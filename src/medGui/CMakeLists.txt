@@ -1,0 +1,67 @@
+### CMakeLists.txt --- 
+## 
+## Author: Julien Wintz
+## Copyright (C) 2008 - Julien Wintz, Inria.
+## Created: Wed Sep 16 17:20:13 2009 (+0200)
+## Version: $Id$
+## Last-Updated: Mon Sep 21 14:46:06 2009 (+0200)
+##           By: Julien Wintz
+##     Update #: 19
+######################################################################
+## 
+### Commentary: 
+## 
+######################################################################
+## 
+### Change log:
+## 
+######################################################################
+
+project(medGui)
+
+## #################################################################
+## Sources
+## #################################################################
+
+set(${PROJECT_NAME}_HEADERS
+  medLayoutChooser.h
+  medStyle.h
+)
+
+set(${PROJECT_NAME}_HEADERS_MOC
+  medLayoutChooser.h
+  medStyle.h
+)
+
+set(${PROJECT_NAME}_SOURCES
+  medLayoutChooser.cpp
+  medStyle.cpp
+)
+
+## #################################################################
+## Build rules
+## #################################################################
+
+qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+
+add_library(${PROJECT_NAME}
+  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_SOURCES_WRAP}
+)
+
+target_link_libraries(${PROJECT_NAME}
+  ${QT_LIBRARIES}
+)
+
+## #################################################################
+## Installation
+## #################################################################
+
+if(NOT med_INSTALL_NO_DEVELOPMENT)
+  install_files(${med_INSTALL_INCLUDE_DIR}/${PROJECT_NAME} .h ${${PROJECT_NAME}_HEADERS})
+endif(NOT med_INSTALL_NO_DEVELOPMENT)
+
+if(NOT med_INSTALL_NO_LIBRARIES)
+  install_targets(${med_INSTALL_LIB_DIR} RUNTIME_DIRECTORY ${med_INSTALL_BIN_DIR} ${PROJECT_NAME})
+endif(NOT med_INSTALL_NO_LIBRARIES)

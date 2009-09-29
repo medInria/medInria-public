@@ -1,0 +1,47 @@
+### medConfig.cmake.in --- 
+## 
+## Author: Julien Wintz
+## Copyright (C) 2008 - Julien Wintz, Inria.
+## Created: Mon Jul 20 22:51:02 2009 (+0200)
+## Version: $Id$
+## Last-Updated: Thu Sep 17 08:25:56 2009 (+0200)
+##           By: Julien Wintz
+##     Update #: 15
+######################################################################
+## 
+### Commentary: 
+## 
+######################################################################
+## 
+### Change log:
+## 
+######################################################################
+
+@med_CONFIG_INSTALL_ONLY@
+
+set(med_VERSION_MAJOR  "@med_VERSION_MAJOR@")
+set(med_VERSION_MINOR  "@med_VERSION_MINOR@")
+set(med_VERSION_BUILD  "@med_VERSION_BUILD@")
+set(med_VERSION        "@med_VERSION@")
+
+set(med_LIBRARIES "@med_LIBRARIES@")
+
+set(med_CMAKE_DIR "@med_CMAKE_DIR_CONFIG@")
+
+set(med_USE_FILE "@med_USE_FILE_CONFIG@")
+
+set(med_BUILD_SETTINGS_FILE "@med_BUILD_SETTINGS_FILE_CONFIG@")
+
+set(med_LIBRARY_DIRS "@med_LIBRARY_DIRS_CONFIG@")
+
+set(med_RUNTIME_DIRS "@med_RUNTIME_DIRS_CONFIG@")
+
+set(med_INCLUDE_DIRS "@med_INCLUDE_DIRS_CONFIG@")
+
+if(NOT med_NO_LIBRARY_DEPENDS AND EXISTS "@med_LIBRARY_DEPENDS_FILE@")
+  include("@med_LIBRARY_DEPENDS_FILE@")
+endif(NOT med_NO_LIBRARY_DEPENDS AND EXISTS "@med_LIBRARY_DEPENDS_FILE@")
+
+set(med_CONFIGURATION_TYPES @med_CONFIGURATION_TYPES_CONFIG@)
+
+set(med_BUILD_TYPE @med_BUILD_TYPE_CONFIG@)

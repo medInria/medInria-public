@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>html/index.html</file>
+        <file>html/template_css.css</file>
+    </qresource>
+</RCC>
