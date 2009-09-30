@@ -11,7 +11,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkImageMapToColors.h>
+#include <vtkImageReslice.h>
 
 
 namespace itk
@@ -65,7 +65,8 @@ namespace itk
 	 m_View->ResetZoom();
 	 this->ImageNotSet = 0;
        }
-       m_View->GetWindowLevel()->Modified();
+       m_View->GetImageReslice()->Modified();
+       m_View->UpdatePosition();
        m_View->Render();
        qDebug() << "Rendered!";
      }
@@ -86,7 +87,8 @@ namespace itk
 	 m_View->ResetZoom();
 	 this->ImageNotSet = 0;
        }
-       m_View->GetWindowLevel()->Modified();
+       m_View->GetImageReslice()->Modified();
+       m_View->UpdatePosition();
        m_View->Render();
      }
   }
