@@ -32,7 +32,7 @@ namespace itk
     itkTypeMacro( SliceReadCommand, Command );
     itkNewMacro(Self);
 
-    typedef itk::Image<unsigned short, 4> ImageType;
+    typedef itk::Image<unsigned short, 3> ImageType;
     
     void Execute(Object *caller, const EventObject &event);
     void Execute(const Object *caller, const EventObject &event);
@@ -64,7 +64,7 @@ namespace itk
      {
        //qDebug() << "Slice read";
        if( this->ImageNotSet ){
-	 //m_View->SetITKImage ( m_Image );
+	 m_View->SetITKImage ( m_Image );
 	 m_View->ResetCurrentPoint();
 	 m_View->ResetZoom();
 	 m_View->SetWindow (2320);
@@ -89,7 +89,7 @@ namespace itk
      {
        //qDebug() << "Slice read";
        if( this->ImageNotSet ){
-	 //m_View->SetITKImage ( m_Image );
+	 m_View->SetITKImage ( m_Image );
 	 m_View->ResetCurrentPoint();
 	 m_View->ResetZoom();
 	 m_View->SetWindow (2320);
@@ -128,7 +128,7 @@ int main (int narg, char* arg[])
   //io->SetFileName ( arg[1] );
   //io->SetNumberOfThreads (1);
   
-  typedef itk::Image<unsigned short, 4> ImageType;
+  typedef itk::Image<unsigned short, 3> ImageType;
   typedef itk::ImageFileReader<ImageType> ImageReaderType;
 
   ImageReaderType::Pointer reader = ImageReaderType::New();

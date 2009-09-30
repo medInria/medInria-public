@@ -295,7 +295,7 @@ namespace itk
       MetaDataDictionary::ConstIterator signBits = dicomDictionary.Find ( "(0028,0103)" );
       std::string sign = "0";
       if( signBits == dicomDictionary.End() ) {
-	itkWarningMacro (<< "Missing Pixel Representation (0028,0103), assuming unsinged");
+	itkWarningMacro (<< "Missing Pixel Representation (0028,0103), assuming unsigned");
       }
       else {
 	
@@ -381,12 +381,14 @@ namespace itk
       SliceThicknessString = metaDataVectorString->GetMetaDataObjectValue()[0];
     }
     double SliceThickness = 0.0;
+    std::cout << "Passing to toScalar 1: " << SliceThicknessString << std::endl;
     if ( !this->toScalar( SliceThicknessString, SliceThickness ) )
-    {      
-      throw std::runtime_error( "failed to convert SliceThicknessString to"
-				" string to double" );  
+    {
+      itkWarningMacro (<< "failed to convert SliceThicknessString from string to double: " << SliceThicknessString << ", assuming 1.0");
+      SliceThickness = 1.0;
+      //      throw std::runtime_error( "failed to convert SliceThicknessString from"
+      //			" string to double" );  
     }
-    
 
     double SpacingBetweenSlices = 0.0;
     if ( dicomDictionary.Find( "(0018,0088)" ) != dicomDictionary.End() )
@@ -401,11 +403,14 @@ namespace itk
 	MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0088)"].GetPointer() );
 	SpacingBetweenSlicesString = metaDataVectorString->GetMetaDataObjectValue()[0];
       }
+      std::cout << "Passing to toScalar 2: " << SpacingBetweenSlicesString << std::endl;
       if ( !this->toScalar( SpacingBetweenSlicesString, 
 			    SpacingBetweenSlices ) )
       {
-	throw std::runtime_error( "failed to convert SpacingBetweenSlices to"
-				  " string to double" ); 
+	itkWarningMacro (<< "failed to convert SpacingBetweenSlices from string to double: " << SpacingBetweenSlicesString  << ", assuming 1.0" );
+	/*	throw std::runtime_error( "failed to convert SpacingBetweenSlices from"
+		" string to double" ); */
+	SpacingBetweenSlices = 1.0;
       }
     }
     
@@ -645,8 +650,19 @@ namespace itk
 			  fileCount );
 	  
 	  floatSliceLocation = 0;
-	  this->toScalar( stringMap[ "(0020,1041)" ][ fileIndex ], floatSliceLocation );
-	  
+
+	  std::vector< std::string > vecSlice = stringMap["(0020,1041)"];
+	  if( vecSlice.size()>0 ) {
+	    this->toScalar( vecSlice[fileIndex], floatSliceLocation );
+	  }
+	  else {
+	    vecSlice = stringMap["(0020,0050)"];
+	    if( vecSlice.size()>0 ) {
+	      this->toScalar( vecSlice[fileIndex], floatSliceLocation );
+	    }
+	    //else // Hopeless
+	  }
+
 	  locations.insert( floatSliceLocation );
 	  locationToNameLut.insert( std::pair< float, std::string >(floatSliceLocation, *f ) );
 	  nameToIndexLut[ *f ] = fileIndex;
@@ -685,6 +701,7 @@ namespace itk
 	  
 	  int32_t instanceNumber = 0;
 	  this->toScalar( instanceNumberString, instanceNumber );
+	  
 	  instanceNumberToNameLut[ instanceNumber ].push_back( n->second );
 	  ++ n;
 	  
@@ -2061,7 +2078,6 @@ namespace itk
    bool DCMTKImageIO::toScalar( const std::string& msg,
 				double& value )
    {
-     
      bool ok = true;
      
      if ( msg.empty() )
@@ -2107,7 +2123,12 @@ namespace itk
   bool DCMTKImageIO::toScalar( const std::string& msg,
 			       int64_t& value, int32_t base )
   {
-    
+
+    if ( msg.empty() )
+     {
+       value = 0;
+       return false;
+     }
     const char* p = msg.c_str();
     int64_t val = INT64_C( 0 );
     int32_t l = msg.length();
