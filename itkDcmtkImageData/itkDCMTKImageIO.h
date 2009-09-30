@@ -11,13 +11,13 @@
 #define HAVE_CONFIG_H
 #include <dcmtk/dcmdata/dctk.h>
 #include <dcmtk/dcmdata/dcistrmf.h>
-//#define INCLUDE_CSTDLIB
-//#define INCLUDE_CSTRING
 #include <dcmtk/ofstd/ofstdinc.h>
 
 
 #include <itkImageIOBase.h>
 #include <itkMetaDataObject.h>
+#include <itkMultiThreader.h>
+#include <itkImageRegion.h>
 
 #include <set>
 
@@ -28,7 +28,7 @@ namespace itk
   {
 
   public:
-    typedef DCMTKImageIO         Self;
+    typedef DCMTKImageIO       Self;
     typedef ImageIOBase        Superclass;
     typedef SmartPointer<Self> Pointer;
     typedef SmartPointer<const Self> ConstPointer;
@@ -60,6 +60,8 @@ namespace itk
     typedef MetaDataObject < std::vector<uint32_t> >     MetaDataVectorUInt32Type;
     typedef MetaDataObject <uint16_t>                    MetaDataUInt16Type;
     typedef MetaDataObject < std::vector<uint16_t> >     MetaDataVectorUInt16Type;
+
+    typedef ImageRegion<1> RegionType;
     
 
     /**
@@ -95,17 +97,53 @@ namespace itk
     /** Writes the data to disk from the memory buffer provided. Make sure
      * that the IORegions has been set properly. */
     virtual void Write(const void* buffer);    
+
+
+
+    itkGetObjectMacro (MultiThreader, MultiThreader);
+
+    itkSetMacro (NumberOfThreads, int);
+    itkGetMacro (NumberOfThreads, int);
+    
+  protected:
     
     DCMTKImageIO();
     ~DCMTKImageIO();
     void PrintSelf(std::ostream& os, Indent indent) const {};
+
+    void ThreadedRead (void* buffer, RegionType region, int threadId);
     
-  private:
-    DCMTKImageIO(const Self&);
-    void operator=(const Self&);
+    void InternalRead (void* buffer, int slice, unsigned long pixelCount, bool isJpeg=0);
+
+
+    static ITK_THREAD_RETURN_TYPE ThreaderCallback( void *arg );
     
+    struct ThreadStruct
+    {
+      Pointer Reader;
+      void*   Buffer;
+    };
+
+    int SplitRequestedRegion (int id, int total, RegionType& region);
+
+
     void SwapBytesIfNecessary(void* buffer, unsigned long numberOfPixels);
 
+
+    void PopulateDictionary (StringMap& stringMap,
+			     FloatMap& floatMap,
+			     DoubleMap& doubleMap,
+			     Int32Map& int32Map,
+			     Int16Map& int16Map,
+			     UInt32Map& uint32Map,
+			     UInt16Map& uint16Map);
+
+    void DeterminePixelType (void);
+    void DetermineSpacing (void);
+    void DetermineDimensions (void);
+    void DetermineOrigin (void);
+    void DetermineOrientation (void);
+    
 
     void readCoreHeader( const std::string& name,
                          StringMap& stringMap,
@@ -139,9 +177,20 @@ namespace itk
     bool isOkInBase (char, int32_t);
 
 
+    
+    
+  private:
+    DCMTKImageIO(const Self&);
+    void operator=(const Self&);
+    
+
     std::vector< std::string > m_FileNames;
     std::vector< std::string > m_OrderedFileNames;
-    
+    std::string                m_Directory;
+
+
+    MultiThreader::Pointer m_MultiThreader;
+    int                    m_NumberOfThreads;
   };
 
 

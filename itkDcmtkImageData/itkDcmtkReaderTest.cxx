@@ -12,7 +12,11 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkImageReslice.h>
+#include "vtkImageMapToWindowLevelColors.h"
+#include "vtkImageMapToColors.h"
+#include "vtkImageActor.h"
 
+#include <time.h>
 
 namespace itk
 {
@@ -28,7 +32,7 @@ namespace itk
     itkTypeMacro( SliceReadCommand, Command );
     itkNewMacro(Self);
 
-    typedef itk::Image<unsigned short, 3> ImageType;
+    typedef itk::Image<unsigned short, 4> ImageType;
     
     void Execute(Object *caller, const EventObject &event);
     void Execute(const Object *caller, const EventObject &event);
@@ -58,17 +62,20 @@ namespace itk
      
      if( typeid(event) == typeid ( itk::SliceReadEvent )  )
      {
-       qDebug() << "Slice read\n";
+       //qDebug() << "Slice read";
        if( this->ImageNotSet ){
-	 m_View->SetITKImage ( m_Image );
+	 //m_View->SetITKImage ( m_Image );
 	 m_View->ResetCurrentPoint();
 	 m_View->ResetZoom();
+	 m_View->SetWindow (2320);
+	 m_View->SetLevel (1138);
 	 this->ImageNotSet = 0;
        }
-       m_View->GetImageReslice()->Modified();
-       m_View->UpdatePosition();
+       //m_View->GetImageReslice()->Modified();
+       m_View->GetWindowLevel()->Modified();
        m_View->Render();
-       qDebug() << "Rendered!";
+       
+       //qDebug() << "Rendered!";
      }
   }
 
@@ -80,16 +87,18 @@ namespace itk
      
      if( typeid(event) == typeid ( SliceReadEvent  )  )
      {
-       qDebug() << "Slice read\n";
+       //qDebug() << "Slice read";
        if( this->ImageNotSet ){
-	 m_View->SetITKImage ( m_Image );
+	 //m_View->SetITKImage ( m_Image );
 	 m_View->ResetCurrentPoint();
 	 m_View->ResetZoom();
+	 m_View->SetWindow (2320);
+	 m_View->SetLevel (1138);
 	 this->ImageNotSet = 0;
        }
-       m_View->GetImageReslice()->Modified();
-       m_View->UpdatePosition();
+       m_View->GetWindowLevel()->Modified();
        m_View->Render();
+  
      }
   }
   
@@ -116,8 +125,10 @@ int main (int narg, char* arg[])
   
   itk::DCMTKImageIO::Pointer io = itk::DCMTKImageIO::New();
   io->SetFileNames ( fileNames );
+  //io->SetFileName ( arg[1] );
+  //io->SetNumberOfThreads (1);
   
-  typedef itk::Image<unsigned short, 3> ImageType;
+  typedef itk::Image<unsigned short, 4> ImageType;
   typedef itk::ImageFileReader<ImageType> ImageReaderType;
 
   ImageReaderType::Pointer reader = ImageReaderType::New();
@@ -144,12 +155,19 @@ int main (int narg, char* arg[])
   view->SetWheelInteractionStyle        (vtkViewImage2D::SELECT_INTERACTION);
   view->SetRightButtonInteractionStyle  (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
 
+  command->SetView ( view );
+
+  ImageType::Pointer image = reader->GetOutput();
+  if( image.IsNull() )
+  {
+    std::cout << "Image is null" << std::endl;
+    return -1;
+  }
+    
   iren->Initialize();
 
 
-  command->SetView ( view );
-  
-  
+  clock_t t1 = clock();
   try
   {
     reader->Update();
@@ -159,13 +177,21 @@ int main (int narg, char* arg[])
     std::cerr << e;
     return -1;
   }
+  clock_t t2 = clock();
 
-  ImageType::Pointer image = reader->GetOutput();
+  std::cout << "Threads: " << io->GetNumberOfThreads() << " Elapsed time:" << (double)(t2-t1)/(double)(CLOCKS_PER_SEC) << std::endl;
+
+  image->DisconnectPipeline();
   std::cout << image << std::endl;
 
 
   iren->Start();
 
+  view->Delete();
+  iren->Delete();
+  renderer->Delete();
+  rwin->Delete();
+  
   /*  
  
   typedef itk::ImageFileWriter<ImageType> WriterType;

@@ -133,15 +133,15 @@ endif()
 
 add_executable(itkDcmtkReaderTest
 itkDcmtkReaderTest.cxx
-# itkDCMTKImageIO.cxx
+itkDCMTKImageIO.cxx
 )
 target_link_libraries(itkDcmtkReaderTest
-  ${PROJECT_NAME}
+#  ${PROJECT_NAME}
 	vtkRenderingAddOn
 	vtkRendering
 	vtkIO
 	vtkDataManagement
-#  ${ITK_LIBRARIES}
-#  ${DCMTK_LIBRARIES}
-#  z
+ ${ITK_LIBRARIES}
+ ${DCMTK_LIBRARIES}
+ z
 )

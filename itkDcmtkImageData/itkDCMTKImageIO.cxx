@@ -11,6 +11,10 @@
 #include <dcmtk/dcmjpeg/djdecode.h>
 #include <dcmtk/dcmdata/dcstack.h>
 
+#include <vnl/vnl_vector.h>
+#include <vnl/vnl_cross.h>
+
+
 #include <float.h>
 #include <inttypes.h>
 #include <stdint.h>
@@ -22,24 +26,17 @@ namespace std
   template < class T >
   bool isUnique( const vector< T >& thing, T& commonValue )
   {
-    
-    commonValue = thing[ 0 ];
-    
+    commonValue = thing[ 0 ]; 
     typename vector< T >::const_iterator i = thing.begin(), ie = thing.end();
     while ( i != ie )
     {
-      
       if ( *i != commonValue )
       {
-	
 	return false;
-	
       }
       ++ i;
-      
     }
     return true;
-    
   }
 }
 
@@ -48,20 +45,14 @@ namespace std
 static std::string filter( const std::string& name )
 {
   std::string result = name;
-
-  std::string::iterator i = result.begin(),
-                        ie = result.end();
+  std::string::iterator i = result.begin(), ie = result.end();
   while ( i != ie )
   {
-
     if ( *i == '#' )
     {
-
       *i = '_';
-
     }
     ++ i;
-
   }
   return result;
 }
@@ -86,6 +77,10 @@ namespace itk
     {
       m_ByteOrder = LittleEndian;
     }
+
+    m_MultiThreader = MultiThreader::New();
+    this->SetNumberOfThreads ( m_MultiThreader->GetNumberOfThreads() );
+    m_Directory = "";
   }
   
 
@@ -93,87 +88,523 @@ namespace itk
   {}
 
 
+  
   bool DCMTKImageIO::CanReadFile(const char* filename)
   {
+
+    if( m_FileNames.size()>0 )
+    {
+      for( unsigned int i=0; i<m_FileNames.size(); i++) {
+	::DcmFileFormat dicomFile;
+	::OFCondition condition = dicomFile.loadFile( m_FileNames[i].c_str() );
+	if ( !condition.good() )
+	{
+	  return false;
+	}
+      }
+    }
+    else
+    {
+      if( itksys::SystemTools::FileIsDirectory ( this->GetFileName() ) )
+      {
+	itksys::Directory directory;
+	directory.Load( this->GetFileName() );
+	for( unsigned long i=0; i<directory.GetNumberOfFiles(); i++ )
+	{
+	  std::string name = directory.GetPath();
+	  name += directory.GetFile (i);
+	  
+	  ::DcmFileFormat dicomFile;
+	  ::OFCondition condition = dicomFile.loadFile( name.c_str() );
+	  if ( !condition.good() )
+	  {
+	    return false;
+	  }
+	}
+      }
+      else
+      {
+	::DcmFileFormat dicomFile;
+	::OFCondition condition = dicomFile.loadFile( this->GetFileName() );
+	if ( !condition.good() )
+	{
+	  return false;
+	}
+      }
+    }
+
     return true;
+  }
+
+
+  void DCMTKImageIO::PopulateDictionary(StringMap& stringMap,
+					FloatMap& floatMap,
+					DoubleMap& doubleMap,
+					Int32Map& int32Map,
+					Int16Map& int16Map,
+					UInt32Map& uint32Map,
+					UInt16Map& uint16Map)
+  {
+
+    MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+    
+    std::map< std::string, std::vector< std::string > >::iterator
+      sm = stringMap.begin(), sme = stringMap.end();
+
+    std::string commonString = "";
+    while ( sm != sme )
+    {
+      if ( std::isUnique( sm->second, commonString ) )
+      {
+	EncapsulateMetaData<std::string>(dicomDictionary, sm->first, commonString); 
+      }
+      else
+      {
+	EncapsulateMetaData< std::vector<std::string> >(dicomDictionary, sm->first, sm->second); 
+      }
+      ++ sm;
+    }
+    
+
+    std::map< std::string, std::vector< float > >::iterator
+      fm = floatMap.begin(), fme = floatMap.end();
+    float commonFloat = 0;
+    while ( fm != fme )
+    {
+      if ( std::isUnique( fm->second, commonFloat ) )
+      {
+	EncapsulateMetaData<float>(dicomDictionary, fm->first, commonFloat); 
+      }
+      else
+      {
+	EncapsulateMetaData< std::vector<float> >(dicomDictionary, fm->first, fm->second);
+      }
+      ++ fm;
+    }
+
+    
+    std::map< std::string, std::vector< double > >::iterator
+      dm = doubleMap.begin(), dme = doubleMap.end();
+    double commonDouble = 0;
+    while ( dm != dme )
+    {
+      if ( std::isUnique( dm->second, commonDouble ) )
+      {
+	EncapsulateMetaData<double>( dicomDictionary, dm->first, commonDouble);
+      }
+      else
+      {
+	EncapsulateMetaData< std::vector<double> >( dicomDictionary, dm->first, dm->second);
+      }
+      ++ dm;
+    }
+
+    
+    std::map< std::string, std::vector< int32_t > >::iterator
+      i32m = int32Map.begin(), i32me = int32Map.end();
+    int32_t commonInt32 = 0;
+    while ( i32m != i32me )
+    {
+      if ( std::isUnique( i32m->second, commonInt32 ) )
+      {
+	EncapsulateMetaData<int32_t>( dicomDictionary, i32m->first, commonInt32);
+      }
+      else
+      {
+	EncapsulateMetaData< std::vector<int32_t> >( dicomDictionary, i32m->first, i32m->second);
+      }
+      ++ i32m;
+    }
+    
+
+    std::map< std::string, std::vector< int16_t > >::iterator
+      i16m = int16Map.begin(), i16me = int16Map.end();
+    int16_t commonInt16 = 0;
+    while ( i16m != i16me )
+    {
+      if ( std::isUnique( i16m->second, commonInt16 ) )
+      {
+	EncapsulateMetaData<int16_t>( dicomDictionary, i16m->first, commonInt16);
+      }
+      else
+      {
+	EncapsulateMetaData< std::vector<int16_t> >( dicomDictionary, i16m->first, i16m->second);
+      }
+      ++ i16m;
+    }
+
+    
+    std::map< std::string, std::vector< uint32_t > >::iterator
+      ui32m = uint32Map.begin(), ui32me = uint32Map.end();
+    uint32_t commonUInt32 = 0;
+    while ( ui32m != ui32me )
+    {
+      if ( std::isUnique( ui32m->second, commonUInt32 ) )
+      {
+	EncapsulateMetaData<uint32_t>( dicomDictionary, ui32m->first, commonUInt32);
+      }
+      else
+      { 
+	EncapsulateMetaData< std::vector<uint32_t> >( dicomDictionary, ui32m->first, ui32m->second);
+      }
+      ++ ui32m;
+    }
+
+    
+    std::map< std::string, std::vector< uint16_t > >::iterator
+      ui16m = uint16Map.begin(), ui16me = uint16Map.end();
+    uint16_t commonUInt16 = 0;
+    while ( ui16m != ui16me )
+    {
+      if ( std::isUnique( ui16m->second, commonUInt16 ) )
+      {
+	EncapsulateMetaData<uint16_t>( dicomDictionary, ui16m->first, commonUInt16); 
+      }
+      else
+      {
+	EncapsulateMetaData< std::vector<uint16_t> >( dicomDictionary, ui16m->first, ui16m->second); 
+      }
+      ++ ui16m;  
+    }
   }
 
 
   
 
+
+  void DCMTKImageIO::DeterminePixelType()
+  {
+    MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+    
+    MetaDataDictionary::ConstIterator bitsAllocatedIterator = dicomDictionary.Find( "(0028,0100)" );
+    if ( bitsAllocatedIterator != dicomDictionary.End() )
+    {
+      uint16_t bitsAllocated = 0;
+      
+      if( MetaDataUInt16Type* metaDataBitsAllocated = dynamic_cast<MetaDataUInt16Type*>( bitsAllocatedIterator->second.GetPointer() ) ) {
+	bitsAllocated = metaDataBitsAllocated->GetMetaDataObjectValue();
+      }
+      else if ( MetaDataVectorUInt16Type* metaDataBitsAllocated = dynamic_cast<MetaDataVectorUInt16Type*>( bitsAllocatedIterator->second.GetPointer() ) ) {
+	bitsAllocated = metaDataBitsAllocated->GetMetaDataObjectValue()[0];
+      }
+      else {
+	throw std::runtime_error ("unsupported component type");
+      }
+      
+      
+      MetaDataDictionary::ConstIterator signBits = dicomDictionary.Find ( "(0028,0103)" );
+      std::string sign = "0";
+      if( signBits == dicomDictionary.End() ) {
+	itkWarningMacro (<< "Missing Pixel Representation (0028,0103), assuming unsinged");
+      }
+      else {
+	
+	if( MetaDataStringType* metaDataSign = dynamic_cast<MetaDataStringType*>( signBits->second.GetPointer() ) ){
+	  sign = metaDataSign->GetMetaDataObjectValue();
+	}
+	else if ( MetaDataVectorStringType* metaDataSign = dynamic_cast<MetaDataVectorStringType*>( signBits->second.GetPointer() ) ){
+	  sign = metaDataSign->GetMetaDataObjectValue()[0];
+	}
+	//else
+	//itkWarningMacro (<< "Cannot cast sign bit");
+      }
+      
+      if ( sign == "0" ) {
+	sign = "U";
+      }
+      else {
+	sign = "S";
+      }
+      
+      if( bitsAllocated == 8 && sign=="U" ){
+	this->SetComponentType ( UCHAR );
+      }
+      else if ( bitsAllocated == 8 && sign=="S" ){
+	this->SetComponentType ( CHAR );
+      }
+      else if ( bitsAllocated == 16 && sign=="U") {
+	this->SetComponentType ( USHORT );
+      }
+      else if ( bitsAllocated == 16 && sign=="S") {
+	this->SetComponentType ( SHORT );
+      }
+      else if ( bitsAllocated == 32 && sign=="U") {
+	this->SetComponentType ( UINT );
+      }
+      else if ( bitsAllocated == 32 && sign=="S") {
+	this->SetComponentType ( INT );
+      }
+      else if (bitsAllocated == 64 ) {
+	this->SetComponentType(DOUBLE);
+      }
+      else
+	this->SetComponentType (UNKNOWNCOMPONENTTYPE);
+    }
+    else
+    {
+      throw std::runtime_error( "cannot find BitsAllocated tag (0028,0100)" );
+    }
+  }
+  
+
+
+
+  void DCMTKImageIO::DetermineSpacing()
+  {
+    MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+
+    std::string PixelSpacing;
+    if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0028,0030)"].GetPointer() ) )
+    {
+      PixelSpacing = metaDataString->GetMetaDataObjectValue();
+    }
+    else
+    {
+      MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0028,0030)"].GetPointer() );
+      PixelSpacing = metaDataVectorString->GetMetaDataObjectValue()[0];
+    }
+    PixelSpacing[ PixelSpacing.find( "\\" ) ] = ' ';
+    double pixSizeX;
+    double pixSizeY;
+    std::istringstream iss( PixelSpacing );
+    iss >> pixSizeX >> pixSizeY;
+    
+
+    std::string SliceThicknessString;
+    if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0018,0050)"].GetPointer() ) )
+    {	
+      SliceThicknessString = metaDataString->GetMetaDataObjectValue();
+    }
+    else
+    {
+      MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0050)"].GetPointer() );
+      SliceThicknessString = metaDataVectorString->GetMetaDataObjectValue()[0];
+    }
+    double SliceThickness = 0.0;
+    if ( !this->toScalar( SliceThicknessString, SliceThickness ) )
+    {      
+      throw std::runtime_error( "failed to convert SliceThicknessString to"
+				" string to double" );  
+    }
+    
+
+    double SpacingBetweenSlices = 0.0;
+    if ( dicomDictionary.Find( "(0018,0088)" ) != dicomDictionary.End() )
+    {
+      std::string SpacingBetweenSlicesString;
+      if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0018,0088)"].GetPointer() ) )
+      {
+	SpacingBetweenSlicesString = metaDataString->GetMetaDataObjectValue(); 
+      }
+      else
+      {
+	MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0088)"].GetPointer() );
+	SpacingBetweenSlicesString = metaDataVectorString->GetMetaDataObjectValue()[0];
+      }
+      if ( !this->toScalar( SpacingBetweenSlicesString, 
+			    SpacingBetweenSlices ) )
+      {
+	throw std::runtime_error( "failed to convert SpacingBetweenSlices to"
+				  " string to double" ); 
+      }
+    }
+    
+    m_Spacing[0] = pixSizeX;
+    m_Spacing[1] = pixSizeY;
+    if ( SpacingBetweenSlices > 0.0 )
+    {
+      m_Spacing[2] = SpacingBetweenSlices;
+    }
+    else if ( SliceThickness > 0.0 )
+    {
+      m_Spacing[2] = SliceThickness;
+    }
+    if( this->GetNumberOfDimensions()==4 )
+      m_Spacing[3] = 1.0;
+    
+  }
+
+
+
+  void DCMTKImageIO::DetermineDimensions()
+  {
+    MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+    
+    if( MetaDataUInt16Type* metaDataUint16 = dynamic_cast<MetaDataUInt16Type*>( dicomDictionary["(0028,0011)"].GetPointer() ) )
+    {
+      m_Dimensions[0] = ( int32_t )metaDataUint16->GetMetaDataObjectValue();	  
+    }
+    else
+    {
+      MetaDataVectorUInt16Type* metaDataVectorUint16 = dynamic_cast<MetaDataVectorUInt16Type*>( dicomDictionary["(0028,0011)"].GetPointer() );
+      m_Dimensions[0] = ( int32_t )metaDataVectorUint16->GetMetaDataObjectValue()[0];
+    }
+    
+    if( MetaDataUInt16Type* metaDataUint16 = dynamic_cast<MetaDataUInt16Type*>( dicomDictionary["(0028,0010)"].GetPointer() ) )
+    {
+      m_Dimensions[1] = ( int32_t )metaDataUint16->GetMetaDataObjectValue();
+    }
+    else
+    {
+      MetaDataVectorUInt16Type* metaDataVectorUint16 = dynamic_cast<MetaDataVectorUInt16Type*>( dicomDictionary["(0028,0010)"].GetPointer() );
+      m_Dimensions[1] = ( int32_t )metaDataVectorUint16->GetMetaDataObjectValue()[0];
+    }      
+  }
+
+
+
+  void DCMTKImageIO::DetermineOrigin()
+  {
+    MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+    
+    double originX = 0.0;
+    double originY = 0.0;
+    double originZ = 0.0;
+    
+    std::string s_origin = "0.0\0.0\0.0";
+    if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0020,0032)"].GetPointer() ) )
+    {
+      s_origin = metaDataString->GetMetaDataObjectValue();
+    }
+    else
+    {
+      MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0020,0032)"].GetPointer() );
+      s_origin = metaDataVectorString->GetMetaDataObjectValue()[0];
+    }
+    
+    std::replace ( s_origin.begin(), s_origin.end(), '\\', ' ');
+    std::istringstream iss( s_origin );
+    iss >> originX >> originY >> originZ;
+    
+    m_Origin [0] = originX;
+    m_Origin [1] = originY;
+    m_Origin [2] = originZ;
+    if( this->GetNumberOfDimensions()==4 )
+      m_Origin [3] = 0.0;
+  }
+  
+  
+  
+  
+  void DCMTKImageIO::DetermineOrientation()
+  {
+    MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+
+    std::string s_orientation = "1.0\0.0\0.0\0.0\1.0\0.0";
+    if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0020,0037)"].GetPointer() ) )
+    {
+      s_orientation = metaDataString->GetMetaDataObjectValue();
+    }
+    else
+    {
+      MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0020,0037)"].GetPointer() );
+      s_orientation = metaDataVectorString->GetMetaDataObjectValue()[0];
+    }
+    
+    double orientation[6];
+    std::replace ( s_orientation.begin(), s_orientation.end(), '\\', ' ');
+    std::istringstream iss( s_orientation );
+    for( int i=0; i<6; i++ )
+      iss >> orientation[i];
+
+    vnl_vector<double> rowDirection(3), columnDirection(3);
+    rowDirection[0] = orientation[0];
+    rowDirection[1] = orientation[1];
+    rowDirection[2] = orientation[2];
+    
+    columnDirection[0] = orientation[3];
+    columnDirection[1] = orientation[4];
+    columnDirection[2] = orientation[5];
+    
+    vnl_vector<double> sliceDirection = vnl_cross_3d(rowDirection, columnDirection);
+
+    m_Direction[0][0] = orientation[0];
+    m_Direction[0][1] = orientation[1];
+    m_Direction[0][2] = orientation[2];
+    m_Direction[1][0] = orientation[3];
+    m_Direction[1][1] = orientation[4];
+    m_Direction[1][2] = orientation[5];
+    m_Direction[2][0] = sliceDirection[0];
+    m_Direction[2][1] = sliceDirection[1];
+    m_Direction[2][2] = sliceDirection[2];
+
+    if( this->GetNumberOfDimensions()==4 ){
+      m_Direction[0][3] = 0.0;
+      m_Direction[1][3] = 0.0;
+      m_Direction[2][3] = 0.0;
+      m_Direction[3][3] = 1.0;
+      m_Direction[3][0] = 0.0;
+      m_Direction[3][1] = 0.0;
+      m_Direction[3][2] = 0.0;
+    }
+  }
+
+  
+  
   void DCMTKImageIO::ReadImageInformation()
   {
 
     try
     {
-
-      //std::string directory = itksys::SystemTools::GetFilenamePath ( this->GetFileName() );
-      
-      // browsing and checking directory coherence
       /*
-      ptk::Directory directory( name );
-     
-      if ( !directory.isValid() )
-      {      
-      throw ptk::FileNotFoundException( name );       
-      }
-
-      if ( directory.getCount() == 0 )
-      {
-      throw std::runtime_error( std::string( "no file in '" ) +
-                                directory.getPath() + "' directory" );
-				}
-      */
-      
-      // checking item type compatibility
-      /*
-	if ( object.getHeader().hasAttribute( "item_type" ) )
-	{
-	std::string itemType;
-	object.getHeader().getAttribute( "item_type", itemType );
-	if ( ! ptk::TypeOf< T >::isSameType( itemType ) ) 
-	{
+	Three possibilities:
 	
-        throw ptk::ItemTypeException(
-	std::string( "object item type given as argument is different from " )
-	+ ptk::TypeOf< T >::getName() );
-	}
-	}
-      */
+	- The user has specified a series of filenames using the SetFileNames() method.
+	We treat this case in priority. All dicoms are read to form a 3D or 4D volume/
 
+	- The user has specified a unique filename using SetFileName(). Image is read
+	to form a 3D volume (one slice = 3D volume)
 
-      
-      // looping over file, checking inter-location header consistency
-      // and collecting slice information
+	- The user has specified a directory: we list all files in the directory and go
+	back to the first case.
+	
+       */
 
-      std::set< std::string > fileNames;
-      std::string s_directory = "";
-      int32_t fileCount = 0;
+      std::set< std::string > fileNames;     
+      int32_t                 fileCount = 0;
       
       if( m_FileNames.size()>0 )
       {
 	for(unsigned int i=0; i<m_FileNames.size(); i++ )
-	  fileNames.insert ( itksys::SystemTools::GetFilenameName (m_FileNames[i]) );
-	fileCount = (int32_t)( m_FileNames.size() );
-	s_directory = itksys::SystemTools::GetFilenamePath ( m_FileNames[0] );
+	{
+	  fileNames.insert ( itksys::SystemTools::GetFilenameName ( m_FileNames[i] ) );
+	}
+	m_Directory = itksys::SystemTools::GetFilenamePath ( m_FileNames[0] );
       }
       else
       {
-	itksys::Directory directory;
-	directory.Load( itksys::SystemTools::GetFilenamePath ( this->GetFileName() ).c_str() );
-	
-	for( unsigned long i=0; i<directory.GetNumberOfFiles(); i++ )
+	if( itksys::SystemTools::FileIsDirectory ( this->GetFileName() ) )
 	{
-	  fileNames.insert ( directory.GetFile ( i ) );
+	  itksys::Directory directory;
+	  directory.Load( this->GetFileName() );
+	  for( unsigned long i=0; i<directory.GetNumberOfFiles(); i++ )
+	  {
+	    std::string name = directory.GetPath();
+	    name += directory.GetFile (i);
+	    
+	    ::DcmFileFormat dicomFile;
+	    ::OFCondition condition = dicomFile.loadFile( name.c_str() );
+	    if ( condition.good() )
+	    {
+	      fileNames.insert ( directory.GetFile ( i ) );
+	    }
+	  }
+	  m_Directory = directory.GetPath();
 	}
-	//fileNames.insert ( itksys::SystemTools::GetFilenameName (this->GetFileName()).c_str() );
-	s_directory = directory.GetPath();
-	fileCount = ( int32_t )fileNames.size()-2; // - ./ and ../
+	else
+	{
+	  fileNames.insert ( itksys::SystemTools::GetFilenameName ( this->GetFileName() ) );
+	  m_Directory = itksys::SystemTools::GetFilenamePath ( this->GetFileName() );
+	}
       }
-      
-	
-      std::set< std::string >::const_iterator f = fileNames.begin(),
-	fe = fileNames.end();
+      fileCount = (int32_t)( fileNames.size() );
+
+      if( fileCount == 0 )
+      {
+	itkExceptionMacro (<<"Cannot find any dicom in directory or dicom is not valid");	
+      }
+
+      std::set< std::string >::const_iterator f = fileNames.begin(), fe = fileNames.end();
       
       StringMap stringMap;
       FloatMap  floatMap;
@@ -182,6 +613,7 @@ namespace itk
       Int16Map  int16Map;
       UInt32Map uint32Map;
       UInt16Map uint16Map;
+
       
       std::set< float > locations;
       std::multimap< float, std::string > locationToNameLut;
@@ -193,14 +625,11 @@ namespace itk
       
       while ( f != fe )
       {
-
 	std::string filename;
-	if( s_directory != "" )
-	  filename = s_directory + "/" + *f;
+	if( m_Directory != "" )
+	  filename = m_Directory + "/" + *f;
 	else
 	  filename = *f;
-	
-	std::ifstream is( filename.c_str() );
 	
 	try
 	{
@@ -217,10 +646,6 @@ namespace itk
 	  
 	  floatSliceLocation = 0;
 	  this->toScalar( stringMap[ "(0020,1041)" ][ fileIndex ], floatSliceLocation );
-
-	  std::cout << stringMap[ "(0010,0010)" ][ fileIndex ] << " / "
-		    << stringMap[ "(0008,103e)" ][ fileIndex ] << " / "
-		    << stringMap[ "(0008,1030)" ][ fileIndex ] << std::endl;
 	  
 	  locations.insert( floatSliceLocation );
 	  locationToNameLut.insert( std::pair< float, std::string >(floatSliceLocation, *f ) );
@@ -229,8 +654,7 @@ namespace itk
 	}
 	catch (ExceptionObject &e)
 	{
-	  std::cerr << e;
-	  // continue
+	  std::cerr << e; // continue
 	}
 	++ f;
       }
@@ -294,6 +718,23 @@ namespace itk
 	
       }
 
+
+      // collecting slice count and rank count while doing sanity checks
+      int32_t sizeZ, sizeT;
+      
+      sizeZ = ( int32_t )locations.size();
+      sizeT = ( int32_t )locationToNameLut.count( *locations.begin() );
+
+      if( sizeT > 1 ) {
+	this->SetNumberOfDimensions (4);
+	m_Dimensions[3] =  sizeT;
+      }
+      else {
+	this->SetNumberOfDimensions (3);
+      }
+      m_Dimensions[2] =  sizeZ;
+
+      
       
       // checking series instance UID
       //
@@ -305,200 +746,38 @@ namespace itk
       // std::string tmp;
       // if ( !std::isUnique( stringMap[ "(0020,000e)" ], tmp ) )
       // {
-      
       //  throw std::runtime_error( "inconsistent series instance UID" );
-      
       // }
+
       
       // creating dicom dictionary
-      MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+      this->PopulateDictionary (stringMap,
+				floatMap,
+				doubleMap,
+				int32Map,
+				int16Map,
+				uint32Map,
+				uint16Map);
+      this->DeterminePixelType();
+      this->DetermineDimensions();
+      this->DetermineSpacing();
+      this->DetermineOrigin();
+      this->DetermineOrientation();
       
-      std::map< std::string, std::vector< std::string > >::iterator
-	sm = stringMap.begin(), sme = stringMap.end();
-      std::string commonString = "";
-      while ( sm != sme )
-      {
 
-	if ( std::isUnique( sm->second, commonString ) )
-	{
-	  EncapsulateMetaData<std::string>(dicomDictionary, sm->first, commonString); 
-	}
-	else
-	{
-	  EncapsulateMetaData< std::vector<std::string> >(dicomDictionary, sm->first, sm->second); 
-	}
-	++ sm;
-      }
+      
+      
 
-      std::map< std::string, std::vector< float > >::iterator
-	fm = floatMap.begin(), fme = floatMap.end();
-      float commonFloat = 0;
-      while ( fm != fme )
-      {
-	
-	if ( std::isUnique( fm->second, commonFloat ) )
-	{
-	  EncapsulateMetaData<float>(dicomDictionary, fm->first, commonFloat); 
-	}
-	else
-	{
-	  EncapsulateMetaData< std::vector<float> >(dicomDictionary, fm->first, fm->second);
-	  
-	}
-	++ fm;
-	
-      }
-      
-      std::map< std::string, std::vector< double > >::iterator
-	dm = doubleMap.begin(), dme = doubleMap.end();
-      double commonDouble = 0;
-      while ( dm != dme )
-      {
-	
-	if ( std::isUnique( dm->second, commonDouble ) )
-	{
-	  EncapsulateMetaData<double>( dicomDictionary, dm->first, commonDouble);
-	}
-	else
-	{
-	  EncapsulateMetaData< std::vector<double> >( dicomDictionary, dm->first, dm->second);
-	}
-	++ dm;
-      }
-
-      std::map< std::string, std::vector< int32_t > >::iterator
-	i32m = int32Map.begin(), i32me = int32Map.end();
-      int32_t commonInt32 = 0;
-      while ( i32m != i32me )
-      {
-	
-	if ( std::isUnique( i32m->second, commonInt32 ) )
-	{
-	  EncapsulateMetaData<int32_t>( dicomDictionary, i32m->first, commonInt32);
-	}
-	else
-	{
-	  EncapsulateMetaData< std::vector<int32_t> >( dicomDictionary, i32m->first, i32m->second);
-	}
-	++ i32m;
-      }
-      
-      std::map< std::string, std::vector< int16_t > >::iterator
-	i16m = int16Map.begin(), i16me = int16Map.end();
-      int16_t commonInt16 = 0;
-      while ( i16m != i16me )
-      {
-	
-	if ( std::isUnique( i16m->second, commonInt16 ) )
-	{
-	  EncapsulateMetaData<int16_t>( dicomDictionary, i16m->first, commonInt16);
-	}
-	else
-	{
-	  EncapsulateMetaData< std::vector<int16_t> >( dicomDictionary, i16m->first, i16m->second);
-	}
-	++ i16m;
-	
-      }
-      
-      std::map< std::string, std::vector< uint32_t > >::iterator
-	ui32m = uint32Map.begin(), ui32me = uint32Map.end();
-      uint32_t commonUInt32 = 0;
-      while ( ui32m != ui32me )
-      {
-	
-	if ( std::isUnique( ui32m->second, commonUInt32 ) )
-	{
-	  EncapsulateMetaData<uint32_t>( dicomDictionary, ui32m->first, commonUInt32);
-	}
-	else
-	{ 
-	  EncapsulateMetaData< std::vector<uint32_t> >( dicomDictionary, ui32m->first, ui32m->second);
-	}
-	++ ui32m;
-      }
-      
-      std::map< std::string, std::vector< uint16_t > >::iterator
-	ui16m = uint16Map.begin(), ui16me = uint16Map.end();
-      uint16_t commonUInt16 = 0;
-      while ( ui16m != ui16me )
-      {
-	
-	if ( std::isUnique( ui16m->second, commonUInt16 ) )
-	{
-	  EncapsulateMetaData<uint16_t>( dicomDictionary, ui16m->first, commonUInt16); 
-	}
-	else
-	{
-	  EncapsulateMetaData< std::vector<uint16_t> >( dicomDictionary, ui16m->first, ui16m->second); 
-	}
-	++ ui16m;
-	
-      }
-      
-      
-      // checking item type compatibility with header
-      MetaDataDictionary::ConstIterator
-	bitsAllocatedIterator = dicomDictionary.Find( "(0028,0100)" );
-      if ( bitsAllocatedIterator != dicomDictionary.End() )
-      {
-
-	uint16_t bitsAllocated = 0;
-	
-	if( MetaDataUInt16Type* metaDataBitsAllocated = dynamic_cast<MetaDataUInt16Type*>( bitsAllocatedIterator->second.GetPointer() ) ) {
-	  bitsAllocated = metaDataBitsAllocated->GetMetaDataObjectValue();
-	}
-	else if ( MetaDataVectorUInt16Type* metaDataBitsAllocated = dynamic_cast<MetaDataVectorUInt16Type*>( bitsAllocatedIterator->second.GetPointer() ) ) {
-	  bitsAllocated = metaDataBitsAllocated->GetMetaDataObjectValue()[0];
-	}
-	else {
-	  throw std::runtime_error ("unsupported component type");
-	}
-	
-	
-	if( bitsAllocated == 8 ){
-	  this->SetComponentType ( CHAR );
-	}
-	else if ( bitsAllocated == 16 ) {
-	  this->SetComponentType ( SHORT );
-	}
-	else if ( bitsAllocated == 32 ) {
-	  this->SetComponentType ( INT );
-	}
-      }
-      else
-      {
-	throw std::runtime_error( "cannot find BitsAllocated tag (0028,0100)" );
-      }
-      
-      
-      
-      // collecting slice count and rank count while doing sanity checks
-      int32_t sizeZ, sizeT;
-      
-      sizeZ = ( int32_t )locations.size();
-      sizeT = ( int32_t )locationToNameLut.count( *locations.begin() );
-
-
-      if( sizeT > 1 ) {
-	this->SetNumberOfDimensions (4);
-      }
-      else {
-	this->SetNumberOfDimensions (3);
-      }
-      
-      
       m_OrderedFileNames = std::vector< std::string > ( sizeZ * sizeT );
       
+
       int32_t location = 0, rank = 0;
       l = locations.begin();
       while ( l != le )
       {
 	if ( ( int32_t )locationToNameLut.count( *l ) != sizeT )
 	{
-	  std::cout <<  ( int32_t )locationToNameLut.count( *l ) << " " << sizeT << std::endl;
-	  throw std::runtime_error( "inconsistent sizeT between locations" );
-	  
+	  throw std::runtime_error( "inconsistent sizeT between locations" );	  
 	}
 	std::multimap< float, std::string >::const_iterator
 	  n = locationToNameLut.lower_bound( *l ),
@@ -513,210 +792,13 @@ namespace itk
 	  
 	  ++ rank;
 	  ++ n; 
-	}
-	
+	}	
 	++ location;
 	++ l;
-
       }     
-
-
+      
       for(unsigned int i=0; i<m_OrderedFileNames.size(); i++ )
 	std::cout << m_OrderedFileNames[i] << std::endl;
-      
-      
-      
-      
-      // adding ordered file names
-      /*
-      object.addSemantic( "__dicom__",
-			  "ordered_file_name",
-			  ptk::Semantic(
-					ptk::TypeOf< std::vector< std::string > >::getName()
-					) );
-      object.getHeader().addAttribute( "ordered_file_names", 
-				       orderedFileNames );
-      */
-      // adding directory path
-      /*
-      object.addSemantic( "__dicom__",
-			  "directory_path",
-			  ptk::Semantic( ptk::TypeOf< std::string >::getName()) );
-      object.getHeader().addAttribute( "directory_path", 
-				       directory.getPath() );
-      */
-      
-      // adding DICOM dictionary to object header
-      //object.getHeader().addAttribute( "dicom", dicomDictionary );
-      
-      
-      // adding size(s) and resolution(s)
-
-
-      if( MetaDataUInt16Type* metaDataUint16 = dynamic_cast<MetaDataUInt16Type*>( dicomDictionary["(0028,0011)"].GetPointer() ) )
-      {
-	m_Dimensions[0] = ( int32_t )metaDataUint16->GetMetaDataObjectValue();	  
-      }
-      else
-      {
-	MetaDataVectorUInt16Type* metaDataVectorUint16 = dynamic_cast<MetaDataVectorUInt16Type*>( dicomDictionary["(0028,0011)"].GetPointer() );
-	m_Dimensions[0] = ( int32_t )metaDataVectorUint16->GetMetaDataObjectValue()[0];
-      }
-
-      if( MetaDataUInt16Type* metaDataUint16 = dynamic_cast<MetaDataUInt16Type*>( dicomDictionary["(0028,0010)"].GetPointer() ) )
-      {
-	m_Dimensions[1] = ( int32_t )metaDataUint16->GetMetaDataObjectValue();
-      }
-      else
-      {
-	MetaDataVectorUInt16Type* metaDataVectorUint16 = dynamic_cast<MetaDataVectorUInt16Type*>( dicomDictionary["(0028,0010)"].GetPointer() );
-	m_Dimensions[1] = ( int32_t )metaDataVectorUint16->GetMetaDataObjectValue()[0];
-      }      
-      m_Dimensions[2] =  sizeZ;
-      m_Dimensions[3] =  sizeT;
-
-      
-      /*
-      try
-      {
-	
-	object.getHeader()[ "sizeX" ] = ( int32_t )dicomDictionary["(0028,0011)" ]->template getValue< uint16_t >();
-	
-      }
-      catch ( std::exception& )
-      {
-	
-	std::vector< uint16_t > values;
-	values = dicomDictionary[ "(0028,0011)" ]->template getValue<
-	std::vector < uint16_t > >();
-	object.getHeader()[ "sizeX" ] = ( int32_t )values[ 0 ];
-	
-      }
-      try
-      {
-	object.getHeader()[ "sizeY" ] = ( int32_t )dicomDictionary["(0028,0010)" ]->template getValue< uint16_t >();
-      }
-      catch ( std::exception& )
-      {
-	
-	std::vector< uint16_t > values;
-	values = dicomDictionary[ "(0028,0010)" ]->template getValue<
-	std::vector < uint16_t > >();
-	object.getHeader()[ "sizeY" ] = ( int32_t )values[ 0 ];
-	
-      }
-      object.getHeader()[ "sizeZ" ] = sizeZ;
-      object.getHeader()[ "sizeT" ] = sizeT;
-      */
-
-      
-      // collecting pixel spacing
-      std::string PixelSpacing;
-      if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0028,0030)"].GetPointer() ) )
-      {
-	PixelSpacing = metaDataString->GetMetaDataObjectValue();
-      }
-      else
-      {
-	MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0028,0030)"].GetPointer() );
-	PixelSpacing = metaDataVectorString->GetMetaDataObjectValue()[0];
-      }
-      PixelSpacing[ PixelSpacing.find( "\\" ) ] = ' ';
-      double pixSizeX;
-      double pixSizeY;
-      std::istringstream iss( PixelSpacing );
-      iss >> pixSizeX >> pixSizeY;
-
-
-      
-      // collecting pixel spacing    
-      std::string SliceThicknessString;
-      if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0018,0050)"].GetPointer() ) )
-      {	
-	SliceThicknessString = metaDataString->GetMetaDataObjectValue();
-      }
-      else
-      {
-	MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0050)"].GetPointer() );
-	SliceThicknessString = metaDataVectorString->GetMetaDataObjectValue()[0];
-      }
-      double SliceThickness = 0.0;
-      if ( !this->toScalar( SliceThicknessString, 
-			    SliceThickness ) )
-      {
-	
-	throw std::runtime_error( "failed to convert SliceThicknessString to"
-				  " string to double" );
-	
-      }
-
-
-      
-      // collecting space between slices
-      double SpacingBetweenSlices = 0.0;
-      if ( dicomDictionary.Find( "(0018,0088)" ) != dicomDictionary.End() )
-      {
-	
-	std::string SpacingBetweenSlicesString;
-	if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0018,0088)"].GetPointer() ) )
-	{
-	  SpacingBetweenSlicesString = metaDataString->GetMetaDataObjectValue(); 
-	}
-	else
-	{
-	  MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0088)"].GetPointer() );
-	  SpacingBetweenSlicesString = metaDataVectorString->GetMetaDataObjectValue()[0];
-	}
-	if ( !this->toScalar( SpacingBetweenSlicesString, 
-			      SpacingBetweenSlices ) )
-	{
-	  throw std::runtime_error( "failed to convert SpacingBetweenSlices to"
-				    " string to double" ); 
-	}
-      }
-
-
-      m_Spacing[0] = pixSizeX;
-      m_Spacing[1] = pixSizeY;
-      if ( SpacingBetweenSlices > 0.0 )
-      {
-	m_Spacing[2] = SpacingBetweenSlices;
-      }
-      else if ( SliceThickness > 0.0 )
-      {
-	m_Spacing[2] = SliceThickness;
-      }
-      m_Spacing[3] = 1.0;
-      
-      /*
-      object.addSemantic( "__dicom__", "resolutionX",
-			  ptk::Semantic( ptk::TypeOf< double >::getName() ) );
-      object.addSemantic( "__dicom__", "resolutionY",
-			  ptk::Semantic( ptk::TypeOf< double >::getName() ) );
-      object.addSemantic( "__dicom__", "resolutionZ",
-			  ptk::Semantic( ptk::TypeOf< double >::getName() ) );
-      object.addSemantic( "__dicom__", "resolutionT",
-			  ptk::Semantic( ptk::TypeOf< double >::getName() ) );
-      object.getHeader()[ "resolutionX" ] = pixSizeX;
-      object.getHeader()[ "resolutionY" ] = pixSizeY;
-      if ( SpacingBetweenSlices > 0.0 )
-      {
-	
-	object.getHeader()[ "resolutionZ" ] = SpacingBetweenSlices;
-	
-      }
-      else if ( SliceThickness > 0.0 )
-      {
-	
-	object.getHeader()[ "resolutionZ" ] = SliceThickness;
-	
-      }
-      object.getHeader()[ "resolutionT" ] = 1.0;
-      
-      // notifying observers
-      object.getHeader().setChanged();
-      object.getHeader().notifyObservers();
-      */
     }
     catch(std::exception& e)
     {
@@ -735,67 +817,200 @@ namespace itk
 
   void DCMTKImageIO::Read(void* buffer)
   {
-
+    
     if( m_OrderedFileNames.size()==0 )
     {
       throw ExceptionObject (__FILE__,__LINE__,"ordered file names is empty");
     }
-    std::string directory = itksys::SystemTools::GetFilenamePath ( this->GetFileName() );
 
-    bool isJpeg = 0;
-    size_t toCopy = (size_t)(m_Dimensions[0] * m_Dimensions[1] * sizeof(unsigned short) );
-
-    unsigned char* dest = (unsigned char*)(buffer);
     
-    for( unsigned int i=0; i<m_OrderedFileNames.size(); i++)
-    {
-      std::string name = directory + "/" + m_OrderedFileNames[i];
-
-      ::DcmFileFormat dicomFile;
-      ::DcmStack stack;
-
-      
-#ifdef UID_RawDataStorage
-      ::DcmInputFileStream dicomStream( name.c_str(), 0U );
-#else
-      ::DcmFileStream dicomStream( name.c_str(), DCM_ReadMode );
-#endif
-      if ( isJpeg )
-      {
-	::DJDecoderRegistration::registerCodecs();
-      }
-      dicomFile.transferInit();
-      dicomFile.read( dicomStream, EXS_Unknown, EGL_noChange );
-      dicomFile.transferEnd();
-
-      if ( isJpeg )
-      {
-	::DcmDataset* dataSet = dicomFile.getDataset();
-	dataSet->chooseRepresentation( EXS_LittleEndianExplicit, NULL );
-      }
-      
-      if ( dicomFile.search( DCM_PixelData, stack ) != EC_Normal )
-      {
-	throw std::runtime_error( "pixel data tag not found" );
-      }
-      ::DcmPixelData* pixelData = static_cast< ::DcmPixelData* >( stack.top() );
-      
-      uint16_t* unsignedShortPointer = 0;
-      pixelData->getUint16Array( unsignedShortPointer );
-
-      unsigned char* copy = (unsigned char*)(unsignedShortPointer);
-      if ( isJpeg )
-      {
-	::DJDecoderRegistration::cleanup();
-      }
-
-      std::memcpy (dest + i*toCopy, copy, toCopy);
-      this->InvokeEvent ( SliceReadEvent() );
-    }
+    // Set up the multithreaded processing
+    ThreadStruct str;
+    str.Reader = this;
+    str.Buffer = buffer;
     
+    this->GetMultiThreader()->SetNumberOfThreads( this->GetNumberOfThreads() );
+    this->GetMultiThreader()->SetSingleMethod   ( this->ThreaderCallback, &str );
+
+    itkDebugMacro (<< "Executing with " << this->GetMultiThreader()->GetNumberOfThreads() << " threads.\n");
+    // multithread the execution
+    this->GetMultiThreader()->SingleMethodExecute();
     
   }
 
+
+
+  void DCMTKImageIO::ThreadedRead (void* buffer, RegionType region, int threadId)
+  {
+    bool isJpeg = 0;
+    unsigned long pixelCount = m_Dimensions[0] * m_Dimensions[1];
+
+    int start = region.GetIndex()[0];
+    int length = region.GetSize()[0];
+    
+    for( int i=start; i<start+length; i++)
+    {
+      this->InternalRead (buffer, i, pixelCount, isJpeg);
+      if( threadId==0 )
+	this->InvokeEvent ( SliceReadEvent() );
+    }
+  }
+  
+
+
+  void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCount, bool isJpeg)
+  {
+    std::string filename;
+    if( m_Directory=="" )
+      filename = m_OrderedFileNames[slice];
+    else
+      filename = m_Directory + "/" + m_OrderedFileNames[slice];
+
+    ::DcmFileFormat dicomFile;
+    ::DcmStack stack;
+    
+#ifdef UID_RawDataStorage
+    ::DcmInputFileStream dicomStream( filename.c_str(), 0U );
+#else
+    ::DcmFileStream dicomStream( filename.c_str(), DCM_ReadMode );
+#endif
+    if ( isJpeg )
+    {
+      ::DJDecoderRegistration::registerCodecs();
+    }
+    dicomFile.transferInit();
+    dicomFile.read( dicomStream, EXS_Unknown, EGL_noChange );
+    dicomFile.transferEnd();
+    
+    if ( isJpeg )
+    {
+      ::DcmDataset* dataSet = dicomFile.getDataset();
+      dataSet->chooseRepresentation( EXS_LittleEndianExplicit, NULL );
+    }
+    
+    if ( dicomFile.search( DCM_PixelData, stack ) != EC_Normal )
+    {
+      throw std::runtime_error( "pixel data tag not found" );
+    }
+    ::DcmPixelData* pixelData = static_cast< ::DcmPixelData* >( stack.top() );
+    
+    
+    unsigned char* copyBuffer = 0;
+    Uint8* ucharBuffer = 0;
+    Sint16* shortBuffer = 0;
+    Uint16* ushortBuffer = 0;
+    Sint32* intBuffer = 0;
+    Uint32* uintBuffer = 0;
+    Float64* doubleBuffer = 0;
+
+    size_t length = 0;
+    
+    switch( this->GetComponentType() ){
+	case CHAR:
+	  throw ExceptionObject (__FILE__,__LINE__,"According to dcmtk, int8 pixel type is not a dicom supported format");
+	  break;
+	  
+	case UCHAR:
+	  pixelData->getUint8Array( ucharBuffer );
+	  copyBuffer = (unsigned char*)( ucharBuffer );
+	  length = (size_t)(pixelCount * sizeof( unsigned char ) );
+	  break;
+	  
+	case SHORT:
+	  pixelData->getSint16Array( shortBuffer );
+	  copyBuffer = (unsigned char*)( shortBuffer );
+	  length = (size_t)(pixelCount * sizeof( short ) );
+	  break;
+	  
+	case USHORT:
+	  pixelData->getUint16Array( ushortBuffer );
+	  copyBuffer = (unsigned char*)( ushortBuffer );
+	  length = (size_t)(pixelCount * sizeof( unsigned short ) );
+	  break;
+	  
+	case INT:
+	  pixelData->getSint32Array( intBuffer );
+	  copyBuffer = (unsigned char*)( intBuffer );
+	  length = (size_t)(pixelCount * sizeof( Sint32 ) );
+	  break;
+	  
+	case UINT:
+	  pixelData->getUint32Array( uintBuffer );
+	  copyBuffer = (unsigned char*)( uintBuffer );
+	  length = (size_t)(pixelCount * sizeof( Uint32 ) );
+	  break;
+	  
+	case DOUBLE:
+	  pixelData->getFloat64Array( doubleBuffer );
+	  copyBuffer = (unsigned char*)( doubleBuffer );
+	  length = (size_t)(pixelCount * sizeof( Float64 ) );
+	  break;
+	  
+	default:
+	  throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
+    }
+    if ( isJpeg )
+    {
+      ::DJDecoderRegistration::cleanup();
+    }
+
+    unsigned char* destBuffer = (unsigned char*)(buffer);
+    memcpy (destBuffer + slice*length, copyBuffer, length);
+  }
+
+  
+
+  ITK_THREAD_RETURN_TYPE DCMTKImageIO::ThreaderCallback( void *arg )
+  {
+    ThreadStruct *str;
+    int total, threadId, threadCount;
+    
+    threadId = ((MultiThreader::ThreadInfoStruct *)(arg))->ThreadID;
+    threadCount = ((MultiThreader::ThreadInfoStruct *)(arg))->NumberOfThreads;
+	  
+    str = (ThreadStruct *)(((MultiThreader::ThreadInfoStruct *)(arg))->UserData);
+
+    RegionType region;
+    total = str->Reader->SplitRequestedRegion (threadId, threadCount, region);
+
+    if ( threadId < total )
+    {
+      str->Reader->ThreadedRead(str->Buffer, region, threadId);
+    }
+    // else
+    //   {
+    //   otherwise don't use this thread. Sometimes the threads dont
+    //   break up very well and it is just as efficient to leave a 
+    //   few threads idle.
+    //   }
+    
+    return ITK_THREAD_RETURN_VALUE;
+  }
+
+
+
+  int DCMTKImageIO::SplitRequestedRegion (int id, int total, RegionType& region)
+  {
+    int fileCount       = (int)( m_OrderedFileNames.size() );
+    int threadFileCount = (int)::ceil(fileCount/(double)total);
+    
+    RegionType::IndexType start;
+    start[0] = id * threadFileCount;
+    RegionType::SizeType length;
+    length[0] = threadFileCount;
+
+    int maxThreadInUse = (int)::ceil(fileCount/(double)threadFileCount) - 1;
+    
+    if( id == maxThreadInUse )
+      length[0] = fileCount - start[0];
+
+    region.SetIndex (start);
+    region.SetSize (length);
+
+    return maxThreadInUse+1;
+  }
+
+  
 
   bool DCMTKImageIO::CanWriteFile( const char* filename)
   {
@@ -836,7 +1051,6 @@ namespace itk
 				    int32_t fileIndex,
 				    int32_t fileCount ) const
   {
-
     
     try
     {
@@ -850,23 +1064,17 @@ namespace itk
 	throw std::runtime_error( name + ": " + condition.text() );
       }
       
-      
+
       // manual call to load data into memory
       dicomFile.loadAllDataIntoMemory();
 
-      
-      // dump data to standard output
-      //dicomFile.print( COUT, DCMTypes::PF_shortenLongTagValues );
 
-      
-      // reading meta info
-      ::DcmMetaInfo* metaInfo = dicomFile.getMetaInfo();
-
-      
       uint64_t e;
+
+      // reading meta info
+      ::DcmMetaInfo* metaInfo = dicomFile.getMetaInfo();      
       for ( e = 0; e < metaInfo->card(); e++ )
       {
-	
 	::DcmElement* element = metaInfo->getElement( e );
 	readElement( element,
 		     stringMap,
@@ -880,12 +1088,11 @@ namespace itk
 		     fileCount );
 	
       }
-      // reading data set
-      ::DcmDataset* dataSet = dicomFile.getDataset();
       
+      // reading data set
+      ::DcmDataset* dataSet = dicomFile.getDataset();      
       for ( e = 0; e < dataSet->card(); e++ )
-      {
-	
+      {	
 	::DcmElement* element = dataSet->getElement( e );
 	readElement( element,
 		     stringMap,
@@ -896,15 +1103,13 @@ namespace itk
 		     uint32Map,
 		     uint16Map,
 		     fileIndex,
-		     fileCount );
-	
+		     fileCount );	
       }
       
     }
     catch(std::exception &e)
     {
-      std::cerr << e.what() << std::endl;
-      
+      std::cerr << e.what() << std::endl;      
       throw ExceptionObject (__FILE__,__LINE__, "template < class T > "
 			     "void ptk::DicomDiskFormat< T >::readCoreHeader( "
 			     "const std::string& name, "
@@ -920,9 +1125,6 @@ namespace itk
 			     "const" );
     }
   }
-
-
-
 
 
   void DCMTKImageIO::readElement(::DcmElement* element,
@@ -943,13 +1145,12 @@ namespace itk
       ::DcmTag* dicomTag = ( ::DcmTag* )( &element->getTag() );
       ::DcmEVR eValueRepresentation = dicomTag->getEVR();
       
-      std::string tagName = dicomTag->getTagName();
+      std::string tagName   = dicomTag->getTagName();
       std::string tagVRName = dicomTag->getVRName();
-      uint16_t tagGroup = dicomTag->getGTag();
-      uint16_t tagElement = dicomTag->getETag();
+      uint16_t tagGroup     = dicomTag->getGTag();
+      uint16_t tagElement   = dicomTag->getETag();
       
-#ifdef ITK_DCMTK_DEBUG
-      
+#ifdef ITK_DCMTK_DEBUG      
       std::cout << '('
 		<< setbase( 16 ) << setw( 4 ) << setfill( '0' )
 		<< tagGroup << ','
@@ -957,8 +1158,7 @@ namespace itk
 		<< tagElement
 		<< ") -> " << tagName
 		<< "(" << tagVRName << ")"
-		<< setbase( 10 ) << " : " ;
-      
+		<< setbase( 10 ) << " : " ;      
 #endif
       
       std::ostringstream oss;
@@ -970,18 +1170,16 @@ namespace itk
 	  << setbase( 10 ) << ")";
       std::string tagGroupElement = oss.str();
       
-      
       switch ( eValueRepresentation )
       {
+
 	
 	// application entity
-	  case ::EVR_AE:
-	    
+	  case ::EVR_AE:	    
 	    {
 	      if ( stringMap.find( tagGroupElement ) == stringMap.end() )
 	      {
-		stringMap[ tagGroupElement ] = std::vector< std::string >( fileCount, "" );
-		
+		stringMap[ tagGroupElement ] = std::vector< std::string >( fileCount, "" );		
 	      }
 	      ::DcmApplicationEntity*
 		  ae = static_cast< ::DcmApplicationEntity* >( element );
@@ -995,366 +1193,253 @@ namespace itk
 	      {
 		std::string
 		  applicationEntity = std::string( applicationEntityChPointer );
-		stringMap[ tagGroupElement ][ fileIndex ]= filter(
-								  applicationEntity );
-	      } 
+		stringMap[ tagGroupElement ][ fileIndex ]= filter( applicationEntity );
+	      }
 	    }
 	    break;
 	    
-	    // age string
-	  case ::EVR_AS:
 	    
-	    {
-	      
+	    // age string
+	  case ::EVR_AS:	    
+	    {	      
 	      if ( stringMap.find( tagGroupElement ) == stringMap.end() )
 	      {
-		
-		stringMap[ tagGroupElement ] = std::vector< std::string >(
-									  fileCount, "" );
-		
+		stringMap[ tagGroupElement ] = std::vector< std::string >( fileCount, "" );
 	      }
 	      ::DcmAgeString* as = static_cast< ::DcmAgeString* >( element );
 	      if ( !as )
 	      {
-		
 		throw std::runtime_error( "bad age string" );
-		
 	      }
 	      char* ageStringChPointer = 0;
 	      as->getString( ageStringChPointer );
 	      if ( ageStringChPointer )
 	      {
-		
-		std::string ageString = std::string( ageStringChPointer );
-		
+		std::string ageString = std::string( ageStringChPointer );		
 #ifdef ITK_DCMTK_DEBUG
-
             std::cout << ageString;
-
 #endif
-
-            stringMap[ tagGroupElement ][ fileIndex ] = filter( ageString );
-	    
-	      }
-	      
+	        stringMap[ tagGroupElement ][ fileIndex ] = filter( ageString );	    
+	      }	      
 	    }
 	    break;
+
 	    
 	    // attribute tag
-	  case ::EVR_AT:
-	    
+	  case ::EVR_AT:	    
 	    
 	    break;
+
 	    
 	    // code string
-	  case ::EVR_CS:
-	    
-	    {
-	      
+	  case ::EVR_CS:	    
+	    {	      
 	      if ( stringMap.find( tagGroupElement ) == stringMap.end() )
-	      {
-		
-		stringMap[ tagGroupElement ] = std::vector< std::string >(
-									  fileCount, "" );
-		
+	      {		
+		stringMap[ tagGroupElement ] = std::vector< std::string >( fileCount, "" );		
 	      }
 	      ::DcmCodeString* cs = static_cast< ::DcmCodeString* >( element );
 	      if ( !cs )
 	      {
-		
 		throw std::runtime_error( "bad code string" );
-		
 	      }
 	      char* codeStringChPointer = 0;
 	      cs->getString( codeStringChPointer );
 	      if ( codeStringChPointer )
 	      {
-		
 		std::string codeString = std::string( codeStringChPointer );
-		
 #ifdef ITK_DCMTK_DEBUG
-		
 		std::cout << codeString;
-
 #endif
-		
-		stringMap[ tagGroupElement ][ fileIndex ] = filter( codeString );
-		
-	      }
-	      
+		stringMap[ tagGroupElement ][ fileIndex ] = filter( codeString );		
+	      }	      
 	    }
 	    break;
+
 	    
 	    // date
-	  case ::EVR_DA:
-	    
-	    {
-	      
+	  case ::EVR_DA:	    
+	    {	      
 	      if ( stringMap.find( tagGroupElement ) == stringMap.end() )
 	      {
-		
-		stringMap[ tagGroupElement ] = std::vector< std::string >(
-									  fileCount, "" );
-		
+		stringMap[ tagGroupElement ] = std::vector< std::string >( fileCount, "" );
 	      }
 	      ::DcmDate* d = static_cast< ::DcmDate* >( element );
 	      if ( !d )
 	      {
-		
 		throw std::runtime_error( "bad date" );
-		
 	      }
 	      char* dateChPointer = 0;
 	      d->getString( dateChPointer );
 	      if ( dateChPointer )
 	      {
-		
 		std::string dateString = std::string( dateChPointer );
-		
 #ifdef ITK_DCMTK_DEBUG
-		
 		std::cout << dateString;
-		
 #endif
-		
-		stringMap[ tagGroupElement ][ fileIndex ] =  filter( dateString );
-		
-	      }
-	      
+		stringMap[ tagGroupElement ][ fileIndex ] =  filter( dateString );		
+	      }	      
 	    }
 	    break;
+
 	    
 	    // decimal string
-	  case ::EVR_DS:
-	    
-	    {
-	      
+	  case ::EVR_DS:	    
+	    {	      
 	      if ( stringMap.find( tagGroupElement ) == stringMap.end() )
 	      {
-		
-		stringMap[ tagGroupElement ] = std::vector< std::string >(
-									  fileCount, "" );
-		
+		stringMap[ tagGroupElement ] = std::vector< std::string >( fileCount, "" );
 	      }
 	      ::DcmDecimalString*
 		  ds = static_cast< ::DcmDecimalString* >( element );
 	      if ( !ds )
 	      {
-		
 		throw std::runtime_error( "bad decimal string" );
-		
 	      }
 	      char* decimalStringChPointer = 0;
 	      ds->getString( decimalStringChPointer );
 	      if ( decimalStringChPointer )
 	      {
-		
 		std::string decimalString = std::string( decimalStringChPointer );
-		
 #ifdef ITK_DCMTK_DEBUG
-		
 		std::cout << decimalString;
-		
 #endif
-		
-		stringMap[ tagGroupElement ][ fileIndex ] =  filter( decimalString);
-		
-	      }
-	      
+		stringMap[ tagGroupElement ][ fileIndex ] =  filter( decimalString);		
+	      }	      
 	    }
 	    break;
+
 	    
 	    // date time
 	  case ::EVR_DT:
-	    
 	    {
-	      
 	      if ( stringMap.find( tagGroupElement ) == stringMap.end() )
 	      {
-		
-		stringMap[ tagGroupElement ] = std::vector< std::string >(
-									  fileCount, "" );
-		
+		stringMap[ tagGroupElement ] = std::vector< std::string >( fileCount, "" );
 	      }
 	      ::DcmDateTime* dt = static_cast< ::DcmDateTime* >( element );
 	      if ( !dt )
 	      {
-		
 		throw std::runtime_error( "bad date time" );
-		
 	      }
 	      char* dateTimeChPointer = 0;
 	      dt->getString( dateTimeChPointer );
 	      if ( dateTimeChPointer )
 	      {
-		
 		std::string dateTime = std::string( dateTimeChPointer );
-		
 #ifdef ITK_DCMTK_DEBUG
-		
 		std::cout << dateTime;
-		
 #endif
-		
-		stringMap[ tagGroupElement ][ fileIndex ] = filter( dateTime );
-		
-	      }
-	      
+		stringMap[ tagGroupElement ][ fileIndex ] = filter( dateTime );		
+	      }	      
 	    }
 	    break;
-	    
+
+
 	    // float
 	  case ::EVR_FL:
-	    
 	    {
-	      
 	      if ( floatMap.find( tagGroupElement ) == floatMap.end() )
 	      {
-		
-		floatMap[ tagGroupElement ] = std::vector< float >(
-								   fileCount, 0.0f );
-		
+		floatMap[ tagGroupElement ] = std::vector< float >( fileCount, 0.0f );
 	      }
 	      ::DcmFloatingPointSingle*
 		  fl = static_cast< ::DcmFloatingPointSingle* >( element );
 	      if ( !fl )
 	      {
-		
 		throw std::runtime_error( "bad float" );
-		
 	      }
 	      float floatValue = 0;
-	      fl->getFloat32( floatValue );
-	      
-#ifdef ITK_DCMTK_DEBUG
-	      
-	      std::cout << floatValue;
-	      
-#endif
-	      
-	      floatMap[ tagGroupElement ][ fileIndex ] = floatValue;
-	      
+	      fl->getFloat32( floatValue );	      
+#ifdef ITK_DCMTK_DEBUG	      
+	      std::cout << floatValue;	      
+#endif	      
+	      floatMap[ tagGroupElement ][ fileIndex ] = floatValue;	      
 	    }
 	    break;
+
 	    
 	    // double
 	  case ::EVR_FD:
-	    
 	    {
-	      
 	      if ( doubleMap.find( tagGroupElement ) == doubleMap.end() )
 	      {
-		
-		doubleMap[ tagGroupElement ] = std::vector< double >(
-								     fileCount, 0.0 );
-		
+		doubleMap[ tagGroupElement ] = std::vector< double >( fileCount, 0.0 );
 	      }
 	      ::DcmFloatingPointDouble*
 		  fd = static_cast< ::DcmFloatingPointDouble* >( element );
 	      if ( !fd )
-	      {
-		
-		throw std::runtime_error( "bad double" );
-		
+	      {		
+		throw std::runtime_error( "bad double" );		
 	      }
 	      double doubleValue = 0;
 	      fd->getFloat64( doubleValue );
-	      
 #ifdef ITK_DCMTK_DEBUG
-
-          std::cout << doubleValue;
-
+	      std::cout << doubleValue;
 #endif
-
-          doubleMap[ tagGroupElement ][ fileIndex ] = doubleValue;
-
-        }
-        break;
-
-      // integer string
-      case ::EVR_IS:
-
-        {
-
-          if ( stringMap.find( tagGroupElement ) == stringMap.end() )
-          {
-
-            stringMap[ tagGroupElement ] = std::vector< std::string >(
-                                             fileCount, "" );
-
-          }
-          ::DcmIntegerString*
-            is = static_cast< ::DcmIntegerString* >( element );
-          if ( !is )
-          {
-
-            throw std::runtime_error( "bad integer string" );
-
-          }
-          char* integerStringChPointer = 0;
-          is->getString( integerStringChPointer );
-          if ( integerStringChPointer )
-          {
-
-            std::string integerString = std::string( integerStringChPointer );
-
+	      doubleMap[ tagGroupElement ][ fileIndex ] = doubleValue;
+	    }
+	    break;
+	    
+	
+	// integer string
+	  case ::EVR_IS:
+	    {
+	      if ( stringMap.find( tagGroupElement ) == stringMap.end() )
+	      {
+		stringMap[ tagGroupElement ] = std::vector< std::string >( fileCount, "" );
+	      }
+	      ::DcmIntegerString*
+		  is = static_cast< ::DcmIntegerString* >( element );
+	      if ( !is )
+	      {
+		throw std::runtime_error( "bad integer string" );
+	      }
+	      char* integerStringChPointer = 0;
+	      is->getString( integerStringChPointer );
+	      if ( integerStringChPointer )
+	      {
+		std::string integerString = std::string( integerStringChPointer );
 #ifdef ITK_DCMTK_DEBUG
-
-            std::cout << integerString;
-
+		std::cout << integerString;
 #endif
-
-            stringMap[ tagGroupElement ][ fileIndex ] = filter( integerString );
-
-          }
-
-        }        
-        break;
-
-      // long string
-      case ::EVR_LO:
-
-        {
-
-          if ( stringMap.find( tagGroupElement ) == stringMap.end() )
-          {
-
-            stringMap[ tagGroupElement ] = std::vector< std::string >(
-                                             fileCount, "" );
-
-          }
-          ::DcmLongString*
-            ls = static_cast< ::DcmLongString* >( element );
-          if ( !ls )
-          {
-
-            throw std::runtime_error( "bad long string" );
-
-          }
-          char* longStringChPointer = 0;
-          ls->getString( longStringChPointer );
-          if ( longStringChPointer )
-          {
-
-            std::string longString = std::string( longStringChPointer );
-
-#ifdef ITK_DCMTK_DEBUG
-
-            std::cout << longString;
-
+		stringMap[ tagGroupElement ][ fileIndex ] = filter( integerString );
+	      }
+	    }        
+	    break;
+	    
+	    
+	    // long string
+	  case ::EVR_LO:
+	    {
+	      if ( stringMap.find( tagGroupElement ) == stringMap.end() )
+	      {
+		stringMap[ tagGroupElement ] = std::vector< std::string >( fileCount, "" );
+	      }
+	      ::DcmLongString*
+		  ls = static_cast< ::DcmLongString* >( element );
+	      if ( !ls )
+	      {
+		throw std::runtime_error( "bad long string" );
+	      }
+	      char* longStringChPointer = 0;
+	      ls->getString( longStringChPointer );
+	      if ( longStringChPointer )
+	      {
+		std::string longString = std::string( longStringChPointer );
+#ifdef ITK_DCMTK_DEBUG		
+		std::cout << longString;
 #endif
+		stringMap[ tagGroupElement ][ fileIndex ] = filter( longString );
+	      }
+	    }        
+	    break;
 
-            stringMap[ tagGroupElement ][ fileIndex ] = filter( longString );
-
-          }
-
-        }        
-        break;
-
-      // long text
-      case ::EVR_LT:
-
-        {
+	    
+	    // long text
+	  case ::EVR_LT:
+	    
+	    {
 
           if ( stringMap.find( tagGroupElement ) == stringMap.end() )
           {
