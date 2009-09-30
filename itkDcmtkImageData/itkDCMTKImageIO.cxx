@@ -1,3 +1,7 @@
+/**
+   Initial work: Cyril Poupon
+ */
+
 #define __STDC_LIMIT_MACROS
 #define __STDC_CONSTANT_MACROS
 
