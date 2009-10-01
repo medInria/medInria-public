@@ -124,7 +124,10 @@ int main (int narg, char* arg[])
 
   
   itk::DCMTKImageIO::Pointer io = itk::DCMTKImageIO::New();
-  io->SetFileNames ( fileNames );
+  if( narg>2 )
+    io->SetFileNames ( fileNames );
+  else
+    io->SetFileName ( arg[1] );
   //io->SetFileName ( arg[1] );
   //io->SetNumberOfThreads (1);
   
@@ -149,6 +152,10 @@ int main (int narg, char* arg[])
   rwin->AddRenderer (renderer);
   view->SetRenderWindow ( rwin );
   view->SetRenderer ( renderer );
+  view->SetBackgroundColor (0.0, 0.0, 0.0);
+  view->Show2DAxisOff();
+  view->CursorFollowMouseOn();
+  view->SetInterpolationMode(0);
 
   view->SetLeftButtonInteractionStyle   (vtkViewImage2D::ZOOM_INTERACTION);
   view->SetMiddleButtonInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
@@ -175,6 +182,10 @@ int main (int narg, char* arg[])
   catch (itk::ExceptionObject &e)
   {
     std::cerr << e;
+    view->Delete();
+    iren->Delete();
+    renderer->Delete();
+    rwin->Delete();
     return -1;
   }
   clock_t t2 = clock();

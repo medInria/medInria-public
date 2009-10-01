@@ -82,9 +82,8 @@ namespace itk
       m_ByteOrder = LittleEndian;
     }
 
-    m_MultiThreader = MultiThreader::New();
-    this->SetNumberOfThreads ( m_MultiThreader->GetNumberOfThreads() );
     m_Directory = "";
+    
   }
   
 
@@ -96,11 +95,11 @@ namespace itk
   bool DCMTKImageIO::CanReadFile(const char* filename)
   {
 
-    if( m_FileNames.size()>0 )
+    if( this->GetFileNames().size()>0 )
     {
-      for( unsigned int i=0; i<m_FileNames.size(); i++) {
+      for( unsigned int i=0; i<this->GetFileNames().size(); i++) {
 	::DcmFileFormat dicomFile;
-	::OFCondition condition = dicomFile.loadFile( m_FileNames[i].c_str() );
+	::OFCondition condition = dicomFile.loadFile( this->GetFileNames()[i].c_str() );
 	if ( !condition.good() )
 	{
 	  return false;
@@ -555,6 +554,7 @@ namespace itk
 
     try
     {
+
       /*
 	Three possibilities:
 	
@@ -572,13 +572,13 @@ namespace itk
       std::set< std::string > fileNames;     
       int32_t                 fileCount = 0;
       
-      if( m_FileNames.size()>0 )
+      if( this->GetFileNames().size()>0 )
       {
-	for(unsigned int i=0; i<m_FileNames.size(); i++ )
+	for(unsigned int i=0; i<this->GetFileNames().size(); i++ )
 	{
-	  fileNames.insert ( itksys::SystemTools::GetFilenameName ( m_FileNames[i] ) );
+	  fileNames.insert ( itksys::SystemTools::GetFilenameName ( this->GetFileNames()[i] ) );
 	}
-	m_Directory = itksys::SystemTools::GetFilenamePath ( m_FileNames[0] );
+	m_Directory = itksys::SystemTools::GetFilenamePath ( this->GetFileNames()[0] );
       }
       else
       {
@@ -698,6 +698,7 @@ namespace itk
 	  
 	  std::string instanceNumberString = 
 	    stringMap[ "(0020,0013)" ][ nameToIndexLut[ n->second ] ];
+
 	  while ( instanceNumberString[ 0 ] == ' ' )
 	  {
 	    instanceNumberString = instanceNumberString.substr( 1U, instanceNumberString.length() - 1U ); 
@@ -707,8 +708,7 @@ namespace itk
 	  this->toScalar( instanceNumberString, instanceNumber );
 	  
 	  instanceNumberToNameLut[ instanceNumber ].push_back( n->second );
-	  ++ n;
-	  
+	  ++ n;	  
 	}
 	
 	// erasing name list corresponding to given location
@@ -726,18 +726,24 @@ namespace itk
 	  
 	  while ( fn != fne )
 	  {
-	    locationToNameLut.insert( std::pair< float, std::string >( *l,
-								       *fn ) );
+	    locationToNameLut.insert( std::pair< float, std::string >( *l, *fn ) );
 	    ++ fn;
-	    
 	  }
 	  ++ in;
-	  
 	}
-	
 	++ l;
-	
       }
+
+
+      std::multimap< float, std::string >::const_iterator it = locationToNameLut.begin();
+      while( it!= locationToNameLut.end() )
+      {
+	std::cout << (*it).first << " => " << (*it).second << std::endl;
+	++it;
+      }
+      for( unsigned int i=0; i<stringMap["(0008,103e)"].size(); i++ )
+	std::cout <<  stringMap["(0008,103e)"][i] << std::endl;
+      getchar();
 
 
       // collecting slice count and rank count while doing sanity checks
@@ -816,10 +822,12 @@ namespace itk
 	}	
 	++ location;
 	++ l;
-      }     
+      }
+
+      this->SetFileNames ( m_OrderedFileNames );
       
       for(unsigned int i=0; i<m_OrderedFileNames.size(); i++ )
-	std::cout << m_OrderedFileNames[i] << std::endl;
+	std::cout << this->GetFileNames()[i] << std::endl;
     }
     catch(std::exception& e)
     {
@@ -829,43 +837,15 @@ namespace itk
 			     "const std::string& name, "
 			     "ptk::HeaderedObject& object ) const" );
     }
-    
+
   }
-
-
-  
-
-
-  void DCMTKImageIO::Read(void* buffer)
-  {
-    
-    if( m_OrderedFileNames.size()==0 )
-    {
-      throw ExceptionObject (__FILE__,__LINE__,"ordered file names is empty");
-    }
-
-    
-    // Set up the multithreaded processing
-    ThreadStruct str;
-    str.Reader = this;
-    str.Buffer = buffer;
-    
-    this->GetMultiThreader()->SetNumberOfThreads( this->GetNumberOfThreads() );
-    this->GetMultiThreader()->SetSingleMethod   ( this->ThreaderCallback, &str );
-
-    itkDebugMacro (<< "Executing with " << this->GetMultiThreader()->GetNumberOfThreads() << " threads.\n");
-    // multithread the execution
-    this->GetMultiThreader()->SingleMethodExecute();
-    
-  }
-
 
 
   void DCMTKImageIO::ThreadedRead (void* buffer, RegionType region, int threadId)
   {
     bool isJpeg = 0;
     unsigned long pixelCount = m_Dimensions[0] * m_Dimensions[1];
-
+    
     int start = region.GetIndex()[0];
     int length = region.GetSize()[0];
     
@@ -980,56 +960,6 @@ namespace itk
   }
 
   
-
-  ITK_THREAD_RETURN_TYPE DCMTKImageIO::ThreaderCallback( void *arg )
-  {
-    ThreadStruct *str;
-    int total, threadId, threadCount;
-    
-    threadId = ((MultiThreader::ThreadInfoStruct *)(arg))->ThreadID;
-    threadCount = ((MultiThreader::ThreadInfoStruct *)(arg))->NumberOfThreads;
-	  
-    str = (ThreadStruct *)(((MultiThreader::ThreadInfoStruct *)(arg))->UserData);
-
-    RegionType region;
-    total = str->Reader->SplitRequestedRegion (threadId, threadCount, region);
-
-    if ( threadId < total )
-    {
-      str->Reader->ThreadedRead(str->Buffer, region, threadId);
-    }
-    // else
-    //   {
-    //   otherwise don't use this thread. Sometimes the threads dont
-    //   break up very well and it is just as efficient to leave a 
-    //   few threads idle.
-    //   }
-    
-    return ITK_THREAD_RETURN_VALUE;
-  }
-
-
-
-  int DCMTKImageIO::SplitRequestedRegion (int id, int total, RegionType& region)
-  {
-    int fileCount       = (int)( m_OrderedFileNames.size() );
-    int threadFileCount = (int)::ceil(fileCount/(double)total);
-    
-    RegionType::IndexType start;
-    start[0] = id * threadFileCount;
-    RegionType::SizeType length;
-    length[0] = threadFileCount;
-
-    int maxThreadInUse = (int)::ceil(fileCount/(double)threadFileCount) - 1;
-    
-    if( id == maxThreadInUse )
-      length[0] = fileCount - start[0];
-
-    region.SetIndex (start);
-    region.SetSize (length);
-
-    return maxThreadInUse+1;
-  }
 
   
 

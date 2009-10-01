@@ -7,44 +7,39 @@
 
 #include <map>
 #include <vector>
+#include <set>
 
 #define HAVE_CONFIG_H
 #include <dcmtk/dcmdata/dctk.h>
 #include <dcmtk/dcmdata/dcistrmf.h>
 #include <dcmtk/ofstd/ofstdinc.h>
 
-
-#include <itkImageIOBase.h>
+#include "itkMultiThreadedImageIOBase.h"
 #include <itkMetaDataObject.h>
-#include <itkMultiThreader.h>
-#include <itkImageRegion.h>
-
-#include <set>
 
 namespace itk
 {
 
-  class ITK_EXPORT DCMTKImageIO : public ImageIOBase
+  class ITK_EXPORT DCMTKImageIO : public MultiThreadedImageIOBase
   {
 
   public:
-    typedef DCMTKImageIO       Self;
-    typedef ImageIOBase        Superclass;
-    typedef SmartPointer<Self> Pointer;
+    typedef DCMTKImageIO             Self;
+    typedef MultiThreadedImageIOBase Superclass;
+    typedef SmartPointer<Self>       Pointer;
     typedef SmartPointer<const Self> ConstPointer;
 
     itkNewMacro (Self);
-    itkTypeMacro(DCMTKImageIO, ImageIOBase);
-
+    itkTypeMacro(DCMTKImageIO, MultiThreadedImageIOBase);
 
 
     typedef std::map< std::string, std::vector< std::string > > StringMap;
-    typedef std::map< std::string, std::vector< float > > FloatMap;
-    typedef std::map< std::string, std::vector< double > > DoubleMap;
-    typedef std::map< std::string, std::vector< int32_t > > Int32Map;
-    typedef std::map< std::string, std::vector< int16_t > > Int16Map;
-    typedef std::map< std::string, std::vector< uint32_t > > UInt32Map;
-    typedef std::map< std::string, std::vector< uint16_t > > UInt16Map;
+    typedef std::map< std::string, std::vector< float > >       FloatMap;
+    typedef std::map< std::string, std::vector< double > >      DoubleMap;
+    typedef std::map< std::string, std::vector< int32_t > >     Int32Map;
+    typedef std::map< std::string, std::vector< int16_t > >     Int16Map;
+    typedef std::map< std::string, std::vector< uint32_t > >    UInt32Map;
+    typedef std::map< std::string, std::vector< uint16_t > >    UInt16Map;
 
     typedef MetaDataObject <std::string>                 MetaDataStringType;
     typedef MetaDataObject < std::vector<std::string> >  MetaDataVectorStringType;
@@ -61,70 +56,32 @@ namespace itk
     typedef MetaDataObject <uint16_t>                    MetaDataUInt16Type;
     typedef MetaDataObject < std::vector<uint16_t> >     MetaDataVectorUInt16Type;
 
-    typedef ImageRegion<1> RegionType;
+    typedef MultiThreadedImageIOBase::RegionType         RegionType;
+    
+    
+    bool CanReadFile(const char*);
+    
+    
+    void ReadImageInformation();
     
 
-    /**
-       Overcome the SetFileName method to specify multiple dicom files.
-     */
-    virtual void SetFileNames (std::vector<std::string> filenames)
-    { m_FileNames = filenames; }
+    bool CanWriteFile(const char*);
+    
 
-    virtual std::vector<std::string> GetFileNames (void) const
-    { return m_FileNames; }
+    void WriteImageInformation();
 
-    /*-------- This part of the interfaces deals with reading data. ----- */
     
-    /** Determine the file type. Returns true if this ImageIO can read the
-     * file specified. */
-    virtual bool CanReadFile(const char*);
-    
-    /** Set the spacing and dimension information for the set filename. */
-    virtual void ReadImageInformation();
-    
-    /** Reads the data from disk into the memory buffer provided. */
-    virtual void Read(void* buffer);
-    
-    /*-------- This part of the interfaces deals with writing data. ----- */
-    
-    /** Determine the file type. Returns true if this ImageIO can write the
-     * file specified. */
-    virtual bool CanWriteFile(const char*);
-    
-    /** Set the spacing and dimension information for the set filename. */
-    virtual void WriteImageInformation();
-    
-    /** Writes the data to disk from the memory buffer provided. Make sure
-     * that the IORegions has been set properly. */
-    virtual void Write(const void* buffer);    
+    void Write(const void* buffer);    
 
 
-
-    itkGetObjectMacro (MultiThreader, MultiThreader);
-
-    itkSetMacro (NumberOfThreads, int);
-    itkGetMacro (NumberOfThreads, int);
-    
   protected:
     
     DCMTKImageIO();
     ~DCMTKImageIO();
     void PrintSelf(std::ostream& os, Indent indent) const {};
 
-    void ThreadedRead (void* buffer, RegionType region, int threadId);
-    
+    void ThreadedRead (void* buffer, RegionType region, int threadId);    
     void InternalRead (void* buffer, int slice, unsigned long pixelCount, bool isJpeg=0);
-
-
-    static ITK_THREAD_RETURN_TYPE ThreaderCallback( void *arg );
-    
-    struct ThreadStruct
-    {
-      Pointer Reader;
-      void*   Buffer;
-    };
-
-    int SplitRequestedRegion (int id, int total, RegionType& region);
 
 
     void SwapBytesIfNecessary(void* buffer, unsigned long numberOfPixels);
@@ -183,19 +140,9 @@ namespace itk
     DCMTKImageIO(const Self&);
     void operator=(const Self&);
     
-
-    std::vector< std::string > m_FileNames;
     std::vector< std::string > m_OrderedFileNames;
     std::string                m_Directory;
-
-
-    MultiThreader::Pointer m_MultiThreader;
-    int                    m_NumberOfThreads;
   };
-
-
-
-  itkEventMacro (SliceReadEvent, AnyEvent);
   
   
 } // end of namespace

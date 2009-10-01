@@ -100,6 +100,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_SOURCES
   itkDCMTKImageIO.cxx
+  itkMultiThreadedImageIOBase.cxx
 )
 
 ## #################################################################
@@ -133,6 +134,7 @@ endif()
 
 add_executable(itkDcmtkReaderTest
 itkDcmtkReaderTest.cxx
+itkMultiThreadedImageIOBase.cxx
 itkDCMTKImageIO.cxx
 )
 target_link_libraries(itkDcmtkReaderTest
