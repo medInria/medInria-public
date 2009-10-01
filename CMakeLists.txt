@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Mon Sep 21 14:48:02 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Fri Sep 25 11:31:59 2009 (+0200)
+## Last-Updated: Thu Oct  1 15:51:18 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 6
+##     Update #: 7
 ######################################################################
 ## 
 ### Commentary: 
@@ -51,4 +51,3 @@ set(${PROJECT_NAME}_RUNTIME_DIRS ${RUNTIME_OUTPUT_PATH})
 
 subdirs(v3dData)
 subdirs(v3dView)
-subdirs(itkDcmtkImageData)
