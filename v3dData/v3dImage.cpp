@@ -51,7 +51,7 @@ QString v3dImage::description(void) const
 // 
 // /////////////////////////////////////////////////////////////////
 
-bool v3dImage::read(const QString& file)
+bool v3dImage::read(QString file)
 {
     if(dtkAbstractData::read(file))
         return true;
@@ -74,7 +74,7 @@ bool v3dImage::read(const QString& file)
     return true;
 }
 
-bool v3dImage::write(const QString& file)
+bool v3dImage::write(QString file)
 {
     if(dtkAbstractData::write(file))
         return true;
