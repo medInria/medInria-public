@@ -15,6 +15,7 @@
 #include "vtkImageMapToWindowLevelColors.h"
 #include "vtkImageMapToColors.h"
 #include "vtkImageActor.h"
+#include "vtkCallbackCommand.h"
 
 #include <time.h>
 
@@ -62,6 +63,7 @@ namespace itk
      
      if( typeid(event) == typeid ( itk::SliceReadEvent )  )
      {
+       std::cout << "Slice read" << std::endl;
        //qDebug() << "Slice read";
        if( this->ImageNotSet ){
 	 m_View->SetITKImage ( m_Image );
@@ -73,7 +75,8 @@ namespace itk
        }
        //m_View->GetImageReslice()->Modified();
        m_View->GetWindowLevel()->Modified();
-       m_View->Render();
+       m_View->GetRenderWindow()->InvokeEvent ( m_View->GetRenderWindow()->GetEventPending() );
+       m_View->GetRenderWindowInteractor()->Render();
        
        //qDebug() << "Rendered!";
      }
@@ -97,11 +100,39 @@ namespace itk
 	 this->ImageNotSet = 0;
        }
        m_View->GetWindowLevel()->Modified();
-       m_View->Render();
+       m_View->GetRenderWindow()->InvokeEvent ( m_View->GetRenderWindow()->GetEventPending() );
+       m_View->GetRenderWindow()->Render();
   
      }
   }
   
+}
+
+
+typedef itk::Image<unsigned short, 3>   ImageType;
+typedef itk::ImageFileReader<ImageType> ImageReaderType;
+static ImageReaderType::Pointer reader    = 0;
+static int                      readImage = 0;
+
+
+void handle_vtk(vtkObject* caller, unsigned long id, void* clientdata, void* calldata)
+{
+  std::cout << "handle_vtk()" << std::endl;
+  //vtkRenderWindowInteractor* iren = static_cast<vtkInteractorStyle*>(caller)->GetInteractor();
+  vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::SafeDownCast( caller );
+  if( !readImage ){
+    readImage = 1;
+    std::cout << "Reading the image" << std::endl;
+    try{
+      reader->Update();
+      reader->GetOutput()->DisconnectPipeline();
+    }
+    catch (itk::ExceptionObject &e){
+      std::cerr <<e;
+      exit (-1);
+    }
+    std::cout << "Reading the image Done." << std::endl;
+  }
 }
 
 
@@ -121,29 +152,31 @@ int main (int narg, char* arg[])
     std::cout << "Inserting: " << arg[i] << std::endl;
     fileNames.push_back ( arg[i] );
   }
-
+  
   
   itk::DCMTKImageIO::Pointer io = itk::DCMTKImageIO::New();
-  if( narg>2 )
-    io->SetFileNames ( fileNames );
-  else
-    io->SetFileName ( arg[1] );
+  //  if( narg>2 )
+  io->SetFileNames ( fileNames );
+  //  else
+  //    io->SetFileName ( arg[1] );
   //io->SetFileName ( arg[1] );
   //io->SetNumberOfThreads (1);
   
-  typedef itk::Image<unsigned short, 3> ImageType;
-  typedef itk::ImageFileReader<ImageType> ImageReaderType;
-
-  ImageReaderType::Pointer reader = ImageReaderType::New();
+  /*
+    typedef itk::Image<unsigned short, 3> ImageType;
+    typedef itk::ImageFileReader<ImageType> ImageReaderType;
+  */
+  /*ImageReaderType::Pointer */
+  reader = ImageReaderType::New();
   reader->SetImageIO ( io );
   reader->SetFileName ( arg[1] );
-
+  
   itk::SliceReadCommand::Pointer command = itk::SliceReadCommand::New();
   command->SetImage ( reader->GetOutput() );
   
   io->AddObserver (itk::SliceReadEvent(), command);
-
-
+  std::cout << "Threads: " << io->GetNumberOfThreads() /* << " Elapsed time:" << (double)(t2-t1)/(double)(CLOCKS_PER_SEC)*/ << std::endl;
+  
   vtkViewImage2D* view = vtkViewImage2D::New();
   vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
   vtkRenderWindow* rwin = vtkRenderWindow::New();
@@ -163,17 +196,35 @@ int main (int narg, char* arg[])
   view->SetRightButtonInteractionStyle  (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
 
   command->SetView ( view );
-
+  
   ImageType::Pointer image = reader->GetOutput();
   if( image.IsNull() )
   {
     std::cout << "Image is null" << std::endl;
     return -1;
   }
-    
+
+
   iren->Initialize();
 
+  std::cout << "Reading the image" << std::endl;
+  try{
+      reader->Update();
+      reader->GetOutput()->DisconnectPipeline();
+  }
+  catch (itk::ExceptionObject &e){
+    std::cerr <<e;
+    view->Delete();
+    iren->Delete();
+    renderer->Delete();
+    rwin->Delete();
+    return -1;
+  }
+  std::cout << image << std::endl;
+  
+  iren->Start();
 
+  /*
   clock_t t1 = clock();
   try
   {
@@ -189,14 +240,16 @@ int main (int narg, char* arg[])
     return -1;
   }
   clock_t t2 = clock();
-
+  
+  
   std::cout << "Threads: " << io->GetNumberOfThreads() << " Elapsed time:" << (double)(t2-t1)/(double)(CLOCKS_PER_SEC) << std::endl;
 
   image->DisconnectPipeline();
   std::cout << image << std::endl;
+  */
 
+  //iren->Start();
 
-  iren->Start();
 
   view->Delete();
   iren->Delete();

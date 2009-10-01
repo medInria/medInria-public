@@ -94,7 +94,16 @@ namespace itk
   
   bool DCMTKImageIO::CanReadFile(const char* filename)
   {
+    ::DcmFileFormat dicomFile;
+    ::OFCondition condition = dicomFile.loadFile( filename );
+    if ( !condition.good() )
+    {
+      return false;
+    }
 
+    return true;
+    
+    /*
     if( this->GetFileNames().size()>0 )
     {
       for( unsigned int i=0; i<this->GetFileNames().size(); i++) {
@@ -134,9 +143,10 @@ namespace itk
 	  return false;
 	}
       }
-    }
+    }  
 
     return true;
+    */
   }
 
 
@@ -384,7 +394,6 @@ namespace itk
       SliceThicknessString = metaDataVectorString->GetMetaDataObjectValue()[0];
     }
     double SliceThickness = 0.0;
-    std::cout << "Passing to toScalar 1: " << SliceThicknessString << std::endl;
     if ( !this->toScalar( SliceThicknessString, SliceThickness ) )
     {
       itkWarningMacro (<< "failed to convert SliceThicknessString from string to double: " << SliceThicknessString << ", assuming 1.0");
@@ -406,7 +415,6 @@ namespace itk
 	MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0088)"].GetPointer() );
 	SpacingBetweenSlicesString = metaDataVectorString->GetMetaDataObjectValue()[0];
       }
-      std::cout << "Passing to toScalar 2: " << SpacingBetweenSlicesString << std::endl;
       if ( !this->toScalar( SpacingBetweenSlicesString, 
 			    SpacingBetweenSlices ) )
       {
@@ -571,7 +579,11 @@ namespace itk
 
       std::set< std::string > fileNames;     
       int32_t                 fileCount = 0;
-      
+
+      for( unsigned int i=0; i<this->GetFileNames().size(); i++ )
+	fileNames.insert ( this->GetFileNames()[i] );
+
+      /*
       if( this->GetFileNames().size()>0 )
       {
 	for(unsigned int i=0; i<this->GetFileNames().size(); i++ )
@@ -606,6 +618,7 @@ namespace itk
 	  m_Directory = itksys::SystemTools::GetFilenamePath ( this->GetFileName() );
 	}
       }
+      */
       fileCount = (int32_t)( fileNames.size() );
 
       if( fileCount == 0 )
@@ -733,17 +746,6 @@ namespace itk
 	}
 	++ l;
       }
-
-
-      std::multimap< float, std::string >::const_iterator it = locationToNameLut.begin();
-      while( it!= locationToNameLut.end() )
-      {
-	std::cout << (*it).first << " => " << (*it).second << std::endl;
-	++it;
-      }
-      for( unsigned int i=0; i<stringMap["(0008,103e)"].size(); i++ )
-	std::cout <<  stringMap["(0008,103e)"][i] << std::endl;
-      getchar();
 
 
       // collecting slice count and rank count while doing sanity checks
