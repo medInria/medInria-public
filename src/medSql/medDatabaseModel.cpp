@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct 14 22:57:50 2008 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Sep 25 13:29:25 2009 (+0200)
+ * Last-Updated: Tue Sep 29 13:53:12 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 427
+ *     Update #: 430
  */
 
 /* Commentary: 
@@ -295,6 +295,8 @@ Qt::DropActions medDatabaseModel::supportedDropActions(void) const
 
 bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
+    qDebug() << __func__ << data->formats();
+
     if (action == Qt::IgnoreAction)
         return true;
     

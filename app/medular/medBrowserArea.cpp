@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Sep 25 14:15:52 2009 (+0200)
+ * Last-Updated: Tue Sep 29 13:50:15 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 19
+ *     Update #: 24
  */
 
 /* Commentary: 
@@ -37,12 +37,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->model = new medDatabaseModel;
 
     d->view = new medDatabaseView(this);
-    // d->view->setFrameStyle(QFrame::NoFrame);
-    // d->view->setAttribute(Qt::WA_MacShowFocusRect, false);
-    // d->view->setUniformRowHeights(true);
-    // d->view->setAnimated(true);
-    // d->view->setAlternatingRowColors(true);
-    // d->view->setSortingEnabled(true);
     d->view->setModel(d->model);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -53,6 +47,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
 medBrowserArea::~medBrowserArea(void)
 {
+    delete d->model;
     delete d->view;
     delete d;
 
