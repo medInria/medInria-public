@@ -125,6 +125,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkCommon
   vtkRendering
   vtkRenderingAddOn
+  vtkVisuManagement
   QVTK
   medItk
   ${ITK_LIBRARIES}

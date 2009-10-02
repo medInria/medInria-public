@@ -51,6 +51,13 @@ set(${PROJECT_NAME}_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
 set(${PROJECT_NAME}_RUNTIME_DIRS ${RUNTIME_OUTPUT_PATH})
 
 ## #################################################################
+## Setup CMake Modules
+## #################################################################
+
+set(CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+
+## #################################################################
 ## Resolve dependencies
 ## #################################################################
 
@@ -85,17 +92,15 @@ include(${VTK_USE_FILE})
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
-find_package(med REQUIRED)
-include(${med_USE_FILE})
-
-find_package(DCMTK2 REQUIRED)
-include_directories(${DCMTK_INCLUDE_DIR})
+# find_package(DCMTK2 REQUIRED)
+# include_directories(${DCMTK_INCLUDE_DIR})
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
+
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -126,24 +131,18 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
 )
 
-if(APPLE)
-  set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup")
-elseif(UNIX)
-  string(REPLACE "-Wl,--no-undefined" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
-endif()
-
 add_executable(itkDcmtkReaderTest
-itkDcmtkReaderTest.cxx
-itkMultiThreadedImageIOBase.cxx
-itkDCMTKImageIO.cxx
+  itkDcmtkReaderTest.cxx
+  itkMultiThreadedImageIOBase.cxx
+  itkDCMTKImageIO.cxx
 )
+
 target_link_libraries(itkDcmtkReaderTest
-#  ${PROJECT_NAME}
-	vtkRenderingAddOn
-	vtkRendering
-	vtkIO
-	vtkDataManagement
- ${ITK_LIBRARIES}
- ${DCMTK_LIBRARIES}
- z
+  vtkRenderingAddOn
+  vtkRendering
+  vtkIO
+  vtkDataManagement
+  ${ITK_LIBRARIES}
+  ${DCMTK_LIBRARIES}
+  z
 )
