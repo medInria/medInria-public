@@ -20,10 +20,14 @@
 project(medItk)
 
 set(${PROJECT_NAME}_HEADERS
+itkMultiThreadedImageIOBase.h
+itkDCMTKImageIO.h
 )
 
 set(${PROJECT_NAME}_SOURCES
 medItk.cpp
+itkMultiThreadedImageIOBase.cxx
+itkDCMTKImageIO.cxx
 )
 
 ## #################################################################
@@ -40,11 +44,16 @@ source_group("Header Files" FILES ${${PROJECT_NAME}_HEADERS})
 ## #################################################################
 
 find_package(ITK REQUIRED)
-if(ITK_FOUND)
-  include(${ITK_USE_FILE})
-else(ITK_FOUND)
-  message(FATAL_ERROR "ITK not found. Please set ITK_DIR.")
-endif(ITK_FOUND)
+include(${ITK_USE_FILE})
+
+find_package(DCMTK2 REQUIRED)
+include_directories(${DCMTK_INCLUDE_DIR})
+
+find_package(vtkINRIA3D)
+include(${vtkINRIA3D_USE_FILE})
+
+find_package(VTK)
+include(${VTK_USE_FILE})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES} 
@@ -54,5 +63,22 @@ add_library(${PROJECT_NAME} SHARED
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${${PROJECT_NAME}_HEADERS}")
 
 target_link_libraries(${PROJECT_NAME}
-  ITKBasicFilters
+  ${ITK_LIBRARIES}
+  ${DCMTK_LIBRARIES}
 )
+
+if (vtkINRIA3D_FOUND AND VTK_FOUND)
+   add_executable(itkDcmtkReaderTest
+   itkDcmtkReaderTest.cxx
+   )
+   target_link_libraries(itkDcmtkReaderTest
+   ${PROJECT_NAME}
+   vtkRenderingAddOn
+   vtkRendering
+   vtkIO
+   vtkDataManagement
+   ${ITK_LIBRARIES}
+   ${DCMTK_LIBRARIES}
+   z
+   )
+endif (vtkINRIA3D_FOUND AND VTK_FOUND)
