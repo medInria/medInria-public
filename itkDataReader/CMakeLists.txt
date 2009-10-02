@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-project(v3dViewPlugin)
+project(itkDataReaderPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -63,6 +63,7 @@ mark_as_advanced(CMAKE_OSX_SYSROOT)
 endif(APPLE)
 
 set(QT_USE_QTOPENGL  TRUE)
+set(QT_USE_QTXML     TRUE)
 set(QT_USE_QTSQL     TRUE)
 set(QT_USE_QTHELP    TRUE)
 set(QT_USE_QTNETWORK TRUE)
@@ -76,12 +77,6 @@ mark_as_advanced(QT_QMAKE_EXECUTABLE)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
-
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
@@ -92,15 +87,13 @@ include_directories(${CMAKE_SOURCE_DIR}/medItk)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  v3dViewPlugin.h
-  v3dView2D.h
-  v3dView3D.h
+  itkDataReaderPlugin.h
+  itkDataImageReader.h
 )
 
 set(${PROJECT_NAME}_SOURCES
-  v3dViewPlugin.cpp
-  v3dView2D.cpp
-  v3dView3D.cpp
+  itkDataReaderPlugin.cpp
+  itkDataImageReader.cpp
 )
 
 ## #################################################################
@@ -122,10 +115,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-  vtkCommon
-  vtkRendering
-  vtkRenderingAddOn
-  QVTK
   medItk
   ${ITK_LIBRARIES}
 )
+

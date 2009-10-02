@@ -778,6 +778,9 @@ namespace itk
       //  throw std::runtime_error( "inconsistent series instance UID" );
       // }
 
+
+      std::cout << "TransferUID: " << stringMap[ "(0002,0010)" ][0] << std::endl;
+      
       
       // creating dicom dictionary
       this->PopulateDictionary (stringMap,

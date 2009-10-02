@@ -10,6 +10,7 @@
 
 #include "v3dViewPluginExport.h"
 
+class QMouseEvent;
 class v3dView2DPrivate;
 
 class V3DVIEWPLUGIN_EXPORT v3dView2D : public dtkAbstractView
@@ -38,6 +39,25 @@ public:
 
     QWidget *widget(void);
 
+public slots:
+    void onPropertySet         (QString key, QString value);
+    void onOrientationPropertySet           (QString value);
+    void onScalarBarVisibilityPropertySet   (QString value);
+    void onLookupTablePropertySet           (QString value);
+    void onBackgroundLookupTablePropertySet (QString value);
+    void onOpacityPropertySet               (QString value);
+    void onShowAxisPropertySet              (QString value);
+    void onInteractionPropertySet           (QString value);
+    void onMousePressEvent                  (QMouseEvent *event);
+
+public slots: // Menu interface
+    void onMenuAxialTriggered        (void);
+    void onMenuSagittalTriggered     (void);
+    void onMenuCoronalTriggered      (void);
+    void onMenuZoomTriggered         (void);
+    void onMenuWindowLevelTriggered  (void);
+
+    
 private:
     v3dView2DPrivate *d;
 };
