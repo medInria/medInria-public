@@ -58,7 +58,8 @@ bool v3dImage::read(QString file)
 
     vtkMetaImageData* metaimage = vtkMetaImageData::New();
 
-    try {
+    try
+    {
         metaimage->Read(file.toAscii().constData());
     }
     catch (vtkErrorCode::ErrorIds &e)
