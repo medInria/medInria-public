@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-project(v3dViewPlugin)
+project(itkDcmtkImageData)
 
 ## #################################################################
 ## Setup version numbering
@@ -76,31 +76,31 @@ mark_as_advanced(QT_QMAKE_EXECUTABLE)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
+find_package(vtkINRIA3D REQUIRED)
+include(${vtkINRIA3D_USE_FILE})
 
-include_directories(${CMAKE_SOURCE_DIR}/medItk)
+find_package(med REQUIRED)
+include(${med_USE_FILE})
+
+find_package(DCMTK2 REQUIRED)
+include_directories(${DCMTK_INCLUDE_DIR})
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  v3dViewPlugin.h
-  v3dView2D.h
-  v3dView3D.h
 )
 
 set(${PROJECT_NAME}_SOURCES
-  v3dViewPlugin.cpp
-  v3dView2D.cpp
-  v3dView3D.cpp
+  itkDCMTKImageIO.cxx
+  itkMultiThreadedImageIOBase.cxx
 )
 
 ## #################################################################
@@ -112,7 +112,7 @@ add_definitions(-DQT_PLUGIN)
 add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+# qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
@@ -121,11 +121,29 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore
-  vtkCommon
-  vtkRendering
-  vtkRenderingAddOn
-  QVTK
-  medItk
   ${ITK_LIBRARIES}
+  ${DCMTK_LIBRARIES}
+  dtkCore
+)
+
+if(APPLE)
+  set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup")
+elseif(UNIX)
+  string(REPLACE "-Wl,--no-undefined" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
+endif()
+
+add_executable(itkDcmtkReaderTest
+itkDcmtkReaderTest.cxx
+itkMultiThreadedImageIOBase.cxx
+itkDCMTKImageIO.cxx
+)
+target_link_libraries(itkDcmtkReaderTest
+#  ${PROJECT_NAME}
+	vtkRenderingAddOn
+	vtkRendering
+	vtkIO
+	vtkDataManagement
+ ${ITK_LIBRARIES}
+ ${DCMTK_LIBRARIES}
+ z
 )
