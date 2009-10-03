@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct 14 22:57:50 2008 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Sep 29 13:53:12 2009 (+0200)
+ * Last-Updated: Sat Oct  3 13:48:32 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 430
+ *     Update #: 439
  */
 
 /* Commentary: 
@@ -290,7 +290,7 @@ QStringList medDatabaseModel::mimeTypes(void) const
 
 Qt::DropActions medDatabaseModel::supportedDropActions(void) const
 {
-    return QAbstractItemModel::supportedDropActions() | Qt::MoveAction;
+    return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
 }
 
 bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
