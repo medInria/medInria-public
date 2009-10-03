@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct  3 13:49:39 2009 (+0200)
+ * Last-Updated: Sat Oct  3 19:07:21 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 103
+ *     Update #: 104
  */
 
 /* Commentary: 
@@ -20,7 +20,6 @@
 #include <QtCore>
 #include <QtGui>
 
-#include <dtkCore/dtkAbstractDataImageDicom.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>

@@ -26,9 +26,11 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
     d->web_view = new QWebView(this);
     d->web_view->setContextMenuPolicy(Qt::NoContextMenu);
     d->web_view->setAcceptDrops(false);
-    d->web_view->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
-    d->web_view->settings()->setAttribute(QWebSettings::JavaEnabled, false);
+    d->web_view->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
+    d->web_view->settings()->setAttribute(QWebSettings::JavaEnabled, true);
     d->web_view->setHtml(readFile(QLatin1String(":/html/index.html")), QUrl("qrc:/html/index.html"));
+
+    // qDebug() << d->web_view->settings()->pluginDatabase()->searchPaths();
 
     connect(d->web_view, SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
 

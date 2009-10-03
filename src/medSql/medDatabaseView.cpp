@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:18:20 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct  3 13:44:31 2009 (+0200)
+ * Last-Updated: Sat Oct  3 13:53:55 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 79
+ *     Update #: 80
  */
 
 /* Commentary: 
@@ -41,29 +41,6 @@ void medDatabaseView::setModel(medDatabaseModel *model)
 {
     QTreeView::setModel(model);
 }
-
-// void medDatabaseView::dragEnterEvent(QDragEnterEvent *event)
-// {
-//     if (event->mimeData()->hasUrls())
-//         event->acceptProposedAction();
-// }
-
-// void medDatabaseView::dragMoveEvent(QDragMoveEvent *event)
-// {
-//     if (event->mimeData()->hasUrls())
-//         event->acceptProposedAction();
-// }
-
-// void medDatabaseView::dragLeaveEvent(QDragLeaveEvent *event)
-// {
-//     Q_UNUSED(event);
-// }
-
-// void medDatabaseView::dropEvent(QDropEvent *event)
-// {
-//     if (event->mimeData()->hasUrls())
-//         event->acceptProposedAction();
-// }
 
 void medDatabaseView::onItemClicked(const QModelIndex& index)
 {
