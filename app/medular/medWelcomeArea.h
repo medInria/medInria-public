@@ -1,3 +1,22 @@
+/* medWelcomeArea.h --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Mon Oct  5 10:47:56 2009 (+0200)
+ * Version: $Id$
+ * Last-Updated: Mon Oct  5 10:48:00 2009 (+0200)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #ifndef MEDWELCOMEAREA_H
 #define MEDWELCOMEAREA_H
 
