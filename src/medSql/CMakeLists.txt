@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Fri Sep 25 11:51:59 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Sat Oct  3 18:26:02 2009 (+0200)
+## Last-Updated: Fri Sep 25 12:21:53 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 18
+##     Update #: 15
 ######################################################################
 ## 
 ### Commentary: 
@@ -46,13 +46,9 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-add_definitions(${QT_DEFINITIONS})
-add_definitions(-DQT_SHARED)
-add_definitions(-DQT_NO_DEBUG)
-
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME}
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES_WRAP}
