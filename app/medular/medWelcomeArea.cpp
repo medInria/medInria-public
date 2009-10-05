@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 08:29:35 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct  5 15:33:26 2009 (+0200)
+ * Last-Updated: Mon Oct  5 16:50:37 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 23
+ *     Update #: 56
  */
 
 /* Commentary: 
@@ -23,6 +23,8 @@
 #include <QtGui>
 #include <QtWebKit>
 
+#include <medGui/medLoginWidget.h>
+
 static QString readFile(const QString &name)
 {
     QFile f(name);
@@ -38,6 +40,8 @@ class medWelcomeAreaPrivate
 {
 public:
     QWebView *web_view;
+
+    medLoginWidget *loginWidget;
 };
 
 medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelcomeAreaPrivate)
@@ -53,17 +57,26 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
 
     // connect(d->web_view, SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
 
-    QWidget *widget = new QWidget(this);
+    QWidget *main = new QWidget(this);
+    main->setStyleSheet("background-image: url(:/html/img/background.jpg);");
 
-    widget->setStyleSheet(
-    "background-image: url(:/html/img/background.jpg);"
-    );
+    d->loginWidget = new medLoginWidget(main);
 
+    { // central widget layout
+    QVBoxLayout *layout = new QVBoxLayout(main);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addStretch(8);
+    layout->addWidget(d->loginWidget);
+    layout->addStretch(1);
+    }
+
+    { // this widget layout
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    // layout->addWidget(d->web_view);
-    layout->addWidget(widget);
+    layout->addWidget(main);
+    }
 }
 
 medWelcomeArea::~medWelcomeArea(void)
