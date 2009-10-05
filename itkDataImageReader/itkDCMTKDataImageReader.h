@@ -25,6 +25,12 @@ public:
     static bool registered(void);
 
 public slots:
+    bool canRead (QString path);
+    bool canRead (QStringList paths);
+
+    void readInformation (QString path);
+    void readInformation (QStringList paths);
+    
     bool read (QString path);
     bool read (QStringList paths);
     

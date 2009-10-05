@@ -374,41 +374,44 @@ namespace itk
     MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
 
     std::string PixelSpacing;
+    double pixSizeX = 1.0;
+    double pixSizeY = 1.0;
     if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0028,0030)"].GetPointer() ) )
     {
       PixelSpacing = metaDataString->GetMetaDataObjectValue();
     }
     else
     {
-      MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0028,0030)"].GetPointer() );
-      PixelSpacing = metaDataVectorString->GetMetaDataObjectValue()[0];
+      if( MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0028,0030)"].GetPointer() ) ) {
+	PixelSpacing = metaDataVectorString->GetMetaDataObjectValue()[0];
+      }
+      else
+	itkExceptionMacro (<< "THIS IS NOT HAPPENING!!" );
     }
     PixelSpacing[ PixelSpacing.find( "\\" ) ] = ' ';
-    double pixSizeX;
-    double pixSizeY;
     std::istringstream iss( PixelSpacing );
     iss >> pixSizeX >> pixSizeY;
     
 
     std::string SliceThicknessString;
+    double SliceThickness = 0.0;
+    
     if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0018,0050)"].GetPointer() ) )
     {	
       SliceThicknessString = metaDataString->GetMetaDataObjectValue();
     }
     else
     {
-      MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0050)"].GetPointer() );
-      SliceThicknessString = metaDataVectorString->GetMetaDataObjectValue()[0];
+      if( MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0050)"].GetPointer() ) ) {
+	SliceThicknessString = metaDataVectorString->GetMetaDataObjectValue()[0];
+	if ( !this->toScalar( SliceThicknessString, SliceThickness ) ) {
+	  itkWarningMacro (<< "failed to convert SliceThicknessString from string to double: " << SliceThicknessString << ", assuming 1.0");
+	  SliceThickness = 1.0;
+	}
+      }
     }
-    double SliceThickness = 0.0;
-    if ( !this->toScalar( SliceThicknessString, SliceThickness ) )
-    {
-      itkWarningMacro (<< "failed to convert SliceThicknessString from string to double: " << SliceThicknessString << ", assuming 1.0");
-      SliceThickness = 1.0;
-      //      throw std::runtime_error( "failed to convert SliceThicknessString from"
-      //			" string to double" );  
-    }
-
+    
+    
     double SpacingBetweenSlices = 0.0;
     if ( dicomDictionary.Find( "(0018,0088)" ) != dicomDictionary.End() )
     {
@@ -419,17 +422,15 @@ namespace itk
       }
       else
       {
-	MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0088)"].GetPointer() );
-	SpacingBetweenSlicesString = metaDataVectorString->GetMetaDataObjectValue()[0];
+	if( MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0088)"].GetPointer() ) ) {
+	  SpacingBetweenSlicesString = metaDataVectorString->GetMetaDataObjectValue()[0];
+	  if ( !this->toScalar( SpacingBetweenSlicesString, SpacingBetweenSlices ) ) {
+	    itkWarningMacro (<< "failed to convert SpacingBetweenSlices from string to double: " << SpacingBetweenSlicesString  << ", assuming 1.0" );
+	    SpacingBetweenSlices = 1.0;
+	  }
+	}
       }
-      if ( !this->toScalar( SpacingBetweenSlicesString, 
-			    SpacingBetweenSlices ) )
-      {
-	itkWarningMacro (<< "failed to convert SpacingBetweenSlices from string to double: " << SpacingBetweenSlicesString  << ", assuming 1.0" );
-	/*	throw std::runtime_error( "failed to convert SpacingBetweenSlices from"
-		" string to double" ); */
-	SpacingBetweenSlices = 1.0;
-      }
+      
     }
     
     m_Spacing[0] = pixSizeX;
@@ -786,7 +787,7 @@ namespace itk
       // }
 
 
-      std::cout << "TransferUID: " << stringMap[ "(0002,0010)" ][0] << std::endl;
+      //std::cout << "TransferUID: " << stringMap[ "(0002,0010)" ][0] << std::endl;
       
       
       // creating dicom dictionary
@@ -992,7 +993,108 @@ namespace itk
   }
 
 
+  std::string DCMTKImageIO::GetPatientName() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0010,0010)" );
+    return name;
+  }
 
+  std::string DCMTKImageIO::GetPatientID() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0010,0020)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetPatientSex() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0010,0040)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetPatientAge() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0010,1010)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetStudyID() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0020,0010)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetPatientDOB() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0010,0030)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetStudyDescription() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0008,1030)" );
+    return name;
+  }
+
+  std::string DCMTKImageIO::GetSeriesDescription() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0008,103e)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetBodyPart() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0018,0015)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetNumberOfSeriesInStudy() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0020,1000)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetNumberOfStudyRelatedSeries() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0020,1206)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetStudyDate() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0008,0020)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetModality() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0008,0060)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetManufacturer() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0008,0070)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetInstitution() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0008,0080)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetModel() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0008,1090)" );
+    return name;
+  }
+  
+  std::string DCMTKImageIO::GetScanOptions() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0018,0022)" );
+    return name;
+  }
+  
   
   void 
   DCMTKImageIO
@@ -2178,13 +2280,38 @@ namespace itk
   
   bool DCMTKImageIO::isOkInBase( char c, int32_t base )
   {
-    
     if ( base <= 10 )
       return isdigit( c ) && ( int32_t )( c - '0' ) < base;
     else
       return isdigit( c ) || ( c >= 'a' && c < ( char )( 'a' + base - 10 ) )
 	|| ( c >= 'A' && c < ( char )( 'A' + base - 10 ) );
-    
+  }
+
+
+  std::string DCMTKImageIO::GetMetaDataValueString (const char* key) const
+  {
+    std::string value = "Not Found";
+    const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+    MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
+    if( it!=dicomDictionary.End() ) {
+      if( MetaDataStringType* metaData = dynamic_cast<MetaDataStringType*>( it->second.GetPointer() ) )
+	value = metaData->GetMetaDataObjectValue();
+    }
+    return value;
+  }
+
+
+  std::vector<std::string> DCMTKImageIO::GetMetaDataValueVectorString (const char* key) const
+  {
+    std::vector<std::string> values;
+    const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+    MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
+    if( it!=dicomDictionary.End() ) {
+      if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) ) {
+	values = metaData->GetMetaDataObjectValue();
+      }
+    }
+    return values;
   }
   
 }

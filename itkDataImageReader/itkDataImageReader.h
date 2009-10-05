@@ -25,6 +25,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
+    
 
  private:
     itkDataImageChar3ReaderPrivate* d;
@@ -51,6 +54,8 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
 
  private:
     itkDataImageUChar3ReaderPrivate* d;
@@ -76,6 +81,8 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
 
  private:
     itkDataImageShort3ReaderPrivate* d;
@@ -101,6 +108,8 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
 
  private:
     itkDataImageUShort3ReaderPrivate* d;
@@ -126,6 +135,8 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
 
  private:
     itkDataImageInt3ReaderPrivate* d;
@@ -151,6 +162,8 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
 
  private:
     itkDataImageUInt3ReaderPrivate* d;
@@ -176,6 +189,8 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
 
  private:
     itkDataImageLong3ReaderPrivate* d;
@@ -201,6 +216,8 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
 
  private:
     itkDataImageULong3ReaderPrivate* d;
@@ -226,6 +243,8 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
 
  private:
     itkDataImageFloat3ReaderPrivate* d;
@@ -251,6 +270,8 @@ public:
     
 public slots:
     bool read(QString path);
+    bool canRead (QString path);
+    void readInformation (QString path);
 
  private:
     itkDataImageDouble3ReaderPrivate* d;

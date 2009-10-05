@@ -6,6 +6,9 @@
   class itkDataImage##suffix##ReaderPrivate				\
   {									\
   public:								\
+  typedef type         PixelType;					\
+  typedef itk::Image<PixelType, dimension> ImageType;			\
+  typedef itk::ImageFileReader<ImageType> ReaderType;			\
   };									\
   itkDataImage##suffix##Reader::itkDataImage##suffix##Reader(void) : dtkAbstractDataReader(), d (new itkDataImage##suffix##ReaderPrivate) \
   {}									\
@@ -22,6 +25,15 @@
   QStringList itkDataImage##suffix##Reader::handled(void) const		\
   {									\
     return QStringList() << "itkDataImage"#suffix;			\
+  }									\
+  bool itkDataImage##suffix##Reader::canRead (QString path)		\
+  {									\
+    itk::ImageIOBase::Pointer io = itk::ImageIOFactory::CreateImageIO( path.toAscii().constData(), \
+								       itk::ImageIOFactory::ReadMode ); \
+    return !io.IsNull();						\
+  }									\
+  void itkDataImage##suffix##Reader::readInformation (QString path)	\
+  {									\
   }									\
   bool itkDataImage##suffix##Reader::read(QString path)			\
   {									\

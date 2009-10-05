@@ -3,6 +3,7 @@
 // /////////////////////////////////////////////////////////////////
 
 #include "itkDataImageReader.h"
+#include "itkDCMTKDataImageReader.h"
 #include "itkDataImageReaderPlugin.h"
 
 #include <dtkCore/dtkLog.h>
@@ -46,6 +47,7 @@ bool itkDataImageReaderPlugin::initialize(void)
     if(!itkDataImageULong3Reader::registered()) dtkWarning() << "Unable to register itkDataImageULong3Reader type";
     if(!itkDataImageFloat3Reader::registered()) dtkWarning() << "Unable to register itkDataImageFloat3Reader type";
     if(!itkDataImageDouble3Reader::registered()) dtkWarning() << "Unable to register itkDataImageDouble3Reader type";
+    if(!itkDCMTKDataImageReader::registered()) dtkWarning() << "Unable to register itkDCMTKDataImageReader type";
 
     return true;
 }
@@ -81,7 +83,8 @@ QStringList itkDataImageReaderPlugin::types(void) const
 			 << "itkDataImageLong3Reader"
 			 << "itkDataImageULong3Reader"
 			 << "itkDataImageFloat3Reader"
-			 << "itkDataImageDouble3Reader";
+			 << "itkDataImageDouble3Reader"
+			 << "itkDCMTKDataImageReader";
 }
 
 Q_EXPORT_PLUGIN2(itkDataImageReaderPlugin, itkDataImageReaderPlugin)

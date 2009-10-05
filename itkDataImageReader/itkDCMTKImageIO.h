@@ -74,6 +74,26 @@ namespace itk
     void Write(const void* buffer);    
 
 
+    // DICOM related stuff
+    std::string GetPatientName() const;
+    std::string GetPatientID() const;
+    std::string GetPatientSex() const;
+    std::string GetPatientAge() const;
+    std::string GetStudyID() const;
+    std::string GetPatientDOB() const;
+    std::string GetStudyDescription() const;
+    std::string GetSeriesDescription() const;
+    std::string GetBodyPart() const;
+    std::string GetNumberOfSeriesInStudy() const;
+    std::string GetNumberOfStudyRelatedSeries() const;
+    std::string GetStudyDate() const;
+    std::string GetModality() const;
+    std::string GetManufacturer() const;
+    std::string GetInstitution() const;
+    std::string GetModel() const;
+    std::string GetScanOptions() const;
+    
+
   protected:
     
     DCMTKImageIO();
@@ -134,6 +154,8 @@ namespace itk
     bool isOkInBase (char, int32_t);
 
 
+    std::string GetMetaDataValueString (const char* key) const;
+    std::vector<std::string> GetMetaDataValueVectorString (const char* key) const;
     
     
   private:
