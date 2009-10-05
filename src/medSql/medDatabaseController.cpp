@@ -20,7 +20,6 @@
 #include <QtCore>
 #include <QtGui>
 
-#include <dtkCore/dtkAbstractDataImageDicom.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
