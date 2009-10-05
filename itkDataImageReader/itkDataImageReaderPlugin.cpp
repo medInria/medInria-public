@@ -3,38 +3,38 @@
 // /////////////////////////////////////////////////////////////////
 
 #include "itkDataImageReader.h"
-#include "itkDataReaderPlugin.h"
+#include "itkDataImageReaderPlugin.h"
 
 #include <dtkCore/dtkLog.h>
 
 
 // /////////////////////////////////////////////////////////////////
-// itkDataReaderPluginPrivate
+// itkDataImageReaderPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class itkDataReaderPluginPrivate 
+class itkDataImageReaderPluginPrivate 
 {
 public:
     // Class variables go here.
 };
 
 // /////////////////////////////////////////////////////////////////
-// itkDataReaderPlugin
+// itkDataImageReaderPlugin
 // /////////////////////////////////////////////////////////////////
 
-itkDataReaderPlugin::itkDataReaderPlugin(QObject *parent) : dtkPlugin(parent), d(new itkDataReaderPluginPrivate)
+itkDataImageReaderPlugin::itkDataImageReaderPlugin(QObject *parent) : dtkPlugin(parent), d(new itkDataImageReaderPluginPrivate)
 {
 
 }
 
-itkDataReaderPlugin::~itkDataReaderPlugin(void)
+itkDataImageReaderPlugin::~itkDataImageReaderPlugin(void)
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkDataReaderPlugin::initialize(void)
+bool itkDataImageReaderPlugin::initialize(void)
 {
     if(!itkDataImageChar3Reader::registered()) dtkWarning() << "Unable to register itkDataImageChar3Reader type";
     if(!itkDataImageUChar3Reader::registered()) dtkWarning() << "Unable to register itkDataImageUChar3Reader type";
@@ -50,27 +50,27 @@ bool itkDataReaderPlugin::initialize(void)
     return true;
 }
 
-bool itkDataReaderPlugin::uninitialize(void)
+bool itkDataImageReaderPlugin::uninitialize(void)
 {
     return true;
 }
 
-QString itkDataReaderPlugin::name(void) const
+QString itkDataImageReaderPlugin::name(void) const
 {
-    return "itkDataReaderPlugin";
+    return "itkDataImageReaderPlugin";
 }
 
-QString itkDataReaderPlugin::description(void) const
+QString itkDataImageReaderPlugin::description(void) const
 {
     return "Readers for any ITK data type.";
 }
 
-QStringList itkDataReaderPlugin::tags(void) const
+QStringList itkDataImageReaderPlugin::tags(void) const
 {
   return QStringList() << "itk" << "data" << "reader";
 }
 
-QStringList itkDataReaderPlugin::types(void) const
+QStringList itkDataImageReaderPlugin::types(void) const
 {
     return QStringList() << "itkDataImageChar3Reader"
 			 << "itkDataImageUChar3Reader"
@@ -84,4 +84,4 @@ QStringList itkDataReaderPlugin::types(void) const
 			 << "itkDataImageDouble3Reader";
 }
 
-Q_EXPORT_PLUGIN2(itkDataReaderPlugin, itkDataReaderPlugin)
+Q_EXPORT_PLUGIN2(itkDataImageReaderPlugin, itkDataImageReaderPlugin)

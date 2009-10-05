@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-project(itkDataPlugin)
+project(itkDataImageReaderPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -51,6 +51,13 @@ set(${PROJECT_NAME}_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
 set(${PROJECT_NAME}_RUNTIME_DIRS ${RUNTIME_OUTPUT_PATH})
 
 ## #################################################################
+## Setup CMake Modules
+## #################################################################
+
+set(CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+
+## #################################################################
 ## Resolve dependencies
 ## #################################################################
 
@@ -80,6 +87,15 @@ include(${dtk_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+find_package(DCMTK2 REQUIRED)
+include_directories(${DCMTK_INCLUDE_DIR})
+
+find_package(vtkINRIA3D REQUIRED)
+include(${vtkINRIA3D_USE_FILE})
+
+find_package(VTK)
+include(${VTK_USE_FILE})
+
 include_directories(${CMAKE_SOURCE_DIR}/medItk)
 
 ## #################################################################
@@ -87,13 +103,16 @@ include_directories(${CMAKE_SOURCE_DIR}/medItk)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataPlugin.h
-  itkDataImage.h
+  itkDataImageReaderPlugin.h
+  itkDataImageReader.h
+  itkDCMTKDataImageReader.h
 )
 
 set(${PROJECT_NAME}_SOURCES
-  itkDataPlugin.cpp
-  itkDataImage.cpp
+  itkDataImageReaderPlugin.cpp
+  itkDataImageReader.cpp
+  itkDCMTKImageIO.cxx
+  itkDCMTKDataImageReader.cpp
 )
 
 ## #################################################################
@@ -116,6 +135,27 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   medItk
+  itkAddOn
+  ${DCMTK_LIBRARIES}
   ${ITK_LIBRARIES}
 )
 
+
+if (VTK_FOUND)
+
+add_executable(itkDCMTKReaderTest
+  itkDCMTKReaderTest.cxx
+)
+  
+target_link_libraries(itkDCMTKReaderTest
+  ${PROJECT_NAME}
+  vtkRenderingAddOn
+  vtkRendering
+  vtkIO
+  vtkDataManagement
+  ${ITK_LIBRARIES}
+  ${DCMTK_LIBRARIES}
+  z
+)
+
+endif (VTK_FOUND)

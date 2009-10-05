@@ -69,28 +69,8 @@ mark_as_advanced(CMAKE_OSX_ARCHITECTURES)
 mark_as_advanced(CMAKE_OSX_SYSROOT)
 endif(APPLE)
 
-set(QT_USE_QTOPENGL  TRUE)
-set(QT_USE_QTSQL     TRUE)
-set(QT_USE_QTHELP    TRUE)
-set(QT_USE_QTNETWORK TRUE)
-set(QT_USE_QTWEBKIT  TRUE)
-
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-
-mark_as_advanced(QT_QMAKE_EXECUTABLE)
-
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
-
-find_package(DCMTK2 REQUIRED)
-include_directories(${DCMTK_INCLUDE_DIR})
-
-find_package(vtkINRIA3D)
-include(${vtkINRIA3D_USE_FILE})
-
-find_package(VTK)
-include(${VTK_USE_FILE})
 
 # if(APPLE)
 # find_package(ZLIB REQUIRED)
@@ -101,22 +81,16 @@ include(${VTK_USE_FILE})
 ## Input
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  itkMultiThreadedImageIOBase.h
-  itkDCMTKImageIO.h
+set(${PROJECT_NAME}_HEADERS
 )
 
 set(${PROJECT_NAME}_SOURCES
   medItk.cpp
-  itkMultiThreadedImageIOBase.cxx
-  itkDCMTKImageIO.cxx
 )
 
 ## #################################################################
 ## Build rules
 ## #################################################################
-
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES} 
@@ -125,28 +99,9 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
-  ${DCMTK_LIBRARIES}
 )
 
 # if(APPLE)
 #   target_link_libraries(${PROJECT_NAME} z)
 # endif(APPLE)
 
-if(vtkINRIA3D_FOUND AND VTK_FOUND)
-
-add_executable(itkDcmtkReaderTest
-  itkDcmtkReaderTest.cxx
-)
-  
-target_link_libraries(itkDcmtkReaderTest
-  ${PROJECT_NAME}
-  vtkRenderingAddOn
-  vtkRendering
-  vtkIO
-  vtkDataManagement
-  ${ITK_LIBRARIES}
-  ${DCMTK_LIBRARIES}
-  z
-)
-
-endif(vtkINRIA3D_FOUND AND VTK_FOUND)

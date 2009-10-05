@@ -3,37 +3,37 @@
 // /////////////////////////////////////////////////////////////////
 
 #include "itkDataImage.h"
-#include "itkDataPlugin.h"
+#include "itkDataImagePlugin.h"
 
 #include <dtkCore/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
-// itkDataPluginPrivate
+// itkDataImagePluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class itkDataPluginPrivate 
+class itkDataImagePluginPrivate 
 {
 public:
     // Class variables go here.
 };
 
 // /////////////////////////////////////////////////////////////////
-// itkDataPlugin
+// itkDataImagePlugin
 // /////////////////////////////////////////////////////////////////
 
-itkDataPlugin::itkDataPlugin(QObject *parent) : dtkPlugin(parent), d(new itkDataPluginPrivate)
+itkDataImagePlugin::itkDataImagePlugin(QObject *parent) : dtkPlugin(parent), d(new itkDataImagePluginPrivate)
 {
 
 }
 
-itkDataPlugin::~itkDataPlugin(void)
+itkDataImagePlugin::~itkDataImagePlugin(void)
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkDataPlugin::initialize(void)
+bool itkDataImagePlugin::initialize(void)
 {
   if(!itkDataImageChar3::registered()) qDebug() << "Unable to register itkDataImageChar3 type";
   if(!itkDataImageUChar3::registered()) qDebug() << "Unable to register itkDataImageUChar3 type";
@@ -49,27 +49,27 @@ bool itkDataPlugin::initialize(void)
   return true;
 }
 
-bool itkDataPlugin::uninitialize(void)
+bool itkDataImagePlugin::uninitialize(void)
 {
     return true;
 }
 
-QString itkDataPlugin::name(void) const
+QString itkDataImagePlugin::name(void) const
 {
-    return "itkDataPlugin";
+    return "itkDataImagePlugin";
 }
 
-QString itkDataPlugin::description(void) const
+QString itkDataImagePlugin::description(void) const
 {
     return "Plugin containing all types of ITK images";
 }
 
-QStringList itkDataPlugin::tags(void) const
+QStringList itkDataImagePlugin::tags(void) const
 {
   return QStringList() << "itk" << "data" << "image";
 }
 
-QStringList itkDataPlugin::types(void) const
+QStringList itkDataImagePlugin::types(void) const
 {
   return QStringList() << "itkDataImageChar3"
 		       << "itkDataImageUChar3"
@@ -83,4 +83,4 @@ QStringList itkDataPlugin::types(void) const
 		       << "itkDataImageDouble3";
 }
 
-Q_EXPORT_PLUGIN2(itkDataPlugin, itkDataPlugin)
+Q_EXPORT_PLUGIN2(itkDataImagePlugin, itkDataImagePlugin)

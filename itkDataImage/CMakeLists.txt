@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-project(itkDataReaderPlugin)
+project(itkDataImagePlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -87,13 +87,13 @@ include_directories(${CMAKE_SOURCE_DIR}/medItk)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataReaderPlugin.h
-  itkDataImageReader.h
+  itkDataImagePlugin.h
+  itkDataImage.h
 )
 
 set(${PROJECT_NAME}_SOURCES
-  itkDataReaderPlugin.cpp
-  itkDataImageReader.cpp
+  itkDataImagePlugin.cpp
+  itkDataImage.cpp
 )
 
 ## #################################################################

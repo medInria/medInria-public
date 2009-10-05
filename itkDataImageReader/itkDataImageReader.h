@@ -5,13 +5,13 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 
-#include "itkDataReaderPluginExport.h"
+#include "itkDataImageReaderPluginExport.h"
 
 
 
 class itkDataImageChar3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageChar3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageChar3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
@@ -37,7 +37,7 @@ dtkAbstractDataReader *createItkDataImageChar3Reader(void);
 
 class itkDataImageUChar3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageUChar3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageUChar3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
@@ -62,7 +62,7 @@ dtkAbstractDataReader *createItkDataImageUChar3Reader(void);
 
 class itkDataImageShort3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageShort3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageShort3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
@@ -87,7 +87,7 @@ dtkAbstractDataReader *createItkDataImageShort3Reader(void);
 
 class itkDataImageUShort3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageUShort3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageUShort3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
@@ -112,7 +112,7 @@ dtkAbstractDataReader *createItkDataImageUShort3Reader(void);
 
 class itkDataImageInt3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageInt3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageInt3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
@@ -137,7 +137,7 @@ dtkAbstractDataReader *createItkDataImageInt3Reader(void);
 
 class itkDataImageUInt3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageUInt3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageUInt3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
@@ -162,7 +162,7 @@ dtkAbstractDataReader *createItkDataImageUInt3Reader(void);
 
 class itkDataImageLong3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageLong3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageLong3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
@@ -187,7 +187,7 @@ dtkAbstractDataReader *createItkDataImageLong3Reader(void);
 
 class itkDataImageULong3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageULong3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageULong3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
@@ -212,7 +212,7 @@ dtkAbstractDataReader *createItkDataImageULong3Reader(void);
 
 class itkDataImageFloat3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageFloat3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageFloat3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 
@@ -237,7 +237,7 @@ dtkAbstractDataReader *createItkDataImageFloat3Reader(void);
 
 class itkDataImageDouble3ReaderPrivate;
 
-class ITKDATAREADERPLUGIN_EXPORT itkDataImageDouble3Reader : public dtkAbstractDataReader
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageDouble3Reader : public dtkAbstractDataReader
 {
     Q_OBJECT
 

@@ -9,18 +9,18 @@
 #include <vector>
 #include <set>
 
-#define HAVE_CONFIG_H
-#include <dcmtk/dcmdata/dctk.h>
-#include <dcmtk/dcmdata/dcistrmf.h>
-#include <dcmtk/ofstd/ofstdinc.h>
-
 #include "itkMultiThreadedImageIOBase.h"
 #include <itkMetaDataObject.h>
+
+#include "itkDataImageReaderPluginExport.h"
+
+class DcmElement;
+
 
 namespace itk
 {
 
-  class ITK_EXPORT DCMTKImageIO : public MultiThreadedImageIOBase
+  class ITKDATAIMAGEREADERPLUGIN_EXPORT DCMTKImageIO : public MultiThreadedImageIOBase
   {
 
   public:

@@ -4,12 +4,12 @@
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
 
-#include "itkDataPluginExport.h"
+#include "itkDataImagePluginExport.h"
 
 
 class itkDataImageChar3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageChar3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageChar3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
@@ -55,7 +55,7 @@ dtkAbstractData* createItkDataImageChar3 (void);
 
 class itkDataImageUChar3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageUChar3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUChar3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
@@ -100,7 +100,7 @@ dtkAbstractData* createItkDataImageUChar3 (void);
 
 class itkDataImageShort3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageShort3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageShort3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
@@ -144,7 +144,7 @@ dtkAbstractData* createItkDataImageShort3 (void);
 
 class itkDataImageUShort3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageUShort3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUShort3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
@@ -188,7 +188,7 @@ dtkAbstractData* createItkDataImageUShort3 (void);
 
 class itkDataImageInt3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageInt3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageInt3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
@@ -232,7 +232,7 @@ dtkAbstractData* createItkDataImageInt3 (void);
 
 class itkDataImageUInt3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageUInt3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUInt3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
@@ -276,7 +276,7 @@ dtkAbstractData* createItkDataImageUInt3 (void);
 
 class itkDataImageLong3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageLong3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageLong3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
@@ -320,7 +320,7 @@ dtkAbstractData* createItkDataImageLong3 (void);
 
 class itkDataImageULong3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageULong3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageULong3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
@@ -365,7 +365,7 @@ dtkAbstractData* createItkDataImageULong3 (void);
 
 class itkDataImageFloat3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageFloat3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageFloat3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
@@ -410,7 +410,7 @@ dtkAbstractData* createItkDataImageFloat3 (void);
 
 class itkDataImageDouble3Private;
 
-class ITKDATAPLUGIN_EXPORT itkDataImageDouble3 : public dtkAbstractDataImage
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageDouble3 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
