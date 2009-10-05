@@ -121,9 +121,3 @@ target_link_libraries(${PROJECT_NAME}
   itkAddOn
   vtkDataManagement
 )
-
-if(APPLE)
-  set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup")
-elseif(UNIX)
-  string(REPLACE "-Wl,--no-undefined" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
-endif()
