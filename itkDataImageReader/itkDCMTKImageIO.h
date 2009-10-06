@@ -92,7 +92,12 @@ namespace itk
     std::string GetInstitution() const;
     std::string GetModel() const;
     std::string GetScanOptions() const;
-    
+
+
+    inline std::string GetMetaDataValueString (const char* key, int index) const;
+    inline std::vector<std::string> GetMetaDataValueVectorString (const char* key) const;
+    //std::vector<std::string> GetMetaDataValueVectorString (const char* key) const;
+
 
   protected:
     
@@ -135,27 +140,23 @@ namespace itk
     
 
     void readElement( ::DcmElement* element,
-                      StringMap& stringMap,
-                      FloatMap& floatMap,
-                      DoubleMap& doubleMap,
-                      Int32Map& int32Map,
-                      Int16Map& int16Map,
-                      UInt32Map& uint32Map,
-                      UInt16Map& uint16Map,
-                      int32_t fileIndex,
-                      int32_t fileCount ) const;
-
-
-    bool toScalar (const std::string& msg, float& value);
-    bool toScalar (const std::string& msg, double& value);
-    bool toScalar( const std::string& msg, int32_t& value, int32_t base = 10 );
-    bool toScalar (const std::string& msg, int64_t& value, int32_t base = 10 );
-    bool isSpace  (char);
-    bool isOkInBase (char, int32_t);
-
-
-    std::string GetMetaDataValueString (const char* key) const;
-    std::vector<std::string> GetMetaDataValueVectorString (const char* key) const;
+		      StringMap& stringMap,
+		      FloatMap& floatMap,
+		      DoubleMap& doubleMap,
+		      Int32Map& int32Map,
+		      Int16Map& int16Map,
+		      UInt32Map& uint32Map,
+		      UInt16Map& uint16Map,
+		      int32_t fileIndex,
+		      int32_t fileCount ) const;
+    
+    
+    inline bool toScalar (const std::string& msg, float& value);
+    inline bool toScalar (const std::string& msg, double& value);
+    inline bool toScalar( const std::string& msg, int32_t& value, int32_t base = 10 );
+    inline bool toScalar (const std::string& msg, int64_t& value, int32_t base = 10 );
+    inline bool isSpace  (char);
+    inline bool isOkInBase (char, int32_t);
     
     
   private:

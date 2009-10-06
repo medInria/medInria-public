@@ -145,14 +145,15 @@ if (VTK_FOUND)
 
 add_executable(itkDCMTKReaderTest
   itkDCMTKReaderTest.cxx
+  itkDCMTKImageIO.cxx
 )
   
 target_link_libraries(itkDCMTKReaderTest
-  ${PROJECT_NAME}
   vtkRenderingAddOn
   vtkRendering
   vtkIO
   vtkDataManagement
+  itkAddOn
   ${ITK_LIBRARIES}
   ${DCMTK_LIBRARIES}
   z

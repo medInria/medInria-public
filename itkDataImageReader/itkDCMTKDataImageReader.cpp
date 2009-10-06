@@ -116,7 +116,7 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
     std::vector< std::string > filenames;
     for (int i=0; i<paths.size(); i++)
       filenames.push_back ( paths[i].toAscii().constData() );
-  
+
     d->io->SetFileNames ( filenames );
     try {
       d->io->ReadImageInformation();
@@ -125,7 +125,7 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       std::cerr << e;
       return;
     }
-
+    
 
     dtkAbstractData* dtkdata = this->data();
 
@@ -205,9 +205,31 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
     }
 
     if (dtkdata) {
-      dtkdata->addMetaData ( "PatientName", d->io->GetPatientName().c_str() );
-      dtkdata->addMetaData ( "StudyDescription", d->io->GetStudyDescription().c_str() );
-      dtkdata->addMetaData ( "SeriesDescription", d->io->GetSeriesDescription().c_str() );
+
+      QStringList patientName;
+      QStringList studyName;
+      QStringList seriesName;
+      
+      patientName << d->io->GetPatientName().c_str();
+      studyName << d->io->GetStudyDescription().c_str();
+      seriesName << d->io->GetSeriesDescription().c_str();
+
+      
+      if (!dtkdata->hasMetaData ( tr ("PatientName") ))
+	dtkdata->addMetaData ( "PatientName", patientName );
+      else
+	dtkdata->setMetaData ( "PatientName", patientName );
+
+      if (!dtkdata->hasMetaData ( tr ("StudyDescription") ))
+	dtkdata->addMetaData ( "StudyDescription", studyName );
+      else
+	dtkdata->setMetaData ( "StudyDescription", studyName );
+
+      if (!dtkdata->hasMetaData ( tr ("SeriesDescription") ))
+	dtkdata->addMetaData ( "SeriesDescription", seriesName );
+      else
+	dtkdata->setMetaData ( "SeriesDescription", seriesName );
+	
       /*        
 		qDebug() << io->GetPatientName().c_str();
 		qDebug() << io->GetPatientID().c_str();

@@ -171,119 +171,119 @@ namespace itk
     std::map< std::string, std::vector< std::string > >::iterator
       sm = stringMap.begin(), sme = stringMap.end();
 
-    std::string commonString = "";
+    //std::string commonString = "";
     while ( sm != sme )
-    {
+    {/*
       if ( std::isUnique( sm->second, commonString ) )
       {
 	EncapsulateMetaData<std::string>(dicomDictionary, sm->first, commonString); 
       }
       else
-      {
+      {*/
 	EncapsulateMetaData< std::vector<std::string> >(dicomDictionary, sm->first, sm->second); 
-      }
+	//}
       ++ sm;
     }
     
 
     std::map< std::string, std::vector< float > >::iterator
       fm = floatMap.begin(), fme = floatMap.end();
-    float commonFloat = 0;
+    //float commonFloat = 0;
     while ( fm != fme )
-    {
+    {/*
       if ( std::isUnique( fm->second, commonFloat ) )
       {
 	EncapsulateMetaData<float>(dicomDictionary, fm->first, commonFloat); 
       }
       else
-      {
+      {*/
 	EncapsulateMetaData< std::vector<float> >(dicomDictionary, fm->first, fm->second);
-      }
+	//}
       ++ fm;
     }
 
     
     std::map< std::string, std::vector< double > >::iterator
       dm = doubleMap.begin(), dme = doubleMap.end();
-    double commonDouble = 0;
+    //double commonDouble = 0;
     while ( dm != dme )
-    {
+    {/*
       if ( std::isUnique( dm->second, commonDouble ) )
       {
 	EncapsulateMetaData<double>( dicomDictionary, dm->first, commonDouble);
       }
       else
-      {
+      {*/
 	EncapsulateMetaData< std::vector<double> >( dicomDictionary, dm->first, dm->second);
-      }
+	//}
       ++ dm;
     }
 
     
     std::map< std::string, std::vector< int32_t > >::iterator
       i32m = int32Map.begin(), i32me = int32Map.end();
-    int32_t commonInt32 = 0;
+    //int32_t commonInt32 = 0;
     while ( i32m != i32me )
-    {
+    {/*
       if ( std::isUnique( i32m->second, commonInt32 ) )
       {
 	EncapsulateMetaData<int32_t>( dicomDictionary, i32m->first, commonInt32);
       }
       else
-      {
+      {*/
 	EncapsulateMetaData< std::vector<int32_t> >( dicomDictionary, i32m->first, i32m->second);
-      }
+	//}
       ++ i32m;
     }
     
 
     std::map< std::string, std::vector< int16_t > >::iterator
       i16m = int16Map.begin(), i16me = int16Map.end();
-    int16_t commonInt16 = 0;
+    //int16_t commonInt16 = 0;
     while ( i16m != i16me )
-    {
+    {/*
       if ( std::isUnique( i16m->second, commonInt16 ) )
       {
 	EncapsulateMetaData<int16_t>( dicomDictionary, i16m->first, commonInt16);
       }
       else
-      {
+      {*/
 	EncapsulateMetaData< std::vector<int16_t> >( dicomDictionary, i16m->first, i16m->second);
-      }
+	//}
       ++ i16m;
     }
 
     
     std::map< std::string, std::vector< uint32_t > >::iterator
       ui32m = uint32Map.begin(), ui32me = uint32Map.end();
-    uint32_t commonUInt32 = 0;
+    //uint32_t commonUInt32 = 0;
     while ( ui32m != ui32me )
-    {
+    {/*
       if ( std::isUnique( ui32m->second, commonUInt32 ) )
       {
 	EncapsulateMetaData<uint32_t>( dicomDictionary, ui32m->first, commonUInt32);
       }
       else
-      { 
+      {*/ 
 	EncapsulateMetaData< std::vector<uint32_t> >( dicomDictionary, ui32m->first, ui32m->second);
-      }
+	//}
       ++ ui32m;
     }
 
     
     std::map< std::string, std::vector< uint16_t > >::iterator
       ui16m = uint16Map.begin(), ui16me = uint16Map.end();
-    uint16_t commonUInt16 = 0;
+    //uint16_t commonUInt16 = 0;
     while ( ui16m != ui16me )
-    {
+    {/*
       if ( std::isUnique( ui16m->second, commonUInt16 ) )
       {
 	EncapsulateMetaData<uint16_t>( dicomDictionary, ui16m->first, commonUInt16); 
       }
       else
-      {
+      {*/
 	EncapsulateMetaData< std::vector<uint16_t> >( dicomDictionary, ui16m->first, ui16m->second); 
-      }
+	//}
       ++ ui16m;  
     }
   }
@@ -300,11 +300,11 @@ namespace itk
     if ( bitsAllocatedIterator != dicomDictionary.End() )
     {
       uint16_t bitsAllocated = 0;
-      
+      /*
       if( MetaDataUInt16Type* metaDataBitsAllocated = dynamic_cast<MetaDataUInt16Type*>( bitsAllocatedIterator->second.GetPointer() ) ) {
 	bitsAllocated = metaDataBitsAllocated->GetMetaDataObjectValue();
       }
-      else if ( MetaDataVectorUInt16Type* metaDataBitsAllocated = dynamic_cast<MetaDataVectorUInt16Type*>( bitsAllocatedIterator->second.GetPointer() ) ) {
+      else*/ if ( MetaDataVectorUInt16Type* metaDataBitsAllocated = dynamic_cast<MetaDataVectorUInt16Type*>( bitsAllocatedIterator->second.GetPointer() ) ) {
 	bitsAllocated = metaDataBitsAllocated->GetMetaDataObjectValue()[0];
       }
       else {
@@ -318,11 +318,11 @@ namespace itk
 	itkWarningMacro (<< "Missing Pixel Representation (0028,0103), assuming unsigned");
       }
       else {
-	
+	/*
 	if( MetaDataStringType* metaDataSign = dynamic_cast<MetaDataStringType*>( signBits->second.GetPointer() ) ){
 	  sign = metaDataSign->GetMetaDataObjectValue();
 	}
-	else if ( MetaDataVectorStringType* metaDataSign = dynamic_cast<MetaDataVectorStringType*>( signBits->second.GetPointer() ) ){
+	else*/ if ( MetaDataVectorStringType* metaDataSign = dynamic_cast<MetaDataVectorStringType*>( signBits->second.GetPointer() ) ){
 	  sign = metaDataSign->GetMetaDataObjectValue()[0];
 	}
 	//else
@@ -376,18 +376,19 @@ namespace itk
     std::string PixelSpacing;
     double pixSizeX = 1.0;
     double pixSizeY = 1.0;
+    /*
     if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0028,0030)"].GetPointer() ) )
     {
       PixelSpacing = metaDataString->GetMetaDataObjectValue();
     }
     else
-    {
+    {*/
       if( MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0028,0030)"].GetPointer() ) ) {
 	PixelSpacing = metaDataVectorString->GetMetaDataObjectValue()[0];
       }
       else
 	itkExceptionMacro (<< "THIS IS NOT HAPPENING!!" );
-    }
+      //}
     PixelSpacing[ PixelSpacing.find( "\\" ) ] = ' ';
     std::istringstream iss( PixelSpacing );
     iss >> pixSizeX >> pixSizeY;
@@ -395,42 +396,47 @@ namespace itk
 
     std::string SliceThicknessString;
     double SliceThickness = 0.0;
-    
+    /*
     if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0018,0050)"].GetPointer() ) )
     {	
       SliceThicknessString = metaDataString->GetMetaDataObjectValue();
     }
     else
-    {
-      if( MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0050)"].GetPointer() ) ) {
+    {*/
+      if( MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0050)"].GetPointer() ) )
+      {
 	SliceThicknessString = metaDataVectorString->GetMetaDataObjectValue()[0];
-	if ( !this->toScalar( SliceThicknessString, SliceThickness ) ) {
-	  itkWarningMacro (<< "failed to convert SliceThicknessString from string to double: " << SliceThicknessString << ", assuming 1.0");
+	if ( !this->toScalar( SliceThicknessString, SliceThickness ) )
+	{
+	  itkWarningMacro (<< "failed to convert SliceThicknessString from string to double: " << SliceThicknessString << ", assuming 1.0\n");
 	  SliceThickness = 1.0;
 	}
       }
-    }
+      //}
     
     
     double SpacingBetweenSlices = 0.0;
     if ( dicomDictionary.Find( "(0018,0088)" ) != dicomDictionary.End() )
     {
       std::string SpacingBetweenSlicesString;
+      /*
       if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0018,0088)"].GetPointer() ) )
       {
 	SpacingBetweenSlicesString = metaDataString->GetMetaDataObjectValue(); 
       }
       else
-      {
-	if( MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0088)"].GetPointer() ) ) {
+      {*/
+	if( MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0018,0088)"].GetPointer() ) )
+	{
 	  SpacingBetweenSlicesString = metaDataVectorString->GetMetaDataObjectValue()[0];
-	  if ( !this->toScalar( SpacingBetweenSlicesString, SpacingBetweenSlices ) ) {
-	    itkWarningMacro (<< "failed to convert SpacingBetweenSlices from string to double: " << SpacingBetweenSlicesString  << ", assuming 1.0" );
+	  if ( !this->toScalar( SpacingBetweenSlicesString, SpacingBetweenSlices ) )
+	  {
+	    itkWarningMacro (<< "failed to convert SpacingBetweenSlices from string to double: " << SpacingBetweenSlicesString  << ", assuming 1.0\n" );
 	    SpacingBetweenSlices = 1.0;
 	  }
 	}
-      }
-      
+	//}
+	
     }
     
     m_Spacing[0] = pixSizeX;
@@ -453,26 +459,32 @@ namespace itk
   void DCMTKImageIO::DetermineDimensions()
   {
     MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
-    
+    /*
     if( MetaDataUInt16Type* metaDataUint16 = dynamic_cast<MetaDataUInt16Type*>( dicomDictionary["(0028,0011)"].GetPointer() ) )
     {
       m_Dimensions[0] = ( int32_t )metaDataUint16->GetMetaDataObjectValue();	  
     }
     else
+    {*/
     {
       MetaDataVectorUInt16Type* metaDataVectorUint16 = dynamic_cast<MetaDataVectorUInt16Type*>( dicomDictionary["(0028,0011)"].GetPointer() );
       m_Dimensions[0] = ( int32_t )metaDataVectorUint16->GetMetaDataObjectValue()[0];
     }
+    //}
     
+    /*
     if( MetaDataUInt16Type* metaDataUint16 = dynamic_cast<MetaDataUInt16Type*>( dicomDictionary["(0028,0010)"].GetPointer() ) )
     {
       m_Dimensions[1] = ( int32_t )metaDataUint16->GetMetaDataObjectValue();
     }
     else
+    {*/
     {
       MetaDataVectorUInt16Type* metaDataVectorUint16 = dynamic_cast<MetaDataVectorUInt16Type*>( dicomDictionary["(0028,0010)"].GetPointer() );
       m_Dimensions[1] = ( int32_t )metaDataVectorUint16->GetMetaDataObjectValue()[0];
-    }      
+    }
+    
+    //}      
   }
 
 
@@ -486,15 +498,16 @@ namespace itk
     double originZ = 0.0;
     
     std::string s_origin = "0.0\0.0\0.0";
+    /*
     if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0020,0032)"].GetPointer() ) )
     {
       s_origin = metaDataString->GetMetaDataObjectValue();
     }
     else
-    {
+    {*/
       MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0020,0032)"].GetPointer() );
       s_origin = metaDataVectorString->GetMetaDataObjectValue()[0];
-    }
+      //}
     
     std::replace ( s_origin.begin(), s_origin.end(), '\\', ' ');
     std::istringstream iss( s_origin );
@@ -515,15 +528,16 @@ namespace itk
     MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
 
     std::string s_orientation = "1.0\0.0\0.0\0.0\1.0\0.0";
+    /*
     if( MetaDataStringType* metaDataString = dynamic_cast<MetaDataStringType*>( dicomDictionary["(0020,0037)"].GetPointer() ) )
     {
       s_orientation = metaDataString->GetMetaDataObjectValue();
     }
     else
-    {
-      MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0020,0037)"].GetPointer() );
-      s_orientation = metaDataVectorString->GetMetaDataObjectValue()[0];
-    }
+    {*/
+    MetaDataVectorStringType* metaDataVectorString = dynamic_cast<MetaDataVectorStringType*>( dicomDictionary["(0020,0037)"].GetPointer() );
+    s_orientation = metaDataVectorString->GetMetaDataObjectValue()[0];
+    //}
     
     double orientation[6];
     std::replace ( s_orientation.begin(), s_orientation.end(), '\\', ' ');
@@ -652,7 +666,7 @@ namespace itk
       
       int32_t fileIndex = 0;
       float floatSliceLocation = 0;
-      
+
       while ( f != fe )
       {
 	std::string filename;
@@ -660,7 +674,7 @@ namespace itk
 	  filename = m_Directory + "/" + *f;
 	else
 	  filename = *f;
-	
+
 	try
 	{
 	  readCoreHeader( filename,
@@ -838,9 +852,11 @@ namespace itk
       }
 
       this->SetFileNames ( m_OrderedFileNames );
-      
-      for(unsigned int i=0; i<m_OrderedFileNames.size(); i++ )
+
+      /*
+	for(unsigned int i=0; i<m_OrderedFileNames.size(); i++ )
 	std::cout << this->GetFileNames()[i] << std::endl;
+      */
     }
     catch(std::exception& e)
     {
@@ -995,103 +1011,103 @@ namespace itk
 
   std::string DCMTKImageIO::GetPatientName() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0010,0010)" );
+    std::string name = this->GetMetaDataValueString ( "(0010,0010)", 0 );
     return name;
   }
 
   std::string DCMTKImageIO::GetPatientID() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0010,0020)" );
+    std::string name = this->GetMetaDataValueString ( "(0010,0020)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetPatientSex() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0010,0040)" );
+    std::string name = this->GetMetaDataValueString ( "(0010,0040)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetPatientAge() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0010,1010)" );
+    std::string name = this->GetMetaDataValueString ( "(0010,1010)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetStudyID() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0020,0010)" );
+    std::string name = this->GetMetaDataValueString ( "(0020,0010)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetPatientDOB() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0010,0030)" );
+    std::string name = this->GetMetaDataValueString ( "(0010,0030)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetStudyDescription() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0008,1030)" );
+    std::string name = this->GetMetaDataValueString ( "(0008,1030)", 0 );
     return name;
   }
 
   std::string DCMTKImageIO::GetSeriesDescription() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0008,103e)" );
+    std::string name = this->GetMetaDataValueString ( "(0008,103e)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetBodyPart() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0018,0015)" );
+    std::string name = this->GetMetaDataValueString ( "(0018,0015)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetNumberOfSeriesInStudy() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0020,1000)" );
+    std::string name = this->GetMetaDataValueString ( "(0020,1000)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetNumberOfStudyRelatedSeries() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0020,1206)" );
+    std::string name = this->GetMetaDataValueString ( "(0020,1206)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetStudyDate() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0008,0020)" );
+    std::string name = this->GetMetaDataValueString ( "(0008,0020)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetModality() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0008,0060)" );
+    std::string name = this->GetMetaDataValueString ( "(0008,0060)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetManufacturer() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0008,0070)" );
+    std::string name = this->GetMetaDataValueString ( "(0008,0070)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetInstitution() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0008,0080)" );
+    std::string name = this->GetMetaDataValueString ( "(0008,0080)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetModel() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0008,1090)" );
+    std::string name = this->GetMetaDataValueString ( "(0008,1090)", 0 );
     return name;
   }
   
   std::string DCMTKImageIO::GetScanOptions() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0018,0022)" );
+    std::string name = this->GetMetaDataValueString ( "(0018,0022)", 0 );
     return name;
   }
   
@@ -1116,7 +1132,7 @@ namespace itk
 				    int32_t fileIndex,
 				    int32_t fileCount ) const
   {
-    
+
     try
     {
       
@@ -1203,7 +1219,7 @@ namespace itk
 				 int32_t fileIndex,
 				 int32_t fileCount ) const
   {
-    
+
     try
     {
       
@@ -1234,6 +1250,9 @@ namespace itk
 	  << tagElement
 	  << setbase( 10 ) << ")";
       std::string tagGroupElement = oss.str();
+
+      char* charPointer = 0;
+      element->getString(charPointer);
       
       switch ( eValueRepresentation )
       {
@@ -2107,7 +2126,7 @@ namespace itk
   }
 
 
-   bool DCMTKImageIO::toScalar( const std::string& msg,
+   inline bool DCMTKImageIO::toScalar( const std::string& msg,
 				float& value )
    {
      
@@ -2123,60 +2142,57 @@ namespace itk
    }
 
 
-   bool DCMTKImageIO::toScalar( const std::string& msg,
-				double& value )
+   inline bool DCMTKImageIO::toScalar( const std::string& msg, double& value )
    {
      bool ok = true;
      
      if ( msg.empty() )
      {
-       
        ok = false;
        value = 0;
-       
      }
      else
      {
-       
+       /*
        char* end;
        value = strtod( msg.c_str(), &end );
        ok = msg[ 0 ] && ( end == 0 || *end == '\0' );
-       
-     }
-     
+       if (!ok)
+       {
+	 std::cout << msg << " " << value << std::endl;
+	 getchar();
+       }
+       */
+       std::istringstream i (msg.c_str());
+       if (!(i >> value))
+	 ok=false;
+     }     
      return ok;
-     
    }
 
 
-  bool DCMTKImageIO::toScalar( const std::string& msg,
-			       int32_t& value, int32_t base )
+  inline bool DCMTKImageIO::toScalar( const std::string& msg, int32_t& value, int32_t base )
   {
-    
     int64_t v = 0;
     bool ok = toScalar( msg, v, base );
     if ( ok && ( v < INT32_MIN || v > INT32_MAX ) )
     {
-      
       ok = false;
       v = 0;
-      
     }
     value = ( int32_t )v;
     return ok;
-    
   }
 
 
-  bool DCMTKImageIO::toScalar( const std::string& msg,
+  inline bool DCMTKImageIO::toScalar( const std::string& msg,
 			       int64_t& value, int32_t base )
   {
-
     if ( msg.empty() )
-     {
-       value = 0;
-       return false;
-     }
+    {
+      value = 0;
+      return false;
+    }
     const char* p = msg.c_str();
     int64_t val = INT64_C( 0 );
     int32_t l = msg.length();
@@ -2270,15 +2286,13 @@ namespace itk
   }
 
 
-  bool DCMTKImageIO::isSpace( char c )
+  inline bool DCMTKImageIO::isSpace( char c )
   {
-    
     return c >= 9 && c <= 13;
-    
   }
   
   
-  bool DCMTKImageIO::isOkInBase( char c, int32_t base )
+  inline bool DCMTKImageIO::isOkInBase( char c, int32_t base )
   {
     if ( base <= 10 )
       return isdigit( c ) && ( int32_t )( c - '0' ) < base;
@@ -2288,20 +2302,20 @@ namespace itk
   }
 
 
-  std::string DCMTKImageIO::GetMetaDataValueString (const char* key) const
+  inline std::string DCMTKImageIO::GetMetaDataValueString (const char* key, int index) const
   {
     std::string value = "Not Found";
     const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
     MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
     if( it!=dicomDictionary.End() ) {
-      if( MetaDataStringType* metaData = dynamic_cast<MetaDataStringType*>( it->second.GetPointer() ) )
-	value = metaData->GetMetaDataObjectValue();
+      if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+	value = metaData->GetMetaDataObjectValue()[index];
     }
     return value;
   }
 
-
-  std::vector<std::string> DCMTKImageIO::GetMetaDataValueVectorString (const char* key) const
+  
+  inline std::vector<std::string> DCMTKImageIO::GetMetaDataValueVectorString (const char* key) const
   {
     std::vector<std::string> values;
     const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
