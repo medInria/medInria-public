@@ -28,8 +28,6 @@
 
 #include <medSql/medDatabaseController.h>
 
-//#include <time.h>
-
 bool medDatabaseController::createConnection(void)
 {
     this->mkpath(this->dataLocation() + "/");
@@ -92,7 +90,7 @@ QString medDatabaseController::configLocation(void) const
 
 void medDatabaseController::import(const QString& file)
 {
-
+  
     QDir dir(file);
     dir.setFilter(QDir::Files | QDir::Hidden);
 
@@ -107,8 +105,6 @@ void medDatabaseController::import(const QString& file)
     
     QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
 
-    //clock_t t3 = clock();
-
     foreach (QString file, fileList) {
 
       dtkAbstractData* dtkdata = 0;
@@ -121,7 +117,6 @@ void medDatabaseController::import(const QString& file)
 	  dataReader->readInformation ( dir.filePath (file) );
 	  dtkdata = dataReader->data();
 	  delete dataReader;
-	  //qDebug() << "Can read with reader: " << dataReader->description() << " " << dataReader;
 	  break;
 	}
       }
@@ -131,7 +126,7 @@ void medDatabaseController::import(const QString& file)
 	continue;
       }
       
-
+      
       if (dtkdata->hasMetaData ("PatientName") &&
 	  dtkdata->hasMetaData ("StudyDescription") &&
 	  dtkdata->hasMetaData ("SeriesDescription") ) {
@@ -153,13 +148,11 @@ void medDatabaseController::import(const QString& file)
 	
 	if(query.first()) {
 	  id = query.value(0);
-	  //qDebug() << "Patient already exists in database" << id;
 	}
 	else {
 	  query.prepare("INSERT INTO patient (name) VALUES (:name)");
 	  query.bindValue(":name", patientName);
 	  query.exec(); id = query.lastInsertId();
-	  //qDebug() << "Patient inserted" << id;
 	}
 	
 	
@@ -173,7 +166,6 @@ void medDatabaseController::import(const QString& file)
 
 	if(query.first()) {
 	  id = query.value(0);
-	  //qDebug() << "Study already exists in database" << id << "for patient" << patientName;
 	}
 	else {
 	  query.prepare("INSERT INTO study (patient, name) VALUES (:patient, :study)");
@@ -249,22 +241,6 @@ void medDatabaseController::import(const QString& file)
       delete dtkdata;
       
     }
-    
-    
-    //clock_t t4 = clock();	
-    //qDebug() << "Elapsed time: " << t3 << " " << t4 << (double)(t4-t3)/(double)CLOCKS_PER_SEC << " for " << fileList.count();
-    
-    
-    // dtkAbstractData *data = dtkAbstractDataFactory::instance()->create("dcmtkDataImage");
-    
-    // dtkAbstractDataImageDicom *dicom = dynamic_cast<dtkAbstractDataImageDicom *>(data);
-
-    // if(!dicom) {
-    //     dtkLog::critical() << "Not able to retreive a dicom data proxy";
-    //     return;
-    // }
-        
-    // dicom->read(dir.filePath(dir.entryList().first()).toAscii());
 
     emit updated();
 }
