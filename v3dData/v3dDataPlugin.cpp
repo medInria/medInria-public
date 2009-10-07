@@ -3,7 +3,7 @@
 // /////////////////////////////////////////////////////////////////
 
 #include "v3dDataPlugin.h"
-#include "v3dImage.h"
+#include "v3dDataImage.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -43,7 +43,7 @@ bool v3dDataPlugin::initialize(void)
     itk::AnalyzeImageIOFactory::RegisterOneFactory();
     itk::VTKImageIOFactory::RegisterOneFactory();
     
-    if(!v3dImage::registered())
+    if(!v3dDataImage::registered())
 	dtkWarning() << "Unable to register v3dImage type";
 
     return true;

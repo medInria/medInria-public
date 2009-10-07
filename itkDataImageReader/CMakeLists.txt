@@ -140,7 +140,6 @@ target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
 )
 
-
 if (VTK_FOUND)
 
 add_executable(itkDCMTKReaderTest
