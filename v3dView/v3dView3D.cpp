@@ -87,11 +87,12 @@ void v3dView3D::link(dtkAbstractView *other)
     if(!d->view)
 	return;
 
-    if(vtkViewImage2D *view = dynamic_cast<vtkViewImage2D*>((vtkObject*)(other->view())))
+    if(vtkSynchronizedView *view = dynamic_cast<vtkSynchronizedView *>((vtkObject*)(other->view())))
 	d->view->AddChild(view);
-
+    /*
     if(vtkViewImage3D *view = dynamic_cast<vtkViewImage3D*>((vtkObject*)(other->view())))
 	d->view->AddChild(view);
+    */
 }
 
 void v3dView3D::unlink(dtkAbstractView *other)
@@ -112,7 +113,30 @@ void v3dView3D::setData(dtkAbstractData *data)
     if(!data)
 	return;
 
-    if(vtkImageData* image = vtkImageData::SafeDownCast((vtkDataObject *)(data->data())))
+#ifdef vtkINRIA3D_USE_ITK
+    if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+#endif
+
+    if(vtkImageData* image = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data())))
         d->view->SetImage(image);
     
     dtkAbstractView::setData(data);

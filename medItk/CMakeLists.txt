@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-project(v3dDataPlugin)
+project(medItk)
 
 ## #################################################################
 ## Setup version numbering
@@ -51,6 +51,13 @@ set(${PROJECT_NAME}_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
 set(${PROJECT_NAME}_RUNTIME_DIRS ${RUNTIME_OUTPUT_PATH})
 
 ## #################################################################
+## Setup CMake Modules
+## #################################################################
+
+set(CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+
+## #################################################################
 ## Resolve dependencies
 ## #################################################################
 
@@ -62,66 +69,39 @@ mark_as_advanced(CMAKE_OSX_ARCHITECTURES)
 mark_as_advanced(CMAKE_OSX_SYSROOT)
 endif(APPLE)
 
-set(QT_USE_QTOPENGL  TRUE)
-set(QT_USE_QTSQL     TRUE)
-set(QT_USE_QTHELP    TRUE)
-set(QT_USE_QTNETWORK TRUE)
-set(QT_USE_QTWEBKIT  TRUE)
-
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-
-mark_as_advanced(QT_QMAKE_EXECUTABLE)
-
-find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
-
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
+# if(APPLE)
+# find_package(ZLIB REQUIRED)
+# include_directories(${ZLIB_INCLUDE_DIR})
+# endif(APPLE)
 
 ## #################################################################
 ## Input
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  v3dDataPlugin.h
-  v3dDataImage.h
+set(${PROJECT_NAME}_HEADERS
 )
 
 set(${PROJECT_NAME}_SOURCES
-  v3dDataPlugin.cpp
-  v3dDataImage.cpp
+  medItk.cpp
 )
 
 ## #################################################################
 ## Build rules
 ## #################################################################
 
-add_definitions(${QT_DEFINITIONS})
-add_definitions(-DQT_PLUGIN)
-add_definitions(-DQT_SHARED)
-add_definitions(-DQT_NO_DEBUG)
-
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_SOURCES} 
+  ${${PROJECT_NAME}_HEADERS}
 )
 
 target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkCore
   ${ITK_LIBRARIES}
-  vtkCommon
-  vtkFiltering
-  vtkRendering
-  itkAddOn
-  vtkDataManagement
 )
+
+# if(APPLE)
+#   target_link_libraries(${PROJECT_NAME} z)
+# endif(APPLE)
+

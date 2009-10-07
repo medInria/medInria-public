@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-project(v3dDataPlugin)
+project(itkDataImageReaderPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -51,6 +51,13 @@ set(${PROJECT_NAME}_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
 set(${PROJECT_NAME}_RUNTIME_DIRS ${RUNTIME_OUTPUT_PATH})
 
 ## #################################################################
+## Setup CMake Modules
+## #################################################################
+
+set(CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+
+## #################################################################
 ## Resolve dependencies
 ## #################################################################
 
@@ -63,6 +70,7 @@ mark_as_advanced(CMAKE_OSX_SYSROOT)
 endif(APPLE)
 
 set(QT_USE_QTOPENGL  TRUE)
+set(QT_USE_QTXML     TRUE)
 set(QT_USE_QTSQL     TRUE)
 set(QT_USE_QTHELP    TRUE)
 set(QT_USE_QTNETWORK TRUE)
@@ -79,24 +87,32 @@ include(${dtk_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
+find_package(DCMTK2 REQUIRED)
+include_directories(${DCMTK_INCLUDE_DIR})
 
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
+
+find_package(VTK)
+include(${VTK_USE_FILE})
+
+include_directories(${CMAKE_SOURCE_DIR}/medItk)
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  v3dDataPlugin.h
-  v3dDataImage.h
+  itkDataImageReaderPlugin.h
+  itkDataImageReader.h
+  itkDCMTKDataImageReader.h
 )
 
 set(${PROJECT_NAME}_SOURCES
-  v3dDataPlugin.cpp
-  v3dDataImage.cpp
+  itkDataImageReaderPlugin.cpp
+  itkDataImageReader.cpp
+  itkDCMTKImageIO.cxx
+  itkDCMTKDataImageReader.cpp
 )
 
 ## #################################################################
@@ -118,10 +134,28 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-  ${ITK_LIBRARIES}
-  vtkCommon
-  vtkFiltering
-  vtkRendering
+  medItk
   itkAddOn
-  vtkDataManagement
+  ${DCMTK_LIBRARIES}
+  ${ITK_LIBRARIES}
 )
+
+if (VTK_FOUND)
+
+add_executable(itkDCMTKReaderTest
+  itkDCMTKReaderTest.cxx
+  itkDCMTKImageIO.cxx
+)
+  
+target_link_libraries(itkDCMTKReaderTest
+  vtkRenderingAddOn
+  vtkRendering
+  vtkIO
+  vtkDataManagement
+  itkAddOn
+  ${ITK_LIBRARIES}
+  ${DCMTK_LIBRARIES}
+  z
+)
+
+endif (VTK_FOUND)

@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-project(v3dDataPlugin)
+project(itkDataImagePlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -63,6 +63,7 @@ mark_as_advanced(CMAKE_OSX_SYSROOT)
 endif(APPLE)
 
 set(QT_USE_QTOPENGL  TRUE)
+set(QT_USE_QTXML     TRUE)
 set(QT_USE_QTSQL     TRUE)
 set(QT_USE_QTHELP    TRUE)
 set(QT_USE_QTNETWORK TRUE)
@@ -79,24 +80,20 @@ include(${dtk_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
+include_directories(${CMAKE_SOURCE_DIR}/medItk)
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  v3dDataPlugin.h
-  v3dDataImage.h
+  itkDataImagePlugin.h
+  itkDataImage.h
 )
 
 set(${PROJECT_NAME}_SOURCES
-  v3dDataPlugin.cpp
-  v3dDataImage.cpp
+  itkDataImagePlugin.cpp
+  itkDataImage.cpp
 )
 
 ## #################################################################
@@ -118,10 +115,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
+  medItk
   ${ITK_LIBRARIES}
-  vtkCommon
-  vtkFiltering
-  vtkRendering
-  itkAddOn
-  vtkDataManagement
 )
+
