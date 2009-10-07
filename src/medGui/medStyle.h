@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Jul  3 19:20:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Jul 11 23:21:48 2009 (+0200)
+ * Last-Updated: Wed Oct  7 12:31:21 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 49
+ *     Update #: 51
  */
 
 /* Commentary: 
@@ -46,6 +46,8 @@ public:
    QPalette standardPalette(void) const;
 
 public:
+   static void medDrawRect(QPainter *painter, const QRect& rect, QColor borderColor);
+
    static void medDrawRectWithColor(QPainter *painter, const QRect& rect, QColor fillColor, QColor borderColor);
    static void medFillRectWithColor(QPainter *painter, const QRect& rect, QColor fillColor);
 

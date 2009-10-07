@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Jul  3 19:21:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Sep 21 14:37:22 2009 (+0200)
+ * Last-Updated: Wed Oct  7 12:31:46 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 571
+ *     Update #: 574
  */
 
 /* Commentary: 
@@ -462,6 +462,14 @@ QPalette medStyle::standardPalette(void) const
 // /////////////////////////////////////////////////////////////////
 // 
 // /////////////////////////////////////////////////////////////////
+
+void medStyle::medDrawRect(QPainter *painter, const QRect& rect, QColor borderColor)
+{
+    painter->save();
+    painter->setPen(borderColor);
+    painter->drawRect(rect);
+    painter->restore();
+}
 
 void medStyle::medDrawRectWithColor(QPainter *painter, const QRect& rect, QColor fillColor, QColor borderColor)
 {
