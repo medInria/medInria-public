@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/" >
         <file>html/index.html</file>
-        <file>html/template_css.css</file>
+        <file>html/css/main.css</file>
+        <file>html/img/background.jpg</file>
     </qresource>
 </RCC>

@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:14:33 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Mon Sep 21 14:42:24 2009 (+0200)
+## Last-Updated: Sat Oct  3 19:01:24 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 18
+##     Update #: 19
 ######################################################################
 ## 
 ### Commentary: 
@@ -159,6 +159,18 @@ mark_as_advanced(QT_QMAKE_EXECUTABLE)
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
+
+find_package(TCL)
+if(TCL_FOUND)
+  include_directories(${TCL_INCLUDE_PATH})
+endif(TCL_FOUND)
+
+find_package(PythonLibs)
+if(PYTHONLIBS_FOUND)
+  include_directories(${PYTHON_INCLUDE_PATH})
+  get_filename_component(PYTHON_PATH ${PYTHON_LIBRARIES} PATH)
+  link_directories(${PYTHON_PATH})
+endif(PYTHONLIBS_FOUND)
 
 ## #################################################################
 ## Build options
