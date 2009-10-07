@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 15:34:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct  5 15:56:55 2009 (+0200)
+ * Last-Updated: Mon Oct  5 18:01:29 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 7
  */
 
 /* Commentary: 
@@ -33,7 +33,8 @@ public:
     ~medLoginWidget(void);
 
 protected slots:
-    void update(void);
+    void onTimeOut(void);
+    void onReturnPressed(void);
 
 private:
     medLoginWidgetPrivate *d;

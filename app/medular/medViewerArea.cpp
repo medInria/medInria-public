@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Sep 22 15:59:36 2009 (+0200)
+ * Last-Updated: Wed Oct  7 15:59:14 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 50
+ *     Update #: 125
  */
 
 /* Commentary: 
@@ -20,6 +20,7 @@
 #include "medViewerArea.h"
 
 #include <medGui/medLayoutChooser.h>
+#include <medGui/medStyle.h>
 
 #include <QtGui>
 
@@ -80,9 +81,13 @@ void medViewerAreaToolBoxHeader::setTitle(const QString& title)
 
 void medViewerAreaToolBoxHeader::paintEvent(QPaintEvent *event)
 {
-    QPainter p(this);
-    p.setPen(Qt::darkGray);
-    p.drawLine(event->rect().bottomLeft(), event->rect().bottomRight());
+    QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
+
+    QColor gradientUp = QColor(0x4b, 0x4b, 0x4b);
+    QColor gradientMd = QColor(0x2e, 0x2e, 0x2e);
+    QColor gradientDw = QColor(0x4b, 0x4b, 0x4b);
+
+    medStyle::medDrawRoundRectWithDoubleLinearGradient(&p, event->rect(), gradientUp, gradientMd, gradientMd, gradientDw, 4, 0, 4, 0, Qt::darkGray);
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -96,6 +101,9 @@ public:
     ~medViewerAreaToolBoxContent(void);
 
     void addWidget(QWidget *widget);
+
+protected:
+    void paintEvent(QPaintEvent *event);
 
 private:
     int row;
@@ -128,6 +136,17 @@ void medViewerAreaToolBoxContent::addWidget(QWidget *widget)
     }
 }
 
+void medViewerAreaToolBoxContent::paintEvent(QPaintEvent *event)
+{
+    QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
+
+    QColor gradientUp = QColor(0x4b, 0x4b, 0x4b);
+    QColor gradientMd = QColor(0x2e, 0x2e, 0x2e);
+    QColor gradientDw = QColor(0x4b, 0x4b, 0x4b);
+
+    medStyle::medDrawRoundRectWithColor(&p, event->rect(), Qt::gray, 0, 4, 0, 4, Qt::darkGray);
+}
+
 ///////////////////////////////////////////////////////////////////
 // medViewerAreaToolBox
 ///////////////////////////////////////////////////////////////////
@@ -143,7 +162,7 @@ public:
     void setTitle(const QString& title);
 
 protected:
-    void paintEvent(QPaintEvent *event);
+    // void paintEvent(QPaintEvent *event);
 
 private:
     medViewerAreaToolBoxHeader *header;
@@ -180,13 +199,6 @@ void medViewerAreaToolBox::setTitle(const QString &title)
     this->header->setTitle(title);
 }
 
-void medViewerAreaToolBox::paintEvent(QPaintEvent *event)
-{
-    QPainter p(this);
-    p.setPen(Qt::darkGray);
-    p.drawRect(event->rect().adjusted(0, 0, -1, -1));
-}
-
 ///////////////////////////////////////////////////////////////////
 // medViewerAreaToolBoxContainer
 ///////////////////////////////////////////////////////////////////
@@ -211,6 +223,8 @@ medViewerAreaToolBoxContainer::medViewerAreaToolBoxContainer(QWidget *parent) : 
     this->layout = new QVBoxLayout(this->container);
     this->layout->addStretch(1);
 
+    this->setFrameStyle(QFrame::NoFrame);
+    this->setAttribute(Qt::WA_MacShowFocusRect, false);
     this->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     this->setWidget(this->container);
     this->setWidgetResizable(true);
@@ -259,6 +273,8 @@ private:
 medViewerAreaViewContainer::medViewerAreaViewContainer(QWidget *parent) : QWidget(parent)
 {
     m_layout = new QGridLayout(this);
+    m_layout->setContentsMargins(0, 0, 0, 0);
+    m_layout->setSpacing(0);
 
     this->setFocusPolicy(Qt::StrongFocus);
 }
@@ -316,9 +332,10 @@ static void paintLayout(QPainter *painter, QLayoutItem *item)
     painter->drawRect(item->geometry().adjusted(0, 0, -1, -1));
 }
 
-void medViewerAreaViewContainer::paintEvent(QPaintEvent *)
+void medViewerAreaViewContainer::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
+
     if (layout())
         paintLayout(&painter, layout());
 }
@@ -334,6 +351,8 @@ class medViewerAreaPrivate
 public:
     medViewerAreaViewContainer *view_container;
     medViewerAreaToolBoxContainer *toolbox_container;
+
+    QHash<int, medViewerAreaToolBoxContainer *> view_containers;
 };
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
@@ -347,28 +366,34 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QWidget *c_top = new QWidget(central);
     c_top->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
+    // QStackedWidget *stack = new QStackedWidget(central);
+
     d->view_container = new medViewerAreaViewContainer(central);
     d->view_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QComboBox *patientComboBox = new QComboBox(this);
+    patientComboBox->addItem("Choose patient");
     patientComboBox->addItem("Patient A");
     patientComboBox->addItem("Patient B");
     patientComboBox->addItem("Patient C");
     connect(patientComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onPatientIndexChanged(int)));
 
     QComboBox *studyComboBox = new QComboBox(this);
+    studyComboBox->addItem("Choose study");
     studyComboBox->addItem("Study A");
     studyComboBox->addItem("Study B");
     studyComboBox->addItem("Study C");
     connect(studyComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onStudyIndexChanged(int)));
 
     QComboBox *seriesComboBox = new QComboBox(this);
+    seriesComboBox->addItem("Choose series");
     seriesComboBox->addItem("Series A");
     seriesComboBox->addItem("Series B");
     seriesComboBox->addItem("Series C");
     connect(seriesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSeriesIndexChanged(int)));
     
     QComboBox *imagesComboBox = new QComboBox(this);
+    imagesComboBox->addItem("Choose image");
     imagesComboBox->addItem("Image A");
     imagesComboBox->addItem("Image B");
     imagesComboBox->addItem("Image C");
@@ -412,11 +437,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->toolbox_container = new medViewerAreaToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
-    d->toolbox_container->setStyleSheet(
-        "border-right-width: 1px;"
-        "border-right-style: solid;"
-        "border-right-color: darkGray;");
-    
     d->toolbox_container->addToolBox(layoutToolBox);
     d->toolbox_container->addToolBox(new medViewerAreaToolBox);
     d->toolbox_container->addToolBox(new medViewerAreaToolBox);
@@ -446,20 +466,32 @@ void medViewerArea::split(int rows, int cols)
 
 void medViewerArea::onPatientIndexChanged(int index)
 {
+    if(!index)
+        return;
+
     qDebug() << __func__ << index;
 }
 
 void medViewerArea::onStudyIndexChanged(int index)
 {
+    if(!index)
+        return;
+
     qDebug() << __func__ << index;
 }
 
 void medViewerArea::onSeriesIndexChanged(int index)
 {
+    if(!index)
+        return;
+
     qDebug() << __func__ << index;
 }
 
 void medViewerArea::onImageIndexChanged(int index)
 {
+    if(!index)
+        return;
+
     qDebug() << __func__ << index;
 }

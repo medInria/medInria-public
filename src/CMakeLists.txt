@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:17:49 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Fri Sep 25 11:51:36 2009 (+0200)
+## Last-Updated: Wed Oct  7 19:34:37 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 5
+##     Update #: 6
 ######################################################################
 ## 
 ### Commentary: 
@@ -17,5 +17,6 @@
 ## 
 ######################################################################
 
+add_subdirectory(medCore)
 add_subdirectory(medGui)
 add_subdirectory(medSql)
