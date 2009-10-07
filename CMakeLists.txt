@@ -49,5 +49,8 @@ set(${PROJECT_NAME}_RUNTIME_DIRS ${RUNTIME_OUTPUT_PATH})
 ## Input
 ## #################################################################
 
+subdirs(medItk)
 subdirs(v3dData)
 subdirs(v3dView)
+subdirs(itkDataImage)
+subdirs(itkDataImageReader)
