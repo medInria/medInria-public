@@ -91,12 +91,12 @@ include(${vtkINRIA3D_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dDataPlugin.h
-  v3dImage.h
+  v3dDataImage.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   v3dDataPlugin.cpp
-  v3dImage.cpp
+  v3dDataImage.cpp
 )
 
 ## #################################################################
@@ -118,12 +118,10 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
+  ${ITK_LIBRARIES}
+  vtkCommon
+  vtkFiltering
+  vtkRendering
   itkAddOn
   vtkDataManagement
 )
-
-if(APPLE)
-  set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup")
-elseif(UNIX)
-  string(REPLACE "-Wl,--no-undefined" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
-endif()

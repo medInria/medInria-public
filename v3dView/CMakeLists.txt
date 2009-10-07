@@ -85,8 +85,6 @@ include(${VTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-include_directories(${CMAKE_SOURCE_DIR}/medItk)
-
 ## #################################################################
 ## Input
 ## #################################################################
@@ -127,6 +125,5 @@ target_link_libraries(${PROJECT_NAME}
   vtkRenderingAddOn
   vtkVisuManagement
   QVTK
-  medItk
   ${ITK_LIBRARIES}
 )

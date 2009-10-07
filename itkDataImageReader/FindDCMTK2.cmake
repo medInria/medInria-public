@@ -16,6 +16,10 @@
 
 SET(DCMTK_DIR $ENV{DCMTK_DIR})
 
+FIND_PATH( DCMTK_root_INCLUDE_DIR dcmtk/config/osconfig.h
+  ${DCMTK_DIR}/include
+)
+
 FIND_PATH( DCMTK_config_INCLUDE_DIR osconfig.h
   ${DCMTK_DIR}/config/include
   ${DCMTK_DIR}/include/config
@@ -117,7 +121,8 @@ FIND_LIBRARY(DCMTK_dcmnet_LIBRARY dcmnet
   ${DCMTK_DIR}/lib
 )
 
-IF( DCMTK_config_INCLUDE_DIR 
+IF( DCMTK_root_INCLUDE_DIR
+    AND DCMTK_config_INCLUDE_DIR 
     AND DCMTK_ofstd_INCLUDE_DIR 
     AND DCMTK_ofstd_LIBRARY
     AND DCMTK_dcmdata_INCLUDE_DIR
@@ -129,12 +134,12 @@ IF( DCMTK_config_INCLUDE_DIR
   SET( DCMTK_FOUND "YES" )
 
   SET( DCMTK_INCLUDE_DIR
+    ${DCMTK_root_INCLUDE_DIR}
     ${DCMTK_config_INCLUDE_DIR}
     ${DCMTK_ofstd_INCLUDE_DIR}
     ${DCMTK_dcmdata_INCLUDE_DIR}
     ${DCMTK_dcmimgle_INCLUDE_DIR}
     ${DCMTK_dcmjpeg_INCLUDE_DIR}
-    ${DCMTK_DIR}/include
   )
 
   SET( DCMTK_LIBRARIES
@@ -167,7 +172,8 @@ IF( WIN32 )
   SET( DCMTK_LIBRARIES ${DCMTK_LIBRARIES} netapi32 )
 ENDIF( WIN32 )
 
-ENDIF( DCMTK_config_INCLUDE_DIR 
+ENDIF( DCMTK_root_INCLUDE_DIR
+    AND DCMTK_config_INCLUDE_DIR 
     AND DCMTK_ofstd_INCLUDE_DIR 
     AND DCMTK_ofstd_LIBRARY
     AND DCMTK_dcmdata_INCLUDE_DIR
