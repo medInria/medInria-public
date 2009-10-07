@@ -52,7 +52,7 @@ namespace itk
         itkTypeMacro( SliceReadCommand, Command );
         itkNewMacro(Self);
         
-        typedef itk::Image<unsigned short, 3> ImageType;
+        typedef itk::Image< short, 3> ImageType;
         
         void Execute(Object *caller, const EventObject &event);
         void Execute(const Object *caller, const EventObject &event);
@@ -128,32 +128,12 @@ namespace itk
 }
 
 
-typedef itk::Image<unsigned short, 3>   ImageType;
+/*
+typedef itk::Image<short, 3>   ImageType;
 typedef itk::ImageFileReader<ImageType> ImageReaderType;
 static ImageReaderType::Pointer reader    = 0;
 static int                      readImage = 0;
-
-
-void handle_vtk(vtkObject* caller, unsigned long id, void* clientdata, void* calldata)
-{
-    std::cout << "handle_vtk()" << std::endl;
-    //vtkRenderWindowInteractor* iren = static_cast<vtkInteractorStyle*>(caller)->GetInteractor();
-    vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::SafeDownCast( caller );
-    if( !readImage ){
-        readImage = 1;
-        std::cout << "Reading the image" << std::endl;
-        try{
-            reader->Update();
-            reader->GetOutput()->DisconnectPipeline();
-        }
-        catch (itk::ExceptionObject &e){
-            std::cerr <<e;
-            exit (-1);
-        }
-        std::cout << "Reading the image Done." << std::endl;
-    }
-}
-
+*/
 
 
 
@@ -174,28 +154,27 @@ int main (int narg, char* arg[])
   
   
     itk::DCMTKImageIO::Pointer io = itk::DCMTKImageIO::New();
-    //  if( narg>2 )
     io->SetFileNames ( fileNames );
-    //  else
-    //    io->SetFileName ( arg[1] );
-    //io->SetFileName ( arg[1] );
-    //io->SetNumberOfThreads (1);
-  
     /*
       typedef itk::Image<unsigned short, 3> ImageType;
       typedef itk::ImageFileReader<ImageType> ImageReaderType;
     */
     /*ImageReaderType::Pointer */
-    reader = ImageReaderType::New();
-    reader->SetImageIO ( io );
-    reader->SetFileName ( arg[1] );
-  
-    itk::SliceReadCommand::Pointer command = itk::SliceReadCommand::New();
-    command->SetImage ( reader->GetOutput() );
-  
-    io->AddObserver (itk::SliceReadEvent(), command);
-    std::cout << "Threads: " << io->GetNumberOfThreads() /* << " Elapsed time:" << (double)(t2-t1)/(double)(CLOCKS_PER_SEC)*/ << std::endl;
-  
+
+    try
+    {
+      io->ReadImageInformation();
+    }
+    catch (itk::ExceptionObject &e)
+    {
+      std::cerr << e;
+      return -1;
+    }
+
+
+
+
+
     vtkViewImage2D* view = vtkViewImage2D::New();
     vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
     vtkRenderWindow* rwin = vtkRenderWindow::New();
@@ -214,33 +193,147 @@ int main (int narg, char* arg[])
     view->SetWheelInteractionStyle        (vtkViewImage2D::SELECT_INTERACTION);
     view->SetRightButtonInteractionStyle  (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
 
-    command->SetView ( view );
-  
-    ImageType::Pointer image = reader->GetOutput();
-    if( image.IsNull() )
-    {
-        std::cout << "Image is null" << std::endl;
-        return -1;
-    }
 
+
+
+
+    
+    switch (io->GetComponentType())
+    {
+	case itk::ImageIOBase::CHAR:
+	  {
+	    typedef itk::Image<char, 3> ImageType;
+	    itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
+	    reader->SetImageIO ( io );
+	    reader->SetFileName ( arg[1] );
+	    try
+	    {
+	      reader->Update();
+	    }
+	    catch (itk::ExceptionObject &e)
+	    {
+	      std::cerr <<e;
+	      view->Delete();
+	      iren->Delete();
+	      renderer->Delete();
+	      rwin->Delete();
+	      return -1;
+	    }
+	    ImageType::Pointer image = reader->GetOutput();
+	    //image->DisconnectPipeline();
+	    view->SetITKImage ( image );
+	    std::cout << image << std::endl;
+	    break;
+	  }
+
+	  case itk::ImageIOBase::UCHAR:
+	  {
+	    typedef itk::Image<unsigned char, 3> ImageType;
+	    itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
+	    reader->SetImageIO ( io );
+	    reader->SetFileName ( arg[1] );
+	    try
+	    {
+	      reader->Update();
+	    }
+	    catch (itk::ExceptionObject &e)
+	    {
+	      std::cerr <<e;
+	      view->Delete();
+	      iren->Delete();
+	      renderer->Delete();
+	      rwin->Delete();
+	      return -1;
+	    }
+	    ImageType::Pointer image = reader->GetOutput();
+	    //image->DisconnectPipeline();
+	    view->SetITKImage ( image );
+	    std::cout << image << std::endl;
+	    break;
+	  }
+
+	case itk::ImageIOBase::SHORT:
+	  {
+	    typedef itk::Image<short, 3> ImageType;
+	    itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
+	    reader->SetImageIO ( io );
+	    reader->SetFileName ( arg[1] );
+	    try
+	    {
+	      reader->Update();
+	    }
+	    catch (itk::ExceptionObject &e)
+	    {
+	      std::cerr <<e;
+	      view->Delete();
+	      iren->Delete();
+	      renderer->Delete();
+	      rwin->Delete();
+	      return -1;
+	    }
+	    ImageType::Pointer image = reader->GetOutput();
+	    //image->DisconnectPipeline();
+	    view->SetITKImage ( image );
+	    std::cout << image << std::endl;
+	    break;
+	  }
+
+	  case itk::ImageIOBase::USHORT:
+	  {
+	    typedef itk::Image<unsigned short, 3> ImageType;
+	    itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
+	    reader->SetImageIO ( io );
+	    reader->SetFileName ( arg[1] );
+	    try
+	    {
+	      reader->Update();
+	    }
+	    catch (itk::ExceptionObject &e)
+	    {
+	      std::cerr <<e;
+	      view->Delete();
+	      iren->Delete();
+	      renderer->Delete();
+	      rwin->Delete();
+	      return -1;
+	    }
+	    ImageType::Pointer image = reader->GetOutput();
+	    //image->DisconnectPipeline();
+	    view->SetITKImage ( image );
+	    std::cout << image << std::endl;
+	    break;
+	  }
+
+
+	default:
+	  {
+	    std::cout << "Unsupported type: " << io->GetComponentTypeAsString ( io->GetComponentType()) << std::endl;
+	    view->Delete();
+	    iren->Delete();
+	    renderer->Delete();
+	    rwin->Delete();
+	    return -1;
+	  }
+	  
+	  
+    }
+    
+
+    /*
+      itk::SliceReadCommand::Pointer command = itk::SliceReadCommand::New();
+      command->SetImage ( reader->GetOutput() );
+      command->SetView ( view );
+      io->AddObserver (itk::SliceReadEvent(), command);      
+    */
+    std::cout << "Threads: " << io->GetNumberOfThreads() /* << " Elapsed time:" << (double)(t2-t1)/(double)(CLOCKS_PER_SEC)*/ << std::endl;
+  
+
+    view->ResetCurrentPoint();
+    view->ResetZoom();
+    view->SetWindow (2320);
+    view->SetLevel (1138);
 
     iren->Initialize();
-
-    std::cout << "Reading the image" << std::endl;
-    try{
-        reader->Update();
-        reader->GetOutput()->DisconnectPipeline();
-    }
-    catch (itk::ExceptionObject &e){
-        std::cerr <<e;
-        view->Delete();
-        iren->Delete();
-        renderer->Delete();
-        rwin->Delete();
-        return -1;
-    }
-    std::cout << image << std::endl;
-  
     iren->Start();
 
     /*

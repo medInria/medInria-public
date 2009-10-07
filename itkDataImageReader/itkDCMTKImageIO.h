@@ -95,7 +95,7 @@ namespace itk
 
 
     inline std::string GetMetaDataValueString (const char* key, int index) const;
-    inline std::vector<std::string> GetMetaDataValueVectorString (const char* key) const;
+    inline const std::vector<std::string>& GetMetaDataValueVectorString (const char* key) const;
     //std::vector<std::string> GetMetaDataValueVectorString (const char* key) const;
 
 
@@ -106,19 +106,11 @@ namespace itk
     void PrintSelf(std::ostream& os, Indent indent) const {};
 
     void ThreadedRead (void* buffer, RegionType region, int threadId);    
-    void InternalRead (void* buffer, int slice, unsigned long pixelCount, bool isJpeg=0);
+    void InternalRead (void* buffer, int slice, unsigned long pixelCount);
 
 
     void SwapBytesIfNecessary(void* buffer, unsigned long numberOfPixels);
 
-
-    void PopulateDictionary (StringMap& stringMap,
-			     FloatMap& floatMap,
-			     DoubleMap& doubleMap,
-			     Int32Map& int32Map,
-			     Int16Map& int16Map,
-			     UInt32Map& uint32Map,
-			     UInt16Map& uint16Map);
 
     void DeterminePixelType (void);
     void DetermineSpacing (void);
@@ -127,44 +119,18 @@ namespace itk
     void DetermineOrientation (void);
     
 
-    void readCoreHeader( const std::string& name,
-                         StringMap& stringMap,
-                         FloatMap& floatMap,
-                         DoubleMap& doubleMap,
-                         Int32Map& int32Map,
-                         Int16Map& int16Map,
-                         UInt32Map& uint32Map,
-                         UInt16Map& uint16Map,
-                         int32_t fileIndex,
-                         int32_t fileCount ) const;
+    void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
+    inline void ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount );
     
-
-    void readElement( ::DcmElement* element,
-		      StringMap& stringMap,
-		      FloatMap& floatMap,
-		      DoubleMap& doubleMap,
-		      Int32Map& int32Map,
-		      Int16Map& int16Map,
-		      UInt32Map& uint32Map,
-		      UInt16Map& uint16Map,
-		      int32_t fileIndex,
-		      int32_t fileCount ) const;
-    
-    
-    inline bool toScalar (const std::string& msg, float& value);
-    inline bool toScalar (const std::string& msg, double& value);
-    inline bool toScalar( const std::string& msg, int32_t& value, int32_t base = 10 );
-    inline bool toScalar (const std::string& msg, int64_t& value, int32_t base = 10 );
-    inline bool isSpace  (char);
-    inline bool isOkInBase (char, int32_t);
-    
-    
+        
   private:
     DCMTKImageIO(const Self&);
     void operator=(const Self&);
     
     std::vector< std::string > m_OrderedFileNames;
     std::string                m_Directory;
+
+    std::vector<std::string>   m_EmptyVector;
   };
   
   

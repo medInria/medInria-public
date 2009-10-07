@@ -230,25 +230,6 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       else
 	dtkdata->setMetaData ( "SeriesDescription", seriesName );
 	
-      /*        
-		qDebug() << io->GetPatientName().c_str();
-		qDebug() << io->GetPatientID().c_str();
-		qDebug() << io->GetPatientSex().c_str();
-		qDebug() << io->GetPatientAge().c_str();
-		qDebug() << io->GetStudyID().c_str();
-		qDebug() << io->GetPatientDOB().c_str();
-		qDebug() << io->GetStudyDescription().c_str();
-		qDebug() << io->GetSeriesDescription().c_str();
-		qDebug() << io->GetBodyPart().c_str();
-		qDebug() << io->GetNumberOfSeriesInStudy().c_str();
-		qDebug() << io->GetNumberOfStudyRelatedSeries().c_str();
-		qDebug() << io->GetStudyDate().c_str();
-		qDebug() << io->GetModality().c_str();
-		qDebug() << io->GetManufacturer().c_str();
-		qDebug() << io->GetInstitution().c_str();
-		qDebug() << io->GetModel().c_str();
-		qDebug() << io->GetScanOptions().c_str();
-      */
     }
 }
 
