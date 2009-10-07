@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Sat Oct  3 19:08:52 2009 (+0200)
+## Last-Updated: Fri Sep 25 12:50:17 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 31
+##     Update #: 30
 ######################################################################
 ## 
 ### Commentary: 
@@ -73,7 +73,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   dtkScript
   dtkGui
-  medCore
   medGui
   medSql
 )
