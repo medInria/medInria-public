@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  7 12:42:42 2009 (+0200)
+ * Last-Updated: Wed Oct  7 15:58:06 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 66
+ *     Update #: 67
  */
 
 /* Commentary: 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     application.setApplicationVersion("0.0.1");
     application.setOrganizationName("inria");
     application.setOrganizationDomain("fr");
-    // application.setStyle(new medStyle);
+    application.setStyle(new medStyle);
 
     // Initialize managers
 

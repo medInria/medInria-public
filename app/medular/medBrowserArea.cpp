@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Sep 29 13:50:15 2009 (+0200)
+ * Last-Updated: Wed Oct  7 16:22:14 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 24
+ *     Update #: 25
  */
 
 /* Commentary: 
@@ -24,6 +24,31 @@
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
+
+// /////////////////////////////////////////////////////////////////
+// medBrowserAreaPreview
+// /////////////////////////////////////////////////////////////////
+
+class medBrowserAreaPreview : public QWidget
+{
+public:
+     medBrowserAreaPreview(QWidget *parent = 0);
+    ~medBrowserAreaPreview(void);
+};
+
+medBrowserAreaPreview::medBrowserAreaPreview(QWidget *parent) : QWidget(parent)
+{
+
+}
+
+medBrowserAreaPreview::~medBrowserAreaPreview(void)
+{
+
+}
+
+// /////////////////////////////////////////////////////////////////
+// medBrowserArea
+// /////////////////////////////////////////////////////////////////
 
 class medBrowserAreaPrivate
 {

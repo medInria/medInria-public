@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  7 12:47:52 2009 (+0200)
+ * Last-Updated: Wed Oct  7 15:59:14 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 117
+ *     Update #: 125
  */
 
 /* Commentary: 
@@ -223,7 +223,6 @@ medViewerAreaToolBoxContainer::medViewerAreaToolBoxContainer(QWidget *parent) : 
     this->layout = new QVBoxLayout(this->container);
     this->layout->addStretch(1);
 
-    this->setAutoFillBackground(true);
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
     this->setAlignment(Qt::AlignTop | Qt::AlignLeft);
@@ -274,6 +273,8 @@ private:
 medViewerAreaViewContainer::medViewerAreaViewContainer(QWidget *parent) : QWidget(parent)
 {
     m_layout = new QGridLayout(this);
+    m_layout->setContentsMargins(0, 0, 0, 0);
+    m_layout->setSpacing(0);
 
     this->setFocusPolicy(Qt::StrongFocus);
 }
@@ -335,16 +336,8 @@ void medViewerAreaViewContainer::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
 
-    this->hasFocus()
-        ? medStyle::medDrawRectWithColor(&painter, event->rect().adjusted(0, 0, -1, -1), Qt::darkGray, Qt::red)
-        : medStyle::medDrawRectWithColor(&painter, event->rect().adjusted(0, 0, -1, -1), Qt::darkGray, Qt::lightGray);
-
-    // this->hasFocus()
-    //     ? medStyle::medDrawRect(&painter, event->rect().adjusted(0, 0, -1, -1), Qt::red)
-    //     : medStyle::medDrawRect(&painter, event->rect().adjusted(0, 0, -1, -1), Qt::lightGray);
-
-    // if (layout())
-    //     paintLayout(&painter, layout());
+    if (layout())
+        paintLayout(&painter, layout());
 }
 
 medViewerAreaViewContainer *medViewerAreaViewContainer::s_current = NULL;
