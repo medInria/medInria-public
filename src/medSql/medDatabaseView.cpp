@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:18:20 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct  3 13:44:31 2009 (+0200)
+ * Last-Updated: Thu Oct  8 21:23:38 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 79
+ *     Update #: 81
  */
 
 /* Commentary: 
@@ -27,6 +27,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
     this->setUniformRowHeights(true);
+    this->setAlternatingRowColors(true);
 
     connect(this, SIGNAL(      clicked(const QModelIndex&)), this, SLOT(onItemClicked(const QModelIndex&)));
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
@@ -41,29 +42,6 @@ void medDatabaseView::setModel(medDatabaseModel *model)
 {
     QTreeView::setModel(model);
 }
-
-// void medDatabaseView::dragEnterEvent(QDragEnterEvent *event)
-// {
-//     if (event->mimeData()->hasUrls())
-//         event->acceptProposedAction();
-// }
-
-// void medDatabaseView::dragMoveEvent(QDragMoveEvent *event)
-// {
-//     if (event->mimeData()->hasUrls())
-//         event->acceptProposedAction();
-// }
-
-// void medDatabaseView::dragLeaveEvent(QDragLeaveEvent *event)
-// {
-//     Q_UNUSED(event);
-// }
-
-// void medDatabaseView::dropEvent(QDropEvent *event)
-// {
-//     if (event->mimeData()->hasUrls())
-//         event->acceptProposedAction();
-// }
 
 void medDatabaseView::onItemClicked(const QModelIndex& index)
 {
