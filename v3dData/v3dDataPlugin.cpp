@@ -71,7 +71,7 @@ QStringList v3dDataPlugin::tags(void) const
 
 QStringList v3dDataPlugin::types(void) const
 {
-    return QStringList() << "v3dImage";
+    return QStringList() << "v3dDataImage";
 }
 
 Q_EXPORT_PLUGIN2(v3dDataPlugin, v3dDataPlugin)
