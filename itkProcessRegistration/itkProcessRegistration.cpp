@@ -12,8 +12,6 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <dtkGui/dtkUi.h>
-
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationPrivate
 // /////////////////////////////////////////////////////////////////
@@ -126,7 +124,7 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
 // 
 // /////////////////////////////////////////////////////////////////
 
-dtkUi *itkProcessRegistration::ui(void)
+QWidget *itkProcessRegistration::ui(void)
 {
     if(!d->ui)
         d->ui = new itkProcessRegistrationWidget;

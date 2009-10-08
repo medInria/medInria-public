@@ -35,7 +35,7 @@ public:
 
     static bool registered(void);
 
-	 dtkUi *ui(void);
+    QWidget *ui(void);
 
 public slots:
     void setInput(dtkAbstractData *data, int channel);
@@ -47,7 +47,7 @@ public slots:
 
     int doRegistration(RegistrationMethodType *method);
 
-	 void update(void);
+    void update(void);
 
 public slots:
     void chooseFixedImage(void);

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jul 27 21:02:42 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jul 27 21:07:06 2009 (+0200)
+ * Last-Updated: Thu Oct  8 16:49:28 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 8
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -39,7 +39,7 @@ public:
 // itkProcessRegistrationWidget
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistrationWidget::itkProcessRegistrationWidget(QWidget *parent) : dtkUi(parent), d(new itkProcessRegistrationWidgetPrivate)
+itkProcessRegistrationWidget::itkProcessRegistrationWidget(QWidget *parent) : QWidget(parent), d(new itkProcessRegistrationWidgetPrivate)
 {
     QFormLayout *layout = new QFormLayout(this);
     

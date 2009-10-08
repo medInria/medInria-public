@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jul 27 21:00:03 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jul 27 21:08:55 2009 (+0200)
+ * Last-Updated: Thu Oct  8 16:49:10 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 9
+ *     Update #: 11
  */
 
 /* Commentary: 
@@ -23,11 +23,9 @@
 #include <QtCore>
 #include <QtGui>
 
-#include <dtkGui/dtkUi.h>
-
 class itkProcessRegistrationWidgetPrivate;
 
-class itkProcessRegistrationWidget : public dtkUi
+class itkProcessRegistrationWidget : public QWidget
 {
     Q_OBJECT
 
