@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Fri Sep 25 12:50:17 2009 (+0200)
+## Last-Updated: Thu Oct  8 19:23:44 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 30
+##     Update #: 31
 ######################################################################
 ## 
 ### Commentary: 
@@ -28,7 +28,7 @@ set(${PROJECT_NAME}_HEADERS
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
-# medBrowserArea.h
+  medBrowserArea.h
   medMainWindow.h
   medViewerArea.h
   medWelcomeArea.h
