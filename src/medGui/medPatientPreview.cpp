@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 19:46:53 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 11:04:07 2009 (+0200)
+ * Last-Updated: Fri Oct  9 16:02:47 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 102
+ *     Update #: 147
  */
 
 /* Commentary: 
@@ -23,32 +23,22 @@
 
 #include <medSql/medDatabaseController.h>
 
+#include <medGui/medImageReflector.h>
 #include <medGui/medImageStack.h>
 
 class medPatientPreviewPrivate
 {
 public:
-    QLabel *user_avatar;
-    QLabel *user_name;
-
     QLabel *info_name;
 
+    medImageReflector *avatar;
     medImageStack *stack;
 };
 
 medPatientPreview::medPatientPreview(QWidget *parent) : QWidget(parent), d(new medPatientPreviewPrivate)
 {
-    d->user_avatar = new QLabel(this);
-    d->user_avatar->setPixmap(QPixmap(":/img/unknown.jpg"));
-
-    d->user_name = new QLabel(this);
-
-    QVBoxLayout *vertical_layout = new QVBoxLayout;
-    vertical_layout->addWidget(d->user_avatar);
-    vertical_layout->addWidget(d->user_name);
-
-    QWidget *avatar = new QWidget(this);
-    avatar->setLayout(vertical_layout);
+    d->avatar = new medImageReflector(this);
+    d->avatar->setImage(QImage(":/img/unknown.jpg"));
 
     d->stack = new medImageStack(this);
 
@@ -60,12 +50,13 @@ medPatientPreview::medPatientPreview(QWidget *parent) : QWidget(parent), d(new m
     form_layout->addRow("Information 3:", new QLabel("Prout"));
     form_layout->addRow("Information 4:", new QLabel("Prout"));
     form_layout->addRow("Information 5:", new QLabel("Prout"));
+    form_layout->addRow("Information 6:", new QLabel("Prout"));
 
     QWidget *information = new QWidget(this);
     information->setLayout(form_layout);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->addWidget(avatar);
+    layout->addWidget(d->avatar);
     layout->addWidget(information);
     layout->addWidget(d->stack);
 }
@@ -75,6 +66,11 @@ medPatientPreview::~medPatientPreview(void)
     delete d;
 
     d = NULL;
+}
+
+QSize medPatientPreview::sizeHint(void) const
+{
+    return d->avatar->sizeHint();
 }
 
 void medPatientPreview::setup(int patientId)
@@ -131,7 +127,6 @@ void medPatientPreview::setup(int patientId)
 
     // Build visual
 
-    d->user_name->setText(patientName);
     d->info_name->setText(patientName);
 
     this->update();
@@ -139,9 +134,15 @@ void medPatientPreview::setup(int patientId)
 
 void medPatientPreview::paintEvent(QPaintEvent *event)
 {
-    QPainter painter(this);
+    QRadialGradient gradient;
+    gradient.setCenter(event->rect().center().x(), event->rect().center().y()+3*event->rect().height()/2);
+    gradient.setFocalPoint(event->rect().center());
+    gradient.setRadius(event->rect().width()/3);
+    gradient.setColorAt(0, QColor(0x91, 0x91, 0x91));
+    gradient.setColorAt(1, QColor(0x49, 0x49, 0x49));
 
-    painter.fillRect(event->rect(), Qt::red);
+    QPainter painter(this);
+    painter.fillRect(event->rect(), gradient);
 
     QWidget::paintEvent(event);
 }

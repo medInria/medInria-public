@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 09:29:40 2009 (+0200)
+ * Last-Updated: Fri Oct  9 15:56:40 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 127
+ *     Update #: 139
  */
 
 /* Commentary: 
@@ -53,7 +53,6 @@ medBrowserAreaPreview::medBrowserAreaPreview(QWidget *parent) : QWidget(parent),
     d->image_preview = new medImagePreview(this);
 
     d->stack = new QStackedWidget(this);
-
     d->stack->addWidget(d->patient_preview);
     d->stack->addWidget(d->study_preview);
     d->stack->addWidget(d->series_preview);
@@ -63,6 +62,8 @@ medBrowserAreaPreview::medBrowserAreaPreview(QWidget *parent) : QWidget(parent),
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(d->stack);
+
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 }
 
 medBrowserAreaPreview::~medBrowserAreaPreview(void)
@@ -75,6 +76,11 @@ medBrowserAreaPreview::~medBrowserAreaPreview(void)
     delete d;
 
     d = NULL;
+}
+
+QSize medBrowserAreaPreview::sizeHint(void) const
+{
+    return d->patient_preview->sizeHint();
 }
 
 void medBrowserAreaPreview::onPatientClicked(int id)
