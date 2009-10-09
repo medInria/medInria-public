@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 20:03:17 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 14:33:50 2009 (+0200)
+ * Last-Updated: Sat Oct 10 01:05:05 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 57
+ *     Update #: 66
  */
 
 /* Commentary: 
@@ -74,7 +74,7 @@ static void drawShadowedText(QPainter *painter, int x, int y, const QString& tex
     painter->drawText(x, y + 1, text);
     painter->drawText(x, y - 1, text);
     
-    painter->setPen(Qt::black);
+    painter->setPen(Qt::lightGray);
     painter->drawText(x, y, text);
     
     painter->restore();
@@ -178,6 +178,7 @@ QPixmap loadImage(const QString& name)
 class medImageStackPrivate
 {
 public:
+    QMap<int, QString> names;
     QMap<int, int> sizes;
 };
 
@@ -195,7 +196,13 @@ medImageStack::~medImageStack(void)
 
 void medImageStack::clear(void)
 {
+    d->names.clear();
     d->sizes.clear();
+}
+
+void medImageStack::setStackName(int stack, QString name)
+{
+    d->names.insert(stack, name);
 }
 
 void medImageStack::setStackSize(int stack, int size)
@@ -214,7 +221,7 @@ void medImageStack::paintEvent(QPaintEvent *event)
     for(int i = 0; i < d->sizes.count(); i++) {
         p.save();
         p.translate(10 + i*160, 10);
-        switch(i) {
+        switch(d->sizes.value(i)) {
         case 1:
             drawOneImage(&p, loadImage("1"));
             break;
@@ -225,7 +232,7 @@ void medImageStack::paintEvent(QPaintEvent *event)
             drawThreeImages(&p, loadImage("1"), loadImage("2"), loadImage("3"));
             break;
         }
-        drawShadowedText(&p, 40, 100, "Study 1");
+        drawShadowedText(&p, 40, 100, d->names.value(i));
         drawBadge(&p, 0, 0, QString::number(d->sizes.value(i)));
         p.restore();
     }

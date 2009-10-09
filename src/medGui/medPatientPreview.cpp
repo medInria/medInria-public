@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 19:46:53 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 16:02:47 2009 (+0200)
+ * Last-Updated: Sat Oct 10 01:02:58 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 147
+ *     Update #: 167
  */
 
 /* Commentary: 
@@ -95,14 +95,16 @@ void medPatientPreview::setup(int patientId)
     // Retrieve studies information
 
     QList<QVariant> studyIds;
+    QList<QVariant> studyNames;
 
-    query.prepare("SELECT id FROM study WHERE patient = :patient");
+    query.prepare("SELECT id, name FROM study WHERE patient = :patient");
     query.bindValue(":patient", patientId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
     
     while(query.next()) {
         studyIds << query.value(0);
+        studyNames << query.value(1);
     }
 
     // Retrieve series information
@@ -121,7 +123,10 @@ void medPatientPreview::setup(int patientId)
     while(query.next())
         seriesCount++;
     
-    d->stack->setStackSize(stackCount++, seriesCount);
+    d->stack->setStackName(stackCount, studyNames.at(stackCount).toString());
+    d->stack->setStackSize(stackCount, seriesCount);
+
+    stackCount++;
 
     }
 
@@ -134,15 +139,19 @@ void medPatientPreview::setup(int patientId)
 
 void medPatientPreview::paintEvent(QPaintEvent *event)
 {
-    QRadialGradient gradient;
-    gradient.setCenter(event->rect().center().x(), event->rect().center().y()+3*event->rect().height()/2);
-    gradient.setFocalPoint(event->rect().center());
-    gradient.setRadius(event->rect().width()/3);
-    gradient.setColorAt(0, QColor(0x91, 0x91, 0x91));
-    gradient.setColorAt(1, QColor(0x49, 0x49, 0x49));
+    // QRadialGradient gradient;
+    // gradient.setCenter(event->rect().center());
+    // gradient.setFocalPoint(event->rect().center().x(), event->rect().center().y()+event->rect().height()/2);
+    // gradient.setRadius(event->rect().width()/3);
+
+    QLinearGradient gradient;
+    gradient.setStart(event->rect().center().x(), event->rect().center().y()-event->rect().height()/2);
+    gradient.setFinalStop(event->rect().center().x(), event->rect().center().y()+event->rect().height()/2);
+
+    gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
+    gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
 
     QPainter painter(this);
     painter.fillRect(event->rect(), gradient);
-
-    QWidget::paintEvent(event);
+    painter.end();
 }

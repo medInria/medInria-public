@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Jul  3 19:21:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 16:04:49 2009 (+0200)
+ * Last-Updated: Sat Oct 10 00:25:12 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 576
+ *     Update #: 590
  */
 
 /* Commentary: 
@@ -110,6 +110,10 @@ void medStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *optio
                 painter->restore();
             }
         }
+        break;
+    case PE_FrameDefaultButton:
+    case PE_FrameFocusRect:
+        // Do not draw the focus frame !
         break;
     case PE_IndicatorCheckBox: {
             bool on = false;
@@ -311,6 +315,7 @@ void medStyle::drawControl(ControlElement element, const QStyleOption *option, Q
             }
         }
         painter->restore();
+        break;
     default:
         QCleanlooksStyle::drawControl(element, option, painter, widget);
         break;
