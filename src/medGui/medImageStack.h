@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 20:02:04 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  8 20:14:13 2009 (+0200)
+ * Last-Updated: Fri Oct  9 11:00:42 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -31,6 +31,10 @@ class medImageStack : public QWidget
 public:
      medImageStack(QWidget *parent = 0);
     ~medImageStack(void);
+
+    void clear(void);
+
+    void setStackSize(int stack, int size);
 
 private:
     void paintEvent(QPaintEvent *event);
