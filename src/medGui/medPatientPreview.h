@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 19:44:38 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  8 19:46:21 2009 (+0200)
+ * Last-Updated: Fri Oct  9 08:46:02 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 3
+ *     Update #: 5
  */
 
 /* Commentary: 
@@ -31,6 +31,8 @@ class medPatientPreview : public QWidget
 public:
      medPatientPreview(QWidget *parent = 0);
     ~medPatientPreview(void);
+
+    void setup(int patientId);
 
 protected:
     void paintEvent(QPaintEvent *event);

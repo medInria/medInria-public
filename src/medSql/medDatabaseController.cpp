@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  8 20:17:51 2009 (+0200)
+ * Last-Updated: Fri Oct  9 09:26:52 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 107
+ *     Update #: 108
  */
 
 /* Commentary: 
@@ -125,11 +125,11 @@ void medDatabaseController::import(const QString& file)
             dtkdata->hasMetaData("StudyDescription") &&
             dtkdata->hasMetaData("SeriesDescription")) {
             
-            const QStringList patientList = dtkdata->metaDataValues (tr("PatientName"));
+            const QStringList patientList = dtkdata->metaDataValues(tr("PatientName"));
             
-            const QString patientName = dtkdata->metaDataValues (tr ("PatientName"))[0];
-            const QString studyName   = dtkdata->metaDataValues (tr ("StudyDescription"))[0];
-            const QString seriesName  = dtkdata->metaDataValues (tr ("SeriesDescription"))[0];
+            const QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
+            const QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
+            const QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
 	
             QSqlQuery query(*(medDatabaseController::instance()->database())); QVariant id;
 

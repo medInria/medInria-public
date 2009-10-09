@@ -1,3 +1,22 @@
+/* medBrowserArea.h --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Fri Oct  9 08:28:09 2009 (+0200)
+ * Version: $Id$
+ * Last-Updated: Fri Oct  9 08:28:14 2009 (+0200)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #ifndef MEDBROWSERAREA_H
 #define MEDBROWSERAREA_H
 

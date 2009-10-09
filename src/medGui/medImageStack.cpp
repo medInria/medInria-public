@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 20:03:17 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  8 21:18:01 2009 (+0200)
+ * Last-Updated: Fri Oct  9 11:01:00 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 30
+ *     Update #: 52
  */
 
 /* Commentary: 
@@ -116,6 +116,35 @@ static void drawBadge(QPainter *painter, int x, int y, const QString& text)
     painter->restore();
 }
 
+static void drawOneImage(QPainter *painter, const QPixmap& pixmap1)
+{
+    painter->save();
+    
+    QColor shadowColor(0x00, 0x00, 0x00, THUMB_SHADOW);
+    painter->translate(8, 8);
+    
+    drawImageShadow(painter,  0, 0,  10, shadowColor);
+    drawImage(painter,  0,  0,  10, pixmap1);
+    
+    painter->restore();
+}
+
+static void drawTwoImages(QPainter *painter, const QPixmap& pixmap1, const QPixmap& pixmap2)
+{
+    painter->save();
+    
+    QColor shadowColor(0x00, 0x00, 0x00, THUMB_SHADOW);
+    painter->translate(8, 8);
+    
+    drawImageShadow(painter, THUMB_STEP1, 0, -10, shadowColor);
+    drawImage(painter, THUMB_STEP1,  0, -10, pixmap2);
+    
+    drawImageShadow(painter,  0, 0,  10, shadowColor);
+    drawImage(painter,  0,  0,  10, pixmap1);
+    
+    painter->restore();
+}
+
 static void drawThreeImages(QPainter *painter, const QPixmap& pixmap1, const QPixmap& pixmap2, const QPixmap& pixmap3)
 {
     painter->save();
@@ -149,6 +178,7 @@ QPixmap loadImage(const QString& name)
 class medImageStackPrivate
 {
 public:
+    QMap<int, int> sizes;
 };
 
 medImageStack::medImageStack(QWidget *parent) : QWidget(parent), d(new medImageStackPrivate)
@@ -163,38 +193,42 @@ medImageStack::~medImageStack(void)
     d = NULL;
 }
 
+void medImageStack::clear(void)
+{
+    d->sizes.clear();
+}
+
+void medImageStack::setStackSize(int stack, int size)
+{
+    d->sizes.insert(stack, size);
+}
+
 void medImageStack::paintEvent(QPaintEvent *event)
 {
-    QPainter p(this);
+    QPainter p;
+    p.begin(this);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
     p.setRenderHint(QPainter::Antialiasing);
-    
     p.setFont(QFont(p.font().family(), 11, QFont::Bold));
-    
-    p.save();
-    p.translate(10, 10);
-    drawBadge(&p, 0, 0, "3");
-    drawThreeImages(&p, loadImage("1"), loadImage("2"), loadImage("3"));
-    drawShadowedText(&p, 40, 100, "Study 1");
-    p.restore();
-    
-    p.save();
-    p.translate(160, 10);
-    drawThreeImages(&p, loadImage("2"), loadImage("3"), loadImage("1"));
-    drawShadowedText(&p, 40, 100, "Study 2");
-    p.restore();
-    
-    p.save();
-    p.translate(10, 130);
-    drawThreeImages(&p, loadImage("4"), loadImage("3"), loadImage("5"));
-    drawShadowedText(&p, 40, 100, "Study 3");
-    p.restore();
-    
-    p.save();
-    p.translate(160, 130);
-    drawThreeImages(&p, loadImage("5"), loadImage("4"), loadImage("3"));
-    drawShadowedText(&p, 40, 100, "Study 4");
-    p.restore();
+
+    for(int i = 0; i < d->sizes.count(); i++) {
+        p.save();
+        p.translate(10 + i*160, 10);
+        drawBadge(&p, 0, 0, QString::number(d->sizes.value(i)));
+        switch(i) {
+        case 1:
+            drawOneImage(&p, loadImage("1"));
+            break;
+        case 2:
+            drawTwoImages(&p, loadImage("1"), loadImage("2"));
+            break;
+        default:
+            drawThreeImages(&p, loadImage("1"), loadImage("2"), loadImage("3"));
+            break;
+        }
+        drawShadowedText(&p, 40, 100, "Study 1");
+        p.restore();
+    }
     
     p.end();
 }
