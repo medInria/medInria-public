@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/" >
+        <file>icons/widget.tiff</file>
         <file>img/1.jpg</file>
         <file>img/2.jpg</file>
         <file>img/3.jpg</file>

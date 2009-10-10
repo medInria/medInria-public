@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 19:27:49 2009 (+0200)
+ * Last-Updated: Sat Oct 10 21:17:41 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 68
+ *     Update #: 71
  */
 
 /* Commentary: 
@@ -48,7 +48,10 @@ int main(int argc, char *argv[])
     // Setting up main window
 
     medMainWindow mainwindow;
-    mainwindow.showFullScreen();
+    if (application.arguments().contains("--fullscreen"))
+        mainwindow.showFullScreen();
+    else
+        mainwindow.show();
 
     // Setting up interpreter
 
