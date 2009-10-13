@@ -23,6 +23,7 @@
 #include <QtGui/QMainWindow>
 
 class medMainWindowPrivate;
+class QModelIndex;
 
 class medMainWindow : public QMainWindow
 {
@@ -39,6 +40,9 @@ public slots:
     void switchToWelcomeArea(void);
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
+
+    void onStudyDoubleClicked (const QModelIndex &index);
+    void onSeriesDoubleClicked (const QModelIndex &index);
 
 protected:
     void closeEvent(QCloseEvent *event);

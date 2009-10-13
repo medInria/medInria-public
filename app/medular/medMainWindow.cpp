@@ -20,6 +20,7 @@
 #include "medBrowserArea.h"
 #include "medMainWindow.h"
 #include "medViewerArea.h"
+#include "medViewerAreaViewContainer.h"
 #include "medWelcomeArea.h"
 
 #include <dtkScript/dtkScriptInterpreter.h>
@@ -27,7 +28,16 @@
 #include <dtkScript/dtkScriptInterpreterPython.h>
 #include <dtkScript/dtkScriptInterpreterTcl.h>
 
+#include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractDataReader.h>
+
 #include <medSql/medDatabaseController.h>
+#include <medSql/medDatabaseView.h>
+#include <medSql/medDatabaseModel.h>
+#include <medSql/medDatabaseItem.h>
 
 #include <QtGui>
 
@@ -83,6 +93,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->switchToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToWelcomeArea()));
     connect(d->switchToBrowserAreaAction, SIGNAL(triggered()), this, SLOT(switchToBrowserArea()));
     connect(d->switchToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
+
+    connect (d->browserArea->databaseView(), SIGNAL (studyDoubleClicked (const QModelIndex&)), this, SLOT (onStudyDoubleClicked (const QModelIndex&)));
+    connect (d->browserArea->databaseView(), SIGNAL (seriesDoubleClicked (const QModelIndex&)), this, SLOT (onSeriesDoubleClicked (const QModelIndex&)));
 
     this->addAction(d->switchToWelcomeAreaAction);
     this->addAction(d->switchToBrowserAreaAction);
@@ -171,6 +184,98 @@ void medMainWindow::switchToBrowserArea(void)
 void medMainWindow::switchToViewerArea(void)
 {
     d->stack->setCurrentWidget(d->viewerArea);
+}
+
+void medMainWindow::onSeriesDoubleClicked (const QModelIndex &index)
+{
+    medViewerAreaViewContainer* current = d->viewerArea->current();
+    if (!current) {
+      return;
+    }
+
+    dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView2D");
+    if (!view)
+      return;
+
+    current->addWidget (view->widget(), 0, 0);
+
+    medDatabaseItem *dataItem = static_cast<medDatabaseItem*>(index.internalPointer());
+
+    QStringList filenames;
+    for (int i=0; i<dataItem->childCount(); i++)
+      filenames << dataItem->child(i)->value (2).toString();
+
+    dtkAbstractData *imData = 0;
+
+    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
+    
+    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
+    for (int i=0; i<readers.size(); i++) {
+      dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+      if (dataReader->canRead(filenames)) {
+	dataReader->read(filenames);
+	imData = dataReader->data();
+	delete dataReader;
+	break;
+      }
+    }
+
+    if (imData) {
+      view->setData (imData);
+      view->reset();
+    }
+
+    switchToViewerArea();
+}
+
+void medMainWindow::onStudyDoubleClicked (const QModelIndex &index)
+{
+    medViewerAreaViewContainer* current = d->viewerArea->current();
+    if (!current) {
+      return;
+    }
+
+
+    medDatabaseItem *studyItem = static_cast<medDatabaseItem*>(index.internalPointer());
+    int seCount = studyItem->childCount();
+
+    for (int i=0; i<seCount; i++) {
+
+      dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView2D");
+      if (!view)
+	return;
+      
+      current->addWidget (view->widget(), 0, i);
+
+      
+      medDatabaseItem *seriesItem = studyItem->child (i);
+
+      QStringList filenames;
+      for (int i=0; i<seriesItem->childCount(); i++)
+	filenames << seriesItem->child(i)->value (2).toString();
+
+      dtkAbstractData *imData = 0;
+      
+      typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
+      
+      QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
+      for (int i=0; i<readers.size(); i++) {
+	dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+	if (dataReader->canRead(filenames)) {
+	  dataReader->read(filenames);
+	  imData = dataReader->data();
+	  delete dataReader;
+	  break;
+	}
+      }
+      
+      if (imData) {
+	view->setData (imData);
+	view->reset();
+      }
+    }
+
+    switchToViewerArea();
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)

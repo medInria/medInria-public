@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct  3 13:49:39 2009 (+0200)
+ * Last-Updated: Fri Oct  9 09:26:52 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 103
+ *     Update #: 108
  */
 
 /* Commentary: 
@@ -90,156 +90,142 @@ QString medDatabaseController::configLocation(void) const
 
 void medDatabaseController::import(const QString& file)
 {
-  
     QDir dir(file);
     dir.setFilter(QDir::Files | QDir::Hidden);
-
+    
     QStringList fileList;
     if (dir.count())
-      foreach (QString file, dir.entryList())
-	fileList << file;
+        foreach (QString file, dir.entryList())
+            fileList << file;
     else
-      fileList << file;
-
+        fileList << file;
+    
     typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
     
     QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
-
+    
     foreach (QString file, fileList) {
-
-      dtkAbstractData* dtkdata = 0;
+        
+        dtkAbstractData* dtkdata = 0;
+        
+        for (int i=0; i<readers.size(); i++) {            
+            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+            if (dataReader->canRead(dir.filePath (file))) {
+                dataReader->readInformation(dir.filePath(file));
+                dtkdata = dataReader->data();
+                delete dataReader;
+                break;
+            }
+        }
+                
+        if (!dtkdata)
+            continue;
       
-      for (int i=0; i<readers.size(); i++) {
+        if (dtkdata->hasMetaData("PatientName") &&
+            dtkdata->hasMetaData("StudyDescription") &&
+            dtkdata->hasMetaData("SeriesDescription")) {
+            
+            const QStringList patientList = dtkdata->metaDataValues(tr("PatientName"));
+            
+            const QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
+            const QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
+            const QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
 	
-	dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader ( readers[i].first,
-											 readers[i].second );
-	if (dataReader->canRead ( dir.filePath (file) )) {
-	  dataReader->readInformation ( dir.filePath (file) );
-	  dtkdata = dataReader->data();
-	  delete dataReader;
-	  break;
-	}
-      }
-      
-      
-      if (!dtkdata) {
-	continue;
-      }
-      
-      
-      if (dtkdata->hasMetaData ("PatientName") &&
-	  dtkdata->hasMetaData ("StudyDescription") &&
-	  dtkdata->hasMetaData ("SeriesDescription") ) {
-	
-	const QStringList patientList = dtkdata->metaDataValues (tr("PatientName"));
-	
-	const QString patientName = dtkdata->metaDataValues (tr ("PatientName"))[0];
-	const QString studyName   = dtkdata->metaDataValues (tr ("StudyDescription"))[0];
-	const QString seriesName  = dtkdata->metaDataValues (tr ("SeriesDescription"))[0];
-	
-	
-	QSqlQuery query(*(medDatabaseController::instance()->database())); QVariant id;
-	
-	
-	query.prepare("SELECT id FROM patient WHERE name = :name");
-	query.bindValue(":name", patientName);
-	if(!query.exec())
-	  qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
-	
-	if(query.first()) {
-	  id = query.value(0);
-	}
-	else {
-	  query.prepare("INSERT INTO patient (name) VALUES (:name)");
-	  query.bindValue(":name", patientName);
-	  query.exec(); id = query.lastInsertId();
-	}
-	
-	
-	////////////////////////////////////////////////////////////////// STUDY
-	
-	query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name");
-	query.bindValue(":id", id);
-	query.bindValue(":name", studyName);
-	if(!query.exec())
-	  qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+            QSqlQuery query(*(medDatabaseController::instance()->database())); QVariant id;
 
-	if(query.first()) {
-	  id = query.value(0);
-	}
-	else {
-	  query.prepare("INSERT INTO study (patient, name) VALUES (:patient, :study)");
-	  query.bindValue(":patient", id);
-	  query.bindValue(":study", studyName);
-	  query.exec(); id = query.lastInsertId();
-	}
+            ////////////////////////////////////////////////////////////////// PATIENT
 
+            query.prepare("SELECT id FROM patient WHERE name = :name");
+            query.bindValue(":name", patientName);
+            if(!query.exec())
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+            
+            if(query.first()) {
+                id = query.value(0);
+            } else {
+                query.prepare("INSERT INTO patient (name) VALUES (:name)");
+                query.bindValue(":name", patientName);
+                query.exec(); id = query.lastInsertId();
+            }
 	
-	///////////////////////////////////////////////////////////////// SERIES
-
-	query.prepare("SELECT * FROM series WHERE study = :id AND name = :name");
-	query.bindValue(":id", id);
-	query.bindValue(":name", seriesName);
-	if(!query.exec())
-	  qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
-
-	if(query.first()) {
-	  id = query.value(0);
-	  QVariant seCount = query.value (2);
-	  QVariant seName  = query.value (3);
-	  QVariant sePath  = query.value (4);
-	  
-	  //qDebug() << "Series already exists in database" << id << "for patient" << patientName;
-
-	  // should update seCount but can't figure out how to do it
-	  /*
-	    seCount = seCount.toLongLong() + 1;
-	    qDebug() << "New series count: " << seCount;
-	    query.prepare("REPLACE INTO series (study, size, name, path) VALUES (:study, :size, :name, :path)");
-	    query.bindValue(":study", id);
-	    query.bindValue(":size", seCount);
-	    query.bindValue(":name", seName);
-	    query.bindValue(":path", sePath);
-	    if(!query.exec())
-	    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
-	  */
-	}
-	else {
-	  query.prepare("INSERT INTO series (study, size, name, path) VALUES (:study, :size, :name, :path)");
-	  query.bindValue(":study", id);
-	  query.bindValue(":size", 1);
-	  query.bindValue(":name", seriesName);
-	  query.bindValue(":path", dir.filePath (file));
-	  query.exec(); id = query.lastInsertId();
-	}
-
-
-
-	///////////////////////////////////////////////////////////////// IMAGE
-	query.prepare("SELECT id FROM image WHERE series = :id AND path = :path");
-	query.bindValue(":id", id);
-	query.bindValue(":name", file);
-	if(!query.exec())
-	  qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
-
-	if(query.first()) {
-	  //qDebug() << "Image" << file << "already in database";
-	}
-	else {
-	  query.prepare("INSERT INTO image (series, size, name, path) VALUES (:series, :size, :name, :path)");
-	  query.bindValue(":series", id);
-	  query.bindValue(":size", 64);
-	  query.bindValue(":name", file);
-	  query.bindValue(":path", dir.filePath (file));
-	  if(!query.exec())
-	    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;	  
-	}
+            ////////////////////////////////////////////////////////////////// STUDY
 	
+            query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name");
+            query.bindValue(":id", id);
+            query.bindValue(":name", studyName);
+            if(!query.exec())
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+            
+            if(query.first()) {
+                id = query.value(0);
+            } else {
+                query.prepare("INSERT INTO study (patient, name) VALUES (:patient, :study)");
+                query.bindValue(":patient", id);
+                query.bindValue(":study", studyName);
+                query.exec(); id = query.lastInsertId();
+            }
+	
+            ///////////////////////////////////////////////////////////////// SERIES
+            
+            query.prepare("SELECT * FROM series WHERE study = :id AND name = :name");
+            query.bindValue(":id", id);
+            query.bindValue(":name", seriesName);
+            if(!query.exec())
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
 
-      }
-      
-      delete dtkdata;
-      
+            if(query.first()) {
+                id = query.value(0);
+                QVariant seCount = query.value (2);
+                QVariant seName  = query.value (3);
+                QVariant sePath  = query.value (4);
+                
+                //qDebug() << "Series already exists in database" << id << "for patient" << patientName;
+                
+                // should update seCount but can't figure out how to do it
+                /*
+                  seCount = seCount.toLongLong() + 1;
+                  qDebug() << "New series count: " << seCount;
+                  query.prepare("REPLACE INTO series (study, size, name, path) VALUES (:study, :size, :name, :path)");
+                  query.bindValue(":study", id);
+                  query.bindValue(":size", seCount);
+                  query.bindValue(":name", seName);
+                  query.bindValue(":path", sePath);
+                  if(!query.exec())
+                  qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+                */
+            } else {
+                query.prepare("INSERT INTO series (study, size, name, path) VALUES (:study, :size, :name, :path)");
+                query.bindValue(":study", id);
+                query.bindValue(":size", 1);
+                query.bindValue(":name", seriesName);
+                query.bindValue(":path", dir.filePath (file));
+                query.exec(); id = query.lastInsertId();
+            }
+
+            ///////////////////////////////////////////////////////////////// IMAGE
+
+            query.prepare("SELECT id FROM image WHERE series = :id AND path = :path");
+            query.bindValue(":id", id);
+            query.bindValue(":name", file);
+
+            if(!query.exec())
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+            
+            if(query.first()) {
+                ; //qDebug() << "Image" << file << "already in database";
+            } else {
+                query.prepare("INSERT INTO image (series, size, name, path) VALUES (:series, :size, :name, :path)");
+                query.bindValue(":series", id);
+                query.bindValue(":size", 64);
+                query.bindValue(":name", file);
+                query.bindValue(":path", dir.filePath (file));
+
+                if(!query.exec())
+                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;	  
+            }	
+        }
+        
+        delete dtkdata;   
     }
 
     emit updated();

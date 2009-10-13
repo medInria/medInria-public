@@ -23,6 +23,7 @@
 #include <QtGui/QWidget>
 
 class medViewerAreaPrivate;
+class medViewerAreaViewContainer;
 
 class medViewerArea : public QWidget
 {
@@ -39,6 +40,8 @@ public slots:
     void onStudyIndexChanged(int index);
     void onSeriesIndexChanged(int index);
     void onImageIndexChanged(int index);
+
+    medViewerAreaViewContainer *current (void);
 
 private:
     medViewerAreaPrivate *d;

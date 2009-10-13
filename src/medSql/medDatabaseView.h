@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:16:32 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct  3 13:35:59 2009 (+0200)
+ * Last-Updated: Thu Oct  8 18:33:06 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 29
+ *     Update #: 30
  */
 
 /* Commentary: 
@@ -45,11 +45,10 @@ signals:
     void  seriesDoubleClicked(int id);
     void   imageDoubleClicked(int id);
 
-// protected:
-//     void dragEnterEvent(QDragEnterEvent *event);
-//     void dragMoveEvent(QDragMoveEvent *event);
-//     void dragLeaveEvent(QDragLeaveEvent *event);
-//     void dropEvent(QDropEvent *event);
+    void patientDoubleClicked(const QModelIndex& index);
+    void   studyDoubleClicked(const QModelIndex& index);
+    void  seriesDoubleClicked(const QModelIndex& index);
+    void   imageDoubleClicked(const QModelIndex& index);
     
 private slots:
     void onItemClicked(const QModelIndex& index);
