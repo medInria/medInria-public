@@ -21,6 +21,11 @@
   itkDataImage##suffix::itkDataImage##suffix(): dtkAbstractDataImage(), d (new itkDataImage##suffix##Private) \
   {									\
     d->image = 0;							\
+    d->histogram = 0;							\
+    d->range_min = 0;							\
+    d->range_max = 0;							\
+    d->histogram_min = 0;						\
+    d->histogram_max = 0;						\
   }									\
   itkDataImage##suffix::~itkDataImage##suffix()				\
   {									\
@@ -53,26 +58,6 @@
       }									\
       d->range_min = calculator->GetMinimum();				\
       d->range_max = calculator->GetMaximum();				\
-      typedef itkDataImage##suffix##Private::HistogramGeneratorType HistogramGeneratorType; \
-      HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New(); \
-      histogramGenerator->SetInput( image );				\
-      histogramGenerator->SetNumberOfBins( d->range_max - d->range_min + 1 ); \
-      histogramGenerator->SetMarginalScale( 1.0 );			\
-      histogramGenerator->SetHistogramMin( d->range_min );		\
-      histogramGenerator->SetHistogramMax( d->range_max );		\
-      try								\
-      {									\
-	histogramGenerator->Compute();					\
-      }									\
-      catch (itk::ExceptionObject &e)					\
-      {									\
-	std::cerr << e;							\
-	return;								\
-      }									\
-      typedef HistogramGeneratorType::HistogramType  HistogramType;	\
-      d->histogram = const_cast<HistogramType*>( histogramGenerator->GetOutput() ); \
-      d->histogram_min = d->histogram->GetFrequency( d->range_min, 0 );	\
-      d->histogram_max = d->histogram->GetFrequency( d->range_max, 0 );	\
       std::cout << "Image min/max: " << d->range_min << " " << d->range_max << std::endl; \
     }									\
   }									\
@@ -134,3 +119,24 @@
 
 
 #endif
+
+//typedef itkDataImage##suffix##Private::HistogramGeneratorType HistogramGeneratorType; 
+//HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New(); 
+//histogramGenerator->SetInput( image );				
+//histogramGenerator->SetNumberOfBins( d->range_max - d->range_min + 1 ); 
+//histogramGenerator->SetMarginalScale( 1.0 );				
+//histogramGenerator->SetHistogramMin( d->range_min );			
+//histogramGenerator->SetHistogramMax( d->range_max );			
+//try									
+//{									
+//histogramGenerator->Compute();					
+//}									
+//catch (itk::ExceptionObject &e)					
+//{									
+//std::cerr << e;							
+//return;								
+//}									
+//typedef HistogramGeneratorType::HistogramType  HistogramType;		
+//d->histogram = const_cast<HistogramType*>( histogramGenerator->GetOutput() ); 
+//d->histogram_min = d->histogram->GetFrequency( d->range_min, 0 );	
+//d->histogram_max = d->histogram->GetFrequency( d->range_max, 0 );	
