@@ -31,6 +31,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserArea.h
   medMainWindow.h
   medViewerArea.h
+  medViewerAreaViewContainer.h
   medWelcomeArea.h
 )
 
@@ -38,6 +39,7 @@ set(${PROJECT_NAME}_SOURCES
   medBrowserArea.cpp
   medMainWindow.cpp
   medViewerArea.cpp
+  medViewerAreaViewContainer.cpp
   medWelcomeArea.cpp
   main.cpp
 )
