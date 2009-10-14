@@ -52,12 +52,18 @@ namespace itk
     }
 
     m_Directory = "";
+
+    DcmRLEDecoderRegistration::registerCodecs();
+    DJDecoderRegistration::registerCodecs();
     
   }
   
 
   DCMTKImageIO::~DCMTKImageIO()
-  {}
+  {
+    DcmRLEDecoderRegistration::cleanup();
+    DJDecoderRegistration::cleanup();
+  }
 
 
   
@@ -511,19 +517,12 @@ namespace itk
     int start = region.GetIndex()[0];
     int length = region.GetSize()[0];
 
-    DcmRLEDecoderRegistration::registerCodecs();
-    DJDecoderRegistration::registerCodecs();
-    
     for( int i=start; i<start+length; i++)
     {
       this->InternalRead (buffer, i, pixelCount);
       if( threadId==0 )
 	this->InvokeEvent ( SliceReadEvent() );
     }
-    
-    DcmRLEDecoderRegistration::cleanup();
-    DJDecoderRegistration::cleanup();
-    
   }
   
 
