@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 08:29:35 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct  5 16:50:37 2009 (+0200)
+ * Last-Updated: Fri Oct  9 18:16:02 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 56
+ *     Update #: 70
  */
 
 /* Commentary: 
@@ -57,26 +57,14 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
 
     // connect(d->web_view, SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
 
-    QWidget *main = new QWidget(this);
-    main->setStyleSheet("background-image: url(:/html/img/background.jpg);");
+    d->loginWidget = new medLoginWidget(this);
 
-    d->loginWidget = new medLoginWidget(main);
-
-    { // central widget layout
-    QVBoxLayout *layout = new QVBoxLayout(main);
+    QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addStretch(8);
     layout->addWidget(d->loginWidget);
     layout->addStretch(1);
-    }
-
-    { // this widget layout
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(main);
-    }
 }
 
 medWelcomeArea::~medWelcomeArea(void)
@@ -84,6 +72,16 @@ medWelcomeArea::~medWelcomeArea(void)
     delete d;
 
     d = NULL;
+}
+
+void medWelcomeArea::paintEvent(QPaintEvent *event)
+{
+    QPainter painter;
+    painter.begin(this);
+    painter.fillRect(event->rect(), QColor(0x31, 0x31, 0x31));
+    painter.end();
+
+    QWidget::paintEvent(event);
 }
 
 void medWelcomeArea::linkClicked(const QUrl& url)

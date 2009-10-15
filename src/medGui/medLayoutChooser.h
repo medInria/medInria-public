@@ -13,6 +13,8 @@ public:
      medLayoutChooser(QWidget *parent = 0);
     ~medLayoutChooser(void);
 
+    QSize sizeHint(void) const;
+
     int sizeHintForRow(int row) const;
     int sizeHintForColumn(int column) const;
 

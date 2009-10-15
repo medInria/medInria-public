@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 20:02:04 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 11:00:42 2009 (+0200)
+ * Last-Updated: Sat Oct 10 01:05:12 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 9
+ *     Update #: 12
  */
 
 /* Commentary: 
@@ -34,6 +34,7 @@ public:
 
     void clear(void);
 
+    void setStackName(int stack, QString name);
     void setStackSize(int stack, int size);
 
 private:

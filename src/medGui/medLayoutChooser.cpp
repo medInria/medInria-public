@@ -19,13 +19,14 @@ medLayoutChooser::medLayoutChooser(QWidget *parent) : QTableWidget(parent), d(ne
     this->verticalHeader()->setHidden(true);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
     this->resizeColumnsToContents();
     this->resizeRowsToContents();
 
     d->left = d->right = d->top = d->bottom = 0;
 
     connect(this->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(onSelectionChanged(const QItemSelection&, const QItemSelection&)));
+
+    this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 medLayoutChooser::~medLayoutChooser(void)
@@ -33,6 +34,11 @@ medLayoutChooser::~medLayoutChooser(void)
     delete d;
 
     d = NULL;
+}
+
+QSize medLayoutChooser::sizeHint(void) const
+{
+    return QSize(this->columnCount()*30, this->rowCount()*30);
 }
 
 int medLayoutChooser::sizeHintForRow(int row) const
