@@ -103,7 +103,7 @@ namespace itk
     
     DCMTKImageIO();
     ~DCMTKImageIO();
-    void PrintSelf(std::ostream& os, Indent indent) const {};
+    void PrintSelf(std::ostream& os, Indent indent) const;
 
     void ThreadedRead (void* buffer, RegionType region, int threadId);    
     void InternalRead (void* buffer, int slice, unsigned long pixelCount);
@@ -117,7 +117,10 @@ namespace itk
     void DetermineDimensions (void);
     void DetermineOrigin (void);
     void DetermineOrientation (void);
-    
+
+    int  GetSliceOrdering (void);
+
+    double GetZPositionForImage (int);
 
     void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
     inline void ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount );

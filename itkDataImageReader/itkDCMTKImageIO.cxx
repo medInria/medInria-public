@@ -66,6 +66,11 @@ namespace itk
   }
 
 
+  void DCMTKImageIO::PrintSelf (std::ostream& os, Indent indent) const
+  {
+    Superclass::PrintSelf (os, indent);
+  }
+  
   
   bool DCMTKImageIO::CanReadFile(const char* filename)
   {
@@ -256,7 +261,11 @@ namespace itk
       return;
     }
 
-    std::string originStr = originVec[0]; // should take the first slice in the pile
+    std::string originStr;
+    if( this->GetSliceOrdering()>0 )
+      originStr = originVec[0];
+    else
+      originStr = originVec[ originVec.size()-1 ];
     std::istringstream is_stream( originStr.c_str() );
     if (!(is_stream >> m_Origin[0]))
     {
@@ -330,6 +339,78 @@ namespace itk
     }
   }
 
+
+  double DCMTKImageIO::GetZPositionForImage (int index)
+  {
+    std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
+    double zpos = 0.0;
+    double junk;
+    std::istringstream is_stream( s_position.c_str() );
+    if (!(is_stream >> junk) )
+    {
+      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() );
+    }
+    if (!(is_stream >> junk) )
+    {
+      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() );
+    }
+    if (!(is_stream >> zpos))
+    {
+      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() );
+    }
+
+    return zpos;
+  }
+
+
+  int DCMTKImageIO::GetSliceOrdering()
+  {
+    const std::vector<std::string> &originVec = this->GetMetaDataValueVectorString("(0020,0032)");
+
+    if (!originVec.size())
+    {
+      itkWarningMacro ( << "Tag (0020,0032) (ImageOrigin) was not found, assuming ascending slice ordering");
+      return 1;
+    }
+    
+    std::string originStr = originVec[0];
+    std::string lastStr   = originVec[ originVec.size()-1 ];
+
+    double firstPos = 0.0;
+    double lastPos = 1.0;
+    double junk;
+    
+    std::istringstream is_stream( originStr.c_str() );
+    if (!(is_stream >> junk) )
+    {
+      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
+    }
+    if (!(is_stream >> junk) )
+    {
+      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
+    }
+    if (!(is_stream >> firstPos))
+    {
+      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
+    }
+
+    
+    std::istringstream is_stream2( lastStr.c_str() );
+    if (!(is_stream2 >> junk) )
+    {
+      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
+    }
+    if (!(is_stream2 >> junk) )
+    {
+      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
+    }
+    if (!(is_stream2 >> lastPos))
+    {
+      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
+    }
+
+    return (lastPos-firstPos)>0?1:-1;
+  }
   
   
   void DCMTKImageIO::ReadImageInformation()
@@ -451,11 +532,13 @@ namespace itk
       sizeZ = ( int )locations.size();
       sizeT = ( int )locationToNameLut.count( *locations.begin() );
 
-      if( sizeT > 1 ) {
+      if( sizeT > 1 )
+      {
 	this->SetNumberOfDimensions (4);
 	m_Dimensions[3] =  sizeT;
       }
-      else {
+      else
+      {
 	this->SetNumberOfDimensions (3);
       }
       m_Dimensions[2] =  sizeZ;
@@ -474,6 +557,26 @@ namespace itk
 
       int32_t location = 0, rank = 0;
       l = locations.begin();
+
+
+
+      std::set< double >::const_reverse_iterator lle = locations.rbegin();
+
+      double locB = *l;
+      double locE = *lle;
+
+      // just check first volume
+      int indexB = nameToIndexLut[ locationToNameLut.lower_bound ( *l )->second ];
+      int indexE = nameToIndexLut[ locationToNameLut.lower_bound ( *lle )->second ];
+
+      double zsliceB = this->GetZPositionForImage (indexB);
+      double zsliceE = this->GetZPositionForImage (indexE);
+
+      int sliceDirection = 1.0;
+
+      int locSign = locE>locB?1.0:-1.0;      
+      sliceDirection = zsliceE>zsliceB?locSign:-locSign;
+      
       while ( l != le )
       {
 	if ( ( int )locationToNameLut.count( *l ) != sizeT )
@@ -487,9 +590,10 @@ namespace itk
 	rank = 0;
 	while ( n != ne )
 	{
-	  // we need to use sizeZ - 1 - location because z = 0 correspond to
-	  // top of the brain
-	  m_OrderedFileNames[ rank * sizeZ + ( sizeZ - 1 - location ) ] = n->second;
+	  if( sliceDirection>0 )
+	    m_OrderedFileNames[ rank * sizeZ + location ] = n->second;
+	  else
+	    m_OrderedFileNames[ rank * sizeZ + ( sizeZ - 1 - location ) ] = n->second;
 	  
 	  ++ rank;
 	  ++ n; 
@@ -537,25 +641,50 @@ namespace itk
 
     DcmFileFormat dicomFile;
     DcmStack      stack;
-    
+
+    /*
 #ifdef UID_RawDataStorage
     DcmInputFileStream dicomStream( filename.c_str(), 0U );
 #else
     DcmFileStream dicomStream( filename.c_str(), DCM_ReadMode );
 #endif
-    
-    dicomFile.transferInit();
-    dicomFile.read( dicomStream, EXS_Unknown, EGL_noChange );
-    dicomFile.transferEnd();
-    
-    if ( dicomFile.search( DCM_PixelData, stack ) != EC_Normal )
+    */
+    /*
+      dicomFile.transferInit();
+      dicomFile.read( dicomStream, EXS_Unknown, EGL_noChange );
+      dicomFile.transferEnd();
+    */
+ 
+    OFCondition cond = dicomFile.loadFile(filename.c_str(), EXS_Unknown, EGL_noChange, DCM_MaxReadLength, ERM_autoDetect);
+    if (! cond.good())
     {
-      itkExceptionMacro( << "PixelData tag was not found" );
+      itkExceptionMacro (<< cond.text() );
     }
-    DcmPixelData* pixelData = static_cast< ::DcmPixelData* >( stack.top() );
+
+    DcmPixelData* pixelData = 0;
     
+    if (dicomFile.search(DCM_PixelData, stack, ESM_fromHere, OFTrue) == EC_Normal)
+    {
+      if( !(pixelData = dynamic_cast<DcmPixelData*>( stack.top() )) )
+      {
+	itkExceptionMacro (<<"Cannot cast DcmElement into PixelData");
+      }
+      else
+      {
+	while ( pixelData->getLength()!=pixelCount && dicomFile.search(DCM_PixelData, stack, ESM_afterStackTop, OFTrue) == EC_Normal)
+	{
+	  pixelData = dynamic_cast<DcmPixelData*>( stack.top() );
+	  if( !(pixelData = dynamic_cast<DcmPixelData*>( stack.top() )) )
+	  {
+	    itkExceptionMacro (<<"Cannot cast DcmElement into PixelData");
+	  }
+	}
+      }
+    }
     
-    unsigned char* copyBuffer = 0;
+
+    //unsigned char* copyBuffer = 0;
+    Uint8* copyBuffer = 0;
     Uint8* ucharBuffer = 0;
     //Sint16* shortBuffer = 0; // apparently, getSInt16Array is not implemented in DCMTK
     Uint16* ushortBuffer = 0;
@@ -565,6 +694,7 @@ namespace itk
 
     size_t length = 0;
 
+
     switch( this->GetComponentType() ){
 	case CHAR:
 	  throw ExceptionObject (__FILE__,__LINE__,"According to dcmtk, int8 pixel type is not a dicom supported format");
@@ -572,37 +702,49 @@ namespace itk
 	  
 	case UCHAR:
 	  pixelData->getUint8Array( ucharBuffer );
-	  copyBuffer = (unsigned char*)( ucharBuffer );
-	  length = (size_t)(pixelCount * sizeof( unsigned char ) );
+	  copyBuffer = (Uint8*)( ucharBuffer );
+	  length = (size_t)(pixelCount * sizeof( Uint8 ) );
 	  break;
 	  
 	case SHORT:
-	  pixelData->getUint16Array( ushortBuffer );
-	  copyBuffer = (unsigned char*)( ushortBuffer );
-	  length = (size_t)(pixelCount * sizeof( short ) );
-	  break;
+	  {
+	    OFCondition of = pixelData->getUint16Array( ushortBuffer );
+	    if ( of.bad() )
+	    {
+	      itkExceptionMacro ( << of.text() );
+	    }
+	    copyBuffer = (Uint8*)( ushortBuffer );
+	    length = (size_t)(pixelCount * sizeof( Sint16 ) );
+	    break;
+	  }
 	  
 	case USHORT:
-	  pixelData->getUint16Array( ushortBuffer );
-	  copyBuffer = (unsigned char*)( ushortBuffer );	  
-	  length = (size_t)(pixelCount * sizeof( unsigned short ) );
-	  break;
+	  {
+	    OFCondition of = pixelData->getUint16Array( ushortBuffer );
+	    if ( of.bad() )
+	    {
+	      itkExceptionMacro ( << of.text() );
+	    }
+	    copyBuffer = (Uint8*)( ushortBuffer );
+	    length = (size_t)(pixelCount * sizeof( Uint16 ) );	    
+	    break;
+	  }
 	  
 	case INT:
 	  pixelData->getUint32Array( uintBuffer );
-	  copyBuffer = (unsigned char*)( uintBuffer );
+	  copyBuffer = (Uint8*)( uintBuffer );
 	  length = (size_t)(pixelCount * sizeof( Sint32 ) );
 	  break;
 	  
 	case UINT:
 	  pixelData->getUint32Array( uintBuffer );
-	  copyBuffer = (unsigned char*)( uintBuffer );
+	  copyBuffer = (Uint8*)( uintBuffer );
 	  length = (size_t)(pixelCount * sizeof( Uint32 ) );
 	  break;
 	  
 	case DOUBLE:
 	  pixelData->getFloat64Array( doubleBuffer );
-	  copyBuffer = (unsigned char*)( doubleBuffer );
+	  copyBuffer = (Uint8*)( doubleBuffer );
 	  length = (size_t)(pixelCount * sizeof( Float64 ) );
 	  break;
 	  
@@ -610,13 +752,15 @@ namespace itk
 	  throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
     }
 
-    if (!copyBuffer)
+    Uint8* destBuffer = (Uint8*)(buffer);
+    
+    if (!copyBuffer || !destBuffer)
     {
-      itkExceptionMacro ( << "Bad copy buffer" );
+      itkExceptionMacro ( << "Bad copy or dest buffer" );
     }
 
-    unsigned char* destBuffer = (unsigned char*)(buffer);
-    memcpy (destBuffer + slice*length, copyBuffer, length);
+    
+    std::memcpy (destBuffer + slice*length, copyBuffer, length);
   }
 
   
@@ -770,6 +914,7 @@ namespace itk
     
     
     // reading meta info
+    
     DcmMetaInfo* metaInfo = dicomFile.getMetaInfo();      
     for ( unsigned long e = 0; e < metaInfo->card(); e++ )
     {
@@ -780,6 +925,7 @@ namespace itk
 	this->ReadDicomElement( element, fileIndex, fileCount );
       }
     }
+    
     
     // reading data set
     DcmDataset* dataSet = dicomFile.getDataset();      
