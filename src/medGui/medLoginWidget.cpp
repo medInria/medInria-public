@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 15:36:10 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct  5 21:58:34 2009 (+0200)
+ * Last-Updated: Sat Oct 10 00:00:40 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 96
+ *     Update #: 99
  */
 
 /* Commentary: 
@@ -34,7 +34,7 @@ public:
 medLoginWidget::medLoginWidget(QWidget *parent) : QWidget(parent), d(new medLoginWidgetPrivate)
 {
     QWidget *main = new QWidget(this);
-    main->setStyleSheet("background-color: qrgba(0, 0, 0, 0.5);");
+    main->setStyleSheet("background-color: qrgba(1, 1, 1, 0.5);");
 
     d->userLabel = new QLabel(main);
     d->loginLabel = new QLabel(main);

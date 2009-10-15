@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 19:46:53 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 11:04:07 2009 (+0200)
+ * Last-Updated: Sat Oct 10 01:02:58 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 102
+ *     Update #: 167
  */
 
 /* Commentary: 
@@ -23,32 +23,22 @@
 
 #include <medSql/medDatabaseController.h>
 
+#include <medGui/medImageReflector.h>
 #include <medGui/medImageStack.h>
 
 class medPatientPreviewPrivate
 {
 public:
-    QLabel *user_avatar;
-    QLabel *user_name;
-
     QLabel *info_name;
 
+    medImageReflector *avatar;
     medImageStack *stack;
 };
 
 medPatientPreview::medPatientPreview(QWidget *parent) : QWidget(parent), d(new medPatientPreviewPrivate)
 {
-    d->user_avatar = new QLabel(this);
-    d->user_avatar->setPixmap(QPixmap(":/img/unknown.jpg"));
-
-    d->user_name = new QLabel(this);
-
-    QVBoxLayout *vertical_layout = new QVBoxLayout;
-    vertical_layout->addWidget(d->user_avatar);
-    vertical_layout->addWidget(d->user_name);
-
-    QWidget *avatar = new QWidget(this);
-    avatar->setLayout(vertical_layout);
+    d->avatar = new medImageReflector(this);
+    d->avatar->setImage(QImage(":/img/unknown.jpg"));
 
     d->stack = new medImageStack(this);
 
@@ -60,12 +50,13 @@ medPatientPreview::medPatientPreview(QWidget *parent) : QWidget(parent), d(new m
     form_layout->addRow("Information 3:", new QLabel("Prout"));
     form_layout->addRow("Information 4:", new QLabel("Prout"));
     form_layout->addRow("Information 5:", new QLabel("Prout"));
+    form_layout->addRow("Information 6:", new QLabel("Prout"));
 
     QWidget *information = new QWidget(this);
     information->setLayout(form_layout);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->addWidget(avatar);
+    layout->addWidget(d->avatar);
     layout->addWidget(information);
     layout->addWidget(d->stack);
 }
@@ -75,6 +66,11 @@ medPatientPreview::~medPatientPreview(void)
     delete d;
 
     d = NULL;
+}
+
+QSize medPatientPreview::sizeHint(void) const
+{
+    return d->avatar->sizeHint();
 }
 
 void medPatientPreview::setup(int patientId)
@@ -99,14 +95,16 @@ void medPatientPreview::setup(int patientId)
     // Retrieve studies information
 
     QList<QVariant> studyIds;
+    QList<QVariant> studyNames;
 
-    query.prepare("SELECT id FROM study WHERE patient = :patient");
+    query.prepare("SELECT id, name FROM study WHERE patient = :patient");
     query.bindValue(":patient", patientId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
     
     while(query.next()) {
         studyIds << query.value(0);
+        studyNames << query.value(1);
     }
 
     // Retrieve series information
@@ -125,13 +123,15 @@ void medPatientPreview::setup(int patientId)
     while(query.next())
         seriesCount++;
     
-    d->stack->setStackSize(stackCount++, seriesCount);
+    d->stack->setStackName(stackCount, studyNames.at(stackCount).toString());
+    d->stack->setStackSize(stackCount, seriesCount);
+
+    stackCount++;
 
     }
 
     // Build visual
 
-    d->user_name->setText(patientName);
     d->info_name->setText(patientName);
 
     this->update();
@@ -139,9 +139,19 @@ void medPatientPreview::setup(int patientId)
 
 void medPatientPreview::paintEvent(QPaintEvent *event)
 {
+    // QRadialGradient gradient;
+    // gradient.setCenter(event->rect().center());
+    // gradient.setFocalPoint(event->rect().center().x(), event->rect().center().y()+event->rect().height()/2);
+    // gradient.setRadius(event->rect().width()/3);
+
+    QLinearGradient gradient;
+    gradient.setStart(event->rect().center().x(), event->rect().center().y()-event->rect().height()/2);
+    gradient.setFinalStop(event->rect().center().x(), event->rect().center().y()+event->rect().height()/2);
+
+    gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
+    gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
+
     QPainter painter(this);
-
-    painter.fillRect(event->rect(), Qt::red);
-
-    QWidget::paintEvent(event);
+    painter.fillRect(event->rect(), gradient);
+    painter.end();
 }

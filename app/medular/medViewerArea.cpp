@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  7 15:59:14 2009 (+0200)
+ * Last-Updated: Sat Oct 10 00:15:26 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 125
+ *     Update #: 133
  */
 
 /* Commentary: 
@@ -22,183 +22,9 @@
 
 #include <medGui/medLayoutChooser.h>
 #include <medGui/medStyle.h>
+#include <medGui/medToolBox.h>
 
 #include <QtGui>
-
-///////////////////////////////////////////////////////////////////
-// medViewerAreaToolBoxHeader
-///////////////////////////////////////////////////////////////////
-
-class medViewerAreaToolBoxHeader : public QWidget
-{
-public:
-     medViewerAreaToolBoxHeader(QWidget *parent = 0);
-    ~medViewerAreaToolBoxHeader(void);
-
-    void setTitle(const QString& title);
-
-protected:
-    void paintEvent(QPaintEvent *event);
-
-private:
-    QLabel *label;
-    QLabel *button;
-};
-
-medViewerAreaToolBoxHeader::medViewerAreaToolBoxHeader(QWidget *parent) : QWidget(parent)
-{
-    this->label = new QLabel(this);
-    this->label->setText("Untitled");
-    this->label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-    this->button = new QLabel(this);
-    this->button->setText("?");
-    this->button->setFixedWidth(16);
-
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(5, 0, 5, 0);
-    layout->setSpacing(0);
-    layout->addWidget(this->label);
-    layout->addWidget(this->button);
-
-    this->setStyleSheet(
-     "color: white;"
-     "font-size: 9px;"
-    );
-
-    this->setFixedHeight(20);
-}
-
-medViewerAreaToolBoxHeader::~medViewerAreaToolBoxHeader(void)
-{
-    delete this->label;
-    delete this->button;
-}
-
-void medViewerAreaToolBoxHeader::setTitle(const QString& title)
-{
-    this->label->setText(title);
-}
-
-void medViewerAreaToolBoxHeader::paintEvent(QPaintEvent *event)
-{
-    QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
-
-    QColor gradientUp = QColor(0x4b, 0x4b, 0x4b);
-    QColor gradientMd = QColor(0x2e, 0x2e, 0x2e);
-    QColor gradientDw = QColor(0x4b, 0x4b, 0x4b);
-
-    medStyle::medDrawRoundRectWithDoubleLinearGradient(&p, event->rect(), gradientUp, gradientMd, gradientMd, gradientDw, 4, 0, 4, 0, Qt::darkGray);
-}
-
-///////////////////////////////////////////////////////////////////
-// medViewerAreaToolBoxContent
-///////////////////////////////////////////////////////////////////
-
-class medViewerAreaToolBoxContent : public QWidget
-{
-public:
-     medViewerAreaToolBoxContent(QWidget *parent = 0);
-    ~medViewerAreaToolBoxContent(void);
-
-    void addWidget(QWidget *widget);
-
-protected:
-    void paintEvent(QPaintEvent *event);
-
-private:
-    int row;
-    int col;
-    QGridLayout *layout;
-};
-
-medViewerAreaToolBoxContent::medViewerAreaToolBoxContent(QWidget *parent) : QWidget(parent)
-{    
-    this->layout = new QGridLayout(this);
-
-    this->row = 0;
-    this->col = 0;
-}
-
-medViewerAreaToolBoxContent::~medViewerAreaToolBoxContent(void)
-{
-
-}
-
-void medViewerAreaToolBoxContent::addWidget(QWidget *widget)
-{
-    this->layout->addWidget(widget, row, col);
-
-    if (col > 3) {
-        row++;
-        col = 0;
-    } else {
-        col++;
-    }
-}
-
-void medViewerAreaToolBoxContent::paintEvent(QPaintEvent *event)
-{
-    QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
-
-    QColor gradientUp = QColor(0x4b, 0x4b, 0x4b);
-    QColor gradientMd = QColor(0x2e, 0x2e, 0x2e);
-    QColor gradientDw = QColor(0x4b, 0x4b, 0x4b);
-
-    medStyle::medDrawRoundRectWithColor(&p, event->rect(), Qt::gray, 0, 4, 0, 4, Qt::darkGray);
-}
-
-///////////////////////////////////////////////////////////////////
-// medViewerAreaToolBox
-///////////////////////////////////////////////////////////////////
-
-class medViewerAreaToolBox : public QWidget
-{
-public:
-     medViewerAreaToolBox(QWidget *parent = 0);
-    ~medViewerAreaToolBox(void);
-
-    void addWidget(QWidget *widget);
-
-    void setTitle(const QString& title);
-
-protected:
-    // void paintEvent(QPaintEvent *event);
-
-private:
-    medViewerAreaToolBoxHeader *header;
-    medViewerAreaToolBoxContent *content;
-};
-
-medViewerAreaToolBox::medViewerAreaToolBox(QWidget *parent) : QWidget(parent)
-{
-    this->header = new medViewerAreaToolBoxHeader(this);
-    this->content = new medViewerAreaToolBoxContent(this);
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(this->header);
-    layout->addWidget(this->content);
-
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-}
-
-medViewerAreaToolBox::~medViewerAreaToolBox(void)
-{
-    delete this->header;
-    delete this->content;
-}
-
-void medViewerAreaToolBox::addWidget(QWidget *widget)
-{
-    this->content->addWidget(widget);
-}
-
-void medViewerAreaToolBox::setTitle(const QString &title)
-{
-    this->header->setTitle(title);
-}
 
 ///////////////////////////////////////////////////////////////////
 // medViewerAreaToolBoxContainer
@@ -210,8 +36,8 @@ public:
      medViewerAreaToolBoxContainer(QWidget *parent = 0);
     ~medViewerAreaToolBoxContainer(void);
 
-    void addToolBox(medViewerAreaToolBox *toolBox);
-    void removeToolBox(medViewerAreaToolBox *toolBox);
+    void addToolBox(medToolBox *toolBox);
+    void removeToolBox(medToolBox *toolBox);
 
 private:
     QWidget *container;
@@ -236,12 +62,12 @@ medViewerAreaToolBoxContainer::~medViewerAreaToolBoxContainer(void)
 
 }
 
-void medViewerAreaToolBoxContainer::addToolBox(medViewerAreaToolBox *toolBox)
+void medViewerAreaToolBoxContainer::addToolBox(medToolBox *toolBox)
 {
     this->layout->insertWidget(this->layout->count()-1, toolBox, 0, Qt::AlignTop);
 }
 
-void medViewerAreaToolBoxContainer::removeToolBox(medViewerAreaToolBox *toolBox)
+void medViewerAreaToolBoxContainer::removeToolBox(medToolBox *toolBox)
 {
     this->layout->removeWidget(toolBox);
 }
@@ -256,7 +82,7 @@ public:
     medViewerAreaViewContainer *view_container;
     medViewerAreaToolBoxContainer *toolbox_container;
 
-    QHash<int, medViewerAreaToolBoxContainer *> view_containers;
+    QHash<int, medViewerAreaViewContainer *> view_containers;
 };
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
@@ -264,8 +90,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QWidget *central = new QWidget(this);
 
     QVBoxLayout *c_layout_v = new QVBoxLayout(central);
-    c_layout_v->setContentsMargins(0, 0, 0, 0);
-    c_layout_v->setSpacing(0);
+    // c_layout_v->setContentsMargins(0, 0, 0, 0);
+    // c_layout_v->setSpacing(0);
 
     QWidget *c_top = new QWidget(central);
     c_top->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -331,7 +157,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     doLayoutButton->setMenu(layoutMenu);
 
-    medViewerAreaToolBox *layoutToolBox = new medViewerAreaToolBox(this);
+    medToolBox *layoutToolBox = new medToolBox(this);
     layoutToolBox->setTitle("Layout");
     layoutToolBox->addWidget(undoLayoutButton);
     layoutToolBox->addWidget( doLayoutButton);
@@ -342,8 +168,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container = new medViewerAreaToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(layoutToolBox);
-    d->toolbox_container->addToolBox(new medViewerAreaToolBox);
-    d->toolbox_container->addToolBox(new medViewerAreaToolBox);
+    d->toolbox_container->addToolBox(new medToolBox);
+    d->toolbox_container->addToolBox(new medToolBox);
 
     // Setting up layout
 

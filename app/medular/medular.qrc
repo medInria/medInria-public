@@ -1,14 +1,11 @@
 <RCC>
     <qresource prefix="/" >
+        <file>icons/widget.tiff</file>
         <file>img/1.jpg</file>
         <file>img/2.jpg</file>
         <file>img/3.jpg</file>
         <file>img/4.jpg</file>
         <file>img/5.jpg</file>
 	<file>img/unknown.jpg</file>
-
-        <file>html/index.html</file>
-        <file>html/css/main.css</file>
-        <file>html/img/background.jpg</file>
     </qresource>
 </RCC>

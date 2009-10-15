@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Sep 25 14:11:16 2009 (+0200)
+ * Last-Updated: Sat Oct 10 21:34:53 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 29
+ *     Update #: 91
  */
 
 /* Commentary: 
@@ -50,6 +50,8 @@ public:
     medBrowserArea *browserArea;
     medViewerArea  *viewerArea;
 
+    QToolBar *toolBar;
+
     QAction *switchToWelcomeAreaAction;
     QAction *switchToBrowserAreaAction;
     QAction *switchToViewerAreaAction;
@@ -90,6 +92,38 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->switchToViewerAreaAction->setShortcut(Qt::ControlModifier + Qt::Key_3);
 #endif
 
+    if(!(qApp->arguments().contains("--fullscreen"))) {
+
+        qDebug() << "HERE";
+
+        d->switchToWelcomeAreaAction->setEnabled(false);
+        d->switchToWelcomeAreaAction->setText("Welcome");
+        d->switchToWelcomeAreaAction->setToolTip("Switch to the welcome area (Ctrl+1)");
+        d->switchToWelcomeAreaAction->setIcon(QIcon(":/icons/widget.tiff"));
+
+        d->switchToBrowserAreaAction->setEnabled(true);
+        d->switchToBrowserAreaAction->setText("Browser");
+        d->switchToBrowserAreaAction->setToolTip("Switch to the borwser area (Ctrl+2)");
+        d->switchToBrowserAreaAction->setIcon(QIcon(":/icons/widget.tiff"));
+
+        d->switchToViewerAreaAction->setEnabled(true);
+        d->switchToViewerAreaAction->setText("Viewer");
+        d->switchToViewerAreaAction->setToolTip("Switch to the viewer area (Ctrl+3)");
+        d->switchToViewerAreaAction->setIcon(QIcon(":/icons/widget.tiff"));
+        
+        d->toolBar = this->addToolBar("Areas");
+#ifdef Q_WS_MAC
+        d->toolBar->setStyle(QStyleFactory::create("macintosh"));
+        d->toolBar->setStyleSheet("*:enabled { color: black; } *:disabled { color: gray; }");
+#endif
+        d->toolBar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        d->toolBar->setIconSize(QSize(32, 32));
+        d->toolBar->addAction(d->switchToWelcomeAreaAction);
+        d->toolBar->addAction(d->switchToBrowserAreaAction);
+        d->toolBar->addAction(d->switchToViewerAreaAction);
+        this->setUnifiedTitleAndToolBarOnMac(true);
+    }
+
     connect(d->switchToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToWelcomeArea()));
     connect(d->switchToBrowserAreaAction, SIGNAL(triggered()), this, SLOT(switchToBrowserArea()));
     connect(d->switchToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
@@ -101,8 +135,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->addAction(d->switchToBrowserAreaAction);
     this->addAction(d->switchToViewerAreaAction);
 
+    this->setWindowTitle("Medular");
     this->setCentralWidget(d->stack);
-
     this->readSettings();
 
     // Setting up core python module
@@ -174,16 +208,28 @@ void medMainWindow::writeSettings(void)
 void medMainWindow::switchToWelcomeArea(void)
 {
     d->stack->setCurrentWidget(d->welcomeArea);
+
+    d->switchToWelcomeAreaAction->setEnabled(false);
+    d->switchToBrowserAreaAction->setEnabled(true);
+    d->switchToViewerAreaAction->setEnabled(true);
 }
 
 void medMainWindow::switchToBrowserArea(void)
 {
     d->stack->setCurrentWidget(d->browserArea);
+
+    d->switchToWelcomeAreaAction->setEnabled(true);
+    d->switchToBrowserAreaAction->setEnabled(false);
+    d->switchToViewerAreaAction->setEnabled(true);
 }
 
 void medMainWindow::switchToViewerArea(void)
 {
     d->stack->setCurrentWidget(d->viewerArea);
+
+    d->switchToWelcomeAreaAction->setEnabled(true);
+    d->switchToBrowserAreaAction->setEnabled(true);
+    d->switchToViewerAreaAction->setEnabled(false);
 }
 
 void medMainWindow::onSeriesDoubleClicked (const QModelIndex &index)

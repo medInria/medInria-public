@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 10:47:56 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct  5 10:48:00 2009 (+0200)
+ * Last-Updated: Fri Oct  9 18:07:01 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 2
  */
 
 /* Commentary: 
@@ -32,6 +32,9 @@ class medWelcomeArea : public QWidget
 public:
      medWelcomeArea(QWidget *parent = 0);
     ~medWelcomeArea(void);
+
+protected:
+    void paintEvent(QPaintEvent *event);
 
 protected slots:
     void linkClicked(const QUrl &url);

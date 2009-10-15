@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Jul  3 19:21:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  7 12:31:46 2009 (+0200)
+ * Last-Updated: Sat Oct 10 21:14:48 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 574
+ *     Update #: 594
  */
 
 /* Commentary: 
@@ -110,6 +110,10 @@ void medStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *optio
                 painter->restore();
             }
         }
+        break;
+    case PE_FrameDefaultButton:
+    case PE_FrameFocusRect:
+        // Do not draw the focus frame !
         break;
     case PE_IndicatorCheckBox: {
             bool on = false;
@@ -311,6 +315,7 @@ void medStyle::drawControl(ControlElement element, const QStyleOption *option, Q
             }
         }
         painter->restore();
+        break;
     default:
         QCleanlooksStyle::drawControl(element, option, painter, widget);
         break;
@@ -363,7 +368,7 @@ void medStyle::polish(QPalette &palette)
     // Active palette
     // /////////////////////////////////////////////////////////////////
     palette.setColor(QPalette::Active, QPalette::Base, d->base);
-    palette.setColor(QPalette::Active, QPalette::AlternateBase, d->base.lighter(150));
+    palette.setColor(QPalette::Active, QPalette::AlternateBase, d->base.lighter(110));
     palette.setColor(QPalette::Active, QPalette::Window, d->window);
     palette.setColor(QPalette::Active, QPalette::WindowText, d->windowText);
     palette.setColor(QPalette::Active, QPalette::Button, d->gradientMd);
@@ -391,7 +396,7 @@ void medStyle::polish(QPalette &palette)
     // Inactive palette
     // /////////////////////////////////////////////////////////////////
     palette.setColor(QPalette::Inactive, QPalette::Base, d->base);
-    palette.setColor(QPalette::Inactive, QPalette::AlternateBase, d->base.lighter(150));
+    palette.setColor(QPalette::Inactive, QPalette::AlternateBase, d->base.lighter(110));
     palette.setColor(QPalette::Inactive, QPalette::Window, d->window);
     palette.setColor(QPalette::Inactive, QPalette::WindowText, d->windowText);
     palette.setColor(QPalette::Inactive, QPalette::Button, d->gradientMd);

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 20:03:17 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 11:01:00 2009 (+0200)
+ * Last-Updated: Sat Oct 10 01:05:05 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 52
+ *     Update #: 66
  */
 
 /* Commentary: 
@@ -74,7 +74,7 @@ static void drawShadowedText(QPainter *painter, int x, int y, const QString& tex
     painter->drawText(x, y + 1, text);
     painter->drawText(x, y - 1, text);
     
-    painter->setPen(Qt::black);
+    painter->setPen(Qt::lightGray);
     painter->drawText(x, y, text);
     
     painter->restore();
@@ -97,18 +97,18 @@ static void drawBadge(QPainter *painter, int x, int y, const QString& text)
     int h = fMetrics.xHeight() + 12;
     
     QRadialGradient badgeGradient(0.0, 0.0, 17.0, 30 - 3, 25 - 3);
-    badgeGradient.setColorAt(0.0, QColor(0x80, 0x84, 0xb));
-    badgeGradient.setColorAt(1.0, QColor(0x0c, 0x0c, 0x00));
+    badgeGradient.setColorAt(0.0, QColor(0xf8, 0x1b, 0x17));
+    badgeGradient.setColorAt(1.0, QColor(0x5b, 0x02, 0x03));
             
-    QColor shadowColor(0x00, 0x00, 0x00, h);
+    QColor shadowColor(0xff, 0xff, 0xff, h);
     drawRoundedRect(painter, x + 1, y, w, h, shadowColor);
     drawRoundedRect(painter, x - 1, y, w, h, shadowColor);
     drawRoundedRect(painter, x, y + 1, w, h, shadowColor);
     drawRoundedRect(painter, x, y - 1, w, h, shadowColor);
 
-    painter->setPen(QPen(Qt::black, 2));
+    painter->setPen(QPen(Qt::white, 2));
     painter->setBrush(badgeGradient);
-    painter->drawRoundedRect(x, y, w - 3, h - 3, 6.0, 6.0);
+    painter->drawRoundedRect(x, y, w-4, h-4, 8.0, 8.0);
 
     painter->setPen(QPen(Qt::white, 1));
     painter->drawText(x, y, w - 3, h - 3, Qt::AlignCenter, text);
@@ -178,6 +178,7 @@ QPixmap loadImage(const QString& name)
 class medImageStackPrivate
 {
 public:
+    QMap<int, QString> names;
     QMap<int, int> sizes;
 };
 
@@ -195,7 +196,13 @@ medImageStack::~medImageStack(void)
 
 void medImageStack::clear(void)
 {
+    d->names.clear();
     d->sizes.clear();
+}
+
+void medImageStack::setStackName(int stack, QString name)
+{
+    d->names.insert(stack, name);
 }
 
 void medImageStack::setStackSize(int stack, int size)
@@ -214,8 +221,7 @@ void medImageStack::paintEvent(QPaintEvent *event)
     for(int i = 0; i < d->sizes.count(); i++) {
         p.save();
         p.translate(10 + i*160, 10);
-        drawBadge(&p, 0, 0, QString::number(d->sizes.value(i)));
-        switch(i) {
+        switch(d->sizes.value(i)) {
         case 1:
             drawOneImage(&p, loadImage("1"));
             break;
@@ -226,7 +232,8 @@ void medImageStack::paintEvent(QPaintEvent *event)
             drawThreeImages(&p, loadImage("1"), loadImage("2"), loadImage("3"));
             break;
         }
-        drawShadowedText(&p, 40, 100, "Study 1");
+        drawShadowedText(&p, 40, 100, d->names.value(i));
+        drawBadge(&p, 0, 0, QString::number(d->sizes.value(i)));
         p.restore();
     }
     
