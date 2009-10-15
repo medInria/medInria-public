@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct 10 00:15:26 2009 (+0200)
+ * Last-Updated: Thu Oct 15 16:13:37 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 133
+ *     Update #: 184
  */
 
 /* Commentary: 
@@ -47,6 +47,7 @@ medViewerAreaToolBoxContainer::medViewerAreaToolBoxContainer(QWidget *parent) : 
 {
     this->container = new QWidget(this);
     this->layout = new QVBoxLayout(this->container);
+    this->layout->setContentsMargins(0, 0, 0, 0);
     this->layout->addStretch(1);
 
     this->setFrameStyle(QFrame::NoFrame);
@@ -178,6 +179,8 @@ public:
     medViewerAreaViewContainer *view_container;
     medViewerAreaToolBoxContainer *toolbox_container;
 
+    QStackedWidget *stack;
+
     QHash<int, medViewerAreaViewContainer *> view_containers;
 };
 
@@ -186,16 +189,18 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QWidget *central = new QWidget(this);
 
     QVBoxLayout *c_layout_v = new QVBoxLayout(central);
-    // c_layout_v->setContentsMargins(0, 0, 0, 0);
-    // c_layout_v->setSpacing(0);
+    c_layout_v->setContentsMargins(0, 0, 0, 0);
+    c_layout_v->setSpacing(10);
 
     QWidget *c_top = new QWidget(central);
     c_top->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-    // QStackedWidget *stack = new QStackedWidget(central);
+    d->stack = new QStackedWidget(central);
+    d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // d->stack->hide();                                                                 // TO BE REMOVED LATER ON
 
-    d->view_container = new medViewerAreaViewContainer(central);
-    d->view_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    // d->view_container = new medViewerAreaViewContainer(central);                      // TO BE REMOVED LATER ON
+    // d->view_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding); // TO BE REMOVED LATER ON
 
     QComboBox *patientComboBox = new QComboBox(this);
     patientComboBox->addItem("Choose patient");
@@ -234,7 +239,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     c_layout_h->addWidget(imagesComboBox);
 
     c_layout_v->addWidget(c_top);
-    c_layout_v->addWidget(d->view_container);
+    // c_layout_v->addWidget(d->view_container);
+    c_layout_v->addWidget(d->stack);
 
     // Setting up toolboxes
 
@@ -247,17 +253,13 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QMenu *layoutMenu = new QMenu;
     layoutMenu->addAction(layoutAction);
 
-    QPushButton *undoLayoutButton = new QPushButton("Undo", this);
-    QPushButton *  doLayoutButton = new QPushButton("    ", this);
-    QPushButton *redoLayoutButton = new QPushButton("Redo", this);
+    QPushButton *doLayoutButton = new QPushButton("    ", this);
 
     doLayoutButton->setMenu(layoutMenu);
 
     medToolBox *layoutToolBox = new medToolBox(this);
     layoutToolBox->setTitle("Layout");
-    layoutToolBox->addWidget(undoLayoutButton);
-    layoutToolBox->addWidget( doLayoutButton);
-    layoutToolBox->addWidget(redoLayoutButton);
+    layoutToolBox->addWidget(doLayoutButton);
     
     // Setting up container
 
@@ -270,8 +272,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // Setting up layout
 
     QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
+    layout->setContentsMargins(10, 10, 10, 10);
+    layout->setSpacing(10);
     layout->addWidget(d->toolbox_container);
     layout->addWidget(central);
 }
@@ -279,7 +281,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 medViewerArea::~medViewerArea(void)
 {
     delete d->toolbox_container;
-    delete d->view_container;
+    delete d->stack;
     delete d;
 
     d = NULL;
@@ -287,7 +289,8 @@ medViewerArea::~medViewerArea(void)
 
 void medViewerArea::split(int rows, int cols)
 {
-    d->view_container->split(rows, cols);
+    if (d->view_container)
+        d->view_container->split(rows, cols);
 }
 
 void medViewerArea::onPatientIndexChanged(int index)
@@ -295,29 +298,34 @@ void medViewerArea::onPatientIndexChanged(int index)
     if(!index)
         return;
 
-    qDebug() << __func__ << index;
+    medViewerAreaViewContainer *view_container;
+
+    if(!d->view_containers.contains(index)) {
+        view_container = new medViewerAreaViewContainer(this);
+        d->view_containers.insert(index, view_container);
+        d->stack->addWidget(view_container);
+    } else {
+        view_container = d->view_containers.value(index);
+    }
+
+    d->stack->setCurrentWidget(view_container);
+    d->view_container = view_container;
 }
 
 void medViewerArea::onStudyIndexChanged(int index)
 {
     if(!index)
         return;
-
-    qDebug() << __func__ << index;
 }
 
 void medViewerArea::onSeriesIndexChanged(int index)
 {
     if(!index)
         return;
-
-    qDebug() << __func__ << index;
 }
 
 void medViewerArea::onImageIndexChanged(int index)
 {
     if(!index)
         return;
-
-    qDebug() << __func__ << index;
 }

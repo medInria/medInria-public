@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 08:29:35 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 18:16:02 2009 (+0200)
+ * Last-Updated: Thu Oct 15 16:08:10 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 70
+ *     Update #: 141
  */
 
 /* Commentary: 
@@ -51,7 +51,8 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
     // d->web_view->setAcceptDrops(false);
     // d->web_view->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
     // d->web_view->settings()->setAttribute(QWebSettings::JavaEnabled, true);
-    // d->web_view->setHtml(readFile(QLatin1String(":/html/index.html")), QUrl("qrc:/html/index.html"));
+    // // d->web_view->setHtml(readFile(QLatin1String(":/html/index.html")), QUrl("qrc:/html/index.html"));
+    // d->web_view->setUrl(QUrl("http://www.youtube.com/html5"));
 
     // // qDebug() << d->web_view->settings()->pluginDatabase()->searchPaths();
 
@@ -62,6 +63,7 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
+    // layout->addWidget(d->web_view);
     layout->addStretch(8);
     layout->addWidget(d->loginWidget);
     layout->addStretch(1);
@@ -76,9 +78,29 @@ medWelcomeArea::~medWelcomeArea(void)
 
 void medWelcomeArea::paintEvent(QPaintEvent *event)
 {
+    QFont font("Helvetica", 96);
+
+    QFontMetrics metrics(font);
+    int textWidth = metrics.width(qApp->applicationName());
+    int textHeight = metrics.height();
+
+    QRadialGradient gradient;
+    gradient.setCenter(event->rect().center());
+    gradient.setFocalPoint(event->rect().center());
+    gradient.setRadius(event->rect().height()*0.66);
+    gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
+    // gradient.setColorAt(0.3, QColor(0x46, 0x46, 0x46));
+    // gradient.setColorAt(0.5, QColor(0x40, 0x40, 0x40));
+    // gradient.setColorAt(0.8, QColor(0x34, 0x34, 0x34));
+    gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
+
     QPainter painter;
     painter.begin(this);
-    painter.fillRect(event->rect(), QColor(0x31, 0x31, 0x31));
+    painter.setRenderHints(QPainter::Antialiasing);
+    painter.fillRect(event->rect(), gradient);
+    painter.setPen(QColor(0x36, 0x36, 0x36));
+    painter.setFont(font);
+    painter.drawText(event->rect().center().x()-textWidth/2, event->rect().center().y(), qApp->applicationName());
     painter.end();
 
     QWidget::paintEvent(event);

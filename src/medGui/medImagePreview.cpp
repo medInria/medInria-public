@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Oct  7 16:13:54 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  8 19:54:07 2009 (+0200)
+ * Last-Updated: Wed Oct 14 18:20:40 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 15
+ *     Update #: 17
  */
 
 /* Commentary: 
@@ -36,9 +36,26 @@ medImagePreview::~medImagePreview(void)
     d = NULL;
 }
 
+QSize medImagePreview::sizeHint(void) const
+{
+    return QSize();
+}
+
+void medImagePreview::setup(int imageId)
+{
+    Q_UNUSED(imageId);
+}
+
 void medImagePreview::paintEvent(QPaintEvent *event)
 {
-    QPainter painter(this);
+    QLinearGradient gradient;
+    gradient.setStart(event->rect().topLeft());
+    gradient.setFinalStop(event->rect().bottomLeft());
 
-    painter.fillRect(event->rect(), Qt::yellow);
+    gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
+    gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
+
+    QPainter painter(this);
+    painter.fillRect(event->rect(), gradient);
+    painter.end();
 }
