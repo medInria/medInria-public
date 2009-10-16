@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 15:12:10 2009 (+0200)
+ * Last-Updated: Fri Oct 16 16:53:50 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 331
+ *     Update #: 342
  */
 
 /* Commentary: 
@@ -25,6 +25,7 @@
 
 #include <medGui/medClutEditor.h>
 #include <medGui/medLayoutChooser.h>
+#include <medGui/medStatusPanel.h>
 #include <medGui/medStyle.h>
 #include <medGui/medToolBox.h>
 
@@ -178,6 +179,7 @@ class medViewerAreaPrivate
 public:
     medViewerAreaViewContainer *view_container;
     medViewerAreaToolBoxContainer *toolbox_container;
+    medStatusPanel *status;
 
     QStackedWidget *stack;
 
@@ -191,7 +193,9 @@ public:
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
 {
-    QWidget *central = new QWidget(this);
+    QWidget *main = new QWidget(this);
+
+    QWidget *central = new QWidget(main);
 
     QVBoxLayout *c_layout_v = new QVBoxLayout(central);
     c_layout_v->setContentsMargins(0, 0, 0, 0);
@@ -262,13 +266,23 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container->addToolBox(layoutToolBox);
     d->toolbox_container->addToolBox(clutEditorToolBox);
 
+    // Setting up panel
+
+    d->status = new medStatusPanel(this);
+
     // Setting up layout
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(10, 10, 10, 10);
-    layout->setSpacing(10);
-    layout->addWidget(d->toolbox_container);
-    layout->addWidget(central);
+    QHBoxLayout *central_layout = new QHBoxLayout(main);
+    central_layout->setContentsMargins(10, 10, 10, 10);
+    central_layout->setSpacing(10);
+    central_layout->addWidget(d->toolbox_container);
+    central_layout->addWidget(central);
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(main);
+    layout->addWidget(d->status);
 
     // Setup from database
     this->setup();

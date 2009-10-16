@@ -1,3 +1,22 @@
+/* medLayoutChooser.cpp --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Fri Oct 16 15:50:11 2009 (+0200)
+ * Version: $Id$
+ * Last-Updated: Fri Oct 16 15:55:18 2009 (+0200)
+ *           By: Julien Wintz
+ *     Update #: 9
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #include "medLayoutChooser.h"
 
 #include <QtGui>
