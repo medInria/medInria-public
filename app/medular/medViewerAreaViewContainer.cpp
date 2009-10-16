@@ -37,6 +37,11 @@ medViewerAreaViewContainer::~medViewerAreaViewContainer(void)
 
 medViewerAreaViewContainer *medViewerAreaViewContainer::current(void)
 {
+    qDebug() << __func__;
+  
+    if (!s_current)
+      s_current = this;
+    
     return s_current;
 }
 

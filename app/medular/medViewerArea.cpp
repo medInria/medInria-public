@@ -193,6 +193,26 @@ medViewerArea::~medViewerArea(void)
     d = NULL;
 }
 
+void medViewerArea::setPatientIndex (int index)
+{
+    d->patientComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::setStudyIndex (int index)
+{
+    d->studyComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::setSeriesIndex (int index)
+{
+    d->seriesComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::setImageIndex (int index)
+{
+    d->imagesComboBox->setCurrentIndex (index);
+}
+
 void medViewerArea::setup(void)
 {
     d->patientComboBox->addItem("Choose patient");
@@ -218,7 +238,7 @@ void medViewerArea::split(int rows, int cols)
 
 void medViewerArea::onPatientIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 
     // Setup view container
@@ -260,7 +280,7 @@ void medViewerArea::onPatientIndexChanged(int index)
 
 void medViewerArea::onStudyIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 
     QVariant id = d->studyComboBox->itemData(index);
@@ -283,7 +303,7 @@ void medViewerArea::onStudyIndexChanged(int index)
 
 void medViewerArea::onSeriesIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 
     QVariant id = d->seriesComboBox->itemData(index);
@@ -300,15 +320,17 @@ void medViewerArea::onSeriesIndexChanged(int index)
 
     while(query.next())
         d->imagesComboBox->addItem(query.value(0).toString(), query.value(1));
+
+    emit seriesSelected (id.toInt());
 }
 
 void medViewerArea::onImageIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 }
 
-medViewerAreaViewContainer *medViewerArea::current (void)
+medViewerAreaViewContainer *medViewerArea::viewContainer (void)
 {
-    return d->view_container->current();
+    return d->view_container;
 }

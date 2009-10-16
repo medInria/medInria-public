@@ -33,6 +33,18 @@ public:
      medViewerArea(QWidget *parent = 0);
     ~medViewerArea(void);
 
+    void setPatientIndex (int index);
+    void setStudyIndex (int index);
+    void setSeriesIndex (int index);
+    void setImageIndex (int index);
+    
+signals:
+    void patientSelected (int index);
+    void studySelected (int index);
+    void seriesSelected (int index);
+    void imageSelected (int index);
+        
+
 public slots:
     void setup(void);
     void split(int rows, int cols);
@@ -42,7 +54,7 @@ public slots:
     void onSeriesIndexChanged(int index);
     void onImageIndexChanged(int index);
 
-    medViewerAreaViewContainer *current (void);
+    medViewerAreaViewContainer *viewContainer (void);
 
 private:
     medViewerAreaPrivate *d;
