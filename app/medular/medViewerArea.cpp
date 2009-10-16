@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 13:35:51 2009 (+0200)
+ * Last-Updated: Fri Oct 16 15:12:10 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 282
+ *     Update #: 331
  */
 
 /* Commentary: 
@@ -107,7 +107,7 @@ medViewerAreaViewContainer::medViewerAreaViewContainer(QWidget *parent) : QWidge
 {
     m_layout = new QGridLayout(this);
     m_layout->setContentsMargins(0, 0, 0, 0);
-    m_layout->setSpacing(0);
+    m_layout->setSpacing(2);
 
     this->setFocusPolicy(Qt::StrongFocus);
 }
@@ -135,6 +135,8 @@ void medViewerAreaViewContainer::split(int rows, int cols)
     for(int i = 0 ; i < rows ; i++)
         for(int j = 0 ; j < cols ; j++)
             current->m_layout->addWidget(new medViewerAreaViewContainer(this), i, j);
+
+    s_current = 0;
 }
 
 void medViewerAreaViewContainer::focusInEvent(QFocusEvent *event)
@@ -149,28 +151,20 @@ void medViewerAreaViewContainer::focusOutEvent(QFocusEvent *event)
     QWidget::focusOutEvent(event);
 }
 
-static void paintLayout(QPainter *painter, QLayoutItem *item)
-{
-    if (QLayout *layout = item->layout())
-        for (int i = 0; i < layout->count(); ++i)
-            paintLayout(painter, layout->itemAt(i));
-
-    medViewerAreaViewContainer *view_container = dynamic_cast<medViewerAreaViewContainer *>(item->widget());
-
-    if(!view_container)
-        return;
-
-    view_container->hasFocus() ? painter->setPen(Qt::red) : painter->setPen(Qt::gray);
-
-    painter->drawRect(item->geometry().adjusted(0, 0, -1, -1));
-}
-
 void medViewerAreaViewContainer::paintEvent(QPaintEvent *event)
 {
-    QPainter painter(this);
+    if(this->layout()->count())
+        return;
 
-    if (layout())
-        paintLayout(&painter, layout());
+    QPainter painter;
+    painter.begin(this);
+    if (s_current == this)
+        painter.setPen(Qt::red);
+    else
+        painter.setPen(Qt::darkGray);
+    painter.setBrush(QColor(0x38, 0x38, 0x38));
+    painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
+    painter.end();
 }
 
 medViewerAreaViewContainer *medViewerAreaViewContainer::s_current = NULL;
