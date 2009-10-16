@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct 12 18:39:47 2009 (+0200)
+ * Last-Updated: Fri Oct 16 11:30:51 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 162
+ *     Update #: 163
  */
 
 /* Commentary: 
@@ -93,7 +93,7 @@ void medBrowserAreaPreview::onPatientClicked(int id)
 
 void medBrowserAreaPreview::onStudyClicked(int id)
 {
-    qDebug() << __func__ << id;
+    d->study_preview->setup(id);
 
     d->stack->setCurrentWidget(d->study_preview);
 }

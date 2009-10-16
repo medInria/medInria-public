@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 20:03:17 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct 10 01:05:05 2009 (+0200)
+ * Last-Updated: Fri Oct 16 11:48:07 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 66
+ *     Update #: 67
  */
 
 /* Commentary: 
@@ -164,7 +164,7 @@ static void drawThreeImages(QPainter *painter, const QPixmap& pixmap1, const QPi
     painter->restore();
 }
 
-QPixmap loadImage(const QString& name)
+static QPixmap loadImage(const QString& name)
 {
     QPixmap pixmap(QString(":/img/%1.jpg").arg(name));
 
