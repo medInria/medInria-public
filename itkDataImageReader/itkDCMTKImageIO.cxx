@@ -10,6 +10,12 @@
 #include <dcmtk/dcmdata/dcistrmf.h>
 #include <dcmtk/ofstd/ofstdinc.h>
 
+/* The path separator for this platform.  */
+#if defined(_WIN32) && !defined(__CYGWIN__)
+# define ITK_FORWARD_PATH_SLASH '\\'
+#else
+# define ITK_FORWARD_PATH_SLASH '/'
+#endif
 
 #include <itksys/SystemTools.hxx>
 #include <itksys/Directory.hxx>
@@ -91,7 +97,7 @@ namespace itk
   void DCMTKImageIO::DeterminePixelType()
   {
     
-    const std::vector<std::string> &bitsAllocatedVec = this->GetMetaDataValueVectorString ("(0028,0100)");
+    const StringVectorType &bitsAllocatedVec = this->GetMetaDataValueVectorString ("(0028,0100)");
     if ( !bitsAllocatedVec.size() )
     {
       itkExceptionMacro ( << "Tag (0028,0100) (Pixel Type) not found" );
@@ -103,7 +109,7 @@ namespace itk
       itkExceptionMacro ( << "Cannot convert string to int: " << bitsAllocatedVec[0].c_str() );
     
     
-    const std::vector<std::string> &signBitsVec = this->GetMetaDataValueVectorString ("(0028,0103)");
+    const StringVectorType &signBitsVec = this->GetMetaDataValueVectorString ("(0028,0103)");
     std::string sign = "0";
     if (signBitsVec.size())
     {
@@ -163,7 +169,7 @@ namespace itk
   {
     m_Spacing[0] = 1.0;
     m_Spacing[1] = 1.0;
-    const std::vector<std::string> &pixSpacingVec = this->GetMetaDataValueVectorString ("(0028,0030)");
+    const StringVectorType &pixSpacingVec = this->GetMetaDataValueVectorString ("(0028,0030)");
     if ( !pixSpacingVec.size() )
     {
       itkWarningMacro ( << "Tag (0028,0030) (PixelSpacing) was not found, assuming 1.0" );
@@ -185,7 +191,7 @@ namespace itk
 
     
     double sliceThickness = 1.0;
-    const std::vector<std::string> &sliceThicknessVec = this->GetMetaDataValueVectorString ("(0018,0050)");
+    const StringVectorType &sliceThicknessVec = this->GetMetaDataValueVectorString ("(0018,0050)");
     if( sliceThicknessVec.size() )
     {
       std::string sliceThicknessStr = sliceThicknessVec[0];
@@ -197,7 +203,7 @@ namespace itk
     }
     
     double spacingBetweenSlices = 1.0;
-    const std::vector<std::string> &spacingBetweenSlicesVec = this->GetMetaDataValueVectorString ("(0018,0088)");
+    const StringVectorType &spacingBetweenSlicesVec = this->GetMetaDataValueVectorString ("(0018,0088)");
     if( spacingBetweenSlicesVec.size() )
     {
       std::string spacingBetweenSlicesStr = spacingBetweenSlicesVec[0];
@@ -224,7 +230,7 @@ namespace itk
   
   void DCMTKImageIO::DetermineDimensions()
   {
-    const std::vector<std::string> &dimXVec = this->GetMetaDataValueVectorString ("(0028,0011)");
+    const StringVectorType &dimXVec = this->GetMetaDataValueVectorString ("(0028,0011)");
     if (!dimXVec.size())
       itkExceptionMacro ( << "Tag (0028,0011) (dim X) not found" );
     
@@ -234,7 +240,7 @@ namespace itk
       itkExceptionMacro ( << "Cannot convert string to int: " << dimXStr.c_str() );
     
     
-    const std::vector<std::string> &dimYVec = this->GetMetaDataValueVectorString ("(0028,0010)");
+    const StringVectorType &dimYVec = this->GetMetaDataValueVectorString ("(0028,0010)");
     if (!dimYVec.size())
       itkExceptionMacro ( << "Tag (0028,0010) (dim Y) not found" );
     
@@ -252,32 +258,32 @@ namespace itk
     m_Origin [1] = 0.0;
     m_Origin [2] = 0.0;
     if( this->GetNumberOfDimensions()==4 )
+    {
       m_Origin [3] = 0.0;
-    
-    const std::vector<std::string> &originVec = this->GetMetaDataValueVectorString("(0020,0032)");
-    if (!originVec.size())
+    }
+
+
+    int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.begin() )->second ];
+	
+    std::string s_origin = this->GetMetaDataValueString("(0020,0032)", startIndex);
+    if ( s_origin=="" )
     {
       itkWarningMacro ( << "Tag (0020,0032) (ImageOrigin) was not found, assuming 0.0/0.0/0.0");
       return;
     }
-
-    std::string originStr;
-    if( this->GetSliceOrdering()>0 )
-      originStr = originVec[0];
-    else
-      originStr = originVec[ originVec.size()-1 ];
-    std::istringstream is_stream( originStr.c_str() );
+    
+    std::istringstream is_stream( s_origin.c_str() );
     if (!(is_stream >> m_Origin[0]))
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
+      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() );
     }
     if (!(is_stream >> m_Origin[1]))
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
+      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() );
     }
     if (!(is_stream >> m_Origin[2]))
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
+      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() );
     }
   }
   
@@ -288,7 +294,7 @@ namespace itk
   {
 
     double orientation[6]={1.0, 0.0, 0.0, 0.0, 1.0, 0.0};
-    const std::vector<std::string> &orientationVec = this->GetMetaDataValueVectorString("(0020,0037)");
+    const StringVectorType &orientationVec = this->GetMetaDataValueVectorString("(0020,0037)");
     if (!orientationVec.size())
     {
       itkWarningMacro ( << "Tag (0020,0037) (PatientOrientation) was not found, assuming identity");
@@ -363,254 +369,237 @@ namespace itk
   }
 
 
-  int DCMTKImageIO::GetSliceOrdering()
-  {
-    const std::vector<std::string> &originVec = this->GetMetaDataValueVectorString("(0020,0032)");
-
-    if (!originVec.size())
-    {
-      itkWarningMacro ( << "Tag (0020,0032) (ImageOrigin) was not found, assuming ascending slice ordering");
-      return 1;
-    }
-    
-    std::string originStr = originVec[0];
-    std::string lastStr   = originVec[ originVec.size()-1 ];
-
-    double firstPos = 0.0;
-    double lastPos = 1.0;
-    double junk;
-    
-    std::istringstream is_stream( originStr.c_str() );
-    if (!(is_stream >> junk) )
-    {
-      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
-    }
-    if (!(is_stream >> junk) )
-    {
-      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
-    }
-    if (!(is_stream >> firstPos))
-    {
-      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
-    }
-
-    
-    std::istringstream is_stream2( lastStr.c_str() );
-    if (!(is_stream2 >> junk) )
-    {
-      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
-    }
-    if (!(is_stream2 >> junk) )
-    {
-      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
-    }
-    if (!(is_stream2 >> lastPos))
-    {
-      itkWarningMacro ( << "Cannot convert string to double: " << originStr.c_str() );
-    }
-
-    return (lastPos-firstPos)>0?1:-1;
-  }
-  
   
   void DCMTKImageIO::ReadImageInformation()
   {
 
-    try
+    /**
+       Using a set, we remove any duplicate filename - should we do this?
+    */
+    NameSetType fileNames;
+    
+    for( unsigned int i=0; i<this->GetFileNames().size(); i++ )
     {
-
-      std::set< std::string > fileNames;     
-
-      for( unsigned int i=0; i<this->GetFileNames().size(); i++ )
-	fileNames.insert ( this->GetFileNames()[i] );
-
-
-      int fileCount = (int)( fileNames.size() );
-      if( fileCount == 0 )
-      {
-	itkExceptionMacro (<<"Cannot find any dicom in directory or dicom is not valid");	
-      }
-
-      std::set< std::string >::const_iterator f = fileNames.begin(), fe = fileNames.end();
-      
-      std::set< double >                   locations;
-      std::multimap< double, std::string > locationToNameLut;
-      std::map< std::string, int >         nameToIndexLut;
-
-
-      int fileIndex = 0;
-      double floatSliceLocation = 0;
-
-      while ( f != fe )
-      {
-	std::string filename;
-	if( m_Directory != "" )
-	  filename = m_Directory + "/" + *f;
-	else
-	  filename = *f;
-
-	try
-	{
-	  this->ReadHeader( filename, fileIndex, fileCount );
-	  
-	  floatSliceLocation = 0;
-
-	  const std::vector< std::string > &vecSlice = this->GetMetaDataValueVectorString ("(0020,1041)");
-	  if( vecSlice.size() )
-	  {
-	    std::istringstream is_stream ( vecSlice[fileIndex].c_str() );
-	    is_stream >> floatSliceLocation;
-	  }
-	  else
-	  {
-	    const std::vector< std::string > &vecSlice2 = this->GetMetaDataValueVectorString ("(0020,0050)");
-	    if( vecSlice2.size() )
-	    {
-	      std::istringstream is_stream ( vecSlice2[fileIndex].c_str() );
-	      is_stream >> floatSliceLocation;
-	    }
-	    //else // Hopeless
-	  }
-
-	  locations.insert( floatSliceLocation );
-	  locationToNameLut.insert( std::pair< double, std::string >(floatSliceLocation, *f ) );
-	  nameToIndexLut[ *f ] = fileIndex;
-	  ++ fileIndex;
-	}
-	catch (ExceptionObject &e)
-	{
-	  std::cerr << e; // continue
-	}
-	++ f;
-      }
-
-      
-
-      
-      // ordering location slices according to instance number
-      std::set< double >::const_iterator l = locations.begin(), le = locations.end();
-      while ( l != le )
-      {
-	std::multimap< double, std::string >::iterator n = locationToNameLut.lower_bound( *l ), ne = locationToNameLut.upper_bound( *l );
-	
-	// using that intermediate lut for instance number ordering
-	std::map< int, std::list< std::string > > instanceNumberToNameLut;
-	
-	while ( n != ne )
-	{	  
-	  std::string instanceNumberString = this->GetMetaDataValueString ("(0020,0013)", nameToIndexLut[ n->second ]);	  
-	  int instanceNumber = 0;
-	  std::istringstream is_stream (instanceNumberString.c_str());
-	  is_stream >> instanceNumber;
-	  
-	  instanceNumberToNameLut[ instanceNumber ].push_back( n->second );
-	  ++ n;	  
-	}
-	
-	// erasing name list corresponding to given location
-	locationToNameLut.erase( *l );
-	
-	// inserting ordered file names
-	std::map< int, std::list< std::string > >::const_iterator in = instanceNumberToNameLut.begin(), ine = instanceNumberToNameLut.end();
-	while ( in != ine )
-	{
-	  std::list< std::string >::const_iterator fn = in->second.begin(), fne = in->second.end();
-	  while ( fn != fne )
-	  {
-	    locationToNameLut.insert( std::pair< double, std::string >( *l, *fn ) );
-	    ++ fn;
-	  }
-	  ++ in;
-	}
-	++ l;
-      }
-
-
-      // collecting slice count and rank count while doing sanity checks
-      int sizeZ, sizeT;
-      
-      sizeZ = ( int )locations.size();
-      sizeT = ( int )locationToNameLut.count( *locations.begin() );
-
-      if( sizeT > 1 )
-      {
-	this->SetNumberOfDimensions (4);
-	m_Dimensions[3] =  sizeT;
-      }
+      fileNames.insert ( this->GetFileNames()[i] );
+    }
+    
+    int fileCount = (int)( fileNames.size() );
+    if( fileCount == 0 )
+    {
+      itkExceptionMacro (<<"Cannot find any dicom in directory or dicom is not valid");	
+    }
+    
+    
+    m_LocationSet.clear();
+    m_FilenameToIndexMap.clear();
+    m_LocationToFilenamesMap.clear();
+    
+    
+    int    fileIndex = 0;
+    double sliceLocation = 0;
+    
+    
+    
+    /**
+       The purpose of the next loop is to parse the DICOM header of each file, store all
+       fields in the Dictionary, and order filenames depending on their sliceLocation,
+       assuming that the sliceLocation field gives the order dicoms are obtained.
+    */
+    NameSetType::const_iterator f = fileNames.begin(), fe = fileNames.end();
+    
+    while ( f != fe )
+    {
+      std::string filename;
+      if( m_Directory != "" )
+	filename = m_Directory + ITK_FORWARD_PATH_SLASH + *f;
       else
+	filename = *f;
+      
+      try
       {
-	this->SetNumberOfDimensions (3);
-      }
-      m_Dimensions[2] =  sizeZ;
-
-      
-      
-      this->DeterminePixelType();
-      this->DetermineDimensions();
-      this->DetermineSpacing();
-      this->DetermineOrigin();
-      this->DetermineOrientation();
-      
-
-      m_OrderedFileNames = std::vector< std::string > ( sizeZ * sizeT );
-      
-
-      int32_t location = 0, rank = 0;
-      l = locations.begin();
-
-
-
-      std::set< double >::const_reverse_iterator lle = locations.rbegin();
-
-      double locB = *l;
-      double locE = *lle;
-
-      // just check first volume
-      int indexB = nameToIndexLut[ locationToNameLut.lower_bound ( *l )->second ];
-      int indexE = nameToIndexLut[ locationToNameLut.lower_bound ( *lle )->second ];
-
-      double zsliceB = this->GetZPositionForImage (indexB);
-      double zsliceE = this->GetZPositionForImage (indexE);
-
-      int sliceDirection = 1.0;
-
-      int locSign = locE>locB?1.0:-1.0;      
-      sliceDirection = zsliceE>zsliceB?locSign:-locSign;
-      
-      while ( l != le )
-      {
-	if ( ( int )locationToNameLut.count( *l ) != sizeT )
-	{
-	  itkExceptionMacro( << "Inconsistent sizeT between locations: very probably, several series are present (this ImageIO can only proceed one serie at a time)" );	  
-	}
-	std::multimap< double, std::string >::const_iterator
-	  n = locationToNameLut.lower_bound( *l ),
-	  ne = locationToNameLut.upper_bound( *l );
+	this->ReadHeader( filename, fileIndex, fileCount );
 	
-	rank = 0;
-	while ( n != ne )
+	sliceLocation = 0;
+	std::string vecSlice = this->GetMetaDataValueString ("(0020,1041)", fileIndex );
+	if( vecSlice!="" )
 	{
-	  if( sliceDirection>0 )
-	    m_OrderedFileNames[ rank * sizeZ + location ] = n->second;
-	  else
-	    m_OrderedFileNames[ rank * sizeZ + ( sizeZ - 1 - location ) ] = n->second;
-	  
-	  ++ rank;
-	  ++ n; 
-	}	
-	++ location;
-	++ l;
+	  std::istringstream is_stream ( vecSlice.c_str() );
+	  is_stream >> sliceLocation;
+	}
+	else
+	{
+	  std::string vecSlice2 = this->GetMetaDataValueString ("(0020,0050)", fileIndex);
+	  if( vecSlice2!="" )
+	  {
+	    std::istringstream is_stream ( vecSlice2.c_str() );
+	    is_stream >> sliceLocation;
+	  }
+	  else // cannot find the sliceLocation information, then we rely on the order files were inputed.
+	  {
+	    sliceLocation = (double)fileIndex;
+	  }
+	}
+	
+	m_LocationSet.insert( sliceLocation );
+	m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *f ) );
+	m_FilenameToIndexMap[ *f ] = fileIndex;
+	++fileIndex;
       }
-
-      this->SetFileNames ( m_OrderedFileNames );
-
+      catch (ExceptionObject &e)
+      {
+	std::cerr << e; // continue to be robust to odd files
+      }
+      ++f;
     }
-    catch(itk::ExceptionObject &e)
+    
+
+    
+    
+    /**
+       In the next loop, slices are ordered according to their instance number, in case multiple
+       volumes are found.
+     */
+    SliceLocationSetType::const_iterator l = m_LocationSet.begin(), le = m_LocationSet.end();
+    while ( l!=le )
     {
-      std::cerr << e;
-      itkExceptionMacro ( << "Error in DCMTKImageIO::ReadImageInformation()");
+      SliceLocationToNamesMultiMapType::iterator n = m_LocationToFilenamesMap.lower_bound( *l ),
+	ne = m_LocationToFilenamesMap.upper_bound( *l );
+      
+      // using that intermediate lut for instance number ordering
+      IndexToNamesMapType instanceNumberToNameMap;
+      
+      while ( n!=ne )
+      {
+	int instanceNumber = 0;
+	std::string instanceNumberString = this->GetMetaDataValueString ("(0020,0013)", m_FilenameToIndexMap[ n->second ]);
+	if( instanceNumberString!="" )
+	{
+	  std::istringstream is_stream ( instanceNumberString.c_str() );
+	  is_stream >> instanceNumber;
+	}
+	// else, we assume all files have the same instance number (0), i.e.: the serie has only one volume
+	
+	instanceNumberToNameMap[instanceNumber].push_back( n->second );
+	++n;
+      }
+	
+
+      // We erase the filename list corresponding to the given location to fill it with the ordered filenames
+      m_LocationToFilenamesMap.erase( *l );
+
+      
+      IndexToNamesMapType::const_iterator in = instanceNumberToNameMap.begin(), ine = instanceNumberToNameMap.end();
+      while ( in!=ine )
+      {
+	std::list< std::string >::const_iterator fn = in->second.begin(), fne = in->second.end();
+	while ( fn!=fne )
+	{
+	  m_LocationToFilenamesMap.insert( std::pair< double, std::string >( *l, *fn ) );
+	  ++fn;
+	}
+	++in;
+      }
+      ++l;
     }
 
+    
+    
+    // collecting slice count and rank count while doing sanity checks
+    unsigned int sizeZ = m_LocationSet.size();
+    unsigned int sizeT = m_LocationToFilenamesMap.count( *m_LocationSet.begin() );
+
+    // check consistency
+    SliceLocationSetType::const_iterator it = m_LocationSet.begin();
+    while (it!=m_LocationSet.end())
+    {
+      if ( m_LocationToFilenamesMap.count(*it)!=sizeT )
+      {
+	itkExceptionMacro (<< "Inconsistency in dicom volumes");
+      }
+      ++it;
+    }
+    
+    if( sizeT > 1 )
+    {
+      this->SetNumberOfDimensions (4);
+      m_Dimensions[3] =  sizeT;
+    }
+    else
+    {
+      this->SetNumberOfDimensions (3);
+    }
+    m_Dimensions[2] =  sizeZ;
+
+    
+
+    /**
+       Now that m_FilenameToIndexMap and m_LocationToFilenamesMap are up-to-date, we may determine
+       the pixel type, spacing, origin and so on.
+     */
+    this->DeterminePixelType();
+    this->DetermineDimensions();
+    this->DetermineSpacing();
+    this->DetermineOrigin();
+    this->DetermineOrientation();
+    
+
+
+
+    
+    
+    /**
+       Determine the slice ordering. Depending on the sliceLocation and the imagePatientPosition,
+       we may determine if the acquistion was made from feet-to-head or head-to-feet.
+     */
+    
+    l = m_LocationSet.begin();  
+    SliceLocationSetType::const_reverse_iterator lle = m_LocationSet.rbegin();
+    
+    double startLocation = *l;
+    double endLocation   = *lle;
+    int locSign = endLocation>startLocation?1.0:-1.0;
+    
+    // just check first volume
+    int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *l )->second ];
+    int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *lle )->second ];
+    
+    double startSlice = this->GetZPositionForImage ( startIndex );
+    double endSlice   = this->GetZPositionForImage ( endIndex );
+    
+    int sliceDirection = endSlice>startSlice?locSign:-locSign;
+
+
+
+
+    
+    /**
+       Now order filenames such that we can read them sequentially and build the 3D/4D volume.
+     */
+    m_OrderedFileNames = StringVectorType ( sizeZ * sizeT );
+    
+    int location = 0;
+    int rank     = 0;
+    
+    while ( l!=le )
+    {
+      SliceLocationToNamesMultiMapType::const_iterator n = m_LocationToFilenamesMap.lower_bound( *l ),
+	ne = m_LocationToFilenamesMap.upper_bound( *l );
+      
+      rank = 0;
+      while ( n!=ne )
+      {
+	if( sliceDirection>0 )
+	  m_OrderedFileNames[ rank * sizeZ + location ] = n->second;
+	else
+	  m_OrderedFileNames[ rank * sizeZ + ( sizeZ - 1 - location ) ] = n->second;
+	
+	++rank;
+	++n; 
+      }	
+      ++location;
+      ++l;
+    }
+    
   }
 
 
@@ -625,7 +614,9 @@ namespace itk
     {
       this->InternalRead (buffer, i, pixelCount);
       if( threadId==0 )
+      {
 	this->InvokeEvent ( SliceReadEvent() );
+      }
     }
   }
   
@@ -637,30 +628,59 @@ namespace itk
     if( m_Directory=="" )
       filename = m_OrderedFileNames[slice];
     else
-      filename = m_Directory + "/" + m_OrderedFileNames[slice];
+      filename = m_Directory + ITK_FORWARD_PATH_SLASH + m_OrderedFileNames[slice];
 
     DcmFileFormat dicomFile;
     DcmStack      stack;
+     
 
-    /*
-#ifdef UID_RawDataStorage
-    DcmInputFileStream dicomStream( filename.c_str(), 0U );
-#else
-    DcmFileStream dicomStream( filename.c_str(), DCM_ReadMode );
-#endif
-    */
-    /*
-      dicomFile.transferInit();
-      dicomFile.read( dicomStream, EXS_Unknown, EGL_noChange );
-      dicomFile.transferEnd();
-    */
- 
     OFCondition cond = dicomFile.loadFile(filename.c_str(), EXS_Unknown, EGL_noChange, DCM_MaxReadLength, ERM_autoDetect);
     if (! cond.good())
     {
       itkExceptionMacro (<< cond.text() );
     }
 
+
+    size_t length = pixelCount;
+    switch( this->GetComponentType() )
+    {  
+	case CHAR:
+	  length *= sizeof(char);
+	  break;
+	  
+	case UCHAR:
+	  length *= sizeof(Uint8);
+	  break;
+	  
+	case SHORT:
+	  length *= sizeof(Sint16);
+	  break;
+	    
+	case USHORT:
+	  length *= sizeof(Uint16);
+	  break;
+	  
+	case INT:
+	  length *= sizeof(Sint32);
+	  break;
+	  
+	case UINT:
+	  length *= sizeof(Uint32);
+	  break;
+	  
+	case DOUBLE:
+	  length *= sizeof(Float64);
+	  break;
+	  
+	default:
+	  throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
+    }
+
+    
+    /**
+       It may happen that several pixelData are present in the DICOM. Then, we select the one whose length is
+       exactly the expected length.
+     */
     DcmPixelData* pixelData = 0;
     
     if (dicomFile.search(DCM_PixelData, stack, ESM_fromHere, OFTrue) == EC_Normal)
@@ -671,7 +691,7 @@ namespace itk
       }
       else
       {
-	while ( pixelData->getLength()!=pixelCount && dicomFile.search(DCM_PixelData, stack, ESM_afterStackTop, OFTrue) == EC_Normal)
+	while ( pixelData->getLength()!=length && dicomFile.search(DCM_PixelData, stack, ESM_afterStackTop, OFTrue) == EC_Normal)
 	{
 	  pixelData = dynamic_cast<DcmPixelData*>( stack.top() );
 	  if( !(pixelData = dynamic_cast<DcmPixelData*>( stack.top() )) )
@@ -680,6 +700,11 @@ namespace itk
 	  }
 	}
       }
+    }
+
+    if (pixelData->getLength()!=length)
+    {
+      itkExceptionMacro (<<"Cannot find a pixel data whose number of pixels (" << pixelData->getLength() << ") match what is required (" << length << ")");
     }
     
 
@@ -692,8 +717,6 @@ namespace itk
     Uint32* uintBuffer = 0;
     Float64* doubleBuffer = 0;
 
-    size_t length = 0;
-
 
     switch( this->GetComponentType() ){
 	case CHAR:
@@ -703,7 +726,6 @@ namespace itk
 	case UCHAR:
 	  pixelData->getUint8Array( ucharBuffer );
 	  copyBuffer = (Uint8*)( ucharBuffer );
-	  length = (size_t)(pixelCount * sizeof( Uint8 ) );
 	  break;
 	  
 	case SHORT:
@@ -714,7 +736,6 @@ namespace itk
 	      itkExceptionMacro ( << of.text() );
 	    }
 	    copyBuffer = (Uint8*)( ushortBuffer );
-	    length = (size_t)(pixelCount * sizeof( Sint16 ) );
 	    break;
 	  }
 	  
@@ -726,41 +747,36 @@ namespace itk
 	      itkExceptionMacro ( << of.text() );
 	    }
 	    copyBuffer = (Uint8*)( ushortBuffer );
-	    length = (size_t)(pixelCount * sizeof( Uint16 ) );	    
 	    break;
 	  }
 	  
 	case INT:
 	  pixelData->getUint32Array( uintBuffer );
 	  copyBuffer = (Uint8*)( uintBuffer );
-	  length = (size_t)(pixelCount * sizeof( Sint32 ) );
 	  break;
 	  
 	case UINT:
 	  pixelData->getUint32Array( uintBuffer );
 	  copyBuffer = (Uint8*)( uintBuffer );
-	  length = (size_t)(pixelCount * sizeof( Uint32 ) );
 	  break;
 	  
 	case DOUBLE:
 	  pixelData->getFloat64Array( doubleBuffer );
 	  copyBuffer = (Uint8*)( doubleBuffer );
-	  length = (size_t)(pixelCount * sizeof( Float64 ) );
 	  break;
 	  
 	default:
 	  throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
     }
 
-    Uint8* destBuffer = (Uint8*)(buffer);
-    
+    Uint8* destBuffer = (Uint8*)(buffer);    
     if (!copyBuffer || !destBuffer)
     {
       itkExceptionMacro ( << "Bad copy or dest buffer" );
     }
-
     
     std::memcpy (destBuffer + slice*length, copyBuffer, length);
+    
   }
 
   
@@ -905,20 +921,19 @@ namespace itk
     // checking that given file is available
     if ( !condition.good() )
     {
-      itkExceptionMacro ( << "Error in " << __func__ << ": " << condition.text() );
+      itkExceptionMacro ( << condition.text() );
     }
     
-    
     // manual call to load data into memory
-    dicomFile.loadAllDataIntoMemory();
+    //dicomFile.loadAllDataIntoMemory();
     
     
     // reading meta info
-    
     DcmMetaInfo* metaInfo = dicomFile.getMetaInfo();      
     for ( unsigned long e = 0; e < metaInfo->card(); e++ )
     {
       DcmElement* element = metaInfo->getElement( e );
+      
       DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(element);
       if (!pixelData) // don't want to read PixData right now
       { 
@@ -932,6 +947,7 @@ namespace itk
     for ( unsigned long e = 0; e < dataSet->card(); e++ )
     {	
       DcmElement* element = dataSet->getElement( e );
+      
       DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(element);
       if (!pixelData) // don't want to read PixData right now
       {
@@ -979,14 +995,14 @@ namespace itk
     if (it!=dicomDictionary.End())
     {
       MetaDataVectorStringType* vec = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() );
-      std::vector<std::string>& value = const_cast< std::vector<std::string>& >(vec->GetMetaDataObjectValue());	
+      StringVectorType& value = const_cast< StringVectorType& >(vec->GetMetaDataObjectValue());	
       value[fileIndex] = s_value;
     }
     else
     {
-      std::vector< std::string > vec (fileCount, "");
+      StringVectorType vec (fileCount, "");
       vec[fileIndex] = s_value;
-      EncapsulateMetaData< std::vector<std::string> >(dicomDictionary, tagKey, vec);
+      EncapsulateMetaData< StringVectorType >(dicomDictionary, tagKey, vec);
     }
   }
 
@@ -995,28 +1011,33 @@ namespace itk
 
   inline std::string DCMTKImageIO::GetMetaDataValueString (const char* key, int index) const
   {
-    std::string value = "Not Found";
+    std::string value = "";
     const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
     MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
-    if( it!=dicomDictionary.End() ) {
+    if( it!=dicomDictionary.End() )
+    {
       if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+      {
 	value = metaData->GetMetaDataObjectValue()[index];
+      }
     }
     return value;
   }
 
   
-  inline const std::vector<std::string>& DCMTKImageIO::GetMetaDataValueVectorString (const char* key) const
+  inline const DCMTKImageIO::StringVectorType& DCMTKImageIO::GetMetaDataValueVectorString (const char* key) const
   {
-    //std::vector<std::string> &values = m_EmptyVector;
     const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
     MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
-    if( it!=dicomDictionary.End() ) {
-      if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) ) {
+    if( it!=dicomDictionary.End() )
+    {
+      if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+      {
 	return metaData->GetMetaDataObjectValue();
-      }
-      else
+      } else
+      {
 	return m_EmptyVector;
+      }
     }
     return m_EmptyVector;
   }
