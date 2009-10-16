@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Sep 22 15:57:54 2009 (+0200)
+ * Last-Updated: Fri Oct 16 12:58:11 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 7
  */
 
 /* Commentary: 
@@ -34,6 +34,7 @@ public:
     ~medViewerArea(void);
 
 public slots:
+    void setup(void);
     void split(int rows, int cols);
 
     void onPatientIndexChanged(int index);

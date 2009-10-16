@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Fri Oct  9 19:46:01 2009 (+0200)
+## Last-Updated: Fri Oct 16 11:43:58 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 54
+##     Update #: 64
 ######################################################################
 ## 
 ### Commentary: 
@@ -24,42 +24,51 @@ project(medGui)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS
+  medClutEditor.h
   medLayoutChooser.h
   medLoginWidget.h
   medImageFlow.h
+  medImageList.h
   medImagePreview.h
   medImageStack.h
   medImageReflector.h
   medPatientPreview.h
   medSeriesPreview.h
+  medStatusPanel.h
   medStudyPreview.h
   medStyle.h
   medToolBox.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
+  medClutEditor.h
   medLayoutChooser.h
   medLoginWidget.h
   medImageFlow.h
+  medImageList.h
   medImagePreview.h
   medImageReflector.h
   medImageStack.h
   medPatientPreview.h
   medSeriesPreview.h
+  medStatusPanel.h
   medStudyPreview.h
   medStyle.h
   medToolBox.h
 )
 
 set(${PROJECT_NAME}_SOURCES
+  medClutEditor.cpp
   medLayoutChooser.cpp
   medLoginWidget.cpp
   medImageFlow.cpp
+  medImageList.cpp
   medImagePreview.cpp
   medImageReflector.cpp
   medImageStack.cpp
   medPatientPreview.cpp
   medSeriesPreview.cpp
+  medStatusPanel.cpp
   medStudyPreview.cpp
   medStyle.cpp
   medToolBox.cpp
