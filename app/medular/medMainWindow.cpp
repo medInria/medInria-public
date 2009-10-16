@@ -20,7 +20,6 @@
 #include "medBrowserArea.h"
 #include "medMainWindow.h"
 #include "medViewerArea.h"
-#include "medViewerAreaViewContainer.h"
 #include "medWelcomeArea.h"
 
 #include <dtkScript/dtkScriptInterpreter.h>
@@ -228,13 +227,9 @@ void medMainWindow::displayData (const QStringList& filenames)
     if (!view)
       return;
 
-    medViewerAreaViewContainer* current = d->viewerArea->viewContainer();
-    if (current) {
-      current->addWidget (view->widget(), 0, 0);
-      
-      view->setData (imData);
-      view->reset();
-    }
+    d->viewerArea->addWidget (view->widget());
+    view->setData (imData);
+    view->reset();    
   }
 }
 

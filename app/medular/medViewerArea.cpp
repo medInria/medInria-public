@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 13:35:51 2009 (+0200)
+ * Last-Updated: Fri Oct 16 15:12:10 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 282
+ *     Update #: 331
  */
 
 /* Commentary: 
@@ -18,7 +18,6 @@
  */
 
 #include "medViewerArea.h"
-#include "medViewerAreaViewContainer.h"
 
 #include <dtkCore/dtkGlobal.h>
 
@@ -78,6 +77,103 @@ void medViewerAreaToolBoxContainer::removeToolBox(medToolBox *toolBox)
 {
     this->layout->removeWidget(toolBox);
 }
+
+///////////////////////////////////////////////////////////////////
+// medViewerAreaViewContainer
+///////////////////////////////////////////////////////////////////
+
+class medViewerAreaViewContainer : public QWidget
+{
+public:
+     medViewerAreaViewContainer(QWidget *parent = 0);
+    ~medViewerAreaViewContainer(void);
+
+    medViewerAreaViewContainer *current(void);
+
+    void split(int rows, int cols);
+    void addWidget (QWidget* widget);
+
+protected:
+    void focusInEvent(QFocusEvent *event);
+    void focusOutEvent(QFocusEvent *event);
+    void paintEvent(QPaintEvent *event);
+
+private:
+    QGridLayout *m_layout;
+
+    static medViewerAreaViewContainer *s_current;
+};
+
+medViewerAreaViewContainer::medViewerAreaViewContainer(QWidget *parent) : QWidget(parent)
+{
+    m_layout = new QGridLayout(this);
+    m_layout->setContentsMargins(0, 0, 0, 0);
+    m_layout->setSpacing(2);
+
+    this->setFocusPolicy(Qt::StrongFocus);
+}
+
+medViewerAreaViewContainer::~medViewerAreaViewContainer(void)
+{
+    delete m_layout;
+}
+
+medViewerAreaViewContainer *medViewerAreaViewContainer::current(void)
+{
+    return s_current;
+}
+
+void medViewerAreaViewContainer::split(int rows, int cols)
+{
+    medViewerAreaViewContainer *current = this->current();
+
+    if (!current)
+        return;
+
+    if (current->m_layout->count())
+        return;
+
+    for(int i = 0 ; i < rows ; i++)
+        for(int j = 0 ; j < cols ; j++)
+            current->m_layout->addWidget(new medViewerAreaViewContainer(this), i, j);
+
+    s_current = 0;
+}
+
+void medViewerAreaViewContainer::addWidget (QWidget* widget)
+{
+    m_layout->addWidget (widget, 0, 0);
+}
+
+void medViewerAreaViewContainer::focusInEvent(QFocusEvent *event)
+{
+    s_current = this;
+
+    QWidget::focusInEvent(event);
+}
+
+void medViewerAreaViewContainer::focusOutEvent(QFocusEvent *event)
+{
+    QWidget::focusOutEvent(event);
+}
+
+void medViewerAreaViewContainer::paintEvent(QPaintEvent *event)
+{
+    if(this->layout()->count())
+        return;
+
+    QPainter painter;
+    painter.begin(this);
+    if (s_current == this)
+        painter.setPen(Qt::red);
+    else
+        painter.setPen(Qt::darkGray);
+    painter.setBrush(QColor(0x38, 0x38, 0x38));
+    painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
+    painter.end();
+}
+
+medViewerAreaViewContainer *medViewerAreaViewContainer::s_current = NULL;
 
 ///////////////////////////////////////////////////////////////////
 // medViewerArea
@@ -213,6 +309,13 @@ void medViewerArea::setImageIndex (int index)
     d->imagesComboBox->setCurrentIndex (index);
 }
 
+void medViewerArea::addWidget (QWidget* widget)
+{
+    // for now, but should be changed rapidly to benefit
+    // from the layout strategy
+    d->view_container->addWidget (widget);
+}
+
 void medViewerArea::setup(void)
 {
     d->patientComboBox->addItem("Choose patient");
@@ -328,9 +431,4 @@ void medViewerArea::onImageIndexChanged(int index)
 {
     if(index<1)
         return;
-}
-
-medViewerAreaViewContainer *medViewerArea::viewContainer (void)
-{
-    return d->view_container;
 }
