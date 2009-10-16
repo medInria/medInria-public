@@ -44,6 +44,11 @@ signals:
     void   studyDoubleClicked(int id);
     void  seriesDoubleClicked(int id);
     void   imageDoubleClicked(int id);
+
+    void patientDoubleClicked(const QModelIndex& index);
+    void   studyDoubleClicked(const QModelIndex& index);
+    void  seriesDoubleClicked(const QModelIndex& index);
+    void   imageDoubleClicked(const QModelIndex& index);
     
 private slots:
     void onItemClicked(const QModelIndex& index);

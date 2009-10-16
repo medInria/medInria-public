@@ -92,6 +92,7 @@ public:
     medViewerAreaViewContainer *current(void);
 
     void split(int rows, int cols);
+    void addWidget (QWidget* widget);
 
 protected:
     void focusInEvent(QFocusEvent *event);
@@ -138,6 +139,11 @@ void medViewerAreaViewContainer::split(int rows, int cols)
             current->m_layout->addWidget(new medViewerAreaViewContainer(this), i, j);
 
     s_current = 0;
+}
+
+void medViewerAreaViewContainer::addWidget (QWidget* widget)
+{
+    m_layout->addWidget (widget, 0, 0);
 }
 
 void medViewerAreaViewContainer::focusInEvent(QFocusEvent *event)
@@ -297,6 +303,33 @@ medViewerArea::~medViewerArea(void)
     d = NULL;
 }
 
+void medViewerArea::setPatientIndex (int index)
+{
+    d->patientComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::setStudyIndex (int index)
+{
+    d->studyComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::setSeriesIndex (int index)
+{
+    d->seriesComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::setImageIndex (int index)
+{
+    d->imagesComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::addWidget (QWidget* widget)
+{
+    // for now, but should be changed rapidly to benefit
+    // from the layout strategy
+    d->view_container->addWidget (widget);
+}
+
 void medViewerArea::setup(void)
 {
     d->patientComboBox->addItem("Choose patient");
@@ -322,7 +355,7 @@ void medViewerArea::split(int rows, int cols)
 
 void medViewerArea::onPatientIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 
     // Setup view container
@@ -364,7 +397,7 @@ void medViewerArea::onPatientIndexChanged(int index)
 
 void medViewerArea::onStudyIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 
     QVariant id = d->studyComboBox->itemData(index);
@@ -387,7 +420,7 @@ void medViewerArea::onStudyIndexChanged(int index)
 
 void medViewerArea::onSeriesIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 
     QVariant id = d->seriesComboBox->itemData(index);
@@ -404,10 +437,12 @@ void medViewerArea::onSeriesIndexChanged(int index)
 
     while(query.next())
         d->imagesComboBox->addItem(query.value(0).toString(), query.value(1));
+
+    emit seriesSelected (id.toInt());
 }
 
 void medViewerArea::onImageIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 }

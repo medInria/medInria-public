@@ -178,3 +178,13 @@ medBrowserArea::~medBrowserArea(void)
 
     d = NULL;
 }
+
+medDatabaseView *medBrowserArea::databaseView (void)
+{
+    return d->view;
+}
+
+medDatabaseModel *medBrowserArea::databaseModel (void)
+{
+    return d->model;
+}

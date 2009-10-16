@@ -61,12 +61,20 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 {
     if(qobject_cast<medDatabaseModel *>(this->model()))
         if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
-            if(item->table() == "patient")
+            if(item->table() == "patient") {
                 emit patientDoubleClicked(item->value(0).toInt());
-            else if(item->table() == "study")
+		emit patientDoubleClicked(index);
+	    }
+            else if(item->table() == "study") {
                 emit studyDoubleClicked(item->value(0).toInt());
-            else if(item->table() == "series")
+		emit studyDoubleClicked(index);
+	    }
+            else if(item->table() == "series") {
                 emit seriesDoubleClicked(item->value(0).toInt());
-            else
+		emit seriesDoubleClicked(index);
+	    }
+	    else {
                 emit imageDoubleClicked(item->value(0).toInt());
+		emit imageDoubleClicked(index);
+	    }
 }

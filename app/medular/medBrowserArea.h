@@ -27,6 +27,8 @@
 // /////////////////////////////////////////////////////////////////
 
 class medBrowserAreaPreviewPrivate;
+class medDatabaseView;
+class medDatabaseModel;
 
 class medBrowserAreaPreview : public QWidget
 {
@@ -61,6 +63,9 @@ class medBrowserArea : public QWidget
 public:
      medBrowserArea(QWidget *parent = 0);
     ~medBrowserArea(void);
+
+    medDatabaseView *databaseView (void);
+    medDatabaseModel *databaseModel (void);
 
 private:
     medBrowserAreaPrivate *d;

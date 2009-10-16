@@ -23,6 +23,7 @@
 #include <QtGui/QWidget>
 
 class medViewerAreaPrivate;
+class medViewerAreaViewContainer;
 
 class medViewerArea : public QWidget
 {
@@ -31,6 +32,20 @@ class medViewerArea : public QWidget
 public:
      medViewerArea(QWidget *parent = 0);
     ~medViewerArea(void);
+
+    void setPatientIndex (int index);
+    void setStudyIndex (int index);
+    void setSeriesIndex (int index);
+    void setImageIndex (int index);
+
+    void addWidget (QWidget* widget);
+        
+signals:
+    void patientSelected (int index);
+    void studySelected (int index);
+    void seriesSelected (int index);
+    void imageSelected (int index);
+        
 
 public slots:
     void setup(void);
