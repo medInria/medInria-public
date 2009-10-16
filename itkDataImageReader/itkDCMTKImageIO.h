@@ -5,14 +5,15 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include <map>
-#include <vector>
-#include <set>
-
 #include "itkMultiThreadedImageIOBase.h"
 #include <itkMetaDataObject.h>
 
 #include "itkDataImageReaderPluginExport.h"
+
+#include <map>
+#include <vector>
+#include <set>
+
 
 class DcmElement;
 
@@ -57,7 +58,14 @@ namespace itk
     typedef MetaDataObject < std::vector<uint16_t> >     MetaDataVectorUInt16Type;
 
     typedef MultiThreadedImageIOBase::RegionType         RegionType;
+
+    typedef std::vector<std::string>                     StringVectorType;
     
+    typedef std::map<std::string, int>                   NameToIndexMapType;
+    typedef std::map<int, std::list<std::string> >       IndexToNamesMapType;
+    typedef std::set< double >                           SliceLocationSetType;
+    typedef std::set< std::string >                      NameSetType;
+    typedef std::multimap< double, std::string >         SliceLocationToNamesMultiMapType;
     
     bool CanReadFile(const char*);
     
@@ -95,7 +103,7 @@ namespace itk
 
 
     inline std::string GetMetaDataValueString (const char* key, int index) const;
-    inline const std::vector<std::string>& GetMetaDataValueVectorString (const char* key) const;
+    inline const StringVectorType& GetMetaDataValueVectorString (const char* key) const;
     //std::vector<std::string> GetMetaDataValueVectorString (const char* key) const;
 
 
@@ -103,7 +111,7 @@ namespace itk
     
     DCMTKImageIO();
     ~DCMTKImageIO();
-    void PrintSelf(std::ostream& os, Indent indent) const {};
+    void PrintSelf(std::ostream& os, Indent indent) const;
 
     void ThreadedRead (void* buffer, RegionType region, int threadId);    
     void InternalRead (void* buffer, int slice, unsigned long pixelCount);
@@ -117,7 +125,8 @@ namespace itk
     void DetermineDimensions (void);
     void DetermineOrigin (void);
     void DetermineOrientation (void);
-    
+
+    double GetZPositionForImage (int);
 
     void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
     inline void ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount );
@@ -127,10 +136,16 @@ namespace itk
     DCMTKImageIO(const Self&);
     void operator=(const Self&);
     
-    std::vector< std::string > m_OrderedFileNames;
+    StringVectorType           m_OrderedFileNames;
     std::string                m_Directory;
 
-    std::vector<std::string>   m_EmptyVector;
+
+    SliceLocationSetType             m_LocationSet;
+    NameToIndexMapType               m_FilenameToIndexMap;
+    SliceLocationToNamesMultiMapType m_LocationToFilenamesMap;
+    
+    
+    StringVectorType           m_EmptyVector;
   };
   
   
