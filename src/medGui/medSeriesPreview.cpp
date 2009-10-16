@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 19:47:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  8 19:52:59 2009 (+0200)
+ * Last-Updated: Wed Oct 14 18:20:55 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 3
+ *     Update #: 6
  */
 
 /* Commentary: 
@@ -36,9 +36,26 @@ medSeriesPreview::~medSeriesPreview(void)
     d = NULL;
 }
 
+QSize medSeriesPreview::sizeHint(void) const
+{
+    return QSize();
+}
+
+void medSeriesPreview::setup(int seriesId)
+{
+    Q_UNUSED(seriesId);
+}
+
 void medSeriesPreview::paintEvent(QPaintEvent *event)
 {
-    QPainter painter(this);
+    QLinearGradient gradient;
+    gradient.setStart(event->rect().topLeft());
+    gradient.setFinalStop(event->rect().bottomLeft());
 
-    painter.fillRect(event->rect(), Qt::blue);
+    gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
+    gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
+
+    QPainter painter(this);
+    painter.fillRect(event->rect(), gradient);
+    painter.end();
 }

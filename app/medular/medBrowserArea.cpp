@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 15:56:40 2009 (+0200)
+ * Last-Updated: Fri Oct 16 11:30:51 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 139
+ *     Update #: 163
  */
 
 /* Commentary: 
@@ -26,6 +26,7 @@
 #include <medSql/medDatabaseView.h>
 
 #include <medGui/medPatientPreview.h>
+#include <medGui/medStatusPanel.h>
 #include <medGui/medStudyPreview.h>
 #include <medGui/medSeriesPreview.h>
 #include <medGui/medImagePreview.h>
@@ -92,7 +93,7 @@ void medBrowserAreaPreview::onPatientClicked(int id)
 
 void medBrowserAreaPreview::onStudyClicked(int id)
 {
-    qDebug() << __func__ << id;
+    d->study_preview->setup(id);
 
     d->stack->setCurrentWidget(d->study_preview);
 }
@@ -119,9 +120,9 @@ class medBrowserAreaPrivate
 {
 public:
     medBrowserAreaPreview *preview;
-
     medDatabaseModel *model;
     medDatabaseView *view;
+    medStatusPanel *status;
 };
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
@@ -133,11 +134,18 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->view = new medDatabaseView(this);
     d->view->setModel(d->model);
 
+    d->status = new medStatusPanel(this);
+    d->status->addWidget(new QLabel("Database location: /path/to/mon/cul"));
+    d->status->addWidget(new QLabel("Database size: xxx KB"));
+    d->status->addSpacer();
+    d->status->addWidget(new QLabel("Current user: Unknown"));
+
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(d->view);
     layout->addWidget(d->preview);
+    layout->addWidget(d->status);
 
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
@@ -155,6 +163,7 @@ medBrowserArea::~medBrowserArea(void)
     delete d->preview;
     delete d->model;
     delete d->view;
+    delete d->status;
     delete d;
 
     d = NULL;

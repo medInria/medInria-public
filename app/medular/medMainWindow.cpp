@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct 10 21:34:53 2009 (+0200)
+ * Last-Updated: Mon Oct 12 18:17:54 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 91
+ *     Update #: 94
  */
 
 /* Commentary: 
@@ -83,8 +83,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 #endif
 
     if(!(qApp->arguments().contains("--fullscreen"))) {
-
-        qDebug() << "HERE";
 
         d->switchToWelcomeAreaAction->setEnabled(false);
         d->switchToWelcomeAreaAction->setText("Welcome");

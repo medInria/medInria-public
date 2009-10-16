@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:46:22 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct 10 00:14:23 2009 (+0200)
+ * Last-Updated: Fri Oct 16 09:48:07 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 140
+ *     Update #: 161
  */
 
 /* Commentary: 
@@ -26,6 +26,7 @@
 
 medToolBoxControl::medToolBoxControl(QWidget *parent) : QAbstractButton(parent)
 {
+    this->setAttribute(Qt::WA_MacShowFocusRect, false);
     this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
@@ -49,7 +50,6 @@ void medToolBoxControl::paintEvent(QPaintEvent *event)
     painter.drawEllipse(event->rect().adjusted(2, 2, -2, -2));
     painter.setPen(QColor(0x49, 0x49, 0x49));
     painter.setBrush(QColor(0x49, 0x49, 0x49));
-    // painter.drawPolygon(QPolygon() << QPoint(10, 5) << QPoint(10, 11) << QPoint(4, 8));
     painter.drawEllipse(event->rect().adjusted(4, 4, -4, -4));
     painter.end();
 }
@@ -114,9 +114,9 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
 
     medStyle::medDrawRoundRectWithDoubleLinearGradient(&p, event->rect(), gradientUp, gradientMd, gradientMd, gradientDw, 4, 0, 4, 0, Qt::black);
 
-    QWidget::paintEvent(event);
-
     p.end();
+
+    QWidget::paintEvent(event);
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -141,7 +141,7 @@ medToolBoxBody::medToolBoxBody(QWidget *parent) : QWidget(parent), d(new medTool
     d->row = 0;
     d->col = 0;
 
-    d->timeline.setDuration(1000);
+    d->timeline.setDuration(500);
     d->timeline.setCurveShape(QTimeLine::EaseInOutCurve);
 
     connect(&(d->timeline), SIGNAL(frameChanged(int)), this, SLOT(animate(int)));
@@ -220,15 +220,11 @@ void medToolBoxBody::paintEvent(QPaintEvent *event)
 {
     QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
 
-    QColor gradientUp = QColor(0x4b, 0x4b, 0x4b);
-    QColor gradientMd = QColor(0x2e, 0x2e, 0x2e);
-    QColor gradientDw = QColor(0x4b, 0x4b, 0x4b);
-
-    medStyle::medDrawRoundRectWithColor(&p, event->rect().adjusted(0, -1, 0, 0), Qt::darkGray, 0, 4, 0, 4, Qt::black);
-
-    QWidget::paintEvent(event);
+    medStyle::medDrawRoundRectWithColor(&p, event->rect().adjusted(0, -1, 0, 0), palette().color(QPalette::Base), 0, 4, 0, 4, Qt::black);
 
     p.end();
+
+    QWidget::paintEvent(event);
 }
 
 // /////////////////////////////////////////////////////////////////

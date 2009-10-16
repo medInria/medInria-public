@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 19:45:42 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  8 19:46:09 2009 (+0200)
+ * Last-Updated: Wed Oct 14 18:19:13 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 3
  */
 
 /* Commentary: 
@@ -31,6 +31,10 @@ class medSeriesPreview : public QWidget
 public:
      medSeriesPreview(QWidget *parent = 0);
     ~medSeriesPreview(void);
+
+    QSize sizeHint(void) const;
+
+    void setup(int seriesId);
 
 protected:
     void paintEvent(QPaintEvent *event);

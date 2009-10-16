@@ -1,12 +1,12 @@
-/* medImageStack.cpp --- 
+/* medImageList.cpp --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Thu Oct  8 20:03:17 2009 (+0200)
+ * Created: Fri Oct 16 11:41:28 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 11:48:07 2009 (+0200)
+ * Last-Updated: Fri Oct 16 12:05:49 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 67
+ *     Update #: 4
  */
 
 /* Commentary: 
@@ -17,7 +17,7 @@
  * 
  */
 
-#include "medImageStack.h"
+#include "medImageList.h"
 
 #include <QtCore>
 #include <QtGui>
@@ -172,45 +172,45 @@ static QPixmap loadImage(const QString& name)
 }
 
 // /////////////////////////////////////////////////////////////////
-// medImageStack
+// medImageList
 // /////////////////////////////////////////////////////////////////
 
-class medImageStackPrivate
+class medImageListPrivate
 {
 public:
     QMap<int, QString> names;
     QMap<int, int> sizes;
 };
 
-medImageStack::medImageStack(QWidget *parent) : QWidget(parent), d(new medImageStackPrivate)
+medImageList::medImageList(QWidget *parent) : QWidget(parent), d(new medImageListPrivate)
 {
 
 }
 
-medImageStack::~medImageStack(void)
+medImageList::~medImageList(void)
 {
     delete d;
     
     d = NULL;
 }
 
-void medImageStack::clear(void)
+void medImageList::clear(void)
 {
     d->names.clear();
     d->sizes.clear();
 }
 
-void medImageStack::setStackName(int stack, QString name)
+void medImageList::setListName(int list, QString name)
 {
-    d->names.insert(stack, name);
+    d->names.insert(list, name);
 }
 
-void medImageStack::setStackSize(int stack, int size)
+void medImageList::setListSize(int list, int size)
 {
-    d->sizes.insert(stack, size);
+    d->sizes.insert(list, size);
 }
 
-void medImageStack::paintEvent(QPaintEvent *event)
+void medImageList::paintEvent(QPaintEvent *event)
 {
     QPainter p;
     p.begin(this);
@@ -221,17 +221,7 @@ void medImageStack::paintEvent(QPaintEvent *event)
     for(int i = 0; i < d->sizes.count(); i++) {
         p.save();
         p.translate(10 + i*160, 10);
-        switch(d->sizes.value(i)) {
-        case 1:
-            drawOneImage(&p, loadImage("1"));
-            break;
-        case 2:
-            drawTwoImages(&p, loadImage("1"), loadImage("2"));
-            break;
-        default:
-            drawThreeImages(&p, loadImage("1"), loadImage("2"), loadImage("3"));
-            break;
-        }
+        drawOneImage(&p, loadImage("1"));
         drawShadowedText(&p, 40, 100, d->names.value(i));
         drawBadge(&p, 0, 0, QString::number(d->sizes.value(i)));
         p.restore();
