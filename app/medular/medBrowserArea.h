@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 08:28:09 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 08:28:14 2009 (+0200)
+ * Last-Updated: Fri Oct  9 15:49:52 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 2
  */
 
 /* Commentary: 
@@ -37,6 +37,8 @@ class medBrowserAreaPreview : public QWidget
 public:
      medBrowserAreaPreview(QWidget *parent = 0);
     ~medBrowserAreaPreview(void);
+
+    QSize sizeHint(void) const;
 
 public slots:
     void onPatientClicked(int id);

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Sep 22 15:57:54 2009 (+0200)
+ * Last-Updated: Fri Oct 16 12:58:11 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 7
  */
 
 /* Commentary: 
@@ -33,15 +33,28 @@ public:
      medViewerArea(QWidget *parent = 0);
     ~medViewerArea(void);
 
+    void setPatientIndex (int index);
+    void setStudyIndex (int index);
+    void setSeriesIndex (int index);
+    void setImageIndex (int index);
+
+    void addWidget (QWidget* widget);
+        
+signals:
+    void patientSelected (int index);
+    void studySelected (int index);
+    void seriesSelected (int index);
+    void imageSelected (int index);
+        
+
 public slots:
+    void setup(void);
     void split(int rows, int cols);
 
     void onPatientIndexChanged(int index);
     void onStudyIndexChanged(int index);
     void onSeriesIndexChanged(int index);
     void onImageIndexChanged(int index);
-
-    medViewerAreaViewContainer *current (void);
 
 private:
     medViewerAreaPrivate *d;

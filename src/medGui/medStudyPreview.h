@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 19:45:13 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  8 19:46:15 2009 (+0200)
+ * Last-Updated: Fri Oct 16 12:12:11 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 3
+ *     Update #: 7
  */
 
 /* Commentary: 
@@ -31,6 +31,10 @@ class medStudyPreview : public QWidget
 public:
      medStudyPreview(QWidget *parent = 0);
     ~medStudyPreview(void);
+
+    QSize sizeHint(void) const;
+
+    void setup(int studyId);
 
 protected:
     void paintEvent(QPaintEvent *event);

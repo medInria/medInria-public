@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  7 15:59:14 2009 (+0200)
+ * Last-Updated: Fri Oct 16 15:12:10 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 125
+ *     Update #: 331
  */
 
 /* Commentary: 
@@ -18,187 +18,18 @@
  */
 
 #include "medViewerArea.h"
-#include "medViewerAreaViewContainer.h"
 
+#include <dtkCore/dtkGlobal.h>
+
+#include <medSql/medDatabaseController.h>
+
+#include <medGui/medClutEditor.h>
 #include <medGui/medLayoutChooser.h>
 #include <medGui/medStyle.h>
+#include <medGui/medToolBox.h>
 
 #include <QtGui>
-
-///////////////////////////////////////////////////////////////////
-// medViewerAreaToolBoxHeader
-///////////////////////////////////////////////////////////////////
-
-class medViewerAreaToolBoxHeader : public QWidget
-{
-public:
-     medViewerAreaToolBoxHeader(QWidget *parent = 0);
-    ~medViewerAreaToolBoxHeader(void);
-
-    void setTitle(const QString& title);
-
-protected:
-    void paintEvent(QPaintEvent *event);
-
-private:
-    QLabel *label;
-    QLabel *button;
-};
-
-medViewerAreaToolBoxHeader::medViewerAreaToolBoxHeader(QWidget *parent) : QWidget(parent)
-{
-    this->label = new QLabel(this);
-    this->label->setText("Untitled");
-    this->label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-    this->button = new QLabel(this);
-    this->button->setText("?");
-    this->button->setFixedWidth(16);
-
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(5, 0, 5, 0);
-    layout->setSpacing(0);
-    layout->addWidget(this->label);
-    layout->addWidget(this->button);
-
-    this->setStyleSheet(
-     "color: white;"
-     "font-size: 9px;"
-    );
-
-    this->setFixedHeight(20);
-}
-
-medViewerAreaToolBoxHeader::~medViewerAreaToolBoxHeader(void)
-{
-    delete this->label;
-    delete this->button;
-}
-
-void medViewerAreaToolBoxHeader::setTitle(const QString& title)
-{
-    this->label->setText(title);
-}
-
-void medViewerAreaToolBoxHeader::paintEvent(QPaintEvent *event)
-{
-    QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
-
-    QColor gradientUp = QColor(0x4b, 0x4b, 0x4b);
-    QColor gradientMd = QColor(0x2e, 0x2e, 0x2e);
-    QColor gradientDw = QColor(0x4b, 0x4b, 0x4b);
-
-    medStyle::medDrawRoundRectWithDoubleLinearGradient(&p, event->rect(), gradientUp, gradientMd, gradientMd, gradientDw, 4, 0, 4, 0, Qt::darkGray);
-}
-
-///////////////////////////////////////////////////////////////////
-// medViewerAreaToolBoxContent
-///////////////////////////////////////////////////////////////////
-
-class medViewerAreaToolBoxContent : public QWidget
-{
-public:
-     medViewerAreaToolBoxContent(QWidget *parent = 0);
-    ~medViewerAreaToolBoxContent(void);
-
-    void addWidget(QWidget *widget);
-
-protected:
-    void paintEvent(QPaintEvent *event);
-
-private:
-    int row;
-    int col;
-    QGridLayout *layout;
-};
-
-medViewerAreaToolBoxContent::medViewerAreaToolBoxContent(QWidget *parent) : QWidget(parent)
-{    
-    this->layout = new QGridLayout(this);
-
-    this->row = 0;
-    this->col = 0;
-}
-
-medViewerAreaToolBoxContent::~medViewerAreaToolBoxContent(void)
-{
-
-}
-
-void medViewerAreaToolBoxContent::addWidget(QWidget *widget)
-{
-    this->layout->addWidget(widget, row, col);
-
-    if (col > 3) {
-        row++;
-        col = 0;
-    } else {
-        col++;
-    }
-}
-
-void medViewerAreaToolBoxContent::paintEvent(QPaintEvent *event)
-{
-    QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
-
-    QColor gradientUp = QColor(0x4b, 0x4b, 0x4b);
-    QColor gradientMd = QColor(0x2e, 0x2e, 0x2e);
-    QColor gradientDw = QColor(0x4b, 0x4b, 0x4b);
-
-    medStyle::medDrawRoundRectWithColor(&p, event->rect(), Qt::gray, 0, 4, 0, 4, Qt::darkGray);
-}
-
-///////////////////////////////////////////////////////////////////
-// medViewerAreaToolBox
-///////////////////////////////////////////////////////////////////
-
-class medViewerAreaToolBox : public QWidget
-{
-public:
-     medViewerAreaToolBox(QWidget *parent = 0);
-    ~medViewerAreaToolBox(void);
-
-    void addWidget(QWidget *widget);
-
-    void setTitle(const QString& title);
-
-protected:
-    // void paintEvent(QPaintEvent *event);
-
-private:
-    medViewerAreaToolBoxHeader *header;
-    medViewerAreaToolBoxContent *content;
-};
-
-medViewerAreaToolBox::medViewerAreaToolBox(QWidget *parent) : QWidget(parent)
-{
-    this->header = new medViewerAreaToolBoxHeader(this);
-    this->content = new medViewerAreaToolBoxContent(this);
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(this->header);
-    layout->addWidget(this->content);
-
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-}
-
-medViewerAreaToolBox::~medViewerAreaToolBox(void)
-{
-    delete this->header;
-    delete this->content;
-}
-
-void medViewerAreaToolBox::addWidget(QWidget *widget)
-{
-    this->content->addWidget(widget);
-}
-
-void medViewerAreaToolBox::setTitle(const QString &title)
-{
-    this->header->setTitle(title);
-}
+#include <QtSql>
 
 ///////////////////////////////////////////////////////////////////
 // medViewerAreaToolBoxContainer
@@ -210,8 +41,8 @@ public:
      medViewerAreaToolBoxContainer(QWidget *parent = 0);
     ~medViewerAreaToolBoxContainer(void);
 
-    void addToolBox(medViewerAreaToolBox *toolBox);
-    void removeToolBox(medViewerAreaToolBox *toolBox);
+    void addToolBox(medToolBox *toolBox);
+    void removeToolBox(medToolBox *toolBox);
 
 private:
     QWidget *container;
@@ -222,6 +53,7 @@ medViewerAreaToolBoxContainer::medViewerAreaToolBoxContainer(QWidget *parent) : 
 {
     this->container = new QWidget(this);
     this->layout = new QVBoxLayout(this->container);
+    this->layout->setContentsMargins(0, 0, 0, 0);
     this->layout->addStretch(1);
 
     this->setFrameStyle(QFrame::NoFrame);
@@ -236,15 +68,112 @@ medViewerAreaToolBoxContainer::~medViewerAreaToolBoxContainer(void)
 
 }
 
-void medViewerAreaToolBoxContainer::addToolBox(medViewerAreaToolBox *toolBox)
+void medViewerAreaToolBoxContainer::addToolBox(medToolBox *toolBox)
 {
     this->layout->insertWidget(this->layout->count()-1, toolBox, 0, Qt::AlignTop);
 }
 
-void medViewerAreaToolBoxContainer::removeToolBox(medViewerAreaToolBox *toolBox)
+void medViewerAreaToolBoxContainer::removeToolBox(medToolBox *toolBox)
 {
     this->layout->removeWidget(toolBox);
 }
+
+///////////////////////////////////////////////////////////////////
+// medViewerAreaViewContainer
+///////////////////////////////////////////////////////////////////
+
+class medViewerAreaViewContainer : public QWidget
+{
+public:
+     medViewerAreaViewContainer(QWidget *parent = 0);
+    ~medViewerAreaViewContainer(void);
+
+    medViewerAreaViewContainer *current(void);
+
+    void split(int rows, int cols);
+    void addWidget (QWidget* widget);
+
+protected:
+    void focusInEvent(QFocusEvent *event);
+    void focusOutEvent(QFocusEvent *event);
+    void paintEvent(QPaintEvent *event);
+
+private:
+    QGridLayout *m_layout;
+
+    static medViewerAreaViewContainer *s_current;
+};
+
+medViewerAreaViewContainer::medViewerAreaViewContainer(QWidget *parent) : QWidget(parent)
+{
+    m_layout = new QGridLayout(this);
+    m_layout->setContentsMargins(0, 0, 0, 0);
+    m_layout->setSpacing(2);
+
+    this->setFocusPolicy(Qt::StrongFocus);
+}
+
+medViewerAreaViewContainer::~medViewerAreaViewContainer(void)
+{
+    delete m_layout;
+}
+
+medViewerAreaViewContainer *medViewerAreaViewContainer::current(void)
+{
+    return s_current;
+}
+
+void medViewerAreaViewContainer::split(int rows, int cols)
+{
+    medViewerAreaViewContainer *current = this->current();
+
+    if (!current)
+        return;
+
+    if (current->m_layout->count())
+        return;
+
+    for(int i = 0 ; i < rows ; i++)
+        for(int j = 0 ; j < cols ; j++)
+            current->m_layout->addWidget(new medViewerAreaViewContainer(this), i, j);
+
+    s_current = 0;
+}
+
+void medViewerAreaViewContainer::addWidget (QWidget* widget)
+{
+    m_layout->addWidget (widget, 0, 0);
+}
+
+void medViewerAreaViewContainer::focusInEvent(QFocusEvent *event)
+{
+    s_current = this;
+
+    QWidget::focusInEvent(event);
+}
+
+void medViewerAreaViewContainer::focusOutEvent(QFocusEvent *event)
+{
+    QWidget::focusOutEvent(event);
+}
+
+void medViewerAreaViewContainer::paintEvent(QPaintEvent *event)
+{
+    if(this->layout()->count())
+        return;
+
+    QPainter painter;
+    painter.begin(this);
+    if (s_current == this)
+        painter.setPen(Qt::red);
+    else
+        painter.setPen(Qt::darkGray);
+    painter.setBrush(QColor(0x38, 0x38, 0x38));
+    painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
+    painter.end();
+}
+
+medViewerAreaViewContainer *medViewerAreaViewContainer::s_current = NULL;
 
 ///////////////////////////////////////////////////////////////////
 // medViewerArea
@@ -256,7 +185,14 @@ public:
     medViewerAreaViewContainer *view_container;
     medViewerAreaToolBoxContainer *toolbox_container;
 
-    QHash<int, medViewerAreaToolBoxContainer *> view_containers;
+    QStackedWidget *stack;
+
+    QComboBox *patientComboBox;
+    QComboBox *studyComboBox;
+    QComboBox *seriesComboBox;
+    QComboBox *imagesComboBox;
+
+    QHash<int, medViewerAreaViewContainer *> view_containers;
 };
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
@@ -265,56 +201,40 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     QVBoxLayout *c_layout_v = new QVBoxLayout(central);
     c_layout_v->setContentsMargins(0, 0, 0, 0);
-    c_layout_v->setSpacing(0);
+    c_layout_v->setSpacing(10);
 
     QWidget *c_top = new QWidget(central);
     c_top->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-    // QStackedWidget *stack = new QStackedWidget(central);
-
-    d->view_container = new medViewerAreaViewContainer(central);
-    d->view_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    QComboBox *patientComboBox = new QComboBox(this);
-    patientComboBox->addItem("Choose patient");
-    patientComboBox->addItem("Patient A");
-    patientComboBox->addItem("Patient B");
-    patientComboBox->addItem("Patient C");
-    connect(patientComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onPatientIndexChanged(int)));
-
-    QComboBox *studyComboBox = new QComboBox(this);
-    studyComboBox->addItem("Choose study");
-    studyComboBox->addItem("Study A");
-    studyComboBox->addItem("Study B");
-    studyComboBox->addItem("Study C");
-    connect(studyComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onStudyIndexChanged(int)));
-
-    QComboBox *seriesComboBox = new QComboBox(this);
-    seriesComboBox->addItem("Choose series");
-    seriesComboBox->addItem("Series A");
-    seriesComboBox->addItem("Series B");
-    seriesComboBox->addItem("Series C");
-    connect(seriesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSeriesIndexChanged(int)));
+    d->view_container = NULL;
     
-    QComboBox *imagesComboBox = new QComboBox(this);
-    imagesComboBox->addItem("Choose image");
-    imagesComboBox->addItem("Image A");
-    imagesComboBox->addItem("Image B");
-    imagesComboBox->addItem("Image C");
-    connect(imagesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onImageIndexChanged(int)));
+    d->stack = new QStackedWidget(central);
+    d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    d->patientComboBox = new QComboBox(this);
+    connect(d->patientComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onPatientIndexChanged(int)));
+
+    d->studyComboBox = new QComboBox(this);
+    connect(d->studyComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onStudyIndexChanged(int)));
+
+    d->seriesComboBox = new QComboBox(this);
+    connect(d->seriesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onSeriesIndexChanged(int)));
+    
+    d->imagesComboBox = new QComboBox(this);
+    connect(d->imagesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onImageIndexChanged(int)));
 
     QHBoxLayout *c_layout_h = new QHBoxLayout(c_top);
     c_layout_h->setContentsMargins(0, 0, 0, 0);
     c_layout_h->setSpacing(0);
-    c_layout_h->addWidget(patientComboBox);
-    c_layout_h->addWidget(studyComboBox);
-    c_layout_h->addWidget(seriesComboBox);
-    c_layout_h->addWidget(imagesComboBox);
+    c_layout_h->addWidget(d->patientComboBox);
+    c_layout_h->addWidget(d->studyComboBox);
+    c_layout_h->addWidget(d->seriesComboBox);
+    c_layout_h->addWidget(d->imagesComboBox);
 
     c_layout_v->addWidget(c_top);
-    c_layout_v->addWidget(d->view_container);
+    c_layout_v->addWidget(d->stack);
 
-    // Setting up toolboxes
+    // Setting up layout chooser
 
     medLayoutChooser *layoutChooser = new medLayoutChooser;
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SLOT(split(int,int)));
@@ -325,82 +245,190 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QMenu *layoutMenu = new QMenu;
     layoutMenu->addAction(layoutAction);
 
-    QPushButton *undoLayoutButton = new QPushButton("Undo", this);
-    QPushButton *  doLayoutButton = new QPushButton("    ", this);
-    QPushButton *redoLayoutButton = new QPushButton("Redo", this);
+    QPushButton *doLayoutButton = new QPushButton(this);
 
     doLayoutButton->setMenu(layoutMenu);
 
-    medViewerAreaToolBox *layoutToolBox = new medViewerAreaToolBox(this);
+    medToolBox *layoutToolBox = new medToolBox(this);
     layoutToolBox->setTitle("Layout");
-    layoutToolBox->addWidget(undoLayoutButton);
-    layoutToolBox->addWidget( doLayoutButton);
-    layoutToolBox->addWidget(redoLayoutButton);
-    
+    layoutToolBox->addWidget(doLayoutButton);
+
+    // Setting up lookup table editor
+
+    medClutEditor *clutEditor = new medClutEditor;
+
+    medToolBox *clutEditorToolBox = new medToolBox(this);
+    clutEditorToolBox->setTitle("Color lookup table");
+    clutEditorToolBox->addWidget(clutEditor);
+
     // Setting up container
 
     d->toolbox_container = new medViewerAreaToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(layoutToolBox);
-    d->toolbox_container->addToolBox(new medViewerAreaToolBox);
-    d->toolbox_container->addToolBox(new medViewerAreaToolBox);
+    d->toolbox_container->addToolBox(clutEditorToolBox);
 
     // Setting up layout
 
     QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
+    layout->setContentsMargins(10, 10, 10, 10);
+    layout->setSpacing(10);
     layout->addWidget(d->toolbox_container);
     layout->addWidget(central);
+
+    // Setup from database
+    this->setup();
 }
 
 medViewerArea::~medViewerArea(void)
 {
     delete d->toolbox_container;
-    delete d->view_container;
+    delete d->stack;
     delete d;
 
     d = NULL;
 }
 
+void medViewerArea::setPatientIndex (int index)
+{
+    d->patientComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::setStudyIndex (int index)
+{
+    d->studyComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::setSeriesIndex (int index)
+{
+    d->seriesComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::setImageIndex (int index)
+{
+    d->imagesComboBox->setCurrentIndex (index);
+}
+
+void medViewerArea::addWidget (QWidget* widget)
+{
+    // for now, but should be changed rapidly to benefit
+    // from the layout strategy
+    d->view_container->addWidget (widget);
+}
+
+void medViewerArea::setup(void)
+{
+    d->patientComboBox->addItem("Choose patient");
+    d->studyComboBox->addItem("Choose study");
+    d->seriesComboBox->addItem("Choose series");
+    d->imagesComboBox->addItem("Choose image");
+
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
+
+    query.prepare("SELECT name, id FROM patient");
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+
+    while(query.next())
+        d->patientComboBox->addItem(query.value(0).toString(), query.value(1));
+}
+
 void medViewerArea::split(int rows, int cols)
 {
-    d->view_container->split(rows, cols);
+    if (d->view_container)
+        d->view_container->split(rows, cols);
 }
 
 void medViewerArea::onPatientIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 
-    qDebug() << __func__ << index;
+    // Setup view container
+
+    medViewerAreaViewContainer *view_container;
+
+    if(!d->view_containers.contains(index)) {
+        view_container = new medViewerAreaViewContainer(this);
+        d->view_containers.insert(index, view_container);
+        d->stack->addWidget(view_container);
+    } else {
+        view_container = d->view_containers.value(index);
+    }
+
+    d->stack->setCurrentWidget(view_container);
+    d->view_container = view_container;
+
+    // Setup combos
+
+    QVariant id = d->patientComboBox->itemData(index);
+
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
+
+    query.prepare("SELECT name, id FROM study WHERE patient = :patient");
+    query.bindValue(":patient", id.toInt());
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+
+    d->studyComboBox->clear();
+    d->studyComboBox->addItem("Choose study");
+    d->seriesComboBox->clear();
+    d->seriesComboBox->addItem("Choose series");
+    d->imagesComboBox->clear();
+    d->imagesComboBox->addItem("Choose image");
+
+    while(query.next())
+        d->studyComboBox->addItem(query.value(0).toString(), query.value(1));
 }
 
 void medViewerArea::onStudyIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 
-    qDebug() << __func__ << index;
+    QVariant id = d->studyComboBox->itemData(index);
+
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
+
+    query.prepare("SELECT name, id FROM series WHERE study = :study");
+    query.bindValue(":study", id);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+
+    d->seriesComboBox->clear();
+    d->seriesComboBox->addItem("Choose series");
+    d->imagesComboBox->clear();
+    d->imagesComboBox->addItem("Choose image");
+
+    while(query.next())
+        d->seriesComboBox->addItem(query.value(0).toString(), query.value(1));
 }
 
 void medViewerArea::onSeriesIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
 
-    qDebug() << __func__ << index;
+    QVariant id = d->seriesComboBox->itemData(index);
+
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
+
+    query.prepare("SELECT name, id FROM image WHERE series = :series");
+    query.bindValue(":series", id);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+
+    d->imagesComboBox->clear();
+    d->imagesComboBox->addItem("Choose image");
+
+    while(query.next())
+        d->imagesComboBox->addItem(query.value(0).toString(), query.value(1));
+
+    emit seriesSelected (id.toInt());
 }
 
 void medViewerArea::onImageIndexChanged(int index)
 {
-    if(!index)
+    if(index<1)
         return;
-
-    qDebug() << __func__ << index;
-}
-
-medViewerAreaViewContainer *medViewerArea::current (void)
-{
-    return d->view_container->current();
 }

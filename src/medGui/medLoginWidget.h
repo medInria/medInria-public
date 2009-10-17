@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 15:34:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct  5 18:01:29 2009 (+0200)
+ * Last-Updated: Thu Oct 15 15:15:58 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 7
+ *     Update #: 8
  */
 
 /* Commentary: 
@@ -35,6 +35,9 @@ public:
 protected slots:
     void onTimeOut(void);
     void onReturnPressed(void);
+
+protected:
+    void paintEvent(QPaintEvent *event);
 
 private:
     medLoginWidgetPrivate *d;

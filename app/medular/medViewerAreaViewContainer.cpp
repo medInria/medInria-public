@@ -37,6 +37,9 @@ medViewerAreaViewContainer::~medViewerAreaViewContainer(void)
 
 medViewerAreaViewContainer *medViewerAreaViewContainer::current(void)
 {
+    if (!s_current)
+      s_current = this;
+    
     return s_current;
 }
 
@@ -90,7 +93,6 @@ static void paintLayout(QPainter *painter, QLayoutItem *item)
 
 void medViewerAreaViewContainer::paintEvent(QPaintEvent *event)
 {
-    qDebug() << "medViewerAreaViewContainer::paintEvent(QPaintEvent *event)";
     QPainter painter(this);
 
     if (layout())

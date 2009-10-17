@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Jul  3 19:21:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  7 12:31:46 2009 (+0200)
+ * Last-Updated: Thu Oct 15 15:34:58 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 574
+ *     Update #: 623
  */
 
 /* Commentary: 
@@ -110,6 +110,10 @@ void medStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *optio
                 painter->restore();
             }
         }
+        break;
+    case PE_FrameDefaultButton:
+    case PE_FrameFocusRect:
+        // Do not draw the focus frame !
         break;
     case PE_IndicatorCheckBox: {
             bool on = false;
@@ -311,6 +315,7 @@ void medStyle::drawControl(ControlElement element, const QStyleOption *option, Q
             }
         }
         painter->restore();
+        break;
     default:
         QCleanlooksStyle::drawControl(element, option, painter, widget);
         break;
@@ -333,6 +338,93 @@ void medStyle::drawComplexControl(ComplexControl control, const QStyleOptionComp
             } 
         }      
         break;
+// #ifndef QT_NO_SCROLLBAR
+//     case CC_ScrollBar:
+//         painter->save();
+//         if (const QStyleOptionSlider *scrollBar = qstyleoption_cast<const QStyleOptionSlider *>(option)) {
+//             bool isEnabled = scrollBar->state & State_Enabled;
+//             bool reverse = scrollBar->direction == Qt::RightToLeft;
+//             bool horizontal = scrollBar->orientation == Qt::Horizontal;
+//             bool sunken = scrollBar->state & State_Sunken;
+
+//             painter->fillRect(option->rect, option->palette.background());
+
+//             QRect rect = scrollBar->rect;
+//             QRect scrollBarSubLine = proxy()->subControlRect(control, scrollBar, SC_ScrollBarSubLine, widget);
+//             QRect scrollBarAddLine = proxy()->subControlRect(control, scrollBar, SC_ScrollBarAddLine, widget);
+//             QRect scrollBarSlider = proxy()->subControlRect(control, scrollBar, SC_ScrollBarSlider, widget);
+//             QRect grooveRect = proxy()->subControlRect(control, scrollBar, SC_ScrollBarGroove, widget);
+
+//             // paint groove
+//             if (scrollBar->subControls & SC_ScrollBarGroove) {
+//                 painter->setBrush(Qt::green);
+//                 painter->setPen(Qt::NoPen);
+//                 if (horizontal) {
+//                     painter->drawRect(grooveRect);
+//                     painter->setPen(Qt::black);
+//                     painter->drawLine(grooveRect.topLeft(), grooveRect.topRight());
+//                     painter->drawLine(grooveRect.bottomLeft(), grooveRect.bottomRight());
+//                 } else {
+//                     painter->drawRect(grooveRect);
+//                     painter->setPen(Qt::black);
+//                     painter->drawLine(grooveRect.topLeft(), grooveRect.bottomLeft());
+//                     painter->drawLine(grooveRect.topRight(), grooveRect.bottomRight());
+//                 }
+//             }
+
+//             //paint slider
+//             if (scrollBar->subControls & SC_ScrollBarSlider) {
+//                 QRect pixmapRect = scrollBarSlider;
+//                 if (horizontal)
+//                     pixmapRect.adjust(-1, 0, 0, -1);
+//                 else
+//                     pixmapRect.adjust(0, -1, -1, 0);
+
+//                 if (isEnabled) {
+//                     QLinearGradient gradient(pixmapRect.center().x(), pixmapRect.top(),
+//                                              pixmapRect.center().x(), pixmapRect.bottom());
+//                     if (!horizontal)
+//                         gradient = QLinearGradient(pixmapRect.left(), pixmapRect.center().y(),
+//                                                    pixmapRect.right(), pixmapRect.center().y());
+
+//                     if (option->palette.button().gradient()) {
+//                         gradient.setStops(option->palette.button().gradient()->stops());
+//                     } else {
+//                         if (sunken || (option->state & State_MouseOver &&
+//                             (scrollBar->activeSubControls & SC_ScrollBarSlider))) {
+//                             gradient.setColorAt(0, d->gradientUp.lighter(110));
+//                             gradient.setColorAt(1, d->gradientDw.lighter(110));
+//                         } else {
+//                             gradient.setColorAt(0, d->gradientUp);
+//                             gradient.setColorAt(1, d->gradientDw);
+//                         }
+//                     }
+//                     painter->setPen(QPen(Qt::black, 0));
+//                     painter->setBrush(gradient);
+//                     painter->drawRect(pixmapRect);
+//                 } else {
+//                     QLinearGradient gradient(pixmapRect.center().x(), pixmapRect.top(),
+//                                              pixmapRect.center().x(), pixmapRect.bottom());
+//                     if (!horizontal) {
+//                         gradient = QLinearGradient(pixmapRect.left(), pixmapRect.center().y(),
+//                                                    pixmapRect.right(), pixmapRect.center().y());
+//                     }
+//                     if (sunken) {
+//                         gradient.setColorAt(0, d->gradientUp.lighter(110));
+//                         gradient.setColorAt(1, d->gradientDw.lighter(110));
+//                     } else {
+//                         gradient.setColorAt(0, d->gradientUp);
+//                         gradient.setColorAt(1, d->gradientDw);
+//                     }
+//                     painter->setPen(Qt::black);
+//                     painter->setBrush(gradient);
+//                     painter->drawRect(pixmapRect);
+//                 }
+//             }
+//         }
+//         painter->restore();
+//         break;
+// #endif // QT_NO_SCROLLBAR
     case CC_SpinBox:
         QCleanlooksStyle::drawComplexControl(control, option, painter, widget);
         painter->save();
@@ -363,7 +455,7 @@ void medStyle::polish(QPalette &palette)
     // Active palette
     // /////////////////////////////////////////////////////////////////
     palette.setColor(QPalette::Active, QPalette::Base, d->base);
-    palette.setColor(QPalette::Active, QPalette::AlternateBase, d->base.lighter(150));
+    palette.setColor(QPalette::Active, QPalette::AlternateBase, d->base.lighter(110));
     palette.setColor(QPalette::Active, QPalette::Window, d->window);
     palette.setColor(QPalette::Active, QPalette::WindowText, d->windowText);
     palette.setColor(QPalette::Active, QPalette::Button, d->gradientMd);
@@ -391,7 +483,7 @@ void medStyle::polish(QPalette &palette)
     // Inactive palette
     // /////////////////////////////////////////////////////////////////
     palette.setColor(QPalette::Inactive, QPalette::Base, d->base);
-    palette.setColor(QPalette::Inactive, QPalette::AlternateBase, d->base.lighter(150));
+    palette.setColor(QPalette::Inactive, QPalette::AlternateBase, d->base.lighter(110));
     palette.setColor(QPalette::Inactive, QPalette::Window, d->window);
     palette.setColor(QPalette::Inactive, QPalette::WindowText, d->windowText);
     palette.setColor(QPalette::Inactive, QPalette::Button, d->gradientMd);

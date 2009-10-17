@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Jul  3 19:20:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  7 12:31:21 2009 (+0200)
+ * Last-Updated: Wed Oct 14 18:32:00 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 51
+ *     Update #: 60
  */
 
 /* Commentary: 
@@ -32,8 +32,8 @@ public:
     medStyle(void);
    ~medStyle(void);
 
-   void drawPrimitive  (PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0) const;
-   void drawControl      (ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0) const;
+   void drawPrimitive    (PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0) const;
+   void drawControl        (ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0) const;
    void drawComplexControl (ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget = 0) const;
 
    void polish(QWidget *widget);
