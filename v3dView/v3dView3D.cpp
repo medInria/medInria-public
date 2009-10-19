@@ -10,6 +10,7 @@
 
 #include "v3dView2D.h"
 #include "v3dView3D.h"
+#include "v3dViewWidget.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 
@@ -31,7 +32,7 @@ public:
     vtkRenderer *renderer;
     vtkViewImage3D *view;
 
-    QVTKWidget *widget;
+    v3dViewWidget *widget;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -42,7 +43,7 @@ v3dView3D::v3dView3D(void) : dtkAbstractView(), d(new v3dView3DPrivate)
 {
     d->renderer = vtkRenderer::New();
     
-    d->widget = new QVTKWidget;
+    d->widget = new v3dViewWidget;
     d->widget->GetRenderWindow()->AddRenderer(d->renderer);
 
     d->view = vtkViewImage3D::New();

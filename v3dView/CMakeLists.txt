@@ -95,12 +95,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
   v3dView2D.h
   v3dView3D.h
+  v3dViewWidget.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
   v3dView2D.cpp
   v3dView3D.cpp
+  v3dViewWidget.cpp
 )
 
 ## #################################################################
