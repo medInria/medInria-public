@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 11:30:51 2009 (+0200)
+ * Last-Updated: Fri Oct 16 15:49:00 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 163
+ *     Update #: 188
  */
 
 /* Commentary: 
@@ -134,11 +134,21 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->view = new medDatabaseView(this);
     d->view->setModel(d->model);
 
+    QFormLayout *dataInfoLayout = new QFormLayout;
+    dataInfoLayout->setContentsMargins(0, 5, 0, 5);
+    dataInfoLayout->setSpacing(0);
+    dataInfoLayout->setFormAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    dataInfoLayout->setLabelAlignment(Qt::AlignRight);
+    dataInfoLayout->addRow("Database location:", new QLabel(QString("%1").arg(medDatabaseController::instance()->dataLocation())));
+    dataInfoLayout->addRow("Database size:", new QLabel(QString("%1 bytes").arg(QFileInfo(medDatabaseController::instance()->dataLocation()).size())));
+
+    QWidget *databaseInfo = new QWidget(this);
+    databaseInfo->setLayout(dataInfoLayout);
+
     d->status = new medStatusPanel(this);
-    d->status->addWidget(new QLabel("Database location: /path/to/mon/cul"));
-    d->status->addWidget(new QLabel("Database size: xxx KB"));
-    d->status->addSpacer();
     d->status->addWidget(new QLabel("Current user: Unknown"));
+    d->status->addSpacer();
+    d->status->addWidget(databaseInfo);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);

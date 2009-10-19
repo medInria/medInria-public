@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 09:26:52 2009 (+0200)
+ * Last-Updated: Fri Oct 16 15:44:02 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 108
+ *     Update #: 111
  */
 
 /* Commentary: 
@@ -70,7 +70,6 @@ QString medDatabaseController::dataLocation(void) const
 #ifdef Q_WS_MAC
     return QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation))
     .remove(QCoreApplication::applicationName())
-    .append("/")
     .append(QCoreApplication::applicationName());
 #else
     qDebug() <<  QDesktopServices::storageLocation(QDesktopServices::DataLocation);

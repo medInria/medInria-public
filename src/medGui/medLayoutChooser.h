@@ -1,3 +1,22 @@
+/* medLayoutChooser.h --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Fri Oct 16 15:50:18 2009 (+0200)
+ * Version: $Id$
+ * Last-Updated: Fri Oct 16 15:50:21 2009 (+0200)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #ifndef MEDLAYOUTCHOOSER_H
 #define MEDLAYOUTCHOOSER_H
 
