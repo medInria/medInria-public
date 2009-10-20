@@ -42,24 +42,7 @@
   {									\
     typedef itkDataImage##suffix##Private::ImageType ImageType;		\
     ImageType::Pointer image = dynamic_cast<ImageType*>( (itk::Object*) data ); \
-    if(!image.IsNull()) {						\
-      d->image = image;							\
-      typedef itk::MinimumMaximumImageCalculator<ImageType> MinMaxCalculatorType; \
-      MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New(); \
-      calculator->SetImage ( image );					\
-      try								\
-      {									\
-	calculator->Compute();						\
-      }									\
-      catch (itk::ExceptionObject &e)					\
-      {									\
-	std::cerr << e;							\
-	return;								\
-      }									\
-      d->range_min = calculator->GetMinimum();				\
-      d->range_max = calculator->GetMaximum();				\
-      std::cout << "Image min/max: " << d->range_min << " " << d->range_max << std::endl; \
-    }									\
+    d->image = image;							\
   }									\
   void *itkDataImage##suffix::output(void)				\
   {									\
@@ -119,6 +102,27 @@
 
 
 #endif
+
+
+
+// if(!image.IsNull()) {							
+//  d->image = image;							
+//  typedef itk::MinimumMaximumImageCalculator<ImageType> MinMaxCalculatorType; 
+//  MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New(); 
+//  calculator->SetImage ( image );					
+//  try									
+//  {									
+//    calculator->Compute();						
+//  }									
+//  catch (itk::ExceptionObject &e)					
+//  {									
+//    std::cerr << e;							
+//    return;								
+//  }									
+//  d->range_min = calculator->GetMinimum();				
+//  d->range_max = calculator->GetMaximum();				
+//  std::cout << "Image min/max: " << d->range_min << " " << d->range_max << std::endl; 
+// }									
 
 //typedef itkDataImage##suffix##Private::HistogramGeneratorType HistogramGeneratorType; 
 //HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New(); 
