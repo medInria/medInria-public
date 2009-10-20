@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sun Oct 11 13:00:53 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct 12 18:38:57 2009 (+0200)
+ * Last-Updated: Tue Oct 20 09:58:45 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 17
  */
 
 /* Commentary: 
@@ -21,27 +21,6 @@
 #define MEDSTATUSPANEL_H
 
 #include <QFrame>
-
-// /////////////////////////////////////////////////////////////////
-// medStatusWidget
-// /////////////////////////////////////////////////////////////////
-
-// class medStatusWidgetPrivate;
-
-// class medStatusWidget : public QWidget
-// {
-//     Q_OBJECT
-
-// public:
-//      medStatusWidget(QWidget *parent = 0);
-//     ~medStatusWidget(void);
-
-//     void addField(const QString& field, QString value);
-//     void setField(const QString& field, QString value);
-
-// private:
-//     medStatusWidgetPrivate *d;
-// };
 
 // /////////////////////////////////////////////////////////////////
 // medStatusPanel
@@ -59,6 +38,8 @@ public:
 
     void addSpacer(void);
     void addWidget(QWidget *widget);
+
+    void removeWidget(QWidget *widget);
 
 protected:
     void paintEvent(QPaintEvent *event);

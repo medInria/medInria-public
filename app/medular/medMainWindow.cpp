@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 23:03:44 2009 (+0200)
+ * Last-Updated: Tue Oct 20 09:57:15 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 113
+ *     Update #: 114
  */
 
 /* Commentary: 
@@ -205,38 +205,6 @@ void medMainWindow::writeSettings(void)
     settings.endGroup();
 }
 
-void medMainWindow::displayData(const QStringList& filenames)
-{
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-    
-    dtkAbstractData *imData = 0;
-    
-    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
-
-    for (int i=0; i<readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
-
-        if (dataReader->canRead(filenames)) {
-            dataReader->read(filenames);
-            imData = dataReader->data();
-            delete dataReader;
-            break;
-        }
-    }
-    
-    if (imData) {
-        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView2D");
-
-        if (!view)
-            return;
-        
-        view->setData(imData);
-        view->reset();
-
-        d->viewerArea->setView(view);
-    }
-}
-
 void medMainWindow::switchToWelcomeArea(void)
 {
     d->stack->setCurrentWidget(d->welcomeArea);
@@ -310,24 +278,6 @@ void medMainWindow::onSeriesDoubleClicked(const QModelIndex &index)
     d->viewerArea->setSeriesIndex(index.row()+1);
 
     switchToViewerArea();
-}
-
-void medMainWindow::onSeriesSelected(int index)
-{
-    QVariant id = index;
-    QSqlQuery query(*(medDatabaseController::instance()->database()));
-
-    query.prepare("SELECT name, id, path FROM image WHERE series = :series");
-    query.bindValue(":series", id);
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
-
-    QStringList filenames;
-
-    while(query.next())
-        filenames << query.value(2).toString();
-
-    displayData(filenames);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)

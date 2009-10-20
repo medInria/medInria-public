@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct 19 16:34:26 2009 (+0200)
+ * Last-Updated: Tue Oct 20 09:59:54 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 406
+ *     Update #: 418
  */
 
 /* Commentary: 
@@ -19,7 +19,11 @@
 
 #include "medViewerArea.h"
 
+#include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkGlobal.h>
 
 #include <medSql/medDatabaseController.h>
@@ -469,11 +473,14 @@ void medViewerArea::onSeriesIndexChanged(int index)
     if(index<1)
         return;
 
+    // Query and manage combos
+
     QVariant id = d->seriesComboBox->itemData(index);
+    QStringList filenames;
 
     QSqlQuery query(*(medDatabaseController::instance()->database()));
 
-    query.prepare("SELECT name, id FROM image WHERE series = :series");
+    query.prepare("SELECT name, id, path FROM image WHERE series = :series");
     query.bindValue(":series", id);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
@@ -481,10 +488,43 @@ void medViewerArea::onSeriesIndexChanged(int index)
     d->imagesComboBox->clear();
     d->imagesComboBox->addItem("Choose image");
 
-    while(query.next())
+    while(query.next()) {
         d->imagesComboBox->addItem(query.value(0).toString(), query.value(1));
+        filenames << query.value(2).toString();
+    }
 
-    emit seriesSelected (id.toInt());
+    // Display data
+
+    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
+    
+    dtkAbstractData *imData = NULL;
+    
+    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
+
+    for (int i=0; i<readers.size(); i++) {
+        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+
+        if (dataReader->canRead(filenames)) {
+            dataReader->read(filenames);
+            imData = dataReader->data();
+            delete dataReader;
+            break;
+        }
+    }
+    
+    if (imData) {
+        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView2D");
+
+        if (!view)
+            return;
+        
+        view->setData(imData);
+        view->reset();
+
+        this->setView(view);
+    }
+
+    emit seriesSelected(id.toInt());
 }
 
 void medViewerArea::onImageIndexChanged(int index)
