@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Jul  3 19:21:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct 15 15:34:58 2009 (+0200)
+ * Last-Updated: Mon Oct 19 16:44:22 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 623
+ *     Update #: 630
  */
 
 /* Commentary: 
@@ -111,6 +111,7 @@ void medStyle::drawPrimitive(PrimitiveElement element, const QStyleOption *optio
             }
         }
         break;
+    case PE_Frame:
     case PE_FrameDefaultButton:
     case PE_FrameFocusRect:
         // Do not draw the focus frame !

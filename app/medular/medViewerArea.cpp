@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 16:53:50 2009 (+0200)
+ * Last-Updated: Mon Oct 19 16:34:26 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 342
+ *     Update #: 406
  */
 
 /* Commentary: 
@@ -19,6 +19,7 @@
 
 #include "medViewerArea.h"
 
+#include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkGlobal.h>
 
 #include <medSql/medDatabaseController.h>
@@ -92,7 +93,8 @@ public:
     medViewerAreaViewContainer *current(void);
 
     void split(int rows, int cols);
-    void addWidget (QWidget* widget);
+
+    void setView(dtkAbstractView *view);
 
 protected:
     void focusInEvent(QFocusEvent *event);
@@ -110,6 +112,8 @@ medViewerAreaViewContainer::medViewerAreaViewContainer(QWidget *parent) : QWidge
     m_layout = new QGridLayout(this);
     m_layout->setContentsMargins(0, 0, 0, 0);
     m_layout->setSpacing(2);
+
+    s_current = this;
 
     this->setFocusPolicy(Qt::StrongFocus);
 }
@@ -136,14 +140,27 @@ void medViewerAreaViewContainer::split(int rows, int cols)
 
     for(int i = 0 ; i < rows ; i++)
         for(int j = 0 ; j < cols ; j++)
-            current->m_layout->addWidget(new medViewerAreaViewContainer(this), i, j);
+            current->m_layout->addWidget(new medViewerAreaViewContainer(current), i, j);
 
     s_current = 0;
 }
 
-void medViewerAreaViewContainer::addWidget (QWidget* widget)
+void medViewerAreaViewContainer::setView(dtkAbstractView *view)
 {
-    m_layout->addWidget (widget, 0, 0);
+    medViewerAreaViewContainer *current = this->current();
+
+    if (!current)
+        return;
+
+    if (current->m_layout->count())
+        return;
+
+    if(QWidget *widget = view->widget()) {
+        widget->setParent(this);
+        widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        current->m_layout->setContentsMargins(1, 1, 1, 1);
+        current->m_layout->addWidget(widget, 0, 0);
+    }
 }
 
 void medViewerAreaViewContainer::focusInEvent(QFocusEvent *event)
@@ -160,8 +177,10 @@ void medViewerAreaViewContainer::focusOutEvent(QFocusEvent *event)
 
 void medViewerAreaViewContainer::paintEvent(QPaintEvent *event)
 {
-    if(this->layout()->count())
+    if(this->layout()->count() > 1)
         return;
+
+    QWidget::paintEvent(event);
 
     QPainter painter;
     painter.begin(this);
@@ -257,6 +276,32 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     layoutToolBox->setTitle("Layout");
     layoutToolBox->addWidget(doLayoutButton);
 
+    // Setting up visualization tools
+
+    QPushButton *button0 = new QPushButton;
+    QPushButton *button1 = new QPushButton;
+    QPushButton *button2 = new QPushButton;
+    QPushButton *button3 = new QPushButton;
+    QPushButton *button4 = new QPushButton;
+    QPushButton *button5 = new QPushButton;
+    QPushButton *button6 = new QPushButton;
+    QPushButton *button7 = new QPushButton;
+    QPushButton *button8 = new QPushButton;
+    QPushButton *button9 = new QPushButton;
+
+    medToolBox *visualizationToolBox = new medToolBox(this);
+    visualizationToolBox->setTitle("Visualization");
+    visualizationToolBox->addWidget(button0);
+    visualizationToolBox->addWidget(button1);
+    visualizationToolBox->addWidget(button2);
+    visualizationToolBox->addWidget(button3);
+    visualizationToolBox->addWidget(button4);
+    visualizationToolBox->addWidget(button5);
+    visualizationToolBox->addWidget(button6);
+    visualizationToolBox->addWidget(button7);
+    visualizationToolBox->addWidget(button8);
+    visualizationToolBox->addWidget(button9);
+
     // Setting up lookup table editor
 
     medClutEditor *clutEditor = new medClutEditor;
@@ -270,6 +315,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container = new medViewerAreaToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(layoutToolBox);
+    d->toolbox_container->addToolBox(visualizationToolBox);
     d->toolbox_container->addToolBox(clutEditorToolBox);
 
     // Setting up panel
@@ -292,6 +338,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // Setup from database
     this->setup();
+
+    connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(setup()));
 }
 
 medViewerArea::~medViewerArea(void)
@@ -303,31 +351,29 @@ medViewerArea::~medViewerArea(void)
     d = NULL;
 }
 
-void medViewerArea::setPatientIndex (int index)
+void medViewerArea::setPatientIndex(int index)
 {
-    d->patientComboBox->setCurrentIndex (index);
+    d->patientComboBox->setCurrentIndex(index);
 }
 
-void medViewerArea::setStudyIndex (int index)
+void medViewerArea::setStudyIndex(int index)
 {
-    d->studyComboBox->setCurrentIndex (index);
+    d->studyComboBox->setCurrentIndex(index);
 }
 
-void medViewerArea::setSeriesIndex (int index)
+void medViewerArea::setSeriesIndex(int index)
 {
-    d->seriesComboBox->setCurrentIndex (index);
+    d->seriesComboBox->setCurrentIndex(index);
 }
 
-void medViewerArea::setImageIndex (int index)
+void medViewerArea::setImageIndex(int index)
 {
-    d->imagesComboBox->setCurrentIndex (index);
+    d->imagesComboBox->setCurrentIndex(index);
 }
 
-void medViewerArea::addWidget (QWidget* widget)
+void medViewerArea::setView(dtkAbstractView *view)
 {
-    // for now, but should be changed rapidly to benefit
-    // from the layout strategy
-    d->view_container->addWidget (widget);
+    d->view_container->current()->setView(view);
 }
 
 void medViewerArea::setup(void)

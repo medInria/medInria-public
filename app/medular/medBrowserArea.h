@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 08:28:09 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 15:49:52 2009 (+0200)
+ * Last-Updated: Fri Oct 16 22:53:10 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 2
+ *     Update #: 4
  */
 
 /* Commentary: 
@@ -64,8 +64,8 @@ public:
      medBrowserArea(QWidget *parent = 0);
     ~medBrowserArea(void);
 
-    medDatabaseView *databaseView (void);
-    medDatabaseModel *databaseModel (void);
+    medDatabaseView *view(void);
+    medDatabaseModel *model(void);
 
 private:
     medBrowserAreaPrivate *d;
