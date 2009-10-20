@@ -38,6 +38,7 @@ public:
 
     QVTKWidget *widget;
     QMenu *menu;
+    dtkAbstractData *data;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -50,6 +51,8 @@ v3dView2D::v3dView2D(void) : dtkAbstractView(), d(new v3dView2DPrivate)
 
     d->widget = new QVTKWidget;
     d->widget->GetRenderWindow()->AddRenderer(d->renderer);
+
+    d->data = 0;
 
     d->view = vtkViewImage2D::New();
     d->view->SetRenderWindow(d->widget->GetRenderWindow());
@@ -170,12 +173,10 @@ void *v3dView2D::view(void)
 
 void v3dView2D::setData(dtkAbstractData *data)
 {
-    if(!d->view)
-        return;
-    
     if(!data)
-        return;
+      return;
 
+    d->data = data;
 
     if (data->hasMetaData("PatientName")){
       const QString patientName = data->metaDataValues(tr("PatientName"))[0];
@@ -227,15 +228,17 @@ void v3dView2D::setData(dtkAbstractData *data)
       d->view->AddDataSet(dataset);
 
     
-    /*
-    for( int i=0; i<3; i++)
-      for( int j=0; j<3; j++)
-	qDebug() << directions (i,j) << " ";
-    */
-    
     dtkAbstractView::setData(data);
 
     this->update();
+}
+
+void *v3dView2D::data (void)
+{
+    if (d->data)
+      return d->data->output();
+
+    return NULL;
 }
 
 QWidget *v3dView2D::widget(void)
