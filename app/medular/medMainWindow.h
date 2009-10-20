@@ -45,7 +45,7 @@ public slots:
     void onStudyDoubleClicked(const QModelIndex &index);
     void onSeriesDoubleClicked(const QModelIndex &index);
 
-    void onProgressUpdated (int progress);
+    //void onProgressUpdated (int progress);
 
 protected:
     void closeEvent(QCloseEvent *event);
