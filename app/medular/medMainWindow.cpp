@@ -54,6 +54,9 @@ public:
     QAction *switchToWelcomeAreaAction;
     QAction *switchToBrowserAreaAction;
     QAction *switchToViewerAreaAction;
+
+    dtkAbstractView       *currentView;
+    dtkAbstractDataReader *currentDataReader;
 };
 
 extern "C" int init_core(void);                  // -- Initialization core layer python wrapped functions
@@ -215,21 +218,50 @@ void medMainWindow::displayData (const QStringList& filenames)
   for (int i=0; i<readers.size(); i++) {
     dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
     if (dataReader->canRead(filenames)) {
-      dataReader->read(filenames);
+
+      dataReader->readInformation (filenames);
       imData = dataReader->data();
+
+      d->currentDataReader = dataReader;
+      
+      if (imData) {
+	dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView2D");
+	if (!view)
+	  return;
+
+	d->currentView = view;
+	
+	d->viewerArea->addWidget (view->widget());
+	d->viewerArea->repaint();
+	
+	//view->reset();
+      }
+      
+      connect ( dataReader, SIGNAL (progressUpdated (int)), this, SLOT (onProgressUpdated (int)));
+      
+      dataReader->read(filenames);
+
+      disconnect( dataReader, SIGNAL (progressUpdated (int)), this, SLOT (onProgressUpdated (int)));
+      
       delete dataReader;
       break;
     }
   }
-  
-  if (imData) {    
-    dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView2D");
-    if (!view)
-      return;
+}
 
-    d->viewerArea->addWidget (view->widget());
-    view->setData (imData);
-    view->reset();    
+void medMainWindow::onProgressUpdated (int progress)
+{
+  qDebug() << __func__ << progress;
+  if (d->currentView && d->currentDataReader) {
+    qDebug() << d->currentDataReader->data()->output();
+    if (d->currentView->data()!=d->currentDataReader->data()->output() ) {
+      d->currentView->setData (d->currentDataReader->data());
+      d->currentView->reset();
+      d->currentView->update();
+    }
+    d->currentView->widget()->repaint();
+    d->viewerArea->repaint();
+    //this->repaint();
   }
 }
 
@@ -265,9 +297,10 @@ void medMainWindow::onPatientDoubleClicked (const QModelIndex &index)
     if (!index.isValid())
       return;
 
-    d->viewerArea->setPatientIndex ( index.row()+1 );
-
     switchToViewerArea();
+    d->viewerArea->repaint();
+    
+    d->viewerArea->setPatientIndex ( index.row()+1 );
 }
 
 void medMainWindow::onStudyDoubleClicked (const QModelIndex &index)
@@ -280,10 +313,11 @@ void medMainWindow::onStudyDoubleClicked (const QModelIndex &index)
     if (!patientIndex.isValid())
       return;
 
+    switchToViewerArea();
+    d->viewerArea->repaint();
+    
     d->viewerArea->setPatientIndex ( patientIndex.row()+1 );
     d->viewerArea->setStudyIndex ( index.row()+1 );
-
-    switchToViewerArea();
 }
 
 void medMainWindow::onSeriesDoubleClicked (const QModelIndex &index)
@@ -300,11 +334,12 @@ void medMainWindow::onSeriesDoubleClicked (const QModelIndex &index)
     if (!patientIndex.isValid())
       return;
 
+    switchToViewerArea();
+    d->viewerArea->repaint();
+    
     d->viewerArea->setPatientIndex ( patientIndex.row()+1 );
     d->viewerArea->setStudyIndex ( studyIndex.row()+1 );
     d->viewerArea->setSeriesIndex ( index.row()+1 );
-      
-    switchToViewerArea();
 }
 
 void medMainWindow::onSeriesSelected (int index)

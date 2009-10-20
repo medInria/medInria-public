@@ -49,6 +49,8 @@ public slots:
 
     void onSeriesSelected (int index);
 
+    void onProgressUpdated (int progress);
+
 protected:
     void closeEvent(QCloseEvent *event);
 
