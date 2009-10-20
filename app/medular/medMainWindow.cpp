@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct 12 18:17:54 2009 (+0200)
+ * Last-Updated: Tue Oct 20 09:57:15 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 94
+ *     Update #: 114
  */
 
 /* Commentary: 
@@ -128,11 +128,11 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->switchToBrowserAreaAction, SIGNAL(triggered()), this, SLOT(switchToBrowserArea()));
     connect(d->switchToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
 
-    connect (d->browserArea->databaseView(), SIGNAL (patientDoubleClicked (const QModelIndex&)), this, SLOT (onPatientDoubleClicked (const QModelIndex&)));
-    connect (d->browserArea->databaseView(), SIGNAL (studyDoubleClicked (const QModelIndex&)), this, SLOT (onStudyDoubleClicked (const QModelIndex&)));
-    connect (d->browserArea->databaseView(), SIGNAL (seriesDoubleClicked (const QModelIndex&)), this, SLOT (onSeriesDoubleClicked (const QModelIndex&)));
+    connect(d->browserArea->view(), SIGNAL(patientDoubleClicked(const QModelIndex&)), this, SLOT(onPatientDoubleClicked (const QModelIndex&)));
+    connect(d->browserArea->view(), SIGNAL(studyDoubleClicked(const QModelIndex&)), this, SLOT(onStudyDoubleClicked (const QModelIndex&)));
+    connect(d->browserArea->view(), SIGNAL(seriesDoubleClicked(const QModelIndex&)), this, SLOT(onSeriesDoubleClicked (const QModelIndex&)));
 
-    connect (d->viewerArea, SIGNAL (seriesSelected (int)), this, SLOT (onSeriesSelected (int)));
+    connect(d->viewerArea, SIGNAL(seriesSelected(int)), this, SLOT(onSeriesSelected(int)));
 
     this->addAction(d->switchToWelcomeAreaAction);
     this->addAction(d->switchToBrowserAreaAction);
@@ -208,63 +208,6 @@ void medMainWindow::writeSettings(void)
     settings.endGroup();
 }
 
-void medMainWindow::displayData (const QStringList& filenames)
-{
-  typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-
-  dtkAbstractData *imData = 0;
-  
-  QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
-  for (int i=0; i<readers.size(); i++) {
-    dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
-    if (dataReader->canRead(filenames)) {
-
-      dataReader->readInformation (filenames);
-      imData = dataReader->data();
-
-      d->currentDataReader = dataReader;
-      
-      if (imData) {
-	dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView2D");
-	if (!view)
-	  return;
-
-	d->currentView = view;
-	
-	d->viewerArea->addWidget (view->widget());
-	d->viewerArea->repaint();
-	
-	//view->reset();
-      }
-      
-      connect ( dataReader, SIGNAL (progressUpdated (int)), this, SLOT (onProgressUpdated (int)));
-      
-      dataReader->read(filenames);
-
-      disconnect( dataReader, SIGNAL (progressUpdated (int)), this, SLOT (onProgressUpdated (int)));
-      
-      delete dataReader;
-      break;
-    }
-  }
-}
-
-void medMainWindow::onProgressUpdated (int progress)
-{
-  qDebug() << __func__ << progress;
-  if (d->currentView && d->currentDataReader) {
-    qDebug() << d->currentDataReader->data()->output();
-    if (d->currentView->data()!=d->currentDataReader->data()->output() ) {
-      d->currentView->setData (d->currentDataReader->data());
-      d->currentView->reset();
-      d->currentView->update();
-    }
-    d->currentView->widget()->repaint();
-    d->viewerArea->repaint();
-    //this->repaint();
-  }
-}
-
 void medMainWindow::switchToWelcomeArea(void)
 {
     d->stack->setCurrentWidget(d->welcomeArea);
@@ -292,10 +235,12 @@ void medMainWindow::switchToViewerArea(void)
     d->switchToViewerAreaAction->setEnabled(false);
 }
 
-void medMainWindow::onPatientDoubleClicked (const QModelIndex &index)
+void medMainWindow::onPatientDoubleClicked(const QModelIndex &index)
 {
     if (!index.isValid())
       return;
+
+    d->viewerArea->setPatientIndex(index.row()+1);
 
     switchToViewerArea();
     d->viewerArea->repaint();
@@ -303,66 +248,47 @@ void medMainWindow::onPatientDoubleClicked (const QModelIndex &index)
     d->viewerArea->setPatientIndex ( index.row()+1 );
 }
 
-void medMainWindow::onStudyDoubleClicked (const QModelIndex &index)
+void medMainWindow::onStudyDoubleClicked(const QModelIndex &index)
 {
     if (!index.isValid())
       return;
   
-    // study -> patient
     QModelIndex patientIndex = index.parent();
+ 
     if (!patientIndex.isValid())
-      return;
-
-    switchToViewerArea();
-    d->viewerArea->repaint();
+        return;
     
-    d->viewerArea->setPatientIndex ( patientIndex.row()+1 );
-    d->viewerArea->setStudyIndex ( index.row()+1 );
+    d->viewerArea->setPatientIndex(patientIndex.row()+1);
+    d->viewerArea->setStudyIndex(index.row()+1);
+    
+    switchToViewerArea();
 }
 
-void medMainWindow::onSeriesDoubleClicked (const QModelIndex &index)
+void medMainWindow::onSeriesDoubleClicked(const QModelIndex &index)
 {
     if (!index.isValid())
       return;
     
-    // series -> study -> patient
     QModelIndex studyIndex = index.parent();
+    
     if (!studyIndex.isValid())
-      return;
-
+        return;
+    
     QModelIndex patientIndex = studyIndex.parent();
+    
     if (!patientIndex.isValid())
-      return;
+        return;
+    
+    d->viewerArea->setPatientIndex(patientIndex.row()+1);
+    d->viewerArea->setStudyIndex(studyIndex.row()+1);
+    d->viewerArea->setSeriesIndex(index.row()+1);
 
     switchToViewerArea();
-    d->viewerArea->repaint();
-    
-    d->viewerArea->setPatientIndex ( patientIndex.row()+1 );
-    d->viewerArea->setStudyIndex ( studyIndex.row()+1 );
-    d->viewerArea->setSeriesIndex ( index.row()+1 );
-}
-
-void medMainWindow::onSeriesSelected (int index)
-{
-    QVariant id = index;
-    QSqlQuery query(*(medDatabaseController::instance()->database()));
-
-    query.prepare("SELECT name, id, path FROM image WHERE series = :series");
-    query.bindValue(":series", id);
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
-
-    QStringList filenames;
-    while(query.next())
-      filenames << query.value(2).toString();
-
-    displayData (filenames);
-    
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
     this->writeSettings();
-
+    
     delete medDatabaseController::instance();
 }

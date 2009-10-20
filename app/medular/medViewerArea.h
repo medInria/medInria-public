@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 12:58:11 2009 (+0200)
+ * Last-Updated: Tue Oct 20 09:53:06 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 7
+ *     Update #: 15
  */
 
 /* Commentary: 
@@ -22,6 +22,8 @@
 
 #include <QtGui/QWidget>
 
+class dtkAbstractView;
+
 class medViewerAreaPrivate;
 class medViewerAreaViewContainer;
 
@@ -33,19 +35,18 @@ public:
      medViewerArea(QWidget *parent = 0);
     ~medViewerArea(void);
 
-    void setPatientIndex (int index);
-    void setStudyIndex (int index);
-    void setSeriesIndex (int index);
-    void setImageIndex (int index);
+    void setPatientIndex(int index);
+    void setStudyIndex(int index);
+    void setSeriesIndex(int index);
+    void setImageIndex(int index);
 
-    void addWidget (QWidget* widget);
+    void setView(dtkAbstractView *view);
         
 signals:
-    void patientSelected (int index);
-    void studySelected (int index);
-    void seriesSelected (int index);
-    void imageSelected (int index);
-        
+    void patientSelected(int index);
+    void studySelected(int index);
+    void seriesSelected(int index);
+    void imageSelected(int index);
 
 public slots:
     void setup(void);

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sun Oct 11 13:02:28 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 15:40:53 2009 (+0200)
+ * Last-Updated: Tue Oct 20 09:59:04 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 90
+ *     Update #: 92
  */
 
 /* Commentary: 
@@ -92,6 +92,11 @@ void medStatusPanel::addSpacer(void)
 void medStatusPanel::addWidget(QWidget *widget)
 {
     d->layout->addWidget(widget);
+}
+
+void medStatusPanel::removeWidget(QWidget *widget)
+{
+    d->layout->removeWidget(widget);
 }
 
 static void paintLayout(QPainter *painter, QLayout *layout, int spacing)

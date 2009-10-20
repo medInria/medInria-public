@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 15:49:00 2009 (+0200)
+ * Last-Updated: Fri Oct 16 22:53:26 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 188
+ *     Update #: 190
  */
 
 /* Commentary: 
@@ -179,12 +179,12 @@ medBrowserArea::~medBrowserArea(void)
     d = NULL;
 }
 
-medDatabaseView *medBrowserArea::databaseView (void)
+medDatabaseView *medBrowserArea::view(void)
 {
     return d->view;
 }
 
-medDatabaseModel *medBrowserArea::databaseModel (void)
+medDatabaseModel *medBrowserArea::model(void)
 {
     return d->model;
 }

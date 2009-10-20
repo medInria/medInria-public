@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Sep 18 22:47:51 2009 (+0200)
+ * Last-Updated: Tue Oct 20 09:56:50 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 8
  */
 
 /* Commentary: 
@@ -36,18 +36,14 @@ public:
     void readSettings(void);
     void writeSettings(void);
 
-    void displayData (const QStringList& filenames);
-
 public slots:
     void switchToWelcomeArea(void);
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
 
-    void onPatientDoubleClicked (const QModelIndex &index);
-    void onStudyDoubleClicked (const QModelIndex &index);
-    void onSeriesDoubleClicked (const QModelIndex &index);
-
-    void onSeriesSelected (int index);
+    void onPatientDoubleClicked(const QModelIndex &index);
+    void onStudyDoubleClicked(const QModelIndex &index);
+    void onSeriesDoubleClicked(const QModelIndex &index);
 
     void onProgressUpdated (int progress);
 
