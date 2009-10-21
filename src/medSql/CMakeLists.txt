@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Fri Sep 25 11:51:59 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Fri Sep 25 12:21:53 2009 (+0200)
+## Last-Updated: Wed Oct 21 14:40:57 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 15
+##     Update #: 20
 ######################################################################
 ## 
 ### Commentary: 
@@ -18,6 +18,13 @@
 ######################################################################
 
 project(medSql)
+
+## #################################################################
+## Resolve dependencies
+## #################################################################
+
+find_package(dtk REQUIRED)
+include(${dtk_USE_FILE})
 
 ## #################################################################
 ## Sources
@@ -45,6 +52,10 @@ set(${PROJECT_NAME}_SOURCES
 ## #################################################################
 ## Build rules
 ## #################################################################
+
+add_definitions(${QT_DEFINITIONS})
+add_definitions(-DQT_SHARED)
+add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 

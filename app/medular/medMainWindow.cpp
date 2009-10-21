@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct 20 09:57:15 2009 (+0200)
+ * Last-Updated: Tue Oct 20 10:14:22 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 114
+ *     Update #: 115
  */
 
 /* Commentary: 
@@ -128,8 +128,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->browserArea->view(), SIGNAL(patientDoubleClicked(const QModelIndex&)), this, SLOT(onPatientDoubleClicked (const QModelIndex&)));
     connect(d->browserArea->view(), SIGNAL(studyDoubleClicked(const QModelIndex&)), this, SLOT(onStudyDoubleClicked (const QModelIndex&)));
     connect(d->browserArea->view(), SIGNAL(seriesDoubleClicked(const QModelIndex&)), this, SLOT(onSeriesDoubleClicked (const QModelIndex&)));
-
-    connect(d->viewerArea, SIGNAL(seriesSelected(int)), this, SLOT(onSeriesSelected(int)));
 
     this->addAction(d->switchToWelcomeAreaAction);
     this->addAction(d->switchToBrowserAreaAction);
