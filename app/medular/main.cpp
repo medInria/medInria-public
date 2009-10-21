@@ -55,14 +55,13 @@ int main(int argc, char *argv[])
 
     // Setting up interpreter
 
-    dtkScriptInterpreter *interpreter;
-    interpreter = dtkScriptInterpreterPool::instance()->python();
+    dtkScriptInterpreter *interpreter = dtkScriptInterpreterPool::instance()->python();
     
     QObject::connect(interpreter, SIGNAL(stopped()), &application, SLOT(quit()));
     QObject::connect(&application, SIGNAL(aboutToQuit()), interpreter, SLOT(stop()));
 
 #if defined(Q_OS_WIN)
-    dtkInterpreter *ginterpreter;
+    dtkInterpreter *ginterpreter = new dtkInterpreter;
     ginterpreter->registerInterpreter(interpreter);
     ginterpreter->readSettings();
     ginterpreter->show();
