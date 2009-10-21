@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct 17 12:07:28 2008 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Sep 25 12:19:09 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:18:42 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 18
+ *     Update #: 21
  */
 
 /* Commentary: 
@@ -20,12 +20,14 @@
 #ifndef MEDDATABASEITEM_H
 #define MEDDATABASEITEM_H
 
+#include "medSqlExport.h"
+
 #include <QtDebug>
 #include <QtGui>
 
 class medDatabaseItemPrivate;
 
-class medDatabaseItem
+class MEDSQL_EXPORT medDatabaseItem
 {
 public:
      medDatabaseItem(const QString &table, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent = 0);

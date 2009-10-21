@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 15:34:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct 15 15:15:58 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:22:29 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 8
+ *     Update #: 10
  */
 
 /* Commentary: 
@@ -20,11 +20,13 @@
 #ifndef MEDLOGINWIDGET_H
 #define MEDLOGINWIDGET_H
 
+#include "medGuiExport.h"
+
 #include <QtGui>
 
 class medLoginWidgetPrivate;
 
-class medLoginWidget : public QWidget
+class MEDGUI_EXPORT medLoginWidget : public QWidget
 {
     Q_OBJECT
 

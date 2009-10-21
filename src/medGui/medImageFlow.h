@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Oct  7 16:07:02 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 11:34:21 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:20:11 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 8
  */
 
 /* Commentary: 
@@ -46,6 +46,8 @@
 #ifndef MEDIMAGEFLOW_H
 #define MEDIMAGEFLOW_H
 
+#include "medGuiExport.h"
+
 #include <qwidget.h>
 
 class medImageFlowPrivate;
@@ -60,7 +62,8 @@ class medImageFlowPrivate;
   placed at the center.
 
  */ 
-class medImageFlow : public QWidget
+
+class MEDGUI_EXPORT medImageFlow : public QWidget
 {
     Q_OBJECT
 

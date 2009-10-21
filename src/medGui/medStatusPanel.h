@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sun Oct 11 13:00:53 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct 20 09:58:45 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:23:06 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 17
+ *     Update #: 19
  */
 
 /* Commentary: 
@@ -20,6 +20,8 @@
 #ifndef MEDSTATUSPANEL_H
 #define MEDSTATUSPANEL_H
 
+#include "medGuiExport.h"
+
 #include <QFrame>
 
 // /////////////////////////////////////////////////////////////////
@@ -28,7 +30,7 @@
 
 class medStatusPanelPrivate;
 
-class medStatusPanel : public QWidget
+class MEDGUI_EXPORT medStatusPanel : public QWidget
 {
     Q_OBJECT
 

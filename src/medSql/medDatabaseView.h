@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:16:32 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  8 18:33:06 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:19:04 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 30
+ *     Update #: 31
  */
 
 /* Commentary: 
@@ -20,11 +20,13 @@
 #ifndef MEDDATABASEVIEW_H
 #define MEDDATABASEVIEW_H
 
+#include "medSqlExport.h"
+
 #include <QtGui>
 
 class medDatabaseModel;
 
-class medDatabaseView : public QTreeView
+class MEDSQL_EXPORT medDatabaseView : public QTreeView
 {
     Q_OBJECT
 

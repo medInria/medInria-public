@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:10 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Sep 25 11:53:11 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:17:55 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 17
  */
 
 /* Commentary: 
@@ -20,10 +20,12 @@
 #ifndef MEDDATABASECONTROLLER_H
 #define MEDDATABASECONTROLLER_H
 
+#include "medSqlExport.h"
+
 #include <QtCore>
 #include <QtSql>
 
-class medDatabaseController : public QObject
+class MEDSQL_EXPORT medDatabaseController : public QObject
 {
     Q_OBJECT
 

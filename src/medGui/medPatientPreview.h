@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 19:44:38 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 15:51:31 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:22:49 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -20,11 +20,13 @@
 #ifndef MEDPATIENTPREVIEW_H
 #define MEDPATIENTPREVIEW_H
 
+#include "medGuiExport.h"
+
 #include <QtGui>
 
 class medPatientPreviewPrivate;
 
-class medPatientPreview : public QWidget
+class MEDGUI_EXPORT medPatientPreview : public QWidget
 {
     Q_OBJECT
 
