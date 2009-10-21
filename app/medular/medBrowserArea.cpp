@@ -100,15 +100,11 @@ void medBrowserAreaPreview::onStudyClicked(int id)
 
 void medBrowserAreaPreview::onSeriesClicked(int id)
 {
-    qDebug() << __func__ << id;
-
     d->stack->setCurrentWidget(d->series_preview);
 }
 
 void medBrowserAreaPreview::onImageClicked(int id)
 {
-    qDebug() << __func__ << id;
-
     d->stack->setCurrentWidget(d->image_preview);
 }
 
