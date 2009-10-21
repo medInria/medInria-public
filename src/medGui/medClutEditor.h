@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue May  5 12:22:54 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu May  7 09:14:09 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:19:50 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 8
  */
 
 /* Commentary: 
@@ -20,6 +20,8 @@
 #ifndef MEDCLUTEDITOR_H
 #define MEDCLUTEDITOR_H
 
+#include "medGuiExport.h"
+
 #include <QtGui>
 
 class dtkAbstractData;
@@ -27,7 +29,7 @@ class dtkAbstractView;
 
 class medClutEditorPrivate;
 
-class medClutEditor : public QWidget
+class MEDGUI_EXPORT medClutEditor : public QWidget
 {
     Q_OBJECT
 

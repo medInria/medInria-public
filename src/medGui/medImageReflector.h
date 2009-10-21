@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 14:55:15 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 15:22:39 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:21:36 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 7
+ *     Update #: 10
  */
 
 /* Commentary: 
@@ -20,11 +20,13 @@
 #ifndef MEDIMAGEREFLECTOR_H
 #define MEDIMAGEREFLECTOR_H
 
+#include "medGuiExport.h"
+
 #include <QWidget>
 
 class medImageReflectorPrivate;
 
-class medImageReflector : public QWidget
+class MEDGUI_EXPORT medImageReflector : public QWidget
 {
     Q_OBJECT
 

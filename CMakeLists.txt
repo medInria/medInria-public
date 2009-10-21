@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:14:33 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Sat Oct  3 19:01:24 2009 (+0200)
+## Last-Updated: Wed Oct 21 14:53:20 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 19
+##     Update #: 21
 ######################################################################
 ## 
 ### Commentary: 
@@ -175,6 +175,10 @@ endif(PYTHONLIBS_FOUND)
 ## #################################################################
 ## Build options
 ## #################################################################
+
+if(WIN32)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Release is default build type for windows because of python distributions")
+endif(WIN32)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" true)
 

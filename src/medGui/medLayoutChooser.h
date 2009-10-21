@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct 16 15:50:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 15:50:21 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:22:09 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 3
  */
 
 /* Commentary: 
@@ -20,11 +20,13 @@
 #ifndef MEDLAYOUTCHOOSER_H
 #define MEDLAYOUTCHOOSER_H
 
+#include "medGuiExport.h"
+
 #include <QTableWidget>
 
 class medLayoutChooserPrivate;
 
-class medLayoutChooser : public QTableWidget
+class MEDGUI_EXPORT medLayoutChooser : public QTableWidget
 {
     Q_OBJECT
 

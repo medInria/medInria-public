@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct 14 22:54:51 2008 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Sep 25 12:18:52 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:18:16 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 121
+ *     Update #: 123
  */
 
 /* Commentary: 
@@ -20,12 +20,14 @@
 #ifndef MEDDATABASEMODEL_H
 #define MEDDATABASEMODEL_H
 
+#include "medSqlExport.h"
+
 #include <QtCore/QAbstractItemModel>
 
 class medDatabaseItem;
 class medDatabaseModelPrivate;
 
-class medDatabaseModel : public QAbstractItemModel
+class MEDSQL_EXPORT medDatabaseModel : public QAbstractItemModel
 {
     Q_OBJECT
   
