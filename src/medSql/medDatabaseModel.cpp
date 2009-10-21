@@ -295,8 +295,6 @@ Qt::DropActions medDatabaseModel::supportedDropActions(void) const
 
 bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
-    qDebug() << __func__ << data->formats();
-
     if (action == Qt::IgnoreAction)
         return true;
     

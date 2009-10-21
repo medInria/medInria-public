@@ -78,8 +78,6 @@ void medLoginWidget::onReturnPressed(void)
 
         QString login = d->loginEdit->text();
         
-        qDebug() << __func__ << login;
-        
         if(!login.isEmpty()) {
             d->loginEdit->clear();
             d->loginEdit->setEchoMode(QLineEdit::Password);
@@ -90,8 +88,6 @@ void medLoginWidget::onReturnPressed(void)
     } else {
         
         QString password = d->loginEdit->text();
-        
-        qDebug() << __func__ << password;
         
         if(!password.isEmpty()) {
             d->loginEdit->clear();
