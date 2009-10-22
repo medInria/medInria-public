@@ -91,26 +91,32 @@ void medDatabaseController::import(const QString& file)
 {
     QDir dir(file);
     dir.setFilter(QDir::Files | QDir::Hidden);
-    
+
     QStringList fileList;
-    if (dir.count())
-        foreach (QString file, dir.entryList())
-            fileList << file;
+    if (dir.exists()) {
+      QDirIterator directory_walker(file, QDir::Files | QDir::Hidden, QDirIterator::Subdirectories);
+	while (directory_walker.hasNext()) {
+	    fileList << directory_walker.next();
+	}
+    }
     else
         fileList << file;
+
     
     typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
     
     QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
     
     foreach (QString file, fileList) {
-        
+
+        QFileInfo fileInfo( file );
+	
         dtkAbstractData* dtkdata = 0;
         
         for (int i=0; i<readers.size(); i++) {            
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
-            if (dataReader->canRead(dir.filePath (file))) {
-                dataReader->readInformation(dir.filePath(file));
+            if (dataReader->canRead( fileInfo.filePath() )) {
+                dataReader->readInformation( fileInfo.filePath() );
                 dtkdata = dataReader->data();
                 delete dataReader;
                 break;
@@ -197,7 +203,7 @@ void medDatabaseController::import(const QString& file)
                 query.bindValue(":study", id);
                 query.bindValue(":size", 1);
                 query.bindValue(":name", seriesName);
-                query.bindValue(":path", dir.filePath (file));
+                query.bindValue(":path", fileInfo.filePath());
                 query.exec(); id = query.lastInsertId();
             }
 
@@ -205,7 +211,7 @@ void medDatabaseController::import(const QString& file)
 
             query.prepare("SELECT id FROM image WHERE series = :id AND path = :path");
             query.bindValue(":id", id);
-            query.bindValue(":name", file);
+            query.bindValue(":path", fileInfo.filePath());
 
             if(!query.exec())
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
@@ -215,9 +221,9 @@ void medDatabaseController::import(const QString& file)
             } else {
                 query.prepare("INSERT INTO image (series, size, name, path) VALUES (:series, :size, :name, :path)");
                 query.bindValue(":series", id);
-                query.bindValue(":size", 64);
-                query.bindValue(":name", file);
-                query.bindValue(":path", dir.filePath (file));
+                query.bindValue(":size", 64);		
+                query.bindValue(":name", fileInfo.fileName());
+                query.bindValue(":path", fileInfo.filePath());
 
                 if(!query.exec())
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;	  
