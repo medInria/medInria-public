@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Jul  3 19:20:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct 14 18:32:00 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:23:57 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 60
+ *     Update #: 61
  */
 
 /* Commentary: 
@@ -20,11 +20,13 @@
 #ifndef medStyle_H
 #define medStyle_H
 
+#include "medGuiExport.h"
+
 #include <QtGui>
 
 class medStylePrivate;
 
-class medStyle : public QCleanlooksStyle
+class MEDGUI_EXPORT medStyle : public QCleanlooksStyle
 {
     Q_OBJECT
 

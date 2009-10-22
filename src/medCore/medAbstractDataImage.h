@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sat Oct  3 18:28:59 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct  3 18:58:29 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:17:53 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 7
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -20,11 +20,13 @@
 #ifndef MEDABSTRACTIMAGEDATA_H
 #define MEDABSTRACTIMAGEDATA_H
 
+#include "medCoreExport.h"
+
 #include <dtkCore/dtkAbstractDataImage.h>
 
 class medAbstractDataImagePrivate;
 
-class medAbstractDataImage : public dtkAbstractDataImage
+class MEDCORE_EXPORT medAbstractDataImage : public dtkAbstractDataImage
 {
     Q_OBJECT
 

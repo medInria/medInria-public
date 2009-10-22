@@ -55,8 +55,8 @@
 #undef  Q_DECLARE_INTERFACE(IFace, IId)
 #define Q_DECLARE_INTERFACE(IFace, IId)
 
-#undef  DTKCORE_EXPORT
-#define DTKCORE_EXPORT
+#undef  MEDCORE_EXPORT
+#define MEDCORE_EXPORT
 
 // /////////////////////////////////////////////////////////////////
 // Ignore rules for operators

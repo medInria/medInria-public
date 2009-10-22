@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:41:48 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 09:48:22 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:24:34 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 41
+ *     Update #: 46
  */
 
 /* Commentary: 
@@ -20,13 +20,15 @@
 #ifndef MEDTOOLBOX_H
 #define MEDTOOLBOX_H
 
+#include "medGuiExport.h"
+
 #include <QtGui>
 
 // /////////////////////////////////////////////////////////////////
 // medToolBoxControl
 // /////////////////////////////////////////////////////////////////
 
-class medToolBoxControl : public QAbstractButton
+class MEDGUI_EXPORT medToolBoxControl : public QAbstractButton
 {
     Q_OBJECT
 
@@ -46,7 +48,7 @@ protected:
 
 class medToolBoxHeaderPrivate;
 
-class medToolBoxHeader : public QWidget
+class MEDGUI_EXPORT medToolBoxHeader : public QWidget
 {
     Q_OBJECT
 
@@ -72,7 +74,7 @@ private:
 
 class medToolBoxBodyPrivate;
 
-class medToolBoxBody : public QWidget
+class MEDGUI_EXPORT medToolBoxBody : public QWidget
 {
     Q_OBJECT
 
@@ -101,7 +103,7 @@ private:
 
 class medToolBoxPrivate;
 
-class medToolBox : public QWidget
+class MEDGUI_EXPORT medToolBox : public QWidget
 {
     Q_OBJECT
 

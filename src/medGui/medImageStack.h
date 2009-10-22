@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 20:02:04 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct 10 01:05:12 2009 (+0200)
+ * Last-Updated: Wed Oct 21 15:21:51 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 12
+ *     Update #: 13
  */
 
 /* Commentary: 
@@ -20,11 +20,13 @@
 #ifndef MEDIMAGESTACK_H
 #define MEDIMAGESTACK_H
 
+#include "medGuiExport.h"
+
 #include <QWidget>
 
 class medImageStackPrivate;
 
-class medImageStack : public QWidget
+class MEDGUI_EXPORT medImageStack : public QWidget
 {
     Q_OBJECT
 

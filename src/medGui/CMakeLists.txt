@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Fri Oct 16 11:43:58 2009 (+0200)
+## Last-Updated: Wed Oct 21 14:41:50 2009 (+0200)
 ##           By: Julien Wintz
-##     Update #: 64
+##     Update #: 68
 ######################################################################
 ## 
 ### Commentary: 
@@ -18,6 +18,13 @@
 ######################################################################
 
 project(medGui)
+
+## #################################################################
+## Resolve dependencies
+## #################################################################
+
+find_package(dtk REQUIRED)
+include(${dtk_USE_FILE})
 
 ## #################################################################
 ## Sources
@@ -78,9 +85,13 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
+add_definitions(${QT_DEFINITIONS})
+add_definitions(-DQT_SHARED)
+add_definitions(-DQT_NO_DEBUG)
+
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES_WRAP}
