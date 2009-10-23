@@ -382,6 +382,11 @@ void medViewerArea::setView(dtkAbstractView *view)
 
 void medViewerArea::setup(void)
 {
+    d->patientComboBox->clear();
+    d->studyComboBox->clear();
+    d->seriesComboBox->clear();
+    d->imagesComboBox->clear();
+  
     d->patientComboBox->addItem("Choose patient");
     d->studyComboBox->addItem("Choose study");
     d->seriesComboBox->addItem("Choose series");
@@ -473,14 +478,16 @@ void medViewerArea::onSeriesIndexChanged(int index)
     if(index<1)
         return;
 
+    
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
+
     // Query and manage combos
 
     QVariant id = d->seriesComboBox->itemData(index);
     QStringList filenames;
-
-    QSqlQuery query(*(medDatabaseController::instance()->database()));
-
-    query.prepare("SELECT name, id, path FROM image WHERE series = :series");
+    QString     filename;
+    
+    query.prepare("SELECT name, id, path, instance_path FROM image WHERE series = :series");
     query.bindValue(":series", id);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
@@ -491,7 +498,8 @@ void medViewerArea::onSeriesIndexChanged(int index)
     while(query.next()) {
         d->imagesComboBox->addItem(query.value(0).toString(), query.value(1));
         filenames << query.value(2).toString();
-    }
+	filename = query.value (3).toString();
+    }    
 
     // Display data
 
@@ -504,8 +512,8 @@ void medViewerArea::onSeriesIndexChanged(int index)
     for (int i=0; i<readers.size(); i++) {
         dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
 
-        if (dataReader->canRead(filenames)) {
-            dataReader->read(filenames);
+        if (dataReader->canRead(filename)) {
+            dataReader->read(filename);
             imData = dataReader->data();
             delete dataReader;
             break;
@@ -513,6 +521,7 @@ void medViewerArea::onSeriesIndexChanged(int index)
     }
     
     if (imData) {
+
         dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView2D");
 
         if (!view)
