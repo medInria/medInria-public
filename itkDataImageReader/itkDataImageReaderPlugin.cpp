@@ -64,12 +64,12 @@ QString itkDataImageReaderPlugin::name(void) const
 
 QString itkDataImageReaderPlugin::description(void) const
 {
-    return "Readers for any ITK data type.";
+    return "Readers for any ITK image data type.";
 }
 
 QStringList itkDataImageReaderPlugin::tags(void) const
 {
-  return QStringList() << "itk" << "data" << "reader";
+  return QStringList() << "itk" << "data" << "image" << "reader";
 }
 
 QStringList itkDataImageReaderPlugin::types(void) const
