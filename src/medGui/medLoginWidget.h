@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 15:34:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct 21 15:22:29 2009 (+0200)
+ * Last-Updated: Fri Oct 23 10:49:03 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 10
+ *     Update #: 15
  */
 
 /* Commentary: 
@@ -34,9 +34,21 @@ public:
      medLoginWidget(QWidget *parent = 0);
     ~medLoginWidget(void);
 
+    enum State {
+        NONE,
+        LOGGED,
+        LOGGING
+    };
+
+signals:
+    void accepted(void);
+    void rejected(void);
+
 protected slots:
     void onTimeOut(void);
     void onReturnPressed(void);
+    void onLoginButtonClicked(void);
+    void onAdminButtonClicked(void);
 
 protected:
     void paintEvent(QPaintEvent *event);

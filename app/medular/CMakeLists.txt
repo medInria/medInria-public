@@ -28,13 +28,19 @@ set(${PROJECT_NAME}_HEADERS
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
+  medAdminArea.h
   medBrowserArea.h
   medMainWindow.h
   medViewerArea.h
   medWelcomeArea.h
 )
 
+set(${PROJECT_NAME}_HEADERS_UIC
+  medAdminArea.ui
+)
+
 set(${PROJECT_NAME}_SOURCES
+  medAdminArea.cpp
   medBrowserArea.cpp
   medMainWindow.cpp
   medViewerArea.cpp
@@ -57,14 +63,15 @@ set(${PROJECT_NAME}_RESOURCES
 ## Build rules
 ## #################################################################
 
+qt4_wrap_ui(${PROJECT_NAME}_SOURCES_UIC ${${PROJECT_NAME}_HEADERS_UIC})
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 add_executable(${PROJECT_NAME} MACOSX_BUNDLE
   ${${PROJECT_NAME}_SOURCES_WRAP}
   ${${PROJECT_NAME}_SOURCES_QRC}
   ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_SOURCES_UIC}
   ${${PROJECT_NAME}_SOURCES}
 )
 

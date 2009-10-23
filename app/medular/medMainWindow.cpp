@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct 20 10:14:22 2009 (+0200)
+ * Last-Updated: Fri Oct 23 10:55:37 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 115
+ *     Update #: 137
  */
 
 /* Commentary: 
@@ -17,6 +17,7 @@
  * 
  */
 
+#include "medAdminArea.h"
 #include "medBrowserArea.h"
 #include "medMainWindow.h"
 #include "medViewerArea.h"
@@ -26,12 +27,6 @@
 #include <dtkScript/dtkScriptInterpreterPool.h>
 #include <dtkScript/dtkScriptInterpreterPython.h>
 #include <dtkScript/dtkScriptInterpreterTcl.h>
-
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataReader.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseView.h>
@@ -45,6 +40,7 @@ class medMainWindowPrivate
 public:
     QStackedWidget *stack;
 
+    medAdminArea   *adminArea;
     medWelcomeArea *welcomeArea;
     medBrowserArea *browserArea;
     medViewerArea  *viewerArea;
@@ -54,9 +50,6 @@ public:
     QAction *switchToWelcomeAreaAction;
     QAction *switchToBrowserAreaAction;
     QAction *switchToViewerAreaAction;
-
-    dtkAbstractView       *currentView;
-    dtkAbstractDataReader *currentDataReader;
 };
 
 extern "C" int init_core(void);                  // -- Initialization core layer python wrapped functions
@@ -71,14 +64,22 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     // Setting up widgets
 
+    d->adminArea   = new medAdminArea(this);
     d->welcomeArea = new medWelcomeArea(this);
     d->browserArea = new medBrowserArea(this);
     d->viewerArea  = new medViewerArea(this);
 
+    connect(d->welcomeArea, SIGNAL(accepted()), this, SLOT(switchToAdminArea()));
+    connect(d->adminArea, SIGNAL(accepted()), this, SLOT(switchToWelcomeArea()));
+    connect(d->adminArea, SIGNAL(rejected()), this, SLOT(switchToWelcomeArea()));
+
     d->stack = new QStackedWidget(this);
+    d->stack->addWidget(d->adminArea);
     d->stack->addWidget(d->welcomeArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->viewerArea);
+
+    d->stack->setCurrentWidget(d->welcomeArea);
 
     d->switchToWelcomeAreaAction = new QAction(this);
     d->switchToBrowserAreaAction = new QAction(this);
@@ -206,6 +207,18 @@ void medMainWindow::writeSettings(void)
     settings.endGroup();
 }
 
+void medMainWindow::switchToAdminArea(void)
+{
+    d->stack->setCurrentWidget(d->adminArea);
+
+    d->switchToWelcomeAreaAction->setEnabled(false);
+    d->switchToBrowserAreaAction->setEnabled(true);
+    d->switchToViewerAreaAction->setEnabled(true);
+
+    disconnect(d->switchToWelcomeAreaAction, SIGNAL(triggered()));
+       connect(d->switchToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToAdminArea()));
+}
+
 void medMainWindow::switchToWelcomeArea(void)
 {
     d->stack->setCurrentWidget(d->welcomeArea);
@@ -213,6 +226,9 @@ void medMainWindow::switchToWelcomeArea(void)
     d->switchToWelcomeAreaAction->setEnabled(false);
     d->switchToBrowserAreaAction->setEnabled(true);
     d->switchToViewerAreaAction->setEnabled(true);
+
+    disconnect(d->switchToWelcomeAreaAction, SIGNAL(triggered()));
+       connect(d->switchToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToWelcomeArea()));
 }
 
 void medMainWindow::switchToBrowserArea(void)

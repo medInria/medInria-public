@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 08:29:35 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct 15 16:08:10 2009 (+0200)
+ * Last-Updated: Fri Oct 23 09:48:42 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 141
+ *     Update #: 144
  */
 
 /* Commentary: 
@@ -59,6 +59,9 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
     // connect(d->web_view, SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
 
     d->loginWidget = new medLoginWidget(this);
+
+    connect(d->loginWidget, SIGNAL(accepted()), this, SIGNAL(accepted()));
+    connect(d->loginWidget, SIGNAL(rejected()), this, SIGNAL(rejected()));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);

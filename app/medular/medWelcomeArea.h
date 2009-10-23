@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 10:47:56 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct  9 18:07:01 2009 (+0200)
+ * Last-Updated: Fri Oct 23 09:39:51 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 2
+ *     Update #: 3
  */
 
 /* Commentary: 
@@ -32,6 +32,10 @@ class medWelcomeArea : public QWidget
 public:
      medWelcomeArea(QWidget *parent = 0);
     ~medWelcomeArea(void);
+
+signals:
+    void accepted(void);
+    void rejected(void);
 
 protected:
     void paintEvent(QPaintEvent *event);

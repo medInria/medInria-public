@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct 20 09:59:54 2009 (+0200)
+ * Last-Updated: Fri Oct 23 11:38:24 2009 (+0200)
  *           By: Julien Wintz
- *     Update #: 418
+ *     Update #: 419
  */
 
 /* Commentary: 
@@ -160,7 +160,7 @@ void medViewerAreaViewContainer::setView(dtkAbstractView *view)
         return;
 
     if(QWidget *widget = view->widget()) {
-        widget->setParent(this);
+        // widget->setParent(this);
         widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         current->m_layout->setContentsMargins(1, 1, 1, 1);
         current->m_layout->addWidget(widget, 0, 0);
