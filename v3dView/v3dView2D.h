@@ -37,6 +37,7 @@ public:
     void *view(void);
 
     void setData(dtkAbstractData *data);
+    void *data (void);
 
     QWidget *widget(void);
 

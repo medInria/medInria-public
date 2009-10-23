@@ -11,6 +11,11 @@
 
 class itkDCMTKDataImageReaderPrivate;
 
+namespace itk
+{
+  class SliceReadCommand;
+}
+
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDCMTKDataImageReader : public dtkAbstractDataReader
 {
     Q_OBJECT
@@ -24,6 +29,8 @@ public:
     virtual QStringList handled(void) const;
     static bool registered(void);
 
+    friend class itk::SliceReadCommand;
+    
 public slots:
     bool canRead (QString path);
     bool canRead (QStringList paths);
