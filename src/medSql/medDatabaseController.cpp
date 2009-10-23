@@ -22,6 +22,7 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
+#include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
@@ -72,7 +73,7 @@ QString medDatabaseController::dataLocation(void) const
     .remove(QCoreApplication::applicationName())
     .append(QCoreApplication::applicationName());
 #else
-    qDebug() <<  QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    //qDebug() <<  QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 
     return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
@@ -102,6 +103,9 @@ void medDatabaseController::import(const QString& file)
     else
         fileList << file;
 
+
+    QMap<QString, QStringList> imagesToWriteMap;
+    
     
     typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
     
@@ -135,27 +139,37 @@ void medDatabaseController::import(const QString& file)
             const QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
             const QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
             const QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
+
+	    QString patientPath;
+	    QString studyPath;
+	    QString seriesPath;
 	
             QSqlQuery query(*(medDatabaseController::instance()->database())); QVariant id;
 
             ////////////////////////////////////////////////////////////////// PATIENT
 
-            query.prepare("SELECT id FROM patient WHERE name = :name");
+	    query.prepare("SELECT id FROM patient WHERE name = :name");
             query.bindValue(":name", patientName);
             if(!query.exec())
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
             
             if(query.first()) {
                 id = query.value(0);
-            } else {
-                query.prepare("INSERT INTO patient (name) VALUES (:name)");
+		patientPath = this->dataLocation() + "/" + QString().setNum (id.toInt());
+            }
+	    else {
+	        query.prepare("INSERT INTO patient (name) VALUES (:name)");
                 query.bindValue(":name", patientName);
                 query.exec(); id = query.lastInsertId();
+		
+		patientPath = this->dataLocation() + "/" + QString().setNum (id.toInt());
+		if (!QDir (patientPath).exists() && !this->mkpath (patientPath))
+		    qDebug() << "Cannot create directory: " << patientPath;
             }
 	
             ////////////////////////////////////////////////////////////////// STUDY
 	
-            query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name");
+	    query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name");
             query.bindValue(":id", id);
             query.bindValue(":name", studyName);
             if(!query.exec())
@@ -163,11 +177,17 @@ void medDatabaseController::import(const QString& file)
             
             if(query.first()) {
                 id = query.value(0);
-            } else {
-                query.prepare("INSERT INTO study (patient, name) VALUES (:patient, :study)");
+		studyPath = patientPath + "/" + QString().setNum (id.toInt());
+            }
+	    else {
+	        query.prepare("INSERT INTO study (patient, name) VALUES (:patient, :study)");
                 query.bindValue(":patient", id);
                 query.bindValue(":study", studyName);
                 query.exec(); id = query.lastInsertId();
+
+		studyPath = patientPath + "/" + QString().setNum (id.toInt());
+		if (!QDir (studyPath).exists() && !this->mkpath (studyPath))
+  		    qDebug() << "Cannot create directory: " <<studyPath;
             }
 	
             ///////////////////////////////////////////////////////////////// SERIES
@@ -183,56 +203,97 @@ void medDatabaseController::import(const QString& file)
                 QVariant seCount = query.value (2);
                 QVariant seName  = query.value (3);
                 QVariant sePath  = query.value (4);
-                
-                //qDebug() << "Series already exists in database" << id << "for patient" << patientName;
-                
-                // should update seCount but can't figure out how to do it
-                /*
-                  seCount = seCount.toLongLong() + 1;
-                  qDebug() << "New series count: " << seCount;
-                  query.prepare("REPLACE INTO series (study, size, name, path) VALUES (:study, :size, :name, :path)");
-                  query.bindValue(":study", id);
-                  query.bindValue(":size", seCount);
-                  query.bindValue(":name", seName);
-                  query.bindValue(":path", sePath);
-                  if(!query.exec())
-                  qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
-                */
-            } else {
-                query.prepare("INSERT INTO series (study, size, name, path) VALUES (:study, :size, :name, :path)");
+
+		seriesPath = studyPath + "/" + QString().setNum (id.toInt()) + ".mhd";
+            }
+	    else {
+	      //query.prepare("INSERT INTO series (study, size, name, path) VALUES (:study, :size, :name, :path)");
+	        query.prepare("INSERT INTO series (study, size, name) VALUES (:study, :size, :name)");
                 query.bindValue(":study", id);
                 query.bindValue(":size", 1);
                 query.bindValue(":name", seriesName);
-                query.bindValue(":path", fileInfo.filePath());
+		//query.bindValue(":path", seriesPath);
                 query.exec(); id = query.lastInsertId();
+
+		seriesPath = studyPath + "/" + QString().setNum (id.toInt()) + ".mhd";
             }
+
 
             ///////////////////////////////////////////////////////////////// IMAGE
 
-            query.prepare("SELECT id FROM image WHERE series = :id AND path = :path");
+            query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
             query.bindValue(":id", id);
-            query.bindValue(":path", fileInfo.filePath());
+            query.bindValue(":name", fileInfo.fileName());
 
             if(!query.exec())
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
             
             if(query.first()) {
                 ; //qDebug() << "Image" << file << "already in database";
-            } else {
-                query.prepare("INSERT INTO image (series, size, name, path) VALUES (:series, :size, :name, :path)");
+            }
+	    else {
+	        query.prepare("INSERT INTO image (series, size, name, path, instance_path) VALUES (:series, :size, :name, :path, :instance_path)");
                 query.bindValue(":series", id);
-                query.bindValue(":size", 64);		
+                query.bindValue(":size", 64);
                 query.bindValue(":name", fileInfo.fileName());
                 query.bindValue(":path", fileInfo.filePath());
+		query.bindValue(":instance_path", seriesPath);
 
                 if(!query.exec())
-                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;	  
+		  qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+
+		imagesToWriteMap[ seriesPath ] << fileInfo.filePath();
             }	
         }
         
-        delete dtkdata;   
+        delete dtkdata;
     }
 
+
+
+    
+    // read and write images in mhd format
+    
+    QList<dtkAbstractDataTypeHandler> writers = dtkAbstractDataFactory::instance()->writers();
+
+    QMap<QString, QStringList>::const_iterator it = imagesToWriteMap.begin();
+    
+    while (it!=imagesToWriteMap.end()) {
+
+      dtkAbstractData *imData = NULL;
+      
+      for (int i=0; i<readers.size(); i++) {
+        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+	
+        if (dataReader->canRead( it.value() )) {
+	    dataReader->read( it.value() );
+            imData = dataReader->data();
+            delete dataReader;
+            break;
+        }
+      }
+
+
+      if (!imData)
+	  return;
+
+
+      for (int i=0; i<writers.size(); i++) {
+	  
+	dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
+	dataWriter->setData (imData);
+	
+	if (dataWriter->canWrite( it.key() )) {
+	    dataWriter->write( it.key() );
+            delete dataWriter;
+	    break;
+        }
+      }
+
+      delete imData;
+      ++it;
+    }
+    
     emit updated();
 }
 
@@ -284,7 +345,8 @@ void medDatabaseController::createImageTable(void)
 	" size     INTEGER,"
 	" name        TEXT,"
         " path        TEXT,"
-        " slice    INTEGER "
+	" instance_path TEXT,"
+        " slice    INTEGER "	
 	");"
     );
 }
