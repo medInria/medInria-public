@@ -2,7 +2,7 @@
 #define _med_ItkDataImageReaderMacros_h_
 
 
-#define medImplementItkDataImageReader(type, dimension, suffix)		\
+#define medImplementItkDataImageReader(type, dimension, suffix, itktype) \
   class itkDataImage##suffix##ReaderPrivate				\
   {									\
   public:								\
@@ -28,15 +28,35 @@
   }									\
   bool itkDataImage##suffix##Reader::canRead (QString path)		\
   {									\
-    itk::ImageIOBase::Pointer io = itk::ImageIOFactory::CreateImageIO( path.toAscii().constData(), \
-								       itk::ImageIOFactory::ReadMode ); \
-    return !io.IsNull();						\
+    typedef type         PixelType;					\
+    typedef itk::Image<PixelType, dimension> ImageType;			\
+    typedef itk::ImageFileReader<ImageType> ReaderType;			\
+    ReaderType::Pointer reader = ReaderType::New();			\
+    reader->SetFileName (path.toAscii().constData());			\
+    try{								\
+      reader->GenerateOutputInformation();				\
+    }									\
+    catch(itk::ExceptionObject &ex) {					\
+      std::cerr << ex << std::endl;					\
+      return false;							\
+    }									\
+    if (reader->GetImageIO()->GetComponentType()==itk::ImageIOBase::itktype) \
+      return true;							\
+    return false;							\
   }									\
   void itkDataImage##suffix##Reader::readInformation (QString path)	\
   {									\
+    dtkAbstractData* dtkdata = this->data();				\
+    if (!dtkdata) {							\
+      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImage"#suffix); \
+      if (dtkdata)							\
+	this->setData ( dtkdata );					\
+    }									\
   }									\
   bool itkDataImage##suffix##Reader::read(QString path)			\
   {									\
+    if (!this->data())							\
+      this->readInformation (path);					\
     typedef type         PixelType;					\
     typedef itk::Image<PixelType, dimension> ImageType;			\
     typedef itk::ImageFileReader<ImageType> ReaderType;			\
