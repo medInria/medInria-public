@@ -11,6 +11,7 @@
 #include "v3dViewPluginExport.h"
 
 class QMouseEvent;
+
 class v3dView2DPrivate;
 
 class V3DVIEWPLUGIN_EXPORT v3dView2D : public dtkAbstractView
