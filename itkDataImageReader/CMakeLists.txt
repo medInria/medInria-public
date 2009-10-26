@@ -158,4 +158,30 @@ target_link_libraries(itkDCMTKReaderTest
   z
 )
 
+add_executable(itkStreamedReaderTest
+  itkStreamedReaderTest.cxx
+)
+  
+target_link_libraries(itkStreamedReaderTest
+  vtkRenderingAddOn
+  vtkRendering
+  vtkIO
+  vtkDataManagement
+  itkAddOn
+  ${ITK_LIBRARIES}
+)
+
+add_executable(itkDCMTKReadWriteBenchmark
+  itkDCMTKReadWriteBenchmark.cxx
+  itkDCMTKImageIO.cxx
+)
+  
+target_link_libraries(itkDCMTKReadWriteBenchmark
+  itkAddOn
+  ${ITK_LIBRARIES}
+  ${DCMTK_LIBRARIES}
+  z
+)
+
 endif (VTK_FOUND)
+
