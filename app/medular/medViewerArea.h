@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct 20 09:53:06 2009 (+0200)
+ * Last-Updated: Mon Oct 26 12:56:09 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 15
+ *     Update #: 17
  */
 
 /* Commentary: 
@@ -56,6 +56,8 @@ public slots:
     void onStudyIndexChanged(int index);
     void onSeriesIndexChanged(int index);
     void onImageIndexChanged(int index);
+
+    void onRegistrationClicked(void);
 
 private:
     medViewerAreaPrivate *d;

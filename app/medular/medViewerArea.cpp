@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 23 11:38:24 2009 (+0200)
+ * Last-Updated: Mon Oct 26 12:56:05 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 419
+ *     Update #: 491
  */
 
 /* Commentary: 
@@ -124,13 +124,14 @@ medViewerAreaViewContainer::medViewerAreaViewContainer(QWidget *parent) : QWidge
 
 medViewerAreaViewContainer::~medViewerAreaViewContainer(void)
 {
-    delete m_layout;
+    // delete m_layout;
 }
 
 medViewerAreaViewContainer *medViewerAreaViewContainer::current(void)
 {
     return s_current;
 }
+
 
 void medViewerAreaViewContainer::split(int rows, int cols)
 {
@@ -210,12 +211,22 @@ public:
     medViewerAreaToolBoxContainer *toolbox_container;
     medStatusPanel *status;
 
+    QProgressBar *progress;
+
     QStackedWidget *stack;
 
     QComboBox *patientComboBox;
     QComboBox *studyComboBox;
     QComboBox *seriesComboBox;
     QComboBox *imagesComboBox;
+
+    // Registration toolbox element
+
+    QComboBox   *registrationWidgetCombo;
+    QPushButton *registrationWidgetRegisterButton;
+    QPushButton *registrationWidgetSaveButton;
+
+    // view containers hash
 
     QHash<int, medViewerAreaViewContainer *> view_containers;
 };
@@ -306,6 +317,34 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     visualizationToolBox->addWidget(button8);
     visualizationToolBox->addWidget(button9);
 
+    // Setting up registration toolbox
+
+    d->registrationWidgetCombo = new QComboBox;
+    d->registrationWidgetRegisterButton = new QPushButton("Register");
+    d->registrationWidgetSaveButton = new QPushButton("Save");
+
+    // foreach(process, processFactory::instance()->processes())
+    //     if(medAbstractRegistrationProcess *process = dynamic_cast<medAbstractRegistrationProcess *>(process))
+    //         d->registrationWidgetCombo->addItem(process->name(), process->name());
+
+    d->registrationWidgetCombo->addItem("Choose registration method");
+    d->registrationWidgetCombo->addItem("Rigid", "itkProcessRegistrationRigid");
+    d->registrationWidgetCombo->addItem("Affine", "itkProcessRegistrationAffine");
+
+    QWidget *registrationWidget = new QWidget;
+    
+    QVBoxLayout *registrationWidgetLayout = new QVBoxLayout(registrationWidget);
+    registrationWidgetLayout->setContentsMargins(0, 0, 0, 0);
+    registrationWidgetLayout->addWidget(d->registrationWidgetCombo);
+    registrationWidgetLayout->addWidget(d->registrationWidgetRegisterButton);
+    registrationWidgetLayout->addWidget(d->registrationWidgetSaveButton);
+
+    medToolBox *registrationToolBox = new medToolBox(this);
+    registrationToolBox->setTitle("Registration");
+    registrationToolBox->addWidget(registrationWidget);
+
+    connect(d->registrationWidgetRegisterButton, SIGNAL(clicked()), this, SLOT(onRegistrationClicked()));
+
     // Setting up lookup table editor
 
     medClutEditor *clutEditor = new medClutEditor;
@@ -320,11 +359,15 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(layoutToolBox);
     d->toolbox_container->addToolBox(visualizationToolBox);
+    d->toolbox_container->addToolBox(registrationToolBox);
     d->toolbox_container->addToolBox(clutEditorToolBox);
 
     // Setting up panel
 
+    d->progress = new QProgressBar(this);
+
     d->status = new medStatusPanel(this);
+    d->status->addWidget(d->progress);
 
     // Setting up layout
 
@@ -540,4 +583,25 @@ void medViewerArea::onImageIndexChanged(int index)
 {
     if(index<1)
         return;
+}
+
+void medViewerArea::onRegistrationClicked(void)
+{
+    int index = d->registrationWidgetCombo->currentIndex();
+
+    if (!index)
+        return;
+
+    QVariant type = d->registrationWidgetCombo->itemData(index);
+
+    qDebug() << "Launch registration using" << type;
+
+    // dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create(type.toString());
+    // process->setInput(..., 0);
+    // process->setInput(..., 1);
+    // process->run();
+    
+    // if(dtkAbstractData *output = process->output()) {
+    //     // put the result into a new view
+    // }
 }

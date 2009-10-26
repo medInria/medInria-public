@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 22:53:26 2009 (+0200)
+ * Last-Updated: Mon Oct 26 12:11:03 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 190
+ *     Update #: 194
  */
 
 /* Commentary: 
@@ -119,6 +119,8 @@ public:
     medDatabaseModel *model;
     medDatabaseView *view;
     medStatusPanel *status;
+
+    QProgressBar *progress;
 };
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
@@ -141,9 +143,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     QWidget *databaseInfo = new QWidget(this);
     databaseInfo->setLayout(dataInfoLayout);
 
+    d->progress = new QProgressBar(this);
+
     d->status = new medStatusPanel(this);
     d->status->addWidget(new QLabel("Current user: Unknown"));
-    d->status->addSpacer();
+    d->status->addWidget(d->progress);
     d->status->addWidget(databaseInfo);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
