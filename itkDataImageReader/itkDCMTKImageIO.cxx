@@ -80,13 +80,12 @@ namespace itk
   
   bool DCMTKImageIO::CanReadFile(const char* filename)
   {
-    ::DcmFileFormat dicomFile;
-    ::OFCondition condition = dicomFile.loadFile( filename );
+    DcmFileFormat dicomFile;
+    OFCondition condition = dicomFile.loadFile( filename );
     if ( !condition.good() )
     {
       return false;
     }
-
     return true;
   }
 

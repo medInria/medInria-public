@@ -12,8 +12,7 @@
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
 #include <itkDCMTKImageIO.h>
-
-
+#include <itkObjectFactoryBase.h>
 
 namespace itk
 {
@@ -108,7 +107,6 @@ itkDCMTKDataImageReaderPrivate::itkDCMTKDataImageReaderPrivate()
 
 itkDCMTKDataImageReader::itkDCMTKDataImageReader(void) : dtkAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate)
 {
-
 }
 
 
@@ -546,10 +544,6 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
 	      qDebug() << e.GetDescription();
 	      return false;
 	    }
-
-	    itk::Image<itk::RGBPixel<unsigned char>, 3>::Pointer image = rgbReader->GetOutput();
-	    std::cout << image << std::endl;
-	    
 	    break;
 	  }
 	default:
