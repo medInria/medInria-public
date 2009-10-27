@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct 26 12:56:05 2009 (+0100)
+ * Last-Updated: Mon Oct 26 21:58:51 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 491
+ *     Update #: 494
  */
 
 /* Commentary: 
@@ -33,182 +33,17 @@
 #include <medGui/medStatusPanel.h>
 #include <medGui/medStyle.h>
 #include <medGui/medToolBox.h>
+#include <medGui/medToolBoxContainer.h>
+#include <medGui/medViewContainer.h>
 
 #include <QtGui>
 #include <QtSql>
 
-///////////////////////////////////////////////////////////////////
-// medViewerAreaToolBoxContainer
-///////////////////////////////////////////////////////////////////
-
-class medViewerAreaToolBoxContainer : public QScrollArea
-{
-public:
-     medViewerAreaToolBoxContainer(QWidget *parent = 0);
-    ~medViewerAreaToolBoxContainer(void);
-
-    void addToolBox(medToolBox *toolBox);
-    void removeToolBox(medToolBox *toolBox);
-
-private:
-    QWidget *container;
-    QVBoxLayout *layout;
-};
-
-medViewerAreaToolBoxContainer::medViewerAreaToolBoxContainer(QWidget *parent) : QScrollArea(parent)
-{
-    this->container = new QWidget(this);
-    this->layout = new QVBoxLayout(this->container);
-    this->layout->setContentsMargins(0, 0, 0, 0);
-    this->layout->addStretch(1);
-
-    this->setFrameStyle(QFrame::NoFrame);
-    this->setAttribute(Qt::WA_MacShowFocusRect, false);
-    this->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    this->setWidget(this->container);
-    this->setWidgetResizable(true);
-}
-
-medViewerAreaToolBoxContainer::~medViewerAreaToolBoxContainer(void)
-{
-
-}
-
-void medViewerAreaToolBoxContainer::addToolBox(medToolBox *toolBox)
-{
-    this->layout->insertWidget(this->layout->count()-1, toolBox, 0, Qt::AlignTop);
-}
-
-void medViewerAreaToolBoxContainer::removeToolBox(medToolBox *toolBox)
-{
-    this->layout->removeWidget(toolBox);
-}
-
-///////////////////////////////////////////////////////////////////
-// medViewerAreaViewContainer
-///////////////////////////////////////////////////////////////////
-
-class medViewerAreaViewContainer : public QWidget
-{
-public:
-     medViewerAreaViewContainer(QWidget *parent = 0);
-    ~medViewerAreaViewContainer(void);
-
-    medViewerAreaViewContainer *current(void);
-
-    void split(int rows, int cols);
-
-    void setView(dtkAbstractView *view);
-
-protected:
-    void focusInEvent(QFocusEvent *event);
-    void focusOutEvent(QFocusEvent *event);
-    void paintEvent(QPaintEvent *event);
-
-private:
-    QGridLayout *m_layout;
-
-    static medViewerAreaViewContainer *s_current;
-};
-
-medViewerAreaViewContainer::medViewerAreaViewContainer(QWidget *parent) : QWidget(parent)
-{
-    m_layout = new QGridLayout(this);
-    m_layout->setContentsMargins(0, 0, 0, 0);
-    m_layout->setSpacing(2);
-
-    s_current = this;
-
-    this->setFocusPolicy(Qt::StrongFocus);
-}
-
-medViewerAreaViewContainer::~medViewerAreaViewContainer(void)
-{
-    // delete m_layout;
-}
-
-medViewerAreaViewContainer *medViewerAreaViewContainer::current(void)
-{
-    return s_current;
-}
-
-
-void medViewerAreaViewContainer::split(int rows, int cols)
-{
-    medViewerAreaViewContainer *current = this->current();
-
-    if (!current)
-        return;
-
-    if (current->m_layout->count())
-        return;
-
-    for(int i = 0 ; i < rows ; i++)
-        for(int j = 0 ; j < cols ; j++)
-            current->m_layout->addWidget(new medViewerAreaViewContainer(current), i, j);
-
-    s_current = 0;
-}
-
-void medViewerAreaViewContainer::setView(dtkAbstractView *view)
-{
-    medViewerAreaViewContainer *current = this->current();
-
-    if (!current)
-        return;
-
-    if (current->m_layout->count())
-        return;
-
-    if(QWidget *widget = view->widget()) {
-        // widget->setParent(this);
-        widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-        current->m_layout->setContentsMargins(1, 1, 1, 1);
-        current->m_layout->addWidget(widget, 0, 0);
-    }
-}
-
-void medViewerAreaViewContainer::focusInEvent(QFocusEvent *event)
-{
-    s_current = this;
-
-    QWidget::focusInEvent(event);
-}
-
-void medViewerAreaViewContainer::focusOutEvent(QFocusEvent *event)
-{
-    QWidget::focusOutEvent(event);
-}
-
-void medViewerAreaViewContainer::paintEvent(QPaintEvent *event)
-{
-    if(this->layout()->count() > 1)
-        return;
-
-    QWidget::paintEvent(event);
-
-    QPainter painter;
-    painter.begin(this);
-    if (s_current == this)
-        painter.setPen(Qt::red);
-    else
-        painter.setPen(Qt::darkGray);
-    painter.setBrush(QColor(0x38, 0x38, 0x38));
-    painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
-    painter.end();
-}
-
-medViewerAreaViewContainer *medViewerAreaViewContainer::s_current = NULL;
-
-///////////////////////////////////////////////////////////////////
-// medViewerArea
-///////////////////////////////////////////////////////////////////
-
 class medViewerAreaPrivate
 {
 public:
-    medViewerAreaViewContainer *view_container;
-    medViewerAreaToolBoxContainer *toolbox_container;
+    medViewContainer *view_container;
+    medToolBoxContainer *toolbox_container;
     medStatusPanel *status;
 
     QProgressBar *progress;
@@ -228,7 +63,7 @@ public:
 
     // view containers hash
 
-    QHash<int, medViewerAreaViewContainer *> view_containers;
+    QHash<int, medViewContainer *> view_containers;
 };
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
@@ -355,7 +190,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // Setting up container
 
-    d->toolbox_container = new medViewerAreaToolBoxContainer(this);
+    d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(layoutToolBox);
     d->toolbox_container->addToolBox(visualizationToolBox);
@@ -458,10 +293,10 @@ void medViewerArea::onPatientIndexChanged(int index)
 
     // Setup view container
 
-    medViewerAreaViewContainer *view_container;
+    medViewContainer *view_container;
 
     if(!d->view_containers.contains(index)) {
-        view_container = new medViewerAreaViewContainer(this);
+        view_container = new medViewContainer(this);
         d->view_containers.insert(index, view_container);
         d->stack->addWidget(view_container);
     } else {
