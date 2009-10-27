@@ -91,6 +91,38 @@ namespace itk
   }
 
 
+
+  void DCMTKImageIO::DetermineNumberOfPixelComponents()
+  {
+
+    const StringVectorType &pixelComponentCountVec = this->GetMetaDataValueVectorString ("(0028,0002)");
+    if ( !pixelComponentCountVec.size() )
+    {
+      itkExceptionMacro ( << "Tag (0028,0002) (SamplesPerPixel) not found" );
+    }
+
+    std::istringstream s_stream ( pixelComponentCountVec[0].c_str() );
+    int samplesPerPixel = 1;
+    if ( !(s_stream >> samplesPerPixel) )
+    {
+      itkExceptionMacro ( << "Cannot convert string to int: " << pixelComponentCountVec[0].c_str()
+			  << "assuming 1 component per pixel." );
+      this->SetNumberOfComponents (1);
+    }
+
+
+    this->SetNumberOfComponents ( samplesPerPixel );
+    
+    if( samplesPerPixel==1 )
+    {
+      this->SetPixelType ( SCALAR );
+    }
+    else
+    {
+      this->SetPixelType ( RGB );
+    }
+    
+  }
   
 
 
@@ -117,7 +149,7 @@ namespace itk
     }
     else
     {
-      itkWarningMacro (<< "Missing Pixel Representation (0028,0103), assuming unsigned");
+      itkWarningMacro (<< "Missing Pixel Representation (0028,0103), assuming unsigned" << std::endl);
     }
 
     if ( sign == "0" )
@@ -172,7 +204,7 @@ namespace itk
     const StringVectorType &pixSpacingVec = this->GetMetaDataValueVectorString ("(0028,0030)");
     if ( !pixSpacingVec.size() )
     {
-      itkWarningMacro ( << "Tag (0028,0030) (PixelSpacing) was not found, assuming 1.0" );
+      itkWarningMacro ( << "Tag (0028,0030) (PixelSpacing) was not found, assuming 1.0" << std::endl);
     }
     else
     {
@@ -180,11 +212,11 @@ namespace itk
       std::istringstream is_stream( pixSpacingStr );
       if (!(is_stream >> m_Spacing[0]))
       {
-	itkWarningMacro ( << "Cannot convert string to double: " << pixSpacingStr.c_str() );
+	itkWarningMacro ( << "Cannot convert string to double: " << pixSpacingStr.c_str() << std::endl);
       }
       if (!(is_stream >> m_Spacing[1]))
       {
-	itkWarningMacro ( << "Cannot convert string to double: " << pixSpacingStr.c_str() );
+	itkWarningMacro ( << "Cannot convert string to double: " << pixSpacingStr.c_str() << std::endl);
       }
     }
     
@@ -198,7 +230,7 @@ namespace itk
       std::istringstream is_stream( sliceThicknessStr.c_str() );
       if (!(is_stream>>sliceThickness))
       {
-	itkWarningMacro ( << "Cannot convert string to double: " << sliceThicknessStr.c_str() );
+	itkWarningMacro ( << "Cannot convert string to double: " << sliceThicknessStr.c_str() << std::endl );
       }
     }
     
@@ -210,7 +242,7 @@ namespace itk
       std::istringstream is_stream( spacingBetweenSlicesStr.c_str() );
       if (!(is_stream>>spacingBetweenSlices))
       {
-	itkWarningMacro ( << "Cannot convert string to double: " << spacingBetweenSlicesStr.c_str() );
+	itkWarningMacro ( << "Cannot convert string to double: " << spacingBetweenSlicesStr.c_str() << std::endl );
       }
     }
     
@@ -237,7 +269,7 @@ namespace itk
     std::string dimXStr = dimXVec[0];
     std::istringstream is_streamX (dimXStr.c_str());
     if (!(is_streamX>>m_Dimensions[0]))
-      itkExceptionMacro ( << "Cannot convert string to int: " << dimXStr.c_str() );
+      itkExceptionMacro ( << "Cannot convert string to int: " << dimXStr.c_str()  << "\n");
     
     
     const StringVectorType &dimYVec = this->GetMetaDataValueVectorString ("(0028,0010)");
@@ -247,7 +279,7 @@ namespace itk
     std::string dimYStr = dimYVec[0];
     std::istringstream is_streamY (dimYStr.c_str());
     if (!(is_streamY>>m_Dimensions[1]))
-      itkExceptionMacro ( << "Cannot convert string to int: " << dimYStr.c_str() );
+      itkExceptionMacro ( << "Cannot convert string to int: " << dimYStr.c_str() << "\n" );
   }
 
 
@@ -268,22 +300,22 @@ namespace itk
     std::string s_origin = this->GetMetaDataValueString("(0020,0032)", startIndex);
     if ( s_origin=="" )
     {
-      itkWarningMacro ( << "Tag (0020,0032) (ImageOrigin) was not found, assuming 0.0/0.0/0.0");
+      itkWarningMacro ( << "Tag (0020,0032) (ImageOrigin) was not found, assuming 0.0/0.0/0.0" << std::endl);
       return;
     }
     
     std::istringstream is_stream( s_origin.c_str() );
     if (!(is_stream >> m_Origin[0]))
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() );
+      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() << std::endl );
     }
     if (!(is_stream >> m_Origin[1]))
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() );
+      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() << std::endl );
     }
     if (!(is_stream >> m_Origin[2]))
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() );
+      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() << std::endl );
     }
   }
   
@@ -297,7 +329,7 @@ namespace itk
     const StringVectorType &orientationVec = this->GetMetaDataValueVectorString("(0020,0037)");
     if (!orientationVec.size())
     {
-      itkWarningMacro ( << "Tag (0020,0037) (PatientOrientation) was not found, assuming identity");
+      itkWarningMacro ( << "Tag (0020,0037) (PatientOrientation) was not found, assuming identity" << std::endl);
     }
     else
     {
@@ -307,7 +339,7 @@ namespace itk
       {
 	if (!(is_stream >> orientation[i]) )
 	{
-	  itkWarningMacro ( << "Cannot convert string to double: " << orientationStr.c_str() );
+	  itkWarningMacro ( << "Cannot convert string to double: " << orientationStr.c_str() << std::endl );
 	}
       }
     }
@@ -343,6 +375,7 @@ namespace itk
       m_Direction[3][1] = 0.0;
       m_Direction[3][2] = 0.0;
     }
+
   }
 
 
@@ -354,15 +387,15 @@ namespace itk
     std::istringstream is_stream( s_position.c_str() );
     if (!(is_stream >> junk) )
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() );
+      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
     }
     if (!(is_stream >> junk) )
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() );
+      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
     }
     if (!(is_stream >> zpos))
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() );
+      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
     }
 
     return zpos;
@@ -536,6 +569,7 @@ namespace itk
        Now that m_FilenameToIndexMap and m_LocationToFilenamesMap are up-to-date, we may determine
        the pixel type, spacing, origin and so on.
      */
+    this->DetermineNumberOfPixelComponents();
     this->DeterminePixelType();
     this->DetermineDimensions();
     this->DetermineSpacing();
@@ -676,6 +710,7 @@ namespace itk
 	  throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
     }
 
+    length *= this->GetNumberOfComponents();
     
     /**
        It may happen that several pixelData are present in the DICOM. Then, we select the one whose length is
@@ -687,7 +722,7 @@ namespace itk
     {
       if( !(pixelData = dynamic_cast<DcmPixelData*>( stack.top() )) )
       {
-	itkExceptionMacro (<<"Cannot cast DcmElement into PixelData");
+	itkExceptionMacro (<<"Cannot cast DcmElement into PixelData\n");
       }
       else
       {
@@ -696,7 +731,7 @@ namespace itk
 	  pixelData = dynamic_cast<DcmPixelData*>( stack.top() );
 	  if( !(pixelData = dynamic_cast<DcmPixelData*>( stack.top() )) )
 	  {
-	    itkExceptionMacro (<<"Cannot cast DcmElement into PixelData");
+	    itkExceptionMacro (<<"Cannot cast DcmElement into PixelData\n");
 	  }
 	}
       }
