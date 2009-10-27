@@ -452,4 +452,92 @@ dtkAbstractData* createItkDataImageDouble3 (void);
 
 
 
+
+class itkDataImageVector3Private;
+
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageVector3 : public dtkAbstractDataImage
+{
+  Q_OBJECT
+    
+ public:
+    itkDataImageVector3(void);
+    ~itkDataImageVector3(void);
+    virtual QString description(void) const;
+    static bool registered(void);
+
+ public slots:
+    // derived from dtkAbstractData
+    
+    void *output(void);
+    void *data(void);
+    void setData(void* data);
+    void update(void);
+
+ public:
+    // derived from dtkAbstractDataImage
+
+    int xDimension(void);
+    int yDimension(void);
+    int zDimension(void);
+
+    int minRangeValue(void);
+    int maxRangeValue(void);
+
+    int scalarValueCount(int value);
+    int scalarValueMinCount(void);
+    int scalarValueMaxCount(void);
+    
+ private:
+
+    itkDataImageVector3Private* d;
+  
+};
+
+dtkAbstractData* createItkDataImageVector3 (void);
+
+
+
+class itkDataImageRGB3Private;
+
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageRGB3 : public dtkAbstractDataImage
+{
+  Q_OBJECT
+    
+ public:
+    itkDataImageRGB3(void);
+    ~itkDataImageRGB3(void);
+    virtual QString description(void) const;
+    static bool registered(void);
+
+ public slots:
+    // derived from dtkAbstractData
+    
+    void *output(void);
+    void *data(void);
+    void setData(void* data);
+    void update(void);
+
+ public:
+    // derived from dtkAbstractDataImage
+
+    int xDimension(void);
+    int yDimension(void);
+    int zDimension(void);
+
+    int minRangeValue(void);
+    int maxRangeValue(void);
+
+    int scalarValueCount(int value);
+    int scalarValueMinCount(void);
+    int scalarValueMaxCount(void);
+    
+ private:
+
+    itkDataImageRGB3Private* d;
+  
+};
+
+dtkAbstractData* createItkDataImageRGB3 (void);
+
+
 #endif

@@ -266,4 +266,54 @@ private:
 
 dtkAbstractDataWriter *createItkDataImageDouble3Writer(void);
 
+
+class itkDataImageVector3WriterPrivate;
+
+class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageVector3Writer : public dtkAbstractDataWriter
+{
+    Q_OBJECT
+
+public:
+             itkDataImageVector3Writer(void);
+    virtual ~itkDataImageVector3Writer(void);
+
+    virtual QString description(void) const;
+    virtual QStringList handled(void) const;
+    static bool registered(void);
+
+public slots:
+    bool write(QString path);
+    bool canWrite (QString path);
+    
+private:
+    itkDataImageVector3WriterPrivate *d;
+};
+
+dtkAbstractDataWriter *createItkDataImageVector3Writer(void);
+
+
+class itkDataImageRGB3WriterPrivate;
+
+class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageRGB3Writer : public dtkAbstractDataWriter
+{
+    Q_OBJECT
+
+public:
+             itkDataImageRGB3Writer(void);
+    virtual ~itkDataImageRGB3Writer(void);
+
+    virtual QString description(void) const;
+    virtual QStringList handled(void) const;
+    static bool registered(void);
+
+public slots:
+    bool write(QString path);
+    bool canWrite (QString path);
+    
+private:
+    itkDataImageRGB3WriterPrivate *d;
+};
+
+dtkAbstractDataWriter *createItkDataImageRGB3Writer(void);
+
 #endif

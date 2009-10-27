@@ -194,23 +194,16 @@ void v3dView2D::setData(dtkAbstractData *data)
       d->view->SetSerieNameData ( seriesName.toAscii().constData() );
     }
 
-    
 
-    itk::ImageBase<3>::DirectionType directions;
-    
 #ifdef vtkINRIA3D_USE_ITK
     if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) )
       d->view->SetITKImage ( image );
     else if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) )
       d->view->SetITKImage ( image );
-    else if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ){
+    else if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) )
       d->view->SetITKImage ( image );
-      directions = image->GetDirection();
-    }
-    else if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
+    else if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) )
       d->view->SetITKImage ( image );
-      directions = image->GetDirection();
-    }
     else if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) )
       d->view->SetITKImage ( image );
     else if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) )
@@ -223,6 +216,12 @@ void v3dView2D::setData(dtkAbstractData *data)
       d->view->SetITKImage ( image );
     else if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) )
       d->view->SetITKImage ( image );
+    else if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else
+      qDebug() << "Cannot cast ITK image";
 #endif
 
     if(vtkDataSet *dataset = dynamic_cast<vtkDataSet*>((vtkDataObject *)(data->data())))

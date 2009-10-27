@@ -1,7 +1,8 @@
-#include "itkDataImage.h"
-
 #include "medItk.h"
 
+#include "itkDataImage.h"
+
+#include <itkVector.h>
 #include <itkImage.h>
 #include <itkMinimumMaximumImageCalculator.h>
 #include <itkScalarImageToHistogramGenerator.h>
@@ -10,6 +11,8 @@
 
 #include "medITKDataImageMacros.h"
 
+typedef itk::Vector<unsigned char, 3> UCharVectorType;
+typedef itk::RGBPixel<unsigned char>  RGBPixelType;
 
 medImplementITKDataImage (char,           3, Char3);
 medImplementITKDataImage (unsigned char,  3, UChar3);
@@ -21,6 +24,8 @@ medImplementITKDataImage (long,           3, Long3);
 medImplementITKDataImage (unsigned long,  3, ULong3);
 medImplementITKDataImage (float,          3, Float3);
 medImplementITKDataImage (double,         3, Double3);
+medImplementITKVectorDataImage (UCharVectorType, 3, Vector3);
+medImplementITKVectorDataImage (RGBPixelType, 3, RGB3);
 
 
 

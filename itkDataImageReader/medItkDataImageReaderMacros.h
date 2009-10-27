@@ -2,7 +2,7 @@
 #define _med_ItkDataImageReaderMacros_h_
 
 
-#define medImplementItkDataImageReader(type, dimension, suffix, itktype) \
+#define medImplementItkDataImageReader(type, dimension, suffix, itkcomponent, itktype) \
   class itkDataImage##suffix##ReaderPrivate				\
   {									\
   public:								\
@@ -28,21 +28,28 @@
   }									\
   bool itkDataImage##suffix##Reader::canRead (QString path)		\
   {									\
-    typedef type         PixelType;					\
+    return this->canRead ( QStringList() << path );			\
+  }									\
+  bool itkDataImage##suffix##Reader::canRead (QStringList paths)	\
+  {									\
+    typedef type                             PixelType;			\
     typedef itk::Image<PixelType, dimension> ImageType;			\
     typedef itk::ImageFileReader<ImageType> ReaderType;			\
-    ReaderType::Pointer reader = ReaderType::New();			\
-    reader->SetFileName (path.toAscii().constData());			\
-    try{								\
-      reader->GenerateOutputInformation();				\
+    for( int i=0; i<paths.count(); i++) {				\
+      ReaderType::Pointer reader = ReaderType::New();			\
+      reader->SetFileName (paths[i].toAscii().constData());		\
+      try{								\
+	reader->GenerateOutputInformation();				\
+      }									\
+      catch(itk::ExceptionObject &ex) {					\
+	std::cerr << ex << std::endl;					\
+	return false;							\
+      }									\
+      if (reader->GetImageIO()->GetComponentType()!=itk::ImageIOBase::itkcomponent || \
+	  reader->GetImageIO()->GetPixelType()!=itk::ImageIOBase::itktype) \
+	return false;							\
     }									\
-    catch(itk::ExceptionObject &ex) {					\
-      std::cerr << ex << std::endl;					\
-      return false;							\
-    }									\
-    if (reader->GetImageIO()->GetComponentType()==itk::ImageIOBase::itktype) \
-      return true;							\
-    return false;							\
+    return true;							\
   }									\
   void itkDataImage##suffix##Reader::readInformation (QString path)	\
   {									\
@@ -52,6 +59,12 @@
       if (dtkdata)							\
 	this->setData ( dtkdata );					\
     }									\
+  }									\
+  bool itkDataImage##suffix##Reader::read(QStringList paths)		\
+  {									\
+    if (!paths.count())							\
+      return false;							\
+    return this->read (paths[0]);					\
   }									\
   bool itkDataImage##suffix##Reader::read(QString path)			\
   {									\
@@ -78,5 +91,7 @@
   {									\
     return new itkDataImage##suffix##Reader;				\
   }
+
+
 
 #endif

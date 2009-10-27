@@ -45,6 +45,8 @@ bool itkDataImageWriterPlugin::initialize(void)
     if(!itkDataImageULong3Writer::registered()) dtkWarning() << "Unable to register itkDataImageULong3Writer type";
     if(!itkDataImageFloat3Writer::registered()) dtkWarning() << "Unable to register itkDataImageFloat3Writer type";
     if(!itkDataImageDouble3Writer::registered()) dtkWarning() << "Unable to register itkDataImageDouble3Writer type";
+    if(!itkDataImageVector3Writer::registered()) dtkWarning() << "Unable to register itkDataImageVector3Writer type";
+    if(!itkDataImageRGB3Writer::registered()) dtkWarning() << "Unable to register itkDataImageRGB3Writer type";
 
     return true;
 }
@@ -80,7 +82,9 @@ QStringList itkDataImageWriterPlugin::types(void) const
 			 << "itkDataImageLong3Writer"
 			 << "itkDataImageULong3Writer"
 			 << "itkDataImageFloat3Writer"
-      			 << "itkDataImageDouble3Writer";
+      			 << "itkDataImageDouble3Writer"
+			 << "itkDataImageVector3Writer"
+			 << "itkDataImageRGB3Writer";
       
 }
 

@@ -25,7 +25,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);    
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
     
 
@@ -54,7 +56,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
 
  private:
@@ -81,7 +85,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
 
  private:
@@ -108,7 +114,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
 
  private:
@@ -135,7 +143,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
 
  private:
@@ -162,7 +172,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
 
  private:
@@ -189,7 +201,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
 
  private:
@@ -216,7 +230,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
 
  private:
@@ -243,7 +259,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
 
  private:
@@ -270,7 +288,9 @@ public:
     
 public slots:
     bool read(QString path);
+    bool read(QStringList paths);
     bool canRead (QString path);
+    bool canRead (QStringList paths);
     void readInformation (QString path);
 
  private:
@@ -278,6 +298,63 @@ public slots:
 };
 
 dtkAbstractDataReader *createItkDataImageDouble3Reader(void);
+
+
+class itkDataImageVector3ReaderPrivate;
+
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageVector3Reader : public dtkAbstractDataReader
+{
+    Q_OBJECT
+
+public:
+     itkDataImageVector3Reader(void);
+    ~itkDataImageVector3Reader(void);
+
+    virtual QString description(void) const;
+    virtual QStringList handled(void) const;
+    static bool registered(void);
+    
+public slots:
+    bool read(QString path);
+    bool read(QStringList paths);
+    bool canRead (QString path);
+    bool canRead (QStringList paths);
+    void readInformation (QString path);
+
+ private:
+    itkDataImageVector3ReaderPrivate* d;
+};
+
+dtkAbstractDataReader *createItkDataImageVector3Reader(void);
+
+
+
+class itkDataImageRGB3ReaderPrivate;
+
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageRGB3Reader : public dtkAbstractDataReader
+{
+    Q_OBJECT
+
+public:
+     itkDataImageRGB3Reader(void);
+    ~itkDataImageRGB3Reader(void);
+
+    virtual QString description(void) const;
+    virtual QStringList handled(void) const;
+    static bool registered(void);
+    
+public slots:
+    bool read(QString path);
+    bool read(QStringList paths);
+    bool canRead (QString path);
+    bool canRead (QStringList paths);
+    void readInformation (QString path);
+
+ private:
+    itkDataImageRGB3ReaderPrivate* d;
+};
+
+dtkAbstractDataReader *createItkDataImageRGB3Reader(void);
 
 
 #endif

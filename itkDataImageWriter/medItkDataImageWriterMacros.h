@@ -31,7 +31,8 @@
       if (data->description()=="itkDataImage"#suffix) {			\
 	itk::ImageIOBase::Pointer io = itk::ImageIOFactory::CreateImageIO( path.toAscii().constData(), \
 									   itk::ImageIOFactory::WriteMode ); \
-	return !io.IsNull();						\
+	if (!io.IsNull() && io->CanWriteFile ( path.toAscii().constData())) \
+	  return true;							\
       }									\
     }									\
     return false;							\
@@ -56,7 +57,7 @@
       std::cerr << ex << std::endl;					\
       return false;							\
     }									\
-    std::cout << "Was able to writer, with ITK IO: " << writer->GetImageIO()->GetNameOfClass() << std::endl; \
+    std::cout << "Was able to write, with ITK IO: " << writer->GetImageIO()->GetNameOfClass() << std::endl; \
     return true;							\
   }									\
   dtkAbstractDataWriter *createItkDataImage##suffix##Writer(void)	\

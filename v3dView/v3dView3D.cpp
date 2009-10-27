@@ -141,6 +141,12 @@ void v3dView3D::setData(dtkAbstractData *data)
       d->view->SetITKImage ( image );
     else if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) )
       d->view->SetITKImage ( image );
+    else if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) )
+      d->view->SetITKImage ( image );
+    else
+      qDebug() << "Cannot cast ITK image";
 #endif
 
     if(vtkImageData* image = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data())))

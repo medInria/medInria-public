@@ -45,6 +45,8 @@ bool itkDataImagePlugin::initialize(void)
   if(!itkDataImageULong3::registered()) qDebug() << "Unable to register itkDataImageULong3 type";
   if(!itkDataImageFloat3::registered()) qDebug() << "Unable to register itkDataImageFloat3 type";
   if(!itkDataImageDouble3::registered()) qDebug() << "Unable to register itkDataImageDouble3 type";
+  if(!itkDataImageVector3::registered()) qDebug() << "Unable to register itkDataImageVector3 type";
+  if(!itkDataImageRGB3::registered()) qDebug() << "Unable to register itkDataImageRGB3 type";
   
   return true;
 }
@@ -80,7 +82,9 @@ QStringList itkDataImagePlugin::types(void) const
 		       << "itkDataImageLong3"
 		       << "itkDataImageULong3"
 		       << "itkDataImageFloat3"
-		       << "itkDataImageDouble3";
+		       << "itkDataImageDouble3"
+		       << "itkDataImageVector3"
+		       << "itkDataImageRGB3";
 }
 
 Q_EXPORT_PLUGIN2(itkDataImagePlugin, itkDataImagePlugin)

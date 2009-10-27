@@ -42,6 +42,10 @@
   {									\
     typedef itkDataImage##suffix##Private::ImageType ImageType;		\
     ImageType::Pointer image = dynamic_cast<ImageType*>( (itk::Object*) data ); \
+    if (image.IsNull()) {						\
+      qDebug() << "Cannot cast data to correct data type";		\
+      return;								\
+    }									\
     d->image = image;							\
   }									\
   void *itkDataImage##suffix::output(void)				\
@@ -98,7 +102,94 @@
   dtkAbstractData *createItkDataImage##suffix(void)			\
   {									\
     return new itkDataImage##suffix;					\
-  }
+  }									\
+
+
+
+
+
+
+#define medImplementITKVectorDataImage(type, dimension, suffix)		\
+  class itkDataImage##suffix##Private					\
+  {									\
+  public:								\
+    typedef type                                                          ScalarType; \
+    typedef itk::Image<ScalarType, dimension>                             ImageType; \
+  public:								\
+    ImageType::Pointer          image;					\
+  };									\
+  itkDataImage##suffix::itkDataImage##suffix(): dtkAbstractDataImage(), d (new itkDataImage##suffix##Private) \
+  {									\
+    d->image = 0;							\
+  }									\
+  itkDataImage##suffix::~itkDataImage##suffix()				\
+  {									\
+  }									\
+  bool itkDataImage##suffix::registered()				\
+  {									\
+    return dtkAbstractDataFactory::instance()->registerDataType("itkDataImage"#suffix, createItkDataImage##suffix); \
+  }									\
+  QString itkDataImage##suffix::description() const			\
+  {									\
+    return "itkDataImage"#suffix;					\
+  }									\
+  void itkDataImage##suffix::setData(void *data)			\
+  {									\
+    typedef itkDataImage##suffix##Private::ImageType ImageType;		\
+    ImageType::Pointer image = dynamic_cast<ImageType*>( (itk::Object*) data ); \
+    if (image.IsNull()) {						\
+      qDebug() << "Cannot cast data to correct data type";		\
+      return;								\
+    }									\
+    d->image = image;							\
+  }									\
+  void *itkDataImage##suffix::output(void)				\
+  {									\
+    return d->image.GetPointer();					\
+  }									\
+  void *itkDataImage##suffix::data(void)				\
+  {									\
+    return d->image.GetPointer();					\
+  }									\
+  void itkDataImage##suffix::update(void)				\
+  {									\
+  }									\
+  int itkDataImage##suffix::xDimension(void)				\
+  {									\
+    return d->image->GetLargestPossibleRegion().GetSize()[0];		\
+  }									\
+  int itkDataImage##suffix::yDimension(void)				\
+  {									\
+    return d->image->GetLargestPossibleRegion().GetSize()[1];		\
+  }									\
+  int itkDataImage##suffix::zDimension(void)				\
+  {									\
+    return d->image->GetLargestPossibleRegion().GetSize()[2];		\
+  }									\
+  int itkDataImage##suffix::minRangeValue(void)				\
+  {									\
+    return -1;								\
+  }									\
+  int itkDataImage##suffix::maxRangeValue(void)				\
+  {									\
+    return -1;								\
+  }									\
+  int itkDataImage##suffix::scalarValueCount(int value)			\
+  {									\
+    return -1;								\
+  }									\
+  int itkDataImage##suffix::scalarValueMinCount(void)                   \
+  {									\
+    return -1;								\
+  }									\
+  int itkDataImage##suffix::scalarValueMaxCount(void)			\
+  {									\
+    return -1;								\
+  }									\
+  dtkAbstractData *createItkDataImage##suffix(void)			\
+  {									\
+    return new itkDataImage##suffix;					\
+  }									\
 
 
 #endif
