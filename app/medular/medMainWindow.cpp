@@ -295,9 +295,11 @@ void medMainWindow::onSeriesDoubleClicked(const QModelIndex &index)
     
     d->viewerArea->setPatientIndex(patientIndex.row()+1);
     d->viewerArea->setStudyIndex(studyIndex.row()+1);
-    d->viewerArea->setSeriesIndex(index.row()+1);
 
     switchToViewerArea();
+    this->update();
+    
+    d->viewerArea->setSeriesIndex(index.row()+1);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)

@@ -364,7 +364,7 @@ void medViewerArea::onSeriesIndexChanged(int index)
     QVariant id = d->seriesComboBox->itemData(index);
     QStringList filenames;
     QString     filename;
-    
+
     query.prepare("SELECT name, id, path, instance_path FROM image WHERE series = :series");
     query.bindValue(":series", id);
     if(!query.exec())
@@ -404,12 +404,21 @@ void medViewerArea::onSeriesIndexChanged(int index)
 
         if (!view)
             return;
+
+	if (!imData->hasMetaData ("PatientName"))
+	  imData->addMetaData("PatientName", QStringList() << d->patientComboBox->currentText());
+	if (!imData->hasMetaData ("StudyDescription"))
+	  imData->addMetaData("StudyDescription", QStringList() << d->studyComboBox->currentText());
+	if (!imData->hasMetaData ("SeriesDescription"))
+	  imData->addMetaData("SeriesDescription", QStringList() << d->seriesComboBox->currentText());
         
         view->setData(imData);
         view->reset();
 
         this->setView(view);
     }
+
+    delete imData;
 
     emit seriesSelected(id.toInt());
 }
