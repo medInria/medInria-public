@@ -87,6 +87,16 @@ namespace itk
     {
       return false;
     }
+
+    E_TransferSyntax xfer = dicomFile.getDataset()->getOriginalXfer();
+    
+    if( xfer == EXS_JPEG2000LosslessOnly ||
+	xfer == EXS_JPEG2000 ||
+	xfer == EXS_JPEG2000MulticomponentLosslessOnly ||
+	xfer == EXS_JPEG2000Multicomponent )
+    {
+      return false;
+    }
     return true;
   }
 
@@ -221,6 +231,8 @@ namespace itk
     }
     
 
+
+    m_Spacing[2] = 1.0;
     
     double sliceThickness = 1.0;
     const StringVectorType &sliceThicknessVec = this->GetMetaDataValueVectorString ("(0018,0050)");
@@ -231,6 +243,10 @@ namespace itk
       if (!(is_stream>>sliceThickness))
       {
 	itkWarningMacro ( << "Cannot convert string to double: " << sliceThicknessStr.c_str() << std::endl );
+      }
+      else
+      {
+	m_Spacing[2] = sliceThickness;
       }
     }
     
@@ -244,16 +260,12 @@ namespace itk
       {
 	itkWarningMacro ( << "Cannot convert string to double: " << spacingBetweenSlicesStr.c_str() << std::endl );
       }
+      else
+      {
+	m_Spacing[2] = spacingBetweenSlices;
+      }
     }
-    
-    if (spacingBetweenSlices > 0.0)
-    {
-      m_Spacing[2] = spacingBetweenSlices;
-    }
-    else if (sliceThickness > 0.0)
-    {
-      m_Spacing[2] = sliceThickness;
-    }
+
     if (this->GetNumberOfDimensions()==4)
       m_Spacing[3] = 1.0; 
   }
@@ -649,7 +661,8 @@ namespace itk
       this->InternalRead (buffer, i, pixelCount);
       if( threadId==0 )
       {
-	this->InvokeEvent ( SliceReadEvent() );
+	this->SetProgress( (double)(i-start+1)/(double)(length) );
+	this->InvokeEvent ( ProgressEvent() );
       }
     }
   }
