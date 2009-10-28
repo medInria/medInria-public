@@ -144,6 +144,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     databaseInfo->setLayout(dataInfoLayout);
 
     d->progress = new QProgressBar(this);
+    d->progress->setRange (0, 100);
 
     d->status = new medStatusPanel(this);
     d->status->addWidget(new QLabel("Current user: Unknown"));
@@ -161,6 +162,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
     connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
     connect(d->view, SIGNAL(imageClicked(int)), d->preview, SLOT(onImageClicked(int)));
+
+    connect (medDatabaseController::instance(), SIGNAL (importCompleted (int)), d->progress, SLOT (setValue (int)));
+	
 
     // connect(d->view, SIGNAL(patientDoubleClicked(int)), this, SLOT(onPatientDoubleClicked(int)));
     // connect(d->view, SIGNAL(studyDoubleClicked(int)), this, SLOT(onStudyDoubleClicked(int)));

@@ -103,6 +103,7 @@ void medDatabaseController::import(const QString& file)
     else
         fileList << file;
 
+       
 
     QMap<QString, QStringList> imagesToWriteMap;
     
@@ -110,13 +111,16 @@ void medDatabaseController::import(const QString& file)
     typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
     
     QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
+
+    int fileCount = fileList.count();
+    int fileIndex = 0;
     
     foreach (QString file, fileList) {
 
         QFileInfo fileInfo( file );
-	
+
         dtkAbstractData* dtkdata = 0;
-        
+
         for (int i=0; i<readers.size(); i++) {            
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
             if (dataReader->canRead( fileInfo.filePath() )) {
@@ -262,7 +266,8 @@ void medDatabaseController::import(const QString& file)
 	  imagesToWriteMap[ seriesPath ] << fileInfo.filePath();
 	}	
 	//}
-        
+
+	this->setImportProgress (  (int)((double)(++fileIndex) / (double)fileCount*100.0) );        
         delete dtkdata;
     }
 
@@ -283,8 +288,14 @@ void medDatabaseController::import(const QString& file)
         dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
 	
         if (dataReader->canRead( it.value() )) {
+
+	    connect (dataReader, SIGNAL (progressed (int)), this, SLOT (setImportProgress(int)));
+	  
 	    dataReader->read( it.value() );
             imData = dataReader->data();
+
+	    disconnect (dataReader, SIGNAL (progressed (int)), this, SLOT (setImportProgress(int)));
+	    
             delete dataReader;
             break;
         }
@@ -312,6 +323,11 @@ void medDatabaseController::import(const QString& file)
     }
     
     emit updated();
+}
+
+void medDatabaseController::setImportProgress (int value)
+{
+    emit importCompleted (value);
 }
 
 void medDatabaseController::createPatientTable(void)

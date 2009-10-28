@@ -49,12 +49,16 @@ public:
 
     QString   dataLocation(void) const;
     QString configLocation(void) const;
-
+    
 signals:
     void updated(void);
+    void importCompleted (int percentage);
 
 public slots:
     void import(const QString& file);
+
+protected slots:
+    void setImportProgress (int value);
 
 private:
     void createPatientTable(void);
