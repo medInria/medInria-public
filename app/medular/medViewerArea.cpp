@@ -416,9 +416,9 @@ void medViewerArea::onSeriesIndexChanged(int index)
         view->reset();
 
         this->setView(view);
+    
+	//delete imData;
     }
-
-    delete imData;
 
     emit seriesSelected(id.toInt());
 }
