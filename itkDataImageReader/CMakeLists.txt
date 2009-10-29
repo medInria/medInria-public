@@ -113,6 +113,7 @@ set(${PROJECT_NAME}_SOURCES
   itkDataImageReader.cpp
   itkDCMTKImageIO.cxx
   itkDCMTKDataImageReader.cpp
+  itkDataImageReaderCommand.cxx
 )
 
 ## #################################################################
