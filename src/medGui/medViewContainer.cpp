@@ -27,6 +27,7 @@ class medViewContainerPrivate
 {
 public:
     QGridLayout *layout;
+    QSet<dtkAbstractView*> views;
 };
 
 medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new medViewContainerPrivate)
@@ -42,6 +43,13 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
 medViewContainer::~medViewContainer(void)
 {
+    QSet<dtkAbstractView*>::iterator it = d->views.begin();
+    while (it!=d->views.end()) {
+      //d->layout->removeWidget ((*it)->widget());
+      delete (*it);
+      ++it;
+    }    
+    d->views.clear();    
     delete d->layout;
 }
 
@@ -70,6 +78,9 @@ void medViewContainer::split(int rows, int cols)
 
 void medViewContainer::setView(dtkAbstractView *view)
 {
+    if (!view)
+        return;
+  
     medViewContainer *current = this->current();
 
     if (!current)
@@ -77,12 +88,13 @@ void medViewContainer::setView(dtkAbstractView *view)
 
     if (current->d->layout->count())
         return;
-
+    
     if(QWidget *widget = view->widget()) {
         widget->setParent(this);
         widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         current->d->layout->setContentsMargins(1, 1, 1, 1);
         current->d->layout->addWidget(widget, 0, 0);
+	d->views.insert (view);
     }
 }
 
