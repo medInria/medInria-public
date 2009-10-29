@@ -114,6 +114,8 @@ void medDatabaseController::import(const QString& file)
 
     int fileCount = fileList.count();
     int fileIndex = 0;
+
+    this->setImportProgress (0);
     
     foreach (QString file, fileList) {
 
@@ -267,18 +269,23 @@ void medDatabaseController::import(const QString& file)
 	}	
 	//}
 
-	this->setImportProgress (  (int)((double)(++fileIndex) / (double)fileCount*100.0) );        
+	this->setImportProgress (  (int)((double)(++fileIndex) / (double)fileCount*100.0) );
         delete dtkdata;
     }
 
-
-
-    
+    this->setImportProgress ( 100 );
+        
     // read and write images in mhd format
     
     QList<dtkAbstractDataTypeHandler> writers = dtkAbstractDataFactory::instance()->writers();
 
     QMap<QString, QStringList>::const_iterator it = imagesToWriteMap.begin();
+
+
+    int imagesCount = imagesToWriteMap.count();
+    int imageIndex = 0;
+
+    this->setImportProgress ( 0 );
     
     while (it!=imagesToWriteMap.end()) {
 
@@ -289,18 +296,18 @@ void medDatabaseController::import(const QString& file)
 	
         if (dataReader->canRead( it.value() )) {
 
-	    connect (dataReader, SIGNAL (progressed (int)), this, SLOT (setImportProgress(int)));
+	    //connect (dataReader, SIGNAL (progressed (int)), this, SLOT (setImportProgress(int)));
 	  
 	    dataReader->read( it.value() );
             imData = dataReader->data();
 
-	    disconnect (dataReader, SIGNAL (progressed (int)), this, SLOT (setImportProgress(int)));
+	    //disconnect (dataReader, SIGNAL (progressed (int)), this, SLOT (setImportProgress(int)));
 	    
             delete dataReader;
             break;
         }
       }
-
+      
 
       if (!imData)
 	  return;
@@ -320,8 +327,11 @@ void medDatabaseController::import(const QString& file)
       
       delete imData;
       ++it;
+
+      this->setImportProgress( (int)((double)(++imageIndex) / (double)imagesCount*100.0) );
+      
     }
-    
+
     emit updated();
 }
 
