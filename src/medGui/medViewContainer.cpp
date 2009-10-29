@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Oct 27 09:10:56 2009 (+0100)
+ * Last-Updated: Thu Oct 29 10:55:38 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 10
+ *     Update #: 19
  */
 
 /* Commentary: 
@@ -42,14 +42,15 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
 medViewContainer::~medViewContainer(void)
 {
-    delete d->layout;
+    delete d;
+    
+    d = NULL;
 }
 
 medViewContainer *medViewContainer::current(void)
 {
     return s_current;
 }
-
 
 void medViewContainer::split(int rows, int cols)
 {
@@ -63,7 +64,7 @@ void medViewContainer::split(int rows, int cols)
 
     for(int i = 0 ; i < rows ; i++)
         for(int j = 0 ; j < cols ; j++)
-            current->d->layout->addWidget(new medViewContainer(current), i, j);
+            current->d->layout->addWidget(new medViewContainer, i, j);
 
     s_current = 0;
 }
@@ -79,7 +80,6 @@ void medViewContainer::setView(dtkAbstractView *view)
         return;
 
     if(QWidget *widget = view->widget()) {
-        widget->setParent(this);
         widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         current->d->layout->setContentsMargins(1, 1, 1, 1);
         current->d->layout->addWidget(widget, 0, 0);

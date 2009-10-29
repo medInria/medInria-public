@@ -112,11 +112,9 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
     QColor gradientMd = QColor(0x2e, 0x2e, 0x2e);
     QColor gradientDw = QColor(0x4b, 0x4b, 0x4b);
 
-    medStyle::medDrawRoundRectWithDoubleLinearGradient(&p, event->rect(), gradientUp, gradientMd, gradientMd, gradientDw, 4, 0, 4, 0, Qt::black);
+    medStyle::medFillRoundRectWithDoubleLinearGradient(&p, event->rect(), gradientUp, gradientMd, gradientMd, gradientDw, 4, 0, 4, 0);
 
     p.end();
-
-    QWidget::paintEvent(event);
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -220,11 +218,9 @@ void medToolBoxBody::paintEvent(QPaintEvent *event)
 {
     QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
 
-    medStyle::medDrawRoundRectWithColor(&p, event->rect().adjusted(0, -1, 0, 0), palette().color(QPalette::Base), 0, 4, 0, 4, Qt::black);
+    medStyle::medFillRoundRectWithColor(&p, event->rect().adjusted(0, -1, 0, 0), palette().color(QPalette::Base), 0, 4, 0, 4);
 
     p.end();
-
-    QWidget::paintEvent(event);
 }
 
 // /////////////////////////////////////////////////////////////////

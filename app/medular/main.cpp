@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct 26 10:56:41 2009 (+0100)
+ * Last-Updated: Wed Oct 28 18:49:57 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 78
+ *     Update #: 82
  */
 
 /* Commentary: 
@@ -21,13 +21,13 @@
 
 #include "medMainWindow.h"
 
-#include <dtkCore/dtkPluginManager.h>
-
 #include <dtkScript/dtkScriptInterpreter.h>
 #include <dtkScript/dtkScriptInterpreterPool.h>
 #include <dtkScript/dtkScriptManager.h>
 
 #include <dtkGui/dtkInterpreter.h>
+
+#include <medCore/medPluginManager.h>
 
 #include <medGui/medStyle.h>
 
@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 
     // Initialize managers
 
-    dtkPluginManager::instance()->initialize();
+    medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
 
     // Setting up main window
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     
     // Uninitialize managers
 
-    dtkPluginManager::instance()->uninitialize();
+    medPluginManager::instance()->uninitialize();
     dtkScriptManager::instance()->uninitialize();
     
     return status;

@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Sat Oct  3 18:38:00 2009 (+0200)
+## Last-Updated: Wed Oct 28 18:47:31 2009 (+0100)
 ##           By: Julien Wintz
-##     Update #: 12
+##     Update #: 17
 ######################################################################
 ## 
 ### Commentary: 
@@ -32,14 +32,17 @@ include(${dtk_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS
   medAbstractDataImage.h
+  medPluginManager.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractDataImage.h
+  medPluginManager.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   medAbstractDataImage.cpp
+  medPluginManager.cpp
 )
 
 ## #################################################################
