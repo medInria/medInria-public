@@ -40,8 +40,8 @@ namespace itk
   
   extern template MEDITK_EXPORT class OrientedImage <short, 3>;
 
-  //extern template MEDITK_EXPORT class ImageFileWriter< Image <Vector<unsigned char, 3> , 3> >;
-  //extern template MEDITK_EXPORT class ImageFileWriter< Image <RGBPixel<unsigned char> , 3> >;
+  extern template MEDITK_EXPORT class ImageFileWriter< Image <Vector<unsigned char, 3> , 3> >;
+  extern template MEDITK_EXPORT class ImageFileWriter< Image <RGBPixel<unsigned char> , 3> >;
 }
 
 #endif

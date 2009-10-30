@@ -152,6 +152,12 @@ IF( DCMTK_root_INCLUDE_DIR
     ${DCMTK_ofstd_LIBRARY}
     ${DCMTK_config_LIBRARY}    
   )
+  IF(NOT WIN32)
+    SET( DCMTK_LIBRARIES
+    ${DCMTK_LIBRARIES}
+    z
+    )   
+  ENDIF(NOT WIN32)
   
 IF(DCMTK_imagedb_LIBRARY)
   SET( DCMTK_LIBRARIES

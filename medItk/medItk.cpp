@@ -1,6 +1,8 @@
 #define ITK_TEMPLATE_CXX 1
 
 #include <itkImage.txx>
+#include <itkImageBase.txx>
+#include <itkImageRegion.txx>
 #include <itkImportImageContainer.txx>
 #include <itkImageFileWriter.txx>
 #include <itkOrientedImage.txx>
@@ -16,6 +18,8 @@ namespace itk
 {
   typedef Vector<unsigned char, 3> VectorUC3;
   typedef RGBPixel<unsigned char>  RGBUC;
+}
+
 
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Vector,(double,2),D2)
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, FixedArray,(double,2),D2)
@@ -37,8 +41,8 @@ namespace itk
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, RGBPixel,(unsigned char),UC)
   //template MEDITK_EXPORT class RGBPixel<unsigned char>;
 
-  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, ImageBase,(3),3)
-  //template MEDITK_EXPORT class ImageBase<3>;
+  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, ImageBase,(3),D3)  
+  //template class MEDITK_EXPORT ImageBase<3>;
 
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Image,(double, 3),D3)
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Image,(float, 3),F3)
@@ -82,8 +86,10 @@ namespace itk
   template MEDITK_EXPORT class Image <RGBPixel<unsigned char>, 3>;
   template MEDITK_EXPORT class Image <Vector<unsigned char, 3>, 3>;
   */
-  template MEDITK_EXPORT class OrientedImage <short, 3>;
+  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, OrientedImage, (short, 3), S3)
 
-  template MEDITK_EXPORT class ImageFileWriter< Image <Vector<unsigned char, 3> , 3> >;
-  template MEDITK_EXPORT class ImageFileWriter< Image <RGBPixel<unsigned char> , 3> >;
+namespace itk
+{
+  template class MEDITK_EXPORT ImageFileWriter< Image <Vector<unsigned char, 3> , 3> >;
+  template class MEDITK_EXPORT ImageFileWriter< Image <RGBPixel<unsigned char> , 3> >;
 }

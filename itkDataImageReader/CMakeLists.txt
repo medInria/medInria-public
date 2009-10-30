@@ -124,7 +124,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderPlugin.cpp
-  itkDataImageReader.cpp  
+  itkDataImageReader.cpp 
   itkDCMTKDataImageReader.cpp
   itkDataImageReaderCommand.cxx
 )
@@ -149,15 +149,15 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   ITKDCMTKIO
-  itkAddOn
   medItk
+  # itkAddOn  
   ${ITK_LIBRARIES}
 )
 
 if (VTK_FOUND)
 
 add_executable(itkDCMTKReaderTest
-  itkDCMTKReaderTest.cxx  
+  itkDCMTKReaderTest.cxx
 )
   
 target_link_libraries(itkDCMTKReaderTest
@@ -167,7 +167,6 @@ target_link_libraries(itkDCMTKReaderTest
   vtkDataManagement
   ITKDCMTKIO
   ${ITK_LIBRARIES}
-  # z
 )
 
 add_executable(itkStreamedReaderTest
@@ -189,7 +188,6 @@ add_executable(itkDCMTKReadWriteBenchmark
 target_link_libraries(itkDCMTKReadWriteBenchmark
   ITKDCMTKIO
   ${ITK_LIBRARIES}
-  # z
 )
 
 endif (VTK_FOUND)
