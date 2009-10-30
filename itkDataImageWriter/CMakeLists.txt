@@ -113,9 +113,9 @@ add_library(${PROJECT_NAME} SHARED
 )
 
 target_link_libraries(${PROJECT_NAME}
-  medItk
-  ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkCore
+  medItk
+  ${ITK_LIBRARIES}
 )
 

@@ -19,6 +19,8 @@
 
 cmake_minimum_required(VERSION 2.6)
 
+project(medular-plugins)
+
 mark_as_advanced(CMAKE_AR)
 
 ## #################################################################
