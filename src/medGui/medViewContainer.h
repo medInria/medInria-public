@@ -20,13 +20,15 @@
 #ifndef MEDVIEWCONTAINER_H
 #define MEDVIEWCONTAINER_H
 
+#include "medGuiExport.h"
+
 #include <QtGui/QWidget>
 
 class dtkAbstractView;
 
 class medViewContainerPrivate;
 
-class medViewContainer : public QWidget
+class MEDGUI_EXPORT medViewContainer : public QWidget
 {
     Q_OBJECT
 

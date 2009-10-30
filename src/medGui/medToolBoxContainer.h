@@ -20,12 +20,14 @@
 #ifndef MEDTOOLBOXCONTAINER_H
 #define MEDTOOLBOXCONTAINER_H
 
+#include "medGuiExport.h"
+
 #include <QtGui/QScrollArea>
 
 class medToolBox;
 class medToolBoxContainerPrivate;
 
-class medToolBoxContainer : public QScrollArea
+class MEDGUI_EXPORT medToolBoxContainer : public QScrollArea
 {
 public:
      medToolBoxContainer(QWidget *parent = 0);
