@@ -12,6 +12,7 @@
 #include <dcmtk/dcmdata/dctk.h>
 #include <dcmtk/dcmdata/dcistrmf.h>
 #include <dcmtk/ofstd/ofstdinc.h>
+#include <dcmtk/dcmimgle/dcmimage.h>
 
 /* The path separator for this platform.  */
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -87,6 +88,16 @@ namespace itk
     {
       return false;
     }
+
+    E_TransferSyntax xfer = dicomFile.getDataset()->getOriginalXfer();
+    
+    if( xfer == EXS_JPEG2000LosslessOnly ||
+	xfer == EXS_JPEG2000 ||
+	xfer == EXS_JPEG2000MulticomponentLosslessOnly ||
+	xfer == EXS_JPEG2000Multicomponent )
+    {
+      return false;
+    }
     return true;
   }
 
@@ -105,8 +116,8 @@ namespace itk
     int samplesPerPixel = 1;
     if ( !(s_stream >> samplesPerPixel) )
     {
-      itkExceptionMacro ( << "Cannot convert string to int: " << pixelComponentCountVec[0].c_str()
-			  << "assuming 1 component per pixel." );
+      itkWarningMacro ( << "Cannot convert string to int: " << pixelComponentCountVec[0].c_str()
+			<< "assuming 1 component per pixel." );
       this->SetNumberOfComponents (1);
     }
 
@@ -221,6 +232,8 @@ namespace itk
     }
     
 
+
+    m_Spacing[2] = 1.0;
     
     double sliceThickness = 1.0;
     const StringVectorType &sliceThicknessVec = this->GetMetaDataValueVectorString ("(0018,0050)");
@@ -231,6 +244,10 @@ namespace itk
       if (!(is_stream>>sliceThickness))
       {
 	itkWarningMacro ( << "Cannot convert string to double: " << sliceThicknessStr.c_str() << std::endl );
+      }
+      else
+      {
+	m_Spacing[2] = sliceThickness;
       }
     }
     
@@ -244,16 +261,12 @@ namespace itk
       {
 	itkWarningMacro ( << "Cannot convert string to double: " << spacingBetweenSlicesStr.c_str() << std::endl );
       }
+      else
+      {
+	m_Spacing[2] = spacingBetweenSlices;
+      }
     }
-    
-    if (spacingBetweenSlices > 0.0)
-    {
-      m_Spacing[2] = spacingBetweenSlices;
-    }
-    else if (sliceThickness > 0.0)
-    {
-      m_Spacing[2] = sliceThickness;
-    }
+
     if (this->GetNumberOfDimensions()==4)
       m_Spacing[3] = 1.0; 
   }
@@ -649,7 +662,8 @@ namespace itk
       this->InternalRead (buffer, i, pixelCount);
       if( threadId==0 )
       {
-	this->InvokeEvent ( SliceReadEvent() );
+	this->SetProgress( (double)(i-start+1)/(double)(length) );
+	this->InvokeEvent ( ProgressEvent() );
       }
     }
   }
@@ -674,7 +688,17 @@ namespace itk
       itkExceptionMacro (<< cond.text() );
     }
 
+    E_TransferSyntax xfer = dicomFile.getDataset()->getOriginalXfer();
 
+    if( xfer == EXS_JPEG2000LosslessOnly ||
+	xfer == EXS_JPEG2000 ||
+	xfer == EXS_JPEG2000MulticomponentLosslessOnly ||
+	xfer == EXS_JPEG2000Multicomponent )
+    {
+      itkExceptionMacro("Jpeg2000 encoding not supported yet.");
+    }
+    
+    
     size_t length = pixelCount;
     switch( this->GetComponentType() )
     {  
@@ -716,6 +740,7 @@ namespace itk
        It may happen that several pixelData are present in the DICOM. Then, we select the one whose length is
        exactly the expected length.
      */
+    /*
     DcmPixelData* pixelData = 0;
     
     if (dicomFile.search(DCM_PixelData, stack, ESM_fromHere, OFTrue) == EC_Normal)
@@ -724,43 +749,55 @@ namespace itk
       {
 	itkExceptionMacro (<<"Cannot cast DcmElement into PixelData\n");
       }
-      else
+      std::cout << "Length: " << pixelData->getLength() << std::endl;
+    }
+    else
+    {
+      while ( pixelData->getLength()!=length && dicomFile.search(DCM_PixelData, stack, ESM_afterStackTop, OFTrue) == EC_Normal)
       {
-	while ( pixelData->getLength()!=length && dicomFile.search(DCM_PixelData, stack, ESM_afterStackTop, OFTrue) == EC_Normal)
+	pixelData = dynamic_cast<DcmPixelData*>( stack.top() );
+	if( !pixelData )
 	{
-	  pixelData = dynamic_cast<DcmPixelData*>( stack.top() );
-	  if( !(pixelData = dynamic_cast<DcmPixelData*>( stack.top() )) )
-	  {
-	    itkExceptionMacro (<<"Cannot cast DcmElement into PixelData\n");
-	  }
+	  itkExceptionMacro (<<"Cannot cast DcmElement into PixelData\n");
 	}
+	std::cout << "Length: " << pixelData->getLength() << std::endl;
       }
     }
-
+    */
+    
+    /*
     if (pixelData->getLength()!=length)
     {
       itkExceptionMacro (<<"Cannot find a pixel data whose number of pixels (" << pixelData->getLength() << ") match what is required (" << length << ")");
     }
-    
+    */
+
+
 
     //unsigned char* copyBuffer = 0;
-    Uint8* copyBuffer = 0;
-    Uint8* ucharBuffer = 0;
-    //Sint16* shortBuffer = 0; // apparently, getSInt16Array is not implemented in DCMTK
-    Uint16* ushortBuffer = 0;
-    //Sint32* intBuffer = 0; // apparently, getSInt32Array is not implemented in DCMTK
-    Uint32* uintBuffer = 0;
-    Float64* doubleBuffer = 0;
+    const Uint8* copyBuffer = 0;
+    //Uint8* ucharBuffer = 0;
+    ////Sint16* shortBuffer = 0; // apparently, getSInt16Array is not implemented in DCMTK
+    //Uint16* ushortBuffer = 0;
+    ////Sint32* intBuffer = 0; // apparently, getSInt32Array is not implemented in DCMTK
+    //Uint32* uintBuffer = 0;
+    //Float64* doubleBuffer = 0;
 
 
+    dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
+    
+    /*
     switch( this->GetComponentType() ){
 	case CHAR:
 	  throw ExceptionObject (__FILE__,__LINE__,"According to dcmtk, int8 pixel type is not a dicom supported format");
 	  break;
 	  
 	case UCHAR:
-	  pixelData->getUint8Array( ucharBuffer );
-	  copyBuffer = (Uint8*)( ucharBuffer );
+	  //pixelData->getUint8Array( ucharBuffer );
+	  //copyBuffer = (Uint8*)( ucharBuffer );
+	  //copyBuffer = (Uint8*)( di->getOutputData(8, 0, 0) );
+	  //copyBuffer = (Uint8*)( di->getInterData()->getData() );
+	  dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
 	  break;
 	  
 	case SHORT:
@@ -769,41 +806,58 @@ namespace itk
 	    if ( of.bad() )
 	    {
 	      itkExceptionMacro ( << of.text() );
-	    }
-	    copyBuffer = (Uint8*)( ushortBuffer );
+	      }
+	    //copyBuffer = (Uint8*)( ushortBuffer );
+	    //copyBuffer = (Uint8*)( di->getOutputData(16, 0, 0) );
+	    //copyBuffer = (Uint8*)( di->getInterData()->getData() );
+	    dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
 	    break;
 	  }
 	  
 	case USHORT:
 	  {
+	    
 	    OFCondition of = pixelData->getUint16Array( ushortBuffer );
 	    if ( of.bad() )
 	    {
 	      itkExceptionMacro ( << of.text() );
-	    }
-	    copyBuffer = (Uint8*)( ushortBuffer );
+	      }
+	    //copyBuffer = (Uint8*)( ushortBuffer );
+	    //copyBuffer = (Uint8*)( di->getOutputData(16, 0, 0) );
+	    //copyBuffer = (Uint8*)( di->getInterData()->getData() );
+	    dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
 	    break;
 	  }
 	  
 	case INT:
-	  pixelData->getUint32Array( uintBuffer );
-	  copyBuffer = (Uint8*)( uintBuffer );
+	  //pixelData->getUint32Array( uintBuffer );
+	  //copyBuffer = (Uint8*)( uintBuffer );
+	  //copyBuffer = (Uint8*)( di->getOutputData(32, 0, 0) );
+	  //copyBuffer = (Uint8*)( di->getInterData()->getData() );
+	  dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
 	  break;
 	  
 	case UINT:
-	  pixelData->getUint32Array( uintBuffer );
-	  copyBuffer = (Uint8*)( uintBuffer );
+	  //pixelData->getUint32Array( uintBuffer );
+	  //copyBuffer = (Uint8*)( uintBuffer );
+	  //copyBuffer = (Uint8*)( di->getOutputData(32, 0, 0) );
+	  //copyBuffer = (Uint8*)( di->getInterData()->getData() );
+	  dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
 	  break;
 	  
 	case DOUBLE:
-	  pixelData->getFloat64Array( doubleBuffer );
-	  copyBuffer = (Uint8*)( doubleBuffer );
+	  //pixelData->getFloat64Array( doubleBuffer );
+	  //copyBuffer = (Uint8*)( doubleBuffer );
+	  //copyBuffer = (Uint8*)( di->getOutputData(64, 0, 0) );
+	  //copyBuffer = (Uint8*)( di->getInterData()->getData() );
+	  dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
 	  break;
 	  
 	default:
 	  throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
     }
-
+    */
+    
     Uint8* destBuffer = (Uint8*)(buffer);    
     if (!copyBuffer || !destBuffer)
     {

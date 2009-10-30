@@ -57,7 +57,10 @@ v3dView3D::v3dView3D(void) : dtkAbstractView(), d(new v3dView3DPrivate)
 
 v3dView3D::~v3dView3D(void)
 {
-
+    d->widget->GetRenderWindow()->RemoveRenderer ( d->renderer );
+    d->view->SetRenderWindow(0);
+    d->view->Delete();
+    d->renderer->Delete();
 }
 
 bool v3dView3D::registered(void)

@@ -48,7 +48,7 @@ bool itkDataImageReaderPlugin::initialize(void)
     if(!itkDataImageFloat3Reader::registered()) dtkWarning() << "Unable to register itkDataImageFloat3Reader type";
     if(!itkDataImageDouble3Reader::registered()) dtkWarning() << "Unable to register itkDataImageDouble3Reader type";
     if(!itkDataImageVector3Reader::registered()) dtkWarning() << "Unable to register itkDataImageVector3Reader type";
-    if(!itkDataImageRGB3Reader::registered()) dtkWarning() << "Unable to register itkDataImageRGB3Reader type";
+    //if(!itkDataImageRGB3Reader::registered()) dtkWarning() << "Unable to register itkDataImageRGB3Reader type";
     if(!itkDCMTKDataImageReader::registered()) dtkWarning() << "Unable to register itkDCMTKDataImageReader type";
 
     return true;
@@ -87,7 +87,7 @@ QStringList itkDataImageReaderPlugin::types(void) const
 			 << "itkDataImageFloat3Reader"
 			 << "itkDataImageDouble3Reader"
 			 << "itkDataImageVector3Reader"
-			 << "itkDataImageRGB3Reader"
+      //<< "itkDataImageRGB3Reader"
 			 << "itkDCMTKDataImageReader";
 }
 

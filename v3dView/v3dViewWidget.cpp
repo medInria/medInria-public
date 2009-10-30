@@ -29,20 +29,22 @@ v3dViewWidget::v3dViewWidget(QWidget *parent) : QVTKWidget(parent)
 
 v3dViewWidget::~v3dViewWidget(void)
 {
-
 }
 
 void v3dViewWidget::focusInEvent(QFocusEvent *event)
 {
     QVTKWidget::focusInEvent(event);
-
+    
     if (QWidget *parent = dynamic_cast<QWidget *>(this->parent()))
         parent->setFocus();
+
+    grabKeyboard();
 }
 
 void v3dViewWidget::focusOutEvent(QFocusEvent *event)
 {
     QVTKWidget::focusOutEvent(event);
-
+    releaseKeyboard();
+    
     event->ignore();
 }

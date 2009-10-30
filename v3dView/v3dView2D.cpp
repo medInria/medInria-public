@@ -64,7 +64,7 @@ v3dView2D::v3dView2D(void) : dtkAbstractView(), d(new v3dView2DPrivate)
     d->view->SetRightButtonInteractionStyle(vtkViewImage2D::NO_INTERACTION);
     d->view->CursorFollowMouseOn();
     d->view->Show2DAxisOff();
-    d->view->SetInterpolationMode (0);
+    d->view->SetInterpolationMode (1);
 
     
     QAction* axialAct = new QAction (tr("Axial"), d->widget);
@@ -109,6 +109,8 @@ v3dView2D::v3dView2D(void) : dtkAbstractView(), d(new v3dView2DPrivate)
 
 v3dView2D::~v3dView2D(void)
 {
+    d->widget->GetRenderWindow()->RemoveRenderer ( d->renderer );
+    d->view->SetRenderWindow(0);
     d->view->Delete();
     d->renderer->Delete();
 }

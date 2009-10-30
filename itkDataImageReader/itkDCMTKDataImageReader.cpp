@@ -13,73 +13,7 @@
 #include <itkRGBPixel.h>
 #include <itkDCMTKImageIO.h>
 #include <itkObjectFactoryBase.h>
-
-namespace itk
-{
-  
-  class SliceReadCommand : public Command
-  {
-    
-  public:
-    typedef SliceReadCommand               Self;
-    typedef Command                        Superclass;
-    typedef itk::SmartPointer<Self>        Pointer;
-    typedef itk::SmartPointer<const Self>  ConstPointer;
-    
-    itkTypeMacro( SliceReadCommand, Command );
-    itkNewMacro (Self);
-    
-    void Execute(Object *caller, const EventObject &event);
-    void Execute(const Object *caller, const EventObject &event);
-
-    void SetDCMTKDataImageReader (itkDCMTKDataImageReader* reader)
-    { m_Reader = reader; }
-    
-  protected:
-    SliceReadCommand(){ m_Reader = 0; };
-    virtual ~SliceReadCommand(){};
-
-  private:
-    itkDCMTKDataImageReader* m_Reader;
-    
-  };
-  
-  
-  void SliceReadCommand::Execute (Object *caller, const EventObject &event)
-  {
-    DCMTKImageIO *po = dynamic_cast<DCMTKImageIO *>(caller);
-    if (! po)
-      return;
-    
-    if( typeid(event) == typeid ( itk::SliceReadEvent )  )
-    {
-      /*
-	if (m_Reader)
-	m_Reader->progressUpdated ( 0 );
-      */
-    }
-  }
-  
-  
-  void SliceReadCommand::Execute (const Object *caller, const EventObject &event)
-  {
-    DCMTKImageIO *po = dynamic_cast<DCMTKImageIO *>(const_cast<Object *>(caller) );
-    if (! po)
-      return;
-    
-    if( typeid(event) == typeid ( SliceReadEvent  )  )
-    {
-      /*
-	if (m_Reader)
-	m_Reader->progressUpdated ( 0 );
-      */
-    }
-  }
-  
-}
-
-
-
+#include "itkDataImageReaderCommand.h"
 
 // /////////////////////////////////////////////////////////////////
 // itkDCMTKDataImageReaderPrivate
@@ -349,9 +283,9 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
     return false;
   }
 
-  itk::SliceReadCommand::Pointer command = itk::SliceReadCommand::New();
+  itk::DataImageReaderCommand::Pointer command = itk::DataImageReaderCommand::New();
   command->SetDCMTKDataImageReader ( this );
-  d->io->AddObserver ( itk::SliceReadEvent(), command);
+  d->io->AddObserver ( itk::ProgressEvent(), command);
 
 
   if (d->io->GetPixelType()==itk::ImageIOBase::SCALAR) {
@@ -563,6 +497,12 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
   
   return true;
 
+}
+
+
+void itkDCMTKDataImageReader::setProgress (int value)
+{
+    emit progressed (value);
 }
 
 // /////////////////////////////////////////////////////////////////

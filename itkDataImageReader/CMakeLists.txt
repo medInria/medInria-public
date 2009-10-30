@@ -126,6 +126,7 @@ set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderPlugin.cpp
   itkDataImageReader.cpp  
   itkDCMTKDataImageReader.cpp
+  itkDataImageReaderCommand.cxx
 )
 
 ## #################################################################

@@ -82,7 +82,7 @@ namespace itk
      
         if( typeid(event) == typeid ( itk::SliceReadEvent )  )
         {
-            std::cout << "Slice read" << std::endl;
+	  std::cout << "Slice read" << std::endl;
             //qDebug() << "Slice read";
             if( this->ImageNotSet ){
                 m_View->SetITKImage ( m_Image );
