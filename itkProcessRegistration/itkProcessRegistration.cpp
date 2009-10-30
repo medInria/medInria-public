@@ -225,7 +225,7 @@ int itkProcessRegistration::doRegistration(RegistrationMethodType *method)
         d->regFactory->Initialize();
         d->regFactory->ApplyRegistrationMethod( 0 );
     }
-    catch ( itk::ExceptionObject & e ) {
+    catch ( itk::ExceptionObject & ) {
         d->regFactory->RemoveRegistrationMethod( 0 );
     }
 

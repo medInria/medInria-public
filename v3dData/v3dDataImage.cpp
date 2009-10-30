@@ -62,7 +62,7 @@ bool v3dDataImage::read(QString file)
     {
         metaimage->Read(file.toAscii().constData());
     }
-    catch (vtkErrorCode::ErrorIds &e)
+    catch (vtkErrorCode::ErrorIds &)
     {
         qDebug() << "Error: cannot open file" << file.toAscii().constData();
     }
