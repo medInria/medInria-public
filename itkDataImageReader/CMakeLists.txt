@@ -98,6 +98,20 @@ include(${VTK_USE_FILE})
 
 include_directories(${CMAKE_SOURCE_DIR}/medItk)
 
+
+set(ITKDCMTKIO_SOURCES
+itkDCMTKImageIO.cxx
+)
+add_library(ITKDCMTKIO SHARED
+${ITKDCMTKIO_SOURCES}
+)
+target_link_libraries(ITKDCMTKIO
+${DCMTK_LIBRARIES}
+itkAddOn
+${ITK_LIBRARIES}
+)
+
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -110,8 +124,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderPlugin.cpp
-  itkDataImageReader.cpp
-  itkDCMTKImageIO.cxx
+  itkDataImageReader.cpp  
   itkDCMTKDataImageReader.cpp
 )
 
@@ -134,17 +147,16 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-  medItk
+  ITKDCMTKIO
   itkAddOn
-  ${DCMTK_LIBRARIES}
+  medItk
   ${ITK_LIBRARIES}
 )
 
 if (VTK_FOUND)
 
 add_executable(itkDCMTKReaderTest
-  itkDCMTKReaderTest.cxx
-  itkDCMTKImageIO.cxx
+  itkDCMTKReaderTest.cxx  
 )
   
 target_link_libraries(itkDCMTKReaderTest
@@ -152,10 +164,9 @@ target_link_libraries(itkDCMTKReaderTest
   vtkRendering
   vtkIO
   vtkDataManagement
-  itkAddOn
+  ITKDCMTKIO
   ${ITK_LIBRARIES}
-  ${DCMTK_LIBRARIES}
-  z
+  # z
 )
 
 add_executable(itkStreamedReaderTest
@@ -167,20 +178,17 @@ target_link_libraries(itkStreamedReaderTest
   vtkRendering
   vtkIO
   vtkDataManagement
-  itkAddOn
   ${ITK_LIBRARIES}
 )
 
 add_executable(itkDCMTKReadWriteBenchmark
-  itkDCMTKReadWriteBenchmark.cxx
-  itkDCMTKImageIO.cxx
+  itkDCMTKReadWriteBenchmark.cxx  
 )
   
 target_link_libraries(itkDCMTKReadWriteBenchmark
-  itkAddOn
+  ITKDCMTKIO
   ${ITK_LIBRARIES}
-  ${DCMTK_LIBRARIES}
-  z
+  # z
 )
 
 endif (VTK_FOUND)

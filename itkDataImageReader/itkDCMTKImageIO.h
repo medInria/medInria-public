@@ -8,7 +8,7 @@
 #include "itkMultiThreadedImageIOBase.h"
 #include <itkMetaDataObject.h>
 
-#include "itkDataImageReaderPluginExport.h"
+#include "itkDCMTKIOExport.h"
 
 #include <map>
 #include <vector>
@@ -21,7 +21,7 @@ class DcmElement;
 namespace itk
 {
 
-  class ITKDATAIMAGEREADERPLUGIN_EXPORT DCMTKImageIO : public MultiThreadedImageIOBase
+  class ITKDCMTKIO_EXPORT DCMTKImageIO : public MultiThreadedImageIOBase
   {
 
   public:
@@ -35,27 +35,9 @@ namespace itk
 
 
     typedef std::map< std::string, std::vector< std::string > > StringMap;
-    typedef std::map< std::string, std::vector< float > >       FloatMap;
-    typedef std::map< std::string, std::vector< double > >      DoubleMap;
-    typedef std::map< std::string, std::vector< int32_t > >     Int32Map;
-    typedef std::map< std::string, std::vector< int16_t > >     Int16Map;
-    typedef std::map< std::string, std::vector< uint32_t > >    UInt32Map;
-    typedef std::map< std::string, std::vector< uint16_t > >    UInt16Map;
 
     typedef MetaDataObject <std::string>                 MetaDataStringType;
     typedef MetaDataObject < std::vector<std::string> >  MetaDataVectorStringType;
-    typedef MetaDataObject <double>                      MetaDataDoubleType;
-    typedef MetaDataObject < std::vector<double> >       MetaDataVectorDoubleType;
-    typedef MetaDataObject <float>                       MetaDataFloatType;
-    typedef MetaDataObject < std::vector<float> >        MetaDataVectorFloatType;
-    typedef MetaDataObject <int32_t>                     MetaDataInt32Type;
-    typedef MetaDataObject < std::vector<int32_t> >      MetaDataVectorInt32Type;
-    typedef MetaDataObject <int16_t>                     MetaDataInt16Type;
-    typedef MetaDataObject < std::vector<int16_t> >      MetaDataVectorInt16Type;
-    typedef MetaDataObject <uint32_t>                    MetaDataUInt32Type;
-    typedef MetaDataObject < std::vector<uint32_t> >     MetaDataVectorUInt32Type;
-    typedef MetaDataObject <uint16_t>                    MetaDataUInt16Type;
-    typedef MetaDataObject < std::vector<uint16_t> >     MetaDataVectorUInt16Type;
 
     typedef MultiThreadedImageIOBase::RegionType         RegionType;
 

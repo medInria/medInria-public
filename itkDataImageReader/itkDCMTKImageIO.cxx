@@ -3,7 +3,10 @@
 
 #include "itkDCMTKImageIO.h"
 
+#ifndef WIN32
 #define HAVE_CONFIG_H
+#endif
+
 #include <dcmtk/config/osconfig.h>
 
 #include <dcmtk/dcmdata/dctk.h>
@@ -31,8 +34,6 @@
 
 
 #include <float.h>
-#include <inttypes.h>
-#include <stdint.h>
 
 #include <fstream>
 

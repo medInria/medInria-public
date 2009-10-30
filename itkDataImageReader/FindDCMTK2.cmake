@@ -150,10 +150,9 @@ IF( DCMTK_root_INCLUDE_DIR
     ${DCMTK_dcmimgle_LIBRARY}
     ${DCMTK_dcmdata_LIBRARY}
     ${DCMTK_ofstd_LIBRARY}
-    ${DCMTK_config_LIBRARY}
-    z
+    ${DCMTK_config_LIBRARY}    
   )
-
+  
 IF(DCMTK_imagedb_LIBRARY)
   SET( DCMTK_LIBRARIES
     ${DCMTK_LIBRARIES}
