@@ -3,6 +3,8 @@
 #include <itkImage.txx>
 #include <itkImageBase.txx>
 #include <itkImageRegion.txx>
+#include <itkImageRegionIterator.txx>
+#include <itkImageRegionConstIterator.txx>
 #include <itkImportImageContainer.txx>
 #include <itkImageFileWriter.txx>
 #include <itkOrientedImage.txx>
