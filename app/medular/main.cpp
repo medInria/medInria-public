@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
     
     // Uninitialize managers
 
-    medPluginManager::instance()->uninitialize();
-    dtkScriptManager::instance()->uninitialize();
+    //dtkPluginManager::instance()->uninitialize();
+    //dtkScriptManager::instance()->uninitialize();
     
     return status;
 }

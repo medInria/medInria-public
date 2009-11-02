@@ -169,7 +169,7 @@ QModelIndex medDatabaseModel::parent(const QModelIndex& index) const
 
 Qt::ItemFlags medDatabaseModel::flags(const QModelIndex& index) const
 {
-    return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+    return Qt::ItemIsSelectable | /*Qt::ItemIsEditable |*/ Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
 }
 
 //! Sets the role data for the item at index to value. Returns true if
