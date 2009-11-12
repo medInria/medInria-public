@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct 26 21:58:51 2009 (+0100)
+ * Last-Updated: Tue Nov  3 09:11:08 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 494
+ *     Update #: 497
  */
 
 /* Commentary: 
@@ -207,14 +207,14 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // Setting up layout
 
     QHBoxLayout *central_layout = new QHBoxLayout(main);
-    central_layout->setContentsMargins(10, 10, 10, 10);
+    central_layout->setContentsMargins(0, 0, 0, 0);
     central_layout->setSpacing(10);
     central_layout->addWidget(d->toolbox_container);
     central_layout->addWidget(central);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
+    layout->setContentsMargins(10, 10, 10, 10);
+    layout->setSpacing(10);
     layout->addWidget(main);
     layout->addWidget(d->status);
 

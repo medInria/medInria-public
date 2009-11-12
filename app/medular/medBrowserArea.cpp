@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Oct 26 12:11:03 2009 (+0100)
+ * Last-Updated: Tue Nov  3 09:16:04 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 194
+ *     Update #: 232
  */
 
 /* Commentary: 
@@ -25,11 +25,13 @@
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
 
+#include <medGui/medImagePreview.h>
 #include <medGui/medPatientPreview.h>
 #include <medGui/medStatusPanel.h>
 #include <medGui/medStudyPreview.h>
 #include <medGui/medSeriesPreview.h>
-#include <medGui/medImagePreview.h>
+#include <medGui/medToolBox.h>
+#include <medGui/medToolBoxContainer.h>
 
 // /////////////////////////////////////////////////////////////////
 // medBrowserAreaPreview
@@ -115,6 +117,8 @@ void medBrowserAreaPreview::onImageClicked(int id)
 class medBrowserAreaPrivate
 {
 public:
+    medToolBoxContainer *toolbox_container;
+
     medBrowserAreaPreview *preview;
     medDatabaseModel *model;
     medDatabaseView *view;
@@ -151,12 +155,52 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->status->addWidget(d->progress);
     d->status->addWidget(databaseInfo);
 
+    // /////////////////////////////////////////////////////////////////
+
+    QWidget *central = new QWidget(this);
+    
+    QVBoxLayout *central_layout = new QVBoxLayout(central);
+    central_layout->setContentsMargins(0, 0, 0, 0);
+    central_layout->setSpacing(10);
+    central_layout->addWidget(d->view);
+    central_layout->addWidget(d->preview);
+
+    // /////////////////////////////////////////////////////////////////
+
+    medToolBox *databaseSelectorToolBox = new medToolBox(this);
+    databaseSelectorToolBox->setTitle("Database selector");
+
+    medToolBox *localDatabaseToolBox = new medToolBox(this);
+    localDatabaseToolBox->setTitle("Local database");
+
+    medToolBox *distantDatabaseToolBox = new medToolBox(this);
+    distantDatabaseToolBox->setTitle("Distant database");
+
+    d->toolbox_container = new medToolBoxContainer(this);
+    d->toolbox_container->setFixedWidth(300);
+    d->toolbox_container->addToolBox(databaseSelectorToolBox);
+    d->toolbox_container->addToolBox(localDatabaseToolBox);
+    d->toolbox_container->addToolBox(distantDatabaseToolBox);
+
+    QWidget *main = new QWidget(this);
+
+    QHBoxLayout *main_layout = new QHBoxLayout(main);
+    main_layout->setContentsMargins(0, 0, 0, 0);
+    main_layout->setSpacing(10);
+    main_layout->addWidget(d->toolbox_container);
+    main_layout->addWidget(central);
+
+    // /////////////////////////////////////////////////////////////////
+
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(d->view);
-    layout->addWidget(d->preview);
+    layout->setContentsMargins(10, 10, 10, 10);
+    layout->setSpacing(10);
+    // layout->addWidget(d->view);
+    // layout->addWidget(d->preview);
+    layout->addWidget(main);
     layout->addWidget(d->status);
+
+    // /////////////////////////////////////////////////////////////////
 
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
@@ -165,7 +209,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     connect (medDatabaseController::instance(), SIGNAL (importCompleted (int)), d->progress, SLOT (setValue (int)));
 	
-
     // connect(d->view, SIGNAL(patientDoubleClicked(int)), this, SLOT(onPatientDoubleClicked(int)));
     // connect(d->view, SIGNAL(studyDoubleClicked(int)), this, SLOT(onStudyDoubleClicked(int)));
     // connect(d->view, SIGNAL(seriesDoubleClicked(int)), this, SLOT(onSeriesDoubleClicked(int)));

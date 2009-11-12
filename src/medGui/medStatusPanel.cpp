@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sun Oct 11 13:02:28 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct 20 09:59:04 2009 (+0200)
+ * Last-Updated: Tue Nov  3 09:42:50 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 92
+ *     Update #: 121
  */
 
 /* Commentary: 
@@ -22,39 +22,6 @@
 #include <QtGui>
 
 // /////////////////////////////////////////////////////////////////
-// medStatusWidget
-// /////////////////////////////////////////////////////////////////
-
-// class medStatusWidgetPrivate
-// {
-// public:
-//     QFormLayout *layout;
-// };
-
-// medStatusWidget::medStatusWidget(QWidget *parent) : QWidget(parent), d(new medStatusWidgetPrivate)
-// {
-//     d->layout = new QFormLayout(this);
-// }
-
-// medStatusWidget::~medStatusWidget(void)
-// {
-//     delete d;
-
-//     d = NULL;
-// }
-
-// void medStatusWidget::addField(const QString& label, QString field)
-// {
-//     d->layout->addRow(field, new QLabel(field, this));
-// }
-
-// void medStatusWidget::setField(const QString& label, QString field)
-// {
-//     if(QLabel *label = d->labelForField(label))
-//     label->setText(value);
-// }
-
-// /////////////////////////////////////////////////////////////////
 // medStatusPanel
 // /////////////////////////////////////////////////////////////////
 
@@ -62,10 +29,11 @@ class medStatusPanelPrivate
 {
 public:
     QHBoxLayout *layout;
+
     int spacing;
 };
 
-medStatusPanel::medStatusPanel(QWidget *parent) : QWidget(parent), d(new medStatusPanelPrivate)
+medStatusPanel::medStatusPanel(QWidget *parent) : QFrame(parent), d(new medStatusPanelPrivate)
 {
     d->spacing = 12;
 
@@ -99,17 +67,17 @@ void medStatusPanel::removeWidget(QWidget *widget)
     d->layout->removeWidget(widget);
 }
 
-static void paintLayout(QPainter *painter, QLayout *layout, int spacing)
+static void paintLayout(QPainter *painter, QLayout *layout, int spacing, const QRect& rect)
 {
     for (int i = 1; i < layout->count(); ++i) {
 
         QLayoutItem *item = layout->itemAt(i);
           
-        QPoint tl(item->geometry().topLeft().x() - spacing/2, item->geometry().topLeft().y());
-        QPoint bl(item->geometry().bottomLeft().x() - spacing/2, item->geometry().bottomLeft().y());
+        QPoint tl(item->geometry().topLeft().x() - spacing/2, rect.top() + 2);
+        QPoint bl(item->geometry().bottomLeft().x() - spacing/2, rect.bottom() - 2);
 
         painter->save();
-        painter->setPen(Qt::black);
+        painter->setPen(QColor(0x31, 0x31, 0x31));
         painter->drawLine(tl, bl);
         painter->restore();
     }
@@ -119,11 +87,9 @@ void medStatusPanel::paintEvent(QPaintEvent *event)
 {
     QPainter painter;
     painter.begin(this);
-    painter.setPen(Qt::black);
-    painter.setBrush(QColor(0x31, 0x31, 0x31).lighter(150));
-    painter.drawRect(event->rect().adjusted(-1, 0, 0, 0));
-    paintLayout(&painter, this->layout(), d->spacing);
+    // painter.setPen(Qt::darkGray);
+    // painter.setBrush(QColor(0x31, 0x31, 0x31).lighter(150));
+    painter.fillRect(event->rect(), QColor(0x31, 0x31, 0x31).lighter(150));
+    paintLayout(&painter, this->layout(), d->spacing, event->rect());
     painter.end();
-
-    QWidget::paintEvent(event);
 }
