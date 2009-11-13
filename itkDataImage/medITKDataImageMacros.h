@@ -116,10 +116,12 @@
   {									\
   typedef itkDataImage##suffix##Private::ImageType ImageType;		\
   typedef itk::Image<type, 2>                      Image2DType;		\
+  if (d->image.IsNull() )						\
+    return d->thumbnails;						\
+  if (ImageType::GetImageDimension()<2 )				\
+    return d->thumbnails;						\
   ImageType::Pointer image = d->image;					\
   {									\
-    if (d->image.IsNull() )						\
-      return d->thumbnails;						\
     ImageType::SizeType size = d->image->GetLargestPossibleRegion().GetSize(); \
     ImageType::SizeType newSize = size;					\
     newSize[0] = 128;							\
@@ -236,42 +238,25 @@
     qDebug() << e.GetDescription();					\
     return d->thumbnails;						\
   }									\
-  typedef itk::Image<RGBPixelType, 2>                           RGBImage2DType; \
-  typedef itk::ExtractImageFilter<RGBImageType, RGBImage2DType> RGBExtractFilterType; \
-  RGBExtractFilterType::Pointer extractor = RGBExtractFilterType::New(); \
-  extractor->SetInput ( rgbfilter->GetOutput() );			\
   ImageType::SizeType size = rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize(); \
-  for( unsigned int i=0; i<size[2]; i++ )				\
+  itk::ImageRegionIterator<RGBImageType> it (rgbfilter->GetOutput(), rgbfilter->GetOutput()->GetLargestPossibleRegion()); \
+  unsigned long nvoxels_per_slice = size[0]*size[1];			\
+  unsigned long voxelCount = 0;						\
+  QImage *qimage = new QImage (size[0], size[1], QImage::Format_ARGB32); \
+  uchar *qImageBuffer = qimage->bits();					\
+  while(!it.IsAtEnd())							\
   {									\
-    RGBImageType::RegionType region = rgbfilter->GetOutput()->GetLargestPossibleRegion(); \
-    RGBImageType::IndexType index = region.GetIndex();			\
-    RGBImageType::SizeType ssize = region.GetSize();			\
-    index[2] = i;							\
-    ssize[2] = 0;							\
-    region.SetIndex ( index );						\
-    region.SetSize ( ssize );						\
-    extractor->SetExtractionRegion (region);				\
-    try									\
-    {									\
-      extractor->Update();						\
-    }									\
-    catch (itk::ExceptionObject &e)					\
-    {									\
-      qDebug() << e.GetDescription();					\
-      return d->thumbnails;						\
-    }									\
-    QImage qimage (ssize[0], ssize[1], QImage::Format_ARGB32);		\
-    uchar *qImageBuffer = qimage.bits();				\
-    itk::ImageRegionIterator<RGBImage2DType> it (extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion()); \
-    while(!it.IsAtEnd())						\
-    {									\
-    *qImageBuffer++ = it.Value().GetRed();				\
-    *qImageBuffer++ = it.Value().GetGreen();				\
-    *qImageBuffer++ = it.Value().GetBlue();				\
+    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetRed());	\
+    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetGreen()); \
+    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetBlue());	\
     *qImageBuffer++ = 0xFF;						\
     ++it;								\
+    ++voxelCount;							\
+    if ( (voxelCount%nvoxels_per_slice)==0 ) {				\
+      d->thumbnails.push_back (*qimage);				\
+      qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);	\
+      qImageBuffer = qimage->bits();					\
     }									\
-    d->thumbnails.push_back (qimage);					\
   }									\
   return d->thumbnails;							\
   }									\
@@ -365,10 +350,12 @@
   {									\
   typedef itkDataImage##suffix##Private::ImageType ImageType;		\
   typedef itk::Image<type, 2>                      Image2DType;		\
+  if (d->image.IsNull() )						\
+    return d->thumbnails;						\
+  if (ImageType::GetImageDimension()<2 )				\
+    return d->thumbnails;						\
   ImageType::Pointer image = d->image;					\
   {									\
-    if (d->image.IsNull() )						\
-      return d->thumbnails;						\
     ImageType::SizeType size = d->image->GetLargestPossibleRegion().GetSize(); \
     ImageType::SizeType newSize = size;					\
     newSize[0] = 128;							\
@@ -391,45 +378,29 @@
     }									\
     image = filter->GetOutput();					\
   }									\
-  typedef itk::ExtractImageFilter<ImageType, Image2DType> ExtractFilterType; \
   ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize(); \
-  for( unsigned int i=0; i<size[2]; i++ )				\
+  itk::ImageRegionIterator<ImageType> it (image, image->GetLargestPossibleRegion()); \
+  unsigned long nvoxels_per_slice = size[0]*size[1];			\
+  unsigned long voxelCount = 0;						\
+  QImage *qimage = new QImage (size[0], size[1], QImage::Format_ARGB32); \
+  uchar *qImageBuffer = qimage->bits();					\
+  while(!it.IsAtEnd())							\
   {									\
-    ExtractFilterType::Pointer extractor = ExtractFilterType::New();	\
-    extractor->SetInput ( image );					\
-    ImageType::RegionType region = image->GetLargestPossibleRegion();	\
-    ImageType::IndexType index = region.GetIndex();			\
-    ImageType::SizeType ssize = region.GetSize();			\
-    index[2] = i;							\
-    ssize[2] = 0;							\
-    region.SetIndex ( index );						\
-    region.SetSize ( ssize );						\
-    extractor->SetExtractionRegion (region);				\
-    try									\
-    {									\
-      extractor->Update();						\
+    *qImageBuffer++ = static_cast<unsigned char>(it.Value()[0]);	\
+    *qImageBuffer++ = static_cast<unsigned char>(it.Value()[1]);	\
+    *qImageBuffer++ = static_cast<unsigned char>(it.Value()[2]);	\
+    *qImageBuffer++ = 0xFF;						\
+    ++it;								\
+    ++voxelCount;							\
+    if ( (voxelCount%nvoxels_per_slice)==0 ) {				\
+      d->thumbnails.push_back (*qimage);				\
+      qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);	\
+      qImageBuffer = qimage->bits();					\
     }									\
-    catch (itk::ExceptionObject &e)					\
-    {									\
-      qDebug() << e.GetDescription();					\
-      return d->thumbnails;						\
-    }									\
-    QImage qimage (ssize[0], ssize[1], QImage::Format_ARGB32);		\
-    uchar *qImageBuffer = qimage.bits();				\
-    itk::ImageRegionIterator<Image2DType> it (extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion()); \
-    while(!it.IsAtEnd())						\
-    {									\
-      *qImageBuffer++ = it.Value()[0];					\
-      *qImageBuffer++ = it.Value()[1];					\
-      *qImageBuffer++ = it.Value()[2];					\
-      *qImageBuffer++ = 0xFF;						\
-      ++it;								\
-    }									\
-    d->thumbnails.push_back (qimage);					\
   }									\
   return d->thumbnails;							\
   }									\
-
+  
 #endif
 
 
@@ -475,3 +446,48 @@
 //d->histogram = const_cast<HistogramType*>( histogramGenerator->GetOutput() ); 
 //d->histogram_min = d->histogram->GetFrequency( d->range_min, 0 );	
 //d->histogram_max = d->histogram->GetFrequency( d->range_max, 0 );	
+
+
+
+
+
+
+
+/*  typedef itk::Image<RGBPixelType, 2>                           RGBImage2DType; \
+  typedef itk::ExtractImageFilter<RGBImageType, RGBImage2DType> RGBExtractFilterType; \
+  RGBExtractFilterType::Pointer extractor = RGBExtractFilterType::New(); \
+  extractor->SetInput ( rgbfilter->GetOutput() );			\
+  ImageType::SizeType size = rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize(); \
+  for( unsigned int i=0; i<size[2]; i++ )				\
+  {									\
+    RGBImageType::RegionType region = rgbfilter->GetOutput()->GetLargestPossibleRegion(); \
+    RGBImageType::IndexType index = region.GetIndex();			\
+    RGBImageType::SizeType ssize = region.GetSize();			\
+    index[2] = i;							\
+    ssize[2] = 0;							\
+    region.SetIndex ( index );						\
+    region.SetSize ( ssize );						\
+    extractor->SetExtractionRegion (region);				\
+    try									\
+    {									\
+      extractor->Update();						\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    QImage qimage (ssize[0], ssize[1], QImage::Format_ARGB32);		\
+    uchar *qImageBuffer = qimage.bits();				\
+    itk::ImageRegionIterator<RGBImage2DType> it (extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion()); \
+    while(!it.IsAtEnd())						\
+    {									\
+    *qImageBuffer++ = it.Value().GetRed();				\
+    *qImageBuffer++ = it.Value().GetGreen();				\
+    *qImageBuffer++ = it.Value().GetBlue();				\
+    *qImageBuffer++ = 0xFF;						\
+    ++it;								\
+    }									\
+    d->thumbnails.push_back (qimage);					\
+  }									\
+*/
