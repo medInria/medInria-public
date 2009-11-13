@@ -9,6 +9,7 @@
 #include <itkVector.h>
 #include <itkImage.h>
 #include <itkImageFileReader.h>
+#include <itkImageIOBase.h>
 
 #include "medItkDataImageReaderMacros.h"
 

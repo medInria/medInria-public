@@ -84,6 +84,10 @@ namespace itk
     std::string GetScanOptions() const;
 
 
+    const StringVectorType& GetOrderedFileNames (void) const
+    { return m_OrderedFileNames; }
+
+
     inline std::string GetMetaDataValueString (const char* key, int index) const;
     inline const StringVectorType& GetMetaDataValueVectorString (const char* key) const;
     //std::vector<std::string> GetMetaDataValueVectorString (const char* key) const;

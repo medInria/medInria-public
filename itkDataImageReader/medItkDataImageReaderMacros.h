@@ -9,9 +9,12 @@
   typedef type         PixelType;					\
   typedef itk::Image<PixelType, dimension> ImageType;			\
   typedef itk::ImageFileReader<ImageType> ReaderType;			\
+  itk::ImageIOBase::Pointer io;						\
   };									\
   itkDataImage##suffix##Reader::itkDataImage##suffix##Reader(void) : dtkAbstractDataReader(), d (new itkDataImage##suffix##ReaderPrivate) \
-  {}									\
+  {									\
+    d->io = 0;								\
+  }									\
   itkDataImage##suffix##Reader::~itkDataImage##suffix##Reader(void)	\
   {}									\
   bool itkDataImage##suffix##Reader::registered(void)			\
@@ -49,8 +52,10 @@
     }									\
     if ( strcmp (reader->GetImageIO()->GetNameOfClass(), "GDCMImageIO")==0 || \
 	 reader->GetImageIO()->GetComponentType()!=itk::ImageIOBase::itkcomponent || \
-	 reader->GetImageIO()->GetPixelType()!=itk::ImageIOBase::itktype) \
+	 reader->GetImageIO()->GetPixelType()!=itk::ImageIOBase::itktype || \
+	 reader->GetImageIO()->GetNumberOfDimensions()!=dimension )	\
       return false;							\
+    d->io = reader->GetImageIO();					\
     return true;							\
   }									\
   void itkDataImage##suffix##Reader::readInformation (QString path)	\
@@ -61,6 +66,8 @@
       if (dtkdata)							\
 	this->setData ( dtkdata );					\
     }									\
+    if(d->io.IsNull())							\
+      this->canRead (path);						\
   }									\
   bool itkDataImage##suffix##Reader::read(QStringList paths)		\
   {									\
@@ -70,13 +77,19 @@
   }									\
   bool itkDataImage##suffix##Reader::read(QString path)			\
   {									\
-    if (!this->data())							\
+    if (!this->data() || d->io.IsNull())				\
       this->readInformation (path);					\
+    if (d->io.IsNull())							\
+      return false;							\
     typedef type         PixelType;					\
     typedef itk::Image<PixelType, dimension> ImageType;			\
     typedef itk::ImageFileReader<ImageType> ReaderType;			\
+    typedef ImageType::RegionType     RegionType;			\
+    typedef ImageType::IndexType      IndexType;			\
+    typedef ImageType::SizeType       SizeType;				\
     ReaderType::Pointer reader = ReaderType::New();			\
     reader->SetFileName (path.toAscii().constData());			\
+    reader->SetImageIO (d->io);						\
     try{								\
       reader->Update();							\
     }									\
@@ -94,6 +107,16 @@
     return new itkDataImage##suffix##Reader;				\
   }
 
+
+/*
+    IndexType index = {{0,0,d->io->GetDimensions (2)/2}};		
+    SizeType size = {{d->io->GetDimensions (0),d->io->GetDimensions (1),1}}; 
+    RegionType region;							
+    region.SetIndex(index);						
+    region.SetSize(size);						
+    reader->GetOutput()->SetRequestedRegion ( region );			
+
+ */
 
 
 #endif

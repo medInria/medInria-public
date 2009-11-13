@@ -238,11 +238,14 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       QStringList patientName;
       QStringList studyName;
       QStringList seriesName;
+      QStringList filePaths;
       
       patientName << d->io->GetPatientName().c_str();
       studyName << d->io->GetStudyDescription().c_str();
       seriesName << d->io->GetSeriesDescription().c_str();
 
+      for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++ )
+	filePaths << d->io->GetOrderedFileNames()[i].c_str();
       
       if (!dtkdata->hasMetaData ( tr ("PatientName") ))
 	dtkdata->addMetaData ( "PatientName", patientName );
@@ -258,6 +261,8 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
 	dtkdata->addMetaData ( "SeriesDescription", seriesName );
       else
 	dtkdata->setMetaData ( "SeriesDescription", seriesName );
+
+      dtkdata->addMetaData ("FilePaths", filePaths);
 	
     }
 }
