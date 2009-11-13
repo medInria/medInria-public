@@ -88,12 +88,34 @@ include_directories(${CMAKE_SOURCE_DIR}/medItk)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImagePlugin.h
-  itkDataImage.h
+  itkDataImageChar3.h
+  itkDataImageUChar3.h
+  itkDataImageShort3.h
+  itkDataImageUShort3.h
+  itkDataImageInt3.h
+  itkDataImageUInt3.h
+  itkDataImageLong3.h
+  itkDataImageULong3.h
+  itkDataImageFloat3.h
+  itkDataImageDouble3.h
+  itkDataImageVector3.h
+  itkDataImageRGB3.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImagePlugin.cpp
-  itkDataImage.cpp
+  itkDataImageChar3.cpp
+  itkDataImageUChar3.cpp
+  itkDataImageShort3.cpp
+  itkDataImageUShort3.cpp
+  itkDataImageInt3.cpp
+  itkDataImageUInt3.cpp
+  itkDataImageLong3.cpp
+  itkDataImageULong3.cpp
+  itkDataImageFloat3.cpp
+  itkDataImageDouble3.cpp
+  itkDataImageVector3.cpp
+  itkDataImageRGB3.cpp
 )
 
 ## #################################################################
