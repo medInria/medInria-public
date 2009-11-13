@@ -19,6 +19,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageChar3 : public dtkAbstractDataImage
     virtual QString description(void) const;
     static bool registered(void);
 
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
+
  public slots:
     // derived from dtkAbstractData
     
@@ -65,6 +68,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUChar3 : public dtkAbstractDataImage
     virtual QString description(void) const;
     static bool registered(void);
 
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
+
  public slots:
     // derived from dtkAbstractData
     
@@ -110,6 +116,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageShort3 : public dtkAbstractDataImage
     virtual QString description(void) const;
     static bool registered(void);
 
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
+
  public slots:
     // derived from dtkAbstractData
     
@@ -153,6 +162,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUShort3 : public dtkAbstractDataImag
     ~itkDataImageUShort3(void);
     virtual QString description(void) const;
     static bool registered(void);
+
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
 
  public slots:
     // derived from dtkAbstractData
@@ -198,6 +210,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageInt3 : public dtkAbstractDataImage
     virtual QString description(void) const;
     static bool registered(void);
 
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
+
  public slots:
     // derived from dtkAbstractData
     
@@ -241,6 +256,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUInt3 : public dtkAbstractDataImage
     ~itkDataImageUInt3(void);
     virtual QString description(void) const;
     static bool registered(void);
+
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
 
  public slots:
     // derived from dtkAbstractData
@@ -286,6 +304,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageLong3 : public dtkAbstractDataImage
     virtual QString description(void) const;
     static bool registered(void);
 
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
+
  public slots:
     // derived from dtkAbstractData
     
@@ -329,6 +350,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageULong3 : public dtkAbstractDataImage
     ~itkDataImageULong3(void);
     virtual QString description(void) const;
     static bool registered(void);
+
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
 
  public slots:
     // derived from dtkAbstractData
@@ -375,6 +399,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageFloat3 : public dtkAbstractDataImage
     virtual QString description(void) const;
     static bool registered(void);
 
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
+
  public slots:
     // derived from dtkAbstractData
     
@@ -419,6 +446,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageDouble3 : public dtkAbstractDataImag
     ~itkDataImageDouble3(void);
     virtual QString description(void) const;
     static bool registered(void);
+
+    virtual QImage        &thumbnail(void)   const;
+    virtual QList<QImage> &thumbnails (void) const;
 
  public slots:
     // derived from dtkAbstractData
@@ -465,6 +495,8 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageVector3 : public dtkAbstractDataImag
     virtual QString description(void) const;
     static bool registered(void);
 
+    virtual QList<QImage> &thumbnails (void) const;
+
  public slots:
     // derived from dtkAbstractData
     
@@ -508,6 +540,8 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageRGB3 : public dtkAbstractDataImage
     ~itkDataImageRGB3(void);
     virtual QString description(void) const;
     static bool registered(void);
+
+    virtual QList<QImage> &thumbnails (void) const;
 
  public slots:
     // derived from dtkAbstractData

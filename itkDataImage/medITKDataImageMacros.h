@@ -17,6 +17,7 @@
     HistogramType::Pointer histogram;					\
     int                    histogram_min;				\
     int                    histogram_max;				\
+    QList<QImage>          thumbnails;					\
   };									\
   itkDataImage##suffix::itkDataImage##suffix(): dtkAbstractDataImage(), d (new itkDataImage##suffix##Private) \
   {									\
@@ -103,9 +104,178 @@
   {									\
     return new itkDataImage##suffix;					\
   }									\
-
-
-
+  QImage &itkDataImage##suffix::thumbnail (void) const			\
+  {									\
+    if (d->image.IsNull())						\
+      return dtkAbstractDataImage::thumbnail();				\
+    if (d->thumbnails.isEmpty())					\
+      this->thumbnails();						\
+    return d->thumbnails[ d->thumbnails.count()/2 ];			\
+  }									\
+  QList<QImage> &itkDataImage##suffix::thumbnails (void) const		\
+  {									\
+  typedef itkDataImage##suffix##Private::ImageType ImageType;		\
+  typedef itk::Image<type, 2>                      Image2DType;		\
+  ImageType::Pointer image = d->image;					\
+  {									\
+    if (d->image.IsNull() )						\
+      return d->thumbnails;						\
+    ImageType::SizeType size = d->image->GetLargestPossibleRegion().GetSize(); \
+    ImageType::SizeType newSize = size;					\
+    newSize[0] = 128;							\
+    newSize[1] = 128;							\
+    unsigned int sfactor[ImageType::GetImageDimension()];		\
+    for (unsigned int i=0; i<ImageType::GetImageDimension(); i++)	\
+      sfactor[i] = size[i]/newSize[i];					\
+    typedef itk::ShrinkImageFilter<ImageType, ImageType> FilterType;	\
+    FilterType::Pointer filter = FilterType::New();			\
+    filter->SetInput ( image );						\
+    filter->SetShrinkFactors ( sfactor );				\
+    try									\
+    {									\
+      filter->Update();							\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    image = filter->GetOutput();					\
+  }									\
+  double imMin = 0.0;							\
+  double imMax = 0.0;							\
+  {									\
+    typedef itk::ExtractImageFilter<ImageType, Image2DType> ExtractFilterType; \
+    ExtractFilterType::Pointer extractor = ExtractFilterType::New();	\
+    extractor->SetInput ( image );					\
+    ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize(); \
+    ImageType::RegionType region = image->GetLargestPossibleRegion();	\
+    ImageType::IndexType index = region.GetIndex();			\
+    ImageType::SizeType ssize = region.GetSize();			\
+    for( unsigned int i=2; i<ImageType::GetImageDimension(); i++) {		\
+      index[i] /= 2;							\
+      ssize[i]  = 0;							\
+    }									\
+    region.SetIndex ( index );						\
+    region.SetSize ( ssize );						\
+    extractor->SetExtractionRegion (region);				\
+    try									\
+    {									\
+      extractor->Update();						\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    typedef itk::MinimumMaximumImageCalculator<Image2DType> MinMaxCalculatorType; \
+    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New(); \
+    calculator->SetImage ( extractor->GetOutput() );			\
+    try									\
+    {									\
+      calculator->Compute();						\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    imMin = calculator->GetMinimum();					\
+    imMax = calculator->GetMaximum();					\
+    typedef itk::Statistics::ScalarImageToHistogramGenerator< Image2DType > HistogramGeneratorType; \
+    HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New();	\
+    histogramGenerator->SetInput( extractor->GetOutput() );		\
+    histogramGenerator->SetNumberOfBins( imMax - imMin + 1 );		\
+    histogramGenerator->SetMarginalScale( 1.0 );			\
+    histogramGenerator->SetHistogramMin( imMin );			\
+    histogramGenerator->SetHistogramMax( imMax );			\
+    try									\
+    {									\
+      histogramGenerator->Compute();					\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    typedef HistogramGeneratorType::HistogramType  HistogramType;	\
+    HistogramType::Pointer histogram = const_cast<HistogramType*>( histogramGenerator->GetOutput() ); \
+    double totalFreq = histogram->GetTotalFrequency();			\
+    int ind_min = 0;							\
+    int ind_max = histogram->Size()-1;					\
+    double freq_min = histogram->GetFrequency (ind_min)/totalFreq;	\
+    double freq_max = histogram->GetFrequency (ind_max)/totalFreq;	\
+    while ( freq_min<0.01 ) {						\
+      ind_min++;							\
+      imMin++;								\
+      freq_min += histogram->GetFrequency (ind_min) / totalFreq;	\
+    }									\
+    while ( freq_max<0.01 ) {						\
+      ind_max--;							\
+      imMax--;								\
+      freq_max += histogram->GetFrequency (ind_max) / totalFreq;	\
+    }									\
+  }									\
+  typedef itk::RGBPixel<unsigned char>    RGBPixelType;			\
+  typedef itk::Image<RGBPixelType, dimension>     RGBImageType;			\
+  typedef itk::ScalarToRGBColormapImageFilter<ImageType, RGBImageType> RGBFilterType; \
+  RGBFilterType::Pointer rgbfilter = RGBFilterType::New();		\
+  rgbfilter->SetColormap( RGBFilterType::Grey );			\
+  rgbfilter->GetColormap()->SetMinimumRGBComponentValue( 0 );		\
+  rgbfilter->GetColormap()->SetMaximumRGBComponentValue( 255 );		\
+  rgbfilter->UseInputImageExtremaForScalingOff ();			\
+  rgbfilter->GetColormap()->SetMinimumInputValue ( imMin );		\
+  rgbfilter->GetColormap()->SetMaximumInputValue ( imMax );		\
+  rgbfilter->SetInput( image );						\
+  try									\
+  {									\
+    rgbfilter->Update();						\
+  }									\
+  catch (itk::ExceptionObject &e)					\
+  {									\
+    qDebug() << e.GetDescription();					\
+    return d->thumbnails;						\
+  }									\
+  typedef itk::Image<RGBPixelType, 2>                           RGBImage2DType; \
+  typedef itk::ExtractImageFilter<RGBImageType, RGBImage2DType> RGBExtractFilterType; \
+  RGBExtractFilterType::Pointer extractor = RGBExtractFilterType::New(); \
+  extractor->SetInput ( rgbfilter->GetOutput() );			\
+  ImageType::SizeType size = rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize(); \
+  for( unsigned int i=0; i<size[2]; i++ )				\
+  {									\
+    RGBImageType::RegionType region = rgbfilter->GetOutput()->GetLargestPossibleRegion(); \
+    RGBImageType::IndexType index = region.GetIndex();			\
+    RGBImageType::SizeType ssize = region.GetSize();			\
+    index[2] = i;							\
+    ssize[2] = 0;							\
+    region.SetIndex ( index );						\
+    region.SetSize ( ssize );						\
+    extractor->SetExtractionRegion (region);				\
+    try									\
+    {									\
+      extractor->Update();						\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    QImage qimage (ssize[0], ssize[1], QImage::Format_ARGB32);		\
+    uchar *qImageBuffer = qimage.bits();				\
+    itk::ImageRegionIterator<RGBImage2DType> it (extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion()); \
+    while(!it.IsAtEnd())						\
+    {									\
+    *qImageBuffer++ = it.Value().GetRed();				\
+    *qImageBuffer++ = it.Value().GetGreen();				\
+    *qImageBuffer++ = it.Value().GetBlue();				\
+    *qImageBuffer++ = 0xFF;						\
+    ++it;								\
+    }									\
+    d->thumbnails.push_back (qimage);					\
+  }									\
+  return d->thumbnails;							\
+  }									\
+  
 
 
 
@@ -117,6 +287,7 @@
     typedef itk::Image<ScalarType, dimension>                             ImageType; \
   public:								\
     ImageType::Pointer          image;					\
+    QList<QImage>               thumbnails;				\
   };									\
   itkDataImage##suffix::itkDataImage##suffix(): dtkAbstractDataImage(), d (new itkDataImage##suffix##Private) \
   {									\
@@ -190,11 +361,80 @@
   {									\
     return new itkDataImage##suffix;					\
   }									\
-
+  QList<QImage> &itkDataImage##suffix::thumbnails (void) const		\
+  {									\
+  typedef itkDataImage##suffix##Private::ImageType ImageType;		\
+  typedef itk::Image<type, 2>                      Image2DType;		\
+  ImageType::Pointer image = d->image;					\
+  {									\
+    if (d->image.IsNull() )						\
+      return d->thumbnails;						\
+    ImageType::SizeType size = d->image->GetLargestPossibleRegion().GetSize(); \
+    ImageType::SizeType newSize = size;					\
+    newSize[0] = 128;							\
+    newSize[1] = 128;							\
+    unsigned int sfactor[ImageType::GetImageDimension()];		\
+    for (unsigned int i=0; i<ImageType::GetImageDimension(); i++)	\
+      sfactor[i] = size[i]/newSize[i];					\
+    typedef itk::ShrinkImageFilter<ImageType, ImageType> FilterType;	\
+    FilterType::Pointer filter = FilterType::New();			\
+    filter->SetInput ( image );						\
+    filter->SetShrinkFactors ( sfactor );				\
+    try									\
+    {									\
+      filter->Update();							\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    image = filter->GetOutput();					\
+  }									\
+  typedef itk::ExtractImageFilter<ImageType, Image2DType> ExtractFilterType; \
+  ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize(); \
+  for( unsigned int i=0; i<size[2]; i++ )				\
+  {									\
+    ExtractFilterType::Pointer extractor = ExtractFilterType::New();	\
+    extractor->SetInput ( image );					\
+    ImageType::RegionType region = image->GetLargestPossibleRegion();	\
+    ImageType::IndexType index = region.GetIndex();			\
+    ImageType::SizeType ssize = region.GetSize();			\
+    index[2] = i;							\
+    ssize[2] = 0;							\
+    region.SetIndex ( index );						\
+    region.SetSize ( ssize );						\
+    extractor->SetExtractionRegion (region);				\
+    try									\
+    {									\
+      extractor->Update();						\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    QImage qimage (ssize[0], ssize[1], QImage::Format_ARGB32);		\
+    uchar *qImageBuffer = qimage.bits();				\
+    itk::ImageRegionIterator<Image2DType> it (extractor->GetOutput(), extractor->GetOutput()->GetLargestPossibleRegion()); \
+    while(!it.IsAtEnd())						\
+    {									\
+      *qImageBuffer++ = it.Value()[0];					\
+      *qImageBuffer++ = it.Value()[1];					\
+      *qImageBuffer++ = it.Value()[2];					\
+      *qImageBuffer++ = 0xFF;						\
+      ++it;								\
+    }									\
+    d->thumbnails.push_back (qimage);					\
+  }									\
+  return d->thumbnails;							\
+  }									\
 
 #endif
 
 
+/*    
+*/
 
 // if(!image.IsNull()) {							
 //  d->image = image;							
