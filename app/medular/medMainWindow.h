@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 23 09:49:06 2009 (+0200)
+ * Last-Updated: Wed Nov 11 18:52:58 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 10
+ *     Update #: 14
  */
 
 /* Commentary: 
@@ -37,6 +37,7 @@ public:
     void writeSettings(void);
 
 public slots:
+    void switchToArea(int);
     void switchToAdminArea(void);
     void switchToWelcomeArea(void);
     void switchToBrowserArea(void);
@@ -50,6 +51,8 @@ public slots:
 
 protected:
     void closeEvent(QCloseEvent *event);
+    void keyPressEvent(QKeyEvent *event);
+    void resizeEvent(QResizeEvent *event);
 
 private:
     medMainWindowPrivate *d;

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:46:22 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 09:48:07 2009 (+0200)
+ * Last-Updated: Tue Nov  3 16:19:03 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 161
+ *     Update #: 188
  */
 
 /* Commentary: 
@@ -26,7 +26,6 @@
 
 medToolBoxControl::medToolBoxControl(QWidget *parent) : QAbstractButton(parent)
 {
-    this->setAttribute(Qt::WA_MacShowFocusRect, false);
     this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
@@ -44,6 +43,7 @@ void medToolBoxControl::paintEvent(QPaintEvent *event)
 {
     QPainter painter;
     painter.begin(this);
+    painter.setBackgroundMode(Qt::TransparentMode);
     painter.setRenderHints(QPainter::Antialiasing);
     this->isDown() ? painter.setPen(Qt::gray) : painter.setPen(Qt::lightGray);
     this->isDown() ? painter.setBrush(Qt::gray) : painter.setBrush(Qt::lightGray);

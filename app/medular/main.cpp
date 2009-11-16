@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct 28 18:49:57 2009 (+0100)
+ * Last-Updated: Tue Nov  3 14:54:44 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 82
+ *     Update #: 89
  */
 
 /* Commentary: 
@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
     application.setOrganizationName("inria");
     application.setOrganizationDomain("fr");
     application.setStyle(new medStyle);
-
+    // application.setStyleSheet(readFile(":/medular.css"));
+    
     // Initialize managers
 
     medPluginManager::instance()->initialize();

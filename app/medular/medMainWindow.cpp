@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 23 10:55:37 2009 (+0200)
+ * Last-Updated: Thu Nov 12 09:55:04 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 137
+ *     Update #: 182
  */
 
 /* Commentary: 
@@ -28,6 +28,8 @@
 #include <dtkScript/dtkScriptInterpreterPython.h>
 #include <dtkScript/dtkScriptInterpreterTcl.h>
 
+#include <medGui/medWorkspaceSwitcher.h>
+
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseModel.h>
@@ -44,6 +46,8 @@ public:
     medWelcomeArea *welcomeArea;
     medBrowserArea *browserArea;
     medViewerArea  *viewerArea;
+
+    medWorkspaceSwitcher *switcher;
 
     QToolBar *toolBar;
 
@@ -69,6 +73,10 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->browserArea = new medBrowserArea(this);
     d->viewerArea  = new medViewerArea(this);
 
+    d->welcomeArea->setObjectName("Welcome");
+    d->browserArea->setObjectName("Browser");
+    d->viewerArea->setObjectName("Viewer");
+
     connect(d->welcomeArea, SIGNAL(accepted()), this, SLOT(switchToAdminArea()));
     connect(d->adminArea, SIGNAL(accepted()), this, SLOT(switchToWelcomeArea()));
     connect(d->adminArea, SIGNAL(rejected()), this, SLOT(switchToWelcomeArea()));
@@ -78,7 +86,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->welcomeArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->viewerArea);
-
     d->stack->setCurrentWidget(d->welcomeArea);
 
     d->switchToWelcomeAreaAction = new QAction(this);
@@ -137,7 +144,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->addAction(d->switchToBrowserAreaAction);
     this->addAction(d->switchToViewerAreaAction);
 
-    this->setWindowTitle("Medular");
+    this->setWindowTitle("medular");
     this->setCentralWidget(d->stack);
     this->readSettings();
 
@@ -178,6 +185,13 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
         "set pluginManager  [dtkPluginManager_instance]"
     );
+
+    d->switcher = new medWorkspaceSwitcher(this);
+    d->switcher->addWorkspace(d->welcomeArea);
+    d->switcher->addWorkspace(d->browserArea);
+    d->switcher->addWorkspace(d->viewerArea);
+
+    connect(d->switcher, SIGNAL(triggered(int)), this, SLOT(switchToArea(int)));
 }
 
 medMainWindow::~medMainWindow(void)
@@ -205,6 +219,23 @@ void medMainWindow::writeSettings(void)
     settings.setValue("pos", pos());
     settings.setValue("size", size());
     settings.endGroup();
+}
+
+void medMainWindow::switchToArea(int index)
+{
+    switch(index) {
+    case 0:
+        this->switchToWelcomeArea();
+        break;
+    case 1:
+        this->switchToBrowserArea();
+        break;
+    case 2:
+        this->switchToViewerArea();
+        break;
+    default:
+        break;
+    }
 }
 
 void medMainWindow::switchToAdminArea(void)
@@ -255,11 +286,9 @@ void medMainWindow::onPatientDoubleClicked(const QModelIndex &index)
       return;
 
     d->viewerArea->setPatientIndex(index.row()+1);
+    d->viewerArea->update();
 
     switchToViewerArea();
-    d->viewerArea->repaint();
-    
-    d->viewerArea->setPatientIndex ( index.row()+1 );
 }
 
 void medMainWindow::onStudyDoubleClicked(const QModelIndex &index)
@@ -307,4 +336,26 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     this->writeSettings();
     
     delete medDatabaseController::instance();
+}
+
+void medMainWindow::keyPressEvent(QKeyEvent *event)
+{
+    switch(event->key()) {
+    case Qt::Key_F1:
+        d->switcher->start();
+        break;
+    case Qt::Key_F2:
+        d->switcher->stop();
+        break;
+    default:
+        QMainWindow::keyPressEvent(event);
+        break;
+    };
+}
+
+void medMainWindow::resizeEvent(QResizeEvent *event)
+{
+    d->switcher->resize(event->size());
+    
+    event->accept();
 }

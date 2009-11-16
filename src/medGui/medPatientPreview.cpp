@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  8 19:46:53 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct 14 18:20:26 2009 (+0200)
+ * Last-Updated: Tue Nov  3 09:32:01 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 178
+ *     Update #: 179
  */
 
 /* Commentary: 
@@ -139,14 +139,14 @@ void medPatientPreview::setup(int patientId)
 
 void medPatientPreview::paintEvent(QPaintEvent *event)
 {
-    QLinearGradient gradient;
-    gradient.setStart(event->rect().topLeft());
-    gradient.setFinalStop(event->rect().bottomLeft());
+    // QLinearGradient gradient;
+    // gradient.setStart(event->rect().topLeft());
+    // gradient.setFinalStop(event->rect().bottomLeft());
 
-    gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
-    gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
+    // gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
+    // gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
 
     QPainter painter(this);
-    painter.fillRect(event->rect(), gradient);
+    painter.fillRect(event->rect(), QColor(0x49, 0x49, 0x49));
     painter.end();
 }
