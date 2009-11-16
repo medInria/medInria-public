@@ -66,7 +66,7 @@ public:
     medToolBoxControl *control;
 };
 
-medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QWidget(parent), d(new medToolBoxHeaderPrivate)
+medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medToolBoxHeaderPrivate)
 {
     d->label = new QLabel(this);
     d->label->setText("Untitled");
@@ -81,13 +81,6 @@ medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QWidget(parent), d(new med
     layout->setSpacing(0);
     layout->addWidget(d->label);
     layout->addWidget(d->control);
-
-    this->setStyleSheet(
-     "color: white;"
-     "font-size: 10px;"
-    );
-
-    this->setFixedHeight(20);
 }
 
 medToolBoxHeader::~medToolBoxHeader(void)
@@ -102,19 +95,6 @@ medToolBoxHeader::~medToolBoxHeader(void)
 void medToolBoxHeader::setTitle(const QString& title)
 {
     d->label->setText(title);
-}
-
-void medToolBoxHeader::paintEvent(QPaintEvent *event)
-{
-    QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
-
-    QColor gradientUp = QColor(0x4b, 0x4b, 0x4b);
-    QColor gradientMd = QColor(0x2e, 0x2e, 0x2e);
-    QColor gradientDw = QColor(0x4b, 0x4b, 0x4b);
-
-    medStyle::medFillRoundRectWithDoubleLinearGradient(&p, event->rect(), gradientUp, gradientMd, gradientMd, gradientDw, 4, 0, 4, 0);
-
-    p.end();
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -132,7 +112,7 @@ public:
     QTimeLine timeline;
 };
 
-medToolBoxBody::medToolBoxBody(QWidget *parent) : QWidget(parent), d(new medToolBoxBodyPrivate)
+medToolBoxBody::medToolBoxBody(QWidget *parent) : QFrame(parent), d(new medToolBoxBodyPrivate)
 {    
     d->layout = new QGridLayout(this);
 
@@ -157,7 +137,7 @@ void medToolBoxBody::addWidget(QWidget *widget)
 {
     d->layout->addWidget(widget, d->row, d->col);
 
-    if (d->col > 3) {
+    if (d->col >= 2) {
         d->row++;
         d->col = 0;
     } else {
@@ -211,16 +191,9 @@ void medToolBoxBody::collapse(void)
 
 void medToolBoxBody::animate(int frame) 
 {
+    qDebug() << __func__;
+
     this->setFixedHeight(frame);
-}
-
-void medToolBoxBody::paintEvent(QPaintEvent *event)
-{
-    QPainter p(this); p.setRenderHint(QPainter::Antialiasing);
-
-    medStyle::medFillRoundRectWithColor(&p, event->rect().adjusted(0, -1, 0, 0), palette().color(QPalette::Base), 0, 4, 0, 4);
-
-    p.end();
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -254,6 +227,9 @@ medToolBox::~medToolBox(void)
 {
     delete d->header;
     delete d->body;
+    delete d;
+
+    d = NULL;
 }
 
 void medToolBox::addWidget(QWidget *widget)

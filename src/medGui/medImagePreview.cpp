@@ -24,7 +24,7 @@ class medImagePreviewPrivate
 public:
 };
 
-medImagePreview::medImagePreview(QWidget *parent) : QWidget(parent), d(new medImagePreviewPrivate)
+medImagePreview::medImagePreview(QWidget *parent) : QFrame(parent), d(new medImagePreviewPrivate)
 {
 
 }
@@ -44,18 +44,4 @@ QSize medImagePreview::sizeHint(void) const
 void medImagePreview::setup(int imageId)
 {
     Q_UNUSED(imageId);
-}
-
-void medImagePreview::paintEvent(QPaintEvent *event)
-{
-    // QLinearGradient gradient;
-    // gradient.setStart(event->rect().topLeft());
-    // gradient.setFinalStop(event->rect().bottomLeft());
-
-    // gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
-    // gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
-
-    QPainter painter(this);
-    painter.fillRect(event->rect(), QColor(0x49, 0x49, 0x49));
-    painter.end();
 }

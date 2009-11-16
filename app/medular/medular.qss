@@ -1,0 +1,343 @@
+/**
+ * QLabel
+ *
+ */
+
+QLabel {
+    color: #b2b8b2;
+    font-size: 10px;
+}
+
+/**
+ * QMenu
+ *
+ */
+
+QMenu {
+    background: transparent;
+    border-image: url(:/pixmaps/menu.png) 12 6 6 6 repeat-x;
+    border-left-width: 6px;
+    border-right-width: 6px;
+    border-top-width: 12px;
+    border-bottom-width: 6px;
+    color: #b2b8b2;
+    font-size: 11pt;
+}
+
+/**
+ * QHeaderView
+ *
+ */
+
+QHeaderView {
+    border-image: url(:/pixmaps/headerview.png) 0 2 0 2 repeat-x;
+    color: #b2b8b2;
+    height: 22px;
+    font-size: 10px;
+}
+
+QHeaderView:section {
+    border-image: url(:/pixmaps/headerview-section.png) 0 2 0 0 repeat-x;
+    border-left-width: 0px;
+    border-right-width: 2px;
+    padding-left: 5px;
+    color: #b2b8b2;
+    height: 22px;
+}
+
+/**
+ * QTreeView
+ *
+ */
+
+QTreeView {
+    alternate-background-color: #505050;
+
+    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+    border-top-width: 16px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-bottom-width: 16px;
+
+    padding-top: -7px;
+    padding-left: -4px;
+    padding-right: -5px;
+
+    color: #b2b8b2;
+}
+
+QTreeView::item:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);
+}
+
+QTreeView::item:selected:active{
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
+}
+
+QTreeView::item:selected:!active {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);
+}
+
+/**
+ * QPushButton
+ *
+ */
+
+QPushButton {
+    border-image: url(:/pixmaps/pushbutton.png) 0 15 0 15 repeat-x;
+    border-left: 15px;
+    border-right: 15px;
+    height: 25px;
+    color: #b2b8b2;
+    font-size: 10px;
+
+}
+
+QPushButton:hover {
+    border-image: url(:/pixmaps/pushbutton-hovered.png) 0 15 0 15 repeat-x;
+    border-left: 15px;
+    border-right: 15px;
+    height: 25px;
+    color: #b2b8b2;
+    font-size: 10px;
+}
+
+QPushButton:pressed {
+    border-image: url(:/pixmaps/pushbutton-pressed.png) 0 15 0 15 repeat-x;
+    border-left: 15px;
+    border-right: 15px;
+    height: 25px;
+    color: #b2b8b2;
+    font-size: 10px;
+}
+
+/**
+ * QComboBox
+ *
+ */
+
+QComboBox {
+    border-image: url(:/pixmaps/pushbutton.png) 0 15 0 15 repeat-x;
+    border-left: 15px;
+    border-right: 15px;
+    height: 25px;
+    color: #b2b8b2;
+    font-size: 10px;
+
+}
+
+QComboBox:hover {
+    border-image: url(:/pixmaps/pushbutton-hovered.png) 0 15 0 15 repeat-x;
+    border-left: 15px;
+    border-right: 15px;
+    height: 25px;
+    color: #b2b8b2;
+    font-size: 10px;
+}
+
+QComboBox:pressed {
+    border-image: url(:/pixmaps/pushbutton-pressed.png) 0 15 0 15 repeat-x;
+    border-left: 15px;
+    border-right: 15px;
+    height: 25px;
+    color: #b2b8b2;
+    font-size: 10px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+
+    width: 12px;
+
+    background-image: url(:/pixmaps/drop-down.png);
+
+    border-left-width: 1px;
+    border-left-color: #2b2b2b;
+    border-left-style: solid;
+
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/**
+ * QScrollBar
+ *
+ * pseudo-state: horizontal
+ */
+
+QScrollBar:horizontal {
+    background-image: url(:/pixmaps/scrollbar-horizontal-background.png);
+    background-repeat: repeat-x;
+    border-left-color: #2a2a2a;
+    border-left-style: solid;
+    border-left-width: 1px;
+    height: 16px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 34px;
+}
+
+QScrollBar::handle:horizontal {
+    border-image: url(:/pixmaps/scrollbar-horizontal-handle.png) 0 6 0 6 repeat-x;
+    border-left: 6px;
+    border-right: 6px;
+    height: 16px;
+    min-width: 20px;
+}
+
+QScrollBar::add-line:horizontal {
+    background-image: url(:/pixmaps/scrollbar-horizontal-addline.png);
+    width: 17px;
+    height: 16px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    background-image: url(:/pixmaps/scrollbar-horizontal-subline.png);
+    width: 17px;
+    height: 16px;
+    subcontrol-position: top right;
+    subcontrol-origin: margin;
+    position: absolute;
+    right: 17px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+QComboBox QAbstractScrollArea {
+    background: transparent;
+    border: transparent;
+    border-image: url(:/pixmaps/menu.png) 12 22 6 6 repeat-x;
+    border-left-width: 6px;
+    border-right-width: 22px;
+    border-top-width: 12px;
+    border-bottom-width: 6px;
+    color: #b2b8b2;
+    font-size: 11pt;
+}
+
+/**
+ * QScrollBar
+ *
+ * pseudo-state: vertical
+ */
+
+QScrollBar:vertical {
+    background-image: url(:/pixmaps/scrollbar-vertical-background.png);
+    background-repeat: repeat-y;
+    border-left-color: #2a2a2a;
+    border-left-style: solid;
+    border-left-width: 1px;
+    width: 16px;
+    margin-top: 0px;
+    margin-bottom: 34px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+QScrollBar::handle:vertical {
+    border-image: url(:/pixmaps/scrollbar-vertical-handle.png) 6 0 6 0 repeat-y;
+    border-top: 6px;
+    border-bottom: 6px;
+    height: 17px;
+    min-height: 20px;
+}
+
+QScrollBar::add-line:vertical {
+    background-image: url(:/pixmaps/scrollbar-vertical-addline.png);
+    width: 16px;
+    height: 17px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    background-image: url(:/pixmaps/scrollbar-vertical-subline.png);
+    width: 16px;
+    height: 17px;
+    subcontrol-position: left bottom;
+    subcontrol-origin: margin;
+    position: absolute;
+    bottom: 17px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+QFrame #medToolBoxContainer {
+    background: #313131;
+}
+
+/**
+ * medMainWindow
+ *
+ */
+
+medMainWindow {
+    background: #313131;
+}
+
+/**
+ * medPatientPreview
+ * medStudyPreview
+ * medSeriesPreview
+ * medImagePreview
+ *
+ */
+
+medPatientPreview, medStudyPreview, medSeriesPreview, medImagePreview {
+    border-image: url(:/pixmaps/frame.png) 16 16 26 16 repeat-x;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 16px;
+    border-bottom-width: 26px;
+}
+
+/**
+ * medStatusPanel
+ *
+ */
+
+medStatusPanel {
+    border-image: url(:/pixmaps/frame.png) 16 16 26 16 repeat-x;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 16px;
+    border-bottom-width: 26px;
+    color: #b2b8b2;
+    font-size: 9px;
+}
+
+/**
+ * medToolBoxHeader
+ *
+ */
+
+medToolBoxHeader {
+    border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 16px;
+    border-bottom-width: 0px;
+
+    padding-top: -5px;
+}
+
+/**
+ * medToolBoxBody
+ *
+ */
+
+medToolBoxBody {
+    border-image: url(:/pixmaps/toolbox-body.png) 0 16 16 16 repeat-x;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 0px;
+    border-bottom-width: 16px;
+}

@@ -29,6 +29,8 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     this->setUniformRowHeights(true);
     this->setAlternatingRowColors(true);
 
+    this->header()->setStretchLastSection(true);
+
     connect(this, SIGNAL(      clicked(const QModelIndex&)), this, SLOT(onItemClicked(const QModelIndex&)));
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
 }

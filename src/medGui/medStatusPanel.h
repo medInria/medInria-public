@@ -22,7 +22,7 @@
 
 #include "medGuiExport.h"
 
-#include <QFrame>
+#include <QtGui/QFrame>
 
 // /////////////////////////////////////////////////////////////////
 // medStatusPanel
@@ -39,12 +39,9 @@ public:
     ~medStatusPanel(void);
 
     void addSpacer(void);
-    void addWidget(QWidget *widget);
 
+    void    addWidget(QWidget *widget);
     void removeWidget(QWidget *widget);
-
-protected:
-    void paintEvent(QPaintEvent *event);
 
 private:
     medStatusPanelPrivate *d;

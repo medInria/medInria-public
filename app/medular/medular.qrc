@@ -1,11 +1,31 @@
 <RCC>
     <qresource prefix="/">
         <file>icons/widget.tiff</file>
-        <file>img/1.jpg</file>
-        <file>img/2.jpg</file>
-        <file>img/3.jpg</file>
-        <file>img/4.jpg</file>
-        <file>img/5.jpg</file>
-        <file>img/unknown.jpg</file>
+        <file>pixmaps/1.jpg</file>
+        <file>pixmaps/2.jpg</file>
+        <file>pixmaps/3.jpg</file>
+        <file>pixmaps/4.jpg</file>
+        <file>pixmaps/5.jpg</file>
+        <file>pixmaps/unknown.jpg</file>
+        <file>medular.qss</file>
+        <file>pixmaps/frame.png</file>
+        <file>pixmaps/headerview-section.png</file>
+        <file>pixmaps/headerview.png</file>
+        <file>pixmaps/pushbutton.png</file>
+        <file>pixmaps/pushbutton-hovered.png</file>
+        <file>pixmaps/pushbutton-pressed.png</file>
+        <file>pixmaps/scrollbar-horizontal-addline.png</file>
+        <file>pixmaps/scrollbar-horizontal-background.png</file>
+        <file>pixmaps/scrollbar-horizontal-handle.png</file>
+        <file>pixmaps/scrollbar-horizontal-subline.png</file>
+        <file>pixmaps/scrollbar-vertical-addline.png</file>
+        <file>pixmaps/scrollbar-vertical-background.png</file>
+        <file>pixmaps/scrollbar-vertical-handle.png</file>
+        <file>pixmaps/scrollbar-vertical-subline.png</file>
+        <file>pixmaps/treeview-frame.png</file>
+        <file>pixmaps/drop-down.png</file>
+        <file>pixmaps/toolbox-body.png</file>
+        <file>pixmaps/toolbox-header.png</file>
+        <file>pixmaps/menu.png</file>
     </qresource>
 </RCC>

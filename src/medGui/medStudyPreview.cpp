@@ -37,12 +37,12 @@ public:
     medImageList *list;
 };
 
-medStudyPreview::medStudyPreview(QWidget *parent) : QWidget(parent), d(new medStudyPreviewPrivate)
+medStudyPreview::medStudyPreview(QWidget *parent) : QFrame(parent), d(new medStudyPreviewPrivate)
 {
     QWidget *main = new QWidget(this);
 
     d->avatar = new medImageReflector(this);
-    d->avatar->setImage(QImage(":/img/unknown.jpg"));
+    d->avatar->setImage(QImage(":/pixmaps/unknown.jpg"));
 
     d->list = new medImageList(this);
 
@@ -144,18 +144,4 @@ void medStudyPreview::setup(int studyId)
     d->info_name->setText(patientName);
 
     this->update();
-}
-
-void medStudyPreview::paintEvent(QPaintEvent *event)
-{
-    // QLinearGradient gradient;
-    // gradient.setStart(event->rect().topLeft());
-    // gradient.setFinalStop(event->rect().bottomLeft());
-
-    // gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
-    // gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
-
-    QPainter painter(this);
-    painter.fillRect(event->rect(), QColor(0x49, 0x49, 0x49));
-    painter.end();
 }

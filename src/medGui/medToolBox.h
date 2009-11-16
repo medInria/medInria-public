@@ -48,7 +48,7 @@ protected:
 
 class medToolBoxHeaderPrivate;
 
-class MEDGUI_EXPORT medToolBoxHeader : public QWidget
+class MEDGUI_EXPORT medToolBoxHeader : public QFrame
 {
     Q_OBJECT
 
@@ -61,9 +61,6 @@ public:
 signals:
     void clicked(void);
 
-protected:
-    void paintEvent(QPaintEvent *event);
-
 private:
     medToolBoxHeaderPrivate *d;
 };
@@ -74,7 +71,7 @@ private:
 
 class medToolBoxBodyPrivate;
 
-class MEDGUI_EXPORT medToolBoxBody : public QWidget
+class MEDGUI_EXPORT medToolBoxBody : public QFrame
 {
     Q_OBJECT
 
@@ -89,9 +86,6 @@ public slots:
     void expand(void);
     void collapse(void);
     void animate(int frame);
-
-protected:
-    void paintEvent(QPaintEvent *event);
 
 private:
     medToolBoxBodyPrivate *d;

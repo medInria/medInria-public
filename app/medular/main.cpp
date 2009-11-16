@@ -17,7 +17,7 @@
  * 
  */
 
-#include <QtGui/QApplication>
+#include <QtGui>
 
 #include "medMainWindow.h"
 
@@ -31,6 +31,25 @@
 
 #include <medGui/medStyle.h>
 
+// Helper functions
+
+QString readFile(const QString& path)
+{
+    QFile file(path);
+    if(!file.open(QFile::ReadOnly))
+        qDebug() << "Unable to read file" << path;
+
+    QString contents = file.readAll();
+
+    file.close();
+
+    qDebug() << contents;
+
+    return contents;
+}
+
+// main
+
 int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);
@@ -38,8 +57,7 @@ int main(int argc, char *argv[])
     application.setApplicationVersion("0.0.1");
     application.setOrganizationName("inria");
     application.setOrganizationDomain("fr");
-    application.setStyle(new medStyle);
-    // application.setStyleSheet(readFile(":/medular.css"));
+    application.setStyleSheet(readFile(":/medular.qss"));
     
     // Initialize managers
 

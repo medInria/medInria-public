@@ -166,7 +166,7 @@ static void drawThreeImages(QPainter *painter, const QPixmap& pixmap1, const QPi
 
 static QPixmap loadImage(const QString& name)
 {
-    QPixmap pixmap(QString(":/img/%1.jpg").arg(name));
+    QPixmap pixmap(QString(":/pixmaps/%1.jpg").arg(name));
 
     return pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 }

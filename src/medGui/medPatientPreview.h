@@ -26,7 +26,7 @@
 
 class medPatientPreviewPrivate;
 
-class MEDGUI_EXPORT medPatientPreview : public QWidget
+class MEDGUI_EXPORT medPatientPreview : public QFrame
 {
     Q_OBJECT
 
@@ -37,9 +37,6 @@ public:
     QSize sizeHint(void) const;
 
     void setup(int patientId);
-
-protected:
-    void paintEvent(QPaintEvent *event);
 
 private:
     medPatientPreviewPrivate *d;

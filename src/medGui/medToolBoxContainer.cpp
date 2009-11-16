@@ -25,13 +25,14 @@
 class medToolBoxContainerPrivate
 {
 public:
-    QWidget *container;
+    QFrame *container;
     QVBoxLayout *layout;
 };
 
 medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent), d(new medToolBoxContainerPrivate)
 {
-    d->container = new QWidget(this);
+    d->container = new QFrame(this);
+    d->container->setObjectName("medToolBoxContainer");
 
     d->layout = new QVBoxLayout(d->container);
     d->layout->setContentsMargins(0, 0, 0, 0);
