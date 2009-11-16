@@ -116,6 +116,7 @@
   {									\
   typedef itkDataImage##suffix##Private::ImageType ImageType;		\
   typedef itk::Image<type, 2>                      Image2DType;		\
+  typedef itk::Image<float, dimension>             FloatImageType;	\
   if (d->image.IsNull() )						\
     return d->thumbnails;						\
   if (ImageType::GetImageDimension()<2 )				\
@@ -127,11 +128,20 @@
     newSize[0] = 128;							\
     newSize[1] = 128;							\
     unsigned int sfactor[ImageType::GetImageDimension()];		\
+    double variance[ImageType::GetImageDimension()];			\
     for (unsigned int i=0; i<ImageType::GetImageDimension(); i++)	\
+    {									\
       sfactor[i] = size[i]/newSize[i];					\
-    typedef itk::ShrinkImageFilter<ImageType, ImageType> FilterType;	\
+      variance[i] = sqrt ( 0.5*(double)sfactor[i] );			\
+    }									\
+    typedef itk::DiscreteGaussianImageFilter<ImageType, FloatImageType> SmootherType; \
+    SmootherType::Pointer smoother = SmootherType::New();		\
+    smoother->SetUseImageSpacing( false );				\
+    smoother->SetInput (image);						\
+    smoother->SetVariance (variance);					\
+    typedef itk::ShrinkImageFilter<FloatImageType, ImageType> FilterType; \
     FilterType::Pointer filter = FilterType::New();			\
-    filter->SetInput ( image );						\
+    filter->SetInput ( smoother->GetOutput() );				\
     filter->SetShrinkFactors ( sfactor );				\
     try									\
     {									\

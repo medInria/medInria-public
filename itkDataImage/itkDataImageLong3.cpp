@@ -11,6 +11,7 @@
 #include <itkScalarToRGBColormapImageFilter.h>
 #include <itkExtractImageFilter.h>
 #include <itkShrinkImageFilter.h>
+#include <itkDiscreteGaussianImageFilter.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 
