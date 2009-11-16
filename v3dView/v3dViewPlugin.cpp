@@ -4,6 +4,7 @@
 
 #include "v3dView2D.h"
 #include "v3dView3D.h"
+#include "v3dViewSwitcher.h"
 #include "v3dViewPlugin.h"
 
 #include <dtkCore/dtkLog.h>
@@ -41,6 +42,10 @@ bool v3dViewPlugin::initialize(void)
 
     if(!v3dView3D::registered())
 	dtkWarning() << "Unable to register v3dView3D type";
+
+    if (!v3dViewSwitcher::registered())
+        dtkWarning() << "Unable to register v3dViewSwitcher type";
+      
 
     return true;
 }
