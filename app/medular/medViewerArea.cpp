@@ -400,7 +400,7 @@ void medViewerArea::onSeriesIndexChanged(int index)
     
     if (imData) {
 
-        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView2D");
+        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dViewSwitcher");
 
         if (!view)
             return;
