@@ -166,7 +166,8 @@ static void drawThreeImages(QPainter *painter, const QPixmap& pixmap1, const QPi
 
 static QPixmap loadImage(const QString& name)
 {
-    QPixmap pixmap(QString(":/img/%1.jpg").arg(name));
+    //QPixmap pixmap(QString(":/img/%1.jpg").arg(name));
+    QPixmap pixmap(name);
 
     return pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 }
@@ -179,6 +180,7 @@ class medImageStackPrivate
 {
 public:
     QMap<int, QString> names;
+    QMap<int, QStringList> pixNames;
     QMap<int, int> sizes;
 };
 
@@ -205,6 +207,11 @@ void medImageStack::setStackName(int stack, QString name)
     d->names.insert(stack, name);
 }
 
+void medImageStack::setStackPixNames(int stack, QStringList names)
+{
+    d->pixNames.insert(stack, names);
+}
+
 void medImageStack::setStackSize(int stack, int size)
 {
     d->sizes.insert(stack, size);
@@ -223,13 +230,22 @@ void medImageStack::paintEvent(QPaintEvent *event)
         p.translate(10 + i*160, 10);
         switch(d->sizes.value(i)) {
         case 1:
-            drawOneImage(&p, loadImage("1"));
+	    if (d->pixNames.value (i).count()>0)
+	        drawOneImage(&p, loadImage(d->pixNames.value (i)[0]));
+	    else
+	        drawOneImage(&p, loadImage(":/img/1.jpg"));
             break;
         case 2:
-            drawTwoImages(&p, loadImage("1"), loadImage("2"));
+	    if (d->pixNames.value (i).count()>1)
+	        drawTwoImages(&p, loadImage(d->pixNames.value (i)[0]), loadImage(d->pixNames.value (i)[1]));
+	    else
+	        drawTwoImages(&p, loadImage(":/img/1.jpg"), loadImage(":/img/2.jpg"));
             break;
         default:
-            drawThreeImages(&p, loadImage("1"), loadImage("2"), loadImage("3"));
+	    if (d->pixNames.value (i).count()>2)
+	        drawThreeImages(&p, loadImage(d->pixNames.value (i)[0]), loadImage(d->pixNames.value (i)[1]), loadImage(d->pixNames.value (i)[2]));
+	    else
+                drawThreeImages(&p, loadImage(":/img/1.jpg"), loadImage(":/img/2.jpg"), loadImage(":/img/3.jpg"));
             break;
         }
         drawShadowedText(&p, 40, 100, d->names.value(i));

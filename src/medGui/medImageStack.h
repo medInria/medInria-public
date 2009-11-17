@@ -38,6 +38,7 @@ public:
 
     void setStackName(int stack, QString name);
     void setStackSize(int stack, int size);
+    void setStackPixNames(int stack, QStringList names);
 
 private:
     void paintEvent(QPaintEvent *event);

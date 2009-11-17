@@ -37,6 +37,7 @@ public:
     void clear(void);
 
     void setListName(int list, QString name);
+    void setPixName(int list, QString name);
     void setListSize(int list, int size);
 
 private:
