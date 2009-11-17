@@ -15,11 +15,12 @@
 
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
+#include <vtkLookupTableManager.h>
+#include <vtkImageActor.h>
 
 #include <vtkViewImage2D.h>
 #include <vtkViewImage3D.h>
-#include <vtkLookupTableManager.h>
-#include <vtkImageActor.h>
+#include <vtkInteractorStyleTrackballCamera2.h>
 
 #include <QVTKWidget.h>
 
@@ -349,8 +350,11 @@ void v3dViewSwitcher::onOrientationPropertySet(QString value)
         d->view2D->UninitializeInteractor();
 	d->widget->GetRenderWindow()->RemoveRenderer(d->renderer2D);
 	d->widget->GetRenderWindow()->AddRenderer(d->renderer3D);
-	d->view3D->InitializeInteractor();
 	d->view3D->SetRenderingModeToVR();
+	d->view3D->InitializeInteractor();
+	vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
+	d->view3D->GetRenderWindowInteractor()->SetInteractorStyle ( interactorStyle );
+	interactorStyle->Delete();	
 	return;
     }
 
