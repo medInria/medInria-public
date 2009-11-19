@@ -20,7 +20,7 @@
 #ifndef MEDVIEWERAREA_H
 #define MEDVIEWERAREA_H
 
-#include <QtGui/QWidget>
+#include <QtGui>
 
 class dtkAbstractView;
 
@@ -34,6 +34,9 @@ class medViewerArea : public QWidget
 public:
      medViewerArea(QWidget *parent = 0);
     ~medViewerArea(void);
+
+    void setup(QStatusBar *status);
+    void setdw(QStatusBar *status);
 
     void setPatientIndex(int index);
     void setStudyIndex(int index);

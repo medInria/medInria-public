@@ -86,7 +86,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->welcomeArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->viewerArea);
-    d->stack->setCurrentWidget(d->welcomeArea);
 
     d->switchToWelcomeAreaAction = new QAction(this);
     d->switchToBrowserAreaAction = new QAction(this);
@@ -192,6 +191,12 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->switcher->addWorkspace(d->viewerArea);
 
     connect(d->switcher, SIGNAL(triggered(int)), this, SLOT(switchToArea(int)));
+
+    this->statusBar()->setSizeGripEnabled(false);
+    this->statusBar()->setContentsMargins(5, 0, 5, 0);
+    this->statusBar()->setFixedHeight(31);
+
+    this->switchToWelcomeArea();
 }
 
 medMainWindow::~medMainWindow(void)
@@ -252,6 +257,10 @@ void medMainWindow::switchToAdminArea(void)
 
 void medMainWindow::switchToWelcomeArea(void)
 {
+    d->welcomeArea->setup(this->statusBar());
+    d->browserArea->setdw(this->statusBar());
+    d->viewerArea->setdw(this->statusBar());
+
     d->stack->setCurrentWidget(d->welcomeArea);
 
     d->switchToWelcomeAreaAction->setEnabled(false);
@@ -264,6 +273,10 @@ void medMainWindow::switchToWelcomeArea(void)
 
 void medMainWindow::switchToBrowserArea(void)
 {
+    d->welcomeArea->setdw(this->statusBar());
+    d->browserArea->setup(this->statusBar());
+    d->viewerArea->setdw(this->statusBar());
+
     d->stack->setCurrentWidget(d->browserArea);
 
     d->switchToWelcomeAreaAction->setEnabled(true);
@@ -273,6 +286,10 @@ void medMainWindow::switchToBrowserArea(void)
 
 void medMainWindow::switchToViewerArea(void)
 {
+    d->welcomeArea->setdw(this->statusBar());
+    d->browserArea->setdw(this->statusBar());
+    d->viewerArea->setup(this->statusBar());
+
     d->stack->setCurrentWidget(d->viewerArea);
 
     d->switchToWelcomeAreaAction->setEnabled(true);

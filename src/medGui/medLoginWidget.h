@@ -50,9 +50,6 @@ protected slots:
     void onLoginButtonClicked(void);
     void onAdminButtonClicked(void);
 
-protected:
-    void paintEvent(QPaintEvent *event);
-
 private:
     medLoginWidgetPrivate *d;
 };

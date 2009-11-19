@@ -38,8 +38,6 @@ public:
 
 medLoginWidget::medLoginWidget(QWidget *parent) : QWidget(parent), d(new medLoginWidgetPrivate)
 {
-    // QWidget *main = new QWidget(this);
-
     d->userLabel = new QLabel(this);
     d->loginLabel = new QLabel(this);
     d->loginLabel->setText("Login:");
@@ -54,6 +52,8 @@ medLoginWidget::medLoginWidget(QWidget *parent) : QWidget(parent), d(new medLogi
     connect(d->loginButton, SIGNAL(clicked()), this, SLOT(onLoginButtonClicked()));
 
     d->layout = new QHBoxLayout(this);
+    d->layout->setContentsMargins(0, 0, 0, 0);
+    d->layout->setSpacing(5);
     d->layout->addWidget(d->userLabel);
     d->layout->addStretch(1);
     d->layout->addWidget(d->loginLabel);
@@ -64,13 +64,6 @@ medLoginWidget::medLoginWidget(QWidget *parent) : QWidget(parent), d(new medLogi
     d->timer = new QTimer;
     d->timer->start(1000);
     connect(d->timer, SIGNAL(timeout()), this, SLOT(onTimeOut()));
-
-    // { // this widget layout
-    // QVBoxLayout *layout = new QVBoxLayout(this);
-    // layout->setContentsMargins(0, 0, 0, 0);
-    // layout->setSpacing(0);
-    // layout->addWidget(this);
-    // }
 
     d->state = NONE;
 }
@@ -145,15 +138,4 @@ void medLoginWidget::onAdminButtonClicked(void)
 {
     if(d->state == LOGGED)
         emit accepted();
-}
-
-void medLoginWidget::paintEvent(QPaintEvent *event)
-{
-    QPainter painter;
-    painter.begin(this);
-    painter.setOpacity(0.5);
-    painter.fillRect(event->rect(), this->palette().color(QPalette::Window));
-    painter.end();
-
-    QWidget::paintEvent(event);
 }

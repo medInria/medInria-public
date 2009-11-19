@@ -27,7 +27,6 @@
 
 #include <medGui/medImagePreview.h>
 #include <medGui/medPatientPreview.h>
-#include <medGui/medStatusPanel.h>
 #include <medGui/medStudyPreview.h>
 #include <medGui/medSeriesPreview.h>
 #include <medGui/medToolBox.h>
@@ -122,7 +121,6 @@ public:
     medBrowserAreaPreview *preview;
     medDatabaseModel *model;
     medDatabaseView *view;
-    medStatusPanel *status;
 
     QProgressBar *progress;
 };
@@ -136,24 +134,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->view = new medDatabaseView(this);
     d->view->setModel(d->model);
 
-    QFormLayout *dataInfoLayout = new QFormLayout;
-    dataInfoLayout->setContentsMargins(0, 5, 0, 5);
-    dataInfoLayout->setSpacing(0);
-    dataInfoLayout->setFormAlignment(Qt::AlignHCenter | Qt::AlignTop);
-    dataInfoLayout->setLabelAlignment(Qt::AlignRight);
-    dataInfoLayout->addRow("Database location:", new QLabel(QString("%1").arg(medDatabaseController::instance()->dataLocation())));
-    dataInfoLayout->addRow("Database size:", new QLabel(QString("%1 bytes").arg(QFileInfo(medDatabaseController::instance()->dataLocation()).size())));
-
-    QWidget *databaseInfo = new QWidget(this);
-    databaseInfo->setLayout(dataInfoLayout);
-
     d->progress = new QProgressBar(this);
-    d->progress->setRange (0, 100);
-
-    d->status = new medStatusPanel(this);
-    d->status->addWidget(new QLabel("Current user: Unknown"));
-    d->status->addWidget(d->progress);
-    d->status->addWidget(databaseInfo);
+    d->progress->setTextVisible(true);
 
     // /////////////////////////////////////////////////////////////////
 
@@ -182,33 +164,17 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_container->addToolBox(localDatabaseToolBox);
     d->toolbox_container->addToolBox(distantDatabaseToolBox);
 
-    QWidget *main = new QWidget(this);
-
-    QHBoxLayout *main_layout = new QHBoxLayout(main);
-    main_layout->setContentsMargins(0, 0, 0, 0);
-    main_layout->setSpacing(10);
-    main_layout->addWidget(d->toolbox_container);
-    main_layout->addWidget(central);
-
-    // /////////////////////////////////////////////////////////////////
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(10, 10, 10, 10);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(10);
-    // layout->addWidget(d->view);
-    // layout->addWidget(d->preview);
-    layout->addWidget(main);
-    layout->addWidget(d->status);
-
-    // /////////////////////////////////////////////////////////////////
+    layout->addWidget(d->toolbox_container);
+    layout->addWidget(central);
 
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
     connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
     connect(d->view, SIGNAL(imageClicked(int)), d->preview, SLOT(onImageClicked(int)));
 
-    connect (medDatabaseController::instance(), SIGNAL (importCompleted (int)), d->progress, SLOT (setValue (int)));
-	
     // connect(d->view, SIGNAL(patientDoubleClicked(int)), this, SLOT(onPatientDoubleClicked(int)));
     // connect(d->view, SIGNAL(studyDoubleClicked(int)), this, SLOT(onStudyDoubleClicked(int)));
     // connect(d->view, SIGNAL(seriesDoubleClicked(int)), this, SLOT(onSeriesDoubleClicked(int)));
@@ -220,10 +186,23 @@ medBrowserArea::~medBrowserArea(void)
     delete d->preview;
     delete d->model;
     delete d->view;
-    delete d->status;
     delete d;
 
     d = NULL;
+}
+
+void medBrowserArea::setup(QStatusBar *status)
+{
+    status->addPermanentWidget(d->progress);
+
+    d->progress->show();
+}
+
+void medBrowserArea::setdw(QStatusBar *status)
+{
+    status->removeWidget(d->progress);
+
+    d->progress->hide();
 }
 
 medDatabaseView *medBrowserArea::view(void)

@@ -30,7 +30,6 @@
 
 #include <medGui/medClutEditor.h>
 #include <medGui/medLayoutChooser.h>
-#include <medGui/medStatusPanel.h>
 #include <medGui/medStyle.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
@@ -44,9 +43,6 @@ class medViewerAreaPrivate
 public:
     medViewContainer *view_container;
     medToolBoxContainer *toolbox_container;
-    medStatusPanel *status;
-
-    QProgressBar *progress;
 
     QStackedWidget *stack;
 
@@ -64,6 +60,10 @@ public:
     // view containers hash
 
     QHash<int, medViewContainer *> view_containers;
+
+    // status elements
+
+    QProgressBar *progress;
 };
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
@@ -98,7 +98,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     QHBoxLayout *c_layout_h = new QHBoxLayout(c_top);
     c_layout_h->setContentsMargins(0, 0, 0, 0);
-    c_layout_h->setSpacing(0);
+    c_layout_h->setSpacing(5);
     c_layout_h->addWidget(d->patientComboBox);
     c_layout_h->addWidget(d->studyComboBox);
     c_layout_h->addWidget(d->seriesComboBox);
@@ -197,26 +197,18 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container->addToolBox(registrationToolBox);
     d->toolbox_container->addToolBox(clutEditorToolBox);
 
-    // Setting up panel
+    // status elements
 
     d->progress = new QProgressBar(this);
-
-    d->status = new medStatusPanel(this);
-    d->status->addWidget(d->progress);
+    d->progress->setTextVisible(true);
 
     // Setting up layout
 
-    QHBoxLayout *central_layout = new QHBoxLayout(main);
-    central_layout->setContentsMargins(0, 0, 0, 0);
-    central_layout->setSpacing(10);
-    central_layout->addWidget(d->toolbox_container);
-    central_layout->addWidget(central);
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(10, 10, 10, 10);
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(10);
-    layout->addWidget(main);
-    layout->addWidget(d->status);
+    layout->addWidget(d->toolbox_container);
+    layout->addWidget(central);
 
     // Setup from database
     this->setup();
@@ -231,6 +223,20 @@ medViewerArea::~medViewerArea(void)
     delete d;
 
     d = NULL;
+}
+
+void medViewerArea::setup(QStatusBar *status)
+{
+    status->addPermanentWidget(d->progress);
+
+    d->progress->show();
+}
+
+void medViewerArea::setdw(QStatusBar *status)
+{
+    status->removeWidget(d->progress);
+
+    d->progress->hide();
 }
 
 void medViewerArea::setPatientIndex(int index)

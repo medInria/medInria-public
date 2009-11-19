@@ -39,9 +39,9 @@ static QString readFile(const QString &name)
 class medWelcomeAreaPrivate
 {
 public:
-    QWebView *web_view;
+//    QWebView *web_view;
 
-    medLoginWidget *loginWidget;
+    medLoginWidget *login;
 };
 
 medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelcomeAreaPrivate)
@@ -58,18 +58,18 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
 
     // connect(d->web_view, SIGNAL(linkClicked(QUrl)), this, SLOT(linkClicked(QUrl)));
 
-    d->loginWidget = new medLoginWidget(this);
+    d->login = new medLoginWidget(this);
 
-    connect(d->loginWidget, SIGNAL(accepted()), this, SIGNAL(accepted()));
-    connect(d->loginWidget, SIGNAL(rejected()), this, SIGNAL(rejected()));
+    connect(d->login, SIGNAL(accepted()), this, SIGNAL(accepted()));
+    connect(d->login, SIGNAL(rejected()), this, SIGNAL(rejected()));
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    // layout->addWidget(d->web_view);
-    layout->addStretch(8);
-    layout->addWidget(d->loginWidget);
-    layout->addStretch(1);
+//    QVBoxLayout *layout = new QVBoxLayout(this);
+//    layout->setContentsMargins(0, 0, 0, 0);
+//    layout->setSpacing(0);
+//    // layout->addWidget(d->web_view);
+//    layout->addStretch(8);
+//    layout->addWidget(d->login);
+//    layout->addStretch(1);
 }
 
 medWelcomeArea::~medWelcomeArea(void)
@@ -77,6 +77,20 @@ medWelcomeArea::~medWelcomeArea(void)
     delete d;
 
     d = NULL;
+}
+
+void medWelcomeArea::setup(QStatusBar *status)
+{
+    status->addPermanentWidget(d->login, 1);
+
+    d->login->show();
+}
+
+void medWelcomeArea::setdw(QStatusBar *status)
+{
+    status->removeWidget(d->login);
+
+    d->login->hide();
 }
 
 void medWelcomeArea::paintEvent(QPaintEvent *event)
@@ -92,9 +106,6 @@ void medWelcomeArea::paintEvent(QPaintEvent *event)
     gradient.setFocalPoint(event->rect().center());
     gradient.setRadius(event->rect().height()*0.66);
     gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
-    // gradient.setColorAt(0.3, QColor(0x46, 0x46, 0x46));
-    // gradient.setColorAt(0.5, QColor(0x40, 0x40, 0x40));
-    // gradient.setColorAt(0.8, QColor(0x34, 0x34, 0x34));
     gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
 
     QPainter painter;

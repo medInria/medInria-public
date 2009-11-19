@@ -29,8 +29,6 @@
 
 #include <medCore/medPluginManager.h>
 
-#include <medGui/medStyle.h>
-
 // Helper functions
 
 QString readFile(const QString& path)
@@ -43,10 +41,25 @@ QString readFile(const QString& path)
 
     file.close();
 
-    qDebug() << contents;
-
     return contents;
 }
+
+// Helper classes
+
+class medStyle : public QWindowsStyle
+{
+public:
+    void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0) const
+    {
+        switch(element) {
+        case PE_FrameFocusRect:
+            break;
+        default:
+            QWindowsStyle::drawPrimitive(element, option, painter, widget);
+            break;
+        }
+    }
+};
 
 // main
 
@@ -57,6 +70,7 @@ int main(int argc, char *argv[])
     application.setApplicationVersion("0.0.1");
     application.setOrganizationName("inria");
     application.setOrganizationDomain("fr");
+    application.setStyle(new medStyle);
     application.setStyleSheet(readFile(":/medular.qss"));
     
     // Initialize managers

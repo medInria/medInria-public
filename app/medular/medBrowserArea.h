@@ -20,7 +20,7 @@
 #ifndef MEDBROWSERAREA_H
 #define MEDBROWSERAREA_H
 
-#include <QWidget>
+#include <QtGui>
 
 // /////////////////////////////////////////////////////////////////
 // medBrowserAreaPreview
@@ -63,6 +63,9 @@ class medBrowserArea : public QWidget
 public:
      medBrowserArea(QWidget *parent = 0);
     ~medBrowserArea(void);
+
+    void setup(QStatusBar *status);
+    void setdw(QStatusBar *status);
 
     medDatabaseView *view(void);
     medDatabaseModel *model(void);

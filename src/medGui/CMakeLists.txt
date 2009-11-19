@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Nov 11 15:34:57 2009 (+0100)
+## Last-Updated: Thu Nov 19 14:13:41 2009 (+0100)
 ##           By: Julien Wintz
-##     Update #: 79
+##     Update #: 80
 ######################################################################
 ## 
 ### Commentary: 
@@ -42,7 +42,6 @@ set(${PROJECT_NAME}_HEADERS
   medImageReflector.h
   medPatientPreview.h
   medSeriesPreview.h
-  medStatusPanel.h
   medStudyPreview.h
   medStyle.h
   medToolBox.h
@@ -62,7 +61,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medImageStack.h
   medPatientPreview.h
   medSeriesPreview.h
-  medStatusPanel.h
   medStudyPreview.h
   medStyle.h
   medToolBox.h
@@ -81,7 +79,6 @@ set(${PROJECT_NAME}_SOURCES
   medImageStack.cpp
   medPatientPreview.cpp
   medSeriesPreview.cpp
-  medStatusPanel.cpp
   medStudyPreview.cpp
   medStyle.cpp
   medToolBox.cpp

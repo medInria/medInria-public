@@ -33,6 +33,9 @@ public:
      medWelcomeArea(QWidget *parent = 0);
     ~medWelcomeArea(void);
 
+    void setup(QStatusBar *status);
+    void setdw(QStatusBar *status);
+
 signals:
     void accepted(void);
     void rejected(void);
