@@ -166,7 +166,8 @@ static void drawThreeImages(QPainter *painter, const QPixmap& pixmap1, const QPi
 
 static QPixmap loadImage(const QString& name)
 {
-    QPixmap pixmap(QString(":/pixmaps/%1.jpg").arg(name));
+    //QPixmap pixmap(QString(":/pixmaps/%1.jpg").arg(name));
+    QPixmap pixmap(name);
 
     return pixmap.scaled(THUMB_SIZE, THUMB_SIZE, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 }
@@ -179,6 +180,7 @@ class medImageListPrivate
 {
 public:
     QMap<int, QString> names;
+    QMap<int, QString> pixNames;
     QMap<int, int> sizes;
 };
 
@@ -205,6 +207,11 @@ void medImageList::setListName(int list, QString name)
     d->names.insert(list, name);
 }
 
+void medImageList::setPixName(int list, QString name)
+{
+    d->pixNames.insert(list, name);
+}
+
 void medImageList::setListSize(int list, int size)
 {
     d->sizes.insert(list, size);
@@ -221,7 +228,11 @@ void medImageList::paintEvent(QPaintEvent *event)
     for(int i = 0; i < d->sizes.count(); i++) {
         p.save();
         p.translate(10 + i*160, 10);
-        drawOneImage(&p, loadImage("1"));
+        //drawOneImage(&p, loadImage("1"));
+	if (d->pixNames.value(i)!=QString())
+	    drawOneImage(&p, loadImage(d->pixNames.value(i)));
+	else
+	    drawOneImage(&p, loadImage(":/pixmaps/1.jpg"));
         drawShadowedText(&p, 40, 100, d->names.value(i));
         drawBadge(&p, 0, 0, QString::number(d->sizes.value(i)));
         p.restore();

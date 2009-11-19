@@ -310,6 +310,22 @@ void medDatabaseController::import(const QString& file)
 		
 	QSqlQuery query(*(medDatabaseController::instance()->database()));
 	QVariant id;
+
+
+	// generate and save the thumbnails
+	QList<QImage> &thumbnails = dtkdata->thumbnails();
+	QFileInfo seriesInfo( seriesPath );
+	QString thumb_dir = seriesInfo.dir().path() + "/" + seriesName.simplified() + "/";
+	QStringList thumbPaths;
+	if (thumbnails.count()) {	    
+	    if (!this->mkpath (thumb_dir))
+	        qDebug() << "Cannot create directory: " << thumb_dir;
+	}
+	for (int j=0; j<thumbnails.count(); j++) {
+	    QString thumb_name = thumb_dir + QString().setNum (j) + ".jpg";
+	    thumbnails[j].save(thumb_name, "JPG");
+	    thumbPaths << thumb_name;
+	}
 	
         ////////////////////////////////////////////////////////////////// PATIENT
       
@@ -378,10 +394,16 @@ void medDatabaseController::import(const QString& file)
 	  //seriesPath = studyPath + "/" + QString().setNum (id.toInt()) + ".mhd";
 	}
 	else {
-	  query.prepare("INSERT INTO series (study, size, name) VALUES (:study, :size, :name)");
+
+	  query.prepare("INSERT INTO series (study, size, name, path, thumbnail) VALUES (:study, :size, :name, :path, :thumbnail)");
 	  query.bindValue(":study", id);
 	  query.bindValue(":size", 1);
 	  query.bindValue(":name", seriesName);
+	  query.bindValue(":path", seriesPath);
+	  if (thumbPaths.count())
+	      query.bindValue(":thumbnail", thumbPaths[ thumbPaths.count()/2 ] );
+	  else
+	      query.bindValue(":thumbnail", "");
 	  query.exec(); id = query.lastInsertId();
 	  
 	  //seriesPath = studyPath + "/" + QString().setNum (id.toInt()) + ".mhd";
@@ -390,14 +412,6 @@ void medDatabaseController::import(const QString& file)
 	
 	///////////////////////////////////////////////////////////////// IMAGE
 
-	QList<QImage> &thumbnails = dtkdata->thumbnails();
-	QFileInfo seriesInfo( seriesPath );
-	QString thumb_dir = seriesInfo.dir().path() + "/" + seriesName.simplified() + "/";
-	if (thumbnails.count()) {	    
-	    if (!this->mkpath (thumb_dir))
-	        qDebug() << "Cannot create directory: " << thumb_dir;
-	}
-		
 	for (int j=0; j<filePaths.count(); j++) {
 	  
 	    QFileInfo fileInfo( filePaths[j] );
@@ -414,17 +428,16 @@ void medDatabaseController::import(const QString& file)
 	    }
 	    else {
 
-	        QString thumb_name = thumb_dir + QString().setNum (j) + ".jpg";
-		if (j<thumbnails.count()) 
-		    thumbnails[j].save(thumb_name, "JPG");
-		
-	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail_path) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail_path)");
+	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
 		query.bindValue(":series", id);
 		query.bindValue(":size", 64);
 		query.bindValue(":name", fileInfo.fileName());
 		query.bindValue(":path", fileInfo.filePath());
 		query.bindValue(":instance_path", seriesPath);
-		query.bindValue(":thumbnail_path", thumb_name);
+		if (j<thumbPaths.count())
+		    query.bindValue(":thumbnail", thumbPaths[j]);
+		else
+		    query.bindValue(":thumbnail", "");
 		
 		if(!query.exec())
 		  qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
@@ -480,7 +493,8 @@ void medDatabaseController::createSeriesTable(void)
         " study    INTEGER," // FOREIGN KEY
 	" size     INTEGER,"
 	" name        TEXT,"
-        " path        TEXT"
+        " path        TEXT,"
+	" thumbnail TEXT"
 	");"
     );
 }
@@ -496,7 +510,7 @@ void medDatabaseController::createImageTable(void)
 	" name        TEXT,"
         " path        TEXT,"
 	" instance_path TEXT,"
-	" thumbnail_path TEXT"
+	" thumbnail TEXT,"
         " slice    INTEGER "	
 	");"
     );

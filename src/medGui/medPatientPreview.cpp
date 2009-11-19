@@ -115,16 +115,20 @@ void medPatientPreview::setup(int patientId)
 
     int seriesCount = 0;
 
-    query.prepare("SELECT id FROM series WHERE study = :study");
+    query.prepare("SELECT id, thumbnail FROM series WHERE study = :study");
     query.bindValue(":study", study);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
 
-    while(query.next())
+    QStringList thumbList;
+    while(query.next()) {
+        thumbList << query.value (1).toString();
         seriesCount++;
+    }
     
     d->stack->setStackName(stackCount, studyNames.at(stackCount).toString());
     d->stack->setStackSize(stackCount, seriesCount);
+    d->stack->setStackPixNames(stackCount, thumbList);
 
     stackCount++;
 

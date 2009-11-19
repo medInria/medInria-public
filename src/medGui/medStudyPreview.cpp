@@ -121,8 +121,9 @@ void medStudyPreview::setup(int studyId)
     QList<QVariant> seriesIds;
     QList<QVariant> seriesNames;
     QList<QVariant> seriesSizes;
+    QList<QVariant> thumbnailPaths;
 
-    query.prepare("SELECT id, name, size FROM series WHERE study = :study");
+    query.prepare("SELECT id, name, size, thumbnail FROM series WHERE study = :study");
     query.bindValue(":study", studyId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
@@ -131,12 +132,14 @@ void medStudyPreview::setup(int studyId)
         seriesIds << query.value(0);
         seriesNames << query.value(1);
         seriesSizes << query.value(2);
+	thumbnailPaths << query.value(3);
         seriesCount++;
     }
 
     for(int i = 0; i < seriesCount; i++) {
         d->list->setListName(i, seriesNames.at(i).toString());
         d->list->setListSize(i, seriesSizes.at(i).toInt());
+	d->list->setPixName (i, thumbnailPaths.at (i).toString());
     }
 
     // Build visual
