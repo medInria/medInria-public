@@ -12,7 +12,9 @@
 #include "v3dViewWidget.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkAbstractDataImage.h>
 
+#include <vtkCommand.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkLookupTableManager.h>
@@ -24,8 +26,75 @@
 
 #include <QVTKWidget.h>
 
+#include <QtGui>
 #include <QMenu>
 #include <QMouseEvent>
+
+
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////
+// v3dViewSwitcherObserver: links a QSlider with the ViewImagePositionChangeEvent of a vtkViewImage instance.
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class v3dViewSwitcherObserver : public vtkCommand
+{
+public:
+  static v3dViewSwitcherObserver* New()
+  { return new v3dViewSwitcherObserver; }
+  
+  void Execute(vtkObject *caller, unsigned long event, void *callData);
+  
+  v3dViewSwitcherObserver();
+  ~v3dViewSwitcherObserver();
+
+  void SetSlider (QSlider *slider)
+  { this->slider = slider; }
+  
+  void Lock (void)
+  { this->lock = 1; }
+  void UnLock (void)
+  { this->lock = 0;}
+
+ protected:
+  
+ private:
+  QSlider *slider;
+  int lock;  
+
+};
+
+
+v3dViewSwitcherObserver::v3dViewSwitcherObserver()
+{
+  this->slider = 0;
+  this->lock = 0;
+}
+
+v3dViewSwitcherObserver::~v3dViewSwitcherObserver()
+{}
+
+
+void v3dViewSwitcherObserver::Execute (vtkObject *caller, unsigned long event, void *callData)
+{
+  vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (caller);
+  if( !view )
+  {
+    return;
+  }
+
+  if( event == vtkViewImage::ViewImagePositionChangeEvent && !this->lock)
+  {
+    if( this->slider )
+    {
+      unsigned int zslice = view->GetZSlice();
+      this->slider->blockSignals (true);
+      this->slider->setValue (zslice);
+      this->slider->blockSignals (false);
+    }
+  }  
+}
+
+
+
 
 // /////////////////////////////////////////////////////////////////
 // v3dViewSwitcherPrivate
@@ -39,8 +108,16 @@ public:
     vtkViewImage2D *view2D;
     vtkViewImage3D *view3D;
 
-    v3dViewWidget *widget;
-    QMenu *menu;
+    QSlider       *slider;
+    v3dViewWidget *v3dWidget;
+    QWidget       *widget;
+    QMenu         *menu;
+    QString orientation;
+    int zslice;
+    int yslice;
+    int xslice;
+    v3dViewSwitcherObserver *observer;
+  
     dtkAbstractData *data;
 };
 
@@ -51,6 +128,7 @@ public:
 v3dViewSwitcher::v3dViewSwitcher(void) : dtkAbstractView(), d(new v3dViewSwitcherPrivate)
 {
     d->data = 0;
+    d->orientation = "Axial";
 
     d->renderer2D = vtkRenderer::New();
     d->view2D = vtkViewImage2D::New();    
@@ -72,43 +150,55 @@ v3dViewSwitcher::v3dViewSwitcher(void) : dtkAbstractView(), d(new v3dViewSwitche
     */
     d->view3D->SetBoxWidgetVisibility(0);
 
-    
-    d->widget = new v3dViewWidget;
 
-    d->view3D->SetRenderWindow(d->widget->GetRenderWindow());
-    d->view3D->SetRenderWindowInteractor(d->widget->GetRenderWindow()->GetInteractor());
+    //d->widget = new v3dViewWidget;
+    d->widget = new QWidget;
+    d->slider = new QSlider (Qt::Horizontal, d->widget);
+    d->v3dWidget = new v3dViewWidget (d->widget);
+    QVBoxLayout *layout = new QVBoxLayout(d->widget);
+    layout->setContentsMargins (0, 0, 0, 0);
+    layout->setSpacing (0);
+    layout->addWidget (d->slider);
+    layout->addWidget (d->v3dWidget);
+    
+    d->view3D->SetRenderWindow(d->v3dWidget->GetRenderWindow());
+    d->view3D->SetRenderWindowInteractor(d->v3dWidget->GetRenderWindow()->GetInteractor());
 
     d->view3D->UninitializeInteractor();
-    d->view2D->SetRenderWindow(d->widget->GetRenderWindow());
-    d->view2D->SetRenderWindowInteractor(d->widget->GetRenderWindow()->GetInteractor());
-    d->widget->GetRenderWindow()->AddRenderer(d->renderer2D);
+    d->view2D->SetRenderWindow(d->v3dWidget->GetRenderWindow());
+    d->view2D->SetRenderWindowInteractor(d->v3dWidget->GetRenderWindow()->GetInteractor());
+    d->v3dWidget->GetRenderWindow()->AddRenderer(d->renderer2D);
 
     
     d->view2D->AddChild ( d->view3D );
     d->view3D->AddChild ( d->view2D );
+
+    d->observer = v3dViewSwitcherObserver::New();
+    d->observer->SetSlider ( d->slider );
+    d->view2D->AddObserver ( vtkViewImage::ViewImagePositionChangeEvent, d->observer);
     
     
-    QAction* axialAct = new QAction (tr("Axial"), d->widget);
+    QAction* axialAct = new QAction (tr("Axial"), d->v3dWidget);
     connect(axialAct, SIGNAL(triggered()), this, SLOT(onMenuAxialTriggered()));
-    QAction* coronalAct = new QAction (tr("Coronal"), d->widget);
+    QAction* coronalAct = new QAction (tr("Coronal"), d->v3dWidget);
     connect(coronalAct, SIGNAL(triggered()), this, SLOT(onMenuCoronalTriggered()));
-    QAction* sagittalAct = new QAction (tr("Sagittal"), d->widget);
+    QAction* sagittalAct = new QAction (tr("Sagittal"), d->v3dWidget);
     connect(sagittalAct, SIGNAL(triggered()), this, SLOT(onMenuSagittalTriggered()));
-    QAction* triDAct = new QAction (tr("3D"), d->widget);
+    QAction* triDAct = new QAction (tr("3D"), d->v3dWidget);
     connect(triDAct, SIGNAL(triggered()), this, SLOT(onMenu3DTriggered()));
     
-    QAction* zoomAct = new QAction (tr("Zoom"), d->widget);
+    QAction* zoomAct = new QAction (tr("Zoom"), d->v3dWidget);
     connect(zoomAct, SIGNAL(triggered()), this, SLOT(onMenuZoomTriggered()));
-    QAction* wlAct = new QAction (tr("Window / Level"), d->widget);
+    QAction* wlAct = new QAction (tr("Window / Level"), d->v3dWidget);
     connect(wlAct, SIGNAL(triggered()), this, SLOT(onMenuWindowLevelTriggered()));
     
-    QActionGroup* group = new QActionGroup ( d->widget );
+    QActionGroup* group = new QActionGroup ( d->v3dWidget );
     group->addAction (zoomAct);
     group->addAction (wlAct);
     wlAct->setChecked (true);
 
     
-    d->menu = new QMenu ( d->widget );
+    d->menu = new QMenu ( d->v3dWidget );
     d->menu->addAction (axialAct);
     d->menu->addAction (coronalAct);
     d->menu->addAction (sagittalAct);
@@ -127,14 +217,15 @@ v3dViewSwitcher::v3dViewSwitcher(void) : dtkAbstractView(), d(new v3dViewSwitche
     this->addProperty("Interaction",          QStringList() << "Zoom" << "Window / Level");
 
     
-    connect (d->widget, SIGNAL (mouseEvent (QMouseEvent*)), this, SLOT (onMousePressEvent (QMouseEvent*)));
+    connect (d->v3dWidget, SIGNAL (mouseEvent (QMouseEvent*)), this, SLOT (onMousePressEvent (QMouseEvent*)));
+    connect (d->slider,    SIGNAL (valueChanged (int)),        this, SLOT (onZSliderValueChanged (int)));
     
 }
 
 v3dViewSwitcher::~v3dViewSwitcher(void)
 {
-  //d->widget->GetRenderWindow()->RemoveRenderer ( d->renderer2D );
-  //d->widget->GetRenderWindow()->RemoveRenderer ( d->renderer3D );
+  //d->v3dWidget->GetRenderWindow()->RemoveRenderer ( d->renderer2D );
+  //d->v3dWidget->GetRenderWindow()->RemoveRenderer ( d->renderer3D );
   /*
     d->view2D->SetRenderWindow(0);
     d->view2D->SetRenderWindowInteractor(0);
@@ -146,6 +237,7 @@ v3dViewSwitcher::~v3dViewSwitcher(void)
     d->view3D->UninitializeInteractor();
     d->view3D->Delete();
     d->renderer3D->Delete();
+    d->observer->Delete();
 }
 
 bool v3dViewSwitcher::registered(void)
@@ -177,6 +269,10 @@ void v3dViewSwitcher::reset(void)
     
     d->view2D->Reset();
     d->view3D->Reset();
+    
+    d->zslice = d->view2D->GetSlice (vtkViewImage::AXIAL_ID);
+    d->yslice = d->view2D->GetSlice (vtkViewImage::CORONAL_ID);
+    d->xslice = d->view2D->GetSlice (vtkViewImage::SAGITTAL_ID);
 }
 
 void v3dViewSwitcher::update(void)
@@ -184,7 +280,7 @@ void v3dViewSwitcher::update(void)
     d->view2D->Render();
     d->view3D->Render();
 
-    d->widget->update();
+    d->v3dWidget->update();
 }
 
 void v3dViewSwitcher::link(dtkAbstractView *other)
@@ -295,7 +391,9 @@ void v3dViewSwitcher::setData(dtkAbstractData *data)
 	d->view3D->AddDataSet(dataset);
     }
 
-    
+    if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) )
+      d->slider->setRange (0, imData->zDimension()-1);
+
     dtkAbstractView::setData(data);
 
     this->update();
@@ -344,12 +442,25 @@ void v3dViewSwitcher::onPropertySet(QString key, QString value)
 
 void v3dViewSwitcher::onOrientationPropertySet(QString value)
 {
+    if (value==d->orientation)
+        return;
+    
     double zoom = d->view2D->GetZoom();
 
+    
+    if (d->orientation=="Axial")
+        d->zslice = d->view2D->GetZSlice();
+    if (d->orientation=="Coronal")
+        d->yslice = d->view2D->GetZSlice();
+    if (d->orientation=="Sagittal")
+        d->xslice = d->view2D->GetZSlice();
+
+    
     if (value=="3D") {
+        d->orientation = "3D";
         d->view2D->UninitializeInteractor();
-	d->widget->GetRenderWindow()->RemoveRenderer(d->renderer2D);
-	d->widget->GetRenderWindow()->AddRenderer(d->renderer3D);
+	d->v3dWidget->GetRenderWindow()->RemoveRenderer(d->renderer2D);
+	d->v3dWidget->GetRenderWindow()->AddRenderer(d->renderer3D);
 	d->view3D->SetRenderingModeToVR();
 	d->view3D->InitializeInteractor();
 	vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
@@ -361,24 +472,36 @@ void v3dViewSwitcher::onOrientationPropertySet(QString value)
 	
     if (value == "Axial" || value == "Sagittal" || value =="Coronal") {
         d->view3D->UninitializeInteractor();
-        d->widget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
-	d->widget->GetRenderWindow()->AddRenderer(d->renderer2D);
+        d->v3dWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
+	d->v3dWidget->GetRenderWindow()->AddRenderer(d->renderer2D);
 	d->view2D->InitializeInteractor();
     }
-    
+
     if (value == "Axial") {
+        d->orientation = "Axial";
 	d->view2D->SetOrientation(vtkViewImage2D::AXIAL_ID);
 	d->view2D->SetAboutData("Axial view");
+	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
+	  d->slider->setRange (0, imData->zDimension()-1);
+	d->slider->setValue (d->zslice);
     }
 
     if (value == "Sagittal") {
+        d->orientation = "Sagittal";
 	d->view2D->SetOrientation(vtkViewImage2D::SAGITTAL_ID);
 	d->view2D->SetAboutData("Sagittal view");
+	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
+	  d->slider->setRange (0, imData->xDimension()-1);
+	d->slider->setValue (d->xslice);
     }
 
     if (value == "Coronal") {
+        d->orientation = "Coronal";
 	d->view2D->SetOrientation(vtkViewImage2D::CORONAL_ID);
 	d->view2D->SetAboutData("Coronal view");
+	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
+	  d->slider->setRange (0, imData->yDimension()-1);
+	d->slider->setValue (d->yslice);
     }
 
     d->view2D->SetZoom ( zoom );
@@ -549,6 +672,18 @@ void v3dViewSwitcher::onMousePressEvent (QMouseEvent *event)
   if( event->button() == Qt::RightButton ) {
     d->menu->popup (event->globalPos());
   }  
+}
+
+
+void v3dViewSwitcher::onZSliderValueChanged (int value)
+{
+  if (d->orientation=="3D")
+    return;
+  d->observer->Lock();
+  d->view2D->SetZSlice (value);
+  d->view2D->Update();
+  d->observer->UnLock();
+
 }
 
 

@@ -51,6 +51,7 @@ public slots:
     void onShowAxisPropertySet              (QString value);
     void onInteractionPropertySet           (QString value);
     void onMousePressEvent                  (QMouseEvent *event);
+    void onZSliderValueChanged              (int value);
 
 public slots: // Menu interface
     void onMenuAxialTriggered        (void);
