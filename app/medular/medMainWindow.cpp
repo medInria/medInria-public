@@ -101,7 +101,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->switchToViewerAreaAction->setShortcut(Qt::ControlModifier + Qt::Key_3);
 #endif
 
-    if(!(qApp->arguments().contains("--fullscreen"))) {
+    if(qApp->arguments().contains("--no-fullscreen")) {
 
         d->switchToWelcomeAreaAction->setEnabled(false);
         d->switchToWelcomeAreaAction->setText("Welcome");

@@ -35,7 +35,7 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
     d->container->setObjectName("medToolBoxContainer");
 
     d->layout = new QVBoxLayout(d->container);
-    d->layout->setContentsMargins(0, 0, 0, 0);
+    d->layout->setContentsMargins(2, 4, 0, 0);
     d->layout->addStretch(1);
 
     this->setFrameStyle(QFrame::NoFrame);

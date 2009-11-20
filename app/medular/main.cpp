@@ -46,7 +46,7 @@ QString readFile(const QString& path)
 
 // Helper classes
 
-class medStyle : public QWindowsStyle
+class medStyle : public QPlastiqueStyle
 {
 public:
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0) const
@@ -55,7 +55,7 @@ public:
         case PE_FrameFocusRect:
             break;
         default:
-            QWindowsStyle::drawPrimitive(element, option, painter, widget);
+            QPlastiqueStyle::drawPrimitive(element, option, painter, widget);
             break;
         }
     }
@@ -81,10 +81,10 @@ int main(int argc, char *argv[])
     // Setting up main window
 
     medMainWindow mainwindow;
-    if (application.arguments().contains("--fullscreen"))
-        mainwindow.showFullScreen();
-    else
+    if (application.arguments().contains("--no-fullscreen"))
         mainwindow.show();
+    else
+        mainwindow.showFullScreen();
 
     // Setting up interpreter
 

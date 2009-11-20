@@ -60,8 +60,6 @@ public slots:
     void onSeriesIndexChanged(int index);
     void onImageIndexChanged(int index);
 
-    void onRegistrationClicked(void);
-
 private:
     medViewerAreaPrivate *d;
 };

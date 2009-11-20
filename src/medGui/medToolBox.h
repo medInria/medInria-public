@@ -43,6 +43,32 @@ protected:
 };
 
 ///////////////////////////////////////////////////////////////////
+// medToolBoxTab
+///////////////////////////////////////////////////////////////////
+
+class medToolBoxTabPrivate;
+
+class medToolBoxTab : public QTabWidget
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int height READ height WRITE setFixedHeight)
+
+public:
+     medToolBoxTab(QWidget *parent);
+    ~medToolBoxTab(void);
+
+public slots:
+    void onCurrentChanged(int index);
+
+protected:
+    void paintEvent(QPaintEvent *event);
+
+private:
+    medToolBoxTabPrivate *d;
+};
+
+///////////////////////////////////////////////////////////////////
 // medToolBoxHeader
 ///////////////////////////////////////////////////////////////////
 
@@ -79,7 +105,7 @@ public:
      medToolBoxBody(QWidget *parent = 0);
     ~medToolBoxBody(void);
 
-    void addWidget(QWidget *widget);
+    void setWidget(QWidget *widget);
 
 public slots:
     void toggle(void);
@@ -105,7 +131,7 @@ public:
      medToolBox(QWidget *parent = 0);
     ~medToolBox(void);
 
-    void addWidget(QWidget *widget);
+    void setWidget(QWidget *widget);
 
     void setTitle(const QString& title);
 

@@ -113,6 +113,24 @@ void medBrowserAreaPreview::onImageClicked(int id)
 // medBrowserArea
 // /////////////////////////////////////////////////////////////////
 
+//class medTabBar : public QTabBar
+//{
+//public:
+//    medTabBar(QWidget *parent) : QTabBar(parent)
+//    {
+//        this->setDrawBase(true);
+//    }
+//
+////    void paintEvent(QPaintEvent *event)
+////    {
+////        QPainter painter(this);
+////        painter.fillRect(event->rect(), Qt::green);
+////        painter.end();
+////
+//////        QTabBar::paintEvent(event);
+////    }
+//};
+
 class medBrowserAreaPrivate
 {
 public:
@@ -122,7 +140,11 @@ public:
     medDatabaseModel *model;
     medDatabaseView *view;
 
+    QTreeView *filesystem_view;
+    QDirModel *filesystem_model;
+
     QProgressBar *progress;
+    QStatusBar *status;
 };
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
@@ -137,38 +159,88 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->progress = new QProgressBar(this);
     d->progress->setTextVisible(true);
 
-    // /////////////////////////////////////////////////////////////////
+    // Database widget /////////////////////////////////////////////////
 
-    QWidget *central = new QWidget(this);
+    QWidget *database_widget = new QWidget(this);
     
-    QVBoxLayout *central_layout = new QVBoxLayout(central);
-    central_layout->setContentsMargins(0, 0, 0, 0);
-    central_layout->setSpacing(10);
-    central_layout->addWidget(d->view);
-    central_layout->addWidget(d->preview);
+    QVBoxLayout *database_layout = new QVBoxLayout(database_widget);
+    database_layout->setContentsMargins(0, 0, 0, 0);
+    database_layout->setSpacing(0);
+    database_layout->addWidget(d->view);
+    database_layout->addWidget(d->preview);
+
+    // Filesystem widget ///////////////////////////////////////////////
+
+    d->filesystem_model = new QDirModel;
+
+    d->filesystem_view = new QTreeView(this);
+    d->filesystem_view->setFrameStyle(QFrame::NoFrame);
+    d->filesystem_view->setAttribute(Qt::WA_MacShowFocusRect, false);
+    d->filesystem_view->setUniformRowHeights(true);
+    d->filesystem_view->setAlternatingRowColors(true);
+    d->filesystem_view->setSortingEnabled(true);
+    d->filesystem_view->setModel(d->filesystem_model);
+    d->filesystem_view->setRootIndex(d->filesystem_model->index(QDir::homePath()));
+
+    // Pacs widget ///////////////////////////////////////////////
+
+    QTreeView *pacs_widget = new QTreeView(this);
+    pacs_widget->setFrameStyle(QFrame::NoFrame);
+    pacs_widget->setAttribute(Qt::WA_MacShowFocusRect, false);
+    pacs_widget->setUniformRowHeights(true);
+    pacs_widget->setAlternatingRowColors(true);
+    pacs_widget->setSortingEnabled(true);
 
     // /////////////////////////////////////////////////////////////////
 
-    medToolBox *databaseSelectorToolBox = new medToolBox(this);
-    databaseSelectorToolBox->setTitle("Database selector");
+    QStackedWidget *stack = new QStackedWidget(this);
+    stack->addWidget(database_widget);
+    stack->addWidget(d->filesystem_view);
+    stack->addWidget(pacs_widget);
 
-    medToolBox *localDatabaseToolBox = new medToolBox(this);
-    localDatabaseToolBox->setTitle("Local database");
+    // Source selector ///////////////////////////////////////////////
 
-    medToolBox *distantDatabaseToolBox = new medToolBox(this);
-    distantDatabaseToolBox->setTitle("Distant database");
+    QWidget *filesystem_page = new QWidget(this);
+
+    QPushButton *filesystem_import_button = new QPushButton("Import", filesystem_page);
+    QPushButton *filesystem_export_button = new QPushButton("Export", filesystem_page);
+
+    QFormLayout *filesystem_page_layout = new QFormLayout(filesystem_page);
+    filesystem_page_layout->addRow("Current item:", filesystem_import_button);
+    filesystem_page_layout->addRow("Current item:", filesystem_export_button);
+    filesystem_page_layout->setFormAlignment(Qt::AlignHCenter);
+
+    connect(filesystem_import_button, SIGNAL(clicked()), this, SLOT(onFileSystemImportClicked()));
+    connect(filesystem_export_button, SIGNAL(clicked()), this, SLOT(onFileSystemExportClicked()));
+
+    QWidget *pacs_page = new QWidget(this);
+
+    QFormLayout *pacs_page_layout = new QFormLayout(pacs_page);
+    pacs_page_layout->addRow("Url:", new QLineEdit(pacs_page));
+    pacs_page_layout->addRow("Login:", new QLineEdit(pacs_page));
+    pacs_page_layout->addRow("Password:", new QLineEdit(pacs_page));
+    pacs_page_layout->addWidget(new QPushButton("Connect", pacs_page));
+    pacs_page_layout->setFormAlignment(Qt::AlignHCenter);
+
+    medToolBoxTab *tab = new medToolBoxTab(this);
+    tab->addTab(new QWidget, "Db");
+    tab->addTab(filesystem_page, "Fs");
+    tab->addTab(pacs_page, "Pc");
+    connect(tab, SIGNAL(currentChanged(int)), stack, SLOT(setCurrentIndex(int)));
+
+    medToolBox *sourceSelectorToolBox = new medToolBox(this);
+    sourceSelectorToolBox->setTitle("Source selector");
+    sourceSelectorToolBox->setWidget(tab);
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
-    d->toolbox_container->addToolBox(databaseSelectorToolBox);
-    d->toolbox_container->addToolBox(localDatabaseToolBox);
-    d->toolbox_container->addToolBox(distantDatabaseToolBox);
+    d->toolbox_container->addToolBox(sourceSelectorToolBox);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(10);
+    layout->setSpacing(0);
     layout->addWidget(d->toolbox_container);
-    layout->addWidget(central);
+    layout->addWidget(stack);
 
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
@@ -193,14 +265,16 @@ medBrowserArea::~medBrowserArea(void)
 
 void medBrowserArea::setup(QStatusBar *status)
 {
-    status->addPermanentWidget(d->progress);
+    d->status = status;
+    d->status->addPermanentWidget(d->progress);
 
     d->progress->show();
 }
 
 void medBrowserArea::setdw(QStatusBar *status)
 {
-    status->removeWidget(d->progress);
+    d->status = status;
+    d->status->removeWidget(d->progress);
 
     d->progress->hide();
 }
@@ -213,4 +287,19 @@ medDatabaseView *medBrowserArea::view(void)
 medDatabaseModel *medBrowserArea::model(void)
 {
     return d->model;
+}
+
+void medBrowserArea::onFileSystemImportClicked(void)
+{
+    QFileInfo info(d->filesystem_model->filePath(d->filesystem_view->currentIndex()));
+
+    if(info.isDir())
+        medDatabaseController::instance()->import(info.absoluteFilePath());
+    else
+        d->status->showMessage("Import only support dicom directories so far.", 10000);
+}
+
+void medBrowserArea::onFileSystemExportClicked(void)
+{
+
 }

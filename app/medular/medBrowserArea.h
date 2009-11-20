@@ -70,6 +70,10 @@ public:
     medDatabaseView *view(void);
     medDatabaseModel *model(void);
 
+public slots:
+    void onFileSystemImportClicked(void);
+    void onFileSystemExportClicked(void);
+
 private:
     medBrowserAreaPrivate *d;
 };

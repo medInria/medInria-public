@@ -73,7 +73,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QWidget *central = new QWidget(main);
 
     QVBoxLayout *c_layout_v = new QVBoxLayout(central);
-    c_layout_v->setContentsMargins(0, 0, 0, 0);
+    c_layout_v->setContentsMargins(0, 10, 0, 10);
     c_layout_v->setSpacing(10);
 
     QWidget *c_top = new QWidget(central);
@@ -119,66 +119,11 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     layoutMenu->addAction(layoutAction);
 
     QPushButton *doLayoutButton = new QPushButton(this);
-
     doLayoutButton->setMenu(layoutMenu);
 
     medToolBox *layoutToolBox = new medToolBox(this);
     layoutToolBox->setTitle("Layout");
-    layoutToolBox->addWidget(doLayoutButton);
-
-    // Setting up visualization tools
-
-    QPushButton *button0 = new QPushButton;
-    QPushButton *button1 = new QPushButton;
-    QPushButton *button2 = new QPushButton;
-    QPushButton *button3 = new QPushButton;
-    QPushButton *button4 = new QPushButton;
-    QPushButton *button5 = new QPushButton;
-    QPushButton *button6 = new QPushButton;
-    QPushButton *button7 = new QPushButton;
-    QPushButton *button8 = new QPushButton;
-    QPushButton *button9 = new QPushButton;
-
-    medToolBox *visualizationToolBox = new medToolBox(this);
-    visualizationToolBox->setTitle("Visualization");
-    visualizationToolBox->addWidget(button0);
-    visualizationToolBox->addWidget(button1);
-    visualizationToolBox->addWidget(button2);
-    visualizationToolBox->addWidget(button3);
-    visualizationToolBox->addWidget(button4);
-    visualizationToolBox->addWidget(button5);
-    visualizationToolBox->addWidget(button6);
-    visualizationToolBox->addWidget(button7);
-    visualizationToolBox->addWidget(button8);
-    visualizationToolBox->addWidget(button9);
-
-    // Setting up registration toolbox
-
-    d->registrationWidgetCombo = new QComboBox;
-    d->registrationWidgetRegisterButton = new QPushButton("Register");
-    d->registrationWidgetSaveButton = new QPushButton("Save");
-
-    // foreach(process, processFactory::instance()->processes())
-    //     if(medAbstractRegistrationProcess *process = dynamic_cast<medAbstractRegistrationProcess *>(process))
-    //         d->registrationWidgetCombo->addItem(process->name(), process->name());
-
-    d->registrationWidgetCombo->addItem("Choose registration method");
-    d->registrationWidgetCombo->addItem("Rigid", "itkProcessRegistrationRigid");
-    d->registrationWidgetCombo->addItem("Affine", "itkProcessRegistrationAffine");
-
-    QWidget *registrationWidget = new QWidget;
-    
-    QVBoxLayout *registrationWidgetLayout = new QVBoxLayout(registrationWidget);
-    registrationWidgetLayout->setContentsMargins(0, 0, 0, 0);
-    registrationWidgetLayout->addWidget(d->registrationWidgetCombo);
-    registrationWidgetLayout->addWidget(d->registrationWidgetRegisterButton);
-    registrationWidgetLayout->addWidget(d->registrationWidgetSaveButton);
-
-    medToolBox *registrationToolBox = new medToolBox(this);
-    registrationToolBox->setTitle("Registration");
-    registrationToolBox->addWidget(registrationWidget);
-
-    connect(d->registrationWidgetRegisterButton, SIGNAL(clicked()), this, SLOT(onRegistrationClicked()));
+    layoutToolBox->setWidget(doLayoutButton);
 
     // Setting up lookup table editor
 
@@ -186,15 +131,13 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     medToolBox *clutEditorToolBox = new medToolBox(this);
     clutEditorToolBox->setTitle("Color lookup table");
-    clutEditorToolBox->addWidget(clutEditor);
+    clutEditorToolBox->setWidget(clutEditor);
 
     // Setting up container
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(layoutToolBox);
-    d->toolbox_container->addToolBox(visualizationToolBox);
-    d->toolbox_container->addToolBox(registrationToolBox);
     d->toolbox_container->addToolBox(clutEditorToolBox);
 
     // status elements
@@ -206,7 +149,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(10);
+    layout->setSpacing(0);
     layout->addWidget(d->toolbox_container);
     layout->addWidget(central);
 
@@ -433,25 +376,4 @@ void medViewerArea::onImageIndexChanged(int index)
 {
     if(index<1)
         return;
-}
-
-void medViewerArea::onRegistrationClicked(void)
-{
-    int index = d->registrationWidgetCombo->currentIndex();
-
-    if (!index)
-        return;
-
-    QVariant type = d->registrationWidgetCombo->itemData(index);
-
-    qDebug() << "Launch registration using" << type;
-
-    // dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create(type.toString());
-    // process->setInput(..., 0);
-    // process->setInput(..., 1);
-    // process->run();
-    
-    // if(dtkAbstractData *output = process->output()) {
-    //     // put the result into a new view
-    // }
 }

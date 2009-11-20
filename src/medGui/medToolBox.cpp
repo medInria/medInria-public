@@ -55,6 +55,67 @@ void medToolBoxControl::paintEvent(QPaintEvent *event)
 }
 
 // /////////////////////////////////////////////////////////////////
+// medToolBoxTab
+// /////////////////////////////////////////////////////////////////
+
+class medToolBoxTabPrivate
+{
+public:
+    QPropertyAnimation *height_animation;
+};
+
+medToolBoxTab::medToolBoxTab(QWidget *parent) : QTabWidget(parent), d(new medToolBoxTabPrivate)
+{
+    d->height_animation = new QPropertyAnimation(this, "height");
+
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(onCurrentChanged(int)));
+}
+
+medToolBoxTab::~medToolBoxTab(void)
+{
+    delete d;
+
+    d = NULL;
+}
+
+void medToolBoxTab::onCurrentChanged(int index)
+{
+    static int old_height = 0;
+    static int new_height = 0;
+
+    new_height = this->widget(index)->sizeHint().height() + 33 + 1;
+
+    if(old_height) {
+//        qDebug() << old_height;
+//        qDebug() << new_height;
+        d->height_animation->setStartValue(old_height);
+        d->height_animation->setEndValue(new_height);
+        d->height_animation->start();
+    }
+
+    old_height = new_height;
+}
+
+void medToolBoxTab::paintEvent(QPaintEvent *event)
+{
+    static int height = 33;
+
+    QLinearGradient gradient;
+    gradient.setStart(0, 0);
+    gradient.setFinalStop(0, height);
+    gradient.setColorAt(0, QColor("#3b3b3c"));
+    gradient.setColorAt(1, QColor("#2d2d2f"));
+
+    QPainter painter(this);
+    painter.setPen(QColor("#2c2c2e"));
+    painter.setBrush(gradient);
+    painter.drawRect(QRect(0, 0, this->width(), height));
+    painter.end();
+
+    QTabWidget::paintEvent(event);
+}
+
+// /////////////////////////////////////////////////////////////////
 // medToolBoxHeader
 // /////////////////////////////////////////////////////////////////
 
@@ -72,21 +133,19 @@ medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medT
     d->label->setText("Untitled");
     d->label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    d->control = new medToolBoxControl(this);
+//    d->control = new medToolBoxControl(this);
 
-    connect(d->control, SIGNAL(clicked()), this, SIGNAL(clicked()));
+//    connect(d->control, SIGNAL(clicked()), this, SIGNAL(clicked()));
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(5, 0, 5, 0);
     layout->setSpacing(0);
     layout->addWidget(d->label);
-    layout->addWidget(d->control);
+//    layout->addWidget(d->control);
 }
 
 medToolBoxHeader::~medToolBoxHeader(void)
 {
-    delete d->label;
-    delete d->control;
     delete d;
 
     d = NULL;
@@ -105,19 +164,16 @@ class medToolBoxBodyPrivate
 {
 public:
     int height;
-    int row;
-    int col;
-    QGridLayout *layout;
+
+    QVBoxLayout *layout;
 
     QTimeLine timeline;
 };
 
 medToolBoxBody::medToolBoxBody(QWidget *parent) : QFrame(parent), d(new medToolBoxBodyPrivate)
 {    
-    d->layout = new QGridLayout(this);
-
-    d->row = 0;
-    d->col = 0;
+    d->layout = new QVBoxLayout(this);
+    d->layout->setContentsMargins(0, 0, 0, 0);
 
     d->timeline.setDuration(500);
     d->timeline.setCurveShape(QTimeLine::EaseInOutCurve);
@@ -133,16 +189,11 @@ medToolBoxBody::~medToolBoxBody(void)
     d = NULL;
 }
 
-void medToolBoxBody::addWidget(QWidget *widget)
+void medToolBoxBody::setWidget(QWidget *widget)
 {
-    d->layout->addWidget(widget, d->row, d->col);
+    d->layout->addWidget(widget);
 
-    if (d->col >= 2) {
-        d->row++;
-        d->col = 0;
-    } else {
-        d->col++;
-    }
+    widget->setParent(this);
 }
 
 void medToolBoxBody::toggle(void)
@@ -173,7 +224,7 @@ void medToolBoxBody::collapse(void)
 
     setUpdatesEnabled(false);
     
-    d->height = d->layout->geometry().height();
+    d->height = this->height();
 
     int oldHeight = d->height;
     int newHeight = 0;
@@ -191,8 +242,6 @@ void medToolBoxBody::collapse(void)
 
 void medToolBoxBody::animate(int frame) 
 {
-    qDebug() << __func__;
-
     this->setFixedHeight(frame);
 }
 
@@ -232,9 +281,9 @@ medToolBox::~medToolBox(void)
     d = NULL;
 }
 
-void medToolBox::addWidget(QWidget *widget)
+void medToolBox::setWidget(QWidget *widget)
 {
-    d->body->addWidget(widget);
+    d->body->setWidget(widget);
 }
 
 void medToolBox::setTitle(const QString &title)
