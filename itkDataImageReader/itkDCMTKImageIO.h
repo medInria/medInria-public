@@ -37,7 +37,7 @@ namespace itk
     typedef std::map< std::string, std::vector< std::string > > StringMap;
 
     typedef MetaDataObject <std::string>                 MetaDataStringType;
-    typedef MetaDataObject < std::vector<std::string> >  MetaDataVectorStringType;
+    typedef MetaDataObject <std::vector<std::string> >   MetaDataVectorStringType;
 
     typedef MultiThreadedImageIOBase::RegionType         RegionType;
 

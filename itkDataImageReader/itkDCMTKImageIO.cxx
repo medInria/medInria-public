@@ -234,39 +234,98 @@ namespace itk
 
 
     m_Spacing[2] = 1.0;
-    
-    double sliceThickness = 1.0;
-    const StringVectorType &sliceThicknessVec = this->GetMetaDataValueVectorString ("(0018,0050)");
-    if( sliceThicknessVec.size() )
-    {
-      std::string sliceThicknessStr = sliceThicknessVec[0];
-      std::istringstream is_stream( sliceThicknessStr.c_str() );
-      if (!(is_stream>>sliceThickness))
-      {
-	itkWarningMacro ( << "Cannot convert string to double: " << sliceThicknessStr.c_str() << std::endl );
-      }
-      else
-      {
-	m_Spacing[2] = sliceThickness;
-      }
-    }
-    
-    double spacingBetweenSlices = 1.0;
-    const StringVectorType &spacingBetweenSlicesVec = this->GetMetaDataValueVectorString ("(0018,0088)");
-    if( spacingBetweenSlicesVec.size() )
-    {
-      std::string spacingBetweenSlicesStr = spacingBetweenSlicesVec[0];
-      std::istringstream is_stream( spacingBetweenSlicesStr.c_str() );
-      if (!(is_stream>>spacingBetweenSlices))
-      {
-	itkWarningMacro ( << "Cannot convert string to double: " << spacingBetweenSlicesStr.c_str() << std::endl );
-      }
-      else
-      {
-	m_Spacing[2] = spacingBetweenSlices;
-      }
-    }
 
+    const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
+
+    /**
+       Z-spacing is determined by the ImagePositionPatient flag. Compute the distance between
+       2 consecutive slices and project it onto the acquisition axis (normal of the ImageOrientation).
+       Average it over all slices, use a 10% margin to distinguish between volumes in case of 4D images.
+     */
+    if( imagePositions.size()>1 )
+    {
+      std::vector<double> gaps (imagePositions.size()-1, 0.0);
+
+      vnl_vector<double> normal (3);
+      normal[0] = m_Direction[0][2];
+      normal[1] = m_Direction[1][2];
+      normal[2] = m_Direction[2][2];
+    
+      for (unsigned int i=1; i<imagePositions.size(); i++)
+      {
+	std::istringstream is_stream1( imagePositions[i-1].c_str() );
+	vnl_vector<double> pos1 (3);
+	is_stream1 >> pos1[0];
+	is_stream1 >> pos1[1];
+	is_stream1 >> pos1[2];
+	
+	std::istringstream is_stream2( imagePositions[i].c_str() );
+	vnl_vector<double> pos2 (3);
+	is_stream2 >> pos2[0];
+	is_stream2 >> pos2[1];
+	is_stream2 >> pos2[2];
+	
+	vnl_vector<double> v21 = pos2-pos1;
+	
+	gaps[i-1] = fabs ( dot_product (normal, v21) );
+      }
+      double ref_gap = gaps[0];
+      double total_gap = ref_gap;
+      double min_gap = 0.9*ref_gap;
+      double max_gap = 1.1*ref_gap;
+      int gapCount = 1;
+      for(unsigned int i=1; i<gaps.size(); i++)
+      {
+	if (gaps[i]>=min_gap && gaps[i]<=max_gap)
+	{
+	  total_gap += gaps[i];
+	  ++gapCount;
+	}
+	else
+	{
+	  ; //itkWarningMacro (<< "Inconsistency in slice spacing: " << ref_gap << " " << gaps[i]);
+	}
+      }
+      m_Spacing[2] = total_gap/(double)(gapCount);
+    }
+    else // rely on the SpacingBetweenSlices tag
+    {
+      // never use sliceThickness as it has nothing to do with the z spacing
+      /*
+	double sliceThickness = 1.0;
+	const StringVectorType &sliceThicknessVec = this->GetMetaDataValueVectorString ("(0018,0050)");
+	if( sliceThicknessVec.size() )
+	{
+	std::string sliceThicknessStr = sliceThicknessVec[0];
+	std::istringstream is_stream( sliceThicknessStr.c_str() );
+	if (!(is_stream>>sliceThickness))
+	{
+	itkWarningMacro ( << "Cannot convert string to double: " << sliceThicknessStr.c_str() << std::endl );
+	}
+	else
+	{
+	m_Spacing[2] = sliceThickness;
+	}
+	}
+      */
+      
+      double spacingBetweenSlices = 1.0;
+      const StringVectorType &spacingBetweenSlicesVec = this->GetMetaDataValueVectorString ("(0018,0088)");
+      if( spacingBetweenSlicesVec.size() )
+      {
+	std::string spacingBetweenSlicesStr = spacingBetweenSlicesVec[0];
+	std::istringstream is_stream( spacingBetweenSlicesStr.c_str() );
+	if (!(is_stream>>spacingBetweenSlices))
+	{
+	  itkWarningMacro ( << "Cannot convert string to double: " << spacingBetweenSlicesStr.c_str() << std::endl );
+	}
+	else
+	{
+	  m_Spacing[2] = spacingBetweenSlices;
+	}
+      }
+    }
+    
     if (this->GetNumberOfDimensions()==4)
       m_Spacing[3] = 1.0; 
   }
@@ -367,16 +426,21 @@ namespace itk
     columnDirection[2] = orientation[5];
     
     vnl_vector<double> sliceDirection = vnl_cross_3d(rowDirection, columnDirection);
-    
-    m_Direction[0][0] = orientation[0];
-    m_Direction[0][1] = orientation[1];
-    m_Direction[0][2] = orientation[2];
-    m_Direction[1][0] = orientation[3];
-    m_Direction[1][1] = orientation[4];
-    m_Direction[1][2] = orientation[5];
-    m_Direction[2][0] = sliceDirection[0];
-    m_Direction[2][1] = sliceDirection[1];
-    m_Direction[2][2] = sliceDirection[2];
+
+    this->SetDirection (0, rowDirection);
+    this->SetDirection (1, columnDirection);
+    this->SetDirection (2, sliceDirection);
+    /*
+      m_Direction[0][0] = orientation[0];
+      m_Direction[0][1] = orientation[1];
+      m_Direction[0][2] = orientation[2];
+      m_Direction[1][0] = orientation[3];
+      m_Direction[1][1] = orientation[4];
+      m_Direction[1][2] = orientation[5];
+      m_Direction[2][0] = sliceDirection[0];
+      m_Direction[2][1] = sliceDirection[1];
+      m_Direction[2][2] = sliceDirection[2];
+    */
     
     if( this->GetNumberOfDimensions()==4 )
     {
@@ -585,10 +649,9 @@ namespace itk
     this->DetermineNumberOfPixelComponents();
     this->DeterminePixelType();
     this->DetermineDimensions();
-    this->DetermineSpacing();
     this->DetermineOrigin();
     this->DetermineOrientation();
-    
+    this->DetermineSpacing(); // always called after DetermineOrientation    
 
 
 
