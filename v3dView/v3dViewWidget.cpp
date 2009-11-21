@@ -24,11 +24,12 @@
 
 v3dViewWidget::v3dViewWidget(QWidget *parent) : QVTKWidget(parent)
 {
-
+    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 }
 
 v3dViewWidget::~v3dViewWidget(void)
 {
+
 }
 
 void v3dViewWidget::focusInEvent(QFocusEvent *event)
@@ -44,6 +45,7 @@ void v3dViewWidget::focusInEvent(QFocusEvent *event)
 void v3dViewWidget::focusOutEvent(QFocusEvent *event)
 {
     QVTKWidget::focusOutEvent(event);
+
     releaseKeyboard();
     
     event->ignore();

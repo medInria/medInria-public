@@ -153,13 +153,18 @@ v3dViewSwitcher::v3dViewSwitcher(void) : dtkAbstractView(), d(new v3dViewSwitche
 
     //d->widget = new v3dViewWidget;
     d->widget = new QWidget;
+    d->widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
     d->slider = new QSlider (Qt::Horizontal, d->widget);
+    d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+
     d->v3dWidget = new v3dViewWidget (d->widget);
+
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
-    layout->setContentsMargins (0, 0, 0, 0);
-    layout->setSpacing (0);
-    layout->addWidget (d->slider);
-    layout->addWidget (d->v3dWidget);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(d->slider);
+    layout->addWidget(d->v3dWidget);
     
     d->view3D->SetRenderWindow(d->v3dWidget->GetRenderWindow());
     d->view3D->SetRenderWindowInteractor(d->v3dWidget->GetRenderWindow()->GetInteractor());
@@ -170,8 +175,8 @@ v3dViewSwitcher::v3dViewSwitcher(void) : dtkAbstractView(), d(new v3dViewSwitche
     d->v3dWidget->GetRenderWindow()->AddRenderer(d->renderer2D);
 
     
-    d->view2D->AddChild ( d->view3D );
-    d->view3D->AddChild ( d->view2D );
+    d->view2D->AddChild(d->view3D);
+    d->view3D->AddChild(d->view2D);
 
     d->observer = v3dViewSwitcherObserver::New();
     d->observer->SetSlider ( d->slider );
@@ -238,6 +243,10 @@ v3dViewSwitcher::~v3dViewSwitcher(void)
     d->view3D->Delete();
     d->renderer3D->Delete();
     d->observer->Delete();
+
+    delete d;
+
+    d = NULL;
 }
 
 bool v3dViewSwitcher::registered(void)
