@@ -65,18 +65,18 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
             if(item->table() == "patient") {
                 emit patientDoubleClicked(item->value(0).toInt());
-		emit patientDoubleClicked(index);
+                emit patientDoubleClicked(index);
 	    }
             else if(item->table() == "study") {
                 emit studyDoubleClicked(item->value(0).toInt());
-		emit studyDoubleClicked(index);
+                emit studyDoubleClicked(index);
 	    }
             else if(item->table() == "series") {
                 emit seriesDoubleClicked(item->value(0).toInt());
-		emit seriesDoubleClicked(index);
+                emit seriesDoubleClicked(index);
 	    }
 	    else {
                 emit imageDoubleClicked(item->value(0).toInt());
-		emit imageDoubleClicked(index);
+                emit imageDoubleClicked(index);
 	    }
 }

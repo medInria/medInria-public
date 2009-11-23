@@ -24,124 +24,108 @@
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
+#include <medSql/medDatabasePreview.h>
 
-#include <medGui/medImagePreview.h>
-#include <medGui/medPatientPreview.h>
-#include <medGui/medStudyPreview.h>
-#include <medGui/medSeriesPreview.h>
+//#include <medGui/medImagePreview.h>
+//#include <medGui/medPatientPreview.h>
+//#include <medGui/medStudyPreview.h>
+//#include <medGui/medSeriesPreview.h>
+
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
 
-// /////////////////////////////////////////////////////////////////
-// medBrowserAreaPreview
-// /////////////////////////////////////////////////////////////////
-
-class medBrowserAreaPreviewPrivate
-{
-public:
-    QStackedWidget *stack;
-
-    medPatientPreview *patient_preview;
-    medStudyPreview *study_preview;
-    medSeriesPreview *series_preview;
-    medImagePreview *image_preview;
-};
-
-medBrowserAreaPreview::medBrowserAreaPreview(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPreviewPrivate)
-{
-    d->patient_preview = new medPatientPreview(this);
-    d->study_preview = new medStudyPreview(this);
-    d->series_preview = new medSeriesPreview(this);
-    d->image_preview = new medImagePreview(this);
-
-    d->stack = new QStackedWidget(this);
-    d->stack->addWidget(d->patient_preview);
-    d->stack->addWidget(d->study_preview);
-    d->stack->addWidget(d->series_preview);
-    d->stack->addWidget(d->image_preview);
-
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(d->stack);
-
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
-}
-
-medBrowserAreaPreview::~medBrowserAreaPreview(void)
-{
-    delete d->patient_preview;
-    delete d->study_preview;
-    delete d->series_preview;
-    delete d->image_preview;
-    delete d->stack;
-    delete d;
-
-    d = NULL;
-}
-
-QSize medBrowserAreaPreview::sizeHint(void) const
-{
-    return d->patient_preview->sizeHint();
-}
-
-void medBrowserAreaPreview::onPatientClicked(int id)
-{
-    d->patient_preview->setup(id);
-    
-    d->stack->setCurrentWidget(d->patient_preview);
-}
-
-void medBrowserAreaPreview::onStudyClicked(int id)
-{
-    d->study_preview->setup(id);
-
-    d->stack->setCurrentWidget(d->study_preview);
-}
-
-void medBrowserAreaPreview::onSeriesClicked(int id)
-{
-    d->stack->setCurrentWidget(d->series_preview);
-}
-
-void medBrowserAreaPreview::onImageClicked(int id)
-{
-    d->stack->setCurrentWidget(d->image_preview);
-}
+//// /////////////////////////////////////////////////////////////////
+//// medBrowserAreaPreview
+//// /////////////////////////////////////////////////////////////////
+//
+//class medBrowserAreaPreviewPrivate
+//{
+//public:
+//    QStackedWidget *stack;
+//
+//    medPatientPreview *patient_preview;
+//    medStudyPreview *study_preview;
+//    medSeriesPreview *series_preview;
+//    medImagePreview *image_preview;
+//};
+//
+//medBrowserAreaPreview::medBrowserAreaPreview(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPreviewPrivate)
+//{
+//    d->patient_preview = new medPatientPreview(this);
+//    d->study_preview = new medStudyPreview(this);
+//    d->series_preview = new medSeriesPreview(this);
+//    d->image_preview = new medImagePreview(this);
+//
+//    d->stack = new QStackedWidget(this);
+//    d->stack->addWidget(d->patient_preview);
+//    d->stack->addWidget(d->study_preview);
+//    d->stack->addWidget(d->series_preview);
+//    d->stack->addWidget(d->image_preview);
+//
+//    QVBoxLayout *layout = new QVBoxLayout(this);
+//    layout->setContentsMargins(0, 0, 0, 0);
+//    layout->setSpacing(0);
+//    layout->addWidget(d->stack);
+//
+//    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
+//}
+//
+//medBrowserAreaPreview::~medBrowserAreaPreview(void)
+//{
+//    delete d->patient_preview;
+//    delete d->study_preview;
+//    delete d->series_preview;
+//    delete d->image_preview;
+//    delete d->stack;
+//    delete d;
+//
+//    d = NULL;
+//}
+//
+//QSize medBrowserAreaPreview::sizeHint(void) const
+//{
+//    return d->patient_preview->sizeHint();
+//}
+//
+//void medBrowserAreaPreview::onPatientClicked(int id)
+//{
+//    d->patient_preview->setup(id);
+//
+//    d->stack->setCurrentWidget(d->patient_preview);
+//}
+//
+//void medBrowserAreaPreview::onStudyClicked(int id)
+//{
+//    d->study_preview->setup(id);
+//
+//    d->stack->setCurrentWidget(d->study_preview);
+//}
+//
+//void medBrowserAreaPreview::onSeriesClicked(int id)
+//{
+//    d->stack->setCurrentWidget(d->series_preview);
+//}
+//
+//void medBrowserAreaPreview::onImageClicked(int id)
+//{
+//    d->stack->setCurrentWidget(d->image_preview);
+//}
 
 // /////////////////////////////////////////////////////////////////
 // medBrowserArea
 // /////////////////////////////////////////////////////////////////
-
-//class medTabBar : public QTabBar
-//{
-//public:
-//    medTabBar(QWidget *parent) : QTabBar(parent)
-//    {
-//        this->setDrawBase(true);
-//    }
-//
-////    void paintEvent(QPaintEvent *event)
-////    {
-////        QPainter painter(this);
-////        painter.fillRect(event->rect(), Qt::green);
-////        painter.end();
-////
-//////        QTabBar::paintEvent(event);
-////    }
-//};
 
 class medBrowserAreaPrivate
 {
 public:
     medToolBoxContainer *toolbox_container;
 
-    medBrowserAreaPreview *preview;
+    medDatabasePreview *preview;
     medDatabaseModel *model;
     medDatabaseView *view;
 
     QTreeView *filesystem_view;
-    QDirModel *filesystem_model;
+    QFileSystemModel *filesystem_model;
 
     QProgressBar *progress;
     QStatusBar *status;
@@ -149,7 +133,7 @@ public:
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
 {
-    d->preview = new medBrowserAreaPreview(this);
+    d->preview = new medDatabasePreview(this);
 
     d->model = new medDatabaseModel;
 
@@ -171,7 +155,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Filesystem widget ///////////////////////////////////////////////
 
-    d->filesystem_model = new QDirModel;
+    d->filesystem_model = new QFileSystemModel;
+    d->filesystem_model->setRootPath(QDir::rootPath());
 
     d->filesystem_view = new QTreeView(this);
     d->filesystem_view->setFrameStyle(QFrame::NoFrame);
@@ -180,7 +165,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->filesystem_view->setAlternatingRowColors(true);
     d->filesystem_view->setSortingEnabled(true);
     d->filesystem_view->setModel(d->filesystem_model);
-    d->filesystem_view->setRootIndex(d->filesystem_model->index(QDir::homePath()));
+    d->filesystem_view->setCurrentIndex(d->filesystem_model->index(QDir::homePath()));
+    d->filesystem_view->setExpanded(d->filesystem_view->currentIndex(), true);
+    d->filesystem_view->header()->setResizeMode(QHeaderView::Stretch);
 
     // Pacs widget ///////////////////////////////////////////////
 
@@ -232,15 +219,28 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     sourceSelectorToolBox->setTitle("Source selector");
     sourceSelectorToolBox->setWidget(tab);
 
+    // Information ///////////////////////////////////////////////
+
+    medToolBox *informationToolBox = new medToolBox(this);
+    informationToolBox->setTitle("Information");
+    informationToolBox->setWidget(new QLabel("Choose an item ...", this));
+
+    // Toolbox container /////////////////////////////////////////////
+
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(sourceSelectorToolBox);
+    d->toolbox_container->addToolBox(informationToolBox);
+
+    // Layout /////////////////////////////////////////////
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(d->toolbox_container);
     layout->addWidget(stack);
+
+    // Toolbox container /////////////////////////////////////////////
 
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));

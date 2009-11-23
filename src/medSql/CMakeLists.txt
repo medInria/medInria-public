@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Fri Sep 25 11:51:59 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Oct 21 14:40:57 2009 (+0200)
+## Last-Updated: Mon Nov 23 09:42:03 2009 (+0100)
 ##           By: Julien Wintz
-##     Update #: 20
+##     Update #: 22
 ######################################################################
 ## 
 ### Commentary: 
@@ -34,12 +34,31 @@ set(${PROJECT_NAME}_HEADERS
   medDatabaseController.h
   medDatabaseItem.h
   medDatabaseModel.h
+  medDatabasePreview.h
+  medDatabasePreviewArrow.h
+  medDatabasePreviewController.h
+  medDatabasePreviewItem.h
+  medDatabasePreviewItemGroup.h
+  medDatabasePreviewItemLoader.h
+  medDatabasePreviewScene.h
+  medDatabasePreviewSelector.h
+  medDatabasePreviewTooltip.h
+  medDatabasePreviewView.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseController.h
   medDatabaseModel.h
   medDatabaseView.h
+  medDatabasePreview.h
+  medDatabasePreviewArrow.h
+  medDatabasePreviewController.h
+  medDatabasePreviewItem.h
+  medDatabasePreviewItemGroup.h
+  medDatabasePreviewItemLoader.h
+  medDatabasePreviewSelector.h
+  medDatabasePreviewTooltip.h
+  medDatabasePreviewView.h
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -47,6 +66,16 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseItem.cpp
   medDatabaseModel.cpp
   medDatabaseView.cpp
+  medDatabasePreview.cpp
+  medDatabasePreviewArrow.cpp
+  medDatabasePreviewController.cpp
+  medDatabasePreviewItem.cpp
+  medDatabasePreviewItemGroup.cpp
+  medDatabasePreviewItemLoader.cpp
+  medDatabasePreviewScene.cpp
+  medDatabasePreviewSelector.cpp
+  medDatabasePreviewTooltip.cpp
+  medDatabasePreviewView.cpp
 )
 
 ## #################################################################

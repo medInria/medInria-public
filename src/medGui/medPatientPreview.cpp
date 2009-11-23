@@ -1,4 +1,4 @@
-/* medPatientPreview.cpp --- 
+    /* medPatientPreview.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.

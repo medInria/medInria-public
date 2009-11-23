@@ -526,22 +526,6 @@ medMainWindow {
 }
 
 /**
- * medPatientPreview
- * medStudyPreview
- * medSeriesPreview
- * medImagePreview
- *
- */
-
-medPatientPreview, medStudyPreview, medSeriesPreview, medImagePreview {
-    border-image: url(:/pixmaps/frame.png) 16 16 26 16 repeat-x;
-    border-left-width: 16px;
-    border-right-width: 16px;
-    border-top-width: 16px;
-    border-bottom-width: 26px;
-}
-
-/**
  * medToolBoxHeader
  *
  */
