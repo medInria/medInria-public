@@ -339,8 +339,12 @@ void medDatabaseController::import(const QString& file)
 	  //patientPath = this->dataLocation() + "/" + QString().setNum (id.toInt());
 	}
 	else {
-	  query.prepare("INSERT INTO patient (name) VALUES (:name)");
+            query.prepare("INSERT INTO patient (name, thumbnail) VALUES (:name, :thumbnail)");
 	  query.bindValue(":name", patientName);
+          if (thumbPaths.count())
+              query.bindValue(":thumbnail", thumbPaths[ thumbPaths.count()/2 ] );
+          else
+              query.bindValue(":thumbnail", "");
 	  query.exec(); id = query.lastInsertId();
 	  
 	  //patientPath = this->dataLocation() + "/" + QString().setNum (id.toInt());
@@ -364,9 +368,13 @@ void medDatabaseController::import(const QString& file)
 	  //studyPath = patientPath + "/" + QString().setNum (id.toInt());
 	}
 	else {
-	  query.prepare("INSERT INTO study (patient, name) VALUES (:patient, :study)");
+            query.prepare("INSERT INTO study (patient, name, thumbnail) VALUES (:patient, :study, :thumbnail)");
 	  query.bindValue(":patient", id);
 	  query.bindValue(":study", studyName);
+          if (thumbPaths.count())
+              query.bindValue(":thumbnail", thumbPaths[ thumbPaths.count()/2 ] );
+          else
+              query.bindValue(":thumbnail", "");
 	  query.exec(); id = query.lastInsertId();
 	  
 	  //studyPath = patientPath + "/" + QString().setNum (id.toInt());
@@ -466,7 +474,8 @@ void medDatabaseController::createPatientTable(void)
     query.exec(
 	"CREATE TABLE patient ("
 	" id       INTEGER PRIMARY KEY,"
-	" name        TEXT"
+        " name        TEXT,"
+        " thumbnail   TEXT"
 	");"
     );
 }
@@ -479,7 +488,8 @@ void medDatabaseController::createStudyTable(void)
 	"CREATE TABLE study ("
 	" id        INTEGER      PRIMARY KEY,"
         " patient   INTEGER," // FOREIGN KEY
-	" name         TEXT"
+        " name         TEXT,"
+        " thumbnail    TEXT"
 	");"
     );
 }
@@ -494,7 +504,7 @@ void medDatabaseController::createSeriesTable(void)
 	" size     INTEGER,"
 	" name        TEXT,"
         " path        TEXT,"
-	" thumbnail TEXT"
+        " thumbnail   TEXT"
 	");"
     );
 }
@@ -504,14 +514,14 @@ void medDatabaseController::createImageTable(void)
     QSqlQuery query(*(this->database()));
     query.exec(
 	"CREATE TABLE image ("
-	" id       INTEGER      PRIMARY KEY,"
-        " series   INTEGER," // FOREIGN KEY
-	" size     INTEGER,"
-	" name        TEXT,"
-        " path        TEXT,"
+        " id         INTEGER      PRIMARY KEY,"
+        " series     INTEGER," // FOREIGN KEY
+        " size       INTEGER,"
+        " name          TEXT,"
+        " path          TEXT,"
 	" instance_path TEXT,"
-	" thumbnail TEXT,"
-        " slice    INTEGER "	
+        " thumbnail     TEXT,"
+        " slice      INTEGER "
 	");"
     );
 }
