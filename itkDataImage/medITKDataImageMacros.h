@@ -127,8 +127,8 @@
     ImageType::SizeType newSize = size;					\
     newSize[0] = 128;							\
     newSize[1] = 128;							\
-    unsigned int sfactor[ImageType::GetImageDimension()];		\
-    double variance[ImageType::GetImageDimension()];			\
+    unsigned int *sfactor = new unsigned int[ImageType::GetImageDimension()];		\
+    double *variance = new double[ImageType::GetImageDimension()];			\
     for (unsigned int i=0; i<ImageType::GetImageDimension(); i++)	\
     {									\
       sfactor[i] = size[i]/newSize[i];					\
@@ -153,6 +153,8 @@
       return d->thumbnails;						\
     }									\
     image = filter->GetOutput();					\
+	delete [] sfactor; \
+	delete [] variance; \
   }									\
   double imMin = 0.0;							\
   double imMax = 0.0;							\
@@ -370,7 +372,7 @@
     ImageType::SizeType newSize = size;					\
     newSize[0] = 128;							\
     newSize[1] = 128;							\
-    unsigned int sfactor[ImageType::GetImageDimension()];		\
+    unsigned int *sfactor = new unsigned int [ImageType::GetImageDimension()];		\
     for (unsigned int i=0; i<ImageType::GetImageDimension(); i++)	\
       sfactor[i] = size[i]/newSize[i];					\
     typedef itk::ShrinkImageFilter<ImageType, ImageType> FilterType;	\
@@ -387,6 +389,7 @@
       return d->thumbnails;						\
     }									\
     image = filter->GetOutput();					\
+	delete [] sfactor; \
   }									\
   ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize(); \
   itk::ImageRegionIterator<ImageType> it (image, image->GetLargestPossibleRegion()); \
