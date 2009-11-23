@@ -48,7 +48,7 @@ protected:
 
 class medToolBoxTabPrivate;
 
-class medToolBoxTab : public QTabWidget
+class MEDGUI_EXPORT medToolBoxTab : public QTabWidget
 {
     Q_OBJECT
 

@@ -20,9 +20,11 @@
 #ifndef MEDWORKSPACESWITCHER_H
 #define MEDWORKSPACESWITCHER_H
 
+#include "medGuiExport.h"
+
 #include <QtGui>
 
-class medWorkspaceSwitcherItem : public QObject, public QGraphicsItem
+class MEDGUI_EXPORT medWorkspaceSwitcherItem : public QObject, public QGraphicsItem
 {
     Q_OBJECT
 
@@ -56,7 +58,7 @@ private:
 
 //////////////////////////////////////////////////////////////
 
-class medWorkspaceSwitcherScene : public QGraphicsScene
+class MEDGUI_EXPORT medWorkspaceSwitcherScene : public QGraphicsScene
 {
 public:
      medWorkspaceSwitcherScene(void);
@@ -67,7 +69,7 @@ public:
 
 class medWorkspaceSwitcherViewPrivate;
 
-class medWorkspaceSwitcherView : public QGraphicsView
+class MEDGUI_EXPORT medWorkspaceSwitcherView : public QGraphicsView
 {
     Q_OBJECT
 
@@ -84,7 +86,7 @@ private:
 
 //////////////////////////////////////////////////////////////
 
-class medWorkspaceSwitcher : public QWidget
+class MEDGUI_EXPORT medWorkspaceSwitcher : public QWidget
 {
     Q_OBJECT
 
