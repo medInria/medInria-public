@@ -30,7 +30,6 @@
 
 #include <medGui/medClutEditor.h>
 #include <medGui/medLayoutChooser.h>
-#include <medGui/medStyle.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medViewContainer.h>
