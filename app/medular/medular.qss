@@ -516,6 +516,21 @@ QFrame #medToolBoxContainer {
     background: #313131;
 }
 
+/*
+ * medNavigatorContainer
+ *
+ */
+
+QFrame #medNavigatorContainer {
+    border-image: url(:/pixmaps/frame.png) 16 16 26 16 repeat-x;
+    border-left-width: 16px;
+    border-right-width: 0px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    color: #b2b8b2;
+    font-size: 9px;
+}
+
 /**
  * medMainWindow
  *

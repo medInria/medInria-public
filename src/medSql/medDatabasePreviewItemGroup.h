@@ -18,8 +18,9 @@ public:
      medDatabasePreviewItemGroup(QGraphicsItem *parent = 0);
     ~medDatabasePreviewItemGroup(void);
 
-public:
     void addItem(medDatabasePreviewItem *item);
+
+    void clear(void);
 
 public:
     QRectF boundingRect(void) const;

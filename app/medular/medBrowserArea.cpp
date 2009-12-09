@@ -21,6 +21,9 @@
 
 #include <QtGui>
 
+#include <dtkGui/dtkSearchBar.h>
+#include <dtkGui/dtkSearchBox.h>
+
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
@@ -36,6 +39,10 @@
 class medBrowserAreaPrivate
 {
 public:
+    dtkSearchBar *db_search_bar;
+    dtkSearchBar *fs_search_bar;
+    dtkSearchBar *pc_search_bar;
+
     medToolBoxContainer *toolbox_container;
 
     medDatabasePreview *preview;
@@ -137,18 +144,42 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     sourceSelectorToolBox->setTitle("Source selector");
     sourceSelectorToolBox->setWidget(tab);
 
-    // Information ///////////////////////////////////////////////
+    // Search ///////////////////////////////////////////////
 
-    medToolBox *informationToolBox = new medToolBox(this);
-    informationToolBox->setTitle("Information");
-    informationToolBox->setWidget(new QLabel("Choose an item ...", this));
+    medToolBoxStack *search_stack = new medToolBoxStack(this);
+
+    d->db_search_bar = new dtkSearchBar(search_stack);
+    d->db_search_bar->addKey("id");
+    d->db_search_bar->addKey("name");
+    d->db_search_bar->setDefaultKey("id");
+    d->db_search_bar->setModel(d->model);
+    d->db_search_bar->setView(d->view);
+
+    d->fs_search_bar = new dtkSearchBar(search_stack);
+    d->fs_search_bar->addKey("name");
+    d->fs_search_bar->addKey("size");
+    d->fs_search_bar->addKey("kind");
+    d->fs_search_bar->addKey("date");
+    d->fs_search_bar->setDefaultKey("name");
+    d->fs_search_bar->setModel(d->filesystem_model);
+    d->fs_search_bar->setView(d->filesystem_view);
+
+    search_stack->addWidget(d->db_search_bar);
+    search_stack->addWidget(d->fs_search_bar);
+    search_stack->setCurrentWidget(d->db_search_bar);
+
+    medToolBox *searchToolBox = new medToolBox(this);
+    searchToolBox->setTitle("Search");
+    searchToolBox->setWidget(search_stack);
+
+    connect(tab, SIGNAL(currentChanged(int)), search_stack, SLOT(setCurrentIndex(int)));
 
     // Toolbox container /////////////////////////////////////////////
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(sourceSelectorToolBox);
-    d->toolbox_container->addToolBox(informationToolBox);
+    d->toolbox_container->addToolBox(searchToolBox);
 
     // Layout /////////////////////////////////////////////
 

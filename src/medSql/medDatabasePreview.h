@@ -15,12 +15,7 @@ public:
      medDatabasePreview(QWidget *parent = 0);
     ~medDatabasePreview(void);
 
-    void setup(const QDir& dir);
-
-    void setSelectionModel(QItemSelectionModel *model);
-
-signals:
-    void currentChanged(QModelIndex current, QItemSelectionModel::SelectionFlags);
+    void reset(void);
 
 public slots:
     void onPatientClicked(int id);
@@ -39,13 +34,6 @@ protected slots:
     void onMoveBg(void);
 
     void onHovered(medDatabasePreviewItem *item);
-
-    void onCurrentChanged(QModelIndex index);
-
-protected:
-    medDatabasePreviewItem *setupPatient(const QDir& dir);
-    medDatabasePreviewItem *setupStudy(const QDir& dir);
-    medDatabasePreviewItem *setupSeries(const QDir& dir);
 
 private:
     medDatabasePreviewPrivate *d;

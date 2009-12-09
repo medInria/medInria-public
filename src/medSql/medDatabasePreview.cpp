@@ -163,70 +163,8 @@ medDatabasePreview::~medDatabasePreview(void)
     d = NULL;
 }
 
-void medDatabasePreview::setup(const QDir& dir)
+void medDatabasePreview::reset(void)
 {
-    medDatabasePreviewItemGroup *group = new medDatabasePreviewItemGroup;
-
-    foreach(QString path, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
-        group->addItem(setupPatient(QDir(dir.absoluteFilePath(path))));
-
-    d->scene->addGroup(group);
-
-    d->patient_group = group;
-}
-
-void medDatabasePreview::setSelectionModel(QItemSelectionModel *model)
-{
-    connect(model, SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(onCurrentChanged(QModelIndex)));
-    connect(this, SIGNAL(currentChanged(QModelIndex, QItemSelectionModel::SelectionFlags)), model, SLOT(setCurrentIndex(QModelIndex, QItemSelectionModel::SelectionFlags)));
-}
-
-medDatabasePreviewItem *medDatabasePreview::setupPatient(const QDir& dir)
-{
-    medDatabasePreviewItemGroup *group = new medDatabasePreviewItemGroup;
-
-    foreach(QString path, dir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot))
-        group->addItem(setupStudy(QDir(dir.absoluteFilePath(path))));
-
-    d->scene->addGroup(group);
-
-    d->study_group = group;
-
-    return dynamic_cast<medDatabasePreviewItem *>(((QGraphicsItem *)group)->children().first())->clone();
-}
-
-medDatabasePreviewItem *medDatabasePreview::setupStudy(const QDir& dir)
-{
-    medDatabasePreviewItemGroup *group = new medDatabasePreviewItemGroup;
-
-    foreach(QString path, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
-        group->addItem(setupSeries(QDir(dir.absoluteFilePath(path))));
-
-    d->scene->addGroup(group);
-
-    d->series_group = group;
-
-    return dynamic_cast<medDatabasePreviewItem *>(((QGraphicsItem *)group)->children().first())->clone();
-}
-
-medDatabasePreviewItem *medDatabasePreview::setupSeries(const QDir& dir)
-{
-    medDatabasePreviewItemGroup *group = new medDatabasePreviewItemGroup;
-
-    foreach(QString path, dir.entryList(QDir::Files | QDir::NoDotAndDotDot))
-        group->addItem(new medDatabasePreviewItem(dir.absoluteFilePath(path)));
-
-    d->scene->addGroup(group);
-
-    d->image_group = group;
-
-    return dynamic_cast<medDatabasePreviewItem *>(((QGraphicsItem *)group)->children().first())->clone();
-}
-
-void medDatabasePreview::onPatientClicked(int patientId)
-{
-    // Clear preview state
-
     d->scene->reset();
 
     d->level = 0;
@@ -236,27 +174,22 @@ void medDatabasePreview::onPatientClicked(int patientId)
         d->animation = NULL;
     }
 
-    if (d->patient_animation) {
-//        delete d->patient_animation;
+    if (d->patient_animation)
         d->patient_animation = NULL;
-    }
 
-    if (d->study_animation) {
-//        delete d->study_animation;
+    if (d->study_animation)
         d->study_animation = NULL;
-    }
 
-    if (d->series_animation) {
-//        delete d->series_animation;
+    if (d->series_animation)
         d->series_animation = NULL;
-    }
 
-    if (d->image_animation) {
-//        delete d->image_animation;
+    if (d->image_animation)
         d->image_animation = NULL;
-    }
+}
 
-    // Database query
+void medDatabasePreview::onPatientClicked(int patientId)
+{
+    this->reset();
 
     QSqlQuery query(*(medDatabaseController::instance()->database())); QVariant id;
 
@@ -882,9 +815,4 @@ void medDatabasePreview::onHovered(medDatabasePreviewItem *item)
 //        return;
 
     d->selector_animation->start();
-}
-
-void medDatabasePreview::onCurrentChanged(QModelIndex index)
-{
-    qDebug() << __func__ << index;
 }

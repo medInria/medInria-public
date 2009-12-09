@@ -21,6 +21,28 @@
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseItem.h>
 
+medDatabaseModel *deproxy(QAbstractItemModel *model)
+{
+    if(QAbstractProxyModel *proxy = dynamic_cast<QAbstractProxyModel *>(model)) {
+        return deproxy(proxy->sourceModel());
+    } else if(medDatabaseModel *db = dynamic_cast<medDatabaseModel *>(model)) {
+        return db;
+    } else {
+        return NULL;
+    }
+}
+
+medDatabaseItem *deproxy(QAbstractItemModel *model, QModelIndex index)
+{
+    if(QAbstractProxyModel *proxy = dynamic_cast<QAbstractProxyModel *>(model)) {
+        return deproxy(proxy->sourceModel(), proxy->mapToSource(index));
+    } else if(medDatabaseModel *db = dynamic_cast<medDatabaseModel *>(model)) {
+        return static_cast<medDatabaseItem *>(index.internalPointer());
+    } else {
+        return NULL;
+    }
+}
+
 medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
 {
     this->setAcceptDrops(true);
@@ -47,36 +69,38 @@ void medDatabaseView::setModel(medDatabaseModel *model)
 
 void medDatabaseView::onItemClicked(const QModelIndex& index)
 {
-    if(qobject_cast<medDatabaseModel *>(this->model()))
-        if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
-            if(item->table() == "patient")
-                emit patientClicked(item->value(0).toInt());
-            else if(item->table() == "study")
-                emit studyClicked(item->value(0).toInt());
-            else if(item->table() == "series")
-                emit seriesClicked(item->value(0).toInt());
-            else
-                emit imageClicked(item->value(0).toInt());
+    medDatabaseItem *item = deproxy(this->model(), index);
+
+    if(item)
+        if(item->table() == "patient")
+            emit patientClicked(item->value(0).toInt());
+        else if(item->table() == "study")
+            emit studyClicked(item->value(0).toInt());
+        else if(item->table() == "series")
+            emit seriesClicked(item->value(0).toInt());
+        else
+            emit imageClicked(item->value(0).toInt());
 }
 
 void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 {
-    if(qobject_cast<medDatabaseModel *>(this->model()))
-        if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
-            if(item->table() == "patient") {
-                emit patientDoubleClicked(item->value(0).toInt());
-                emit patientDoubleClicked(index);
-	    }
-            else if(item->table() == "study") {
-                emit studyDoubleClicked(item->value(0).toInt());
-                emit studyDoubleClicked(index);
-	    }
-            else if(item->table() == "series") {
-                emit seriesDoubleClicked(item->value(0).toInt());
-                emit seriesDoubleClicked(index);
-	    }
-	    else {
-                emit imageDoubleClicked(item->value(0).toInt());
-                emit imageDoubleClicked(index);
-	    }
+    medDatabaseItem *item = deproxy(this->model(), index);
+
+    if(item)
+        if(item->table() == "patient") {
+            emit patientDoubleClicked(item->value(0).toInt());
+            emit patientDoubleClicked(index);
+        }
+        else if(item->table() == "study") {
+            emit studyDoubleClicked(item->value(0).toInt());
+            emit studyDoubleClicked(index);
+        }
+        else if(item->table() == "series") {
+            emit seriesDoubleClicked(item->value(0).toInt());
+            emit seriesDoubleClicked(index);
+        }
+        else {
+            emit imageDoubleClicked(item->value(0).toInt());
+            emit imageDoubleClicked(index);
+        }
 }
