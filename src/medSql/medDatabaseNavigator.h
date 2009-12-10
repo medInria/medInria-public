@@ -4,10 +4,12 @@
 #include <QtCore>
 #include <QtGui>
 
+#include "medSqlExport.h"
+
 class medDatabaseNavigatorItem;
 class medDatabaseNavigatorPrivate;
 
-class medDatabaseNavigator : public QFrame
+class MEDSQL_EXPORT medDatabaseNavigator : public QFrame
 {
     Q_OBJECT
 

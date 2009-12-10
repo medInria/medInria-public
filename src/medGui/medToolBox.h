@@ -48,7 +48,7 @@ protected:
 
 class medToolBoxStackPrivate;
 
-class medToolBoxStack : public QStackedWidget
+class MEDGUI_EXPORT medToolBoxStack : public QStackedWidget
 {
     Q_OBJECT
 

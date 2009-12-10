@@ -294,17 +294,23 @@ void medDatabasePreview::onPatientClicked(int patientId)
 
 void medDatabasePreview::onStudyClicked(int id)
 {
+#ifndef WIN32
     qDebug() << __func__ << id;
+#endif
 }
 
 void medDatabasePreview::onSeriesClicked(int id)
 {
+#ifndef WIN32
     qDebug() << __func__ << id;
+#endif
 }
 
 void medDatabasePreview::onImageClicked(int id)
 {
+#ifndef WIN32
     qDebug() << __func__ << id;
+#endif
 }
 
 void medDatabasePreview::onSlideUp(void)
