@@ -43,6 +43,29 @@ protected:
 };
 
 ///////////////////////////////////////////////////////////////////
+// medToolBoxStack
+///////////////////////////////////////////////////////////////////
+
+class medToolBoxStackPrivate;
+
+class medToolBoxStack : public QStackedWidget
+{
+    Q_OBJECT
+
+    Q_PROPERTY(int height READ height WRITE setFixedHeight)
+
+public:
+     medToolBoxStack(QWidget *parent = 0);
+    ~medToolBoxStack(void);
+
+public slots:
+    void onCurrentChanged(int index);
+
+private:
+    medToolBoxStackPrivate *d;
+};
+
+///////////////////////////////////////////////////////////////////
 // medToolBoxTab
 ///////////////////////////////////////////////////////////////////
 
@@ -55,7 +78,7 @@ class MEDGUI_EXPORT medToolBoxTab : public QTabWidget
     Q_PROPERTY(int height READ height WRITE setFixedHeight)
 
 public:
-     medToolBoxTab(QWidget *parent);
+     medToolBoxTab(QWidget *parent = 0);
     ~medToolBoxTab(void);
 
 public slots:

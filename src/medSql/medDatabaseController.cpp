@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 15:44:02 2009 (+0200)
+ * Last-Updated: Wed Dec  2 14:42:23 2009 (+0100)
  *           By: Julien Wintz
- *     Update #: 111
+ *     Update #: 112
  */
 
 /* Commentary: 
@@ -73,8 +73,6 @@ QString medDatabaseController::dataLocation(void) const
     .remove(QCoreApplication::applicationName())
     .append(QCoreApplication::applicationName());
 #else
-    //qDebug() <<  QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-
     return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
 }
@@ -126,6 +124,9 @@ void medDatabaseController::import(const QString& file)
         for (int i=0; i<readers.size(); i++) {            
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
             if (dataReader->canRead( fileInfo.filePath() )) {
+
+                qDebug() << "Read using" << dataReader->description();
+
                 dataReader->readInformation( fileInfo.filePath() );
                 dtkdata = dataReader->data();
                 delete dataReader;

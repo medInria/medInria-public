@@ -36,6 +36,14 @@ void medDatabasePreviewItemGroup::addItem(medDatabasePreviewItem *item)
     d->item_count++;
 }
 
+void medDatabasePreviewItemGroup::clear(void)
+{
+    foreach(QGraphicsItem *item, this->childItems())
+        delete item;
+
+    d->item_count = 0;
+}
+
 QRectF medDatabasePreviewItemGroup::boundingRect(void) const
 {
     qreal item_width   = medDatabasePreviewController::instance()->itemWidth();

@@ -22,32 +22,6 @@
 
 #include <QtGui>
 
-//// /////////////////////////////////////////////////////////////////
-//// medBrowserAreaPreview
-//// /////////////////////////////////////////////////////////////////
-//
-//class medBrowserAreaPreviewPrivate;
-//
-//class medBrowserAreaPreview : public QWidget
-//{
-//    Q_OBJECT
-//
-//public:
-//     medBrowserAreaPreview(QWidget *parent = 0);
-//    ~medBrowserAreaPreview(void);
-//
-//    QSize sizeHint(void) const;
-//
-//public slots:
-//    void onPatientClicked(int id);
-//    void onStudyClicked(int id);
-//    void onSeriesClicked(int id);
-//    void onImageClicked(int id);
-//
-//private:
-//    medBrowserAreaPreviewPrivate *d;
-//};
-
 // /////////////////////////////////////////////////////////////////
 // medBrowserArea
 // /////////////////////////////////////////////////////////////////

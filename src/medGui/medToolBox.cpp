@@ -17,7 +17,6 @@
  * 
  */
 
-#include "medStyle.h"
 #include "medToolBox.h"
 
 // /////////////////////////////////////////////////////////////////
@@ -52,6 +51,48 @@ void medToolBoxControl::paintEvent(QPaintEvent *event)
     painter.setBrush(QColor(0x49, 0x49, 0x49));
     painter.drawEllipse(event->rect().adjusted(4, 4, -4, -4));
     painter.end();
+}
+
+// /////////////////////////////////////////////////////////////////
+// medToolBoxStack
+// /////////////////////////////////////////////////////////////////
+
+class medToolBoxStackPrivate
+{
+public:
+    QPropertyAnimation *height_animation;
+};
+
+medToolBoxStack::medToolBoxStack(QWidget *parent) : QStackedWidget(parent), d(new medToolBoxStackPrivate)
+{
+    d->height_animation = new QPropertyAnimation(this, "height");
+
+    connect(this, SIGNAL(currentChanged(int)), this, SLOT(onCurrentChanged(int)));
+}
+
+medToolBoxStack::~medToolBoxStack(void)
+{
+    delete d;
+
+    d = NULL;
+}
+
+void medToolBoxStack::onCurrentChanged(int index)
+{
+    static int old_height = 0;
+    static int new_height = 0;
+
+    new_height = this->widget(index)->sizeHint().height() + 33 + 1;
+
+    if(old_height) {
+//        qDebug() << old_height;
+//        qDebug() << new_height;
+        d->height_animation->setStartValue(old_height);
+        d->height_animation->setEndValue(new_height);
+        d->height_animation->start();
+    }
+
+    old_height = new_height;
 }
 
 // /////////////////////////////////////////////////////////////////
