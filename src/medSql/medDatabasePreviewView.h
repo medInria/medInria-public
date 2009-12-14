@@ -24,6 +24,11 @@ public:
     void setImageTooltip(medDatabasePreviewTooltip *tooltip);
 
 signals:
+//    void patientClicked(int id);
+//    void   studyClicked(int id);
+//    void  seriesClicked(int id);
+//    void   imageClicked(int id);
+
     void slideUp(void);
     void slideDw(void);
     void moveUp(void);

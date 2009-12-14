@@ -68,6 +68,16 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->progress = new QProgressBar(this);
     d->progress->setTextVisible(true);
 
+    connect(d->preview, SIGNAL(patientClicked(int)), d->view, SLOT(onPatientClicked(int)));
+    connect(d->preview, SIGNAL(studyClicked(int)), d->view, SLOT(onStudyClicked(int)));
+    connect(d->preview, SIGNAL(seriesClicked(int)), d->view, SLOT(onSeriesClicked(int)));
+    connect(d->preview, SIGNAL(imageClicked(int)), d->view, SLOT(onImageClicked(int)));
+
+    connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
+    connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
+    connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
+    connect(d->view, SIGNAL(imageClicked(int)), d->preview, SLOT(onImageClicked(int)));
+
     // Database widget /////////////////////////////////////////////////
 
     QWidget *database_widget = new QWidget(this);

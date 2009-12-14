@@ -37,8 +37,6 @@ void medDatabasePreviewScene::addGroup(medDatabasePreviewItemGroup *group)
         : group->setPos((3 - d->group_count) * (group_height + group_spacing) + group_spacing, group_spacing);
 
     d->group_count++;
-
-    this->setSceneRect(0, 0, this->sceneRect().right(), this->sceneRect().bottom());
 }
 
 void medDatabasePreviewScene::reset(void)

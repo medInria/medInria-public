@@ -210,8 +210,6 @@ QTreeView {
     padding-right: -5px;
 
     color: #b2b8b2;
-
-    show-decoration-selected: 1;
 }
 
 QTreeView::item:hover {

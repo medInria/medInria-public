@@ -67,6 +67,56 @@ void medDatabaseView::setModel(medDatabaseModel *model)
     QTreeView::setModel(model);
 }
 
+void medDatabaseView::onPatientClicked(int id)
+{
+    if(medDatabaseModel *model = deproxy(this->model())) {
+        QModelIndex index = model->indexForPatient(id);
+        this->collapseAll();
+        this->setExpanded(index, true);
+        selectionModel()->clearSelection();
+        selectionModel()->select(index, QItemSelectionModel::Select);
+    }
+}
+
+void medDatabaseView::onStudyClicked(int id)
+{
+    if(medDatabaseModel *model = deproxy(this->model())) {
+        QModelIndex index = model->indexForStudy(id);
+        this->collapseAll();
+        this->setExpanded(index.parent(), true);
+        this->setExpanded(index, true);
+        selectionModel()->clearSelection();
+        selectionModel()->select(index, QItemSelectionModel::Select);
+    }
+}
+
+void medDatabaseView::onSeriesClicked(int id)
+{
+    if(medDatabaseModel *model = deproxy(this->model())) {
+        QModelIndex index = model->indexForSeries(id);
+        this->collapseAll();
+        this->setExpanded(index.parent().parent(), true);
+        this->setExpanded(index.parent(), true);
+        this->setExpanded(index, true);
+        selectionModel()->clearSelection();
+        selectionModel()->select(index, QItemSelectionModel::Select);
+    }
+}
+
+void medDatabaseView::onImageClicked(int id)
+{
+    if(medDatabaseModel *model = deproxy(this->model())) {
+        QModelIndex index = model->indexForImage(id);
+        this->collapseAll();
+        this->setExpanded(index.parent().parent().parent(), true);
+        this->setExpanded(index.parent().parent(), true);
+        this->setExpanded(index.parent(), true);
+        this->setExpanded(index, true);
+        selectionModel()->clearSelection();
+        selectionModel()->select(index, QItemSelectionModel::Select);
+    }
+}
+
 void medDatabaseView::onItemClicked(const QModelIndex& index)
 {
     medDatabaseItem *item = deproxy(this->model(), index);

@@ -126,6 +126,86 @@ QVariant medDatabaseModel::headerData(int section, Qt::Orientation orientation, 
     return QVariant();
 }
 
+// This is really a shocking search. A hash table is to be used instead !!!!
+
+QModelIndex medDatabaseModel::indexForPatient(int id) const
+{
+    for(int i = 0; i < this->rowCount(); i++) {
+        QModelIndex index = this->index(i, 0);
+        if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
+            if(item->data(0).toInt() == id)
+                return index;
+    }
+
+    return QModelIndex();
+}
+
+// This is really a shocking search. A hash table is to be used instead !!!!
+
+QModelIndex medDatabaseModel::indexForStudy(int id) const
+{
+    for(int i = 0; i < this->rowCount(); i++) {
+        QModelIndex patientIndex = this->index(i, 0);
+        if(medDatabaseItem *patientItem = static_cast<medDatabaseItem *>(patientIndex.internalPointer()))
+            for(int j = 0; j < patientItem->childCount(); j++) {
+                QModelIndex index = this->index(j, 0, patientIndex);
+                if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
+                    if(item->data(0).toInt() == id)
+                        return index;
+            }
+    }
+
+    return QModelIndex();
+}
+
+// This is really a shocking search. A hash table is to be used instead !!!!
+
+QModelIndex medDatabaseModel::indexForSeries(int id) const
+{
+    for(int i = 0; i < this->rowCount(); i++) {
+        QModelIndex patientIndex = this->index(i, 0);
+        if(medDatabaseItem *patientItem = static_cast<medDatabaseItem *>(patientIndex.internalPointer()))
+            for(int j = 0; j < patientItem->childCount(); j++) {
+                QModelIndex studyIndex = this->index(j, 0, patientIndex);
+                if(medDatabaseItem *studyItem = static_cast<medDatabaseItem *>(studyIndex.internalPointer()))
+                    for(int k = 0; k < studyItem->childCount(); k++) {
+                        QModelIndex index = this->index(k, 0, studyIndex);
+                        if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
+                            if(item->data(0).toInt() == id)
+                                return index;
+                    }
+            }
+    }
+
+    return QModelIndex();
+}
+
+// This is really a shocking search. A hash table is to be used instead !!!!
+
+QModelIndex medDatabaseModel::indexForImage(int id) const
+{
+    for(int i = 0; i < this->rowCount(); i++) {
+        QModelIndex patientIndex = this->index(i, 0);
+        if(medDatabaseItem *patientItem = static_cast<medDatabaseItem *>(patientIndex.internalPointer()))
+            for(int j = 0; j < patientItem->childCount(); j++) {
+                QModelIndex studyIndex = this->index(j, 0, patientIndex);
+                if(medDatabaseItem *studyItem = static_cast<medDatabaseItem *>(studyIndex.internalPointer()))
+                    for(int k = 0; k < studyItem->childCount(); k++) {
+                        QModelIndex seriesIndex = this->index(k, 0, studyIndex);
+                        if(medDatabaseItem *seriesItem = static_cast<medDatabaseItem *>(seriesIndex.internalPointer()))
+                            for(int l = 0; l < seriesItem->childCount(); l++) {
+                                QModelIndex index = this->index(l, 0, seriesIndex);
+                                if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
+                                    if(item->data(0).toInt() == id)
+                                        return index;
+                            }
+                    }
+            }
+    }
+
+    return QModelIndex();
+}
+
 QModelIndex medDatabaseModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (!hasIndex(row, column, parent))

@@ -8,6 +8,8 @@ class medDatabasePreviewItemGroupPrivate
 {
 public:
     int item_count;
+
+    QHash<int, medDatabasePreviewItem *> items;
 };
 
 medDatabasePreviewItemGroup::medDatabasePreviewItemGroup(QGraphicsItem *parent) : QGraphicsItem(parent), d(new medDatabasePreviewItemGroupPrivate)
@@ -33,6 +35,15 @@ void medDatabasePreviewItemGroup::addItem(medDatabasePreviewItem *item)
         ? item->setPos(d->item_count * (item_width + item_spacing), 0)
         : item->setPos(0, d->item_count * (item_width + item_spacing));
 
+    if (item->imageId() >= 0)
+        d->items.insert(item->imageId(), item);
+    else if (item->seriesId() >= 0)
+        d->items.insert(item->seriesId(), item);
+    else if (item->studyId() >= 0)
+        d->items.insert(item->studyId(), item);
+    else
+        d->items.insert(item->patientId(), item);
+
     d->item_count++;
 }
 
@@ -42,6 +53,15 @@ void medDatabasePreviewItemGroup::clear(void)
         delete item;
 
     d->item_count = 0;
+    d->items.clear();
+}
+
+medDatabasePreviewItem *medDatabasePreviewItemGroup::item(int index)
+{
+    if(d->items.keys().contains(index))
+            return d->items.value(index);
+
+    return NULL;
 }
 
 QRectF medDatabasePreviewItemGroup::boundingRect(void) const

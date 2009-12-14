@@ -22,6 +22,8 @@ public:
 
     void clear(void);
 
+    medDatabasePreviewItem *item(int index);
+
 public:
     QRectF boundingRect(void) const;
 

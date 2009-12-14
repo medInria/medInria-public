@@ -18,6 +18,11 @@ class medDatabasePreviewPrivate
 public:
     int level;
 
+    int current_patient_id;
+    int current_study_id;
+    int current_series_id;
+    int current_image_id;
+
     medDatabasePreviewScene *scene;
     medDatabasePreviewView *view;
     medDatabasePreviewSelector *selector;
@@ -48,6 +53,8 @@ public:
     QPropertyAnimation *tooltip_image_animation;
 
     QItemSelectionModel *model;
+
+    medDatabasePreviewItem *target;
 };
 
 medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new medDatabasePreviewPrivate)
@@ -63,10 +70,20 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
 
     d->scene->addItem(d->selector);
 
-    d->patient_group = NULL;
-    d->study_group = NULL;
-    d->series_group = NULL;
-    d->image_group = NULL;
+    d->current_patient_id = -1;
+    d->current_study_id = -1;
+    d->current_series_id = -1;
+    d->current_image_id = -1;
+
+    d->patient_group = new medDatabasePreviewItemGroup;
+    d->study_group = new medDatabasePreviewItemGroup;
+    d->series_group = new medDatabasePreviewItemGroup;
+    d->image_group = new medDatabasePreviewItemGroup;
+
+    d->scene->addGroup(d->image_group);
+    d->scene->addGroup(d->series_group);
+    d->scene->addGroup(d->study_group);
+    d->scene->addGroup(d->patient_group);
 
     d->patient_animation = NULL;
     d->study_animation = NULL;
@@ -141,17 +158,11 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
     layout->setSpacing(0);
     layout->addWidget(d->view);
 
-//    medDatabasePreviewController::instance()->setOrientation(Qt::Vertical);
-
-//    medDatabasePreviewController::instance()->setItemSize( 72,  72);
-//    medDatabasePreviewController::instance()->setItemSize( 96,  96);
-    medDatabasePreviewController::instance()->setItemSize(128, 128);
-
-//    this->setup(QDir("/Users/jwintz/Desktop/thumbs 128"));
-
     medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
         ? this->setFixedHeight(medDatabasePreviewController::instance()->groupHeight() + medDatabasePreviewController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
         : this->setFixedWidth(medDatabasePreviewController::instance()->groupWidth() + medDatabasePreviewController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
+
+    this->init();
 
     QTimer::singleShot(100, this, SLOT(onMoveBg()));
 }
@@ -187,32 +198,35 @@ void medDatabasePreview::reset(void)
         d->image_animation = NULL;
 }
 
-void medDatabasePreview::onPatientClicked(int patientId)
+void medDatabasePreview::init(void)
 {
-    this->reset();
-
-    QSqlQuery query(*(medDatabaseController::instance()->database())); QVariant id;
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
 
     // Retrieve patient information
 
-    QString patientName;
-    QString patientThumbnail;
+    QVariant patientId;
+    QVariant patientName;
+    QVariant patientThumbnail;
 
-    query.prepare("SELECT name, thumbnail FROM patient WHERE id = :id");
-    query.bindValue(":id", patientId);
+    query.prepare("SELECT id, name, thumbnail FROM patient");
+
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
 
-    if(query.first()) {
-        patientName = query.value(0).toString();
-        patientThumbnail = query.value(1).toString();
+    d->patient_group->clear();
 
-        if (d->patient_group)
-            delete d->patient_group;
+    while(query.next()) {
+        patientId = query.value(0);
+        patientName = query.value(1);
+        patientThumbnail = query.value(2);
 
-        d->patient_group = new medDatabasePreviewItemGroup;
-        d->patient_group->addItem(new medDatabasePreviewItem(patientThumbnail));
+        d->patient_group->addItem(new medDatabasePreviewItem(patientId.toInt(), -1, -1, -1, patientThumbnail.toString()));
     }
+}
+
+void medDatabasePreview::onPatientClicked(int id)
+{
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
 
     // Retrieve studies information
 
@@ -221,96 +235,166 @@ void medDatabasePreview::onPatientClicked(int patientId)
     QVariant studyThumbnail;
 
     query.prepare("SELECT id, name, thumbnail FROM study WHERE patient = :patient");
-    query.bindValue(":patient", patientId);
+    query.bindValue(":patient", id);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
 
-    if(query.first()) {
+    d->study_group->clear();
+    d->series_group->clear();
+    d->image_group->clear();
+
+    while(query.next()) {
         studyId = query.value(0);
         studyName = query.value(1);
         studyThumbnail = query.value(2);
 
-        if (d->study_group)
-            delete d->study_group;
-
-        d->study_group = new medDatabasePreviewItemGroup;
-        d->study_group->addItem(new medDatabasePreviewItem(studyThumbnail.toString()));
+        d->study_group->addItem(new medDatabasePreviewItem(id, studyId.toInt(), -1, -1, studyThumbnail.toString()));
     }
 
+    d->current_patient_id = id;
+    d->current_study_id = -1;
+    d->current_series_id = -1;
+    d->current_image_id = -1;
+
+    while(d->level > 0) this->onSlideDw();
+    while(d->level < 0) this->onSlideUp();
+
+    onMoveBg();
+}
+
+void medDatabasePreview::onStudyClicked(int id)
+{
     // Retrieve series information
+
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
+
+    QVariant patientId;
+
+    query.prepare("SELECT patient FROM study WHERE id = :id");
+    query.bindValue(":id", id);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+
+    if(query.first())
+        patientId = query.value(0);
 
     QVariant seriesId;
     QVariant seriesName;
     QVariant seriesThumbnail;
 
     query.prepare("SELECT id, name, thumbnail FROM series WHERE study = :study");
-    query.bindValue(":study", studyId);
+    query.bindValue(":study", id);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
 
-    if(query.first()) {
+    d->series_group->clear();
+    d->image_group->clear();
+
+    while(query.next()) {
         seriesId = query.value(0);
         seriesName = query.value(1);
         seriesThumbnail = query.value(2);
 
-        if (d->series_group)
-            delete d->series_group;
-
-        d->series_group = new medDatabasePreviewItemGroup;
-        d->series_group->addItem(new medDatabasePreviewItem(seriesThumbnail.toString()));
+        d->series_group->addItem(new medDatabasePreviewItem(patientId.toInt(), id, seriesId.toInt(), -1, seriesThumbnail.toString()));
     }
 
+    d->current_study_id = id;
+    d->current_series_id = -1;
+    d->current_image_id = -1;
+
+    while(d->level > 1) this->onSlideDw();
+    while(d->level < 1) this->onSlideUp();
+
+    onMoveBg();
+}
+
+void medDatabasePreview::onSeriesClicked(int id)
+{
     // Retrieve images information
+
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
+
+    QVariant studyId;
+
+    query.prepare("SELECT study FROM series WHERE id = :id");
+    query.bindValue(":id", id);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+
+    if(query.first())
+        studyId = query.value(0);
+
+    QVariant patientId;
+
+    query.prepare("SELECT patient FROM study WHERE id = :id");
+    query.bindValue(":id", studyId);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+
+    if(query.first())
+        patientId = query.value(0);
 
     QVariant imageId;
     QVariant imageName;
     QVariant imageThumbnail;
 
     query.prepare("SELECT id, name, thumbnail FROM image WHERE series = :series");
-    query.bindValue(":series", seriesId);
+    query.bindValue(":series", id);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
 
-    if (d->image_group)
-        delete d->image_group;
-
-    d->image_group = new medDatabasePreviewItemGroup;
+    d->image_group->clear();
 
     while(query.next()) {
         imageId = query.value(0);
         imageName = query.value(1);
         imageThumbnail = query.value(2);
 
-        d->image_group->addItem(new medDatabasePreviewItem(imageThumbnail.toString()));
+        d->image_group->addItem(new medDatabasePreviewItem(patientId.toInt(), studyId.toInt(), id, imageId.toInt(), imageThumbnail.toString()));
     }
 
-    d->scene->addGroup(d->image_group);
-    d->scene->addGroup(d->series_group);
-    d->scene->addGroup(d->study_group);
-    d->scene->addGroup(d->patient_group);
+    d->current_series_id = id;
+    d->current_image_id = -1;
 
-    QTimer::singleShot(100, this, SLOT(onMoveBg()));
-}
+    while(d->level > 2) this->onSlideDw();
+    while(d->level < 2) this->onSlideUp();
 
-void medDatabasePreview::onStudyClicked(int id)
-{
-    qDebug() << __func__ << id;
-}
-
-void medDatabasePreview::onSeriesClicked(int id)
-{
-    qDebug() << __func__ << id;
+    onMoveBg();
 }
 
 void medDatabasePreview::onImageClicked(int id)
 {
-    qDebug() << __func__ << id;
+    d->current_image_id = id;
+
+    while(d->level > 3) this->onSlideDw();
+    while(d->level < 3) this->onSlideUp();
+
+    onMoveBg();
 }
 
 void medDatabasePreview::onSlideUp(void)
 {
     if(d->level > 2)
         return;
+
+    qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
+    qreal item_width = medDatabasePreviewController::instance()->itemWidth();
+    qreal item_height = medDatabasePreviewController::instance()->itemHeight();
+    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
+    qreal item_margins = selector_width - item_width;
+    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
+
+    if(medDatabasePreviewItem *target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(d->selector->pos() + QPointF(query_offset, query_offset)))) {
+
+        if (d->level == 0)
+            this->onPatientClicked(target->patientId());
+
+        if (d->level == 1)
+            this->onStudyClicked(target->studyId());
+
+        if (d->level == 2)
+            this->onSeriesClicked(target->seriesId());
+    }
 
     d->level++;
 
@@ -374,6 +458,25 @@ void medDatabasePreview::onSlideDw(void)
 {
     if(d->level < 1)
         return;
+
+    qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
+    qreal item_width = medDatabasePreviewController::instance()->itemWidth();
+    qreal item_height = medDatabasePreviewController::instance()->itemHeight();
+    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
+    qreal item_margins = selector_width - item_width;
+    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
+
+    if(medDatabasePreviewItem *target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(d->selector->pos() + QPointF(query_offset, query_offset)))) {
+
+        if (d->level == 0)
+            this->onPatientClicked(target->patientId());
+
+        if (d->level == 1)
+            this->onStudyClicked(target->studyId());
+
+        if (d->level == 2)
+            this->onSeriesClicked(target->seriesId());
+    }
 
     d->level--;
 
@@ -453,6 +556,18 @@ void medDatabasePreview::onMoveRt(void)
     if(!target)
         return;
 
+    if(target->patientId() >= 0)
+        emit patientClicked(target->patientId());
+
+    if(target->studyId() >= 0)
+        emit studyClicked(target->studyId());
+
+    if(target->seriesId() >= 0)
+        emit seriesClicked(target->seriesId());
+
+    if(target->imageId() >= 0)
+        emit imageClicked(target->imageId());
+
     // Scroll view if needed
 
     target->ensureVisible(target->boundingRect(), medDatabasePreviewController::instance()->selectorWidth() + medDatabasePreviewController::instance()->itemSpacing(), 0);
@@ -517,6 +632,18 @@ void medDatabasePreview::onMoveLt(void)
 
     if(!target)
         return;
+
+    if(target->patientId() >= 0)
+        emit patientClicked(target->patientId());
+
+    if(target->studyId() >= 0)
+        emit studyClicked(target->studyId());
+
+    if(target->seriesId() >= 0)
+        emit seriesClicked(target->seriesId());
+
+    if(target->imageId() >= 0)
+        emit imageClicked(target->imageId());
 
     // Scroll view if needed
 
@@ -586,6 +713,18 @@ void medDatabasePreview::onMoveUp(void)
     if(!target)
         return;
 
+    if(target->patientId() >= 0)
+        emit patientClicked(target->patientId());
+
+    if(target->studyId() >= 0)
+        emit studyClicked(target->studyId());
+
+    if(target->seriesId() >= 0)
+        emit seriesClicked(target->seriesId());
+
+    if(target->imageId() >= 0)
+        emit imageClicked(target->imageId());
+
     // Update selector
 
     d->selector->setText(target->path());
@@ -647,6 +786,18 @@ void medDatabasePreview::onMoveDw(void)
     if(!target)
         return;
 
+    if(target->patientId() >= 0)
+        emit patientClicked(target->patientId());
+
+    if(target->studyId() >= 0)
+        emit studyClicked(target->studyId());
+
+    if(target->seriesId() >= 0)
+        emit seriesClicked(target->seriesId());
+
+    if(target->imageId() >= 0)
+        emit imageClicked(target->imageId());
+
     // Update selector
 
     d->selector->setText(target->path());
@@ -703,10 +854,33 @@ void medDatabasePreview::onMoveBg(void) // move to beginning of the current line
     QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
                            (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
 
-    medDatabasePreviewItem *target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(d->selector->scenePos() + QPointF(d->selector->scenePos().x() * (-1) + query_offset, query_offset)));
+    medDatabasePreviewItem *target = NULL;
+
+    if(d->level == 0 && d->current_patient_id >= 0)
+        target = d->patient_group->item(d->current_patient_id);
+    else if(d->level == 1 && d->current_study_id >= 0)
+        target = d->study_group->item(d->current_study_id);
+    else if(d->level == 2 && d->current_series_id >= 0)
+        target = d->series_group->item(d->current_series_id);
+    else if(d->level == 3 && d->current_image_id >= 0)
+        target = d->image_group->item(d->current_image_id);
+    else
+        target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(d->selector->scenePos() + QPointF(d->selector->scenePos().x() * (-1) + query_offset, query_offset)));
 
     if(!target)
         return;
+
+    if(target->patientId() >= 0)
+        emit patientClicked(target->patientId());
+
+    if(target->studyId() >= 0)
+        emit studyClicked(target->studyId());
+
+    if(target->seriesId() >= 0)
+        emit seriesClicked(target->seriesId());
+
+    if(target->imageId() >= 0)
+        emit imageClicked(target->imageId());
 
     // Scroll view if needed
 
@@ -772,6 +946,18 @@ void medDatabasePreview::onHovered(medDatabasePreviewItem *item)
 
     if(qAbs(d->selector->pos().x() - item->scenePos().x()) < 20 && qAbs(d->selector->pos().y() - item->scenePos().y()) < 20)
         return;
+
+    if(item->patientId() >= 0)
+        emit patientClicked(item->patientId());
+
+    if(item->studyId() >= 0)
+        emit studyClicked(item->studyId());
+
+    if(item->seriesId() >= 0)
+        emit seriesClicked(item->seriesId());
+
+    if(item->imageId() >= 0)
+        emit imageClicked(item->imageId());
 
     // Update selector
 

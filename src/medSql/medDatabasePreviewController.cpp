@@ -76,8 +76,8 @@ void medDatabasePreviewController::setOrientation(Qt::Orientation orientation)
 
 medDatabasePreviewController::medDatabasePreviewController(void)
 {
-    this->m_width = 72;
-    this->m_height = 72;
+    this->m_width = 128;
+    this->m_height = 128;
 
     this->m_orientation = Qt::Horizontal;
 }
