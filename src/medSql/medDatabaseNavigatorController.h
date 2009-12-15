@@ -1,3 +1,22 @@
+/* medDatabaseNavigatorController.h --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Dec 15 09:39:06 2009 (+0100)
+ * Version: $Id$
+ * Last-Updated: Tue Dec 15 09:39:07 2009 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #ifndef MEDDATABASENAVIGATORCONTROLLER_H
 #define MEDDATABASENAVIGATORCONTROLLER_H
 
