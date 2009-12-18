@@ -1,4 +1,4 @@
-/* medDatabaseModel.h --- 
+/* medDatabaseModel.h ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -41,6 +41,11 @@ public:
 
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+
+    QModelIndex indexForPatient(int id) const;
+    QModelIndex indexForStudy(int id) const;
+    QModelIndex indexForSeries(int id) const;
+    QModelIndex indexForImage(int id) const;
 
     QModelIndex index(int row, int colum, const QModelIndex& parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex& index = QModelIndex()) const;

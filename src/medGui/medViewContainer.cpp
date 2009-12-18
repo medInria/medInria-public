@@ -27,7 +27,8 @@ class medViewContainerPrivate
 {
 public:
     QGridLayout *layout;
-    QSet<dtkAbstractView*> views;
+
+    QHash<QWidget *, dtkAbstractView*> views;
 };
 
 medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new medViewContainerPrivate)
@@ -38,19 +39,23 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
     s_current = this;
 
-    this->setFocusPolicy(Qt::StrongFocus);
+    static int id = 0;
+
+    this->setObjectName(QString("medViewContainer%1").arg(id++));
+
+    this->setFocusPolicy(Qt::ClickFocus);
 }
 
 medViewContainer::~medViewContainer(void)
 {
-    QSet<dtkAbstractView*>::iterator it = d->views.begin();
+    QHash<QWidget *, dtkAbstractView*>::iterator it = d->views.begin();
+
     while (it!=d->views.end()) {
-      //d->layout->removeWidget ((*it)->widget());
-      delete (*it);
-      ++it;
+        delete (*it);
+        ++it;
     }    
-    d->views.clear();    
-    delete d->layout;
+
+    d->views.clear();
 }
 
 medViewContainer *medViewContainer::current(void)
@@ -75,6 +80,22 @@ void medViewContainer::split(int rows, int cols)
     s_current = 0;
 }
 
+dtkAbstractView *medViewContainer::view(void)
+{
+    QWidget *widget = NULL;
+
+    if(d->layout->count())
+        widget = d->layout->itemAt(0)->widget();
+
+    if(!widget)
+        return NULL;
+
+    if(!d->views.keys().contains(widget))
+        return NULL;
+
+    return d->views.value(widget);
+}
+
 void medViewContainer::setView(dtkAbstractView *view)
 {
     if (!view)
@@ -89,24 +110,30 @@ void medViewContainer::setView(dtkAbstractView *view)
         return;
     
     if(QWidget *widget = view->widget()) {
-        widget->setParent(this);
-        widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        widget->setParent(current);
         current->d->layout->setContentsMargins(1, 1, 1, 1);
         current->d->layout->addWidget(widget, 0, 0);
-	d->views.insert (view);
+        d->views.insert(widget, view);
     }
 }
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
+    qDebug() << __FILE__ << __func__;
+
     s_current = this;
 
-    QWidget::focusInEvent(event);
+    if(dtkAbstractView *view = this->view())
+        emit focused(view);
+
+    this->update();
 }
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)
 {
-    QWidget::focusOutEvent(event);
+    qDebug() << __FILE__ << __func__;
+
+    this->update();
 }
 
 void medViewContainer::paintEvent(QPaintEvent *event)
@@ -119,7 +146,7 @@ void medViewContainer::paintEvent(QPaintEvent *event)
     QPainter painter;
     painter.begin(this);
     if (s_current == this)
-        painter.setPen(Qt::red);
+        painter.setPen(QColor(0x9a, 0xb3, 0xd5));
     else
         painter.setPen(Qt::darkGray);
     painter.setBrush(QColor(0x38, 0x38, 0x38));

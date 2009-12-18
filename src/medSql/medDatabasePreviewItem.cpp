@@ -1,3 +1,22 @@
+/* medDatabasePreviewItem.cpp --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Dec 15 09:43:00 2009 (+0100)
+ * Version: $Id$
+ * Last-Updated: Tue Dec 15 09:43:01 2009 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #include "medDatabasePreviewItem.h"
 #include "medDatabasePreviewItemLoader.h"
 
@@ -7,11 +26,21 @@
 class medDatabasePreviewItemPrivate
 {
 public:
+    int patientId;
+    int studyId;
+    int seriesId;
+    int imageId;
+
     QString path;
 };
 
-medDatabasePreviewItem::medDatabasePreviewItem(const QString& path, QGraphicsItem *parent) : QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabasePreviewItemPrivate)
+medDatabasePreviewItem::medDatabasePreviewItem(int patientId, int studyId, int seriesId, int imageId, const QString& path, QGraphicsItem *parent) : QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabasePreviewItemPrivate)
 {
+    d->patientId = patientId;
+    d->studyId = studyId;
+    d->seriesId = seriesId;
+    d->imageId = imageId;
+
     d->path = path;
 
     medDatabasePreviewItemLoader *loader = new medDatabasePreviewItemLoader(path);
@@ -30,7 +59,27 @@ medDatabasePreviewItem::~medDatabasePreviewItem(void)
 
 medDatabasePreviewItem *medDatabasePreviewItem::clone(void)
 {
-    return new medDatabasePreviewItem(d->path);
+    return new medDatabasePreviewItem(d->patientId, d->studyId, d->seriesId, d->imageId, d->path);
+}
+
+int medDatabasePreviewItem::patientId(void) const
+{
+    return d->patientId;
+}
+
+int medDatabasePreviewItem::studyId(void) const
+{
+    return d->studyId;
+}
+
+int medDatabasePreviewItem::seriesId(void) const
+{
+    return d->seriesId;
+}
+
+int medDatabasePreviewItem::imageId(void) const
+{
+    return d->imageId;
 }
 
 QString medDatabasePreviewItem::path(void) const

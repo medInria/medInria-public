@@ -1,3 +1,22 @@
+/* medDatabasePreviewSelector.cpp --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Dec 15 09:44:08 2009 (+0100)
+ * Version: $Id$
+ * Last-Updated: Tue Dec 15 09:44:09 2009 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #include "medDatabasePreviewController.h"
 #include "medDatabasePreviewSelector.h"
 
@@ -45,7 +64,7 @@ void medDatabasePreviewSelector::paint(QPainter *painter, const QStyleOptionGrap
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setBrush(Qt::gray);
     painter->setPen(Qt::NoPen);
-    painter->drawRoundRect(d->rect, 12, 12);
+    painter->drawRoundedRect(d->rect, 12, 12);
     painter->setPen(Qt::white);
     painter->drawText(d->rect.adjusted(10, d->rect.height() - 17, -10, d->rect.height()), Qt::AlignRight | Qt::TextSingleLine, d->text);
     painter->restore();

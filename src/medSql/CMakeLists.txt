@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Fri Sep 25 11:51:59 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Dec  8 09:01:24 2009 (+0100)
+## Last-Updated: Wed Dec 16 10:42:54 2009 (+0100)
 ##           By: Julien Wintz
-##     Update #: 23
+##     Update #: 25
 ######################################################################
 ## 
 ### Commentary: 
@@ -35,14 +35,11 @@ set(${PROJECT_NAME}_HEADERS
   medDatabaseItem.h
   medDatabaseModel.h
   medDatabaseNavigator.h
-  medDatabaseNavigatorArrow.h
   medDatabaseNavigatorController.h
   medDatabaseNavigatorItem.h
   medDatabaseNavigatorItemGroup.h
   medDatabaseNavigatorItemLoader.h
   medDatabaseNavigatorScene.h
-  medDatabaseNavigatorSelector.h
-  medDatabaseNavigatorTooltip.h
   medDatabaseNavigatorView.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
@@ -61,13 +58,10 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseModel.h
   medDatabaseView.h
   medDatabaseNavigator.h
-  medDatabaseNavigatorArrow.h
   medDatabaseNavigatorController.h
   medDatabaseNavigatorItem.h
   medDatabaseNavigatorItemGroup.h
   medDatabaseNavigatorItemLoader.h
-  medDatabaseNavigatorSelector.h
-  medDatabaseNavigatorTooltip.h
   medDatabaseNavigatorView.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
@@ -86,14 +80,11 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseModel.cpp
   medDatabaseView.cpp
   medDatabaseNavigator.cpp
-  medDatabaseNavigatorArrow.cpp
   medDatabaseNavigatorController.cpp
   medDatabaseNavigatorItem.cpp
   medDatabaseNavigatorItemGroup.cpp
   medDatabaseNavigatorItemLoader.cpp
   medDatabaseNavigatorScene.cpp
-  medDatabaseNavigatorSelector.cpp
-  medDatabaseNavigatorTooltip.cpp
   medDatabaseNavigatorView.cpp
   medDatabasePreview.cpp
   medDatabasePreviewArrow.cpp

@@ -38,7 +38,12 @@ public:
 
     medViewContainer *current(void);
 
+    dtkAbstractView *view(void);
+
     void setView(dtkAbstractView *view);
+
+signals:
+    void focused(dtkAbstractView *view);
 
 public slots:
     void split(int rows, int cols);

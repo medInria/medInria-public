@@ -1,3 +1,22 @@
+/* medDatabaseNavigatorScene.cpp --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Dec 15 09:40:46 2009 (+0100)
+ * Version: $Id$
+ * Last-Updated: Tue Dec 15 09:40:46 2009 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #include "medDatabaseNavigatorController.h"
 #include "medDatabaseNavigatorItemGroup.h"
 #include "medDatabaseNavigatorScene.h"
@@ -15,7 +34,7 @@ public:
 
 medDatabaseNavigatorScene::medDatabaseNavigatorScene(QObject *parent) : QGraphicsScene(parent), d(new medDatabaseNavigatorScenePrivate)
 {
-//    this->setBackgroundBrush(Qt::red);
+
 }
 
 medDatabaseNavigatorScene::~medDatabaseNavigatorScene(void)
@@ -36,14 +55,12 @@ void medDatabaseNavigatorScene::addGroup(medDatabaseNavigatorItemGroup *group)
     d->groups << group;
 
     medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
-        ? group->setPos(QPointF(d->position.x() + group_spacing, d->position.y()))
-        : group->setPos(QPointF(d->position.x(), d->position.y() + group_spacing));
+        ? group->setPos(d->position + QPointF(10, 0))
+        : group->setPos(d->position + QPointF(0, 10));
 
-    switch(medDatabaseNavigatorController::instance()->orientation()) {
-    case Qt::Horizontal: d->position = group->boundingRect().topRight(); break;
-    case Qt::Vertical: d->position = group->boundingRect().bottomLeft(); break;
-    default: break;
-    }
+    medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
+        ? d->position = group->boundingRect().topRight() + QPointF(group_spacing, 0)
+        : d->position = group->boundingRect().bottomLeft() + QPointF(0, group_spacing);
 
     this->setSceneRect(0, 0, this->sceneRect().right(), this->sceneRect().bottom());
 }

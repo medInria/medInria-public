@@ -68,6 +68,16 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->progress = new QProgressBar(this);
     d->progress->setTextVisible(true);
 
+    connect(d->preview, SIGNAL(patientClicked(int)), d->view, SLOT(onPatientClicked(int)));
+    connect(d->preview, SIGNAL(studyClicked(int)), d->view, SLOT(onStudyClicked(int)));
+    connect(d->preview, SIGNAL(seriesClicked(int)), d->view, SLOT(onSeriesClicked(int)));
+    connect(d->preview, SIGNAL(imageClicked(int)), d->view, SLOT(onImageClicked(int)));
+
+    connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
+    connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
+    connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
+    connect(d->view, SIGNAL(imageClicked(int)), d->preview, SLOT(onImageClicked(int)));
+
     // Database widget /////////////////////////////////////////////////
 
     QWidget *database_widget = new QWidget(this);
@@ -164,9 +174,17 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->fs_search_bar->setModel(d->filesystem_model);
     d->fs_search_bar->setView(d->filesystem_view);
 
-    search_stack->addWidget(d->db_search_bar);
-    search_stack->addWidget(d->fs_search_bar);
-    search_stack->setCurrentWidget(d->db_search_bar);
+    QWidget *db_search_bar_widget = new QWidget(search_stack);
+    QVBoxLayout *db_search_bar_widget_layout = new QVBoxLayout(db_search_bar_widget);
+    db_search_bar_widget_layout->addWidget(d->db_search_bar);
+
+    QWidget *fs_search_bar_widget = new QWidget(search_stack);
+    QVBoxLayout *fs_search_bar_widget_layout = new QVBoxLayout(fs_search_bar_widget);
+    fs_search_bar_widget_layout->addWidget(d->fs_search_bar);
+
+    search_stack->addWidget(db_search_bar_widget);
+    search_stack->addWidget(fs_search_bar_widget);
+    search_stack->setCurrentWidget(db_search_bar_widget);
 
     medToolBox *searchToolBox = new medToolBox(this);
     searchToolBox->setTitle("Search");
@@ -195,11 +213,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
     connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
     connect(d->view, SIGNAL(imageClicked(int)), d->preview, SLOT(onImageClicked(int)));
-
-    // connect(d->view, SIGNAL(patientDoubleClicked(int)), this, SLOT(onPatientDoubleClicked(int)));
-    // connect(d->view, SIGNAL(studyDoubleClicked(int)), this, SLOT(onStudyDoubleClicked(int)));
-    // connect(d->view, SIGNAL(seriesDoubleClicked(int)), this, SLOT(onSeriesDoubleClicked(int)));
-    // connect(d->view, SIGNAL(imageDoubleClicked(int)), this, SLOT(onImageDoubleClicked(int)));
 }
 
 medBrowserArea::~medBrowserArea(void)
@@ -215,7 +228,7 @@ medBrowserArea::~medBrowserArea(void)
 void medBrowserArea::setup(QStatusBar *status)
 {
     d->status = status;
-    d->status->addPermanentWidget(d->progress);
+    d->status->addWidget(d->progress);
 
     d->progress->show();
 }

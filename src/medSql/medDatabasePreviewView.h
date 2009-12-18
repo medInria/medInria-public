@@ -1,3 +1,22 @@
+/* medDatabasePreviewView.h --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Dec 15 09:44:36 2009 (+0100)
+ * Version: $Id$
+ * Last-Updated: Tue Dec 15 09:44:37 2009 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #ifndef MEDDATABASEPREVIEWVIEW_H
 #define MEDDATABASEPREVIEWVIEW_H
 
@@ -24,6 +43,11 @@ public:
     void setImageTooltip(medDatabasePreviewTooltip *tooltip);
 
 signals:
+//    void patientClicked(int id);
+//    void   studyClicked(int id);
+//    void  seriesClicked(int id);
+//    void   imageClicked(int id);
+
     void slideUp(void);
     void slideDw(void);
     void moveUp(void);

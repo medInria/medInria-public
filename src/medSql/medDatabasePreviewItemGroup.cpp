@@ -1,3 +1,22 @@
+/* medDatabasePreviewItemGroup.cpp --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Dec 15 09:43:19 2009 (+0100)
+ * Version: $Id$
+ * Last-Updated: Tue Dec 15 09:43:19 2009 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #include "medDatabasePreviewController.h"
 #include "medDatabasePreviewItem.h"
 #include "medDatabasePreviewItemGroup.h"
@@ -8,6 +27,8 @@ class medDatabasePreviewItemGroupPrivate
 {
 public:
     int item_count;
+
+    QHash<int, medDatabasePreviewItem *> items;
 };
 
 medDatabasePreviewItemGroup::medDatabasePreviewItemGroup(QGraphicsItem *parent) : QGraphicsItem(parent), d(new medDatabasePreviewItemGroupPrivate)
@@ -33,6 +54,15 @@ void medDatabasePreviewItemGroup::addItem(medDatabasePreviewItem *item)
         ? item->setPos(d->item_count * (item_width + item_spacing), 0)
         : item->setPos(0, d->item_count * (item_width + item_spacing));
 
+    if (item->imageId() >= 0)
+        d->items.insert(item->imageId(), item);
+    else if (item->seriesId() >= 0)
+        d->items.insert(item->seriesId(), item);
+    else if (item->studyId() >= 0)
+        d->items.insert(item->studyId(), item);
+    else
+        d->items.insert(item->patientId(), item);
+
     d->item_count++;
 }
 
@@ -42,6 +72,15 @@ void medDatabasePreviewItemGroup::clear(void)
         delete item;
 
     d->item_count = 0;
+    d->items.clear();
+}
+
+medDatabasePreviewItem *medDatabasePreviewItemGroup::item(int index)
+{
+    if(d->items.keys().contains(index))
+            return d->items.value(index);
+
+    return NULL;
 }
 
 QRectF medDatabasePreviewItemGroup::boundingRect(void) const

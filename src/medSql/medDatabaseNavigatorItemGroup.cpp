@@ -1,106 +1,121 @@
+/* medDatabaseNavigatorItemGroup.cpp --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Dec 15 09:39:49 2009 (+0100)
+ * Version: $Id$
+ * Last-Updated: Tue Dec 15 09:39:50 2009 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #include "medDatabaseNavigatorController.h"
 #include "medDatabaseNavigatorItem.h"
 #include "medDatabaseNavigatorItemGroup.h"
 
 #include <QtCore>
 
-class medDatabaseNavigatorItemGroupHeader : public QGraphicsItem
-{
-public:
-     medDatabaseNavigatorItemGroupHeader(QGraphicsItem *parent = 0);
-    ~medDatabaseNavigatorItemGroupHeader(void);
-
-    void setName(const QString& name);
-
-    QRectF boundingRect(void) const;
-
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-private:
-    QString name;
-};
-
-medDatabaseNavigatorItemGroupHeader::medDatabaseNavigatorItemGroupHeader(QGraphicsItem *parent) : QGraphicsItem(parent)
-{
-
-}
-
-medDatabaseNavigatorItemGroupHeader::~medDatabaseNavigatorItemGroupHeader(void)
-{
-
-}
-
-void medDatabaseNavigatorItemGroupHeader::setName(const QString& name)
-{
-    this->name = name;
-}
-
-QRectF medDatabaseNavigatorItemGroupHeader::boundingRect(void) const
-{
-    qreal group_width  = medDatabaseNavigatorController::instance()->groupWidth();
-    qreal group_height = medDatabaseNavigatorController::instance()->groupHeight();
-
-    if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal)
-        return QRectF(0, 0, 30, 1000);
-    else
-        return QRectF(0, 0, 1000, 30);
-}
-
-void medDatabaseNavigatorItemGroupHeader::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-
-    if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal) {
-
-        QLinearGradient gradient;
-        gradient.setStart(0, 0);
-        gradient.setFinalStop(30, 0);
-        gradient.setColorAt(0, QColor("#3b3b3c"));
-        gradient.setColorAt(1, QColor("#2d2d2f"));
-
-        painter->save();
-        painter->setPen(Qt::black);
-        painter->setBrush(gradient);
-        painter->drawRect(option->rect.adjusted(-1, 0, 1, 0));
-        painter->setPen(Qt::white);
-        painter->drawText(10, 10, name);
-        painter->restore();
-
-    } else {
-
-        QLinearGradient gradient;
-        gradient.setStart(0, 0);
-        gradient.setFinalStop(0, 30);
-        gradient.setColorAt(0, QColor("#3b3b3c"));
-        gradient.setColorAt(1, QColor("#2d2d2f"));
-
-        painter->save();
-        painter->setPen(Qt::black);
-        painter->setBrush(gradient);
-        painter->drawRect(option->rect.adjusted(-1, 0, 1, 0));
-        painter->setPen(Qt::white);
-        painter->drawText(10, 20, name);
-        painter->restore();
-
-    }
-}
-
-// -------
+//class medDatabaseNavigatorItemGroupHeader : public QGraphicsItem
+//{
+//public:
+//     medDatabaseNavigatorItemGroupHeader(QGraphicsItem *parent = 0);
+//    ~medDatabaseNavigatorItemGroupHeader(void);
+//
+//    void setName(const QString& name);
+//
+//    QRectF boundingRect(void) const;
+//
+//    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+//
+//private:
+//    QString name;
+//};
+//
+//medDatabaseNavigatorItemGroupHeader::medDatabaseNavigatorItemGroupHeader(QGraphicsItem *parent) : QGraphicsItem(parent)
+//{
+//
+//}
+//
+//medDatabaseNavigatorItemGroupHeader::~medDatabaseNavigatorItemGroupHeader(void)
+//{
+//
+//}
+//
+//void medDatabaseNavigatorItemGroupHeader::setName(const QString& name)
+//{
+//    this->name = name;
+//}
+//
+//QRectF medDatabaseNavigatorItemGroupHeader::boundingRect(void) const
+//{
+//    qreal group_width  = medDatabaseNavigatorController::instance()->groupWidth();
+//    qreal group_height = medDatabaseNavigatorController::instance()->groupHeight();
+//
+//    if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal)
+//        return QRectF(0, 0, 30, 1000);
+//    else
+//        return QRectF(0, 0, 1000, 30);
+//}
+//
+//void medDatabaseNavigatorItemGroupHeader::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+//{
+//    Q_UNUSED(option);
+//    Q_UNUSED(widget);
+//
+//    if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal) {
+//
+//        QLinearGradient gradient;
+//        gradient.setStart(0, 0);
+//        gradient.setFinalStop(30, 0);
+//        gradient.setColorAt(0, QColor("#3b3b3c"));
+//        gradient.setColorAt(1, QColor("#2d2d2f"));
+//
+//        painter->save();
+//        painter->setPen(Qt::black);
+//        painter->setBrush(gradient);
+//        painter->drawRect(option->rect.adjusted(-1, 0, 1, 0));
+//        painter->setPen(Qt::white);
+//        painter->drawText(10, 10, name);
+//        painter->restore();
+//
+//    } else {
+//
+//        QLinearGradient gradient;
+//        gradient.setStart(0, 0);
+//        gradient.setFinalStop(0, 30);
+//        gradient.setColorAt(0, QColor("#3b3b3c"));
+//        gradient.setColorAt(1, QColor("#2d2d2f"));
+//
+//        painter->save();
+//        painter->setPen(Qt::black);
+//        painter->setBrush(gradient);
+//        painter->drawRect(option->rect.adjusted(-1, 0, 1, 0));
+//        painter->setPen(Qt::white);
+//        painter->drawText(10, 20, name);
+//        painter->restore();
+//
+//    }
+//}
 
 class medDatabaseNavigatorItemGroupPrivate
 {
 public:
     int item_count;
 
-    medDatabaseNavigatorItemGroupHeader *header;
+    QString name;
 };
 
 medDatabaseNavigatorItemGroup::medDatabaseNavigatorItemGroup(QGraphicsItem *parent) : QGraphicsItem(parent), d(new medDatabaseNavigatorItemGroupPrivate)
 {
     d->item_count = 0;
-
-    d->header = new medDatabaseNavigatorItemGroupHeader(this);
 }
 
 medDatabaseNavigatorItemGroup::~medDatabaseNavigatorItemGroup(void)
@@ -117,9 +132,12 @@ void medDatabaseNavigatorItemGroup::addItem(medDatabaseNavigatorItem *item)
 
     item->setParentItem(this);
 
+    // 30px for the decoration
+    // 2x10px for the margins
+
     medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
-        ? item->setPos(d->item_count * (item_width + item_spacing) + 40, 10)  // 40px for header
-        : item->setPos(10, d->item_count * (item_width + item_spacing) + 40); // 40px for header
+        ? item->setPos(d->item_count * (item_width + item_spacing) + 30, 10)
+        : item->setPos(10, d->item_count * (item_width + item_spacing) + 30);
 
     d->item_count++;
 }
@@ -134,7 +152,7 @@ void medDatabaseNavigatorItemGroup::clear(void)
 
 void medDatabaseNavigatorItemGroup::setName(const QString& name)
 {
-    d->header->setName(name);
+    d->name = name;
 }
 
 QRectF medDatabaseNavigatorItemGroup::boundingRect(void) const
@@ -143,15 +161,23 @@ QRectF medDatabaseNavigatorItemGroup::boundingRect(void) const
     qreal item_height  = medDatabaseNavigatorController::instance()->itemHeight();
     qreal item_spacing = medDatabaseNavigatorController::instance()->itemSpacing();
 
+    // 20px for the margins
+    // 30px for the decoration
+
     if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal)
-        return QRectF(0, 0, d->item_count * (item_width + item_spacing), item_height);
+        return QRectF(0, 0, d->item_count * (item_width + item_spacing) + 30, item_height + 20);
     else
-        return QRectF(0, 0, item_width, d->item_count * (item_height + item_spacing));
+        return QRectF(0, 0, item_width + 20, d->item_count * (item_height + item_spacing) + 30);
 }
 
 void medDatabaseNavigatorItemGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    Q_UNUSED(painter);
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setBrush(Qt::darkGray);
+    painter->setPen(Qt::NoPen);
+    painter->drawRoundedRect(option->rect, 5, 5);
+    painter->setPen(Qt::white);
+    painter->drawText(option->rect.adjusted(5, 5, -15, option->rect.height() - 20), Qt::AlignRight | Qt::TextSingleLine, d->name);
+    painter->restore();
 }

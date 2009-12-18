@@ -1,3 +1,22 @@
+/* medDatabasePreviewScene.cpp --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Dec 15 09:43:54 2009 (+0100)
+ * Version: $Id$
+ * Last-Updated: Tue Dec 15 09:43:55 2009 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #include "medDatabasePreviewController.h"
 #include "medDatabasePreviewItemGroup.h"
 #include "medDatabasePreviewScene.h"
@@ -37,8 +56,6 @@ void medDatabasePreviewScene::addGroup(medDatabasePreviewItemGroup *group)
         : group->setPos((3 - d->group_count) * (group_height + group_spacing) + group_spacing, group_spacing);
 
     d->group_count++;
-
-    this->setSceneRect(0, 0, this->sceneRect().right(), this->sceneRect().bottom());
 }
 
 void medDatabasePreviewScene::reset(void)

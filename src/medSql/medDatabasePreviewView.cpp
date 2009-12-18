@@ -1,3 +1,22 @@
+/* medDatabasePreviewView.cpp --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Dec 15 09:44:41 2009 (+0100)
+ * Version: $Id$
+ * Last-Updated: Tue Dec 15 09:44:41 2009 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
 #include "medDatabasePreviewArrow.h"
 #include "medDatabasePreviewController.h"
 #include "medDatabasePreviewItem.h"
@@ -39,7 +58,13 @@ medDatabasePreviewView::medDatabasePreviewView(QWidget *parent) : QGraphicsView(
     this->viewport()->setMouseTracking(true);
 
     this->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    if(medDatabasePreviewController::instance()->orientation() == Qt::Horizontal) {
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    } else {
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 }
 
