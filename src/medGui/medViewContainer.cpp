@@ -28,8 +28,6 @@ class medViewContainerPrivate
 public:
     QGridLayout *layout;
 
-    QHash<QWidget *, dtkAbstractView*> views;
-
     dtkAbstractView *view;
 };
 
@@ -43,21 +41,17 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
     s_current = this;
 
-    static int id = 0; this->setObjectName(QString("medViewContainer%1").arg(id++));
+    if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent))
+        connect(this, SIGNAL(focused(dtkAbstractView*)), container, SIGNAL(focused(dtkAbstractView*)));
 
     this->setFocusPolicy(Qt::ClickFocus);
 }
 
 medViewContainer::~medViewContainer(void)
 {
-    QHash<QWidget *, dtkAbstractView*>::iterator it = d->views.begin();
+    delete d;
 
-    while (it!=d->views.end()) {
-        delete (*it);
-        ++it;
-    }    
-
-    d->views.clear();
+    d = NULL;
 }
 
 medViewContainer *medViewContainer::current(void)
@@ -67,18 +61,6 @@ medViewContainer *medViewContainer::current(void)
 
 void medViewContainer::split(int rows, int cols)
 {
-//    medViewContainer *current = this->current();
-//
-//    if (!current)
-//        return;
-//
-//    if (current->d->layout->count())
-//        return;
-//
-//    for(int i = 0 ; i < rows ; i++)
-//        for(int j = 0 ; j < cols ; j++)
-//            current->d->layout->addWidget(new medViewContainer(current), i, j);
-
     if (d->layout->count())
         return;
 

@@ -259,6 +259,9 @@ void medBrowserArea::onFileSystemImportClicked(void)
         medDatabaseController::instance()->import(info.absoluteFilePath());
     else
         d->status->showMessage("Import only support dicom directories so far.", 10000);
+
+    d->preview->reset();
+    d->preview->init();
 }
 
 void medBrowserArea::onFileSystemExportClicked(void)
