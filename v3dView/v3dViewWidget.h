@@ -31,10 +31,6 @@ class v3dViewWidget : public QVTKWidget
 public:
              v3dViewWidget(QWidget *parent = 0);
     virtual ~v3dViewWidget(void);
-
-protected:
-    void focusInEvent(QFocusEvent *event);
-    void focusOutEvent(QFocusEvent *event);
 };
 
 #endif
