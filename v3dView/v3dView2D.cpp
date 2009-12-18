@@ -10,7 +10,6 @@
 
 #include "v3dView2D.h"
 #include "v3dView3D.h"
-#include "v3dViewWidget.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 
@@ -37,8 +36,9 @@ public:
     vtkRenderer *renderer;
     vtkViewImage2D *view;
 
-    v3dViewWidget *widget;
+    QVTKWidget *widget;
     QMenu *menu;
+
     dtkAbstractData *data;
 };
 
@@ -50,8 +50,10 @@ v3dView2D::v3dView2D(void) : dtkAbstractView(), d(new v3dView2DPrivate)
 {
     d->renderer = vtkRenderer::New();
 
-    d->widget = new v3dViewWidget;
+    d->widget = new QVTKWidget;
     d->widget->GetRenderWindow()->AddRenderer(d->renderer);
+    d->widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    d->widget->setFocusPolicy(Qt::NoFocus);
 
     d->data = 0;
 
@@ -65,7 +67,6 @@ v3dView2D::v3dView2D(void) : dtkAbstractView(), d(new v3dView2DPrivate)
     d->view->CursorFollowMouseOn();
     d->view->Show2DAxisOff();
     d->view->SetInterpolationMode (1);
-
     
     QAction* axialAct = new QAction (tr("Axial"), d->widget);
     connect(axialAct, SIGNAL(triggered()), this, SLOT(onMenuAxialTriggered()));
@@ -93,7 +94,6 @@ v3dView2D::v3dView2D(void) : dtkAbstractView(), d(new v3dView2DPrivate)
     d->menu->addAction (zoomAct);
     d->menu->addAction (wlAct);
 
-
     this->addProperty("Orientation",          QStringList() << "Axial" << "Sagittal" << "Coronal");
     this->addProperty("ScalarBarVisibility",  QStringList() << "true" << "false");
     this->addProperty("LookupTable",          QStringList() << "Default" << "Black&White" << "Black&WhiteInversed" << "Spectrum" << "HotMetal" << "GE" << "Flow" << "Loni" << "Loni2" << "Asymmetry" << "PValue" << "blueBlackAlpha" << "greenBlackAlpha" << "redBlackAlpha");
@@ -101,10 +101,8 @@ v3dView2D::v3dView2D(void) : dtkAbstractView(), d(new v3dView2DPrivate)
     this->addProperty("Opacity",              QStringList() << "1.0");
     this->addProperty("ShowAxis",             QStringList() << "true" << "false");
     this->addProperty("Interaction",          QStringList() << "Zoom" << "Window / Level");
-
     
     connect (d->widget, SIGNAL (mouseEvent (QMouseEvent*)), this, SLOT (onMousePressEvent (QMouseEvent*)));
-    
 }
 
 v3dView2D::~v3dView2D(void)
@@ -155,13 +153,13 @@ void v3dView2D::update(void)
 void v3dView2D::link(dtkAbstractView *other)
 {
     if(!d->view)
-      return;
-  
+        return;
+
     if(!other)
-      return;
-  
+        return;
+
     if(vtkSynchronizedView *view = dynamic_cast<vtkSynchronizedView *>((vtkObject*)(other->view())))
-      d->view->AddChild(view);
+        d->view->AddChild(view);
 }
 
 void v3dView2D::unlink(dtkAbstractView *other)
@@ -177,57 +175,57 @@ void *v3dView2D::view(void)
 void v3dView2D::setData(dtkAbstractData *data)
 {
     if(!data)
-      return;
+        return;
 
     d->data = data;
 
     if (data->hasMetaData("PatientName")){
-      const QString patientName = data->metaDataValues(tr("PatientName"))[0];
-      d->view->SetPatientNameData ( patientName.toAscii().constData() );
+        const QString patientName = data->metaDataValues(tr("PatientName"))[0];
+        d->view->SetPatientNameData ( patientName.toAscii().constData() );
     }
     
     if( data->hasMetaData("StudyDescription")){
-      const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
-      d->view->SetStudyNameData ( studyName.toAscii().constData() );
+        const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
+        d->view->SetStudyNameData ( studyName.toAscii().constData() );
     }
     
     if (data->hasMetaData("SeriesDescription")){
-      const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
-      d->view->SetSerieNameData ( seriesName.toAscii().constData() );
+        const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
+        d->view->SetSerieNameData ( seriesName.toAscii().constData() );
     }
 
 
 #ifdef vtkINRIA3D_USE_ITK
     if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else
-      qDebug() << "Cannot cast ITK image";
+        qDebug() << "Cannot cast ITK image";
 #endif
 
     if(vtkDataSet *dataset = dynamic_cast<vtkDataSet*>((vtkDataObject *)(data->data())))
-      d->view->AddDataSet(dataset);
+        d->view->AddDataSet(dataset);
 
     
     dtkAbstractView::setData(data);
@@ -238,7 +236,7 @@ void v3dView2D::setData(dtkAbstractData *data)
 void *v3dView2D::data (void)
 {
     if (d->data)
-      return d->data->output();
+        return d->data->output();
 
     return NULL;
 }
@@ -269,7 +267,7 @@ void v3dView2D::onPropertySet(QString key, QString value)
     if(key == "ShowAxis")
 	this->onShowAxisPropertySet(value);
 
-     if(key == "Interaction")
+    if(key == "Interaction")
 	this->onInteractionPropertySet(value);
 
     this->widget()->update();
@@ -430,39 +428,39 @@ void v3dView2D::onInteractionPropertySet(QString value)
 
 void v3dView2D::onMousePressEvent (QMouseEvent *event)
 {
-  if( event->button() == Qt::RightButton ) {
-    d->menu->popup (event->globalPos());
-  }  
+    if( event->button() == Qt::RightButton ) {
+        d->menu->popup (event->globalPos());
+    }
 }
 
 
 void v3dView2D::onMenuAxialTriggered (void)
 {
-  this->onPropertySet ("Orientation", "Axial");
+    this->onPropertySet ("Orientation", "Axial");
 }
 
 
 void v3dView2D::onMenuCoronalTriggered (void)
 {
-  this->onPropertySet ("Orientation", "Coronal");
+    this->onPropertySet ("Orientation", "Coronal");
 }
 
 
 void v3dView2D::onMenuSagittalTriggered (void)
 {
-  this->onPropertySet ("Orientation", "Sagittal");
+    this->onPropertySet ("Orientation", "Sagittal");
 }
 
 
 void v3dView2D::onMenuZoomTriggered (void)
 {
-  this->onPropertySet ("Interaction", "Zoom");
+    this->onPropertySet ("Interaction", "Zoom");
 }
 
 
 void v3dView2D::onMenuWindowLevelTriggered (void)
 {
-  this->onPropertySet ("Interaction", "Window / Level");
+    this->onPropertySet ("Interaction", "Window / Level");
 }
 
 
