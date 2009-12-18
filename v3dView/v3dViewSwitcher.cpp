@@ -159,7 +159,7 @@ v3dViewSwitcher::v3dViewSwitcher(void) : dtkAbstractView(), d(new v3dViewSwitche
     d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 
     d->v3dWidget = new v3dViewWidget (d->widget);
-    d->v3dWidget->SetUseTDx(true);
+    //d->v3dWidget->SetUseTDx(true);
 
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
     layout->setContentsMargins(0, 0, 0, 0);
