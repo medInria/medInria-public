@@ -42,6 +42,9 @@ public:
 
     medViewContainer *current(void);
 
+signals:
+    void focused(dtkAbstractView *view);
+
 private:
     medViewerAreaStackPrivate *d;
 };
@@ -68,8 +71,6 @@ public:
     void setSeriesIndex(int index);
     void setImageIndex(int index);
 
-    void setView(dtkAbstractView *view);
-
 public slots:
     void setup(void);
     void split(int rows, int cols);
@@ -78,6 +79,8 @@ public slots:
     void onStudyIndexChanged(int index);
     void onSeriesIndexChanged(int index);
     void onImageIndexChanged(int index);
+
+    void onViewFocused(dtkAbstractView *view);
 
 protected slots: // layout settings
     void setStackIndex(int index);

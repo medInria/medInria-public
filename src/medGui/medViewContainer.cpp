@@ -28,7 +28,7 @@ class medViewContainerPrivate
 public:
     QGridLayout *layout;
 
-    QHash<QWidget *, dtkAbstractView*> views;
+    dtkAbstractView *view;
 };
 
 medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new medViewContainerPrivate)
@@ -37,25 +37,21 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
     d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(2);
 
+    d->view = NULL;
+
     s_current = this;
 
-    static int id = 0;
-
-    this->setObjectName(QString("medViewContainer%1").arg(id++));
+    if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent))
+        connect(this, SIGNAL(focused(dtkAbstractView*)), container, SIGNAL(focused(dtkAbstractView*)));
 
     this->setFocusPolicy(Qt::ClickFocus);
 }
 
 medViewContainer::~medViewContainer(void)
 {
-    QHash<QWidget *, dtkAbstractView*>::iterator it = d->views.begin();
+    delete d;
 
-    while (it!=d->views.end()) {
-        delete (*it);
-        ++it;
-    }    
-
-    d->views.clear();
+    d = NULL;
 }
 
 medViewContainer *medViewContainer::current(void)
@@ -65,62 +61,38 @@ medViewContainer *medViewContainer::current(void)
 
 void medViewContainer::split(int rows, int cols)
 {
-    medViewContainer *current = this->current();
-
-    if (!current)
-        return;
-
-    if (current->d->layout->count())
+    if (d->layout->count())
         return;
 
     for(int i = 0 ; i < rows ; i++)
         for(int j = 0 ; j < cols ; j++)
-            current->d->layout->addWidget(new medViewContainer(current), i, j);
+            d->layout->addWidget(new medViewContainer(this), i, j);
 
     s_current = 0;
 }
 
 dtkAbstractView *medViewContainer::view(void)
 {
-    QWidget *widget = NULL;
-
-    if(d->layout->count())
-        widget = d->layout->itemAt(0)->widget();
-
-    if(!widget)
-        return NULL;
-
-    if(!d->views.keys().contains(widget))
-        return NULL;
-
-    return d->views.value(widget);
+    return d->view;
 }
 
 void medViewContainer::setView(dtkAbstractView *view)
 {
     if (!view)
         return;
-  
-    medViewContainer *current = this->current();
 
-    if (!current)
+    if (d->layout->count())
         return;
 
-    if (current->d->layout->count())
-        return;
-    
     if(QWidget *widget = view->widget()) {
-        widget->setParent(current);
-        current->d->layout->setContentsMargins(1, 1, 1, 1);
-        current->d->layout->addWidget(widget, 0, 0);
-        d->views.insert(widget, view);
+        d->layout->setContentsMargins(1, 1, 1, 1);
+        d->layout->addWidget(widget, 0, 0);
+        d->view = view;
     }
 }
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
-    qDebug() << __FILE__ << __func__;
-
     s_current = this;
 
     if(dtkAbstractView *view = this->view())
@@ -131,8 +103,6 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)
 {
-    qDebug() << __FILE__ << __func__;
-
     this->update();
 }
 

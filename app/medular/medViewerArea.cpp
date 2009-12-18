@@ -61,6 +61,10 @@ medViewerAreaStack::medViewerAreaStack(QWidget *parent) : QStackedWidget(parent)
     this->addWidget(d->container_custom);
 
     this->setCurrentIndex(0);
+
+    connect(d->container_single, SIGNAL(focused(dtkAbstractView*)), this, SIGNAL(focused(dtkAbstractView*)));
+    connect(d->container_multi,  SIGNAL(focused(dtkAbstractView*)), this, SIGNAL(focused(dtkAbstractView*)));
+    connect(d->container_custom, SIGNAL(focused(dtkAbstractView*)), this, SIGNAL(focused(dtkAbstractView*)));
 }
 
 medViewerAreaStack::~medViewerAreaStack(void)
@@ -97,13 +101,14 @@ public:
 
     QStackedWidget *stack;
 
+    // toolbox elements
+
     QComboBox *patientComboBox;
 
-    // Registration toolbox element
-
-    QComboBox   *registrationWidgetCombo;
-    QPushButton *registrationWidgetRegisterButton;
-    QPushButton *registrationWidgetSaveButton;
+    QComboBox *foregroundLookupTableComboBox;
+    QComboBox *backgroundLookupTableComboBox;
+    QCheckBox *scalarBarVisibilityCheckBox;
+    QCheckBox *axisVisibilityCheckBox;
 
     // view containers hash
 
@@ -172,64 +177,62 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     connect(layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SLOT(setStackIndex(int)));
 
-//    connect(tab, SIGNAL(currentChanged(int)), stack, SLOT(setCurrentIndex(int)));
-
     medToolBox *layoutToolBox = new medToolBox(this);
     layoutToolBox->setTitle("Layout");
     layoutToolBox->setWidget(layoutToolBoxTab);
 
     // Setting up view settings
 
-    QComboBox *foregroundLookupTableComboBox = new QComboBox(this);
-    foregroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
-    foregroundLookupTableComboBox->addItem("Default");
-    foregroundLookupTableComboBox->addItem("Black&White");
-    foregroundLookupTableComboBox->addItem("Black&WhiteInversed");
-    foregroundLookupTableComboBox->addItem("Spectrum");
-    foregroundLookupTableComboBox->addItem("HotMetal");
-    foregroundLookupTableComboBox->addItem("GE");
-    foregroundLookupTableComboBox->addItem("Loni");
-    foregroundLookupTableComboBox->addItem("Loni2");
-    foregroundLookupTableComboBox->addItem("Asymmetry");
-    foregroundLookupTableComboBox->addItem("PValue");
-    foregroundLookupTableComboBox->addItem("blueBlackAlpha");
-    foregroundLookupTableComboBox->addItem("greenBlackAlpha");
-    foregroundLookupTableComboBox->addItem("redBlackAlpha");
+    d->foregroundLookupTableComboBox = new QComboBox(this);
+    d->foregroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
+    d->foregroundLookupTableComboBox->addItem("Default");
+    d->foregroundLookupTableComboBox->addItem("Black&White");
+    d->foregroundLookupTableComboBox->addItem("Black&WhiteInversed");
+    d->foregroundLookupTableComboBox->addItem("Spectrum");
+    d->foregroundLookupTableComboBox->addItem("HotMetal");
+    d->foregroundLookupTableComboBox->addItem("GE");
+    d->foregroundLookupTableComboBox->addItem("Loni");
+    d->foregroundLookupTableComboBox->addItem("Loni2");
+    d->foregroundLookupTableComboBox->addItem("Asymmetry");
+    d->foregroundLookupTableComboBox->addItem("PValue");
+    d->foregroundLookupTableComboBox->addItem("blueBlackAlpha");
+    d->foregroundLookupTableComboBox->addItem("greenBlackAlpha");
+    d->foregroundLookupTableComboBox->addItem("redBlackAlpha");
 
-    QComboBox *backgroundLookupTableComboBox = new QComboBox(this);
-    backgroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
-    backgroundLookupTableComboBox->addItem("Default");
-    backgroundLookupTableComboBox->addItem("Black&White");
-    backgroundLookupTableComboBox->addItem("Black&WhiteInversed");
-    backgroundLookupTableComboBox->addItem("Spectrum");
-    backgroundLookupTableComboBox->addItem("HotMetal");
-    backgroundLookupTableComboBox->addItem("GE");
-    backgroundLookupTableComboBox->addItem("Loni");
-    backgroundLookupTableComboBox->addItem("Loni2");
-    backgroundLookupTableComboBox->addItem("Asymmetry");
-    backgroundLookupTableComboBox->addItem("PValue");
-    backgroundLookupTableComboBox->addItem("blueBlackAlpha");
-    backgroundLookupTableComboBox->addItem("greenBlackAlpha");
-    backgroundLookupTableComboBox->addItem("redBlackAlpha");
+    d->backgroundLookupTableComboBox = new QComboBox(this);
+    d->backgroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
+    d->backgroundLookupTableComboBox->addItem("Default");
+    d->backgroundLookupTableComboBox->addItem("Black&White");
+    d->backgroundLookupTableComboBox->addItem("Black&WhiteInversed");
+    d->backgroundLookupTableComboBox->addItem("Spectrum");
+    d->backgroundLookupTableComboBox->addItem("HotMetal");
+    d->backgroundLookupTableComboBox->addItem("GE");
+    d->backgroundLookupTableComboBox->addItem("Loni");
+    d->backgroundLookupTableComboBox->addItem("Loni2");
+    d->backgroundLookupTableComboBox->addItem("Asymmetry");
+    d->backgroundLookupTableComboBox->addItem("PValue");
+    d->backgroundLookupTableComboBox->addItem("blueBlackAlpha");
+    d->backgroundLookupTableComboBox->addItem("greenBlackAlpha");
+    d->backgroundLookupTableComboBox->addItem("redBlackAlpha");
 
-    connect(foregroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
-    connect(backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
+    connect(d->foregroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
+    connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
 
-    QCheckBox *scalarBarVisibilityCheckBox = new QCheckBox(this);
+    d->scalarBarVisibilityCheckBox = new QCheckBox(this);
 
-    connect(scalarBarVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(setupScalarBarVisibility(bool)));
+    connect(d->scalarBarVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(setupScalarBarVisibility(bool)));
 
-    QCheckBox *axisVisibilityCheckBox = new QCheckBox(this);
+    d->axisVisibilityCheckBox = new QCheckBox(this);
 
-    connect(axisVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(setupAxisVisibility(bool)));
+    connect(d->axisVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(setupAxisVisibility(bool)));
 
     QWidget *viewToolBoxWidget = new QWidget;
 
     QFormLayout *lutToolBoxWidgetLayout = new QFormLayout(viewToolBoxWidget);
-    lutToolBoxWidgetLayout->addRow("Foreground lut:", foregroundLookupTableComboBox);
-    lutToolBoxWidgetLayout->addRow("Background lut:", backgroundLookupTableComboBox);
-    lutToolBoxWidgetLayout->addRow("Show axis", axisVisibilityCheckBox);
-    lutToolBoxWidgetLayout->addRow("Show scalars", scalarBarVisibilityCheckBox);
+    lutToolBoxWidgetLayout->addRow("Foreground lut:", d->foregroundLookupTableComboBox);
+    lutToolBoxWidgetLayout->addRow("Background lut:", d->backgroundLookupTableComboBox);
+    lutToolBoxWidgetLayout->addRow("Show axis", d->axisVisibilityCheckBox);
+    lutToolBoxWidgetLayout->addRow("Show scalars", d->scalarBarVisibilityCheckBox);
     lutToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
 
     medToolBox *viewToolBox = new medToolBox(this);
@@ -330,11 +333,6 @@ void medViewerArea::setImageIndex(int index)
 
 }
 
-void medViewerArea::setView(dtkAbstractView *view)
-{
-    d->view_stacks.value(d->patientComboBox->currentIndex())->current()->setView(view);
-}
-
 void medViewerArea::setup(void)
 {
     d->patientComboBox->clear();
@@ -352,7 +350,8 @@ void medViewerArea::setup(void)
 
 void medViewerArea::split(int rows, int cols)
 {
-    d->view_stacks.value(d->patientComboBox->currentIndex())->current()->split(rows, cols);
+    if (d->view_stacks.count())
+        d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->split(rows, cols);
 }
 
 void medViewerArea::onPatientIndexChanged(int index)
@@ -366,6 +365,7 @@ void medViewerArea::onPatientIndexChanged(int index)
 
     if(!d->view_stacks.contains(index)) {
         view_stack = new medViewerAreaStack(this);
+        connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
         d->view_stacks.insert(index, view_stack);
         d->stack->addWidget(view_stack);
     } else {
@@ -431,7 +431,7 @@ void medViewerArea::onSeriesIndexChanged(int index)
     
     if (imData) {
 
-        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dViewSwitcher");
+        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView");
 
         if (!view)
             return;
@@ -446,7 +446,8 @@ void medViewerArea::onSeriesIndexChanged(int index)
         view->setData(imData);
         view->reset();
 
-        this->setView(view);
+        d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->setView(view);
+        d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
     
 	//delete imData;
     }
@@ -454,8 +455,16 @@ void medViewerArea::onSeriesIndexChanged(int index)
 
 void medViewerArea::onImageIndexChanged(int index)
 {
-    if(index<1)
+    if (index<1)
         return;
+}
+
+void medViewerArea::onViewFocused(dtkAbstractView *view)
+{
+    d->foregroundLookupTableComboBox->setCurrentIndex(d->foregroundLookupTableComboBox->findText(view->property("LookupTable")));
+    d->backgroundLookupTableComboBox->setCurrentIndex(d->backgroundLookupTableComboBox->findText(view->property("BackgroundLookupTable")));
+    d->axisVisibilityCheckBox->setChecked(view->property("ShowAxis") == "true");
+    d->scalarBarVisibilityCheckBox->setChecked(view->property("ScalarBarVisibility") == "true");
 }
 
 // layout settings
@@ -470,24 +479,29 @@ void medViewerArea::setStackIndex(int index)
 
 void medViewerArea::setupForegroundLookupTable(QString table)
 {
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->view())
+    if(!d->view_stacks.count())
+        return;
+
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
         view->setProperty("LookupTable", table);
+    else
+        qDebug() << "Unable to retrieve view";
 }
 
 void medViewerArea::setupBackgroundLookupTable(QString table)
 {
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->view())
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
         view->setProperty("BackgroundLookupTable", table);
 }
 
 void medViewerArea::setupAxisVisibility(bool visible)
 {
-    if(dtkAbstractView *view = d->view_stacks.value(d->patientComboBox->currentIndex())->current()->view())
+    if(dtkAbstractView *view = d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
         visible ? view->setProperty("ShowAxis", "true") : view->setProperty("ShowAxis", "false");
 }
 
 void medViewerArea::setupScalarBarVisibility(bool visible)
 {
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->view())
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
         visible ? view->setProperty("ScalarBarVisibility", "true") : view->setProperty("ScalarBarVisibility", "false");
 }
