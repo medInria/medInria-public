@@ -10,7 +10,6 @@
 
 #include "v3dView2D.h"
 #include "v3dView3D.h"
-#include "v3dViewWidget.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 
@@ -32,7 +31,7 @@ public:
     vtkRenderer *renderer;
     vtkViewImage3D *view;
 
-    v3dViewWidget *widget;
+    QVTKWidget *widget;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -43,8 +42,10 @@ v3dView3D::v3dView3D(void) : dtkAbstractView(), d(new v3dView3DPrivate)
 {
     d->renderer = vtkRenderer::New();
     
-    d->widget = new v3dViewWidget;
+    d->widget = new QVTKWidget;
     d->widget->GetRenderWindow()->AddRenderer(d->renderer);
+    d->widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    d->widget->setFocusPolicy(Qt::NoFocus);
 
     d->view = vtkViewImage3D::New();
     d->view->SetRenderWindow(d->widget->GetRenderWindow());
@@ -125,31 +126,31 @@ void v3dView3D::setData(dtkAbstractData *data)
 
 #ifdef vtkINRIA3D_USE_ITK
     if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) )
-      d->view->SetITKImage ( image );
+        d->view->SetITKImage ( image );
     else
-      qDebug() << "Cannot cast ITK image";
+        qDebug() << "Cannot cast ITK image";
 #endif
 
     if(vtkImageData* image = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data())))
