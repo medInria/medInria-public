@@ -22,8 +22,9 @@
 
 #include <QtGui/QMainWindow>
 
-class medMainWindowPrivate;
 class QModelIndex;
+
+class medMainWindowPrivate;
 
 class medMainWindow : public QMainWindow
 {
@@ -51,8 +52,9 @@ public slots:
 
 protected:
     void closeEvent(QCloseEvent *event);
-    void keyPressEvent(QKeyEvent *event);
-    void resizeEvent(QResizeEvent *event);
+
+//    void keyPressEvent(QKeyEvent *event);
+//    void resizeEvent(QResizeEvent *event);
 
 private:
     medMainWindowPrivate *d;

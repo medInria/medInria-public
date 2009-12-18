@@ -24,8 +24,33 @@
 
 class dtkAbstractView;
 
+class medViewContainer;
+
+// /////////////////////////////////////////////////////////////////
+// medViewerAreaStack
+// /////////////////////////////////////////////////////////////////
+
+class medViewerAreaStackPrivate;
+
+class medViewerAreaStack : public QStackedWidget
+{
+    Q_OBJECT
+
+public:
+     medViewerAreaStack(QWidget *parent = 0);
+    ~medViewerAreaStack(void);
+
+    medViewContainer *current(void);
+
+private:
+    medViewerAreaStackPrivate *d;
+};
+
+// /////////////////////////////////////////////////////////////////
+// medViewerArea
+// /////////////////////////////////////////////////////////////////
+
 class medViewerAreaPrivate;
-class medViewerAreaViewContainer;
 
 class medViewerArea : public QWidget
 {
@@ -44,12 +69,6 @@ public:
     void setImageIndex(int index);
 
     void setView(dtkAbstractView *view);
-        
-signals:
-    void patientSelected(int index);
-    void studySelected(int index);
-    void seriesSelected(int index);
-    void imageSelected(int index);
 
 public slots:
     void setup(void);
@@ -59,6 +78,15 @@ public slots:
     void onStudyIndexChanged(int index);
     void onSeriesIndexChanged(int index);
     void onImageIndexChanged(int index);
+
+protected slots: // layout settings
+    void setStackIndex(int index);
+
+protected slots: // view settings
+    void setupForegroundLookupTable(QString table);
+    void setupBackgroundLookupTable(QString table);
+    void setupAxisVisibility(bool visible);
+    void setupScalarBarVisibility(bool visible);
 
 private:
     medViewerAreaPrivate *d;

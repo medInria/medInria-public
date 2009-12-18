@@ -37,6 +37,9 @@ public:
 
 public:
     medDatabaseItem *root;
+
+    QList<QVariant> attributes;
+    QList<QVariant> data;
 };
 
 medDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
@@ -56,9 +59,53 @@ medDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
 
 medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent), d(new medDatabaseModelPrivate)
 {
-    QList<QVariant> data = QList<QVariant>() << "id" << "name";
+    d->attributes = QList<QVariant>()
+        << "id"
+        << "Patient name"
+        << "Study name"
+        << "Series name"
+        << "Image name"
+        << "Count"
+        << "Age"
+        << "Date of birth"
+        << "Gender"
+        << "Description"
+        << "Modality"
+        << "Protocol"
+        << "Comments"
+        << "Status"
+        << "Date acquired"
+        << "Date imported"
+        << "Last opened"
+        << "Referee"
+        << "Performer"
+        << "Institution"
+        << "Report";
 
-    d->root = new medDatabaseItem("", data, data);
+    d->data = QList<QVariant>()
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << ""
+        << "";
+
+    d->root = new medDatabaseItem("", d->attributes, d->attributes);
 
     populate(d->root);
 
@@ -437,9 +484,12 @@ void medDatabaseModel::populate(medDatabaseItem *root)
         QVariant   ptId = ptQuery.value(0);
         QVariant ptName = ptQuery.value(1);
 
-        medDatabaseItem *ptItem = new medDatabaseItem("patient",
-                QList<QVariant>() << "id" << "name",
-                QList<QVariant>() << ptId << ptName, root);
+        QList<QVariant> ptData;
+        ptData << d->data;
+        ptData[0] = ptId;
+        ptData[1] = ptName;
+
+        medDatabaseItem *ptItem = new medDatabaseItem("patient", d->attributes, ptData, root);
 
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
         stQuery.prepare("SELECT * FROM study WHERE patient = :id");
@@ -451,9 +501,12 @@ void medDatabaseModel::populate(medDatabaseItem *root)
             QVariant   stId = stQuery.value(0);
             QVariant stName = stQuery.value(2);
             
-            medDatabaseItem *stItem = new medDatabaseItem("study",
-                    QList<QVariant>() << "id" << "name",
-                    QList<QVariant>() << stId << stName, ptItem);
+            QList<QVariant> stData;
+            stData << d->data;
+            stData[0] = stId;
+            stData[2] = stName;
+
+            medDatabaseItem *stItem = new medDatabaseItem("study", d->attributes, stData, ptItem);
             
             QSqlQuery seQuery(*(medDatabaseController::instance()->database()));
             seQuery.prepare("SELECT * FROM series WHERE study = :id");
@@ -466,9 +519,12 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                 QVariant seSize = seQuery.value(2);
                 QVariant seName = seQuery.value(3);
                 
-                medDatabaseItem *seItem = new medDatabaseItem("series",
-                        QList<QVariant>() << "id" << "name",
-                        QList<QVariant>() << seId << seName, stItem);
+                QList<QVariant> seData;
+                seData << d->data;
+                seData[0] = seId;
+                seData[3] = seName;
+
+                medDatabaseItem *seItem = new medDatabaseItem("series", d->attributes, seData, stItem);
                 
                 QSqlQuery imQuery(*(medDatabaseController::instance()->database()));
                 imQuery.prepare("SELECT * FROM image WHERE series = :id");
@@ -480,11 +536,14 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                     QVariant   imId = imQuery.value(0);
                     QVariant imSize = imQuery.value(2);
                     QVariant imName = imQuery.value(3);
-                    QVariant imThum = imQuery.value(4);
+//                    QVariant imThum = imQuery.value(4);
 
-                    medDatabaseItem *imItem = new medDatabaseItem("image",
-                            QList<QVariant>() << "id" << "name" << "thumbnail",
-                            QList<QVariant>() << imId << imName << imThum, seItem);
+                    QList<QVariant> imData;
+                    imData << d->data;
+                    imData[0] = imId;
+                    imData[4] = imName;
+
+                    medDatabaseItem *imItem = new medDatabaseItem("image", d->attributes, imData, seItem);
                     
                     seItem->append(imItem);
                 }            

@@ -48,9 +48,6 @@ public slots:
     void  onSeriesClicked(int id);
     void   onImageClicked(int id);
 
-protected slots:
-    void onHovered(medDatabaseNavigatorItem *item);
-
 private:
     medDatabaseNavigatorPrivate *d;
 };

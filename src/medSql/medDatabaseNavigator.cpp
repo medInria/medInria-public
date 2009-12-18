@@ -23,8 +23,6 @@
 #include "medDatabaseNavigatorItem.h"
 #include "medDatabaseNavigatorItemGroup.h"
 #include "medDatabaseNavigatorScene.h"
-#include "medDatabaseNavigatorSelector.h"
-#include "medDatabaseNavigatorTooltip.h"
 #include "medDatabaseNavigatorView.h"
 
 #include <QtCore>
@@ -37,11 +35,6 @@ class medDatabaseNavigatorPrivate
 public:
     medDatabaseNavigatorScene *scene;
     medDatabaseNavigatorView *view;
-    medDatabaseNavigatorSelector *selector;
-
-    QPropertyAnimation *selector_position_animation;
-    QPropertyAnimation *selector_rect_animation;
-    QParallelAnimationGroup *selector_animation;
 };
 
 medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(new medDatabaseNavigatorPrivate)
@@ -51,12 +44,6 @@ medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(
     d->view = new medDatabaseNavigatorView(this);
     d->view->setScene(d->scene);
 
-    d->selector = new medDatabaseNavigatorSelector;
-    d->selector_position_animation = NULL;
-    d->selector_rect_animation = NULL;
-    d->selector_animation = NULL;
-    d->scene->addItem(d->selector);
-
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -64,11 +51,9 @@ medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(
 
     medDatabaseNavigatorController::instance()->setOrientation(Qt::Vertical);
     medDatabaseNavigatorController::instance()->setItemSize(128, 128);
-//    medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
-//        ? this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
-//        : this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
-
-    connect(d->view, SIGNAL(hovered(medDatabaseNavigatorItem*)), this, SLOT(onHovered(medDatabaseNavigatorItem*)));
+    medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
+        ? this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
+        : this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 }
 
 medDatabaseNavigator::~medDatabaseNavigator(void)
@@ -169,56 +154,4 @@ void medDatabaseNavigator::onSeriesClicked(int id)
 void medDatabaseNavigator::onImageClicked(int id)
 {
     qDebug() << __func__ << id;
-}
-
-void medDatabaseNavigator::onHovered(medDatabaseNavigatorItem *item)
-{
-    qreal selector_width = medDatabaseNavigatorController::instance()->selectorWidth();
-    qreal item_width = medDatabaseNavigatorController::instance()->itemWidth();
-    qreal item_height = medDatabaseNavigatorController::instance()->itemHeight();
-    qreal item_spacing = medDatabaseNavigatorController::instance()->itemSpacing();
-    qreal item_margins = selector_width - item_width;
-    qreal query_offset = medDatabaseNavigatorController::instance()->queryOffset();
-
-    QPoint selector_offset(-4, -4);
-
-//    QPoint selector_offset((medDatabaseNavigatorController::instance()->selectorWidth()  - medDatabaseNavigatorController::instance()->itemWidth())/-2,
-//                           (medDatabaseNavigatorController::instance()->selectorHeight() - medDatabaseNavigatorController::instance()->itemHeight())/-2);
-
-    if(qAbs(d->selector->pos().x() - item->scenePos().x()) < 20 && qAbs(d->selector->pos().y() - item->scenePos().y()) < 20)
-        return;
-
-    // Update selector
-
-    d->selector->setText(item->path());
-
-    // Selector position animation
-
-    if(!d->selector_position_animation)
-        d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
-
-    d->selector_position_animation->setDuration(100);
-    d->selector_position_animation->setStartValue(d->selector->pos());
-    d->selector_position_animation->setEndValue(item->scenePos() + selector_offset);
-    d->selector_position_animation->setEasingCurve(QEasingCurve::Linear);
-
-    // Selector rect animation
-
-    if(!d->selector_rect_animation)
-        d->selector_rect_animation = new QPropertyAnimation(d->selector, "rect");
-
-    d->selector_rect_animation->setDuration(100);
-    d->selector_rect_animation->setStartValue(d->selector->rect());
-    d->selector_rect_animation->setEndValue(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
-    d->selector_rect_animation->setEasingCurve(QEasingCurve::Linear);
-
-    // Selector Parallel animation
-
-    if(!d->selector_animation) {
-        d->selector_animation = new QParallelAnimationGroup(this);
-        d->selector_animation->addAnimation(d->selector_position_animation);
-        d->selector_animation->addAnimation(d->selector_rect_animation);
-    }
-
-    d->selector_animation->start();
 }

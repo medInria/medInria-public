@@ -58,7 +58,13 @@ medDatabasePreviewView::medDatabasePreviewView(QWidget *parent) : QGraphicsView(
     this->viewport()->setMouseTracking(true);
 
     this->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    if(medDatabasePreviewController::instance()->orientation() == Qt::Horizontal) {
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    } else {
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 }
 

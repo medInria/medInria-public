@@ -17,11 +17,9 @@
  * 
  */
 
-#include "medDatabaseNavigatorArrow.h"
 #include "medDatabaseNavigatorController.h"
 #include "medDatabaseNavigatorItem.h"
 #include "medDatabaseNavigatorView.h"
-#include "medDatabaseNavigatorTooltip.h"
 
 class medDatabaseNavigatorViewPrivate
 {
@@ -34,12 +32,15 @@ medDatabaseNavigatorView::medDatabaseNavigatorView(QWidget *parent) : QGraphicsV
 
     this->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
 
-    if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal)
+    if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal) {
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    else
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    } else {
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
 
-    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+//    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setFrameShape(QFrame::NoFrame);
 
     this->setStyleSheet("background: transparent;");

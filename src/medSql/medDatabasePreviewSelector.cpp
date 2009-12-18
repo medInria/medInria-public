@@ -64,7 +64,7 @@ void medDatabasePreviewSelector::paint(QPainter *painter, const QStyleOptionGrap
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setBrush(Qt::gray);
     painter->setPen(Qt::NoPen);
-    painter->drawRoundRect(d->rect, 12, 12);
+    painter->drawRoundedRect(d->rect, 12, 12);
     painter->setPen(Qt::white);
     painter->drawText(d->rect.adjusted(10, d->rect.height() - 17, -10, d->rect.height()), Qt::AlignRight | Qt::TextSingleLine, d->text);
     painter->restore();

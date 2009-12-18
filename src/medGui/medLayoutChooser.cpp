@@ -33,13 +33,14 @@ public:
 medLayoutChooser::medLayoutChooser(QWidget *parent) : QTableWidget(parent), d(new medLayoutChooserPrivate)
 {
     this->setRowCount(5);
-    this->setColumnCount(8);
+    this->setColumnCount(5);
     this->horizontalHeader()->setHidden(true);
     this->verticalHeader()->setHidden(true);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->resizeColumnsToContents();
     this->resizeRowsToContents();
+    this->setFrameShape(QFrame::NoFrame);
 
     d->left = d->right = d->top = d->bottom = 0;
 

@@ -28,7 +28,8 @@
 #include <dtkScript/dtkScriptInterpreterPython.h>
 #include <dtkScript/dtkScriptInterpreterTcl.h>
 
-#include <medGui/medWorkspaceSwitcher.h>
+#include <medGui/medWorkspaceShifter.h>
+//#include <medGui/medWorkspaceSwitcher.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseView.h>
@@ -47,13 +48,15 @@ public:
     medBrowserArea *browserArea;
     medViewerArea  *viewerArea;
 
-    medWorkspaceSwitcher *switcher;
-
     QToolBar *toolBar;
 
     QAction *switchToWelcomeAreaAction;
     QAction *switchToBrowserAreaAction;
     QAction *switchToViewerAreaAction;
+
+    medWorkspaceShifterAction *shiftToWelcomeAreaAction;
+    medWorkspaceShifterAction *shiftToBrowserAreaAction;
+    medWorkspaceShifterAction *shiftToViewerAreaAction;
 };
 
 extern "C" int init_core(void);                  // -- Initialization core layer python wrapped functions
@@ -185,16 +188,32 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
         "set pluginManager  [dtkPluginManager_instance]"
     );
 
-    d->switcher = new medWorkspaceSwitcher(this);
-    d->switcher->addWorkspace(d->welcomeArea);
-    d->switcher->addWorkspace(d->browserArea);
-    d->switcher->addWorkspace(d->viewerArea);
+//    d->switcher = new medWorkspaceSwitcher(this);
+//    d->switcher->addWorkspace(d->welcomeArea);
+//    d->switcher->addWorkspace(d->browserArea);
+//    d->switcher->addWorkspace(d->viewerArea);
+//
+//    connect(d->switcher, SIGNAL(triggered(int)), this, SLOT(switchToArea(int)));
 
-    connect(d->switcher, SIGNAL(triggered(int)), this, SLOT(switchToArea(int)));
+    d->shiftToWelcomeAreaAction = new medWorkspaceShifterAction("Welcome");
+    d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
+    d->shiftToViewerAreaAction  = new medWorkspaceShifterAction("Viewer");
+
+    d->shiftToWelcomeAreaAction->setChecked(true);
+
+    connect(d->shiftToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToWelcomeArea()));
+    connect(d->shiftToBrowserAreaAction, SIGNAL(triggered()), this, SLOT(switchToBrowserArea()));
+    connect(d->shiftToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
+
+    medWorkspaceShifter *shifter = new medWorkspaceShifter(this);
+    shifter->addAction(d->shiftToWelcomeAreaAction);
+    shifter->addAction(d->shiftToBrowserAreaAction);
+    shifter->addAction(d->shiftToViewerAreaAction);
 
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
     this->statusBar()->setFixedHeight(31);
+    this->statusBar()->addPermanentWidget(shifter);
 
     this->switchToWelcomeArea();
 }
@@ -251,6 +270,10 @@ void medMainWindow::switchToAdminArea(void)
     d->switchToBrowserAreaAction->setEnabled(true);
     d->switchToViewerAreaAction->setEnabled(true);
 
+    d->shiftToWelcomeAreaAction->setChecked(true);
+    d->shiftToBrowserAreaAction->setChecked(false);
+    d->shiftToViewerAreaAction->setChecked(false);
+
     disconnect(d->switchToWelcomeAreaAction, SIGNAL(triggered()));
        connect(d->switchToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToAdminArea()));
 }
@@ -267,6 +290,10 @@ void medMainWindow::switchToWelcomeArea(void)
     d->switchToBrowserAreaAction->setEnabled(true);
     d->switchToViewerAreaAction->setEnabled(true);
 
+    d->shiftToWelcomeAreaAction->setChecked(true);
+    d->shiftToBrowserAreaAction->setChecked(false);
+    d->shiftToViewerAreaAction->setChecked(false);
+
     disconnect(d->switchToWelcomeAreaAction, SIGNAL(triggered()));
        connect(d->switchToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToWelcomeArea()));
 }
@@ -282,6 +309,10 @@ void medMainWindow::switchToBrowserArea(void)
     d->switchToWelcomeAreaAction->setEnabled(true);
     d->switchToBrowserAreaAction->setEnabled(false);
     d->switchToViewerAreaAction->setEnabled(true);
+
+    d->shiftToWelcomeAreaAction->setChecked(false);
+    d->shiftToBrowserAreaAction->setChecked(true);
+    d->shiftToViewerAreaAction->setChecked(false);
 }
 
 void medMainWindow::switchToViewerArea(void)
@@ -295,6 +326,10 @@ void medMainWindow::switchToViewerArea(void)
     d->switchToWelcomeAreaAction->setEnabled(true);
     d->switchToBrowserAreaAction->setEnabled(true);
     d->switchToViewerAreaAction->setEnabled(false);
+
+    d->shiftToWelcomeAreaAction->setChecked(false);
+    d->shiftToBrowserAreaAction->setChecked(false);
+    d->shiftToViewerAreaAction->setChecked(true);
 }
 
 void medMainWindow::onPatientDoubleClicked(const QModelIndex &index)
@@ -355,24 +390,24 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     delete medDatabaseController::instance();
 }
 
-void medMainWindow::keyPressEvent(QKeyEvent *event)
-{
-    switch(event->key()) {
-    case Qt::Key_F1:
-        d->switcher->start();
-        break;
-    case Qt::Key_F2:
-        d->switcher->stop();
-        break;
-    default:
-        QMainWindow::keyPressEvent(event);
-        break;
-    };
-}
+//void medMainWindow::keyPressEvent(QKeyEvent *event)
+//{
+//    switch(event->key()) {
+//    case Qt::Key_F1:
+//        d->switcher->start();
+//        break;
+//    case Qt::Key_F2:
+//        d->switcher->stop();
+//        break;
+//    default:
+//        QMainWindow::keyPressEvent(event);
+//        break;
+//    };
+//}
 
-void medMainWindow::resizeEvent(QResizeEvent *event)
-{
-    d->switcher->resize(event->size());
-    
-    event->accept();
-}
+//void medMainWindow::resizeEvent(QResizeEvent *event)
+//{
+//    d->switcher->resize(event->size());
+//
+//    event->accept();
+//}

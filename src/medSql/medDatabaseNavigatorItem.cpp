@@ -23,6 +23,137 @@
 #include <QtCore>
 #include <QtGui>
 
+// /////////////////////////////////////////////////////////////////
+// medDatabaseNavigatorItemLabel
+// /////////////////////////////////////////////////////////////////
+
+medDatabaseNavigatorItemLabel::medDatabaseNavigatorItemLabel(QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmaps/database_navigator_item_label.png"), parent)
+{
+
+}
+
+medDatabaseNavigatorItemLabel::~medDatabaseNavigatorItemLabel(void)
+{
+
+}
+
+void medDatabaseNavigatorItemLabel::setText(const QString& text)
+{
+    this->text = text;
+}
+
+void medDatabaseNavigatorItemLabel::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QGraphicsPixmapItem::paint(painter, option, widget);
+
+    painter->save();
+    painter->setPen(Qt::white);
+    painter->setFont(QFont("Helvetica", 11, 1, 0));
+    painter->drawText(option->rect.translated(0, 7), Qt::AlignRight | Qt::TextSingleLine, text);
+    painter->restore();
+}
+
+// /////////////////////////////////////////////////////////////////
+// medDatabaseNavigatorItemCount
+// /////////////////////////////////////////////////////////////////
+
+medDatabaseNavigatorItemCount::medDatabaseNavigatorItemCount(QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmaps/database_navigator_item_count.png"), parent)
+{
+    this->count = 0;
+}
+
+medDatabaseNavigatorItemCount::~medDatabaseNavigatorItemCount(void)
+{
+
+}
+
+void medDatabaseNavigatorItemCount::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QGraphicsPixmapItem::paint(painter, option, widget);
+
+    painter->save();
+    painter->setPen(Qt::white);
+    painter->setFont(QFont("Helvetica", 11, 1, 0));
+    painter->drawText(option->rect.translated(0, 7), Qt::AlignHCenter, QString::number(count));
+    painter->restore();
+}
+
+// /////////////////////////////////////////////////////////////////
+// medDatabaseNavigatorItemChecker
+// /////////////////////////////////////////////////////////////////
+
+class medDatabaseNavigatorItemCheckerPrivate
+{
+public:
+    bool      checked;
+    QPixmap unchecked_pixmap;
+    QPixmap   checked_pixmap;
+};
+
+medDatabaseNavigatorItemChecker::medDatabaseNavigatorItemChecker(QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(parent), d(new medDatabaseNavigatorItemCheckerPrivate)
+{
+    d->unchecked_pixmap = QPixmap(":/pixmaps/database_navigator_item_checker_unchecked.png");
+    d->checked_pixmap   = QPixmap(":/pixmaps/database_navigator_item_checker_checked.png");
+    d->checked = false;
+
+    this->setPixmap(d->unchecked_pixmap);
+}
+
+medDatabaseNavigatorItemChecker::~medDatabaseNavigatorItemChecker(void)
+{
+    delete d;
+
+    d = NULL;
+}
+
+void medDatabaseNavigatorItemChecker::check(void)
+{
+    this->setChecked(true);
+}
+
+void medDatabaseNavigatorItemChecker::uncheck(void)
+{
+    this->setChecked(false);
+}
+
+void medDatabaseNavigatorItemChecker::setChecked(bool value)
+{
+    d->checked = value;
+
+    if (d->checked) {
+        this->setPixmap(d->checked_pixmap);
+        emit checked();
+    } else {
+        this->setPixmap(d->unchecked_pixmap);
+        emit unchecked();
+    }
+}
+
+void medDatabaseNavigatorItemChecker::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    d->checked = !d->checked;
+
+    if (d->checked) {
+        this->setPixmap(d->checked_pixmap);
+        emit checked();
+    } else {
+        this->setPixmap(d->unchecked_pixmap);
+        emit unchecked();
+    }
+}
+
+// /////////////////////////////////////////////////////////////////
+// medDatabaseNavigatorItem
+// /////////////////////////////////////////////////////////////////
+
+// -- TODO
+//
+// Passing database indexes as arguments to the constructor is more than
+// sufficiant.
+//
+// Attributes such as path to thumbnail, count and text should be retreived
+// from the database.
+
 class medDatabaseNavigatorItemPrivate
 {
 public:
@@ -32,9 +163,20 @@ public:
     int imageId;
 
     QString path;
+
+    medDatabaseNavigatorItemCount *item_count;
+    medDatabaseNavigatorItemChecker *item_checker_single;
+    medDatabaseNavigatorItemChecker *item_checker_multi;
+    medDatabaseNavigatorItemLabel *item_label;
+
+    QPropertyAnimation *item_count_fading_animation;
+    QPropertyAnimation *item_checker_single_fading_animation;
+    QPropertyAnimation *item_checker_multi_fading_animation;
+    QPropertyAnimation *item_label_fading_animation;
+    QParallelAnimationGroup *fading_animation;
 };
 
-medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QString &path, QGraphicsItem *parent) : QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
+medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QString &path, QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
 {
     d->patientId = patientId;
     d->studyId = studyId;
@@ -43,11 +185,60 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, i
 
     d->path = path;
 
+    d->item_count = new medDatabaseNavigatorItemCount(this);
+    d->item_count->setPos(5, 5);
+//    d->item_count->setVisible(false);
+    d->item_count->setOpacity(0.0);
+
+    d->item_checker_single= new medDatabaseNavigatorItemChecker(this);
+    d->item_checker_single->setPos(98, 5);
+//    d->item_checker_single->setVisible(false);
+    d->item_checker_single->setOpacity(0.0);
+
+    d->item_checker_multi = new medDatabaseNavigatorItemChecker(this);
+    d->item_checker_multi->setPos(98, 30);
+//    d->item_checker_multi->setVisible(false);
+    d->item_checker_multi->setOpacity(0.0);
+
+    d->item_label = new medDatabaseNavigatorItemLabel(this);
+    d->item_label->setPos(5, 98);
+//    d->item_label->setVisible(false);
+    d->item_label->setOpacity(0.0);
+    d->item_label->setText(path);
+
+    connect(d->item_checker_single, SIGNAL(  checked()), this, SLOT(  checked()));
+    connect(d->item_checker_single, SIGNAL(unchecked()), this, SLOT(unchecked()));
+    connect(d->item_checker_single, SIGNAL(  checked()), d->item_checker_multi, SLOT(check()));
+
+    // Setup animation
+
+    d->item_count_fading_animation = new QPropertyAnimation(d->item_count, "opacity", this);
+    d->item_count_fading_animation->setDuration(150);
+
+    d->item_checker_single_fading_animation = new QPropertyAnimation(d->item_checker_single, "opacity", this);
+    d->item_checker_single_fading_animation->setDuration(150);
+
+    d->item_checker_multi_fading_animation = new QPropertyAnimation(d->item_checker_multi, "opacity", this);
+    d->item_checker_multi_fading_animation->setDuration(150);
+
+    d->item_label_fading_animation = new QPropertyAnimation(d->item_label, "opacity", this);
+    d->item_label_fading_animation->setDuration(150);
+
+    d->fading_animation = new QParallelAnimationGroup(this);
+    d->fading_animation->addAnimation(d->item_count_fading_animation);
+    d->fading_animation->addAnimation(d->item_checker_single_fading_animation);
+    d->fading_animation->addAnimation(d->item_checker_multi_fading_animation);
+    d->fading_animation->addAnimation(d->item_label_fading_animation);
+
+    // Load thumbnail
+
     medDatabaseNavigatorItemLoader *loader = new medDatabaseNavigatorItemLoader(path);
 
     connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
 
     QThreadPool::globalInstance()->start(loader);
+
+    this->setAcceptHoverEvents(true);
 }
 
 medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
@@ -60,6 +251,11 @@ medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
 medDatabaseNavigatorItem *medDatabaseNavigatorItem::clone(void)
 {
     return new medDatabaseNavigatorItem(d->patientId, d->studyId, d->seriesId, d->imageId, d->path);
+}
+
+void medDatabaseNavigatorItem::setup(void)
+{
+    // Retrieve attributes from the database
 }
 
 int medDatabaseNavigatorItem::patientId(void) const
@@ -87,12 +283,7 @@ QString medDatabaseNavigatorItem::path(void) const
     return d->path;
 }
 
-void medDatabaseNavigatorItem::setImage(const QImage& image)
-{
-    this->setPixmap(QPixmap::fromImage(image));
-}
-
-void medDatabaseNavigatorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void medDatabaseNavigatorItem::checked(void)
 {
     if(d->imageId >= 0)
         emit imageClicked(d->imageId);
@@ -105,4 +296,56 @@ void medDatabaseNavigatorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
     else if(d->patientId >= 0)
         emit patientClicked(d->patientId);
+}
+
+void medDatabaseNavigatorItem::unchecked(void)
+{
+
+}
+
+void medDatabaseNavigatorItem::setImage(const QImage& image)
+{
+    this->setPixmap(QPixmap::fromImage(image));
+}
+
+void medDatabaseNavigatorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    d->item_count_fading_animation->setStartValue(0.0);
+    d->item_count_fading_animation->setEndValue(1.0);
+//    d->item_count_fading_animation->setEasingCurve(QEasingCurve::InQuart);
+
+    d->item_checker_single_fading_animation->setStartValue(0.0);
+    d->item_checker_single_fading_animation->setEndValue(1.0);
+//    d->item_checker_single_fading_animation->setEasingCurve(QEasingCurve::InQuart);
+
+    d->item_checker_multi_fading_animation->setStartValue(0.0);
+    d->item_checker_multi_fading_animation->setEndValue(1.0);
+//    d->item_checker_multi_fading_animation->setEasingCurve(QEasingCurve::InQuart);
+
+    d->item_label_fading_animation->setStartValue(0.0);
+    d->item_label_fading_animation->setEndValue(1.0);
+//    d->item_label_fading_animation->setEasingCurve(QEasingCurve::InQuart);
+
+    d->fading_animation->start();
+}
+
+void medDatabaseNavigatorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    d->item_count_fading_animation->setStartValue(1.0);
+    d->item_count_fading_animation->setEndValue(0.0);
+//    d->item_count_fading_animation->setEasingCurve(QEasingCurve::OutQuart);
+
+    d->item_checker_single_fading_animation->setStartValue(1.0);
+    d->item_checker_single_fading_animation->setEndValue(0.0);
+//    d->item_checker_single_fading_animation->setEasingCurve(QEasingCurve::OutQuart);
+
+    d->item_checker_multi_fading_animation->setStartValue(1.0);
+    d->item_checker_multi_fading_animation->setEndValue(0.0);
+//    d->item_checker_multi_fading_animation->setEasingCurve(QEasingCurve::OutQuart);
+
+    d->item_label_fading_animation->setStartValue(1.0);
+    d->item_label_fading_animation->setEndValue(0.0);
+//    d->item_label_fading_animation->setEasingCurve(QEasingCurve::OutQuart);
+
+    d->fading_animation->start();
 }

@@ -81,7 +81,7 @@ medWelcomeArea::~medWelcomeArea(void)
 
 void medWelcomeArea::setup(QStatusBar *status)
 {
-    status->addPermanentWidget(d->login, 1);
+    status->addWidget(d->login, 1);
 
     d->login->show();
 }
