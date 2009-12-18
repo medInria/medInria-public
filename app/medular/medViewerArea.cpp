@@ -332,7 +332,8 @@ void medViewerArea::setImageIndex(int index)
 
 void medViewerArea::setView(dtkAbstractView *view)
 {
-    d->view_stacks.value(d->patientComboBox->currentIndex())->current()->setView(view);
+    d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->setView(view);
+    d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
 }
 
 void medViewerArea::setup(void)
@@ -352,7 +353,8 @@ void medViewerArea::setup(void)
 
 void medViewerArea::split(int rows, int cols)
 {
-    d->view_stacks.value(d->patientComboBox->currentIndex())->current()->split(rows, cols);
+    if (d->view_stacks.count())
+        d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->split(rows, cols);
 }
 
 void medViewerArea::onPatientIndexChanged(int index)
@@ -431,7 +433,7 @@ void medViewerArea::onSeriesIndexChanged(int index)
     
     if (imData) {
 
-        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dViewSwitcher");
+        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView");
 
         if (!view)
             return;
@@ -470,24 +472,31 @@ void medViewerArea::setStackIndex(int index)
 
 void medViewerArea::setupForegroundLookupTable(QString table)
 {
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->view())
+    qDebug() << __func__;
+
+    if(!d->view_stacks.count())
+        return;
+
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
         view->setProperty("LookupTable", table);
+    else
+        qDebug() << "Unable to retrieve view";
 }
 
 void medViewerArea::setupBackgroundLookupTable(QString table)
 {
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->view())
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
         view->setProperty("BackgroundLookupTable", table);
 }
 
 void medViewerArea::setupAxisVisibility(bool visible)
 {
-    if(dtkAbstractView *view = d->view_stacks.value(d->patientComboBox->currentIndex())->current()->view())
+    if(dtkAbstractView *view = d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
         visible ? view->setProperty("ShowAxis", "true") : view->setProperty("ShowAxis", "false");
 }
 
 void medViewerArea::setupScalarBarVisibility(bool visible)
 {
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->view())
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
         visible ? view->setProperty("ScalarBarVisibility", "true") : view->setProperty("ScalarBarVisibility", "false");
 }
