@@ -81,7 +81,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     // Database widget /////////////////////////////////////////////////
 
     QWidget *database_widget = new QWidget(this);
-    
+
     QVBoxLayout *database_layout = new QVBoxLayout(database_widget);
     database_layout->setContentsMargins(0, 0, 0, 0);
     database_layout->setSpacing(0);
@@ -122,6 +122,36 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Source selector ///////////////////////////////////////////////
 
+    QWidget *database_page = new QWidget(this);
+
+    QWidget *database_page_expand = new QWidget(database_page);
+
+    QPushButton *database_page_expand_studies_button = new QPushButton("Studies");
+    QPushButton *database_page_expand_series_button = new QPushButton("Series");
+    QPushButton *database_page_expand_images_button = new QPushButton("Images", database_page_expand);
+    QPushButton *database_page_collapse_all_button = new QPushButton("All", database_page_expand);
+
+    database_page_expand_studies_button->setObjectName("medDatabaseExpandStudiesButton");
+    database_page_expand_series_button->setObjectName("medDatabaseExpandSeriesButton");
+    database_page_expand_images_button->setObjectName("medDatabaseExpandImagesButton");
+
+    QHBoxLayout *database_page_expand_layout = new QHBoxLayout(database_page_expand);
+    database_page_expand_layout->setContentsMargins(0, 0, 0, 0);
+    database_page_expand_layout->setSpacing(0);
+    database_page_expand_layout->addWidget(database_page_expand_studies_button);
+    database_page_expand_layout->addWidget(database_page_expand_series_button);
+    database_page_expand_layout->addWidget(database_page_expand_images_button);
+
+    connect(database_page_expand_studies_button, SIGNAL(clicked()), d->view, SLOT(expandAllStudies()));
+    connect(database_page_expand_series_button, SIGNAL(clicked()), d->view, SLOT(expandAllSeries()));
+    connect(database_page_expand_images_button, SIGNAL(clicked()), d->view, SLOT(expandAllImages()));
+    connect(database_page_collapse_all_button, SIGNAL(clicked()), d->view, SLOT(collapseAll()));
+
+    QFormLayout *database_page_layout = new QFormLayout(database_page);
+    database_page_layout->addRow("Expand:", database_page_expand);
+    database_page_layout->addRow("Collapse:", database_page_collapse_all_button);
+    database_page_layout->setFormAlignment(Qt::AlignHCenter);
+
     QWidget *filesystem_page = new QWidget(this);
 
     QPushButton *filesystem_import_button = new QPushButton("Import", filesystem_page);
@@ -145,7 +175,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     pacs_page_layout->setFormAlignment(Qt::AlignHCenter);
 
     medToolBoxTab *tab = new medToolBoxTab(this);
-    tab->addTab(new QWidget, "Db");
+    tab->addTab(database_page, "Db");
     tab->addTab(filesystem_page, "Fs");
     tab->addTab(pacs_page, "Pc");
     connect(tab, SIGNAL(currentChanged(int)), stack, SLOT(setCurrentIndex(int)));

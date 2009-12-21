@@ -26,6 +26,9 @@
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkGlobal.h>
 
+#include <medCore/medDataIndex.h>
+#include <medCore/medDataManager.h>
+
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseNavigator.h>
 
@@ -45,6 +48,8 @@
 class medViewerAreaStackPrivate
 {
 public:
+    int id;
+
     medViewContainer *container_single;
     medViewContainer *container_multi;
     medViewContainer *container_custom;
@@ -72,6 +77,11 @@ medViewerAreaStack::~medViewerAreaStack(void)
     delete d;
 
     d = NULL;
+}
+
+void medViewerAreaStack::setPatientId(int id)
+{
+    d->id = id;
 }
 
 medViewContainer *medViewerAreaStack::current(void)
@@ -354,109 +364,79 @@ void medViewerArea::split(int rows, int cols)
         d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->split(rows, cols);
 }
 
-void medViewerArea::onPatientIndexChanged(int index)
+void medViewerArea::onPatientIndexChanged(int id)
 {
-    if(index<1)
+    medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
+
+    if(!index.isValid())
         return;
 
     // Setup view container
 
     medViewerAreaStack *view_stack;
 
-    if(!d->view_stacks.contains(index)) {
+    if(!d->view_stacks.contains(id)) {
         view_stack = new medViewerAreaStack(this);
+        view_stack->setPatientId(id);
         connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
-        d->view_stacks.insert(index, view_stack);
+        d->view_stacks.insert(id, view_stack);
         d->stack->addWidget(view_stack);
     } else {
-        view_stack = d->view_stacks.value(index);
+        view_stack = d->view_stacks.value(id);
     }
 
     d->stack->setCurrentWidget(view_stack);
 
     // Setup navigator
 
-    d->navigator->onPatientClicked(index);
+    d->navigator->onPatientClicked(id);
 }
 
-void medViewerArea::onStudyIndexChanged(int index)
+void medViewerArea::onStudyIndexChanged(int id)
 {
-    if(index<1)
+    medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
+
+    if(!index.isValid())
         return;
+
+    Q_UNUSED(index);
 }
 
-void medViewerArea::onSeriesIndexChanged(int index)
+void medViewerArea::onSeriesIndexChanged(int id)
 {
-    qDebug() << __func__ << index;
+    medDataIndex index = medDatabaseController::instance()->indexForSeries(id);
 
-    if(index<1)
+    if(!index.isValid())
         return;
 
-    QSqlQuery query(*(medDatabaseController::instance()->database()));
+    dtkAbstractData *data = medDatabaseController::instance()->read(index);
 
-    // Query and manage combos
+    if(data)
+        medDataManager::instance()->insert(index, data);
 
-    QVariant id = index;
-    QStringList filenames;
-    QString     filename;
-
-    query.prepare("SELECT name, id, path, instance_path FROM image WHERE series = :series");
-    query.bindValue(":series", id);
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
-
-    while(query.next()) {
-        filenames << query.value(2).toString();
-        filename = query.value(3).toString();
-    }
-
-    // Display data
-
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-    
-    dtkAbstractData *imData = NULL;
-    
-    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
-
-    for (int i=0; i<readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
-
-        if (dataReader->canRead(filename)) {            
-            dataReader->read(filename);
-            imData = dataReader->data();
-            delete dataReader;
-            break;
-        }
-    }
-    
-    if (imData) {
+    if (data) {
 
         dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView");
 
         if (!view)
             return;
 
-//	if (!imData->hasMetaData ("PatientName"))
-//	  imData->addMetaData("PatientName", QStringList() << d->patientComboBox->currentText());
-//	if (!imData->hasMetaData ("StudyDescription"))
-//	  imData->addMetaData("StudyDescription", QStringList() << d->studyComboBox->currentText());
-//	if (!imData->hasMetaData ("SeriesDescription"))
-//	  imData->addMetaData("SeriesDescription", QStringList() << d->seriesComboBox->currentText());
-        
-        view->setData(imData);
+        view->setData(data);
         view->reset();
 
         d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->setView(view);
         d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
-    
-	//delete imData;
     }
 }
 
-void medViewerArea::onImageIndexChanged(int index)
+void medViewerArea::onImageIndexChanged(int id)
 {
-    if (index<1)
+    medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
+
+    if(!index.isValid())
         return;
+
+    Q_UNUSED(index);
 }
 
 void medViewerArea::onViewFocused(dtkAbstractView *view)

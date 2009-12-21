@@ -117,6 +117,21 @@ void medDatabaseView::onImageClicked(int id)
     }
 }
 
+void medDatabaseView::expandAllStudies(void)
+{
+    this->expandToDepth(0);
+}
+
+void medDatabaseView::expandAllSeries(void)
+{
+    this->expandToDepth(1);
+}
+
+void medDatabaseView::expandAllImages(void)
+{
+    this->expandToDepth(2);
+}
+
 void medDatabaseView::onItemClicked(const QModelIndex& index)
 {
     medDatabaseItem *item = deproxy(this->model(), index);

@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Oct 28 18:47:31 2009 (+0100)
+## Last-Updated: Mon Dec 21 12:47:29 2009 (+0100)
 ##           By: Julien Wintz
-##     Update #: 17
+##     Update #: 27
 ######################################################################
 ## 
 ### Commentary: 
@@ -24,6 +24,7 @@ project(medCore)
 ## #################################################################
 
 find_package(dtk REQUIRED)
+
 include(${dtk_USE_FILE})
 
 ## #################################################################
@@ -31,17 +32,22 @@ include(${dtk_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS
-  medAbstractDataImage.h
+  medDataManager.h
+  medViewManager.h
   medPluginManager.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  medAbstractDataImage.h
+  medDataIndex.h
+  medDataManager.h
+  medViewManager.h
   medPluginManager.h
 )
 
 set(${PROJECT_NAME}_SOURCES
-  medAbstractDataImage.cpp
+  medDataIndex.cpp
+  medDataManager.cpp
+  medViewManager.cpp
   medPluginManager.cpp
 )
 

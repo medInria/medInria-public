@@ -22,24 +22,21 @@
 
 #include "medSqlExport.h"
 
+#include <medCore/medDataIndex.h>
+
 #include <QtCore>
 #include <QtSql>
+
+class dtkAbstractData;
 
 class MEDSQL_EXPORT medDatabaseController : public QObject
 {
     Q_OBJECT
 
 public:
-    static medDatabaseController *instance(void) {
-        if(!m_instance)
-            m_instance = new medDatabaseController;
+    static medDatabaseController *instance(void);
 
-        return m_instance;
-    }
-
-    QSqlDatabase *database(void) {
-        return &m_database;
-    }
+    QSqlDatabase *database(void);
 
     bool createConnection(void);
     bool  closeConnection(void);
@@ -49,16 +46,23 @@ public:
 
     QString   dataLocation(void) const;
     QString configLocation(void) const;
-    
+
+    medDataIndex indexForPatient(int id);
+    medDataIndex indexForStudy  (int id);
+    medDataIndex indexForSeries (int id);
+    medDataIndex indexForImage  (int id);
+
+    QStringList patientNames(void);
+
+    dtkAbstractData *read(const medDataIndex& index);
+    dtkAbstractData *read(int patientId, int studyId, int seriesId);
+    dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId);
+
 signals:
     void updated(void);
-    void importCompleted (int percentage);
 
 public slots:
     void import(const QString& file);
-
-protected slots:
-    void setImportProgress (int value);
 
 private:
     void createPatientTable(void);
@@ -70,7 +74,7 @@ private:
     QSqlDatabase m_database;
 
 private:
-    static medDatabaseController *m_instance;
+    static medDatabaseController *s_instance;
 };
 
 #endif

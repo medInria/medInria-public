@@ -42,6 +42,8 @@ public:
 
     medViewContainer *current(void);
 
+    void setPatientId(int id);
+
 signals:
     void focused(dtkAbstractView *view);
 
@@ -66,19 +68,19 @@ public:
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
 
-    void setPatientIndex(int index);
-    void setStudyIndex(int index);
-    void setSeriesIndex(int index);
-    void setImageIndex(int index);
+    void setPatientIndex(int id);
+    void   setStudyIndex(int id);
+    void  setSeriesIndex(int id);
+    void   setImageIndex(int id);
 
 public slots:
     void setup(void);
     void split(int rows, int cols);
 
     void onPatientIndexChanged(int index);
-    void onStudyIndexChanged(int index);
-    void onSeriesIndexChanged(int index);
-    void onImageIndexChanged(int index);
+    void   onStudyIndexChanged(int index);
+    void  onSeriesIndexChanged(int index);
+    void   onImageIndexChanged(int index);
 
     void onViewFocused(dtkAbstractView *view);
 
