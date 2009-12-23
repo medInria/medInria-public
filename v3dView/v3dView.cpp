@@ -201,20 +201,21 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view3D->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
     d->view3D->UninitializeInteractor();
     
     d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
     d->view2DCoronal->UninitializeInteractor();
 
     d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view2DSagittal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
     d->view2DSagittal->UninitializeInteractor();
 
     d->view2DAxial->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view2DAxial->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
-    
-    d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DAxial);
 
     d->collection = vtkImageViewCollection::New();
     d->collection->AddItem (d->view2DAxial);
@@ -566,7 +567,7 @@ void v3dView::onPropertySet(QString key, QString value)
 void v3dView::onOrientationPropertySet(QString value)
 {
     if (value==d->orientation)
-        return;
+         return;
     
     double pos[3], window = 0.0, level = 0.0;
     if( d->currentView ) {
