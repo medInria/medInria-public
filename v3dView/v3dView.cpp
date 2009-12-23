@@ -176,6 +176,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view3D->CroppingOff();
     d->view3D->ImageAxisVisibilityOff();
     d->view3D->ScalarBarVisibilityOff();
+    //d->view3D->CroppingOn();
+    d->view3D->SetCroppingModeModeToOutside();
+    d->view3D->ShadeOn();
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
     d->view3D->SetInteractorStyle ( interactorStyle );
     interactorStyle->Delete();
