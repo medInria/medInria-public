@@ -113,13 +113,6 @@ public:
     QMenu *menu;
     QString orientation;
 
-    int slices[3];
-  /*
-    int zslice;
-    int yslice;
-    int xslice;
-  */
-
     dtkAbstractData *data;
 };
 
@@ -142,9 +135,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DAxial->GetInteractorStyleImageView2D()->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_SLICENAVIGATION);
     d->view2DAxial->GetInteractorStyleImageView2D()->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_NONE);
     d->view2DAxial->SetSliceOrientation(vtkImageView2D::SLICE_ORIENTATION_AXIAL);
-    //d->view2D->GetInteractorStyleImageView2D()->CursorFollowMouseOn();
-    //d->view2D->Show2DAxisOff();
-    //d->view2D->SetInterpolationMode (1);
+    d->view2DAxial->CursorFollowMouseOn();
+    d->view2DAxial->ImageAxisVisibilityOff();
+    d->view2DAxial->ScalarBarVisibilityOff();
 
     
     d->renderer2DSagittal = vtkRenderer::New();
@@ -155,7 +148,10 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DSagittal->GetInteractorStyleImageView2D()->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_SLICENAVIGATION);
     d->view2DSagittal->GetInteractorStyleImageView2D()->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_NONE);
     d->view2DSagittal->SetSliceOrientation(vtkImageView2D::SLICE_ORIENTATION_SAGITTAL);
-
+    d->view2DSagittal->CursorFollowMouseOn();
+    d->view2DSagittal->ImageAxisVisibilityOff();
+    d->view2DSagittal->ScalarBarVisibilityOff();
+    
 
     d->renderer2DCoronal = vtkRenderer::New();
     d->view2DCoronal = vtkImageView2D::New();    
@@ -165,20 +161,21 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DCoronal->GetInteractorStyleImageView2D()->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_SLICENAVIGATION);
     d->view2DCoronal->GetInteractorStyleImageView2D()->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_NONE);
     d->view2DCoronal->SetSliceOrientation(vtkImageView2D::SLICE_ORIENTATION_CORONAL);
+    d->view2DCoronal->CursorFollowMouseOn();
+    d->view2DCoronal->ImageAxisVisibilityOff();
+    d->view2DCoronal->ScalarBarVisibilityOff();
 
     d->currentView = d->view2DAxial;
 
-    d->slices[0] = 0;
-    d->slices[1] = 0;
-    d->slices[2] = 0;
-    // Setting up 3D view
 
-    
+    // Setting up 3D view
     d->renderer3D = vtkRenderer::New();
     d->view3D = vtkImageView3D::New();
     d->view3D->SetRenderer(d->renderer3D);
     d->view3D->SetBoxWidgetVisibility(0);
     d->view3D->CroppingOff();
+    d->view3D->ImageAxisVisibilityOff();
+    d->view3D->ScalarBarVisibilityOff();
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
     d->view3D->SetInteractorStyle ( interactorStyle );
     interactorStyle->Delete();
@@ -320,10 +317,10 @@ v3dView::~v3dView(void)
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
 
     /*
-    d->view2D->SetRenderWindow(0);
-    d->view2D->SetRenderWindowInteractor(0);
-    d->view3D->SetRenderWindow(0);
-    d->view3D->SetRenderWindowInteractor(0);
+      d->view2D->SetRenderWindow(0);
+      d->view2D->SetRenderWindowInteractor(0);
+      d->view3D->SetRenderWindow(0);
+      d->view3D->SetRenderWindowInteractor(0);
     */
 
     d->view2DAxial->Delete();
@@ -358,12 +355,7 @@ QString v3dView::description(void) const
 
 void v3dView::clear(void)
 {
-  /*
-    if(!d->view2D)
-	return;
-  */
-    
-    //d->view2D->Clear();
+    d->collection->SyncSetInput (0); // to be tested
 }
 
 void v3dView::reset(void)
@@ -372,22 +364,11 @@ void v3dView::reset(void)
 	return;
     
     d->collection->SyncReset();
-
-    //d->slices[d->view2D->GetSliceOrientation(), d->view2D->GetSlice()];
-    /*
-      d->zslice = d->view2D->GetSlice (vtkImageView::AXIAL_ID);
-      d->yslice = d->view2D->GetSlice (vtkImageView::CORONAL_ID);
-      d->xslice = d->view2D->GetSlice (vtkImageView::SAGITTAL_ID);
-    */
 }
 
 void v3dView::update(void)
 {
     d->collection->SyncRender();
-  /*
-    d->view2D->Render();
-    d->view3D->Render();
-  */
     d->vtkWidget->update();
 }
 
@@ -411,7 +392,7 @@ void v3dView::unlink(dtkAbstractView *other)
 
 void *v3dView::view(void)
 {
-    return d->view2DCoronal;
+    return d->currentView;
 }
 
 void v3dView::setData(dtkAbstractData *data)
@@ -521,17 +502,19 @@ void v3dView::setData(dtkAbstractData *data)
     else
         qDebug() << "Cannot cast ITK image";
 #endif
-    /*
-    if(vtkDataSet *dataset = dynamic_cast<vtkDataSet*>((vtkDataObject *)(data->data()))) {
-        d->view2D->AddDataSet(dataset);
-	d->view3D->AddDataSet(dataset);
-    }
-    */
-    if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) )
-        d->slider->setRange(0, imData->zDimension()-1);
 
-    //d->view2D->Update();
-    //d->view3D->Update();
+
+    if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data()))) {
+        d->collection->SyncSetInput(dataset);
+    }
+    
+    if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) )
+      if( d->orientation=="Axial")
+        d->slider->setRange(0, imData->zDimension()-1);
+      else if( d->orientation=="Sagittal")
+	d->slider->setRange(0, imData->xDimension()-1);
+      else if( d->orientation=="Coronal")
+	d->slider->setRange(0, imData->yDimension()-1);
 
     dtkAbstractView::setData(data);
 
@@ -582,19 +565,6 @@ void v3dView::onOrientationPropertySet(QString value)
     if (value==d->orientation)
         return;
     
-    //double zoom = d->view2D->GetZoom();
-
-    //d->slices[d->view2D->GetSliceOrientation()] = d->view2D->GetSlice();
-    
-    /*    
-    if (d->orientation=="Axial")
-        d->slices[d->view2D->GetSliceOrientation()] = d->view2D->GetSlice();
-    if (d->orientation=="Coronal")
-        d->yslice = d->view2D->GetSlice();
-    if (d->orientation=="Sagittal")
-        d->xslice = d->view2D->GetSlice();
-    */
-
     double pos[3], window = 0.0, level = 0.0;
     if( d->currentView ) {
       d->currentView->GetCurrentPoint (pos);
@@ -613,16 +583,9 @@ void v3dView::onOrientationPropertySet(QString value)
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer3D);
 	d->view3D->InitializeInteractor();
 
-	d->view3D->SetWorldCoordinates (pos);
-	d->view3D->SetColorWindow (window);
-	d->view3D->SetColorLevel (level);
-	
-	d->currentView = d->view3D;
-	
-	return;
+	d->currentView = d->view3D;	
     }
-
-    if (value == "Axial" || value == "Sagittal" || value =="Coronal") {
+    else {
         d->view3D->UninitializeInteractor();
         d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);        
     }
@@ -637,15 +600,13 @@ void v3dView::onOrientationPropertySet(QString value)
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DAxial);	
         d->view2DAxial->InitializeInteractor();
         d->orientation = "Axial";
-	//d->view2DAxial->SetSliceOrientation(vtkImageView2D::SLICE_ORIENTATION_AXIAL);
+
 	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
             d->slider->setRange (0, imData->zDimension()-1);
-
 
 	d->view2DSagittal->RemoveObserver(d->observer);
 	d->view2DCoronal->RemoveObserver(d->observer);
 	d->view2DAxial->AddObserver(vtkImageView::ImageViewPositionChangeEvent, d->observer);	
-
     
 	d->currentView = d->view2DAxial;
     }
@@ -659,14 +620,13 @@ void v3dView::onOrientationPropertySet(QString value)
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DSagittal);
         d->view2DSagittal->InitializeInteractor();
         d->orientation = "Sagittal";
-	//d->view2D->SetSliceOrientation(vtkImageView2D::SLICE_ORIENTATION_SAGITTAL);
+
 	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
             d->slider->setRange (0, imData->xDimension()-1);
 
 	d->view2DAxial->RemoveObserver(d->observer);
 	d->view2DCoronal->RemoveObserver(d->observer);
 	d->view2DSagittal->AddObserver(vtkImageView::ImageViewPositionChangeEvent, d->observer);	
-
 
 	d->currentView = d->view2DSagittal;
     }
@@ -680,16 +640,13 @@ void v3dView::onOrientationPropertySet(QString value)
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DCoronal);
         d->view2DCoronal->InitializeInteractor();
         d->orientation = "Coronal";
-	//d->view2D->SetSliceOrientation(vtkImageView2D::SLICE_ORIENTATION_CORONAL);
+
 	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
             d->slider->setRange (0, imData->yDimension()-1);
-
 
 	d->view2DAxial->RemoveObserver(d->observer);
 	d->view2DSagittal->RemoveObserver(d->observer);
 	d->view2DCoronal->AddObserver(vtkImageView::ImageViewPositionChangeEvent, d->observer);	
-
-
 	
 	d->currentView = d->view2DCoronal;
     }
@@ -701,101 +658,80 @@ void v3dView::onOrientationPropertySet(QString value)
     d->currentView->SetColorWindow (window);
     d->currentView->SetColorLevel (level);
 
-    d->slider->blockSignals (true);
-    //d->slider->setValue ( d->currentView->GetSlice() );
-    d->slider->blockSignals (false);
-
-    
-    
+    // force a correct display of the 2D axis for planar views
     d->currentView->InvokeEvent (vtkImageView::ImageViewPositionChangeEvent, NULL);
-    
-    //d->current2DView->ResetCamera();
-    //currentView->SetZoom(zoom);
-    //d->current2DView->UpdateZoom();
-    //d->current2DView->UpdateCurrentPoint();
-
 }
 
 void v3dView::onScalarBarVisibilityPropertySet(QString value)
 {
     if (value == "true") {
-      //d->view2D->SetScalarBarVisibility(true);
-      //d->view3D->SetScalarBarVisibility(true);
+      d->collection->SyncSetScalarBarVisibility(true);
     }
 
     if (value == "false") {
-      //d->view2D->SetScalarBarVisibility(false);
-      //d->view3D->SetScalarBarVisibility(false);
+      d->collection->SyncSetScalarBarVisibility(false);
     }
+    
+    if (d->currentView)
+        d->currentView->Render();
 }
 
 void v3dView::onLookupTablePropertySet(QString value)
 {
     if (value == "Default") {
         d->collection->SyncSetLookupTable(vtkLookupTableManager::GetBWLookupTable());
-        //d->view2D->SetLookupTable(vtkLookupTableManager::GetBWLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetBWLookupTable());
     }
 
     if (value == "Black&White") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetBWLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetBWLookupTable());
     }
 
     if (value == "Black&WhiteInversed") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetBWInverseLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetBWInverseLookupTable());
     }
 
     if (value == "Spectrum") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetSpectrumLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetSpectrumLookupTable());
     }
 
     if (value == "HotMetal") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetHotMetalLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetHotMetalLookupTable());
     }
 
     if (value == "GE") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetGEColorLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetGEColorLookupTable());
     }
 
     if (value == "Loni") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetLONILookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetLONILookupTable());
     }
 
     if (value == "Loni2") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetLONI2LookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetLONI2LookupTable());
     }
 
     if (value == "Asymmetry") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetAsymmetryLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetAsymmetryLookupTable());
     }
 
     if (value == "PValue") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetPValueLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetPValueLookupTable());
     }
 
     if (value == "blueBlackAlpha") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetBlueBlackAlphaLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetBlueBlackAlphaLookupTable());
     }
 
     if( value == "greenBlackAlpha") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetGreenBlackAlphaLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetGreenBlackAlphaLookupTable());
     }
 
     if (value == "redBlackAlpha") {
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetRedBlackAlphaLookupTable());
-	//d->view3D->SetLookupTable(vtkLookupTableManager::GetRedBlackAlphaLookupTable());
     }
+
+    if (d->currentView)
+        d->currentView->Render();
 }
 
 
@@ -855,17 +791,21 @@ void v3dView::onOpacityPropertySet(QString value)
     }
     else
 	qDebug("Error: cannot convert QString value to a double");
+
+    if (d->currentView)
+        d->currentView->Render();
 }
 
 void v3dView::onShowAxisPropertySet(QString value)
 {
-  /*
     if (value == "true")
-	d->view2D->SetShow2DAxis(1);
+	d->collection->SyncSetImageAxisVisibility(1);
 
     if (value == "false")
-	d->view2D->SetShow2DAxis(0);
-  */
+	d->collection->SyncSetImageAxisVisibility(0);
+    
+    if (d->currentView)
+        d->currentView->Render();
 }
 
 void v3dView::onInteractionPropertySet(QString value)
