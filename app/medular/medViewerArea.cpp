@@ -387,7 +387,9 @@ void medViewerArea::onStudyIndexChanged(int index)
 
 void medViewerArea::onSeriesIndexChanged(int index)
 {
+#ifndef WIN32
     qDebug() << __func__ << index;
+#endif
 
     if(index<1)
         return;
