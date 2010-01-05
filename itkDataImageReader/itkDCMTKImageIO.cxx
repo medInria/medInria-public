@@ -250,7 +250,8 @@ namespace itk
       normal[0] = m_Direction[0][2];
       normal[1] = m_Direction[1][2];
       normal[2] = m_Direction[2][2];
-    
+
+      double ref_gap = 9999.9; // choose ref_gap as minimum gap between slices
       for (unsigned int i=1; i<imagePositions.size(); i++)
       {
 	std::istringstream is_stream1( imagePositions[i-1].c_str() );
@@ -268,8 +269,9 @@ namespace itk
 	vnl_vector<double> v21 = pos2-pos1;
 	
 	gaps[i-1] = fabs ( dot_product (normal, v21) );
+	if (gaps[i-1]<ref_gap)
+	  ref_gap = gaps[i-1];
       }
-      double ref_gap = gaps[0];
       double total_gap = ref_gap;
       double min_gap = 0.9*ref_gap;
       double max_gap = 1.1*ref_gap;

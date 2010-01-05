@@ -58,7 +58,8 @@ public slots: // Menu interface
     void onMenuSagittalTriggered     (void);
     void onMenuCoronalTriggered      (void);
     void onMenu3DVRTriggered           (void);
-    void onMenu3DMIPTriggered           (void);
+    void onMenu3DMaxIPTriggered           (void);
+    void onMenu3DMinIPTriggered           (void);
     void onMenu3DMPRTriggered           (void);
     void onMenuZoomTriggered         (void);
     void onMenuWindowLevelTriggered  (void);

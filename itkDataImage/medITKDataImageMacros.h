@@ -1,6 +1,8 @@
 #ifndef _med_ITKDataImageMacros_h_
 #define _med_ITKDataImageMacros_h_
 
+#include "itkImageFileWriter.h"
+
 
 #define medImplementITKDataImage(type, dimension, suffix)		\
   class itkDataImage##suffix##Private					\
@@ -125,27 +127,44 @@
   {									\
     ImageType::SizeType size = d->image->GetLargestPossibleRegion().GetSize(); \
     ImageType::SizeType newSize = size;					\
+    ImageType::SpacingType spacing = d->image->GetSpacing();		\
+    ImageType::SpacingType newSpacing = spacing;			\
     newSize[0] = 128;							\
     newSize[1] = 128;							\
-    unsigned int *sfactor = new unsigned int[ImageType::GetImageDimension()];		\
-    double *variance = new double[ImageType::GetImageDimension()];			\
+    double *sfactor = new double[ImageType::GetImageDimension()];	\
+    double *variance = new double[ImageType::GetImageDimension()];	\
     for (unsigned int i=0; i<ImageType::GetImageDimension(); i++)	\
     {									\
-      sfactor[i] = size[i]/newSize[i];					\
+      sfactor[i] = (double)size[i]/(double)newSize[i];			\
       variance[i] = sqrt ( 0.5*(double)sfactor[i] );			\
+      newSpacing[i] *= sfactor[i];					\
     }									\
+    int index = size[0]>size[1]?0:1;					\
+    sfactor[!index] = sfactor[index];					\
+    variance[!index] = variance[index];					\
+    newSpacing[!index] = newSpacing[index];				\
+    ImageType::PointType origin = image->GetOrigin();			\
+    origin[!index] -= 0.5*( newSize[!index]*newSpacing[!index] - size[!index]*spacing[!index]); \
     typedef itk::DiscreteGaussianImageFilter<ImageType, FloatImageType> SmootherType; \
     SmootherType::Pointer smoother = SmootherType::New();		\
     smoother->SetUseImageSpacing( false );				\
     smoother->SetInput (image);						\
     smoother->SetVariance (variance);					\
-    typedef itk::ShrinkImageFilter<FloatImageType, ImageType> FilterType; \
+    typedef itk::ResampleImageFilter<FloatImageType, ImageType> FilterType; \
     FilterType::Pointer filter = FilterType::New();			\
     filter->SetInput ( smoother->GetOutput() );				\
-    filter->SetShrinkFactors ( sfactor );				\
+    filter->SetSize( newSize );						\
+    filter->SetOutputSpacing( newSpacing );				\
+    filter->SetOutputOrigin ( origin );					\
+    filter->SetOutputDirection ( image->GetDirection() );		\
     try									\
     {									\
       filter->Update();							\
+      typedef itk::ImageFileWriter<ImageType> WriterType;		\
+      WriterType::Pointer writer = WriterType::New();			\
+      writer->SetInput (filter->GetOutput());				\
+      writer->SetFileName ("test.nii.gz");				\
+      writer->Update();							\
     }									\
     catch (itk::ExceptionObject &e)					\
     {									\
@@ -153,82 +172,8 @@
       return d->thumbnails;						\
     }									\
     image = filter->GetOutput();					\
-	delete [] sfactor; \
-	delete [] variance; \
-  }									\
-  double imMin = 0.0;							\
-  double imMax = 0.0;							\
-  {									\
-    typedef itk::ExtractImageFilter<ImageType, Image2DType> ExtractFilterType; \
-    ExtractFilterType::Pointer extractor = ExtractFilterType::New();	\
-    extractor->SetInput ( image );					\
-    ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize(); \
-    ImageType::RegionType region = image->GetLargestPossibleRegion();	\
-    ImageType::IndexType index = region.GetIndex();			\
-    ImageType::SizeType ssize = region.GetSize();			\
-    for( unsigned int i=2; i<ImageType::GetImageDimension(); i++) {		\
-      index[i] /= 2;							\
-      ssize[i]  = 0;							\
-    }									\
-    region.SetIndex ( index );						\
-    region.SetSize ( ssize );						\
-    extractor->SetExtractionRegion (region);				\
-    try									\
-    {									\
-      extractor->Update();						\
-    }									\
-    catch (itk::ExceptionObject &e)					\
-    {									\
-      qDebug() << e.GetDescription();					\
-      return d->thumbnails;						\
-    }									\
-    typedef itk::MinimumMaximumImageCalculator<Image2DType> MinMaxCalculatorType; \
-    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New(); \
-    calculator->SetImage ( extractor->GetOutput() );			\
-    try									\
-    {									\
-      calculator->Compute();						\
-    }									\
-    catch (itk::ExceptionObject &e)					\
-    {									\
-      qDebug() << e.GetDescription();					\
-      return d->thumbnails;						\
-    }									\
-    imMin = calculator->GetMinimum();					\
-    imMax = calculator->GetMaximum();					\
-    typedef itk::Statistics::ScalarImageToHistogramGenerator< Image2DType > HistogramGeneratorType; \
-    HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New();	\
-    histogramGenerator->SetInput( extractor->GetOutput() );		\
-    histogramGenerator->SetNumberOfBins( imMax - imMin + 1 );		\
-    histogramGenerator->SetMarginalScale( 1.0 );			\
-    histogramGenerator->SetHistogramMin( imMin );			\
-    histogramGenerator->SetHistogramMax( imMax );			\
-    try									\
-    {									\
-      histogramGenerator->Compute();					\
-    }									\
-    catch (itk::ExceptionObject &e)					\
-    {									\
-      qDebug() << e.GetDescription();					\
-      return d->thumbnails;						\
-    }									\
-    typedef HistogramGeneratorType::HistogramType  HistogramType;	\
-    HistogramType::Pointer histogram = const_cast<HistogramType*>( histogramGenerator->GetOutput() ); \
-    double totalFreq = histogram->GetTotalFrequency();			\
-    int ind_min = 0;							\
-    int ind_max = histogram->Size()-1;					\
-    double freq_min = histogram->GetFrequency (ind_min)/totalFreq;	\
-    double freq_max = histogram->GetFrequency (ind_max)/totalFreq;	\
-    while ( freq_min<0.01 ) {						\
-      ind_min++;							\
-      imMin++;								\
-      freq_min += histogram->GetFrequency (ind_min) / totalFreq;	\
-    }									\
-    while ( freq_max<0.01 ) {						\
-      ind_max--;							\
-      imMax--;								\
-      freq_max += histogram->GetFrequency (ind_max) / totalFreq;	\
-    }									\
+    delete [] sfactor;							\
+    delete [] variance;							\
   }									\
   typedef itk::RGBPixel<unsigned char>    RGBPixelType;			\
   typedef itk::Image<RGBPixelType, dimension>     RGBImageType;			\
@@ -237,9 +182,7 @@
   rgbfilter->SetColormap( RGBFilterType::Grey );			\
   rgbfilter->GetColormap()->SetMinimumRGBComponentValue( 0 );		\
   rgbfilter->GetColormap()->SetMaximumRGBComponentValue( 255 );		\
-  rgbfilter->UseInputImageExtremaForScalingOff ();			\
-  rgbfilter->GetColormap()->SetMinimumInputValue ( imMin );		\
-  rgbfilter->GetColormap()->SetMaximumInputValue ( imMax );		\
+  rgbfilter->UseInputImageExtremaForScalingOn ();			\
   rgbfilter->SetInput( image );						\
   try									\
   {									\
@@ -503,4 +446,99 @@
     }									\
     d->thumbnails.push_back (qimage);					\
   }									\
+*/
+
+
+
+/*  double imMin = 0.0;							\
+  double imMax = 0.0;							\
+  {									\
+    typedef itk::ExtractImageFilter<ImageType, Image2DType> ExtractFilterType; \
+    ExtractFilterType::Pointer extractor = ExtractFilterType::New();	\
+    extractor->SetInput ( image );					\
+    ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize(); \
+    ImageType::RegionType region = image->GetLargestPossibleRegion();	\
+    ImageType::IndexType index = region.GetIndex();			\
+    ImageType::SizeType ssize = region.GetSize();			\
+    for( unsigned int i=2; i<ImageType::GetImageDimension(); i++) {		\
+      index[i] /= 2;							\
+      ssize[i]  = 0;							\
+    }									\
+    region.SetIndex ( index );						\
+    region.SetSize ( ssize );						\
+    extractor->SetExtractionRegion (region);				\
+    try									\
+    {									\
+      extractor->Update();						\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    typedef itk::MinimumMaximumImageCalculator<Image2DType> MinMaxCalculatorType; \
+    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New(); \
+    calculator->SetImage ( extractor->GetOutput() );			\
+    try									\
+    {									\
+      calculator->Compute();						\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    imMin = calculator->GetMinimum();					\
+    imMax = calculator->GetMaximum();					\
+    typedef itk::Statistics::ScalarImageToHistogramGenerator< Image2DType > HistogramGeneratorType; \
+    HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New();	\
+    histogramGenerator->SetInput( extractor->GetOutput() );		\
+    histogramGenerator->SetNumberOfBins( imMax - imMin + 1 );		\
+    histogramGenerator->SetMarginalScale( 1.0 );			\
+    histogramGenerator->SetHistogramMin( imMin );			\
+    histogramGenerator->SetHistogramMax( imMax );			\
+    try									\
+    {									\
+      histogramGenerator->Compute();					\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      qDebug() << e.GetDescription();					\
+      return d->thumbnails;						\
+    }									\
+    typedef HistogramGeneratorType::HistogramType  HistogramType;	\
+    HistogramType::Pointer histogram = const_cast<HistogramType*>( histogramGenerator->GetOutput() ); \
+    double totalFreq = histogram->GetTotalFrequency();			\
+    int ind_min = 0;							\
+    int ind_max = histogram->Size()-1;					\
+    double freq_min = histogram->GetFrequency (ind_min)/totalFreq;	\
+    double freq_max = histogram->GetFrequency (ind_max)/totalFreq;	\
+    while ( freq_min<0.01 ) {						\
+      ind_min++;							\
+      imMin++;								\
+      freq_min += histogram->GetFrequency (ind_min) / totalFreq;	\
+    }									\
+    while ( freq_max<0.01 ) {						\
+      ind_max--;							\
+      imMax--;								\
+      freq_max += histogram->GetFrequency (ind_max) / totalFreq;	\
+    }									\
+  }									\
+*/
+
+
+
+/*  rgbfilter->GetColormap()->SetMinimumInputValue ( imMin );		\
+  rgbfilter->GetColormap()->SetMaximumInputValue ( imMax );		\
+*/
+
+
+/*    typedef itk::ShrinkImageFilter<FloatImageType, ImageType> FilterType; \
+    FilterType::Pointer filter = FilterType::New();			\
+    filter->SetInput ( smoother->GetOutput() );				\
+    filter->SetShrinkFactors ( sfactor );				\
+    try									\
+    {									\
+      filter->Update();							\
+    }									\
 */

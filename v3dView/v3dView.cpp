@@ -254,8 +254,11 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
     connect(vrAct, SIGNAL(triggered()), this, SLOT(onMenu3DVRTriggered()));
 
-    QAction *mipAct = new QAction(tr("MIP"), d->vtkWidget);
-    connect(mipAct, SIGNAL(triggered()), this, SLOT(onMenu3DMIPTriggered()));
+    QAction *maxipAct = new QAction(tr("MIP - Max"), d->vtkWidget);
+    connect(maxipAct, SIGNAL(triggered()), this, SLOT(onMenu3DMaxIPTriggered()));
+
+    QAction *minipAct = new QAction(tr("MIP - Min"), d->vtkWidget);
+    connect(minipAct, SIGNAL(triggered()), this, SLOT(onMenu3DMinIPTriggered()));
     
     QAction *mprAct = new QAction(tr("MPR"), d->vtkWidget);
     connect(mprAct, SIGNAL(triggered()), this, SLOT(onMenu3DMPRTriggered()));
@@ -278,7 +281,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
     tridMenu->addAction (vrAct);
-    tridMenu->addAction (mipAct);
+    tridMenu->addAction (maxipAct);
+    tridMenu->addAction (minipAct);
     tridMenu->addAction (mprAct);
 
     d->menu->addSeparator();
@@ -877,10 +881,17 @@ void v3dView::onMenu3DMPRTriggered (void)
     this->onPropertySet("Orientation", "3D");
 }
 
-void v3dView::onMenu3DMIPTriggered (void)
+void v3dView::onMenu3DMaxIPTriggered (void)
 {
     d->view3D->SetRenderingModeToVR();
-    d->view3D->SetVolumeRayCastFunctionToMIP();
+    d->view3D->SetVolumeRayCastFunctionToMaximumIntensityProjection();
+    this->onPropertySet("Orientation", "3D");
+}
+
+void v3dView::onMenu3DMinIPTriggered (void)
+{
+    d->view3D->SetRenderingModeToVR();
+    d->view3D->SetVolumeRayCastFunctionToMinimumIntensityProjection();
     this->onPropertySet("Orientation", "3D");
 }
 
