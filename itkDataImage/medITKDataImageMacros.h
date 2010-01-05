@@ -1,8 +1,6 @@
 #ifndef _med_ITKDataImageMacros_h_
 #define _med_ITKDataImageMacros_h_
 
-#include "itkImageFileWriter.h"
-
 
 #define medImplementITKDataImage(type, dimension, suffix)		\
   class itkDataImage##suffix##Private					\
@@ -160,11 +158,6 @@
     try									\
     {									\
       filter->Update();							\
-      typedef itk::ImageFileWriter<ImageType> WriterType;		\
-      WriterType::Pointer writer = WriterType::New();			\
-      writer->SetInput (filter->GetOutput());				\
-      writer->SetFileName ("test.nii.gz");				\
-      writer->Update();							\
     }									\
     catch (itk::ExceptionObject &e)					\
     {									\
