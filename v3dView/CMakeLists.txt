@@ -127,6 +127,8 @@ target_link_libraries(${PROJECT_NAME}
   vtkCommon
   vtkRendering
   vtkRenderingAddOn
+  vtkRenderingAddOn3
+  vtkWidgetsAddOn
   vtkVisuManagement
   QVTK
 )
