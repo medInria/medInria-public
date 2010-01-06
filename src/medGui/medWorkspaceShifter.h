@@ -20,11 +20,13 @@
 #ifndef MEDWORKSPACESHIFTER_H
 #define MEDWORKSPACESHIFTER_H
 
+#include "medGuiExport.h"
+
 #include <QtGui>
 
 class medWorkspaceShifterActionPrivate;
 
-class medWorkspaceShifterAction : public QObject
+class MEDGUI_EXPORT medWorkspaceShifterAction : public QObject
 {
     Q_OBJECT
 
@@ -64,7 +66,7 @@ private:
 
 class medWorkspaceShifterPrivate;
 
-class medWorkspaceShifter : public QWidget
+class MEDGUI_EXPORT medWorkspaceShifter : public QWidget
 {
     Q_OBJECT
 

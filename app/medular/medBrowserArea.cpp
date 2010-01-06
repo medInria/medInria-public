@@ -66,7 +66,10 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->view->setModel(d->model);
 
     d->progress = new QProgressBar(this);
-    d->progress->setTextVisible(true);
+    d->progress->setTextVisible(false);
+    d->progress->setMinimum(0);
+    d->progress->setMaximum(100);
+    d->progress->setValue(0);
 
     connect(d->preview, SIGNAL(patientClicked(int)), d->view, SLOT(onPatientClicked(int)));
     connect(d->preview, SIGNAL(studyClicked(int)), d->view, SLOT(onStudyClicked(int)));

@@ -283,7 +283,10 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // status elements
 
     d->progress = new QProgressBar(this);
-    d->progress->setTextVisible(true);
+    d->progress->setTextVisible(false);
+    d->progress->setMinimum(0);
+    d->progress->setMaximum(100);
+    d->progress->setValue(0);
 
     // Setting up layout
 

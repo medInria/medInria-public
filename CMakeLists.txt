@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:14:33 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Dec  2 10:29:44 2009 (+0100)
+## Last-Updated: Tue Jan  5 11:38:53 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 22
+##     Update #: 23
 ######################################################################
 ## 
 ### Commentary: 
@@ -194,6 +194,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_PATH})
 
 add_subdirectory(src)
 add_subdirectory(app)
+add_subdirectory(doc)
 
 ## #################################################################
 ## Configuration rules for the build tree

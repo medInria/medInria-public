@@ -41,5 +41,8 @@
         <file>pixmaps/database_navigator_item_checker_unchecked.png</file>
         <file>pixmaps/database_navigator_item_count.png</file>
         <file>pixmaps/database_navigator_item_label.png</file>
+        <file>pixmaps/documentation_go_arrow.png</file>
+        <file>pixmaps/documentation_next_arrow.png</file>
+        <file>pixmaps/documentation_previous_arrow.png</file>
     </qresource>
 </RCC>

@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Thu Oct  8 19:23:44 2009 (+0200)
+## Last-Updated: Sun Jan  3 10:39:34 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 31
+##     Update #: 46
 ######################################################################
 ## 
 ### Commentary: 
@@ -20,6 +20,16 @@
 project(medular)
 
 ## #################################################################
+## Setup version numbering
+## #################################################################
+
+set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "medular major version number.")
+set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "medular minor version number.")
+set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "medular build version number.")
+set(${PROJECT_NAME}_VERSION
+  "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
+
+## #################################################################
 ## Sources
 ## #################################################################
 
@@ -30,6 +40,7 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_HEADERS_MOC
   medAdminArea.h
   medBrowserArea.h
+  medDocumentationArea.h
   medMainWindow.h
   medViewerArea.h
   medWelcomeArea.h
@@ -42,6 +53,7 @@ set(${PROJECT_NAME}_HEADERS_UIC
 set(${PROJECT_NAME}_SOURCES
   medAdminArea.cpp
   medBrowserArea.cpp
+  medDocumentationArea.cpp
   medMainWindow.cpp
   medViewerArea.cpp
   medWelcomeArea.cpp
@@ -84,6 +96,31 @@ target_link_libraries(${PROJECT_NAME}
   medSql
 )
 
+# ## #################################################################
+# ## Documentation rules
+# ## #################################################################
+
+# set(DOXYGEN_FIND_QUIETLY TRUE)
+
+# find_package(Doxygen)
+
+# if (DOXYGEN_FOUND)
+#   configure_file(Doxyfile.config.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile IMMEDIATE @ONLY)
+
+#   add_custom_target(doc
+#     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
+#     COMMAND ${CMAKE_COMMAND} -E remove qch/${PROJECT_NAME}-0.1.qch
+#     COMMAND qhelpgenerator html/index.qhp -o qch/${PROJECT_NAME}.qch
+#     COMMENT "-- Generating embedded documentation")
+
+#   add_custom_target(docclean 
+#     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#     COMMAND ${CMAKE_COMMAND} -E remove html man qch
+#     COMMENT "-- Cleaning documentation generated files")
+
+# endif (DOXYGEN_FOUND)
+
 ## #################################################################
 ## Handling of generated script modules
 ## #################################################################
@@ -107,7 +144,7 @@ target_link_libraries(${PROJECT_NAME}
 #  set(${PROJECT_NAME}_RESOURCE_DIR ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.app/Contents/Resources)
 ## set(${PROJECT_NAME}_PLUGINS_DIR  ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.app/Contents/Plugins)
 #  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#    COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_RESOURCE_DIR}
+#    COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_RESOURCE_DIR}1
 ##   COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_PLUGINS_DIR}
 #    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.icns ${${PROJECT_NAME}_RESOURCE_DIR}
 #    COMMENT "-- Setting up plugins and resources")
