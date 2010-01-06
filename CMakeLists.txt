@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Mon Sep 21 14:48:02 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Jan  6 10:48:40 2010 (+0100)
+## Last-Updated: Wed Jan  6 10:51:50 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 14
+##     Update #: 15
 ######################################################################
 ## 
 ### Commentary: 
@@ -57,4 +57,3 @@ subdirs(v3dView)
 subdirs(itkDataImage)
 subdirs(itkDataImageReader)
 subdirs(itkDataImageWriter)
-subdirs(itkProcessRegistration)
