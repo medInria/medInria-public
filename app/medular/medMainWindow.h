@@ -43,18 +43,14 @@ public slots:
     void switchToWelcomeArea(void);
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
+    void switchToDocumentationArea(void);
 
     void onPatientDoubleClicked(const QModelIndex &index);
     void onStudyDoubleClicked(const QModelIndex &index);
     void onSeriesDoubleClicked(const QModelIndex &index);
 
-    //void onProgressUpdated (int progress);
-
 protected:
     void closeEvent(QCloseEvent *event);
-
-//    void keyPressEvent(QKeyEvent *event);
-//    void resizeEvent(QResizeEvent *event);
 
 private:
     medMainWindowPrivate *d;

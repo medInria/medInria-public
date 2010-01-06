@@ -25,7 +25,8 @@
 #include <QtDebug>
 #include <QtCore>
 
-#include <medCore/medAbstractDataImage.h>
+#include <medCore/medDataIndex.h>
+#include <medCore/medDataManager.h>
 %}
 
 // /////////////////////////////////////////////////////////////////
@@ -102,6 +103,7 @@
 // Wrapper input
 // /////////////////////////////////////////////////////////////////
 
-%include "medAbstractDataImage.h"
+%include "medDataIndex.h"
+%include "medDataManager.h"
 
 #endif

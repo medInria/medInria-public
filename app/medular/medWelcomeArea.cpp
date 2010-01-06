@@ -19,8 +19,6 @@
 
 #include "medWelcomeArea.h"
 
-#include <QtCore>
-#include <QtGui>
 #include <QtWebKit>
 
 #include <medGui/medLoginWidget.h>

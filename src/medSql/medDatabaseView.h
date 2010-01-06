@@ -58,6 +58,11 @@ public slots:
     void onSeriesClicked(int id);
     void onImageClicked(int id);
 
+public slots:
+    void expandAllStudies(void);
+    void expandAllSeries(void);
+    void expandAllImages(void);
+
 private slots:
     void onItemClicked(const QModelIndex& index);
     void onItemDoubleClicked(const QModelIndex& index);

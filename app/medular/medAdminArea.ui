@@ -18,7 +18,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QTabWidget" name="tab_2">
+    <widget class="QTabWidget" name="tab">
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -128,9 +128,6 @@
     </widget>
    </item>
   </layout>
-  <zorder>tab_2</zorder>
-  <zorder>widget</zorder>
-  <zorder>buttonBox</zorder>
  </widget>
  <resources/>
  <connections/>

@@ -20,16 +20,24 @@
 #include    "medAdminArea.h"
 #include "ui_medAdminArea.h"
 
+#include <dtkGui/dtkSettingsEditor.h>
+
 class medAdminAreaPrivate
 {
 public:
     Ui::medAdminArea *ui;
+
+    dtkSettingsEditor *settings_editor;
 };
 
 medAdminArea::medAdminArea(QWidget *parent) : QWidget(parent), d(new medAdminAreaPrivate)
 {
+    d->settings_editor = new dtkSettingsEditor(this);
+    d->settings_editor->setSettings("inria", "dtk");
+
     d->ui = new Ui::medAdminArea;
     d->ui->setupUi(this);
+    d->ui->tab->addTab(d->settings_editor, "Settings");
 
     connect(d->ui->buttonBox, SIGNAL(accepted()), this, SIGNAL(accepted()));
     connect(d->ui->buttonBox, SIGNAL(rejected()), this, SIGNAL(rejected()));

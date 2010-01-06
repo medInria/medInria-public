@@ -19,6 +19,7 @@
 
 #include "medAdminArea.h"
 #include "medBrowserArea.h"
+#include "medDocumentationArea.h"
 #include "medMainWindow.h"
 #include "medViewerArea.h"
 #include "medWelcomeArea.h"
@@ -43,20 +44,23 @@ class medMainWindowPrivate
 public:
     QStackedWidget *stack;
 
-    medAdminArea   *adminArea;
-    medWelcomeArea *welcomeArea;
-    medBrowserArea *browserArea;
-    medViewerArea  *viewerArea;
+    medAdminArea         *adminArea;
+    medWelcomeArea       *welcomeArea;
+    medBrowserArea       *browserArea;
+    medViewerArea        *viewerArea;
+    medDocumentationArea *documentationArea;
 
     QToolBar *toolBar;
 
     QAction *switchToWelcomeAreaAction;
     QAction *switchToBrowserAreaAction;
     QAction *switchToViewerAreaAction;
+    QAction *switchToDocumentationAreaAction;
 
     medWorkspaceShifterAction *shiftToWelcomeAreaAction;
     medWorkspaceShifterAction *shiftToBrowserAreaAction;
     medWorkspaceShifterAction *shiftToViewerAreaAction;
+    medWorkspaceShifterAction *shiftToDocumentationAreaAction;
 };
 
 extern "C" int init_core(void);                  // -- Initialization core layer python wrapped functions
@@ -71,14 +75,16 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     // Setting up widgets
 
-    d->adminArea   = new medAdminArea(this);
+    d->adminArea = new medAdminArea(this);
     d->welcomeArea = new medWelcomeArea(this);
     d->browserArea = new medBrowserArea(this);
-    d->viewerArea  = new medViewerArea(this);
+    d->viewerArea = new medViewerArea(this);
+    d->documentationArea = new medDocumentationArea(this);
 
     d->welcomeArea->setObjectName("Welcome");
     d->browserArea->setObjectName("Browser");
     d->viewerArea->setObjectName("Viewer");
+    d->viewerArea->setObjectName("Documentation");
 
     connect(d->welcomeArea, SIGNAL(accepted()), this, SLOT(switchToAdminArea()));
     connect(d->adminArea, SIGNAL(accepted()), this, SLOT(switchToWelcomeArea()));
@@ -89,19 +95,23 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->welcomeArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->viewerArea);
+    d->stack->addWidget(d->documentationArea);
 
     d->switchToWelcomeAreaAction = new QAction(this);
     d->switchToBrowserAreaAction = new QAction(this);
-    d->switchToViewerAreaAction  = new QAction(this);
+    d->switchToViewerAreaAction = new QAction(this);
+    d->switchToDocumentationAreaAction = new QAction(this);
 
 #if defined(Q_WS_MAC)
     d->switchToWelcomeAreaAction->setShortcut(Qt::MetaModifier + Qt::Key_1);
     d->switchToBrowserAreaAction->setShortcut(Qt::MetaModifier + Qt::Key_2);
     d->switchToViewerAreaAction->setShortcut(Qt::MetaModifier + Qt::Key_3);
+    d->switchToDocumentationAreaAction->setShortcut(Qt::MetaModifier + Qt::Key_4);
 #else
     d->switchToWelcomeAreaAction->setShortcut(Qt::ControlModifier + Qt::Key_1);
     d->switchToBrowserAreaAction->setShortcut(Qt::ControlModifier + Qt::Key_2);
     d->switchToViewerAreaAction->setShortcut(Qt::ControlModifier + Qt::Key_3);
+    d->switchToDocumentationAreaAction->setShortcut(Qt::ControlModifier + Qt::Key_3);
 #endif
 
     if(qApp->arguments().contains("--no-fullscreen")) {
@@ -121,6 +131,11 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
         d->switchToViewerAreaAction->setToolTip("Switch to the viewer area (Ctrl+3)");
         d->switchToViewerAreaAction->setIcon(QIcon(":/icons/widget.tiff"));
         
+        d->switchToDocumentationAreaAction->setEnabled(true);
+        d->switchToDocumentationAreaAction->setText("Documentation");
+        d->switchToDocumentationAreaAction->setToolTip("Switch to the documentation area (Ctrl+4)");
+        d->switchToDocumentationAreaAction->setIcon(QIcon(":/icons/widget.tiff"));
+
         d->toolBar = this->addToolBar("Areas");
 #ifdef Q_WS_MAC
         d->toolBar->setStyle(QStyleFactory::create("macintosh"));
@@ -131,12 +146,14 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
         d->toolBar->addAction(d->switchToWelcomeAreaAction);
         d->toolBar->addAction(d->switchToBrowserAreaAction);
         d->toolBar->addAction(d->switchToViewerAreaAction);
+        d->toolBar->addAction(d->switchToDocumentationAreaAction);
         this->setUnifiedTitleAndToolBarOnMac(true);
     }
 
     connect(d->switchToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToWelcomeArea()));
     connect(d->switchToBrowserAreaAction, SIGNAL(triggered()), this, SLOT(switchToBrowserArea()));
     connect(d->switchToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
+    connect(d->switchToDocumentationAreaAction, SIGNAL(triggered()), this, SLOT(switchToDocumentationArea()));
 
     connect(d->browserArea->view(), SIGNAL(patientDoubleClicked(const QModelIndex&)), this, SLOT(onPatientDoubleClicked (const QModelIndex&)));
     connect(d->browserArea->view(), SIGNAL(studyDoubleClicked(const QModelIndex&)), this, SLOT(onStudyDoubleClicked (const QModelIndex&)));
@@ -145,6 +162,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->addAction(d->switchToWelcomeAreaAction);
     this->addAction(d->switchToBrowserAreaAction);
     this->addAction(d->switchToViewerAreaAction);
+    this->addAction(d->switchToDocumentationAreaAction);
 
     this->setWindowTitle("medular");
     this->setCentralWidget(d->stack);
@@ -198,17 +216,20 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->shiftToWelcomeAreaAction = new medWorkspaceShifterAction("Welcome");
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
     d->shiftToViewerAreaAction  = new medWorkspaceShifterAction("Viewer");
+    d->shiftToDocumentationAreaAction  = new medWorkspaceShifterAction("Documentation");
 
     d->shiftToWelcomeAreaAction->setChecked(true);
 
     connect(d->shiftToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToWelcomeArea()));
     connect(d->shiftToBrowserAreaAction, SIGNAL(triggered()), this, SLOT(switchToBrowserArea()));
     connect(d->shiftToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
+    connect(d->shiftToDocumentationAreaAction, SIGNAL(triggered()), this, SLOT(switchToDocumentationArea()));
 
     medWorkspaceShifter *shifter = new medWorkspaceShifter(this);
     shifter->addAction(d->shiftToWelcomeAreaAction);
     shifter->addAction(d->shiftToBrowserAreaAction);
     shifter->addAction(d->shiftToViewerAreaAction);
+    shifter->addAction(d->shiftToDocumentationAreaAction);
 
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
@@ -269,10 +290,12 @@ void medMainWindow::switchToAdminArea(void)
     d->switchToWelcomeAreaAction->setEnabled(false);
     d->switchToBrowserAreaAction->setEnabled(true);
     d->switchToViewerAreaAction->setEnabled(true);
+    d->switchToDocumentationAreaAction->setEnabled(true);
 
     d->shiftToWelcomeAreaAction->setChecked(true);
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(false);
+    d->shiftToDocumentationAreaAction->setChecked(false);
 
     disconnect(d->switchToWelcomeAreaAction, SIGNAL(triggered()));
        connect(d->switchToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToAdminArea()));
@@ -283,16 +306,19 @@ void medMainWindow::switchToWelcomeArea(void)
     d->welcomeArea->setup(this->statusBar());
     d->browserArea->setdw(this->statusBar());
     d->viewerArea->setdw(this->statusBar());
+    d->documentationArea->setdw(this->statusBar());
 
     d->stack->setCurrentWidget(d->welcomeArea);
 
     d->switchToWelcomeAreaAction->setEnabled(false);
     d->switchToBrowserAreaAction->setEnabled(true);
     d->switchToViewerAreaAction->setEnabled(true);
+    d->switchToDocumentationAreaAction->setEnabled(true);
 
     d->shiftToWelcomeAreaAction->setChecked(true);
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(false);
+    d->shiftToDocumentationAreaAction->setChecked(false);
 
     disconnect(d->switchToWelcomeAreaAction, SIGNAL(triggered()));
        connect(d->switchToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToWelcomeArea()));
@@ -303,16 +329,19 @@ void medMainWindow::switchToBrowserArea(void)
     d->welcomeArea->setdw(this->statusBar());
     d->browserArea->setup(this->statusBar());
     d->viewerArea->setdw(this->statusBar());
+    d->documentationArea->setdw(this->statusBar());
 
     d->stack->setCurrentWidget(d->browserArea);
 
     d->switchToWelcomeAreaAction->setEnabled(true);
     d->switchToBrowserAreaAction->setEnabled(false);
     d->switchToViewerAreaAction->setEnabled(true);
+    d->switchToDocumentationAreaAction->setEnabled(true);
 
     d->shiftToWelcomeAreaAction->setChecked(false);
     d->shiftToBrowserAreaAction->setChecked(true);
     d->shiftToViewerAreaAction->setChecked(false);
+    d->shiftToDocumentationAreaAction->setChecked(false);
 }
 
 void medMainWindow::switchToViewerArea(void)
@@ -320,16 +349,39 @@ void medMainWindow::switchToViewerArea(void)
     d->welcomeArea->setdw(this->statusBar());
     d->browserArea->setdw(this->statusBar());
     d->viewerArea->setup(this->statusBar());
+    d->documentationArea->setdw(this->statusBar());
 
     d->stack->setCurrentWidget(d->viewerArea);
 
     d->switchToWelcomeAreaAction->setEnabled(true);
     d->switchToBrowserAreaAction->setEnabled(true);
     d->switchToViewerAreaAction->setEnabled(false);
+    d->switchToDocumentationAreaAction->setEnabled(true);
 
     d->shiftToWelcomeAreaAction->setChecked(false);
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(true);
+    d->shiftToDocumentationAreaAction->setChecked(false);
+}
+
+void medMainWindow::switchToDocumentationArea(void)
+{
+    d->welcomeArea->setdw(this->statusBar());
+    d->browserArea->setdw(this->statusBar());
+    d->viewerArea->setdw(this->statusBar());
+    d->documentationArea->setup(this->statusBar());
+
+    d->stack->setCurrentWidget(d->documentationArea);
+
+    d->switchToWelcomeAreaAction->setEnabled(true);
+    d->switchToBrowserAreaAction->setEnabled(true);
+    d->switchToViewerAreaAction->setEnabled(true);
+    d->switchToDocumentationAreaAction->setEnabled(false);
+
+    d->shiftToWelcomeAreaAction->setChecked(false);
+    d->shiftToBrowserAreaAction->setChecked(false);
+    d->shiftToViewerAreaAction->setChecked(false);
+    d->shiftToDocumentationAreaAction->setChecked(true);
 }
 
 void medMainWindow::onPatientDoubleClicked(const QModelIndex &index)
