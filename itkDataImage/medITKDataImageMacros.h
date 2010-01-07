@@ -1,6 +1,7 @@
 #ifndef _med_ITKDataImageMacros_h_
 #define _med_ITKDataImageMacros_h_
 
+#include <time.h>
 
 #define medImplementITKDataImage(type, dimension, suffix)		\
   class itkDataImage##suffix##Private					\
@@ -201,7 +202,7 @@
     ++it;								\
     ++voxelCount;							\
     if ( (voxelCount%nvoxels_per_slice)==0 ) {				\
-      d->thumbnails.push_back (qimage->mirrored(true, false));				\
+      d->thumbnails.push_back (qimage->mirrored(true, false));		\
       qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);	\
       qImageBuffer = qimage->bits();					\
     }									\
