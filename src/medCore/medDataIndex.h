@@ -22,9 +22,11 @@
 
 #include <QtCore>
 
+#include "medCoreExport.h"
+
 class medDataIndexPrivate;
 
-class medDataIndex
+class MEDCORE_EXPORT medDataIndex
 {
 public:
      medDataIndex(int patientId = -1, int studyId = -1, int seriesId = -1, int imageId = -1);
