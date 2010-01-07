@@ -117,9 +117,17 @@ public:
 
     QComboBox *foregroundLookupTableComboBox;
     QComboBox *backgroundLookupTableComboBox;
+    QComboBox *presetComboBox;
     QCheckBox *scalarBarVisibilityCheckBox;
     QCheckBox *axisVisibilityCheckBox;
 
+    QComboBox   *view3dModeComboBox;
+    QSlider     *view3dLODSlider;
+    QToolButton *windowingToolButton;
+    QToolButton *zoomingToolButton;
+    QToolButton *slicingToolButton;
+    QToolButton *measuringToolButton;
+  
     // view containers hash
 
     QHash<int, medViewerAreaStack *> view_stacks;
@@ -225,6 +233,34 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->backgroundLookupTableComboBox->addItem("greenBlackAlpha");
     d->backgroundLookupTableComboBox->addItem("redBlackAlpha");
 
+    d->presetComboBox = new QComboBox(this);
+    d->presetComboBox->setFocusPolicy(Qt::NoFocus);
+    d->presetComboBox->addItem("No preset");
+    d->presetComboBox->addItem("Muscle and bones");
+
+    d->view3dModeComboBox = new QComboBox(this);
+    d->view3dModeComboBox->setFocusPolicy(Qt::NoFocus);
+    d->view3dModeComboBox->addItem("Volume rendering");
+    d->view3dModeComboBox->addItem("MIP - Maximum");
+    d->view3dModeComboBox->addItem("MIP - Minimum");
+    d->view3dModeComboBox->addItem("MPR");
+
+    d->view3dLODSlider = new QSlider (Qt::Horizontal, this);
+    d->view3dLODSlider->setRange (100, 1000);
+    d->view3dLODSlider->setValue (1000);
+
+    d->windowingToolButton = new QToolButton(this);
+    d->zoomingToolButton = new QToolButton(this);
+    d->slicingToolButton = new QToolButton(this);
+    d->measuringToolButton = new QToolButton(this);
+
+    QHBoxLayout *mouseLayout = new QHBoxLayout;
+    mouseLayout->addWidget(d->windowingToolButton);
+    mouseLayout->addWidget(d->zoomingToolButton);
+    mouseLayout->addWidget(d->slicingToolButton);
+    mouseLayout->addWidget(d->measuringToolButton);
+
+        
     connect(d->foregroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
     connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
 
@@ -237,17 +273,31 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->axisVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(setupAxisVisibility(bool)));
 
     QWidget *viewToolBoxWidget = new QWidget;
+    QWidget *view3dToolBoxWidget = new QWidget;
 
     QFormLayout *lutToolBoxWidgetLayout = new QFormLayout(viewToolBoxWidget);
-    lutToolBoxWidgetLayout->addRow("Foreground lut:", d->foregroundLookupTableComboBox);
-    lutToolBoxWidgetLayout->addRow("Background lut:", d->backgroundLookupTableComboBox);
+    lutToolBoxWidgetLayout->addRow("Color lut:", d->foregroundLookupTableComboBox);
+    lutToolBoxWidgetLayout->addRow("Preset:", d->presetComboBox);
+    //lutToolBoxWidgetLayout->addRow("Background lut:", d->backgroundLookupTableComboBox);
     lutToolBoxWidgetLayout->addRow("Show axis", d->axisVisibilityCheckBox);
     lutToolBoxWidgetLayout->addRow("Show scalars", d->scalarBarVisibilityCheckBox);
     lutToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
 
+
+    QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(view3dToolBoxWidget);
+    view3dToolBoxWidgetLayout->addRow("3D Mode:", d->view3dModeComboBox);
+    view3dToolBoxWidgetLayout->addRow("LOD:", d->view3dLODSlider);
+    view3dToolBoxWidgetLayout->addRow ("", mouseLayout);
+    view3dToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
+    
+
     medToolBox *viewToolBox = new medToolBox(this);
     viewToolBox->setTitle("View");
     viewToolBox->setWidget(viewToolBoxWidget);
+
+    medToolBox *view3dToolBox = new medToolBox(this);
+    view3dToolBox->setTitle("3D");
+    view3dToolBox->setWidget(view3dToolBoxWidget);
 
     // Setting up toolbox container
 
@@ -256,6 +306,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container->addToolBox(patientToolBox);
     d->toolbox_container->addToolBox(layoutToolBox);
     d->toolbox_container->addToolBox(viewToolBox);
+    d->toolbox_container->addToolBox(view3dToolBox);
 
     // Setting up view container
 
