@@ -331,14 +331,14 @@ QPushButton, QComboBox {
     height: 20px;
     padding-left: 5px;
     padding-right: 5px;
-    min-width: 40px;
+    min-width: 20px;
 }
 
 QPushButton:hover, QComboBox::hover {
     border: 1px solid #a7b6d3;
 }
 
-QPushButton:pressed, QComboBox::pressed {
+QPushButton:pressed, QPushButton:checked, QComboBox::pressed {
     border: 1px solid #a7b6d3;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
 }

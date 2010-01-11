@@ -123,10 +123,10 @@ public:
 
     QComboBox   *view3dModeComboBox;
     QSlider     *view3dLODSlider;
-    QToolButton *windowingToolButton;
-    QToolButton *zoomingToolButton;
-    QToolButton *slicingToolButton;
-    QToolButton *measuringToolButton;
+    QPushButton *windowingPushButton;
+    QPushButton *zoomingPushButton;
+    QPushButton *slicingPushButton;
+    QPushButton *measuringPushButton;
   
     // view containers hash
 
@@ -216,6 +216,11 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->foregroundLookupTableComboBox->addItem("blueBlackAlpha");
     d->foregroundLookupTableComboBox->addItem("greenBlackAlpha");
     d->foregroundLookupTableComboBox->addItem("redBlackAlpha");
+    d->foregroundLookupTableComboBox->addItem("Muscles&Bones");
+    d->foregroundLookupTableComboBox->addItem("Red Vessels");
+    d->foregroundLookupTableComboBox->addItem("Bones");
+    d->foregroundLookupTableComboBox->addItem("Stern");
+
 
     d->backgroundLookupTableComboBox = new QComboBox(this);
     d->backgroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
@@ -232,15 +237,30 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->backgroundLookupTableComboBox->addItem("blueBlackAlpha");
     d->backgroundLookupTableComboBox->addItem("greenBlackAlpha");
     d->backgroundLookupTableComboBox->addItem("redBlackAlpha");
+    d->backgroundLookupTableComboBox->addItem("Muscles&Bones");
+    d->backgroundLookupTableComboBox->addItem("Red Vessels");
+    d->backgroundLookupTableComboBox->addItem("Bones");
+    d->backgroundLookupTableComboBox->addItem("Stern");
+
 
     d->presetComboBox = new QComboBox(this);
     d->presetComboBox->setFocusPolicy(Qt::NoFocus);
-    d->presetComboBox->addItem("No preset");
-    d->presetComboBox->addItem("Muscle and bones");
+    d->presetComboBox->addItem("None");
+    d->presetComboBox->addItem("VR Muscles&Bones");
+    d->presetComboBox->addItem("Vascular I");
+    d->presetComboBox->addItem("Vascular II");
+    d->presetComboBox->addItem("Vascular III");
+    d->presetComboBox->addItem("Vascular IV");
+    d->presetComboBox->addItem("Standard");
+    d->presetComboBox->addItem("Soft");
+    d->presetComboBox->addItem("Soft on White");
+    d->presetComboBox->addItem("Soft on Blue");
+    d->presetComboBox->addItem("Red on White");
+    d->presetComboBox->addItem("Glossy");
 
     d->view3dModeComboBox = new QComboBox(this);
     d->view3dModeComboBox->setFocusPolicy(Qt::NoFocus);
-    d->view3dModeComboBox->addItem("Volume rendering");
+    d->view3dModeComboBox->addItem("VR");
     d->view3dModeComboBox->addItem("MIP - Maximum");
     d->view3dModeComboBox->addItem("MIP - Minimum");
     d->view3dModeComboBox->addItem("MPR");
@@ -249,23 +269,46 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->view3dLODSlider->setRange (100, 1000);
     d->view3dLODSlider->setValue (1000);
 
-    d->windowingToolButton = new QToolButton(this);
-    d->zoomingToolButton = new QToolButton(this);
-    d->slicingToolButton = new QToolButton(this);
-    d->measuringToolButton = new QToolButton(this);
+    d->windowingPushButton = new QPushButton("", this);
+    d->windowingPushButton->setIcon (QIcon (":/icons/wlww.tiff"));
+    d->windowingPushButton->setCheckable (true);
+    d->windowingPushButton->setMinimumWidth ( 20 );
+    d->zoomingPushButton   = new QPushButton("", this);
+    d->zoomingPushButton->setIcon (QIcon (":/icons/zoom.tiff"));
+    d->zoomingPushButton->setCheckable (true);
+    d->slicingPushButton   = new QPushButton("", this);
+    d->slicingPushButton->setIcon (QIcon (":/icons/stack.tiff"));
+    d->slicingPushButton->setCheckable (true);
+    d->measuringPushButton = new QPushButton("", this);
+    d->measuringPushButton->setIcon (QIcon (":/icons/length.tiff"));
+    d->measuringPushButton->setCheckable (true);
 
-    QHBoxLayout *mouseLayout = new QHBoxLayout;
-    mouseLayout->addWidget(d->windowingToolButton);
-    mouseLayout->addWidget(d->zoomingToolButton);
-    mouseLayout->addWidget(d->slicingToolButton);
-    mouseLayout->addWidget(d->measuringToolButton);
+    QButtonGroup *mouseGroup = new QButtonGroup (this);
+    mouseGroup->addButton ( d->windowingPushButton );
+    mouseGroup->addButton ( d->zoomingPushButton );
+    mouseGroup->addButton ( d->slicingPushButton );
+    mouseGroup->addButton ( d->measuringPushButton );
+    mouseGroup->setExclusive (true);
+
+    QHBoxLayout *mouseLayout = new QHBoxLayout;    
+    mouseLayout->addWidget(d->windowingPushButton);
+    mouseLayout->addWidget(d->slicingPushButton);
+    mouseLayout->addWidget(d->zoomingPushButton);
+    mouseLayout->addWidget(d->measuringPushButton);
 
         
     connect(d->foregroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
     connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
+    connect(d->presetComboBox,                SIGNAL(currentIndexChanged(QString)), this, SLOT(setupLUTPreset(QString)));
+    connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SLOT(setup3DMode(QString)));
+    connect(d->view3dLODSlider,               SIGNAL(valueChanged(int)),            this, SLOT(setup3DLOD(int)));
+    connect(d->windowingPushButton,           SIGNAL(toggled(bool)),                this, SLOT(setupWindowing(bool)));
+    connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(setupZooming(bool)));
+    connect(d->slicingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(setupSlicing(bool)));
+    connect(d->measuringPushButton,           SIGNAL(toggled(bool)),                this, SLOT(setupMeasuring(bool)));
 
     d->scalarBarVisibilityCheckBox = new QCheckBox(this);
-
+ 
     connect(d->scalarBarVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(setupScalarBarVisibility(bool)));
 
     d->axisVisibilityCheckBox = new QCheckBox(this);
@@ -274,21 +317,26 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     QWidget *viewToolBoxWidget = new QWidget;
     QWidget *view3dToolBoxWidget = new QWidget;
+    QWidget *mouseToolBoxWidget = new QWidget;
 
     QFormLayout *lutToolBoxWidgetLayout = new QFormLayout(viewToolBoxWidget);
     lutToolBoxWidgetLayout->addRow("Color lut:", d->foregroundLookupTableComboBox);
     lutToolBoxWidgetLayout->addRow("Preset:", d->presetComboBox);
     //lutToolBoxWidgetLayout->addRow("Background lut:", d->backgroundLookupTableComboBox);
-    lutToolBoxWidgetLayout->addRow("Show axis", d->axisVisibilityCheckBox);
-    lutToolBoxWidgetLayout->addRow("Show scalars", d->scalarBarVisibilityCheckBox);
+    lutToolBoxWidgetLayout->addRow("Show axis:", d->axisVisibilityCheckBox);
+    lutToolBoxWidgetLayout->addRow("Show scalars:", d->scalarBarVisibilityCheckBox);
     lutToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
 
 
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(view3dToolBoxWidget);
     view3dToolBoxWidgetLayout->addRow("3D Mode:", d->view3dModeComboBox);
     view3dToolBoxWidgetLayout->addRow("LOD:", d->view3dLODSlider);
-    view3dToolBoxWidgetLayout->addRow ("", mouseLayout);
     view3dToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
+
+
+    QFormLayout *mouseToolBoxWidgetLayout = new QFormLayout(mouseToolBoxWidget);
+    mouseToolBoxWidgetLayout->addRow ("Type:", mouseLayout);
+    mouseToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
     
 
     medToolBox *viewToolBox = new medToolBox(this);
@@ -299,6 +347,11 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     view3dToolBox->setTitle("3D");
     view3dToolBox->setWidget(view3dToolBoxWidget);
 
+    medToolBox *mouseToolBox = new medToolBox(this);
+    mouseToolBox->setTitle("Mouse");
+    mouseToolBox->setWidget(mouseToolBoxWidget);
+
+    
     // Setting up toolbox container
 
     d->toolbox_container = new medToolBoxContainer(this);
@@ -306,6 +359,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container->addToolBox(patientToolBox);
     d->toolbox_container->addToolBox(layoutToolBox);
     d->toolbox_container->addToolBox(viewToolBox);
+    d->toolbox_container->addToolBox(mouseToolBox);
     d->toolbox_container->addToolBox(view3dToolBox);
 
     // Setting up view container
@@ -495,10 +549,46 @@ void medViewerArea::onImageIndexChanged(int id)
 
 void medViewerArea::onViewFocused(dtkAbstractView *view)
 {
+    d->foregroundLookupTableComboBox->blockSignals (true);
     d->foregroundLookupTableComboBox->setCurrentIndex(d->foregroundLookupTableComboBox->findText(view->property("LookupTable")));
+    d->foregroundLookupTableComboBox->blockSignals (false);
+
+    d->backgroundLookupTableComboBox->blockSignals (true);
     d->backgroundLookupTableComboBox->setCurrentIndex(d->backgroundLookupTableComboBox->findText(view->property("BackgroundLookupTable")));
+    d->backgroundLookupTableComboBox->blockSignals (false);
+
+    d->axisVisibilityCheckBox->blockSignals (true);
     d->axisVisibilityCheckBox->setChecked(view->property("ShowAxis") == "true");
+    d->axisVisibilityCheckBox->blockSignals (false);
+
+    d->scalarBarVisibilityCheckBox->blockSignals (true);
     d->scalarBarVisibilityCheckBox->setChecked(view->property("ScalarBarVisibility") == "true");
+    d->scalarBarVisibilityCheckBox->blockSignals (false);
+
+    d->windowingPushButton->blockSignals (true);
+    d->zoomingPushButton->blockSignals (true);
+    d->slicingPushButton->blockSignals (true);
+    d->measuringPushButton->blockSignals (true);
+    if( view->property("LeftClickInteraction")=="Windowing" )
+      d->windowingPushButton->setChecked (true);
+    if( view->property("LeftClickInteraction")=="Zooming" )
+      d->zoomingPushButton->setChecked (true);
+    if( view->property("LeftClickInteraction")=="Slicing" )
+      d->slicingPushButton->setChecked (true);
+    if( view->property("LeftClickInteraction")=="Measuring" )
+      d->measuringPushButton->setChecked (true);
+    d->windowingPushButton->blockSignals (false);
+    d->zoomingPushButton->blockSignals (false);
+    d->slicingPushButton->blockSignals (false);
+    d->measuringPushButton->blockSignals (false);
+
+    d->view3dModeComboBox->blockSignals (true);
+    d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("Mode")));
+    d->view3dModeComboBox->blockSignals (false);
+
+    d->presetComboBox->blockSignals (true);
+    d->presetComboBox->setCurrentIndex(d->presetComboBox->findText(view->property("Preset")));
+    d->presetComboBox->blockSignals (false);
 }
 
 // layout settings
@@ -516,26 +606,114 @@ void medViewerArea::setupForegroundLookupTable(QString table)
     if(!d->view_stacks.count())
         return;
 
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
         view->setProperty("LookupTable", table);
+	view->update();
+    }
     else
         qDebug() << "Unable to retrieve view";
 }
 
 void medViewerArea::setupBackgroundLookupTable(QString table)
 {
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
+    if(!d->view_stacks.count())
+        return;
+    
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
         view->setProperty("BackgroundLookupTable", table);
+	view->update();
+    }
 }
 
 void medViewerArea::setupAxisVisibility(bool visible)
 {
-    if(dtkAbstractView *view = d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view = d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
         visible ? view->setProperty("ShowAxis", "true") : view->setProperty("ShowAxis", "false");
+	view->update();
+    }
 }
 
 void medViewerArea::setupScalarBarVisibility(bool visible)
 {
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view())
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
         visible ? view->setProperty("ScalarBarVisibility", "true") : view->setProperty("ScalarBarVisibility", "false");
+	view->update();
+    }
+}
+
+void medViewerArea::setup3DMode (QString table)
+{
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
+        view->setProperty("Mode", table);
+        view->update();
+    }
+}
+
+void medViewerArea::setupLUTPreset (QString table)
+{
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
+        view->setProperty("Preset", table);
+	view->update();
+    }
+}
+
+void medViewerArea::setup3DLOD (int value)
+{
+  qDebug() << __func__;
+}
+
+void medViewerArea::setupWindowing (bool checked)
+{
+    if(!d->view_stacks.count())
+        return;
+
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
+        view->setProperty("LeftClickInteraction", "Windowing");
+	view->update();
+    }
+}
+
+void medViewerArea::setupZooming (bool checked)
+{
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
+        view->setProperty("LeftClickInteraction", "Zooming");
+	view->update();
+    }
+}
+
+void medViewerArea::setupSlicing (bool checked)
+{
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
+        view->setProperty("LeftClickInteraction", "Slicing");
+	view->update();
+    }
+}
+
+void medViewerArea::setupMeasuring (bool checked)
+{
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
+        view->setProperty("LeftClickInteraction", "Measuring");
+	view->update();
+    }
 }
