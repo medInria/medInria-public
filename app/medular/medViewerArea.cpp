@@ -127,6 +127,7 @@ public:
     QPushButton *zoomingPushButton;
     QPushButton *slicingPushButton;
     QPushButton *measuringPushButton;
+    QPushButton *croppingPushButton;
   
     // view containers hash
 
@@ -283,6 +284,11 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->measuringPushButton->setIcon (QIcon (":/icons/length.tiff"));
     d->measuringPushButton->setCheckable (true);
 
+    d->croppingPushButton = new QPushButton ("", this);
+    d->croppingPushButton->setIcon (QIcon (":/icons/cropping.png"));
+    d->croppingPushButton->setCheckable (true);
+    d->croppingPushButton->setMinimumWidth ( 20 );
+
     QButtonGroup *mouseGroup = new QButtonGroup (this);
     mouseGroup->addButton ( d->windowingPushButton );
     mouseGroup->addButton ( d->zoomingPushButton );
@@ -306,6 +312,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(setupZooming(bool)));
     connect(d->slicingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(setupSlicing(bool)));
     connect(d->measuringPushButton,           SIGNAL(toggled(bool)),                this, SLOT(setupMeasuring(bool)));
+    connect(d->croppingPushButton,            SIGNAL(toggled(bool)),                this, SLOT(setupCropping(bool)));
 
     d->scalarBarVisibilityCheckBox = new QCheckBox(this);
  
@@ -331,6 +338,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(view3dToolBoxWidget);
     view3dToolBoxWidgetLayout->addRow("3D Mode:", d->view3dModeComboBox);
     view3dToolBoxWidgetLayout->addRow("LOD:", d->view3dLODSlider);
+    view3dToolBoxWidgetLayout->addRow("Cropping:", d->croppingPushButton);
     view3dToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
 
 
@@ -589,6 +597,13 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     d->presetComboBox->blockSignals (true);
     d->presetComboBox->setCurrentIndex(d->presetComboBox->findText(view->property("Preset")));
     d->presetComboBox->blockSignals (false);
+
+    d->croppingPushButton->blockSignals (true);
+    if( view->property("Cropping")=="true" )
+        d->croppingPushButton->setChecked(true);
+    else
+        d->croppingPushButton->setChecked(false);
+    d->croppingPushButton->blockSignals (false);
 }
 
 // layout settings
@@ -714,6 +729,17 @@ void medViewerArea::setupMeasuring (bool checked)
   
     if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
         view->setProperty("LeftClickInteraction", "Measuring");
+	view->update();
+    }
+}
+
+void medViewerArea::setupCropping (bool checked)
+{
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->view()) {
+        checked ? view->setProperty("Cropping", "true") : view->setProperty("Cropping", "false");
 	view->update();
     }
 }

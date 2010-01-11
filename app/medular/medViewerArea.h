@@ -99,6 +99,7 @@ protected slots: // view settings
     void setupZooming (bool checked);
     void setupSlicing (bool checked);
     void setupMeasuring (bool checked);
+    void setupCropping (bool checked);
 
 private:
     medViewerAreaPrivate *d;
