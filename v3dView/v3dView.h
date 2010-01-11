@@ -44,12 +44,14 @@ public:
 public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);
+    void onModePropertySet                  (QString value);
+    void onPresetPropertySet                (QString value);
     void onScalarBarVisibilityPropertySet   (QString value);
     void onLookupTablePropertySet           (QString value);
     void onBackgroundLookupTablePropertySet (QString value);
     void onOpacityPropertySet               (QString value);
     void onShowAxisPropertySet              (QString value);
-    void onInteractionPropertySet           (QString value);
+    void onLeftClickInteractionPropertySet  (QString value);
     void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged              (int value);
 
