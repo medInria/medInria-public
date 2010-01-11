@@ -52,6 +52,7 @@ public slots:
     void onOpacityPropertySet               (QString value);
     void onShowAxisPropertySet              (QString value);
     void onLeftClickInteractionPropertySet  (QString value);
+    void onCroppingPropertySet              (QString value);
     void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged              (int value);
 

@@ -317,6 +317,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
     this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
     this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum");
+    this->addProperty ("Cropping",              QStringList() << "true" << "false");
     this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
 		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
 		                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
@@ -591,6 +592,9 @@ void v3dView::onPropertySet(QString key, QString value)
 
     if(key == "Preset")
 	this->onPresetPropertySet(value);
+
+    if(key == "Cropping")
+	this->onCroppingPropertySet(value);
 
     this->widget()->update();
 }
@@ -1063,6 +1067,18 @@ void v3dView::onPresetPropertySet (QString value)
       //d->view->SetAboutData ("Glossy - Powered by magic Pedro");
     }
 
+}
+
+void v3dView::onCroppingPropertySet (QString value)
+{
+    if ( value=="true" ) {
+        d->view3D->SetCropping ( 1 );
+	d->view3D->SetBoxWidgetVisibility ( 1 );
+    }
+    else {
+      d->view3D->SetCropping ( 0 );
+      d->view3D->SetBoxWidgetVisibility ( 0 );
+    }
 }
 
 void v3dView::onMousePressEvent(QMouseEvent *event)
