@@ -1124,8 +1124,8 @@ namespace itk
     Uint16 tagElement = dicomTag.getETag();
     
     std::ostringstream oss;
-    oss << '(' << hex << setw( 4 ) << setfill( '0' )<< tagGroup << ','
-	<< hex << setw( 4 ) << setfill( '0' ) << tagElement << ")";
+    oss << '(' << std::hex << std::setw( 4 ) << std::setfill( '0' )<< tagGroup << ','
+	<< std::hex << std::setw( 4 ) << std::setfill( '0' ) << tagElement << ")";
     std::string tagKey = oss.str();
     
     
