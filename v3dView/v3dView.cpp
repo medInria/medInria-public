@@ -191,11 +191,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->vtkWidget = new QVTKWidget(d->widget);
     d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     d->vtkWidget->setFocusPolicy(Qt::NoFocus);
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 0bc9af2417d9455618ac1137496e4c23fc2356e7
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -542,7 +538,6 @@ void v3dView::setData(dtkAbstractData *data)
         d->collection->SyncSetInput(dataset);
     }
     
-<<<<<<< HEAD
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) ) {
         if( d->orientation=="Axial") {
             d->slider->setRange(0, imData->zDimension()-1);
@@ -552,15 +547,6 @@ void v3dView::setData(dtkAbstractData *data)
             d->slider->setRange(0, imData->yDimension()-1);
         }
     }
-=======
-    if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) )
-      if( d->orientation=="Axial")
-        d->slider->setRange(0, imData->zDimension()-1);
-      else if( d->orientation=="Sagittal")
-		d->slider->setRange(0, imData->xDimension()-1);
-      else if( d->orientation=="Coronal")
-		d->slider->setRange(0, imData->yDimension()-1);
->>>>>>> 0bc9af2417d9455618ac1137496e4c23fc2356e7
 
     dtkAbstractView::setData(data);
 
