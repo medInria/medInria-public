@@ -13,6 +13,7 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractDataImage.h>
 
+#include <vtkCamera.h>
 #include <vtkCommand.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
@@ -167,9 +168,10 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     d->currentView = d->view2DAxial;
 
-
     // Setting up 3D view
+
     d->renderer3D = vtkRenderer::New();
+
     d->view3D = vtkImageView3D::New();
     d->view3D->SetRenderer(d->renderer3D);
     d->view3D->SetBoxWidgetVisibility(0);
@@ -178,8 +180,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view3D->ScalarBarVisibilityOff();
     d->view3D->SetCroppingModeModeToOutside();
     d->view3D->ShadeOn();
+
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
-    d->view3D->SetInteractorStyle ( interactorStyle );
+    d->view3D->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
 
     d->widget = new QWidget;
@@ -192,6 +195,12 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     d->vtkWidget->setFocusPolicy(Qt::NoFocus);
 
+    vtkRenderWindow* renwin = vtkRenderWindow::New();
+    renwin->StereoCapableWindowOn();
+    renwin->SetStereoTypeToCrystalEyes();
+    renwin->SetStereoRender(1);
+    d->vtkWidget->SetRenderWindow(renwin);
+
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -201,7 +210,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     //d->view3D->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
     d->view3D->UninitializeInteractor();
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
+    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
     
     d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     //d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
@@ -601,6 +610,8 @@ void v3dView::onPropertySet(QString key, QString value)
     this->widget()->update();
 }
 
+#include <iostream>
+
 void v3dView::onOrientationPropertySet(QString value)
 {
     if (value==d->orientation)
@@ -615,14 +626,20 @@ void v3dView::onOrientationPropertySet(QString value)
     
     if (value=="3D") {
         d->orientation = "3D";
+
+        d->renderer3D->GetActiveCamera()->SetLeftEye(1);
+
         d->view2DAxial->UninitializeInteractor();
 	d->view2DSagittal->UninitializeInteractor();
 	d->view2DCoronal->UninitializeInteractor();
+
         d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer3D);
 	d->view3D->InitializeInteractor();
+
+        std::cout << d->renderer3D->GetActiveCamera() << std::endl;
 
 	d->currentView = d->view3D;	
     }
