@@ -201,7 +201,7 @@
     ++it;								\
     ++voxelCount;							\
     if ( (voxelCount%nvoxels_per_slice)==0 ) {				\
-      d->thumbnails.push_back (*qimage);				\
+      d->thumbnails.push_back (qimage->mirrored(true, false));				\
       qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);	\
       qImageBuffer = qimage->bits();					\
     }									\

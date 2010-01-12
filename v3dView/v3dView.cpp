@@ -176,7 +176,6 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view3D->CroppingOff();
     d->view3D->ImageAxisVisibilityOff();
     d->view3D->ScalarBarVisibilityOff();
-    //d->view3D->CroppingOn();
     d->view3D->SetCroppingModeModeToOutside();
     d->view3D->ShadeOn();
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
@@ -192,7 +191,11 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->vtkWidget = new QVTKWidget(d->widget);
     d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     d->vtkWidget->setFocusPolicy(Qt::NoFocus);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 0bc9af2417d9455618ac1137496e4c23fc2356e7
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -200,22 +203,22 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     layout->addWidget(d->vtkWidget);
 
     d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view3D->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
+    //d->view3D->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
     d->view3D->UninitializeInteractor();
+	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
     
     d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    //d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
     d->view2DCoronal->UninitializeInteractor();
 
     d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view2DSagittal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    //d->view2DSagittal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
     d->view2DSagittal->UninitializeInteractor();
 
     d->view2DAxial->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view2DAxial->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    //d->view2DAxial->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 
     d->collection = vtkImageViewCollection::New();
     d->collection->AddItem (d->view2DAxial);
@@ -303,15 +306,37 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 	<< "PValue"
 	<< "blueBlackAlpha"
 	<< "greenBlackAlpha"
-	<< "redBlackAlpha";
+	<< "redBlackAlpha"
+	<< "Muscles&Bones"
+      	<< "Red Vessels"
+      	<< "Bones"
+	<< "Stern";
     
-    this->addProperty("Orientation",           QStringList() << "Axial" << "Sagittal" << "Coronal" << "3D");
-    this->addProperty("ScalarBarVisibility",   QStringList() << "true" << "false");
-    this->addProperty("LookupTable",           lut);
-    this->addProperty("BackgroundLookupTable", lut);
-    this->addProperty("Opacity",               QStringList() << "1.0");
-    this->addProperty("ShowAxis",              QStringList() << "true" << "false");
-    this->addProperty("Interaction",           QStringList() << "Zoom" << "Window / Level");
+    
+    this->addProperty ("Orientation",           QStringList() << "Axial" << "Sagittal" << "Coronal" << "3D");
+    this->addProperty ("ScalarBarVisibility",   QStringList() << "true" << "false");
+    this->addProperty ("LookupTable",           lut);
+    this->addProperty ("BackgroundLookupTable", lut);
+    this->addProperty ("Opacity",               QStringList() << "1.0");
+    this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
+    this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
+    this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum");
+    this->addProperty ("Cropping",              QStringList() << "true" << "false");
+    this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
+		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
+		                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
+		                                              << "Red on White" << "Glossy");
+
+    // set default properties
+    this->setProperty ("Orientation", "Axial");
+    this->setProperty ("ScalarBarVisibility", "false");
+    this->setProperty ("ShowAxis", "false");
+    this->setProperty ("LookupTable", "Default");
+    this->setProperty ("BackgroundLookupTable", "Default");
+    this->setProperty ("Opacity", "1.0");
+    this->setProperty ("LeftClickInteraction", "Zooming");
+    this->setProperty ("Mode", "VR");
+    this->setProperty ("Preset", "None");
 
     connect(d->vtkWidget, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,    SIGNAL(valueChanged(int)),        this, SLOT(onZSliderValueChanged(int)));
@@ -376,7 +401,8 @@ void v3dView::reset(void)
 
 void v3dView::update(void)
 {
-    d->collection->SyncRender();
+    if( d->currentView )
+        d->currentView->Render();
     d->vtkWidget->update();
 }
 
@@ -413,98 +439,98 @@ void v3dView::setData(dtkAbstractData *data)
     if (data->hasMetaData("PatientName")){
         const QString patientName = data->metaDataValues(tr("PatientName"))[0];	
         d->view2DAxial->SetPatientName (patientName.toAscii().constData());
-	d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
-	d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
+		d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
+		d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
         d->view3D->SetPatientName (patientName.toAscii().constData());
     }
     
     if( data->hasMetaData("StudyDescription")){
         const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
         d->view2DAxial->SetStudyName (studyName.toAscii().constData());
-	d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
-	d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
+		d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
+		d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
         d->view3D->SetStudyName (studyName.toAscii().constData());
     }
     
     if (data->hasMetaData("SeriesDescription")){
         const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
         d->view2DAxial->SetSeriesName (seriesName.toAscii().constData());
-	d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
-	d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
+		d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
+		d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
         d->view3D->SetSeriesName (seriesName.toAscii().constData());
     }
 
 #ifdef vtkINRIA3D_USE_ITK
     if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
+		d->view2DSagittal->SetITKInput(image);
+		d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else
@@ -516,6 +542,7 @@ void v3dView::setData(dtkAbstractData *data)
         d->collection->SyncSetInput(dataset);
     }
     
+<<<<<<< HEAD
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) ) {
         if( d->orientation=="Axial") {
             d->slider->setRange(0, imData->zDimension()-1);
@@ -525,6 +552,15 @@ void v3dView::setData(dtkAbstractData *data)
             d->slider->setRange(0, imData->yDimension()-1);
         }
     }
+=======
+    if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) )
+      if( d->orientation=="Axial")
+        d->slider->setRange(0, imData->zDimension()-1);
+      else if( d->orientation=="Sagittal")
+		d->slider->setRange(0, imData->xDimension()-1);
+      else if( d->orientation=="Coronal")
+		d->slider->setRange(0, imData->yDimension()-1);
+>>>>>>> 0bc9af2417d9455618ac1137496e4c23fc2356e7
 
     dtkAbstractView::setData(data);
 
@@ -564,8 +600,17 @@ void v3dView::onPropertySet(QString key, QString value)
     if(key == "ShowAxis")
 	this->onShowAxisPropertySet(value);
 
-    if(key == "Interaction")
-	this->onInteractionPropertySet(value);
+    if(key == "LeftClickInteraction")
+	this->onLeftClickInteractionPropertySet(value);
+
+    if(key == "Mode")
+	this->onModePropertySet(value);
+
+    if(key == "Preset")
+	this->onPresetPropertySet(value);
+
+    if(key == "Cropping")
+	this->onCroppingPropertySet(value);
 
     this->widget()->update();
 }
@@ -577,9 +622,9 @@ void v3dView::onOrientationPropertySet(QString value)
     
     double pos[3], window = 0.0, level = 0.0;
     if( d->currentView ) {
-      d->currentView->GetCurrentPoint (pos);
-      window = d->currentView->GetColorWindow();
-      level = d->currentView->GetColorLevel();
+        d->currentView->GetCurrentPoint (pos);
+        window = d->currentView->GetColorWindow();
+        level = d->currentView->GetColorLevel();
     }
     
     if (value=="3D") {
@@ -602,22 +647,22 @@ void v3dView::onOrientationPropertySet(QString value)
     
     
     if (value == "Axial") {
-	d->view2DSagittal->UninitializeInteractor();
+        d->view2DSagittal->UninitializeInteractor();
 	d->view2DCoronal->UninitializeInteractor();
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
-      
+	
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DAxial);	
         d->view2DAxial->InitializeInteractor();
         d->orientation = "Axial";
 
 	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
-            d->slider->setRange (0, imData->zDimension()-1);
-
+	    d->slider->setRange (0, imData->zDimension()-1);
+	
 	d->view2DSagittal->RemoveObserver(d->observer);
 	d->view2DCoronal->RemoveObserver(d->observer);
 	d->view2DAxial->AddObserver(vtkImageView::ImageViewPositionChangeEvent, d->observer);	
-    
+	
 	d->currentView = d->view2DAxial;
     }
 
@@ -632,12 +677,12 @@ void v3dView::onOrientationPropertySet(QString value)
         d->orientation = "Sagittal";
 
 	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
-            d->slider->setRange (0, imData->xDimension()-1);
+	    d->slider->setRange (0, imData->xDimension()-1);
 
 	d->view2DAxial->RemoveObserver(d->observer);
 	d->view2DCoronal->RemoveObserver(d->observer);
 	d->view2DSagittal->AddObserver(vtkImageView::ImageViewPositionChangeEvent, d->observer);	
-
+	
 	d->currentView = d->view2DSagittal;
     }
 
@@ -666,10 +711,33 @@ void v3dView::onOrientationPropertySet(QString value)
 
     d->currentView->SetWorldCoordinates (pos);
     d->currentView->SetColorWindow (window);
-    d->currentView->SetColorLevel (level);
+    d->currentView->SetColorLevel (level);	
 
     // force a correct display of the 2D axis for planar views
     d->currentView->InvokeEvent (vtkImageView::ImageViewPositionChangeEvent, NULL);
+}
+
+void v3dView::onModePropertySet (QString value)
+{
+  if (value=="VR") {
+      d->view3D->SetRenderingModeToVR();
+      d->view3D->SetVolumeRayCastFunctionToComposite();
+  }
+
+  if (value=="MPR") {
+      d->view3D->SetRenderingModeToPlanar();
+  }
+
+  if (value=="MIP - Maximum") {
+      d->view3D->SetRenderingModeToVR();
+      d->view3D->SetVolumeRayCastFunctionToMaximumIntensityProjection();
+  }
+
+  if (value=="MIP - Minimum") {
+      d->view3D->SetRenderingModeToVR();
+      d->view3D->SetVolumeRayCastFunctionToMinimumIntensityProjection();
+  }
+  
 }
 
 void v3dView::onScalarBarVisibilityPropertySet(QString value)
@@ -681,9 +749,10 @@ void v3dView::onScalarBarVisibilityPropertySet(QString value)
     if (value == "false") {
       d->collection->SyncSetScalarBarVisibility(false);
     }
-    
+    /*
     if (d->currentView)
         d->currentView->Render();
+    */
 }
 
 void v3dView::onLookupTablePropertySet(QString value)
@@ -740,8 +809,25 @@ void v3dView::onLookupTablePropertySet(QString value)
 	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetRedBlackAlphaLookupTable());
     }
 
+    if (value == "Muscles&Bones") {
+	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetVRMusclesBonesLookupTable());
+    }
+
+    if (value == "Stern") {
+	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetSternLookupTable());
+    }
+
+    if (value == "Red Vessels") {
+	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetVRRedVesselsLookupTable());
+    }
+
+    if (value == "Bones") {
+	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetVRBonesLookupTable());
+    }
+    /*
     if (d->currentView)
         d->currentView->Render();
+    */
 }
 
 
@@ -801,9 +887,10 @@ void v3dView::onOpacityPropertySet(QString value)
     }
     else
 	qDebug("Error: cannot convert QString value to a double");
-
+    /*
     if (d->currentView)
         d->currentView->Render();
+    */
 }
 
 void v3dView::onShowAxisPropertySet(QString value)
@@ -813,23 +900,200 @@ void v3dView::onShowAxisPropertySet(QString value)
 
     if (value == "false")
 	d->collection->SyncSetImageAxisVisibility(0);
-    
+
+    /*
     if (d->currentView)
         d->currentView->Render();
+    */
 }
 
-void v3dView::onInteractionPropertySet(QString value)
+void v3dView::onLeftClickInteractionPropertySet(QString value)
 {
-    if (value == "Zoom") {
+    if (value == "Zooming") {
         d->view2DAxial->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_ZOOMING);
 	d->view2DSagittal->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_ZOOMING);
 	d->view2DCoronal->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_ZOOMING);
     }
 
-    if (value == "Window / Level") {
+    if (value == "Windowing") {
         d->view2DAxial->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_WINDOWING);
 	d->view2DSagittal->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_WINDOWING);
 	d->view2DCoronal->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_WINDOWING);
+    }
+
+    if (value == "Slicing") {
+        d->view2DAxial->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_SLICENAVIGATION);
+	d->view2DSagittal->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_SLICENAVIGATION);
+	d->view2DCoronal->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_SLICENAVIGATION);
+    }
+
+    if (value == "Measuring") {
+      /*
+        d->view2DAxial->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_WINDOWING);
+	d->view2DSagittal->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_WINDOWING);
+	d->view2DCoronal->GetInteractorStyleImageView2D()->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::MOUSE_INTERACTION_WINDOWING);
+      */
+    }
+}
+
+void v3dView::onPresetPropertySet (QString value)
+{
+  //double white[3] = {1.0,1.0,1.0};
+    
+    if( value == "VR Muscles&Bones" ) {
+
+      this->setProperty ("LookupTable", "Muscles&Bones");
+
+      double color[3] = {0.0, 0.0, 0.0};
+
+      if ( d->currentView ) {
+	d->currentView->SetBackgroundColor( color );
+	d->currentView->SetColorWindow (337.0);
+	d->currentView->SetColorLevel (1237.0);
+	//d->collection->SyncSetTextColor ( white );
+	//d->collection->SyncSetAboutData ("VR Muscles - Bones - Powered by magic Pedro");
+      }
+    }
+
+    if( value == "Vascular I" ) {
+
+      this->setProperty ("LookupTable", "Stern");
+
+      double color[3] = {0.0, 0.0, 0.0};
+      
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (388.8);
+      d->collection->SyncSetColorLevel (362.9);
+      //d->collection->SyncSetTextColor ( white );
+      //d->view->SetAboutData ("Vascular - Powered by magic Pedro");
+    }
+
+    if( value == "Vascular II" ) {
+
+      this->setProperty ("LookupTable", "Red Vessels");
+
+      double color[3] = {0.0, 0.0, 0.0};
+      
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (189.6);
+      d->collection->SyncSetColorLevel (262.3);
+
+      //d->collection->SyncSetTextColor ( white );
+      //d->view->SetAboutData ("Vascular II - Powered by magic Pedro");
+    }
+
+    if( value == "Vascular III" ) {
+
+      this->setProperty ("LookupTable", "Red Vessels");
+
+      double color[3] = {0.0, 0.0, 0.0};
+      
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (284.4);
+      d->collection->SyncSetColorLevel (341.7);
+      //d->collection->SyncSetTextColor ( white );
+      //d->view->SetAboutData ("Vascular III - Powered by magic Pedro");
+    }
+    
+    if( value == "Vascular IV" ) {
+
+      this->setProperty ("LookupTable", "Red Vessels");
+
+      double color[3] = {0.0, 0.0, 0.0};
+      
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (272.5);
+      d->collection->SyncSetColorLevel (310.9);
+      //d->collection->SyncSetTextColor ( white );
+      //d->view->SetAboutData ("Vascular IV - Powered by magic Pedro");
+    }
+
+    if( value == "Standard" ) {
+
+      this->setProperty ("LookupTable", "Muscles&Bones");
+
+      double color[3] = {0.0, 0.0, 0.0};
+      
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (243.7);
+      d->collection->SyncSetColorLevel (199.6);
+      //d->collection->SyncSetTextColor ( white );
+      //d->view->SetAboutData ("Standard - Powered by magic Pedro");
+    }
+
+    if( value == "Soft" ) {
+
+      this->setProperty ("LookupTable", "Bones");
+
+      double color[3] = {0.0, 0.0, 0.0};
+      
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (133.5);
+      d->collection->SyncSetColorLevel (163.4);
+      //d->collection->SyncSetTextColor ( white );
+      //d->view->SetAboutData ("Soft - Powered by magic Pedro");
+    }
+
+    if( value == "Soft on White" ) {
+
+      this->setProperty ("LookupTable", "Muscles&Bones");
+
+      double color[3] = {1.0,0.98820477724075317,0.98814374208450317};
+      
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (449.3);
+      d->collection->SyncSetColorLevel (372.8);
+      //d->view->SetAboutData ("Soft on White - Powered by magic Pedro");
+    }
+
+    if( value == "Soft on Blue" ) {
+
+      this->setProperty ("LookupTable", "Muscles&Bones");
+
+      double color[3]={0.0, 0.27507439255714417, 0.26398107409477234};      
+      
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (449.3);
+      d->collection->SyncSetColorLevel (372.8);
+      //d->collection->SetAboutData ("Soft on Blue - Powered by magic Pedro");
+    }
+
+    if( value == "Red on White" ) {
+
+      this->setProperty ("LookupTable", "Red Vessels");
+
+      double color[3]={1.0, 0.98820477724075317, 0.98814374208450317};
+	
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (449.3);
+      d->collection->SyncSetColorLevel (372.8);
+      //d->view->SetAboutData ("Red on White - Powered by magic Pedro");
+    }
+
+    if( value == "Glossy" ) {
+
+      this->setProperty ("LookupTable", "Bones");
+
+      double color[3] = {0.0, 0.0, 0.0};
+      
+      d->collection->SyncSetBackgroundColor( color );
+      d->collection->SyncSetColorWindow (133.5);
+      d->collection->SyncSetColorLevel (163.4);
+      //d->collection->SyncSetTextColor ( white );
+      //d->view->SetAboutData ("Glossy - Powered by magic Pedro");
+    }
+
+}
+
+void v3dView::onCroppingPropertySet (QString value)
+{
+    if ( value=="true" ) {
+        d->view3D->SetCropping ( 1 );
+	d->view3D->SetBoxWidgetVisibility ( 1 );
+    }
+    else {
+      d->view3D->SetCropping ( 0 );
+      d->view3D->SetBoxWidgetVisibility ( 0 );
     }
 }
 
@@ -847,64 +1111,70 @@ void v3dView::onZSliderValueChanged (int value)
 
     d->observer->Lock();
     if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
-      view->SetSlice (value);
-      d->currentView->Render();
+        view->SetSlice (value);
+        d->currentView->Render();
     }
     d->observer->UnLock();
 }
 
 void v3dView::onMenuAxialTriggered (void)
 {
-    this->onPropertySet("Orientation", "Axial");
+    this->setProperty("Orientation", "Axial");
+    d->view2DAxial->Render();
 }
 
 
 void v3dView::onMenuCoronalTriggered (void)
 {
-    this->onPropertySet("Orientation", "Coronal");
+    this->setProperty("Orientation", "Coronal");
+    d->view2DCoronal->Render();
 }
 
 
 void v3dView::onMenuSagittalTriggered (void)
 {
-    this->onPropertySet("Orientation", "Sagittal");
+    this->setProperty("Orientation", "Sagittal");
+    d->view2DSagittal->Render();
 }
 
 void v3dView::onMenu3DVRTriggered (void)
 {
-    d->view3D->SetRenderingModeToVR();
-    d->view3D->SetVolumeRayCastFunctionToComposite();
-    this->onPropertySet("Orientation", "3D");
+    this->setProperty ("Orientation", "3D");
+    this->setProperty ("Mode", "VR");    
+    d->view3D->Render();
 }
 
 void v3dView::onMenu3DMPRTriggered (void)
-{
-    d->view3D->SetRenderingModeToPlanar();
-    this->onPropertySet("Orientation", "3D");
+{    
+    this->setProperty("Orientation", "3D");
+    this->setProperty("Mode", "MPR");
+    d->view3D->Render();
 }
 
 void v3dView::onMenu3DMaxIPTriggered (void)
 {
-    d->view3D->SetRenderingModeToVR();
-    d->view3D->SetVolumeRayCastFunctionToMaximumIntensityProjection();
-    this->onPropertySet("Orientation", "3D");
+    this->setProperty("Orientation", "3D");
+    this->setProperty("Mode", "MIP - Maximum");
+    d->view3D->Render();
 }
 
 void v3dView::onMenu3DMinIPTriggered (void)
 {
-    d->view3D->SetRenderingModeToVR();
-    d->view3D->SetVolumeRayCastFunctionToMinimumIntensityProjection();
-    this->onPropertySet("Orientation", "3D");
+    this->setProperty("Orientation", "3D");
+    this->setProperty("Mode", "MIP - Minimum");
+    d->view3D->Render();
 }
 
 void v3dView::onMenuZoomTriggered (void)
 {
-    this->onPropertySet("Interaction", "Zoom");
+    this->setProperty ("LeftClickInteraction", "Zooming");
+    //this->onPropertySet("LeftClickInteraction", "Zooming");
 }
 
 void v3dView::onMenuWindowLevelTriggered (void)
 {
-    this->onPropertySet("Interaction", "Window / Level");
+    this->setProperty ("LeftClickInteraction", "Windowing");
+    //this->onPropertySet("LeftClickInteraction", "Windowing");
 }
 
 // /////////////////////////////////////////////////////////////////
