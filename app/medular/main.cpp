@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Nov  3 14:54:44 2009 (+0100)
+ * Last-Updated: Mon Jan 11 23:50:51 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 89
+ *     Update #: 97
  */
 
 /* Commentary: 
@@ -18,6 +18,7 @@
  */
 
 #include <QtGui>
+#include <QtOpenGL>
 
 #include "medMainWindow.h"
 
@@ -72,19 +73,36 @@ int main(int argc, char *argv[])
     application.setOrganizationDomain("fr");
     application.setStyle(new medStyle);
     application.setStyleSheet(readFile(":/medular.qss"));
-    
+
     // Initialize managers
 
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
 
+    // Setting up OpenGL default context
+
+    if(application.arguments().contains("--stereo")) {
+       QGLFormat format;
+       format.setAlpha(true);
+       format.setDoubleBuffer(true);
+       format.setStereo(true);
+       format.setDirectRendering(true);
+       QGLFormat::setDefaultFormat(format);
+    }
+    
     // Setting up main window
 
-    medMainWindow mainwindow;
-    if (application.arguments().contains("--no-fullscreen"))
+    medMainWindow mainwindow; mainwindow.show();
+
+    if (application.arguments().contains("--no-fullscreen")) {
         mainwindow.show();
-    else
+    } else if (application.arguments().contains("--immersive-space")) {
+        mainwindow.show();
+        mainwindow.move(0, -15);
+        mainwindow.resize(3528, 1200);
+    } else {
         mainwindow.showFullScreen();
+    }
 
     // Setting up interpreter
 
