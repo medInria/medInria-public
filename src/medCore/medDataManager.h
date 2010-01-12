@@ -22,6 +22,8 @@
 
 #include <QtCore/QObject>
 
+#include "medCoreExport.h"
+
 #include "medDataIndex.h"
 
 class dtkAbstractData;
@@ -29,7 +31,7 @@ class dtkAbstractDataFactory;
 
 class medDataManagerPrivate;
 
-class medDataManager : public QObject
+class MEDCORE_EXPORT medDataManager : public QObject
 {
     Q_OBJECT
 

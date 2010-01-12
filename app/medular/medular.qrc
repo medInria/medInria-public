@@ -1,6 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>icons/widget.tiff</file>
+	<file>icons/stack.tiff</file>
+	<file>icons/zoom.tiff</file>
+	<file>icons/length.tiff</file>
+	<file>icons/wlww.tiff</file>
+	<file>icons/cropping.png</file>
         <file>pixmaps/unknown.jpg</file>
         <file>medular.qss</file>
         <file>pixmaps/frame.png</file>

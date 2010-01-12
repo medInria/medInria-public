@@ -92,6 +92,14 @@ protected slots: // view settings
     void setupBackgroundLookupTable(QString table);
     void setupAxisVisibility(bool visible);
     void setupScalarBarVisibility(bool visible);
+    void setup3DMode (QString table);
+    void setupLUTPreset (QString table);
+    void setup3DLOD (int value);
+    void setupWindowing (bool checked);
+    void setupZooming (bool checked);
+    void setupSlicing (bool checked);
+    void setupMeasuring (bool checked);
+    void setupCropping (bool checked);
 
 private:
     medViewerAreaPrivate *d;

@@ -143,15 +143,21 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 
 void medDatabaseNavigator::onStudyClicked(int id)
 {
-    qDebug() << __func__ << id;
+#ifndef WIN32
+	qDebug() << __func__ << id;
+#endif
 }
 
 void medDatabaseNavigator::onSeriesClicked(int id)
 {
+#ifndef WIN32
     qDebug() << __func__ << id;
+#endif
 }
 
 void medDatabaseNavigator::onImageClicked(int id)
 {
+#ifndef WIN32
     qDebug() << __func__ << id;
+#endif
 }
