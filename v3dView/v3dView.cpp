@@ -139,7 +139,6 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DAxial->CursorFollowMouseOn();
     d->view2DAxial->ImageAxisVisibilityOff();
     d->view2DAxial->ScalarBarVisibilityOff();
-
     
     d->renderer2DSagittal = vtkRenderer::New();
     d->view2DSagittal = vtkImageView2D::New();    
@@ -152,7 +151,6 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DSagittal->CursorFollowMouseOn();
     d->view2DSagittal->ImageAxisVisibilityOff();
     d->view2DSagittal->ScalarBarVisibilityOff();
-    
 
     d->renderer2DCoronal = vtkRenderer::New();
     d->view2DCoronal = vtkImageView2D::New();    

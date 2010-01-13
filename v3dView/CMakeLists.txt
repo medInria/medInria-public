@@ -93,18 +93,12 @@ include_directories(${CMAKE_SOURCE_DIR}/medItk)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
-  v3dView2D.h
-  v3dView3D.h
   v3dView.h
-  GUI4.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
-  v3dView2D.cpp
-  v3dView3D.cpp
   v3dView.cpp
-  GUI4.cxx
 )
 
 ## #################################################################
@@ -116,14 +110,10 @@ add_definitions(-DQT_PLUGIN)
 add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
-qt4_wrap_ui(${PROJECT_NAME}_SOURCES_UI GUI4.ui)
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC}
-	${${PROJECT_NAME}_SOURCES_UI}
-)
+qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES_UI} 
   ${${PROJECT_NAME}_SOURCES}
 )
 
@@ -140,8 +130,5 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 if (vtkINRIA3D_USE_ITK)
-  target_link_libraries(${PROJECT_NAME}
-  medItk
-  ${ITK_LIBRARIES}
-  )
+  target_link_libraries(${PROJECT_NAME} medItk ${ITK_LIBRARIES})
 endif (vtkINRIA3D_USE_ITK)
