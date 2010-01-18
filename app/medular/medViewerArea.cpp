@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Nov  3 09:11:08 2009 (+0100)
+ * Last-Updated: Mon Jan 18 11:19:38 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 497
+ *     Update #: 510
  */
 
 /* Commentary: 
@@ -34,6 +34,7 @@
 
 #include <medGui/medClutEditor.h>
 #include <medGui/medLayoutChooser.h>
+#include <medGui/medRegistrationWidget.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medViewContainer.h>
@@ -222,7 +223,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->foregroundLookupTableComboBox->addItem("Bones");
     d->foregroundLookupTableComboBox->addItem("Stern");
 
-
     d->backgroundLookupTableComboBox = new QComboBox(this);
     d->backgroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
     d->backgroundLookupTableComboBox->addItem("Default");
@@ -242,7 +242,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->backgroundLookupTableComboBox->addItem("Red Vessels");
     d->backgroundLookupTableComboBox->addItem("Bones");
     d->backgroundLookupTableComboBox->addItem("Stern");
-
 
     d->presetComboBox = new QComboBox(this);
     d->presetComboBox->setFocusPolicy(Qt::NoFocus);
@@ -301,7 +300,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     mouseLayout->addWidget(d->slicingPushButton);
     mouseLayout->addWidget(d->zoomingPushButton);
     mouseLayout->addWidget(d->measuringPushButton);
-
         
     connect(d->foregroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
     connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
@@ -346,19 +344,22 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     mouseToolBoxWidgetLayout->addRow ("Type:", mouseLayout);
     mouseToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
     
+    medToolBoxTab *viewToolBoxTab = new medToolBoxTab(this);
+    viewToolBoxTab->addTab(viewToolBoxWidget, "All");
+    viewToolBoxTab->addTab(mouseToolBoxWidget, "2D");
+    viewToolBoxTab->addTab(view3dToolBoxWidget, "3D");
 
     medToolBox *viewToolBox = new medToolBox(this);
     viewToolBox->setTitle("View");
-    viewToolBox->setWidget(viewToolBoxWidget);
+    viewToolBox->setWidget(viewToolBoxTab);
 
-    medToolBox *view3dToolBox = new medToolBox(this);
-    view3dToolBox->setTitle("3D");
-    view3dToolBox->setWidget(view3dToolBoxWidget);
+    // Setting up registration settings
 
-    medToolBox *mouseToolBox = new medToolBox(this);
-    mouseToolBox->setTitle("Mouse");
-    mouseToolBox->setWidget(mouseToolBoxWidget);
+    medRegistrationWidget *registrationWidget = new medRegistrationWidget(this);
 
+    medToolBox *registrationToolBox = new medToolBox(this);
+    registrationToolBox->setTitle("Registration");
+    registrationToolBox->setWidget(registrationWidget);
     
     // Setting up toolbox container
 
@@ -367,8 +368,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container->addToolBox(patientToolBox);
     d->toolbox_container->addToolBox(layoutToolBox);
     d->toolbox_container->addToolBox(viewToolBox);
-    d->toolbox_container->addToolBox(mouseToolBox);
-    d->toolbox_container->addToolBox(view3dToolBox);
+    d->toolbox_container->addToolBox(registrationToolBox);
 
     // Setting up view container
 

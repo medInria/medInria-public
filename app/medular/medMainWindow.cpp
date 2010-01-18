@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Nov 12 09:55:04 2009 (+0100)
+ * Last-Updated: Mon Jan 18 09:22:13 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 182
+ *     Update #: 184
  */
 
 /* Commentary: 
@@ -186,9 +186,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
         "pluginManager  = core.dtkPluginManager.instance()"
     );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "deviceFactory  = core.dtkAbstractDeviceFactory.instance()"
-    );
 
     // Setting up core tcl module
 
@@ -205,13 +202,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
         "set pluginManager  [dtkPluginManager_instance]"
     );
-
-//    d->switcher = new medWorkspaceSwitcher(this);
-//    d->switcher->addWorkspace(d->welcomeArea);
-//    d->switcher->addWorkspace(d->browserArea);
-//    d->switcher->addWorkspace(d->viewerArea);
-//
-//    connect(d->switcher, SIGNAL(triggered(int)), this, SLOT(switchToArea(int)));
 
     d->shiftToWelcomeAreaAction = new medWorkspaceShifterAction("Welcome");
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
@@ -441,25 +431,3 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     
     delete medDatabaseController::instance();
 }
-
-//void medMainWindow::keyPressEvent(QKeyEvent *event)
-//{
-//    switch(event->key()) {
-//    case Qt::Key_F1:
-//        d->switcher->start();
-//        break;
-//    case Qt::Key_F2:
-//        d->switcher->stop();
-//        break;
-//    default:
-//        QMainWindow::keyPressEvent(event);
-//        break;
-//    };
-//}
-
-//void medMainWindow::resizeEvent(QResizeEvent *event)
-//{
-//    d->switcher->resize(event->size());
-//
-//    event->accept();
-//}

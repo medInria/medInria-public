@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Dec 15 11:11:30 2009 (+0100)
+## Last-Updated: Mon Jan 18 11:16:47 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 82
+##     Update #: 85
 ######################################################################
 ## 
 ### Commentary: 
@@ -35,6 +35,7 @@ set(${PROJECT_NAME}_HEADERS
   medClutEditor.h
   medLayoutChooser.h
   medLoginWidget.h
+  medRegistrationWidget.h
   medToolBox.h
   medToolBoxContainer.h
   medViewContainer.h
@@ -46,6 +47,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medClutEditor.h
   medLayoutChooser.h
   medLoginWidget.h
+  medRegistrationWidget.h
   medToolBox.h
   medViewContainer.h
   medWorkspaceShifter.h
@@ -56,6 +58,7 @@ set(${PROJECT_NAME}_SOURCES
   medClutEditor.cpp
   medLayoutChooser.cpp
   medLoginWidget.cpp
+  medRegistrationWidget.cpp
   medToolBox.cpp
   medToolBoxContainer.cpp
   medViewContainer.cpp
