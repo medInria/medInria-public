@@ -81,6 +81,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
             unsigned int zslice = view->GetSlice();
             this->slider->blockSignals (true);
             this->slider->setValue (zslice);
+			this->slider->update();
             this->slider->blockSignals (false);
         }
     }
