@@ -370,6 +370,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container->addToolBox(mouseToolBox);
     d->toolbox_container->addToolBox(view3dToolBox);
 
+    
     // Setting up view container
 
     QWidget *view_container = new QWidget(this);
