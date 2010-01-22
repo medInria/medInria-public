@@ -447,98 +447,98 @@ void v3dView::setData(dtkAbstractData *data)
     if (data->hasMetaData("PatientName")){
         const QString patientName = data->metaDataValues(tr("PatientName"))[0];	
         d->view2DAxial->SetPatientName (patientName.toAscii().constData());
-		d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
-		d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
+	d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
+	d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
         d->view3D->SetPatientName (patientName.toAscii().constData());
     }
     
     if( data->hasMetaData("StudyDescription")){
         const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
         d->view2DAxial->SetStudyName (studyName.toAscii().constData());
-		d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
-		d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
+	d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
+	d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
         d->view3D->SetStudyName (studyName.toAscii().constData());
     }
     
     if (data->hasMetaData("SeriesDescription")){
         const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
         d->view2DAxial->SetSeriesName (seriesName.toAscii().constData());
-		d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
-		d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
+	d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
+	d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
         d->view3D->SetSeriesName (seriesName.toAscii().constData());
     }
 
 #ifdef vtkINRIA3D_USE_ITK
     if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else
@@ -552,11 +552,11 @@ void v3dView::setData(dtkAbstractData *data)
     
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) )
       if( d->orientation=="Axial")
-        d->slider->setRange(0, imData->zDimension()-1);
+          d->slider->setRange(0, imData->zDimension()-1);
       else if( d->orientation=="Sagittal")
-		d->slider->setRange(0, imData->xDimension()-1);
+	  d->slider->setRange(0, imData->xDimension()-1);
       else if( d->orientation=="Coronal")
-		d->slider->setRange(0, imData->yDimension()-1);
+	  d->slider->setRange(0, imData->yDimension()-1);
 
     dtkAbstractView::setData(data);
 
@@ -646,8 +646,7 @@ void v3dView::onOrientationPropertySet(QString value)
         d->view2DSagittal->UnInstallInteractor();
 	d->view2DCoronal->UnInstallInteractor();
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
-	
+	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);	
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DAxial);	
         d->view2DAxial->InstallInteractor();
         d->orientation = "Axial";
@@ -666,8 +665,7 @@ void v3dView::onOrientationPropertySet(QString value)
         d->view2DAxial->UnInstallInteractor();
 	d->view2DCoronal->UnInstallInteractor();
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
-	
+	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);	
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DSagittal);
         d->view2DSagittal->InstallInteractor();
         d->orientation = "Sagittal";
@@ -687,7 +685,6 @@ void v3dView::onOrientationPropertySet(QString value)
 	d->view2DAxial->UnInstallInteractor();
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
-
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DCoronal);
         d->view2DCoronal->InstallInteractor();
         d->orientation = "Coronal";
@@ -905,15 +902,15 @@ void v3dView::onShowAxisPropertySet(QString value)
 void v3dView::onLeftClickInteractionPropertySet(QString value)
 {
     if (value == "Zooming") {
-      d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-      d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-      d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+        d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+	d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+	d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
     }
 
     if (value == "Windowing") {
-      d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-      d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-      d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+        d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+	d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+	d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
     }
     
 
