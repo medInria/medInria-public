@@ -120,12 +120,16 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageReaderPlugin.h
   itkDataImageReader.h
   itkDCMTKDataImageReader.h
+  itkDataImageReaderBase.h
+  itkMetaDataImageReader.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderPlugin.cpp
-  itkDataImageReader.cpp 
+  itkDataImageReader.cpp
   itkDCMTKDataImageReader.cpp
+  itkDataImageReaderBase.cpp
+  itkMetaDataImageReader.cpp
   itkDataImageReaderCommand.cxx
 )
 
