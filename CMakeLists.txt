@@ -360,7 +360,6 @@ enable_testing()
 
 mark_as_advanced(DART_ROOT)
 
-include(medDart)
 include(Dart)
 
 ## #################################################################
