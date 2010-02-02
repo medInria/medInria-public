@@ -57,3 +57,11 @@ subdirs(v3dView)
 subdirs(itkDataImage)
 subdirs(itkDataImageReader)
 subdirs(itkDataImageWriter)
+
+## #################################################################
+## Dashboard settings
+## #################################################################
+
+mark_as_advanced(DART_ROOT)
+
+include(Dart)
