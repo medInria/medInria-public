@@ -78,6 +78,10 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
 find_package(ITK REQUIRED)
+
+if( NOT ITK_USE_REVIEW )
+  message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW to ON")
+endif( NOT ITK_USE_REVIEW )
 include(${ITK_USE_FILE})
 
 include_directories(${CMAKE_SOURCE_DIR}/medItk)
