@@ -248,9 +248,24 @@ bool itkDataImageReaderBase::read (QString path)
 				return false;
 			}
 		}
-		
+
 		else if (dtkdata->description()=="itkDataImageShort3") {
 			itk::ImageFileReader< itk::Image<short, 3> >::Pointer shortReader = itk::ImageFileReader< itk::Image<short, 3> >::New();
+			shortReader->SetImageIO ( this->io );
+			shortReader->SetFileName ( path.toAscii().constData() );
+			if( dtkAbstractData* dtkdata = this->data() )
+				dtkdata->setData ( shortReader->GetOutput() );
+			try {
+				shortReader->Update();
+			}
+			catch (itk::ExceptionObject &e) {
+				qDebug() << e.GetDescription();
+				return false;
+			}
+		}
+
+		else if (dtkdata->description()=="itkDataImageShort4") {
+			itk::ImageFileReader< itk::Image<short, 4> >::Pointer shortReader = itk::ImageFileReader< itk::Image<short, 4> >::New();
 			shortReader->SetImageIO ( this->io );
 			shortReader->SetFileName ( path.toAscii().constData() );
 			if( dtkAbstractData* dtkdata = this->data() )

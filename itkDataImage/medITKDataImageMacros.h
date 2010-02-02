@@ -1,6 +1,22 @@
 #ifndef _med_ITKDataImageMacros_h_
 #define _med_ITKDataImageMacros_h_
 
+#include <itkVector.h>
+#include <itkImage.h>
+#include <itkMinimumMaximumImageCalculator.h>
+#include <itkScalarImageToHistogramGenerator.h>
+#include <itkRGBPixel.h>
+#include <itkGreyColormapFunctor.h>
+#include <itkScalarToRGBColormapImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkShrinkImageFilter.h>
+#include <itkResampleImageFilter.h>
+#include <itkDiscreteGaussianImageFilter.h>
+
+#include <dtkCore/dtkAbstractDataFactory.h>
+
+#include <QtGui>
+
 #include <time.h>
 
 #define medImplementITKDataImage(type, dimension, suffix)		\

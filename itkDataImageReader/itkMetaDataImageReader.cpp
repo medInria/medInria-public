@@ -29,6 +29,7 @@ bool itkMetaDataImageReader::registered(void)
 																	  << "itkDataImageInt3"
 																	  << "itkDataImageUShort3"
 																	  << "itkDataImageShort3"
+																	  << "itkDataImageShort4"																	  
 																	  << "itkDataImageUChar3"
 																	  << "itkDataImageChar3"
 																	  << "itkDataImageRGB3",
@@ -46,6 +47,7 @@ QStringList itkMetaDataImageReader::handled(void) const
 	<< "itkDataImageInt3"
 	<< "itkDataImageUShort3"
 	<< "itkDataImageShort3"
+	<< "itkDataImageShort4"	
 	<< "itkDataImageUChar3"
 	<< "itkDataImageChar3"
 	<< "itkDataImageRGB3";
