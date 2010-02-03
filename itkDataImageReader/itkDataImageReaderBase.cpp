@@ -38,7 +38,7 @@ QStringList itkDataImageReaderBase::handled(void) const
 			 << "itkDataImageRGB3";
 }
 
-QStringList itkDataImageReaderBase::p_handled(void)
+QStringList itkDataImageReaderBase::s_handled(void)
 {
     return QStringList() << "itkDataImageDouble3"
 			 << "itkDataImageFloat3"
@@ -70,16 +70,16 @@ bool itkDataImageReaderBase::canRead (QStringList paths)
 
 void itkDataImageReaderBase::readInformation (QString path)
 {
-	if (this->io.IsNull())
-		return;
-	
+    if (this->io.IsNull())
+        return;
+    
     this->io->SetFileName ( path.toAscii().constData() );
     try {
-		this->io->ReadImageInformation();
+        this->io->ReadImageInformation();
     }
     catch (itk::ExceptionObject &e) {
-		qDebug() << e.GetDescription();
-		return;
+        qDebug() << e.GetDescription();
+	return;
     }
     
 	
@@ -88,102 +88,106 @@ void itkDataImageReaderBase::readInformation (QString path)
     
     if (!dtkdata) {
 		
-		if (this->io->GetPixelType() == itk::ImageIOBase::SCALAR ) {
+        if (this->io->GetPixelType() == itk::ImageIOBase::SCALAR ) {
 			
-			switch (this->io->GetComponentType()) {
+	    switch (this->io->GetComponentType()) {
 					
-				case itk::ImageIOBase::UCHAR:
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUChar3");
-					if (dtkdata)
-						this->setData ( dtkdata );
-					break;
-					
-				case itk::ImageIOBase::CHAR:
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageChar3");
-					if (dtkdata)
-						this->setData ( dtkdata );
-					break;
-					
-				case itk::ImageIOBase::USHORT:
-				{
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3");
-					if (dtkdata) 
-						this->setData ( dtkdata );
-					break;
-				}
-					
-				case itk::ImageIOBase::SHORT:
-				{
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageShort3");
-					if (dtkdata)
-						this->setData ( dtkdata );
-				}
-					break;
-					
-				case itk::ImageIOBase::UINT:
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUInt3");
-					if (dtkdata)
-						this->setData ( dtkdata );
-					break;
-					
-				case itk::ImageIOBase::INT:
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageInt3");
-					if (dtkdata)
-						this->setData ( dtkdata );
-					break;
-					
-				case itk::ImageIOBase::ULONG:
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageULong3");
-					if (dtkdata)
-						this->setData ( dtkdata );
-					break;
-					
-				case itk::ImageIOBase::LONG:
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageLong3");
-					if (dtkdata)
-						this->setData ( dtkdata );
-					break;
-					
-				case itk::ImageIOBase::FLOAT:
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
-					if (dtkdata)
-						this->setData ( dtkdata );
-					break;
-					
-				case itk::ImageIOBase::DOUBLE:
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
-					if (dtkdata)
-						this->setData ( dtkdata );
-					break;
-					
-				default:
-					qDebug() << "Unrecognized component type";
-					return;
-			}
-			
-		}
-		else if ( this->io->GetPixelType()==itk::ImageIOBase::RGB ) {
-			
-			switch (this->io->GetComponentType()) {
-					
-				case itk::ImageIOBase::UCHAR:
-					dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageRGB3");
-					
-					if (dtkdata)
-						this->setData ( dtkdata );
-					break;
-					
-				default:
-					qDebug() << "Unrecognized component type";
-					return;
-			}
-		}
-		else {
-			qDebug() << "Unsupported pixel type";
-			return;
-		}
+		  case itk::ImageIOBase::UCHAR:
+		      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUChar3");
+		      if (dtkdata)
+			  this->setData ( dtkdata );
+		      break;
+
+		  case itk::ImageIOBase::CHAR:
+		      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageChar3");
+		      if (dtkdata)
+			  this->setData ( dtkdata );
+		      break;
+		      
+		case itk::ImageIOBase::USHORT:
+		  {
+		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3");
+		    if (dtkdata) 
+		      this->setData ( dtkdata );
+		    break;
+		  }
+		  
+		case itk::ImageIOBase::SHORT:
+		  {
+		    if ( this->io->GetNumberOfDimensions()<=3 )
+		        dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageShort3");
+		    else if ( this->io->GetNumberOfDimensions()==4 )
+		        dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageShort4");
+		        
+		    if (dtkdata)
+		      this->setData ( dtkdata );
+		  }
+		  break;
+		  
+		case itk::ImageIOBase::UINT:
+		  dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUInt3");
+		  if (dtkdata)
+		    this->setData ( dtkdata );
+		  break;
+		  
+		case itk::ImageIOBase::INT:
+		  dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageInt3");
+		  if (dtkdata)
+		    this->setData ( dtkdata );
+		  break;
+		  
+		case itk::ImageIOBase::ULONG:
+		  dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageULong3");
+		  if (dtkdata)
+		    this->setData ( dtkdata );
+		  break;
+		  
+		case itk::ImageIOBase::LONG:
+		  dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageLong3");
+		  if (dtkdata)
+		    this->setData ( dtkdata );
+		  break;
+		  
+		case itk::ImageIOBase::FLOAT:
+		  dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+		  if (dtkdata)
+		    this->setData ( dtkdata );
+		  break;
+		  
+		case itk::ImageIOBase::DOUBLE:
+		  dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
+		  if (dtkdata)
+		    this->setData ( dtkdata );
+		  break;
+		  
+		default:
+		  qDebug() << "Unrecognized component type";
+		  return;
+	    }
+	    
+	}
+	else if ( this->io->GetPixelType()==itk::ImageIOBase::RGB ) {
+	  
+	  switch (this->io->GetComponentType()) {
+	    
+	      case itk::ImageIOBase::UCHAR:
+		dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageRGB3");
+		
+		if (dtkdata)
+		  this->setData ( dtkdata );
+		break;
+		
+	      default:
+		qDebug() << "Unrecognized component type";
+		return;
+	  }
+	}
+	else {
+	  qDebug() << "Unsupported pixel type";
+	  return;
+	}
     }
-	
+    
 	
     if (dtkdata) {
 		/*

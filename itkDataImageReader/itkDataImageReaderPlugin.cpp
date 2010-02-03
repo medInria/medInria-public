@@ -97,32 +97,18 @@ QStringList itkDataImageReaderPlugin::tags(void) const
 }
 
 QStringList itkDataImageReaderPlugin::types(void) const
-{/*
-    return QStringList() << "itkDataImageChar3Reader"
-			 << "itkDataImageUChar3Reader"
-			 << "itkDataImageShort3Reader"
-			 << "itkDataImageUShort3Reader"
-			 << "itkDataImageInt3Reader"
-			 << "itkDataImageUInt3Reader"
-			 << "itkDataImageLong3Reader"
-			 << "itkDataImageULong3Reader"
-			 << "itkDataImageFloat3Reader"
-			 << "itkDataImageDouble3Reader"
-			 << "itkDataImageVector3Reader"
-      //<< "itkDataImageRGB3Reader"
-			 << "itkDCMTKDataImageReader";
-  */
-	return QStringList() << "itkMetaDataImageReader"
-			     << "itkDCMTKDataImageReader"
-			     << "itkNiftiDataImageReader"
-			     << "itkAnalyzeDataImageReader"
-			     << "itkNrrdDataImageReader"
-			     << "itkGiplDataImageReader"
-			     << "itkVTKDataImageReader"
-			     << "itkPNGDataImageReader"
-			     << "itkBMPDataImageReader"
-			     << "itkJPEGDataImageReader"
-			     << "itkTIFFDataImageReader";
-	}
+{
+  return QStringList() << "itkMetaDataImageReader"
+		       << "itkDCMTKDataImageReader"
+		       << "itkNiftiDataImageReader"
+		       << "itkAnalyzeDataImageReader"
+		       << "itkNrrdDataImageReader"
+		       << "itkGiplDataImageReader"
+		       << "itkVTKDataImageReader"
+		       << "itkPNGDataImageReader"
+		       << "itkBMPDataImageReader"
+		       << "itkJPEGDataImageReader"
+		       << "itkTIFFDataImageReader";
+}
 
 Q_EXPORT_PLUGIN2(itkDataImageReaderPlugin, itkDataImageReaderPlugin)
