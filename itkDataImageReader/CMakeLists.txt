@@ -118,7 +118,6 @@ ${ITK_LIBRARIES}
 
 set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageReaderPlugin.h
-  itkDataImageReader.h
   itkDCMTKDataImageReader.h
   itkDataImageReaderBase.h
   itkMetaDataImageReader.h
@@ -135,7 +134,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderPlugin.cpp
-  itkDataImageReader.cpp
   itkDataImageReaderCommand.cxx
   itkDataImageReaderBase.cpp
   itkMetaDataImageReader.cpp

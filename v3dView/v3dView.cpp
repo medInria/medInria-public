@@ -6,6 +6,7 @@
 
 #ifdef vtkINRIA3D_USE_ITK
 #include "medItk.h"
+#include "itkExtractImageFilter.h"
 #endif
 
 #include "v3dView.h"
@@ -454,102 +455,127 @@ void v3dView::setData(dtkAbstractData *data)
     if (data->hasMetaData("PatientName")){
         const QString patientName = data->metaDataValues(tr("PatientName"))[0];	
         d->view2DAxial->SetPatientName (patientName.toAscii().constData());
-		d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
-		d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
+	d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
+	d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
         d->view3D->SetPatientName (patientName.toAscii().constData());
     }
     
     if( data->hasMetaData("StudyDescription")){
         const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
         d->view2DAxial->SetStudyName (studyName.toAscii().constData());
-		d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
-		d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
+	d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
+	d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
         d->view3D->SetStudyName (studyName.toAscii().constData());
     }
     
     if (data->hasMetaData("SeriesDescription")){
         const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
         d->view2DAxial->SetSeriesName (seriesName.toAscii().constData());
-		d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
-		d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
+	d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
+	d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
         d->view3D->SetSeriesName (seriesName.toAscii().constData());
     }
 
 #ifdef vtkINRIA3D_USE_ITK
     if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
+    }
+    else if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
+        itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::Pointer extractor = itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::New();
+	itk::Image<short, 4>::SizeType size = image->GetLargestPossibleRegion().GetSize();
+	itk::Image<short, 4>::IndexType index = {{0,0,0,0}};
+	size[3] = 0;
+	itk::Image<short, 4>::RegionType region;
+	region.SetSize (size);
+	region.SetIndex (index);
+
+	extractor->SetExtractionRegion (region);
+	extractor->SetInput ( image );
+	try
+	{
+	  extractor->Update();
+	}
+	catch (itk::ExceptionObject &e) {
+	  qDebug() << e.GetDescription();
+	  return;
+	}
+        d->view2DAxial->SetITKInput( extractor->GetOutput() );
+	d->view2DSagittal->SetITKInput( extractor->GetOutput() );
+	d->view2DCoronal->SetITKInput( extractor->GetOutput() );
+        d->view3D->SetITKInput( extractor->GetOutput() );
     }
     else if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
+	d->view3D->SetITKInput(image);
     }
     else if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
     else if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
         d->view2DAxial->SetITKInput(image);
-		d->view2DSagittal->SetITKInput(image);
-		d->view2DCoronal->SetITKInput(image);
+	d->view2DSagittal->SetITKInput(image);
+	d->view2DCoronal->SetITKInput(image);
         d->view3D->SetITKInput(image);
     }
-    else
-        qDebug() << "Cannot cast ITK image";
+    else {
+        qDebug() << "Cannot cast data into compatible data structure";
+    }
 #endif
 
 

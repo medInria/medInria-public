@@ -21,7 +21,7 @@ itkMetaDataImageReader::~itkMetaDataImageReader(void)
 
 bool itkMetaDataImageReader::registered(void)
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataImageReader", itkDataImageReaderBase::p_handled(),
+  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataImageReader", itkDataImageReaderBase::s_handled(),
 								    createItkMetaDataImageReader);
 }
 

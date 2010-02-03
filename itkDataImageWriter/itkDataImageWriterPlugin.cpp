@@ -95,7 +95,16 @@ QStringList itkDataImageWriterPlugin::tags(void) const
 
 QStringList itkDataImageWriterPlugin::types(void) const
 {
-  return itkDataImageWriterBase::s_handled();
+  return QStringList() << "itkMetaDataImageWriter"
+		       << "itkNiftiDataImageWriter"
+		       << "itkAnalyzeDataImageWriter"
+		       << "itkNrrdDataImageWriter"
+		       << "itkGiplDataImageWriterr"
+		       << "itkVTKDataImageWriter"
+		       << "itkPNGDataImageWriter"
+		       << "itkBMPDataImageWriter"
+		       << "itkJPEGDataImageWriter"
+		       << "itkTIFFDataImageWriter";
 }
 
 Q_EXPORT_PLUGIN2(itkDataImageWriterPlugin, itkDataImageWriterPlugin)
