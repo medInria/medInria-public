@@ -541,8 +541,10 @@ void medViewerArea::onSeriesIndexChanged(int id)
         view->setData(data);
         view->reset();
 
+	if( d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current() ) {
         d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->setView(view);
         d->view_stacks.value(d->patientComboBox->currentIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
+	}
     }
 }
 
