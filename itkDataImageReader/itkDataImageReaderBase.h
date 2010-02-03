@@ -11,18 +11,28 @@ class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageReaderBase : public dtkAbstrac
     Q_OBJECT
 	
 public:
-	itkDataImageReaderBase(void);
+    itkDataImageReaderBase(void);
     virtual ~itkDataImageReaderBase(void);
+
+    virtual QStringList handled(void) const;
 	
 public slots:
     virtual bool canRead (QString path);
-    virtual void readInformation (QString path);    
+    virtual bool canRead (QStringList paths);
+    
+    virtual void readInformation (QString path);
+    virtual void readInformation (QStringList paths);
+    
     virtual bool read (QString path);
+    virtual bool read (QStringList paths);
 	
     virtual void setProgress (int value);
     
 protected:
-	itk::ImageIOBase::Pointer io;
+    itk::ImageIOBase::Pointer io;
+    
+    static QStringList p_handled (void);
+
 	
 };
 

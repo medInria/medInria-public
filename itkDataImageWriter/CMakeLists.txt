@@ -88,12 +88,34 @@ include_directories(${CMAKE_SOURCE_DIR}/medItk)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageWriterPlugin.h
-  itkDataImageWriter.h
+  # itkDataImageWriter.h
+  itkDataImageWriterBase.h
+  itkMetaDataImageWriter.h
+  itkAnalyzeDataImageWriter.h
+  itkBMPDataImageWriter.h
+  itkPNGDataImageWriter.h
+  itkJPEGDataImageWriter.h
+  itkTIFFDataImageWriter.h
+  itkNiftiDataImageWriter.h
+  itkNrrdDataImageWriter.h
+  itkGiplDataImageWriter.h
+  itkVTKDataImageWriter.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImageWriterPlugin.cpp
-  itkDataImageWriter.cpp
+  # itkDataImageWriter.cpp
+  itkDataImageWriterBase.cpp
+  itkMetaDataImageWriter.cpp
+  itkAnalyzeDataImageWriter.cpp
+  itkBMPDataImageWriter.cpp
+  itkPNGDataImageWriter.cpp
+  itkJPEGDataImageWriter.cpp
+  itkTIFFDataImageWriter.cpp
+  itkNiftiDataImageWriter.cpp
+  itkNrrdDataImageWriter.cpp
+  itkGiplDataImageWriter.cpp
+  itkVTKDataImageWriter.cpp
 )
 
 ## #################################################################

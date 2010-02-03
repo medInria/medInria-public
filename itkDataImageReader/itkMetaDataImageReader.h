@@ -10,12 +10,11 @@ class ITKDATAIMAGEREADERPLUGIN_EXPORT itkMetaDataImageReader : public itkDataIma
     Q_OBJECT
 	
 public:
-	itkMetaDataImageReader(void);
+    itkMetaDataImageReader(void);
     virtual ~itkMetaDataImageReader(void);
 	
     virtual QString description(void) const;
 	
-    virtual QStringList handled(void) const;
     static bool registered(void);	
 };
 

@@ -122,15 +122,33 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkDCMTKDataImageReader.h
   itkDataImageReaderBase.h
   itkMetaDataImageReader.h
+  itkAnalyzeDataImageReader.h
+  itkPNGDataImageReader.h
+  itkBMPDataImageReader.h
+  itkJPEGDataImageReader.h
+  itkTIFFDataImageReader.h
+  itkNiftiDataImageReader.h
+  itkNrrdDataImageReader.h
+  itkGiplDataImageReader.h
+  itkVTKDataImageReader.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderPlugin.cpp
   itkDataImageReader.cpp
-  itkDCMTKDataImageReader.cpp
+  itkDataImageReaderCommand.cxx
   itkDataImageReaderBase.cpp
   itkMetaDataImageReader.cpp
-  itkDataImageReaderCommand.cxx
+  itkDCMTKDataImageReader.cpp
+  itkAnalyzeDataImageReader.cpp
+  itkPNGDataImageReader.cpp
+  itkBMPDataImageReader.cpp
+  itkJPEGDataImageReader.cpp
+  itkTIFFDataImageReader.cpp
+  itkNiftiDataImageReader.cpp
+  itkNrrdDataImageReader.cpp
+  itkGiplDataImageReader.cpp
+  itkVTKDataImageReader.cpp
 )
 
 ## #################################################################

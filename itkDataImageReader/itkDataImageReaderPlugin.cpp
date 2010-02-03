@@ -5,6 +5,16 @@
 //#include "itkDataImageReader.h"
 #include "itkDCMTKDataImageReader.h"
 #include "itkMetaDataImageReader.h"
+#include "itkAnalyzeDataImageReader.h"
+#include "itkPNGDataImageReader.h"
+#include "itkBMPDataImageReader.h"
+#include "itkJPEGDataImageReader.h"
+#include "itkTIFFDataImageReader.h"
+#include "itkNiftiDataImageReader.h"
+#include "itkNrrdDataImageReader.h"
+#include "itkGiplDataImageReader.h"
+#include "itkVTKDataImageReader.h"
+
 #include "itkDataImageReaderPlugin.h"
 
 #include <dtkCore/dtkLog.h>
@@ -51,8 +61,17 @@ bool itkDataImageReaderPlugin::initialize(void)
     if(!itkDataImageVector3Reader::registered()) dtkWarning() << "Unable to register itkDataImageVector3Reader type";
     //if(!itkDataImageRGB3Reader::registered()) dtkWarning() << "Unable to register itkDataImageRGB3Reader type";
   */
-	if(!itkMetaDataImageReader::registered()) dtkWarning() << "Unable to register itkMetaDataImageReader type";
-    if(!itkDCMTKDataImageReader::registered()) dtkWarning() << "Unable to register itkDCMTKDataImageReader type";
+    if(!itkMetaDataImageReader::registered())     dtkWarning() << "Unable to register itkMetaDataImageReader type";    
+    if(!itkDCMTKDataImageReader::registered())    dtkWarning() << "Unable to register itkDCMTKDataImageReader type";
+    if(!itkNiftiDataImageReader::registered())    dtkWarning() << "Unable to register itkNiftiDataImageReader type";
+    if(!itkAnalyzeDataImageReader::registered())  dtkWarning() << "Unable to register itkAnalyzeDataImageReader type";
+    if(!itkNrrdDataImageReader::registered())     dtkWarning() << "Unable to register itkNrrdDataImageReader type";
+    if(!itkGiplDataImageReader::registered())     dtkWarning() << "Unable to register itkGiplDataImageReader type";
+    if(!itkVTKDataImageReader::registered())      dtkWarning() << "Unable to register itkVTKDataImageReader type";
+    if(!itkPNGDataImageReader::registered())      dtkWarning() << "Unable to register itkPNGDataImageReader type";
+    if(!itkBMPDataImageReader::registered())      dtkWarning() << "Unable to register itkBMPDataImageReader type";
+    if(!itkJPEGDataImageReader::registered())     dtkWarning() << "Unable to register itkJPEGDataImageReader type";
+    if(!itkTIFFDataImageReader::registered())     dtkWarning() << "Unable to register itkTIFFDataImageReader type";    
 
     return true;
 }
@@ -94,7 +113,16 @@ QStringList itkDataImageReaderPlugin::types(void) const
 			 << "itkDCMTKDataImageReader";
   */
 	return QStringList() << "itkMetaDataImageReader"
-	<< "itkDCMTKDataImageReader";
-}
+			     << "itkDCMTKDataImageReader"
+			     << "itkNiftiDataImageReader"
+			     << "itkAnalyzeDataImageReader"
+			     << "itkNrrdDataImageReader"
+			     << "itkGiplDataImageReader"
+			     << "itkVTKDataImageReader"
+			     << "itkPNGDataImageReader"
+			     << "itkBMPDataImageReader"
+			     << "itkJPEGDataImageReader"
+			     << "itkTIFFDataImageReader";
+	}
 
 Q_EXPORT_PLUGIN2(itkDataImageReaderPlugin, itkDataImageReaderPlugin)

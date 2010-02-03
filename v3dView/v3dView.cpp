@@ -83,7 +83,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
             unsigned int zslice = view->GetSlice();
             this->slider->blockSignals (true);
             this->slider->setValue (zslice);
-			this->slider->update();
+	    this->slider->update();
             this->slider->blockSignals (false);
         }
     }
@@ -142,7 +142,6 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DAxial->ShowImageAxisOff();
     d->view2DAxial->ShowScalarBarOff();
     d->view2DAxial->ShowRulerWidgetOn();
-
     
     d->renderer2DSagittal = vtkRenderer::New();
     d->view2DSagittal = vtkImageView2D::New();    
@@ -156,7 +155,6 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DSagittal->ShowImageAxisOff();
     d->view2DSagittal->ShowScalarBarOff();
     d->view2DSagittal->ShowRulerWidgetOn();
-    
 
     d->renderer2DCoronal = vtkRenderer::New();
     d->view2DCoronal = vtkImageView2D::New();    
@@ -170,13 +168,11 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DCoronal->ShowImageAxisOff();
     d->view2DCoronal->ShowScalarBarOff();
     d->view2DCoronal->ShowRulerWidgetOn();
-
+    
     d->currentView = d->view2DAxial;
 
     // Setting up 3D view
-
     d->renderer3D = vtkRenderer::New();
-
     d->view3D = vtkImageView3D::New();
     d->view3D->SetRenderer(d->renderer3D);
     d->view3D->SetShowBoxWidget(0);
@@ -203,7 +199,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     vtkRenderWindow* renwin = vtkRenderWindow::New();
     renwin->StereoCapableWindowOn();
     renwin->SetStereoTypeToCrystalEyes();
-    renwin->SetStereoRender(1);
+    //renwin->SetStereoRender(1);
     d->vtkWidget->SetRenderWindow(renwin);
 
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
@@ -633,9 +629,9 @@ void v3dView::onOrientationPropertySet(QString value)
     if( d->currentView ) {
         d->currentView->GetCurrentPoint (pos);
         window = d->currentView->GetColorWindow();
-        level = d->currentView->GetColorLevel();
+        level  = d->currentView->GetColorLevel();
     }
-    
+
     if (value=="3D") {
         d->orientation = "3D";
         d->view2DAxial->UnInstallInteractor();
@@ -646,7 +642,7 @@ void v3dView::onOrientationPropertySet(QString value)
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer3D);
 	d->view3D->InstallInteractor();
-
+	
 	d->currentView = d->view3D;	
     }
     else {
