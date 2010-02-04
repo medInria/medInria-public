@@ -48,6 +48,15 @@ set(${PROJECT_NAME}_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
 set(${PROJECT_NAME}_RUNTIME_DIRS ${RUNTIME_OUTPUT_PATH})
 
 ## #################################################################
+## Dashboard settings
+## #################################################################
+
+mark_as_advanced(DART_ROOT)
+
+include(Dart)
+enable_testing()
+
+## #################################################################
 ## Input
 ## #################################################################
 
@@ -58,10 +67,3 @@ subdirs(itkDataImage)
 subdirs(itkDataImageReader)
 subdirs(itkDataImageWriter)
 
-## #################################################################
-## Dashboard settings
-## #################################################################
-
-mark_as_advanced(DART_ROOT)
-
-include(Dart)

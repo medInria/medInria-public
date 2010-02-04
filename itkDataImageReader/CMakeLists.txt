@@ -236,3 +236,6 @@ target_link_libraries(itkDCMTKReadWriteBenchmark
 
 endif (VTK_FOUND)
 
+if (BUILD_TESTING)
+  add_subdirectory(Testing)
+endif (BUILD_TESTING)
