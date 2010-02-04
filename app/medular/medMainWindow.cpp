@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jan 18 09:22:13 2010 (+0100)
+ * Last-Updated: Mon Jan 18 14:20:53 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 184
+ *     Update #: 185
  */
 
 /* Commentary: 
@@ -30,7 +30,6 @@
 #include <dtkScript/dtkScriptInterpreterTcl.h>
 
 #include <medGui/medWorkspaceShifter.h>
-//#include <medGui/medWorkspaceSwitcher.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseView.h>

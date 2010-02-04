@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jan 18 11:19:38 2010 (+0100)
+ * Last-Updated: Mon Jan 18 14:26:47 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 510
+ *     Update #: 511
  */
 
 /* Commentary: 
@@ -527,7 +527,7 @@ void medViewerArea::onSeriesIndexChanged(int id)
 
     dtkAbstractData *data = medDatabaseController::instance()->read(index);
 
-    if(data)
+    if (data)
         medDataManager::instance()->insert(index, data);
 
     if (data) {
