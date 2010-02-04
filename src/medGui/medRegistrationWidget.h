@@ -58,7 +58,7 @@ private:
 
 class medRegistrationWidgetPrivate;
 
-class medRegistrationWidget : public QWidget
+class MEDGUI_EXPORT medRegistrationWidget : public QWidget
 {
     Q_OBJECT
 
