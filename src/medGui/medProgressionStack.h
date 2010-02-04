@@ -20,11 +20,13 @@
 #ifndef MEDPROGRESSIONSTACK_H
 #define MEDPROGRESSIONSTACK_H
 
+#include "medGuiExport.h"
+
 #include <QtGui/QWidget>
 
 class medProgressionStackPrivate;
 
-class medProgressionStack : public QWidget
+class MEDGUI_EXPORT medProgressionStack : public QWidget
 {
     Q_OBJECT
 

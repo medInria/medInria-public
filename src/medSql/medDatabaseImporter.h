@@ -20,11 +20,13 @@
 #ifndef MEDDATABASEIMPORTER_H
 #define MEDDATABASEIMPORTER_H
 
+#include "medSqlExport.h"
+
 #include <QtCore>
 
 class medDatabaseImporterPrivate;
 
-class medDatabaseImporter : public QObject, public QRunnable
+class MEDSQL_EXPORT medDatabaseImporter : public QObject, public QRunnable
 {
     Q_OBJECT
 
