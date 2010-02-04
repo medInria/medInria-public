@@ -689,7 +689,6 @@ void medViewerArea::setupLUTPreset (QString table)
 
 void medViewerArea::setup3DLOD (int value)
 {
-  qDebug() << __func__;
 }
 
 void medViewerArea::setupWindowing (bool checked)
