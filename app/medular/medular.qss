@@ -797,3 +797,14 @@ QLineEdit#medDocumentationAreaAddressEdit {
     border-bottom-left-radius: 8px;
     height: 16px;
 }
+
+/**
+ * medRegistrationWidgetItem
+ *
+ */
+
+medRegistrationWidgetItem {
+    border: 1px solid #6b6b6b;
+    border-radius: 4px;
+    background-color: #2b2b2b;
+}

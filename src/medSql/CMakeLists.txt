@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Fri Sep 25 11:51:59 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Dec 16 10:42:54 2009 (+0100)
+## Last-Updated: Tue Jan 19 13:43:46 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 25
+##     Update #: 27
 ######################################################################
 ## 
 ### Commentary: 
@@ -32,6 +32,8 @@ include(${dtk_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS
   medDatabaseController.h
+  medDatabaseExporter.h
+  medDatabaseImporter.h
   medDatabaseItem.h
   medDatabaseModel.h
   medDatabaseNavigator.h
@@ -55,6 +57,8 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseController.h
+  medDatabaseExporter.h
+  medDatabaseImporter.h
   medDatabaseModel.h
   medDatabaseView.h
   medDatabaseNavigator.h
@@ -76,6 +80,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_SOURCES
   medDatabaseController.cpp
+  medDatabaseExporter.cpp
+  medDatabaseImporter.cpp
   medDatabaseItem.cpp
   medDatabaseModel.cpp
   medDatabaseView.cpp
