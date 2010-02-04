@@ -25,5 +25,5 @@ endif (ITK_SOURCE_DIR)
 
 FOREACH (test ${itkDataImageReaderPluginTests})
   GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
-  ADD_TEST(${TName} ${PLUGIN_NAME}CxxTests ${TName} ${PLUGIN_PATH} ${ITK_DATA_ROOT})
+  ADD_TEST(${TName} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${PLUGIN_PATH} ${ITK_DATA_ROOT})
 ENDFOREACH (test) 

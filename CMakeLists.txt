@@ -56,6 +56,8 @@ mark_as_advanced(DART_ROOT)
 include(Dart)
 enable_testing()
 
+SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH}) # for tests
+
 ## #################################################################
 ## Input
 ## #################################################################
