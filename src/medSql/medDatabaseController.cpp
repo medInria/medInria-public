@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Dec  2 14:42:23 2009 (+0100)
+ * Last-Updated: Fri Jan 22 20:03:43 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 112
+ *     Update #: 113
  */
 
 /* Commentary: 
@@ -28,6 +28,8 @@
 #include <dtkCore/dtkLog.h>
 
 #include <medSql/medDatabaseController.h>
+#include <medSql/medDatabaseImporter.h>
+#include <medSql/medDatabaseExporter.h>
 
 medDatabaseController *medDatabaseController::instance(void)
 {

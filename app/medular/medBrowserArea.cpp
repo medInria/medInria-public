@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Nov  3 09:16:04 2009 (+0100)
+ * Last-Updated: Thu Feb  4 10:48:22 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 232
+ *     Update #: 245
  */
 
 /* Commentary: 
@@ -21,14 +21,16 @@
 
 #include <QtGui>
 
-#include <dtkGui/dtkSearchBar.h>
-#include <dtkGui/dtkSearchBox.h>
-
 #include <medSql/medDatabaseController.h>
+#include <medSql/medDatabaseExporter.h>
+#include <medSql/medDatabaseImporter.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabasePreview.h>
 
+#include <medGui/medProgressionStack.h>
+#include <medGui/medSearchBar.h>
+#include <medGui/medSearchBox.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
 
@@ -39,9 +41,9 @@
 class medBrowserAreaPrivate
 {
 public:
-    dtkSearchBar *db_search_bar;
-    dtkSearchBar *fs_search_bar;
-    dtkSearchBar *pc_search_bar;
+    medSearchBar *db_search_bar;
+    medSearchBar *fs_search_bar;
+    medSearchBar *pc_search_bar;
 
     medToolBoxContainer *toolbox_container;
 
@@ -54,6 +56,8 @@ public:
 
     QProgressBar *progress;
     QStatusBar *status;
+
+    medProgressionStack *progression_stack;
 };
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
@@ -160,9 +164,12 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     QPushButton *filesystem_import_button = new QPushButton("Import", filesystem_page);
     QPushButton *filesystem_export_button = new QPushButton("Export", filesystem_page);
 
+    d->progression_stack = new medProgressionStack(filesystem_page);
+
     QFormLayout *filesystem_page_layout = new QFormLayout(filesystem_page);
     filesystem_page_layout->addRow("Current item:", filesystem_import_button);
     filesystem_page_layout->addRow("Current item:", filesystem_export_button);
+    filesystem_page_layout->addWidget(d->progression_stack);
     filesystem_page_layout->setFormAlignment(Qt::AlignHCenter);
 
     connect(filesystem_import_button, SIGNAL(clicked()), this, SLOT(onFileSystemImportClicked()));
@@ -191,14 +198,14 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     medToolBoxStack *search_stack = new medToolBoxStack(this);
 
-    d->db_search_bar = new dtkSearchBar(search_stack);
+    d->db_search_bar = new medSearchBar(search_stack);
     d->db_search_bar->addKey("id");
     d->db_search_bar->addKey("name");
     d->db_search_bar->setDefaultKey("id");
     d->db_search_bar->setModel(d->model);
     d->db_search_bar->setView(d->view);
 
-    d->fs_search_bar = new dtkSearchBar(search_stack);
+    d->fs_search_bar = new medSearchBar(search_stack);
     d->fs_search_bar->addKey("name");
     d->fs_search_bar->addKey("size");
     d->fs_search_bar->addKey("kind");
@@ -295,9 +302,23 @@ void medBrowserArea::onFileSystemImportClicked(void)
 
     d->preview->reset();
     d->preview->init();
+
+    // Temporary interface
+
+    medDatabaseImporter *importer = new medDatabaseImporter;
+
+    connect(importer, SIGNAL(progressed(int)), d->progression_stack, SLOT(setProgress(int)));
+
+    QThreadPool::globalInstance()->start(importer);
 }
 
 void medBrowserArea::onFileSystemExportClicked(void)
 {
+    // Temporary interface
 
+    medDatabaseExporter *exporter = new medDatabaseExporter;
+
+    connect(exporter, SIGNAL(progressed(int)), d->progression_stack, SLOT(setProgress(int)));
+
+    QThreadPool::globalInstance()->start(exporter);
 }
