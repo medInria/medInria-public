@@ -57,11 +57,11 @@ include(Dart)
 enable_testing()
 
 SET(CXX_TEST_PATH        ${RUNTIME_OUTPUT_PATH}) # for tests
-SET(CXX_TEST_PLUGIN_PATH ${RUNTIME_OUTPUT_PATH}) # for tests
+SET(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH}) # for tests
 IF (MSVC)
-  IF(EXISTS ${RUNTIME_OUTPUT_PATH}/Release)
-    SET(CXX_TEST_PLUGIN_PATH   ${RUNTIME_OUTPUT_PATH}/Release) # tests will only be working when compiling on Release
-  ENDIF(EXISTS ${RUNTIME_OUTPUT_PATH}/Release)
+  IF(EXISTS ${LIBRARY_OUTPUT_PATH}/Release)
+    SET(CXX_TEST_PLUGIN_PATH   ${LIBRARY_OUTPUT_PATH}/Release) # tests will only be working when compiling on Release
+  ENDIF(EXISTS ${LIBRARY_OUTPUT_PATH}/Release)
 ENDIF (MSVC)
 
 ## #################################################################
