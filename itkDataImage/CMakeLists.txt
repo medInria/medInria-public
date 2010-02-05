@@ -147,3 +147,6 @@ target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
 )
 
+if (BUILD_TESTING)
+  add_subdirectory(Testing)
+endif (BUILD_TESTING)
