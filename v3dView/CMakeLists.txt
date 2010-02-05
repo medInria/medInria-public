@@ -132,3 +132,7 @@ target_link_libraries(${PROJECT_NAME}
 if (vtkINRIA3D_USE_ITK)
   target_link_libraries(${PROJECT_NAME} medItk ${ITK_LIBRARIES})
 endif (vtkINRIA3D_USE_ITK)
+
+if (BUILD_TESTING)
+  add_subdirectory(Testing)
+endif (BUILD_TESTING)
