@@ -23,6 +23,31 @@ project(medular-plugins)
 
 mark_as_advanced(CMAKE_AR)
 
+# On Visual Studio 8 MS deprecated C. This removes all 1.276E1265 security
+# warnings
+IF(WIN32)
+  IF(NOT BORLAND)
+    IF(NOT CYGWIN)
+      IF(NOT MINGW)
+        IF(NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
+          ADD_DEFINITIONS(
+            -D_CRT_FAR_MAPPINGS_NO_DEPRECATE
+            -D_CRT_IS_WCTYPE_NO_DEPRECATE
+            -D_CRT_MANAGED_FP_NO_DEPRECATE
+            -D_CRT_NONSTDC_NO_DEPRECATE
+            -D_CRT_SECURE_NO_DEPRECATE
+            -D_CRT_SECURE_NO_DEPRECATE_GLOBALS
+            -D_CRT_SETERRORMODE_BEEP_SLEEP_NO_DEPRECATE
+            -D_CRT_TIME_FUNCTIONS_NO_DEPRECATE
+            -D_CRT_VCCLRIT_NO_DEPRECATE
+            -D_SCL_SECURE_NO_DEPRECATE
+            )
+        ENDIF(NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
+      ENDIF(NOT MINGW)
+    ENDIF(NOT CYGWIN)
+  ENDIF(NOT BORLAND)
+ENDIF(WIN32)
+
 ## #################################################################
 ## Setup output paths
 ## #################################################################
@@ -59,9 +84,7 @@ enable_testing()
 SET(CXX_TEST_PATH        ${RUNTIME_OUTPUT_PATH}) # for tests
 SET(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH}) # for tests
 IF (MSVC)
-  IF(EXISTS ${LIBRARY_OUTPUT_PATH}/Release)
-    SET(CXX_TEST_PLUGIN_PATH   ${LIBRARY_OUTPUT_PATH}/Release) # tests will only be working when compiling on Release
-  ENDIF(EXISTS ${LIBRARY_OUTPUT_PATH}/Release)
+  SET(CXX_TEST_PLUGIN_PATH   ${LIBRARY_OUTPUT_PATH}/Release) # tests will only be working when compiling on Release
 ENDIF (MSVC)
 
 ## #################################################################
