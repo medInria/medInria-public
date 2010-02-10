@@ -2,6 +2,7 @@ SET(PLUGIN_NAME itkDataImageReaderPlugin)
 
 SET(itkDataImageReaderPluginTests
   itkMetaDataImageReaderTest.cxx
+  itkDCMTKDataImageReaderTest.cxx
   )
 
 CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
