@@ -12,32 +12,32 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
 {
 	if (argc<3) {
 		std::cerr << "Not enough arguments" << std::endl;
-        return EXIT_FAILURE;
+		return EXIT_FAILURE;
 	}
     
-  dtkPluginManager::instance()->setPath (argv[1]);
-  dtkPluginManager::instance()->initialize();
+	dtkPluginManager::instance()->setPath (argv[1]);
+	dtkPluginManager::instance()->initialize();
 
-  // the test file
-  QDir dir (argv[2]);
-  dir.setFilter(QDir::Files | QDir::NoSymLinks);
+	// the test file
+	QDir dir (argv[2]);
+	dir.setFilter(QDir::Files | QDir::NoSymLinks);
 	
 	QDir::setCurrent( argv[2] );
-
-  // first method to read data
-  dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
-
+	
+	// first method to read data
+	dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
+	
 	if (!data) {
-		std::cerr << "Cannot create data object from plugin" << std::endl;
-        return EXIT_FAILURE;
+	    std::cerr << "Cannot create data object from plugin" << std::endl;
+	    return EXIT_FAILURE;
 	}
-
-  data->enableReader ("itkDCMTKDataImageReader");
-  
+	
+	data->enableReader ("itkDCMTKDataImageReader");
+	
 	if (!data->read(dir.entryList())) {
-		std::cerr << "Cannot read DICOM dir: " << argv[2] << std::endl;
-        return EXIT_FAILURE;
+	    std::cerr << "Cannot read DICOM dir: " << argv[2] << std::endl;
+	    return EXIT_FAILURE;
 	}
-
-  return EXIT_SUCCESS;
+	
+	return EXIT_SUCCESS;
 }

@@ -58,7 +58,8 @@ int v3dViewTest(int argc, char *argv[])
   view->setData ( data );
   view->reset();
   view->update();
-  
+
+
   view->setProperty ("Orientation", "Axial"); view->update();
   view->setProperty ("Orientation", "Sagittal"); view->update();
   view->setProperty ("Orientation", "Coronal"); view->update();
@@ -100,10 +101,8 @@ int v3dViewTest(int argc, char *argv[])
   view->setProperty ("Preset", "Soft on Blue"); view->update();
   view->setProperty ("Preset", "Red on White"); view->update();
   view->setProperty ("Preset", "Glossy"); view->update();
-
   view->setProperty ("ShowAxis" ,"true"); view->update();
   view->setProperty ("ShowAxis" ,"false"); view->update();
-  
 
   return EXIT_SUCCESS; //application.exec();
   
