@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue May  5 12:20:38 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 09:17:46 2009 (+0200)
+ * Last-Updated: Tue Feb  9 23:11:38 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 273
+ *     Update #: 274
  */
 
 /* Commentary: 
@@ -500,6 +500,6 @@ void medClutEditor::onApplyTablesAction(void)
             if(medClutEditorTable *lut = dynamic_cast<medClutEditorTable *>(item))
                 lut->setup(min_range, max_range, size, table);
         
-        d->dtk_view->setColorLookupTable(min_range, max_range, max_range-min_range, table);
+        // d->dtk_view->setColorLookupTable(min_range, max_range, max_range-min_range, table);
     }
 }
