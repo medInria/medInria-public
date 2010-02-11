@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 22 09:04:25 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 22 09:04:48 2009 (+0100)
+ * Last-Updated: Thu Feb 11 14:44:59 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 3
+ *     Update #: 32
  */
 
 /* Commentary: 
@@ -19,23 +19,14 @@
 
 #include "medDocumentationArea.h"
 
-#include <QtHelp>
-#include <QtWebKit>
+#include <dtkGui/dtkAddressBar.h>
+#include <dtkGui/dtkNavigationBar.h>
+#include <dtkGui/dtkRegistrationBar.h>
+#include <dtkGui/dtkSearchBar.h>
+#include <dtkGui/dtkSplitter.h>
 
-// /////////////////////////////////////////////////////////////////
-// Helper functions
-// /////////////////////////////////////////////////////////////////
-
-static QString readFile(const QString &name)
-{
-    QFile f(name);
-    if (!f.open(QIODevice::ReadOnly)) {
-        qWarning("Unable to open %s: %s", name.toUtf8().constData(), f.errorString().toUtf8().constData());
-        return QString();
-    }
-    QTextStream ts(&f);
-    return ts.readAll();
-}
+#include <dtkHelp/dtkHelpController.h>
+#include <dtkHelp/dtkHelpBrowser.h>
 
 // /////////////////////////////////////////////////////////////////
 // medDocumentationArea
@@ -44,90 +35,103 @@ static QString readFile(const QString &name)
 class medDocumentationAreaPrivate
 {
 public:
-    QWebView *view;
+    dtkHelpBrowser *browser;
 
-    QWidget *navigation;
-    QPushButton *previous_button;
-    QPushButton *next_button;
-    QPushButton *go_button;
-    QLineEdit *address_edit;
+    dtkNavigationBar *navigation;
+    dtkRegistrationBar *registration;
+    dtkAddressBar *address;
+    dtkSearchBar *search;
 
-    QAction *previous_action;
-    QAction *next_action;
+    QAction *backwardAction;
+    QAction *forwardAction;
 
-    QProgressBar *progress;
+    QAction   *registerAction;
+    QAction *unregisterAction;
+
+    QAction *addressFocusAction;
+    QAction *searchFocusAction;
+
+    dtkSplitter *hsplitter;
+    dtkSplitter *vsplitter;
+
     QStatusBar *status;
 };
 
 medDocumentationArea::medDocumentationArea(QWidget *parent) : QWidget(parent), d(new medDocumentationAreaPrivate)
 {
-    d->view = new QWebView(this);
-    d->view->setContextMenuPolicy(Qt::NoContextMenu);
-    d->view->setAcceptDrops(false);
-    d->view->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
-    d->view->settings()->setAttribute(QWebSettings::JavaEnabled, true);
-    d->view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-#ifdef Q_WS_MAC
-    d->view->setUrl(QUrl(qApp->applicationDirPath() + "/../../../../doc/index.html"));
+    d->browser = new dtkHelpBrowser(this);
+
+    connect(d->browser, SIGNAL(sourceChanged(const QUrl&)), this, SLOT(onUrlChanged(const QUrl&)));
+
+    connect(dtkHelpController::instance()->engine()->contentWidget(), SIGNAL(linkActivated(const QUrl&)), d->browser, SLOT(setSource(const QUrl&)));
+    connect(dtkHelpController::instance()->engine()->indexWidget(), SIGNAL(linkActivated(const QUrl&, const QString&)), d->browser, SLOT(setSource(const QUrl&)));
+    connect(dtkHelpController::instance()->engine()->indexWidget(), SIGNAL(linksActivated(const QMap<QString, QUrl>&, const QString&)), this, SLOT(onLinksActivated(const QMap<QString, QUrl>&, const QString&)));
+
+    d->backwardAction = d->browser->backwardAction();
+
+    d->forwardAction = d->browser->forwardAction();
+
+    d->registerAction = new QAction("Register", this);
+    connect(d->registerAction, SIGNAL(triggered()), this, SLOT(onRegisterClicked()));
+
+    d->unregisterAction = new QAction("Unregister", this);
+    connect(d->unregisterAction, SIGNAL(triggered()), this, SLOT(onUnregisterClicked()));
+
+    d->navigation = new dtkNavigationBar(this);
+    d->navigation->backwardButton()->setShortcut(Qt::ControlModifier + Qt::Key_Left);
+    d->navigation->forwardButton()->setShortcut(Qt::ControlModifier + Qt::Key_Right);
+
+    connect(d->navigation->backwardButton(), SIGNAL(clicked()), d->backwardAction, SLOT(trigger()));
+    connect(d->navigation->forwardButton(), SIGNAL(clicked()), d->forwardAction, SLOT(trigger()));
+
+    d->registration = new dtkRegistrationBar(this);
+    
+    connect(d->registration->registerButton(), SIGNAL(clicked()), d->registerAction, SLOT(trigger()));
+    connect(d->registration->unregisterButton(), SIGNAL(clicked()), d->unregisterAction, SLOT(trigger()));
+
+    d->address = new dtkAddressBar(this);
+    d->address->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    connect(d->address, SIGNAL(addressEntered(const QUrl&)), d->browser, SLOT(setSource(const QUrl&)));
+
+    d->search = new dtkSearchBar(this);
+    d->search->setFixedWidth(200);
+
+    connect(d->search, SIGNAL(textChanged(QString)), dtkHelpController::instance()->engine()->indexWidget(), SLOT(filterIndices(QString)));
+    connect(d->search, SIGNAL(returnPressed()), dtkHelpController::instance()->engine()->indexWidget(), SLOT(activateCurrentItem()));
+
+    QAction *addressFocusAction = new QAction(this);
+    addressFocusAction->setShortcut(Qt::ControlModifier + Qt::Key_L);
+    connect(addressFocusAction, SIGNAL(triggered()), this, SLOT(onAddressFocusTriggered()));
+    this->addAction(addressFocusAction);
+
+    QAction *searchFocusAction = new QAction(this);
+#if defined(Q_WS_MAC)
+    searchFocusAction->setShortcut(Qt::ControlModifier + Qt::AltModifier + Qt::Key_F);
 #else
-    d->view->setUrl(QUrl(qApp->applicationDirPath() + "../doc/index.html"));
+    searchFocusAction->setShortcut(Qt::ControlModifier + Qt::Key_K);
 #endif
+    connect(searchFocusAction, SIGNAL(triggered()), this, SLOT(onSearchFocusTriggered()));
+    this->addAction(searchFocusAction);
 
-    d->previous_action = d->view->pageAction(QWebPage::Back);
-    d->next_action = d->view->pageAction(QWebPage::Back);
+    d->vsplitter = new dtkSplitter(this, true);
+    d->vsplitter->setOrientation(Qt::Vertical);
+    d->vsplitter->addWidget(dtkHelpController::instance()->engine()->contentWidget());
+    d->vsplitter->addWidget(dtkHelpController::instance()->engine()->indexWidget());
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(d->view);
-
-    d->navigation = new QWidget(this);
-    d->previous_button = new QPushButton(d->navigation);
-    d->previous_button->setIcon(QIcon(":/pixmaps/documentation_previous_arrow.png"));
-    d->previous_button->setObjectName("medDocumentationAreaPreviousButton");
-    d->previous_button->setEnabled(false);
-    d->next_button = new QPushButton(d->navigation);
-    d->next_button->setIcon(QIcon(":/pixmaps/documentation_next_arrow.png"));
-    d->next_button->setObjectName("medDocumentationAreaNextButton");
-    d->next_button->setEnabled(false);
-    d->go_button = new QPushButton(d->navigation);
-    d->go_button->setIcon(QIcon(":/pixmaps/documentation_go_arrow.png"));
-    d->go_button->setObjectName("medDocumentationAreaGoButton");
-    d->address_edit = new QLineEdit(d->navigation);
-    d->address_edit->setObjectName("medDocumentationAreaAddressEdit");
-
-    connect(d->previous_button, SIGNAL(clicked()), d->previous_action, SLOT(trigger()));
-    connect(d->next_button, SIGNAL(clicked()), d->next_action, SLOT(trigger()));
-
-    QHBoxLayout *navigation_buttons_layout = new QHBoxLayout;
-    navigation_buttons_layout->setContentsMargins(0, 0, 0, 0);
-    navigation_buttons_layout->setSpacing(0);
-    navigation_buttons_layout->addWidget(d->previous_button);
-    navigation_buttons_layout->addWidget(d->next_button);
-
-    QHBoxLayout *navigation_address_layout = new QHBoxLayout;
-    navigation_address_layout->setContentsMargins(0, 0, 0, 0);
-    navigation_address_layout->setSpacing(0);
-    navigation_address_layout->addWidget(d->address_edit);
-    navigation_address_layout->addWidget(d->go_button);
-
-    QHBoxLayout *navigation_layout = new QHBoxLayout(d->navigation);
-    navigation_layout->setContentsMargins(0, 0, 0, 0);
-    navigation_layout->setSpacing(10);
-    navigation_layout->addLayout(navigation_buttons_layout);
-    navigation_layout->addLayout(navigation_address_layout);
-
-    connect(d->address_edit, SIGNAL(returnPressed()), SLOT(load()));
-    connect(d->go_button, SIGNAL(clicked()), SLOT(load()));
-
-    connect(d->view, SIGNAL(loadProgress(int)), this, SLOT(onLoadProgress(int)));
-    connect(d->view, SIGNAL(loadFinished(bool)), this, SLOT(onLoadFinished()));
-
-    d->progress = new QProgressBar;
-    d->progress->setMinimum(0);
-    d->progress->setMaximum(100);
+    d->hsplitter = new dtkSplitter(this);
+    d->hsplitter->setOrientation(Qt::Horizontal);
+    d->hsplitter->addWidget(d->vsplitter);
+    d->hsplitter->addWidget(d->browser);
 
     d->status = NULL;
+
+    d->browser->setSource(QUrl("qthelp://fr.inria.med/doc/index.html"));
+
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(d->hsplitter);
 }
 
 medDocumentationArea::~medDocumentationArea(void)
@@ -141,37 +145,86 @@ void medDocumentationArea::setup(QStatusBar *status)
 {
     d->status = status;
     d->status->addWidget(d->navigation);
-    d->status->addWidget(d->progress);
+    d->status->addWidget(d->registration);
+    d->status->addWidget(d->address);
+    d->status->addWidget(d->search);
 
     d->navigation->show();
-    d->progress->show();
+    d->registration->show();
+    d->address->show();
+    d->search->show();
 }
 
 void medDocumentationArea::setdw(QStatusBar *status)
 {
     d->status = status;
     d->status->removeWidget(d->navigation);
-    d->status->removeWidget(d->progress);
+    d->status->removeWidget(d->registration);
+    d->status->removeWidget(d->address);
+    d->status->removeWidget(d->search);
 
     d->navigation->hide();
-    d->progress->hide();
+    d->registration->hide();
+    d->address->hide();
+    d->search->hide();
 }
 
-void medDocumentationArea::load(void)
+void medDocumentationArea::onRegisterClicked(void)
 {
-    d->view->load(QUrl(d->address_edit->text()));
-    d->view->setFocus();
+    QString fileName = QFileDialog::getOpenFileName(this, "Open Help Collection File", qApp->applicationDirPath(), "Help collection file (*.qch)");
+    
+    if(!fileName.isNull())
+        dtkHelpController::instance()->registerDocumentation(fileName);
 }
 
-void medDocumentationArea::onLoadProgress(int progress)
+void medDocumentationArea::onUnregisterClicked(void)
 {
-    d->progress->setValue(progress);
+    bool ok;
+
+    QStringList items = dtkHelpController::instance()->registeredNamespaces();
+    items.removeFirst();
+
+    QString namespaceName = QInputDialog::getItem(
+        this,
+        "dtkAssistant",
+        "Choose the documentation namespace to unregister",
+        items,
+        0,
+        false,
+        &ok);
+    
+    if (ok)
+        dtkHelpController::instance()->unregisterDocumentation(namespaceName);
 }
 
-void medDocumentationArea::onLoadFinished(void)
+void medDocumentationArea::onUrlChanged(const QUrl& url)
 {
-    d->previous_button->setEnabled(d->previous_action->isEnabled());
-    d->next_button->setEnabled(d->next_action->isEnabled());
-    d->address_edit->setText(d->view->url().toString());
-    d->progress->setValue(100);
+    d->address->setText(url.toString());
+}
+
+void medDocumentationArea::onLinksActivated(const QMap<QString, QUrl>& urls, const QString& keyword)
+{
+    bool ok;
+    
+    QString key = QInputDialog::getItem(
+        this,
+        "dtkAssistant",
+        QString("Choose a topic for %1").arg(keyword),
+        urls.keys(),
+        0,
+        false,
+        &ok);
+    
+    if (ok)
+        d->browser->setSource(urls.value(key));
+}
+
+void medDocumentationArea::onAddressFocusTriggered(void)
+{
+    d->address->setFocus();
+}
+
+void medDocumentationArea::onSearchFocusTriggered(void)
+{
+    d->search->setFocus();
 }

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 22 09:04:15 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 22 09:04:16 2009 (+0100)
+ * Last-Updated: Thu Feb 11 10:46:10 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 5
  */
 
 /* Commentary: 
@@ -37,9 +37,12 @@ public:
     void setdw(QStatusBar *status);
 
 protected slots:
-    void   load(void);
-    void onLoadProgress(int progress);
-    void onLoadFinished(void);
+    void onRegisterClicked(void);
+    void onUnregisterClicked(void);
+    void onUrlChanged(const QUrl& url);
+    void onLinksActivated(const QMap<QString, QUrl>& urls, const QString& keyword);
+    void onAddressFocusTriggered(void);
+    void onSearchFocusTriggered(void);
 
 private:
     medDocumentationAreaPrivate *d;

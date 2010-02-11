@@ -248,7 +248,7 @@ QTreeView::branch:open:has-children:has-siblings  {
 QHelpContentWidget {
     alternate-background-color: #505050;
 
-    background-color: red;
+    background-color: #4b4b4b;
 
     border-image: none;
     border-top-width: 0px;
@@ -266,7 +266,7 @@ QHelpContentWidget {
 QHelpIndexWidget {
     alternate-background-color: #505050;
 
-    background-color: green;
+    background-color: #4b4b4b;
 
     border-image: none;
     border-top-width: 0px;
