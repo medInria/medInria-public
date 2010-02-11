@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Feb 11 14:30:07 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Feb 11 14:37:19 2010 (+0100)
+ * Last-Updated: Thu Feb 11 14:55:53 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 7
  */
 
 /* Commentary: 
@@ -20,8 +20,5 @@
 /*! \mainpage Medular reference documentation
 
   medular is a medical imaging platform ....
-
-  \subpage user
-  \subpage developer
 
  */

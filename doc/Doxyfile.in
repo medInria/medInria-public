@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Jun 13 19:49:36 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Thu Feb 11 11:01:57 2010 (+0100)
+## Last-Updated: Thu Feb 11 14:58:05 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 126
+##     Update #: 128
 ######################################################################
 ## 
 ### Commentary: 
@@ -592,7 +592,10 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = @CMAKE_SOURCE_DIR@/doc/dox
+INPUT                  = @CMAKE_SOURCE_DIR@/src/medCore \
+                         @CMAKE_SOURCE_DIR@/src/medGui \
+                         @CMAKE_SOURCE_DIR@/src/medSql \
+                         @CMAKE_SOURCE_DIR@/doc/dox
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
@@ -609,7 +612,9 @@ INPUT_ENCODING         = UTF-8
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx 
 # *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm *.py *.f90
 
-FILE_PATTERNS          = *.dox
+FILE_PATTERNS          = *.h \
+                         *.cpp \
+                         *.dox
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 
