@@ -13,6 +13,9 @@
 class QMouseEvent;
 
 class v3dViewPrivate;
+class vtkImageView;
+class vtkRenderer;
+class vtkRenderWindowInteractor;
 
 class V3DVIEWPLUGIN_EXPORT v3dView : public dtkAbstractView
 {
@@ -35,12 +38,25 @@ public:
     void unlink(dtkAbstractView *other);
 
     void *view(void);
+	vtkImageView *viewAxial(void);
+	vtkImageView *viewCoronal(void);
+	vtkImageView *viewSagittal(void);
+	vtkImageView *view3D(void);
+	
+	vtkRenderWindowInteractor *interactor(void);
+	
+	vtkRenderer *rendererAxial(void);
+	vtkRenderer *rendererCoronal(void);
+	vtkRenderer *rendererSagittal(void);
+	vtkRenderer *renderer3D(void);
 
+	void projectData(dtkAbstractData *data);
+	
     void setData(dtkAbstractData *data);
     void *data (void);
 
     QWidget *widget(void);
-
+	
 public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);

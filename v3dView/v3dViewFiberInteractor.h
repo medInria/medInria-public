@@ -35,6 +35,7 @@ public slots:
 	virtual void onGPUModePropertySet (QString value);
 	virtual void onColorModePropertySet (QString value);
 	virtual void onBoxBooleanOperationPropertySet (QString value);
+	virtual void onProjectionPropertySet (QString value);
 	
 	virtual void onSelectionTagged (void);
     virtual void onSelectionReset (void);

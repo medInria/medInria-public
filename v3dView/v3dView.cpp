@@ -21,6 +21,7 @@
 #include <vtkLookupTableManager.h>
 #include <vtkImageActor.h>
 #include <vtkImageData.h>
+#include <vtkPointSet.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -209,18 +210,18 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     layout->addWidget(d->slider);
     layout->addWidget(d->vtkWidget);
 
-    d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    //d->view3D->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    //d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
+    d->view3D->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
     d->view3D->UnInstallInteractor();
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
     
-    d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    //d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    //d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
+    d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
     d->view2DCoronal->UnInstallInteractor();
 
-    d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    //d->view2DSagittal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    //d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
+    d->view2DSagittal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
     d->view2DSagittal->UnInstallInteractor();
 
@@ -445,6 +446,51 @@ void *v3dView::view(void)
     return d->currentView;
 }
 
+vtkImageView *v3dView::viewAxial(void)
+{
+	return d->view2DAxial;
+}
+
+vtkImageView *v3dView::viewCoronal(void)
+{
+	return d->view2DCoronal;
+}
+
+vtkImageView *v3dView::viewSagittal(void)
+{
+	return d->view2DSagittal;
+}
+
+vtkImageView *v3dView::view3D(void)
+{
+	return d->view3D;
+}
+
+vtkRenderWindowInteractor *v3dView::interactor(void)
+{
+	return d->vtkWidget->GetRenderWindow()->GetInteractor();
+}
+
+vtkRenderer *v3dView::rendererAxial(void)
+{
+	return d->renderer2DAxial;
+}
+
+vtkRenderer *v3dView::rendererSagittal(void)
+{
+	return d->renderer2DSagittal;
+}
+
+vtkRenderer *v3dView::rendererCoronal(void)
+{
+	return d->renderer2DCoronal;
+}
+
+vtkRenderer *v3dView::renderer3D(void)
+{
+	return d->renderer3D;
+}
+
 void v3dView::setData(dtkAbstractData *data)
 {
     if(!data)
@@ -598,6 +644,16 @@ void v3dView::setData(dtkAbstractData *data)
     this->update();
 }
 
+void v3dView::projectData(dtkAbstractData *data)
+{
+	if (!data)
+		return;
+	
+	if (vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkDataObject *)(data->data()))) {
+		d->collection->SyncAddDataSet(pointset);
+	}
+}
+
 void *v3dView::data (void)
 {
     if (d->data)
@@ -661,77 +717,91 @@ void v3dView::onOrientationPropertySet(QString value)
     if (value=="3D") {
         d->orientation = "3D";
         d->view2DAxial->UnInstallInteractor();
-	d->view2DSagittal->UnInstallInteractor();
-	d->view2DCoronal->UnInstallInteractor();
+		d->view2DSagittal->UnInstallInteractor();
+		d->view2DCoronal->UnInstallInteractor();
+		d->view2DAxial->SetRenderWindow( 0 );
+		d->view2DSagittal->SetRenderWindow( 0 );
+		d->view2DCoronal->SetRenderWindow( 0 );
         d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
+		d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
+		d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer3D);
-	d->view3D->InstallInteractor();
+		d->view3D->SetRenderWindow( d->vtkWidget->GetRenderWindow() );
+		d->view3D->InstallInteractor();
 	
-	d->currentView = d->view3D;	
+		d->currentView = d->view3D;	
     }
     else {
         d->view3D->UnInstallInteractor();
+		d->view3D->SetRenderWindow( 0 );
         d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);        
     }
     
     
     if (value == "Axial") {
         d->view2DSagittal->UnInstallInteractor();
-	d->view2DCoronal->UnInstallInteractor();
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);	
+		d->view2DCoronal->UnInstallInteractor();
+		d->view2DSagittal->SetRenderWindow( 0 );
+		d->view2DCoronal->SetRenderWindow( 0 );		
+		d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
+		d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);	
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DAxial);	
+		d->view2DAxial->SetRenderWindow( d->vtkWidget->GetRenderWindow() );
         d->view2DAxial->InstallInteractor();
         d->orientation = "Axial";
 	
-	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
-	    d->slider->setRange (0, imData->zDimension()-1);
+		if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
+			d->slider->setRange (0, imData->zDimension()-1);
 
-	d->view2DSagittal->RemoveObserver(d->observer);
-	d->view2DCoronal->RemoveObserver(d->observer);
-	d->view2DAxial->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 5);
+		d->view2DSagittal->RemoveObserver(d->observer);
+		d->view2DCoronal->RemoveObserver(d->observer);
+		d->view2DAxial->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 5);
 
-	d->currentView = d->view2DAxial;
+		d->currentView = d->view2DAxial;
     }
 
     if (value == "Sagittal") {
         d->view2DAxial->UnInstallInteractor();
-	d->view2DCoronal->UnInstallInteractor();
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);	
+		d->view2DCoronal->UnInstallInteractor();
+		d->view2DAxial->SetRenderWindow( 0 );
+		d->view2DCoronal->SetRenderWindow( 0 );		
+		d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
+		d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);	
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DSagittal);
+		d->view2DSagittal->SetRenderWindow( d->vtkWidget->GetRenderWindow() );
         d->view2DSagittal->InstallInteractor();
         d->orientation = "Sagittal";
 
-	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
+		if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
             d->slider->setRange (0, imData->xDimension()-1);
 
-	d->view2DAxial->RemoveObserver(d->observer);
-	d->view2DCoronal->RemoveObserver(d->observer);
-	d->view2DSagittal->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 5);
+		d->view2DAxial->RemoveObserver(d->observer);
+		d->view2DCoronal->RemoveObserver(d->observer);
+		d->view2DSagittal->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 5);
 	
-	d->currentView = d->view2DSagittal;
+		d->currentView = d->view2DSagittal;
     }
 
     if (value == "Coronal") {
         d->view2DSagittal->UnInstallInteractor();
-	d->view2DAxial->UnInstallInteractor();
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
-	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
+		d->view2DAxial->UnInstallInteractor();
+		d->view2DAxial->SetRenderWindow( 0 );
+		d->view2DSagittal->SetRenderWindow( 0 );
+		d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
+		d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
         d->vtkWidget->GetRenderWindow()->AddRenderer(d->renderer2DCoronal);
+		d->view2DCoronal->SetRenderWindow( d->vtkWidget->GetRenderWindow() );
         d->view2DCoronal->InstallInteractor();
         d->orientation = "Coronal";
 
-	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
+		if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
             d->slider->setRange (0, imData->yDimension()-1);
 
-	d->view2DAxial->RemoveObserver(d->observer);
-	d->view2DSagittal->RemoveObserver(d->observer);
-	d->view2DCoronal->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 5);
+		d->view2DAxial->RemoveObserver(d->observer);
+		d->view2DSagittal->RemoveObserver(d->observer);
+		d->view2DCoronal->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 5);
 	
-	d->currentView = d->view2DCoronal;
+		d->currentView = d->view2DCoronal;
     }
 
     if (!d->currentView)

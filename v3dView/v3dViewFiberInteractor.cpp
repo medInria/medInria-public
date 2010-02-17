@@ -1,6 +1,7 @@
 #include "v3dViewFiberInteractor.h"
 
 #include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
@@ -8,11 +9,14 @@
 #include <vtkFibersManager.h>
 #include <vtkImageView.h>
 
+#include "v3dView.h"
+
 class v3dViewFiberInteractorPrivate
 {
 public:
     dtkAbstractData *data;
-    dtkAbstractView *view;
+    v3dView *view;
+	dtkAbstractData *projectionData;
 	
 	vtkFibersManager *manager;
 	QHash<QString, dtkAbstractData*> bundleList;
@@ -31,6 +35,7 @@ v3dViewFiberInteractor::v3dViewFiberInteractor(): dtkAbstractViewInteractor(), d
 	this->addProperty("GPUMode", QStringList() << "true" << "false");
 	this->addProperty("ColorMode", QStringList() << "local" << "global");
 	this->addProperty("BoxBooleanOperation", QStringList() << "plus" << "minus");
+	this->addProperty("Projection", QStringList() << "true" << "false");
 }
 
 v3dViewFiberInteractor::~v3dViewFiberInteractor()
@@ -63,10 +68,11 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
 
 void v3dViewFiberInteractor::setView(dtkAbstractView *view)
 {
-	if (vtkImageView *vtkView = dynamic_cast<vtkImageView *>((vtkObject *)(view->view()))) {
-		d->manager->SetRenderWindowInteractor(vtkView->GetInteractor());
-		d->view = view;
-    }
+	if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
+		d->view = v3dview;
+		d->manager->SetRenderer( v3dview->renderer3D() );
+		d->manager->SetRenderWindowInteractor( v3dview->interactor() );
+	}
 }
 
 void v3dViewFiberInteractor::onPropertySet(QString key, QString value)
@@ -88,6 +94,9 @@ void v3dViewFiberInteractor::onPropertySet(QString key, QString value)
 	
 	if (key=="BoxBooleanOperation")
 		this->onBoxBooleanOperationPropertySet (value);
+	
+	if (key=="Projection")
+		this->onProjectionPropertySet (value);
 	
 	if (d->view)
 		d->view->update();
@@ -161,6 +170,18 @@ void v3dViewFiberInteractor::onSelectionTagged(void)
 void v3dViewFiberInteractor::onSelectionReset(void)
 {
 	d->manager->Reset();
+}
+
+void v3dViewFiberInteractor::onProjectionPropertySet(QString value)
+{
+	if (!d->view)
+		return;
+	
+	if (value=="true") {
+		d->view->viewAxial()->AddDataSet( d->manager->GetCallbackOutput() );
+		d->view->viewSagittal()->AddDataSet( d->manager->GetCallbackOutput() );
+		d->view->viewCoronal()->AddDataSet( d->manager->GetCallbackOutput() );
+	}
 }
 
 // /////////////////////////////////////////////////////////////////
