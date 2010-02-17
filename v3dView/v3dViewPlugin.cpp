@@ -3,6 +3,7 @@
 // /////////////////////////////////////////////////////////////////
 
 #include "v3dView.h"
+#include "v3dViewFiberInteractor.h"
 #include "v3dViewPlugin.h"
 
 #include <dtkCore/dtkLog.h>
@@ -35,8 +36,8 @@ v3dViewPlugin::~v3dViewPlugin(void)
 
 bool v3dViewPlugin::initialize(void)
 {
-    if (!v3dView::registered())
-        dtkWarning() << "Unable to register v3dView type";
+    if (!v3dView::registered()) dtkWarning() << "Unable to register v3dView type";
+	if (!v3dViewFiberInteractor::registered()) dtkWarning() << "Unable to register v3dViewFiberInteractor type";
       
     return true;
 }
@@ -63,7 +64,7 @@ QStringList v3dViewPlugin::tags(void) const
 
 QStringList v3dViewPlugin::types(void) const
 {
-    return QStringList() << "v3dView2D" << "v3dView3D" << "v3dView";
+    return QStringList() << "v3dView" << "v3dViewFiberInteractor";
 }
 
 Q_EXPORT_PLUGIN2(v3dViewPlugin, v3dViewPlugin)

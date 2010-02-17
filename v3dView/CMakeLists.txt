@@ -94,11 +94,13 @@ include_directories(${CMAKE_SOURCE_DIR}/medItk)
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
   v3dView.h
+  v3dViewFiberInteractor.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
   v3dView.cpp
+  v3dViewFiberInteractor.cpp
 )
 
 ## #################################################################

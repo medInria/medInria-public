@@ -97,4 +97,5 @@ subdirs(v3dView)
 subdirs(itkDataImage)
 subdirs(itkDataImageReader)
 subdirs(itkDataImageWriter)
+subdirs(vtkDataFibers)
 
