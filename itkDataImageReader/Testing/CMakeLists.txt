@@ -21,9 +21,14 @@ TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
   )
 if (ITK_SOURCE_DIR)
   set(ITK_DATA_ROOT ${ITK_SOURCE_DIR}/Examples/Data)
+  ADD_TEST(itkMetaDataImageReaderTest ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests itkMetaDataImageReaderTest ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
 endif (ITK_SOURCE_DIR)
 
-FOREACH (test ${itkDataImageReaderPluginTests})
-  GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
-  ADD_TEST(${TName} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
-ENDFOREACH (test) 
+find_path(DICOM_DATA_ROOT "dicom.lst")
+
+if (DICOM_DATA_ROOT)
+  file(STRINGS "${DICOM_DATA_ROOT}/dicom.lst" DICOM_LIST)
+  foreach(DICOM_DIR ${DICOM_LIST})
+    ADD_TEST(itkDCMTKDataImageReaderTest_${DICOM_DIR} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests itkDCMTKDataImageReaderTest ${CXX_TEST_PLUGIN_PATH} "${DICOM_DATA_ROOT}/${DICOM_DIR}")
+  endforeach()
+endif(DICOM_DATA_ROOT)
