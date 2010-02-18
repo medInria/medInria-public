@@ -12,6 +12,7 @@
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
 #include <itkDCMTKImageIO.h>
+#include <itkMetaDataDictionary.h>
 #include <itkObjectFactoryBase.h>
 #include "itkDataImageReaderCommand.h"
 
@@ -476,214 +477,23 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
 			return false;
 		}
 		
-	}
-	/*
-
-    if (d->io->GetPixelType()==itk::ImageIOBase::SCALAR) {
-    
-      switch (d->io->GetComponentType()) {
-      
-	  case itk::ImageIOBase::UCHAR:
-	    {
-	      itk::ImageFileReader< itk::Image<unsigned char, 3> >::Pointer ucharReader = itk::ImageFileReader< itk::Image<unsigned char, 3> >::New();
-	      ucharReader->SetImageIO ( d->io );
-	      ucharReader->SetFileName ( paths[0].toAscii().constData() );
-	      if( dtkAbstractData* dtkdata = this->data() )
-		dtkdata->setData ( ucharReader->GetOutput() );
-	      try {
-		ucharReader->Update();
-	      }
-	      catch (itk::ExceptionObject &e) {
-		qDebug() << e.GetDescription();
-		return false;
-	      }
-	      break;
-	    }
-	case itk::ImageIOBase::CHAR:
-	  {
-	    itk::ImageFileReader< itk::Image<char, 3> >::Pointer charReader = itk::ImageFileReader< itk::Image<char, 3> >::New();
-	    charReader->SetImageIO ( d->io );
-	    charReader->SetFileName ( paths[0].toAscii().constData() );
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( charReader->GetOutput() );
-	    try {
-	      charReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	case itk::ImageIOBase::USHORT:
-	  {
-	    itk::ImageFileReader< itk::Image<unsigned short, 3> >::Pointer ushortReader = itk::ImageFileReader< itk::Image<unsigned short, 3> >::New();
-	    ushortReader->SetImageIO ( d->io );
-	    ushortReader->SetFileName ( paths[0].toAscii().constData() );
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( ushortReader->GetOutput() );
-	    try {
-	      ushortReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	case itk::ImageIOBase::SHORT:
-	  {
-	    itk::ImageFileReader< itk::Image<short, 3> >::Pointer shortReader = itk::ImageFileReader< itk::Image<short, 3> >::New();
-	    shortReader->SetImageIO ( d->io );
-	    shortReader->SetFileName ( paths[0].toAscii().constData() );
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( shortReader->GetOutput() );
-	    try {
-	      shortReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	case itk::ImageIOBase::UINT:
-	  {
-	    itk::ImageFileReader< itk::Image<unsigned int, 3> >::Pointer uintReader = itk::ImageFileReader< itk::Image<unsigned int, 3> >::New();
-	    uintReader->SetImageIO ( d->io );
-	    uintReader->SetFileName ( paths[0].toAscii().constData() );
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( uintReader->GetOutput() );
-	    try {
-	      uintReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	case itk::ImageIOBase::INT:
-	  {
-	    itk::ImageFileReader< itk::Image<int, 3> >::Pointer intReader = itk::ImageFileReader< itk::Image<int, 3> >::New();
-	    intReader->SetImageIO ( d->io );
-	    intReader->SetFileName ( paths[0].toAscii().constData() );
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( intReader->GetOutput() );
-	    try {
-	      intReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	case itk::ImageIOBase::ULONG:
-	  {
-	    itk::ImageFileReader< itk::Image<unsigned long, 3> >::Pointer ulongReader = itk::ImageFileReader< itk::Image<unsigned long, 3> >::New();
-	    ulongReader->SetImageIO ( d->io );
-	    ulongReader->SetFileName ( paths[0].toAscii().constData() );
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( ulongReader->GetOutput() );
-	    try {
-	      ulongReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	case itk::ImageIOBase::LONG:
-	  {
-	    itk::ImageFileReader< itk::Image<long, 3> >::Pointer longReader = itk::ImageFileReader< itk::Image<long, 3> >::New();
-	    longReader->SetImageIO ( d->io );
-	    longReader->SetFileName ( paths[0].toAscii().constData() );
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( longReader->GetOutput() );
-	    try {
-	      longReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	case itk::ImageIOBase::FLOAT:
-	  {
-	    itk::ImageFileReader< itk::Image<float, 3> >::Pointer floatReader = itk::ImageFileReader< itk::Image<float, 3> >::New();
-	    floatReader->SetImageIO ( d->io );
-	    floatReader->SetFileName ( paths[0].toAscii().constData() );
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( floatReader->GetOutput() );
-	    try {
-	      floatReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	case itk::ImageIOBase::DOUBLE:
-	  {
-	    itk::ImageFileReader< itk::Image<double, 3> >::Pointer doubleReader = itk::ImageFileReader< itk::Image<double, 3> >::New();
-	    doubleReader->SetImageIO ( d->io );
-	    doubleReader->SetFileName ( paths[0].toAscii().constData() );
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( doubleReader->GetOutput() );
-	    try {
-	      doubleReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	default:
-	  {
-	    qDebug() << "Unrecognized component type";
-	    return false;
-	  }
-    }
+		// copy over the dicom dictionary into metadata
+		typedef itk::DCMTKImageIO::MetaDataVectorStringType MetaDataVectorStringType;
+		typedef itk::DCMTKImageIO::StringVectorType         StringVectorType;
+	
+		const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
+		itk::MetaDataDictionary::ConstIterator it = dictionary.Begin();
+		while(it!=dictionary.End()) {
+			if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) ) {
+				const StringVectorType &values = metaData->GetMetaDataObjectValue();
+				for (unsigned int i=0; i<values.size(); i++) {
+					dtkdata->addMetaData( it->first.c_str(), values[i].c_str());
+				}
+			}
+			++it;
+		}
   }
-  else if (d->io->GetPixelType()==itk::ImageIOBase::RGB) {
-    
-    switch (d->io->GetComponentType()) {
-      
-	case itk::ImageIOBase::UCHAR:
-	  {
-	    itk::ImageFileReader< itk::Image<itk::RGBPixel<unsigned char>, 3> >::Pointer rgbReader = itk::ImageFileReader< itk::Image<itk::RGBPixel<unsigned char>, 3> >::New();
-	    rgbReader->SetImageIO ( d->io );
-	    rgbReader->SetFileName ( paths[0].toAscii().constData() );
-	    
-	    if( dtkAbstractData* dtkdata = this->data() )
-	      dtkdata->setData ( rgbReader->GetOutput() );
-	    try {
-	      rgbReader->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return false;
-	    }
-	    break;
-	  }
-	default:
-	  {
-	    qDebug() << "Unrecognized component type";
-	    return false;
-	  }
-    }
-  }
-  else {
-    qDebug() << "Unrecognized pixel type";
-    return false;
-  }
-	*/  
-
+	
   d->io->RemoveAllObservers ();
   
   return true;

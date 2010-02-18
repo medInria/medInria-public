@@ -22,6 +22,7 @@
 #include <vtkImageActor.h>
 #include <vtkImageData.h>
 #include <vtkPointSet.h>
+#include <vtkTextProperty.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -180,6 +181,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view3D->SetShowBoxWidget(0);
     d->view3D->SetCroppingModeToOff();
     d->view3D->ShowScalarBarOff();
+	d->view3D->GetTextProperty()->SetColor(1.0, 1.0, 1.0);
     d->view3D->ShadeOn();
 
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
