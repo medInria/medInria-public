@@ -266,8 +266,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->view3dModeComboBox->addItem("MPR");
 
     d->view3dLODSlider = new QSlider (Qt::Horizontal, this);
-    d->view3dLODSlider->setRange (100, 1000);
-    d->view3dLODSlider->setValue (1000);
+    d->view3dLODSlider->setRange (0, 100);
+    d->view3dLODSlider->setValue (100);
 
     d->windowingPushButton = new QPushButton("", this);
     d->windowingPushButton->setIcon (QIcon (":/icons/wlww.tiff"));
@@ -305,7 +305,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
     connect(d->presetComboBox,                SIGNAL(currentIndexChanged(QString)), this, SLOT(setupLUTPreset(QString)));
     connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SLOT(setup3DMode(QString)));
-    connect(d->view3dLODSlider,               SIGNAL(valueChanged(int)),            this, SLOT(setup3DLOD(int)));
+    //connect(d->view3dLODSlider,               SIGNAL(valueChanged(int)),            this, SLOT(setup3DLOD(int)));
     connect(d->windowingPushButton,           SIGNAL(toggled(bool)),                this, SLOT(setupWindowing(bool)));
     connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(setupZooming(bool)));
     connect(d->slicingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(setupSlicing(bool)));
@@ -538,6 +538,8 @@ void medViewerArea::onSeriesIndexChanged(int id)
         if (!view)
             return;
 
+	connect(d->view3dLODSlider, SIGNAL(valueChanged(int)), view, SLOT(onVRQualitySet(int)));
+	
         view->setData(data);
         view->reset();
 
