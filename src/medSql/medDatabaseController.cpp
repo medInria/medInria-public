@@ -373,6 +373,7 @@ void medDatabaseController::import(const QString& file)
 	QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0].simplified();
 	QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0].simplified();
 	QStringList filePaths = dtkdata->metaDataValues (tr("FilePaths"));
+		QString s_age = dtkdata->metaDataValues(tr("(0010,1010)"))[0];
 	
 	//QString patientPath;
 	//QString studyPath;
@@ -473,7 +474,7 @@ void medDatabaseController::import(const QString& file)
 	}
 	else {
 
-            query.prepare("INSERT INTO series (study, size, name, path, thumbnail) VALUES (:study, :size, :name, :path, :thumbnail)");
+            query.prepare("INSERT INTO series (study, size, name, path, thumbnail, age) VALUES (:study, :size, :name, :path, :thumbnail, :age)");
             query.bindValue(":study", id);
             query.bindValue(":size", 1);
             query.bindValue(":name", seriesName);
@@ -482,6 +483,7 @@ void medDatabaseController::import(const QString& file)
                 query.bindValue(":thumbnail", thumbPaths[ thumbPaths.count()/2 ] );
             else
                 query.bindValue(":thumbnail", "");
+			query.bindValue(":age", s_age),
             query.exec(); id = query.lastInsertId();
 
             //seriesPath = studyPath + "/" + QString().setNum (id.toInt()) + ".mhd";
@@ -507,18 +509,18 @@ void medDatabaseController::import(const QString& file)
 	    else {
 
 	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
-		query.bindValue(":series", id);
-		query.bindValue(":size", 64);
-		query.bindValue(":name", fileInfo.fileName());
-		query.bindValue(":path", fileInfo.filePath());
-		query.bindValue(":instance_path", seriesPath);
-		if (j<thumbPaths.count())
-		    query.bindValue(":thumbnail", thumbPaths[j]);
-		else
-		    query.bindValue(":thumbnail", "");
+			query.bindValue(":series", id);
+			query.bindValue(":size", 64);
+			query.bindValue(":name", fileInfo.fileName());
+			query.bindValue(":path", fileInfo.filePath());
+			query.bindValue(":instance_path", seriesPath);
+			if (j<thumbPaths.count())
+				query.bindValue(":thumbnail", thumbPaths[j]);
+			else
+				query.bindValue(":thumbnail", "");
 		
-		if(!query.exec())
-                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+			if(!query.exec())
+				qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
 	    }
 	}
 
@@ -537,6 +539,31 @@ dtkAbstractData *medDatabaseController::read(const medDataIndex& index)
 
     QSqlQuery query(m_database);
 
+	QString patientName;
+	QString studyName;
+	QString seriesName;
+	
+	query.prepare("SELECT name FROM patient WHERE id = :id");
+    query.bindValue(":id", patientId);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+	if (query.first())
+		patientName = query.value(0).toString();
+	
+	query.prepare("SELECT name FROM study WHERE id = :id");
+    query.bindValue(":id", studyId);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+	if (query.first())
+		studyName = query.value(0).toString();
+	
+	query.prepare("SELECT name FROM series WHERE id = :id");
+    query.bindValue(":id", seriesId);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+	if (query.first())
+		seriesName = query.value(0).toString();
+	
     QStringList filenames;
     QString     filename;
 
@@ -567,6 +594,13 @@ dtkAbstractData *medDatabaseController::read(const medDataIndex& index)
         }
     }
 
+	
+	if (data) {
+		data->addMetaData("PatientName", patientName);
+		data->addMetaData("StudyDescription",   studyName);
+		data->addMetaData("SeriesDescription",  seriesName);
+	}
+	
     return data;
 }
 
@@ -616,7 +650,18 @@ void medDatabaseController::createSeriesTable(void)
             " size     INTEGER,"
             " name        TEXT,"
             " path        TEXT,"
-            " thumbnail   TEXT"
+            " thumbnail   TEXT,"
+			" age INTEGER,"
+			" birthdate TEXT,"
+			" gender TEXT,"
+			" description TEXT,"
+			" modality TEXT,"
+			" acquisitiondate TEXT,"
+			" importationdate TEXT,"
+			" referee TEXT,"
+			" perfomer TEXT,"
+			" institution TEXT,"
+			" report TEXT"
             ");"
             );
 }
@@ -633,7 +678,7 @@ void medDatabaseController::createImageTable(void)
             " path          TEXT,"
             " instance_path TEXT,"
             " thumbnail     TEXT,"
-            " slice      INTEGER "
+            " slice      INTEGER"
             ");"
             );
 }
