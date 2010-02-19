@@ -91,7 +91,6 @@ ENDIF (MSVC)
 ## Input
 ## #################################################################
 
-subdirs(medItk)
 subdirs(v3dData)
 subdirs(v3dView)
 subdirs(itkDataImage)

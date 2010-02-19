@@ -1,4 +1,4 @@
-#include "medItk.h"
+#include "medItk/medItk.h"
 
 #include "itkDataImageULong3.h"
 

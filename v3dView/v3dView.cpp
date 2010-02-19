@@ -5,7 +5,7 @@
 #include <vtkINRIA3DConfigure.h>
 
 #ifdef vtkINRIA3D_USE_ITK
-#include "medItk.h"
+#include "medItk/medItk.h"
 #include "itkExtractImageFilter.h"
 #endif
 

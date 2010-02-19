@@ -1,4 +1,4 @@
-#include "medItk.h"
+#include "medItk/medItk.h"
 
 #include "itkDataImageRGB3.h"
 

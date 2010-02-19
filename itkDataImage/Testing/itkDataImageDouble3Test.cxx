@@ -1,4 +1,4 @@
-#include "medItk.h"
+#include "medItk/medItk.h"
 
 #include "dtkCore/dtkPluginManager.h"
 #include "dtkCore/dtkAbstractDataFactory.h"

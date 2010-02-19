@@ -76,16 +76,22 @@ mark_as_advanced(QT_QMAKE_EXECUTABLE)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
-
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
-include_directories(${CMAKE_SOURCE_DIR}/medItk)
+if(vtkINRIA3D_USE_ITK)
+  find_package(med REQUIRED)
+  if(NOT med_EXT_ITK)
+    message(FATAL_ERROR "Medular must be build with option med_EXT_ITK to ON")
+  endif(NOT med_EXT_ITK)
+  include(${med_USE_FILE})
+
+  find_package(ITK REQUIRED)
+  include(${ITK_USE_FILE})
+endif(vtkINRIA3D_USE_ITK)
 
 ## #################################################################
 ## Input

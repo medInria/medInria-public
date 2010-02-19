@@ -77,10 +77,14 @@ mark_as_advanced(QT_QMAKE_EXECUTABLE)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
+find_package(med REQUIRED)
+if (NOT med_EXT_ITK)
+  message(FATAL_ERROR "Medular must be build with option med_EXT_ITK to ON")
+endif (NOT med_EXT_ITK)
+include(${med_USE_FILE})
+
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
-
-include_directories(${CMAKE_SOURCE_DIR}/medItk)
 
 ## #################################################################
 ## Input
