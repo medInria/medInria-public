@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Jan 19 13:40:31 2010 (+0100)
+## Last-Updated: Fri Feb 19 10:44:01 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 90
+##     Update #: 97
 ######################################################################
 ## 
 ### Commentary: 
@@ -41,6 +41,11 @@ set(${PROJECT_NAME}_HEADERS
   medSearchBox.h
   medToolBox.h
   medToolBoxContainer.h
+  medToolBoxConfiguration.h
+  medToolBoxLayout.h
+  medToolBoxPatient.h
+  medToolBoxRegistration.h
+  medToolBoxView.h
   medViewContainer.h
   medWorkspaceShifter.h
 )
@@ -54,6 +59,11 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medSearchBar.h
   medSearchBox.h
   medToolBox.h
+  medToolBoxConfiguration.h
+  medToolBoxLayout.h
+  medToolBoxPatient.h
+  medToolBoxRegistration.h
+  medToolBoxView.h
   medViewContainer.h
   medWorkspaceShifter.h
 )
@@ -68,6 +78,11 @@ set(${PROJECT_NAME}_SOURCES
   medSearchBox.cpp
   medToolBox.cpp
   medToolBoxContainer.cpp
+  medToolBoxConfiguration.cpp
+  medToolBoxLayout.cpp
+  medToolBoxPatient.cpp
+  medToolBoxRegistration.cpp
+  medToolBoxView.cpp
   medViewContainer.cpp
   medWorkspaceShifter.cpp
 )

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jan 18 11:14:54 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Jan 18 12:37:11 2010 (+0100)
+ * Last-Updated: Fri Feb 19 10:52:19 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 24
+ *     Update #: 25
  */
 
 /* Commentary: 
@@ -36,6 +36,7 @@ medRegistrationWidgetItem::medRegistrationWidgetItem(QWidget *parent) : QLabel(p
     setAlignment(Qt::AlignCenter);
     setAcceptDrops(true);
     setBackgroundRole(QPalette::Base);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
 medRegistrationWidgetItem::~medRegistrationWidgetItem(void)

@@ -186,6 +186,14 @@ endif(WIN32)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" true)
 
+option(BUILD_EXTENSIONS "Build medular extensions" ON)
+if (BUILD_EXTENSIONS)
+  set(${PROJECT_NAME}_INCLUDE_PATH
+  ${${PROJECT_NAME}_INCLUDE_PATH}
+  ${CMAKE_SOURCE_DIR}/ext
+  )
+endif (BUILD_EXTENSIONS)
+
 ## #################################################################
 ## Build rules
 ## #################################################################
@@ -195,6 +203,9 @@ include_directories(${${PROJECT_NAME}_INCLUDE_PATH})
 add_subdirectory(src)
 add_subdirectory(app)
 add_subdirectory(doc)
+if (BUILD_EXTENSIONS)
+  add_subdirectory(ext)
+endif (BUILD_EXTENSIONS)
 
 ## #################################################################
 ## Configuration rules for the build tree
