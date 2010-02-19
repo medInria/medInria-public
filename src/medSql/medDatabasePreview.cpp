@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 09:42:19 2009 (+0100)
+ * Last-Updated: Sat Feb 20 00:29:51 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 24
  */
 
 /* Commentary: 
@@ -86,6 +86,7 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
     d->view->setScene(d->scene);
 
     d->selector = new medDatabasePreviewSelector;
+    d->selector->setRect(QRectF(5, 5, 138, 138));
 
     d->scene->addItem(d->selector);
 
@@ -182,8 +183,6 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
         : this->setFixedWidth(medDatabasePreviewController::instance()->groupWidth() + medDatabasePreviewController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 
     this->init();
-
-    QTimer::singleShot(100, this, SLOT(onMoveBg()));
 }
 
 medDatabasePreview::~medDatabasePreview(void)

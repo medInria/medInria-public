@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 18:41:41 2010 (+0100)
+ * Last-Updated: Sat Feb 20 00:33:11 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 567
+ *     Update #: 630
  */
 
 /* Commentary: 
@@ -139,7 +139,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->configurationToolBox = new medToolBoxConfiguration(this);
 
-    // connect(d->configurationToolBox, SIGNAL(configurationChanged(QString)), this, SLOT());
+    connect(d->configurationToolBox, SIGNAL(configurationChanged(QString)), medViewerConfigurator::instance(), SLOT(setConfiguration(QString)));
 
     // -- Layout toolbox --
 
@@ -168,10 +168,12 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // -- Diffusion toolbox --
 
     d->diffusionToolBox = new medToolBoxDiffusion(this);
+    d->diffusionToolBox->setVisible(false);
 
     // -- Registration toolbox --
 
     d->registrationToolBox = new medToolBoxRegistration(this);
+    d->registrationToolBox->setVisible(false);
     
     // Setting up toolbox container
 
@@ -199,6 +201,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     navigator_container->setFixedWidth(186);
 
     d->navigator = new medDatabaseNavigator(navigator_container);
+
     connect(d->navigator, SIGNAL(seriesClicked(int)), this, SLOT(onSeriesIndexChanged(int)));
 
     QVBoxLayout *navigator_container_layout = new QVBoxLayout(navigator_container);
@@ -216,11 +219,42 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     layout->addWidget(view_container);
     layout->addWidget(navigator_container);
 
-    // Setup from database
+    // Setting up database
 
     this->setup();
 
     connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(setup()));
+
+    // Setting up visualization configuration
+
+    medViewerConfiguration *visualizationConfiguration = new medViewerConfiguration;
+    visualizationConfiguration->attach(d->layoutToolBox, true);
+    visualizationConfiguration->attach(d->viewToolBox, true);
+
+    medViewerConfigurator::instance()->addConfiguration("Visualization", visualizationConfiguration);
+
+    // Setting up diffusion configuration
+
+    medViewerConfiguration *diffusionConfiguration = new medViewerConfiguration;
+    diffusionConfiguration->attach(d->layoutToolBox, false);
+    diffusionConfiguration->attach(d->viewToolBox, true);
+    diffusionConfiguration->attach(d->diffusionToolBox, true);
+
+    medViewerConfigurator::instance()->addConfiguration("Diffusion", diffusionConfiguration);
+
+    // Setting up registration configuration
+
+    medViewerConfiguration *registrationConfiguration = new medViewerConfiguration;
+    registrationConfiguration->attach(d->viewToolBox, true);
+    registrationConfiguration->attach(d->registrationToolBox, true);
+
+    medViewerConfigurator::instance()->addConfiguration("Registration", registrationConfiguration);
+
+    // Feed configuration toolbox accordingly
+
+    d->configurationToolBox->addConfiguration("Visualization");
+    d->configurationToolBox->addConfiguration("Diffusion");
+    d->configurationToolBox->addConfiguration("Registration");
 }
 
 medViewerArea::~medViewerArea(void)
@@ -499,3 +533,92 @@ void medViewerArea::setupCropping (bool checked)
 	view->update();
     }
 }
+
+// /////////////////////////////////////////////////////////////////
+// medViewerConfiguration
+// /////////////////////////////////////////////////////////////////
+
+class medViewerConfigurationPrivate
+{
+public:
+    QHash<medToolBox *, bool> toolboxes;
+};
+
+medViewerConfiguration::medViewerConfiguration(void) : QObject(), d(new medViewerConfigurationPrivate)
+{
+
+}
+
+medViewerConfiguration::~medViewerConfiguration(void)
+{
+    delete d;
+
+    d = NULL;
+}
+
+void medViewerConfiguration::setup(void)
+{
+    foreach(medToolBox *toolbox, d->toolboxes.keys())
+        toolbox->setVisible(d->toolboxes.value(toolbox));
+}
+
+void medViewerConfiguration::setdw(void)
+{
+    foreach(medToolBox *toolbox, d->toolboxes.keys())
+        toolbox->setVisible(!(d->toolboxes.value(toolbox)));
+}
+
+void medViewerConfiguration::attach(medToolBox *toolbox, bool visible)
+{
+    d->toolboxes.insert(toolbox, visible);
+}
+
+// /////////////////////////////////////////////////////////////////
+// medViewerConfigurator
+// /////////////////////////////////////////////////////////////////
+
+class medViewerConfiguratorPrivate
+{
+public:
+    QHash<QString, medViewerConfiguration *> configurations;
+
+    QString current;
+};
+
+medViewerConfigurator *medViewerConfigurator::instance(void)
+{
+    if(!s_instance)
+        s_instance = new medViewerConfigurator;
+
+    return s_instance;
+}
+
+medViewerConfigurator::medViewerConfigurator(void) : QObject(), d(new medViewerConfiguratorPrivate)
+{
+
+}
+
+medViewerConfigurator::~medViewerConfigurator(void)
+{
+    delete d;
+
+    d = NULL;
+}
+
+void medViewerConfigurator::addConfiguration(QString name, medViewerConfiguration *configuration)
+{
+    d->configurations.insert(name, configuration);
+}
+
+void medViewerConfigurator::setConfiguration(QString name)
+{
+    if(!d->current.isNull())
+        d->configurations.value(d->current)->setdw();
+
+    if (d->configurations.keys().contains(name))
+        d->configurations.value(name)->setup();
+
+    d->current = name;
+}
+
+medViewerConfigurator *medViewerConfigurator::s_instance = NULL;
