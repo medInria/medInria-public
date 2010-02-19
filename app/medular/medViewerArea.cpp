@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 10:55:04 2010 (+0100)
+ * Last-Updated: Fri Feb 19 11:05:06 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 558
+ *     Update #: 561
  */
 
 /* Commentary: 
@@ -37,6 +37,7 @@
 #include <medGui/medToolBoxConfiguration.h>
 #include <medGui/medToolBoxLayout.h>
 #include <medGui/medToolBoxPatient.h>
+#include <medGui/medToolBoxDiffusion.h>
 #include <medGui/medToolBoxRegistration.h>
 #include <medGui/medToolBoxView.h>
 #include <medGui/medViewContainer.h>
@@ -112,6 +113,7 @@ public:
     medToolBoxConfiguration *configurationToolBox;
     medToolBoxLayout *layoutToolBox;
     medToolBoxView *viewToolBox;
+    medToolBoxDiffusion *diffusionToolBox;
     medToolBoxRegistration *registrationToolBox;
     medToolBoxContainer *toolbox_container;
 
@@ -169,6 +171,10 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->viewToolBox, SIGNAL(scalarBarVisibilityChanged(bool)), this, SLOT(setupScalarBarVisibility(bool)));
     connect(d->viewToolBox, SIGNAL(axisVisibilityChanged(bool)), this, SLOT(setupAxisVisibility(bool)));
 
+    // -- Diffusion toolbox --
+
+    d->diffusionToolBox = new medToolBoxDiffusion(this);
+
     // -- Registration toolbox --
 
     d->registrationToolBox = new medToolBoxRegistration(this);
@@ -181,6 +187,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container->addToolBox(d->configurationToolBox);
     d->toolbox_container->addToolBox(d->layoutToolBox);
     d->toolbox_container->addToolBox(d->viewToolBox);
+    d->toolbox_container->addToolBox(d->diffusionToolBox);
     d->toolbox_container->addToolBox(d->registrationToolBox);
 
     // Setting up view container
