@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 18:24:26 2010 (+0100)
+ * Last-Updated: Fri Feb 19 18:41:41 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 563
+ *     Update #: 567
  */
 
 /* Commentary: 
@@ -121,13 +121,7 @@ public:
 
     QStackedWidget *stack;
   
-    // view containers hash
-
-    QHash<int, medViewerAreaStack *> view_stacks;
-
-    // status elements
-
-    QProgressBar *progress;
+    QHash<int, medViewerAreaStack *> view_stacks; // To be removed when the single/multi/custom stuff will disappear
 };
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
@@ -213,14 +207,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     navigator_container_layout->addWidget(d->navigator);
     navigator_container_layout->setAlignment(Qt::AlignHCenter);
 
-    // status elements
-
-    d->progress = new QProgressBar(this);
-    d->progress->setTextVisible(false);
-    d->progress->setMinimum(0);
-    d->progress->setMaximum(100);
-    d->progress->setValue(0);
-
     // Setting up layout
 
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -239,8 +225,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
 medViewerArea::~medViewerArea(void)
 {
-    delete d->toolbox_container;
-    delete d->stack;
     delete d;
 
     d = NULL;
@@ -248,16 +232,12 @@ medViewerArea::~medViewerArea(void)
 
 void medViewerArea::setup(QStatusBar *status)
 {
-    status->addWidget(d->progress);
 
-    d->progress->show();
 }
 
 void medViewerArea::setdw(QStatusBar *status)
 {
-    status->removeWidget(d->progress);
 
-    d->progress->hide();
 }
 
 void medViewerArea::setPatientIndex(int index)
