@@ -20,6 +20,8 @@
 #ifndef MEDREGISTRATIONWIDGET_H
 #define MEDREGISTRATIONWIDGET_H
 
+#include "medGuiExport.h"
+
 #include <QLabel>
 #include <QWidget>
 
@@ -29,7 +31,7 @@
 
 class medRegistrationWidgetItemPrivate;
 
-class medRegistrationWidgetItem : public QLabel
+class MEDGUI_EXPORT medRegistrationWidgetItem : public QLabel
 {
     Q_OBJECT
 
@@ -56,7 +58,7 @@ private:
 
 class medRegistrationWidgetPrivate;
 
-class medRegistrationWidget : public QWidget
+class MEDGUI_EXPORT medRegistrationWidget : public QWidget
 {
     Q_OBJECT
 

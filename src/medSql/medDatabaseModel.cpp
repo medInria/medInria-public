@@ -518,11 +518,13 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                 QVariant   seId = seQuery.value(0);
                 QVariant seSize = seQuery.value(2);
                 QVariant seName = seQuery.value(3);
+				QVariant seAge  = seQuery.value(6);
                 
                 QList<QVariant> seData;
                 seData << d->data;
                 seData[0] = seId;
                 seData[3] = seName;
+				seData[6] = seAge;
 
                 medDatabaseItem *seItem = new medDatabaseItem("series", d->attributes, seData, stItem);
                 

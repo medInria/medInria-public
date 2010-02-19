@@ -20,11 +20,13 @@
 #ifndef MEDDATABASEEXPORTER_H
 #define MEDDATABASEEXPORTER_H
 
+#include "medSqlExport.h"
+
 #include <QtCore>
 
 class medDatabaseExporterPrivate;
 
-class medDatabaseExporter : public QObject, public QRunnable
+class MEDSQL_EXPORT medDatabaseExporter : public QObject, public QRunnable
 {
     Q_OBJECT
 

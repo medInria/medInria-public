@@ -186,6 +186,14 @@ endif(WIN32)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" true)
 
+option(BUILD_EXTENSIONS "Build medular extensions" ON)
+if (BUILD_EXTENSIONS)
+  set(${PROJECT_NAME}_INCLUDE_PATH
+  ${${PROJECT_NAME}_INCLUDE_PATH}
+  ${CMAKE_SOURCE_DIR}/ext
+  )
+endif (BUILD_EXTENSIONS)
+
 ## #################################################################
 ## Build rules
 ## #################################################################
@@ -195,6 +203,9 @@ include_directories(${${PROJECT_NAME}_INCLUDE_PATH})
 add_subdirectory(src)
 add_subdirectory(app)
 add_subdirectory(doc)
+if (BUILD_EXTENSIONS)
+  add_subdirectory(ext)
+endif (BUILD_EXTENSIONS)
 
 ## #################################################################
 ## Configuration rules for the build tree
@@ -347,3 +358,35 @@ configure_file("${PROJECT_SOURCE_DIR}/cmake/${PROJECT_NAME}Uninstall.cmake.in"
 add_custom_target(uninstall
   "${CMAKE_COMMAND}" -P
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Uninstall.cmake")
+
+## #################################################################
+## Nighty builds
+## #################################################################
+
+enable_testing()
+
+## #################################################################
+## Dashboard settings
+## #################################################################
+
+mark_as_advanced(DART_ROOT)
+
+include(Dart)
+
+## #################################################################
+## Packaging settings
+## #################################################################
+
+set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_VENDOR "http://www.inria.fr/sophia/dream")
+set(CPACK_PACKAGE_CONTACT "Julien Wintz <jwintz@sophia.inria.fr>")
+# set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/README.txt)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_NAME})
+set(CPACK_PACKAGE_DESCRIPTION "")
+# set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.txt)
+
+set(CPACK_PACKAGE_VERSION_MAJOR ${${PROJECT_NAME}_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${${PROJECT_NAME}_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${${PROJECT_NAME}_VERSION_BUILD})
+
+include(CPack)

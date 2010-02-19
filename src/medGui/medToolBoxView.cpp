@@ -105,8 +105,8 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     d->view3dModeComboBox->addItem("MPR");
 
     d->view3dLODSlider = new QSlider (Qt::Horizontal, this);
-    d->view3dLODSlider->setRange (100, 1000);
-    d->view3dLODSlider->setValue (1000);
+    d->view3dLODSlider->setRange (0, 100);
+    d->view3dLODSlider->setValue (100);
 
     d->windowingPushButton = new QPushButton("", this);
     d->windowingPushButton->setIcon (QIcon (":/icons/wlww.tiff"));

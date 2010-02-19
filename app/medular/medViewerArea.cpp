@@ -162,7 +162,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
     connect(d->viewToolBox, SIGNAL(lutPresetChanged(QString)), this, SLOT(setupLUTPreset(QString)));
     connect(d->viewToolBox, SIGNAL(tdModeChanged(QString)), this, SLOT(setup3DMode(QString)));
-    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), this, SLOT(setup3DLOD(int)));
+    //connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), this, SLOT(setup3DLOD(int)));
     connect(d->viewToolBox, SIGNAL(windowingChanged(bool)), this, SLOT(setupWindowing(bool)));
     connect(d->viewToolBox, SIGNAL(zoomingChanged(bool)), this, SLOT(setupZooming(bool)));
     connect(d->viewToolBox, SIGNAL(slicingChanged(bool)), this, SLOT(setupSlicing(bool)));
@@ -189,7 +189,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container->addToolBox(d->viewToolBox);
     d->toolbox_container->addToolBox(d->diffusionToolBox);
     d->toolbox_container->addToolBox(d->registrationToolBox);
-
+    
     // Setting up view container
 
     QWidget *view_container = new QWidget(this);
@@ -358,6 +358,8 @@ void medViewerArea::onSeriesIndexChanged(int id)
         if (!view)
             return;
 
+	connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
+	
         view->setData(data);
         view->reset();
 
@@ -461,7 +463,6 @@ void medViewerArea::setupLUTPreset (QString table)
 
 void medViewerArea::setup3DLOD (int value)
 {
-  qDebug() << __func__;
 }
 
 void medViewerArea::setupWindowing (bool checked)
