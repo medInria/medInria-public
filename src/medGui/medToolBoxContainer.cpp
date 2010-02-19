@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:51:08 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Oct 26 22:01:07 2009 (+0100)
+ * Last-Updated: Fri Feb 19 18:25:16 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 16
  */
 
 /* Commentary: 
@@ -17,6 +17,7 @@
  * 
  */
 
+#include "medFlicker.h"
 #include "medToolBox.h"
 #include "medToolBoxContainer.h"
 
@@ -43,6 +44,9 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
     this->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     this->setWidget(d->container);
     this->setWidgetResizable(true);
+
+    medFlicker *flicker = new medFlicker(this);
+    flicker->activateOn(this);
 }
 
 medToolBoxContainer::~medToolBoxContainer(void)
