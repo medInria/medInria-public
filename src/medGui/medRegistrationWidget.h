@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jan 18 11:14:24 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Jan 18 11:16:23 2010 (+0100)
+ * Last-Updated: Fri Feb 19 17:41:04 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 8
  */
 
 /* Commentary: 
@@ -22,39 +22,7 @@
 
 #include "medGuiExport.h"
 
-#include <QLabel>
-#include <QWidget>
-
-// /////////////////////////////////////////////////////////////////
-// medRegistrationWidgetItem
-// /////////////////////////////////////////////////////////////////
-
-class medRegistrationWidgetItemPrivate;
-
-class MEDGUI_EXPORT medRegistrationWidgetItem : public QLabel
-{
-    Q_OBJECT
-
-public:
-     medRegistrationWidgetItem(QWidget *parent = 0);
-    ~medRegistrationWidgetItem(void);
-
-    QSize sizeHint(void) const;
-
-protected:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
-    void dragLeaveEvent(QDragLeaveEvent *event);
-    void dropEvent(QDropEvent *event);
-    void paintEvent(QPaintEvent *event);
-
-private:
-    medRegistrationWidgetItemPrivate *d;
-};
-
-// /////////////////////////////////////////////////////////////////
-// medRegistrationWidget
-// /////////////////////////////////////////////////////////////////
+#include <QtGui/QWidget>
 
 class medRegistrationWidgetPrivate;
 

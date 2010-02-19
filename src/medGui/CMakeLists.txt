@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Fri Feb 19 11:03:25 2010 (+0100)
+## Last-Updated: Fri Feb 19 17:43:45 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 101
+##     Update #: 105
 ######################################################################
 ## 
 ### Commentary: 
@@ -33,6 +33,7 @@ include(${dtk_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS
   medClutEditor.h
+  medDropSite.h
   medLayoutChooser.h
   medLoginWidget.h
   medProgressionStack.h
@@ -53,6 +54,7 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medClutEditor.h
+  medDropSite.h
   medLayoutChooser.h
   medLoginWidget.h
   medProgressionStack.h
@@ -72,6 +74,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_SOURCES
   medClutEditor.cpp
+  medDropSite.cpp
   medLayoutChooser.cpp
   medLoginWidget.cpp
   medProgressionStack.cpp

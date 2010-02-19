@@ -10,6 +10,33 @@ QTableView {
 }
 
 /**
+ * QListView
+ *
+ */
+
+QListView {
+    color: #CCCCCC;
+    background: #6b6b6b;
+    border: 1px solid darkgray;
+    padding: 0px 0px 0px 0px;
+    gridline-color: gray;
+
+    alternate-background-color: #606060;
+}
+
+/**
+ * QTextEdit
+ *
+ */
+
+QTextEdit {
+    color: #CCCCCC;
+    background: #6b6b6b;
+    border: 1px solid darkgray;
+    padding: 0px 0px 0px 0px;
+}
+
+/**
  * QCheckBox
  *
  */
@@ -799,11 +826,11 @@ QLineEdit#medDocumentationAreaAddressEdit {
 }
 
 /**
- * medRegistrationWidgetItem
+ * medDropSite
  *
  */
 
-medRegistrationWidgetItem {
+medDropSite {
     border: 1px solid #6b6b6b;
     border-radius: 4px;
     background-color: #2b2b2b;
