@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Feb  4 10:48:22 2010 (+0100)
+ * Last-Updated: Sat Feb 20 00:27:41 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 245
+ *     Update #: 249
  */
 
 /* Commentary: 
@@ -54,7 +54,6 @@ public:
     QTreeView *filesystem_view;
     QFileSystemModel *filesystem_model;
 
-    QProgressBar *progress;
     QStatusBar *status;
 
     medProgressionStack *progression_stack;
@@ -68,12 +67,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->view = new medDatabaseView(this);
     d->view->setModel(d->model);
-
-    d->progress = new QProgressBar(this);
-    d->progress->setTextVisible(false);
-    d->progress->setMinimum(0);
-    d->progress->setMaximum(100);
-    d->progress->setValue(0);
 
     connect(d->preview, SIGNAL(patientClicked(int)), d->view, SLOT(onPatientClicked(int)));
     connect(d->preview, SIGNAL(studyClicked(int)), d->view, SLOT(onStudyClicked(int)));
@@ -268,17 +261,11 @@ medBrowserArea::~medBrowserArea(void)
 void medBrowserArea::setup(QStatusBar *status)
 {
     d->status = status;
-    d->status->addWidget(d->progress);
-
-    d->progress->show();
 }
 
 void medBrowserArea::setdw(QStatusBar *status)
 {
     d->status = status;
-    d->status->removeWidget(d->progress);
-
-    d->progress->hide();
 }
 
 medDatabaseView *medBrowserArea::view(void)

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 08:29:35 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 23 09:48:42 2009 (+0200)
+ * Last-Updated: Fri Feb 19 23:39:28 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 144
+ *     Update #: 156
  */
 
 /* Commentary: 
@@ -93,26 +93,15 @@ void medWelcomeArea::setdw(QStatusBar *status)
 
 void medWelcomeArea::paintEvent(QPaintEvent *event)
 {
-    QFont font("Helvetica", 96);
-
-    QFontMetrics metrics(font);
-    int textWidth = metrics.width(qApp->applicationName());
-    int textHeight = metrics.height();
-
-    QRadialGradient gradient;
-    gradient.setCenter(event->rect().center());
-    gradient.setFocalPoint(event->rect().center());
-    gradient.setRadius(event->rect().height()*0.66);
-    gradient.setColorAt(0.0, QColor(0x49, 0x49, 0x49));
-    gradient.setColorAt(1.0, QColor(0x31, 0x31, 0x31));
+    QPixmap pixmap(":/pixmaps/medular-logo.png");
 
     QPainter painter;
     painter.begin(this);
     painter.setRenderHints(QPainter::Antialiasing);
-    painter.fillRect(event->rect(), gradient);
-    painter.setPen(QColor(0x36, 0x36, 0x36));
-    painter.setFont(font);
-    painter.drawText(event->rect().center().x()-textWidth/2, event->rect().center().y(), qApp->applicationName());
+    painter.fillRect(event->rect(), QColor(0x31, 0x31, 0x31));
+    painter.drawPixmap(
+        event->rect().width()/2-pixmap.width()/2,
+        event->rect().height()/2-pixmap.height()/2, pixmap);
     painter.end();
 
     QWidget::paintEvent(event);

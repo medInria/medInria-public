@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:38:39 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 09:38:40 2009 (+0100)
+ * Last-Updated: Fri Feb 19 22:52:33 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 3
  */
 
 /* Commentary: 
@@ -43,6 +43,8 @@ medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(
 
     d->view = new medDatabaseNavigatorView(this);
     d->view->setScene(d->scene);
+    d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);

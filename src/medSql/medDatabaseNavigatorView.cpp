@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:41:46 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Jan 18 11:12:43 2010 (+0100)
+ * Last-Updated: Fri Feb 19 22:54:47 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 7
  */
 
 /* Commentary: 
@@ -40,7 +40,7 @@ medDatabaseNavigatorView::medDatabaseNavigatorView(QWidget *parent) : QGraphicsV
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     }
 
-//    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     this->setFrameShape(QFrame::NoFrame);
 
     this->setStyleSheet("background: transparent;");

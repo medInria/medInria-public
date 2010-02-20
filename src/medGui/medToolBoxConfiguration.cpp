@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 10:54:25 2010 (+0100)
+ * Last-Updated: Fri Feb 19 22:57:44 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 10
+ *     Update #: 14
  */
 
 /* Commentary: 
@@ -30,9 +30,7 @@ medToolBoxConfiguration::medToolBoxConfiguration(QWidget *parent) : medToolBox(p
     QWidget *central = new QWidget(this);
 
     d->combo = new QComboBox(this);
-    d->combo->addItem("Default");
-    d->combo->addItem("Diffusion");
-    d->combo->addItem("Registration");
+    d->combo->setFocusPolicy(Qt::NoFocus);
 
     QHBoxLayout *layout = new QHBoxLayout(central);
     layout->addWidget(d->combo);
@@ -48,4 +46,9 @@ medToolBoxConfiguration::~medToolBoxConfiguration(void)
     delete d;
 
     d = NULL;
+}
+
+void medToolBoxConfiguration::addConfiguration(QString name)
+{
+    d->combo->addItem(name);
 }

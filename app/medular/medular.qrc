@@ -6,8 +6,8 @@
 	<file>icons/length.tiff</file>
 	<file>icons/wlww.tiff</file>
 	<file>icons/cropping.png</file>
-        <file>pixmaps/unknown.jpg</file>
         <file>medular.qss</file>
+        <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/frame.png</file>
         <file>pixmaps/scrollbar-horizontal-addline.png</file>
         <file>pixmaps/scrollbar-horizontal-background.png</file>
@@ -49,5 +49,6 @@
         <file>pixmaps/documentation_go_arrow.png</file>
         <file>pixmaps/documentation_next_arrow.png</file>
         <file>pixmaps/documentation_previous_arrow.png</file>
+        <file>pixmaps/medular-logo.png</file>
     </qresource>
 </RCC>

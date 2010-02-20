@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 09:49:04 2010 (+0100)
+ * Last-Updated: Fri Feb 19 22:57:27 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 32
+ *     Update #: 33
  */
 
 /* Commentary: 
@@ -32,6 +32,7 @@ medToolBoxPatient::medToolBoxPatient(QWidget *parent) : medToolBox(parent), d(ne
     QWidget *central = new QWidget(this);
 
     d->combo = new QComboBox(central);
+    d->combo->setFocusPolicy(Qt::NoFocus);
 
     QHBoxLayout *layout = new QHBoxLayout(central);
     layout->addWidget(d->combo);
