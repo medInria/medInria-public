@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jan 11 23:50:51 2010 (+0100)
+ * Last-Updated: Sun Feb 21 13:58:30 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 97
+ *     Update #: 99
  */
 
 /* Commentary: 
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
         mainwindow.show();
     } else if (application.arguments().contains("--immersive-space")) {
         mainwindow.show();
-        mainwindow.move(0, -15);
+        mainwindow.move(0, -30);
         mainwindow.resize(3528, 1200);
     } else {
         mainwindow.showFullScreen();
