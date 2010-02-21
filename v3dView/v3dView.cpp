@@ -201,8 +201,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     vtkRenderWindow* renwin = vtkRenderWindow::New();
     renwin->StereoCapableWindowOn();
     renwin->SetStereoTypeToCrystalEyes();
-    if(qApp->arguments().contains("--stereo"))
-        renwin->SetStereoRender(1);
+    // if(qApp->arguments().contains("--stereo"))
+    //     renwin->SetStereoRender(1);
     d->vtkWidget->SetRenderWindow(renwin);
 
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
@@ -1128,6 +1128,9 @@ void v3dView::onZSliderValueChanged (int value)
 
 void v3dView::onMenuAxialTriggered (void)
 {
+    if(qApp->arguments().contains("--stereo"))
+        d->vtkWidget->GetRenderWindow()->SetStereoRender(0);
+
     this->setProperty("Orientation", "Axial");
     d->view2DAxial->Render();
 }
@@ -1135,6 +1138,9 @@ void v3dView::onMenuAxialTriggered (void)
 
 void v3dView::onMenuCoronalTriggered (void)
 {
+    if(qApp->arguments().contains("--stereo"))
+        d->vtkWidget->GetRenderWindow()->SetStereoRender(0);
+
     this->setProperty("Orientation", "Coronal");
     d->view2DCoronal->Render();
 }
@@ -1142,19 +1148,28 @@ void v3dView::onMenuCoronalTriggered (void)
 
 void v3dView::onMenuSagittalTriggered (void)
 {
+    if(qApp->arguments().contains("--stereo"))
+        d->vtkWidget->GetRenderWindow()->SetStereoRender(0);
+
     this->setProperty("Orientation", "Sagittal");
     d->view2DSagittal->Render();
 }
 
 void v3dView::onMenu3DVRTriggered (void)
 {
+    if(qApp->arguments().contains("--stereo"))
+        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+
     this->setProperty ("Orientation", "3D");
     this->setProperty ("Mode", "VR");    
     d->view3D->Render();
 }
 
 void v3dView::onMenu3DMPRTriggered (void)
-{    
+{
+    if(qApp->arguments().contains("--stereo"))
+        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+
     this->setProperty("Orientation", "3D");
     this->setProperty("Mode", "MPR");
     d->view3D->Render();
@@ -1162,6 +1177,9 @@ void v3dView::onMenu3DMPRTriggered (void)
 
 void v3dView::onMenu3DMaxIPTriggered (void)
 {
+    if(qApp->arguments().contains("--stereo"))
+        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+
     this->setProperty("Orientation", "3D");
     this->setProperty("Mode", "MIP - Maximum");
     d->view3D->Render();
@@ -1169,6 +1187,9 @@ void v3dView::onMenu3DMaxIPTriggered (void)
 
 void v3dView::onMenu3DMinIPTriggered (void)
 {
+    if(qApp->arguments().contains("--stereo"))
+        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+
     this->setProperty("Orientation", "3D");
     this->setProperty("Mode", "MIP - Minimum");
     d->view3D->Render();
