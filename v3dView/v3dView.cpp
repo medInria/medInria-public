@@ -201,7 +201,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     vtkRenderWindow* renwin = vtkRenderWindow::New();
     renwin->StereoCapableWindowOn();
     renwin->SetStereoTypeToCrystalEyes();
-    //renwin->SetStereoRender(1);
+    if(qApp->arguments().contains("--stereo"))
+        renwin->SetStereoRender(1);
     d->vtkWidget->SetRenderWindow(renwin);
 
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
