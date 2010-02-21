@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:39:28 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 09:39:28 2009 (+0100)
+ * Last-Updated: Sun Feb 21 13:37:12 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 5
  */
 
 /* Commentary: 
@@ -143,6 +143,8 @@ protected slots:
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void  mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     medDatabaseNavigatorItemPrivate *d;

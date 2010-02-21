@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:39:35 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 09:39:36 2009 (+0100)
+ * Last-Updated: Sun Feb 21 13:39:16 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 10
  */
 
 /* Commentary: 
@@ -348,4 +348,21 @@ void medDatabaseNavigatorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 //    d->item_label_fading_animation->setEasingCurve(QEasingCurve::OutQuart);
 
     d->fading_animation->start();
+}
+
+void medDatabaseNavigatorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    Q_UNUSED(event);
+}
+
+void medDatabaseNavigatorItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QMimeData *data = new QMimeData;
+    data->setImageData(this->pixmap());
+    
+    QDrag *drag = new QDrag(this->scene()->views().first());
+    drag->setMimeData(data);
+    drag->setPixmap(this->pixmap());
+    drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
+    drag->start();
 }
