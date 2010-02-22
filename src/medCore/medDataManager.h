@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 08:34:45 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Dec 21 08:34:49 2009 (+0100)
+ * Last-Updated: Mon Feb 22 20:20:25 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 2
+ *     Update #: 3
  */
 
 /* Commentary: 
@@ -23,7 +23,6 @@
 #include <QtCore/QObject>
 
 #include "medCoreExport.h"
-
 #include "medDataIndex.h"
 
 class dtkAbstractData;

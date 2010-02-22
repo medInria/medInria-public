@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 17:54:48 2010 (+0100)
+ * Last-Updated: Mon Feb 22 21:35:18 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 102
+ *     Update #: 105
  */
 
 /* Commentary: 
@@ -16,6 +16,8 @@
 /* Change log:
  * 
  */
+
+#include <medCore/medPluginManager.h>
 
 #include "medDropSite.h"
 #include "medToolBoxDiffusion.h"
@@ -119,6 +121,9 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     QLabel *tractographyMethodLabel = new QLabel("Use:", tractographyPage);
 
     QComboBox *tractographyMethodCombo = new QComboBox(tractographyPage);
+
+    foreach(QString handler, medPluginManager::instance()->handlers("tractography"))
+        tractographyMethodCombo->addItem(handler);
 
     QHBoxLayout *tractographyMethodLayout = new QHBoxLayout;
     tractographyMethodLayout->addWidget(tractographyMethodLabel);
