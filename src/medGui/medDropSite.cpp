@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 17:41:43 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 17:44:21 2010 (+0100)
+ * Last-Updated: Mon Feb 22 21:15:03 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 18
  */
 
 /* Commentary: 
@@ -17,6 +17,10 @@
  * 
  */
 
+#include <dtkCore/dtkGlobal.h>
+
+#include <medCore/medDataIndex.h>
+
 #include "medDropSite.h"
 
 #include <QtGui>
@@ -24,6 +28,7 @@
 class medDropSitePrivate
 {
 public:
+    medDataIndex index;
 };
 
 medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePrivate)
@@ -44,6 +49,11 @@ medDropSite::~medDropSite(void)
 QSize medDropSite::sizeHint(void) const
 {
     return QSize(128, 128);
+}
+
+medDataIndex medDropSite::index(void) const
+{
+    return d->index;
 }
 
 void medDropSite::dragEnterEvent(QDragEnterEvent *event)
@@ -71,6 +81,15 @@ void medDropSite::dropEvent(QDropEvent *event)
 
     if (mimeData->hasImage()) {
         setPixmap(qvariant_cast<QPixmap>(mimeData->imageData()));
+    }
+
+    if (mimeData->hasFormat("med/index")) {
+        QStringList ids = QString(mimeData->data("med/index")).split(":");
+        int patientId = ids.at(0).toInt();
+        int   studyId = ids.at(1).toInt();
+        int  seriesId = ids.at(2).toInt();
+        int   imageId = ids.at(3).toInt();
+        d->index = medDataIndex(patientId, studyId, seriesId, imageId);
     }
 
     setBackgroundRole(QPalette::Base);
