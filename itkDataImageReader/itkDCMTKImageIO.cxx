@@ -626,7 +626,7 @@ namespace itk
     {
       if ( m_LocationToFilenamesMap.count(*it)!=sizeT )
       {
-	itkExceptionMacro (<< "Inconsistency in dicom volumes");
+	itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
       }
       ++it;
     }
@@ -657,7 +657,6 @@ namespace itk
 
 
 
-    
     
     /**
        Determine the slice ordering. Depending on the sliceLocation and the imagePatientPosition,
