@@ -64,6 +64,7 @@ bool vtkDataFibers::write(QString file)
 	vtkPolyDataWriter* writer = vtkPolyDataWriter::New();
 	writer->SetFileName( file.toAscii().constData() );
 	writer->SetInput( d->data );
+	writer->SetFileTypeToBinary();
 	writer->Update();
 	return true;
 }
