@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sun Feb 21 13:58:30 2010 (+0100)
+ * Last-Updated: Mon Feb 22 21:10:30 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 99
+ *     Update #: 102
  */
 
 /* Commentary: 
@@ -29,8 +29,11 @@
 #include <dtkGui/dtkInterpreter.h>
 
 #include <medCore/medPluginManager.h>
+#include <medCore/medDataIndex.h>
 
+// /////////////////////////////////////////////////////////////////
 // Helper functions
+// /////////////////////////////////////////////////////////////////
 
 QString readFile(const QString& path)
 {
@@ -45,7 +48,9 @@ QString readFile(const QString& path)
     return contents;
 }
 
+// /////////////////////////////////////////////////////////////////
 // Helper classes
+// /////////////////////////////////////////////////////////////////
 
 class medStyle : public QPlastiqueStyle
 {
@@ -62,10 +67,16 @@ public:
     }
 };
 
+// /////////////////////////////////////////////////////////////////
 // main
+// /////////////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[])
 {
+    // meta types registration
+
+    qRegisterMetaType<medDataIndex>("medDataIndex");
+
     QApplication application(argc, argv);
     application.setApplicationName("medular");
     application.setApplicationVersion("0.0.1");
@@ -128,8 +139,8 @@ int main(int argc, char *argv[])
     
     // Uninitialize managers
 
-    //dtkPluginManager::instance()->uninitialize();
-    //dtkScriptManager::instance()->uninitialize();
+    medPluginManager::instance()->uninitialize();
+    dtkScriptManager::instance()->uninitialize();
     
     return status;
 }

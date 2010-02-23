@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:39:35 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sun Feb 21 13:39:16 2010 (+0100)
+ * Last-Updated: Mon Feb 22 21:09:44 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 10
+ *     Update #: 18
  */
 
 /* Commentary: 
@@ -357,7 +357,10 @@ void medDatabaseNavigatorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void medDatabaseNavigatorItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    QString index = QString("%1:%2:%3:%4").arg(d->patientId).arg(d->studyId).arg(d->seriesId).arg(d->imageId);
+
     QMimeData *data = new QMimeData;
+    data->setData("med/index", index.toLatin1());
     data->setImageData(this->pixmap());
     
     QDrag *drag = new QDrag(this->scene()->views().first());

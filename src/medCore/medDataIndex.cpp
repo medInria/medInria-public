@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 09:29:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Dec 21 09:29:22 2009 (+0100)
+ * Last-Updated: Mon Feb 22 21:06:14 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 15
  */
 
 /* Commentary: 
@@ -34,6 +34,14 @@ medDataIndex::medDataIndex(int patientId, int studyId, int seriesId, int imageId
     d->studyId = studyId;
     d->seriesId = seriesId;
     d->imageId = imageId;
+}
+
+medDataIndex::medDataIndex(const medDataIndex& index) : d(new medDataIndexPrivate)
+{
+    d->patientId = index.d->patientId;
+    d->studyId = index.d->studyId;
+    d->seriesId = index.d->seriesId;
+    d->imageId = index.d->imageId;
 }
 
 medDataIndex::~medDataIndex(void)
@@ -86,6 +94,14 @@ int medDataIndex::seriesId(void) const
 int medDataIndex::imageId(void) const
 {
     return d->imageId;
+}
+
+medDataIndex& medDataIndex::operator=(const medDataIndex& index)
+{
+    d->patientId = index.d->patientId;
+    d->studyId = index.d->studyId;
+    d->seriesId = index.d->seriesId;
+    d->imageId = index.d->imageId;
 }
 
 // /////////////////////////////////////////////////////////////////
