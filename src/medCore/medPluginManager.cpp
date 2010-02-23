@@ -79,7 +79,7 @@ void medPluginManager::onPluginLoaded(const QString& name)
 
 medPluginManager::medPluginManager(void) : QObject(), d(new medPluginManagerPrivate)
 {
-    connect(medPluginManager::instance(), SIGNAL(loaded(const QString&)), this, SLOT(onPluginLoaded(const QString&)));
+    connect(dtkPluginManager::instance(), SIGNAL(loaded(const QString&)), this, SLOT(onPluginLoaded(const QString&)));
 }
 
 medPluginManager::~medPluginManager(void)
