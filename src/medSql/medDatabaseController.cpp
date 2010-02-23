@@ -483,7 +483,7 @@ void medDatabaseController::import(const QString& file)
                 query.bindValue(":thumbnail", thumbPaths[ thumbPaths.count()/2 ] );
             else
                 query.bindValue(":thumbnail", "");
-			query.bindValue(":age", s_age),
+	    query.bindValue(":age", s_age),
             query.exec(); id = query.lastInsertId();
 
             //seriesPath = studyPath + "/" + QString().setNum (id.toInt()) + ".mhd";
@@ -651,17 +651,17 @@ void medDatabaseController::createSeriesTable(void)
             " name        TEXT,"
             " path        TEXT,"
             " thumbnail   TEXT,"
-			" age INTEGER,"
-			" birthdate TEXT,"
-			" gender TEXT,"
-			" description TEXT,"
-			" modality TEXT,"
-			" acquisitiondate TEXT,"
-			" importationdate TEXT,"
-			" referee TEXT,"
-			" perfomer TEXT,"
-			" institution TEXT,"
-			" report TEXT"
+	    " age INTEGER,"
+	    " birthdate TEXT,"
+	    " gender TEXT,"
+	    " description TEXT,"
+	    " modality TEXT,"
+	    " acquisitiondate TEXT,"
+	    " importationdate TEXT,"
+	    " referee TEXT,"
+	    " perfomer TEXT,"
+	    " institution TEXT,"
+	    " report TEXT"
             ");"
             );
 }

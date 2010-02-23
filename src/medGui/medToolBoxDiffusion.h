@@ -22,6 +22,7 @@
 
 #include "medToolBox.h"
 
+class dtkAbstractView;
 class medToolBoxDiffusionPrivate;
 
 class MEDGUI_EXPORT medToolBoxDiffusion : public medToolBox
@@ -32,6 +33,12 @@ public:
      medToolBoxDiffusion(QWidget *parent = 0);
     ~medToolBoxDiffusion(void);
 
+    void update(dtkAbstractView *view);
+    
+public slots:
+    void run (void);
+    void printProgress (int value);
+    
 private:
     medToolBoxDiffusionPrivate *d;
 };

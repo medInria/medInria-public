@@ -360,6 +360,7 @@ void medViewerArea::onSeriesIndexChanged(int id)
     if(!index.isValid())
         return;
 
+  
     dtkAbstractData *data = medDatabaseController::instance()->read(index);
 
     if (data)
@@ -368,6 +369,7 @@ void medViewerArea::onSeriesIndexChanged(int id)
     if (data) {
 
         dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView");
+	view->enableInteractor ("v3dViewFiberInteractor");
 
         if (!view)
             return;

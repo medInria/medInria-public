@@ -17,14 +17,10 @@ namespace itk
   extern template class MEDITK_EXPORT Vector<double, 2>;
   extern template class MEDITK_EXPORT Vector<double, 3>;
   extern template class MEDITK_EXPORT Vector<unsigned char, 3>;
-  extern template class MEDITK_EXPORT Vector<float,  6>;
-  extern template class MEDITK_EXPORT Vector<double, 6>;
 
   extern template class MEDITK_EXPORT FixedArray<double, 2>;
   extern template class MEDITK_EXPORT FixedArray<double, 3>;
   extern template class MEDITK_EXPORT FixedArray<unsigned char, 3>;
-  extern template class MEDITK_EXPORT FixedArray<float,  6>;
-  extern template class MEDITK_EXPORT FixedArray<double, 6>;
 
   extern template class MEDITK_EXPORT Point<double, 2>;
   extern template class MEDITK_EXPORT Point<double, 3>;
@@ -63,18 +59,12 @@ namespace itk
   extern template class MEDITK_EXPORT Image <RGBPixel<unsigned char> , 4>;
   extern template class MEDITK_EXPORT Image <Vector<unsigned char, 3> , 4>;
 
-  extern template class MEDITK_EXPORT Image <Vector<float, 6> ,  3>;
-  extern template class MEDITK_EXPORT Image <Vector<double, 6> , 3>;
-
   extern template class MEDITK_EXPORT OrientedImage <short, 3>;
   extern template class MEDITK_EXPORT OrientedImage <short, 4>;
 
   extern template class MEDITK_EXPORT ImageFileWriter< Image <Vector<unsigned char, 3> , 3> >;
   extern template class MEDITK_EXPORT ImageFileWriter< Image <RGBPixel<unsigned char> , 3> >;
 
-  extern template class MEDITK_EXPORT ImageFileWriter< Image <Vector<double, 6> , 3> >;
-  extern template class MEDITK_EXPORT ImageFileWriter< Image <Vector<float, 6> , 3> >;
-	
   extern template class MEDITK_EXPORT ImageFileWriter< Image <Vector<unsigned char, 3> , 4> >;
   extern template class MEDITK_EXPORT ImageFileWriter< Image <RGBPixel<unsigned char> , 4> >;
 }

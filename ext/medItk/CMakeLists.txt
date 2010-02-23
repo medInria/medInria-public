@@ -69,6 +69,18 @@ mark_as_advanced(CMAKE_OSX_ARCHITECTURES)
 mark_as_advanced(CMAKE_OSX_SYSROOT)
 endif(APPLE)
 
+set(QT_USE_QTOPENGL  TRUE)
+set(QT_USE_QTXML     TRUE)
+set(QT_USE_QTSQL     TRUE)
+set(QT_USE_QTHELP    TRUE)
+set(QT_USE_QTNETWORK TRUE)
+set(QT_USE_QTWEBKIT  TRUE)
+
+find_package(Qt4 REQUIRED)
+include(${QT_USE_FILE})
+
+mark_as_advanced(QT_QMAKE_EXECUTABLE)
+
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
@@ -81,7 +93,8 @@ include(${ITK_USE_FILE})
 ## Input
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS
+set(${PROJECT_NAME}_HEADERS_MOC
+medITKProcessObjectObserver.h
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -92,13 +105,20 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
+add_definitions(${QT_DEFINITIONS})
+add_definitions(-DQT_PLUGIN)
+add_definitions(-DQT_SHARED)
+add_definitions(-DQT_NO_DEBUG)
+
+qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+
 add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES} 
-  ${${PROJECT_NAME}_HEADERS}
 )
 
 target_link_libraries(${PROJECT_NAME}
-  ${ITK_LIBRARIES}
+  ${QT_LIBRARIES}
 )
 
 # if(APPLE)

@@ -22,13 +22,27 @@
 #include "medDropSite.h"
 #include "medToolBoxDiffusion.h"
 
+#include "dtkCore/dtkAbstractData.h"
+#include "dtkCore/dtkAbstractDataFactory.h"
+#include "dtkCore/dtkAbstractView.h"
+#include "dtkCore/dtkAbstractProcess.h"
+#include "dtkCore/dtkAbstractProcessFactory.h"
+#include <medSql/medDatabaseController.h>
+#include <medCore/medDataManager.h>
+
 class medToolBoxDiffusionPrivate
 {
 public:
+  medDropSite *tractographyDropSite;
+  
+  QList<dtkAbstractProcess *> methods;
+  dtkAbstractProcess *activeMethod;
 };
 
 medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
-{    
+{
+    d->activeMethod = 0;
+  
     // /////////////////////////////////////////////////////////////////
     // Display page
     // /////////////////////////////////////////////////////////////////
@@ -133,16 +147,16 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     // tractographyMethodEdit->setReadOnly(true);
     // tractographyMethodEdit->setMaximumHeight(100);
 
-    medDropSite *tractographyDropSite = new medDropSite(tractographyPage);
+    d->tractographyDropSite = new medDropSite(tractographyPage);
 
     QPushButton *tractographyRunButton = new QPushButton("Run", tractographyPage);
 
     QVBoxLayout *tractographyLayout = new QVBoxLayout(tractographyPage);
     tractographyLayout->addLayout(tractographyMethodLayout);
     // tractographyLayout->addWidget(tractographyMethodEdit);
-    tractographyLayout->addWidget(tractographyDropSite);
+    tractographyLayout->addWidget(d->tractographyDropSite);
     tractographyLayout->addWidget(tractographyRunButton);
-    tractographyLayout->setAlignment(tractographyDropSite, Qt::AlignHCenter);
+    tractographyLayout->setAlignment(d->tractographyDropSite, Qt::AlignHCenter);
 
     // /////////////////////////////////////////////////////////////////
     // Setup
@@ -153,6 +167,19 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     tab->addTab(bundlingPage, "Bundling");
     tab->addTab(tractographyPage, "Tractography");
 
+
+    connect (tractographyRunButton, SIGNAL (clicked()), this, SLOT (run()) );
+    
+
+    if (dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create ("itkProcessTensorDTITrackPipeline")) {
+      tractographyMethodCombo->addItem( proc->description() );
+      d->methods.append ( proc );
+      d->activeMethod = proc;
+      connect (d->activeMethod, SIGNAL (progressed (int)), this,  SLOT (printProgress (int)));
+    }
+    
+    
+
     this->setTitle("Diffusion");
     this->setWidget(tab);
 }
@@ -162,4 +189,123 @@ medToolBoxDiffusion::~medToolBoxDiffusion(void)
     delete d;
 
     d = NULL;
+}
+
+
+void medToolBoxDiffusion::run (void)
+{
+
+  medDataIndex index = d->tractographyDropSite->index();
+  
+  if (!index.isValid())
+      return;
+  
+  if (d->activeMethod) {
+    
+    dtkAbstractData *data = medDataManager::instance()->data (index);
+    
+    if (!data) {
+        data = medDatabaseController::instance()->read(index);
+	if (data)
+	    medDataManager::instance()->insert(index, data);
+    }
+    
+    if (data) {
+
+        if (!data->hasMetaData ("DiffusionGradientList")) {
+	  QMessageBox msgBox;
+	  msgBox.setText("No diffusion gradient attached to the image.");
+	  msgBox.setInformativeText("Do you want to specify them manually?");
+	  msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+	  msgBox.setDefaultButton(QMessageBox::Ok);
+	  int ret = msgBox.exec();
+
+	  switch (ret) {
+	      case QMessageBox::Ok:
+		{
+		  QString fileName = QFileDialog::getOpenFileName(this,
+								  tr("Gradient File"), "", tr("Gradient files (*.*)"));
+
+		  if (fileName.isEmpty())
+		    return;
+
+		  dtkAbstractData *gradients=dtkAbstractDataFactory::instance()->create ("itkDataDiffusionGradientList");
+		  if (!gradients){
+		    // error
+		    return;
+		  }
+		  if (!gradients->read(fileName)) {
+		    // error
+		    return;
+		  }
+
+		  double *grad = (double *)(gradients->data(0));
+		  int i=0;
+		  QStringList gradientList;
+		  while (double *grad=(double *)(gradients->data(i))){
+		    QString s_gx, s_gy, s_gz;
+		    s_gx = QString::number (grad[0], 'g', 10);
+		    s_gy = QString::number (grad[1], 'g', 10);
+		    s_gz = QString::number (grad[2], 'g', 10);
+		    gradientList.append (s_gx);
+		    gradientList.append (s_gy);
+		    gradientList.append (s_gz);
+		    i++;
+		  }
+
+		  data->addMetaData ("DiffusionGradientList", gradientList);
+		  
+		}
+		
+		break;
+	      case QMessageBox::Cancel:
+		return;
+	      default:
+		return;
+	  }
+        }
+	
+        d->activeMethod->setInput (data);
+	d->activeMethod->run();
+    }
+  }
+}
+
+
+void medToolBoxDiffusion::update (dtkAbstractView *view)
+{
+  if (!view)
+    return;
+  
+  dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor");
+  if (interactor)
+    qDebug() << "Yiarghhh!";
+
+  if (d->activeMethod) {
+
+    medDataIndex index (1,1,1,-1);
+    if(!index.isValid())
+        return;
+
+    dtkAbstractData *data = medDataManager::instance()->data (index);
+    if (data)
+      qDebug() << "no need to read!";
+    
+    if (!data) {
+        data = medDatabaseController::instance()->read(index);
+	if (data)
+	  medDataManager::instance()->insert(index, data);
+    }
+    
+    if (data) {        
+        d->activeMethod->setInput (data);
+        qDebug() << "sboooon!";
+    }
+  }
+}
+
+
+void medToolBoxDiffusion::printProgress (int value)
+{
+  qDebug() << value;
 }

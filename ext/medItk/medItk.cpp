@@ -20,8 +20,6 @@ namespace itk
 {
   typedef Vector<unsigned char, 3> VectorUC3;
   typedef RGBPixel<unsigned char>  RGBUC;
-  typedef Vector<float, 6> VectorF6;
-  typedef Vector<double, 6> VectorD6;
 }
 
 
@@ -36,16 +34,9 @@ namespace itk
 
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Vector,(unsigned char,3),UC3)
 
-  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Vector,(float,6),F6)
-  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, FixedArray,(float,6),F6)
-
-  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Vector,(double,6),D6)
-  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, FixedArray,(double,6),D6)
   
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Point,(double,2),D2)
-
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Point,(double,3),D3)
-
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Point,(double,4),D4)
 
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, RGBPixel,(unsigned char),UC)
@@ -65,8 +56,6 @@ namespace itk
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Image,(unsigned char, 3),UC3)
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Image,(RGBUC,3),RGBUC3)
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Image,(VectorUC3,3),VECTORUC3)
-  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Image,(VectorF6,3),VECTORF6)
-  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Image,(VectorD6,3),VECTORD6)
 
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Image,(double, 4),D4)
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Image,(float, 4),F4)
@@ -93,8 +82,6 @@ namespace itk
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, ImportImageContainer,(unsigned long, unsigned char),UC)
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, ImportImageContainer,(unsigned long, RGBUC),RGBUC)
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, ImportImageContainer,(unsigned long, VectorUC3),VectorUC3)
-  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, ImportImageContainer,(unsigned long, VectorF6),VectorF6)
-  ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, ImportImageContainer,(unsigned long, VectorD6),VectorD6)
 
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Matrix,(double, 3, 3),D33)
   ITK_EXPORT_TEMPLATE(MEDITK_EXPORT, Matrix,(double, 4, 4),D44)
@@ -123,7 +110,4 @@ namespace itk
 	
   template class MEDITK_EXPORT ImageFileWriter< Image <Vector<unsigned char, 3> , 4> >;
   template class MEDITK_EXPORT ImageFileWriter< Image <RGBPixel<unsigned char> , 4> >;
-
-  template class MEDITK_EXPORT ImageFileWriter< Image <Vector<double, 6> , 3> >;
-  template class MEDITK_EXPORT ImageFileWriter< Image <Vector<float, 6> , 3> >;
 }
