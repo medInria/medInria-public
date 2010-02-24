@@ -37,7 +37,13 @@ public:
     
 public slots:
     void run (void);
-    void printProgress (int value);
+
+    void onColorModeChanged      (int index);
+    void onGPUActivated          (int value);
+    void onLinesRenderingModeSelected   (bool value);
+    void onRibbonsRenderingModeSelected (bool value);
+    void onTubesRenderingModeSelected   (bool value);
+    
     
 private:
     medToolBoxDiffusionPrivate *d;

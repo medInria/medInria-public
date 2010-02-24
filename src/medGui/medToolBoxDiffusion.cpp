@@ -25,23 +25,39 @@
 #include "dtkCore/dtkAbstractData.h"
 #include "dtkCore/dtkAbstractDataFactory.h"
 #include "dtkCore/dtkAbstractView.h"
+#include "dtkCore/dtkAbstractViewInteractor.h"
 #include "dtkCore/dtkAbstractProcess.h"
 #include "dtkCore/dtkAbstractProcessFactory.h"
 #include <medSql/medDatabaseController.h>
 #include <medCore/medDataManager.h>
 
+#include <medGui/medProgressionStack.h>
+
 class medToolBoxDiffusionPrivate
 {
 public:
-  medDropSite *tractographyDropSite;
+  medDropSite         *tractographyDropSite;
+  medProgressionStack *progression_stack;
+
+  QComboBox *colorCombo;
+  QCheckBox *displayCheckBox;
+  QRadioButton *displayRadioPolylines;
+  QRadioButton *displayRadioRibbons;
+  QRadioButton *displayRadioTubes;
+  QSlider      *radiusSlider;
   
   QList<dtkAbstractProcess *> methods;
-  dtkAbstractProcess *activeMethod;
+  dtkAbstractProcess         *activeMethod;
+
+  dtkAbstractView *view;
+  
+  
 };
 
 medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
 {
     d->activeMethod = 0;
+    d->view = 0;
   
     // /////////////////////////////////////////////////////////////////
     // Display page
@@ -51,48 +67,48 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     QLabel *colorLabel = new QLabel("Color fibers by:", displayPage);
 
-    QComboBox *colorCombo = new QComboBox(displayPage);
-    colorCombo->addItem("Local orientation");
-    colorCombo->addItem("Global orientation");
-    colorCombo->addItem("Fractional anisotropy");
+    d->colorCombo = new QComboBox(displayPage);
+    d->colorCombo->addItem("Local orientation");
+    d->colorCombo->addItem("Global orientation");
+    d->colorCombo->addItem("Fractional anisotropy");
 
     QHBoxLayout *colorLayout = new QHBoxLayout;
     colorLayout->addWidget(colorLabel);
-    colorLayout->addWidget(colorCombo);
+    colorLayout->addWidget(d->colorCombo);
 
-    QCheckBox *displayCheckBox = new QCheckBox("Use hardware acceleration", displayPage);
+    d->displayCheckBox = new QCheckBox("Use hardware acceleration", displayPage);
 
-    QRadioButton *displayRadioPolylines = new QRadioButton("Display fibers as polylines", displayPage);
-    QRadioButton *displayRadioRibbons = new QRadioButton("Display fibers as ribbons", displayPage);
-    QRadioButton *displayRadioTubes = new QRadioButton("Display fibers as tubes", displayPage);
+    d->displayRadioPolylines = new QRadioButton("Display fibers as polylines", displayPage);
+    d->displayRadioRibbons = new QRadioButton("Display fibers as ribbons", displayPage);
+    d->displayRadioTubes = new QRadioButton("Display fibers as tubes", displayPage);
 
     QButtonGroup *displayRadioGroup = new QButtonGroup(this);
-    displayRadioGroup->addButton(displayRadioPolylines);
-    displayRadioGroup->addButton(displayRadioRibbons);
-    displayRadioGroup->addButton(displayRadioTubes);
+    displayRadioGroup->addButton(d->displayRadioPolylines);
+    displayRadioGroup->addButton(d->displayRadioRibbons);
+    displayRadioGroup->addButton(d->displayRadioTubes);
     displayRadioGroup->setExclusive(true);
 
     QVBoxLayout *displayGroupLayout = new QVBoxLayout;
-    displayGroupLayout->addWidget(displayRadioPolylines);
-    displayGroupLayout->addWidget(displayRadioRibbons);
-    displayGroupLayout->addWidget(displayRadioTubes);
+    displayGroupLayout->addWidget(d->displayRadioPolylines);
+    displayGroupLayout->addWidget(d->displayRadioRibbons);
+    displayGroupLayout->addWidget(d->displayRadioTubes);
     displayGroupLayout->addStretch(1);
 
-    displayRadioPolylines->setChecked(true);
+    d->displayRadioPolylines->setChecked(true);
 
     QLabel *radiusLabel = new QLabel("Fibers radius:", displayPage);
 
-    QSlider *radiusSlider = new QSlider(Qt::Horizontal, displayPage);
-    radiusSlider->setMinimum(0);
-    radiusSlider->setMaximum(100);
+    d->radiusSlider = new QSlider(Qt::Horizontal, displayPage);
+    d->radiusSlider->setMinimum(0);
+    d->radiusSlider->setMaximum(100);
 
     QHBoxLayout *radiusLayout = new QHBoxLayout;
     radiusLayout->addWidget(radiusLabel);
-    radiusLayout->addWidget(radiusSlider);
+    radiusLayout->addWidget(d->radiusSlider);
 
     QVBoxLayout *displayLayout = new QVBoxLayout(displayPage);
     displayLayout->addLayout(colorLayout);
-    displayLayout->addWidget(displayCheckBox);
+    displayLayout->addWidget(d->displayCheckBox);
     displayLayout->addLayout(displayGroupLayout);
     displayLayout->addLayout(radiusLayout);
 
@@ -139,10 +155,16 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     foreach(QString handler, medPluginManager::instance()->handlers("tractography"))
         tractographyMethodCombo->addItem(handler);
 
+    d->progression_stack = new medProgressionStack(tractographyPage);
+    QLabel *progressLabel = new QLabel("Progress:", tractographyPage);
+    QHBoxLayout *progressStackLayout = new QHBoxLayout;
+    progressStackLayout->addWidget(progressLabel);
+    progressStackLayout->addWidget(d->progression_stack);
+    
     QHBoxLayout *tractographyMethodLayout = new QHBoxLayout;
     tractographyMethodLayout->addWidget(tractographyMethodLabel);
     tractographyMethodLayout->addWidget(tractographyMethodCombo);
-
+    
     // QTextEdit *tractographyMethodEdit = new QTextEdit(tractographyPage);
     // tractographyMethodEdit->setReadOnly(true);
     // tractographyMethodEdit->setMaximumHeight(100);
@@ -156,6 +178,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     // tractographyLayout->addWidget(tractographyMethodEdit);
     tractographyLayout->addWidget(d->tractographyDropSite);
     tractographyLayout->addWidget(tractographyRunButton);
+    tractographyLayout->addLayout(progressStackLayout);
     tractographyLayout->setAlignment(d->tractographyDropSite, Qt::AlignHCenter);
 
     // /////////////////////////////////////////////////////////////////
@@ -165,20 +188,22 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     medToolBoxTab *tab = new medToolBoxTab(this);
     tab->addTab(displayPage, "Display");
     tab->addTab(bundlingPage, "Bundling");
-    tab->addTab(tractographyPage, "Tractography");
-
-
-    connect (tractographyRunButton, SIGNAL (clicked()), this, SLOT (run()) );
-    
+    tab->addTab(tractographyPage, "Tractography"); 
 
     if (dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create ("itkProcessTensorDTITrackPipeline")) {
       tractographyMethodCombo->addItem( proc->description() );
       d->methods.append ( proc );
       d->activeMethod = proc;
-      connect (d->activeMethod, SIGNAL (progressed (int)), this,  SLOT (printProgress (int)));
+      connect (d->activeMethod, SIGNAL (progressed (int)), d->progression_stack,  SLOT (setProgress (int)));
     }
     
-    
+    connect (tractographyRunButton,    SIGNAL (clicked()),               this, SLOT (run()) );
+    connect (d->colorCombo,            SIGNAL(currentIndexChanged(int)), this, SLOT (onColorModeChanged (int)));
+    connect (d->displayCheckBox,       SIGNAL(stateChanged(int)),        this, SLOT (onGPUActivated (int)));
+    connect (d->displayRadioPolylines, SIGNAL(toggled(bool)),            this, SLOT (onLinesRenderingModeSelected (bool)));
+    connect (d->displayRadioRibbons,   SIGNAL(toggled(bool)),            this, SLOT (onRibbonsRenderingModeSelected (bool)));
+    connect (d->displayRadioTubes,     SIGNAL(toggled(bool)),            this, SLOT (onTubesRenderingModeSelected (bool)));
+
 
     this->setTitle("Diffusion");
     this->setWidget(tab);
@@ -252,7 +277,6 @@ void medToolBoxDiffusion::run (void)
 		    gradientList.append (s_gz);
 		    i++;
 		  }
-
 		  data->addMetaData ("DiffusionGradientList", gradientList);
 		  
 		}
@@ -267,6 +291,12 @@ void medToolBoxDiffusion::run (void)
 	
         d->activeMethod->setInput (data);
 	d->activeMethod->run();
+
+	if (d->view)
+	  if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+	    d->view->setData ( d->activeMethod->output() );
+	    d->view->update();
+	  }
     }
   }
 }
@@ -274,38 +304,102 @@ void medToolBoxDiffusion::run (void)
 
 void medToolBoxDiffusion::update (dtkAbstractView *view)
 {
-  if (!view)
+  if (!view || view==d->view)
     return;
+
+  if (d->view)
+    if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor"))
+      disconnect (d->radiusSlider, SIGNAL(valueChanged(int)), interactor, SLOT (onRadiusSet(int)));
   
   dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor");
-  if (interactor)
-    qDebug() << "Yiarghhh!";
+  if (!interactor) {
+    view->enableInteractor ("v3dViewFiberInteractor");
+    interactor = view->interactor ("v3dViewFiberInteractor");
+  }
 
+  if (!interactor) {
+    qDebug() << "Cannot enable interactor: v3dViewFiberInteractor";
+    return;
+  }
+
+  d->view = view;
+
+  connect (d->radiusSlider, SIGNAL(valueChanged(int)), interactor, SLOT (onRadiusSet(int)));
+  
   if (d->activeMethod) {
-
-    medDataIndex index (1,1,1,-1);
-    if(!index.isValid())
-        return;
-
-    dtkAbstractData *data = medDataManager::instance()->data (index);
-    if (data)
-      qDebug() << "no need to read!";
-    
-    if (!data) {
-        data = medDatabaseController::instance()->read(index);
-	if (data)
-	  medDataManager::instance()->insert(index, data);
-    }
-    
-    if (data) {        
-        d->activeMethod->setInput (data);
-        qDebug() << "sboooon!";
-    }
+    d->view->setData ( d->activeMethod->output() );
+    d->view->update();
   }
 }
 
-
-void medToolBoxDiffusion::printProgress (int value)
+void medToolBoxDiffusion::onColorModeChanged (int index)
 {
-  qDebug() << value;
+  if (!d->view)
+    return;
+
+  if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+    if (index==0)
+      interactor->setProperty("ColorMode","local");
+    if (index==1)
+      interactor->setProperty("ColorMode","global");
+    if (index==2)
+      interactor->setProperty("ColorMode","fa");
+
+    d->view->update();
+  }
 }
+
+void medToolBoxDiffusion::onGPUActivated (int value)
+{
+  if (!d->view)
+    return;
+
+  if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+    if (value)
+      interactor->setProperty ("GPUMode", "true");
+    else
+      interactor->setProperty ("GPUMode", "false");
+
+    d->view->update();
+  }
+}
+
+void medToolBoxDiffusion::onLinesRenderingModeSelected (bool value)
+{
+  if (!d->view)
+    return;
+  
+  if (value)
+    if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+      interactor->setProperty ("RenderingMode", "lines");
+      
+      d->view->update();
+    }
+}
+
+void medToolBoxDiffusion::onRibbonsRenderingModeSelected (bool value)
+{
+    if (!d->view)
+    return;
+  
+    if (value)
+      if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+	interactor->setProperty ("RenderingMode", "ribbons");
+	
+	d->view->update();
+      }
+}
+
+void medToolBoxDiffusion::onTubesRenderingModeSelected (bool value)
+{
+  if (!d->view)
+    return;
+  
+  if (value)
+    if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+      interactor->setProperty ("RenderingMode", "tubes");
+
+      d->view->update();
+    }
+}
+

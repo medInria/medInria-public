@@ -78,4 +78,5 @@ void medProgressionStack::setProgress(int progress)
     }
 
     this->update();
+    qApp->processEvents();
 }

@@ -397,6 +397,7 @@ void medViewerArea::onImageIndexChanged(int id)
 void medViewerArea::onViewFocused(dtkAbstractView *view)
 {
     d->viewToolBox->update(view);
+    d->diffusionToolBox->update(view);
 }
 
 // layout settings
