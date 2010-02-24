@@ -102,6 +102,8 @@ medDataIndex& medDataIndex::operator=(const medDataIndex& index)
     d->studyId = index.d->studyId;
     d->seriesId = index.d->seriesId;
     d->imageId = index.d->imageId;
+
+	return *this;
 }
 
 // /////////////////////////////////////////////////////////////////
