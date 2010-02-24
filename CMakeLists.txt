@@ -97,4 +97,4 @@ subdirs(itkDataImage)
 subdirs(itkDataImageReader)
 subdirs(itkDataImageWriter)
 subdirs(vtkDataFibers)
-
+subdirs(itkDataDiffusionGradientList)

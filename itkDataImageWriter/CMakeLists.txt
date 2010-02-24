@@ -77,12 +77,6 @@ mark_as_advanced(QT_QMAKE_EXECUTABLE)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-find_package(med REQUIRED)
-if (NOT med_EXT_ITK)
-  message(FATAL_ERROR "Medular must be build with option med_EXT_ITK to ON")
-endif (NOT med_EXT_ITK)
-include(${med_USE_FILE})
-
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
@@ -139,7 +133,6 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-  medItk
   ${ITK_LIBRARIES}
 )
 

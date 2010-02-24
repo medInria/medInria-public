@@ -83,12 +83,6 @@ find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
 if(vtkINRIA3D_USE_ITK)
-  find_package(med REQUIRED)
-  if(NOT med_EXT_ITK)
-    message(FATAL_ERROR "Medular must be build with option med_EXT_ITK to ON")
-  endif(NOT med_EXT_ITK)
-  include(${med_USE_FILE})
-
   find_package(ITK REQUIRED)
   include(${ITK_USE_FILE})
 endif(vtkINRIA3D_USE_ITK)
@@ -138,7 +132,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 if (vtkINRIA3D_USE_ITK)
-  target_link_libraries(${PROJECT_NAME} medItk ${ITK_LIBRARIES})
+  target_link_libraries(${PROJECT_NAME} ${ITK_LIBRARIES})
 endif (vtkINRIA3D_USE_ITK)
 
 if (BUILD_TESTING)

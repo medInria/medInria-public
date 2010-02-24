@@ -33,7 +33,7 @@ v3dViewFiberInteractor::v3dViewFiberInteractor(): dtkAbstractViewInteractor(), d
 	this->addProperty("BoxVisibility", QStringList() << "true" << "false");
 	this->addProperty("RenderingMode", QStringList() << "lines" << "ribbons" << "tubes");
 	this->addProperty("GPUMode", QStringList() << "true" << "false");
-	this->addProperty("ColorMode", QStringList() << "local" << "global");
+	this->addProperty("ColorMode", QStringList() << "local" << "global" << "fa");
 	this->addProperty("BoxBooleanOperation", QStringList() << "plus" << "minus");
 	this->addProperty("Projection", QStringList() << "true" << "false");
 }
@@ -149,6 +149,9 @@ void v3dViewFiberInteractor::onColorModePropertySet (QString value)
 	
 	if (value=="global")
 		d->manager->SetColorModelToGlobalFiberOrientation();
+
+	if (value=="fa")
+		d->manager->SetColorModeToPointArray(1);
 }
 
 void v3dViewFiberInteractor::onBoxBooleanOperationPropertySet (QString value)
@@ -182,6 +185,11 @@ void v3dViewFiberInteractor::onProjectionPropertySet(QString value)
 		d->view->viewSagittal()->AddDataSet( d->manager->GetCallbackOutput() );
 		d->view->viewCoronal()->AddDataSet( d->manager->GetCallbackOutput() );
 	}
+}
+
+void v3dViewFiberInteractor::onRadiusSet (int value)
+{
+    d->manager->SetRadius (value);
 }
 
 // /////////////////////////////////////////////////////////////////

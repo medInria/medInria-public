@@ -1,5 +1,3 @@
-#include "medItk/medItk.h"
-
 #include "itkMetaDataImageReader.h"
 
 #include <dtkCore/dtkAbstractData.h>

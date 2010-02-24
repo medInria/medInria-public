@@ -1,7 +1,5 @@
 #include <QtGui>
 
-#include "medItk/medItk.h"
-
 #include "dtkCore/dtkPluginManager.h"
 #include "dtkCore/dtkAbstractDataFactory.h"
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -13,7 +11,7 @@
 int v3dViewTest(int argc, char *argv[])
 {
   if (argc<3) {
-      std::cerr << "Not enough arguments" << std::endl;
+      qDebug() << "Not enough arguments";
       return EXIT_FAILURE;
   }
 
@@ -31,20 +29,20 @@ int v3dViewTest(int argc, char *argv[])
   dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
   
   if (!data) {
-      std::cerr << "Cannot create data object from plugin" << std::endl;
+      qDebug() << "Cannot create data object from plugin";
       return EXIT_FAILURE;
   }
 
   data->enableReader ("itkMetaDataImageReader");
   
   if (!data->read(filepath)) {
-      std::cerr << "Cannot read image file" << std::endl;
+      qDebug() << "Cannot read image file";
       return EXIT_FAILURE;
   }
 
   dtkAbstractView *view = dtkAbstractViewFactory::instance()->create ("v3dView");
   if (!view) {
-      std::cerr << "Cannot create view object from plugin" << std::endl;
+      qDebug() << "Cannot create view object from plugin";
       return EXIT_FAILURE;
   }
   

@@ -28,7 +28,7 @@ public:
 	virtual void setView(dtkAbstractView *view);
 	
 public slots:
-    virtual void onPropertySet (QString key, QString value);
+	virtual void onPropertySet (QString key, QString value);
 	virtual void onVisibilityPropertySet (QString value);
 	virtual void onBoxVisibilityPropertySet (QString value);
 	virtual void onRenderingModePropertySet (QString value);
@@ -38,7 +38,9 @@ public slots:
 	virtual void onProjectionPropertySet (QString value);
 	
 	virtual void onSelectionTagged (void);
-    virtual void onSelectionReset (void);
+	virtual void onSelectionReset (void);
+
+	virtual void onRadiusSet (int value);
 /*
     virtual void onBundleValidated (void);
     virtual void onBundleClicked (QListWidgetItem* item);

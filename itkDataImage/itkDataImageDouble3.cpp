@@ -1,5 +1,3 @@
-#include "medItk/medItk.h"
-
 #include "itkDataImageDouble3.h"
 
 #include "medITKDataImageMacros.h"

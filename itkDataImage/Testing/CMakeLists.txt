@@ -14,7 +14,6 @@ ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests
 
 TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
   dtkCore
-  medItk
   ${ITK_LIBRARIES}
   )
 
