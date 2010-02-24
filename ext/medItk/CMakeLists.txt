@@ -94,11 +94,11 @@ include(${ITK_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-medITKProcessObjectObserver.h
+  medITKProcessObjectObserver.h
 )
 
 set(${PROJECT_NAME}_SOURCES
-  medItk.cpp
+  medITKProcessObjectObserver.cxx
 )
 
 ## #################################################################
