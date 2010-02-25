@@ -75,18 +75,21 @@ v3dViewObserver::~v3dViewObserver(void)
 
 void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *callData)
 {
+	if (this->lock)
+		return;
+
     vtkImageView2D* view = vtkImageView2D::SafeDownCast (caller);
 
     if(!view )
         return;
 
-    if(event == vtkImageView::CurrentPointChangedEvent && !this->lock) {
+    if (event == vtkImageView::CurrentPointChangedEvent) {
         if(this->slider ) {
             unsigned int zslice = view->GetSlice();
             this->slider->blockSignals (true);
             this->slider->setValue (zslice);
-	    this->slider->update();
-	    qApp->processEvents();
+		    this->slider->update();
+		    qApp->processEvents();
             this->slider->blockSignals (false);
         }
     }
@@ -1121,7 +1124,8 @@ void v3dView::onZSliderValueChanged (int value)
     d->observer->Lock();
     if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
         view->SetSlice (value);
-        d->currentView->Render();
+		qApp->processEvents();
+        d->currentView->Render();		
     }
     d->observer->UnLock();
 }
