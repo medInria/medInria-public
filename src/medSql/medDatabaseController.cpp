@@ -228,13 +228,13 @@ void medDatabaseController::import(const QString& file)
             continue;
 
         if(!dtkdata->hasMetaData("PatientName"))
-            dtkdata->addMetaData("PatientName", QStringList() << fileInfo.fileName());
+            dtkdata->addMetaData("PatientName", QStringList() << "John Doe");
 
         if(!dtkdata->hasMetaData("StudyDescription"))
             dtkdata->addMetaData("StudyDescription", QStringList() << "EmptyStudy");
 
         if(!dtkdata->hasMetaData("SeriesDescription"))
-            dtkdata->addMetaData("SeriesDescription", QStringList() << "EmptySeries");
+            dtkdata->addMetaData("SeriesDescription", QStringList() << fileInfo.baseName());
 	
 	QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
 	QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
@@ -321,11 +321,11 @@ void medDatabaseController::import(const QString& file)
                             imData->addMetaData("FilePaths", it.value());
 
                         if (!imData->hasMetaData ("PatientName"))
-                            imData->addMetaData ("PatientName", QStringList() << QFileInfo (it.value()[0]).fileName());
+                            imData->addMetaData ("PatientName", QStringList() << "John Doe");
                         if (!imData->hasMetaData ("StudyDescription"))
                             imData->addMetaData ("StudyDescription", QStringList() << "EmptyStudy");
                         if (!imData->hasMetaData ("SeriesDescription"))
-                            imData->addMetaData ("SeriesDescription", QStringList() << "EmptySeries");
+                            imData->addMetaData ("SeriesDescription", QStringList() << QFileInfo (it.value()[0]).baseName());
 
                         imData->addMetaData ("FileName", it.key() );
                         delete dataReader;
@@ -373,7 +373,9 @@ void medDatabaseController::import(const QString& file)
 	QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0].simplified();
 	QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0].simplified();
 	QStringList filePaths = dtkdata->metaDataValues (tr("FilePaths"));
-		QString s_age = dtkdata->metaDataValues(tr("(0010,1010)"))[0];
+	QString s_age;
+	if (dtkdata->hasMetaData(tr("(0010,1010)")))
+	    s_age=dtkdata->metaDataValues(tr("(0010,1010)"))[0];
 	
 	//QString patientPath;
 	//QString studyPath;

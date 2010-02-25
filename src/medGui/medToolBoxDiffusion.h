@@ -43,7 +43,7 @@ public slots:
     void onLinesRenderingModeSelected   (bool value);
     void onRibbonsRenderingModeSelected (bool value);
     void onTubesRenderingModeSelected   (bool value);
-    
+    void onBundlingBoxActivated         (int value);
     
 private:
     medToolBoxDiffusionPrivate *d;

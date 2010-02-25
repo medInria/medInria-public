@@ -282,11 +282,13 @@ void medBrowserArea::onFileSystemImportClicked(void)
 {
     QFileInfo info(d->filesystem_model->filePath(d->filesystem_view->currentIndex()));
 
+    medDatabaseController::instance()->import(info.absoluteFilePath());
+    /*
     if(info.isDir())
         medDatabaseController::instance()->import(info.absoluteFilePath());
     else
         d->status->showMessage("Import only support dicom directories so far.", 10000);
-
+    */
     d->preview->reset();
     d->preview->init();
 

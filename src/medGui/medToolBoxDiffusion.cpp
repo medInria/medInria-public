@@ -118,6 +118,8 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     QWidget *bundlingPage = new QWidget(this);
 
+    QCheckBox *bundleBoxCheckBox = new QCheckBox("Activate bundling box", bundlingPage);
+    
     QPushButton *bundlingButtonTag = new QPushButton("Tag", bundlingPage);
     QPushButton *bundlingButtonAdd = new QPushButton("Add", bundlingPage);
     QPushButton *bundlingButtonRst = new QPushButton("Reset", bundlingPage);
@@ -138,6 +140,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     QCheckBox *bundlingShowCheckBox = new QCheckBox("Show all bundles", bundlingPage);
 
     QVBoxLayout *bundlingLayout = new QVBoxLayout(bundlingPage);
+    bundlingLayout->addWidget(bundleBoxCheckBox);
     bundlingLayout->addLayout(bundlingButtonsLayout);
     bundlingLayout->addWidget(bundlingList);
     bundlingLayout->addWidget(bundlingShowCheckBox);
@@ -204,6 +207,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     connect (d->displayRadioRibbons,   SIGNAL(toggled(bool)),            this, SLOT (onRibbonsRenderingModeSelected (bool)));
     connect (d->displayRadioTubes,     SIGNAL(toggled(bool)),            this, SLOT (onTubesRenderingModeSelected (bool)));
 
+    connect (bundleBoxCheckBox, SIGNAL (stateChanged(int)), this, SLOT (onBundlingBoxActivated (int)));
 
     this->setTitle("Diffusion");
     this->setWidget(tab);
@@ -294,7 +298,6 @@ void medToolBoxDiffusion::run (void)
 
 	if (d->view)
 	  if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-	    qDebug() << "Fiber data set!";
 	    d->view->setData ( d->activeMethod->output() );
 	    d->view->update();
 	  }
@@ -319,8 +322,6 @@ void medToolBoxDiffusion::update (dtkAbstractView *view)
     qDebug() << "Cannot enable interactor: v3dViewFiberInteractor";
     return;
   }
-
-  qDebug() << "Interactor set";
   
   d->view = view;
 
@@ -403,3 +404,17 @@ void medToolBoxDiffusion::onTubesRenderingModeSelected (bool value)
     }
 }
 
+void medToolBoxDiffusion::onBundlingBoxActivated (int value)
+{
+  if (!d->view)
+    return;
+
+  if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+    if (value)
+      interactor->setProperty ("BoxVisibility", "true");
+    else
+      interactor->setProperty ("BoxVisibility", "false");
+
+      d->view->update();
+    }
+}
