@@ -269,7 +269,7 @@ namespace itk
 	vnl_vector<double> v21 = pos2-pos1;
 	
 	gaps[i-1] = fabs ( dot_product (normal, v21) );
-	if (gaps[i-1]<ref_gap)
+	if (gaps[i-1]<ref_gap && gaps[i-1]>0.0)
 	  ref_gap = gaps[i-1];
       }
       double total_gap = ref_gap;
