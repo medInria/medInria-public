@@ -294,6 +294,7 @@ void medToolBoxDiffusion::run (void)
 
 	if (d->view)
 	  if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+	    qDebug() << "Fiber data set!";
 	    d->view->setData ( d->activeMethod->output() );
 	    d->view->update();
 	  }
@@ -310,18 +311,17 @@ void medToolBoxDiffusion::update (dtkAbstractView *view)
   if (d->view)
     if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor"))
       disconnect (d->radiusSlider, SIGNAL(valueChanged(int)), interactor, SLOT (onRadiusSet(int)));
-  
+
+  view->enableInteractor ("v3dViewFiberInteractor");
   dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor");
-  if (!interactor) {
-    view->enableInteractor ("v3dViewFiberInteractor");
-    interactor = view->interactor ("v3dViewFiberInteractor");
-  }
 
   if (!interactor) {
     qDebug() << "Cannot enable interactor: v3dViewFiberInteractor";
     return;
   }
 
+  qDebug() << "Interactor set";
+  
   d->view = view;
 
   connect (d->radiusSlider, SIGNAL(valueChanged(int)), interactor, SLOT (onRadiusSet(int)));

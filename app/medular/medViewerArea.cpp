@@ -369,7 +369,6 @@ void medViewerArea::onSeriesIndexChanged(int id)
     if (data) {
 
         dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView");
-	view->enableInteractor ("v3dViewFiberInteractor");
 
         if (!view)
             return;
