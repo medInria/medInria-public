@@ -44,6 +44,8 @@ public slots:
     void onRibbonsRenderingModeSelected (bool value);
     void onTubesRenderingModeSelected   (bool value);
     void onBundlingBoxActivated         (int value);
+
+    void onBundleValidated (QString name);
     
 private:
     medToolBoxDiffusionPrivate *d;

@@ -45,6 +45,11 @@ public:
   QRadioButton *displayRadioRibbons;
   QRadioButton *displayRadioTubes;
   QSlider      *radiusSlider;
+
+  QListWidget *bundlingList;
+  QPushButton *bundlingButtonVdt;
+  QPushButton *bundlingButtonTag;
+  QPushButton *bundlingButtonRst;
   
   QList<dtkAbstractProcess *> methods;
   dtkAbstractProcess         *activeMethod;
@@ -120,29 +125,26 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     QCheckBox *bundleBoxCheckBox = new QCheckBox("Activate bundling box", bundlingPage);
     
-    QPushButton *bundlingButtonTag = new QPushButton("Tag", bundlingPage);
+    d->bundlingButtonTag = new QPushButton("Tag", bundlingPage);
     QPushButton *bundlingButtonAdd = new QPushButton("Add", bundlingPage);
-    QPushButton *bundlingButtonRst = new QPushButton("Reset", bundlingPage);
-    QPushButton *bundlingButtonVdt = new QPushButton("Validate", bundlingPage);
+    d->bundlingButtonRst = new QPushButton("Reset", bundlingPage);
+    d->bundlingButtonVdt = new QPushButton("Validate", bundlingPage);
 
     QHBoxLayout *bundlingButtonsLayout = new QHBoxLayout;
-    bundlingButtonsLayout->addWidget(bundlingButtonTag);
+    bundlingButtonsLayout->addWidget(d->bundlingButtonTag);
     bundlingButtonsLayout->addWidget(bundlingButtonAdd);
-    bundlingButtonsLayout->addWidget(bundlingButtonRst);
-    bundlingButtonsLayout->addWidget(bundlingButtonVdt);
+    bundlingButtonsLayout->addWidget(d->bundlingButtonRst);
+    bundlingButtonsLayout->addWidget(d->bundlingButtonVdt);
 
-    QListWidget *bundlingList = new QListWidget(bundlingPage);
-    bundlingList->setAlternatingRowColors(true);
-    bundlingList->addItem("Bundle 1");
-    bundlingList->addItem("Bundle 2");
-    bundlingList->addItem("Bundle 3");
+    d->bundlingList = new QListWidget(bundlingPage);
+    d->bundlingList->setAlternatingRowColors(true);
 
     QCheckBox *bundlingShowCheckBox = new QCheckBox("Show all bundles", bundlingPage);
 
     QVBoxLayout *bundlingLayout = new QVBoxLayout(bundlingPage);
     bundlingLayout->addWidget(bundleBoxCheckBox);
     bundlingLayout->addLayout(bundlingButtonsLayout);
-    bundlingLayout->addWidget(bundlingList);
+    bundlingLayout->addWidget(d->bundlingList);
     bundlingLayout->addWidget(bundlingShowCheckBox);
 
     // /////////////////////////////////////////////////////////////////
@@ -312,8 +314,13 @@ void medToolBoxDiffusion::update (dtkAbstractView *view)
     return;
 
   if (d->view)
-    if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor"))
-      disconnect (d->radiusSlider, SIGNAL(valueChanged(int)), interactor, SLOT (onRadiusSet(int)));
+    if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+      disconnect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
+      disconnect (d->bundlingButtonVdt, SIGNAL (clicked(void)),              interactor, SLOT (onSelectionValidated (void)));
+      disconnect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
+      disconnect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
+      disconnect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
+    }
 
   view->enableInteractor ("v3dViewFiberInteractor");
   dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor");
@@ -325,7 +332,11 @@ void medToolBoxDiffusion::update (dtkAbstractView *view)
   
   d->view = view;
 
-  connect (d->radiusSlider, SIGNAL(valueChanged(int)), interactor, SLOT (onRadiusSet(int)));
+  connect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
+  connect (d->bundlingButtonVdt, SIGNAL (clicked(void)),              interactor, SLOT (onSelectionValidated (void)));
+  connect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
+  connect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
+  connect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
   
   if (d->activeMethod) {
     d->view->setData ( d->activeMethod->output() );
@@ -417,4 +428,9 @@ void medToolBoxDiffusion::onBundlingBoxActivated (int value)
 
       d->view->update();
     }
+}
+
+void medToolBoxDiffusion::onBundleValidated (QString name)
+{
+    d->bundlingList->addItem (name);
 }
