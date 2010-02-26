@@ -26,7 +26,13 @@ public:
 	
 	virtual void setData(dtkAbstractData *data);
 	virtual void setView(dtkAbstractView *view);
-	
+
+	virtual void enable(void);
+	virtual void disable(void);
+
+signals:
+	void selectionValidated (QString name);
+
 public slots:
 	virtual void onPropertySet (QString key, QString value);
 	virtual void onVisibilityPropertySet (QString value);
@@ -36,22 +42,22 @@ public slots:
 	virtual void onColorModePropertySet (QString value);
 	virtual void onBoxBooleanOperationPropertySet (QString value);
 	virtual void onProjectionPropertySet (QString value);
-	
+	virtual void onRadiusSet (int value);
+
 	virtual void onSelectionTagged (void);
 	virtual void onSelectionReset (void);
-
-	virtual void onRadiusSet (int value);
-/*
-    virtual void onBundleValidated (void);
-    virtual void onBundleClicked (QListWidgetItem* item);
-    virtual void onBundleVisibilityClicked (bool value);
-    virtual void onBundleColorModeClicked (bool value);
-    virtual void onShowAllClicked (bool value);
-    virtual void onDeleteAllClicked (void);
-    virtual void onBundleDeleteClicked (void);
-    virtual void onBundleColorClicked (void);
-    virtual void onBundleNameChanged (void);
-*/	
+	virtual void onSelectionValidated (void);	
+	
+	/*
+	  virtual void onBundleClicked (QListWidgetItem* item);
+	  virtual void onBundleVisibilityClicked (bool value);
+	  virtual void onBundleColorModeClicked (bool value);
+	  virtual void onShowAllClicked (bool value);
+	  virtual void onDeleteAllClicked (void);
+	  virtual void onBundleDeleteClicked (void);
+	  virtual void onBundleColorClicked (void);
+	  virtual void onBundleNameChanged (void);
+	*/	
 private:
     v3dViewFiberInteractorPrivate *d;
 

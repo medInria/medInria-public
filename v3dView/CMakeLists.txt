@@ -101,6 +101,7 @@ set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
   v3dView.cpp
   v3dViewFiberInteractor.cpp
+  v3dFiberBundle.cpp
 )
 
 ## #################################################################
