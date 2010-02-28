@@ -260,7 +260,7 @@ void v3dViewFiberInteractor::onSelectionValidated(void)
 	  data->setData ( d->manager->GetCallbackOutput() );
 	  d->bundleList.insert (text, data);
 
-	  QColor color = QColorDialog::getColor();
+	  QColor color = QColorDialog::getColor(Qt::white, d->view->widget());
 	  float color_d[3] = {(float)color.red()/255.0, (float)color.green()/255.0, (float)color.blue()/255.0};
 	  
 	  v3dFiberBundle* fiberBundle = v3dFiberBundle::New();
