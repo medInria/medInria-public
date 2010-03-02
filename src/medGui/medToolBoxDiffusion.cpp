@@ -254,8 +254,7 @@ void medToolBoxDiffusion::run (void)
 	  switch (ret) {
 	      case QMessageBox::Ok:
 		{
-		  QString fileName = QFileDialog::getOpenFileName(this,
-								  tr("Gradient File"), "", tr("Gradient files (*.*)"));
+		  QString fileName = QFileDialog::getOpenFileName(this, tr("Gradient File"), "", tr("Gradient files (*.*)"));
 
 		  if (fileName.isEmpty())
 		    return;
@@ -296,13 +295,12 @@ void medToolBoxDiffusion::run (void)
         }
 	
         d->activeMethod->setInput (data);
-	d->activeMethod->run();
-
-	if (d->view)
-	  if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-	    d->view->setData ( d->activeMethod->output() );
-	    d->view->update();
-	  }
+	if (d->activeMethod->run()==0 )
+	    if (d->view)
+	        if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+		    d->view->setData ( d->activeMethod->output() );
+		    d->view->update();
+		}
     }
   }
 }
