@@ -32,6 +32,7 @@ v3dViewFiberInteractor::v3dViewFiberInteractor(): dtkAbstractViewInteractor(), d
 	d->data = 0;
 	d->view = 0;
 	d->manager = vtkFibersManager::New();
+	d->manager->SetHelpMessageVisibility(0);
 	
 	// addProperty here
 	this->addProperty("Visibility", QStringList() << "true" << "false");
