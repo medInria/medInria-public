@@ -104,8 +104,8 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     QLabel *radiusLabel = new QLabel("Fibers radius:", displayPage);
 
     d->radiusSlider = new QSlider(Qt::Horizontal, displayPage);
-    d->radiusSlider->setMinimum(0);
-    d->radiusSlider->setMaximum(100);
+    d->radiusSlider->setMinimum(1);
+    d->radiusSlider->setMaximum(10);
 
     QHBoxLayout *radiusLayout = new QHBoxLayout;
     radiusLayout->addWidget(radiusLabel);
