@@ -88,6 +88,9 @@ void v3dViewFiberInteractor::setView(dtkAbstractView *view)
 
 void v3dViewFiberInteractor::enable(void)
 {
+	if (this->enabled())
+		return;
+	
     if (d->view) {
         d->manager->SetRenderer( d->view->renderer3D() );
 	d->manager->SetRenderWindowInteractor( d->view->interactor() );
@@ -101,6 +104,9 @@ void v3dViewFiberInteractor::enable(void)
 
 void v3dViewFiberInteractor::disable(void)
 {
+	if (!this->enabled())
+		return;
+
     if (d->view) {
         d->manager->SetRenderer( 0 );
 	d->manager->SetRenderWindowInteractor( 0 );
