@@ -399,6 +399,11 @@ void medDatabaseController::import(const QString& file)
 	    thumbnails[j].save(thumb_name, "JPG");
 	    thumbPaths << thumb_name;
 	}
+
+	QImage thumbnail = dtkdata->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
+	QString thumbPath = thumb_dir + "ref.jpg";
+	thumbnail.save (thumbPath, "JPG");
+	
 	
         ////////////////////////////////////////////////////////////////// PATIENT
 
@@ -414,10 +419,7 @@ void medDatabaseController::import(const QString& file)
 	else {
             query.prepare("INSERT INTO patient (name, thumbnail) VALUES (:name, :thumbnail)");
             query.bindValue(":name", patientName);
-            if (thumbPaths.count())
-                query.bindValue(":thumbnail", thumbPaths[ thumbPaths.count()/2 ] );
-            else
-                query.bindValue(":thumbnail", "");
+	    query.bindValue(":thumbnail", thumbPath );
             query.exec(); id = query.lastInsertId();
 
             //patientPath = this->dataLocation() + "/" + QString().setNum (id.toInt());
@@ -444,10 +446,11 @@ void medDatabaseController::import(const QString& file)
             query.prepare("INSERT INTO study (patient, name, thumbnail) VALUES (:patient, :study, :thumbnail)");
             query.bindValue(":patient", id);
             query.bindValue(":study", studyName);
-            if (thumbPaths.count())
-                query.bindValue(":thumbnail", thumbPaths[ thumbPaths.count()/2 ] );
-            else
+            //if (thumbPaths.count())
+	    query.bindValue(":thumbnail", thumbPath );
+		/*else
                 query.bindValue(":thumbnail", "");
+		*/
             query.exec(); id = query.lastInsertId();
 
             //studyPath = patientPath + "/" + QString().setNum (id.toInt());
@@ -481,10 +484,7 @@ void medDatabaseController::import(const QString& file)
             query.bindValue(":size", 1);
             query.bindValue(":name", seriesName);
             query.bindValue(":path", seriesPath);
-            if (thumbPaths.count())
-                query.bindValue(":thumbnail", thumbPaths[ thumbPaths.count()/2 ] );
-            else
-                query.bindValue(":thumbnail", "");
+	    query.bindValue(":thumbnail", thumbPath );
 	    query.bindValue(":age", s_age),
             query.exec(); id = query.lastInsertId();
 
