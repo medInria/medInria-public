@@ -259,9 +259,16 @@ void v3dViewFiberInteractor::onSelectionValidated(void)
       if (dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("vtkDataFibers")) {
 	  data->setData ( d->manager->GetCallbackOutput() );
 	  d->bundleList.insert (text, data);
-
-	  QColor color = QColorDialog::getColor(Qt::white, d->view->widget());
+/*
+	  QColorDialog *cdialog = new QColorDialog(Qt::white, d->view->widget());
+	  cdialog->exec();
+	  QColor color = cdialog->selectedColor();
+ */
+	  //QColor color = QColorDialog::getColor(Qt::white, d->view->widget()); // buggy on Mac
+		  
+		  QColor color = QColor::fromHsv(qrand()%360, 255, 210);
 	  float color_d[3] = {(float)color.red()/255.0, (float)color.green()/255.0, (float)color.blue()/255.0};
+	  //float color_d[3] = {(float)qrand()/(float)RAND_MAX, (float)qrand()/(float)RAND_MAX, (float)qrand()/(float)RAND_MAX};
 	  
 	  v3dFiberBundle* fiberBundle = v3dFiberBundle::New();
 	  fiberBundle->SetName ( text.toAscii().constData() );
