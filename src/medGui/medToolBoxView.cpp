@@ -103,6 +103,7 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     d->view3dModeComboBox->addItem("MIP - Maximum");
     d->view3dModeComboBox->addItem("MIP - Minimum");
     d->view3dModeComboBox->addItem("MPR");
+	d->view3dModeComboBox->addItem("Off");
 
     d->view3dLODSlider = new QSlider (Qt::Horizontal, this);
     d->view3dLODSlider->setRange (0, 100);
