@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 08:29:35 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 23:39:28 2010 (+0100)
+ * Last-Updated: Wed Mar  3 21:51:34 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 156
+ *     Update #: 157
  */
 
 /* Commentary: 
@@ -93,7 +93,7 @@ void medWelcomeArea::setdw(QStatusBar *status)
 
 void medWelcomeArea::paintEvent(QPaintEvent *event)
 {
-    QPixmap pixmap(":/pixmaps/medular-logo.png");
+    QPixmap pixmap(":/pixmaps/mediseen-logo.png");
 
     QPainter painter;
     painter.begin(this);

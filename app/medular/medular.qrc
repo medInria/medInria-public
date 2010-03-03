@@ -50,5 +50,6 @@
         <file>pixmaps/documentation_next_arrow.png</file>
         <file>pixmaps/documentation_previous_arrow.png</file>
         <file>pixmaps/medular-logo.png</file>
+        <file>pixmaps/mediseen-logo.png</file>
     </qresource>
 </RCC>
