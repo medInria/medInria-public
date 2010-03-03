@@ -269,6 +269,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     
     QAction *mprAct = new QAction(tr("MPR"), d->vtkWidget);
     connect(mprAct, SIGNAL(triggered()), this, SLOT(onMenu3DMPRTriggered()));
+	
+	QAction *offAct = new QAction(tr("Off"), d->vtkWidget);
+    connect(offAct, SIGNAL(triggered()), this, SLOT(onMenu3DOffTriggered()));
     
     QAction *zoomAct = new QAction(tr("Zoom"), d->vtkWidget);
     connect(zoomAct, SIGNAL(triggered()), this, SLOT(onMenuZoomTriggered()));
@@ -291,6 +294,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     tridMenu->addAction (maxipAct);
     tridMenu->addAction (minipAct);
     tridMenu->addAction (mprAct);
+	tridMenu->addAction (offAct);
 
     d->menu->addSeparator();
     d->menu->addAction(zoomAct);
@@ -324,7 +328,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->addProperty ("Opacity",               QStringList() << "1.0");
     this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
     this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
-    this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum");
+    this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum" << "Off");
     this->addProperty ("Cropping",              QStringList() << "true" << "false");
     this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
 		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
@@ -776,6 +780,9 @@ void v3dView::onModePropertySet (QString value)
 
   if (value=="MPR") {
       d->view3D->SetRenderingModeToPlanar();
+	  d->view3D->ShowActorXOn();
+	  d->view3D->ShowActorYOn();
+	  d->view3D->ShowActorZOn();
   }
 
   if (value=="MIP - Maximum") {
@@ -787,6 +794,13 @@ void v3dView::onModePropertySet (QString value)
       d->view3D->SetRenderingModeToVR();
       d->view3D->SetVolumeRayCastFunctionToMinimumIntensityProjection();
   }
+	
+	if (value=="Off") {
+		d->view3D->SetRenderingModeToPlanar();
+		d->view3D->ShowActorXOff();
+		d->view3D->ShowActorYOff();
+		d->view3D->ShowActorZOff();
+	}
   
 }
 
@@ -1221,6 +1235,15 @@ void v3dView::onMenu3DMinIPTriggered (void)
 
     this->setProperty("Orientation", "3D");
     this->setProperty("Mode", "MIP - Minimum");
+    d->view3D->Render();
+}
+
+void v3dView::onMenu3DOffTriggered (void)
+{
+    if(qApp->arguments().contains("--stereo"))
+        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+	
+    this->setProperty("Mode", "Off");
     d->view3D->Render();
 }
 

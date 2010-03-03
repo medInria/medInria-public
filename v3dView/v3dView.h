@@ -81,6 +81,7 @@ public slots: // Menu interface
     void onMenu3DMaxIPTriggered      (void);
     void onMenu3DMinIPTriggered      (void);
     void onMenu3DMPRTriggered        (void);
+	void onMenu3DOffTriggered        (void);
     void onMenuZoomTriggered         (void);
     void onMenuWindowLevelTriggered  (void);
 
