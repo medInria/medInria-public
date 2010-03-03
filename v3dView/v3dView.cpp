@@ -88,8 +88,8 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
             unsigned int zslice = view->GetSlice();
             this->slider->blockSignals (true);
             this->slider->setValue (zslice);
-		    this->slider->update();
-		    qApp->processEvents();
+	    this->slider->update();
+	    qApp->processEvents();
             this->slider->blockSignals (false);
         }
     }
@@ -144,7 +144,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DAxial->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
     d->view2DAxial->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
     d->view2DAxial->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
-    d->view2DAxial->CursorFollowMouseOn();
+    d->view2DAxial->CursorFollowMouseOff();
     d->view2DAxial->ShowImageAxisOff();
     d->view2DAxial->ShowScalarBarOff();
     d->view2DAxial->ShowRulerWidgetOn();
@@ -157,7 +157,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DSagittal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
     d->view2DSagittal->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
     d->view2DSagittal->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
-    d->view2DSagittal->CursorFollowMouseOn();
+    d->view2DSagittal->CursorFollowMouseOff();
     d->view2DSagittal->ShowImageAxisOff();
     d->view2DSagittal->ShowScalarBarOff();
     d->view2DSagittal->ShowRulerWidgetOn();
@@ -170,7 +170,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DCoronal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
     d->view2DCoronal->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
     d->view2DCoronal->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_CORONAL);
-    d->view2DCoronal->CursorFollowMouseOn();
+    d->view2DCoronal->CursorFollowMouseOff();
     d->view2DCoronal->ShowImageAxisOff();
     d->view2DCoronal->ShowScalarBarOff();
     d->view2DCoronal->ShowRulerWidgetOn();
@@ -483,6 +483,139 @@ void v3dView::setData(dtkAbstractData *data)
     if(!data)
         return;
 
+#ifdef vtkINRIA3D_USE_ITK
+    if (data->description()=="itkDataImageChar3") {
+        if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageUChar3") {
+        if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageShort3") {
+        if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageShort4") {
+        if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
+	    itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::Pointer extractor = itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::New();
+	    itk::Image<short, 4>::SizeType size = image->GetLargestPossibleRegion().GetSize();
+	    itk::Image<short, 4>::IndexType index = {{0,0,0,0}};
+	    size[3] = 0;
+	    itk::Image<short, 4>::RegionType region;
+	    region.SetSize (size);
+	    region.SetIndex (index);
+	    
+	    extractor->SetExtractionRegion (region);
+	    extractor->SetInput ( image );
+	    try
+	    {
+	      extractor->Update();
+	    }
+	    catch (itk::ExceptionObject &e) {
+	      qDebug() << e.GetDescription();
+	      return;
+	    }
+	    d->view2DAxial->SetITKInput( extractor->GetOutput() );
+	    d->view2DSagittal->SetITKInput( extractor->GetOutput() );
+	    d->view2DCoronal->SetITKInput( extractor->GetOutput() );
+	    d->view3D->SetITKInput( extractor->GetOutput() );
+	}
+    }
+    else if (data->description()=="itkDataImageUShort3") {
+        if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageInt3") {
+        if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageUInt3") {
+        if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageLong3") {
+        if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageULong3") {
+        if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageFloat3") {
+        if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageDouble3") {
+        if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageRGB3") {
+        if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageVector3") {
+        if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
+	    d->view2DAxial->SetITKInput(image);
+	    d->view2DSagittal->SetITKInput(image);
+	    d->view2DCoronal->SetITKInput(image);
+	    d->view3D->SetITKInput(image);
+	}
+    }
+    else
+#endif
+    if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data()))) {
+        d->collection->SyncSetInput(dataset);
+    }
+    else {
+        dtkAbstractView::setData(data);
+        return;
+    }
+
     d->data = data;
 
     if (data->hasMetaData("PatientName")){
@@ -509,112 +642,6 @@ void v3dView::setData(dtkAbstractData *data)
         d->view3D->SetSeriesName (seriesName.toAscii().constData());
     }
 
-#ifdef vtkINRIA3D_USE_ITK
-    if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
-        itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::Pointer extractor = itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::New();
-	itk::Image<short, 4>::SizeType size = image->GetLargestPossibleRegion().GetSize();
-	itk::Image<short, 4>::IndexType index = {{0,0,0,0}};
-	size[3] = 0;
-	itk::Image<short, 4>::RegionType region;
-	region.SetSize (size);
-	region.SetIndex (index);
-
-	extractor->SetExtractionRegion (region);
-	extractor->SetInput ( image );
-	try
-	{
-	  extractor->Update();
-	}
-	catch (itk::ExceptionObject &e) {
-	  qDebug() << e.GetDescription();
-	  return;
-	}
-        d->view2DAxial->SetITKInput( extractor->GetOutput() );
-	d->view2DSagittal->SetITKInput( extractor->GetOutput() );
-	d->view2DCoronal->SetITKInput( extractor->GetOutput() );
-        d->view3D->SetITKInput( extractor->GetOutput() );
-    }
-    else if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-	d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
-        d->view2DAxial->SetITKInput(image);
-	d->view2DSagittal->SetITKInput(image);
-	d->view2DCoronal->SetITKInput(image);
-        d->view3D->SetITKInput(image);
-    }
-    else {
-        qDebug() << "Cannot cast data into compatible data structure";
-    }
-#endif
-
-
-    if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data()))) {
-        d->collection->SyncSetInput(dataset);
-    }
     
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) ) {
         if( d->orientation=="Axial") {
@@ -627,8 +654,6 @@ void v3dView::setData(dtkAbstractData *data)
             d->slider->setRange(0, imData->yDimension()-1);
         }
     }
-
-    dtkAbstractView::setData(data);
 
     this->update();
 }
