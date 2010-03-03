@@ -127,7 +127,13 @@
       return dtkAbstractDataImage::thumbnail();				\
     if (d->thumbnails.isEmpty())					\
       this->thumbnails();						\
-    return d->thumbnails[ d->thumbnails.count()/2 ];			\
+    int index = 0;							\
+    if (d->image->GetImageDimension()>2)				\
+      index = d->image->GetLargestPossibleRegion().GetSize()[2]/2;	\
+    if (index<d->thumbnails.count())					\
+      return d->thumbnails[ index ];					\
+    else								\
+      return d->thumbnails[0];						\
   }									\
   QList<QImage> &itkDataImage##suffix::thumbnails (void) const		\
   {									\
@@ -218,7 +224,8 @@
     ++it;								\
     ++voxelCount;							\
     if ( (voxelCount%nvoxels_per_slice)==0 ) {				\
-      d->thumbnails.push_back (qimage->mirrored(true, false));		\
+      d->thumbnails.push_back (qimage->mirrored(d->image->GetDirection()(0,0)==-1.0, \
+						d->image->GetDirection()(1,1)==-1.0)); \
       qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);	\
       qImageBuffer = qimage->bits();					\
     }									\
