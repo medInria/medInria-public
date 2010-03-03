@@ -335,11 +335,12 @@ void medToolBoxDiffusion::update (dtkAbstractView *view)
   connect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
   connect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
   connect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
-  
+  /*
   if (d->activeMethod) {
     d->view->setData ( d->activeMethod->output() );
     d->view->update();
   }
+   */
 }
 
 void medToolBoxDiffusion::onColorModeChanged (int index)
