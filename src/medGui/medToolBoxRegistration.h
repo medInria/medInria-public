@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 10:41:41 2010 (+0100)
+ * Last-Updated: Thu Mar  4 10:44:47 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 19
+ *     Update #: 29
  */
 
 /* Commentary: 
@@ -31,6 +31,13 @@ class MEDGUI_EXPORT medToolBoxRegistration : public medToolBox
 public:
      medToolBoxRegistration(QWidget *parent = 0);
     ~medToolBoxRegistration(void);
+
+signals:
+    void setupLayoutCompare(void);
+    void setupLayoutFuse(void);
+
+public slots:
+    void run(void);
 
 private:
     medToolBoxRegistrationPrivate *d;

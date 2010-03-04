@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:46:22 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 15:11:20 2010 (+0100)
+ * Last-Updated: Thu Mar  4 11:44:58 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 189
+ *     Update #: 191
  */
 
 /* Commentary: 
@@ -330,4 +330,9 @@ void medToolBox::setWidget(QWidget *widget)
 void medToolBox::setTitle(const QString &title)
 {
     d->header->setTitle(title);
+}
+
+void medToolBox::expand(void)
+{
+    d->body->expand();
 }

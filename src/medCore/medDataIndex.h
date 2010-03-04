@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 09:29:10 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Feb 22 21:06:24 2010 (+0100)
+ * Last-Updated: Thu Mar  4 10:37:12 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 23
  */
 
 /* Commentary: 
@@ -51,6 +51,9 @@ public:
     friend bool operator==(const medDataIndex& index1, const medDataIndex& index2);
     friend bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
 
+    friend QDebug operator<<(QDebug debug, const medDataIndex& index);
+    friend QDebug operator<<(QDebug debug,       medDataIndex *index);
+
 private:
     medDataIndexPrivate *d;
 };
@@ -61,6 +64,9 @@ private:
 
 bool operator==(const medDataIndex& index1, const medDataIndex& index2);
 bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
+
+QDebug operator<<(QDebug debug, const medDataIndex& index);
+QDebug operator<<(QDebug debug,       medDataIndex *index);
 
 // /////////////////////////////////////////////////////////////////
 // Hash functions

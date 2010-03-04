@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 09:29:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Feb 22 21:06:14 2010 (+0100)
+ * Last-Updated: Thu Mar  4 10:51:50 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 15
+ *     Update #: 26
  */
 
 /* Commentary: 
@@ -118,6 +118,20 @@ bool operator==(const medDataIndex& index1, const medDataIndex& index2)
 bool operator!=(const medDataIndex& index1, const medDataIndex& index2)
 {
     return ((index1.patientId() != index2.patientId()) || (index1.studyId() != index2.studyId()) || (index1.seriesId() != index2.seriesId()) || (index1.imageId() == index2.imageId()));
+}
+
+QDebug operator<<(QDebug debug, const medDataIndex& index)
+{
+    debug.nospace() << "(" << index.d->patientId << ", " << index.d->studyId << ", " << index.d->seriesId << ", " << index.d->imageId << ")";
+
+    return debug.space();
+}
+
+QDebug operator<<(QDebug debug, medDataIndex *index)
+{
+    debug.nospace() << "(" << index->d->patientId << ", " << index->d->studyId << ", " << index->d->seriesId << ", " << index->d->imageId << ")";
+
+    return debug.space();
 }
 
 // /////////////////////////////////////////////////////////////////

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 22:38:06 2010 (+0100)
+ * Last-Updated: Thu Mar  4 11:02:14 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 39
+ *     Update #: 45
  */
 
 /* Commentary: 
@@ -100,6 +100,10 @@ protected slots: // view settings
     void setupSlicing (bool checked);
     void setupMeasuring (bool checked);
     void setupCropping (bool checked);
+
+protected slots: // registration settings
+    void setupLayoutCompare(void);
+    void setupLayoutFuse(void);
 
 private:
     medViewerAreaPrivate *d;

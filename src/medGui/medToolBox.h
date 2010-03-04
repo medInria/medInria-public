@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:41:48 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Nov  3 14:55:21 2009 (+0100)
+ * Last-Updated: Thu Mar  4 11:44:27 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 47
+ *     Update #: 49
  */
 
 /* Commentary: 
@@ -157,6 +157,9 @@ public:
     void setWidget(QWidget *widget);
 
     void setTitle(const QString& title);
+
+public slots:
+    void expand(void);
 
 private:
     medToolBoxPrivate *d;

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Feb 20 00:33:11 2010 (+0100)
+ * Last-Updated: Thu Mar  4 11:28:07 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 630
+ *     Update #: 654
  */
 
 /* Commentary: 
@@ -57,6 +57,8 @@ public:
     medViewContainer *container_single;
     medViewContainer *container_multi;
     medViewContainer *container_custom;
+    medViewContainer *container_registration_compare;
+    medViewContainer *container_registration_fuse;
 };
 
 medViewerAreaStack::medViewerAreaStack(QWidget *parent) : QStackedWidget(parent), d(new medViewerAreaStackPrivate)
@@ -64,10 +66,15 @@ medViewerAreaStack::medViewerAreaStack(QWidget *parent) : QStackedWidget(parent)
     d->container_single = new medViewContainer(this);
     d->container_multi = new medViewContainer(this);
     d->container_custom = new medViewContainer(this);
+    d->container_registration_compare = new medViewContainer(this);
+    d->container_registration_compare->split(1, 2);
+    d->container_registration_fuse = new medViewContainer(this);
 
     this->addWidget(d->container_single);
     this->addWidget(d->container_multi);
     this->addWidget(d->container_custom);
+    this->addWidget(d->container_registration_compare);
+    this->addWidget(d->container_registration_fuse);
 
     this->setCurrentIndex(0);
 
@@ -174,6 +181,9 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->registrationToolBox = new medToolBoxRegistration(this);
     d->registrationToolBox->setVisible(false);
+
+    connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(setupLayoutCompare()));
+    connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()), this, SLOT(setupLayoutFuse()));
     
     // Setting up toolbox container
 
@@ -245,6 +255,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // Setting up registration configuration
 
     medViewerConfiguration *registrationConfiguration = new medViewerConfiguration;
+    registrationConfiguration->attach(d->layoutToolBox, false);
     registrationConfiguration->attach(d->viewToolBox, true);
     registrationConfiguration->attach(d->registrationToolBox, true);
 
@@ -534,6 +545,22 @@ void medViewerArea::setupCropping (bool checked)
         checked ? view->setProperty("Cropping", "true") : view->setProperty("Cropping", "false");
 	view->update();
     }
+}
+
+void medViewerArea::setupLayoutCompare(void)
+{
+    if(!d->view_stacks.count())
+        return;
+
+    d->view_stacks.value(d->patientToolBox->patientIndex())->setCurrentIndex(3);
+}
+
+void medViewerArea::setupLayoutFuse(void)
+{
+    if(!d->view_stacks.count())
+        return;
+
+    d->view_stacks.value(d->patientToolBox->patientIndex())->setCurrentIndex(4);
 }
 
 // /////////////////////////////////////////////////////////////////
