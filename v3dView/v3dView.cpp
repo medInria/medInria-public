@@ -646,14 +646,20 @@ void v3dView::setData(dtkAbstractData *data)
     }
     else
 #endif
-    if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data()))) {
-        d->collection->SyncSetInput(dataset);
-    }
-    else {
+      if (data->description()=="v3dDataImage") {
+	  if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data()))) {
+	    //d->collection->SyncSetInput(dataset);
+	    d->view2DAxial->SetInput(dataset);
+	    d->view2DSagittal->SetInput(dataset);
+	    d->view2DCoronal->SetInput(dataset);
+	    d->view3D->SetInput(dataset);
+	  }
+      }
+      else {
         dtkAbstractView::setData(data);
         return;
-    }
-
+      }
+    
     d->data = data;
 
     if (data->hasMetaData("PatientName")){
