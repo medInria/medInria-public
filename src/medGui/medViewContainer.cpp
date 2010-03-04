@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Nov  3 16:26:19 2009 (+0100)
+ * Last-Updated: Thu Mar  4 13:56:48 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 20
+ *     Update #: 39
  */
 
 /* Commentary: 
@@ -22,6 +22,8 @@
 #include <QtGui>
 
 #include <dtkCore/dtkAbstractView.h>
+
+#include <medCore/medDataIndex.h>
 
 class medViewContainerPrivate
 {
@@ -41,9 +43,12 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
     s_current = this;
 
-    if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent))
+    if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent)) {
+        connect(this, SIGNAL(dropped(const medDataIndex&)), container, SIGNAL(dropped(const medDataIndex&)));
         connect(this, SIGNAL(focused(dtkAbstractView*)), container, SIGNAL(focused(dtkAbstractView*)));
+    }
 
+    this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
 }
 
@@ -89,6 +94,48 @@ void medViewContainer::setView(dtkAbstractView *view)
         d->layout->addWidget(widget, 0, 0);
         d->view = view;
     }
+}
+
+void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
+{
+    setBackgroundRole(QPalette::Highlight);
+
+    event->acceptProposedAction();
+}
+
+void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
+{
+    event->acceptProposedAction();
+}
+
+void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    setBackgroundRole(QPalette::Base);
+
+    event->accept();
+}
+
+void medViewContainer::dropEvent(QDropEvent *event)
+{
+    s_current = this;
+
+    this->update();
+
+    const QMimeData *mimeData = event->mimeData();
+
+    if (mimeData->hasFormat("med/index")) {
+        QStringList ids = QString(mimeData->data("med/index")).split(":");
+        int patientId = ids.at(0).toInt();
+        int   studyId = ids.at(1).toInt();
+        int  seriesId = ids.at(2).toInt();
+        int   imageId = ids.at(3).toInt();
+        
+        emit dropped(medDataIndex(patientId, studyId, seriesId, imageId));
+    }
+
+    setBackgroundRole(QPalette::Base);
+
+    event->acceptProposedAction();
 }
 
 void medViewContainer::focusInEvent(QFocusEvent *event)

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Mar  4 11:02:14 2010 (+0100)
+ * Last-Updated: Thu Mar  4 13:50:51 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 45
+ *     Update #: 59
  */
 
 /* Commentary: 
@@ -24,6 +24,7 @@
 
 class dtkAbstractView;
 
+class medDataIndex;
 class medViewContainer;
 
 // /////////////////////////////////////////////////////////////////
@@ -45,7 +46,8 @@ public:
     void setPatientId(int id);
 
 signals:
-    void focused(dtkAbstractView *view);
+    void dropped(const medDataIndex&);
+    void focused(dtkAbstractView *);
 
 private:
     medViewerAreaStackPrivate *d;
@@ -77,6 +79,8 @@ public slots:
     void setup(void);
     void split(int rows, int cols);
 
+    void open(const medDataIndex& index);
+
     void onPatientIndexChanged(int index);
     void   onStudyIndexChanged(int index);
     void  onSeriesIndexChanged(int index);
@@ -84,7 +88,7 @@ public slots:
 
     void onViewFocused(dtkAbstractView *view);
 
-protected slots: // layout settings
+public slots: // layout settings
     void setStackIndex(int index);
 
 protected slots: // view settings
@@ -121,12 +125,13 @@ class medViewerConfiguration : public QObject
     Q_OBJECT
 
 public:
-     medViewerConfiguration(void);
+     medViewerConfiguration(medViewerArea *area);
     ~medViewerConfiguration(void);
 
     void setup(void);
     void setdw(void);
 
+    void attach(int index);
     void attach(medToolBox *toolbox, bool visible);
 
 private:

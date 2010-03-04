@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:53:58 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Oct 27 12:01:14 2009 (+0100)
+ * Last-Updated: Thu Mar  4 13:39:41 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 10
+ *     Update #: 15
  */
 
 /* Commentary: 
@@ -25,6 +25,7 @@
 #include <QtGui/QWidget>
 
 class dtkAbstractView;
+class medDataIndex;
 
 class medViewContainerPrivate;
 
@@ -43,12 +44,18 @@ public:
     void setView(dtkAbstractView *view);
 
 signals:
+    void dropped(const medDataIndex& index);
     void focused(dtkAbstractView *view);
 
 public slots:
     void split(int rows, int cols);
 
 protected:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dropEvent(QDropEvent *event);
+
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
     void paintEvent(QPaintEvent *event);

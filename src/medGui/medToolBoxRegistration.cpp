@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Mar  4 11:49:48 2010 (+0100)
+ * Last-Updated: Thu Mar  4 13:29:28 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 173
+ *     Update #: 174
  */
 
 /* Commentary: 
@@ -86,9 +86,6 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QVBoxLayout *layoutLayout = new QVBoxLayout(layoutPage);
     layoutLayout->addLayout(layoutButtonLayout);
     layoutLayout->addWidget(layoutFuseSlider);
-
-    connect(layoutButtonCompare, SIGNAL(clicked()), layoutFuseSlider, SLOT(hide()));
-    connect(layoutButtonFuse, SIGNAL(clicked()), layoutFuseSlider, SLOT(show()));
 
     connect(layoutButtonCompare, SIGNAL(clicked()), this, SIGNAL(setupLayoutCompare()));
     connect(layoutButtonFuse, SIGNAL(clicked()), this, SIGNAL(setupLayoutFuse()));
