@@ -95,12 +95,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
   v3dView.h
   v3dViewFiberInteractor.h
+  v3dViewFuseInteractor.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
   v3dView.cpp
   v3dViewFiberInteractor.cpp
+  v3dViewFuseInteractor.cpp
   v3dFiberBundle.cpp
 )
 
