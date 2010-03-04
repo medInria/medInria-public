@@ -5,13 +5,13 @@
 #ifndef V3DDATAIMAGE_H
 #define V3DDATAIMAGE_H
 
-#include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractDataImage.h>
 
 #include "v3dDataPluginExport.h"
 
 class v3dDataImagePrivate;
 
-class V3DDATAPLUGIN_EXPORT v3dDataImage : public dtkAbstractData
+class V3DDATAPLUGIN_EXPORT v3dDataImage : public dtkAbstractDataImage
 {
     Q_OBJECT
 
@@ -27,9 +27,17 @@ public:
     bool read(QString file);
     bool write(QString file);
 
+    void *output(void);
     void *data(void);
 
     void setData(void *data);
+
+public:
+    // derived from dtkAbstractDataImage
+    int xDimension(void);
+    int yDimension(void);
+    int zDimension(void);
+
 
 private:
     v3dDataImagePrivate *d;

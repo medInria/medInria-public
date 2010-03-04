@@ -27,7 +27,7 @@ public:
 // v3dDataImage
 // /////////////////////////////////////////////////////////////////
 
-v3dDataImage::v3dDataImage(void) : dtkAbstractData(), d(new v3dDataImagePrivate)
+v3dDataImage::v3dDataImage(void) : dtkAbstractDataImage(), d(new v3dDataImagePrivate)
 {
     d->image = NULL;
 }
@@ -92,6 +92,38 @@ void v3dDataImage::setData(void *data)
 void *v3dDataImage::data(void)
 {
     return d->image;
+}
+
+void *v3dDataImage::output(void)
+{
+    return d->image;
+}
+
+int v3dDataImage::xDimension (void)
+{
+  if (!d->image)
+    return -1;
+
+  int *dimensions = d->image->GetDimensions();
+  return dimensions[0];
+}
+
+int v3dDataImage::yDimension (void)
+{
+  if (!d->image)
+    return -1;
+
+  int *dimensions = d->image->GetDimensions();
+  return dimensions[1];
+}
+
+int v3dDataImage::zDimension (void)
+{
+  if (!d->image)
+    return -1;
+
+  int *dimensions = d->image->GetDimensions();
+  return dimensions[2];
 }
 
 // /////////////////////////////////////////////////////////////////
