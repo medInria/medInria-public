@@ -25,6 +25,7 @@
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
+#include <vtkImageView2DCommand.h>
 #include <vtkInteractorStyleImageView2D.h>
 #include <vtkInteractorStyleTrackballCamera2.h>
 #include <vtkImageViewCollection.h>
@@ -46,26 +47,30 @@ public:
 
     void Execute(vtkObject *caller, unsigned long event, void *callData);
 
-    void SetSlider(QSlider *slider) {
+    void setSlider(QSlider *slider) {
         this->slider = slider;
     }
+    void setView (vtkImageView2D *view){
+        this->view = view;
+    }
 
-    inline void   Lock(void) { this->lock = 1; }
-    inline void UnLock(void) { this->lock = 0; }
+    inline void   lock(void) { this->m_lock = 1; }
+    inline void unlock(void) { this->m_lock = 0; }
 
 protected:
      v3dViewObserver(void);
     ~v3dViewObserver(void);
 
 private:
-    int lock;
-    QSlider *slider;
+    int             m_lock;
+    QSlider        *slider;
+    vtkImageView2D *view;
 };
 
 v3dViewObserver::v3dViewObserver(void)
 {
     this->slider = 0;
-    this->lock = 0;
+    this->m_lock = 0;
 }
 
 v3dViewObserver::~v3dViewObserver(void)
@@ -75,24 +80,28 @@ v3dViewObserver::~v3dViewObserver(void)
 
 void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *callData)
 {
-	if (this->lock)
-		return;
-
-    vtkImageView2D* view = vtkImageView2D::SafeDownCast (caller);
-
-    if(!view )
+    if (this->m_lock)
         return;
 
-    if (event == vtkImageView::CurrentPointChangedEvent) {
-        if(this->slider ) {
-            unsigned int zslice = view->GetSlice();
+    //vtkImageView2D* view = vtkImageView2D::SafeDownCast (caller);
+    vtkInteractorStyleImageView2D *isi = vtkInteractorStyleImageView2D::SafeDownCast (caller);
+    /*
+    if (!view)
+        return;
+    */
+    if (!isi)
+        return;
+
+    //if (event == vtkImageView::CurrentPointChangedEvent) {
+        if(this->slider && this->view) {
+            unsigned int zslice = this->view->GetSlice();
             this->slider->blockSignals (true);
             this->slider->setValue (zslice);
 	    this->slider->update();
-	    qApp->processEvents();
             this->slider->blockSignals (false);
+	    qApp->processEvents();
         }
-    }
+	//}
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -114,14 +123,19 @@ public:
     vtkImageView *currentView;
   
     vtkImageViewCollection *collection;
+    vtkImageViewCollection *collectionAxial;
+    vtkImageViewCollection *collectionSagittal;
+    vtkImageViewCollection *collectionCoronal;
     v3dViewObserver *observer;
 
-    QWidget *widget;
-    QSlider *slider;
+    QWidget    *widget;
+    QSlider    *slider;
     QVTKWidget *vtkWidget;
-    QMenu *menu;
+    QMenu      *menu;
     QString orientation;
 
+    QList<dtkAbstractView*> linkedViews;
+  
     dtkAbstractData *data;
 };
 
@@ -184,7 +198,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view3D->SetShowBoxWidget(0);
     d->view3D->SetCroppingModeToOff();
     d->view3D->ShowScalarBarOff();
-	d->view3D->GetTextProperty()->SetColor(1.0, 1.0, 1.0);
+    d->view3D->GetTextProperty()->SetColor(1.0, 1.0, 1.0);
     d->view3D->ShadeOn();
 
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
@@ -245,9 +259,19 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->collection->SetLinkZoom (0);
     d->collection->SetLinkRequestedPosition (0);
 
+    d->collectionAxial    = vtkImageViewCollection::New();
+    d->collectionSagittal = vtkImageViewCollection::New();
+    d->collectionCoronal  = vtkImageViewCollection::New();
+
+    d->collectionAxial->AddItem    ( d->view2DAxial );
+    d->collectionSagittal->AddItem ( d->view2DSagittal );
+    d->collectionCoronal->AddItem  ( d->view2DCoronal );
+    
     d->observer = v3dViewObserver::New();
-    d->observer->SetSlider(d->slider);
-    d->view2DAxial->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 5);
+    d->observer->setSlider(d->slider);
+    //d->view2DAxial->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
+    d->view2DAxial->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
+    d->observer->setView (d->view2DAxial);
 
     QAction *axialAct = new QAction(tr("Axial"), d->vtkWidget);
     connect(axialAct, SIGNAL(triggered()), this, SLOT(onMenuAxialTriggered()));
@@ -270,7 +294,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     QAction *mprAct = new QAction(tr("MPR"), d->vtkWidget);
     connect(mprAct, SIGNAL(triggered()), this, SLOT(onMenu3DMPRTriggered()));
 	
-	QAction *offAct = new QAction(tr("Off"), d->vtkWidget);
+    QAction *offAct = new QAction(tr("Off"), d->vtkWidget);
     connect(offAct, SIGNAL(triggered()), this, SLOT(onMenu3DOffTriggered()));
     
     QAction *zoomAct = new QAction(tr("Zoom"), d->vtkWidget);
@@ -294,7 +318,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     tridMenu->addAction (maxipAct);
     tridMenu->addAction (minipAct);
     tridMenu->addAction (mprAct);
-	tridMenu->addAction (offAct);
+    tridMenu->addAction (offAct);
 
     d->menu->addSeparator();
     d->menu->addAction(zoomAct);
@@ -416,20 +440,30 @@ void v3dView::update(void)
 
 void v3dView::link(dtkAbstractView *other)
 {
-    if(!d->collection)
+    if(!other || other->description()!=tr("v3dView"))
         return;
 
-    if(!other)
-        return;
+    d->linkedViews.append (other);
 
-    if(vtkImageView *view = dynamic_cast<vtkImageView*>((vtkObject*)(other->view()))) {
-        d->collection->AddItem (view);
+    if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
+        d->collectionAxial->AddItem    ( otherView->viewAxial() );
+	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
+	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
     }
 }
 
 void v3dView::unlink(dtkAbstractView *other)
 {
-    Q_UNUSED(other);
+    if(!other || other->description()!=tr("v3dView"))
+        return;
+
+    d->linkedViews.removeAll (other);
+    
+    if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
+        d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
+	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
+	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
+    }
 }
 
 void *v3dView::view(void)
@@ -708,6 +742,9 @@ void v3dView::onPropertySet(QString key, QString value)
 	this->onCroppingPropertySet(value);
 
     this->widget()->update();
+    
+    for (int i=0; i<d->linkedViews.count(); i++)
+      d->linkedViews[i]->setProperty (key, value);
 }
 
 void v3dView::onOrientationPropertySet(QString value)
@@ -723,7 +760,8 @@ void v3dView::onOrientationPropertySet(QString value)
 	
 	d->currentView->UnInstallInteractor();
 	d->currentView->SetRenderWindow( 0 );
-	d->currentView->RemoveObserver(d->observer);
+	//d->currentView->RemoveObserver(d->observer);
+	d->currentView->GetInteractorStyle()->RemoveObserver(d->observer);
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->currentView->GetRenderer());
     }
 
@@ -761,7 +799,9 @@ void v3dView::onOrientationPropertySet(QString value)
 
     d->currentView->SetRenderWindow ( d->vtkWidget->GetRenderWindow() );
     //d->currentView->InstallInteractor();
-    d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 5);
+    //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
+    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
+    d->observer->setView ( vtkImageView2D::SafeDownCast (d->currentView) );
 
     d->currentView->SetCurrentPoint (pos);
     d->currentView->SetColorWindow (window);
@@ -1160,13 +1200,14 @@ void v3dView::onZSliderValueChanged (int value)
     if (d->orientation=="3D" || !d->currentView)
         return;
 
-    d->observer->Lock();
+    d->observer->lock();
     if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
         view->SetSlice (value);
-		qApp->processEvents();
+	view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
+	qApp->processEvents();
         d->currentView->Render();		
     }
-    d->observer->UnLock();
+    d->observer->unlock();
 }
 
 void v3dView::onMenuAxialTriggered (void)
