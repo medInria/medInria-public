@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 08:34:45 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Feb 22 20:20:25 2010 (+0100)
+ * Last-Updated: Fri Mar  5 08:51:02 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 3
+ *     Update #: 4
  */
 
 /* Commentary: 
@@ -38,14 +38,12 @@ public:
     static medDataManager *instance(void);
 
     void insert(const medDataIndex& index, dtkAbstractData *data);
-    void insert(int patientId, int studyId, int seriesId, int imageId, dtkAbstractData *data);
 
           dtkAbstractData *  data(const medDataIndex& index);
-          dtkAbstractData *  data(int patientId = -1, int studyId = -1, int seriesId = -1, int imageId = -1);
-    QList<dtkAbstractData *> dataForPatient(int patientId);
-    QList<dtkAbstractData *> dataForStudy  (int   studyId);
-    QList<dtkAbstractData *> dataForSeries (int  seriesId);
-    QList<dtkAbstractData *> dataForImage  (int   imageId);
+    QList<dtkAbstractData *> dataForPatient(int id);
+    QList<dtkAbstractData *> dataForStudy  (int id);
+    QList<dtkAbstractData *> dataForSeries (int id);
+    QList<dtkAbstractData *> dataForImage  (int id);
 
 protected:
      medDataManager(void);

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Mar  4 13:52:22 2010 (+0100)
+ * Last-Updated: Fri Mar  5 09:05:24 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 710
+ *     Update #: 724
  */
 
 /* Commentary: 
@@ -28,6 +28,7 @@
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
+#include <medCore/medViewManager.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseNavigator.h>
@@ -339,29 +340,30 @@ void medViewerArea::split(int rows, int cols)
 
 void medViewerArea::open(const medDataIndex& index)
 {
-    // if(!index.isValid())
-    //     return;
+    if(!((medDataIndex)index).isValid())
+        return;
   
-    dtkAbstractData *data = medDatabaseController::instance()->read(index);
+    dtkAbstractData *data = NULL;
+    dtkAbstractView *view = NULL;
 
-    if (data)
-        medDataManager::instance()->insert(index, data);
+    if(!(data = medDatabaseController::instance()->read(index)))
+        return;
 
-    if (data) {
+    medDataManager::instance()->insert(index, data);
 
-        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView");
+    if(!(view = dtkAbstractViewFactory::instance()->create("v3dView")))
+        return;
 
-        if (!view)
-            return;
-
-	connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
-	
-        view->setData(data);
-        view->reset();
-
-        d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setView(view);
-        d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
-    }
+    medViewManager::instance()->insert(index, view);
+    
+    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
+    
+    view->setData(data);
+    view->reset();
+    
+    d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setView(view);
+    d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
+    
 }
 
 void medViewerArea::onPatientIndexChanged(int id)
@@ -378,7 +380,7 @@ void medViewerArea::onPatientIndexChanged(int id)
     if(!d->view_stacks.contains(id)) {
         view_stack = new medViewerAreaStack(this);
         view_stack->setPatientId(id);
-        connect(view_stack, SIGNAL(dropped(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
+        connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
         connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
         d->view_stacks.insert(id, view_stack);
         d->stack->addWidget(view_stack);
@@ -405,31 +407,7 @@ void medViewerArea::onStudyIndexChanged(int id)
 
 void medViewerArea::onSeriesIndexChanged(int id)
 {
-    medDataIndex index = medDatabaseController::instance()->indexForSeries(id);
-
-    if(!index.isValid())
-        return;
-  
-    dtkAbstractData *data = medDatabaseController::instance()->read(index);
-
-    if (data)
-        medDataManager::instance()->insert(index, data);
-
-    if (data) {
-
-        dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView");
-
-        if (!view)
-            return;
-
-	connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
-	
-        view->setData(data);
-        view->reset();
-
-        d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setView(view);
-        d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
-    }
+    this->open(medDatabaseController::instance()->indexForSeries(id));
 }
 
 void medViewerArea::onImageIndexChanged(int id)

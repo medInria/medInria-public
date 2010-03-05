@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Jan 22 20:03:43 2010 (+0100)
+ * Last-Updated: Fri Mar  5 09:44:20 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 113
+ *     Update #: 115
  */
 
 /* Commentary: 
@@ -66,6 +66,8 @@ bool medDatabaseController::createConnection(void)
 
 bool medDatabaseController::closeConnection(void)
 {
+    qDebug() << __func__;
+
     m_database.close();
 
     return true;

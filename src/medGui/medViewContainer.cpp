@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Mar  4 13:56:48 2010 (+0100)
+ * Last-Updated: Thu Mar  4 21:53:07 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 39
+ *     Update #: 42
  */
 
 /* Commentary: 
@@ -22,7 +22,6 @@
 #include <QtGui>
 
 #include <dtkCore/dtkAbstractView.h>
-
 #include <medCore/medDataIndex.h>
 
 class medViewContainerPrivate

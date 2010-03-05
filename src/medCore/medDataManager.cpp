@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 08:34:55 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Jan 18 14:27:40 2010 (+0100)
+ * Last-Updated: Fri Mar  5 08:52:13 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 13
  */
 
 /* Commentary: 
@@ -43,60 +43,50 @@ void medDataManager::insert(const medDataIndex& index, dtkAbstractData *data)
     d->datas.insert(index, data);
 }
 
-void medDataManager::insert(int patientId, int studyId, int seriesId, int imageId, dtkAbstractData *data)
-{
-    insert(medDataIndex(patientId, studyId, seriesId, imageId), data);
-}
-
 dtkAbstractData *medDataManager::data(const medDataIndex& index)
 {
     return d->datas.value(index);
 }
 
-dtkAbstractData *medDataManager::data(int patientId, int studyId, int seriesId, int imageId)
-{
-    return data(medDataIndex(patientId, studyId, seriesId, imageId));
-}
-
-QList<dtkAbstractData *> medDataManager::dataForPatient(int patientId)
+QList<dtkAbstractData *> medDataManager::dataForPatient(int id)
 {
     QList<dtkAbstractData *> data;
 
     foreach(medDataIndex index, d->datas.keys())
-        if(index.patientId() == patientId)
+        if(index.patientId() == id)
             data << d->datas.value(index);
 
     return data;
 }
 
-QList<dtkAbstractData *> medDataManager::dataForStudy(int studyId)
+QList<dtkAbstractData *> medDataManager::dataForStudy(int id)
 {
     QList<dtkAbstractData *> data;
 
     foreach(medDataIndex index, d->datas.keys())
-        if(index.studyId() == studyId)
+        if(index.studyId() == id)
             data << d->datas.value(index);
 
     return data;
 }
 
-QList<dtkAbstractData *> medDataManager::dataForSeries(int seriesId)
+QList<dtkAbstractData *> medDataManager::dataForSeries(int id)
 {
     QList<dtkAbstractData *> data;
 
     foreach(medDataIndex index, d->datas.keys())
-        if(index.seriesId() == seriesId)
+        if(index.seriesId() == id)
             data << d->datas.value(index);
 
     return data;
 }
 
-QList<dtkAbstractData *> medDataManager::dataForImage(int imageId)
+QList<dtkAbstractData *> medDataManager::dataForImage(int id)
 {
     QList<dtkAbstractData *> data;
 
     foreach(medDataIndex index, d->datas.keys())
-        if(index.imageId() == imageId)
+        if(index.imageId() == id)
             data << d->datas.value(index);
 
     return data;

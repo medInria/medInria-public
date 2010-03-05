@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Mar  4 13:29:28 2010 (+0100)
+ * Last-Updated: Fri Mar  5 09:37:36 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 174
+ *     Update #: 186
  */
 
 /* Commentary: 
@@ -24,8 +24,11 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
+#include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkAbstractView.h>
 
 #include <medCore/medDataManager.h>
+#include <medCore/medViewManager.h>
 
 #include <QtGui>
 
@@ -121,21 +124,39 @@ void medToolBoxRegistration::run(void)
     qDebug() << d->processDropSiteFixed->index();
     qDebug() << d->processDropSiteMoving->index();
     
-    dtkAbstractData *fixedData  = medDataManager::instance()->data(d->processDropSiteFixed->index());
+    dtkAbstractData *fixedData = medDataManager::instance()->data(d->processDropSiteFixed->index());
 
     if(!fixedData) {
         qDebug() << "Unable to retrieve fixed image";
-        return;
+        // return;
     }
 
     dtkAbstractData *movingData = medDataManager::instance()->data(d->processDropSiteMoving->index());
 
     if(!movingData) {
         qDebug() << "Unable to retrieve moving image";
-        return;
+        // return;
     }
+
+    dtkAbstractView *fixedView = medViewManager::instance()->views(d->processDropSiteFixed->index()).first();
+
+    if(!fixedView) {
+        qDebug() << "Unable to retrieve fixed view";
+        // return;
+    }
+
+    dtkAbstractView *movingView = medViewManager::instance()->views(d->processDropSiteMoving->index()).first();
+
+    if(!movingView) {
+        qDebug() << "Unable to retrieve moving view";
+        // return;
+    }
+
+    fixedView->link(movingView);
 
     Q_UNUSED(process);
     Q_UNUSED(fixedData);
     Q_UNUSED(movingData);
+    Q_UNUSED(fixedView);
+    Q_UNUSED(movingView);
 }

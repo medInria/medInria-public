@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 12:47:46 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Dec 21 12:47:46 2009 (+0100)
+ * Last-Updated: Fri Mar  5 08:51:18 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -22,6 +22,7 @@
 
 #include <QtCore/QObject>
 
+#include "medCoreExport.h"
 #include "medDataIndex.h"
 
 class dtkAbstractView;
@@ -29,12 +30,20 @@ class dtkAbstractViewFactory;
 
 class medViewManagerPrivate;
 
-class medViewManager : public QObject
+class MEDCORE_EXPORT medViewManager : public QObject
 {
     Q_OBJECT
 
 public:
     static medViewManager *instance(void);
+
+    void insert(const medDataIndex& index, dtkAbstractView *view);
+
+    QList<dtkAbstractView *> views(const medDataIndex& index);
+    QList<dtkAbstractView *> viewsForPatient(int id);
+    QList<dtkAbstractView *> viewsForStudy  (int id);
+    QList<dtkAbstractView *> viewsForSeries (int id);
+    QList<dtkAbstractView *> viewsForImage  (int id);
 
 protected:
      medViewManager(void);

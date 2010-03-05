@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sat Oct  3 18:27:33 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct  3 18:56:14 2009 (+0200)
+ * Last-Updated: Fri Mar  5 09:01:25 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 10
  */
 
 /* Commentary: 
@@ -33,10 +33,7 @@
 // Preprocessing setup
 // /////////////////////////////////////////////////////////////////
 
-// 401:
-// 509:
-// 801:
-#pragma SWIG nowarn=401, 509, 801, 472
+#pragma SWIG nowarn=362, 378, 401, 503, 509, 801, 472
 
 // /////////////////////////////////////////////////////////////////
 // Macro undefinition
