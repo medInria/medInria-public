@@ -42,8 +42,7 @@ v3dViewFuseInteractor::v3dViewFuseInteractor(): dtkAbstractViewInteractor(), d(n
     
     d->output = dtkAbstractDataFactory::instance()->create ("v3dDataImage");
     if (d->output)
-        d->output->setData ( d->fuse->GetOutput() );
-
+        d->output->setData(d->fuse->GetOutput());
 
     this->addProperty("FusionStyle", QStringList() << "blend" << "checkerboard");
 }
@@ -87,9 +86,23 @@ void v3dViewFuseInteractor::onFusionStylePropertySet (QString value)
         d->fuse->SetFuseMode ( vtkImageFuse::FUSEMODE_GRID );
 }
 
+void v3dViewFuseInteractor::onBlendAlphaValueSet (int value)
+{
+    d->fuse->SetBlendAlpha ((double)value/100.0);
+    if (d->view)
+        d->view->update();
+}
+
 void v3dViewFuseInteractor::onBlendAlphaValueSet (double value)
 {
     d->fuse->SetBlendAlpha (value);
+    if (d->view)
+        d->view->update();
+}
+
+void v3dViewFuseInteractor::onCheckerboardDivisionCountValueSet (int value)
+{
+    d->fuse->SetCheckerAlpha ((double)value/100.0);
     if (d->view)
         d->view->update();
 }

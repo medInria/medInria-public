@@ -210,7 +210,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->widget = new QWidget;
 
     d->slider = new QSlider(Qt::Horizontal, d->widget);
-    d->slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->slider->setFocusPolicy(Qt::NoFocus);
 
     d->anchorButton = new QPushButton(d->widget);
