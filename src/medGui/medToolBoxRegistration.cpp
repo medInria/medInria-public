@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 12:40:37 2010 (+0100)
+ * Last-Updated: Fri Mar  5 18:34:40 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 193
+ *     Update #: 202
  */
 
 /* Commentary: 
@@ -191,6 +191,19 @@ void medToolBoxRegistration::run(void)
             d->fuseView->update();
         }
     }
+
+    dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
+    process->setInput(fixedData, 0);
+    process->setInput(movingData, 1);
+    process->run();
+
+    dtkAbstractData *output = process->output();
+
+    if(output)
+        qDebug() << "prout";
+
+    movingView->setData(output);
+    movingView->update();
 
     Q_UNUSED(fixedData);
     Q_UNUSED(movingData);

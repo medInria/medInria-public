@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 09:05:24 2010 (+0100)
+ * Last-Updated: Fri Mar  5 16:55:30 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 724
+ *     Update #: 725
  */
 
 /* Commentary: 
@@ -369,7 +369,6 @@ void medViewerArea::open(const medDataIndex& index)
     
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setView(view);
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
-    
 }
 
 void medViewerArea::onPatientIndexChanged(int id)
