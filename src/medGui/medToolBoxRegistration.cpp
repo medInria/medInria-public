@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 09:37:36 2010 (+0100)
+ * Last-Updated: Fri Mar  5 10:26:51 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 186
+ *     Update #: 187
  */
 
 /* Commentary: 
@@ -128,28 +128,28 @@ void medToolBoxRegistration::run(void)
 
     if(!fixedData) {
         qDebug() << "Unable to retrieve fixed image";
-        // return;
+        return;
     }
 
     dtkAbstractData *movingData = medDataManager::instance()->data(d->processDropSiteMoving->index());
 
     if(!movingData) {
         qDebug() << "Unable to retrieve moving image";
-        // return;
+        return;
     }
 
     dtkAbstractView *fixedView = medViewManager::instance()->views(d->processDropSiteFixed->index()).first();
 
     if(!fixedView) {
         qDebug() << "Unable to retrieve fixed view";
-        // return;
+        return;
     }
 
     dtkAbstractView *movingView = medViewManager::instance()->views(d->processDropSiteMoving->index()).first();
 
     if(!movingView) {
         qDebug() << "Unable to retrieve moving view";
-        // return;
+        return;
     }
 
     fixedView->link(movingView);
