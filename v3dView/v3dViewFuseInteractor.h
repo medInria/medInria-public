@@ -32,8 +32,8 @@ public:
 public slots:
 	virtual void onPropertySet                       (QString key, QString value);
 	virtual void onFusionStylePropertySet            (QString value);
-	virtual void onBlendAlphaValueSet                (double value);
-	virtual void onCheckerboardDivisionCountValueSet (double value);
+	virtual void onBlendAlphaValueSet                (int value);
+	virtual void onCheckerboardDivisionCountValueSet (int value);
 
 private:
     v3dViewFuseInteractorPrivate *d;

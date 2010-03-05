@@ -87,16 +87,16 @@ void v3dViewFuseInteractor::onFusionStylePropertySet (QString value)
         d->fuse->SetFuseMode ( vtkImageFuse::FUSEMODE_GRID );
 }
 
-void v3dViewFuseInteractor::onBlendAlphaValueSet (double value)
+void v3dViewFuseInteractor::onBlendAlphaValueSet (int value)
 {
-    d->fuse->SetBlendAlpha (value);
+    d->fuse->SetBlendAlpha ((double)value/100.0);
     if (d->view)
         d->view->update();
 }
 
-void v3dViewFuseInteractor::onCheckerboardDivisionCountValueSet (double value)
+void v3dViewFuseInteractor::onCheckerboardDivisionCountValueSet (int value)
 {
-    d->fuse->SetCheckerAlpha (value);
+    d->fuse->SetCheckerAlpha ((double)value/100.0);
     if (d->view)
         d->view->update();
 }
