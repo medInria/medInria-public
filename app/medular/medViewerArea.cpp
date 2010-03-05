@@ -114,6 +114,12 @@ medViewContainer *medViewerAreaStack::current(void)
 
     if(this->currentIndex() == 2)
         return d->container_custom;
+	
+	if(this->currentIndex() == 3)
+        return d->container_registration_compare;
+	
+	if(this->currentIndex() == 4)
+        return d->container_registration_fuse;
 
     return NULL;
 }
@@ -577,6 +583,11 @@ void medViewerArea::setupLayoutFuse(void)
         return;
 
     d->view_stacks.value(d->patientToolBox->patientIndex())->setCurrentIndex(4);
+	
+	if (d->registrationToolBox->fuseView()) {
+	    d->view_stacks.value(d->patientToolBox->patientIndex())->current()->setView(d->registrationToolBox->fuseView());
+        d->view_stacks.value(d->patientToolBox->patientIndex())->current()->setFocus(Qt::MouseFocusReason);
+	}
 }
 
 // /////////////////////////////////////////////////////////////////
