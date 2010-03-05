@@ -130,6 +130,8 @@ public:
 
     QWidget    *widget;
     QSlider    *slider;
+    QPushButton *anchorButton;
+    QPushButton *linkButton;
     QVTKWidget *vtkWidget;
     QMenu      *menu;
     QString orientation;
@@ -208,8 +210,29 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->widget = new QWidget;
 
     d->slider = new QSlider(Qt::Horizontal, d->widget);
-    d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     d->slider->setFocusPolicy(Qt::NoFocus);
+
+    d->anchorButton = new QPushButton(d->widget);
+    d->anchorButton->setText("a");
+    d->anchorButton->setCheckable(true);
+    d->anchorButton->setMaximumHeight(16);
+    d->anchorButton->setMaximumWidth(16);
+    d->anchorButton->setFocusPolicy(Qt::NoFocus);
+    d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    d->linkButton = new QPushButton(d->widget);
+    d->linkButton->setText("l");
+    d->linkButton->setCheckable(true);
+    d->linkButton->setMaximumHeight(16);
+    d->linkButton->setMaximumWidth(16);
+    d->linkButton->setFocusPolicy(Qt::NoFocus);
+    d->linkButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    QButtonGroup *toolButtonGroup = new QButtonGroup(d->widget);
+    toolButtonGroup->addButton(d->anchorButton);
+    toolButtonGroup->addButton(d->linkButton);
+    toolButtonGroup->setExclusive(true);
 
     d->vtkWidget = new QVTKWidget(d->widget);
     d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -222,10 +245,17 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     //     renwin->SetStereoRender(1);
     d->vtkWidget->SetRenderWindow(renwin);
 
+    QHBoxLayout *toolsLayout = new QHBoxLayout;
+    toolsLayout->setContentsMargins(0, 0, 0, 0);
+    toolsLayout->setSpacing(0);
+    toolsLayout->addWidget(d->slider);
+    toolsLayout->addWidget(d->anchorButton);
+    toolsLayout->addWidget(d->linkButton);
+
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(d->slider);
+    layout->addLayout(toolsLayout);
     layout->addWidget(d->vtkWidget);
 
     //d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
