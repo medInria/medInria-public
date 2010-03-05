@@ -50,7 +50,8 @@ public:
     void setSlider(QSlider *slider) {
         this->slider = slider;
     }
-    void setView (vtkImageView2D *view){
+
+    void setView(vtkImageView2D *view){
         this->view = view;
     }
 
@@ -220,6 +221,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->anchorButton->setMaximumWidth(16);
     d->anchorButton->setFocusPolicy(Qt::NoFocus);
     d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->anchorButton->setObjectName("tool");
 
     d->linkButton = new QPushButton(d->widget);
     d->linkButton->setText("l");
@@ -228,11 +230,12 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->linkButton->setMaximumWidth(16);
     d->linkButton->setFocusPolicy(Qt::NoFocus);
     d->linkButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->linkButton->setObjectName("tool");
 
     QButtonGroup *toolButtonGroup = new QButtonGroup(d->widget);
     toolButtonGroup->addButton(d->anchorButton);
     toolButtonGroup->addButton(d->linkButton);
-    toolButtonGroup->setExclusive(true);
+    toolButtonGroup->setExclusive(false);
 
     d->vtkWidget = new QVTKWidget(d->widget);
     d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
