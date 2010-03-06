@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 18:34:40 2010 (+0100)
+ * Last-Updated: Sat Mar  6 11:54:58 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 202
+ *     Update #: 215
  */
 
 /* Commentary: 
@@ -153,20 +153,6 @@ dtkAbstractView *medToolBoxRegistration::fuseView(void)
 
 void medToolBoxRegistration::run(void)
 {
-    dtkAbstractData *fixedData = medDataManager::instance()->data(d->processDropSiteFixed->index());
-
-    if(!fixedData) {
-        qDebug() << "Unable to retrieve fixed image";
-        return;
-    }
-
-    dtkAbstractData *movingData = medDataManager::instance()->data(d->processDropSiteMoving->index());
-
-    if(!movingData) {
-        qDebug() << "Unable to retrieve moving image";
-        return;
-    }
-
     dtkAbstractView *fixedView = medViewManager::instance()->views(d->processDropSiteFixed->index()).first();
 
     if(!fixedView) {
@@ -182,6 +168,20 @@ void medToolBoxRegistration::run(void)
     }
 
     fixedView->link(movingView);
+
+    dtkAbstractData *fixedData = medDataManager::instance()->data(d->processDropSiteFixed->index());
+    
+    if(!fixedData) {
+        qDebug() << "Unable to retrieve fixed image";
+        return;
+    }
+
+    dtkAbstractData *movingData = medDataManager::instance()->data(d->processDropSiteMoving->index());
+
+    if(!movingData) {
+        qDebug() << "Unable to retrieve moving image";
+        return;
+    }
 	
     if (d->fuseView) {
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
@@ -199,16 +199,10 @@ void medToolBoxRegistration::run(void)
 
     dtkAbstractData *output = process->output();
 
-    if(output)
-        qDebug() << "prout";
-
-    movingView->setData(output);
-    movingView->update();
-
-    Q_UNUSED(fixedData);
-    Q_UNUSED(movingData);
-    Q_UNUSED(fixedView);
-    Q_UNUSED(movingView);
+    if(output) {
+        movingView->setData(output);
+        movingView->update();
+    }
 }
 
 void medToolBoxRegistration::onBlendModeSet(bool value)

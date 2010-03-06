@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 12:47:46 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 08:51:18 2010 (+0100)
+ * Last-Updated: Sat Mar  6 11:49:01 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 9
+ *     Update #: 12
  */
 
 /* Commentary: 
@@ -44,6 +44,8 @@ public:
     QList<dtkAbstractView *> viewsForStudy  (int id);
     QList<dtkAbstractView *> viewsForSeries (int id);
     QList<dtkAbstractView *> viewsForImage  (int id);
+
+    medDataIndex index(dtkAbstractView *view);
 
 protected:
      medViewManager(void);

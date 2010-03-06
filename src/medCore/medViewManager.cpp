@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 12:47:51 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 09:06:06 2010 (+0100)
+ * Last-Updated: Sat Mar  6 11:58:28 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 18
+ *     Update #: 27
  */
 
 /* Commentary: 
@@ -39,8 +39,6 @@ medViewManager *medViewManager::instance(void)
 void medViewManager::insert(const medDataIndex& index, dtkAbstractView *view)
 {
     d->views[index] << view;
-
-    qDebug() << __func__ << d->views;
 }
 
 QList<dtkAbstractView *> medViewManager::views(const medDataIndex& index)
@@ -90,6 +88,22 @@ QList<dtkAbstractView *> medViewManager::viewsForImage(int id)
             views << d->views.value(index);
 
     return views;
+}
+
+//! Get the index associated to a view.
+/*! 
+ *  Warning, this method is quite consuming, use this as little as
+ *  possible.
+ */
+
+medDataIndex medViewManager::index(dtkAbstractView *view)
+{
+    foreach(medDataIndex index, d->views.keys())
+        foreach(dtkAbstractView *v, d->views.value(index))
+            if(v == view)
+                return index;
+
+    return medDataIndex();
 }
 
 medViewManager::medViewManager(void) : d(new medViewManagerPrivate)
