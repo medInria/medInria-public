@@ -201,6 +201,7 @@ void medToolBoxRegistration::run(void)
 
     if(output) {
         movingView->setData(output);
+		movingView->reset();
         movingView->update();
     }
 }
