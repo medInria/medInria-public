@@ -79,14 +79,20 @@
   }									\
   int itkDataImage##suffix::xDimension(void)				\
   {									\
+	if (d->image.IsNull()) \
+		return -1; \
     return d->image->GetLargestPossibleRegion().GetSize()[0];		\
   }									\
   int itkDataImage##suffix::yDimension(void)				\
   {									\
+	if (d->image.IsNull()) \
+		return -1; \
     return d->image->GetLargestPossibleRegion().GetSize()[1];		\
   }									\
   int itkDataImage##suffix::zDimension(void)				\
   {									\
+	if (d->image.IsNull()) \
+		return -1; \
     return d->image->GetLargestPossibleRegion().GetSize()[2];		\
   }									\
   int itkDataImage##suffix::minRangeValue(void)				\
