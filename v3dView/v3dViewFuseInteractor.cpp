@@ -8,6 +8,7 @@
 
 #include "v3dView.h"
 
+#include <vtkImageCast.h>
 #include "vtkImageFuse.h"
 
 #include "itkImageToVTKImageFilter.h"
@@ -126,9 +127,14 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, converter->GetOutput() );
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
     else if (data->description()==tr("itkDataImageUChar3")) {
       typedef unsigned char ScalarType;
@@ -137,9 +143,14 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, converter->GetOutput() );
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
 
     else if (data->description()==tr("itkDataImageShort3")) {
@@ -149,9 +160,14 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, converter->GetOutput() );
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
 
     else if (data->description()==tr("itkDataImageUShort3")) {
@@ -161,9 +177,14 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, converter->GetOutput() );
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
 
     else if (data->description()==tr("itkDataImageInt3")) {
@@ -173,9 +194,14 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, converter->GetOutput() );
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
 
     else if (data->description()==tr("itkDataImageUInt3")) {
@@ -185,9 +211,14 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, converter->GetOutput() );
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
 
     else if (data->description()==tr("itkDataImageLong3")) {
@@ -197,9 +228,14 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
-      
-      d->fuse->SetInput (channel, converter->GetOutput() );
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
+
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
 
     else if (data->description()==tr("itkDataImageULong3")) {
@@ -209,9 +245,14 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, converter->GetOutput() );
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
 
     else if (data->description()==tr("itkDataImageFloat3")) {
@@ -221,9 +262,14 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, converter->GetOutput() );
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
 
     else if (data->description()==tr("itkDataImageDouble3")) {
@@ -233,12 +279,24 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       ConverterType::Pointer converter = ConverterType::New();
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
-      converter->SetReferenceCount (2);
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput (converter->GetOutput());
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, converter->GetOutput() );
+      d->fuse->SetInput (channel, caster->GetOutput() );
+      caster->Delete();
     }
     else if (data->description()==tr("vtkDataImage")) {
-      d->fuse->SetInput (channel, dynamic_cast<vtkImageData*>( (vtkObject*)(data->data()) ) );
+
+      vtkImageCast *caster = vtkImageCast::New();
+      caster->SetInput ( dynamic_cast<vtkImageData*>( (vtkObject*)(data->data()) ) );
+      caster->SetOutputScalarTypeToFloat ();
+      caster->GetOutput()->Update();
+
+      d->fuse->SetInput (channel, caster->GetOutput());
+      caster->Delete();
     }
     else
       return;
@@ -251,7 +309,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
     if (d->data1 && d->data2 && d->view) {
         d->fuse->Update();
 	//d->output->setData (d->fuse->GetOutput());
-	
+
 	if (d->data1->hasMetaData ("PatientName") && d->data2->hasMetaData ("PatientName"))
 	    d->output->addMetaData ("PatientName",
 				    tr("Fusion - ") +
