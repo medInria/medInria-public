@@ -24,6 +24,7 @@
 
 class medToolBoxRegistrationPrivate;
 class dtkAbstractView;
+class medDataIndex;
 
 class MEDGUI_EXPORT medToolBoxRegistration : public medToolBox
 {
@@ -33,7 +34,7 @@ public:
      medToolBoxRegistration(QWidget *parent = 0);
     ~medToolBoxRegistration(void);
 	
-	dtkAbstractView *fuseView(void);
+    dtkAbstractView *fuseView(void);
 
 signals:
     void setupLayoutCompare(void);
@@ -41,9 +42,12 @@ signals:
 
 public slots:
     void run(void);
-	
-	void onBlendModeSet(bool value);
-	void onCheckerboardModeSet(bool value);
+
+    void onMovingImageDropped (void);
+    void onFixedImageDropped (void);
+    
+    void onBlendModeSet(bool value);
+    void onCheckerboardModeSet(bool value);
 	
 private:
     medToolBoxRegistrationPrivate *d;

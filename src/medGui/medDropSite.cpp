@@ -95,6 +95,8 @@ void medDropSite::dropEvent(QDropEvent *event)
     setBackgroundRole(QPalette::Base);
 
     event->acceptProposedAction();
+    
+    emit objectDropped();
 }
 
 void medDropSite::paintEvent(QPaintEvent *event)

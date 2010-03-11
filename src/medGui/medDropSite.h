@@ -24,7 +24,8 @@
 
 #include <QtGui/QLabel>
 
-class medDataIndex;
+#include <medCore/medDataIndex.h>
+
 class medDropSitePrivate;
 
 class MEDGUI_EXPORT medDropSite : public QLabel
@@ -40,13 +41,16 @@ public:
 public:
     medDataIndex index(void) const;
 
+signals:
+    void objectDropped (void);
+    
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
     void paintEvent(QPaintEvent *event);
-
+    
 private:
     medDropSitePrivate *d;
 };

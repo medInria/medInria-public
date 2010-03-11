@@ -39,10 +39,10 @@ public:
     medDropSite *processDropSiteFixed;
     medDropSite *processDropSiteMoving;
 	
-	QRadioButton *blendRadio;
-	QRadioButton *checkerboardRadio;
+    QRadioButton *blendRadio;
+    QRadioButton *checkerboardRadio;
 	
-	dtkAbstractView *fuseView;
+    dtkAbstractView *fuseView;
 };
 
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
@@ -126,6 +126,9 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     
     connect(d->blendRadio, SIGNAL(toggled(bool)), this, SLOT(onBlendModeSet(bool)));
     connect(d->checkerboardRadio, SIGNAL(toggled(bool)), this, SLOT(onCheckerboardModeSet(bool)));
+
+    connect (d->processDropSiteFixed,  SIGNAL (objectDropped ()), this, SLOT (onFixedImageDropped ()));
+    connect (d->processDropSiteMoving, SIGNAL (objectDropped ()), this, SLOT (onMovingImageDropped ()));
     
     // /////////////////////////////////////////////////////////////////
     // Setup
@@ -182,15 +185,6 @@ void medToolBoxRegistration::run(void)
         qDebug() << "Unable to retrieve moving image";
         return;
     }
-	
-    if (d->fuseView) {
-        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-            interactor->setData(fixedData,  0);
-            interactor->setData(movingData, 1);
-            d->fuseView->reset();
-            d->fuseView->update();
-        }
-    }
 
     dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
     process->setInput(fixedData, 0);
@@ -201,8 +195,17 @@ void medToolBoxRegistration::run(void)
 
     if(output) {
         movingView->setData(output);
-		movingView->reset();
+	movingView->reset();
         movingView->update();
+	if (d->fuseView) {
+	  if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+            interactor->setData(fixedData,  0);
+            interactor->setData(output, 1);
+            d->fuseView->reset();
+            d->fuseView->update();
+        }
+    }
+
     }
 }
 
@@ -224,4 +227,47 @@ void medToolBoxRegistration::onCheckerboardModeSet(bool value)
                 interactor->setProperty("FusionStyle", "checkerboard");
                 d->fuseView->update();
             }
+}
+
+void medToolBoxRegistration::onFixedImageDropped (void)
+{
+
+  medDataIndex index = d->processDropSiteFixed->index();
+  
+  if (!index.isValid())
+      return;
+
+  dtkAbstractData *fixedData = medDataManager::instance()->data(index);
+  
+  if (!fixedData)
+      return;
+
+  if (d->fuseView)
+    if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+            interactor->setData(fixedData,  0);
+            d->fuseView->update();
+	    d->fuseView->reset();
+            d->fuseView->update();
+    }
+}
+
+void medToolBoxRegistration::onMovingImageDropped (void)
+{
+  medDataIndex index = d->processDropSiteMoving->index();
+  
+  if (!index.isValid())
+      return;
+
+  dtkAbstractData *movingData = medDataManager::instance()->data(index);
+  
+  if (!movingData)
+      return;
+
+  if (d->fuseView)
+    if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+            interactor->setData(movingData,  1);
+            d->fuseView->update();
+	    d->fuseView->reset();
+            d->fuseView->update();
+    }
 }
