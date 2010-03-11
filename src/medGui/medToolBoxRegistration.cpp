@@ -22,6 +22,7 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -46,8 +47,8 @@ public:
     dtkAbstractView *movingView;
     dtkAbstractView *fuseView;
 
-    dtkAbstractData *fixedData;
-    dtkAbstractData *movingData;
+    dtkAbstractDataImage *fixedData;
+    dtkAbstractDataImage *movingData;
 };
 
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
@@ -221,7 +222,7 @@ void medToolBoxRegistration::onFixedImageDropped (void)
     if (!index.isValid())
         return;
 
-    d->fixedData = medDataManager::instance()->data(index);
+    d->fixedData = dynamic_cast<dtkAbstractDataImage*>( medDataManager::instance()->data(index) );
   
     if (!d->fixedData)
         return;
@@ -239,9 +240,14 @@ void medToolBoxRegistration::onFixedImageDropped (void)
     if (d->fuseView)
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
 	    interactor->setData(d->fixedData,  0);
-	    if (d->movingData) {
-	        d->fuseView->reset();
-		d->fuseView->update();
+	    if (d->movingData &&
+		d->fixedData->xDimension()==d->movingData->xDimension() &&
+		d->fixedData->yDimension()==d->movingData->yDimension() &&
+		d->fixedData->zDimension()==d->movingData->zDimension()) {
+	              interactor->setData(d->fixedData,   0);
+		      interactor->setData(d->movingData,  1);
+		      d->fuseView->reset();
+		      d->fuseView->update();
 	    }
 	}
 }
@@ -253,7 +259,7 @@ void medToolBoxRegistration::onMovingImageDropped (void)
     if (!index.isValid())
         return;
 
-    d->movingData = medDataManager::instance()->data(index);
+    d->movingData = dynamic_cast<dtkAbstractDataImage*>( medDataManager::instance()->data(index) );
   
     if (!d->movingData)
         return;
@@ -270,10 +276,14 @@ void medToolBoxRegistration::onMovingImageDropped (void)
 
     if (d->fuseView)
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-            interactor->setData(d->movingData,  1);
-	    if (d->fixedData) {
-	        d->fuseView->reset();
-		d->fuseView->update();
+	    if (d->fixedData &&
+		d->fixedData->xDimension()==d->movingData->xDimension() &&
+		d->fixedData->yDimension()==d->movingData->yDimension() &&
+		d->fixedData->zDimension()==d->movingData->zDimension()) {
+	            interactor->setData(d->fixedData,   0);
+	            interactor->setData(d->movingData,  1);
+		    d->fuseView->reset();
+		    d->fuseView->update();
 	    }
 	}
 }
