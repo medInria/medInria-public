@@ -116,12 +116,14 @@ add_library(${PROJECT_NAME} SHARED
 )
 
 target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
   dtkCore
-  ${ITK_LIBRARIES}
+  vtkDataManagement
   vtkCommon
   vtkFiltering
   vtkRendering
   itkAddOn
-  vtkDataManagement
+  ITKIOReview  
+  ${ITK_LIBRARIES}
+  ${QT_LIBRARIES}
 )
+
