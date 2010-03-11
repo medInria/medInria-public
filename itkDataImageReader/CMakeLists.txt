@@ -102,11 +102,15 @@ include(${vtkINRIA3D_USE_FILE})
 find_package(VTK)
 include(${VTK_USE_FILE})
 
+set(ITK_LIB_STYLE "STATIC")
+if (ITK_BUILD_SHARED)
+   set(ITK_LIB_STYLE "SHARED")
+endif (ITK_BUILD_SHARED)
 
 set(ITKDCMTKIO_SOURCES
 itkDCMTKImageIO.cxx
 )
-add_library(ITKDCMTKIO SHARED
+add_library(ITKDCMTKIO ${ITK_LIB_STYLE}
 ${ITKDCMTKIO_SOURCES}
 )
 target_link_libraries(ITKDCMTKIO
@@ -210,6 +214,8 @@ add_executable(itkDCMTKReaderTest
   
 target_link_libraries(itkDCMTKReaderTest
   vtkRenderingAddOn
+  vtkWidgetsAddOn
+  vtkWidgets
   vtkRendering
   vtkIO
   vtkDataManagement
@@ -223,6 +229,8 @@ add_executable(itkStreamedReaderTest
   
 target_link_libraries(itkStreamedReaderTest
   vtkRenderingAddOn
+  vtkWidgetsAddOn
+  vtkWidgets
   vtkRendering
   vtkIO
   vtkDataManagement
