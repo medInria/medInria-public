@@ -1,0 +1,25 @@
+/* XPM */
+static const char *collapse_xpm[] =
+{
+/* width height ncolors chars_per_pixel */
+"11 11 6 1",
+/* colors */
+"A c None",
+"B c #CCCCCCCCCCCC",
+"C c #EEEEEEEEEEEE",
+"D c #DDDDDDDDDDDD",
+"E c #BBBBBBBBBBBB",
+"F c #AAAAAAAAAAAA",
+/* pixels */
+"ACAAAAAAAAA",
+"ABEAAAAAAAA",
+"AFEEBAAAAAA",
+"AEEFEEDAAAA",
+"AEFEFEFBCAA",
+"AFEFEFEFEBA",
+"AEEEFEFBCAA",
+"AEFFEEDAAAA",
+"AFEEDAAAAAA",
+"ABBCAAAAAAA",
+"ACAAAAAAAAA",
+};

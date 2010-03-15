@@ -1,0 +1,27 @@
+
+
+SET(TEST 
+  TestSynchronizedViews
+)
+
+SET(EXE_NAME ${TEST})
+ADD_EXECUTABLE(${EXE_NAME} ${TEST}.cxx)
+
+TARGET_LINK_LIBRARIES(${EXE_NAME}
+	${vtkINRIA3D_LIB_RENDERING}
+)
+
+IF (KWWidgets_FOUND)
+  INCLUDE("${KWWidgets_CMAKE_DIR}/KWWidgetsPathsMacros.cmake")
+  KWWidgets_GENERATE_SETUP_PATHS_SCRIPTS("${CMAKE_CURRENT_BINARY_DIR}")
+  SET(LAUNCHER_EXE_NAME "TestSynchronizedViewsLauncher")
+  KWWidgets_GENERATE_SETUP_PATHS_LAUNCHER(
+    "${CMAKE_CURRENT_BINARY_DIR}" "${LAUNCHER_EXE_NAME}" "" "TestSynchronizedViews")
+  ADD_TEST(${TEST} 
+    ${EXECUTABLE_OUTPUT_PATH}/TestSynchronizedViews ${ARGN})
+ENDIF(KWWidgets_FOUND)
+
+
+
+
+

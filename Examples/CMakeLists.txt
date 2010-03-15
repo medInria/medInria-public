@@ -1,0 +1,8 @@
+SUBDIRS(
+SynchronizedViews
+FibersManager
+IsosurfacesManager
+TensorManager
+CompareImageManager
+DataManager
+)

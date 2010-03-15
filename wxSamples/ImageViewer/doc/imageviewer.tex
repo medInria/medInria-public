@@ -1,0 +1,97 @@
+\index{}\chapter{Image Viewer Module}
+\label{sec:imageviewer}
+
+\minitoc \ \\
+
+\begin{figure}[htbp]
+  \centering \includegraphics[width=0.95\linewidth]{imageviewer1}
+  \caption{{\bf The Image Viewer window, shown here in the preview screen where some
+      volumes have been imported from a DICOM exam.}
+  \label{fig:imageviewer}}
+\end{figure}
+
+This module is a simple but yet powerfull medical image browser. No data processing can be
+performed from here, for that please refer to the other modules.
+
+From this module you can quickly open several images in a ``web browser style''. It also provide an easy-to-use DICOM
+importer and a ``radiologic convention reorientation tool''. 
+
+\section{File Formats}
+\label{sec:fileformats}
+\ \\
+
+\ifalone
+\input{fileformats}
+\else
+	\input{../../../../vtkINRIA3D/src/wxSamples/ImageViewer/doc/fileformats}
+\fi
+
+\ \\
+
+\section{DICOM import}
+\label{sec:dicomimport}
+\ \\
+
+\ifalone
+\input{dicomimport}
+\else
+	\input{../../../../vtkINRIA3D/src/wxSamples/ImageViewer/doc/dicomimport}
+\fi
+
+
+
+All the DICOM exam volumes are now visible in the preview window. For the user
+convinience, a ``save all'' button has been added in order to quickly save all the loaded
+images in a given directory. They will be saved in ITK Analyze format (.hdr - .img). 
+
+\section{Image browsing}
+\label{sec:imagebrowsing}
+\ \\
+
+The preview window shows every volume loaded in the Image Viewer. you can quickly access
+to one of the images by clicking on the down arrow icon in the upper right corner. it will
+pop up a list of the images. 
+In the preview window, you can choose to link (default) or unlink the views for the
+current chosen interaction (see Sect. \ref{sec:2d3dviewinteractions}). The user can click
+in one tabulation to switch to the corresponding image. When one of the image is shown,
+you can easily delete it by clicking in its corresponding cross. 
+\ \\
+
+\section{2D-3D view interactions}
+\label{sec:2d3dviewinteractions}
+\ \\
+
+\subsection{2D Views}
+\label{sec:2dview}
+\ \\
+
+\ifalone
+\input{view2d}
+\else
+	\input{../../../../vtkINRIA3D/src/wxSamples/ImageViewer/doc/view2d}
+\fi
+
+\subsection{3D View}
+\label{sec:3dview}
+\ \\
+
+\ifalone
+\input{view3d}
+\else
+	\input{../../../../vtkINRIA3D/src/wxSamples/ImageViewer/doc/view3d}
+\fi
+
+\ \\
+
+
+\section{Image reorientation tool}
+\label{sec:imagereorientation}
+\ \\
+
+\ifalone
+\input{reorientationtool}
+\else
+	\input{../../../../vtkINRIA3D/src/wxSamples/ImageViewer/doc/reorientationtool}
+\fi
+
+
