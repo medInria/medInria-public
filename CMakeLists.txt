@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 2.4)
+cmake_minimum_required(VERSION 2.6)
 
 IF(COMMAND cmake_policy)
-  cmake_policy(VERSION 2.4)
+  cmake_policy(VERSION 2.6)
   cmake_policy(SET CMP0005 OLD)
   cmake_policy(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
@@ -270,7 +270,6 @@ IF( vtkINRIA3D_USE_HWSHADING )
     MESSAGE(FATAL_ERROR " VTK must be compiled with VTK_USE_GLSL_SHADERS at ON to use the HWShading library. This option is only available with VTK>=5.1.")
   ENDIF( NOT VTK_USE_GLSL_SHADERS )
 ENDIF( vtkINRIA3D_USE_HWSHADING )
-
 
 
 # Create the list of include directories needed for vtkINRIA3D header files.
