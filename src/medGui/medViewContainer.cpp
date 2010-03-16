@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Mar 16 19:44:09 2010 (+0100)
+ * Last-Updated: Tue Mar 16 20:10:52 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 227
+ *     Update #: 266
  */
 
 /* Commentary: 
@@ -94,53 +94,59 @@ void medViewContainer::setMulti(bool multi)
 
 void medViewContainer::setView(dtkAbstractView *view)
 {
-    static int size = 1;
-
-    qDebug() << __func__ << d->layout->count();
-
     if (!view)
         return;
 
-    if (!d->multi && d->layout->count())
-        return;
+    qDebug() << __func__;
 
-    // --
+    if(!d->multi) { // -- Single
 
-    QList<QWidget *> content;
+        if (d->layout->count())
+            return;
 
-    for(int i = 0; i < d->layout->rowCount() ; i++) {
-        for(int j = 0; j < d->layout->columnCount() ; j++) {
-            if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
-                content << item->widget();
-                d->layout->removeItem(item);
+        d->layout->setContentsMargins(1, 1, 1, 1);    
+        d->layout->addWidget(view->widget(), 0, 0);
+        d->view = view;
+
+    } else { // -- Multi 
+
+        qDebug() << "Adding image to multi view";
+
+        static int size = 1;
+        
+        QList<QWidget *> content;
+        
+        for(int i = 0; i < d->layout->rowCount() ; i++) {
+            for(int j = 0; j < d->layout->columnCount() ; j++) {
+                if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+                    content << item->widget();
+                    d->layout->removeItem(item);
+                }
             }
         }
-    }
-
-    if(QWidget *widget = view->widget())
-        content << widget;
-
-    // qreal ratio = (qreal)this->width() / (qreal)this->height();
-
-    size = (int)(ceil(sqrt((qreal)content.count())));
-
-    for(int i = 0; i < content.count(); i++) {
         
-        int row = i/size;
-        int col = i%size;
+        medViewContainer *container = new medViewContainer(this);
+        container->setView(view);
 
-        // qDebug() << "Adding widget" << i << "at" << row << col;
+        content << container;
         
-        d->layout->addWidget(content.at(i), row, col);
+        size = (int)(ceil(sqrt((qreal)content.count())));
+        
+        for(int i = 0; i < content.count(); i++) {
+            
+            int row = i/size;
+            int col = i%size;
+            
+            d->layout->addWidget(content.at(i), row, col);
+        }
+        d->layout->setContentsMargins(1, 1, 1, 1);    
+        d->view = view;
     }
-    
-    d->layout->setContentsMargins(1, 1, 1, 1);    
-    d->view = view;
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
 {
-    this->setAttribute(Qt::WA_UpdatesDisabled, true);
+    // this->setAttribute(Qt::WA_UpdatesDisabled, true);
 
     setBackgroundRole(QPalette::Highlight);
 
@@ -161,9 +167,14 @@ void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainer::dropEvent(QDropEvent *event)
 {
-    this->setAttribute(Qt::WA_UpdatesDisabled, false);
+    // this->setAttribute(Qt::WA_UpdatesDisabled, false);
 
-    s_current = this;
+    if(medViewContainer *container = dynamic_cast<medViewContainer *>(this->parentWidget())) {
+        if(container->d->multi)
+            s_current = container;
+    }
+    else
+        s_current = this;
 
     this->update();
 
@@ -186,6 +197,12 @@ void medViewContainer::dropEvent(QDropEvent *event)
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
+    // if(medViewContainer *container = dynamic_cast<medViewContainer *>(this->parentWidget())) {
+    //     if(container->d->multi)
+    //         s_current = container;
+    // } else
+    //         s_current = this;
+    
     s_current = this;
 
     if(dtkAbstractView *view = this->view())
