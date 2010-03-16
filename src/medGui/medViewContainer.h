@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:53:58 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Mar  4 21:51:59 2010 (+0100)
+ * Last-Updated: Tue Mar 16 15:46:25 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 16
+ *     Update #: 18
  */
 
 /* Commentary: 
@@ -41,6 +41,7 @@ public:
 
     dtkAbstractView *view(void);
 
+    void setMulti(bool multi);
     void setView(dtkAbstractView *view);
 
 signals:

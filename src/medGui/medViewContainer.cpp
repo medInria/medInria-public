@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 17:00:35 2010 (+0100)
+ * Last-Updated: Tue Mar 16 19:44:09 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 44
+ *     Update #: 227
  */
 
 /* Commentary: 
@@ -27,6 +27,8 @@
 class medViewContainerPrivate
 {
 public:
+    bool multi;
+
     QGridLayout *layout;
 
     dtkAbstractView *view;
@@ -34,6 +36,8 @@ public:
 
 medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new medViewContainerPrivate)
 {
+    d->multi = false;
+
     d->layout = new QGridLayout(this);
     d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(2);
@@ -65,6 +69,9 @@ medViewContainer *medViewContainer::current(void)
 
 void medViewContainer::split(int rows, int cols)
 {
+    if(d->multi)
+        return;
+
     if (d->layout->count())
         return;
 
@@ -80,23 +87,61 @@ dtkAbstractView *medViewContainer::view(void)
     return d->view;
 }
 
+void medViewContainer::setMulti(bool multi)
+{
+    d->multi = multi;
+}
+
 void medViewContainer::setView(dtkAbstractView *view)
 {
+    static int size = 1;
+
+    qDebug() << __func__ << d->layout->count();
+
     if (!view)
         return;
 
-    if (d->layout->count())
+    if (!d->multi && d->layout->count())
         return;
 
-    if(QWidget *widget = view->widget()) {
-        d->layout->setContentsMargins(1, 1, 1, 1);
-        d->layout->addWidget(widget, 0, 0);
-        d->view = view;
+    // --
+
+    QList<QWidget *> content;
+
+    for(int i = 0; i < d->layout->rowCount() ; i++) {
+        for(int j = 0; j < d->layout->columnCount() ; j++) {
+            if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+                content << item->widget();
+                d->layout->removeItem(item);
+            }
+        }
     }
+
+    if(QWidget *widget = view->widget())
+        content << widget;
+
+    // qreal ratio = (qreal)this->width() / (qreal)this->height();
+
+    size = (int)(ceil(sqrt((qreal)content.count())));
+
+    for(int i = 0; i < content.count(); i++) {
+        
+        int row = i/size;
+        int col = i%size;
+
+        // qDebug() << "Adding widget" << i << "at" << row << col;
+        
+        d->layout->addWidget(content.at(i), row, col);
+    }
+    
+    d->layout->setContentsMargins(1, 1, 1, 1);    
+    d->view = view;
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
 {
+    this->setAttribute(Qt::WA_UpdatesDisabled, true);
+
     setBackgroundRole(QPalette::Highlight);
 
     event->acceptProposedAction();
@@ -116,6 +161,8 @@ void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainer::dropEvent(QDropEvent *event)
 {
+    this->setAttribute(Qt::WA_UpdatesDisabled, false);
+
     s_current = this;
 
     this->update();

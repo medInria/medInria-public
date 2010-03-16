@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 16:55:30 2010 (+0100)
+ * Last-Updated: Tue Mar 16 16:06:57 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 725
+ *     Update #: 740
  */
 
 /* Commentary: 
@@ -66,6 +66,7 @@ medViewerAreaStack::medViewerAreaStack(QWidget *parent) : QStackedWidget(parent)
 {
     d->container_single = new medViewContainer(this);
     d->container_multi = new medViewContainer(this);
+    d->container_multi->setMulti(true);
     d->container_custom = new medViewContainer(this);
     d->container_registration_compare = new medViewContainer(this);
     d->container_registration_compare->split(1, 2);
@@ -115,13 +116,28 @@ medViewContainer *medViewerAreaStack::current(void)
     if(this->currentIndex() == 2)
         return d->container_custom;
 	
-	if(this->currentIndex() == 3)
+    if(this->currentIndex() == 3)
         return d->container_registration_compare;
-	
-	if(this->currentIndex() == 4)
+    
+    if(this->currentIndex() == 4)
         return d->container_registration_fuse;
 
     return NULL;
+}
+
+medViewContainer *medViewerAreaStack::single(void)
+{
+    return d->container_single;
+}
+
+medViewContainer *medViewerAreaStack::multi(void)
+{
+    return d->container_multi;
+}
+
+medViewContainer *medViewerAreaStack::custom(void)
+{
+    return d->container_custom;
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -362,13 +378,15 @@ void medViewerArea::open(const medDataIndex& index)
 
     medViewManager::instance()->insert(index, view);
     
-    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
-    
     view->setData(data);
     view->reset();
     
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setView(view);
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
+
+    // d->view_stacks.value(d->patientToolBox->patientIndex())->multi()->current()->setView(view);
+
+    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
 }
 
 void medViewerArea::onPatientIndexChanged(int id)
