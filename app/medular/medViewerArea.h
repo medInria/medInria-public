@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Mar 16 15:35:51 2010 (+0100)
+ * Last-Updated: Wed Mar 17 18:55:15 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 63
+ *     Update #: 64
  */
 
 /* Commentary: 
@@ -42,6 +42,7 @@ public:
     ~medViewerAreaStack(void);
 
     medViewContainer *current(void);
+
     medViewContainer *single(void);
     medViewContainer *multi(void);
     medViewContainer *custom(void);

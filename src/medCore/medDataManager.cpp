@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 08:34:55 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 08:52:13 2010 (+0100)
+ * Last-Updated: Wed Mar 17 18:48:48 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 13
+ *     Update #: 17
  */
 
 /* Commentary: 
@@ -41,6 +41,13 @@ medDataManager *medDataManager::instance(void)
 void medDataManager::insert(const medDataIndex& index, dtkAbstractData *data)
 {
     d->datas.insert(index, data);
+}
+
+void medDataManager::remove(const medDataIndex& index)
+{
+    delete d->datas.value(index);
+
+    d->datas.remove(index);
 }
 
 dtkAbstractData *medDataManager::data(const medDataIndex& index)

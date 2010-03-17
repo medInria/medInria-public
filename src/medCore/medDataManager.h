@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 08:34:45 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 08:51:02 2010 (+0100)
+ * Last-Updated: Wed Mar 17 18:25:19 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 5
  */
 
 /* Commentary: 
@@ -38,6 +38,7 @@ public:
     static medDataManager *instance(void);
 
     void insert(const medDataIndex& index, dtkAbstractData *data);
+    void remove(const medDataIndex& index);
 
           dtkAbstractData *  data(const medDataIndex& index);
     QList<dtkAbstractData *> dataForPatient(int id);

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:38:39 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 22:52:33 2010 (+0100)
+ * Last-Updated: Wed Mar 17 11:05:57 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 3
+ *     Update #: 4
  */
 
 /* Commentary: 
@@ -84,7 +84,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
     patientQuery.prepare("SELECT name, thumbnail FROM patient WHERE id = :id");
     patientQuery.bindValue(":id", patientId);
     if(!patientQuery.exec())
-        qDebug() << DTK_COLOR_FG_RED << patientQuery.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << patientQuery.lastError() << DTK_NO_COLOR;
 
     if(patientQuery.first())
         patientName = patientQuery.value(0).toString();
@@ -100,7 +100,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
     studyQuery.prepare("SELECT id, name, thumbnail FROM study WHERE patient = :patient");
     studyQuery.bindValue(":patient", patientId);
     if(!studyQuery.exec())
-        qDebug() << DTK_COLOR_FG_RED << studyQuery.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << studyQuery.lastError() << DTK_NO_COLOR;
 
     while(studyQuery.next()) {
         studyId = studyQuery.value(0);
@@ -122,7 +122,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
         seriesQuery.prepare("SELECT id, name, thumbnail FROM series WHERE study = :study");
         seriesQuery.bindValue(":study", studyId);
         if(!seriesQuery.exec())
-            qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NOCOLOR;
+            qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
 
         while(seriesQuery.next()) {
             seriesId = seriesQuery.value(0);

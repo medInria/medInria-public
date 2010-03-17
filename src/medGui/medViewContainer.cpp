@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Mar 16 20:10:52 2010 (+0100)
+ * Last-Updated: Wed Mar 17 18:35:59 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 266
+ *     Update #: 392
  */
 
 /* Commentary: 
@@ -18,26 +18,15 @@
  */
 
 #include "medViewContainer.h"
+#include "medViewContainer_p.h"
 
 #include <QtGui>
 
 #include <dtkCore/dtkAbstractView.h>
 #include <medCore/medDataIndex.h>
 
-class medViewContainerPrivate
-{
-public:
-    bool multi;
-
-    QGridLayout *layout;
-
-    dtkAbstractView *view;
-};
-
 medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new medViewContainerPrivate)
 {
-    d->multi = false;
-
     d->layout = new QGridLayout(this);
     d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(2);
@@ -62,6 +51,11 @@ medViewContainer::~medViewContainer(void)
     d = NULL;
 }
 
+medViewContainer::Type medViewContainer::type(void)
+{
+    return Default;
+}
+
 medViewContainer *medViewContainer::current(void)
 {
     return s_current;
@@ -69,17 +63,8 @@ medViewContainer *medViewContainer::current(void)
 
 void medViewContainer::split(int rows, int cols)
 {
-    if(d->multi)
-        return;
-
-    if (d->layout->count())
-        return;
-
-    for(int i = 0 ; i < rows ; i++)
-        for(int j = 0 ; j < cols ; j++)
-            d->layout->addWidget(new medViewContainer(this), i, j);
-
-    s_current = 0;
+    Q_UNUSED(rows);
+    Q_UNUSED(cols);
 }
 
 dtkAbstractView *medViewContainer::view(void)
@@ -87,69 +72,14 @@ dtkAbstractView *medViewContainer::view(void)
     return d->view;
 }
 
-void medViewContainer::setMulti(bool multi)
-{
-    d->multi = multi;
-}
-
 void medViewContainer::setView(dtkAbstractView *view)
 {
     if (!view)
         return;
-
-    qDebug() << __func__;
-
-    if(!d->multi) { // -- Single
-
-        if (d->layout->count())
-            return;
-
-        d->layout->setContentsMargins(1, 1, 1, 1);    
-        d->layout->addWidget(view->widget(), 0, 0);
-        d->view = view;
-
-    } else { // -- Multi 
-
-        qDebug() << "Adding image to multi view";
-
-        static int size = 1;
-        
-        QList<QWidget *> content;
-        
-        for(int i = 0; i < d->layout->rowCount() ; i++) {
-            for(int j = 0; j < d->layout->columnCount() ; j++) {
-                if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
-                    content << item->widget();
-                    d->layout->removeItem(item);
-                }
-            }
-        }
-        
-        medViewContainer *container = new medViewContainer(this);
-        container->setView(view);
-
-        content << container;
-        
-        size = (int)(ceil(sqrt((qreal)content.count())));
-        
-        for(int i = 0; i < content.count(); i++) {
-            
-            int row = i/size;
-            int col = i%size;
-            
-            d->layout->addWidget(content.at(i), row, col);
-        }
-        d->layout->setContentsMargins(1, 1, 1, 1);    
-        d->view = view;
-    }
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
 {
-    // this->setAttribute(Qt::WA_UpdatesDisabled, true);
-
-    setBackgroundRole(QPalette::Highlight);
-
     event->acceptProposedAction();
 }
 
@@ -160,24 +90,11 @@ void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 
 void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 {
-    setBackgroundRole(QPalette::Base);
-
     event->accept();
 }
 
 void medViewContainer::dropEvent(QDropEvent *event)
 {
-    // this->setAttribute(Qt::WA_UpdatesDisabled, false);
-
-    if(medViewContainer *container = dynamic_cast<medViewContainer *>(this->parentWidget())) {
-        if(container->d->multi)
-            s_current = container;
-    }
-    else
-        s_current = this;
-
-    this->update();
-
     const QMimeData *mimeData = event->mimeData();
 
     if (mimeData->hasFormat("med/index")) {
@@ -190,19 +107,11 @@ void medViewContainer::dropEvent(QDropEvent *event)
         emit dropped(medDataIndex(patientId, studyId, seriesId, imageId));
     }
 
-    setBackgroundRole(QPalette::Base);
-
     event->acceptProposedAction();
 }
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
-    // if(medViewContainer *container = dynamic_cast<medViewContainer *>(this->parentWidget())) {
-    //     if(container->d->multi)
-    //         s_current = container;
-    // } else
-    //         s_current = this;
-    
     s_current = this;
 
     if(dtkAbstractView *view = this->view())

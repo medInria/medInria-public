@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct 14 22:57:50 2008 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct 21 13:34:54 2009 (+0200)
+ * Last-Updated: Wed Mar 17 11:05:34 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 440
+ *     Update #: 441
  */
 
 /* Commentary: 
@@ -336,7 +336,7 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
         query.bindValue(":value", value);
         query.bindValue(":id", id);
         if(!query.exec())
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     }
 
     return result;
@@ -478,7 +478,7 @@ void medDatabaseModel::populate(medDatabaseItem *root)
     QSqlQuery ptQuery(*(medDatabaseController::instance()->database()));
     ptQuery.prepare("SELECT * FROM patient");
     if(!ptQuery.exec())
-        qDebug() << DTK_COLOR_FG_RED << ptQuery.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << ptQuery.lastError() << DTK_NO_COLOR;
 
     while(ptQuery.next()) { // ---------------------------------------------------- Retrieving patients
         QVariant   ptId = ptQuery.value(0);
@@ -495,7 +495,7 @@ void medDatabaseModel::populate(medDatabaseItem *root)
         stQuery.prepare("SELECT * FROM study WHERE patient = :id");
         stQuery.bindValue(":id", ptId);
         if(!stQuery.exec())
-            qDebug() << DTK_COLOR_FG_RED << stQuery.lastError() << DTK_NOCOLOR;
+            qDebug() << DTK_COLOR_FG_RED << stQuery.lastError() << DTK_NO_COLOR;
 
         while(stQuery.next()) { // ------------------------------------------------- Retrieving studies
             QVariant   stId = stQuery.value(0);
@@ -512,7 +512,7 @@ void medDatabaseModel::populate(medDatabaseItem *root)
             seQuery.prepare("SELECT * FROM series WHERE study = :id");
             seQuery.bindValue(":id", stId);
             if(!seQuery.exec())
-                qDebug() << DTK_COLOR_FG_RED << seQuery.lastError() << DTK_NOCOLOR;
+                qDebug() << DTK_COLOR_FG_RED << seQuery.lastError() << DTK_NO_COLOR;
 
             while(seQuery.next()) { // ---------------------------------------------- Retrieving series
                 QVariant   seId = seQuery.value(0);
@@ -532,7 +532,7 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                 imQuery.prepare("SELECT * FROM image WHERE series = :id");
                 imQuery.bindValue(":id", seId);
                 if(!imQuery.exec())
-                    qDebug() << DTK_COLOR_FG_RED << imQuery.lastError() << DTK_NOCOLOR;
+                    qDebug() << DTK_COLOR_FG_RED << imQuery.lastError() << DTK_NO_COLOR;
                 
                 while(imQuery.next()) { // ------------------------------------------ Retrieving images
                     QVariant   imId = imQuery.value(0);
