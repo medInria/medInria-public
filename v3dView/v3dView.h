@@ -29,6 +29,9 @@ public:
 
     static bool registered(void);
 
+signals:
+    void closed(void);
+
 public:
     void reset(void);
     void clear(void);
@@ -56,8 +59,7 @@ public:
     vtkRenderer *rendererCoronal(void);
     vtkRenderer *rendererSagittal(void);
     vtkRenderer *renderer3D(void);
-    
-	
+    	
 public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);

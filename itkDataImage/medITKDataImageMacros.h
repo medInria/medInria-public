@@ -238,9 +238,14 @@
   }									\
   return d->thumbnails;							\
   }									\
-  
-
-
+  void itkDataImage##suffix::onMetaDataSet(QString key, QString value) {\
+  Q_UNUSED(key);                                                        \
+  Q_UNUSED(value);                                                      \
+  }                                                                     \
+  void itkDataImage##suffix::onPropertySet(QString key, QString value) {\
+  Q_UNUSED(key);                                                        \
+  Q_UNUSED(value);                                                      \
+  }                                                                     \
 
 #define medImplementITKVectorDataImage(type, dimension, suffix)		\
   class itkDataImage##suffix##Private					\
@@ -379,6 +384,14 @@
   }									\
   return d->thumbnails;							\
   }									\
+  void itkDataImage##suffix::onMetaDataSet(QString key, QString value) {\
+  Q_UNUSED(key);                                                        \
+  Q_UNUSED(value);                                                      \
+  }                                                                     \
+  void itkDataImage##suffix::onPropertySet(QString key, QString value) {\
+  Q_UNUSED(key);                                                        \
+  Q_UNUSED(value);                                                      \
+  }                                                                     \
   
 #endif
 

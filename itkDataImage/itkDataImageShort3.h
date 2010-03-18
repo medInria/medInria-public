@@ -32,6 +32,9 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageShort3 : public dtkAbstractDataImage
     void setData(void* data);
     void update(void);
 
+    void onMetaDataSet(QString key, QString value);
+    void onPropertySet(QString key, QString value);
+
  public:
     // derived from dtkAbstractDataImage
 
