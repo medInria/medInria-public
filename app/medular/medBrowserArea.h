@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 08:28:09 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 16 22:53:10 2009 (+0200)
+ * Last-Updated: Thu Mar 18 20:55:39 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 5
  */
 
 /* Commentary: 
@@ -47,6 +47,7 @@ public:
 public slots:
     void onFileSystemImportClicked(void);
     void onFileSystemExportClicked(void);
+    void onFileImported(void);
 
 private:
     medBrowserAreaPrivate *d;
