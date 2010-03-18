@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:39:23 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Jan 19 13:39:39 2010 (+0100)
+ * Last-Updated: Thu Mar 18 22:52:07 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 2
+ *     Update #: 5
  */
 
 /* Commentary: 
@@ -36,7 +36,12 @@ public:
 
     QSize sizeHint(void) const;
 
+signals:
+    void shown(void);
+    void hidden(void);
+
 public slots:
+    void setLabel(QObject *sender, QString label);
     void setProgress(int progress);
 
 private:
