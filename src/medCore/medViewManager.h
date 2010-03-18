@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 12:47:46 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sat Mar  6 11:49:01 2010 (+0100)
+ * Last-Updated: Wed Mar 17 18:39:17 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 12
+ *     Update #: 17
  */
 
 /* Commentary: 
@@ -38,6 +38,8 @@ public:
     static medViewManager *instance(void);
 
     void insert(const medDataIndex& index, dtkAbstractView *view);
+    void remove(const medDataIndex& index, dtkAbstractView *view);
+    void remove(const medDataIndex& index);
 
     QList<dtkAbstractView *> views(const medDataIndex& index);
     QList<dtkAbstractView *> viewsForPatient(int id);

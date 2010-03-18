@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:53:58 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Mar  4 21:51:59 2010 (+0100)
+ * Last-Updated: Wed Mar 17 18:47:34 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 16
+ *     Update #: 28
  */
 
 /* Commentary: 
@@ -34,22 +34,31 @@ class MEDGUI_EXPORT medViewContainer : public QWidget
     Q_OBJECT
 
 public:
+    enum Type {
+        Single,
+        Multi,
+        Custom,
+        Default
+    };
+
      medViewContainer(QWidget *parent = 0);
     ~medViewContainer(void);
 
+    Type type(void);
+
     medViewContainer *current(void);
 
-    dtkAbstractView *view(void);
+    virtual dtkAbstractView *view(void);
 
-    void setView(dtkAbstractView *view);
+    virtual void setView(dtkAbstractView *view);
 
 signals:
     void dropped(const medDataIndex& index);
     void focused(dtkAbstractView *view);
 
 public slots:
-    void split(int rows, int cols);
-
+    virtual void split(int rows, int cols);
+    
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
@@ -58,12 +67,13 @@ protected:
 
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
+
     void paintEvent(QPaintEvent *event);
 
-private:
+protected:
     static medViewContainer *s_current;
 
-private:
+protected:
     medViewContainerPrivate *d;
 };
 

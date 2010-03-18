@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 12:47:51 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sat Mar  6 11:58:28 2010 (+0100)
+ * Last-Updated: Wed Mar 17 18:40:02 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 27
+ *     Update #: 36
  */
 
 /* Commentary: 
@@ -39,6 +39,20 @@ medViewManager *medViewManager::instance(void)
 void medViewManager::insert(const medDataIndex& index, dtkAbstractView *view)
 {
     d->views[index] << view;
+}
+
+void medViewManager::remove(const medDataIndex& index, dtkAbstractView *view)
+{
+    foreach(dtkAbstractView *view, d->views.value(index))
+        delete view;
+}
+
+void medViewManager::remove(const medDataIndex& index)
+{
+    foreach(dtkAbstractView *view, d->views.value(index))
+        delete view;
+
+    d->views.remove(index);
 }
 
 QList<dtkAbstractView *> medViewManager::views(const medDataIndex& index)

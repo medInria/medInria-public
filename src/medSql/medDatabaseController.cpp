@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 09:44:20 2010 (+0100)
+ * Last-Updated: Wed Mar 17 11:05:02 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 115
+ *     Update #: 116
  */
 
 /* Commentary: 
@@ -52,7 +52,7 @@ bool medDatabaseController::createConnection(void)
     this->m_database.setDatabaseName(this->dataLocation() + "/" + "db");
 
     if (!m_database.open()) {
-        qDebug() << DTK_COLOR_FG_RED << "Cannot open database: Unable to establish a database connection." << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << "Cannot open database: Unable to establish a database connection." << DTK_NO_COLOR;
         return false;
     }
 
@@ -115,7 +115,7 @@ medDataIndex medDatabaseController::indexForStudy(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         patientId = query.value(0);
@@ -133,7 +133,7 @@ medDataIndex medDatabaseController::indexForSeries(int id)
     query.prepare("SELECT study FROM series WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         studyId = query.value(0);
@@ -141,7 +141,7 @@ medDataIndex medDatabaseController::indexForSeries(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         patientId = query.value(0);
@@ -160,7 +160,7 @@ medDataIndex medDatabaseController::indexForImage(int id)
     query.prepare("SELECT series FROM image WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         seriesId = query.value(0);
@@ -168,7 +168,7 @@ medDataIndex medDatabaseController::indexForImage(int id)
     query.prepare("SELECT study FROM series WHERE id = :id");
     query.bindValue(":id", seriesId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         studyId = query.value(0);
@@ -176,7 +176,7 @@ medDataIndex medDatabaseController::indexForImage(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         patientId = query.value(0);
@@ -251,7 +251,7 @@ void medDatabaseController::import(const QString& file)
 	query.prepare("SELECT id FROM patient WHERE name = :name");
 	query.bindValue(":name", patientName);
 	if(!query.exec())
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	
 	if(query.first()) {
             id = query.value(0);
@@ -260,7 +260,7 @@ void medDatabaseController::import(const QString& file)
             query.bindValue(":id", id);
             query.bindValue(":name", studyName);
             if(!query.exec())
-                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
             if(query.first()) {
                 id = query.value(0);
@@ -269,7 +269,7 @@ void medDatabaseController::import(const QString& file)
                 query.bindValue(":id", id);
                 query.bindValue(":name", seriesName);
                 if(!query.exec())
-                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
                 if(query.first()) {
                     id = query.value(0);
@@ -279,7 +279,7 @@ void medDatabaseController::import(const QString& file)
                     query.bindValue(":name", fileInfo.fileName());
 
                     if(!query.exec())
-                        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+                        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
                     if(query.first()) {
                         imageExists = true;
@@ -410,7 +410,7 @@ void medDatabaseController::import(const QString& file)
         query.prepare("SELECT id FROM patient WHERE name = :name");
 	query.bindValue(":name", patientName);
 	if(!query.exec())
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
 	if(query.first()) {
             id = query.value(0);
@@ -436,7 +436,7 @@ void medDatabaseController::import(const QString& file)
 	query.bindValue(":id", id);
 	query.bindValue(":name", studyName);
 	if(!query.exec())
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	
 	if(query.first()) {
             id = query.value(0);
@@ -467,7 +467,7 @@ void medDatabaseController::import(const QString& file)
 	query.bindValue(":id", id);
 	query.bindValue(":name", seriesName);
 	if(!query.exec())
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	
 	if(query.first()) {
             id = query.value(0);
@@ -503,7 +503,7 @@ void medDatabaseController::import(const QString& file)
 	    query.bindValue(":name", fileInfo.fileName());
 	    
 	    if(!query.exec())
-                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	    
 	    if(query.first()) {
                 ; //qDebug() << "Image" << file << "already in database";
@@ -522,7 +522,7 @@ void medDatabaseController::import(const QString& file)
 				query.bindValue(":thumbnail", "");
 		
 			if(!query.exec())
-				qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+				qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	    }
 	}
 
@@ -548,21 +548,21 @@ dtkAbstractData *medDatabaseController::read(const medDataIndex& index)
 	query.prepare("SELECT name FROM patient WHERE id = :id");
     query.bindValue(":id", patientId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	if (query.first())
 		patientName = query.value(0).toString();
 	
 	query.prepare("SELECT name FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	if (query.first())
 		studyName = query.value(0).toString();
 	
 	query.prepare("SELECT name FROM series WHERE id = :id");
     query.bindValue(":id", seriesId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	if (query.first())
 		seriesName = query.value(0).toString();
 	
@@ -572,7 +572,7 @@ dtkAbstractData *medDatabaseController::read(const medDataIndex& index)
     query.prepare("SELECT name, id, path, instance_path FROM image WHERE series = :series");
     query.bindValue(":series", seriesId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     while(query.next()) {
         filenames << query.value(2).toString();

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sat Feb 20 00:29:51 2010 (+0100)
+ * Last-Updated: Wed Mar 17 11:06:21 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 24
+ *     Update #: 25
  */
 
 /* Commentary: 
@@ -229,7 +229,7 @@ void medDatabasePreview::init(void)
     query.prepare("SELECT id, name, thumbnail FROM patient");
 
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     d->patient_group->clear();
 
@@ -255,7 +255,7 @@ void medDatabasePreview::onPatientClicked(int id)
     query.prepare("SELECT id, name, thumbnail FROM study WHERE patient = :patient");
     query.bindValue(":patient", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     d->study_group->clear();
     d->series_group->clear();
@@ -291,7 +291,7 @@ void medDatabasePreview::onStudyClicked(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         patientId = query.value(0);
@@ -303,7 +303,7 @@ void medDatabasePreview::onStudyClicked(int id)
     query.prepare("SELECT id, name, thumbnail FROM series WHERE study = :study");
     query.bindValue(":study", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     d->series_group->clear();
     d->image_group->clear();
@@ -337,7 +337,7 @@ void medDatabasePreview::onSeriesClicked(int id)
     query.prepare("SELECT study FROM series WHERE id = :id");
     query.bindValue(":id", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         studyId = query.value(0);
@@ -347,7 +347,7 @@ void medDatabasePreview::onSeriesClicked(int id)
     query.prepare("SELECT patient FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     if(query.first())
         patientId = query.value(0);
@@ -359,7 +359,7 @@ void medDatabasePreview::onSeriesClicked(int id)
     query.prepare("SELECT id, name, thumbnail FROM image WHERE series = :series");
     query.bindValue(":series", id);
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     d->image_group->clear();
 

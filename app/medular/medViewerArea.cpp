@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 16:55:30 2010 (+0100)
+ * Last-Updated: Wed Mar 17 18:58:32 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 725
+ *     Update #: 770
  */
 
 /* Commentary: 
@@ -42,6 +42,9 @@
 #include <medGui/medToolBoxRegistration.h>
 #include <medGui/medToolBoxView.h>
 #include <medGui/medViewContainer.h>
+#include <medGui/medViewContainerCustom.h>
+#include <medGui/medViewContainerMulti.h>
+#include <medGui/medViewContainerSingle.h>
 
 #include <QtGui>
 #include <QtSql>
@@ -55,21 +58,21 @@ class medViewerAreaStackPrivate
 public:
     int id;
 
-    medViewContainer *container_single;
-    medViewContainer *container_multi;
-    medViewContainer *container_custom;
+    medViewContainerSingle *container_single;
+    medViewContainerMulti *container_multi;
+    medViewContainerCustom *container_custom;
     medViewContainer *container_registration_compare;
     medViewContainer *container_registration_fuse;
 };
 
 medViewerAreaStack::medViewerAreaStack(QWidget *parent) : QStackedWidget(parent), d(new medViewerAreaStackPrivate)
 {
-    d->container_single = new medViewContainer(this);
-    d->container_multi = new medViewContainer(this);
-    d->container_custom = new medViewContainer(this);
-    d->container_registration_compare = new medViewContainer(this);
+    d->container_single = new medViewContainerSingle(this);
+    d->container_multi = new medViewContainerMulti(this);
+    d->container_custom = new medViewContainerCustom(this);
+    d->container_registration_compare = new medViewContainerCustom(this);
     d->container_registration_compare->split(1, 2);
-    d->container_registration_fuse = new medViewContainer(this);
+    d->container_registration_fuse = new medViewContainerCustom(this);
 
     this->addWidget(d->container_single);
     this->addWidget(d->container_multi);
@@ -115,13 +118,28 @@ medViewContainer *medViewerAreaStack::current(void)
     if(this->currentIndex() == 2)
         return d->container_custom;
 	
-	if(this->currentIndex() == 3)
+    if(this->currentIndex() == 3)
         return d->container_registration_compare;
-	
-	if(this->currentIndex() == 4)
+    
+    if(this->currentIndex() == 4)
         return d->container_registration_fuse;
 
     return NULL;
+}
+
+medViewContainer *medViewerAreaStack::single(void)
+{
+    return d->container_single;
+}
+
+medViewContainer *medViewerAreaStack::multi(void)
+{
+    return d->container_multi;
+}
+
+medViewContainer *medViewerAreaStack::custom(void)
+{
+    return d->container_custom;
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -332,7 +350,7 @@ void medViewerArea::setup(void)
 
     query.prepare("SELECT name, id FROM patient");
     if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NOCOLOR;
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     while(query.next())
         d->patientToolBox->addItem(query.value(0).toString(), query.value(1));
@@ -352,23 +370,35 @@ void medViewerArea::open(const medDataIndex& index)
     dtkAbstractData *data = NULL;
     dtkAbstractView *view = NULL;
 
-    if(!(data = medDatabaseController::instance()->read(index)))
+    if(!data)
+        data = medDataManager::instance()->data(index);
+
+    if(!data)
+        data = medDatabaseController::instance()->read(index);
+
+    if(!data)
         return;
 
     medDataManager::instance()->insert(index, data);
 
-    if(!(view = dtkAbstractViewFactory::instance()->create("v3dView")))
+    if(!view)
+        view = d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->view();
+
+    if(!view)
+        view = dtkAbstractViewFactory::instance()->create("v3dView");
+    
+    if(!view)
         return;
 
     medViewManager::instance()->insert(index, view);
-    
-    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
     
     view->setData(data);
     view->reset();
     
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setView(view);
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
+
+    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
 }
 
 void medViewerArea::onPatientIndexChanged(int id)

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar  5 17:00:35 2010 (+0100)
+ * Last-Updated: Wed Mar 17 18:35:59 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 44
+ *     Update #: 392
  */
 
 /* Commentary: 
@@ -18,19 +18,12 @@
  */
 
 #include "medViewContainer.h"
+#include "medViewContainer_p.h"
 
 #include <QtGui>
 
 #include <dtkCore/dtkAbstractView.h>
 #include <medCore/medDataIndex.h>
-
-class medViewContainerPrivate
-{
-public:
-    QGridLayout *layout;
-
-    dtkAbstractView *view;
-};
 
 medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new medViewContainerPrivate)
 {
@@ -58,6 +51,11 @@ medViewContainer::~medViewContainer(void)
     d = NULL;
 }
 
+medViewContainer::Type medViewContainer::type(void)
+{
+    return Default;
+}
+
 medViewContainer *medViewContainer::current(void)
 {
     return s_current;
@@ -65,14 +63,8 @@ medViewContainer *medViewContainer::current(void)
 
 void medViewContainer::split(int rows, int cols)
 {
-    if (d->layout->count())
-        return;
-
-    for(int i = 0 ; i < rows ; i++)
-        for(int j = 0 ; j < cols ; j++)
-            d->layout->addWidget(new medViewContainer(this), i, j);
-
-    s_current = 0;
+    Q_UNUSED(rows);
+    Q_UNUSED(cols);
 }
 
 dtkAbstractView *medViewContainer::view(void)
@@ -84,21 +76,10 @@ void medViewContainer::setView(dtkAbstractView *view)
 {
     if (!view)
         return;
-
-    if (d->layout->count())
-        return;
-
-    if(QWidget *widget = view->widget()) {
-        d->layout->setContentsMargins(1, 1, 1, 1);
-        d->layout->addWidget(widget, 0, 0);
-        d->view = view;
-    }
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
 {
-    setBackgroundRole(QPalette::Highlight);
-
     event->acceptProposedAction();
 }
 
@@ -109,17 +90,11 @@ void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
 
 void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 {
-    setBackgroundRole(QPalette::Base);
-
     event->accept();
 }
 
 void medViewContainer::dropEvent(QDropEvent *event)
 {
-    s_current = this;
-
-    this->update();
-
     const QMimeData *mimeData = event->mimeData();
 
     if (mimeData->hasFormat("med/index")) {
@@ -131,8 +106,6 @@ void medViewContainer::dropEvent(QDropEvent *event)
         
         emit dropped(medDataIndex(patientId, studyId, seriesId, imageId));
     }
-
-    setBackgroundRole(QPalette::Base);
 
     event->acceptProposedAction();
 }
