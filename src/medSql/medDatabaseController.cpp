@@ -66,8 +66,6 @@ bool medDatabaseController::createConnection(void)
 
 bool medDatabaseController::closeConnection(void)
 {
-    qDebug() << __func__;
-
     m_database.close();
 
     return true;
