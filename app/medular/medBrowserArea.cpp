@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Mar 18 23:17:02 2010 (+0100)
+ * Last-Updated: Sat Mar 20 20:06:27 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 275
+ *     Update #: 289
  */
 
 /* Commentary: 
@@ -29,8 +29,6 @@
 #include <medSql/medDatabasePreview.h>
 
 #include <medGui/medProgressionStack.h>
-#include <medGui/medSearchBar.h>
-#include <medGui/medSearchBox.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
 
@@ -41,10 +39,6 @@
 class medBrowserAreaPrivate
 {
 public:
-    medSearchBar *db_search_bar;
-    medSearchBar *fs_search_bar;
-    medSearchBar *pc_search_bar;
-
     medToolBoxContainer *toolbox_container;
 
     medDatabasePreview *preview;
@@ -68,15 +62,13 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->view = new medDatabaseView(this);
     d->view->setModel(d->model);
 
-    connect(d->preview, SIGNAL(patientClicked(int)), d->view, SLOT(onPatientClicked(int)));
-    connect(d->preview, SIGNAL(studyClicked(int)), d->view, SLOT(onStudyClicked(int)));
-    connect(d->preview, SIGNAL(seriesClicked(int)), d->view, SLOT(onSeriesClicked(int)));
-    connect(d->preview, SIGNAL(imageClicked(int)), d->view, SLOT(onImageClicked(int)));
+    // connect(d->preview, SIGNAL(patientClicked(int)), d->view, SLOT(onPatientClicked(int)));
+    // connect(d->preview, SIGNAL(studyClicked(int)), d->view, SLOT(onStudyClicked(int)));
+    // connect(d->preview, SIGNAL(seriesClicked(int)), d->view, SLOT(onSeriesClicked(int)));
+    // connect(d->preview, SIGNAL(imageClicked(int)), d->view, SLOT(onImageClicked(int)));
 
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
-    connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
     connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
-    connect(d->view, SIGNAL(imageClicked(int)), d->preview, SLOT(onImageClicked(int)));
 
     // Database widget /////////////////////////////////////////////////
 
@@ -124,31 +116,14 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     QWidget *database_page = new QWidget(this);
 
-    QWidget *database_page_expand = new QWidget(database_page);
+    QPushButton *database_page_expand_all_button = new QPushButton("All", database_page);
+    QPushButton *database_page_collapse_all_button = new QPushButton("All", database_page);
 
-    QPushButton *database_page_expand_studies_button = new QPushButton("Studies");
-    QPushButton *database_page_expand_series_button = new QPushButton("Series");
-    QPushButton *database_page_expand_images_button = new QPushButton("Images", database_page_expand);
-    QPushButton *database_page_collapse_all_button = new QPushButton("All", database_page_expand);
-
-    database_page_expand_studies_button->setObjectName("medDatabaseExpandStudiesButton");
-    database_page_expand_series_button->setObjectName("medDatabaseExpandSeriesButton");
-    database_page_expand_images_button->setObjectName("medDatabaseExpandImagesButton");
-
-    QHBoxLayout *database_page_expand_layout = new QHBoxLayout(database_page_expand);
-    database_page_expand_layout->setContentsMargins(0, 0, 0, 0);
-    database_page_expand_layout->setSpacing(0);
-    database_page_expand_layout->addWidget(database_page_expand_studies_button);
-    database_page_expand_layout->addWidget(database_page_expand_series_button);
-    database_page_expand_layout->addWidget(database_page_expand_images_button);
-
-    connect(database_page_expand_studies_button, SIGNAL(clicked()), d->view, SLOT(expandAllStudies()));
-    connect(database_page_expand_series_button, SIGNAL(clicked()), d->view, SLOT(expandAllSeries()));
-    connect(database_page_expand_images_button, SIGNAL(clicked()), d->view, SLOT(expandAllImages()));
+    connect(database_page_expand_all_button, SIGNAL(clicked()), d->view, SLOT(expandAll()));
     connect(database_page_collapse_all_button, SIGNAL(clicked()), d->view, SLOT(collapseAll()));
 
     QFormLayout *database_page_layout = new QFormLayout(database_page);
-    database_page_layout->addRow("Expand:", database_page_expand);
+    database_page_layout->addRow("Expand:", database_page_expand_all_button);
     database_page_layout->addRow("Collapse:", database_page_collapse_all_button);
     database_page_layout->setFormAlignment(Qt::AlignHCenter);
 
@@ -196,50 +171,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(d->progression_stack, SIGNAL(shown()), jobsToolBox, SLOT(show()));
     connect(d->progression_stack, SIGNAL(hidden()), jobsToolBox, SLOT(hide()));
 
-    // Search ///////////////////////////////////////////////
-
-    medToolBoxStack *search_stack = new medToolBoxStack(this);
-
-    d->db_search_bar = new medSearchBar(search_stack);
-    d->db_search_bar->addKey("id");
-    d->db_search_bar->addKey("name");
-    d->db_search_bar->setDefaultKey("id");
-    d->db_search_bar->setModel(d->model);
-    d->db_search_bar->setView(d->view);
-
-    d->fs_search_bar = new medSearchBar(search_stack);
-    d->fs_search_bar->addKey("name");
-    d->fs_search_bar->addKey("size");
-    d->fs_search_bar->addKey("kind");
-    d->fs_search_bar->addKey("date");
-    d->fs_search_bar->setDefaultKey("name");
-    d->fs_search_bar->setModel(d->filesystem_model);
-    d->fs_search_bar->setView(d->filesystem_view);
-
-    QWidget *db_search_bar_widget = new QWidget(search_stack);
-    QVBoxLayout *db_search_bar_widget_layout = new QVBoxLayout(db_search_bar_widget);
-    db_search_bar_widget_layout->addWidget(d->db_search_bar);
-
-    QWidget *fs_search_bar_widget = new QWidget(search_stack);
-    QVBoxLayout *fs_search_bar_widget_layout = new QVBoxLayout(fs_search_bar_widget);
-    fs_search_bar_widget_layout->addWidget(d->fs_search_bar);
-
-    search_stack->addWidget(db_search_bar_widget);
-    search_stack->addWidget(fs_search_bar_widget);
-    search_stack->setCurrentWidget(db_search_bar_widget);
-
-    medToolBox *searchToolBox = new medToolBox(this);
-    searchToolBox->setTitle("Search");
-    searchToolBox->setWidget(search_stack);
-
-    connect(tab, SIGNAL(currentChanged(int)), search_stack, SLOT(setCurrentIndex(int)));
-
     // Toolbox container /////////////////////////////////////////////
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(sourceSelectorToolBox);
-    d->toolbox_container->addToolBox(searchToolBox);
     d->toolbox_container->addToolBox(jobsToolBox);
 
     // Layout /////////////////////////////////////////////
@@ -249,13 +185,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     layout->setSpacing(0);
     layout->addWidget(d->toolbox_container);
     layout->addWidget(stack);
-
-    // Toolbox container /////////////////////////////////////////////
-
-    connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
-    connect(d->view, SIGNAL(studyClicked(int)), d->preview, SLOT(onStudyClicked(int)));
-    connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
-    connect(d->view, SIGNAL(imageClicked(int)), d->preview, SLOT(onImageClicked(int)));
 }
 
 medBrowserArea::~medBrowserArea(void)

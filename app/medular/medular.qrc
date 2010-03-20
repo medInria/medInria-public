@@ -33,15 +33,7 @@
         <file>pixmaps/drop-down.png</file>
         <file>pixmaps/treeview-branch-closed.png</file>
         <file>pixmaps/treeview-branch-open.png</file>
-        <file>pixmaps/database_preview_arrow_down.tiff</file>
-        <file>pixmaps/database_preview_arrow_down_pressed.tiff</file>
-        <file>pixmaps/database_preview_arrow_up.tiff</file>
-        <file>pixmaps/database_preview_arrow_up_pressed.tiff</file>
         <file>pixmaps/database_preview_thumbnail_default.tiff</file>
-        <file>pixmaps/database_preview_tooltip_image.tiff</file>
-        <file>pixmaps/database_preview_tooltip_patient.tiff</file>
-        <file>pixmaps/database_preview_tooltip_series.tiff</file>
-        <file>pixmaps/database_preview_tooltip_study.tiff</file>
         <file>pixmaps/database_navigator_item_checker_checked.png</file>
         <file>pixmaps/database_navigator_item_checker_unchecked.png</file>
         <file>pixmaps/database_navigator_item_count.png</file>
@@ -51,5 +43,6 @@
         <file>pixmaps/documentation_previous_arrow.png</file>
         <file>pixmaps/medular-logo.png</file>
         <file>pixmaps/mediseen-logo.png</file>
+        <file>pixmaps/medinria-logo.png</file>
     </qresource>
 </RCC>

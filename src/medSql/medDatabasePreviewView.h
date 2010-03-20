@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:44:36 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 09:44:37 2009 (+0100)
+ * Last-Updated: Sat Mar 20 19:50:42 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 8
  */
 
 /* Commentary: 
@@ -37,33 +37,16 @@ public:
 
     void setScene(QGraphicsScene *scene);
 
-    void setPatientTooltip(medDatabasePreviewTooltip *tooltip);
-    void setStudyTooltip(medDatabasePreviewTooltip *tooltip);
-    void setSeriesTooltip(medDatabasePreviewTooltip *tooltip);
-    void setImageTooltip(medDatabasePreviewTooltip *tooltip);
-
 signals:
-//    void patientClicked(int id);
-//    void   studyClicked(int id);
-//    void  seriesClicked(int id);
-//    void   imageClicked(int id);
-
-    void slideUp(void);
-    void slideDw(void);
     void moveUp(void);
     void moveDw(void);
     void moveRt(void);
     void moveLt(void);
-
     void hovered(medDatabasePreviewItem *item);
-
-protected slots:
-    void onFrameChanged(int frame);
 
 protected:
     void keyPressEvent(QKeyEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
-    void resizeEvent(QResizeEvent *event);
 
 private:
     medDatabasePreviewViewPrivate *d;

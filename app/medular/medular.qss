@@ -234,18 +234,8 @@ QTreeView {
     padding-right: -5px;
 
     color: #b2b8b2;
-}
 
-QTreeView::item:hover {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);
-}
-
-QTreeView::item:selected:active {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
-}
-
-QTreeView::item:selected:!active {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);
+    background: #313131;
 }
 
 QTreeView::branch:has-siblings:!adjoins-item {
@@ -270,78 +260,6 @@ QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
-}
-
-QHelpContentWidget {
-    alternate-background-color: #505050;
-
-    background-color: #4b4b4b;
-
-    border-image: none;
-    border-top-width: 0px;
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-bottom-width: 0px;
-
-    padding-top: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-
-    color: #b2b8b2;
-}
-
-QHelpIndexWidget {
-    alternate-background-color: #505050;
-
-    background-color: #4b4b4b;
-
-    border-image: none;
-    border-top-width: 0px;
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-bottom-width: 0px;
-
-    padding-top: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-
-    color: #b2b8b2;
-}
-
-QDefaultResultWidget {
-    alternate-background-color: #505050;
-
-    background-color: blue;
-
-    border-image: none;
-    border-top-width: 0px;
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-bottom-width: 0px;
-
-    padding-top: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-
-    color: #b2b8b2;
-}
-
-QCLuceneResultWidget {
-    alternate-background-color: #505050;
-
-    background-color: yellow;
-
-    border-image: none;
-    border-top-width: 0px;
-    border-left-width: 0px;
-    border-right-width: 0px;
-    border-bottom-width: 0px;
-
-    padding-top: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-
-    color: #b2b8b2;
 }
 
 /**
@@ -759,15 +677,6 @@ medToolBoxBody QTabBar::tab:selected, medToolBoxBody QTabBar::tab:hover {
 
     height: 32px;
     min-width: 40px;
-}
-
-/**
- * medLoginWidget
- *
- */
-
-medLoginWidget {
-    background: rgba(0, 0, 0, 96);
 }
 
 /**
