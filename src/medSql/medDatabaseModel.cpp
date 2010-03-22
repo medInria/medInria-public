@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct 14 22:57:50 2008 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 11:05:34 2010 (+0100)
+ * Last-Updated: Fri Mar 19 20:43:04 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 441
+ *     Update #: 447
  */
 
 /* Commentary: 
@@ -501,12 +501,12 @@ void medDatabaseModel::populate(medDatabaseItem *root)
             QVariant   stId = stQuery.value(0);
             QVariant stName = stQuery.value(2);
             
-            QList<QVariant> stData;
-            stData << d->data;
-            stData[0] = stId;
-            stData[2] = stName;
+            // QList<QVariant> stData;
+            // stData << d->data;
+            // stData[0] = stId;
+            // stData[2] = stName;
 
-            medDatabaseItem *stItem = new medDatabaseItem("study", d->attributes, stData, ptItem);
+            // medDatabaseItem *stItem = new medDatabaseItem("study", d->attributes, stData, ptItem);
             
             QSqlQuery seQuery(*(medDatabaseController::instance()->database()));
             seQuery.prepare("SELECT * FROM series WHERE study = :id");
@@ -518,15 +518,16 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                 QVariant   seId = seQuery.value(0);
                 QVariant seSize = seQuery.value(2);
                 QVariant seName = seQuery.value(3);
-				QVariant seAge  = seQuery.value(6);
+                QVariant seAge  = seQuery.value(6);
                 
                 QList<QVariant> seData;
                 seData << d->data;
                 seData[0] = seId;
+                seData[2] = stName;
                 seData[3] = seName;
-				seData[6] = seAge;
+                seData[6] = seAge;
 
-                medDatabaseItem *seItem = new medDatabaseItem("series", d->attributes, seData, stItem);
+                medDatabaseItem *seItem = new medDatabaseItem("series", d->attributes, seData, ptItem);
                 
                 QSqlQuery imQuery(*(medDatabaseController::instance()->database()));
                 imQuery.prepare("SELECT * FROM image WHERE series = :id");
@@ -534,24 +535,23 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                 if(!imQuery.exec())
                     qDebug() << DTK_COLOR_FG_RED << imQuery.lastError() << DTK_NO_COLOR;
                 
-                while(imQuery.next()) { // ------------------------------------------ Retrieving images
-                    QVariant   imId = imQuery.value(0);
-                    QVariant imSize = imQuery.value(2);
-                    QVariant imName = imQuery.value(3);
-//                    QVariant imThum = imQuery.value(4);
+                // while(imQuery.next()) { // ------------------------------------------ Retrieving images
+                //     QVariant   imId = imQuery.value(0);
+                //     QVariant imSize = imQuery.value(2);
+                //     QVariant imName = imQuery.value(3);
 
-                    QList<QVariant> imData;
-                    imData << d->data;
-                    imData[0] = imId;
-                    imData[4] = imName;
+                //     QList<QVariant> imData;
+                //     imData << d->data;
+                //     imData[0] = imId;
+                //     imData[4] = imName;
 
-                    medDatabaseItem *imItem = new medDatabaseItem("image", d->attributes, imData, seItem);
+                //     medDatabaseItem *imItem = new medDatabaseItem("image", d->attributes, imData, seItem);
                     
-                    seItem->append(imItem);
-                }            
-                stItem->append(seItem);
+                //     seItem->append(imItem);
+                // }
+                ptItem->append(seItem);
             }
-            ptItem->append(stItem);
+            // ptItem->append(stItem);
         }
         root->append(ptItem);
     }

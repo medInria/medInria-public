@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:41:48 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Mar  4 11:44:27 2010 (+0100)
+ * Last-Updated: Fri Mar 19 18:53:59 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 49
+ *     Update #: 56
  */
 
 /* Commentary: 
@@ -24,24 +24,6 @@
 
 #include <QtGui>
 
-// /////////////////////////////////////////////////////////////////
-// medToolBoxControl
-// /////////////////////////////////////////////////////////////////
-
-class MEDGUI_EXPORT medToolBoxControl : public QAbstractButton
-{
-    Q_OBJECT
-
-public:
-     medToolBoxControl(QWidget *parent);
-    ~medToolBoxControl(void);
-
-    QSize sizeHint(void) const;
-
-protected:
-    void paintEvent(QPaintEvent *event);
-};
-
 ///////////////////////////////////////////////////////////////////
 // medToolBoxStack
 ///////////////////////////////////////////////////////////////////
@@ -52,14 +34,9 @@ class MEDGUI_EXPORT medToolBoxStack : public QStackedWidget
 {
     Q_OBJECT
 
-    Q_PROPERTY(int height READ height WRITE setFixedHeight)
-
 public:
      medToolBoxStack(QWidget *parent = 0);
     ~medToolBoxStack(void);
-
-public slots:
-    void onCurrentChanged(int index);
 
 private:
     medToolBoxStackPrivate *d;
@@ -80,9 +57,6 @@ class MEDGUI_EXPORT medToolBoxTab : public QTabWidget
 public:
      medToolBoxTab(QWidget *parent = 0);
     ~medToolBoxTab(void);
-
-public slots:
-    void onCurrentChanged(int index);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -130,12 +104,6 @@ public:
 
     void setWidget(QWidget *widget);
 
-public slots:
-    void toggle(void);
-    void expand(void);
-    void collapse(void);
-    void animate(int frame);
-
 private:
     medToolBoxBodyPrivate *d;
 };
@@ -157,9 +125,6 @@ public:
     void setWidget(QWidget *widget);
 
     void setTitle(const QString& title);
-
-public slots:
-    void expand(void);
 
 private:
     medToolBoxPrivate *d;

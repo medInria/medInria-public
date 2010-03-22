@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Nov 11 18:52:58 2009 (+0100)
+ * Last-Updated: Fri Mar 19 16:28:20 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 21
  */
 
 /* Commentary: 
@@ -38,8 +38,9 @@ public:
     void writeSettings(void);
 
 public slots:
-    void switchToArea(int);
-    void switchToAdminArea(void);
+    void showInterpreter(void);
+    void setFullScreen(bool full);
+
     void switchToWelcomeArea(void);
     void switchToBrowserArea(void);
     void switchToViewerArea(void);

@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Mar 17 14:27:47 2010 (+0100)
+## Last-Updated: Fri Mar 19 18:55:05 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 113
+##     Update #: 117
 ######################################################################
 ## 
 ### Commentary: 
@@ -36,10 +36,7 @@ set(${PROJECT_NAME}_HEADERS
   medDropSite.h
   medFlicker.h
   medLayoutChooser.h
-  medLoginWidget.h
   medProgressionStack.h
-  medSearchBar.h
-  medSearchBox.h
   medToolBox.h
   medToolBoxContainer.h
   medToolBoxConfiguration.h
@@ -60,10 +57,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDropSite.h
   medFlicker.h
   medLayoutChooser.h
-  medLoginWidget.h
   medProgressionStack.h
-  medSearchBar.h
-  medSearchBox.h
   medToolBox.h
   medToolBoxConfiguration.h
   medToolBoxDiffusion.h
@@ -83,10 +77,7 @@ set(${PROJECT_NAME}_SOURCES
   medDropSite.cpp
   medFlicker.cpp
   medLayoutChooser.cpp
-  medLoginWidget.cpp
   medProgressionStack.cpp
-  medSearchBar.cpp
-  medSearchBox.cpp
   medToolBox.cpp
   medToolBoxContainer.cpp
   medToolBoxConfiguration.cpp

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:16:32 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct 21 15:19:04 2009 (+0200)
+ * Last-Updated: Sat Mar 20 20:02:54 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 31
+ *     Update #: 32
  */
 
 /* Commentary: 
@@ -57,11 +57,6 @@ public slots:
     void onStudyClicked(int id);
     void onSeriesClicked(int id);
     void onImageClicked(int id);
-
-public slots:
-    void expandAllStudies(void);
-    void expandAllSeries(void);
-    void expandAllImages(void);
 
 private slots:
     void onItemClicked(const QModelIndex& index);

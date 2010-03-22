@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:43:54 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 09:43:55 2009 (+0100)
+ * Last-Updated: Sat Mar 20 13:52:34 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 2
  */
 
 /* Commentary: 
@@ -52,8 +52,8 @@ void medDatabasePreviewScene::addGroup(medDatabasePreviewItemGroup *group)
     this->addItem(group);
 
     medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
-        ? group->setPos(group_spacing, (3 - d->group_count) * (group_height + group_spacing) + group_spacing)
-        : group->setPos((3 - d->group_count) * (group_height + group_spacing) + group_spacing, group_spacing);
+        ? group->setPos(group_spacing, (1 - d->group_count) * (group_height + group_spacing) + group_spacing)
+        : group->setPos((1 - d->group_count) * (group_height + group_spacing) + group_spacing, group_spacing);
 
     d->group_count++;
 }

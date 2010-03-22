@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:18:20 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Oct 10 00:57:20 2009 (+0200)
+ * Last-Updated: Sat Mar 20 20:03:03 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 83
+ *     Update #: 97
  */
 
 /* Commentary: 
@@ -21,28 +21,6 @@
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseItem.h>
 
-medDatabaseModel *deproxy(QAbstractItemModel *model)
-{
-    if(QAbstractProxyModel *proxy = dynamic_cast<QAbstractProxyModel *>(model)) {
-        return deproxy(proxy->sourceModel());
-    } else if(medDatabaseModel *db = dynamic_cast<medDatabaseModel *>(model)) {
-        return db;
-    } else {
-        return NULL;
-    }
-}
-
-medDatabaseItem *deproxy(QAbstractItemModel *model, QModelIndex index)
-{
-    if(QAbstractProxyModel *proxy = dynamic_cast<QAbstractProxyModel *>(model)) {
-        return deproxy(proxy->sourceModel(), proxy->mapToSource(index));
-    } else if(medDatabaseModel *db = dynamic_cast<medDatabaseModel *>(model)) {
-        return static_cast<medDatabaseItem *>(index.internalPointer());
-    } else {
-        return NULL;
-    }
-}
-
 medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
 {
     this->setAcceptDrops(true);
@@ -50,6 +28,10 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
     this->setUniformRowHeights(true);
     this->setAlternatingRowColors(true);
+    this->setAnimated(false);
+    this->setSortingEnabled(true);
+
+    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     this->header()->setStretchLastSection(true);
 
@@ -69,7 +51,7 @@ void medDatabaseView::setModel(medDatabaseModel *model)
 
 void medDatabaseView::onPatientClicked(int id)
 {
-    if(medDatabaseModel *model = deproxy(this->model())) {
+    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model())) {
         QModelIndex index = model->indexForPatient(id);
         this->collapseAll();
         this->setExpanded(index, true);
@@ -80,7 +62,7 @@ void medDatabaseView::onPatientClicked(int id)
 
 void medDatabaseView::onStudyClicked(int id)
 {
-    if(medDatabaseModel *model = deproxy(this->model())) {
+    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model())) {
         QModelIndex index = model->indexForStudy(id);
         this->collapseAll();
         this->setExpanded(index.parent(), true);
@@ -92,7 +74,7 @@ void medDatabaseView::onStudyClicked(int id)
 
 void medDatabaseView::onSeriesClicked(int id)
 {
-    if(medDatabaseModel *model = deproxy(this->model())) {
+    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model())) {
         QModelIndex index = model->indexForSeries(id);
         this->collapseAll();
         this->setExpanded(index.parent().parent(), true);
@@ -105,7 +87,7 @@ void medDatabaseView::onSeriesClicked(int id)
 
 void medDatabaseView::onImageClicked(int id)
 {
-    if(medDatabaseModel *model = deproxy(this->model())) {
+    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model())) {
         QModelIndex index = model->indexForImage(id);
         this->collapseAll();
         this->setExpanded(index.parent().parent().parent(), true);
@@ -117,24 +99,12 @@ void medDatabaseView::onImageClicked(int id)
     }
 }
 
-void medDatabaseView::expandAllStudies(void)
-{
-    this->expandToDepth(0);
-}
-
-void medDatabaseView::expandAllSeries(void)
-{
-    this->expandToDepth(1);
-}
-
-void medDatabaseView::expandAllImages(void)
-{
-    this->expandToDepth(2);
-}
-
 void medDatabaseView::onItemClicked(const QModelIndex& index)
 {
-    medDatabaseItem *item = deproxy(this->model(), index);
+    medDatabaseItem *item = NULL;
+
+    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(index.internalPointer());
 
     if(item)
         if(item->table() == "patient")
@@ -149,7 +119,10 @@ void medDatabaseView::onItemClicked(const QModelIndex& index)
 
 void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 {
-    medDatabaseItem *item = deproxy(this->model(), index);
+    medDatabaseItem *item = NULL;
+
+    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(index.internalPointer());
 
     if(item)
         if(item->table() == "patient") {

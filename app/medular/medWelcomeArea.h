@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 10:47:56 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Oct 23 09:39:51 2009 (+0200)
+ * Last-Updated: Fri Mar 19 17:21:21 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 3
+ *     Update #: 6
  */
 
 /* Commentary: 
@@ -36,14 +36,9 @@ public:
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
 
-signals:
-    void accepted(void);
-    void rejected(void);
-
-protected:
-    void paintEvent(QPaintEvent *event);
-
 protected slots:
+    void authenticate(void);
+
     void linkClicked(const QUrl &url);
 
 private:
