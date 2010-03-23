@@ -22,8 +22,10 @@
 
 #include "medToolBox.h"
 
+
 class dtkAbstractView;
 class medToolBoxDiffusionPrivate;
+
 
 class MEDGUI_EXPORT medToolBoxDiffusion : public medToolBox
 {
@@ -46,6 +48,22 @@ public slots:
     void onBundlingBoxActivated         (int value);
 
     void onBundleValidated (QString name);
+
+    void onObjectDropped (void);
+
+    void onCoefficientsChanged  (int);
+    /*
+      void onComputeLFA (void);
+      void onComputeRA  (void);
+      void onComputeADC (void);
+      void onComputeL1  (void);
+    void onComputeL2  (void);
+    void onComputeL3  (void);
+    void onComputeCl  (void);
+    void onComputeCp  (void);
+    void onComputeCs  (void);
+    void onComputeVR  (void);
+    */
     
 private:
     medToolBoxDiffusionPrivate *d;

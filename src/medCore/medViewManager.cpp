@@ -38,7 +38,7 @@ medViewManager *medViewManager::instance(void)
 
 void medViewManager::insert(const medDataIndex& index, dtkAbstractView *view)
 {
-    d->views[index] << view;
+    d->views[index].prepend (view);
 }
 
 void medViewManager::remove(const medDataIndex& index, dtkAbstractView *view)

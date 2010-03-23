@@ -20,9 +20,11 @@
 #ifndef MEDVIEWCONTAINERCUSTOM_H
 #define MEDVIEWCONTAINERCUSTOM_H
 
+#include "medGuiExport.h"
+
 #include "medViewContainer.h"
 
-class medViewContainerCustom : public medViewContainer
+class MEDGUI_EXPORT medViewContainerCustom : public medViewContainer
 {
     Q_OBJECT
 
