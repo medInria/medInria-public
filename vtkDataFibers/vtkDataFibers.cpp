@@ -27,12 +27,13 @@ public:
 
 vtkDataFibers::vtkDataFibers(void) : dtkAbstractData(), d(new vtkDataFibersPrivate)
 {
-	d->data = 0;
+    d->data = 0;
 }
 
 vtkDataFibers::~vtkDataFibers(void)
 {
-
+    delete d;
+    d = 0;
 }
 
 bool vtkDataFibers::registered(void)

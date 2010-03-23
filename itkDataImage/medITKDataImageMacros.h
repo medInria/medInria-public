@@ -47,6 +47,8 @@
   }									\
   itkDataImage##suffix::~itkDataImage##suffix()				\
   {									\
+    delete d;								\
+    d = 0;								\
   }									\
   bool itkDataImage##suffix::registered()				\
   {									\

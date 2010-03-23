@@ -34,7 +34,8 @@ v3dDataImage::v3dDataImage(void) : dtkAbstractDataImage(), d(new v3dDataImagePri
 
 v3dDataImage::~v3dDataImage(void)
 {
-
+    delete d;
+    d = 0;
 }
 
 bool v3dDataImage::registered(void)

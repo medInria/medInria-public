@@ -45,7 +45,8 @@ itkDCMTKDataImageReader::itkDCMTKDataImageReader(void) : dtkAbstractDataReader()
 
 itkDCMTKDataImageReader::~itkDCMTKDataImageReader(void)
 {
-
+  delete d;
+  d = 0;
 }
 
 

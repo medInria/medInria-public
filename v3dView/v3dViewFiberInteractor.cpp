@@ -54,6 +54,9 @@ v3dViewFiberInteractor::~v3dViewFiberInteractor()
     }
     d->v3dBundleList.clear();
     d->manager->Delete();
+
+    delete d;
+    d = 0;
 }
 
 QString v3dViewFiberInteractor::description(void) const

@@ -51,6 +51,9 @@ v3dViewFuseInteractor::v3dViewFuseInteractor(): dtkAbstractViewInteractor(), d(n
 v3dViewFuseInteractor::~v3dViewFuseInteractor()
 {
     d->fuse->Delete();
+    // delete d->output;
+    delete d;
+    d = 0;
 }
 
 
@@ -117,7 +120,7 @@ void v3dViewFuseInteractor::onCheckerboardDivisionCountValueSet (double value)
 
 void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 {
-    if (!data || channel<0 || channel>1)
+    if (!data || channel<0 || channel>1 || !data->data())
         return;
 
     if (data->description()==tr("itkDataImageChar3")) {
