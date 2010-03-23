@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sat Mar 20 20:06:00 2010 (+0100)
+ * Last-Updated: Sat Mar 20 20:37:56 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 118
+ *     Update #: 119
  */
 
 /* Commentary: 
@@ -169,6 +169,8 @@ void medDatabasePreview::onPatientClicked(int id)
 
     if(d->level)
         this->onSlideDw();
+    else
+        this->onMoveBg();
 }
 
 void medDatabasePreview::onSeriesClicked(int id)
