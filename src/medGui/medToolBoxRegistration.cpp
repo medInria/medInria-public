@@ -170,29 +170,34 @@ void medToolBoxRegistration::run(void)
     if (!d->fixedData || !d->movingData || !d->movingView)
         return;
 
+    
     dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
     if (!process)
         return;
     
     process->setInput(d->fixedData,  0);
     process->setInput(d->movingData, 1);
-    process->run();
-    
-    dtkAbstractData *output = process->output();
 
-    if(output) {
-        d->movingView->setData(output);
-	d->movingView->reset();
-        d->movingView->update();
-	
-	if (d->fuseView) {
-	    if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-		interactor->setData(output, 1);
-		d->fuseView->reset();
-		d->fuseView->update();
+    if (process->run()==0) {
+
+        dtkAbstractData *output = process->output();
+
+	if(output) {
+	    d->movingView->setData(output);
+	    d->movingView->reset();
+	    d->movingView->update();
+	    
+	    if (d->fuseView) {
+	        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+		    interactor->setData(output, 1);
+		    d->fuseView->reset();
+		    d->fuseView->update();
+		}
 	    }
 	}
     }
+    
+    delete process;
 }
 
 void medToolBoxRegistration::onBlendModeSet(bool value)
