@@ -48,11 +48,11 @@ public:
 
     medDataIndex& operator=(const medDataIndex& index);
 
-    friend bool operator==(const medDataIndex& index1, const medDataIndex& index2);
-    friend bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
+    friend MEDCORE_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
+    friend MEDCORE_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
 
-    friend QDebug operator<<(QDebug debug, const medDataIndex& index);
-    friend QDebug operator<<(QDebug debug,       medDataIndex *index);
+    friend MEDCORE_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
+    friend MEDCORE_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);
 
 private:
     medDataIndexPrivate *d;
@@ -62,17 +62,17 @@ private:
 // Convenience operators
 // /////////////////////////////////////////////////////////////////
 
-bool operator==(const medDataIndex& index1, const medDataIndex& index2);
-bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
+MEDCORE_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
+MEDCORE_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
 
-QDebug operator<<(QDebug debug, const medDataIndex& index);
-QDebug operator<<(QDebug debug,       medDataIndex *index);
+MEDCORE_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
+MEDCORE_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);
 
 // /////////////////////////////////////////////////////////////////
 // Hash functions
 // /////////////////////////////////////////////////////////////////
 
-uint qHash(const medDataIndex &key);
+MEDCORE_EXPORT uint qHash(const medDataIndex &key);
 
 // /////////////////////////////////////////////////////////////////
 // Meta type registration
