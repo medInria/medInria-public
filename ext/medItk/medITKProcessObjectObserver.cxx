@@ -1,6 +1,7 @@
 #include "medItk/medITKProcessObjectObserver.h"
 
 #include <QDebug>
+#include <QtCore>
 
 #include "itkProcessObject.h"
 
@@ -33,8 +34,10 @@ namespace itk
     if (! po) {
       return;
     }
-    if (this->adaptor)
+    if (this->adaptor) {
       this->adaptor->EmitSignal ((int)(po->GetProgress()*100.0) );
+      qApp->processEvents();
+    }
   }
   
   void medProcessObjectObserver::Execute (const itk::Object *caller, const itk::EventObject &event)
@@ -43,8 +46,10 @@ namespace itk
     if (! po)
       return;
     
-    if (this->adaptor)
+    if (this->adaptor) {
       this->adaptor->EmitSignal ((int)(po->GetProgress()*100.0) );
+      qApp->processEvents();
+    }
   }
   
 }

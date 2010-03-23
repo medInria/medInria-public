@@ -61,8 +61,8 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
     QWidget *widget = new QWidget(this);
 
     QLabel *ilabel = new QLabel(label, widget);
-    ilabel->setFixedWidth(100);
-    ilabel->setAlignment(Qt::AlignRight);
+    //ilabel->setFixedWidth(100);
+    //ilabel->setAlignment(Qt::AlignRight);
 
     QProgressBar *bar = new QProgressBar(widget);
     bar->setRange(0, 100);
