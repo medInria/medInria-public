@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Mar 19 13:54:57 2010 (+0100)
+ * Last-Updated: Tue Mar 23 20:47:30 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 118
+ *     Update #: 122
  */
 
 /* Commentary: 
@@ -18,6 +18,7 @@
  */
 
 #include <QtGui>
+#include <QtOpenGL>
 
 #include "medMainWindow.h"
 
@@ -41,7 +42,20 @@ int main(int argc, char *argv[])
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
 
-    medMainWindow mainwindow; mainwindow.show();
+    medMainWindow mainwindow;
+    mainwindow.show();
+
+    if(application.arguments().contains("--wall"))
+        mainwindow.setWallScreen(true);
+
+    if(application.arguments().contains("--stereo")) {
+       QGLFormat format;
+       format.setAlpha(true);
+       format.setDoubleBuffer(true);
+       format.setStereo(true);
+       format.setDirectRendering(true);
+       QGLFormat::setDefaultFormat(format);
+    }
 
     int status = application.exec();
     

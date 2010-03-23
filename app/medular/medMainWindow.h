@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Mar 19 16:28:20 2010 (+0100)
+ * Last-Updated: Mon Mar 22 15:22:53 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 21
+ *     Update #: 22
  */
 
 /* Commentary: 
@@ -39,6 +39,7 @@ public:
 
 public slots:
     void showInterpreter(void);
+    void setWallScreen(bool full);
     void setFullScreen(bool full);
 
     void switchToWelcomeArea(void);

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Mar 19 16:28:17 2010 (+0100)
+ * Last-Updated: Mon Mar 22 15:26:36 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 359
+ *     Update #: 367
  */
 
 /* Commentary: 
@@ -282,6 +282,23 @@ void medMainWindow::showInterpreter(void)
     d->interpreter->setVisible(!d->interpreter->isVisible());
     d->interpreter->move(pos);
     d->interpreter->resize(size);
+}
+
+void medMainWindow::setWallScreen(bool full)
+{
+    if(full)
+        this->setUnifiedTitleAndToolBarOnMac(false);
+
+    if(full) {
+        this->move(0, -50);
+        this->resize(3528, 1230);
+    } else
+        this->showNormal();
+
+    if(!full)
+        this->setUnifiedTitleAndToolBarOnMac(true);
+
+    d->toolbar->toggleViewAction()->trigger();
 }
 
 void medMainWindow::setFullScreen(bool full)
