@@ -45,6 +45,7 @@ SET(ITK_LIBS_STYLE              "@ITK_LIBS_STYLE@")
 # Examples were built
 SET(vtkINRIA3D_BUILD_EXAMPLES "@vtkINRIA3D_BUILD_EXAMPLES@")
 
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${vtkINRIA3D_SOURCE_DIR}/CMakeModules")
 
 # Some specific settings.
 SET(VTK_DIR "@VTK_DIR@")
