@@ -654,6 +654,7 @@ RegistrationFactory<TImage>
     fieldGenerator->SetOutputRegion(m_FixedImage->GetRequestedRegion());
     fieldGenerator->SetOutputSpacing(m_FixedImage->GetSpacing());
     fieldGenerator->SetOutputOrigin(m_FixedImage->GetOrigin());
+    fieldGenerator->SetOutputDirection(m_FixedImage->GetDirection());
   }
   else
   {
@@ -673,6 +674,7 @@ RegistrationFactory<TImage>
 	fieldGenerator->SetOutputRegion(displacementfieldtransform->GetDisplacementField()->GetRequestedRegion());
 	fieldGenerator->SetOutputSpacing(displacementfieldtransform->GetDisplacementField()->GetSpacing());
 	fieldGenerator->SetOutputOrigin(displacementfieldtransform->GetDisplacementField()->GetOrigin());
+	fieldGenerator->SetOutputDirection(displacementfieldtransform->GetDisplacementField()->GetDirection());
       }
     }
 
