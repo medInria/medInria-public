@@ -41,7 +41,7 @@ vtkLimitFibersToROI::vtkLimitFibersToROI()
   MaskImage = 0;
   for( unsigned int i=0; i<256; i++)
   {
-    this->BooleanOperationVector[i] = 1;
+    this->BooleanOperationVector[i] = 2;
   }
   this->DirectionMatrix = 0;
 }
@@ -257,16 +257,23 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
     }
     
     bool insert = true;
+
+    // 0: NULL
+    // 1: NOT
+    // 2: AND
     
     for( unsigned int i=0; i<numLabels; i++)
     {
-      if( this->BooleanOperationVector[ Labels[i] ] == 0 )
+      if( this->BooleanOperationVector[ Labels[i] ] > 0 )
       {
-        insert = insert && !FiberRegions[i];
-      }
-      else
-      {
-        insert = insert && FiberRegions[i];
+	if( this->BooleanOperationVector[ Labels[i] ] == 1 )
+	{
+	  insert = insert && !FiberRegions[i];
+	}
+	else
+	{
+	  insert = insert && FiberRegions[i];
+	}
       }
     }
     
