@@ -287,14 +287,10 @@ vtkViewImage3D::vtkViewImage3D ()
   this->VolumeActor->SetVisibility (0);
   this->AxesActor->SetVisibility (0);
 
-  
     
   this->ActorSagittal->SetVisibility ( this->GetVisibility() );
   this->ActorCoronal->SetVisibility ( this->GetVisibility() );
   this->ActorAxial->SetVisibility ( this->GetVisibility() );
-
-  this->GetScalarBar()->GetLabelTextProperty()->SetColor (0.0,0.0,0.0);
-  this->GetScalarBar()->GetTitleTextProperty()->SetColor (0.0,0.0,0.0);
 
 }
 
@@ -480,7 +476,6 @@ void vtkViewImage3D::SetImage ( vtkImageData* image )
 	vtkVolumeTextureMapper2D* newMapper = vtkVolumeTextureMapper2D::New();
         newMapper->CroppingOn();
         newMapper->SetCroppingRegionFlags (0x7ffdfff);
-        
 
 	double* range = this->GetImage()->GetScalarRange();
 	double shift = 0 - range[0];
