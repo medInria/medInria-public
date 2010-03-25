@@ -1274,6 +1274,7 @@ void vtkViewImage3D::SetDirectionMatrix (vtkMatrix4x4 *mat)
      is not what is expected. To correct for this, we change the translation of the DirectionMatrix
      such that DirectionMatrix*Origin = Origin.
    */
+
   if (this->GetImage())
   {
     // clear the former translation in case there is any
@@ -1297,8 +1298,10 @@ void vtkViewImage3D::SetDirectionMatrix (vtkMatrix4x4 *mat)
   this->ActorAxial->SetUserMatrix ( this->GetDirectionMatrix() );
   this->VolumeActor->SetUserMatrix ( this->GetDirectionMatrix() );
 
-  this->BoxWidget->SetOrientationMatrix (this->GetDirectionMatrix() );
+  this->AxesActor->SetUserMatrix ( this->GetDirectionMatrix() );
   
+  this->BoxWidget->SetOrientationMatrix (this->GetDirectionMatrix() );
+
   this->Modified();
 }
 
