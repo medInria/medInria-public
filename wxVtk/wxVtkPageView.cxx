@@ -160,14 +160,17 @@ void wxVtkPageView::SetProperties()
   m_View1->SetBackgroundColor (0.0,0.0,0.0);
   m_View2->SetBackgroundColor (0.0,0.0,0.0);
   m_View3->SetBackgroundColor (0.0,0.0,0.0);
-//   m_View4->SetBackgroundColor (0.0,0.0,0.0);  
+  m_View4->SetBackgroundColor (0.0,0.0,0.0);
+  
   m_View1->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
   m_View2->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
   m_View3->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
 
-  m_View1->CursorFollowMouseOn();
-  m_View2->CursorFollowMouseOn();
-  m_View3->CursorFollowMouseOn();
+  /*
+    m_View1->CursorFollowMouseOn();
+    m_View2->CursorFollowMouseOn();
+    m_View3->CursorFollowMouseOn();
+  */
   
   rend1->Delete();
   rend2->Delete();
@@ -183,8 +186,8 @@ void wxVtkPageView::SetProperties()
   m_View3->ScalarBarVisibilityOn();
   m_View4->ScalarBarVisibilityOn();
 
-  double textcolor[3]={0.0,0.0,0.0};
-  m_View4->SetTextColor (textcolor);
+  double textcolor[3]={1.0,1.0,1.0};
+  m_View4->SetTextColor (textcolor);  
   m_View4->SetRenderingModeToPlanar();
 
   m_View1->AddChild (m_View2);
