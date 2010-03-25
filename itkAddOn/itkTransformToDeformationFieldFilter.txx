@@ -35,6 +35,8 @@ TransformToDeformationFieldFilter<TOutputImage,TTransformScalarType>
   m_OutputSpacing.Fill(1.0);
   m_OutputOrigin.Fill(0.0);
 
+  m_OutputDirection.SetIdentity();
+
   m_Transform = 0;
 }
 
@@ -54,6 +56,7 @@ TransformToDeformationFieldFilter<TOutputImage,TTransformScalarType>
   os << indent << "OutputRegion:    " << m_OutputRegion << std::endl;
   os << indent << "OutputSpacing:   " << m_OutputSpacing << std::endl;
   os << indent << "OutputOrigin:    " << m_OutputOrigin << std::endl;
+  os << indent << "OutputDirection:    " << m_OutputDirection << std::endl;
   os << indent << "Transform: " << m_Transform.GetPointer() << std::endl;
 
   return;
@@ -183,6 +186,7 @@ TransformToDeformationFieldFilter<TOutputImage,TTransformScalarType>
   // Set spacing and origin
   outputPtr->SetSpacing( m_OutputSpacing );
   outputPtr->SetOrigin( m_OutputOrigin );
+  outputPtr->SetDirection( m_OutputDirection );
 
   return;
 }

@@ -87,6 +87,7 @@ public:
   /** Image spacing typedef */
   typedef typename TOutputImage::SpacingType      SpacingType;
   typedef typename TOutputImage::PointType        OriginPointType;
+  typedef typename TOutputImage::DirectionType    DirectionType;
   
   /** Set/Get the Transfrom. */
   itkSetObjectMacro( Transform, TransformType );
@@ -111,6 +112,14 @@ public:
 
   /** Get the output image origin. */
   itkGetConstReferenceMacro( OutputOrigin, OriginPointType );
+
+
+  /** Set the output image spacing. */
+  itkSetMacro(OutputDirection, DirectionType);
+
+  /** Get the output image spacing. */
+  itkGetConstReferenceMacro( OutputDirection, DirectionType );
+
   
   /** TransformToDeformationFieldFilter produces an image which is a different size
    * than its input.  As such, it needs to provide an implementation
@@ -150,6 +159,7 @@ private:
   OutputImageRegionType         m_OutputRegion;      // Region of the output image
   SpacingType                   m_OutputSpacing;     // output image spacing
   OriginPointType               m_OutputOrigin;      // output image origin
+  DirectionType                 m_OutputDirection;
 };
 
   
