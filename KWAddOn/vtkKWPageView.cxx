@@ -135,7 +135,9 @@ void vtkKWPageView::CreateRenderWidgets()
 void vtkKWPageView::ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget)
 {
   
-  view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
+//   view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
+  view->SetRenderWindowInteractor (widget->GetRenderWindow()->GetInteractor());
+  
   vtkRenderer* renderer = view->GetRenderer();
 
 

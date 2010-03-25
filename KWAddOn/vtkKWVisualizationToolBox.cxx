@@ -1014,7 +1014,7 @@ void vtkKWVisualizationToolBox::ImageRenderingModeCallback (const char* value)
     }
     if (strcmp (value, "Volume Rendering") == 0)
     {
-      page->GetView4()->SetVolumeMapperToTexture();
+//       page->GetView4()->SetVolumeMapperToTexture();
       page->GetView4()->SetRenderingModeToVR();
       page->GetView4()->SetBoxWidgetVisibility (this->CroppingBoxCheckbox->GetWidget()->GetSelectedState());
       this->CroppingBoxCheckbox->GetWidget()->SetStateToNormal();
@@ -1023,7 +1023,7 @@ void vtkKWVisualizationToolBox::ImageRenderingModeCallback (const char* value)
     }
     if (strcmp (value, "MIP") == 0)
     {
-      page->GetView4()->SetVolumeMapperToRayCast();
+//       page->GetView4()->SetVolumeMapperToRayCast();
       page->GetView4()->SetVolumeRayCastFunctionToMIP();
       page->GetView4()->SetRenderingModeToVR();
     }
