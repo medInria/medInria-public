@@ -272,9 +272,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   /** Set the render window interactor */
   void SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin);
 	
-	/** Set the default renderer to put actors in. Must be called before SetInput() */
-	vtkSetObjectMacro(Renderer, vtkRenderer);
-	vtkGetObjectMacro(Renderer, vtkRenderer);
+  /** Set the default renderer to put actors in. Must be called before SetInput() */
+  vtkSetObjectMacro(Renderer, vtkRenderer);
+  vtkGetObjectMacro(Renderer, vtkRenderer);
 
   /** Remove all actors added by this manager. */
   void RemoveAllActors (void);
