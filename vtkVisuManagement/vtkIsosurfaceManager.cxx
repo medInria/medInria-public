@@ -40,6 +40,8 @@ vtkIsosurfaceManager::vtkIsosurfaceManager()
   this->Opacity         = 0.5;
   this->Decimation      = 0;
 
+  this->DirectionMatrix = 0;
+
 }
 
 vtkIsosurfaceManager::~vtkIsosurfaceManager()
@@ -56,6 +58,11 @@ vtkIsosurfaceManager::~vtkIsosurfaceManager()
   if( this->Input )
   {
     this->Input->Delete();
+  }
+
+  if (this->DirectionMatrix)
+  {
+    this->DirectionMatrix->Delete();
   }
 
   if( this->RenderWindowInteractor )
@@ -153,7 +160,7 @@ void vtkIsosurfaceManager::GenerateData()
 
 
   this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-//   vtkRenderer* renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
+  // vtkRenderer* renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
   vtkRenderer* renderer = this->RenderWindowInteractor->FindPokedRenderer(
 				this->RenderWindowInteractor->GetLastEventPosition()[0],
 				this->RenderWindowInteractor->GetLastEventPosition()[1]);
@@ -185,7 +192,11 @@ void vtkIsosurfaceManager::GenerateData()
       ImageToIsosurfaceFilter->SetDecimationOff();
     }
     
-     
+
+    if (this->DirectionMatrix)
+    {
+      ImageToIsosurfaceFilter->GetActor()->SetUserMatrix (this->DirectionMatrix);
+    }
     
     if( renderer )
     {

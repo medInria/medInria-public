@@ -27,6 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkRenderWindow.h>
 #include <vtkLookupTable.h>
 #include <vtkProperty.h>
+#include <vtkMatrix4x4.h>
 
 
 class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
@@ -41,6 +42,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
   vtkGetObjectMacro (Input, vtkImageData);
   vtkSetObjectMacro (LUT, vtkLookupTable);
   vtkGetObjectMacro (LUT, vtkLookupTable);
+
+  vtkSetObjectMacro (DirectionMatrix, vtkMatrix4x4);
+  vtkGetObjectMacro (DirectionMatrix, vtkMatrix4x4);
 
   /** Set the render window interactor */
   void SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin);
@@ -118,6 +122,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
   int                                  Visibility;
   double                               Opacity;
   int                                  Decimation;
+
+  vtkMatrix4x4                        *DirectionMatrix;
 
 };
 
