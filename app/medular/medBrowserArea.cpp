@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Mar 20 20:06:27 2010 (+0100)
+ * Last-Updated: Thu Mar 25 18:43:40 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 289
+ *     Update #: 290
  */
 
 /* Commentary: 
@@ -94,7 +94,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->filesystem_view->setModel(d->filesystem_model);
     d->filesystem_view->setCurrentIndex(d->filesystem_model->index(QDir::homePath()));
     d->filesystem_view->setExpanded(d->filesystem_view->currentIndex(), true);
-    d->filesystem_view->header()->setResizeMode(QHeaderView::Stretch);
+    d->filesystem_view->header()->setResizeMode(QHeaderView::Interactive);
 
     // Pacs widget ///////////////////////////////////////////////
 
