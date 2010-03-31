@@ -76,16 +76,16 @@ mark_as_advanced(QT_QMAKE_EXECUTABLE)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
+# find_package(VTK REQUIRED)
+# include(${VTK_USE_FILE})
 
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
+find_package(vtkINRIA3D-Private REQUIRED)
+include(${vtkINRIA3D-Private_USE_FILE})
 
-if(vtkINRIA3D_USE_ITK)
-  find_package(ITK REQUIRED)
-  include(${ITK_USE_FILE})
-endif(vtkINRIA3D_USE_ITK)
+# if(vtkINRIA3D_USE_ITK)
+#   find_package(ITK REQUIRED)
+#   include(${ITK_USE_FILE})
+# endif(vtkINRIA3D_USE_ITK)
 
 ## #################################################################
 ## Input
@@ -127,7 +127,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   vtkCommon
   vtkRendering
-  vtkRenderingAddOn
+#   vtkRenderingAddOn
   vtkRenderingAddOn3
   vtkWidgetsAddOn
   vtkVisuManagement
