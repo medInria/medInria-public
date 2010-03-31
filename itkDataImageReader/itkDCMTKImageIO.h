@@ -88,9 +88,38 @@ namespace itk
     { return m_OrderedFileNames; }
 
 
-    inline std::string GetMetaDataValueString (const char* key, int index) const;
-    inline const StringVectorType& GetMetaDataValueVectorString (const char* key) const;
-    //std::vector<std::string> GetMetaDataValueVectorString (const char* key) const;
+    inline std::string GetMetaDataValueString (const char* key, int index) const
+    {
+      std::string value = "";
+      const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+      MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
+      if( it!=dicomDictionary.End() )
+      {
+	if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+	{
+	  value = metaData->GetMetaDataObjectValue()[index];
+	}
+      }
+      return value;
+    }
+    
+    inline const StringVectorType& GetMetaDataValueVectorString (const char* key) const
+    {
+      const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+      MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
+      if( it!=dicomDictionary.End() )
+      {
+	if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+	{
+	  return metaData->GetMetaDataObjectValue();
+	}
+	else
+	{
+	  return m_EmptyVector;
+	}
+      }
+      return m_EmptyVector;
+    }
 
 
   protected:

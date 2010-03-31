@@ -1160,7 +1160,7 @@ namespace itk
   }
 
 
-
+  /*
 
   inline std::string DCMTKImageIO::GetMetaDataValueString (const char* key, int index) const
   {
@@ -1177,7 +1177,8 @@ namespace itk
     return value;
   }
 
-  
+  */
+  /*
   inline const DCMTKImageIO::StringVectorType& DCMTKImageIO::GetMetaDataValueVectorString (const char* key) const
   {
     const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
@@ -1194,5 +1195,5 @@ namespace itk
     }
     return m_EmptyVector;
   }
-  
+  */  
 }
