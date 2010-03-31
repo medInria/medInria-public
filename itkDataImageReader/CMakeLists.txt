@@ -196,6 +196,15 @@ target_link_libraries(itkDCMTKConvert
   ${ITK_LIBRARIES}
 )
 
+add_executable(itkDCMTKDiffusionGradientTableExtractor
+  itkDCMTKDiffusionGradientTableExtractor.cxx
+)
+  
+target_link_libraries(itkDCMTKDiffusionGradientTableExtractor
+  ITKDCMTKIO
+  ${ITK_LIBRARIES}
+)
+
 
 add_executable(itkGenerateThumbnails
   itkGenerateThumbnails.cxx
