@@ -18,7 +18,6 @@ IF( ITK_FOUND AND wxWidgets_FOUND)
    vtkDataManagement
    wxVtk
    wxAddOn
-   ${vtkINRIA3D_LIB_RENDERING}
    ${ITK_LIBRARIES}
    )
 
@@ -59,7 +58,6 @@ IF( ITK_FOUND AND wxWidgets_FOUND)
      vtkVisuManagement
      wxVtk
      wxAddOn
-     ${vtkINRIA3D_LIB_RENDERING}
      ${ITK_LIBRARIES}    
    )
 
@@ -75,7 +73,6 @@ IF( ITK_FOUND AND wxWidgets_FOUND)
    ${wxWidgets_LIBRARIES}
    wxVtk
    wxAddOn
-   ${vtkINRIA3D_LIB_RENDERING}
    ${ITK_LIBRARIES}
    )
 

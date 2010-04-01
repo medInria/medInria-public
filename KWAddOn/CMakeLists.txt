@@ -63,8 +63,8 @@ SET(KWAddOn_LIBRARIES
   vtkCommon
   vtkDataManagement
   vtkDataManagementTCL
-  ${vtkINRIA3D_LIB_RENDERING}
-  ${vtkINRIA3D_LIB_RENDERING}TCL
+  vtkRenderingAddOn
+  vtkRenderingAddOnTCL
   vtkVisuManagement
 )
 
