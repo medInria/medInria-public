@@ -19,8 +19,6 @@ TARGET_LINK_LIBRARIES(${KIT}CxxTests
   vtkCommon
   vtkDataManagement
   vtkDataManagementTCL
-  ${vtkINRIA3D_LIB_RENDERING}
-  ${vtkINRIA3D_LIB_RENDERING}TCL
   vtkVisuManagement
   KWAddOn
   )

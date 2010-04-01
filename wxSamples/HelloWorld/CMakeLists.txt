@@ -23,7 +23,6 @@ IF( wxWidgets_FOUND )
   wxVtk
   wxAddOn
   ${ITK_LIBRARIES}
-  ${vtkINRIA3D_LIB_RENDERING}
   vtkDataManagement
   vtkRendering
   )
@@ -52,7 +51,6 @@ IF( wxWidgets_FOUND )
   wxAddOn
   ${ITK_LIBRARIES}
   vtkRendering
-  ${vtkINRIA3D_LIB_RENDERING}
   )
 
   INSTALL_TARGETS(/lib HelloWorldLib)
