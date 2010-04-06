@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:14:33 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Apr  6 21:10:34 2010 (+0200)
+## Last-Updated: Tue Apr  6 22:19:54 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 30
+##     Update #: 34
 ######################################################################
 ## 
 ### Commentary: 
@@ -40,17 +40,5 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 include(medDart)
 
-option(BUILD_SHARED_LIBS "Build shared libraries" true)
-option(BUILD_EXTENSIONS "Build medular extensions" true)
-
-if (BUILD_EXTENSIONS)
-set(${PROJECT_NAME}_INCLUDE_PATH
-  ${${PROJECT_NAME}_INCLUDE_PATH} ${CMAKE_SOURCE_DIR}/ext)
-endif (BUILD_EXTENSIONS)
-
 add_subdirectory(src)
 add_subdirectory(app)
-
-if (BUILD_EXTENSIONS)
-add_subdirectory(ext)
-endif (BUILD_EXTENSIONS)
