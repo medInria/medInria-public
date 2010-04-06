@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Fri Sep 25 11:51:59 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Jan 19 13:43:46 2010 (+0100)
+## Last-Updated: Tue Apr  6 21:35:41 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 27
+##     Update #: 30
 ######################################################################
 ## 
 ### Commentary: 
@@ -18,13 +18,6 @@
 ######################################################################
 
 project(medSql)
-
-## #################################################################
-## Resolve dependencies
-## #################################################################
-
-find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
 
 ## #################################################################
 ## Sources
@@ -52,8 +45,7 @@ set(${PROJECT_NAME}_HEADERS
   medDatabasePreviewScene.h
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
-  medDatabasePreviewView.h
-)
+  medDatabasePreviewView.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseController.h
@@ -62,21 +54,18 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseModel.h
   medDatabaseView.h
   medDatabaseNavigator.h
-  medDatabaseNavigatorController.h
   medDatabaseNavigatorItem.h
   medDatabaseNavigatorItemGroup.h
   medDatabaseNavigatorItemLoader.h
   medDatabaseNavigatorView.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
-  medDatabasePreviewController.h
   medDatabasePreviewItem.h
   medDatabasePreviewItemGroup.h
   medDatabasePreviewItemLoader.h
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
-  medDatabasePreviewView.h
-)
+  medDatabasePreviewView.h)
 
 set(${PROJECT_NAME}_SOURCES
   medDatabaseController.cpp
@@ -101,8 +90,7 @@ set(${PROJECT_NAME}_SOURCES
   medDatabasePreviewScene.cpp
   medDatabasePreviewSelector.cpp
   medDatabasePreviewTooltip.cpp
-  medDatabasePreviewView.cpp
-)
+  medDatabasePreviewView.cpp)
 
 ## #################################################################
 ## Build rules
@@ -117,23 +105,19 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_WRAP}
-)
+  ${${PROJECT_NAME}_SOURCES_WRAP})
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-  medCore
-)
+  medCore)
 
 ## #################################################################
 ## Installation
 ## #################################################################
 
-if(NOT med_INSTALL_NO_DEVELOPMENT)
-  install_files(${med_INSTALL_INCLUDE_DIR}/${PROJECT_NAME} .h ${${PROJECT_NAME}_HEADERS})
-endif(NOT med_INSTALL_NO_DEVELOPMENT)
-
-if(NOT med_INSTALL_NO_LIBRARIES)
-  install_targets(${med_INSTALL_LIB_DIR} RUNTIME_DIRECTORY ${med_INSTALL_BIN_DIR} ${PROJECT_NAME})
-endif(NOT med_INSTALL_NO_LIBRARIES)
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)

@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Fri Mar  5 09:02:06 2010 (+0100)
+## Last-Updated: Tue Apr  6 21:34:54 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 28
+##     Update #: 35
 ######################################################################
 ## 
 ### Commentary: 
@@ -20,43 +20,32 @@
 project(medCore)
 
 ## #################################################################
-## Resolve dependencies
-## #################################################################
-
-find_package(dtk REQUIRED)
-
-include(${dtk_USE_FILE})
-
-## #################################################################
 ## Sources
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS
+  medDataIndex.h
   medDataManager.h
   medViewManager.h
-  medPluginManager.h
-)
+  medPluginManager.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataIndex.h
   medDataManager.h
   medViewManager.h
-  medPluginManager.h
-)
+  medPluginManager.h)
 
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
   medViewManager.cpp
-  medPluginManager.cpp
-)
+  medPluginManager.cpp)
 
 ## #################################################################
 ## Wrapping
 ## #################################################################
 
-set(${PROJECT_NAME}_WRAP_DEPENDS
-  ${CMAKE_CURRENT_SOURCE_DIR}/medAbstractDataImage.h)
+set(${PROJECT_NAME}_WRAP_DEPENDS ${${PROJECT_NAME}_HEADERS})
 
 dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore python ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
 dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore tcl    ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
@@ -79,13 +68,13 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_WRAP}
-)
+  ${${PROJECT_NAME}_SOURCES_WRAP})
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-)
+  ${TCL_LIBRARY}
+  ${PYTHON_LIBRARIES})
 
 ## #################################################################
 ## Handling of generated script modules
@@ -98,14 +87,15 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
   COMMENT "-- Moving python modules to ${CMAKE_BINARY_DIR}/modules"
 )
 
+set(${PROJECT_NAME}_MODULES ${CMAKE_BINARY_DIR}/modules/medcore.py)
+
 ## #################################################################
 ## Installation
 ## #################################################################
 
-if(NOT dtk_INSTALL_NO_DEVELOPMENT)
-  install_files(${dtk_INSTALL_INCLUDE_DIR}/${PROJECT_NAME} .h ${${PROJECT_NAME}_HEADERS})
-endif(NOT dtk_INSTALL_NO_DEVELOPMENT)
-
-if(NOT dtk_INSTALL_NO_LIBRARIES)
-  install_targets(${dtk_INSTALL_LIB_DIR} RUNTIME_DIRECTORY ${dtk_INSTALL_BIN_DIR} ${PROJECT_NAME})
-endif(NOT dtk_INSTALL_NO_LIBRARIES)
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(FILES ${${PROJECT_NAME}_MODULES} DESTINATION modules)
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)

@@ -1,12 +1,12 @@
-### medConfig.cmake.in --- 
+### medConfig.install.cmake.in --- 
 ## 
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Mon Jul 20 22:51:02 2009 (+0200)
+## Created: Tue Apr  6 21:03:00 2010 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Apr  6 21:02:41 2010 (+0200)
+## Last-Updated: Tue Apr  6 21:15:21 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 16
+##     Update #: 3
 ######################################################################
 ## 
 ### Commentary: 
@@ -22,8 +22,8 @@ set(med_VERSION_MINOR  "@med_VERSION_MINOR@")
 set(med_VERSION_BUILD  "@med_VERSION_BUILD@")
 set(med_VERSION        "@med_VERSION@")
 
-set(med_INCLUDE_DIRS "@med_INCLUDE_DIRS@")
-set(med_LIBRARY_DIRS "@med_LIBRARY_DIRS@")
-set(med_CMAKE_DIRS   "@med_CMAKE_DIRS@")
+set(med_INCLUDE_DIRS "@med_INSTALL_INCLUDE_DIRS@")
+set(med_LIBRARY_DIRS "@med_INSTALL_LIBRARY_DIRS@")
+set(med_CMAKE_DIRS   "@med_INSTALL_CMAKE_DIRS@")
 
-set(med_USE_FILE "@med_USE_FILE@")
+set(med_USE_FILE "@med_INSTALL_USE_FILE@")

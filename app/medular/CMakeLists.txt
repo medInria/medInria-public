@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Fri Mar 19 16:24:44 2010 (+0100)
+## Last-Updated: Tue Apr  6 21:37:54 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 55
+##     Update #: 57
 ######################################################################
 ## 
 ### Commentary: 
@@ -20,30 +20,15 @@
 project(medular)
 
 ## #################################################################
-## Setup version numbering
-## #################################################################
-
-set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "medular major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "medular minor version number.")
-set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "medular build version number.")
-set(${PROJECT_NAME}_VERSION
-  "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
-
-## #################################################################
 ## Sources
 ## #################################################################
-
-set(${PROJECT_NAME}_HEADERS
-
-)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserArea.h
   medDocumentationArea.h
   medMainWindow.h
   medViewerArea.h
-  medWelcomeArea.h
-)
+  medWelcomeArea.h)
 
 set(${PROJECT_NAME}_SOURCES
   medBrowserArea.cpp
@@ -51,19 +36,9 @@ set(${PROJECT_NAME}_SOURCES
   medMainWindow.cpp
   medViewerArea.cpp
   medWelcomeArea.cpp
-  main.cpp
-)
+  main.cpp)
 
-set(${PROJECT_NAME}_RESOURCES
-  medular.qrc
-)
-
-## #################################################################
-## Wrapping
-## #################################################################
-
-#dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medular python ${CMAKE_CURRENT_SOURCE_DIR}/medular.i ${${PROJECT_NAME}_WRAP_DEPENDS})
-#dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medular tcl    ${CMAKE_CURRENT_SOURCE_DIR}/medular.i ${${PROJECT_NAME}_WRAP_DEPENDS})
+set(${PROJECT_NAME}_RESOURCES medular.qrc)
 
 ## #################################################################
 ## Build rules
@@ -76,18 +51,15 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE
   ${${PROJECT_NAME}_SOURCES_WRAP}
   ${${PROJECT_NAME}_SOURCES_QRC}
   ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES}
-)
+  ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkScript
   dtkGui
-  dtkHelp
   medGui
-  medSql
-)
+  medSql)
 
 ## #################################################################
 ## Bundle setup
@@ -103,3 +75,11 @@ if(APPLE)
     COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_RESOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.icns ${${PROJECT_NAME}_RESOURCE_DIR})
 endif(APPLE)
+
+## #################################################################
+## Installation
+## #################################################################
+
+install(TARGETS ${PROJECT_NAME}
+   BUNDLE DESTINATION bin
+  RUNTIME DESTINATION bin)
