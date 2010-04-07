@@ -27,13 +27,12 @@ PURPOSE.  See the above copyright notices for more information.
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkImageSeriesReader.h>
-#include <itkDataObject.h>
-#include <itkMetaDataObject.h>
 #include <itkGDCMImageIOFactory.h>
 #include <itkGDCMImageIO.h>
 #include <itksys/SystemTools.hxx>
 
 #include "gdcmScanner.h"
+
 #include <sstream>
 #include <vector>
 
@@ -50,8 +49,8 @@ namespace itk
      \see GDCMImporter3 ImageSeriesReader Image
      \ingroup   ImageObjects
   */
-  template <class TPixelType=unsigned short, unsigned int NDimensions=3>
-    class ITK_EXPORT GDCMVolume : public Image<TPixelType, NDimensions>
+  template <class TPixelType=unsigned short>
+    class ITK_EXPORT GDCMVolume : public Image<TPixelType, 4>
     {
     public:
     /// ITK typedefs
@@ -59,7 +58,10 @@ namespace itk
     /// ITK typedefs
     typedef GDCMVolume ImageType;
     /// ITK typedefs
-    typedef Image<TPixelType, NDimensions> Superclass;
+    typedef Image<TPixelType, 3> SubImageType;
+    /// ITK typedefs
+    typedef Image<TPixelType, 4> Superclass;
+    
     /// ITK typedefs
     typedef SmartPointer<Self> Pointer;
     /// ITK typedefs
@@ -68,26 +70,28 @@ namespace itk
     typedef std::vector<std::string> FileList;
     typedef std::map<std::string, FileList> FileListMapType;
     
-    /// serie reader typedef, reading a serie of dicom file to reconstruct a volume image
-    typedef typename itk::ImageSeriesReader<ImageType> SeriesReaderType;
     /// ITK typedefs
     itkNewMacro  (Self);
     /// ITK typedefs
     itkTypeMacro (GDCMVolume, Superclass);
     // superclass typedefs
     typedef typename Superclass::SpacingType SpacingType;
-
-    /**
+    /**/// serie reader typedef, reading a serie of dicom file to reconstruct a volume image
+    typedef ImageSeriesReader<SubImageType> SeriesReaderType;
+    /** Reader typedef, used to read a single file such as DICOMDIR file */
+    typedef typename itk::ImageFileReader<ImageType> ReaderType;
+    /** Writer typedef, not used */
+    typedef typename itk::ImageFileWriter<ImageType> WriterType;    
+    
+    /*
        Get/Set the FileList coming from the GDCM library.
        This list will then be used by Build() for reconstructing
        the volume image.
     */
-    virtual void SetFileListMap(FileListMapType map)
+    void SetFileListMap(FileListMapType map)
     {
-      if (map == this->m_FileListMap)
-	return;
-
       this->m_FileListMap = map;
+      this->Modified();
       m_IsBuilt = 0;
     }
     /**
@@ -95,27 +99,24 @@ namespace itk
        This list will then be used by Build() for reconstructing
        the volume image.
     */
-    virtual FileListMapType GetFileListMap (void) const
+    FileListMapType GetFileListMap (void) const
     { return this->m_FileListMap; }
     /**
        Set/Get the name of the image. This attribute can
        then be used for display purposes
     */
     itkGetStringMacro (Name);
-    /**
-       Set/Get the name of the image. This attribute can
-       then be used for display purposes
-    */
     itkSetStringMacro (Name);
     /**
        Build() will actually fill the volume image considering
        the FileList (SetFileList())
     */
-    virtual void Build(void);
+    void Build(void);
     /**
-       Use this method to release memory after volume parsing (e.g. to a filter)
     */
-    virtual void Initialize (void)
+    void Write(std::string filename);
+    /** Use this method to release memory after volume parsing (e.g. to a filter) */
+    void Initialize (void)
     {
       this->Superclass::Initialize();
       this->m_IsBuilt = 0;
@@ -156,6 +157,11 @@ namespace itk
   };
 
 
+
+
+
+  
+
   /**
 
      \class GDCMImporter3
@@ -166,153 +172,95 @@ namespace itk
      \ingroup   DataSources
 
   */
-  template <typename TImage=Image<unsigned short, 3> >
- class ITK_EXPORT GDCMImporter3 : public ImageSource < TImage >
+  template <class TPixelType=unsigned short>
+ class ITK_EXPORT GDCMImporter3 : public ImageSource < GDCMVolume <TPixelType> >
     {
     public:
 
     /** generic typedefs */
     typedef GDCMImporter3 Self;
     /** generic typedefs */
-    typedef ImageSource < TImage >   Superclass;
+    typedef GDCMVolume <TPixelType> ImageType;
+    /** generic typedefs */
+    typedef ImageSource < ImageType > Superclass;
     /** generic typedefs */
     typedef SmartPointer<Self>       Pointer;
     /** generic typedefs */
     typedef SmartPointer<const Self> ConstPointer;
-    /** generic typedefs */
-    typedef TImage ImageType;
-
+    
     /** generic constructors */
     itkNewMacro (Self);
     /** generic typedefs */
     itkTypeMacro (GDCMImporter3, Superclass);
-
     /** ImageDimension typedef, dimension of the output Image(s) */
     itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);
-    itkStaticConstMacro (ImageDimension2, unsigned int, ImageType::ImageDimension+1);
     /** Pixel typedef */
     typedef typename ImageType::PixelType PixelType;
     /** GDCMVolume typedef, corresponding to the output Image type */
-    typedef GDCMVolume<PixelType, ImageDimension> GDCMVolumeType;
-    /** GDCMVolume typedef, corresponding to the output Image type */
-    typedef typename GDCMVolumeType::Pointer GDCMVolumePointerType;
-    /** Reader typedef, used to read a single file such as DICOMDIR file */
-    typedef typename itk::ImageFileReader<GDCMVolumeType> ReaderType;
-    /** Writer typedef, not used */
-    typedef typename itk::ImageFileWriter<GDCMVolumeType> WriterType;
-    typedef typename itk::ImageFileWriter<Image<PixelType, ImageDimension+1> > Writer4DType;
-    
+    typedef typename ImageType::Pointer ImagePointerType;
     /** stl vector of DataObject, used for a fast access to outputs array  */
     typedef itk::ProcessObject::DataObjectPointerArray DataObjectPointerArray;
     /** Get/Set the InputDirectory, root directory where a DICOM exam can be found*/
     itkGetStringMacro (InputDirectory);
-    /** Get/Set the InputDirectory, root directory where a DICOM exam can be found*/
-    itkSetStringMacro (InputDirectory);
-
-    typedef typename GDCMVolumeType::FileList FileList;
-    typedef std::map<std::string, FileList> FileListMapType;
-    typedef std::map<std::string, FileListMapType> FileListMapofMapType;
+    void SetInputDirectory (std::string d)
+    {
+      m_InputDirectory = d;
+      m_IsScanned = 0;
+      this->Modified();
+    }
     
-    /// serie reader typedef, reading a serie of dicom file to reconstruct a volume image
-    typedef typename itk::ImageSeriesReader<ImageType> SeriesReaderType;
-    /**
-      check if a file can be read by itk::GDCMImageIO
-    */
-    virtual bool CanReadFile(const char* filename);
-    /**
-       Read a single file, attempt to add content to the volume list
-    */
-    virtual void ReadFile (const char* filename);
+
+    typedef typename ImageType::FileList FileList;
+    typedef typename ImageType::FileListMapType FileListMapType;
+    typedef std::map<std::string, FileListMapType> FileListMapofMapType;
     /**
        Use this method to save a specific volume in a file
     */
-    virtual void SaveOutputInFile(unsigned int, const char*);
+    void SaveOutputInFile(unsigned int, const char*);
     /**
        Save all output images in a given directory
     */
-    virtual void SaveOutputsInDirectory(const char*);
-    /**
-       Save all output images in a given directory. Root filename is provided
-    */
-    virtual void SaveOutputsInDirectory(const char*, const char*);
-    /**
-       Remove (release memory) of all output images.
-       dosen't reset the InputDirectory, so that the scanning might be faster afterward.
-    */
-    virtual void Initialize(void)
-    {
-      this->PrepareOutputs();
-    }
+    void SaveOutputsInDirectory(const char*);
     /**
        Scan the directory (or the DICOMDIR file) respecting the strategies explained above,
        The scan might be slow, it is linearly dependant on the number of
        files present in the SetInputDirectory() (or the size of DICOMDIR file).
     */
-    virtual void Scan (void);
-    /**
-       Explicitally removes the given output from the output list. It will release memory
-       involved by this output if any.
-    */
-    virtual void RemoveGDCMVolume (GDCMVolumePointerType dicomimage);
-
-    FileListMapofMapType GetGlobalDicomFileListMap (void);
-    
-    
-  protected:
-
-    /** Overload of the ImageSource process */
-    virtual void GenerateData (void);
-
-    
-    void BuildAndWriteMap (FileListMapType map, const char* filename);
-    
+    void Scan (void);
     /**
        Restoring/Setting output states according to the helper.
     */
-    virtual void InitializeOutputs (void);
-    /**
-       INTERNAL:
+    void Reset (void);
 
-       Generate an unused name using the UID series description from the
-       first item in argument filelist.
-       Returns a name.
-    */
-    virtual std::string GenerateName (FileList filelist);
+  protected:
+
+    /** Overload of the ImageSource process */
+    void GenerateData ();
+    
+    
     /** default constructor */
     GDCMImporter3();
     /** default destructor, release memory */
-    ~GDCMImporter3()
-    {
-      // Release the memory
-      this->Initialize();
-    }
-    /**
-       Prints information concerning the Importer,
-       does not print all outputs inner informations.
-    */
+    ~GDCMImporter3(){}
     void PrintSelf(std::ostream& os, Indent indent) const;
 
-    void Scan (const char* directory);
-    void IPPSort (void);
-    FileListMapType SortwrtIPP (FileList list, const char* rootid);
-
-    
   private:
     GDCMImporter3(const Self&);
     void operator=(const Self&);
 
     std::string m_InputDirectory;
-    FileListMapofMapType FileListMapofMap;
+    FileListMapofMapType m_FileListMapofMap;
 
-    gdcm::Scanner FirstScanner;
-    gdcm::Scanner SecondScanner;
-    gdcm::Scanner ThirdScanner;
+    gdcm::Scanner m_FirstScanner;
+    gdcm::Scanner m_SecondScanner;
+    gdcm::Scanner m_ThirdScanner;
 
+    bool m_IsScanned;
+    
     FileListMapType PrimarySort (FileList list);
     FileListMapType SecondarySort (FileList list);
     FileListMapType TertiarySort (FileList list);
-    
-    
+    std::string GenerateUniqueName (FileListMapType map);
   };
 
 } // end of namespace itk

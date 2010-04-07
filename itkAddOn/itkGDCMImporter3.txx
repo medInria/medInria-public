@@ -16,11 +16,10 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #include "itkGDCMImporter3.h"
+
 #include "gdcmReader.h"
-#include "gdcmDirectory.h"
 #include "gdcmDirectionCosines.h"
-#include "gdcmTag.h"
-#include "gdcmReader.h"
+#include "gdcmStringFilter.h"
 
 
 namespace itk
@@ -29,130 +28,12 @@ namespace itk
 
   
 //----------------------------------------------------------------------------
-  template <typename TImage>
-  void GDCMImporter3<TImage>::BuildAndWriteMap (FileListMapType map, const char* filename)
+  template <class TPixelType>
+  void GDCMVolume<TPixelType>::Write (std::string filename)
   {
-    typedef typename itk::Image<typename TImage::PixelType, 4> Image4DType;
-    typedef typename itk::Image<typename TImage::PixelType, 3> Image3DType;
-    typedef typename Image4DType::RegionType Region4dType;
-    typedef typename Image4DType::SpacingType Spacing4Dtype;
-    typedef typename Image4DType::PointType Point4Dtype;
-    typedef typename Image4DType::DirectionType Direction4Dtype;
-    
-    typedef typename itk::ImageRegionIterator<Image4DType> Iterator4DType;
-    typedef typename Iterator4DType::IndexType Index4DType;
-    
-    typename Image4DType::Pointer image = Image4DType::New();
-    
-    Iterator4DType itOut;
-    Index4DType index;
-    
-    typename FileListMapType::iterator it;
-    unsigned thirdindex = 0;
-
-    std::cout<<"building 4D volume containing : "<<map.size()<<" volumes."<<std::endl;
-    
-    for (it = map.begin(); it != map.end(); ++it)
-    {
-
-      typename SeriesReaderType::Pointer dicomreader = SeriesReaderType::New();
-      typename itk::GDCMImageIO::Pointer io = itk::GDCMImageIO::New();
-      dicomreader->SetFileNames( (*it).second );
-      dicomreader->SetImageIO( io );
-      try
-      {
-	dicomreader->Update();
-      }
-      catch (itk::ExceptionObject & e)
-      {
-	std::cerr << e;
-	throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMVolume::Build()");
-      }
-      
-      typename Image3DType::Pointer t_image = dicomreader->GetOutput();
-
-
-      if (thirdindex == 0)
-      {
-	
-	Region4dType region;
-	
-	region.SetSize (0, t_image->GetLargestPossibleRegion().GetSize()[0]);
-	region.SetSize (1, t_image->GetLargestPossibleRegion().GetSize()[1]);
-	region.SetSize (2, t_image->GetLargestPossibleRegion().GetSize()[2]);
-	region.SetSize (3, map.size());
-	
-	image->SetRegions (region);
-	image->Allocate();
-	
-	Spacing4Dtype spacing;
-	spacing[0] = t_image->GetSpacing()[0];
-	spacing[1] = t_image->GetSpacing()[1];
-	spacing[2] = t_image->GetSpacing()[2];
-	spacing[3] = 1;
-	image->SetSpacing (spacing);
-	
-	Point4Dtype origin;
-	origin[0] = t_image->GetOrigin()[0];
-	origin[1] = t_image->GetOrigin()[1];
-	origin[2] = t_image->GetOrigin()[2];
-	origin[3] = 0;
-	image->SetOrigin (origin);
-	
-    
-	Direction4Dtype direction;
-	
-	for (unsigned int i=0; i<4; i++)
-	  for (unsigned int j=0; j<4; j++)
-	  {
-	    if ((i < 3) && (j < 3))
-	      direction[i][j] = t_image->GetDirection()[i][j];
-	    else
-	      direction[i][j] = (i == j) ? 1 : 0;
-	  }
-	
-	image->SetDirection(direction);
-	itOut = Iterator4DType (image, region);
-	
-      }
-      
-      typename itk::ImageRegionIterator<Image3DType> itIn(t_image, t_image->GetLargestPossibleRegion());
-      typename itk::ImageRegionIterator<Image3DType>::IndexType t_index;
-
-      index[3] = thirdindex;
-      
-      for (unsigned int x=0; x<t_image->GetLargestPossibleRegion().GetSize()[0]; x++)
-      {
-	index[0] = x;
-	t_index[0] = x;
-	for (unsigned int y=0; y<t_image->GetLargestPossibleRegion().GetSize()[1]; y++)
-	{
-	  index[1] = y;
-	  t_index[1] = y;
-	  for (unsigned int z=0; z<t_image->GetLargestPossibleRegion().GetSize()[2]; z++)
-	  {
-	    index[2] = z;
-	    t_index[2] = z;
-	    
-	    itOut.SetIndex (index);
-	    itIn.SetIndex (t_index);
-	    
-	    itOut.Set (itIn.Get());
-	  }
-	}
-      }
-
-      
-      thirdindex++;
-      
-    }
-    
-    
-    typename itk::ImageFileWriter<Image4DType>::Pointer writer 
-      = itk::ImageFileWriter<Image4DType>::New();
+    typename WriterType::Pointer writer = WriterType::New();
     writer->SetFileName (filename);
-    
-    writer->SetInput (image);
+    writer->SetInput (this);
     
     try
     {
@@ -162,20 +43,108 @@ namespace itk
     catch (itk::ExceptionObject & e)
     {
       std::cerr<<e<<std::endl;
-    } 
-    
+    }
   }
   
 
 //----------------------------------------------------------------------------
-  template <class TPixelType, unsigned int NDimensions>
-  void GDCMVolume<TPixelType, NDimensions>::Build()
+  template <class TPixelType>
+  void GDCMVolume<TPixelType>::Build(void)
   {
+
+    FileListMapType map = this->GetFileListMap();
+
+    typedef typename ImageType::RegionType RegionType;
+    typedef typename ImageType::SpacingType SpacingType;
+    typedef typename ImageType::PointType PointType;
+    typedef typename ImageType::DirectionType DirectionType;
+    typedef typename itk::ImageRegionIterator<ImageType> IteratorType;
+    typedef typename IteratorType::IndexType IndexType;
+    
+    typename ImageType::Pointer image = ImageType::New();
+    
+    
+    typename FileListMapType::iterator it;
+    typename itk::GDCMImageIO::Pointer io = itk::GDCMImageIO::New();
+    bool metadatacopied = 0;
+    IteratorType itOut;
+
+    std::cout<<"building volume "<<this->GetName()<<" containing "<<map.size()<<" subvolumes."<<std::endl;
+    
+    for (it = map.begin(); it != map.end(); ++it)
+    {
+      typename SeriesReaderType::Pointer seriesreader = SeriesReaderType::New();
+      seriesreader->UseStreamingOn();
+      
+      seriesreader->SetFileNames( (*it).second );
+      seriesreader->SetImageIO( io );
+      try
+      {
+	seriesreader->Update();
+      }
+      catch (itk::ExceptionObject & e)
+      {
+	std::cerr << e;
+	throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMVolume::Build()");
+      }
+      
+      typename SubImageType::Pointer t_image = seriesreader->GetOutput();
+
+      if (!metadatacopied)
+      {
+	RegionType region;
+	region.SetSize (0, t_image->GetLargestPossibleRegion().GetSize()[0]);
+	region.SetSize (1, t_image->GetLargestPossibleRegion().GetSize()[1]);
+	region.SetSize (2, t_image->GetLargestPossibleRegion().GetSize()[2]);
+	region.SetSize (3, map.size());
+	image->SetRegions (region);
+	image->Allocate();
+	SpacingType spacing;
+	spacing[0] = t_image->GetSpacing()[0];
+	spacing[1] = t_image->GetSpacing()[1];
+	spacing[2] = t_image->GetSpacing()[2];
+	spacing[3] = 1;
+	image->SetSpacing (spacing);
+	PointType origin;
+	origin[0] = t_image->GetOrigin()[0];
+	origin[1] = t_image->GetOrigin()[1];
+	origin[2] = t_image->GetOrigin()[2];
+	origin[3] = 0;
+	image->SetOrigin (origin);
+	DirectionType direction;
+	for (unsigned int i=0; i<4; i++)
+	  for (unsigned int j=0; j<4; j++)
+	  {
+	    if ((i < 3) && (j < 3))
+	      direction[i][j] = t_image->GetDirection()[i][j];
+	    else
+	      direction[i][j] = (i == j) ? 1 : 0;
+	  }
+	image->SetDirection(direction);
+	itOut = IteratorType (image, region);
+
+	this->SetMetaDataDictionary (io->GetMetaDataDictionary());
+	
+	metadatacopied = 1;
+      }
+      
+      typename itk::ImageRegionIterator<SubImageType> itIn(t_image, t_image->GetLargestPossibleRegion());
+      while (!itIn.IsAtEnd())
+      {
+	itOut.Set(itIn.Get());
+	++itIn;
+	++itOut;
+      }
+    }
+    std::cout<<"done"<<std::endl;
+
+    this->Graft (image);
+    this->SetMetaDataDictionary (io->GetMetaDataDictionary());
   }
 
 //----------------------------------------------------------------------------
-  template <class TPixelType, unsigned int NDimensions>
-  void GDCMVolume<TPixelType, NDimensions>::PrintSelf(std::ostream& os, Indent indent) const
+  template <class TPixelType>
+  void GDCMVolume<TPixelType>::PrintSelf(std::ostream& os, Indent indent) const
   {
     Superclass::PrintSelf( os, indent );
     unsigned long NumberOfFiles = 0;
@@ -203,13 +172,14 @@ namespace itk
 
 
 //----------------------------------------------------------------------------
-  template <typename TImage>
-  GDCMImporter3<TImage>::GDCMImporter3()
+  template <class TPixelType>
+  GDCMImporter3<TPixelType>::GDCMImporter3()
   {
     itk::GDCMImageIOFactory::RegisterOneFactory();
 
-    this->SetInputDirectory ("");
-
+    m_InputDirectory  = "";
+    m_IsScanned = 0;
+    
     this->SetNumberOfRequiredInputs (0);
     this->SetNumberOfRequiredOutputs (0);
     this->SetNumberOfOutputs (0);
@@ -217,414 +187,114 @@ namespace itk
         // 0010 0010 Patient name
     // we want to reconstruct an image from a single
     // patient
-    this->FirstScanner.AddTag( gdcm::Tag(0x10,0x10) ); // patient's name
+    this->m_FirstScanner.AddTag( gdcm::Tag(0x10,0x10) ); // patient's name
     // 0020 000d Study uid
     // single study
-    this->FirstScanner.AddTag( gdcm::Tag(0x20,0xd) );  // study uid
+    this->m_FirstScanner.AddTag( gdcm::Tag(0x20,0xd) );  // study uid
     // 0020 000e Series uid
     // single serie
-    this->FirstScanner.AddTag( gdcm::Tag(0x20,0xe) );  // series uid
+    this->m_FirstScanner.AddTag( gdcm::Tag(0x20,0xe) );  // series uid
     // 0020 0037 Orientation
     // single orientation matrix
-    this->FirstScanner.AddTag( gdcm::Tag(0x20,0x37) ); // orientation
+    this->m_FirstScanner.AddTag( gdcm::Tag(0x20,0x37) ); // orientation
     // 0020 0011 Series Number
     // A scout scan prior to a CT volume scan can share the same
     //   SeriesUID, but they will sometimes have a different Series Number
-    this->FirstScanner.AddTag( gdcm::Tag(0x0020, 0x0011) );
+    this->m_FirstScanner.AddTag( gdcm::Tag(0x0020, 0x0011) );
     // 0018 0024 Sequence Name
     // For T1-map and phase-contrast MRA, the different flip angles and
     //   directions are only distinguished by the Sequence Name
-    this->FirstScanner.AddTag( gdcm::Tag(0x0018, 0x0024) );
+    this->m_FirstScanner.AddTag( gdcm::Tag(0x0018, 0x0024) );
     // 0018 0050 Slice Thickness
     // On some CT systems, scout scans and subsequence volume scans will
     //   have the same SeriesUID and Series Number - YET the slice 
     //   thickness will differ from the scout slice and the volume slices.
-    this->FirstScanner.AddTag( gdcm::Tag(0x0018, 0x0050) );
+    this->m_FirstScanner.AddTag( gdcm::Tag(0x0018, 0x0050) );
     // 0028 0010 Rows
     // If the 2D images in a sequence don't have the same number of rows,
     // then it is difficult to reconstruct them into a 3D volume.
-    this->FirstScanner.AddTag( gdcm::Tag(0x0028, 0x0010));
+    this->m_FirstScanner.AddTag( gdcm::Tag(0x0028, 0x0010));
     // 0028 0011 Columns
     // If the 2D images in a sequence don't have the same number of columns,
     // then it is difficult to reconstruct them into a 3D volume.
-    this->FirstScanner.AddTag( gdcm::Tag(0x0028, 0x0011));
+    this->m_FirstScanner.AddTag( gdcm::Tag(0x0028, 0x0011));
 
 
     // 0018 9087 Diffusion B-Factor
     // If the 2D images in a sequence don't have the b-value,
     // then we separate the DWIs.
-    this->SecondScanner.AddTag( gdcm::Tag(0x18,0x9087));
+    this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x9087));
     // 0018 9089 Gradient Orientation
     // If the 2D images in a sequence don't have the same gradient orientation,
     // then we separate the DWIs.
-    this->SecondScanner.AddTag( gdcm::Tag(0x18,0x9089));
+    this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x9089));
     // 0018 1060 Trigger Time
-    this->SecondScanner.AddTag( gdcm::Tag(0x18,0x1060));
+    this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x1060));
 
+    
     // 0020 0032 Position Patient
-    this->ThirdScanner.AddTag( gdcm::Tag(0x20,0x32) );  
+    this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x32) );  
     // 0020 0037 Orientation Patient
-    this->ThirdScanner.AddTag( gdcm::Tag(0x20,0x37) );  
+    this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x37) );  
         
     
   }
 
 
 //----------------------------------------------------------------------------
-  template <typename TImage>
-  bool GDCMImporter3<TImage>::CanReadFile (const char* filename)
-  {
-    typename ReaderType::Pointer reader = ReaderType::New();
-    reader->SetFileName(filename);
-    try
-    {
-      reader->GenerateOutputInformation();
-      return true;
-    }
-    catch (itk::ExceptionObject & e)
-    {
-      std::cerr << e;
-      return false;
-    }
-  }
-
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  void GDCMImporter3<TImage>::ReadFile (const char* filename)
+  template <class TPixelType>
+  void GDCMImporter3<TPixelType>::Scan (void)
   {
 
-    typename ReaderType::Pointer reader = ReaderType::New();
-    typename itk::GDCMImageIO::Pointer io = itk::GDCMImageIO::New();
-//     io->LoadPrivateTagsOn();
-    reader->SetFileName(filename);
-    reader->SetImageIO (io);
-
-    try
-    {
-      reader->Update();
-    }
-    catch (itk::ExceptionObject & e)
-    {
-      std::cerr << e << std::endl;
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::ReadFile()");
-    }
+    if (m_IsScanned)
+      return;
     
-    FileList filelist;
-    filelist.push_back (filename);
-    std::string name = this->GenerateName (filelist);
-    
-    typename GDCMVolumeType::Pointer image = GDCMVolumeType::New();
-    image->SetName (name.c_str());
-    // image->SetFileList (filelist);
-    image->Graft (reader->GetOutput());
-    image->SetMetaDataDictionary (io->GetMetaDataDictionary());
-    this->AddOutput (image);
-  }
-
-
-
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  void
-  GDCMImporter3<TImage>::SaveOutputInFile (unsigned int N, const char* filename)
-  {
-
-    
-    try
-    {
-      typename GDCMVolumeType::Pointer image = static_cast<GDCMVolumeType*>(this->GetOutput (N));
-
-      this->BuildAndWriteMap (image->GetFileListMap(), filename);
-      
-    }
-    catch (itk::ExceptionObject & e)
-    {
-      std::cerr << e << std::endl;
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::SaveOutputInFile()");
-    }
-
-  }
-
-
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  void
-  GDCMImporter3<TImage>::SaveOutputsInDirectory (const char* directory)
-  {
-    for( unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
-    {
-      typename GDCMVolumeType::Pointer image = static_cast<GDCMVolumeType*>(this->GetOutput (i));
-
-      try
-      {
-        if (image.IsNull())
-        throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::SaveOutputsInDirectory(), cannot convert image");
-        std::string name = itksys::SystemTools::MakeCindentifier (image->GetName());
-        std::string filename = directory;
-#ifdef WIN32
-        filename += "\\";
-#else  // WIN32
-        filename += "/";
-#endif // WIN32
-        // Use this ITK extension so that the image keeps
-        // its orientation information coming from the DICOM flags
-        filename += name + ".mha";
-        this->SaveOutputInFile(i, filename.c_str());
-        this->UpdateProgress( double(i)/double(this->GetNumberOfOutputs()) );
-      }
-      catch(itk::ExceptionObject &e)
-      {
-        std::cerr <<"cannot save output "<<i<<std::endl;
-        std::cerr << e <<std::endl;
-      }
-    }
-
-  }
-
-
-  template <typename TImage>
-  void
-  GDCMImporter3<TImage>::SaveOutputsInDirectory (const char* directory, const char* rootfilename)
-  {
-    char buffer[32];
-
-    for ( unsigned int i = 0; i < this->GetNumberOfOutputs(); i++ )
-    {
-      typename GDCMVolumeType::Pointer image = static_cast<GDCMVolumeType*>( this->GetOutput(i) );
-
-      try
-      {
-        if ( image.IsNull() )
-          throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::SaveOutputsInDirectory(), cannot convert image");
-
-        std::string name = itksys::SystemTools::MakeCindentifier (image->GetName());
-        std::string filename = directory;
-#ifdef WIN32
-        filename += "\\";
-#else  // WIN32
-        filename += "/";
-#endif // WIN32
-
-        sprintf(buffer, "%03d", i );
-
-        // Use this ITK extension so that the image keeps
-        // its orientation information coming from the DICOM flags
-	filename = filename + rootfilename + buffer + ".mha";
-        this->SaveOutputInFile(i, filename.c_str());
-        this->UpdateProgress( double(i)/double(this->GetNumberOfOutputs()) );
-      }
-      catch(itk::ExceptionObject &e)
-      {
-        std::cerr <<"cannot save output "<<i<<std::endl;
-        std::cerr << e <<std::endl;
-      }
-    }
-
-  }
-
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  void GDCMImporter3<TImage>::Scan (void)
-  {
-    if (!this->GetInputDirectory() || !(*this->GetInputDirectory()))
-    {
-      itkWarningMacro(<<"Input directory not set !"<<std::endl<<"No scan performed."<<std::endl);
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::Scan()");
-    }
-
-    this->SetNumberOfOutputs(0);
-    this->Initialize();
-
-    // we will scan from scratch all dicom file headers
-    try
-    {
-      std::cout<<"Scanning the directory for DICOM files... ";
-      this->Scan (this->m_InputDirectory.c_str());
-      std::cout<<"done. "<<std::endl;
-    }
-    catch (itk::ExceptionObject & e)
-    {
-      std::cerr << e << std::endl;
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::Scan()");
-    }
-    
-    try
-    {
-      this->InitializeOutputs();
-    }
-    catch (itk::ExceptionObject & e)
-    {
-      std::cerr << e << std::endl;
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::Scan()");
-    }
-
-  }
-
-
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  void GDCMImporter3<TImage>::InitializeOutputs (void)
-  {
-
-    std::cout<<"initlializing..."<<std::endl;
-    
-    
-    this->SetNumberOfOutputs (0);
-    this->Initialize();
-
-    try
-    {
-
-      this->UpdateProgress(0.0);
-
-      typename FileListMapofMapType::iterator it;
-
-      unsigned int iter=0;
-      
-      for (it = this->FileListMapofMap.begin(); it != this->FileListMapofMap.end(); it++)
-      {
-	typename FileListMapType::iterator it2;
-	
-	iter++;
-	
-	FileListMapType filelistmap = (*it).second;
-	if ( !filelistmap.size() )
-	  continue;
-	
-	std::ostringstream name;
-	name <<"output-"<<iter;
-	typename GDCMVolumeType::Pointer image = GDCMVolumeType::New();
-	image->SetName (name.str().c_str());
-	image->SetFileListMap (filelistmap);
-	this->AddOutput (image);
-      }
-    }
-    
-    catch (itk::ExceptionObject & e)
-    {
-      this->UpdateProgress(1.0);
-      this->SetProgress(0.0);
-      std::cerr << e << std::endl;
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::InitializeOutputs(), during tree structuring");
-    }
-    
-    this->UpdateProgress(1.0);
-    this->SetProgress(0.0);
-  }
-
-
-
-
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  void GDCMImporter3<TImage>::GenerateData (void)
-  {
-
-  }
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  typename GDCMImporter3<TImage>::FileListMapofMapType
-  GDCMImporter3<TImage>::GetGlobalDicomFileListMap (void)
-  {
-    return this->FileListMapofMap;
-  }
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  std::string
-  GDCMImporter3<TImage>::GenerateName (FileList filelist)
-  {
-    std::string name = "name";
-    
-    return name;
-  }
-
-  //----------------------------------------------------------------------------
-  template <typename TImage>
-  void
-  GDCMImporter3<TImage>::RemoveGDCMVolume (GDCMVolumePointerType dicomimage)
-  {
-    DataObjectPointerArray::iterator it = std::find(this->GetOutputs().begin(), this->GetOutputs().end(), dicomimage);
-    this->GetOutputs().erase(it);
-  }
-
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  void
-  GDCMImporter3<TImage>::PrintSelf(std::ostream& os, Indent indent) const
-  {
-    Superclass::PrintSelf( os, indent );
-    os << indent << "Input Directory: " << m_InputDirectory.c_str() << std::endl;
-    os << indent << "Number of Volumes: " << this->GetNumberOfOutputs() << std::endl;
-  }
-
-
-//----------------------------------------------------------------------------
-  template <typename TImage>
-  void GDCMImporter3<TImage>::Scan (const char* directoryname)
-  {
-    if (!itksys::SystemTools::FileExists (directoryname))
+    if (!itksys::SystemTools::FileExists (this->m_InputDirectory.c_str()))
       throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::Load(): directory not found");
 
     this->UpdateProgress(0.00);
+
+    this->m_FileListMapofMap.clear();
     
     gdcm::Directory directory;
     std::cout<<"loading"<<std::endl;    
-    unsigned long nfiles = directory.Load( directoryname, true);
-    std::cout<<"done : "<<nfiles<< " included."<<std::endl;    
+    unsigned long nfiles = directory.Load( this->m_InputDirectory, true);
+    std::cout<<"done : "<<nfiles<< " files included."<<std::endl;
 
     if (!nfiles)
     {
-      itkExceptionMacro (<<"The GDCM loader did not succeed loading directory "<<directoryname<<" (or there is no file in directory)"<<std::endl);
+      itkExceptionMacro (<<"The GDCM loader did not succeed loading directory "<<this->m_InputDirectory<<" (or there is no file in directory)"<<std::endl);
       return;
     }    
     
-    std::cout<<"scanning(1)"<<std::endl;    
-    if (!this->FirstScanner.Scan (directory.GetFilenames()))
-    {
-      itkExceptionMacro (<<"The GDCM scanner did not succeed scanning directory "<<directoryname<<std::endl);
-      return;
-    }
-    std::cout<<"done"<<std::endl;
     // First sort of the filenames.
     // it will distinguish patient name, series and instance uids, sequence name
     // as well as the image orientation and the nb of columns and rows 
     FileListMapType map = this->PrimarySort (directory.GetFilenames());
+
+    std::cout<<"primary sort gives "<<map.size()<<" different volumes (outputs)"<<std::endl;
+    
     typename FileListMapType::const_iterator it;
     for (it = map.begin(); it != map.end(); ++it)
     {
-      if (!this->SecondScanner.Scan ((*it).second))
-      {
-	std::cerr<<"The GDCM scanner did not succeed scanning the list, skipping"<<std::endl;
-	continue;
-      }
+      
       // Second sort of the filenames.
       // it will distinguish the gradient orientation, the b-value, the trigger time
       // and the T2/pr* density.
       FileListMapType mapi = this->SecondarySort ((*it).second);
+
+      std::cout<<"  secondary division gives "<<mapi.size()<<" subvolumes"<<std::endl;    
+      
       typename FileListMapType::iterator it2;
       for (it2 = mapi.begin(); it2 != mapi.end(); ++it2)
       {
 	
-	if (!this->ThirdScanner.Scan ((*it2).second))
-	{
-	  std::cerr<<"The GDCM scanner did not succeed scanning the list, skipping"<<std::endl;
-	  continue;
-	}
 	// Third sort of the filenames.
 	// it will detect identical image positions
 	// and separate distinct volumes.
 	// If all image positions are identical, no sort is done.
 	FileListMapType mapij = this->TertiarySort ((*it2).second);
-	
+      
 	if (mapij.size() >= 1)
 	{
 	  typename FileListMapType::iterator it3;
@@ -642,29 +312,44 @@ namespace itk
 	  
 	}
       }
-
       // We add the map of volumes in the global "database".
       // If more than 1 volume is in the map, it will be saved as a 4D image.
-      this->FileListMapofMap[(*it).first] = mapi;
+      this->m_FileListMapofMap[(*it).first] = mapi;
     }
+
+    std::cout<<"sorting finished "<<std::endl;
+    m_IsScanned = 1;
+    
+    this->Reset();
   }
 
   //----------------------------------------------------------------------------
-  template <typename TImage>
-  typename GDCMImporter3<TImage>::FileListMapType
-  GDCMImporter3<TImage>::PrimarySort (FileList list)
+  template <class TPixelType>
+  typename GDCMImporter3<TPixelType>::FileListMapType
+  GDCMImporter3<TPixelType>::PrimarySort (FileList list)
   {
+
+    FileListMapType ret;
+    
+    std::cout<<"first scan"<<std::endl;    
+    if (!this->m_FirstScanner.Scan (list))
+    {
+      itkExceptionMacro (<<"The GDCM scanner did not succeed scanning directory "<<this->m_InputDirectory<<std::endl);
+      return ret;
+    }
+    std::cout<<"done"<<std::endl;
+    
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
-    FileListMapType ret;
+    
     
     for (file = list.begin(); file != list.end(); ++file)
     {
-      if( this->FirstScanner.IsKey((*file).c_str()) )
+      if( this->m_FirstScanner.IsKey((*file).c_str()) )
       {
-	const gdcm::Scanner::TagToValue& mapping = this->FirstScanner.GetMapping((*file).c_str());
+	const gdcm::Scanner::TagToValue& mapping = this->m_FirstScanner.GetMapping((*file).c_str());
 	
-	if ( !this->FirstScanner.GetValue  ((*file).c_str(), gdcm::Tag(0x0028, 0x0010)) )
+	if ( !this->m_FirstScanner.GetValue  ((*file).c_str(), gdcm::Tag(0x0028, 0x0010)) )
 	  continue;
 	
 	std::ostringstream os;
@@ -688,21 +373,28 @@ namespace itk
     
   }
 
-
   //----------------------------------------------------------------------------
-  template <typename TImage>
-  typename GDCMImporter3<TImage>::FileListMapType
-  GDCMImporter3<TImage>::SecondarySort (FileList list)
+  template <class TPixelType>
+  typename GDCMImporter3<TPixelType>::FileListMapType
+  GDCMImporter3<TPixelType>::SecondarySort (FileList list)
   {
+
+    FileListMapType ret;
+    
+    if (!this->m_SecondScanner.Scan (list))
+    {
+      std::cerr<<"The GDCM scanner did not succeed scanning the list, skipping"<<std::endl;
+      return ret;
+    }
+      
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
-    FileListMapType ret;
     
     for (file = list.begin(); file != list.end(); ++file)
     {
-      if( this->FirstScanner.IsKey((*file).c_str()) )
+      if( this->m_FirstScanner.IsKey((*file).c_str()) )
       {
-	const gdcm::Scanner::TagToValue& mapping = this->SecondScanner.GetMapping((*file).c_str());
+	const gdcm::Scanner::TagToValue& mapping = this->m_SecondScanner.GetMapping((*file).c_str());
 	
 	std::ostringstream os;
 	for(it = mapping.begin(); it != mapping.end(); ++it)
@@ -727,14 +419,21 @@ namespace itk
   
 
 //----------------------------------------------------------------------------
-  template <typename TImage>
-  typename GDCMImporter3<TImage>::FileListMapType
-  GDCMImporter3<TImage>::TertiarySort (FileList list)
+  template <class TPixelType>
+  typename GDCMImporter3<TPixelType>::FileListMapType
+  GDCMImporter3<TPixelType>::TertiarySort (FileList list)
   {
+
     FileListMapType ret;
+    
+    if (!this->m_ThirdScanner.Scan (list))
+    {
+      std::cerr<<"The GDCM scanner did not succeed scanning the list, skipping"<<std::endl;
+      return ret;
+    }
 
     const char *reference = list[0].c_str();
-    gdcm::Scanner::TagToValue const &t2v = this->ThirdScanner.GetMapping(reference);
+    gdcm::Scanner::TagToValue const &t2v = this->m_ThirdScanner.GetMapping(reference);
     gdcm::Scanner::TagToValue::const_iterator firstit = t2v.find( gdcm::Tag(0x20,0x37) );
     if( (*firstit).first != gdcm::Tag(0x20,0x37) )
     {
@@ -780,10 +479,10 @@ namespace itk
     for(it = list.begin(); it != list.end(); ++it)
     {
       const char *filename = (*it).c_str();
-      bool iskey = this->ThirdScanner.IsKey(filename);
+      bool iskey = this->m_ThirdScanner.IsKey(filename);
       if( iskey )
       {
-	const char *value =  this->ThirdScanner.GetValue(filename, gdcm::Tag(0x20,0x32));
+	const char *value =  this->m_ThirdScanner.GetValue(filename, gdcm::Tag(0x20,0x32));
 	if( value )
         {
 	  gdcm::Element<gdcm::VR::DS,gdcm::VM::VM3> ipp;
@@ -811,13 +510,13 @@ namespace itk
 
     if ((list.size() % sorted.size()) != 0)
     {
-      std::cerr<<"inconsistent sizes : "<<list.size()<<" in "<<sorted.size()<<std::endl;
+      std::cerr<<"inconsistent sizes : "<<list.size()<<" in "<<sorted.size()<<", , no sorting"<<std::endl;
       return ret;
     }
 
     if (sorted.size() == 1)
     {
-      std::cout<<"single position"<<std::endl;
+      // single position, no sorting;
       return ret;
     }
 
@@ -839,7 +538,194 @@ namespace itk
 
     return ret;
   }
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  void GDCMImporter3<TPixelType>::Reset (void)
+  {
+
+    std::cout<<"reseting..."<<std::endl;
+    
+    this->SetNumberOfOutputs (0);
+    this->PrepareOutputs();
+
+    try
+    {
+
+      this->UpdateProgress(0.0);
+
+      typename FileListMapofMapType::iterator it;
+
+      for (it = this->m_FileListMapofMap.begin(); it != this->m_FileListMapofMap.end(); it++)
+      {
+	typename FileListMapType::iterator it2;
+	
+	FileListMapType filelistmap = (*it).second;
+	if ( !filelistmap.size() )
+	  continue;
+	
+	std::string name = this->GenerateUniqueName(filelistmap);
+	typename ImageType::Pointer image = ImageType::New();
+	
+	image->SetName (name.c_str());
+	image->SetFileListMap (filelistmap);
+	this->AddOutput (image);
+      }
+    }
+    
+    catch (itk::ExceptionObject & e)
+    {
+      this->UpdateProgress(1.0);
+      this->SetProgress(0.0);
+      std::cerr << e << std::endl;
+      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::InitializeOutputs(), during tree structuring");
+    }
+    
+    this->UpdateProgress(1.0);
+    this->SetProgress(0.0);
+  }
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  void
+  GDCMImporter3<TPixelType>::SaveOutputInFile (unsigned int N, const char* filename)
+  {
+    
+    try
+    {
+      this->GetOutput (N)->Build();
+      this->GetOutput (N)->Write (filename);      
+    }
+    catch (itk::ExceptionObject & e)
+    {
+      std::cerr << e << std::endl;
+      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::SaveOutputInFile()");
+    }
+
+  }
+
+
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  void
+  GDCMImporter3<TPixelType>::SaveOutputsInDirectory (const char* directory)
+  {
+    for( unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
+    {
+      std::ostringstream os;
+      os << this->GetOutput(i)->GetName() <<".mha";
+      this->GetOutput(i)->Write (os.str());
+    }
+    
+  }
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  void
+  GDCMImporter3<TPixelType>::GenerateData (void)
+  {
+    if (!m_IsScanned)
+      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::GenerateData(): MUST call Scan() before Update()");
+
+    this->UpdateProgress(0.0);
+    
+    try
+    {
+      for (unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
+      {
+	this->GetOutput (i)->Build();
+	this->UpdateProgress((double)i/(double)this->GetNumberOfOutputs());
+      }
+    }
+    catch (itk::ExceptionObject & e)
+    {
+      this->UpdateProgress(1.0);
+      this->SetProgress(0.0);
+      std::cerr << e << std::endl;
+      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::GenerateData()");
+    }
+  }
   
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  std::string
+  GDCMImporter3<TPixelType>::GenerateUniqueName (FileListMapType map)
+  {
+    std::string ret;
+    std::string description = "output";
+    if (map.size())
+    {
+      if ((*map.begin()).second.size())
+      {
+	std::string file = (*map.begin()).second[0];
+	gdcm::Reader reader;
+	reader.SetFileName (file.c_str());
+	std::set<gdcm::Tag> set;
+	set.insert (gdcm::Tag(0x8, 0x103e));
+	
+	if (reader.ReadSelectedTags(set))
+	{
+	  gdcm::File gdcmfile = reader.GetFile();
+	  gdcm::StringFilter filter;
+	  filter.SetFile (reader.GetFile());
+	  description = filter.ToString (gdcm::Tag(0x8, 0x103e));
+	}
+      }
+    }
+    
+    ret = description;
+
+    itksys::SystemTools::ReplaceString (ret, " ", "-");
+    itksys::SystemTools::ReplaceString (ret, "_", "-");
+    bool finished = 0;
+    while(!finished)
+    {
+      std::string::size_type dot_pos = ret.rfind("-");
+      if(dot_pos == (ret.size()-1))
+	ret = ret.substr(0, dot_pos);
+      else
+	finished = 1;
+    }
+    
+    bool taken = 0;
+    unsigned int toadd = 0;
+    for (unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
+      if (! strcmp ( this->GetOutput (i)->GetName(), ret.c_str() ) )
+      {
+	taken = 1;
+	toadd++;
+	break;
+      }
+    while(taken)
+    {
+      std::ostringstream replacement;      
+      replacement << description << "-";
+      if (toadd < 10) replacement << "0";
+      replacement << toadd;
+      ret = replacement.str();
+      
+      taken = 0;
+      for (unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
+	if (! strcmp ( this->GetOutput (i)->GetName(), ret.c_str() ) )
+	{
+	  taken = 1;
+	  toadd++;
+	  break;
+	}
+    }
+    return ret;
+  }
+  
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  void
+  GDCMImporter3<TPixelType>::PrintSelf(std::ostream& os, Indent indent) const
+  {
+    Superclass::PrintSelf( os, indent );
+    os << indent << "Input Directory: " << m_InputDirectory.c_str() << std::endl;
+    os << indent << "Number of Volumes: " << this->GetNumberOfOutputs() << std::endl;
+  }
 
 
 } // end of namespace ITK
