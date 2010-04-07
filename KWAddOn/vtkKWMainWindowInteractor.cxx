@@ -16,7 +16,6 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
-#include <itkGDCMImporter.h>
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
 #include <kwcommon.h>

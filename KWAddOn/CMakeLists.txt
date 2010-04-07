@@ -12,33 +12,37 @@ INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR})
 
 SET(KWAddOn_SRCS
   vtkKWMainCallback.cxx
-#  vtkKWImage3DImagePlaneCallback.cxx
-#  vtkKWViewImage2DDialog.cxx
-#  vtkKWMetaInfoWidget.cxx
   vtkKWTimeAnimationWidget.cxx
   vtkKWCameraAnimationWidget.cxx
   vtkKWSequenceImporter.cxx
   vtkKWSequencer.cxx
-#  vtkKWMetaDataSetControlWidget.cxx
   vtkKWToolBox.cxx
   vtkKWToolboxManager.cxx
   vtkKWHelloWorldToolBox.cxx
   vtkKWPageView.cxx
   vtkKWPreviewPage.cxx
   vtkKWMainWindow.cxx
-  vtkKWMainWindowInteractor.cxx
-  vtkKWDICOMImporter2.cxx
   vtkKWVisualizationToolBox.cxx
   vtkKWDataManagerWidget.cxx
   vtkKWLandmarkManagerWidget.cxx
-  vtkKWDicomInfoWidget.cxx
-  vtkKWInfoToolBox.cxx
   vtkKWDataSelectorWidget.cxx
-  vtkKWDICOMExporter.cxx
   vtkKWSequenceEditorWidget.cxx
   vtkKWTimeTableWidget.cxx
   vtkKWSnapshotHandler.cxx
 )
+
+
+IF (NOT ITK_USE_SYSTEM_GDCM)
+SET(KWAddOn_SRCS
+  ${KWAddOn_SRCS}
+  vtkKWMainWindowInteractor.cxx
+  vtkKWDICOMImporter2.cxx
+  vtkKWDICOMExporter.cxx
+  vtkKWDicomInfoWidget.cxx
+  vtkKWInfoToolBox.cxx
+  )
+ENDIF (NOT ITK_USE_SYSTEM_GDCM)
+
 SET_SOURCE_FILES_PROPERTIES(
  vtkKWMainCallback.cxx
 # vtkKWImage3DImagePlaneCallback.cxx
@@ -127,27 +131,6 @@ CONFIGURE_FILE(
   ${CMAKE_CURRENT_BINARY_DIR}/vtkKWWidgetsPaths.h)
 
 
-ADD_EXECUTABLE(INRIAviz4D WIN32 
-INRIAviz4D.cxx
-#${RC_FILENAME}
-)
-
-SET(INRIAviz4D_LIBRARIES
-  KWAddOn
-)
-
-
-IF(ITK_USE_REVIEW)
-  SET(INRIAviz4D_LIBRARIES
-    ITKIOReview
-    ${INRIAviz4D_LIBRARIES}	
-    )
-ENDIF(ITK_USE_REVIEW)
-
-
-TARGET_LINK_LIBRARIES(INRIAviz4D
-  ${INRIAviz4D_LIBRARIES}
-)
 
 # If we are building this example as a standalone external project:
 # - Generate a few small scripts (.bat, .sh, .csh) that can be sourced to set
@@ -164,6 +147,37 @@ IF(NOT KWWidgets_SOURCE_DIR)
   KWWidgets_GENERATE_SETUP_PATHS_LAUNCHER(
     "${CMAKE_CURRENT_BINARY_DIR}" "${LAUNCHER_EXE_NAME}" "" "INRIAviz4D")
 ENDIF(NOT KWWidgets_SOURCE_DIR)
+
+
+IF (NOT ITK_USE_SYSTEM_GDCM)
+
+  ADD_EXECUTABLE(INRIAviz4D WIN32 
+    INRIAviz4D.cxx
+    #${RC_FILENAME}
+    )
+  SET(INRIAviz4D_LIBRARIES
+    KWAddOn
+    )
+  IF(ITK_USE_REVIEW)
+    SET(INRIAviz4D_LIBRARIES
+      ITKIOReview
+      ${INRIAviz4D_LIBRARIES}	
+      )
+  ENDIF(ITK_USE_REVIEW)  
+  TARGET_LINK_LIBRARIES(INRIAviz4D
+    ${INRIAviz4D_LIBRARIES}
+    )
+
+  INSTALL_TARGETS(/bin INRIAviz4D)
+  INSTALL_TARGETS(/bin INRIAviz4DLauncher)
+
+
+  IF( BUILD_TESTING )
+    ADD_SUBDIRECTORY(Testing)
+  ENDIF( BUILD_TESTING )
+
+
+ENDIF (NOT ITK_USE_SYSTEM_GDCM)
 
 # If needed, copy the Tcl/Tk support files required at run-time 
 # to initialize Tcl/Tk. This is only triggered if VTK was built
@@ -183,15 +197,8 @@ ENDIF(NOT KWWidgets_SOURCE_DIR AND VTK_TCL_TK_COPY_SUPPORT_LIBRARY)
 # omit this section or change the installation directory, unless you want
 # to install your application right where KWWidgets is already installed.
 
-INSTALL_TARGETS(/bin INRIAviz4D)
-INSTALL_TARGETS(/bin INRIAviz4DLauncher)
-
 SUBDIRS(
 GenericToolBox
 )
-
-IF( BUILD_TESTING )
-  ADD_SUBDIRECTORY(Testing)
-ENDIF( BUILD_TESTING )
 
 ENDIF( KWWidgets_FOUND AND ITK_FOUND)

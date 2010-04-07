@@ -31,7 +31,6 @@ vtkCxxRevisionMacro(vtkMetaImageData, "$Revision: 1370 $");
 #ifdef vtkINRIA3D_USE_ITK
 #include <itkMatrix.h>
 #include <itkImage.h>
-#include <itkDicomTagManager.h>
 #endif
 
 #ifdef ITK_USE_REVIEW
