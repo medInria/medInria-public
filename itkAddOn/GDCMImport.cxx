@@ -27,7 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
  * \author Nicolas Toussaint, INRIA
  */
 
-#include <itkGDCMImporter2.h>
+#include <itkGDCMImporter3.h>
 
 #ifndef WIN32
 #include <getopt.h>
@@ -222,25 +222,22 @@ int main( int argc, char *argv[] )
   std::cout<<args<<std::endl<<std::endl;
 
   typedef itk::Image<short, 3> ImageType;
-
-  typedef itk::GDCMImporter2<ImageType> ImporterType;
+  typedef itk::GDCMImporter3<ImageType> ImporterType;
 
   ImporterType::Pointer importer = ImporterType::New();
 
   try
   {
     importer->SetInputDirectory (args.InputDirectory);
-    importer->SetRecursiveScan (args.Recursivity);
-    importer->SetUseDicomDirFile (args.UseDicomDir);
     importer->Scan();
     std::string directory = itksys::SystemTools::GetCurrentWorkingDirectory();
     if (args.OutputDirectory.size())
       directory = args.OutputDirectory;
 
-    if (args.AutoMode == 1)
-      importer->AutoOrganization();
-    if (args.AutoMode == 2)
-      importer->AutoOrganizationPositionBased();
+//     if (args.AutoMode == 1)
+//       importer->AutoOrganization();
+//     if (args.AutoMode == 2)
+//       importer->AutoOrganizationPositionBased();
 
     if ( args.OutputFilename.empty() )
       importer->SaveOutputsInDirectory (directory.c_str());
