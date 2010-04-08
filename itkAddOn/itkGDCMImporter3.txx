@@ -50,6 +50,99 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
+  void GDCMVolume<TPixelType>::WriteGradients (std::string filename)
+  {
+    // Recovering the acquistion plane orientation
+    // A vector in the world coordinate system would have to
+    // be rotated with the inverse orientation matrix to get its
+    // its equivalent in the image coordinate system
+    typename SubImageType::DirectionType directions;
+    for (unsigned int i=0; i<ImageDimension - 1; i++)
+      for (unsigned int j=0; j<ImageDimension - 1; j++)
+	directions[i][j] = this->GetDirection()[i][j];
+    typename SubImageType::DirectionType inversedirections = typename SubImageType::DirectionType (directions.GetInverse());
+
+    std::cout << "writing: " << filename << std::endl;
+    std::ofstream file (filename.c_str());
+    if(file.fail())
+    {
+      std::cerr << "Unable to open file for writing: " << filename.c_str() << std::endl;
+      return;
+    }
+    file << m_Gradients.size() << std::endl;
+    for (unsigned int i=0; i<m_Gradients.size(); i++)
+    {
+      GradientType g = inversedirections * m_Gradients [i];      
+      if (NumericTraits<double>::IsPositive (g.GetNorm()))
+	g.Normalize();
+      file << g[0] << " " << g[1] << " " << g[2] << std::endl;
+    }
+    file.close();
+  }
+  
+
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  bool GDCMVolume<TPixelType>::IsVolumeDWIs (void)
+  {
+    FileListMapType map = this->GetFileListMap();
+    bool ret = 0;
+    double cumulatednorm = 0.0;
+
+    m_MeanDiffusivitySkipped = 0;
+    m_Gradients.clear();
+    
+    if (map.size())
+    {
+      typename FileListMapType::iterator it;
+      typename FileListMapType::iterator last = map.end();
+      last--;
+      
+      for (it = map.begin(); it != map.end(); ++it)
+      {
+	if (!(*it).second.size())
+	{
+	  ret = 0;
+	  break;
+	}
+	std::string file = (*it).second[0];
+	gdcm::Reader reader;
+	reader.SetFileName (file.c_str());
+	std::set<gdcm::Tag> set;
+	set.insert (gdcm::Tag(0x18, 0x9089));
+	if (!reader.ReadSelectedTags(set))
+	{
+	  ret = 0;
+	  break;
+	}
+	gdcm::StringFilter filter;
+	filter.SetFile (reader.GetFile());
+	std::stringstream ss;
+	ss.str( filter.ToString (gdcm::Tag(0x18, 0x9089)) );
+	gdcm::Element<gdcm::VR::DS,gdcm::VM::VM3> gradient;
+	gradient.Read(ss );
+	ret = 1;	
+	GradientType gr;
+	for (unsigned int i=0; i<3; i++)
+	  gr[i] = gradient[i];
+
+	cumulatednorm += gr.GetNorm();
+	
+	if (!m_SkipMeanDiffusivity || (it != last) || NumericTraits<double>::IsPositive (gr.GetNorm()) )
+	  m_Gradients.push_back (gr);
+	else
+	  m_MeanDiffusivitySkipped = 1;
+	
+      }
+    }
+    
+    return ret && NumericTraits<double>::IsPositive (cumulatednorm);
+  }
+  
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
   void GDCMVolume<TPixelType>::Build(void)
   {
 
@@ -64,9 +157,15 @@ namespace itk
     typename ImageType::Pointer image = ImageType::New();    
     typename GDCMImageIO::Pointer io = GDCMImageIO::New();
     typename FileListMapType::iterator it;
+    typename FileListMapType::iterator last = map.end();
+    last--;
+    
     bool metadatacopied = 0;
     IteratorType itOut;
 
+    if (this->IsVolumeDWIs() && this->m_SkipMeanDiffusivity && this->m_MeanDiffusivitySkipped)
+      map.erase (last);
+    
     std::cout<<"building volume "<<this->GetName()<<" containing "<<map.size()<<" subvolumes."<<std::endl;
     
     for (it = map.begin(); it != map.end(); ++it)
@@ -360,7 +459,6 @@ namespace itk
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
     
-    
     for (file = list.begin(); file != list.end(); ++file)
     {
       if( this->m_FirstScanner.IsKey((*file).c_str()) )
@@ -612,8 +710,16 @@ namespace itk
     for( unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
     {
       std::ostringstream os;
-      os << this->GetOutput(i)->GetName() <<".mha";
+      os << directory <<"/"<< this->GetOutput(i)->GetName() <<".mha";
       this->GetOutput(i)->Write (os.str());
+      
+      if (this->GetOutput(i)->IsVolumeDWIs())
+      {
+	std::ostringstream os2;
+	os2 << directory <<"/"<< this->GetOutput(i)->GetName() <<".bvec";
+	this->GetOutput(i)->WriteGradients (os2.str());
+      }
+
     }
     
   }
@@ -637,7 +743,6 @@ namespace itk
 	
 	if (reader.ReadSelectedTags(set))
 	{
-	  gdcm::File gdcmfile = reader.GetFile();
 	  gdcm::StringFilter filter;
 	  filter.SetFile (reader.GetFile());
 	  description = filter.ToString (gdcm::Tag(0x8, 0x103e));

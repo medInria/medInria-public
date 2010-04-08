@@ -59,6 +59,9 @@ namespace itk
     typedef Image<TPixelType, 3> SubImageType;
     /// ITK typedefs
     typedef Image<TPixelType, 4> Superclass;
+
+    /** ImageDimension typedef, dimension of the output Image(s) */
+    itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);
     
     /// ITK typedefs
     typedef SmartPointer<Self> Pointer;
@@ -67,6 +70,9 @@ namespace itk
     /// gdcm::File typedef (used to retrieve some dicom information)    
     typedef std::vector<std::string> FileList;
     typedef std::map<std::string, FileList> FileListMapType;
+    typedef Vector<double, 3> GradientType;
+    
+    typedef std::vector< GradientType > GradientsContainer;
     
     /// ITK typedefs
     itkNewMacro  (Self);
@@ -113,13 +119,18 @@ namespace itk
     /**
     */
     void Write(std::string filename);
-    /** Use this method to release memory after volume parsing (e.g. to a filter) */
+
     void Initialize (void)
     {
       this->Superclass::Initialize();
       this->m_IsBuilt = 0;
     }
 
+    bool IsVolumeDWIs (void);
+
+    void WriteGradients (std::string filename);
+    
+    
   protected:
 
     /**
@@ -130,6 +141,8 @@ namespace itk
     {
       this->SetName ("image");
       m_IsBuilt = 0;
+      m_SkipMeanDiffusivity = 1;
+      m_MeanDiffusivitySkipped = 0;
     }
     /**
        default GDCMVolume destructor,
@@ -152,6 +165,9 @@ namespace itk
     std::string m_Name;
     FileListMapType m_FileListMap;
     bool m_IsBuilt;
+    bool m_SkipMeanDiffusivity;
+    bool m_MeanDiffusivitySkipped;
+    GradientsContainer m_Gradients;
   };
 
 
