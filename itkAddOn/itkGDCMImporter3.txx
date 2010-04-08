@@ -21,6 +21,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "gdcmDirectionCosines.h"
 #include "gdcmStringFilter.h"
 
+#include <itkGDCMImageIO.h>
 
 namespace itk
 {
@@ -58,14 +59,11 @@ namespace itk
     typedef typename ImageType::SpacingType SpacingType;
     typedef typename ImageType::PointType PointType;
     typedef typename ImageType::DirectionType DirectionType;
-    typedef typename itk::ImageRegionIterator<ImageType> IteratorType;
-    typedef typename IteratorType::IndexType IndexType;
-    
-    typename ImageType::Pointer image = ImageType::New();
-    
-    
+    typedef ImageRegionIterator<ImageType> IteratorType;
+    typedef typename IteratorType::IndexType IndexType;    
+    typename ImageType::Pointer image = ImageType::New();    
+    typename GDCMImageIO::Pointer io = GDCMImageIO::New();
     typename FileListMapType::iterator it;
-    typename itk::GDCMImageIO::Pointer io = itk::GDCMImageIO::New();
     bool metadatacopied = 0;
     IteratorType itOut;
 
@@ -76,19 +74,41 @@ namespace itk
       typename SeriesReaderType::Pointer seriesreader = SeriesReaderType::New();
       seriesreader->UseStreamingOn();
       
-      seriesreader->SetFileNames( (*it).second );
-      seriesreader->SetImageIO( io );
-      try
-      {
-	seriesreader->Update();
-      }
-      catch (itk::ExceptionObject & e)
-      {
-	std::cerr << e;
-	throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMVolume::Build()");
-      }
+      typename ReaderType::Pointer singlereader = ReaderType::New();
+      typename SubImageType::Pointer t_image = 0;
       
-      typename SubImageType::Pointer t_image = seriesreader->GetOutput();
+      if ((*it).second.size() > 1)
+      {
+	seriesreader->SetFileNames( (*it).second );
+	seriesreader->SetImageIO( io );
+	try
+	{
+	  seriesreader->Update();
+	}
+	catch (itk::ExceptionObject & e)
+	{
+	  std::cerr << e;
+	  throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMVolume::Build()");
+	}
+      
+	t_image= seriesreader->GetOutput();
+      }
+      else
+      {
+	singlereader->SetFileName( (*it).second[0] );
+	singlereader->SetImageIO( io );
+	try
+	{
+	  singlereader->Update();
+	}
+	catch (itk::ExceptionObject & e)
+	{
+	  std::cerr << e;
+	  throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMVolume::Build()");
+	}
+      
+	t_image= singlereader->GetOutput();
+      }
 
       if (!metadatacopied)
       {
@@ -128,7 +148,7 @@ namespace itk
 	metadatacopied = 1;
       }
       
-      typename itk::ImageRegionIterator<SubImageType> itIn(t_image, t_image->GetLargestPossibleRegion());
+      ImageRegionIterator<SubImageType> itIn(t_image, t_image->GetLargestPossibleRegion());
       while (!itIn.IsAtEnd())
       {
 	itOut.Set(itIn.Get());
@@ -146,19 +166,19 @@ namespace itk
   template <class TPixelType>
   void GDCMVolume<TPixelType>::PrintSelf(std::ostream& os, Indent indent) const
   {
-    Superclass::PrintSelf( os, indent );
+    //Superclass::PrintSelf( os, indent );
     unsigned long NumberOfFiles = 0;
     NumberOfFiles = this->GetFileListMap().size();
-    os << indent << "Number of Files: " << NumberOfFiles << std::endl;
+    os << indent << "Number of SubVolumes: " << NumberOfFiles << std::endl;
     os << indent << "Name: " << this->GetName() << std::endl;
     os << indent << "Is image built: " << m_IsBuilt << std::endl;
     os << indent << "Dictionary : " << std::endl;
 
     std::string value;
-    itk::MetaDataDictionary dict = this->GetMetaDataDictionary();
+    MetaDataDictionary dict = this->GetMetaDataDictionary();
     //Smarter approach using real iterators
-    itk::MetaDataDictionary::ConstIterator itr = dict.Begin();
-    itk::MetaDataDictionary::ConstIterator end = dict.End();
+    MetaDataDictionary::ConstIterator itr = dict.Begin();
+    MetaDataDictionary::ConstIterator end = dict.End();
 
     while(itr != end)
     {
@@ -175,8 +195,6 @@ namespace itk
   template <class TPixelType>
   GDCMImporter3<TPixelType>::GDCMImporter3()
   {
-    itk::GDCMImageIOFactory::RegisterOneFactory();
-
     m_InputDirectory  = "";
     m_IsScanned = 0;
     
@@ -456,21 +474,7 @@ namespace itk
     normal[0] = cosines[1]*cosines[5] - cosines[2]*cosines[4];
     normal[1] = cosines[2]*cosines[3] - cosines[0]*cosines[5];
     normal[2] = cosines[0]*cosines[4] - cosines[1]*cosines[3];
-    
-    gdcm::DirectionCosines dc;
-    dc.SetFromString( dircos );
-    if( !dc.IsValid() )
-    {
-      std::cerr<<"cosines not valid "<<std::endl;
-      return ret;
-    }
 
-    
-    double normal2[3];
-    dc.Cross( normal2 );
-    // You only have to do this once for all slices in the volume. Next, for
-    // each slice, calculate the distance along the slice normal using the IPP
-    // tag ("dist" is initialized to zero before reading the first slice) :
     typedef std::map<double, FileList> SortedFilenames;
     SortedFilenames sorted;
 
@@ -543,9 +547,6 @@ namespace itk
   template <class TPixelType>
   void GDCMImporter3<TPixelType>::Reset (void)
   {
-
-    std::cout<<"reseting..."<<std::endl;
-    
     this->SetNumberOfOutputs (0);
     this->PrepareOutputs();
 
@@ -594,17 +595,14 @@ namespace itk
     try
     {
       this->GetOutput (N)->Build();
-      this->GetOutput (N)->Write (filename);      
+      this->GetOutput (N)->Write (filename);
     }
     catch (itk::ExceptionObject & e)
     {
       std::cerr << e << std::endl;
       throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::SaveOutputInFile()");
     }
-
   }
-
-
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
@@ -620,33 +618,6 @@ namespace itk
     
   }
 
-//----------------------------------------------------------------------------
-  template <class TPixelType>
-  void
-  GDCMImporter3<TPixelType>::GenerateData (void)
-  {
-    if (!m_IsScanned)
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::GenerateData(): MUST call Scan() before Update()");
-
-    this->UpdateProgress(0.0);
-    
-    try
-    {
-      for (unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
-      {
-	this->GetOutput (i)->Build();
-	this->UpdateProgress((double)i/(double)this->GetNumberOfOutputs());
-      }
-    }
-    catch (itk::ExceptionObject & e)
-    {
-      this->UpdateProgress(1.0);
-      this->SetProgress(0.0);
-      std::cerr << e << std::endl;
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::GenerateData()");
-    }
-  }
-  
 //----------------------------------------------------------------------------
   template <class TPixelType>
   std::string
@@ -716,6 +687,69 @@ namespace itk
     }
     return ret;
   }
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  void 
+  GDCMImporter3<TPixelType>::ThreadedGenerateData(const OutputImageRegionType& region, int id)
+  {
+    if (!m_IsScanned)
+      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::GenerateData(): MUST call Scan() before Update()");
+    
+    unsigned int start = region.GetIndex()[0];
+    unsigned int end = start + region.GetSize()[0];
+
+    for (unsigned int i = start; i < end; i++)
+    {
+      try
+      {
+	this->GetOutput (i)->Build();
+      }
+      catch (itk::ExceptionObject & e)
+      {
+	std::cerr << e << std::endl;
+	continue;
+      }
+    }
+  }
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  int 
+  GDCMImporter3<TPixelType>::SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion)
+  {
+    typename ImageType::IndexType splitIndex;
+    typename ImageType::SizeType splitSize;
+    
+    // determine the actual number of pieces that will be generated
+    typename ImageType::SizeType::SizeValueType range = this->GetNumberOfOutputs();
+    int valuesPerThread = (int)::vcl_ceil(range/(double)num);
+    int maxThreadIdUsed = (int)::vcl_ceil(range/(double)valuesPerThread) - 1;
+
+    splitIndex[0] = 0;
+    splitSize[0] = this->GetNumberOfOutputs();
+    
+    // Split the region
+    if (i < maxThreadIdUsed)
+    {
+      splitIndex[0] += i*valuesPerThread;
+      splitSize[0] = valuesPerThread;
+    }
+    if (i == maxThreadIdUsed)
+    {
+      splitIndex[0] += i*valuesPerThread;
+      // last thread needs to process the "rest" dimension being split
+      splitSize[0] = splitSize[0] - i*valuesPerThread;
+    }
+    
+  
+    // set the split region ivars
+    splitRegion.SetIndex( splitIndex );
+    splitRegion.SetSize( splitSize );
+
+    return maxThreadIdUsed + 1;
+  }
+
   
 //----------------------------------------------------------------------------
   template <class TPixelType>

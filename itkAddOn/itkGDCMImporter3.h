@@ -27,8 +27,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkImageSeriesReader.h>
-#include <itkGDCMImageIOFactory.h>
-#include <itkGDCMImageIO.h>
 #include <itksys/SystemTools.hxx>
 
 #include "gdcmScanner.h"
@@ -79,7 +77,7 @@ namespace itk
     /**/// serie reader typedef, reading a serie of dicom file to reconstruct a volume image
     typedef ImageSeriesReader<SubImageType> SeriesReaderType;
     /** Reader typedef, used to read a single file such as DICOMDIR file */
-    typedef typename itk::ImageFileReader<ImageType> ReaderType;
+    typedef typename itk::ImageFileReader<SubImageType> ReaderType;
     /** Writer typedef, not used */
     typedef typename itk::ImageFileWriter<ImageType> WriterType;    
     
@@ -200,6 +198,8 @@ namespace itk
     typedef typename ImageType::Pointer ImagePointerType;
     /** stl vector of DataObject, used for a fast access to outputs array  */
     typedef itk::ProcessObject::DataObjectPointerArray DataObjectPointerArray;
+    typedef typename ImageType::RegionType OutputImageRegionType;
+
     /** Get/Set the InputDirectory, root directory where a DICOM exam can be found*/
     itkGetStringMacro (InputDirectory);
     void SetInputDirectory (std::string d)
@@ -234,10 +234,9 @@ namespace itk
 
   protected:
 
-    /** Overload of the ImageSource process */
-    void GenerateData ();
-    
-    
+    virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
+    void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId );
+
     /** default constructor */
     GDCMImporter3();
     /** default destructor, release memory */
