@@ -30,6 +30,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
+include(dtkPlugin)
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
@@ -56,13 +57,6 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-set(LIBRARY_OUTPUT_PATH ${${PROJECT_NAME}_PLUGINS_DIR})
-
-add_definitions(${QT_DEFINITIONS})
-add_definitions(-DQT_PLUGIN)
-add_definitions(-DQT_SHARED)
-add_definitions(-DQT_NO_DEBUG)
-
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
@@ -79,3 +73,12 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOReview  
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES})
+
+## #################################################################
+## Install rules
+## #################################################################
+
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION plugins
+  LIBRARY DESTINATION plugins
+  ARCHIVE DESTINATION plugins)

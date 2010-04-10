@@ -30,6 +30,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
+include(dtkPlugin)
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
@@ -65,3 +66,12 @@ target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkCore)
+
+## #################################################################
+## Install rules
+## #################################################################
+
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION plugins
+  LIBRARY DESTINATION plugins
+  ARCHIVE DESTINATION plugins)
