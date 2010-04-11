@@ -25,57 +25,12 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 ## #################################################################
-## Setup output paths
-## #################################################################
-
-if(WIN32)
-  set(${PROJECT_NAME}_ARCHIVE_OUTPUT_DIRECTORY lib)
-  set(${PROJECT_NAME}_RUNTIME_OUTPUT_DIRECTORY bin)
-  set(${PROJECT_NAME}_LIBRARY_OUTPUT_DIRECTORY bin)
-else(WIN32)
-  set(${PROJECT_NAME}_ARCHIVE_OUTPUT_DIRECTORY lib)
-  set(${PROJECT_NAME}_RUNTIME_OUTPUT_DIRECTORY bin)
-  set(${PROJECT_NAME}_LIBRARY_OUTPUT_DIRECTORY lib)
-endif(WIN32)
-
-set(CMAKE_DEBUG_POSTFIX "d")
-
-set(LIBRARY_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_LIBRARY_OUTPUT_DIRECTORY})
-set(ARCHIVE_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_ARCHIVE_OUTPUT_DIRECTORY})
-set(RUNTIME_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_RUNTIME_OUTPUT_DIRECTORY})
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_RUNTIME_OUTPUT_DIRECTORY})
-
-set(${PROJECT_NAME}_INCLUDE_PATH ${CMAKE_SOURCE_DIR}/src)
-
-set(${PROJECT_NAME}_LIBRARY_DIRS ${LIBRARY_OUTPUT_PATH})
-set(${PROJECT_NAME}_RUNTIME_DIRS ${RUNTIME_OUTPUT_PATH})
-
-## #################################################################
 ## Resolve dependencies
 ## #################################################################
 
-mark_as_advanced(CMAKE_BACKWARDS_COMPATIBILITY)
-mark_as_advanced(CMAKE_BUILD_TYPE)
-mark_as_advanced(CMAKE_INSTALL_PREFIX)
-if(APPLE)
-mark_as_advanced(CMAKE_OSX_ARCHITECTURES)
-mark_as_advanced(CMAKE_OSX_SYSROOT)
-endif(APPLE)
-
-set(QT_USE_QTOPENGL  TRUE)
-set(QT_USE_QTXML     TRUE)
-set(QT_USE_QTSQL     TRUE)
-set(QT_USE_QTHELP    TRUE)
-set(QT_USE_QTNETWORK TRUE)
-set(QT_USE_QTWEBKIT  TRUE)
-
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-
-mark_as_advanced(QT_QMAKE_EXECUTABLE)
-
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
+include(dtkPlugin)
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
@@ -96,8 +51,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkNiftiDataImageWriter.h
   itkNrrdDataImageWriter.h
   itkGiplDataImageWriter.h
-  itkVTKDataImageWriter.h
-)
+  itkVTKDataImageWriter.h)
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImageWriterPlugin.cpp
@@ -111,28 +65,28 @@ set(${PROJECT_NAME}_SOURCES
   itkNiftiDataImageWriter.cpp
   itkNrrdDataImageWriter.cpp
   itkGiplDataImageWriter.cpp
-  itkVTKDataImageWriter.cpp
-)
+  itkVTKDataImageWriter.cpp)
 
 ## #################################################################
 ## Build rules
 ## #################################################################
 
-add_definitions(${QT_DEFINITIONS})
-add_definitions(-DQT_PLUGIN)
-add_definitions(-DQT_SHARED)
-add_definitions(-DQT_NO_DEBUG)
-
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES}
-)
+  ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-  ${ITK_LIBRARIES}
-)
+  ${ITK_LIBRARIES})
 
+## #################################################################
+## Install rules
+## #################################################################
+
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION plugins
+  LIBRARY DESTINATION plugins
+  ARCHIVE DESTINATION plugins)
