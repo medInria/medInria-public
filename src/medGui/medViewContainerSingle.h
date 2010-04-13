@@ -35,7 +35,10 @@ public:
 
     void split(int rows, int cols);
 
-    void setView(dtkAbstractView *view);    
+    void setView(dtkAbstractView *view); 
+       
+public slots:
+    void unsetView(void);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -45,6 +48,7 @@ protected:
 
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
+    
 };
 
 #endif

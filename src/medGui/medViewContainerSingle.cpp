@@ -45,6 +45,7 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
+    connect(d->view,SIGNAL(closed()),this,SLOT(unsetView()));
 }
 
 void medViewContainerSingle::dragEnterEvent(QDragEnterEvent *event)
@@ -83,4 +84,11 @@ void medViewContainerSingle::focusInEvent(QFocusEvent *event)
 void medViewContainerSingle::focusOutEvent(QFocusEvent *event)
 {
     medViewContainer::focusOutEvent(event);
+}
+
+void medViewContainerSingle::unsetView(void)
+{
+    d->layout->removeWidget(d->view->widget());
+    delete d->view;
+    d->view= NULL;
 }
