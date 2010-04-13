@@ -1225,123 +1225,14 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
   }
 
 
-  /*
-  if( this->Orientation == vtkViewImage::SAGITTAL_ID )
-  {
 
-    resliceMatrix = this->GetSagittalResliceMatrix();
-  */
-    /*
-    vtkMatrix4x4::Multiply4x4 (directions, this->GetSagittalResliceMatrix(), resliceMatrix);
-    for (int i=0; i<3; i++)
-      resliceMatrix->SetElement (i, 2, fabs(resliceMatrix->GetElement (i,2)) );
-    */
+  //vtkMatrix4x4::Multiply4x4 (directions, resliceMatrix, resultMatrix);
+  vtkMatrix4x4 *t_directions = vtkMatrix4x4::New();
+  vtkMatrix4x4::Transpose (directions, t_directions);
+  vtkMatrix4x4::Multiply4x4 (t_directions, resliceMatrix, resultMatrix);
 
-    /*
-      this->ImageReslice->SetResliceAxesDirectionCosines( 0,       flipy*1, 0,
-      0,       0,       flipz*1,
-      flipx*1, 0,       0);
-    */
-    //this->ImageReslice->SetResliceAxes ( resliceMatrix );
-
-    /*
-      this->OrientationMatrix->SetElement (0, 2, 0.0);
-      this->OrientationMatrix->SetElement (1, 0, flipy*1.0);
-      this->OrientationMatrix->SetElement (2, 1, flipz*1.0);
-    */
-    //this->ScreenToRealWorldMatrix->SetElement (0, 0, 1.0);
-  //}
-
-  /*
-  if( this->Orientation == vtkViewImage::CORONAL_ID )
-  {
-
-    resliceMatrix = this->GetCoronalResliceMatrix();
-  */
-    /*
-    vtkMatrix4x4::Multiply4x4 (directions, this->GetCoronalResliceMatrix(), resliceMatrix);
-    this->OrientationMatrix->DeepCopy (resliceMatrix);
-    
-    for (int i=0; i<3; i++)
-    {
-    resliceMatrix->SetElement (i, 2, fabs(resliceMatrix->GetElement (i,2)) );
-    this->OrientationMatrix->SetElement (i, 2, 0.0);
-    }
-    */
-    /*
-    if( this->Conventions == RADIOLOGIC )
-    {
-      this->OrientationMatrix->SetElement(0, 0, flipx*1.0);
-      this->ImageReslice->SetResliceAxesDirectionCosines(flipx*1,  0,       0,
-							 0,        0,       flipz*1,
-							 0,        1, 0); 
-    }
-    else
-    {  
-      this->OrientationMatrix->SetElement(0, 0, flipx*-1.0);
-      this->ImageReslice->SetResliceAxesDirectionCosines(flipx*-1,  0,       0,
-							 0,         0,       flipz*1,
-							 0,         1, 0); 
-    }
-    */
-
-    //this->ImageReslice->SetResliceAxes ( resliceMatrix );
-
-    
-    /*
-      this->OrientationMatrix->SetElement(0, 0, flipx*1.0);
-      this->OrientationMatrix->SetElement(2, 1, flipz*1.0);
-    */
-    
-    //this->ScreenToRealWorldMatrix->SetElement (1, 1, 1.0);
-      
-  //}
-
-  /*
-  if( this->Orientation == vtkViewImage::AXIAL_ID )
-  {
-    resliceMatrix = this->GetAxialResliceMatrix();
-  */
-    /*
-      vtkMatrix4x4::Multiply4x4 (directions, this->GetAxialResliceMatrix(), resliceMatrix);
-      for (int i=0; i<3; i++)
-      resliceMatrix->SetElement (i, 2, fabs(resliceMatrix->GetElement (i,2)) );
-    */
-    
-    /*
-    if( this->Conventions == RADIOLOGIC )
-    {
-      this->OrientationMatrix->SetElement(0, 0, flipx*1.0 );
-      this->ImageReslice->SetResliceAxesDirectionCosines(flipx*1, 0,        0,
-							 0,       flipy*-1, 0,
-							 0,       0,        1);
-    }
-    else
-    {  
-      this->OrientationMatrix->SetElement(0, 0, flipx*-1.0 );
-      this->ImageReslice->SetResliceAxesDirectionCosines(flipx*-1, 0,        0,
-							 0,        flipy*-1, 0,
-							 0,        0,        1);
-    }
-    */
-    
-    //this->OrientationMatrix->SetElement(0, 0, flipx*1.0 );
-    //this->ImageReslice->SetResliceAxes ( resliceMatrix );
-    
-    /*
-      this->ImageReslice->SetResliceAxesDirectionCosines ( resliceMatrix->GetElement (0,0), resliceMatrix->GetElement (1,0), resliceMatrix->GetElement (2,0),
-      resliceMatrix->GetElement (0,1), resliceMatrix->GetElement (1,1), resliceMatrix->GetElement (2,1),
-      resliceMatrix->GetElement (0,2), resliceMatrix->GetElement (1,2), resliceMatrix->GetElement (2,2));
-    */
-
-    //this->OrientationMatrix->SetElement(1, 1, flipy*-1.0 );
-    //this->ScreenToRealWorldMatrix->SetElement (2, 2, 1.0);
-  //}
-
-
-
-  vtkMatrix4x4::Multiply4x4 (directions, resliceMatrix, resultMatrix);
   this->OrientationMatrix->DeepCopy (resultMatrix);
+  
   int indexForScreen = 0;
   this->SliceNavigation = 1;
   for (int i=0; i<3; i++)
@@ -1355,7 +1246,7 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
     this->OrientationMatrix->SetElement (i, 2, 0.0);
   }
   this->ScreenToRealWorldMatrix->SetElement (indexForScreen, indexForScreen, 1.0);
-  
+
   this->ImageReslice->SetResliceAxes ( resultMatrix );
   
 
@@ -1381,6 +1272,7 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
   this->SetupAnnotations(); // make sure annotations are ok
 
   resultMatrix->Delete();
+  t_directions->Delete();
   
   this->Modified();
 }

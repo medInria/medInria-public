@@ -41,14 +41,18 @@ vtkLimitFibersToROI::vtkLimitFibersToROI()
   MaskImage = 0;
   for( unsigned int i=0; i<256; i++)
   {
-    this->BooleanOperationVector[i] = 1;
+    this->BooleanOperationVector[i] = 2;
   }
+  this->DirectionMatrix = 0;
 }
 
 vtkLimitFibersToROI::~vtkLimitFibersToROI()
 {
   if( MaskImage )
     MaskImage->Delete();
+
+  if (this->DirectionMatrix)
+    this->DirectionMatrix->Delete();
 }
 
 
@@ -186,6 +190,13 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
   int maxProgress  = lines->GetNumberOfCells();
   int step         = maxProgress/100;
 
+
+  vtkMatrix4x4 *t_direction = vtkMatrix4x4::New();
+  t_direction->Identity();
+  if (this->DirectionMatrix)
+  {
+    vtkMatrix4x4::Transpose (this->DirectionMatrix, t_direction);
+  }
  
   
   // for All the Fibers 
@@ -199,13 +210,27 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
     // for All the points of the fiber
     for (int k=0; k<npts; k++)
     {
-      double pt[3];
+      double pt[4];
       points->GetPoint (ptids[k], pt);
+      pt[3] = 1.0;
       
       int c[3];
-      c[0] = (int)( vtkMath::Round( (pt[0]-origin[0])/spacing[0]) );
-      c[1] = (int)( vtkMath::Round( (pt[1]-origin[1])/spacing[1]) );
-      c[2] = (int)( vtkMath::Round( (pt[2]-origin[2])/spacing[2]) );
+
+      for (int i=0; i<3; i++)
+      {
+	pt[i] -= origin[i];
+      }
+
+      t_direction->MultiplyPoint (pt, pt);
+
+      /*
+	c[0] = (int)( vtkMath::Round( (pt[0]-origin[0])/spacing[0]) );
+	c[1] = (int)( vtkMath::Round( (pt[1]-origin[1])/spacing[1]) );
+	c[2] = (int)( vtkMath::Round( (pt[2]-origin[2])/spacing[2]) );
+      */
+      c[0] = (int)( vtkMath::Round( pt[0]/spacing[0] ));
+      c[1] = (int)( vtkMath::Round( pt[1]/spacing[1] ));
+      c[2] = (int)( vtkMath::Round( pt[2]/spacing[2] ));
       
       if( c[0]>=0 && c[0]<dim[0] &&
           c[1]>=0 && c[1]<dim[1] &&
@@ -232,16 +257,23 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
     }
     
     bool insert = true;
+
+    // 0: NULL
+    // 1: NOT
+    // 2: AND
     
     for( unsigned int i=0; i<numLabels; i++)
     {
-      if( this->BooleanOperationVector[ Labels[i] ] == 0 )
+      if( this->BooleanOperationVector[ Labels[i] ] > 0 )
       {
-        insert = insert && !FiberRegions[i];
-      }
-      else
-      {
-        insert = insert && FiberRegions[i];
+	if( this->BooleanOperationVector[ Labels[i] ] == 1 )
+	{
+	  insert = insert && !FiberRegions[i];
+	}
+	else
+	{
+	  insert = insert && FiberRegions[i];
+	}
       }
     }
     
@@ -279,7 +311,9 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
     output->GetCellData()->SetScalars (newColors);
   }
   newColors->Delete();
-    
+
+  t_direction->Delete();
+  
   this->UpdateProgress (1.0);
   
 

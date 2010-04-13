@@ -607,10 +607,10 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   m_Callback->GetROIFiberLimiter()->SetInput ( this->GetInput() );
 
   
-	if( this->Renderer )
-	{
-		m_BoxWidget->SetDefaultRenderer(this->Renderer);
-	}
+  if( this->Renderer )
+  {
+    m_BoxWidget->SetDefaultRenderer(this->Renderer);
+  }
   m_BoxWidget->SetInput ( this->GetInput() );
   m_BoxWidget->PlaceWidget();
 

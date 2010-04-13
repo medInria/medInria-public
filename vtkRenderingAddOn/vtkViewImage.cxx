@@ -250,7 +250,13 @@ unsigned int vtkViewImage::GetOrthogonalAxis(unsigned int p_plan)
   
   double axisVec[4] = {0.0, 0.0, 0.0, 0.0};
   axisVec[axis] = 1.0;
-  this->GetDirectionMatrix()->MultiplyPoint (axisVec, axisVec);
+
+  vtkMatrix4x4 *t_directions = vtkMatrix4x4::New();
+  vtkMatrix4x4::Transpose (this->GetDirectionMatrix(), t_directions);
+  
+  //this->GetDirectionMatrix()->MultiplyPoint (axisVec, axisVec);
+  t_directions->MultiplyPoint (axisVec, axisVec);
+  t_directions->Delete();
   
   for (int i=0; i<3; i++)
     if (fabs (axisVec[i])>0.0 )
@@ -1522,7 +1528,7 @@ void vtkViewImage::SetDirectionMatrix (vtkMatrix4x4 *mat)
   this->DirectionMatrix->SetElement (jbest-1, 1, qbest);
   this->DirectionMatrix->SetElement (kbest-1, 2, rbest);
   this->DirectionMatrix->SetElement (3, 3, 1.0);
-  
+
   this->Modified();
   
 }

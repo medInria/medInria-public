@@ -110,7 +110,7 @@ wxImageViewer::wxImageViewer (wxWindow* parent, int id,
   wxChoice* cb1 = new wxChoice (m_ToolBarView, TOOLBAR_VRCHOICE, wxDefaultPosition, wxSize(100,-1));
   cb1->Append (wxT("3D mode:"));
   cb1->Append (wxT("Texture"));
-  cb1->Append (wxT("MIP"));
+  //cb1->Append (wxT("MIP"));
   cb1->SetSelection (0);
   
   m_ToolBarView->AddControl (cb1);

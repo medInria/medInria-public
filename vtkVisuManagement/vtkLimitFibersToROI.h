@@ -22,6 +22,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkPolyDataAlgorithm.h"
 #include <vtkImageData.h>
+#include <vtkMatrix4x4.h>
 #include <vector>
 
 
@@ -34,6 +35,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLimitFibersToROI: public vtkPolyDataAlgorithm
 
   vtkSetObjectMacro (MaskImage,  vtkImageData);
   vtkGetObjectMacro (MaskImage,  vtkImageData);
+
+  vtkSetObjectMacro (DirectionMatrix,  vtkMatrix4x4);
+  vtkGetObjectMacro (DirectionMatrix,  vtkMatrix4x4);
   
   void PrintSelf (ostream& os, vtkIndent indent){};
 
@@ -71,7 +75,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLimitFibersToROI: public vtkPolyDataAlgorithm
   void operator=(const vtkLimitFibersToROI&);
   
   vtkImageData* MaskImage;
-
+  vtkMatrix4x4* DirectionMatrix;
 
   int BooleanOperationVector[256];
  
