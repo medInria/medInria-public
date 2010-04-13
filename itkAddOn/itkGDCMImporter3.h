@@ -33,6 +33,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <sstream>
 #include <vector>
+#include <string>
 
 namespace itk
 {
@@ -53,41 +54,29 @@ namespace itk
     public:
     /// ITK typedefs
     typedef GDCMVolume Self;
-    /// ITK typedefs
     typedef GDCMVolume ImageType;
-    /// ITK typedefs
     typedef Image<TPixelType, 3> SubImageType;
-    /// ITK typedefs
     typedef Image<TPixelType, 4> Superclass;
-
-    /** ImageDimension typedef, dimension of the output Image(s) */
-    itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);
-    
-    /// ITK typedefs
     typedef SmartPointer<Self> Pointer;
-    /// ITK typedefs
     typedef SmartPointer<const Self> ConstPointer;
-    /// gdcm::File typedef (used to retrieve some dicom information)    
+    typedef typename Superclass::SpacingType SpacingType;
     typedef std::vector<std::string> FileList;
     typedef std::map<std::string, FileList> FileListMapType;
     typedef Vector<double, 3> GradientType;
-    
     typedef std::vector< GradientType > GradientsContainer;
-    
-    /// ITK typedefs
+    itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);    
+
     itkNewMacro  (Self);
-    /// ITK typedefs
     itkTypeMacro (GDCMVolume, Superclass);
-    // superclass typedefs
-    typedef typename Superclass::SpacingType SpacingType;
+
     /**/// serie reader typedef, reading a serie of dicom file to reconstruct a volume image
     typedef ImageSeriesReader<SubImageType> SeriesReaderType;
-    /** Reader typedef, used to read a single file such as DICOMDIR file */
+    /** Reader typedef */
     typedef typename itk::ImageFileReader<SubImageType> ReaderType;
-    /** Writer typedef, not used */
+    /** Writer typedef */
     typedef typename itk::ImageFileWriter<ImageType> WriterType;    
     
-    /*
+    /**
        Get/Set the FileList coming from the GDCM library.
        This list will then be used by Build() for reconstructing
        the volume image.
@@ -113,23 +102,36 @@ namespace itk
     itkSetStringMacro (Name);
     /**
        Build() will actually fill the volume image considering
-       the FileList (SetFileList())
+       the FileListMap (SetFileListMap())
     */
     void Build(void);
     /**
+       Write the volume (or 4D volume) in a file
+       This only depends on the FileMap currently present in the volume.
+       a SeriesReaderType is used to sequencially reads all DICOM files
+       that have been included in the each filemap item.
+       Each 3D image is concatenated in a 4D image with a 4th spacing of 1.
     */
     void Write(std::string filename);
-
+    /**
+       Re-Initialize the volume.
+       Release memory. The Build() method has to be re-called to
+       be able to get the volume back.
+    */
     void Initialize (void)
     {
       this->Superclass::Initialize();
       this->m_IsBuilt = 0;
     }
-
+    /**
+       Ask the filemap files if there is any gradient present,
+       and if they are coherent (one null gradient and > 1 non-null gradients
+    */
     bool IsVolumeDWIs (void);
-
+    /**
+       Write the gradient orientations in a file
+    */
     void WriteGradients (std::string filename);
-    
     
   protected:
 
@@ -144,10 +146,6 @@ namespace itk
       m_SkipMeanDiffusivity = 1;
       m_MeanDiffusivitySkipped = 0;
     }
-    /**
-       default GDCMVolume destructor,
-       free memory.
-    */
     ~GDCMVolume()
     {
       this->Initialize();
@@ -155,7 +153,7 @@ namespace itk
     /**
        Print the image information, including the name and
        the DICOM dictionnary (displaying the dictionnary of the first
-       file contained in GetFileList()).
+       file contained in GetFileListMap()).
     */
     void PrintSelf(std::ostream& os, Indent indent) const;
 
@@ -182,7 +180,7 @@ namespace itk
      \brief itkImageSource to manage DICOM files, reordering, building volumes
      \author Nicolas Toussaint
 
-     \see GDCMImporter3 GDCMSeriesFileNames ImageSource GDCMSeriesFileNames
+     \see GDCMImporter3 ImageSource
      \ingroup   DataSources
 
   */
@@ -216,7 +214,15 @@ namespace itk
     typedef itk::ProcessObject::DataObjectPointerArray DataObjectPointerArray;
     typedef typename ImageType::RegionType OutputImageRegionType;
 
-    /** Get/Set the InputDirectory, root directory where a DICOM exam can be found*/
+    typedef typename ImageType::FileList FileList;
+    typedef typename ImageType::FileListMapType FileListMapType;
+    typedef std::map<std::string, FileListMapType> FileListMapofMapType;
+    typedef std::map<double, FileList> SortedMapType;
+    
+    /**
+       Get/Set the InputDirectory,
+       root directory where a DICOM exam can be found
+    */
     itkGetStringMacro (InputDirectory);
     void SetInputDirectory (std::string d)
     {
@@ -224,35 +230,29 @@ namespace itk
       m_IsScanned = 0;
       this->Modified();
     }
-    
-
-    typedef typename ImageType::FileList FileList;
-    typedef typename ImageType::FileListMapType FileListMapType;
-    typedef std::map<std::string, FileListMapType> FileListMapofMapType;
     /**
        Use this method to save a specific volume in a file
     */
-    void SaveOutputInFile(unsigned int, const char*);
+    void WriteOutputInFile(unsigned int, std::string);
     /**
        Save all output images in a given directory
     */
-    void SaveOutputsInDirectory(const char*);
+    void WriteOutputsInDirectory(std::string);
     /**
        Scan the directory (or the DICOMDIR file) respecting the strategies explained above,
        The scan might be slow, it is linearly dependant on the number of
-       files present in the SetInputDirectory() (or the size of DICOMDIR file).
+       files present in the SetInputDirectory().
+       A cache system is used by the internal Scanner (from GDCM library). Thus
+       a second call of Scan() will be faster.
     */
     void Scan (void);
-    /**
-       Restoring/Setting output states according to the helper.
-    */
-    void Reset (void);
 
   protected:
 
+    /** Internal methods for mmultithreading. */
     virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
     void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId );
-
+    void GenerateOutputs (void);
     /** default constructor */
     GDCMImporter3();
     /** default destructor, release memory */
@@ -275,7 +275,9 @@ namespace itk
     FileListMapType PrimarySort (FileList list);
     FileListMapType SecondarySort (FileList list);
     FileListMapType TertiarySort (FileList list);
-    std::string GenerateUniqueName (FileListMapType map);
+    FileListMapType TimeSort (FileListMapType map);
+    
+    std::string GenerateUniqueName (FileListMapType map);    
   };
 
 } // end of namespace itk

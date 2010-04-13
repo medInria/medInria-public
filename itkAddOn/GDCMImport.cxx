@@ -1,7 +1,7 @@
 /*=========================================================================
 
 Program:   vtkINRIA3D
-Module:    $Id: ImageRegistrationFactory.cxx 1 2008-01-22 19:01:33Z ntoussaint $
+Module:    $Id: GDCMImport.cxx 1 2008-01-22 19:01:33Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
 Date:      $Date: 2008-01-22 20:01:33 +0100 (Tue, 22 Jan 2008) $
@@ -17,12 +17,12 @@ PURPOSE.  See the above copyright notices for more information.
 =========================================================================*/
 
 /**
- * This is a small tool that shows how to use the Registration Factory
- * Mostly inspired by Tom Vercauteren DemonsRegistration test code.
+ * This is a small tool that shows how to use the GDCM DICOM import
+ * 
  *
- * The user can choose between different registration methods.
- * The user can also choose input transform file or input displacement field;
- *
+ * The user chooses the inpu directory where all DICOM files are located.
+ * The tool outputs all series in 3D or 4D image file (itk-mmetaimage format .mha)
+ * 
  *
  * \author Nicolas Toussaint, INRIA
  */
@@ -35,24 +35,15 @@ PURPOSE.  See the above copyright notices for more information.
 #include "getoptcompat/getopt.h"
 #endif //WIN32
 #include <iostream>
-#include <itksys/SystemTools.hxx>
 
 struct arguments
 {
   std::string  InputDirectory;  /* -i option */
   std::string  OutputDirectory; /* -o option */
-  std::string  OutputFilename;  /* -f option */
-  unsigned int AutoMode;        /* -a option */
-  unsigned int Recursivity;     /* -r option */
-  unsigned int UseDicomDir;     /* -d option */
 
   arguments () :
     InputDirectory(""),
-    OutputDirectory(""),
-    OutputFilename(""),
-    AutoMode(0u),
-    Recursivity(1u),
-    UseDicomDir(0u)
+    OutputDirectory("")
   {
   }
 
@@ -132,8 +123,6 @@ void parseOpts (int argc, char **argv, struct arguments & args)
 	  if (! optarg) display_usage(progname);
 	  args.OutputDirectory = optarg;
 	  break;
-	  args.OutputFilename = optarg;
-	  break;
 
 	case 'h':	/* fall-through is intentional */
 	case '?':   /* fall-through is intentional */
@@ -166,14 +155,13 @@ int main( int argc, char *argv[] )
   {
     importer->SetInputDirectory (args.InputDirectory);
     importer->Scan();
-    
     importer->Update();
 
     std::string directory = itksys::SystemTools::GetCurrentWorkingDirectory();
     if (args.OutputDirectory.size())
       directory = args.OutputDirectory;    
     
-    importer->SaveOutputsInDirectory (directory.c_str());
+    importer->WriteOutputsInDirectory (directory.c_str());
   }
   catch(itk::ExceptionObject &e)
   {

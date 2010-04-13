@@ -16,12 +16,13 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #include "itkGDCMImporter3.h"
+#include <itkGDCMImageIO.h>
 
 #include "gdcmReader.h"
 #include "gdcmDirectionCosines.h"
 #include "gdcmStringFilter.h"
 
-#include <itkGDCMImageIO.h>
+#include <ctype.h>
 
 namespace itk
 {
@@ -38,12 +39,12 @@ namespace itk
     
     try
     {
-      std::cout << "writing: " << filename << std::endl;
       writer->Write();
     }
     catch (itk::ExceptionObject & e)
     {
       std::cerr<<e<<std::endl;
+      itkExceptionMacro (<<"Cannot write "<<filename<<std::endl);
     }
   }
   
@@ -62,13 +63,10 @@ namespace itk
 	directions[i][j] = this->GetDirection()[i][j];
     typename SubImageType::DirectionType inversedirections = typename SubImageType::DirectionType (directions.GetInverse());
 
-    std::cout << "writing: " << filename << std::endl;
     std::ofstream file (filename.c_str());
     if(file.fail())
-    {
-      std::cerr << "Unable to open file for writing: " << filename.c_str() << std::endl;
-      return;
-    }
+      itkExceptionMacro (<<"Unable to open file for writing: " << filename.c_str() << std::endl);
+
     file << m_Gradients.size() << std::endl;
     for (unsigned int i=0; i<m_Gradients.size(); i++)
     {
@@ -92,7 +90,9 @@ namespace itk
 
     m_MeanDiffusivitySkipped = 0;
     m_Gradients.clear();
-    
+
+    bool engaged = 0;
+
     if (map.size())
     {
       typename FileListMapType::iterator it;
@@ -126,14 +126,18 @@ namespace itk
 	GradientType gr;
 	for (unsigned int i=0; i<3; i++)
 	  gr[i] = gradient[i];
+	
+	if (!engaged && NumericTraits<double>::IsPositive (gr.GetNorm()))
+	  engaged = 1;
 
 	cumulatednorm += gr.GetNorm();
 	
-	if (!m_SkipMeanDiffusivity || (it != last) || NumericTraits<double>::IsPositive (gr.GetNorm()) )
+	if (!m_SkipMeanDiffusivity || !engaged || NumericTraits<double>::IsPositive (gr.GetNorm()) )
 	  m_Gradients.push_back (gr);
 	else
 	  m_MeanDiffusivitySkipped = 1;
 	
+
       }
     }
     
@@ -157,16 +161,21 @@ namespace itk
     typename ImageType::Pointer image = ImageType::New();    
     typename GDCMImageIO::Pointer io = GDCMImageIO::New();
     typename FileListMapType::iterator it;
-    typename FileListMapType::iterator last = map.end();
-    last--;
     
     bool metadatacopied = 0;
     IteratorType itOut;
 
     if (this->IsVolumeDWIs() && this->m_SkipMeanDiffusivity && this->m_MeanDiffusivitySkipped)
-      map.erase (last);
-    
-    std::cout<<"building volume "<<this->GetName()<<" containing "<<map.size()<<" subvolumes."<<std::endl;
+    {
+      while (map.size() > m_Gradients.size())
+      {
+	typename FileListMapType::iterator last = map.end();
+	last--;
+	map.erase (last);
+      }
+    }
+      
+    std::cout<<"building volume "<<this->GetName()<<" containing "<<map.size()<<" subvolumes..."<<std::flush;
     
     for (it = map.begin(); it != map.end(); ++it)
     {
@@ -187,7 +196,8 @@ namespace itk
 	catch (itk::ExceptionObject & e)
 	{
 	  std::cerr << e;
-	  throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMVolume::Build()");
+	  itkExceptionMacro ( <<"Cannot read file list beggining with "<<(*it).second[0]<<std::endl
+			      <<", volume will not be built"<<std::endl);
 	}
       
 	t_image= seriesreader->GetOutput();
@@ -203,7 +213,8 @@ namespace itk
 	catch (itk::ExceptionObject & e)
 	{
 	  std::cerr << e;
-	  throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMVolume::Build()");
+	  itkExceptionMacro ( <<"Cannot read single file "<<(*it).second[0]<<std::endl
+			      <<", volume will not be built"<<std::endl);
 	}
       
 	t_image= singlereader->GetOutput();
@@ -300,8 +311,8 @@ namespace itk
     this->SetNumberOfRequiredInputs (0);
     this->SetNumberOfRequiredOutputs (0);
     this->SetNumberOfOutputs (0);
-
-        // 0010 0010 Patient name
+    
+    // 0010 0010 Patient name
     // we want to reconstruct an image from a single
     // patient
     this->m_FirstScanner.AddTag( gdcm::Tag(0x10,0x10) ); // patient's name
@@ -336,7 +347,6 @@ namespace itk
     // then it is difficult to reconstruct them into a 3D volume.
     this->m_FirstScanner.AddTag( gdcm::Tag(0x0028, 0x0011));
 
-
     // 0018 9087 Diffusion B-Factor
     // If the 2D images in a sequence don't have the b-value,
     // then we separate the DWIs.
@@ -345,15 +355,13 @@ namespace itk
     // If the 2D images in a sequence don't have the same gradient orientation,
     // then we separate the DWIs.
     this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x9089));
-    // 0018 1060 Trigger Time
-    this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x1060));
-
     
     // 0020 0032 Position Patient
     this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x32) );  
     // 0020 0037 Orientation Patient
-    this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x37) );  
-        
+    this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x37) );
+    // 0018 1060 Trigger Time
+    this->m_ThirdScanner.AddTag( gdcm::Tag(0x18,0x1060) );
     
   }
 
@@ -367,28 +375,37 @@ namespace itk
       return;
     
     if (!itksys::SystemTools::FileExists (this->m_InputDirectory.c_str()))
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::Load(): directory not found");
+      itkExceptionMacro (<<"Directory "<<this->m_InputDirectory.c_str()<<" not found."<<std::endl);
 
     this->UpdateProgress(0.00);
 
     this->m_FileListMapofMap.clear();
     
     gdcm::Directory directory;
-    std::cout<<"loading"<<std::endl;    
+    std::cout<<"loading"<<std::endl;
     unsigned long nfiles = directory.Load( this->m_InputDirectory, true);
     std::cout<<"done : "<<nfiles<< " files included."<<std::endl;
 
     if (!nfiles)
     {
-      itkExceptionMacro (<<"The GDCM loader did not succeed loading directory "<<this->m_InputDirectory<<" (or there is no file in directory)"<<std::endl);
-      return;
+      itkExceptionMacro (<<"The GDCM loader did not succeed loading directory "
+			 <<this->m_InputDirectory<<" (or there is no file in directory)"<<std::endl);
     }    
     
     // First sort of the filenames.
     // it will distinguish patient name, series and instance uids, sequence name
     // as well as the image orientation and the nb of columns and rows 
-    FileListMapType map = this->PrimarySort (directory.GetFilenames());
-
+    FileListMapType map;
+    try
+    {
+      map = this->PrimarySort (directory.GetFilenames());
+    }
+    catch ( itk::ExceptionObject & e)
+    {
+      std::cerr << e << std::endl;
+      itkExceptionMacro (<<"Scanning failed"<<std::endl);
+    }
+    
     std::cout<<"primary sort gives "<<map.size()<<" different volumes (outputs)"<<std::endl;
     
     typename FileListMapType::const_iterator it;
@@ -396,10 +413,19 @@ namespace itk
     {
       
       // Second sort of the filenames.
-      // it will distinguish the gradient orientation, the b-value, the trigger time
-      // and the T2/pr* density.
-      FileListMapType mapi = this->SecondarySort ((*it).second);
-
+      // it will distinguish the gradient orientation, the b-value
+      // and the T2/ proton density (TODO)
+      FileListMapType mapi;
+      try
+      {
+	mapi = this->SecondarySort ((*it).second);
+      }
+      catch ( itk::ExceptionObject & e)
+      {
+	std::cerr << e << std::endl;
+	continue;
+      }
+    
       std::cout<<"  secondary division gives "<<mapi.size()<<" subvolumes"<<std::endl;    
       
       typename FileListMapType::iterator it2;
@@ -410,19 +436,35 @@ namespace itk
 	// it will detect identical image positions
 	// and separate distinct volumes.
 	// If all image positions are identical, no sort is done.
-	FileListMapType mapij = this->TertiarySort ((*it2).second);
-      
+	FileListMapType mapij;
+	try
+	{
+	  mapij = this->TertiarySort ((*it2).second);
+	}
+	catch ( itk::ExceptionObject & e)
+	{
+	  std::cerr << e << std::endl;
+	  continue;
+	}
+
 	if (mapij.size() >= 1)
 	{
+
+	  // Time sort.
+	  // A hack to sort the images trigger-time-wise
+	  // In case of DWIs, no sort is done since
+	  // trigger times are similar
+	  FileListMapType mapijtimed = this->TimeSort (mapij);
+
 	  typename FileListMapType::iterator it3;
-	  typename FileListMapType::iterator end = mapij.end();
 	  std::string rootid = (*it2).first;
 	  mapi.erase (it2);
 	  it2--;
-	  for(it3 = mapij.begin(); it3 != mapij.end(); it3++)
+	  for(it3 = mapijtimed.begin(); it3 != mapijtimed.end(); it3++)
 	  {
 	    std::ostringstream os;
 	    os << rootid << (*it3).first;
+	    
 	    typename FileListMapType::value_type newpair(os.str(),(*it3).second );
 	    it2 = mapi.insert (it2, newpair);
 	  }
@@ -437,7 +479,7 @@ namespace itk
     std::cout<<"sorting finished "<<std::endl;
     m_IsScanned = 1;
     
-    this->Reset();
+    this->GenerateOutputs();
   }
 
   //----------------------------------------------------------------------------
@@ -451,8 +493,8 @@ namespace itk
     std::cout<<"first scan"<<std::endl;    
     if (!this->m_FirstScanner.Scan (list))
     {
-      itkExceptionMacro (<<"The GDCM scanner did not succeed scanning directory "<<this->m_InputDirectory<<std::endl);
-      return ret;
+      itkExceptionMacro (<<"The first scanner did not succeed scanning directory "
+			 <<this->m_InputDirectory<<std::endl);
     }
     std::cout<<"done"<<std::endl;
     
@@ -469,6 +511,7 @@ namespace itk
 	  continue;
 	
 	std::ostringstream os;
+	os<<"firstscan.";
 	for(it = mapping.begin(); it != mapping.end(); ++it)
 	  os <<(*it).second<<".";
 	
@@ -482,7 +525,11 @@ namespace itk
 	  ret[os.str()].push_back ((*file).c_str());
       }
       else
-	std::cout<<"The file "<<(*file).c_str()<<" does not appear in the scanner mappings, skipping. "<<std::endl;
+      {
+	itkWarningMacro (<<"The file "<<(*file).c_str()
+			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
+      }
+      
     }    
 
     return ret;
@@ -499,8 +546,8 @@ namespace itk
     
     if (!this->m_SecondScanner.Scan (list))
     {
-      std::cerr<<"The GDCM scanner did not succeed scanning the list, skipping"<<std::endl;
-      return ret;
+      itkExceptionMacro (<<"The second scanner did not succeed scanning the list, skipping"
+			 <<std::endl);
     }
       
     gdcm::Directory::FilenamesType::const_iterator file;
@@ -508,11 +555,13 @@ namespace itk
     
     for (file = list.begin(); file != list.end(); ++file)
     {
-      if( this->m_FirstScanner.IsKey((*file).c_str()) )
+      if( this->m_SecondScanner.IsKey((*file).c_str()) )
       {
 	const gdcm::Scanner::TagToValue& mapping = this->m_SecondScanner.GetMapping((*file).c_str());
 	
 	std::ostringstream os;
+	os<<"secondscan.";
+	
 	for(it = mapping.begin(); it != mapping.end(); ++it)
 	  os <<(*it).second<<".";
 
@@ -526,7 +575,10 @@ namespace itk
 	  ret[os.str()].push_back ((*file).c_str());
       }
       else
-	std::cout<<"The file "<<(*file).c_str()<<" does not appear in the scanner mappings, skipping. "<<std::endl;
+      {
+	itkWarningMacro (<<"The file "<<(*file).c_str()
+			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
+      }
     }    
 
     return ret;
@@ -544,8 +596,8 @@ namespace itk
     
     if (!this->m_ThirdScanner.Scan (list))
     {
-      std::cerr<<"The GDCM scanner did not succeed scanning the list, skipping"<<std::endl;
-      return ret;
+      itkExceptionMacro (<<"The third scanner did not succeed scanning the list, skipping"
+			 <<std::endl);
     }
 
     const char *reference = list[0].c_str();
@@ -553,9 +605,8 @@ namespace itk
     gdcm::Scanner::TagToValue::const_iterator firstit = t2v.find( gdcm::Tag(0x20,0x37) );
     if( (*firstit).first != gdcm::Tag(0x20,0x37) )
     {
-    // first file does not contains Image Orientation (Patient), let's give up
-      std::cerr<<"No iop in first file "<<std::endl;
-      return ret;
+      itkExceptionMacro (<<"No orientation information in first file "
+			 <<reference<<std::endl);
     }
 
     const char *dircos = (*firstit).second;
@@ -572,10 +623,9 @@ namespace itk
     normal[0] = cosines[1]*cosines[5] - cosines[2]*cosines[4];
     normal[1] = cosines[2]*cosines[3] - cosines[0]*cosines[5];
     normal[2] = cosines[0]*cosines[4] - cosines[1]*cosines[3];
-
-    typedef std::map<double, FileList> SortedFilenames;
-    SortedFilenames sorted;
-
+    
+    SortedMapType sorted;
+    
     std::vector<std::string>::const_iterator it;
 
     for(it = list.begin(); it != list.end(); ++it)
@@ -584,7 +634,7 @@ namespace itk
       bool iskey = this->m_ThirdScanner.IsKey(filename);
       if( iskey )
       {
-	const char *value =  this->m_ThirdScanner.GetValue(filename, gdcm::Tag(0x20,0x32));
+	const char *value = this->m_ThirdScanner.GetValue(filename, gdcm::Tag(0x20,0x32));
 	if( value )
         {
 	  gdcm::Element<gdcm::VR::DS,gdcm::VM::VM3> ipp;
@@ -594,32 +644,42 @@ namespace itk
 	  double dist = 0;
 	  for (int i = 0; i < 3; ++i)
 	    dist += normal[i]*ipp[i];
+
+	  bool found = 0;
+	  typename SortedMapType::iterator finder;
+	  for (finder = sorted.begin(); finder != sorted.end(); ++finder)
+	    if ( std::abs ( (*finder).first - dist ) < NumericTraits<double>::min() )
+	    {
+	      found = 1;
+	      break;
+	    }
 	  
-	  if( sorted.find(dist) == sorted.end() )
+	  if( !found )
 	  {
 	    FileList newlist;
 	    newlist.push_back (filename);
-	    typename SortedFilenames::value_type newpair(dist,newlist);
+	    typename SortedMapType::value_type newpair(dist,newlist);
 	    sorted.insert( newpair );
 	  }
 	  else
-	    sorted[dist].push_back (filename);
+	    (*finder).second.push_back (filename);
 	}
       }
       else
-	std::cout<<"The file "<<filename<<" does not appear in the scanner mappings, skipping. "<<std::endl;
+      {
+	itkWarningMacro (<<"The file "<<filename
+			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
+      }
     }
 
     if ((list.size() % sorted.size()) != 0)
     {
-      std::cerr<<"inconsistent sizes : "<<list.size()<<" in "<<sorted.size()<<", , no sorting"<<std::endl;
-      return ret;
-    }
-
-    if (sorted.size() == 1)
-    {
-      // single position, no sorting;
-      return ret;
+      itkExceptionMacro (<<"There appears to be inconsistent file list sizes "<<std::endl
+			 <<"Scanner outputs "<<sorted.size()<<" different image positions "
+			 <<"within a total list of "<<list.size()<<" files."<<std::endl
+			 <<"no sorting will be performed"<<std::endl);
+      ///\todo Here we could take into account the files that are consistent
+      /// to each other and leave the rest, to build a truncated volume.
     }
 
     unsigned int nb_of_volumes = list.size() / sorted.size();
@@ -627,99 +687,170 @@ namespace itk
     for (unsigned int i=0; i<nb_of_volumes; i++)
     {
       std::ostringstream os;
-      os<<"."<<i;
+      os<<".";
+      if (i < 100)
+	os << "0";
+      if (i < 10)
+	os << "0";
+      os<<i;
+      
       FileList newfilelist;
 
-      typename SortedFilenames::const_iterator newit;
-      for (newit = sorted.begin(); newit != sorted.end(); ++newit)
-	newfilelist.push_back ((*newit).second[i]);
-
+      typename SortedMapType::const_iterator toinsert;
+      
+      for (toinsert = sorted.begin(); toinsert != sorted.end(); ++toinsert)
+      {
+	newfilelist.push_back ((*toinsert).second[i]);
+      }
+      
       typename FileListMapType::value_type newpair(os.str(),newfilelist);
       ret.insert (newpair);
+    }
+    
+    return ret;
+  }
+
+ 
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  typename GDCMImporter3<TPixelType>::FileListMapType
+  GDCMImporter3<TPixelType>::TimeSort  (FileListMapType map)
+  {
+
+    FileListMapType ret;
+    
+    if (map.size() <= 1)
+      return map;
+    
+    SortedMapType sorted;
+    typename FileListMapType::const_iterator it;
+    
+    for(it = map.begin(); it != map.end(); ++it)
+    {
+      const char *filename = (*it).second[0].c_str();
+      bool iskey = this->m_ThirdScanner.IsKey(filename);
+      if( iskey )
+      {
+	const char *value = this->m_ThirdScanner.GetValue(filename, gdcm::Tag(0x18,0x1060));
+	if( value )
+        {
+	  typename SortedMapType::value_type newpair(std::atof (value), (*it).second);
+	  sorted.insert (newpair);
+	}
+      }
+      else
+      {
+	itkWarningMacro (<<"The file "<<filename
+			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
+      }
+    }
+
+
+    if (sorted.size() <= 1)
+    {
+      // It means all volumes have the same trigger time.
+      // We do not want to then reduce the ordering.
+      // We give back the input map
+      return map;
+    }
+    
+    typename SortedMapType::const_iterator it2;
+    unsigned int iteration = 0;
+    
+    for(it2 = sorted.begin(); it2 != sorted.end(); ++it2)
+    {
+      std::ostringstream os;
+      if (iteration < 100)
+	os << "0";
+      if (iteration < 10)
+	os << "0";
+      os<<iteration;
+      
+      typename FileListMapType::value_type newpair(os.str(), (*it2).second);
+      ret.insert (newpair);
+      iteration++;
     }
 
     return ret;
   }
+  
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  void GDCMImporter3<TPixelType>::Reset (void)
+  void GDCMImporter3<TPixelType>::GenerateOutputs  (void)
   {
-    this->SetNumberOfOutputs (0);
+    // release memory
     this->PrepareOutputs();
+    this->SetNumberOfOutputs (0);
 
-    try
-    {
-
-      this->UpdateProgress(0.0);
-
-      typename FileListMapofMapType::iterator it;
-
-      for (it = this->m_FileListMapofMap.begin(); it != this->m_FileListMapofMap.end(); it++)
-      {
-	typename FileListMapType::iterator it2;
-	
-	FileListMapType filelistmap = (*it).second;
-	if ( !filelistmap.size() )
-	  continue;
-	
-	std::string name = this->GenerateUniqueName(filelistmap);
-	typename ImageType::Pointer image = ImageType::New();
-	
-	image->SetName (name.c_str());
-	image->SetFileListMap (filelistmap);
-	this->AddOutput (image);
-      }
-    }
+    typename FileListMapofMapType::iterator it;
     
-    catch (itk::ExceptionObject & e)
+    for (it = this->m_FileListMapofMap.begin(); it != this->m_FileListMapofMap.end(); it++)
     {
-      this->UpdateProgress(1.0);
-      this->SetProgress(0.0);
-      std::cerr << e << std::endl;
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::InitializeOutputs(), during tree structuring");
+      if ( !(*it).second.size() ) continue;
+      
+      typename ImageType::Pointer image = ImageType::New();
+      
+      image->SetName (this->GenerateUniqueName((*it).second));
+      image->SetFileListMap ((*it).second);
+      this->AddOutput (image);
     }
-    
-    this->UpdateProgress(1.0);
-    this->SetProgress(0.0);
+
+    this->Modified();
   }
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void
-  GDCMImporter3<TPixelType>::SaveOutputInFile (unsigned int N, const char* filename)
+  GDCMImporter3<TPixelType>::WriteOutputInFile (unsigned int i, std::string filename)
   {
-    
     try
     {
-      this->GetOutput (N)->Build();
-      this->GetOutput (N)->Write (filename);
+      this->GetOutput (i)->Build();
+      this->GetOutput (i)->Write (filename);
     }
     catch (itk::ExceptionObject & e)
     {
       std::cerr << e << std::endl;
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::SaveOutputInFile()");
+      itkExceptionMacro (<<"Cannot write "<<filename<<std::endl);
     }
   }
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void
-  GDCMImporter3<TPixelType>::SaveOutputsInDirectory (const char* directory)
+  GDCMImporter3<TPixelType>::WriteOutputsInDirectory (std::string directory)
   {
     for( unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
     {
-      std::ostringstream os;
-      os << directory <<"/"<< this->GetOutput(i)->GetName() <<".mha";
-      this->GetOutput(i)->Write (os.str());
+      std::string filename = itksys::SystemTools::AppendStrings
+	( itksys::SystemTools::ConvertToOutputPath (directory.c_str()).c_str(),
+	  this->GetOutput(i)->GetName(),
+	  ".mha");
       
-      if (this->GetOutput(i)->IsVolumeDWIs())
+      try
       {
-	std::ostringstream os2;
-	os2 << directory <<"/"<< this->GetOutput(i)->GetName() <<".bvec";
-	this->GetOutput(i)->WriteGradients (os2.str());
-      }
+	std::cout<<"Writing "<<filename<<" ... "<<std::flush;
+	this->GetOutput(i)->Write (filename);
+	std::cout<<"done. "<<std::endl;
 
+	if (this->GetOutput(i)->IsVolumeDWIs())
+	{
+	  std::string gradientsname = itksys::SystemTools::AppendStrings
+	    ( itksys::SystemTools::ConvertToOutputPath (directory.c_str()).c_str(),
+	      this->GetOutput(i)->GetName(),
+	      ".bvec");
+
+	  std::cout<<"Writing "<<gradientsname<<" ... "<<std::flush;
+	  this->GetOutput(i)->WriteGradients (gradientsname);
+	  std::cout<<"done. "<<std::endl;
+	}
+      }
+      catch (itk::ExceptionObject & e)
+      {
+	std::cerr << e << std::endl;
+	continue;
+      }
     }
     
   }
@@ -730,7 +861,12 @@ namespace itk
   GDCMImporter3<TPixelType>::GenerateUniqueName (FileListMapType map)
   {
     std::string ret;
-    std::string description = "output";
+
+    // Grab the description given in the DICOM header
+    // of the first file in the map.
+    // --> We consider the description to be similar in
+    // all files of the map
+    std::string description = "unknown";
     if (map.size())
     {
       if ((*map.begin()).second.size())
@@ -745,25 +881,43 @@ namespace itk
 	{
 	  gdcm::StringFilter filter;
 	  filter.SetFile (reader.GetFile());
-	  description = filter.ToString (gdcm::Tag(0x8, 0x103e));
+	  std::string toadd = filter.ToString (gdcm::Tag(0x8, 0x103e));
+	  if (toadd.size() > 1)
+	    description = toadd;
 	}
       }
     }
-    
-    ret = description;
 
-    itksys::SystemTools::ReplaceString (ret, " ", "-");
-    itksys::SystemTools::ReplaceString (ret, "_", "-");
-    bool finished = 0;
+    // Remove space and replace underscores
+    // Clean sides of the string
+    itksys::SystemTools::ReplaceString (description, " ", "-");
+    itksys::SystemTools::ReplaceString (description, "_", "-");
+    bool finished;
+    finished = 0;
     while(!finished)
     {
-      std::string::size_type dot_pos = ret.rfind("-");
-      if(dot_pos == (ret.size()-1))
-	ret = ret.substr(0, dot_pos);
+      std::string::size_type dot_pos = description.rfind("-");
+      if( description.size() && (dot_pos == (description.size()-1)) )
+	description = description.substr(0, dot_pos);
       else
 	finished = 1;
     }
+    finished = 0;
+    while(!finished)
+    {
+      std::string::size_type dot_pos = description.find("-");
+      if( description.size() && (dot_pos == 0) )
+	description = description.substr(dot_pos+1, description.size());
+      else
+	finished = 1;
+    }
+    if (!description.size())
+      description = "unknown";
     
+    ret = description;
+
+    // Check if name is taken
+    // if it is then add a number at the end of it
     bool taken = 0;
     unsigned int toadd = 0;
     for (unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
@@ -799,8 +953,8 @@ namespace itk
   GDCMImporter3<TPixelType>::ThreadedGenerateData(const OutputImageRegionType& region, int id)
   {
     if (!m_IsScanned)
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error in GDCMImporter3::GenerateData(): MUST call Scan() before Update()");
-    
+      itkExceptionMacro (<<"MUST call Scan() before Update()");
+
     unsigned int start = region.GetIndex()[0];
     unsigned int end = start + region.GetSize()[0];
 
@@ -845,8 +999,7 @@ namespace itk
       splitIndex[0] += i*valuesPerThread;
       // last thread needs to process the "rest" dimension being split
       splitSize[0] = splitSize[0] - i*valuesPerThread;
-    }
-    
+    }  
   
     // set the split region ivars
     splitRegion.SetIndex( splitIndex );
@@ -865,7 +1018,5 @@ namespace itk
     os << indent << "Input Directory: " << m_InputDirectory.c_str() << std::endl;
     os << indent << "Number of Volumes: " << this->GetNumberOfOutputs() << std::endl;
   }
-
-
 } // end of namespace ITK
 
