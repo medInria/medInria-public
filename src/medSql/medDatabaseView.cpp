@@ -47,6 +47,7 @@ medDatabaseView::~medDatabaseView(void)
 void medDatabaseView::setModel(medDatabaseModel *model)
 {
     QTreeView::setModel(model);
+    this->hideColumn(model->columnCount()-1);
 }
 
 void medDatabaseView::onPatientClicked(int id)
@@ -107,14 +108,15 @@ void medDatabaseView::onItemClicked(const QModelIndex& index)
         item = static_cast<medDatabaseItem *>(index.internalPointer());
 
     if(item)
-        if(item->table() == "patient")
-            emit patientClicked(item->value(0).toInt());
+        if(item->table() == "patient"){
+            emit patientClicked(item->value(item->columnCount()-1).toInt());
+        }
         else if(item->table() == "study")
-            emit studyClicked(item->value(0).toInt());
+            emit studyClicked(item->value(item->columnCount()-1).toInt());
         else if(item->table() == "series")
-            emit seriesClicked(item->value(0).toInt());
+            emit seriesClicked(item->value(item->columnCount()-1).toInt());
         else
-            emit imageClicked(item->value(0).toInt());
+            emit imageClicked(item->value(item->columnCount()-1).toInt());
 }
 
 void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
@@ -126,19 +128,20 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 
     if(item)
         if(item->table() == "patient") {
-            emit patientDoubleClicked(item->value(0).toInt());
+
+            emit patientDoubleClicked(item->value(item->columnCount()-1).toInt());
             emit patientDoubleClicked(index);
         }
         else if(item->table() == "study") {
-            emit studyDoubleClicked(item->value(0).toInt());
+            emit studyDoubleClicked(item->value(item->columnCount()-1).toInt());
             emit studyDoubleClicked(index);
         }
         else if(item->table() == "series") {
-            emit seriesDoubleClicked(item->value(0).toInt());
+            emit seriesDoubleClicked(item->value(item->columnCount()-1).toInt());
             emit seriesDoubleClicked(index);
         }
         else {
-            emit imageDoubleClicked(item->value(0).toInt());
+            emit imageDoubleClicked(item->value(item->columnCount()-1).toInt());
             emit imageDoubleClicked(index);
         }
 }

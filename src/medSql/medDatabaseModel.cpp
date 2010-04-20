@@ -60,7 +60,6 @@ medDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
 medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent), d(new medDatabaseModelPrivate)
 {
     d->attributes = QList<QVariant>()
-        << "id"
         << "Patient name"
         << "Study name"
         << "Series name"
@@ -80,8 +79,8 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
         << "Referee"
         << "Performer"
         << "Institution"
-        << "Report";
-
+        << "Report"
+        << "id";
     d->data = QList<QVariant>()
         << ""
         << ""
@@ -466,9 +465,9 @@ void medDatabaseModel::clear(void)
 
 //! Model population.
 /*! 
- * This method fills the model in with the data. The actual data is
- * contained within an medDatabaseItem and the later is accessed from
- * an index using the QModelIndex::internalPointer() method.
+ *  This method fills the model in with the data. The actual data is
+ *  contained within an medDatabaseItem and the later is accessed from
+ *  an index using the QModelIndex::internalPointer() method.
  * 
  * \param root The root item of the model.
  */
@@ -486,9 +485,8 @@ void medDatabaseModel::populate(medDatabaseItem *root)
 
         QList<QVariant> ptData;
         ptData << d->data;
-        ptData[0] = ptId;
-        ptData[1] = ptName;
-
+        ptData[0] = ptName;
+        ptData[ptData.count()-1] = ptId;
         medDatabaseItem *ptItem = new medDatabaseItem("patient", d->attributes, ptData, root);
 
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
@@ -522,10 +520,10 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                 
                 QList<QVariant> seData;
                 seData << d->data;
-                seData[0] = seId;
-                seData[2] = stName;
-                seData[3] = seName;
-                seData[6] = seAge;
+                seData[d->data.count()-1] = seId;
+                seData[1] = stName;
+                seData[2] = seName;
+                seData[5] = seAge;
 
                 medDatabaseItem *seItem = new medDatabaseItem("series", d->attributes, seData, ptItem);
                 
