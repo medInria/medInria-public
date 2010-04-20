@@ -1,5 +1,6 @@
 #include "v3dViewFuseInteractor.h"
 
+#include <dtkCore/dtkLog.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -17,8 +18,8 @@
 class v3dViewFuseInteractorPrivate
 {
 public:
-  dtkAbstractData *data1;
-  dtkAbstractData *data2;
+  dtkAbstractDataImage *data1;
+  dtkAbstractDataImage *data2;
 
   dtkAbstractData *output;
 
@@ -30,8 +31,8 @@ public:
 
 v3dViewFuseInteractor::v3dViewFuseInteractor(): dtkAbstractViewInteractor(), d(new v3dViewFuseInteractorPrivate)
 {
-    d->data1 = 0;
-    d->data2 = 0;
+    d->data1 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("v3dDataImage") );
+    d->data2 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("v3dDataImage") );
     d->view = 0;
     
     d->fuse = vtkImageFuse::New();
@@ -122,7 +123,8 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 {
     if (!data || channel<0 || channel>1 || !data->data())
         return;
-
+    
+        
     if (data->description()==tr("itkDataImageChar3")) {
       typedef char ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
@@ -131,12 +133,15 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       converter->SetInput ( dynamic_cast<ImageType*>( (itk::Object*)(data->data()) ) );
       converter->Update();
 
-      vtkImageCast *caster = vtkImageCast::New();
+      vtkImageCast *caster = vtkImageCast::New(); 
       caster->SetInput (converter->GetOutput());
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
     else if (data->description()==tr("itkDataImageUChar3")) {
@@ -152,7 +157,10 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
 
@@ -169,7 +177,10 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
 
@@ -186,7 +197,10 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
 
@@ -203,7 +217,10 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
 
@@ -220,7 +237,10 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
 
@@ -236,8 +256,11 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       caster->SetInput (converter->GetOutput());
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
-
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
 
@@ -254,7 +277,10 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
 
@@ -271,7 +297,10 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
 
@@ -288,37 +317,50 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
       
-      d->fuse->SetInput (channel, caster->GetOutput() );
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
     else if (data->description()==tr("vtkDataImage")) {
-
       vtkImageCast *caster = vtkImageCast::New();
       caster->SetInput ( dynamic_cast<vtkImageData*>( (vtkObject*)(data->data()) ) );
       caster->SetOutputScalarTypeToFloat ();
       caster->GetOutput()->Update();
-
-      d->fuse->SetInput (channel, caster->GetOutput());
+      
+      if (channel==0)
+          d->data1->setData ( caster->GetOutput() );
+      else if (channel==1)
+          d->data2->setData ( caster->GetOutput() );
       caster->Delete();
     }
     else
       return;
-    
-    if (channel==0)
-        d->data1 = data;
-    if (channel==1)
-        d->data2 = data;    
+
     
     if (d->data1 && d->data2 && d->view) {
-        d->fuse->Update();
-	//d->output->setData (d->fuse->GetOutput());
+
+      if (d->data1->xDimension()!=d->data2->xDimension() ||
+	  d->data1->yDimension()!=d->data2->yDimension() ||
+	  d->data1->zDimension()!=d->data2->zDimension()) {
+	dtkWarning() << "Dimensions mismatch";
+	return;
+      }
+
+      
+        d->fuse->SetInput (0, dynamic_cast<vtkImageData*>(static_cast<vtkObject*>(d->data1->data())) );
+	d->fuse->SetInput (1, dynamic_cast<vtkImageData*>(static_cast<vtkObject*>(d->data2->data())) );
+	
+	d->fuse->GetOutput()->SetUpdateExtentToWholeExtent();      
+        d->fuse->GetOutput()->Update();
 
 	if (d->data1->hasMetaData ("PatientName") && d->data2->hasMetaData ("PatientName"))
 	    d->output->addMetaData ("PatientName",
 				    tr("Fusion - ") +
 				    d->data1->metaDataValues("PatientName")[0] + "\n" +
 				    d->data2->metaDataValues("PatientName")[0]);
-	
+
         d->view->setData ( d->output );
     }
 }

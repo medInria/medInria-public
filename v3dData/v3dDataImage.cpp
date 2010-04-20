@@ -10,6 +10,7 @@
 #include <itkGDCMImageIOFactory.h>
 #include <itkVTKImageIOFactory.h>
 
+#include "vtkSmartPointer.h"
 #include <vtkImageData.h>
 #include <vtkMetaImageData.h>
 
@@ -20,7 +21,7 @@
 class v3dDataImagePrivate
 {
 public:
-    vtkImageData *image;
+    vtkSmartPointer<vtkImageData> image;
 };
 
 // /////////////////////////////////////////////////////////////////
