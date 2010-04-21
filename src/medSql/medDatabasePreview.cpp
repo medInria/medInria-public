@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Apr 21 09:36:09 2010 (+0200)
+ * Last-Updated: Wed Apr 21 11:36:22 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 121
+ *     Update #: 126
  */
 
 /* Commentary: 
@@ -238,6 +238,8 @@ void medDatabasePreview::onSeriesClicked(int id)
 
     if(!d->level)
         onSlideUp();
+    else
+        this->onMoveBg();
 }
 
 void medDatabasePreview::onSlideUp(void)
@@ -459,10 +461,12 @@ void medDatabasePreview::onMoveBg(void) // move to beginning of the current line
 
     medDatabasePreviewItem *target = NULL;
 
-    target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(10, 10));
+    target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(40, 40));
 
-    if(!target)
+    if(!target) {
+        d->selector->setPos(5, 5);
         return;
+    }
 
     d->current_index_patient = target->patientId();
     d->current_index_study   = target->studyId();
