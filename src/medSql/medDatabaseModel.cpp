@@ -486,7 +486,7 @@ void medDatabaseModel::populate(medDatabaseItem *root)
         QList<QVariant> ptData;
         ptData << d->data;
         ptData[0] = ptName;
-        ptData[ptData.count()-1] = ptId;
+        ptData[20] = ptId;
         medDatabaseItem *ptItem = new medDatabaseItem("patient", d->attributes, ptData, root);
 
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
@@ -520,7 +520,7 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                 
                 QList<QVariant> seData;
                 seData << d->data;
-                seData[d->data.count()-1] = seId;
+                seData[20] = seId;
                 seData[1] = stName;
                 seData[2] = seName;
                 seData[5] = seAge;
