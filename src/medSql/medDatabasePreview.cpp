@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sat Mar 20 20:37:56 2010 (+0100)
+ * Last-Updated: Wed Apr 21 09:36:09 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 119
+ *     Update #: 121
  */
 
 /* Commentary: 
@@ -196,6 +196,26 @@ void medDatabasePreview::onSeriesClicked(int id)
 
     if(query.first())
         patientId = query.value(0);
+    
+    // Series level
+
+    d->series_group->clear();
+    
+    query.prepare("SELECT id, name, thumbnail FROM series WHERE study = :id");
+    query.bindValue(":id", studyId);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    
+    while(query.next()) {
+        
+        QVariant   seId  = query.value(0);
+        QVariant seName  = query.value(1);
+        QVariant seThumb = query.value(2);
+        
+        d->series_group->addItem(new medDatabasePreviewItem(patientId.toInt(), studyId.toInt(), seId.toInt(), -1, seThumb.toString()));
+    }
+    
+    // Image level
 
     QVariant imageId;
     QVariant imageName;
