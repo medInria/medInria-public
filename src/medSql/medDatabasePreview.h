@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:06 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sat Mar 20 19:49:02 2010 (+0100)
+ * Last-Updated: Wed Apr 21 09:35:09 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 5
  */
 
 /* Commentary: 
@@ -40,8 +40,8 @@ public:
     void reset(void);
 
 signals:
-    void  seriesClicked(int id);
-    void   imageClicked(int id);
+    void seriesClicked(int id);
+    void  imageClicked(int id);
 
 public slots:
     void onPatientClicked(int id);
