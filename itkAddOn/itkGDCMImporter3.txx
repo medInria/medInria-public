@@ -311,6 +311,30 @@ namespace itk
     this->SetNumberOfRequiredInputs (0);
     this->SetNumberOfRequiredOutputs (0);
     this->SetNumberOfOutputs (0);
+
+    // Given a list of file names
+    
+    // A first sort will determine how many (4D) outputs the importer (IO)
+    // will have.
+    // Usually, one only discriminate patient name, study uid and series uid.
+    // Additionally, we discriminate different "Series Number", "Slice Thickness",
+    // "Rows", "Columns" and "Image Orientation Patient".
+    
+    // Indeed, multiple volumes in a single output will be stored in a  4D volume.
+    // Thus, one needs consistent slice thickness, orientation and slice XxY size.
+    
+    // A second sort will determine how many volumes each output
+    // will contain.
+    // We discriminate "Sequence name", "Trigger Time", "Diffusion B-factor",
+    // and  "Gradient Orientation". We might have to read private "shadowed"
+    // tags in order to get this last two values.
+    
+    // A third sort will order the slices of each volume according to  the data
+    // "Image Position Patient", with respect to the "Image Orientation patient"
+    // An exception should be thrown if several slices have the same position.
+    // If this occurs, it means the sorting process either in the first or
+    // second sort was not discriminant enough.
+    
     
     // 0010 0010 Patient name
     // we want to reconstruct an image from a single
@@ -329,10 +353,6 @@ namespace itk
     // A scout scan prior to a CT volume scan can share the same
     //   SeriesUID, but they will sometimes have a different Series Number
     this->m_FirstScanner.AddTag( gdcm::Tag(0x0020, 0x0011) );
-    // 0018 0024 Sequence Name
-    // For T1-map and phase-contrast MRA, the different flip angles and
-    //   directions are only distinguished by the Sequence Name
-    this->m_FirstScanner.AddTag( gdcm::Tag(0x0018, 0x0024) );
     // 0018 0050 Slice Thickness
     // On some CT systems, scout scans and subsequence volume scans will
     //   have the same SeriesUID and Series Number - YET the slice 
@@ -347,6 +367,10 @@ namespace itk
     // then it is difficult to reconstruct them into a 3D volume.
     this->m_FirstScanner.AddTag( gdcm::Tag(0x0028, 0x0011));
 
+    // 0018 0024 Sequence Name
+    // For T1-map and phase-contrast MRA, the different flip angles and
+    //   directions are only distinguished by the Sequence Name
+    this->m_SecondScanner.AddTag( gdcm::Tag(0x0018, 0x0024) );
     // 0018 9087 Diffusion B-Factor
     // If the 2D images in a sequence don't have the b-value,
     // then we separate the DWIs.
@@ -903,6 +927,7 @@ namespace itk
 	finished = 1;
     }
     finished = 0;
+    
     while(!finished)
     {
       std::string::size_type dot_pos = description.find("-");
