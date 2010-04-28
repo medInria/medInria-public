@@ -572,16 +572,23 @@ RegistrationFactory<TImage>
   this->UpdateProgress (0);
 
   typename WarpedImageType::Pointer gridimage = WarpedImageType::New();
-  gridimage->SetRegions( displacement->GetRequestedRegion() );
-  gridimage->SetOrigin(  displacement->GetOrigin() );
-  gridimage->SetSpacing( displacement->GetSpacing() );
+  /*
+    gridimage->SetRegions( displacement->GetRequestedRegion() );
+    gridimage->SetOrigin(  displacement->GetOrigin() );
+    gridimage->SetSpacing( displacement->GetSpacing() );
+    gridimage->SetDirection( displacement->GetDirection() );
+  */
+  gridimage->SetRegions( this->GetMovingImage()->GetRequestedRegion() );
+  gridimage->SetOrigin(  this->GetMovingImage()->GetOrigin() );
+  gridimage->SetSpacing( this->GetMovingImage()->GetSpacing() );
+  gridimage->SetDirection( this->GetMovingImage()->GetDirection() );
   gridimage->Allocate();
   gridimage->FillBuffer(0);
 
   typedef itk::ImageRegionIteratorWithIndex<WarpedImageType> GridImageIteratorWithIndex;
   GridImageIteratorWithIndex itergrid = GridImageIteratorWithIndex( gridimage, gridimage->GetRequestedRegion() );
 
-  typename WarpedImageType::SizeType size = displacement->GetLargestPossibleRegion().GetSize();
+  typename WarpedImageType::SizeType size = this->GetMovingImage()->GetLargestPossibleRegion().GetSize();
 
   unsigned int gridspacing[2];
   for (unsigned int i=0; i<2; i++)
@@ -606,6 +613,7 @@ RegistrationFactory<TImage>
   warper->SetInput( gridimage );
   warper->SetOutputSpacing( displacement->GetSpacing() );
   warper->SetOutputOrigin( displacement->GetOrigin() );
+  warper->SetOutputDirection( displacement->GetDirection() );
   warper->SetDeformationField( displacement );
 
   // instanciate callback to follow the warper
