@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Apr  6 21:37:54 2010 (+0200)
+## Last-Updated: Wed Apr 28 17:40:52 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 57
+##     Update #: 62
 ######################################################################
 ## 
 ### Commentary: 
@@ -83,3 +83,7 @@ endif(APPLE)
 install(TARGETS ${PROJECT_NAME}
    BUNDLE DESTINATION bin
   RUNTIME DESTINATION bin)
+
+if(APPLE)
+  install(CODE "execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)")
+endif(APPLE)
