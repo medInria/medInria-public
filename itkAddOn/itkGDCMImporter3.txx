@@ -351,7 +351,7 @@ namespace itk
     this->m_FirstScanner.AddTag( gdcm::Tag(0x20,0x37) ); // orientation
     // 0020 0011 Series Number
     // A scout scan prior to a CT volume scan can share the same
-    //   SeriesUID, but they will sometimes have a different Series Number
+    // SeriesUID, but they will sometimes have a different Series Number
     this->m_FirstScanner.AddTag( gdcm::Tag(0x0020, 0x0011) );
     // 0018 0050 Slice Thickness
     // On some CT systems, scout scans and subsequence volume scans will
@@ -379,13 +379,13 @@ namespace itk
     // If the 2D images in a sequence don't have the same gradient orientation,
     // then we separate the DWIs.
     this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x9089));
+    // 0018 1060 Trigger Time
+    this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x1060) );
     
     // 0020 0032 Position Patient
     this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x32) );  
     // 0020 0037 Orientation Patient
     this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x37) );
-    // 0018 1060 Trigger Time
-    this->m_ThirdScanner.AddTag( gdcm::Tag(0x18,0x1060) );
     
   }
 
@@ -437,8 +437,8 @@ namespace itk
     {
       
       // Second sort of the filenames.
-      // it will distinguish the gradient orientation, the b-value
-      // and the T2/ proton density (TODO)
+      // it will distinguish the gradient orientation, the b-value, trigger delay
+      // (and the T2/ proton density (TODO))
       FileListMapType mapi;
       try
       {
@@ -478,7 +478,8 @@ namespace itk
 	  // A hack to sort the images trigger-time-wise
 	  // In case of DWIs, no sort is done since
 	  // trigger times are similar
-	  FileListMapType mapijtimed = this->TimeSort (mapij);
+// 	  FileListMapType mapijtimed = this->TimeSort (mapij);
+	  FileListMapType mapijtimed = mapij;
 
 	  typename FileListMapType::iterator it3;
 	  std::string rootid = (*it2).first;
@@ -707,6 +708,9 @@ namespace itk
     }
 
     unsigned int nb_of_volumes = list.size() / sorted.size();
+
+    std::cout<<"Tertiary sort : "<<nb_of_volumes<<std::endl;
+    
     
     for (unsigned int i=0; i<nb_of_volumes; i++)
     {
