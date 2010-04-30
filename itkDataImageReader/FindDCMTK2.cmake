@@ -14,9 +14,16 @@
 # Written for VXL by Amitha Perera.
 # 
 
+UNSET(DCMTK_FOUND)
+
+# Construct consitent error messages for use below.
+SET(DCMTK_DIR_DESCRIPTION "directory containing DCMTK install files.  This is either the root of the build or install tree.")
+SET(DCMTK_DIR_MESSAGE "DCMTK not found.  Set the DCMTK_DIR cmake cache entry to the ${DCMTK_DIR_DESCRIPTION}")
+
 SET(DCMTK_DIR $ENV{DCMTK_DIR})
 
 FIND_PATH( DCMTK_root_INCLUDE_DIR dcmtk/config/osconfig.h
+  PATHS
   ${DCMTK_DIR}/include
 )
 
@@ -131,7 +138,7 @@ IF( DCMTK_root_INCLUDE_DIR
     AND DCMTK_dcmimgle_LIBRARY 
     AND DCMTK_dcmjpeg_LIBRARY )
 
-  SET( DCMTK_FOUND "YES" )
+  SET( DCMTK_FOUND 1)
 
   SET( DCMTK_INCLUDE_DIR
     ${DCMTK_root_INCLUDE_DIR}
@@ -187,7 +194,20 @@ ENDIF( DCMTK_root_INCLUDE_DIR
     AND DCMTK_dcmimgle_LIBRARY
     AND DCMTK_dcmjpeg_LIBRARY )
 
-IF( NOT DCMTK_FOUND )
-  SET( DCMTK_DIR "" CACHE PATH "Root of DCMTK source tree (optional)." )
-  MARK_AS_ADVANCED( DCMTK_DIR )
-ENDIF( NOT DCMTK_FOUND )
+#-----------------------------------------------------------------------------
+IF(DCMTK_FOUND)
+  
+ELSE(DCMTK_FOUND)
+
+  SET( DCMTK_DIR "" CACHE PATH ${DCMTK_DIR_MESSAGE} )
+  
+  # DCMTK not found, explain to the user how to specify its location.
+  IF(DCMTK2_FIND_REQUIRED)
+    MESSAGE(FATAL_ERROR ${DCMTK_DIR_MESSAGE})
+  ELSE(DCMTK2_FIND_REQUIRED)
+    IF(NOT DCMTK2_FIND_QUIETLY)
+      MESSAGE(STATUS ${DCMTK_DIR_MESSAGE})
+    ENDIF(NOT DCMTK2_FIND_QUIETLY)
+  ENDIF(DCMTK2_FIND_REQUIRED)
+  
+ENDIF(DCMTK_FOUND)
