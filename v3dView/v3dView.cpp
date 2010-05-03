@@ -22,6 +22,7 @@
 #include <vtkImageData.h>
 #include <vtkPointSet.h>
 #include <vtkTextProperty.h>
+#include <vtkImageMapToColors.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -479,8 +480,10 @@ void v3dView::reset(void)
 
 void v3dView::update(void)
 {
-    if( d->currentView )
+    if( d->currentView ) {
+      d->currentView->GetWindowLevel()->Modified();
         d->currentView->Render();
+    }
     d->vtkWidget->update();
 }
 
