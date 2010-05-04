@@ -19,7 +19,7 @@ class v3dViewFuseInteractorPrivate
 {
 public:
 
-  typedef float PixelType;
+  typedef short PixelType;
   typedef itk::Image<PixelType, 3> ImageType;
   typedef itk::WeightedAddImageFilter<ImageType, ImageType, ImageType>  BlendFilterType;
   typedef itk::CheckerBoardImageFilter<ImageType>                       CheckerboardFilterType;
@@ -30,6 +30,9 @@ public:
   dtkAbstractData *output;
 
   v3dView *view;
+
+  double alpha;
+  int    pattern;
   
   BlendFilterType::Pointer        blender;
   CheckerboardFilterType::Pointer checkerboarder;
@@ -38,20 +41,20 @@ public:
 
 v3dViewFuseInteractor::v3dViewFuseInteractor(): dtkAbstractViewInteractor(), d(new v3dViewFuseInteractorPrivate)
 {
-    d->data1 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageFloat3") );
-    d->data2 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageFloat3") );
+    d->data1 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageShort3") );
+    d->data2 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageShort3") );
     d->view = 0;
 
-    d->blender        = v3dViewFuseInteractorPrivate::BlendFilterType::New();
-    d->blender->SetAlpha (0.5);
+    d->alpha = 0.5;
+    d->pattern = 50;
     
-    d->checkerboarder = v3dViewFuseInteractorPrivate::CheckerboardFilterType::New();
+    d->blender        = 0; 
+    d->checkerboarder = 0;
     
-    d->output = dtkAbstractDataFactory::instance()->create("itkDataImageFloat3");
-    if (d->output)
-        d->output->setData( d->blender->GetOutput() );
+    d->output = dtkAbstractDataFactory::instance()->create("itkDataImageShort3");
 
-    this->addProperty("FusionStyle", QStringList() << "blend" << "checkerboard");
+    this->addProperty ("FusionStyle", QStringList() << "blend" << "checkerboard");
+    this->setProperty ("FusionStyle", "blend");
 }
 
 v3dViewFuseInteractor::~v3dViewFuseInteractor()
@@ -89,10 +92,12 @@ void v3dViewFuseInteractor::onPropertySet (QString key, QString value)
 void v3dViewFuseInteractor::onFusionStylePropertySet (QString value)
 {
     if (value=="blend")
-        d->output->setData( d->blender->GetOutput() );
+        if (!d->blender.IsNull())
+	    d->output->setData( d->blender->GetOutput() );
 
     if (value=="checkerboard")
-        d->output->setData( d->checkerboarder->GetOutput() );
+        if (!d->checkerboarder.IsNull())
+	    d->output->setData( d->checkerboarder->GetOutput() );
       
      if (d->view && d->data1 && d->data1->data() &&
 	 d->data2 && d->data2->data() )
@@ -101,26 +106,21 @@ void v3dViewFuseInteractor::onFusionStylePropertySet (QString value)
 
 void v3dViewFuseInteractor::onBlendAlphaValueSet (int value)
 {
-    d->blender->SetAlpha ( (double)value/100.0 );
-
-    if (d->view) {
-        d->view->update();
-    }
+    this->onBlendAlphaValueSet ( (double)value/100.0 );
 }
 
 void v3dViewFuseInteractor::onBlendAlphaValueSet (double value)
 {
-    d->blender->SetAlpha (value);
-    
-    if (d->view) {
-        d->view->update();
+    d->alpha = value;
+    if (!d->blender.IsNull()) {
+        d->blender->SetAlpha (value);
+	if (d->view)
+	    d->view->update();
     }
 }
 
 void v3dViewFuseInteractor::onCheckerboardDivisionCountValueSet (int value)
 {
-    v3dViewFuseInteractorPrivate::CheckerboardFilterType::PatternArrayType array;
-
     if (d->data1) {
       if ( value>d->data1->xDimension() )
 	value = d->data1->xDimension();
@@ -132,24 +132,24 @@ void v3dViewFuseInteractor::onCheckerboardDivisionCountValueSet (int value)
 	value = d->data1->zDimension();  
     }
 
-    for (int i=0; i<3; i++)
-        array[i] = value;
+    d->pattern = value;
 
-    d->checkerboarder->SetCheckerPattern (array);
+    if (!d->checkerboarder.IsNull()) {
+      
+        v3dViewFuseInteractorPrivate::CheckerboardFilterType::PatternArrayType array;
+	for (int i=0; i<3; i++)
+	    array[i] = value;
+
+	d->checkerboarder->SetCheckerPattern (array);
     
-    if (d->view)
-        d->view->update();
+	if (d->view)
+	    d->view->update();
+    }
 }
 
 void v3dViewFuseInteractor::onCheckerboardDivisionCountValueSet (double value)
 {
-    v3dViewFuseInteractorPrivate::CheckerboardFilterType::PatternArrayType array;
-    for (int i=0; i<3; i++)
-      array[i] = (int)(value*100.0);
-    d->checkerboarder->SetCheckerPattern (array);
-    
-    if (d->view)
-        d->view->update();
+    this->onCheckerboardDivisionCountValueSet ( (int)(value*100.0) );
 }
 
 void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
@@ -397,26 +397,36 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       return;
 
     
-    if (d->data1 && d->data2 && d->view) {
-
+    if (d->data1 && d->data1->data() &&
+	d->data2 && d->data2->data() &&
+	d->view) {
+      /*
       if (d->data1->xDimension()!=d->data2->xDimension() ||
 	  d->data1->yDimension()!=d->data2->yDimension() ||
 	  d->data1->zDimension()!=d->data2->zDimension()) {
 	dtkWarning() << "Dimensions mismatch";
 	return;
       }
-
+      */
 
         v3dViewFuseInteractorPrivate::ImageType::Pointer input1 = dynamic_cast<v3dViewFuseInteractorPrivate::ImageType*>(static_cast<itk::Object*>(d->data1->data()));
 	v3dViewFuseInteractorPrivate::ImageType::Pointer input2 = dynamic_cast<v3dViewFuseInteractorPrivate::ImageType*>(static_cast<itk::Object*>(d->data2->data()));
-      
+
+	d->blender = v3dViewFuseInteractorPrivate::BlendFilterType::New();
+	d->checkerboarder = v3dViewFuseInteractorPrivate::CheckerboardFilterType::New();
+	
         d->blender->SetInput1 ( input1 );
 	d->blender->SetInput2 ( input2 );
 	
 	d->checkerboarder->SetInput1 ( input1 );
 	d->checkerboarder->SetInput2 ( input2 );
 
-	v3dViewFuseInteractorPrivate::CheckerboardFilterType::PatternArrayType pattern = d->checkerboarder->GetCheckerPattern();
+	d->blender->SetAlpha ( d->alpha );
+	
+	v3dViewFuseInteractorPrivate::CheckerboardFilterType::PatternArrayType pattern;
+	for (int i=0; i<3; i++)
+	  pattern[i] = d->pattern;
+	
 	if ((int)pattern[0]>d->data1->xDimension() )
 	    pattern[0] = d->data1->xDimension();
 	if ((int)pattern[1]>d->data1->yDimension() )
@@ -426,6 +436,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 
 	d->checkerboarder->SetCheckerPattern ( pattern );
 
+
 	try {
 	    d->blender->Update();
 	    d->checkerboarder->Update();
@@ -434,13 +445,18 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	  qDebug() << e.GetDescription();
 	  return;
 	}
-
+	
 	if (d->data1->hasMetaData ("PatientName") && d->data2->hasMetaData ("PatientName"))
 	    d->output->addMetaData ("PatientName",
 				    tr("Fusion - ") +
 				    d->data1->metaDataValues("PatientName")[0] + "\n" +
 				    d->data2->metaDataValues("PatientName")[0]);
 
+	if (this->property ("FusionStyle")=="blend")
+	    d->output->setData ( d->blender->GetOutput());
+	else
+	    d->output->setData ( d->checkerboarder->GetOutput());
+	
         d->view->setData ( d->output );
     }
 }
