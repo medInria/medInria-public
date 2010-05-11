@@ -83,6 +83,15 @@ namespace itk
     std::string GetModel() const;
     std::string GetScanOptions() const;
 
+// new
+    std::string GetSeriesID() const;
+    std::string GetOrientation() const;
+    std::string GetSeriesNumber() const;
+    std::string GetSequenceName() const;
+    std::string GetSliceThickness() const;
+    std::string GetRows() const;
+    std::string GetColumns() const;
+
 
     const StringVectorType& GetOrderedFileNames (void) const
     { return m_OrderedFileNames; }

@@ -627,6 +627,32 @@ void v3dView::setData(dtkAbstractData *data)
 	    d->view3D->SetITKInput(image);
 	}
     }
+    else if (data->description()=="itkDataImageUShort4") {
+        if( itk::Image<unsigned short, 4>* image = dynamic_cast<itk::Image<unsigned short, 4>*>( (itk::Object*)( data->data() ) ) ) {
+	    itk::ExtractImageFilter< itk::Image<unsigned short, 4>, itk::Image<unsigned short, 3> >::Pointer extractor = itk::ExtractImageFilter< itk::Image<unsigned short, 4>, itk::Image<unsigned short, 3> >::New();
+	    itk::Image<unsigned short, 4>::SizeType size = image->GetLargestPossibleRegion().GetSize();
+	    itk::Image<unsigned short, 4>::IndexType index = {{0,0,0,0}};
+	    size[3] = 0;
+	    itk::Image<unsigned short, 4>::RegionType region;
+	    region.SetSize (size);
+	    region.SetIndex (index);
+	    
+	    extractor->SetExtractionRegion (region);
+	    extractor->SetInput ( image );
+	    try
+	    {
+	      extractor->Update();
+	    }
+	    catch (itk::ExceptionObject &e) {
+	      qDebug() << e.GetDescription();
+	      return;
+	    }
+	    d->view2DAxial->SetITKInput( extractor->GetOutput() );
+	    d->view2DSagittal->SetITKInput( extractor->GetOutput() );
+	    d->view2DCoronal->SetITKInput( extractor->GetOutput() );
+	    d->view3D->SetITKInput( extractor->GetOutput() );
+	}
+    }
     else if (data->description()=="itkDataImageInt3") {
         if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
 	    d->view2DAxial->SetITKInput(image);

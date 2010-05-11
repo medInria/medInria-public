@@ -202,7 +202,7 @@ namespace itk
     }
     else
       this->SetComponentType (UNKNOWNCOMPONENTTYPE);
-    
+
   }
   
   
@@ -247,8 +247,8 @@ namespace itk
       std::vector<double> gaps (imagePositions.size()-1, 0.0);
 
       vnl_vector<double> normal (3);
-      normal[0] = m_Direction[0][2];
-      normal[1] = m_Direction[1][2];
+      normal[0] = m_Direction[2][0];
+      normal[1] = m_Direction[2][1];
       normal[2] = m_Direction[2][2];
 
       double ref_gap = 9999.9; // choose ref_gap as minimum gap between slices
@@ -426,7 +426,7 @@ namespace itk
     columnDirection[0] = orientation[3];
     columnDirection[1] = orientation[4];
     columnDirection[2] = orientation[5];
-    
+
     vnl_vector<double> sliceDirection = vnl_cross_3d(rowDirection, columnDirection);
 
     this->SetDirection (0, rowDirection);
@@ -546,12 +546,21 @@ namespace itk
 	    std::istringstream is_stream ( vecSlice2.c_str() );
 	    is_stream >> sliceLocation;
 	  }
+	else  // instance number
+	{
+		std::string vecSlice3 = this->GetMetaDataValueString("(0020,0013)", fileIndex);
+		if (vecSlice3!="")
+		{
+			std::istringstream is_stream ( vecSlice3.c_str() );
+	    		is_stream >> sliceLocation;
+		}
 	  else // cannot find the sliceLocation information, then we rely on the order files were inputed.
 	  {
 	    sliceLocation = (double)fileIndex;
 	  }
 	}
-	
+	}
+
 	m_LocationSet.insert( sliceLocation );
 	m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *f ) );
 	m_FilenameToIndexMap[ *f ] = fileIndex;
@@ -710,7 +719,7 @@ namespace itk
       ++location;
       ++l;
     }
-    
+
   }
 
 
@@ -979,7 +988,7 @@ namespace itk
   
   std::string DCMTKImageIO::GetStudyID() const
   {
-    std::string name = this->GetMetaDataValueString ( "(0020,0010)", 0 );
+    std::string name = this->GetMetaDataValueString ( "(0020,000d)", 0 );
     return name;
   }
   
@@ -1054,8 +1063,49 @@ namespace itk
     std::string name = this->GetMetaDataValueString ( "(0018,0022)", 0 );
     return name;
   }
+
+  std::string DCMTKImageIO::GetSeriesID() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0020,000e)", 0 );
+    return name;
+  }
   
-  
+  std::string DCMTKImageIO::GetOrientation() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0020,0037)", 0 );
+    return name;
+  }
+
+  std::string DCMTKImageIO::GetSeriesNumber() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0020,0011)", 0 );
+    return name;
+  }
+
+  std::string DCMTKImageIO::GetSequenceName() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0018,0024)", 0 );
+    return name;
+  }
+
+  std::string DCMTKImageIO::GetSliceThickness() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0018,0050)", 0 );
+    return name;
+  }
+
+  std::string DCMTKImageIO::GetRows() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0028,0010)", 0 );
+    return name;
+  }
+
+  std::string DCMTKImageIO::GetColumns() const
+  {
+    std::string name = this->GetMetaDataValueString ( "(0028,0011)", 0 );
+    return name;
+  }  
+
   void 
   DCMTKImageIO
   ::SwapBytesIfNecessary( void* buffer, unsigned long numberOfPixels )
