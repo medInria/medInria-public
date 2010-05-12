@@ -85,25 +85,19 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
     if (this->m_lock)
         return;
 
-    //vtkImageView2D* view = vtkImageView2D::SafeDownCast (caller);
-    vtkInteractorStyleImageView2D *isi = vtkInteractorStyleImageView2D::SafeDownCast (caller);
-    /*
-    if (!view)
-        return;
-    */
-    if (!isi)
-        return;
-
-    //if (event == vtkImageView::CurrentPointChangedEvent) {
-        if(this->slider && this->view) {
-            unsigned int zslice = this->view->GetSlice();
-            this->slider->blockSignals (true);
-            this->slider->setValue (zslice);
+    // vtkImageView2D* view = vtkImageView2D::SafeDownCast (caller);
+    // if (vtkInteractorStyleImageView2D *isi = vtkInteractorStyleImageView2D::SafeDownCast (caller)) {
+      // if (event == vtkImageView::CurrentPointChangedEvent) {
+        if (this->slider && this->view) {
+	    unsigned int zslice = this->view->GetSlice();
+	    this->slider->blockSignals (true);
+	    this->slider->setValue (zslice);
 	    this->slider->update();
-            this->slider->blockSignals (false);
+	    this->slider->blockSignals (false);
 	    qApp->processEvents();
-        }
-	//}
+	}
+	// }
+	// }
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -476,6 +470,10 @@ void v3dView::reset(void)
 	return;
     
     d->collection->SyncReset();
+
+    // update slider position
+    if (d->currentView)
+        d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL);
 }
 
 void v3dView::update(void)
@@ -627,6 +625,32 @@ void v3dView::setData(dtkAbstractData *data)
 	    d->view2DSagittal->SetITKInput(image);
 	    d->view2DCoronal->SetITKInput(image);
 	    d->view3D->SetITKInput(image);
+	}
+    }
+    else if (data->description()=="itkDataImageUShort4") {
+        if( itk::Image<unsigned short, 4>* image = dynamic_cast<itk::Image<unsigned short, 4>*>( (itk::Object*)( data->data() ) ) ) {
+	    itk::ExtractImageFilter< itk::Image<unsigned short, 4>, itk::Image<unsigned short, 3> >::Pointer extractor = itk::ExtractImageFilter< itk::Image<unsigned short, 4>, itk::Image<unsigned short, 3> >::New();
+	    itk::Image<unsigned short, 4>::SizeType size = image->GetLargestPossibleRegion().GetSize();
+	    itk::Image<unsigned short, 4>::IndexType index = {{0,0,0,0}};
+	    size[3] = 0;
+	    itk::Image<unsigned short, 4>::RegionType region;
+	    region.SetSize (size);
+	    region.SetIndex (index);
+	    
+	    extractor->SetExtractionRegion (region);
+	    extractor->SetInput ( image );
+	    try
+	    {
+	      extractor->Update();
+	    }
+	    catch (itk::ExceptionObject &e) {
+	      qDebug() << e.GetDescription();
+	      return;
+	    }
+	    d->view2DAxial->SetITKInput( extractor->GetOutput() );
+	    d->view2DSagittal->SetITKInput( extractor->GetOutput() );
+	    d->view2DCoronal->SetITKInput( extractor->GetOutput() );
+	    d->view3D->SetITKInput( extractor->GetOutput() );
 	}
     }
     else if (data->description()=="itkDataImageInt3") {
@@ -864,6 +888,9 @@ void v3dView::onOrientationPropertySet(QString value)
 
     // force a correct display of the 2D axis for planar views
     d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL);
+
+    // update slider position
+    d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL);
 }
 
 void v3dView::onModePropertySet (QString value)
