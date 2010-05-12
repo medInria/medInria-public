@@ -105,7 +105,7 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
 
     for(; it!=seriesFilenames.end(); it++) {
 
-        dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort4");
+        dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("itkDataImageShort4"); // to be compatible with all dicoms
 	
 	if (!data) {
 	    std::cerr << "Cannot create data object from plugin" << std::endl;
