@@ -22,6 +22,7 @@
 #include <vtkImageData.h>
 #include <vtkPointSet.h>
 #include <vtkTextProperty.h>
+#include <vtkImageMapToColors.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -84,25 +85,19 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
     if (this->m_lock)
         return;
 
-    //vtkImageView2D* view = vtkImageView2D::SafeDownCast (caller);
-    vtkInteractorStyleImageView2D *isi = vtkInteractorStyleImageView2D::SafeDownCast (caller);
-    /*
-    if (!view)
-        return;
-    */
-    if (!isi)
-        return;
-
-    //if (event == vtkImageView::CurrentPointChangedEvent) {
-        if(this->slider && this->view) {
-            unsigned int zslice = this->view->GetSlice();
-            this->slider->blockSignals (true);
-            this->slider->setValue (zslice);
+    // vtkImageView2D* view = vtkImageView2D::SafeDownCast (caller);
+    // if (vtkInteractorStyleImageView2D *isi = vtkInteractorStyleImageView2D::SafeDownCast (caller)) {
+      // if (event == vtkImageView::CurrentPointChangedEvent) {
+        if (this->slider && this->view) {
+	    unsigned int zslice = this->view->GetSlice();
+	    this->slider->blockSignals (true);
+	    this->slider->setValue (zslice);
 	    this->slider->update();
-            this->slider->blockSignals (false);
+	    this->slider->blockSignals (false);
 	    qApp->processEvents();
-        }
-	//}
+	}
+	// }
+	// }
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -475,12 +470,18 @@ void v3dView::reset(void)
 	return;
     
     d->collection->SyncReset();
+
+    // update slider position
+    if (d->currentView)
+        d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL);
 }
 
 void v3dView::update(void)
 {
-    if( d->currentView )
+    if( d->currentView ) {
+      d->currentView->GetWindowLevel()->Modified();
         d->currentView->Render();
+    }
     d->vtkWidget->update();
 }
 
@@ -861,6 +862,9 @@ void v3dView::onOrientationPropertySet(QString value)
 
     // force a correct display of the 2D axis for planar views
     d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL);
+
+    // update slider position
+    d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL);
 }
 
 void v3dView::onModePropertySet (QString value)

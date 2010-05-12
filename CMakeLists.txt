@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Mon Sep 21 14:48:02 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Apr  6 21:51:10 2010 (+0200)
+## Last-Updated: Wed Apr 28 18:18:03 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 22
+##     Update #: 23
 ######################################################################
 ## 
 ### Commentary: 
@@ -21,11 +21,11 @@ cmake_minimum_required(VERSION 2.8.1)
 
 project(medular-plugins)
 
-enable_testing()
-
 ## #################################################################
 ## Dashboard settings
 ## #################################################################
+
+enable_testing()
 
 mark_as_advanced(DART_ROOT)
 
