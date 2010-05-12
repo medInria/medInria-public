@@ -26,7 +26,15 @@
 
 #include "v3dViewPluginExport.h"
 
-class V3DVIEWPLUGIN_EXPORT v3dFiberBundle : public vtkObject
+#ifdef WIN32
+  #ifdef VTK_BUILD_SHARED
+    #define V3DFIBERBUNDLE_EXPORT V3DVIEWPLUGIN_EXPORT
+  #else
+    #define V3DFIBERBUNDLE_EXPORT
+  #endif
+#endif
+
+class V3DFIBERBUNDLE_EXPORT v3dFiberBundle : public vtkObject
 {
  public:
 
