@@ -55,7 +55,7 @@ void medDatabaseImporter::run(void)
 
     QStringList fileList;
     if (dir.exists()) {
-        QDirIterator directory_walker(file, QDir::Files | QDir::Hidden, QDirIterator::Subdirectories);
+        QDirIterator directory_walker(file, QDir::Files, QDirIterator::Subdirectories);
 	while (directory_walker.hasNext()) {
 	    fileList << directory_walker.next();
 	}
@@ -153,8 +153,8 @@ void medDatabaseImporter::run(void)
 	// we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
 	QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
 	if (!keyToInt.contains(key)) {
-		keyToInt[key] = currentIndex;
-		currentIndex++;
+	    keyToInt[key] = currentIndex;
+	    currentIndex++;
 	}
 
 	QSqlQuery query(*(medDatabaseController::instance()->database()));
@@ -239,8 +239,6 @@ void medDatabaseImporter::run(void)
 
     for (it; it!=imagesToWriteMap.end(); it++) {
 
-	qDebug() << it.value();
-
         emit progressed(((qreal)imageIndex/(qreal)imagesCount)*50.0 + 50.0);
 
         imageIndex++;
@@ -272,49 +270,30 @@ void medDatabaseImporter::run(void)
             		    imData->addMetaData("StudyID", QStringList() << "");
 	
 			if(!imData->hasMetaData("SeriesID"))
-            			imData->addMetaData("SeriesID", QStringList() << "");
+			    imData->addMetaData("SeriesID", QStringList() << "");
 
 			if(!imData->hasMetaData("Orientation"))
-            			imData->addMetaData("Orientation", QStringList() << "");
+			    imData->addMetaData("Orientation", QStringList() << "");
 
 			if(!imData->hasMetaData("SeriesNumber"))
-            			imData->addMetaData("SeriesNumber", QStringList() << "");
+			    imData->addMetaData("SeriesNumber", QStringList() << "");
 
 			if(!imData->hasMetaData("SequenceName"))
-            			imData->addMetaData("SequenceName", QStringList() << "");
+			    imData->addMetaData("SequenceName", QStringList() << "");
 
 			if(!imData->hasMetaData("SliceThickness"))
-            			imData->addMetaData("SliceThickness", QStringList() << "");
+			    imData->addMetaData("SliceThickness", QStringList() << "");
 
 			if(!imData->hasMetaData("Rows"))
-            			imData->addMetaData("Rows", QStringList() << "");
+			    imData->addMetaData("Rows", QStringList() << "");
 	
 			if(!imData->hasMetaData("Columns"))
-            			imData->addMetaData("Columns", QStringList() << "");
-
-/*
-			else {
-				QString patientName = imData->metaDataValues(tr("PatientName"))[0];
-				QString studyId = imData->metaDataValues(tr("StudyID"))[0];
-				QString seriesId = imData->metaDataValues(tr("SeriesID"))[0];
-				QString orientation = imData->metaDataValues(tr("Orientation"))[0];
-				QString seriesNumber = imData->metaDataValues(tr("SeriesNumber"))[0];
-				QString sequenceName = imData->metaDataValues(tr("SequenceName"))[0];
-				QString sliceThickness = imData->metaDataValues(tr("SliceThickness"))[0];
-				QString rows = imData->metaDataValues(tr("Rows"))[0];
-				QString columns = imData->metaDataValues(tr("Columns"))[0];
-
-				QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
-				QString uniqueSeriesId;
-				uniqueSeriesId.setNum(keyToInt[key]);
-
-				QString seriesName = imData->metaDataValues(tr("SeriesDescription"))[0];
-				seriesName += tr("_")+uniqueSeriesId;
-				imData->setMetaData("SeriesDescription", QStringList() << seriesName);
-			}*/
+			    imData->addMetaData("Columns", QStringList() << "");
 
                         imData->addMetaData ("FileName", it.key() );
+			
                         delete dataReader;
+			
                         break;
                     }
                 }
@@ -342,7 +321,6 @@ void medDatabaseImporter::run(void)
             if (dataWriter->canWrite( it.key() )) {
                 if (dataWriter->write( it.key() )) {
                     dtkDataList.push_back (imData);
-		    qDebug()<< "Wrote: " << it.key();
                     delete dataWriter;
                     break;
                 }
@@ -525,18 +503,18 @@ void medDatabaseImporter::run(void)
 	    else {
 
 	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
-			query.bindValue(":series", id);
-			query.bindValue(":size", 64);
-			query.bindValue(":name", fileInfo.fileName());
-			query.bindValue(":path", fileInfo.filePath());
-			query.bindValue(":instance_path", seriesPath);
-			if (j<thumbPaths.count())
-				query.bindValue(":thumbnail", thumbPaths[j]);
-			else
-				query.bindValue(":thumbnail", "");
+		query.bindValue(":series", id);
+		query.bindValue(":size", 64);
+		query.bindValue(":name", fileInfo.fileName());
+		query.bindValue(":path", fileInfo.filePath());
+		query.bindValue(":instance_path", seriesPath);
+		if (j<thumbPaths.count())
+		    query.bindValue(":thumbnail", thumbPaths[j]);
+		else
+		    query.bindValue(":thumbnail", "");
 		
-			if(!query.exec())
-				qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+		if(!query.exec())
+		    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	    }
 	}
 
