@@ -48,6 +48,10 @@ namespace itk
     typedef std::set< double >                           SliceLocationSetType;
     typedef std::set< std::string >                      NameSetType;
     typedef std::multimap< double, std::string >         SliceLocationToNamesMultiMapType;
+
+
+    static double MAXIMUM_GAP;
+    
     
     bool CanReadFile(const char*);
     

@@ -42,7 +42,9 @@
 
 namespace itk
 {
-  
+
+  double DCMTKImageIO::MAXIMUM_GAP = 999999;
+    
   DCMTKImageIO::DCMTKImageIO()
   {
     this->SetNumberOfDimensions(3);
@@ -98,6 +100,24 @@ namespace itk
     {
       return false;
     }
+
+    // search for mandatory tags
+    DcmStack stack;
+    DcmTagKey searchKey;
+    unsigned int group = 0x0028; // samples per pixel
+    unsigned int elem  = 0x0002; // samples per pixel
+    
+    searchKey.set(group, elem);    
+    if (dicomFile.search(searchKey, stack, ESM_fromHere, OFTrue) != EC_Normal)
+      return false;
+
+    group = 0x0028; // pixel type
+    elem  = 0x0100; // pixel type
+    searchKey.set(group, elem);    
+    if (dicomFile.search(searchKey, stack, ESM_fromHere, OFTrue) != EC_Normal)
+      return false;
+    
+    
     return true;
   }
 
@@ -251,7 +271,7 @@ namespace itk
       normal[1] = m_Direction[2][1];
       normal[2] = m_Direction[2][2];
 
-      double ref_gap = 9999.9; // choose ref_gap as minimum gap between slices
+      double ref_gap = MAXIMUM_GAP; // choose ref_gap as minimum gap between slices
       for (unsigned int i=1; i<imagePositions.size(); i++)
       {
 	std::istringstream is_stream1( imagePositions[i-1].c_str() );
@@ -288,7 +308,10 @@ namespace itk
 	  ; //itkWarningMacro (<< "Inconsistency in slice spacing: " << ref_gap << " " << gaps[i]);
 	}
       }
-      m_Spacing[2] = total_gap/(double)(gapCount);
+      if (total_gap==MAXIMUM_GAP)
+	m_Spacing[2] = 1.0;
+      else
+	m_Spacing[2] = total_gap/(double)(gapCount);
     }
     else // rely on the SpacingBetweenSlices tag
     {
@@ -432,17 +455,6 @@ namespace itk
     this->SetDirection (0, rowDirection);
     this->SetDirection (1, columnDirection);
     this->SetDirection (2, sliceDirection);
-    /*
-      m_Direction[0][0] = orientation[0];
-      m_Direction[0][1] = orientation[1];
-      m_Direction[0][2] = orientation[2];
-      m_Direction[1][0] = orientation[3];
-      m_Direction[1][1] = orientation[4];
-      m_Direction[1][2] = orientation[5];
-      m_Direction[2][0] = sliceDirection[0];
-      m_Direction[2][1] = sliceDirection[1];
-      m_Direction[2][2] = sliceDirection[2];
-    */
     
     if( this->GetNumberOfDimensions()==4 )
     {
@@ -548,12 +560,12 @@ namespace itk
 	  }
 	else  // instance number
 	{
-		std::string vecSlice3 = this->GetMetaDataValueString("(0020,0013)", fileIndex);
-		if (vecSlice3!="")
-		{
-			std::istringstream is_stream ( vecSlice3.c_str() );
-	    		is_stream >> sliceLocation;
-		}
+	  std::string vecSlice3 = this->GetMetaDataValueString("(0020,0013)", fileIndex);
+	  if (vecSlice3!="")
+	  {
+	    std::istringstream is_stream ( vecSlice3.c_str() );
+	    is_stream >> sliceLocation;
+	  }
 	  else // cannot find the sliceLocation information, then we rely on the order files were inputed.
 	  {
 	    sliceLocation = (double)fileIndex;

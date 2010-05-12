@@ -31,12 +31,6 @@ mark_as_advanced(DART_ROOT)
 
 include(Dart)
 
-set(CXX_TEST_PATH        ${RUNTIME_OUTPUT_PATH})
-set(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH})
-if(MSVC)
-set(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH}/Release)
-endif(MSVC)
-
 ## #################################################################
 ## Input
 ## #################################################################

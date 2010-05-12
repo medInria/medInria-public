@@ -251,14 +251,14 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       QStringList studyName;
       QStringList seriesName;
 
-	QStringList studyId;
-	QStringList seriesId;
-	QStringList orientation;
-	QStringList seriesNumber;
-	QStringList sequenceName;
-	QStringList sliceThickness;
-	QStringList rows;
-	QStringList columns;
+      QStringList studyId;
+      QStringList seriesId;
+      QStringList orientation;
+      QStringList seriesNumber;
+      QStringList sequenceName;
+      QStringList sliceThickness;
+      QStringList rows;
+      QStringList columns;
 
       QStringList filePaths;
       
@@ -266,14 +266,14 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       studyName << d->io->GetStudyDescription().c_str();
       seriesName << d->io->GetSeriesDescription().c_str();
 
-	studyId << d->io->GetStudyID().c_str();
-	seriesId << d->io->GetSeriesID().c_str();
-	orientation << d->io->GetOrientation().c_str();
-	seriesNumber << d->io->GetSeriesNumber().c_str();
-	sequenceName << d->io->GetSequenceName().c_str();
-	sliceThickness << d->io->GetSliceThickness().c_str();
-	rows << d->io->GetRows().c_str();
-	columns << d->io->GetColumns().c_str();
+      studyId << d->io->GetStudyID().c_str();
+      seriesId << d->io->GetSeriesID().c_str();
+      orientation << d->io->GetOrientation().c_str();
+      seriesNumber << d->io->GetSeriesNumber().c_str();
+      sequenceName << d->io->GetSequenceName().c_str();
+      sliceThickness << d->io->GetSliceThickness().c_str();
+      rows << d->io->GetRows().c_str();
+      columns << d->io->GetColumns().c_str();
 
 
       for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++ )
@@ -294,14 +294,14 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       else
 	dtkdata->setMetaData ( "SeriesDescription", seriesName );
 
-dtkdata->setMetaData("StudyID", studyId);
-dtkdata->setMetaData("SeriesID", seriesId);
-dtkdata->setMetaData("Orientation", orientation);
-dtkdata->setMetaData("SeriesNumber", seriesNumber);
-dtkdata->setMetaData("SequenceName", sequenceName);
-dtkdata->setMetaData("SliceThickness", sliceThickness);
-dtkdata->setMetaData("Rows", rows);
-dtkdata->setMetaData("Columns", columns);
+      dtkdata->setMetaData("StudyID", studyId);
+      dtkdata->setMetaData("SeriesID", seriesId);
+      dtkdata->setMetaData("Orientation", orientation);
+      dtkdata->setMetaData("SeriesNumber", seriesNumber);
+      dtkdata->setMetaData("SequenceName", sequenceName);
+      dtkdata->setMetaData("SliceThickness", sliceThickness);
+      dtkdata->setMetaData("Rows", rows);
+      dtkdata->setMetaData("Columns", columns);
 
 
       dtkdata->addMetaData ("FilePaths", filePaths);
