@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:42:32 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Mar 18 23:17:30 2010 (+0100)
+ * Last-Updated: Wed May 12 15:25:04 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 32
+ *     Update #: 37
  */
 
 /* Commentary: 
@@ -179,7 +179,7 @@ void medDatabaseImporter::run(void)
 	if(query.first()) {
             id = query.value(0);
 
-            query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND studyID = :studyID");
+            query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :studyID");
             query.bindValue(":id", id);
             query.bindValue(":name", studyName);
 	    query.bindValue(":studyID", studyId);
@@ -189,7 +189,7 @@ void medDatabaseImporter::run(void)
             if(query.first()) {
                 id = query.value(0);
 
-                query.prepare("SELECT id FROM series WHERE study = :id AND name = :name AND seriesID = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
+                query.prepare("SELECT id FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
                 query.bindValue(":id", id);
                 query.bindValue(":name", seriesName);
 		query.bindValue(":seriesID", seriesId);
@@ -407,7 +407,7 @@ void medDatabaseImporter::run(void)
 	
 	////////////////////////////////////////////////////////////////// STUDY
 
-	query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND studyID = :studyID");
+	query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :studyID");
 	query.bindValue(":id", id);
 	query.bindValue(":name", studyName);
 	query.bindValue(":studyID", studyId);
@@ -419,7 +419,7 @@ void medDatabaseImporter::run(void)
             //studyPath = patientPath + "/" + QString().setNum (id.toInt());
 	}
 	else {
-            query.prepare("INSERT INTO study (patient, name, studyID, thumbnail) VALUES (:patient, :study, :studyID, :thumbnail)");
+            query.prepare("INSERT INTO study (patient, name, uid, thumbnail) VALUES (:patient, :study, :studyID, :thumbnail)");
             query.bindValue(":patient", id);
             query.bindValue(":study", studyName);
 	    query.bindValue(":studyID", studyId);
@@ -440,7 +440,7 @@ void medDatabaseImporter::run(void)
 	
 	///////////////////////////////////////////////////////////////// SERIES
 	
-	query.prepare("SELECT * FROM series WHERE study = :id AND name = :name AND seriesID = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
+	query.prepare("SELECT * FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
         query.bindValue(":id", id);
         query.bindValue(":name", seriesName);
 	query.bindValue(":seriesID", seriesId);
@@ -464,7 +464,7 @@ void medDatabaseImporter::run(void)
 	}
 	else {
 
-            query.prepare("INSERT INTO series (study, size, name, path, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age) VALUES (:study, :size, :name, :path, :seriesID, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :thumbnail, :age)");
+            query.prepare("INSERT INTO series (study, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age) VALUES (:study, :size, :name, :path, :seriesID, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :thumbnail, :age)");
             query.bindValue(":study", id);
             query.bindValue(":size", 1);
             query.bindValue(":name", seriesName);

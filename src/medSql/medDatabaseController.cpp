@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Mar 18 23:15:25 2010 (+0100)
+ * Last-Updated: Wed May 12 15:06:57 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 124
+ *     Update #: 125
  */
 
 /* Commentary: 
@@ -296,7 +296,7 @@ void medDatabaseController::createStudyTable(void)
             " id        INTEGER      PRIMARY KEY,"
             " patient   INTEGER," // FOREIGN KEY
             " name         TEXT,"
-	    " studyID      TEXT,"
+	    " uid          TEXT,"
             " thumbnail    TEXT"
             ");"
             );
@@ -311,7 +311,7 @@ void medDatabaseController::createSeriesTable(void)
             " study    INTEGER," // FOREIGN KEY
             " size     INTEGER,"
             " name           TEXT,"
-	    " seriesID       TEXT,"
+	    " uid            TEXT,"
             " orientation    TEXT,"
             " seriesNumber   TEXT,"
             " sequenceName   TEXT,"
