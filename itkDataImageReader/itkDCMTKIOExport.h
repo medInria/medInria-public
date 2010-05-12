@@ -1,7 +1,7 @@
 #ifndef ITKDCMTKIOEXPORT_H
 #define ITKDCMTKIOEXPORT_H
 
-#ifdef WIN32
+#if defined(WIN32) && defined(ITK_BUILD_SHARED)
     #ifdef ITKDCMTKIO_EXPORTS
         #define ITKDCMTKIO_EXPORT __declspec(dllexport) 
     #else
