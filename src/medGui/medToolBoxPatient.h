@@ -38,9 +38,11 @@ public:
     void clear(void);
 
     int patientIndex(void);
+    int patientIndex(QString patient);
 
 signals:
     void patientIndexChanged(int);
+    void quickOpenImage(void);
 
 public slots:
     void setPatientIndex(int);

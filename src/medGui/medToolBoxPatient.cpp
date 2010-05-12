@@ -24,7 +24,8 @@
 class medToolBoxPatientPrivate
 {
 public:
-    QComboBox *combo;
+    QComboBox   *combo;
+    QPushButton *quickopenButton;
 };
 
 medToolBoxPatient::medToolBoxPatient(QWidget *parent) : medToolBox(parent), d(new medToolBoxPatientPrivate)
@@ -34,13 +35,17 @@ medToolBoxPatient::medToolBoxPatient(QWidget *parent) : medToolBox(parent), d(ne
     d->combo = new QComboBox(central);
     d->combo->setFocusPolicy(Qt::NoFocus);
 
-    QHBoxLayout *layout = new QHBoxLayout(central);
+    d->quickopenButton = new QPushButton ("Quick open patient image", central);
+
+    QVBoxLayout *layout = new QVBoxLayout(central);
     layout->addWidget(d->combo);
+    layout->addWidget(d->quickopenButton);
 
     this->setTitle("Patient");
     this->setWidget(central);
 
-    connect(d->combo, SIGNAL(currentIndexChanged(int)), this, SIGNAL(patientIndexChanged(int)));
+    connect(d->combo,           SIGNAL(currentIndexChanged(int)), this, SIGNAL(patientIndexChanged(int)));
+    connect(d->quickopenButton, SIGNAL(clicked()),                this, SIGNAL(quickOpenImage()));
 }
 
 medToolBoxPatient::~medToolBoxPatient(void)
@@ -68,6 +73,11 @@ void medToolBoxPatient::clear(void)
 int medToolBoxPatient::patientIndex(void)
 {
     return d->combo->currentIndex();
+}
+
+int medToolBoxPatient::patientIndex(QString patient)
+{
+    return d->combo->findText (patient);
 }
 
 void medToolBoxPatient::setPatientIndex(int index)
