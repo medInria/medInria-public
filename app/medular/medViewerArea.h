@@ -56,6 +56,8 @@ public slots:
 
     void onViewFocused(dtkAbstractView *view);
 
+    void onQuickOpenFileButtonClicked (void);
+
 public slots: // layout settings
     void setStackIndex(int index);
 

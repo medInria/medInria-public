@@ -84,7 +84,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->patientToolBox = new medToolBoxPatient(this);
 
     connect(d->patientToolBox, SIGNAL(patientIndexChanged(int)), this, SLOT(onPatientIndexChanged(int)));
-
+    connect(d->patientToolBox, SIGNAL(quickOpenImage()),         this, SLOT (onQuickOpenFileButtonClicked()));
+    
     // -- Configuration toolbox --
 
     d->configurationToolBox = new medToolBoxConfiguration(this);
@@ -127,7 +128,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(setupLayoutCompare()));
     connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()), this, SLOT(setupLayoutFuse()));
-    
+
     // Setting up toolbox container
 
     d->toolbox_container = new medToolBoxContainer(this);
@@ -313,11 +314,15 @@ void medViewerArea::open(const medDataIndex& index)
 
 void medViewerArea::onPatientIndexChanged(int id)
 {
+  // comment out the following lines to allow quick open file (no index in database in this case)
+  /*
     medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
 
     if(!index.isValid())
-        return;
+        return;      
+  */
 
+  
     // Setup view container
 
     medViewerAreaStack *view_stack;
@@ -371,12 +376,91 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     d->diffusionToolBox->update(view);
 }
 
+void medViewerArea::onQuickOpenFileButtonClicked()
+{
+
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), tr(""), tr("Image Files (*.*)"));
+    if (fileName.isEmpty())
+        return;
+
+    QFileInfo fileInfo ( fileName );
+    
+    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
+    
+    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
+    dtkAbstractData* data = 0;
+    
+    for (int i=0; i<readers.size(); i++) {
+        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+	if (dataReader->canRead( fileInfo.filePath() )) {
+	    dataReader->read( fileInfo.filePath() );
+	    data = dataReader->data();
+	    delete dataReader;
+	    break;
+	}
+    }
+
+    if (!data) {
+        qDebug() << "Cannot read data";
+	return;
+    }
+    
+    
+    int id = d->patientToolBox->patientIndex (fileInfo.baseName());
+    if (id==-1) {
+      d->patientToolBox->addItem (fileInfo.baseName());
+      id = d->patientToolBox->patientIndex (fileInfo.baseName());
+    }
+    
+    if (id==-1)
+        return;
+    
+    d->patientToolBox->setPatientIndex ( id );
+    
+
+    medViewerAreaStack *view_stack;
+    if (!d->view_stacks.contains (id)) {
+        view_stack = new medViewerAreaStack(this);
+	view_stack->setPatientId (id);
+	//connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
+	connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
+	d->view_stacks.insert(id, view_stack);
+	d->stack->addWidget(view_stack);
+    }
+    else
+        view_stack = d->view_stacks.value (id);
+
+    
+    d->stack->setCurrentWidget(view_stack);
+    view_stack->current()->setFocus(); // needs focus to set s_current to correct ViewContainer
+
+
+    dtkAbstractView *view = 0;
+
+    view = view_stack->current()->current()->view();
+
+    if (!view)    
+        view = dtkAbstractViewFactory::instance()->create("v3dView");
+    
+    if (!view)
+        return;
+
+    view->setData (data);
+    view->reset();
+    
+    view_stack->current()->current()->setView(view);
+    view_stack->current()->current()->setFocus(Qt::MouseFocusReason);
+
+    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
+}
+
 // layout settings
 
 void medViewerArea::setStackIndex(int index)
 {
     if (d->view_stacks.count())
-        d->view_stacks.value(d->patientToolBox->patientIndex())->setCurrentIndex(index);
+        if (d->view_stacks.value(d->patientToolBox->patientIndex()))
+	    d->view_stacks.value(d->patientToolBox->patientIndex())->setCurrentIndex(index);
 }
 
 // view settings
