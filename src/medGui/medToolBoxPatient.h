@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 09:46:15 2010 (+0100)
+ * Last-Updated: Thu May 13 15:14:48 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 18
+ *     Update #: 19
  */
 
 /* Commentary: 
@@ -42,7 +42,6 @@ public:
 
 signals:
     void patientIndexChanged(int);
-    void quickOpenImage(void);
 
 public slots:
     void setPatientIndex(int);

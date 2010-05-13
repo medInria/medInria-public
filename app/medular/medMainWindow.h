@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Mar 22 15:22:53 2010 (+0100)
+ * Last-Updated: Thu May 13 16:35:43 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 22
+ *     Update #: 23
  */
 
 /* Commentary: 
@@ -50,6 +50,8 @@ public slots:
     void onPatientDoubleClicked(const QModelIndex &index);
     void onStudyDoubleClicked(const QModelIndex &index);
     void onSeriesDoubleClicked(const QModelIndex &index);
+
+    void open(const QString& file);
 
 protected:
     void closeEvent(QCloseEvent *event);

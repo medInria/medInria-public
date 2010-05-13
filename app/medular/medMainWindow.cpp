@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Mar 22 15:26:36 2010 (+0100)
+ * Last-Updated: Thu May 13 16:36:33 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 367
+ *     Update #: 375
  */
 
 /* Commentary: 
@@ -158,6 +158,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->browserArea->view(), SIGNAL(patientDoubleClicked(const QModelIndex&)), this, SLOT(onPatientDoubleClicked (const QModelIndex&)));
     connect(d->browserArea->view(), SIGNAL(studyDoubleClicked(const QModelIndex&)), this, SLOT(onStudyDoubleClicked (const QModelIndex&)));
     connect(d->browserArea->view(), SIGNAL(seriesDoubleClicked(const QModelIndex&)), this, SLOT(onSeriesDoubleClicked (const QModelIndex&)));
+
+    connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
 
     // Setting up core python module
 
@@ -426,6 +428,13 @@ void medMainWindow::onSeriesDoubleClicked(const QModelIndex &index)
     this->update();
     
     d->viewerArea->setSeriesIndex(index.row()+1);
+}
+
+void medMainWindow::open(const QString& file)
+{
+    d->viewerArea->open(file);
+
+    this->switchToViewerArea();
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)

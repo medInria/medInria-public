@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 22:57:27 2010 (+0100)
+ * Last-Updated: Thu May 13 15:16:23 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 33
+ *     Update #: 37
  */
 
 /* Commentary: 
@@ -24,8 +24,7 @@
 class medToolBoxPatientPrivate
 {
 public:
-    QComboBox   *combo;
-    QPushButton *quickopenButton;
+    QComboBox *combo;
 };
 
 medToolBoxPatient::medToolBoxPatient(QWidget *parent) : medToolBox(parent), d(new medToolBoxPatientPrivate)
@@ -35,17 +34,13 @@ medToolBoxPatient::medToolBoxPatient(QWidget *parent) : medToolBox(parent), d(ne
     d->combo = new QComboBox(central);
     d->combo->setFocusPolicy(Qt::NoFocus);
 
-    d->quickopenButton = new QPushButton ("Quick open patient image", central);
-
     QVBoxLayout *layout = new QVBoxLayout(central);
     layout->addWidget(d->combo);
-    layout->addWidget(d->quickopenButton);
 
     this->setTitle("Patient");
     this->setWidget(central);
 
-    connect(d->combo,           SIGNAL(currentIndexChanged(int)), this, SIGNAL(patientIndexChanged(int)));
-    connect(d->quickopenButton, SIGNAL(clicked()),                this, SIGNAL(quickOpenImage()));
+    connect(d->combo, SIGNAL(currentIndexChanged(int)), this, SIGNAL(patientIndexChanged(int)));
 }
 
 medToolBoxPatient::~medToolBoxPatient(void)
@@ -77,7 +72,7 @@ int medToolBoxPatient::patientIndex(void)
 
 int medToolBoxPatient::patientIndex(QString patient)
 {
-    return d->combo->findText (patient);
+    return d->combo->findText(patient);
 }
 
 void medToolBoxPatient::setPatientIndex(int index)

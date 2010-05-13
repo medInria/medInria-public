@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu May 13 14:14:30 2010 (+0200)
+ * Last-Updated: Thu May 13 16:26:10 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 74
+ *     Update #: 78
  */
 
 /* Commentary: 
@@ -48,6 +48,7 @@ public slots:
     void split(int rows, int cols);
 
     void open(const medDataIndex& index);
+    void open(const QString& file);
 
     void onPatientIndexChanged(int index);
     void   onStudyIndexChanged(int index);
@@ -55,8 +56,6 @@ public slots:
     void   onImageIndexChanged(int index);
 
     void onViewFocused(dtkAbstractView *view);
-
-    void onQuickOpenFileButtonClicked (void);
 
 public slots: // layout settings
     void setStackIndex(int index);
