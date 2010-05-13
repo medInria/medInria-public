@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Apr 28 17:40:52 2010 (+0200)
+## Last-Updated: Thu May 13 14:13:23 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 62
+##     Update #: 64
 ######################################################################
 ## 
 ### Commentary: 
@@ -28,6 +28,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDocumentationArea.h
   medMainWindow.h
   medViewerArea.h
+  medViewerAreaStack.h
+  medViewerConfiguration.h
+  medViewerConfigurator.h
   medWelcomeArea.h)
 
 set(${PROJECT_NAME}_SOURCES
@@ -35,6 +38,9 @@ set(${PROJECT_NAME}_SOURCES
   medDocumentationArea.cpp
   medMainWindow.cpp
   medViewerArea.cpp
+  medViewerAreaStack.cpp
+  medViewerConfiguration.cpp
+  medViewerConfigurator.cpp
   medWelcomeArea.cpp
   main.cpp)
 
