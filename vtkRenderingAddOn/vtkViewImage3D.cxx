@@ -465,11 +465,19 @@ void vtkViewImage3D::SetImage ( vtkImageData* image )
   vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::SafeDownCast ( this->VolumeActor->GetMapper() );
   if( mapper3D && !this->GetRenderWindow()->GetNeverRendered() )
   {
-    if( !mapper3D->IsRenderSupported ( this->VolumeProperty ) )
+    if( !mapper3D->IsRenderSupported ( this->VolumeProperty
+#if ( VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>=7 ) || VTK_MAJOR_VERSION>5
+				       , this->GetRenderer()
+#endif
+	  ) )
     {
       //try the ATI fragment program implementation
       mapper3D->SetPreferredMethodToFragmentProgram();
-      if ( !mapper3D->IsRenderSupported ( this->VolumeProperty ) )
+      if( !mapper3D->IsRenderSupported ( this->VolumeProperty
+#if ( VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>=7 ) || VTK_MAJOR_VERSION>5
+					 , this->GetRenderer()
+#endif
+	    ) )
       {
         vtkWarningMacro (<<"Warning: 3D texture volume rendering is not supported by your hardware, switching to 2D texture rendering."<<endl);
 
