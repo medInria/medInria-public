@@ -32,6 +32,8 @@
   #else
     #define V3DFIBERBUNDLE_EXPORT
   #endif
+#else
+  #define V3DFIBERBUNDLE_EXPORT
 #endif
 
 class V3DFIBERBUNDLE_EXPORT v3dFiberBundle : public vtkObject
