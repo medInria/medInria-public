@@ -146,9 +146,7 @@ FIND_LIBRARY(DCMTK_dcmnet_LIBRARY dcmnet
 IF( DCMTK_root_INCLUDE_DIR
     AND DCMTK_config_INCLUDE_DIR 
     AND DCMTK_ofstd_INCLUDE_DIR 
-    AND DCMTK_oflog_INCLUDE_DIR
     AND DCMTK_ofstd_LIBRARY
-    AND DCMTK_oflog_LIBRARY
     AND DCMTK_dcmdata_INCLUDE_DIR
     AND DCMTK_dcmdata_LIBRARY
     AND DCMTK_dcmimgle_INCLUDE_DIR
@@ -161,20 +159,28 @@ IF( DCMTK_root_INCLUDE_DIR
     ${DCMTK_root_INCLUDE_DIR}
     ${DCMTK_config_INCLUDE_DIR}
     ${DCMTK_ofstd_INCLUDE_DIR}
-    ${DCMTK_oflog_INCLUDE_DIR}
     ${DCMTK_dcmdata_INCLUDE_DIR}
     ${DCMTK_dcmimgle_INCLUDE_DIR}
     ${DCMTK_dcmjpeg_INCLUDE_DIR}
   )
+  IF (DCMTK_oflog_LIBRARY)#oflog only in dcmtk>=3.5.5
+    SET( DCMTK_INCLUDE_DIR
+      ${DCMTK_INCLUDE_DIR}
+      ${DCMTK_oflog_INCLUDE_DIR}
+    )
+    SET( DCMTK_LIBRARIES
+      ${DCMTK_oflog_LIBRARY} #must be defined before ofstd 
+    )
+  ENDIF (DCMTK_oflog_LIBRARY)
 
   SET( DCMTK_LIBRARIES
+    ${DCMTK_LIBRARIES}
     ${DCMTK_dcmjpeg_LIBRARY}
     ${DCMTK_ijg8_LIBRARY}
     ${DCMTK_ijg12_LIBRARY}
     ${DCMTK_ijg16_LIBRARY}
     ${DCMTK_dcmimgle_LIBRARY}
     ${DCMTK_dcmdata_LIBRARY}
-    ${DCMTK_oflog_LIBRARY}    
     ${DCMTK_ofstd_LIBRARY}
     ${DCMTK_config_LIBRARY}    
   )
@@ -206,9 +212,7 @@ ENDIF( WIN32 )
 ENDIF( DCMTK_root_INCLUDE_DIR
     AND DCMTK_config_INCLUDE_DIR 
     AND DCMTK_ofstd_INCLUDE_DIR
-    AND DCMTK_oflog_INCLUDE_DIR 
     AND DCMTK_ofstd_LIBRARY
-    AND DCMTK_oflog_LIBRARY
     AND DCMTK_dcmdata_INCLUDE_DIR
     AND DCMTK_dcmdata_LIBRARY
     AND DCMTK_dcmimgle_INCLUDE_DIR
