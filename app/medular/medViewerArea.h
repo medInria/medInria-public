@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu May 13 16:26:10 2010 (+0200)
+ * Last-Updated: Fri May 21 15:04:28 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 78
+ *     Update #: 79
  */
 
 /* Commentary: 
@@ -59,6 +59,7 @@ public slots:
 
 public slots: // layout settings
     void setStackIndex(int index);
+    void setPreset(int preset);
 
 protected slots: // view settings
     void setupForegroundLookupTable(QString table);

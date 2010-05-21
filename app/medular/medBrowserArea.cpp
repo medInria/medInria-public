@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu May 13 16:33:10 2010 (+0200)
+ * Last-Updated: Thu May 13 20:02:17 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 336
+ *     Update #: 337
  */
 
 /* Commentary: 
@@ -209,8 +209,6 @@ void medBrowserArea::onFileSystemExportClicked(void)
 void medBrowserArea::onFileSystemViewClicked(void)
 {
     QFileInfo info(d->filesystem_model->filePath(d->filesystem_view->currentIndex()));
-
-    qDebug() << __func__ << info.absoluteFilePath();
 
     emit open(info.absoluteFilePath());
 }

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:39:28 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sun Feb 21 13:37:12 2010 (+0100)
+ * Last-Updated: Thu May 13 20:12:20 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -23,85 +23,6 @@
 #include <QtGui/QGraphicsPixmapItem>
 
 // /////////////////////////////////////////////////////////////////
-// medDatabaseNavigatorItemLabel
-// /////////////////////////////////////////////////////////////////
-
-class medDatabaseNavigatorItemLabel : public QObject, public QGraphicsPixmapItem
-{
-    Q_OBJECT
-
-    Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity)
-
-public:
-     medDatabaseNavigatorItemLabel(QGraphicsItem *parent = 0);
-    ~medDatabaseNavigatorItemLabel(void);
-
-    void setText(const QString& text);
-
-protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-private:
-    QString text;
-};
-
-// /////////////////////////////////////////////////////////////////
-// medDatabaseNavigatorItemCount
-// /////////////////////////////////////////////////////////////////
-
-class medDatabaseNavigatorItemCount : public QObject, public QGraphicsPixmapItem
-{
-    Q_OBJECT
-
-    Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity)
-
-public:
-     medDatabaseNavigatorItemCount(QGraphicsItem *parent = 0);
-    ~medDatabaseNavigatorItemCount(void);
-
-    void setCount(int count);
-
-protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-private:
-    int count;
-};
-
-// /////////////////////////////////////////////////////////////////
-// medDatabaseNavigatorItemChecker
-// /////////////////////////////////////////////////////////////////
-
-class medDatabaseNavigatorItemCheckerPrivate;
-
-class medDatabaseNavigatorItemChecker : public QObject, public QGraphicsPixmapItem
-{
-    Q_OBJECT
-
-    Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity)
-
-public:
-     medDatabaseNavigatorItemChecker(QGraphicsItem *parent = 0);
-    ~medDatabaseNavigatorItemChecker(void);
-
-public slots:
-    void   check(void);
-    void uncheck(void);
-
-    void setChecked(bool checked);
-
-signals:
-    void   checked(void);
-    void unchecked(void);
-
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-
-private:
-    medDatabaseNavigatorItemCheckerPrivate *d;
-};
-
-// /////////////////////////////////////////////////////////////////
 // medDatabaseNavigatorItem
 // /////////////////////////////////////////////////////////////////
 
@@ -115,6 +36,7 @@ class medDatabaseNavigatorItem : public QObject, public QGraphicsPixmapItem
 
 public:
      medDatabaseNavigatorItem(int patientId = -1, int studyId = -1, int seriesId = -1, int imageId = -1, const QString& path = QString(), QGraphicsItem *parent = 0);
+     medDatabaseNavigatorItem(int patientId = -1, int studyId = -1, int seriesId = -1, int imageId = -1, const QImage& image = QImage(), QGraphicsItem *parent = 0);
     ~medDatabaseNavigatorItem(void);
 
     medDatabaseNavigatorItem *clone(void);
@@ -135,14 +57,9 @@ signals:
     void   imageClicked(int id);
 
 protected slots:
-    void   checked(void);
-    void unchecked(void);
-
     void setImage(const QImage& image);
 
 protected:
-    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void  mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
