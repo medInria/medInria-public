@@ -35,6 +35,8 @@ include(Dart)
 ## Input
 ## #################################################################
 
+set(DTK_AGGREGATE_PLUGINS 1)
+
 subdirs(v3dData)
 subdirs(v3dView)
 subdirs(itkDataImage)
@@ -42,6 +44,10 @@ subdirs(itkDataImageReader)
 subdirs(itkDataImageWriter)
 subdirs(vtkDataFibers)
 subdirs(itkDataDiffusionGradientList)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+include(pack)
+
 
 ## #################################################################
 ## Build settings

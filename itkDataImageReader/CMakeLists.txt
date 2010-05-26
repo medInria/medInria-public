@@ -171,8 +171,16 @@ endif (BUILD_TESTING)
 ## #################################################################
 ## Install rules
 ## #################################################################
+if( ITK_BUILD_SHARED )
+  install(TARGETS ${PROJECT_NAME} ITKDCMTKIO
+    RUNTIME DESTINATION plugins
+    LIBRARY DESTINATION plugins
+    ARCHIVE DESTINATION plugins)
+else( ITK_BUILD_SHARED )
+  install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION plugins
+    LIBRARY DESTINATION plugins
+    ARCHIVE DESTINATION plugins)
+endif( ITK_BUILD_SHARED )
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION plugins)
+
