@@ -1261,7 +1261,8 @@ void vtkViewImage3D::ColorDataSetByArray(vtkDataSet* dataset, const char* arrayn
 
 void vtkViewImage3D::SetDirectionMatrix (vtkMatrix4x4 *mat)
 {
-  vtkViewImage::SetDirectionMatrix (mat);
+    //vtkViewImage::SetDirectionMatrix (mat);
+	this->GetDirectionMatrix()->DeepCopy( mat );
 
   /**
      If image has an origin, it is already taken into account in the image actors (position==origin).
