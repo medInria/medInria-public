@@ -318,7 +318,7 @@ namespace itk
     // will have.
     // Usually, one only discriminate patient name, study uid and series uid.
     // Additionally, we discriminate different "Series Number", "Slice Thickness",
-    // "Rows", "Columns" and "Image Orientation Patient".
+    // "Rows", "Columns" and "Orientation".
     
     // Indeed, multiple volumes in a single output will be stored in a  4D volume.
     // Thus, one needs consistent slice thickness, orientation and slice XxY size.
