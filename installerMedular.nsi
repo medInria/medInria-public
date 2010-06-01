@@ -9,11 +9,11 @@
 ;General
 
   ;Name and file
-  Name "Medinria-fusion"
+  Name "${PROJECT_NAME}"
   !ifdef WIN64
-    OutFile "${medularDIR}\Medinria-fusion-${VERSION}-win32-x64.exe"
+    OutFile "${medularDIR}\${PROJECT_NAME}-${VERSION}-win32-x64.exe"
   !else
-    OutFile "${medularDIR}\Medinria-fusion-${VERSION}-win32-x86.exe"
+    OutFile "${medularDIR}\${PROJECT_NAME}-${VERSION}-win32-x86.exe"
   !endif
   
   XPStyle on
@@ -29,10 +29,10 @@
   ;FunctionEnd
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\medinria-fusion"
+  InstallDir "$PROGRAMFILES\${PROJECT_NAME}"
   
   ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\medinria-fusion" ""
+  InstallDirRegKey HKCU "Software\${PROJECT_NAME}" ""
 ;--------------------------------
 ;Interface Settings
 
@@ -51,7 +51,7 @@
   !insertmacro MUI_PAGE_DIRECTORY
   ;Start Menu Folder Page Configuration
   !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU" 
-  !define MUI_STARTMENUPAGE_REGISTRY_KEY "medinria-fusion" 
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "${PROJECT_NAME}" 
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
 
@@ -73,7 +73,7 @@
 ;--------------------------------
 ;Installer Sections
 
-Section "Medinria-fusion (required)" SecMedular  
+Section "${PROJECT_NAME} (required)" SecMedular  
 
   SectionIn RO  
 
@@ -81,19 +81,20 @@ Section "Medinria-fusion (required)" SecMedular
 
   ; Specific for medinria
   ;File "${medularDIR}\release\medular.exe"
+  ;WARNING: copies everything in install directory: could be much better.
   File /r "${INST_PREFIX}\*.*" 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
-  CreateShortCut  "$SMPROGRAMS\$STARTMENU_FOLDER\medinria-fusion.lnk"          "$INSTDIR\bin\medinria-fusion.exe" 
-  CreateShortCut  "$DESKTOP\medinria-fusion.lnk"                               "$INSTDIR\bin\medinria-fusion.exe"
-  CreateShortCut  "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk"         "$INSTDIR\Uninstall.exe"
+  CreateShortCut  "$SMPROGRAMS\$STARTMENU_FOLDER\${PROJECT_NAME}.lnk"  "$INSTDIR\bin\${PROJECT_NAME}.exe" 
+  CreateShortCut  "$DESKTOP\${PROJECT_NAME}.lnk"  "$INSTDIR\bin\${PROJECT_NAME}.exe"
+  CreateShortCut  "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk"  "$INSTDIR\Uninstall.exe"
   
   !insertmacro MUI_STARTMENU_WRITE_END
  
   ;Store installation folder
-  WriteRegStr HKCU "Software\medinria-fusion" "" $INSTDIR
+  WriteRegStr HKCU "Software\${PROJECT_NAME}" "" $INSTDIR
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -130,7 +131,7 @@ SectionEnd
 
   ;Language strings
   LangString DESC_Secmedular ${LANG_ENGLISH} "Select this option to install \
-  the main program Medinria-fusion."
+  the main program ${PROJECT_NAME}."
 ;  LangString DESC_SecTensorViewer ${LANG_ENGLISH} "Select this option to install \
 ;  the Tensor Viewer program."
 
@@ -148,16 +149,14 @@ Section "Uninstall"
   ;ADD YOUR OWN FILES HERE...
   Delete    "$INSTDIR\*.*"
   RMDir  /r "$INSTDIR"
-  
- ;messageBox MB_OK "Hello world!: $LOCALAPPDATA"
 
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
-  Delete "$SMPROGRAMS\$MUI_TEMP\medinria-fusion.lnk"
+  Delete "$SMPROGRAMS\$MUI_TEMP\${PROJECT_NAME}.lnk"
   Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
   RMDir "$SMPROGRAMS\$MUI_TEMP"
-  RMDir /r "$LOCALAPPDATA\inria\medinria-fusion"
+  RMDir /r "$LOCALAPPDATA\inria\${PROJECT_NAME}"
   RMDir "$LOCALAPPDATA\inria"
-  Delete    "$DESKTOP\medinria-fusion.lnk"
+  Delete    "$DESKTOP\${PROJECT_NAME}.lnk"
 ;  Delete    "$DESKTOP\DTI Track.lnk"
 ;  Delete    "$DESKTOP\ImageViewer.lnk"
 ;  Delete    "$DESKTOP\LSE.lnk"
@@ -165,8 +164,9 @@ Section "Uninstall"
 ;  Delete    "$DESKTOP\ImageFusion.lnk"
 ;  Delete    "$DESKTOP\TensorViewer.lnk"
 ;  Delete    "$DESKTOP\SLViewer.lnk"
-  DeleteRegKey HKCU "Software\medinria-fusion"
-  DeleteRegKey HKU "Software\medinria-fusion"
+  DeleteRegKey HKCU "Software\${PROJECT_NAME}"
+  DeleteRegKey HKU "Software\${PROJECT_NAME}"
+  ;medular is hard coded
   DeleteRegKey HKCU "Software\inria\medular"
   ;WARNING!!!!!!!!!!!!!! do not delete if other dtk software
   DeleteRegKey HKCU "Software\inria\dtk"
