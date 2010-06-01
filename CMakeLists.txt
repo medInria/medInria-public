@@ -41,5 +41,6 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
 include(medDart)
+include(medNSIS)
 add_subdirectory(src)
 add_subdirectory(app)
