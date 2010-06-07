@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 22:57:27 2010 (+0100)
+ * Last-Updated: Thu May 13 15:16:23 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 33
+ *     Update #: 37
  */
 
 /* Commentary: 
@@ -34,7 +34,7 @@ medToolBoxPatient::medToolBoxPatient(QWidget *parent) : medToolBox(parent), d(ne
     d->combo = new QComboBox(central);
     d->combo->setFocusPolicy(Qt::NoFocus);
 
-    QHBoxLayout *layout = new QHBoxLayout(central);
+    QVBoxLayout *layout = new QVBoxLayout(central);
     layout->addWidget(d->combo);
 
     this->setTitle("Patient");
@@ -68,6 +68,11 @@ void medToolBoxPatient::clear(void)
 int medToolBoxPatient::patientIndex(void)
 {
     return d->combo->currentIndex();
+}
+
+int medToolBoxPatient::patientIndex(QString patient)
+{
+    return d->combo->findText(patient);
 }
 
 void medToolBoxPatient::setPatientIndex(int index)

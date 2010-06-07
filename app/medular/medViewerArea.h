@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:55:15 2010 (+0100)
+ * Last-Updated: Thu May 13 16:26:10 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 64
+ *     Update #: 78
  */
 
 /* Commentary: 
@@ -25,42 +25,6 @@
 class dtkAbstractView;
 
 class medDataIndex;
-class medViewContainer;
-
-// /////////////////////////////////////////////////////////////////
-// medViewerAreaStack
-// /////////////////////////////////////////////////////////////////
-
-class medViewerAreaStackPrivate;
-
-class medViewerAreaStack : public QStackedWidget
-{
-    Q_OBJECT
-
-public:
-     medViewerAreaStack(QWidget *parent = 0);
-    ~medViewerAreaStack(void);
-
-    medViewContainer *current(void);
-
-    medViewContainer *single(void);
-    medViewContainer *multi(void);
-    medViewContainer *custom(void);
-
-    void setPatientId(int id);
-
-signals:
-    void dropped(const medDataIndex&);
-    void focused(dtkAbstractView *);
-
-private:
-    medViewerAreaStackPrivate *d;
-};
-
-// /////////////////////////////////////////////////////////////////
-// medViewerArea
-// /////////////////////////////////////////////////////////////////
-
 class medViewerAreaPrivate;
 
 class medViewerArea : public QWidget
@@ -84,6 +48,7 @@ public slots:
     void split(int rows, int cols);
 
     void open(const medDataIndex& index);
+    void open(const QString& file);
 
     void onPatientIndexChanged(int index);
     void   onStudyIndexChanged(int index);
@@ -115,60 +80,6 @@ protected slots: // registration settings
 
 private:
     medViewerAreaPrivate *d;
-};
-
-// /////////////////////////////////////////////////////////////////
-// medViewerConfiguration
-// /////////////////////////////////////////////////////////////////
-
-class medToolBox;
-class medViewerConfigurationPrivate;
-
-class medViewerConfiguration : public QObject
-{
-    Q_OBJECT
-
-public:
-     medViewerConfiguration(medViewerArea *area);
-    ~medViewerConfiguration(void);
-
-    void setup(void);
-    void setdw(void);
-
-    void attach(int index);
-    void attach(medToolBox *toolbox, bool visible);
-
-private:
-    medViewerConfigurationPrivate *d;
-};
-
-// /////////////////////////////////////////////////////////////////
-// medViewerConfigurator
-// /////////////////////////////////////////////////////////////////
-
-class medViewerConfiguratorPrivate;
-
-class medViewerConfigurator : public QObject
-{
-    Q_OBJECT
-
-public:
-    static medViewerConfigurator *instance(void);
-
-    void addConfiguration(QString name, medViewerConfiguration *configuration);
-
-public slots:
-    void setConfiguration(QString name);
-
-protected:
-     medViewerConfigurator(void);
-    ~medViewerConfigurator(void);
-
-protected:
-    static medViewerConfigurator *s_instance;
-
-private:
-    medViewerConfiguratorPrivate *d;
 };
 
 #endif // MEDVIEWERAREA_H
