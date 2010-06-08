@@ -48,6 +48,10 @@ namespace itk
     typedef std::set< double >                           SliceLocationSetType;
     typedef std::set< std::string >                      NameSetType;
     typedef std::multimap< double, std::string >         SliceLocationToNamesMultiMapType;
+
+
+    static double MAXIMUM_GAP;
+    
     
     bool CanReadFile(const char*);
     
@@ -82,6 +86,15 @@ namespace itk
     std::string GetInstitution() const;
     std::string GetModel() const;
     std::string GetScanOptions() const;
+
+// new
+    std::string GetSeriesID() const;
+    std::string GetOrientation() const;
+    std::string GetSeriesNumber() const;
+    std::string GetSequenceName() const;
+    std::string GetSliceThickness() const;
+    std::string GetRows() const;
+    std::string GetColumns() const;
 
 
     const StringVectorType& GetOrderedFileNames (void) const

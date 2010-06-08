@@ -29,6 +29,7 @@ QStringList itkDataImageReaderBase::handled(void) const
 			 << "itkDataImageUInt3"
 			 << "itkDataImageInt3"
 			 << "itkDataImageUShort3"
+			 << "itkDataImageUShort4"
 			 << "itkDataImageShort3"
 			 << "itkDataImageShort4"	
 			 << "itkDataImageUChar3"
@@ -45,6 +46,7 @@ QStringList itkDataImageReaderBase::s_handled(void)
 			 << "itkDataImageUInt3"
 			 << "itkDataImageInt3"
 			 << "itkDataImageUShort3"
+			 << "itkDataImageUShort4"
 			 << "itkDataImageShort3"
 			 << "itkDataImageShort4"	
 			 << "itkDataImageUChar3"
@@ -104,7 +106,11 @@ void itkDataImageReaderBase::readInformation (QString path)
 		      
 		case itk::ImageIOBase::USHORT:
 		  {
-		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3");
+		    if ( this->io->GetNumberOfDimensions()<=3 )
+		        dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3");
+		    else if ( this->io->GetNumberOfDimensions()==4 )
+		        dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort4");
+		    
 		    if (dtkdata) 
 		      this->setData ( dtkdata );
 		    break;
@@ -275,6 +281,20 @@ bool itkDataImageReaderBase::read (QString path)
 		
 		else if (dtkdata->description()=="itkDataImageUShort3") {
 			itk::ImageFileReader< itk::Image<unsigned short, 3> >::Pointer ushortReader = itk::ImageFileReader< itk::Image<unsigned short, 3> >::New();
+			ushortReader->SetImageIO ( this->io );
+			ushortReader->SetFileName ( path.toAscii().constData() );
+			dtkdata->setData ( ushortReader->GetOutput() );
+			try {
+				ushortReader->Update();
+			}
+			catch (itk::ExceptionObject &e) {
+				qDebug() << e.GetDescription();
+				return false;
+			}
+		}
+
+		else if (dtkdata->description()=="itkDataImageUShort4") {
+			itk::ImageFileReader< itk::Image<unsigned short, 4> >::Pointer ushortReader = itk::ImageFileReader< itk::Image<unsigned short, 4> >::New();
 			ushortReader->SetImageIO ( this->io );
 			ushortReader->SetFileName ( path.toAscii().constData() );
 			dtkdata->setData ( ushortReader->GetOutput() );

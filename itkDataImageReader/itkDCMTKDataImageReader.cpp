@@ -59,6 +59,7 @@ bool itkDCMTKDataImageReader::registered(void)
 								      << "itkDataImageUInt3"
 								      << "itkDataImageInt3"
 								      << "itkDataImageUShort3"
+								      << "itkDataImageUShort4"
 								      << "itkDataImageShort3"
 								      << "itkDataImageShort4"
 								      << "itkDataImageUChar3"
@@ -77,6 +78,7 @@ QStringList itkDCMTKDataImageReader::handled(void) const
 			 << "itkDataImageUInt3"
 			 << "itkDataImageInt3"
 			 << "itkDataImageUShort3"
+			 << "itkDataImageUShort4"
 			 << "itkDataImageShort3"
 			 << "itkDataImageShort4"
 			 << "itkDataImageUChar3"
@@ -131,7 +133,7 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       qDebug() << e.GetDescription();
       return;
     }
-    
+
 
     dtkAbstractData* dtkdata = this->data();
     
@@ -156,7 +158,11 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
 	      
 	    case itk::ImageIOBase::USHORT:
 	      {
-		dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3");
+		if ( d->io->GetNumberOfDimensions()<=3 )
+		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3");
+		else if ( d->io->GetNumberOfDimensions()==4 )
+		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort4");
+
 		if (dtkdata) 
 		  this->setData ( dtkdata );
 		break;
@@ -211,7 +217,7 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
 	      break;
 	      
 	    default:
-		qDebug() << "Unrecognized component type";
+		qDebug() << "Unrecognized component pouet type";
 		return;
 	}
 	
@@ -244,11 +250,31 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       QStringList patientName;
       QStringList studyName;
       QStringList seriesName;
+
+      QStringList studyId;
+      QStringList seriesId;
+      QStringList orientation;
+      QStringList seriesNumber;
+      QStringList sequenceName;
+      QStringList sliceThickness;
+      QStringList rows;
+      QStringList columns;
+
       QStringList filePaths;
       
       patientName << d->io->GetPatientName().c_str();
       studyName << d->io->GetStudyDescription().c_str();
       seriesName << d->io->GetSeriesDescription().c_str();
+
+      studyId << d->io->GetStudyID().c_str();
+      seriesId << d->io->GetSeriesID().c_str();
+      orientation << d->io->GetOrientation().c_str();
+      seriesNumber << d->io->GetSeriesNumber().c_str();
+      sequenceName << d->io->GetSequenceName().c_str();
+      sliceThickness << d->io->GetSliceThickness().c_str();
+      rows << d->io->GetRows().c_str();
+      columns << d->io->GetColumns().c_str();
+
 
       for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++ )
 	filePaths << d->io->GetOrderedFileNames()[i].c_str();
@@ -267,6 +293,16 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
 	dtkdata->addMetaData ( "SeriesDescription", seriesName );
       else
 	dtkdata->setMetaData ( "SeriesDescription", seriesName );
+
+      dtkdata->setMetaData("StudyID", studyId);
+      dtkdata->setMetaData("SeriesID", seriesId);
+      dtkdata->setMetaData("Orientation", orientation);
+      dtkdata->setMetaData("SeriesNumber", seriesNumber);
+      dtkdata->setMetaData("SequenceName", sequenceName);
+      dtkdata->setMetaData("SliceThickness", sliceThickness);
+      dtkdata->setMetaData("Rows", rows);
+      dtkdata->setMetaData("Columns", columns);
+
 
       dtkdata->addMetaData ("FilePaths", filePaths);
 	
@@ -333,6 +369,20 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
 		
 		else if (dtkdata->description()=="itkDataImageUShort3") {
 			itk::ImageFileReader< itk::Image<unsigned short, 3> >::Pointer ushortReader = itk::ImageFileReader< itk::Image<unsigned short, 3> >::New();
+			ushortReader->SetImageIO ( d->io );
+			ushortReader->SetFileName ( paths[0].toAscii().constData() );
+			dtkdata->setData ( ushortReader->GetOutput() );
+			try {
+				ushortReader->Update();
+			}
+			catch (itk::ExceptionObject &e) {
+				qDebug() << e.GetDescription();
+				return false;
+			}
+		}
+
+		else if (dtkdata->description()=="itkDataImageUShort4") {
+			itk::ImageFileReader< itk::Image<unsigned short, 4> >::Pointer ushortReader = itk::ImageFileReader< itk::Image<unsigned short, 4> >::New();
 			ushortReader->SetImageIO ( d->io );
 			ushortReader->SetFileName ( paths[0].toAscii().constData() );
 			dtkdata->setData ( ushortReader->GetOutput() );

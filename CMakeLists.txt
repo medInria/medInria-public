@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Mon Sep 21 14:48:02 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Apr  6 21:51:10 2010 (+0200)
+## Last-Updated: Wed Apr 28 18:18:03 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 22
+##     Update #: 23
 ######################################################################
 ## 
 ### Commentary: 
@@ -21,25 +21,42 @@ cmake_minimum_required(VERSION 2.8.1)
 
 project(medular-plugins)
 
-enable_testing()
+
+## #################################################################
+## Setup version numbering
+## #################################################################
+
+set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major
+version number.")
+set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "${PROJECT_NAME} minor
+version number.")
+set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build
+version number.")
+set(${PROJECT_NAME}_VERSION
+	  "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
+
+mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
+mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
+mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
+
+
 
 ## #################################################################
 ## Dashboard settings
 ## #################################################################
 
+enable_testing()
+
 mark_as_advanced(DART_ROOT)
 
 include(Dart)
 
-set(CXX_TEST_PATH        ${RUNTIME_OUTPUT_PATH})
-set(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH})
-if(MSVC)
-set(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH}/Release)
-endif(MSVC)
-
 ## #################################################################
 ## Input
 ## #################################################################
+
+set(DTK_AGGREGATE_PLUGINS 1)
+set(DEPENDS_ON_DTK 1)
 
 subdirs(v3dData)
 subdirs(v3dView)
@@ -48,6 +65,10 @@ subdirs(itkDataImageReader)
 subdirs(itkDataImageWriter)
 subdirs(vtkDataFibers)
 subdirs(itkDataDiffusionGradientList)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+include(pack)
+
 
 ## #################################################################
 ## Build settings
