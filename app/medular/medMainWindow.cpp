@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun  8 21:44:49 2010 (+0200)
+ * Last-Updated: Wed Jun  9 00:14:03 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 390
+ *     Update #: 399
  */
 
 /* Commentary: 
@@ -21,6 +21,7 @@
 #include "medDocumentationArea.h"
 #include "medMainWindow.h"
 #include "medViewerArea.h"
+#include "medViewerConfigurator.h"
 #include "medWelcomeArea.h"
 
 #include <dtkCore/dtkGlobal.h>
@@ -166,6 +167,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     dtkScriptInterpreter *interpreter = dtkScriptInterpreterPool::instance()->console("python");
     interpreter->start();
+    QObject::connect(qApp, SIGNAL(aboutToQuit()), interpreter, SLOT(stop()));
 
     // Setting up status bar
 
@@ -181,10 +183,17 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->shiftToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
     connect(d->shiftToDocumentationAreaAction, SIGNAL(triggered()), this, SLOT(switchToDocumentationArea()));
 
+    QMenu *menu = new QMenu;
+    menu->addAction("Visualization");
+    menu->addAction("Registration");
+    menu->addAction("Diffusion");
+
+    connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onConfigurationTriggered(QAction *)));
+
     medWorkspaceShifter *shifter = new medWorkspaceShifter(this);
     shifter->addAction(d->shiftToWelcomeAreaAction);
     shifter->addAction(d->shiftToBrowserAreaAction);
-    shifter->addAction(d->shiftToViewerAreaAction);
+    shifter->addAction(d->shiftToViewerAreaAction)->setMenu(menu);
     shifter->addAction(d->shiftToDocumentationAreaAction);
 
     this->statusBar()->setSizeGripEnabled(false);
@@ -354,6 +363,11 @@ void medMainWindow::onSeriesDoubleClicked(const QModelIndex &index)
     this->update();
     
     d->viewerArea->setSeriesIndex(index.row()+1);
+}
+
+void medMainWindow::onConfigurationTriggered(QAction *action)
+{
+    medViewerConfigurator::instance()->setConfiguration(action->text());
 }
 
 void medMainWindow::open(const QString& file)

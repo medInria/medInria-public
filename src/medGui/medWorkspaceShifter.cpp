@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 11:11:53 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 11:17:35 2009 (+0100)
+ * Last-Updated: Tue Jun  8 23:35:28 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 35
  */
 
 /* Commentary: 
@@ -125,6 +125,7 @@ public:
     bool isHovered;
     bool isChecked;
     QString text;
+    QMenu *menu;
     QIcon icon;
 };
 
@@ -132,6 +133,7 @@ medWorkspaceShifterAction::medWorkspaceShifterAction(QObject *parent) : QObject(
 {
     d->isHovered = false;
     d->isChecked = false;
+    d->menu = NULL;
 }
 
 medWorkspaceShifterAction::medWorkspaceShifterAction(const QString& text, QObject *parent) : QObject(parent), d(new medWorkspaceShifterActionPrivate)
@@ -139,6 +141,7 @@ medWorkspaceShifterAction::medWorkspaceShifterAction(const QString& text, QObjec
     d->isHovered = false;
     d->isChecked = false;
     d->text = text;
+    d->menu = NULL;
 }
 
 medWorkspaceShifterAction::medWorkspaceShifterAction(const QIcon& icon, const QString& text, QObject *parent) : QObject(parent), d(new medWorkspaceShifterActionPrivate)
@@ -147,6 +150,7 @@ medWorkspaceShifterAction::medWorkspaceShifterAction(const QIcon& icon, const QS
     d->isChecked = false;
     d->icon = icon;
     d->text = text;
+    d->menu = NULL;
 }
 
 medWorkspaceShifterAction::~medWorkspaceShifterAction(void)
@@ -156,17 +160,17 @@ medWorkspaceShifterAction::~medWorkspaceShifterAction(void)
 
 bool medWorkspaceShifterAction::isChecked(void) const
 {
-    return(d->isChecked);
+    return d->isChecked;
 }
 
 bool medWorkspaceShifterAction::isHovered(void) const
 {
-    return(d->isHovered);
+    return d->isHovered;
 }
 
 QIcon medWorkspaceShifterAction::icon(void) const
 {
-    return(d->icon);
+    return d->icon;
 }
 
 void medWorkspaceShifterAction::setIcon(const QIcon& icon)
@@ -176,12 +180,22 @@ void medWorkspaceShifterAction::setIcon(const QIcon& icon)
 
 QString medWorkspaceShifterAction::text(void) const
 {
-    return(d->text);
+    return d->text;
 }
 
 void medWorkspaceShifterAction::setText(const QString& text)
 {
     d->text = text;
+}
+
+QMenu *medWorkspaceShifterAction::menu(void)
+{
+    return d->menu;
+}
+
+void medWorkspaceShifterAction::setMenu(QMenu *menu)
+{
+    d->menu = menu;
 }
 
 void medWorkspaceShifterAction::hover(bool isHovered)
@@ -286,6 +300,20 @@ void medWorkspaceShifter::paintEvent(QPaintEvent *event)
     p.fillRect(buttonsX, height - 4, buttonsWidth, 1, QColor(0x6d, 0x6d, 0x6d));
 
     p.end();
+}
+
+void medWorkspaceShifter::mousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::RightButton) {
+
+        medWorkspaceShifterAction *action = hoveredAction(event->pos());
+        
+        if (action == d->checkedAction && action->menu() != NULL) {
+            action->menu()->popup(event->globalPos());
+            action->hover(true);
+            update();
+        }
+    }
 }
 
 void medWorkspaceShifter::mouseMoveEvent(QMouseEvent *event)

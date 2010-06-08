@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 11:11:47 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 11:11:48 2009 (+0100)
+ * Last-Updated: Tue Jun  8 22:31:26 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 3
  */
 
 /* Commentary: 
@@ -54,6 +54,9 @@ public:
     QString text(void) const;
     void setText(const QString& text);
 
+    QMenu *menu(void);
+    void setMenu(QMenu *menu);
+    
 public slots:
     void toggle(void);
     void trigger(void);
@@ -83,6 +86,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
 
+    void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
 
