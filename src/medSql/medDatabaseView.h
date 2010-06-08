@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:16:32 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Mar 20 20:02:54 2010 (+0100)
+ * Last-Updated: Wed Jun  9 00:22:49 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 32
+ *     Update #: 34
  */
 
 /* Commentary: 
@@ -34,6 +34,8 @@ public:
      medDatabaseView(QWidget *parent = 0);
     ~medDatabaseView(void);
 
+    int sizeHintForColumn(int column) const;
+
     void setModel(medDatabaseModel *model);
 
 signals:
@@ -57,6 +59,7 @@ public slots:
     void onStudyClicked(int id);
     void onSeriesClicked(int id);
     void onImageClicked(int id);
+
 
 private slots:
     void onItemClicked(const QModelIndex& index);
