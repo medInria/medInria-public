@@ -33,12 +33,13 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
 enable_testing()
 
+set (DEPENDS_ON_DTK 1)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+include(medPack)
+
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-
 include(medDart)
-
 add_subdirectory(src)
 add_subdirectory(app)
