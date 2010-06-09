@@ -1,6 +1,6 @@
 #include <itkCommand.h>
 
-class itkDCMTKDataImageReader;
+class dtkAbstractDataReader;
 
 namespace itk
 {
@@ -20,7 +20,7 @@ namespace itk
     void Execute(Object *caller, const EventObject &event);
     void Execute(const Object *caller, const EventObject &event);
     
-    void SetDCMTKDataImageReader (itkDCMTKDataImageReader* reader)
+    void SetDataImageReader (dtkAbstractDataReader* reader)
     { m_Reader = reader; }
 
   protected:

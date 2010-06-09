@@ -550,11 +550,6 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
 }
 
 
-void itkDCMTKDataImageReader::setProgress (int value)
-{
-    emit progressed (value);
-}
-
 // /////////////////////////////////////////////////////////////////
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
