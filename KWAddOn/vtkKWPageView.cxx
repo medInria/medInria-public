@@ -134,13 +134,14 @@ void vtkKWPageView::CreateRenderWidgets()
 //----------------------------------------------------------------------------
 void vtkKWPageView::ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget)
 {
-  
+
 //   view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
   view->SetRenderWindowInteractor (widget->GetRenderWindow()->GetInteractor());
   
-  vtkRenderer* renderer = view->GetRenderer();
-
-
+  // vtkRenderer* renderer = view->GetRenderer();
+  vtkRenderer* renderer = vtkRenderer::New();
+  view->SetRenderer (renderer);
+  
   vtkRendererCollection* collection = widget->GetRenderWindow()->GetRenderers();
   collection->RemoveAllItems();
   widget->GetRenderWindow()->AddRenderer (renderer);
@@ -149,7 +150,7 @@ void vtkKWPageView::ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget)
   widget->SetRenderModeToInteractive();
   view->SetRenderWindow (widget->GetRenderWindow());
 
-  view->SetRenderer (renderer);
+  // view->SetRenderer (renderer);
   renderer->Delete();
 }
 
