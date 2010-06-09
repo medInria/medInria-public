@@ -65,7 +65,8 @@ protected slots: // view settings
     void setupBackgroundLookupTable(QString table);
     void setupAxisVisibility(bool visible);
     void setupScalarBarVisibility(bool visible);
-    void setup3DMode (QString table);
+    void setup3DMode (QString mode);
+    void setup3DVRMode (QString mode);
     void setupLUTPreset (QString table);
     void setup3DLOD (int value);
     void setupWindowing (bool checked);

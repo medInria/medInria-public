@@ -31,6 +31,7 @@ public:
     QCheckBox *axisVisibilityCheckBox;
 
     QComboBox   *view3dModeComboBox;
+    QComboBox   *view3dVRModeComboBox;
     QSlider     *view3dLODSlider;
     QPushButton *windowingPushButton;
     QPushButton *zoomingPushButton;
@@ -103,7 +104,15 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     d->view3dModeComboBox->addItem("MIP - Maximum");
     d->view3dModeComboBox->addItem("MIP - Minimum");
     d->view3dModeComboBox->addItem("MPR");
-	d->view3dModeComboBox->addItem("Off");
+    d->view3dModeComboBox->addItem("Off");
+
+    d->view3dVRModeComboBox = new QComboBox(this);
+    d->view3dVRModeComboBox->setFocusPolicy(Qt::NoFocus);
+    d->view3dVRModeComboBox->addItem( "GPU" );
+    d->view3dVRModeComboBox->addItem( "RayCastAndTexture" );
+    d->view3dVRModeComboBox->addItem( "RayCast" );
+    d->view3dVRModeComboBox->addItem( "Texture" );
+    d->view3dVRModeComboBox->addItem( "Default" );
 
     d->view3dLODSlider = new QSlider (Qt::Horizontal, this);
     d->view3dLODSlider->setRange (0, 100);
@@ -145,6 +154,7 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(backgroundLookupTableChanged(QString)));
     connect(d->presetComboBox,                SIGNAL(currentIndexChanged(QString)), this, SIGNAL(lutPresetChanged(QString)));
     connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SIGNAL(tdModeChanged(QString)));
+    connect(d->view3dVRModeComboBox,          SIGNAL(currentIndexChanged(QString)), this, SIGNAL(tdVRModeChanged(QString)));
     connect(d->view3dLODSlider,               SIGNAL(valueChanged(int)),            this, SIGNAL(tdLodChanged(int)));
     connect(d->windowingPushButton,           SIGNAL(toggled(bool)),                this, SIGNAL(windowingChanged(bool)));
     connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SIGNAL(zoomingChanged(bool)));
@@ -173,6 +183,7 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
 
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(view3dToolBoxWidget);
     view3dToolBoxWidgetLayout->addRow("3D Mode:", d->view3dModeComboBox);
+    view3dToolBoxWidgetLayout->addRow("Renderer:", d->view3dVRModeComboBox);
     view3dToolBoxWidgetLayout->addRow("LOD:", d->view3dLODSlider);
     view3dToolBoxWidgetLayout->addRow("Cropping:", d->croppingPushButton);
     view3dToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
@@ -235,6 +246,10 @@ void medToolBoxView::update(dtkAbstractView *view)
     d->view3dModeComboBox->blockSignals(true);
     d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("Mode")));
     d->view3dModeComboBox->blockSignals(false);
+
+    d->view3dVRModeComboBox->blockSignals(true);
+    d->view3dVRModeComboBox->setCurrentIndex(d->view3dVRModeComboBox->findText(view->property("VRMode")));
+    d->view3dVRModeComboBox->blockSignals(false);
 
     d->presetComboBox->blockSignals(true);
     d->presetComboBox->setCurrentIndex(d->presetComboBox->findText(view->property("Preset")));
