@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 11:11:53 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Jun  9 13:03:31 2010 (+0200)
+ * Last-Updated: Wed Jun  9 18:17:45 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 78
+ *     Update #: 79
  */
 
 /* Commentary: 
@@ -469,14 +469,18 @@ void medWorkspaceShifter::mousePressEvent(QMouseEvent *event)
     if(event->button() == Qt::RightButton) {
 
         medWorkspaceShifterAction *action = hoveredAction(event->pos());
+
+ 	if(!action)
+            return;
+
         medWorkspaceShifterMenu *menu = action->menu();
-
+        
         if (action == d->checkedAction && menu != NULL) {
-
+            
             QPoint sbPos = this->mapToParent(event->pos());
             QPoint mwPos = this->parentWidget()->mapToParent(sbPos);
             mwPos -= QPoint(menu->size().width()/2, menu->size().height());
-
+            
             menu->move(mwPos);
             menu->show();
             action->hover(true);
