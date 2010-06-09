@@ -813,3 +813,28 @@ QPushButton#tool {
 QPushButton#tool:pressed, QPushButton#tool:checked {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
 }
+
+
+/*
+ * medDescription
+ *
+ */
+
+/*QTextBrowser {*/
+QWebView {
+    alternate-background-color: #505050;
+
+    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+    border-top-width: 16px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-bottom-width: 16px;
+
+    padding-top: -7px;
+    padding-left: -4px;
+    padding-right: -5px;
+
+    background: #313131;
+
+}
+

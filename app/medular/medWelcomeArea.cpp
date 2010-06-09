@@ -18,7 +18,7 @@
  */
 
 #include "medWelcomeArea.h"
-
+#include <QPropertyAnimation>
 #include <QtWebKit>
 
 class medWelcomeAreaPrivate
@@ -28,8 +28,11 @@ public:
 
     QLineEdit *userEdit;
     QLineEdit *passEdit;
-
+    QWebView * medDescription;
+    QTextDocument * text;
     QStatusBar *status;
+    void setDocument(void);
+
 };
 
 medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelcomeAreaPrivate)
@@ -51,8 +54,17 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
     logn->addLayout(form);
     logn->addStretch(1);
 
+    //some description:
+    d->medDescription = new QWebView(this);
+    //d->medDescription->setAcceptRichText(true);
+    //d->medDescription->setReadOnly(true);
+    //d->medDescription->setOpenExternalLinks(true);
+    d->setDocument();
+
+
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addStretch(1);
+    layout->addWidget(d->medDescription);
     layout->addLayout(logn);
     layout->addStretch(1);
 }
@@ -100,4 +112,23 @@ void medWelcomeArea::authenticate(void)
 void medWelcomeArea::linkClicked(const QUrl& url)
 {
     Q_UNUSED(url);
+}
+
+void medWelcomeAreaPrivate::setDocument()
+{
+    QString disclaimer (
+            "<img src=\":/pixmaps/medular-logo.png\" alt=\"Medular Logo\" />\
+            <center>\
+            <H1>Medular</H1><H2>Welcome</H2>\
+            <center>\
+            </br>Welcome to Medular.\
+            Medular is a platform developed by INRIA for integrating medical imaging algorithms and tools. \
+            </br>\
+            Medular is the successor of MedINRIA 1.9, You may find more information on the MedINRIA project at <a href=\"http://www-sop.inria.fr/asclepios/software/MedINRIA/index.php\">http://www-sop.inria.fr/asclepios/software/MedINRIA/index.php</a>.\
+            You can download this software and get some additional information at <a href=\"somewhere\">somewhere</a>.\
+            ");
+    //this->text = new QTextDocument(this->medDescription);
+    //text->setHtml(disclaimer);
+    //this->medDescription->setDocument(this->text);
+    this->medDescription->setHtml((const QString ) disclaimer);
 }
