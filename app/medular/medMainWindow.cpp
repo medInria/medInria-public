@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Jun  9 00:14:03 2010 (+0200)
+ * Last-Updated: Wed Jun  9 09:15:28 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 399
+ *     Update #: 404
  */
 
 /* Commentary: 
@@ -165,9 +165,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     // Setting up console script interpreter
 
-    dtkScriptInterpreter *interpreter = dtkScriptInterpreterPool::instance()->console("python");
-    interpreter->start();
-    QObject::connect(qApp, SIGNAL(aboutToQuit()), interpreter, SLOT(stop()));
+    // dtkScriptInterpreter *interpreter = dtkScriptInterpreterPool::instance()->console("python");
+    // interpreter->start();
+    // QObject::connect(qApp, SIGNAL(aboutToQuit()), interpreter, SLOT(stop()));
 
     // Setting up status bar
 
@@ -183,7 +183,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->shiftToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
     connect(d->shiftToDocumentationAreaAction, SIGNAL(triggered()), this, SLOT(switchToDocumentationArea()));
 
-    QMenu *menu = new QMenu;
+    medWorkspaceShifterMenu *menu = new medWorkspaceShifterMenu(this);
     menu->addAction("Visualization");
     menu->addAction("Registration");
     menu->addAction("Diffusion");

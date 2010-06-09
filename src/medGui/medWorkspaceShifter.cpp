@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 11:11:53 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Jun  8 23:35:28 2010 (+0200)
+ * Last-Updated: Wed Jun  9 12:51:18 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 35
+ *     Update #: 77
  */
 
 /* Commentary: 
@@ -116,16 +116,171 @@ void medWorkspaceShifterPainter::fillRoundRect(const QRectF& rect, qreal leftTop
 }
 
 // /////////////////////////////////////////////////////////////////
+// medWorkspaceShifterMenu
+// /////////////////////////////////////////////////////////////////
+
+#define MENU_ROUND        10
+#define ARROW_HEIGHT      18
+#define TEXT_HPADDING     26
+#define TEXT_VPADDING     18
+
+class medWorkspaceShifterMenuPrivate
+{
+public:
+    QVector<QPair<int, int> > xCache;
+    QList<QAction *> actions;
+    QSize size;
+    
+public:
+    int isHoverItem (int x, int y) const;
+    QSize calculateSizeHint (const QFontMetrics& fm);
+};
+
+int medWorkspaceShifterMenuPrivate::isHoverItem(int x, int y) const
+{
+    if (y >= 0 && y <= (size.height() -  ARROW_HEIGHT)) {
+        for (int i = 0; i < xCache.size(); ++i) {
+            const QPair<int, int>& pair = xCache[i];
+            
+            if (x >= pair.first && x <= (pair.first + pair.second))
+                return(i);
+        }
+    }
+    
+    return(-1);
+}
+
+QSize medWorkspaceShifterMenuPrivate::calculateSizeHint(const QFontMetrics& fm)
+{
+    int i = 0;
+    int fullWidth = 0;
+    xCache.resize(actions.size());
+    foreach (QAction *action, actions) {
+        int width = fm.width(action->text()) + TEXT_HPADDING;
+        xCache[i++] = qMakePair(fullWidth, width);
+        fullWidth += width;
+    }
+    int height = fm.xHeight() + TEXT_VPADDING;
+    return(QSize(fullWidth, height + ARROW_HEIGHT));
+}
+
+medWorkspaceShifterMenu::medWorkspaceShifterMenu(QWidget *parent) : QWidget(parent), d(new medWorkspaceShifterMenuPrivate)
+{
+    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setMouseTracking(true);
+    setVisible(false);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+}
+
+medWorkspaceShifterMenu::~medWorkspaceShifterMenu(void)
+{
+    delete d;
+}
+
+void medWorkspaceShifterMenu::addAction(QAction *action)
+{
+    d->actions.append(action);
+    d->size = d->calculateSizeHint(fontMetrics());
+    resize(d->size);
+    update();
+}
+
+QAction *medWorkspaceShifterMenu::addAction(const QString& text)
+{
+    QAction *action = new QAction(text, this);    
+    addAction(action);
+    return(action);
+}
+
+QSize medWorkspaceShifterMenu::sizeHint(void) const
+{
+    if (d->size.isEmpty())
+        d->size = d->calculateSizeHint(fontMetrics());
+    return(d->size);
+}
+
+void medWorkspaceShifterMenu::mouseReleaseEvent(QMouseEvent *event)
+{
+    int index = d->isHoverItem(event->x(), event->y());
+    if (index >= 0) {
+        QAction *action = d->actions.at(index);
+        action->trigger();
+        emit triggered(action);
+        this->setVisible(false);
+    }
+}
+
+void medWorkspaceShifterMenu::mouseMoveEvent(QMouseEvent *event)
+{
+    bool isArrowCursor = (cursor().shape() == Qt::ArrowCursor);
+    int index = d->isHoverItem(event->x(), event->y());
+    if (index >= 0) {
+        if (isArrowCursor) {        
+            setCursor(Qt::PointingHandCursor);
+            d->actions.at(index)->hover();
+        }
+    } else if (!isArrowCursor) {
+        unsetCursor();
+    }
+}
+
+void medWorkspaceShifterMenu::paintEvent(QPaintEvent *event)
+{
+    QWidget::paintEvent(event);
+
+    const QPair<int, int>& midPair = d->xCache[d->xCache.size() / 2];
+    int midWidth = midPair.first + (midPair.second / 2) - 5;
+    int height = d->size.height() - ARROW_HEIGHT;
+
+    QPainterPath path;
+    path.addRoundedRect(0, 0, d->size.width(), height, MENU_ROUND, MENU_ROUND);
+    path.moveTo(midWidth, height);
+    path.lineTo(midWidth + (ARROW_HEIGHT / 2), height + (ARROW_HEIGHT / 2));
+    path.lineTo(midWidth + ARROW_HEIGHT, height);
+
+    QLinearGradient brush(0, 0, 0, height);
+    brush.setColorAt(0.5f, QColor(0x50, 0x51, 0x55));
+    brush.setColorAt(0.0f, QColor(0x7d, 0x7e, 0x73));
+    brush.setColorAt(1.0f, QColor(0x00, 0x00, 0x00));
+
+    QPainter p(this);
+    p.setRenderHint(QPainter::TextAntialiasing);
+    p.setRenderHint(QPainter::Antialiasing);
+
+    // Draw Path
+    p.setPen(QPen(Qt::transparent, 0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    p.setBrush(brush);
+    p.drawPath(path);
+
+    int i = 0;
+    foreach (QAction *action, d->actions) {
+        const QPair<int, int>& pair = d->xCache[i++];
+        int width = pair.second;
+        int x = pair.first;
+
+        p.setPen(Qt::white);
+        p.drawText(x, 0, width, height, Qt::AlignCenter, action->text());
+
+        if (x > 0) {
+            p.setPen(QPen(QColor(0xd0, 0xd0, 0xd0), 0.1f));
+            p.drawLine(x, 0, x, height);
+        }
+    }
+
+    p.end();
+}
+
+// /////////////////////////////////////////////////////////////////
 // medWorkspaceShifterAction
 // /////////////////////////////////////////////////////////////////
 
 class medWorkspaceShifterActionPrivate
 {
 public:
+    medWorkspaceShifterMenu *menu;
     bool isHovered;
     bool isChecked;
     QString text;
-    QMenu *menu;
     QIcon icon;
 };
 
@@ -188,14 +343,20 @@ void medWorkspaceShifterAction::setText(const QString& text)
     d->text = text;
 }
 
-QMenu *medWorkspaceShifterAction::menu(void)
+medWorkspaceShifterMenu *medWorkspaceShifterAction::menu(void)
 {
     return d->menu;
 }
 
-void medWorkspaceShifterAction::setMenu(QMenu *menu)
+void medWorkspaceShifterAction::setMenu(medWorkspaceShifterMenu *menu)
 {
     d->menu = menu;
+
+    if(!this->parent())
+        return;
+
+    if(medWorkspaceShifter *shifter = dynamic_cast<medWorkspaceShifter *>(this->parent()))
+        connect(d->menu, SIGNAL(triggered(QAction *)), shifter, SLOT(update()));
 }
 
 void medWorkspaceShifterAction::hover(bool isHovered)
@@ -248,6 +409,7 @@ medWorkspaceShifter::~medWorkspaceShifter(void)
 
 medWorkspaceShifterAction *medWorkspaceShifter::addAction(medWorkspaceShifterAction *action)
 {
+    action->setParent(this);
     d->actionList.append(action);
 
     return action;
@@ -307,13 +469,22 @@ void medWorkspaceShifter::mousePressEvent(QMouseEvent *event)
     if(event->button() == Qt::RightButton) {
 
         medWorkspaceShifterAction *action = hoveredAction(event->pos());
-        
-        if (action == d->checkedAction && action->menu() != NULL) {
-            action->menu()->popup(event->globalPos());
+        medWorkspaceShifterMenu *menu = action->menu();
+
+        if (action == d->checkedAction && menu != NULL) {
+
+            QPoint sbPos = this->mapToParent(event->pos());
+            QPoint mwPos = this->parentWidget()->mapToParent(sbPos);
+            mwPos -= QPoint(menu->size().width()/2, menu->size().height());
+
+            menu->move(mwPos);
+            menu->show();
             action->hover(true);
             update();
         }
     }
+
+    QWidget::mousePressEvent(event);
 }
 
 void medWorkspaceShifter::mouseMoveEvent(QMouseEvent *event)
