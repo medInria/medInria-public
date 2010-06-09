@@ -110,8 +110,9 @@ namespace itk
 	gdcm::Reader reader;
 	reader.SetFileName (file.c_str());
 	std::set<gdcm::Tag> set;
-	set.insert (gdcm::Tag(0x18, 0x9089));
-	if (!reader.ReadSelectedTags(set))
+	// set.insert (gdcm::Tag(0x18, 0x9089));
+	// if (!reader.ReadSelectedTags(set))
+	if (reader.ReadUpToTag(gdcm::Tag(0x8, 0x9089), set))
 	{
 	  ret = 0;
 	  break;
@@ -903,9 +904,10 @@ namespace itk
 	gdcm::Reader reader;
 	reader.SetFileName (file.c_str());
 	std::set<gdcm::Tag> set;
-	set.insert (gdcm::Tag(0x8, 0x103e));
+	//set.insert (gdcm::Tag(0x8, 0x103e));
 	
-	if (reader.ReadSelectedTags(set))
+	// if (reader.ReadSelectedTags(set))
+	if (reader.ReadUpToTag(gdcm::Tag(0x8, 0x103e), set))
 	{
 	  gdcm::StringFilter filter;
 	  filter.SetFile (reader.GetFile());
