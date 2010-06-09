@@ -86,8 +86,14 @@ namespace itk
     std::string GetInstitution() const;
     std::string GetModel() const;
     std::string GetScanOptions() const;
+    std::string GetAcquisitionDate() const;
+    std::string GetReferringPhysicianName () const;
+    std::string GetPerformingPhysicianName () const;
+    std::string GetProtocolName() const;
+    std::string GetAcquisitionComments() const;
+    std::string GetPatientStatus() const;
 
-// new
+    // new
     std::string GetSeriesID() const;
     std::string GetOrientation() const;
     std::string GetSeriesNumber() const;

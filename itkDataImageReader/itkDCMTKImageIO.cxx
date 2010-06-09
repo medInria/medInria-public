@@ -1116,7 +1116,37 @@ namespace itk
   {
     std::string name = this->GetMetaDataValueString ( "(0028,0011)", 0 );
     return name;
-  }  
+  }
+
+  std::string DCMTKImageIO::GetAcquisitionDate() const
+  {
+    return this->GetMetaDataValueString ( "(0008,0022)", 0 );
+  }
+
+  std::string DCMTKImageIO::GetReferringPhysicianName() const
+  {
+    return this->GetMetaDataValueString ( "(0008,0090)", 0 );
+  }
+
+  std::string DCMTKImageIO::GetPerformingPhysicianName() const
+  {
+    return this->GetMetaDataValueString ( "(0008,1050)", 0 );
+  }
+
+  std::string DCMTKImageIO::GetProtocolName() const
+  {
+    return this->GetMetaDataValueString ( "(0018,1030)", 0 );
+  }
+
+  std::string DCMTKImageIO::GetAcquisitionComments() const
+  {
+    return this->GetMetaDataValueString ( "(0018,4000)", 0 );
+  }
+
+  std::string DCMTKImageIO::GetPatientStatus() const
+  {
+    return this->GetMetaDataValueString ( "(0011,1010)", 0 );
+  }
 
   void 
   DCMTKImageIO
