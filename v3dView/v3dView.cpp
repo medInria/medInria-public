@@ -394,6 +394,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
     this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
     this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum" << "Off");
+    this->addProperty ("VRMode",                QStringList() << "GPU" << "RayCastAndTexture" << "RayCast" << "Texture" << "Default");
     this->addProperty ("Cropping",              QStringList() << "true" << "false");
     this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
 		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
@@ -409,6 +410,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("Opacity", "1.0");
     this->setProperty ("LeftClickInteraction", "Zooming");
     this->setProperty ("Mode", "VR");
+    this->setProperty ("VRMode", "Default");
     this->setProperty ("Preset", "None");
 
     connect(d->vtkWidget, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
@@ -814,6 +816,9 @@ void v3dView::onPropertySet(QString key, QString value)
     if(key == "Mode")
 	this->onModePropertySet(value);
 
+    if(key == "VRMode")
+	this->onVRModePropertySet(value);
+
     if(key == "Preset")
 	this->onPresetPropertySet(value);
 
@@ -895,35 +900,52 @@ void v3dView::onOrientationPropertySet(QString value)
 
 void v3dView::onModePropertySet (QString value)
 {
-  if (value=="VR") {
-      d->view3D->SetRenderingModeToVR();
-      d->view3D->SetVolumeRayCastFunctionToComposite();
-  }
+    if (value=="VR") {
+        d->view3D->SetRenderingModeToVR();
+	d->view3D->SetVolumeRayCastFunctionToComposite();
+    }
 
-  if (value=="MPR") {
-      d->view3D->SetRenderingModeToPlanar();
-	  d->view3D->ShowActorXOn();
-	  d->view3D->ShowActorYOn();
-	  d->view3D->ShowActorZOn();
-  }
+    if (value=="MPR") {
+        d->view3D->SetRenderingModeToPlanar();
+	    d->view3D->ShowActorXOn();
+	    d->view3D->ShowActorYOn();
+	    d->view3D->ShowActorZOn();
+    }
 
-  if (value=="MIP - Maximum") {
-      d->view3D->SetRenderingModeToVR();
-      d->view3D->SetVolumeRayCastFunctionToMaximumIntensityProjection();
-  }
+    if (value=="MIP - Maximum") {
+        d->view3D->SetRenderingModeToVR();
+	d->view3D->SetVolumeRayCastFunctionToMaximumIntensityProjection();
+    }
 
-  if (value=="MIP - Minimum") {
-      d->view3D->SetRenderingModeToVR();
-      d->view3D->SetVolumeRayCastFunctionToMinimumIntensityProjection();
-  }
+    if (value=="MIP - Minimum") {
+        d->view3D->SetRenderingModeToVR();
+	d->view3D->SetVolumeRayCastFunctionToMinimumIntensityProjection();
+    }
 	
-	if (value=="Off") {
-		d->view3D->SetRenderingModeToPlanar();
-		d->view3D->ShowActorXOff();
-		d->view3D->ShowActorYOff();
-		d->view3D->ShowActorZOff();
-	}
-  
+    if (value=="Off") {
+        d->view3D->SetRenderingModeToPlanar();
+	d->view3D->ShowActorXOff();
+	d->view3D->ShowActorYOff();
+	d->view3D->ShowActorZOff();
+    } 
+}
+
+void v3dView::onVRModePropertySet (QString value)
+{
+    if (value=="GPU") 
+        d->view3D->SetVolumeMapperToGPU();
+
+    if (value=="RayCastAndTexture")
+        d->view3D->SetVolumeMapperToRayCastAndTexture();
+
+    if (value=="RayCast")
+        d->view3D->SetVolumeMapperToRayCast();
+
+    if (value=="Texture")
+        d->view3D->SetVolumeMapperToGPU();
+
+    if (value=="Default")
+        d->view3D->SetVolumeMapperToDefault();
 }
 
 void v3dView::onScalarBarVisibilityPropertySet(QString value)

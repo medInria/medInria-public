@@ -64,6 +64,7 @@ public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);
     void onModePropertySet                  (QString value);
+    void onVRModePropertySet                (QString value);
     void onPresetPropertySet                (QString value);
     void onScalarBarVisibilityPropertySet   (QString value);
     void onLookupTablePropertySet           (QString value);
