@@ -131,9 +131,48 @@ void medDatabaseImporter::run(void)
 
 	if(!dtkdata->hasMetaData("Rows"))
             dtkdata->addMetaData("Rows", QStringList() << "");
-	
-	if(!dtkdata->hasMetaData("Columns"))
-            dtkdata->addMetaData("Columns", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Age"))
+            dtkdata->addMetaData("Age", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("BirthDate"))
+            dtkdata->addMetaData("BirthDate", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Gender"))
+            dtkdata->addMetaData("Gender", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Description"))
+            dtkdata->addMetaData("Description", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Modality"))
+            dtkdata->addMetaData("Modality", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Protocol"))
+            dtkdata->addMetaData("Protocol", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Comments"))
+            dtkdata->addMetaData("Comments", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Status"))
+            dtkdata->addMetaData("Status", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("AcquisitionDate"))
+            dtkdata->addMetaData("AcquisitionDate", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("ImportationDate"))
+            dtkdata->addMetaData("ImportationDate", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Referee"))
+            dtkdata->addMetaData("Referee", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Performer"))
+            dtkdata->addMetaData("Performer", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Institution"))
+            dtkdata->addMetaData("Institution", QStringList() << "");
+
+	if(!dtkdata->hasMetaData("Report"))
+            dtkdata->addMetaData("Report", QStringList() << "");
 
 
 	QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
@@ -219,14 +258,17 @@ void medDatabaseImporter::run(void)
                 }
             }
 	}
-
+	
 	if (!imageExists)
 	    imagesToWriteMap[ imageFileName ] << fileInfo.filePath();
-    }
 
-	QMap<QString, int>::const_iterator itk = keyToInt.begin();
+	delete dtkdata;
 	
-
+    }
+    
+    QMap<QString, int>::const_iterator itk = keyToInt.begin();
+    
+    
     // read and write images in mhd format
 
     QList<dtkAbstractData*> dtkDataList;
@@ -255,41 +297,90 @@ void medDatabaseImporter::run(void)
                 if (dataReader->read( it.value() )) {
                     imData = dataReader->data();
 
+		    QStringList size;
+		    size << QString::number (it.value().count());
+
                     if (imData) {
                         if (!imData->hasMetaData ("FilePaths"))
-                            imData->addMetaData("FilePaths", it.value());
+                            imData->addMetaData  ("FilePaths", it.value());
 
                         if (!imData->hasMetaData ("PatientName"))
-                            imData->addMetaData ("PatientName", QStringList() << "John Doe");
+                            imData->addMetaData  ("PatientName", QStringList() << "John Doe");
+			
                         if (!imData->hasMetaData ("StudyDescription"))
-                            imData->addMetaData ("StudyDescription", QStringList() << "EmptyStudy");
+                            imData->addMetaData  ("StudyDescription", QStringList() << "EmptyStudy");
+			
                         if (!imData->hasMetaData ("SeriesDescription"))
-                            imData->addMetaData ("SeriesDescription", QStringList() << QFileInfo (it.value()[0]).baseName());
+                            imData->addMetaData  ("SeriesDescription", QStringList() << QFileInfo (it.value()[0]).baseName());
 
-			if(!imData->hasMetaData("StudyID"))
-            		    imData->addMetaData("StudyID", QStringList() << "");
+			imData->setMetaData ("Size", size);
+
+			if(!imData->hasMetaData ("StudyID"))
+            		    imData->addMetaData ("StudyID", QStringList() << "");
 	
-			if(!imData->hasMetaData("SeriesID"))
-			    imData->addMetaData("SeriesID", QStringList() << "");
+			if(!imData->hasMetaData ("SeriesID"))
+			    imData->addMetaData ("SeriesID", QStringList() << "");
 
-			if(!imData->hasMetaData("Orientation"))
-			    imData->addMetaData("Orientation", QStringList() << "");
+			if(!imData->hasMetaData ("Orientation"))
+			    imData->addMetaData ("Orientation", QStringList() << "");
 
-			if(!imData->hasMetaData("SeriesNumber"))
-			    imData->addMetaData("SeriesNumber", QStringList() << "");
+			if(!imData->hasMetaData ("SeriesNumber"))
+			    imData->addMetaData ("SeriesNumber", QStringList() << "");
 
-			if(!imData->hasMetaData("SequenceName"))
-			    imData->addMetaData("SequenceName", QStringList() << "");
+			if(!imData->hasMetaData ("SequenceName"))
+			    imData->addMetaData ("SequenceName", QStringList() << "");
 
-			if(!imData->hasMetaData("SliceThickness"))
-			    imData->addMetaData("SliceThickness", QStringList() << "");
+			if(!imData->hasMetaData ("SliceThickness"))
+			    imData->addMetaData ("SliceThickness", QStringList() << "");
 
-			if(!imData->hasMetaData("Rows"))
-			    imData->addMetaData("Rows", QStringList() << "");
+			if(!imData->hasMetaData ("Rows"))
+			    imData->addMetaData ("Rows", QStringList() << "");
 	
-			if(!imData->hasMetaData("Columns"))
-			    imData->addMetaData("Columns", QStringList() << "");
+			if(!imData->hasMetaData ("Columns"))
+			    imData->addMetaData ("Columns", QStringList() << "");
 
+			if(!imData->hasMetaData("Age"))
+			    imData->addMetaData("Age", QStringList() << "");
+
+			if(!imData->hasMetaData("BirthDate"))
+			    imData->addMetaData("BirthDate", QStringList() << "");
+
+			if(!imData->hasMetaData("Gender"))
+			    imData->addMetaData("Gender", QStringList() << "");
+			
+			if(!imData->hasMetaData("Description"))
+			    imData->addMetaData("Description", QStringList() << "");
+			
+			if(!imData->hasMetaData("Modality"))
+			    imData->addMetaData("Modality", QStringList() << "");
+
+			if(!imData->hasMetaData("Protocol"))
+			    imData->addMetaData("Protocol", QStringList() << "");
+
+			if(!imData->hasMetaData("Comments"))
+			    imData->addMetaData("Comments", QStringList() << "");
+
+			if(!imData->hasMetaData("Status"))
+			    imData->addMetaData("Status", QStringList() << "");
+			
+			if(!imData->hasMetaData("AcquisitionDate"))
+			    imData->addMetaData("AcquisitionDate", QStringList() << "");
+			
+			if(!imData->hasMetaData("ImportationDate"))
+			    imData->addMetaData("ImportationDate", QStringList() << "");
+			
+			if(!imData->hasMetaData("Referee"))
+			    imData->addMetaData("Referee", QStringList() << "");
+			
+			if(!imData->hasMetaData("Performer"))
+			    imData->addMetaData("Performer", QStringList() << "");
+			
+			if(!imData->hasMetaData("Institution"))
+			    imData->addMetaData("Institution", QStringList() << "");
+			
+			if(!imData->hasMetaData("Report"))
+			    imData->addMetaData("Report", QStringList() << "");
+			
                         imData->addMetaData ("FileName", it.key() );
 			
                         delete dataReader;
@@ -326,31 +417,53 @@ void medDatabaseImporter::run(void)
                 }
             }
         }
-    }
+	//}
 
     // Now, populate the database
     
-    for (int i=0; i<dtkDataList.count(); i++) {
-
-        dtkAbstractData *dtkdata = dtkDataList[i];
+    //for (int i=0; i<dtkDataList.count(); i++) {
+	if (imData) {
+	  
+	  dtkAbstractData *dtkdata = imData; //dtkDataList[i];
 
       	QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0].simplified();
 	QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0].simplified();
 	QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0].simplified();
 
-	QString studyId = dtkdata->metaDataValues(tr("StudyID"))[0];
-	QString seriesId = dtkdata->metaDataValues(tr("SeriesID"))[0];
-	QString orientation = dtkdata->metaDataValues(tr("Orientation"))[0];
-	QString seriesNumber = dtkdata->metaDataValues(tr("SeriesNumber"))[0];
-	QString sequenceName = dtkdata->metaDataValues(tr("SequenceName"))[0];
+	QString studyId        = dtkdata->metaDataValues(tr("StudyID"))[0];
+	QString seriesId       = dtkdata->metaDataValues(tr("SeriesID"))[0];
+	int size               = dtkdata->metaDataValues(tr("Size"))[0].toInt();
+	qDebug() << dtkdata->metaDataValues(tr("Size"))[0] << " " << size;
+	
+	QString orientation    = dtkdata->metaDataValues(tr("Orientation"))[0];
+	QString seriesNumber   = dtkdata->metaDataValues(tr("SeriesNumber"))[0];
+	QString sequenceName   = dtkdata->metaDataValues(tr("SequenceName"))[0];
 	QString sliceThickness = dtkdata->metaDataValues(tr("SliceThickness"))[0];
-	QString rows = dtkdata->metaDataValues(tr("Rows"))[0];
-	QString columns = dtkdata->metaDataValues(tr("Columns"))[0];
+	QString rows           = dtkdata->metaDataValues(tr("Rows"))[0];
+	QString columns        = dtkdata->metaDataValues(tr("Columns"))[0];
 
-	QStringList filePaths = dtkdata->metaDataValues (tr("FilePaths"));
+	QString age            = dtkdata->metaDataValues(tr("Age"))[0];
+	QString birthdate      = dtkdata->metaDataValues(tr("BirthDate"))[0];
+	QString gender         = dtkdata->metaDataValues(tr("Gender"))[0];
+	QString description    = dtkdata->metaDataValues(tr("Description"))[0];
+	QString modality       = dtkdata->metaDataValues(tr("Modality"))[0];
+	QString protocol       = dtkdata->metaDataValues(tr("Protocol"))[0];
+	QString comments       = dtkdata->metaDataValues(tr("Comments"))[0];
+	QString status         = dtkdata->metaDataValues(tr("Status"))[0];
+	QString acqdate        = dtkdata->metaDataValues(tr("AcquisitionDate"))[0];
+	QString importdate     = dtkdata->metaDataValues(tr("ImportationDate"))[0];
+	QString referee        = dtkdata->metaDataValues(tr("Referee"))[0];
+	QString performer      = dtkdata->metaDataValues(tr("Performer"))[0];
+	QString institution    = dtkdata->metaDataValues(tr("Institution"))[0];
+	QString report         = dtkdata->metaDataValues(tr("Report"))[0];
+
+	QStringList filePaths  = dtkdata->metaDataValues (tr("FilePaths"));
+
+	/*
 	QString s_age;
 	if (dtkdata->hasMetaData(tr("(0010,1010)")))
 	    s_age=dtkdata->metaDataValues(tr("(0010,1010)"))[0];
+	*/
 	
 	//QString patientPath;
 	//QString studyPath;
@@ -392,16 +505,18 @@ void medDatabaseImporter::run(void)
             //patientPath = this->dataLocation() + "/" + QString().setNum (id.toInt());
 	}
 	else {
-            query.prepare("INSERT INTO patient (name, thumbnail) VALUES (:name, :thumbnail)");
+            query.prepare("INSERT INTO patient (name, thumbnail, birthdate, gender) VALUES (:name, :thumbnail, :birthdate, :gender)");
             query.bindValue(":name", patientName);
 	    query.bindValue(":thumbnail", thumbPath );
+	    query.bindValue(":birthdate", birthdate );
+	    query.bindValue(":gender",    gender );
             query.exec(); id = query.lastInsertId();
 
             //patientPath = this->dataLocation() + "/" + QString().setNum (id.toInt());
             /*
-	  if (!QDir (patientPath).exists() && !this->mkpath (patientPath))
-	    qDebug() << "Cannot create directory: " << patientPath;
-	  */
+	      if (!QDir (patientPath).exists() && !this->mkpath (patientPath))
+	      qDebug() << "Cannot create directory: " << patientPath;
+	    */
 	}
 	
 	
@@ -425,16 +540,16 @@ void medDatabaseImporter::run(void)
 	    query.bindValue(":studyID", studyId);
             //if (thumbPaths.count())
 	    query.bindValue(":thumbnail", thumbPath );
-		/*else
-                query.bindValue(":thumbnail", "");
-		*/
+	    /*else
+	      query.bindValue(":thumbnail", "");
+	    */
             query.exec(); id = query.lastInsertId();
-
+	    
             //studyPath = patientPath + "/" + QString().setNum (id.toInt());
             /*
-	  if (!QDir (studyPath).exists() && !this->mkpath (studyPath))
-	    qDebug() << "Cannot create directory: " << studyPath;
-	  */
+	      if (!QDir (studyPath).exists() && !this->mkpath (studyPath))
+	      qDebug() << "Cannot create directory: " << studyPath;
+	    */
 	}
 
 	
@@ -464,21 +579,37 @@ void medDatabaseImporter::run(void)
 	}
 	else {
 
-            query.prepare("INSERT INTO series (study, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age) VALUES (:study, :size, :name, :path, :seriesID, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :thumbnail, :age)");
-            query.bindValue(":study", id);
-            query.bindValue(":size", 1);
-            query.bindValue(":name", seriesName);
-            query.bindValue(":path", seriesPath);
-	    query.bindValue(":seriesID", seriesId);
-	    query.bindValue(":orientation", orientation);
-	    query.bindValue(":seriesNumber", seriesNumber);
-	    query.bindValue(":sequenceName", sequenceName);
+            query.prepare("INSERT INTO series (study, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) VALUES (:study, :size, :name, :path, :seriesID, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :thumbnail, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)");
+            query.bindValue(":study",          id);
+            query.bindValue(":size",           size);
+            query.bindValue(":name",           seriesName);
+            query.bindValue(":path",           seriesPath);
+	    query.bindValue(":seriesID",       seriesId);
+	    query.bindValue(":orientation",    orientation);
+	    query.bindValue(":seriesNumber",   seriesNumber);
+	    query.bindValue(":sequenceName",   sequenceName);
 	    query.bindValue(":sliceThickness", sliceThickness);
-	    query.bindValue(":rows", rows);
-	    query.bindValue(":columns", columns);
-	    query.bindValue(":thumbnail", thumbPath );
-	    query.bindValue(":age", s_age),
-            query.exec(); id = query.lastInsertId();
+	    query.bindValue(":rows",           rows);
+	    query.bindValue(":columns",        columns);
+	    query.bindValue(":thumbnail",      thumbPath );
+
+	    query.bindValue(":age",         age);
+	    query.bindValue(":description", description);
+	    query.bindValue(":modality",    modality);
+	    query.bindValue(":protocol",    protocol);
+	    query.bindValue(":comments",    comments);
+	    query.bindValue(":status",      status);
+	    query.bindValue(":acquisitiondate",     acqdate);
+	    query.bindValue(":importationdate",  importdate);
+	    query.bindValue(":referee",     referee);
+	    query.bindValue(":performer",   performer);
+	    query.bindValue(":institution", institution);
+	    query.bindValue(":report",      report);
+
+	    if(!query.exec())
+	        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+	    id = query.lastInsertId();
 
             //seriesPath = studyPath + "/" + QString().setNum (id.toInt()) + ".mhd";
 	}
@@ -518,8 +649,12 @@ void medDatabaseImporter::run(void)
 	    }
 	}
 
-        delete dtkdata;
+        //delete dtkdata;
+	delete imData;
+	imData = NULL;
     }
+    }
+    
 
     emit progressed(100);
     emit done();

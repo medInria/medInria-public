@@ -6,7 +6,15 @@
 	<file>icons/length.tiff</file>
 	<file>icons/wlww.tiff</file>
 	<file>icons/cropping.png</file>
+        <file>icons/medViewContainerCustomA.png</file>
+        <file>icons/medViewContainerCustomB.png</file>
+        <file>icons/medViewContainerCustomC.png</file>
+        <file>icons/medViewContainerCustomD.png</file>
+        <file>icons/medViewContainerCustomE.png</file>
+        <file>icons/medViewContainerCustomF.png</file>
+
         <file>medular.qss</file>
+
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/frame.png</file>
         <file>pixmaps/scrollbar-horizontal-addline.png</file>

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu May 13 16:33:10 2010 (+0200)
+ * Last-Updated: Wed Jun  9 00:27:43 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 336
+ *     Update #: 341
  */
 
 /* Commentary: 
@@ -31,7 +31,6 @@
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
-#include <medGui/medToolBoxInformation.h>
 #include <medGui/medToolBoxJobs.h>
 #include <medGui/medToolBoxSource.h>
 
@@ -43,7 +42,6 @@ class medBrowserAreaPrivate
 {
 public:
     medToolBoxContainer *toolbox_container;
-    medToolBoxInformation *toolbox_information;
     medToolBoxJobs *toolbox_jobs;
     medToolBoxSource *toolbox_source;
 
@@ -127,10 +125,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(d->toolbox_source, SIGNAL(viewCurrent()), this, SLOT(onFileSystemViewClicked()));
     connect(d->toolbox_source, SIGNAL(indexChanged(int)), stack, SLOT(setCurrentIndex(int)));
 
-    // Information toolbox /////////////////////////////////////////////
-
-    d->toolbox_information = new medToolBoxInformation(this);
-
     // Jobs //////////////////////////////////////////
 
     d->toolbox_jobs = new medToolBoxJobs(this);
@@ -141,7 +135,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(d->toolbox_source);
-    d->toolbox_container->addToolBox(d->toolbox_information);
     d->toolbox_container->addToolBox(d->toolbox_jobs);
 
     // Layout /////////////////////////////////////////////
@@ -209,8 +202,6 @@ void medBrowserArea::onFileSystemExportClicked(void)
 void medBrowserArea::onFileSystemViewClicked(void)
 {
     QFileInfo info(d->filesystem_model->filePath(d->filesystem_view->currentIndex()));
-
-    qDebug() << __func__ << info.absoluteFilePath();
 
     emit open(info.absoluteFilePath());
 }

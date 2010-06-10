@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:18:20 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Mar 20 20:03:03 2010 (+0100)
+ * Last-Updated: Wed Jun  9 00:24:02 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 97
+ *     Update #: 101
  */
 
 /* Commentary: 
@@ -44,9 +44,19 @@ medDatabaseView::~medDatabaseView(void)
 
 }
 
+int medDatabaseView::sizeHintForColumn(int column) const
+{
+    Q_UNUSED(column);
+
+    return 150;
+}
+
 void medDatabaseView::setModel(medDatabaseModel *model)
 {
     QTreeView::setModel(model);
+
+    for(int i = 0; i < model->columnCount(); this->resizeColumnToContents(i), i++);
+
     this->hideColumn(20);
 }
 

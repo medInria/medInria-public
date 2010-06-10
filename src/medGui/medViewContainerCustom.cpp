@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:13:32 2010 (+0100)
+ * Last-Updated: Fri May 21 15:18:31 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 42
+ *     Update #: 63
  */
 
 /* Commentary: 
@@ -35,6 +35,52 @@ void medViewContainerCustom::split(int rows, int cols)
     for(int i = 0 ; i < rows ; i++)
         for(int j = 0 ; j < cols ; j++)
             d->layout->addWidget(new medViewContainerCustom(this), i, j);
+
+    s_current = 0;
+}
+
+void medViewContainerCustom::setPreset(int preset)
+{
+    if (d->layout->count())
+        return;
+
+    medViewContainerCustom *custom1;
+    medViewContainerCustom *custom2;
+
+    switch(preset) {
+    case A:
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
+        break;
+    case B:
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
+        d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
+        break;
+    case C:
+        custom1 = new medViewContainerCustom(this);
+        custom1->split(2, 1);
+        custom2 = new medViewContainerCustom(this);
+        d->layout->addWidget(custom1, 0, 0);
+        d->layout->addWidget(custom2, 0, 1);
+        d->layout->setColumnStretch(0, 1);
+        d->layout->setColumnStretch(1, 2);
+        break;
+    case D:
+        custom1 = new medViewContainerCustom(this);
+        custom1->split(3, 1);
+        custom2 = new medViewContainerCustom(this);
+        d->layout->addWidget(custom1, 0, 0);
+        d->layout->addWidget(custom2, 0, 1);
+        d->layout->setColumnStretch(0, 1);
+        d->layout->setColumnStretch(1, 2);
+        break;
+    case E:
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
+        d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
+        d->layout->addWidget(new medViewContainerCustom(this), 1, 1);
+        break;
+    };
 
     s_current = 0;
 }

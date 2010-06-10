@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:38:39 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 11:05:57 2010 (+0100)
+ * Last-Updated: Thu May 13 20:07:19 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 11
  */
 
 /* Commentary: 
@@ -162,4 +162,13 @@ void medDatabaseNavigator::onImageClicked(int id)
 #ifndef WIN32
     qDebug() << __func__ << id;
 #endif
+}
+
+void medDatabaseNavigator::addThumbnail(const QImage& thumbnail)
+{
+    medDatabaseNavigatorItemGroup *group = new medDatabaseNavigatorItemGroup;
+    medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(-1, -1, -1, -1, thumbnail);
+
+    group->addItem(item);
+    d->scene->addGroup(group);    
 }

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 10:03:42 2010 (+0100)
+ * Last-Updated: Fri May 21 15:00:09 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -35,6 +35,14 @@ public:
 signals:
     void modeChanged(int);
     void split(int, int);
+    void presetClicked(int);
+
+protected slots:
+    void onButtonAClicked(void);
+    void onButtonBClicked(void);
+    void onButtonCClicked(void);
+    void onButtonDClicked(void);
+    void onButtonEClicked(void);
 
 private:
     medToolBoxLayoutPrivate *d;

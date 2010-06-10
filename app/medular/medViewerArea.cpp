@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu May 13 16:31:19 2010 (+0200)
+ * Last-Updated: Fri May 21 15:07:10 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 789
+ *     Update #: 815
  */
 
 /* Commentary: 
@@ -97,6 +97,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     connect(d->layoutToolBox, SIGNAL(modeChanged(int)), this, SLOT(setStackIndex(int)));
     connect(d->layoutToolBox, SIGNAL(split(int, int)), this, SLOT(split(int, int)));
+    connect(d->layoutToolBox, SIGNAL(presetClicked(int)), this, SLOT(setPreset(int)));
 
     // -- View toolbox --
     
@@ -404,17 +405,17 @@ void medViewerArea::open(const QString& file)
 	return;
     }
         
-    int id = d->patientToolBox->patientIndex (fileInfo.baseName());
+    int id = d->patientToolBox->patientIndex(fileInfo.baseName());
 
     if (id == -1) {
-        d->patientToolBox->addItem (fileInfo.baseName());
-        id = d->patientToolBox->patientIndex (fileInfo.baseName());
+        d->patientToolBox->addItem(fileInfo.baseName());
+        id = d->patientToolBox->patientIndex(fileInfo.baseName());
     }
     
     if (id == -1)
         return;
     
-    d->patientToolBox->setPatientIndex ( id );
+    d->patientToolBox->setPatientIndex(id);
     
     medViewerAreaStack *view_stack;
 
@@ -442,13 +443,18 @@ void medViewerArea::open(const QString& file)
     if (!view)
         return;
 
-    view->setData (data);
+    view->setData(data);
     view->reset();
     
     view_stack->current()->current()->setView(view);
     view_stack->current()->current()->setFocus(Qt::MouseFocusReason);
 
     connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
+
+    // towards thumbnail generation
+
+    d->navigator->reset();
+    d->navigator->addThumbnail(data->thumbnail());
 }
 
 // layout settings
@@ -458,6 +464,14 @@ void medViewerArea::setStackIndex(int index)
     if (d->view_stacks.count())
         if (d->view_stacks.value(d->patientToolBox->patientIndex()))
 	    d->view_stacks.value(d->patientToolBox->patientIndex())->setCurrentIndex(index);
+}
+
+void medViewerArea::setPreset(int preset)
+{
+    if (d->view_stacks.count())
+        if (d->view_stacks.value(d->patientToolBox->patientIndex()))
+	    if(medViewContainerCustom *custom = dynamic_cast<medViewContainerCustom *>(d->view_stacks.value(d->patientToolBox->patientIndex())->custom()))
+                custom->setPreset(preset);
 }
 
 // view settings
