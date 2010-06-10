@@ -44,5 +44,9 @@
         <file>pixmaps/medular-logo.png</file>
         <file>pixmaps/mediseen-logo.png</file>
         <file>pixmaps/medinria-logo.png</file>
+	<file>html/index.html</file>
+	<file>html/css/style.css</file>
+	<file>html/js/jquery.tools.min.js</file>
+	<file>html/img/overlay_close.png</file>
     </qresource>
 </RCC>

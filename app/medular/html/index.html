@@ -1,0 +1,123 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+
+    <script src="js/jquery.tools.min.js"></script>
+
+<style>
+/* the overlayed element */
+.simple_overlay {
+	
+	/* must be initially hidden */
+	display:none;
+	
+	/* place overlay on top of other elements */
+	z-index:10000;
+	
+	/* styling */
+	background-color:#333;
+	
+	width:675px;	
+	min-height:200px;
+	border:1px solid #666;
+	
+	/* CSS3 styling for latest browsers */
+	-moz-box-shadow:0 0 90px 5px #000;
+	-webkit-box-shadow: 0 0 90px #000;	
+}
+
+/* close button positioned on upper right corner */
+.simple_overlay .close {
+	background-image:url(img/overlay_close.png);
+	position:absolute;
+	right:-15px;
+	top:-15px;
+	cursor:pointer;
+	height:35px;
+	width:35px;
+}
+
+
+	/* some styling for triggers */
+	#triggers {
+		text-align:center;
+	}
+	
+	#triggers img {
+		cursor:pointer;
+		margin:0 5px;
+		background-color:#fff;
+		border:1px solid #ccc;
+		padding:2px;
+	
+		-moz-border-radius:4px;
+		-webkit-border-radius:4px;
+		
+	}
+	
+	/* styling for elements inside overlay */
+	.details {
+		position:absolute;
+		top:15px;
+		right:15px;
+		font-size:11px;
+		color:#fff;
+		width:150px;
+	}
+	
+	.details h3 {
+		color:#aba;
+		font-size:15px;
+		margin:0 0 -10px 0;
+	}
+	</style>
+  </head>
+
+  <body>
+    <h1>Prout</h1>
+
+    <div align="center">
+      <img src="../pixmaps/medinria-logo.png"/>
+    </div>
+
+    Our former logos:<br>
+    <img src="../pixmaps/medular-logo.png" width="50px" rel="#thumb1"/>
+    <img src="../pixmaps/mediseen-logo.png" width="50px" rel="#thumb2"/>
+
+    <div class="simple_overlay" id="thumb1">
+      <img src="../pixmaps/medular-logo.png" />
+      <div class="details">
+	<h3>Logo 1</h3>
+	<h4>medular version</h4>
+	<p>The content ...</p>
+      </div>
+    </div>
+
+    <div class="simple_overlay" id="thumb2">
+      <img src="../pixmaps/mediseen-logo.png" />
+      <div class="details">
+	<h3>Logo 2</h3>
+	<h4>mediseen version</h4>
+	<p>The content ...</p>
+      </div>
+    </div>
+
+    <script>
+      $(document).ready(function() {
+      $("img[rel]").overlay();
+      });
+    </script>
+
+    <br/>
+    <br/>
+
+    Workspaces:
+    <ul>
+      <li><a href="medular://browser">Browser</a></li>
+      <li><a href="medular://viewer">Viewer</a></li>
+      <li><a href="medular://documentation">Documentation</a></li>
+      <li><a href="http://www.inria.fr">dtk</a></li>
+    </ul>
+
+  </body>
+</html>
