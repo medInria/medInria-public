@@ -29,7 +29,6 @@ PURPOSE.  See the above copyright notices for more information.
 
 #ifdef vtkINRIA3D_USE_ITK
 #include <itkImage.h>
-#include <itkGDCMImporter.h>
 #endif
 
 

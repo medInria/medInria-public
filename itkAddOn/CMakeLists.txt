@@ -7,25 +7,29 @@ IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
 ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
 
 
-IF( WIN32 )
-  ADD_LIBRARY(itkAddOn STATIC
-    itkRegistrationFactory-explicit-template.cxx
+SET ( itkAddOnSRCS
+  itkRegistrationFactory-explicit-template.cxx
+  itkGISImageIO.cxx
+  itkGISImageIOFactory.cxx
+  itkMultiThreadedImageIOBase.cxx
+)
+
+IF (NOT ITK_USE_SYSTEM_GDCM)
+  SET ( itkAddOnSRCS
+    ${itkAddOnSRCS}
+    itkDicomTagManager.cxx
     itkGDCMImporter.cxx
     itkGDCMExporter.cxx
-    itkDicomTagManager.cxx
-    itkGISImageIO.cxx
-    itkGISImageIOFactory.cxx
-    itkMultiThreadedImageIOBase.cxx
+    )
+ENDIF(NOT ITK_USE_SYSTEM_GDCM)
+
+IF( WIN32 )
+  ADD_LIBRARY(itkAddOn STATIC
+    ${itkAddOnSRCS}
   )
 ELSE( WIN32 )
   ADD_LIBRARY( itkAddOn ${ITK_LIBS_STYLE}
-    itkRegistrationFactory-explicit-template.cxx
-    itkGDCMImporter.cxx
-    itkGDCMExporter.cxx
-    itkDicomTagManager.cxx
-    itkGISImageIO.cxx
-    itkGISImageIOFactory.cxx
-    itkMultiThreadedImageIOBase.cxx
+    ${itkAddOnSRCS} 
   )
 ENDIF( WIN32 )
 
@@ -73,26 +77,29 @@ ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
 #  ${ITK_LIBRARIES}  
 # )
 
-ADD_EXECUTABLE(GDCMImport
-GDCMImport.cxx
-)
+IF (ITK_USE_SYSTEM_GDCM)
 
-IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
- TARGET_LINK_LIBRARIES(GDCMImport 
-  ${ITK_LIBRARIES}
-  getoptcompatlib
- )
-ELSE(WIN32 AND NOT CYGWIN AND NOT MINGW)
- TARGET_LINK_LIBRARIES(GDCMImport
-  ${ITK_LIBRARIES}
- )
-ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+  ADD_EXECUTABLE(GDCMImport
+    GDCMImport.cxx
+    )
+  IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+    TARGET_LINK_LIBRARIES(GDCMImport 
+      ${ITK_LIBRARIES}
+      getoptcompatlib
+      )
+  ELSE(WIN32 AND NOT CYGWIN AND NOT MINGW)
+    TARGET_LINK_LIBRARIES(GDCMImport
+      ${ITK_LIBRARIES}
+      )
+  ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+  
+ENDIF (ITK_USE_SYSTEM_GDCM)
 
 if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
   install_targets(
     ${vtkINRIA3D_INSTALL_LIB_DIR}
     RUNTIME_DIRECTORY ${vtkINRIA3D_INSTALL_BIN_DIR}
-    itkAddOn
+    itkAddOn      
     )
 endif(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
 
