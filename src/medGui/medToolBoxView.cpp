@@ -109,8 +109,8 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     d->view3dVRModeComboBox = new QComboBox(this);
     d->view3dVRModeComboBox->setFocusPolicy(Qt::NoFocus);
     d->view3dVRModeComboBox->addItem( "GPU" );
-    d->view3dVRModeComboBox->addItem( "RayCastAndTexture" );
-    d->view3dVRModeComboBox->addItem( "RayCast" );
+    d->view3dVRModeComboBox->addItem( "Ray Cast / Texture" );
+    d->view3dVRModeComboBox->addItem( "Ray Cast" );
     d->view3dVRModeComboBox->addItem( "Texture" );
     d->view3dVRModeComboBox->addItem( "Default" );
 
