@@ -314,6 +314,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DAxial->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
     d->observer->setView (d->view2DAxial);
 
+    // 2D mode
     QAction *axialAct = new QAction(tr("Axial"), d->vtkWidget);
     connect(axialAct, SIGNAL(triggered()), this, SLOT(onMenuAxialTriggered()));
 
@@ -323,6 +324,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     QAction *sagittalAct = new QAction(tr("Sagittal"), d->vtkWidget);
     connect(sagittalAct, SIGNAL(triggered()), this, SLOT(onMenuSagittalTriggered()));
 
+    // 3D mode
     QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
     connect(vrAct, SIGNAL(triggered()), this, SLOT(onMenu3DVRTriggered()));
 
@@ -394,7 +396,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
     this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
     this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum" << "Off");
-    this->addProperty ("VRMode",                QStringList() << "GPU" << "RayCastAndTexture" << "RayCast" << "Texture" << "Default");
+    this->addProperty ("VRMode",                QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default");
     this->addProperty ("Cropping",              QStringList() << "true" << "false");
     this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
 		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
@@ -935,10 +937,10 @@ void v3dView::onVRModePropertySet (QString value)
     if (value=="GPU") 
         d->view3D->SetVolumeMapperToGPU();
 
-    if (value=="RayCastAndTexture")
+    if (value=="Ray Cast / Texture")
         d->view3D->SetVolumeMapperToRayCastAndTexture();
 
-    if (value=="RayCast")
+    if (value=="Ray Cast")
         d->view3D->SetVolumeMapperToRayCast();
 
     if (value=="Texture")
