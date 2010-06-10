@@ -338,8 +338,30 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     connect(mprAct, SIGNAL(triggered()), this, SLOT(onMenu3DMPRTriggered()));
 	
     QAction *offAct = new QAction(tr("Off"), d->vtkWidget);
-    connect(offAct, SIGNAL(triggered()), this, SLOT(onMenu3DOffTriggered()));
-    
+    connect(offAct, SIGNAL(triggered()), this, SLOT(onMenu3DOffTriggered())); 
+
+    // Volume Mapper
+    QAction *gpuAct = new QAction(tr("GPU"), d->vtkWidget);
+    connect(gpuAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRGPUTriggered()));
+   
+    QAction *rntAct = new QAction(tr("Ray Cast / Texture"), d->vtkWidget);
+    connect(rntAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRRayCastAndTextureTriggered()));
+
+    QAction *rayAct = new QAction(tr("Ray Cast"), d->vtkWidget);
+    connect(rayAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRRayCastTriggered()));
+
+    QAction *texAct = new QAction(tr("Texture"), d->vtkWidget);
+    connect(texAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRTextureTriggered()));
+
+    QAction *defAct = new QAction(tr("Default"), d->vtkWidget);
+    connect(defAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRDefaultTriggered()));
+   
+    // Tools
     QAction *zoomAct = new QAction(tr("Zoom"), d->vtkWidget);
     connect(zoomAct, SIGNAL(triggered()), this, SLOT(onMenuZoomTriggered()));
 
@@ -362,6 +384,13 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     tridMenu->addAction (minipAct);
     tridMenu->addAction (mprAct);
     tridMenu->addAction (offAct);
+
+    QMenu *vrMenu = d->menu->addMenu (tr ("Renderer"));
+    vrMenu->addAction (gpuAct);
+    vrMenu->addAction (rntAct);
+    vrMenu->addAction (rayAct);
+    vrMenu->addAction (texAct);
+    vrMenu->addAction (defAct);
 
     d->menu->addSeparator();
     d->menu->addAction(zoomAct);
@@ -1392,6 +1421,36 @@ void v3dView::onMenu3DOffTriggered (void)
 	
     this->setProperty("Mode", "Off");
     d->view3D->Render();
+}
+
+void v3dView::onMenuVRGPUTriggered (void)
+{
+  this->setProperty("VRMode", "GPU");
+  d->view3D->Render();
+}
+
+void v3dView::onMenuVRRayCastAndTextureTriggered (void)
+{
+  this->setProperty("VRMode", "Ray Cast / Texture");
+  d->view3D->Render();
+}
+
+void v3dView::onMenuVRRayCastTriggered (void)
+{
+  this->setProperty("VRMode", "Ray Cast");
+  d->view3D->Render();
+}
+
+void v3dView::onMenuVRTextureTriggered (void)
+{
+  this->setProperty("VRMode", "Texture");
+  d->view3D->Render();
+}
+
+void v3dView::onMenuVRDefaultTriggered (void)
+{
+  this->setProperty("VRMode", "Default");
+  d->view3D->Render();
 }
 
 void v3dView::onMenuZoomTriggered (void)
