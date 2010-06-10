@@ -69,6 +69,7 @@ target_link_libraries(ITKDCMTKIO
 set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageReaderPlugin.h
   itkDCMTKDataImageReader.h
+  itkGDCMDataImageReader.h
   itkDataImageReaderBase.h
   itkMetaDataImageReader.h
   itkAnalyzeDataImageReader.h
@@ -87,6 +88,7 @@ set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderBase.cpp
   itkMetaDataImageReader.cpp
   itkDCMTKDataImageReader.cpp
+  itkGDCMDataImageReader.cpp
   itkAnalyzeDataImageReader.cpp
   itkPNGDataImageReader.cpp
   itkBMPDataImageReader.cpp

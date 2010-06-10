@@ -28,6 +28,6 @@ namespace itk
     virtual ~DataImageReaderCommand(){};
     
   private:
-    itkDCMTKDataImageReader* m_Reader;
+    dtkAbstractDataReader* m_Reader;
   };
 }
