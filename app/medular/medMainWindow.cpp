@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Jun  9 09:15:28 2010 (+0200)
+ * Last-Updated: Thu Jun 10 12:14:33 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 404
+ *     Update #: 406
  */
 
 /* Commentary: 
@@ -101,8 +101,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(windowFullScreenAction, SIGNAL(toggled(bool)), this, SLOT(setFullScreen(bool)));
 
-    QMenu *windowMenu = this->menuBar()->addMenu("Window");
-    windowMenu->addAction(windowFullScreenAction);
+    this->addAction(windowFullScreenAction);
 
     // Setting up widgets
 
