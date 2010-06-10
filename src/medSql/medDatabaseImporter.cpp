@@ -258,14 +258,17 @@ void medDatabaseImporter::run(void)
                 }
             }
 	}
-
+	
 	if (!imageExists)
 	    imagesToWriteMap[ imageFileName ] << fileInfo.filePath();
-    }
 
-	QMap<QString, int>::const_iterator itk = keyToInt.begin();
+	delete dtkdata;
 	
-
+    }
+    
+    QMap<QString, int>::const_iterator itk = keyToInt.begin();
+    
+    
     // read and write images in mhd format
 
     QList<dtkAbstractData*> dtkDataList;
@@ -414,13 +417,14 @@ void medDatabaseImporter::run(void)
                 }
             }
         }
-    }
+	//}
 
     // Now, populate the database
     
-    for (int i=0; i<dtkDataList.count(); i++) {
-
-        dtkAbstractData *dtkdata = dtkDataList[i];
+    //for (int i=0; i<dtkDataList.count(); i++) {
+	if (imData) {
+	  
+	  dtkAbstractData *dtkdata = imData; //dtkDataList[i];
 
       	QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0].simplified();
 	QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0].simplified();
@@ -645,8 +649,12 @@ void medDatabaseImporter::run(void)
 	    }
 	}
 
-        delete dtkdata;
+        //delete dtkdata;
+	delete imData;
+	imData = NULL;
     }
+    }
+    
 
     emit progressed(100);
     emit done();
