@@ -6,6 +6,7 @@
   vtkMetaVolumeMesh.cxx
   vtkDataManager.cxx
   vtkMetaDataSetSequence.cxx
+  vtkDiffXMLWriter.cxx
   )
 
   IF (VTK_MAJOR_VERSION GREATER 4)

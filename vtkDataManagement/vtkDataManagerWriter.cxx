@@ -644,7 +644,6 @@ int vtkDataManagerWriter::FillInputPortInformation(
   return 1;
 }
 
-
 //----------------------------------------------------------------------------
 void vtkDataManagerWriter::SetInput (vtkDataManager* manager)
 {

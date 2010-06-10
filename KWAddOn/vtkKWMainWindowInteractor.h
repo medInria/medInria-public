@@ -91,6 +91,7 @@ public:
   virtual void OnMenuFileOpenDICOM();
   virtual void OnMenuFileSaveDICOM();
   virtual void SaveManagerCallback (void);
+  virtual void SaveDiffXMLCallback (void);
   
   virtual void OnDataSetSave();
   virtual void OnDataSetDelete();
