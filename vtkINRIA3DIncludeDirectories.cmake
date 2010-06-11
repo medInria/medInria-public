@@ -26,6 +26,7 @@ ${vtkINRIA3D_SOURCE_DIR}/KWAddOn/
 ${vtkINRIA3D_SOURCE_DIR}/KWAddOn/GenericToolBox/
 ${vtkINRIA3D_SOURCE_DIR}/vtkItk/
 ${vtkINRIA3D_SOURCE_DIR}/itkAddOn/
+${vtkINRIA3D_SOURCE_DIR}/itkAddOn/Registration/
 ${vtkINRIA3D_SOURCE_DIR}/wxSamples/HelloWorld/
 ${vtkINRIA3D_SOURCE_DIR}/wxSamples/ImageViewer/
 ${vtkINRIA3D_SOURCE_DIR}/vtkRenderingAddOn/
