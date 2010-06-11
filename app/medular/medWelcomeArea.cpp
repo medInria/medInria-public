@@ -36,7 +36,7 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
     d->view= new QWebView(this);
     d->view->setContextMenuPolicy(Qt::NoContextMenu);
     d->view->setAcceptDrops(false);
-    d->view->settings()->setAttribute(QWebSettings::PluginsEnabled, false);
+    d->view->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
     d->view->settings()->setAttribute(QWebSettings::JavaEnabled, false);
     d->view->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     d->view->setHtml(dtkReadFile(QString(":/html/index.html")), QUrl("qrc:/html/index.html"));

@@ -46,7 +46,13 @@
         <file>pixmaps/medinria-logo.png</file>
 	<file>html/index.html</file>
 	<file>html/css/style.css</file>
+	<file>html/css/blueprint/screen.css</file>
 	<file>html/js/jquery.tools.min.js</file>
+	<file>html/js/flowplayer-3.2.2.min.js</file>
 	<file>html/img/overlay_close.png</file>
+	<file>html/img/tooltip/black_arrow.png</file>
+	<file>html/swf/flowplayer.controls-3.2.1.swf</file>
+	<file>html/swf/flowplayer-3.2.2.swf</file>
+   
     </qresource>
 </RCC>
