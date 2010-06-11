@@ -37,6 +37,10 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+if(NOT ITK_USE_SYSTEM_GDCM)
+  message(FATAL_ERROR "The DICOM GDCM reader plugin needs ITK to compile with SYSTEM_GDCM, please, set the option ITK_USE_SYSTEM_GDCM:ON in ITK and re-compile")
+endif(NOT ITK_USE_SYSTEM_GDCM)
+
 find_package(DCMTK2 REQUIRED)
 include_directories(${DCMTK_INCLUDE_DIR})
 
