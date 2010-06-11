@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri May 21 15:07:10 2010 (+0200)
+ * Last-Updated: Fri Jun 11 13:57:25 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 815
+ *     Update #: 829
  */
 
 /* Commentary: 
@@ -107,7 +107,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
     connect(d->viewToolBox, SIGNAL(lutPresetChanged(QString)), this, SLOT(setupLUTPreset(QString)));
     connect(d->viewToolBox, SIGNAL(tdModeChanged(QString)), this, SLOT(setup3DMode(QString)));
-    //connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), this, SLOT(setup3DLOD(int)));
+    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), this, SLOT(setup3DLOD(int)));
     connect(d->viewToolBox, SIGNAL(windowingChanged(bool)), this, SLOT(setupWindowing(bool)));
     connect(d->viewToolBox, SIGNAL(zoomingChanged(bool)), this, SLOT(setupZooming(bool)));
     connect(d->viewToolBox, SIGNAL(slicingChanged(bool)), this, SLOT(setupSlicing(bool)));
@@ -308,8 +308,6 @@ void medViewerArea::open(const medDataIndex& index)
     
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setView(view);
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
-
-    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
 }
 
 void medViewerArea::onPatientIndexChanged(int id)
@@ -448,8 +446,6 @@ void medViewerArea::open(const QString& file)
     view_stack->current()->current()->setView(view);
     view_stack->current()->current()->setFocus(Qt::MouseFocusReason);
 
-    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), view, SLOT(onVRQualitySet(int)));
-
     // towards thumbnail generation
 
     d->navigator->reset();
@@ -545,6 +541,13 @@ void medViewerArea::setupLUTPreset (QString table)
 
 void medViewerArea::setup3DLOD (int value)
 {
+    if(!d->view_stacks.count())
+        return;
+
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->view()) {
+        view->setMetaData("LOD", QString::number(value));
+	view->update();
+    }
 }
 
 void medViewerArea::setupWindowing (bool checked)
