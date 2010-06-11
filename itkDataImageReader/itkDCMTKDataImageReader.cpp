@@ -260,20 +260,49 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       QStringList rows;
       QStringList columns;
 
+      QStringList age;
+      QStringList birthdate;
+      QStringList gender;
+      QStringList desc;
+      QStringList modality;
+      QStringList acqdate;
+      QStringList importdate;
+      QStringList referee;
+      QStringList performer;
+      QStringList institution;
+      QStringList report;
+      QStringList protocol;
+      QStringList comments;
+      QStringList status;
+
       QStringList filePaths;
       
       patientName << d->io->GetPatientName().c_str();
-      studyName << d->io->GetStudyDescription().c_str();
-      seriesName << d->io->GetSeriesDescription().c_str();
+      studyName   << d->io->GetStudyDescription().c_str();
+      seriesName  << d->io->GetSeriesDescription().c_str();
 
-      studyId << d->io->GetStudyID().c_str();
-      seriesId << d->io->GetSeriesID().c_str();
-      orientation << d->io->GetOrientation().c_str();
-      seriesNumber << d->io->GetSeriesNumber().c_str();
-      sequenceName << d->io->GetSequenceName().c_str();
+      studyId        << d->io->GetStudyID().c_str();
+      seriesId       << d->io->GetSeriesID().c_str();
+      orientation    << d->io->GetOrientation().c_str();
+      seriesNumber   << d->io->GetSeriesNumber().c_str();
+      sequenceName   << d->io->GetSequenceName().c_str();
       sliceThickness << d->io->GetSliceThickness().c_str();
-      rows << d->io->GetRows().c_str();
-      columns << d->io->GetColumns().c_str();
+      rows           << d->io->GetRows().c_str();
+      columns        << d->io->GetColumns().c_str();
+      age            << d->io->GetPatientAge().c_str();
+      birthdate      << d->io->GetPatientDOB().c_str();
+      gender         << d->io->GetPatientSex().c_str();
+      desc           << d->io->GetScanOptions().c_str();
+      modality       << d->io->GetModality().c_str();
+      acqdate        << d->io->GetAcquisitionDate().c_str();
+      referee        << d->io->GetReferringPhysicianName().c_str();
+      performer      << d->io->GetPerformingPhysicianName().c_str();
+      institution    << d->io->GetInstitution().c_str();
+      protocol       << d->io->GetProtocolName().c_str();
+      comments       << d->io->GetAcquisitionComments().c_str();
+      status         << d->io->GetPatientStatus().c_str();
+      report << "";
+      
 
 
       for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++ )
@@ -294,17 +323,29 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
       else
 	dtkdata->setMetaData ( "SeriesDescription", seriesName );
 
-      dtkdata->setMetaData("StudyID", studyId);
-      dtkdata->setMetaData("SeriesID", seriesId);
-      dtkdata->setMetaData("Orientation", orientation);
-      dtkdata->setMetaData("SeriesNumber", seriesNumber);
-      dtkdata->setMetaData("SequenceName", sequenceName);
-      dtkdata->setMetaData("SliceThickness", sliceThickness);
-      dtkdata->setMetaData("Rows", rows);
-      dtkdata->setMetaData("Columns", columns);
-
-
-      dtkdata->addMetaData ("FilePaths", filePaths);
+      dtkdata->setMetaData("StudyID",         studyId);
+      dtkdata->setMetaData("SeriesID",        seriesId);
+      dtkdata->setMetaData("Orientation",     orientation);
+      dtkdata->setMetaData("SeriesNumber",    seriesNumber);
+      dtkdata->setMetaData("SequenceName",    sequenceName);
+      dtkdata->setMetaData("SliceThickness",  sliceThickness);
+      dtkdata->setMetaData("Rows",            rows);
+      dtkdata->setMetaData("Columns",         columns);
+      dtkdata->setMetaData("Age",             age);
+      dtkdata->setMetaData("BirthDate",       birthdate);
+      dtkdata->setMetaData("Gender",          gender);
+      dtkdata->setMetaData("Description",     desc);
+      dtkdata->setMetaData("Modality",        modality);
+      dtkdata->setMetaData("AcquisitionDate", acqdate);
+      dtkdata->setMetaData("Referee",         referee);
+      dtkdata->setMetaData("Performer",       performer);
+      dtkdata->setMetaData("Institution",     institution);
+      dtkdata->setMetaData("Report",          report);
+      dtkdata->setMetaData("Protocol",        protocol);
+      dtkdata->setMetaData("Comments",        comments);
+      dtkdata->setMetaData("Status",          status);      
+      
+      dtkdata->addMetaData ("FilePaths",      filePaths);
 	
     }
 }
