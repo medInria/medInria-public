@@ -8,7 +8,6 @@ ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
 
 
 SET ( itkAddOnSRCS
-  itkRegistrationFactory-explicit-template.cxx
   itkGISImageIO.cxx
   itkGISImageIOFactory.cxx
   itkMultiThreadedImageIOBase.cxx
@@ -37,22 +36,6 @@ TARGET_LINK_LIBRARIES(itkAddOn
   ${ITK_LIBRARIES}
 )
 
-ADD_EXECUTABLE(RegistrationFactory
-RegistrationFactory.cxx
-)
-
-IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
- TARGET_LINK_LIBRARIES(RegistrationFactory 
-  itkAddOn 
-  getoptcompatlib
- )
-ELSE(WIN32 AND NOT CYGWIN AND NOT MINGW)
- TARGET_LINK_LIBRARIES(RegistrationFactory
-  itkAddOn
- )
-ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
-
-
 ADD_EXECUTABLE(itkReshaper
 itkReshaper.cxx
 )
@@ -67,15 +50,6 @@ ELSE(WIN32 AND NOT CYGWIN AND NOT MINGW)
   itkAddOn
  )
 ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
-
-
-#ADD_EXECUTABLE(transform_gradients
-#transform_gradients.cxx
-#)
-
-#TARGET_LINK_LIBRARIES(transform_gradients
-#  ${ITK_LIBRARIES}  
-# )
 
 IF (ITK_USE_SYSTEM_GDCM)
 
