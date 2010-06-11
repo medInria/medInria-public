@@ -133,7 +133,7 @@ public:
     QMenu      *menu;
     QString orientation;
 
-    QList<dtkAbstractView*> linkedViews;
+    QSet<dtkAbstractView*> linkedViews;
   
     dtkAbstractData *data;
 };
@@ -481,7 +481,7 @@ void v3dView::reset(void)
 void v3dView::update(void)
 {
     if( d->currentView ) {
-      d->currentView->GetWindowLevel()->Modified();
+        d->currentView->GetWindowLevel()->Modified();
         d->currentView->Render();
     }
     d->vtkWidget->update();
@@ -492,9 +492,45 @@ void v3dView::link(dtkAbstractView *other)
     if(!other || other->description()!=tr("v3dView"))
         return;
 
-    d->linkedViews.append (other);
+    d->linkedViews.insert (other);
 
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
+      
+        otherView->viewAxial()->SetCurrentPoint    ( d->view2DAxial->GetCurrentPoint() );
+	otherView->viewSagittal()->SetCurrentPoint ( d->view2DSagittal->GetCurrentPoint() );
+	otherView->viewCoronal()->SetCurrentPoint  ( d->view2DCoronal->GetCurrentPoint() );
+	otherView->view3D()->SetCurrentPoint       ( d->view3D->GetCurrentPoint() );
+
+	otherView->viewAxial()->SetColorWindow    ( d->view2DAxial->GetColorWindow() );
+	otherView->viewSagittal()->SetColorWindow ( d->view2DSagittal->GetColorWindow() );
+	otherView->viewCoronal()->SetColorWindow  ( d->view2DCoronal->GetColorWindow() );
+	otherView->view3D()->SetColorWindow       ( d->view3D->GetColorWindow() );
+
+	otherView->viewAxial()->SetColorLevel    ( d->view2DAxial->GetColorLevel() );
+	otherView->viewSagittal()->SetColorLevel ( d->view2DSagittal->GetColorLevel() );
+	otherView->viewCoronal()->SetColorLevel  ( d->view2DCoronal->GetColorLevel() );
+	otherView->view3D()->SetColorLevel       ( d->view3D->GetColorLevel() );
+
+	//otherView->viewAxial()->SetCameraPosition   ( d->view2DAxial->GetCameraPosition() );
+	//otherView->viewAxial()->SetCameraFocalPoint ( d->view2DAxial->GetCameraFocalPoint() );
+	otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
+	otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
+
+	//otherView->viewSagittal()->SetCameraPosition   ( d->view2DSagittal->GetCameraPosition() );
+	//otherView->viewSagittal()->SetCameraFocalPoint ( d->view2DSagittal->GetCameraFocalPoint() );
+	otherView->viewSagittal()->SetPan  ( d->view2DSagittal->GetPan() );
+	otherView->viewSagittal()->SetZoom ( d->view2DSagittal->GetZoom() );
+
+	//otherView->viewCoronal()->SetCameraPosition    ( d->view2DCoronal->GetCameraPosition() );
+	//otherView->viewCoronal()->SetCameraFocalPoint  ( d->view2DCoronal->GetCameraFocalPoint() );
+	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
+	otherView->viewCoronal()->SetZoom ( d->view2DCoronal->GetZoom() );
+
+	/** 3D is more tricky than this */
+	//otherView->view3D()->SetCameraPosition    ( d->view3D->GetCameraPosition() );
+	//otherView->view3D()->SetCameraFocalPoint  ( d->view3D->GetCameraFocalPoint() );
+	//otherView->view3D()->SetZoom              ( d->view3D->GetZoom() );
+
         d->collectionAxial->AddItem    ( otherView->viewAxial() );
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
@@ -506,7 +542,7 @@ void v3dView::unlink(dtkAbstractView *other)
     if(!other || other->description()!=tr("v3dView"))
         return;
 
-    d->linkedViews.removeAll (other);
+    d->linkedViews.remove (other);
     
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
         d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
@@ -520,24 +556,24 @@ void *v3dView::view(void)
     return d->currentView;
 }
 
-vtkImageView *v3dView::viewAxial(void)
+vtkImageView2D *v3dView::viewAxial(void)
 {
-	return d->view2DAxial;
+    return d->view2DAxial;
 }
 
-vtkImageView *v3dView::viewCoronal(void)
+vtkImageView2D *v3dView::viewCoronal(void)
 {
-	return d->view2DCoronal;
+    return d->view2DCoronal;
 }
 
-vtkImageView *v3dView::viewSagittal(void)
+vtkImageView2D *v3dView::viewSagittal(void)
 {
-	return d->view2DSagittal;
+    return d->view2DSagittal;
 }
 
-vtkImageView *v3dView::view3D(void)
+vtkImageView3D *v3dView::view3D(void)
 {
-	return d->view3D;
+    return d->view3D;
 }
 
 vtkRenderWindowInteractor *v3dView::interactor(void)
@@ -774,7 +810,7 @@ void v3dView::setData(dtkAbstractData *data)
         }
     }
 
-    this->update();
+    // this->update();
 }
 
 void *v3dView::data (void)
@@ -826,9 +862,11 @@ void v3dView::onPropertySet(QString key, QString value)
 	this->onCroppingPropertySet(value);
 
     this->widget()->update();
-    
-    for (int i=0; i<d->linkedViews.count(); i++)
-      d->linkedViews[i]->setProperty (key, value);
+
+    foreach (dtkAbstractView *lview, d->linkedViews)
+        lview->setProperty (key, value);
+      //for (int i=0; i<d->linkedViews.count(); i++)
+      //d->linkedViews[i]->setProperty (key, value);
 }
 
 void v3dView::onOrientationPropertySet(QString value)
