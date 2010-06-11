@@ -117,6 +117,7 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     d->view3dLODSlider = new QSlider (Qt::Horizontal, this);
     d->view3dLODSlider->setRange (0, 100);
     d->view3dLODSlider->setValue (100);
+    d->view3dLODSlider->setTracking( false );
 
     d->windowingPushButton = new QPushButton("", this);
     d->windowingPushButton->setIcon (QIcon (":/icons/wlww.tiff"));
@@ -251,9 +252,9 @@ void medToolBoxView::update(dtkAbstractView *view)
     d->view3dVRModeComboBox->setCurrentIndex(d->view3dVRModeComboBox->findText(view->property("VRMode")));
     d->view3dVRModeComboBox->blockSignals(false);
 
-    d->view3dLODSlider->blockSignals(true); 
-    d->view3dLODSlider->setValue(view->property(""))
-    d->view3dLODSlider->blockSignals(false);
+    // d->view3dLODSlider->blockSignals(true); 
+    // d->view3dLODSlider->setValue(view->property(""));
+    // d->view3dLODSlider->blockSignals(false);
 
     d->presetComboBox->blockSignals(true);
     d->presetComboBox->setCurrentIndex(d->presetComboBox->findText(view->property("Preset")));
