@@ -1345,6 +1345,12 @@ void v3dView::onZSliderValueChanged (int value)
     d->observer->unlock();
 }
 
+void v3dView::onMetaDataSet(QString key, QString value)
+{
+  if (key == "VRQuality")        
+    d->view3D->SetVRQuality((float)(value.toInt())/100.0);
+}
+
 void v3dView::onMenuAxialTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
@@ -1461,11 +1467,6 @@ void v3dView::onMenuZoomTriggered (void)
 void v3dView::onMenuWindowLevelTriggered (void)
 {
     this->setProperty ("LeftClickInteraction", "Windowing");
-}
-
-void v3dView::onVRQualitySet (int value)
-{
-    d->view3D->SetVRQuality ( (float)(value) / 100.0 );
 }
 
 // /////////////////////////////////////////////////////////////////
