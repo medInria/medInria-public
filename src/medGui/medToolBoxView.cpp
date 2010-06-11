@@ -251,6 +251,10 @@ void medToolBoxView::update(dtkAbstractView *view)
     d->view3dVRModeComboBox->setCurrentIndex(d->view3dVRModeComboBox->findText(view->property("VRMode")));
     d->view3dVRModeComboBox->blockSignals(false);
 
+    d->view3dLODSlider->blockSignals(true); 
+    d->view3dLODSlider->setValue(view->property(""))
+    d->view3dLODSlider->blockSignals(false);
+
     d->presetComboBox->blockSignals(true);
     d->presetComboBox->setCurrentIndex(d->presetComboBox->findText(view->property("Preset")));
     d->presetComboBox->blockSignals(false);
