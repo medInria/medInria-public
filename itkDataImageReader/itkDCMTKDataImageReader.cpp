@@ -333,7 +333,7 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
     */
 
     itk::DataImageReaderCommand::Pointer command = itk::DataImageReaderCommand::New();
-    command->SetDCMTKDataImageReader ( this );
+    command->SetDataImageReader ( this );
     d->io->AddObserver ( itk::ProgressEvent(), command);
 
 
