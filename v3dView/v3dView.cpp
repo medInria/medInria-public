@@ -1402,9 +1402,10 @@ void v3dView::onMenuWindowLevelTriggered (void)
     this->setProperty ("LeftClickInteraction", "Windowing");
 }
 
-void v3dView::onVRQualitySet (int value)
+void v3dView::onMetaDataSet(QString key, QString value)
 {
-    d->view3D->SetVRQuality ( (float)(value) / 100.0 );
+    if(key == "LOD")        
+        d->view3D->SetVRQuality((float)(value.toInt())/100.0);
 }
 
 // /////////////////////////////////////////////////////////////////
