@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 15:19:01 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Thu May 13 16:20:55 2010 (+0200)
+ * Last-Updated: Sun Jun 13 21:36:52 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 11
+ *     Update #: 14
  */
 
 /* Commentary: 
@@ -32,14 +32,9 @@ public:
      medToolBoxSource(QWidget *parent = 0);
     ~medToolBoxSource(void);
 
+    void setFileSystemWidget(QWidget *widget);
+    
 signals:
-    void expandAll(void);
-    void collapseAll(void);
-
-    void importCurrent(void);
-    void exportCurrent(void);
-    void viewCurrent(void);
-
     void indexChanged(int);
 
 private:
