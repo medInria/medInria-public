@@ -4,7 +4,9 @@
 
 //#include "itkDataImageReader.h"
 #include "itkDCMTKDataImageReader.h"
+#ifdef ITK_USE_SYSTEM_GDCM
 #include "itkGDCMDataImageReader.h"
+#endif
 #include "itkMetaDataImageReader.h"
 #include "itkAnalyzeDataImageReader.h"
 #include "itkPNGDataImageReader.h"
@@ -49,9 +51,11 @@ itkDataImageReaderPlugin::~itkDataImageReaderPlugin(void)
 
 bool itkDataImageReaderPlugin::initialize(void)
 {
-  if(!itkMetaDataImageReader::registered())     dtkWarning() << "Unable to register itkMetaDataImageReader type";    
-  //if(!itkDCMTKDataImageReader::registered())    dtkWarning() << "Unable to register itkDCMTKDataImageReader type";
+  if(!itkMetaDataImageReader::registered())     dtkWarning() << "Unable to register itkMetaDataImageReader type";
+#ifdef ITK_USE_SYSTEM_GDCM
   if(!itkGDCMDataImageReader::registered())     dtkWarning() << "Unable to register  itkGDCMDataImageReader type";
+#endif
+  if(!itkDCMTKDataImageReader::registered())    dtkWarning() << "Unable to register itkDCMTKDataImageReader type";
   if(!itkNiftiDataImageReader::registered())    dtkWarning() << "Unable to register itkNiftiDataImageReader type";
   if(!itkAnalyzeDataImageReader::registered())  dtkWarning() << "Unable to register itkAnalyzeDataImageReader type";
   if(!itkNrrdDataImageReader::registered())     dtkWarning() << "Unable to register itkNrrdDataImageReader type";
