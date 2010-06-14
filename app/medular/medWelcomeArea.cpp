@@ -39,8 +39,7 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
     d->view->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
     d->view->settings()->setAttribute(QWebSettings::JavaEnabled, false);
     d->view->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    d->view->setHtml(dtkReadFile(QString(":/html/index.html")), QUrl("qrc:/html/index.html"));
-
+    d->view->setUrl(QUrl("qrc:/html/index.html"));
     connect(d->view, SIGNAL(linkClicked(const QUrl&)), this, SLOT(linkClicked(const QUrl&)));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -73,8 +72,11 @@ void medWelcomeArea::linkClicked(const QUrl& url)
             emit switchToBrowserArea();
         if(url.host() == "viewer")
             emit switchToViewerArea();
-        if(url.host() == "documentation")
-            emit switchToDocumentationArea();
+        if(url.host() == "documentation"){
+            qDebug()<<url.queryItems();
+            qDebug()<<url.path();
+            emit switchToDocumentationArea(url);
+        }
     } else {
         d->view->load(url);
     }

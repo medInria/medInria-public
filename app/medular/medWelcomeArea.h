@@ -40,6 +40,7 @@ signals:
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
     void switchToDocumentationArea(void);
+    void switchToDocumentationArea(QUrl);
 
 protected slots:
     void linkClicked(const QUrl &url);

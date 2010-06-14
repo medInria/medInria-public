@@ -1,6 +1,7 @@
 <html>
   <head>
-    
+    <script type="text/javascript" src="jquery-1.2.6.min.js" charset="utf-8">
+    </script> 
     <script src="js/jquery.tools.min.js"></script>
     <script src="js/flowplayer-3.2.2.min.js"></script>
     
@@ -17,10 +18,8 @@
       $(document).ready(function() {
       $("img[rel]").overlay({mask: '#000', effect: 'apple'});
       $("#medularTrigger").tooltip();
-      $(function() {
-	// setup ul.tabs to work as tabs for each div directly under div.panes
-	$("#tabs ul").tabs("#panes > div");
-});
+      // setup ul.tabs to work as tabs for each div directly under div.panes
+      $("#tabs ul").tabs("#panes > div");
       });
     </script>
     
@@ -31,34 +30,13 @@
     
     <div class="container">
       <div class="span-24 last" align="center">
-	<!--the page in BluePrint has 24 units in the grid, always!
+	<!--the page in BluePrint has 24 units in the grid!
 	Fill always 24 units exactly.
 	-->
-	<img src="../pixmaps/medinria-logo.png"/>
+	<img src="../pixmaps/medinria-logo.png"/ width="50%">
 	<h1>Welcome to MedINRIA</h1>
 	</div>
 
-      <div class="span-4">
-	<div class="boxyCaption">
-		New Features
-	</div>
-	<div class="boxyBody">
-	  <ul>
-	    <li> Registration</li>
-	    <li> DTI Tracking</li>
-	  </ul>
-        </div>
-        <div class="boxyCaption">
-		News
-	</div>
-	<div class="boxyBody">
-	  <ul>
-	    <li> VPH1 Workshop in September</li>
-	    <li> MICCAI Conference in Beijing</li>
-	  </ul>
-        </div>
-
-      </div>
       <div class="span-16" align="center"><!--center container-->
 	      <!-- tabs -->
 	<div id="tabs">
@@ -95,9 +73,19 @@
 
 	  </div>
 	  <div class="tutorials" ><!--Tutorials -->
-		  <a  href="http://www-sop.inria.fr/dream/screencasts/medular_rg.mov" style="display:block;width:500px; height:320px;" id="player-rg"></a>
-	<p><script>flowplayer("player-rg", "swf/flowplayer-3.2.2.swf", { clip:{autoPlay: false,  autoBuffering: true} });</script></p>
 
+		  Registration Tutorial
+		  <a  href="http://www-sop.inria.fr/dream/screencasts/medular_rg.mov" style="display:block;width:500px; height:320px;" id="player-rg"></a>
+		  <p><script>flowplayer("player-rg", "http://releases.flowplayer.org/swf/flowplayer-3.2.2.swf", { clip:{autoPlay: false,  autoBuffering: true}//, plugins: {
+//		controls: {
+//			url: 'swf/flowplayer.controls-3.2.1.swf'
+//			} }});
+		});</script></p>
+		<p>For more information on how to use this tool, see 
+		  the documentation on 
+		  <a href="medular://documentation/registration.html">
+			  registration</a>
+		</p>
 	  </div>
 	  <!--<div><Documentation should be empty
 	  </div>-->
@@ -126,19 +114,39 @@
 
 	
       </div>
-      <div class="span-4 last">
+      <div class="span-8 last">
+	<div class="boxyCaption">
+		New Features
+	</div>
+	<div class="boxyBody">
+	  <ul>
+	    <li> Registration</li>
+	    <li> DTI Tracking</li>
+	  </ul>
+        </div>
+        <div class="boxyCaption">
+		News
+	</div>
+	<div class="boxyBody">
+	  <ul>
+	    <li> VPH1 Workshop in September</li>
+	    <li> MICCAI Conference in Beijing</li>
+	  </ul>
+        </div>
 	<div class="boxyCaption">
 		Workspaces:
 	</div>
 	<div class="boxyBody">
-	<ul>
-	  <li><a href="medular://browser">Browser</a></li>
-	  <li><a href="medular://viewer">Viewer</a></li>
-	  <li><a href="medular://documentation">Documentation</a></li>
-	  <li><a href="http://www.inria.fr">dtk</a></li>
-	</ul>
+	  <ul>
+	    <li><a href="medular://browser">Browser</a></li>
+	    <li><a href="medular://viewer">Viewer</a></li>
+	    <li><a href="medular://documentation">Documentation</a></li>
+	    <li><a href="http://www.inria.fr">dtk</a></li>
+	  </ul>
 	</div>
+
 	</div>	
+
     </div>
     
     
