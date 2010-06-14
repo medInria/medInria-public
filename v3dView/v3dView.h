@@ -67,6 +67,7 @@ public slots:
     void onOrientationPropertySet           (QString value);
     void onModePropertySet                  (QString value);
     void onVRModePropertySet                (QString value);
+    void onUseLODPropertySet                (QString value);
     void onPresetPropertySet                (QString value);
     void onScalarBarVisibilityPropertySet   (QString value);
     void onLookupTablePropertySet           (QString value);
@@ -81,16 +82,22 @@ public slots:
     void onMetaDataSet(QString key, QString value);
 
 public slots: // Menu interface
-    void onMenuAxialTriggered        (void);
-    void onMenuSagittalTriggered     (void);
-    void onMenuCoronalTriggered      (void);
-    void onMenu3DVRTriggered         (void);
-    void onMenu3DMaxIPTriggered      (void);
-    void onMenu3DMinIPTriggered      (void);
-    void onMenu3DMPRTriggered        (void);
-    void onMenu3DOffTriggered        (void);
-    void onMenuZoomTriggered         (void);
-    void onMenuWindowLevelTriggered  (void);
+    void onMenuAxialTriggered               (void);
+    void onMenuSagittalTriggered            (void);
+    void onMenuCoronalTriggered             (void);
+    void onMenu3DVRTriggered                (void);
+    void onMenu3DMaxIPTriggered             (void);
+    void onMenu3DMinIPTriggered             (void);
+    void onMenu3DMPRTriggered               (void);
+    void onMenu3DOffTriggered               (void);
+    void onMenuVRGPUTriggered               (void);
+    void onMenuVRRayCastAndTextureTriggered (void);
+    void onMenuVRRayCastTriggered           (void);
+    void onMenuVRTextureTriggered           (void);
+    void onMenuVRDefaultTriggered           (void);
+    void onMenu3DLODTriggered               (void);
+    void onMenuZoomTriggered                (void);
+    void onMenuWindowLevelTriggered         (void);
     
 private:
     v3dViewPrivate *d;
