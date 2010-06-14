@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Thu May 13 15:16:23 2010 (+0200)
+ * Last-Updated: Mon Jun 14 16:34:02 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 37
+ *     Update #: 39
  */
 
 /* Commentary: 
@@ -20,6 +20,8 @@
 #include "medToolBoxPatient.h"
 
 #include <QtGui>
+
+#include <medCore/medDataIndex.h>
 
 class medToolBoxPatientPrivate
 {
@@ -73,6 +75,11 @@ int medToolBoxPatient::patientIndex(void)
 int medToolBoxPatient::patientIndex(QString patient)
 {
     return d->combo->findText(patient);
+}
+
+int medToolBoxPatient::patientIndex(const medDataIndex& index)
+{
+    return d->combo->findData(index.patientId());
 }
 
 void medToolBoxPatient::setPatientIndex(int index)

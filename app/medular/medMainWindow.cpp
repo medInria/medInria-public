@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 14 15:58:28 2010 (+0200)
+ * Last-Updated: Mon Jun 14 16:37:40 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 410
+ *     Update #: 411
  */
 
 /* Commentary: 
@@ -122,6 +122,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->documentationArea);
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
+    connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
     // Setting up core python module
 
