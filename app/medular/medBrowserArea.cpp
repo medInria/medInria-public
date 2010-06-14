@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sun Jun 13 22:05:24 2010 (+0200)
+ * Last-Updated: Mon Jun 14 10:42:15 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 368
+ *     Update #: 382
  */
 
 /* Commentary: 
@@ -129,6 +129,15 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
         "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);"
         "}");
 
+    QAction *importAction = new QAction("Import", this);
+    QAction   *viewAction = new QAction("View", this);
+
+    d->finder->addContextMenuAction(importAction);
+    d->finder->addContextMenuAction(viewAction);
+
+    connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportClicked()));
+    connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));
+
     QWidget *filesystem_widget = new QWidget(this);
 
     QVBoxLayout *filesystem_layout = new QVBoxLayout(filesystem_widget);
@@ -228,30 +237,34 @@ void medBrowserArea::onFileSystemImportClicked(void)
 {
     // QFileInfo info(d->filesystem_model->filePath(d->filesystem_view->currentIndex()));
 
-    // medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
+    QFileInfo info(d->finder->selectedPath());
 
-    // connect(importer, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
-    // connect(importer, SIGNAL(done()), this, SLOT(onFileImported()));
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
 
-    // d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
+    connect(importer, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
+    connect(importer, SIGNAL(done()), this, SLOT(onFileImported()));
 
-    // QThreadPool::globalInstance()->start(importer);
+    d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
+
+    QThreadPool::globalInstance()->start(importer);
 }
 
 void medBrowserArea::onFileSystemExportClicked(void)
 {
-    // medDatabaseExporter *exporter = new medDatabaseExporter;
+    medDatabaseExporter *exporter = new medDatabaseExporter;
 
-    // connect(exporter, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
+    connect(exporter, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
 
-    // QThreadPool::globalInstance()->start(exporter);
+    QThreadPool::globalInstance()->start(exporter);
 }
 
 void medBrowserArea::onFileSystemViewClicked(void)
 {
     // QFileInfo info(d->filesystem_model->filePath(d->filesystem_view->currentIndex()));
 
-    // emit open(info.absoluteFilePath());
+    QFileInfo info(d->finder->selectedPath());
+
+    emit open(info.absoluteFilePath());
 }
 
 void medBrowserArea::onFileImported(void)
