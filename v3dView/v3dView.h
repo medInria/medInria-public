@@ -78,6 +78,8 @@ public slots:
     void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged              (int value);
 
+    void onMetaDataSet(QString key, QString value);
+
 public slots: // Menu interface
     void onMenuAxialTriggered        (void);
     void onMenuSagittalTriggered     (void);
@@ -89,9 +91,6 @@ public slots: // Menu interface
     void onMenu3DOffTriggered        (void);
     void onMenuZoomTriggered         (void);
     void onMenuWindowLevelTriggered  (void);
-
-public slots:
-    void onVRQualitySet (int value);
     
 private:
     v3dViewPrivate *d;
