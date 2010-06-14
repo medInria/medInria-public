@@ -69,7 +69,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkCommon
   vtkFiltering
   vtkRendering
-  itkAddOn
+  itkIOAddOn
   ITKIOReview  
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES})
