@@ -633,6 +633,10 @@ itkGDCMDataImageReader::FileList itkGDCMDataImageReader::unfoldMap (FileListMapT
 }
 
 
+void itkGDCMDataImageReader::setProgress (int value)
+{
+    emit progressed (value);
+}
 
 // /////////////////////////////////////////////////////////////////
 // Type instanciation

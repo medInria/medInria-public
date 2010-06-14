@@ -27,8 +27,6 @@ public slots:
     
     virtual bool read (QString path);
     virtual bool read (QStringList paths);
-	
-    virtual void setProgress (int value);
     
 protected:
     itk::ImageIOBase::Pointer io;

@@ -56,6 +56,8 @@ class ITKDATAIMAGEREADERPLUGIN_EXPORT itkGDCMDataImageReader : public dtkAbstrac
   bool read (QString path);
   bool read (QStringList paths);
   
+  void setProgress (int value);
+
  private:  
   
   FileListMapType sort (FileList filelist);

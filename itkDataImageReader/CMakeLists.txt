@@ -63,7 +63,7 @@ add_library(ITKDCMTKIO ${ITK_LIB_STYLE}
 
 target_link_libraries(ITKDCMTKIO
   ${DCMTK_LIBRARIES}
-  itkAddOn
+  itkIOAddOn
   ${ITK_LIBRARIES})
 
 ## #################################################################
@@ -117,8 +117,6 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   ITKDCMTKIO
-  # medItk
-  # itkAddOn  
   ${ITK_LIBRARIES})
 
 add_executable(itkDCMTKConvert

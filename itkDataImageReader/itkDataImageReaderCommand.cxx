@@ -2,7 +2,7 @@
 
 #include <itkImageIOBase.h>
 
-#include "dtkCore/dtkAbstractDataReader.h"
+#include <dtkCore/dtkAbstractDataReader.h>
 
 namespace itk
 {
