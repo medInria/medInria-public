@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Jun 11 13:57:25 2010 (+0200)
+ * Last-Updated: Mon Jun 14 16:11:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 829
+ *     Update #: 832
  */
 
 /* Commentary: 
@@ -232,26 +232,6 @@ void medViewerArea::setdw(QStatusBar *status)
 
 }
 
-void medViewerArea::setPatientIndex(int index)
-{
-    d->patientToolBox->setPatientIndex(index);
-}
-
-void medViewerArea::setStudyIndex(int index)
-{
-
-}
-
-void medViewerArea::setSeriesIndex(int index)
-{
-
-}
-
-void medViewerArea::setImageIndex(int index)
-{
-
-}
-
 void medViewerArea::setup(void)
 {
     d->patientToolBox->clear();
@@ -312,15 +292,6 @@ void medViewerArea::open(const medDataIndex& index)
 
 void medViewerArea::onPatientIndexChanged(int id)
 {
-    // comment out the following lines to allow quick open file (no index in database in this case)
-
-    // medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
-    
-    // if(!index.isValid())
-    //     return;      
-    
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-
     // Setup view container
 
     medViewerAreaStack *view_stack;
@@ -343,29 +314,9 @@ void medViewerArea::onPatientIndexChanged(int id)
     d->navigator->onPatientClicked(id);
 }
 
-void medViewerArea::onStudyIndexChanged(int id)
-{
-    medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
-
-    if(!index.isValid())
-        return;
-
-    Q_UNUSED(index);
-}
-
 void medViewerArea::onSeriesIndexChanged(int id)
 {
     this->open(medDatabaseController::instance()->indexForSeries(id));
-}
-
-void medViewerArea::onImageIndexChanged(int id)
-{
-    medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
-
-    if(!index.isValid())
-        return;
-
-    Q_UNUSED(index);
 }
 
 void medViewerArea::onViewFocused(dtkAbstractView *view)

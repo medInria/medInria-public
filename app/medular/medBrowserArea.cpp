@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 14 10:42:15 2010 (+0200)
+ * Last-Updated: Mon Jun 14 13:40:56 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 382
+ *     Update #: 384
  */
 
 /* Commentary: 
@@ -69,6 +69,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
+    connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
 
     // Database widget /////////////////////////////////////////////////
 

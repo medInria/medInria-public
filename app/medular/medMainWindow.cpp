@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Jun 10 12:14:33 2010 (+0200)
+ * Last-Updated: Mon Jun 14 15:58:28 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 406
+ *     Update #: 410
  */
 
 /* Commentary: 
@@ -120,10 +120,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->viewerArea);
     d->stack->addWidget(d->documentationArea);
-
-    connect(d->browserArea->view(), SIGNAL(patientDoubleClicked(const QModelIndex&)), this, SLOT(onPatientDoubleClicked (const QModelIndex&)));
-    connect(d->browserArea->view(), SIGNAL(studyDoubleClicked(const QModelIndex&)), this, SLOT(onStudyDoubleClicked (const QModelIndex&)));
-    connect(d->browserArea->view(), SIGNAL(seriesDoubleClicked(const QModelIndex&)), this, SLOT(onSeriesDoubleClicked (const QModelIndex&)));
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
 
@@ -313,60 +309,16 @@ void medMainWindow::switchToDocumentationArea(void)
     d->shiftToDocumentationAreaAction->setChecked(true);
 }
 
-void medMainWindow::onPatientDoubleClicked(const QModelIndex &index)
-{
-    if (!index.isValid())
-      return;
-
-    d->viewerArea->setPatientIndex(index.row()+1);
-    d->viewerArea->update();
-
-    switchToViewerArea();
-}
-
-void medMainWindow::onStudyDoubleClicked(const QModelIndex &index)
-{
-    if (!index.isValid())
-      return;
-  
-    QModelIndex patientIndex = index.parent();
- 
-    if (!patientIndex.isValid())
-        return;
-    
-    d->viewerArea->setPatientIndex(patientIndex.row()+1);
-    d->viewerArea->setStudyIndex(index.row()+1);
-    
-    switchToViewerArea();
-}
-
-void medMainWindow::onSeriesDoubleClicked(const QModelIndex &index)
-{
-    if (!index.isValid())
-      return;
-    
-    QModelIndex studyIndex = index.parent();
-    
-    if (!studyIndex.isValid())
-        return;
-    
-    QModelIndex patientIndex = studyIndex.parent();
-    
-    if (!patientIndex.isValid())
-        return;
-    
-    d->viewerArea->setPatientIndex(patientIndex.row()+1);
-    d->viewerArea->setStudyIndex(studyIndex.row()+1);
-
-    switchToViewerArea();
-    this->update();
-    
-    d->viewerArea->setSeriesIndex(index.row()+1);
-}
-
 void medMainWindow::onConfigurationTriggered(QAction *action)
 {
     medViewerConfigurator::instance()->setConfiguration(action->text());
+}
+
+void medMainWindow::open(const medDataIndex& index)
+{
+    d->viewerArea->open(index);
+
+    this->switchToViewerArea();
 }
 
 void medMainWindow::open(const QString& file)
