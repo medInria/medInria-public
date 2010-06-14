@@ -54,7 +54,7 @@ itkDCMTKDataImageReader::~itkDCMTKDataImageReader(void)
 
 bool itkDCMTKDataImageReader::registered(void)
 {
-    return dtkAbstractDataReader::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
+    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
 								      << "itkDataImageFloat3"
 								      << "itkDataImageULong3"
 								      << "itkDataImageLong3"
@@ -592,6 +592,7 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
 
 }
 
+
 void itkDCMTKDataImageReader::setProgress (int value)
 {
     emit progressed (value);
@@ -601,7 +602,7 @@ void itkDCMTKDataImageReader::setProgress (int value)
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-itkDataImageReaderBase *createItkDCMTKDataImageReader(void)
+dtkAbstractDataReader *createItkDCMTKDataImageReader(void)
 {
     return new itkDCMTKDataImageReader;
 }
