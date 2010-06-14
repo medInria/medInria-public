@@ -6,6 +6,7 @@
   vtkMetaVolumeMesh.cxx
   vtkDataManager.cxx
   vtkMetaDataSetSequence.cxx
+  vtkDiffXMLWriter.cxx
   )
 
   IF (VTK_MAJOR_VERSION GREATER 4)
@@ -41,7 +42,7 @@
   IF(ITK_FOUND)
     
     SET(vtkDataManagement_LIBS
-      itkAddOn
+      itkIOAddOn
       ${vtkDataManagement_LIBS}
     )
 

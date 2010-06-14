@@ -34,7 +34,10 @@ PURPOSE.  See the above copyright notices for more information.
 #else
 #include "getoptcompat/getopt.h"
 #endif //WIN32
+
 #include <iostream>
+#include <cstdlib>
+#include <fstream>
 
 struct arguments
 {

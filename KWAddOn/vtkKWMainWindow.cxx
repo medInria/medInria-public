@@ -108,6 +108,7 @@ void vtkKWMainWindow::CreateOpenToolbar()
   vtkKWMenu *menu = button1->GetMenu();
   menu->AddCommand("Save selected dataset into file... (Ctrl+S)", this, "OnDataSetSave");
   menu->AddCommand("Save environement into file...", this, "SaveManagerCallback");
+  menu->AddCommand("Save DIFF XML into file...", this, "SaveDiffXMLCallback");
 
   
   this->OpenToolbar->AddWidget(button1);
@@ -510,6 +511,12 @@ void vtkKWMainWindow::OnDataSetDelete(void)
 
 //----------------------------------------------------------------------------
 void vtkKWMainWindow::SaveManagerCallback(void)
+{
+  std::cout<<"not implemented yet"<<std::endl;
+}
+
+//----------------------------------------------------------------------------
+void vtkKWMainWindow::SaveDiffXMLCallback(void)
 {
   std::cout<<"not implemented yet"<<std::endl;
 }

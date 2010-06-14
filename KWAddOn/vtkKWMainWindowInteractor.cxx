@@ -101,6 +101,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkDelaunay3D.h>
 #include <vtkSelectPolyData.h>
 
+#include <vtkDiffXMLWriter.h>
+
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/stl/string>
 #include <vtksys/stl/vector>
@@ -940,6 +942,50 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 #endif // VTK_MAJOR_VERSION>=5 && VTK_MINOR_VERSION>=1
   
   
+}
+
+
+
+//----------------------------------------------------------------------------
+void vtkKWMainWindowInteractor::SaveDiffXMLCallback()
+{
+
+  
+  vtkKWLoadSaveDialog *dialog = vtkKWLoadSaveDialog::New() ;
+  
+  dialog->SetParent(this);
+  dialog->Create();
+  dialog->MultipleSelectionOff();
+  dialog->SaveDialogOn ();
+  dialog->RetrieveLastPathFromRegistry("DataPath");
+  dialog->SetTitle ("Save the manager to file");
+
+  std::string managerformat = "{{Diff XML file} {.xml .diff}}";
+  
+  dialog->SetFileTypes (managerformat.c_str());
+  
+  if ( dialog->Invoke () == 0 )
+  {
+    dialog->Delete();
+    return;
+  }
+
+  std::string managerfile = dialog->GetFileName();
+  std::string ext = vtksys::SystemTools::GetFilenameLastExtension (managerfile.c_str());
+
+  dialog->Delete();
+  
+  if ( strcmp(ext.c_str(), ".xml") &&
+       strcmp(ext.c_str(), ".diff") )
+  {
+    managerfile+=".diff";
+  }
+
+  vtkDiffXMLWriter* writer = vtkDiffXMLWriter::New();
+  writer->SetInput (this->GetDataManager());
+  writer->SetFileName (managerfile.c_str());
+  writer->Update();
+  writer->Delete();  
 }
 
 
