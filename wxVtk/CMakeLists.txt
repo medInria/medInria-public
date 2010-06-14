@@ -51,7 +51,7 @@ IF(wxWidgets_FOUND)
     ENDIF(NOT ITK_USE_SYSTEM_GDCM)
     
     SET(wxVtk_LIBS
-      itkAddOn
+      itkIOAddOn
       ${ITK_LIBRARIES}
       ${wxVtk_LIBS}
       )

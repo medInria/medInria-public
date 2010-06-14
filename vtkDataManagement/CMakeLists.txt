@@ -42,7 +42,7 @@
   IF(ITK_FOUND)
     
     SET(vtkDataManagement_LIBS
-      itkAddOn
+      itkIOAddOn
       ${vtkDataManagement_LIBS}
     )
 
