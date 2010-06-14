@@ -314,6 +314,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DAxial->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
     d->observer->setView (d->view2DAxial);
 
+    // 2D mode
     QAction *axialAct = new QAction(tr("Axial"), d->vtkWidget);
     connect(axialAct, SIGNAL(triggered()), this, SLOT(onMenuAxialTriggered()));
 
@@ -323,6 +324,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     QAction *sagittalAct = new QAction(tr("Sagittal"), d->vtkWidget);
     connect(sagittalAct, SIGNAL(triggered()), this, SLOT(onMenuSagittalTriggered()));
 
+    // 3D mode
     QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
     connect(vrAct, SIGNAL(triggered()), this, SLOT(onMenu3DVRTriggered()));
 
@@ -336,8 +338,34 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     connect(mprAct, SIGNAL(triggered()), this, SLOT(onMenu3DMPRTriggered()));
 	
     QAction *offAct = new QAction(tr("Off"), d->vtkWidget);
-    connect(offAct, SIGNAL(triggered()), this, SLOT(onMenu3DOffTriggered()));
-    
+    connect(offAct, SIGNAL(triggered()), this, SLOT(onMenu3DOffTriggered())); 
+
+    // Volume Mapper
+    QAction *gpuAct = new QAction(tr("GPU"), d->vtkWidget);
+    connect(gpuAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRGPUTriggered()));
+   
+    QAction *rntAct = new QAction(tr("Ray Cast / Texture"), d->vtkWidget);
+    connect(rntAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRRayCastAndTextureTriggered()));
+
+    QAction *rayAct = new QAction(tr("Ray Cast"), d->vtkWidget);
+    connect(rayAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRRayCastTriggered()));
+
+    QAction *texAct = new QAction(tr("Texture"), d->vtkWidget);
+    connect(texAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRTextureTriggered()));
+
+    QAction *defAct = new QAction(tr("Default"), d->vtkWidget);
+    connect(defAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenuVRDefaultTriggered()));
+   
+    QAction *lodAct = new QAction(tr("Toggle LOD"), d->vtkWidget);
+    connect(lodAct, SIGNAL(triggered()),
+	    this,   SLOT(onMenu3DLODTriggered()));
+
+    // Tools
     QAction *zoomAct = new QAction(tr("Zoom"), d->vtkWidget);
     connect(zoomAct, SIGNAL(triggered()), this, SLOT(onMenuZoomTriggered()));
 
@@ -360,6 +388,15 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     tridMenu->addAction (minipAct);
     tridMenu->addAction (mprAct);
     tridMenu->addAction (offAct);
+
+    QMenu *vrMenu = d->menu->addMenu (tr ("Renderer"));
+    vrMenu->addAction (gpuAct);
+    vrMenu->addAction (rntAct);
+    vrMenu->addAction (rayAct);
+    vrMenu->addAction (texAct);
+    vrMenu->addAction (defAct);
+
+    d->menu->addAction(lodAct);
 
     d->menu->addSeparator();
     d->menu->addAction(zoomAct);
@@ -394,7 +431,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
     this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
     this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum" << "Off");
-    this->addProperty ("VRMode",                QStringList() << "GPU" << "RayCastAndTexture" << "RayCast" << "Texture" << "Default");
+    this->addProperty ("VRMode",                QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default");
+    this->addProperty ("UseLOD",                QStringList() << "On" << "Off" );
     this->addProperty ("Cropping",              QStringList() << "true" << "false");
     this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
 		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
@@ -411,6 +449,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("LeftClickInteraction", "Zooming");
     this->setProperty ("Mode", "VR");
     this->setProperty ("VRMode", "Default");
+    this->setProperty ("UseLOD", "On");
     this->setProperty ("Preset", "None");
 
     connect(d->vtkWidget, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
@@ -855,6 +894,9 @@ void v3dView::onPropertySet(QString key, QString value)
     if(key == "VRMode")
 	this->onVRModePropertySet(value);
 
+    if(key == "UseLOD")
+	this->onUseLODPropertySet(value);
+
     if(key == "Preset")
 	this->onPresetPropertySet(value);
 
@@ -973,10 +1015,10 @@ void v3dView::onVRModePropertySet (QString value)
     if (value=="GPU") 
         d->view3D->SetVolumeMapperToGPU();
 
-    if (value=="RayCastAndTexture")
+    if (value=="Ray Cast / Texture")
         d->view3D->SetVolumeMapperToRayCastAndTexture();
 
-    if (value=="RayCast")
+    if (value=="Ray Cast")
         d->view3D->SetVolumeMapperToRayCast();
 
     if (value=="Texture")
@@ -984,6 +1026,14 @@ void v3dView::onVRModePropertySet (QString value)
 
     if (value=="Default")
         d->view3D->SetVolumeMapperToDefault();
+}
+
+void v3dView::onUseLODPropertySet (QString value)
+{
+  if (value == "On")
+    d->view3D->UseVRQualityOn();
+  else
+    d->view3D->UseVRQualityOff();
 }
 
 void v3dView::onScalarBarVisibilityPropertySet(QString value)
@@ -1352,6 +1402,15 @@ void v3dView::onZSliderValueChanged (int value)
     d->observer->unlock();
 }
 
+void v3dView::onMetaDataSet(QString key, QString value)
+{
+  if (key == "VRQuality")        
+    d->view3D->SetVRQuality((float)(value.toInt())/100.0);
+  
+  if(key == "LOD")        
+        d->view3D->SetVRQuality((float)(value.toInt())/100.0);
+}
+
 void v3dView::onMenuAxialTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
@@ -1430,6 +1489,45 @@ void v3dView::onMenu3DOffTriggered (void)
     d->view3D->Render();
 }
 
+void v3dView::onMenuVRGPUTriggered (void)
+{
+  this->setProperty("VRMode", "GPU");
+  d->view3D->Render();
+}
+
+void v3dView::onMenuVRRayCastAndTextureTriggered (void)
+{
+  this->setProperty("VRMode", "Ray Cast / Texture");
+  d->view3D->Render();
+}
+
+void v3dView::onMenuVRRayCastTriggered (void)
+{
+  this->setProperty("VRMode", "Ray Cast");
+  d->view3D->Render();
+}
+
+void v3dView::onMenuVRTextureTriggered (void)
+{
+  this->setProperty("VRMode", "Texture");
+  d->view3D->Render();
+}
+
+void v3dView::onMenuVRDefaultTriggered (void)
+{
+  this->setProperty("VRMode", "Default");
+  d->view3D->Render();
+}
+
+void v3dView::onMenu3DLODTriggered (void)
+{
+  if ( this->property( "UseLOD" ) == "On" )
+    this->setProperty ("UseLOD", "Off");
+  else
+    this->setProperty ("UseLOD", "On");
+  d->view3D->Render();
+}
+
 void v3dView::onMenuZoomTriggered (void)
 {
     this->setProperty ("LeftClickInteraction", "Zooming");
@@ -1438,12 +1536,6 @@ void v3dView::onMenuZoomTriggered (void)
 void v3dView::onMenuWindowLevelTriggered (void)
 {
     this->setProperty ("LeftClickInteraction", "Windowing");
-}
-
-void v3dView::onMetaDataSet(QString key, QString value)
-{
-    if(key == "LOD")        
-        d->view3D->SetVRQuality((float)(value.toInt())/100.0);
 }
 
 // /////////////////////////////////////////////////////////////////
