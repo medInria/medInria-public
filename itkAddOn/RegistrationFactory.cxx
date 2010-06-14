@@ -409,8 +409,8 @@ void ImageRegistrationFactoryFunction( arguments args )
 //   typedef typename itk::DiffeomorphicDemonsRegistrationMethod<ImageType> DiffeomorphicDemonsMethodType;
   
   // Images we use
-  typename ImageType::ConstPointer fixedImage = 0;
-  typename ImageType::ConstPointer movingImage = 0;
+  typename ImageType::Pointer fixedImage = 0;
+  typename ImageType::Pointer movingImage = 0;
   typename DeformationFieldType::Pointer inputDefField = 0;
   typename InputTransformType::Pointer  inputTransform = 0;
 
@@ -584,7 +584,7 @@ void ImageRegistrationFactoryFunction( arguments args )
   factory->SetFixedImage (fixedImage);
   factory->SetMovingImage (movingImage);
   
-  std::cout<<factory->CheckImagesConsistency(fixedImage, movingImage)<<std::endl;  
+  std::cout << factory->CheckImagesConsistency(fixedImage, movingImage) << std::endl;  
   
   if (!inputTransform.IsNull())
   {

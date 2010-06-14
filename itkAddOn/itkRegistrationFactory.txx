@@ -154,13 +154,24 @@ RegistrationFactory<TImage>
  *  Get Output
  */
 template < typename TImage >
+typename RegistrationFactory<TImage>::ImageType *
+RegistrationFactory<TImage>
+::GetOutput()
+{
+  return static_cast< ImageType* >( this->ProcessObject::GetOutput(0) );
+}
+
+
+/*
+ *  Get Output
+ */
+template < typename TImage >
 const typename RegistrationFactory<TImage>::ImageType *
 RegistrationFactory<TImage>
 ::GetOutput() const
 {
-  return static_cast< const ImageType * >( this->ProcessObject::GetOutput(0) );
+  return static_cast< const ImageType* >( this->ProcessObject::GetOutput(0) );
 }
-
 
   /*
  *  Get Output
@@ -231,7 +242,7 @@ RegistrationFactory<TImage>
 template <typename TImage>
 void
 RegistrationFactory<TImage>
-::SetFixedImage( const ImageType * fixedImage )
+::SetFixedImage( ImageType * fixedImage )
 {
   itkDebugMacro("setting Fixed Image to " << fixedImage );
 
@@ -266,7 +277,7 @@ RegistrationFactory<TImage>
 template <typename TImage>
 void
 RegistrationFactory<TImage>
-::SetMovingImage( const ImageType * movingImage )
+::SetMovingImage( ImageType * movingImage )
 {
   itkDebugMacro("setting Moving Image to " << movingImage );
 
@@ -921,7 +932,7 @@ RegistrationFactory<TImage>
 template <typename TImage>
 bool
 RegistrationFactory<TImage>
-::CheckImagesConsistency (ImageConstPointer image1, ImageConstPointer image2, double epsilon)
+::CheckImagesConsistency (const ImageType* image1, const ImageType* image2, double epsilon)
 {
   typename ImageType::PointType origin1 = image1->GetOrigin();
   typename ImageType::PointType origin2 = image2->GetOrigin();

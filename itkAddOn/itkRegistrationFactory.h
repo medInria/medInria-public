@@ -239,12 +239,12 @@ class CommandIterationUpdate : public itk::Command
     typedef std::map<unsigned int, MethodPointerType> MethodListType;
     
     /** Set/Get the Fixed image. */
-    void SetFixedImage( const ImageType * fixedImage );
-    itkGetConstObjectMacro( FixedImage, ImageType );
+    void SetFixedImage( ImageType * fixedImage );
+    itkGetObjectMacro( FixedImage, ImageType );
 
     /** Set/Get the Moving image. */
-    void SetMovingImage( const ImageType * movingImage );
-    itkGetConstObjectMacro( MovingImage, ImageType );
+    void SetMovingImage( ImageType * movingImage );
+    itkGetObjectMacro( MovingImage, ImageType );
 
     /** Set/Get the Transform. */
     void SetGeneralTransform(GeneralTransformType*);
@@ -256,6 +256,9 @@ class CommandIterationUpdate : public itk::Command
 
     /** Check if inputs are present or not. */
     virtual bool CheckInputs(void);
+
+    /** Returns the transform resulting from the registration process  */
+    virtual ImageType * GetOutput();
 
     /** Returns the transform resulting from the registration process  */
     virtual const ImageType * GetOutput() const;
@@ -360,7 +363,7 @@ class CommandIterationUpdate : public itk::Command
     static LinearTransformPointerType GetTargetToSourceInnerTransform (ImageConstPointer target, ImageConstPointer source);
     /** This method returns true the origins and directions of image1 and image2
 	do NOT differ, false otherwise. Precision is given by epsilon */ 
-    static bool CheckImagesConsistency (ImageConstPointer image1, ImageConstPointer image2, double epsilon=0.001);
+    static bool CheckImagesConsistency (const ImageType* image1, const ImageType* image2, double epsilon=0.001);
     
   protected:
     RegistrationFactory();
@@ -386,8 +389,8 @@ class CommandIterationUpdate : public itk::Command
 
     virtual bool CheckForceResampling (void);
     
-    ImageConstPointer m_MovingImage;
-    ImageConstPointer m_FixedImage;
+    ImagePointer m_MovingImage;
+    ImagePointer m_FixedImage;
 
     GeneralTransformPointerType m_GeneralTransform;
     TransformConstPointerType m_InitialTransform;
