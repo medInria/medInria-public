@@ -6,7 +6,6 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractDataReader.h>
 
 
 #include <itkImageFileReader.h>
@@ -41,7 +40,7 @@ itkDCMTKDataImageReaderPrivate::itkDCMTKDataImageReaderPrivate()
 // /////////////////////////////////////////////////////////////////
 
 
-itkDCMTKDataImageReader::itkDCMTKDataImageReader(void) : itkDataImageReaderBase(), d(new itkDCMTKDataImageReaderPrivate)
+itkDCMTKDataImageReader::itkDCMTKDataImageReader(void) : dtkAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate)
 {
 }
 
@@ -55,7 +54,7 @@ itkDCMTKDataImageReader::~itkDCMTKDataImageReader(void)
 
 bool itkDCMTKDataImageReader::registered(void)
 {
-    return itkDataImageReaderBase::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
+    return dtkAbstractDataReader::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
 								      << "itkDataImageFloat3"
 								      << "itkDataImageULong3"
 								      << "itkDataImageLong3"
