@@ -65,6 +65,7 @@ public slots:
     void onOrientationPropertySet           (QString value);
     void onModePropertySet                  (QString value);
     void onVRModePropertySet                (QString value);
+    void onUseLODPropertySet                (QString value);
     void onPresetPropertySet                (QString value);
     void onScalarBarVisibilityPropertySet   (QString value);
     void onLookupTablePropertySet           (QString value);
@@ -92,6 +93,7 @@ public slots: // Menu interface
     void onMenuVRRayCastTriggered           (void);
     void onMenuVRTextureTriggered           (void);
     void onMenuVRDefaultTriggered           (void);
+    void onMenu3DLODTriggered               (void);
     void onMenuZoomTriggered                (void);
     void onMenuWindowLevelTriggered         (void);
     
