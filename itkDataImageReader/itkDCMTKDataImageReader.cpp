@@ -6,6 +6,8 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractDataReader.h>
+
 
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
@@ -13,6 +15,7 @@
 #include <itkMetaDataDictionary.h>
 #include <itkObjectFactoryBase.h>
 #include "itkDataImageReaderCommand.h"
+
 
 // /////////////////////////////////////////////////////////////////
 // itkDCMTKDataImageReaderPrivate
@@ -38,7 +41,7 @@ itkDCMTKDataImageReaderPrivate::itkDCMTKDataImageReaderPrivate()
 // /////////////////////////////////////////////////////////////////
 
 
-itkDCMTKDataImageReader::itkDCMTKDataImageReader(void) : dtkAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate)
+itkDCMTKDataImageReader::itkDCMTKDataImageReader(void) : itkDataImageReaderBase(), d(new itkDCMTKDataImageReaderPrivate)
 {
 }
 
@@ -52,7 +55,7 @@ itkDCMTKDataImageReader::~itkDCMTKDataImageReader(void)
 
 bool itkDCMTKDataImageReader::registered(void)
 {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
+    return itkDataImageReaderBase::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
 								      << "itkDataImageFloat3"
 								      << "itkDataImageULong3"
 								      << "itkDataImageLong3"
@@ -590,12 +593,16 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
 
 }
 
+void itkDCMTKDataImageReader::setProgress (int value)
+{
+    emit progressed (value);
+}
 
 // /////////////////////////////////////////////////////////////////
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkDCMTKDataImageReader(void)
+itkDataImageReaderBase *createItkDCMTKDataImageReader(void)
 {
     return new itkDCMTKDataImageReader;
 }

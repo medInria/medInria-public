@@ -41,6 +41,8 @@ public slots:
     bool read (QString path);
     bool read (QStringList paths);
 
+    void setProgress (int value);
+    
 private:
     itkDCMTKDataImageReaderPrivate *d;
 };
