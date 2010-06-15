@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 14 16:37:40 2010 (+0200)
+ * Last-Updated: Tue Jun 15 16:44:32 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 411
+ *     Update #: 419
  */
 
 /* Commentary: 
@@ -75,6 +75,7 @@ public:
     medViewerArea        *viewerArea;
     medDocumentationArea *documentationArea;
 
+    medWorkspaceShifter *shifter;
     medWorkspaceShifterAction *shiftToWelcomeAreaAction;
     medWorkspaceShifterAction *shiftToBrowserAreaAction;
     medWorkspaceShifterAction *shiftToViewerAreaAction;
@@ -186,16 +187,16 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onConfigurationTriggered(QAction *)));
 
-    medWorkspaceShifter *shifter = new medWorkspaceShifter(this);
-    shifter->addAction(d->shiftToWelcomeAreaAction);
-    shifter->addAction(d->shiftToBrowserAreaAction);
-    shifter->addAction(d->shiftToViewerAreaAction)->setMenu(menu);
-    shifter->addAction(d->shiftToDocumentationAreaAction);
+    d->shifter = new medWorkspaceShifter(this);
+    d->shifter->addAction(d->shiftToWelcomeAreaAction);
+    d->shifter->addAction(d->shiftToBrowserAreaAction);
+    d->shifter->addAction(d->shiftToViewerAreaAction)->setMenu(menu);
+    d->shifter->addAction(d->shiftToDocumentationAreaAction);
 
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
     this->statusBar()->setFixedHeight(31);
-    this->statusBar()->addPermanentWidget(shifter);
+    this->statusBar()->addPermanentWidget(d->shifter);
 
     this->readSettings();
     this->setCentralWidget(d->stack);
@@ -263,6 +264,8 @@ void medMainWindow::switchToWelcomeArea(void)
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(false);
     d->shiftToDocumentationAreaAction->setChecked(false);
+
+    d->shifter->update();
 }
 
 void medMainWindow::switchToBrowserArea(void)
@@ -278,6 +281,8 @@ void medMainWindow::switchToBrowserArea(void)
     d->shiftToBrowserAreaAction->setChecked(true);
     d->shiftToViewerAreaAction->setChecked(false);
     d->shiftToDocumentationAreaAction->setChecked(false);
+
+    d->shifter->update();
 }
 
 void medMainWindow::switchToViewerArea(void)
@@ -293,6 +298,8 @@ void medMainWindow::switchToViewerArea(void)
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(true);
     d->shiftToDocumentationAreaAction->setChecked(false);
+
+    d->shifter->update();
 }
 
 void medMainWindow::switchToDocumentationArea(void)
@@ -308,6 +315,8 @@ void medMainWindow::switchToDocumentationArea(void)
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(false);
     d->shiftToDocumentationAreaAction->setChecked(true);
+
+    d->shifter->update();
 }
 
 void medMainWindow::onConfigurationTriggered(QAction *action)
