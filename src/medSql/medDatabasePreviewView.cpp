@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:44:41 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sat Mar 20 19:58:11 2010 (+0100)
+ * Last-Updated: Tue Jun 15 18:44:22 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 7
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -33,6 +33,7 @@ medDatabasePreviewView::medDatabasePreviewView(QWidget *parent) : QGraphicsView(
     this->viewport()->setMouseTracking(true);
 
     this->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+
     if(medDatabasePreviewController::instance()->orientation() == Qt::Horizontal) {
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -40,6 +41,7 @@ medDatabasePreviewView::medDatabasePreviewView(QWidget *parent) : QGraphicsView(
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     }
+
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 }
 
@@ -74,4 +76,9 @@ void medDatabasePreviewView::mouseMoveEvent(QMouseEvent *event)
         emit hovered(target);
 
     QGraphicsView::mouseMoveEvent(event);
+}
+
+void medDatabasePreviewView::wheelEvent(QWheelEvent *event)
+{
+    Q_UNUSED(event);
 }
