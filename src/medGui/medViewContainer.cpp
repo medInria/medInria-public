@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:35:59 2010 (+0100)
+ * Last-Updated: Tue Jun 15 16:26:36 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 392
+ *     Update #: 425
  */
 
 /* Commentary: 
@@ -33,7 +33,7 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
     d->view = NULL;
 
-    s_current = this;
+    d->current = this;
 
     if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent)) {
         connect(this, SIGNAL(dropped(const medDataIndex&)), container, SIGNAL(dropped(const medDataIndex&)));
@@ -42,6 +42,7 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
     this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
+    this->setMouseTracking(true);
 }
 
 medViewContainer::~medViewContainer(void)
@@ -58,7 +59,7 @@ medViewContainer::Type medViewContainer::type(void)
 
 medViewContainer *medViewContainer::current(void)
 {
-    return s_current;
+    return d->current;
 }
 
 void medViewContainer::split(int rows, int cols)
@@ -76,6 +77,14 @@ void medViewContainer::setView(dtkAbstractView *view)
 {
     if (!view)
         return;
+}
+
+void medViewContainer::setCurrent(medViewContainer *container)
+{
+    if(medViewContainer *parent = dynamic_cast<medViewContainer *>(this->parentWidget()))
+        parent->setCurrent(container);
+    else
+        d->current = container;
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
@@ -112,17 +121,22 @@ void medViewContainer::dropEvent(QDropEvent *event)
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
-    s_current = this;
+    Q_UNUSED(event);
+
+    medViewContainer *former = this->current();
+
+    this->setCurrent(this);
 
     if(dtkAbstractView *view = this->view())
         emit focused(view);
 
+    former->update();
     this->update();
 }
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)
 {
-    this->update();
+    Q_UNUSED(event);
 }
 
 void medViewContainer::paintEvent(QPaintEvent *event)
@@ -134,7 +148,7 @@ void medViewContainer::paintEvent(QPaintEvent *event)
 
     QPainter painter;
     painter.begin(this);
-    if (s_current == this)
+    if (d->current == this)
         painter.setPen(QColor(0x9a, 0xb3, 0xd5));
     else
         painter.setPen(Qt::darkGray);
@@ -143,4 +157,3 @@ void medViewContainer::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
-medViewContainer *medViewContainer::s_current = NULL;

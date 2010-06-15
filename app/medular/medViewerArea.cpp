@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 14:39:41 2010 (+0200)
+ * Last-Updated: Tue Jun 15 16:32:32 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 930
+ *     Update #: 937
  */
 
 /* Commentary: 
@@ -159,8 +159,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->navigator = new medDatabaseNavigator(navigator_container);
 
-    connect(d->navigator, SIGNAL(seriesClicked(int)), this, SLOT(onSeriesIndexChanged(int)));
-
     QVBoxLayout *navigator_container_layout = new QVBoxLayout(navigator_container);
     navigator_container_layout->setContentsMargins(0, 0, 0, 0);
     navigator_container_layout->setSpacing(0);
@@ -274,7 +272,7 @@ void medViewerArea::setup(void)
 void medViewerArea::split(int rows, int cols)
 {
     if (d->view_stacks.count())
-        d->view_stacks.value(d->current_patient)->current()->current()->split(rows, cols);
+        d->view_stacks.value(d->current_patient)->current()->split(rows, cols);
 }
 
 //! Open data corresponding to index \param index.
@@ -341,8 +339,8 @@ void medViewerArea::open(const QString& file)
     
     for (int i=0; i<readers.size(); i++) {
         dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
-	if (dataReader->canRead( fileInfo.filePath() )) {
-	    dataReader->read( fileInfo.filePath() );
+	if (dataReader->canRead(fileInfo.filePath())) {
+	    dataReader->read(fileInfo.filePath());
 	    data = dataReader->data();
 	    delete dataReader;
 	    break;
@@ -368,10 +366,10 @@ void medViewerArea::open(const QString& file)
 
     dtkAbstractView *view = this->currentContainerFocused()->view();
 
-    if (!view)    
+    if(!view)    
         view = dtkAbstractViewFactory::instance()->create("v3dView");
     
-    if (!view)
+    if(!view)
         return;
 
     view->setData(data);
@@ -419,11 +417,6 @@ void medViewerArea::switchToPatient(int id)
     // Setup patient toolbox
 
     d->patientToolBox->setPatientIndex(id);
-
-    // Give the current container focus
-
-    if(!view_stack->current())
-        view_stack->current()->setFocus();
 }
 
 //! Set stack index.

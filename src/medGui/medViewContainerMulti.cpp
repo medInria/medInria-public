@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:48:11 2010 (+0100)
+ * Last-Updated: Tue Jun 15 16:30:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 52
+ *     Update #: 54
  */
 
 /* Commentary: 
@@ -119,9 +119,9 @@ void medViewContainerMulti::dragLeaveEvent(QDragLeaveEvent *event)
 void medViewContainerMulti::dropEvent(QDropEvent *event)
 {
     if(medViewContainerMulti *container = dynamic_cast<medViewContainerMulti *>(this->parentWidget())) {
-        s_current = container;
+        this->setCurrent(container);
     } else {
-        s_current = this;
+        this->setCurrent(this);
     }
 
     medViewContainer::dropEvent(event);

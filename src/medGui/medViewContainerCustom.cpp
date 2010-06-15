@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri May 21 15:18:31 2010 (+0200)
+ * Last-Updated: Tue Jun 15 16:28:13 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 63
+ *     Update #: 67
  */
 
 /* Commentary: 
@@ -36,7 +36,7 @@ void medViewContainerCustom::split(int rows, int cols)
         for(int j = 0 ; j < cols ; j++)
             d->layout->addWidget(new medViewContainerCustom(this), i, j);
 
-    s_current = 0;
+    this->setCurrent(NULL);
 }
 
 void medViewContainerCustom::setPreset(int preset)
@@ -82,14 +82,11 @@ void medViewContainerCustom::setPreset(int preset)
         break;
     };
 
-    s_current = 0;
+    this->setCurrent(NULL);
 }
 
 void medViewContainerCustom::setView(dtkAbstractView *view)
 {
-    // if (d->layout->count() && (view->widget() == d->layout->itemAtPosition(0, 0)->widget()))
-    //     return;
-
     if (d->layout->count())
         d->layout->removeItem(d->layout->itemAt(0));
     
@@ -119,7 +116,7 @@ void medViewContainerCustom::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainerCustom::dropEvent(QDropEvent *event)
 {
-    s_current = this;
+    this->setCurrent(this);
 
     this->setAttribute(Qt::WA_UpdatesDisabled, false);
 

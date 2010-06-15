@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:49:32 2010 (+0100)
+ * Last-Updated: Tue Jun 15 16:30:34 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 67
+ *     Update #: 69
  */
 
 /* Commentary: 
@@ -68,8 +68,7 @@ void medViewContainerSingle::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainerSingle::dropEvent(QDropEvent *event)
 {
-    s_current = this;
-
+    this->setCurrent(this);
     this->setAttribute(Qt::WA_UpdatesDisabled, false);
 
     medViewContainer::dropEvent(event);
