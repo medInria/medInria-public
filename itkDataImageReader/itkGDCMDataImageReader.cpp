@@ -50,7 +50,7 @@
   bool metadatacopied = 0;						\
   IteratorType itOut;							\
   									\
-  std::cout<<"building volume containing "<<map.size()<<" subvolumes..."<<std::flush; \
+  std::cout<<"building volume containing\t "<<map.size()<<"\t subvolumes..."<<std::flush; \
   									\
   for (it = map.begin(); it != map.end(); ++it)				\
   {									\
@@ -68,7 +68,7 @@
     catch (itk::ExceptionObject & e)					\
     {									\
       std::cerr << e;							\
-      qDebug() <<"Cannot read file list beggining with \n" \
+      qDebug() <<"Cannot read file list begining with \n" \
 	       <<", volume will not be built\n";			\
     }									\
     									\
@@ -121,6 +121,7 @@
     }									\
   }									\
   std::cout<<"done"<<std::endl;						\
+  dtkdata->setData (image);						\
 
 
 class itkGDCMDataImageReaderPrivate
@@ -302,16 +303,26 @@ void itkGDCMDataImageReader::readInformation (QStringList paths)
 	  imagetypestring << "Float";
 	  break;
 	case itk::ImageIOBase::DOUBLE:
-	  imagetypestring << "Short";
+	  /**
+	     @todo Handle properly double pixel values.
+	     For the moment it is only handled in 3D, not in 4D, and it is very
+	     common to have 4D double images (cardiac).
+	     This hack just downcast images in short when the dimension is 4.
+	     which is WRONG.
+	  */
+	  if (imagedimension == 4)
+	    imagetypestring << "Short";
+	  else
+	    imagetypestring << "Double";	    
 	  break;
 	default:
-	  qDebug() << "Unrecognized component type: " << d->io->GetComponentType();
+	  qDebug() << "Unrecognized component type:\t " << d->io->GetComponentType();
 	  return;
     }
     
     imagetypestring << imagedimension;
     if (imagedimension == 4)
-      std::cout<<"image type given : "<<imagetypestring.str().c_str()<<std::endl;
+      std::cout<<"image type given :\t "<<imagetypestring.str().c_str()<<std::endl;
     
     dtkdata = dtkAbstractDataFactory::instance()->create (imagetypestring.str().c_str());
     if (dtkdata)
@@ -414,11 +425,9 @@ bool itkGDCMDataImageReader::read (QStringList paths)
     FileList filelist;
     for (int i=0; i<qfilelist.size(); i++)
       filelist.push_back (qfilelist[i].toAscii().constData());
-
     
     std::cout<<"reading : "<<dtkdata->description().toAscii().constData()<<std::endl;
     std::cout<<"containing : "<<map.size()<<" volumes"<<std::endl;
-    
 
     if      (dtkdata->description() == "itkDataImageUChar3")
     { Read3DImageMacro(unsigned char); }
@@ -445,7 +454,16 @@ bool itkGDCMDataImageReader::read (QStringList paths)
     else if (dtkdata->description() == "itkDataImageShort4")
     { Read4DImageMacro(short); }
     else if (dtkdata->description() == "itkDataImageDouble4")
-    { Read4DImageMacro(short); }
+    {
+      /**
+	 @todo Handle properly double pixel values.
+	 For the moment it is only handled in 3D, not in 4D, and it is very
+	 common to have 4D double images (cardiac).
+	 This hack just downcast images in short when the dimension is 4.
+	 which is WRONG.
+      */
+      Read4DImageMacro(short);
+    }
     else
     {
       qDebug() << "Unhandled dtkdata description : " << dtkdata->description();
