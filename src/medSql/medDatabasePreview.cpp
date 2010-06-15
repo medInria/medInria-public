@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 18:56:37 2010 (+0200)
+ * Last-Updated: Tue Jun 15 20:02:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 131
+ *     Update #: 132
  */
 
 /* Commentary: 
@@ -238,7 +238,7 @@ void medDatabasePreview::onSeriesClicked(int id)
         d->image_group->addItem(new medDatabasePreviewItem(patientId.toInt(), studyId.toInt(), id, imageId.toInt(), imageThumbnail.toString()));
     }
 
-    d->scene->setSceneRect(d->series_group->boundingRect().united(d->image_group->boundingRect()));
+    d->scene->setSceneRect(d->image_group->boundingRect());
 
     if(!d->level)
         onSlideUp();
