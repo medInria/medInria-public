@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 14:22:41 2010 (+0200)
+ * Last-Updated: Tue Jun 15 14:27:10 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 915
+ *     Update #: 928
  */
 
 /* Commentary: 
@@ -110,6 +110,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
     connect(d->viewToolBox, SIGNAL(lutPresetChanged(QString)), this, SLOT(setupLUTPreset(QString)));
     connect(d->viewToolBox, SIGNAL(tdModeChanged(QString)), this, SLOT(setup3DMode(QString)));
+    connect(d->viewToolBox, SIGNAL(tdVRModeChanged(QString)), this, SLOT(setup3DVRMode(QString)));
     connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), this, SLOT(setup3DLOD(int)));
     connect(d->viewToolBox, SIGNAL(windowingChanged(bool)), this, SLOT(setupWindowing(bool)));
     connect(d->viewToolBox, SIGNAL(zoomingChanged(bool)), this, SLOT(setupZooming(bool)));
@@ -546,18 +547,29 @@ void medViewerArea::setupScalarBarVisibility(bool visible)
     }
 }
 
-void medViewerArea::setup3DMode (QString table)
+void medViewerArea::setup3DMode(QString mode)
 {
     if(!d->view_stacks.count())
         return;
   
     if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        view->setProperty("Mode", table);
+        view->setProperty("Mode", mode);
         view->update();
     }
 }
 
-void medViewerArea::setupLUTPreset (QString table)
+void medViewerArea::setup3DVRMode(QString mode)
+{
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->view()) {
+        view->setProperty("VRMode", mode);
+        view->update();
+    }
+}
+
+void medViewerArea::setupLUTPreset(QString table)
 {
     if(!d->view_stacks.count())
         return;
@@ -568,7 +580,7 @@ void medViewerArea::setupLUTPreset (QString table)
     }
 }
 
-void medViewerArea::setup3DLOD (int value)
+void medViewerArea::setup3DLOD(int value)
 {
     if(!d->view_stacks.count())
         return;
@@ -579,7 +591,7 @@ void medViewerArea::setup3DLOD (int value)
     }
 }
 
-void medViewerArea::setupWindowing (bool checked)
+void medViewerArea::setupWindowing(bool checked)
 {
     if(!d->view_stacks.count())
         return;
@@ -590,7 +602,7 @@ void medViewerArea::setupWindowing (bool checked)
     }
 }
 
-void medViewerArea::setupZooming (bool checked)
+void medViewerArea::setupZooming(bool checked)
 {
     if(!d->view_stacks.count())
         return;
@@ -601,7 +613,7 @@ void medViewerArea::setupZooming (bool checked)
     }
 }
 
-void medViewerArea::setupSlicing (bool checked)
+void medViewerArea::setupSlicing(bool checked)
 {
     if(!d->view_stacks.count())
         return;
@@ -612,7 +624,7 @@ void medViewerArea::setupSlicing (bool checked)
     }
 }
 
-void medViewerArea::setupMeasuring (bool checked)
+void medViewerArea::setupMeasuring(bool checked)
 {
     if(!d->view_stacks.count())
         return;
@@ -623,7 +635,7 @@ void medViewerArea::setupMeasuring (bool checked)
     }
 }
 
-void medViewerArea::setupCropping (bool checked)
+void medViewerArea::setupCropping(bool checked)
 {
     if(!d->view_stacks.count())
         return;
