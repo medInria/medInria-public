@@ -1179,8 +1179,12 @@ void v3dView::onOpacityPropertySet(QString value)
 
 void v3dView::onShowAxisPropertySet(QString value)
 {
-    if (value == "true")
-	d->collection->SyncSetShowImageAxis(1);
+    if (value == "true") {
+    	d->collection->SyncSetShowImageAxis(1);
+		if (d->currentView) {
+			d->currentView->InvokeEvent(vtkImageView2D::CurrentPointChangedEvent);
+		}
+	}
 
     if (value == "false")
 	d->collection->SyncSetShowImageAxis(0);
