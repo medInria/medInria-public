@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri May 21 15:04:28 2010 (+0200)
+ * Last-Updated: Mon Jun 14 16:11:18 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 79
+ *     Update #: 81
  */
 
 /* Commentary: 
@@ -38,11 +38,6 @@ public:
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
 
-    void setPatientIndex(int id);
-    void   setStudyIndex(int id);
-    void  setSeriesIndex(int id);
-    void   setImageIndex(int id);
-
 public slots:
     void setup(void);
     void split(int rows, int cols);
@@ -51,9 +46,7 @@ public slots:
     void open(const QString& file);
 
     void onPatientIndexChanged(int index);
-    void   onStudyIndexChanged(int index);
     void  onSeriesIndexChanged(int index);
-    void   onImageIndexChanged(int index);
 
     void onViewFocused(dtkAbstractView *view);
 
@@ -66,7 +59,8 @@ protected slots: // view settings
     void setupBackgroundLookupTable(QString table);
     void setupAxisVisibility(bool visible);
     void setupScalarBarVisibility(bool visible);
-    void setup3DMode (QString table);
+    void setup3DMode (QString mode);
+    void setup3DVRMode (QString mode);
     void setupLUTPreset (QString table);
     void setup3DLOD (int value);
     void setupWindowing (bool checked);

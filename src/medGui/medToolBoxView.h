@@ -40,6 +40,7 @@ signals:
     void backgroundLookupTableChanged(QString);
     void lutPresetChanged(QString);
     void tdModeChanged(QString);
+    void tdVRModeChanged(QString);
     void tdLodChanged(int);
     void windowingChanged(bool);
     void zoomingChanged(bool);

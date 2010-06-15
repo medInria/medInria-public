@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 11:11:53 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Jun  9 18:17:45 2010 (+0200)
+ * Last-Updated: Thu Jun 10 12:24:50 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 79
+ *     Update #: 93
  */
 
 /* Commentary: 
@@ -166,7 +166,8 @@ QSize medWorkspaceShifterMenuPrivate::calculateSizeHint(const QFontMetrics& fm)
 
 medWorkspaceShifterMenu::medWorkspaceShifterMenu(QWidget *parent) : QWidget(parent), d(new medWorkspaceShifterMenuPrivate)
 {
-    setWindowFlags(Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_NoSystemBackground, true);
+    setWindowFlags(Qt::Popup);
     setMouseTracking(true);
     setVisible(false);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -226,7 +227,7 @@ void medWorkspaceShifterMenu::mouseMoveEvent(QMouseEvent *event)
 
 void medWorkspaceShifterMenu::paintEvent(QPaintEvent *event)
 {
-    QWidget::paintEvent(event);
+    // QWidget::paintEvent(event);
 
     const QPair<int, int>& midPair = d->xCache[d->xCache.size() / 2];
     int midWidth = midPair.first + (midPair.second / 2) - 5;
@@ -479,7 +480,7 @@ void medWorkspaceShifter::mousePressEvent(QMouseEvent *event)
             
             QPoint sbPos = this->mapToParent(event->pos());
             QPoint mwPos = this->parentWidget()->mapToParent(sbPos);
-            mwPos -= QPoint(menu->size().width()/2, menu->size().height());
+            mwPos -= QPoint(menu->size().width()/2, 0);
             
             menu->move(mwPos);
             menu->show();

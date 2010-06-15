@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Jun  9 00:11:26 2010 (+0200)
+ * Last-Updated: Mon Jun 14 16:02:22 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 25
+ *     Update #: 28
  */
 
 /* Commentary: 
@@ -22,8 +22,7 @@
 
 #include <QtGui/QMainWindow>
 
-class QModelIndex;
-
+class medDataIndex;
 class medMainWindowPrivate;
 
 class medMainWindow : public QMainWindow
@@ -46,12 +45,9 @@ public slots:
     void switchToViewerArea(void);
     void switchToDocumentationArea(void);
 
-    void onPatientDoubleClicked(const QModelIndex &index);
-    void onStudyDoubleClicked(const QModelIndex &index);
-    void onSeriesDoubleClicked(const QModelIndex &index);
-
     void onConfigurationTriggered(QAction *action);
 
+    void open(const medDataIndex& index);
     void open(const QString& file);
 
 protected:
