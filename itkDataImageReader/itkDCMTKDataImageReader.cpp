@@ -141,88 +141,54 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
     
     
     if (!dtkdata) {
+
+      std::ostringstream imagetypestring;
+      imagetypestring << "itkDataImage";
+      
       
       if (d->io->GetPixelType() == itk::ImageIOBase::SCALAR ) {
-	
-	switch (d->io->GetComponentType()) {
-	  
-	    case itk::ImageIOBase::UCHAR:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUChar3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
-	      
-	    case itk::ImageIOBase::CHAR:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageChar3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
-	      
-	    case itk::ImageIOBase::USHORT:
-	      {
-		if ( d->io->GetNumberOfDimensions()<=3 )
-		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3");
-		else if ( d->io->GetNumberOfDimensions()==4 )
-		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort4");
 
-		if (dtkdata) 
-		  this->setData ( dtkdata );
-		break;
-	      }
-	      
+	switch (d->io->GetComponentType())
+	{
+	    case itk::ImageIOBase::UCHAR:
+	      imagetypestring << "UChar";
+	      break;
+	    case itk::ImageIOBase::CHAR:
+	      imagetypestring << "Char";
+	      break;
+	    case itk::ImageIOBase::USHORT:
+	      imagetypestring << "UShort";
+	      break;
 	    case itk::ImageIOBase::SHORT:
-	      {
-		if ( d->io->GetNumberOfDimensions()<=3 )
-		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageShort3");
-		else if ( d->io->GetNumberOfDimensions()==4 )
-		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageShort4");
-		
-		if (dtkdata)
-		  this->setData ( dtkdata );
-	      }
+	      imagetypestring << "Short";
 	      break;
-	      
 	    case itk::ImageIOBase::UINT:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUInt3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
+	      imagetypestring << "UInt";
 	      break;
-	      
 	    case itk::ImageIOBase::INT:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageInt3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
+	      imagetypestring << "Int";
 	      break;
-	      
 	    case itk::ImageIOBase::ULONG:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageULong3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
+	      imagetypestring << "ULong";
 	      break;
-	      
 	    case itk::ImageIOBase::LONG:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageLong3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
+	      imagetypestring << "Long";
 	      break;
-	      
-	  case itk::ImageIOBase::FLOAT:
-	    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
-	    if (dtkdata)
-	      this->setData ( dtkdata );
-	    break;
-	    
+	    case itk::ImageIOBase::FLOAT:
+	      imagetypestring << "Float";
+	      break;
 	    case itk::ImageIOBase::DOUBLE:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
+	      imagetypestring << "Short";
 	      break;
-	      
 	    default:
-		qDebug() << "Unrecognized component pouet type";
-		return;
+	      qDebug() << "Unrecognized component type: " << d->io->GetComponentType();
+	      return;
 	}
-	
+
+	imagetypestring << d->io->GetNumberOfDimensions();
+	dtkdata = dtkAbstractDataFactory::instance()->create (imagetypestring.str().c_str());
+	if (dtkdata)
+	  this->setData ( dtkdata );
       }
       else if ( d->io->GetPixelType()==itk::ImageIOBase::RGB ) {
 
@@ -245,7 +211,6 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
 	return;
       }
     }
-
 
     if (dtkdata) {
 
