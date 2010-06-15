@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 14:27:10 2010 (+0200)
+ * Last-Updated: Tue Jun 15 14:39:41 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 928
+ *     Update #: 930
  */
 
 /* Commentary: 
@@ -422,7 +422,8 @@ void medViewerArea::switchToPatient(int id)
 
     // Give the current container focus
 
-    view_stack->current()->setFocus();
+    if(!view_stack->current())
+        view_stack->current()->setFocus();
 }
 
 //! Set stack index.
