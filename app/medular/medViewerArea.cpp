@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri May 21 15:07:10 2010 (+0200)
+ * Last-Updated: Mon Jun 14 22:41:52 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 815
+ *     Update #: 846
  */
 
 /* Commentary: 
@@ -233,26 +233,6 @@ void medViewerArea::setdw(QStatusBar *status)
 
 }
 
-void medViewerArea::setPatientIndex(int index)
-{
-    d->patientToolBox->setPatientIndex(index);
-}
-
-void medViewerArea::setStudyIndex(int index)
-{
-
-}
-
-void medViewerArea::setSeriesIndex(int index)
-{
-
-}
-
-void medViewerArea::setImageIndex(int index)
-{
-
-}
-
 void medViewerArea::setup(void)
 {
     d->patientToolBox->clear();
@@ -279,6 +259,27 @@ void medViewerArea::open(const medDataIndex& index)
     if(!((medDataIndex)index).isValid())
         return;
   
+    int id = d->patientToolBox->patientIndex(index);
+
+    if (d->patientToolBox->patientIndex() != id)
+        d->patientToolBox->setPatientIndex(id);
+
+    medViewerAreaStack *view_stack;
+
+    if (!d->view_stacks.contains(id)) {
+        view_stack = new medViewerAreaStack(this);
+	view_stack->setPatientId (id);
+	connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
+	d->view_stacks.insert(id, view_stack);
+	d->stack->addWidget(view_stack);
+    } else {
+        view_stack = d->view_stacks.value (id);
+    }
+
+    d->stack->setCurrentWidget(view_stack);
+
+    view_stack->current()->setFocus(); // needs focus to set s_current to correct ViewContainer
+
     dtkAbstractData *data = NULL;
     dtkAbstractView *view = NULL;
 
@@ -309,70 +310,6 @@ void medViewerArea::open(const medDataIndex& index)
     
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setView(view);
     d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->setFocus(Qt::MouseFocusReason);
-}
-
-void medViewerArea::onPatientIndexChanged(int id)
-{
-    // comment out the following lines to allow quick open file (no index in database in this case)
-
-    // medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
-    
-    // if(!index.isValid())
-    //     return;      
-    
-    // ////////////////////////////////////////////////////////////////////////////////////////////
-
-    // Setup view container
-
-    medViewerAreaStack *view_stack;
-
-    if(!d->view_stacks.contains(id)) {
-        view_stack = new medViewerAreaStack(this);
-        view_stack->setPatientId(id);
-        connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
-        connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
-        d->view_stacks.insert(id, view_stack);
-        d->stack->addWidget(view_stack);
-    } else {
-        view_stack = d->view_stacks.value(id);
-    }
-
-    d->stack->setCurrentWidget(view_stack);
-
-    // Setup navigator
-
-    d->navigator->onPatientClicked(id);
-}
-
-void medViewerArea::onStudyIndexChanged(int id)
-{
-    medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
-
-    if(!index.isValid())
-        return;
-
-    Q_UNUSED(index);
-}
-
-void medViewerArea::onSeriesIndexChanged(int id)
-{
-    this->open(medDatabaseController::instance()->indexForSeries(id));
-}
-
-void medViewerArea::onImageIndexChanged(int id)
-{
-    medDataIndex index = medDatabaseController::instance()->indexForStudy(id);
-
-    if(!index.isValid())
-        return;
-
-    Q_UNUSED(index);
-}
-
-void medViewerArea::onViewFocused(dtkAbstractView *view)
-{
-    d->viewToolBox->update(view);
-    d->diffusionToolBox->update(view);
 }
 
 void medViewerArea::open(const QString& file)
@@ -451,6 +388,41 @@ void medViewerArea::open(const QString& file)
 
     d->navigator->reset();
     d->navigator->addThumbnail(data->thumbnail());
+}
+
+void medViewerArea::onPatientIndexChanged(int id)
+{
+    // Setup view container
+
+    medViewerAreaStack *view_stack;
+
+    if(!d->view_stacks.contains(id)) {
+        view_stack = new medViewerAreaStack(this);
+        view_stack->setPatientId(id);
+        connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
+        connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
+        d->view_stacks.insert(id, view_stack);
+        d->stack->addWidget(view_stack);
+    } else {
+        view_stack = d->view_stacks.value(id);
+    }
+
+    d->stack->setCurrentWidget(view_stack);
+
+    // Setup navigator
+
+    d->navigator->onPatientClicked(id);
+}
+
+void medViewerArea::onSeriesIndexChanged(int id)
+{
+    this->open(medDatabaseController::instance()->indexForSeries(id));
+}
+
+void medViewerArea::onViewFocused(dtkAbstractView *view)
+{
+    d->viewToolBox->update(view);
+    d->diffusionToolBox->update(view);
 }
 
 // layout settings
@@ -557,8 +529,8 @@ void medViewerArea::setup3DLOD (int value)
         return;
   
     if(dtkAbstractView *view =  d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->view()) {
-      view->setMetaData("VRQuality", QString::number(value));
-      view->update();
+        view->setMetaData("LOD", QString::number(value));
+	view->update();
     }
 }
 

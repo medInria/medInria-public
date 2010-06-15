@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:18:20 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Jun  9 00:24:02 2010 (+0200)
+ * Last-Updated: Mon Jun 14 13:42:21 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 101
+ *     Update #: 122
  */
 
 /* Commentary: 
@@ -17,6 +17,7 @@
  * 
  */
 
+#include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseItem.h>
@@ -30,13 +31,13 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     this->setAlternatingRowColors(true);
     this->setAnimated(false);
     this->setSortingEnabled(true);
-
-    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
-
+    // this->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->header()->setStretchLastSection(true);
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(this, SIGNAL(      clicked(const QModelIndex&)), this, SLOT(onItemClicked(const QModelIndex&)));
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 }
 
 medDatabaseView::~medDatabaseView(void)
@@ -110,6 +111,25 @@ void medDatabaseView::onImageClicked(int id)
     }
 }
 
+void medDatabaseView::updateContextMenu(const QPoint& point)
+{
+    QModelIndex index = this->indexAt(point);
+
+    if(!index.isValid())
+        return;
+
+    medDatabaseItem *item = NULL;
+
+    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(index.internalPointer());
+
+    if(item && item->table() == "series") {    
+        QMenu menu(this);
+        menu.addAction("View", this, SLOT(onMenuViewClicked()));
+        menu.exec(mapToGlobal(point));
+    }
+}
+
 void medDatabaseView::onItemClicked(const QModelIndex& index)
 {
     medDatabaseItem *item = NULL;
@@ -137,21 +157,38 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         item = static_cast<medDatabaseItem *>(index.internalPointer());
 
     if(item)
-        if(item->table() == "patient") {
+        if(item->table() == "patient")
+            ;
+        else if(item->table() == "study")
+            ;
+        else if(item->table() == "series")
+            ;
+        else
+            ;
+}
 
-            emit patientDoubleClicked(item->value(20).toInt());
-            emit patientDoubleClicked(index);
-        }
-        else if(item->table() == "study") {
-            emit studyDoubleClicked(item->value(20).toInt());
-            emit studyDoubleClicked(index);
-        }
-        else if(item->table() == "series") {
-            emit seriesDoubleClicked(item->value(20).toInt());
-            emit seriesDoubleClicked(index);
-        }
-        else {
-            emit imageDoubleClicked(item->value(20).toInt());
-            emit imageDoubleClicked(index);
-        }
+void medDatabaseView::onMenuViewClicked(void)
+{
+    if(!this->selectedIndexes().count())
+        return;
+
+    QModelIndex index = this->selectedIndexes().first();
+
+    if(!index.isValid())
+        return;
+
+    medDatabaseItem *item = NULL;
+
+    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(index.internalPointer());
+
+    if(item)
+        if(item->table() == "patient")
+            ;
+        else if(item->table() == "study")
+            ;
+        else if(item->table() == "series")
+            emit open(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
+        else
+            ;
 }
