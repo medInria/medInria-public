@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 12:31:16 2010 (+0200)
+ * Last-Updated: Tue Jun 15 14:22:41 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 913
+ *     Update #: 915
  */
 
 /* Commentary: 
@@ -318,8 +318,6 @@ void medViewerArea::open(const medDataIndex& index)
     
     d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
     d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
-
-    qDebug() << __func__ << "reached en successfully";
 }
 
 //! Open file on the local filesystem.
@@ -486,7 +484,7 @@ medViewerAreaStack *medViewerArea::currentStack(void)
 
 medViewContainer *medViewerArea::currentContainer(void)
 {
-    d->view_stacks.value(d->current_patient)->current();
+    return d->view_stacks.value(d->current_patient)->current();
 }
 
 //! Returns the currently focused child container.
@@ -497,7 +495,7 @@ medViewContainer *medViewerArea::currentContainer(void)
 
 medViewContainer *medViewerArea::currentContainerFocused(void)
 {
-    d->view_stacks.value(d->current_patient)->current()->current();
+    return d->view_stacks.value(d->current_patient)->current()->current();
 }
 
 // view settings
