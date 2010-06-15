@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Jun 14 16:33:07 2010 (+0200)
+ * Last-Updated: Tue Jun 15 10:46:14 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 21
+ *     Update #: 26
  */
 
 /* Commentary: 
@@ -40,13 +40,16 @@ public:
 
     int patientIndex(void);
     int patientIndex(QString patient);
-    int patientIndex(const medDataIndex& index);
 
 signals:
     void patientIndexChanged(int);
 
 public slots:
-    void setPatientIndex(int);
+    void setPatientIndex(int patientId);
+    void setPatientIndex(const medDataIndex& index);
+
+protected slots:
+    void onCurrentIndexChanged(int);
 
 private:
     medToolBoxPatientPrivate *d;

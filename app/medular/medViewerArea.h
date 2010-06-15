@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 09:36:42 2010 (+0200)
+ * Last-Updated: Tue Jun 15 11:31:21 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 89
+ *     Update #: 110
  */
 
 /* Commentary: 
@@ -25,6 +25,8 @@
 class dtkAbstractView;
 
 class medDataIndex;
+class medViewContainer;
+class medViewerAreaStack;
 class medViewerAreaPrivate;
 
 class medViewerArea : public QWidget
@@ -46,22 +48,22 @@ public slots:
     void open(const medDataIndex& index);
     void open(const QString& file);
 
-    void onPatientIndexChanged(int index);
-    void  onSeriesIndexChanged(int index);
+    void switchToPatient(int index);
+    void switchToContainer(int index);
+    void switchToContainerPreset(int index);
 
+protected slots:
     void onViewFocused(dtkAbstractView *view);
 
-//! @name "Layout settings" @{
+protected:
+    medViewerAreaStack *currentStack(void);
+    medViewContainer   *currentContainer(void);
+    medViewContainer   *currentContainerFocused(void);
 
-public slots:
-    void setStackIndex(int index);
-    void setPreset(int preset);
-
-//  @}
+protected slots:
 
 //! @name "View Settings" @{
 
-protected slots:
     void setupForegroundLookupTable(QString table);
     void setupBackgroundLookupTable(QString table);
     void setupAxisVisibility(bool visible);
@@ -79,7 +81,6 @@ protected slots:
 
 //! @name "Registration Settings" @{
 
-protected slots:
     void setupLayoutCompare(void);
     void setupLayoutFuse(void);
 

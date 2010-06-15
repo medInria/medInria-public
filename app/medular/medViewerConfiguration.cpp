@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 14:12:19 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Thu May 13 14:19:23 2010 (+0200)
+ * Last-Updated: Tue Jun 15 11:04:35 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 7
  */
 
 /* Commentary: 
@@ -49,7 +49,7 @@ void medViewerConfiguration::setup(void)
     foreach(medToolBox *toolbox, d->toolboxes.keys())
         toolbox->setVisible(d->toolboxes.value(toolbox));
 
-    d->parent->setStackIndex(d->container_index);
+    d->parent->switchToContainer(d->container_index);
 }
 
 void medViewerConfiguration::setdw(void)
