@@ -125,10 +125,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->welcomeArea, SIGNAL(switchToViewerArea()), this, SLOT(switchToViewerArea()));
     connect(d->welcomeArea, SIGNAL(switchToDocumentationArea(QUrl)), this, SLOT(switchToDocumentationArea(QUrl)));
 
-    connect(d->browserArea->view(), SIGNAL(patientDoubleClicked(const QModelIndex&)), this, SLOT(onPatientDoubleClicked (const QModelIndex&)));
-    connect(d->browserArea->view(), SIGNAL(studyDoubleClicked(const QModelIndex&)), this, SLOT(onStudyDoubleClicked (const QModelIndex&)));
-    connect(d->browserArea->view(), SIGNAL(seriesDoubleClicked(const QModelIndex&)), this, SLOT(onSeriesDoubleClicked (const QModelIndex&)));
-
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
@@ -322,17 +318,6 @@ void medMainWindow::switchToDocumentationArea(QUrl url)
 {
     switchToDocumentationArea();
     d->documentationArea->loadDoc(url);
-}
-
-void medMainWindow::onPatientDoubleClicked(const QModelIndex &index)
-{
-    if (!index.isValid())
-      return;
-
-    d->viewerArea->setPatientIndex(index.row()+1);
-    d->viewerArea->update();
-
-    switchToViewerArea();
 }
 
 void medMainWindow::onConfigurationTriggered(QAction *action)
