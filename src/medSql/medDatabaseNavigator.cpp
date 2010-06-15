@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:38:39 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Jun 14 21:33:21 2010 (+0200)
+ * Last-Updated: Tue Jun 15 09:59:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 13
+ *     Update #: 14
  */
 
 /* Commentary: 
@@ -128,8 +128,6 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
             seriesId = seriesQuery.value(0);
             seriesName = seriesQuery.value(1);
             seriesThumbnail = seriesQuery.value(2);
-
-            qDebug() << "Creating navigator item with id" << patientId;
 
             medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(patientId, studyId.toInt(), seriesId.toInt(), -1, seriesThumbnail.toString());
 

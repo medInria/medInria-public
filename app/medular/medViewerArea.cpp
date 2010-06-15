@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 14 22:41:52 2010 (+0200)
+ * Last-Updated: Tue Jun 15 09:57:57 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 846
+ *     Update #: 861
  */
 
 /* Commentary: 
@@ -38,7 +38,7 @@
 
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
-#include <medGui/medToolBoxConfiguration.h>
+// #include <medGui/medToolBoxConfiguration.h>
 #include <medGui/medToolBoxLayout.h>
 #include <medGui/medToolBoxPatient.h>
 #include <medGui/medToolBoxDiffusion.h>
@@ -60,7 +60,7 @@ class medViewerAreaPrivate
 {
 public:
     medToolBoxPatient *patientToolBox;
-    medToolBoxConfiguration *configurationToolBox;
+    // medToolBoxConfiguration *configurationToolBox;
     medToolBoxLayout *layoutToolBox;
     medToolBoxView *viewToolBox;
     medToolBoxDiffusion *diffusionToolBox;
@@ -71,7 +71,7 @@ public:
 
     QStackedWidget *stack;
   
-    QHash<int, medViewerAreaStack *> view_stacks; // To be removed when the single/multi/custom stuff will disappear
+    QHash<int, medViewerAreaStack *> view_stacks;
 };
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
@@ -87,9 +87,9 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     
     // -- Configuration toolbox --
 
-    d->configurationToolBox = new medToolBoxConfiguration(this);
+    // d->configurationToolBox = new medToolBoxConfiguration(this);
 
-    connect(d->configurationToolBox, SIGNAL(configurationChanged(QString)), medViewerConfigurator::instance(), SLOT(setConfiguration(QString)));
+    // connect(d->configurationToolBox, SIGNAL(configurationChanged(QString)), medViewerConfigurator::instance(), SLOT(setConfiguration(QString)));
 
     // -- Layout toolbox --
 
@@ -134,7 +134,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(320);
     d->toolbox_container->addToolBox(d->patientToolBox);
-    d->toolbox_container->addToolBox(d->configurationToolBox);
+    // d->toolbox_container->addToolBox(d->configurationToolBox);
     d->toolbox_container->addToolBox(d->layoutToolBox);
     d->toolbox_container->addToolBox(d->viewToolBox);
     d->toolbox_container->addToolBox(d->diffusionToolBox);
@@ -210,9 +210,9 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // Feed configuration toolbox accordingly
 
-    d->configurationToolBox->addConfiguration("Visualization");
-    d->configurationToolBox->addConfiguration("Diffusion");
-    d->configurationToolBox->addConfiguration("Registration");
+    // d->configurationToolBox->addConfiguration("Visualization");
+    // d->configurationToolBox->addConfiguration("Diffusion");
+    // d->configurationToolBox->addConfiguration("Registration");
 }
 
 medViewerArea::~medViewerArea(void)
@@ -222,20 +222,41 @@ medViewerArea::~medViewerArea(void)
     d = NULL;
 }
 
+//! Status bar setup
+/*! 
+ *  Called whenever the viewer area is switched to. Add viewer area
+ *  specific status widgets on the left of the status bar.
+ */
+
 void medViewerArea::setup(QStatusBar *status)
 {
 
 }
+
+//! Status bar setdown
+/*! 
+ *  Called whenever the viewer area is left. Remove viewer area
+ *  specific status widgets from the left of the status bar.
+ */
 
 void medViewerArea::setdw(QStatusBar *status)
 {
 
 }
 
+//! Viewer area setup.
+/*! 
+ *  This methods sets the patient toolbox up by retreiving the list of
+ *  partients from the database, add items using their names, and the
+ *  database patient id as a user data for each item. Beware, the
+ *  index of the patient in the combo box does not necessarily
+ *  corresponds to the one of the patient in the database.
+ */
+
 void medViewerArea::setup(void)
 {
     d->patientToolBox->clear();
-    d->patientToolBox->addItem("Choose patient");
+    d->patientToolBox->addItem("Choose patient", -1);
 
     QSqlQuery query(*(medDatabaseController::instance()->database()));
 
@@ -246,6 +267,12 @@ void medViewerArea::setup(void)
     while(query.next())
         d->patientToolBox->addItem(query.value(0).toString(), query.value(1));
 }
+
+//! Split the currently displayed custom container.
+/*! 
+ *  This slots make the connection between the layout toolbox gui and
+ *  the actual custom view container.
+ */
 
 void medViewerArea::split(int rows, int cols)
 {
@@ -258,26 +285,26 @@ void medViewerArea::open(const medDataIndex& index)
     if(!((medDataIndex)index).isValid())
         return;
   
-    int id = d->patientToolBox->patientIndex(index);
+    // int id = d->patientToolBox->patientIndex(index);
 
-    if (d->patientToolBox->patientIndex() != id)
-        d->patientToolBox->setPatientIndex(id);
+    // if (d->patientToolBox->patientIndex() != id)
+    //     d->patientToolBox->setPatientIndex(id);
 
-    medViewerAreaStack *view_stack;
+    // medViewerAreaStack *view_stack;
 
-    if (!d->view_stacks.contains(id)) {
-        view_stack = new medViewerAreaStack(this);
-	view_stack->setPatientId (id);
-	connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
-	d->view_stacks.insert(id, view_stack);
-	d->stack->addWidget(view_stack);
-    } else {
-        view_stack = d->view_stacks.value (id);
-    }
+    // if (!d->view_stacks.contains(id)) {
+    //     view_stack = new medViewerAreaStack(this);
+    //     view_stack->setPatientId (id);
+    //     connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
+    //     d->view_stacks.insert(id, view_stack);
+    //     d->stack->addWidget(view_stack);
+    // } else {
+    //     view_stack = d->view_stacks.value (id);
+    // }
 
-    d->stack->setCurrentWidget(view_stack);
+    // d->stack->setCurrentWidget(view_stack);
 
-    view_stack->current()->setFocus(); // needs focus to set s_current to correct ViewContainer
+    // view_stack->current()->setFocus(); // needs focus to set s_current to correct ViewContainer
 
     dtkAbstractData *data = NULL;
     dtkAbstractView *view = NULL;
@@ -418,13 +445,23 @@ void medViewerArea::onSeriesIndexChanged(int id)
     this->open(medDatabaseController::instance()->indexForSeries(id));
 }
 
+//! View focused callback. 
+/*! 
+ *  This method updates the toolboxes according to the focused view.
+ */
+
 void medViewerArea::onViewFocused(dtkAbstractView *view)
 {
     d->viewToolBox->update(view);
     d->diffusionToolBox->update(view);
 }
 
-// layout settings
+//! Set stack index.
+/*! 
+ *  This method actually allows one to switch between the
+ *  single/multi/custom modes for the currently displayed view
+ *  stack. A view stack is composed of a single/custom/multi layout.
+ */
 
 void medViewerArea::setStackIndex(int index)
 {
@@ -432,6 +469,11 @@ void medViewerArea::setStackIndex(int index)
         if (d->view_stacks.value(d->patientToolBox->patientIndex()))
 	    d->view_stacks.value(d->patientToolBox->patientIndex())->setCurrentIndex(index);
 }
+
+//! Set custom view preset
+/*! 
+ *  Presets are defined in src/medGui/medViewContainerCustom.
+ */
 
 void medViewerArea::setPreset(int preset)
 {
@@ -592,8 +634,8 @@ void medViewerArea::setupLayoutFuse(void)
 
     d->view_stacks.value(d->patientToolBox->patientIndex())->setCurrentIndex(4);
 	
-	if (d->registrationToolBox->fuseView()) {
-	    d->view_stacks.value(d->patientToolBox->patientIndex())->current()->setView(d->registrationToolBox->fuseView());
+    if (d->registrationToolBox->fuseView()) {
+        d->view_stacks.value(d->patientToolBox->patientIndex())->current()->setView(d->registrationToolBox->fuseView());
         d->view_stacks.value(d->patientToolBox->patientIndex())->current()->setFocus(Qt::MouseFocusReason);
-	}
+    }
 }
