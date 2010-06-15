@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 18:48:31 2010 (+0200)
+ * Last-Updated: Tue Jun 15 18:49:31 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 128
+ *     Update #: 127
  */
 
 /* Commentary: 
@@ -138,7 +138,6 @@ void medDatabasePreview::init(void)
 
 void medDatabasePreview::onPatientClicked(int id)
 {
-    d->scene->setSceneRect(QRectF());
     d->series_group->clear();
     d->image_group->clear();
 
@@ -199,8 +198,6 @@ void medDatabasePreview::onSeriesClicked(int id)
         patientId = query.value(0);
     
     // Series level
-
-    d->scene->setSceneRect(QRectF());
 
     d->series_group->clear();
     
