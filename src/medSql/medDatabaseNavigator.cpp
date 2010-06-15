@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:38:39 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 11:05:57 2010 (+0100)
+ * Last-Updated: Tue Jun 15 09:59:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 14
  */
 
 /* Commentary: 
@@ -129,7 +129,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
             seriesName = seriesQuery.value(1);
             seriesThumbnail = seriesQuery.value(2);
 
-            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(id.toInt(), studyId.toInt(), seriesId.toInt(), -1, seriesThumbnail.toString());
+            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(patientId, studyId.toInt(), seriesId.toInt(), -1, seriesThumbnail.toString());
 
             connect(item, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
             connect(item, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
@@ -162,4 +162,13 @@ void medDatabaseNavigator::onImageClicked(int id)
 #ifndef WIN32
     qDebug() << __func__ << id;
 #endif
+}
+
+void medDatabaseNavigator::addThumbnail(const QImage& thumbnail)
+{
+    medDatabaseNavigatorItemGroup *group = new medDatabaseNavigatorItemGroup;
+    medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(-1, -1, -1, -1, thumbnail);
+
+    group->addItem(item);
+    d->scene->addGroup(group);    
 }

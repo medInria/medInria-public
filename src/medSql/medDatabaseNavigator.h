@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:38:25 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 09:38:29 2009 (+0100)
+ * Last-Updated: Thu May 13 20:07:04 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 4
  */
 
 /* Commentary: 
@@ -49,6 +49,9 @@ public slots:
     void   onStudyClicked(int id);
     void  onSeriesClicked(int id);
     void   onImageClicked(int id);
+
+public slots:
+    void addThumbnail(const QImage& thumbnail);
 
 private:
     medDatabaseNavigatorPrivate *d;

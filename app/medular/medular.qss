@@ -1,4 +1,23 @@
-/*
+/* medular.qss --- 
+;; 
+;; Author: Julien Wintz
+;; Copyright (C) 2008 - Julien Wintz, Inria.
+;; Created: Fri May 21 09:46:29 2010 (+0200)
+;; Version: $Id$
+;; Last-Updated: Sun Jun 13 22:04:41 2010 (+0200)
+;;           By: Julien Wintz
+;;     Update #: 27
+*/
+
+/* Commentary: 
+;; 
+*/
+
+/* Change log:
+;; 
+*/
+
+/**
  * QTableView
  */
 
@@ -216,11 +235,11 @@ QSlider::handle:vertical {
 }
 
 /**
- * QTreeView
+ * medDatabaseView
  *
  */
 
-QTreeView {
+medDatabaseView {
     alternate-background-color: #505050;
 
     border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
@@ -238,26 +257,26 @@ QTreeView {
     background: #313131;
 }
 
-QTreeView::branch:has-siblings:!adjoins-item {
+medDatabaseView::branch:has-siblings:!adjoins-item {
     image: none;
 }
 
-QTreeView::branch:has-siblings:adjoins-item {
+medDatabaseView::branch:has-siblings:adjoins-item {
     image: none;
 }
 
-QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+medDatabaseView::branch:!has-children:!has-siblings:adjoins-item {
     image: none;
 }
 
-QTreeView::branch:has-children:!has-siblings:closed,
-QTreeView::branch:closed:has-children:has-siblings {
+medDatabaseView::branch:has-children:!has-siblings:closed,
+medDatabaseView::branch:closed:has-children:has-siblings {
     border-image: none;
     image: url(:pixmaps/treeview-branch-closed.png);
 }
 
-QTreeView::branch:open:has-children:!has-siblings,
-QTreeView::branch:open:has-children:has-siblings  {
+medDatabaseView::branch:open:has-children:!has-siblings,
+medDatabaseView::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
 }
@@ -294,6 +313,27 @@ QPushButton::menu-indicator, QComboBox::drop-down {
     subcontrol-position: center right;
 
     right: 7px;
+}
+
+QPushButton:flat {
+    border: none;
+    background-color: none;
+    color: #b2b8b2;
+    height: 32px;
+    font-size: 10px;
+}
+
+QPushButton:flat:hover {
+    border: none;
+}
+
+QPushButton:flat:pressed {
+    border: none;
+    background-color: none;
+}
+
+QPushButton::menu-indicator:flat {
+    image: none;
 }
 
 QComboBox QAbstractItemView {
@@ -812,4 +852,50 @@ QPushButton#tool {
 
 QPushButton#tool:pressed, QPushButton#tool:checked {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
+}
+
+/**
+ * dtkFinderPathBar
+ *
+ */
+
+dtkFinderPathBar {
+    background: #414141;
+    color: #b2b2b2;
+    border: 1px solid #a9a9a9;
+}
+
+/**
+ * dtkFinderTreeView
+ *
+ */
+
+dtkFinderTreeView {
+    color: #b2b8b2;
+    background: #6b6b6b;
+    border: 1px solid #a9a9a9;
+}
+
+dtkFinderTreeView::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+dtkFinderTreeView::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+dtkFinderTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+dtkFinderTreeView::branch:has-children:!has-siblings:closed,
+dtkFinderTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+dtkFinderTreeView::branch:open:has-children:!has-siblings,
+dtkFinderTreeView::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
 }
