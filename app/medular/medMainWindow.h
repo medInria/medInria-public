@@ -21,7 +21,7 @@
 #define MEDMAINWINDOW_H
 
 #include <QtGui/QMainWindow>
-
+#include <QUrl>
 class medDataIndex;
 class medMainWindowPrivate;
 
@@ -44,6 +44,8 @@ public slots:
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
     void switchToDocumentationArea(void);
+    void switchToDocumentationArea(QUrl);
+
 
     void onConfigurationTriggered(QAction *action);
 

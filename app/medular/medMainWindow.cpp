@@ -122,6 +122,10 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->viewerArea);
     d->stack->addWidget(d->documentationArea);
 
+    connect(d->welcomeArea, SIGNAL(switchToBrowserArea()), this, SLOT(switchToBrowserArea()));
+    connect(d->welcomeArea, SIGNAL(switchToViewerArea()), this, SLOT(switchToViewerArea()));
+    connect(d->welcomeArea, SIGNAL(switchToDocumentationArea(QUrl)), this, SLOT(switchToDocumentationArea(QUrl)));
+
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
@@ -317,6 +321,12 @@ void medMainWindow::switchToDocumentationArea(void)
     d->shiftToDocumentationAreaAction->setChecked(true);
 
     d->shifter->update();
+}
+
+void medMainWindow::switchToDocumentationArea(QUrl url)
+{
+    switchToDocumentationArea();
+    d->documentationArea->loadDoc(url);
 }
 
 void medMainWindow::onConfigurationTriggered(QAction *action)

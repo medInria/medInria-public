@@ -1,0 +1,154 @@
+<html>
+  <head>
+    <script type="text/javascript" src="jquery-1.2.6.min.js" charset="utf-8">
+    </script> 
+    <script src="js/jquery.tools.min.js"></script>
+    <script src="js/flowplayer-3.2.2.min.js"></script>
+    
+    <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print">
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+      
+  </head>
+  
+  <body>
+    
+    
+    <script>
+      $(document).ready(function() {
+      $("img[rel]").overlay({mask: '#000', effect: 'apple'});
+      $("#medularTrigger").tooltip();
+      // setup ul.tabs to work as tabs for each div directly under div.panes
+      $("#tabs ul").tabs("#panes > div");
+      });
+    </script>
+    
+    <br/>
+    <br/>
+    
+    
+    
+    <div class="container">
+      <div class="span-24 last" align="center">
+	<!--the page in BluePrint has 24 units in the grid!
+	Fill always 24 units exactly.
+	-->
+	<img src="../pixmaps/medinria-logo.png"/ width="50%">
+	<h1>Welcome to MedINRIA</h1>
+	</div>
+
+      <div class="span-16" align="center"><!--center container-->
+	      <!-- tabs -->
+	<div id="tabs">
+	  <ul >
+	    <li><a href="#home">Home</a></li>
+	    <li><a href="#features">Features</a></li>
+	    <li><a href="#news">News</a></li>
+	    <li><a href="#tutorial">Tutorials</a></li>
+	    <!--<li><a href="#">Documentation</a></li>-->
+  	  </ul>
+  	</div>
+	<div id="panes">
+		<div class="home"><!--home -->
+			<p>MedInria is the Imaging Tool developed inside INRIA by the Asclepios Team.</p>
+			Have a look at our <a href="#features">New Features</a>
+
+	  </div>
+    
+	  <div class="features"><!--Features -->
+		  <p>Let's list the range of features available in medinria.</p>
+		  <p>Medinria is based on dtk, architectured as a core/plugin framework:</p> <br/>
+		  <img src="img/overview.png" width="100px" rel="#thumbOverview"/>
+		  <div class="simple_overlay" id="thumbOverview">
+	  		<img  src="img/overview.png" />
+		  </div>
+
+
+	  </div>
+	  <div class="news"><!--News-->
+		<div >medINRIA/Medular</div> <!--id="medularTrigger"-->
+		<div ><!--class="tooltip" -->
+			It'about time we get our act together on the names and licenses. ;-)
+   </div>
+
+	  </div>
+	  <div class="tutorials" ><!--Tutorials -->
+
+		  Registration Tutorial
+		  <a  href="http://www-sop.inria.fr/dream/screencasts/medular_rg.mov" style="display:block;width:500px; height:320px;" id="player-rg"></a>
+		  <p><script>flowplayer("player-rg", "http://releases.flowplayer.org/swf/flowplayer-3.2.2.swf", { clip:{autoPlay: false,  autoBuffering: true}//, plugins: {
+//		controls: {
+//			url: 'swf/flowplayer.controls-3.2.1.swf'
+//			} }});
+		});</script></p>
+		<p>For more information on how to use this tool, see 
+		  the documentation on 
+		  <a href="medular://documentation/registration.html">
+			  registration</a>
+		</p>
+	  </div>
+	  <!--<div><Documentation should be empty
+	  </div>-->
+	</div>
+
+	
+	Our former logos:<br>
+	<img  src="../pixmaps/medular-logo.png" width="50px" rel="#thumb1"/>
+	<img src="../pixmaps/mediseen-logo.png" width="50px" rel="#thumb2"/>
+	
+	<div class="simple_overlay" id="thumb1">
+	  <img  src="../pixmaps/medular-logo.png" />
+	  <div class="details">
+	    <h3>Logo 1</h3>
+	    <h4>medular version</h4>
+	  </div>
+	</div>
+	
+	<div class="simple_overlay" id="thumb2">
+	  <img src="../pixmaps/mediseen-logo.png" />
+	  <div class="details">
+	    <h3>Logo 2</h3>
+	    <h4>mediseen version</h4>
+	  </div>
+        </div>
+
+	
+      </div>
+      <div class="span-8 last">
+	<div class="boxyCaption">
+		New Features
+	</div>
+	<div class="boxyBody">
+	  <ul>
+	    <li> Registration</li>
+	    <li> DTI Tracking</li>
+	  </ul>
+        </div>
+        <div class="boxyCaption">
+		News
+	</div>
+	<div class="boxyBody">
+	  <ul>
+	    <li> VPH1 Workshop in September</li>
+	    <li> MICCAI Conference in Beijing</li>
+	  </ul>
+        </div>
+	<div class="boxyCaption">
+		Workspaces:
+	</div>
+	<div class="boxyBody">
+	  <ul>
+	    <li><a href="medular://browser">Browser</a></li>
+	    <li><a href="medular://viewer">Viewer</a></li>
+	    <li><a href="medular://documentation">Documentation</a></li>
+	    <li><a href="http://www.inria.fr">dtk</a></li>
+	  </ul>
+	</div>
+
+	</div>	
+
+    </div>
+    
+    
+  </body>
+</html>

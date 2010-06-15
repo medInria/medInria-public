@@ -1,4 +1,4 @@
-/* medWelcomeArea.cpp --- 
+/* medWelcomeArea.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -19,42 +19,33 @@
 
 #include "medWelcomeArea.h"
 
+#include <dtkCore/dtkGlobal.h>
+
 #include <QtWebKit>
 
 class medWelcomeAreaPrivate
 {
 public:
-    bool logged;
-
-    QLineEdit *userEdit;
-    QLineEdit *passEdit;
+    QWebView *view;
 
     QStatusBar *status;
 };
 
 medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelcomeAreaPrivate)
 {
-    d->logged = 0;
-
-    d->userEdit = new QLineEdit(this);
-    d->passEdit = new QLineEdit(this);
-    d->passEdit->setEchoMode(QLineEdit::Password);
-
-    QFormLayout *form = new QFormLayout;
-    form->addRow(    "User", d->userEdit);
-    form->addRow("Password", d->passEdit);
-
-    connect(d->passEdit, SIGNAL(returnPressed()), this, SLOT(authenticate()));
-
-    QHBoxLayout *logn = new QHBoxLayout;
-    logn->addStretch(1);
-    logn->addLayout(form);
-    logn->addStretch(1);
+    d->view= new QWebView(this);
+    d->view->setContextMenuPolicy(Qt::NoContextMenu);
+    d->view->setAcceptDrops(false);
+    d->view->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
+    d->view->settings()->setAttribute(QWebSettings::JavaEnabled, false);
+    d->view->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    d->view->setUrl(QUrl("qrc:/html/index.html"));
+    connect(d->view, SIGNAL(linkClicked(const QUrl&)), this, SLOT(linkClicked(const QUrl&)));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->addStretch(1);
-    layout->addLayout(logn);
-    layout->addStretch(1);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addWidget(d->view);
 }
 
 medWelcomeArea::~medWelcomeArea(void)
@@ -67,9 +58,6 @@ medWelcomeArea::~medWelcomeArea(void)
 void medWelcomeArea::setup(QStatusBar *status)
 {
     d->status = status;
-
-    if(!d->logged)
-        status->setMaximumHeight(0);
 }
 
 void medWelcomeArea::setdw(QStatusBar *status)
@@ -77,27 +65,28 @@ void medWelcomeArea::setdw(QStatusBar *status)
     d->status = status;
 }
 
-void medWelcomeArea::authenticate(void)
-{
-    QString user = d->userEdit->text();
-    QString pass = d->passEdit->text();
-
-    if(!user.isNull() && !pass.isNull()) {
-        
-        QPropertyAnimation *animation = new QPropertyAnimation(d->status, "maximumHeight");
-        animation->setDuration(200);
-        animation->setEasingCurve(QEasingCurve::OutCubic);        
-        animation->setStartValue(0);
-        animation->setEndValue(31);
-        animation->start();
-        
-        connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
-
-        d->logged = true;
+void medWelcomeArea::linkClicked(const QUrl& url)
+{    
+    if(url.scheme() == "medular") {
+        if(url.host() == "browser")
+            emit switchToBrowserArea();
+        if(url.host() == "viewer")
+            emit switchToViewerArea();
+        if(url.host() == "documentation"){
+            qDebug()<<url.queryItems();
+            qDebug()<<url.path();
+            emit switchToDocumentationArea(url);
+        }
+    } else {
+        d->view->load(url);
     }
 }
 
-void medWelcomeArea::linkClicked(const QUrl& url)
+void medWelcomeArea::keyPressEvent(QKeyEvent *event)
 {
-    Q_UNUSED(url);
+    if(event->modifiers() == Qt::AltModifier && event->key() == Qt::Key_Left)
+        d->view->back();
+
+    if(event->modifiers() == Qt::AltModifier && event->key() == Qt::Key_Right)
+        d->view->forward();
 }

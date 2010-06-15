@@ -36,10 +36,17 @@ public:
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
 
-protected slots:
-    void authenticate(void);
+signals:
+    void switchToBrowserArea(void);
+    void switchToViewerArea(void);
+    void switchToDocumentationArea(void);
+    void switchToDocumentationArea(QUrl);
 
+protected slots:
     void linkClicked(const QUrl &url);
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     medWelcomeAreaPrivate *d;
