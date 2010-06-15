@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 16:32:32 2010 (+0200)
+ * Last-Updated: Tue Jun 15 22:13:09 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 937
+ *     Update #: 946
  */
 
 /* Commentary: 
@@ -391,6 +391,9 @@ void medViewerArea::open(const QString& file)
 
 void medViewerArea::switchToPatient(int id)
 {
+    if(id < 0)
+        return;
+
     d->current_patient = id;
 
     // Setup view container
@@ -428,6 +431,9 @@ void medViewerArea::switchToPatient(int id)
 
 void medViewerArea::switchToContainer(int index)
 {
+    if(index < 0)
+        return;
+
     d->current_container = index;
 
     if (d->view_stacks.count())
@@ -442,6 +448,9 @@ void medViewerArea::switchToContainer(int index)
 
 void medViewerArea::switchToContainerPreset(int index)
 {
+    if(index < 0)
+        return;
+
     if (d->view_stacks.count()) {
         if (d->view_stacks.value(d->current_patient)) {
 	    if(medViewContainerCustom *custom = dynamic_cast<medViewContainerCustom *>(d->view_stacks.value(d->current_patient)->custom())) {
