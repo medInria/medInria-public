@@ -35,6 +35,13 @@ public:
 
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
+    void loadDoc(const QUrl &url);
+
+protected slots:
+    void linkClicked(const QUrl &url);
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
 
 private:
     medDocumentationAreaPrivate *d;

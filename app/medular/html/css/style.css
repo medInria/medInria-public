@@ -1,0 +1,183 @@
+body {
+    background-color: #313131;
+    color: white;
+}
+h1 {
+    color: white;
+}
+
+/* the overlayed element */
+.simple_overlay img{
+	max-width:100%;
+}
+.simple_overlay {
+	
+	/* must be initially hidden */
+	display:none;
+	
+	/* place overlay on top of other elements */
+	z-index:10000;
+	
+	/* styling */
+	background-color:#333;
+	
+	max-width:50%;	
+	min-height:200px;
+	
+	border:1px solid #666;
+	
+	/* CSS3 styling for latest browsers */
+	-moz-box-shadow:0 0 90px 5px #000;
+	-webkit-box-shadow: 0 0 90px #000;	
+}
+
+/* close button positioned on upper right corner */
+.simple_overlay .close {
+	background-image:url(../img/overlay_close.png);
+	position:absolute;
+	right:-15px;
+	top:-15px;
+	cursor:pointer;
+	height:35px;
+	width:35px;
+}
+
+
+.boxyBody{
+	/*border-width:0 1px 1px 1px;*/
+	background-color:#494949;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-left-radius:5px;
+	-webkit-border-bottom-right-radius:5px;
+	-webkit-box-shadow: 0 3px 8px rgba(0,0,0,.9);
+
+}
+.boxyCaption{
+	text-align:center;
+    	padding-top: -5px;
+    	background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000));
+    	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius:5px;
+	-webkit-border-top-right-radius:5px;
+
+}
+
+/* some styling for triggers */
+#triggers {
+	text-align:center;
+}
+
+#triggers img {
+	cursor:pointer;
+	margin:0 5px;
+	background-color:#fff;
+	border:1px solid #ccc;
+	padding:2px;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	
+}
+	
+/* styling for elements inside overlay */
+.details {
+	position:absolute;
+	top:15px;
+	right:15px;
+	font-size:11px;
+	color:#fff;
+	width:150px;
+}
+	
+.details h3 {
+	color:#aba;
+	font-size:15px;
+	margin:0 0 -10px 0;
+}
+
+/* tooltip styling. by default the element to be styled is .tooltip  */
+.tooltip {
+	display:none;
+	background:transparent url(../img/tooltip/black_arrow.png);
+	font-size:12px;
+	height:70px;
+	width:160px;
+	padding:25px;
+	color:#fff;	
+}
+
+
+
+/* root element for tabs  */
+#tabs ul{  
+	margin:0 !important; 
+	padding:0;
+	height:30px;
+}
+
+/* single tab */
+#tabs li {  
+	float:left;	 
+	padding:0; 
+	margin:0;  
+	list-style-type:none;	
+}
+
+/* link inside the tab. uses a background image */
+#tabs a { 
+	float:left;
+	font-size:13px;
+	display:block;
+	padding:5px 30px;	
+	text-decoration:none;
+	height:18px;
+	/*background-color:#efefef;*/
+	/*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#000000'); /* for IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000)); /* for webkit browsers */
+	background: -moz-linear-gradient(top,  #ccc,  #000); /* for firefox 3.6+ */
+
+	color:#fff;
+	margin-right:2px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius:5px;
+	-webkit-border-top-right-radius:5px;
+	position:relative;
+	top:1px;	
+}
+
+#tabs a:hover {
+	background-color:#F7F7F7;
+	color:#333;
+}
+	
+/* selected tab */
+#tabs a.current {
+	/*background-color:#ddd;*/
+	border-bottom:1px solid #ccc;	
+	color:#000;	
+	cursor:default;
+	background: -webkit-gradient(linear, left bottom, left top, from(#ccc), to(#000));
+}
+
+	
+/* tab pane */
+#panes div {
+	display:none;
+	/*border:1px solid #666;*/
+	-webkit-box-shadow: 0 3px 8px rgba(0,0,0,.9);
+	/*background: -webkit-gradient(linear, left bottom, left top, from(#ccc), to(#000));*/
+        
+	border-radius: 5px;
+	padding: 5px 5px 5px 15px;
+	
+	/*border-width:0 1px 1px 1px;*/
+	min-height:150px;
+	padding:15px 20px;
+	background-color:#494949;
+}
+
+
+
+
