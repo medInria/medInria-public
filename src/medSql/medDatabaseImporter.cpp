@@ -23,6 +23,7 @@
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 
@@ -131,6 +132,9 @@ void medDatabaseImporter::run(void)
 
 	if(!dtkdata->hasMetaData("Rows"))
             dtkdata->addMetaData("Rows", QStringList() << "");
+		
+	if(!dtkdata->hasMetaData("Columns"))
+            dtkdata->addMetaData("Columns", QStringList() << "");
 
 	if(!dtkdata->hasMetaData("Age"))
             dtkdata->addMetaData("Age", QStringList() << "");
@@ -295,10 +299,7 @@ void medDatabaseImporter::run(void)
                 //connect (dataReader, SIGNAL (progressed (int)), this, SLOT (setImportProgress(int)));
 
                 if (dataReader->read( it.value() )) {
-                    imData = dataReader->data();
-
-		    QStringList size;
-		    size << QString::number (it.value().count());
+                    imData = dataReader->data();					
 
                     if (imData) {
                         if (!imData->hasMetaData ("FilePaths"))
@@ -313,7 +314,14 @@ void medDatabaseImporter::run(void)
                         if (!imData->hasMetaData ("SeriesDescription"))
                             imData->addMetaData  ("SeriesDescription", QStringList() << QFileInfo (it.value()[0]).baseName());
 
-			imData->setMetaData ("Size", size);
+						QStringList size;
+						if (dtkAbstractDataImage *imagedata = dynamic_cast<dtkAbstractDataImage*> (imData) ) {
+							size << QString::number (imagedata->zDimension() );
+						}
+						else {
+							size << "";
+						}
+						imData->setMetaData ("Size", size);
 
 			if(!imData->hasMetaData ("StudyID"))
             		    imData->addMetaData ("StudyID", QStringList() << "");
@@ -433,7 +441,6 @@ void medDatabaseImporter::run(void)
 	QString studyId        = dtkdata->metaDataValues(tr("StudyID"))[0];
 	QString seriesId       = dtkdata->metaDataValues(tr("SeriesID"))[0];
 	int size               = dtkdata->metaDataValues(tr("Size"))[0].toInt();
-	qDebug() << dtkdata->metaDataValues(tr("Size"))[0] << " " << size;
 	
 	QString orientation    = dtkdata->metaDataValues(tr("Orientation"))[0];
 	QString seriesNumber   = dtkdata->metaDataValues(tr("SeriesNumber"))[0];

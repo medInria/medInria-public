@@ -185,6 +185,8 @@ void medToolBoxRegistration::run(void)
 	if(output) {
 	    d->movingView->setData(output);
 	    //d->movingView->reset(); // do not reset
+	    d->fixedView->unlink (d->movingView);
+	    d->fixedView->link (d->movingView);
 	    d->movingView->update();
 	    
 	    if (d->fuseView) {
@@ -239,8 +241,10 @@ void medToolBoxRegistration::onFixedImageDropped (void)
 	return;
     }
 
-    if (d->movingView)
+    if (d->movingView) {
         d->fixedView->link(d->movingView);
+	d->movingView->update();
+    }
 
     if (d->fuseView)
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
@@ -272,8 +276,10 @@ void medToolBoxRegistration::onMovingImageDropped (void)
 	return;
     }
 
-    if (d->fixedView)
+    if (d->fixedView) {
         d->fixedView->link(d->movingView);
+	d->movingView->update();
+    }
 
     if (d->fuseView)
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
