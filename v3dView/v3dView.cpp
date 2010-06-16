@@ -448,6 +448,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->addProperty ("Opacity",               QStringList() << "1.0");
     this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
     this->addProperty ("ShowRuler",             QStringList() << "true" << "false");
+    this->addProperty ("ShowAnnotations",       QStringList() << "true" << "false");
     this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
     this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum" << "Off");
     this->addProperty ("VRMode",                QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default");
@@ -463,6 +464,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("ScalarBarVisibility", "false");
     this->setProperty ("ShowAxis", "false");
     this->setProperty ("ShowRuler", "true");
+    this->setProperty ("ShowAnnotations", "true");
     this->setProperty ("LookupTable", "Default");
     this->setProperty ("BackgroundLookupTable", "Default");
     this->setProperty ("Opacity", "1.0");
@@ -933,6 +935,9 @@ void v3dView::onPropertySet(QString key, QString value)
     if(key == "ShowRuler")
 	this->onShowRulerPropertySet(value);
 
+    if(key == "ShowAnnotations")
+	this->onShowAnnotationsPropertySet(value);
+
     if(key == "LeftClickInteraction")
 	this->onLeftClickInteractionPropertySet(value);
 
@@ -1252,6 +1257,11 @@ void v3dView::onShowRulerPropertySet(QString value)
       d->view2DSagittal->SetShowRulerWidget (0);
       d->view2DCoronal->SetShowRulerWidget (0);
     }
+}
+
+void v3dView::onShowAnnotationsPropertySet(QString value)
+{
+  d->collection->SyncSetShowAnnotations ((value == "true"));
 }
 
 void v3dView::onLeftClickInteractionPropertySet(QString value)
