@@ -314,14 +314,14 @@ void medDatabaseImporter::run(void)
                         if (!imData->hasMetaData ("SeriesDescription"))
                             imData->addMetaData  ("SeriesDescription", QStringList() << QFileInfo (it.value()[0]).baseName());
 
-						QStringList size;
-						if (dtkAbstractDataImage *imagedata = dynamic_cast<dtkAbstractDataImage*> (imData) ) {
-							size << QString::number (imagedata->zDimension() );
-						}
-						else {
-							size << "";
-						}
-						imData->setMetaData ("Size", size);
+			QStringList size;
+			if (dtkAbstractDataImage *imagedata = dynamic_cast<dtkAbstractDataImage*> (imData) ) {
+			    size << QString::number (imagedata->zDimension() );
+			}
+			else {
+			    size << "";
+			}
+			imData->setMetaData ("Size", size);
 
 			if(!imData->hasMetaData ("StudyID"))
             		    imData->addMetaData ("StudyID", QStringList() << "");
@@ -599,7 +599,6 @@ void medDatabaseImporter::run(void)
 	    query.bindValue(":rows",           rows);
 	    query.bindValue(":columns",        columns);
 	    query.bindValue(":thumbnail",      thumbPath );
-
 	    query.bindValue(":age",         age);
 	    query.bindValue(":description", description);
 	    query.bindValue(":modality",    modality);
@@ -624,45 +623,81 @@ void medDatabaseImporter::run(void)
 	
 	///////////////////////////////////////////////////////////////// IMAGE
 
-	for (int j=0; j<filePaths.count(); j++) {
+	if (filePaths.count()==1 && thumbPaths.count()>1) // special case to 1 image and multiple thumbnails
+	{
 
-	    QFileInfo fileInfo( filePaths[j] );
-
-	    query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
-	    query.bindValue(":id", id);
-	    query.bindValue(":name", fileInfo.fileName());
-	    
-	    if(!query.exec())
-                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-	    
-	    if(query.first()) {
-                ; //qDebug() << "Image" << file << "already in database";
-	    }
-	    else {
-
-	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
-		query.bindValue(":series", id);
-		query.bindValue(":size", 64);
-		query.bindValue(":name", fileInfo.fileName());
-		query.bindValue(":path", fileInfo.filePath());
-		query.bindValue(":instance_path", seriesPath);
-		if (j<thumbPaths.count())
-		    query.bindValue(":thumbnail", thumbPaths[j]);
-		else
-		    query.bindValue(":thumbnail", "");
+	    QFileInfo fileInfo( filePaths[0] );
+	    for (int j=0; j<thumbPaths.count(); j++)
+	    {
+	        query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
+		query.bindValue(":id", id);
+		query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
 		
 		if(!query.exec())
-		    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+		
+		if(query.first()) {
+		    ; //qDebug() << "Image" << file << "already in database";
+		}
+		else {
+
+	            query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
+		    query.bindValue(":series", id);
+		    query.bindValue(":size", 64);
+		    query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
+		    query.bindValue(":path", fileInfo.filePath());
+		    query.bindValue(":instance_path", seriesPath);
+		    query.bindValue(":thumbnail", thumbPaths[j]);
+		
+		    if(!query.exec())
+		        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+		}
+	    }
+	    
+	}
+	else {
+	
+	    for (int j=0; j<filePaths.count(); j++) {
+
+	        QFileInfo fileInfo( filePaths[j] );
+
+		query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
+		query.bindValue(":id", id);
+		query.bindValue(":name", fileInfo.fileName());
+		
+		if(!query.exec())
+                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+	    
+		if(query.first()) {
+		    ; //qDebug() << "Image" << file << "already in database";
+		}
+		else {
+		  
+		    query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
+		    query.bindValue(":series", id);
+		    query.bindValue(":size", 64);
+		    query.bindValue(":name", fileInfo.fileName());
+		    query.bindValue(":path", fileInfo.filePath());
+		    query.bindValue(":instance_path", seriesPath);
+		    if (j<thumbPaths.count())
+		        query.bindValue(":thumbnail", thumbPaths[j]);
+		    else
+		        query.bindValue(":thumbnail", "");
+		
+		    if(!query.exec())
+		        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+		}
 	    }
 	}
-
-        //delete dtkdata;
+	
+	
 	delete imData;
 	imData = NULL;
-    }
+	
+	}
     }
     
-
+    
     emit progressed(100);
     emit done();
 }
