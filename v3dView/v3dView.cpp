@@ -128,6 +128,7 @@ public:
     QSlider    *slider;
     QPushButton *anchorButton;
     QPushButton *linkButton;
+    QPushButton *playButton;
     QPushButton *closeButton;
     QVTKWidget *vtkWidget;
     QMenu      *menu;
@@ -136,6 +137,8 @@ public:
     QSet<dtkAbstractView*> linkedViews;
   
     dtkAbstractData *data;
+
+    QTimeLine *timeline;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -146,6 +149,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 {
     d->data = 0;
     d->orientation = "Axial";
+
+    d->timeline = new QTimeLine(10000, this);
+    connect(d->timeline, SIGNAL(frameChanged(int)), this, SLOT(onZSliderValueChanged(int)));
 
     // Setting up 2D view
     
@@ -228,6 +234,17 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     // d->linkButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     // d->linkButton->setObjectName("tool");
 
+    d->playButton = new QPushButton(d->widget);
+    d->playButton->setText(">");
+    d->playButton->setCheckable(true);
+    d->playButton->setMaximumHeight(16);
+    d->playButton->setMaximumWidth(16);
+    d->playButton->setFocusPolicy(Qt::NoFocus);
+    d->playButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->playButton->setObjectName("tool");
+
+    connect(d->playButton, SIGNAL(clicked(bool)), this, SLOT(play(bool)));
+
     d->closeButton = new QPushButton(d->widget);
     d->closeButton->setText("x");
     d->closeButton->setCheckable(false);
@@ -261,6 +278,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     toolsLayout->addWidget(d->slider);
     // toolsLayout->addWidget(d->anchorButton);
     // toolsLayout->addWidget(d->linkButton);
+    toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->closeButton);
 
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
@@ -863,6 +881,31 @@ void *v3dView::data (void)
 QWidget *v3dView::widget(void)
 {
     return d->widget;
+}
+
+void v3dView::play(bool start)
+{
+    qDebug() << __func__ << start;
+
+    if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data)) {
+
+        if (d->orientation=="Axial") {
+            d->timeline->setFrameRange(0, imData->zDimension()-1);
+        }
+
+	if (d->orientation=="Sagittal") {
+            d->timeline->setFrameRange(0, imData->xDimension()-1);
+        }
+
+	if (d->orientation=="Coronal") {
+            d->timeline->setFrameRange(0, imData->yDimension()-1);
+        }
+
+        if(start)
+            d->timeline->start();
+        else
+            d->timeline->stop();
+    }
 }
 
 void v3dView::onPropertySet(QString key, QString value)
