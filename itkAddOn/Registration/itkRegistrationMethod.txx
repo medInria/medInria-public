@@ -133,7 +133,7 @@ RegistrationMethod<TImage>
 template <typename TImage>
 void 
 RegistrationMethod<TImage>
-::SetFixedImage( const ImageType * fixedImage )
+::SetFixedImage( ImageType * fixedImage )
 {
   itkDebugMacro("setting Fixed Image to " << fixedImage ); 
   
@@ -154,7 +154,7 @@ RegistrationMethod<TImage>
 template <typename TImage>
 void 
 RegistrationMethod<TImage>
-::SetMovingImage( const ImageType * movingImage )
+::SetMovingImage( ImageType * movingImage )
 {
   itkDebugMacro("setting Moving Image to " << movingImage ); 
   
