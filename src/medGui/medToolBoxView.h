@@ -49,6 +49,7 @@ signals:
     void croppingChanged(bool);
     void scalarBarVisibilityChanged(bool);
     void axisVisibilityChanged(bool);
+    void rulerVisibilityChanged(bool);
 
 private:
     medToolBoxViewPrivate *d;
