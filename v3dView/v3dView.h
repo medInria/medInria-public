@@ -77,6 +77,7 @@ public slots:
     void onBackgroundLookupTablePropertySet (QString value);
     void onOpacityPropertySet               (QString value);
     void onShowAxisPropertySet              (QString value);
+    void onShowRulerPropertySet             (QString value);
     void onLeftClickInteractionPropertySet  (QString value);
     void onCroppingPropertySet              (QString value);
     void onMousePressEvent                  (QMouseEvent *event);

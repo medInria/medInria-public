@@ -447,6 +447,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->addProperty ("BackgroundLookupTable", lut);
     this->addProperty ("Opacity",               QStringList() << "1.0");
     this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
+    this->addProperty ("ShowRuler",             QStringList() << "true" << "false");
     this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
     this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum" << "Off");
     this->addProperty ("VRMode",                QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default");
@@ -461,6 +462,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("Orientation", "Axial");
     this->setProperty ("ScalarBarVisibility", "false");
     this->setProperty ("ShowAxis", "false");
+    this->setProperty ("ShowRuler", "true");
     this->setProperty ("LookupTable", "Default");
     this->setProperty ("BackgroundLookupTable", "Default");
     this->setProperty ("Opacity", "1.0");
@@ -928,6 +930,9 @@ void v3dView::onPropertySet(QString key, QString value)
     if(key == "ShowAxis")
 	this->onShowAxisPropertySet(value);
 
+    if(key == "ShowRuler")
+	this->onShowRulerPropertySet(value);
+
     if(key == "LeftClickInteraction")
 	this->onLeftClickInteractionPropertySet(value);
 
@@ -1233,12 +1238,31 @@ void v3dView::onShowAxisPropertySet(QString value)
 	d->collection->SyncSetShowImageAxis(0);
 }
 
+void v3dView::onShowRulerPropertySet(QString value)
+{
+
+    if (value == "true") {
+      d->view2DAxial->SetShowRulerWidget (1);
+      d->view2DSagittal->SetShowRulerWidget (1);
+      d->view2DCoronal->SetShowRulerWidget (1);
+    }
+
+    if (value == "false"){
+      d->view2DAxial->SetShowRulerWidget (0);
+      d->view2DSagittal->SetShowRulerWidget (0);
+      d->view2DCoronal->SetShowRulerWidget (0);
+    }
+}
+
 void v3dView::onLeftClickInteractionPropertySet(QString value)
 {
     if (value == "Zooming") {
         d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
 	d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
 	d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+        d->view2DAxial->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
+        d->view2DSagittal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
+        d->view2DCoronal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     }
 
     if (value == "Windowing") {
