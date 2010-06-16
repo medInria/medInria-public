@@ -269,9 +269,17 @@ void medDatabaseImporter::run(void)
 	delete dtkdata;
 	
     }
+
+
+    if (imagesToWriteMap.count()==0)
+    {
+      emit message(tr("No compatible or new image was found"), 10000);
+      emit failure();
+      return;
+    }
+
     
-    QMap<QString, int>::const_iterator itk = keyToInt.begin();
-    
+    QMap<QString, int>::const_iterator itk = keyToInt.begin();    
     
     // read and write images in mhd format
 
@@ -403,16 +411,18 @@ void medDatabaseImporter::run(void)
         }
 
         if (!imData) {
-            qDebug() << "Could not read data: " << it.value();
+	    emit message ( tr ("Could not read data: ") + it.value()[0], 10000);
             continue;
         }
 
         QFileInfo fileInfo (it.key());
         if (!fileInfo.dir().exists() && !medDatabaseController::instance()->mkpath (fileInfo.dir().path())) {
-            qDebug() << "Cannot create directory: " << fileInfo.dir().path();
+	    qDebug() << "Cannot create directory: " << fileInfo.dir().path();
             continue;
         }
 
+	int writeSuccess = 0;
+	
         for (int i=0; i<writers.size(); i++) {
             dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
             dataWriter->setData (imData);
@@ -420,16 +430,21 @@ void medDatabaseImporter::run(void)
             if (dataWriter->canWrite( it.key() )) {
                 if (dataWriter->write( it.key() )) {
                     dtkDataList.push_back (imData);
+		    writeSuccess = 1;
                     delete dataWriter;
                     break;
                 }
             }
         }
-	//}
 
-    // Now, populate the database
-    
-    //for (int i=0; i<dtkDataList.count(); i++) {
+
+	if (!writeSuccess) {
+	    emit message ( tr ("Could not save data file: ") + it.value()[0], 10000);
+	    continue;
+	}
+	
+
+	// Now, populate the database
 	if (imData) {
 	  
 	  dtkAbstractData *dtkdata = imData; //dtkDataList[i];
@@ -699,5 +714,5 @@ void medDatabaseImporter::run(void)
     
     
     emit progressed(100);
-    emit done();
+    emit success();
 }

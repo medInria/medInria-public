@@ -242,8 +242,11 @@ void medBrowserArea::onFileSystemImportClicked(void)
 
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
 
-    connect(importer, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
-    connect(importer, SIGNAL(done()), this, SLOT(onFileImported()));
+    connect(importer, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(message (QString, int)), d->status, SLOT (showMessage (QString, int)), Qt::BlockingQueuedConnection);
 
     d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
 

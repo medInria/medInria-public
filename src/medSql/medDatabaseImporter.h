@@ -37,8 +37,10 @@ public:
     void run(void);
 
 signals:
-    void done(void);
     void progressed(int);
+    void success (void);
+    void failure (void);
+    void message (QString text, int timeout);
 
 private:
     medDatabaseImporterPrivate *d;

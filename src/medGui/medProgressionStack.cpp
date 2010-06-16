@@ -104,20 +104,42 @@ void medProgressionStack::setProgress(int progress)
     if (d->bars.contains(object)) {
 
         d->bars.value(object)->setValue(progress);
+    }
+}
 
-        if (progress == 100) {
-            QWidget *widget = d->widgets.value(object);
+void medProgressionStack::onSuccess (void)
+{
+    QObject *object = this->sender();
 
+    if (d->bars.contains(object)) {
 
-            //Completed notification
-            QLabel *completeLabel = new QLabel("Successfull",widget);
-            widget->layout()->removeWidget(d->bars.value(object));
-            delete d->bars.value(object);
-            widget->layout()->addWidget(completeLabel);
-            d->bars.remove(object);
-            d->itemstoBeRemoved.enqueue(object);
-            QTimer::singleShot(3000, this, SLOT(removeItem()));
-        }
+        QWidget *widget = d->widgets.value(object);
+
+	//Completed notification
+	QLabel *completeLabel = new QLabel("Successfull",widget);
+	widget->layout()->removeWidget(d->bars.value(object));
+	d->bars.value(object)->hide();
+	widget->layout()->addWidget(completeLabel);
+	d->itemstoBeRemoved.enqueue(object);
+	QTimer::singleShot(3000, this, SLOT(removeItem()));
+    }
+}
+
+void medProgressionStack::onFailure (void)
+{
+    QObject *object = this->sender();
+
+    if (d->bars.contains(object)) {
+
+        QWidget *widget = d->widgets.value(object);
+
+	//Completed notification
+	QLabel *completeLabel = new QLabel("Failure",widget);
+	widget->layout()->removeWidget(d->bars.value(object));
+	d->bars.value(object)->hide();
+	widget->layout()->addWidget(completeLabel);
+	d->itemstoBeRemoved.enqueue(object);
+	QTimer::singleShot(3000, this, SLOT(removeItem()));
     }
 }
 
@@ -125,6 +147,8 @@ void medProgressionStack::removeItem(){
     if(!d->itemstoBeRemoved.isEmpty()){
         QObject* object = d->itemstoBeRemoved.dequeue();
         QWidget *widget = d->widgets.value(object);
+	delete d->bars.value(object);
+	d->bars.remove (object);
         d->layout->removeWidget(widget);
         d->widgets.remove(object);
         delete widget;
