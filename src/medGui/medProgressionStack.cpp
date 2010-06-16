@@ -49,6 +49,7 @@ public:
 
     QHash<QObject *, QProgressBar *> bars;
     QHash<QObject *, QWidget *> widgets;
+    QQueue<QObject*> itemstoBeRemoved;
 };
 
 medProgressionStack::medProgressionStack(QWidget *parent) : QWidget(parent), d(new medProgressionStackPrivate)
@@ -105,18 +106,29 @@ void medProgressionStack::setProgress(int progress)
         d->bars.value(object)->setValue(progress);
 
         if (progress == 100) {
-
             QWidget *widget = d->widgets.value(object);
 
-            d->layout->removeWidget(widget);
-            
-            d->bars.remove(object);
-            d->widgets.remove(object);
-            
-            delete widget;
 
-            if(d->bars.count() == 0)
-                emit(hidden());
+            //Completed notification
+            QLabel *completeLabel = new QLabel("Successfull",widget);
+            widget->layout()->removeWidget(d->bars.value(object));
+            delete d->bars.value(object);
+            widget->layout()->addWidget(completeLabel);
+            d->bars.remove(object);
+            d->itemstoBeRemoved.enqueue(object);
+            QTimer::singleShot(3000, this, SLOT(removeItem()));
         }
+    }
+}
+
+void medProgressionStack::removeItem(){
+    if(!d->itemstoBeRemoved.isEmpty()){
+        QObject* object = d->itemstoBeRemoved.dequeue();
+        QWidget *widget = d->widgets.value(object);
+        d->layout->removeWidget(widget);
+        d->widgets.remove(object);
+        delete widget;
+        if(d->bars.count() == 0)
+            emit(hidden());
     }
 }
