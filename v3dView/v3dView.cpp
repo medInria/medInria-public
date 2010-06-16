@@ -1245,18 +1245,7 @@ void v3dView::onShowAxisPropertySet(QString value)
 
 void v3dView::onShowRulerPropertySet(QString value)
 {
-
-    if (value == "true") {
-      d->view2DAxial->SetShowRulerWidget (1);
-      d->view2DSagittal->SetShowRulerWidget (1);
-      d->view2DCoronal->SetShowRulerWidget (1);
-    }
-
-    if (value == "false"){
-      d->view2DAxial->SetShowRulerWidget (0);
-      d->view2DSagittal->SetShowRulerWidget (0);
-      d->view2DCoronal->SetShowRulerWidget (0);
-    }
+  d->collection->SyncSetShowRulerWidget ((value == "true"));  
 }
 
 void v3dView::onShowAnnotationsPropertySet(QString value)
@@ -1266,26 +1255,19 @@ void v3dView::onShowAnnotationsPropertySet(QString value)
 
 void v3dView::onLeftClickInteractionPropertySet(QString value)
 {
+  d->collection->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+  
     if (value == "Zooming") {
-        d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-	d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-	d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-        d->view2DAxial->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
-        d->view2DSagittal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
-        d->view2DCoronal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
+        d->collection->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+        d->collection->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     }
 
     if (value == "Windowing") {
-        d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-	d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-	d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-    }
-    
+        d->collection->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+    }    
 
     if (value == "Slicing") {
-        d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
-	d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
-	d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+        d->collection->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
     }
 
     if (value == "Measuring") {
