@@ -63,6 +63,9 @@ public:
     vtkRenderer *renderer3D(void);
     	
 public slots:
+    void play(bool);
+
+public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);
     void onModePropertySet                  (QString value);
