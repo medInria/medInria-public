@@ -70,6 +70,7 @@ protected slots:
     void setupScalarBarVisibility(bool visible);
     void setupRulerVisibility(bool visible);
     void setupAnnotationsVisibility(bool visible);
+    void setupSynchronization (bool sync);
     void setup3DMode (QString mode);
     void setup3DVRMode (QString mode);
     void setupLUTPreset (QString table);

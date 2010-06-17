@@ -33,6 +33,11 @@ public:
     dtkAbstractView *view;
 
     medViewContainer *current;
+
+    // for view synchronization
+    QList<dtkAbstractView *> views;
+    dtkAbstractView         *refView;
+    int                      synchronize;
 };
 
 #endif

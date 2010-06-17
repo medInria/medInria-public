@@ -35,6 +35,9 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
     d->current = this;
 
+    d->refView     = NULL;
+    d->synchronize = 0;
+
     if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent)) {
         connect(this, SIGNAL(dropped(const medDataIndex&)), container, SIGNAL(dropped(const medDataIndex&)));
         connect(this, SIGNAL(focused(dtkAbstractView*)), container, SIGNAL(focused(dtkAbstractView*)));
@@ -66,6 +69,31 @@ void medViewContainer::split(int rows, int cols)
 {
     Q_UNUSED(rows);
     Q_UNUSED(cols);
+}
+
+void medViewContainer::synchronize (void)
+{
+    d->synchronize = 1;
+    if (d->views.count()==0)
+        return;
+
+    QList<dtkAbstractView *>::iterator it = d->views.begin();
+    d->refView = (*it);
+    for (it; it!=d->views.end(); ++it) {
+      d->refView->link ( (*it) );
+    }
+}
+
+void medViewContainer::desynchronize (void)
+{
+    if (d->refView) {
+        QList<dtkAbstractView *>::iterator it = d->views.begin();
+	for (it; it!=d->views.end(); ++it) {
+	    d->refView->unlink ( (*it) );
+	}
+	d->refView = NULL;
+	d->synchronize = 0;
+    }
 }
 
 dtkAbstractView *medViewContainer::view(void)

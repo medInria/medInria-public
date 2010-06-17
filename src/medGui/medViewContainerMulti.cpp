@@ -23,6 +23,14 @@
 
 #include <dtkCore/dtkAbstractView.h>
 
+medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent)
+{
+}
+
+medViewContainerMulti::~medViewContainerMulti()
+{
+}
+  
 medViewContainer::Type medViewContainerMulti::type(void)
 {
     return medViewContainer::Multi;
@@ -99,6 +107,17 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->view = view;
+
+    if (!d->views.contains (view))
+        d->views.append (view);
+
+    QList<dtkAbstractView *>::iterator it = d->views.begin();
+    if (d->synchronize) {
+        if (!d->refView)
+	    d->refView = view;
+	else
+	    d->refView->link ( view );
+    }
 }
 
 void medViewContainerMulti::dragEnterEvent(QDragEnterEvent *event)

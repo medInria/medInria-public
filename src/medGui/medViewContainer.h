@@ -58,6 +58,9 @@ signals:
 
 public slots:
     virtual void split(int rows, int cols);
+    virtual void synchronize   (void);
+    virtual void desynchronize (void);
+
 
 protected:
     void setCurrent(medViewContainer *container);
