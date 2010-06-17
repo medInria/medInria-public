@@ -104,8 +104,7 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
 
-    if (d->synchronize)
-      this->synchronize_2 (view);
+    this->synchronize_2 (view);
 }
 
 void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
@@ -116,12 +115,11 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
   else { // top level medViewContainerCustom
       if (!d->views.contains (view))
 	  d->views.append (view);
-      
+
+      if (!d->refView)
+	  d->refView = view;
       QList<dtkAbstractView *>::iterator it = d->views.begin();
       if (d->synchronize) {
-        if (!d->refView)
-	  d->refView = view;
-	else
 	  d->refView->link ( view );
       } 
   }
@@ -137,10 +135,11 @@ void medViewContainerCustom::synchronize (void)
       if (d->views.count()==0)
           return;
 
-      QList<dtkAbstractView *>::iterator it = d->views.begin();
-      d->refView = (*it);
-      for (it; it!=d->views.end(); ++it) {
-	  d->refView->link ( (*it) );
+      if (d->refView) {
+	  QList<dtkAbstractView *>::iterator it = d->views.begin();
+	  for (it; it!=d->views.end(); ++it) {
+	      d->refView->link ( (*it) );
+	  }
     }
   }
 }
@@ -151,12 +150,13 @@ void medViewContainerCustom::desynchronize (void)
       parent->desynchronize();
   }
   else { // top level medViewContainerCustom
-      QList<dtkAbstractView *>::iterator it = d->views.begin();
-      d->refView = (*it);
-      for (it; it!=d->views.end(); ++it) {
-	  d->refView->unlink ( (*it) );
+
+      if (d->refView) {
+	  QList<dtkAbstractView *>::iterator it = d->views.begin();
+	  for (it; it!=d->views.end(); ++it) {
+	      d->refView->unlink ( (*it) );
+	  }
       }
-      d->refView = NULL;
       d->synchronize = 0;
   } 
 }
