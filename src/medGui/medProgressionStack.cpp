@@ -49,6 +49,7 @@ public:
 
     QHash<QObject *, QProgressBar *> bars;
     QHash<QObject *, QWidget *> widgets;
+    QQueue<QObject*> itemstoBeRemoved;
 };
 
 medProgressionStack::medProgressionStack(QWidget *parent) : QWidget(parent), d(new medProgressionStackPrivate)
@@ -103,20 +104,55 @@ void medProgressionStack::setProgress(int progress)
     if (d->bars.contains(object)) {
 
         d->bars.value(object)->setValue(progress);
+    }
+}
 
-        if (progress == 100) {
+void medProgressionStack::onSuccess (void)
+{
+    QObject *object = this->sender();
 
-            QWidget *widget = d->widgets.value(object);
+    if (d->bars.contains(object)) {
 
-            d->layout->removeWidget(widget);
-            
-            d->bars.remove(object);
-            d->widgets.remove(object);
-            
-            delete widget;
+        QWidget *widget = d->widgets.value(object);
 
-            if(d->bars.count() == 0)
-                emit(hidden());
-        }
+	//Completed notification
+        QLabel *completeLabel = new QLabel(tr("Successful"),widget);
+	widget->layout()->removeWidget(d->bars.value(object));
+	d->bars.value(object)->hide();
+	widget->layout()->addWidget(completeLabel);
+	d->itemstoBeRemoved.enqueue(object);
+	QTimer::singleShot(3000, this, SLOT(removeItem()));
+    }
+}
+
+void medProgressionStack::onFailure (void)
+{
+    QObject *object = this->sender();
+
+    if (d->bars.contains(object)) {
+
+        QWidget *widget = d->widgets.value(object);
+
+	//Completed notification
+        QLabel *completeLabel = new QLabel(tr("Failure"),widget);
+	widget->layout()->removeWidget(d->bars.value(object));
+	d->bars.value(object)->hide();
+	widget->layout()->addWidget(completeLabel);
+	d->itemstoBeRemoved.enqueue(object);
+	QTimer::singleShot(3000, this, SLOT(removeItem()));
+    }
+}
+
+void medProgressionStack::removeItem(){
+    if(!d->itemstoBeRemoved.isEmpty()){
+        QObject* object = d->itemstoBeRemoved.dequeue();
+        QWidget *widget = d->widgets.value(object);
+	delete d->bars.value(object);
+	d->bars.remove (object);
+        d->layout->removeWidget(widget);
+        d->widgets.remove(object);
+        delete widget;
+        if(d->bars.count() == 0)
+            emit(hidden());
     }
 }
