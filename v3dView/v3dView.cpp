@@ -550,7 +550,7 @@ void v3dView::update(void)
 
 void v3dView::link(dtkAbstractView *other)
 {
-    if(!other || other->description()!=tr("v3dView"))
+    if(!other || other->description()!=tr("v3dView") || d->linkedViews.contains (other) || other==this)
         return;
 
     d->linkedViews.insert (other);
@@ -600,7 +600,7 @@ void v3dView::link(dtkAbstractView *other)
 
 void v3dView::unlink(dtkAbstractView *other)
 {
-    if(!other || other->description()!=tr("v3dView"))
+    if(!other || other->description()!=tr("v3dView") || !d->linkedViews.contains (other) ||  other==this)
         return;
 
     d->linkedViews.remove (other);
