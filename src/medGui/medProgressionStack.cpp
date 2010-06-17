@@ -116,7 +116,7 @@ void medProgressionStack::onSuccess (void)
         QWidget *widget = d->widgets.value(object);
 
 	//Completed notification
-	QLabel *completeLabel = new QLabel("Successfull",widget);
+        QLabel *completeLabel = new QLabel(tr("Successful"),widget);
 	widget->layout()->removeWidget(d->bars.value(object));
 	d->bars.value(object)->hide();
 	widget->layout()->addWidget(completeLabel);
@@ -134,7 +134,7 @@ void medProgressionStack::onFailure (void)
         QWidget *widget = d->widgets.value(object);
 
 	//Completed notification
-	QLabel *completeLabel = new QLabel("Failure",widget);
+        QLabel *completeLabel = new QLabel(tr("Failure"),widget);
 	widget->layout()->removeWidget(d->bars.value(object));
 	d->bars.value(object)->hide();
 	widget->layout()->addWidget(completeLabel);
