@@ -470,7 +470,11 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("Opacity", "1.0");
     this->setProperty ("LeftClickInteraction", "Zooming");
     this->setProperty ("Mode", "VR");
+#ifdef __APPLE__
+    this->setProperty ("VRMode", "Ray Cast / Texture");
+#else
     this->setProperty ("VRMode", "Default");
+#endif    
     this->setProperty ("UseLOD", "On");
     this->setProperty ("Preset", "None");
 
