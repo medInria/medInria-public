@@ -77,21 +77,40 @@ void medViewContainer::synchronize (void)
     if (d->views.count()==0)
         return;
 
+    // look if a view is a daddy
+    dtkAbstractView *refView = NULL;
     QList<dtkAbstractView *>::iterator it = d->views.begin();
-    d->refView = (*it);
-    for (it; it!=d->views.end(); ++it) {
-      d->refView->link ( (*it) );
+    for( ; it!=d->views.end(); it++) {
+        if ((*it)->property ("Daddy")=="true") {
+	  refView = (*it);
+	  break;
+	}
+    }
+
+    it = d->views.begin();
+    if (refView) {
+        for (it; it!=d->views.end(); ++it) {
+	    refView->link ( (*it) );
+	}
     }
 }
 
 void medViewContainer::desynchronize (void)
 {
-    if (d->refView) {
+    dtkAbstractView *refView = NULL;
+    QList<dtkAbstractView *>::iterator it = d->views.begin();
+    for( ; it!=d->views.end(); it++) {
+        if ((*it)->property ("Daddy")=="true") {
+	  refView = (*it);
+	  break;
+	}
+    }
+
+    if (refView) {
         QList<dtkAbstractView *>::iterator it = d->views.begin();
 	for (it; it!=d->views.end(); ++it) {
-	    d->refView->unlink ( (*it) );
+	    refView->unlink ( (*it) );
 	}
-	d->refView = NULL;
 	d->synchronize = 0;
     }
 }

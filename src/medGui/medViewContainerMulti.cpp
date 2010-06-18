@@ -111,13 +111,24 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     if (!d->views.contains (view))
         d->views.append (view);
 
-    QList<dtkAbstractView *>::iterator it = d->views.begin();
-    if (d->synchronize) {
-        if (!d->refView)
-	    d->refView = view;
-	else
-	    d->refView->link ( view );
+    dtkAbstractView *refView = NULL;
+
+    if (d->views.count()==1) {
+        refView = view;
+	refView->setProperty ("Daddy", "true");
     }
+    else {  
+        QList<dtkAbstractView *>::iterator it = d->views.begin();
+	for( ; it!=d->views.end(); it++) {
+	    if ((*it)->property ("Daddy")=="true") {
+	        refView = (*it);
+		break;
+	    }
+	}
+    }
+    
+    if (d->synchronize && refView)
+	    refView->link ( view );
 }
 
 void medViewContainerMulti::dragEnterEvent(QDragEnterEvent *event)

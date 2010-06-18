@@ -116,12 +116,24 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
       if (!d->views.contains (view))
 	  d->views.append (view);
 
-      if (!d->refView)
-	  d->refView = view;
-      QList<dtkAbstractView *>::iterator it = d->views.begin();
-      if (d->synchronize) {
-	  d->refView->link ( view );
-      } 
+      dtkAbstractView *refView = NULL;
+      
+      if (d->views.count()==1) {
+        refView = view;
+	refView->setProperty ("Daddy", "true");
+      }
+      else {  
+	QList<dtkAbstractView *>::iterator it = d->views.begin();
+	for( ; it!=d->views.end(); it++) {
+	  if ((*it)->property ("Daddy")=="true") {
+	    refView = (*it);
+	    break;
+	  }
+	}
+      }
+      
+      if (d->synchronize && refView)
+	  refView->link ( view );
   }
 }
 
@@ -135,11 +147,19 @@ void medViewContainerCustom::synchronize (void)
       if (d->views.count()==0)
           return;
 
-      if (d->refView) {
+      dtkAbstractView *refView = NULL;
+      QList<dtkAbstractView *>::iterator it = d->views.begin();
+      for( ; it!=d->views.end(); it++) {
+        if ((*it)->property ("Daddy")=="true") {
+	  refView = (*it);
+	  break;
+	}
+      }
+
+      if (refView) {
 	  QList<dtkAbstractView *>::iterator it = d->views.begin();
-	  for (it; it!=d->views.end(); ++it) {
-	      d->refView->link ( (*it) );
-	  }
+	  for (it; it!=d->views.end(); ++it)
+	      refView->link ( (*it) );
     }
   }
 }
@@ -151,11 +171,19 @@ void medViewContainerCustom::desynchronize (void)
   }
   else { // top level medViewContainerCustom
 
-      if (d->refView) {
+      dtkAbstractView *refView = NULL;
+      QList<dtkAbstractView *>::iterator it = d->views.begin();
+      for( ; it!=d->views.end(); it++) {
+        if ((*it)->property ("Daddy")=="true") {
+	  refView = (*it);
+	  break;
+	}
+      }
+      
+      if (refView) {
 	  QList<dtkAbstractView *>::iterator it = d->views.begin();
-	  for (it; it!=d->views.end(); ++it) {
-	      d->refView->unlink ( (*it) );
-	  }
+	  for (it; it!=d->views.end(); ++it)
+	      refView->unlink ( (*it) );
       }
   }
   d->synchronize = 0;
