@@ -43,6 +43,10 @@ include(${vtkINRIA3D-Private_USE_FILE})
 #   include(${ITK_USE_FILE})
 # endif(vtkINRIA3D_USE_ITK)
 
+if (NOT VTK_USE_QT)
+  message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
+endif(NOT VTK_USE_QT)
+
 ## #################################################################
 ## Input
 ## #################################################################

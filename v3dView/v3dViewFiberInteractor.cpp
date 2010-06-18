@@ -8,6 +8,8 @@
 #include <vtkPolyData.h>
 #include <vtkFibersManager.h>
 #include <vtkImageView.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 
 #include "v3dView.h"
 #include "v3dFiberBundle.h"

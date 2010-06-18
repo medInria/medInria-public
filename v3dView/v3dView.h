@@ -14,6 +14,8 @@ class QMouseEvent;
 
 class v3dViewPrivate;
 class vtkImageView;
+class vtkImageView2D;
+class vtkImageView3D;
 class vtkRenderer;
 class vtkRenderWindowInteractor;
 
@@ -48,10 +50,10 @@ public:
     QWidget *widget(void);
 
     // access method to internal members for v3dView**Interactor classes
-    vtkImageView *viewAxial(void);
-    vtkImageView *viewCoronal(void);
-    vtkImageView *viewSagittal(void);
-    vtkImageView *view3D(void);
+    vtkImageView2D *viewAxial(void);
+    vtkImageView2D *viewCoronal(void);
+    vtkImageView2D *viewSagittal(void);
+    vtkImageView3D *view3D(void);
     
     vtkRenderWindowInteractor *interactor(void);
     
@@ -60,6 +62,9 @@ public:
     vtkRenderer *rendererSagittal(void);
     vtkRenderer *renderer3D(void);
     	
+public slots:
+    void play(bool);
+
 public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);
@@ -72,12 +77,14 @@ public slots:
     void onBackgroundLookupTablePropertySet (QString value);
     void onOpacityPropertySet               (QString value);
     void onShowAxisPropertySet              (QString value);
+    void onShowRulerPropertySet             (QString value);
+    void onShowAnnotationsPropertySet       (QString value);
     void onLeftClickInteractionPropertySet  (QString value);
     void onCroppingPropertySet              (QString value);
     void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged              (int value);
 
-    void onMetaDataSet         (QString key, QString value);
+    void onMetaDataSet(QString key, QString value);
 
 public slots: // Menu interface
     void onMenuAxialTriggered               (void);

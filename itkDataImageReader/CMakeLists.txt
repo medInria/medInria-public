@@ -37,6 +37,12 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+if(ITK_USE_SYSTEM_GDCM)
+  add_definitions(-DITK_USE_SYSTEM_GDCM)
+else(ITK_USE_SYSTEM_GDCM)
+  message(WARNING "The DICOM GDCM reader plugin needs ITK to compile with SYSTEM_GDCM. If you don't want to use GDCM, discard this warning. Otherwise, please set the option ITK_USE_SYSTEM_GDCM:ON in ITK and re-compile")
+endif(ITK_USE_SYSTEM_GDCM)
+
 find_package(DCMTK2 REQUIRED)
 include_directories(${DCMTK_INCLUDE_DIR})
 
@@ -59,7 +65,7 @@ add_library(ITKDCMTKIO ${ITK_LIB_STYLE}
 
 target_link_libraries(ITKDCMTKIO
   ${DCMTK_LIBRARIES}
-  itkAddOn
+  itkIOAddOn
   ${ITK_LIBRARIES})
 
 ## #################################################################
@@ -79,8 +85,15 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkNiftiDataImageReader.h
   itkNrrdDataImageReader.h
   itkGiplDataImageReader.h
-  itkVTKDataImageReader.h)
-
+  itkVTKDataImageReader.h
+  )
+if(ITK_USE_SYSTEM_GDCM)
+  set(${PROJECT_NAME}_HEADERS_MOC
+    ${${PROJECT_NAME}_HEADERS_MOC}
+    itkGDCMDataImageReader.h
+    )
+endif(ITK_USE_SYSTEM_GDCM)
+  
 set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderPlugin.cpp
   itkDataImageReaderCommand.cxx
@@ -95,7 +108,14 @@ set(${PROJECT_NAME}_SOURCES
   itkNiftiDataImageReader.cpp
   itkNrrdDataImageReader.cpp
   itkGiplDataImageReader.cpp
-  itkVTKDataImageReader.cpp)
+  itkVTKDataImageReader.cpp
+  )
+if(ITK_USE_SYSTEM_GDCM)
+  set(${PROJECT_NAME}_SOURCES
+    ${${PROJECT_NAME}_SOURCES}
+    itkGDCMDataImageReader.cpp
+    )
+endif(ITK_USE_SYSTEM_GDCM)
 
 ## #################################################################
 ## Build rules
@@ -111,8 +131,6 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   ITKDCMTKIO
-  # medItk
-  # itkAddOn  
   ${ITK_LIBRARIES})
 
 add_executable(itkDCMTKConvert
