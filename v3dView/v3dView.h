@@ -42,10 +42,14 @@ public:
     void   link(dtkAbstractView *other);
     void unlink(dtkAbstractView *other);
 
+    void setDady(dtkAbstractView *dady);
+
     void *view(void);
 
     void setData(dtkAbstractData *data);
     void *data (void);
+
+    QSet<dtkAbstractView *> linkedViews (void);
     
     QWidget *widget(void);
 
@@ -64,6 +68,8 @@ public:
     	
 public slots:
     void play(bool);
+    void sync(bool);
+    void becomeDady (bool);
 
 public slots:
     void onPropertySet         (QString key, QString value);
@@ -83,6 +89,7 @@ public slots:
     void onCroppingPropertySet              (QString value);
     void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged              (int value);
+    void onDaddyPropertySet                 (QString value);
 
     void onMetaDataSet(QString key, QString value);
 
