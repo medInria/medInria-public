@@ -127,11 +127,11 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
 
 void medViewContainerCustom::synchronize (void)
 {
+  d->synchronize = 1;
   if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
       parent->synchronize();
   }
-  else { // top level medViewContainerCustom
-      d->synchronize = 1;
+  else { // top level medViewContainerCustom      
       if (d->views.count()==0)
           return;
 
@@ -157,8 +157,8 @@ void medViewContainerCustom::desynchronize (void)
 	      d->refView->unlink ( (*it) );
 	  }
       }
-      d->synchronize = 0;
-  } 
+  }
+  d->synchronize = 0;
 }
 
 void medViewContainerCustom::dragEnterEvent(QDragEnterEvent *event)
