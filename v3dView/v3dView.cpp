@@ -471,7 +471,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("LeftClickInteraction", "Zooming");
     this->setProperty ("Mode", "VR");
 #ifdef __APPLE__
-    this->setProperty ("VRMode", "Ray Cast / Texture");
+    this->setProperty ("VRMode", "Ray Cast");
 #else
     this->setProperty ("VRMode", "Default");
 #endif    
