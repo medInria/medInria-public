@@ -7,18 +7,88 @@ h1 {
 }
 
 /* the overlayed element */
-.simple_overlay img{
+div.simple_overlay img{
 	max-width:100%;
 }
-.simple_overlay {
+
+/* the overlayed element */
+.apple_overlay {
 	
-	/* must be initially hidden */
+	/* initially overlay is hidden */
 	display:none;
 	
-	/* place overlay on top of other elements */
+	/* growing background image */
+	background-image:url(../img/overlay_white.png);
+	/*background-color:"white";*/
+	/* 
+		width after the growing animation finishes
+		height is automatically calculated
+	*/
+	width:640px;		
+	
+	/* some padding to layout nested elements nicely  */
+	padding:35px;
+
+	/* a little styling */	
+	font-size:11px;
+}
+
+/* default close button positioned on upper right corner */
+.apple_overlay .close {
+	background-image:url(../img/overlay_close.png);
+	position:absolute; right:5px; top:5px;
+	cursor:pointer;
+	height:35px;
+	width:35px;
+}
+
+div.apple_overlay h2 {
+	margin:10px 0 -9px 0;
+	font-weight:bold;
+	font-size:14px;
+}
+
+div.black h2 {
+	color:#fff;
+}
+
+div.apple_overlay img{
+	width:100%;
+}
+
+#triggers {
+	margin-top:10px;
+	text-align:center;
+}
+	
+#triggers img {
+	background-color:#fff;
+	padding:2px;
+	border:1px solid #ccc;
+	margin:2px 5px;
+	cursor:pointer;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+}
+
+#player-rg{
+	display:block;
+	width:500px;
+	height:320px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/*
+div.simple_overlay {
+	
+	/* must be initially hidden 
+	display:none;
+	
+	/* place overlay on top of other elements 
 	z-index:10000;
 	
-	/* styling */
+	/* styling 
 	background-color:#333;
 	
 	max-width:50%;	
@@ -26,13 +96,13 @@ h1 {
 	
 	border:1px solid #666;
 	
-	/* CSS3 styling for latest browsers */
+	/* CSS3 styling for latest browsers
 	-moz-box-shadow:0 0 90px 5px #000;
 	-webkit-box-shadow: 0 0 90px #000;	
 }
 
-/* close button positioned on upper right corner */
-.simple_overlay .close {
+/* close button positioned on upper right corner 
+div.simple_overlay .close {
 	background-image:url(../img/overlay_close.png);
 	position:absolute;
 	right:-15px;
@@ -41,8 +111,17 @@ h1 {
 	height:35px;
 	width:35px;
 }
-
-
+*/
+.box_container{
+	position:relative;
+	margin-left:1em;
+	margin-right:1em;
+	left=0px;
+	width:45%;
+	min-width:50px;
+	float:left;
+	display:inline;
+}
 .boxyBody{
 	/*border-width:0 1px 1px 1px;*/
 	background-color:#494949;
@@ -51,8 +130,17 @@ h1 {
 	-webkit-border-bottom-left-radius:5px;
 	-webkit-border-bottom-right-radius:5px;
 	-webkit-box-shadow: 0 3px 8px rgba(0,0,0,.9);
-
+	margin-bottom:10px;
+	padding:4px;
 }
+.boxyBody ul {
+	margin:0px;
+}
+
+.boxyBody p {
+	margin:0px;
+}
+
 .boxyCaption{
 	text-align:center;
     	padding-top: -5px;
@@ -61,15 +149,25 @@ h1 {
 	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius:5px;
 	-webkit-border-top-right-radius:5px;
+	margin-top:10px;
+}
 
+#home{
+	display:block;
+	/*text-align:left;*/
+}
+
+#slate{
+	width=50em;
+	height=70em;
 }
 
 /* some styling for triggers */
-#triggers {
+#MedularTrigger {
 	text-align:center;
 }
 
-#triggers img {
+#medularTrigger img {
 	cursor:pointer;
 	margin:0 5px;
 	background-color:#fff;
@@ -80,7 +178,7 @@ h1 {
 	
 }
 	
-/* styling for elements inside overlay */
+/* styling for elements inside overlay 
 .details {
 	position:absolute;
 	top:15px;
@@ -95,9 +193,9 @@ h1 {
 	font-size:15px;
 	margin:0 0 -10px 0;
 }
-
+*/
 /* tooltip styling. by default the element to be styled is .tooltip  */
-.tooltip {
+div.tooltip {
 	display:none;
 	background:transparent url(../img/tooltip/black_arrow.png);
 	font-size:12px;
@@ -179,5 +277,109 @@ h1 {
 }
 
 
+#scroll {
+	position:relative;
+	height:;
+	overflow:hidden;
+	border:1px solid #ddd;
+	width:948px;
+	padding:15px;
+	height:473px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+}
+
+#tools {
+	width:9999em;
+	position:absolute;
+	height:400px;
+}
+
+.tool {
+	float:left;
+	width:1000px;
+	height:340px;
+	text-align:center;
+}
+
+.details {
+	font-size:18px;
+	color:#555;
+	margin-top:-20px;
+	background-color:transparent;
+	padding:5px 148px;
+}
+
+
+#thumbs {
+	background:url(http://static.flowplayer.org/tools/img/demo-navi.jpg) no-repeat;
+	height:90px;
+	position:absolute;
+	top:425px;
+	width:990px;
+	left:-8px;
+}
+
+.t {
+	padding:0 !important;
+	border:0 !important;
+}
+
+.t a {
+	background:transparent url(http://static.flowplayer.org/tools/img/demo-navi.jpg) no-repeat scroll -21px -90px;
+	margin-left:11px;
+	display:block;
+	width:99px;
+	float:left;
+	height:90px;
+	cursor:pointer;
+}
+
+.t a.active {
+	cursor:default !important;
+}
+
+.navi {
+	margin-left:314px;
+	_margin-left:304px;
+}
+
+/* CSS sprite for the navigation */
+#t0{ margin-left:20px; _margin-left:10px;
+text-align:center;
+}
+#t0.active { background-position:-21px 0 !important; }
+#t0:hover  { background-position:-21px -180px; }
+#t0:active { background-position:-21px -270px; }
+
+#t1		{ background-position:-325px -90px; }
+#t1:hover 	{ background-position:-325px -180px; }
+#t1:active	{ background-position:-325px -270px; }
+#t1.active	{ background-position:-325px 0 !important; }
+
+#t2		{ background-position:-435px -90px; }
+#t2:hover 	{ background-position:-435px -180px; }
+#t2:active	{ background-position:-435px -270px; }
+#t2.active	{ background-position:-435px 0 !important; }
+
+#t3		{ background-position:-545px -90px; }
+#t3:hover 	{ background-position:-545px -180px; }
+#t3:active	{ background-position:-545px -270px; }
+#t3.active	{ background-position:-545px 0 !important; }
+
+#t4		{ background-position:-655px -90px; }
+#t4:hover 	{ background-position:-655px -180px; }
+#t4:active	{ background-position:-655px -270px; }
+#t4.active	{ background-position:-655px 0 !important; }
+
+#t5		{ background-position:-765px -90px; }
+#t5:hover 	{ background-position:-765px -180px; }
+#t5:active	{ background-position:-765px -270px; }
+#t5.active	{ background-position:-765px 0 !important; }
+
+#t6		{ background-position:-875px -90px; }
+#t6:hover 	{ background-position:-875px -180px; }
+#t6:active	{ background-position:-875px -270px; }
+#t6.active	{ background-position:-875px 0 !important; }
 
 
