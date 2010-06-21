@@ -38,11 +38,16 @@ public:
     void appendView (dtkAbstractView *view);
     void removeView (dtkAbstractView *view);
 
+    dtkAbstractView *daddy (void);
+
     int synchronized (void);
     
 public slots:
     void synchronize   (void);
     void desynchronize (void);
+
+    void onViewDaddy (bool);
+    void onViewSync  (bool);
 
     void onViewPropertySet (QString key, QString value);
 

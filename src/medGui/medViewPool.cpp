@@ -20,12 +20,15 @@
 #include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkAbstractProcess.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
 
 class medViewPoolPrivate
 {
 public:
-  QList<dtkAbstractView *> views;
-  int                      synchronize;
+  QList<dtkAbstractView *>                 views;
+  QMap<dtkAbstractView*, dtkAbstractData*> viewData;
+  int                                      synchronize;
 };
 
 
@@ -47,21 +50,16 @@ void medViewPool::appendView (dtkAbstractView *view)
 
     d->views.append (view);
     connect (view, SIGNAL (propertySet(QString, QString)), this, SLOT (onViewPropertySet(QString, QString)));
+    connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (onViewDaddy(bool)));
+    connect (view, SIGNAL (sync(bool)), this, SLOT (onViewSync(bool)));
   
     dtkAbstractView *refView = NULL;
     if (d->views.count()==1) {
         refView = view;
 	refView->setProperty ("Daddy", "true");
     }
-    else {  
-        QList<dtkAbstractView *>::iterator it = d->views.begin();
-	for( ; it!=d->views.end(); it++) {
-	    if ((*it)->property ("Daddy")=="true") {
-	        refView = (*it);
-		break;
-	    }
-	}
-    }
+    else
+        refView = this->daddy();
     
     if (d->synchronize && refView)
         refView->link (view);
@@ -73,20 +71,28 @@ void medViewPool::removeView (dtkAbstractView *view)
         return;
 
     // look if a view is a daddy
-    dtkAbstractView *refView = NULL;
-    QList<dtkAbstractView *>::iterator it = d->views.begin();
-    for( ; it!=d->views.end(); it++) {
-        if ((*it)->property ("Daddy")=="true") {
-	  refView = (*it);
-	  break;
-	}
-    }
+    dtkAbstractView *refView = this->daddy();
 
     if (refView)
         refView->unlink (view);
 
     disconnect (view, SIGNAL (propertySet(QString, QString)), this, SLOT (onViewPropertySet(QString, QString)));
+    disconnect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
+    disconnect (view, SIGNAL (sync(bool)),                    this, SLOT (onViewSync(bool)));
     d->views.removeOne (view);
+}
+
+dtkAbstractView *medViewPool::daddy (void)
+{
+    dtkAbstractView *daddy = NULL;
+    QList<dtkAbstractView *>::iterator it = d->views.begin();
+    for( ; it!=d->views.end(); it++) {
+        if ((*it)->property ("Daddy")=="true") {
+	  daddy = (*it);
+	  break;
+	}
+    }
+    return daddy;
 }
 
 int medViewPool::synchronized()
@@ -101,16 +107,9 @@ void medViewPool::synchronize (void)
         return;
     
     // look if a view is a daddy
-    dtkAbstractView *refView = NULL;
-    QList<dtkAbstractView *>::iterator it = d->views.begin();
-    for( ; it!=d->views.end(); it++) {
-        if ((*it)->property ("Daddy")=="true") {
-	  refView = (*it);
-	  break;
-	}
-    }
+    dtkAbstractView *refView = this->daddy();
 
-    it = d->views.begin();
+    QList<dtkAbstractView *>::iterator it = d->views.begin();
     if (refView) {
         for (it; it!=d->views.end(); ++it) {
 	    refView->link ( (*it) );
@@ -120,14 +119,7 @@ void medViewPool::synchronize (void)
 
 void medViewPool::desynchronize (void)
 {
-    dtkAbstractView *refView = NULL;
-    QList<dtkAbstractView *>::iterator it = d->views.begin();
-    for( ; it!=d->views.end(); it++) {
-        if ((*it)->property ("Daddy")=="true") {
-	  refView = (*it);
-	  break;
-	}
-    }
+    dtkAbstractView *refView = this->daddy();
 
     if (refView) {
         QList<dtkAbstractView *>::iterator it = d->views.begin();
@@ -139,6 +131,60 @@ void medViewPool::desynchronize (void)
     d->synchronize = 0;
 }
 
+void medViewPool::onViewDaddy (bool daddy)
+{
+    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+
+      if (daddy) {
+        if (d->views.contains (view)) {
+	    QList<dtkAbstractView *>::iterator it = d->views.begin();
+	    for( ; it!=d->views.end(); it++)
+	        (*it)->setProperty ("Daddy", "false");
+	    
+	    view->setProperty ("Daddy", "true");
+	}
+      }
+      else
+	view->setProperty ("Daddy", "false");
+    }
+}
+
+void medViewPool::onViewSync (bool sync)
+{
+    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+      
+        if (sync) {
+	  dtkAbstractView *refView = this->daddy();
+	  if (refView) {
+
+	    dtkAbstractData *data1 = static_cast<dtkAbstractData *>(refView->data());
+	    dtkAbstractData *data2 = static_cast<dtkAbstractData *>(view->data());
+
+	    dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
+	    if (!process)
+	        return;
+	  
+	    process->setInput (data1, 0);
+	    process->setInput (data2, 1);
+	    if (process->run()==0) {
+	        dtkAbstractData *output = process->output();
+	        d->viewData[view] = data2;
+		view->setData (output);
+		view->update();
+	    } 
+	  }
+	}
+	else {
+
+	  if ( d->viewData[view] ) {
+	    view->setData (d->viewData[view]);
+	    d->viewData[view] = NULL;
+	    view->update();
+	  }
+	}
+	
+    }  
+}
 
 void medViewPool::onViewPropertySet (QString key, QString value)
 {
