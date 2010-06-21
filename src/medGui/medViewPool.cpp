@@ -191,11 +191,13 @@ void medViewPool::onViewPropertySet (QString key, QString value)
     if (key=="Daddy")
         return;
 
+	if (d->synchronize) {
     foreach (dtkAbstractView *lview, d->views) {
       if (lview!=this->sender()) {
         lview->blockSignals (true);
         lview->setProperty (key, value);
-	lview->blockSignals (false);
+	    lview->blockSignals (false);
       }
     }
+	}
 }
