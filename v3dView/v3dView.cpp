@@ -335,7 +335,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->observer = v3dViewObserver::New();
     d->observer->setSlider(d->slider);
     //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
-    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
+    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 0);
     d->observer->setView ( vtkImageView2D::SafeDownCast (d->currentView) );
 
     // 2D mode
