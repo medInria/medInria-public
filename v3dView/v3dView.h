@@ -42,7 +42,7 @@ public:
     void   link(dtkAbstractView *other);
     void unlink(dtkAbstractView *other);
 
-    void setDady(dtkAbstractView *dady);
+    void setDaddy(dtkAbstractView *daddy);
 
     void *view(void);
 
@@ -69,7 +69,7 @@ public:
 public slots:
     void play(bool);
     void sync(bool);
-    void becomeDady (bool);
+    void becomeDaddy (bool);
 
 public slots:
     void onPropertySet         (QString key, QString value);

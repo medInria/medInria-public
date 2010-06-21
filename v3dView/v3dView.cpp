@@ -140,7 +140,7 @@ public:
     
     dtkAbstractData *data;
     dtkAbstractData *previousData;
-    dtkAbstractView *dady;
+    dtkAbstractView *daddy;
 
     QTimeLine *timeline;
 };
@@ -152,7 +152,7 @@ public:
 v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 {
     d->data = 0;
-    d->dady = NULL;
+    d->daddy = NULL;
     d->previousData = NULL;
     d->orientation = "Axial";
 
@@ -231,7 +231,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->anchorButton->setObjectName("tool");
 
-    connect(d->anchorButton, SIGNAL(clicked(bool)), this, SLOT(becomeDady(bool)));
+    connect(d->anchorButton, SIGNAL(clicked(bool)), this, SLOT(becomeDaddy(bool)));
 
     d->linkButton = new QPushButton(d->widget);
     d->linkButton->setText("l");
@@ -569,7 +569,7 @@ void v3dView::link(dtkAbstractView *other)
 
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
 
-        otherView->setDady (this);
+        otherView->setDaddy (this);
 
         otherView->viewAxial()->SetCurrentPoint    ( d->view2DAxial->GetCurrentPoint() );
 	otherView->viewSagittal()->SetCurrentPoint ( d->view2DSagittal->GetCurrentPoint() );
@@ -621,7 +621,7 @@ void v3dView::unlink(dtkAbstractView *other)
     
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
 
-        otherView->setDady (NULL);
+        otherView->setDaddy (NULL);
 	
         d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
 	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
@@ -629,9 +629,9 @@ void v3dView::unlink(dtkAbstractView *other)
     }
 }
 
-void v3dView::setDady (dtkAbstractView *dady)
+void v3dView::setDaddy (dtkAbstractView *daddy)
 {
-    d->dady = dady;
+    d->daddy = daddy;
 }
 
 void *v3dView::view(void)
@@ -944,13 +944,13 @@ void v3dView::play(bool start)
 void v3dView::sync(bool start)
 {
   if (start) {
-      if(d->dady && d->dady->data())
+      if(d->daddy && d->daddy->data())
       {
 	  dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
 	  if (!process)
 	      return;
 	  
-	  process->setInput (static_cast<dtkAbstractData*>(d->dady->data()), 0);
+	  process->setInput (static_cast<dtkAbstractData*>(d->daddy->data()), 0);
 	  process->setInput (static_cast<dtkAbstractData*>(this->data()),    1);
 	  if (process->run()==0) {
 	      dtkAbstractData *output = process->output();
@@ -969,34 +969,34 @@ void v3dView::sync(bool start)
   }
 }
 
-void v3dView::becomeDady (bool dady)
+void v3dView::becomeDaddy (bool daddy)
 {
-  if (dady) {
+  if (daddy) {
     this->setProperty ("Daddy", "true");
     
-    if (v3dView *pufdady = dynamic_cast<v3dView*>(d->dady)) {
-      foreach (dtkAbstractView *view, pufdady->linkedViews()) {
+    if (v3dView *pufdaddy = dynamic_cast<v3dView*>(d->daddy)) {
+      foreach (dtkAbstractView *view, pufdaddy->linkedViews()) {
 
 	if (v3dView *vview = dynamic_cast<v3dView*>(view)) {
 	  
-	  pufdady->unlink (vview);
-	  //vview->setDady (this); // done in link
+	  pufdaddy->unlink (vview);
+	  //vview->setDaddy (this); // done in link
 	  this->link (vview);
 	  
 	}
-	this->link (pufdady); // don't forget to link the daaaaady
-	pufdady->setProperty ("Daddy", "false");	
+	this->link (pufdaddy); // don't forget to link the daaaaady
+	pufdaddy->setProperty ("Daddy", "false");	
       }
     }
   }
   else {
     this->setProperty ("Daddy", "false");
     /*
-    if (v3dView *pufdady = dynamic_cast<v3dView*>(d->dady)) {
-        foreach (dtkAbstractView *view, pufdady->linkedViews()) {
+    if (v3dView *pufdaddy = dynamic_cast<v3dView*>(d->daddy)) {
+        foreach (dtkAbstractView *view, pufdaddy->linkedViews()) {
 	    if (v3dView *vview = dynamic_cast<v3dView*>(view)) {
 	    this->unlink (vview);
-	    //vview->setDady (NULL); // done in unlink
+	    //vview->setDaddy (NULL); // done in unlink
 	  }
 	}
     }
