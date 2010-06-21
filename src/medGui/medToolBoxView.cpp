@@ -292,4 +292,8 @@ void medToolBoxView::update(dtkAbstractView *view)
     else
         d->croppingPushButton->setChecked(false);
     d->croppingPushButton->blockSignals(false);
+
+    d->synchronizeCheckBox->blockSignals (true);
+    d->synchronizeCheckBox->setChecked ( view->property ("Linked")=="true");
+    d->synchronizeCheckBox->blockSignals (false);
 }
