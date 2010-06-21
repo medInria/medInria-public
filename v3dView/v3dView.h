@@ -33,6 +33,8 @@ public:
 
 signals:
     void closed(void);
+    void becomeDaddy (bool);
+    void sync (bool);
 
 public:
     void reset(void);
@@ -41,8 +43,6 @@ public:
 
     void   link(dtkAbstractView *other);
     void unlink(dtkAbstractView *other);
-
-    void setDaddy(dtkAbstractView *daddy);
 
     void *view(void);
 
@@ -68,8 +68,8 @@ public:
     	
 public slots:
     void play(bool);
-    void sync(bool);
-    void becomeDaddy (bool);
+    //void sync(dtkAbstracData* data);
+    //void becomeDaddy (bool);
 
 public slots:
     void onPropertySet         (QString key, QString value);

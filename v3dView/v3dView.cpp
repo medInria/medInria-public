@@ -139,8 +139,6 @@ public:
     QSet<dtkAbstractView*> linkedViews;
     
     dtkAbstractData *data;
-    dtkAbstractData *previousData;
-    dtkAbstractView *daddy;
 
     QTimeLine *timeline;
 };
@@ -152,8 +150,6 @@ public:
 v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 {
     d->data = 0;
-    d->daddy = NULL;
-    d->previousData = NULL;
     d->orientation = "Axial";
 
     d->timeline = new QTimeLine(10000, this);
@@ -231,7 +227,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->anchorButton->setObjectName("tool");
 
-    connect(d->anchorButton, SIGNAL(clicked(bool)), this, SLOT(becomeDaddy(bool)));
+    connect(d->anchorButton, SIGNAL(clicked(bool)), this, SIGNAL(becomeDaddy(bool)));
 
     d->linkButton = new QPushButton(d->widget);
     d->linkButton->setText("l");
@@ -242,7 +238,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->linkButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->linkButton->setObjectName("tool");
 
-    connect(d->linkButton, SIGNAL(clicked(bool)), this, SLOT(sync(bool)));
+    connect(d->linkButton, SIGNAL(clicked(bool)), this, SIGNAL(sync(bool)));
 
     d->playButton = new QPushButton(d->widget);
     d->playButton->setText(">");
@@ -570,7 +566,6 @@ void v3dView::link(dtkAbstractView *other)
 
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
 
-        otherView->setDaddy (this);
 	otherView->setProperty ("Linked", "true");
 
         otherView->viewAxial()->SetCurrentPoint    ( d->view2DAxial->GetCurrentPoint() );
@@ -625,7 +620,6 @@ void v3dView::unlink(dtkAbstractView *other)
     
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
 
-        otherView->setDaddy (NULL);
 	otherView->setProperty ("Linked", "false");
 	
         d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
@@ -635,11 +629,6 @@ void v3dView::unlink(dtkAbstractView *other)
 
     if (d->linkedViews.count()==0)
         this->setProperty ("Linked", "false");
-}
-
-void v3dView::setDaddy (dtkAbstractView *daddy)
-{
-    d->daddy = daddy;
 }
 
 void *v3dView::view(void)
@@ -949,76 +938,10 @@ void v3dView::play(bool start)
     }
 }
 
-void v3dView::sync(bool start)
-{
-  if (start) {
-      if(d->daddy && d->daddy->data())
-      {
-	  dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
-	  if (!process)
-	      return;
-	  
-	  process->setInput (static_cast<dtkAbstractData*>(d->daddy->data()), 0);
-	  process->setInput (static_cast<dtkAbstractData*>(this->data()),    1);
-	  if (process->run()==0) {
-	      dtkAbstractData *output = process->output();
-	      d->previousData = static_cast<dtkAbstractData*>(this->data());
-	      this->setData (output);
-	      this->update();
-	  }
-      }
-  }
-  else {
-      if (d->previousData) {
-	  this->setData (d->previousData);
-	  this->update();
-	  d->previousData = NULL;
-      }
-  }
-}
-
-void v3dView::becomeDaddy (bool daddy)
-{
-  if (daddy) {
-    this->setProperty ("Daddy", "true");
-    
-    if (v3dView *pufdaddy = dynamic_cast<v3dView*>(d->daddy)) {
-      foreach (dtkAbstractView *view, pufdaddy->linkedViews()) {
-
-	if (v3dView *vview = dynamic_cast<v3dView*>(view)) {
-	  
-	  pufdaddy->unlink (vview);
-	  //vview->setDaddy (this); // done in link
-	  this->link (vview);
-	  
-	}
-	this->link (pufdaddy); // don't forget to link the daaaaady
-	pufdaddy->setProperty ("Daddy", "false");	
-      }
-    }
-  }
-  else {
-    this->setProperty ("Daddy", "false");
-    /*
-    if (v3dView *pufdaddy = dynamic_cast<v3dView*>(d->daddy)) {
-        foreach (dtkAbstractView *view, pufdaddy->linkedViews()) {
-	    if (v3dView *vview = dynamic_cast<v3dView*>(view)) {
-	    this->unlink (vview);
-	    //vview->setDaddy (NULL); // done in unlink
-	  }
-	}
-    }
-    */
-  }
-}
-
 void v3dView::onPropertySet(QString key, QString value)
 {
-    // property not passed to linked views
-    if(key == "Daddy") {
+    if(key == "Daddy")
 	this->onDaddyPropertySet(value);
-	return;
-    }
     
     if(key == "Orientation")
 	this->onOrientationPropertySet(value);
