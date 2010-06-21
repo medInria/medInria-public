@@ -29,6 +29,8 @@ public:
     QComboBox *presetComboBox;
     QCheckBox *scalarBarVisibilityCheckBox;
     QCheckBox *axisVisibilityCheckBox;
+    QCheckBox *rulerVisibilityCheckBox;
+    QCheckBox *annotationsVisibilityCheckBox;
 
     QComboBox   *view3dModeComboBox;
     QComboBox   *view3dVRModeComboBox;
@@ -171,6 +173,14 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
 
     connect(d->axisVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(axisVisibilityChanged(bool)));
 
+    d->rulerVisibilityCheckBox = new QCheckBox(this);
+    
+    connect(d->rulerVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(rulerVisibilityChanged(bool)));
+    
+    d->annotationsVisibilityCheckBox = new QCheckBox(this);
+    
+    connect(d->annotationsVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(annotationsVisibilityChanged(bool)));
+
     QWidget *viewToolBoxWidget = new QWidget;
     QWidget *view3dToolBoxWidget = new QWidget;
     QWidget *mouseToolBoxWidget = new QWidget;
@@ -178,8 +188,8 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     QFormLayout *lutToolBoxWidgetLayout = new QFormLayout(viewToolBoxWidget);
     lutToolBoxWidgetLayout->addRow("Color lut:", d->foregroundLookupTableComboBox);
     lutToolBoxWidgetLayout->addRow("Preset:", d->presetComboBox);
-    lutToolBoxWidgetLayout->addRow("Show axis:", d->axisVisibilityCheckBox);
     lutToolBoxWidgetLayout->addRow("Show scalars:", d->scalarBarVisibilityCheckBox);
+    lutToolBoxWidgetLayout->addRow("Show annotations:", d->annotationsVisibilityCheckBox);
     lutToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
 
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(view3dToolBoxWidget);
@@ -191,6 +201,8 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
 
     QFormLayout *mouseToolBoxWidgetLayout = new QFormLayout(mouseToolBoxWidget);
     mouseToolBoxWidgetLayout->addRow ("Type:", mouseLayout);
+    mouseToolBoxWidgetLayout->addRow("Show axis:", d->axisVisibilityCheckBox);
+    mouseToolBoxWidgetLayout->addRow("Show ruler:", d->rulerVisibilityCheckBox);
     mouseToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
     
     medToolBoxTab *viewToolBoxTab = new medToolBoxTab(this);
@@ -226,6 +238,14 @@ void medToolBoxView::update(dtkAbstractView *view)
     d->scalarBarVisibilityCheckBox->blockSignals(true);
     d->scalarBarVisibilityCheckBox->setChecked(view->property("ScalarBarVisibility") == "true");
     d->scalarBarVisibilityCheckBox->blockSignals(false);
+
+    d->rulerVisibilityCheckBox->blockSignals(true);
+    d->rulerVisibilityCheckBox->setChecked(view->property("ShowRuler") == "true");
+    d->rulerVisibilityCheckBox->blockSignals(false);    
+
+    d->annotationsVisibilityCheckBox->blockSignals(true);
+    d->annotationsVisibilityCheckBox->setChecked(view->property("ShowAnnotations") == "true");
+    d->annotationsVisibilityCheckBox->blockSignals(false);    
 
     d->windowingPushButton->blockSignals(true);
     d->zoomingPushButton->blockSignals(true);

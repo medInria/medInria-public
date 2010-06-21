@@ -119,6 +119,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->viewToolBox, SIGNAL(croppingChanged(bool)), this, SLOT(setupCropping(bool)));
     connect(d->viewToolBox, SIGNAL(scalarBarVisibilityChanged(bool)), this, SLOT(setupScalarBarVisibility(bool)));
     connect(d->viewToolBox, SIGNAL(axisVisibilityChanged(bool)), this, SLOT(setupAxisVisibility(bool)));
+    connect(d->viewToolBox, SIGNAL(rulerVisibilityChanged(bool)), this, SLOT(setupRulerVisibility(bool)));
+    connect(d->viewToolBox, SIGNAL(annotationsVisibilityChanged(bool)), this, SLOT(setupAnnotationsVisibility(bool)));
 
     // -- Diffusion toolbox --
 
@@ -546,6 +548,28 @@ void medViewerArea::setupScalarBarVisibility(bool visible)
   
     if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
         visible ? view->setProperty("ScalarBarVisibility", "true") : view->setProperty("ScalarBarVisibility", "false");
+	view->update();
+    }
+}
+
+void medViewerArea::setupRulerVisibility(bool visible)
+{
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
+        visible ? view->setProperty("ShowRuler", "true") : view->setProperty("ShowRuler", "false");
+	view->update();
+    }
+}
+
+void medViewerArea::setupAnnotationsVisibility(bool visible)
+{
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
+        visible ? view->setProperty("ShowAnnotations", "true") : view->setProperty("ShowAnnotations", "false");
 	view->update();
     }
 }
