@@ -37,6 +37,8 @@ public:
 
     void appendView (dtkAbstractView *view);
     void removeView (dtkAbstractView *view);
+
+    int synchronized (void);
     
 public slots:
     void synchronize   (void);

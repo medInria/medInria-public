@@ -89,6 +89,11 @@ void medViewPool::removeView (dtkAbstractView *view)
     d->views.removeOne (view);
 }
 
+int medViewPool::synchronized()
+{
+    return d->synchronize;
+}
+
 void medViewPool::synchronize (void)
 {
     d->synchronize = 1;
