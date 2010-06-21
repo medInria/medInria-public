@@ -102,6 +102,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkSelectPolyData.h>
 
 #include <vtkDiffXMLWriter.h>
+#include <vtkDataArrayCollection.h>
+#include <vtkCellArray.h>
 
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/stl/string>
@@ -854,6 +856,8 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
       
       if (!filepath.size())
       {
+		  
+		  std::cout<<"I am in"<<std::endl;
 	vtkKWPopupWarningMessage (this, "dataset not written, please save to file");
 	vtkKWLoadSaveDialog *dialog2 = vtkKWLoadSaveDialog::New() ;
 	
@@ -870,6 +874,8 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 	
 	std::string ext;
 	
+		  bool doThis = false;
+		  
 	switch (val)
 	{
 	    case vtkMetaDataSet::VTK_META_IMAGE_DATA :
@@ -878,6 +884,8 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 	      
 	    case vtkMetaDataSet::VTK_META_SURFACE_MESH :
 	    case vtkMetaDataSet::VTK_META_VOLUME_MESH :
+			doThis = true;
+			
 	      ext = kwsupportedmeshformats_global + kwsupportedmeshformats;
 	      break;
 	    default :
@@ -919,8 +927,7 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 	vtkKWPopupWarningMessage (this, "skipping dataset");
 	continue;
       }
-
-      
+	
       os <<"$m_manager ReadFile "<<filepath.c_str()<<" "<<metadata->GetName()<<"\n";
     
     }
@@ -980,7 +987,7 @@ void vtkKWMainWindowInteractor::SaveDiffXMLCallback()
   {
     managerfile+=".diff";
   }
-
+	
   vtkDiffXMLWriter* writer = vtkDiffXMLWriter::New();
   writer->SetInput (this->GetDataManager());
   writer->SetFileName (managerfile.c_str());
