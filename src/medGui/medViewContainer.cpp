@@ -19,6 +19,7 @@
 
 #include "medViewContainer.h"
 #include "medViewContainer_p.h"
+#include "medViewPool.h"
 
 #include <QtGui>
 
@@ -32,12 +33,10 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
     d->layout->setSpacing(2);
 
     d->view = NULL;
-
     d->current = this;
-
-    d->refView     = NULL;
-    d->synchronize = 0;
-
+    
+    d->pool = new medViewPool;
+    
     if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent)) {
         connect(this, SIGNAL(dropped(const medDataIndex&)), container, SIGNAL(dropped(const medDataIndex&)));
         connect(this, SIGNAL(focused(dtkAbstractView*)), container, SIGNAL(focused(dtkAbstractView*)));
@@ -73,46 +72,12 @@ void medViewContainer::split(int rows, int cols)
 
 void medViewContainer::synchronize (void)
 {
-    d->synchronize = 1;
-    if (d->views.count()==0)
-        return;
-
-    // look if a view is a daddy
-    dtkAbstractView *refView = NULL;
-    QList<dtkAbstractView *>::iterator it = d->views.begin();
-    for( ; it!=d->views.end(); it++) {
-        if ((*it)->property ("Daddy")=="true") {
-	  refView = (*it);
-	  break;
-	}
-    }
-
-    it = d->views.begin();
-    if (refView) {
-        for (it; it!=d->views.end(); ++it) {
-	    refView->link ( (*it) );
-	}
-    }
+    d->pool->synchronize();
 }
 
 void medViewContainer::desynchronize (void)
 {
-    dtkAbstractView *refView = NULL;
-    QList<dtkAbstractView *>::iterator it = d->views.begin();
-    for( ; it!=d->views.end(); it++) {
-        if ((*it)->property ("Daddy")=="true") {
-	  refView = (*it);
-	  break;
-	}
-    }
-
-    if (refView) {
-        QList<dtkAbstractView *>::iterator it = d->views.begin();
-	for (it; it!=d->views.end(); ++it) {
-	    refView->unlink ( (*it) );
-	}
-	d->synchronize = 0;
-    }
+    d->pool->desynchronize();
 }
 
 dtkAbstractView *medViewContainer::view(void)

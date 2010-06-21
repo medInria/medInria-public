@@ -24,6 +24,7 @@
 
 class dtkAbstractView;
 class medViewContainer;
+class medViewPool;
 
 class medViewContainerPrivate
 {
@@ -35,9 +36,12 @@ public:
     medViewContainer *current;
 
     // for view synchronization
-    QList<dtkAbstractView *> views;
-    dtkAbstractView         *refView;
-    int                      synchronize;
+    /*
+      QList<dtkAbstractView *> views;
+      dtkAbstractView         *refView;
+      int                      synchronize;
+    */
+    medViewPool *pool;
 };
 
 #endif

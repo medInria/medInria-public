@@ -19,6 +19,7 @@
 
 #include "medViewContainer_p.h"
 #include "medViewContainerCustom.h"
+#include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
 
@@ -113,54 +114,17 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
       parent->synchronize_2(view);
   }
   else { // top level medViewContainerCustom
-      if (!d->views.contains (view))
-	  d->views.append (view);
-
-      dtkAbstractView *refView = NULL;
-      
-      if (d->views.count()==1) {
-        refView = view;
-	refView->setProperty ("Daddy", "true");
-      }
-      else {  
-	QList<dtkAbstractView *>::iterator it = d->views.begin();
-	for( ; it!=d->views.end(); it++) {
-	  if ((*it)->property ("Daddy")=="true") {
-	    refView = (*it);
-	    break;
-	  }
-	}
-      }
-      
-      if (d->synchronize && refView)
-	  refView->link ( view );
+      d->pool->appendView (view);
   }
 }
 
 void medViewContainerCustom::synchronize (void)
 {
-  d->synchronize = 1;
   if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
       parent->synchronize();
   }
   else { // top level medViewContainerCustom      
-      if (d->views.count()==0)
-          return;
-
-      dtkAbstractView *refView = NULL;
-      QList<dtkAbstractView *>::iterator it = d->views.begin();
-      for( ; it!=d->views.end(); it++) {
-        if ((*it)->property ("Daddy")=="true") {
-	  refView = (*it);
-	  break;
-	}
-      }
-
-      if (refView) {
-	  QList<dtkAbstractView *>::iterator it = d->views.begin();
-	  for (it; it!=d->views.end(); ++it)
-	      refView->link ( (*it) );
-    }
+      d->pool->synchronize();
   }
 }
 
@@ -170,23 +134,8 @@ void medViewContainerCustom::desynchronize (void)
       parent->desynchronize();
   }
   else { // top level medViewContainerCustom
-
-      dtkAbstractView *refView = NULL;
-      QList<dtkAbstractView *>::iterator it = d->views.begin();
-      for( ; it!=d->views.end(); it++) {
-        if ((*it)->property ("Daddy")=="true") {
-	  refView = (*it);
-	  break;
-	}
-      }
-      
-      if (refView) {
-	  QList<dtkAbstractView *>::iterator it = d->views.begin();
-	  for (it; it!=d->views.end(); ++it)
-	      refView->unlink ( (*it) );
-      }
+      d->pool->desynchronize();
   }
-  d->synchronize = 0;
 }
 
 void medViewContainerCustom::dragEnterEvent(QDragEnterEvent *event)

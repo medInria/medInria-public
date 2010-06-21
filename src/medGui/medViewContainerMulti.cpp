@@ -20,6 +20,7 @@
 #include "medViewContainer_p.h"
 #include "medViewContainerSingle.h"
 #include "medViewContainerMulti.h"
+#include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
 
@@ -108,27 +109,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->view = view;
 
-    if (!d->views.contains (view))
-        d->views.append (view);
-
-    dtkAbstractView *refView = NULL;
-
-    if (d->views.count()==1) {
-        refView = view;
-	refView->setProperty ("Daddy", "true");
-    }
-    else {  
-        QList<dtkAbstractView *>::iterator it = d->views.begin();
-	for( ; it!=d->views.end(); it++) {
-	    if ((*it)->property ("Daddy")=="true") {
-	        refView = (*it);
-		break;
-	    }
-	}
-    }
-    
-    if (d->synchronize && refView)
-	    refView->link ( view );
+    d->pool->appendView (view);
 }
 
 void medViewContainerMulti::dragEnterEvent(QDragEnterEvent *event)
