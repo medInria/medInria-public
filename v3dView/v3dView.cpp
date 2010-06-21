@@ -468,6 +468,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
 		                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
 		                                              << "Red on White" << "Glossy");
+    this->addProperty ("Linked", QStringList() << "true" << "false");
     this->addProperty ("Daddy", QStringList() << "true" << "false");
 
     // set default properties
@@ -570,6 +571,7 @@ void v3dView::link(dtkAbstractView *other)
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
 
         otherView->setDaddy (this);
+	otherView->setProperty ("Linked", "true");
 
         otherView->viewAxial()->SetCurrentPoint    ( d->view2DAxial->GetCurrentPoint() );
 	otherView->viewSagittal()->SetCurrentPoint ( d->view2DSagittal->GetCurrentPoint() );
@@ -610,6 +612,8 @@ void v3dView::link(dtkAbstractView *other)
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
     }
+
+    this->setProperty ("Linked", "true");
 }
 
 void v3dView::unlink(dtkAbstractView *other)
@@ -622,11 +626,15 @@ void v3dView::unlink(dtkAbstractView *other)
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
 
         otherView->setDaddy (NULL);
+	otherView->setProperty ("Linked", "false");
 	
         d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
 	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
 	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
     }
+
+    if (d->linkedViews.count()==0)
+        this->setProperty ("Linked", "false");
 }
 
 void v3dView::setDaddy (dtkAbstractView *daddy)
