@@ -50,8 +50,8 @@ void medViewPool::appendView (dtkAbstractView *view)
 
     d->views.append (view);
     connect (view, SIGNAL (propertySet(QString, QString)), this, SLOT (onViewPropertySet(QString, QString)));
-    connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (onViewDaddy(bool)));
-    connect (view, SIGNAL (sync(bool)), this, SLOT (onViewSync(bool)));
+    connect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
+    connect (view, SIGNAL (sync(bool)),                    this, SLOT (onViewSync(bool)));
   
     dtkAbstractView *refView = NULL;
     if (d->views.count()==1) {
@@ -73,8 +73,22 @@ void medViewPool::removeView (dtkAbstractView *view)
     // look if a view is a daddy
     dtkAbstractView *refView = this->daddy();
 
-    if (refView)
-        refView->unlink (view);
+    if (refView) {
+
+      if (refView==view) { // we are daddy
+	if (d->synchronize) { // we are synchronized
+	  QList<dtkAbstractView *>::iterator it = d->views.begin();
+	  for( ; it!=d->views.end(); it++) {
+	    if ((*it)->property ("Daddy")=="false") {
+	      (*it)->setProperty ("Daddy", "true");
+	      break;
+	    }
+	  }
+	}
+      }
+      else
+	  refView->unlink (view);
+    }
 
     disconnect (view, SIGNAL (propertySet(QString, QString)), this, SLOT (onViewPropertySet(QString, QString)));
     disconnect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));

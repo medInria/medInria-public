@@ -39,6 +39,11 @@ public:
     dtkAbstractView *view(void);
 
     void setView(dtkAbstractView *view);
+
+    void layout (QList<QWidget *> content);
+
+public slots:
+    void onViewClosed (void);
    
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
