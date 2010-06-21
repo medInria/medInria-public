@@ -338,9 +338,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     
     d->observer = v3dViewObserver::New();
     d->observer->setSlider(d->slider);
-    //d->view2DAxial->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
-    d->view2DAxial->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
-    d->observer->setView (d->view2DAxial);
+    //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
+    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
+    d->observer->setView ( vtkImageView2D::SafeDownCast (d->currentView) );
 
     // 2D mode
     QAction *axialAct = new QAction(tr("Axial"), d->vtkWidget);
@@ -920,8 +920,6 @@ QWidget *v3dView::widget(void)
 
 void v3dView::play(bool start)
 {
-    qDebug() << __func__ << start;
-
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data)) {
 
         if (d->orientation=="Axial") {
@@ -1008,6 +1006,12 @@ void v3dView::becomeDady (bool dady)
 
 void v3dView::onPropertySet(QString key, QString value)
 {
+    // property not passed to linked views
+    if(key == "Daddy") {
+	this->onDaddyPropertySet(value);
+	return;
+    }
+    
     if(key == "Orientation")
 	this->onOrientationPropertySet(value);
 
@@ -1049,12 +1053,6 @@ void v3dView::onPropertySet(QString key, QString value)
 
     if(key == "Cropping")
 	this->onCroppingPropertySet(value);
-
-    // property not passed to linked views
-    if(key == "Daddy") {
-	this->onDaddyPropertySet(value);
-	return;
-    }
     
     this->widget()->update();
 
@@ -1087,6 +1085,10 @@ void v3dView::onOrientationPropertySet(QString value)
         d->orientation = "3D";
 	d->currentView = d->view3D;	
     }
+
+    // in case the max range becomes smaller than the actual value, a signal is emitted and
+    // we don't want it
+    d->slider->blockSignals (true);
     
     if (value == "Axial") {
         d->orientation = "Axial";
@@ -1112,8 +1114,10 @@ void v3dView::onOrientationPropertySet(QString value)
             d->slider->setRange (0, imData->yDimension()-1);
     }
 
-    if (!d->currentView)
-      return;
+    if (!d->currentView) {
+        d->slider->blockSignals (false);
+	return;
+    }
 
     d->currentView->SetRenderWindow ( d->vtkWidget->GetRenderWindow() );
     //d->currentView->InstallInteractor();
@@ -1126,10 +1130,17 @@ void v3dView::onOrientationPropertySet(QString value)
     d->currentView->SetColorLevel (level);	
 
     // force a correct display of the 2D axis for planar views
-    d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL);
+    d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL); // seems not needed anymore
 
     // update slider position
-    d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL);
+    d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL); // seems not needed anymore
+    
+    if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
+        unsigned int zslice = view2d->GetSlice();
+	d->slider->setValue (zslice);
+    }
+
+    d->slider->blockSignals (false);
 }
 
 void v3dView::onModePropertySet (QString value)
