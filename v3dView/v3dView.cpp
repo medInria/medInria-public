@@ -1053,14 +1053,14 @@ void v3dView::onPropertySet(QString key, QString value)
 
     if(key == "Cropping")
 	this->onCroppingPropertySet(value);
-    
-    this->widget()->update();
 
+    this->widget()->update();
+    this->update();
+
+    /*
     foreach (dtkAbstractView *lview, d->linkedViews)
         lview->setProperty (key, value);
-      //for (int i=0; i<d->linkedViews.count(); i++)
-      //d->linkedViews[i]->setProperty (key, value);
-
+    */
 }
 
 void v3dView::onOrientationPropertySet(QString value)
