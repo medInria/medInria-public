@@ -12,6 +12,8 @@
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractDataImage.h>
+#include <dtkCore/dtkAbstractProcess.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -135,7 +137,7 @@ public:
     QString orientation;
 
     QSet<dtkAbstractView*> linkedViews;
-  
+    
     dtkAbstractData *data;
 
     QTimeLine *timeline;
@@ -216,23 +218,27 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->slider->setFocusPolicy(Qt::NoFocus);
 
-    // d->anchorButton = new QPushButton(d->widget);
-    // d->anchorButton->setText("a");
-    // d->anchorButton->setCheckable(true);
-    // d->anchorButton->setMaximumHeight(16);
-    // d->anchorButton->setMaximumWidth(16);
-    // d->anchorButton->setFocusPolicy(Qt::NoFocus);
-    // d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    // d->anchorButton->setObjectName("tool");
+    d->anchorButton = new QPushButton(d->widget);
+    d->anchorButton->setText("a");
+    d->anchorButton->setCheckable(true);
+    d->anchorButton->setMaximumHeight(16);
+    d->anchorButton->setMaximumWidth(16);
+    d->anchorButton->setFocusPolicy(Qt::NoFocus);
+    d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->anchorButton->setObjectName("tool");
 
-    // d->linkButton = new QPushButton(d->widget);
-    // d->linkButton->setText("l");
-    // d->linkButton->setCheckable(true);
-    // d->linkButton->setMaximumHeight(16);
-    // d->linkButton->setMaximumWidth(16);
-    // d->linkButton->setFocusPolicy(Qt::NoFocus);
-    // d->linkButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    // d->linkButton->setObjectName("tool");
+    connect(d->anchorButton, SIGNAL(clicked(bool)), this, SIGNAL(becomeDaddy(bool)));
+
+    d->linkButton = new QPushButton(d->widget);
+    d->linkButton->setText("l");
+    d->linkButton->setCheckable(true);
+    d->linkButton->setMaximumHeight(16);
+    d->linkButton->setMaximumWidth(16);
+    d->linkButton->setFocusPolicy(Qt::NoFocus);
+    d->linkButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->linkButton->setObjectName("tool");
+
+    connect(d->linkButton, SIGNAL(clicked(bool)), this, SIGNAL(sync(bool)));
 
     d->playButton = new QPushButton(d->widget);
     d->playButton->setText(">");
@@ -256,10 +262,10 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     connect(d->closeButton, SIGNAL(clicked()), this, SIGNAL(closed()));
 
-    // QButtonGroup *toolButtonGroup = new QButtonGroup(d->widget);
-    // toolButtonGroup->addButton(d->anchorButton);
-    // toolButtonGroup->addButton(d->linkButton);
-    // toolButtonGroup->setExclusive(false);
+    QButtonGroup *toolButtonGroup = new QButtonGroup(d->widget);
+    toolButtonGroup->addButton(d->anchorButton);
+    toolButtonGroup->addButton(d->linkButton);
+    toolButtonGroup->setExclusive(false);
 
     d->vtkWidget = new QVTKWidget(d->widget);
     d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -276,8 +282,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     toolsLayout->setContentsMargins(0, 0, 0, 0);
     toolsLayout->setSpacing(0);
     toolsLayout->addWidget(d->slider);
-    // toolsLayout->addWidget(d->anchorButton);
-    // toolsLayout->addWidget(d->linkButton);
+    toolsLayout->addWidget(d->anchorButton);
+    toolsLayout->addWidget(d->linkButton);
     toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->closeButton);
 
@@ -328,9 +334,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     
     d->observer = v3dViewObserver::New();
     d->observer->setSlider(d->slider);
-    //d->view2DAxial->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
-    d->view2DAxial->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
-    d->observer->setView (d->view2DAxial);
+    //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
+    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 0);
+    d->observer->setView ( vtkImageView2D::SafeDownCast (d->currentView) );
 
     // 2D mode
     QAction *axialAct = new QAction(tr("Axial"), d->vtkWidget);
@@ -458,6 +464,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
 		                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
 		                                              << "Red on White" << "Glossy");
+    this->addProperty ("Linked", QStringList() << "true" << "false");
+    this->addProperty ("Daddy", QStringList() << "true" << "false");
 
     // set default properties
     this->setProperty ("Orientation", "Axial");
@@ -477,6 +485,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 #endif    
     this->setProperty ("UseLOD", "On");
     this->setProperty ("Preset", "None");
+    this->setProperty ("Daddy", "false");
 
     connect(d->vtkWidget, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,    SIGNAL(valueChanged(int)),        this, SLOT(onZSliderValueChanged(int)));
@@ -554,13 +563,15 @@ void v3dView::update(void)
 
 void v3dView::link(dtkAbstractView *other)
 {
-    if(!other || other->description()!=tr("v3dView"))
+    if(!other || other->description()!=tr("v3dView") || d->linkedViews.contains (other) || other==this)
         return;
 
     d->linkedViews.insert (other);
 
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
-      
+
+	otherView->setProperty ("Linked", "true");
+
         otherView->viewAxial()->SetCurrentPoint    ( d->view2DAxial->GetCurrentPoint() );
 	otherView->viewSagittal()->SetCurrentPoint ( d->view2DSagittal->GetCurrentPoint() );
 	otherView->viewCoronal()->SetCurrentPoint  ( d->view2DCoronal->GetCurrentPoint() );
@@ -600,20 +611,28 @@ void v3dView::link(dtkAbstractView *other)
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
     }
+
+    this->setProperty ("Linked", "true");
 }
 
 void v3dView::unlink(dtkAbstractView *other)
 {
-    if(!other || other->description()!=tr("v3dView"))
+    if(!other || other->description()!=tr("v3dView") || !d->linkedViews.contains (other) ||  other==this)
         return;
 
     d->linkedViews.remove (other);
     
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
+
+	otherView->setProperty ("Linked", "false");
+	
         d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
 	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
 	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
     }
+
+    if (d->linkedViews.count()==0)
+        this->setProperty ("Linked", "false");
 }
 
 void *v3dView::view(void)
@@ -880,10 +899,19 @@ void v3dView::setData(dtkAbstractData *data)
 
 void *v3dView::data (void)
 {
-    if (d->data)
-        return d->data->output();
 
-    return NULL;
+    return d->data;
+    /*
+      if (d->data)
+      return d->data->output();
+      
+      return NULL;
+    */
+}
+
+QSet<dtkAbstractView *> v3dView::linkedViews (void)
+{
+    return d->linkedViews;
 }
 
 QWidget *v3dView::widget(void)
@@ -893,8 +921,6 @@ QWidget *v3dView::widget(void)
 
 void v3dView::play(bool start)
 {
-    qDebug() << __func__ << start;
-
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data)) {
 
         if (d->orientation=="Axial") {
@@ -918,6 +944,9 @@ void v3dView::play(bool start)
 
 void v3dView::onPropertySet(QString key, QString value)
 {
+    if(key == "Daddy")
+	this->onDaddyPropertySet(value);
+    
     if(key == "Orientation")
 	this->onOrientationPropertySet(value);
 
@@ -961,11 +990,12 @@ void v3dView::onPropertySet(QString key, QString value)
 	this->onCroppingPropertySet(value);
 
     this->widget()->update();
+    this->update();
 
+    /*
     foreach (dtkAbstractView *lview, d->linkedViews)
         lview->setProperty (key, value);
-      //for (int i=0; i<d->linkedViews.count(); i++)
-      //d->linkedViews[i]->setProperty (key, value);
+    */
 }
 
 void v3dView::onOrientationPropertySet(QString value)
@@ -990,6 +1020,10 @@ void v3dView::onOrientationPropertySet(QString value)
         d->orientation = "3D";
 	d->currentView = d->view3D;	
     }
+
+    // in case the max range becomes smaller than the actual value, a signal is emitted and
+    // we don't want it
+    d->slider->blockSignals (true);
     
     if (value == "Axial") {
         d->orientation = "Axial";
@@ -1015,8 +1049,10 @@ void v3dView::onOrientationPropertySet(QString value)
             d->slider->setRange (0, imData->yDimension()-1);
     }
 
-    if (!d->currentView)
-      return;
+    if (!d->currentView) {
+        d->slider->blockSignals (false);
+	return;
+    }
 
     d->currentView->SetRenderWindow ( d->vtkWidget->GetRenderWindow() );
     //d->currentView->InstallInteractor();
@@ -1029,10 +1065,17 @@ void v3dView::onOrientationPropertySet(QString value)
     d->currentView->SetColorLevel (level);	
 
     // force a correct display of the 2D axis for planar views
-    d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL);
+    d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL); // seems not needed anymore
 
     // update slider position
-    d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL);
+    d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL); // seems not needed anymore
+    
+    if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
+        unsigned int zslice = view2d->GetSlice();
+	d->slider->setValue (zslice);
+    }
+
+    d->slider->blockSignals (false);
 }
 
 void v3dView::onModePropertySet (QString value)
@@ -1467,6 +1510,21 @@ void v3dView::onZSliderValueChanged (int value)
         d->currentView->Render();		
     }
     d->observer->unlock();
+}
+
+void v3dView::onDaddyPropertySet (QString value)
+{
+  if (value=="true") {
+    d->anchorButton->blockSignals(true);
+    d->anchorButton->setChecked (true);
+    d->anchorButton->blockSignals(false);
+  }
+
+  if (value=="false") {
+    d->anchorButton->blockSignals(true);
+    d->anchorButton->setChecked (false);
+    d->anchorButton->blockSignals(false);
+  }
 }
 
 void v3dView::onMetaDataSet(QString key, QString value)
