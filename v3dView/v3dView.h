@@ -34,6 +34,7 @@ public:
 signals:
     void closed(void);
     void becomeDaddy (bool);
+    void becameDaddy (bool);
     void sync (bool);
 
 public:

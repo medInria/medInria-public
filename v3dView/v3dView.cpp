@@ -1536,17 +1536,19 @@ void v3dView::onZSliderValueChanged (int value)
 
 void v3dView::onDaddyPropertySet (QString value)
 {
-  if (value=="true") {
     d->anchorButton->blockSignals(true);
-    d->anchorButton->setChecked (true);
-    d->anchorButton->blockSignals(false);
-  }
 
-  if (value=="false") {
-    d->anchorButton->blockSignals(true);
-    d->anchorButton->setChecked (false);
-    d->anchorButton->blockSignals(false);
-  }
+    if (value=="true") {
+        d->anchorButton->setChecked (true);
+	d->anchorButton->blockSignals(false);
+	emit becameDaddy(1);
+    }
+
+    if (value=="false") {
+        d->anchorButton->setChecked (false);
+	d->anchorButton->blockSignals(false);
+	emit becameDaddy(0);
+    }
 }
 
 void v3dView::onMetaDataSet(QString key, QString value)
