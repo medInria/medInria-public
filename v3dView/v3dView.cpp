@@ -1074,7 +1074,7 @@ void v3dView::onOrientationPropertySet(QString value)
     d->currentView->SetRenderWindow ( d->vtkWidget->GetRenderWindow() );
     //d->currentView->InstallInteractor();
     //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
-    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
+    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 0);
     d->observer->setView ( vtkImageView2D::SafeDownCast (d->currentView) );
 
     d->currentView->SetCurrentPoint (pos);
