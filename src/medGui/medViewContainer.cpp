@@ -142,7 +142,8 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
     if(dtkAbstractView *view = this->view())
         emit focused(view);
 
-    former->update();
+	if (former)
+        former->update();
     this->update();
 }
 
