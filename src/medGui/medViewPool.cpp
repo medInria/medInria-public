@@ -61,8 +61,10 @@ void medViewPool::appendView (dtkAbstractView *view)
     else
         refView = this->daddy();
     
-    if (d->synchronize && refView)
+    if (d->synchronize && refView) {
         refView->link (view);
+		//view->update();
+	}
 }
 
 void medViewPool::removeView (dtkAbstractView *view)
@@ -249,6 +251,7 @@ void medViewPool::onViewPropertySet (QString key, QString value)
 	  if (lview!=this->sender()) {
 	    lview->blockSignals (true);
 	    lview->setProperty (key, value);
+		  lview->update();
 	    lview->blockSignals (false);
 	  }
 	}
