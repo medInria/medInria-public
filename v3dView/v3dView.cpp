@@ -25,6 +25,7 @@
 #include <vtkPointSet.h>
 #include <vtkTextProperty.h>
 #include <vtkImageMapToColors.h>
+#include <vtkOrientedBoxWidget.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -1498,12 +1499,16 @@ void v3dView::onPresetPropertySet (QString value)
 void v3dView::onCroppingPropertySet (QString value)
 {
     if ( value=="true" ) {
-        d->view3D->SetCroppingModeToOutside();
-	d->view3D->SetShowBoxWidget ( 1 );
+		if (d->view3D->GetBoxWidget()->GetInteractor()) { // avoid VTK warnings
+            d->view3D->SetCroppingModeToOutside();
+	        d->view3D->SetShowBoxWidget ( 1 );
+		}
     }
     else {
-      d->view3D->SetCroppingModeToOff ();
-      d->view3D->SetShowBoxWidget ( 0 );
+		if (d->view3D->GetBoxWidget()->GetInteractor()) {
+            d->view3D->SetCroppingModeToOff ();
+            d->view3D->SetShowBoxWidget ( 0 );
+		}
     }
 }
 
