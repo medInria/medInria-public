@@ -150,13 +150,24 @@ void medViewPool::onViewDaddy (bool daddy)
     if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
 
       if (daddy) {
-        if (d->views.contains (view)) {
+		  
+		  dtkAbstractView *refView = this->daddy();
+		  if (refView && d->synchronize) {
+			  QList<dtkAbstractView *>::iterator it = d->views.begin();
+			  for( ; it!=d->views.end(); it++)
+				  refView->unlink((*it));
+		  }
+		  
 	    QList<dtkAbstractView *>::iterator it = d->views.begin();
 	    for( ; it!=d->views.end(); it++)
 	        (*it)->setProperty ("Daddy", "false");
 	    
 	    view->setProperty ("Daddy", "true");
-	}
+		  if (d->synchronize) {
+			  it = d->views.begin();
+			  for( ; it!=d->views.end(); it++)
+				  view->link((*it));
+		  }
       }
       else
 	view->setProperty ("Daddy", "false");
