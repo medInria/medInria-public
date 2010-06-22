@@ -480,8 +480,11 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("Mode", "VR");
     this->setProperty ("VRMode", "Default");
     this->setProperty ("UseLOD", "On");
+    this->setProperty ("Cropping", "false");
     this->setProperty ("Preset", "None");
+    
     this->setProperty ("Daddy", "false");
+    
 
     connect(d->vtkWidget, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,    SIGNAL(valueChanged(int)),        this, SLOT(onZSliderValueChanged(int)));
@@ -585,18 +588,20 @@ void v3dView::link(dtkAbstractView *other)
 
 	//otherView->viewAxial()->SetCameraPosition   ( d->view2DAxial->GetCameraPosition() );
 	//otherView->viewAxial()->SetCameraFocalPoint ( d->view2DAxial->GetCameraFocalPoint() );
-	otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
+	// zoom comes first, then pan (==translation)
 	otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
+	otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
+	
 
 	//otherView->viewSagittal()->SetCameraPosition   ( d->view2DSagittal->GetCameraPosition() );
 	//otherView->viewSagittal()->SetCameraFocalPoint ( d->view2DSagittal->GetCameraFocalPoint() );
-	otherView->viewSagittal()->SetPan  ( d->view2DSagittal->GetPan() );
 	otherView->viewSagittal()->SetZoom ( d->view2DSagittal->GetZoom() );
+	otherView->viewSagittal()->SetPan  ( d->view2DSagittal->GetPan() );	
 
 	//otherView->viewCoronal()->SetCameraPosition    ( d->view2DCoronal->GetCameraPosition() );
 	//otherView->viewCoronal()->SetCameraFocalPoint  ( d->view2DCoronal->GetCameraFocalPoint() );
-	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
 	otherView->viewCoronal()->SetZoom ( d->view2DCoronal->GetZoom() );
+	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
 
 	/** 3D is more tricky than this */
 	//otherView->view3D()->SetCameraPosition    ( d->view3D->GetCameraPosition() );
@@ -606,6 +611,22 @@ void v3dView::link(dtkAbstractView *other)
         d->collectionAxial->AddItem    ( otherView->viewAxial() );
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
+
+	// properties:
+	otherView->setProperty ("Orientation",          this->property ("Orientation"));
+	otherView->setProperty ("ScalarBarVisibility",  this->property ("ScalarBarVisibility"));
+	otherView->setProperty ("LookupTable",          this->property ("LookupTable"));
+	otherView->setProperty ("BackgroundLookupTable",this->property ("BackgroundLookupTable"));
+	otherView->setProperty ("Opacity",              this->property ("Opacity"));
+	otherView->setProperty ("ShowAxis",             this->property ("ShowAxis"));
+	otherView->setProperty ("ShowRuler",            this->property ("ShowRuler"));
+	otherView->setProperty ("ShowAnnotations",      this->property ("ShowAnnotations"));
+	otherView->setProperty ("LeftClickInteraction", this->property ("LeftClickInteraction"));
+	otherView->setProperty ("Mode",                 this->property ("Mode"));
+	otherView->setProperty ("VRMode",               this->property ("VRMode"));
+	otherView->setProperty ("UseLOD",               this->property ("UseLOD"));
+	otherView->setProperty ("Cropping",             this->property ("Cropping"));
+	
     }
 
     this->setProperty ("Linked", "true");
