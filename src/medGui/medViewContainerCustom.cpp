@@ -19,8 +19,17 @@
 
 #include "medViewContainer_p.h"
 #include "medViewContainerCustom.h"
+#include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
+
+medViewContainerCustom::medViewContainerCustom (QWidget *parent) : medViewContainer(parent)
+{
+}
+
+medViewContainerCustom::~medViewContainerCustom()
+{
+}
 
 medViewContainer::Type medViewContainerCustom::type(void)
 {
@@ -33,8 +42,10 @@ void medViewContainerCustom::split(int rows, int cols)
         return;
 
     for(int i = 0 ; i < rows ; i++)
-        for(int j = 0 ; j < cols ; j++)
-            d->layout->addWidget(new medViewContainerCustom(this), i, j);
+        for(int j = 0 ; j < cols ; j++) {
+	    medViewContainerCustom *container = new medViewContainerCustom(this);
+            d->layout->addWidget(container, i, j);
+	}
 
     this->setCurrent(NULL);
 }
@@ -93,6 +104,38 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
+
+    this->synchronize_2 (view);
+}
+
+void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
+{
+  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+      parent->synchronize_2(view);
+  }
+  else { // top level medViewContainerCustom
+      d->pool->appendView (view);
+  }
+}
+
+void medViewContainerCustom::synchronize (void)
+{
+  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+      parent->synchronize();
+  }
+  else { // top level medViewContainerCustom      
+      d->pool->synchronize();
+  }
+}
+
+void medViewContainerCustom::desynchronize (void)
+{
+  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+      parent->desynchronize();
+  }
+  else { // top level medViewContainerCustom
+      d->pool->desynchronize();
+  }
 }
 
 void medViewContainerCustom::dragEnterEvent(QDragEnterEvent *event)

@@ -121,6 +121,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->viewToolBox, SIGNAL(axisVisibilityChanged(bool)), this, SLOT(setupAxisVisibility(bool)));
     connect(d->viewToolBox, SIGNAL(rulerVisibilityChanged(bool)), this, SLOT(setupRulerVisibility(bool)));
     connect(d->viewToolBox, SIGNAL(annotationsVisibilityChanged(bool)), this, SLOT(setupAnnotationsVisibility(bool)));
+    connect(d->viewToolBox, SIGNAL(synchronizeChanged(bool)), this, SLOT(setupSynchronization(bool)));
 
     // -- Diffusion toolbox --
 
@@ -572,6 +573,17 @@ void medViewerArea::setupAnnotationsVisibility(bool visible)
         visible ? view->setProperty("ShowAnnotations", "true") : view->setProperty("ShowAnnotations", "false");
 	view->update();
     }
+}
+
+void medViewerArea::setupSynchronization(bool sync)
+{
+    if(!d->view_stacks.count())
+        return;
+
+    if (sync)
+      d->view_stacks.value(d->current_patient)->current()->synchronize();
+    else
+      d->view_stacks.value(d->current_patient)->current()->desynchronize();
 }
 
 void medViewerArea::setup3DMode(QString mode)

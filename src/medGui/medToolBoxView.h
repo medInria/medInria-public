@@ -51,6 +51,7 @@ signals:
     void axisVisibilityChanged(bool);
     void rulerVisibilityChanged(bool);
     void annotationsVisibilityChanged(bool);
+    void synchronizeChanged (bool);
 
 private:
     medToolBoxViewPrivate *d;

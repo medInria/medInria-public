@@ -29,7 +29,8 @@ class MEDGUI_EXPORT medViewContainerMulti : public medViewContainer
     Q_OBJECT
 
 public:
-    medViewContainerMulti(QWidget *parent = 0) : medViewContainer(parent) {}
+    medViewContainerMulti(QWidget *parent = 0);
+   ~medViewContainerMulti();
 
     Type type(void);
 
@@ -38,7 +39,7 @@ public:
     dtkAbstractView *view(void);
 
     void setView(dtkAbstractView *view);
-
+   
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);

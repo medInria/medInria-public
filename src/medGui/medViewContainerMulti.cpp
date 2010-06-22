@@ -20,9 +20,18 @@
 #include "medViewContainer_p.h"
 #include "medViewContainerSingle.h"
 #include "medViewContainerMulti.h"
+#include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
 
+medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent)
+{
+}
+
+medViewContainerMulti::~medViewContainerMulti()
+{
+}
+  
 medViewContainer::Type medViewContainerMulti::type(void)
 {
     return medViewContainer::Multi;
@@ -99,6 +108,8 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->view = view;
+
+    d->pool->appendView (view);
 }
 
 void medViewContainerMulti::dragEnterEvent(QDragEnterEvent *event)
