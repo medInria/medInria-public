@@ -50,6 +50,7 @@ public:
 public slots:
     void synchronize   (void);
     void desynchronize (void);
+    void onViewClosed  (void);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -61,6 +62,7 @@ protected:
     void focusOutEvent(QFocusEvent *event);
 
     void synchronize_2 (dtkAbstractView *view);
+    void desynchronize_2 (dtkAbstractView *view);
 };
 
 #endif

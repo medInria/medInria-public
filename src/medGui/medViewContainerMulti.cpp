@@ -55,7 +55,6 @@ dtkAbstractView *medViewContainerMulti::view(void)
 void medViewContainerMulti::setView(dtkAbstractView *view)
 {
     QList<QWidget *> content;
-    
     for(int i = 0; i < d->layout->rowCount() ; i++) {
         for(int j = 0; j < d->layout->columnCount() ; j++) {
             if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
@@ -69,6 +68,17 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     container->setAcceptDrops(false);
     container->setView(view);
     content << container;
+
+    this->layout (content);
+    
+    d->view = view;
+
+    d->pool->appendView (view);
+    connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+}
+
+void medViewContainerMulti::layout (QList<QWidget *> content)
+{
     
     int row = 0;
     int col = 0, colmax = 0;
@@ -106,10 +116,30 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
         }
     }
     
-    d->layout->setContentsMargins(1, 1, 1, 1);    
-    d->view = view;
+    d->layout->setContentsMargins(1, 1, 1, 1);
+}
 
-    d->pool->appendView (view);
+void medViewContainerMulti::onViewClosed (void)
+{ 
+    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+
+      QList<QWidget *> content;
+      for(int i = 0; i < d->layout->rowCount() ; i++) {
+        for(int j = 0; j < d->layout->columnCount() ; j++) {
+	  if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+	    if(item->widget()!=view->widget()->parent())
+	      content << item->widget();
+	    else
+	      item->widget()->hide();
+	    d->layout->removeItem(item);
+	  }
+        }
+      }
+
+      d->pool->removeView (view);
+      
+      this->layout (content);
+    }
 }
 
 void medViewContainerMulti::dragEnterEvent(QDragEnterEvent *event)

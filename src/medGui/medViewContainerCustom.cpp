@@ -103,7 +103,13 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
     
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->layout->addWidget(view->widget(), 0, 0);
+
+    if (d->view)
+        disconnect (d->view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+    
     d->view = view;
+
+    connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
 
     this->synchronize_2 (view);
 }
@@ -115,6 +121,16 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
   }
   else { // top level medViewContainerCustom
       d->pool->appendView (view);
+  }
+}
+
+void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
+{
+  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+      parent->desynchronize_2(view);
+  }
+  else { // top level medViewContainerCustom
+      d->pool->removeView (view);
   }
 }
 
@@ -136,6 +152,15 @@ void medViewContainerCustom::desynchronize (void)
   else { // top level medViewContainerCustom
       d->pool->desynchronize();
   }
+}
+
+void medViewContainerCustom::onViewClosed (void)
+{
+    d->layout->removeWidget (d->view->widget());
+    d->view->widget()->hide();
+    this->desynchronize_2 (d->view);
+    disconnect (d->view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+    d->view = NULL;
 }
 
 void medViewContainerCustom::dragEnterEvent(QDragEnterEvent *event)
