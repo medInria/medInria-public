@@ -171,9 +171,9 @@ void medViewPool::desynchronize (void)
 void medViewPool::onViewDaddy (bool daddy)
 {
     if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
-
+      
         if (daddy) {
-		  
+	  
 	    dtkAbstractView *refView = this->daddy();
 	    if (refView && d->synchronize) {
 	        QList<dtkAbstractView *>::iterator it = d->views.begin();
@@ -195,9 +195,10 @@ void medViewPool::onViewDaddy (bool daddy)
 	else {
 	    if (view==this->daddy()) {
 	        QList<dtkAbstractView *>::iterator it = d->views.begin();
-		for( ; it!=d->views.end(); it++)
-		    view->unlink((*it));
+		  for( ; it!=d->views.end(); it++)
+		      view->unlink((*it));
 	    }
+
 	    view->setProperty ("Daddy", "false");
 	}
     }

@@ -76,7 +76,8 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     d->view->reset();
 
     d->pool->appendView (view);
-    connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));
 }
 
 void medViewContainerMulti::layout (QList<QWidget *> content)
@@ -138,6 +139,9 @@ void medViewContainerMulti::onViewClosed (void)
         }
       }
 
+      disconnect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+      disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+      
       d->pool->removeView (view);
       
       this->layout (content);

@@ -98,22 +98,25 @@ void medViewContainerCustom::setPreset(int preset)
 
 void medViewContainerCustom::setView(dtkAbstractView *view)
 {
+    if (view==d->view)
+        return;
+    
     if (d->layout->count())
         d->layout->removeItem(d->layout->itemAt(0));
+
+    if (d->view)
+        this->onViewClosed();
     
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->layout->addWidget(view->widget(), 0, 0);
 
-    if (d->view)
-        disconnect (d->view, SIGNAL (closed()), this, SLOT (onViewClosed()));
-    
     d->view = view;
-
-    connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
-
     d->view->reset();
     
     this->synchronize_2 (view);
+
+    connect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));
 }
 
 void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
@@ -158,11 +161,14 @@ void medViewContainerCustom::desynchronize (void)
 
 void medViewContainerCustom::onViewClosed (void)
 {
-    d->layout->removeWidget (d->view->widget());
-    d->view->widget()->hide();
-    this->desynchronize_2 (d->view);
-    disconnect (d->view, SIGNAL (closed()), this, SLOT (onViewClosed()));
-    d->view = NULL;
+    if (d->view) {
+        d->layout->removeWidget (d->view->widget());
+	d->view->widget()->hide();
+	this->desynchronize_2 (d->view);
+	disconnect (d->view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+	disconnect (d->view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+	d->view = NULL;
+    }
 }
 
 void medViewContainerCustom::dragEnterEvent(QDragEnterEvent *event)
