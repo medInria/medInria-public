@@ -73,6 +73,8 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     
     d->view = view;
 
+    d->view->reset();
+
     d->pool->appendView (view);
     connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
 }

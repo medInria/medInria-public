@@ -320,7 +320,7 @@ void medViewerArea::open(const medDataIndex& index)
     d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
     d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
 
-	view->reset(); // better to call reset after setting the view on its container
+    //view->reset(); // better to call reset after setting the view on its container
 }
 
 //! Open file on the local filesystem.

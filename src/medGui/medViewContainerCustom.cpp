@@ -111,6 +111,8 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 
     connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
 
+    d->view->reset();
+    
     this->synchronize_2 (view);
 }
 
