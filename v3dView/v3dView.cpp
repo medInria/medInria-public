@@ -296,33 +296,38 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     //d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view3D->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view3D->UnInstallInteractor();
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
     
     //d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
     d->view2DCoronal->UnInstallInteractor();
 
     //d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view2DSagittal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
     d->view2DSagittal->UnInstallInteractor();
 
     d->view2DAxial->SetRenderWindow(d->vtkWidget->GetRenderWindow()); // set the interactor as well
     //d->view2DAxial->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 
-    d->collection = vtkImageViewCollection::New();
+    d->collection = vtkImageViewCollection::New();    
     d->collection->AddItem (d->view2DAxial);
     d->collection->AddItem (d->view2DCoronal);
     d->collection->AddItem (d->view2DSagittal);
     d->collection->AddItem (d->view3D);
+    
 
     d->collection->SetLinkCurrentPoint (0);
     d->collection->SetLinkSliceMove (0);
     d->collection->SetLinkColorWindowLevel (0);
     d->collection->SetLinkCamera (0);
     d->collection->SetLinkZoom (0);
+    d->collection->SetLinkPan (0);
     d->collection->SetLinkRequestedPosition (0);
 
     d->collectionAxial    = vtkImageViewCollection::New();
@@ -569,40 +574,40 @@ void v3dView::link(dtkAbstractView *other)
     d->linkedViews.insert (other);
 
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
-
-	otherView->setProperty ("Linked", "true");
-		// properties:
-		//otherView->setProperty ("Orientation",          this->property ("Orientation"));
-		otherView->setProperty ("ScalarBarVisibility",  this->property ("ScalarBarVisibility"));
-		//otherView->setProperty ("LookupTable",          this->property ("LookupTable")); // seems to reset the window / level 
-		otherView->setProperty ("BackgroundLookupTable",this->property ("BackgroundLookupTable"));
-		otherView->setProperty ("Opacity",              this->property ("Opacity"));
-		otherView->setProperty ("ShowAxis",             this->property ("ShowAxis"));
-		otherView->setProperty ("ShowRuler",            this->property ("ShowRuler"));
-		otherView->setProperty ("ShowAnnotations",      this->property ("ShowAnnotations"));
-		otherView->setProperty ("LeftClickInteraction", this->property ("LeftClickInteraction"));
-		otherView->setProperty ("Mode",                 this->property ("Mode"));
-		otherView->setProperty ("VRMode",               this->property ("VRMode"));
-		otherView->setProperty ("UseLOD",               this->property ("UseLOD"));
-		otherView->setProperty ("Cropping",             this->property ("Cropping"));
+      
+        otherView->setProperty ("Linked", "true");
+	// properties:
+	//otherView->setProperty ("Orientation",          this->property ("Orientation"));
+	otherView->setProperty ("ScalarBarVisibility",  this->property ("ScalarBarVisibility"));
+	//otherView->setProperty ("LookupTable",          this->property ("LookupTable")); // seems to reset the window / level 
+	otherView->setProperty ("BackgroundLookupTable",this->property ("BackgroundLookupTable"));
+	otherView->setProperty ("Opacity",              this->property ("Opacity"));
+	otherView->setProperty ("ShowAxis",             this->property ("ShowAxis"));
+	otherView->setProperty ("ShowRuler",            this->property ("ShowRuler"));
+	otherView->setProperty ("ShowAnnotations",      this->property ("ShowAnnotations"));
+	otherView->setProperty ("LeftClickInteraction", this->property ("LeftClickInteraction"));
+	otherView->setProperty ("Mode",                 this->property ("Mode"));
+	otherView->setProperty ("VRMode",               this->property ("VRMode"));
+	otherView->setProperty ("UseLOD",               this->property ("UseLOD"));
+	otherView->setProperty ("Cropping",             this->property ("Cropping"));
 		
 
         otherView->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
 	otherView->viewSagittal()->SetCurrentPoint ( d->currentView->GetCurrentPoint() );
 	otherView->viewCoronal()->SetCurrentPoint  ( d->currentView->GetCurrentPoint() );
 	otherView->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
-
-		otherView->viewAxial()->SetColorWindow    ( d->currentView->GetColorWindow() );
-		otherView->viewSagittal()->SetColorWindow ( d->currentView->GetColorWindow() );
-		otherView->viewCoronal()->SetColorWindow  ( d->currentView->GetColorWindow() );
-		otherView->view3D()->SetColorWindow       ( d->currentView->GetColorWindow() );
-
-		otherView->viewAxial()->SetColorLevel    ( d->currentView->GetColorLevel() );
-		otherView->viewSagittal()->SetColorLevel ( d->currentView->GetColorLevel() );
-		otherView->viewCoronal()->SetColorLevel  ( d->currentView->GetColorLevel() );
-		otherView->view3D()->SetColorLevel       ( d->currentView->GetColorLevel() );
-		
-
+	
+	otherView->viewAxial()->SetColorWindow    ( d->currentView->GetColorWindow() );
+	otherView->viewSagittal()->SetColorWindow ( d->currentView->GetColorWindow() );
+	otherView->viewCoronal()->SetColorWindow  ( d->currentView->GetColorWindow() );
+	otherView->view3D()->SetColorWindow       ( d->currentView->GetColorWindow() );
+	
+	otherView->viewAxial()->SetColorLevel    ( d->currentView->GetColorLevel() );
+	otherView->viewSagittal()->SetColorLevel ( d->currentView->GetColorLevel() );
+	otherView->viewCoronal()->SetColorLevel  ( d->currentView->GetColorLevel() );
+	otherView->view3D()->SetColorLevel       ( d->currentView->GetColorLevel() );
+	
+	
 	//otherView->viewAxial()->SetCameraPosition   ( d->view2DAxial->GetCameraPosition() );
 	//otherView->viewAxial()->SetCameraFocalPoint ( d->view2DAxial->GetCameraFocalPoint() );
 	// zoom comes first, then pan (==translation)
@@ -1024,8 +1029,8 @@ void v3dView::onOrientationPropertySet(QString value)
         level  = d->currentView->GetColorLevel();
 	
 	d->currentView->UnInstallInteractor();
-	d->currentView->SetRenderWindow( 0 );
-	//d->currentView->RemoveObserver(d->observer);
+	// d->currentView->SetRenderWindow( 0 );
+	
 	d->currentView->GetInteractorStyle()->RemoveObserver(d->observer);
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->currentView->GetRenderer());
     }
@@ -1076,7 +1081,8 @@ void v3dView::onOrientationPropertySet(QString value)
 
     d->currentView->SetCurrentPoint (pos);
     d->currentView->SetColorWindow (window);
-    d->currentView->SetColorLevel (level);	
+    d->currentView->SetColorLevel (level);
+
 
     // force a correct display of the 2D axis for planar views
     d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL); // seems not needed anymore
