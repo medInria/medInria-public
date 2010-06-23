@@ -902,6 +902,7 @@ void v3dView::setData(dtkAbstractData *data)
 
     
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) ) {
+        d->slider->blockSignals (true);
         if( d->orientation=="Axial") {
             d->slider->setRange(0, imData->zDimension()-1);
         }
@@ -911,21 +912,15 @@ void v3dView::setData(dtkAbstractData *data)
 	else if( d->orientation=="Coronal") {
             d->slider->setRange(0, imData->yDimension()-1);
         }
+	d->slider->blockSignals (false);
     }
 
-    // this->update();
+    // this->update(); // update is not the role of the plugin, but of the app
 }
 
 void *v3dView::data (void)
 {
-
     return d->data;
-    /*
-      if (d->data)
-      return d->data->output();
-      
-      return NULL;
-    */
 }
 
 QSet<dtkAbstractView *> v3dView::linkedViews (void)
@@ -1087,8 +1082,6 @@ void v3dView::onOrientationPropertySet(QString value)
     d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL); // seems not needed anymore
 
     // update slider position
-    d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL); // seems not needed anymore
-    
     if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
         unsigned int zslice = view2d->GetSlice();
 	d->slider->setValue (zslice);
