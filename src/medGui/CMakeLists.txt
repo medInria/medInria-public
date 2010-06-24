@@ -39,6 +39,7 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxRegistration.h
   medToolBoxSource.h
   medToolBoxView.h
+  medViewPool.h
   medViewContainer.h
   medViewContainerCustom.h
   medViewContainerMulti.h
@@ -60,6 +61,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxRegistration.h
   medToolBoxSource.h
   medToolBoxView.h
+  medViewPool.h
   medViewContainer.h
   medViewContainerCustom.h
   medViewContainerMulti.h
@@ -82,6 +84,7 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxRegistration.cpp
   medToolBoxSource.cpp
   medToolBoxView.cpp
+  medViewPool.cpp
   medViewContainer.cpp
   medViewContainerCustom.cpp
   medViewContainerMulti.cpp

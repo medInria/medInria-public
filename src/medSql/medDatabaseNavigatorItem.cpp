@@ -137,9 +137,13 @@ void medDatabaseNavigatorItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     data->setData("med/index", index.toLatin1());
     data->setImageData(this->pixmap());
     
-    QDrag *drag = new QDrag(this->scene()->views().first());
+	QDrag *drag = new QDrag(this->scene()->views().first());
     drag->setMimeData(data);
+#if WIN32
+	drag->setPixmap(this->pixmap().scaled(64,64));
+#else
     drag->setPixmap(this->pixmap());
+#endif
     drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
     drag->start();
 }
