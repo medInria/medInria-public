@@ -31,6 +31,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkPolyData.h>
 #include <vtkDataArrayCollection.h>
 #include <vtkCellArray.h>
+#include <vtkActor.h>
+#include <vtkProperty.h>
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkDiffXMLWriter);
 vtkCxxRevisionMacro(vtkDiffXMLWriter, "$Revision: 1298 $");
@@ -99,7 +101,29 @@ void vtkDiffXMLWriter::Update(void)
 					metadata->GetColorArrayCollection (arrays);
 					
 					
-					os<<"<Volume name=\""<<metadata->GetName()<<"\" color=\""<<arrays->GetItem(0)<<"\">\n\t\t\t\t<Vertices number=\""<<metasurface->GetPolyData()->GetNumberOfPoints()<<"\">\n";
+					os<<"<Volume name=\""<<metadata->GetName()<<"\" color=\"";
+					
+					
+					// TODO: Color required to be in Hexadecimal values, but when asked from vtk object it is returned as RGB values, Thus conversion required here.
+					
+					//double *color; color = metadata->GetActor(0)->GetProperty()->GetColor();
+//					
+//					//printf("color %x",color[0]);
+//					
+//					
+//					double dv;
+//					char *sv;
+//					int i;
+//					
+//					dv=0.1;
+//					sv=(char *) &dv;
+//					printf("sv -> ");
+//					for (i=0;i<sizeof (double);++i)
+//						printf("%x ",sv[i]);
+//					printf("\n");
+					
+					
+					os<<"\">\n\t\t\t\t<Vertices number=\""<<metasurface->GetPolyData()->GetNumberOfPoints()<<"\">\n";
 					double point[3];
 					for(vtkIdType i=0;i<metasurface->GetPolyData()->GetNumberOfPoints();i++)
 					{
@@ -121,7 +145,7 @@ void vtkDiffXMLWriter::Update(void)
 							
 							return;
 						}
-						os<<"\t\t\t\t\t"<<pointids->GetId(0)<<" "<<pointids->GetId(1)<<" "<<pointids->GetId(2)<<"\n";
+						os<<"\t\t\t\t\t"<<(pointids->GetId(0)+1)<<" "<<(pointids->GetId(1)+1)<<" "<<(pointids->GetId(2)+1)<<"\n";
 					}
 					os<<"</Polygons>";
 					os<<"\n\t\t\t</Volume>";
