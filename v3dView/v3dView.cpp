@@ -97,7 +97,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
 	    this->slider->setValue (zslice);
 	    this->slider->update();
 	    this->slider->blockSignals (false);
-	    qApp->processEvents();
+	    //qApp->processEvents();
 	}
 	// }
 	// }
@@ -122,6 +122,7 @@ public:
     vtkImageView *currentView;
   
     vtkImageViewCollection *collection;
+    vtkImageViewCollection *collectionPos;
     vtkImageViewCollection *collectionAxial;
     vtkImageViewCollection *collectionSagittal;
     vtkImageViewCollection *collectionCoronal;
@@ -315,12 +316,11 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DAxial->SetRenderWindow(d->vtkWidget->GetRenderWindow()); // set the interactor as well
     //d->view2DAxial->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 
-    d->collection = vtkImageViewCollection::New();    
+    d->collection = vtkImageViewCollection::New();
     d->collection->AddItem (d->view2DAxial);
     d->collection->AddItem (d->view2DCoronal);
     d->collection->AddItem (d->view2DSagittal);
     d->collection->AddItem (d->view3D);
-    
 
     d->collection->SetLinkCurrentPoint (0);
     d->collection->SetLinkSliceMove (0);
@@ -333,14 +333,51 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->collectionAxial    = vtkImageViewCollection::New();
     d->collectionSagittal = vtkImageViewCollection::New();
     d->collectionCoronal  = vtkImageViewCollection::New();
+    d->collectionPos      = vtkImageViewCollection::New();
+
+    d->collectionPos->SetLinkCurrentPoint (0);
+    d->collectionPos->SetLinkRequestedPosition (1);
+    d->collectionPos->SetLinkSliceMove (1);
+    d->collectionPos->SetLinkColorWindowLevel (0);
+    d->collectionPos->SetLinkCamera (0);
+    d->collectionPos->SetLinkZoom (0);
+    d->collectionPos->SetLinkPan (0);
+
+    d->collectionAxial->SetLinkCurrentPoint (0);
+    d->collectionAxial->SetLinkRequestedPosition (0);
+    d->collectionAxial->SetLinkSliceMove (1);
+    d->collectionAxial->SetLinkColorWindowLevel (1);
+    d->collectionAxial->SetLinkCamera (0);
+    d->collectionAxial->SetLinkZoom (1);
+    d->collectionAxial->SetLinkPan (1);
+
+    d->collectionSagittal->SetLinkCurrentPoint (0);
+    d->collectionSagittal->SetLinkRequestedPosition (0);
+    d->collectionSagittal->SetLinkSliceMove (1);
+    d->collectionSagittal->SetLinkColorWindowLevel (1);
+    d->collectionSagittal->SetLinkCamera (0);
+    d->collectionSagittal->SetLinkZoom (1);
+    d->collectionSagittal->SetLinkPan (1);
+
+    d->collectionCoronal->SetLinkCurrentPoint (0);
+    d->collectionCoronal->SetLinkRequestedPosition (0);
+    d->collectionCoronal->SetLinkSliceMove (1);
+    d->collectionCoronal->SetLinkColorWindowLevel (1);
+    d->collectionCoronal->SetLinkCamera (0);
+    d->collectionCoronal->SetLinkZoom (1);
+    d->collectionCoronal->SetLinkPan (1);
+
 
     d->collectionAxial->AddItem    ( d->view2DAxial );
     d->collectionSagittal->AddItem ( d->view2DSagittal );
     d->collectionCoronal->AddItem  ( d->view2DCoronal );
     
+    d->collectionPos->AddItem    ( d->view2DAxial );
+    d->collectionPos->AddItem ( d->view2DSagittal );
+    d->collectionPos->AddItem  ( d->view2DCoronal );
+    
     d->observer = v3dViewObserver::New();
     d->observer->setSlider(d->slider);
-    //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
     d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 0);
     d->observer->setView ( vtkImageView2D::SafeDownCast (d->currentView) );
 
@@ -634,6 +671,10 @@ void v3dView::link(dtkAbstractView *other)
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
 		
+	d->collectionPos->AddItem    ( otherView->viewAxial() );
+	d->collectionPos->AddItem ( otherView->viewSagittal() );
+	d->collectionPos->AddItem  ( otherView->viewCoronal() );	
+	
     }
 
     this->setProperty ("Linked", "true");
@@ -653,6 +694,11 @@ void v3dView::unlink(dtkAbstractView *other)
         d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
 	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
 	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
+
+	d->collectionPos->RemoveItem    ( otherView->viewAxial() );
+	d->collectionPos->RemoveItem ( otherView->viewSagittal() );
+	d->collectionPos->RemoveItem  ( otherView->viewCoronal() );	
+
     }
 
     if (d->linkedViews.count()==0)
