@@ -61,8 +61,10 @@ void medViewPool::appendView (dtkAbstractView *view)
     else
         refView = this->daddy();
     
-    if (d->synchronize && refView)
+    if (d->synchronize && refView) {
         refView->link (view);
+		//view->update();
+	}
 }
 
 void medViewPool::removeView (dtkAbstractView *view)
@@ -74,22 +76,43 @@ void medViewPool::removeView (dtkAbstractView *view)
     dtkAbstractView *refView = this->daddy();
 
     if (refView) {
+        if (refView==view) { // we are daddy, we need to unlink, find a new daddy, and link again (if needed)
+	    if (d->synchronize) { // we are synchronized
 
-      if (refView==view) { // we are daddy
-	if (d->synchronize) { // we are synchronized
-	  QList<dtkAbstractView *>::iterator it = d->views.begin();
-	  for( ; it!=d->views.end(); it++) {
-	    if ((*it)->property ("Daddy")=="false") {
-	      (*it)->setProperty ("Daddy", "true");
-	      break;
+	        // unlink
+	      QList<dtkAbstractView *>::iterator it = d->views.begin();
+	      for( ; it!=d->views.end(); it++)
+		  refView->unlink ((*it));
+	    
+	      // change daddy
+	      it = d->views.begin();
+	      for( ; it!=d->views.end(); it++)
+		  if ((*it)->property ("Daddy")=="false") {
+		    (*it)->setProperty ("Daddy", "true");
+		    break;
+		  }
+	    
+	      refView = this->daddy();
+	      if (refView) {// re-link
+		  it = d->views.begin();
+		  for( ; it!=d->views.end(); it++)
+		    refView->link ((*it));
+	      }
 	    }
-	  }
-	}
-      }
-      else
-	  refView->unlink (view);
-    }
+	    else { // we are not synchronized, just look for another daddy (next in the list)
 
+	        QList<dtkAbstractView *>::iterator it = d->views.begin();
+		for( ; it!=d->views.end(); it++)
+		    if ((*it)->property ("Daddy")=="false") {
+		      (*it)->setProperty ("Daddy", "true");
+		      break;
+		    }
+	      }
+	}
+	else // we are not daddy, just unlink
+	    refView->unlink (view);
+    }
+    
     disconnect (view, SIGNAL (propertySet(QString, QString)), this, SLOT (onViewPropertySet(QString, QString)));
     disconnect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
     disconnect (view, SIGNAL (sync(bool)),                    this, SLOT (onViewSync(bool)));
@@ -98,15 +121,12 @@ void medViewPool::removeView (dtkAbstractView *view)
 
 dtkAbstractView *medViewPool::daddy (void)
 {
-    dtkAbstractView *daddy = NULL;
     QList<dtkAbstractView *>::iterator it = d->views.begin();
     for( ; it!=d->views.end(); it++) {
-        if ((*it)->property ("Daddy")=="true") {
-	  daddy = (*it);
-	  break;
-	}
+        if ((*it)->property ("Daddy")=="true")
+	  return (*it);
     }
-    return daddy;
+    return NULL;
 }
 
 int medViewPool::synchronized()
@@ -125,9 +145,8 @@ void medViewPool::synchronize (void)
 
     QList<dtkAbstractView *>::iterator it = d->views.begin();
     if (refView) {
-        for (it; it!=d->views.end(); ++it) {
+        for (it; it!=d->views.end(); ++it)
 	    refView->link ( (*it) );
-	}
     }
 }
 
@@ -137,9 +156,8 @@ void medViewPool::desynchronize (void)
 
     if (refView) {
         QList<dtkAbstractView *>::iterator it = d->views.begin();
-	for (it; it!=d->views.end(); ++it) {
+	for (it; it!=d->views.end(); ++it)
 	    refView->unlink ( (*it) );
-	}
     }
 
     d->synchronize = 0;
@@ -148,29 +166,41 @@ void medViewPool::desynchronize (void)
 void medViewPool::onViewDaddy (bool daddy)
 {
     if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+      
+        if (daddy) { // view wants to become daddy
+	  
+	    dtkAbstractView *refView = this->daddy();
+	    
+	    if (refView && d->synchronize) { // if daddy & synchronize, then unlink first
+	        QList<dtkAbstractView *>::iterator it = d->views.begin();
+		for( ; it!=d->views.end(); it++)
+		    refView->unlink((*it));
+	    }
 
-      if (daddy) {
-		  
-		  dtkAbstractView *refView = this->daddy();
-		  if (refView && d->synchronize) {
-			  QList<dtkAbstractView *>::iterator it = d->views.begin();
-			  for( ; it!=d->views.end(); it++)
-				  refView->unlink((*it));
-		  }
-		  
+	    // tell all views that they are not daddys
 	    QList<dtkAbstractView *>::iterator it = d->views.begin();
 	    for( ; it!=d->views.end(); it++)
 	        (*it)->setProperty ("Daddy", "false");
-	    
+
+	    // tell the sender it is now daddy
 	    view->setProperty ("Daddy", "true");
-		  if (d->synchronize) {
-			  it = d->views.begin();
-			  for( ; it!=d->views.end(); it++)
-				  view->link((*it));
-		  }
-      }
-      else
-	view->setProperty ("Daddy", "false");
+
+	    // synchronize with new daddy if required
+	    if (d->synchronize) {
+	        it = d->views.begin();
+		for( ; it!=d->views.end(); it++)
+		    view->link((*it));
+	    }
+	}
+	else { // view does not want to become daddy
+	  if (view==this->daddy()) { // unlink if needed
+	        QList<dtkAbstractView *>::iterator it = d->views.begin();
+		  for( ; it!=d->views.end(); it++)
+		      view->unlink((*it));
+	    }
+	  
+	    view->setProperty ("Daddy", "false");
+	}
     }
 }
 
@@ -216,13 +246,14 @@ void medViewPool::onViewPropertySet (QString key, QString value)
     if (key=="Daddy")
         return;
 
-	if (d->synchronize) {
-    foreach (dtkAbstractView *lview, d->views) {
-      if (lview!=this->sender()) {
-        lview->blockSignals (true);
-        lview->setProperty (key, value);
+    if (d->synchronize) {
+        foreach (dtkAbstractView *lview, d->views) {
+	  if (lview!=this->sender()) {
+	    lview->blockSignals (true);
+	    lview->setProperty (key, value);
+		  lview->update();
 	    lview->blockSignals (false);
-      }
-    }
+	  }
 	}
+    }
 }
