@@ -30,7 +30,7 @@
 
 class medWorkspaceShifterMenuPrivate;
 
-class medWorkspaceShifterMenu : public QWidget
+class MEDGUI_EXPORT medWorkspaceShifterMenu : public QWidget
 {
     Q_OBJECT
     

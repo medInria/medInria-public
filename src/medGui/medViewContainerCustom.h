@@ -37,7 +37,8 @@ public:
         E = 5  // (2, 2)
     };
 
-    medViewContainerCustom(QWidget *parent = 0) : medViewContainer(parent) {}
+    medViewContainerCustom(QWidget *parent = 0);
+    ~medViewContainerCustom(void);
 
     Type type(void);
 
@@ -45,6 +46,11 @@ public:
 
     void setPreset(int preset);
     void setView(dtkAbstractView *view);
+
+public slots:
+    void synchronize   (void);
+    void desynchronize (void);
+    void onViewClosed  (void);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -54,6 +60,9 @@ protected:
 
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
+
+    void synchronize_2 (dtkAbstractView *view);
+    void desynchronize_2 (dtkAbstractView *view);
 };
 
 #endif

@@ -19,6 +19,7 @@
 
 #include "medViewContainer.h"
 #include "medViewContainer_p.h"
+#include "medViewPool.h"
 
 #include <QtGui>
 
@@ -32,9 +33,10 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
     d->layout->setSpacing(2);
 
     d->view = NULL;
-
     d->current = this;
-
+    
+    d->pool = new medViewPool;
+    
     if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent)) {
         connect(this, SIGNAL(dropped(const medDataIndex&)), container, SIGNAL(dropped(const medDataIndex&)));
         connect(this, SIGNAL(focused(dtkAbstractView*)), container, SIGNAL(focused(dtkAbstractView*)));
@@ -66,6 +68,16 @@ void medViewContainer::split(int rows, int cols)
 {
     Q_UNUSED(rows);
     Q_UNUSED(cols);
+}
+
+void medViewContainer::synchronize (void)
+{
+    d->pool->synchronize();
+}
+
+void medViewContainer::desynchronize (void)
+{
+    d->pool->desynchronize();
 }
 
 dtkAbstractView *medViewContainer::view(void)
@@ -130,7 +142,8 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
     if(dtkAbstractView *view = this->view())
         emit focused(view);
 
-    former->update();
+	if (former)
+        former->update();
     this->update();
 }
 
@@ -148,10 +161,16 @@ void medViewContainer::paintEvent(QPaintEvent *event)
 
     QPainter painter;
     painter.begin(this);
-    if (d->current == this)
+
+    if (this->view() && this->view()->property ("Daddy")=="true")
+        painter.setPen(Qt::red);
+    else {
+      if (d->current == this)
         painter.setPen(QColor(0x9a, 0xb3, 0xd5));
-    else
+      else
         painter.setPen(Qt::darkGray);
+    }
+    
     painter.setBrush(QColor(0x38, 0x38, 0x38));
     painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
     painter.end();
