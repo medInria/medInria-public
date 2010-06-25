@@ -78,7 +78,11 @@ void medWelcomeArea::linkClicked(const QUrl& url)
             emit switchToDocumentationArea(url);
         }
     } else {
-        d->view->load(url);
+        if (url.isRelative())
+
+            d->view->load(url);
+        else
+            QDesktopServices::openUrl(url);
     }
 }
 

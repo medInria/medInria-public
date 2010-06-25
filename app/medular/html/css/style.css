@@ -24,8 +24,8 @@ div.simple_overlay img{
 		width after the growing animation finishes
 		height is automatically calculated
 	*/
-	width:640px;		
-	
+	width:800px;		
+	max-height:700px;	
 	/* some padding to layout nested elements nicely  */
 	padding:35px;
 

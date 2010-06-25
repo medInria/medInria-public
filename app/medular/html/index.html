@@ -19,9 +19,13 @@
       $(document).ready(function() {
       $("img[rel]").overlay({mask:"#aaa",effect:'apple'});
       $("#medularTrigger").tooltip();
-      $("#test").rssfeed('http://feeds.reuters.com/reuters/oddlyEnoughNews', {
+      //$("#test").rssfeed('http://feeds.reuters.com/reuters/oddlyEnoughNews', {
+      //limit: 3
+      //});
+      $("#test").rssfeed('http://www.sciencedaily.com/rss/health_medicine/medical_imaging.xml', {
       limit: 3
       });
+
       });
     </script>
     
@@ -36,8 +40,13 @@
 	<!-- scrollable items -->
 	<div id="tools">
 	  
-	  <!-- empty item -->
-	  <div class="tool">&nbsp;</div>
+		<div class="tool">
+			<img src="img/brebix3d.png" width="300px" rel="#thumbBrebix"/>
+	    <div class="apple_overlay" id="thumbBrebix">
+	      <img  src="img/brebix3d.png" width="100%" />
+	    </div>
+
+		</div>
 	  
 	  <!-- item #1: tabs -->
 	  <div class="tool" id="home"> 
@@ -46,12 +55,14 @@
 	    <img src="img/overview.png" width="100px" rel="#thumbOverview"/>
 	    <div class="apple_overlay" id="thumbOverview">
 	      <img  src="img/overview.png" width="100%" />
-	    </div>
-	    
+      </div>
+      	    <p>
+	    Implemented right now: Visualisation of 3D Volumes and 2D images. 
+	    </p>
 	  </div>
 	  
 	  <div class="tool">
-	    
+		  <p> Stay tuned for very exciting news in the near future as the development of Medinria will increase its pace with the adjunction of new crew member and your feedback.</p> 
 	  </div>
 	  <div class="tool" >
 	    Registration Tutorial
@@ -66,7 +77,7 @@
 	    <p>For more information on how to use this tool, see 
 	      the documentation on 
 	      <a href="medular://documentation/registration.html">
-		registration</a>
+		registration</a>. Please note the interface has changed recently and will change again as we are stabilizing the workflow.
 	    </p>
 	  </div>
 	  
