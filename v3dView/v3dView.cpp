@@ -372,10 +372,6 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->collectionSagittal->AddItem ( d->view2DSagittal );
     d->collectionCoronal->AddItem  ( d->view2DCoronal );
     
-    d->collectionPos->AddItem    ( d->view2DAxial );
-    d->collectionPos->AddItem ( d->view2DSagittal );
-    d->collectionPos->AddItem  ( d->view2DCoronal );
-    
     d->observer = v3dViewObserver::New();
     d->observer->setSlider(d->slider);
     d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 0);
@@ -648,21 +644,13 @@ void v3dView::link(dtkAbstractView *other)
 	otherView->viewCoronal()->SetColorLevel  ( d->currentView->GetColorLevel() );
 	otherView->view3D()->SetColorLevel       ( d->currentView->GetColorLevel() );
 	
-	
-	//otherView->viewAxial()->SetCameraPosition   ( d->view2DAxial->GetCameraPosition() );
-	//otherView->viewAxial()->SetCameraFocalPoint ( d->view2DAxial->GetCameraFocalPoint() );
 	// zoom comes first, then pan (==translation)
 	otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
 	otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
 	
-
-	//otherView->viewSagittal()->SetCameraPosition   ( d->view2DSagittal->GetCameraPosition() );
-	//otherView->viewSagittal()->SetCameraFocalPoint ( d->view2DSagittal->GetCameraFocalPoint() );
 	otherView->viewSagittal()->SetZoom ( d->view2DSagittal->GetZoom() );
 	otherView->viewSagittal()->SetPan  ( d->view2DSagittal->GetPan() );	
 
-	//otherView->viewCoronal()->SetCameraPosition    ( d->view2DCoronal->GetCameraPosition() );
-	//otherView->viewCoronal()->SetCameraFocalPoint  ( d->view2DCoronal->GetCameraFocalPoint() );
 	otherView->viewCoronal()->SetZoom ( d->view2DCoronal->GetZoom() );
 	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
 
@@ -674,11 +662,20 @@ void v3dView::link(dtkAbstractView *other)
         d->collectionAxial->AddItem    ( otherView->viewAxial() );
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
-		
-	d->collectionPos->AddItem    ( otherView->viewAxial() );
+
+	if (!d->collectionPos->IsItemPresent (d->view2DAxial ))
+	    d->collectionPos->AddItem    ( d->view2DAxial );
+	if (!d->collectionPos->IsItemPresent (d->view2DSagittal ))
+	    d->collectionPos->AddItem ( d->view2DSagittal );
+	if (!d->collectionPos->IsItemPresent (d->view2DCoronal ))
+	    d->collectionPos->AddItem  ( d->view2DCoronal );
+	if (!d->collectionPos->IsItemPresent (d->view3D ))
+	    d->collectionPos->AddItem  ( d->view3D );
+
+	d->collectionPos->AddItem ( otherView->viewAxial() );
 	d->collectionPos->AddItem ( otherView->viewSagittal() );
-	d->collectionPos->AddItem  ( otherView->viewCoronal() );	
-	
+	d->collectionPos->AddItem ( otherView->viewCoronal() );
+	d->collectionPos->AddItem ( otherView->view3D() );
     }
 
     this->setProperty ("Linked", "true");
@@ -689,8 +686,6 @@ void v3dView::unlink(dtkAbstractView *other)
     if(!other || other->description()!=tr("v3dView") || !d->linkedViews.contains (other) ||  other==this)
         return;
 
-    d->linkedViews.remove (other);
-    
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
 
 	otherView->setProperty ("Linked", "false");
@@ -699,14 +694,21 @@ void v3dView::unlink(dtkAbstractView *other)
 	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
 	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
 
-	d->collectionPos->RemoveItem    ( otherView->viewAxial() );
+	d->collectionPos->RemoveItem ( otherView->viewAxial() );
 	d->collectionPos->RemoveItem ( otherView->viewSagittal() );
-	d->collectionPos->RemoveItem  ( otherView->viewCoronal() );	
-
+	d->collectionPos->RemoveItem ( otherView->viewCoronal() );
+	d->collectionPos->RemoveItem ( otherView->view3D() );
     }
 
-    if (d->linkedViews.count()==0)
+    d->linkedViews.remove (other);
+    
+    if (d->linkedViews.count()==0) {
         this->setProperty ("Linked", "false");
+	d->collectionPos->RemoveItem ( d->view2DAxial );
+	d->collectionPos->RemoveItem ( d->view2DSagittal );
+	d->collectionPos->RemoveItem ( d->view2DCoronal );
+	d->collectionPos->RemoveItem ( d->view3D );
+    }
 }
 
 void *v3dView::view(void)
