@@ -52,12 +52,10 @@ itkDataImageReaderPlugin::~itkDataImageReaderPlugin(void)
 bool itkDataImageReaderPlugin::initialize(void)
 {
   if(!itkMetaDataImageReader::registered())     dtkWarning() << "Unable to register itkMetaDataImageReader type";
-#ifdef ITK_USE_SYSTEM_GDCM
-  std::cout<<"gdcm registered"<<std::endl;
-  if(!itkGDCMDataImageReader::registered())     dtkWarning() << "Unable to register  itkGDCMDataImageReader type";
-#else  // ITK_USE_SYSTEM_GDCM
   if(!itkDCMTKDataImageReader::registered())    dtkWarning() << "Unable to register itkDCMTKDataImageReader type";  
-#endif // ITK_USE_SYSTEM_GDCM
+#ifdef ITK_USE_SYSTEM_GDCM
+  if(!itkGDCMDataImageReader::registered())     dtkWarning() << "Unable to register  itkGDCMDataImageReader type";
+#endif
   if(!itkNiftiDataImageReader::registered())    dtkWarning() << "Unable to register itkNiftiDataImageReader type";
   if(!itkAnalyzeDataImageReader::registered())  dtkWarning() << "Unable to register itkAnalyzeDataImageReader type";
   if(!itkNrrdDataImageReader::registered())     dtkWarning() << "Unable to register itkNrrdDataImageReader type";
