@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Fri Sep 25 11:51:59 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Apr  6 21:35:41 2010 (+0200)
+## Last-Updated: Sun Jun 27 18:52:40 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 30
+##     Update #: 39
 ######################################################################
 ## 
 ### Commentary: 
@@ -32,10 +32,13 @@ set(${PROJECT_NAME}_HEADERS
   medDatabaseNavigator.h
   medDatabaseNavigatorController.h
   medDatabaseNavigatorItem.h
+  medDatabaseNavigatorItem_p.h
   medDatabaseNavigatorItemGroup.h
   medDatabaseNavigatorItemLoader.h
   medDatabaseNavigatorScene.h
   medDatabaseNavigatorView.h
+  medDatabaseNonPersitentController.h
+  medDatabaseNonPersitentItem.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
   medDatabasePreviewController.h
@@ -58,6 +61,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseNavigatorItemGroup.h
   medDatabaseNavigatorItemLoader.h
   medDatabaseNavigatorView.h
+  medDatabaseNonPersitentController.h
+  medDatabaseNonPersitentItem.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
   medDatabasePreviewItem.h
@@ -81,6 +86,8 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseNavigatorItemLoader.cpp
   medDatabaseNavigatorScene.cpp
   medDatabaseNavigatorView.cpp
+  medDatabaseNonPersitentController.cpp
+  medDatabaseNonPersitentItem.cpp
   medDatabasePreview.cpp
   medDatabasePreviewArrow.cpp
   medDatabasePreviewController.cpp

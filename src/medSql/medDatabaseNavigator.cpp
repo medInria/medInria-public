@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:38:39 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 09:59:12 2010 (+0200)
+ * Last-Updated: Sun Jun 27 19:17:45 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 36
  */
 
 /* Commentary: 
@@ -24,6 +24,8 @@
 #include "medDatabaseNavigatorItemGroup.h"
 #include "medDatabaseNavigatorScene.h"
 #include "medDatabaseNavigatorView.h"
+#include "medSql/medDatabaseNonPersitentItem.h"
+#include "medSql/medDatabaseNonPersitentController.h"
 
 #include <QtCore>
 #include <QtGui>
@@ -74,9 +76,11 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 {
     this->reset();
 
+    // Query persistent data
+
     QSqlQuery patientQuery(*(medDatabaseController::instance()->database())); QVariant id;
 
-    // Retrieve patient information
+    // Query persistent data -- Retrieve patient information
 
     QString patientName;
     QString patientThumbnail;
@@ -89,7 +93,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
     if(patientQuery.first())
         patientName = patientQuery.value(0).toString();
 
-    // Retrieve studies information
+    // Query persistent data -- Retrieve studies information
 
     QSqlQuery studyQuery(*(medDatabaseController::instance()->database()));
 
@@ -141,27 +145,47 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 
         d->scene->addGroup(group);
     }
+
+    // Query non persistent data
+
+    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
+
+        if(item->index().patientId() == patientId) {
+
+            medDatabaseNavigatorItem *nitem = new medDatabaseNavigatorItem(
+                item->index().patientId(), 
+                item->index().studyId(), 
+                item->index().seriesId(), 
+                item->index().imageId(), 
+                item->thumb());
+            
+            connect(nitem, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
+            connect(nitem, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
+            connect(nitem, SIGNAL(seriesClicked(int)), this, SIGNAL(seriesClicked(int)));
+            connect(nitem, SIGNAL(imageClicked(int)), this, SIGNAL(imageClicked(int)));
+
+            medDatabaseNavigatorItemGroup *group = new medDatabaseNavigatorItemGroup;
+            group->setName(item->name());
+            group->addItem(nitem);
+
+            d->scene->addGroup(group);
+        }
+    }
 }
 
 void medDatabaseNavigator::onStudyClicked(int id)
 {
-#ifndef WIN32
-	qDebug() << __func__ << id;
-#endif
+    qDebug() << DTK_PRETTY_FUNCTION << id;
 }
 
 void medDatabaseNavigator::onSeriesClicked(int id)
 {
-#ifndef WIN32
-    qDebug() << __func__ << id;
-#endif
+    qDebug() << DTK_PRETTY_FUNCTION << id;
 }
 
 void medDatabaseNavigator::onImageClicked(int id)
 {
-#ifndef WIN32
-    qDebug() << __func__ << id;
-#endif
+    qDebug() << DTK_PRETTY_FUNCTION << id;
 }
 
 void medDatabaseNavigator::addThumbnail(const QImage& thumbnail)

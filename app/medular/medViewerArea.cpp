@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 22:13:09 2010 (+0200)
+ * Last-Updated: Sun Jun 27 19:03:56 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 946
+ *     Update #: 964
  */
 
 /* Commentary: 
@@ -34,6 +34,8 @@
 #include <medCore/medViewManager.h>
 
 #include <medSql/medDatabaseController.h>
+#include <medSql/medDatabaseNonPersitentItem.h>
+#include <medSql/medDatabaseNonPersitentController.h>
 #include <medSql/medDatabaseNavigator.h>
 
 #include <medGui/medToolBox.h>
@@ -182,6 +184,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     this->setup();
 
     connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(setup()));
+    connect(medDatabaseNonPersitentController::instance(), SIGNAL(updated()), this, SLOT(setup()));
 
     // Setting up visualization configuration
 
@@ -256,6 +259,8 @@ void medViewerArea::setup(void)
     d->patientToolBox->clear();
     d->patientToolBox->addItem("Choose patient", -1);
 
+    // Setting up persitent data
+
     QSqlQuery query(*(medDatabaseController::instance()->database()));
 
     query.prepare("SELECT name, id FROM patient");
@@ -264,6 +269,11 @@ void medViewerArea::setup(void)
 
     while(query.next())
         d->patientToolBox->addItem(query.value(0).toString(), query.value(1));
+
+    // Setting up non persitent data
+
+    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items())
+        d->patientToolBox->addItem(item->name(), item->index().patientId());
 }
 
 //! Split the currently displayed custom container.
@@ -295,6 +305,9 @@ void medViewerArea::open(const medDataIndex& index)
 
     if(!data)
         data = medDataManager::instance()->data(index);
+
+    if(!data)
+        data = medDatabaseNonPersitentController::instance()->data(index);
 
     if(!data)
         data = medDatabaseController::instance()->read(index);
@@ -330,63 +343,7 @@ void medViewerArea::open(const medDataIndex& index)
 
 void medViewerArea::open(const QString& file)
 {
-    if (file.isEmpty())
-        return;
-
-    QFileInfo fileInfo(file);
-    
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-    
-    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
-
-    dtkAbstractData* data = 0;
-    
-    for (int i=0; i<readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
-	if (dataReader->canRead(fileInfo.filePath())) {
-	    dataReader->read(fileInfo.filePath());
-	    data = dataReader->data();
-	    delete dataReader;
-	    break;
-	}
-    }
-
-    if (!data) {
-        qDebug() << "Cannot read data";
-	return;
-    }
-        
-    int id = d->patientToolBox->patientIndex(fileInfo.baseName());
-
-    if (id == -1) {
-        d->patientToolBox->addItem(fileInfo.baseName());
-        id = d->patientToolBox->patientIndex(fileInfo.baseName());
-    }
-    
-    if (id == -1)
-        return;
-    
-    this->switchToPatient(id);
-
-    dtkAbstractView *view = this->currentContainerFocused()->view();
-
-    if(!view)    
-        view = dtkAbstractViewFactory::instance()->create("v3dView");
-    
-    if(!view)
-        return;
-
-    view->setData(data);
-    
-    this->currentContainerFocused()->setView(view);
-    this->currentContainerFocused()->setFocus(Qt::MouseFocusReason);
-
-	view->reset(); // better to call reset after setting the view on its container
-
-    // towards thumbnail generation
-
-    d->navigator->reset();
-    d->navigator->addThumbnail(data->thumbnail());
+    this->open(medDatabaseNonPersitentController::instance()->read(file));
 }
 
 //! Switch the view area layout to the one of patient with database index \param index.
