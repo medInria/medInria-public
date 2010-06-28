@@ -2,13 +2,14 @@
   <head>
     <script type="text/javascript" src="jquery-1.2.6.min.js" charset="utf-8">
     </script> 
-    <script src="js/jquery.tools.min.js"></script>
+    <script src="js/jquery.tools.min.js?select=full&debug=true"></script>
     <script src="js/flowplayer-3.2.2.min.js"></script>
+    <script src="js/jquery.zrssfeed.min.js" type="text/javascript"></script>
     
-    <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print">
+    <!--<link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print">-->
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
-      
+    
   </head>
   
   <body>
@@ -16,139 +17,205 @@
     
     <script>
       $(document).ready(function() {
-      $("img[rel]").overlay({mask: '#000', effect: 'apple'});
+      $("img[rel]").overlay({mask:"#aaa",effect:'apple'});
       $("#medularTrigger").tooltip();
-      // setup ul.tabs to work as tabs for each div directly under div.panes
-      $("#tabs ul").tabs("#panes > div");
+      //$("#test").rssfeed('http://feeds.reuters.com/reuters/oddlyEnoughNews', {
+      //limit: 3
+      //});
+      $("#test").rssfeed('http://www.sciencedaily.com/rss/health_medicine/medical_imaging.xml', {
+      limit: 3
+      });
+
       });
     </script>
     
-    <br/>
-    <br/>
-    
-    
-    
-    <div class="container">
-      <div class="span-24 last" align="center">
-	<!--the page in BluePrint has 24 units in the grid!
-	Fill always 24 units exactly.
-	-->
-	<img src="../pixmaps/medinria-logo.png"/ width="50%">
+    <div id="site" align="center">
+      <div id="page_header">
+      	<img src="../pixmaps/medinria-logo.png" width="300px">
 	<h1>Welcome to MedINRIA</h1>
-	</div>
-
-      <div class="span-16" align="center"><!--center container-->
-	      <!-- tabs -->
-	<div id="tabs">
-	  <ul >
-	    <li><a href="#home">Home</a></li>
-	    <li><a href="#features">Features</a></li>
-	    <li><a href="#news">News</a></li>
-	    <li><a href="#tutorial">Tutorials</a></li>
-	    <!--<li><a href="#">Documentation</a></li>-->
-  	  </ul>
-  	</div>
-	<div id="panes">
-		<div class="home"><!--home -->
-			<p>MedInria is the Imaging Tool developed inside INRIA by the Asclepios Team.</p>
-			Have a look at our <a href="#features">New Features</a>
-
-	  </div>
-    
-	  <div class="features"><!--Features -->
-		  <p>Let's list the range of features available in medinria.</p>
-		  <p>Medinria is based on dtk, architectured as a core/plugin framework:</p> <br/>
-		  <img src="img/overview.png" width="100px" rel="#thumbOverview"/>
-		  <div class="simple_overlay" id="thumbOverview">
-	  		<img  src="img/overview.png" />
-		  </div>
-
-
-	  </div>
-	  <div class="news"><!--News-->
-		<div >medINRIA/Medular</div> <!--id="medularTrigger"-->
-		<div ><!--class="tooltip" -->
-			It'about time we get our act together on the names and licenses. ;-)
-   </div>
-
-	  </div>
-	  <div class="tutorials" ><!--Tutorials -->
-
-		  Registration Tutorial
-		  <a  href="http://www-sop.inria.fr/dream/screencasts/medular_rg.mov" style="display:block;width:500px; height:320px;" id="player-rg"></a>
-		  <p><script>flowplayer("player-rg", "http://releases.flowplayer.org/swf/flowplayer-3.2.2.swf", { clip:{autoPlay: false,  autoBuffering: true}//, plugins: {
-//		controls: {
-//			url: 'swf/flowplayer.controls-3.2.1.swf'
-//			} }});
-		});</script></p>
-		<p>For more information on how to use this tool, see 
-		  the documentation on 
-		  <a href="medular://documentation/registration.html">
-			  registration</a>
-		</p>
-	  </div>
-	  <!--<div><Documentation should be empty
-	  </div>-->
-	</div>
-
+      </div>
+      <!-- root element for everything -->
+      <div id="scroll">
 	
-	Our former logos:<br>
-	<img  src="../pixmaps/medular-logo.png" width="50px" rel="#thumb1"/>
-	<img src="../pixmaps/mediseen-logo.png" width="50px" rel="#thumb2"/>
-	
-	<div class="simple_overlay" id="thumb1">
-	  <img  src="../pixmaps/medular-logo.png" />
-	  <div class="details">
-	    <h3>Logo 1</h3>
-	    <h4>medular version</h4>
+	<!-- scrollable items -->
+	<div id="tools">
+	  
+		<div class="tool">
+			<img src="img/brebix3d.png" width="300px" rel="#thumbBrebix"/>
+	    <div class="apple_overlay" id="thumbBrebix">
+	      <img  src="img/brebix3d.png" width="100%" />
+	    </div>
+
+		</div>
+	  
+	  <!-- item #1: tabs -->
+	  <div class="tool" id="home"> 
+	    <p>Let's list the range of features available in medinria.</p>
+	    <p>Medinria is based on dtk, architectured as a core/plugin framework:</p> <br/>
+	    <img src="img/overview.png" width="100px" rel="#thumbOverview"/>
+	    <div class="apple_overlay" id="thumbOverview">
+	      <img  src="img/overview.png" width="100%" />
+      </div>
+      	    <p>
+	    Implemented right now: Visualisation of 3D Volumes and 2D images. 
+	    </p>
 	  </div>
+	  
+	  <div class="tool">
+		  <p> Stay tuned for very exciting news in the near future as the development of Medinria will increase its pace with the adjunction of new crew member and your feedback.</p> 
+	  </div>
+	  <div class="tool" >
+	    Registration Tutorial
+	    <a  href="http://www-sop.inria.fr/dream/screencasts/medular_rg.mov" 
+		id="player-rg">
+	    </a>
+	    <script>flowplayer("player-rg", "http://releases.flowplayer.org/swf/flowplayer-3.2.2.swf", { clip:{autoPlay: false,  autoBuffering: true}//, plugins: {
+	      //		controls: {
+	      //			url: 'swf/flowplayer.controls-3.2.1.swf'
+	      //			} }});
+	      });</script>
+	    <p>For more information on how to use this tool, see 
+	      the documentation on 
+	      <a href="medular://documentation/registration.html">
+		registration</a>. Please note the interface has changed recently and will change again as we are stabilizing the workflow.
+	    </p>
+	  </div>
+	  
+	  <!-- the intro "page"  -->
+	  <div id="intro" class="tool" style="background:url(tools.jpg)">
+	    
+	  </div>
+	  <br clear="all" /> 
+	  
 	</div>
 	
-	<div class="simple_overlay" id="thumb2">
-	  <img src="../pixmaps/mediseen-logo.png" />
-	  <div class="details">
-	    <h3>Logo 2</h3>
-	    <h4>mediseen version</h4>
+	<!-- thumbnails -->
+	<div id="thumbs" class="t">
+	  
+	  <!-- intro page navigator button -->
+	  <a id="t0" class="active"></a>
+	  
+	  <!-- scrollable navigator root element -->
+	  <div class="navi">
+	    
+	    <!-- navigator item for the first empty "page" -->
+	    <a style="display:none"></a>
+	    
+	    <!-- navigator items for the rest of the scrollable items -->
+	    <a id="t1"></a>
+	    <a id="t2"></a>
+	    <a id="t3"></a>
+	    
 	  </div>
-        </div>
-
+	  
+	</div>
+	
+            
+	<script>
+	  // initialize scrollable and return the programming API
+	  var api = $("#scroll").scrollable({
+	  items: '#tools'
+	  
+	  // use the navigator plugin
+	  }).navigator().data("scrollable");
+	
+	  
+	  // this callback does the special handling of our "intro page"
+	  api.onBeforeSeek(function(e, i) {
+	  
+	  // when on the first item: hide the intro
+	  if (i) {
+	  $("#intro").fadeOut("slow");
+	  
+	  // dirty hack for IE7-. cannot explain
+	  if ($.browser.msie && $.browser.version < 8) {
+						    $("#intro").hide();
+						    }
+						    
+						    // otherwise show the intro
+						    } else {
+						    $("#intro").fadeIn(1000);
+						    }
+						    
+						    // toggle activity for the intro thumbnail
+						    $("#t0").toggleClass("active", i == 0);
+						    });
+						    
+						    // a dedicated click event for the intro thumbnail
+						    $("#t0").click(function() {
+						    
+						    // seek to the beginning (the hidden first item)
+						    $("#scroll").scrollable().begin();
+						    
+						    });
+						    
+						    </script>
 	
       </div>
-      <div class="span-8 last">
-	<div class="boxyCaption">
-		New Features
+      <!--boxes-->
+      
+      <div id="boxies">
+	<div class="box_container">
+	  <div class="boxyCaption">
+	    MedINRIA in Short
+	  </div>
+	  <div class="boxyBody">
+	    <p>MedInria is the Imaging Tool developed inside INRIA by the Asclepios Team.
+	    </p>
+	    <p>Have a look at our <a href="#features">New Features</a></p>
+	    
+	  </div>
 	</div>
-	<div class="boxyBody">
-	  <ul>
-	    <li> Registration</li>
-	    <li> DTI Tracking</li>
-	  </ul>
-        </div>
-        <div class="boxyCaption">
-		News
+	
+	<div class="box_container">
+	  <div class="boxyCaption">
+	    New Features
+	  </div>
+	  <div class="boxyBody">
+	    <ul>
+	      <li> Registration</li>
+	      <li> DTI Tracking</li>
+	    </ul>
+	  </div>
 	</div>
-	<div class="boxyBody">
-	  <ul>
-	    <li> VPH1 Workshop in September</li>
-	    <li> MICCAI Conference in Beijing</li>
-	  </ul>
-        </div>
-	<div class="boxyCaption">
+	<div class="box_container">
+	  <div class="boxyCaption">
+	    News
+	  </div>
+	  <div class="boxyBody">
+	    <div id="test"></div> 
+		<!--<ul>
+		    <li> VPH1 Workshop in September</li>
+	      <li> MICCAI Conference in Beijing</li>
+		  </ul>-->
+              </div>
+	    </div>
+	    <div class="box_container">
+	      <div class="boxyCaption">
 		Workspaces:
+	      </div>
+	      <div class="boxyBody">
+		<ul>
+		  <li><a href="medular://browser">Browser</a></li>
+		  <li><a href="medular://viewer">Viewer</a></li>
+		  <li><a href="medular://documentation">Documentation</a></li>
+		  <li><a href="http://www.inria.fr">dtk</a></li>
+		</ul>
+	      </div>
+	    </div>
+	    <div class="box_container">
+              <div class="boxyCaption">
+		Tips of the Day
+	      </div>
+	      <div class="boxyBody">
+		<ul>
+		  <li> "Ctrl+Alt+f" enables/disables the full-screen mode.</li>
+		  <li> "Alt + Left" and "Alt+Right" display the previous and next pages in the documentation area.</li>
+		</ul>
+              </div>
+	    </div>
+	  </div>	
 	</div>
-	<div class="boxyBody">
-	  <ul>
-	    <li><a href="medular://browser">Browser</a></li>
-	    <li><a href="medular://viewer">Viewer</a></li>
-	    <li><a href="medular://documentation">Documentation</a></li>
-	    <li><a href="http://www.inria.fr">dtk</a></li>
-	  </ul>
-	</div>
-
-	</div>	
-
-    </div>
-    
-    
+	
   </body>
 </html>
