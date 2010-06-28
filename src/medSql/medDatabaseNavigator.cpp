@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:38:39 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sun Jun 27 20:10:10 2010 (+0200)
+ * Last-Updated: Mon Jun 28 14:21:37 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 47
+ *     Update #: 59
  */
 
 /* Commentary: 
@@ -167,18 +167,20 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
             connect(nitem, SIGNAL(imageClicked(int)), this, SIGNAL(imageClicked(int)));
 
 	    medDatabaseNavigatorItemGroup *group = NULL;
-	    if (groupMap.contains (item->studyName()))
-	        group = groupMap[item->studyName()];
+	    if (groupMap.contains(item->studyName()))
+	        group = groupMap.value(item->studyName());
 	    else {
 		group = new medDatabaseNavigatorItemGroup;
 		group->setName (item->studyName());
 		groupMap.insert(item->studyName(), group);		
-		d->scene->addGroup(group);
 	    }
 	                
             group->addItem(nitem);
         }
     }
+
+    foreach(medDatabaseNavigatorItemGroup *group, groupMap)
+        d->scene->addGroup(group);
 }
 
 void medDatabaseNavigator::onStudyClicked(int id)
