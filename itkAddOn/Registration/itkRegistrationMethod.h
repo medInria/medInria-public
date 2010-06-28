@@ -105,12 +105,12 @@ public:
   { return m_Name; }
   
   /** Set/Get the Fixed image. */
-  virtual void SetFixedImage( const ImageType * fixedImage );
-  itkGetConstObjectMacro( FixedImage, ImageType ); 
+  virtual void SetFixedImage( ImageType * fixedImage );
+  itkGetObjectMacro( FixedImage, ImageType ); 
   
   /** Set/Get the Moving image. */
-  virtual void SetMovingImage( const ImageType * movingImage );
-  itkGetConstObjectMacro( MovingImage, ImageType );
+  virtual void SetMovingImage( ImageType * movingImage );
+  itkGetObjectMacro( MovingImage, ImageType );
   
   /** Set/Get the Transfrom. */
   itkSetObjectMacro( Transform, TransformType );
@@ -173,8 +173,8 @@ protected:
   /** Provides derived classes with the ability to set this private var */
   itkSetMacro( LastTransformParameters, ParametersType );
 
-  ImageConstPointer m_MovingImage;
-  ImageConstPointer m_FixedImage;
+  typename ImageType::Pointer m_MovingImage;
+  typename ImageType::Pointer m_FixedImage;
   
   TransformPointerType m_Transform;
   TransformConstPointerType m_InitialTransform;
