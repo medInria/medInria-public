@@ -270,7 +270,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   }
   
   /** Set the render window interactor */
-  void SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin);
+  void SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin, vtkRenderer* ren=0);
 	
   /** Set the default renderer to put actors in. Must be called before SetInput() */
   vtkSetObjectMacro(Renderer, vtkRenderer);
@@ -498,7 +498,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   vtkFiberKeyboardCallback*  m_KeyboardCallback;
   
   vtkRenderWindowInteractor* m_RWin;
-	vtkRenderer *Renderer;
+  vtkRenderer *Renderer;
 
   int MaximumNumberOfFibers;
   

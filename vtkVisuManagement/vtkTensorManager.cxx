@@ -92,20 +92,20 @@ void vtkTensorManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwi
   else if (this->RenderWindowInteractor)
   {
   
-	this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
+    this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
     vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
-
-	int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
+    
+    int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
     this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
-
-	this->Renderer = vtkRenderer::New();
-	this->Renderer->SetLayer ( numLayers );
-	if (first_renderer)
+    
+    this->Renderer = vtkRenderer::New();
+    this->Renderer->SetLayer ( numLayers );
+    if (first_renderer)
       this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
-	
-	this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
-	
-	this->Renderer->Delete();
+    
+    this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
+    
+    this->Renderer->Delete();
   }
   
 }

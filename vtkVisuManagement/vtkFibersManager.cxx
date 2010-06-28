@@ -395,7 +395,7 @@ vtkFibersManager::vtkFibersManager()
 {
   m_Input = 0;
   m_RWin = 0;
-	this->Renderer = 0;
+  this->Renderer = 0;
 
   m_BoxWidget    = vtkBoxWidget::New();
   m_Callback     = vtkFibersManagerCallback::New();
@@ -541,7 +541,7 @@ vtkFibersManager::~vtkFibersManager()
 
 
 
-void vtkFibersManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin)
+void vtkFibersManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin, vtkRenderer *ren)
 {
   if( rwin != m_RWin )
   {
@@ -559,6 +559,29 @@ void vtkFibersManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwi
       m_RWin->Register(this);
     }
   }
+
+  if (ren)
+  {
+    this->Renderer = ren;
+  }
+  else if (m_RWin)
+  {
+    m_RWin->GetRenderWindow()->GetRenderers()->InitTraversal();
+    vtkRenderer* first_renderer = m_RWin->GetRenderWindow()->GetRenderers()->GetNextItem();
+    
+    int numLayers = m_RWin->GetRenderWindow()->GetNumberOfLayers();
+    m_RWin->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
+    
+    this->Renderer = vtkRenderer::New();
+    this->Renderer->SetLayer ( numLayers );
+    if (first_renderer)
+      this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
+    
+    m_RWin->GetRenderWindow()->AddRenderer ( this->Renderer );
+    
+    this->Renderer->Delete();
+  }
+  
 }
 
 
