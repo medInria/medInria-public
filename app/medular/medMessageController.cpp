@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 09:59:08 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 13:19:04 2010 (+0200)
+ * Last-Updated: Mon Jun 28 14:44:18 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 38
+ *     Update #: 39
  */
 
 /* Commentary: 
@@ -21,11 +21,13 @@
 #include "medMessageController.h"
 #include "medViewerArea.h"
 
+#include <QtGui>
+
 // /////////////////////////////////////////////////////////////////
 // medMessageControllerMessage
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessage : QObject
+class medMessageControllerMessage : public QWidget
 {
     Q_OBJECT
 
