@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu May 13 16:26:10 2010 (+0200)
+ * Last-Updated: Tue Jun 15 11:31:21 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 78
+ *     Update #: 110
  */
 
 /* Commentary: 
@@ -25,6 +25,8 @@
 class dtkAbstractView;
 
 class medDataIndex;
+class medViewContainer;
+class medViewerAreaStack;
 class medViewerAreaPrivate;
 
 class medViewerArea : public QWidget
@@ -38,34 +40,39 @@ public:
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
 
-    void setPatientIndex(int id);
-    void   setStudyIndex(int id);
-    void  setSeriesIndex(int id);
-    void   setImageIndex(int id);
-
 public slots:
     void setup(void);
+
     void split(int rows, int cols);
 
     void open(const medDataIndex& index);
     void open(const QString& file);
 
-    void onPatientIndexChanged(int index);
-    void   onStudyIndexChanged(int index);
-    void  onSeriesIndexChanged(int index);
-    void   onImageIndexChanged(int index);
+    void switchToPatient(int index);
+    void switchToContainer(int index);
+    void switchToContainerPreset(int index);
 
+protected slots:
     void onViewFocused(dtkAbstractView *view);
 
-public slots: // layout settings
-    void setStackIndex(int index);
+protected:
+    medViewerAreaStack *currentStack(void);
+    medViewContainer   *currentContainer(void);
+    medViewContainer   *currentContainerFocused(void);
 
-protected slots: // view settings
+protected slots:
+
+//! @name "View Settings" @{
+
     void setupForegroundLookupTable(QString table);
     void setupBackgroundLookupTable(QString table);
     void setupAxisVisibility(bool visible);
     void setupScalarBarVisibility(bool visible);
-    void setup3DMode (QString table);
+    void setupRulerVisibility(bool visible);
+    void setupAnnotationsVisibility(bool visible);
+    void setupSynchronization (bool sync);
+    void setup3DMode (QString mode);
+    void setup3DVRMode (QString mode);
     void setupLUTPreset (QString table);
     void setup3DLOD (int value);
     void setupWindowing (bool checked);
@@ -74,9 +81,14 @@ protected slots: // view settings
     void setupMeasuring (bool checked);
     void setupCropping (bool checked);
 
-protected slots: // registration settings
+//  @}
+
+//! @name "Registration Settings" @{
+
     void setupLayoutCompare(void);
     void setupLayoutFuse(void);
+
+//  @}
 
 private:
     medViewerAreaPrivate *d;

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:16:32 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sat Mar 20 20:02:54 2010 (+0100)
+ * Last-Updated: Mon Jun 14 13:37:53 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 32
+ *     Update #: 42
  */
 
 /* Commentary: 
@@ -24,6 +24,7 @@
 
 #include <QtGui>
 
+class medDataIndex;
 class medDatabaseModel;
 
 class MEDSQL_EXPORT medDatabaseView : public QTreeView
@@ -34,6 +35,8 @@ public:
      medDatabaseView(QWidget *parent = 0);
     ~medDatabaseView(void);
 
+    int sizeHintForColumn(int column) const;
+
     void setModel(medDatabaseModel *model);
 
 signals:
@@ -42,21 +45,17 @@ signals:
     void  seriesClicked(int id);
     void   imageClicked(int id);
 
-    void patientDoubleClicked(int id);
-    void   studyDoubleClicked(int id);
-    void  seriesDoubleClicked(int id);
-    void   imageDoubleClicked(int id);
-
-    void patientDoubleClicked(const QModelIndex& index);
-    void   studyDoubleClicked(const QModelIndex& index);
-    void  seriesDoubleClicked(const QModelIndex& index);
-    void   imageDoubleClicked(const QModelIndex& index);
-    
+    void open(const medDataIndex&);
+  
 public slots:
     void onPatientClicked(int id);
     void onStudyClicked(int id);
     void onSeriesClicked(int id);
     void onImageClicked(int id);
+    void onMenuViewClicked(void);
+
+protected slots:
+    void updateContextMenu(const QPoint&);
 
 private slots:
     void onItemClicked(const QModelIndex& index);

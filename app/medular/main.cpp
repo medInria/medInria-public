@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Mar 23 20:47:30 2010 (+0100)
+ * Last-Updated: Wed Jun  9 12:52:00 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 122
+ *     Update #: 123
  */
 
 /* Commentary: 
@@ -47,6 +47,9 @@ int main(int argc, char *argv[])
 
     if(application.arguments().contains("--wall"))
         mainwindow.setWallScreen(true);
+
+    if(application.arguments().contains("--full"))
+        mainwindow.setFullScreen(true);
 
     if(application.arguments().contains("--stereo")) {
        QGLFormat format;

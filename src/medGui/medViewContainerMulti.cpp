@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:48:11 2010 (+0100)
+ * Last-Updated: Tue Jun 15 16:30:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 52
+ *     Update #: 54
  */
 
 /* Commentary: 
@@ -20,9 +20,18 @@
 #include "medViewContainer_p.h"
 #include "medViewContainerSingle.h"
 #include "medViewContainerMulti.h"
+#include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
 
+medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent)
+{
+}
+
+medViewContainerMulti::~medViewContainerMulti()
+{
+}
+  
 medViewContainer::Type medViewContainerMulti::type(void)
 {
     return medViewContainer::Multi;
@@ -46,7 +55,6 @@ dtkAbstractView *medViewContainerMulti::view(void)
 void medViewContainerMulti::setView(dtkAbstractView *view)
 {
     QList<QWidget *> content;
-    
     for(int i = 0; i < d->layout->rowCount() ; i++) {
         for(int j = 0; j < d->layout->columnCount() ; j++) {
             if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
@@ -60,6 +68,20 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     container->setAcceptDrops(false);
     container->setView(view);
     content << container;
+
+    this->layout (content);
+    
+    d->view = view;
+
+    d->view->reset();
+
+    d->pool->appendView (view);
+    connect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));
+}
+
+void medViewContainerMulti::layout (QList<QWidget *> content)
+{
     
     int row = 0;
     int col = 0, colmax = 0;
@@ -97,8 +119,33 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
         }
     }
     
-    d->layout->setContentsMargins(1, 1, 1, 1);    
-    d->view = view;
+    d->layout->setContentsMargins(1, 1, 1, 1);
+}
+
+void medViewContainerMulti::onViewClosed (void)
+{ 
+    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+
+      QList<QWidget *> content;
+      for(int i = 0; i < d->layout->rowCount() ; i++) {
+        for(int j = 0; j < d->layout->columnCount() ; j++) {
+	  if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+	    if(item->widget()!=view->widget()->parent())
+	      content << item->widget();
+	    else
+	      item->widget()->hide();
+	    d->layout->removeItem(item);
+	  }
+        }
+      }
+
+      disconnect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+      disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+      
+      d->pool->removeView (view);
+      
+      this->layout (content);
+    }
 }
 
 void medViewContainerMulti::dragEnterEvent(QDragEnterEvent *event)
@@ -119,9 +166,9 @@ void medViewContainerMulti::dragLeaveEvent(QDragLeaveEvent *event)
 void medViewContainerMulti::dropEvent(QDropEvent *event)
 {
     if(medViewContainerMulti *container = dynamic_cast<medViewContainerMulti *>(this->parentWidget())) {
-        s_current = container;
+        this->setCurrent(container);
     } else {
-        s_current = this;
+        this->setCurrent(this);
     }
 
     medViewContainer::dropEvent(event);

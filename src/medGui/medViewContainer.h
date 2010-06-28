@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:53:58 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:47:34 2010 (+0100)
+ * Last-Updated: Tue Jun 15 16:21:52 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 28
+ *     Update #: 32
  */
 
 /* Commentary: 
@@ -58,20 +58,21 @@ signals:
 
 public slots:
     virtual void split(int rows, int cols);
+    virtual void synchronize   (void);
+    virtual void desynchronize (void);
+
+
+protected:
+    void setCurrent(medViewContainer *container);
     
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
-
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
-
     void paintEvent(QPaintEvent *event);
-
-protected:
-    static medViewContainer *s_current;
 
 protected:
     medViewContainerPrivate *d;

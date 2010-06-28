@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Thu May 13 16:15:31 2010 (+0200)
+## Last-Updated: Wed Jun  9 00:28:22 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 129
+##     Update #: 131
 ######################################################################
 ## 
 ### Commentary: 
@@ -33,13 +33,13 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxContainer.h
   medToolBoxConfiguration.h
   medToolBoxDiffusion.h
-  medToolBoxInformation.h
   medToolBoxJobs.h
   medToolBoxLayout.h
   medToolBoxPatient.h
   medToolBoxRegistration.h
   medToolBoxSource.h
   medToolBoxView.h
+  medViewPool.h
   medViewContainer.h
   medViewContainerCustom.h
   medViewContainerMulti.h
@@ -55,13 +55,13 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBox.h
   medToolBoxConfiguration.h
   medToolBoxDiffusion.h
-  medToolBoxInformation.h
   medToolBoxJobs.h
   medToolBoxLayout.h
   medToolBoxPatient.h
   medToolBoxRegistration.h
   medToolBoxSource.h
   medToolBoxView.h
+  medViewPool.h
   medViewContainer.h
   medViewContainerCustom.h
   medViewContainerMulti.h
@@ -78,13 +78,13 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxContainer.cpp
   medToolBoxConfiguration.cpp
   medToolBoxDiffusion.cpp
-  medToolBoxInformation.cpp
   medToolBoxJobs.cpp
   medToolBoxLayout.cpp
   medToolBoxPatient.cpp
   medToolBoxRegistration.cpp
   medToolBoxSource.cpp
   medToolBoxView.cpp
+  medViewPool.cpp
   medViewContainer.cpp
   medViewContainerCustom.cpp
   medViewContainerMulti.cpp

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:39:47 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Mar 18 22:59:53 2010 (+0100)
+ * Last-Updated: Tue Jun 15 20:01:36 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 57
+ *     Update #: 71
  */
 
 /* Commentary: 
@@ -22,6 +22,26 @@
 #include <QtCore>
 #include <QtGui>
 
+// /////////////////////////////////////////////////////////////////
+// Helper functions
+// /////////////////////////////////////////////////////////////////
+
+QString medChop(const QString& string)
+{
+    QString result = string;
+
+    if(string.size() > 15) {
+        result.resize(12);
+        result.append("...");
+    }
+    
+    return result;
+}
+
+// /////////////////////////////////////////////////////////////////
+// medProgressionStack
+// /////////////////////////////////////////////////////////////////
+
 class medProgressionStackPrivate
 {
 public:
@@ -29,6 +49,7 @@ public:
 
     QHash<QObject *, QProgressBar *> bars;
     QHash<QObject *, QWidget *> widgets;
+    QQueue<QObject*> itemstoBeRemoved;
 };
 
 medProgressionStack::medProgressionStack(QWidget *parent) : QWidget(parent), d(new medProgressionStackPrivate)
@@ -60,7 +81,7 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
 
     QWidget *widget = new QWidget(this);
 
-    QLabel *ilabel = new QLabel(label, widget);
+    QLabel *ilabel = new QLabel(medChop(label), widget);
     //ilabel->setFixedWidth(100);
     //ilabel->setAlignment(Qt::AlignRight);
 
@@ -83,20 +104,55 @@ void medProgressionStack::setProgress(int progress)
     if (d->bars.contains(object)) {
 
         d->bars.value(object)->setValue(progress);
+    }
+}
 
-        if (progress == 100) {
+void medProgressionStack::onSuccess (void)
+{
+    QObject *object = this->sender();
 
-            QWidget *widget = d->widgets.value(object);
+    if (d->bars.contains(object)) {
 
-            d->layout->removeWidget(widget);
-            
-            d->bars.remove(object);
-            d->widgets.remove(object);
-            
-            delete widget;
+        QWidget *widget = d->widgets.value(object);
 
-            if(d->bars.count() == 0)
-                emit(hidden());
-        }
+	//Completed notification
+        QLabel *completeLabel = new QLabel(tr("Successful"),widget);
+	widget->layout()->removeWidget(d->bars.value(object));
+	d->bars.value(object)->hide();
+	widget->layout()->addWidget(completeLabel);
+	d->itemstoBeRemoved.enqueue(object);
+	QTimer::singleShot(3000, this, SLOT(removeItem()));
+    }
+}
+
+void medProgressionStack::onFailure (void)
+{
+    QObject *object = this->sender();
+
+    if (d->bars.contains(object)) {
+
+        QWidget *widget = d->widgets.value(object);
+
+	//Completed notification
+        QLabel *completeLabel = new QLabel(tr("Failure"),widget);
+	widget->layout()->removeWidget(d->bars.value(object));
+	d->bars.value(object)->hide();
+	widget->layout()->addWidget(completeLabel);
+	d->itemstoBeRemoved.enqueue(object);
+	QTimer::singleShot(3000, this, SLOT(removeItem()));
+    }
+}
+
+void medProgressionStack::removeItem(){
+    if(!d->itemstoBeRemoved.isEmpty()){
+        QObject* object = d->itemstoBeRemoved.dequeue();
+        QWidget *widget = d->widgets.value(object);
+	delete d->bars.value(object);
+	d->bars.remove (object);
+        d->layout->removeWidget(widget);
+        d->widgets.remove(object);
+        delete widget;
+        if(d->bars.count() == 0)
+            emit(hidden());
     }
 }

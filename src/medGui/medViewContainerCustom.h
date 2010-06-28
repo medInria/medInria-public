@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 10:59:36 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:06:37 2010 (+0100)
+ * Last-Updated: Fri May 21 15:08:08 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 9
+ *     Update #: 15
  */
 
 /* Commentary: 
@@ -29,13 +29,28 @@ class MEDGUI_EXPORT medViewContainerCustom : public medViewContainer
     Q_OBJECT
 
 public:
-    medViewContainerCustom(QWidget *parent = 0) : medViewContainer(parent) {}
+    enum Preset {
+        A = 1, // (1, 2)
+        B = 2, // (2, 1)
+        C = 3, // ((2, 1) s 1, 1 s 2)
+        D = 4, // ((3, 1) s 1, 1 s 2)
+        E = 5  // (2, 2)
+    };
+
+    medViewContainerCustom(QWidget *parent = 0);
+    ~medViewContainerCustom(void);
 
     Type type(void);
 
     void split(int rows, int cols);
 
-    void setView(dtkAbstractView *view);    
+    void setPreset(int preset);
+    void setView(dtkAbstractView *view);
+
+public slots:
+    void synchronize   (void);
+    void desynchronize (void);
+    void onViewClosed  (void);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -45,6 +60,9 @@ protected:
 
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
+
+    void synchronize_2 (dtkAbstractView *view);
+    void desynchronize_2 (dtkAbstractView *view);
 };
 
 #endif

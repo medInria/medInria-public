@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 11:11:47 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 11:11:48 2009 (+0100)
+ * Last-Updated: Wed Jun  9 12:47:50 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 8
  */
 
 /* Commentary: 
@@ -23,6 +23,41 @@
 #include "medGuiExport.h"
 
 #include <QtGui>
+
+// /////////////////////////////////////////////////////////////////
+// medWorkspaceShifterMenu
+// /////////////////////////////////////////////////////////////////
+
+class medWorkspaceShifterMenuPrivate;
+
+class MEDGUI_EXPORT medWorkspaceShifterMenu : public QWidget
+{
+    Q_OBJECT
+    
+public:
+     medWorkspaceShifterMenu(QWidget *parent = 0);
+    ~medWorkspaceShifterMenu(void);
+
+    void addAction(QAction *action);
+    QAction *addAction(const QString& text);
+
+    QSize sizeHint(void) const;
+
+signals:
+    void triggered(QAction *action);
+    
+protected:
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent *event);
+    
+private:
+    medWorkspaceShifterMenuPrivate *d;
+};
+
+// /////////////////////////////////////////////////////////////////
+// 
+// /////////////////////////////////////////////////////////////////
 
 class medWorkspaceShifterActionPrivate;
 
@@ -54,6 +89,9 @@ public:
     QString text(void) const;
     void setText(const QString& text);
 
+    medWorkspaceShifterMenu *menu(void);
+    void setMenu(medWorkspaceShifterMenu *menu);
+    
 public slots:
     void toggle(void);
     void trigger(void);
@@ -83,6 +121,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
 
+    void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
 

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:49:32 2010 (+0100)
+ * Last-Updated: Tue Jun 15 16:30:34 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 67
+ *     Update #: 69
  */
 
 /* Commentary: 
@@ -45,6 +45,18 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
+
+    connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+}
+
+void medViewContainerSingle::onViewClosed (void)
+{
+  if (d->view) {
+    d->layout->removeWidget(d->view->widget());
+    d->view->widget()->hide();
+    disconnect (d->view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+    d->view = NULL;
+  }
 }
 
 void medViewContainerSingle::dragEnterEvent(QDragEnterEvent *event)
@@ -68,8 +80,7 @@ void medViewContainerSingle::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainerSingle::dropEvent(QDropEvent *event)
 {
-    s_current = this;
-
+    this->setCurrent(this);
     this->setAttribute(Qt::WA_UpdatesDisabled, false);
 
     medViewContainer::dropEvent(event);

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Thu May 13 15:14:48 2010 (+0200)
+ * Last-Updated: Tue Jun 15 10:46:14 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 19
+ *     Update #: 26
  */
 
 /* Commentary: 
@@ -22,6 +22,7 @@
 
 #include "medToolBox.h"
 
+class medDataIndex;
 class medToolBoxPatientPrivate;
 
 class MEDGUI_EXPORT medToolBoxPatient : public medToolBox
@@ -44,7 +45,11 @@ signals:
     void patientIndexChanged(int);
 
 public slots:
-    void setPatientIndex(int);
+    void setPatientIndex(int patientId);
+    void setPatientIndex(const medDataIndex& index);
+
+protected slots:
+    void onCurrentIndexChanged(int);
 
 private:
     medToolBoxPatientPrivate *d;
