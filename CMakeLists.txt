@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Mon Sep 21 14:48:02 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Apr 28 18:18:03 2010 (+0200)
+## Last-Updated: Thu Jun 17 09:42:14 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 23
+##     Update #: 25
 ######################################################################
 ## 
 ### Commentary: 
@@ -20,7 +20,6 @@
 cmake_minimum_required(VERSION 2.8.1)
 
 project(medular-plugins)
-
 
 ## #################################################################
 ## Setup version numbering
@@ -38,8 +37,6 @@ set(${PROJECT_NAME}_VERSION
 mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
-
-
 
 ## #################################################################
 ## Dashboard settings
@@ -68,7 +65,6 @@ subdirs(itkDataDiffusionGradientList)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(pack)
-
 
 ## #################################################################
 ## Build settings
