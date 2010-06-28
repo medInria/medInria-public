@@ -87,16 +87,20 @@ void medViewPool::removeView (dtkAbstractView *view)
 	      // change daddy
 	      it = d->views.begin();
 	      for( ; it!=d->views.end(); it++)
-		  if ((*it)->property ("Daddy")=="false") {
+		if ((*it)!=refView && (*it)->property ("Daddy")=="false") {
 		    (*it)->setProperty ("Daddy", "true");
 		    break;
 		  }
-	    
-	      refView = this->daddy();
-	      if (refView) {// re-link
+
+	      dtkAbstractView *oldDaddy = refView;
+	      refView = (*it);
+	      oldDaddy->setProperty ("Daddy", "false");
+	      
+	      if (refView) {// re-link, but not with old daddy
 		  it = d->views.begin();
 		  for( ; it!=d->views.end(); it++)
-		    refView->link ((*it));
+		      if ((*it)!=oldDaddy)
+			  refView->link ((*it));
 	      }
 	    }
 	    else { // we are not synchronized, just look for another daddy (next in the list)
