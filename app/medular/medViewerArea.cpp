@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sun Jun 27 19:03:56 2010 (+0200)
+ * Last-Updated: Mon Jun 28 15:20:47 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 964
+ *     Update #: 965
  */
 
 /* Commentary: 
@@ -18,6 +18,7 @@
  */
 
 #include "medViewerArea.h"
+#include "medViewerArea_p.h"
 #include "medViewerAreaStack.h"
 #include "medViewerConfiguration.h"
 #include "medViewerConfigurator.h"
@@ -56,28 +57,6 @@
 // /////////////////////////////////////////////////////////////////
 // medViewerArea
 // /////////////////////////////////////////////////////////////////
-
-class medViewerAreaPrivate
-{
-public:
-    medToolBoxPatient *patientToolBox;
-    medToolBoxLayout *layoutToolBox;
-    medToolBoxView *viewToolBox;
-    medToolBoxDiffusion *diffusionToolBox;
-    medToolBoxRegistration *registrationToolBox;
-    medToolBoxContainer *toolbox_container;
-
-    medDatabaseNavigator *navigator;
-
-    QStackedWidget *stack;
-  
-    QHash<int, medViewerAreaStack *> view_stacks;
-
-public:
-    int current_patient;
-    int current_container;
-    int current_container_preset;
-};
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
 {

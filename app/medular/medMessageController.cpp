@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 09:59:08 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 14:44:18 2010 (+0200)
+ * Last-Updated: Mon Jun 28 16:28:53 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 39
+ *     Update #: 107
  */
 
 /* Commentary: 
@@ -18,41 +18,90 @@
  */
 
 #include "medBrowserArea.h"
+#include "medBrowserArea_p.h"
 #include "medMessageController.h"
 #include "medViewerArea.h"
-
-#include <QtGui>
+// #include "medViewerArea_p.h"
 
 // /////////////////////////////////////////////////////////////////
 // medMessageControllerMessage
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessage : public QWidget
+medMessageControllerMessage::medMessageControllerMessage(QWidget *parent) : QWidget(parent)
 {
-    Q_OBJECT
+    this->setFixedWidth(400);
+}
 
+medMessageControllerMessage::~medMessageControllerMessage(void)
+{
+
+}
+
+// /////////////////////////////////////////////////////////////////
+// medMessageControllerMessageInfo
+// /////////////////////////////////////////////////////////////////
+
+medMessageControllerMessageInfo::medMessageControllerMessageInfo(const QString& text, QWidget *parent) : medMessageControllerMessage(parent)
+{
+    QLabel *icon = new QLabel(this);
+    icon->setPixmap(QPixmap(":/icons/information.png"));
+
+    QLabel *info = new QLabel(this);
+    info->setText(text);
+    
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setAlignment(Qt::AlignLeft);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(5);
+    layout->addWidget(icon);
+    layout->addWidget(info);
+}
+
+medMessageControllerMessageInfo::~medMessageControllerMessageInfo(void)
+{
+
+}
+
+// /////////////////////////////////////////////////////////////////
+// medMessageControllerMessageProgress
+// /////////////////////////////////////////////////////////////////
+
+class medMessageControllerMessageProgressPrivate
+{
 public:
-     medMessageControllerMessage(void) {}
-    ~medMessageControllerMessage(void) {}
+    QProgressBar *progress;
 };
 
-class medMessageControllerMessageInfo : public medMessageControllerMessage
+medMessageControllerMessageProgress::medMessageControllerMessageProgress(const QString& text, QWidget *parent) : medMessageControllerMessage(parent), d(new medMessageControllerMessageProgressPrivate)
 {
-    Q_OBJECT
+    QLabel *icon = new QLabel(this);
+    icon->setPixmap(QPixmap(":/icons/information.png"));
 
-public:
-     medMessageControllerMessageInfo(void) {}
-    ~medMessageControllerMessageInfo(void) {}
-};
+    QLabel *info = new QLabel(this);
+    info->setText(text);
+    
+    d->progress = new QProgressBar(this);
+    d->progress->setMinimum(0);
+    d->progress->setMaximum(100);
 
-class medMessageControllerMessageProgress : public medMessageControllerMessage
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setAlignment(Qt::AlignLeft);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(5);
+    layout->addWidget(icon);
+    layout->addWidget(info);
+    layout->addWidget(d->progress);
+}
+
+medMessageControllerMessageProgress::~medMessageControllerMessageProgress(void)
 {
-    Q_OBJECT
 
-public:
-     medMessageControllerMessageProgress(void) {}
-    ~medMessageControllerMessageProgress(void) {}
-};
+}
+
+void medMessageControllerMessageProgress::setProgress(int value)
+{
+    d->progress->setValue(value);
+}
 
 // /////////////////////////////////////////////////////////////////
 // medMessageController
@@ -63,6 +112,8 @@ class medMessageControllerPrivate
 public:
     medBrowserArea *browser;
     medViewerArea *viewer;
+
+    QHash<int, medMessageControllerMessage *> messages;
 };
 
 medMessageController *medMessageController::instance(void)
@@ -83,33 +134,52 @@ void medMessageController::attach(medViewerArea *viewer)
     d->viewer = viewer;
 }
 
-int medMessageController::showInfo(Area area, const QString& text, int timeout)
+int medMessageController::showInfo(const QString& text)
 {
-    Q_UNUSED(text);
-    Q_UNUSED(timeout);
+    medMessageControllerMessageInfo *message = new medMessageControllerMessageInfo(text);
+    
+    d->browser->d->status->addWidget(message);
+    d->browser->d->status->update();
+    qApp->processEvents();
 
-    switch(area) {
-    case Browser:
-        break;
-    case Viewer:
-        break;
-    default:
-        break;
+    d->messages.insert(d->messages.count(), message);
+
+    return d->messages.count()-1;
+}
+
+int medMessageController::showProgress(const QString& text)
+{
+    medMessageControllerMessageProgress *message = new medMessageControllerMessageProgress(text);
+    
+    d->browser->d->status->addWidget(message);
+    d->browser->d->status->update();
+    qApp->processEvents();
+
+    d->messages.insert(d->messages.count(), message);
+
+    return d->messages.count()-1;
+}
+
+void medMessageController::setProgress(int id, int value)
+{
+    medMessageControllerMessage *message = d->messages.value(id);
+
+    if(medMessageControllerMessageProgress *progress = dynamic_cast<medMessageControllerMessageProgress *>(message)) {
+        progress->setProgress(value);
+        progress->update();
+        qApp->processEvents();
     }
 }
 
-int medMessageController::showProgress(Area area, const QString& text)
+void medMessageController::remove(int id)
 {
-    Q_UNUSED(text);
+    medMessageControllerMessage *message = d->messages.value(id);
 
-    switch(area) {
-    case Browser:
-        break;
-    case Viewer:
-        break;
-    default:
-        break;
-    }
+    d->browser->d->status->removeWidget(message);
+
+    d->messages.remove(id);
+
+    delete message;
 }
 
 medMessageController::medMessageController(void) : QObject(), d(new medMessageControllerPrivate)

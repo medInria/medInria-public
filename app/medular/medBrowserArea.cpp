@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sun Jun 27 17:31:38 2010 (+0200)
+ * Last-Updated: Mon Jun 28 15:05:17 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 386
+ *     Update #: 388
  */
 
 /* Commentary: 
@@ -18,6 +18,7 @@
  */
 
 #include "medBrowserArea.h"
+#include "medBrowserArea_p.h"
 
 #include <QtGui>
 
@@ -39,24 +40,6 @@
 // /////////////////////////////////////////////////////////////////
 // medBrowserArea
 // /////////////////////////////////////////////////////////////////
-
-class medBrowserAreaPrivate
-{
-public:
-    medToolBoxContainer *toolbox_container;
-    medToolBoxJobs *toolbox_jobs;
-    medToolBoxSource *toolbox_source;
-
-    medDatabasePreview *preview;
-    medDatabaseModel *model;
-    medDatabaseView *view;
-
-    dtkFinder *finder;
-    dtkFinderPathBar *path;
-    dtkFinderSideView *side;
-
-    QStatusBar *status;
-};
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
 {

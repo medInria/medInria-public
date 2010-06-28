@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 12:44:42 2010 (+0200)
+ * Last-Updated: Mon Jun 28 16:30:11 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 422
+ *     Update #: 442
  */
 
 /* Commentary: 
@@ -20,6 +20,7 @@
 #include "medBrowserArea.h"
 #include "medDocumentationArea.h"
 #include "medMainWindow.h"
+#include "medMessageController.h"
 #include "medViewerArea.h"
 #include "medViewerConfigurator.h"
 #include "medWelcomeArea.h"
@@ -208,6 +209,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->setStyleSheet(dtkReadFile(":/medular.qss"));
     this->setWindowTitle("medular");
     this->switchToWelcomeArea();
+
+    medMessageController::instance()->attach(d->browserArea);
+    medMessageController::instance()->attach(d->viewerArea);
 }
 
 medMainWindow::~medMainWindow(void)
@@ -336,16 +340,31 @@ void medMainWindow::onConfigurationTriggered(QAction *action)
 
 void medMainWindow::open(const medDataIndex& index)
 {
+    int id = medMessageController::instance()->showInfo("Opening a database file");
+
     d->viewerArea->open(index);
 
     this->switchToViewerArea();
+
+    medMessageController::instance()->remove(id);
 }
+
+
 
 void medMainWindow::open(const QString& file)
 {
+    int id = medMessageController::instance()->showProgress("Opening a local file");
+
     d->viewerArea->open(file);
 
     this->switchToViewerArea();
+
+    for(int i = 0; i < 100; i++) {
+        usleep(100);
+        medMessageController::instance()->setProgress(id, i);
+    }
+
+    medMessageController::instance()->remove(id);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)
