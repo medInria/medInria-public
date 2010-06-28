@@ -29,7 +29,7 @@
   ;FunctionEnd
 
   ;Default installation folder
-  InstallDir "$PROGRAMFILES\${PROJECT_NAME}"
+  InstallDir "${INST_PREFIX}"
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKCU "Software\${PROJECT_NAME}" ""
