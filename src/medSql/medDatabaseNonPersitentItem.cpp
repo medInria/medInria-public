@@ -37,6 +37,11 @@ const QString& medDatabaseNonPersitentItem::name(void) const
     return d->name;
 }
 
+const QString& medDatabaseNonPersitentItem::studyName(void) const
+{
+    return d->studyName;
+}
+
 const QString& medDatabaseNonPersitentItem::file(void) const
 {
     return d->file;
