@@ -78,92 +78,78 @@ void vtkDiffXMLWriter::Update(void)
   
   std::vector<vtkMetaDataSet*> datasetlist = this->Input->GetMetaDataSetList();
   
-  os<<"<?xml version=\"1.0\"?>\n<DIF>\n\t<DIFBody>\n\t\t<Volumes number=\""<<datasetlist.size()<<"\">\n\t\t\t";
+  os<<"<?xml version=\"1.0\"?>"<<std::endl;
+  os<<"<DIF>"<<std::endl;
+  os<<"\t<DIFBody>"<<std::endl;
+  os<<"\t\t<Volumes number=\""<<datasetlist.size()<<"\">"<<std::endl;
+  
   vtkMetaSurfaceMesh* metasurface = 0;
   vtkDataArrayCollection* arrays = vtkDataArrayCollection::New();
+  vtkIdList* pointids = vtkIdList::New();
+  double point[3];
+  
   for (unsigned int j=0; j<datasetlist.size(); j++)
   {
     
     vtkMetaDataSet* metadata = datasetlist[j];
     std::string filepath = metadata->GetFilePath();
-    
     int val = metadata->GetType();
-			
-    switch (val)
-    {
-	case vtkMetaDataSet::VTK_META_IMAGE_DATA :
-	  break;
-	  
-	case vtkMetaDataSet::VTK_META_SURFACE_MESH :
-	  metasurface = vtkMetaSurfaceMesh::SafeDownCast(metadata);
-	  
-	  metadata->GetColorArrayCollection (arrays);
-	  
-	  os<<"<Volume name=\""<<metadata->GetName()<<"\" color=\"";
-	  
-	  // TODO: Color required to be in Hexadecimal values, but when asked from vtk object it is returned as RGB values, Thus conversion required here.
-	  
-	  //double *color; color = metadata->GetActor(0)->GetProperty()->GetColor();
-	  //					
-	  //					//printf("color %x",color[0]);
-	  //					
-	  //					
-	  //					double dv;
-	  //					char *sv;
-	  //					int i;
-	  //					
-	  //					dv=0.1;
-	  //					sv=(char *) &dv;
-	  //					printf("sv -> ");
-	  //					for (i=0;i<sizeof (double);++i)
-	  //						printf("%x ",sv[i]);
-	  //					printf("\n");
-	  
-	  os<<"\">\n\t\t\t\t<Vertices number=\""<<metasurface->GetPolyData()->GetNumberOfPoints()<<"\">\n";
-	  double point[3];
-	  for(vtkIdType i=0;i<metasurface->GetPolyData()->GetNumberOfPoints();i++)
-	  {
-	    metasurface->GetPolyData()->GetPoint(i,point);
-	    os<<"\t\t\t\t\t"<<point[0]<<" "<<point[1]<<" "<<point[2]<<"\n";
-	  }
-	  os<<"</Vertices>";
-	  os<<"\n";
-	  
-	  os<<"\t\t\t\t<Polygons number=\""<<metasurface->GetPolyData()->GetPolys()->GetNumberOfCells()<<"\">\n";
-	  vtkIdList* pointids = vtkIdList::New();
-	  
-	  for(unsigned int i=0;i<metasurface->GetPolyData()->GetPolys()->GetNumberOfCells();++i)
-	  {
-	    metasurface->GetPolyData()->GetCellPoints(i, pointids);
-	    if (pointids->GetNumberOfIds() != 3)
-	    {
-	      vtkWarningMacro(<<"warning : wrong type of cells !"<<endl);
-	      pointids->Delete();
-							
-	      return;
-	    }
-	    os<<"\t\t\t\t\t"<<(pointids->GetId(0)+1)<<" "<<(pointids->GetId(1)+1)<<" "<<(pointids->GetId(2)+1)<<"\n";
-	  }
 
-	  pointsids->Delete();
-	  
-	  os<<"</Polygons>";
-	  os<<"\n\t\t\t</Volume>";
-	  
-	  break;
-	  
-	case vtkMetaDataSet::VTK_META_VOLUME_MESH :
-	  break;
-	default :
-	  break;
+    if (val != vtkMetaDataSet::VTK_META_SURFACE_MESH)
+      continue;
+    
+    metasurface = vtkMetaSurfaceMesh::SafeDownCast(metadata);
+    metadata->GetColorArrayCollection (arrays);
+    
+    os<<"\t\t\t<Volume name=\""<<metadata->GetName()<<"\" color=\"";
+    
+    // // TODO: Color required to be in Hexadecimal values, but when asked from vtk object it is returned as RGB values, Thus conversion required here.    
+    // //double *color; color = metadata->GetActor(0)->GetProperty()->GetColor();
+    					
+    // //printf("color %x",color[0]);
+    // double dv;
+    // char *sv;
+    // int i;
+    
+    // dv=0.1;
+    // sv=(char *) &dv;
+    // printf("sv -> ");
+    // for (i=0;i<sizeof (double);++i)
+    //   printf("%x ",sv[i]);
+    // printf("\n");
+    
+    os<<"\">"<<std::endl;
+
+    os <<"\t\t\t\t<Vertices number=\""<<metasurface->GetPolyData()->GetNumberOfPoints()<<"\">"<<std::endl;
+    for(vtkIdType i=0;i<metasurface->GetPolyData()->GetNumberOfPoints();i++)
+    {
+      metasurface->GetPolyData()->GetPoint(i,point);
+      os<<"\t\t\t\t\t"<<point[0]<<" "<<point[1]<<" "<<point[2]<<std::endl;
     }
+    os<<"\t\t\t\t</Vertices>"<<std::endl;
+    
+    os<<"\t\t\t\t<Polygons number=\""<<metasurface->GetPolyData()->GetPolys()->GetNumberOfCells()<<"\">"<<std::endl;
+    for(unsigned int i=0;i<metasurface->GetPolyData()->GetPolys()->GetNumberOfCells();++i)
+    {
+      metasurface->GetPolyData()->GetCellPoints(i, pointids);
+      if (pointids->GetNumberOfIds() != 3)
+      {
+	vtkWarningMacro(<<"warning : wrong type of cells !"<<endl);
+	pointids->Delete();
+	return;
+      }
+      os<<"\t\t\t\t\t"<<(pointids->GetId(0)+1)<<" "<<(pointids->GetId(1)+1)<<" "<<(pointids->GetId(2)+1)<<std::endl;
+    }
+    os<<"\t\t\t\t</Polygons>"<<std::endl;
+    os<<"\t\t\t</Volume>"<<std::endl;
   }
 
+  pointids->Delete();
   arrays->Delete();
   
-  os<<"\n\t\t</Volumes>";
-  
-  os<<"\n\t<DIFBody>\n<DIF>\n";
+  os<<"\t\t</Volumes>"<<std::endl;
+  os<<"\t<DIFBody>"<<std::endl;
+  os <<"<DIF>"<<std::endl;
   
   // open the file:
   std::ofstream buffer (this->FileName.c_str());
@@ -171,9 +157,9 @@ void vtkDiffXMLWriter::Update(void)
   {
     vtkErrorMacro(<<"Cannot write in file !"<<endl);
     buffer.close();
-  }  
-	
-  buffer << os.str().c_str();
+  }
+  
+  buffer << os.str().c_str() <<std::endl;
   buffer.close();
 }
 
