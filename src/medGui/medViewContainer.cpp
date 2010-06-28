@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:35:59 2010 (+0100)
+ * Last-Updated: Tue Jun 15 16:26:36 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 392
+ *     Update #: 425
  */
 
 /* Commentary: 
@@ -19,6 +19,7 @@
 
 #include "medViewContainer.h"
 #include "medViewContainer_p.h"
+#include "medViewPool.h"
 
 #include <QtGui>
 
@@ -32,9 +33,10 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
     d->layout->setSpacing(2);
 
     d->view = NULL;
-
-    s_current = this;
-
+    d->current = this;
+    
+    d->pool = new medViewPool;
+    
     if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent)) {
         connect(this, SIGNAL(dropped(const medDataIndex&)), container, SIGNAL(dropped(const medDataIndex&)));
         connect(this, SIGNAL(focused(dtkAbstractView*)), container, SIGNAL(focused(dtkAbstractView*)));
@@ -42,6 +44,7 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
     this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
+    this->setMouseTracking(true);
 }
 
 medViewContainer::~medViewContainer(void)
@@ -58,13 +61,23 @@ medViewContainer::Type medViewContainer::type(void)
 
 medViewContainer *medViewContainer::current(void)
 {
-    return s_current;
+    return d->current;
 }
 
 void medViewContainer::split(int rows, int cols)
 {
     Q_UNUSED(rows);
     Q_UNUSED(cols);
+}
+
+void medViewContainer::synchronize (void)
+{
+    d->pool->synchronize();
+}
+
+void medViewContainer::desynchronize (void)
+{
+    d->pool->desynchronize();
 }
 
 dtkAbstractView *medViewContainer::view(void)
@@ -76,6 +89,14 @@ void medViewContainer::setView(dtkAbstractView *view)
 {
     if (!view)
         return;
+}
+
+void medViewContainer::setCurrent(medViewContainer *container)
+{
+    if(medViewContainer *parent = dynamic_cast<medViewContainer *>(this->parentWidget()))
+        parent->setCurrent(container);
+    else
+        d->current = container;
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
@@ -112,17 +133,23 @@ void medViewContainer::dropEvent(QDropEvent *event)
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
-    s_current = this;
+    Q_UNUSED(event);
+
+    medViewContainer *former = this->current();
+
+    this->setCurrent(this);
 
     if(dtkAbstractView *view = this->view())
         emit focused(view);
 
+	if (former)
+        former->update();
     this->update();
 }
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)
 {
-    this->update();
+    Q_UNUSED(event);
 }
 
 void medViewContainer::paintEvent(QPaintEvent *event)
@@ -134,13 +161,18 @@ void medViewContainer::paintEvent(QPaintEvent *event)
 
     QPainter painter;
     painter.begin(this);
-    if (s_current == this)
+
+    if (this->view() && this->view()->property ("Daddy")=="true")
+        painter.setPen(Qt::red);
+    else {
+      if (d->current == this)
         painter.setPen(QColor(0x9a, 0xb3, 0xd5));
-    else
+      else
         painter.setPen(Qt::darkGray);
+    }
+    
     painter.setBrush(QColor(0x38, 0x38, 0x38));
     painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
     painter.end();
 }
 
-medViewContainer *medViewContainer::s_current = NULL;

@@ -23,6 +23,7 @@
 #include "medSqlExport.h"
 
 #include <QtCore/QAbstractItemModel>
+#include <QtGui>
 
 class medDatabaseItem;
 class medDatabaseModelPrivate;

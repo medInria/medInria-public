@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:18 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sat Mar 20 20:37:56 2010 (+0100)
+ * Last-Updated: Tue Jun 15 20:02:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 119
+ *     Update #: 132
  */
 
 /* Commentary: 
@@ -167,6 +167,8 @@ void medDatabasePreview::onPatientClicked(int id)
         }
     }
 
+    d->scene->setSceneRect(d->series_group->boundingRect());
+
     if(d->level)
         this->onSlideDw();
     else
@@ -196,6 +198,26 @@ void medDatabasePreview::onSeriesClicked(int id)
 
     if(query.first())
         patientId = query.value(0);
+    
+    // Series level
+
+    d->series_group->clear();
+    
+    query.prepare("SELECT id, name, thumbnail FROM series WHERE study = :id");
+    query.bindValue(":id", studyId);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    
+    while(query.next()) {
+        
+        QVariant   seId  = query.value(0);
+        QVariant seName  = query.value(1);
+        QVariant seThumb = query.value(2);
+        
+        d->series_group->addItem(new medDatabasePreviewItem(patientId.toInt(), studyId.toInt(), seId.toInt(), -1, seThumb.toString()));
+    }
+    
+    // Image level
 
     QVariant imageId;
     QVariant imageName;
@@ -216,8 +238,12 @@ void medDatabasePreview::onSeriesClicked(int id)
         d->image_group->addItem(new medDatabasePreviewItem(patientId.toInt(), studyId.toInt(), id, imageId.toInt(), imageThumbnail.toString()));
     }
 
+    d->scene->setSceneRect(d->image_group->boundingRect());
+
     if(!d->level)
         onSlideUp();
+    else
+        this->onMoveBg();
 }
 
 void medDatabasePreview::onSlideUp(void)
@@ -439,10 +465,12 @@ void medDatabasePreview::onMoveBg(void) // move to beginning of the current line
 
     medDatabasePreviewItem *target = NULL;
 
-    target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(10, 10));
+    target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(40, 40));
 
-    if(!target)
+    if(!target) {
+        d->selector->setPos(5, 5);
         return;
+    }
 
     d->current_index_patient = target->patientId();
     d->current_index_study   = target->studyId();

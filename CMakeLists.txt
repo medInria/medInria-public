@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:14:33 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Apr  6 22:19:54 2010 (+0200)
+## Last-Updated: Thu Jun 10 10:35:51 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 34
+##     Update #: 38
 ######################################################################
 ## 
 ### Commentary: 
@@ -33,11 +33,14 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
 enable_testing()
 
-find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
+set(DEPENDS_ON_DTK 1)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
+find_package(dtk REQUIRED)
+include(${dtk_USE_FILE})
+
+include(medPack)
 include(medDart)
 
 add_subdirectory(src)

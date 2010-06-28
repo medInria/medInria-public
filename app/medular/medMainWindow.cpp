@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Mar 22 15:26:36 2010 (+0100)
+ * Last-Updated: Mon Jun 28 12:44:42 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 367
+ *     Update #: 422
  */
 
 /* Commentary: 
@@ -21,16 +21,16 @@
 #include "medDocumentationArea.h"
 #include "medMainWindow.h"
 #include "medViewerArea.h"
+#include "medViewerConfigurator.h"
 #include "medWelcomeArea.h"
+
+#include <dtkCore/dtkGlobal.h>
 
 #include <dtkScript/dtkScriptInterpreter.h>
 #include <dtkScript/dtkScriptInterpreterPool.h>
 #include <dtkScript/dtkScriptInterpreterPython.h>
 #include <dtkScript/dtkScriptInterpreterTcl.h>
 
-#include <dtkCore/dtkGlobal.h>
-
-#include <dtkGui/dtkInterpreter.h>
 #include <dtkGui/dtkSpacer.h>
 
 #include <medGui/medWorkspaceShifter.h>
@@ -41,17 +41,6 @@
 #include <medSql/medDatabaseItem.h>
 
 #include <QtGui>
-
-// /////////////////////////////////////////////////////////////////
-// log message handler
-// /////////////////////////////////////////////////////////////////
-
-QWidget *medLogOutput;
-
-void medRedirectLogHandler(dtkLog::Level level, const QString& msg)
-{
-    QCoreApplication::postEvent(medLogOutput, new dtkLogEvent(level, msg));
-}
 
 // /////////////////////////////////////////////////////////////////
 // medMainWindowStyle
@@ -80,19 +69,17 @@ class medMainWindowPrivate
 {
 public:
     QStackedWidget *stack;
-    QToolBar *toolbar;
 
     medWelcomeArea       *welcomeArea;
     medBrowserArea       *browserArea;
     medViewerArea        *viewerArea;
     medDocumentationArea *documentationArea;
 
+    medWorkspaceShifter *shifter;
     medWorkspaceShifterAction *shiftToWelcomeAreaAction;
     medWorkspaceShifterAction *shiftToBrowserAreaAction;
     medWorkspaceShifterAction *shiftToViewerAreaAction;
     medWorkspaceShifterAction *shiftToDocumentationAreaAction;
-
-    dtkInterpreter *interpreter;
 };
 
 extern "C" int init_core(void);                  // -- Initialization core layer python wrapped functions
@@ -105,25 +92,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     if(!medDatabaseController::instance()->createConnection())
         qDebug() << "Unable to create a connection to the database";
 
-    // Setting up toolbar
-
-    QAction *showInterpreterAction = new QAction("Interpreter", this);
-    showInterpreterAction->setIcon(QIcon(":dtkGui/pixmaps/dtk-interpreter.png"));
-    showInterpreterAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_I);
-    showInterpreterAction->setToolTip("Toggle interpreter");
-    
-    connect(showInterpreterAction, SIGNAL(triggered()), this, SLOT(showInterpreter()));
-
-    d->toolbar = this->addToolBar("main");
-#if defined(Q_WS_MAC)
-    d->toolbar->setStyle(QStyleFactory::create("macintosh"));
-#endif
-    d->toolbar->setStyleSheet("*:enabled { color: black; } *:disabled { color: gray; }");
-    d->toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    d->toolbar->setIconSize(QSize(32, 32));
-    d->toolbar->addWidget(new dtkSpacer(this));
-    d->toolbar->addAction(showInterpreterAction);
-
     // Setting up menu
 
     QAction *windowFullScreenAction = new QAction("Toggle fullscreen mode", this);
@@ -134,8 +102,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(windowFullScreenAction, SIGNAL(toggled(bool)), this, SLOT(setFullScreen(bool)));
 
-    QMenu *windowMenu = this->menuBar()->addMenu("Window");
-    windowMenu->addAction(windowFullScreenAction);
+    this->addAction(windowFullScreenAction);
 
     // Setting up widgets
 
@@ -155,9 +122,12 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->viewerArea);
     d->stack->addWidget(d->documentationArea);
 
-    connect(d->browserArea->view(), SIGNAL(patientDoubleClicked(const QModelIndex&)), this, SLOT(onPatientDoubleClicked (const QModelIndex&)));
-    connect(d->browserArea->view(), SIGNAL(studyDoubleClicked(const QModelIndex&)), this, SLOT(onStudyDoubleClicked (const QModelIndex&)));
-    connect(d->browserArea->view(), SIGNAL(seriesDoubleClicked(const QModelIndex&)), this, SLOT(onSeriesDoubleClicked (const QModelIndex&)));
+    connect(d->welcomeArea, SIGNAL(switchToBrowserArea()), this, SLOT(switchToBrowserArea()));
+    connect(d->welcomeArea, SIGNAL(switchToViewerArea()), this, SLOT(switchToViewerArea()));
+    connect(d->welcomeArea, SIGNAL(switchToDocumentationArea(QUrl)), this, SLOT(switchToDocumentationArea(QUrl)));
+
+    connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
+    connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
     // Setting up core python module
 
@@ -194,7 +164,13 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
         "set pluginManager  [dtkPluginManager_instance]"
     );
 
-    d->interpreter = NULL;
+    // Setting up console script interpreter
+
+    // dtkScriptInterpreter *interpreter = dtkScriptInterpreterPool::instance()->console("python");
+    // interpreter->start();
+    // QObject::connect(qApp, SIGNAL(aboutToQuit()), interpreter, SLOT(stop()));
+
+    // Setting up status bar
 
     d->shiftToWelcomeAreaAction = new medWorkspaceShifterAction("Welcome");
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
@@ -208,22 +184,28 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->shiftToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
     connect(d->shiftToDocumentationAreaAction, SIGNAL(triggered()), this, SLOT(switchToDocumentationArea()));
 
-    medWorkspaceShifter *shifter = new medWorkspaceShifter(this);
-    shifter->addAction(d->shiftToWelcomeAreaAction);
-    shifter->addAction(d->shiftToBrowserAreaAction);
-    shifter->addAction(d->shiftToViewerAreaAction);
-    shifter->addAction(d->shiftToDocumentationAreaAction);
+    medWorkspaceShifterMenu *menu = new medWorkspaceShifterMenu(this);
+    menu->addAction("Visualization");
+    menu->addAction("Registration");
+    menu->addAction("Diffusion");
+
+    connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onConfigurationTriggered(QAction *)));
+
+    d->shifter = new medWorkspaceShifter(this);
+    d->shifter->addAction(d->shiftToWelcomeAreaAction);
+    d->shifter->addAction(d->shiftToBrowserAreaAction);
+    d->shifter->addAction(d->shiftToViewerAreaAction)->setMenu(menu);
+    d->shifter->addAction(d->shiftToDocumentationAreaAction);
 
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
     this->statusBar()->setFixedHeight(31);
-    this->statusBar()->addPermanentWidget(shifter);
+    this->statusBar()->addPermanentWidget(d->shifter);
 
     this->readSettings();
     this->setCentralWidget(d->stack);
     this->setStyle(new medMainWindowStyle);
     this->setStyleSheet(dtkReadFile(":/medular.qss"));
-    this->setUnifiedTitleAndToolBarOnMac(true);
     this->setWindowTitle("medular");
     this->switchToWelcomeArea();
 }
@@ -255,66 +237,22 @@ void medMainWindow::writeSettings(void)
     settings.endGroup();
 }
 
-void medMainWindow::showInterpreter(void)
-{
-    if(!d->interpreter) {
-
-        dtkScriptInterpreter *interpreter = dtkScriptInterpreterPool::instance()->python();
-         
-        d->interpreter = new dtkInterpreter; medLogOutput = d->interpreter;
-        d->interpreter->registerInterpreter(interpreter);
-        d->interpreter->registerAsHandler(medRedirectLogHandler);
-        d->interpreter->readSettings();
-        d->interpreter->setFrameStyle(QFrame::NoFrame);
-        d->interpreter->setAttribute(Qt::WA_MacShowFocusRect, false);
-        d->interpreter->setWindowTitle("medular python interpreter");
-        d->interpreter->setWindowFlags(Qt::Tool | Qt::WindowCloseButtonHint | Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint);
-        d->interpreter->setWindowOpacity(0.8);
-
-        QObject::connect(interpreter, SIGNAL(stopped()), qApp, SLOT(quit()));
-        QObject::connect(qApp, SIGNAL(aboutToQuit()), interpreter, SLOT(stop()));       
-        QObject::connect(qApp, SIGNAL(aboutToQuit()), d->interpreter, SLOT(writeSettings()));
-    }
-
-    QPoint pos = d->interpreter->pos();
-    QSize size = d->interpreter->size();
-
-    d->interpreter->setVisible(!d->interpreter->isVisible());
-    d->interpreter->move(pos);
-    d->interpreter->resize(size);
-}
-
 void medMainWindow::setWallScreen(bool full)
 {
-    if(full)
-        this->setUnifiedTitleAndToolBarOnMac(false);
-
     if(full) {
         this->move(0, -50);
         this->resize(3528, 1230);
-    } else
+    } else {
         this->showNormal();
-
-    if(!full)
-        this->setUnifiedTitleAndToolBarOnMac(true);
-
-    d->toolbar->toggleViewAction()->trigger();
+    }
 }
 
 void medMainWindow::setFullScreen(bool full)
 {
     if(full)
-        this->setUnifiedTitleAndToolBarOnMac(false);
-
-    if(full)
         this->showFullScreen();
     else
         this->showNormal();
-
-    if(!full)
-        this->setUnifiedTitleAndToolBarOnMac(true);
-
-    d->toolbar->toggleViewAction()->trigger();
 }
 
 void medMainWindow::switchToWelcomeArea(void)
@@ -330,6 +268,8 @@ void medMainWindow::switchToWelcomeArea(void)
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(false);
     d->shiftToDocumentationAreaAction->setChecked(false);
+
+    d->shifter->update();
 }
 
 void medMainWindow::switchToBrowserArea(void)
@@ -345,6 +285,8 @@ void medMainWindow::switchToBrowserArea(void)
     d->shiftToBrowserAreaAction->setChecked(true);
     d->shiftToViewerAreaAction->setChecked(false);
     d->shiftToDocumentationAreaAction->setChecked(false);
+
+    d->shifter->update();
 }
 
 void medMainWindow::switchToViewerArea(void)
@@ -360,6 +302,8 @@ void medMainWindow::switchToViewerArea(void)
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(true);
     d->shiftToDocumentationAreaAction->setChecked(false);
+
+    d->shifter->update();
 }
 
 void medMainWindow::switchToDocumentationArea(void)
@@ -375,57 +319,33 @@ void medMainWindow::switchToDocumentationArea(void)
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(false);
     d->shiftToDocumentationAreaAction->setChecked(true);
+
+    d->shifter->update();
 }
 
-void medMainWindow::onPatientDoubleClicked(const QModelIndex &index)
+void medMainWindow::switchToDocumentationArea(QUrl url)
 {
-    if (!index.isValid())
-      return;
-
-    d->viewerArea->setPatientIndex(index.row()+1);
-    d->viewerArea->update();
-
-    switchToViewerArea();
+    switchToDocumentationArea();
+    d->documentationArea->loadDoc(url);
 }
 
-void medMainWindow::onStudyDoubleClicked(const QModelIndex &index)
+void medMainWindow::onConfigurationTriggered(QAction *action)
 {
-    if (!index.isValid())
-      return;
-  
-    QModelIndex patientIndex = index.parent();
- 
-    if (!patientIndex.isValid())
-        return;
-    
-    d->viewerArea->setPatientIndex(patientIndex.row()+1);
-    d->viewerArea->setStudyIndex(index.row()+1);
-    
-    switchToViewerArea();
+    medViewerConfigurator::instance()->setConfiguration(action->text());
 }
 
-void medMainWindow::onSeriesDoubleClicked(const QModelIndex &index)
+void medMainWindow::open(const medDataIndex& index)
 {
-    if (!index.isValid())
-      return;
-    
-    QModelIndex studyIndex = index.parent();
-    
-    if (!studyIndex.isValid())
-        return;
-    
-    QModelIndex patientIndex = studyIndex.parent();
-    
-    if (!patientIndex.isValid())
-        return;
-    
-    d->viewerArea->setPatientIndex(patientIndex.row()+1);
-    d->viewerArea->setStudyIndex(studyIndex.row()+1);
+    d->viewerArea->open(index);
 
-    switchToViewerArea();
-    this->update();
-    
-    d->viewerArea->setSeriesIndex(index.row()+1);
+    this->switchToViewerArea();
+}
+
+void medMainWindow::open(const QString& file)
+{
+    d->viewerArea->open(file);
+
+    this->switchToViewerArea();
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)

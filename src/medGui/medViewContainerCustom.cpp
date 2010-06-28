@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:13:32 2010 (+0100)
+ * Last-Updated: Tue Jun 15 16:28:13 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 42
+ *     Update #: 67
  */
 
 /* Commentary: 
@@ -19,8 +19,17 @@
 
 #include "medViewContainer_p.h"
 #include "medViewContainerCustom.h"
+#include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
+
+medViewContainerCustom::medViewContainerCustom (QWidget *parent) : medViewContainer(parent)
+{
+}
+
+medViewContainerCustom::~medViewContainerCustom()
+{
+}
 
 medViewContainer::Type medViewContainerCustom::type(void)
 {
@@ -33,23 +42,133 @@ void medViewContainerCustom::split(int rows, int cols)
         return;
 
     for(int i = 0 ; i < rows ; i++)
-        for(int j = 0 ; j < cols ; j++)
-            d->layout->addWidget(new medViewContainerCustom(this), i, j);
+        for(int j = 0 ; j < cols ; j++) {
+	    medViewContainerCustom *container = new medViewContainerCustom(this);
+            d->layout->addWidget(container, i, j);
+	}
 
-    s_current = 0;
+    this->setCurrent(NULL);
+}
+
+void medViewContainerCustom::setPreset(int preset)
+{
+    if (d->layout->count())
+        return;
+
+    medViewContainerCustom *custom1;
+    medViewContainerCustom *custom2;
+
+    switch(preset) {
+    case A:
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
+        break;
+    case B:
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
+        d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
+        break;
+    case C:
+        custom1 = new medViewContainerCustom(this);
+        custom1->split(2, 1);
+        custom2 = new medViewContainerCustom(this);
+        d->layout->addWidget(custom1, 0, 0);
+        d->layout->addWidget(custom2, 0, 1);
+        d->layout->setColumnStretch(0, 1);
+        d->layout->setColumnStretch(1, 2);
+        break;
+    case D:
+        custom1 = new medViewContainerCustom(this);
+        custom1->split(3, 1);
+        custom2 = new medViewContainerCustom(this);
+        d->layout->addWidget(custom1, 0, 0);
+        d->layout->addWidget(custom2, 0, 1);
+        d->layout->setColumnStretch(0, 1);
+        d->layout->setColumnStretch(1, 2);
+        break;
+    case E:
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
+        d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
+        d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
+        d->layout->addWidget(new medViewContainerCustom(this), 1, 1);
+        break;
+    };
+
+    this->setCurrent(NULL);
 }
 
 void medViewContainerCustom::setView(dtkAbstractView *view)
 {
-    // if (d->layout->count() && (view->widget() == d->layout->itemAtPosition(0, 0)->widget()))
-    //     return;
-
+    if (view==d->view)
+        return;
+    
     if (d->layout->count())
         d->layout->removeItem(d->layout->itemAt(0));
+
+    if (d->view)
+        this->onViewClosed();
     
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->layout->addWidget(view->widget(), 0, 0);
+
     d->view = view;
+    d->view->reset();
+    
+    this->synchronize_2 (view);
+
+    connect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));
+}
+
+void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
+{
+  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+      parent->synchronize_2(view);
+  }
+  else { // top level medViewContainerCustom
+      d->pool->appendView (view);
+  }
+}
+
+void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
+{
+  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+      parent->desynchronize_2(view);
+  }
+  else { // top level medViewContainerCustom
+      d->pool->removeView (view);
+  }
+}
+
+void medViewContainerCustom::synchronize (void)
+{
+  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+      parent->synchronize();
+  }
+  else { // top level medViewContainerCustom      
+      d->pool->synchronize();
+  }
+}
+
+void medViewContainerCustom::desynchronize (void)
+{
+  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+      parent->desynchronize();
+  }
+  else { // top level medViewContainerCustom
+      d->pool->desynchronize();
+  }
+}
+
+void medViewContainerCustom::onViewClosed (void)
+{
+    if (d->view) {
+        d->layout->removeWidget (d->view->widget());
+	d->view->widget()->hide();
+	this->desynchronize_2 (d->view);
+	disconnect (d->view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+	disconnect (d->view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+	d->view = NULL;
+    }
 }
 
 void medViewContainerCustom::dragEnterEvent(QDragEnterEvent *event)
@@ -73,7 +192,7 @@ void medViewContainerCustom::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medViewContainerCustom::dropEvent(QDropEvent *event)
 {
-    s_current = this;
+    this->setCurrent(this);
 
     this->setAttribute(Qt::WA_UpdatesDisabled, false);
 

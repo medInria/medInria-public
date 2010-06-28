@@ -6,6 +6,12 @@
 	<file>icons/length.tiff</file>
 	<file>icons/wlww.tiff</file>
 	<file>icons/cropping.png</file>
+        <file>icons/medViewContainerCustomA.png</file>
+        <file>icons/medViewContainerCustomB.png</file>
+        <file>icons/medViewContainerCustomC.png</file>
+        <file>icons/medViewContainerCustomD.png</file>
+        <file>icons/medViewContainerCustomE.png</file>
+        <file>icons/medViewContainerCustomF.png</file>
         <file>medular.qss</file>
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/frame.png</file>
@@ -44,5 +50,22 @@
         <file>pixmaps/medular-logo.png</file>
         <file>pixmaps/mediseen-logo.png</file>
         <file>pixmaps/medinria-logo.png</file>
+        <file>html/index.html</file>
+	<file>html/doc/index.html</file>
+	<file>html/doc/dicomImport.html</file>
+	<file>html/doc/registration.html</file>
+        <file>html/css/style.css</file>
+        <file>html/css/blueprint/screen.css</file>
+        <file>html/js/jquery.tools.min.js</file>
+        <file>html/js/flowplayer-3.2.2.min.js</file>
+	<file>html/js/jquery.zrssfeed.min.js</file>
+        <file>html/img/overlay_close.png</file>
+        <file>html/img/tooltip/black_arrow.png</file>
+	<file>html/img/overlay_white.png</file>
+	<file>html/img/brebix3d.png</file>
+	<file>html/img/naviMed.png</file>
+        <file>html/swf/flowplayer.controls-3.2.1.swf</file>
+        <file>html/swf/flowplayer-3.2.2.swf</file>
+        <file>html/img/overview.png</file>
     </qresource>
 </RCC>

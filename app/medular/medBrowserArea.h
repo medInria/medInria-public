@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 08:28:09 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Mar 18 20:55:39 2010 (+0100)
+ * Last-Updated: Mon Jun 14 13:27:21 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 13
  */
 
 /* Commentary: 
@@ -26,6 +26,7 @@
 // medBrowserArea
 // /////////////////////////////////////////////////////////////////
 
+class medDataIndex;
 class medDatabaseView;
 class medDatabaseModel;
 class medBrowserAreaPrivate;
@@ -44,9 +45,14 @@ public:
     medDatabaseView *view(void);
     medDatabaseModel *model(void);
 
+signals:
+    void open(const medDataIndex& index);
+    void open(const QString& file);
+
 public slots:
     void onFileSystemImportClicked(void);
     void onFileSystemExportClicked(void);
+    void onFileSystemViewClicked(void);
     void onFileImported(void);
 
 private:

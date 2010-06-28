@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Mar 25 18:43:40 2010 (+0100)
+ * Last-Updated: Sun Jun 27 17:31:38 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 290
+ *     Update #: 386
  */
 
 /* Commentary: 
@@ -21,6 +21,8 @@
 
 #include <QtGui>
 
+#include <dtkGui/dtkFinder.h>
+
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseExporter.h>
 #include <medSql/medDatabaseImporter.h>
@@ -31,6 +33,8 @@
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
+#include <medGui/medToolBoxJobs.h>
+#include <medGui/medToolBoxSource.h>
 
 // /////////////////////////////////////////////////////////////////
 // medBrowserArea
@@ -40,17 +44,18 @@ class medBrowserAreaPrivate
 {
 public:
     medToolBoxContainer *toolbox_container;
+    medToolBoxJobs *toolbox_jobs;
+    medToolBoxSource *toolbox_source;
 
     medDatabasePreview *preview;
     medDatabaseModel *model;
     medDatabaseView *view;
 
-    QTreeView *filesystem_view;
-    QFileSystemModel *filesystem_model;
+    dtkFinder *finder;
+    dtkFinderPathBar *path;
+    dtkFinderSideView *side;
 
     QStatusBar *status;
-
-    medProgressionStack *progression_stack;
 };
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
@@ -62,13 +67,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->view = new medDatabaseView(this);
     d->view->setModel(d->model);
 
-    // connect(d->preview, SIGNAL(patientClicked(int)), d->view, SLOT(onPatientClicked(int)));
-    // connect(d->preview, SIGNAL(studyClicked(int)), d->view, SLOT(onStudyClicked(int)));
-    // connect(d->preview, SIGNAL(seriesClicked(int)), d->view, SLOT(onSeriesClicked(int)));
-    // connect(d->preview, SIGNAL(imageClicked(int)), d->view, SLOT(onImageClicked(int)));
-
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
+    connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
 
     // Database widget /////////////////////////////////////////////////
 
@@ -82,101 +83,117 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Filesystem widget ///////////////////////////////////////////////
 
-    d->filesystem_model = new QFileSystemModel;
-    d->filesystem_model->setRootPath(QDir::rootPath());
+    d->finder = new dtkFinder(this);
+    d->finder->setPath(QDir::homePath());
 
-    d->filesystem_view = new QTreeView(this);
-    d->filesystem_view->setFrameStyle(QFrame::NoFrame);
-    d->filesystem_view->setAttribute(Qt::WA_MacShowFocusRect, false);
-    d->filesystem_view->setUniformRowHeights(true);
-    d->filesystem_view->setAlternatingRowColors(true);
-    d->filesystem_view->setSortingEnabled(true);
-    d->filesystem_view->setModel(d->filesystem_model);
-    d->filesystem_view->setCurrentIndex(d->filesystem_model->index(QDir::homePath()));
-    d->filesystem_view->setExpanded(d->filesystem_view->currentIndex(), true);
-    d->filesystem_view->header()->setResizeMode(QHeaderView::Interactive);
+    d->path = new dtkFinderPathBar(this);
+    d->path->setPath(QDir::homePath());
+
+    d->side = new dtkFinderSideView(this);
+    d->side->setStyleSheet(
+        "dtkFinderSideView {"
+        "    color: #b2b2b2;"
+        "    padding: 5px;"
+        "    background: #494949;"
+        "    show-decoration-selected: 1;"
+        "}"
+        ""
+        "dtkFinderSideView::item {"
+        "    margin-left: 0px;"
+        "    border-top-color: transparent;"
+        "    border-bottom-color: transparent;"
+        "}"
+        ""
+        "dtkFinderSideView::item:selected {"
+        "    border-top: 1px solid #567dbc;"
+        "    border-bottom: 1px solid #567dbc;"
+        "}"
+        ""
+        "dtkFinderSideView::item:selected:active{"
+        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);"
+        "}"
+        ""
+        "dtkFinderSideView::item:selected:!active {"
+        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);"
+        "}"
+        ""
+        "dtkFinderSideView::branch:selected {"
+        "    border-top: 1px solid #567dbc;"
+        "    border-bottom: 1px solid #567dbc;"
+        "}"
+        ""
+        "dtkFinderSideView::branch:selected:active{"
+        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);"
+        "}"
+        ""
+        "dtkFinderSideView::branch:selected:!active {"
+        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);"
+        "}");
+
+    QAction *importAction = new QAction("Import", this);
+    QAction   *viewAction = new QAction("View", this);
+
+    d->finder->addContextMenuAction(importAction);
+    d->finder->addContextMenuAction(viewAction);
+
+    connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportClicked()));
+    connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));
+
+    QWidget *filesystem_widget = new QWidget(this);
+
+    QVBoxLayout *filesystem_layout = new QVBoxLayout(filesystem_widget);
+    filesystem_layout->setContentsMargins(10, 10, 10, 10);
+    filesystem_layout->setSpacing(0);
+    filesystem_layout->addWidget(d->finder);
+    filesystem_layout->addWidget(d->path);
+
+    connect(d->finder, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
+    connect(d->finder, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
+
+    connect(d->path, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
+    connect(d->path, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
+
+    connect(d->side, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
+    connect(d->side, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
+
+    connect(d->finder, SIGNAL(bookmarked(QString)), d->side, SLOT(addBookmark(QString)));
 
     // Pacs widget ///////////////////////////////////////////////
 
-    QTreeView *pacs_widget = new QTreeView(this);
-    pacs_widget->setFrameStyle(QFrame::NoFrame);
-    pacs_widget->setAttribute(Qt::WA_MacShowFocusRect, false);
-    pacs_widget->setUniformRowHeights(true);
-    pacs_widget->setAlternatingRowColors(true);
-    pacs_widget->setSortingEnabled(true);
+    // QTreeView *pacs_widget = new QTreeView(this);
+    // pacs_widget->setFrameStyle(QFrame::NoFrame);
+    // pacs_widget->setAttribute(Qt::WA_MacShowFocusRect, false);
+    // pacs_widget->setUniformRowHeights(true);
+    // pacs_widget->setAlternatingRowColors(true);
+    // pacs_widget->setSortingEnabled(true);
+
+    QWidget *pacs_widget = new QWidget(this);
 
     // /////////////////////////////////////////////////////////////////
 
     QStackedWidget *stack = new QStackedWidget(this);
     stack->addWidget(database_widget);
-    stack->addWidget(d->filesystem_view);
+    stack->addWidget(filesystem_widget);
     stack->addWidget(pacs_widget);
 
-    // Source selector ///////////////////////////////////////////////
+    // Source toolbox ///////////////////////////////////////////////
 
-    QWidget *database_page = new QWidget(this);
+    d->toolbox_source = new medToolBoxSource(this);
+    d->toolbox_source->setFileSystemWidget(d->side);
 
-    QPushButton *database_page_expand_all_button = new QPushButton("All", database_page);
-    QPushButton *database_page_collapse_all_button = new QPushButton("All", database_page);
-
-    connect(database_page_expand_all_button, SIGNAL(clicked()), d->view, SLOT(expandAll()));
-    connect(database_page_collapse_all_button, SIGNAL(clicked()), d->view, SLOT(collapseAll()));
-
-    QFormLayout *database_page_layout = new QFormLayout(database_page);
-    database_page_layout->addRow("Expand:", database_page_expand_all_button);
-    database_page_layout->addRow("Collapse:", database_page_collapse_all_button);
-    database_page_layout->setFormAlignment(Qt::AlignHCenter);
-
-    QWidget *filesystem_page = new QWidget(this);
-
-    QPushButton *filesystem_import_button = new QPushButton("Import", filesystem_page);
-    QPushButton *filesystem_export_button = new QPushButton("Export", filesystem_page);
-
-    QFormLayout *filesystem_page_layout = new QFormLayout(filesystem_page);
-    filesystem_page_layout->addRow("Current item:", filesystem_import_button);
-    filesystem_page_layout->addRow("Current item:", filesystem_export_button);
-    filesystem_page_layout->setFormAlignment(Qt::AlignHCenter);
-
-    connect(filesystem_import_button, SIGNAL(clicked()), this, SLOT(onFileSystemImportClicked()));
-    connect(filesystem_export_button, SIGNAL(clicked()), this, SLOT(onFileSystemExportClicked()));
-
-    QWidget *pacs_page = new QWidget(this);
-
-    QFormLayout *pacs_page_layout = new QFormLayout(pacs_page);
-    pacs_page_layout->addRow("Url:", new QLineEdit(pacs_page));
-    pacs_page_layout->addRow("Login:", new QLineEdit(pacs_page));
-    pacs_page_layout->addRow("Password:", new QLineEdit(pacs_page));
-    pacs_page_layout->addWidget(new QPushButton("Connect", pacs_page));
-    pacs_page_layout->setFormAlignment(Qt::AlignHCenter);
-
-    medToolBoxTab *tab = new medToolBoxTab(this);
-    tab->addTab(database_page, "Db");
-    tab->addTab(filesystem_page, "Fs");
-    tab->addTab(pacs_page, "Pc");
-    connect(tab, SIGNAL(currentChanged(int)), stack, SLOT(setCurrentIndex(int)));
-
-    medToolBox *sourceSelectorToolBox = new medToolBox(this);
-    sourceSelectorToolBox->setTitle("Source selector");
-    sourceSelectorToolBox->setWidget(tab);
+    connect(d->toolbox_source, SIGNAL(indexChanged(int)), stack, SLOT(setCurrentIndex(int)));
 
     // Jobs //////////////////////////////////////////
 
-    d->progression_stack = new medProgressionStack(filesystem_page);
-
-    medToolBox *jobsToolBox = new medToolBox(this);
-    jobsToolBox->setTitle("Jobs");
-    jobsToolBox->setWidget(d->progression_stack);
-    jobsToolBox->setVisible(false);
-
-    connect(d->progression_stack, SIGNAL(shown()), jobsToolBox, SLOT(show()));
-    connect(d->progression_stack, SIGNAL(hidden()), jobsToolBox, SLOT(hide()));
+    d->toolbox_jobs = new medToolBoxJobs(this);
+    d->toolbox_jobs->setVisible(false);
 
     // Toolbox container /////////////////////////////////////////////
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
-    d->toolbox_container->addToolBox(sourceSelectorToolBox);
-    d->toolbox_container->addToolBox(jobsToolBox);
+    d->toolbox_container->addToolBox(d->toolbox_source);
+    d->toolbox_container->addToolBox(d->toolbox_jobs);
 
     // Layout /////////////////////////////////////////////
 
@@ -219,14 +236,17 @@ medDatabaseModel *medBrowserArea::model(void)
 
 void medBrowserArea::onFileSystemImportClicked(void)
 {
-    QFileInfo info(d->filesystem_model->filePath(d->filesystem_view->currentIndex()));
+    QFileInfo info(d->finder->selectedPath());
 
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
 
-    connect(importer, SIGNAL(progressed(int)), d->progression_stack, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(done()), this, SLOT(onFileImported()));
+    connect(importer, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(message (QString, int)), d->status, SLOT (showMessage (QString, int)), Qt::BlockingQueuedConnection);
 
-    d->progression_stack->setLabel(importer, info.baseName());
+    d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
 
     QThreadPool::globalInstance()->start(importer);
 }
@@ -235,9 +255,16 @@ void medBrowserArea::onFileSystemExportClicked(void)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter;
 
-    connect(exporter, SIGNAL(progressed(int)), d->progression_stack, SLOT(setProgress(int)));
+    connect(exporter, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
 
     QThreadPool::globalInstance()->start(exporter);
+}
+
+void medBrowserArea::onFileSystemViewClicked(void)
+{
+    QFileInfo info(d->finder->selectedPath());
+
+    emit open(info.absoluteFilePath());
 }
 
 void medBrowserArea::onFileImported(void)

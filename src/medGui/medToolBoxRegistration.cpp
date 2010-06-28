@@ -184,13 +184,15 @@ void medToolBoxRegistration::run(void)
 
 	if(output) {
 	    d->movingView->setData(output);
-	    d->movingView->reset();
+	    //d->movingView->reset(); // do not reset
+	    d->fixedView->unlink (d->movingView);
+	    d->fixedView->link (d->movingView);
 	    d->movingView->update();
 	    
 	    if (d->fuseView) {
 	        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
 		    interactor->setData(output, 1);
-		    d->fuseView->reset();
+		    //d->fuseView->reset();  // do not reset
 		    d->fuseView->update();
 		}
 	    }
@@ -239,20 +241,18 @@ void medToolBoxRegistration::onFixedImageDropped (void)
 	return;
     }
 
-    if (d->movingView)
+    if (d->movingView) {
         d->fixedView->link(d->movingView);
+	d->movingView->update();
+    }
 
     if (d->fuseView)
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-	    interactor->setData(d->fixedData,  0);
-	    if (d->movingData &&
-		d->fixedData->xDimension()==d->movingData->xDimension() &&
-		d->fixedData->yDimension()==d->movingData->yDimension() &&
-		d->fixedData->zDimension()==d->movingData->zDimension()) {
-	              interactor->setData(d->fixedData,   0);
-		      interactor->setData(d->movingData,  1);
-		      d->fuseView->reset();
-		      d->fuseView->update();
+	    if (d->movingData) {
+	        interactor->setData(d->fixedData,   0);
+		interactor->setData(d->movingData,  1);
+		d->fuseView->reset();
+		d->fuseView->update();
 	    }
 	}
 }
@@ -276,15 +276,14 @@ void medToolBoxRegistration::onMovingImageDropped (void)
 	return;
     }
 
-    if (d->fixedView)
+    if (d->fixedView) {
         d->fixedView->link(d->movingView);
+	d->movingView->update();
+    }
 
     if (d->fuseView)
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-	    if (d->fixedData &&
-		d->fixedData->xDimension()==d->movingData->xDimension() &&
-		d->fixedData->yDimension()==d->movingData->yDimension() &&
-		d->fixedData->zDimension()==d->movingData->zDimension()) {
+	    if (d->fixedData) {
 	            interactor->setData(d->fixedData,   0);
 	            interactor->setData(d->movingData,  1);
 		    d->fuseView->reset();

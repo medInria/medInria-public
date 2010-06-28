@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:41:46 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sun Feb 21 13:39:42 2010 (+0100)
+ * Last-Updated: Sun Jun 27 20:31:36 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 18
  */
 
 /* Commentary: 
@@ -34,9 +34,9 @@ medDatabaseNavigatorView::medDatabaseNavigatorView(QWidget *parent) : QGraphicsV
 
     if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal) {
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     } else {
-        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     }
 

@@ -40,6 +40,7 @@ signals:
     void backgroundLookupTableChanged(QString);
     void lutPresetChanged(QString);
     void tdModeChanged(QString);
+    void tdVRModeChanged(QString);
     void tdLodChanged(int);
     void windowingChanged(bool);
     void zoomingChanged(bool);
@@ -48,6 +49,9 @@ signals:
     void croppingChanged(bool);
     void scalarBarVisibilityChanged(bool);
     void axisVisibilityChanged(bool);
+    void rulerVisibilityChanged(bool);
+    void annotationsVisibilityChanged(bool);
+    void synchronizeChanged (bool);
 
 private:
     medToolBoxViewPrivate *d;

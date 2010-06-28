@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:40:46 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 09:40:46 2009 (+0100)
+ * Last-Updated: Sun Jun 27 20:34:08 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 1
+ *     Update #: 25
  */
 
 /* Commentary: 
@@ -59,10 +59,12 @@ void medDatabaseNavigatorScene::addGroup(medDatabaseNavigatorItemGroup *group)
         : group->setPos(d->position + QPointF(0, 10));
 
     medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
-        ? d->position = group->boundingRect().topRight() + QPointF(group_spacing, 0)
-        : d->position = group->boundingRect().bottomLeft() + QPointF(0, group_spacing);
+        ? d->position = group->pos() + group->boundingRect().topRight() + QPointF(group_spacing, 0)
+        : d->position = group->pos() + group->boundingRect().bottomLeft() + QPointF(0, group_spacing);
 
-    this->setSceneRect(0, 0, this->sceneRect().right(), this->sceneRect().bottom());
+    medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
+        ? this->setSceneRect(QRectF(0, 10, d->position.x(), 128))
+        : this->setSceneRect(QRectF(10, 0, 128, d->position.y()));
 }
 
 void medDatabaseNavigatorScene::reset(void)

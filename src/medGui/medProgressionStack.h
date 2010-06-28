@@ -43,7 +43,10 @@ signals:
 public slots:
     void setLabel(QObject *sender, QString label);
     void setProgress(int progress);
-
+    void onSuccess(void);
+    void onFailure(void);
+    void removeItem();
+    
 private:
     medProgressionStackPrivate *d;
 };

@@ -29,8 +29,12 @@ public:
     QComboBox *presetComboBox;
     QCheckBox *scalarBarVisibilityCheckBox;
     QCheckBox *axisVisibilityCheckBox;
+    QCheckBox *rulerVisibilityCheckBox;
+    QCheckBox *annotationsVisibilityCheckBox;
+    QCheckBox *synchronizeCheckBox;
 
     QComboBox   *view3dModeComboBox;
+    QComboBox   *view3dVRModeComboBox;
     QSlider     *view3dLODSlider;
     QPushButton *windowingPushButton;
     QPushButton *zoomingPushButton;
@@ -103,11 +107,20 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     d->view3dModeComboBox->addItem("MIP - Maximum");
     d->view3dModeComboBox->addItem("MIP - Minimum");
     d->view3dModeComboBox->addItem("MPR");
-	d->view3dModeComboBox->addItem("Off");
+    d->view3dModeComboBox->addItem("Off");
+
+    d->view3dVRModeComboBox = new QComboBox(this);
+    d->view3dVRModeComboBox->setFocusPolicy(Qt::NoFocus);
+    d->view3dVRModeComboBox->addItem( "GPU" );
+    d->view3dVRModeComboBox->addItem( "Ray Cast / Texture" );
+    d->view3dVRModeComboBox->addItem( "Ray Cast" );
+    d->view3dVRModeComboBox->addItem( "Texture" );
+    d->view3dVRModeComboBox->addItem( "Default" );
 
     d->view3dLODSlider = new QSlider (Qt::Horizontal, this);
     d->view3dLODSlider->setRange (0, 100);
     d->view3dLODSlider->setValue (100);
+    d->view3dLODSlider->setTracking( false );
 
     d->windowingPushButton = new QPushButton("", this);
     d->windowingPushButton->setIcon (QIcon (":/icons/wlww.tiff"));
@@ -145,6 +158,7 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(backgroundLookupTableChanged(QString)));
     connect(d->presetComboBox,                SIGNAL(currentIndexChanged(QString)), this, SIGNAL(lutPresetChanged(QString)));
     connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SIGNAL(tdModeChanged(QString)));
+    connect(d->view3dVRModeComboBox,          SIGNAL(currentIndexChanged(QString)), this, SIGNAL(tdVRModeChanged(QString)));
     connect(d->view3dLODSlider,               SIGNAL(valueChanged(int)),            this, SIGNAL(tdLodChanged(int)));
     connect(d->windowingPushButton,           SIGNAL(toggled(bool)),                this, SIGNAL(windowingChanged(bool)));
     connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SIGNAL(zoomingChanged(bool)));
@@ -160,6 +174,18 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
 
     connect(d->axisVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(axisVisibilityChanged(bool)));
 
+    d->rulerVisibilityCheckBox = new QCheckBox(this);
+    
+    connect(d->rulerVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(rulerVisibilityChanged(bool)));
+    
+    d->annotationsVisibilityCheckBox = new QCheckBox(this);
+    
+    connect(d->annotationsVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(annotationsVisibilityChanged(bool)));
+
+    d->synchronizeCheckBox = new QCheckBox(this);
+    
+    connect(d->synchronizeCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(synchronizeChanged(bool)));
+
     QWidget *viewToolBoxWidget = new QWidget;
     QWidget *view3dToolBoxWidget = new QWidget;
     QWidget *mouseToolBoxWidget = new QWidget;
@@ -167,18 +193,22 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     QFormLayout *lutToolBoxWidgetLayout = new QFormLayout(viewToolBoxWidget);
     lutToolBoxWidgetLayout->addRow("Color lut:", d->foregroundLookupTableComboBox);
     lutToolBoxWidgetLayout->addRow("Preset:", d->presetComboBox);
-    lutToolBoxWidgetLayout->addRow("Show axis:", d->axisVisibilityCheckBox);
     lutToolBoxWidgetLayout->addRow("Show scalars:", d->scalarBarVisibilityCheckBox);
+    lutToolBoxWidgetLayout->addRow("Show annotations:", d->annotationsVisibilityCheckBox);
+    lutToolBoxWidgetLayout->addRow("Synchronize:", d->synchronizeCheckBox);
     lutToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
 
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(view3dToolBoxWidget);
     view3dToolBoxWidgetLayout->addRow("3D Mode:", d->view3dModeComboBox);
+    view3dToolBoxWidgetLayout->addRow("Renderer:", d->view3dVRModeComboBox);
     view3dToolBoxWidgetLayout->addRow("LOD:", d->view3dLODSlider);
     view3dToolBoxWidgetLayout->addRow("Cropping:", d->croppingPushButton);
     view3dToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
 
     QFormLayout *mouseToolBoxWidgetLayout = new QFormLayout(mouseToolBoxWidget);
     mouseToolBoxWidgetLayout->addRow ("Type:", mouseLayout);
+    mouseToolBoxWidgetLayout->addRow("Show axis:", d->axisVisibilityCheckBox);
+    mouseToolBoxWidgetLayout->addRow("Show ruler:", d->rulerVisibilityCheckBox);
     mouseToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
     
     medToolBoxTab *viewToolBoxTab = new medToolBoxTab(this);
@@ -215,6 +245,14 @@ void medToolBoxView::update(dtkAbstractView *view)
     d->scalarBarVisibilityCheckBox->setChecked(view->property("ScalarBarVisibility") == "true");
     d->scalarBarVisibilityCheckBox->blockSignals(false);
 
+    d->rulerVisibilityCheckBox->blockSignals(true);
+    d->rulerVisibilityCheckBox->setChecked(view->property("ShowRuler") == "true");
+    d->rulerVisibilityCheckBox->blockSignals(false);    
+
+    d->annotationsVisibilityCheckBox->blockSignals(true);
+    d->annotationsVisibilityCheckBox->setChecked(view->property("ShowAnnotations") == "true");
+    d->annotationsVisibilityCheckBox->blockSignals(false);    
+
     d->windowingPushButton->blockSignals(true);
     d->zoomingPushButton->blockSignals(true);
     d->slicingPushButton->blockSignals(true);
@@ -236,6 +274,14 @@ void medToolBoxView::update(dtkAbstractView *view)
     d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("Mode")));
     d->view3dModeComboBox->blockSignals(false);
 
+    d->view3dVRModeComboBox->blockSignals(true);
+    d->view3dVRModeComboBox->setCurrentIndex(d->view3dVRModeComboBox->findText(view->property("VRMode")));
+    d->view3dVRModeComboBox->blockSignals(false);
+
+    // d->view3dLODSlider->blockSignals(true); 
+    // d->view3dLODSlider->setValue(view->property(""));
+    // d->view3dLODSlider->blockSignals(false);
+
     d->presetComboBox->blockSignals(true);
     d->presetComboBox->setCurrentIndex(d->presetComboBox->findText(view->property("Preset")));
     d->presetComboBox->blockSignals(false);
@@ -246,4 +292,8 @@ void medToolBoxView::update(dtkAbstractView *view)
     else
         d->croppingPushButton->setChecked(false);
     d->croppingPushButton->blockSignals(false);
+
+    d->synchronizeCheckBox->blockSignals (true);
+    d->synchronizeCheckBox->setChecked ( view->property ("Linked")=="true");
+    d->synchronizeCheckBox->blockSignals (false);
 }

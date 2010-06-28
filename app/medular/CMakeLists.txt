@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Apr  6 21:37:54 2010 (+0200)
+## Last-Updated: Mon Jun 28 10:00:32 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 57
+##     Update #: 67
 ######################################################################
 ## 
 ### Commentary: 
@@ -27,14 +27,22 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserArea.h
   medDocumentationArea.h
   medMainWindow.h
+  medMessageController.h
   medViewerArea.h
+  medViewerAreaStack.h
+  medViewerConfiguration.h
+  medViewerConfigurator.h
   medWelcomeArea.h)
 
 set(${PROJECT_NAME}_SOURCES
   medBrowserArea.cpp
   medDocumentationArea.cpp
   medMainWindow.cpp
+  medMessageController.cpp
   medViewerArea.cpp
+  medViewerAreaStack.cpp
+  medViewerConfiguration.cpp
+  medViewerConfigurator.cpp
   medWelcomeArea.cpp
   main.cpp)
 
@@ -47,7 +55,16 @@ set(${PROJECT_NAME}_RESOURCES medular.qrc)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE
+set(DEPLOYMENT_SYSTEM)
+IF(APPLE)
+  set(DEPLOYMENT_SYSTEM MACOSX_BUNDLE)
+endif()
+if(WIN32)
+  set(DEPLOYMENT_SYSTEM WIN32)
+endif()
+
+
+add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM}
   ${${PROJECT_NAME}_SOURCES_WRAP}
   ${${PROJECT_NAME}_SOURCES_QRC}
   ${${PROJECT_NAME}_SOURCES_MOC}
@@ -83,3 +100,7 @@ endif(APPLE)
 install(TARGETS ${PROJECT_NAME}
    BUNDLE DESTINATION bin
   RUNTIME DESTINATION bin)
+
+if(APPLE)
+  install(CODE "execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)")
+endif(APPLE)
