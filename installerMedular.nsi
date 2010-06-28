@@ -29,7 +29,7 @@
   ;FunctionEnd
 
   ;Default installation folder
-  InstallDir "${INST_PREFIX}"
+  InstallDir "${PACK_INSTALLDIR}"
   
   ;Get installation folder from registry if available
   InstallDirRegKey HKCU "Software\${PROJECT_NAME}" ""
@@ -87,8 +87,8 @@ Section "${PROJECT_NAME} (required)" SecMedular
     
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
-  CreateShortCut  "$SMPROGRAMS\$STARTMENU_FOLDER\${PROJECT_NAME}.lnk"  "$INSTDIR\bin\${PROJECT_NAME}.exe" 
-  CreateShortCut  "$DESKTOP\${PROJECT_NAME}.lnk"  "$INSTDIR\bin\${PROJECT_NAME}.exe"
+  CreateShortCut  "$SMPROGRAMS\$STARTMENU_FOLDER\${PROJECT_NAME}.lnk"  "$INSTDIR\bin\${MED_EXECUTABLE}" 
+  CreateShortCut  "$DESKTOP\${PROJECT_NAME}.lnk"  "$INSTDIR\bin\${MED_EXECUTABLE}"
   CreateShortCut  "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk"  "$INSTDIR\Uninstall.exe"
   
   !insertmacro MUI_STARTMENU_WRITE_END

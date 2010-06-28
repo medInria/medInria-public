@@ -36,11 +36,14 @@ IF(WIN32)
 			SET(NSIS_OPTIONS
 				${NSIS_OPTIONS}
 				"/DmedularDIR=${EXECUTABLE_OUTPUT_PATH}"
-				"/DmedularLIBDIR=${LIBRARY_OUTPUT_PATH}/release
+				"/DmedularLIBDIR=${LIBRARY_OUTPUT_PATH}/release"
 				"/DVERSION=${VERSION}"
 				"/DSRCDIR=${PROJECT_SOURCE_DIR}"
 				"/DINST_PREFIX=${CMAKE_INSTALL_PREFIX}"
+				#must be changed but ${CMAKE_INSTALL_PREFIX} has slashes not backslashes...
+				"/DPACK_INSTALLDIR=C:\\Program Files\\inria"
 				"/DPROJECT_NAME=${PROJECT_NAME}"
+				"/DMED_EXECUTABLE=medular.exe"
 				)
 			ADD_CUSTOM_COMMAND(
 				TARGET ${TARGET} POST_BUILD
@@ -51,8 +54,8 @@ IF(WIN32)
 	ENDMACRO( MAKE_NSIS_INSTALLER )
 	
 	ADD_CUSTOM_TARGET(nsis  
-	COMMENT "Create an installer for windows"
-	DEPENDS install 
+		COMMENT "Create an installer for windows"
+		DEPENDS install 
 	)
     MAKE_NSIS_INSTALLER( nsis  ${PROJECT_SOURCE_DIR}/installerMedular.nsi  ${${PROJECT_NAME}_VERSION})
 ENDIF(WIN32)
