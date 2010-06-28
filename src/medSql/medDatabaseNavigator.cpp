@@ -148,6 +148,8 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 
     // Query non persistent data
 
+    QMap<QString, medDatabaseNavigatorItemGroup*> groupMap;
+
     foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
 
         if(item->index().patientId() == patientId) {
@@ -164,11 +166,17 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
             connect(nitem, SIGNAL(seriesClicked(int)), this, SIGNAL(seriesClicked(int)));
             connect(nitem, SIGNAL(imageClicked(int)), this, SIGNAL(imageClicked(int)));
 
-            medDatabaseNavigatorItemGroup *group = new medDatabaseNavigatorItemGroup;
-            group->setName(item->name());
+	    medDatabaseNavigatorItemGroup *group = NULL;
+	    if (groupMap.contains (item->studyName()))
+	        group = groupMap[item->studyName()];
+	    else {
+		group = new medDatabaseNavigatorItemGroup;
+		group->setName (item->studyName());
+		groupMap.insert(item->studyName(), group);		
+		d->scene->addGroup(group);
+	    }
+	                
             group->addItem(nitem);
-
-            d->scene->addGroup(group);
         }
     }
 }

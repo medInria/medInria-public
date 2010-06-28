@@ -40,6 +40,7 @@ public:
     ~medDatabaseNonPersitentItem(void);
 
     const QString& name(void) const;
+    const QString& studyName(void) const;
     const QString& file(void) const;
     const QImage& thumb(void) const;
 

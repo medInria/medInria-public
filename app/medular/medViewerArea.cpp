@@ -271,9 +271,13 @@ void medViewerArea::setup(void)
         d->patientToolBox->addItem(query.value(0).toString(), query.value(1));
 
     // Setting up non persitent data
-
-    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items())
-        d->patientToolBox->addItem(item->name(), item->index().patientId());
+    QList<QString> patientList;
+    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
+        if (!patientList.contains (item->name())) {
+	    d->patientToolBox->addItem(item->name(), item->index().patientId());
+	    patientList.append (item->name());
+        }
+    }
 }
 
 //! Split the currently displayed custom container.
