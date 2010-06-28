@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed May 12 15:06:57 2010 (+0200)
+ * Last-Updated: Sun Jun 27 17:43:20 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 125
+ *     Update #: 130
  */
 
 /* Commentary: 
@@ -200,34 +200,34 @@ dtkAbstractData *medDatabaseController::read(const medDataIndex& index)
 
     QSqlQuery query(m_database);
 
-	QString patientName;
-	QString studyName;
-	QString seriesName;
-	
-	query.prepare("SELECT name FROM patient WHERE id = :id");
+    QString patientName;
+    QString studyName;
+    QString seriesName;
+    
+    query.prepare("SELECT name FROM patient WHERE id = :id");
     query.bindValue(":id", patientId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-	if (query.first())
-		patientName = query.value(0).toString();
-	
-	query.prepare("SELECT name FROM study WHERE id = :id");
+    if (query.first())
+        patientName = query.value(0).toString();
+    
+    query.prepare("SELECT name FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-	if (query.first())
-		studyName = query.value(0).toString();
-	
-	query.prepare("SELECT name FROM series WHERE id = :id");
+    if (query.first())
+        studyName = query.value(0).toString();
+    
+    query.prepare("SELECT name FROM series WHERE id = :id");
     query.bindValue(":id", seriesId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-	if (query.first())
-		seriesName = query.value(0).toString();
-	
+    if (query.first())
+        seriesName = query.value(0).toString();
+    
     QStringList filenames;
     QString     filename;
-
+    
     query.prepare("SELECT name, id, path, instance_path FROM image WHERE series = :series");
     query.bindValue(":series", seriesId);
     if(!query.exec())
@@ -246,7 +246,7 @@ dtkAbstractData *medDatabaseController::read(const medDataIndex& index)
 
     for (int i = 0; i < readers.size(); i++) {
         dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
-
+        
         if (dataReader->canRead(filename)) {
             dataReader->read(filename);
             data = dataReader->data();
@@ -254,13 +254,13 @@ dtkAbstractData *medDatabaseController::read(const medDataIndex& index)
             break;
         }
     }
-
-	
-	if (data) {
-		data->addMetaData("PatientName", patientName);
-		data->addMetaData("StudyDescription",   studyName);
-		data->addMetaData("SeriesDescription",  seriesName);
-	}
+    
+    
+    if (data) {
+        data->addMetaData("PatientName", patientName);
+        data->addMetaData("StudyDescription",   studyName);
+        data->addMetaData("SeriesDescription",  seriesName);
+    }
 	
     return data;
 }

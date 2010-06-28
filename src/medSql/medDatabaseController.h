@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:10 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct 21 15:17:55 2009 (+0200)
+ * Last-Updated: Sun Jun 27 17:39:21 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 17
+ *     Update #: 19
  */
 
 /* Commentary: 
@@ -54,6 +54,7 @@ public:
 
     QStringList patientNames(void);
 
+    dtkAbstractData *read(const QString& file);
     dtkAbstractData *read(const medDataIndex& index);
     dtkAbstractData *read(int patientId, int studyId, int seriesId);
     dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId);

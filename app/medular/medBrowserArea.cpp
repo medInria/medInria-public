@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 14 13:40:56 2010 (+0200)
+ * Last-Updated: Sun Jun 27 17:31:38 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 384
+ *     Update #: 386
  */
 
 /* Commentary: 
@@ -236,8 +236,6 @@ medDatabaseModel *medBrowserArea::model(void)
 
 void medBrowserArea::onFileSystemImportClicked(void)
 {
-    // QFileInfo info(d->filesystem_model->filePath(d->filesystem_view->currentIndex()));
-
     QFileInfo info(d->finder->selectedPath());
 
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
@@ -264,8 +262,6 @@ void medBrowserArea::onFileSystemExportClicked(void)
 
 void medBrowserArea::onFileSystemViewClicked(void)
 {
-    // QFileInfo info(d->filesystem_model->filePath(d->filesystem_view->currentIndex()));
-
     QFileInfo info(d->finder->selectedPath());
 
     emit open(info.absoluteFilePath());
