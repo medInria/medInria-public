@@ -70,7 +70,7 @@ void itkDataImageReaderBase::readInformation (QString path)
 {
   if (this->io.IsNull())
     return;
-    
+
   this->io->SetFileName ( path.toAscii().constData() );
   try {
     this->io->ReadImageInformation();
@@ -237,8 +237,12 @@ bool itkDataImageReaderBase::read (QString path)
 {
   if (this->io.IsNull())
     return false;
+
+  this->setProgress (0);
 	
   this->readInformation ( path );
+
+  this->setProgress (50);
 	
   qDebug() << "Can read with: " << this->description();
   /*	
@@ -438,6 +442,8 @@ bool itkDataImageReaderBase::read (QString path)
 		
   }
 
+  this->setProgress (100);
+
   //this->io->RemoveAllObservers ();
 	
   return true;
@@ -449,4 +455,9 @@ bool itkDataImageReaderBase::read (QStringList paths)
   if (!paths.count())
     return false;
   return this->read ( paths[0].toAscii().constData() );
+}
+
+void itkDataImageReaderBase::setProgress (int value)
+{
+  emit progressed (value);
 }
