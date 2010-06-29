@@ -20,7 +20,7 @@
 #include "medBrowserArea.h"
 #include "medDocumentationArea.h"
 #include "medMainWindow.h"
-#include "medMessageController.h"
+#include "medCore/medMessageController.h"
 #include "medViewerArea.h"
 #include "medViewerConfigurator.h"
 #include "medWelcomeArea.h"
