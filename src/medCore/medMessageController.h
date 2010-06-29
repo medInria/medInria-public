@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 09:57:25 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 16:23:14 2010 (+0200)
+ * Last-Updated: Tue Jun 29 15:02:01 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 40
+ *     Update #: 45
  */
 
 /* Commentary: 
@@ -23,8 +23,6 @@
 #include <QtCore>
 #include <QtGui>
 
-class medBrowserArea;
-class medViewerArea;
 class medMessageControllerPrivate;
 
 // /////////////////////////////////////////////////////////////////
@@ -85,16 +83,15 @@ class medMessageController : public QObject
 public:
     static medMessageController *instance(void);
 
-    void attach(medBrowserArea *browser);
-    void attach(medViewerArea *viewer);
+    void attach(QStatusBar *status);
 
 public slots:
-    int     showInfo(const QString& text);
-    int showProgress(const QString& text);
+    void     showInfo(QObject *sender, const QString& text);
+    void showProgress(QObject *sender, const QString& text);
 
-    void setProgress(int id, int value);
+    void setProgress(int value);
 
-    void remove(int id);
+    void remove(QObject *sender);
 
 protected:
      medMessageController(void);

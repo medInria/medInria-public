@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 15:20:47 2010 (+0200)
+ * Last-Updated: Tue Jun 29 16:20:05 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 965
+ *     Update #: 966
  */
 
 /* Commentary: 
@@ -250,6 +250,7 @@ void medViewerArea::setup(void)
         d->patientToolBox->addItem(query.value(0).toString(), query.value(1));
 
     // Setting up non persitent data
+
     QList<QString> patientList;
     foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
         if (!patientList.contains (item->name())) {

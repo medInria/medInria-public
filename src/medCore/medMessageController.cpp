@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 09:59:08 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 16:28:53 2010 (+0200)
+ * Last-Updated: Tue Jun 29 15:40:46 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 107
+ *     Update #: 134
  */
 
 /* Commentary: 
@@ -17,11 +17,9 @@
  * 
  */
 
-#include "medBrowserArea.h"
-#include "medBrowserArea_p.h"
+#include <dtkCore/dtkGlobal.h>
+
 #include "medMessageController.h"
-#include "medViewerArea.h"
-// #include "medViewerArea_p.h"
 
 // /////////////////////////////////////////////////////////////////
 // medMessageControllerMessage
@@ -100,6 +98,8 @@ medMessageControllerMessageProgress::~medMessageControllerMessageProgress(void)
 
 void medMessageControllerMessageProgress::setProgress(int value)
 {
+    qDebug() << DTK_PRETTY_FUNCTION << value;
+
     d->progress->setValue(value);
 }
 
@@ -110,10 +110,9 @@ void medMessageControllerMessageProgress::setProgress(int value)
 class medMessageControllerPrivate
 {
 public:
-    medBrowserArea *browser;
-    medViewerArea *viewer;
+    QStatusBar *status;
 
-    QHash<int, medMessageControllerMessage *> messages;
+    QHash<QObject *, medMessageControllerMessage *> messages;
 };
 
 medMessageController *medMessageController::instance(void)
@@ -124,45 +123,36 @@ medMessageController *medMessageController::instance(void)
     return s_instance;
 }
 
-void medMessageController::attach(medBrowserArea *browser)
+void medMessageController::attach(QStatusBar *status)
 {
-    d->browser = browser;
+    d->status = status;
 }
 
-void medMessageController::attach(medViewerArea *viewer)
-{
-    d->viewer = viewer;
-}
-
-int medMessageController::showInfo(const QString& text)
+void medMessageController::showInfo(QObject *sender, const QString& text)
 {
     medMessageControllerMessageInfo *message = new medMessageControllerMessageInfo(text);
     
-    d->browser->d->status->addWidget(message);
-    d->browser->d->status->update();
+    d->status->addWidget(message);
+    d->status->update();
     qApp->processEvents();
 
-    d->messages.insert(d->messages.count(), message);
-
-    return d->messages.count()-1;
+    d->messages.insert(sender, message);
 }
 
-int medMessageController::showProgress(const QString& text)
+void medMessageController::showProgress(QObject *sender, const QString& text)
 {
     medMessageControllerMessageProgress *message = new medMessageControllerMessageProgress(text);
     
-    d->browser->d->status->addWidget(message);
-    d->browser->d->status->update();
+    d->status->addWidget(message);
+    d->status->update();
     qApp->processEvents();
 
-    d->messages.insert(d->messages.count(), message);
-
-    return d->messages.count()-1;
+    d->messages.insert(sender, message);
 }
 
-void medMessageController::setProgress(int id, int value)
+void medMessageController::setProgress(int value)
 {
-    medMessageControllerMessage *message = d->messages.value(id);
+    medMessageControllerMessage *message = d->messages.value(this->sender());
 
     if(medMessageControllerMessageProgress *progress = dynamic_cast<medMessageControllerMessageProgress *>(message)) {
         progress->setProgress(value);
@@ -171,21 +161,22 @@ void medMessageController::setProgress(int id, int value)
     }
 }
 
-void medMessageController::remove(int id)
+void medMessageController::remove(QObject *sender)
 {
-    medMessageControllerMessage *message = d->messages.value(id);
+    qDebug() << DTK_PRETTY_FUNCTION;
 
-    d->browser->d->status->removeWidget(message);
+    medMessageControllerMessage *message = d->messages.value(sender);
 
-    d->messages.remove(id);
+    d->status->removeWidget(message);
+
+    d->messages.remove(sender);
 
     delete message;
 }
 
 medMessageController::medMessageController(void) : QObject(), d(new medMessageControllerPrivate)
 {
-    d->browser = NULL;
-    d->viewer = NULL;
+    d->status = NULL;
 }
 
 medMessageController::~medMessageController(void)

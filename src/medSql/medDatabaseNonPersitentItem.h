@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sun Jun 27 18:41:16 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Sun Jun 27 18:54:30 2010 (+0200)
+ * Last-Updated: Tue Jun 29 16:09:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 7
+ *     Update #: 8
  */
 
 /* Commentary: 
@@ -50,6 +50,7 @@ public:
 
 private:
     friend class medDatabaseNonPersitentController;
+    friend class medDatabaseNonPersitentReader;
 
 private:
     medDatabaseNonPersitentItemPrivate *d;
