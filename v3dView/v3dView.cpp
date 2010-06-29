@@ -12,6 +12,8 @@
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractDataImage.h>
+#include <dtkCore/dtkAbstractProcess.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -23,6 +25,7 @@
 #include <vtkPointSet.h>
 #include <vtkTextProperty.h>
 #include <vtkImageMapToColors.h>
+#include <vtkOrientedBoxWidget.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -94,7 +97,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
 	    this->slider->setValue (zslice);
 	    this->slider->update();
 	    this->slider->blockSignals (false);
-	    qApp->processEvents();
+	    //qApp->processEvents();
 	}
 	// }
 	// }
@@ -119,6 +122,7 @@ public:
     vtkImageView *currentView;
   
     vtkImageViewCollection *collection;
+    vtkImageViewCollection *collectionPos;
     vtkImageViewCollection *collectionAxial;
     vtkImageViewCollection *collectionSagittal;
     vtkImageViewCollection *collectionCoronal;
@@ -135,7 +139,7 @@ public:
     QString orientation;
 
     QSet<dtkAbstractView*> linkedViews;
-  
+    
     dtkAbstractData *data;
 
     QTimeLine *timeline;
@@ -216,23 +220,27 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->slider->setFocusPolicy(Qt::NoFocus);
 
-    // d->anchorButton = new QPushButton(d->widget);
-    // d->anchorButton->setText("a");
-    // d->anchorButton->setCheckable(true);
-    // d->anchorButton->setMaximumHeight(16);
-    // d->anchorButton->setMaximumWidth(16);
-    // d->anchorButton->setFocusPolicy(Qt::NoFocus);
-    // d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    // d->anchorButton->setObjectName("tool");
+    d->anchorButton = new QPushButton(d->widget);
+    d->anchorButton->setText("a");
+    d->anchorButton->setCheckable(true);
+    d->anchorButton->setMaximumHeight(16);
+    d->anchorButton->setMaximumWidth(16);
+    d->anchorButton->setFocusPolicy(Qt::NoFocus);
+    d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->anchorButton->setObjectName("tool");
 
-    // d->linkButton = new QPushButton(d->widget);
-    // d->linkButton->setText("l");
-    // d->linkButton->setCheckable(true);
-    // d->linkButton->setMaximumHeight(16);
-    // d->linkButton->setMaximumWidth(16);
-    // d->linkButton->setFocusPolicy(Qt::NoFocus);
-    // d->linkButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    // d->linkButton->setObjectName("tool");
+    connect(d->anchorButton, SIGNAL(clicked(bool)), this, SIGNAL(becomeDaddy(bool)));
+
+    d->linkButton = new QPushButton(d->widget);
+    d->linkButton->setText("l");
+    d->linkButton->setCheckable(true);
+    d->linkButton->setMaximumHeight(16);
+    d->linkButton->setMaximumWidth(16);
+    d->linkButton->setFocusPolicy(Qt::NoFocus);
+    d->linkButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->linkButton->setObjectName("tool");
+
+    connect(d->linkButton, SIGNAL(clicked(bool)), this, SIGNAL(sync(bool)));
 
     d->playButton = new QPushButton(d->widget);
     d->playButton->setText(">");
@@ -256,10 +264,10 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     connect(d->closeButton, SIGNAL(clicked()), this, SIGNAL(closed()));
 
-    // QButtonGroup *toolButtonGroup = new QButtonGroup(d->widget);
-    // toolButtonGroup->addButton(d->anchorButton);
-    // toolButtonGroup->addButton(d->linkButton);
-    // toolButtonGroup->setExclusive(false);
+    QButtonGroup *toolButtonGroup = new QButtonGroup(d->widget);
+    toolButtonGroup->addButton(d->anchorButton);
+    toolButtonGroup->addButton(d->linkButton);
+    toolButtonGroup->setExclusive(false);
 
     d->vtkWidget = new QVTKWidget(d->widget);
     d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -276,8 +284,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     toolsLayout->setContentsMargins(0, 0, 0, 0);
     toolsLayout->setSpacing(0);
     toolsLayout->addWidget(d->slider);
-    // toolsLayout->addWidget(d->anchorButton);
-    // toolsLayout->addWidget(d->linkButton);
+    toolsLayout->addWidget(d->anchorButton);
+    toolsLayout->addWidget(d->linkButton);
     toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->closeButton);
 
@@ -289,16 +297,19 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     //d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view3D->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view3D->UnInstallInteractor();
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
     
     //d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
     d->view2DCoronal->UnInstallInteractor();
 
     //d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->view2DSagittal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
+    d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
     d->view2DSagittal->UnInstallInteractor();
 
@@ -316,11 +327,46 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->collection->SetLinkColorWindowLevel (0);
     d->collection->SetLinkCamera (0);
     d->collection->SetLinkZoom (0);
+    d->collection->SetLinkPan (0);
     d->collection->SetLinkRequestedPosition (0);
 
     d->collectionAxial    = vtkImageViewCollection::New();
     d->collectionSagittal = vtkImageViewCollection::New();
     d->collectionCoronal  = vtkImageViewCollection::New();
+    d->collectionPos      = vtkImageViewCollection::New();
+
+    d->collectionPos->SetLinkCurrentPoint (0);
+    d->collectionPos->SetLinkRequestedPosition (1);
+    d->collectionPos->SetLinkSliceMove (1);
+    d->collectionPos->SetLinkColorWindowLevel (0);
+    d->collectionPos->SetLinkCamera (0);
+    d->collectionPos->SetLinkZoom (0);
+    d->collectionPos->SetLinkPan (0);
+
+    d->collectionAxial->SetLinkCurrentPoint (0);
+    d->collectionAxial->SetLinkRequestedPosition (0);
+    d->collectionAxial->SetLinkSliceMove (1);
+    d->collectionAxial->SetLinkColorWindowLevel (1);
+    d->collectionAxial->SetLinkCamera (0);
+    d->collectionAxial->SetLinkZoom (1);
+    d->collectionAxial->SetLinkPan (1);
+
+    d->collectionSagittal->SetLinkCurrentPoint (0);
+    d->collectionSagittal->SetLinkRequestedPosition (0);
+    d->collectionSagittal->SetLinkSliceMove (1);
+    d->collectionSagittal->SetLinkColorWindowLevel (1);
+    d->collectionSagittal->SetLinkCamera (0);
+    d->collectionSagittal->SetLinkZoom (1);
+    d->collectionSagittal->SetLinkPan (1);
+
+    d->collectionCoronal->SetLinkCurrentPoint (0);
+    d->collectionCoronal->SetLinkRequestedPosition (0);
+    d->collectionCoronal->SetLinkSliceMove (1);
+    d->collectionCoronal->SetLinkColorWindowLevel (1);
+    d->collectionCoronal->SetLinkCamera (0);
+    d->collectionCoronal->SetLinkZoom (1);
+    d->collectionCoronal->SetLinkPan (1);
+
 
     d->collectionAxial->AddItem    ( d->view2DAxial );
     d->collectionSagittal->AddItem ( d->view2DSagittal );
@@ -328,9 +374,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     
     d->observer = v3dViewObserver::New();
     d->observer->setSlider(d->slider);
-    //d->view2DAxial->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
-    d->view2DAxial->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
-    d->observer->setView (d->view2DAxial);
+    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 0);
+    d->observer->setView ( vtkImageView2D::SafeDownCast (d->currentView) );
 
     // 2D mode
     QAction *axialAct = new QAction(tr("Axial"), d->vtkWidget);
@@ -447,6 +492,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->addProperty ("BackgroundLookupTable", lut);
     this->addProperty ("Opacity",               QStringList() << "1.0");
     this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
+    this->addProperty ("ShowRuler",             QStringList() << "true" << "false");
+    this->addProperty ("ShowAnnotations",       QStringList() << "true" << "false");
     this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
     this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum" << "Off");
     this->addProperty ("VRMode",                QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default");
@@ -456,19 +503,31 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
 		                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
 		                                              << "Red on White" << "Glossy");
+    this->addProperty ("Linked", QStringList() << "true" << "false");
+    this->addProperty ("Daddy", QStringList() << "true" << "false");
 
     // set default properties
     this->setProperty ("Orientation", "Axial");
     this->setProperty ("ScalarBarVisibility", "false");
     this->setProperty ("ShowAxis", "false");
+    this->setProperty ("ShowRuler", "true");
+    this->setProperty ("ShowAnnotations", "true");
     this->setProperty ("LookupTable", "Default");
     this->setProperty ("BackgroundLookupTable", "Default");
     this->setProperty ("Opacity", "1.0");
     this->setProperty ("LeftClickInteraction", "Zooming");
     this->setProperty ("Mode", "VR");
+#ifdef __APPLE__
+    this->setProperty ("VRMode", "Ray Cast");
+#else
     this->setProperty ("VRMode", "Default");
+#endif    
     this->setProperty ("UseLOD", "On");
+    this->setProperty ("Cropping", "false");
     this->setProperty ("Preset", "None");
+    
+    this->setProperty ("Daddy", "false");
+    
 
     connect(d->vtkWidget, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,    SIGNAL(valueChanged(int)),        this, SLOT(onZSliderValueChanged(int)));
@@ -538,7 +597,7 @@ void v3dView::reset(void)
 void v3dView::update(void)
 {
     if( d->currentView ) {
-        d->currentView->GetWindowLevel()->Modified();
+        //d->currentView->GetWindowLevel()->Modified();
         d->currentView->Render();
     }
     d->vtkWidget->update();
@@ -546,42 +605,54 @@ void v3dView::update(void)
 
 void v3dView::link(dtkAbstractView *other)
 {
-    if(!other || other->description()!=tr("v3dView"))
+    if(!other || other->description()!=tr("v3dView") || d->linkedViews.contains (other) || other==this)
         return;
 
     d->linkedViews.insert (other);
 
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
       
-        otherView->viewAxial()->SetCurrentPoint    ( d->view2DAxial->GetCurrentPoint() );
-	otherView->viewSagittal()->SetCurrentPoint ( d->view2DSagittal->GetCurrentPoint() );
-	otherView->viewCoronal()->SetCurrentPoint  ( d->view2DCoronal->GetCurrentPoint() );
-	otherView->view3D()->SetCurrentPoint       ( d->view3D->GetCurrentPoint() );
+        otherView->setProperty ("Linked", "true");
+	// properties:
+	//otherView->setProperty ("Orientation",          this->property ("Orientation"));
+	otherView->setProperty ("ScalarBarVisibility",  this->property ("ScalarBarVisibility"));
+	//otherView->setProperty ("LookupTable",          this->property ("LookupTable")); // seems to reset the window / level 
+	otherView->setProperty ("BackgroundLookupTable",this->property ("BackgroundLookupTable"));
+	otherView->setProperty ("Opacity",              this->property ("Opacity"));
+	otherView->setProperty ("ShowAxis",             this->property ("ShowAxis"));
+	otherView->setProperty ("ShowRuler",            this->property ("ShowRuler"));
+	otherView->setProperty ("ShowAnnotations",      this->property ("ShowAnnotations"));
+	otherView->setProperty ("LeftClickInteraction", this->property ("LeftClickInteraction"));
+	otherView->setProperty ("Mode",                 this->property ("Mode"));
+	otherView->setProperty ("VRMode",               this->property ("VRMode"));
+	otherView->setProperty ("UseLOD",               this->property ("UseLOD"));
+	otherView->setProperty ("Cropping",             this->property ("Cropping"));
+		
 
-	otherView->viewAxial()->SetColorWindow    ( d->view2DAxial->GetColorWindow() );
-	otherView->viewSagittal()->SetColorWindow ( d->view2DSagittal->GetColorWindow() );
-	otherView->viewCoronal()->SetColorWindow  ( d->view2DCoronal->GetColorWindow() );
-	otherView->view3D()->SetColorWindow       ( d->view3D->GetColorWindow() );
-
-	otherView->viewAxial()->SetColorLevel    ( d->view2DAxial->GetColorLevel() );
-	otherView->viewSagittal()->SetColorLevel ( d->view2DSagittal->GetColorLevel() );
-	otherView->viewCoronal()->SetColorLevel  ( d->view2DCoronal->GetColorLevel() );
-	otherView->view3D()->SetColorLevel       ( d->view3D->GetColorLevel() );
-
-	//otherView->viewAxial()->SetCameraPosition   ( d->view2DAxial->GetCameraPosition() );
-	//otherView->viewAxial()->SetCameraFocalPoint ( d->view2DAxial->GetCameraFocalPoint() );
-	otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
+        otherView->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
+	otherView->viewSagittal()->SetCurrentPoint ( d->currentView->GetCurrentPoint() );
+	otherView->viewCoronal()->SetCurrentPoint  ( d->currentView->GetCurrentPoint() );
+	otherView->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
+	
+	otherView->viewAxial()->SetColorWindow    ( d->currentView->GetColorWindow() );
+	otherView->viewSagittal()->SetColorWindow ( d->currentView->GetColorWindow() );
+	otherView->viewCoronal()->SetColorWindow  ( d->currentView->GetColorWindow() );
+	otherView->view3D()->SetColorWindow       ( d->currentView->GetColorWindow() );
+	
+	otherView->viewAxial()->SetColorLevel    ( d->currentView->GetColorLevel() );
+	otherView->viewSagittal()->SetColorLevel ( d->currentView->GetColorLevel() );
+	otherView->viewCoronal()->SetColorLevel  ( d->currentView->GetColorLevel() );
+	otherView->view3D()->SetColorLevel       ( d->currentView->GetColorLevel() );
+	
+	// zoom comes first, then pan (==translation)
 	otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
-
-	//otherView->viewSagittal()->SetCameraPosition   ( d->view2DSagittal->GetCameraPosition() );
-	//otherView->viewSagittal()->SetCameraFocalPoint ( d->view2DSagittal->GetCameraFocalPoint() );
-	otherView->viewSagittal()->SetPan  ( d->view2DSagittal->GetPan() );
+	otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
+	
 	otherView->viewSagittal()->SetZoom ( d->view2DSagittal->GetZoom() );
+	otherView->viewSagittal()->SetPan  ( d->view2DSagittal->GetPan() );	
 
-	//otherView->viewCoronal()->SetCameraPosition    ( d->view2DCoronal->GetCameraPosition() );
-	//otherView->viewCoronal()->SetCameraFocalPoint  ( d->view2DCoronal->GetCameraFocalPoint() );
-	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
 	otherView->viewCoronal()->SetZoom ( d->view2DCoronal->GetZoom() );
+	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
 
 	/** 3D is more tricky than this */
 	//otherView->view3D()->SetCameraPosition    ( d->view3D->GetCameraPosition() );
@@ -591,20 +662,52 @@ void v3dView::link(dtkAbstractView *other)
         d->collectionAxial->AddItem    ( otherView->viewAxial() );
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
+
+	if (!d->collectionPos->IsItemPresent (d->view2DAxial ))
+	    d->collectionPos->AddItem    ( d->view2DAxial );
+	if (!d->collectionPos->IsItemPresent (d->view2DSagittal ))
+	    d->collectionPos->AddItem ( d->view2DSagittal );
+	if (!d->collectionPos->IsItemPresent (d->view2DCoronal ))
+	    d->collectionPos->AddItem  ( d->view2DCoronal );
+	if (!d->collectionPos->IsItemPresent (d->view3D ))
+	    d->collectionPos->AddItem  ( d->view3D );
+
+	d->collectionPos->AddItem ( otherView->viewAxial() );
+	d->collectionPos->AddItem ( otherView->viewSagittal() );
+	d->collectionPos->AddItem ( otherView->viewCoronal() );
+	d->collectionPos->AddItem ( otherView->view3D() );
     }
+
+    this->setProperty ("Linked", "true");
 }
 
 void v3dView::unlink(dtkAbstractView *other)
 {
-    if(!other || other->description()!=tr("v3dView"))
+    if(!other || other->description()!=tr("v3dView") || !d->linkedViews.contains (other) ||  other==this)
         return;
 
-    d->linkedViews.remove (other);
-    
     if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
+
+	otherView->setProperty ("Linked", "false");
+	
         d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
 	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
 	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
+
+	d->collectionPos->RemoveItem ( otherView->viewAxial() );
+	d->collectionPos->RemoveItem ( otherView->viewSagittal() );
+	d->collectionPos->RemoveItem ( otherView->viewCoronal() );
+	d->collectionPos->RemoveItem ( otherView->view3D() );
+    }
+
+    d->linkedViews.remove (other);
+    
+    if (d->linkedViews.count()==0) {
+        this->setProperty ("Linked", "false");
+	d->collectionPos->RemoveItem ( d->view2DAxial );
+	d->collectionPos->RemoveItem ( d->view2DSagittal );
+	d->collectionPos->RemoveItem ( d->view2DCoronal );
+	d->collectionPos->RemoveItem ( d->view3D );
     }
 }
 
@@ -856,6 +959,7 @@ void v3dView::setData(dtkAbstractData *data)
 
     
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) ) {
+        d->slider->blockSignals (true);
         if( d->orientation=="Axial") {
             d->slider->setRange(0, imData->zDimension()-1);
         }
@@ -865,17 +969,20 @@ void v3dView::setData(dtkAbstractData *data)
 	else if( d->orientation=="Coronal") {
             d->slider->setRange(0, imData->yDimension()-1);
         }
+	d->slider->blockSignals (false);
     }
 
-    // this->update();
+    // this->update(); // update is not the role of the plugin, but of the app
 }
 
 void *v3dView::data (void)
 {
-    if (d->data)
-        return d->data->output();
+    return d->data;
+}
 
-    return NULL;
+QSet<dtkAbstractView *> v3dView::linkedViews (void)
+{
+    return d->linkedViews;
 }
 
 QWidget *v3dView::widget(void)
@@ -885,8 +992,6 @@ QWidget *v3dView::widget(void)
 
 void v3dView::play(bool start)
 {
-    qDebug() << __func__ << start;
-
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data)) {
 
         if (d->orientation=="Axial") {
@@ -910,6 +1015,9 @@ void v3dView::play(bool start)
 
 void v3dView::onPropertySet(QString key, QString value)
 {
+    if(key == "Daddy")
+	this->onDaddyPropertySet(value);
+    
     if(key == "Orientation")
 	this->onOrientationPropertySet(value);
 
@@ -927,6 +1035,12 @@ void v3dView::onPropertySet(QString key, QString value)
 
     if(key == "ShowAxis")
 	this->onShowAxisPropertySet(value);
+
+    if(key == "ShowRuler")
+	this->onShowRulerPropertySet(value);
+
+    if(key == "ShowAnnotations")
+	this->onShowAnnotationsPropertySet(value);
 
     if(key == "LeftClickInteraction")
 	this->onLeftClickInteractionPropertySet(value);
@@ -946,12 +1060,13 @@ void v3dView::onPropertySet(QString key, QString value)
     if(key == "Cropping")
 	this->onCroppingPropertySet(value);
 
-    this->widget()->update();
+    //this->widget()->update();
+    //this->update();
 
+    /*
     foreach (dtkAbstractView *lview, d->linkedViews)
         lview->setProperty (key, value);
-      //for (int i=0; i<d->linkedViews.count(); i++)
-      //d->linkedViews[i]->setProperty (key, value);
+    */
 }
 
 void v3dView::onOrientationPropertySet(QString value)
@@ -966,8 +1081,8 @@ void v3dView::onOrientationPropertySet(QString value)
         level  = d->currentView->GetColorLevel();
 	
 	d->currentView->UnInstallInteractor();
-	d->currentView->SetRenderWindow( 0 );
-	//d->currentView->RemoveObserver(d->observer);
+	// d->currentView->SetRenderWindow( 0 );
+	
 	d->currentView->GetInteractorStyle()->RemoveObserver(d->observer);
 	d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->currentView->GetRenderer());
     }
@@ -976,6 +1091,10 @@ void v3dView::onOrientationPropertySet(QString value)
         d->orientation = "3D";
 	d->currentView = d->view3D;	
     }
+
+    // in case the max range becomes smaller than the actual value, a signal is emitted and
+    // we don't want it
+    d->slider->blockSignals (true);
     
     if (value == "Axial") {
         d->orientation = "Axial";
@@ -1001,24 +1120,32 @@ void v3dView::onOrientationPropertySet(QString value)
             d->slider->setRange (0, imData->yDimension()-1);
     }
 
-    if (!d->currentView)
-      return;
+    if (!d->currentView) {
+        d->slider->blockSignals (false);
+	return;
+    }
 
     d->currentView->SetRenderWindow ( d->vtkWidget->GetRenderWindow() );
     //d->currentView->InstallInteractor();
     //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
-    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 15);
+    d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 0);
     d->observer->setView ( vtkImageView2D::SafeDownCast (d->currentView) );
 
     d->currentView->SetCurrentPoint (pos);
     d->currentView->SetColorWindow (window);
-    d->currentView->SetColorLevel (level);	
+    d->currentView->SetColorLevel (level);
+
 
     // force a correct display of the 2D axis for planar views
-    d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL);
+    d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL); // seems not needed anymore
 
     // update slider position
-    d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent, NULL);
+    if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
+        unsigned int zslice = view2d->GetSlice();
+	d->slider->setValue (zslice);
+    }
+
+    d->slider->blockSignals (false);
 }
 
 void v3dView::onModePropertySet (QString value)
@@ -1233,25 +1360,31 @@ void v3dView::onShowAxisPropertySet(QString value)
 	d->collection->SyncSetShowImageAxis(0);
 }
 
+void v3dView::onShowRulerPropertySet(QString value)
+{
+  d->collection->SyncSetShowRulerWidget ((value == "true"));  
+}
+
+void v3dView::onShowAnnotationsPropertySet(QString value)
+{
+  d->collection->SyncSetShowAnnotations ((value == "true"));
+}
+
 void v3dView::onLeftClickInteractionPropertySet(QString value)
 {
+  d->collection->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+  
     if (value == "Zooming") {
-        d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-	d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-	d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+        d->collection->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+        d->collection->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     }
 
     if (value == "Windowing") {
-        d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-	d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-	d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-    }
-    
+        d->collection->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+    }    
 
     if (value == "Slicing") {
-        d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
-	d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
-	d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+        d->collection->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
     }
 
     if (value == "Measuring") {
@@ -1418,12 +1551,16 @@ void v3dView::onPresetPropertySet (QString value)
 void v3dView::onCroppingPropertySet (QString value)
 {
     if ( value=="true" ) {
-        d->view3D->SetCroppingModeToOutside();
-	d->view3D->SetShowBoxWidget ( 1 );
+		if (d->view3D->GetBoxWidget()->GetInteractor()) { // avoid VTK warnings
+            d->view3D->SetCroppingModeToOutside();
+	        d->view3D->SetShowBoxWidget ( 1 );
+		}
     }
     else {
-      d->view3D->SetCroppingModeToOff ();
-      d->view3D->SetShowBoxWidget ( 0 );
+		if (d->view3D->GetBoxWidget()->GetInteractor()) {
+            d->view3D->SetCroppingModeToOff ();
+            d->view3D->SetShowBoxWidget ( 0 );
+		}
     }
 }
 
@@ -1447,6 +1584,23 @@ void v3dView::onZSliderValueChanged (int value)
         d->currentView->Render();		
     }
     d->observer->unlock();
+}
+
+void v3dView::onDaddyPropertySet (QString value)
+{
+    d->anchorButton->blockSignals(true);
+
+    if (value=="true") {
+        d->anchorButton->setChecked (true);
+	d->anchorButton->blockSignals(false);
+	emit becameDaddy(1);
+    }
+
+    if (value=="false") {
+        d->anchorButton->setChecked (false);
+	d->anchorButton->blockSignals(false);
+	emit becameDaddy(0);
+    }
 }
 
 void v3dView::onMetaDataSet(QString key, QString value)

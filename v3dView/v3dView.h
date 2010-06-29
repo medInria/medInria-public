@@ -33,6 +33,9 @@ public:
 
 signals:
     void closed(void);
+    void becomeDaddy (bool);
+    void becameDaddy (bool);
+    void sync (bool);
 
 public:
     void reset(void);
@@ -46,6 +49,8 @@ public:
 
     void setData(dtkAbstractData *data);
     void *data (void);
+
+    QSet<dtkAbstractView *> linkedViews (void);
     
     QWidget *widget(void);
 
@@ -64,6 +69,8 @@ public:
     	
 public slots:
     void play(bool);
+    //void sync(dtkAbstracData* data);
+    //void becomeDaddy (bool);
 
 public slots:
     void onPropertySet         (QString key, QString value);
@@ -77,10 +84,13 @@ public slots:
     void onBackgroundLookupTablePropertySet (QString value);
     void onOpacityPropertySet               (QString value);
     void onShowAxisPropertySet              (QString value);
+    void onShowRulerPropertySet             (QString value);
+    void onShowAnnotationsPropertySet       (QString value);
     void onLeftClickInteractionPropertySet  (QString value);
     void onCroppingPropertySet              (QString value);
     void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged              (int value);
+    void onDaddyPropertySet                 (QString value);
 
     void onMetaDataSet(QString key, QString value);
 

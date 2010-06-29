@@ -15,6 +15,20 @@
 #include <itkObjectFactoryBase.h>
 #include "itkDataImageReaderCommand.h"
 
+#define ReadImageMacro(type, dimension)					\
+  itk::ImageFileReader< itk::Image<type, dimension> >::Pointer Reader = itk::ImageFileReader< itk::Image<type, dimension> >::New(); \
+  Reader->SetImageIO ( d->io );						\
+  Reader->SetFileName ( paths[0].toAscii().constData() );		\
+  dtkdata->setData ( Reader->GetOutput() );				\
+  try									\
+  {									\
+    Reader->Update();							\
+  }									\
+  catch (itk::ExceptionObject &e) {					\
+    qDebug() << e.GetDescription();					\
+    return false;							\
+  }
+
 
 // /////////////////////////////////////////////////////////////////
 // itkDCMTKDataImageReaderPrivate
@@ -23,16 +37,16 @@
 class itkDCMTKDataImageReaderPrivate
 {
 public:
-    itkDCMTKDataImageReaderPrivate();
-    ~itkDCMTKDataImageReaderPrivate(){};
+  itkDCMTKDataImageReaderPrivate();
+  ~itkDCMTKDataImageReaderPrivate(){};
   
-    itk::DCMTKImageIO::Pointer io;
+  itk::DCMTKImageIO::Pointer io;
 };
 
 
 itkDCMTKDataImageReaderPrivate::itkDCMTKDataImageReaderPrivate()
 {
-    io = itk::DCMTKImageIO::New();
+  io = itk::DCMTKImageIO::New();
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -54,50 +68,50 @@ itkDCMTKDataImageReader::~itkDCMTKDataImageReader(void)
 
 bool itkDCMTKDataImageReader::registered(void)
 {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
-								      << "itkDataImageFloat3"
-								      << "itkDataImageULong3"
-								      << "itkDataImageLong3"
-								      << "itkDataImageUInt3"
-								      << "itkDataImageInt3"
-								      << "itkDataImageUShort3"
-								      << "itkDataImageUShort4"
-								      << "itkDataImageShort3"
-								      << "itkDataImageShort4"
-								      << "itkDataImageUChar3"
-								      << "itkDataImageChar3"
-								      << "itkDataImageRGB3",
-								      createItkDCMTKDataImageReader);
+  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
+								    << "itkDataImageFloat3"
+								    << "itkDataImageULong3"
+								    << "itkDataImageLong3"
+								    << "itkDataImageUInt3"
+								    << "itkDataImageInt3"
+								    << "itkDataImageUShort3"
+								    << "itkDataImageUShort4"
+								    << "itkDataImageShort3"
+								    << "itkDataImageShort4"
+								    << "itkDataImageUChar3"
+								    << "itkDataImageChar3"
+								    << "itkDataImageRGB3",
+								    createItkDCMTKDataImageReader);
 }
 
 
 QStringList itkDCMTKDataImageReader::handled(void) const
 {
-    return QStringList() << "itkDataImageDouble3"
-			 << "itkDataImageFloat3"
-			 << "itkDataImageULong3"
-			 << "itkDataImageLong3"
-			 << "itkDataImageUInt3"
-			 << "itkDataImageInt3"
-			 << "itkDataImageUShort3"
-			 << "itkDataImageUShort4"
-			 << "itkDataImageShort3"
-			 << "itkDataImageShort4"
-			 << "itkDataImageUChar3"
-			 << "itkDataImageChar3"
-			 << "itkDataImageRGB3";
+  return QStringList() << "itkDataImageDouble3"
+		       << "itkDataImageFloat3"
+		       << "itkDataImageULong3"
+		       << "itkDataImageLong3"
+		       << "itkDataImageUInt3"
+		       << "itkDataImageInt3"
+		       << "itkDataImageUShort3"
+		       << "itkDataImageUShort4"
+		       << "itkDataImageShort3"
+		       << "itkDataImageShort4"
+		       << "itkDataImageUChar3"
+		       << "itkDataImageChar3"
+		       << "itkDataImageRGB3";
 }
 
 
 QString itkDCMTKDataImageReader::description(void) const
 {
-    return "itkDCMTKDataImageReader";
+  return "itkDCMTKDataImageReader";
 }
 
 
 bool itkDCMTKDataImageReader::canRead (QString path)
 {
-    return d->io->CanReadFile ( path.toAscii().constData() );
+  return d->io->CanReadFile ( path.toAscii().constData() );
 }
 
 
@@ -120,470 +134,276 @@ void itkDCMTKDataImageReader::readInformation (QString path)
 
 void itkDCMTKDataImageReader::readInformation (QStringList paths)
 {
-    if (paths.size()==0)
-      return;
+  if (paths.size()==0)
+    return;
 
-    std::vector< std::string > filenames;
-    for (int i=0; i<paths.size(); i++)
-      filenames.push_back ( paths[i].toAscii().constData() );
+  std::vector< std::string > filenames;
+  for (int i=0; i<paths.size(); i++)
+    filenames.push_back ( paths[i].toAscii().constData() );
 
-    d->io->SetFileNames ( filenames );
-    try {
-      d->io->ReadImageInformation();
-    }
-    catch (itk::ExceptionObject &e) {
-      qDebug() << e.GetDescription();
-      return;
-    }
+  d->io->SetFileNames ( filenames );
+  try {
+    d->io->ReadImageInformation();
+  }
+  catch (itk::ExceptionObject &e) {
+    qDebug() << e.GetDescription();
+    return;
+  }
 
-
-    dtkAbstractData* dtkdata = this->data();
+  dtkAbstractData* dtkdata = this->data();
     
-    
-    if (!dtkdata) {
+  if (!dtkdata) {
+
+    std::ostringstream imagetypestring;
+    imagetypestring << "itkDataImage";
       
-      if (d->io->GetPixelType() == itk::ImageIOBase::SCALAR ) {
-	
-	switch (d->io->GetComponentType()) {
-	  
-	    case itk::ImageIOBase::UCHAR:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUChar3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
-	      
-	    case itk::ImageIOBase::CHAR:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageChar3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
-	      
-	    case itk::ImageIOBase::USHORT:
-	      {
-		if ( d->io->GetNumberOfDimensions()<=3 )
-		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3");
-		else if ( d->io->GetNumberOfDimensions()==4 )
-		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUShort4");
+      
+    if (d->io->GetPixelType() == itk::ImageIOBase::SCALAR ) {
 
-		if (dtkdata) 
-		  this->setData ( dtkdata );
-		break;
-	      }
-	      
-	    case itk::ImageIOBase::SHORT:
-	      {
-		if ( d->io->GetNumberOfDimensions()<=3 )
-		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageShort3");
-		else if ( d->io->GetNumberOfDimensions()==4 )
-		    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageShort4");
-		
-		if (dtkdata)
-		  this->setData ( dtkdata );
-	      }
-	      break;
-	      
-	    case itk::ImageIOBase::UINT:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUInt3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
-	      
-	    case itk::ImageIOBase::INT:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageInt3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
-	      
-	    case itk::ImageIOBase::ULONG:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageULong3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
-	      
-	    case itk::ImageIOBase::LONG:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageLong3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
-	      
+      switch (d->io->GetComponentType())
+      {
+	  case itk::ImageIOBase::UCHAR:
+	    imagetypestring << "UChar";
+	    break;
+	  case itk::ImageIOBase::CHAR:
+	    imagetypestring << "Char";
+	    break;
+	  case itk::ImageIOBase::USHORT:
+	    imagetypestring << "UShort";
+	    break;
+	  case itk::ImageIOBase::SHORT:
+	    imagetypestring << "Short";
+	    break;
+	  case itk::ImageIOBase::UINT:
+	    imagetypestring << "UInt";
+	    break;
+	  case itk::ImageIOBase::INT:
+	    imagetypestring << "Int";
+	    break;
+	  case itk::ImageIOBase::ULONG:
+	    imagetypestring << "ULong";
+	    break;
+	  case itk::ImageIOBase::LONG:
+	    imagetypestring << "Long";
+	    break;
 	  case itk::ImageIOBase::FLOAT:
-	    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+	    imagetypestring << "Float";
+	    break;
+	  case itk::ImageIOBase::DOUBLE:
+	    imagetypestring << "Double";
+	    break;
+	  default:
+	    qDebug() << "Unrecognized component type: " << d->io->GetComponentType();
+	    return;
+      }
+
+      imagetypestring << d->io->GetNumberOfDimensions();
+      dtkdata = dtkAbstractDataFactory::instance()->create (imagetypestring.str().c_str());
+      if (dtkdata)
+	this->setData ( dtkdata );
+    }
+    else if ( d->io->GetPixelType()==itk::ImageIOBase::RGB ) {
+
+      switch (d->io->GetComponentType()) {
+	  
+	  case itk::ImageIOBase::UCHAR:
+	    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageRGB3");
+	      
 	    if (dtkdata)
 	      this->setData ( dtkdata );
 	    break;
-	    
-	    case itk::ImageIOBase::DOUBLE:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
 	      
-	    default:
-		qDebug() << "Unrecognized component pouet type";
-		return;
-	}
-	
-      }
-      else if ( d->io->GetPixelType()==itk::ImageIOBase::RGB ) {
-
-	switch (d->io->GetComponentType()) {
-	  
-	    case itk::ImageIOBase::UCHAR:
-	      dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageRGB3");
-	      
-	      if (dtkdata)
-		this->setData ( dtkdata );
-	      break;
-	      
-	    default:
-	      qDebug() << "Unrecognized component type";
-	      return;
-	}
-      }
-      else {
-	qDebug() << "Unsupported pixel type";
-	return;
+	  default:
+	    qDebug() << "Unrecognized component type";
+	    return;
       }
     }
-
-
-    if (dtkdata) {
-
-      QStringList patientName;
-      QStringList studyName;
-      QStringList seriesName;
-
-      QStringList studyId;
-      QStringList seriesId;
-      QStringList orientation;
-      QStringList seriesNumber;
-      QStringList sequenceName;
-      QStringList sliceThickness;
-      QStringList rows;
-      QStringList columns;
-
-      QStringList age;
-      QStringList birthdate;
-      QStringList gender;
-      QStringList desc;
-      QStringList modality;
-      QStringList acqdate;
-      QStringList importdate;
-      QStringList referee;
-      QStringList performer;
-      QStringList institution;
-      QStringList report;
-      QStringList protocol;
-      QStringList comments;
-      QStringList status;
-
-      QStringList filePaths;
-      
-      patientName << d->io->GetPatientName().c_str();
-      studyName   << d->io->GetStudyDescription().c_str();
-      seriesName  << d->io->GetSeriesDescription().c_str();
-
-      studyId        << d->io->GetStudyID().c_str();
-      seriesId       << d->io->GetSeriesID().c_str();
-      orientation    << d->io->GetOrientation().c_str();
-      seriesNumber   << d->io->GetSeriesNumber().c_str();
-      sequenceName   << d->io->GetSequenceName().c_str();
-      sliceThickness << d->io->GetSliceThickness().c_str();
-      rows           << d->io->GetRows().c_str();
-      columns        << d->io->GetColumns().c_str();
-      age            << d->io->GetPatientAge().c_str();
-      birthdate      << d->io->GetPatientDOB().c_str();
-      gender         << d->io->GetPatientSex().c_str();
-      desc           << d->io->GetScanOptions().c_str();
-      modality       << d->io->GetModality().c_str();
-      acqdate        << d->io->GetAcquisitionDate().c_str();
-      referee        << d->io->GetReferringPhysicianName().c_str();
-      performer      << d->io->GetPerformingPhysicianName().c_str();
-      institution    << d->io->GetInstitution().c_str();
-      protocol       << d->io->GetProtocolName().c_str();
-      comments       << d->io->GetAcquisitionComments().c_str();
-      status         << d->io->GetPatientStatus().c_str();
-      report << "";
-      
-
-
-      for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++ )
-	filePaths << d->io->GetOrderedFileNames()[i].c_str();
-      
-      if (!dtkdata->hasMetaData ( tr ("PatientName") ))
-	dtkdata->addMetaData ( "PatientName", patientName );
-      else
-	dtkdata->setMetaData ( "PatientName", patientName );
-
-      if (!dtkdata->hasMetaData ( tr ("StudyDescription") ))
-	dtkdata->addMetaData ( "StudyDescription", studyName );
-      else
-	dtkdata->setMetaData ( "StudyDescription", studyName );
-
-      if (!dtkdata->hasMetaData ( tr ("SeriesDescription") ))
-	dtkdata->addMetaData ( "SeriesDescription", seriesName );
-      else
-	dtkdata->setMetaData ( "SeriesDescription", seriesName );
-
-      dtkdata->setMetaData("StudyID",         studyId);
-      dtkdata->setMetaData("SeriesID",        seriesId);
-      dtkdata->setMetaData("Orientation",     orientation);
-      dtkdata->setMetaData("SeriesNumber",    seriesNumber);
-      dtkdata->setMetaData("SequenceName",    sequenceName);
-      dtkdata->setMetaData("SliceThickness",  sliceThickness);
-      dtkdata->setMetaData("Rows",            rows);
-      dtkdata->setMetaData("Columns",         columns);
-      dtkdata->setMetaData("Age",             age);
-      dtkdata->setMetaData("BirthDate",       birthdate);
-      dtkdata->setMetaData("Gender",          gender);
-      dtkdata->setMetaData("Description",     desc);
-      dtkdata->setMetaData("Modality",        modality);
-      dtkdata->setMetaData("AcquisitionDate", acqdate);
-      dtkdata->setMetaData("Referee",         referee);
-      dtkdata->setMetaData("Performer",       performer);
-      dtkdata->setMetaData("Institution",     institution);
-      dtkdata->setMetaData("Report",          report);
-      dtkdata->setMetaData("Protocol",        protocol);
-      dtkdata->setMetaData("Comments",        comments);
-      dtkdata->setMetaData("Status",          status);      
-      
-      dtkdata->addMetaData ("FilePaths",      filePaths);
-	
+    else {
+      qDebug() << "Unsupported pixel type";
+      return;
     }
+  }
+
+  if (dtkdata) {
+
+    QStringList patientName;
+    QStringList studyName;
+    QStringList seriesName;
+
+    QStringList studyId;
+    QStringList seriesId;
+    QStringList orientation;
+    QStringList seriesNumber;
+    QStringList sequenceName;
+    QStringList sliceThickness;
+    QStringList rows;
+    QStringList columns;
+
+    QStringList age;
+    QStringList birthdate;
+    QStringList gender;
+    QStringList desc;
+    QStringList modality;
+    QStringList acqdate;
+    QStringList importdate;
+    QStringList referee;
+    QStringList performer;
+    QStringList institution;
+    QStringList report;
+    QStringList protocol;
+    QStringList comments;
+    QStringList status;
+
+    QStringList filePaths;
+      
+    patientName << d->io->GetPatientName().c_str();
+    studyName   << d->io->GetStudyDescription().c_str();
+    seriesName  << d->io->GetSeriesDescription().c_str();
+
+    studyId        << d->io->GetStudyID().c_str();
+    seriesId       << d->io->GetSeriesID().c_str();
+    orientation    << d->io->GetOrientation().c_str();
+    seriesNumber   << d->io->GetSeriesNumber().c_str();
+    sequenceName   << d->io->GetSequenceName().c_str();
+    sliceThickness << d->io->GetSliceThickness().c_str();
+    rows           << d->io->GetRows().c_str();
+    columns        << d->io->GetColumns().c_str();
+    age            << d->io->GetPatientAge().c_str();
+    birthdate      << d->io->GetPatientDOB().c_str();
+    gender         << d->io->GetPatientSex().c_str();
+    desc           << d->io->GetScanOptions().c_str();
+    modality       << d->io->GetModality().c_str();
+    acqdate        << d->io->GetAcquisitionDate().c_str();
+    referee        << d->io->GetReferringPhysicianName().c_str();
+    performer      << d->io->GetPerformingPhysicianName().c_str();
+    institution    << d->io->GetInstitution().c_str();
+    protocol       << d->io->GetProtocolName().c_str();
+    comments       << d->io->GetAcquisitionComments().c_str();
+    status         << d->io->GetPatientStatus().c_str();
+    report << "";
+
+    for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++ )
+      filePaths << d->io->GetOrderedFileNames()[i].c_str();
+      
+    if (!dtkdata->hasMetaData ( tr ("PatientName") ))
+      dtkdata->addMetaData ( "PatientName", patientName );
+    else
+      dtkdata->setMetaData ( "PatientName", patientName );
+
+    if (!dtkdata->hasMetaData ( tr ("StudyDescription") ))
+      dtkdata->addMetaData ( "StudyDescription", studyName );
+    else
+      dtkdata->setMetaData ( "StudyDescription", studyName );
+
+    if (!dtkdata->hasMetaData ( tr ("SeriesDescription") ))
+      dtkdata->addMetaData ( "SeriesDescription", seriesName );
+    else
+      dtkdata->setMetaData ( "SeriesDescription", seriesName );
+
+    dtkdata->setMetaData("StudyID",         studyId);
+    dtkdata->setMetaData("SeriesID",        seriesId);
+    dtkdata->setMetaData("Orientation",     orientation);
+    dtkdata->setMetaData("SeriesNumber",    seriesNumber);
+    dtkdata->setMetaData("SequenceName",    sequenceName);
+    dtkdata->setMetaData("SliceThickness",  sliceThickness);
+    dtkdata->setMetaData("Rows",            rows);
+    dtkdata->setMetaData("Columns",         columns);
+    dtkdata->setMetaData("Age",             age);
+    dtkdata->setMetaData("BirthDate",       birthdate);
+    dtkdata->setMetaData("Gender",          gender);
+    dtkdata->setMetaData("Description",     desc);
+    dtkdata->setMetaData("Modality",        modality);
+    dtkdata->setMetaData("AcquisitionDate", acqdate);
+    dtkdata->setMetaData("Referee",         referee);
+    dtkdata->setMetaData("Performer",       performer);
+    dtkdata->setMetaData("Institution",     institution);
+    dtkdata->setMetaData("Report",          report);
+    dtkdata->setMetaData("Protocol",        protocol);
+    dtkdata->setMetaData("Comments",        comments);
+    dtkdata->setMetaData("Status",          status);      
+      
+    dtkdata->addMetaData ("FilePaths",      filePaths);
+	
+  }
 }
 
 
 bool itkDCMTKDataImageReader::read (QString path)
 {
-    QStringList paths;
-    paths << path;
-    return read ( paths );
+  QStringList paths;
+  paths << path;
+  return read ( paths );
 }
 
 
 bool itkDCMTKDataImageReader::read (QStringList paths)
 {
-    if (paths.size()==0)
-        return false;
+  if (paths.size()==0)
+    return false;
 
-    this->readInformation ( paths );
+  this->readInformation ( paths );
 
-    /*
+  /*
     if (d->io->GetNumberOfDimensions() != 3) {
-        qWarning() << "Only 3D images are supported for now (required: " << d->io->GetNumberOfDimensions() << ")";
-	return false;
+    qWarning() << "Only 3D images are supported for now (required: " << d->io->GetNumberOfDimensions() << ")";
+    return false;
     }
-    */
+  */
 
-    itk::DataImageReaderCommand::Pointer command = itk::DataImageReaderCommand::New();
-    command->SetDataImageReader ( this );
-    d->io->AddObserver ( itk::ProgressEvent(), command);
+  itk::DataImageReaderCommand::Pointer command = itk::DataImageReaderCommand::New();
+  command->SetDataImageReader ( this );
+  d->io->AddObserver ( itk::ProgressEvent(), command);
 
 
-    	if (dtkAbstractData *dtkdata = this->data() ) {
+  if (dtkAbstractData *dtkdata = this->data() ) {
 		
-		if (dtkdata->description()=="itkDataImageUChar3") {
-			itk::ImageFileReader< itk::Image<unsigned char, 3> >::Pointer ucharReader = itk::ImageFileReader< itk::Image<unsigned char, 3> >::New();
-			ucharReader->SetImageIO ( d->io );
-			ucharReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( ucharReader->GetOutput() );
-			try {
-				ucharReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
+    if (dtkdata->description()=="itkDataImageUChar3")
+    { ReadImageMacro (unsigned char, 3); }		
+    else if (dtkdata->description()=="itkDataImageChar3")
+    { ReadImageMacro (char, 3); }		
+    else if (dtkdata->description()=="itkDataImageUShort3")
+    { ReadImageMacro (unsigned short, 3); }
+    else if (dtkdata->description()=="itkDataImageShort3")
+    { ReadImageMacro (short, 3); }
+    else if (dtkdata->description()=="itkDataImageUInt3")
+    { ReadImageMacro (unsigned int, 3); }	
+    else if (dtkdata->description()=="itkDataImageInt3")
+    { ReadImageMacro (int, 3); }	
+    else if (dtkdata->description()=="itkDataImageULong3")
+    { ReadImageMacro (unsigned long, 3); }
+    else if (dtkdata->description()=="itkDataImageLong3")
+    { ReadImageMacro (long, 3); }	
+    else if (dtkdata->description()=="itkDataImageFloat3")
+    { ReadImageMacro (float, 3); }	
+    else if (dtkdata->description()=="itkDataImageDouble3")
+    { ReadImageMacro (double, 3); }	
+    else if (dtkdata->description()=="itkDataImageRGB3")
+    { ReadImageMacro (itk::RGBPixel<unsigned char>, 3); }
+    else if (dtkdata->description()=="itkDataImageUShort4")
+    { ReadImageMacro (unsigned short, 4); }
+    else if (dtkdata->description()=="itkDataImageShort4")
+    { ReadImageMacro (short, 4); }	
+    else
+    {
+      qWarning() << "Unrecognized pixel type";
+      return false;
+    }
 		
-		else if (dtkdata->description()=="itkDataImageChar3") {
-			itk::ImageFileReader< itk::Image<char, 3> >::Pointer charReader = itk::ImageFileReader< itk::Image<char, 3> >::New();
-			charReader->SetImageIO ( d->io );
-			charReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( charReader->GetOutput() );
-			try {
-				charReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-		
-		else if (dtkdata->description()=="itkDataImageUShort3") {
-			itk::ImageFileReader< itk::Image<unsigned short, 3> >::Pointer ushortReader = itk::ImageFileReader< itk::Image<unsigned short, 3> >::New();
-			ushortReader->SetImageIO ( d->io );
-			ushortReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( ushortReader->GetOutput() );
-			try {
-				ushortReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-
-		else if (dtkdata->description()=="itkDataImageUShort4") {
-			itk::ImageFileReader< itk::Image<unsigned short, 4> >::Pointer ushortReader = itk::ImageFileReader< itk::Image<unsigned short, 4> >::New();
-			ushortReader->SetImageIO ( d->io );
-			ushortReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( ushortReader->GetOutput() );
-			try {
-				ushortReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-
-		else if (dtkdata->description()=="itkDataImageShort3") {
-			itk::ImageFileReader< itk::Image<short, 3> >::Pointer shortReader = itk::ImageFileReader< itk::Image<short, 3> >::New();
-			shortReader->SetImageIO ( d->io );
-			shortReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( shortReader->GetOutput() );
-			try {
-				shortReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-
-		else if (dtkdata->description()=="itkDataImageShort4") {
-			itk::ImageFileReader< itk::Image<short, 4> >::Pointer shortReader = itk::ImageFileReader< itk::Image<short, 4> >::New();
-			shortReader->SetImageIO ( d->io );
-			shortReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( shortReader->GetOutput() );
-			try {
-				shortReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-		
-		else if (dtkdata->description()=="itkDataImageUInt3") {
-			itk::ImageFileReader< itk::Image<unsigned int, 3> >::Pointer uintReader = itk::ImageFileReader< itk::Image<unsigned int, 3> >::New();
-			uintReader->SetImageIO ( d->io );
-			uintReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( uintReader->GetOutput() );
-			try {
-				uintReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-		
-		else if (dtkdata->description()=="itkDataImageInt3") {
-			itk::ImageFileReader< itk::Image<int, 3> >::Pointer intReader = itk::ImageFileReader< itk::Image<int, 3> >::New();
-			intReader->SetImageIO ( d->io );
-			intReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( intReader->GetOutput() );
-			try {
-				intReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-		
-		else if (dtkdata->description()=="itkDataImageULong3") {
-			itk::ImageFileReader< itk::Image<unsigned long, 3> >::Pointer ulongReader = itk::ImageFileReader< itk::Image<unsigned long, 3> >::New();
-			ulongReader->SetImageIO ( d->io );
-			ulongReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( ulongReader->GetOutput() );
-			try {
-				ulongReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-		
-		else if (dtkdata->description()=="itkDataImageLong3") {
-			itk::ImageFileReader< itk::Image<long, 3> >::Pointer longReader = itk::ImageFileReader< itk::Image<long, 3> >::New();
-			longReader->SetImageIO ( d->io );
-			longReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( longReader->GetOutput() );
-			try {
-				longReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-		
-		else if (dtkdata->description()=="itkDataImageFloat3") {
-			itk::ImageFileReader< itk::Image<float, 3> >::Pointer floatReader = itk::ImageFileReader< itk::Image<float, 3> >::New();
-			floatReader->SetImageIO ( d->io );
-			floatReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( floatReader->GetOutput() );
-			try {
-				floatReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-		
-		else if (dtkdata->description()=="itkDataImageDouble3") {
-			itk::ImageFileReader< itk::Image<double, 3> >::Pointer doubleReader = itk::ImageFileReader< itk::Image<double, 3> >::New();
-			doubleReader->SetImageIO ( d->io );
-			doubleReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( doubleReader->GetOutput() );
-			try {
-				doubleReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-		
-		else if (dtkdata->description()=="itkDataImageRGB3") {
-			itk::ImageFileReader< itk::Image<itk::RGBPixel<unsigned char>, 3> >::Pointer rgbReader = itk::ImageFileReader< itk::Image<itk::RGBPixel<unsigned char>, 3> >::New();
-			rgbReader->SetImageIO ( d->io );
-			rgbReader->SetFileName ( paths[0].toAscii().constData() );
-			dtkdata->setData ( rgbReader->GetOutput() );
-			try {
-				rgbReader->Update();
-			}
-			catch (itk::ExceptionObject &e) {
-				qDebug() << e.GetDescription();
-				return false;
-			}
-		}
-		
-		else {
-			qWarning() << "Unrecognized pixel type";
-			return false;
-		}
-		
-		// copy over the dicom dictionary into metadata
-		typedef itk::DCMTKImageIO::MetaDataVectorStringType MetaDataVectorStringType;
-		typedef itk::DCMTKImageIO::StringVectorType         StringVectorType;
+    // copy over the dicom dictionary into metadata
+    typedef itk::DCMTKImageIO::MetaDataVectorStringType MetaDataVectorStringType;
+    typedef itk::DCMTKImageIO::StringVectorType         StringVectorType;
 	
-		const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
-		itk::MetaDataDictionary::ConstIterator it = dictionary.Begin();
-		while(it!=dictionary.End()) {
-			if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) ) {
-				const StringVectorType &values = metaData->GetMetaDataObjectValue();
-				for (unsigned int i=0; i<values.size(); i++) {
-					dtkdata->addMetaData( it->first.c_str(), values[i].c_str());
-				}
-			}
-			++it;
-		}
+    const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
+    itk::MetaDataDictionary::ConstIterator it = dictionary.Begin();
+    while(it!=dictionary.End()) {
+      if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) ) {
+	const StringVectorType &values = metaData->GetMetaDataObjectValue();
+	for (unsigned int i=0; i<values.size(); i++) {
+	  dtkdata->addMetaData( it->first.c_str(), values[i].c_str());
+	}
+      }
+      ++it;
+    }
   }
 	
   d->io->RemoveAllObservers ();
@@ -595,7 +415,7 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
 
 void itkDCMTKDataImageReader::setProgress (int value)
 {
-    emit progressed (value);
+  emit progressed (value);
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -604,6 +424,6 @@ void itkDCMTKDataImageReader::setProgress (int value)
 
 dtkAbstractDataReader *createItkDCMTKDataImageReader(void)
 {
-    return new itkDCMTKDataImageReader;
+  return new itkDCMTKDataImageReader;
 }
 
