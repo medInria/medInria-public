@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 11:31:21 2010 (+0200)
+ * Last-Updated: Mon Jun 28 15:02:00 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 110
+ *     Update #: 111
  */
 
 /* Commentary: 
@@ -89,6 +89,9 @@ protected slots:
     void setupLayoutFuse(void);
 
 //  @}
+
+private:
+    friend class medMessageController;
 
 private:
     medViewerAreaPrivate *d;

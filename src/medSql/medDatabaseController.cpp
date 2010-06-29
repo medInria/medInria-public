@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 11:05:39 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Sun Jun 27 17:43:20 2010 (+0200)
+ * Last-Updated: Tue Jun 29 15:57:34 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 130
+ *     Update #: 141
  */
 
 /* Commentary: 
@@ -27,9 +27,12 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseImporter.h>
-#include <medSql/medDatabaseExporter.h>
+#include <medCore/medMessageController.h>
+
+#include "medDatabaseController.h"
+#include "medDatabaseImporter.h"
+#include "medDatabaseExporter.h"
+#include "medDatabaseReader.h"
 
 medDatabaseController *medDatabaseController::instance(void)
 {
@@ -193,76 +196,17 @@ void medDatabaseController::import(const QString& file)
 
 dtkAbstractData *medDatabaseController::read(const medDataIndex& index)
 {
-    QVariant patientId = index.patientId();
-    QVariant   studyId = index.studyId();
-    QVariant  seriesId = index.seriesId();
-    QVariant   imageId = index.imageId();
+    medDatabaseReader *reader = new medDatabaseReader(index);
 
-    QSqlQuery query(m_database);
+    connect(reader, SIGNAL(progressed(int)), medMessageController::instance(), SLOT(setProgress(int)));
+    connect(reader, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(reader, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(reader, SIGNAL(success(QObject *)), reader, SLOT(deleteLater()));
+    connect(reader, SIGNAL(failure(QObject *)), reader, SLOT(deleteLater()));
 
-    QString patientName;
-    QString studyName;
-    QString seriesName;
-    
-    query.prepare("SELECT name FROM patient WHERE id = :id");
-    query.bindValue(":id", patientId);
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    if (query.first())
-        patientName = query.value(0).toString();
-    
-    query.prepare("SELECT name FROM study WHERE id = :id");
-    query.bindValue(":id", studyId);
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    if (query.first())
-        studyName = query.value(0).toString();
-    
-    query.prepare("SELECT name FROM series WHERE id = :id");
-    query.bindValue(":id", seriesId);
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    if (query.first())
-        seriesName = query.value(0).toString();
-    
-    QStringList filenames;
-    QString     filename;
-    
-    query.prepare("SELECT name, id, path, instance_path FROM image WHERE series = :series");
-    query.bindValue(":series", seriesId);
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    medMessageController::instance()->showProgress(reader, "Opening database item");
 
-    while(query.next()) {
-        filenames << query.value(2).toString();
-        filename = query.value(3).toString();
-    }
-
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-
-    dtkAbstractData *data = NULL;
-
-    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
-
-    for (int i = 0; i < readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
-        
-        if (dataReader->canRead(filename)) {
-            dataReader->read(filename);
-            data = dataReader->data();
-            delete dataReader;
-            break;
-        }
-    }
-    
-    
-    if (data) {
-        data->addMetaData("PatientName", patientName);
-        data->addMetaData("StudyDescription",   studyName);
-        data->addMetaData("SeriesDescription",  seriesName);
-    }
-	
-    return data;
+    return reader->run();
 }
 
 dtkAbstractData *medDatabaseController::read(int patientId, int studyId, int seriesId)

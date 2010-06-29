@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 12:44:42 2010 (+0200)
+ * Last-Updated: Tue Jun 29 12:46:23 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 422
+ *     Update #: 448
  */
 
 /* Commentary: 
@@ -20,6 +20,7 @@
 #include "medBrowserArea.h"
 #include "medDocumentationArea.h"
 #include "medMainWindow.h"
+#include "medMessageController.h"
 #include "medViewerArea.h"
 #include "medViewerConfigurator.h"
 #include "medWelcomeArea.h"
@@ -208,6 +209,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->setStyleSheet(dtkReadFile(":/medular.qss"));
     this->setWindowTitle("medular");
     this->switchToWelcomeArea();
+
+    medMessageController::instance()->attach(this->statusBar());
 }
 
 medMainWindow::~medMainWindow(void)
