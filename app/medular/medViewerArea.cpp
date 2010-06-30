@@ -50,6 +50,7 @@
 #include <medGui/medViewContainerCustom.h>
 #include <medGui/medViewContainerMulti.h>
 #include <medGui/medViewContainerSingle.h>
+#include <medGui/medViewPool.h>
 
 #include <QtGui>
 #include <QtSql>
@@ -102,7 +103,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->viewToolBox, SIGNAL(axisVisibilityChanged(bool)), this, SLOT(setupAxisVisibility(bool)));
     connect(d->viewToolBox, SIGNAL(rulerVisibilityChanged(bool)), this, SLOT(setupRulerVisibility(bool)));
     connect(d->viewToolBox, SIGNAL(annotationsVisibilityChanged(bool)), this, SLOT(setupAnnotationsVisibility(bool)));
-    connect(d->viewToolBox, SIGNAL(synchronizeChanged(bool)), this, SLOT(setupSynchronization(bool)));
 
     // -- Diffusion toolbox --
 
@@ -468,9 +468,8 @@ void medViewerArea::setupBackgroundLookupTable(QString table)
     if(!d->view_stacks.count())
         return;
     
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        view->setProperty("BackgroundLookupTable", table);
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        pool->setViewProperty("BackgroundLookupTable", table);
     }
 }
 
@@ -478,10 +477,9 @@ void medViewerArea::setupAxisVisibility(bool visible)
 {
     if(!d->view_stacks.count())
         return;
-  
-    if(dtkAbstractView *view = d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        visible ? view->setProperty("ShowAxis", "true") : view->setProperty("ShowAxis", "false");
-	view->update();
+
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        visible ? pool->setViewProperty("ShowAxis", "true") : pool->setViewProperty("ShowAxis", "false");
     }
 }
 
@@ -490,9 +488,8 @@ void medViewerArea::setupScalarBarVisibility(bool visible)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        visible ? view->setProperty("ScalarBarVisibility", "true") : view->setProperty("ScalarBarVisibility", "false");
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        visible ? pool->setViewProperty("ScalarBarVisibility", "true") : pool->setViewProperty("ScalarBarVisibility", "false");
     }
 }
 
@@ -501,9 +498,8 @@ void medViewerArea::setupRulerVisibility(bool visible)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        visible ? view->setProperty("ShowRuler", "true") : view->setProperty("ShowRuler", "false");
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        visible ? pool->setViewProperty("ShowRuler", "true") : pool->setViewProperty("ShowRuler", "false");
     }
 }
 
@@ -512,21 +508,9 @@ void medViewerArea::setupAnnotationsVisibility(bool visible)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        visible ? view->setProperty("ShowAnnotations", "true") : view->setProperty("ShowAnnotations", "false");
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        visible ? pool->setViewProperty("ShowAnnotations", "true") : pool->setViewProperty("ShowAnnotations", "false");
     }
-}
-
-void medViewerArea::setupSynchronization(bool sync)
-{
-    if(!d->view_stacks.count())
-        return;
-
-    if (sync)
-      d->view_stacks.value(d->current_patient)->current()->synchronize();
-    else
-      d->view_stacks.value(d->current_patient)->current()->desynchronize();
 }
 
 void medViewerArea::setup3DMode(QString mode)
@@ -534,9 +518,8 @@ void medViewerArea::setup3DMode(QString mode)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        view->setProperty("Mode", mode);
-        view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        pool->setViewProperty("Mode", mode);
     }
 }
 
@@ -545,9 +528,8 @@ void medViewerArea::setup3DVRMode(QString mode)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->patientToolBox->patientIndex())->current()->current()->view()) {
-        view->setProperty("VRMode", mode);
-        view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        pool->setViewProperty("VRMode", mode);
     }
 }
 
@@ -556,9 +538,8 @@ void medViewerArea::setupLUTPreset(QString table)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        view->setProperty("Preset", table);
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        pool->setViewProperty("Preset", table);
     }
 }
 
@@ -578,9 +559,8 @@ void medViewerArea::setupWindowing(bool checked)
     if(!d->view_stacks.count())
         return;
 
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        view->setProperty("LeftClickInteraction", "Windowing");
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        pool->setViewProperty("LeftClickInteraction", "Windowing");
     }
 }
 
@@ -589,9 +569,8 @@ void medViewerArea::setupZooming(bool checked)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        view->setProperty("LeftClickInteraction", "Zooming");
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        pool->setViewProperty("LeftClickInteraction", "Zooming");
     }
 }
 
@@ -600,9 +579,8 @@ void medViewerArea::setupSlicing(bool checked)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        view->setProperty("LeftClickInteraction", "Slicing");
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        pool->setViewProperty("LeftClickInteraction", "Slicing");
     }
 }
 
@@ -611,9 +589,8 @@ void medViewerArea::setupMeasuring(bool checked)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        view->setProperty("LeftClickInteraction", "Measuring");
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        pool->setViewProperty("LeftClickInteraction", "Measuring");
     }
 }
 
@@ -622,9 +599,8 @@ void medViewerArea::setupCropping(bool checked)
     if(!d->view_stacks.count())
         return;
   
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        checked ? view->setProperty("Cropping", "true") : view->setProperty("Cropping", "false");
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        checked ? pool->setViewProperty("Cropping", "true") : pool->setViewProperty("Cropping", "false");
     }
 }
 

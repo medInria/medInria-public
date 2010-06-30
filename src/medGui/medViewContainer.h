@@ -26,6 +26,7 @@
 
 class dtkAbstractView;
 class medDataIndex;
+class medViewPool;
 
 class medViewContainerPrivate;
 
@@ -50,6 +51,8 @@ public:
 
     virtual dtkAbstractView *view(void);
 
+    medViewPool *pool (void);
+
     virtual void setView(dtkAbstractView *view);
 
 signals:
@@ -58,9 +61,6 @@ signals:
 
 public slots:
     virtual void split(int rows, int cols);
-    virtual void synchronize   (void);
-    virtual void desynchronize (void);
-
 
 protected:
     void setCurrent(medViewContainer *container);

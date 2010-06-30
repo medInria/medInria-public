@@ -139,26 +139,6 @@ void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
   }
 }
 
-void medViewContainerCustom::synchronize (void)
-{
-  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
-      parent->synchronize();
-  }
-  else { // top level medViewContainerCustom      
-      d->pool->synchronize();
-  }
-}
-
-void medViewContainerCustom::desynchronize (void)
-{
-  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
-      parent->desynchronize();
-  }
-  else { // top level medViewContainerCustom
-      d->pool->desynchronize();
-  }
-}
-
 void medViewContainerCustom::onViewClosed (void)
 {
     if (d->view) {
