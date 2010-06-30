@@ -97,7 +97,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
 	    this->slider->setValue (zslice);
 	    this->slider->update();
 	    this->slider->blockSignals (false);
-	    //qApp->processEvents();
+	    //qApp->processEvents(); // cause a crash when opening very fast multiple images
 	}
 	// }
 	// }
@@ -133,6 +133,7 @@ public:
     QSlider    *slider;
     QPushButton *anchorButton;
     QPushButton *linkButton;
+    QPushButton *linkWLButton;
     QPushButton *playButton;
     QPushButton *closeButton;
     QVTKWidget *vtkWidget;
@@ -222,7 +223,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->slider->setFocusPolicy(Qt::NoFocus);
 
     d->anchorButton = new QPushButton(d->widget);
-    d->anchorButton->setText("a");
+    d->anchorButton->setIcon (QIcon(":/icons/anchor.png"));
+    //d->anchorButton->setText("a");
     d->anchorButton->setCheckable(true);
     d->anchorButton->setMaximumHeight(16);
     d->anchorButton->setMaximumWidth(16);
@@ -233,7 +235,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     connect(d->anchorButton, SIGNAL(clicked(bool)), this, SIGNAL(becomeDaddy(bool)));
 
     d->linkButton = new QPushButton(d->widget);
-    d->linkButton->setText("l");
+    d->linkButton->setIcon (QIcon(":/icons/link.png"));
+    //d->linkButton->setText("l");
     d->linkButton->setCheckable(true);
     d->linkButton->setMaximumHeight(16);
     d->linkButton->setMaximumWidth(16);
@@ -242,6 +245,18 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->linkButton->setObjectName("tool");
 
     connect(d->linkButton, SIGNAL(clicked(bool)), this, SIGNAL(sync(bool)));
+
+    d->linkWLButton = new QPushButton(d->widget);
+    d->linkWLButton->setIcon (QIcon(":/icons/link_wl.png"));
+    //d->linkWLButton->setText("l");
+    d->linkWLButton->setCheckable(true);
+    d->linkWLButton->setMaximumHeight(16);
+    d->linkWLButton->setMaximumWidth(16);
+    d->linkWLButton->setFocusPolicy(Qt::NoFocus);
+    d->linkWLButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->linkWLButton->setObjectName("tool");
+
+    connect(d->linkWLButton, SIGNAL(clicked(bool)), this, SIGNAL(syncWL(bool)));
 
     d->playButton = new QPushButton(d->widget);
     d->playButton->setText(">");
@@ -287,6 +302,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     toolsLayout->addWidget(d->slider);
     toolsLayout->addWidget(d->anchorButton);
     toolsLayout->addWidget(d->linkButton);
+    toolsLayout->addWidget(d->linkWLButton);
     toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->closeButton);
 
@@ -513,8 +529,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
 		                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
 		                                              << "Red on White" << "Glossy");
-    this->addProperty ("Linked", QStringList() << "true" << "false");
-    this->addProperty ("Daddy", QStringList() << "true" << "false");
+    this->addProperty ("Linked",   QStringList() << "true" << "false");
+    this->addProperty ("LinkedWL", QStringList() << "true" << "false");
+    this->addProperty ("Daddy",    QStringList() << "true" << "false");
 
     // set default properties
     this->setProperty ("Orientation", "Axial");
@@ -535,8 +552,10 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("UseLOD", "On");
     this->setProperty ("Cropping", "false");
     this->setProperty ("Preset", "None");
-    
-    this->setProperty ("Daddy", "false");
+
+    this->setProperty ("Linked",   "false");
+    this->setProperty ("LinkedWL", "false");
+    this->setProperty ("Daddy",    "false");
     
 
     connect(d->vtkWidget, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
@@ -624,6 +643,7 @@ void v3dView::link(dtkAbstractView *other)
       
         otherView->setProperty ("Linked", "true");
 	// properties:
+	/*
 	//otherView->setProperty ("Orientation",          this->property ("Orientation"));
 	otherView->setProperty ("ScalarBarVisibility",  this->property ("ScalarBarVisibility"));
 	//otherView->setProperty ("LookupTable",          this->property ("LookupTable")); // seems to reset the window / level 
@@ -637,24 +657,13 @@ void v3dView::link(dtkAbstractView *other)
 	//otherView->setProperty ("VRMode",               this->property ("VRMode"));
 	otherView->setProperty ("UseLOD",               this->property ("UseLOD"));
 	otherView->setProperty ("Cropping",             this->property ("Cropping"));
-		
-
-        otherView->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
+	*/
+	
+	otherView->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
 	otherView->viewSagittal()->SetCurrentPoint ( d->currentView->GetCurrentPoint() );
 	otherView->viewCoronal()->SetCurrentPoint  ( d->currentView->GetCurrentPoint() );
 	otherView->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
 	
-	otherView->viewAxial()->SetColorWindow    ( d->currentView->GetColorWindow() );
-	otherView->viewSagittal()->SetColorWindow ( d->currentView->GetColorWindow() );
-	otherView->viewCoronal()->SetColorWindow  ( d->currentView->GetColorWindow() );
-	otherView->view3D()->SetColorWindow       ( d->currentView->GetColorWindow() );
-	
-	otherView->viewAxial()->SetColorLevel    ( d->currentView->GetColorLevel() );
-	otherView->viewSagittal()->SetColorLevel ( d->currentView->GetColorLevel() );
-	otherView->viewCoronal()->SetColorLevel  ( d->currentView->GetColorLevel() );
-	otherView->view3D()->SetColorLevel       ( d->currentView->GetColorLevel() );
-
-
 	d->collectionAxial->AddItem    ( otherView->viewAxial() );
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
@@ -684,16 +693,6 @@ void v3dView::link(dtkAbstractView *other)
 	d->collectionPos->AddItem ( otherView->viewSagittal() );
 	d->collectionPos->AddItem ( otherView->viewCoronal() );
 	d->collectionPos->AddItem ( otherView->view3D() );
-	
-	d->collectionWindowLevel->AddItem ( d->view2DAxial );
-	d->collectionWindowLevel->AddItem ( d->view2DSagittal );
-	d->collectionWindowLevel->AddItem ( d->view2DCoronal );
-	d->collectionWindowLevel->AddItem ( d->view3D );
-
-	d->collectionWindowLevel->AddItem ( otherView->viewAxial() );
-	d->collectionWindowLevel->AddItem ( otherView->viewSagittal() );
-	d->collectionWindowLevel->AddItem ( otherView->viewCoronal() );
-	d->collectionWindowLevel->AddItem ( otherView->view3D() );
     }
 
     this->setProperty ("Linked", "true");
@@ -717,10 +716,6 @@ void v3dView::unlink(dtkAbstractView *other)
 	d->collectionPos->RemoveItem ( otherView->viewCoronal() );
 	d->collectionPos->RemoveItem ( otherView->view3D() );
 
-	d->collectionWindowLevel->RemoveItem ( otherView->viewAxial() );
-	d->collectionWindowLevel->RemoveItem ( otherView->viewSagittal() );
-	d->collectionWindowLevel->RemoveItem ( otherView->viewCoronal() );
-	d->collectionWindowLevel->RemoveItem ( otherView->view3D() );
     }
 
     d->linkedViews.remove (other);
@@ -733,10 +728,6 @@ void v3dView::unlink(dtkAbstractView *other)
 	d->collectionPos->RemoveItem ( d->view2DCoronal );
 	d->collectionPos->RemoveItem ( d->view3D );
 
-	d->collectionWindowLevel->RemoveItem ( d->view2DAxial );
-	d->collectionWindowLevel->RemoveItem ( d->view2DSagittal );
-	d->collectionWindowLevel->RemoveItem ( d->view2DCoronal );
-	d->collectionWindowLevel->RemoveItem ( d->view3D );
     }
 }
 
@@ -1042,6 +1033,52 @@ void v3dView::play(bool start)
     }
 }
 
+void v3dView::linkwl (dtkAbstractView *view, bool value)
+{
+    if (v3dView *vview = dynamic_cast<v3dView*>(view)) {
+      if (value) {
+
+	  vview->setProperty ("LinkedWL", "true");
+	
+	  d->collectionWindowLevel->AddItem ( d->view2DAxial );
+	  d->collectionWindowLevel->AddItem ( d->view2DSagittal );
+	  d->collectionWindowLevel->AddItem ( d->view2DCoronal );
+	  d->collectionWindowLevel->AddItem ( d->view3D );
+
+	  vview->viewAxial()->SetColorWindow    ( d->currentView->GetColorWindow() );
+	  vview->viewSagittal()->SetColorWindow ( d->currentView->GetColorWindow() );
+	  vview->viewCoronal()->SetColorWindow  ( d->currentView->GetColorWindow() );
+	  vview->view3D()->SetColorWindow       ( d->currentView->GetColorWindow() );
+	  
+	  vview->viewAxial()->SetColorLevel    ( d->currentView->GetColorLevel() );
+	  vview->viewSagittal()->SetColorLevel ( d->currentView->GetColorLevel() );
+	  vview->viewCoronal()->SetColorLevel  ( d->currentView->GetColorLevel() );
+	  vview->view3D()->SetColorLevel       ( d->currentView->GetColorLevel() );
+	  
+	  d->collectionWindowLevel->AddItem (vview->viewAxial());
+	  d->collectionWindowLevel->AddItem (vview->viewSagittal());
+	  d->collectionWindowLevel->AddItem (vview->viewCoronal());
+	  d->collectionWindowLevel->AddItem (vview->view3D());
+      }
+      else {
+
+	  vview->setProperty ("LinkedWL", "false");
+	  
+	  d->collectionWindowLevel->RemoveItem (vview->viewAxial());
+	  d->collectionWindowLevel->RemoveItem (vview->viewSagittal());
+	  d->collectionWindowLevel->RemoveItem (vview->viewCoronal());
+	  d->collectionWindowLevel->RemoveItem (vview->view3D());
+	  
+	  if (d->collectionWindowLevel->GetNumberOfItems()==4) {
+	      d->collectionWindowLevel->RemoveItem ( d->view2DAxial );
+	      d->collectionWindowLevel->RemoveItem ( d->view2DSagittal );
+	      d->collectionWindowLevel->RemoveItem ( d->view2DCoronal );
+	      d->collectionWindowLevel->RemoveItem ( d->view3D );
+	  }
+      }
+  }
+}
+
 void v3dView::onPropertySet(QString key, QString value)
 {
     if(key == "Daddy")
@@ -1089,13 +1126,11 @@ void v3dView::onPropertySet(QString key, QString value)
     if(key == "Cropping")
 	this->onCroppingPropertySet(value);
 
-    //this->widget()->update();
-    //this->update();
+    if(key == "LinkedWL")
+	this->onLinkedWLPropertySet(value);
 
-    /*
-    foreach (dtkAbstractView *lview, d->linkedViews)
-        lview->setProperty (key, value);
-    */
+    //this->update(); // never update after setting a property, it is not our role
+
 }
 
 void v3dView::onOrientationPropertySet(QString value)
@@ -1580,16 +1615,16 @@ void v3dView::onPresetPropertySet (QString value)
 void v3dView::onCroppingPropertySet (QString value)
 {
     if ( value=="true" ) {
-		if (d->view3D->GetBoxWidget()->GetInteractor()) { // avoid VTK warnings
-            d->view3D->SetCroppingModeToOutside();
-	        d->view3D->SetShowBoxWidget ( 1 );
-		}
+        if (d->view3D->GetBoxWidget()->GetInteractor()) { // avoid VTK warnings
+	    d->view3D->SetCroppingModeToOutside();
+	    d->view3D->SetShowBoxWidget ( 1 );
+	}
     }
     else {
-		if (d->view3D->GetBoxWidget()->GetInteractor()) {
-            d->view3D->SetCroppingModeToOff ();
+        if (d->view3D->GetBoxWidget()->GetInteractor()) {
+	    d->view3D->SetCroppingModeToOff ();
             d->view3D->SetShowBoxWidget ( 0 );
-		}
+	}
     }
 }
 
@@ -1629,6 +1664,21 @@ void v3dView::onDaddyPropertySet (QString value)
         d->anchorButton->setChecked (false);
 	d->anchorButton->blockSignals(false);
 	emit becameDaddy(0);
+    }
+}
+
+void v3dView::onLinkedWLPropertySet (QString value)
+{
+    d->linkWLButton->blockSignals(true);
+
+    if (value=="true") {
+        d->linkWLButton->setChecked (true);
+	d->linkWLButton->blockSignals(false);
+    }
+
+    if (value=="false") {
+        d->linkWLButton->setChecked (false);
+	d->linkWLButton->blockSignals(false);
     }
 }
 

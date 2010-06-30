@@ -36,6 +36,7 @@ signals:
     void becomeDaddy (bool);
     void becameDaddy (bool);
     void sync (bool);
+    void syncWL (bool);
 
 public:
     void reset(void);
@@ -68,10 +69,9 @@ public:
     vtkRenderer *renderer3D(void);
     	
 public slots:
-    void play(bool);
-    //void sync(dtkAbstracData* data);
-    //void becomeDaddy (bool);
-
+    void play   (bool);
+    void linkwl (dtkAbstractView* view, bool);
+    
 public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);
@@ -91,6 +91,7 @@ public slots:
     void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged              (int value);
     void onDaddyPropertySet                 (QString value);
+    void onLinkedWLPropertySet              (QString value);
 
     void onMetaDataSet(QString key, QString value);
 
