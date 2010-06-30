@@ -18,7 +18,7 @@
  */
 
 #include "medViewContainer_p.h"
-#include "medViewContainerSingle.h"
+#include "medViewContainerSingle2.h"
 #include "medViewContainerMulti.h"
 #include "medViewPool.h"
 
@@ -64,7 +64,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
         }
     }
     
-    medViewContainer *container = new medViewContainerSingle(this);
+    medViewContainer *container = new medViewContainerSingle2(this);
     container->setAcceptDrops(false);
     container->setView(view);
     content << container;
@@ -75,6 +75,11 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
 
     d->view->reset();
 
+	if (content.count()==1) {
+		d->view->setProperty("Daddy", "true");
+		connect (d->pool, SIGNAL (linkwl (dtkAbstractView *, bool)), d->view, SLOT (linkwl (dtkAbstractView *, bool)));
+	}
+	
     d->pool->appendView (view);
     connect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
     connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));

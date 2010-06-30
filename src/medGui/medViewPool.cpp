@@ -52,6 +52,7 @@ void medViewPool::appendView (dtkAbstractView *view)
     connect (view, SIGNAL (sync(bool)),                    this, SLOT (onViewSync(bool)));
     connect (view, SIGNAL (syncWL(bool)),                  this, SLOT (onViewSyncWL(bool)));
   
+	/*
     dtkAbstractView *refView = NULL;
     if (d->views.count()==1) {
         refView = view;
@@ -60,6 +61,7 @@ void medViewPool::appendView (dtkAbstractView *view)
     }
     else
         refView = this->daddy();
+	 */
 
     // set properties
     QHashIterator<QString, QString> it(d->propertySet);
@@ -96,10 +98,12 @@ void medViewPool::removeView (dtkAbstractView *view)
 		}
 
 	    dtkAbstractView *oldDaddy = refView;
-	    refView = (*it);
 	    oldDaddy->setProperty ("Daddy", "false");
 	    disconnect (this, SIGNAL (linkwl (dtkAbstractView *, bool)), oldDaddy, SLOT (linkwl (dtkAbstractView *, bool)));
-	    connect (this, SIGNAL (linkwl (dtkAbstractView *, bool)), refView, SLOT (linkwl (dtkAbstractView *, bool)));
+		refView = this->daddy();
+		if (refView) {
+			connect (this, SIGNAL (linkwl (dtkAbstractView *, bool)), refView, SLOT (linkwl (dtkAbstractView *, bool)));
+		}
 	}
 	else { // we are not daddy, just unlink
 	    refView->unlink (view);
@@ -155,8 +159,10 @@ void medViewPool::onViewDaddy (bool daddy)
 	else { // view does not want to become daddy
 	  if (view==this->daddy()) { // unlink if needed
 	        QList<dtkAbstractView *>::iterator it = d->views.begin();
-		  for( ; it!=d->views.end(); it++)
+		  for( ; it!=d->views.end(); it++) {
 		      view->unlink((*it));
+			  emit linkwl ((*it), false);
+		  }
 	    }
 	  
 	    view->setProperty ("Daddy", "false");

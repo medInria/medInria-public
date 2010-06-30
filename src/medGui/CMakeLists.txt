@@ -44,6 +44,7 @@ set(${PROJECT_NAME}_HEADERS
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
+  medViewContainerSingle2.h
   medWorkspaceShifter.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -66,6 +67,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
+  medViewContainerSingle2.h
   medWorkspaceShifter.h)
 
 set(${PROJECT_NAME}_SOURCES
@@ -89,6 +91,7 @@ set(${PROJECT_NAME}_SOURCES
   medViewContainerCustom.cpp
   medViewContainerMulti.cpp
   medViewContainerSingle.cpp
+  medViewContainerSingle2.cpp
   medWorkspaceShifter.cpp)
 
 ## #################################################################
