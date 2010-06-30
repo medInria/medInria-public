@@ -1,352 +1,84 @@
+/* style.css --- 
+;; 
+;; Author: Julien Wintz
+;; Copyright (C) 2008 - Julien Wintz, Inria.
+;; Created: Wed Jun 30 09:42:44 2010 (+0200)
+;; Version: $Id$
+;; Last-Updated: Wed Jun 30 11:27:14 2010 (+0200)
+;;           By: Julien Wintz
+;;     Update #: 135
+*/
+
+/* Commentary: 
+;; 
+*/
+
+/* Change log:
+;; 
+*/
+
 body {
     background-color: #313131;
+
     color: white;
-}
-h1 {
-    color: white;
-}
 
-/* the overlayed element */
-div.simple_overlay img{
-	max-width:100%;
+    margin: 0px;
+
+    font-family: Gill Sans, sans-serif;
 }
 
-/* the overlayed element */
-.apple_overlay {
-	
-	/* initially overlay is hidden */
-	display:none;
-	
-	/* growing background image */
-	background-image:url(../img/overlay_white.png);
-	/*background-color:"white";*/
-	/* 
-		width after the growing animation finishes
-		height is automatically calculated
-	*/
-	width:800px;		
-	max-height:700px;	
-	/* some padding to layout nested elements nicely  */
-	padding:35px;
+/* *************************************************************** */
+/* Layout                                                          */
+/* *************************************************************** */
 
-	/* a little styling */	
-	font-size:11px;
+#left {
+    position:absolute;
+    top: 0px;
+    left: 0px;
+    width:300px;
 }
 
-/* default close button positioned on upper right corner */
-.apple_overlay .close {
-	background-image:url(../img/overlay_close.png);
-	position:absolute; right:5px; top:5px;
-	cursor:pointer;
-	height:35px;
-	width:35px;
+#right {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width:300px;
 }
 
-div.apple_overlay h2 {
-	margin:10px 0 -9px 0;
-	font-weight:bold;
-	font-size:14px;
+#content {
+    margin-left: 300px;
+    margin-right: 300px;
 }
 
-div.black h2 {
-	color:#fff;
+/* *************************************************************** */
+/* Toolboxes                                                       */
+/* *************************************************************** */
+
+.toolbox {
+
 }
 
-div.apple_overlay img{
-	width:100%;
+.header {
+    -webkit-border-image: url(../../pixmaps/toolbox-header.png) 16 16 0 16;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 16px;
+    border-bottom-width: 0px;
+
+    padding-bottom: 3px;
+
+    font-size: 12px;
 }
 
-#triggers {
-	margin-top:10px;
-	text-align:center;
+.body {
+    -webkit-border-image: url(../../pixmaps/toolbox-body.png) 0 16 16 16;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 0px;
+    border-bottom-width: 16px;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    font-size: 10px;
 }
-	
-#triggers img {
-	background-color:#fff;
-	padding:2px;
-	border:1px solid #ccc;
-	margin:2px 5px;
-	cursor:pointer;
-	-moz-border-radius:4px;
-	-webkit-border-radius:4px;
-}
-
-#player-rg{
-	display:block;
-	width:500px;
-	height:320px;
-	margin-left: auto;
-	margin-right: auto;
-}
-.box_container{
-	position:relative;
-	margin-left:1em;
-	margin-right:1em;
-	left=0px;
-	width:45%;
-	min-width:50px;
-	float:left;
-	display:inline;
-}
-.boxyBody{
-	/*border-width:0 1px 1px 1px;*/
-	background-color:#494949;
-	-moz-border-radius-bottomleft: 5px;
-	-moz-border-radius-bottomright: 5px;
-	-webkit-border-bottom-left-radius:5px;
-	-webkit-border-bottom-right-radius:5px;
-	-webkit-box-shadow: 0 3px 8px rgba(0,0,0,.9);
-	margin-bottom:10px;
-	padding:4px;
-}
-.boxyBody ul {
-	margin:0px;
-}
-
-.boxyBody p {
-	margin:0px;
-}
-
-.boxyCaption{
-	text-align:center;
-    	padding-top: -5px;
-    	background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000));
-    	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius:5px;
-	-webkit-border-top-right-radius:5px;
-	margin-top:10px;
-}
-
-#home{
-	display:block;
-	/*text-align:left;*/
-}
-
-#slate{
-	width=50em;
-	height=70em;
-}
-
-/* some styling for triggers */
-#MedularTrigger {
-	text-align:center;
-}
-
-#medularTrigger img {
-	cursor:pointer;
-	margin:0 5px;
-	background-color:#fff;
-	border:1px solid #ccc;
-	padding:2px;
-	-moz-border-radius:4px;
-	-webkit-border-radius:4px;
-	
-}
-	
-/* styling for elements inside overlay 
-.details {
-	position:absolute;
-	top:15px;
-	right:15px;
-	font-size:11px;
-	color:#fff;
-	width:150px;
-}
-	
-.details h3 {
-	color:#aba;
-	font-size:15px;
-	margin:0 0 -10px 0;
-}
-*/
-/* tooltip styling. by default the element to be styled is .tooltip  */
-div.tooltip {
-	display:none;
-	background:transparent url(../img/tooltip/black_arrow.png);
-	font-size:12px;
-	height:70px;
-	width:160px;
-	padding:25px;
-	color:#fff;	
-}
-
-
-
-/* root element for tabs  */
-#tabs ul{  
-	margin:0 !important; 
-	padding:0;
-	height:30px;
-}
-
-/* single tab */
-#tabs li {  
-	float:left;	 
-	padding:0; 
-	margin:0;  
-	list-style-type:none;	
-}
-
-/* link inside the tab. uses a background image */
-#tabs a { 
-	float:left;
-	font-size:13px;
-	display:block;
-	padding:5px 30px;	
-	text-decoration:none;
-	height:18px;
-	/*background-color:#efefef;*/
-	/*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#cccccc', endColorstr='#000000'); /* for IE */
-	background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#000)); /* for webkit browsers */
-	background: -moz-linear-gradient(top,  #ccc,  #000); /* for firefox 3.6+ */
-
-	color:#fff;
-	margin-right:2px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius:5px;
-	-webkit-border-top-right-radius:5px;
-	position:relative;
-	top:1px;	
-}
-
-#tabs a:hover {
-	background-color:#F7F7F7;
-	color:#333;
-}
-	
-/* selected tab */
-#tabs a.current {
-	/*background-color:#ddd;*/
-	border-bottom:1px solid #ccc;	
-	color:#000;	
-	cursor:default;
-	background: -webkit-gradient(linear, left bottom, left top, from(#ccc), to(#000));
-}
-
-	
-/* tab pane */
-#panes div {
-	display:none;
-	/*border:1px solid #666;*/
-	-webkit-box-shadow: 0 3px 8px rgba(0,0,0,.9);
-	/*background: -webkit-gradient(linear, left bottom, left top, from(#ccc), to(#000));*/
-        
-	border-radius: 5px;
-	padding: 5px 5px 5px 15px;
-	
-	/*border-width:0 1px 1px 1px;*/
-	min-height:150px;
-	padding:15px 20px;
-	background-color:#494949;
-}
-
-
-#scroll {
-	position:relative;
-	height:;
-	overflow:hidden;
-	border:1px solid #ddd;
-	width:960px;
-	padding:0px;
-	height:473px;
-	-moz-border-radius:5px;
-	-webkit-border-radius:5px;
-}
-
-#tools {
-	width:9999em;
-	position:absolute;
-	height:400px;
-}
-
-.tool {
-	float:left;
-	width:1000px;
-	height:400px;
-	text-align:center;
-}
-
-.details {
-	font-size:18px;
-	color:#555;
-	margin-top:-20px;
-	background-color:transparent;
-	padding:5px 148px;
-}
-
-
-#thumbs {
-	background:url(../img/naviMed.png) no-repeat;
-	height:90px;
-	position:absolute;
-	top:400px;
-	width:960px;
-	/*left:-8px;*/
-}
-
-.t {
-	padding:0 !important;
-	border:0 !important;
-}
-
-.t a {
-	background:transparent url(../img/naviMed.png) no-repeat scroll -4444px -90px;
-	margin-left:66px;
-	display:block;
-	width:180px;
-	float:left;
-	height:90px;
-	cursor:pointer;
-}
-
-.t a.active {
-	cursor:default !important;
-}
-
-.navi {
-	margin-left:200px;
-	_margin-left:200px;
-}
-
-/* CSS sprite for the navigation */
-#t0{ margin-left:20px; _margin-left:20px;text-align:center;
-	background-position:-19px -90px;
-}
-
-#t0.active { background-position:-19px 0 !important; }
-#t0:hover  { background-position:-19px -180px; }
-#t0:active { background-position:-19px -270px; }
-
-#t1		{ background-position:-266px -90px; }
-#t1:hover 	{ background-position:-266px -180px; }
-#t1:active	{ background-position:-266px -270px; }
-#t1.active	{ background-position:-266px 0 !important; }
-
-#t2		{ background-position:-513px -90px; }
-#t2:hover 	{ background-position:-513px -180px; }
-#t2:active	{ background-position:-513px -270px; }
-#t2.active	{ background-position:-513px 0 !important; }
-
-#t3		{ background-position:-760px -90px; }
-#t3:hover 	{ background-position:-760px -180px; }
-#t3:active	{ background-position:-760px -270px; }
-#t3.active	{ background-position:-760px 0 !important; }
-/*
-#t4		{ background-position:-655px -90px; }
-#t4:hover 	{ background-position:-655px -180px; }
-#t4:active	{ background-position:-655px -270px; }
-#t4.active	{ background-position:-655px 0 !important; }
-
-#t5		{ background-position:-765px -90px; }
-#t5:hover 	{ background-position:-765px -180px; }
-#t5:active	{ background-position:-765px -270px; }
-#t5.active	{ background-position:-765px 0 !important; }
-
-#t6		{ background-position:-875px -90px; }
-#t6:hover 	{ background-position:-875px -180px; }
-#t6:active	{ background-position:-875px -270px; }
-#t6.active	{ background-position:-875px 0 !important; }
-*/
-
