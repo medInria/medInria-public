@@ -123,6 +123,7 @@ public:
   
     vtkImageViewCollection *collection;
     vtkImageViewCollection *collectionPos;
+    vtkImageViewCollection *collectionWindowLevel;
     vtkImageViewCollection *collectionAxial;
     vtkImageViewCollection *collectionSagittal;
     vtkImageViewCollection *collectionCoronal;
@@ -317,11 +318,6 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     //d->view2DAxial->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 
     d->collection = vtkImageViewCollection::New();
-    d->collection->AddItem (d->view2DAxial);
-    d->collection->AddItem (d->view2DCoronal);
-    d->collection->AddItem (d->view2DSagittal);
-    d->collection->AddItem (d->view3D);
-
     d->collection->SetLinkCurrentPoint (0);
     d->collection->SetLinkSliceMove (0);
     d->collection->SetLinkColorWindowLevel (0);
@@ -330,10 +326,24 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->collection->SetLinkPan (0);
     d->collection->SetLinkRequestedPosition (0);
 
-    d->collectionAxial    = vtkImageViewCollection::New();
-    d->collectionSagittal = vtkImageViewCollection::New();
-    d->collectionCoronal  = vtkImageViewCollection::New();
-    d->collectionPos      = vtkImageViewCollection::New();
+    d->collection->AddItem (d->view2DAxial);
+    d->collection->AddItem (d->view2DCoronal);
+    d->collection->AddItem (d->view2DSagittal);
+    d->collection->AddItem (d->view3D);
+
+    d->collectionAxial       = vtkImageViewCollection::New();
+    d->collectionSagittal    = vtkImageViewCollection::New();
+    d->collectionCoronal     = vtkImageViewCollection::New();
+    d->collectionWindowLevel = vtkImageViewCollection::New();
+    d->collectionPos         = vtkImageViewCollection::New();
+
+    d->collectionWindowLevel->SetLinkCurrentPoint (0);
+    d->collectionWindowLevel->SetLinkRequestedPosition (0);
+    d->collectionWindowLevel->SetLinkSliceMove (0);
+    d->collectionWindowLevel->SetLinkColorWindowLevel (1);
+    d->collectionWindowLevel->SetLinkCamera (0);
+    d->collectionWindowLevel->SetLinkZoom (0);
+    d->collectionWindowLevel->SetLinkPan (0);
 
     d->collectionPos->SetLinkCurrentPoint (0);
     d->collectionPos->SetLinkRequestedPosition (1);
@@ -345,24 +355,24 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     d->collectionAxial->SetLinkCurrentPoint (0);
     d->collectionAxial->SetLinkRequestedPosition (0);
-    d->collectionAxial->SetLinkSliceMove (1);
-    d->collectionAxial->SetLinkColorWindowLevel (1);
+    d->collectionAxial->SetLinkSliceMove (0);
+    d->collectionAxial->SetLinkColorWindowLevel (0);
     d->collectionAxial->SetLinkCamera (0);
     d->collectionAxial->SetLinkZoom (1);
     d->collectionAxial->SetLinkPan (1);
 
     d->collectionSagittal->SetLinkCurrentPoint (0);
     d->collectionSagittal->SetLinkRequestedPosition (0);
-    d->collectionSagittal->SetLinkSliceMove (1);
-    d->collectionSagittal->SetLinkColorWindowLevel (1);
+    d->collectionSagittal->SetLinkSliceMove (0);
+    d->collectionSagittal->SetLinkColorWindowLevel (0);
     d->collectionSagittal->SetLinkCamera (0);
     d->collectionSagittal->SetLinkZoom (1);
     d->collectionSagittal->SetLinkPan (1);
 
     d->collectionCoronal->SetLinkCurrentPoint (0);
     d->collectionCoronal->SetLinkRequestedPosition (0);
-    d->collectionCoronal->SetLinkSliceMove (1);
-    d->collectionCoronal->SetLinkColorWindowLevel (1);
+    d->collectionCoronal->SetLinkSliceMove (0);
+    d->collectionCoronal->SetLinkColorWindowLevel (0);
     d->collectionCoronal->SetLinkCamera (0);
     d->collectionCoronal->SetLinkZoom (1);
     d->collectionCoronal->SetLinkPan (1);
@@ -623,8 +633,8 @@ void v3dView::link(dtkAbstractView *other)
 	otherView->setProperty ("ShowRuler",            this->property ("ShowRuler"));
 	otherView->setProperty ("ShowAnnotations",      this->property ("ShowAnnotations"));
 	otherView->setProperty ("LeftClickInteraction", this->property ("LeftClickInteraction"));
-	otherView->setProperty ("Mode",                 this->property ("Mode"));
-	otherView->setProperty ("VRMode",               this->property ("VRMode"));
+	//otherView->setProperty ("Mode",                 this->property ("Mode"));
+	//otherView->setProperty ("VRMode",               this->property ("VRMode"));
 	otherView->setProperty ("UseLOD",               this->property ("UseLOD"));
 	otherView->setProperty ("Cropping",             this->property ("Cropping"));
 		
@@ -643,8 +653,14 @@ void v3dView::link(dtkAbstractView *other)
 	otherView->viewSagittal()->SetColorLevel ( d->currentView->GetColorLevel() );
 	otherView->viewCoronal()->SetColorLevel  ( d->currentView->GetColorLevel() );
 	otherView->view3D()->SetColorLevel       ( d->currentView->GetColorLevel() );
+
+
+	d->collectionAxial->AddItem    ( otherView->viewAxial() );
+	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
+	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
+
 	
-	// zoom comes first, then pan (==translation)
+	// zoom comes first, then pan (==translation)	
 	otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
 	otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
 	
@@ -658,24 +674,26 @@ void v3dView::link(dtkAbstractView *other)
 	//otherView->view3D()->SetCameraPosition    ( d->view3D->GetCameraPosition() );
 	//otherView->view3D()->SetCameraFocalPoint  ( d->view3D->GetCameraFocalPoint() );
 	//otherView->view3D()->SetZoom              ( d->view3D->GetZoom() );
-
-        d->collectionAxial->AddItem    ( otherView->viewAxial() );
-	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
-	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
-
-	if (!d->collectionPos->IsItemPresent (d->view2DAxial ))
-	    d->collectionPos->AddItem    ( d->view2DAxial );
-	if (!d->collectionPos->IsItemPresent (d->view2DSagittal ))
-	    d->collectionPos->AddItem ( d->view2DSagittal );
-	if (!d->collectionPos->IsItemPresent (d->view2DCoronal ))
-	    d->collectionPos->AddItem  ( d->view2DCoronal );
-	if (!d->collectionPos->IsItemPresent (d->view3D ))
-	    d->collectionPos->AddItem  ( d->view3D );
+	
+	d->collectionPos->AddItem ( d->view2DAxial );
+	d->collectionPos->AddItem ( d->view2DSagittal );
+	d->collectionPos->AddItem ( d->view2DCoronal );
+	d->collectionPos->AddItem ( d->view3D );
 
 	d->collectionPos->AddItem ( otherView->viewAxial() );
 	d->collectionPos->AddItem ( otherView->viewSagittal() );
 	d->collectionPos->AddItem ( otherView->viewCoronal() );
 	d->collectionPos->AddItem ( otherView->view3D() );
+	
+	d->collectionWindowLevel->AddItem ( d->view2DAxial );
+	d->collectionWindowLevel->AddItem ( d->view2DSagittal );
+	d->collectionWindowLevel->AddItem ( d->view2DCoronal );
+	d->collectionWindowLevel->AddItem ( d->view3D );
+
+	d->collectionWindowLevel->AddItem ( otherView->viewAxial() );
+	d->collectionWindowLevel->AddItem ( otherView->viewSagittal() );
+	d->collectionWindowLevel->AddItem ( otherView->viewCoronal() );
+	d->collectionWindowLevel->AddItem ( otherView->view3D() );
     }
 
     this->setProperty ("Linked", "true");
@@ -698,16 +716,27 @@ void v3dView::unlink(dtkAbstractView *other)
 	d->collectionPos->RemoveItem ( otherView->viewSagittal() );
 	d->collectionPos->RemoveItem ( otherView->viewCoronal() );
 	d->collectionPos->RemoveItem ( otherView->view3D() );
+
+	d->collectionWindowLevel->RemoveItem ( otherView->viewAxial() );
+	d->collectionWindowLevel->RemoveItem ( otherView->viewSagittal() );
+	d->collectionWindowLevel->RemoveItem ( otherView->viewCoronal() );
+	d->collectionWindowLevel->RemoveItem ( otherView->view3D() );
     }
 
     d->linkedViews.remove (other);
     
     if (d->linkedViews.count()==0) {
         this->setProperty ("Linked", "false");
+	
 	d->collectionPos->RemoveItem ( d->view2DAxial );
 	d->collectionPos->RemoveItem ( d->view2DSagittal );
 	d->collectionPos->RemoveItem ( d->view2DCoronal );
 	d->collectionPos->RemoveItem ( d->view3D );
+
+	d->collectionWindowLevel->RemoveItem ( d->view2DAxial );
+	d->collectionWindowLevel->RemoveItem ( d->view2DSagittal );
+	d->collectionWindowLevel->RemoveItem ( d->view2DCoronal );
+	d->collectionWindowLevel->RemoveItem ( d->view3D );
     }
 }
 
@@ -1646,8 +1675,8 @@ void v3dView::onMenu3DVRTriggered (void)
     if(qApp->arguments().contains("--stereo"))
         d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
 
+    this->setProperty ("Mode", "VR");
     this->setProperty ("Orientation", "3D");
-    this->setProperty ("Mode", "VR");    
     d->view3D->Render();
 }
 
@@ -1656,8 +1685,8 @@ void v3dView::onMenu3DMPRTriggered (void)
     if(qApp->arguments().contains("--stereo"))
         d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
 
-    this->setProperty("Orientation", "3D");
     this->setProperty("Mode", "MPR");
+    this->setProperty("Orientation", "3D");
     d->view3D->Render();
 }
 
@@ -1666,8 +1695,8 @@ void v3dView::onMenu3DMaxIPTriggered (void)
     if(qApp->arguments().contains("--stereo"))
         d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
 
-    this->setProperty("Orientation", "3D");
     this->setProperty("Mode", "MIP - Maximum");
+    this->setProperty("Orientation", "3D");
     d->view3D->Render();
 }
 
@@ -1676,8 +1705,8 @@ void v3dView::onMenu3DMinIPTriggered (void)
     if(qApp->arguments().contains("--stereo"))
         d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
 
-    this->setProperty("Orientation", "3D");
     this->setProperty("Mode", "MIP - Minimum");
+    this->setProperty("Orientation", "3D");
     d->view3D->Render();
 }
 
