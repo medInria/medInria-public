@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>icons/anchor.png</file>
         <file>icons/cropping.png</file>
         <file>icons/error.png</file>
         <file>icons/error_add.png</file>
@@ -25,6 +26,7 @@
         <file>icons/link_edit.png</file>
         <file>icons/link_error.png</file>
         <file>icons/link_go.png</file>
+	<file>icons/link_wl.png</file>
         <file>icons/lock.png</file>
         <file>icons/lock_add.png</file>
         <file>icons/lock_break.png</file>
