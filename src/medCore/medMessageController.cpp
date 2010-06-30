@@ -98,8 +98,6 @@ medMessageControllerMessageProgress::~medMessageControllerMessageProgress(void)
 
 void medMessageControllerMessageProgress::setProgress(int value)
 {
-    qDebug() << DTK_PRETTY_FUNCTION << value;
-
     d->progress->setValue(value);
 }
 
@@ -163,8 +161,6 @@ void medMessageController::setProgress(int value)
 
 void medMessageController::remove(QObject *sender)
 {
-    qDebug() << DTK_PRETTY_FUNCTION;
-
     medMessageControllerMessage *message = d->messages.value(sender);
 
     d->status->removeWidget(message);
