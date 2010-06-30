@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 08:29:35 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Mar 19 18:21:00 2010 (+0100)
+ * Last-Updated: Wed Jun 30 13:08:05 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 196
+ *     Update #: 199
  */
 
 /* Commentary: 
@@ -39,7 +39,7 @@ medWelcomeArea::medWelcomeArea(QWidget *parent) : QWidget(parent), d(new medWelc
     d->view->settings()->setAttribute(QWebSettings::PluginsEnabled, true);
     d->view->settings()->setAttribute(QWebSettings::JavaEnabled, false);
     d->view->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    d->view->setUrl(QUrl("qrc:/html/index.html"));
+    d->view->setUrl(QUrl("qrc:/html/welcome/index.html"));
     connect(d->view, SIGNAL(linkClicked(const QUrl&)), this, SLOT(linkClicked(const QUrl&)));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
@@ -72,14 +72,8 @@ void medWelcomeArea::linkClicked(const QUrl& url)
             emit switchToBrowserArea();
         if(url.host() == "viewer")
             emit switchToViewerArea();
-        if(url.host() == "documentation"){
-            qDebug()<<url.queryItems();
-            qDebug()<<url.path();
-            emit switchToDocumentationArea(url);
-        }
     } else {
-        if (url.isRelative())
-
+        if (url.isRelative())            
             d->view->load(url);
         else
             QDesktopServices::openUrl(url);

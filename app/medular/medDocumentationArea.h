@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 22 09:04:15 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Mar 19 18:45:11 2010 (+0100)
+ * Last-Updated: Wed Jun 30 13:06:09 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 7
  */
 
 /* Commentary: 
@@ -35,7 +35,6 @@ public:
 
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
-    void loadDoc(const QUrl &url);
 
 protected slots:
     void linkClicked(const QUrl &url);

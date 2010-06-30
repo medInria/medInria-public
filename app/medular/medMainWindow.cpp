@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 29 12:46:23 2010 (+0200)
+ * Last-Updated: Wed Jun 30 13:07:14 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 448
+ *     Update #: 450
  */
 
 /* Commentary: 
@@ -125,7 +125,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(d->welcomeArea, SIGNAL(switchToBrowserArea()), this, SLOT(switchToBrowserArea()));
     connect(d->welcomeArea, SIGNAL(switchToViewerArea()), this, SLOT(switchToViewerArea()));
-    connect(d->welcomeArea, SIGNAL(switchToDocumentationArea(QUrl)), this, SLOT(switchToDocumentationArea(QUrl)));
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
@@ -324,12 +323,6 @@ void medMainWindow::switchToDocumentationArea(void)
     d->shiftToDocumentationAreaAction->setChecked(true);
 
     d->shifter->update();
-}
-
-void medMainWindow::switchToDocumentationArea(QUrl url)
-{
-    switchToDocumentationArea();
-    d->documentationArea->loadDoc(url);
 }
 
 void medMainWindow::onConfigurationTriggered(QAction *action)
