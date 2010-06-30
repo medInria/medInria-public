@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct  5 10:47:56 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Fri Mar 19 17:21:21 2010 (+0100)
+ * Last-Updated: Wed Jun 30 13:07:35 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 6
+ *     Update #: 7
  */
 
 /* Commentary: 
@@ -40,7 +40,6 @@ signals:
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
     void switchToDocumentationArea(void);
-    void switchToDocumentationArea(QUrl);
 
 protected slots:
     void linkClicked(const QUrl &url);

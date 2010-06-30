@@ -1,27 +1,19 @@
-#left_container{
-    position:relative;
-    display:inline;
-    float:left;
-    width:300px;
-    height:100%;
-    background-color:green;
-}
-#content{
-    position:relative;
-    display:inline;
-    margin-left:auto;
-    margin-right:auto;
-    width:100%;
-    background-color:yellow;
-}
+/* style.css --- 
+;; 
+;; Author: Julien Wintz
+;; Copyright (C) 2008 - Julien Wintz, Inria.
+;; Created: Wed Jun 30 09:32:03 2010 (+0200)
+;; Version: $Id$
+;; Last-Updated: Wed Jun 30 12:58:34 2010 (+0200)
+;;           By: Julien Wintz
+;;     Update #: 22
+*/
 
-#right_container{
-    position:relative;
-    display:inline;
-    float:right;
-    width:300px;
-    height:100%;
-    background-color:green;
-}
+/* Commentary: 
+;; 
+*/
 
+/* Change log:
+;; 
+*/
 

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 15:21:13 2010 (+0200)
+ * Last-Updated: Wed Jun 30 13:07:01 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 29
+ *     Update #: 30
  */
 
 /* Commentary: 
@@ -44,7 +44,6 @@ public slots:
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
     void switchToDocumentationArea(void);
-    void switchToDocumentationArea(QUrl);
 
     void onConfigurationTriggered(QAction *action);
 
