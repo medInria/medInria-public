@@ -23,13 +23,15 @@
 #include <QtCore>
 #include <QtGui>
 
+#include "medCoreExport.h"
+
 class medMessageControllerPrivate;
 
 // /////////////////////////////////////////////////////////////////
 // medMessageControllerMessage
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessage : public QWidget
+class MEDCORE_EXPORT medMessageControllerMessage : public QWidget
 {
     Q_OBJECT
 
@@ -42,7 +44,7 @@ public:
 // medMessageControllerMessageInfo
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessageInfo : public medMessageControllerMessage
+class MEDCORE_EXPORT medMessageControllerMessageInfo : public medMessageControllerMessage
 {
     Q_OBJECT
 
@@ -57,7 +59,7 @@ public:
 
 class medMessageControllerMessageProgressPrivate;
 
-class medMessageControllerMessageProgress : public medMessageControllerMessage
+class MEDCORE_EXPORT medMessageControllerMessageProgress : public medMessageControllerMessage
 {
     Q_OBJECT
 
@@ -76,7 +78,7 @@ private:
 // medMessageController
 // /////////////////////////////////////////////////////////////////
 
-class medMessageController : public QObject
+class MEDCORE_EXPORT medMessageController : public QObject
 {
     Q_OBJECT
 

@@ -31,7 +31,7 @@ class dtkAbstractData;
 
 class medDatabaseNonPersitentItemPrivate;
 
-class medDatabaseNonPersitentItem : public QObject
+class MEDSQL_EXPORT medDatabaseNonPersitentItem : public QObject
 {
     Q_OBJECT
 

@@ -32,7 +32,7 @@ class dtkAbstractData;
 
 class medDatabaseNonPersitentControllerPrivate;
 
-class medDatabaseNonPersitentController : public QObject
+class MEDSQL_EXPORT medDatabaseNonPersitentController : public QObject
 {
     Q_OBJECT
 
