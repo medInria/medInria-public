@@ -134,6 +134,7 @@ public:
     QPushButton *anchorButton;
     QPushButton *linkButton;
     QPushButton *linkWLButton;
+	QPushButton *registerButton;
     QPushButton *playButton;
     QPushButton *closeButton;
     QVTKWidget *vtkWidget;
@@ -258,6 +259,18 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     connect(d->linkWLButton, SIGNAL(clicked(bool)), this, SIGNAL(syncWL(bool)));
 
+	d->registerButton = new QPushButton(d->widget);
+    //d->registerButton->setIcon (QIcon(":/icons/link_wl.png"));
+    d->registerButton->setText("r");
+    d->registerButton->setCheckable(true);
+    d->registerButton->setMaximumHeight(16);
+    d->registerButton->setMaximumWidth(16);
+    d->registerButton->setFocusPolicy(Qt::NoFocus);
+    d->registerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->registerButton->setObjectName("tool");
+
+    connect(d->registerButton, SIGNAL(clicked(bool)), this, SIGNAL(reg(bool)));
+
     d->playButton = new QPushButton(d->widget);
     d->playButton->setText(">");
     d->playButton->setCheckable(true);
@@ -303,6 +316,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     toolsLayout->addWidget(d->anchorButton);
     toolsLayout->addWidget(d->linkButton);
     toolsLayout->addWidget(d->linkWLButton);
+	toolsLayout->addWidget(d->registerButton);
     toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->closeButton);
 
@@ -1653,22 +1667,36 @@ void v3dView::onZSliderValueChanged (int value)
 void v3dView::onDaddyPropertySet (QString value)
 {
     d->anchorButton->blockSignals(true);
+	d->linkButton->blockSignals(true);
+	d->linkWLButton->blockSignals(true);
+	d->registerButton->blockSignals(true);
 
     if (value=="true") {
         d->anchorButton->setChecked (true);
-	d->linkButton->setEnabled(false);
-	d->linkWLButton->setEnabled(false);
-	d->anchorButton->blockSignals(false);
-	emit becameDaddy(1);
+
+		d->linkButton->setChecked (false);
+		d->linkWLButton->setChecked (false);
+		d->registerButton->setChecked (false);
+		d->linkButton->setEnabled(false);
+		d->linkWLButton->setEnabled(false);
+		d->registerButton->setEnabled(false);
+		d->anchorButton->blockSignals(false);
+		emit becameDaddy(1);
     }
 
     if (value=="false") {
         d->anchorButton->setChecked (false);
-	d->linkButton->setEnabled(true);
-	d->linkWLButton->setEnabled(true);
-	d->anchorButton->blockSignals(false);
-	emit becameDaddy(0);
+	
+		d->linkButton->setEnabled(true);
+		d->linkWLButton->setEnabled(true);
+		d->registerButton->setEnabled(true);
+		emit becameDaddy(0);
     }
+
+	d->anchorButton->blockSignals(false);
+	d->linkButton->blockSignals(false);
+	d->linkWLButton->blockSignals(false);
+	d->registerButton->blockSignals(false);
 }
 
 void v3dView::onLinkedWLPropertySet (QString value)

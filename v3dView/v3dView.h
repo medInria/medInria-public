@@ -37,6 +37,7 @@ signals:
     void becameDaddy (bool);
     void sync (bool);
     void syncWL (bool);
+	void reg(bool);
 
 public:
     void reset(void);
