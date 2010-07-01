@@ -51,6 +51,7 @@ public slots:
     void onViewDaddy   (bool);
     void onViewSync    (bool);
     void onViewSyncWL  (bool);
+	void onViewReg     (bool);
 
 private:
     medViewPoolPrivate *d;

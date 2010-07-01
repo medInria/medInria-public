@@ -53,6 +53,7 @@ void medViewPool::appendView (dtkAbstractView *view)
     connect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
     connect (view, SIGNAL (sync(bool)),                    this, SLOT (onViewSync(bool)));
     connect (view, SIGNAL (syncWL(bool)),                  this, SLOT (onViewSyncWL(bool)));
+	connect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));
   
     /*
       dtkAbstractView *refView = NULL;
@@ -115,6 +116,7 @@ void medViewPool::removeView (dtkAbstractView *view)
     disconnect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
     disconnect (view, SIGNAL (sync(bool)),                    this, SLOT (onViewSync(bool)));
     disconnect (view, SIGNAL (syncWL(bool)),                  this, SLOT (onViewSyncWL(bool)));
+	disconnect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));
     d->views.removeOne (view);
 }
 
@@ -154,6 +156,13 @@ void medViewPool::onViewDaddy (bool daddy)
 
 	    // tell the sender it is now daddy
 	    view->setProperty ("Daddy", "true");
+
+		// restore the previous data (if any)
+	    if ( d->viewData[view] ) {
+	        view->setData (d->viewData[view]);
+		    d->viewData[view] = NULL;
+		    view->update();
+	    }
 	    connect (this, SIGNAL (linkwl (dtkAbstractView *, bool)), view, SLOT (linkwl (dtkAbstractView *, bool)));
 
 	}
@@ -178,6 +187,42 @@ void medViewPool::onViewSync (bool sync)
         if (sync) {
 	    dtkAbstractView *refView = this->daddy();
 
+	    if (refView==view) // do not link the view with itself
+	        return;
+	  
+	    if (refView) {
+		
+		refView->link (view);
+		view->update();
+	    }
+	}
+	else {
+	    // unlink, no matter what
+	    if (dtkAbstractView *refView = this->daddy())
+	        refView->unlink (view);
+	}
+    }
+}
+
+void medViewPool::onViewSyncWL (bool value)
+{
+    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+      
+        if (view->property ("Daddy")=="false") {
+	    emit linkwl (view, value);
+	    view->update();
+	}
+	
+    }
+}
+
+void medViewPool::onViewReg(bool value)
+{
+	if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+      
+        if (value) {
+	    dtkAbstractView *refView = this->daddy();
+
 	    if (refView==view) // do not register the view with itself
 	        return;
 	  
@@ -198,12 +243,11 @@ void medViewPool::onViewSync (bool sync)
 		        dtkAbstractData *output = process->output();
 			d->viewData[view] = data2;
 			view->setData (output);
+			view->update();
 			//medMessageController::instance()->showInfo (this, tr ("Automatic registration successful"));
 		    }
 		}
-		
-		refView->link (view);
-		view->update();
+
 	    }
 	}
 	else {
@@ -214,23 +258,7 @@ void medViewPool::onViewSync (bool sync)
 		d->viewData[view] = NULL;
 		view->update();
 	    }
-
-	    // unlink, no matter what
-	    if (dtkAbstractView *refView = this->daddy())
-	        refView->unlink (view);
 	}
-    }
-}
-
-void medViewPool::onViewSyncWL (bool value)
-{
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
-      
-        if (view->property ("Daddy")=="false") {
-	    emit linkwl (view, value);
-	    view->update();
-	}
-	
     }
 }
 
