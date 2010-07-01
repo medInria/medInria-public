@@ -1656,12 +1656,16 @@ void v3dView::onDaddyPropertySet (QString value)
 
     if (value=="true") {
         d->anchorButton->setChecked (true);
+	d->linkButton->setEnabled(false);
+	d->linkWLButton->setEnabled(false);
 	d->anchorButton->blockSignals(false);
 	emit becameDaddy(1);
     }
 
     if (value=="false") {
         d->anchorButton->setChecked (false);
+	d->linkButton->setEnabled(true);
+	d->linkWLButton->setEnabled(true);
 	d->anchorButton->blockSignals(false);
 	emit becameDaddy(0);
     }
