@@ -18,11 +18,31 @@
  */
 
 #include "medViewContainer_p.h"
-#include "medViewContainerSingle2.h"
 #include "medViewContainerMulti.h"
 #include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
+
+void medViewContainerSingle2::setView (dtkAbstractView *view)
+{
+    d->layout->setContentsMargins(1, 1, 1, 1);    
+    d->layout->addWidget(view->widget(), 0, 0);
+    d->view = view;
+
+    // d->pool->appendView (view); // only difference with medViewContainerSingle: do not add the view to the pool
+    connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+}
+
+void medViewContainerSingle2::onViewClosed (void)
+{
+    if (d->view) {
+        d->layout->removeWidget(d->view->widget());
+	d->view->widget()->hide();
+	disconnect (d->view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+	// d->pool->removeView (d->view); // do not reomve it from the pool
+	d->view = NULL;
+    }
+}
 
 medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent)
 {

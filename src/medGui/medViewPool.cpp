@@ -235,3 +235,8 @@ void medViewPool::setViewProperty (QString key, QString value)
 	}
     }
 }
+
+int medViewPool::count (void)
+{
+    return d->views.count();
+}

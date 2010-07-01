@@ -126,6 +126,10 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
   }
   else { // top level medViewContainerCustom
       d->pool->appendView (view);
+      if (d->pool->count()==1) {
+	view->setProperty ("Daddy", "true");
+	connect (d->pool, SIGNAL (linkwl (dtkAbstractView *, bool)), view, SLOT (linkwl (dtkAbstractView *, bool)));
+      }
   }
 }
 

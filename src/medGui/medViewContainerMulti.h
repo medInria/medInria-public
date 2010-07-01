@@ -23,6 +23,21 @@
 #include "medGuiExport.h"
 
 #include "medViewContainer.h"
+#include "medViewContainerSingle.h"
+
+class MEDGUI_EXPORT medViewContainerSingle2 : public medViewContainerSingle
+{
+    Q_OBJECT
+
+public:
+    medViewContainerSingle2(QWidget *parent = 0) : medViewContainerSingle(parent) {}
+    void setView(dtkAbstractView *view);
+
+public slots:
+    virtual void onViewClosed (void);
+};
+
+
 
 class MEDGUI_EXPORT medViewContainerMulti : public medViewContainer
 {

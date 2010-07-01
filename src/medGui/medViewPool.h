@@ -42,6 +42,8 @@ public:
 
     void setViewProperty (QString key, QString value);
 
+    int count (void);
+
 signals:
     void linkwl (dtkAbstractView *view, bool value);
     

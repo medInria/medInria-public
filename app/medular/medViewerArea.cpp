@@ -455,12 +455,9 @@ void medViewerArea::setupForegroundLookupTable(QString table)
     if(!d->view_stacks.count())
         return;
 
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
-        view->setProperty("LookupTable", table);
-	view->update();
+    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+        pool->setViewProperty("LookupTable", table);
     }
-    else
-        qDebug() << "Unable to retrieve view";
 }
 
 void medViewerArea::setupBackgroundLookupTable(QString table)

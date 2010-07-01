@@ -47,7 +47,7 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
 
-	d->pool->appendView (view);
+    d->pool->appendView (view);
     connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
 }
 
