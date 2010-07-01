@@ -13,7 +13,7 @@ class itkDCMTKDataImageReaderPrivate;
 
 namespace itk
 {
-  class SliceReadCommand;
+    class SliceReadCommand;
 }
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDCMTKDataImageReader : public dtkAbstractDataReader

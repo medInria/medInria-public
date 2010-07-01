@@ -29,7 +29,6 @@
     return false;							\
   }
 
-
 // /////////////////////////////////////////////////////////////////
 // itkDCMTKDataImageReaderPrivate
 // /////////////////////////////////////////////////////////////////
@@ -102,18 +101,15 @@ QStringList itkDCMTKDataImageReader::handled(void) const
 		       << "itkDataImageRGB3";
 }
 
-
 QString itkDCMTKDataImageReader::description(void) const
 {
   return "itkDCMTKDataImageReader";
 }
 
-
 bool itkDCMTKDataImageReader::canRead (QString path)
 {
   return d->io->CanReadFile ( path.toAscii().constData() );
 }
-
 
 bool itkDCMTKDataImageReader::canRead (QStringList paths)
 {
@@ -123,14 +119,12 @@ bool itkDCMTKDataImageReader::canRead (QStringList paths)
   return true;
 }
 
-
 void itkDCMTKDataImageReader::readInformation (QString path)
 {
   QStringList paths;
   paths << path;
   readInformation ( paths );  
 }
-
 
 void itkDCMTKDataImageReader::readInformation (QStringList paths)
 {
@@ -415,7 +409,7 @@ bool itkDCMTKDataImageReader::read (QStringList paths)
 
 void itkDCMTKDataImageReader::setProgress (int value)
 {
-  emit progressed (value);
+    emit progressed(value); qApp->processEvents();
 }
 
 // /////////////////////////////////////////////////////////////////

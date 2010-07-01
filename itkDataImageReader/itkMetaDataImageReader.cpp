@@ -5,24 +5,20 @@
 
 #include <itkMetaImageIO.h>
 
-
 itkMetaDataImageReader::itkMetaDataImageReader(void) : itkDataImageReaderBase()
 {
     this->io = itk::MetaImageIO::New();
 }
 
-
 itkMetaDataImageReader::~itkMetaDataImageReader(void)
 {
-}
 
+}
 
 bool itkMetaDataImageReader::registered(void)
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataImageReader", itkDataImageReaderBase::s_handled(),
-								    createItkMetaDataImageReader);
+    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataImageReader", itkDataImageReaderBase::s_handled(), createItkMetaDataImageReader);
 }
-
 
 QString itkMetaDataImageReader::description(void) const
 {
@@ -37,4 +33,3 @@ dtkAbstractDataReader *createItkMetaDataImageReader(void)
 {
     return new itkMetaDataImageReader;
 }
-
