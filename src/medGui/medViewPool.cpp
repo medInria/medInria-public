@@ -176,6 +176,10 @@ void medViewPool::onViewSync (bool sync)
       
         if (sync) {
 	  dtkAbstractView *refView = this->daddy();
+
+	  if (refView==view) // do not register the view with itself
+	      return;
+	  
 	  if (refView) {
 
 	    dtkAbstractData *data1 = static_cast<dtkAbstractData *>(refView->data());
