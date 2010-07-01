@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>medular.ico</file>
         <file>icons/anchor.png</file>
         <file>icons/cropping.png</file>
         <file>icons/error.png</file>
