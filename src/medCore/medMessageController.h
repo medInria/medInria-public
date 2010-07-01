@@ -38,17 +38,45 @@ public:
     ~medMessageControllerMessage(void);
 };
 
+
+// /////////////////////////////////////////////////////////////////
+// medMessageControllerMessageSimple
+// /////////////////////////////////////////////////////////////////
+
+class medMessageControllerMessageSimple : public medMessageControllerMessage
+{
+    Q_OBJECT
+
+public:
+     medMessageControllerMessageSimple(const QString& text, QWidget *parent = 0);
+    ~medMessageControllerMessageSimple(void);
+protected:
+    QLabel * icon;
+};
+
 // /////////////////////////////////////////////////////////////////
 // medMessageControllerMessageInfo
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessageInfo : public medMessageControllerMessage
+class medMessageControllerMessageInfo : public medMessageControllerMessageSimple
 {
     Q_OBJECT
 
 public:
      medMessageControllerMessageInfo(const QString& text, QWidget *parent = 0);
     ~medMessageControllerMessageInfo(void);
+};
+
+// /////////////////////////////////////////////////////////////////
+// medMessageControllerMessageError
+// /////////////////////////////////////////////////////////////////
+
+class medMessageControllerMessageError : public medMessageControllerMessageSimple
+{
+    Q_OBJECT
+public:
+     medMessageControllerMessageError(const QString& text, QWidget *parent = 0);
+    ~medMessageControllerMessageError(void);
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -87,6 +115,7 @@ public:
 
 public slots:
     void     showInfo(QObject *sender, const QString& text);
+    void     showError(QObject *sender, const QString& text);
     void showProgress(QObject *sender, const QString& text);
 
     void setProgress(int value);

@@ -349,4 +349,5 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     this->writeSettings();
     
     delete medDatabaseController::instance();
+    //delete medMessageController::instance();
 }

@@ -36,17 +36,19 @@ medMessageControllerMessage::~medMessageControllerMessage(void)
 }
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageInfo
+// medMessageControllerMessageSimple
 // /////////////////////////////////////////////////////////////////
 
-medMessageControllerMessageInfo::medMessageControllerMessageInfo(const QString& text, QWidget *parent) : medMessageControllerMessage(parent)
+medMessageControllerMessageSimple::medMessageControllerMessageSimple(
+        const QString& text,
+        QWidget *parent) : medMessageControllerMessage(parent)
 {
-    QLabel *icon = new QLabel(this);
-    icon->setPixmap(QPixmap(":/icons/information.png"));
+    icon = new QLabel(this);
+    //icon->setPixmap(QPixmap(":/icons/information.png"));
 
     QLabel *info = new QLabel(this);
     info->setText(text);
-    
+
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setAlignment(Qt::AlignLeft);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -55,7 +57,39 @@ medMessageControllerMessageInfo::medMessageControllerMessageInfo(const QString& 
     layout->addWidget(info);
 }
 
+medMessageControllerMessageSimple::~medMessageControllerMessageSimple(void)
+{
+
+}
+
+// /////////////////////////////////////////////////////////////////
+// medMessageControllerMessageInfo
+// /////////////////////////////////////////////////////////////////
+
+medMessageControllerMessageInfo::medMessageControllerMessageInfo(
+        const QString& text, QWidget *parent) :
+        medMessageControllerMessageSimple(text, parent)
+{
+    icon->setPixmap(QPixmap(":/icons/information.png"));
+}
+
 medMessageControllerMessageInfo::~medMessageControllerMessageInfo(void)
+{
+
+}
+
+// /////////////////////////////////////////////////////////////////
+// medMessageControllerMessageError
+// /////////////////////////////////////////////////////////////////
+
+medMessageControllerMessageError::medMessageControllerMessageError(
+        const QString& text, QWidget *parent) :
+        medMessageControllerMessageSimple(text, parent)
+{
+    icon->setPixmap(QPixmap(":/icons/exclamation.png"));
+}
+
+medMessageControllerMessageError::~medMessageControllerMessageError(void)
 {
 
 }
@@ -130,6 +164,17 @@ void medMessageController::showInfo(QObject *sender, const QString& text)
 {
     medMessageControllerMessageInfo *message = new medMessageControllerMessageInfo(text);
     
+    d->status->addWidget(message);
+    d->status->update();
+    qApp->processEvents();
+
+    d->messages.insert(sender, message);
+}
+
+void medMessageController::showError(QObject *sender, const QString& text)
+{
+    medMessageControllerMessageError *message = new medMessageControllerMessageError(text);
+
     d->status->addWidget(message);
     d->status->update();
     qApp->processEvents();
