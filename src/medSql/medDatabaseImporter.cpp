@@ -26,7 +26,6 @@
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
-
 #include <medSql/medDatabaseController.h>
 
 class medDatabaseImporterPrivate
@@ -273,7 +272,7 @@ void medDatabaseImporter::run(void)
 
     if (imagesToWriteMap.count()==0)
     {
-      emit message(tr("No compatible or new image was found"), 10000);
+      emit showError(this, tr("No compatible or new image was found"),5000);
       emit failure();
       return;
     }
@@ -411,7 +410,7 @@ void medDatabaseImporter::run(void)
         }
 
         if (!imData) {
-	    emit message ( tr ("Could not read data: ") + it.value()[0], 10000);
+             emit showError(this, tr ("Could not read data: ") + it.value()[0],5000);
             continue;
         }
 
@@ -439,7 +438,7 @@ void medDatabaseImporter::run(void)
 
 
 	if (!writeSuccess) {
-	    emit message ( tr ("Could not save data file: ") + it.value()[0], 10000);
+            emit showError(this, tr ("Could not save data file: ") + it.value()[0],5000);
 	    continue;
 	}
 	

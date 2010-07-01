@@ -30,6 +30,7 @@
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabasePreview.h>
+#include <medCore/medMessageController.h>
 
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
@@ -227,8 +228,8 @@ void medBrowserArea::onFileSystemImportClicked(void)
     connect(importer, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
     connect(importer, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
     connect(importer, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
-    connect(importer, SIGNAL(message (QString, int)), d->status, SLOT (showMessage (QString, int)), Qt::BlockingQueuedConnection);
-
+    connect(importer,SIGNAL(showError(QObject*,const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
     d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
 
     QThreadPool::globalInstance()->start(importer);

@@ -18,6 +18,7 @@
  */
 
 #include "medViewPool.h"
+#include <medCore/medMessageController.h>
 
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractProcess.h>
@@ -222,7 +223,9 @@ void medViewPool::onViewSync (bool sync)
 	    dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
 	    if (!process)
 	        return;
-	  
+
+            //connect(process,SIGNAL(showError(QObject*,const QString&,unsigned int)),
+            //        medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
 	    process->setInput (data1, 0);
 	    process->setInput (data2, 1);
 	    if (process->run()==0) {

@@ -34,8 +34,10 @@ class medMessageControllerMessage : public QWidget
     Q_OBJECT
 
 public:
-     medMessageControllerMessage(QWidget *parent = 0);
+     medMessageControllerMessage(QObject* sender, QWidget *parent = 0);
     ~medMessageControllerMessage(void);
+protected:
+    QObject* sender;
 };
 
 
@@ -48,10 +50,15 @@ class medMessageControllerMessageSimple : public medMessageControllerMessage
     Q_OBJECT
 
 public:
-     medMessageControllerMessageSimple(const QString& text, QWidget *parent = 0);
+     medMessageControllerMessageSimple(QObject* sender,const QString& text, QWidget *parent = 0,
+                                       unsigned int timeout=0);
     ~medMessageControllerMessageSimple(void);
 protected:
     QLabel * icon;
+    QTimer * timer;
+protected slots:
+    void remove(void);
+
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -63,7 +70,8 @@ class medMessageControllerMessageInfo : public medMessageControllerMessageSimple
     Q_OBJECT
 
 public:
-     medMessageControllerMessageInfo(const QString& text, QWidget *parent = 0);
+     medMessageControllerMessageInfo(QObject* sender,const QString& text, QWidget *parent = 0,
+                                     unsigned int timeout=0);
     ~medMessageControllerMessageInfo(void);
 };
 
@@ -75,7 +83,8 @@ class medMessageControllerMessageError : public medMessageControllerMessageSimpl
 {
     Q_OBJECT
 public:
-     medMessageControllerMessageError(const QString& text, QWidget *parent = 0);
+     medMessageControllerMessageError(QObject* sender,const QString& text, QWidget *parent = 0,
+                                      unsigned int timeout=0);
     ~medMessageControllerMessageError(void);
 };
 
@@ -90,7 +99,7 @@ class medMessageControllerMessageProgress : public medMessageControllerMessage
     Q_OBJECT
 
 public:
-     medMessageControllerMessageProgress(const QString& text, QWidget *parent = 0);
+     medMessageControllerMessageProgress(QObject* sender,const QString& text, QWidget *parent = 0);
     ~medMessageControllerMessageProgress(void);
 
 public slots:
@@ -114,8 +123,8 @@ public:
     void attach(QStatusBar *status);
 
 public slots:
-    void     showInfo(QObject *sender, const QString& text);
-    void     showError(QObject *sender, const QString& text);
+    void     showInfo(QObject *sender, const QString& text,unsigned int timeout=0);
+    void     showError(QObject *sender, const QString& text,unsigned int timeout=0);
     void showProgress(QObject *sender, const QString& text);
 
     void setProgress(int value);
