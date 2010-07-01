@@ -198,12 +198,12 @@ void medViewPool::onViewSync (bool sync)
 		        dtkAbstractData *output = process->output();
 			d->viewData[view] = data2;
 			view->setData (output);
-			view->update();
 			//medMessageController::instance()->showInfo (this, tr ("Automatic registration successful"));
 		    }
 		}
 		
 		refView->link (view);
+		view->update();
 	    }
 	}
 	else {
