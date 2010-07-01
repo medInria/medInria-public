@@ -259,9 +259,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     connect(d->linkWLButton, SIGNAL(clicked(bool)), this, SIGNAL(syncWL(bool)));
 
-	d->registerButton = new QPushButton(d->widget);
-    //d->registerButton->setIcon (QIcon(":/icons/link_wl.png"));
-    d->registerButton->setText("r");
+    d->registerButton = new QPushButton(d->widget);
+    d->registerButton->setIcon (QIcon(":/icons/cog.png"));
+    //d->registerButton->setText("r");
     d->registerButton->setCheckable(true);
     d->registerButton->setMaximumHeight(16);
     d->registerButton->setMaximumWidth(16);
