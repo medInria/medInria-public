@@ -70,19 +70,14 @@ void medViewContainer::split(int rows, int cols)
     Q_UNUSED(cols);
 }
 
-void medViewContainer::synchronize (void)
-{
-    d->pool->synchronize();
-}
-
-void medViewContainer::desynchronize (void)
-{
-    d->pool->desynchronize();
-}
-
 dtkAbstractView *medViewContainer::view(void)
 {
     return d->view;
+}
+
+medViewPool *medViewContainer::pool (void)
+{
+    return d->pool;
 }
 
 void medViewContainer::setView(dtkAbstractView *view)

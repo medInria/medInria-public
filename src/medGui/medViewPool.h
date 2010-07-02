@@ -40,16 +40,18 @@ public:
 
     dtkAbstractView *daddy (void);
 
-    int synchronized (void);
+    void setViewProperty (QString key, QString value);
+
+    int count (void);
+
+signals:
+    void linkwl (dtkAbstractView *view, bool value);
     
 public slots:
-    void synchronize   (void);
-    void desynchronize (void);
-
-    void onViewDaddy (bool);
-    void onViewSync  (bool);
-
-    void onViewPropertySet (QString key, QString value);
+    void onViewDaddy   (bool);
+    void onViewSync    (bool);
+    void onViewSyncWL  (bool);
+	void onViewReg     (bool);
 
 private:
     medViewPoolPrivate *d;

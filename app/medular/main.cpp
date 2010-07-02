@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
     application.setApplicationVersion("0.0.1");
     application.setOrganizationName("inria");
     application.setOrganizationDomain("fr");
+	application.setWindowIcon(QIcon(":/medular.ico"));
 
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();

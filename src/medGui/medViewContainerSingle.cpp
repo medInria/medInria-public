@@ -19,6 +19,7 @@
 
 #include "medViewContainer_p.h"
 #include "medViewContainerSingle.h"
+#include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
 
@@ -46,6 +47,7 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
 
+    d->pool->appendView (view);
     connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
 }
 
@@ -55,6 +57,7 @@ void medViewContainerSingle::onViewClosed (void)
     d->layout->removeWidget(d->view->widget());
     d->view->widget()->hide();
     disconnect (d->view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+	d->pool->removeView (d->view);
     d->view = NULL;
   }
 }

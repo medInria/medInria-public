@@ -32,7 +32,6 @@ set(${PROJECT_NAME}_HEADERS
   medDatabaseNavigator.h
   medDatabaseNavigatorController.h
   medDatabaseNavigatorItem.h
-  medDatabaseNavigatorItem_p.h
   medDatabaseNavigatorItemGroup.h
   medDatabaseNavigatorItemLoader.h
   medDatabaseNavigatorScene.h

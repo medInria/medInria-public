@@ -48,8 +48,6 @@ public:
     void setView(dtkAbstractView *view);
 
 public slots:
-    void synchronize   (void);
-    void desynchronize (void);
     void onViewClosed  (void);
 
 protected:

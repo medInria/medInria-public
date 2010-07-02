@@ -126,6 +126,10 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
   }
   else { // top level medViewContainerCustom
       d->pool->appendView (view);
+      if (d->pool->count()==1) {
+	view->setProperty ("Daddy", "true");
+	connect (d->pool, SIGNAL (linkwl (dtkAbstractView *, bool)), view, SLOT (linkwl (dtkAbstractView *, bool)));
+      }
   }
 }
 
@@ -136,26 +140,6 @@ void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
   }
   else { // top level medViewContainerCustom
       d->pool->removeView (view);
-  }
-}
-
-void medViewContainerCustom::synchronize (void)
-{
-  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
-      parent->synchronize();
-  }
-  else { // top level medViewContainerCustom      
-      d->pool->synchronize();
-  }
-}
-
-void medViewContainerCustom::desynchronize (void)
-{
-  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
-      parent->desynchronize();
-  }
-  else { // top level medViewContainerCustom
-      d->pool->desynchronize();
   }
 }
 
