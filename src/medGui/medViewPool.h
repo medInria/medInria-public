@@ -46,7 +46,8 @@ public:
 
 signals:
     void linkwl (dtkAbstractView *view, bool value);
-    
+    void showInfo(QObject*,const QString&,unsigned int timeout);
+    void showError(QObject*,const QString&,unsigned int timeout);
 public slots:
     void onViewDaddy   (bool);
     void onViewSync    (bool);

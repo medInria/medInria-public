@@ -37,6 +37,10 @@ public:
 
 medViewPool::medViewPool(void) : d (new medViewPoolPrivate)
 {
+    connect(this,SIGNAL(showInfo(QObject*,const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
 }
 
 medViewPool::~medViewPool(void)
@@ -236,16 +240,18 @@ void medViewPool::onViewReg(bool value)
 		    dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
 		    if (!process)
 		        return;
-	  
-		    process->setInput (data1, 0);
+                    process->setInput (data1, 0);
 		    process->setInput (data2, 1);
 		    if (process->run()==0) {
 		        dtkAbstractData *output = process->output();
 			d->viewData[view] = data2;
 			view->setData (output);
 			view->update();
-			//medMessageController::instance()->showInfo (this, tr ("Automatic registration successful"));
+                        emit showInfo (this, tr ("Automatic registration successful"),3000);
 		    }
+                    else {
+                        emit showError(this, tr  ("Automatic registration failed"),3000);
+                    }
 		}
 
 	    }
