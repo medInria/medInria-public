@@ -18,7 +18,7 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageChar3 : public dtkAbstractDataImage
     virtual QString description(void) const;
     static bool registered(void);
 
-    virtual QImage        &thumbnail(void)   const;
+    virtual QImage        &thumbnail  (void) const;
     virtual QList<QImage> &thumbnails (void) const;
 
  public slots:
