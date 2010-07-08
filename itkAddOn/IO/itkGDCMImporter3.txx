@@ -87,7 +87,7 @@ namespace itk
     FileListMapType map = this->GetFileListMap();
     bool ret = 0;
     double cumulatednorm = 0.0;
-
+    
     m_MeanDiffusivitySkipped = 0;
     m_Gradients.clear();
 
@@ -106,22 +106,19 @@ namespace itk
 	  ret = 0;
 	  break;
 	}
+	m_GradientScanner.Scan ((*it).second);
+	
 	std::string file = (*it).second[0];
-	gdcm::Reader reader;
-	reader.SetFileName (file.c_str());
-	std::set<gdcm::Tag> set;
-	// set.insert (gdcm::Tag(0x18, 0x9089));
-	// if (!reader.ReadSelectedTags(set))
-	if (reader.ReadUpToTag(gdcm::Tag(0x8, 0x9089), set))
-	{
+	const char *value = this->m_GradientScanner.GetValue(file.c_str(), gdcm::Tag(0x18,0x9089));
+	if( !value )
+        {
 	  ret = 0;
 	  break;
 	}
-	gdcm::StringFilter filter;
-	filter.SetFile (reader.GetFile());
-	std::stringstream ss;
-	ss.str( filter.ToString (gdcm::Tag(0x18, 0x9089)) );
+
 	gdcm::Element<gdcm::VR::DS,gdcm::VM::VM3> gradient;
+	std::stringstream ss;
+	ss.str( value );
 	gradient.Read(ss );
 	ret = 1;	
 	GradientType gr;
@@ -130,15 +127,13 @@ namespace itk
 	
 	if (!engaged && NumericTraits<double>::IsPositive (gr.GetNorm()))
 	  engaged = 1;
-
+	
 	cumulatednorm += gr.GetNorm();
 	
 	if (!m_SkipMeanDiffusivity || !engaged || NumericTraits<double>::IsPositive (gr.GetNorm()) )
 	  m_Gradients.push_back (gr);
 	else
 	  m_MeanDiffusivitySkipped = 1;
-	
-
       }
     }
     
@@ -386,7 +381,7 @@ namespace itk
     // 0020 0032 Position Patient
     this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x32) );  
     // 0020 0037 Orientation Patient
-    this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x37) );
+    this->m_ThirdScanner.AddTag( gdcm::Tag(0x20,0x37) );    
     
   }
 
@@ -1009,7 +1004,10 @@ namespace itk
   GDCMImporter3<TPixelType>::SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion)
   {
     typename ImageType::IndexType splitIndex;
+    splitIndex.Fill (0);
+    
     typename ImageType::SizeType splitSize;
+    splitSize.Fill (0);
     
     // determine the actual number of pieces that will be generated
     typename ImageType::SizeType::SizeValueType range = this->GetNumberOfOutputs();
