@@ -73,7 +73,7 @@ namespace itk
       GradientType g = inversedirections * m_Gradients [i];      
       if (NumericTraits<double>::IsPositive (g.GetNorm()))
 	g.Normalize();
-      file << g[0] << " " << g[1] << " " << g[2] << std::endl;
+      file << g[0] << "\t" << g[1] << "\t" << g[2] << std::endl;
     }
     file.close();
   }
@@ -863,7 +863,7 @@ namespace itk
 	  std::string gradientsname = itksys::SystemTools::AppendStrings
 	    ( itksys::SystemTools::ConvertToOutputPath (directory.c_str()).c_str(),
 	      this->GetOutput(i)->GetName(),
-	      ".bvec");
+	      ".txt");
 
 	  std::cout<<"Writing "<<gradientsname<<" ... "<<std::flush;
 	  this->GetOutput(i)->WriteGradients (gradientsname);
