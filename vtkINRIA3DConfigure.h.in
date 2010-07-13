@@ -10,7 +10,6 @@
 #cmakedefine vtkINRIA3D_USE_WXWINDOWS
 #cmakedefine vtkINRIA3D_USE_KWWIDGETS
 #cmakedefine vtkINRIA3D_USE_KWWIDGETS_OLD_API
-#cmakedefine vtkINRIA3D_USE_VTKEdge
 #cmakedefine VTK_TCL_SUPPORT_LIBRARY_PATH
 #cmakedefine VTK_TK_SUPPORT_LIBRARY_PATH
 
