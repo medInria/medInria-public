@@ -19,7 +19,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 
-project(med)
+project(medular)
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "medular major version number.")
 set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "medular minor version number.")
