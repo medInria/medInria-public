@@ -138,9 +138,8 @@ void medDatabaseView::onItemClicked(const QModelIndex& index)
         item = static_cast<medDatabaseItem *>(index.internalPointer());
 
     if(item)
-        if(item->table() == "patient"){
-            emit patientClicked(item->value(20).toInt());
-        }
+        if(item->table() == "patient")
+	    emit patientClicked(item->value(20).toInt());
         else if(item->table() == "study")
             emit studyClicked(item->value(20).toInt());
         else if(item->table() == "series")
@@ -158,11 +157,11 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 
     if(item)
         if(item->table() == "patient")
-            ;
+	    emit open(medDatabaseController::instance()->indexForPatient(item->value(20).toInt()));
         else if(item->table() == "study")
             ;
         else if(item->table() == "series")
-            ;
+	    emit open(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
         else
             ;
 }
