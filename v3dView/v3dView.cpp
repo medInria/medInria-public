@@ -32,6 +32,7 @@
 #include <vtkImageView2DCommand.h>
 #include <vtkInteractorStyleImageView2D.h>
 #include <vtkInteractorStyleTrackballCamera2.h>
+#include <vtkInteractorStyleTrackballActor.h>
 #include <vtkImageViewCollection.h>
 
 #include <QVTKWidget.h>
@@ -205,6 +206,10 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     // Setting up 3D view
     d->renderer3D = vtkRenderer::New();
+    d->renderer3D->GetActiveCamera()->SetPosition(0, -1, 0);
+    d->renderer3D->GetActiveCamera()->SetViewUp(0, 0, 1);
+    d->renderer3D->GetActiveCamera()->SetFocalPoint(0, 0, 0);
+
     d->view3D = vtkImageView3D::New();
     d->view3D->SetRenderer(d->renderer3D);
     d->view3D->SetShowBoxWidget(0);
@@ -214,6 +219,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view3D->ShadeOn();
 
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
+    //    vtkInteractorStyleTrackballCamera *interactorStyle = vtkInteractorStyleTrackballCamera::New();
     d->view3D->SetInteractorStyle(interactorStyle);
     interactorStyle->Delete();
 
@@ -307,6 +313,9 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     renwin->SetStereoTypeToCrystalEyes();
     // if(qApp->arguments().contains("--stereo"))
     //     renwin->SetStereoRender(1);
+    
+    
+
     d->vtkWidget->SetRenderWindow(renwin);
 
     QHBoxLayout *toolsLayout = new QHBoxLayout;
