@@ -171,7 +171,9 @@ target_link_libraries(itkStreamedReaderTest
   vtkRendering
   vtkIO
   vtkDataManagement
-  ${ITK_LIBRARIES})
+  QVTK
+  ${ITK_LIBRARIES}
+  ${QT_LIBRARIES})
 
 add_executable(itkDCMTKReadWriteBenchmark
   itkDCMTKReadWriteBenchmark.cxx)
