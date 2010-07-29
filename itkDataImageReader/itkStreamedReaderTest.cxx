@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  2 21:46:08 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Jul 29 00:50:04 2010 (+0200)
+ * Last-Updated: Thu Jul 29 01:37:39 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 132
+ *     Update #: 158
  */
 
 /* Commentary: 
@@ -33,6 +33,8 @@
 #include <vtkImageMapToColors.h>
 #include <vtkImageActor.h>
 #include <vtkCallbackCommand.h>
+
+#include <itkImageToVTKImageFilter.h>
 
 #include <time.h>
 
@@ -65,6 +67,9 @@ namespace itk
 
         void SetView (vtkViewImage2D* view)
         { m_View = view; }
+
+        void SetConverter(itk::ImageToVTKImageFilter<itk::Image<float, 3> >* converter)
+        { m_Coonverter = converter; }
     
     protected:
         SliceReadCommand(){ this->ImageNotSet = 1; };
@@ -74,7 +79,7 @@ namespace itk
         ImageType::Pointer m_Image;
         vtkViewImage2D*    m_View;
         int ImageNotSet;
-    
+        itk::ImageToVTKImageFilter<itk::Image<float, 3> > *m_Coonverter; 
     };
 
 
@@ -83,12 +88,16 @@ namespace itk
         static int slice = 0;
 
         std::cout << event.GetEventName() << " - Slice read: " << slice++ << std::endl;
-        
+                
             //qDebug() << "Slice read";
             // if( this->ImageNotSet ){
-        m_View->SetITKImage(m_Image);
+        
+        m_Coonverter->Update();
 
-        qApp->processEvents();
+        // if(slice == 1)
+            m_View->SetImage(m_Coonverter->GetOutput());
+
+        // m_View->Update();
         
             //     m_View->ResetCurrentPoint();
             //     m_View->ResetZoom();
@@ -99,7 +108,9 @@ namespace itk
             // //m_View->GetImageReslice()->Modified();
             // m_View->GetWindowLevel()->Modified();
             // m_View->GetRenderWindow()->InvokeEvent ( m_View->GetRenderWindow()->GetEventPending() );
-            // m_View->GetRenderWindowInteractor()->Render();
+            m_View->GetRenderWindowInteractor()->Render();
+
+        qApp->processEvents();
        
             //qDebug() << "Rendered!";
     }
@@ -119,9 +130,7 @@ namespace itk
             // m_View->GetWindowLevel()->Modified();
             // m_View->GetRenderWindow()->InvokeEvent ( m_View->GetRenderWindow()->GetEventPending() );
             // m_View->GetRenderWindow()->Render();
-  
     }
-  
 }
 
 
@@ -162,6 +171,10 @@ int main (int narg, char* arg[])
     streamer->SetNumberOfStreamDivisions(100);
     // streamer->Update();    
     
+    typedef itk::ImageToVTKImageFilter< itk::Image<float, 3> > ConverterType;
+    ConverterType::Pointer myConverter = ConverterType::New();
+    myConverter->SetInput(streamer->GetOutput());
+
 // -----
 
     // if( narg<2 ) {
@@ -214,10 +227,10 @@ int main (int narg, char* arg[])
     //   return -1;
     // }
     
-    OutputImageType::Pointer image = streamer->GetOutput();
+    // OutputImageType::Pointer image = myConverter->GetOutput();
     // image->DisconnectPipeline();
     
-    std::cout << image << std::endl;
+    // std::cout << image << std::endl;
     
     vtkViewImage2D* view = vtkViewImage2D::New();
     // vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
@@ -248,10 +261,10 @@ int main (int narg, char* arg[])
     view->SetRightButtonInteractionStyle  (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
 
     itk::SliceReadCommand::Pointer command = itk::SliceReadCommand::New();
-    command->SetImage (image);
+    // command->SetImage (image);
     command->SetView (view);
+    command->SetConverter(myConverter);
     streamer->AddObserver(itk::ProgressEvent(), command);
-    streamer->AddObserver(itk::ModifiedEvent(), command);   
 
     /*
       itk::SliceReadCommand::Pointer command = itk::SliceReadCommand::New();
@@ -269,7 +282,7 @@ int main (int narg, char* arg[])
     // iren->Initialize();
     // iren->Start();
 
-    // view->SetITKImage (image);
+    // view->SetITKImage(image);
 
     // if (view->GetImage())
     //   std::cout << *view->GetImage() << std::endl;

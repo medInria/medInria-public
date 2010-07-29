@@ -257,6 +257,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<unsigned char, 3> >::Pointer ucharReader = itk::ImageFileReader< itk::Image<unsigned char, 3> >::New();
       ucharReader->SetImageIO ( this->io );
       ucharReader->SetFileName ( path.toAscii().constData() );
+      ucharReader->SetUseStreaming(true);
       dtkdata->setData ( ucharReader->GetOutput() );
       try {
 	ucharReader->Update();
@@ -271,6 +272,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<char, 3> >::Pointer charReader = itk::ImageFileReader< itk::Image<char, 3> >::New();
       charReader->SetImageIO ( this->io );
       charReader->SetFileName ( path.toAscii().constData() );
+      charReader->SetUseStreaming(true);
       dtkdata->setData ( charReader->GetOutput() );
       try {
 	charReader->Update();
@@ -285,6 +287,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<unsigned short, 3> >::Pointer ushortReader = itk::ImageFileReader< itk::Image<unsigned short, 3> >::New();
       ushortReader->SetImageIO ( this->io );
       ushortReader->SetFileName ( path.toAscii().constData() );
+      ushortReader->SetUseStreaming(true);
       dtkdata->setData ( ushortReader->GetOutput() );
       try {
 	ushortReader->Update();
@@ -299,6 +302,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<unsigned short, 4> >::Pointer ushortReader = itk::ImageFileReader< itk::Image<unsigned short, 4> >::New();
       ushortReader->SetImageIO ( this->io );
       ushortReader->SetFileName ( path.toAscii().constData() );
+      ushortReader->SetUseStreaming(true);
       dtkdata->setData ( ushortReader->GetOutput() );
       try {
 	ushortReader->Update();
@@ -313,6 +317,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<short, 3> >::Pointer shortReader = itk::ImageFileReader< itk::Image<short, 3> >::New();
       shortReader->SetImageIO ( this->io );
       shortReader->SetFileName ( path.toAscii().constData() );
+      shortReader->SetUseStreaming(true);
       dtkdata->setData ( shortReader->GetOutput() );
       try {
 	shortReader->Update();
@@ -327,6 +332,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<short, 4> >::Pointer shortReader = itk::ImageFileReader< itk::Image<short, 4> >::New();
       shortReader->SetImageIO ( this->io );
       shortReader->SetFileName ( path.toAscii().constData() );
+      shortReader->SetUseStreaming(true);
       dtkdata->setData ( shortReader->GetOutput() );
       try {
 	shortReader->Update();
@@ -341,6 +347,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<unsigned int, 3> >::Pointer uintReader = itk::ImageFileReader< itk::Image<unsigned int, 3> >::New();
       uintReader->SetImageIO ( this->io );
       uintReader->SetFileName ( path.toAscii().constData() );
+      uintReader->SetUseStreaming(true);
       dtkdata->setData ( uintReader->GetOutput() );
       try {
 	uintReader->Update();
@@ -355,6 +362,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<int, 3> >::Pointer intReader = itk::ImageFileReader< itk::Image<int, 3> >::New();
       intReader->SetImageIO ( this->io );
       intReader->SetFileName ( path.toAscii().constData() );
+      intReader->SetUseStreaming(true);
       dtkdata->setData ( intReader->GetOutput() );
       try {
 	intReader->Update();
@@ -369,6 +377,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<unsigned long, 3> >::Pointer ulongReader = itk::ImageFileReader< itk::Image<unsigned long, 3> >::New();
       ulongReader->SetImageIO ( this->io );
       ulongReader->SetFileName ( path.toAscii().constData() );
+      ulongReader->SetUseStreaming(true);
       dtkdata->setData ( ulongReader->GetOutput() );
       try {
 	ulongReader->Update();
@@ -383,6 +392,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<long, 3> >::Pointer longReader = itk::ImageFileReader< itk::Image<long, 3> >::New();
       longReader->SetImageIO ( this->io );
       longReader->SetFileName ( path.toAscii().constData() );
+      longReader->SetUseStreaming(true);
       dtkdata->setData ( longReader->GetOutput() );
       try {
 	longReader->Update();
@@ -397,6 +407,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<float, 3> >::Pointer floatReader = itk::ImageFileReader< itk::Image<float, 3> >::New();
       floatReader->SetImageIO ( this->io );
       floatReader->SetFileName ( path.toAscii().constData() );
+      floatReader->SetUseStreaming(true);
       dtkdata->setData ( floatReader->GetOutput() );
       try {
 	floatReader->Update();
@@ -411,6 +422,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<double, 3> >::Pointer doubleReader = itk::ImageFileReader< itk::Image<double, 3> >::New();
       doubleReader->SetImageIO ( this->io );
       doubleReader->SetFileName ( path.toAscii().constData() );
+      doubleReader->SetUseStreaming(true);
       dtkdata->setData ( doubleReader->GetOutput() );
       try {
 	doubleReader->Update();
@@ -425,6 +437,7 @@ bool itkDataImageReaderBase::read (QString path)
       itk::ImageFileReader< itk::Image<itk::RGBPixel<unsigned char>, 3> >::Pointer rgbReader = itk::ImageFileReader< itk::Image<itk::RGBPixel<unsigned char>, 3> >::New();
       rgbReader->SetImageIO ( this->io );
       rgbReader->SetFileName ( path.toAscii().constData() );
+      rgbReader->SetUseStreaming(true);
       dtkdata->setData ( rgbReader->GetOutput() );
       try {
 	rgbReader->Update();

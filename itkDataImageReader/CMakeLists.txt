@@ -49,6 +49,9 @@ include_directories(${DCMTK_INCLUDE_DIR})
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
+find_package(vtkINRIA3D-Private REQUIRED)
+include(${vtkINRIA3D-Private_USE_FILE})
+
 find_package(VTK)
 include(${VTK_USE_FILE})
 
@@ -165,6 +168,21 @@ add_executable(itkStreamedReaderTest
   itkStreamedReaderTest.cxx)
   
 target_link_libraries(itkStreamedReaderTest
+  vtkRenderingAddOn
+  vtkWidgetsAddOn
+  vtkWidgets
+  vtkRendering
+  vtkIO
+  vtkDataManagement
+  QVTK
+  ${ITK_LIBRARIES}
+  ${QT_LIBRARIES})
+
+add_executable(itkStreamedReaderTest2
+  itkStreamedReaderTest2.cxx)
+  
+target_link_libraries(itkStreamedReaderTest2
+  vtkRenderingAddOn3
   vtkRenderingAddOn
   vtkWidgetsAddOn
   vtkWidgets
