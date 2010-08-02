@@ -206,7 +206,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->setCentralWidget(d->stack);
     this->setStyle(new medMainWindowStyle);
     this->setStyleSheet(dtkReadFile(":/medular.qss"));
-    this->setWindowTitle("medular");
+    this->setWindowTitle("medinria");
     this->switchToWelcomeArea();
 
     medMessageController::instance()->attach(this->statusBar());
@@ -221,8 +221,8 @@ medMainWindow::~medMainWindow(void)
 
 void medMainWindow::readSettings(void)
 {
-    QSettings settings("inria", "medular");
-    settings.beginGroup("medular");
+    QSettings settings("inria", "medinria");
+    settings.beginGroup("medinria");
     QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
     QSize size = settings.value("size", QSize(600, 400)).toSize();
     move(pos);
@@ -232,8 +232,8 @@ void medMainWindow::readSettings(void)
 
 void medMainWindow::writeSettings(void)
 {
-    QSettings settings("inria", "medular");
-    settings.beginGroup("medular");
+    QSettings settings("inria", "medinria");
+    settings.beginGroup("medinria");
     settings.setValue("pos", pos());
     settings.setValue("size", size());
     settings.endGroup();

@@ -11,9 +11,9 @@
   ;Name and file
   Name "${PROJECT_NAME}"
   !ifdef WIN64
-    OutFile "${medularDIR}\${PROJECT_NAME}-${VERSION}-win32-x64.exe"
+    OutFile "${medinriaDIR}\${PROJECT_NAME}-${VERSION}-win32-x64.exe"
   !else
-    OutFile "${medularDIR}\${PROJECT_NAME}-${VERSION}-win32-x86.exe"
+    OutFile "${medinriaDIR}\${PROJECT_NAME}-${VERSION}-win32-x86.exe"
   !endif
   
   XPStyle on
@@ -21,7 +21,7 @@
   ;Function .onInit
   ;# the plugins dir is automatically deleted when the installer exits
   ;InitPluginsDir
-  ;File /oname=$PLUGINSDIR\splash.bmp "pixmaps\logomedular.bmp"
+  ;File /oname=$PLUGINSDIR\splash.bmp "pixmaps\logomedinria.bmp"
 
   ;advsplash::show 1000 600 400 -1 $PLUGINSDIR\splash
   ;Pop $0 ; $0 has '1' if the user closed the splash screen early,
@@ -38,7 +38,7 @@
 
   !define MUI_ABORTWARNING
   !define MUI_HEADERIMAGE
-  ;!define MUI_HEADERIMAGE_BITMAP "pixmaps\logomedularHeader.bmp" ; optional
+  ;!define MUI_HEADERIMAGE_BITMAP "pixmaps\logomedinriaHeader.bmp" ; optional
 ;--------------------------------
 ;Pages
 
@@ -73,14 +73,13 @@
 ;--------------------------------
 ;Installer Sections
 
-Section "${PROJECT_NAME} (required)" SecMedular  
+Section "${PROJECT_NAME} (required)" Secmedinria  
 
   SectionIn RO  
 
   SetOutPath "$INSTDIR"
 
   ; Specific for medinria
-  ;File "${medularDIR}\release\medular.exe"
   ;WARNING: copies everything in install directory: could be much better.
   File /r "${INST_PREFIX}\*.*" 
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -104,21 +103,21 @@ Section "${PROJECT_NAME} (required)" SecMedular
 ;  !define Index "Line${__LINE__}"
 ;  ReadRegStr $1 HKCR ".dts" ""
 ;  StrCmp $1 "" "${Index}-NoBackup"
-;    StrCmp $1 "medular.dts" "${Index}-NoBackup"
+;    StrCmp $1 "medinria.dts" "${Index}-NoBackup"
 ;    WriteRegStr HKCR ".opt" "backup_val" $1
 ;  "${Index}-NoBackup:"
-;  WriteRegStr HKCR ".dts" "" "medular.dts"
-;  ReadRegStr $0 HKCR "medular.dts" ""
+;  WriteRegStr HKCR ".dts" "" "medinria.dts"
+;  ReadRegStr $0 HKCR "medinria.dts" ""
 ;  StrCmp $0 "" 0 "${Index}-Skip"
-;	WriteRegStr HKCR "medular.dts" "" "medular DTI Study"
-;	WriteRegStr HKCR "medular.dts\shell" "" "open"
-;	WriteRegStr HKCR "medular.dts\DefaultIcon" "" "$INSTDIR\medular.exe,0"
+;	WriteRegStr HKCR "medinria.dts" "" "medinria DTI Study"
+;	WriteRegStr HKCR "medinria.dts\shell" "" "open"
+;	WriteRegStr HKCR "medinria.dts\DefaultIcon" "" "$INSTDIR\medinria.exe,0"
 ;  "${Index}-Skip:"
-;  WriteRegStr HKCR "medular.dts\shell\open\command" "" \
-;    '$INSTDIR\medular.exe -mod dtitrack -dts "%1"'
-;  WriteRegStr HKCR "medular.dts\shell\edit" "" "Edit Options File"
-;  WriteRegStr HKCR "medular.dts\shell\edit\command" "" \
-;    '$INSTDIR\medular.exe "%1"'
+;  WriteRegStr HKCR "medinria.dts\shell\open\command" "" \
+;    '$INSTDIR\medinria.exe -mod dtitrack -dts "%1"'
+;  WriteRegStr HKCR "medinria.dts\shell\edit" "" "Edit Options File"
+;  WriteRegStr HKCR "medinria.dts\shell\edit\command" "" \
+;    '$INSTDIR\medinria.exe "%1"'
 ; 
 ;  System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 ;  !undef Index;
@@ -130,14 +129,14 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_Secmedular ${LANG_ENGLISH} "Select this option to install \
+  LangString DESC_Secmedinria ${LANG_ENGLISH} "Select this option to install \
   the main program ${PROJECT_NAME}."
 ;  LangString DESC_SecTensorViewer ${LANG_ENGLISH} "Select this option to install \
 ;  the Tensor Viewer program."
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-    !insertmacro MUI_DESCRIPTION_TEXT ${Secmedular} $(DESC_Secmedular)
+    !insertmacro MUI_DESCRIPTION_TEXT ${Secmedinria} $(DESC_Secmedinria)
 ;    !insertmacro MUI_DESCRIPTION_TEXT ${SecTensorViewer} $(DESC_SecTensorViewer)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
  
@@ -166,18 +165,18 @@ Section "Uninstall"
 ;  Delete    "$DESKTOP\SLViewer.lnk"
   DeleteRegKey HKCU "Software\${PROJECT_NAME}"
   DeleteRegKey HKU "Software\${PROJECT_NAME}"
-  ;medular is hard coded
-  DeleteRegKey HKCU "Software\inria\medular"
+  ;medinria is hard coded
+  DeleteRegKey HKCU "Software\inria\medinria"
   ;WARNING!!!!!!!!!!!!!! do not delete if other dtk software
   DeleteRegKey HKCU "Software\inria\dtk"
   DeleteRegKey HKU "Software\inria\dtk" 
-  DeleteRegKey HKU "Software\inria\medular"
+  DeleteRegKey HKU "Software\inria\medinria"
   DeleteRegKey /ifempty HKU "Software\inria"
   DeleteRegKey /ifempty HKCU "Software\inria"
 ;  ;start of restore script
 ;  !define Index "Line${__LINE__}"
 ;  ReadRegStr $1 HKCR ".dts" ""
-;  StrCmp $1 "medular.dts" 0 "${Index}-NoOwn" ; only do this if we own it
+;  StrCmp $1 "medinria.dts" 0 "${Index}-NoOwn" ; only do this if we own it
 ;    ReadRegStr $1 HKCR ".dts" "backup_val"
 ;    StrCmp $1 "" 0 "${Index}-Restore" ; if backup="" then delete the whole key
 ;      DeleteRegKey HKCR ".dts"
@@ -186,7 +185,7 @@ Section "Uninstall"
 ;      WriteRegStr HKCR ".dts" "" $1
 ;      DeleteRegValue HKCR ".dts" "backup_val"
 ;   
-;    DeleteRegKey HKCR "medular.dts" ;Delete key with association settings
+;    DeleteRegKey HKCR "medinria.dts" ;Delete key with association settings
 ; 
 ;    System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 ;    "${Index}-NoOwn:"
