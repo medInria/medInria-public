@@ -284,6 +284,8 @@ void medViewerArea::open(const medDataIndex& index)
 
     this->switchToPatient(index.patientId());
 
+    if(((medDataIndex)index).isValidForSeries()) {
+
     dtkAbstractData *data = NULL;
     dtkAbstractView *view = NULL;
 
@@ -318,6 +320,35 @@ void medViewerArea::open(const medDataIndex& index)
     
     d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
     d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
+
+    return;
+
+    }
+
+    if(((medDataIndex)index).isValidForPatient()) {
+
+    this->switchToPatient(index.patientId());
+    this->switchToContainer(1);
+
+    QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
+    stQuery.prepare("SELECT * FROM study WHERE patient = :id");
+    stQuery.bindValue(":id", index.patientId());
+    if(!stQuery.exec())
+	qDebug() << DTK_COLOR_FG_RED << stQuery.lastError() << DTK_NO_COLOR;
+
+    while(stQuery.next()) {
+      
+        QSqlQuery seQuery(*(medDatabaseController::instance()->database()));
+        seQuery.prepare("SELECT * FROM series WHERE study = :id");
+        seQuery.bindValue(":id", stQuery.value(0));
+        if(!seQuery.exec())
+	    qDebug() << DTK_COLOR_FG_RED << seQuery.lastError() << DTK_NO_COLOR;
+        
+        while(seQuery.next())
+	    this->open(medDataIndex(index.patientId(), stQuery.value(0).toInt(), seQuery.value(0).toInt()));
+    }
+
+    }
 }
 
 //! Open file on the local filesystem.

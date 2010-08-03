@@ -332,9 +332,9 @@ void medMainWindow::onConfigurationTriggered(QAction *action)
 
 void medMainWindow::open(const medDataIndex& index)
 {
-    d->viewerArea->open(index);
-
     this->switchToViewerArea();
+
+    d->viewerArea->open(index);
 }
 
 void medMainWindow::open(const QString& file)

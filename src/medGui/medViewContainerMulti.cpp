@@ -89,7 +89,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     container->setView(view);
     content << container;
 
-    this->layout (content);
+    this->layout(content);
     
     d->view = view;
 
@@ -105,7 +105,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));
 }
 
-void medViewContainerMulti::layout (QList<QWidget *> content)
+void medViewContainerMulti::layout(QList<QWidget *> content)
 {
     
     int row = 0;
@@ -118,7 +118,7 @@ void medViewContainerMulti::layout (QList<QWidget *> content)
             qreal rratio = qMin(((qreal)this->height()/(qreal)(row+2)), ((qreal)this->width()/(qreal)(col+1)));
             qreal cratio = qMin(((qreal)this->height()/(qreal)(row+1)), ((qreal)this->width()/(qreal)(col+2)));
             
-            if(rratio > cratio) {                    
+            if(rratio > cratio) {
                 row++;
                 col = 0;
             } else {
