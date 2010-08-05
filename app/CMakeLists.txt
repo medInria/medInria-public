@@ -17,4 +17,4 @@
 ## 
 ######################################################################
 
-add_subdirectory(medular)
+add_subdirectory(medinria)

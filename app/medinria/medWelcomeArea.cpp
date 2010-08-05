@@ -67,7 +67,7 @@ void medWelcomeArea::setdw(QStatusBar *status)
 
 void medWelcomeArea::linkClicked(const QUrl& url)
 {    
-    if(url.scheme() == "medular") {
+    if(url.scheme() == "medinria") {
         if(url.host() == "browser")
             emit switchToBrowserArea();
         if(url.host() == "viewer")

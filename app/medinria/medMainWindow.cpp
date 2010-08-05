@@ -205,7 +205,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->readSettings();
     this->setCentralWidget(d->stack);
     this->setStyle(new medMainWindowStyle);
-    this->setStyleSheet(dtkReadFile(":/medular.qss"));
+    this->setStyleSheet(dtkReadFile(":/medinria.qss"));
     this->setWindowTitle("medinria");
     this->switchToWelcomeArea();
 

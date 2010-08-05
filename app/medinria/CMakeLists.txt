@@ -44,7 +44,7 @@ set(${PROJECT_NAME}_SOURCES
   medWelcomeArea.cpp
   main.cpp)
 
-set(${PROJECT_NAME}_RESOURCES medular.qrc)
+set(${PROJECT_NAME}_RESOURCES medinria.qrc)
 
 ## #################################################################
 ## Build rules
