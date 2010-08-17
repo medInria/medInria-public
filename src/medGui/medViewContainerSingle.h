@@ -34,10 +34,11 @@ public:
     Type type(void);
 
     void split(int rows, int cols);
-    void setView(dtkAbstractView *view);
+
+    virtual void setView(dtkAbstractView *view);
 
 public slots:
-    void onViewClosed (void);
+    virtual void onViewClosed (void);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -47,7 +48,6 @@ protected:
 
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
-    
 };
 
 #endif

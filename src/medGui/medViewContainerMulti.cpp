@@ -18,11 +18,31 @@
  */
 
 #include "medViewContainer_p.h"
-#include "medViewContainerSingle.h"
 #include "medViewContainerMulti.h"
 #include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
+
+void medViewContainerSingle2::setView (dtkAbstractView *view)
+{
+    d->layout->setContentsMargins(1, 1, 1, 1);    
+    d->layout->addWidget(view->widget(), 0, 0);
+    d->view = view;
+
+    // d->pool->appendView (view); // only difference with medViewContainerSingle: do not add the view to the pool
+    connect (view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+}
+
+void medViewContainerSingle2::onViewClosed (void)
+{
+    if (d->view) {
+        d->layout->removeWidget(d->view->widget());
+	d->view->widget()->hide();
+	disconnect (d->view, SIGNAL (closed()), this, SLOT (onViewClosed()));
+	// d->pool->removeView (d->view); // do not reomve it from the pool
+	d->view = NULL;
+    }
+}
 
 medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent)
 {
@@ -64,23 +84,28 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
         }
     }
     
-    medViewContainer *container = new medViewContainerSingle(this);
+    medViewContainer *container = new medViewContainerSingle2(this);
     container->setAcceptDrops(false);
     container->setView(view);
     content << container;
 
-    this->layout (content);
+    this->layout(content);
     
     d->view = view;
 
     d->view->reset();
 
+	if (content.count()==1) {
+		d->view->setProperty("Daddy", "true");
+		connect (d->pool, SIGNAL (linkwl (dtkAbstractView *, bool)), d->view, SLOT (linkwl (dtkAbstractView *, bool)));
+	}
+	
     d->pool->appendView (view);
     connect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
     connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));
 }
 
-void medViewContainerMulti::layout (QList<QWidget *> content)
+void medViewContainerMulti::layout(QList<QWidget *> content)
 {
     
     int row = 0;
@@ -93,7 +118,7 @@ void medViewContainerMulti::layout (QList<QWidget *> content)
             qreal rratio = qMin(((qreal)this->height()/(qreal)(row+2)), ((qreal)this->width()/(qreal)(col+1)));
             qreal cratio = qMin(((qreal)this->height()/(qreal)(row+1)), ((qreal)this->width()/(qreal)(col+2)));
             
-            if(rratio > cratio) {                    
+            if(rratio > cratio) {
                 row++;
                 col = 0;
             } else {

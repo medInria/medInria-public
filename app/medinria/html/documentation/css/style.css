@@ -1,0 +1,57 @@
+/* style.css --- 
+;; 
+;; Author: Julien Wintz
+;; Copyright (C) 2008 - Julien Wintz, Inria.
+;; Created: Wed Jun 30 10:53:16 2010 (+0200)
+;; Version: $Id$
+;; Last-Updated: Wed Jun 30 12:57:01 2010 (+0200)
+;;           By: Julien Wintz
+;;     Update #: 64
+*/
+
+/* Commentary: 
+;; 
+*/
+
+/* Change log:
+;; 
+*/
+
+/* *************************************************************** */
+/* Breadcrumb                                                      */
+/* *************************************************************** */
+
+#breadcrumb {
+    background-color: #494949;
+    background-repeat: repeat-x;
+    height: 30px;
+    line-height: 30px;
+    color: white;
+    border: solid 1px #565656;
+    border-radius: 3px;
+    width: 100%;
+    overflow: hidden;
+    margin: 6px;
+    padding: 0px;
+}
+
+#breadcrumb li {
+    list-style-type: none;
+    float: left;
+    padding-left: 10px;
+}
+
+#breadcrumb a {
+    height: 30px;
+    display: block;
+    background-image: url('../img/bc_separator.png'); 
+    background-repeat: no-repeat; 
+    background-position: right;
+    padding-right: 15px;
+    text-decoration: none;
+    color:#757575;
+}
+
+#breadcrumb a:hover {
+    color: #35acc5;
+}

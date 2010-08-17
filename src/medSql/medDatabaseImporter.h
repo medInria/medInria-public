@@ -40,8 +40,7 @@ signals:
     void progressed(int);
     void success (void);
     void failure (void);
-    void message (QString text, int timeout);
-
+    void showError(QObject*,const QString&,unsigned int timeout);
 private:
     medDatabaseImporterPrivate *d;
 };

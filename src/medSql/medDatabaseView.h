@@ -45,6 +45,9 @@ signals:
     void  seriesClicked(int id);
     void   imageClicked(int id);
 
+    void patientDoubleClicked(int id);
+    void  seriesDoubleClicked(int id);
+
     void open(const medDataIndex&);
   
 public slots:

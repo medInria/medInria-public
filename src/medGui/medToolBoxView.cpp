@@ -31,7 +31,6 @@ public:
     QCheckBox *axisVisibilityCheckBox;
     QCheckBox *rulerVisibilityCheckBox;
     QCheckBox *annotationsVisibilityCheckBox;
-    QCheckBox *synchronizeCheckBox;
 
     QComboBox   *view3dModeComboBox;
     QComboBox   *view3dVRModeComboBox;
@@ -182,10 +181,6 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     
     connect(d->annotationsVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(annotationsVisibilityChanged(bool)));
 
-    d->synchronizeCheckBox = new QCheckBox(this);
-    
-    connect(d->synchronizeCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(synchronizeChanged(bool)));
-
     QWidget *viewToolBoxWidget = new QWidget;
     QWidget *view3dToolBoxWidget = new QWidget;
     QWidget *mouseToolBoxWidget = new QWidget;
@@ -195,7 +190,6 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     lutToolBoxWidgetLayout->addRow("Preset:", d->presetComboBox);
     lutToolBoxWidgetLayout->addRow("Show scalars:", d->scalarBarVisibilityCheckBox);
     lutToolBoxWidgetLayout->addRow("Show annotations:", d->annotationsVisibilityCheckBox);
-    lutToolBoxWidgetLayout->addRow("Synchronize:", d->synchronizeCheckBox);
     lutToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
 
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(view3dToolBoxWidget);
@@ -292,8 +286,4 @@ void medToolBoxView::update(dtkAbstractView *view)
     else
         d->croppingPushButton->setChecked(false);
     d->croppingPushButton->blockSignals(false);
-
-    d->synchronizeCheckBox->blockSignals (true);
-    d->synchronizeCheckBox->setChecked ( view->property ("Linked")=="true");
-    d->synchronizeCheckBox->blockSignals (false);
 }

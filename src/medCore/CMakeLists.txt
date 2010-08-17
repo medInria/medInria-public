@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Apr  6 21:34:54 2010 (+0200)
+## Last-Updated: Tue Jun 29 15:03:53 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 35
+##     Update #: 39
 ######################################################################
 ## 
 ### Commentary: 
@@ -26,18 +26,21 @@ project(medCore)
 set(${PROJECT_NAME}_HEADERS
   medDataIndex.h
   medDataManager.h
+  medMessageController.h
   medViewManager.h
   medPluginManager.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataIndex.h
   medDataManager.h
+  medMessageController.h
   medViewManager.h
   medPluginManager.h)
 
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
+  medMessageController.cpp
   medViewManager.cpp
   medPluginManager.cpp)
 
