@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+
+# Every night, each entry following '#PIPOL' is passed as argument to
+# a pipol-sub command:
+
+# There is two ways to make a reservation via pipol-sub:
+# --> Add a line per image with the following syntaxe:
+# '#PIPOL esn amd64-linux-debian-testing.dd none 2:00 --silent --user'
+#  (1)    (2) (3)                           (4)  (5)  (6)      (7)
+     
+# (1) comment token known by pipol
+# (2) a reservation as soon as possible (at night, reservations are starting at 20h30)
+# (3) the system image
+# (4) none as we do not want a particular host
+# (5) the reservation is for two hours
+# (6) do not send reservation emails
+# (7) run as user (You can only run the script as root for the Windows Images).
+
+# Use entries only if you need them!
+
+# --> The second way is to use pipol-sub shortcut:
+# '#PIPOL debian 2:00 --root`
+#  (1)         (2)       (3)    (4)
+
+# (1)  Comment token known by pipol
+# (2)  The string to matched with. 
+#	   In this example the line will reserve and deploy all the Debian images.
+#        For example, the line: #PIPOL linux 2:00 --root will reserve and deploy all the linux images.
+#        For more informations, please read the documentation: http://pipol.inrialpes.fr/documentation/manual/user-manual/user-manual.html#ex-cutions-en-batch-mode-simplifi
+# (3)  The reservation is for two hours
+# (4)  Some options, please read the documentation for more details
+
+
+
+# Reservation for all the images: linux, windows and mac
+
+#PIPOL linux 1:00 --root
+
+#Don't forget the --root option for windows, cygwin is a single-user system:
+#PIPOL windows 1:00 --root
+
+#  PIPOL mac 4:00 --root
+
+
+# 1) You have to get your sources from somewhere.
+
+# On the gforge, this is done with a anonymous reader or with an
+# expect script or with a 'password less' ssh key.
+
+cd $PIPOL_HOMEDIR/scripts
+
+DATE=`date +%Y-%m-%d`
+mkdir -p $PIPOL_HOMEDIR/log/
+
+case $PIPOL_IMAGE in
+	*-windows-xp-*)
+    echo "./installer.py -f run_pipol_winxp.cfg" &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	
+	;;
+	*-linux-fedora-*)
+	echo "./installer.py -f run_linux.cfg -f run_pipol_fed.cfg" &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	
+	;;
+	*-linux-ubuntu-*)
+	echo "./installer.py -f run_linux.cfg -f run_pipol_ubuntu.cfg" &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	;;
+	
+	*-linux-debian-*)
+	echo "./installer.py -f run_linux.cfg -f run_pipol_fed.cfg" &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	;;
+	
+	*)
+	;;
+esac
+
+
+#    amd64_kvm-linux-debian-lenny
+#    amd64_kvm-linux-debian-testing
+#    amd64_kvm-windows-7
+#    amd64-linux-centos-5.dd.gz
+#    amd64-linux-debian-etch.dd.gz
+#    amd64-linux-debian-lenny.dd.gz
+#    amd64-linux-debian-testing.dd.gz
+#    amd64-linux-fedora-core10.dd.gz
+#    amd64-linux-fedora-core11.dd.gz
+#    amd64-linux-fedora-core12.dd.gz
+#    amd64-linux-fedora-core13.dd.gz
+#    amd64-linux-fedora-core7.dd.gz
+#    amd64-linux-fedora-core8.dd.gz
+#    amd64-linux-fedora-core9.dd.gz
+#    amd64-linux-mandriva-2007_springs_powerpack.dd.gz
+#    amd64-linux-mandriva-2009_powerpack.dd.gz
+#    amd64-linux-opensuse-11.dd.gz
+#    amd64-linux-redhatEL-5.0.dd.gz
+#    amd64-linux-suse-LES10.dd.gz
+#    amd64-linux-ubuntu-feisty.dd.gz
+#    amd64-linux-ubuntu-hardy.dd.gz
+#    amd64-linux-ubuntu-intrepid.dd.gz
+#    amd64-linux-ubuntu-jaunty.dd.gz
+#    amd64-linux-ubuntu-karmic.dd.gz
+#    amd64-linux-ubuntu-lucid.dd.gz
+#    amd64-unix-freebsd-7.dd.gz
+#    amd64-windows-server-2003-64bits.dd.gz
+#    amd64-windows-server-2008-64bits.dd.gz
+#    i386_kvm-linux-debian-lenny
+#    i386_kvm-linux-debian-testing
+#    i386_kvm-linux-fedora-core13
+#    i386_kvm-windows-xp-pro-sp3
+#    i386-linux-centos-5.dd.gz
+#    i386-linux-debian-etch.dd.gz
+#    i386-linux-debian-lenny.dd.gz
+#    i386-linux-debian-testing.dd.gz
+#    i386-linux-fedora-core10.dd.gz
+#    i386-linux-fedora-core11.dd.gz
+#    i386-linux-fedora-core12.dd.gz
+#    i386-linux-fedora-core13.dd.gz
+#    i386-linux-fedora-core7.dd.gz
+#    i386-linux-fedora-core8.dd.gz
+#    i386-linux-fedora-core9.dd.gz
+#    i386-linux-mandriva-2007_springs_powerpack.dd.gz
+#    i386-linux-mandriva-2009_powerpack.dd.gz
+#    i386-linux-opensuse-11.dd.gz
+#    i386-linux-redhatEL-5.0.dd.gz
+#    i386-linux-suse-LES10.dd.gz
+#    i386-linux-ubuntu-feisty.dd.gz
+#    i386-linux-ubuntu-hardy.dd.gz
+#    i386-linux-ubuntu-intrepid.dd.gz
+#    i386-linux-ubuntu-jaunty.dd.gz
+#    i386-linux-ubuntu-karmic.dd.gz
+#    i386-linux-ubuntu-lucid.dd.gz
+#    i386_mac-mac-osx-server-leopard.dd.gz
+#    i386-unix-freebsd-7.dd.gz
+#    i386-unix-opensolaris-10.dd.gz
+#    i386-unix-opensolaris-11.dd.gz
+#    i386-unix-solaris-10.dd.gz
+#    ia64-linux-debian-lenny.dd
+#    ia64-linux-fedora-core9.dd
+#    ia64-linux-redhatEL-5.0.dd
+#    x86_64_mac-mac-osx-server-snow-leopard.dd.gz
+#    x86_mac-mac-osx-server-snow-leopard.dd.gz
