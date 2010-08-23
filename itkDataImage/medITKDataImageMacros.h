@@ -23,7 +23,7 @@ void
 generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
 		    int xydim, bool singlez, QList<QImage> & thumbnails)
 {
-  if (VDimension != 3)
+  if (VDimension < 3)
     return;
   if (image.IsNull())
     return;
@@ -317,8 +317,10 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
 					d->thumbnails);			\
 									\
   int index = 0;							\
-  if (dimension > 2)							\
-    index = d->thumbnails.length() / 2;					\
+  if (dimension > 2) {							\
+	itkDataImage##suffix##Private::ImageType::SizeType size = d->image->GetLargestPossibleRegion().GetSize(); \
+    index = size[2] / 2;					\
+  } \
 									\
   qDebug() << "thumbnail " << index << " / " << d->thumbnails.length(); \
   if (index < d->thumbnails.length())					\
