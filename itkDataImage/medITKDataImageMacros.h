@@ -209,6 +209,7 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     int                    histogram_min;				\
     int                    histogram_max;				\
     QList<QImage>          thumbnails;					\
+    QImage                 defaultThumbnail; \
   };									\
   itkDataImage##suffix::itkDataImage##suffix(): dtkAbstractDataImage(), d (new itkDataImage##suffix##Private) \
   {									\
@@ -218,6 +219,8 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     d->range_max = 0;							\
     d->histogram_min = 0;						\
     d->histogram_max = 0;						\
+    d->defaultThumbnail = QImage(128, 128, QImage::Format_ARGB32); \
+    d->defaultThumbnail.fill(0); \
   }									\
   itkDataImage##suffix::~itkDataImage##suffix()				\
   {									\
@@ -325,8 +328,10 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   qDebug() << "thumbnail " << index << " / " << d->thumbnails.length(); \
   if (index < d->thumbnails.length())					\
     return d->thumbnails[index];					\
-  else									\
+  else if (d->thumbnails.size()>0)									\
     return d->thumbnails[0];						\
+  else \
+	return d->defaultThumbnail; \
   }									\
 									\
   QList<QImage> & itkDataImage##suffix::thumbnails (void) const		\
