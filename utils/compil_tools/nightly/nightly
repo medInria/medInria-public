@@ -1,51 +1,9 @@
 #!/usr/bin/env bash
 
-# Every night, each entry following '#PIPOL' is passed as argument to
-# a pipol-sub command:
+#PIPOL linux-fedora 3:00 --root
+#PIPOL linux-ubuntu 3:00 --root
+#PIPOL windows-xp 4:00 --root
 
-# There is two ways to make a reservation via pipol-sub:
-# --> Add a line per image with the following syntaxe:
-# '#PIPOL esn amd64-linux-debian-testing.dd none 2:00 --silent --user'
-#  (1)    (2) (3)                           (4)  (5)  (6)      (7)
-     
-# (1) comment token known by pipol
-# (2) a reservation as soon as possible (at night, reservations are starting at 20h30)
-# (3) the system image
-# (4) none as we do not want a particular host
-# (5) the reservation is for two hours
-# (6) do not send reservation emails
-# (7) run as user (You can only run the script as root for the Windows Images).
-
-# Use entries only if you need them!
-
-# --> The second way is to use pipol-sub shortcut:
-# '#PIPOL debian 2:00 --root`
-#  (1)         (2)       (3)    (4)
-
-# (1)  Comment token known by pipol
-# (2)  The string to matched with. 
-#	   In this example the line will reserve and deploy all the Debian images.
-#        For example, the line: #PIPOL linux 2:00 --root will reserve and deploy all the linux images.
-#        For more informations, please read the documentation: http://pipol.inrialpes.fr/documentation/manual/user-manual/user-manual.html#ex-cutions-en-batch-mode-simplifi
-# (3)  The reservation is for two hours
-# (4)  Some options, please read the documentation for more details
-
-
-
-# Reservation for all the images: linux, windows and mac
-
-#PIPOL linux 1:00 --root
-
-#Don't forget the --root option for windows, cygwin is a single-user system:
-#PIPOL windows 1:00 --root
-
-#  PIPOL mac 4:00 --root
-
-
-# 1) You have to get your sources from somewhere.
-
-# On the gforge, this is done with a anonymous reader or with an
-# expect script or with a 'password less' ssh key.
 
 cd $PIPOL_HOMEDIR/scripts
 
@@ -54,19 +12,19 @@ mkdir -p $PIPOL_HOMEDIR/log/
 
 case $PIPOL_IMAGE in
 	*-windows-xp-*)
-    echo "./installer.py -f run_pipol_winxp.cfg" &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+    ./installer.py -f run_pipol_winxp.cfg &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
 	
 	;;
 	*-linux-fedora-*)
-	echo "./installer.py -f run_linux.cfg -f run_pipol_fed.cfg" &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	./installer.py -f run_linux.cfg -f run_pipol_fed.cfg &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
 	
 	;;
 	*-linux-ubuntu-*)
-	echo "./installer.py -f run_linux.cfg -f run_pipol_ubuntu.cfg" &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	./installer.py -f run_linux.cfg -f run_pipol_ubuntu.cfg &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
 	;;
 	
 	*-linux-debian-*)
-	echo "./installer.py -f run_linux.cfg -f run_pipol_fed.cfg" &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	./installer.py -f run_linux.cfg -f run_pipol_fed.cfg &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
 	;;
 	
 	*)
