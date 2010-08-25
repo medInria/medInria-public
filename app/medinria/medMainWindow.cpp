@@ -83,8 +83,13 @@ public:
     medWorkspaceShifterAction *shiftToDocumentationAreaAction;
 };
 
+#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
 extern "C" int init_core(void);                  // -- Initialization core layer python wrapped functions
+#endif
+
+#if defined(HAVE_SWIG) && defined(HAVE_TCL)
 extern "C" int Core_Init(Tcl_Interp *interp);    // -- Initialization core layer tcl    wrapped functions
+#endif
 
 medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMainWindowPrivate)
 {
@@ -128,7 +133,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
-
+    
+#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)    
     // Setting up core python module
 
     dtkScriptInterpreterPythonModuleManager::instance()->registerInitializer(&init_core);
@@ -147,7 +153,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
         "pluginManager  = core.dtkPluginManager.instance()"
     );
-
+#endif
+#if defined(HAVE_SWIG) && defined(HAVE_TCL)
     // Setting up core tcl module
 
     dtkScriptInterpreterTclModuleManager::instance()->registerInitializer(&Core_Init);
@@ -163,7 +170,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
         "set pluginManager  [dtkPluginManager_instance]"
     );
-
+#endif
     // Setting up console script interpreter
 
     // dtkScriptInterpreter *interpreter = dtkScriptInterpreterPool::instance()->console("python");
