@@ -10,11 +10,11 @@
 #ifndef DCMTKFINDSCU_H
 #define DCMTKFINDSCU_H
 
-#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtkBaseScu.h"
+
+// #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */ -> already in dcmtkBase.h
 #include "dcmtk/ofstd/ofstring.h" /* for class OFString */
 #include "dcmtk/ofstd/oflist.h"
-
-#include "dcmtkBaseScu.h"
 
 #include <iostream>
 #include <vector>
@@ -187,4 +187,4 @@ protected:
 
 };
 
-#endif DCMTKFINDSCU_H
+#endif

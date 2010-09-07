@@ -198,16 +198,22 @@ IF( DCMTK_root_INCLUDE_DIR
   
 IF(DCMTK_dcmqrdb_LIBRARY)
   SET( DCMTK_LIBRARIES
-    ${DCMTK_LIBRARIES}
     ${DCMTK_dcmqrdb_LIBRARY}
+    ${DCMTK_LIBRARIES}
     )
 ENDIF(DCMTK_dcmqrdb_LIBRARY)
 
 IF(DCMTK_dcmnet_LIBRARY)
   SET( DCMTK_LIBRARIES
-    ${DCMTK_LIBRARIES}
     ${DCMTK_dcmnet_LIBRARY}
+    ${DCMTK_LIBRARIES}
     )
+    if (UNIX)
+    SET( DCMTK_LIBRARIES
+    ${DCMTK_LIBRARIES}
+    wrap
+    )
+    endif (UNIX)
 ENDIF(DCMTK_dcmnet_LIBRARY)
 
 IF( WIN32 )

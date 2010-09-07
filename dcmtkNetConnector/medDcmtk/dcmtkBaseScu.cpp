@@ -1,7 +1,8 @@
-#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
+#include "dcmtkBaseScu.h"
+
+// #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 #include "dcmtk/dcmnet/assoc.h"
 
-#include "dcmtkBaseScu.h"
 #include "dcmtkLogger.h"
 
 //---------------------------------------------------------------------------------------------

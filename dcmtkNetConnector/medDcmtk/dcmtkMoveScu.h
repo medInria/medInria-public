@@ -10,6 +10,10 @@
 #ifndef DCMTKMOVESCU_H
 #define DCMTKMOVESCU_H
 
+#ifndef WIN32
+#define HAVE_CONFIG_H
+#endif
+
 #include "dcmtk/config/osconfig.h" /* make sure OS specific configuration is included first */
 
 #include "dcmtk/dcmdata/dcdeftag.h"
