@@ -18,10 +18,6 @@ LoggerWidgetOutput::LoggerWidgetOutput(LoggerLogLevel::LogLevel logLevel, QWidge
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->addWidget(m_TextEdit);
 
-  //QPushButton* button = new QPushButton("Copy to clipboard", this);
-  //layout->addWidget(button);
-
-  //connect(button, SIGNAL(clicked()), this, SLOT(copyToClipboard()));
 }
 
 LoggerWidgetOutput::~LoggerWidgetOutput()
@@ -56,17 +52,6 @@ void LoggerWidgetOutput::logMessage(std::string message, LoggerLogLevel::LogLeve
     msg.append("</font>");
     m_TextEdit->append(msg);
   }
-  if (logLevel == LoggerLogLevel::ERRORLOG)
-  {
-    QMessageBox::critical(0, "An error occured", msg);
-  }
+
 }
 
-void LoggerWidgetOutput::copyToClipboard()
-{
-  QClipboard *cb = QApplication::clipboard();
-  QString text = m_TextEdit->text();
-  // remove tags
-  text.replace(QRegExp("<[^>]*>"), "");
-  cb->setText(text, QClipboard::Clipboard);
-}

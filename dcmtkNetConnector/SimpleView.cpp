@@ -179,6 +179,10 @@ void SimpleView::search()
         pItem->setText(0,text);
         ui->treeWidget->insertTopLevelItem(0,pItem);
     }
+    text.clear();
+    text.setNum(m_resultSet.size());
+    text.append(" patient(s) found");
+    ui->logWindow->append(text);
 
 }
 

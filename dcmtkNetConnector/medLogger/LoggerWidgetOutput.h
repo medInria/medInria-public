@@ -43,14 +43,6 @@ class LoggerWidgetOutput : public QWidget, public LoggerOutput
      */
     void logMessage(std::string message, LoggerLogLevel::LogLevel logLevel);
 
-  protected:
-
-  private slots:
-
-    /**
-     * Copies the entire content of the log to the clipboard.
-     */
-    void copyToClipboard();
 
   private:
 
