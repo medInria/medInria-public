@@ -724,7 +724,7 @@ void dcmtkStoreScu::replaceSOPInstanceInformation(DcmDataset *dataset)
   dcmtkLogger::infoStream() << "  SOPInstanceUID=" << sopInstanceUID;
   dcmtkLogger::infoStream() << "  ImageNumber=" << imageNumber;
 
-  updateStringAttributeValue(dataset, DCM_PatientsName, patientName);
+  updateStringAttributeValue(dataset, DCM_PatientName, patientName);
   updateStringAttributeValue(dataset, DCM_PatientID, patientID);
   updateStringAttributeValue(dataset, DCM_StudyInstanceUID, studyInstanceUID);
   updateStringAttributeValue(dataset, DCM_StudyID, studyID);

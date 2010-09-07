@@ -48,11 +48,13 @@
      * @brief class to send C-STORE to the remote node.
      * Used to send DICOM data to another modality.
      */
-
 class dcmtkStoreScu : public  dcmtkBaseScu
 {
 public:
 
+    /**
+    * Default constructor
+    */
     dcmtkStoreScu();
 
 
@@ -99,7 +101,7 @@ protected:
     * @param assoc - [in] The association (network connection to another DICOM application).
     * @param fname - [in] Name of the file which shall be processed.
     */
-    OFCondition dcmtkStoreScu::storeSCU(T_ASC_Association *assoc, const char *fname);
+    OFCondition storeSCU(T_ASC_Association *assoc, const char *fname);
 
     /**
     * This function will process the given file as often as is specified by opt_repeatCount.
@@ -113,18 +115,24 @@ protected:
 
     OFBool isaListMember(OFList<OFString> &lst, OFString &s);
 
-    OFCondition dcmtkStoreScu::addPresentationContext(T_ASC_Parameters *params, int presentationContextId,
+    OFCondition addPresentationContext(T_ASC_Parameters *params, int presentationContextId,
                                                   const OFString &abstractSyntax, const OFString &transferSyntax,
                                                   T_ASC_SC_ROLE proposedRole = ASC_SC_ROLE_DEFAULT);
 
-    OFCondition dcmtkStoreScu::addPresentationContext(T_ASC_Parameters *params, int presentationContextId,
+    OFCondition addPresentationContext(T_ASC_Parameters *params, int presentationContextId,
                                                   const OFString &abstractSyntax, const OFList<OFString> &transferSyntaxList,
                                                   T_ASC_SC_ROLE proposedRole = ASC_SC_ROLE_DEFAULT);
 
     OFCondition addStoragePresentationContexts(T_ASC_Parameters *params, OFList<OFString> &sopClasses);
 
+    /**
+    * SSL stuff, not used at the moment
+    */
     OFCondition configureUserIdentityRequest(T_ASC_Parameters *params);
-
+    
+    /**
+    * SSL stuff, not used at the moment
+    */
     OFCondition checkUserIdentityResponse(T_ASC_Parameters *params);
 
     static void progressCallback(void * /*callbackData*/, T_DIMSE_StoreProgress *progress,
@@ -135,11 +143,11 @@ protected:
     void replaceSOPInstanceInformation(DcmDataset *dataset);
 
 
-protected:
+private:
 
 
     // helper
-    
+
     int secondsSince1970();
 
     OFString intToString(int i);

@@ -11,18 +11,17 @@
 // forward declarations
 class LoggerOutput;
 
-/**
- * @class Logger
- * @author Michael Knopke
- * @brief Logging class. Logs to LoggerOutput objects.
- *
- * This Logger logs to LoggerOutput objects. These output objects define what action has to be done on loggin (e.g.
- * writing the log messages to std::cout or to a logfile etc.).
- * To use the logger, call Logger::startUp() first. Then attach some LoggerOutput objects using Logger::addOutput(). These
- * objects will automatically be deleted when the logger gets destroyed.
- * To destroy the logger and all attached logger outputs call Logger::shutDown().
- *
- */
+    /**
+     * @class Logger
+     * @author Michael Knopke
+     * @brief Logging class. Logs to LoggerOutput objects.
+     *
+     * This Logger logs to LoggerOutput objects. These output objects define what action has to be done on loggin (e.g.
+     * writing the log messages to std::cout or to a logfile etc.).
+     * To use the logger, call Logger::startUp() first. Then attach some LoggerOutput objects using Logger::addOutput(). These
+     * objects will automatically be deleted when the logger gets destroyed.
+     * To destroy the logger and all attached logger outputs call Logger::shutDown().
+     */
 class Logger
 {
 

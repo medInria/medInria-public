@@ -30,7 +30,6 @@ class DcmFileFormat;
     * Use it to request and receive DICOM data.
     * The result will be stored in resultData that can be used to acquire the data.
     */
-
 class dcmtkMoveScu : public dcmtkBaseScu
 {
 public:

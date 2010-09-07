@@ -1,14 +1,16 @@
 #ifndef DCMTKFINDDATASET_H
 #define DCMTKFINDDATASET_H
 
+#include "dcmtkBaseDataset.h"
 #include <iostream>
 #include <vector>
 
-class dcmtkFindDataset
+   /**
+    * Experimental at the moment
+    */
+class dcmtkFindDataset : public dcmtkBaseDataset
 {
 public:
-
-
         const char* patientName;
         const char* patientID;
         const char* patientSex;

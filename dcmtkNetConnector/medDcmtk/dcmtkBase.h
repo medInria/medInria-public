@@ -1,4 +1,4 @@
-    /**
+   /**
     * This software was developed using DCMTK from OFFIS e.V.
     *
     * Kuratorium OFFIS e.V.
@@ -51,23 +51,22 @@ static const char* transferSyntaxes[] = {
 };
 
 
-    /**
+   /**
     * @class dcmtkBase
     * @author Michael Knopke
     * @brief base class for all SCU/SCP base implementations.
     * Adds common network connection stuff.
     */
-
 class dcmtkBase
 {
 public:
 
-    /**
+   /**
     * Default Constructor
     */
     dcmtkBase();
 
-    /**
+   /**
     * Default Destructor
     */
     ~dcmtkBase();

@@ -1,4 +1,4 @@
-    /**
+   /**
     * This software was developed using DCMTK from OFFIS e.V.
     *
     * Kuratorium OFFIS e.V.
@@ -13,7 +13,7 @@
 
 #include "dcmtkBase.h"
 
-    /**
+   /**
     * @class dcmtkBaseScu
     * @author Michael Knopke
     * @brief base class for all SCU implementations
@@ -23,17 +23,17 @@ class dcmtkBaseScu : public dcmtkBase
 {
 public:
 
-    /**
+   /**
     * Default Constructor
     */
     dcmtkBaseScu();
 
-    /**
+   /**
     * Default Destructor
     */
     ~dcmtkBaseScu();
 
-    /**
+   /**
     * Struct defining the query level (search hierachy)
     */
     enum eQueryLevel{
@@ -42,14 +42,14 @@ public:
             SERIES,
             IMAGE};
 
-    /**
+   /**
     * Set a new query level.
     * @param level The query level
     * @see dcmtkBaseScu
     */
     virtual void setQueryLevel(eQueryLevel level);
 
-    /**
+   /**
     * Set the default connection parameters to simplify queries.
     * @param peerTitle The AE of the peer
     * @param peerIP The IP of the peer that performs the C-FIND.
@@ -61,13 +61,13 @@ public:
     virtual void setConnectionParams(const char* peerTitle, const char* peerIP, unsigned short peerPort, 
                                      const char* ourTitle, const char* ourIP, unsigned short ourPort);
 
-    /**
+   /**
     * Override all params with the default values.
     * Subclasses should set their specific params here too
     */
     virtual void resetDefaultParams();
 
-    /**
+   /**
     * Set one or more attributes to look for.
     * You have to set at least one attribute.
     * This could be for example the name of the patient using Attribute: (0010,0010) = MyPatient.
@@ -80,7 +80,7 @@ public:
     virtual bool addQueryAttribute(const char* group, const char* elem, const char* value);
 
 
-    /**
+   /**
     * Overloaded function (original from dcmtk).
     * Use either key format: "group,element=value" or dictionary name (see dcmtk/dcuid)
     * @param group The group number
@@ -90,7 +90,7 @@ public:
     */
     virtual bool addQueryAttribute(const char* key);
 
-    /**
+   /**
     * Removes all added query attributes.
     * abstract please override
     */
@@ -98,7 +98,7 @@ public:
 
 protected:
     
-    /**
+   /**
     * We prefer to use Explicitly encoded transfer syntaxes.
     * If we are running on a Little Endian machine we prefer
     * LittleEndianExplicitTransferSyntax to BigEndianTransferSyntax.
@@ -123,7 +123,7 @@ protected:
     int ReleaseAssociation(OFCondition &cond);
 
 
-    /**
+   /**
     * Process the attribute to be used in queries.
     * virtual and abstract, override it if needed!
     * @return Success if key was recognized.

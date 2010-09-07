@@ -3,6 +3,7 @@
 #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 #include "dcmtk/ofstd/ofstring.h"
 
+
 class dcmtkLogger : public Logger
 {
 public:
