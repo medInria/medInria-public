@@ -35,9 +35,15 @@ SET (MED_LOGGER_SOURCES
 		medLogger/LoggerConsoleOutput.cpp
 		medLogger/LoggerFileOutput.h
 		medLogger/LoggerFileOutput.cpp
+		medLogger/LoggerWidgetOutput.h
+		medLogger/LoggerWidgetOutput.cpp		
 		medLogger/LoggerLogStream.h
 		medLogger/LoggerLogStream.cpp
 		medLogger/LoggerLogLevel.h
 		medLogger/LoggerOutput.h
 		medLogger/LoggerOutput.cpp
+	)
+	
+SET (OTHER_MOC_FILES
+		medLogger/LoggerWidgetOutput.h
 	)

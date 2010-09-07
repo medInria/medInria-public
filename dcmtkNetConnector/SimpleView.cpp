@@ -1,6 +1,7 @@
 #include "ui_SimpleView.h"
 #include "SimpleView.h"
 #include <QSettings>
+#include <QDockWidget>
 
 #include "dcmtkEchoScu.h"
 #include "dcmtkFindScu.h"
@@ -12,6 +13,7 @@
 #include "Logger.h"
 #include "LoggerFileOutput.h"
 #include "LoggerConsoleOutput.h"
+#include "LoggerWidgetOutput.h"
 
 //---------------------------------------------------------------------------------------------
 
@@ -20,8 +22,6 @@ SimpleView::SimpleView()
 {
   //initialize logger
   Logger::startUp();
-  Logger::addOutput(new LoggerFileOutput());
-  //Logger::addOutput(new LoggerConsoleOutput());
 
   this->ui = new Ui_SimpleView;
   this->ui->setupUi(this);
@@ -31,35 +31,94 @@ SimpleView::SimpleView()
   m_moveScu = new dcmtkMoveScu();
   m_storeScu = new dcmtkStoreScu();
 
+  m_shellOut = new LoggerConsoleOutput();
+  m_fileOut = new LoggerFileOutput();
+  m_widgetOut = new LoggerWidgetOutput();
+  
   setConnectionParams();
 
   connect(this->ui->searchField, SIGNAL(returnPressed()), this, SLOT(search()));
   connect(this->ui->treeWidget, SIGNAL(itemDoubleClicked ( QTreeWidgetItem* , int )), this, SLOT(move(QTreeWidgetItem *, int)));
   connect(this->ui->echoButton, SIGNAL(clicked()), this, SLOT(testConnection()));
-
+  connect(this->ui->applySettingsButton, SIGNAL(clicked()), this, SLOT(applySettingsSlot()));
+  connect(this->ui->cbFileTarget, SIGNAL(stateChanged(int)), this, SLOT(fileAppender(int)));
+  connect(this->ui->cbShellTarget, SIGNAL(stateChanged(int)), this, SLOT(shellAppender(int)));
+  connect(this->ui->cbWidgetTarget, SIGNAL(stateChanged(int)), this, SLOT(widgetAppender(int)));
+  connect(this->ui->cbLogLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeLogLevel(int)));
+  
   retrieveSettings();
 
+  //set logger defaults
+  ui->cbWidgetTarget->setChecked(true);
+  ui->cbLogLevel->setCurrentIndex(2);
+
+  // create and show LoggerWidget
+  QDockWidget* loggerDock = new QDockWidget(this);
+  loggerDock->setWidget(m_widgetOut);
+  this->addDockWidget(Qt::BottomDockWidgetArea, loggerDock);
+
 };
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::changeLogLevel(int index)
+{
+    LoggerLogLevel::LogLevel logLevel;
+    switch(index)
+    {
+    case 0:
+        logLevel = LoggerLogLevel::NOLOG;
+        break;
+    case 1:
+        logLevel = LoggerLogLevel::ERRORLOG;
+        break;
+    case 2:
+        logLevel = LoggerLogLevel::WARNINGLOG;
+        break;
+    case 3:
+        logLevel = LoggerLogLevel::INFOLOG;
+        break;
+    case 4:
+        logLevel = LoggerLogLevel::DEBUGLOG;
+        break;
+    default:
+        logLevel = LoggerLogLevel::INFOLOG;
+        break;
+    }
+
+    m_fileOut->setLogLevel(logLevel);
+    m_shellOut->setLogLevel(logLevel);
+    m_widgetOut->setLogLevel(logLevel);
+}
 
 //---------------------------------------------------------------------------------------------
 
 void SimpleView::setConnectionParams()
 {
 
-    m_ourTitle = "DCMTKTOOL";
-    m_ourIP    = "localhost";
-    m_ourPort  = 100;
+    m_ourTitle  = ui->ourTitleEdit->text().toStdString();
+    m_ourIP     = ui->ourIPEdit->text().toStdString();
     m_peerTitle = ui->peerTitleEdit->text().toStdString();
     m_peerIP    = ui->peerIPEdit->text().toStdString();
+    
     try
     {
         m_peerPort  = ui->peerPortEdit->text().toInt();
-    
     }
     catch(...)
     {
         ui->peerPortEdit->setText("");
     }
+
+    try
+    {
+        m_ourPort   = ui->ourPortEdit->text().toInt();
+    }
+    catch(...)
+    {
+        ui->ourPortEdit->setText("100");
+    }
+
 
     m_findScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_moveScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
@@ -75,6 +134,10 @@ SimpleView::~SimpleView()
   delete m_moveScu;
   delete m_echoScu;
   delete m_storeScu;
+
+  delete m_shellOut;
+  delete m_fileOut;
+  delete m_widgetOut;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -107,12 +170,13 @@ void SimpleView::search()
 
     m_resultSet = m_findScu->getResultDataset();
     ui->treeWidget->clear();
-     
+    QString text;
     for (iter= m_resultSet.begin(); iter != m_resultSet.end(); iter++)
     {
         // add result to list
         QTreeWidgetItem *pItem = new QTreeWidgetItem(ui->treeWidget);
-        pItem->setText(0,(*iter)->m_patientName.c_str());
+        text = (*iter)->m_patientName.c_str();
+        pItem->setText(0,text);
         ui->treeWidget->insertTopLevelItem(0,pItem);
     }
 
@@ -154,7 +218,7 @@ void SimpleView::testConnection()
     {
         ui->logWindow->append(tr("Connection verified successfully"));
 
-        storeSettings();
+        storeSettings(0);
     }
     else
         ui->logWindow->append(tr("No response from peer. Check your connection"));
@@ -163,31 +227,119 @@ void SimpleView::testConnection()
 
 //---------------------------------------------------------------------------------------------
 
-void SimpleView::storeSettings()
+void SimpleView::applySettingsSlot()
+{
+    storeSettings(1);
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::storeSettings(int type)
 {
     QSettings settings("INRIA", "DCMTKTOOL");
-    settings.beginGroup("Connection");
-    settings.setValue("PEER_AET", ui->peerTitleEdit->text());
-    settings.setValue("PEER_IP", ui->peerIPEdit->text());
-    settings.setValue("PEER_PORT", ui->peerPortEdit->text());
-    settings.endGroup();
+
+    switch(type)
+    {
+    case 0:
+        settings.beginGroup("Connection");
+        settings.setValue("PEER_AET", ui->peerTitleEdit->text());
+        settings.setValue("PEER_IP", ui->peerIPEdit->text());
+        settings.setValue("PEER_PORT", ui->peerPortEdit->text());
+        settings.endGroup();
+        break;
+    case 1:
+        settings.beginGroup("Connection");
+        settings.setValue("OUR_AET", ui->ourTitleEdit->text());
+        settings.setValue("OUR_IP", ui->ourIPEdit->text());
+        settings.setValue("OUR_PORT", ui->ourPortEdit->text());
+        settings.endGroup();
+        break;
+    default:
+        std::cout << "switch error" << std::endl;
+        break;
+    }
 }
 
 //---------------------------------------------------------------------------------------------
 
 void SimpleView::retrieveSettings()
 {
+    QString ourTitle, ourIP, ourPort;
     QString peerTitle, peerIP, peerPort;
     QSettings settings("INRIA", "DCMTKTOOL");
     settings.beginGroup("Connection");
     peerTitle = settings.value("PEER_AET").value<QString>();
     peerIP = settings.value("PEER_IP").value<QString>();
     peerPort = settings.value("PEER_PORT").value<QString>();
+    ourTitle = settings.value("OUR_AET").value<QString>();
+    ourIP = settings.value("OUR_IP").value<QString>();
+    ourPort = settings.value("OUR_PORT").value<QString>();
     settings.endGroup();
     
     ui->peerTitleEdit->setText(peerTitle);
     ui->peerIPEdit->setText(peerIP);
     ui->peerPortEdit->setText(peerPort);
+
+    // apply only if none-empty
+    if(!ourTitle.isEmpty()) ui->ourTitleEdit->setText(ourTitle);
+    if(!ourIP.isEmpty()) ui->ourIPEdit->setText(ourIP);
+    if(!ourPort.isEmpty()) ui->ourPortEdit->setText(ourPort);
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::fileAppender(int state)
+{
+ switch(state)
+ {
+ case 0:
+      Logger::removeOutput(m_fileOut);
+      break;
+ case 2:
+      Logger::addOutput(m_fileOut);
+      break;
+ default:
+     std::cout << "switch error" << std::endl;
+      break;
+ }
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::shellAppender(int state)
+{
+ switch(state)
+ {
+ case 0:
+      Logger::removeOutput(m_shellOut);
+      break;
+ case 2:
+      Logger::addOutput(m_shellOut);
+      break;
+ default:
+     std::cout << "switch error" << std::endl;
+      break;
+ }
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::widgetAppender(int state)
+{
+
+ switch(state)
+ {
+ case 0:
+      Logger::removeOutput(m_widgetOut);
+      break;
+ case 2:
+      Logger::addOutput(m_widgetOut);
+      break;
+ default:
+     std::cout << "switch error" << std::endl;
+      break;
+ }
 
 }
 

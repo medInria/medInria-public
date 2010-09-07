@@ -34,7 +34,7 @@ SET(SimpleViewResources Icons/icons.qrc)
 
 # The rest should just work (sure...)
 QT4_WRAP_UI(UISrcs ${SimpleViewUI})
-QT4_WRAP_CPP(MOCSrcs ${SimpleViewHeaders} )
+QT4_WRAP_CPP(MOCSrcs ${SimpleViewHeaders} ${OTHER_MOC_FILES})
 QT4_ADD_RESOURCES(ResourceSrcs ${SimpleViewResources})
 
 SOURCE_GROUP("Resources" FILES
