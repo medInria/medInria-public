@@ -1,4 +1,4 @@
-#include <qthread>
+#include <QThread>
 
 class dcmtkStoreScp;
 

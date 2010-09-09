@@ -11,10 +11,7 @@
 #ifndef DCMTKSTORESCU_H
 #define DCMTKSTORESCU_H
 
-#ifndef WIN32
-#define HAVE_CONFIG_H
-#endif
-
+#include "dcmtkBaseScu.h"
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
@@ -40,8 +37,6 @@
 #include "dcmtk/dcmdata/cmdlnarg.h"
 #include "dcmtk/dcmdata/dcuid.h"     /* for dcmtk version name */
 #include "dcmtk/dcmdata/dcostrmz.h"  /* for dcmZlibCompressionLevel */
-
-#include "dcmtkBaseScu.h"
 
 
 

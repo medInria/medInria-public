@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 
-#include <qwidget>
+#include <QWidget>
 
 #include "LoggerOutput.h"
 

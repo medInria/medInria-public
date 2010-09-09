@@ -10,10 +10,7 @@
 #ifndef DCMTKMOVESCU_H
 #define DCMTKMOVESCU_H
 
-#ifndef WIN32
-#define HAVE_CONFIG_H
-#endif
-
+#include "dcmtkBaseScu.h"
 
 #include "dcmtk/dcmdata/dcdeftag.h"
 #include "dcmtk/dcmdata/dcuid.h"      /* for dcmtk version name */
@@ -21,8 +18,6 @@
 #include "dcmtk/dcmdata/dcostrmz.h"   /* for dcmZlibCompressionLevel */
 
 class DcmFileFormat;
-
-#include "dcmtkBaseScu.h"
 
 
     /**

@@ -11,6 +11,8 @@
 #ifndef DCMTKSTORESCP_H
 #define DCMTKSTPRESCP_H
 
+#include "dcmtkBaseScp.h"
+
 #include "dcmtk/ofstd/ofstd.h"
 #include "dcmtk/ofstd/ofconapp.h"
 #include "dcmtk/ofstd/ofdatime.h"
@@ -29,8 +31,6 @@
 #include "dcmtk/dcmdata/dcostrmz.h"     /* for dcmZlibCompressionLevel */
 
 #include <iostream>
-
-#include "dcmtkBaseScp.h"
 
 /**
  * @class dcmtkStoreScp

@@ -1,4 +1,4 @@
-#include <qwidget>
+#include <QWidget>
 
 class QTextEdit;
 class QEvent;

@@ -1,4 +1,4 @@
-#include <qevent>
+#include <QEvent>
 
 /**
  * @class LoggerMessageEvent

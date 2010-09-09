@@ -1,7 +1,7 @@
 #include "LoggerWidget.h"
 
-#include <qlayout>
-#include <qtextedit>
+#include <QLayout>
+#include <QTextEdit>
 #include "LoggerMessageEvent.h"
 
 LoggerWidget::LoggerWidget(QWidget* parent) : QWidget(parent)
