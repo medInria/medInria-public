@@ -12,7 +12,6 @@
 
 #include "dcmtkBaseScu.h"
 
-// #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */ -> already in dcmtkBase.h
 #include "dcmtk/ofstd/ofstring.h" /* for class OFString */
 #include "dcmtk/ofstd/oflist.h"
 
@@ -25,36 +24,41 @@ class dcmtkFindCallback;
 class DcmFindSCUCallback;
 
 
-    /**
-    * @class dcmtkFindScu
-    * @author Michael Knopke
-    * @brief class to send C-FIND to the remote node.
-    * Slight wrapper for DcmFindSCU class, uses custom callback (dcmtkFindCallback) to aquire data
-    * The result will be stored in resultData that can be used to acquire the data.
-    */
-
+/**
+ * @class dcmtkFindScu
+ * @author Michael Knopke
+ * @brief class to send C-FIND to the remote node.
+ * Slight wrapper for DcmFindSCU class, uses custom callback (dcmtkFindCallback) to aquire data
+ * The result will be stored in resultData that can be used to acquire the data.
+ */
 class dcmtkFindScu : public dcmtkBaseScu
 {
 public:
 
+   /*
+    * Constructor
+    */
     dcmtkFindScu();
-    
+
+   /*
+    * Destructor
+    */
     ~dcmtkFindScu();
 
-    /**
-     * Performs the C-FIND request on the peer.
-     * @param peerTitle The AE of the peer
-     * @param peerIP The IP of the peer that performs the C-FIND.
-     * @param peerPort The port number of the peer.
-     * @param ourTitel The AE of the caller
-     * @param ourIP The IP of the caller.
-     * @param ourPort The port number of the caller.
-     * @return 0 for success or errorcode
-     */
+   /**
+    * Performs the C-FIND request on the peer.
+    * @param peerTitle The AE of the peer
+    * @param peerIP The IP of the peer that performs the C-FIND.
+    * @param peerPort The port number of the peer.
+    * @param ourTitel The AE of the caller
+    * @param ourIP The IP of the caller.
+    * @param ourPort The port number of the caller.
+    * @return 0 for success or errorcode
+    */
     int sendFindRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, 
                         const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
-    /**
+   /**
     * Overloaded for convenience. Performs the C-FIND request on the peer.
     * Uses the internal connection parameters. 
     * @see setConnectionParams(const char*, const char*, unsigned short,const char*, const char*, unsigned short)
@@ -62,9 +66,12 @@ public:
     */
     int sendFindRequest();
 
+   /*
+    * returns the vector of all result sets
+    */
     std::vector<dcmtkFindDataset*> getResultDataset();
 
-    /**
+   /**
     * Clear all previously set attributes.
     */
     void clearAllQueryAttributes();

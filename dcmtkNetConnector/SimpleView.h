@@ -3,7 +3,6 @@
 
 // includes
 #include <QMainWindow>
-#include "dcmtkFindScu.h"
 #include <iostream>
 #include <vector>
 
@@ -11,13 +10,18 @@
 class Ui_SimpleView;
 class QTreeWidgetItem;
 
+class ServerThread;
+
 class dcmtkEchoScu;
 class dcmtkMoveScu;
 class dcmtkStoreScu;
+class dcmtkFindDataset;
+class dcmtkFindScu;
 
 class LoggerConsoleOutput;
 class LoggerFileOutput;
 class LoggerWidgetOutput;
+class LoggerWidget;
 
 class SimpleView : public QMainWindow
 {
@@ -43,6 +47,8 @@ protected slots:
   void shellAppender(int state);
   void widgetAppender(int state);
   void changeLogLevel(int index);
+  void startServer();
+  void stopServer();
 
 private:
 
@@ -59,6 +65,8 @@ private:
   dcmtkMoveScu*                 m_moveScu;
   dcmtkStoreScu*                m_storeScu;
 
+  ServerThread*                 m_serverThread;
+  
   std::vector<dcmtkFindDataset*> m_resultSet;
   std::vector<dcmtkFindDataset*>::iterator iter;
 
@@ -70,6 +78,7 @@ private:
   LoggerConsoleOutput*          m_shellOut;
   LoggerFileOutput*             m_fileOut;
   LoggerWidgetOutput*           m_widgetOut;
+  LoggerWidget*                 m_loggerWidget;
 };
 
 #endif // SimpleView_H

@@ -724,7 +724,7 @@ void dcmtkStoreScu::replaceSOPInstanceInformation(DcmDataset *dataset)
   dcmtkLogger::infoStream() << "  SOPInstanceUID=" << sopInstanceUID;
   dcmtkLogger::infoStream() << "  ImageNumber=" << imageNumber;
 
-  updateStringAttributeValue(dataset, DCM_PatientName, patientName);
+  updateStringAttributeValue(dataset, DcmTagKey(0x0010, 0x0010), patientName);
   updateStringAttributeValue(dataset, DCM_PatientID, patientID);
   updateStringAttributeValue(dataset, DCM_StudyInstanceUID, studyInstanceUID);
   updateStringAttributeValue(dataset, DCM_StudyID, studyID);
@@ -747,6 +747,8 @@ void dcmtkStoreScu::progressCallback(void * /*callbackData*/, T_DIMSE_StoreProgr
     dcmtkLogger::debugStream() << DIMSE_dumpMessage(str, *req, DIMSE_OUTGOING);
   }
 
+  // TODO find substitute here - mk
+  /*
   // We can't use oflog for the pdu output, but we use a special logger for
   // generating this output. If it is set to level "INFO" we generate the
   // output, if it's set to "DEBUG" then we'll assume that there is debug output
@@ -763,6 +765,7 @@ void dcmtkStoreScu::progressCallback(void * /*callbackData*/, T_DIMSE_StoreProgr
     }
     COUT.flush();
   }
+  */
 }
 
 //---------------------------------------------------------------------------------------------

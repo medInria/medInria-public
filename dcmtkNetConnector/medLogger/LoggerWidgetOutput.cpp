@@ -1,35 +1,32 @@
 #include "LoggerWidgetOutput.h"
 
-#include <qlayout.h>
-#include <qtextedit.h>
-#include <qpushbutton.h>
-#include <qapplication.h>
-#include <qclipboard.h>
-#include <qregexp.h>
-#include <qmessagebox.h>
+#include <QApplication>
+
+#include "LoggerMessageEvent.h"
 
 using namespace std;
 
-LoggerWidgetOutput::LoggerWidgetOutput(LoggerLogLevel::LogLevel logLevel, QWidget* parent) : QWidget(parent), LoggerOutput(logLevel, "WidgetOutput")
-{
-  m_TextEdit = new QTextEdit(this);
-  m_TextEdit->setTextFormat(Qt::LogText);
-  m_TextEdit->setPointSize(4);
-  QVBoxLayout* layout = new QVBoxLayout(this);
-  layout->addWidget(m_TextEdit);
+//---------------------------------------------------------------------------------------------
 
+LoggerWidgetOutput::LoggerWidgetOutput(QWidget* parent, LoggerLogLevel::LogLevel logLevel) : 
+    LoggerOutput(logLevel, "WidgetOutput")
+{
+    m_parent = parent;
 }
+
+//---------------------------------------------------------------------------------------------
 
 LoggerWidgetOutput::~LoggerWidgetOutput()
 {
 }
+
+//---------------------------------------------------------------------------------------------
 
 void LoggerWidgetOutput::logMessage(std::string message, LoggerLogLevel::LogLevel logLevel)
 {
   QString msg;
   if (logLevel <= this->getLogLevel())
   {
-
     msg.append("[");
     msg.append(Logger::getTimeString().c_str());
     msg.append("] ");
@@ -50,8 +47,10 @@ void LoggerWidgetOutput::logMessage(std::string message, LoggerLogLevel::LogLeve
     }
     msg.append(message.c_str());
     msg.append("</font>");
-    m_TextEdit->append(msg);
+    // sending message to gui
+    QApplication::postEvent(m_parent, new LoggerMessageEvent(msg));
   }
-
 }
+
+//---------------------------------------------------------------------------------------------
 

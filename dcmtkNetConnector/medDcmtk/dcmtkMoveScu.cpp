@@ -855,6 +855,7 @@ void dcmtkMoveScu::storeSCPCallback(  /* in */
       OFStandard::sleep((unsigned int)scu->opt_sleepDuring);
     }
     
+    // TODO find substitute here - mk
     /*
     // dump some information if required (depending on the progress state)
     // We can't use oflog for the pdu output, but we use a special logger for

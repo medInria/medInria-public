@@ -13,12 +13,11 @@
 
 #include "dcmtkBase.h"
 
-   /**
-    * @class dcmtkBaseScu
-    * @author Michael Knopke
-    * @brief base class for all SCU implementations
-    */
-
+/**
+ * @class dcmtkBaseScu
+ * @author Michael Knopke
+ * @brief base class for all SCU implementations
+ */
 class dcmtkBaseScu : public dcmtkBase
 {
 public:

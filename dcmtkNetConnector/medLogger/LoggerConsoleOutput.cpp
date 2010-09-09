@@ -4,6 +4,8 @@
 
 using namespace std;
 
+//---------------------------------------------------------------------------------------------
+
 LoggerConsoleOutput::LoggerConsoleOutput(LoggerLogLevel::LogLevel logLevel) : LoggerOutput(logLevel, "ConsoleOutput")
 {
   ostringstream msg;
@@ -11,9 +13,13 @@ LoggerConsoleOutput::LoggerConsoleOutput(LoggerLogLevel::LogLevel logLevel) : Lo
   Logger::info(msg.str());
 }
 
+//---------------------------------------------------------------------------------------------
+
 LoggerConsoleOutput::~LoggerConsoleOutput()
 {
 }
+
+//---------------------------------------------------------------------------------------------
 
 void LoggerConsoleOutput::logMessage(std::string message, LoggerLogLevel::LogLevel logLevel)
 {
@@ -40,4 +46,6 @@ void LoggerConsoleOutput::logMessage(std::string message, LoggerLogLevel::LogLev
     cout << message << endl;
   }
 }
+
+//---------------------------------------------------------------------------------------------
 

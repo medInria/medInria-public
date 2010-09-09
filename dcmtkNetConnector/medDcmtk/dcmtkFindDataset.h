@@ -5,9 +5,9 @@
 #include <iostream>
 #include <vector>
 
-   /**
-    * Experimental at the moment
-    */
+/**
+ * Experimental at the moment
+ */
 class dcmtkFindDataset : public dcmtkBaseDataset
 {
 public:

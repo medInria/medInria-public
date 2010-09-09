@@ -5,11 +5,12 @@
 #define HAVE_CONFIG_H
 #endif
 
+// inc
 #include "dcmtk/dcmnet/dfindscu.h"
-
 #include <iostream>
 #include <vector>
 
+// fwd
 class dcmtkFindDataset;
 
 /** Custom implementation of FindSCU callback class. This implementation is 

@@ -4,23 +4,18 @@
 #include <string>
 #include <fstream>
 
-#include <qwidget.h>
+#include <qwidget>
 
 #include "LoggerOutput.h"
 
-// forward declarations
-class QTextEdit;
 
 /**
  * @class LoggerWidgetOutput
  * @author Michael Knopke
  * @brief Logs to a Qt Widget (into a QTextEdit)
- *
  */
-class LoggerWidgetOutput : public QWidget, public LoggerOutput
+class LoggerWidgetOutput : public LoggerOutput
 {
-
-  Q_OBJECT
 
   public:
 
@@ -29,7 +24,7 @@ class LoggerWidgetOutput : public QWidget, public LoggerOutput
      * @param logLevel level to log on Widget
      * @param parent the parent widget
      */
-    LoggerWidgetOutput(LoggerLogLevel::LogLevel logLevel = LoggerLogLevel::INFOLOG, QWidget* parent = 0);
+    LoggerWidgetOutput(QWidget* parent,LoggerLogLevel::LogLevel logLevel = LoggerLogLevel::INFOLOG);
 
     /**
      * The destructor does nothing
@@ -43,13 +38,9 @@ class LoggerWidgetOutput : public QWidget, public LoggerOutput
      */
     void logMessage(std::string message, LoggerLogLevel::LogLevel logLevel);
 
-
   private:
 
-    /**
-     * Holds a pointer to the text edit object that displays the log text
-     */
-    QTextEdit* m_TextEdit;
+      QWidget*  m_parent;
 
 };
 

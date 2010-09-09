@@ -11,25 +11,32 @@ using namespace std;
 
 Logger* Logger::m_Instance = 0;
 
+//---------------------------------------------------------------------------------------------
+
 Logger::Logger()
 {
   cout << "Logger::Logger(): Logger instance created." << endl;
 }
+
+//---------------------------------------------------------------------------------------------
 
 Logger::~Logger()
 {
   cout << "Logger::~Logger(): Logger instance destroyed." << endl;
 }
 
+//---------------------------------------------------------------------------------------------
+
 Logger* Logger::getInstance()
 {
   if (m_Instance == 0)
   {
     m_Instance = new Logger();
-  } else {
-  }
+  } 
   return m_Instance;
 }
+
+//---------------------------------------------------------------------------------------------
 
 void Logger::destroy()
 {
@@ -39,12 +46,15 @@ void Logger::destroy()
   }
 }
 
+//---------------------------------------------------------------------------------------------
 
 void Logger::startUp()
 {
   // create an instance
   getInstance();
 }
+
+//---------------------------------------------------------------------------------------------
 
 void Logger::shutDown()
 {
@@ -57,12 +67,16 @@ void Logger::shutDown()
   destroy();
 }
 
+//---------------------------------------------------------------------------------------------
+
 void Logger::addOutput(LoggerOutput* output)
 {
   Logger::infoStream() << "Logger::addOutput(): adding logging output " << output << " \"" << output->getName() << "\"";
   output->logMessage("LOG BEGIN", LoggerLogLevel::INFOLOG);
   getInstance()->m_Outputs.push_back(output);
 }
+
+//---------------------------------------------------------------------------------------------
 
 void Logger::removeOutput(LoggerOutput* output)
 {
@@ -84,47 +98,63 @@ void Logger::removeOutput(LoggerOutput* output)
   }
 }
 
+//---------------------------------------------------------------------------------------------
+
 void Logger::debug(string message)
 {
   logMessage(message, LoggerLogLevel::DEBUGLOG);
 }
+
+//---------------------------------------------------------------------------------------------
 
 void Logger::info(string message)
 {
   logMessage(message, LoggerLogLevel::INFOLOG);
 }
 
+//---------------------------------------------------------------------------------------------
+
 void Logger::warning(string message)
 {
   logMessage(message, LoggerLogLevel::WARNINGLOG);
 }
+
+//---------------------------------------------------------------------------------------------
 
 void Logger::error(string message)
 {
   logMessage(message, LoggerLogLevel::ERRORLOG);
 }
 
+//---------------------------------------------------------------------------------------------
+
 LoggerLogStream Logger::debugStream()
 {
-    return LoggerLogStream(LoggerLogLevel::DEBUGLOG);
+  return LoggerLogStream(LoggerLogLevel::DEBUGLOG);
 }
+
+//---------------------------------------------------------------------------------------------
 
 LoggerLogStream Logger::infoStream()
 {
   return LoggerLogStream(LoggerLogLevel::INFOLOG);
 }
 
+//---------------------------------------------------------------------------------------------
+
 LoggerLogStream Logger::warningStream()
 {
   return LoggerLogStream(LoggerLogLevel::WARNINGLOG);
 }
+
+//---------------------------------------------------------------------------------------------
 
 LoggerLogStream Logger::errorStream()
 {
   return LoggerLogStream(LoggerLogLevel::ERRORLOG);
 }
 
-
+//---------------------------------------------------------------------------------------------
 
 void Logger::logMessage(string message, LoggerLogLevel::LogLevel logLevel)
 {
@@ -138,6 +168,8 @@ void Logger::logMessage(string message, LoggerLogLevel::LogLevel logLevel)
     }
   }
 }
+
+//---------------------------------------------------------------------------------------------
 
 string Logger::getTimeString()
 {
@@ -160,6 +192,8 @@ string Logger::getTimeString()
   return os.str();
 }
 
+//---------------------------------------------------------------------------------------------
+
 string Logger::getDateString()
 {
   time_t currentTime;
@@ -180,3 +214,5 @@ string Logger::getDateString()
   os << ptm->tm_year - 100 << ": ";
   return os.str();
 }
+
+//---------------------------------------------------------------------------------------------

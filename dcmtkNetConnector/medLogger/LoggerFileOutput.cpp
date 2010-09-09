@@ -4,18 +4,26 @@
 
 using namespace std;
 
-LoggerFileOutput::LoggerFileOutput(LoggerLogLevel::LogLevel logLevel, const char* filename) : LoggerOutput(logLevel, "FileOutput"), m_OutputStream(filename)
+//---------------------------------------------------------------------------------------------
+
+LoggerFileOutput::LoggerFileOutput(LoggerLogLevel::LogLevel logLevel, const char* filename) : 
+    LoggerOutput(logLevel, "FileOutput"), m_OutputStream(filename)
 {
   m_SequenceNumber = 0;
   ostringstream msg;
-  msg << "LoggerFileOutput::LoggerFileOutput(): New file logger output to file '" << filename << "' with log level " << getLogLevel() << " created.";
+  msg << "LoggerFileOutput::LoggerFileOutput(): New file logger output to file '" 
+        << filename << "' with log level " << getLogLevel() << " created.";
   Logger::info(msg.str());
 }
+
+//---------------------------------------------------------------------------------------------
 
 LoggerFileOutput::~LoggerFileOutput()
 {
   m_OutputStream.close();
 }
+
+//---------------------------------------------------------------------------------------------
 
 void LoggerFileOutput::logMessage(std::string message, LoggerLogLevel::LogLevel logLevel)
 {
@@ -49,4 +57,6 @@ void LoggerFileOutput::logMessage(std::string message, LoggerLogLevel::LogLevel 
     m_OutputStream << message << endl;
   }
 }
+
+//---------------------------------------------------------------------------------------------
 

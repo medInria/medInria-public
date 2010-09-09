@@ -7,7 +7,12 @@
 #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 #include "dcmtk/ofstd/ofstring.h"
 
-
+/**
+ * @class dcmtkLogger
+ * @author Michael Knopke
+ * @brief Main logger class to be used in dcmtk based code
+ * Inherits from generic logger and adds OFSting conversion methods
+ */
 class dcmtkLogger : public Logger
 {
 public:

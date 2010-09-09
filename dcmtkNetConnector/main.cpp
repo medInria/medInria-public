@@ -26,5 +26,6 @@ int main( int argc, char** argv )
   SimpleView mySimpleView;
   mySimpleView.show();
   
+
   return app.exec();
 }

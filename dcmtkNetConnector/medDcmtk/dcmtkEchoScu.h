@@ -12,14 +12,14 @@
 
 #include "dcmtkBaseScu.h"
 
-   /**
-    * @class dcmtkEchoScu
-    * @author Michael Knopke
-    * @brief class to send C-ECHO to the remote node.
-    * Use it to test if the DICOM connection is set up correctly (one way only). 
-    * It's not to be mistaken with a common ping command.
-    * The echo might fail if the remote node doesn't know the client (us)
-    */
+/**
+ * @class dcmtkEchoScu
+ * @author Michael Knopke
+ * @brief class to send C-ECHO to the remote node.
+ * Use it to test if the DICOM connection is set up correctly (one way only). 
+ * It's not to be mistaken with a common ping command.
+ * The echo might fail if the remote node doesn't know the client (us)
+ */
 class dcmtkEchoScu : public  dcmtkBaseScu
 {
 public:

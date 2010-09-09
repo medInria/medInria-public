@@ -1,5 +1,7 @@
 #include "ui_SimpleView.h"
 #include "SimpleView.h"
+#include "ServerThread.h"
+
 #include <QSettings>
 #include <QDockWidget>
 
@@ -7,13 +9,13 @@
 #include "dcmtkFindScu.h"
 #include "dcmtkMoveScu.h"
 #include "dcmtkStoreScu.h"
-#include "dcmtkStoreScp.h"
 #include "dcmtkFindDataset.h"
 
 #include "Logger.h"
 #include "LoggerFileOutput.h"
 #include "LoggerConsoleOutput.h"
 #include "LoggerWidgetOutput.h"
+#include "LoggerWidget.h"
 
 //---------------------------------------------------------------------------------------------
 
@@ -31,9 +33,13 @@ SimpleView::SimpleView()
   m_moveScu = new dcmtkMoveScu();
   m_storeScu = new dcmtkStoreScu();
 
+  m_serverThread = new ServerThread();
+
   m_shellOut = new LoggerConsoleOutput();
   m_fileOut = new LoggerFileOutput();
-  m_widgetOut = new LoggerWidgetOutput();
+  m_loggerWidget = new LoggerWidget(this);
+  m_widgetOut = new LoggerWidgetOutput(m_loggerWidget);
+
   
   setConnectionParams();
 
@@ -45,19 +51,38 @@ SimpleView::SimpleView()
   connect(this->ui->cbShellTarget, SIGNAL(stateChanged(int)), this, SLOT(shellAppender(int)));
   connect(this->ui->cbWidgetTarget, SIGNAL(stateChanged(int)), this, SLOT(widgetAppender(int)));
   connect(this->ui->cbLogLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeLogLevel(int)));
-  
+
   retrieveSettings();
 
   //set logger defaults
   ui->cbWidgetTarget->setChecked(true);
-  ui->cbLogLevel->setCurrentIndex(2);
+  ui->cbLogLevel->setCurrentIndex(3);
 
   // create and show LoggerWidget
   QDockWidget* loggerDock = new QDockWidget(this);
-  loggerDock->setWidget(m_widgetOut);
+  loggerDock->setWidget(m_loggerWidget);
   this->addDockWidget(Qt::BottomDockWidgetArea, loggerDock);
 
+  // start the threaded server
+  startServer();
+
 };
+
+//---------------------------------------------------------------------------------------------
+
+SimpleView::~SimpleView()
+{
+  delete m_findScu;
+  delete m_moveScu;
+  delete m_echoScu;
+  delete m_storeScu;
+
+  delete m_serverThread;
+
+  delete m_shellOut;
+  delete m_fileOut;
+  delete m_widgetOut;
+}
 
 //---------------------------------------------------------------------------------------------
 
@@ -124,20 +149,7 @@ void SimpleView::setConnectionParams()
     m_moveScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_echoScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_storeScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
-}
-
-//---------------------------------------------------------------------------------------------
-
-SimpleView::~SimpleView()
-{
-  delete m_findScu;
-  delete m_moveScu;
-  delete m_echoScu;
-  delete m_storeScu;
-
-  delete m_shellOut;
-  delete m_fileOut;
-  delete m_widgetOut;
+    m_serverThread->setConnectionParams(m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
 }
 
 //---------------------------------------------------------------------------------------------
@@ -201,7 +213,7 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
 
     // set up search criteria
     m_moveScu->addQueryAttribute("0020", "000D", m_resultSet.at(index)->m_studyInstUID.c_str());
-    m_moveScu->useBuildInStoreSCP(true);        
+    //m_moveScu->useBuildInStoreSCP(true);
     
     // send the move request using the search crits
     m_moveScu->sendMoveRequest();
@@ -215,6 +227,7 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
 
 void SimpleView::testConnection()
 {
+
     setConnectionParams();
 
     // now send the echo
@@ -344,6 +357,22 @@ void SimpleView::widgetAppender(int state)
      std::cout << "switch error" << std::endl;
       break;
  }
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::startServer()
+{
+    ui->logWindow->append(tr("Server started."));
+    m_serverThread->start();
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::stopServer()
+{
+    m_serverThread->terminate();
 
 }
 

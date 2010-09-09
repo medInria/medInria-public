@@ -35,11 +35,7 @@ extern "C" {
 }
 #endif
 
-
-
-
-static OFLogger storescpLogger = OFLog::getLogger("MedInria storeSCP");
-
+#include "dcmtkLogger.h"
 
 
 #define PATH_PLACEHOLDER "#p"
@@ -47,12 +43,16 @@ static OFLogger storescpLogger = OFLog::getLogger("MedInria storeSCP");
 #define CALLING_AETITLE_PLACEHOLDER "#a"
 #define CALLED_AETITLE_PLACEHOLDER "#c"
 
+//---------------------------------------------------------------------------------------------
 
-
+int dcmtkStoreScp::start()
+{
+    return start(opt_respondingAETitle, "", opt_port);
+}
 
 //---------------------------------------------------------------------------------------------
 
-int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, int ourPort)
+int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int ourPort)
 {
 
     opt_showPresentationContexts = OFFalse;
@@ -117,7 +117,7 @@ int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, int ourPort)
   {
     if (geteuid() != 0)
     {
-      OFLOG_FATAL(storescpLogger, "cannot listen on port " << opt_port << ", insufficient privileges");
+      dcmtkLogger::errorStream() <<  "cannot listen on port " << opt_port << ", insufficient privileges";
       return 1;
     }
   }
@@ -135,7 +135,7 @@ int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, int ourPort)
      */
     if (!OFStandard::dirExists(opt_outputDirectory))
     {
-      OFLOG_FATAL(storescpLogger, "specified output directory does not exist");
+      dcmtkLogger::errorStream() << "specified output directory does not exist";
       return 1;
     }
   }
@@ -143,7 +143,7 @@ int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, int ourPort)
   /* check if the output directory is writeable */
   if (!OFStandard::isWriteable(opt_outputDirectory))
   {
-    OFLOG_FATAL(storescpLogger, "specified output directory is not writeable");
+    dcmtkLogger::errorStream() <<  "specified output directory is not writeable";
     return 1;
   }
 
@@ -152,7 +152,7 @@ int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, int ourPort)
   OFCondition cond = ASC_initializeNetwork(NET_ACCEPTOR, OFstatic_cast(int, opt_port), opt_acse_timeout, &net);
   if (cond.bad())
   {
-    OFLOG_ERROR(storescpLogger, "cannot create network: " << DimseCondition::dump(temp_str, cond));
+    dcmtkLogger::errorStream() << "cannot create network: " << DimseCondition::dump(temp_str, cond);
     return 1;
   }
 
@@ -186,7 +186,7 @@ int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, int ourPort)
   cond = ASC_dropNetwork(&net);
   if (cond.bad())
   {
-    OFLOG_ERROR(storescpLogger, DimseCondition::dump(temp_str, cond));
+    dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
     return 1;
   }
   
@@ -222,7 +222,7 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
 
   if (cond.code() == DULC_FORKEDCHILD)
   {
-    // OFLOG_DEBUG(storescpLogger, DimseCondition::dump(temp_str, cond));
+    // dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
     goto cleanup;
   }
 
@@ -266,20 +266,26 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
     // If something else was wrong we might have to dump an error message.
     else
     {
-      OFLOG_DEBUG(storescpLogger, DimseCondition::dump(temp_str, cond));
+        dcmtkLogger::debugStream() << DimseCondition::dump(temp_str, cond);
     }
 
     // no matter what kind of error occurred, we need to do a cleanup
     goto cleanup;
   }
 
-    OFLOG_INFO(storescpLogger, "Association Received");
+    dcmtkLogger::infoStream() << "Association Received";
 
   /* dump presentation contexts if required */
   if (opt_showPresentationContexts)
-    OFLOG_INFO(storescpLogger, "Parameters:" << OFendl << ASC_dumpParameters(temp_str, assoc->params, ASC_ASSOC_RQ));
+  {
+    dcmtkLogger::infoStream() << "Parameters:";
+        dcmtkLogger::infoStream() << ASC_dumpParameters(temp_str, assoc->params, ASC_ASSOC_RQ);
+  }
   else
-    OFLOG_DEBUG(storescpLogger, "Parameters:" << OFendl << ASC_dumpParameters(temp_str, assoc->params, ASC_ASSOC_RQ));
+  {
+    dcmtkLogger::debugStream() << "Parameters:";
+        dcmtkLogger::debugStream() << ASC_dumpParameters(temp_str, assoc->params, ASC_ASSOC_RQ);
+  }
 
   if (opt_refuseAssociation)
   {
@@ -290,11 +296,11 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
       ASC_REASON_SU_NOREASON
     };
 
-    OFLOG_INFO(storescpLogger, "Refusing Association (forced via command line)");
+    dcmtkLogger::infoStream() << "Refusing Association (forced via command line)";
     cond = ASC_rejectAssociation(assoc, &rej);
     if (cond.bad())
     {
-      OFLOG_ERROR(storescpLogger, "Association Reject Failed: " << DimseCondition::dump(temp_str, cond));
+      dcmtkLogger::errorStream() << "Association Reject Failed: " << DimseCondition::dump(temp_str, cond);
     }
     goto cleanup;
   }
@@ -463,7 +469,7 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
     cond = asccfg.evaluateAssociationParameters(sprofile.c_str(), *assoc);
     if (cond.bad())
     {
-      OFLOG_DEBUG(storescpLogger, DimseCondition::dump(temp_str, cond));
+      dcmtkLogger::debugStream() << DimseCondition::dump(temp_str, cond);
       goto cleanup;
     }
   }
@@ -473,7 +479,7 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
     cond = ASC_acceptContextsWithPreferredTransferSyntaxes( assoc->params, knownAbstractSyntaxes, DIM_OF(knownAbstractSyntaxes), transferSyntaxes, numTransferSyntaxes);
     if (cond.bad())
     {
-      OFLOG_DEBUG(storescpLogger, DimseCondition::dump(temp_str, cond));
+      dcmtkLogger::debugStream() << DimseCondition::dump(temp_str, cond);
       goto cleanup;
     }
 
@@ -481,7 +487,7 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
     cond = ASC_acceptContextsWithPreferredTransferSyntaxes( assoc->params, dcmAllStorageSOPClassUIDs, numberOfAllDcmStorageSOPClassUIDs, transferSyntaxes, numTransferSyntaxes);
     if (cond.bad())
     {
-      OFLOG_DEBUG(storescpLogger, DimseCondition::dump(temp_str, cond));
+      dcmtkLogger::debugStream() << DimseCondition::dump(temp_str, cond);
       goto cleanup;
     }
 
@@ -492,7 +498,7 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
         assoc->params, transferSyntaxes, numTransferSyntaxes);
       if (cond.bad())
       {
-        OFLOG_DEBUG(storescpLogger, DimseCondition::dump(temp_str, cond));
+        dcmtkLogger::debugStream() << DimseCondition::dump(temp_str, cond);
         goto cleanup;
       }
     }
@@ -513,11 +519,11 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
       ASC_REASON_SU_APPCONTEXTNAMENOTSUPPORTED
     };
 
-    OFLOG_INFO(storescpLogger, "Association Rejected: Bad Application Context Name: " << buf);
+    dcmtkLogger::infoStream() << "Association Rejected: Bad Application Context Name: " << buf;
     cond = ASC_rejectAssociation(assoc, &rej);
     if (cond.bad())
     {
-      OFLOG_DEBUG(storescpLogger, DimseCondition::dump(temp_str, cond));
+      dcmtkLogger::debugStream() << DimseCondition::dump(temp_str, cond);
     }
     goto cleanup;
 
@@ -532,11 +538,11 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
       ASC_REASON_SU_NOREASON
     };
 
-    OFLOG_INFO(storescpLogger, "Association Rejected: No Implementation Class UID provided");
+    dcmtkLogger::infoStream() << "Association Rejected: No Implementation Class UID provided";
     cond = ASC_rejectAssociation(assoc, &rej);
     if (cond.bad())
     {
-      OFLOG_DEBUG(storescpLogger, DimseCondition::dump(temp_str, cond));
+      dcmtkLogger::debugStream() << DimseCondition::dump(temp_str, cond);
     }
     goto cleanup;
   }
@@ -545,17 +551,17 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
     cond = ASC_acknowledgeAssociation(assoc);
     if (cond.bad())
     {
-      OFLOG_ERROR(storescpLogger, DimseCondition::dump(temp_str, cond));
+      dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
       goto cleanup;
     }
-    OFLOG_INFO(storescpLogger, "Association Acknowledged (Max Send PDV: " << assoc->sendPDVLength << ")");
+    dcmtkLogger::infoStream() << "Association Acknowledged (Max Send PDV: " << assoc->sendPDVLength << ")";
     if (ASC_countAcceptedPresentationContexts(assoc->params) == 0)
-      OFLOG_INFO(storescpLogger, "    (but no valid presentation contexts)");
+      dcmtkLogger::infoStream() << "    (but no valid presentation contexts)";
     /* dump the presentation contexts which have been accepted/refused */
     if (opt_showPresentationContexts)
-      OFLOG_INFO(storescpLogger, ASC_dumpParameters(temp_str, assoc->params, ASC_ASSOC_AC));
+      dcmtkLogger::infoStream() << ASC_dumpParameters(temp_str, assoc->params, ASC_ASSOC_AC);
     else
-      OFLOG_DEBUG(storescpLogger, ASC_dumpParameters(temp_str, assoc->params, ASC_ASSOC_AC));
+      dcmtkLogger::debugStream() << ASC_dumpParameters(temp_str, assoc->params, ASC_ASSOC_AC);
   }
 
 
@@ -590,16 +596,16 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
 
   if (cond == DUL_PEERREQUESTEDRELEASE)
   {
-    OFLOG_INFO(storescpLogger, "Association Release");
+    dcmtkLogger::infoStream() << "Association Release";
     cond = ASC_acknowledgeRelease(assoc);
   }
   else if (cond == DUL_PEERABORTEDASSOCIATION)
   {
-    OFLOG_INFO(storescpLogger, "Association Aborted");
+    dcmtkLogger::infoStream() << "Association Aborted";
   }
   else
   {
-    OFLOG_ERROR(storescpLogger, "DIMSE failure (aborting association): " << DimseCondition::dump(temp_str, cond));
+    dcmtkLogger::errorStream() << "DIMSE failure (aborting association): " << DimseCondition::dump(temp_str, cond);
     /* some kind of error so abort the association */
     cond = ASC_abortAssociation(assoc);
   }
@@ -613,13 +619,13 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
   cond = ASC_dropSCPAssociation(assoc);
   if (cond.bad())
   {
-    OFLOG_FATAL(storescpLogger, DimseCondition::dump(temp_str, cond));
+    dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
     exit(1);
   }
   cond = ASC_destroyAssociation(&assoc);
   if (cond.bad())
   {
-    OFLOG_FATAL(storescpLogger, DimseCondition::dump(temp_str, cond));
+    dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
     exit(1);
   }
 
@@ -683,7 +689,8 @@ OFCondition dcmtkStoreScp::processCommands(T_ASC_Association * assoc)
     // detail information, dump this information
     if (statusDetail != NULL)
     {
-      OFLOG_WARN(storescpLogger, "Status Detail:" << OFendl << DcmObject::PrintHelper(*statusDetail));
+      dcmtkLogger::warningStream() << "Status Detail:";
+        dcmtkLogger::warningStream() << DcmObject::PrintHelper(*statusDetail);
       delete statusDetail;
     }
 
@@ -705,8 +712,8 @@ OFCondition dcmtkStoreScp::processCommands(T_ASC_Association * assoc)
         default:
           // we cannot handle this kind of message
           cond = DIMSE_BADCOMMANDTYPE;
-          OFLOG_ERROR(storescpLogger, "cannot handle command: 0x"
-               << STD_NAMESPACE hex << OFstatic_cast(unsigned, msg.CommandField));
+          dcmtkLogger::errorStream() << "cannot handle command: 0x"
+               << STD_NAMESPACE hex << OFstatic_cast(unsigned, msg.CommandField);
           break;
       }
     }
@@ -719,14 +726,14 @@ OFCondition dcmtkStoreScp::processCommands(T_ASC_Association * assoc)
 OFCondition dcmtkStoreScp::echoSCP( T_ASC_Association * assoc, T_DIMSE_Message * msg, T_ASC_PresentationContextID presID)
 {
   OFString temp_str;
-  OFLOG_INFO(storescpLogger, "Received Echo Request");
-  OFLOG_DEBUG(storescpLogger, DIMSE_dumpMessage(temp_str, msg->msg.CEchoRQ, DIMSE_INCOMING, NULL, presID));
+  dcmtkLogger::infoStream() << "Received Echo Request";
+  dcmtkLogger::debugStream() << DIMSE_dumpMessage(temp_str, msg->msg.CEchoRQ, DIMSE_INCOMING, NULL, presID);
 
   /* the echo succeeded !! */
   OFCondition cond = DIMSE_sendEchoResponse(assoc, presID, &msg->msg.CEchoRQ, STATUS_Success, NULL);
   if (cond.bad())
   {
-    OFLOG_ERROR(storescpLogger, "Echo SCP Failed: " << DimseCondition::dump(temp_str, cond));
+    dcmtkLogger::errorStream() << "Echo SCP Failed: " << DimseCondition::dump(temp_str, cond);
   }
   return cond;
 }
@@ -751,7 +758,7 @@ void dcmtkStoreScp::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *
     if( (scp->opt_abortDuringStore && progress->state != DIMSE_StoreBegin) ||
         (scp->opt_abortAfterStore && progress->state == DIMSE_StoreEnd) )
     {
-      OFLOG_INFO(storescpLogger, "ABORT initiated (due to command line options)");
+      dcmtkLogger::infoStream() << "ABORT initiated (due to command line options)";
       ASC_abortAssociation(scp->m_assoc);
       rsp->DimseStatus = STATUS_STORE_Refused_OutOfResources;
       return;
@@ -764,6 +771,8 @@ void dcmtkStoreScp::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *
     OFStandard::sleep(OFstatic_cast(unsigned int, scp->opt_sleepDuring));
   }
 
+  // TODO find substitute here - mk
+  /*
   // dump some information if required (depending on the progress state)
   // We can't use oflog for the pdu output, but we use a special logger for
   // generating this output. If it is set to level "INFO" we generate the
@@ -786,6 +795,7 @@ void dcmtkStoreScp::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *
     }
     COUT.flush();
   }
+  */
 
   // if this is the final call of this function, save the data which was received to a file
   // (note that we could also save the image somewhere else, put it in database, etc.)
@@ -816,7 +826,7 @@ void dcmtkStoreScp::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *
         OFString currentStudyInstanceUID;
         if ((*imageDataSet)->findAndGetOFString(DCM_StudyInstanceUID, currentStudyInstanceUID).bad() || currentStudyInstanceUID.empty())
         {
-          OFLOG_ERROR(storescpLogger, "element StudyInstanceUID " << DCM_StudyInstanceUID << " absent or empty in data set");
+          dcmtkLogger::errorStream() << "element StudyInstanceUID " << DCM_StudyInstanceUID << " absent or empty in data set";
           rsp->DimseStatus = STATUS_STORE_Error_CannotUnderstand;
           return;
         }
@@ -827,12 +837,12 @@ void dcmtkStoreScp::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *
         if (scp->opt_sortStudyMode == dcmtkStoreScp::ESM_PatientsName)
         {
           OFString tmpName;
-          if ((*imageDataSet)->findAndGetOFString(DCM_PatientsName, tmpName).bad() || tmpName.empty())
+          if ((*imageDataSet)->findAndGetOFString(DcmTagKey(0x0010, 0x0010), tmpName).bad() || tmpName.empty())
           {
             // default if patient name is missing or empty
             tmpName = "ANONYMOUS";
-            OFLOG_WARN(storescpLogger, "element PatientsName " << DCM_PatientsName << " absent or empty in data set, using '"
-                 << tmpName << "' instead");
+            dcmtkLogger::warningStream() << "element PatientsName " << DcmTagKey(0x0010, 0x0010) << " absent or empty in data set, using '"
+                 << tmpName << "' instead";
           }
 
           /* substitute non-ASCII characters in patient name to ASCII "equivalent" */
@@ -901,18 +911,18 @@ void dcmtkStoreScp::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *
           // check if the subdirectory already exists
           // if it already exists dump a warning
           if( OFStandard::dirExists(scp->subdirectoryPathAndName) )
-            OFLOG_WARN(storescpLogger, "subdirectory for study already exists: " << scp->subdirectoryPathAndName);
+            dcmtkLogger::warningStream() << "subdirectory for study already exists: " << scp->subdirectoryPathAndName;
           else
           {
             // if it does not exist create it
-            OFLOG_INFO(storescpLogger, "creating new subdirectory for study: " << scp->subdirectoryPathAndName);
+            dcmtkLogger::infoStream() << "creating new subdirectory for study: " << scp->subdirectoryPathAndName;
 #ifdef HAVE_WINDOWS_H
             if( _mkdir( scp->subdirectoryPathAndName.c_str() ) == -1 )
 #else
             if( mkdir( scp->subdirectoryPathAndName.c_str(), S_IRWXU | S_IRWXG | S_IRWXO ) == -1 )
 #endif
             {
-              OFLOG_ERROR(storescpLogger, "could not create subdirectory for study: " << scp->subdirectoryPathAndName);
+              dcmtkLogger::errorStream() << "could not create subdirectory for study: " << scp->subdirectoryPathAndName;
               rsp->DimseStatus = STATUS_STORE_Error_CannotUnderstand;
               return;
             }
@@ -947,10 +957,10 @@ void dcmtkStoreScp::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *
       if (xfer == EXS_Unknown) xfer = (*imageDataSet)->getOriginalXfer();
 
       // store file either with meta header or as pure dataset
-      OFLOG_INFO(storescpLogger, "storing DICOM file: " << fileName);
+      dcmtkLogger::infoStream() << "storing DICOM file: " << fileName;
       if (OFStandard::fileExists(fileName))
       {
-        OFLOG_WARN(storescpLogger, "DICOM file already exists: " << fileName);
+        dcmtkLogger::warningStream() << "DICOM file already exists: " << fileName;
       }
       OFCondition cond = scp->m_dcmff->saveFile(fileName.c_str(), xfer, scp->opt_sequenceType, scp->opt_groupLength,
           scp->opt_paddingType, OFstatic_cast(Uint32, scp->opt_filepad), OFstatic_cast(Uint32, scp->opt_itempad),
@@ -958,7 +968,7 @@ void dcmtkStoreScp::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *
 
       if (cond.bad())
       {
-        OFLOG_ERROR(storescpLogger, "cannot write DICOM file: " << fileName << ": " << cond.text());
+        dcmtkLogger::errorStream() << "cannot write DICOM file: " << fileName << ": " << cond.text();
         rsp->DimseStatus = STATUS_STORE_Refused_OutOfResources;
       }
 
@@ -969,7 +979,7 @@ void dcmtkStoreScp::storeSCPCallback(void *callbackData, T_DIMSE_StoreProgress *
         // which SOP class and SOP instance ?
         if (!DU_findSOPClassAndInstanceInDataSet(*imageDataSet, sopClass, sopInstance, scp->opt_correctUIDPadding))
         {
-           OFLOG_ERROR(storescpLogger, "bad DICOM file: " << fileName);
+           dcmtkLogger::errorStream() << "bad DICOM file: " << fileName;
            rsp->DimseStatus = STATUS_STORE_Error_CannotUnderstand;
         }
         else if (strcmp(sopClass, req->AffectedSOPClassUID) != 0)
@@ -1083,9 +1093,9 @@ OFCondition dcmtkStoreScp::storeSCP( T_ASC_Association *assoc, T_DIMSE_Message *
 
   // dump some information if required
   OFString str;
-  OFLOG_INFO(storescpLogger, "Received Store Request: MsgID " << req->MessageID << ", ("
-    << dcmSOPClassUIDToModality(req->AffectedSOPClassUID, "OT") << ")");
-  OFLOG_DEBUG(storescpLogger, DIMSE_dumpMessage(str, *req, DIMSE_INCOMING, NULL, presID));
+  dcmtkLogger::infoStream() << "Received Store Request: MsgID " << req->MessageID << ", ("
+    << dcmSOPClassUIDToModality(req->AffectedSOPClassUID, "OT") << ")";
+  dcmtkLogger::debugStream() << DIMSE_dumpMessage(str, *req, DIMSE_INCOMING, NULL, presID);
 
   // intialize some variables
   this->m_assoc = assoc;
@@ -1121,7 +1131,7 @@ OFCondition dcmtkStoreScp::storeSCP( T_ASC_Association *assoc, T_DIMSE_Message *
   if (cond.bad())
   {
     OFString temp_str;
-    OFLOG_ERROR(storescpLogger, "Store SCP Failed: " << DimseCondition::dump(temp_str, cond));
+    dcmtkLogger::errorStream() << "Store SCP Failed: " << DimseCondition::dump(temp_str, cond);
     // remove file
     if (!opt_ignore)
     {
@@ -1267,7 +1277,7 @@ void dcmtkStoreScp::renameOnEndOfStudy()
 
     // rename file
     if( rename( oldPathAndFileName.c_str(), newPathAndFileName.c_str() ) != 0 )
-      OFLOG_WARN(storescpLogger, "cannot rename file '" << oldPathAndFileName << "' to '" << newPathAndFileName << "'");
+      dcmtkLogger::warningStream() << "cannot rename file '" << oldPathAndFileName << "' to '" << newPathAndFileName << "'";
 
     // remove entry from list
     first = outputFileNameArray.erase(first);

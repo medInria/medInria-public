@@ -21,10 +21,10 @@ SET (MED_DCMTK_SOURCES
 		medDcmtk/dcmtkStoreScu.h
 		medDcmtk/dcmtkStoreScu.cpp
 		
-		#medDcmtk/dcmtkBaseScp.h
-		#medDcmtk/dcmtkBaseScp.cpp
-		#medDcmtk/dcmtkStoreScp.h
-		#medDcmtk/dcmtkStoreScp.cpp	
+		medDcmtk/dcmtkBaseScp.h
+		medDcmtk/dcmtkBaseScp.cpp
+		medDcmtk/dcmtkStoreScp.h
+		medDcmtk/dcmtkStoreScp.cpp	
 		
 	)
 	
@@ -35,6 +35,8 @@ SET (MED_LOGGER_SOURCES
 		medLogger/LoggerConsoleOutput.cpp
 		medLogger/LoggerFileOutput.h
 		medLogger/LoggerFileOutput.cpp
+		medLogger/LoggerWidget.h
+		medLogger/LoggerWidget.cpp
 		medLogger/LoggerWidgetOutput.h
 		medLogger/LoggerWidgetOutput.cpp		
 		medLogger/LoggerLogStream.h
@@ -42,8 +44,14 @@ SET (MED_LOGGER_SOURCES
 		medLogger/LoggerLogLevel.h
 		medLogger/LoggerOutput.h
 		medLogger/LoggerOutput.cpp
+		medLogger/LoggerMessageEvent.h
 	)
 	
 SET (OTHER_MOC_FILES
-		medLogger/LoggerWidgetOutput.h
+		medLogger/LoggerWidget.h
+	)
+	
+SET (MED_GENERAL_SOURCES
+	    ServerThread.h
+		ServerThread.cpp
 	)

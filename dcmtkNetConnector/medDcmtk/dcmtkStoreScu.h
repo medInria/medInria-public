@@ -15,7 +15,6 @@
 #define HAVE_CONFIG_H
 #endif
 
-#include "dcmtk/config/osconfig.h" /* make sure OS specific configuration is included first */
 
 #define INCLUDE_CSTDLIB
 #define INCLUDE_CSTDIO
@@ -46,12 +45,12 @@
 
 
 
-    /**
-     * @class dcmtkStoreScu
-     * @author Michael Knopke
-     * @brief class to send C-STORE to the remote node.
-     * Used to send DICOM data to another modality.
-     */
+/**
+ * @class dcmtkStoreScu
+ * @author Michael Knopke
+ * @brief class to send C-STORE to the remote node.
+ * Used to send DICOM data to another modality.
+ */
 class dcmtkStoreScu : public  dcmtkBaseScu
 {
 public:

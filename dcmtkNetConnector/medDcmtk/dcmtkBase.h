@@ -55,12 +55,12 @@ static const char* transferSyntaxes[] = {
 };
 
 
-   /**
-    * @class dcmtkBase
-    * @author Michael Knopke
-    * @brief base class for all SCU/SCP base implementations.
-    * Adds common network connection stuff.
-    */
+/**
+ * @class dcmtkBase
+ * @author Michael Knopke
+ * @brief base class for all SCU/SCP base implementations.
+ * Adds common network connection stuff.
+ */
 class dcmtkBase
 {
 public:

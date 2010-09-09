@@ -1,6 +1,5 @@
 #include "dcmtkBaseScu.h"
 
-// #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 #include "dcmtk/dcmnet/assoc.h"
 
 #include "dcmtkLogger.h"

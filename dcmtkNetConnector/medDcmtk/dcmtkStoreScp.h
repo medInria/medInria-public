@@ -11,9 +11,6 @@
 #ifndef DCMTKSTORESCP_H
 #define DCMTKSTPRESCP_H
 
-#include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
-
-
 #include "dcmtk/ofstd/ofstd.h"
 #include "dcmtk/ofstd/ofconapp.h"
 #include "dcmtk/ofstd/ofdatime.h"
@@ -35,13 +32,12 @@
 
 #include "dcmtkBaseScp.h"
 
-    /**
-     * @class dcmtkStoreScp
-     * @author Michael Knopke
-     * @brief Class to implement Server functionality (C-Store only)
-     * Should be running in a threaded environment to be able to listen to commands at all times.
-     */
-
+/**
+ * @class dcmtkStoreScp
+ * @author Michael Knopke
+ * @brief Class to implement Server functionality (C-Store only)
+ * Should be running in a threaded environment to be able to listen to commands at all times.
+ */
 class dcmtkStoreScp : public dcmtkBaseScp
 {
 public:
@@ -53,8 +49,15 @@ public:
     * @param ourPort The port number of to listen.
     * @return 0 for success, otherwise errorcode
     */
-    int start(const char* ourTitle, const char* ourIP, int ourPort);
+    int start(const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
+   /**
+    * Overloaded for convenience. starts tge store SCP server.
+    * Uses the internal connection parameters. 
+    * @see setConnectionParams(const char* , const char* , unsigned int );
+    * @return 0 for success or errorcode
+    */
+    int start();
 
     /**
     * Set a directory where the store-scp should store its incoming data.
@@ -191,17 +194,13 @@ protected:
                                                                    const char* transferSyntaxes[],
                                                                    int transferSyntaxCount,
                                                                    T_ASC_SC_ROLE acceptedRole = ASC_SC_ROLE_DEFAULT);
-    
-  
-   /*
+
+    /*
     * substitute non-ASCII characters with ASCII "equivalents"
     * @param c Character to substitute
     * @param output Output string
     */
     void mapCharacterAndAppendToString(Uint8 c, OFString &output);
-
-  
-
 
 private:
 
@@ -221,7 +220,6 @@ private:
     OFString           opt_fileNameExtension;
     OFBool             opt_timeNames;
     int                timeNameCounter;   // "serial number" to differentiate between files with same timestamp
-    OFCmdUnsignedInt   opt_port;
     OFBool             opt_refuseAssociation;
     OFBool             opt_rejectWithoutImplementationUID;
     OFCmdUnsignedInt   opt_sleepAfter;
@@ -248,7 +246,6 @@ private:
     OFString           lastCallingAETitle;
     OFString           calledAETitle;        // called application entity title will be stored here
     OFString           lastCalledAETitle;
-    const char*        opt_respondingAETitle;
     OFBool             opt_secureConnection;    // default: no secure connection
     OFString           opt_outputDirectory;         // default: output directory equals "."
     E_SortStudyMode    opt_sortStudyMode;      // default: no sorting
@@ -276,8 +273,6 @@ private:
     char*              m_imageFileName;
     DcmFileFormat*     m_dcmff;
     T_ASC_Association* m_assoc;
-
-
 
 };
 
