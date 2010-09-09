@@ -11,10 +11,10 @@ class Ui_SimpleView;
 class QTreeWidgetItem;
 
 class ServerThread;
+class SendThread;
 
 class dcmtkEchoScu;
 class dcmtkMoveScu;
-class dcmtkStoreScu;
 class dcmtkFindDataset;
 class dcmtkFindScu;
 
@@ -41,14 +41,16 @@ protected slots:
 
   void search();
   void move(QTreeWidgetItem * item, int column);
+  void store();
+  void setSendDirectory();
   void testConnection();
   void applySettingsSlot();
   void fileAppender(int state);
   void shellAppender(int state);
   void widgetAppender(int state);
   void changeLogLevel(int index);
-  void startServer();
-  void stopServer();
+  void restartServer();
+  void quit();
 
 private:
 
@@ -56,6 +58,8 @@ private:
 
   void storeSettings(int type);
   void retrieveSettings();
+  void startServer();
+  void stopServer();
     
   // Designer form
   Ui_SimpleView *ui;
@@ -63,10 +67,10 @@ private:
   dcmtkEchoScu*                 m_echoScu;
   dcmtkFindScu*                 m_findScu;
   dcmtkMoveScu*                 m_moveScu;
-  dcmtkStoreScu*                m_storeScu;
-
-  ServerThread*                 m_serverThread;
   
+  ServerThread*                 m_serverThread;
+  SendThread*                   m_sendThread;
+
   std::vector<dcmtkFindDataset*> m_resultSet;
   std::vector<dcmtkFindDataset*>::iterator iter;
 

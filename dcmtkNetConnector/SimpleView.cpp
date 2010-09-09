@@ -1,14 +1,15 @@
 #include "ui_SimpleView.h"
 #include "SimpleView.h"
 #include "ServerThread.h"
+#include "SendThread.h"
 
 #include <QSettings>
 #include <QDockWidget>
+#include <QFileDialog>
 
 #include "dcmtkEchoScu.h"
 #include "dcmtkFindScu.h"
 #include "dcmtkMoveScu.h"
-#include "dcmtkStoreScu.h"
 #include "dcmtkFindDataset.h"
 
 #include "Logger.h"
@@ -31,18 +32,16 @@ SimpleView::SimpleView()
   m_echoScu = new dcmtkEchoScu();
   m_findScu = new dcmtkFindScu();
   m_moveScu = new dcmtkMoveScu();
-  m_storeScu = new dcmtkStoreScu();
-
+  
   m_serverThread = new ServerThread();
+  m_sendThread = new SendThread();
 
   m_shellOut = new LoggerConsoleOutput();
   m_fileOut = new LoggerFileOutput();
   m_loggerWidget = new LoggerWidget(this);
   m_widgetOut = new LoggerWidgetOutput(m_loggerWidget);
 
-  
-  setConnectionParams();
-
+  connect(this->ui->actionExit, SIGNAL(triggered()), this, SLOT(quit()));
   connect(this->ui->searchField, SIGNAL(returnPressed()), this, SLOT(search()));
   connect(this->ui->treeWidget, SIGNAL(itemDoubleClicked ( QTreeWidgetItem* , int )), this, SLOT(move(QTreeWidgetItem *, int)));
   connect(this->ui->echoButton, SIGNAL(clicked()), this, SLOT(testConnection()));
@@ -51,8 +50,13 @@ SimpleView::SimpleView()
   connect(this->ui->cbShellTarget, SIGNAL(stateChanged(int)), this, SLOT(shellAppender(int)));
   connect(this->ui->cbWidgetTarget, SIGNAL(stateChanged(int)), this, SLOT(widgetAppender(int)));
   connect(this->ui->cbLogLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeLogLevel(int)));
+  connect(this->ui->serverRestartButton, SIGNAL(clicked()), this, SLOT(restartServer()));
+  connect(this->ui->dirButton, SIGNAL(clicked()),this,SLOT(setSendDirectory()));
+  connect(this->ui->sendButton, SIGNAL(clicked()),this,SLOT(store()));
+
 
   retrieveSettings();
+  setConnectionParams();
 
   //set logger defaults
   ui->cbWidgetTarget->setChecked(true);
@@ -75,9 +79,9 @@ SimpleView::~SimpleView()
   delete m_findScu;
   delete m_moveScu;
   delete m_echoScu;
-  delete m_storeScu;
 
   delete m_serverThread;
+  delete m_sendThread;
 
   delete m_shellOut;
   delete m_fileOut;
@@ -148,8 +152,12 @@ void SimpleView::setConnectionParams()
     m_findScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_moveScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_echoScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
-    m_storeScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+    m_sendThread->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_serverThread->setConnectionParams(m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+
+    // add available dicom nodes to cb, for the moment only one..
+    this->ui->sendToNodeCB->addItem(QString::fromStdString(m_peerTitle));
+
 }
 
 //---------------------------------------------------------------------------------------------
@@ -157,8 +165,6 @@ void SimpleView::setConnectionParams()
 // Action to be taken upon file open 
 void SimpleView::search()
 {
-    setConnectionParams();
-
     QString patientName = ui->searchField->text();
     patientName.append("*");
 
@@ -213,12 +219,10 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
 
     // set up search criteria
     m_moveScu->addQueryAttribute("0020", "000D", m_resultSet.at(index)->m_studyInstUID.c_str());
-    //m_moveScu->useBuildInStoreSCP(true);
     
     // send the move request using the search crits
     m_moveScu->sendMoveRequest();
-    m_moveScu->clearAllQueryAttributes();
-
+    
     ui->logWindow->append(tr("All done."));
 
 }
@@ -227,7 +231,7 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
 
 void SimpleView::testConnection()
 {
-
+    // update params
     setConnectionParams();
 
     // now send the echo
@@ -244,9 +248,42 @@ void SimpleView::testConnection()
 
 //---------------------------------------------------------------------------------------------
 
+void SimpleView::store()
+{
+    QDir testDir;
+    testDir.setPath(ui->directoryLE->text());
+    if ( testDir.isReadable() )
+    {
+        m_sendThread->setScanDirectory(ui->directoryLE->text().toLatin1());
+        m_sendThread->start();
+    }
+    else
+    {
+        ui->logWindow->append("This is not a valid import directory!");
+    }
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::setSendDirectory()
+{
+    QDir selDir;
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    if (dialog.exec())
+    {
+        selDir = dialog.directory();
+        this->ui->directoryLE->setText(selDir.path());
+    }
+}
+
+//---------------------------------------------------------------------------------------------
+
 void SimpleView::applySettingsSlot()
 {
     storeSettings(1);
+    setConnectionParams();
+    restartServer();
 }
 
 //---------------------------------------------------------------------------------------------
@@ -373,7 +410,22 @@ void SimpleView::startServer()
 void SimpleView::stopServer()
 {
     m_serverThread->terminate();
+    ui->logWindow->append(tr("Server stopped."));
+}
 
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::restartServer()
+{
+    stopServer();
+    startServer();
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::quit()
+{
+    qApp->quit();
 }
 
 //---------------------------------------------------------------------------------------------

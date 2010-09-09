@@ -103,8 +103,6 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
 
     if (cond.bad()) dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
 
-    dcmtkLogger::infoStream() << "Found " << m_resultSet.capacity() << " patients";
-
     return 0;
 }
 

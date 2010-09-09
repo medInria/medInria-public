@@ -54,4 +54,6 @@ SET (OTHER_MOC_FILES
 SET (MED_GENERAL_SOURCES
 	    ServerThread.h
 		ServerThread.cpp
+		SendThread.h
+		SendThread.cpp
 	)
