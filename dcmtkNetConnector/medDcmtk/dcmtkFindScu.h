@@ -66,11 +66,6 @@ public:
     */
     int sendFindRequest();
 
-   /*
-    * returns the vector of all result sets
-    */
-    std::vector<dcmtkFindDataset*> getResultDataset();
-
    /**
     * Clear all previously set attributes.
     */
@@ -181,17 +176,11 @@ protected:
     */
     virtual bool processQueryAttribute(const char* key);
 
-    /**
-    * Helper for the moment
-    */
-    void cleanUpDataset();
-
+ 
     OFList<OFString>                        overrideKeys;
     OFList<OFString>                        fileNameList;
 
-    std::vector<dcmtkFindDataset*>          m_resultSet;
-    
-
+ 
 };
 
 #endif

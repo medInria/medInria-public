@@ -13,6 +13,8 @@
 
 #include "dcmtkBase.h"
 
+class dcmtkNodeContainer;
+
 /**
  * @class dcmtkBaseScu
  * @author Michael Knopke
@@ -95,6 +97,11 @@ public:
     */
     virtual void clearAllQueryAttributes();
 
+   /**
+    * Returns the result container that contains all datasets that belong to nodes
+    */
+    dcmtkNodeContainer* getResultNodeContainer();
+
 protected:
     
    /**
@@ -163,6 +170,7 @@ protected:
     OFString              temp_str;
 
     eQueryLevel           m_currentQueryLevel;
+    dcmtkNodeContainer*   m_resContainer;
 
 };
 

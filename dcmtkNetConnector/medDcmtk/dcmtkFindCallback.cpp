@@ -4,6 +4,7 @@
 
 #include "dcmtkFindDataset.h"
 #include "dcmtkLogger.h"
+#include "dcmtkNodeContainer.h"
 
 //---------------------------------------------------------------------------------------------
 
@@ -27,7 +28,7 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
     /* dump data set which was received */
     dcmtkLogger::infoStream() << DcmObject::PrintHelper(*responseIdentifiers);
 
-    dcmtkFindDataset* findDs = new dcmtkFindDataset();
+    dcmtkFindDataset* findDs = new dcmtkFindDataset;
     responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0010),findDs->patientName);
     responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0020),findDs->patientID);
     responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0030),findDs->patientBd);
@@ -42,7 +43,7 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
     responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x1030),findDs->studyDescr);
     responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x0061),findDs->modalitiesInStudy);
     findDs->copy();
-    m_ds->push_back(findDs);
+    m_ds->addDataset(findDs);
 
    
     /* in case extractResponsesToFile is set the responses shall be extracted to a certain file */
@@ -53,6 +54,8 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
     }
 
     /* should we send a cancel back ?? */
+// TODO: CHECK THIS SETTING!
+    /* 
     if (cancelAfterNResponses_ == responseCount)
     {
         dcmtkLogger::infoStream() << "Sending Cancel Request, MsgID: " << request->MessageID << ", PresID: " << presId_;
@@ -63,16 +66,16 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
             dcmtkLogger::errorStream() << "Cancel Request Failed: " << DimseCondition::dump(temp_str, cond);
         }
     }
+    */
 }
 
 
 
 //---------------------------------------------------------------------------------------------
 
-void dcmtkFindScuCallback::setResultDataset(std::vector<dcmtkFindDataset*>*  resultSet)
+void dcmtkFindScuCallback::setResultDataset(DatasetContainer*  dataCont)
 {
-    m_ds = resultSet;
+    m_ds = dataCont;
 }
 
 //---------------------------------------------------------------------------------------------
-

@@ -20,6 +20,8 @@ SET (MED_DCMTK_SOURCES
 		medDcmtk/dcmtkMoveScu.cpp
 		medDcmtk/dcmtkStoreScu.h
 		medDcmtk/dcmtkStoreScu.cpp
+		medDcmtk/dcmtkNodeContainer.h
+		medDcmtk/dcmtkNodeContainer.cpp
 		
 		medDcmtk/dcmtkBaseScp.h
 		medDcmtk/dcmtkBaseScp.cpp

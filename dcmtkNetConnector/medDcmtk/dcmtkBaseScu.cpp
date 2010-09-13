@@ -2,6 +2,7 @@
 
 #include "dcmtk/dcmnet/assoc.h"
 
+#include "dcmtkNodeContainer.h"
 #include "dcmtkLogger.h"
 
 //---------------------------------------------------------------------------------------------
@@ -9,13 +10,15 @@
 dcmtkBaseScu::dcmtkBaseScu()
 {
     resetDefaultParams();
+
+    m_resContainer = new dcmtkNodeContainer();
 }
 
 //---------------------------------------------------------------------------------------------
 
 dcmtkBaseScu::~dcmtkBaseScu()
 {
-
+    delete m_resContainer;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -283,3 +286,11 @@ OFCondition dcmtkBaseScu::addPresentationContext(T_ASC_Parameters *params,
 }
 
 //---------------------------------------------------------------------------------------------
+
+dcmtkNodeContainer* dcmtkBaseScu::getResultNodeContainer()
+{
+    return m_resContainer;
+}
+
+//---------------------------------------------------------------------------------------------
+

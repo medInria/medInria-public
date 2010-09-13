@@ -32,6 +32,8 @@ SimpleView::SimpleView()
   m_echoScu = new dcmtkEchoScu();
   m_findScu = new dcmtkFindScu();
   m_moveScu = new dcmtkMoveScu();
+
+  m_selectedNodes = new dcmtkNodeContainer();
   
   m_serverThread = new ServerThread();
   m_sendThread = new SendThread();
@@ -42,9 +44,9 @@ SimpleView::SimpleView()
   m_widgetOut = new LoggerWidgetOutput(m_loggerWidget);
 
   connect(this->ui->actionExit, SIGNAL(triggered()), this, SLOT(quit()));
-  connect(this->ui->searchField, SIGNAL(returnPressed()), this, SLOT(search()));
+  connect(this->ui->searchField, SIGNAL(returnPressed()), this, SLOT(find()));
   connect(this->ui->treeWidget, SIGNAL(itemDoubleClicked ( QTreeWidgetItem* , int )), this, SLOT(move(QTreeWidgetItem *, int)));
-  connect(this->ui->echoButton, SIGNAL(clicked()), this, SLOT(testConnection()));
+  connect(this->ui->echoButton, SIGNAL(clicked()), this, SLOT(echo()));
   connect(this->ui->applySettingsButton, SIGNAL(clicked()), this, SLOT(applySettingsSlot()));
   connect(this->ui->cbFileTarget, SIGNAL(stateChanged(int)), this, SLOT(fileAppender(int)));
   connect(this->ui->cbShellTarget, SIGNAL(stateChanged(int)), this, SLOT(shellAppender(int)));
@@ -53,6 +55,11 @@ SimpleView::SimpleView()
   connect(this->ui->serverRestartButton, SIGNAL(clicked()), this, SLOT(restartServer()));
   connect(this->ui->dirButton, SIGNAL(clicked()),this,SLOT(setSendDirectory()));
   connect(this->ui->sendButton, SIGNAL(clicked()),this,SLOT(store()));
+  connect(this->ui->addButton, SIGNAL(clicked()), this, SLOT(addConn()));
+  connect(this->ui->connTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(handleConnSelection()));
+  connect(this->ui->peerTitleEdit, SIGNAL(textChanged(QString)), this, SLOT(inputChanged()));
+  connect(this->ui->peerIPEdit, SIGNAL(textChanged(QString)), this, SLOT(inputChanged()));
+  connect(this->ui->peerPortEdit, SIGNAL(textChanged(QString)), this, SLOT(inputChanged()));
 
 
   retrieveSettings();
@@ -60,7 +67,7 @@ SimpleView::SimpleView()
 
   //set logger defaults
   ui->cbWidgetTarget->setChecked(true);
-  ui->cbLogLevel->setCurrentIndex(3);
+  ui->cbLogLevel->setCurrentIndex(2);
 
   // create and show LoggerWidget
   QDockWidget* loggerDock = new QDockWidget(this);
@@ -86,6 +93,8 @@ SimpleView::~SimpleView()
   delete m_shellOut;
   delete m_fileOut;
   delete m_widgetOut;
+
+  delete m_selectedNodes;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -149,27 +158,37 @@ void SimpleView::setConnectionParams()
     }
 
 
-    m_findScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
-    m_moveScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_echoScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
-    m_sendThread->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_serverThread->setConnectionParams(m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
-
-    // add available dicom nodes to cb, for the moment only one..
-    this->ui->sendToNodeCB->addItem(QString::fromStdString(m_peerTitle));
 
 }
 
 //---------------------------------------------------------------------------------------------
 
 // Action to be taken upon file open 
-void SimpleView::search()
+void SimpleView::find()
 {
+
+    //build selected node container
+    m_selectedNodes->clear();
+    for(int i=0; i < ui->nodeSelectionLW->count(); i++)
+    {
+      QListWidgetItem *item = ui->nodeSelectionLW->item(i);
+      if( item->checkState() == Qt::Checked)
+      {
+          Node node;
+          node.addConnData(m_nodes.at(i));
+          m_selectedNodes->addNode(&node);
+      }
+    }
+
     QString patientName = ui->searchField->text();
     patientName.append("*");
 
-    // set up search criteria
+    // clear previous results
     m_findScu->clearAllQueryAttributes();
+
+    // set up search criteria
     m_findScu->setQueryLevel(dcmtkFindScu::STUDY);
     m_findScu->addQueryAttribute("0010", "0010", patientName.toLatin1()); // search for patient
     m_findScu->addQueryAttribute("0020", "000D", "\0"); // studyInstanceUID
@@ -182,46 +201,78 @@ void SimpleView::search()
     m_findScu->addQueryAttribute("0010","0030","\0"); // patient BD
     m_findScu->addQueryAttribute("0010","0040","\0"); // sex
     m_findScu->addQueryAttribute("0008","0061","\0"); // modalities in study
-    
-    // do the work
-    m_findScu->sendFindRequest();
 
-    m_resultSet = m_findScu->getResultDataset();
-    ui->treeWidget->clear();
-    QString text;
-    for (iter= m_resultSet.begin(); iter != m_resultSet.end(); iter++)
+
+    // we repeat the find process with the data from all selected nodes
+    Node* selNode = m_selectedNodes->getFirst();
+    while (selNode != NULL)
     {
-        // add result to list
-        QTreeWidgetItem *pItem = new QTreeWidgetItem(ui->treeWidget);
-        text = (*iter)->m_patientName.c_str();
-        pItem->setText(0,text);
-        ui->treeWidget->insertTopLevelItem(0,pItem);
-    }
-    text.clear();
-    text.setNum(m_resultSet.size());
-    text.append(" patient(s) found");
-    ui->logWindow->append(text);
+        // do the work
+        ConnData cdata = selNode->getConnData();
+        m_findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
 
+        selNode = m_selectedNodes->getNext();
+    }
+
+
+    // now extract information from datasets and build a visual list
+    QString text;
+    int nodeCounter = 0;
+    int itemCounter = 0;
+    int sum = 0;
+    ui->treeWidget->clear();
+    dcmtkNodeContainer* resCont = m_findScu->getResultNodeContainer();
+    Node* myNode = resCont->getFirst();
+    while (myNode != NULL)
+    {
+        dcmtkFindDataset* myDs = myNode->getDatasetContainer()->getFirst();
+        while (myDs != NULL)
+        {
+            // add result to list
+            QTreeWidgetItem *pItem = new QTreeWidgetItem(ui->treeWidget);
+            QPoint refPoint(nodeCounter,itemCounter);
+            QVariant vr = refPoint;
+            pItem->setData(0,Qt::UserRole, vr);
+            text = myDs->m_patientName.c_str();
+            pItem->setText(0,text);
+            ui->treeWidget->insertTopLevelItem(0,pItem);
+            myDs = myNode->getDatasetContainer()->getNext();
+            itemCounter++;
+            sum++;
+        }
+        myNode = resCont->getNext();
+        nodeCounter++;
+        itemCounter=0;
+    }
+
+    // print number of results
+    QString patNumber;
+    patNumber.setNum(sum);
+    ui->logWindow->append(patNumber + " patiens found.");
 }
 
 //---------------------------------------------------------------------------------------------
 
 void SimpleView::move(QTreeWidgetItem * item, int column) 
 {
-    m_resultSet = m_findScu->getResultDataset();
+   dcmtkNodeContainer* resCont =  m_findScu->getResultNodeContainer();
 
-    int index = ui->treeWidget->indexOfTopLevelItem(item);
+   QPoint pt = item->data(0,Qt::UserRole).toPoint();
+   dcmtkFindDataset* resDs = resCont->getAtPos(pt.x())->getDatasetContainer()->getAtPos(pt.y());
+
+   
     ui->logWindow->append(tr("Fetching data..."));
     QString patString = "Selected patient: ";
-    patString.append(m_resultSet.at(index)->m_patientName.c_str());
+    patString.append(resDs->m_patientName.c_str());
     ui->logWindow->append(patString);
     ui->logWindow->repaint();
 
     // set up search criteria
-    m_moveScu->addQueryAttribute("0020", "000D", m_resultSet.at(index)->m_studyInstUID.c_str());
+    m_moveScu->addQueryAttribute("0020", "000D", resDs->m_studyInstUID.c_str());
     
     // send the move request using the search crits
-    m_moveScu->sendMoveRequest();
+    ConnData cdata = resCont->getAtPos(pt.x())->getConnData();
+    m_moveScu->sendMoveRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     
     ui->logWindow->append(tr("All done."));
 
@@ -229,7 +280,7 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
 
 //---------------------------------------------------------------------------------------------
 
-void SimpleView::testConnection()
+void SimpleView::echo()
 {
     // update params
     setConnectionParams();
@@ -238,8 +289,6 @@ void SimpleView::testConnection()
     if ( m_echoScu->sendEchoRequest() == 0 )
     {
         ui->logWindow->append(tr("Connection verified successfully"));
-
-        storeSettings(0);
     }
     else
         ui->logWindow->append(tr("No response from peer. Check your connection"));
@@ -250,6 +299,10 @@ void SimpleView::testConnection()
 
 void SimpleView::store()
 {
+    // set the current node params first
+    ConnData* cb = &(m_nodes.at(ui->sendToNodeCB->currentIndex()));
+    m_sendThread->setConnectionParams(cb->title.c_str(), cb->ip.c_str(), cb->port, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+    
     QDir testDir;
     testDir.setPath(ui->directoryLE->text());
     if ( testDir.isReadable() )
@@ -292,13 +345,33 @@ void SimpleView::storeSettings(int type)
 {
     QSettings settings("INRIA", "DCMTKTOOL");
 
+    std::vector<ConnData>::iterator iter;
+    int count = 0;
+    QString countString;
+
     switch(type)
     {
     case 0:
         settings.beginGroup("Connection");
-        settings.setValue("PEER_AET", ui->peerTitleEdit->text());
-        settings.setValue("PEER_IP", ui->peerIPEdit->text());
-        settings.setValue("PEER_PORT", ui->peerPortEdit->text());
+        for( iter = m_nodes.begin(); iter != m_nodes.end(); iter++)
+        {
+            countString.setNum(count);
+            QString port;
+            port.setNum((*iter).port);
+            settings.setValue(QString("PEER_AET" + countString), QString::fromStdString((*iter).title));
+            settings.setValue(QString("PEER_IP" + countString), QString::fromStdString((*iter).ip));
+            settings.setValue(QString("PEER_PORT" + countString), port);
+            count++;
+        }
+        // remove all items comming after the last one
+        countString.setNum(count);
+        while (settings.contains(QString("PEER_IP" + countString)))
+        {
+            settings.remove(QString("PEER_AET" + countString));
+            settings.remove(QString("PEER_IP" + countString));
+            settings.remove(QString("PEER_PORT" + countString));
+        }
+
         settings.endGroup();
         break;
     case 1:
@@ -320,11 +393,21 @@ void SimpleView::retrieveSettings()
 {
     QString ourTitle, ourIP, ourPort;
     QString peerTitle, peerIP, peerPort;
+    int count = 0;
+    QString countString;
+    countString.setNum(count);
     QSettings settings("INRIA", "DCMTKTOOL");
     settings.beginGroup("Connection");
-    peerTitle = settings.value("PEER_AET").value<QString>();
-    peerIP = settings.value("PEER_IP").value<QString>();
-    peerPort = settings.value("PEER_PORT").value<QString>();
+    while (settings.contains(QString("PEER_IP" + countString)))
+    {
+        peerTitle = settings.value("PEER_AET" + countString).value<QString>();
+        peerIP = settings.value("PEER_IP" + countString).value<QString>();
+        peerPort = settings.value("PEER_PORT" + countString).value<QString>();
+        this->addConnection(peerTitle, peerIP, peerPort);
+        count++;
+        countString.setNum(count);
+    }
+
     ourTitle = settings.value("OUR_AET").value<QString>();
     ourIP = settings.value("OUR_IP").value<QString>();
     ourPort = settings.value("OUR_PORT").value<QString>();
@@ -426,6 +509,92 @@ void SimpleView::restartServer()
 void SimpleView::quit()
 {
     qApp->quit();
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::addConn()
+{
+    if (ui->addButton->text() == "Add")
+    {
+        addConnection(ui->peerTitleEdit->text(), ui->peerIPEdit->text(), ui->peerPortEdit->text());
+    }
+    else
+    {
+        removeConnection(ui->connTableWidget->currentRow());
+    }
+    storeSettings(0);
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::addConnection(QString peer, QString ip, QString port)
+{
+    int row = ui->connTableWidget->rowCount();
+    ui->connTableWidget->insertRow(row);
+    ui->connTableWidget->setColumnCount(3);
+    ui->connTableWidget->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
+    QStringList horHeaders;
+    horHeaders << "AET" << "IP" << "PORT";
+    ui->connTableWidget->setHorizontalHeaderLabels(horHeaders);
+
+    QTableWidgetItem *aetItem = new QTableWidgetItem(peer);
+    ui->connTableWidget->setItem(row, 0, aetItem);
+    QTableWidgetItem *ipItem = new QTableWidgetItem(ip);
+    ui->connTableWidget->setItem(row, 1, ipItem);
+    QTableWidgetItem *portItem = new QTableWidgetItem(port);
+    ui->connTableWidget->setItem(row, 2, portItem);
+
+    ConnData connData;
+    connData.title = peer.toStdString();
+    connData.ip    = ip.toStdString();
+    connData.port  = port.toInt();
+
+    m_nodes.push_back(connData);
+
+    QListWidgetItem* myItem = new QListWidgetItem(peer,ui->nodeSelectionLW);
+    myItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    myItem->setCheckState(Qt::Unchecked);
+
+    // add available dicom nodes to cb, for the moment only one..
+    ui->sendToNodeCB->addItem(peer);
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::removeConnection(int index)
+{
+    ui->connTableWidget->removeRow(index);
+    m_nodes.erase(m_nodes.begin()+index);
+    ui->nodeSelectionLW->takeItem(index);
+    ui->sendToNodeCB->removeItem(index);
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::handleConnSelection()
+{
+    int row = this->ui->connTableWidget->currentRow();
+
+    if ( row < (int)m_nodes.size())
+    {
+        ui->peerTitleEdit->setText(QString::fromStdString(m_nodes.at(row).title));
+        ui->peerIPEdit->setText(QString::fromStdString(m_nodes.at(row).ip));
+        QString mystring;
+        ui->peerPortEdit->setText(mystring.setNum(m_nodes.at(row).port));
+
+    }
+
+    //change add button to remove
+    ui->addButton->setText("Remove");
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::inputChanged()
+{
+    ui->addButton->setText("Add");
 }
 
 //---------------------------------------------------------------------------------------------

@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <iostream>
 #include <vector>
+#include "dcmtkNodeContainer.h"
 
 // Forward Qt class declarations
 class Ui_SimpleView;
@@ -39,11 +40,11 @@ protected:
    
 protected slots:
 
-  void search();
+  void find();
   void move(QTreeWidgetItem * item, int column);
   void store();
+  void echo();
   void setSendDirectory();
-  void testConnection();
   void applySettingsSlot();
   void fileAppender(int state);
   void shellAppender(int state);
@@ -51,15 +52,20 @@ protected slots:
   void changeLogLevel(int index);
   void restartServer();
   void quit();
+  void addConn();
+  void handleConnSelection();
+  void inputChanged();
 
 private:
 
   void setConnectionParams();
-
   void storeSettings(int type);
   void retrieveSettings();
   void startServer();
   void stopServer();
+  void removeConnection(int index);
+  void addConnection(QString peer, QString ip, QString port);
+
     
   // Designer form
   Ui_SimpleView *ui;
@@ -67,16 +73,18 @@ private:
   dcmtkEchoScu*                 m_echoScu;
   dcmtkFindScu*                 m_findScu;
   dcmtkMoveScu*                 m_moveScu;
-  
+
   ServerThread*                 m_serverThread;
   SendThread*                   m_sendThread;
 
-  std::vector<dcmtkFindDataset*> m_resultSet;
-  std::vector<dcmtkFindDataset*>::iterator iter;
+
+  dcmtkNodeContainer*           m_selectedNodes;
+  std::vector<ConnData>         m_nodes;
 
   std::string m_peerIP, m_peerTitle;
   std::string m_ourIP, m_ourTitle;
   std::string m_patientName;
+
   int m_peerPort, m_ourPort;
 
   LoggerConsoleOutput*          m_shellOut;

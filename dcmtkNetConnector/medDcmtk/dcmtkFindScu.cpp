@@ -11,6 +11,10 @@
 #include "dcmtkFindCallback.h"
 #include "dcmtkLogger.h"
 
+#include "dcmtkNodeContainer.h"
+
+//---------------------------------------------------------------------------------------------
+
 dcmtkFindScu::dcmtkFindScu()
 {
 
@@ -34,9 +38,6 @@ dcmtkFindScu::dcmtkFindScu()
 
 dcmtkFindScu::~dcmtkFindScu()
 {
-    
-    cleanUpDataset();
-    
 }
 
 //---------------------------------------------------------------------------------------------
@@ -71,9 +72,18 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
         return 1;
     }
 
+
+    // add node to result container
+    ConnData conndata;
+    conndata.title = peerTitle; 
+    conndata.ip = peerIP;
+    conndata.port = peerPort;
+    Node* node = new Node;
+    node->addConnData(conndata);
+    
     //own callback
     dcmtkFindScuCallback myCallback(false, 1);
-    myCallback.setResultDataset(&m_resultSet);
+    myCallback.setResultDataset(node->getDatasetContainer());
 
     // do the main work: negotiate network association, perform C-FIND transaction,
     // process results, and finally tear down the association.
@@ -95,6 +105,8 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
       &overrideKeys,     
       &myCallback,
       &fileNameList);
+
+    m_resContainer->addNode(node);
 
     if (cond.bad()) dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
 
@@ -125,29 +137,10 @@ bool dcmtkFindScu::processQueryAttribute(const char* key)
 
 //---------------------------------------------------------------------------------------------
 
-std::vector<dcmtkFindDataset*> dcmtkFindScu::getResultDataset()
-{
-    return m_resultSet;
-}
-
-//---------------------------------------------------------------------------------------------
-
 void dcmtkFindScu::clearAllQueryAttributes()
 {
     overrideKeys.clear();
-    cleanUpDataset();
-}
-
-//---------------------------------------------------------------------------------------------
-
-void dcmtkFindScu::cleanUpDataset()
-{
-    std::vector<dcmtkFindDataset*>::iterator iter;
-    for (iter = m_resultSet.begin(); iter != m_resultSet.end(); iter++)
-    {
-        delete (*iter);
-    }
-    m_resultSet.clear();
+    m_resContainer->clear();
 }
 
 //---------------------------------------------------------------------------------------------

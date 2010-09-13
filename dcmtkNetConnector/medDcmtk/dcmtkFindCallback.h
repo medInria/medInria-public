@@ -12,6 +12,7 @@
 
 // fwd
 class dcmtkFindDataset;
+class DatasetContainer;
 
 /** Custom implementation of FindSCU callback class. This implementation is 
  *  used when no explicit callback is passed by the user, e.g. in the findscu tool.
@@ -41,7 +42,7 @@ public:
   /**
    *  set a pointer to an dcmtkFindDataset that will be filled inside the callback function
    */
-  void setResultDataset(std::vector<dcmtkFindDataset*>*  resultSet);
+  void setResultDataset(DatasetContainer*  dataCont);
 
 private:
 
@@ -51,7 +52,8 @@ private:
    /// if non-negative, a C-FIND-CANCEL will be issued after the given number of incoming C-FIND-RSP messages
    int cancelAfterNResponses_;
 
-   std::vector<dcmtkFindDataset*>*          m_ds;
+   DatasetContainer*          m_ds;
+
 };
 
 #endif DCMTKFINDCALLBACK_H
