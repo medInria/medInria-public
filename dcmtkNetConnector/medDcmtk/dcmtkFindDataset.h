@@ -26,9 +26,31 @@ public:
 
         std::string m_studyInstUID;
         std::string m_patientName;
+        std::string m_seriesDescr;
+        std::string m_seriesInstUID;
+        std::string m_imageType;
 
         void copy();
+        
+        const char* seriesDate;
+        const char* seriesTime;
+        const char* seriesDescription;
+        const char* bodyPart;
+        const char* seriesNumber;
+        const char* seriesModality;
+        const char* protocolName;
+        const char* patientPosition;
+        const char* frameOfRefUID;
+        const char* seriesInstUID;
+
+        const char* imageType;
+
+        void setPatientName(const char* str){m_patientName=str;};
+        std::string getPatientName(){return m_patientName;};
+
+
 
 };
+
 
 #endif DCMTKFINDDATASET_H

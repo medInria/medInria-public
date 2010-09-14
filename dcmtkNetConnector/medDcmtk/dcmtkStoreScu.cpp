@@ -4,19 +4,27 @@
 #include <algorithm>
 #include <iterator>
 
-BEGIN_EXTERN_C
-#ifdef HAVE_SYS_FILE_H
-#include <sys/file.h>
-#endif
-END_EXTERN_C
-
-
-#if defined (HAVE_WINDOWS_H) || defined(HAVE_FNMATCH_H)
-#define PATTERN_MATCHING_AVAILABLE
-#endif
+#include "dcmtk/ofstd/ofstdinc.h"
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/ofstd/ofstring.h"
+#include "dcmtk/ofstd/ofstream.h"
+#include "dcmtk/dcmnet/dicom.h"      /* for DICOM_APPLICATION_REQUESTOR */
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmnet/dcasccfg.h"   /* for class DcmAssociationConfiguration */
+#include "dcmtk/dcmnet/dcasccff.h"   /* for class DcmAssociationConfigurationFile */
+#include "dcmtk/dcmdata/dcdatset.h"
+#include "dcmtk/dcmdata/dcmetinf.h"
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/dcmdata/dcuid.h"     /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcostrmz.h"  /* for dcmZlibCompressionLevel */
 
 #include "dcmtkLogger.h"
-
 
 
 //---------------------------------------------------------------------------------------------

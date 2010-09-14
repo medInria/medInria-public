@@ -1,10 +1,5 @@
 #include "dcmtkMoveScu.h"
 
-#define INCLUDE_CSTDLIB
-#define INCLUDE_CSTDIO
-#define INCLUDE_CSTRING
-#define INCLUDE_CSTDARG
-#define INCLUDE_CERRNO
 #include "dcmtk/ofstd/ofstdinc.h"
 #include "dcmtk/ofstd/ofstd.h"
 #include "dcmtk/ofstd/ofconapp.h"
@@ -16,6 +11,11 @@
 #include "dcmtk/dcmdata/cmdlnarg.h"
 #include "dcmtk/dcmdata/dcmetinf.h"
 #include "dcmtk/dcmdata/dcdict.h"
+
+#include "dcmtk/dcmdata/dcdeftag.h"
+#include "dcmtk/dcmdata/dcuid.h"      /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcdicent.h"
+#include "dcmtk/dcmdata/dcostrmz.h"   /* for dcmZlibCompressionLevel */
 
 #include "dcmtkLogger.h"
 

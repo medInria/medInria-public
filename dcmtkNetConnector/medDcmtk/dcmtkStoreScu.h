@@ -7,38 +7,11 @@
     * D-26121 Oldenburg, Germany
     */
 
-
 #ifndef DCMTKSTORESCU_H
 #define DCMTKSTORESCU_H
 
+// inc
 #include "dcmtkBaseScu.h"
-
-#define INCLUDE_CSTDLIB
-#define INCLUDE_CSTDIO
-#define INCLUDE_CSTRING
-#define INCLUDE_CCTYPE
-#include "dcmtk/ofstd/ofstdinc.h"
-
-#include "dcmtk/ofstd/ofstd.h"
-#include "dcmtk/ofstd/ofconapp.h"
-#include "dcmtk/ofstd/ofstring.h"
-#include "dcmtk/ofstd/ofstream.h"
-#include "dcmtk/dcmnet/dicom.h"      /* for DICOM_APPLICATION_REQUESTOR */
-#include "dcmtk/dcmnet/dimse.h"
-#include "dcmtk/dcmnet/diutil.h"
-#include "dcmtk/dcmnet/dcasccfg.h"   /* for class DcmAssociationConfiguration */
-#include "dcmtk/dcmnet/dcasccff.h"   /* for class DcmAssociationConfigurationFile */
-#include "dcmtk/dcmdata/dcdatset.h"
-#include "dcmtk/dcmdata/dcmetinf.h"
-#include "dcmtk/dcmdata/dcfilefo.h"
-#include "dcmtk/dcmdata/dcuid.h"
-#include "dcmtk/dcmdata/dcdict.h"
-#include "dcmtk/dcmdata/dcdeftag.h"
-#include "dcmtk/dcmdata/cmdlnarg.h"
-#include "dcmtk/dcmdata/dcuid.h"     /* for dcmtk version name */
-#include "dcmtk/dcmdata/dcostrmz.h"  /* for dcmZlibCompressionLevel */
-
-
 
 /**
  * @class dcmtkStoreScu

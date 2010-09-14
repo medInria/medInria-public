@@ -40,7 +40,9 @@ protected:
    
 protected slots:
 
-  void find();
+  void findStudyLevel();
+  void findSeriesLevel(QTreeWidgetItem* item);
+  void findImageLevel(QTreeWidgetItem* item);
   void move(QTreeWidgetItem * item, int column);
   void store();
   void echo();
@@ -56,6 +58,7 @@ protected slots:
   void handleConnSelection();
   void inputChanged();
 
+
 private:
 
   void setConnectionParams();
@@ -65,7 +68,9 @@ private:
   void stopServer();
   void removeConnection(int index);
   void addConnection(QString peer, QString ip, QString port);
-
+  void printResults(int sum, const char* type);
+  
+  dcmtkNodeContainer* getSelectedNodes();
     
   // Designer form
   Ui_SimpleView *ui;
@@ -77,8 +82,6 @@ private:
   ServerThread*                 m_serverThread;
   SendThread*                   m_sendThread;
 
-
-  dcmtkNodeContainer*           m_selectedNodes;
   std::vector<ConnData>         m_nodes;
 
   std::string m_peerIP, m_peerTitle;

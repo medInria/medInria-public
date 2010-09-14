@@ -11,25 +11,12 @@
 #ifndef DCMTKSTORESCP_H
 #define DCMTKSTPRESCP_H
 
+// fwd
+class DcmAssociationConfiguration;
+class DcmFileFormat;
+
+// includes
 #include "dcmtkBaseScp.h"
-
-#include "dcmtk/ofstd/ofstd.h"
-#include "dcmtk/ofstd/ofconapp.h"
-#include "dcmtk/ofstd/ofdatime.h"
-#include "dcmtk/dcmnet/dicom.h"         /* for DICOM_APPLICATION_ACCEPTOR */
-#include "dcmtk/dcmnet/dimse.h"
-#include "dcmtk/dcmnet/diutil.h"
-#include "dcmtk/dcmnet/dcasccfg.h"      /* for class DcmAssociationConfiguration */
-#include "dcmtk/dcmnet/dcasccff.h"      /* for class DcmAssociationConfigurationFile */
-#include "dcmtk/dcmdata/dcfilefo.h"
-#include "dcmtk/dcmdata/dcuid.h"
-#include "dcmtk/dcmdata/dcdict.h"
-#include "dcmtk/dcmdata/cmdlnarg.h"
-#include "dcmtk/dcmdata/dcmetinf.h"
-#include "dcmtk/dcmdata/dcuid.h"        /* for dcmtk version name */
-#include "dcmtk/dcmdata/dcdeftag.h"     /* for DCM_StudyInstanceUID */
-#include "dcmtk/dcmdata/dcostrmz.h"     /* for dcmZlibCompressionLevel */
-
 #include <iostream>
 
 /**

@@ -29,6 +29,8 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
     dcmtkLogger::infoStream() << DcmObject::PrintHelper(*responseIdentifiers);
 
     dcmtkFindDataset* findDs = new dcmtkFindDataset;
+
+    // study
     responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0010),findDs->patientName);
     responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0020),findDs->patientID);
     responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0030),findDs->patientBd);
@@ -42,6 +44,15 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
     responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x0090),findDs->refPhysician);
     responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x1030),findDs->studyDescr);
     responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x0061),findDs->modalitiesInStudy);
+
+    // series
+    responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x103E),findDs->seriesDescription);
+    responseIdentifiers->findAndGetString(DcmTagKey(0x0020,0x000E),findDs->seriesInstUID);
+
+    // image
+    responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x0008),findDs->imageType);
+
+
     findDs->copy();
     m_ds->addDataset(findDs);
 

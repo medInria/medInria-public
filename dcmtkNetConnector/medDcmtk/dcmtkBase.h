@@ -18,6 +18,50 @@
 #include "dcmtk/ofstd/ofcond.h"
 #include "dcmtk/dcmnet/assoc.h"
 #include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/ofstd/ofstdinc.h"
+
+#define INCLUDE_CSTDLIB
+#define INCLUDE_CSTDIO
+#define INCLUDE_CSTRING
+#define INCLUDE_CSTDARG
+#define INCLUDE_CERRNO
+#define INCLUDE_CCTYPE
+#define INCLUDE_CSIGNAL
+
+BEGIN_EXTERN_C
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>       /* needed on Solaris for O_RDONLY */
+#endif
+#ifdef HAVE_SIGNAL_H
+// On Solaris with Sun Workshop 11, <signal.h> declares signal() but <csignal> does not
+#include <signal.h>
+#endif
+END_EXTERN_C
+
+#ifdef HAVE_WINDOWS_H
+#include <direct.h>      /* for _mkdir() */
+#endif
+
+#if defined(HAVE_MKTEMP) && !defined(HAVE_PROTOTYPE_MKTEMP)
+extern "C" {
+//char * mktemp(char *);
+}
+#endif
+
+BEGIN_EXTERN_C
+#ifdef HAVE_SYS_FILE_H
+#include <sys/file.h>
+#endif
+END_EXTERN_C
+
+
+#if defined (HAVE_WINDOWS_H) || defined(HAVE_FNMATCH_H)
+#define PATTERN_MATCHING_AVAILABLE
+#endif
+
 
 
 /* DICOM standard transfer syntaxes */

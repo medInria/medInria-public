@@ -1,42 +1,23 @@
 #include "dcmtkStoreScp.h"
 
-
-#define INCLUDE_CSTDLIB
-#define INCLUDE_CSTRING
-#define INCLUDE_CSTDARG
-#define INCLUDE_CCTYPE
-#define INCLUDE_CSIGNAL
-#include "dcmtk/ofstd/ofstdinc.h"
-
-BEGIN_EXTERN_C
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#ifdef HAVE_FCNTL_H
-#include <fcntl.h>       /* needed on Solaris for O_RDONLY */
-#endif
-#ifdef HAVE_SIGNAL_H
-// On Solaris with Sun Workshop 11, <signal.h> declares signal() but <csignal> does not
-#include <signal.h>
-#endif
-END_EXTERN_C
-
-
-
-#ifdef HAVE_WINDOWS_H
-#include <direct.h>      /* for _mkdir() */
-#endif
-
-
-
-#if defined(HAVE_MKTEMP) && !defined(HAVE_PROTOTYPE_MKTEMP)
-extern "C" {
-//char * mktemp(char *);
-}
-#endif
+#include "dcmtk/ofstd/ofstd.h"
+#include "dcmtk/ofstd/ofconapp.h"
+#include "dcmtk/ofstd/ofdatime.h"
+#include "dcmtk/dcmnet/dicom.h"         /* for DICOM_APPLICATION_ACCEPTOR */
+#include "dcmtk/dcmnet/dimse.h"
+#include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/dcmnet/dcasccfg.h"      /* for class DcmAssociationConfiguration */
+#include "dcmtk/dcmnet/dcasccff.h"      /* for class DcmAssociationConfigurationFile */
+#include "dcmtk/dcmdata/dcfilefo.h"
+#include "dcmtk/dcmdata/dcuid.h"
+#include "dcmtk/dcmdata/dcdict.h"
+#include "dcmtk/dcmdata/cmdlnarg.h"
+#include "dcmtk/dcmdata/dcmetinf.h"
+#include "dcmtk/dcmdata/dcuid.h"        /* for dcmtk version name */
+#include "dcmtk/dcmdata/dcdeftag.h"     /* for DCM_StudyInstanceUID */
+#include "dcmtk/dcmdata/dcostrmz.h"     /* for dcmZlibCompressionLevel */
 
 #include "dcmtkLogger.h"
-
 
 #define PATH_PLACEHOLDER "#p"
 #define FILENAME_PLACEHOLDER "#f"

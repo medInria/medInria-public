@@ -10,14 +10,11 @@
 #ifndef DCMTKMOVESCU_H
 #define DCMTKMOVESCU_H
 
-#include "dcmtkBaseScu.h"
-
-#include "dcmtk/dcmdata/dcdeftag.h"
-#include "dcmtk/dcmdata/dcuid.h"      /* for dcmtk version name */
-#include "dcmtk/dcmdata/dcdicent.h"
-#include "dcmtk/dcmdata/dcostrmz.h"   /* for dcmZlibCompressionLevel */
-
+// fwd
 class DcmFileFormat;
+
+// inc
+#include "dcmtkBaseScu.h"
 
 
     /**
