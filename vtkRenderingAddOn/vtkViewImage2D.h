@@ -316,6 +316,13 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
   */
   virtual void SetOverlappingImage (vtkImageData* image);
 
+
+  /**
+     Set/Get the overlapping image opacity
+   */
+  virtual void SetOverlappingImageOpacity (double val);
+  virtual double GetOverlappingImageOpacity (void);
+  
   
   /**
      Remove the overlapping image (if any).
@@ -445,8 +452,8 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
   */
   virtual void SetBGImageOpacity(double opacity);
   double GetBGImageOpacity (void) const;
-  
-  
+
+
   /**
      A complete reset: a classical reset and also cancel all the transformations.
   */

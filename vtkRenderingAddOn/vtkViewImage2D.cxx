@@ -1549,6 +1549,24 @@ void vtkViewImage2D::RemoveOverlappingImage()
 }
 
 
+void vtkViewImage2D::SetOverlappingImageOpacity (double val)
+{
+  if (val<0.0)
+    val = 0.0;
+  if (val>1.0)
+    val = 1.0;
+  
+  this->Blender->SetOpacity (0, 1.0-val);
+  this->Blender->SetOpacity (1, val);
+}
+
+
+double vtkViewImage2D::GetOverlappingImageOpacity (void)
+{
+  return this->Blender->GetOpacity (1);
+}
+
+
 vtkActor* vtkViewImage2D::AddDataSet (vtkDataSet* dataset,  vtkProperty* property)
 {
 
