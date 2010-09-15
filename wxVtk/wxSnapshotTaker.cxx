@@ -26,6 +26,9 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkTIFFWriter.h>
 #include <vtkPNGWriter.h>
 
+#include <vtkRendererCollection.h>
+
+#include <vector>
 
 wxSnapshotTaker::wxSnapshotTaker (wxWindow* parent)
 {
@@ -121,6 +124,23 @@ void wxSnapshotTaker::Snap()
   }
 
 
+  std::vector<double> red;
+  std::vector<double> green;
+  std::vector<double> blue;
+  
+  vtkRendererCollection *collection = m_RenderWindow->GetRenderers();
+  collection->InitTraversal();
+  while (vtkRenderer *ren = collection->GetNextItem() )
+  {
+    // save renderer background color
+    red.push_back   (ren->GetBackground()[0]);
+    green.push_back (ren->GetBackground()[1]);
+    blue.push_back  (ren->GetBackground()[2]);
+
+    // set background color to white (better for screenshots)
+    ren->SetBackground (1.0, 1.0, 1.0);
+  }
+  
   vtkWindowToImageFilter* snapper = vtkWindowToImageFilter::New();
   snapper->SetMagnification( m_Magnification );
   snapper->SetInput( m_RenderWindow );
@@ -129,6 +149,15 @@ void wxSnapshotTaker::Snap()
   writer->SetInput( snapper->GetOutput() );
   writer->SetFileName( fileName.char_str() );
   writer->Write();
+
+  int index = 0;
+  collection->InitTraversal();
+  while (vtkRenderer *ren = collection->GetNextItem() )
+  {
+    // restore renderer background color
+    ren->SetBackground ( red[index], green[index], blue[index]);
+    index++;
+  }
 
   snapper->Delete();
   writer->Delete();
