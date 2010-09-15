@@ -56,6 +56,7 @@ public:
   { this->FileName = file; }
   const char* GetFileName (void)
   { return this->FileName.c_str(); }
+	
   
 protected:
   vtkDiffXMLWriter();

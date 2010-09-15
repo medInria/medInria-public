@@ -264,6 +264,7 @@ void vtkRulerWidget::ExecuteCameraUpdateEvent(vtkObject *vtkNotUsed(o),
 
   double ww1[4] = {0.0, 0.0, 0.0, 1.0};
   double ww2[4] = {10.0, 10.0, 10.0, 1.0};
+  double norma = 300; // = ( 3*10*10 )
 
   this->CurrentRenderer->SetWorldPoint(ww1);
   this->CurrentRenderer->WorldToDisplay();
@@ -276,12 +277,18 @@ void vtkRulerWidget::ExecuteCameraUpdateEvent(vtkObject *vtkNotUsed(o),
   vp[0] = 20;
   vp[2] = 30;
   
-  double yfactor = fabs(ww2[1]-ww1[1]);
+  double dist = 0.0;
+  for (int i=0; i<3; i++) {
+	dist += (ww1[i]-ww2[i])*(ww1[i]-ww2[i]);
+  }	
+	
+  double yfactor = sqrt(dist/norma)*10; //fabs(ww2[1]-ww1[1]);
   double ymin = mid[1] - 5.0 * yfactor;
   double ymax = mid[1] + 5.0 * yfactor;
   double xstep = ( vp[2] - vp[0] )/ 3.0;
   double ystep = yfactor;
-  
+
+
 /*
   double xpoints[31]={vp[2], vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], vp[0]+xstep, vp[0],
 		    vp[0], vp[0]+xstep, vp[0], vp[0], vp[0]+xstep, vp[0], vp[0], vp[2], 
@@ -342,8 +349,9 @@ void vtkRulerWidget::ExecuteCameraUpdateEvent(vtkObject *vtkNotUsed(o),
   vp[3] = 30;
 
   vtkPoints *ypoints = this->OutlineY->GetPoints();
-  
-  double xfactor = fabs(ww2[0]-ww1[0]);
+
+	
+	double xfactor = yfactor; //sqrt(dist); //fabs(ww2[0]-ww1[0]);
   //double xfactor = fabs(ww2[2]-ww1[2]);
   double xmin = mid[0] - 5.0 * xfactor;
   double xmax = mid[0] + 5.0 * xfactor;

@@ -139,8 +139,12 @@ namespace itk
     {
       this->SetName ("image");
       m_IsBuilt = 0;
-      m_SkipMeanDiffusivity = 1;
+      m_SkipMeanDiffusivity = 0;
       m_MeanDiffusivitySkipped = 0;
+
+      // 0018 9089 Gradient Direction Information
+      m_GradientScanner.AddTag( gdcm::Tag(0x18,0x9089) );
+      
     }
     ~GDCMVolume()
     {
@@ -162,6 +166,8 @@ namespace itk
     bool m_SkipMeanDiffusivity;
     bool m_MeanDiffusivitySkipped;
     GradientsContainer m_Gradients;
+    gdcm::Scanner m_GradientScanner;
+
   };
 
 
