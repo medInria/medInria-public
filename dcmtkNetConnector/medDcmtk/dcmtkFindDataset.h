@@ -1,53 +1,54 @@
 #ifndef DCMTKFINDDATASET_H
 #define DCMTKFINDDATASET_H
 
-#include "dcmtkBaseDataset.h"
+// inc
 #include <iostream>
 #include <vector>
+#include "dcmtkContainer.h"
 
-/**
- * Experimental at the moment
- */
-class dcmtkFindDataset : public dcmtkBaseDataset
+class dcmtkKey
 {
 public:
-        const char* patientName;
-        const char* patientID;
-        const char* patientSex;
-        const char* patientBd;
-        const char* accNo;
-        const char* studyID;
-        const char* studyDescr;
-        const char* studyDate;
-        const char* studyTime;
-        const char* studyInstanceUID;
-        const char* refPhysician;
-        const char* modalitiesInStudy;
+    int group;
+    int elem;
+    std::string value;
+};
 
-        std::string m_studyInstUID;
-        std::string m_patientName;
-        std::string m_seriesDescr;
-        std::string m_seriesInstUID;
-        std::string m_imageType;
+class dcmtkKeyContainer : public dcmtkContainer<dcmtkKey*>
+{
+public:
+       const char* findKeyValue(int group, int elem);
+};
 
-        void copy();
-        
-        const char* seriesDate;
-        const char* seriesTime;
-        const char* seriesDescription;
-        const char* bodyPart;
-        const char* seriesNumber;
-        const char* seriesModality;
-        const char* protocolName;
-        const char* patientPosition;
-        const char* frameOfRefUID;
-        const char* seriesInstUID;
+/**
+ * @class dcmtkFindDataset
+ * @author Michael Knopke
+ * @brief class to store results of a C-FIND
+ * The key container contains all requested and found values
+ * The basic search keys can be get from container or from function (e.g.g getStudyInstanceUID)
+ */
+class dcmtkFindDataset
+{
+public:
 
-        const char* imageType;
+        const char* getStudyInstanceUID();
+        void setStudyInstanceUID(const char* uid);
 
-        void setPatientName(const char* str){m_patientName=str;};
-        std::string getPatientName(){return m_patientName;};
+        const char* getSeriesInstanceUID();
+        void setSeriesInstanceUID(const char* uid);
 
+        const char* getSOPInstanceUID();
+        void setSOPInstanceUID(const char* uid);
+
+        dcmtkKeyContainer* getKeyContainer();
+
+protected:
+
+        dcmtkKeyContainer        m_keyContainer;
+
+        std::string              m_studyInstUID;
+        std::string              m_seriesInstUID;
+        std::string              m_sopInstUID;
 
 
 };

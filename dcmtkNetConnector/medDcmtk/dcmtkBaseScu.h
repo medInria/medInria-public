@@ -14,6 +14,7 @@
 #include "dcmtkBase.h"
 
 class dcmtkNodeContainer;
+class dcmtkKeyContainer;
 
 /**
  * @class dcmtkBaseScu
@@ -69,7 +70,7 @@ public:
     virtual void resetDefaultParams();
 
    /**
-    * Set one or more attributes to look for.
+    * Set one or more attributes to look for
     * You have to set at least one attribute.
     * This could be for example the name of the patient using Attribute: (0010,0010) = MyPatient.
     * @param group The group number
@@ -78,18 +79,7 @@ public:
     * @return Success if key was recognized.
     * @see addQueryAttribute(const char* key)
     */
-    virtual bool addQueryAttribute(const char* group, const char* elem, const char* value);
-
-
-   /**
-    * Overloaded function (original from dcmtk).
-    * Use either key format: "group,element=value" or dictionary name (see dcmtk/dcuid)
-    * @param group The group number
-    * @param elem The element number
-    * @param value The value for this attribute
-    * @return Success if key was recognized.
-    */
-    virtual bool addQueryAttribute(const char* key);
+    virtual bool addQueryAttribute(int group, int elem, const char* value);
 
    /**
     * Removes all added query attributes.
@@ -103,6 +93,25 @@ public:
     dcmtkNodeContainer* getResultNodeContainer();
 
 protected:
+
+    /**
+    * Overloaded Helper
+    * @param group The group number
+    * @param elem The element number
+    * @param value The value for this attribute
+    * @return Success if key was recognized.
+    * @see addQueryAttribute(const char* key)
+    */
+    virtual bool addQueryAttribute(const char* group, const char* elem, const char* value);
+
+
+   /**
+    * Overloaded Helper
+    * Use either key format: "group,element=value" or dictionary name (see dcmtk/dcuid)
+    * @param key The group and element number including the value
+    * @return Success if key was recognized.
+    */
+    virtual bool addQueryAttribute(const char* key);
     
    /**
     * We prefer to use Explicitly encoded transfer syntaxes.
@@ -171,6 +180,7 @@ protected:
 
     eQueryLevel           m_currentQueryLevel;
     dcmtkNodeContainer*   m_resContainer;
+    dcmtkKeyContainer*    m_keyContainer;
 
 };
 

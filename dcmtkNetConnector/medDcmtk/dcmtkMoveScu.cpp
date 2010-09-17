@@ -1003,3 +1003,11 @@ void dcmtkMoveScu::useBuildInStoreSCP(bool flag)
 }
 
 //---------------------------------------------------------------------------------------------
+
+dcmtkMoveScu::~dcmtkMoveScu()
+{
+    if (overrideKeys != NULL)
+       delete overrideKeys;
+}
+
+//---------------------------------------------------------------------------------------------

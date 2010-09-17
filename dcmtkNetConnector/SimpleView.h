@@ -82,7 +82,7 @@ private:
   ServerThread*                 m_serverThread;
   SendThread*                   m_sendThread;
 
-  std::vector<ConnData>         m_nodes;
+  std::vector<dcmtkConnectionData>         m_nodes;
 
   std::string m_peerIP, m_peerTitle;
   std::string m_ourIP, m_ourTitle;

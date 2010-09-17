@@ -30,14 +30,13 @@ dcmtkFindScu::dcmtkFindScu()
     OFBool                opt_secureConnection = OFFalse; /* default: no secure connection */
     opt_abstractSyntax = UID_FINDStudyRootQueryRetrieveInformationModel; 
 
-    
-
 }
 
 //---------------------------------------------------------------------------------------------
 
 dcmtkFindScu::~dcmtkFindScu()
 {
+
 }
 
 //---------------------------------------------------------------------------------------------
@@ -74,16 +73,18 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
 
 
     // add node to result container
-    ConnData conndata;
-    conndata.title = peerTitle; 
-    conndata.ip = peerIP;
-    conndata.port = peerPort;
-    Node* node = new Node;
-    node->addConnData(conndata);
+    dcmtkConnectionData cdata;
+    cdata.title = peerTitle; 
+    cdata.ip = peerIP;
+    cdata.port = peerPort;
+    
+    dcmtkNode* node = new dcmtkNode;
+    node->addConnData(cdata);
     
     //own callback
     dcmtkFindScuCallback myCallback(false, 1);
-    myCallback.setResultDataset(node->getDatasetContainer());
+    myCallback.setResultDatasetContainer(node->getResultDatasetContainer());
+    myCallback.setKeyContainer(m_keyContainer);
 
     // do the main work: negotiate network association, perform C-FIND transaction,
     // process results, and finally tear down the association.
@@ -106,7 +107,9 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
       &myCallback,
       &fileNameList);
 
-    m_resContainer->addNode(node);
+    // make sure memory is erased
+    m_resContainer->clear();
+    m_resContainer->add(node);
 
     if (cond.bad()) dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
 

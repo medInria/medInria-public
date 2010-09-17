@@ -2,8 +2,12 @@
 
 #include "dcmtk/dcmnet/assoc.h"
 
+#include "dcmtkFindDataset.h"
 #include "dcmtkNodeContainer.h"
 #include "dcmtkLogger.h"
+
+#include <sstream>
+#include <iostream>
 
 //---------------------------------------------------------------------------------------------
 
@@ -12,6 +16,7 @@ dcmtkBaseScu::dcmtkBaseScu()
     resetDefaultParams();
 
     m_resContainer = new dcmtkNodeContainer();
+    m_keyContainer = new dcmtkKeyContainer();
 }
 
 //---------------------------------------------------------------------------------------------
@@ -19,6 +24,7 @@ dcmtkBaseScu::dcmtkBaseScu()
 dcmtkBaseScu::~dcmtkBaseScu()
 {
     delete m_resContainer;
+    delete m_keyContainer;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -290,6 +296,26 @@ OFCondition dcmtkBaseScu::addPresentationContext(T_ASC_Parameters *params,
 dcmtkNodeContainer* dcmtkBaseScu::getResultNodeContainer()
 {
     return m_resContainer;
+}
+
+//---------------------------------------------------------------------------------------------
+
+bool dcmtkBaseScu::addQueryAttribute(int group, int elem, const char* value)
+{
+    std::stringstream groupSs;
+    std::stringstream elemSs;
+    groupSs << std::hex << group;
+    elemSs  << std::hex << elem;
+
+    // store in container
+    dcmtkKey* keyobj = new dcmtkKey;
+    keyobj->group = group;
+    keyobj->elem = elem;
+    keyobj->value = value;
+    m_keyContainer->add(keyobj);
+
+    return addQueryAttribute(groupSs.str().c_str(), elemSs.str().c_str(), value);
+
 }
 
 //---------------------------------------------------------------------------------------------

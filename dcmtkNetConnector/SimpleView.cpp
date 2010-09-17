@@ -18,16 +18,27 @@
 #include "LoggerWidgetOutput.h"
 #include "LoggerWidget.h"
 
+#include <sstream>
+
+
 //---------------------------------------------------------------------------------------------
 
 // Constructor
 SimpleView::SimpleView() 
 {
+
   //initialize logger
   Logger::startUp();
-
+  
+  // create and show LoggerWidget
   this->ui = new Ui_SimpleView;
   this->ui->setupUi(this);
+  
+
+  QStringList labels;
+  labels << "Patient name" << "Description" << "ID/Number"  << "Modality/Type";
+  ui->treeWidget->setHeaderLabels(labels);
+  ui->treeWidget->setHeaderHidden(false);
 
   m_echoScu = new dcmtkEchoScu();
   m_findScu = new dcmtkFindScu();
@@ -69,10 +80,10 @@ SimpleView::SimpleView()
   ui->cbWidgetTarget->setChecked(true);
   ui->cbLogLevel->setCurrentIndex(2);
 
-  // create and show LoggerWidget
   QDockWidget* loggerDock = new QDockWidget(this);
   loggerDock->setWidget(m_loggerWidget);
   this->addDockWidget(Qt::BottomDockWidgetArea, loggerDock);
+  
 
   // start the threaded server
   startServer();
@@ -83,6 +94,10 @@ SimpleView::SimpleView()
 
 SimpleView::~SimpleView()
 {
+  stopServer();
+  delete ui;
+  Logger::shutDown();
+
   delete m_findScu;
   delete m_moveScu;
   delete m_echoScu;
@@ -93,6 +108,8 @@ SimpleView::~SimpleView()
   delete m_shellOut;
   delete m_fileOut;
   delete m_widgetOut;
+
+
 }
 
 //---------------------------------------------------------------------------------------------
@@ -177,25 +194,25 @@ void SimpleView::findStudyLevel()
 
     // set up search criteria
     m_findScu->setQueryLevel(dcmtkFindScu::STUDY);
-    m_findScu->addQueryAttribute("0010","0010",patientName.toLatin1()); // patient name
-    m_findScu->addQueryAttribute("0008","0030","\0"); // study date
-    m_findScu->addQueryAttribute("0008","0050","\0"); // accession no
-    m_findScu->addQueryAttribute("0008","0061","\0"); // modalities in study
-    m_findScu->addQueryAttribute("0008","0090","\0"); // ref physician
-    m_findScu->addQueryAttribute("0008","1030","\0"); // study description
-    m_findScu->addQueryAttribute("0010","0020","\0"); // patient ID
-    m_findScu->addQueryAttribute("0010","0030","\0"); // patient BD
-    m_findScu->addQueryAttribute("0010","0040","\0"); // sex
-    m_findScu->addQueryAttribute("0020","000D","\0"); // studyInstanceUID
-    m_findScu->addQueryAttribute("0020","0010","\0"); // study ID
+    m_findScu->addQueryAttribute(0x0010,0x0010,patientName.toLatin1()); // patient name
+    m_findScu->addQueryAttribute(0x0008,0x0030,"\0"); // study date
+    m_findScu->addQueryAttribute(0x0008,0x0050,"\0"); // accession no
+    m_findScu->addQueryAttribute(0x0008,0x0061,"\0"); // modalities in study
+    m_findScu->addQueryAttribute(0x0008,0x0090,"\0"); // ref physician
+    m_findScu->addQueryAttribute(0x0008,0x1030,"\0"); // study description
+    m_findScu->addQueryAttribute(0x0010,0x0020,"\0"); // patient ID
+    m_findScu->addQueryAttribute(0x0010,0x0030,"\0"); // patient BD
+    m_findScu->addQueryAttribute(0x0010,0x0040,"\0"); // sex
+    m_findScu->addQueryAttribute(0x0020,0x000D,"\0"); // studyInstanceUID
+    m_findScu->addQueryAttribute(0x0020,0x0010,"\0"); // study ID
    
 
     // we repeat the find process with the data from all selected nodes
-    Node* selNode = selectedNodes->getFirst();
-    while (selNode != NULL)
+    dcmtkNode* selNode = selectedNodes->getFirst();
+    while (selectedNodes->isValid())
     {
         // do the work
-        ConnData cdata = selNode->getConnData();
+        dcmtkConnectionData cdata = selNode->getConnData();
         m_findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
 
         selNode = selectedNodes->getNext();
@@ -203,39 +220,38 @@ void SimpleView::findStudyLevel()
 
 
     // now extract information from datasets and build a visual list
-    QString text;
-    int nodeCounter = 0;
-    int itemCounter = 0;
     int sum = 0;
     ui->treeWidget->clear();
-    dcmtkNodeContainer* resCont = m_findScu->getResultNodeContainer();
-    Node* myNode = resCont->getFirst();
-    while (myNode != NULL)
+    dcmtkNodeContainer* resNodeCont = m_findScu->getResultNodeContainer();
+    dcmtkNode* myNode = resNodeCont->getFirst();
+    
+    while (resNodeCont->isValid())
     {
-        dcmtkFindDataset* myDs = myNode->getDatasetContainer()->getFirst();
-        while (myDs != NULL)
+        dcmtkResultDatasetContainer* resCont = myNode->getResultDatasetContainer();
+        dcmtkFindDataset* resDs = resCont->getFirst();
+        
+        while ( resCont->isValid())
         {
             // add result to list
             QTreeWidgetItem *pItem = new QTreeWidgetItem(ui->treeWidget);
             pItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-            QPoint refPoint(nodeCounter,itemCounter);
-            QVariant vr = refPoint;
-            pItem->setData(0,Qt::UserRole, vr);
-            text = myDs->m_patientName.c_str();
-            pItem->setText(0,text);
+            
+            pItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
+            pItem->setData(1,Qt::UserRole, QPoint(0x0020,0x000D)); // tag
+            pItem->setData(2,Qt::UserRole, QString(resDs->getStudyInstanceUID())); // search value
+            
+            pItem->setText(0,resDs->getKeyContainer()->findKeyValue(0x0010,0x0010)); // patient name
             ui->treeWidget->insertTopLevelItem(0,pItem);
-            myDs = myNode->getDatasetContainer()->getNext();
-            itemCounter++;
-            sum++;
+            resDs = resCont->getNext();
         }
-        myNode = resCont->getNext();
-        nodeCounter++;
-        itemCounter=0;
+        sum = sum + resCont->size();
+        myNode = resNodeCont->getNext();
     }
 
     // print to logwindow
     printResults(sum,"studies");
 
+    // clean up
     delete selectedNodes;
 }
 
@@ -246,73 +262,66 @@ void SimpleView::findSeriesLevel(QTreeWidgetItem * item)
     // check if its a top level item
     if (item->parent() != NULL) 
     {
-        findImageLevel(item);
+        findImageLevel(item); // forward to image level
         return;
     }
 
     // check if the item alread has children (don't query again)
     if (item->child(0) != NULL) return;
 
-    dcmtkNodeContainer* resCont =  m_findScu->getResultNodeContainer();
-
-    QPoint pt = item->data(0,Qt::UserRole).toPoint();
-    dcmtkFindDataset* resDs = resCont->getAtPos(pt.x())->getDatasetContainer()->getAtPos(pt.y());
-
-    std::string studInst = resDs->m_studyInstUID;
-    ConnData cdata = resCont->getAtPos(pt.x())->getConnData();
+    // retrieve data
+    int nodeIndex = item->data(0,Qt::UserRole).toInt();
+    QPoint tag = item->data(1,Qt::UserRole).toPoint();
+    QString searchStr = item->data(2,Qt::UserRole).toString();
+    dcmtkConnectionData cdata = m_findScu->getResultNodeContainer()->getAtPos(nodeIndex)->getConnData();
 
     // clear previous results
     dcmtkFindScu* findScu = new dcmtkFindScu;
 
     // set up search criteria
     findScu->setQueryLevel(dcmtkFindScu::SERIES);
-    findScu->addQueryAttribute("0020","000D",studInst.c_str()); // studyInstanceUID
-    findScu->addQueryAttribute("0008","0021","\0"); // series date
-    findScu->addQueryAttribute("0008","0031","\0"); // series time
-    findScu->addQueryAttribute("0008","0060","\0"); // series modality
-    findScu->addQueryAttribute("0008","103E","\0"); // series description
-    findScu->addQueryAttribute("0018","0015","\0"); // body part
-    findScu->addQueryAttribute("0018","1030","\0"); // protocol name
-    findScu->addQueryAttribute("0018","5100","\0"); // patient position
-    findScu->addQueryAttribute("0020","000E","\0"); // series instance UID
-    findScu->addQueryAttribute("0020","0011","\0"); // series number
-    findScu->addQueryAttribute("0020","0052","\0"); // frame of reference
-
-
+    findScu->addQueryAttribute(tag.x(),tag.y(),searchStr.toLatin1()); // studyInstanceUID
+    findScu->addQueryAttribute(0x0008,0x0021,"\0"); // series date
+    findScu->addQueryAttribute(0x0008,0x0031,"\0"); // series time
+    findScu->addQueryAttribute(0x0008,0x0060,"\0"); // series modality
+    findScu->addQueryAttribute(0x0008,0x103E,"\0"); // series description
+    findScu->addQueryAttribute(0x0018,0x0015,"\0"); // body part
+    findScu->addQueryAttribute(0x0018,0x1030,"\0"); // protocol name
+    findScu->addQueryAttribute(0x0018,0x5100,"\0"); // patient position
+    findScu->addQueryAttribute(0x0020,0x000E,"\0"); // series instance UID
+    findScu->addQueryAttribute(0x0020,0x0011,"\0"); // series number
+    findScu->addQueryAttribute(0x0020,0x0052,"\0"); // frame of reference
 
     // do the work
     findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
 
     // now extract information from datasets and build a visual list
-    QString text;
-    int nodeCounter = 0;
-    int itemCounter = 0;
     int sum = 0;
-    resCont = findScu->getResultNodeContainer();
-    Node* myNode = resCont->getFirst();
-    while (myNode != NULL)
+    dcmtkNodeContainer* resNodeCont = findScu->getResultNodeContainer();
+    dcmtkNode* myNode = resNodeCont->getFirst();
+    
+    if (resNodeCont->isValid())
     {
-        dcmtkFindDataset* myDs = myNode->getDatasetContainer()->getFirst();
-        while (myDs != NULL)
+        dcmtkResultDatasetContainer* resCont = myNode->getResultDatasetContainer();
+        dcmtkFindDataset* resDs = resCont->getFirst();
+
+        while (resCont->isValid())
         {
             // add result to list
             QTreeWidgetItem *pItem = new QTreeWidgetItem(item);
             pItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-            QPoint refPoint(nodeCounter,itemCounter);
-            QVariant vr = refPoint;
-            pItem->setData(0,Qt::UserRole, vr);
-            QString refString(myDs->m_seriesInstUID.c_str());
-            pItem->setData(1,Qt::UserRole, refString);
-            text = myDs->m_seriesDescr.c_str();
-            pItem->setText(0,text);
+
+            pItem->setData(0,Qt::UserRole, nodeIndex); //forwarding node index
+            pItem->setData(1,Qt::UserRole, QPoint(0x0020,0x000E)); // tag
+            pItem->setData(2,Qt::UserRole, QString(resDs->getSeriesInstanceUID())); // search value
+
+            pItem->setText(0,">>");
+            pItem->setText(2,resDs->getKeyContainer()->findKeyValue(0x0020,0x0011)); // series number
             item->addChild(pItem);
-            myDs = myNode->getDatasetContainer()->getNext();
-            itemCounter++;
-            sum++;
+            resDs = resCont->getNext();
         }
-        myNode = resCont->getNext();
-        nodeCounter++;
-        itemCounter=0;
+        sum = resCont->size();
+        myNode = resNodeCont->getNext();
     }
 
     // print to logwindow
@@ -329,68 +338,61 @@ void SimpleView::findImageLevel(QTreeWidgetItem * item)
     // check if the item alread has children (don't query again)
     if (item->child(0) != NULL) return;
 
-    dcmtkNodeContainer* resCont =  m_findScu->getResultNodeContainer();
-
-    QPoint pt = item->data(0,Qt::UserRole).toPoint();
-    dcmtkFindDataset* resDs = resCont->getAtPos(pt.x())->getDatasetContainer()->getAtPos(pt.y());
-
-    QString refString = item->data(1,Qt::UserRole).toString();
-
-    std::string serInst = resDs->m_studyInstUID;
-    ConnData cdata = resCont->getAtPos(pt.x())->getConnData();
+    // retrieve data
+    int nodeIndex = item->data(0,Qt::UserRole).toInt(); // node index
+    QString searchStr = item->data(2,Qt::UserRole).toString(); // search value
+    dcmtkConnectionData cdata = m_findScu->getResultNodeContainer()->getAtPos(nodeIndex)->getConnData(); // conn data
 
     // clear previous results
     dcmtkFindScu* findScu = new dcmtkFindScu;
 
     // set up search criteria
     findScu->setQueryLevel(dcmtkFindScu::IMAGE);
-    findScu->addQueryAttribute("0020","000E",refString.toLatin1()); // series instance UID
-    findScu->addQueryAttribute("0008","0008","\0"); // image type
-    findScu->addQueryAttribute("0008","0012","\0"); // instance creation date
-    findScu->addQueryAttribute("0008","0013","\0"); // instance creation time
-    findScu->addQueryAttribute("0008","0016","\0"); // SOP class UID
-    findScu->addQueryAttribute("0008","0018","\0"); // SOP instance UID
-    findScu->addQueryAttribute("0008","0022","\0"); // image date
-    findScu->addQueryAttribute("0008","0032","\0"); // image time
-    findScu->addQueryAttribute("0020","0012","\0"); // aquisition number
-    findScu->addQueryAttribute("0020","000D","\0"); // study instance UID
-    findScu->addQueryAttribute("0020","0013","\0"); // instance time
-    findScu->addQueryAttribute("0020","0032","\0"); // image position patient
-    findScu->addQueryAttribute("0020","0037","\0"); // image orientation patient
-    findScu->addQueryAttribute("0020","1041","\0"); // slice location
-    findScu->addQueryAttribute("0028","0008","\0"); // number of frames
+    findScu->addQueryAttribute(0x0020,0x000E,searchStr.toLatin1()); // series instance UID
+    findScu->addQueryAttribute(0x0008,0x0008,"\0"); // image type
+    findScu->addQueryAttribute(0x0008,0x0012,"\0"); // instance creation date
+    findScu->addQueryAttribute(0x0008,0x0013,"\0"); // instance creation time
+    findScu->addQueryAttribute(0x0008,0x0016,"\0"); // SOP class UID
+    findScu->addQueryAttribute(0x0008,0x0018,"\0"); // SOP instance UID
+    findScu->addQueryAttribute(0x0008,0x0022,"\0"); // image date
+    findScu->addQueryAttribute(0x0008,0x0032,"\0"); // image time
+    findScu->addQueryAttribute(0x0020,0x0012,"\0"); // acquisition number
+    findScu->addQueryAttribute(0x0020,0x000D,"\0"); // study instance UID
+    findScu->addQueryAttribute(0x0020,0x0013,"\0"); // instance time
+    findScu->addQueryAttribute(0x0020,0x0032,"\0"); // image position patient
+    findScu->addQueryAttribute(0x0020,0x0037,"\0"); // image orientation patient
+    findScu->addQueryAttribute(0x0020,0x1041,"\0"); // slice location
+    findScu->addQueryAttribute(0x0028,0x0008,"\0"); // number of frames
     
     // do the work
-    
     findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
 
     // now extract information from datasets and build a visual list
-    QString text;
-    int nodeCounter = 0;
-    int itemCounter = 0;
     int sum = 0;
-    resCont = findScu->getResultNodeContainer();
-    Node* myNode = resCont->getFirst();
-    while (myNode != NULL)
+    dcmtkNodeContainer* resNodeCont = findScu->getResultNodeContainer();
+    dcmtkNode* node = resNodeCont->getFirst();
+
+    if (resNodeCont->isValid())
     {
-        dcmtkFindDataset* myDs = myNode->getDatasetContainer()->getFirst();
-        while (myDs != NULL)
+        dcmtkResultDatasetContainer* resCont = node->getResultDatasetContainer();
+        dcmtkFindDataset* resDs = resCont->getFirst();
+
+        while (resCont->isValid())
         {
             // add result to list
             QTreeWidgetItem *pItem = new QTreeWidgetItem(item);
-            QPoint refPoint(nodeCounter,itemCounter);
-            QVariant vr = refPoint;
-            pItem->setData(1,Qt::UserRole, vr);
-            text = myDs->m_imageType.c_str();
-            pItem->setText(0,text);
+
+            pItem->setData(0,Qt::UserRole, nodeIndex); //forwarding node index
+            pItem->setData(1,Qt::UserRole, QPoint(0x0008,0x0018)); // tag
+            pItem->setData(2,Qt::UserRole, QString(resDs->getSOPInstanceUID())); // search value
+
+            pItem->setText(0,">>");
+            pItem->setText(2,resDs->getKeyContainer()->findKeyValue(0x0020,0x0012)); // aqu. number
+            pItem->setText(3,resDs->getKeyContainer()->findKeyValue(0x0008,0x0008)); // image type
             item->addChild(pItem);
-            myDs = myNode->getDatasetContainer()->getNext();
-            itemCounter++;
-            sum++;
+            resDs = resCont->getNext();
         }
-        myNode = resCont->getNext();
-        nodeCounter++;
-        itemCounter=0;
+        sum = resCont->size();
     }
 
     // print to logwindow
@@ -406,21 +408,19 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
 {
    dcmtkNodeContainer* resCont =  m_findScu->getResultNodeContainer();
 
-   QPoint pt = item->data(0,Qt::UserRole).toPoint();
-   dcmtkFindDataset* resDs = resCont->getAtPos(pt.x())->getDatasetContainer()->getAtPos(pt.y());
-
+   // retrieve data
+   int nodeIndex = item->data(0,Qt::UserRole).toInt();
+   QPoint tag = item->data(1,Qt::UserRole).toPoint();
+   QString searchStr = item->data(2,Qt::UserRole).toString();
    
     ui->logWindow->append(tr("Fetching data..."));
-    QString patString = "Selected patient: ";
-    patString.append(resDs->m_patientName.c_str());
-    ui->logWindow->append(patString);
     ui->logWindow->repaint();
 
     // set up search criteria
-    m_moveScu->addQueryAttribute("0020", "000D", resDs->m_studyInstUID.c_str());
+    m_moveScu->addQueryAttribute(tag.x(), tag.y(), searchStr.toLatin1());
     
     // send the move request using the search crits
-    ConnData cdata = resCont->getAtPos(pt.x())->getConnData();
+    dcmtkConnectionData cdata = resCont->getAtPos(nodeIndex)->getConnData();
     m_moveScu->sendMoveRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     
     ui->logWindow->append(tr("All done."));
@@ -449,7 +449,7 @@ void SimpleView::echo()
 void SimpleView::store()
 {
     // set the current node params first
-    ConnData* cb = &(m_nodes.at(ui->sendToNodeCB->currentIndex()));
+    dcmtkConnectionData* cb = &(m_nodes.at(ui->sendToNodeCB->currentIndex()));
     m_sendThread->setConnectionParams(cb->title.c_str(), cb->ip.c_str(), cb->port, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     
     QDir testDir;
@@ -494,7 +494,7 @@ void SimpleView::storeSettings(int type)
 {
     QSettings settings("INRIA", "DCMTKTOOL");
 
-    std::vector<ConnData>::iterator iter;
+    std::vector<dcmtkConnectionData>::iterator iter;
     int count = 0;
     QString countString;
 
@@ -694,12 +694,12 @@ void SimpleView::addConnection(QString peer, QString ip, QString port)
     QTableWidgetItem *portItem = new QTableWidgetItem(port);
     ui->connTableWidget->setItem(row, 2, portItem);
 
-    ConnData connData;
-    connData.title = peer.toStdString();
-    connData.ip    = ip.toStdString();
-    connData.port  = port.toInt();
+    dcmtkConnectionData cdata;
+    cdata.title = peer.toStdString();
+    cdata.ip    = ip.toStdString();
+    cdata.port  = port.toInt();
 
-    m_nodes.push_back(connData);
+    m_nodes.push_back(cdata);
 
     QListWidgetItem* myItem = new QListWidgetItem(peer,ui->nodeSelectionLW);
     myItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
@@ -757,9 +757,9 @@ dcmtkNodeContainer* SimpleView::getSelectedNodes()
       QListWidgetItem *item = ui->nodeSelectionLW->item(i);
       if( item->checkState() == Qt::Checked)
       {
-          Node node;
-          node.addConnData(m_nodes.at(i));
-          selectedNodes->addNode(&node);
+          dcmtkNode* node = new dcmtkNode;
+          node->addConnData(m_nodes.at(i));
+          selectedNodes->add(node);
       }
     }
     return selectedNodes;

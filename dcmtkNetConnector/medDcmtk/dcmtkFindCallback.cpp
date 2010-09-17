@@ -30,39 +30,38 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
 
     dcmtkFindDataset* findDs = new dcmtkFindDataset;
 
-    // study
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0010),findDs->patientName);
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0020),findDs->patientID);
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0030),findDs->patientBd);
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0020),findDs->patientID);
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0010,0x0040),findDs->patientSex);
+    // get the basic key values
+    const char* szhelper;
+    responseIdentifiers->findAndGetString(DcmTagKey(0x0020,0x000D),szhelper);
+    findDs->setStudyInstanceUID(szhelper);
 
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0020,0x000D),findDs->studyInstanceUID);
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0020,0x0010),findDs->studyID);
+    responseIdentifiers->findAndGetString(DcmTagKey(0x0020,0x000E),szhelper);
+    findDs->setSeriesInstanceUID(szhelper);
 
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x0050),findDs->accNo);
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x0090),findDs->refPhysician);
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x1030),findDs->studyDescr);
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x0061),findDs->modalitiesInStudy);
-
-    // series
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x103E),findDs->seriesDescription);
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0020,0x000E),findDs->seriesInstUID);
-
-    // image
-    responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x0008),findDs->imageType);
+    responseIdentifiers->findAndGetString(DcmTagKey(0x0008,0x0018),szhelper);
+    findDs->setSOPInstanceUID(szhelper);
 
 
-    findDs->copy();
-    m_ds->addDataset(findDs);
+    // check what keys are requested and add them to the container
+    dcmtkKey* reqKey = m_keyCont->getFirst();
 
-   
-    /* in case extractResponsesToFile is set the responses shall be extracted to a certain file */
-    if (extractResponsesToFile_) {
-        char rspIdsFileName[1024];
-        sprintf(rspIdsFileName, "rsp%04d.dcm", responseCount);
-        DcmFindSCU::writeToFile(rspIdsFileName, responseIdentifiers);
+    while (m_keyCont->isValid())
+    {
+        responseIdentifiers->findAndGetString(DcmTagKey(reqKey->group,reqKey->elem),szhelper);
+        if (szhelper != NULL)
+        {
+            dcmtkKey *key = new dcmtkKey;
+            key->group = reqKey->group;
+            key->elem  = reqKey->elem;
+            key->value = szhelper;
+            findDs->getKeyContainer()->add(key);
+        }
+        reqKey = m_keyCont->getNext();
     }
+
+    m_ds->add(findDs);
+
+
 
     /* should we send a cancel back ?? */
 // TODO: CHECK THIS SETTING!
@@ -84,9 +83,16 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
 
 //---------------------------------------------------------------------------------------------
 
-void dcmtkFindScuCallback::setResultDataset(DatasetContainer*  dataCont)
+void dcmtkFindScuCallback::setResultDatasetContainer(dcmtkResultDatasetContainer*  dataCont)
 {
     m_ds = dataCont;
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkFindScuCallback::setKeyContainer( dcmtkKeyContainer* cont )
+{
+    m_keyCont = cont;
 }
 
 //---------------------------------------------------------------------------------------------

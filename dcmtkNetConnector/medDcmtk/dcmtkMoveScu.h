@@ -34,6 +34,12 @@ public:
     */
     dcmtkMoveScu();
 
+
+    /**
+    *  Destructor
+    */
+    ~dcmtkMoveScu();
+
     /**
     * Performs the C-MOVE request on the peer.
     * You can use this function to move dicom data directly to another AET, 

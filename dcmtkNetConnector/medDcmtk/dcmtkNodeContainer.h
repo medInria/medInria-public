@@ -1,65 +1,50 @@
+#ifndef DCMTKNODECONTAINER_H
+#define DCMTKNODECONTAINER_H
 
-#include <vector>
+// inc
 #include "dcmtkFindDataset.h"
+#include "dcmtkContainer.h"
 
-struct ConnData
+struct dcmtkConnectionData
 {
     std::string title;
     std::string ip;
     unsigned int port;
 };
 
-class DatasetContainer
+class dcmtkResultDatasetContainer : public dcmtkContainer<dcmtkFindDataset*>
 {
-private:
+};
 
-    std::vector<dcmtkFindDataset> m_findDs;
-    std::vector<dcmtkFindDataset>::iterator m_findIter;
+class dcmtkNode
+{
+
+protected:
+
+    dcmtkConnectionData                    m_connData;
+    dcmtkResultDatasetContainer            m_dsContainer;
 
 public:
 
-    ~DatasetContainer();
+    void addConnData(dcmtkConnectionData cdata)
+    {
+        m_connData = cdata;
+    };
 
-    void addDataset(dcmtkFindDataset* ds){m_findDs.push_back(*ds);};
+    dcmtkConnectionData getConnData()
+    {
+        return m_connData;
+    };
 
-    void clear();
+    dcmtkResultDatasetContainer* getResultDatasetContainer()
+    {
+        return &m_dsContainer;
+    };
 
-    dcmtkFindDataset* getFirst();
-    dcmtkFindDataset* getNext();
-    dcmtkFindDataset* getAtPos(unsigned int position);
 };
 
-class Node
+class dcmtkNodeContainer : public dcmtkContainer<dcmtkNode*>
 {
-private:
-    ConnData m_connData;
-    DatasetContainer m_dsContainer;
-
-public:
-
-    void addConnData(ConnData node){m_connData = node;};
-
-    ConnData getConnData(){return m_connData;};
-
-    DatasetContainer* getDatasetContainer(){return &m_dsContainer;};
-
 };
 
-class dcmtkNodeContainer
-{
-private:
-    std::vector<Node> m_nodeArr;
-    std::vector<Node>::iterator m_nodeIter;
-public:
-
-    ~dcmtkNodeContainer();
-
-    void addNode(Node* nd){m_nodeArr.push_back(*nd);};
-
-    void clear();
-
-    Node* getFirst();
-    Node* getNext();
-    Node* getAtPos(unsigned int position);
-
-};
+#endif DCMTKNODECONTAINER_H
