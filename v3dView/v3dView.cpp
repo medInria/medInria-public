@@ -168,7 +168,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DAxial->SetRenderer(d->renderer2DAxial);
     d->view2DAxial->SetBackground(0.0, 0.0, 0.0);
     d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-    d->view2DAxial->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+    d->view2DAxial->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     d->view2DAxial->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
     d->view2DAxial->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
     d->view2DAxial->CursorFollowMouseOff();
@@ -181,7 +181,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DSagittal->SetRenderer(d->renderer2DSagittal);
     d->view2DSagittal->SetBackground(0.0, 0.0, 0.0);
     d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-    d->view2DSagittal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+    d->view2DSagittal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     d->view2DSagittal->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
     d->view2DSagittal->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
     d->view2DSagittal->CursorFollowMouseOff();
@@ -194,7 +194,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DCoronal->SetRenderer(d->renderer2DCoronal);
     d->view2DCoronal->SetBackground(0.0, 0.0, 0.0);
     d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-    d->view2DCoronal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+    d->view2DCoronal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     d->view2DCoronal->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
     d->view2DCoronal->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_CORONAL);
     d->view2DCoronal->CursorFollowMouseOff();
