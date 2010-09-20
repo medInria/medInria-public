@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 #PIPOL linux-fedora 3:00 --root
 #PIPOL linux-ubuntu 3:00 --root
@@ -16,15 +16,15 @@ case $PIPOL_IMAGE in
 	
 	;;
 	*-linux-fedora-*)
-	./installer.py -f run_linux.cfg -f run_pipol_fed.cfg &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	./installer.py -f run_linux.cfg -f run_pipol_fed.cfg --no-package-deps 
 	
 	;;
 	*-linux-ubuntu-*)
-	./installer.py -f run_linux.cfg -f run_pipol_ubuntu.cfg &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	./installer.py -f run_linux.cfg -f run_pipol_ubuntu.cfg --no-package-deps
 	;;
 	
 	*-linux-debian-*)
-	./installer.py -f run_linux.cfg -f run_pipol_fed.cfg &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+	./installer.py -f run_linux.cfg -f run_pipol_fed.cfg --no-package-deps
 	;;
 	
 	*)
