@@ -95,9 +95,7 @@ SimpleView::SimpleView()
 SimpleView::~SimpleView()
 {
   stopServer();
-  delete ui;
-  Logger::shutDown();
-
+ 
   delete m_findScu;
   delete m_moveScu;
   delete m_echoScu;
@@ -109,6 +107,8 @@ SimpleView::~SimpleView()
   delete m_fileOut;
   delete m_widgetOut;
 
+  if(ui != NULL) delete ui;
+  Logger::shutDown();
 
 }
 
