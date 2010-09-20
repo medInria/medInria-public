@@ -544,6 +544,14 @@ def main(argv):
                       help = "Continue with next task immediately after \
                               completion of previous task."
                       )
+    parser.add_option("-s","--show-conf",
+                      dest = "show_conf",
+                      action = "store_true",
+                      default = False,
+                      help = "Shows the concatenation of all config files. \
+                              Debugging tool. Returns right after \
+                              displaying the configuration."
+                      )
 
 
     (options, args) = parser.parse_args()
@@ -556,6 +564,12 @@ def main(argv):
     config = load_config_files(filenames)
     architecture = find_architecture()
 
+    # debug function: shows config values:
+    if options.show_conf:
+        for section in config.sections():
+            print "["+section+"]"
+            for k,v in config.items(section):
+                print k+"="+str(v)
 
     # install dependencies through the package management system.
     if options.pkg_dep and config.getint('package_deps', 'install') == 1:
