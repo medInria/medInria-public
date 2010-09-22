@@ -33,8 +33,6 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
 enable_testing()
 
-set(DEPENDS_ON_DTK 1)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(dtk REQUIRED)
