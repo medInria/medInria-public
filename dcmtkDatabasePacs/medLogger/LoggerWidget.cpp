@@ -7,8 +7,6 @@
 LoggerWidget::LoggerWidget(QWidget* parent) : QWidget(parent)
 {
   m_TextEdit = new QTextEdit(this);
-  m_TextEdit->setTextFormat(Qt::LogText);
-  m_TextEdit->setPointSize(4);
   QVBoxLayout* layout = new QVBoxLayout(this);
   layout->addWidget(m_TextEdit);
 }

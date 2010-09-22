@@ -22,7 +22,7 @@ class LoggerOutput;
      * objects will automatically be deleted when the logger gets destroyed.
      * To destroy the logger and all attached logger outputs call Logger::shutDown().
      */
-class Logger
+class BaseLogger
 {
 
   public:
@@ -30,7 +30,7 @@ class Logger
     /**
      * The destructor deletes all attached logger outputs.
      */
-    virtual ~Logger();
+    virtual ~BaseLogger();
 
     /**
      * Logs a debug message (log level DEBUG)
@@ -126,7 +126,7 @@ class Logger
      * will be created. Else, the existing instance will be returned.
      * @return Instance of Logger
      */
-    static Logger* getInstance();
+    static BaseLogger* getInstance();
 
     /**
      * Destroys the instance.
@@ -140,12 +140,12 @@ class Logger
      * use getInstance() to get an instance of the logger.
      * The constructor sets the default members.
      */
-    Logger();
+    BaseLogger();
 
     /**
      * Protect the copy constructor to avoid copies.
      */
-    Logger(const Logger& logger);
+    BaseLogger(const BaseLogger& logger);
 
     /**
      * Flushes all streams.
@@ -160,7 +160,7 @@ class Logger
     /**
      * The single instance
      */
-    static Logger* m_Instance;
+    static BaseLogger* m_Instance;
 
 };
 

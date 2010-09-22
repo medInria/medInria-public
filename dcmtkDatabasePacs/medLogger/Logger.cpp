@@ -9,25 +9,25 @@
 
 using namespace std;
 
-Logger* Logger::m_Instance = 0;
+BaseLogger* BaseLogger::m_Instance = 0;
 
 //---------------------------------------------------------------------------------------------
 
-Logger::Logger()
+BaseLogger::BaseLogger()
 {
   cout << "Logger::Logger(): Logger instance created." << endl;
 }
 
 //---------------------------------------------------------------------------------------------
 
-Logger::~Logger()
+BaseLogger::~BaseLogger()
 {
   cout << "Logger::~Logger(): Logger instance destroyed." << endl;
 }
 
 //---------------------------------------------------------------------------------------------
 
-Logger* Logger::getInstance()
+BaseLogger* BaseLogger::getInstance()
 {
   if (m_Instance == 0)
   {
@@ -38,7 +38,7 @@ Logger* Logger::getInstance()
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::destroy()
+void BaseLogger::destroy()
 {
   if (m_Instance != 0)
   {
@@ -48,7 +48,7 @@ void Logger::destroy()
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::startUp()
+void BaseLogger::startUp()
 {
   // create an instance
   getInstance();
@@ -56,7 +56,7 @@ void Logger::startUp()
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::shutDown()
+void BaseLogger::shutDown()
 {
   vector<LoggerOutput*>::iterator iter;
   while(getInstance()->m_Outputs.size() > 0)
@@ -69,7 +69,7 @@ void Logger::shutDown()
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::addOutput(LoggerOutput* output)
+void BaseLogger::addOutput(LoggerOutput* output)
 {
   Logger::infoStream() << "Logger::addOutput(): adding logging output " << output << " \"" << output->getName() << "\"";
   output->logMessage("LOG BEGIN", LoggerLogLevel::INFOLOG);
@@ -78,7 +78,7 @@ void Logger::addOutput(LoggerOutput* output)
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::removeOutput(LoggerOutput* output)
+void BaseLogger::removeOutput(LoggerOutput* output)
 {
   Logger::infoStream() << "Logger::removeOutput(): removing logging output " << output << " \"" << output->getName() << "\", "
      << "(currently " << getInstance()->m_Outputs.size() << " outputs).";
@@ -100,63 +100,63 @@ void Logger::removeOutput(LoggerOutput* output)
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::debug(string message)
+void BaseLogger::debug(string message)
 {
   logMessage(message, LoggerLogLevel::DEBUGLOG);
 }
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::info(string message)
+void BaseLogger::info(string message)
 {
   logMessage(message, LoggerLogLevel::INFOLOG);
 }
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::warning(string message)
+void BaseLogger::warning(string message)
 {
   logMessage(message, LoggerLogLevel::WARNINGLOG);
 }
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::error(string message)
+void BaseLogger::error(string message)
 {
   logMessage(message, LoggerLogLevel::ERRORLOG);
 }
 
 //---------------------------------------------------------------------------------------------
 
-LoggerLogStream Logger::debugStream()
+LoggerLogStream BaseLogger::debugStream()
 {
   return LoggerLogStream(LoggerLogLevel::DEBUGLOG);
 }
 
 //---------------------------------------------------------------------------------------------
 
-LoggerLogStream Logger::infoStream()
+LoggerLogStream BaseLogger::infoStream()
 {
   return LoggerLogStream(LoggerLogLevel::INFOLOG);
 }
 
 //---------------------------------------------------------------------------------------------
 
-LoggerLogStream Logger::warningStream()
+LoggerLogStream BaseLogger::warningStream()
 {
   return LoggerLogStream(LoggerLogLevel::WARNINGLOG);
 }
 
 //---------------------------------------------------------------------------------------------
 
-LoggerLogStream Logger::errorStream()
+LoggerLogStream BaseLogger::errorStream()
 {
   return LoggerLogStream(LoggerLogLevel::ERRORLOG);
 }
 
 //---------------------------------------------------------------------------------------------
 
-void Logger::logMessage(string message, LoggerLogLevel::LogLevel logLevel)
+void BaseLogger::logMessage(string message, LoggerLogLevel::LogLevel logLevel)
 {
   if (message.length() > 0)
   {
@@ -171,7 +171,7 @@ void Logger::logMessage(string message, LoggerLogLevel::LogLevel logLevel)
 
 //---------------------------------------------------------------------------------------------
 
-string Logger::getTimeString()
+string BaseLogger::getTimeString()
 {
   time_t currentTime;
   time (&currentTime); // fill now with the current time
@@ -194,7 +194,7 @@ string Logger::getTimeString()
 
 //---------------------------------------------------------------------------------------------
 
-string Logger::getDateString()
+string BaseLogger::getDateString()
 {
   time_t currentTime;
   time (&currentTime); // fill now with the current time

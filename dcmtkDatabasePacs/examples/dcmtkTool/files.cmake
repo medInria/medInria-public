@@ -30,8 +30,8 @@ SET (MED_DCMTK_SOURCES
 	)
 	
 SET (MED_LOGGER_SOURCES
-		../../medLogger/Logger.h
-		../../medLogger/Logger.cpp
+		../../medLogger/BaseLogger.h
+		../../medLogger/BaseLogger.cpp
 		../../medLogger/LoggerConsoleOutput.h
 		../../medLogger/LoggerConsoleOutput.cpp
 		../../medLogger/LoggerFileOutput.h

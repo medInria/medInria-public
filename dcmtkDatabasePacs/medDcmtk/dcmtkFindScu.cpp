@@ -107,8 +107,6 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
       &myCallback,
       &fileNameList);
 
-    // make sure memory is erased
-    m_resContainer->clear();
     m_resContainer->add(node);
 
     if (cond.bad()) dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);

@@ -1,5 +1,5 @@
 #include "LoggerFileOutput.h"
-
+#include "BaseLogger.h"
 #include <sstream>
 
 using namespace std;
@@ -13,7 +13,7 @@ LoggerFileOutput::LoggerFileOutput(LoggerLogLevel::LogLevel logLevel, const char
   ostringstream msg;
   msg << "LoggerFileOutput::LoggerFileOutput(): New file logger output to file '" 
         << filename << "' with log level " << getLogLevel() << " created.";
-  Logger::info(msg.str());
+  BaseLogger::info(msg.str());
 }
 
 //---------------------------------------------------------------------------------------------
@@ -35,7 +35,7 @@ void LoggerFileOutput::logMessage(std::string message, LoggerLogLevel::LogLevel 
     m_OutputStream.width(8);
     m_OutputStream << m_SequenceNumber++ << "] ";
     // write time
-    m_OutputStream << "[" << Logger::getTimeString() << "] ";
+    m_OutputStream << "[" << BaseLogger::getTimeString() << "] ";
 
     switch(logLevel)
     {

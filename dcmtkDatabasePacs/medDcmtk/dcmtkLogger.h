@@ -1,4 +1,4 @@
-#include "Logger.h"
+#include "BaseLogger.h"
 
 #ifndef WIN32
 #define HAVE_CONFIG_H
@@ -13,7 +13,7 @@
  * @brief Main logger class to be used in dcmtk based code
  * Inherits from generic logger and adds OFSting conversion methods
  */
-class dcmtkLogger : public Logger
+class dcmtkLogger : public BaseLogger
 {
 public:
 

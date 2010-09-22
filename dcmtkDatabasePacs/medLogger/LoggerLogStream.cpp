@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "LoggerLogStream.h"
-#include "Logger.h"
+#include "BaseLogger.h"
 
 using namespace std;
 
@@ -29,7 +29,7 @@ void LoggerLogStream::flushBuffer()
   m_Buffer->str("");
   if (bufferString.length() > 0)
   {
-    Logger::logMessage(bufferString, m_LogLevel);
+    BaseLogger::logMessage(bufferString, m_LogLevel);
   }
 }
 

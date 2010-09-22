@@ -62,6 +62,7 @@ subdirs(itkDataImageReader)
 subdirs(itkDataImageWriter)
 subdirs(vtkDataFibers)
 subdirs(itkDataDiffusionGradientList)
+subdirs(dcmtkDatabasePacs)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(pack)

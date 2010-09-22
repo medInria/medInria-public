@@ -1,5 +1,6 @@
 #include "LoggerConsoleOutput.h"
 
+#include "BaseLogger.h"
 #include <iostream>
 
 using namespace std;
@@ -10,7 +11,7 @@ LoggerConsoleOutput::LoggerConsoleOutput(LoggerLogLevel::LogLevel logLevel) : Lo
 {
   ostringstream msg;
   msg << "LoggerConsoleOutput::LoggerConsoleOutput(): New logger output to console with log level " << getLogLevel() << " created.";
-  Logger::info(msg.str());
+  BaseLogger::info(msg.str());
 }
 
 //---------------------------------------------------------------------------------------------
@@ -25,7 +26,7 @@ void LoggerConsoleOutput::logMessage(std::string message, LoggerLogLevel::LogLev
 {
   if (logLevel <= this->getLogLevel())
   {
-    cout << "[" << Logger::getTimeString() << "] ";
+    cout << "[" << BaseLogger::getTimeString() << "] ";
     switch(logLevel)
     {
       case LoggerLogLevel::DEBUGLOG:

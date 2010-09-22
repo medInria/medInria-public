@@ -12,7 +12,7 @@
 #include "dcmtkMoveScu.h"
 #include "dcmtkFindDataset.h"
 
-#include "Logger.h"
+#include "dcmtkLogger.h"
 #include "LoggerFileOutput.h"
 #include "LoggerConsoleOutput.h"
 #include "LoggerWidgetOutput.h"
@@ -28,7 +28,7 @@ SimpleView::SimpleView()
 {
 
   //initialize logger
-  Logger::startUp();
+  dcmtkLogger::startUp();
   
   // create and show LoggerWidget
   this->ui = new Ui_SimpleView;
@@ -94,6 +94,8 @@ SimpleView::SimpleView()
 
 SimpleView::~SimpleView()
 {
+  dcmtkLogger::shutDown();
+
   stopServer();
  
   delete m_findScu;
@@ -108,7 +110,6 @@ SimpleView::~SimpleView()
   delete m_widgetOut;
 
   if(ui != NULL) delete ui;
-  Logger::shutDown();
 
 }
 
@@ -406,17 +407,18 @@ void SimpleView::findImageLevel(QTreeWidgetItem * item)
 
 void SimpleView::move(QTreeWidgetItem * item, int column) 
 {
-   dcmtkNodeContainer* resCont =  m_findScu->getResultNodeContainer();
+    dcmtkNodeContainer* resCont =  m_findScu->getResultNodeContainer();
 
-   // retrieve data
-   int nodeIndex = item->data(0,Qt::UserRole).toInt();
-   QPoint tag = item->data(1,Qt::UserRole).toPoint();
-   QString searchStr = item->data(2,Qt::UserRole).toString();
-   
+    // retrieve data
+    int nodeIndex = item->data(0,Qt::UserRole).toInt();
+    QPoint tag = item->data(1,Qt::UserRole).toPoint();
+    QString searchStr = item->data(2,Qt::UserRole).toString();
+
     ui->logWindow->append(tr("Fetching data..."));
     ui->logWindow->repaint();
 
     // set up search criteria
+    m_moveScu->clearAllQueryAttributes();
     m_moveScu->addQueryAttribute(tag.x(), tag.y(), searchStr.toLatin1());
     
     // send the move request using the search crits
@@ -580,10 +582,10 @@ void SimpleView::fileAppender(int state)
  switch(state)
  {
  case 0:
-      Logger::removeOutput(m_fileOut);
+      BaseLogger::removeOutput(m_fileOut);
       break;
  case 2:
-      Logger::addOutput(m_fileOut);
+      BaseLogger::addOutput(m_fileOut);
       break;
  default:
      std::cout << "switch error" << std::endl;
@@ -598,10 +600,10 @@ void SimpleView::shellAppender(int state)
  switch(state)
  {
  case 0:
-      Logger::removeOutput(m_shellOut);
+      BaseLogger::removeOutput(m_shellOut);
       break;
  case 2:
-      Logger::addOutput(m_shellOut);
+      BaseLogger::addOutput(m_shellOut);
       break;
  default:
      std::cout << "switch error" << std::endl;
@@ -617,10 +619,10 @@ void SimpleView::widgetAppender(int state)
  switch(state)
  {
  case 0:
-      Logger::removeOutput(m_widgetOut);
+      BaseLogger::removeOutput(m_widgetOut);
       break;
  case 2:
-      Logger::addOutput(m_widgetOut);
+      BaseLogger::addOutput(m_widgetOut);
       break;
  default:
      std::cout << "switch error" << std::endl;

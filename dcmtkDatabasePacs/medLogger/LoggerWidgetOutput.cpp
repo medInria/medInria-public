@@ -1,7 +1,7 @@
 #include "LoggerWidgetOutput.h"
 
 #include <QApplication>
-
+#include "BaseLogger.h"
 #include "LoggerMessageEvent.h"
 
 using namespace std;
@@ -28,7 +28,7 @@ void LoggerWidgetOutput::logMessage(std::string message, LoggerLogLevel::LogLeve
   if (logLevel <= this->getLogLevel())
   {
     msg.append("[");
-    msg.append(Logger::getTimeString().c_str());
+    msg.append(BaseLogger::getTimeString().c_str());
     msg.append("] ");
     msg.append("<font color=");
     switch(logLevel)

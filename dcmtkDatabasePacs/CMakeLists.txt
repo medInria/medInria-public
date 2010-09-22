@@ -4,7 +4,8 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(medDatabasePacsPlugin)
+project(dcmtkDatabasePacsPlugin)
+include(files.cmake)
 
 ## #################################################################
 ## Setup version numbering
@@ -24,6 +25,8 @@ set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+
 ## #################################################################
 ## Resolve dependencies
 ## #################################################################
@@ -32,21 +35,21 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-	medDatabasePacs.h
-	medDatabasePacsPlugin.h
-   )
+	dcmtkPacsFindScu.h
+	dcmtkDatabasePacsPlugin.h
+	${OTHER_MOC_FILES})
 
 set(${PROJECT_NAME}_SOURCES
-	medDatabasePacs.cpp
-	medDatabasePacsPlugin.cpp
-   )
+	dcmtkPacsFindScu.cpp
+	dcmtkDatabasePacsPlugin.cpp)
 
 ## #################################################################
 ## Build rules
@@ -54,15 +57,46 @@ set(${PROJECT_NAME}_SOURCES
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
+
+find_package(DCMTK2 REQUIRED)
+include_directories(${DCMTK_INCLUDE_DIR})
+
+IF(WIN32)		
+	SET(WIN32_STD_LIBRARIES 
+		ws2_32
+		netapi32
+		wsock32
+		)
+ENDIF(WIN32)
+		
+  
+INCLUDE_DIRECTORIES(
+  "medDcmtk"
+  "medLogger"
+)
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES})
-
-target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkCore
+  ${${PROJECT_NAME}_SOURCES}
+  ${MED_DCMTK_SOURCES}
+  ${MED_LOGGER_SOURCES}
+  ${MED_GENERAL_SOURCES}	
   )
 
+target_link_libraries(${PROJECT_NAME}
+  ${DCMTK_LIBRARIES}
+  ${QT_LIBRARIES}
+  ${WIN32_STD_LIBRARIES} 
+  dtkCore
+  medCore
+  medPacs
+  )
+
+#Build Groups for Visual Studio
+SOURCE_GROUP( "DCMTK" FILES ${MED_DCMTK_SOURCES})
+SOURCE_GROUP( "LOGGER" FILES ${MED_LOGGER_SOURCES})
+
+  
 OPTION(BUILD_EXAMPLES "Enable this if you want to build the exmples" OFF)
 IF(BUILD_EXAMPLES)
 	subdirs(examples)

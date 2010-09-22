@@ -70,7 +70,10 @@ public:
     */
     void useBuildInStoreSCP(bool flag);
 
-
+   /**
+    * Clear all previously set attributes.
+    */
+    void clearAllQueryAttributes();
 
 protected:
 
