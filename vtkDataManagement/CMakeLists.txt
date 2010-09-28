@@ -59,9 +59,6 @@
   ${vtkDataManagement_LIBS}
   )
 
-  INSTALL_TARGETS(/lib vtkDataManagement)
-
-
   IF (VTK_WRAP_TCL)
 
     SET_SOURCE_FILES_PROPERTIES(
@@ -91,10 +88,9 @@
     )
    
     if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
-      install_targets(
-      ${vtkINRIA3D_INSTALL_LIB_DIR}
-      RUNTIME_DIRECTORY ${vtkINRIA3D_INSTALL_BIN_DIR}
-      vtkDataManagementTCL
+      install(TARGETS vtkDataManagementTCL
+      LIBRARY DESTINATION ${vtkINRIA3D_INSTALL_LIB_DIR}
+      RUNTIME DESTINATION ${vtkINRIA3D_INSTALL_BIN_DIR}
       )
     endif(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
 
@@ -107,14 +103,13 @@
   ENDIF( BUILD_TESTING )
   
   if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
-    install_targets(
-    ${vtkINRIA3D_INSTALL_LIB_DIR}
-    RUNTIME_DIRECTORY ${vtkINRIA3D_INSTALL_BIN_DIR}
-    vtkDataManagement
+    install(TARGETS vtkDataManagement
+    LIBRARY DESTINATION ${vtkINRIA3D_INSTALL_LIB_DIR}
+    RUNTIME DESTINATION ${vtkINRIA3D_INSTALL_BIN_DIR}
     )
   endif(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
 
   if(NOT vtkINRIA3D_INSTALL_NO_DEVELOPMENT)
-    install_files(${vtkINRIA3D_INSTALL_INCLUDE_DIR} .h ${vtkDataManagement_SRCS})
+    install_files(i${vtkINRIA3D_INSTALL_INCLUDE_DIR} .h ${vtkDataManagement_SRCS})
   endif(NOT vtkINRIA3D_INSTALL_NO_DEVELOPMENT)
 
