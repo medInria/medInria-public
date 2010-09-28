@@ -17,6 +17,7 @@
 ## 
 ######################################################################
 
+
 include (InstallRequiredSystemLibraries)
 
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
@@ -38,6 +39,8 @@ set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 set(CPACK_BINARY_STGZ OFF)
 set(CPACK_BINARY_TBZ2 OFF)
 set(CPACK_BINARY_TGZ OFF)
+set(CPACK_BINARY_TZ OFF)
+
 set(CPACK_SOURCE_TBZ2 OFF)
 set(CPACK_SOURCE_TGZ OFF)
 set(CPACK_SOURCE_TZ OFF)

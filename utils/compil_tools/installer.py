@@ -410,11 +410,24 @@ def build_package(project,config,architecture):
 
     print "build package: " + project
     os.chdir(config.get(project,"build_dir"))
-    cpack_cmd = config.get("commands","cpack")
-    #cmd = cpack_cmd
-    cmd = config.get("commands","make") + " package"
-    print cmd
-    os.system(cmd)
+    print architecture,
+    if architecture =='win' or architecture == 'win32' \
+            or architecture == 'win64':
+
+        cmd = config.get("commands","make") + " package"
+        print cmd
+
+        os.system(cmd)
+    else:
+        cpack_cmd = config.get("commands","cpack")
+        pkg_mngr = config.get("package_deps","package_manager")
+        print pkg_mngr
+        gen = "RPM"
+        if pkg_mngr == "apt":
+            gen = "DEB"
+        cmd = cpack_cmd + " -G " + gen
+        os.system(cmd)
+
     extra_package_cmd=config.get(project,"extra_package_cmd")
     if len(extra_package_cmd):
         print "Execute extra package command:",extra_package_cmd
@@ -606,6 +619,7 @@ def main(argv):
             getattr(options, name) and config.getint(project, name) == 1
 
         os.chdir(projects_dir)
+
         if choose_fun('create_dirs'):
             print "Creating directory for " + project + "..."
             if confirm_fun():
