@@ -48,6 +48,7 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageFloat3 : public dtkAbstractDataImage
     int scalarValueMaxCount(void);
     
  private:
+    void computeRange(void);
 
     itkDataImageFloat3Private* d;
   
