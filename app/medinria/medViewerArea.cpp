@@ -193,6 +193,12 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     registrationConfiguration->attach(3); // Registration compare container when set up
 
     medViewerConfigurator::instance()->addConfiguration("Registration", registrationConfiguration);
+
+
+    //action for transfer function
+    QAction * transFunAction = new QAction("Toggle Tranfer Function Widget On", this);
+    transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_L);
+    connect(transFunAction, SIGNAL(transFunToggle(currentView,currentData)), this, SLOT(bringUpTransFun(currentView,currentData)));
 }
 
 medViewerArea::~medViewerArea(void)
