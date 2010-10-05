@@ -411,6 +411,15 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   {									\
     return d->image->GetLargestPossibleRegion().GetSize()[2];		\
   }									\
+  int itkDataImage##suffix::tDimension(void)				\
+  { 									\
+    if (d->image.IsNull()) \
+      return -1; \
+    if (dimension<4) \
+      return 1; \
+    else \
+      return d->image->GetLargestPossibleRegion().GetSize()[3];		\
+  }									\
   int itkDataImage##suffix::minRangeValue(void)				\
   {									\
     return -1;								\

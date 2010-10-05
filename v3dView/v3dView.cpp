@@ -1023,16 +1023,21 @@ void v3dView::setData(dtkAbstractData *data)
     
     if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) ) {
         d->slider->blockSignals (true);
+		if (d->dimensionBox->currentText()==tr("Space")) {
         if( d->orientation=="Axial") {
             d->slider->setRange(0, imData->zDimension()-1);
         }
-	else if( d->orientation=="Sagittal") {
+		else if( d->orientation=="Sagittal") {
             d->slider->setRange(0, imData->xDimension()-1);
         }
-	else if( d->orientation=="Coronal") {
+		else if( d->orientation=="Coronal") {
             d->slider->setRange(0, imData->yDimension()-1);
         }
-	d->slider->blockSignals (false);
+		}
+		else if (d->dimensionBox->currentText()==tr("Time")) {
+			d->slider->setRange(0, imData->tDimension()-1);
+		}
+		d->slider->blockSignals (false);
     }
 
     // this->update(); // update is not the role of the plugin, but of the app
@@ -1203,30 +1208,39 @@ void v3dView::onOrientationPropertySet(QString value)
     // we don't want it
     d->slider->blockSignals (true);
     
+	dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data);
+	
     if (value == "Axial") {
         d->orientation = "Axial";
-	d->currentView = d->view2DAxial;
+		d->currentView = d->view2DAxial;
 	
-	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
-	    d->slider->setRange (0, imData->zDimension()-1);
-    }
-
+		if (d->dimensionBox->currentText()==tr("Space") && imData) {
+			d->slider->setRange (0, imData->zDimension()-1);
+		}
+	}
+	
     if (value == "Sagittal") {
         d->orientation = "Sagittal";
-	d->currentView = d->view2DSagittal;
+		d->currentView = d->view2DSagittal;
 	
-	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
+		if (d->dimensionBox->currentText()==tr("Space") && imData) {
             d->slider->setRange (0, imData->xDimension()-1);
+		}
     }
 
     if (value == "Coronal") {
         d->orientation = "Coronal";
-	d->currentView = d->view2DCoronal;
+		d->currentView = d->view2DCoronal;
 	
-	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
+		if (d->dimensionBox->currentText()==tr("Space") && imData) {
             d->slider->setRange (0, imData->yDimension()-1);
+		}
     }
 
+	if (d->dimensionBox->currentText()==tr("Time") && imData) {
+			d->slider->setRange(0, imData->tDimension()-1);
+	}
+	
     if (!d->currentView) {
         d->slider->blockSignals (false);
 	return;
@@ -1247,10 +1261,15 @@ void v3dView::onOrientationPropertySet(QString value)
     d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL); // seems not needed anymore
 
     // update slider position
+	if (d->dimensionBox->currentText()==tr("Space")) {
     if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
         unsigned int zslice = view2d->GetSlice();
-	d->slider->setValue (zslice);
+	    d->slider->setValue (zslice);
     }
+	}
+	else if (d->dimensionBox->currentText()==tr("Time")) {
+		d->slider->setValue(d->currentView->GetTimeIndex());
+	}
 
     d->slider->blockSignals (false);
 }
@@ -1680,28 +1699,30 @@ void v3dView::onMousePressEvent(QMouseEvent *event)
 
 void v3dView::onZSliderValueChanged (int value)
 {
-    if (d->orientation=="3D" || !d->currentView)
+    if (!d->currentView)
         return;
 
-    d->observer->lock();
-    if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
 		if (d->dimensionBox->currentText()==tr("Space"))
 		{
+			if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
 			qDebug() << "Space";
-          view->SetSlice (value);
-		  view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
+			d->observer->lock();
+            view->SetSlice (value);
+		    view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
+			d->observer->unlock();
+			}
 		}
 		else if (d->dimensionBox->currentText()==tr("Time"))
 		{
+			if( d->currentView ) {
 			qDebug() << "Time: " << value;
-			view->SetTimeIndex (value);
-			view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::TimeChangeEvent);		
+			d->currentView->SetTimeIndex (value);
+			d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::TimeChangeEvent);	
+			}
 		}
 		
 		qApp->processEvents();
-        d->currentView->Render();		
-    }
-    d->observer->unlock();
+        d->currentView->Render();
 }
 
 void v3dView::onDaddyPropertySet (QString value)
@@ -1760,6 +1781,7 @@ void v3dView::onDimensionBoxChanged (QString value)
 	
 	d->slider->blockSignals (true);
 	if (value=="Space") {
+		d->observer->unlock();
 		if( d->orientation=="Axial") {
             d->slider->setRange(0, data->zDimension()-1);
         }
@@ -1768,10 +1790,19 @@ void v3dView::onDimensionBoxChanged (QString value)
         }
 		else if( d->orientation=="Coronal") {
             d->slider->setRange(0, data->yDimension()-1);
-        }		
+        }
+		if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
+			unsigned int zslice = view2d->GetSlice();
+			d->slider->setValue (zslice);
+		}
 	}
 	else if (value=="Time") {
+		d->observer->lock();
 		d->slider->setRange(0, data->tDimension()-1);
+		if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
+			unsigned int timeIndex = view2d->GetTimeIndex();
+			d->slider->setValue (timeIndex);
+		}
 	}
 	d->slider->blockSignals (false);
 	}
