@@ -63,8 +63,9 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+add_definitions(-DHAVE_CONFIG_H)
 
+qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 find_package(DCMTK2 REQUIRED)
 include_directories(${DCMTK_INCLUDE_DIR})

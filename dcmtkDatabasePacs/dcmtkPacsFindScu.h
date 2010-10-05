@@ -2,6 +2,7 @@
 #define DCMTKPACSFINDSCU_H
 
 #include "dcmtkFindScu.h"
+
 #include <medPacs/medAbstractPacsFindScu.h>
 
 class dcmtkPacsFindScu : public medAbstractPacsFindScu

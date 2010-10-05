@@ -43,7 +43,6 @@ SimpleView::SimpleView()
   m_echoScu = new dcmtkEchoScu();
   m_findScu = new dcmtkFindScu();
   m_moveScu = new dcmtkMoveScu();
-
   
   m_serverThread = new ServerThread();
   m_sendThread = new SendThread();

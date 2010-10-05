@@ -4,7 +4,7 @@
 // includes
 #include <QMainWindow>
 #include <iostream>
-#include <vector>
+#include <>vector>
 #include "dcmtkNode.h"
 
 // Forward Qt class declarations

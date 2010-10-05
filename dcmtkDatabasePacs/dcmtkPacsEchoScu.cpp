@@ -17,7 +17,7 @@ int dcmtkPacsEchoScu::sendEchoRequest( const char* peerTitle, const char* peerIP
     return scu.sendEchoRequest(peerTitle,peerIP,peerPort,ourTitle,ourIP,ourPort);
 }
 
-medAbstractPacsEchoScu * createDcmtkEchoScu( void )
+medAbstractPacsEchoScu *createDcmtkEchoScu(void)
 {
     return new dcmtkPacsEchoScu;
 }

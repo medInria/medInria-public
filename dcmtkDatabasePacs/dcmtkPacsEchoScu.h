@@ -10,7 +10,8 @@ class dcmtkPacsEchoScu : public medAbstractPacsEchoScu
 
 public:
     virtual QString description(void) const;
-    static bool     registered(void);
+
+    static bool registered(void);
 
     int sendEchoRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, 
                         const char* ourTitle, const char* ourIP, unsigned int ourPort);
