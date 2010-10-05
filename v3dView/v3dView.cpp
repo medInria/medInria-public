@@ -132,6 +132,7 @@ public:
 
     QWidget    *widget;
     QSlider    *slider;
+	QComboBox  *dimensionBox;
     QPushButton *anchorButton;
     QPushButton *linkButton;
     QPushButton *linkWLButton;
@@ -228,6 +229,15 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->slider = new QSlider(Qt::Horizontal, d->widget);
     d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->slider->setFocusPolicy(Qt::NoFocus);
+	
+	d->dimensionBox = new QComboBox(d->widget);
+	d->dimensionBox->setFocusPolicy(Qt::NoFocus);
+	d->dimensionBox->addItem( tr("Space") );
+	d->dimensionBox->addItem( tr("Time") );
+	d->dimensionBox->setCurrentIndex( 0 );
+	d->dimensionBox->setMaximumHeight(16);
+	d->dimensionBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->dimensionBox->setMaximumWidth(64);
 
     d->anchorButton = new QPushButton(d->widget);
     d->anchorButton->setIcon (QIcon(":/icons/anchor.png"));
@@ -321,12 +331,13 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setContentsMargins(0, 0, 0, 0);
     toolsLayout->setSpacing(0);
+	toolsLayout->addWidget(d->dimensionBox);
+	toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->slider);
     toolsLayout->addWidget(d->anchorButton);
     toolsLayout->addWidget(d->linkButton);
     toolsLayout->addWidget(d->linkWLButton);
 	toolsLayout->addWidget(d->registerButton);
-    toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->closeButton);
 
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
@@ -583,6 +594,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
 
     connect(d->vtkWidget, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,    SIGNAL(valueChanged(int)),        this, SLOT(onZSliderValueChanged(int)));
+	connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(QString)));
 }
 
 v3dView::~v3dView(void)
@@ -836,6 +848,7 @@ void v3dView::setData(dtkAbstractData *data)
     }
     else if (data->description()=="itkDataImageShort4") {
         if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
+			/*
 	    itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::Pointer extractor = itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::New();
 	    itk::Image<short, 4>::SizeType size = image->GetLargestPossibleRegion().GetSize();
 	    itk::Image<short, 4>::IndexType index = {{0,0,0,0}};
@@ -858,6 +871,11 @@ void v3dView::setData(dtkAbstractData *data)
 	    d->view2DSagittal->SetITKInput( extractor->GetOutput() );
 	    d->view2DCoronal->SetITKInput( extractor->GetOutput() );
 	    d->view3D->SetITKInput( extractor->GetOutput() );
+		 */
+		d->view2DAxial->SetITKInput4( image );
+	    d->view2DSagittal->SetITKInput4( image );
+	    d->view2DCoronal->SetITKInput4( image );
+	    d->view3D->SetITKInput4( image );		
 	}
     }
     else if (data->description()=="itkDataImageUShort3") {
@@ -870,6 +888,7 @@ void v3dView::setData(dtkAbstractData *data)
     }
     else if (data->description()=="itkDataImageUShort4") {
         if( itk::Image<unsigned short, 4>* image = dynamic_cast<itk::Image<unsigned short, 4>*>( (itk::Object*)( data->data() ) ) ) {
+			/*
 	    itk::ExtractImageFilter< itk::Image<unsigned short, 4>, itk::Image<unsigned short, 3> >::Pointer extractor = itk::ExtractImageFilter< itk::Image<unsigned short, 4>, itk::Image<unsigned short, 3> >::New();
 	    itk::Image<unsigned short, 4>::SizeType size = image->GetLargestPossibleRegion().GetSize();
 	    itk::Image<unsigned short, 4>::IndexType index = {{0,0,0,0}};
@@ -888,10 +907,11 @@ void v3dView::setData(dtkAbstractData *data)
 	      qDebug() << e.GetDescription();
 	      return;
 	    }
-	    d->view2DAxial->SetITKInput( extractor->GetOutput() );
-	    d->view2DSagittal->SetITKInput( extractor->GetOutput() );
-	    d->view2DCoronal->SetITKInput( extractor->GetOutput() );
-	    d->view3D->SetITKInput( extractor->GetOutput() );
+			 */
+	    d->view2DAxial->SetITKInput4( image );
+	    d->view2DSagittal->SetITKInput4( image );
+	    d->view2DCoronal->SetITKInput4( image );
+	    d->view3D->SetITKInput4( image );
 	}
     }
     else if (data->description()=="itkDataImageInt3") {
@@ -1665,9 +1685,20 @@ void v3dView::onZSliderValueChanged (int value)
 
     d->observer->lock();
     if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
-        view->SetSlice (value);
-	view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
-	qApp->processEvents();
+		if (d->dimensionBox->currentText()==tr("Space"))
+		{
+			qDebug() << "Space";
+          view->SetSlice (value);
+		  view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
+		}
+		else if (d->dimensionBox->currentText()==tr("Time"))
+		{
+			qDebug() << "Time: " << value;
+			view->SetTimeIndex (value);
+			view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::TimeChangeEvent);		
+		}
+		
+		qApp->processEvents();
         d->currentView->Render();		
     }
     d->observer->unlock();
@@ -1721,6 +1752,29 @@ void v3dView::onLinkedWLPropertySet (QString value)
         d->linkWLButton->setChecked (false);
 	d->linkWLButton->blockSignals(false);
     }
+}
+
+void v3dView::onDimensionBoxChanged (QString value)
+{
+	if (dtkAbstractDataImage *data = dynamic_cast<dtkAbstractDataImage*>(d->data) ) {
+	
+	d->slider->blockSignals (true);
+	if (value=="Space") {
+		if( d->orientation=="Axial") {
+            d->slider->setRange(0, data->zDimension()-1);
+        }
+		else if( d->orientation=="Sagittal") {
+            d->slider->setRange(0, data->xDimension()-1);
+        }
+		else if( d->orientation=="Coronal") {
+            d->slider->setRange(0, data->yDimension()-1);
+        }		
+	}
+	else if (value=="Time") {
+		d->slider->setRange(0, data->tDimension()-1);
+	}
+	d->slider->blockSignals (false);
+	}
 }
 
 void v3dView::onMetaDataSet(QString key, QString value)

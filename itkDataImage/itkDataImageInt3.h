@@ -39,6 +39,7 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageInt3 : public dtkAbstractDataImage
     int xDimension(void);
     int yDimension(void);
     int zDimension(void);
+	int tDimension(void);
 
     int minRangeValue(void);
     int maxRangeValue(void);
