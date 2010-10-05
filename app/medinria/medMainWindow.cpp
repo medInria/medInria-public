@@ -98,6 +98,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     if(!medDatabaseController::instance()->createConnection())
         qDebug() << "Unable to create a connection to the database";
 
+
     // Setting up menu
 
     QAction *windowFullScreenAction = new QAction("Toggle fullscreen mode", this);

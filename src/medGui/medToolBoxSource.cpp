@@ -42,11 +42,16 @@ medToolBoxSource::medToolBoxSource(QWidget *parent) : medToolBox(parent), d(new 
     d->filseystem_layout->setSpacing(0);
 
     QFormLayout *pacs_page_layout = new QFormLayout(d->pacs_page);
-    pacs_page_layout->addRow("Url:", new QLineEdit(d->pacs_page));
-    pacs_page_layout->addRow("Login:", new QLineEdit(d->pacs_page));
-    pacs_page_layout->addRow("Password:", new QLineEdit(d->pacs_page));
-    pacs_page_layout->addWidget(new QPushButton("Connect", d->pacs_page));
+    //pacs_page_layout->addRow("Url:", new QLineEdit(d->pacs_page));
+    //pacs_page_layout->addRow("Login:", new QLineEdit(d->pacs_page));
+    //pacs_page_layout->addRow("Password:", new QLineEdit(d->pacs_page));
+    QPushButton* echoButton = new QPushButton("EchoTest", d->pacs_page);
+    pacs_page_layout->addWidget(echoButton);
+    QPushButton* findButton = new QPushButton("FindTest", d->pacs_page);
+    pacs_page_layout->addWidget(findButton);
     pacs_page_layout->setFormAlignment(Qt::AlignHCenter);
+    connect(echoButton,SIGNAL(pressed()), this, SIGNAL(echoPressed()));
+    connect(findButton,SIGNAL(pressed()), this, SIGNAL(findPressed()));
 
     medToolBoxTab *tab = new medToolBoxTab(this);
     tab->addTab(d->database_page, "Db");
