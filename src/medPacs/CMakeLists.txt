@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Oct  5 11:06:43 2010 (+0200)
+## Last-Updated: Tue Oct  5 18:03:15 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 40
+##     Update #: 41
 ######################################################################
 ## 
 ### Commentary: 
@@ -29,11 +29,13 @@ set(${PROJECT_NAME}_HEADERS
   medAbstractPacsEchoScu.h
   medAbstractPacsFindScu.h
   medAbstractPacsMoveScu.h	
+  medAbstractPacsStoreScu.h
+  medAbstractPacsStoreScp.h
   medAbstractPacsNode.h
   medAbstractPacsResultDataset.h
+  medAbstractPacsKey.h
   medPacsExport.h
-  medPacsWidget.h
-)
+  medPacsWidget.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractPacsBaseScu.h
@@ -41,10 +43,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractPacsEchoScu.h
   medAbstractPacsFindScu.h
   medAbstractPacsMoveScu.h
+  medAbstractPacsStoreScu.h
+  medAbstractPacsStoreScp.h
   medAbstractPacsNode.h
-  medAbstractPacsResultDataset.h	
-  medPacsWidget.h
-)
+  medAbstractPacsResultDataset.h
+  medAbstractPacsKey.h	
+  medPacsWidget.h)
 
 set(${PROJECT_NAME}_SOURCES
   medAbstractPacsBaseScu.cpp	
@@ -52,10 +56,12 @@ set(${PROJECT_NAME}_SOURCES
   medAbstractPacsEchoScu.cpp
   medAbstractPacsFindScu.cpp
   medAbstractPacsMoveScu.cpp
+  medAbstractPacsStoreScu.cpp
+  medAbstractPacsStoreScp.cpp
   medAbstractPacsNode.cpp
   medAbstractPacsResultDataset.cpp
-  medPacsWidget.cpp
-)
+  medAbstractPacsKey.cpp
+  medPacsWidget.cpp)
 
 ## #################################################################
 ## Build rules
