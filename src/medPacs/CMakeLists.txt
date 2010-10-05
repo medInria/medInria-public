@@ -29,8 +29,11 @@ set(${PROJECT_NAME}_HEADERS
 	medAbstractPacsEchoScu.h
 	medAbstractPacsFindScu.h
 	medAbstractPacsMoveScu.h	
+	medAbstractPacsStoreScu.h
+	medAbstractPacsStoreScp.h
 	medAbstractPacsNode.h
 	medAbstractPacsResultDataset.h
+	medAbstractPacsKey.h
 	medPacsExport.h
 	medPacsWidget.h
 )
@@ -41,8 +44,11 @@ set(${PROJECT_NAME}_HEADERS_MOC
 	medAbstractPacsEchoScu.h
 	medAbstractPacsFindScu.h
 	medAbstractPacsMoveScu.h
+	medAbstractPacsStoreScu.h
+	medAbstractPacsStoreScp.h
 	medAbstractPacsNode.h
-	medAbstractPacsResultDataset.h	
+	medAbstractPacsResultDataset.h
+	medAbstractPacsKey.h	
 	medPacsWidget.h
 )
 
@@ -52,8 +58,11 @@ set(${PROJECT_NAME}_SOURCES
 	medAbstractPacsEchoScu.cpp
 	medAbstractPacsFindScu.cpp
 	medAbstractPacsMoveScu.cpp
+	medAbstractPacsStoreScu.cpp
+	medAbstractPacsStoreScp.cpp
 	medAbstractPacsNode.cpp
 	medAbstractPacsResultDataset.cpp
+	medAbstractPacsKey.cpp
 	medPacsWidget.cpp
 )
 

@@ -29,9 +29,9 @@ medAbstractPacsNode::ConnData medAbstractPacsNode::getConnData()
     return data;
 }
 
-QVector<medAbstractPacsResultDataset*>* medAbstractPacsNode::getResultDatasetContainer()
+QVector<medAbstractPacsResultDataset*>& medAbstractPacsNode::getResultDatasetContainer()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
-    return NULL;
+    return QVector<medAbstractPacsResultDataset*>();
 }
