@@ -370,6 +370,7 @@ void medClutEditorView::resizeEvent(QResizeEvent *event)
 {
     QGraphicsView::resizeEvent(event);
 
+    qDebug() << this->sceneRect();
     this->fitInView(this->sceneRect(), Qt::KeepAspectRatio);
 }
 
@@ -423,16 +424,16 @@ void medClutEditor::setData(dtkAbstractData *data)
         medClutEditorHistogram *histogram = new medClutEditorHistogram;
         int min_range = image->minRangeValue();
         int max_range = image->maxRangeValue();
-	qDebug() << "min: " << min_range << "\nmax: " << max_range;
 
 
         for(int i = min_range ; i < max_range ; i++)
             histogram->addValue(i, image->scalarValueCount(i-min_range));
 
         d->scene->addItem(histogram);
-        d->scene->setSceneRect(
-            min_range,           200*-log10((double)1+image->scalarValueMaxCount()),
-            max_range-min_range, 200* log10((double)1+image->scalarValueMaxCount()));
+	int log_max =
+	  static_cast<int>(log10((double)1+image->scalarValueMaxCount()));
+        d->scene->setSceneRect(min_range,           200 * -log_max,
+			       max_range-min_range, 200 *  log_max);
         d->dtk_data = image;
     }
 }

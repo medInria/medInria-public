@@ -656,12 +656,11 @@ void medViewerArea::bringUpTransFun(bool checked)
   
     if(dtkAbstractView *view = d->view_stacks.value(d->current_patient)->current()->current()->view()) {
 
-      medClutEditor * transFun = new medClutEditor(this);
+      medClutEditor * transFun = new medClutEditor(NULL);
+      transFun->setWindowModality( Qt::WindowModal );
       transFun->setData(static_cast<dtkAbstractData *>(view->data()));
       transFun->setView(view);
 
-      transFun->setProperty( "modal", true );
-      // transFun->setProperty( "geometry", QRect(50, 50, 300, 300) );
       transFun->show();
     }
 }
