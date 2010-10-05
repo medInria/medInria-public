@@ -280,8 +280,6 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     if ( d->range_computed )						\
       return;								\
 									\
-    d->image->Print( std::cout );					\
-									\
     if ( d->image->GetLargestPossibleRegion().GetNumberOfPixels() == 0 ) \
       return;								\
 									\
@@ -302,16 +300,13 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     }									\
     d->range_min = calculator->GetMinimum();				\
     d->range_max = calculator->GetMaximum();				\
-    calculator->Print( std::cout );					\
-    std::cout << "Image min/max: " << d->range_min << " "		\
-	      << d->range_max << std::endl;				\
     d->range_computed = true;						\
   }									\
   int itkDataImage##suffix::minRangeValue(void)				\
   {									\
     computeRange();							\
     if ( !d->range_computed )						\
-      qDebug() << "Cannot compute ran";		\
+      qDebug() << "Cannot compute range";				\
     return d->range_min;						\
   }									\
   int itkDataImage##suffix::maxRangeValue(void)				\
