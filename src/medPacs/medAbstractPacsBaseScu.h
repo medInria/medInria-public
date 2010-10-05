@@ -30,7 +30,7 @@ public:
 
     virtual void clearAllQueryAttributes(void);
 
-    virtual QVector<medAbstractPacsNode*>& getNodeContainer(void);
+    virtual QVector<medAbstractPacsNode*> getNodeContainer(void);
 
 };
 

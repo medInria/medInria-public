@@ -15,19 +15,19 @@ public:
              medAbstractPacsNode(void);
     virtual ~medAbstractPacsNode(void);
 
-    struct ConnData
-    {
-        std::string title;
-        std::string ip;
-        unsigned int port;
-    };
+    virtual std::string title(void) {
+        return "default title";
+    }
 
-    void addConnData(ConnData cdata);
+    virtual std::string ip(void) {
+         return "default ip";
+    }
+    
+    virtual unsigned int port(void) {
+        return 22;
+    }
 
-    ConnData getConnData();
-
-    QVector<medAbstractPacsResultDataset*>& getResultDatasetContainer();
-
+    virtual QVector<medAbstractPacsResultDataset*> getResultDatasetContainer();
 };
 
 #endif

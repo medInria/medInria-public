@@ -12,19 +12,19 @@ class MEDPACS_EXPORT medAbstractPacsResultDataset : public QObject
     Q_OBJECT
 
 public:
-    medAbstractPacsResultDataset(void);
+             medAbstractPacsResultDataset(void);
     virtual ~medAbstractPacsResultDataset(void);
 
-    const char* getStudyInstanceUID();
-    void setStudyInstanceUID(const char* uid);
+    virtual const char* getStudyInstanceUID(void);
+    virtual void setStudyInstanceUID(const char* uid);
 
-    const char* getSeriesInstanceUID();
-    void setSeriesInstanceUID(const char* uid);
+    virtual const char* getSeriesInstanceUID(void);
+    virtual void setSeriesInstanceUID(const char* uid);
 
-    const char* getSOPInstanceUID();
-    void setSOPInstanceUID(const char* uid);
+    virtual const char* getSOPInstanceUID(void);
+    virtual void setSOPInstanceUID(const char* uid);
 
-    QVector<medAbstractPacsKey*>* getKeyContainer();
+    virtual QVector<medAbstractPacsKey*>* getKeyContainer(void);
 
 };
 

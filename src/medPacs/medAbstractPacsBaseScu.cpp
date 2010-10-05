@@ -38,7 +38,7 @@ void medAbstractPacsBaseScu::clearAllQueryAttributes(void)
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-QVector<medAbstractPacsNode*>& medAbstractPacsBaseScu::getNodeContainer( void )
+QVector<medAbstractPacsNode*> medAbstractPacsBaseScu::getNodeContainer( void )
 {
     DTK_DEFAULT_IMPLEMENTATION;
 

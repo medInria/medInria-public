@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 17:45:02 2010 (+0200)
+ * Last-Updated: Tue Oct  5 18:23:30 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 436
+ *     Update #: 444
  */
 
 /* Commentary: 
@@ -41,6 +41,7 @@
 #include <medGui/medToolBoxSource.h>
 #include <medGui/medToolBoxPacsHost.h>
 #include <medGui/medToolBoxPacsNodes.h>
+#include <medGui/medToolBoxPacsSearch.h>
 
 #include <medPacs/medPacsWidget.h>
 
@@ -183,6 +184,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_pacs_nodes = new medToolBoxPacsNodes(this);
     d->toolbox_pacs_nodes->setVisible(false);
 
+    // Toolbox pacs search //////////////////////////////////////////
+
+    d->toolbox_pacs_search = new medToolBoxPacsSearch(this);
+    d->toolbox_pacs_search->setVisible(false);
+
     // Toolbox container /////////////////////////////////////////////
 
     d->toolbox_container = new medToolBoxContainer(this);
@@ -190,6 +196,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_container->addToolBox(d->toolbox_source);
     d->toolbox_container->addToolBox(d->toolbox_pacs_host);
     d->toolbox_container->addToolBox(d->toolbox_pacs_nodes);
+    d->toolbox_container->addToolBox(d->toolbox_pacs_search);
     d->toolbox_container->addToolBox(d->toolbox_jobs);
 
     // Layout /////////////////////////////////////////////
@@ -280,9 +287,11 @@ void medBrowserArea::onSourceIndexChanged(int index)
     if(index == 2) {
         d->toolbox_pacs_host->setVisible(true);
         d->toolbox_pacs_nodes->setVisible(true);
+        d->toolbox_pacs_search->setVisible(true);
     } else {
         d->toolbox_pacs_host->setVisible(false);
         d->toolbox_pacs_nodes->setVisible(false);
+        d->toolbox_pacs_search->setVisible(false);
     }
 }
 

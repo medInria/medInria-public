@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 15:03:27 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 16:20:02 2010 (+0200)
+ * Last-Updated: Tue Oct  5 18:16:09 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 12
+ *     Update #: 14
  */
 
 /* Commentary: 
@@ -25,6 +25,7 @@ class medToolBoxJobs;
 class medToolBoxSource;
 class medToolBoxPacsHost;
 class medToolBoxPacsNodes;
+class medToolBoxPacsSearch;
 
 class medDatabasePreview;
 class medDatabaseModel;
@@ -46,6 +47,7 @@ public:
     medToolBoxSource *toolbox_source;
     medToolBoxPacsHost *toolbox_pacs_host;
     medToolBoxPacsNodes *toolbox_pacs_nodes;
+    medToolBoxPacsSearch *toolbox_pacs_search;
 
     medDatabasePreview *preview;
     medDatabaseModel *model;
