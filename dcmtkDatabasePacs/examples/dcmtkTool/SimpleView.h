@@ -4,7 +4,7 @@
 // includes
 #include <QMainWindow>
 #include <iostream>
-#include <>vector>
+#include <vector>
 #include "dcmtkNode.h"
 
 // Forward Qt class declarations
@@ -82,7 +82,7 @@ private:
   ServerThread*                 m_serverThread;
   SendThread*                   m_sendThread;
 
-  std::vector<dcmtkNode::dcmtkConnectionData>         m_nodes;
+  std::vector<dcmtkNode::dcmtkConnectionData> m_nodes;
 
   std::string m_peerIP, m_peerTitle;
   std::string m_ourIP, m_ourTitle;

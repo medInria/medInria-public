@@ -73,13 +73,11 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
 
 
     // add node to result container
-    dcmtkNode::dcmtkConnectionData cdata;
-    cdata.title = peerTitle; 
-    cdata.ip = peerIP;
-    cdata.port = peerPort;
-    
+
     dcmtkNode* node = new dcmtkNode;
-    node->addConnData(cdata);
+    node->setTitle(peerTitle);
+    node->setIp(peerIP);
+    node->setPort(peerPort);
     
     //own callback
     dcmtkFindScuCallback myCallback(false, 1);

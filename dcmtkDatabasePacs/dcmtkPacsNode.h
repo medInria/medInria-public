@@ -14,27 +14,41 @@ class dcmtkPacsNode : public medAbstractPacsNode
     Q_OBJECT
 
 public:
+    inline void setTitle(std::string title) {
+        m_title = title;
+    }
 
-    struct ConnData
-    {
-        std::string title;
-        std::string ip;
-        unsigned int port;
-    };
+    inline void setIp(std::string ip) {
+        m_ip = ip;
+    }
+    
+    inline void setPort(unsigned int port) {
+        m_port = port;
+    }
+
+    inline std::string title(void) {
+        return m_title;
+    }
+
+    inline std::string ip(void) {
+        return m_ip;
+    }
+    
+    inline unsigned int port(void) {
+        return m_port;
+    }
 
     void convert( dcmtkNode* node);
 
-    void addConnData(ConnData cdata);
+    QVector<medAbstractPacsResultDataset*> getResultDatasetContainer(void);
 
-    ConnData getConnData();
-
-    QVector<medAbstractPacsResultDataset*>& getResultDatasetContainer();
-
+protected:
+    std::string  m_title;
+    std::string  m_ip;
+    unsigned int m_port;
 
 private:
-    ConnData                                   m_connData;
-    QVector<medAbstractPacsResultDataset*>     m_copyCont;
-
+    QVector<medAbstractPacsResultDataset*> m_copyCont;
 };
 
 

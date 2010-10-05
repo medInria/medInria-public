@@ -5,32 +5,22 @@
 
 #include "medPacs/medAbstractPacsResultDataset.h"
 
+#include <dtkCore/dtkGlobal.h>
 
-void dcmtkPacsNode::addConnData( ConnData cdata )
-{
-    m_connData = cdata;
-}
-
-dcmtkPacsNode::ConnData dcmtkPacsNode::getConnData()
-{
-    return m_connData;
-}
-
-QVector<medAbstractPacsResultDataset*>& dcmtkPacsNode::getResultDatasetContainer()
+QVector<medAbstractPacsResultDataset*> dcmtkPacsNode::getResultDatasetContainer(void)
 {
     return m_copyCont;
 }
 
 void dcmtkPacsNode::convert( dcmtkNode* node)
 {
-    m_connData.title = node->getConnData().title;
-    m_connData.ip = node->getConnData().ip;
-    m_connData.port = node->getConnData().port;
-
+    this->setTitle(node->title());
+    this->setIp(node->ip());
+    this->setPort(node->port());
 
     dcmtkContainer<dcmtkResultDataset*>* container = node->getResultDatasetContainer();
-    for (int i = 0; i<container->size(); i++)
-    {
+
+    for (int i = 0; i<container->size(); i++) {
         dcmtkPacsResultDataset* ds = new dcmtkPacsResultDataset;
         ds->convert(container->getAtPos(i));
         m_copyCont<<ds;

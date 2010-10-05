@@ -34,17 +34,28 @@ void dcmtkPacsFindScu::clearAllQueryAttributes()
     scu.clearAllQueryAttributes();
 }
 
-QVector<medAbstractPacsNode*>& dcmtkPacsFindScu::getNodeContainer( void )
+#include <dtkCore/dtkGlobal.h>
+
+QVector<medAbstractPacsNode*> dcmtkPacsFindScu::getNodeContainer( void )
 {
-  dcmtkContainer<dcmtkNode*>* container = scu.getNodeContainer();
-  m_copyCont.clear();
-  for (int i= container->size(); i<0; --i)
-  {
-      dcmtkPacsNode* ds = new dcmtkPacsNode;
-      ds->convert(container->getAtPos(i));
-      m_copyCont<<ds;
-  }
-  return m_copyCont;
+    dcmtkContainer<dcmtkNode*>* container = scu.getNodeContainer();
+
+    qDebug() << "Initial size" << container->size();
+
+    m_copyCont.clear();
+
+    for (int i = 0; i < container->size(); i++) {
+
+        qDebug() << DTK_PRETTY_FUNCTION << i;
+
+        dcmtkPacsNode* ds = new dcmtkPacsNode;
+        ds->convert(container->getAtPos(i));
+        m_copyCont << ds;
+    }
+
+    qDebug() << "Final size" << m_copyCont.count();
+
+    return m_copyCont;
 }
 
 medAbstractPacsFindScu *createDcmtkFindScu(void) 

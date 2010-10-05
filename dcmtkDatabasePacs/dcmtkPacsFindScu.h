@@ -26,7 +26,7 @@ public:
 
     void clearAllQueryAttributes();
 
-    virtual QVector<medAbstractPacsNode*>& getNodeContainer(void);
+    virtual QVector<medAbstractPacsNode*> getNodeContainer(void);
 
 
 private:
