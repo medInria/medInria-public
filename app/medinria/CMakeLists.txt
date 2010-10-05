@@ -76,7 +76,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkScript
   dtkGui
   medGui
-  medSql)
+  medSql
+  medPacs)
 
 ## #################################################################
 ## Bundle setup

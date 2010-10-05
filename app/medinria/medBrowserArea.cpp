@@ -38,6 +38,8 @@
 #include <medGui/medToolBoxJobs.h>
 #include <medGui/medToolBoxSource.h>
 
+#include <medPacs/medPacsWidget.h>
+
 // /////////////////////////////////////////////////////////////////
 // medBrowserArea
 // /////////////////////////////////////////////////////////////////
@@ -144,14 +146,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Pacs widget ///////////////////////////////////////////////
 
-    // QTreeView *pacs_widget = new QTreeView(this);
-    // pacs_widget->setFrameStyle(QFrame::NoFrame);
-    // pacs_widget->setAttribute(Qt::WA_MacShowFocusRect, false);
-    // pacs_widget->setUniformRowHeights(true);
-    // pacs_widget->setAlternatingRowColors(true);
-    // pacs_widget->setSortingEnabled(true);
-
-    QWidget *pacs_widget = new QWidget(this);
+    medPacsWidget *pacs_widget = new medPacsWidget(this);
 
     // /////////////////////////////////////////////////////////////////
 
@@ -166,6 +161,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_source->setFileSystemWidget(d->side);
 
     connect(d->toolbox_source, SIGNAL(indexChanged(int)), stack, SLOT(setCurrentIndex(int)));
+    connect(d->toolbox_source, SIGNAL(echoPressed()), pacs_widget, SLOT(echoTest()));
+    connect(d->toolbox_source, SIGNAL(findPressed()), pacs_widget, SLOT(findTest()));
 
     // Jobs //////////////////////////////////////////
 
