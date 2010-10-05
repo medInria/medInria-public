@@ -5,7 +5,7 @@
 #include <QMainWindow>
 #include <iostream>
 #include <vector>
-#include "dcmtkNodeContainer.h"
+#include "dcmtkNode.h"
 
 // Forward Qt class declarations
 class Ui_SimpleView;
@@ -70,7 +70,7 @@ private:
   void addConnection(QString peer, QString ip, QString port);
   void printResults(int sum, const char* type);
   
-  dcmtkNodeContainer* getSelectedNodes();
+  dcmtkContainer<dcmtkNode*>* getSelectedNodes();
     
   // Designer form
   Ui_SimpleView *ui;
@@ -82,7 +82,7 @@ private:
   ServerThread*                 m_serverThread;
   SendThread*                   m_sendThread;
 
-  std::vector<dcmtkConnectionData>         m_nodes;
+  std::vector<dcmtkNode::dcmtkConnectionData>         m_nodes;
 
   std::string m_peerIP, m_peerTitle;
   std::string m_ourIP, m_ourTitle;

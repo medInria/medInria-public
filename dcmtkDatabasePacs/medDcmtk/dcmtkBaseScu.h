@@ -10,10 +10,12 @@
 #ifndef DCMTKBASESCU_H
 #define DCMTKBASESCU_H
 
-
+// inc
 #include "dcmtkBase.h"
+#include "dcmtkContainer.h"
 
-class dcmtkNodeContainer;
+// fwd
+class dcmtkNode;
 class dcmtkKeyContainer;
 
 /**
@@ -90,7 +92,7 @@ public:
    /**
     * Returns the result container that contains all datasets that belong to nodes
     */
-    dcmtkNodeContainer* getResultNodeContainer();
+    dcmtkContainer<dcmtkNode*>* getNodeContainer();
 
 protected:
 
@@ -178,9 +180,9 @@ protected:
 
     OFString              temp_str;
 
-    eQueryLevel           m_currentQueryLevel;
-    dcmtkNodeContainer*   m_resContainer;
-    dcmtkKeyContainer*    m_keyContainer;
+    eQueryLevel                  m_currentQueryLevel;
+    dcmtkContainer<dcmtkNode*>   m_resContainer;
+    dcmtkKeyContainer*           m_keyContainer;
 
 };
 

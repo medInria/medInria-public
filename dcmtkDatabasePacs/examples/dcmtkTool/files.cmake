@@ -2,8 +2,6 @@
 SET (MED_DCMTK_SOURCES
 		../../medDcmtk/dcmtkLogger.h
 		../../medDcmtk/dcmtkLogger.cpp
-		../../medDcmtk/dcmtkFindDataset.h
-		../../medDcmtk/dcmtkFindDataset.cpp
 		../../medDcmtk/dcmtkBase.h
 		../../medDcmtk/dcmtkBase.cpp
 		../../medDcmtk/dcmtkBaseScu.h
@@ -20,7 +18,12 @@ SET (MED_DCMTK_SOURCES
 		../../medDcmtk/dcmtkStoreScu.cpp
 		../../medDcmtk/dcmtkContainer.h
 		../../medDcmtk/dcmtkContainer.txx
-		../../medDcmtk/dcmtkNodeContainer.h
+		../../medDcmtk/dcmtkResultDataset.h
+		../../medDcmtk/dcmtkResultDataset.cpp
+		../../medDcmtk/dcmtkKeyContainer.h
+		../../medDcmtk/dcmtkKeyContainer.cpp		
+		../../medDcmtk/dcmtkNode.h
+		../../medDcmtk/dcmtkNode.cpp
 		
 		../../medDcmtk/dcmtkBaseScp.h
 		../../medDcmtk/dcmtkBaseScp.cpp

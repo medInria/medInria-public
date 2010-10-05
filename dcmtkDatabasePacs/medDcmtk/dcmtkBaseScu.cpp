@@ -2,8 +2,8 @@
 
 #include "dcmtk/dcmnet/assoc.h"
 
-#include "dcmtkFindDataset.h"
-#include "dcmtkNodeContainer.h"
+#include "dcmtkResultDataset.h"
+#include "dcmtkNode.h"
 #include "dcmtkLogger.h"
 
 #include <sstream>
@@ -15,7 +15,6 @@ dcmtkBaseScu::dcmtkBaseScu()
 {
     resetDefaultParams();
 
-    m_resContainer = new dcmtkNodeContainer();
     m_keyContainer = new dcmtkKeyContainer();
 }
 
@@ -23,7 +22,6 @@ dcmtkBaseScu::dcmtkBaseScu()
 
 dcmtkBaseScu::~dcmtkBaseScu()
 {
-    delete m_resContainer;
     delete m_keyContainer;
 }
 
@@ -293,9 +291,9 @@ OFCondition dcmtkBaseScu::addPresentationContext(T_ASC_Parameters *params,
 
 //---------------------------------------------------------------------------------------------
 
-dcmtkNodeContainer* dcmtkBaseScu::getResultNodeContainer()
+dcmtkContainer<dcmtkNode*>* dcmtkBaseScu::getNodeContainer()
 {
-    return m_resContainer;
+    return &m_resContainer;
 }
 
 //---------------------------------------------------------------------------------------------

@@ -1,22 +1,22 @@
-#include "dcmtkFindDataset.h"
+#include "dcmtkResultDataset.h"
 
 //---------------------------------------------------------------------------------------------
 
-dcmtkKeyContainer* dcmtkFindDataset::getKeyContainer()
+dcmtkKeyContainer* dcmtkResultDataset::getKeyContainer()
 {
     return &m_keyContainer;
 }
 
 //---------------------------------------------------------------------------------------------
 
-const char* dcmtkFindDataset::getStudyInstanceUID()
+const char* dcmtkResultDataset::getStudyInstanceUID()
 {
     return m_studyInstUID.c_str();
 }
 
 //---------------------------------------------------------------------------------------------
 
-void dcmtkFindDataset::setStudyInstanceUID( const char* uid )
+void dcmtkResultDataset::setStudyInstanceUID( const char* uid )
 {
     if (uid !=  NULL)
         m_studyInstUID = uid;
@@ -24,14 +24,14 @@ void dcmtkFindDataset::setStudyInstanceUID( const char* uid )
 
 //---------------------------------------------------------------------------------------------
 
-const char* dcmtkFindDataset::getSeriesInstanceUID()
+const char* dcmtkResultDataset::getSeriesInstanceUID()
 {
     return m_seriesInstUID.c_str();
 }
 
 //---------------------------------------------------------------------------------------------
 
-void dcmtkFindDataset::setSeriesInstanceUID( const char* uid )
+void dcmtkResultDataset::setSeriesInstanceUID( const char* uid )
 {
     if (uid !=  NULL)
         m_seriesInstUID = uid;
@@ -39,33 +39,17 @@ void dcmtkFindDataset::setSeriesInstanceUID( const char* uid )
 
 //---------------------------------------------------------------------------------------------
 
-const char* dcmtkFindDataset::getSOPInstanceUID()
+const char* dcmtkResultDataset::getSOPInstanceUID()
 {
     return m_sopInstUID.c_str();
 }
 
 //---------------------------------------------------------------------------------------------
 
-void dcmtkFindDataset::setSOPInstanceUID( const char* uid )
+void dcmtkResultDataset::setSOPInstanceUID( const char* uid )
 {
     if (uid !=  NULL)
         m_sopInstUID = uid;
-}
-
-//---------------------------------------------------------------------------------------------
-
-const char* dcmtkKeyContainer::findKeyValue( int group, int elem )
-{
-    const char* result = "";
-    for(iter = data.begin(); iter != data.end(); iter++)
-    {
-        if ( ((*iter)->group == group) && ((*iter)->elem == elem) )
-        {
-                result = (*iter)->value.c_str();
-                break;
-        }
-    }
-    return result;
 }
 
 //---------------------------------------------------------------------------------------------

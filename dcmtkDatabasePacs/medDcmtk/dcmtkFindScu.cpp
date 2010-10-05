@@ -7,11 +7,11 @@
 #include "dcmtk/dcmdata/dcpath.h"
 #include "dcmtk/ofstd/ofconapp.h"
 
-#include "dcmtkFindDataset.h"
+#include "dcmtkResultDataset.h"
 #include "dcmtkFindCallback.h"
 #include "dcmtkLogger.h"
 
-#include "dcmtkNodeContainer.h"
+#include "dcmtkNode.h"
 
 //---------------------------------------------------------------------------------------------
 
@@ -73,7 +73,7 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
 
 
     // add node to result container
-    dcmtkConnectionData cdata;
+    dcmtkNode::dcmtkConnectionData cdata;
     cdata.title = peerTitle; 
     cdata.ip = peerIP;
     cdata.port = peerPort;
@@ -107,7 +107,7 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
       &myCallback,
       &fileNameList);
 
-    m_resContainer->add(node);
+    m_resContainer.add(node);
 
     if (cond.bad()) dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
 
@@ -141,7 +141,7 @@ bool dcmtkFindScu::processQueryAttribute(const char* key)
 void dcmtkFindScu::clearAllQueryAttributes()
 {
     overrideKeys.clear();
-    m_resContainer->clear();
+    m_resContainer.clear();
 }
 
 //---------------------------------------------------------------------------------------------

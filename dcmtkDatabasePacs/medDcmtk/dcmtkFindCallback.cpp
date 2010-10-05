@@ -2,9 +2,9 @@
 
 #include "dcmtk/dcmnet/diutil.h"
 
-#include "dcmtkFindDataset.h"
+#include "dcmtkResultDataset.h"
 #include "dcmtkLogger.h"
-#include "dcmtkNodeContainer.h"
+#include "dcmtkNode.h"
 
 //---------------------------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
     /* dump data set which was received */
     dcmtkLogger::infoStream() << DcmObject::PrintHelper(*responseIdentifiers);
 
-    dcmtkFindDataset* findDs = new dcmtkFindDataset;
+    dcmtkResultDataset* findDs = new dcmtkResultDataset;
 
     // get the basic key values
     const char* szhelper;
@@ -83,7 +83,7 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
 
 //---------------------------------------------------------------------------------------------
 
-void dcmtkFindScuCallback::setResultDatasetContainer(dcmtkResultDatasetContainer*  dataCont)
+void dcmtkFindScuCallback::setResultDatasetContainer(dcmtkContainer<dcmtkResultDataset*>*  dataCont)
 {
     m_ds = dataCont;
 }

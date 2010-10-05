@@ -4,6 +4,7 @@
 
 #include "dcmtkDatabasePacsPlugin.h"
 #include "dcmtkPacsFindScu.h"
+#include "dcmtkPacsEchoScu.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -40,14 +41,10 @@ bool dcmtkDatabasePacsPlugin::initialize(void)
         dtkWarning() << "Unable to register dcmtkDatabasePacs type";
         return false;
     }
-
-
-
-    // -- within dcmtkinria
-    // dcmtkAbstactPacsFindScu *scu = dcmtkAbstractPacsFactory::instance()->createFindScu("dcmtkFindScu");
-    // if (scu) {
-    //     scu->...;
-    // }
+    if(!dcmtkPacsEchoScu::registered()) {
+        dtkWarning() << "Unable to register dcmtkDatabasePacs type";
+        return false;
+    }
 
     return true;
 }

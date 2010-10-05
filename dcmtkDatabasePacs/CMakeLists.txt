@@ -43,12 +43,20 @@ include(${medinria_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
+	dcmtkPacsEchoScu.h
 	dcmtkPacsFindScu.h
+	dcmtkPacsMoveScu.h
+	dcmtkPacsNode.h
+	dcmtkPacsResultDataset.h
 	dcmtkDatabasePacsPlugin.h
 	${OTHER_MOC_FILES})
 
 set(${PROJECT_NAME}_SOURCES
+	dcmtkPacsEchoScu.cpp
 	dcmtkPacsFindScu.cpp
+	dcmtkPacsMoveScu.cpp
+	dcmtkPacsNode.cpp
+	dcmtkPacsResultDataset.cpp
 	dcmtkDatabasePacsPlugin.cpp)
 
 ## #################################################################

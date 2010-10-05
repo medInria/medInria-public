@@ -19,7 +19,7 @@
 #include <vector>
 
 // fwd
-class dcmtkFindDataset;
+class dcmtkResultDataset;
 class dcmtkFindCallback;
 class DcmFindSCUCallback;
 

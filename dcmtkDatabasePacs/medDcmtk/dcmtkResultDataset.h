@@ -1,33 +1,23 @@
-#ifndef DCMTKFINDDATASET_H
-#define DCMTKFINDDATASET_H
+#ifndef DCMTKRESULTDATASET_H
+#define DCMTKRESULTDATASET_H
 
 // inc
 #include <iostream>
-#include <vector>
-#include "dcmtkContainer.h"
 
-class dcmtkKey
-{
-public:
-    int group;
-    int elem;
-    std::string value;
-};
+#include "dcmtkKeyContainer.h"
 
-class dcmtkKeyContainer : public dcmtkContainer<dcmtkKey*>
-{
-public:
-       const char* findKeyValue(int group, int elem);
-};
+//fwd
+class dcmtkKeyContainer;
+
 
 /**
- * @class dcmtkFindDataset
+ * @class dcmtkResultDataset
  * @author Michael Knopke
  * @brief class to store results of a C-FIND
  * The key container contains all requested and found values
  * The basic search keys can be get from container or from function (e.g.g getStudyInstanceUID)
  */
-class dcmtkFindDataset
+class dcmtkResultDataset
 {
 public:
 
@@ -54,4 +44,5 @@ protected:
 };
 
 
-#endif DCMTKFINDDATASET_H
+
+#endif DCMTKRESULTDATASET_H

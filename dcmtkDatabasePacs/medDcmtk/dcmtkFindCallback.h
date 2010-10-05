@@ -9,9 +9,10 @@
 #include "dcmtk/dcmnet/dfindscu.h"
 #include <iostream>
 #include <vector>
+#include "dcmtkContainer.h"
 
 // fwd
-class dcmtkFindDataset;
+class dcmtkResultDataset;
 class dcmtkResultDatasetContainer;
 class dcmtkKeyContainer;
 
@@ -45,7 +46,7 @@ public:
   /**
    * set a pointer to an dcmtkResultDatasetContainer that will be filled inside the callback function
    */
-  void setResultDatasetContainer(dcmtkResultDatasetContainer*  dataCont);
+  void setResultDatasetContainer(dcmtkContainer<dcmtkResultDataset*>*  dataCont);
 
 
   /**
@@ -62,7 +63,7 @@ private:
    /// if non-negative, a C-FIND-CANCEL will be issued after the given number of incoming C-FIND-RSP messages
    int cancelAfterNResponses_;
 
-   dcmtkResultDatasetContainer*          m_ds;
+   dcmtkContainer<dcmtkResultDataset*>*  m_ds;
 
    dcmtkKeyContainer*                    m_keyCont;
 
