@@ -3,6 +3,7 @@
 #define DCMTKCONTAINER_H
 
 #include <vector>
+#include <algorithm>
 
 /**
 * @class dcmtkContainer
@@ -67,6 +68,8 @@ public:
     * @return   int index number
     */
     int index();
+
+    T find(T obj);
 
 protected:
 

@@ -240,7 +240,7 @@ void SimpleView::findStudyLevel()
             pItem->setData(1,Qt::UserRole, QPoint(0x0020,0x000D)); // tag
             pItem->setData(2,Qt::UserRole, QString(resDs->getStudyInstanceUID())); // search value
             
-            pItem->setText(0,resDs->getKeyContainer()->findKeyValue(0x0010,0x0010)); // patient name
+            pItem->setText(0,resDs->findKeyValue(0x0010,0x0010)); // patient name
             ui->treeWidget->insertTopLevelItem(0,pItem);
             resDs = resCont->getNext();
         }
@@ -317,7 +317,7 @@ void SimpleView::findSeriesLevel(QTreeWidgetItem * item)
             pItem->setData(2,Qt::UserRole, QString(resDs->getSeriesInstanceUID())); // search value
 
             pItem->setText(0,">>");
-            pItem->setText(2,resDs->getKeyContainer()->findKeyValue(0x0020,0x0011)); // series number
+            pItem->setText(2,resDs->findKeyValue(0x0020,0x0011)); // series number
             item->addChild(pItem);
             resDs = resCont->getNext();
         }
@@ -389,8 +389,8 @@ void SimpleView::findImageLevel(QTreeWidgetItem * item)
             pItem->setData(2,Qt::UserRole, QString(resDs->getSOPInstanceUID())); // search value
 
             pItem->setText(0,">>");
-            pItem->setText(2,resDs->getKeyContainer()->findKeyValue(0x0020,0x0012)); // aqu. number
-            pItem->setText(3,resDs->getKeyContainer()->findKeyValue(0x0008,0x0008)); // image type
+            pItem->setText(2,resDs->findKeyValue(0x0020,0x0012)); // aqu. number
+            pItem->setText(3,resDs->findKeyValue(0x0008,0x0008)); // image type
             item->addChild(pItem);
             resDs = resCont->getNext();
         }

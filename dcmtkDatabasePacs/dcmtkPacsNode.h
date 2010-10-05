@@ -28,12 +28,12 @@ public:
 
     ConnData getConnData();
 
-    QVector<medAbstractPacsResultDataset*>* getResultDatasetContainer();
+    QVector<medAbstractPacsResultDataset*>& getResultDatasetContainer();
 
 
 private:
     ConnData                                   m_connData;
-    QVector<dcmtkPacsResultDataset*>           m_dsContainer;
+    QVector<medAbstractPacsResultDataset*>     m_copyCont;
 
 };
 

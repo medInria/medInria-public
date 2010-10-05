@@ -6,6 +6,7 @@
 #include "dcmtkResultDataset.h"
 #include <medPacs/medAbstractPacsResultDataset.h>
 
+class medAbstractPacsKey;
 
 class dcmtkPacsResultDataset : public medAbstractPacsResultDataset
 {
@@ -18,7 +19,7 @@ public:
 
 
 private:
-
+    QVector<medAbstractPacsKey*>     m_copyCont;
 
 
 };

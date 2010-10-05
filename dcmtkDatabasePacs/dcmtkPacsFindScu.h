@@ -4,6 +4,9 @@
 #include "dcmtkFindScu.h"
 
 #include <medPacs/medAbstractPacsFindScu.h>
+#include "dcmtkPacsNode.h"
+
+class medAbstractPacsNode;
 
 class dcmtkPacsFindScu : public medAbstractPacsFindScu
 {
@@ -23,9 +26,13 @@ public:
 
     void clearAllQueryAttributes();
 
-private:
-    dcmtkFindScu scu;
+    virtual QVector<medAbstractPacsNode*>& getNodeContainer(void);
 
+
+private:
+    dcmtkPacsNode convHelper;
+    dcmtkFindScu scu;
+    QVector<medAbstractPacsNode*> m_copyCont;
 };
 
 medAbstractPacsFindScu *createDcmtkFindScu(void); 
