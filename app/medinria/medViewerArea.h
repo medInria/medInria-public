@@ -80,6 +80,8 @@ protected slots:
     void setupMeasuring (bool checked);
     void setupCropping (bool checked);
 
+    void bringUpTransFun(bool checked);
+
 //  @}
 
 //! @name "Registration Settings" @{

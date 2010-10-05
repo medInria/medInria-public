@@ -420,10 +420,12 @@ medClutEditor::~medClutEditor(void)
 void medClutEditor::setData(dtkAbstractData *data)
 {
     if(dtkAbstractDataImage *image = dynamic_cast<dtkAbstractDataImage *>(data)) {
-
         medClutEditorHistogram *histogram = new medClutEditorHistogram;
         int min_range = image->minRangeValue();
         int max_range = image->maxRangeValue();
+	qDebug() << "min: " << min_range << "\nmax: " << max_range;
+
+
         for(int i = min_range ; i < max_range ; i++)
             histogram->addValue(i, image->scalarValueCount(i-min_range));
 
