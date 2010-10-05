@@ -316,7 +316,7 @@ void medViewerArea::open(const medDataIndex& index)
     
     view->setData(data);
 
-    view->reset();
+    // view->reset(); // called in view_stacks -> setView
     
     d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
     d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
