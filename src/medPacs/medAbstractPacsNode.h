@@ -26,7 +26,7 @@ public:
 
     ConnData getConnData();
 
-    QVector<medAbstractPacsResultDataset*>* getResultDatasetContainer();
+    QVector<medAbstractPacsResultDataset*>& getResultDatasetContainer();
 
 };
 
