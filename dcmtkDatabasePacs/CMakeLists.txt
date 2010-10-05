@@ -46,8 +46,11 @@ set(${PROJECT_NAME}_HEADERS_MOC
 	dcmtkPacsEchoScu.h
 	dcmtkPacsFindScu.h
 	dcmtkPacsMoveScu.h
+	dcmtkPacsStoreScu.h
+	dcmtkPacsStoreScp.h
 	dcmtkPacsNode.h
 	dcmtkPacsResultDataset.h
+	dcmtkPacsKey.h
 	dcmtkDatabasePacsPlugin.h
 	${OTHER_MOC_FILES})
 
@@ -55,8 +58,11 @@ set(${PROJECT_NAME}_SOURCES
 	dcmtkPacsEchoScu.cpp
 	dcmtkPacsFindScu.cpp
 	dcmtkPacsMoveScu.cpp
+	dcmtkPacsStoreScu.cpp
+	dcmtkPacsStoreScp.cpp
 	dcmtkPacsNode.cpp
 	dcmtkPacsResultDataset.cpp
+	dcmtkPacsKey.cpp
 	dcmtkDatabasePacsPlugin.cpp)
 
 ## #################################################################

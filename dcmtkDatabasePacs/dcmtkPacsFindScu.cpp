@@ -1,6 +1,8 @@
 #include "dcmtkPacsFindScu.h"
 #include "medPacs/medAbstractPacsFindScu.h"
 #include "medPacs/medAbstractPacsFactory.h"
+#include "medPacs/medAbstractPacsNode.h"
+#include "dcmtkPacsNode.h"
 
 QString dcmtkPacsFindScu::description(void) const
 {
@@ -30,6 +32,19 @@ void dcmtkPacsFindScu::setQueryLevel( eQueryLevel level )
 void dcmtkPacsFindScu::clearAllQueryAttributes()
 {
     scu.clearAllQueryAttributes();
+}
+
+QVector<medAbstractPacsNode*>& dcmtkPacsFindScu::getNodeContainer( void )
+{
+  dcmtkContainer<dcmtkNode*>* container = scu.getNodeContainer();
+  m_copyCont.clear();
+  for (int i= container->size(); i<0; --i)
+  {
+      dcmtkPacsNode* ds = new dcmtkPacsNode;
+      ds->convert(container->getAtPos(i));
+      m_copyCont<<ds;
+  }
+  return m_copyCont;
 }
 
 medAbstractPacsFindScu *createDcmtkFindScu(void) 

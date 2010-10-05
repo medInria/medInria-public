@@ -30,7 +30,9 @@ public:
         const char* getSOPInstanceUID();
         void setSOPInstanceUID(const char* uid);
 
-        dcmtkKeyContainer* getKeyContainer();
+        dcmtkContainer<dcmtkKey*>* getKeyContainer();
+
+        const char* findKeyValue(int group, int elem);
 
 protected:
 

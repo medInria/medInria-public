@@ -2,7 +2,7 @@
 
 //---------------------------------------------------------------------------------------------
 
-dcmtkKeyContainer* dcmtkResultDataset::getKeyContainer()
+dcmtkContainer<dcmtkKey*>* dcmtkResultDataset::getKeyContainer()
 {
     return &m_keyContainer;
 }
@@ -50,6 +50,18 @@ void dcmtkResultDataset::setSOPInstanceUID( const char* uid )
 {
     if (uid !=  NULL)
         m_sopInstUID = uid;
+}
+
+//---------------------------------------------------------------------------------------------
+
+const char* dcmtkResultDataset::findKeyValue( int group, int elem)
+{
+    dcmtkContainer<dcmtkKey*>* cont= this->getKeyContainer();
+
+    dcmtkKey key;
+    key.elem = elem;
+    key.group = group;
+    return (*(cont->find(&key))).value.c_str();
 }
 
 //---------------------------------------------------------------------------------------------

@@ -16,18 +16,23 @@ dcmtkPacsNode::ConnData dcmtkPacsNode::getConnData()
     return m_connData;
 }
 
-QVector<medAbstractPacsResultDataset*>* dcmtkPacsNode::getResultDatasetContainer()
+QVector<medAbstractPacsResultDataset*>& dcmtkPacsNode::getResultDatasetContainer()
 {
-    return reinterpret_cast<QVector<medAbstractPacsResultDataset*>*>(&m_dsContainer);
+    return m_copyCont;
 }
 
 void dcmtkPacsNode::convert( dcmtkNode* node)
 {
+    m_connData.title = node->getConnData().title;
+    m_connData.ip = node->getConnData().ip;
+    m_connData.port = node->getConnData().port;
+
+
     dcmtkContainer<dcmtkResultDataset*>* container = node->getResultDatasetContainer();
-    for (int i= container->size(); i<0; --i)
+    for (int i = 0; i<container->size(); i++)
     {
         dcmtkPacsResultDataset* ds = new dcmtkPacsResultDataset;
         ds->convert(container->getAtPos(i));
-        m_dsContainer.push_back(ds);
+        m_copyCont<<ds;
     }
 }
