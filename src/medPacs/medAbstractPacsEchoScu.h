@@ -9,7 +9,7 @@ class MEDPACS_EXPORT medAbstractPacsEchoScu : public medAbstractPacsBaseScu
     Q_OBJECT
 
 public:
-    medAbstractPacsEchoScu(void);
+             medAbstractPacsEchoScu(void);
     virtual ~medAbstractPacsEchoScu(void);
 
     virtual int  sendEchoRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, 

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 15:19:01 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Sun Jun 13 21:36:52 2010 (+0200)
+ * Last-Updated: Tue Oct  5 12:56:54 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 15
  */
 
 /* Commentary: 
@@ -36,8 +36,8 @@ public:
     
 signals:
     void indexChanged(int);
-    void echoPressed();
-    void findPressed();
+    // void echoPressed();
+    // void findPressed();
 
 private:
     medToolBoxSourcePrivate *d;

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Nov  7 15:48:10 2008 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Sep 11 13:33:02 2009 (+0200)
+ * Last-Updated: Tue Oct  5 11:23:41 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 48
+ *     Update #: 50
  */
 
 /* Commentary:
@@ -48,17 +48,12 @@ public:
     static medAbstractPacsFactory *instance(void);
 
     bool registerEchoScuType(QString type, medAbstractPacsEchoScuCreator func);
-
     bool registerFindScuType(QString type, medAbstractPacsFindScuCreator func);
-
     bool registerMoveScuType(QString type, medAbstractPacsMoveScuCreator func);
 
 public slots:
-
     medAbstractPacsEchoScu *createEchoScu(QString type);
-
     medAbstractPacsFindScu *createFindScu(QString type);
-
     medAbstractPacsMoveScu *createMoveScu(QString type);
 
 protected:

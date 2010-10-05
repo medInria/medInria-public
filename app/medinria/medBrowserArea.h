@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 08:28:09 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 15:00:32 2010 (+0200)
+ * Last-Updated: Tue Oct  5 16:20:51 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 18
  */
 
 /* Commentary: 
@@ -54,6 +54,9 @@ public slots:
     void onFileSystemExportClicked(void);
     void onFileSystemViewClicked(void);
     void onFileImported(void);
+    void onSourceIndexChanged(int index);
+
+    void onPacsHostSettingsApplied(void);
 
 private:
     friend class medMessageController;

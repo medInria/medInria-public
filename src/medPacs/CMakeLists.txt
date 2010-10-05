@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Jun 29 15:03:53 2010 (+0200)
+## Last-Updated: Tue Oct  5 11:06:43 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 39
+##     Update #: 40
 ######################################################################
 ## 
 ### Commentary: 
@@ -24,37 +24,37 @@ project(medPacs)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS
-	medAbstractPacsBaseScu.h
-	medAbstractPacsFactory.h
-	medAbstractPacsEchoScu.h
-	medAbstractPacsFindScu.h
-	medAbstractPacsMoveScu.h	
-	medAbstractPacsNode.h
-	medAbstractPacsResultDataset.h
-	medPacsExport.h
-	medPacsWidget.h
+  medAbstractPacsBaseScu.h
+  medAbstractPacsFactory.h
+  medAbstractPacsEchoScu.h
+  medAbstractPacsFindScu.h
+  medAbstractPacsMoveScu.h	
+  medAbstractPacsNode.h
+  medAbstractPacsResultDataset.h
+  medPacsExport.h
+  medPacsWidget.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
-	medAbstractPacsBaseScu.h
-	medAbstractPacsFactory.h
-	medAbstractPacsEchoScu.h
-	medAbstractPacsFindScu.h
-	medAbstractPacsMoveScu.h
-	medAbstractPacsNode.h
-	medAbstractPacsResultDataset.h	
-	medPacsWidget.h
+  medAbstractPacsBaseScu.h
+  medAbstractPacsFactory.h
+  medAbstractPacsEchoScu.h
+  medAbstractPacsFindScu.h
+  medAbstractPacsMoveScu.h
+  medAbstractPacsNode.h
+  medAbstractPacsResultDataset.h	
+  medPacsWidget.h
 )
 
 set(${PROJECT_NAME}_SOURCES
-	medAbstractPacsBaseScu.cpp	
-	medAbstractPacsFactory.cpp
-	medAbstractPacsEchoScu.cpp
-	medAbstractPacsFindScu.cpp
-	medAbstractPacsMoveScu.cpp
-	medAbstractPacsNode.cpp
-	medAbstractPacsResultDataset.cpp
-	medPacsWidget.cpp
+  medAbstractPacsBaseScu.cpp	
+  medAbstractPacsFactory.cpp
+  medAbstractPacsEchoScu.cpp
+  medAbstractPacsFindScu.cpp
+  medAbstractPacsMoveScu.cpp
+  medAbstractPacsNode.cpp
+  medAbstractPacsResultDataset.cpp
+  medPacsWidget.cpp
 )
 
 ## #################################################################
@@ -78,9 +78,9 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_WRAP})
 
 target_link_libraries(${PROJECT_NAME} 
-    ${QT_LIBRARIES}
-	dtkCore
-    medCore)
+  ${QT_LIBRARIES}
+  dtkCore
+  medCore)
 
 ## #################################################################
 ## Installation

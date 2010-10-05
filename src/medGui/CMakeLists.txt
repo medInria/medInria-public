@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Wed Jun  9 00:28:22 2010 (+0200)
+## Last-Updated: Tue Oct  5 17:25:41 2010 (+0200)
 ##           By: Julien Wintz
-##     Update #: 131
+##     Update #: 135
 ######################################################################
 ## 
 ### Commentary: 
@@ -35,6 +35,8 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxDiffusion.h
   medToolBoxJobs.h
   medToolBoxLayout.h
+  medToolBoxPacsHost.h
+  medToolBoxPacsNodes.h
   medToolBoxPatient.h
   medToolBoxRegistration.h
   medToolBoxSource.h
@@ -57,6 +59,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxDiffusion.h
   medToolBoxJobs.h
   medToolBoxLayout.h
+  medToolBoxPacsHost.h
+  medToolBoxPacsNodes.h
   medToolBoxPatient.h
   medToolBoxRegistration.h
   medToolBoxSource.h
@@ -80,6 +84,8 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxDiffusion.cpp
   medToolBoxJobs.cpp
   medToolBoxLayout.cpp
+  medToolBoxPacsHost.cpp
+  medToolBoxPacsNodes.cpp
   medToolBoxPatient.cpp
   medToolBoxRegistration.cpp
   medToolBoxSource.cpp
@@ -109,6 +115,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   medCore
+  medPacs
   medSql)
 
 ## #################################################################

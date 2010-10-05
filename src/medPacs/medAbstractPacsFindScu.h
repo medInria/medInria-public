@@ -1,3 +1,21 @@
+/* medAbstractPacsFindScu.h --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Tue Oct  5 11:30:13 2010 (+0200)
+ * Version: $Id$
+ * Last-Updated: Tue Oct  5 11:30:15 2010 (+0200)
+ *           By: Julien Wintz
+ *     Update #: 1
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
 
 #ifndef MEDABSTRACTPACSFINDSCU_H
 #define MEDABSTRACTPACSFINDSCU_H
