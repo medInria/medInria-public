@@ -7,6 +7,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
+#include <medCore/medAbstractView.h>
 
 #include "v3dViewPluginExport.h"
 
@@ -19,7 +20,7 @@ class vtkImageView3D;
 class vtkRenderer;
 class vtkRenderWindowInteractor;
 
-class V3DVIEWPLUGIN_EXPORT v3dView : public dtkAbstractView
+class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractView
 {
     Q_OBJECT
 
@@ -68,7 +69,10 @@ public:
     vtkRenderer *rendererCoronal(void);
     vtkRenderer *rendererSagittal(void);
     vtkRenderer *renderer3D(void);
-    	
+
+
+    void setColorLookupTable(QList<double>scalars,QList<QColor>colors);
+
 public slots:
     void play   (bool);
     void linkwl (dtkAbstractView* view, bool);

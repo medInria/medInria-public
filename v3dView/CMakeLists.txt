@@ -32,6 +32,9 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 # find_package(VTK REQUIRED)
 # include(${VTK_USE_FILE})
 

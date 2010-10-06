@@ -34,7 +34,7 @@
 #include <vtkInteractorStyleTrackballCamera2.h>
 #include <vtkInteractorStyleTrackballActor.h>
 #include <vtkImageViewCollection.h>
-
+#include <vtkColorTransferFunction.h>
 #include <QVTKWidget.h>
 
 #include <QtGui>
@@ -153,7 +153,7 @@ public:
 // v3dView
 // /////////////////////////////////////////////////////////////////
 
-v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
+v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 {
     d->data = 0;
     d->orientation = "Axial";
@@ -1866,4 +1866,19 @@ void v3dView::onMenuWindowLevelTriggered (void)
 dtkAbstractView *createV3dView(void)
 {
     return new v3dView;
+}
+
+
+void v3dView::setColorLookupTable(QList<double>scalars,QList<QColor>colors)
+{
+    int size= qMin(scalars.count(),colors.count());
+    vtkColorTransferFunction * ctf = vtkColorTransferFunction::New();
+    for (int i=0;i<size;i++)
+    {
+        ctf->AddRGBPoint(scalars.at(i),colors.at(i).redF(),colors.at(i).greenF(),
+                         colors.at(i).blueF());
+    }
+
+    d->currentView->SetLookupTable(ctf);
+
 }
