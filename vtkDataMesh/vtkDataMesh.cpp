@@ -6,6 +6,15 @@
 #include "vtkPolyData.h"
 #include "vtkUnstructuredGrid.h"
 
+#include <vtkPNGWriter.h>
+#include <vtkDataSetSurfaceFilter.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkProperty.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkWindowToImageFilter.h>
+
 class vtkDataMeshPrivate
 {
 public:
@@ -68,13 +77,53 @@ dtkAbstractData *createVtkDataMesh(void)
 
 QImage & vtkDataMesh::thumbnail (void) const
 {
-  if (!d->mesh)
+  if (!d->thumbnails.size())
     return dtkAbstractDataMesh::thumbnail();
+  
+  return (d->thumbnails[0]);
 }
 
 QList<QImage> & vtkDataMesh::thumbnails (void) const
 {
-  ///\todo generate several thumbnails !...
+  d->thumbnails.clear();
+
+  if (!d->mesh->GetNumberOfPoints())
+    return d->thumbnails;
+  
+  vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
+  vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
+  vtkActor* actor = vtkActor::New();
+  vtkProperty* prop = vtkProperty::New();
+  vtkRenderer* renderer = vtkRenderer::New();
+  vtkRenderWindow* window = vtkRenderWindow::New();
+  vtkWindowToImageFilter* filter = vtkWindowToImageFilter::New();
+  geometryextractor->SetInput (d->mesh);
+  mapper->SetInput (geometryextractor->GetOutput());
+  actor->SetMapper (mapper);
+  actor->SetProperty (prop);  
+  renderer->AddViewProp(actor);
+  window->SetSize (128,128);
+  window->AddRenderer (renderer);
+  window->OffScreenRenderingOn();
+  renderer->ResetCamera();
+  window->Render();
+  unsigned int w=128, h=128;
+
+  QImage img(w, h, QImage::Format_RGB32);
+  
+  vtkUnsignedCharArray* pixels = vtkUnsignedCharArray::New();
+  pixels->SetArray(img.bits(), w*h*4, 1);
+  window->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
+  pixels->Delete();
+
+  mapper->Delete();
+  geometryextractor->Delete();
+  actor->Delete();
+  renderer->Delete();
+  window->Delete();
+
+  d->thumbnails.push_back (img);
+  
   return d->thumbnails;
 }
 
