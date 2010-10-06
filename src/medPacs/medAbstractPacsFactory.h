@@ -29,6 +29,7 @@
 class medAbstractPacsEchoScu;
 class medAbstractPacsFindScu;
 class medAbstractPacsMoveScu;
+class medAbstractPacsStoreScp;
 class medAbstractPacsFactoryPrivate;
 
 class MEDPACS_EXPORT medAbstractPacsFactory : public dtkAbstractFactory
@@ -39,10 +40,12 @@ public:
     typedef medAbstractPacsFindScu *(*medAbstractPacsFindScuCreator)(void);
     typedef medAbstractPacsEchoScu *(*medAbstractPacsEchoScuCreator)(void);
     typedef medAbstractPacsMoveScu *(*medAbstractPacsMoveScuCreator)(void);
+    typedef medAbstractPacsStoreScp *(*medAbstractPacsStoreScpCreator)(void);
 
     typedef QHash<QString, medAbstractPacsFindScuCreator> medAbstractPacsFindScuCreatorHash;
     typedef QHash<QString, medAbstractPacsEchoScuCreator> medAbstractPacsEchoScuCreatorHash;
     typedef QHash<QString, medAbstractPacsMoveScuCreator> medAbstractPacsMoveScuCreatorHash;
+    typedef QHash<QString, medAbstractPacsStoreScpCreator> medAbstractPacsStoreScpCreatorHash;
 
 public:
     static medAbstractPacsFactory *instance(void);
@@ -50,6 +53,7 @@ public:
     bool registerEchoScuType(QString type, medAbstractPacsEchoScuCreator func);
     bool registerFindScuType(QString type, medAbstractPacsFindScuCreator func);
     bool registerMoveScuType(QString type, medAbstractPacsMoveScuCreator func);
+    bool registerStoreScpType(QString type, medAbstractPacsStoreScpCreator func);
 
 public slots:
     medAbstractPacsEchoScu *createEchoScu(QString type);
