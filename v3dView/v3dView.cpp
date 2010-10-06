@@ -1869,16 +1869,36 @@ dtkAbstractView *createV3dView(void)
 }
 
 
-void v3dView::setColorLookupTable(QList<double>scalars,QList<QColor>colors)
+void v3dView::setColorLookupTable(QList<double>scalars, QList<QColor>colors)
 {
     int size= qMin(scalars.count(),colors.count());
     vtkColorTransferFunction * ctf = vtkColorTransferFunction::New();
     for (int i=0;i<size;i++)
     {
-        ctf->AddRGBPoint(scalars.at(i),colors.at(i).redF(),colors.at(i).greenF(),
+        ctf->AddRGBPoint(scalars.at(i),
+			 colors.at(i).redF(),
+			 colors.at(i).greenF(),
                          colors.at(i).blueF());
     }
 
-    d->currentView->SetLookupTable(ctf);
+    double min = scalars.first();
+    double max = scalars.last();
+    int n = static_cast< int >( max - min ) + 1;
+    double * table = new double[3*n];
+    ctf->GetTable( min, max, n, table );
+    ctf->Delete();
 
+    vtkLookupTable * lut = vtkLookupTable::New();
+    lut->SetNumberOfTableValues(n + 2);
+    lut->SetTableRange( min - 1.0, max + 1.0 );
+    // lut->Build();
+
+    lut->SetTableValue( 0, 0.0, 0.0, 0.0, 0.0 );
+    for ( int i = 0, j = 0; i < n; ++i, j += 3 )
+      lut->SetTableValue(i+1, table[j], table[j+1], table[j+2], 1.0 );
+    lut->SetTableValue( n + 1, 0.0, 0.0, 0.0, 0.0 );
+
+    d->currentView->SetLookupTable(lut);
+    d->currentView->Render();
+    lut->Delete();
 }
