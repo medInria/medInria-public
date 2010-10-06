@@ -41,7 +41,7 @@ dcmtkDatabasePacsPlugin::~dcmtkDatabasePacsPlugin(void)
 
 bool dcmtkDatabasePacsPlugin::initialize(void)
 {
-    LoggerConsoleOutput *out = new LoggerConsoleOutput(LoggerLogLevel::INFOLOG);
+    LoggerConsoleOutput *out = new LoggerConsoleOutput(LoggerLogLevel::WARNINGLOG);
 
     BaseLogger::addOutput(out);
 
