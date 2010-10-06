@@ -15,6 +15,8 @@ public:
 
     virtual  int start(const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
+    virtual  bool setStorageDirectory(const char* directory);
+
 };
 
 #endif
