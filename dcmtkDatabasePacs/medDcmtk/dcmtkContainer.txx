@@ -95,12 +95,4 @@ int dcmtkContainer<T>::index()
     return m_index;
 }
 
-//---------------------------------------------------------------------------------------------
-
-template <class T>
-T dcmtkContainer<T>::find( T obj)
-{
-	return (*(std::find(data.begin(),data.end(),obj)));
-}
-
 #endif DCMTKCONTAINER_TXX
