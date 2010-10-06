@@ -20,7 +20,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractView.h>
-
+#include <medCore/medAbstractView.h>
 #include "medClutEditor.h"
 
 #include <math.h>
@@ -119,6 +119,7 @@ public:
     void addVertex(medClutEditorVertex *vertex);
 
     void setup(int min, int max, int size, int *table);
+    void setupTransferFunction(QList<double> &scalars,QList<QColor> &colors );
 
 public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -182,6 +183,18 @@ void medClutEditorTable::setup(int min, int max, int size, int *table)
             table[x-min+(2*size)] = b;
             table[x-min+(3*size)] = 255;
         }
+    }
+
+}
+void medClutEditorTable::setupTransferFunction(QList<double> &scalars,QList<QColor> &colors )
+{
+    scalars.clear();
+    colors.clear();
+
+    for (QList<medClutEditorVertex *>::Iterator it = vertices.begin(); it != vertices.end();it++)
+    {
+        colors << (*it)->color();
+        scalars << (*it)->position().x();
     }
 }
 
@@ -444,7 +457,7 @@ public:
     medClutEditorHistogram *histogram;
 
     dtkAbstractData *dtk_data;
-    dtkAbstractView *dtk_view;
+    medAbstractView *med_view;
 };
 
 medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
@@ -495,9 +508,9 @@ void medClutEditor::setData(dtkAbstractData *data)
     }
 }
 
-void medClutEditor::setView(dtkAbstractView *view)
+void medClutEditor::setView(medAbstractView *view)
 {
-    d->dtk_view = view;
+    d->med_view = view;
 }
 
 void medClutEditor::mousePressEvent(QMouseEvent *event)
@@ -544,23 +557,34 @@ void medClutEditor::onApplyTablesAction(void)
 {
     if(dtkAbstractDataImage *image = dynamic_cast<dtkAbstractDataImage *>(d->dtk_data)) {
         
-        int min_range = image->minRangeValue();
-        int max_range = image->maxRangeValue();
-        int size = max_range-min_range;
+//        int min_range = image->minRangeValue();
+//        int max_range = image->maxRangeValue();
+//        int size = max_range-min_range;
 
-        int *table = new int[4*size];
+//        int *table = new int[4*size];
         
-        for(int i = 0 ; i < size ; i++) {
-            table[0*size+i] = ((double)i/(double)size)*255;
-            table[1*size+i] = ((double)i/(double)size)*255;
-            table[2*size+i] = ((double)i/(double)size)*255;
-            table[3*size+i] = 0;
-        }
+//        for(int i = 0 ; i < size ; i++) {
+//            table[0*size+i] = ((double)i/(double)size)*255;
+//            table[1*size+i] = ((double)i/(double)size)*255;
+//            table[2*size+i] = ((double)i/(double)size)*255;
+//            table[3*size+i] = 0;
+//        }
         
+//        foreach(QGraphicsItem *item, d->scene->items())
+//            if(medClutEditorTable *lut = dynamic_cast<medClutEditorTable *>(item))
+//            {
+//                //lut->setup(min_range, max_range, size, table);
+
+//            }
+//        // d->dtk_view->setColorLookupTable(min_range, max_range, max_range-min_range, table);
+        QList<double> scalars;
+        QList<QColor> colors;
         foreach(QGraphicsItem *item, d->scene->items())
             if(medClutEditorTable *lut = dynamic_cast<medClutEditorTable *>(item))
-                lut->setup(min_range, max_range, size, table);
-        
-        // d->dtk_view->setColorLookupTable(min_range, max_range, max_range-min_range, table);
+            {
+                lut->setupTransferFunction(scalars,colors);
+                d->med_view->setColorLookupTable(scalars,colors);
+            }
+
     }
 }

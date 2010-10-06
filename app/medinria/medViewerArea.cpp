@@ -33,6 +33,7 @@
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
+#include <medCore/medAbstractView.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseNonPersitentItem.h>
@@ -659,7 +660,7 @@ void medViewerArea::bringUpTransFun(bool checked)
       medClutEditor * transFun = new medClutEditor(NULL);
       transFun->setWindowModality( Qt::WindowModal );
       transFun->setData(static_cast<dtkAbstractData *>(view->data()));
-      transFun->setView(view);
+      transFun->setView(dynamic_cast<medAbstractView*>(view));
 
       transFun->show();
     }

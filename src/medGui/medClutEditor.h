@@ -25,7 +25,7 @@
 #include <QtGui>
 
 class dtkAbstractData;
-class dtkAbstractView;
+class medAbstractView;
 
 class medClutEditorPrivate;
 
@@ -38,7 +38,7 @@ public:
     ~medClutEditor(void);
 
     void setData(dtkAbstractData *data);
-    void setView(dtkAbstractView *view);
+    void setView(medAbstractView *view);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
