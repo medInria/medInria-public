@@ -4,9 +4,9 @@
 ;; Copyright (C) 2008 - Julien Wintz, Inria.
 ;; Created: Fri May 21 09:46:29 2010 (+0200)
 ;; Version: $Id$
-;; Last-Updated: Tue Oct  5 15:42:44 2010 (+0200)
+;; Last-Updated: Wed Oct  6 17:19:51 2010 (+0200)
 ;;           By: Julien Wintz
-;;     Update #: 32
+;;     Update #: 43
 */
 
 /* Commentary: 
@@ -94,6 +94,16 @@ QLabel {
 }
 
 /**
+ * QTableWidget
+ *
+ */
+
+QTableWidget {
+    border: 1px solid #2a2a2a;
+    color: #b2b8b2;
+}
+
+/**
  * QHeaderView
  *
  */
@@ -108,7 +118,7 @@ QHeaderView {
     height: 22px;
 }
 
-QHeaderView:section {
+QHeaderView::section {
     border: 1px solid #2a2a2a;
     border-top: none;
     border-bottom: none;

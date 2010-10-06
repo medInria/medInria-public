@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Jun  9 12:52:00 2010 (+0200)
+ * Last-Updated: Wed Oct  6 17:41:20 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 123
+ *     Update #: 124
  */
 
 /* Commentary: 
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     application.setApplicationVersion("0.0.1");
     application.setOrganizationName("inria");
     application.setOrganizationDomain("fr");
-	application.setWindowIcon(QIcon(":/medinria.ico"));
+    application.setWindowIcon(QIcon(":/medinria.ico"));
 
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
