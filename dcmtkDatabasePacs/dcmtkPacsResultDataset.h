@@ -16,8 +16,21 @@ class dcmtkPacsResultDataset : public medAbstractPacsResultDataset
 public:
     void convert(dcmtkResultDataset* dataset);
 
-private:
+
+    const char* getStudyInstanceUID(void);
+
+    const char* getSeriesInstanceUID(void);
+
+    const char* getSOPInstanceUID(void);
+
+    QVector<medAbstractPacsKey*> getKeyContainer(void);
+
+    const char* findKeyValue(int group, int elem);
+
+protected:
+    
     QVector<medAbstractPacsKey*> m_copyCont;
+    dcmtkResultDataset*          m_dataset;
 };
 
 #endif DCMTKPACSRESULTDATASET_H
