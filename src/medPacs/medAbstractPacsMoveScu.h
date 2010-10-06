@@ -17,6 +17,9 @@ public:
 
     virtual void useBuildInStoreSCP(bool flag);
 
+    virtual bool setStorageDirectory(const char* directory);
+
+
 
 };
 

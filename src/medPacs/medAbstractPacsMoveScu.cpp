@@ -32,3 +32,12 @@ void medAbstractPacsMoveScu::useBuildInStoreSCP( bool flag )
 
     DTK_DEFAULT_IMPLEMENTATION;
 }
+
+bool medAbstractPacsMoveScu::setStorageDirectory( const char* directory )
+{
+    DTK_UNUSED(directory);
+
+    DTK_DEFAULT_IMPLEMENTATION;
+
+    return false;
+}
