@@ -128,6 +128,7 @@ public:
     vtkImageViewCollection *collectionAxial;
     vtkImageViewCollection *collectionSagittal;
     vtkImageViewCollection *collectionCoronal;
+    //vtkImageViewCollection *collection3D;	
     v3dViewObserver *observer;
 
     QWidget    *widget;
@@ -159,7 +160,8 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->data = 0;
     d->orientation = "Axial";
 
-    d->timeline = new QTimeLine(10000, this);
+    d->timeline = new QTimeLine(1000, this);
+	d->timeline->setLoopCount(0);
     connect(d->timeline, SIGNAL(frameChanged(int)), this, SLOT(onZSliderValueChanged(int)));
 
     // Setting up 2D view
@@ -374,6 +376,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->collection->SetLinkCamera (0);
     d->collection->SetLinkZoom (0);
     d->collection->SetLinkPan (0);
+	d->collection->SetLinkTimeChange (0);
     d->collection->SetLinkRequestedPosition (0);
 
     d->collection->AddItem (d->view2DAxial);
@@ -384,12 +387,14 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->collectionAxial       = vtkImageViewCollection::New();
     d->collectionSagittal    = vtkImageViewCollection::New();
     d->collectionCoronal     = vtkImageViewCollection::New();
+    //d->collection3D          = vtkImageViewCollection::New();	
     d->collectionWindowLevel = vtkImageViewCollection::New();
     d->collectionPos         = vtkImageViewCollection::New();
 
     d->collectionWindowLevel->SetLinkCurrentPoint (0);
     d->collectionWindowLevel->SetLinkRequestedPosition (0);
     d->collectionWindowLevel->SetLinkSliceMove (0);
+	d->collectionWindowLevel->SetLinkTimeChange (0);	
     d->collectionWindowLevel->SetLinkColorWindowLevel (1);
     d->collectionWindowLevel->SetLinkCamera (0);
     d->collectionWindowLevel->SetLinkZoom (0);
@@ -398,6 +403,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->collectionPos->SetLinkCurrentPoint (0);
     d->collectionPos->SetLinkRequestedPosition (1);
     d->collectionPos->SetLinkSliceMove (1);
+	d->collectionPos->SetLinkTimeChange (1);
     d->collectionPos->SetLinkColorWindowLevel (0);
     d->collectionPos->SetLinkCamera (0);
     d->collectionPos->SetLinkZoom (0);
@@ -426,11 +432,19 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->collectionCoronal->SetLinkCamera (0);
     d->collectionCoronal->SetLinkZoom (1);
     d->collectionCoronal->SetLinkPan (1);
-
-
+/*
+	d->collection3D->SetLinkCurrentPoint (0);
+    d->collection3D->SetLinkRequestedPosition (0);
+    d->collection3D->SetLinkSliceMove (0);
+    d->collection3D->SetLinkColorWindowLevel (0);
+    d->collection3D->SetLinkCamera (0);
+    d->collection3D->SetLinkZoom (1);
+    d->collection3D->SetLinkPan (1);	
+*/
     d->collectionAxial->AddItem    ( d->view2DAxial );
     d->collectionSagittal->AddItem ( d->view2DSagittal );
     d->collectionCoronal->AddItem  ( d->view2DCoronal );
+	//d->collection3D->AddItem       ( d->view3D );
     
     d->observer = v3dViewObserver::New();
     d->observer->setSlider(d->slider);
@@ -698,11 +712,17 @@ void v3dView::link(dtkAbstractView *other)
 	otherView->viewSagittal()->SetCurrentPoint ( d->currentView->GetCurrentPoint() );
 	otherView->viewCoronal()->SetCurrentPoint  ( d->currentView->GetCurrentPoint() );
 	otherView->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
-	
+
+		otherView->viewAxial()->SetTimeIndex    ( d->currentView->GetTimeIndex() );
+		otherView->viewSagittal()->SetTimeIndex ( d->currentView->GetTimeIndex() );
+		otherView->viewCoronal()->SetTimeIndex  ( d->currentView->GetTimeIndex() );
+		otherView->view3D()->SetTimeIndex       ( d->currentView->GetTimeIndex() );
+		
+		
 	d->collectionAxial->AddItem    ( otherView->viewAxial() );
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
-
+	//d->collection3D->AddItem       ( otherView->view3D() );
 	
 	// zoom comes first, then pan (==translation)	
 	otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
@@ -713,7 +733,7 @@ void v3dView::link(dtkAbstractView *other)
 
 	otherView->viewCoronal()->SetZoom ( d->view2DCoronal->GetZoom() );
 	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
-
+		
 	/** 3D is more tricky than this */
 	//otherView->view3D()->SetCameraPosition    ( d->view3D->GetCameraPosition() );
 	//otherView->view3D()->SetCameraFocalPoint  ( d->view3D->GetCameraFocalPoint() );
@@ -742,9 +762,10 @@ void v3dView::unlink(dtkAbstractView *other)
 
 	otherView->setProperty ("Linked", "false");
 	
-        d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
+	d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
 	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
 	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
+	//d->collection3D->RemoveItem       ( otherView->view3D() );
 
 	d->collectionPos->RemoveItem ( otherView->viewAxial() );
 	d->collectionPos->RemoveItem ( otherView->viewSagittal() );
@@ -1060,8 +1081,12 @@ QWidget *v3dView::widget(void)
 
 void v3dView::play(bool start)
 {
-    if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data)) {
+//    if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data)) {
 
+		d->timeline->setFrameRange(d->slider->minimum(), d->slider->maximum() );
+		/*
+		if (d->dimensionBox->currentText()==tr("Space"))
+		{
         if (d->orientation=="Axial") {
             d->timeline->setFrameRange(0, imData->zDimension()-1);
         }
@@ -1073,12 +1098,16 @@ void v3dView::play(bool start)
 	if (d->orientation=="Coronal") {
             d->timeline->setFrameRange(0, imData->yDimension()-1);
         }
-
+		}
+		else if (d->dimensionBox->currentText()==tr("Time")) {
+			d->timeline->setFrameRange(0, imData->tDimension()-1);
+		}
+*/
         if(start)
             d->timeline->start();
         else
             d->timeline->stop();
-    }
+//    }
 }
 
 void v3dView::linkwl (dtkAbstractView *view, bool value)
@@ -1187,10 +1216,12 @@ void v3dView::onOrientationPropertySet(QString value)
          return;
     
     double pos[3], window = 0.0, level = 0.0;
+	int timeIndex = 0;
     if( d->currentView ) {
         d->currentView->GetCurrentPoint (pos);
         window = d->currentView->GetColorWindow();
         level  = d->currentView->GetColorLevel();
+		timeIndex = d->currentView->GetTimeIndex();
 	
 	d->currentView->UnInstallInteractor();
 	// d->currentView->SetRenderWindow( 0 );
@@ -1256,6 +1287,7 @@ void v3dView::onOrientationPropertySet(QString value)
     d->currentView->SetCurrentPoint (pos);
     d->currentView->SetColorWindow (window);
     d->currentView->SetColorLevel (level);
+	d->currentView->SetTimeIndex (timeIndex);
 
 
     // force a correct display of the 2D axis for planar views
@@ -1704,7 +1736,6 @@ void v3dView::onZSliderValueChanged (int value)
 		if (d->dimensionBox->currentText()==tr("Space"))
 		{
 			if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
-			qDebug() << "Space";
 			d->observer->lock();
             view->SetSlice (value);
 		    view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
@@ -1714,13 +1745,12 @@ void v3dView::onZSliderValueChanged (int value)
 		else if (d->dimensionBox->currentText()==tr("Time"))
 		{
 			if( d->currentView ) {
-			qDebug() << "Time: " << value;
 			d->currentView->SetTimeIndex (value);
 			d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::TimeChangeEvent);	
 			}
 		}
 		
-		qApp->processEvents();
+		//qApp->processEvents();
         d->currentView->Render();
 }
 
@@ -1798,12 +1828,13 @@ void v3dView::onDimensionBoxChanged (QString value)
 	else if (value=="Time") {
 		d->observer->lock();
 		d->slider->setRange(0, data->tDimension()-1);
-		if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
-			unsigned int timeIndex = view2d->GetTimeIndex();
+		if (d->currentView) {
+			unsigned int timeIndex = d->currentView->GetTimeIndex();
 			d->slider->setValue (timeIndex);
 		}
 	}
 	d->slider->blockSignals (false);
+	d->timeline->setFrameRange(d->slider->minimum(), d->slider->maximum() );
 	}
 }
 
