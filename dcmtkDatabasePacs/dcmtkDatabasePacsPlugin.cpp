@@ -5,6 +5,8 @@
 #include "dcmtkDatabasePacsPlugin.h"
 #include "dcmtkPacsFindScu.h"
 #include "dcmtkPacsEchoScu.h"
+#include "dcmtkPacsMoveScu.h"
+#include "dcmtkPacsStoreScp.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -34,15 +36,32 @@ dcmtkDatabasePacsPlugin::~dcmtkDatabasePacsPlugin(void)
     d = NULL;
 }
 
+#include "medLogger/BaseLogger.h"
+#include "medLogger/LoggerConsoleOutput.h"
+
 bool dcmtkDatabasePacsPlugin::initialize(void)
 {
+    LoggerConsoleOutput *out = new LoggerConsoleOutput(LoggerLogLevel::INFOLOG);
+
+    BaseLogger::addOutput(out);
 
     if(!dcmtkPacsFindScu::registered()) {
-        dtkWarning() << "Unable to register dcmtkDatabasePacs type";
+        dtkWarning() << "Unable to register dcmtkPacsFindScu type";
         return false;
     }
+
     if(!dcmtkPacsEchoScu::registered()) {
-        dtkWarning() << "Unable to register dcmtkDatabasePacs type";
+        dtkWarning() << "Unable to register dcmtkPacsEchoScu type";
+        return false;
+    }
+
+    if(!dcmtkPacsMoveScu::registered()) {
+        dtkWarning() << "Unable to register dcmtkPacsMoveScu type";
+        return false;
+    }
+
+    if(!dcmtkPacsStoreScp::registered()) {
+        dtkWarning() << "Unable to register dcmtkPacsStoreScp type";
         return false;
     }
 
