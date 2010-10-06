@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 11:07:02 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 11:40:06 2010 (+0200)
+ * Last-Updated: Wed Oct  6 12:49:53 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 25
+ *     Update #: 30
  */
 
 /* Commentary: 
@@ -41,7 +41,9 @@ public slots:
     void search(QString query);
 
 protected slots:
-    void onItemClicked(QTreeWidgetItem *, int);
+    void onItemExpanded(QTreeWidgetItem *);
+    void onItemImported(void);
+    void updateContextMenu(const QPoint&);
 
 protected:
   void findSeriesLevel(QTreeWidgetItem* item);

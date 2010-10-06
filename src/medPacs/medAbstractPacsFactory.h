@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Nov  7 15:48:10 2008 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 11:23:41 2010 (+0200)
+ * Last-Updated: Wed Oct  6 13:07:55 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 50
+ *     Update #: 51
  */
 
 /* Commentary:
@@ -59,6 +59,7 @@ public slots:
     medAbstractPacsEchoScu *createEchoScu(QString type);
     medAbstractPacsFindScu *createFindScu(QString type);
     medAbstractPacsMoveScu *createMoveScu(QString type);
+    medAbstractPacsStoreScp *createStoreScp(QString type);
 
 protected:
      medAbstractPacsFactory(void);

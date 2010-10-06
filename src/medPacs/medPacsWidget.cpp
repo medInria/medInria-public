@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 11:07:29 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 12:29:49 2010 (+0200)
+ * Last-Updated: Wed Oct  6 14:57:40 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 197
+ *     Update #: 316
  */
 
 /* Commentary: 
@@ -22,11 +22,25 @@
 #include <medPacs/medAbstractPacsFactory.h>
 #include <medPacs/medAbstractPacsFindScu.h>
 #include <medPacs/medAbstractPacsEchoScu.h>
+#include <medPacs/medAbstractPacsMoveScu.h>
 #include <medPacs/medAbstractPacsNode.h>
+#include <medPacs/medAbstractPacsStoreScp.h>
 #include <medPacs/medAbstractPacsResultDataset.h>
 
-class medPacsWidgetPrivate
+#include <dtkCore/dtkGlobal.h>
+
+// /////////////////////////////////////////////////////////////////
+// medPacsWidgetPrivate
+// /////////////////////////////////////////////////////////////////
+
+class medPacsWidgetPrivate : public QThread
 {
+protected:
+    void run(void);
+
+public:
+    int index(QString node_title);
+
 public:
     QString host_title;
     QString host_address;
@@ -35,7 +49,32 @@ public:
     QList<QStringList> nodes;
 
     medAbstractPacsFindScu *find;
+    medAbstractPacsStoreScp *server;
+    medAbstractPacsMoveScu *move;
 };
+
+void medPacsWidgetPrivate::run(void)
+{
+    if(!this->server) {
+        qDebug() << "Unable to find a valid implementation of the store scp service.";
+        return;
+    }
+
+    this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), 9998);
+}
+
+int medPacsWidgetPrivate::index(QString node_title)
+{
+    for(int i = 0; i < this->nodes.count(); i++)
+        if(this->nodes[i].contains(node_title))
+            return i;
+
+    return -1;
+}
+
+// /////////////////////////////////////////////////////////////////
+// medPacsWidget
+// /////////////////////////////////////////////////////////////////
 
 medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPacsWidgetPrivate)
 {
@@ -44,19 +83,28 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     this->setUniformRowHeights(true);
     this->setAlternatingRowColors(true);
     this->setSortingEnabled(true);
+    this->setContextMenuPolicy(Qt::CustomContextMenu);
 
     this->setHeaderLabels(QStringList() << "Name" << "Description" << "Id" << "Modality");
 
     d->find = medAbstractPacsFactory::instance()->createFindScu("dcmtkFindScu");
+    d->server = medAbstractPacsFactory::instance()->createStoreScp("dcmtkStoreScp");
+    d->move = medAbstractPacsFactory::instance()->createMoveScu("dcmtkMoveScu");
 
     this->readSettings();
 
-    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
+    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
+
+    d->start();
 }
 
 medPacsWidget::~medPacsWidget(void)
 {
     this->writeSettings();
+
+    d->terminate();
+    d->wait();
 
     delete d;
 
@@ -114,11 +162,11 @@ void medPacsWidget::search(QString query)
         foreach(QStringList node, d->nodes)
             d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), node.at(2).toInt(), d->host_title.toLatin1(), d->host_address.toLatin1(), d->host_port.toInt());
         
-        QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer(); int i = 0;
+        QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
         
         foreach(medAbstractPacsNode *node, nodes) {
             
-            QVector<medAbstractPacsResultDataset*> container = node->getResultDatasetContainer();
+            QVector<medAbstractPacsResultDataset *> container = node->getResultDatasetContainer();
             
             foreach(medAbstractPacsResultDataset *dataset, container) {
                 
@@ -129,7 +177,7 @@ void medPacsWidget::search(QString query)
                                                             << QString(dataset->findKeyValue(0x0008,0x0061)));
                 
                 item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-                item->setData(0,Qt::UserRole, i++);
+                item->setData(0,Qt::UserRole, d->index(QString::fromStdString(node->title())));
                 item->setData(1,Qt::UserRole, QPoint(0x0020,0x000D));
                 item->setData(2,Qt::UserRole, QString(dataset->getStudyInstanceUID()));
             }
@@ -137,10 +185,8 @@ void medPacsWidget::search(QString query)
     }
 }
 
-void medPacsWidget::onItemClicked(QTreeWidgetItem *item, int column)
+void medPacsWidget::onItemExpanded(QTreeWidgetItem *item)
 {
-    Q_UNUSED(column);
-
     if(!item->parent() && !item->childCount()) 
         this->findSeriesLevel(item);
 
@@ -242,4 +288,52 @@ void medPacsWidget::findImageLevel(QTreeWidgetItem *item)
             item->addChild(pItem);
         }
     }
+}
+
+void medPacsWidget::updateContextMenu(const QPoint& point)
+{
+    QModelIndex index = this->indexAt(point);
+
+    if(!index.isValid())
+        return;
+
+    QTreeWidgetItem *item = itemFromIndex(index);
+
+    QMenu menu(this);
+    menu.addAction("Import", this, SLOT(onItemImported()));
+    menu.exec(mapToGlobal(point));
+}
+
+void medPacsWidget::onItemImported(void)
+{
+    if(!this->selectedIndexes().count())
+        return;
+    
+    QModelIndex index = this->selectedIndexes().first();
+    
+    if(!index.isValid())
+        return;
+    
+    QTreeWidgetItem *item = itemFromIndex(index);
+
+    int nodeIndex = item->data(0, Qt::UserRole).toInt();
+    QPoint tag = item->data(1, Qt::UserRole).toPoint();
+    QString query = item->data(2, Qt::UserRole).toString();
+
+    qDebug() << DTK_PRETTY_FUNCTION << "Node index" << nodeIndex;
+    qDebug() << DTK_PRETTY_FUNCTION << "tagx" << tag.x();
+    qDebug() << DTK_PRETTY_FUNCTION << "tagy" << tag.y();
+    qDebug() << DTK_PRETTY_FUNCTION << "Sending request to node" << d->nodes.at(nodeIndex).at(0).toLatin1();
+
+    d->move->clearAllQueryAttributes();
+
+    d->move->addQueryAttribute(tag.x(), tag.y(), query.toLatin1());
+
+    d->move->sendMoveRequest(
+        d->nodes.at(nodeIndex).at(0).toLatin1(),
+        d->nodes.at(nodeIndex).at(1).toLatin1(),
+        d->nodes.at(nodeIndex).at(2).toInt(),
+        d->host_title.toLatin1(),
+        d->host_address.toLatin1(),
+        d->host_port.toLatin1());
 }
