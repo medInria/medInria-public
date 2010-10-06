@@ -3,7 +3,7 @@
 
 
 #include <QVector>
-#include "dcmtkKeyContainer.h"
+#include "dcmtkKey.h"
 #include <medPacs/medAbstractPacsKey.h>
 
 

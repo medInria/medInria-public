@@ -1,5 +1,5 @@
-#ifndef DCMTKKEYCONTAINER_H
-#define DCMTKKEYCONTAINER_H
+#ifndef DCMTKKEY_H
+#define DCMTKKEY_H
 
 #include <iostream>
 

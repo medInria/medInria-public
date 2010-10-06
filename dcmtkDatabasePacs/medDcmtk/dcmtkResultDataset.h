@@ -4,7 +4,7 @@
 // inc
 #include <iostream>
 
-#include "dcmtkKeyContainer.h"
+#include "dcmtkKey.h"
 
 //fwd
 class dcmtkKeyContainer;

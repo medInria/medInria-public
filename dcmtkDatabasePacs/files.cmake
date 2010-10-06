@@ -20,8 +20,8 @@ SET (MED_DCMTK_SOURCES
 		./medDcmtk/dcmtkContainer.txx
 		./medDcmtk/dcmtkResultDataset.h
 		./medDcmtk/dcmtkResultDataset.cpp
-		./medDcmtk/dcmtkKeyContainer.h
-		./medDcmtk/dcmtkKeyContainer.cpp	
+		./medDcmtk/dcmtkKey.h
+		./medDcmtk/dcmtkKey.cpp	
 		./medDcmtk/dcmtkNode.h
 		./medDcmtk/dcmtkNode.cpp
 		
