@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(v3dViewPlugin)
+project(vtkDataMeshReaderPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -28,44 +28,31 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-# find_package(VTK REQUIRED)
-# include(${VTK_USE_FILE})
+#find_package(ITK REQUIRED)
+#include(${ITK_USE_FILE})
 
-find_package(vtkINRIA3D-Private REQUIRED)
-include(${vtkINRIA3D-Private_USE_FILE})
+find_package(vtkINRIA3D REQUIRED)
+include(${vtkINRIA3D_USE_FILE})
 
-# if(vtkINRIA3D_USE_ITK)
-#   find_package(ITK REQUIRED)
-#   include(${ITK_USE_FILE})
-# endif(vtkINRIA3D_USE_ITK)
-
-if (NOT VTK_USE_QT)
-  message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
-endif(NOT VTK_USE_QT)
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  v3dViewPlugin.h
-  v3dView.h
-  v3dViewFiberInteractor.h
-  v3dViewFuseInteractor.h
-  v3dViewMeshInteractor.h
+#TODO : Add header files
   )
-
+    
 set(${PROJECT_NAME}_SOURCES
-  v3dViewPlugin.cpp
-  v3dView.cpp
-  v3dViewFiberInteractor.cpp
-  v3dViewFuseInteractor.cpp
-  v3dViewMeshInteractor.cpp
-  v3dFiberBundle.cpp
+#TODO : Add cpp files
   )
 
 ## #################################################################
@@ -81,22 +68,17 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-  vtkCommon
-  vtkRendering
-#   vtkRenderingAddOn
-  vtkRenderingAddOn3
-  vtkWidgetsAddOn
-  vtkVisuManagement
-  vtkVolumeRendering
-  QVTK)
+)
 
-if (vtkINRIA3D_USE_ITK)
-  target_link_libraries(${PROJECT_NAME} ${ITK_LIBRARIES})
-endif (vtkINRIA3D_USE_ITK)
-
-if (vtkINRIA3D_USE_HWSHADING)
-  target_link_libraries(${PROJECT_NAME} vtkHWShading vtkHelpers)
-endif (vtkINRIA3D_USE_HWSHADING)
+#target_link_libraries(
+#  vtkRenderingAddOn
+#  vtkWidgetsAddOn
+#  vtkWidgets
+#  vtkRendering
+#  vtkIO
+#  vtkDataManagement
+#  ITKDCMTKIO
+#  ${ITK_LIBRARIES})
 
 if (BUILD_TESTING)
   add_subdirectory(Testing)
@@ -105,8 +87,9 @@ endif (BUILD_TESTING)
 ## #################################################################
 ## Install rules
 ## #################################################################
+  install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION plugins
+    LIBRARY DESTINATION plugins
+    ARCHIVE DESTINATION plugins)
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION plugins)
+
