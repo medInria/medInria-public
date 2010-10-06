@@ -15,6 +15,9 @@ ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests
 TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
   dtkCore
   ${ITK_LIBRARIES}
+  vtkRenderingAddOn3
+  vtkHybrid
+  vtkImaging
   ${QT_LIBRARIES}
   )
 

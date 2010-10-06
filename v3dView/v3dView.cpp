@@ -168,7 +168,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DAxial->SetRenderer(d->renderer2DAxial);
     d->view2DAxial->SetBackground(0.0, 0.0, 0.0);
     d->view2DAxial->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-    d->view2DAxial->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+    d->view2DAxial->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     d->view2DAxial->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
     d->view2DAxial->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
     d->view2DAxial->CursorFollowMouseOff();
@@ -181,7 +181,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DSagittal->SetRenderer(d->renderer2DSagittal);
     d->view2DSagittal->SetBackground(0.0, 0.0, 0.0);
     d->view2DSagittal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-    d->view2DSagittal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+    d->view2DSagittal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     d->view2DSagittal->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
     d->view2DSagittal->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
     d->view2DSagittal->CursorFollowMouseOff();
@@ -194,7 +194,7 @@ v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
     d->view2DCoronal->SetRenderer(d->renderer2DCoronal);
     d->view2DCoronal->SetBackground(0.0, 0.0, 0.0);
     d->view2DCoronal->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-    d->view2DCoronal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+    d->view2DCoronal->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     d->view2DCoronal->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
     d->view2DCoronal->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_CORONAL);
     d->view2DCoronal->CursorFollowMouseOff();
@@ -1212,7 +1212,8 @@ void v3dView::onOrientationPropertySet(QString value)
 	return;
     }
 
-    d->currentView->SetRenderWindow ( d->vtkWidget->GetRenderWindow() );
+	d->currentView->SetRenderWindow ( d->vtkWidget->GetRenderWindow() );
+	
     //d->currentView->InstallInteractor();
     //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
     d->currentView->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::SliceMoveEvent, d->observer, 0);
@@ -1495,14 +1496,12 @@ void v3dView::onPresetPropertySet (QString value)
       this->setProperty ("LookupTable", "Muscles&Bones");
 
       double color[3] = {0.0, 0.0, 0.0};
-
-      if ( d->currentView ) {
-	d->currentView->SetBackground( color );
-	d->currentView->SetColorWindow (337.0);
-	d->currentView->SetColorLevel (1237.0);
+	
+	d->collection->SyncSetBackground( color );
+	d->collection->SyncSetColorWindow (337.0, 0, 1);
+	d->collection->SyncSetColorLevel (1237.0, 0, 1);
 	//d->collection->SyncSetTextColor ( white );
 	//d->collection->SyncSetAboutData ("VR Muscles - Bones - Powered by magic Pedro");
-      }
     }
 
     if( value == "Vascular I" ) {
@@ -1512,8 +1511,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3] = {0.0, 0.0, 0.0};
       
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (388.8);
-      d->collection->SyncSetColorLevel (362.9);
+      d->collection->SyncSetColorWindow (388.8, 0, 1);
+      d->collection->SyncSetColorLevel (362.9, 0, 1);
       //d->collection->SyncSetTextColor ( white );
       //d->view->SetAboutData ("Vascular - Powered by magic Pedro");
     }
@@ -1525,8 +1524,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3] = {0.0, 0.0, 0.0};
       
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (189.6);
-      d->collection->SyncSetColorLevel (262.3);
+      d->collection->SyncSetColorWindow (189.6, 0, 1);
+      d->collection->SyncSetColorLevel (262.3, 0, 1);
 
       //d->collection->SyncSetTextColor ( white );
       //d->view->SetAboutData ("Vascular II - Powered by magic Pedro");
@@ -1539,8 +1538,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3] = {0.0, 0.0, 0.0};
       
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (284.4);
-      d->collection->SyncSetColorLevel (341.7);
+      d->collection->SyncSetColorWindow (284.4, 0, 1);
+      d->collection->SyncSetColorLevel (341.7, 0, 1);
       //d->collection->SyncSetTextColor ( white );
       //d->view->SetAboutData ("Vascular III - Powered by magic Pedro");
     }
@@ -1552,8 +1551,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3] = {0.0, 0.0, 0.0};
       
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (272.5);
-      d->collection->SyncSetColorLevel (310.9);
+      d->collection->SyncSetColorWindow (272.5, 0, 1);
+      d->collection->SyncSetColorLevel (310.9, 0, 1);
       //d->collection->SyncSetTextColor ( white );
       //d->view->SetAboutData ("Vascular IV - Powered by magic Pedro");
     }
@@ -1565,8 +1564,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3] = {0.0, 0.0, 0.0};
       
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (243.7);
-      d->collection->SyncSetColorLevel (199.6);
+      d->collection->SyncSetColorWindow (243.7, 0, 1);
+      d->collection->SyncSetColorLevel (199.6, 0, 1);
       //d->collection->SyncSetTextColor ( white );
       //d->view->SetAboutData ("Standard - Powered by magic Pedro");
     }
@@ -1578,8 +1577,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3] = {0.0, 0.0, 0.0};
       
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (133.5);
-      d->collection->SyncSetColorLevel (163.4);
+      d->collection->SyncSetColorWindow (133.5, 0, 1);
+      d->collection->SyncSetColorLevel (163.4, 0, 1);
       //d->collection->SyncSetTextColor ( white );
       //d->view->SetAboutData ("Soft - Powered by magic Pedro");
     }
@@ -1591,8 +1590,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3] = {1.0,0.98820477724075317,0.98814374208450317};
       
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (449.3);
-      d->collection->SyncSetColorLevel (372.8);
+      d->collection->SyncSetColorWindow (449.3, 0, 1);
+      d->collection->SyncSetColorLevel (372.8, 0, 1);
       //d->view->SetAboutData ("Soft on White - Powered by magic Pedro");
     }
 
@@ -1603,8 +1602,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3]={0.0, 0.27507439255714417, 0.26398107409477234};      
       
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (449.3);
-      d->collection->SyncSetColorLevel (372.8);
+      d->collection->SyncSetColorWindow (449.3, 0, 1);
+      d->collection->SyncSetColorLevel (372.8, 0, 1);
       //d->collection->SetAboutData ("Soft on Blue - Powered by magic Pedro");
     }
 
@@ -1615,8 +1614,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3]={1.0, 0.98820477724075317, 0.98814374208450317};
 	
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (449.3);
-      d->collection->SyncSetColorLevel (372.8);
+      d->collection->SyncSetColorWindow (449.3, 0, 1);
+      d->collection->SyncSetColorLevel (372.8, 0, 1);
       //d->view->SetAboutData ("Red on White - Powered by magic Pedro");
     }
 
@@ -1627,8 +1626,8 @@ void v3dView::onPresetPropertySet (QString value)
       double color[3] = {0.0, 0.0, 0.0};
       
       d->collection->SyncSetBackground( color );
-      d->collection->SyncSetColorWindow (133.5);
-      d->collection->SyncSetColorLevel (163.4);
+      d->collection->SyncSetColorWindow (133.5, 0, 1);
+      d->collection->SyncSetColorLevel (163.4, 0, 1);
       //d->collection->SyncSetTextColor ( white );
       //d->view->SetAboutData ("Glossy - Powered by magic Pedro");
     }
