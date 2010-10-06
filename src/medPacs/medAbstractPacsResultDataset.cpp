@@ -21,25 +21,12 @@ const char* medAbstractPacsResultDataset::getStudyInstanceUID()
     return NULL;
 }
 
-void medAbstractPacsResultDataset::setStudyInstanceUID( const char* uid )
-{
-    DTK_UNUSED(uid);
-
-    DTK_DEFAULT_IMPLEMENTATION;
-}
 
 const char* medAbstractPacsResultDataset::getSeriesInstanceUID()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return NULL;
-}
-
-void medAbstractPacsResultDataset::setSeriesInstanceUID( const char* uid )
-{
-    DTK_UNUSED(uid);
-
-    DTK_DEFAULT_IMPLEMENTATION;
 }
 
 const char* medAbstractPacsResultDataset::getSOPInstanceUID()
@@ -49,14 +36,14 @@ const char* medAbstractPacsResultDataset::getSOPInstanceUID()
     return NULL;
 }
 
-void medAbstractPacsResultDataset::setSOPInstanceUID( const char* uid )
+QVector<medAbstractPacsKey*> medAbstractPacsResultDataset::getKeyContainer()
 {
-    DTK_UNUSED(uid);
-
     DTK_DEFAULT_IMPLEMENTATION;
+
+    return QVector<medAbstractPacsKey*>();
 }
 
-QVector<medAbstractPacsKey*>* medAbstractPacsResultDataset::getKeyContainer()
+const char* medAbstractPacsResultDataset::findKeyValue( int group, int elem )
 {
     DTK_DEFAULT_IMPLEMENTATION;
 

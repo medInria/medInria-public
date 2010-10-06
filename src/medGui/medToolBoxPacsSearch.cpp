@@ -90,6 +90,9 @@ void medToolBoxPacsSearch::onSearch(void)
                 qDebug() << "instance uid:" << dataset->getSeriesInstanceUID();
                 qDebug() << "sop uid:" << dataset->getSOPInstanceUID();
 
+                //qDebug() << "Find accession no:" << dataset->findKeyValue(0x0008,0x0050);
+
+
                 
             }
         }

@@ -16,15 +16,14 @@ public:
     virtual ~medAbstractPacsResultDataset(void);
 
     virtual const char* getStudyInstanceUID(void);
-    virtual void setStudyInstanceUID(const char* uid);
 
     virtual const char* getSeriesInstanceUID(void);
-    virtual void setSeriesInstanceUID(const char* uid);
 
     virtual const char* getSOPInstanceUID(void);
-    virtual void setSOPInstanceUID(const char* uid);
 
-    virtual QVector<medAbstractPacsKey*>* getKeyContainer(void);
+    virtual QVector<medAbstractPacsKey*> getKeyContainer(void);
+
+    virtual const char* findKeyValue(int group, int elem);
 
 };
 
