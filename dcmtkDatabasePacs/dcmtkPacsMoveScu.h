@@ -22,6 +22,9 @@ public:
 
     void clearAllQueryAttributes();
 
+    void useBuildInStoreSCP(bool flag);
+
+
 private:
     dcmtkMoveScu scu;
 

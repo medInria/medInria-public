@@ -33,6 +33,11 @@ void dcmtkPacsMoveScu::clearAllQueryAttributes()
     scu.clearAllQueryAttributes();
 }
 
+void dcmtkPacsMoveScu::useBuildInStoreSCP( bool flag )
+{
+    scu.useBuildInStoreSCP(flag);
+}
+
 medAbstractPacsMoveScu * createDcmtkMoveScu( void )
 {
     return new dcmtkPacsMoveScu;
