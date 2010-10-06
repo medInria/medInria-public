@@ -60,7 +60,7 @@ void medPacsWidgetPrivate::run(void)
         return;
     }
 
-    this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), 9998);
+    this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), this->host_port.toInt());
 }
 
 int medPacsWidgetPrivate::index(QString node_title)
@@ -96,7 +96,7 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
-    d->start();
+    //d->start();
 }
 
 medPacsWidget::~medPacsWidget(void)
@@ -329,11 +329,12 @@ void medPacsWidget::onItemImported(void)
 
     d->move->addQueryAttribute(tag.x(), tag.y(), query.toLatin1());
 
+    d->move->useBuildInStoreSCP(true);
     d->move->sendMoveRequest(
         d->nodes.at(nodeIndex).at(0).toLatin1(),
         d->nodes.at(nodeIndex).at(1).toLatin1(),
         d->nodes.at(nodeIndex).at(2).toInt(),
         d->host_title.toLatin1(),
         d->host_address.toLatin1(),
-        d->host_port.toLatin1());
+        d->host_port.toInt());
 }

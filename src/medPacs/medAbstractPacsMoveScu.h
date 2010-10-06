@@ -15,6 +15,9 @@ public:
     virtual int sendMoveRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, 
                                 const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
+    virtual void useBuildInStoreSCP(bool flag);
+
+
 };
 
 #endif

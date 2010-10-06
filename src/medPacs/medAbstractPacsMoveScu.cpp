@@ -25,3 +25,10 @@ medAbstractPacsMoveScu::~medAbstractPacsMoveScu( void )
 {
 
 }
+
+void medAbstractPacsMoveScu::useBuildInStoreSCP( bool flag )
+{
+    DTK_UNUSED(flag);
+
+    DTK_DEFAULT_IMPLEMENTATION;
+}
