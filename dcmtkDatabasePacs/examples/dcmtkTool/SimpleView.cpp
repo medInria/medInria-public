@@ -212,7 +212,11 @@ void SimpleView::findStudyLevel()
     while (selectedNodes->isValid())
     {
         // do the work
-        dcmtkNode::dcmtkConnectionData cdata = selNode->getConnData();
+        dcmtkConnectionData cdata;
+        cdata.title = selNode->title();
+        cdata.ip = selNode->ip();
+        cdata.port = selNode->port();
+
         m_findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
 
         selNode = selectedNodes->getNext();
@@ -274,8 +278,12 @@ void SimpleView::findSeriesLevel(QTreeWidgetItem * item)
     QPoint tag = item->data(1,Qt::UserRole).toPoint();
     QString searchStr = item->data(2,Qt::UserRole).toString();
     dcmtkContainer<dcmtkNode*>* mainNodeCont = m_findScu->getNodeContainer();
-    dcmtkNode::dcmtkConnectionData cdata = mainNodeCont->getAtPos(nodeIndex)->getConnData();
-
+    dcmtkConnectionData cdata;
+    dcmtkNode* node = mainNodeCont->getAtPos(nodeIndex);
+    cdata.title = node->title();
+    cdata.ip = node->ip();
+    cdata.port = node->port();
+ 
     // clear previous results
     dcmtkFindScu* findScu = new dcmtkFindScu;
 
@@ -343,7 +351,12 @@ void SimpleView::findImageLevel(QTreeWidgetItem * item)
     int nodeIndex = item->data(0,Qt::UserRole).toInt(); // node index
     QString searchStr = item->data(2,Qt::UserRole).toString(); // search value
     dcmtkContainer<dcmtkNode*>* mainNodeCont = m_findScu->getNodeContainer();
-    dcmtkNode::dcmtkConnectionData cdata = mainNodeCont->getAtPos(nodeIndex)->getConnData(); // conn data
+    
+    dcmtkConnectionData cdata;
+    dcmtkNode* myNode = mainNodeCont->getAtPos(nodeIndex);
+    cdata.title = myNode->title();
+    cdata.ip = myNode->ip();
+    cdata.port = myNode->port();
 
     // clear previous results
     dcmtkFindScu* findScu = new dcmtkFindScu;
@@ -423,7 +436,11 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
     m_moveScu->addQueryAttribute(tag.x(), tag.y(), searchStr.toLatin1());
     
     // send the move request using the search crits
-    dcmtkNode::dcmtkConnectionData cdata = mainNodeCont->getAtPos(nodeIndex)->getConnData();
+    dcmtkConnectionData cdata;
+    dcmtkNode* myNode = mainNodeCont->getAtPos(nodeIndex);
+    cdata.title = myNode->title();
+    cdata.ip = myNode->ip();
+    cdata.port = myNode->port();
     m_moveScu->sendMoveRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     
     ui->logWindow->append(tr("All done."));
@@ -452,7 +469,8 @@ void SimpleView::echo()
 void SimpleView::store()
 {
     // set the current node params first
-    dcmtkNode::dcmtkConnectionData* cb = &(m_nodes.at(ui->sendToNodeCB->currentIndex()));
+    dcmtkConnectionData* cb = &(m_nodes.at(ui->sendToNodeCB->currentIndex()));
+
     m_sendThread->setConnectionParams(cb->title.c_str(), cb->ip.c_str(), cb->port, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     
     QDir testDir;
@@ -497,7 +515,7 @@ void SimpleView::storeSettings(int type)
 {
     QSettings settings("INRIA", "DCMTKTOOL");
 
-    std::vector<dcmtkNode::dcmtkConnectionData>::iterator iter;
+    std::vector<dcmtkConnectionData>::iterator iter;
     int count = 0;
     QString countString;
 
@@ -697,7 +715,7 @@ void SimpleView::addConnection(QString peer, QString ip, QString port)
     QTableWidgetItem *portItem = new QTableWidgetItem(port);
     ui->connTableWidget->setItem(row, 2, portItem);
 
-    dcmtkNode::dcmtkConnectionData cdata;
+    dcmtkConnectionData cdata;
     cdata.title = peer.toStdString();
     cdata.ip    = ip.toStdString();
     cdata.port  = port.toInt();
@@ -761,7 +779,9 @@ dcmtkContainer<dcmtkNode*>* SimpleView::getSelectedNodes()
       if( item->checkState() == Qt::Checked)
       {
           dcmtkNode* node = new dcmtkNode;
-          node->addConnData(m_nodes.at(i));
+          node->setTitle(m_nodes.at(i).title);
+          node->setIp(m_nodes.at(i).ip);
+          node->setPort(m_nodes.at(i).port);
           selectedNodes->add(node);
       }
     }
