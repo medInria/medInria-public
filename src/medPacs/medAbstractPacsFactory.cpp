@@ -21,6 +21,7 @@
 #include "medAbstractPacsEchoScu.h"
 #include "medAbstractPacsFindScu.h"
 #include "medAbstractPacsMoveScu.h"
+#include "medAbstractPacsStoreScp.h"
 
 class medAbstractPacsFactoryPrivate
 {
@@ -28,6 +29,8 @@ public:
     medAbstractPacsFactory::medAbstractPacsEchoScuCreatorHash echo_scu_creators;
     medAbstractPacsFactory::medAbstractPacsFindScuCreatorHash find_scu_creators;
     medAbstractPacsFactory::medAbstractPacsMoveScuCreatorHash move_scu_creators;
+    medAbstractPacsFactory::medAbstractPacsStoreScpCreatorHash store_scp_creators;
+
 
 };
 
@@ -99,6 +102,16 @@ bool medAbstractPacsFactory::registerMoveScuType( QString type, medAbstractPacsM
     return false;
 }
 
+bool medAbstractPacsFactory::registerStoreScpType( QString type, medAbstractPacsStoreScpCreator func )
+{
+    if(!d->store_scp_creators.contains(type)) {
+        d->store_scp_creators.insert(type, func);
+        return true;
+    }
+
+    return false;
+}
+
 medAbstractPacsFactory::medAbstractPacsFactory(void) : dtkAbstractFactory(), d(new medAbstractPacsFactoryPrivate)
 {
 
@@ -110,6 +123,7 @@ medAbstractPacsFactory::~medAbstractPacsFactory(void)
 
     d = NULL;
 }
+
 
 
 medAbstractPacsFactory *medAbstractPacsFactory::s_instance = NULL;

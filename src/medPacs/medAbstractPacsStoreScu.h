@@ -1,11 +1,12 @@
 
-#ifndef MEDABSTRACTPACSSTORESCP_H
-#define MEDABSTRACTPACSSTORESCP_H
+#ifndef MEDABSTRACTPACSSTORESCU_H
+#define MEDABSTRACTPACSSTORESCU_H
 
 #include <QtCore/QObject>
 #include "medPacsExport.h"
+#include "medAbstractPacsBaseScu.h"
 
-class MEDPACS_EXPORT medAbstractPacsStoreScu : public QObject
+class MEDPACS_EXPORT medAbstractPacsStoreScu : public medAbstractPacsBaseScu
 {
     Q_OBJECT
 

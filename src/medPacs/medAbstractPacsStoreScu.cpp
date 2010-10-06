@@ -2,8 +2,6 @@
 
 #include <dtkCore/dtkGlobal.h>
 
-#include <QtCore>
-
 medAbstractPacsStoreScu::medAbstractPacsStoreScu( void )
 {
 
