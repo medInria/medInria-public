@@ -24,6 +24,9 @@ public:
 
     void useBuildInStoreSCP(bool flag);
 
+    bool setStorageDirectory(const char* directory);
+
+
 
 private:
     dcmtkMoveScu scu;
