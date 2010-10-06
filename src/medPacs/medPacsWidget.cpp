@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 11:07:29 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 16:02:39 2010 (+0200)
+ * Last-Updated: Wed Oct  6 16:18:13 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 340
+ *     Update #: 342
  */
 
 /* Commentary: 
@@ -147,7 +147,7 @@ void medPacsWidget::search(QString query)
         
         d->find->clearAllQueryAttributes();
         d->find->setQueryLevel(medAbstractPacsFindScu::STUDY);
-        d->find->addQueryAttribute(0x0010,0x0010, query.toAscii().constData());   // patient name
+        d->find->addQueryAttribute(0x0010,0x0010, query.toAscii().constData()); // patient name
         d->find->addQueryAttribute(0x0008,0x0030, "\0"); // study date
         d->find->addQueryAttribute(0x0008,0x0050, "\0"); // accession no
         d->find->addQueryAttribute(0x0008,0x0061, "\0"); // modalities in study
@@ -321,11 +321,6 @@ void medPacsWidget::onItemImported(void)
     int nodeIndex = item->data(0, Qt::UserRole).toInt();
     QPoint tag = item->data(1, Qt::UserRole).toPoint();
     QString query = item->data(2, Qt::UserRole).toString();
-
-    qDebug() << DTK_PRETTY_FUNCTION << "Node index" << nodeIndex;
-    qDebug() << DTK_PRETTY_FUNCTION << "tagx" << tag.x();
-    qDebug() << DTK_PRETTY_FUNCTION << "tagy" << tag.y();
-    qDebug() << DTK_PRETTY_FUNCTION << "Sending request to node" << d->nodes.at(nodeIndex).at(0).toLatin1();
 
     QString ref = QDateTime::currentDateTime().toString();
 
