@@ -85,7 +85,7 @@ SimpleView::SimpleView()
   
 
   // start the threaded server
-  // startServer();
+   startServer();
 
 };
 
