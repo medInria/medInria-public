@@ -51,6 +51,7 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageShort4 : public dtkAbstractDataImage
     
  private:
     void computeRange(void);
+    void computeValueCounts(void);
 
     itkDataImageShort4Private* d;
   

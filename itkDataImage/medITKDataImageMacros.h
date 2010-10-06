@@ -318,46 +318,67 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   {									\
     typedef itkDataImage##suffix##Private::ScalarType ScalarType;	\
 									\
-    computeRange();							\
-    if( d->histogram.IsNull() )						\
-    {									\
-      typedef itkDataImage##suffix##Private::HistogramGeneratorType	\
-	HistogramGeneratorType;						\
-      HistogramGeneratorType::Pointer histogramGenerator =		\
-	HistogramGeneratorType::New();					\
-      histogramGenerator->SetInput( d->image );				\
-      histogramGenerator->SetNumberOfBins( d->range_max - d->range_min + 1 ); \
-      histogramGenerator->SetMarginalScale( 1.0 );			\
-      histogramGenerator->SetHistogramMin( d->range_min );		\
-      histogramGenerator->SetHistogramMax( d->range_max );		\
-      try								\
-      {									\
-	histogramGenerator->Compute();					\
-      }									\
-      catch (itk::ExceptionObject &e)					\
-      {									\
-	std::cerr << e;							\
-	return -1;							\
-      }									\
-      typedef HistogramGeneratorType::HistogramType  HistogramType;	\
-      d->histogram =							\
-	const_cast<HistogramType*>( histogramGenerator->GetOutput() );	\
-      d->histogram_min = d->histogram->GetFrequency( d->range_min, 0 );	\
-      d->histogram_max = d->histogram->GetFrequency( d->range_max, 0 );	\
-    }									\
-									\
+    computeValueCounts();						\
     if( (ScalarType)value>=d->range_min && (ScalarType)value<=d->range_max ) \
     {									\
       return d->histogram->GetFrequency( value, 0 );			\
     }									\
     return -1;								\
   }									\
+  void itkDataImage##suffix::computeValueCounts()			\
+  {									\
+    if( d->histogram.IsNull() )						\
+    {									\
+      computeRange();							\
+									\
+      typedef itkDataImage##suffix##Private::HistogramGeneratorType	\
+	HistogramGeneratorType;						\
+      HistogramGeneratorType::Pointer histogramGenerator =		\
+	HistogramGeneratorType::New();					\
+      histogramGenerator->SetInput( d->image );				\
+      histogramGenerator->SetNumberOfBins(d->range_max - d->range_min + 1); \
+      histogramGenerator->SetMarginalScale( 1.0 );			\
+      histogramGenerator->SetHistogramMin( d->range_min );		\
+      histogramGenerator->SetHistogramMax( d->range_max );		\
+      try								\
+      {									\
+	std::cerr << "calculating histogram...";			\
+	histogramGenerator->Compute();					\
+	std::cerr << "done" << std::endl;				\
+      }									\
+      catch (itk::ExceptionObject &e)					\
+      {									\
+	std::cerr << e;							\
+	return;								\
+      }									\
+									\
+      typedef HistogramGeneratorType::HistogramType  HistogramType;	\
+      typedef HistogramType::AbsoluteFrequencyType   FrequencyType;	\
+      d->histogram =							\
+	const_cast<HistogramType*>( histogramGenerator->GetOutput() );	\
+      FrequencyType min = itk::NumericTraits< FrequencyType >::max();	\
+      FrequencyType max = itk::NumericTraits< FrequencyType >::min();	\
+									\
+      typedef HistogramType::Iterator Iterator;				\
+      for ( Iterator it = d->histogram->Begin(), end = d->histogram->End(); \
+	    it != end; ++it )						\
+      {									\
+	FrequencyType c = it.GetFrequency();				\
+	if ( min > c ) min = c;						\
+	if ( max < c ) max = c;						\
+      }									\
+      d->histogram_min = static_cast< int >( min );			\
+      d->histogram_max = static_cast< int >( max );			\
+    }									\
+  }									\
   int itkDataImage##suffix::scalarValueMinCount(void)                   \
   {									\
+    computeValueCounts();						\
     return d->histogram_min;						\
   }									\
   int itkDataImage##suffix::scalarValueMaxCount(void)			\
   {									\
+    computeValueCounts();						\
     return d->histogram_max;						\
   }									\
   dtkAbstractData *createItkDataImage##suffix(void)			\
