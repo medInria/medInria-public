@@ -36,18 +36,9 @@ signals:
 public slots:
     virtual void onPropertySet (QString key, QString value);
     virtual void onVisibilityPropertySet (QString value);
-    virtual void onBoxVisibilityPropertySet (QString value);
+    virtual void onEdgeVisibilityPropertySet (QString value);
     virtual void onRenderingModePropertySet (QString value);
-    virtual void onGPUModePropertySet (QString value);
-    virtual void onColorModePropertySet (QString value);
-    virtual void onBoxBooleanOperationPropertySet (QString value);
-    virtual void onProjectionPropertySet (QString value);
-    virtual void onRadiusSet (int value);
 
-    virtual void onSelectionTagged (void);
-    virtual void onSelectionReset (void);
-    virtual void onSelectionValidated (void);    
-     
 private:
     v3dViewMeshInteractorPrivate *d;
 
