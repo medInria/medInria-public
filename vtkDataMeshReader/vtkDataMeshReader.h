@@ -4,7 +4,8 @@
 #include <dtkCore/dtkAbstractDataReader.h>
 
 #include "vtkDataMeshReaderPluginExport.h"
-#include "vtkDataSetReader.h"
+
+class vtkDataSetReader;
 
 class VTKDATAMESHREADERPLUGIN_EXPORT vtkDataMeshReader : public dtkAbstractDataReader
 {

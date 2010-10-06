@@ -7,12 +7,13 @@
 
 vtkDataMeshReader::vtkDataMeshReader(void) : dtkAbstractDataReader()
 {
-  this->reader = vtkSmartPointer<vtkDataSetReader>::New();
+  this->reader = vtkDataSetReader::New();
 }
 
 
 vtkDataMeshReader::~vtkDataMeshReader(void)
 {
+  this->reader->Delete();
 }
 
 
@@ -29,7 +30,7 @@ QStringList vtkDataMeshReader::s_handled(void)
 bool vtkDataMeshReader::canRead (QString path)
 {
   this->reader->SetFileName (path.toAscii().constData());
-  
+
   if (this->reader->IsFilePolyData() ||
       this->reader->IsFileUnstructuredGrid() ||
       this->reader->IsFileStructuredGrid()   ||
@@ -49,18 +50,20 @@ bool vtkDataMeshReader::canRead (QStringList paths)
 
 void vtkDataMeshReader::readInformation (QString path)
 {
-	
+  
   dtkAbstractData* dtkdata = this->data();
   this->reader->SetFileName (path.toAscii().constData());
   
   if (!dtkdata)
   {
+    dtkdata = dtkAbstractDataFactory::instance()->create ("vtkDataMesh");
+    if (dtkdata)
+      this->setData ( dtkdata );
   }
-  else
-  {
-    dtkdata->addMetaData ("FilePath", QStringList() << path);
-    dtkdata->description() = "vtkDataMesh";
-  }
+
+
+  dtkdata->addMetaData ("FilePath", QStringList() << path);
+  dtkdata->description() = "vtkDataMesh";
 }
 
 void vtkDataMeshReader::readInformation (QStringList paths)
@@ -110,8 +113,7 @@ void vtkDataMeshReader::setProgress (int value)
 
 bool vtkDataMeshReader::registered(void)
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("vtkDataMeshReader", vtkDataMeshReader::s_handled(),
-								    createVtkDataMeshReader);
+  return dtkAbstractDataFactory::instance()->registerDataReaderType("vtkDataMeshReader", vtkDataMeshReader::s_handled(),								    createVtkDataMeshReader);
 }
 
 QString vtkDataMeshReader::description(void) const
@@ -125,6 +127,6 @@ QString vtkDataMeshReader::description(void) const
 
 dtkAbstractDataReader *createVtkDataMeshReader(void)
 {
-    return new vtkDataMeshReader;
+  return new vtkDataMeshReader;
 }
 
