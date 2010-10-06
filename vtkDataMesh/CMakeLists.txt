@@ -58,9 +58,9 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   ${ITK_LIBRARIES})
 
-if (BUILD_TESTING)
-#JDS  add_subdirectory(Testing)
-endif (BUILD_TESTING)
+#if (BUILD_TESTING)
+#  add_subdirectory(Testing)
+#endif (BUILD_TESTING)
 
 ## #################################################################
 ## Install rules

@@ -1,4 +1,5 @@
 #include "vtkDataMeshPlugin.h"
+#include "vtkDataMesh.h"
 
 #include <dtkCore/dtkLog.h>
 
