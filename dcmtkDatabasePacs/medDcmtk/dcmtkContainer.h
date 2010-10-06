@@ -69,8 +69,6 @@ public:
     */
     int index();
 
-    T find(T obj);
-
 protected:
 
     int             m_index;

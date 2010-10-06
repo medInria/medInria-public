@@ -54,14 +54,15 @@ void dcmtkResultDataset::setSOPInstanceUID( const char* uid )
 
 //---------------------------------------------------------------------------------------------
 
-const char* dcmtkResultDataset::findKeyValue( int group, int elem)
+const char* dcmtkResultDataset::findKeyValue(int group, int elem)
 {
     dcmtkContainer<dcmtkKey*>* cont= this->getKeyContainer();
 
-    dcmtkKey key;
-    key.elem = elem;
-    key.group = group;
-    return (*(cont->find(&key))).value.c_str();
+    for(int i = 0; i < cont->size(); i++)
+        if(cont->getAtPos(i)->group == group && cont->getAtPos(i)->elem)
+            return cont->getAtPos(i)->value.c_str();
+
+    return NULL;
 }
 
 //---------------------------------------------------------------------------------------------
