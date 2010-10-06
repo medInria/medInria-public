@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 15:46:09 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 17:18:23 2010 (+0200)
+ * Last-Updated: Wed Oct  6 11:40:43 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 10
+ *     Update #: 11
  */
 
 /* Commentary: 
@@ -34,10 +34,6 @@ public:
 
     void readSettings(void);
     void writeSettings(void);
-
-    void setHostTitle(const QString& title);
-    void setHostAddress(const QString& address);
-    void setHostPort(const QString& port);
 
 public slots:
     void addNode(void);

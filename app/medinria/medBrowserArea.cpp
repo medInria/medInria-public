@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 18:23:30 2010 (+0200)
+ * Last-Updated: Wed Oct  6 11:40:24 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 444
+ *     Update #: 448
  */
 
 /* Commentary: 
@@ -177,8 +177,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_pacs_host = new medToolBoxPacsHost(this);
     d->toolbox_pacs_host->setVisible(false);
 
-    connect(d->toolbox_pacs_host, SIGNAL(applied()), this, SLOT(onPacsHostSettingsApplied()));
-
     // Toolbox pacs nodes //////////////////////////////////////////
 
     d->toolbox_pacs_nodes = new medToolBoxPacsNodes(this);
@@ -188,6 +186,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->toolbox_pacs_search = new medToolBoxPacsSearch(this);
     d->toolbox_pacs_search->setVisible(false);
+
+    connect(d->toolbox_pacs_search, SIGNAL(search(QString)), d->pacs, SLOT(search(QString)));
 
     // Toolbox container /////////////////////////////////////////////
 
@@ -293,11 +293,4 @@ void medBrowserArea::onSourceIndexChanged(int index)
         d->toolbox_pacs_nodes->setVisible(false);
         d->toolbox_pacs_search->setVisible(false);
     }
-}
-
-void medBrowserArea::onPacsHostSettingsApplied(void)
-{
-    d->toolbox_pacs_nodes->setHostTitle(d->toolbox_pacs_host->title());
-    d->toolbox_pacs_nodes->setHostAddress(d->toolbox_pacs_host->address());
-    d->toolbox_pacs_nodes->setHostPort(d->toolbox_pacs_host->port());
 }

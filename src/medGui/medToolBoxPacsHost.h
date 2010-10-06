@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 15:45:46 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 17:37:28 2010 (+0200)
+ * Last-Updated: Wed Oct  6 11:36:22 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -39,8 +39,8 @@ public:
     QString address(void);
     QString port(void);
 
-signals:
-    void applied(void);
+protected slots:
+    void onSettingsApplied(void);
 
 private:
     medToolBoxPacsHostPrivate *d;

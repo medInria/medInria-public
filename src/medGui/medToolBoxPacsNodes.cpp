@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 15:49:05 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 17:43:01 2010 (+0200)
+ * Last-Updated: Wed Oct  6 12:03:32 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 142
+ *     Update #: 150
  */
 
 /* Commentary: 
@@ -108,6 +108,8 @@ void medToolBoxPacsNodes::readSettings(void)
     nodes = settings.value("nodes").toList();
     settings.endGroup();
 
+    d->table->clearContents();
+
     foreach(QVariant node, nodes) {
         int row = d->table->rowCount(); d->table->insertRow(row);
         
@@ -136,21 +138,6 @@ void medToolBoxPacsNodes::writeSettings(void)
     settings.endGroup();
 }
 
-void medToolBoxPacsNodes::setHostTitle(const QString& title)
-{
-    d->host_title = title;
-}
-
-void medToolBoxPacsNodes::setHostAddress(const QString& address)
-{
-    d->host_address = address;
-}
-
-void medToolBoxPacsNodes::setHostPort(const QString& port)
-{
-    d->host_port = port;
-}
-
 void medToolBoxPacsNodes::addNode(void)
 {
     int row = d->table->rowCount(); d->table->insertRow(row);
@@ -158,15 +145,21 @@ void medToolBoxPacsNodes::addNode(void)
     d->table->setItem(row, 0, new QTableWidgetItem(d->title->text()));
     d->table->setItem(row, 1, new QTableWidgetItem(d->address->text()));
     d->table->setItem(row, 2, new QTableWidgetItem(d->port->text()));
+
+    this->writeSettings();
 }
 
 void medToolBoxPacsNodes::remNode(void)
 {
     d->table->removeRow(d->table->currentRow());
+
+    this->writeSettings();
 }
 
 void medToolBoxPacsNodes::echo(void)
 {
+    // this->readSettings();
+
     for(int i = 0; i < d->table->rowCount(); i++) {
 
         medAbstractPacsEchoScu *scu = medAbstractPacsFactory::instance()->createEchoScu("dcmtkEchoScu");
