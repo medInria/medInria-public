@@ -650,19 +650,27 @@ void medViewerArea::setupCropping(bool checked)
 void medViewerArea::bringUpTransFun(bool checked)
 {
     if (!checked)
+    {
+        if (d->transFun !=NULL )
+        {
+            delete d->transFun ;
+            d->transFun=NULL;
+        }
       return;
-
+    }
     if(!d->view_stacks.count())
         return;
   
     if(dtkAbstractView *view = d->view_stacks.value(d->current_patient)->current()->current()->view()) {
 
-      medClutEditor * transFun = new medClutEditor(NULL);
-      transFun->setWindowModality( Qt::WindowModal );
-      transFun->setData(static_cast<dtkAbstractData *>(view->data()));
-      transFun->setView(dynamic_cast<medAbstractView*>(view));
+      d->transFun = new medClutEditor(NULL);
+      d->transFun->setWindowModality( Qt::WindowModal );
+      d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
 
-      transFun->show();
+      d->transFun->setData(static_cast<dtkAbstractData *>(view->data()));
+      d->transFun->setView(dynamic_cast<medAbstractView*>(view));
+
+      d->transFun->show();
     }
 }
 
