@@ -37,10 +37,12 @@ include(${VTK_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS_MOC
   vtkDataMeshPlugin.h
+  vtkDataMesh.h
   )
 
 set(${PROJECT_NAME}_SOURCES
   vtkDataMeshPlugin.cpp
+  vtkDataMesh.cpp
   )
 
 ## #################################################################
@@ -56,11 +58,13 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-  ${ITK_LIBRARIES})
+  vtkCommon
+  vtkFiltering
+  )
 
-if (BUILD_TESTING)
-#JDS  add_subdirectory(Testing)
-endif (BUILD_TESTING)
+#if (BUILD_TESTING)
+#  add_subdirectory(Testing)
+#endif (BUILD_TESTING)
 
 ## #################################################################
 ## Install rules
