@@ -267,6 +267,8 @@ public:
     ~medClutEditorHistogram(void);
 
     void addValue(int intensity, int number);
+    int getRangeMin();
+    int getRangeMax();
 
 public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -275,11 +277,13 @@ public:
 
 private:
     QList<QPoint> values;
+    QSizeF size;
 };
 
-medClutEditorHistogram::medClutEditorHistogram(QGraphicsItem *parent) : QGraphicsItem(parent)
+medClutEditorHistogram::medClutEditorHistogram(QGraphicsItem *parent) :
+        QGraphicsItem(parent),size()
 {
-    this->setFlag(QGraphicsItem::ItemIsMovable, false);
+    //this->setFlag(QGraphicsItem::ItemIsMovable, false);
     this->setZValue(-1000);
 }
 
@@ -288,9 +292,28 @@ medClutEditorHistogram::~medClutEditorHistogram(void)
 
 }
 
+int medClutEditorHistogram::getRangeMin(void)
+{
+    return values[0].x();
+}
+
+int medClutEditorHistogram::getRangeMax(void)
+{
+    return values.back().x();
+}
+
 void medClutEditorHistogram::addValue(int intensity, int number)
 {
-    values << QPoint(intensity, 200*-log10((double)1+number));
+    int x =0;
+    if (!values.isEmpty() )
+        x = intensity-values[0].x();
+    int y = 200*-log10((double)1+number);
+    if (-y>size.height()) size.setHeight(-y);
+
+    if ((x>size.width()))
+        size.setWidth(x);
+
+    values << QPoint(intensity, y);
 }
 
 void medClutEditorHistogram::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -310,7 +333,17 @@ void medClutEditorHistogram::paint(QPainter *painter, const QStyleOptionGraphics
 
 QRectF medClutEditorHistogram::boundingRect(void) const
 {
-    return QRectF(0, 0, 16, 16);
+    if (!values.isEmpty())
+    {
+        //qDebug()<< "boundingRect Histogram" <<QRectF((double)(values[0].x()),(double)(values[0].y()),(double)(values.back().x()),(double)(values[0].y()));
+        //qDebug()<<"boundingRect Histogram"<<QRectF(QPointF((double)(values[0].x()),-size.height()),size);
+        return QRectF(QPointF((double)(values[0].x()),-size.height()),size);
+    }
+    else
+    {
+        qDebug() << "empty histogram";
+        return QRectF(0, 0, 16, 16);
+    }
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -346,6 +379,9 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event);
+    void wheelEvent ( QWheelEvent * event );
+    void keyReleaseEvent( QKeyEvent * event);
+    void keyPressEvent( QKeyEvent * event);
 };
 
 medClutEditorView::medClutEditorView(QWidget *parent) : QGraphicsView(parent)
@@ -370,10 +406,28 @@ void medClutEditorView::resizeEvent(QResizeEvent *event)
 {
     QGraphicsView::resizeEvent(event);
 
-    qDebug() << this->sceneRect();
+    //qDebug() << this->sceneRect();
     this->fitInView(this->sceneRect(), Qt::KeepAspectRatio);
 }
 
+void medClutEditorView::wheelEvent ( QWheelEvent * event )
+{
+    double degrees =  exp(0.0001*(double)(event->delta()));
+
+    qreal factor = degrees;
+    if (factor < 0 ) factor = 0 ;
+    this->scale(factor,factor);
+}
+
+void medClutEditorView::keyPressEvent( QKeyEvent * event){
+    if (event->key()==Qt::Key_Control)
+        this->setDragMode(QGraphicsView::ScrollHandDrag);
+}
+
+void medClutEditorView::keyReleaseEvent( QKeyEvent * event){
+    if (event->key()==Qt::Key_Control)
+        this->setDragMode(QGraphicsView::NoDrag);
+}
 // /////////////////////////////////////////////////////////////////
 // medClutEditor
 // /////////////////////////////////////////////////////////////////
@@ -387,6 +441,7 @@ public:
 
     medClutEditorScene *scene;
     medClutEditorView  *view;
+    medClutEditorHistogram *histogram;
 
     dtkAbstractData *dtk_data;
     dtkAbstractView *dtk_view;
@@ -421,19 +476,21 @@ medClutEditor::~medClutEditor(void)
 void medClutEditor::setData(dtkAbstractData *data)
 {
     if(dtkAbstractDataImage *image = dynamic_cast<dtkAbstractDataImage *>(data)) {
-        medClutEditorHistogram *histogram = new medClutEditorHistogram;
+        d->histogram = new medClutEditorHistogram;
         int min_range = image->minRangeValue();
         int max_range = image->maxRangeValue();
-
+        //qDebug()<<min_range<<","<<max_range;
 
         for(int i = min_range ; i < max_range ; i++)
-            histogram->addValue(i, image->scalarValueCount(i-min_range));
+            d->histogram->addValue(i, image->scalarValueCount(i-min_range));
 
-        d->scene->addItem(histogram);
+        d->scene->addItem(d->histogram);
 	int log_max =
 	  static_cast<int>(log10((double)1+image->scalarValueMaxCount()));
-        d->scene->setSceneRect(min_range,           200 * -log_max,
-			       max_range-min_range, 200 *  log_max);
+       // d->scene->setSceneRect(min_range,           200 * -log_max,
+//			       max_range-min_range, 200 *  log_max);
+
+        //d->scene->setSceneRect(histogram->boundingRect());
         d->dtk_data = image;
     }
 }
@@ -458,9 +515,10 @@ void medClutEditor::mousePressEvent(QMouseEvent *event)
 
 void medClutEditor::onNewTableAction(void)
 {
-    medClutEditorVertex *v1 = new medClutEditorVertex(-1024, 300, Qt::blue);
-    medClutEditorVertex *v2 = new medClutEditorVertex( 1379, 500, Qt::red);
-    medClutEditorVertex *v3 = new medClutEditorVertex(  130, 550, Qt::yellow);
+    medClutEditorVertex *v1 = new medClutEditorVertex(d->histogram->getRangeMin(), 300, Qt::blue);
+    medClutEditorVertex *v2 = new medClutEditorVertex((d->histogram->getRangeMax()+d->histogram->getRangeMin())/2,
+                                                       500, Qt::red);
+    medClutEditorVertex *v3 = new medClutEditorVertex( d->histogram->getRangeMax() , 550, Qt::yellow);
     // medClutEditorVertex *v4 = new medClutEditorVertex(260,  60, Qt::white);
     d->scene->addItem(v1);
     d->scene->addItem(v2);
