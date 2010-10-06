@@ -92,8 +92,11 @@ void medDatabaseImporter::run(void)
         for (int i=0; i<readers.size(); i++) {
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
             if (dataReader->canRead( fileInfo.filePath() )) {
+	      qDebug() << "datareader is able to read : " << fileInfo.filePath() << "\n";
+	      
                 dataReader->readInformation( fileInfo.filePath() );
                 dtkdata = dataReader->data();
+		qDebug() << dtkdata << "\n";
                 delete dataReader;
                 break;
             }
@@ -205,8 +208,16 @@ void medDatabaseImporter::run(void)
 	// we append the uniqueID at the end of the filename to have unique filenames for each volume
 	QString uniqueSeriesId;
 	uniqueSeriesId.setNum(keyToInt[key]);
-
-	QString imageFileName = medDatabaseController::instance()->dataLocation() + "/" + patientName.simplified() + "/" + studyName.simplified() + "/" + seriesName.simplified() + "_" + uniqueSeriesId + ".mhd";
+	
+	QString FileName = medDatabaseController::instance()->dataLocation() + "/" + patientName.simplified() + "/" + studyName.simplified() + "/" + seriesName.simplified() + "_" + uniqueSeriesId;
+	if (dtkdata->description() == "vtkDataMesh")
+	{
+	  FileName = FileName + ".vtk";
+	}
+	else
+	{
+	  FileName = FileName + ".mha";
+	}  
 
 	seriesName += tr("_") + uniqueSeriesId;
 
@@ -263,7 +274,7 @@ void medDatabaseImporter::run(void)
 	}
 	
 	if (!imageExists)
-	    imagesToWriteMap[ imageFileName ] << fileInfo.filePath();
+	    imagesToWriteMap[ FileName ] << fileInfo.filePath();
 
 	delete dtkdata;
 	
@@ -422,10 +433,22 @@ void medDatabaseImporter::run(void)
 
 	int writeSuccess = 0;
 	
-        for (int i=0; i<writers.size(); i++) {
+        for (int i=0; i<writers.size(); i++)
+	{
             dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
+	    qDebug() << "trying " << dataWriter->description();
+	    
+	    if (! dataWriter->handled().contains(imData->description()))
+	    {
+	      qDebug() << "failed with " << dataWriter->description();
+	      continue;
+	    }
+	    
+	    qDebug() << "success with " << dataWriter->description();
             dataWriter->setData (imData);
 
+	    qDebug() << "trying to write in file : "<<it.key();
+	    
             if (dataWriter->canWrite( it.key() )) {
                 if (dataWriter->write( it.key() )) {
                     dtkDataList.push_back (imData);
