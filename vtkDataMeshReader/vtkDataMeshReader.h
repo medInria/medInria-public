@@ -29,10 +29,19 @@ public slots:
   virtual bool read (QStringList paths);
   
   virtual void setProgress (int value);
+
+  virtual QString description(void) const;
+  
+  static bool registered(void);	
+
     
 protected:
 
   vtkDataSetReader* reader;
 };
+
+
+dtkAbstractDataReader *createVtkDataMeshReader(void);
+
 
 #endif

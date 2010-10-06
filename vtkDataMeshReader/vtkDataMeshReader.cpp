@@ -1,11 +1,13 @@
 #include "vtkDataMeshReader.h"
 
+#include "vtkDataSetReader.h"
+#include "vtkSmartPointer.h"
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 vtkDataMeshReader::vtkDataMeshReader(void) : dtkAbstractDataReader()
 {
-  this->io = 0;
+  this->reader = vtkSmartPointer<vtkDataSetReader>::New();
 }
 
 
@@ -60,7 +62,6 @@ void vtkDataMeshReader::readInformation (QString path)
     dtkdata->description() = "vtkDataMesh";
   }
 }
-  
 
 void vtkDataMeshReader::readInformation (QStringList paths)
 {
@@ -72,7 +73,7 @@ void vtkDataMeshReader::readInformation (QStringList paths)
 bool vtkDataMeshReader::read (QString path)
 {
   this->setProgress (0);
-	
+  
   this->readInformation ( path );
 
   this->setProgress (50);
@@ -82,7 +83,7 @@ bool vtkDataMeshReader::read (QString path)
   if (dtkAbstractData *dtkdata = this->data() )
   {
     
-    if (!dtkdata->description()=="vtkDataMesh")
+    if (!(dtkdata->description()=="vtkDataMesh"))
       return false;
 
     reader->SetFileName (path.toAscii().constData());
@@ -106,3 +107,24 @@ void vtkDataMeshReader::setProgress (int value)
 {
   emit progressed (value);
 }
+
+bool vtkDataMeshReader::registered(void)
+{
+  return dtkAbstractDataFactory::instance()->registerDataReaderType("vtkDataMeshReader", vtkDataMeshReader::s_handled(),
+								    createVtkDataMeshReader);
+}
+
+QString vtkDataMeshReader::description(void) const
+{
+    return "vtkDataMeshReader";
+}
+
+// /////////////////////////////////////////////////////////////////
+// Type instanciation
+// /////////////////////////////////////////////////////////////////
+
+dtkAbstractDataReader *createVtkDataMeshReader(void)
+{
+    return new vtkDataMeshReader;
+}
+

@@ -36,7 +36,7 @@ include(${VTK_USE_FILE})
 
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataMeshReaderPlugin.h
+  vtkDataMeshReaderPlugin.h
 #  vtkDataMeshReaderCommand.h
   vtkDataMeshReader.h
   )
