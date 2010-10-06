@@ -17,6 +17,8 @@ public:
 
     int start(const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
+    bool setStorageDirectory(const char* directory);
+
 
 private:
     dcmtkStoreScp   scp;

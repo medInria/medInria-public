@@ -325,6 +325,7 @@ void SimpleView::findSeriesLevel(QTreeWidgetItem * item)
             pItem->setData(2,Qt::UserRole, QString(resDs->getSeriesInstanceUID())); // search value
 
             pItem->setText(0,">>");
+            pItem->setText(1,resDs->findKeyValue(0x0008,0x103E));
             pItem->setText(2,resDs->findKeyValue(0x0020,0x0011)); // series number
             item->addChild(pItem);
             resDs = resCont->getNext();

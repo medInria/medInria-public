@@ -19,6 +19,11 @@ int dcmtkPacsStoreScp::start( const char* ourTitle, const char* ourIP, unsigned 
     return 1;
 }
 
+bool dcmtkPacsStoreScp::setStorageDirectory( const char* directory )
+{
+    return scp.setStorageDirectory(directory);
+}
+
 medAbstractPacsStoreScp * createDcmtkStoreScp( void )
 {
     return new dcmtkPacsStoreScp;
