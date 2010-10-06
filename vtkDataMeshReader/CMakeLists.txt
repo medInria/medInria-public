@@ -1,6 +1,4 @@
-cmake_minimum_required(VERSION 2.4)
-
-project(vtkDataMeshPlugin)
+project(vtkDataMeshReaderPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -24,23 +22,29 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(VTK REQUIRED)
+find_package(vtkINRIA3D REQUIRED)
+include(${vtkINRIA3D_USE_FILE})
+
+find_package(VTK)
 include(${VTK_USE_FILE})
 
-## #################################################################
-## Input
-## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  vtkDataMeshPlugin.h
+  itkDataMeshReaderPlugin.h
+#  vtkDataMeshReaderCommand.h
+  vtkDataMeshReader.h
   )
-
+  
 set(${PROJECT_NAME}_SOURCES
-  vtkDataMeshPlugin.cpp
+  vtkDataMeshReaderPlugin.cpp
+#  vtkDataMeshReaderCommand.cxx
+  vtkDataMeshReader.cpp
   )
 
 ## #################################################################
@@ -51,22 +55,33 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES})
+  ${${PROJECT_NAME}_SOURCES}
+)
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-  ${ITK_LIBRARIES})
-
-#if (BUILD_TESTING)
-#  add_subdirectory(Testing)
-#endif (BUILD_TESTING)
+  vtkCommon
+  vtkFiltering
+  vtkIO
+)
 
 ## #################################################################
 ## Install rules
 ## #################################################################
+if( VTK_BUILD_SHARED )
+  install(TARGETS ${PROJECT_NAME}  
+    RUNTIME DESTINATION plugins
+    LIBRARY DESTINATION plugins
+    ARCHIVE DESTINATION plugins)
+  install(DIRECTORY ${VTK_LIBRARY_DIRS}/ 
+    DESTINATION lib
+    FILES_MATCHING PATTERN "lib*")
+else( VTK_BUILD_SHARED )
+  install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION plugins
+    LIBRARY DESTINATION plugins
+    ARCHIVE DESTINATION plugins)
+endif( VTK_BUILD_SHARED )
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION plugins)
+
