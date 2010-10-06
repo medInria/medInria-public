@@ -38,6 +38,11 @@ void dcmtkPacsMoveScu::useBuildInStoreSCP( bool flag )
     scu.useBuildInStoreSCP(flag);
 }
 
+bool dcmtkPacsMoveScu::setStorageDirectory( const char* directory )
+{
+    return scu.setStorageDirectory(directory);
+}
+
 medAbstractPacsMoveScu * createDcmtkMoveScu( void )
 {
     return new dcmtkPacsMoveScu;

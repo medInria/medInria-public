@@ -1017,3 +1017,13 @@ void dcmtkMoveScu::clearAllQueryAttributes()
 }
 
 //---------------------------------------------------------------------------------------------
+
+bool dcmtkMoveScu::setStorageDirectory( const char* directory )
+{
+    opt_outputDirectory = directory;
+
+    // Todo check if directory is valid
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------

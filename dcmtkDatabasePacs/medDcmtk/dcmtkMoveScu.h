@@ -70,6 +70,15 @@ public:
     */
     void useBuildInStoreSCP(bool flag);
 
+    /**
+    * Set a directory where the store-scp should store its incoming data.
+    * The default storage directory is '.'
+    * @param directory valid directory
+    * @return True if directory is valid, false otherwise.
+    */
+    bool setStorageDirectory(const char* directory);
+
+
    /**
     * Clear all previously set attributes.
     */
