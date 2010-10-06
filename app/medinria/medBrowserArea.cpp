@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 11:40:24 2010 (+0200)
+ * Last-Updated: Wed Oct  6 16:03:20 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 448
+ *     Update #: 456
  */
 
 /* Commentary: 
@@ -153,6 +153,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->pacs = new medPacsWidget(this);
 
+    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
+
     // /////////////////////////////////////////////////////////////////
 
     d->stack = new QStackedWidget(this);
@@ -250,6 +252,23 @@ void medBrowserArea::onFileSystemImportClicked(void)
     connect(importer, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
     connect(importer,SIGNAL(showError(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
+    d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
+
+    QThreadPool::globalInstance()->start(importer);
+}
+
+void medBrowserArea::onPacsImport(QString path)
+{
+    QFileInfo info(path);
+
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
+
+    connect(importer, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
+    connect(importer,SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
+
     d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
 
     QThreadPool::globalInstance()->start(importer);

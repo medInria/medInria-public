@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 11:07:02 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 12:49:53 2010 (+0200)
+ * Last-Updated: Wed Oct  6 15:52:13 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 30
+ *     Update #: 31
  */
 
 /* Commentary: 
@@ -36,6 +36,9 @@ public:
 
     void readSettings(void);
     void writeSettings(void);
+
+signals:
+    void import(QString);
 
 public slots:
     void search(QString query);

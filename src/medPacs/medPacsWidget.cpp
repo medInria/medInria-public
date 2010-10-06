@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 11:07:29 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 15:28:54 2010 (+0200)
+ * Last-Updated: Wed Oct  6 16:02:39 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 318
+ *     Update #: 340
  */
 
 /* Commentary: 
@@ -304,6 +304,8 @@ void medPacsWidget::updateContextMenu(const QPoint& point)
     menu.exec(mapToGlobal(point));
 }
 
+#include <medSql/medDatabaseImporter.h>
+
 void medPacsWidget::onItemImported(void)
 {
     if(!this->selectedIndexes().count())
@@ -325,9 +327,18 @@ void medPacsWidget::onItemImported(void)
     qDebug() << DTK_PRETTY_FUNCTION << "tagy" << tag.y();
     qDebug() << DTK_PRETTY_FUNCTION << "Sending request to node" << d->nodes.at(nodeIndex).at(0).toLatin1();
 
+    QString ref = QDateTime::currentDateTime().toString();
+
+    QDir tmp = QDir::temp();
+    tmp.mkdir(ref);
+    tmp.cd(ref);
+
+    qDebug() << tmp.absolutePath().toLatin1();
+
     d->move->clearAllQueryAttributes();
     d->move->addQueryAttribute(tag.x(), tag.y(), query.toLatin1());
     d->move->useBuildInStoreSCP(true);
+    d->move->setStorageDirectory(tmp.absolutePath().toLatin1());
     d->move->sendMoveRequest(
         d->nodes.at(nodeIndex).at(0).toLatin1(),
         d->nodes.at(nodeIndex).at(1).toLatin1(),
@@ -335,4 +346,6 @@ void medPacsWidget::onItemImported(void)
         d->host_title.toLatin1(),
         d->host_address.toLatin1(),
         d->host_port.toInt());
+
+    emit import(tmp.absolutePath().toLatin1());
 }
