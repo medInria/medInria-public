@@ -90,7 +90,7 @@ void dcmtkFindScuCallback::setResultDatasetContainer(dcmtkContainer<dcmtkResultD
 
 //---------------------------------------------------------------------------------------------
 
-void dcmtkFindScuCallback::setKeyContainer( dcmtkKeyContainer* cont )
+void dcmtkFindScuCallback::setKeyContainer(dcmtkContainer<dcmtkKey*>* cont )
 {
     m_keyCont = cont;
 }

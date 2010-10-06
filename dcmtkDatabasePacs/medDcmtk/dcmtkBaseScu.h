@@ -15,6 +15,7 @@
 #include "dcmtkContainer.h"
 
 // fwd
+class dcmtkKey;
 class dcmtkNode;
 class dcmtkKeyContainer;
 
@@ -182,7 +183,7 @@ protected:
 
     eQueryLevel                  m_currentQueryLevel;
     dcmtkContainer<dcmtkNode*>   m_resContainer;
-    dcmtkKeyContainer*           m_keyContainer;
+    dcmtkContainer<dcmtkKey*>    m_keyContainer;
 
 };
 

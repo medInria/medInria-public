@@ -23,9 +23,5 @@ public:
     }
 };
 
-class dcmtkKeyContainer : public dcmtkContainer<dcmtkKey*>
-{
-
-};
 
 #endif DCMTKKEYCONTAINER_H

@@ -12,9 +12,9 @@
 #include "dcmtkContainer.h"
 
 // fwd
+class dcmtkKey;
 class dcmtkResultDataset;
 class dcmtkResultDatasetContainer;
-class dcmtkKeyContainer;
 
 /** Custom implementation of FindSCU callback class. This implementation is 
  *  used when no explicit callback is passed by the user, e.g. in the findscu tool.
@@ -53,7 +53,7 @@ public:
   * setKeyContainer to look for keys in the result dataset
   * @params: cont pointer to keycontainer
   */
-  void setKeyContainer(dcmtkKeyContainer* cont);
+  void setKeyContainer(dcmtkContainer<dcmtkKey*>* cont);
 
 private:
 
@@ -65,7 +65,7 @@ private:
 
    dcmtkContainer<dcmtkResultDataset*>*  m_ds;
 
-   dcmtkKeyContainer*                    m_keyCont;
+   dcmtkContainer<dcmtkKey*>*            m_keyCont;
 
 };
 

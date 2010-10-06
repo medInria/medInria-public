@@ -36,11 +36,11 @@ public:
 
 protected:
 
-        dcmtkKeyContainer        m_keyContainer;
+        dcmtkContainer<dcmtkKey*> m_keyContainer;
 
-        std::string              m_studyInstUID;
-        std::string              m_seriesInstUID;
-        std::string              m_sopInstUID;
+        std::string               m_studyInstUID;
+        std::string               m_seriesInstUID;
+        std::string               m_sopInstUID;
 
 
 };

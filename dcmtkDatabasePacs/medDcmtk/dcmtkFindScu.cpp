@@ -82,7 +82,7 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
     //own callback
     dcmtkFindScuCallback myCallback(false, 1);
     myCallback.setResultDatasetContainer(node->getResultDatasetContainer());
-    myCallback.setKeyContainer(m_keyContainer);
+    myCallback.setKeyContainer(&m_keyContainer);
 
     // do the main work: negotiate network association, perform C-FIND transaction,
     // process results, and finally tear down the association.

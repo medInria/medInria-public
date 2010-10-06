@@ -15,14 +15,12 @@ dcmtkBaseScu::dcmtkBaseScu()
 {
     resetDefaultParams();
 
-    m_keyContainer = new dcmtkKeyContainer();
 }
 
 //---------------------------------------------------------------------------------------------
 
 dcmtkBaseScu::~dcmtkBaseScu()
 {
-    delete m_keyContainer;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -310,7 +308,7 @@ bool dcmtkBaseScu::addQueryAttribute(int group, int elem, const char* value)
     keyobj->group = group;
     keyobj->elem = elem;
     keyobj->value = value;
-    m_keyContainer->add(keyobj);
+    m_keyContainer.add(keyobj);
 
     return addQueryAttribute(groupSs.str().c_str(), elemSs.str().c_str(), value);
 
