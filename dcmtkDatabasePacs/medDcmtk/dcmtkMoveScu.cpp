@@ -62,7 +62,6 @@ dcmtkMoveScu::dcmtkMoveScu()
 int  dcmtkMoveScu::sendMoveRequest(const char* peerTitle, const char* peerIP, int peerPort, 
                                    const char* targetTitle, const char* targetIP, int targetPort)
 {
-
     // always use study info model
     opt_queryModel = QMStudyRoot;
 
