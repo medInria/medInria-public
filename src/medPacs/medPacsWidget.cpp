@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 11:07:29 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 14:57:40 2010 (+0200)
+ * Last-Updated: Wed Oct  6 15:28:54 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 316
+ *     Update #: 318
  */
 
 /* Commentary: 
@@ -96,7 +96,7 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
-    //d->start();
+    // d->start();
 }
 
 medPacsWidget::~medPacsWidget(void)
@@ -326,9 +326,7 @@ void medPacsWidget::onItemImported(void)
     qDebug() << DTK_PRETTY_FUNCTION << "Sending request to node" << d->nodes.at(nodeIndex).at(0).toLatin1();
 
     d->move->clearAllQueryAttributes();
-
     d->move->addQueryAttribute(tag.x(), tag.y(), query.toLatin1());
-
     d->move->useBuildInStoreSCP(true);
     d->move->sendMoveRequest(
         d->nodes.at(nodeIndex).at(0).toLatin1(),

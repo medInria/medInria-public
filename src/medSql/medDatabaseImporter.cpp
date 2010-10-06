@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:42:32 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed May 12 15:25:04 2010 (+0200)
+ * Last-Updated: Wed Oct  6 15:32:32 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 37
+ *     Update #: 38
  */
 
 /* Commentary: 
@@ -65,7 +65,6 @@ void medDatabaseImporter::run(void)
 
 
     fileList.sort();
-
 
     QMap<QString, QStringList> imagesToWriteMap;
 

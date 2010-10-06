@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:41:28 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Mar 18 21:06:43 2010 (+0100)
+ * Last-Updated: Wed Oct  6 15:33:33 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 9
+ *     Update #: 10
  */
 
 /* Commentary: 
@@ -41,6 +41,7 @@ signals:
     void success (void);
     void failure (void);
     void showError(QObject*,const QString&,unsigned int timeout);
+
 private:
     medDatabaseImporterPrivate *d;
 };
