@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Nov  7 15:54:10 2008 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Jul  6 19:20:01 2010 (+0200)
+ * Last-Updated: Wed Oct  6 13:09:06 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 49
+ *     Update #: 56
  */
 
 /* Commentary: 
@@ -62,7 +62,7 @@ medAbstractPacsFindScu *medAbstractPacsFactory::createFindScu(QString type)
     return scu;
 }
 
-medAbstractPacsMoveScu * medAbstractPacsFactory::createMoveScu( QString type )
+medAbstractPacsMoveScu *medAbstractPacsFactory::createMoveScu( QString type )
 {
     if(!d->move_scu_creators.contains(type))
         return NULL;
@@ -70,6 +70,16 @@ medAbstractPacsMoveScu * medAbstractPacsFactory::createMoveScu( QString type )
     medAbstractPacsMoveScu *scu = d->move_scu_creators[type]();
 
     return scu;
+}
+
+medAbstractPacsStoreScp *medAbstractPacsFactory::createStoreScp(QString type)
+{
+    if(!d->store_scp_creators.contains(type))
+        return NULL;
+
+    medAbstractPacsStoreScp *scp = d->store_scp_creators[type]();
+
+    return scp;
 }
 
 bool medAbstractPacsFactory::registerEchoScuType( QString type, medAbstractPacsEchoScuCreator func )

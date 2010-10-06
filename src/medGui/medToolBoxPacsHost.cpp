@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 15:49:05 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 17:42:28 2010 (+0200)
+ * Last-Updated: Wed Oct  6 11:37:23 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 51
+ *     Update #: 55
  */
 
 /* Commentary: 
@@ -48,7 +48,7 @@ medToolBoxPacsHost::medToolBoxPacsHost(QWidget *parent) : medToolBox(parent), d(
     this->setTitle("Pacs host");
     this->setWidget(page);
 
-    connect(d->apply, SIGNAL(clicked()), this, SIGNAL(applied()));
+    connect(d->apply, SIGNAL(clicked()), this, SLOT(onSettingsApplied()));
 
     this->readSettings();
 }
@@ -95,4 +95,9 @@ QString medToolBoxPacsHost::address(void)
 QString medToolBoxPacsHost::port(void)
 {
     return d->port->text();
+}
+
+void medToolBoxPacsHost::onSettingsApplied(void)
+{
+    this->writeSettings();
 }
