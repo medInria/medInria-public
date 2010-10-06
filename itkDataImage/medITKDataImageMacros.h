@@ -23,7 +23,7 @@ void
 generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
 		    int xydim, bool singlez, QList<QImage> & thumbnails)
 {
-  if (VDimension != 3)
+  if (VDimension < 3)
     return;
   if (image.IsNull())
     return;
@@ -209,6 +209,7 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     int                    histogram_min;				\
     int                    histogram_max;				\
     QList<QImage>          thumbnails;					\
+    QImage                 defaultThumbnail; \
   };									\
   itkDataImage##suffix::itkDataImage##suffix(): dtkAbstractDataImage(), d (new itkDataImage##suffix##Private) \
   {									\
@@ -218,6 +219,8 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     d->range_max = 0;							\
     d->histogram_min = 0;						\
     d->histogram_max = 0;						\
+    d->defaultThumbnail = QImage(128, 128, QImage::Format_ARGB32); \
+    d->defaultThumbnail.fill(0); \
   }									\
   itkDataImage##suffix::~itkDataImage##suffix()				\
   {									\
@@ -326,14 +329,18 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
 					d->thumbnails);			\
 									\
   int index = 0;							\
-  if (dimension > 2)							\
-    index = d->thumbnails.length() / 2;					\
+  if (dimension > 2) {							\
+	itkDataImage##suffix##Private::ImageType::SizeType size = d->image->GetLargestPossibleRegion().GetSize(); \
+    index = size[2] / 2;					\
+  } \
 									\
   qDebug() << "thumbnail " << index << " / " << d->thumbnails.length(); \
   if (index < d->thumbnails.length())					\
     return d->thumbnails[index];					\
-  else									\
+  else if (d->thumbnails.size()>0)									\
     return d->thumbnails[0];						\
+  else \
+	return d->defaultThumbnail; \
   }									\
 									\
   QList<QImage> & itkDataImage##suffix::thumbnails (void) const		\

@@ -85,8 +85,8 @@ void v3dViewFuseInteractor::onPropertySet (QString key, QString value)
     if (key=="FusionStyle")
         this->onFusionStylePropertySet (value);
 
-    if (d->view)
-        d->view->update();
+    //if (d->view)
+      //  d->view->update();
 }
 
 void v3dViewFuseInteractor::onFusionStylePropertySet (QString value)
