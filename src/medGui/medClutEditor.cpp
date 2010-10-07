@@ -24,6 +24,7 @@
 #include "medClutEditor.h"
 
 #include <math.h>
+#include <climits>
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditorHistogram
@@ -31,13 +32,14 @@
 
 class medClutEditorVertexPrivate{
  public:
-
     QColor fgColor;
     QColor bgColor;
     int upperBd;
     QAction *deleteAction;
     QAction *setColorAction;
 
+    medClutEditorVertex * prev;
+    medClutEditorVertex * next;
 };
 
 medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,int upperBound, QGraphicsItem *parent) : QGraphicsItem(parent)
@@ -59,6 +61,8 @@ medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,int upperBou
     connect(d->deleteAction, SIGNAL(triggered()), this, SLOT(onDeleteAction()));
     connect(d->setColorAction, SIGNAL(triggered()), this, SLOT(onSetColorAction()));
 
+    d->prev = NULL;
+    d->next = NULL;
 }
 
 medClutEditorVertex::~medClutEditorVertex(void)
@@ -113,6 +117,11 @@ QColor medClutEditorVertex::color(void) const
     return d->fgColor;
 }
 
+void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+   event->pos();
+}
+
 void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
@@ -158,24 +167,29 @@ public:
      medClutEditorTable(QGraphicsItem *parent = 0);
     ~medClutEditorTable(void);
 
+    void setAllowedArea( QRect  rect );
+    void setAllowedArea( QRectF rect );
     void addVertex(medClutEditorVertex *vertex);
+    QRectF boundingRect(void) const;
 
     void setup(int min, int max, int size, int *table);
     void setupTransferFunction(QList<double> &scalars,QList<QColor> &colors );
 
-public:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+	       QWidget *widget = 0);
 
-    QRectF boundingRect(void) const;
 
     void keyPressEvent(QKeyEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+    QRect allowedArea;
     QList<medClutEditorVertex *> vertices;
 };
 
-medClutEditorTable::medClutEditorTable(QGraphicsItem *parent) : QGraphicsItem(parent)
+medClutEditorTable::medClutEditorTable(QGraphicsItem *parent)
+  : QGraphicsItem(parent),
+    allowedArea( INT_MIN, INT_MIN, INT_MAX, INT_MAX ) 
 {
     //this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -184,7 +198,19 @@ medClutEditorTable::medClutEditorTable(QGraphicsItem *parent) : QGraphicsItem(pa
 
 medClutEditorTable::~medClutEditorTable(void)
 {
+}
 
+void medClutEditorTable::setAllowedArea( QRect rect )
+{
+    allowedArea = rect;
+    qDebug() << allowedArea;
+}
+
+void medClutEditorTable::setAllowedArea( QRectF rect )
+{
+  allowedArea = QRect( rect.topLeft().toPoint(),
+		       rect.bottomRight().toPoint() );
+  qDebug() << allowedArea;
 }
 
 void medClutEditorTable::addVertex(medClutEditorVertex *vertex)
@@ -227,8 +253,8 @@ void medClutEditorTable::setup(int min, int max, int size, int *table)
             table[x-min+(3*size)] = 255;
         }
     }
-
 }
+
 void medClutEditorTable::setupTransferFunction(QList<double> &scalars,QList<QColor> &colors )
 {
     scalars.clear();
@@ -246,19 +272,22 @@ void medClutEditorTable::paint(QPainter *painter, const QStyleOptionGraphicsItem
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    int n_points = vertices.size()+2;
-	QPoint *points = new QPoint[n_points];
-    points[0] = QPoint(vertices.first()->position().x(), 0);
-    for(int i = 0 ; i < vertices.count() ; i++)
+    int n_points = vertices.size();
+    QPoint *points = new QPoint[n_points + 2];
+    // points[0]            = QPoint(0, vertices.first()->position().y());
+    // points[n_points + 1] = QPoint(0, vertices.last()->position().y());
+    points[0]            = QPoint(vertices.first()->position().x(), 0);
+    points[n_points + 1] = QPoint(vertices.last()->position().x(),  0);
+    for (int i = 0 ; i < n_points; i++) {
         points[i+1] = vertices.at(i)->position();
-    points[vertices.count()+1] = QPoint(vertices.last()->position().x(), 0);
-
+    }
     QPen pen(Qt::lightGray, 2);
 
     int xmin = vertices.first()->x();
     int xmax = vertices.last()->x();
     int ymin = INT_MAX; 
-    foreach(medClutEditorVertex *vertex, vertices) ymin = qMin(ymin, (int)vertex->y());
+    foreach(medClutEditorVertex *vertex, vertices)
+      ymin = qMin(ymin, (int)vertex->y());
 
     QLinearGradient linearGradient(xmin, 0, xmax, 0);
     foreach(medClutEditorVertex *vertex, vertices) {
@@ -274,7 +303,7 @@ void medClutEditorTable::paint(QPainter *painter, const QStyleOptionGraphicsItem
     painter->setPen(pen);
     painter->setBrush(linearGradient);
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-    painter->drawPolygon(points, n_points);
+    painter->drawPolygon(points, n_points + 2);
 
     int posx = (xmax+xmin)/2;
     int posy = ymin/2;
@@ -544,18 +573,25 @@ medClutEditor::~medClutEditor(void)
 
 void medClutEditor::setData(dtkAbstractData *data)
 {
-    if(dtkAbstractDataImage *image = dynamic_cast<dtkAbstractDataImage *>(data)) {
+    if (dtkAbstractDataImage *image =
+	dynamic_cast<dtkAbstractDataImage *>(data)) {
+
         d->histogram = new medClutEditorHistogram;
         int min_range = image->minRangeValue();
         int max_range = image->maxRangeValue();
-        //qDebug()<<min_range<<","<<max_range;
 
-        for(int i = min_range ; i < max_range ; i++)
-            d->histogram->addValue(i, image->scalarValueCount(i-min_range));
+        for (int i = min_range ; i < max_range ; i++)
+	    d->histogram->addValue(i, image->scalarValueCount(i-min_range));
 
         d->scene->addItem(d->histogram);
-	int log_max =
-	  static_cast<int>(log10((double)1+image->scalarValueMaxCount()));
+
+        foreach (QGraphicsItem *item, d->scene->items())
+            if (medClutEditorTable *lut =
+		dynamic_cast<medClutEditorTable *>(item))
+	        lut->setAllowedArea( d->histogram->boundingRect() );
+
+	// int log_max =
+	//   static_cast<int>(log10((double)1+image->scalarValueMaxCount()));
        // d->scene->setSceneRect(min_range,           200 * -log_max,
 //			       max_range-min_range, 200 *  log_max);
 
@@ -596,6 +632,7 @@ void medClutEditor::onNewTableAction(void)
     // d->scene->addItem(v4);
     
     medClutEditorTable *lut = new medClutEditorTable;
+    lut->setAllowedArea( d->histogram->boundingRect() );
     lut->addVertex(v1);
     lut->addVertex(v2);
     lut->addVertex(v3);

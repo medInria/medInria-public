@@ -48,6 +48,7 @@ public:
     void onDeleteAction();
     void onSetColorAction();
 protected:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QMouseEvent *event);
 private :
