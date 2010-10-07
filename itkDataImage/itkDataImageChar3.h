@@ -47,6 +47,8 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageChar3 : public dtkAbstractDataImage
     int scalarValueMaxCount(void);
     
  private:
+    void computeRange(void);
+    void computeValueCounts(void);
 
     itkDataImageChar3Private* d;
   

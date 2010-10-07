@@ -50,6 +50,8 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUShort4 : public dtkAbstractDataImag
     int scalarValueMaxCount(void);
     
  private:
+    void computeRange(void);
+    void computeValueCounts(void);
 
     itkDataImageUShort4Private* d;
   

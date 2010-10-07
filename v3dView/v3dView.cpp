@@ -34,7 +34,8 @@
 #include <vtkInteractorStyleTrackballCamera2.h>
 #include <vtkInteractorStyleTrackballActor.h>
 #include <vtkImageViewCollection.h>
-
+#include <vtkColorTransferFunction.h>
+#include <vtkPiecewiseFunction.h>
 #include <QVTKWidget.h>
 
 #include <QtGui>
@@ -153,7 +154,7 @@ public:
 // v3dView
 // /////////////////////////////////////////////////////////////////
 
-v3dView::v3dView(void) : dtkAbstractView(), d(new v3dViewPrivate)
+v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 {
     d->data = 0;
     d->orientation = "Axial";
@@ -1865,4 +1866,49 @@ void v3dView::onMenuWindowLevelTriggered (void)
 dtkAbstractView *createV3dView(void)
 {
     return new v3dView;
+}
+
+
+void v3dView::setColorLookupTable(QList<double>scalars, QList<QColor>colors)
+{
+    int size= qMin(scalars.count(),colors.count());
+    vtkColorTransferFunction * ctf = vtkColorTransferFunction::New();
+    vtkPiecewiseFunction * pf = vtkPiecewiseFunction::New();
+    for (int i=0;i<size;i++)
+    {
+        ctf->AddRGBPoint(scalars.at(i),
+			 colors.at(i).redF(),
+			 colors.at(i).greenF(),
+                         colors.at(i).blueF());
+        pf->AddPoint(scalars.at(i),colors.at(i).alphaF());
+    }
+
+    double min = scalars.first();
+    double max = scalars.last();
+    int n = static_cast< int >( max - min ) + 1;
+    double * table = new double[3*n];
+    double * alphaTable = new double[n];
+    ctf->GetTable( min, max, n, table );
+    ctf->Delete();
+    pf->GetTable(min,max,n,alphaTable);
+    pf->Delete();
+
+    vtkLookupTable * lut = vtkLookupTable::New();
+    lut->SetNumberOfTableValues(n + 2);
+    lut->SetTableRange( min - 1.0, max + 1.0 );
+    // lut->Build();
+
+    lut->SetTableValue( 0, 0.0, 0.0, 0.0, 0.0 );
+    for ( int i = 0, j = 0; i < n; ++i, j += 3 )
+    {
+        lut->SetTableValue(i+1, table[j], table[j+1], table[j+2], alphaTable[i] );
+        std::cerr<< alphaTable[i]<<std::endl;
+    }
+    lut->SetTableValue( n + 1, 0.0, 0.0, 0.0, 0.0 );
+
+    d->currentView->SetLookupTable(lut);
+    d->currentView->Render();
+    lut->Delete();
+    delete table;
+    delete alphaTable;
 }
