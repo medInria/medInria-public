@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Jun 30 13:07:01 2010 (+0200)
+ * Last-Updated: Thu Oct  7 11:05:16 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 30
+ *     Update #: 31
  */
 
 /* Commentary: 
@@ -40,10 +40,8 @@ public slots:
     void setWallScreen(bool full);
     void setFullScreen(bool full);
 
-    void switchToWelcomeArea(void);
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
-    void switchToDocumentationArea(void);
 
     void onConfigurationTriggered(QAction *action);
 

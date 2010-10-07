@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 11:11:47 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Jun  9 12:47:50 2010 (+0200)
+ * Last-Updated: Thu Oct  7 11:21:53 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 8
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -71,7 +71,7 @@ class MEDGUI_EXPORT medWorkspaceShifterAction : public QObject
 public:
      medWorkspaceShifterAction(QObject *parent = 0);
      medWorkspaceShifterAction(const QString& text, QObject *parent = 0);
-     medWorkspaceShifterAction(const QIcon& icon, const QString& text, QObject *parent = 0);
+     medWorkspaceShifterAction(const QIcon& icon, const QString& text = "", QObject *parent = 0);
     ~medWorkspaceShifterAction(void);
 
 signals:

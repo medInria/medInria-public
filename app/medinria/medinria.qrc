@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>medinria.ico</file>
+        <file>icons/quit.png</file>
         <file>icons/anchor.png</file>
 	<file>icons/cog.png</file>
         <file>icons/cropping.png</file>
@@ -102,19 +103,8 @@
         <file>pixmaps/database_navigator_item_checker_unchecked.png</file>
         <file>pixmaps/database_navigator_item_count.png</file>
         <file>pixmaps/database_navigator_item_label.png</file>
-        <file>pixmaps/documentation_go_arrow.png</file>
-        <file>pixmaps/documentation_next_arrow.png</file>
-        <file>pixmaps/documentation_previous_arrow.png</file>
         <file>pixmaps/mediseen-logo.png</file>
         <file>pixmaps/medinria-logo.png</file>
-
-        <file>html/css/style.css</file>
-        <file>html/documentation/css/style.css</file>
-        <file>html/documentation/img/bc_separator.png</file>
-        <file>html/documentation/index.html</file>
-        <file>html/js/jquery.tools.min.js</file>
-        <file>html/welcome/css/style.css</file>
-        <file>html/welcome/index.html</file>
-
+        <file>pixmaps/medinria-splash.png</file>
     </qresource>
 </RCC>
