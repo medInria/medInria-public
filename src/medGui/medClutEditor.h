@@ -49,7 +49,7 @@ public:
     void onSetColorAction();
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 private :
     void setAlpha();
     medClutEditorVertexPrivate * d;
