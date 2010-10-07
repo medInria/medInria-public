@@ -205,9 +205,18 @@ void medDatabaseImporter::run(void)
 	QString uniqueSeriesId;
 	uniqueSeriesId.setNum(keyToInt[key]);
 
-	QString imageFileName = medDatabaseController::instance()->dataLocation() + "/" + patientName.simplified() + "/" + studyName.simplified() + "/" + seriesName.simplified() + "_" + uniqueSeriesId + ".mhd";
-
-	seriesName += tr("_") + uniqueSeriesId;
+	QString s_patientName = patientName.simplified();
+	QString s_studyName   = studyName.simplified();
+	QString s_seriesName  = seriesName.simplified();
+		
+	s_patientName.replace (0x00EA, 'e');
+	s_studyName.replace   (0x00EA, 'e');
+	s_seriesName.replace  (0x00EA, 'e');
+		
+	QString imageFileName = medDatabaseController::instance()->dataLocation() + tr("/") + 
+		s_patientName + tr("/") +
+		s_studyName   + tr("/") +
+		s_seriesName  + uniqueSeriesId + tr(".mhd");
 
 	// Check if PATIENT/STUDY/SERIES/IMAGE already exists in the database
 

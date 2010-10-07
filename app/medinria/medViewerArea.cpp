@@ -314,13 +314,13 @@ void medViewerArea::open(const medDataIndex& index)
 
     medViewManager::instance()->insert(index, view);
     
-    view->setData(data);
-
-    view->reset();
+	view->setData(data);
+	view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
     
     d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
     d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
-
+	
+	
     return;
 
     }
