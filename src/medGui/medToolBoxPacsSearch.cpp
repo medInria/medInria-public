@@ -55,5 +55,7 @@ medToolBoxPacsSearch::~medToolBoxPacsSearch(void)
 
 void medToolBoxPacsSearch::onSearch(void)
 {
-    emit search(d->edit->text());
+    QString name = d->edit->text();
+    name.append("*");
+    emit search(name);
 }
