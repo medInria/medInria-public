@@ -29,42 +29,62 @@
 // medClutEditorHistogram
 // /////////////////////////////////////////////////////////////////
 
-class medClutEditorVertex : public QGraphicsItem
-{
-public:
-     medClutEditorVertex(int x, int y, QColor color = Qt::yellow,int upperBound = 0, QGraphicsItem *parent = 0);
-    ~medClutEditorVertex(void);
+class medClutEditorVertexPrivate{
+ public:
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-
-    QRectF boundingRect(void) const;
-    QPoint position(void) const;
-    QColor color(void) const;
-
-protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void setAlpha();
-private:
     QColor fgColor;
     QColor bgColor;
-    int upperBound;
+    int upperBd;
+    QAction *deleteAction;
+    QAction *setColorAction;
+
 };
 
 medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,int upperBound, QGraphicsItem *parent) : QGraphicsItem(parent)
 {
-    this->fgColor = color;
-    this->bgColor = QColor(0xc0, 0xc0, 0xc0,0x0);
-    this->upperBound = upperBound;
+    d = new medClutEditorVertexPrivate;
+    d->fgColor = color;
+    d->bgColor = QColor(0xc0, 0xc0, 0xc0,0x0);
+    d->upperBd = upperBound;
     this->setPos(x, -y);
     setAlpha();
     this->setZValue(1);
 
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
+
+    d->deleteAction = new QAction("Delete", 0);
+    d->setColorAction = new QAction("Edit Color", 0);
+
+
+    connect(d->deleteAction, SIGNAL(triggered()), this, SLOT(onDeleteAction()));
+    connect(d->setColorAction, SIGNAL(triggered()), this, SLOT(onSetColorAction()));
+
 }
 
 medClutEditorVertex::~medClutEditorVertex(void)
 {
+    delete d;
+}
 
+int medClutEditorVertex::upperBound()
+{
+    return d->upperBd;
+}
+
+void medClutEditorVertex::onDeleteAction()
+{
+}
+
+
+
+void medClutEditorVertex::onSetColorAction()
+{
+    QColor color = QColorDialog::getColor(d->fgColor, 0);
+
+    if(color.isValid()) {
+        d->fgColor = color;
+        this->update();
+    }
 }
 
 void medClutEditorVertex::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -74,8 +94,8 @@ void medClutEditorVertex::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
     painter->setPen(Qt::black);
     setAlpha();
-    painter->setBrush(bgColor); painter->drawEllipse(-40, -40, 80, 80);
-    painter->setBrush(fgColor); painter->drawEllipse(-25, -25, 50, 50);
+    painter->setBrush(d->bgColor); painter->drawEllipse(-40, -40, 80, 80);
+    painter->setBrush(d->fgColor); painter->drawEllipse(-25, -25, 50, 50);
 }
 
 QRectF medClutEditorVertex::boundingRect(void) const
@@ -90,31 +110,43 @@ QPoint medClutEditorVertex::position(void) const
 
 QColor medClutEditorVertex::color(void) const
 {
-    return fgColor;
+    return d->fgColor;
 }
 
 void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
 
-    QColor color = QColorDialog::getColor(fgColor, 0);
+    QColor color = QColorDialog::getColor(d->fgColor, 0);
 
     if(color.isValid()) {
-        this->fgColor = color;
+        d->fgColor = color;
         this->update();
     }
 }
 
 void medClutEditorVertex::setAlpha()
 {
-    float alpha = qAbs(this->y()/(float)upperBound);
+    float alpha = qAbs(this->y()/(float)d->upperBd);
     if ( alpha > 1 ) alpha = 1;
-    this->fgColor.setAlphaF(alpha);
+    d->fgColor.setAlphaF(alpha);
 }
 
 static bool medClutEditorVertexLessThan(const medClutEditorVertex *v1, const medClutEditorVertex *v2) {
     return (v1->position().x() < v2->position().x());
 }
+
+void medClutEditorVertex::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::RightButton) {
+        QMenu menu("Edit Marker", 0) ;
+        menu.setWindowOpacity(0.8) ;
+        menu.addAction(d->setColorAction) ;
+        menu.addAction(d->deleteAction) ;
+        menu.exec(event->globalPos()) ;
+    }
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditorTable
@@ -137,6 +169,7 @@ public:
     QRectF boundingRect(void) const;
 
     void keyPressEvent(QKeyEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     QList<medClutEditorVertex *> vertices;
@@ -277,6 +310,16 @@ void medClutEditorTable::keyPressEvent(QKeyEvent *event)
     case Qt::Key_X: this->scene()->removeItem(this); break;
     default: break;
     }
+    qDebug()<< event->key();
+}
+
+
+void medClutEditorTable::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    addVertex(new medClutEditorVertex(event->pos().x(),
+                                      -event->pos().y(),
+                                      Qt::yellow,
+                                      vertices[0]->upperBound(),this));
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -451,6 +494,9 @@ void medClutEditorView::keyReleaseEvent( QKeyEvent * event){
     if (event->key()==Qt::Key_Control)
         this->setDragMode(QGraphicsView::NoDrag);
 }
+
+
+
 // /////////////////////////////////////////////////////////////////
 // medClutEditor
 // /////////////////////////////////////////////////////////////////
@@ -493,7 +539,7 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
 
 medClutEditor::~medClutEditor(void)
 {
-
+    delete d;
 }
 
 void medClutEditor::setData(dtkAbstractData *data)

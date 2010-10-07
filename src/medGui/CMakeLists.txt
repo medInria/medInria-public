@@ -66,7 +66,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
-  medWorkspaceShifter.h)
+  medWorkspaceShifter.h
+  )
 
 set(${PROJECT_NAME}_SOURCES
   medClutEditor.cpp

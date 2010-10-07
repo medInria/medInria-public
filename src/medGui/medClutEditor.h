@@ -28,6 +28,33 @@ class dtkAbstractData;
 class medAbstractView;
 
 class medClutEditorPrivate;
+class medClutEditorVertexPrivate;
+
+class medClutEditorVertex : public QObject, public QGraphicsItem
+{
+    Q_OBJECT
+public:
+     medClutEditorVertex(int x, int y, QColor color = Qt::yellow,int upperBound = 0, QGraphicsItem *parent = 0);
+    ~medClutEditorVertex(void);
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+
+    QRectF boundingRect(void) const;
+    QPoint position(void) const;
+    QColor color(void) const;
+    int upperBound();
+
+ public slots:
+    void onDeleteAction();
+    void onSetColorAction();
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+private :
+    void setAlpha();
+    medClutEditorVertexPrivate * d;
+};
+
 
 class MEDGUI_EXPORT medClutEditor : public QWidget
 {
