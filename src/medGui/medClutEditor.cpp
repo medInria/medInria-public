@@ -39,7 +39,7 @@ public:
     void setAllowedArea( QRect  rect );
     void setAllowedArea( QRectF rect );
     QRect & allowedArea();
-    void addVertex(medClutEditorVertex *vertex);
+    void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
     QRectF boundingRect(void) const;
 
     void setup(int min, int max, int size, int *table);
@@ -87,7 +87,8 @@ QRect & medClutEditorTable::allowedArea()
   return limits;
 }
 
-void medClutEditorTable::addVertex(medClutEditorVertex *vertex)
+void medClutEditorTable::addVertex(medClutEditorVertex *vertex,
+				   bool interpolate)
 {
     vertices << vertex;
 
@@ -105,6 +106,9 @@ void medClutEditorTable::addVertex(medClutEditorVertex *vertex)
     }
     if ( lastVertex != NULL )
         lastVertex->setNext( NULL );
+
+    if (interpolate)
+      vertex->interpolate();
 }
 
 void medClutEditorTable::setup(int min, int max, int size, int *table)
@@ -233,7 +237,7 @@ void medClutEditorTable::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     addVertex(new medClutEditorVertex(event->pos().x(),
                                       -event->pos().y(),
                                       Qt::yellow,
-                                      vertices[0]->upperBound(),this));
+                                      vertices[0]->upperBound(),this), true);
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -638,6 +642,34 @@ int medClutEditorVertex::upperBound()
 
 }
 
+void medClutEditorVertex::interpolate()
+{
+  QColor cp( Qt::black ), cn( Qt::black );
+  int nNeighbors = 0;
+
+  if ( d->prev != NULL ) {
+    cp = d->prev->color();
+    qDebug() << cp;
+    ++nNeighbors;
+  }
+  if ( d->next != NULL ) {
+    cn = d->next->color();
+    qDebug() << cn;
+    ++nNeighbors;
+  }
+
+  qDebug() << nNeighbors;
+
+  if ( nNeighbors > 0 ) {
+    d->fgColor.setRed  ( ( cp.red()   + cn.red()   ) / nNeighbors );
+    d->fgColor.setGreen( ( cp.green() + cn.green() ) / nNeighbors );
+    d->fgColor.setBlue ( ( cp.blue()  + cn.blue()  ) / nNeighbors );
+    d->fgColor.setAlpha( ( cp.alpha() + cn.alpha() ) / nNeighbors );
+  }
+  qDebug() << d->fgColor;
+}
+
+
 void medClutEditorVertex::onDeleteAction()
 {
 
@@ -721,7 +753,7 @@ void medClutEditorVertex::setAlpha()
     if ( medClutEditorTable * table =
 	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
       height = table->allowedArea().height();
-    qDebug() << d->upperBd << " | " << height;
+    // qDebug() << d->upperBd << " | " << height;
     if ( alpha > 1 ) alpha = 1;
     d->fgColor.setAlphaF(alpha);
 }

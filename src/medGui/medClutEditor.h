@@ -46,11 +46,12 @@ public:
     QColor color(void) const;
     int upperBound();
 
+    void interpolate();
 
-  static bool LessThan(const medClutEditorVertex *v1,
-		       const medClutEditorVertex *v2) {
-      return (v1->position().x() < v2->position().x());
-  }
+    static bool LessThan(const medClutEditorVertex *v1,
+  		       const medClutEditorVertex *v2) {
+        return (v1->position().x() < v2->position().x());
+    }
 
  public slots:
     void onDeleteAction();
