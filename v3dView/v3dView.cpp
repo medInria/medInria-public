@@ -972,6 +972,13 @@ void v3dView::setData(dtkAbstractData *data)
 	    d->view3D->SetInput(dataset);
 	  }
       }
+      else if ( data->description() == "vtkDataMesh" ) {
+
+          this->enableInteractor ( "v3dViewMeshInteractor" );
+          // This will add the data to the interactor.
+          dtkAbstractView::setData(data);
+
+      }
       else {
         dtkAbstractView::setData(data);
         return;
