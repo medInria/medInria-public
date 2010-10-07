@@ -90,10 +90,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
     if (this->m_lock)
         return;
 
-    // vtkImageView2D* view = vtkImageView2D::SafeDownCast (caller);
-    // if (vtkInteractorStyleImageView2D *isi = vtkInteractorStyleImageView2D::SafeDownCast (caller)) {
-      // if (event == vtkImageView::CurrentPointChangedEvent) {
-        if (this->slider && this->view) {
+	if (this->slider && this->view) {
 	    unsigned int zslice = this->view->GetSlice();
 	    this->slider->blockSignals (true);
 	    this->slider->setValue (zslice);
@@ -101,8 +98,6 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
 	    this->slider->blockSignals (false);
 	    //qApp->processEvents(); // cause a crash when opening very fast multiple images
 	}
-	// }
-	// }
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -129,10 +124,12 @@ public:
     vtkImageViewCollection *collectionAxial;
     vtkImageViewCollection *collectionSagittal;
     vtkImageViewCollection *collectionCoronal;
+    //vtkImageViewCollection *collection3D;	
     v3dViewObserver *observer;
 
     QWidget    *widget;
     QSlider    *slider;
+	QComboBox  *dimensionBox;
     QPushButton *anchorButton;
     QPushButton *linkButton;
     QPushButton *linkWLButton;
@@ -145,7 +142,8 @@ public:
 
     QSet<dtkAbstractView*> linkedViews;
     
-    dtkAbstractData *data;
+    dtkAbstractData      *data;
+	dtkAbstractDataImage *imageData;
 
     QTimeLine *timeline;
 };
@@ -156,10 +154,12 @@ public:
 
 v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 {
-    d->data = 0;
+    d->data       = 0;
+	d->imageData  = 0;
     d->orientation = "Axial";
 
-    d->timeline = new QTimeLine(10000, this);
+    d->timeline = new QTimeLine(1000, this);
+	d->timeline->setLoopCount(0);
     connect(d->timeline, SIGNAL(frameChanged(int)), this, SLOT(onZSliderValueChanged(int)));
 
     // Setting up 2D view
@@ -229,6 +229,15 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->slider = new QSlider(Qt::Horizontal, d->widget);
     d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->slider->setFocusPolicy(Qt::NoFocus);
+	
+	d->dimensionBox = new QComboBox(d->widget);
+	d->dimensionBox->setFocusPolicy(Qt::NoFocus);
+	d->dimensionBox->addItem( tr("Space") );
+	d->dimensionBox->addItem( tr("Time") );
+	d->dimensionBox->setCurrentIndex( 0 );
+	d->dimensionBox->setMaximumHeight(16);
+	d->dimensionBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->dimensionBox->setMaximumWidth(64);
 
     d->anchorButton = new QPushButton(d->widget);
     d->anchorButton->setIcon (QIcon(":/icons/anchor.png"));
@@ -322,12 +331,13 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setContentsMargins(0, 0, 0, 0);
     toolsLayout->setSpacing(0);
+	toolsLayout->addWidget(d->dimensionBox);
+	toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->slider);
     toolsLayout->addWidget(d->anchorButton);
     toolsLayout->addWidget(d->linkButton);
     toolsLayout->addWidget(d->linkWLButton);
 	toolsLayout->addWidget(d->registerButton);
-    toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->closeButton);
 
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
@@ -364,6 +374,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->collection->SetLinkCamera (0);
     d->collection->SetLinkZoom (0);
     d->collection->SetLinkPan (0);
+	d->collection->SetLinkTimeChange (0);
     d->collection->SetLinkRequestedPosition (0);
 
     d->collection->AddItem (d->view2DAxial);
@@ -374,12 +385,14 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->collectionAxial       = vtkImageViewCollection::New();
     d->collectionSagittal    = vtkImageViewCollection::New();
     d->collectionCoronal     = vtkImageViewCollection::New();
+    //d->collection3D          = vtkImageViewCollection::New();	
     d->collectionWindowLevel = vtkImageViewCollection::New();
     d->collectionPos         = vtkImageViewCollection::New();
 
     d->collectionWindowLevel->SetLinkCurrentPoint (0);
     d->collectionWindowLevel->SetLinkRequestedPosition (0);
     d->collectionWindowLevel->SetLinkSliceMove (0);
+	d->collectionWindowLevel->SetLinkTimeChange (0);	
     d->collectionWindowLevel->SetLinkColorWindowLevel (1);
     d->collectionWindowLevel->SetLinkCamera (0);
     d->collectionWindowLevel->SetLinkZoom (0);
@@ -388,6 +401,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->collectionPos->SetLinkCurrentPoint (0);
     d->collectionPos->SetLinkRequestedPosition (1);
     d->collectionPos->SetLinkSliceMove (1);
+	d->collectionPos->SetLinkTimeChange (1);
     d->collectionPos->SetLinkColorWindowLevel (0);
     d->collectionPos->SetLinkCamera (0);
     d->collectionPos->SetLinkZoom (0);
@@ -416,11 +430,19 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->collectionCoronal->SetLinkCamera (0);
     d->collectionCoronal->SetLinkZoom (1);
     d->collectionCoronal->SetLinkPan (1);
-
-
+/*
+	d->collection3D->SetLinkCurrentPoint (0);
+    d->collection3D->SetLinkRequestedPosition (0);
+    d->collection3D->SetLinkSliceMove (0);
+    d->collection3D->SetLinkColorWindowLevel (0);
+    d->collection3D->SetLinkCamera (0);
+    d->collection3D->SetLinkZoom (1);
+    d->collection3D->SetLinkPan (1);	
+*/
     d->collectionAxial->AddItem    ( d->view2DAxial );
     d->collectionSagittal->AddItem ( d->view2DSagittal );
     d->collectionCoronal->AddItem  ( d->view2DCoronal );
+	//d->collection3D->AddItem       ( d->view3D );
     
     d->observer = v3dViewObserver::New();
     d->observer->setSlider(d->slider);
@@ -584,6 +606,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 
     connect(d->vtkWidget, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,    SIGNAL(valueChanged(int)),        this, SLOT(onZSliderValueChanged(int)));
+	connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(QString)));
 }
 
 v3dView::~v3dView(void)
@@ -687,11 +710,17 @@ void v3dView::link(dtkAbstractView *other)
 	otherView->viewSagittal()->SetCurrentPoint ( d->currentView->GetCurrentPoint() );
 	otherView->viewCoronal()->SetCurrentPoint  ( d->currentView->GetCurrentPoint() );
 	otherView->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
-	
+
+	otherView->viewAxial()->SetTimeIndex    ( d->currentView->GetTimeIndex() );
+	otherView->viewSagittal()->SetTimeIndex ( d->currentView->GetTimeIndex() );
+	otherView->viewCoronal()->SetTimeIndex  ( d->currentView->GetTimeIndex() );
+	otherView->view3D()->SetTimeIndex       ( d->currentView->GetTimeIndex() );
+		
+		
 	d->collectionAxial->AddItem    ( otherView->viewAxial() );
 	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
 	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
-
+	//d->collection3D->AddItem       ( otherView->view3D() );
 	
 	// zoom comes first, then pan (==translation)	
 	otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
@@ -702,7 +731,7 @@ void v3dView::link(dtkAbstractView *other)
 
 	otherView->viewCoronal()->SetZoom ( d->view2DCoronal->GetZoom() );
 	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
-
+		
 	/** 3D is more tricky than this */
 	//otherView->view3D()->SetCameraPosition    ( d->view3D->GetCameraPosition() );
 	//otherView->view3D()->SetCameraFocalPoint  ( d->view3D->GetCameraFocalPoint() );
@@ -731,9 +760,10 @@ void v3dView::unlink(dtkAbstractView *other)
 
 	otherView->setProperty ("Linked", "false");
 	
-        d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
+	d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
 	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
 	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
+	//d->collection3D->RemoveItem       ( otherView->view3D() );
 
 	d->collectionPos->RemoveItem ( otherView->viewAxial() );
 	d->collectionPos->RemoveItem ( otherView->viewSagittal() );
@@ -837,28 +867,10 @@ void v3dView::setData(dtkAbstractData *data)
     }
     else if (data->description()=="itkDataImageShort4") {
         if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
-	    itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::Pointer extractor = itk::ExtractImageFilter< itk::Image<short, 4>, itk::Image<short, 3> >::New();
-	    itk::Image<short, 4>::SizeType size = image->GetLargestPossibleRegion().GetSize();
-	    itk::Image<short, 4>::IndexType index = {{0,0,0,0}};
-	    size[3] = 0;
-	    itk::Image<short, 4>::RegionType region;
-	    region.SetSize (size);
-	    region.SetIndex (index);
-	    
-	    extractor->SetExtractionRegion (region);
-	    extractor->SetInput ( image );
-	    try
-	    {
-	      extractor->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return;
-	    }
-	    d->view2DAxial->SetITKInput( extractor->GetOutput() );
-	    d->view2DSagittal->SetITKInput( extractor->GetOutput() );
-	    d->view2DCoronal->SetITKInput( extractor->GetOutput() );
-	    d->view3D->SetITKInput( extractor->GetOutput() );
+		d->view2DAxial->SetITKInput4( image );
+	    d->view2DSagittal->SetITKInput4( image );
+	    d->view2DCoronal->SetITKInput4( image );
+	    d->view3D->SetITKInput4( image );		
 	}
     }
     else if (data->description()=="itkDataImageUShort3") {
@@ -871,30 +883,20 @@ void v3dView::setData(dtkAbstractData *data)
     }
     else if (data->description()=="itkDataImageUShort4") {
         if( itk::Image<unsigned short, 4>* image = dynamic_cast<itk::Image<unsigned short, 4>*>( (itk::Object*)( data->data() ) ) ) {
-	    itk::ExtractImageFilter< itk::Image<unsigned short, 4>, itk::Image<unsigned short, 3> >::Pointer extractor = itk::ExtractImageFilter< itk::Image<unsigned short, 4>, itk::Image<unsigned short, 3> >::New();
-	    itk::Image<unsigned short, 4>::SizeType size = image->GetLargestPossibleRegion().GetSize();
-	    itk::Image<unsigned short, 4>::IndexType index = {{0,0,0,0}};
-	    size[3] = 0;
-	    itk::Image<unsigned short, 4>::RegionType region;
-	    region.SetSize (size);
-	    region.SetIndex (index);
-	    
-	    extractor->SetExtractionRegion (region);
-	    extractor->SetInput ( image );
-	    try
-	    {
-	      extractor->Update();
-	    }
-	    catch (itk::ExceptionObject &e) {
-	      qDebug() << e.GetDescription();
-	      return;
-	    }
-	    d->view2DAxial->SetITKInput( extractor->GetOutput() );
-	    d->view2DSagittal->SetITKInput( extractor->GetOutput() );
-	    d->view2DCoronal->SetITKInput( extractor->GetOutput() );
-	    d->view3D->SetITKInput( extractor->GetOutput() );
+	    d->view2DAxial->SetITKInput4( image );
+	    d->view2DSagittal->SetITKInput4( image );
+	    d->view2DCoronal->SetITKInput4( image );
+	    d->view3D->SetITKInput4( image );
 	}
     }
+	else if (data->description()=="itkDataImageFloat4") {
+        if( itk::Image<float, 4>* image = dynamic_cast<itk::Image<float, 4>*>( (itk::Object*)( data->data() ) ) ) {
+			d->view2DAxial->SetITKInput4( image );
+			d->view2DSagittal->SetITKInput4( image );
+			d->view2DCoronal->SetITKInput4( image );
+			d->view3D->SetITKInput4( image );
+		}
+    }	
     else if (data->description()=="itkDataImageInt3") {
         if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
 	    d->view2DAxial->SetITKInput(image);
@@ -976,44 +978,50 @@ void v3dView::setData(dtkAbstractData *data)
       }
     
     d->data = data;
+	d->imageData = dynamic_cast<dtkAbstractDataImage*> (data);
 
     if (data->hasMetaData("PatientName")){
         const QString patientName = data->metaDataValues(tr("PatientName"))[0];	
-        d->view2DAxial->SetPatientName (patientName.toAscii().constData());
-	d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
-	d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
+	    d->view2DAxial->SetPatientName (patientName.toAscii().constData());
+	    d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
+	    d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
         d->view3D->SetPatientName (patientName.toAscii().constData());
     }
     
     if( data->hasMetaData("StudyDescription")){
         const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
         d->view2DAxial->SetStudyName (studyName.toAscii().constData());
-	d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
-	d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
+	    d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
+	    d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
         d->view3D->SetStudyName (studyName.toAscii().constData());
     }
     
     if (data->hasMetaData("SeriesDescription")){
         const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
         d->view2DAxial->SetSeriesName (seriesName.toAscii().constData());
-	d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
-	d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
+	    d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
+	    d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
         d->view3D->SetSeriesName (seriesName.toAscii().constData());
     }
 
     
-    if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(data) ) {
+    if(d->imageData) {
         d->slider->blockSignals (true);
+		if (d->dimensionBox->currentText()==tr("Space")) {
         if( d->orientation=="Axial") {
-            d->slider->setRange(0, imData->zDimension()-1);
+            d->slider->setRange(0, d->imageData->zDimension()-1);
         }
-	else if( d->orientation=="Sagittal") {
-            d->slider->setRange(0, imData->xDimension()-1);
+		else if( d->orientation=="Sagittal") {
+            d->slider->setRange(0, d->imageData->xDimension()-1);
         }
-	else if( d->orientation=="Coronal") {
-            d->slider->setRange(0, imData->yDimension()-1);
+		else if( d->orientation=="Coronal") {
+            d->slider->setRange(0, d->imageData->yDimension()-1);
         }
-	d->slider->blockSignals (false);
+		}
+		else if (d->dimensionBox->currentText()==tr("Time")) {
+			d->slider->setRange(0, d->imageData->tDimension()-1);
+		}
+		d->slider->blockSignals (false);
     }
 
     // this->update(); // update is not the role of the plugin, but of the app
@@ -1036,25 +1044,12 @@ QWidget *v3dView::widget(void)
 
 void v3dView::play(bool start)
 {
-    if(dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data)) {
+    d->timeline->setFrameRange(d->slider->minimum(), d->slider->maximum() );
 
-        if (d->orientation=="Axial") {
-            d->timeline->setFrameRange(0, imData->zDimension()-1);
-        }
-
-	if (d->orientation=="Sagittal") {
-            d->timeline->setFrameRange(0, imData->xDimension()-1);
-        }
-
-	if (d->orientation=="Coronal") {
-            d->timeline->setFrameRange(0, imData->yDimension()-1);
-        }
-
-        if(start)
-            d->timeline->start();
-        else
-            d->timeline->stop();
-    }
+    if(start)
+		d->timeline->start();
+	else
+		d->timeline->stop();
 }
 
 void v3dView::linkwl (dtkAbstractView *view, bool value)
@@ -1163,10 +1158,12 @@ void v3dView::onOrientationPropertySet(QString value)
          return;
     
     double pos[3], window = 0.0, level = 0.0;
+	int timeIndex = 0;
     if( d->currentView ) {
         d->currentView->GetCurrentPoint (pos);
         window = d->currentView->GetColorWindow();
         level  = d->currentView->GetColorLevel();
+		timeIndex = d->currentView->GetTimeIndex();
 	
 	d->currentView->UnInstallInteractor();
 	// d->currentView->SetRenderWindow( 0 );
@@ -1177,7 +1174,7 @@ void v3dView::onOrientationPropertySet(QString value)
 
     if (value=="3D") {
         d->orientation = "3D";
-	d->currentView = d->view3D;	
+	    d->currentView = d->view3D;	
     }
 
     // in case the max range becomes smaller than the actual value, a signal is emitted and
@@ -1186,31 +1183,38 @@ void v3dView::onOrientationPropertySet(QString value)
     
     if (value == "Axial") {
         d->orientation = "Axial";
-	d->currentView = d->view2DAxial;
+		d->currentView = d->view2DAxial;
 	
-	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
-	    d->slider->setRange (0, imData->zDimension()-1);
-    }
-
+		if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
+			d->slider->setRange (0, d->imageData->zDimension()-1);
+		}
+	}
+	
     if (value == "Sagittal") {
         d->orientation = "Sagittal";
-	d->currentView = d->view2DSagittal;
+		d->currentView = d->view2DSagittal;
 	
-	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
-            d->slider->setRange (0, imData->xDimension()-1);
+		if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
+            d->slider->setRange (0, d->imageData->xDimension()-1);
+		}
     }
 
     if (value == "Coronal") {
         d->orientation = "Coronal";
-	d->currentView = d->view2DCoronal;
+		d->currentView = d->view2DCoronal;
 	
-	if ( dtkAbstractDataImage* imData = dynamic_cast<dtkAbstractDataImage*>(d->data) )
-            d->slider->setRange (0, imData->yDimension()-1);
+		if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
+            d->slider->setRange (0, d->imageData->yDimension()-1);
+		}
     }
 
+	if (d->dimensionBox->currentText()==tr("Time") && d->imageData) {
+			d->slider->setRange(0, d->imageData->tDimension()-1);
+	}
+	
     if (!d->currentView) {
         d->slider->blockSignals (false);
-	return;
+	    return;
     }
 
 	d->currentView->SetRenderWindow ( d->vtkWidget->GetRenderWindow() );
@@ -1221,18 +1225,24 @@ void v3dView::onOrientationPropertySet(QString value)
     d->observer->setView ( vtkImageView2D::SafeDownCast (d->currentView) );
 
     d->currentView->SetCurrentPoint (pos);
-    d->currentView->SetColorWindow (window);
-    d->currentView->SetColorLevel (level);
+    d->currentView->SetColorWindow  (window);
+    d->currentView->SetColorLevel   (level);
+	d->currentView->SetTimeIndex    (timeIndex);
 
 
     // force a correct display of the 2D axis for planar views
     d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL); // seems not needed anymore
 
     // update slider position
+	if (d->dimensionBox->currentText()==tr("Space")) {
     if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
         unsigned int zslice = view2d->GetSlice();
-	d->slider->setValue (zslice);
+	    d->slider->setValue (zslice);
     }
+	}
+	else if (d->dimensionBox->currentText()==tr("Time")) {
+		d->slider->setValue(d->currentView->GetTimeIndex());
+	}
 
     d->slider->blockSignals (false);
 }
@@ -1660,17 +1670,28 @@ void v3dView::onMousePressEvent(QMouseEvent *event)
 
 void v3dView::onZSliderValueChanged (int value)
 {
-    if (d->orientation=="3D" || !d->currentView)
+    if (!d->currentView)
         return;
 
-    d->observer->lock();
-    if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
-        view->SetSlice (value);
-	view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
-	qApp->processEvents();
-        d->currentView->Render();		
-    }
-    d->observer->unlock();
+		if (d->dimensionBox->currentText()==tr("Space"))
+		{
+			if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
+			d->observer->lock();
+            view->SetSlice (value);
+		    view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
+			d->observer->unlock();
+			}
+		}
+		else if (d->dimensionBox->currentText()==tr("Time"))
+		{
+			if( d->currentView ) {
+			d->currentView->SetTimeIndex (value);
+			d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::TimeChangeEvent);	
+			}
+		}
+		
+		//qApp->processEvents();
+        d->currentView->Render();
 }
 
 void v3dView::onDaddyPropertySet (QString value)
@@ -1723,13 +1744,47 @@ void v3dView::onLinkedWLPropertySet (QString value)
     }
 }
 
+void v3dView::onDimensionBoxChanged (QString value)
+{
+	if (d->imageData) {
+	
+	d->slider->blockSignals (true);
+	if (value=="Space") {
+		d->observer->unlock();
+		if( d->orientation=="Axial") {
+            d->slider->setRange(0, d->imageData->zDimension()-1);
+        }
+		else if( d->orientation=="Sagittal") {
+            d->slider->setRange(0, d->imageData->xDimension()-1);
+        }
+		else if( d->orientation=="Coronal") {
+            d->slider->setRange(0, d->imageData->yDimension()-1);
+        }
+		if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
+			unsigned int zslice = view2d->GetSlice();
+			d->slider->setValue (zslice);
+		}
+	}
+	else if (value=="Time") {
+		d->observer->lock();
+		d->slider->setRange(0, d->imageData->tDimension()-1);
+		if (d->currentView) {
+			unsigned int timeIndex = d->currentView->GetTimeIndex();
+			d->slider->setValue (timeIndex);
+		}
+	}
+	d->slider->blockSignals (false);
+	d->timeline->setFrameRange(d->slider->minimum(), d->slider->maximum() );
+	}
+}
+
 void v3dView::onMetaDataSet(QString key, QString value)
 {
   if (key == "VRQuality")        
     d->view3D->SetVRQuality((float)(value.toInt())/100.0);
   
   if(key == "LOD")        
-        d->view3D->SetVRQuality((float)(value.toInt())/100.0);
+	d->view3D->SetVRQuality((float)(value.toInt())/100.0);
 }
 
 void v3dView::onMenuAxialTriggered (void)

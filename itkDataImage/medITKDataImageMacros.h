@@ -278,6 +278,7 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
       return -1;							\
     return d->image->GetLargestPossibleRegion().GetSize()[2];		\
   }									\
+                                                                        \
   void itkDataImage##suffix::computeRange()				\
   {									\
     if ( d->range_computed )						\
@@ -304,7 +305,18 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     d->range_min = calculator->GetMinimum();				\
     d->range_max = calculator->GetMaximum();				\
     d->range_computed = true;						\
+  }                                                                     \
+                                                                        \
+  int itkDataImage##suffix::tDimension(void)				\
+  {									\
+      if (d->image.IsNull())                                            \
+          return -1;                                                    \
+      if (dimension<4)                                                  \
+          return 1;                                                     \
+      else                                                              \
+          return d->image->GetLargestPossibleRegion().GetSize()[3];     \
   }									\
+                                                                        \
   int itkDataImage##suffix::minRangeValue(void)				\
   {									\
     computeRange();							\
@@ -490,6 +502,15 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   int itkDataImage##suffix::zDimension(void)				\
   {									\
     return d->image->GetLargestPossibleRegion().GetSize()[2];		\
+  }									\
+  int itkDataImage##suffix::tDimension(void)				\
+  { 									\
+    if (d->image.IsNull()) \
+      return -1; \
+    if (dimension<4) \
+      return 1; \
+    else \
+      return d->image->GetLargestPossibleRegion().GetSize()[3];		\
   }									\
   int itkDataImage##suffix::minRangeValue(void)				\
   {									\

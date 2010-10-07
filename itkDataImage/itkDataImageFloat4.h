@@ -1,5 +1,5 @@
-#ifndef _itk_DataImageUInt3_h_
-#define _itk_DataImageUInt3_h_
+#ifndef _itk_DataImageFloat4_h_
+#define _itk_DataImageFloat4_h_
 
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
@@ -7,15 +7,17 @@
 #include "itkDataImagePluginExport.h"
 
 
-class itkDataImageUInt3Private;
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUInt3 : public dtkAbstractDataImage
+
+class itkDataImageFloat4Private;
+
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageFloat4 : public dtkAbstractDataImage
 {
   Q_OBJECT
     
  public:
-    itkDataImageUInt3(void);
-    ~itkDataImageUInt3(void);
+    itkDataImageFloat4(void);
+    ~itkDataImageFloat4(void);
     virtual QString description(void) const;
     static bool registered(void);
 
@@ -49,13 +51,11 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUInt3 : public dtkAbstractDataImage
     int scalarValueMaxCount(void);
     
  private:
-    void computeRange(void);
-    void computeValueCounts(void);
 
-    itkDataImageUInt3Private* d;
+    itkDataImageFloat4Private* d;
   
 };
 
-dtkAbstractData* createItkDataImageUInt3 (void);
+dtkAbstractData* createItkDataImageFloat4 (void);
 
 #endif

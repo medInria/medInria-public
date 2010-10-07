@@ -54,6 +54,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageLong3.h
   itkDataImageULong3.h
   itkDataImageFloat3.h
+  itkDataImageFloat4.h
   itkDataImageDouble3.h
   itkDataImageVector3.h
   itkDataImageRGB3.h
@@ -71,6 +72,7 @@ set(${PROJECT_NAME}_SOURCES
   itkDataImageLong3.cpp
   itkDataImageULong3.cpp
   itkDataImageFloat3.cpp
+  itkDataImageFloat4.cpp
   itkDataImageDouble3.cpp
   itkDataImageVector3.cpp
   itkDataImageRGB3.cpp

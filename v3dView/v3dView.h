@@ -97,6 +97,7 @@ public slots:
     void onZSliderValueChanged              (int value);
     void onDaddyPropertySet                 (QString value);
     void onLinkedWLPropertySet              (QString value);
+	void onDimensionBoxChanged              (QString value);
 
     void onMetaDataSet(QString key, QString value);
 
