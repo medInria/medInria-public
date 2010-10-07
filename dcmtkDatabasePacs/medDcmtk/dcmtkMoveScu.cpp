@@ -972,6 +972,8 @@ void dcmtkMoveScu::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
 
     // get context
     dcmtkMoveScu* scu = (dcmtkMoveScu*) callbackData;
+    // send progress event
+    scu->emitProgressed(responseCount, responseCount + response->NumberOfRemainingSubOperations);
 
     OFCondition cond = EC_Normal;
     MyCallbackInfo *myCallbackData;
@@ -981,6 +983,7 @@ void dcmtkMoveScu::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
     OFString temp_str;
     dcmtkLogger::infoStream() << "Move Response " << responseCount << ":"; 
         dcmtkLogger::infoStream() << DIMSE_dumpMessage(temp_str, *response, DIMSE_INCOMING);
+
 
     /* should we send a cancel back ?? */
     if (scu->opt_cancelAfterNResponses == responseCount) {
@@ -1024,6 +1027,21 @@ bool dcmtkMoveScu::setStorageDirectory( const char* directory )
 
     // Todo check if directory is valid
     return true;
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkMoveScu::emitProgressed( int current, int max )
+{
+    float currentf, maxf;
+    currentf = current;
+    maxf = max;
+
+    int progress;
+    progress = currentf/maxf * 100;
+
+    emit progressed(progress);
+
 }
 
 //---------------------------------------------------------------------------------------------

@@ -7,6 +7,8 @@
     * D-26121 Oldenburg, Germany
     */
 
+#include <QObject>
+
 #ifndef DCMTKBASE_H
 #define DCMTKBASE_H
 
@@ -105,7 +107,7 @@ static const char* transferSyntaxes[] = {
  * @brief base class for all SCU/SCP base implementations.
  * Adds common network connection stuff.
  */
-class dcmtkBase
+class dcmtkBase: public QObject
 {
 public:
 
