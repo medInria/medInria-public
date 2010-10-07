@@ -44,6 +44,7 @@
 #include <medGui/medToolBoxPacsSearch.h>
 
 #include <medPacs/medPacsWidget.h>
+#include <medPacs/medPacsMover.h>
 
 // /////////////////////////////////////////////////////////////////
 // medBrowserArea
@@ -153,7 +154,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->pacs = new medPacsWidget(this);
 
-    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
+    connect(d->pacs, SIGNAL(move(int, int, QString, QString, int)), this, SLOT(onPacsMove(int, int, QString, QString, int)));
+
 
     // /////////////////////////////////////////////////////////////////
 
@@ -312,4 +314,20 @@ void medBrowserArea::onSourceIndexChanged(int index)
         d->toolbox_pacs_nodes->setVisible(false);
         d->toolbox_pacs_search->setVisible(false);
     }
+}
+
+void medBrowserArea::onPacsMove( int group, int elem, QString query, QString storageFolder, int nodeIndex )
+{
+    medPacsMover* mover = new medPacsMover(group, elem, query, storageFolder, nodeIndex);
+
+    connect(mover, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
+    connect(mover, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
+    connect(mover, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
+    connect(mover, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
+    connect(mover,SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
+    connect(mover, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
+
+    d->toolbox_jobs->stack()->setLabel(mover, "moving");
+
+    QThreadPool::globalInstance()->start(mover);
 }

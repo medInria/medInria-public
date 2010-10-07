@@ -34,6 +34,7 @@ set(${PROJECT_NAME}_HEADERS
   medAbstractPacsNode.h
   medAbstractPacsResultDataset.h
   medAbstractPacsKey.h
+  medPacsMover.h
   medPacsExport.h
   medPacsWidget.h)
 
@@ -48,6 +49,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractPacsNode.h
   medAbstractPacsResultDataset.h
   medAbstractPacsKey.h	
+  medPacsMover.h
   medPacsWidget.h)
 
 set(${PROJECT_NAME}_SOURCES
@@ -61,6 +63,7 @@ set(${PROJECT_NAME}_SOURCES
   medAbstractPacsNode.cpp
   medAbstractPacsResultDataset.cpp
   medAbstractPacsKey.cpp
+  medPacsMover.cpp
   medPacsWidget.cpp)
 
 ## #################################################################

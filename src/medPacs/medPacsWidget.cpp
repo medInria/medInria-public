@@ -22,10 +22,10 @@
 #include <medPacs/medAbstractPacsFactory.h>
 #include <medPacs/medAbstractPacsFindScu.h>
 #include <medPacs/medAbstractPacsEchoScu.h>
-#include <medPacs/medAbstractPacsMoveScu.h>
 #include <medPacs/medAbstractPacsNode.h>
 #include <medPacs/medAbstractPacsStoreScp.h>
 #include <medPacs/medAbstractPacsResultDataset.h>
+//#include <medSql/medDatabaseImporter.h>
 
 #include <QUuid>
 
@@ -52,7 +52,6 @@ public:
 
     medAbstractPacsFindScu *find;
     medAbstractPacsStoreScp *server;
-    medAbstractPacsMoveScu *move;
 };
 
 void medPacsWidgetPrivate::run(void)
@@ -91,7 +90,6 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
 
     d->find = medAbstractPacsFactory::instance()->createFindScu("dcmtkFindScu");
     d->server = medAbstractPacsFactory::instance()->createStoreScp("dcmtkStoreScp");
-    d->move = medAbstractPacsFactory::instance()->createMoveScu("dcmtkMoveScu");
 
     this->readSettings();
 
@@ -306,7 +304,7 @@ void medPacsWidget::updateContextMenu(const QPoint& point)
     menu.exec(mapToGlobal(point));
 }
 
-#include <medSql/medDatabaseImporter.h>
+
 
 void medPacsWidget::onItemImported(void)
 {
@@ -333,17 +331,6 @@ void medPacsWidget::onItemImported(void)
 
     qDebug() << tmp.absolutePath().toLatin1();
 
-    d->move->clearAllQueryAttributes();
-    d->move->addQueryAttribute(tag.x(), tag.y(), query.toLatin1());
-    d->move->useBuildInStoreSCP(true);
-    d->move->setStorageDirectory(tmp.absolutePath().toLatin1());
-    d->move->sendMoveRequest(
-        d->nodes.at(nodeIndex).at(0).toLatin1(),
-        d->nodes.at(nodeIndex).at(1).toLatin1(),
-        d->nodes.at(nodeIndex).at(2).toInt(),
-        d->host_title.toLatin1(),
-        d->host_address.toLatin1(),
-        d->host_port.toInt());
 
-    emit import(tmp.absolutePath().toLatin1());
+    emit move(tag.x(), tag.y(), query, tmp.absolutePath(), nodeIndex);
 }

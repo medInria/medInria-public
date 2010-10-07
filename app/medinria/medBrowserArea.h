@@ -55,6 +55,7 @@ public slots:
     void onFileSystemViewClicked(void);
     void onFileImported(void);
     void onSourceIndexChanged(int index);
+    void onPacsMove(int group, int elem, QString query, QString storageFolder, int nodeIndex);
     void onPacsImport(QString path);
 
 private:
