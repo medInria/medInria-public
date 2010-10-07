@@ -42,7 +42,11 @@ class medClutEditorVertexPrivate{
     medClutEditorVertex * next;
 };
 
-medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,int upperBound, QGraphicsItem *parent) : QGraphicsItem(parent)
+medClutEditorVertex::medClutEditorVertex(int x, int y,
+					 QColor color,
+					 int upperBound,
+					 QGraphicsItem *parent)
+  : QGraphicsItem(parent)
 {
     d = new medClutEditorVertexPrivate;
     d->fgColor = color;
@@ -58,8 +62,10 @@ medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,int upperBou
     d->setColorAction = new QAction("Edit Color", 0);
 
 
-    connect(d->deleteAction, SIGNAL(triggered()), this, SLOT(onDeleteAction()));
-    connect(d->setColorAction, SIGNAL(triggered()), this, SLOT(onSetColorAction()));
+    connect(d->deleteAction, SIGNAL(triggered()),
+	    this, SLOT(onDeleteAction()));
+    connect(d->setColorAction, SIGNAL(triggered()),
+	    this, SLOT(onSetColorAction()));
 
     d->prev = NULL;
     d->next = NULL;
@@ -80,7 +86,6 @@ void medClutEditorVertex::onDeleteAction()
 }
 
 
-
 void medClutEditorVertex::onSetColorAction()
 {
     QColor color = QColorDialog::getColor(d->fgColor, 0);
@@ -91,7 +96,9 @@ void medClutEditorVertex::onSetColorAction()
     }
 }
 
-void medClutEditorVertex::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void medClutEditorVertex::paint(QPainter *painter,
+				const QStyleOptionGraphicsItem *option,
+				QWidget *widget)
 {
     Q_UNUSED(option);
     Q_UNUSED(widget);
@@ -141,7 +148,8 @@ void medClutEditorVertex::setAlpha()
     d->fgColor.setAlphaF(alpha);
 }
 
-static bool medClutEditorVertexLessThan(const medClutEditorVertex *v1, const medClutEditorVertex *v2) {
+static bool medClutEditorVertexLessThan(const medClutEditorVertex *v1,
+					const medClutEditorVertex *v2) {
     return (v1->position().x() < v2->position().x());
 }
 
