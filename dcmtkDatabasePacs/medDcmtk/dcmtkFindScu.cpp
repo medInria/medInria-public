@@ -129,6 +129,8 @@ int dcmtkFindScu::sendFindRequest()
 
 bool dcmtkFindScu::processQueryAttribute(const char* key)
 {
+    std::cout << "QUERY: " << key << std::endl;
+
     OFString ovKey(key);
     overrideKeys.push_back(ovKey);
     return true;
