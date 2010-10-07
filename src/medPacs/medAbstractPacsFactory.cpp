@@ -21,6 +21,7 @@
 #include "medAbstractPacsEchoScu.h"
 #include "medAbstractPacsFindScu.h"
 #include "medAbstractPacsMoveScu.h"
+#include "medAbstractPacsStoreScu.h"
 #include "medAbstractPacsStoreScp.h"
 
 class medAbstractPacsFactoryPrivate
@@ -29,6 +30,7 @@ public:
     medAbstractPacsFactory::medAbstractPacsEchoScuCreatorHash echo_scu_creators;
     medAbstractPacsFactory::medAbstractPacsFindScuCreatorHash find_scu_creators;
     medAbstractPacsFactory::medAbstractPacsMoveScuCreatorHash move_scu_creators;
+    medAbstractPacsFactory::medAbstractPacsStoreScuCreatorHash store_scu_creators; 
     medAbstractPacsFactory::medAbstractPacsStoreScpCreatorHash store_scp_creators;
 
 
@@ -68,6 +70,16 @@ medAbstractPacsMoveScu *medAbstractPacsFactory::createMoveScu( QString type )
         return NULL;
 
     medAbstractPacsMoveScu *scu = d->move_scu_creators[type]();
+
+    return scu;
+}
+
+medAbstractPacsStoreScu * medAbstractPacsFactory::createStoreScu( QString type )
+{
+    if(!d->store_scu_creators.contains(type))
+        return NULL;
+
+    medAbstractPacsStoreScu *scu = d->store_scu_creators[type]();
 
     return scu;
 }
@@ -122,6 +134,16 @@ bool medAbstractPacsFactory::registerStoreScpType( QString type, medAbstractPacs
     return false;
 }
 
+bool medAbstractPacsFactory::registerStoreScuType( QString type, medAbstractPacsStoreScuCreator func )
+{
+    if(!d->store_scu_creators.contains(type)) {
+        d->store_scu_creators.insert(type, func);
+        return true;
+    }
+
+    return false;
+}
+
 medAbstractPacsFactory::medAbstractPacsFactory(void) : dtkAbstractFactory(), d(new medAbstractPacsFactoryPrivate)
 {
 
@@ -133,7 +155,6 @@ medAbstractPacsFactory::~medAbstractPacsFactory(void)
 
     d = NULL;
 }
-
 
 
 medAbstractPacsFactory *medAbstractPacsFactory::s_instance = NULL;

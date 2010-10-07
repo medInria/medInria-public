@@ -27,6 +27,8 @@
 #include <medPacs/medAbstractPacsStoreScp.h>
 #include <medPacs/medAbstractPacsResultDataset.h>
 
+#include <QUuid>
+
 #include <dtkCore/dtkGlobal.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -322,10 +324,11 @@ void medPacsWidget::onItemImported(void)
     QPoint tag = item->data(1, Qt::UserRole).toPoint();
     QString query = item->data(2, Qt::UserRole).toString();
 
-    QString ref = QDateTime::currentDateTime().toString();
-
+    // creating a unique path for storing the import data
+    QString ref = QUuid::createUuid().toString();
     QDir tmp = QDir::temp();
-    tmp.mkdir(ref);
+    if (!tmp.mkdir(ref))
+        qDebug() << "Could not create temp folder!";
     tmp.cd(ref);
 
     qDebug() << tmp.absolutePath().toLatin1();
