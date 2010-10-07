@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:42:32 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed May 12 15:25:04 2010 (+0200)
+ * Last-Updated: Thu Oct  7 15:48:22 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 37
+ *     Update #: 48
  */
 
 /* Commentary: 
@@ -66,7 +66,6 @@ void medDatabaseImporter::run(void)
 
     fileList.sort();
 
-
     QMap<QString, QStringList> imagesToWriteMap;
 
     typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
@@ -92,8 +91,11 @@ void medDatabaseImporter::run(void)
         for (int i=0; i<readers.size(); i++) {
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
             if (dataReader->canRead( fileInfo.filePath() )) {
+	      qDebug() << "datareader is able to read : " << fileInfo.filePath() << "\n";
+	      
                 dataReader->readInformation( fileInfo.filePath() );
                 dtkdata = dataReader->data();
+		qDebug() << dtkdata << "\n";
                 delete dataReader;
                 break;
             }
@@ -214,10 +216,15 @@ void medDatabaseImporter::run(void)
 	s_studyName.replace   (0x00EA, 'e');
 	s_seriesName.replace  (0x00EA, 'e');
 		
-	QString imageFileName = medDatabaseController::instance()->dataLocation() + tr("/") + 
-		s_patientName + tr("/") +
-		s_studyName   + tr("/") +
-		s_seriesName  + uniqueSeriesId + tr(".mhd");
+	QString imageFileName = medDatabaseController::instance()->dataLocation() + "/" + 
+		s_patientName + "/" +
+		s_studyName   + "/" +
+		s_seriesName  + uniqueSeriesId;
+	
+	if (dtkdata->description() == "vtkDataMesh")
+            imageFileName = imageFileName + ".vtk";
+	else
+            imageFileName = imageFileName + ".mha";
 
 	// Check if PATIENT/STUDY/SERIES/IMAGE already exists in the database
 
@@ -272,7 +279,7 @@ void medDatabaseImporter::run(void)
 	}
 	
 	if (!imageExists)
-	    imagesToWriteMap[ imageFileName ] << fileInfo.filePath();
+	    imagesToWriteMap[imageFileName] << fileInfo.filePath();
 
 	delete dtkdata;
 	
@@ -431,10 +438,22 @@ void medDatabaseImporter::run(void)
 
 	int writeSuccess = 0;
 	
-        for (int i=0; i<writers.size(); i++) {
+        for (int i=0; i<writers.size(); i++)
+	{
             dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
+	    qDebug() << "trying " << dataWriter->description();
+	    
+	    if (! dataWriter->handled().contains(imData->description()))
+	    {
+	      qDebug() << "failed with " << dataWriter->description();
+	      continue;
+	    }
+	    
+	    qDebug() << "success with " << dataWriter->description();
             dataWriter->setData (imData);
 
+	    qDebug() << "trying to write in file : "<<it.key();
+	    
             if (dataWriter->canWrite( it.key() )) {
                 if (dataWriter->write( it.key() )) {
                     dtkDataList.push_back (imData);

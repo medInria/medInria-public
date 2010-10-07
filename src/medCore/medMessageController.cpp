@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 09:59:08 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 29 15:40:46 2010 (+0200)
+ * Last-Updated: Thu Oct  7 12:41:07 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 134
+ *     Update #: 143
  */
 
 /* Commentary: 
@@ -147,6 +147,44 @@ medMessageControllerMessageProgress::~medMessageControllerMessageProgress(void)
 void medMessageControllerMessageProgress::setProgress(int value)
 {
     d->progress->setValue(value);
+}
+
+// /////////////////////////////////////////////////////////////////
+// medMessageControllerMessageQuestion
+// /////////////////////////////////////////////////////////////////
+
+class medMessageControllerMessageQuestionPrivate
+{
+public:
+};
+
+medMessageControllerMessageQuestion::medMessageControllerMessageQuestion(QObject* sender, const QString& text, QWidget *parent) : medMessageControllerMessage(sender,parent), d(new medMessageControllerMessageQuestionPrivate)
+{
+    QLabel *icon = new QLabel(this);
+    icon->setPixmap(QPixmap(":/icons/information.png"));
+
+    QLabel *info = new QLabel(this);
+    info->setText(text);
+    
+    QPushButton *ok_button = new QPushButton("Yes", this);
+    QPushButton *no_button = new QPushButton("No", this);
+
+    QHBoxLayout *layout = new QHBoxLayout(this);
+    layout->setAlignment(Qt::AlignLeft);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(5);
+    layout->addWidget(icon);
+    layout->addWidget(info);
+    layout->addWidget(ok_button);
+    layout->addWidget(no_button);
+
+    connect(ok_button, SIGNAL(clicked()), this, SIGNAL(accepted()));
+    connect(no_button, SIGNAL(clicked()), this, SIGNAL(rejected()));
+}
+
+medMessageControllerMessageQuestion::~medMessageControllerMessageQuestion(void)
+{
+
 }
 
 // /////////////////////////////////////////////////////////////////

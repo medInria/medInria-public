@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 15:05:17 2010 (+0200)
+ * Last-Updated: Wed Oct  6 16:03:20 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 388
+ *     Update #: 456
  */
 
 /* Commentary: 
@@ -21,6 +21,8 @@
 #include "medBrowserArea_p.h"
 
 #include <QtGui>
+
+#include <dtkCore/dtkGlobal.h>
 
 #include <dtkGui/dtkFinder.h>
 
@@ -37,6 +39,11 @@
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medToolBoxJobs.h>
 #include <medGui/medToolBoxSource.h>
+#include <medGui/medToolBoxPacsHost.h>
+#include <medGui/medToolBoxPacsNodes.h>
+#include <medGui/medToolBoxPacsSearch.h>
+
+#include <medPacs/medPacsWidget.h>
 
 // /////////////////////////////////////////////////////////////////
 // medBrowserArea
@@ -144,39 +151,54 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Pacs widget ///////////////////////////////////////////////
 
-    // QTreeView *pacs_widget = new QTreeView(this);
-    // pacs_widget->setFrameStyle(QFrame::NoFrame);
-    // pacs_widget->setAttribute(Qt::WA_MacShowFocusRect, false);
-    // pacs_widget->setUniformRowHeights(true);
-    // pacs_widget->setAlternatingRowColors(true);
-    // pacs_widget->setSortingEnabled(true);
+    d->pacs = new medPacsWidget(this);
 
-    QWidget *pacs_widget = new QWidget(this);
+    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
 
     // /////////////////////////////////////////////////////////////////
 
-    QStackedWidget *stack = new QStackedWidget(this);
-    stack->addWidget(database_widget);
-    stack->addWidget(filesystem_widget);
-    stack->addWidget(pacs_widget);
+    d->stack = new QStackedWidget(this);
+    d->stack->addWidget(database_widget);
+    d->stack->addWidget(filesystem_widget);
+    d->stack->addWidget(d->pacs);
 
     // Source toolbox ///////////////////////////////////////////////
 
     d->toolbox_source = new medToolBoxSource(this);
     d->toolbox_source->setFileSystemWidget(d->side);
 
-    connect(d->toolbox_source, SIGNAL(indexChanged(int)), stack, SLOT(setCurrentIndex(int)));
+    connect(d->toolbox_source, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
 
     // Jobs //////////////////////////////////////////
 
     d->toolbox_jobs = new medToolBoxJobs(this);
     d->toolbox_jobs->setVisible(false);
 
+    // Toolbox pacs host ///////////////////////////////////////////
+
+    d->toolbox_pacs_host = new medToolBoxPacsHost(this);
+    d->toolbox_pacs_host->setVisible(false);
+
+    // Toolbox pacs nodes //////////////////////////////////////////
+
+    d->toolbox_pacs_nodes = new medToolBoxPacsNodes(this);
+    d->toolbox_pacs_nodes->setVisible(false);
+
+    // Toolbox pacs search //////////////////////////////////////////
+
+    d->toolbox_pacs_search = new medToolBoxPacsSearch(this);
+    d->toolbox_pacs_search->setVisible(false);
+
+    connect(d->toolbox_pacs_search, SIGNAL(search(QString)), d->pacs, SLOT(search(QString)));
+
     // Toolbox container /////////////////////////////////////////////
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(d->toolbox_source);
+    d->toolbox_container->addToolBox(d->toolbox_pacs_host);
+    d->toolbox_container->addToolBox(d->toolbox_pacs_nodes);
+    d->toolbox_container->addToolBox(d->toolbox_pacs_search);
     d->toolbox_container->addToolBox(d->toolbox_jobs);
 
     // Layout /////////////////////////////////////////////
@@ -185,7 +207,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(d->toolbox_container);
-    layout->addWidget(stack);
+    layout->addWidget(d->stack);
 }
 
 medBrowserArea::~medBrowserArea(void)
@@ -235,6 +257,23 @@ void medBrowserArea::onFileSystemImportClicked(void)
     QThreadPool::globalInstance()->start(importer);
 }
 
+void medBrowserArea::onPacsImport(QString path)
+{
+    QFileInfo info(path);
+
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
+
+    connect(importer, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
+    connect(importer, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
+    connect(importer,SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
+
+    d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
+
+    QThreadPool::globalInstance()->start(importer);
+}
+
 void medBrowserArea::onFileSystemExportClicked(void)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter;
@@ -258,4 +297,19 @@ void medBrowserArea::onFileImported(void)
     d->preview->reset();
     d->preview->init();
     d->preview->update();
+}
+
+void medBrowserArea::onSourceIndexChanged(int index)
+{
+    d->stack->setCurrentIndex(index);
+
+    if(index == 2) {
+        d->toolbox_pacs_host->setVisible(true);
+        d->toolbox_pacs_nodes->setVisible(true);
+        d->toolbox_pacs_search->setVisible(true);
+    } else {
+        d->toolbox_pacs_host->setVisible(false);
+        d->toolbox_pacs_nodes->setVisible(false);
+        d->toolbox_pacs_search->setVisible(false);
+    }
 }

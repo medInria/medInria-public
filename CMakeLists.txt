@@ -40,8 +40,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-include(medPack)
-include(medDart)
+include(medinriaPack)
+include(medinriaDart)
 
 add_subdirectory(src)
 add_subdirectory(app)

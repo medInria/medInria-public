@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 09:57:25 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 29 15:02:01 2010 (+0200)
+ * Last-Updated: Thu Oct  7 12:33:38 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 45
+ *     Update #: 56
  */
 
 /* Commentary: 
@@ -38,6 +38,7 @@ class MEDCORE_EXPORT medMessageControllerMessage : public QWidget
 public:
      medMessageControllerMessage(QObject* sender, QWidget *parent = 0);
     ~medMessageControllerMessage(void);
+
 protected:
     QObject* sender;
 };
@@ -52,15 +53,15 @@ class medMessageControllerMessageSimple : public medMessageControllerMessage
     Q_OBJECT
 
 public:
-     medMessageControllerMessageSimple(QObject* sender,const QString& text, QWidget *parent = 0,
-                                       unsigned int timeout=0);
+     medMessageControllerMessageSimple(QObject* sender,const QString& text, QWidget *parent = 0, unsigned int timeout=0);
     ~medMessageControllerMessageSimple(void);
+
 protected:
-    QLabel * icon;
-    QTimer * timer;
+    QLabel *icon;
+    QTimer *timer;
+
 protected slots:
     void remove(void);
-
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -109,6 +110,28 @@ public slots:
 
 private:
     medMessageControllerMessageProgressPrivate *d;
+};
+
+// /////////////////////////////////////////////////////////////////
+// medMessageControllerMessageQuestion
+// /////////////////////////////////////////////////////////////////
+
+class medMessageControllerMessageQuestionPrivate;
+
+class MEDCORE_EXPORT medMessageControllerMessageQuestion : public medMessageControllerMessage
+{
+    Q_OBJECT
+
+public:
+     medMessageControllerMessageQuestion(QObject* sender, const QString& text, QWidget *parent = 0);
+    ~medMessageControllerMessageQuestion(void);
+
+signals:
+    void accepted(void);
+    void rejected(void);
+
+private:
+    medMessageControllerMessageQuestionPrivate *d;
 };
 
 // /////////////////////////////////////////////////////////////////

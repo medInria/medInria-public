@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 29 16:20:05 2010 (+0200)
+ * Last-Updated: Thu Oct  7 13:00:31 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 966
+ *     Update #: 967
  */
 
 /* Commentary: 
@@ -412,6 +412,10 @@ void medViewerArea::switchToPatient(int id)
     // Setup patient toolbox
 
     d->patientToolBox->setPatientIndex(id);
+
+    // Setup layout toolbox
+
+    
 }
 
 //! Set stack index.
