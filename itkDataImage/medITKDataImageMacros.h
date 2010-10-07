@@ -197,12 +197,14 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   class itkDataImage##suffix##Private					\
   {									\
   public:								\
-    typedef type                                                          ScalarType; \
-    typedef itk::Image<ScalarType, dimension>                             ImageType; \
-    typedef itk::Statistics::ScalarImageToHistogramGenerator< ImageType > HistogramGeneratorType; \
-    typedef HistogramGeneratorType::HistogramType                         HistogramType; \
+    typedef type                              ScalarType;		\
+    typedef itk::Image<ScalarType, dimension> ImageType;		\
+    typedef itk::Statistics::ScalarImageToHistogramGenerator< ImageType > \
+      HistogramGeneratorType;						\
+    typedef HistogramGeneratorType::HistogramType HistogramType;	\
   public:								\
     ImageType::Pointer          image;					\
+    bool range_computed;						\
     ScalarType range_min;						\
     ScalarType range_max;						\
     HistogramType::Pointer histogram;					\
@@ -215,6 +217,7 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   {									\
     d->image = 0;							\
     d->histogram = 0;							\
+    d->range_computed = false;						\
     d->range_min = 0;							\
     d->range_max = 0;							\
     d->histogram_min = 0;						\
@@ -244,6 +247,7 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
       return;								\
     }									\
     d->image = image;							\
+    d->range_computed = false;						\
   }									\
   void *itkDataImage##suffix::output(void)				\
   {									\
@@ -258,48 +262,138 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   }									\
   int itkDataImage##suffix::xDimension(void)				\
   {									\
-	if (d->image.IsNull()) \
-		return -1; \
+    if (d->image.IsNull())						\
+      return -1;							\
     return d->image->GetLargestPossibleRegion().GetSize()[0];		\
   }									\
   int itkDataImage##suffix::yDimension(void)				\
   {									\
-	if (d->image.IsNull()) \
-		return -1; \
+    if (d->image.IsNull())						\
+      return -1;							\
     return d->image->GetLargestPossibleRegion().GetSize()[1];		\
   }									\
   int itkDataImage##suffix::zDimension(void)				\
   {									\
-	if (d->image.IsNull()) \
-		return -1; \
+    if (d->image.IsNull())						\
+      return -1;							\
     return d->image->GetLargestPossibleRegion().GetSize()[2];		\
   }									\
+                                                                        \
+  void itkDataImage##suffix::computeRange()				\
+  {									\
+    if ( d->range_computed )						\
+      return;								\
+									\
+    if ( d->image->GetLargestPossibleRegion().GetNumberOfPixels() == 0 ) \
+      return;								\
+									\
+    typedef itkDataImage##suffix##Private::ImageType ImageType;		\
+    typedef itk::MinimumMaximumImageCalculator<ImageType>		\
+      MinMaxCalculatorType;						\
+    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New(); \
+    calculator->SetImage ( d->image );					\
+    calculator->SetRegion( d->image->GetLargestPossibleRegion() );	\
+    try									\
+    {									\
+      calculator->Compute();						\
+    }									\
+    catch (itk::ExceptionObject &e)					\
+    {									\
+      std::cerr << e;							\
+      return;								\
+    }									\
+    d->range_min = calculator->GetMinimum();				\
+    d->range_max = calculator->GetMaximum();				\
+    d->range_computed = true;						\
+  }                                                                     \
+                                                                        \
+  int itkDataImage##suffix::tDimension(void)				\
+  {									\
+      if (d->image.IsNull())                                            \
+          return -1;                                                    \
+      if (dimension<4)                                                  \
+          return 1;                                                     \
+      else                                                              \
+          return d->image->GetLargestPossibleRegion().GetSize()[3];     \
+  }									\
+                                                                        \
   int itkDataImage##suffix::minRangeValue(void)				\
   {									\
+    computeRange();							\
+    if ( !d->range_computed )						\
+      qDebug() << "Cannot compute range";				\
     return d->range_min;						\
   }									\
   int itkDataImage##suffix::maxRangeValue(void)				\
   {									\
+    computeRange();							\
     return d->range_max;						\
   }									\
   int itkDataImage##suffix::scalarValueCount(int value)			\
   {									\
     typedef itkDataImage##suffix##Private::ScalarType ScalarType;	\
-    if( !d->histogram.IsNull() )					\
-    {									\
-      if( (ScalarType)value>=d->range_min && (ScalarType)value<=d->range_max ) \
+									\
+    computeValueCounts();						\
+    if( (ScalarType)value>=d->range_min && (ScalarType)value<=d->range_max ) \
     {									\
       return d->histogram->GetFrequency( value, 0 );			\
     }									\
+    return -1;								\
   }									\
-  return -1;								\
+  void itkDataImage##suffix::computeValueCounts()			\
+  {									\
+    if( d->histogram.IsNull() )						\
+    {									\
+      computeRange();							\
+									\
+      typedef itkDataImage##suffix##Private::HistogramGeneratorType	\
+	HistogramGeneratorType;						\
+      HistogramGeneratorType::Pointer histogramGenerator =		\
+	HistogramGeneratorType::New();					\
+      histogramGenerator->SetInput( d->image );				\
+      histogramGenerator->SetNumberOfBins(d->range_max - d->range_min + 1); \
+      histogramGenerator->SetMarginalScale( 1.0 );			\
+      histogramGenerator->SetHistogramMin( d->range_min );		\
+      histogramGenerator->SetHistogramMax( d->range_max );		\
+      try								\
+      {									\
+	std::cerr << "calculating histogram...";			\
+	histogramGenerator->Compute();					\
+	std::cerr << "done" << std::endl;				\
+      }									\
+      catch (itk::ExceptionObject &e)					\
+      {									\
+	std::cerr << e;							\
+	return;								\
+      }									\
+									\
+      typedef HistogramGeneratorType::HistogramType  HistogramType;	\
+      typedef HistogramType::AbsoluteFrequencyType   FrequencyType;	\
+      d->histogram =							\
+	const_cast<HistogramType*>( histogramGenerator->GetOutput() );	\
+      FrequencyType min = itk::NumericTraits< FrequencyType >::max();	\
+      FrequencyType max = itk::NumericTraits< FrequencyType >::min();	\
+									\
+      typedef HistogramType::Iterator Iterator;				\
+      for ( Iterator it = d->histogram->Begin(), end = d->histogram->End(); \
+	    it != end; ++it )						\
+      {									\
+	FrequencyType c = it.GetFrequency();				\
+	if ( min > c ) min = c;						\
+	if ( max < c ) max = c;						\
+      }									\
+      d->histogram_min = static_cast< int >( min );			\
+      d->histogram_max = static_cast< int >( max );			\
+    }									\
   }									\
   int itkDataImage##suffix::scalarValueMinCount(void)                   \
   {									\
+    computeValueCounts();						\
     return d->histogram_min;						\
   }									\
   int itkDataImage##suffix::scalarValueMaxCount(void)			\
   {									\
+    computeValueCounts();						\
     return d->histogram_max;						\
   }									\
   dtkAbstractData *createItkDataImage##suffix(void)			\
@@ -408,6 +502,15 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   int itkDataImage##suffix::zDimension(void)				\
   {									\
     return d->image->GetLargestPossibleRegion().GetSize()[2];		\
+  }									\
+  int itkDataImage##suffix::tDimension(void)				\
+  { 									\
+    if (d->image.IsNull()) \
+      return -1; \
+    if (dimension<4) \
+      return 1; \
+    else \
+      return d->image->GetLargestPossibleRegion().GetSize()[3];		\
   }									\
   int itkDataImage##suffix::minRangeValue(void)				\
   {									\
