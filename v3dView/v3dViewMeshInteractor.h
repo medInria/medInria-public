@@ -30,6 +30,12 @@ public:
     virtual void enable(void);
     virtual void disable(void);
 
+    //! Override dtkAbstractViewInteractor.
+    virtual bool isAutoEnabledWith ( dtkAbstractData * data );
+
+protected:
+    virtual void updatePipeline ();
+
 signals:
     void selectionValidated (QString name);
 

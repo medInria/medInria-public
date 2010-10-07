@@ -25,10 +25,16 @@ class v3dViewMeshInteractorPrivate
 {
 public:
     typedef vtkSmartPointer <vtkActor>  ActorSmartPointer;
+    typedef vtkSmartPointer <vtkProperty>  PropertySmartPointer;
 
     dtkAbstractData  *data;
     v3dView          *view;
-    ActorSmartPointer     actor;
+    ActorSmartPointer     actorSagital;
+    ActorSmartPointer     actorAxial;
+    ActorSmartPointer     actorCoronal;
+    ActorSmartPointer     actor3d;
+    PropertySmartPointer  actorProperty;
+
 
 };
 
@@ -71,6 +77,7 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
     if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
 
         d->data = data;
+        updatePipeline ();
     }
 }
 
@@ -81,41 +88,26 @@ void v3dViewMeshInteractor::setView(dtkAbstractView *view)
     }
 }
 
+bool v3dViewMeshInteractor::isAutoEnabledWith ( dtkAbstractData * data )
+{
+    if ( data->description() == "vtkDataMesh" ) {
+
+        this->enable ();
+        return true;
+    }
+    return false;
+}
+
 void v3dViewMeshInteractor::enable(void)
 {
     if (this->enabled())
         return;
 
-    if (d->view) {
+    updatePipeline ();
 
-        vtkSmartPointer < vtkActor > actor;
-        if ( vtkPolyData *polydata = dynamic_cast<vtkPolyData *>((vtkObject *)(d->data->data())) ) {
-
-            vtkSmartPointer < vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
-            mapper->SetInput ( polydata );
-            actor = vtkSmartPointer < vtkActor>::New ();
-            actor->SetMapper ( mapper );
-
-        } else if (vtkDataSet *dataset = dynamic_cast<vtkDataSet *>((vtkObject *)(d->data->data())) ) {
-
-            vtkSmartPointer < vtkDataSetSurfaceFilter > surfaceFilter = vtkSmartPointer<vtkDataSetSurfaceFilter>::New ();
-            surfaceFilter->SetInput ( dataset );
-
-            vtkSmartPointer < vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
-            mapper->SetInputConnection ( surfaceFilter->GetOutputPort () );
-            actor = vtkSmartPointer < vtkActor>::New ();
-            actor->SetMapper ( mapper );
-
-        }
-
-        if ( actor.GetPointer () ) {
-
-            d->actor = actor;
-            d->view->renderer3D()->AddViewProp ( actor );
-        }
-    }
     dtkAbstractViewInteractor::enable();
 }
+
 
 void v3dViewMeshInteractor::disable(void)
 {
@@ -124,7 +116,10 @@ void v3dViewMeshInteractor::disable(void)
 
     if (d->view) {
 
-        d->view->renderer3D()->RemoveViewProp ( d->actor );
+// TODO        d->view->view3D ()->RemoveDataset ();
+// TODO        d->view->view3D ()->RemoveDataset ();
+// TODO        d->view->view3D ()->RemoveDataset ();
+// TODO        d->view->view3D ()->RemoveDataset ();
     }
     dtkAbstractViewInteractor::disable();
 }
@@ -146,28 +141,35 @@ void v3dViewMeshInteractor::onPropertySet(QString key, QString value)
 
 void v3dViewMeshInteractor::onVisibilityPropertySet (QString value)
 {
-    if (value=="true")
-        d->actor->SetVisibility(1);
-    else
-        d->actor->SetVisibility(0);
+    if (value=="true") {
+        d->actorAxial->SetVisibility(1);
+        d->actorCoronal->SetVisibility(1);
+        d->actorSagital->SetVisibility(1);
+        d->actor3d->SetVisibility(1);
+    } else {
+        d->actorAxial->SetVisibility(0);
+        d->actorCoronal->SetVisibility(0);
+        d->actorSagital->SetVisibility(0);
+        d->actor3d->SetVisibility(0);
+    }
 }
 
 void v3dViewMeshInteractor::onEdgeVisibilityPropertySet (QString value)
 {
     if (value=="true")
-        d->actor->GetProperty ()->SetEdgeVisibility (1);
+        d->actorProperty->SetEdgeVisibility (1);
     else
-        d->actor->GetProperty ()->SetEdgeVisibility (0);
+        d->actorProperty->SetEdgeVisibility (0);
 }
 
 void v3dViewMeshInteractor::onRenderingModePropertySet (QString value)
 {
     if (value=="wireframe") {
-        d->actor->GetProperty ()->SetRepresentationToWireframe ();
+        d->actorProperty->SetRepresentationToWireframe ();
     } else if (value=="surface") {
-        d->actor->GetProperty ()->SetRepresentationToSurface ();
+        d->actorProperty->SetRepresentationToSurface ();
     } else if (value=="points") {
-        d->actor->GetProperty ()->SetRepresentationToPoints ();
+        d->actorProperty->SetRepresentationToPoints ();
     }
 }
 
@@ -178,4 +180,30 @@ void v3dViewMeshInteractor::onRenderingModePropertySet (QString value)
 dtkAbstractViewInteractor *createV3dViewMeshInteractor(void)
 {
     return new v3dViewMeshInteractor;
+}
+
+void v3dViewMeshInteractor::updatePipeline (void)
+{
+    if (d->view && d->data) {
+
+        if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(d->data->data()))) {
+            d->actorAxial = d->view->viewAxial ()->AddDataSet (pointset);
+            d->actorSagital = d->view->viewSagittal ()->AddDataSet(pointset);
+            d->actorCoronal = d->view->viewCoronal ()->AddDataSet(pointset);
+            d->actor3d = d->view->view3D ()->AddDataSet(pointset);
+
+            d->actorProperty = v3dViewMeshInteractorPrivate::PropertySmartPointer::New ();
+
+            d->actorProperty->SetColor ( 1,0,0 );
+            d->actorAxial->SetProperty ( d->actorProperty );
+            d->actorSagital->SetProperty ( d->actorProperty );
+            d->actorCoronal->SetProperty ( d->actorProperty );
+            d->actor3d->SetProperty ( d->actorProperty );
+
+            d->actorAxial->GetMapper ()->ScalarVisibilityOff ();
+            d->actorSagital->GetMapper ()->ScalarVisibilityOff ();
+            d->actorCoronal->GetMapper ()->ScalarVisibilityOff ();
+            d->actor3d->GetMapper ()->ScalarVisibilityOff ();
+        }
+    }
 }
