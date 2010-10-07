@@ -60,6 +60,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   vtkCommon
   vtkFiltering
+  vtkRendering
   )
 
 #if (BUILD_TESTING)

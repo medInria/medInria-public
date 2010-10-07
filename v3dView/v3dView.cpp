@@ -969,6 +969,15 @@ void v3dView::setData(dtkAbstractData *data)
 	    d->view3D->SetInput(dataset);
 	  }
       }
+      else if ( data->description() == "vtkDataMesh" ) {
+	      if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(data->data()))) {
+	        d->view2DAxial->AddDataSet(pointset);
+	        d->view2DSagittal->AddDataSet(pointset);
+	        d->view2DCoronal->AddDataSet(pointset);
+	        d->view3D->AddDataSet(pointset);
+	      }
+
+      }
       else {
         dtkAbstractView::setData(data);
         return;
