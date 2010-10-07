@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  7 11:58:08 2010 (+0200)
+ * Last-Updated: Thu Oct  7 12:40:09 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 491
+ *     Update #: 498
  */
 
 /* Commentary: 
@@ -182,6 +182,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     medStatusQuitButton *quitButton = new medStatusQuitButton(this);
 
+    connect(quitButton, SIGNAL(quit()), this, SLOT(onQuit()));
+
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
     this->statusBar()->setFixedHeight(31);
@@ -274,6 +276,16 @@ void medMainWindow::switchToViewerArea(void)
 void medMainWindow::onConfigurationTriggered(QAction *action)
 {
     medViewerConfigurator::instance()->setConfiguration(action->text());
+}
+
+void medMainWindow::onQuit(void)
+{
+    medMessageControllerMessageQuestion *question = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
+
+    connect(question, SIGNAL(accepted()), qApp, SLOT(quit()));
+    connect(question, SIGNAL(rejected()), question, SLOT(deleteLater()));
+
+    this->statusBar()->addWidget(question);
 }
 
 void medMainWindow::open(const medDataIndex& index)

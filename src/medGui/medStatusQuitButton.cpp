@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct  7 11:45:34 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  7 11:55:28 2010 (+0200)
+ * Last-Updated: Thu Oct  7 12:32:06 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 20
+ *     Update #: 21
  */
 
 /* Commentary: 
@@ -43,5 +43,5 @@ QSize medStatusQuitButton::sizeHint(void) const
 
 void medStatusQuitButton::mousePressEvent(QMouseEvent *event)
 {
-    qApp->quit();
+    emit quit();
 }

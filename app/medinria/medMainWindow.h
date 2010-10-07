@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  7 11:05:16 2010 (+0200)
+ * Last-Updated: Thu Oct  7 12:31:41 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 31
+ *     Update #: 32
  */
 
 /* Commentary: 
@@ -44,6 +44,7 @@ public slots:
     void switchToViewerArea(void);
 
     void onConfigurationTriggered(QAction *action);
+    void onQuit(void);
 
     void open(const medDataIndex& index);
     void open(const QString& file);
