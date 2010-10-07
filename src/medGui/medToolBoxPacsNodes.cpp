@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 15:49:05 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 12:03:32 2010 (+0200)
+ * Last-Updated: Wed Oct  6 18:49:00 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 150
+ *     Update #: 151
  */
 
 /* Commentary: 
@@ -52,6 +52,7 @@ medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), 
     d->table->setRowCount(0);
     d->table->setColumnCount(3);
     d->table->setHorizontalHeaderLabels(QStringList() << "Title" << "Address" << "Port");
+    d->table->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     d->add = new QPushButton("Add"); d->add->setObjectName("left");
     d->ech = new QPushButton("Echo"); d->ech->setObjectName("center");

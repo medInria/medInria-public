@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 11:07:29 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 16:18:13 2010 (+0200)
+ * Last-Updated: Wed Oct  6 18:57:16 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 342
+ *     Update #: 343
  */
 
 /* Commentary: 
@@ -103,8 +103,8 @@ medPacsWidget::~medPacsWidget(void)
 {
     this->writeSettings();
 
-    d->terminate();
-    d->wait();
+    // d->terminate();
+    // d->wait();
 
     delete d;
 
