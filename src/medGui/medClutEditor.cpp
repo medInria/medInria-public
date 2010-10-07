@@ -73,6 +73,8 @@ medClutEditorVertex::medClutEditorVertex(int x, int y,
 
 medClutEditorVertex::~medClutEditorVertex(void)
 {
+    delete d->deleteAction;
+    delete d->setColorAction;
     delete d;
 }
 
@@ -89,10 +91,12 @@ void medClutEditorVertex::setNext( medClutEditorVertex * v )
 int medClutEditorVertex::upperBound()
 {
     return d->upperBd;
+
 }
 
 void medClutEditorVertex::onDeleteAction()
 {
+
 }
 
 
@@ -160,14 +164,14 @@ static bool medClutEditorVertexLessThan(const medClutEditorVertex *v1,
     return (v1->position().x() < v2->position().x());
 }
 
-void medClutEditorVertex::mousePressEvent(QMouseEvent *event)
+void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::RightButton) {
         QMenu menu("Edit Marker", 0) ;
         menu.setWindowOpacity(0.8) ;
-        menu.addAction(d->setColorAction) ;
+        menu.addAction(d->setColorAction);
         menu.addAction(d->deleteAction) ;
-        menu.exec(event->globalPos()) ;
+        menu.exec(event->screenPos());
     }
 }
 

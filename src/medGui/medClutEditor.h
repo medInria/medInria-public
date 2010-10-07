@@ -52,7 +52,7 @@ public:
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void mousePressEvent(QMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 private :
     void setAlpha();
     medClutEditorVertexPrivate * d;
