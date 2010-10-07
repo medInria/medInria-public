@@ -32,7 +32,7 @@
 class medClutEditorVertex : public QGraphicsItem
 {
 public:
-     medClutEditorVertex(int x, int y, QColor color = Qt::yellow, QGraphicsItem *parent = 0);
+     medClutEditorVertex(int x, int y, QColor color = Qt::yellow,int upperBound = 0, QGraphicsItem *parent = 0);
     ~medClutEditorVertex(void);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -43,18 +43,20 @@ public:
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
+    void setAlpha();
 private:
     QColor fgColor;
     QColor bgColor;
+    int upperBound;
 };
 
-medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color, QGraphicsItem *parent) : QGraphicsItem(parent)
+medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,int upperBound, QGraphicsItem *parent) : QGraphicsItem(parent)
 {
     this->fgColor = color;
-    this->bgColor = QColor(0xc0, 0xc0, 0xc0);
-
+    this->bgColor = QColor(0xc0, 0xc0, 0xc0,0x0);
+    this->upperBound = upperBound;
     this->setPos(x, -y);
+    setAlpha();
     this->setZValue(1);
 
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -71,6 +73,7 @@ void medClutEditorVertex::paint(QPainter *painter, const QStyleOptionGraphicsIte
     Q_UNUSED(widget);
 
     painter->setPen(Qt::black);
+    setAlpha();
     painter->setBrush(bgColor); painter->drawEllipse(-40, -40, 80, 80);
     painter->setBrush(fgColor); painter->drawEllipse(-25, -25, 50, 50);
 }
@@ -100,6 +103,13 @@ void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         this->fgColor = color;
         this->update();
     }
+}
+
+void medClutEditorVertex::setAlpha()
+{
+    float alpha = qAbs(this->y()/(float)upperBound);
+    if ( alpha > 1 ) alpha = 1;
+    this->fgColor.setAlphaF(alpha);
 }
 
 static bool medClutEditorVertexLessThan(const medClutEditorVertex *v1, const medClutEditorVertex *v2) {
@@ -528,10 +538,11 @@ void medClutEditor::mousePressEvent(QMouseEvent *event)
 
 void medClutEditor::onNewTableAction(void)
 {
-    medClutEditorVertex *v1 = new medClutEditorVertex(d->histogram->getRangeMin(), 300, Qt::blue);
+    int upperbound = d->histogram->boundingRect().height();
+    medClutEditorVertex *v1 = new medClutEditorVertex(d->histogram->getRangeMin(), 300, Qt::blue,upperbound);
     medClutEditorVertex *v2 = new medClutEditorVertex((d->histogram->getRangeMax()+d->histogram->getRangeMin())/2,
-                                                       500, Qt::red);
-    medClutEditorVertex *v3 = new medClutEditorVertex( d->histogram->getRangeMax() , 550, Qt::yellow);
+                                                       500, Qt::red,upperbound);
+    medClutEditorVertex *v3 = new medClutEditorVertex( d->histogram->getRangeMax() , 550, Qt::yellow,upperbound);
     // medClutEditorVertex *v4 = new medClutEditorVertex(260,  60, Qt::white);
     d->scene->addItem(v1);
     d->scene->addItem(v2);
