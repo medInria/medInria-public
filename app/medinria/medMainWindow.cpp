@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Jun 30 13:07:14 2010 (+0200)
+ * Last-Updated: Thu Oct  7 12:40:09 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 450
+ *     Update #: 498
  */
 
 /* Commentary: 
@@ -18,12 +18,9 @@
  */
 
 #include "medBrowserArea.h"
-#include "medDocumentationArea.h"
 #include "medMainWindow.h"
-#include "medCore/medMessageController.h"
 #include "medViewerArea.h"
 #include "medViewerConfigurator.h"
-#include "medWelcomeArea.h"
 
 #include <dtkCore/dtkGlobal.h>
 
@@ -34,6 +31,9 @@
 
 #include <dtkGui/dtkSpacer.h>
 
+#include <medCore/medMessageController.h>
+
+#include <medGui/medStatusQuitButton.h>
 #include <medGui/medWorkspaceShifter.h>
 
 #include <medSql/medDatabaseController.h>
@@ -71,16 +71,12 @@ class medMainWindowPrivate
 public:
     QStackedWidget *stack;
 
-    medWelcomeArea       *welcomeArea;
-    medBrowserArea       *browserArea;
-    medViewerArea        *viewerArea;
-    medDocumentationArea *documentationArea;
+    medBrowserArea *browserArea;
+    medViewerArea  *viewerArea;
 
     medWorkspaceShifter *shifter;
-    medWorkspaceShifterAction *shiftToWelcomeAreaAction;
     medWorkspaceShifterAction *shiftToBrowserAreaAction;
     medWorkspaceShifterAction *shiftToViewerAreaAction;
-    medWorkspaceShifterAction *shiftToDocumentationAreaAction;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -98,7 +94,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     if(!medDatabaseController::instance()->createConnection())
         qDebug() << "Unable to create a connection to the database";
 
-
     // Setting up menu
 
     QAction *windowFullScreenAction = new QAction("Toggle fullscreen mode", this);
@@ -113,24 +108,15 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     // Setting up widgets
 
-    d->welcomeArea = new medWelcomeArea(this);
     d->browserArea = new medBrowserArea(this);
     d->viewerArea = new medViewerArea(this);
-    d->documentationArea = new medDocumentationArea(this);
 
-    d->welcomeArea->setObjectName("Welcome");
     d->browserArea->setObjectName("Browser");
     d->viewerArea->setObjectName("Viewer");
-    d->viewerArea->setObjectName("Documentation");
 
     d->stack = new QStackedWidget(this);
-    d->stack->addWidget(d->welcomeArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->viewerArea);
-    d->stack->addWidget(d->documentationArea);
-
-    connect(d->welcomeArea, SIGNAL(switchToBrowserArea()), this, SLOT(switchToBrowserArea()));
-    connect(d->welcomeArea, SIGNAL(switchToViewerArea()), this, SLOT(switchToViewerArea()));
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
@@ -172,25 +158,16 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
         "set pluginManager  [dtkPluginManager_instance]"
     );
 #endif
-    // Setting up console script interpreter
-
-    // dtkScriptInterpreter *interpreter = dtkScriptInterpreterPool::instance()->console("python");
-    // interpreter->start();
-    // QObject::connect(qApp, SIGNAL(aboutToQuit()), interpreter, SLOT(stop()));
 
     // Setting up status bar
 
-    d->shiftToWelcomeAreaAction = new medWorkspaceShifterAction("Welcome");
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
-    d->shiftToViewerAreaAction  = new medWorkspaceShifterAction("Viewer");
-    d->shiftToDocumentationAreaAction  = new medWorkspaceShifterAction("Documentation");
+    d->shiftToViewerAreaAction = new medWorkspaceShifterAction("Viewer");
 
-    d->shiftToWelcomeAreaAction->setChecked(true);
+    d->shiftToBrowserAreaAction->setChecked(true);
 
-    connect(d->shiftToWelcomeAreaAction, SIGNAL(triggered()), this, SLOT(switchToWelcomeArea()));
     connect(d->shiftToBrowserAreaAction, SIGNAL(triggered()), this, SLOT(switchToBrowserArea()));
     connect(d->shiftToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
-    connect(d->shiftToDocumentationAreaAction, SIGNAL(triggered()), this, SLOT(switchToDocumentationArea()));
 
     medWorkspaceShifterMenu *menu = new medWorkspaceShifterMenu(this);
     menu->addAction("Visualization");
@@ -200,24 +177,29 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onConfigurationTriggered(QAction *)));
 
     d->shifter = new medWorkspaceShifter(this);
-    d->shifter->addAction(d->shiftToWelcomeAreaAction);
     d->shifter->addAction(d->shiftToBrowserAreaAction);
     d->shifter->addAction(d->shiftToViewerAreaAction)->setMenu(menu);
-    d->shifter->addAction(d->shiftToDocumentationAreaAction);
+
+    medStatusQuitButton *quitButton = new medStatusQuitButton(this);
+
+    connect(quitButton, SIGNAL(quit()), this, SLOT(onQuit()));
 
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
     this->statusBar()->setFixedHeight(31);
     this->statusBar()->addPermanentWidget(d->shifter);
+    this->statusBar()->addPermanentWidget(quitButton);
 
     this->readSettings();
     this->setCentralWidget(d->stack);
     this->setStyle(new medMainWindowStyle);
     this->setStyleSheet(dtkReadFile(":/medinria.qss"));
     this->setWindowTitle("medinria");
-    this->switchToWelcomeArea();
+    this->switchToBrowserArea();
 
     medMessageController::instance()->attach(this->statusBar());
+
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
 }
 
 medMainWindow::~medMainWindow(void)
@@ -265,70 +247,28 @@ void medMainWindow::setFullScreen(bool full)
         this->showNormal();
 }
 
-void medMainWindow::switchToWelcomeArea(void)
-{
-    d->welcomeArea->setup(this->statusBar());
-    d->browserArea->setdw(this->statusBar());
-    d->viewerArea->setdw(this->statusBar());
-    d->documentationArea->setdw(this->statusBar());
-
-    d->stack->setCurrentWidget(d->welcomeArea);
-
-    d->shiftToWelcomeAreaAction->setChecked(true);
-    d->shiftToBrowserAreaAction->setChecked(false);
-    d->shiftToViewerAreaAction->setChecked(false);
-    d->shiftToDocumentationAreaAction->setChecked(false);
-
-    d->shifter->update();
-}
-
 void medMainWindow::switchToBrowserArea(void)
 {
-    d->welcomeArea->setdw(this->statusBar());
     d->browserArea->setup(this->statusBar());
     d->viewerArea->setdw(this->statusBar());
-    d->documentationArea->setdw(this->statusBar());
 
     d->stack->setCurrentWidget(d->browserArea);
 
-    d->shiftToWelcomeAreaAction->setChecked(false);
     d->shiftToBrowserAreaAction->setChecked(true);
     d->shiftToViewerAreaAction->setChecked(false);
-    d->shiftToDocumentationAreaAction->setChecked(false);
 
     d->shifter->update();
 }
 
 void medMainWindow::switchToViewerArea(void)
 {
-    d->welcomeArea->setdw(this->statusBar());
     d->browserArea->setdw(this->statusBar());
     d->viewerArea->setup(this->statusBar());
-    d->documentationArea->setdw(this->statusBar());
 
     d->stack->setCurrentWidget(d->viewerArea);
 
-    d->shiftToWelcomeAreaAction->setChecked(false);
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(true);
-    d->shiftToDocumentationAreaAction->setChecked(false);
-
-    d->shifter->update();
-}
-
-void medMainWindow::switchToDocumentationArea(void)
-{
-    d->welcomeArea->setdw(this->statusBar());
-    d->browserArea->setdw(this->statusBar());
-    d->viewerArea->setdw(this->statusBar());
-    d->documentationArea->setup(this->statusBar());
-
-    d->stack->setCurrentWidget(d->documentationArea);
-
-    d->shiftToWelcomeAreaAction->setChecked(false);
-    d->shiftToBrowserAreaAction->setChecked(false);
-    d->shiftToViewerAreaAction->setChecked(false);
-    d->shiftToDocumentationAreaAction->setChecked(true);
 
     d->shifter->update();
 }
@@ -336,6 +276,16 @@ void medMainWindow::switchToDocumentationArea(void)
 void medMainWindow::onConfigurationTriggered(QAction *action)
 {
     medViewerConfigurator::instance()->setConfiguration(action->text());
+}
+
+void medMainWindow::onQuit(void)
+{
+    medMessageControllerMessageQuestion *question = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
+
+    connect(question, SIGNAL(accepted()), qApp, SLOT(quit()));
+    connect(question, SIGNAL(rejected()), question, SLOT(deleteLater()));
+
+    this->statusBar()->addWidget(question);
 }
 
 void medMainWindow::open(const medDataIndex& index)
@@ -357,5 +307,5 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     this->writeSettings();
     
     delete medDatabaseController::instance();
-    //delete medMessageController::instance();
+    // delete medMessageController::instance();
 }

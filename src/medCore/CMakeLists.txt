@@ -28,21 +28,27 @@ set(${PROJECT_NAME}_HEADERS
   medDataManager.h
   medMessageController.h
   medViewManager.h
-  medPluginManager.h)
+  medPluginManager.h
+  medAbstractView.h
+)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataIndex.h
   medDataManager.h
   medMessageController.h
   medViewManager.h
-  medPluginManager.h)
+  medPluginManager.h
+  medAbstractView.h
+)
 
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
   medMessageController.cpp
   medViewManager.cpp
-  medPluginManager.cpp)
+  medPluginManager.cpp
+  medAbstractView.cpp
+)
 
 ## #################################################################
 ## Wrapping

@@ -30,7 +30,7 @@ class medToolBoxContainer;
 class medDatabaseNavigator;
 
 class medViewerAreaStack;
-
+class medClutEditor;
 class QStackedWidget;
 
 #include <QtCore/QHash>
@@ -46,6 +46,8 @@ public:
     medToolBoxContainer *toolbox_container;
 
     medDatabaseNavigator *navigator;
+
+    medClutEditor * transFun;
 
     QStackedWidget *stack;
   

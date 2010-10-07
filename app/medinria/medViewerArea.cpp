@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Jun 29 16:20:05 2010 (+0200)
+ * Last-Updated: Thu Oct  7 13:00:31 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 966
+ *     Update #: 967
  */
 
 /* Commentary: 
@@ -33,12 +33,14 @@
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
+#include <medCore/medAbstractView.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseNonPersitentItem.h>
 #include <medSql/medDatabaseNonPersitentController.h>
 #include <medSql/medDatabaseNavigator.h>
 
+#include <medGui/medClutEditor.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medToolBoxLayout.h>
@@ -193,6 +195,19 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     registrationConfiguration->attach(3); // Registration compare container when set up
 
     medViewerConfigurator::instance()->addConfiguration("Registration", registrationConfiguration);
+
+
+    //action for transfer function
+    QAction * transFunAction =
+      new QAction("Toggle Tranfer Function Widget", this);
+    transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier +
+				Qt::Key_L);
+    transFunAction->setCheckable( true );
+    transFunAction->setChecked( false );
+    connect(transFunAction, SIGNAL(toggled(bool)),
+	    this, SLOT(bringUpTransFun(bool)));
+
+    this->addAction(transFunAction);
 }
 
 medViewerArea::~medViewerArea(void)
@@ -314,13 +329,13 @@ void medViewerArea::open(const medDataIndex& index)
 
     medViewManager::instance()->insert(index, view);
     
-    view->setData(data);
-
-    view->reset();
+	view->setData(data);
+	view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
     
     d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
     d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
-
+	
+	
     return;
 
     }
@@ -397,6 +412,10 @@ void medViewerArea::switchToPatient(int id)
     // Setup patient toolbox
 
     d->patientToolBox->setPatientIndex(id);
+
+    // Setup layout toolbox
+
+    
 }
 
 //! Set stack index.
@@ -629,6 +648,33 @@ void medViewerArea::setupCropping(bool checked)
   
     if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
         checked ? pool->setViewProperty("Cropping", "true") : pool->setViewProperty("Cropping", "false");
+    }
+}
+
+void medViewerArea::bringUpTransFun(bool checked)
+{
+    if (!checked)
+    {
+        if (d->transFun !=NULL )
+        {
+            delete d->transFun ;
+            d->transFun=NULL;
+        }
+      return;
+    }
+    if(!d->view_stacks.count())
+        return;
+  
+    if(dtkAbstractView *view = d->view_stacks.value(d->current_patient)->current()->current()->view()) {
+
+      d->transFun = new medClutEditor(NULL);
+      d->transFun->setWindowModality( Qt::WindowModal );
+      d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
+
+      d->transFun->setData(static_cast<dtkAbstractData *>(view->data()));
+      d->transFun->setView(dynamic_cast<medAbstractView*>(view));
+
+      d->transFun->show();
     }
 }
 

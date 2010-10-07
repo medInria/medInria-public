@@ -20,7 +20,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractView.h>
-
+#include <medCore/medAbstractView.h>
 #include "medClutEditor.h"
 
 #include <math.h>
@@ -29,40 +29,62 @@
 // medClutEditorHistogram
 // /////////////////////////////////////////////////////////////////
 
-class medClutEditorVertex : public QGraphicsItem
-{
-public:
-     medClutEditorVertex(int x, int y, QColor color = Qt::yellow, QGraphicsItem *parent = 0);
-    ~medClutEditorVertex(void);
+class medClutEditorVertexPrivate{
+ public:
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-
-    QRectF boundingRect(void) const;
-    QPoint position(void) const;
-    QColor color(void) const;
-
-protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-private:
     QColor fgColor;
     QColor bgColor;
+    int upperBd;
+    QAction *deleteAction;
+    QAction *setColorAction;
+
 };
 
-medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color, QGraphicsItem *parent) : QGraphicsItem(parent)
+medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,int upperBound, QGraphicsItem *parent) : QGraphicsItem(parent)
 {
-    this->fgColor = color;
-    this->bgColor = QColor(0xc0, 0xc0, 0xc0);
-
+    d = new medClutEditorVertexPrivate;
+    d->fgColor = color;
+    d->bgColor = QColor(0xc0, 0xc0, 0xc0,0x0);
+    d->upperBd = upperBound;
     this->setPos(x, -y);
+    setAlpha();
     this->setZValue(1);
 
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
+
+    d->deleteAction = new QAction("Delete", 0);
+    d->setColorAction = new QAction("Edit Color", 0);
+
+
+    connect(d->deleteAction, SIGNAL(triggered()), this, SLOT(onDeleteAction()));
+    connect(d->setColorAction, SIGNAL(triggered()), this, SLOT(onSetColorAction()));
+
 }
 
 medClutEditorVertex::~medClutEditorVertex(void)
 {
+    delete d;
+}
 
+int medClutEditorVertex::upperBound()
+{
+    return d->upperBd;
+}
+
+void medClutEditorVertex::onDeleteAction()
+{
+}
+
+
+
+void medClutEditorVertex::onSetColorAction()
+{
+    QColor color = QColorDialog::getColor(d->fgColor, 0);
+
+    if(color.isValid()) {
+        d->fgColor = color;
+        this->update();
+    }
 }
 
 void medClutEditorVertex::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -71,8 +93,9 @@ void medClutEditorVertex::paint(QPainter *painter, const QStyleOptionGraphicsIte
     Q_UNUSED(widget);
 
     painter->setPen(Qt::black);
-    painter->setBrush(bgColor); painter->drawEllipse(-40, -40, 80, 80);
-    painter->setBrush(fgColor); painter->drawEllipse(-25, -25, 50, 50);
+    setAlpha();
+    painter->setBrush(d->bgColor); painter->drawEllipse(-40, -40, 80, 80);
+    painter->setBrush(d->fgColor); painter->drawEllipse(-25, -25, 50, 50);
 }
 
 QRectF medClutEditorVertex::boundingRect(void) const
@@ -87,24 +110,43 @@ QPoint medClutEditorVertex::position(void) const
 
 QColor medClutEditorVertex::color(void) const
 {
-    return fgColor;
+    return d->fgColor;
 }
 
 void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
 
-    QColor color = QColorDialog::getColor(fgColor, 0);
+    QColor color = QColorDialog::getColor(d->fgColor, 0);
 
     if(color.isValid()) {
-        this->fgColor = color;
+        d->fgColor = color;
         this->update();
     }
+}
+
+void medClutEditorVertex::setAlpha()
+{
+    float alpha = qAbs(this->y()/(float)d->upperBd);
+    if ( alpha > 1 ) alpha = 1;
+    d->fgColor.setAlphaF(alpha);
 }
 
 static bool medClutEditorVertexLessThan(const medClutEditorVertex *v1, const medClutEditorVertex *v2) {
     return (v1->position().x() < v2->position().x());
 }
+
+void medClutEditorVertex::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::RightButton) {
+        QMenu menu("Edit Marker", 0) ;
+        menu.setWindowOpacity(0.8) ;
+        menu.addAction(d->setColorAction) ;
+        menu.addAction(d->deleteAction) ;
+        menu.exec(event->globalPos()) ;
+    }
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditorTable
@@ -119,6 +161,7 @@ public:
     void addVertex(medClutEditorVertex *vertex);
 
     void setup(int min, int max, int size, int *table);
+    void setupTransferFunction(QList<double> &scalars,QList<QColor> &colors );
 
 public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -126,6 +169,7 @@ public:
     QRectF boundingRect(void) const;
 
     void keyPressEvent(QKeyEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     QList<medClutEditorVertex *> vertices;
@@ -182,6 +226,18 @@ void medClutEditorTable::setup(int min, int max, int size, int *table)
             table[x-min+(2*size)] = b;
             table[x-min+(3*size)] = 255;
         }
+    }
+
+}
+void medClutEditorTable::setupTransferFunction(QList<double> &scalars,QList<QColor> &colors )
+{
+    scalars.clear();
+    colors.clear();
+
+    for (QList<medClutEditorVertex *>::Iterator it = vertices.begin(); it != vertices.end();it++)
+    {
+        colors << (*it)->color();
+        scalars << (*it)->position().x();
     }
 }
 
@@ -254,6 +310,16 @@ void medClutEditorTable::keyPressEvent(QKeyEvent *event)
     case Qt::Key_X: this->scene()->removeItem(this); break;
     default: break;
     }
+    qDebug()<< event->key();
+}
+
+
+void medClutEditorTable::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    addVertex(new medClutEditorVertex(event->pos().x(),
+                                      -event->pos().y(),
+                                      Qt::yellow,
+                                      vertices[0]->upperBound(),this));
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -267,6 +333,8 @@ public:
     ~medClutEditorHistogram(void);
 
     void addValue(int intensity, int number);
+    int getRangeMin();
+    int getRangeMax();
 
 public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -275,11 +343,13 @@ public:
 
 private:
     QList<QPoint> values;
+    QSizeF size;
 };
 
-medClutEditorHistogram::medClutEditorHistogram(QGraphicsItem *parent) : QGraphicsItem(parent)
+medClutEditorHistogram::medClutEditorHistogram(QGraphicsItem *parent) :
+        QGraphicsItem(parent),size()
 {
-    this->setFlag(QGraphicsItem::ItemIsMovable, false);
+    //this->setFlag(QGraphicsItem::ItemIsMovable, false);
     this->setZValue(-1000);
 }
 
@@ -288,9 +358,28 @@ medClutEditorHistogram::~medClutEditorHistogram(void)
 
 }
 
+int medClutEditorHistogram::getRangeMin(void)
+{
+    return values[0].x();
+}
+
+int medClutEditorHistogram::getRangeMax(void)
+{
+    return values.back().x();
+}
+
 void medClutEditorHistogram::addValue(int intensity, int number)
 {
-    values << QPoint(intensity, 200*-log10((double)1+number));
+    int x =0;
+    if (!values.isEmpty() )
+        x = intensity-values[0].x();
+    int y = 200*-log10((double)1+number);
+    if (-y>size.height()) size.setHeight(-y);
+
+    if ((x>size.width()))
+        size.setWidth(x);
+
+    values << QPoint(intensity, y);
 }
 
 void medClutEditorHistogram::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -310,7 +399,17 @@ void medClutEditorHistogram::paint(QPainter *painter, const QStyleOptionGraphics
 
 QRectF medClutEditorHistogram::boundingRect(void) const
 {
-    return QRectF(0, 0, 16, 16);
+    if (!values.isEmpty())
+    {
+        //qDebug()<< "boundingRect Histogram" <<QRectF((double)(values[0].x()),(double)(values[0].y()),(double)(values.back().x()),(double)(values[0].y()));
+        //qDebug()<<"boundingRect Histogram"<<QRectF(QPointF((double)(values[0].x()),-size.height()),size);
+        return QRectF(QPointF((double)(values[0].x()),-size.height()),size);
+    }
+    else
+    {
+        qDebug() << "empty histogram";
+        return QRectF(0, 0, 16, 16);
+    }
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -346,6 +445,9 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event);
+    void wheelEvent ( QWheelEvent * event );
+    void keyReleaseEvent( QKeyEvent * event);
+    void keyPressEvent( QKeyEvent * event);
 };
 
 medClutEditorView::medClutEditorView(QWidget *parent) : QGraphicsView(parent)
@@ -370,8 +472,30 @@ void medClutEditorView::resizeEvent(QResizeEvent *event)
 {
     QGraphicsView::resizeEvent(event);
 
+    //qDebug() << this->sceneRect();
     this->fitInView(this->sceneRect(), Qt::KeepAspectRatio);
 }
+
+void medClutEditorView::wheelEvent ( QWheelEvent * event )
+{
+    double degrees =  exp(0.0001*(double)(event->delta()));
+
+    qreal factor = degrees;
+    if (factor < 0 ) factor = 0 ;
+    this->scale(factor,factor);
+}
+
+void medClutEditorView::keyPressEvent( QKeyEvent * event){
+    if (event->key()==Qt::Key_Control)
+        this->setDragMode(QGraphicsView::ScrollHandDrag);
+}
+
+void medClutEditorView::keyReleaseEvent( QKeyEvent * event){
+    if (event->key()==Qt::Key_Control)
+        this->setDragMode(QGraphicsView::NoDrag);
+}
+
+
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditor
@@ -386,9 +510,10 @@ public:
 
     medClutEditorScene *scene;
     medClutEditorView  *view;
+    medClutEditorHistogram *histogram;
 
     dtkAbstractData *dtk_data;
-    dtkAbstractView *dtk_view;
+    medAbstractView *med_view;
 };
 
 medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
@@ -414,30 +539,34 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
 
 medClutEditor::~medClutEditor(void)
 {
-
+    delete d;
 }
 
 void medClutEditor::setData(dtkAbstractData *data)
 {
     if(dtkAbstractDataImage *image = dynamic_cast<dtkAbstractDataImage *>(data)) {
-
-        medClutEditorHistogram *histogram = new medClutEditorHistogram;
+        d->histogram = new medClutEditorHistogram;
         int min_range = image->minRangeValue();
         int max_range = image->maxRangeValue();
-        for(int i = min_range ; i < max_range ; i++)
-            histogram->addValue(i, image->scalarValueCount(i-min_range));
+        //qDebug()<<min_range<<","<<max_range;
 
-        d->scene->addItem(histogram);
-        d->scene->setSceneRect(
-            min_range,           200*-log10((double)1+image->scalarValueMaxCount()),
-            max_range-min_range, 200* log10((double)1+image->scalarValueMaxCount()));
+        for(int i = min_range ; i < max_range ; i++)
+            d->histogram->addValue(i, image->scalarValueCount(i-min_range));
+
+        d->scene->addItem(d->histogram);
+	int log_max =
+	  static_cast<int>(log10((double)1+image->scalarValueMaxCount()));
+       // d->scene->setSceneRect(min_range,           200 * -log_max,
+//			       max_range-min_range, 200 *  log_max);
+
+        //d->scene->setSceneRect(histogram->boundingRect());
         d->dtk_data = image;
     }
 }
 
-void medClutEditor::setView(dtkAbstractView *view)
+void medClutEditor::setView(medAbstractView *view)
 {
-    d->dtk_view = view;
+    d->med_view = view;
 }
 
 void medClutEditor::mousePressEvent(QMouseEvent *event)
@@ -455,9 +584,11 @@ void medClutEditor::mousePressEvent(QMouseEvent *event)
 
 void medClutEditor::onNewTableAction(void)
 {
-    medClutEditorVertex *v1 = new medClutEditorVertex(-1024, 300, Qt::blue);
-    medClutEditorVertex *v2 = new medClutEditorVertex( 1379, 500, Qt::red);
-    medClutEditorVertex *v3 = new medClutEditorVertex(  130, 550, Qt::yellow);
+    int upperbound = d->histogram->boundingRect().height();
+    medClutEditorVertex *v1 = new medClutEditorVertex(d->histogram->getRangeMin(), 300, Qt::blue,upperbound);
+    medClutEditorVertex *v2 = new medClutEditorVertex((d->histogram->getRangeMax()+d->histogram->getRangeMin())/2,
+                                                       500, Qt::red,upperbound);
+    medClutEditorVertex *v3 = new medClutEditorVertex( d->histogram->getRangeMax() , 550, Qt::yellow,upperbound);
     // medClutEditorVertex *v4 = new medClutEditorVertex(260,  60, Qt::white);
     d->scene->addItem(v1);
     d->scene->addItem(v2);
@@ -483,23 +614,34 @@ void medClutEditor::onApplyTablesAction(void)
 {
     if(dtkAbstractDataImage *image = dynamic_cast<dtkAbstractDataImage *>(d->dtk_data)) {
         
-        int min_range = image->minRangeValue();
-        int max_range = image->maxRangeValue();
-        int size = max_range-min_range;
+//        int min_range = image->minRangeValue();
+//        int max_range = image->maxRangeValue();
+//        int size = max_range-min_range;
 
-        int *table = new int[4*size];
+//        int *table = new int[4*size];
         
-        for(int i = 0 ; i < size ; i++) {
-            table[0*size+i] = ((double)i/(double)size)*255;
-            table[1*size+i] = ((double)i/(double)size)*255;
-            table[2*size+i] = ((double)i/(double)size)*255;
-            table[3*size+i] = 0;
-        }
+//        for(int i = 0 ; i < size ; i++) {
+//            table[0*size+i] = ((double)i/(double)size)*255;
+//            table[1*size+i] = ((double)i/(double)size)*255;
+//            table[2*size+i] = ((double)i/(double)size)*255;
+//            table[3*size+i] = 0;
+//        }
         
+//        foreach(QGraphicsItem *item, d->scene->items())
+//            if(medClutEditorTable *lut = dynamic_cast<medClutEditorTable *>(item))
+//            {
+//                //lut->setup(min_range, max_range, size, table);
+
+//            }
+//        // d->dtk_view->setColorLookupTable(min_range, max_range, max_range-min_range, table);
+        QList<double> scalars;
+        QList<QColor> colors;
         foreach(QGraphicsItem *item, d->scene->items())
             if(medClutEditorTable *lut = dynamic_cast<medClutEditorTable *>(item))
-                lut->setup(min_range, max_range, size, table);
-        
-        // d->dtk_view->setColorLookupTable(min_range, max_range, max_range-min_range, table);
+            {
+                lut->setupTransferFunction(scalars,colors);
+                d->med_view->setColorLookupTable(scalars,colors);
+            }
+
     }
 }
