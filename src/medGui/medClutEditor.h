@@ -49,6 +49,7 @@ public:
     QColor color(void) const;
     int upperBound();
 
+    void forceGeometricalConstraints();
     void interpolate();
 
     static bool LessThan(const medClutEditorVertex *v1,

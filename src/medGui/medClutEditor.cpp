@@ -396,7 +396,7 @@ void medClutEditorView::resizeEvent(QResizeEvent *event)
 
 void medClutEditorView::wheelEvent ( QWheelEvent * event )
 {
-    double degrees =  exp(0.0001*(double)(event->delta()));
+    double degrees =  exp(0.001*(double)(event->delta()));
 
     qreal factor = degrees;
     if (factor < 0 ) factor = 0 ;
@@ -649,16 +649,12 @@ void medClutEditorVertex::interpolate()
 
   if ( d->prev != NULL ) {
     cp = d->prev->color();
-    qDebug() << cp;
     ++nNeighbors;
   }
   if ( d->next != NULL ) {
     cn = d->next->color();
-    qDebug() << cn;
     ++nNeighbors;
   }
-
-  qDebug() << nNeighbors;
 
   if ( nNeighbors > 0 ) {
     d->fgColor.setRed  ( ( cp.red()   + cn.red()   ) / nNeighbors );
@@ -714,13 +710,44 @@ QColor medClutEditorVertex::color(void) const
     return d->fgColor;
 }
 
+void medClutEditorVertex::forceGeometricalConstraints()
+{
+    if ( medClutEditorTable * table =
+	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) ) {
+      QRect & limits = table->allowedArea();
+      if ( this->x() < limits.left() ) {
+	  this->setX( limits.left() );
+	  this->update();
+      }
+      if ( this->x() > limits.right() ) {
+	  this->setX( limits.right() );
+	  this->update();
+      }
+      if ( this->y() < limits.top() ) {
+	  this->setY( limits.top() );
+	  this->update();
+      }
+      if ( this->y() > limits.bottom() ) {
+	  this->setY( limits.bottom() );
+	  this->update();
+      }
+    }
+
+    if ( d->prev != NULL && d->prev->x() > this->x() ) {
+      	d->prev->setX( this->x() );
+      	d->prev->forceGeometricalConstraints();
+    }
+    if ( d->next != NULL && d->next->x() < this->x() ) {
+      	d->next->setX( this->x() );
+      	d->next->forceGeometricalConstraints();
+    }
+}
+
 void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     this->QGraphicsItem::mouseMoveEvent( event );
-    if ( d->prev != NULL && d->prev->x() >= this->x() )
-      qDebug() << "!";
-    if ( d->next != NULL && d->next->x() <= this->x() )
-      qDebug() << "?";
+
+    forceGeometricalConstraints();
 }
 
 void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -749,10 +776,10 @@ void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void medClutEditorVertex::setAlpha()
 {
     float alpha = qAbs(this->y()/(float)d->upperBd);
-    int height = 0;
-    if ( medClutEditorTable * table =
-	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
-      height = table->allowedArea().height();
+    // int height = 0;
+    // if ( medClutEditorTable * table =
+    // 	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
+    //   height = table->allowedArea().height();
     // qDebug() << d->upperBd << " | " << height;
     if ( alpha > 1 ) alpha = 1;
     d->fgColor.setAlphaF(alpha);
