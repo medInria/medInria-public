@@ -26,7 +26,6 @@
 #include <math.h>
 #include <climits>
 
-
 // /////////////////////////////////////////////////////////////////
 // medClutEditorTable
 // /////////////////////////////////////////////////////////////////
@@ -94,7 +93,7 @@ void medClutEditorTable::addVertex(medClutEditorVertex *vertex)
 
     vertex->setParentItem(this);
 
-    qSort(vertices.begin(), vertices.end(), medClutEditorVertexLessThan);
+    qSort(vertices.begin(), vertices.end(), medClutEditorVertex::LessThan);
 
     medClutEditorVertex * lastVertex = NULL;
     foreach (medClutEditorVertex * vertex, vertices) {
@@ -702,11 +701,6 @@ void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         d->fgColor = color;
         this->update();
     }
-}
-
-static bool medClutEditorVertexLessThan(const medClutEditorVertex *v1,
-					const medClutEditorVertex *v2) {
-    return (v1->position().x() < v2->position().x());
 }
 
 void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
