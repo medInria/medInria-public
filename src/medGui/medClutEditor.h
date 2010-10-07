@@ -37,6 +37,8 @@ public:
      medClutEditorVertex(int x, int y, QColor color = Qt::yellow,int upperBound = 0, QGraphicsItem *parent = 0);
     ~medClutEditorVertex(void);
 
+    void setPrev( medClutEditorVertex * v );
+    void setNext( medClutEditorVertex * v );
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
     QRectF boundingRect(void) const;
@@ -48,6 +50,7 @@ public:
     void onDeleteAction();
     void onSetColorAction();
 protected:
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 private :
