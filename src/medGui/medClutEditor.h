@@ -27,8 +27,13 @@
 class dtkAbstractData;
 class medAbstractView;
 
-class medClutEditorPrivate;
+
+// /////////////////////////////////////////////////////////////////
+// medClutEditorVertex
+// /////////////////////////////////////////////////////////////////
+
 class medClutEditorVertexPrivate;
+class medClutEditorTable;
 
 class medClutEditorVertex : public QObject, public QGraphicsItem
 {
@@ -37,7 +42,8 @@ class medClutEditorVertex : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 
 public:
-     medClutEditorVertex(int x, int y, QColor color = Qt::yellow,int upperBound = 0, QGraphicsItem *parent = 0);
+     medClutEditorVertex(int x, int y, QColor color = Qt::yellow,
+			 int upperBound = 0, QGraphicsItem *parent = 0);
     ~medClutEditorVertex(void);
 
     void setPrev( medClutEditorVertex * v );
@@ -57,17 +63,70 @@ public:
         return (v1->position().x() < v2->position().x());
     }
 
- public slots:
-    void onDeleteAction();
+public slots:
     void onSetColorAction();
+    void onDeleteAction();
+
+signals:
+    void deleteFromTable( medClutEditorVertex * );
+
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
 private :
     void setAlpha();
     medClutEditorVertexPrivate * d;
 };
+
+
+// /////////////////////////////////////////////////////////////////
+// medClutEditorTable
+// /////////////////////////////////////////////////////////////////
+class medClutEditorTablePrivate;
+
+class medClutEditorTable : public QObject, public QGraphicsItem
+{
+    Q_OBJECT
+
+    Q_INTERFACES(QGraphicsItem)
+
+public:
+     medClutEditorTable(QGraphicsItem *parent = 0);
+    ~medClutEditorTable(void);
+
+    void setAllowedArea( QRect  rect );
+    void setAllowedArea( QRectF rect );
+    QRect & allowedArea();
+    void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
+    // void removeVertex(medClutEditorVertex *vertex);
+    QRectF boundingRect(void) const;
+
+    void setup(int min, int max, int size, int *table);
+    void setupTransferFunction(QList<double> &scalars,QList<QColor> &colors );
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+	       QWidget *widget = 0);
+
+
+    void keyPressEvent(QKeyEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+public slots:
+    void onDeleteVertex(medClutEditorVertex * v);
+
+private:
+    medClutEditorTablePrivate *d;
+};
+
+
+// /////////////////////////////////////////////////////////////////
+// medClutEditor
+// /////////////////////////////////////////////////////////////////
+
+class medClutEditorPrivate;
 
 class MEDGUI_EXPORT medClutEditor : public QWidget
 {
