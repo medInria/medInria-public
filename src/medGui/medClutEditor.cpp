@@ -378,7 +378,7 @@ public:
     int upperBd;
     QAction *deleteAction;
     QAction *setColorAction;
-    // bool selectedForDeletion;
+    bool isSelectedForDeletion;
 
     medClutEditorVertex * prev;
     medClutEditorVertex * next;
@@ -409,14 +409,13 @@ medClutEditorVertex::medClutEditorVertex(int x, int y,
 
     if ( medClutEditorTable * table =
     	 dynamic_cast< medClutEditorTable * >( parent ) ) {
-    	qDebug() << (long int) table;
     	connect(d->deleteAction, SIGNAL(triggered()),
     		this, SLOT(onDeleteAction()));
     	connect(this, SIGNAL(deleteFromTable(medClutEditorVertex *)),
     		table, SLOT(onDeleteVertex(medClutEditorVertex *)));
     }
 
-    // d->selectedForDeletion = false
+    d->isSelectedForDeletion = false;
 
     d->prev = NULL;
     d->next = NULL;
@@ -480,16 +479,10 @@ void medClutEditorVertex::onSetColorAction()
 	// d->fgColor.setAlpha( alpha );
         this->update();
     }
-
-    qDebug() << (long int) this;
-    qDebug() << this->color();
-    qDebug();
 }
 
 void medClutEditorVertex::onDeleteAction()
 {
-    qDebug() << (long int) this;
-    qDebug() << this->color();
     emit deleteFromTable( this );
 }
 
@@ -500,7 +493,7 @@ void medClutEditorVertex::paint(QPainter *painter,
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    painter->setPen(Qt::black);
+    painter->setPen( d->isSelectedForDeletion ? Qt::red : Qt::black);
     setAlpha();
     painter->setBrush(d->bgColor); painter->drawEllipse(-40, -40, 80, 80);
     painter->setBrush(d->fgColor); painter->drawEllipse(-25, -25, 50, 50);
@@ -525,23 +518,23 @@ void medClutEditorVertex::forceGeometricalConstraints()
 {
     if ( medClutEditorTable * table =
 	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) ) {
-      QRect & limits = table->allowedArea();
-      if ( this->x() < limits.left() ) {
-	  this->setX( limits.left() );
-	  this->update();
-      }
-      if ( this->x() > limits.right() ) {
-	  this->setX( limits.right() );
-	  this->update();
-      }
-      if ( this->y() < limits.top() ) {
-	  this->setY( limits.top() );
-	  this->update();
-      }
-      if ( this->y() > limits.bottom() ) {
-	  this->setY( limits.bottom() );
-	  this->update();
-      }
+	QRect & limits = table->allowedArea();
+	if ( this->x() < limits.left() ) {
+	    this->setX( limits.left() );
+	    this->update();
+	}
+	if ( this->x() > limits.right() ) {
+	    this->setX( limits.right() );
+	    this->update();
+	}
+	if ( this->y() < limits.top() ) {
+	    this->setY( limits.top() );
+	    this->update();
+	}
+	if ( this->y() > limits.bottom() ) {
+	    this->setY( limits.bottom() );
+	    this->update();
+	}
     }
 
     if ( d->prev != NULL && d->prev->x() > this->x() ) {
@@ -556,9 +549,6 @@ void medClutEditorVertex::forceGeometricalConstraints()
 
 void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    qDebug() << (long int) this;
-    qDebug() << this->color();
-
     this->QGraphicsItem::mouseMoveEvent( event );
 
     forceGeometricalConstraints();
@@ -568,29 +558,38 @@ void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
 
-    QColor color = QColorDialog::getColor(d->fgColor, 0);
+    if ( d->isSelectedForDeletion ) {
+	d->deleteAction->trigger();
+    }
+    else {
+	QColor color = QColorDialog::getColor(d->fgColor, 0);
 
-    if(color.isValid()) {
-        d->fgColor = color;
-        this->update();
+	if(color.isValid()) {
+	    d->fgColor = color;
+	    this->update();
+	}
     }
 }
 
-void medClutEditorVertex::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    Q_UNUSED(event);
-}
+// void medClutEditorVertex::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+// {
+//     Q_UNUSED(event);
+// }
 
 void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (event->button() == Qt::RightButton) {
+	d->isSelectedForDeletion = !d->isSelectedForDeletion;
+	this->update();
+	event->accept();
         // QMenu menu("Edit Marker", 0) ;
         // menu.setWindowOpacity(0.8) ;
         // menu.addAction(d->setColorAction);
         // menu.addAction(d->deleteAction) ;
         // menu.exec(event->screenPos());
-	// event->accept();
     }
+
+    this->QGraphicsItem::mousePressEvent(event);
 }
 
 void medClutEditorVertex::setAlpha()
@@ -649,13 +648,8 @@ QRect & medClutEditorTable::allowedArea()
   return d->limits;
 }
 
-void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
-				    bool interpolate )
+void medClutEditorTable::linkVertices()
 {
-    d->vertices << vertex;
-
-    vertex->setParentItem(this);
-
     qSort(d->vertices.begin(), d->vertices.end(),
 	  medClutEditorVertex::LessThan);
 
@@ -669,6 +663,16 @@ void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
     }
     if ( lastVertex != NULL )
 	lastVertex->setNext( NULL );
+}
+
+void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
+				    bool interpolate )
+{
+    d->vertices << vertex;
+
+    vertex->setParentItem(this);
+
+    linkVertices();
 
     if (interpolate)
 	vertex->interpolate();
@@ -678,6 +682,11 @@ void medClutEditorTable::onDeleteVertex(medClutEditorVertex *vertex)
 {
     qDebug() << (long int) vertex;
     qDebug() << vertex->color();
+
+    d->vertices.removeAll( vertex );
+    delete vertex;
+
+    linkVertices();
 }
 
 void medClutEditorTable::setup(int min, int max, int size, int *table)

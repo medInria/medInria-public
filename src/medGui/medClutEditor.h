@@ -74,7 +74,7 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    // void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private :
     void setAlpha();
@@ -101,7 +101,6 @@ public:
     void setAllowedArea( QRectF rect );
     QRect & allowedArea();
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
-    // void removeVertex(medClutEditorVertex *vertex);
     QRectF boundingRect(void) const;
 
     void setup(int min, int max, int size, int *table);
@@ -118,6 +117,8 @@ public slots:
     void onDeleteVertex(medClutEditorVertex * v);
 
 private:
+    void linkVertices();
+
     medClutEditorTablePrivate *d;
 };
 
