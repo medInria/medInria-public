@@ -22,6 +22,7 @@
 #include <dtkCore/dtkPluginManager.h>
 #include <dtkCore/dtkPlugin.h>
 
+
 class medPluginManagerPrivate
 {
 public:
@@ -32,7 +33,6 @@ medPluginManager *medPluginManager::instance(void)
 {
     if(!s_instance)
         s_instance = new medPluginManager;
-
     return s_instance;
 }
 

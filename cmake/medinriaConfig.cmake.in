@@ -1,0 +1,29 @@
+### medinriaConfig.cmake.in --- 
+## 
+## Author: Julien Wintz
+## Copyright (C) 2008 - Julien Wintz, Inria.
+## Created: Mon Jul 20 22:51:02 2009 (+0200)
+## Version: $Id$
+## Last-Updated: Tue Apr  6 21:02:41 2010 (+0200)
+##           By: Julien Wintz
+##     Update #: 16
+######################################################################
+## 
+### Commentary: 
+## 
+######################################################################
+## 
+### Change log:
+## 
+######################################################################
+
+set(medinria_VERSION_MAJOR  "@medinria_VERSION_MAJOR@")
+set(medinria_VERSION_MINOR  "@medinria_VERSION_MINOR@")
+set(medinria_VERSION_BUILD  "@medinria_VERSION_BUILD@")
+set(medinria_VERSION        "@medinria_VERSION@")
+
+set(medinria_INCLUDE_DIRS "@medinria_INCLUDE_DIRS@")
+set(medinria_LIBRARY_DIRS "@medinria_LIBRARY_DIRS@")
+set(medinria_CMAKE_DIRS   "@medinria_CMAKE_DIRS@")
+
+set(medinria_USE_FILE "@medinria_USE_FILE@")

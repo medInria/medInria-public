@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Jun  9 12:52:00 2010 (+0200)
+ * Last-Updated: Thu Oct  7 10:53:01 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 123
+ *     Update #: 138
  */
 
 /* Commentary: 
@@ -38,19 +38,28 @@ int main(int argc, char *argv[])
     application.setApplicationVersion("0.0.1");
     application.setOrganizationName("inria");
     application.setOrganizationDomain("fr");
-	application.setWindowIcon(QIcon(":/medinria.ico"));
+    application.setWindowIcon(QIcon(":/medinria.ico"));
+
+    if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
+        qDebug() << "Usage: medinria [--no-fullscreen] [--stereo]";
+        return 1;
+    }
+
+    QSplashScreen splash(QPixmap(":/pixmaps/medinria-splash.png"), Qt::WindowStaysOnTopHint);
+    splash.show();
 
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
 
     medMainWindow mainwindow;
+
     mainwindow.show();
+
+    if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen"))
+        mainwindow.setFullScreen(true);
 
     if(application.arguments().contains("--wall"))
         mainwindow.setWallScreen(true);
-
-    if(application.arguments().contains("--full"))
-        mainwindow.setFullScreen(true);
 
     if(application.arguments().contains("--stereo")) {
        QGLFormat format;
@@ -60,6 +69,8 @@ int main(int argc, char *argv[])
        format.setDirectRendering(true);
        QGLFormat::setDefaultFormat(format);
     }
+
+    splash.finish(&mainwindow);
 
     int status = application.exec();
     

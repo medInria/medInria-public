@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue May  5 12:22:54 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct 21 15:19:50 2009 (+0200)
+ * Last-Updated: Thu Oct  7 14:09:46 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 8
+ *     Update #: 15
  */
 
 /* Commentary: 
@@ -25,9 +25,38 @@
 #include <QtGui>
 
 class dtkAbstractData;
-class dtkAbstractView;
+class medAbstractView;
 
 class medClutEditorPrivate;
+class medClutEditorVertexPrivate;
+
+class medClutEditorVertex : public QObject, public QGraphicsItem
+{
+    Q_OBJECT
+
+    Q_INTERFACES(QGraphicsItem)
+
+public:
+     medClutEditorVertex(int x, int y, QColor color = Qt::yellow,int upperBound = 0, QGraphicsItem *parent = 0);
+    ~medClutEditorVertex(void);
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+
+    QRectF boundingRect(void) const;
+    QPoint position(void) const;
+    QColor color(void) const;
+    int upperBound();
+
+ public slots:
+    void onDeleteAction();
+    void onSetColorAction();
+protected:
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+private :
+    void setAlpha();
+    medClutEditorVertexPrivate * d;
+};
 
 class MEDGUI_EXPORT medClutEditor : public QWidget
 {
@@ -38,7 +67,7 @@ public:
     ~medClutEditor(void);
 
     void setData(dtkAbstractData *data);
-    void setView(dtkAbstractView *view);
+    void setView(medAbstractView *view);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

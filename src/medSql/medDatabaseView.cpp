@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:18:20 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 14 13:42:21 2010 (+0200)
+ * Last-Updated: Wed Oct  6 19:08:51 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 122
+ *     Update #: 126
  */
 
 /* Commentary: 
@@ -31,6 +31,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     this->setAlternatingRowColors(true);
     this->setAnimated(false);
     this->setSortingEnabled(true);
+    this->setSelectionBehavior(QAbstractItemView::SelectRows);
     // this->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->header()->setStretchLastSection(true);
     this->setContextMenuPolicy(Qt::CustomContextMenu);

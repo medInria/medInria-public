@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 15:20:03 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Sun Jun 13 21:39:19 2010 (+0200)
+ * Last-Updated: Tue Oct  5 16:07:54 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 27
+ *     Update #: 114
  */
 
 /* Commentary: 
@@ -40,14 +40,7 @@ medToolBoxSource::medToolBoxSource(QWidget *parent) : medToolBox(parent), d(new 
     d->filseystem_layout = new QVBoxLayout(d->filesystem_page);
     d->filseystem_layout->setContentsMargins(0, 0, 0, 0);
     d->filseystem_layout->setSpacing(0);
-
-    QFormLayout *pacs_page_layout = new QFormLayout(d->pacs_page);
-    pacs_page_layout->addRow("Url:", new QLineEdit(d->pacs_page));
-    pacs_page_layout->addRow("Login:", new QLineEdit(d->pacs_page));
-    pacs_page_layout->addRow("Password:", new QLineEdit(d->pacs_page));
-    pacs_page_layout->addWidget(new QPushButton("Connect", d->pacs_page));
-    pacs_page_layout->setFormAlignment(Qt::AlignHCenter);
-
+    
     medToolBoxTab *tab = new medToolBoxTab(this);
     tab->addTab(d->database_page, "Db");
     tab->addTab(d->filesystem_page, "Fs");
