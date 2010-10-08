@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-#include "Logger.h"
+#include "BaseLogger.h"
 #include "LoggerLogLevel.h"
 
 /**
