@@ -74,11 +74,13 @@ public:
       vtkRenderWindowInteractor* rwi = vtkRenderWindowInteractor::SafeDownCast(caller);
       if (rwi->GetKeyCode() == 'y')
       {
+	bool write_movie = 0;
+	
 	vtkTimerLog* TimerLog = vtkTimerLog::New();
 	double absolutetime = 0.0;
-    
-	TimerLog->StartTimer();
 	
+	TimerLog->StartTimer();
+
 	while( absolutetime < 30 )
 	{
 	  int id = Sequence->GetCurrentId();
@@ -86,16 +88,43 @@ public:
 	    id = 0;
 	  else
 	    id = id+1;
-	  
 	  Manager->UpdateSequencesToIndex (id);
 	  TensorGlyph->UpdateLUT();
 	  View->Render();
+
+	  if (write_movie)
+	  {
+	    
+	    std::ostringstream os;
+	    os << Sequence->GetName() << "-" << 0;
+	    unsigned int N = Sequence->GetNumberOfMetaDataSets();
+	    if (N > 99)
+	    {
+	      if (id < 10) os << "0";
+	      if (id <100) os << "0";
+	    }
+	    else if (N > 9)
+	      if (id < 10) os << "0";
+	    os << id << ".png";
+	    
+	    vtkWindowToImageFilter* filter = vtkWindowToImageFilter::New();
+	    filter->SetInput (View->GetRenderWindow());
+	    filter->Update();
+	    vtkPNGWriter* writer = vtkPNGWriter::New();
+	    writer->SetInputConnection (filter->GetOutputPort());	  
+	    writer->SetFileName (os.str().c_str());
+	    writer->Write();
+	    filter->Delete();
+	    writer->Delete();
+	  }
+	  
 	  
 	  TimerLog->StopTimer();
 	  double delay = TimerLog->GetElapsedTime();
 	  TimerLog->StartTimer();
 	  
 	  absolutetime += delay;
+	  
 	  
 	}
 	TimerLog->StopTimer();
