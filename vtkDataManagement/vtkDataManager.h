@@ -132,6 +132,11 @@ class VTK_DATAMANAGEMENT_EXPORT vtkDataManager: public vtkObject
      Method to update the current time of all sequences referenced in the manager.
      NB : can be accessed directly from the vtkMetaDataSetSequence.
   */
+  virtual void UpdateSequencesToIndex (unsigned int);
+  /**
+     Method to update the current time of all sequences referenced in the manager.
+     NB : can be accessed directly from the vtkMetaDataSetSequence.
+  */
   virtual void UpdateSequencesMatchingTagToTime (const char* tag, double time);
   /**
      Get the minimum time flag from all sequences referenced in the manager.

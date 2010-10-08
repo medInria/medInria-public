@@ -999,6 +999,8 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
 
     vtkDataArray* pdscalars = this->GetDataSet()->GetPointData()->GetScalars();
     vtkDataArray* cdscalars = this->GetDataSet()->GetCellData()->GetScalars();
+    vtkDataArray* pdtensors = this->GetDataSet()->GetPointData()->GetTensors();
+    vtkDataArray* cdtensors = this->GetDataSet()->GetCellData()->GetTensors();
     
     if (pdscalars)
     {
@@ -1043,7 +1045,51 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
       this->GetDataSet()->GetCellData()->Modified();
       
     }
+    if (pdtensors)
+    {
+      
+      const char* c_name = pdtensors->GetName();
+      if ( c_name && (*c_name) )
+      {
+	std::string name = c_name;
+	vtkDataArray* array = datasettoshow->GetPointData()->GetArray(name.c_str());
+	if (array)
+	{
+// 	  pdscalars->SetVoidArray (array);	  
+ 	  pdtensors->DeepCopy (array);
+	}
+      }
+      else
+      {
+	this->GetDataSet()->GetPointData()->SetTensors(datasettoshow->GetPointData()->GetTensors());
+      }
+      
+      this->GetDataSet()->GetPointData()->Modified();
+    }
     
+    if (cdtensors)
+    {
+      const char* c_name = cdtensors->GetName();
+      if ( c_name && (*c_name) )
+      {
+	std::string name = c_name;
+	vtkDataArray* array = datasettoshow->GetCellData()->GetArray(name.c_str());
+	
+	if (array)
+	{
+// 	  cdscalars->SetVoidArray (array);
+	  cdtensors->DeepCopy (array);
+	}
+	
+      }
+      else
+      {
+	this->GetDataSet()->GetCellData()->SetTensors(datasettoshow->GetCellData()->GetTensors());
+      }
+      this->GetDataSet()->GetCellData()->Modified();
+      
+    }
+        
   }
   
   // index showing how much frames we lost

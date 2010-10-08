@@ -155,6 +155,18 @@ void vtkDataManager::UpdateSequencesToTime (double time)
     }
   }  
 }
+void vtkDataManager::UpdateSequencesToIndex (unsigned int id)
+{
+  for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
+  {
+    vtkMetaDataSetSequence* sequence = NULL;
+    sequence = vtkMetaDataSetSequence::SafeDownCast(this->MetaDataSetList[i]);
+    if (sequence)
+    {
+      sequence->UpdateToIndex (id);
+    }
+  }
+}
 
 void vtkDataManager::UpdateSequencesMatchingTagToTime (const char* tag, double time)
 {

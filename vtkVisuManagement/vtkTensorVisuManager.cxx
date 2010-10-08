@@ -300,7 +300,12 @@ void vtkTensorVisuManager::SetGlyphScale(const float& f)
   
   this->Glyph->SetScaleFactor(f);
 }
-  
+
+double vtkTensorVisuManager::GetGlyphScale(void)
+{
+  return this->Glyph->GetScaleFactor();
+}
+
 
 
 void vtkTensorVisuManager::SetMaxGlyphSize(const float& f)

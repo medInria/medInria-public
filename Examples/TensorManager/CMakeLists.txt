@@ -14,4 +14,15 @@ vtkRendering
 vtkIO
 )
 
-
+ADD_EXECUTABLE(SyncTensors
+  SyncTensors.cxx
+  )	      
+TARGET_LINK_LIBRARIES(SyncTensors
+  vtkRendering
+  vtkIO
+  vtkRenderingAddOn
+  vtkDataManagement
+  vtkVisuManagement
+  ${ITK_LIBRARIES}
+  )
+  
