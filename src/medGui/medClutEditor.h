@@ -104,6 +104,7 @@ public:
     QRectF boundingRect(void) const;
 
     void setSelectedAllVertices( bool isSelected );
+    void deleteSelectedVertices();
 
     void setup(int min, int max, int size, int *table);
     void setupTransferFunction(QList<double> &scalars,QList<QColor> &colors );
@@ -113,7 +114,7 @@ public:
 
 
     // void keyPressEvent(QKeyEvent *event);
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
     void onDeleteVertex(medClutEditorVertex * v);
