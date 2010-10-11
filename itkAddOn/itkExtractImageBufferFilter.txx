@@ -21,7 +21,6 @@
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkObjectFactory.h"
-#include "itkExtractImageBufferFilterRegionCopier.h"
 #include "itkProgressReporter.h"
 
 
