@@ -187,7 +187,7 @@ void medClutEditorVertex::onSetColorAction()
 
     QColor color = QColorDialog::getColor(d->fgColor, 0);
 
-    if(color.isValid()) {
+    if (color.isValid()) {
 	// int alpha = d->fgColor.alpha();
         d->fgColor = color;
 	// d->fgColor.setAlpha( alpha );
@@ -228,44 +228,38 @@ QColor medClutEditorVertex::color(void) const
     return d->fgColor;
 }
 
-void medClutEditorVertex::forceGeometricalConstraints()
+void medClutEditorVertex::forceGeometricalConstraints( const QRect & limits )
 {
-    if ( medClutEditorTable * table =
-	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) ) {
-	const QRect & limits = table->allowedArea();
-	if ( this->x() < limits.left() ) {
-	    this->setX( limits.left() );
-	    this->update();
-	}
-	if ( this->x() > limits.right() ) {
-	    this->setX( limits.right() );
-	    this->update();
-	}
-	if ( this->y() < limits.top() ) {
-	    this->setY( limits.top() );
-	    this->update();
-	}
-	if ( this->y() > limits.bottom() ) {
-	    this->setY( limits.bottom() );
-	    this->update();
-	}
+    bool forced = false;
+
+    if ( this->x() < limits.left() ) {
+	this->setX( limits.left() );
+	forced = true;
+    }
+    else if ( this->x() > limits.right() ) {
+	this->setX( limits.right() );
+	forced = true;
+    }
+    if ( this->y() < limits.top() ) {
+	this->setY( limits.top() );
+	forced = true;
+    }
+    else if ( this->y() > limits.bottom() ) {
+	this->setY( limits.bottom() );
+	forced = true;
     }
 
-    if ( d->prev != NULL && d->prev->x() > this->x() ) {
-      	d->prev->setX( this->x() );
-      	d->prev->forceGeometricalConstraints();
-    }
-    if ( d->next != NULL && d->next->x() < this->x() ) {
-      	d->next->setX( this->x() );
-      	d->next->forceGeometricalConstraints();
-    }
+    if ( forced )
+	this->update();
 }
 
 void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     this->QGraphicsItem::mouseMoveEvent( event );
 
-    forceGeometricalConstraints();
+    if ( medClutEditorTable * table =
+    	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
+    	table->forceGeometricalConstraints();
 }
 
 void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -360,6 +354,35 @@ void medClutEditorTable::setAllowedArea( const QRectF & rect )
 const QRect & medClutEditorTable::allowedArea() const
 {
   return d->limits;
+}
+
+void medClutEditorTable::forceGeometricalConstraints()
+{
+    int n = d->vertices.count();
+    for ( int i = 0 ; i < n; ++i ) {
+	QRect limits = allowedArea();
+	int left  = i;
+	int right = limits.right() - n + i + 1;
+
+	for ( int j = i - 1; j >= 0; --j )
+	    if ( d->vertices.at( j )->isSelected() ) {
+		int l = static_cast<int>( d->vertices.at( j )->x() ) + 1;
+		left = qMin( qMax( left, l ), right );
+		break;
+	    }
+
+	for ( int j = i + 1; j < n; ++j )
+	    if ( d->vertices.at( j )->isSelected() ) {
+		int r = static_cast<int>( d->vertices.at( j )->x() ) - 1;
+		right = qMax( left, qMin( r, right ) );
+		break;
+	    }
+
+	limits.setLeft( left );
+	limits.setRight( right );
+
+	d->vertices.at( i )->forceGeometricalConstraints( limits );
+    }
 }
 
 void medClutEditorTable::linkVertices()

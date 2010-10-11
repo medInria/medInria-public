@@ -55,7 +55,8 @@ public:
     QPoint position(void) const;
     QColor color(void) const;
 
-    void forceGeometricalConstraints();
+    // void forceGeometricalConstraints();
+    void forceGeometricalConstraints( const QRect & limits );
     void interpolate();
 
     static bool LessThan(const medClutEditorVertex *v1,
@@ -101,6 +102,8 @@ public:
     void setAllowedArea( const QRectF & rect );
     const QRect & allowedArea() const;
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
+    void forceGeometricalConstraints();
+
     QRectF boundingRect(void) const;
 
     void setSelectedAllVertices( bool isSelected );
