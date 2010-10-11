@@ -32,6 +32,9 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 # find_package(VTK REQUIRED)
 # include(${VTK_USE_FILE})
 
@@ -55,14 +58,18 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
   v3dView.h
   v3dViewFiberInteractor.h
-  v3dViewFuseInteractor.h)
+  v3dViewFuseInteractor.h
+  v3dViewMeshInteractor.h
+  )
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
   v3dView.cpp
   v3dViewFiberInteractor.cpp
   v3dViewFuseInteractor.cpp
-  v3dFiberBundle.cpp)
+  v3dViewMeshInteractor.cpp
+  v3dFiberBundle.cpp
+  )
 
 ## #################################################################
 ## Build rules
@@ -77,6 +84,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
+  medCore
   vtkCommon
   vtkRendering
 #   vtkRenderingAddOn

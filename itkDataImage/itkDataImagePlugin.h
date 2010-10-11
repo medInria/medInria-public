@@ -30,7 +30,7 @@ public:
     virtual QStringList types(void) const;
 
 private:
-     itkDataImagePluginPrivate *d;
+    itkDataImagePluginPrivate *d;
 };
 
 #endif

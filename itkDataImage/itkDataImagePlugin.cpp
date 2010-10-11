@@ -14,6 +14,7 @@
 #include "itkDataImageLong3.h"
 #include "itkDataImageULong3.h"
 #include "itkDataImageFloat3.h"
+#include "itkDataImageFloat4.h"
 #include "itkDataImageDouble3.h"
 #include "itkDataImageVector3.h"
 #include "itkDataImageRGB3.h"
@@ -59,6 +60,7 @@ bool itkDataImagePlugin::initialize(void)
   if(!itkDataImageLong3::registered()) qDebug() << "Unable to register itkDataImageLong3 type";
   if(!itkDataImageULong3::registered()) qDebug() << "Unable to register itkDataImageULong3 type";
   if(!itkDataImageFloat3::registered()) qDebug() << "Unable to register itkDataImageFloat3 type";
+  if(!itkDataImageFloat4::registered()) qDebug() << "Unable to register itkDataImageFloat4 type";	
   if(!itkDataImageDouble3::registered()) qDebug() << "Unable to register itkDataImageDouble3 type";
   if(!itkDataImageVector3::registered()) qDebug() << "Unable to register itkDataImageVector3 type";
   if(!itkDataImageRGB3::registered()) qDebug() << "Unable to register itkDataImageRGB3 type";
@@ -99,6 +101,7 @@ QStringList itkDataImagePlugin::types(void) const
 		       << "itkDataImageLong3"
 		       << "itkDataImageULong3"
 		       << "itkDataImageFloat3"
+		       << "itkDataImageFloat4"
 		       << "itkDataImageDouble3"
 		       << "itkDataImageVector3"
 		       << "itkDataImageRGB3";
