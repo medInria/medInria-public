@@ -303,12 +303,12 @@ void medClutEditor::onNewTableAction(void)
     int rangemax = d->histogram->getRangeMax();
     int upperbound = d->histogram->boundingRect().height();
     medClutEditorVertex *v1 =
-      new medClutEditorVertex( rangemin, 300, Qt::blue, upperbound, lut );
+      new medClutEditorVertex( rangemin, 0.2 * upperbound, Qt::blue, lut );
     medClutEditorVertex *v2 =
-      new medClutEditorVertex( (rangemax + rangemin) / 2, 500, Qt::red,
-			       upperbound, lut );
+      new medClutEditorVertex( (rangemax + rangemin) / 2, 0.5 * upperbound,
+			       Qt::red, lut );
     medClutEditorVertex *v3 =
-      new medClutEditorVertex( rangemax, 550, Qt::yellow, upperbound, lut );
+      new medClutEditorVertex( rangemax, 0.6 * upperbound, Qt::yellow, lut );
     // medClutEditorVertex *v4 = new medClutEditorVertex(260,  60, Qt::white);
     d->scene->addItem(v1);
     d->scene->addItem(v2);
@@ -377,7 +377,6 @@ class medClutEditorVertexPrivate
 public:
     QColor fgColor;
     QColor bgColor;
-    int upperBd;
     QAction *deleteAction;
     QAction *setColorAction;
     bool isSelectedForDeletion;
@@ -386,16 +385,13 @@ public:
     medClutEditorVertex * next;
 };
 
-medClutEditorVertex::medClutEditorVertex(int x, int y,
-					 QColor color,
-					 int upperBound,
+medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,
 					 QGraphicsItem * parent)
   : QGraphicsItem(parent)
 {
     d = new medClutEditorVertexPrivate;
     d->fgColor = color;
     d->bgColor = QColor(0xc0, 0xc0, 0xc0,0x0);
-    d->upperBd = upperBound;
     this->setPos(x, -y);
     setAlpha();
     this->setZValue(1);
@@ -438,12 +434,6 @@ void medClutEditorVertex::setPrev( medClutEditorVertex * v )
 void medClutEditorVertex::setNext( medClutEditorVertex * v )
 {
     d->next = v;
-}
-
-int medClutEditorVertex::upperBound()
-{
-    return d->upperBd;
-
 }
 
 void medClutEditorVertex::interpolate()
@@ -594,14 +584,14 @@ void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void medClutEditorVertex::setAlpha()
 {
-    float alpha = qAbs(this->y()/(float)d->upperBd);
-    // int height = 0;
-    // if ( medClutEditorTable * table =
-    // 	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
-    //   height = table->allowedArea().height();
-    // qDebug() << d->upperBd << " | " << height;
-    if ( alpha > 1 ) alpha = 1;
-    d->fgColor.setAlphaF(alpha);
+    float alpha = 1.0;
+    if ( medClutEditorTable * table =
+	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) ) {
+	const QRect & limits = table->allowedArea();
+	alpha = qAbs( this->y() / static_cast< float >( limits.height() ) );
+    }
+
+    d->fgColor.setAlphaF( qMin( alpha, 1.0f ) );
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -819,8 +809,6 @@ void medClutEditorTable::keyPressEvent(QKeyEvent *event)
 void medClutEditorTable::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     addVertex( new medClutEditorVertex( event->pos().x(), -event->pos().y(),
-					Qt::yellow,
-					d->vertices[0]->upperBound(),
-					this ),
+					Qt::yellow, this ),
 	       true );
 }

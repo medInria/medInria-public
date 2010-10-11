@@ -43,7 +43,7 @@ class medClutEditorVertex : public QObject, public QGraphicsItem
 
 public:
      medClutEditorVertex(int x, int y, QColor color = Qt::yellow,
-			 int upperBound = 0, QGraphicsItem *parent = 0);
+			 QGraphicsItem *parent = 0);
     ~medClutEditorVertex(void);
 
     void setPrev( medClutEditorVertex * v );
@@ -53,7 +53,6 @@ public:
     QRectF boundingRect(void) const;
     QPoint position(void) const;
     QColor color(void) const;
-    int upperBound();
 
     void forceGeometricalConstraints();
     void interpolate();
