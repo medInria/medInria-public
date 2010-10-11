@@ -258,13 +258,8 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
     {
       vtkErrorMacro(<<"unable to open file : "<<filename<<endl);
       throw vtkErrorCode::CannotOpenFileError;
-    }  
-
-    // here we look for the 4th dimension:
-    typename Image4DType::Pointer image = reader->GetOutput();
-    typename Image4DType::SizeType size = image->GetLargestPossibleRegion().GetSize();
-    unsigned int nVolumes = size[3];
-
+    }
+    
     if ( !strcmp (reader->GetImageIO()->GetNameOfClass(), "PhilipsRECImageIO"))
     {
       Direction3Dtype correct3ddirection = this->ExtractPARRECImageOrientation(filename);
@@ -275,10 +270,32 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 	  correct4ddirection[i][j] = correct3ddirection[i][j];
       correct4ddirection[3][3] = 1;
 
-      image->SetDirection (correct4ddirection);
+      reader->GetOutput()->SetDirection (correct4ddirection);
     }  
 
     
+    // here we look for the 4th dimension:
+    SetITKDataSet<type>(reader->GetOutput(), filename);
+  }
+  
+  template <typename type> inline void SetITKDataSet (typename itk::Image<type, 4>* dataset, const char* filename = "nofile")
+  {
+    
+    typedef typename itk::Image<type, 4> Image4DType;
+    typedef typename itk::Image<type, 3> Image3DType;
+    typedef typename Image4DType::RegionType Region4dType;
+    typedef typename Image4DType::SpacingType Spacing4Dtype;
+  
+    typedef typename itk::ImageRegionIterator<Image4DType> Iterator4DType;
+    typedef typename Iterator4DType::IndexType Index4DType;
+    typedef typename Image3DType::DirectionType Direction3Dtype;
+    typedef typename Image4DType::DirectionType Direction4Dtype;
+
+    typename Image4DType::Pointer image = dataset;
+
+    typename Image4DType::SizeType size = image->GetLargestPossibleRegion().GetSize();
+    unsigned int nVolumes = size[3];
+
     // split the 4D volume into 3D volumes
     typename Image4DType::RegionType regionToExtract = image->GetLargestPossibleRegion();
     typename Image4DType::IndexType index;
@@ -292,7 +309,6 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
     
     if( nVolumes==0 )
     {
-      vtkErrorMacro(<<"no volume in file : "<<filename<<endl);
       throw vtkErrorCode::CannotOpenFileError;
     }
 
@@ -345,9 +361,8 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
       imagedata->Delete();
     
     }
-
+    
   }
-
   
 
   ShortDirectionType ExtractPARRECImageOrientation (const char* filename);
@@ -519,7 +534,8 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   virtual void CopyInformation (vtkMetaDataSet* metadataset);
 
   virtual double* GetCurrentScalarRange(void);
-  
+
+  vtkGetMacro (CurrentId, int);
   
  protected:
   vtkMetaDataSetSequence();
@@ -551,8 +567,12 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   double SequenceDuration;
   bool   SameGeometryFlag;
   bool  ParseAttributes;
-  
-  
+
+#ifdef vtkINRIA3D_USE_ITK
+  //BTX
+  std::vector<itk::ProcessObject::Pointer> Converters;
+  //ETX
+#endif
 };
 
 #endif

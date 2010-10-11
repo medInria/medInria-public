@@ -69,6 +69,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
   
   /** Set the glyph shape */
   void SetGlyphShape (int i);
+
+  /** Set the glyph shape */
+  vtkGetMacro (ShapeMode, unsigned int);
   
   /** Set a specific glyph shape */
   void SetGlyphShapeToLine (void);
@@ -96,9 +99,15 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
   
   /** Get the freshly generated actor. */
   vtkGetObjectMacro (Actor, vtkActor);
+
   
+  /** Get the freshly generated actor. */
+  vtkGetObjectMacro (Normals, vtkPolyDataNormals);
+
   /** Set a scaling factor for the glyhs. */
   void SetGlyphScale(const float& f);
+  double GetGlyphScale (void);
+  
   
   /** Set a maximum size for the glyphs. The size
       is clamped to the maximum if it is over this
@@ -156,7 +165,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
   
   /** Get the vtkMapper. */
   vtkGetObjectMacro (Mapper, vtkMapper);
-  
+
+  vtkGetObjectMacro (Glyph, vtkTensorGlyph);
+
   /** Force the update of the lookup table. */
   void UpdateLUT();
   

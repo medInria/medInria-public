@@ -98,7 +98,6 @@ int main (int argc, char*argv[])
   view->SetCubeVisibility(1);
   view->SetAboutData ("Powered by vtkINRIA3D");
 
-
   vtkViewImage2D* view2            = vtkViewImage2D::New();
   vtkRenderWindowInteractor* iren2 = vtkRenderWindowInteractor::New();
   vtkRenderWindow* rwin2           = vtkRenderWindow::New();
@@ -255,6 +254,7 @@ int main (int argc, char*argv[])
     image->AllocateScalars();
 
 
+    view->SetImage (image);
     view2->SetImage (image);
     view3->SetImage (image);
     view4->SetImage (image);
