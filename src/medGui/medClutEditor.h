@@ -48,7 +48,8 @@ public:
 
     void setPrev( medClutEditorVertex * v );
     void setNext( medClutEditorVertex * v );
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+	       QWidget *widget = 0);
 
     QRectF boundingRect(void) const;
     QPoint position(void) const;
@@ -96,9 +97,9 @@ public:
      medClutEditorTable(QGraphicsItem *parent = 0);
     ~medClutEditorTable(void);
 
-    void setAllowedArea( QRect  rect );
-    void setAllowedArea( QRectF rect );
-    QRect & allowedArea();
+    void setAllowedArea( const QRect  & rect );
+    void setAllowedArea( const QRectF & rect );
+    const QRect & allowedArea() const;
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
     QRectF boundingRect(void) const;
 

@@ -508,7 +508,7 @@ void medClutEditorVertex::forceGeometricalConstraints()
 {
     if ( medClutEditorTable * table =
 	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) ) {
-	QRect & limits = table->allowedArea();
+	const QRect & limits = table->allowedArea();
 	if ( this->x() < limits.left() ) {
 	    this->setX( limits.left() );
 	    this->update();
@@ -622,18 +622,18 @@ medClutEditorTable::~medClutEditorTable(void)
     delete d;
 }
 
-void medClutEditorTable::setAllowedArea( QRect rect )
+void medClutEditorTable::setAllowedArea( const QRect & rect )
 {
     d->limits = rect;
 }
 
-void medClutEditorTable::setAllowedArea( QRectF rect )
+void medClutEditorTable::setAllowedArea( const QRectF & rect )
 {
     d->limits = QRect( rect.topLeft().toPoint(),
-		    rect.bottomRight().toPoint() );
+		       rect.bottomRight().toPoint() );
 }
 
-QRect & medClutEditorTable::allowedArea()
+const QRect & medClutEditorTable::allowedArea() const
 {
   return d->limits;
 }
