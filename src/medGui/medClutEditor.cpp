@@ -330,7 +330,8 @@ void medClutEditor::onClearTablesAction(void)
 
 void medClutEditor::onApplyTablesAction(void)
 {
-    if(dtkAbstractDataImage *image = dynamic_cast<dtkAbstractDataImage *>(d->dtk_data)) {
+    if (dtkAbstractDataImage *image =
+	dynamic_cast<dtkAbstractDataImage *>(d->dtk_data)) {
         
 //        int min_range = image->minRangeValue();
 //        int max_range = image->maxRangeValue();
@@ -352,11 +353,12 @@ void medClutEditor::onApplyTablesAction(void)
 
 //            }
 //        // d->dtk_view->setColorLookupTable(min_range, max_range, max_range-min_range, table);
+
         QList<double> scalars;
         QList<QColor> colors;
-        foreach(QGraphicsItem *item, d->scene->items())
-            if(medClutEditorTable *lut = dynamic_cast<medClutEditorTable *>(item))
-            {
+        foreach (QGraphicsItem *item, d->scene->items())
+            if (medClutEditorTable *lut =
+		dynamic_cast<medClutEditorTable *>(item)) {
                 lut->setupTransferFunction(scalars,colors);
                 d->med_view->setColorLookupTable(scalars,colors);
             }
@@ -446,23 +448,21 @@ int medClutEditorVertex::upperBound()
 
 void medClutEditorVertex::interpolate()
 {
-  QColor cp( Qt::black ), cn( Qt::black );
-  int nNeighbors = 0;
-
-  if ( d->prev != NULL ) {
-    cp = d->prev->color();
-    ++nNeighbors;
-  }
-  if ( d->next != NULL ) {
-    cn = d->next->color();
-    ++nNeighbors;
-  }
-
-  if ( nNeighbors > 0 ) {
-    d->fgColor.setRed  ( ( cp.red()   + cn.red()   ) / nNeighbors );
-    d->fgColor.setGreen( ( cp.green() + cn.green() ) / nNeighbors );
-    d->fgColor.setBlue ( ( cp.blue()  + cn.blue()  ) / nNeighbors );
-    d->fgColor.setAlpha( ( cp.alpha() + cn.alpha() ) / nNeighbors );
+  if ( d->prev != NULL && d->next == NULL )
+      d->fgColor = d->prev->color();
+  else if ( d->prev == NULL && d->next != NULL )
+      d->fgColor = d->next->color();
+  else if ( d->prev != NULL && d->next != NULL ) {
+      if ( ( d->prev->color().alpha() == 0 ) &&
+	   ( d->next->color().alpha() > 0 ) )
+	  d->fgColor = d->next->color();
+      else if ( ( d->prev->color().alpha() > 0 ) &&
+		( d->next->color().alpha() == 0 ) )
+	  d->fgColor = d->prev->color();
+      else if ( ( this->x() - d->prev->x() ) < ( d->next->x() - this->x() ) )
+	  d->fgColor = d->prev->color();
+      else	  
+	  d->fgColor = d->next->color();
   }
 }
 
