@@ -125,6 +125,8 @@ class medClutEditorScene : public QGraphicsScene
 public:
      medClutEditorScene(QObject *parent = 0);
     ~medClutEditorScene(void);
+
+    medClutEditorTable * table();
 };
 
 medClutEditorScene::medClutEditorScene(QObject *parent) : QGraphicsScene(parent)
@@ -135,6 +137,16 @@ medClutEditorScene::medClutEditorScene(QObject *parent) : QGraphicsScene(parent)
 medClutEditorScene::~medClutEditorScene(void)
 {
 
+}
+
+medClutEditorTable * medClutEditorScene::table()
+{
+    foreach ( QGraphicsItem *item, this->items() )
+      if ( medClutEditorTable * lut =
+	   dynamic_cast<medClutEditorTable *>( item ) )
+	  return lut;
+
+    return NULL;
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -189,9 +201,27 @@ void medClutEditorView::wheelEvent ( QWheelEvent * event )
     this->scale(factor,factor);
 }
 
-void medClutEditorView::keyPressEvent( QKeyEvent * event){
-    if (event->key()==Qt::Key_Control)
-        this->setDragMode(QGraphicsView::ScrollHandDrag);
+void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
+    switch (event->key()) {
+    case Qt::Key_Control:
+	this->setDragMode(QGraphicsView::ScrollHandDrag); break;
+    case Qt::Key_A:
+    {
+	medClutEditorScene * scene =
+	    dynamic_cast< medClutEditorScene * >( this->scene() );
+	if ( scene == NULL ) break;
+	medClutEditorTable * table =
+	    dynamic_cast< medClutEditorTable * >( scene->table() );
+	if ( table == NULL ) break;
+	if ( static_cast< bool >( event->modifiers() & Qt::ControlModifier ) )
+	    table->setSelectedAllVertices(
+		!static_cast<bool>( event->modifiers() & Qt::ShiftModifier ) );
+	break;
+    }
+    default:
+	// qDebug() << "key: " << event->key();
+	break;
+    }
 }
 
 void medClutEditorView::keyReleaseEvent( QKeyEvent * event){
@@ -227,13 +257,16 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
     d->view  = new medClutEditorView;
     d->view->setScene(d->scene);
 
-    d->newAction = new QAction("New table", this);
+    d->newAction =   new QAction("New table", this);
     d->clearAction = new QAction("Clear tables", this);
     d->applyAction = new QAction("Apply", this);
 
-    connect(d->newAction, SIGNAL(triggered()), this, SLOT(onNewTableAction()));
-    connect(d->clearAction, SIGNAL(triggered()), this, SLOT(onClearTablesAction()));
-    connect(d->applyAction, SIGNAL(triggered()), this, SLOT(onApplyTablesAction()));
+    connect(d->newAction,   SIGNAL(triggered()),
+	    this,           SLOT(onNewTableAction()));
+    connect(d->clearAction, SIGNAL(triggered()),
+	    this,           SLOT(onClearTablesAction()));
+    connect(d->applyAction, SIGNAL(triggered()),
+	    this,           SLOT(onApplyTablesAction()));
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
@@ -379,7 +412,6 @@ public:
     QColor bgColor;
     QAction *deleteAction;
     QAction *setColorAction;
-    bool isSelectedForDeletion;
 
     medClutEditorVertex * prev;
     medClutEditorVertex * next;
@@ -397,6 +429,7 @@ medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,
     this->setZValue(1);
 
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
+    this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
     d->deleteAction = new QAction("Delete", 0);
     d->setColorAction = new QAction("Edit Color", 0);
@@ -412,8 +445,6 @@ medClutEditorVertex::medClutEditorVertex(int x, int y, QColor color,
     	connect(this, SIGNAL(deleteFromTable(medClutEditorVertex *)),
     		table, SLOT(onDeleteVertex(medClutEditorVertex *)));
     }
-
-    d->isSelectedForDeletion = false;
 
     d->prev = NULL;
     d->next = NULL;
@@ -483,7 +514,7 @@ void medClutEditorVertex::paint(QPainter *painter,
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    painter->setPen( d->isSelectedForDeletion ? Qt::red : Qt::black);
+    painter->setPen( this->isSelected() ? Qt::red : Qt::black);
     setAlpha();
     painter->setBrush(d->bgColor); painter->drawEllipse(-40, -40, 80, 80);
     painter->setBrush(d->fgColor); painter->drawEllipse(-25, -25, 50, 50);
@@ -548,7 +579,7 @@ void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
 
-    if ( d->isSelectedForDeletion ) {
+    if ( this->isSelected() ) {
 	d->deleteAction->trigger();
     }
     else {
@@ -566,21 +597,21 @@ void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //     Q_UNUSED(event);
 // }
 
-void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (event->button() == Qt::RightButton) {
-	d->isSelectedForDeletion = !d->isSelectedForDeletion;
-	this->update();
-	event->accept();
-        // QMenu menu("Edit Marker", 0) ;
-        // menu.setWindowOpacity(0.8) ;
-        // menu.addAction(d->setColorAction);
-        // menu.addAction(d->deleteAction) ;
-        // menu.exec(event->screenPos());
-    }
+// void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
+// {
+//     if (event->button() == Qt::RightButton) {
+// 	this->setSelected( !this->isSelected() );
+// 	this->update();
+// 	event->accept();
+//         // QMenu menu("Edit Marker", 0) ;
+//         // menu.setWindowOpacity(0.8) ;
+//         // menu.addAction(d->setColorAction);
+//         // menu.addAction(d->deleteAction) ;
+//         // menu.exec(event->screenPos());
+//     }
 
-    this->QGraphicsItem::mousePressEvent(event);
-}
+//     this->QGraphicsItem::mousePressEvent(event);
+// }
 
 void medClutEditorVertex::setAlpha()
 {
@@ -666,6 +697,12 @@ void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
 
     if (interpolate)
 	vertex->interpolate();
+}
+
+void medClutEditorTable::setSelectedAllVertices( bool isSelected )
+{
+    foreach (medClutEditorVertex * vertex, d->vertices)
+	vertex->setSelected( isSelected );
 }
 
 void medClutEditorTable::onDeleteVertex(medClutEditorVertex *vertex)
@@ -794,16 +831,16 @@ QRectF medClutEditorTable::boundingRect(void) const
     return QRectF(xmin, ymin, xmax-xmin, qAbs(ymin));
 }
 
-void medClutEditorTable::keyPressEvent(QKeyEvent *event)
-{
-    switch (event->key()) {
-    case Qt::Key_F: this->setZValue(this->zValue()+1); break;
-    case Qt::Key_B: this->setZValue(this->zValue()-1); break;
-    case Qt::Key_X: this->scene()->removeItem(this); break;
-    default: break;
-    }
-    qDebug() << event->key();
-}
+// void medClutEditorTable::keyPressEvent(QKeyEvent *event)
+// {
+//     switch (event->key()) {
+//     case Qt::Key_F: this->setZValue(this->zValue()+1); break;
+//     case Qt::Key_B: this->setZValue(this->zValue()-1); break;
+//     case Qt::Key_X: this->scene()->removeItem(this); break;
+//     default: break;
+//     }
+//     qDebug() << event->key();
+// }
 
 
 void medClutEditorTable::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

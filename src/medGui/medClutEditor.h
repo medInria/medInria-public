@@ -73,7 +73,7 @@ signals:
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    // void mousePressEvent(QGraphicsSceneMouseEvent *event);
     // void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private :
@@ -103,6 +103,8 @@ public:
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
     QRectF boundingRect(void) const;
 
+    void setSelectedAllVertices( bool isSelected );
+
     void setup(int min, int max, int size, int *table);
     void setupTransferFunction(QList<double> &scalars,QList<QColor> &colors );
 
@@ -110,7 +112,7 @@ public:
 	       QWidget *widget = 0);
 
 
-    void keyPressEvent(QKeyEvent *event);
+    // void keyPressEvent(QKeyEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
