@@ -228,6 +228,15 @@ QColor medClutEditorVertex::color(void) const
     return d->fgColor;
 }
 
+void medClutEditorVertex::setColor( QColor color )
+{
+    color.setAlpha( d->fgColor.alpha() );
+    if ( d->fgColor != color ) {
+	d->fgColor = color;
+	this->update();
+    }
+}
+
 void medClutEditorVertex::forceGeometricalConstraints( const QRect & limits )
 {
     bool forced = false;
@@ -266,17 +275,9 @@ void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
 
-    if ( this->isSelected() ) {
-	d->deleteAction->trigger();
-    }
-    else {
-	QColor color = QColorDialog::getColor(d->fgColor, 0);
-
-	if(color.isValid()) {
-	    d->fgColor = color;
-	    this->update();
-	}
-    }
+    if ( medClutEditorTable * table =
+    	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
+	table->setColorOfSelection( d->fgColor );
 }
 
 // void medClutEditorVertex::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -422,7 +423,7 @@ void medClutEditorTable::setSelectedAllVertices( bool isSelected )
 	vertex->setSelected( isSelected );
 }
 
-void medClutEditorTable::deleteSelectedVertices()
+void medClutEditorTable::deleteSelection()
 {
     QList<medClutEditorVertex *> remaining;
     while ( !d->vertices.isEmpty() ) {
@@ -435,6 +436,26 @@ void medClutEditorTable::deleteSelectedVertices()
 
     d->vertices = remaining;
     linkVertices();
+}
+
+void medClutEditorTable::setColorOfSelection( const QColor & color )
+{
+    QColor newColor = QColorDialog::getColor( color, 0 );
+
+    if ( newColor.isValid() )
+      foreach( medClutEditorVertex * vertex, d->vertices )
+	if ( vertex->isSelected() )
+	  vertex->setColor( newColor );
+}
+
+void medClutEditorTable::setColorOfSelection()
+{
+    QColor color( 0, 0, 0, 0 );
+    foreach( medClutEditorVertex * vertex, d->vertices )
+	if ( vertex->isSelected() && vertex->color().alpha() > color.alpha() )
+	    color = vertex->color();
+
+    this->setColorOfSelection( color );
 }
 
 void medClutEditorTable::onDeleteVertex(medClutEditorVertex *vertex)
@@ -735,17 +756,24 @@ void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
     case Qt::Key_Control:
 	this->setDragMode(QGraphicsView::ScrollHandDrag); break;
     case Qt::Key_A:
+	// if ( static_cast< bool >( event->modifiers() & Qt::ControlModifier ) ) {
     {
 	medClutEditorTable * table = this->table();
-	if ( table != NULL &&
-	     static_cast< bool >( event->modifiers() & Qt::ControlModifier ) )
+	if ( table != NULL )
 	    table->setSelectedAllVertices(
 		!static_cast<bool>( event->modifiers() & Qt::ShiftModifier ) );
 	break;
     }
+    case Qt::Key_C:
+    {
+	medClutEditorTable * table = this->table();
+	if ( table != NULL )
+	    table->setColorOfSelection();
+	break;
+    }
     case Qt::Key_Delete:
 	if ( medClutEditorTable * table = this->table() )
-	    table->deleteSelectedVertices();
+	    table->deleteSelection();
 	break;
     default:
 	break;
@@ -753,7 +781,7 @@ void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
 }
 
 void medClutEditorView::keyReleaseEvent( QKeyEvent * event){
-    if (event->key()==Qt::Key_Control)
+    if (event->key() == Qt::Key_Control)
         this->setDragMode(QGraphicsView::NoDrag);
 }
 

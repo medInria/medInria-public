@@ -54,6 +54,7 @@ public:
     QRectF boundingRect(void) const;
     QPoint position(void) const;
     QColor color(void) const;
+    void setColor(QColor color);
 
     // void forceGeometricalConstraints();
     void forceGeometricalConstraints( const QRect & limits );
@@ -107,10 +108,12 @@ public:
     QRectF boundingRect(void) const;
 
     void setSelectedAllVertices( bool isSelected );
-    void deleteSelectedVertices();
+    void deleteSelection();
+    void setColorOfSelection( const QColor & color );
+    void setColorOfSelection();
 
     void setup(int min, int max, int size, int *table);
-    void setupTransferFunction(QList<double> &scalars,QList<QColor> &colors );
+    void setupTransferFunction(QList<double> &scalars, QList<QColor> &colors );
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	       QWidget *widget = 0);
