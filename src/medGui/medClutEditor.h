@@ -142,14 +142,16 @@ public:
     void setView(medAbstractView *view);
 
 protected:
+    void initializeTable(void);
+    void deleteTable(void);
+
     void mousePressEvent(QMouseEvent *event);
 
 protected slots:
     void onNewTableAction(void);
-    void onClearTablesAction(void);
     void onApplyTablesAction(void);
-    // void onSetColorAction();
-    // void onDeleteAction();
+    void onColorAction(void);
+    void onDeleteAction(void);
 
 private:
     medClutEditorPrivate *d;

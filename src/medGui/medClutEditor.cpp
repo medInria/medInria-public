@@ -153,8 +153,8 @@ void medClutEditorVertex::paint(QPainter *painter,
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    painter->setPen( this->isSelected() ? Qt::red : Qt::black);
     setAlpha();
+    painter->setPen( this->isSelected() ? Qt::red : Qt::black);
     painter->setBrush(d->bgColor); painter->drawEllipse(-40, -40, 80, 80);
     painter->setBrush(d->fgColor); painter->drawEllipse(-25, -25, 50, 50);
 }
@@ -381,12 +381,13 @@ void medClutEditorTable::setColorOfSelection( const QColor & color )
 
 void medClutEditorTable::setColorOfSelection()
 {
-    QColor color( 0, 0, 0, 0 );
+    QColor color;
     foreach( medClutEditorVertex * vertex, d->vertices )
 	if ( vertex->isSelected() && vertex->color().alpha() > color.alpha() )
 	    color = vertex->color();
 
-    this->setColorOfSelection( color );
+    if ( color.isValid() )
+	this->setColorOfSelection( color );
 }
 
 void medClutEditorTable::onDeleteVertex(medClutEditorVertex *vertex)
@@ -720,10 +721,9 @@ class medClutEditorPrivate
 {   
 public:
     QAction *newAction;
-    QAction *clearAction;
+    QAction *deleteAction;
+    QAction *colorAction;
     QAction *applyAction;
-    // QAction *deleteAction;
-    // QAction *setColorAction;
 
     medClutEditorScene *scene;
     medClutEditorView  *view;
@@ -740,22 +740,19 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
     d->view  = new medClutEditorView;
     d->view->setScene(d->scene);
 
-    d->newAction =   new QAction("New table", this);
-    d->clearAction = new QAction("Clear tables", this);
-    d->applyAction = new QAction("Apply", this);
-    // d->deleteAction = new QAction("Delete", 0);
-    // d->setColorAction = new QAction("Edit Color", 0);
+    d->newAction    = new QAction("New table", this);
+    d->colorAction  = new QAction("Edit color", this);
+    d->deleteAction = new QAction("Delete selection", this);
+    d->applyAction  = new QAction("Apply", this);
 
-    connect(d->newAction,   SIGNAL(triggered()),
-	    this,           SLOT(onNewTableAction()));
-    connect(d->clearAction, SIGNAL(triggered()),
-	    this,           SLOT(onClearTablesAction()));
-    connect(d->applyAction, SIGNAL(triggered()),
-	    this,           SLOT(onApplyTablesAction()));
-    // connect(d->setColorAction, SIGNAL(triggered()),
-    // 	    this, SLOT(onSetColorAction()));
-    // connect(d->deleteAction, SIGNAL(triggered()),
-    // 	    this, SLOT(onDeleteAction()));
+    connect(d->newAction,      SIGNAL(triggered()),
+	    this,              SLOT(onNewTableAction()));
+    connect(d->colorAction, SIGNAL(triggered()),
+    	    this,              SLOT(onColorAction()));
+    connect(d->deleteAction,   SIGNAL(triggered()),
+    	    this,              SLOT(onDeleteAction()));
+    connect(d->applyAction,    SIGNAL(triggered()),
+	    this,              SLOT(onApplyTablesAction()));
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
@@ -766,11 +763,12 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
 medClutEditor::~medClutEditor(void)
 {
     delete d->newAction;
-    delete d->clearAction;
+    delete d->colorAction;
+    delete d->deleteAction;
     delete d->applyAction;
 
-    // delete d->scene;
-    // delete d->view;
+    delete d->scene;
+    delete d->view;
     delete d;
 }
 
@@ -798,6 +796,8 @@ void medClutEditor::setData(dtkAbstractData *data)
 
         //d->scene->setSceneRect(histogram->boundingRect());
         d->dtk_data = image;
+
+	this->initializeTable();
     }
 }
 
@@ -806,21 +806,10 @@ void medClutEditor::setView(medAbstractView *view)
     d->med_view = view;
 }
 
-void medClutEditor::mousePressEvent(QMouseEvent *event)
+void medClutEditor::initializeTable(void)
 {
-    if (event->button() == Qt::RightButton) {
-        QMenu menu("Color Lookup Table", this) ;
-        menu.setWindowOpacity(0.8) ;
-        menu.addAction(d->newAction) ;
-        menu.addAction(d->clearAction) ;
-        menu.addSeparator();
-        menu.addAction(d->applyAction) ;
-        menu.exec(mapFrom(this, QCursor::pos())) ;
-    }
-}
+    this->deleteTable();
 
-void medClutEditor::onNewTableAction(void)
-{
     medClutEditorTable *lut = new medClutEditorTable;
     lut->setAllowedArea( d->histogram->boundingRect() );
     d->scene->addItem(lut);
@@ -843,17 +832,47 @@ void medClutEditor::onNewTableAction(void)
     // lut->addVertex(v4);
 }
 
-void medClutEditor::onClearTablesAction(void)
+void medClutEditor::deleteTable(void)
 {
     medClutEditorTable * table;
     while ( table = d->scene->table() ) {
 	d->scene->removeItem( table );
 	delete table;
     }
+}
 
-    // foreach(QGraphicsItem *item, d->scene->items())
-    //     if(dynamic_cast<medClutEditorTable *>(item))
-    //         d->scene->removeItem(item);
+void medClutEditor::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::RightButton) {
+	event->accept();
+
+        QMenu menu("Color Lookup Table", this) ;
+        menu.setWindowOpacity(0.8) ;
+        menu.addAction(d->newAction);
+        menu.addSeparator();
+	menu.addAction(d->colorAction);
+	menu.addAction(d->deleteAction);
+        menu.addSeparator();
+        menu.addAction(d->applyAction);
+        menu.exec(mapFrom(this, QCursor::pos()));
+    }
+}
+
+void medClutEditor::onNewTableAction(void)
+{
+    this->initializeTable();
+}
+
+void medClutEditor::onColorAction(void)
+{
+    if ( medClutEditorTable * table = d->scene->table() )
+	table->setColorOfSelection();
+}
+
+void medClutEditor::onDeleteAction(void)
+{
+    if ( medClutEditorTable * table = d->scene->table() )
+	table->deleteSelection();
 }
 
 void medClutEditor::onApplyTablesAction(void)
