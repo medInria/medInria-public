@@ -56,21 +56,13 @@ public:
     QColor color(void) const;
     void setColor(QColor color);
 
-    // void forceGeometricalConstraints();
     void forceGeometricalConstraints( const QRect & limits );
-    void interpolate();
+    void interpolate( medClutEditorVertex * pred, medClutEditorVertex * next );
 
     static bool LessThan(const medClutEditorVertex *v1,
   		       const medClutEditorVertex *v2) {
         return (v1->position().x() < v2->position().x());
     }
-
-public slots:
-    void onSetColorAction();
-    void onDeleteAction();
-
-signals:
-    void deleteFromTable( medClutEditorVertex * );
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -156,6 +148,8 @@ protected slots:
     void onNewTableAction(void);
     void onClearTablesAction(void);
     void onApplyTablesAction(void);
+    // void onSetColorAction();
+    // void onDeleteAction();
 
 private:
     medClutEditorPrivate *d;
