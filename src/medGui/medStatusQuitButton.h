@@ -21,8 +21,9 @@
 #define MEDSTATUSQUITBUTTON_H
 
 #include <QtGui/QWidget>
+#include "medGuiExport.h"
 
-class medStatusQuitButton : public QWidget
+class MEDGUI_EXPORT medStatusQuitButton : public QWidget
 {
     Q_OBJECT
 
