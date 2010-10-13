@@ -25,7 +25,6 @@
 #include <medPacs/medAbstractPacsNode.h>
 #include <medPacs/medAbstractPacsStoreScp.h>
 #include <medPacs/medAbstractPacsResultDataset.h>
-//#include <medSql/medDatabaseImporter.h>
 
 #include <QUuid>
 
@@ -96,16 +95,19 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
-    // d->start();
+    //d->start();
 }
 
 medPacsWidget::~medPacsWidget(void)
 {
     this->writeSettings();
 
-    // d->terminate();
-    // d->wait();
-
+    if (d->isRunning())
+    {
+        d->server->stop();
+        d->exit();
+        d->wait();
+    }
     delete d;
 
     d = NULL;

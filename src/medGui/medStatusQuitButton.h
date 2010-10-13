@@ -20,9 +20,12 @@
 #ifndef MEDSTATUSQUITBUTTON_H
 #define MEDSTATUSQUITBUTTON_H
 
+
+#include "medGuiExport.h"
+
 #include <QtGui/QWidget>
 
-class medStatusQuitButton : public QWidget
+class MEDGUI_EXPORT medStatusQuitButton : public QWidget
 {
     Q_OBJECT
 
