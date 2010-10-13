@@ -90,8 +90,8 @@ public:
      medClutEditorTable(QGraphicsItem *parent = 0);
     ~medClutEditorTable(void);
 
-    void setSize( const QRectF & size );
-    const QRectF & size() const;
+    void setSize( const QSizeF & size );
+    const QSizeF & size() const;
     void setRange( qreal min, qreal max );
     QPointF coordinateToValue( QPointF coord );
 

@@ -36,10 +36,13 @@ public:
      medClutEditorHistogram(QGraphicsItem *parent = 0);
     ~medClutEditorHistogram(void);
 
+    QSizeF size(void) const;
+    void setSize( QSizeF s );
+
     void addValue(qreal intensity, qreal number);
-    qreal getRangeMin();
-    qreal getRangeMax();
-    QPointF valueToCoordinate( QPointF value );
+    qreal getRangeMin() const;
+    qreal getRangeMax() const;
+    QPointF valueToCoordinate( QPointF value ) const;
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
@@ -51,9 +54,10 @@ public:
 
 private:
     QMap<qreal, qreal> values;
+    QList<QPointF> scaledValues;
 
     qreal maxLogNum;
-    QSizeF size;
+    QSizeF histSize;
 };
 
 
@@ -257,7 +261,7 @@ void medClutEditorVertex::setAlpha()
 class medClutEditorTablePrivate
 {
  public:
-    QRectF size;
+    QSizeF size;
     qreal rangeMin;
     qreal rangeMax;
     QList<medClutEditorVertex *> vertices;
@@ -268,7 +272,7 @@ medClutEditorTable::medClutEditorTable(QGraphicsItem *parent)
   : QGraphicsItem(parent)
 {
     d = new medClutEditorTablePrivate;
-    d->size.setCoords( 0.0, 0.0, 500.0, 300.0 );
+    d->size = QSizeF( 500.0, 300.0 );
 
     //this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -282,12 +286,12 @@ medClutEditorTable::~medClutEditorTable(void)
     delete d;
 }
 
-void medClutEditorTable::setSize( const QRectF & size )
+void medClutEditorTable::setSize( const QSizeF & size )
 {
     d->size = size;
 }
 
-const QRectF & medClutEditorTable::size() const
+const QSizeF & medClutEditorTable::size() const
 {
     return d->size;
 }
@@ -302,7 +306,7 @@ void medClutEditorTable::forceGeometricalConstraints()
 {
     int n = d->vertices.count();
     for ( int i = 0 ; i < n; ++i ) {
-	QRectF limits = size();
+	QRectF limits( QPointF( 0.0, 0.0), d->size );
 	qreal left  = static_cast< qreal >( i );
 	qreal right = limits.right() - static_cast< qreal >( n - i - 1 );
 
@@ -496,10 +500,10 @@ void medClutEditorTable::paint(QPainter *painter,
 QRectF medClutEditorTable::boundingRect(void) const
 {
     qreal xmin, xmax, ymin, ymax;
-    xmin = d->size.right();
-    xmax = d->size.left();
-    ymin = d->size.top();
-    ymax = d->size.bottom();
+    xmin = d->size.width();
+    xmax = 0.0;
+    ymin = d->size.height();
+    ymax = 0.0;
 
     foreach (medClutEditorVertex *vertex, d->vertices) {
 	xmin = qMin(xmin, vertex->x());
@@ -530,7 +534,7 @@ QRectF medClutEditorTable::boundingRect(void) const
 
 medClutEditorHistogram::medClutEditorHistogram(QGraphicsItem *parent)
   : QGraphicsItem(parent)
-  , size( 500.0, 300.0 )
+  , histSize( 500.0, 300.0 )
   , maxLogNum( 0.0 )
 {
     //this->setFlag(QGraphicsItem::ItemIsMovable, false);
@@ -541,14 +545,30 @@ medClutEditorHistogram::~medClutEditorHistogram(void)
 {
 }
 
-qreal medClutEditorHistogram::getRangeMin(void)
+QRectF medClutEditorHistogram::boundingRect(void) const
+{
+    return QRectF( QPointF( 0.0, 0.0 ), histSize );
+}
+
+QSizeF medClutEditorHistogram::size(void) const
+{
+    return histSize;
+}
+
+void medClutEditorHistogram::setSize( QSizeF s )
+{
+    histSize = s;
+    scaledValues.clear();
+}
+
+qreal medClutEditorHistogram::getRangeMin(void) const
 {
     return values.begin().key();
 }
 
-qreal medClutEditorHistogram::getRangeMax(void)
+qreal medClutEditorHistogram::getRangeMax(void) const
 {
-    QMap<qreal, qreal>::iterator end = values.end();
+    QMap<qreal, qreal>::const_iterator end = values.end();
     --end;
     return end.key();
 }
@@ -558,16 +578,18 @@ void medClutEditorHistogram::addValue(qreal intensity, qreal number)
     qreal logNum = 1000.0 * log10f( number + 1.0 );
     maxLogNum = qMax( logNum, maxLogNum );
     values.insert( intensity, logNum );
+    scaledValues.clear();
 }
 
-QPointF medClutEditorHistogram::valueToCoordinate( QPointF value )
+QPointF medClutEditorHistogram::valueToCoordinate( QPointF value ) const
 {
     qreal rangeMin  = this->getRangeMin();
     qreal valRange  = this->getRangeMax() - rangeMin;
 
     QPointF coord;
-    coord.setX( size.width() * ( ( value.x() - rangeMin ) / valRange ) );
-    coord.setY( size.height() - size.height() * ( value.y() / maxLogNum ) );
+    coord.setX( histSize.width() * ( ( value.x() - rangeMin ) / valRange ) );
+    coord.setY( histSize.height() -
+		histSize.height() * ( value.y() / maxLogNum ) );
 
     return coord;
 }
@@ -579,32 +601,25 @@ void medClutEditorHistogram::paint(QPainter *painter,
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    QList<QPointF> scaledValues;
-    for ( QMap<qreal, qreal>::iterator it = values.begin(), end = values.end();
-	  it != end; ++it )
-	scaledValues <<
-	    this->valueToCoordinate( QPointF( it.key(), it.value() ) );
+    if ( scaledValues.count() != values.count() ) {
+	qDebug() << "scaling histogram values";
+
+	scaledValues.clear();
+	for ( QMap<qreal, qreal>::iterator it = values.begin(),
+		  end = values.end(); it != end; ++it )
+	    scaledValues << this->valueToCoordinate( QPointF( it.key(),
+							      it.value() ) );
+    }
 
     QPainterPath path;
-    path.moveTo( QPointF( scaledValues.first().x(), size.height() ) );
+    path.moveTo( QPointF( scaledValues.first().x(), histSize.height() ) );
     foreach ( QPointF point, scaledValues )
 	path.lineTo( point );
-    path.lineTo( QPointF( scaledValues.last().x(), size.height() ) );
+    path.lineTo( QPointF( scaledValues.last().x(), histSize.height() ) );
 
     painter->setPen(QColor(0x61, 0x61, 0x61));
     painter->setBrush(QColor(0x2a, 0x2a, 0x2a));
     painter->drawPath(path);
-}
-
-QRectF medClutEditorHistogram::boundingRect(void) const
-{
-    return QRectF( QPointF( 0.0, 0.0 ), size );
-    // if (!values.isEmpty())
-    //     return QRectF(QPointF((double)(values[0].x()),-size.height()),size);
-    // else {
-    //     qDebug() << "empty histogram";
-    //     return QRectF(0, 0, 16, 16);
-    // }
 }
 
 
@@ -821,7 +836,7 @@ void medClutEditor::initializeTable(void)
     this->deleteTable();
 
     medClutEditorTable *lut = new medClutEditorTable;
-    lut->setSize( d->histogram->boundingRect() );
+    lut->setSize( d->histogram->size() );
     lut->setRange( d->histogram->getRangeMin(), d->histogram->getRangeMax() );
     d->scene->addItem( lut );
 
@@ -829,13 +844,13 @@ void medClutEditor::initializeTable(void)
     // int rangemin = d->histogram->getRangeMin();
     // int rangemax = d->histogram->getRangeMax();
     medClutEditorVertex * v1 =
-	new medClutEditorVertex( area.left(), 0.2 * area.height(),
+	new medClutEditorVertex( area.left(), 0.8 * area.height(),
 				 Qt::blue, lut );
     medClutEditorVertex * v2 =
 	new medClutEditorVertex( area.center().x(), area.center().y(),
 				 Qt::red, lut );
     medClutEditorVertex * v3 =
-	new medClutEditorVertex( area.right(), 0.6 * area.height(),
+	new medClutEditorVertex( area.right(), 0.4 * area.height(),
 				 Qt::yellow, lut );
     // medClutEditorVertex *v4 = new medClutEditorVertex(260,  60, Qt::white);
     
