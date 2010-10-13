@@ -231,16 +231,18 @@ IF( DCMTK_root_INCLUDE_DIR
   )
   SET( DCMTK_LIBRARIES
     optimized ${DCMTK_dcmjpeg_LIBRARY}
-    debug     ${DCMTK_dcmjpeg_LIBRARY_DEBUG}
     optimized ${DCMTK_ijg8_LIBRARY}
-    debug     ${DCMTK_ijg8_LIBRARY_DEBUG}
     optimized ${DCMTK_ijg12_LIBRARY}
-    debug     ${DCMTK_ijg12_LIBRARY_DEBUG}
     optimized ${DCMTK_ijg16_LIBRARY}
-    debug     ${DCMTK_ijg16_LIBRARY_DEBUG}
     optimized ${DCMTK_dcmimgle_LIBRARY}
-    debug     ${DCMTK_dcmimgle_LIBRARY_DEBUG}
     optimized ${DCMTK_dcmdata_LIBRARY}
+  )
+  SET (DCMTK_LIBRARIES_DEBUG
+    debug     ${DCMTK_dcmjpeg_LIBRARY_DEBUG}
+    debug     ${DCMTK_ijg8_LIBRARY_DEBUG}
+    debug     ${DCMTK_ijg12_LIBRARY_DEBUG}
+    debug     ${DCMTK_ijg16_LIBRARY_DEBUG}
+    debug     ${DCMTK_dcmimgle_LIBRARY_DEBUG}
     debug     ${DCMTK_dcmdata_LIBRARY_DEBUG}
   )
 
@@ -251,18 +253,26 @@ IF( DCMTK_root_INCLUDE_DIR
     )
     SET( DCMTK_LIBRARIES
       ${DCMTK_LIBRARIES}
-      optimized ${DCMTK_oflog_LIBRARY} #must be defined before ofstd 
+      optimized ${DCMTK_oflog_LIBRARY} #must be defined before ofstd
+    )
+    SET( DCMTK_LIBRARIES_DEBUG
+      ${DCMTK_LIBRARIES_DEBUG}
       debug     ${DCMTK_oflog_LIBRARY_DEBUG} #must be defined before ofstd 
     )
+
   ENDIF ( DCMTK_oflog_LIBRARY )
   
   SET( DCMTK_LIBRARIES 
    ${DCMTK_LIBRARIES}
    optimized ${DCMTK_ofstd_LIBRARY}
-   debug     ${DCMTK_ofstd_LIBRARY_DEBUG}
 #   optimized ${DCMTK_config_LIBRARY}    
-#   debug     ${DCMTK_config_LIBRARY_DEBUG}    
   )
+  SET( DCMTK_LIBRARIES_DEBUG 
+   ${DCMTK_LIBRARIES_DEBUG}
+   debug     ${DCMTK_ofstd_LIBRARY_DEBUG}
+#  debug     ${DCMTK_config_LIBRARY_DEBUG}    
+  )
+
 
   IF(NOT WIN32)
     SET( DCMTK_LIBRARIES
@@ -274,17 +284,25 @@ IF( DCMTK_root_INCLUDE_DIR
 IF(DCMTK_dcmqrdb_LIBRARY)
   SET( DCMTK_LIBRARIES
     optimized ${DCMTK_dcmqrdb_LIBRARY}
-    debug     ${DCMTK_dcmqrdb_LIBRARY_DEBUG}
     ${DCMTK_LIBRARIES}
     )
+  SET( DCMTK_LIBRARIES_DEBUG
+    debug     ${DCMTK_dcmqrdb_LIBRARY_DEBUG}
+    ${DCMTK_LIBRARIES_DEBUG}
+    )
+
 ENDIF(DCMTK_dcmqrdb_LIBRARY)
 
 IF(DCMTK_dcmnet_LIBRARY)
   SET( DCMTK_LIBRARIES
     optimized ${DCMTK_dcmnet_LIBRARY}
-    debug ${DCMTK_dcmnet_LIBRARY_DEBUG}
     ${DCMTK_LIBRARIES}
     )
+  SET( DCMTK_LIBRARIES_DEBUG
+    debug ${DCMTK_dcmnet_LIBRARY_DEBUG}
+    ${DCMTK_LIBRARIES_DEBUG}
+    )
+
     if (UNIX)
     SET( DCMTK_LIBRARIES
     ${DCMTK_LIBRARIES}
@@ -295,6 +313,9 @@ ENDIF(DCMTK_dcmnet_LIBRARY)
 
 IF( WIN32 )
   SET( DCMTK_LIBRARIES ${DCMTK_LIBRARIES} netapi32 )
+  SET (DCMTK_LIBRARIES
+      ${DCMTK_LIBRARIES}
+      ${DCMTK_LIBRARIES_DEBUG})
 ENDIF( WIN32 )
 
 ENDIF( DCMTK_root_INCLUDE_DIR
