@@ -693,8 +693,7 @@ OFCondition dcmtkStoreScp::processCommands(T_ASC_Association * assoc)
         default:
           // we cannot handle this kind of message
           cond = DIMSE_BADCOMMANDTYPE;
-          dcmtkLogger::errorStream() << "cannot handle command: 0x"
-               << STD_NAMESPACE hex << OFstatic_cast(unsigned, msg.CommandField);
+          dcmtkLogger::errorStream() << "cannot handle command: 0x" << STD_NAMESPACE hex << OFstatic_cast(unsigned, msg.CommandField);
           break;
       }
     }
