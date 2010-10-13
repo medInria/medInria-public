@@ -33,7 +33,6 @@ class medAbstractView;
 // /////////////////////////////////////////////////////////////////
 
 class medClutEditorVertexPrivate;
-class medClutEditorTable;
 
 class medClutEditorVertex : public QObject, public QGraphicsItem
 {
@@ -64,7 +63,7 @@ public:
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    // void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     // void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private :
@@ -138,6 +137,7 @@ public:
 
     void setData(dtkAbstractData *data);
     void setView(medAbstractView *view);
+    void applyTable(void);
 
 protected:
     void initializeTable(void);
