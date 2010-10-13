@@ -108,6 +108,7 @@ protected:
 class medClutEditorVertexPrivate
 {
 public:
+    QColor color;
     QColor fgColor;
     QColor bgColor;
 };
@@ -117,11 +118,10 @@ medClutEditorVertex::medClutEditorVertex(qreal x, qreal y, QColor color,
   : QGraphicsItem(parent)
 {
     d = new medClutEditorVertexPrivate;
-    d->fgColor = color;
-    d->bgColor = QColor(0xc0, 0xc0, 0xc0, 0x0);
     this->setPos(x, y);
-    setAlpha();
     this->setZValue(1);
+    setAlpha();
+    setColor( color );
 
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -129,6 +129,8 @@ medClutEditorVertex::medClutEditorVertex(qreal x, qreal y, QColor color,
 
 medClutEditorVertex::~medClutEditorVertex(void)
 {
+    qDebug() << __func__;
+
     delete d;
 }
 
@@ -136,20 +138,20 @@ void medClutEditorVertex::interpolate( medClutEditorVertex * prev,
 				       medClutEditorVertex * next )
 {
   if ( prev != NULL && next == NULL )
-      d->fgColor = prev->color();
+      setColor( prev->color() );
   else if ( prev == NULL && next != NULL )
-      d->fgColor = next->color();
+      setColor( next->color() );
   else if ( prev != NULL && next != NULL ) {
       if ( ( prev->color().alpha() == 0 ) &&
 	   ( next->color().alpha() > 0 ) )
-	  d->fgColor = next->color();
+	  setColor( next->color() );
       else if ( ( prev->color().alpha() > 0 ) &&
 		( next->color().alpha() == 0 ) )
-	  d->fgColor = prev->color();
+	  setColor( prev->color() );
       else if ( ( this->x() - prev->x() ) < ( next->x() - this->x() ) )
-	  d->fgColor = prev->color();
+	  setColor( prev->color() );
       else	  
-	  d->fgColor = next->color();
+	  setColor( next->color() );
   }
 }
 
@@ -160,10 +162,18 @@ void medClutEditorVertex::paint(QPainter *painter,
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
+    qreal rInner = 10.0;
+    qreal rOuter = 20.0;
+
     setAlpha();
-    painter->setPen( this->isSelected() ? Qt::red : Qt::black);
-    painter->setBrush(d->bgColor); painter->drawEllipse(-40, -40, 80, 80);
-    painter->setBrush(d->fgColor); painter->drawEllipse(-25, -25, 50, 50);
+    painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+    painter->setPen( QPen( this->isSelected() ? Qt::lightGray : Qt::black, 2 ));
+    painter->setBrush(d->bgColor);
+    painter->drawEllipse(-rOuter, -rOuter, 2 * rOuter, 2 * rOuter);
+
+    painter->setPen( Qt::NoPen );
+    painter->setBrush(d->fgColor);
+    painter->drawEllipse(-rInner, -rInner, 2 * rInner, 2 * rInner);
 }
 
 QRectF medClutEditorVertex::boundingRect(void) const
@@ -173,14 +183,17 @@ QRectF medClutEditorVertex::boundingRect(void) const
 
 QColor medClutEditorVertex::color(void) const
 {
-    return d->fgColor;
+    return d->color;
 }
 
 void medClutEditorVertex::setColor( QColor color )
 {
-    color.setAlpha( d->fgColor.alpha() );
-    if ( d->fgColor != color ) {
+    color.setAlphaF( d->color.alphaF() );
+    if ( d->color != color ) {
+	d->color   = color;
+	d->bgColor = color;
 	d->fgColor = color;
+	d->fgColor.setAlphaF( 1.0 );
 	this->update();
     }
 }
@@ -225,7 +238,7 @@ void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     if ( medClutEditorTable * table =
     	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
-	table->setColorOfSelection( d->fgColor );
+	table->setColorOfSelection( d->color );
 }
 
 // void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -248,10 +261,13 @@ void medClutEditorVertex::setAlpha()
 {
     qreal alpha = 1.0;
     if ( medClutEditorTable * table =
-	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
+	 dynamic_cast< medClutEditorTable * >( this->parentItem() ) ) {
 	alpha = table->coordinateToValue( this->pos() ).y();
+	alpha = qMin( alpha, 1.0 );
+    }
 
-    d->fgColor.setAlphaF( qMin( alpha, 1.0 ) );
+    d->color.setAlphaF( alpha );
+    d->bgColor.setAlphaF( alpha );
 }
 
 // /////////////////////////////////////////////////////////////////

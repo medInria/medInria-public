@@ -46,8 +46,6 @@ public:
 			 QGraphicsItem *parent = 0);
     ~medClutEditorVertex(void);
 
-    void setPrev( medClutEditorVertex * v );
-    void setNext( medClutEditorVertex * v );
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 	       QWidget *widget = 0);
 
