@@ -35,4 +35,4 @@ private:
 
 medAbstractPacsMoveScu *createDcmtkMoveScu(void); 
 
-#endif DCMTKPACSMOVESCU_H
+#endif //DCMTKPACSMOVESCU_H

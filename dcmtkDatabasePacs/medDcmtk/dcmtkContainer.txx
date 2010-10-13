@@ -95,4 +95,4 @@ int dcmtkContainer<T>::index()
     return m_index;
 }
 
-#endif DCMTKCONTAINER_TXX
+#endif //DCMTKCONTAINER_TXX

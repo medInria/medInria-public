@@ -79,4 +79,4 @@ protected:
 
 #include "dcmtkContainer.txx"
 
-#endif DCMTKCONTAINER_H
+#endif //DCMTKCONTAINER_H
