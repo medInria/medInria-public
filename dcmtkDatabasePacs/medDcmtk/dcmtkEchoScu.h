@@ -69,4 +69,4 @@ protected:
 
 };
 
-#endif DCMTKECHOSCU_H
+#endif //DCMTKECHOSCU_H

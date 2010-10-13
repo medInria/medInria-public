@@ -37,4 +37,4 @@ private:
 
 medAbstractPacsFindScu *createDcmtkFindScu(void); 
 
-#endif DCMTKPACSFINDSCU_H
+#endif //DCMTKPACSFINDSCU_H

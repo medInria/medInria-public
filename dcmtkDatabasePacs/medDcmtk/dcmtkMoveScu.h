@@ -27,6 +27,8 @@ class DcmFileFormat;
     */
 class dcmtkMoveScu : public dcmtkBaseScu
 {
+    Q_OBJECT
+
 public:
 
     /**
@@ -83,6 +85,9 @@ public:
     * Clear all previously set attributes.
     */
     void clearAllQueryAttributes();
+
+signals:
+    void progressed(int);
 
 protected:
 
@@ -166,6 +171,8 @@ protected:
     */
     void substituteOverrideKeys(DcmDataset *dset);
 
+    void emitProgressed(int current, int max);
+
 private:
 
 
@@ -219,4 +226,4 @@ private:
 
 };
 
-#endif DCMTKMOVESCU_H
+#endif //DCMTKMOVESCU_H

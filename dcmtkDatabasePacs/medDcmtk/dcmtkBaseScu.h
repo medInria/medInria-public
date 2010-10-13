@@ -187,4 +187,4 @@ protected:
 
 };
 
-#endif DCMTKBASESCU_H
+#endif //DCMTKBASESCU_H
