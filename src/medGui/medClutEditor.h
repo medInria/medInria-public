@@ -42,7 +42,7 @@ class medClutEditorVertex : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 
 public:
-     medClutEditorVertex(int x, int y, QColor color = Qt::yellow,
+     medClutEditorVertex(qreal x, qreal y, QColor color = Qt::white,
 			 QGraphicsItem *parent = 0);
     ~medClutEditorVertex(void);
 
@@ -52,16 +52,15 @@ public:
 	       QWidget *widget = 0);
 
     QRectF boundingRect(void) const;
-    QPoint position(void) const;
     QColor color(void) const;
     void setColor(QColor color);
 
-    void forceGeometricalConstraints( const QRect & limits );
+    void forceGeometricalConstraints( const QRectF & limits );
     void interpolate( medClutEditorVertex * pred, medClutEditorVertex * next );
 
     static bool LessThan(const medClutEditorVertex *v1,
-  		       const medClutEditorVertex *v2) {
-        return (v1->position().x() < v2->position().x());
+			 const medClutEditorVertex *v2) {
+        return (v1->x() < v2->x());
     }
 
 protected:
@@ -91,9 +90,11 @@ public:
      medClutEditorTable(QGraphicsItem *parent = 0);
     ~medClutEditorTable(void);
 
-    void setAllowedArea( const QRect  & rect );
-    void setAllowedArea( const QRectF & rect );
-    const QRect & allowedArea() const;
+    void setSize( const QRectF & size );
+    const QRectF & size() const;
+    void setRange( qreal min, qreal max );
+    QPointF coordinateToValue( QPointF coord );
+
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
     void forceGeometricalConstraints();
 
@@ -104,7 +105,7 @@ public:
     void setColorOfSelection( const QColor & color );
     void setColorOfSelection();
 
-    void setup(int min, int max, int size, int *table);
+    void setup(float min, float max, int size, int *table);
     void setupTransferFunction(QList<double> &scalars, QList<QColor> &colors );
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -118,7 +119,6 @@ public slots:
     void onDeleteVertex(medClutEditorVertex * v);
 
 private:
-    void linkVertices();
 
     medClutEditorTablePrivate *d;
 };
