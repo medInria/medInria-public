@@ -25,4 +25,4 @@ private:
 };
 
 
-#endif DCMTKPACSFINDSCU_H
+#endif //DCMTKPACSKEY_H

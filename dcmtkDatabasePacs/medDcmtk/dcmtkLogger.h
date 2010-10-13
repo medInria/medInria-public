@@ -1,8 +1,7 @@
+#ifndef DCMTKLOGGER_H
+#define DCMTKLOGGER_H
 #include "BaseLogger.h"
 
-#ifndef WIN32
-#define HAVE_CONFIG_H
-#endif
 
 #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 #include "dcmtk/ofstd/ofstring.h"
@@ -41,3 +40,5 @@ public:
      */
     static void error(OFString message);
 };
+
+#endif //DCMTKLOGGER_H

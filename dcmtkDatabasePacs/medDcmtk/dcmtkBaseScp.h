@@ -37,4 +37,4 @@ protected:
  
 };
 
-#endif DCMTKBASESCP_H
+#endif //DCMTKBASESCP_H

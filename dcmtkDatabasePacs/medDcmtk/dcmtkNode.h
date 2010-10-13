@@ -46,4 +46,4 @@ protected:
     unsigned int m_port;
 };
 
-#endif DCMTKNODE_H
+#endif //DCMTKNODE_H

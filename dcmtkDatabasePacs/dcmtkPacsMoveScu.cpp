@@ -43,6 +43,11 @@ bool dcmtkPacsMoveScu::setStorageDirectory( const char* directory )
     return scu.setStorageDirectory(directory);
 }
 
+dcmtkPacsMoveScu::dcmtkPacsMoveScu()
+{
+    connect(&scu, SIGNAL(progressed(int)), this,SIGNAL(progressed(int)) );
+}
+
 medAbstractPacsMoveScu * createDcmtkMoveScu( void )
 {
     return new dcmtkPacsMoveScu;
