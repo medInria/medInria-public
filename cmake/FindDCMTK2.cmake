@@ -294,6 +294,24 @@ IF(DCMTK_dcmqrdb_LIBRARY)
 ENDIF(DCMTK_dcmqrdb_LIBRARY)
 
 IF(DCMTK_dcmnet_LIBRARY)
+
+  FIND_PATH( DCMTK_dcmnet_INCLUDE_DIR assoc.h
+    ${DCMTK_DIR}/dcmnet/include
+    ${DCMTK_DIR}/include/dcmnet
+    ${DCMTK_DIR}/include/dcmtk/dcmnet
+  )
+
+  IF(NOT DCMTK_dcmnet_INCLUDE_DIR) 
+    FIND_PATH( DCMTK_dcmnet_INCLUDE_DIR dcmtk/dcmnet/assoc.h
+      ${DCMTK_SOURCE_DIR}/dcmnet/include
+    )
+  ENDIF(NOT DCMTK_dcmnet_INCLUDE_DIR)
+
+  SET( DCMTK_INCLUDE_DIR
+    ${DCMTK_dcmnet_INCLUDE_DIR}
+    ${DCMTK_INCLUDE_DIR}
+    )
+
   SET( DCMTK_LIBRARIES
     optimized ${DCMTK_dcmnet_LIBRARY}
     ${DCMTK_LIBRARIES}
