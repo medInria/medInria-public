@@ -42,11 +42,11 @@ class medClutEditorVertex : public QObject, public QGraphicsItem
 
 public:
      medClutEditorVertex(qreal x, qreal y, QColor color = Qt::white,
-			 QGraphicsItem *parent = 0);
+                         QGraphicsItem *parent = 0);
     ~medClutEditorVertex(void);
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-	       QWidget *widget = 0);
+               QWidget *widget = 0);
 
     QRectF boundingRect(void) const;
     QColor color(void) const;
@@ -56,7 +56,7 @@ public:
     void interpolate( medClutEditorVertex * pred, medClutEditorVertex * next );
 
     static bool LessThan(const medClutEditorVertex *v1,
-			 const medClutEditorVertex *v2) {
+                         const medClutEditorVertex *v2) {
         return (v1->x() < v2->x());
     }
 
@@ -106,7 +106,7 @@ public:
     void setupTransferFunction(QList<double> &scalars, QList<QColor> &colors );
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-	       QWidget *widget = 0);
+               QWidget *widget = 0);
 
 
     // void keyPressEvent(QKeyEvent *event);
