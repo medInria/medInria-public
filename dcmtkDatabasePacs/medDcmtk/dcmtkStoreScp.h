@@ -46,6 +46,11 @@ public:
     */
     int start();
 
+   /**
+    * Stop the storescp loop and exit normally
+    */
+    void stop();
+
     /**
     * Set a directory where the store-scp should store its incoming data.
     * The default storage directory is '.'
@@ -260,6 +265,7 @@ private:
     char*              m_imageFileName;
     DcmFileFormat*     m_dcmff;
     T_ASC_Association* m_assoc;
+    bool               m_stop;
 
 };
 

@@ -18,6 +18,8 @@ public:
 
     void setConnectionParams(const char* ourTitle, const char* ourIP, unsigned short ourPort);
 
+    void stop();
+
 private:
 
     dcmtkStoreScp*                  m_server;

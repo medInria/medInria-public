@@ -101,7 +101,7 @@ SimpleView::~SimpleView()
   delete m_moveScu;
   delete m_echoScu;
 
-  delete m_serverThread;
+  //delete m_serverThread;
   delete m_sendThread;
 
   delete m_shellOut;
@@ -169,7 +169,7 @@ void SimpleView::setConnectionParams()
     }
     catch(...)
     {
-        ui->ourPortEdit->setText("100");
+        ui->ourPortEdit->setText("9999");
     }
 
 
@@ -663,7 +663,14 @@ void SimpleView::startServer()
 
 void SimpleView::stopServer()
 {
-    m_serverThread->terminate();
+    m_serverThread->stop();
+    m_serverThread->exit();
+    m_serverThread->wait(10);
+    while (m_serverThread->isRunning())
+    {
+        std::cout << "thread running" << std::endl;
+    }
+
     ui->logWindow->append(tr("Server stopped."));
 }
 
