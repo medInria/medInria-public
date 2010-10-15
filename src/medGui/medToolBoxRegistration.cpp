@@ -155,6 +155,11 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
 medToolBoxRegistration::~medToolBoxRegistration(void)
 {
+    if(d->fixedView) delete d->fixedView;
+    if(d->movingView) delete d->movingView;
+    if(d->fuseView)  delete d->fuseView;
+    if(d->fixedData) delete d->fixedData;
+    if(d->movingData) delete d->movingData;
     delete d;
 
     d = NULL;

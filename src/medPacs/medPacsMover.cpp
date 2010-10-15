@@ -32,13 +32,12 @@ medPacsMover::medPacsMover(int group, int elem, QString query,
     d->storageFolder = storageFolder;
     d->nodeIndex = nodeIndex;
 
-    d->move = medAbstractPacsFactory::instance()->createMoveScu("dcmtkMoveScu");
-
-    connect(d->move,SIGNAL(progressed(int)),this, SIGNAL(progressed(int)));
+    d->move = NULL;
 }
 
 medPacsMover::~medPacsMover( void )
 {
+    if (d->move) delete d->move;
     delete d;
 
     d = NULL;
@@ -73,26 +72,35 @@ void medPacsMover::run( void )
 
 void medPacsMover::doMove()
 {
-    d->move->clearAllQueryAttributes();
-    d->move->addQueryAttribute(d->group, d->elem, d->query.toLatin1());
-    d->move->useBuildInStoreSCP(true);
-    d->move->setStorageDirectory(d->storageFolder.toLatin1());
-    if (d->move->sendMoveRequest(
-        d->nodes.at(d->nodeIndex).at(0).toLatin1(),
-        d->nodes.at(d->nodeIndex).at(1).toLatin1(),
-        d->nodes.at(d->nodeIndex).at(2).toInt(),
-        d->host_title.toLatin1(),
-        d->host_address.toLatin1(),
-        d->host_port.toInt()))
+    if(!d->move)
     {
-      QString errorMessage;
-      errorMessage = tr("Failed to move from ") +
-          d->nodes.at(d->nodeIndex).at(0);
-      emit showError(this, errorMessage,5000);
-      emit failure();
-      return;
+        d->move = medAbstractPacsFactory::instance()->createMoveScu("dcmtkMoveScu");
+        connect(d->move,SIGNAL(progressed(int)),this, SIGNAL(progressed(int)));
     }
-    emit progressed(100);
-    emit success();
-    emit import(d->storageFolder.toLatin1());
+
+    if(d->move)
+    {
+        d->move->clearAllQueryAttributes();
+        d->move->addQueryAttribute(d->group, d->elem, d->query.toLatin1());
+        d->move->useBuildInStoreSCP(true);
+        d->move->setStorageDirectory(d->storageFolder.toLatin1());
+        if (d->move->sendMoveRequest(
+            d->nodes.at(d->nodeIndex).at(0).toLatin1(),
+            d->nodes.at(d->nodeIndex).at(1).toLatin1(),
+            d->nodes.at(d->nodeIndex).at(2).toInt(),
+            d->host_title.toLatin1(),
+            d->host_address.toLatin1(),
+            d->host_port.toInt()))
+        {
+          QString errorMessage;
+          errorMessage = tr("Failed to move from ") +
+              d->nodes.at(d->nodeIndex).at(0);
+          emit showError(this, errorMessage,5000);
+          emit failure();
+          return;
+        }
+        emit progressed(100);
+        emit success();
+        emit import(d->storageFolder.toLatin1());
+    }
 }
