@@ -40,6 +40,8 @@ void medViewContainerSingle::split(int rows, int cols)
 
 void medViewContainerSingle::setView(dtkAbstractView *view)
 {
+	if (view==d->view)
+		return;
     // if (d->layout->count())
     //     d->layout->takeAt(0)->widget()->hide();
     
