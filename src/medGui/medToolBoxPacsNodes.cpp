@@ -181,5 +181,6 @@ void medToolBoxPacsNodes::echo(void)
             d->table->item(i, 1)->setBackground(Qt::red);
             d->table->item(i, 2)->setBackground(Qt::red);
         }
+        delete scu;
     }
 }

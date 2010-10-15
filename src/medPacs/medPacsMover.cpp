@@ -19,7 +19,7 @@ public:
 
     QList<QStringList> nodes;
 
-    medAbstractPacsMoveScu *move;
+    medAbstractPacsMoveScu* move;
 };
 
 medPacsMover::medPacsMover(int group, int elem, QString query, 
