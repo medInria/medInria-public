@@ -91,6 +91,11 @@ int  dcmtkMoveScu::sendMoveRequest(const char* peerTitle, const char* peerIP, in
                 };
 
 
+    // do not use the port if not using the build int storescp
+    if (!m_useBuildInStoreScp)
+        opt_retrievePort = 0;
+
+
     /* make sure output directory exists and is writeable */
     if (opt_retrievePort > 0)
     {

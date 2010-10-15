@@ -35,7 +35,7 @@ int dcmtkStoreScp::start()
 
 int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int ourPort)
 {
-
+    m_stop = false;
     opt_showPresentationContexts = OFFalse;
     opt_uniqueFilenames = OFFalse;
     opt_fileNameExtension;
@@ -149,7 +149,7 @@ int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int o
 
 
 
-  while (cond.good())
+  while (cond.good() && (!m_stop))
   {
     /* receive an association and acknowledge or reject it. If the association was */
     /* acknowledged, offer corresponding services and invoke one or more if required. */
@@ -197,7 +197,7 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
   // try to receive an association. Here we either want to use blocking or
   // non-blocking, depending on if the option --eostudy-timeout is set.
   if( opt_endOfStudyTimeout == -1 )
-    cond = ASC_receiveAssociation(net, &assoc, opt_maxPDU, NULL, NULL, opt_secureConnection);
+    cond = ASC_receiveAssociation(net, &assoc, opt_maxPDU, NULL, NULL, opt_secureConnection, DUL_NOBLOCK);
   else
     cond = ASC_receiveAssociation(net, &assoc, opt_maxPDU, NULL, NULL, opt_secureConnection, DUL_NOBLOCK, OFstatic_cast(int, opt_endOfStudyTimeout));
 
@@ -625,6 +625,7 @@ OFCondition dcmtkStoreScp::processCommands(T_ASC_Association * assoc)
   // start a loop to be able to receive more than one DIMSE command
   while( cond == EC_Normal || cond == DIMSE_NODATAAVAILABLE || cond == DIMSE_OUTOFRESOURCES )
   {
+
     // receive a DIMSE command over the network
     if( opt_endOfStudyTimeout == -1 )
       cond = DIMSE_receiveCommand(assoc, DIMSE_BLOCKING, 0, &presID, &msg, &statusDetail);
@@ -1466,3 +1467,9 @@ bool dcmtkStoreScp::setStorageDirectory(const char* directory)
 
 //---------------------------------------------------------------------------------------------
 
+void dcmtkStoreScp::stop()
+{
+    m_stop = true;
+}
+
+//---------------------------------------------------------------------------------------------

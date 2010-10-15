@@ -24,3 +24,8 @@ void ServerThread::setConnectionParams(const char* ourTitle, const char* ourIP, 
     m_ourPort = ourPort;
     m_server->setConnectionParams(ourTitle, ourIP, ourPort);
 }
+
+void ServerThread::stop()
+{
+    m_server->stop();
+}

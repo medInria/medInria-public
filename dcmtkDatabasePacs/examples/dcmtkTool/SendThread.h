@@ -21,6 +21,7 @@ public:
 
     void setScanDirectory(const char* dir);
 
+
 private:
 
     dcmtkStoreScu*                  m_storeScu;
