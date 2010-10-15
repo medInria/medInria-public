@@ -23,4 +23,4 @@ private:
 
 medAbstractPacsEchoScu *createDcmtkEchoScu(void); 
 
-#endif DCMTKPACSECHOSCU_H
+#endif //DCMTKPACSECHOSCU_H

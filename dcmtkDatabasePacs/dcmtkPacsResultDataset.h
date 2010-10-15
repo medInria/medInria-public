@@ -33,4 +33,4 @@ protected:
     dcmtkResultDataset*          m_dataset;
 };
 
-#endif DCMTKPACSRESULTDATASET_H
+#endif //DCMTKPACSRESULTDATASET_H

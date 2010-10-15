@@ -269,4 +269,4 @@ private:
 
 };
 
-#endif DCMTKSTPRESCP_H
+#endif //DCMTKSTPRESCP_H

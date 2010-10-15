@@ -226,4 +226,4 @@ private:
 
 };
 
-#endif DCMTKMOVESCU_H
+#endif //DCMTKMOVESCU_H

@@ -7,14 +7,14 @@
     * D-26121 Oldenburg, Germany
     */
 
-#include <QObject>
-
 #ifndef DCMTKBASE_H
 #define DCMTKBASE_H
 
-#ifndef WIN32
-#define HAVE_CONFIG_H
-#endif
+#include <QObject>
+
+//#ifndef WIN32
+//#define HAVE_CONFIG_H
+//#endif
 
 #include "dcmtk/config/osconfig.h"    /* make sure OS specific configuration is included first */
 #include "dcmtk/ofstd/ofcond.h"
@@ -128,4 +128,4 @@ protected:
 
 };
 
-#endif DCMTKBASE_H
+#endif //DCMTKBASE_H

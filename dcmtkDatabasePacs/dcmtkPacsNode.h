@@ -52,4 +52,4 @@ private:
 };
 
 
-#endif DCMTKPACSFINDSCU_H
+#endif //DCMTKPACSFINDSCU_H
