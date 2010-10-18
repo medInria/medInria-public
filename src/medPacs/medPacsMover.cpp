@@ -81,6 +81,26 @@ void medPacsMover::doMove()
     if(d->move)
     {
         d->move->clearAllQueryAttributes();
+
+        // find out the query level and set it
+        switch(d->elem)
+        {
+        case 0x0018:
+            d->move->setQueryLevel(medAbstractPacsMoveScu::IMAGE);
+            break;
+
+        case 0x000E:
+            d->move->setQueryLevel(medAbstractPacsMoveScu::SERIES);
+            break;
+
+        case 0x000D:
+            d->move->setQueryLevel(medAbstractPacsMoveScu::STUDY);
+            break;
+
+        default:
+            qDebug() << "Err: could not determine query level for MOVE_SCU";
+        }
+
         d->move->addQueryAttribute(d->group, d->elem, d->query.toLatin1());
         d->move->useBuildInStoreSCP(true);
         d->move->setStorageDirectory(d->storageFolder.toLatin1());
