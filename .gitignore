@@ -1,4 +1,5 @@
 *~
+*.swp
 build
-\.project
-\.gitignore
+.project
+.DS_Store
