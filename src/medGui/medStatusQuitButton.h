@@ -20,6 +20,9 @@
 #ifndef MEDSTATUSQUITBUTTON_H
 #define MEDSTATUSQUITBUTTON_H
 
+
+#include "medGuiExport.h"
+
 #include <QtGui/QWidget>
 #include "medGuiExport.h"
 

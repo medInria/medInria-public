@@ -19,7 +19,7 @@ public:
 
     QList<QStringList> nodes;
 
-    medAbstractPacsMoveScu *move;
+    medAbstractPacsMoveScu* move;
 };
 
 medPacsMover::medPacsMover(int group, int elem, QString query, 
@@ -32,13 +32,12 @@ medPacsMover::medPacsMover(int group, int elem, QString query,
     d->storageFolder = storageFolder;
     d->nodeIndex = nodeIndex;
 
-    d->move = medAbstractPacsFactory::instance()->createMoveScu("dcmtkMoveScu");
-
-    connect(d->move,SIGNAL(progressed(int)),this, SIGNAL(progressed(int)));
+    d->move = NULL;
 }
 
 medPacsMover::~medPacsMover( void )
 {
+    if (d->move) delete d->move;
     delete d;
 
     d = NULL;
@@ -73,26 +72,55 @@ void medPacsMover::run( void )
 
 void medPacsMover::doMove()
 {
-    d->move->clearAllQueryAttributes();
-    d->move->addQueryAttribute(d->group, d->elem, d->query.toLatin1());
-    d->move->useBuildInStoreSCP(true);
-    d->move->setStorageDirectory(d->storageFolder.toLatin1());
-    if (d->move->sendMoveRequest(
-        d->nodes.at(d->nodeIndex).at(0).toLatin1(),
-        d->nodes.at(d->nodeIndex).at(1).toLatin1(),
-        d->nodes.at(d->nodeIndex).at(2).toInt(),
-        d->host_title.toLatin1(),
-        d->host_address.toLatin1(),
-        d->host_port.toInt()))
+    if(!d->move)
     {
-      QString errorMessage;
-      errorMessage = tr("Failed to move from ") +
-          d->nodes.at(d->nodeIndex).at(0);
-      emit showError(this, errorMessage,5000);
-      emit failure();
-      return;
+        d->move = medAbstractPacsFactory::instance()->createMoveScu("dcmtkMoveScu");
+        connect(d->move,SIGNAL(progressed(int)),this, SIGNAL(progressed(int)));
     }
-    emit progressed(100);
-    emit success();
-    emit import(d->storageFolder.toLatin1());
+
+    if(d->move)
+    {
+        d->move->clearAllQueryAttributes();
+
+        // find out the query level and set it
+        switch(d->elem)
+        {
+        case 0x0018:
+            d->move->setQueryLevel(medAbstractPacsMoveScu::IMAGE);
+            break;
+
+        case 0x000E:
+            d->move->setQueryLevel(medAbstractPacsMoveScu::SERIES);
+            break;
+
+        case 0x000D:
+            d->move->setQueryLevel(medAbstractPacsMoveScu::STUDY);
+            break;
+
+        default:
+            qDebug() << "Err: could not determine query level for MOVE_SCU";
+        }
+
+        d->move->addQueryAttribute(d->group, d->elem, d->query.toLatin1());
+        d->move->useBuildInStoreSCP(true);
+        d->move->setStorageDirectory(d->storageFolder.toLatin1());
+        if (d->move->sendMoveRequest(
+            d->nodes.at(d->nodeIndex).at(0).toLatin1(),
+            d->nodes.at(d->nodeIndex).at(1).toLatin1(),
+            d->nodes.at(d->nodeIndex).at(2).toInt(),
+            d->host_title.toLatin1(),
+            d->host_address.toLatin1(),
+            d->host_port.toInt()))
+        {
+          QString errorMessage;
+          errorMessage = tr("Failed to move from ") +
+              d->nodes.at(d->nodeIndex).at(0);
+          emit showError(this, errorMessage,5000);
+          emit failure();
+          return;
+        }
+        emit progressed(100);
+        emit success();
+        emit import(d->storageFolder.toLatin1());
+    }
 }

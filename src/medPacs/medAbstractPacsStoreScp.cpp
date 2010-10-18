@@ -25,6 +25,11 @@ int medAbstractPacsStoreScp::start( const char* ourTitle, const char* ourIP, uns
     return 0;
 }
 
+void medAbstractPacsStoreScp::stop()
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
 bool medAbstractPacsStoreScp::setStorageDirectory( const char* directory )
 {
     DTK_UNUSED(directory);
