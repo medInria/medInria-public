@@ -93,6 +93,8 @@ protected:
     void wheelEvent ( QWheelEvent * event );
     void keyReleaseEvent( QKeyEvent * event);
     void keyPressEvent( QKeyEvent * event);
+    void mousePressEvent(QMouseEvent * event );
+    void mouseReleaseEvent(QMouseEvent * event );
 };
 
 
@@ -792,7 +794,23 @@ void medClutEditorView::keyReleaseEvent( QKeyEvent * event){
         this->setDragMode(QGraphicsView::RubberBandDrag);
 }
 
+void medClutEditorView::mousePressEvent(QMouseEvent * event )
+{
+    if (event->button() == Qt::RightButton)
+    {
+        this->setDragMode(QGraphicsView::NoDrag);
+    }
+    QGraphicsView::mousePressEvent(event);
+}
 
+void medClutEditorView::mouseReleaseEvent(QMouseEvent * event )
+{
+    if (event->button() == Qt::RightButton)
+    {
+        this->setDragMode(QGraphicsView::RubberBandDrag);
+    }
+    QGraphicsView::mouseReleaseEvent(event);
+}
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditor
@@ -951,6 +969,8 @@ void medClutEditor::mousePressEvent(QMouseEvent *event)
         menu.addSeparator();
         menu.addAction(d->applyAction);
         menu.exec(mapFrom(this, QCursor::pos()));
+        //hack to get the rubber band back after right clicking on the view
+        d->view->setDragMode(QGraphicsView::RubberBandDrag);
     }
 }
 
