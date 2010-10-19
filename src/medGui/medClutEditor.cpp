@@ -717,6 +717,7 @@ medClutEditorView::medClutEditorView(QWidget *parent)
 
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
+    this->setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 medClutEditorView::~medClutEditorView(void)
@@ -788,7 +789,7 @@ void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
 
 void medClutEditorView::keyReleaseEvent( QKeyEvent * event){
     if (event->key() == Qt::Key_Control)
-        this->setDragMode(QGraphicsView::NoDrag);
+        this->setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 
