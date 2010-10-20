@@ -89,8 +89,8 @@ void medClutEditorVertex::paint(QPainter *painter,
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    qreal rInner = 10.0;
-    qreal rOuter = 20.0;
+    qreal rInner = 5.0;
+    qreal rOuter = 10.0;
 
     setAlpha();
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
@@ -105,7 +105,7 @@ void medClutEditorVertex::paint(QPainter *painter,
 
 QRectF medClutEditorVertex::boundingRect(void) const
 {
-    return QRectF(-40.0, -40.0, 80.0, 80.0);
+    return QRectF(-10.0, -10.0, 20.0, 20.0);
 }
 
 QColor medClutEditorVertex::color(void) const
