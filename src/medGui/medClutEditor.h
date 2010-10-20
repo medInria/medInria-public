@@ -73,6 +73,37 @@ private :
 
 
 // /////////////////////////////////////////////////////////////////
+// medClutEditorHistogram
+// /////////////////////////////////////////////////////////////////
+class medClutEditorHistogramPrivate;
+
+class medClutEditorHistogram : public QGraphicsItem
+{
+public:
+     medClutEditorHistogram(QGraphicsItem *parent = 0);
+    ~medClutEditorHistogram(void);
+
+    QSizeF size(void) const;
+    void setSize( QSizeF s );
+
+    void addValue(qreal intensity, qreal number);
+    qreal getRangeMin() const;
+    qreal getRangeMax() const;
+    QPointF valueToCoordinate( QPointF value ) const;
+
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+public:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget = 0);
+
+    QRectF boundingRect(void) const;
+
+private:
+    medClutEditorHistogramPrivate * d;
+};
+
+// /////////////////////////////////////////////////////////////////
 // medClutEditorTable
 // /////////////////////////////////////////////////////////////////
 class medClutEditorTablePrivate;
@@ -119,6 +150,44 @@ private:
 
     medClutEditorTablePrivate *d;
 };
+
+
+// /////////////////////////////////////////////////////////////////
+// medClutEditorScene
+// /////////////////////////////////////////////////////////////////
+
+class medClutEditorScene : public QGraphicsScene
+{
+public:
+     medClutEditorScene(QObject *parent = 0);
+    ~medClutEditorScene(void);
+
+    medClutEditorTable * table();
+    // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+};
+
+
+// /////////////////////////////////////////////////////////////////
+// medClutEditorView
+// /////////////////////////////////////////////////////////////////
+
+class medClutEditorView : public QGraphicsView
+{
+public:
+     medClutEditorView(QWidget *parent = 0);
+    ~medClutEditorView(void);
+
+protected:
+    medClutEditorTable * table();
+
+    void resizeEvent(QResizeEvent *event);
+    void wheelEvent ( QWheelEvent * event );
+    void keyReleaseEvent( QKeyEvent * event);
+    void keyPressEvent( QKeyEvent * event);
+    void mousePressEvent(QMouseEvent * event );
+    void mouseReleaseEvent(QMouseEvent * event );
+};
+
 
 
 // /////////////////////////////////////////////////////////////////

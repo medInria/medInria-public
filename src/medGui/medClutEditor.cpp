@@ -26,81 +26,6 @@
 #include <math.h>
 #include <climits>
 
-// /////////////////////////////////////////////////////////////////
-// medClutEditorHistogram
-// /////////////////////////////////////////////////////////////////
-
-class medClutEditorHistogram : public QGraphicsItem
-{
-public:
-     medClutEditorHistogram(QGraphicsItem *parent = 0);
-    ~medClutEditorHistogram(void);
-
-    QSizeF size(void) const;
-    void setSize( QSizeF s );
-
-    void addValue(qreal intensity, qreal number);
-    qreal getRangeMin() const;
-    qreal getRangeMax() const;
-    QPointF valueToCoordinate( QPointF value ) const;
-
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-public:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget = 0);
-
-    QRectF boundingRect(void) const;
-
-private:
-    QMap<qreal, qreal> values;
-    QList<QPointF> scaledValues;
-
-    qreal maxLogNum;
-    QSizeF histSize;
-};
-
-
-// /////////////////////////////////////////////////////////////////
-// medClutEditorScene
-// /////////////////////////////////////////////////////////////////
-
-class medClutEditorScene : public QGraphicsScene
-{
-public:
-     medClutEditorScene(QObject *parent = 0);
-    ~medClutEditorScene(void);
-
-    medClutEditorTable * table();
-    // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-};
-
-
-// /////////////////////////////////////////////////////////////////
-// medClutEditorView
-// /////////////////////////////////////////////////////////////////
-
-class medClutEditorView : public QGraphicsView
-{
-public:
-     medClutEditorView(QWidget *parent = 0);
-    ~medClutEditorView(void);
-
-protected:
-    medClutEditorTable * table();
-
-    void resizeEvent(QResizeEvent *event);
-    void wheelEvent ( QWheelEvent * event );
-    void keyReleaseEvent( QKeyEvent * event);
-    void keyPressEvent( QKeyEvent * event);
-    void mousePressEvent(QMouseEvent * event );
-    void mouseReleaseEvent(QMouseEvent * event );
-};
-
-
-
-
-
 
 
 // /////////////////////////////////////////////////////////////////
@@ -571,43 +496,57 @@ QRectF medClutEditorTable::boundingRect(void) const
 // medClutEditorHistogram
 // /////////////////////////////////////////////////////////////////
 
+
+class medClutEditorHistogramPrivate
+{
+public:
+    QMap<qreal, qreal> values;
+    QList<QPointF> scaledValues;
+    qreal maxLogNum;
+    QSizeF histSize;
+};
+
+
 medClutEditorHistogram::medClutEditorHistogram(QGraphicsItem *parent)
   : QGraphicsItem(parent)
-  , histSize( 500.0, 300.0 )
-  , maxLogNum( 0.0 )
+  , d (new medClutEditorHistogramPrivate)
 {
+    d->histSize = QSizeF( 500.0, 300.0 );
+    d->maxLogNum =  0.0 ;
     //this->setFlag(QGraphicsItem::ItemIsMovable, false);
     this->setZValue(-1000);
 }
 
 medClutEditorHistogram::~medClutEditorHistogram(void)
 {
+    delete d;
+    d = NULL;
 }
 
 QRectF medClutEditorHistogram::boundingRect(void) const
 {
-    return QRectF( QPointF( 0.0, 0.0 ), histSize );
+    return QRectF( QPointF( 0.0, 0.0 ), d->histSize );
 }
 
 QSizeF medClutEditorHistogram::size(void) const
 {
-    return histSize;
+    return d->histSize;
 }
 
 void medClutEditorHistogram::setSize( QSizeF s )
 {
-    histSize = s;
-    scaledValues.clear();
+    d->histSize = s;
+    d->scaledValues.clear();
 }
 
 qreal medClutEditorHistogram::getRangeMin(void) const
 {
-    return values.begin().key();
+    return d->values.begin().key();
 }
 
 qreal medClutEditorHistogram::getRangeMax(void) const
 {
-    QMap<qreal, qreal>::const_iterator end = values.end();
+    QMap<qreal, qreal>::const_iterator end = d->values.end();
     --end;
     return end.key();
 }
@@ -615,9 +554,9 @@ qreal medClutEditorHistogram::getRangeMax(void) const
 void medClutEditorHistogram::addValue(qreal intensity, qreal number)
 {
     qreal logNum = 1000.0 * log10f( number + 1.0 );
-    maxLogNum = qMax( logNum, maxLogNum );
-    values.insert( intensity, logNum );
-    scaledValues.clear();
+    d->maxLogNum = qMax( logNum, d->maxLogNum );
+    d->values.insert( intensity, logNum );
+    d->scaledValues.clear();
 }
 
 QPointF medClutEditorHistogram::valueToCoordinate( QPointF value ) const
@@ -626,9 +565,9 @@ QPointF medClutEditorHistogram::valueToCoordinate( QPointF value ) const
     qreal valRange  = this->getRangeMax() - rangeMin;
 
     QPointF coord;
-    coord.setX( histSize.width() * ( ( value.x() - rangeMin ) / valRange ) );
-    coord.setY( histSize.height() -
-                histSize.height() * ( value.y() / maxLogNum ) );
+    coord.setX( d->histSize.width() * ( ( value.x() - rangeMin ) / valRange ) );
+    coord.setY( d->histSize.height() -
+                d->histSize.height() * ( value.y() / d->maxLogNum ) );
 
     return coord;
 }
@@ -640,21 +579,21 @@ void medClutEditorHistogram::paint(QPainter *painter,
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    if ( scaledValues.count() != values.count() ) {
+    if ( d->scaledValues.count() != d->values.count() ) {
         qDebug() << "scaling histogram values";
 
-        scaledValues.clear();
-        for ( QMap<qreal, qreal>::iterator it = values.begin(),
-                  end = values.end(); it != end; ++it )
-            scaledValues << this->valueToCoordinate( QPointF( it.key(),
+        d->scaledValues.clear();
+        for ( QMap<qreal, qreal>::iterator it = d->values.begin(),
+                  end = d->values.end(); it != end; ++it )
+            d->scaledValues << this->valueToCoordinate( QPointF( it.key(),
                                                               it.value() ) );
     }
 
     QPainterPath path;
-    path.moveTo( QPointF( scaledValues.first().x(), histSize.height() ) );
-    foreach ( QPointF point, scaledValues )
+    path.moveTo( QPointF( d->scaledValues.first().x(), d->histSize.height() ) );
+    foreach ( QPointF point, d->scaledValues )
         path.lineTo( point );
-    path.lineTo( QPointF( scaledValues.last().x(), histSize.height() ) );
+    path.lineTo( QPointF( d->scaledValues.last().x(), d->histSize.height() ) );
 
     painter->setPen(QColor(0x61, 0x61, 0x61));
     painter->setBrush(QColor(0x2a, 0x2a, 0x2a));
