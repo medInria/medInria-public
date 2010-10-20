@@ -25,7 +25,6 @@
 #include <medPacs/medAbstractPacsNode.h>
 #include <medPacs/medAbstractPacsStoreScp.h>
 #include <medPacs/medAbstractPacsResultDataset.h>
-//#include <medSql/medDatabaseImporter.h>
 
 #include <QUuid>
 
@@ -88,10 +87,9 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
 
     this->setHeaderLabels(QStringList() << "Name" << "Description" << "Id" << "Modality");
 
-    d->find = medAbstractPacsFactory::instance()->createFindScu("dcmtkFindScu");
+    d->find = NULL;
     d->server = medAbstractPacsFactory::instance()->createStoreScp("dcmtkStoreScp");
-
-    this->readSettings();
+    if (!d->server) qDebug() << "Warning server could not be started, pacsmodule not loaded.";
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
@@ -102,10 +100,13 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
 medPacsWidget::~medPacsWidget(void)
 {
     this->writeSettings();
-
-    // d->terminate();
-    // d->wait();
-
+    if (d->find) delete d->find;
+    if (d->isRunning())
+    {
+        d->server->stop();
+        d->exit();
+        d->wait();
+    }
     delete d;
 
     d = NULL;
@@ -143,8 +144,9 @@ void medPacsWidget::search(QString query)
 
     this->clear();
 
-    if(d->find) {
-        
+    if (!d->find) d->find = medAbstractPacsFactory::instance()->createFindScu("dcmtkFindScu");
+    if(d->find) 
+    {
         d->find->clearAllQueryAttributes();
         d->find->setQueryLevel(medAbstractPacsFindScu::STUDY);
         d->find->addQueryAttribute(0x0010,0x0010, query.toAscii().constData()); // patient name
@@ -182,6 +184,8 @@ void medPacsWidget::search(QString query)
                 item->setData(2,Qt::UserRole, QString(dataset->getStudyInstanceUID()));
             }
         }
+    }else {
+        qDebug() << "findScu: cannot create instance, maybe module was not loaded?";
     }
 }
 

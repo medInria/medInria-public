@@ -77,6 +77,8 @@ public:
     medWorkspaceShifter *shifter;
     medWorkspaceShifterAction *shiftToBrowserAreaAction;
     medWorkspaceShifterAction *shiftToViewerAreaAction;
+
+    medMessageControllerMessageQuestion *quitMessage;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -280,12 +282,13 @@ void medMainWindow::onConfigurationTriggered(QAction *action)
 
 void medMainWindow::onQuit(void)
 {
-    medMessageControllerMessageQuestion *question = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
+    this->statusBar()->removeWidget(d->quitMessage);
+    d->quitMessage = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
 
-    connect(question, SIGNAL(accepted()), qApp, SLOT(quit()));
-    connect(question, SIGNAL(rejected()), question, SLOT(deleteLater()));
+    connect(d->quitMessage, SIGNAL(accepted()), qApp, SLOT(quit()));
+    connect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
 
-    this->statusBar()->addWidget(question);
+    this->statusBar()->addWidget(d->quitMessage);
 }
 
 void medMainWindow::open(const medDataIndex& index)
