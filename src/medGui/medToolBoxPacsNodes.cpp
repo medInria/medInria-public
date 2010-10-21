@@ -1,21 +1,21 @@
 /* medToolBoxPacsNodes.cpp --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Oct  5 15:49:05 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Wed Oct  6 18:49:00 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 151
- */
+* 
+* Author: Julien Wintz
+* Copyright (C) 2008 - Julien Wintz, Inria.
+* Created: Tue Oct  5 15:49:05 2010 (+0200)
+* Version: $Id$
+* Last-Updated: Wed Oct  6 18:49:00 2010 (+0200)
+*           By: Julien Wintz
+*     Update #: 151
+*/
 
 /* Commentary: 
- * 
- */
+* 
+*/
 
 /* Change log:
- * 
- */
+* 
+*/
 
 #include "medToolBoxPacsNodes.h"
 
@@ -38,21 +38,20 @@ public:
     QString host_title;
     QString host_address;
     QString host_port;
+
+    medAbstractPacsEchoScu *scu;
 };
 
 medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), d(new medToolBoxPacsNodesPrivate)
 {
     QWidget *page = new QWidget(this);
 
+    d->scu = NULL;
     d->title = new QLineEdit("DCM4CHEE", page);
     d->address = new QLineEdit("jumbo-4.irisa.fr", page);
     d->port = new QLineEdit("10012", page);
 
     d->table = new QTableWidget(page);
-    d->table->setRowCount(0);
-    d->table->setColumnCount(3);
-    d->table->setHorizontalHeaderLabels(QStringList() << "Title" << "Address" << "Port");
-    d->table->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     d->add = new QPushButton("Add"); d->add->setObjectName("left");
     d->ech = new QPushButton("Echo"); d->ech->setObjectName("center");
@@ -87,7 +86,7 @@ medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), 
 medToolBoxPacsNodes::~medToolBoxPacsNodes(void)
 {
     this->writeSettings();
-
+    if(d->scu) delete d->scu;
     delete d;
 
     d = NULL;
@@ -109,11 +108,15 @@ void medToolBoxPacsNodes::readSettings(void)
     nodes = settings.value("nodes").toList();
     settings.endGroup();
 
-    d->table->clearContents();
+    d->table->clear(); // using clearcontent() seems not to remove the items correctly?!
+    d->table->setRowCount(0);
+    d->table->setColumnCount(3);
+    d->table->setHorizontalHeaderLabels(QStringList() << "Title" << "Address" << "Port");
+    d->table->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     foreach(QVariant node, nodes) {
         int row = d->table->rowCount(); d->table->insertRow(row);
-        
+
         d->table->setItem(row, 0, new QTableWidgetItem(node.toStringList().at(0)));
         d->table->setItem(row, 1, new QTableWidgetItem(node.toStringList().at(1)));
         d->table->setItem(row, 2, new QTableWidgetItem(node.toStringList().at(2)));
@@ -159,27 +162,32 @@ void medToolBoxPacsNodes::remNode(void)
 
 void medToolBoxPacsNodes::echo(void)
 {
-    // this->readSettings();
+     this->readSettings();
 
-    for(int i = 0; i < d->table->rowCount(); i++) {
+    for(int i = 0; i < d->table->rowCount(); i++) 
+    {
 
-        medAbstractPacsEchoScu *scu = medAbstractPacsFactory::instance()->createEchoScu("dcmtkEchoScu");
-        
-        if(!scu->sendEchoRequest(
-               d->table->item(i, 0)->text().toAscii().constData(),
-               d->table->item(i, 1)->text().toAscii().constData(),
-               d->table->item(i, 2)->text().toInt(),
-               d->host_title.toAscii().constData(),
-               d->host_address.toAscii().constData(),
-               d->host_port.toInt())) {
+        if(!d->scu) d->scu = medAbstractPacsFactory::instance()->createEchoScu("dcmtkEchoScu");
+        if(d->scu)
+        {
+            if(!d->scu->sendEchoRequest(
+                d->table->item(i, 0)->text().toAscii().constData(),
+                d->table->item(i, 1)->text().toAscii().constData(),
+                d->table->item(i, 2)->text().toInt(),
+                d->host_title.toAscii().constData(),
+                d->host_address.toAscii().constData(),
+                d->host_port.toInt())) {
 
-            d->table->item(i, 0)->setBackground(Qt::green);
-            d->table->item(i, 1)->setBackground(Qt::green);
-            d->table->item(i, 2)->setBackground(Qt::green);
+                    d->table->item(i, 0)->setBackground(Qt::green);
+                    d->table->item(i, 1)->setBackground(Qt::green);
+                    d->table->item(i, 2)->setBackground(Qt::green);
+            } else {
+                d->table->item(i, 0)->setBackground(Qt::red);
+                d->table->item(i, 1)->setBackground(Qt::red);
+                d->table->item(i, 2)->setBackground(Qt::red);
+            }
         } else {
-            d->table->item(i, 0)->setBackground(Qt::red);
-            d->table->item(i, 1)->setBackground(Qt::red);
-            d->table->item(i, 2)->setBackground(Qt::red);
+            qDebug() << "echoScu: cannot create instance, maybe module was not loaded?";
         }
     }
 }

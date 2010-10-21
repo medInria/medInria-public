@@ -19,7 +19,8 @@ public:
 
     virtual bool setStorageDirectory(const char* directory);
 
-
+signals:
+    void progressed(int);
 
 };
 

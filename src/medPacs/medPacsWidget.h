@@ -38,7 +38,7 @@ public:
     void writeSettings(void);
 
 signals:
-    void import(QString);
+    void move(int, int, QString, QString, int);
 
 public slots:
     void search(QString query);

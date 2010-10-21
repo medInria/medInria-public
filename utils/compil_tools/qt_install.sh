@@ -14,6 +14,7 @@ files="QtCLucene4.dll \
 	QtXmlPatterns4.dll \
 	phonon4.dll"
 	
+mkdir -p  /cygdrive/c/Program\ Files/inria/bin
 
 for f in $files ; do
     cp /cygdrive/c/Qt/4.6.3/bin/$f /cygdrive/c/Program\ Files/inria/bin/$f

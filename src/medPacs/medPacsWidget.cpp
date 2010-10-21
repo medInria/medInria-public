@@ -22,7 +22,6 @@
 #include <medPacs/medAbstractPacsFactory.h>
 #include <medPacs/medAbstractPacsFindScu.h>
 #include <medPacs/medAbstractPacsEchoScu.h>
-#include <medPacs/medAbstractPacsMoveScu.h>
 #include <medPacs/medAbstractPacsNode.h>
 #include <medPacs/medAbstractPacsStoreScp.h>
 #include <medPacs/medAbstractPacsResultDataset.h>
@@ -52,7 +51,6 @@ public:
 
     medAbstractPacsFindScu *find;
     medAbstractPacsStoreScp *server;
-    medAbstractPacsMoveScu *move;
 };
 
 void medPacsWidgetPrivate::run(void)
@@ -89,11 +87,9 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
 
     this->setHeaderLabels(QStringList() << "Name" << "Description" << "Id" << "Modality");
 
-    d->find = medAbstractPacsFactory::instance()->createFindScu("dcmtkFindScu");
+    d->find = NULL;
     d->server = medAbstractPacsFactory::instance()->createStoreScp("dcmtkStoreScp");
-    d->move = medAbstractPacsFactory::instance()->createMoveScu("dcmtkMoveScu");
-
-    this->readSettings();
+    if (!d->server) qDebug() << "Warning server could not be started, pacsmodule not loaded.";
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
@@ -104,10 +100,13 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
 medPacsWidget::~medPacsWidget(void)
 {
     this->writeSettings();
-
-    // d->terminate();
-    // d->wait();
-
+    if (d->find) delete d->find;
+    if (d->isRunning())
+    {
+        d->server->stop();
+        d->exit();
+        d->wait();
+    }
     delete d;
 
     d = NULL;
@@ -145,8 +144,9 @@ void medPacsWidget::search(QString query)
 
     this->clear();
 
-    if(d->find) {
-        
+    if (!d->find) d->find = medAbstractPacsFactory::instance()->createFindScu("dcmtkFindScu");
+    if(d->find) 
+    {
         d->find->clearAllQueryAttributes();
         d->find->setQueryLevel(medAbstractPacsFindScu::STUDY);
         d->find->addQueryAttribute(0x0010,0x0010, query.toAscii().constData()); // patient name
@@ -184,6 +184,8 @@ void medPacsWidget::search(QString query)
                 item->setData(2,Qt::UserRole, QString(dataset->getStudyInstanceUID()));
             }
         }
+    }else {
+        qDebug() << "findScu: cannot create instance, maybe module was not loaded?";
     }
 }
 
@@ -306,7 +308,7 @@ void medPacsWidget::updateContextMenu(const QPoint& point)
     menu.exec(mapToGlobal(point));
 }
 
-#include <medSql/medDatabaseImporter.h>
+
 
 void medPacsWidget::onItemImported(void)
 {
@@ -333,17 +335,6 @@ void medPacsWidget::onItemImported(void)
 
     qDebug() << tmp.absolutePath().toLatin1();
 
-    d->move->clearAllQueryAttributes();
-    d->move->addQueryAttribute(tag.x(), tag.y(), query.toLatin1());
-    d->move->useBuildInStoreSCP(true);
-    d->move->setStorageDirectory(tmp.absolutePath().toLatin1());
-    d->move->sendMoveRequest(
-        d->nodes.at(nodeIndex).at(0).toLatin1(),
-        d->nodes.at(nodeIndex).at(1).toLatin1(),
-        d->nodes.at(nodeIndex).at(2).toInt(),
-        d->host_title.toLatin1(),
-        d->host_address.toLatin1(),
-        d->host_port.toInt());
 
-    emit import(tmp.absolutePath().toLatin1());
+    emit move(tag.x(), tag.y(), query, tmp.absolutePath(), nodeIndex);
 }
