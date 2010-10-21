@@ -213,14 +213,16 @@ class medClutEditorTablePrivate
     qreal rangeMin;
     qreal rangeMax;
     QList<medClutEditorVertex *> vertices;
+    QString title;
 };
 
 
-medClutEditorTable::medClutEditorTable(QGraphicsItem *parent)
+medClutEditorTable::medClutEditorTable(const QString & title,  QGraphicsItem *parent)
   : QGraphicsItem(parent)
 {
     d = new medClutEditorTablePrivate;
     d->size = QSizeF( 500.0, 300.0 );
+    d->title = title;
 
     //this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -232,6 +234,15 @@ medClutEditorTable::~medClutEditorTable(void)
     qDebug() << __func__;
 
     delete d;
+}
+
+QString medClutEditorTable::title(){
+    return d->title;
+}
+
+void medClutEditorTable::setTitle(QString & title)
+{
+    d->title = title;
 }
 
 void medClutEditorTable::setSize( const QSizeF & size )
@@ -309,6 +320,11 @@ void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
         medClutEditorVertex * next = i < last ? d->vertices[i+1] : NULL;
         vertex->interpolate( prev, next );
     }
+}
+
+const QList<medClutEditorVertex*>  medClutEditorTable::vertices()
+{
+    return d->vertices;
 }
 
 void medClutEditorTable::setSelectedAllVertices( bool isSelected )
@@ -841,7 +857,7 @@ void medClutEditor::initializeTable(void)
 {
     this->deleteTable();
 
-    medClutEditorTable *lut = new medClutEditorTable;
+    medClutEditorTable *lut = new medClutEditorTable("Unknown");
     lut->setSize( d->histogram->size() );
     lut->setRange( d->histogram->getRangeMin(), d->histogram->getRangeMax() );
     d->scene->addItem( lut );
