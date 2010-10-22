@@ -11,6 +11,8 @@ class dcmtkNode
 {
 public:
 
+	//dcmtkNode(const dcmtkNode& node);
+
     inline void setTitle(std::string title) {
         m_title = title;
     }

@@ -1,1 +1,2 @@
 subdirs(dcmtkTool)
+subdirs(dcmtkSpeedTest)
