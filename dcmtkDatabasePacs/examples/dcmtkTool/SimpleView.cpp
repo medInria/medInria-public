@@ -434,6 +434,29 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
 
     // set up search criteria
     m_moveScu->clearAllQueryAttributes();
+
+    // find out which query level should be used
+    int elem = tag.y();
+    switch(elem)
+    {
+    case 0x0018:
+        m_moveScu->setQueryLevel(dcmtkMoveScu::IMAGE);
+        break;
+
+    case 0x000E:
+        m_moveScu->setQueryLevel(dcmtkMoveScu::SERIES);
+        break;
+
+    case 0x000D:
+        m_moveScu->setQueryLevel(dcmtkMoveScu::STUDY);
+        break;
+
+    default:
+        ui->logWindow->append(tr("Could not determine query level."));
+    }
+
+
+
     m_moveScu->addQueryAttribute(tag.x(), tag.y(), searchStr.toLatin1());
     
     // send the move request using the search crits
