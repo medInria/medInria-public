@@ -52,7 +52,6 @@ include(Dart)
 ## Input
 ## #################################################################
 
-set(DTK_AGGREGATE_PLUGINS 1)
 set(DEPENDS_ON_DTK 1)
 
 subdirs(v3dData)

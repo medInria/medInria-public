@@ -6,6 +6,7 @@
 #include "dcmtkPacsFindScu.h"
 #include "dcmtkPacsEchoScu.h"
 #include "dcmtkPacsMoveScu.h"
+#include "dcmtkPacsStoreScu.h"
 #include "dcmtkPacsStoreScp.h"
 
 #include <dtkCore/dtkLog.h>
@@ -57,6 +58,11 @@ bool dcmtkDatabasePacsPlugin::initialize(void)
 
     if(!dcmtkPacsMoveScu::registered()) {
         dtkWarning() << "Unable to register dcmtkPacsMoveScu type";
+        return false;
+    }
+
+    if(!dcmtkPacsStoreScu::registered()) {
+        dtkWarning() << "Unable to register dcmtkPacsStoreScu type";
         return false;
     }
 

@@ -12,6 +12,8 @@ public:
     virtual QString description(void) const;
     static bool     registered(void);
 
+    dcmtkPacsMoveScu();
+
     int sendMoveRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, 
                         const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
@@ -26,8 +28,6 @@ public:
 
     bool setStorageDirectory(const char* directory);
 
-
-
 private:
     dcmtkMoveScu scu;
 
@@ -35,4 +35,4 @@ private:
 
 medAbstractPacsMoveScu *createDcmtkMoveScu(void); 
 
-#endif DCMTKPACSMOVESCU_H
+#endif //DCMTKPACSMOVESCU_H

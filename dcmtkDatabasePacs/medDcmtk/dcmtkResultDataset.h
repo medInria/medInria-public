@@ -47,4 +47,4 @@ protected:
 
 
 
-#endif DCMTKRESULTDATASET_H
+#endif //DCMTKRESULTDATASET_H

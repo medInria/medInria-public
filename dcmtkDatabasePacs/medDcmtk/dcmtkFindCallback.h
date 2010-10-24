@@ -1,10 +1,6 @@
 #ifndef DCMTKFINDCALLBACK_H
 #define DCMTKFINDCALLBACK_H
 
-#ifndef WIN32
-#define HAVE_CONFIG_H
-#endif
-
 // inc
 #include "dcmtk/dcmnet/dfindscu.h"
 #include <iostream>
@@ -69,4 +65,4 @@ private:
 
 };
 
-#endif DCMTKFINDCALLBACK_H
+#endif //DCMTKFINDCALLBACK_H

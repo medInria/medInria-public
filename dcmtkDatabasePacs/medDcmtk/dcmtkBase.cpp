@@ -9,6 +9,8 @@
 
 #include "dcmtkLogger.h"
 
+static OFLogger dummyLogger = OFLog::getLogger("inria" "inria");
+
 //---------------------------------------------------------------------------------------------
 
 dcmtkBase::dcmtkBase()
