@@ -33,6 +33,7 @@
 #include "medDatabaseImporter.h"
 #include "medDatabaseExporter.h"
 #include "medDatabaseReader.h"
+#include <medCore/medStorage.h>
 
 medDatabaseController *medDatabaseController::instance(void)
 {
@@ -49,10 +50,10 @@ QSqlDatabase *medDatabaseController::database(void)
 
 bool medDatabaseController::createConnection(void)
 {
-    this->mkpath(this->dataLocation() + "/");
+    medStorage::mkpath(medStorage::dataLocation() + "/");
 
     this->m_database = QSqlDatabase::addDatabase("QSQLITE");
-    this->m_database.setDatabaseName(this->dataLocation() + "/" + "db");
+    this->m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
 
     if (!m_database.open()) {
         qDebug() << DTK_COLOR_FG_RED << "Cannot open database: Unable to establish a database connection." << DTK_NO_COLOR;
@@ -74,35 +75,7 @@ bool medDatabaseController::closeConnection(void)
     return true;
 }
 
-bool medDatabaseController::mkpath(const QString& dirPath)
-{
-    QDir dir; return(dir.mkpath(dirPath));
-}
 
-bool medDatabaseController::rmpath(const QString& dirPath)
-{
-    QDir dir; return(dir.rmpath(dirPath));
-}
-
-QString medDatabaseController::dataLocation(void) const
-{
-#ifdef Q_WS_MAC
-    return QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation))
-            .remove(QCoreApplication::applicationName())
-            .append(QCoreApplication::applicationName());
-#else
-    return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-#endif
-}
-
-QString medDatabaseController::configLocation(void) const
-{
-#ifdef Q_WS_MAC
-    return(QDir::homePath() + "/Library/Preferences/" + "com" + "." + QCoreApplication::organizationName() + "." + QCoreApplication::applicationName() + "." + "plist");
-#else
-    return(dataLocation());
-#endif
-}
 
 medDataIndex medDatabaseController::indexForPatient(int id)
 {

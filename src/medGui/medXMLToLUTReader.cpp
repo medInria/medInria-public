@@ -6,14 +6,14 @@
 class medXMLToLUTReaderPrivate{
 public:
     QXmlStreamReader xml;
-    QList<medClutEditorTable> *  tables;
+    QList<medClutEditorTable *> *tables;
     void readLUT();
     void readTable();
     void readNode(medClutEditorTable & table);
 };
 
 
-medXMLToLUTReader::medXMLToLUTReader (QList<medClutEditorTable> * tables):
+medXMLToLUTReader::medXMLToLUTReader (QList<medClutEditorTable*> * tables):
         d(new medXMLToLUTReaderPrivate)
 {
     d->tables = tables;
@@ -28,25 +28,25 @@ medXMLToLUTReader::~medXMLToLUTReader()
 
 bool medXMLToLUTReader::read(QIODevice *device)
 {
-    xml.setDevice(device);
+    d->xml.setDevice(device);
 
-    if (xml.readNextStartElement())
+    if (d->xml.readNextStartElement())
     {
-        if (xml.name() == "medLUTs" && xml.attributes().value("version") == "1.0")
-            readLUT();
+        if (d->xml.name() == "medLUTs" && d->xml.attributes().value("version") == "1.0")
+            d->readLUT();
         else
-            xml.raiseError(QObject::tr("The file is not a medLUT version 1.0 file."));
+            d->xml.raiseError(QObject::tr("The file is not a medLUT version 1.0 file."));
     }
 
-    return !xml.error();
+    return !d->xml.error();
 }
 
 QString medXMLToLUTReader::errorString() const
  {
      return QObject::tr("%1\nLine %2, column %3")
-             .arg(xml.errorString())
-             .arg(xml.lineNumber())
-             .arg(xml.columnNumber());
+             .arg(d->xml.errorString())
+             .arg(d->xml.lineNumber())
+             .arg(d->xml.columnNumber());
  }
 
 
@@ -68,12 +68,12 @@ void medXMLToLUTReaderPrivate::readLUT()
 void medXMLToLUTReaderPrivate::readTable()
  {
      Q_ASSERT(xml.isStartElement() && xml.name() == "table");
-     medClutEditorTable table = new medClutEditorTable(
-             xml.attributes().value("title"));
+     medClutEditorTable * table = new medClutEditorTable(
+             xml.attributes().value("title").toString());
 
      while (xml.readNextStartElement()) {
          if (xml.name() == "node")
-             readNode(table);
+             readNode(*table);
          else
              xml.skipCurrentElement();
      }
@@ -86,7 +86,7 @@ void medXMLToLUTReaderPrivate::readNode(medClutEditorTable & table)
      QString node = xml.readElementText();
      QStringList sl = node.split(';');
      if (sl.count() != 6){
-         qDebug << "node not compliant with 6 coordinates scheme";
+         qDebug() << "node not compliant with 6 coordinates scheme";
          return;
      }
      table.addVertex(new medClutEditorVertex(sl.at(0).toDouble(),

@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     medMainWindow mainwindow;
 
     mainwindow.show();
-
+    mainwindow.raise();
     if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen"))
         mainwindow.setFullScreen(true);
 

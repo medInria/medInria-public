@@ -11,7 +11,7 @@ class medXMLToLUTReaderPrivate;
 
 class medXMLToLUTReader {
 public:
-    medXMLToLUTReader(QList<medClutEditorTable> * tables);
+    medXMLToLUTReader(QList<medClutEditorTable*> * tables);
     ~medXMLToLUTReader();
     bool read(QIODevice *device);
     QString errorString() const;

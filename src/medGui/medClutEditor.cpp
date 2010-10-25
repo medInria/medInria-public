@@ -21,11 +21,13 @@
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <medCore/medAbstractView.h>
+#include <medCore/medStorage.h>
 #include "medClutEditor.h"
 
 #include <math.h>
 #include <climits>
-
+#include "medLUTtoXMLWriter.h"
+#include "medXMLtoLUTReader.h"
 
 
 // /////////////////////////////////////////////////////////////////
@@ -322,7 +324,7 @@ void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
     }
 }
 
-const QList<medClutEditorVertex*>  medClutEditorTable::vertices()
+QList<medClutEditorVertex*>  medClutEditorTable::vertices()
 {
     return d->vertices;
 }
@@ -778,7 +780,9 @@ public:
     QAction *deleteAction;
     QAction *colorAction;
     QAction *applyAction;
-
+    QAction *loadTableAction;
+    QAction *deleteTableAction;
+    QAction *saveTableAction;
     medClutEditorScene *scene;
     medClutEditorView  *view;
     medClutEditorHistogram *histogram;
@@ -794,13 +798,22 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
     d->view  = new medClutEditorView( this );
     d->view->setScene(d->scene);
 
-    d->newAction    = new QAction("New table", this);
-    d->colorAction  = new QAction("Edit color", this);
-    d->deleteAction = new QAction("Delete selection", this);
-    d->applyAction  = new QAction("Apply", this);
+    d->newAction         = new QAction("New table", this);
+    d->loadTableAction   = new QAction("Load table", this);
+    d->saveTableAction   = new QAction("SaveTable",this);
+    d->deleteTableAction = new QAction("Delete table", this);
+    d->colorAction       = new QAction("Edit color", this);
+    d->deleteAction      = new QAction("Delete selection", this);
+    d->applyAction       = new QAction("Apply", this);
 
     connect(d->newAction,    SIGNAL(triggered()),
             this,            SLOT(onNewTableAction()));
+    connect(d->loadTableAction,    SIGNAL(triggered()),
+            this,            SLOT(onLoadTableAction()));
+    connect(d->saveTableAction,    SIGNAL(triggered()),
+            this,            SLOT(onSaveTableAction()));
+    connect(d->deleteTableAction, SIGNAL(triggered()),
+            this,            SLOT(onDeleteTableAction()));
     connect(d->colorAction,  SIGNAL(triggered()),
             this,            SLOT(onColorAction()));
     connect(d->deleteAction, SIGNAL(triggered()),
@@ -817,6 +830,9 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
 medClutEditor::~medClutEditor(void)
 {
     delete d->newAction;
+    delete d->loadTableAction;
+    delete d->saveTableAction;
+    delete d->deleteTableAction;
     delete d->colorAction;
     delete d->deleteAction;
     delete d->applyAction;
@@ -918,6 +934,9 @@ void medClutEditor::mousePressEvent(QMouseEvent *event)
         QMenu menu("Color Lookup Table", this) ;
         menu.setWindowOpacity(0.8) ;
         menu.addAction(d->newAction);
+        menu.addAction(d->loadTableAction);
+        menu.addAction(d->saveTableAction);
+        menu.addAction(d->deleteTableAction);
         menu.addSeparator();
         menu.addAction(d->colorAction);
         menu.addAction(d->deleteAction);
@@ -949,4 +968,42 @@ void medClutEditor::onDeleteAction(void)
 void medClutEditor::onApplyTablesAction(void)
 {
     applyTable();
+}
+
+void medClutEditor::onLoadTableAction(void)
+{
+
+}
+
+void medClutEditor::onSaveTableAction(void)
+{
+    SaveLUTDialog dialog (this);
+    dialog.exec();
+    if ( medClutEditorTable * table = d->scene->table() )
+    {
+        QList<medClutEditorTable*> l;
+        l << table;
+        medLUTToXMLWriter writer (l);
+        //create file object in an existing storage place
+        medStorage::mkpath(medStorage::dataLocation());
+        QString fileName = medStorage::dataLocation();
+        fileName.append("/LUTs.xml");
+        QFile * file = new QFile();
+        file->setFileName(fileName);
+        if (file->open(QIODevice::WriteOnly))
+        {
+            writer.writeFile(file);
+            file->close();
+        }
+        else
+        {
+            qDebug() << "can'open file " << fileName;
+        }
+        delete file;
+    }
+}
+
+void medClutEditor::onDeleteTableAction(void)
+{
+
 }

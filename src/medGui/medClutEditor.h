@@ -126,7 +126,7 @@ public:
     QPointF coordinateToValue( QPointF coord );
 
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
-    const QList<medClutEditorVertex*> vertices();
+    QList<medClutEditorVertex*> vertices();
     void forceGeometricalConstraints();
 
     QRectF boundingRect(void) const;
@@ -219,6 +219,9 @@ protected:
 
 protected slots:
     void onNewTableAction(void);
+    void onLoadTableAction(void);
+    void onSaveTableAction(void);
+    void onDeleteTableAction(void);
     void onApplyTablesAction(void);
     void onColorAction(void);
     void onDeleteAction(void);

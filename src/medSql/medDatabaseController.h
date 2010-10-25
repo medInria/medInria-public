@@ -41,12 +41,6 @@ public:
     bool createConnection(void);
     bool  closeConnection(void);
 
-    bool mkpath(const QString& dirPath);
-    bool rmpath(const QString& dirPath);
-
-    QString   dataLocation(void) const;
-    QString configLocation(void) const;
-
     medDataIndex indexForPatient(int id);
     medDataIndex indexForStudy  (int id);
     medDataIndex indexForSeries (int id);

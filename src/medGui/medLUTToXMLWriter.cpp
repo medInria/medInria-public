@@ -8,8 +8,8 @@ public:
     QXmlStreamWriter xml;
     QList<medClutEditorTable *> tables;
 
-    void writeTable(const medClutEditorTable & table);
-    void writeNode(const medClutEditorVertex & vertex);
+    void writeTable(medClutEditorTable & table);
+    void writeNode(medClutEditorVertex & vertex);
 };
 
 
@@ -34,32 +34,34 @@ bool medLUTToXMLWriter::writeFile(QIODevice *device)
     d->xml.writeDTD("<!DOCTYPE medLUTs>");
     d->xml.writeStartElement("medLUTs");
     d->xml.writeAttribute("version", "1.0");
-    for (QList<medClutEditorTable*>::Iterator i = d->tables.begin();
-            i < d->tables.end(); ++i)
-        d->writeTable(i*);
+    foreach (medClutEditorTable * table, d->tables)
+        d->writeTable(*table);
     d->xml.writeEndDocument();
     return true;
 }
 
-void medLUTToXMLWriterPrivate::writeTable(const medClutEditorTable & table){
+void medLUTToXMLWriterPrivate::writeTable(medClutEditorTable & table){
     xml.writeStartElement("table");
     xml.writeAttribute("title", table.title());
-    for (QList<medClutEditorVertex*>::iterator i = table.vertices().begin();
-            i < table.vertices().end(); ++i)
-        writeNode(i*);
+    qDebug()<< table.title();
+    qDebug()<< "size: " << table.vertices().count();
+    foreach (medClutEditorVertex * vertex, table.vertices())
+        writeNode(*vertex);
     xml.writeEndElement();
 }
 
-void medLUTToXMLWriterPrivate::writeNode(const medClutEditorVertex & vertex)
+void medLUTToXMLWriterPrivate::writeNode(medClutEditorVertex & vertex)
 {
     QString node;
     //position
-    node.append(QString(float(vertex.pos().x())));
-    node.append(QString((float)vertex.pos().y()));
-    //color
-    node.append(QString(vertex.color().red()));
-    node.append(QString(vertex.color().green()));
-    node.append(QString(vertex.color().blue()));
-    node.append(QString(vertex.color().alpha()));
-    xml.writeTextElement("node", node);
+    qDebug()<< "vertex: "<< (long int )&vertex;
+    qDebug() << "node:" << vertex.pos();
+    qDebug() << "color" <<vertex.color();
+    node.sprintf("%.4f;%.4f;%d;%d;%d;%d",vertex.pos().x(),
+                 vertex.pos().y(),
+                 vertex.color().red(),
+                 vertex.color().green(),
+                 vertex.color().blue(),
+                 vertex.color().alpha());
+    xml.writeTextElement("node",node);
 }
