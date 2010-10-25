@@ -564,7 +564,7 @@ void vtkFibersManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwi
   {
     this->Renderer = ren;
   }
-  else if (m_RWin)
+  else if (m_RWin && !this->Renderer)
   {
     m_RWin->GetRenderWindow()->GetRenderers()->InitTraversal();
     vtkRenderer* first_renderer = m_RWin->GetRenderWindow()->GetRenderers()->GetNextItem();
