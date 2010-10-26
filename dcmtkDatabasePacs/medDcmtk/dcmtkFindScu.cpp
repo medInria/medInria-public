@@ -73,7 +73,6 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
 
 
     // add node to result container
-
     dcmtkNode* node = new dcmtkNode;
     node->setTitle(peerTitle);
     node->setIp(peerIP);

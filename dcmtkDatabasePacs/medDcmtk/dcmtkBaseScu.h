@@ -95,7 +95,34 @@ public:
     */
     dcmtkContainer<dcmtkNode*>* getNodeContainer();
 
+
+
+    /**
+    * Set this to true if you want to release the association manually. Default: False
+    * @params: bool flag if True association will be created only if not previously released
+    * @return   void
+    */
+    void keepAssociationOpen(bool flag);
+
+    /**
+    * ReleaseAssociation from outside use last condition. Should only be used if keepAssociationOpen is set to true
+    * @return   void
+    */
+    void releaseAssociation();
+
 protected:
+
+    typedef enum {
+        QMPatientRoot = 0,
+        QMStudyRoot = 1,
+        QMPatientStudyOnly = 2
+    } QueryModel;
+
+    typedef struct {
+        const char *findSyntax;
+        const char *moveSyntax;
+    } QuerySyntax;
+
 
     /**
     * Overloaded Helper
@@ -134,11 +161,21 @@ protected:
                                        const char* abstractSyntax,
                                        E_TransferSyntax preferredTransferSyntax);
 
+    
+    /**
+    * CreateAssociation (currently only cmove uses this)
+    * work in progress
+    * @return   OFCondition
+    */
+    OFCondition createAssociation();
 
-    int CreateAssociation(OFCondition &cond, T_ASC_Network* net, T_ASC_Parameters* params,
-                                    T_ASC_Association* assoc);
-
-    int ReleaseAssociation(OFCondition &cond);
+    
+    /**
+    * ReleaseAssociation
+    * @params: OFCondition & cond
+    * @return   int
+    */
+    int releaseAssociation(OFCondition &cond);
 
 
    /**
@@ -163,6 +200,11 @@ protected:
     OFCmdUnsignedInt      opt_port;         /* peerPort */
     OFCmdUnsignedInt      opt_retrievePort; /* ourPort */
 
+    bool                  m_keepAssocOpen;
+    bool                  m_assocExists;
+    OFCondition           m_lastCondition;
+    QueryModel            opt_queryModel;
+    OFCmdUnsignedInt      opt_maxPDU;
     int                   opt_acse_timeout;
     T_DIMSE_BlockingMode  opt_blockMode;
     int                   opt_dimse_timeout;

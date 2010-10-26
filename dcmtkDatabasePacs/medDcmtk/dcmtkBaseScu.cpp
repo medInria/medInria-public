@@ -122,15 +122,72 @@ void dcmtkBaseScu::resetDefaultParams()
     opt_sleepDuring =               0;
 
     net =                           NULL; 
-
-
+    m_lastCondition =               EC_Normal;
+    m_assocExists =                 false;
+    m_keepAssocOpen =               false;
 }
 
 //---------------------------------------------------------------------------------------------
 
-int dcmtkBaseScu::CreateAssociation(OFCondition &cond, T_ASC_Network* net, T_ASC_Parameters* params,
-                                    T_ASC_Association* assoc)
+OFCondition dcmtkBaseScu::createAssociation()
 {
+    if (m_assocExists) return m_lastCondition;
+
+    params = NULL;
+    assoc = NULL;
+
+    DIC_NODENAME localHost;
+    DIC_NODENAME peerHost;
+
+
+    QuerySyntax querySyntax[3] =  {
+        { UID_FINDPatientRootQueryRetrieveInformationModel,
+        UID_MOVEPatientRootQueryRetrieveInformationModel },
+        { UID_FINDStudyRootQueryRetrieveInformationModel,
+        UID_MOVEStudyRootQueryRetrieveInformationModel },
+        { UID_FINDPatientStudyOnlyQueryRetrieveInformationModel,
+        UID_MOVEPatientStudyOnlyQueryRetrieveInformationModel }
+    };
+
+
+    /* network for move request and responses */
+    T_ASC_NetworkRole role = (opt_retrievePort > 0) ? NET_ACCEPTORREQUESTOR : NET_REQUESTOR;
+    OFCondition cond = ASC_initializeNetwork(role, OFstatic_cast(int, opt_retrievePort), opt_acse_timeout, &net);
+    if (cond.bad())
+    {
+        dcmtkLogger::errorStream() << "cannot create network: " << DimseCondition::dump(temp_str, cond);
+        return cond;
+    }
+
+    /* set up main association */
+    cond = ASC_createAssociationParameters(&params, opt_maxPDU);
+    if (cond.bad()) {
+        dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
+        return cond;
+    }
+    ASC_setAPTitles(params, opt_ourTitle, opt_peerTitle, NULL);
+
+    gethostname(localHost, sizeof(localHost) - 1);
+    sprintf(peerHost, "%s:%d", opt_peer, (int)opt_port);
+    ASC_setPresentationAddresses(params, localHost, peerHost);
+
+    /*
+    * We also add a presentation context for the corresponding
+    * find sop class.
+    */
+    cond = addPresentationContext(params, 1,
+        querySyntax[opt_queryModel].findSyntax, opt_networkTransferSyntax);
+
+    cond = addPresentationContext(params, 3,
+        querySyntax[opt_queryModel].moveSyntax, opt_networkTransferSyntax);
+    if (cond.bad()) {
+        dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
+        return cond;
+    }
+
+    dcmtkLogger::debugStream() << "Request Parameters:"; 
+    dcmtkLogger::debugStream() << ASC_dumpParameters(temp_str, params, ASC_ASSOC_RQ);
+
     /* create association */
     dcmtkLogger::info("Requesting Association");
     cond = ASC_requestAssociation(net, params, &assoc);
@@ -141,11 +198,11 @@ int dcmtkBaseScu::CreateAssociation(OFCondition &cond, T_ASC_Network* net, T_ASC
             ASC_getRejectParameters(params, &rej);
             dcmtkLogger::error("Association Rejected:");
             dcmtkLogger::error( ASC_printRejectParameters(temp_str, &rej));
-            return 1;
+            return cond;
         } else {
             dcmtkLogger::error("Association Request Failed:");
             dcmtkLogger::error( DimseCondition::dump(temp_str, cond));
-            return 1;
+            return cond;
         }
     }
     /* what has been accepted/refused ? */
@@ -154,18 +211,27 @@ int dcmtkBaseScu::CreateAssociation(OFCondition &cond, T_ASC_Network* net, T_ASC
 
     if (ASC_countAcceptedPresentationContexts(params) == 0) {
         dcmtkLogger::error( "No Acceptable Presentation Contexts");
-        return 1;
+        return cond;
     }
 
     dcmtkLogger::infoStream() << "Association Accepted (Max Send PDV: " << assoc->sendPDVLength << ")";
 
-    return 0;
+    m_lastCondition = cond;
+    m_assocExists = true;
+
+    return cond;
 }
 
 //---------------------------------------------------------------------------------------------
 
-int dcmtkBaseScu::ReleaseAssociation(OFCondition &cond)
+int dcmtkBaseScu::releaseAssociation(OFCondition &cond)
 {
+    // return if manual release of association is set to true
+    if (m_keepAssocOpen) return 0;
+
+    // return if no assoc exists
+    if (!m_assocExists) return 0;
+
         /* tear down association */
     if (cond == EC_Normal)
     {
@@ -224,7 +290,20 @@ int dcmtkBaseScu::ReleaseAssociation(OFCondition &cond)
         return 1;
     }
 
+    m_assocExists = false;
     return 0;
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkBaseScu::releaseAssociation()
+{
+    if (m_keepAssocOpen)
+    {
+        m_keepAssocOpen = false;
+        releaseAssociation(m_lastCondition);
+        m_keepAssocOpen = true;
+    }
 }
 
 //---------------------------------------------------------------------------------------------
@@ -312,6 +391,13 @@ bool dcmtkBaseScu::addQueryAttribute(int group, int elem, const char* value)
 
     return addQueryAttribute(groupSs.str().c_str(), elemSs.str().c_str(), value);
 
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkBaseScu::keepAssociationOpen( bool flag )
+{
+    m_keepAssocOpen = flag;
 }
 
 //---------------------------------------------------------------------------------------------

@@ -52,6 +52,7 @@ dcmtkMoveScu::dcmtkMoveScu()
 
     overrideKeys = NULL;
     m_useBuildInStoreScp = false;
+    m_skipWriting = false;
 
     this->setQueryLevel(STUDY);
 
@@ -70,25 +71,12 @@ int  dcmtkMoveScu::sendMoveRequest(const char* peerTitle, const char* peerIP, in
         dcmtkLogger::errorStream() << "You have to add keys to look for!";
     }
 
-    T_ASC_Parameters *params = NULL;
-    const char *opt_peer = peerIP;
-    OFCmdUnsignedInt opt_port = peerPort;
-    opt_retrievePort = targetPort;
-    DIC_NODENAME localHost;
-    DIC_NODENAME peerHost;
-    T_ASC_Association *assoc = NULL;
-    const char *opt_peerTitle = peerTitle;
-    const char *opt_ourTitle = targetTitle;
-    OFList<OFString> fileNameList;
 
-    QuerySyntax querySyntax[3] =  {
-                { UID_FINDPatientRootQueryRetrieveInformationModel,
-                  UID_MOVEPatientRootQueryRetrieveInformationModel },
-                { UID_FINDStudyRootQueryRetrieveInformationModel,
-                  UID_MOVEStudyRootQueryRetrieveInformationModel },
-                { UID_FINDPatientStudyOnlyQueryRetrieveInformationModel,
-                  UID_MOVEPatientStudyOnlyQueryRetrieveInformationModel }
-                };
+    opt_peer = peerIP;
+    opt_port = peerPort;
+    opt_retrievePort = targetPort;
+    opt_peerTitle = peerTitle;
+    opt_ourTitle = targetTitle;
 
 
     // do not use the port if not using the build int storescp
@@ -111,153 +99,15 @@ int  dcmtkMoveScu::sendMoveRequest(const char* peerTitle, const char* peerIP, in
         }
     }
 
+    // initialize association
+    OFCondition cond = createAssociation();
 
-    /* network for move request and responses */
-    T_ASC_NetworkRole role = (opt_retrievePort > 0) ? NET_ACCEPTORREQUESTOR : NET_REQUESTOR;
-    OFCondition cond = ASC_initializeNetwork(role, OFstatic_cast(int, opt_retrievePort), opt_acse_timeout, &net);
-    if (cond.bad())
-    {
-        dcmtkLogger::errorStream() << "cannot create network: " << DimseCondition::dump(temp_str, cond);
-        return 1;
-    }
+    // now do the real work
+    cond = cmove(assoc, NULL);
 
-    /* set up main association */
-    cond = ASC_createAssociationParameters(&params, opt_maxPDU);
-    if (cond.bad()) {
-        dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
-        return 1;
-    }
-    ASC_setAPTitles(params, opt_ourTitle, opt_peerTitle, NULL);
+    // release association and report errors
+    return releaseAssociation(cond);
 
-    gethostname(localHost, sizeof(localHost) - 1);
-    sprintf(peerHost, "%s:%d", opt_peer, (int)opt_port);
-    ASC_setPresentationAddresses(params, localHost, peerHost);
-
-    /*
-     * We also add a presentation context for the corresponding
-     * find sop class.
-     */
-    cond = addPresentationContext(params, 1,
-        querySyntax[opt_queryModel].findSyntax, opt_networkTransferSyntax);
-
-    cond = addPresentationContext(params, 3,
-        querySyntax[opt_queryModel].moveSyntax, opt_networkTransferSyntax);
-    if (cond.bad()) {
-        dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
-        return 1;
-    }
-
-    dcmtkLogger::debugStream() << "Request Parameters:"; 
-         dcmtkLogger::debugStream() << ASC_dumpParameters(temp_str, params, ASC_ASSOC_RQ);
-
-   // CreateAssociation(cond, net,params, assoc);
-
-    /* create association */
-    dcmtkLogger::infoStream() << "Requesting Association";
-    cond = ASC_requestAssociation(net, params, &assoc);
-    if (cond.bad()) {
-        if (cond == DUL_ASSOCIATIONREJECTED) {
-            T_ASC_RejectParameters rej;
-
-            ASC_getRejectParameters(params, &rej);
-            dcmtkLogger::errorStream() << "Association Rejected:";
-                dcmtkLogger::errorStream() << ASC_printRejectParameters(temp_str, &rej);
-            return 1;
-        } else {
-            dcmtkLogger::errorStream() << "Association Request Failed:";
-                dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
-            return 1;
-        }
-    }
-    /* what has been accepted/refused ? */
-    dcmtkLogger::debugStream() << "Association Parameters Negotiated:"; 
-        dcmtkLogger::debugStream() << ASC_dumpParameters(temp_str, params, ASC_ASSOC_AC);
-
-    if (ASC_countAcceptedPresentationContexts(params) == 0) {
-        dcmtkLogger::errorStream() << "No Acceptable Presentation Contexts";
-        return 1;
-    }
-
-    dcmtkLogger::infoStream() << "Association Accepted (Max Send PDV: " << assoc->sendPDVLength << ")";
-
-    /* do the real work */
-    cond = EC_Normal;
-    if (fileNameList.empty())
-    {
-      /* no files provided on command line */
-      cond = cmove(assoc, NULL);
-    } else {
-      OFListIterator(OFString) iter = fileNameList.begin();
-      OFListIterator(OFString) enditer = fileNameList.end();
-      while ((iter != enditer) && cond.good())
-      {
-          cond = cmove(assoc, (*iter).c_str());
-          ++iter;
-      }
-    }
-
-    //ReleaseAssociation(cond);
-
-            /* tear down association */
-    if (cond == EC_Normal)
-    {
-        if (opt_abortAssociation) {
-            dcmtkLogger::infoStream() << "Aborting Association";
-            cond = ASC_abortAssociation(assoc);
-            if (cond.bad()) {
-                dcmtkLogger::errorStream() << "Association Abort Failed: " << DimseCondition::dump(temp_str, cond);
-                return 1;
-            }
-        } else {
-            /* release association */
-            dcmtkLogger::infoStream() << "Releasing Association";
-            cond = ASC_releaseAssociation(assoc);
-            if (cond.bad())
-            {
-                dcmtkLogger::errorStream() << "Association Release Failed:";
-                    dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
-                return 1;
-            }
-        }
-    }
-    else if (cond == DUL_PEERREQUESTEDRELEASE)
-    {
-        dcmtkLogger::errorStream() << "Protocol Error: Peer requested release (Aborting)";
-        dcmtkLogger::infoStream() << "Aborting Association";
-        cond = ASC_abortAssociation(assoc);
-        if (cond.bad()) {
-            dcmtkLogger::errorStream() << "Association Abort Failed: " << DimseCondition::dump(temp_str, cond);
-            return 1;
-        }
-    }
-    else if (cond == DUL_PEERABORTEDASSOCIATION)
-    {
-        dcmtkLogger::infoStream() << "Peer Aborted Association";
-    }
-    else
-    {
-        dcmtkLogger::errorStream() << "Move SCU Failed: " << DimseCondition::dump(temp_str, cond);
-        dcmtkLogger::infoStream() << "Aborting Association";
-        cond = ASC_abortAssociation(assoc);
-        if (cond.bad()) {
-            dcmtkLogger::errorStream() << "Association Abort Failed: " << DimseCondition::dump(temp_str, cond);
-            return 1;
-        }
-    }
-
-    cond = ASC_destroyAssociation(&assoc);
-    if (cond.bad()) {
-        dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
-        return 1;
-    }
-    cond = ASC_dropNetwork(&net);
-    if (cond.bad()) {
-        dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
-        return 1;
-    }
-
-
-    return 0;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -859,31 +709,6 @@ void dcmtkMoveScu::storeSCPCallback(  /* in */
       OFStandard::sleep((unsigned int)scu->opt_sleepDuring);
     }
     
-    // TODO find substitute here - mk
-    /*
-    // dump some information if required (depending on the progress state)
-    // We can't use oflog for the pdu output, but we use a special logger for
-    // generating this output. If it is set to level "INFO" we generate the
-    // output, if it's set to "DEBUG" then we'll assume that there is debug output
-    // generated for each PDU elsewhere.
-    OFLogger progressLogger = OFLog::getLogger("progress");
-    if (progressLogger.getChainedLogLevel() == OFLogger::INFO_LOG_LEVEL)
-    {
-      switch (progress->state)
-      {
-        case DIMSE_StoreBegin:
-          COUT << "RECV: ";
-          break;
-        case DIMSE_StoreEnd:
-          COUT << OFendl;
-          break;
-        default:
-          COUT << '.';
-          break;
-      }
-      COUT.flush();
-    }
-    */
 
     if (progress->state == DIMSE_StoreEnd)
     {
@@ -906,14 +731,19 @@ void dcmtkMoveScu::storeSCPCallback(  /* in */
          E_TransferSyntax xfer = scu->opt_writeTransferSyntax;
          if (xfer == EXS_Unknown) xfer = (*imageDataSet)->getOriginalXfer();
 
-         
-         OFCondition cond = scu->m_dcmff->saveFile(ofname.c_str(), xfer, scu->opt_sequenceType, scu->opt_groupLength,
-           scu->opt_paddingType, OFstatic_cast(Uint32, scu->opt_filepad), OFstatic_cast(Uint32, scu->opt_itempad),
-           (scu->opt_useMetaheader) ? EWM_fileformat : EWM_dataset);
-         if (cond.bad())
+         if (scu->m_skipWriting)
+             dcmtkLogger::errorStream() << "Image received but not stored: " << ofname;
+         else
          {
-           dcmtkLogger::errorStream() << "cannot write DICOM file: " << ofname;
-           rsp->DimseStatus = STATUS_STORE_Refused_OutOfResources;
+             OFCondition cond = scu->m_dcmff->saveFile(ofname.c_str(), xfer, scu->opt_sequenceType, scu->opt_groupLength,
+               scu->opt_paddingType, OFstatic_cast(Uint32, scu->opt_filepad), OFstatic_cast(Uint32, scu->opt_itempad),
+               (scu->opt_useMetaheader) ? EWM_fileformat : EWM_dataset);
+
+             if (cond.bad())
+             {
+               dcmtkLogger::errorStream() << "cannot write DICOM file: " << ofname;
+               rsp->DimseStatus = STATUS_STORE_Refused_OutOfResources;
+             }
          }
 
         /* should really check the image to make sure it is consistent,
@@ -953,8 +783,6 @@ void dcmtkMoveScu::subOpCallback(void * subOpCallbackData ,
 {
     if (!subOpCallbackData)
         return;
-
-
 
     if (aNet == NULL) return;   /* help no net ! */
 
@@ -1047,6 +875,13 @@ void dcmtkMoveScu::emitProgressed( int current, int max )
 
     emit progressed(progress);
 
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkMoveScu::skipWritingFiles( bool flag )
+{
+    m_skipWriting = flag;
 }
 
 //---------------------------------------------------------------------------------------------

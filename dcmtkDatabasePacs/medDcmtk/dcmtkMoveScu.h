@@ -36,7 +36,6 @@ public:
     */
     dcmtkMoveScu();
 
-
     /**
     *  Destructor
     */
@@ -80,11 +79,18 @@ public:
     */
     bool setStorageDirectory(const char* directory);
 
-
    /**
     * Clear all previously set attributes.
     */
     void clearAllQueryAttributes();
+
+
+    /**
+    * if set the storescp (when activated) will not write the received buffer to disk. Testing only
+    * @params: bool flag
+    * @return   void
+    */
+    void skipWritingFiles(bool flag);
 
 signals:
     void progressed(int);
@@ -175,25 +181,12 @@ protected:
 
 private:
 
-
-    typedef enum {
-         QMPatientRoot = 0,
-         QMStudyRoot = 1,
-         QMPatientStudyOnly = 2
-         } QueryModel;
-
-    typedef struct {
-         const char *findSyntax;
-         const char *moveSyntax;
-         } QuerySyntax;
-
     typedef struct {
          T_ASC_Association *assoc;
          T_ASC_PresentationContextID presId;
          } MyCallbackInfo;
 
 
-    OFCmdUnsignedInt  opt_maxPDU;
     OFBool            opt_useMetaheader;
     OFBool            opt_acceptAllXfers;
     E_TransferSyntax  opt_writeTransferSyntax;
@@ -213,11 +206,10 @@ private:
     OFBool            opt_abortAssociation;
     const char *      opt_moveDestination;
     OFCmdSignedInt    opt_cancelAfterNResponses;
-    QueryModel        opt_queryModel;
     OFBool            opt_ignorePendingDatasets;
     OFString          opt_outputDirectory;
     bool              m_useBuildInStoreScp;
-
+    bool              m_skipWriting;
 
     DcmDataset          *overrideKeys;  
     char*               m_imageFileName;

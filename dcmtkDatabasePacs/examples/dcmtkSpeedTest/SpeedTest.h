@@ -11,23 +11,30 @@ class SpeedTest
 
 public:
 
-	SpeedTest(dcmtkNode hostNode, dcmtkNode peerNode);
-	~SpeedTest();
+    SpeedTest(dcmtkNode hostNode, dcmtkNode peerNode);
+    ~SpeedTest();
 
-	// return milliseconds
-	int moveStudyLevel(std::string patientName);
+    // return milliseconds
+    int moveStudyLevel(std::string patientName);
 
-	// return milliseconds
-	int moveImageLevel(std::string patientName);
+    // return milliseconds
+    int moveSeriesLevel(std::string patientName);
+
+    // return milliseconds
+    int moveImageLevel(std::string patientName,bool useBatch = false);
+
+    // manually release assoc
+    void ReleaseAssociation();
+
 
 private:
 
-	void move(int group, int elem, const char* query);
+    void move(int group, int elem, const char* query);
 
-	dcmtkFindScu* m_findScu;
-	dcmtkMoveScu* m_moveScu;
+    dcmtkFindScu* m_findScu;
+    dcmtkMoveScu* m_moveScu;
 
-	dcmtkNode peerNode;
-	dcmtkNode hostNode;
+    dcmtkNode peerNode;
+    dcmtkNode hostNode;
 
 };
