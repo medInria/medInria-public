@@ -119,7 +119,7 @@ public:
     ~medClutEditorTable(void);
 
     QString title();
-    void setTitle(QString & title);
+    void setTitle(const QString & title);
     void setSize( const QSizeF & size );
     const QSizeF & size() const;
     void setRange( qreal min, qreal max );

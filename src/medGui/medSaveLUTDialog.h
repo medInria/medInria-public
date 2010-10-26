@@ -1,14 +1,14 @@
 #ifndef MEDSAVELUTDIALOG_H
 #define MEDSAVELUTDIALOG_H
 
-#include <QDialog>
+#include <QInputDialog>
 #include <QWidget>
 
-class medSaveLUTDialog : public QDialog
+class medSaveLUTDialog : public QInputDialog
 {
     Q_OBJECT
 public:
-    explicit medSaveLUTDialog(QWidget *parent = 0);
+    medSaveLUTDialog(const QString & name="Unknown",QWidget *parent = 0);
 
 signals:
 

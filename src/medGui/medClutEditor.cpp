@@ -28,7 +28,8 @@
 #include <climits>
 #include "medLUTtoXMLWriter.h"
 #include "medXMLtoLUTReader.h"
-
+#include "medSaveLUTDialog.h"
+#include "medLoadLUTDialog.h"
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditorVertex
@@ -242,7 +243,7 @@ QString medClutEditorTable::title(){
     return d->title;
 }
 
-void medClutEditorTable::setTitle(QString & title)
+void medClutEditorTable::setTitle(const QString & title)
 {
     d->title = title;
 }
@@ -789,6 +790,7 @@ public:
 
     dtkAbstractData *dtk_data;
     medAbstractView *med_view;
+    QList <medClutEditorTable *> * tables;
 };
 
 medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
@@ -825,6 +827,19 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(d->view);
     this->setLayout(layout);
+
+    //get saved LUTs.
+    d->tables = new QList<medClutEditorTable *>();
+    medXMLToLUTReader reader = medXMLToLUTReader(d->tables);
+    QString lutFileName = medStorage::dataLocation();
+    lutFileName.append("/LUTs.xml");
+    QFile file(lutFileName);
+    if (file.open(QIODevice::ReadOnly))
+    {
+        reader.read(&file);
+        file.close();
+    }
+
 }
 
 medClutEditor::~medClutEditor(void)
@@ -839,6 +854,7 @@ medClutEditor::~medClutEditor(void)
 
     delete d->scene;
     delete d->view;
+    delete d->tables; //TODO: delete all the tables as well.
     delete d;
 }
 
@@ -972,34 +988,63 @@ void medClutEditor::onApplyTablesAction(void)
 
 void medClutEditor::onLoadTableAction(void)
 {
+    QStringList titles;
+    foreach (medClutEditorTable * table,*d->tables )
+    {
+        titles << table->title();
+    }
+
+    medLoadLUTDialog dialog (titles,this);
+    // Show it and wait for Ok or Cancel
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        // We got Ok
+       foreach (medClutEditorTable * table,*d->tables )
+        {
+           if ( table->title() == dialog.textValue())
+           {
+                //display this table
+               d->scene->removeItem(d->scene->table());
+               d->scene->addItem(table);
+               d->scene->update();
+           }
+        }
+    }
 
 }
 
 void medClutEditor::onSaveTableAction(void)
 {
-    SaveLUTDialog dialog (this);
-    dialog.exec();
+
     if ( medClutEditorTable * table = d->scene->table() )
     {
-        QList<medClutEditorTable*> l;
-        l << table;
-        medLUTToXMLWriter writer (l);
-        //create file object in an existing storage place
-        medStorage::mkpath(medStorage::dataLocation());
-        QString fileName = medStorage::dataLocation();
-        fileName.append("/LUTs.xml");
-        QFile * file = new QFile();
-        file->setFileName(fileName);
-        if (file->open(QIODevice::WriteOnly))
+        medSaveLUTDialog dialog (table->title(),this);
+        // Show it and wait for Ok or Cancel
+        if( dialog.exec() == QDialog::Accepted )
         {
-            writer.writeFile(file);
-            file->close();
+            // We got Ok
+            table->setTitle(dialog.textValue());
+
+            QList<medClutEditorTable*>  l = *d->tables;
+            l << table;
+            medLUTToXMLWriter writer (l);
+            //create file object in an existing storage place
+            medStorage::mkpath(medStorage::dataLocation());
+            QString fileName = medStorage::dataLocation();
+            fileName.append("/LUTs.xml");
+            QFile * file = new QFile();
+            file->setFileName(fileName);
+            if (file->open(QIODevice::WriteOnly))
+            {
+                writer.writeFile(file);
+                file->close();
+            }
+            else
+            {
+                qDebug() << "can'open file " << fileName;
+            }
+            delete file;
         }
-        else
-        {
-            qDebug() << "can'open file " << fileName;
-        }
-        delete file;
     }
 }
 
