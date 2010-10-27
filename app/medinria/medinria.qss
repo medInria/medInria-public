@@ -4,9 +4,9 @@
 ;; Copyright (C) 2008 - Julien Wintz, Inria.
 ;; Created: Fri May 21 09:46:29 2010 (+0200)
 ;; Version: $Id$
-;; Last-Updated: Wed Oct  6 17:19:51 2010 (+0200)
+;; Last-Updated: Tue Oct 26 09:34:31 2010 (+0200)
 ;;           By: Julien Wintz
-;;     Update #: 43
+;;     Update #: 45
 */
 
 /* Commentary: 
@@ -694,8 +694,8 @@ QFrame #medToolBoxContainer {
 
 QFrame #medNavigatorContainer {
     border-image: url(:/pixmaps/frame.png) 16 16 26 16 repeat-x;
-    border-left-width: 16px;
-    border-right-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 16px;
     border-top-width: 0px;
     border-bottom-width: 0px;
     color: #b2b8b2;
