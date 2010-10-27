@@ -26,22 +26,13 @@
 
 //---------------------------------------------------------------------------------------------
 
-int dcmtkStoreScp::start()
+dcmtkStoreScp::dcmtkStoreScp()
 {
-    return start(opt_respondingAETitle, "", opt_port);
-}
-
-//---------------------------------------------------------------------------------------------
-
-int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int ourPort)
-{
-    m_stop = false;
     opt_showPresentationContexts = OFFalse;
     opt_uniqueFilenames = OFFalse;
     opt_fileNameExtension;
     opt_timeNames = OFFalse;
     timeNameCounter = -1;   // "serial number" to differentiate between files with same timestamp
-    opt_port = ourPort;
     opt_refuseAssociation = OFFalse;
     opt_rejectWithoutImplementationUID = OFFalse;
     opt_sleepAfter = 0;
@@ -68,24 +59,37 @@ int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int o
     lastCallingAETitle;
     calledAETitle;        // called application entity title will be stored here
     lastCalledAETitle;
-    opt_respondingAETitle = ourTitle;
     opt_secureConnection = OFFalse;    // default: no secure connection
     opt_outputDirectory = ".";         // default: output directory equals "."
-    opt_sortStudyMode = ESM_None;      // default: no sorting
-    opt_sortStudyDirPrefix = NULL;     // default: no directory prefix
+    opt_sortStudyMode = ESM_StudyInstanceUID;      // default: no sorting
+    opt_sortStudyDirPrefix = "";     // default: no directory prefix
     opt_execOnReception = NULL;        // default: don't execute anything on reception
-    opt_execOnEndOfStudy = NULL;       // default: don't execute anything on end of study
+    opt_execOnEndOfStudy = "TRUE";       // default: don't execute anything on end of study
     opt_renameOnEndOfStudy = OFFalse;  // default: don't rename any files on end of study
-    opt_endOfStudyTimeout = -1;        // default: no end of study timeout
-    endOfStudyThroughTimeoutEvent = OFFalse;
+    opt_endOfStudyTimeout = 10;        // default: no end of study timeout
+    endOfStudyThroughTimeoutEvent = OFTrue;
     opt_configFile = NULL;
     opt_profileName = NULL;
     opt_blockMode = DIMSE_BLOCKING;
     opt_dimse_timeout = 0;
     opt_acse_timeout = 30;
 
+}
 
+//---------------------------------------------------------------------------------------------
 
+int dcmtkStoreScp::start()
+{
+    return start(opt_respondingAETitle, "", opt_port);
+}
+
+//---------------------------------------------------------------------------------------------
+
+int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int ourPort)
+{
+    m_stop = false;
+    opt_port = ourPort;
+    opt_respondingAETitle = ourTitle;
 
     T_ASC_Network *net;
     DcmAssociationConfiguration asccfg;
@@ -1164,9 +1168,10 @@ void dcmtkStoreScp::executeEndOfStudyEvents()
   // not equal NULL (i.e. we received all objects that belong to one study, or - in other
   // words - it is the end of one study) we want to execute a certain command which was
   // passed to the application
-  if( opt_execOnEndOfStudy != NULL && !lastStudySubdirectoryPathAndName.empty() )
+  //if( opt_execOnEndOfStudy != NULL && !lastStudySubdirectoryPathAndName.empty() )
+  if(!lastStudySubdirectoryPathAndName.empty())
     executeOnEndOfStudy();
-
+ 
   lastStudySubdirectoryPathAndName.clear();
 }
 
@@ -1284,8 +1289,9 @@ void dcmtkStoreScp::executeOnEndOfStudy()
   // perform substitution for placeholder #c
   cmd = replaceChars( cmd, OFString(CALLED_AETITLE_PLACEHOLDER), (endOfStudyThroughTimeoutEvent) ? calledAETitle : lastCalledAETitle );
 
-  // Execute command in a new process
-//  executeCommand( cmd );
+  std::cout << "STUDY WRITTEN TO: " << lastStudySubdirectoryPathAndName << std::endl;
+
+  emit endOfStudy (QString(lastStudySubdirectoryPathAndName.c_str()));
 }
 
 //---------------------------------------------------------------------------------------------
@@ -1459,7 +1465,7 @@ void dcmtkStoreScp::mapCharacterAndAppendToString(Uint8 c, OFString &output)
 
 bool dcmtkStoreScp::setStorageDirectory(const char* directory)
 {
-    m_storeDir = directory;
+    opt_outputDirectory = directory;
     
     // Todo check if directory is valid
     return true;

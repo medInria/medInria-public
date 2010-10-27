@@ -349,7 +349,7 @@ bool dcmtkMoveScu::processQueryAttribute(const char* key)
     unsigned int g = 0xffff;
     unsigned int e = 0xffff;
     int n = 0;
-    char val[1024];
+    char val[99999]; // Todo: the parsing should be done using dynamic arrays
     OFString dicName, valStr;
     OFString msg;
     char msg2[200];
@@ -361,7 +361,7 @@ bool dcmtkMoveScu::processQueryAttribute(const char* key)
     size_t eqPos = toParse.find('=');
     if (n < 2)  // if at least no tag could be parsed
     {
-      // if value is given, extract it (and extrect dictname)
+      // if value is given, extract it (and extract dictname)
       if (eqPos != OFString_npos)
       {
         dicName = toParse.substr(0,eqPos).c_str();

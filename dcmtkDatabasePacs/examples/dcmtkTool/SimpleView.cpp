@@ -686,12 +686,11 @@ void SimpleView::startServer()
 
 void SimpleView::stopServer()
 {
-    m_serverThread->stop();
-    m_serverThread->exit();
-    m_serverThread->wait(10);
-    while (m_serverThread->isRunning())
+    if (m_serverThread->isRunning())
     {
-        std::cout << "thread running" << std::endl;
+        m_serverThread->stop();
+        m_serverThread->exit();
+        m_serverThread->wait();
     }
 
     ui->logWindow->append(tr("Server stopped."));

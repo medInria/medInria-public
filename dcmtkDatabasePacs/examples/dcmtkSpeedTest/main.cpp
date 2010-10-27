@@ -10,7 +10,7 @@
 
 int main( int argc, char** argv )
 {
-    std::string patientname = "new*";
+    std::string patientname = "phe*";
     
     if ( argc > 1)
     {
@@ -39,13 +39,9 @@ int main( int argc, char** argv )
     int time3 = 0;
     int time4 = 0;
     time1 = stest.moveStudyLevel(patientname.c_str());
-    stest.ReleaseAssociation();
     time2 = stest.moveSeriesLevel(patientname.c_str());
-    stest.ReleaseAssociation();
     time3 = stest.moveImageLevel(patientname.c_str(), true);
-    stest.ReleaseAssociation();
     time4 = stest.moveImageLevel(patientname.c_str(), false);
-    stest.ReleaseAssociation();
     
     std::cout << "Time: " << time1 <<" | "<< time2 << " | " << time3 << " | " << time4 <<std::endl;
     std::cout << "Image move (batch) takes: " << (float) time3/time2 << " times longer than series and... " <<

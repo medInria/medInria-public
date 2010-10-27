@@ -24,6 +24,17 @@ bool dcmtkPacsStoreScp::setStorageDirectory( const char* directory )
     return scp.setStorageDirectory(directory);
 }
 
+dcmtkPacsStoreScp::dcmtkPacsStoreScp()
+{
+    // forward signal
+    connect(&scp, SIGNAL(endOfStudy(QString)), this,SIGNAL(endOfStudy(QString)) );
+}
+
+void dcmtkPacsStoreScp::stop()
+{
+    scp.stop();
+}
+
 medAbstractPacsStoreScp * createDcmtkStoreScp( void )
 {
     return new dcmtkPacsStoreScp;

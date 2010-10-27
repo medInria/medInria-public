@@ -27,7 +27,15 @@ class DcmFileFormat;
  */
 class dcmtkStoreScp : public dcmtkBaseScp
 {
+    Q_OBJECT
+
 public:
+
+    /**
+    * dcmtkBaseScu
+    * @return   
+    */
+    dcmtkStoreScp();
 
     /*
     * Main function to start the store SCP server. Should be called in a threaded env.
@@ -58,6 +66,9 @@ public:
     * @return True if directory is valid, false otherwise.
     */
     bool setStorageDirectory(const char* directory);
+
+signals:
+    void endOfStudy(QString);
 
 protected:
 
@@ -194,8 +205,9 @@ protected:
     */
     void mapCharacterAndAppendToString(Uint8 c, OFString &output);
 
-private:
 
+
+private:
 
     /* sort study mode */
     enum E_SortStudyMode
@@ -257,8 +269,6 @@ private:
     T_DIMSE_BlockingMode opt_blockMode;
     int                opt_dimse_timeout;
     int                opt_acse_timeout;
-
-    std::string        m_storeDir;
 
     OFString temp_str;
 

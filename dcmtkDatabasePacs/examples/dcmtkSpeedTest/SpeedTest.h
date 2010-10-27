@@ -23,10 +23,6 @@ public:
     // return milliseconds
     int moveImageLevel(std::string patientName,bool useBatch = false);
 
-    // manually release assoc
-    void ReleaseAssociation();
-
-
 private:
 
     void move(int group, int elem, const char* query);

@@ -56,6 +56,9 @@ int SpeedTest::moveStudyLevel(std::string patientName)
         }
         myNode = resNodeCont->getNext();
     }
+
+    // manually release assoc
+    m_moveScu->releaseAssociation();
     return timer.elapsed();
 }
 
@@ -114,7 +117,9 @@ int SpeedTest::moveSeriesLevel( std::string patientName )
         }
         myNode = resNodeCont->getNext();
     }
-    
+
+    // manually release assoc
+    m_moveScu->releaseAssociation();
     return timer.elapsed();
 
 }
@@ -216,6 +221,8 @@ int SpeedTest::moveImageLevel(std::string patientName, bool useBatch)
         }
         myNode = resNodeCont->getNext();
     }
+    // manually release assoc
+    m_moveScu->releaseAssociation();
     return timer.elapsed();
 }
 
@@ -253,11 +260,3 @@ void SpeedTest::move(int group, int elem, const char* query)
 }
 
 //---------------------------------------------------------------------------------------------
-
-void SpeedTest::ReleaseAssociation()
-{
-    m_moveScu->releaseAssociation();
-}
-
-//---------------------------------------------------------------------------------------------
-
