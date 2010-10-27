@@ -51,6 +51,7 @@ public:
 
     medAbstractPacsFindScu *find;
     medAbstractPacsStoreScp *server;
+
 };
 
 void medPacsWidgetPrivate::run(void)
@@ -59,7 +60,8 @@ void medPacsWidgetPrivate::run(void)
         qDebug() << "Unable to find a valid implementation of the store scp service.";
         return;
     }
-
+    QDir tmp = QDir::temp();
+    this->server->setStorageDirectory(tmp.absolutePath().toLatin1());
     this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), this->host_port.toInt());
 }
 
@@ -71,6 +73,7 @@ int medPacsWidgetPrivate::index(QString node_title)
 
     return -1;
 }
+
 
 // /////////////////////////////////////////////////////////////////
 // medPacsWidget
@@ -93,8 +96,10 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
-
-    // d->start();
+    connect(this->d->server, SIGNAL(endOfStudy(QString)), this, SIGNAL(import(QString)));
+    
+    this->readSettings();
+    d->start();
 }
 
 medPacsWidget::~medPacsWidget(void)
@@ -329,12 +334,9 @@ void medPacsWidget::onItemImported(void)
     // creating a unique path for storing the import data
     QString ref = QUuid::createUuid().toString();
     QDir tmp = QDir::temp();
-    if (!tmp.mkdir(ref))
-        qDebug() << "Could not create temp folder!";
-    tmp.cd(ref);
-
-    qDebug() << tmp.absolutePath().toLatin1();
-
+    //if (!tmp.mkdir(ref))
+    //    qDebug() << "Could not create temp folder!";
+    //tmp.cd(ref);
 
     emit move(tag.x(), tag.y(), query, tmp.absolutePath(), nodeIndex);
 }

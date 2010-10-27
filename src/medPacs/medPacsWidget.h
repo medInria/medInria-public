@@ -39,6 +39,7 @@ public:
 
 signals:
     void move(int, int, QString, QString, int);
+    void import(QString);
 
 public slots:
     void search(QString query);

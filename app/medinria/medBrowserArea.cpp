@@ -155,6 +155,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->pacs = new medPacsWidget(this);
 
     connect(d->pacs, SIGNAL(move(int, int, QString, QString, int)), this, SLOT(onPacsMove(int, int, QString, QString, int)));
+    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
 
 
     // /////////////////////////////////////////////////////////////////
@@ -261,6 +262,7 @@ void medBrowserArea::onFileSystemImportClicked(void)
 
 void medBrowserArea::onPacsImport(QString path)
 {
+    qDebug() << path;
     QFileInfo info(path);
 
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());

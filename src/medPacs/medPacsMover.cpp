@@ -102,8 +102,8 @@ void medPacsMover::doMove()
         }
 
         d->move->addQueryAttribute(d->group, d->elem, d->query.toLatin1());
-        d->move->useBuildInStoreSCP(true);
-        d->move->setStorageDirectory(d->storageFolder.toLatin1());
+        //d->move->useBuildInStoreSCP(true);
+        //d->move->setStorageDirectory(d->storageFolder.toLatin1());
         if (d->move->sendMoveRequest(
             d->nodes.at(d->nodeIndex).at(0).toLatin1(),
             d->nodes.at(d->nodeIndex).at(1).toLatin1(),
@@ -121,6 +121,6 @@ void medPacsMover::doMove()
         }
         emit progressed(100);
         emit success();
-        emit import(d->storageFolder.toLatin1());
+        //emit import(d->storageFolder.toLatin1());
     }
 }
