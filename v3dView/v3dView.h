@@ -38,7 +38,7 @@ signals:
     void becameDaddy (bool);
     void sync (bool);
     void syncWL (bool);
-	void reg(bool);
+    void reg(bool);
 
 public:
     void reset(void);
@@ -54,7 +54,8 @@ public:
     void *data (void);
 
     QSet<dtkAbstractView *> linkedViews (void);
-    
+
+    QWidget *receiverWidget(void);
     QWidget *widget(void);
 
     // access method to internal members for v3dView**Interactor classes
@@ -69,7 +70,6 @@ public:
     vtkRenderer *rendererCoronal(void);
     vtkRenderer *rendererSagittal(void);
     vtkRenderer *renderer3D(void);
-
 
     void setColorLookupTable(QList<double>scalars,QList<QColor>colors);
 
@@ -118,7 +118,17 @@ public slots: // Menu interface
     void onMenu3DLODTriggered               (void);
     void onMenuZoomTriggered                (void);
     void onMenuWindowLevelTriggered         (void);
-    
+
+public:
+    void  enableInteraction(void);
+    void disableInteraction(void);
+    void bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax);
+    void cameraUp(double *coordinates);
+    void cameraPosition(double *coordinates);
+    void cameraFocalPoint(double *coordinates);
+    void setCameraPosition(double x, double y, double z);
+    void setCameraClippingRange(double near, double far);
+
 private:
     v3dViewPrivate *d;
 };
