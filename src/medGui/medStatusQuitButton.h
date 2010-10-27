@@ -24,6 +24,7 @@
 #include "medGuiExport.h"
 
 #include <QtGui/QWidget>
+#include "medGuiExport.h"
 
 class MEDGUI_EXPORT medStatusQuitButton : public QWidget
 {

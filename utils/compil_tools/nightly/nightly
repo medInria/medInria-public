@@ -1,8 +1,10 @@
 #!/bin/bash
 
-#PIPOL linux-ubuntu 4:00 --root
-#PIPOL linux-fedora 4:00 --root
+#PIPOL linux-fedora 3:00 --root
+#PIPOL linux-ubuntu 3:00 --root
 #PIPOL windows-xp 4:00 --root
+
+
 cd $PIPOL_HOMEDIR/scripts
 
 DATE=`date +%Y-%m-%d`
@@ -10,7 +12,7 @@ mkdir -p $PIPOL_HOMEDIR/log/
 
 case $PIPOL_IMAGE in
 	*-windows-xp-*)
-    	./installer.py -f run_pipol_winxp.cfg &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
+    ./installer.py -f run_pipol_winxp.cfg &> $PIPOL_HOMEDIR/log/$DATE-$PIPOL_IMAGE-$PIPOL_JOB_ID
 	
 	;;
 	*-linux-fedora-*)
