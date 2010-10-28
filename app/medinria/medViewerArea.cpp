@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct 27 16:22:36 2010 (+0200)
+ * Last-Updated: Thu Oct 28 15:59:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 1029
+ *     Update #: 1030
  */
 
 /* Commentary: 
@@ -482,9 +482,9 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
         }
 
         if(view->property("Orientation") == "3D")
-            head_recognizer->setReceiver(view);
+            head_recognizer->setView(view);
         else
-            head_recognizer->setReceiver(NULL);
+            head_recognizer->setView(NULL);
     }
 
     // set gesture recognizer
@@ -498,6 +498,7 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
             gesture_recognizer->startConnection(QUrl(dtkApplicationArgumentsValue(qApp, "--tracker")));
         }
 
+        gesture_recognizer->setView(view);
         gesture_recognizer->setReceiver(static_cast<medAbstractView *>(view)->receiverWidget());
     }
 
