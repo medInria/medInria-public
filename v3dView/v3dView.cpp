@@ -1044,6 +1044,11 @@ QSet<dtkAbstractView *> v3dView::linkedViews (void)
     return d->linkedViews;
 }
 
+QWidget *v3dView::receiverWidget(void)
+{
+    return d->vtkWidget;
+}
+
 QWidget *v3dView::widget(void)
 {
     return d->widget;
@@ -1973,4 +1978,91 @@ void v3dView::setColorLookupTable(QList<double>scalars, QList<QColor>colors)
     lut->Delete();
     delete table;
     delete alphaTable;
+}
+
+// -- head tracking support
+
+void v3dView::enableInteraction(void)
+{
+    if(this->property("Orientation") != "3D")
+        return;
+
+    d->widget->setAttribute(Qt::WA_TransparentForMouseEvents, false);
+}
+
+void v3dView::disableInteraction(void)
+{
+    if(this->property("Orientation") != "3D")
+        return;
+
+    // d->window->GetInteractor()->Disable();
+
+    d->widget->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+}
+
+void v3dView::bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax)
+{
+    if(this->property("Orientation") != "3D")
+        return;
+
+    double bounds[6]; d->renderer3D->ComputeVisiblePropBounds(bounds);
+
+    xmin = bounds[0];
+    xmax = bounds[1];
+    ymin = bounds[2];
+    ymax = bounds[3];
+    zmin = bounds[4];
+    zmax = bounds[5];
+}
+
+void v3dView::cameraUp(double *coordinates)
+{
+    if(this->property("Orientation") != "3D")
+        return;
+
+    vtkCamera *camera = d->renderer3D->GetActiveCamera();
+
+    camera->GetViewUp(coordinates);
+}
+
+void v3dView::cameraPosition(double *coordinates)
+{
+    if(this->property("Orientation") != "3D")
+        return;
+
+    vtkCamera *camera = d->renderer3D->GetActiveCamera();
+
+    camera->GetPosition(coordinates);
+}
+
+void v3dView::cameraFocalPoint(double *coordinates)
+{
+    if(this->property("Orientation") != "3D")
+        return;
+
+    vtkCamera *camera = d->renderer3D->GetActiveCamera();
+
+    camera->GetFocalPoint(coordinates);
+}
+
+void v3dView::setCameraPosition(double x, double y, double z)
+{
+    if(this->property("Orientation") != "3D")
+        return;
+
+    vtkCamera *camera = d->renderer3D->GetActiveCamera();
+
+    camera->SetPosition(x, y, z);
+
+    d->renderer3D->ResetCameraClippingRange();
+}
+
+void v3dView::setCameraClippingRange(double near, double far)
+{
+    if(this->property("Orientation") != "3D")
+        return;
+    
+    vtkCamera *camera = d->renderer3D->GetActiveCamera();
+    
+    camera->SetClippingRange(near, far);
 }
