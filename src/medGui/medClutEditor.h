@@ -51,7 +51,6 @@ public:
     QRectF boundingRect(void) const;
     QColor color(void) const;
     void setColor(QColor color);
-
     void forceGeometricalConstraints( const QRectF & limits );
     void interpolate( medClutEditorVertex * pred, medClutEditorVertex * next );
 
@@ -115,15 +114,20 @@ class medClutEditorTable : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 
 public:
-     medClutEditorTable(QGraphicsItem *parent = 0);
+    //medClutEditorTable(QGraphicsItem *parent = 0);
+    medClutEditorTable(const medClutEditorTable & table);
+    medClutEditorTable(const QString & title = "Unknown", QGraphicsItem *parent = 0);
     ~medClutEditorTable(void);
 
+    QString title();
+    void setTitle(const QString & title);
     void setSize( const QSizeF & size );
     const QSizeF & size() const;
     void setRange( qreal min, qreal max );
     QPointF coordinateToValue( QPointF coord );
 
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
+    QList<medClutEditorVertex*> vertices();
     void forceGeometricalConstraints();
 
     QRectF boundingRect(void) const;
@@ -216,6 +220,9 @@ protected:
 
 protected slots:
     void onNewTableAction(void);
+    void onLoadTableAction(void);
+    void onSaveTableAction(void);
+    void onDeleteTableAction(void);
     void onApplyTablesAction(void);
     void onColorAction(void);
     void onDeleteAction(void);

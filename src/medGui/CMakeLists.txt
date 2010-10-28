@@ -48,7 +48,12 @@ set(${PROJECT_NAME}_HEADERS
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
-  medWorkspaceShifter.h)
+  medWorkspaceShifter.h
+  medLUTtoXMLWriter.h
+  medXMLtoLUTReader.h
+  medSaveLUTDialog.h
+  medLoadLUTDialog.h
+)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medClutEditor.h
@@ -75,7 +80,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewContainerMulti.h
   medViewContainerSingle.h
   medWorkspaceShifter.h
-  )
+  medSaveLUTDialog.h
+  medLoadLUTDialog.h)
 
 set(${PROJECT_NAME}_SOURCES
   medClutEditor.cpp
@@ -102,7 +108,11 @@ set(${PROJECT_NAME}_SOURCES
   medViewContainerCustom.cpp
   medViewContainerMulti.cpp
   medViewContainerSingle.cpp
-  medWorkspaceShifter.cpp)
+  medWorkspaceShifter.cpp
+  medLUTToXMLWriter.cpp
+  medXMLToLUTReader.cpp
+  medSaveLUTDialog.cpp
+  medLoadLUTDialog.cpp)
 
 ## #################################################################
 ## Build rules

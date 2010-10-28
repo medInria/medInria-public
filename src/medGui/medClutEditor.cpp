@@ -21,12 +21,15 @@
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <medCore/medAbstractView.h>
+#include <medCore/medStorage.h>
 #include "medClutEditor.h"
 
 #include <math.h>
 #include <climits>
-
-
+#include "medLUTtoXMLWriter.h"
+#include "medXMLtoLUTReader.h"
+#include "medSaveLUTDialog.h"
+#include "medLoadLUTDialog.h"
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditorVertex
@@ -213,18 +216,33 @@ class medClutEditorTablePrivate
     qreal rangeMin;
     qreal rangeMax;
     QList<medClutEditorVertex *> vertices;
+    QString title;
 };
 
 
-medClutEditorTable::medClutEditorTable(QGraphicsItem *parent)
+medClutEditorTable::medClutEditorTable(const QString & title,  QGraphicsItem *parent)
   : QGraphicsItem(parent)
 {
     d = new medClutEditorTablePrivate;
     d->size = QSizeF( 500.0, 300.0 );
+    d->title = title;
 
     //this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
     this->setZValue(0);
+}
+
+medClutEditorTable::medClutEditorTable(const medClutEditorTable & table)
+    : medClutEditorTable (table.title(),table.parent())
+{
+    d->size = table.size();
+
+    foreach(medClutEditorVertex * vertex,table.vertices())
+    {
+        d->vertices << new medClutEditorVertex(vertex);
+    }
+    //TODO: what about rangeMin and rangeMax?
+
 }
 
 medClutEditorTable::~medClutEditorTable(void)
@@ -232,6 +250,15 @@ medClutEditorTable::~medClutEditorTable(void)
     qDebug() << __func__;
 
     delete d;
+}
+
+QString medClutEditorTable::title(){
+    return d->title;
+}
+
+void medClutEditorTable::setTitle(const QString & title)
+{
+    d->title = title;
 }
 
 void medClutEditorTable::setSize( const QSizeF & size )
@@ -309,6 +336,11 @@ void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
         medClutEditorVertex * next = i < last ? d->vertices[i+1] : NULL;
         vertex->interpolate( prev, next );
     }
+}
+
+QList<medClutEditorVertex*>  medClutEditorTable::vertices()
+{
+    return d->vertices;
 }
 
 void medClutEditorTable::setSelectedAllVertices( bool isSelected )
@@ -762,13 +794,16 @@ public:
     QAction *deleteAction;
     QAction *colorAction;
     QAction *applyAction;
-
+    QAction *loadTableAction;
+    QAction *deleteTableAction;
+    QAction *saveTableAction;
     medClutEditorScene *scene;
     medClutEditorView  *view;
     medClutEditorHistogram *histogram;
 
     dtkAbstractData *dtk_data;
     medAbstractView *med_view;
+    QList <medClutEditorTable *> * tables;
 };
 
 medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
@@ -778,13 +813,22 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
     d->view  = new medClutEditorView( this );
     d->view->setScene(d->scene);
 
-    d->newAction    = new QAction("New table", this);
-    d->colorAction  = new QAction("Edit color", this);
-    d->deleteAction = new QAction("Delete selection", this);
-    d->applyAction  = new QAction("Apply", this);
+    d->newAction         = new QAction("New table", this);
+    d->loadTableAction   = new QAction("Load table", this);
+    d->saveTableAction   = new QAction("SaveTable",this);
+    d->deleteTableAction = new QAction("Delete table", this);
+    d->colorAction       = new QAction("Edit color", this);
+    d->deleteAction      = new QAction("Delete selection", this);
+    d->applyAction       = new QAction("Apply", this);
 
     connect(d->newAction,    SIGNAL(triggered()),
             this,            SLOT(onNewTableAction()));
+    connect(d->loadTableAction,    SIGNAL(triggered()),
+            this,            SLOT(onLoadTableAction()));
+    connect(d->saveTableAction,    SIGNAL(triggered()),
+            this,            SLOT(onSaveTableAction()));
+    connect(d->deleteTableAction, SIGNAL(triggered()),
+            this,            SLOT(onDeleteTableAction()));
     connect(d->colorAction,  SIGNAL(triggered()),
             this,            SLOT(onColorAction()));
     connect(d->deleteAction, SIGNAL(triggered()),
@@ -796,17 +840,34 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(d->view);
     this->setLayout(layout);
+
+    //get saved LUTs.
+    d->tables = new QList<medClutEditorTable *>();
+    medXMLToLUTReader reader = medXMLToLUTReader(d->tables);
+    QString lutFileName = medStorage::dataLocation();
+    lutFileName.append("/LUTs.xml");
+    QFile file(lutFileName);
+    if (file.open(QIODevice::ReadOnly))
+    {
+        reader.read(&file);
+        file.close();
+    }
+
 }
 
 medClutEditor::~medClutEditor(void)
 {
     delete d->newAction;
+    delete d->loadTableAction;
+    delete d->saveTableAction;
+    delete d->deleteTableAction;
     delete d->colorAction;
     delete d->deleteAction;
     delete d->applyAction;
 
     delete d->scene;
     delete d->view;
+    delete d->tables; //TODO: delete all the tables as well.
     delete d;
 }
 
@@ -841,7 +902,7 @@ void medClutEditor::initializeTable(void)
 {
     this->deleteTable();
 
-    medClutEditorTable *lut = new medClutEditorTable;
+    medClutEditorTable *lut = new medClutEditorTable("Unknown");
     lut->setSize( d->histogram->size() );
     lut->setRange( d->histogram->getRangeMin(), d->histogram->getRangeMax() );
     d->scene->addItem( lut );
@@ -902,6 +963,9 @@ void medClutEditor::mousePressEvent(QMouseEvent *event)
         QMenu menu("Color Lookup Table", this) ;
         menu.setWindowOpacity(0.8) ;
         menu.addAction(d->newAction);
+        menu.addAction(d->loadTableAction);
+        menu.addAction(d->saveTableAction);
+        menu.addAction(d->deleteTableAction);
         menu.addSeparator();
         menu.addAction(d->colorAction);
         menu.addAction(d->deleteAction);
@@ -933,4 +997,81 @@ void medClutEditor::onDeleteAction(void)
 void medClutEditor::onApplyTablesAction(void)
 {
     applyTable();
+}
+
+void medClutEditor::onLoadTableAction(void)
+{
+    QStringList titles;
+    foreach (medClutEditorTable * table,*d->tables )
+    {
+        titles << table->title();
+    }
+
+    medLoadLUTDialog dialog (titles,this);
+    // Show it and wait for Ok or Cancel
+    if( dialog.exec() == QDialog::Accepted )
+    {
+        // We got Ok
+       foreach (medClutEditorTable * table,*d->tables )
+        {
+           if ( table->title() == dialog.textValue())
+           {
+                //display this table
+               d->scene->removeItem(d->scene->table());
+               d->scene->addItem(table);
+               d->scene->update();
+           }
+        }
+    }
+
+}
+
+void medClutEditor::onSaveTableAction(void)
+{
+
+    if ( medClutEditorTable * table = d->scene->table() )
+    {
+        medSaveLUTDialog dialog (table->title(),this);
+        // Show it and wait for Ok or Cancel
+        if( dialog.exec() == QDialog::Accepted )
+        {
+            // We got Ok
+            medClutEditorTable * tableToSave;
+            if (table->title().compare(dialog.textValue()))
+            {
+                //copy the table
+                tableToSave = new medClutEditorTable(table);
+                tableToSave->setTitle(dialog.textValue());
+            }
+            else
+            {
+                tableToSave = table;
+            }
+
+            QList<medClutEditorTable*>  l = *d->tables;
+            l << tableToSave;
+            medLUTToXMLWriter writer (l);
+            //create file object in an existing storage place
+            medStorage::mkpath(medStorage::dataLocation());
+            QString fileName = medStorage::dataLocation();
+            fileName.append("/LUTs.xml");
+            QFile * file = new QFile();
+            file->setFileName(fileName);
+            if (file->open(QIODevice::WriteOnly))
+            {
+                writer.writeFile(file);
+                file->close();
+            }
+            else
+            {
+                qDebug() << "can'open file " << fileName;
+            }
+            delete file;
+        }
+    }
+}
+
+void medClutEditor::onDeleteTableAction(void)
+{
+
 }
