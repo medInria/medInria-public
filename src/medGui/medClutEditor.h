@@ -114,7 +114,8 @@ class medClutEditorTable : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 
 public:
-    medClutEditorTable(QGraphicsItem *parent = 0);
+    //medClutEditorTable(QGraphicsItem *parent = 0);
+    medClutEditorTable(const medClutEditorTable & table);
     medClutEditorTable(const QString & title = "Unknown", QGraphicsItem *parent = 0);
     ~medClutEditorTable(void);
 

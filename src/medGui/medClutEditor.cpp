@@ -232,6 +232,19 @@ medClutEditorTable::medClutEditorTable(const QString & title,  QGraphicsItem *pa
     this->setZValue(0);
 }
 
+medClutEditorTable::medClutEditorTable(const medClutEditorTable & table)
+    : medClutEditorTable (table.title(),table.parent())
+{
+    d->size = table.size();
+
+    foreach(medClutEditorVertex * vertex,table.vertices())
+    {
+        d->vertices << new medClutEditorVertex(vertex);
+    }
+    //TODO: what about rangeMin and rangeMax?
+
+}
+
 medClutEditorTable::~medClutEditorTable(void)
 {
     qDebug() << __func__;
@@ -1023,10 +1036,20 @@ void medClutEditor::onSaveTableAction(void)
         if( dialog.exec() == QDialog::Accepted )
         {
             // We got Ok
-            table->setTitle(dialog.textValue());
+            medClutEditorTable * tableToSave;
+            if (table->title().compare(dialog.textValue()))
+            {
+                //copy the table
+                tableToSave = new medClutEditorTable(table);
+                tableToSave->setTitle(dialog.textValue());
+            }
+            else
+            {
+                tableToSave = table;
+            }
 
             QList<medClutEditorTable*>  l = *d->tables;
-            l << table;
+            l << tableToSave;
             medLUTToXMLWriter writer (l);
             //create file object in an existing storage place
             medStorage::mkpath(medStorage::dataLocation());
