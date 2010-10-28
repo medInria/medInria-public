@@ -71,7 +71,8 @@ IF(WIN32)
 				"/DSRCDIR=${PROJECT_SOURCE_DIR}"
 				"/DINST_PREFIX=${CMAKE_INSTALL_PREFIX}"
 				#must be changed but ${CMAKE_INSTALL_PREFIX} has slashes not backslashes...
-				"/DPACK_INSTALLDIR=C:\\Program Files\\inria"
+				
+                "/DPACK_INSTALLDIR=$PROGRAMFILES\\inria"
 				"/DPROJECT_NAME=${PROJECT_NAME}"
 				"/DMED_EXECUTABLE=medinria.exe"
 				)
