@@ -17,6 +17,11 @@ public:
                                      int size,
                                      const int & table);
 
-    virtual void setColorLookupTable(QList<double>scalars,QList<QColor>colors);
+    virtual void setColorLookupTable( QList<double> scalars,
+				      QList<QColor> colors );
+    virtual void setTransferFunctions( QList<double> scalars,
+				       QList<QColor> colors );
+    virtual void getTransferFunctions( QList<double> & scalars,
+				       QList<QColor> & colors );
 };
 #endif

@@ -21,7 +21,20 @@ void medAbstractView::setColorLookupTable(int min_range,
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medAbstractView::setColorLookupTable(QList<double>scalars,QList<QColor>colors)
+void medAbstractView::setColorLookupTable( QList<double> scalars,
+					   QList<QColor> colors )
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::setTransferFunctions( QList<double> scalars,
+					    QList<QColor> colors )
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::getTransferFunctions( QList<double> & scalars,
+					    QList<QColor> & colors )
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }

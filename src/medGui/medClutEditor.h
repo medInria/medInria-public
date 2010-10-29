@@ -127,6 +127,7 @@ public:
     const QSizeF & size() const;
     void setRange( qreal min, qreal max );
     QPointF coordinateToValue( QPointF coord );
+    QPointF valueToCoordinate( QPointF value );
 
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
     QList<medClutEditorVertex *> vertices();
@@ -155,6 +156,7 @@ public slots:
     void onDeleteVertex(medClutEditorVertex * v);
 
 private:
+    void deleteAllVertices();
 
     medClutEditorTablePrivate *d;
 };

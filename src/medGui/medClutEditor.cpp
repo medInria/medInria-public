@@ -26,6 +26,7 @@
 
 #include <math.h>
 #include <climits>
+
 #include "medLUTtoXMLWriter.h"
 #include "medXMLtoLUTReader.h"
 #include "medSaveLUTDialog.h"
@@ -342,6 +343,19 @@ QPointF medClutEditorTable::coordinateToValue( QPointF coord )
     return value;
 }
 
+QPointF medClutEditorTable::valueToCoordinate( QPointF value )
+{
+    qreal valRange  = d->rangeMax - d->rangeMin;
+
+    QPointF coord;
+    if ( valRange > 0.0 ) {
+	coord.setX( d->size.width() * ( value.x() - d->rangeMin ) / valRange );
+	coord.setY( d->size.height() - d->size.height() * value.y() );
+    }
+
+    return coord;
+}
+
 void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
                                     bool interpolate )
 {
@@ -405,6 +419,14 @@ void medClutEditorTable::deleteSelection()
     }
 
     d->vertices = remaining;
+}
+
+void medClutEditorTable::deleteAllVertices()
+{
+    foreach( medClutEditorVertex * vertex, d->vertices )
+	delete vertex;
+
+    d->vertices.clear();
 }
 
 void medClutEditorTable::setColorOfSelection( const QColor & color )
@@ -474,8 +496,8 @@ void medClutEditorTable::setup(float min, float max, int size, int *table)
     }
 }
 
-void medClutEditorTable::setupTransferFunction( QList<double> &scalars,
-                                                QList<QColor> &colors )
+void medClutEditorTable::getTransferFunction( QList<double> &scalars,
+					      QList<QColor> &colors )
 {
     scalars.clear();
     colors.clear();
@@ -484,6 +506,32 @@ void medClutEditorTable::setupTransferFunction( QList<double> &scalars,
         colors  << vertex->color();
         scalars << static_cast< double >( vertex->x() );
     }
+}
+
+void medClutEditorTable::setTransferFunction( QList<double> &scalars,
+					      QList<QColor> &colors )
+{
+    int size = qMin( scalars.count(), colors.count() );
+
+    if ( size < 2 ) {
+	qDebug() << "medClutEditorTable::setTransferFunction: Transfer function"
+		 << " has less than two nodes.  Can't use it.";
+	return;
+    }
+
+    this->deleteAllVertices();
+
+    for ( int i = 0; i < size; i++ ) {
+	QPointF value( scalars.at( i ), colors.at( i ).alphaF() );
+	QPointF coord = this->valueToCoordinate( value );
+
+	qDebug() << "value: " << value << ", coord: " << coord;
+	d->vertices << new medClutEditorVertex( coord.x(), coord.y(),
+						colors.at( i ), this );
+    }
+
+    qSort( d->vertices.begin(), d->vertices.end(),
+           medClutEditorVertex::LessThan );
 }
 
 void medClutEditorTable::paint(QPainter *painter,
@@ -928,6 +976,15 @@ void medClutEditor::setData(dtkAbstractData *data)
 void medClutEditor::setView(medAbstractView *view)
 {
     d->med_view = view;
+
+    if ( d->med_view != NULL ) {
+	QList<double> scalars;
+	QList<QColor> colors;
+    
+	d->med_view->getTransferFunctions( scalars, colors );
+	medClutEditorTable * table = d->scene->table();
+	table->setTransferFunction( scalars, colors );
+    }
 }
 
 void medClutEditor::initializeTable(void)
@@ -970,19 +1027,16 @@ void medClutEditor::deleteTable(void)
 
 void medClutEditor::applyTable(void)
 {
-    if (dtkAbstractDataImage *image =
-        dynamic_cast<dtkAbstractDataImage *>(d->dtk_data)) {
+    // if (dtkAbstractDataImage *image =
+    //     dynamic_cast<dtkAbstractDataImage *>(d->dtk_data)) {
+    if ( d->med_view != NULL ) {
 
         QList<double> scalars;
         QList<QColor> colors;
-        foreach (QGraphicsItem *item, d->scene->items())
-            if (medClutEditorTable *lut =
-                dynamic_cast<medClutEditorTable *>(item)) {
-                lut->setupTransferFunction(scalars, colors);
-                d->med_view->setColorLookupTable(scalars, colors);
-                break;
-            }
-
+	medClutEditorTable * table = d->scene->table();
+	table->getTransferFunction(scalars, colors);
+	// d->med_view->setColorLookupTable(scalars, colors);
+	d->med_view->setTransferFunctions(scalars, colors);
     }
 }
 
