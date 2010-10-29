@@ -2002,47 +2002,132 @@ void v3dView::disableInteraction(void)
 
 void v3dView::bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax)
 {
-    if(this->property("Orientation") != "3D")
-        return;
+    if(this->property("Orientation") == "Axial") {
 
-    double bounds[6]; d->renderer3D->ComputeVisiblePropBounds(bounds);
+        double bounds[6]; d->renderer2DAxial->ComputeVisiblePropBounds(bounds);
+        
+        xmin = bounds[0];
+        xmax = bounds[1];
+        ymin = bounds[2];
+        ymax = bounds[3];
+        zmin = bounds[4];
+        zmax = bounds[5];
+    }
 
-    xmin = bounds[0];
-    xmax = bounds[1];
-    ymin = bounds[2];
-    ymax = bounds[3];
-    zmin = bounds[4];
-    zmax = bounds[5];
+    if(this->property("Orientation") == "Sagittal") {
+
+        double bounds[6]; d->renderer2DSagittal->ComputeVisiblePropBounds(bounds);
+        
+        xmin = bounds[0];
+        xmax = bounds[1];
+        ymin = bounds[2];
+        ymax = bounds[3];
+        zmin = bounds[4];
+        zmax = bounds[5];
+    }
+
+    if(this->property("Orientation") == "Coronal") {
+
+        double bounds[6]; d->renderer2DCoronal->ComputeVisiblePropBounds(bounds);
+        
+        xmin = bounds[0];
+        xmax = bounds[1];
+        ymin = bounds[2];
+        ymax = bounds[3];
+        zmin = bounds[4];
+        zmax = bounds[5];
+    }
+
+    if(this->property("Orientation") == "3D") {
+
+        double bounds[6]; d->renderer3D->ComputeVisiblePropBounds(bounds);
+        
+        xmin = bounds[0];
+        xmax = bounds[1];
+        ymin = bounds[2];
+        ymax = bounds[3];
+        zmin = bounds[4];
+        zmax = bounds[5];
+    }
 }
 
 void v3dView::cameraUp(double *coordinates)
 {
-    if(this->property("Orientation") != "3D")
-        return;
+    if(this->property("Orientation") == "Axial") {
 
-    vtkCamera *camera = d->renderer3D->GetActiveCamera();
+        vtkCamera *camera = d->renderer2DAxial->GetActiveCamera();   
+        camera->GetViewUp(coordinates);
+    }
 
-    camera->GetViewUp(coordinates);
+    if(this->property("Orientation") == "Sagittal") {
+
+        vtkCamera *camera = d->renderer2DSagittal->GetActiveCamera();   
+        camera->GetViewUp(coordinates);
+    }
+
+    if(this->property("Orientation") == "Coronal") {
+
+        vtkCamera *camera = d->renderer2DCoronal->GetActiveCamera();   
+        camera->GetViewUp(coordinates);
+    }
+
+    if(this->property("Orientation") == "3D") {
+
+        vtkCamera *camera = d->renderer3D->GetActiveCamera();   
+        camera->GetViewUp(coordinates);
+    }
 }
 
 void v3dView::cameraPosition(double *coordinates)
 {
-    if(this->property("Orientation") != "3D")
-        return;
+    if(this->property("Orientation") == "Axial") {
 
-    vtkCamera *camera = d->renderer3D->GetActiveCamera();
+        vtkCamera *camera = d->renderer2DAxial->GetActiveCamera();   
+        camera->GetPosition(coordinates);
+    }
 
-    camera->GetPosition(coordinates);
+    if(this->property("Orientation") == "Sagittal") {
+
+        vtkCamera *camera = d->renderer2DSagittal->GetActiveCamera();   
+        camera->GetPosition(coordinates);
+    }
+
+    if(this->property("Orientation") == "Coronal") {
+
+        vtkCamera *camera = d->renderer2DCoronal->GetActiveCamera();   
+        camera->GetPosition(coordinates);
+    }
+
+    if(this->property("Orientation") == "3D") {
+        vtkCamera *camera = d->renderer3D->GetActiveCamera();   
+        camera->GetPosition(coordinates);
+    }
 }
 
 void v3dView::cameraFocalPoint(double *coordinates)
 {
-    if(this->property("Orientation") != "3D")
-        return;
+    if(this->property("Orientation") == "Axial") {
 
-    vtkCamera *camera = d->renderer3D->GetActiveCamera();
+        vtkCamera *camera = d->renderer2DAxial->GetActiveCamera();   
+        camera->GetFocalPoint(coordinates);
+    }
 
-    camera->GetFocalPoint(coordinates);
+    if(this->property("Orientation") == "Coronal") {
+
+        vtkCamera *camera = d->renderer2DCoronal->GetActiveCamera();   
+        camera->GetFocalPoint(coordinates);
+    }
+
+    if(this->property("Orientation") == "Sagittal") {
+
+        vtkCamera *camera = d->renderer2DSagittal->GetActiveCamera();   
+        camera->GetFocalPoint(coordinates);
+    }
+
+    if(this->property("Orientation") == "3D") {
+        vtkCamera *camera = d->renderer3D->GetActiveCamera();   
+        camera->GetFocalPoint(coordinates);
+    }
 }
 
 void v3dView::setCameraPosition(double x, double y, double z)
