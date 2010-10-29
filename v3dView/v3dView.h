@@ -71,7 +71,12 @@ public:
     vtkRenderer *renderer3D(void);
 
 
-    void setColorLookupTable(QList<double>scalars,QList<QColor>colors);
+    virtual void getTransferFunctions( QList<double> & scalars,
+				       QList<QColor> & colors );
+    virtual void setTransferFunctions( QList<double> scalars,
+				       QList<QColor > colors );
+    virtual void setColorLookupTable( QList< double > scalars,
+				      QList< QColor > colors );
 
 public slots:
     void play   (bool);

@@ -1862,6 +1862,71 @@ dtkAbstractView *createV3dView(void)
     return new v3dView;
 }
 
+void v3dView::getTransferFunctions( QList<double> & scalars,
+				    QList<QColor> & colors )
+{
+    qDebug() << "v3dView::getTransferFunctions";
+
+    vtkColorTransferFunction * color   =
+      d->currentView->GetColorTransferFunction();
+    vtkPiecewiseFunction     * opacity = 
+      d->currentView->GetOpacityTransferFunction();
+
+    if ( color == NULL || opacity == NULL )
+      return;
+      
+    if ( color->GetSize() != opacity->GetSize() )
+      qDebug() << __func__ << " sizes of color and opacity transfer functions"
+	"don't match!";
+    int size = qMin( color->GetSize(), opacity->GetSize() );
+
+    scalars.clear();
+    colors.clear();
+
+    bool ok = true;
+    for ( int i = 0; i < size; i++ )
+    {
+	double xrgb[6], xalpha[4];
+	color->GetNodeValue( i, xrgb );
+	opacity->GetNodeValue( i, xalpha );
+	if ( xrgb[0] != xalpha[0] )
+	  ok = false;
+
+	scalars << xrgb[0];
+	QColor c;
+	c.setRgbF( xrgb[1], xrgb[2], xrgb[3], xalpha[1] );
+	colors << c;
+    }
+
+    if ( !ok )
+      qDebug() << __func__ << " x values of color and opacity transfer "
+	"functions don't match!";
+}
+
+void v3dView::setTransferFunctions( QList< double > scalars,
+				    QList< QColor > colors )
+{
+    qDebug() << "v3dView::setTransferFunctions";
+
+    int size = qMin( scalars.count(), colors.count() );
+    vtkColorTransferFunction * color   = vtkColorTransferFunction::New();
+    vtkPiecewiseFunction     * opacity = vtkPiecewiseFunction::New();
+
+    for ( int i = 0; i < size; i++ )
+    {
+	color->AddRGBPoint( scalars.at( i ),
+			    colors.at( i ).redF(),
+			    colors.at( i ).greenF(),
+			    colors.at( i ).blueF() );
+        opacity->AddPoint( scalars.at( i ), colors.at( i ).alphaF() );
+    }
+
+    d->currentView->SetTransferFunctions( color, opacity );
+    d->currentView->Render();
+
+    color->Delete();
+    opacity->Delete();
+}
 
 void v3dView::setColorLookupTable(QList<double>scalars, QList<QColor>colors)
 {
