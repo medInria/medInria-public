@@ -148,6 +148,8 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0);
 
+    void changeDisplayAlpha( qreal step );
+    void resetDisplayAlpha();
 
     // void keyPressEvent(QKeyEvent *event);
     // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

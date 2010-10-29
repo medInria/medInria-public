@@ -234,6 +234,7 @@ class medClutEditorTablePrivate
     qreal rangeMax;
     QList<medClutEditorVertex *> vertices;
     QString title;
+    qreal displayAlpha;
 };
 
 
@@ -243,6 +244,7 @@ medClutEditorTable::medClutEditorTable(const QString & title,  QGraphicsItem *pa
     d = new medClutEditorTablePrivate;
     d->size = QSizeF( 500.0, 300.0 );
     d->title = title;
+    d->displayAlpha = 1.0;
 
     //this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -560,7 +562,7 @@ void medClutEditorTable::paint(QPainter *painter,
         position = qMax( 0.0, position );
         position = qMin( position, 1.0 );
         QColor color = vertex->color();
-        // color.setAlphaF( 0.5 );
+        color.setAlphaF( d->displayAlpha * color.alphaF() );
         linearGradient.setColorAt(position, color);
     }
 
@@ -589,6 +591,18 @@ QRectF medClutEditorTable::boundingRect(void) const
     }
 
     return QRectF(xmin, ymin, xmax - xmin, qAbs(ymin));
+}
+
+void medClutEditorTable::changeDisplayAlpha( qreal step )
+{
+    d->displayAlpha = qMax( 0.0, qMin( d->displayAlpha + step, 1.0 ) );
+    this->update();
+}
+
+void medClutEditorTable::resetDisplayAlpha()
+{
+    d->displayAlpha = 1.0;
+    this->update();
 }
 
 // void medClutEditorTable::keyPressEvent(QKeyEvent *event)
@@ -803,17 +817,23 @@ void medClutEditorView::wheelEvent ( QWheelEvent * event )
 }
 
 void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
+    bool withShift =
+	static_cast<bool>( event->modifiers() & Qt::ShiftModifier );
+    bool withCtrl =
+	static_cast<bool>( event->modifiers() & Qt::ControlModifier );
+
     switch (event->key()) {
     case Qt::Key_Control:
         this->setDragMode(QGraphicsView::ScrollHandDrag); break;
+
     case Qt::Key_A:
     {
         medClutEditorTable * table = this->table();
         if ( table != NULL )
-            table->setSelectedAllVertices(
-                !static_cast<bool>( event->modifiers() & Qt::ShiftModifier ) );
+            table->setSelectedAllVertices( !withShift );
         break;
     }
+
     case Qt::Key_C:
     {
         medClutEditorTable * table = this->table();
@@ -821,6 +841,7 @@ void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
             table->setColorOfSelection();
         break;
     }
+
     case Qt::Key_Delete:
     {
         medClutEditorTable * table = this->table();
@@ -828,12 +849,40 @@ void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
             table->deleteSelection();
         break;
     }
+
     case Qt::Key_Return:
     case Qt::Key_Enter:
     {
         medClutEditor * editor = dynamic_cast<medClutEditor *>(this->parent());
         if ( editor != NULL )
             editor->applyTable();
+    }
+
+    case Qt::Key_Plus:
+    case Qt::Key_Equal:
+    {
+        medClutEditorTable * table = this->table();
+        if ( table != NULL )
+	  table->changeDisplayAlpha( withCtrl ? 0.05 : 0.25 );
+
+	break;
+    }
+    case Qt::Key_Minus:
+    case Qt::Key_Underscore:
+    {
+        medClutEditorTable * table = this->table();
+        if ( table != NULL )
+	  table->changeDisplayAlpha( withCtrl ? -0.05 : -0.25 );
+
+	break;
+    }
+    case Qt::Key_0:
+    {
+        medClutEditorTable * table = this->table();
+        if ( table != NULL )
+	  table->resetDisplayAlpha();
+
+	break;
     }
     default:
         break;
