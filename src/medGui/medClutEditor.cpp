@@ -57,10 +57,26 @@ medClutEditorVertex::medClutEditorVertex(qreal x, qreal y, QColor color,
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 
+medClutEditorVertex::medClutEditorVertex( const medClutEditorVertex & other,
+					  QGraphicsItem * parent)
+  : QGraphicsItem( parent )
+{
+    d = new medClutEditorVertexPrivate;
+    d->color   = other.d->color;
+    d->fgColor = other.d->fgColor;
+    d->bgColor = other.d->bgColor;
+
+    this->setPos( other.pos() );
+    this->setZValue(1);
+    setAlpha();
+    setColor( d->color );
+
+    this->setFlag(QGraphicsItem::ItemIsMovable, true);
+    this->setFlag(QGraphicsItem::ItemIsSelectable, true);
+}
+
 medClutEditorVertex::~medClutEditorVertex(void)
 {
-    qDebug() << __func__;
-
     delete d;
 }
 
@@ -233,26 +249,34 @@ medClutEditorTable::medClutEditorTable(const QString & title,  QGraphicsItem *pa
 }
 
 medClutEditorTable::medClutEditorTable(const medClutEditorTable & table)
-    : medClutEditorTable (table.title(),table.parent())
+  : QGraphicsItem( static_cast< QGraphicsItem *>( table.parentItem() ) )
+    // : medClutEditorTable (table.title(),table.parent())
 {
+    d = new medClutEditorTablePrivate;
+    d->title = table.title();
     d->size = table.size();
 
-    foreach(medClutEditorVertex * vertex,table.vertices())
+    foreach ( const medClutEditorVertex * vertex, table.vertices())
     {
-        d->vertices << new medClutEditorVertex(vertex);
+        d->vertices << new medClutEditorVertex( * vertex);
     }
-    //TODO: what about rangeMin and rangeMax?
 
+    //TODO: what about rangeMin and rangeMax?
+    // actual values are set by medClutEditor::initializeTable()
+    d->rangeMin = 0.0;
+    d->rangeMax = 255.0;
+
+    this->setFlag(QGraphicsItem::ItemIsFocusable, true);
+    this->setZValue(0);
 }
 
 medClutEditorTable::~medClutEditorTable(void)
 {
-    qDebug() << __func__;
-
     delete d;
 }
 
-QString medClutEditorTable::title(){
+const QString & medClutEditorTable::title() const
+{
     return d->title;
 }
 
@@ -338,9 +362,17 @@ void medClutEditorTable::addVertex( medClutEditorVertex *vertex,
     }
 }
 
-QList<medClutEditorVertex*>  medClutEditorTable::vertices()
+QList< medClutEditorVertex * > medClutEditorTable::vertices()
 {
     return d->vertices;
+}
+
+QList< const medClutEditorVertex * > medClutEditorTable::vertices() const
+{
+    QList< const medClutEditorVertex * > const_vertices;
+    foreach (medClutEditorVertex * vertex, d->vertices)
+	const_vertices << vertex;
+    return const_vertices;
 }
 
 void medClutEditorTable::setSelectedAllVertices( bool isSelected )
@@ -1040,7 +1072,7 @@ void medClutEditor::onSaveTableAction(void)
             if (table->title().compare(dialog.textValue()))
             {
                 //copy the table
-                tableToSave = new medClutEditorTable(table);
+                tableToSave = new medClutEditorTable( * table );
                 tableToSave->setTitle(dialog.textValue());
             }
             else

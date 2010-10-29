@@ -8,8 +8,8 @@ public:
     QXmlStreamWriter xml;
     QList<medClutEditorTable *> tables;
 
-    void writeTable(medClutEditorTable & table);
-    void writeNode(medClutEditorVertex & vertex);
+    void writeTable(const medClutEditorTable & table);
+    void writeNode( const medClutEditorVertex & vertex);
 };
 
 
@@ -40,17 +40,17 @@ bool medLUTToXMLWriter::writeFile(QIODevice *device)
     return true;
 }
 
-void medLUTToXMLWriterPrivate::writeTable(medClutEditorTable & table){
+void medLUTToXMLWriterPrivate::writeTable(const medClutEditorTable & table){
     xml.writeStartElement("table");
     xml.writeAttribute("title", table.title());
     qDebug()<< table.title();
     qDebug()<< "size: " << table.vertices().count();
-    foreach (medClutEditorVertex * vertex, table.vertices())
+    foreach (const medClutEditorVertex * vertex, table.vertices())
         writeNode(*vertex);
     xml.writeEndElement();
 }
 
-void medLUTToXMLWriterPrivate::writeNode(medClutEditorVertex & vertex)
+void medLUTToXMLWriterPrivate::writeNode(const medClutEditorVertex & vertex)
 {
     QString node;
     //position

@@ -41,7 +41,9 @@ class medClutEditorVertex : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 
 public:
-     medClutEditorVertex(qreal x, qreal y, QColor color = Qt::white,
+    medClutEditorVertex(qreal x, qreal y, QColor color = Qt::white,
+			QGraphicsItem *parent = 0);
+    medClutEditorVertex( const medClutEditorVertex & other,
                          QGraphicsItem *parent = 0);
     ~medClutEditorVertex(void);
 
@@ -119,7 +121,7 @@ public:
     medClutEditorTable(const QString & title = "Unknown", QGraphicsItem *parent = 0);
     ~medClutEditorTable(void);
 
-    QString title();
+    const QString & title() const;
     void setTitle(const QString & title);
     void setSize( const QSizeF & size );
     const QSizeF & size() const;
@@ -127,7 +129,8 @@ public:
     QPointF coordinateToValue( QPointF coord );
 
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
-    QList<medClutEditorVertex*> vertices();
+    QList<medClutEditorVertex *> vertices();
+    QList<const medClutEditorVertex *> vertices() const;
     void forceGeometricalConstraints();
 
     QRectF boundingRect(void) const;
@@ -138,7 +141,8 @@ public:
     void setColorOfSelection();
 
     void setup(float min, float max, int size, int *table);
-    void setupTransferFunction(QList<double> &scalars, QList<QColor> &colors );
+    void getTransferFunction(QList<double> &scalars, QList<QColor> &colors );
+    void setTransferFunction(QList<double> &scalars, QList<QColor> &colors );
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0);
