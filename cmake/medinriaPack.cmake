@@ -54,9 +54,12 @@ endif(UNIX AND NOT APPLE)
 IF(WIN32)
 	MACRO( MAKE_NSIS_INSTALLER TARGET INPUT VERSION)
 		FIND_FILE(MAKENSIS makensis.exe
-			"C:/Program Files/NSIS/"        
-			)                          
+			"C:/Program Files/NSIS/" 
+            "C:/Program Files (x86)/NSIS/" 
+			)    
+        #MESSAGE("makensis found?: ${MAKENSIS}")
 		IF( MAKENSIS )       
+            #MESSAGE("makensis found")
 			FILE(TO_CMAKE_PATH "$ENV{SYSTEMROOT}" SYSTEMROOT)
 			IF(CMAKE_CL_64)
 				SET(MSVC_ARCH amd64)
@@ -76,6 +79,7 @@ IF(WIN32)
 				"/DPROJECT_NAME=${PROJECT_NAME}"
 				"/DMED_EXECUTABLE=medinria.exe"
 				)
+            #MESSAGE(${NSIS_OPTIONS})
 			ADD_CUSTOM_COMMAND(
 				TARGET ${TARGET} POST_BUILD
 				COMMAND ${MAKENSIS} 
