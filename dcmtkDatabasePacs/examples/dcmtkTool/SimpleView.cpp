@@ -18,6 +18,8 @@
 #include "LoggerWidgetOutput.h"
 #include "LoggerWidget.h"
 
+#include "dcmtkDump.h"
+
 #include <sstream>
 
 
@@ -233,11 +235,19 @@ void SimpleView::findStudyLevel()
     {
         dcmtkContainer<dcmtkResultDataset*>* resCont = myNode->getResultDatasetContainer();
         dcmtkResultDataset* resDs = resCont->getFirst();
+
+        // add the root node containing the name of the DICOM NODE
+        QTreeWidgetItem *topLevelItem = new QTreeWidgetItem();
+        ui->treeWidget->addTopLevelItem(topLevelItem);
+        topLevelItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
+        topLevelItem->setData(1,Qt::UserRole, QPoint(0x0010,0x0010)); // tag
+        topLevelItem->setData(2,Qt::UserRole, patientName); // search value
+        topLevelItem->setText(0,myNode->title().c_str());
         
         while ( resCont->isValid())
         {
             // add result to list
-            QTreeWidgetItem *pItem = new QTreeWidgetItem(ui->treeWidget);
+            QTreeWidgetItem *pItem = new QTreeWidgetItem(topLevelItem);
             pItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
             
             pItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
@@ -250,6 +260,8 @@ void SimpleView::findStudyLevel()
         }
         sum = sum + resCont->size();
         myNode = resNodeCont->getNext();
+        topLevelItem->setExpanded(true);
+
     }
 
     // print to logwindow
@@ -266,9 +278,12 @@ void SimpleView::findSeriesLevel(QTreeWidgetItem * item)
     // check if its a top level item
     if (item->parent() != NULL) 
     {
-        findImageLevel(item); // forward to image level
-        return;
-    }
+        if (item->parent()->parent() != NULL)
+        {
+            findImageLevel(item); // forward to image level
+            return;
+        }
+    } else return;
 
     // check if the item alread has children (don't query again)
     if (item->child(0) != NULL) return;
@@ -345,7 +360,7 @@ void SimpleView::findSeriesLevel(QTreeWidgetItem * item)
 
 void SimpleView::findImageLevel(QTreeWidgetItem * item)
 {
-    // check if the item alread has children (don't query again)
+    // check if the item already has children (don't query again)
     if (item->child(0) != NULL) return;
 
     // retrieve data

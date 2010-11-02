@@ -6,6 +6,12 @@
 #include <GUSI.h>
 #endif
 
+#ifdef WITH_ZLIB
+#include <zlib.h>        /* for zlibVersion() */
+#endif
+
+#define INCLUDE_CSTDLIB
+#define INCLUDE_CSTRING
 
 #include "dcmtkLogger.h"
 

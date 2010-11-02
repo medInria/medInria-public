@@ -191,9 +191,8 @@ int SpeedTest::moveImageLevel(std::string patientName, bool useBatch)
                         {
                             while (resContImage->isValid())
                             {
-                                // concatenate the uids
-                                if (myQueryValue != "") myQueryValue +=  "\\";
-                                myQueryValue += resDsImage->getSOPInstanceUID();
+                                // concatenate the uids in reverse order (seems not to have an effect on the pacs)
+                                myQueryValue = std::string(resDsImage->getSOPInstanceUID()) +"\\"+ myQueryValue;
                                 resDsImage = resContImage->getNext();
                             }
                             // now do a batch move on all image

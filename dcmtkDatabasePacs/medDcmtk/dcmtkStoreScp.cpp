@@ -66,7 +66,7 @@ dcmtkStoreScp::dcmtkStoreScp()
     opt_execOnReception = NULL;        // default: don't execute anything on reception
     opt_execOnEndOfStudy = "TRUE";       // default: don't execute anything on end of study
     opt_renameOnEndOfStudy = OFFalse;  // default: don't rename any files on end of study
-    opt_endOfStudyTimeout = 10;        // default: no end of study timeout
+    opt_endOfStudyTimeout = 3;        // default: no end of study timeout
     endOfStudyThroughTimeoutEvent = OFTrue;
     opt_configFile = NULL;
     opt_profileName = NULL;
