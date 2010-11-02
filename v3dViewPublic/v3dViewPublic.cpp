@@ -36,7 +36,10 @@ public:
     vtkViewImage *currentView;	
 	
     QWidget    *widget;	
-    QVTKWidget *vtkWidget;	
+    QVTKWidget *vtkWidgetAxial;
+    QVTKWidget *vtkWidgetSagittal;
+    QVTKWidget *vtkWidgetCoronal;
+    QVTKWidget *vtkWidget3D;	
 	
     dtkAbstractData      *data;
 	dtkAbstractDataImage *imageData;
@@ -54,6 +57,39 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
     d->data       = 0;
 	d->imageData  = 0;
 	
+	d->widget = new QWidget;
+	
+    d->vtkWidgetAxial = new QVTKWidget(d->widget);
+    d->vtkWidgetAxial->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    d->vtkWidgetAxial->setFocusPolicy(Qt::NoFocus);
+
+	d->vtkWidgetSagittal = new QVTKWidget(d->widget);
+    d->vtkWidgetSagittal->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    d->vtkWidgetSagittal->setFocusPolicy(Qt::NoFocus);
+
+	d->vtkWidgetCoronal = new QVTKWidget(d->widget);
+    d->vtkWidgetCoronal->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    d->vtkWidgetCoronal->setFocusPolicy(Qt::NoFocus);
+
+	d->vtkWidget3D = new QVTKWidget(d->widget);
+    d->vtkWidget3D->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    d->vtkWidget3D->setFocusPolicy(Qt::NoFocus);
+	
+	QStackedLayout *stackedLayout = new QStackedLayout;
+	stackedLayout->addWidget(d->vtkWidgetAxial);
+	stackedLayout->addWidget(d->vtkWidgetSagittal);
+	stackedLayout->addWidget(d->vtkWidgetCoronal);
+	stackedLayout->addWidget(d->vtkWidget3D);
+	stackedLayout->setCurrentIndex(0);
+	d->vtkWidgetSagittal->hide();
+	d->vtkWidgetCoronal->hide();
+	d->vtkWidget3D->hide();
+	
+	QVBoxLayout *layout = new QVBoxLayout(d->widget);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+    layout->addLayout(stackedLayout);
+	
     d->renderer2DAxial = vtkRenderer::New();
     d->view2DAxial = vtkViewImage2D::New();    
     d->view2DAxial->SetRenderer(d->renderer2DAxial);
@@ -69,7 +105,7 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
 
     d->renderer2DSagittal = vtkRenderer::New();
     d->view2DSagittal = vtkViewImage2D::New();    
-    d->view2DSagittal->SetRenderer(d->renderer2DAxial);
+    d->view2DSagittal->SetRenderer(d->renderer2DSagittal);
     d->view2DSagittal->SetBackgroundColor(0.0, 0.0, 0.0);
     d->view2DSagittal->SetLeftButtonInteractionStyle(vtkViewImage2D::ZOOM_INTERACTION);
     d->view2DSagittal->SetMiddleButtonInteractionStyle(vtkViewImage2D::ZOOM_INTERACTION);
@@ -82,7 +118,7 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
 
     d->renderer2DCoronal = vtkRenderer::New();
     d->view2DCoronal = vtkViewImage2D::New();    
-    d->view2DCoronal->SetRenderer(d->renderer2DAxial);
+    d->view2DCoronal->SetRenderer(d->renderer2DCoronal);
     d->view2DCoronal->SetBackgroundColor(0.0, 0.0, 0.0);
     d->view2DCoronal->SetLeftButtonInteractionStyle(vtkViewImage2D::ZOOM_INTERACTION);
     d->view2DCoronal->SetMiddleButtonInteractionStyle(vtkViewImage2D::ZOOM_INTERACTION);
@@ -113,53 +149,65 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
 	d->view2DAxial->AddChild( d->view2DSagittal );
 	d->view2DAxial->AddChild( d->view2DCoronal );
 	d->view2DAxial->AddChild( d->view3D );
-	
-    d->widget = new QWidget;
+		
+    vtkRenderWindow* renwinAxial = vtkRenderWindow::New();
+    renwinAxial->StereoCapableWindowOn();
+    renwinAxial->SetStereoTypeToCrystalEyes();
 
-    d->vtkWidget = new QVTKWidget(d->widget);
-    d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    d->vtkWidget->setFocusPolicy(Qt::NoFocus);
-	
-    vtkRenderWindow* renwin = vtkRenderWindow::New();
-    renwin->StereoCapableWindowOn();
-    renwin->SetStereoTypeToCrystalEyes();
+	vtkRenderWindow* renwinSagittal = vtkRenderWindow::New();
+    renwinSagittal->StereoCapableWindowOn();
+    renwinSagittal->SetStereoTypeToCrystalEyes();
 
-    d->vtkWidget->SetRenderWindow(renwin);
+	vtkRenderWindow* renwinCoronal = vtkRenderWindow::New();
+    renwinCoronal->StereoCapableWindowOn();
+    renwinCoronal->SetStereoTypeToCrystalEyes();
 
-    QVBoxLayout *layout = new QVBoxLayout(d->widget);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(d->vtkWidget);
+	vtkRenderWindow* renwin3D = vtkRenderWindow::New();
+    renwin3D->StereoCapableWindowOn();
+    renwin3D->SetStereoTypeToCrystalEyes();
 	
-    //d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view3D->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
-    d->view3D->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view3D->UninitializeInteractor();
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
+    d->vtkWidgetAxial->SetRenderWindow(renwinAxial);
+    d->vtkWidgetSagittal->SetRenderWindow(renwinSagittal);
+    d->vtkWidgetCoronal->SetRenderWindow(renwinCoronal);
+    d->vtkWidget3D->SetRenderWindow(renwin3D);
+
+	
+	qDebug() << d->vtkWidget3D->GetRenderWindow()->GetInteractor()
+	<< d->vtkWidgetCoronal->GetRenderWindow()->GetInteractor()
+	<< d->vtkWidgetSagittal->GetRenderWindow()->GetInteractor()
+	<< d->vtkWidgetAxial->GetRenderWindow()->GetInteractor();
+	
+	qDebug() << d->vtkWidget3D->GetRenderWindow()
+	<< d->vtkWidgetCoronal->GetRenderWindow()
+	<< d->vtkWidgetSagittal->GetRenderWindow()
+	<< d->vtkWidgetAxial->GetRenderWindow();
+	
+	qDebug() << d->view3D->GetRenderer()
+	<< d->view2DCoronal->GetRenderer()
+	<< d->view2DSagittal->GetRenderer()
+	<< d->view2DAxial->GetRenderer();
+	
+	
+	
+    d->view3D->SetRenderWindowInteractor(d->vtkWidget3D->GetRenderWindow()->GetInteractor());
+    d->view3D->SetRenderWindow(d->vtkWidget3D->GetRenderWindow());
     
-    //d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
-    d->view2DCoronal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
-    d->view2DCoronal->UninitializeInteractor();
+    d->view2DCoronal->SetRenderWindowInteractor(d->vtkWidgetCoronal->GetRenderWindow()->GetInteractor());
+    d->view2DCoronal->SetRenderWindow(d->vtkWidgetCoronal->GetRenderWindow());
 	
-    //d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view2DSagittal->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
-    d->view2DSagittal->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
-    d->view2DSagittal->UninitializeInteractor();
+    d->view2DSagittal->SetRenderWindowInteractor(d->vtkWidgetSagittal->GetRenderWindow()->GetInteractor());
+    d->view2DSagittal->SetRenderWindow(d->vtkWidgetSagittal->GetRenderWindow());
 	
-    d->view2DAxial->SetRenderWindow(d->vtkWidget->GetRenderWindow()); // set the interactor as well
-    //d->view2DAxial->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
-	
+    d->view2DAxial->SetRenderWindowInteractor(d->vtkWidgetAxial->GetRenderWindow()->GetInteractor());	
+    d->view2DAxial->SetRenderWindow(d->vtkWidgetAxial->GetRenderWindow()); // set the interactor as well
 }
 
 v3dViewPublic::~v3dViewPublic(void)
 {
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
+    d->vtkWidgetAxial->GetRenderWindow()->RemoveRenderer(d->renderer2DAxial);
+    d->vtkWidgetCoronal->GetRenderWindow()->RemoveRenderer(d->renderer2DCoronal);
+    d->vtkWidgetSagittal->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
+    d->vtkWidget3D->GetRenderWindow()->RemoveRenderer(d->renderer3D);
 	
     /*
 	 d->view2D->SetRenderWindow(0);
@@ -204,7 +252,7 @@ void v3dViewPublic::update(void)
     if( d->currentView ) {
         d->currentView->Render();
     }
-    d->vtkWidget->update();
+    d->widget->update();
 }
 
 void v3dViewPublic::link(dtkAbstractView *other)
