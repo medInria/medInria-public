@@ -46,6 +46,9 @@ public:
 	
     QSet<dtkAbstractView*> linkedViews;	
 	
+	QMenu *menu;
+	QStackedLayout *stackedLayout;
+	
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -75,20 +78,17 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
     d->vtkWidget3D->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     d->vtkWidget3D->setFocusPolicy(Qt::NoFocus);
 	
-	QStackedLayout *stackedLayout = new QStackedLayout;
-	stackedLayout->addWidget(d->vtkWidgetAxial);
-	stackedLayout->addWidget(d->vtkWidgetSagittal);
-	stackedLayout->addWidget(d->vtkWidgetCoronal);
-	stackedLayout->addWidget(d->vtkWidget3D);
-	stackedLayout->setCurrentIndex(0);
-	d->vtkWidgetSagittal->hide();
-	d->vtkWidgetCoronal->hide();
-	d->vtkWidget3D->hide();
+	d->stackedLayout = new QStackedLayout;
+	d->stackedLayout->addWidget(d->vtkWidgetAxial);
+	d->stackedLayout->addWidget(d->vtkWidgetSagittal);
+	d->stackedLayout->addWidget(d->vtkWidgetCoronal);
+	d->stackedLayout->addWidget(d->vtkWidget3D);
+	d->stackedLayout->setCurrentIndex(0);
 	
 	QVBoxLayout *layout = new QVBoxLayout(d->widget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addLayout(stackedLayout);
+    layout->addLayout(d->stackedLayout);
 	
     d->renderer2DAxial = vtkRenderer::New();
     d->view2DAxial = vtkViewImage2D::New();    
@@ -169,24 +169,7 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
     d->vtkWidgetAxial->SetRenderWindow(renwinAxial);
     d->vtkWidgetSagittal->SetRenderWindow(renwinSagittal);
     d->vtkWidgetCoronal->SetRenderWindow(renwinCoronal);
-    d->vtkWidget3D->SetRenderWindow(renwin3D);
-
-	
-	qDebug() << d->vtkWidget3D->GetRenderWindow()->GetInteractor()
-	<< d->vtkWidgetCoronal->GetRenderWindow()->GetInteractor()
-	<< d->vtkWidgetSagittal->GetRenderWindow()->GetInteractor()
-	<< d->vtkWidgetAxial->GetRenderWindow()->GetInteractor();
-	
-	qDebug() << d->vtkWidget3D->GetRenderWindow()
-	<< d->vtkWidgetCoronal->GetRenderWindow()
-	<< d->vtkWidgetSagittal->GetRenderWindow()
-	<< d->vtkWidgetAxial->GetRenderWindow();
-	
-	qDebug() << d->view3D->GetRenderer()
-	<< d->view2DCoronal->GetRenderer()
-	<< d->view2DSagittal->GetRenderer()
-	<< d->view2DAxial->GetRenderer();
-	
+    d->vtkWidget3D->SetRenderWindow(renwin3D);	
 	
 	
     d->view3D->SetRenderWindowInteractor(d->vtkWidget3D->GetRenderWindow()->GetInteractor());
@@ -200,6 +183,30 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
 	
     d->view2DAxial->SetRenderWindowInteractor(d->vtkWidgetAxial->GetRenderWindow()->GetInteractor());	
     d->view2DAxial->SetRenderWindow(d->vtkWidgetAxial->GetRenderWindow()); // set the interactor as well
+	
+	QAction *axialAct = new QAction(tr("Axial"), d->widget);
+    connect(axialAct, SIGNAL(triggered()), this, SLOT(switchToAxial()));
+	
+    QAction *coronalAct = new QAction(tr("Coronal"), d->widget);
+    connect(coronalAct, SIGNAL(triggered()), this, SLOT(switchToCoronal()));
+	
+    QAction *sagittalAct = new QAction(tr("Sagittal"), d->widget);
+    connect(sagittalAct, SIGNAL(triggered()), this, SLOT(switchToSagittal()));
+	
+	QAction *vrAct = new QAction(tr("3D"), d->widget);
+    connect(vrAct, SIGNAL(triggered()), this, SLOT(switchTo3D()));
+
+	d->menu = new QMenu(d->widget );
+    d->menu->addAction(axialAct);
+    d->menu->addAction(coronalAct);
+    d->menu->addAction(sagittalAct);
+    d->menu->addAction(vrAct);	
+	
+	connect(d->vtkWidgetAxial, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
+	connect(d->vtkWidgetSagittal, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
+	connect(d->vtkWidgetCoronal, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
+	connect(d->vtkWidget3D, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
+	
 }
 
 v3dViewPublic::~v3dViewPublic(void)
@@ -513,6 +520,32 @@ QWidget *v3dViewPublic::widget(void)
     return d->widget;
 }
 
+void v3dViewPublic::onMousePressEvent(QMouseEvent *event)
+{
+    if(event->button() == Qt::RightButton) {
+        d->menu->popup (event->globalPos());
+    }
+}
+
+void v3dViewPublic::switchToAxial(void)
+{
+	d->stackedLayout->setCurrentIndex(0);
+}
+
+void v3dViewPublic::switchToSagittal(void)
+{
+	d->stackedLayout->setCurrentIndex(1);
+}
+
+void v3dViewPublic::switchToCoronal(void)
+{
+	d->stackedLayout->setCurrentIndex(2);
+}
+
+void v3dViewPublic::switchTo3D(void)
+{
+	d->stackedLayout->setCurrentIndex(3);
+}
 
 // /////////////////////////////////////////////////////////////////
 // Type instanciation

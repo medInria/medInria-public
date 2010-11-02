@@ -63,6 +63,12 @@ public slots:
     void linkwl (dtkAbstractView* view, bool);	
 	void onPropertySet         (QString key, QString value);
 	 */
+	void onMousePressEvent(QMouseEvent *event);
+	void switchToAxial(void);
+	void switchToSagittal(void);
+	void switchToCoronal(void);
+	void switchTo3D(void);
+	
 
 private:
     v3dViewPublicPrivate *d;
