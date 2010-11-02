@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  7 12:40:09 2010 (+0200)
+ * Last-Updated: Thu Oct 14 14:34:59 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 498
+ *     Update #: 500
  */
 
 /* Commentary: 
@@ -234,8 +234,8 @@ void medMainWindow::writeSettings(void)
 void medMainWindow::setWallScreen(bool full)
 {
     if(full) {
-        this->move(0, -50);
-        this->resize(3528, 1230);
+        this->move(0, -30);
+        this->resize(3528, 1200);
     } else {
         this->showNormal();
     }

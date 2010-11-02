@@ -1,14 +1,14 @@
 #include "medAbstractView.h"
 
 
-medAbstractView::medAbstractView(medAbstractView *parent):
-dtkAbstractView(parent){
+medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent)
+{
 
 }
 
 
-medAbstractView::medAbstractView(const medAbstractView& view):
-dtkAbstractView(view){
+medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(view)
+{
 
 }
 
@@ -26,5 +26,9 @@ void medAbstractView::setColorLookupTable(QList<double>scalars,QList<QColor>colo
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
+QWidget *medAbstractView::receiverWidget(void)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
 
-
+    return NULL;
+}

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:40:46 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Sun Jun 27 20:34:08 2010 (+0200)
+ * Last-Updated: Tue Oct 26 10:30:09 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 25
+ *     Update #: 41
  */
 
 /* Commentary: 
@@ -55,16 +55,16 @@ void medDatabaseNavigatorScene::addGroup(medDatabaseNavigatorItemGroup *group)
     d->groups << group;
 
     medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
-        ? group->setPos(d->position + QPointF(10, 0))
-        : group->setPos(d->position + QPointF(0, 10));
+        ? group->setPos(d->position + QPointF(10,  0))
+        : group->setPos(d->position + QPointF( 0, 10));
 
     medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
         ? d->position = group->pos() + group->boundingRect().topRight() + QPointF(group_spacing, 0)
         : d->position = group->pos() + group->boundingRect().bottomLeft() + QPointF(0, group_spacing);
 
     medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
-        ? this->setSceneRect(QRectF(0, 10, d->position.x(), 128))
-        : this->setSceneRect(QRectF(10, 0, 128, d->position.y()));
+        ? this->setSceneRect(QRectF(0, 0, d->position.x(), 128))
+        : this->setSceneRect(QRectF(20, 0, 128, d->position.y()));
 }
 
 void medDatabaseNavigatorScene::reset(void)

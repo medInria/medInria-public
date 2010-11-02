@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 16:03:20 2010 (+0200)
+ * Last-Updated: Tue Oct 26 10:31:28 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 456
+ *     Update #: 457
  */
 
 /* Commentary: 
@@ -208,8 +208,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(d->toolbox_container);
     layout->addWidget(d->stack);
+    layout->addWidget(d->toolbox_container);
 }
 
 medBrowserArea::~medBrowserArea(void)
