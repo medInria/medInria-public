@@ -238,7 +238,8 @@ class medClutEditorTablePrivate
 };
 
 
-medClutEditorTable::medClutEditorTable(const QString & title,  QGraphicsItem *parent)
+medClutEditorTable::medClutEditorTable(const QString & title,
+				       QGraphicsItem *parent)
   : QGraphicsItem(parent)
 {
     d = new medClutEditorTablePrivate;
@@ -1002,8 +1003,19 @@ medClutEditor::~medClutEditor(void)
 
 void medClutEditor::setData(dtkAbstractData *data)
 {
+    if ( data == NULL ) {
+	this->deleteTable();
+	d->dtk_data = data;
+    }
+
+    if ( data == d->dtk_data )
+	return;
+
     if (dtkAbstractDataImage *image =
         dynamic_cast<dtkAbstractDataImage *>(data)) {
+
+	if ( d->histogram != NULL )
+	  delete d->histogram;
 
         d->histogram = new medClutEditorHistogram();
         int min_range = image->minRangeValue();
@@ -1024,6 +1036,13 @@ void medClutEditor::setData(dtkAbstractData *data)
 
 void medClutEditor::setView(medAbstractView *view)
 {
+    dtkAbstractDataImage * image =
+	dynamic_cast<dtkAbstractDataImage *>( data );
+    this->setData( image );
+
+    if ( view == d->med_view )
+	return;
+
     d->med_view = view;
 
     if ( d->med_view != NULL ) {
