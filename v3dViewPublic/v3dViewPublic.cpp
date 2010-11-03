@@ -385,6 +385,8 @@ void v3dViewPublic::onDaddyPropertySet (QString value)
     d->registerButton->blockSignals(true);
 
     if (value=="true") {
+		d->view2DAxial->SetLinkWindowLevel ( 1 );
+		
         d->anchorButton->setChecked (true);
 
 	d->linkButton->setChecked (false);
@@ -398,6 +400,8 @@ void v3dViewPublic::onDaddyPropertySet (QString value)
     }
 
     if (value=="false") {
+		d->view2DAxial->SetLinkWindowLevel ( 0 );
+		
         d->anchorButton->setChecked (false);
 	
 	d->linkButton->setEnabled(true);
@@ -1094,7 +1098,8 @@ void v3dViewPublic::linkwl (dtkAbstractView *view, bool value)
 
 	  vview->setProperty ("LinkedWL", "true");
 	
-	  d->view2DAxial->SetLinkWindowLevel ( 1 );
+	  //d->view2DAxial->SetLinkWindowLevel ( 1 );
+	  vview->viewAxial()->SetLinkWindowLevel ( 1 );
 
 	  vview->viewAxial()->SetWindow    ( d->currentView->GetWindow() );
 	  vview->view3D()->SetWindow       ( d->currentView->GetWindow() );
@@ -1105,8 +1110,8 @@ void v3dViewPublic::linkwl (dtkAbstractView *view, bool value)
       else {
 
 	  vview->setProperty ("LinkedWL", "false");
-
-	  d->view2DAxial->SetLinkWindowLevel ( 0 );
+	  vview->viewAxial()->SetLinkWindowLevel ( 0 );
+	  //d->view2DAxial->SetLinkWindowLevel ( 0 );
       }
   }
 }
