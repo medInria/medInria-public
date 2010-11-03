@@ -555,6 +555,7 @@ void vtkViewImage::SyncSetWindow (double w)
   }
 
 
+	if (this->GetLinkWindowLevel())
   this->SetWindow (w);
 
 
@@ -566,7 +567,7 @@ void vtkViewImage::SyncSetWindow (double w)
 
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
 
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncSetWindow (w);
       view->Update();
@@ -585,6 +586,7 @@ void vtkViewImage::SyncStartWindowing ()
   }
 
 
+		if (this->GetLinkWindowLevel())
   this->StartWindowing ();
 
 
@@ -596,7 +598,7 @@ void vtkViewImage::SyncStartWindowing ()
 
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
 
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncStartWindowing ();
       view->Update();
@@ -615,6 +617,7 @@ void vtkViewImage::SyncEndWindowing ()
   }
 
 
+		if (this->GetLinkWindowLevel())
   this->EndWindowing ();
 
 
@@ -626,7 +629,7 @@ void vtkViewImage::SyncEndWindowing ()
 
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
 
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncEndWindowing ();
       view->Update();
@@ -646,6 +649,7 @@ void vtkViewImage::SyncSetLevel (double l)
   }
 
 
+		if (this->GetLinkWindowLevel())
   this->SetLevel (l);
 
   // this boolean is used so that the other observe won't call
@@ -655,7 +659,7 @@ void vtkViewImage::SyncSetLevel (double l)
   {
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
 
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncSetLevel (l);
       view->Update();
@@ -693,7 +697,7 @@ void vtkViewImage::SyncResetWindowLevel()
   for( unsigned int i=0; i<this->Children.size(); i++)
   {
     vtkViewImage* view = vtkViewImage::SafeDownCast(this->Children[i]);
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncResetWindowLevel ();
       view->Update();

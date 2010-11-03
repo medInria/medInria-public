@@ -209,8 +209,14 @@ void vtkViewImage2DCommand::Windowing(vtkInteractorStyleImage2D* p_isi)
     newLevel = EPS * (newLevel < 0 ? -1 : 1);
   }
   
-  this->View->SyncSetWindow(newWindow);
-  this->View->SyncSetLevel(newLevel);
+  this->View->SetWindow(newWindow);
+  this->View->SetLevel(newLevel);	
+  
+  if (this->View->GetLinkWindowLevel() )
+  {
+    this->View->SyncSetWindow(newWindow);
+    this->View->SyncSetLevel(newLevel);
+  }
   //this->View->Update();
 }
 
