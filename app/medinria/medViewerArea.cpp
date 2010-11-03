@@ -205,7 +205,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     transFunAction->setCheckable( true );
     transFunAction->setChecked( false );
     connect(transFunAction, SIGNAL(toggled(bool)),
-	    this, SLOT(bringUpTransFun(bool)));
+	    this, SLOT(bringUpTransferFunction(bool)));
 
     this->addAction(transFunAction);
 }
@@ -465,6 +465,7 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
 {
     d->viewToolBox->update(view);
     d->diffusionToolBox->update(view);
+    this->updateTransferFunction();
 }
 
 //! Returns the currently displayed stack. 
@@ -505,9 +506,11 @@ void medViewerArea::setupForegroundLookupTable(QString table)
     if(!d->view_stacks.count())
         return;
 
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+    if ( medViewPool *pool = this->currentContainer()->pool() ) {
         pool->setViewProperty("LookupTable", table);
     }
+
+    this->updateTransferFunction();
 }
 
 void medViewerArea::setupBackgroundLookupTable(QString table)
@@ -515,9 +518,11 @@ void medViewerArea::setupBackgroundLookupTable(QString table)
     if(!d->view_stacks.count())
         return;
     
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+    if ( medViewPool *pool = this->currentContainer()->pool() ) {
         pool->setViewProperty("BackgroundLookupTable", table);
     }
+
+    this->updateTransferFunction();
 }
 
 void medViewerArea::setupAxisVisibility(bool visible)
@@ -585,9 +590,11 @@ void medViewerArea::setupLUTPreset(QString table)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+    if ( medViewPool *pool = this->currentContainer()->pool() ) {
         pool->setViewProperty("Preset", table);
     }
+
+    this->updateTransferFunction();
 }
 
 void medViewerArea::setup3DLOD(int value)
@@ -651,7 +658,7 @@ void medViewerArea::setupCropping(bool checked)
     }
 }
 
-void medViewerArea::bringUpTransFun(bool checked)
+void medViewerArea::bringUpTransferFunction(bool checked)
 {
     if (!checked)
     {
@@ -662,10 +669,11 @@ void medViewerArea::bringUpTransFun(bool checked)
         }
       return;
     }
-    if(!d->view_stacks.count())
+
+    if( !d->view_stacks.count() )
         return;
   
-    if(dtkAbstractView *view = d->view_stacks.value(d->current_patient)->current()->current()->view()) {
+    if ( dtkAbstractView *view = this->currentContainerFocused()->view() ) {
 
       d->transFun = new medClutEditor(NULL);
       d->transFun->setWindowModality( Qt::WindowModal );
@@ -675,6 +683,16 @@ void medViewerArea::bringUpTransFun(bool checked)
       d->transFun->setView(dynamic_cast<medAbstractView*>(view));
 
       d->transFun->show();
+    }
+}
+
+void medViewerArea::updateTransferFunction()
+{
+    dtkAbstractView * view = this->currentContainerFocused()->view();
+    if ( d->transFun && view ) {
+	d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );
+	d->transFun->setView( dynamic_cast<medAbstractView *>( view ) );
+	d->transFun->update();
     }
 }
 
