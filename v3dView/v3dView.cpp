@@ -2142,12 +2142,14 @@ void v3dView::setCameraPosition(double x, double y, double z)
     d->renderer3D->ResetCameraClippingRange();
 }
 
-void v3dView::setCameraClippingRange(double near, double far)
+// Avoid using the variable names 'near' and 'far' as windows #defines them out of existence.
+
+void v3dView::setCameraClippingRange(double nearRange, double farRange)
 {
     if(this->property("Orientation") != "3D")
         return;
     
     vtkCamera *camera = d->renderer3D->GetActiveCamera();
     
-    camera->SetClippingRange(near, far);
+    camera->SetClippingRange(nearRange, farRange);
 }
