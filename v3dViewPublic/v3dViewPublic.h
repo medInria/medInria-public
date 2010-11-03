@@ -45,30 +45,41 @@ public:
     void setData(dtkAbstractData *data);
     void *data (void);
 	
-    QSet<dtkAbstractView *> linkedViews (void);
+    QList<dtkAbstractView *> linkedViews (void);
 	
     // QWidget *receiverWidget(void);
     QWidget *widget(void);
 	
     // access method to internal members for v3dView**Interactor classes
     vtkViewImage2D *viewAxial(void);
-    vtkViewImage2D *viewCoronal(void);
-    vtkViewImage2D *viewSagittal(void);
     vtkViewImage3D *view3D(void);
 	
-	
 public slots:
-	/*
-    void play   (bool);
-    void linkwl (dtkAbstractView* view, bool);	
-	void onPropertySet         (QString key, QString value);
-	 */
-	void onMousePressEvent(QMouseEvent *event);
-	void switchToAxial(void);
-	void switchToSagittal(void);
-	void switchToCoronal(void);
-	void switchTo3D(void);
-	
+    void onPropertySet         (QString key, QString value);
+    void onOrientationPropertySet           (QString value);
+    void onModePropertySet                  (QString value);
+    void onPresetPropertySet                (QString value);
+    void onScalarBarVisibilityPropertySet   (QString value);
+    void onLookupTablePropertySet           (QString value);
+    void onShowAxisPropertySet              (QString value);
+    void onShowRulerPropertySet             (QString value);
+    void onShowAnnotationsPropertySet       (QString value);
+    void onLeftClickInteractionPropertySet  (QString value);
+    void onCroppingPropertySet              (QString value);
+    void onDaddyPropertySet                 (QString value);
+    void onLinkedWLPropertySet              (QString value);
+
+    
+public slots:
+    //void play   (bool);
+      void linkwl (dtkAbstractView* view, bool);
+      
+    void onMousePressEvent(QMouseEvent *event);
+    void switchToAxial(void);
+    void switchToSagittal(void);
+    void switchToCoronal(void);
+    void switchTo3D(void);
+    
 
 private:
     v3dViewPublicPrivate *d;
