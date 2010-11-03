@@ -712,7 +712,7 @@ void medClutEditorHistogram::paint(QPainter *painter,
         for ( QMap<qreal, qreal>::iterator it = d->values.begin(),
                   end = d->values.end(); it != end; ++it )
             d->scaledValues << this->valueToCoordinate( QPointF( it.key(),
-                                                              it.value() ) );
+								 it.value() ) );
     }
 
     QPainterPath path;

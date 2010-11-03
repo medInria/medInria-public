@@ -530,8 +530,8 @@ void medViewerArea::setupAxisVisibility(bool visible)
     if(!d->view_stacks.count())
         return;
 
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        visible ? pool->setViewProperty("ShowAxis", "true") : pool->setViewProperty("ShowAxis", "false");
+    if(medViewPool *pool = this->currentContainer()->pool()) {
+        pool->setViewProperty("ShowAxis", (visible ? "true" : "false"));
     }
 }
 
@@ -540,8 +540,9 @@ void medViewerArea::setupScalarBarVisibility(bool visible)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        visible ? pool->setViewProperty("ScalarBarVisibility", "true") : pool->setViewProperty("ScalarBarVisibility", "false");
+    if(medViewPool *pool = this->currentContainer()->pool()) {
+	pool->setViewProperty("ScalarBarVisibility",
+			      (visible ? "true" : "false"));
     }
 }
 
@@ -550,8 +551,8 @@ void medViewerArea::setupRulerVisibility(bool visible)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        visible ? pool->setViewProperty("ShowRuler", "true") : pool->setViewProperty("ShowRuler", "false");
+    if(medViewPool *pool = this->currentContainer()->pool()) {
+	pool->setViewProperty("ShowRuler", (visible ? "true" : "false"));
     }
 }
 
@@ -560,8 +561,8 @@ void medViewerArea::setupAnnotationsVisibility(bool visible)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        visible ? pool->setViewProperty("ShowAnnotations", "true") : pool->setViewProperty("ShowAnnotations", "false");
+    if(medViewPool *pool = this->currentContainer()->pool()) {
+	pool->setViewProperty("ShowAnnotations", (visible ? "true" : "false"));
     }
 }
 
@@ -570,7 +571,7 @@ void medViewerArea::setup3DMode(QString mode)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+    if(medViewPool *pool = this->currentContainer()->pool()) {
         pool->setViewProperty("Mode", mode);
     }
 }
@@ -580,7 +581,7 @@ void medViewerArea::setup3DVRMode(QString mode)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+    if(medViewPool *pool = this->currentContainer()->pool()) {
         pool->setViewProperty("VRMode", mode);
     }
 }
@@ -602,7 +603,7 @@ void medViewerArea::setup3DLOD(int value)
     if(!d->view_stacks.count())
         return;
 
-    if(dtkAbstractView *view =  d->view_stacks.value(d->current_patient)->current()->current()->view()) {
+    if(dtkAbstractView *view =  this->currentContainer()->current()->view()) {
         view->setMetaData("LOD", QString::number(value));
 	view->update();
     }
@@ -613,7 +614,7 @@ void medViewerArea::setupWindowing(bool checked)
     if(!d->view_stacks.count())
         return;
 
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+    if(medViewPool *pool = this->currentContainer()->pool()) {
         pool->setViewProperty("LeftClickInteraction", "Windowing");
     }
 }
@@ -623,7 +624,7 @@ void medViewerArea::setupZooming(bool checked)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+    if(medViewPool *pool = this->currentContainer()->pool()) {
         pool->setViewProperty("LeftClickInteraction", "Zooming");
     }
 }
@@ -633,7 +634,7 @@ void medViewerArea::setupSlicing(bool checked)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+    if(medViewPool *pool = this->currentContainer()->pool()) {
         pool->setViewProperty("LeftClickInteraction", "Slicing");
     }
 }
@@ -643,7 +644,7 @@ void medViewerArea::setupMeasuring(bool checked)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
+    if(medViewPool *pool = this->currentContainer()->pool()) {
         pool->setViewProperty("LeftClickInteraction", "Measuring");
     }
 }
@@ -653,8 +654,8 @@ void medViewerArea::setupCropping(bool checked)
     if(!d->view_stacks.count())
         return;
   
-    if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        checked ? pool->setViewProperty("Cropping", "true") : pool->setViewProperty("Cropping", "false");
+    if(medViewPool *pool = this->currentContainer()->pool()) {
+        pool->setViewProperty("Cropping", (checked ? "true" : "false"));
     }
 }
 
@@ -667,7 +668,7 @@ void medViewerArea::bringUpTransferFunction(bool checked)
             delete d->transFun ;
             d->transFun=NULL;
         }
-      return;
+	return;
     }
 
     if( !d->view_stacks.count() )
@@ -712,7 +713,7 @@ void medViewerArea::setupLayoutFuse(void)
     d->view_stacks.value(d->current_patient)->setCurrentIndex(4);
 	
     if (d->registrationToolBox->fuseView()) {
-        d->view_stacks.value(d->current_patient)->current()->setView(d->registrationToolBox->fuseView());
-        d->view_stacks.value(d->current_patient)->current()->setFocus(Qt::MouseFocusReason);
+        this->currentContainer()->setView(d->registrationToolBox->fuseView());
+        this->currentContainer()->setFocus(Qt::MouseFocusReason);
     }
 }
