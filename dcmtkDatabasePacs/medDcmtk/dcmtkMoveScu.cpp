@@ -431,14 +431,13 @@ bool dcmtkMoveScu::processQueryAttribute(const char* key)
 
 OFCondition dcmtkMoveScu::moveSCU(T_ASC_Association * assoc, const char *fname)
 {
-    T_ASC_PresentationContextID presId;
     T_DIMSE_C_MoveRQ    req;
     T_DIMSE_C_MoveRSP   rsp;
     DIC_US              msgId = assoc->nextMsgID++;
     DcmDataset          *rspIds = NULL;
     const char          *sopClass;
     DcmDataset          *statusDetail = NULL;
-    MyCallbackInfo      callbackData;
+    //MyCallbackInfo      callbackData;
 
     QuerySyntax querySyntax[3] =  {
             { UID_FINDPatientRootQueryRetrieveInformationModel,
@@ -473,8 +472,8 @@ OFCondition dcmtkMoveScu::moveSCU(T_ASC_Association * assoc, const char *fname)
             dcmtkLogger::infoStream() << DcmObject::PrintHelper(*dcmff.getDataset());
 
 
-    callbackData.assoc = assoc;
-    callbackData.presId = presId;
+    //callbackData.assoc = assoc;
+    //callbackData.presId = presId;
 
     req.MessageID = msgId;
     strcpy(req.AffectedSOPClassUID, sopClass);
@@ -809,24 +808,21 @@ void dcmtkMoveScu::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
     scu->emitProgressed(responseCount, responseCount + response->NumberOfRemainingSubOperations);
 
     OFCondition cond = EC_Normal;
-    MyCallbackInfo *myCallbackData;
-
-    myCallbackData = (MyCallbackInfo*)callbackData;
-
     OFString temp_str;
     dcmtkLogger::infoStream() << "Move Response " << responseCount << ":"; 
         dcmtkLogger::infoStream() << DIMSE_dumpMessage(temp_str, *response, DIMSE_INCOMING);
 
 
     /* should we send a cancel back ?? */
-    if (scu->opt_cancelAfterNResponses == responseCount) {
+    if ( (scu->opt_cancelAfterNResponses == responseCount) || (scu->m_cancelRqst) ) 
+    {
         dcmtkLogger::infoStream() << "Sending Cancel Request: MsgID " << request->MessageID
-                 << ", PresID " << myCallbackData->presId;
-        cond = DIMSE_sendCancelRequest(myCallbackData->assoc,
-            myCallbackData->presId, request->MessageID);
-        if (cond != EC_Normal) {
+                 << ", PresID " << scu->presId;
+        cond = DIMSE_sendCancelRequest(scu->assoc, scu->presId, request->MessageID);
+
+        if (cond != EC_Normal) 
             dcmtkLogger::errorStream() << "Cancel Request Failed: " << DimseCondition::dump(temp_str, cond);
-        }
+        scu->m_cancelRqst = false;
     }
 }
 
@@ -882,6 +878,13 @@ void dcmtkMoveScu::emitProgressed( int current, int max )
 void dcmtkMoveScu::skipWritingFiles( bool flag )
 {
     m_skipWriting = flag;
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkMoveScu::run()
+{
+    this->sendMoveRequest();
 }
 
 //---------------------------------------------------------------------------------------------

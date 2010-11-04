@@ -78,14 +78,14 @@ dcmtkStoreScp::dcmtkStoreScp()
 
 //---------------------------------------------------------------------------------------------
 
-int dcmtkStoreScp::start()
+int dcmtkStoreScp::startService()
 {
-    return start(opt_respondingAETitle, "", opt_port);
+    return startService(opt_respondingAETitle, "", opt_port);
 }
 
 //---------------------------------------------------------------------------------------------
 
-int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int ourPort)
+int dcmtkStoreScp::startService(const char* ourTitle, const char* ourIP, unsigned int ourPort)
 {
     m_stop = false;
     opt_port = ourPort;
@@ -1472,9 +1472,16 @@ bool dcmtkStoreScp::setStorageDirectory(const char* directory)
 
 //---------------------------------------------------------------------------------------------
 
-void dcmtkStoreScp::stop()
+void dcmtkStoreScp::stopService()
 {
     m_stop = true;
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkStoreScp::run()
+{
+    startService();
 }
 
 //---------------------------------------------------------------------------------------------

@@ -86,12 +86,15 @@ bool dcmtkBaseScu::addQueryAttribute(const char* key)
 void dcmtkBaseScu::setConnectionParams(const char* peerTitle, const char* peerIP, unsigned short peerPort, 
                                        const char* ourTitle, const char* ourIP, unsigned short ourPort)
 {
-
-    opt_peerTitle = peerTitle;
-    opt_peer = peerIP;
+    szPeerTitle = peerTitle;
+    szPeerIP = peerIP;
+    szOurTitle = ourTitle;
+    szOurIP = ourIP;
+    opt_peerTitle = szPeerTitle.c_str();
+    opt_peer = szPeerIP.c_str();
     opt_port = peerPort; 
-    opt_ourTitle = ourTitle;
-    opt_ourIP = ourIP;
+    opt_ourTitle = szOurTitle.c_str();
+    opt_ourIP = szOurIP.c_str();
     opt_retrievePort = ourPort;
 }
 
@@ -110,7 +113,7 @@ void dcmtkBaseScu::resetDefaultParams()
     opt_acse_timeout =              30;
     opt_blockMode =                 DIMSE_BLOCKING;
     opt_cancelAfterNResponses =     -1;
-    opt_dimse_timeout =             0;
+    opt_dimse_timeout =             10;
     opt_extractResponsesToFile =    OFFalse;
     opt_maxReceivePDULength =       ASC_DEFAULTMAXPDU;
     opt_maxSendPDULength=           ASC_DEFAULTMAXPDU;
@@ -125,6 +128,7 @@ void dcmtkBaseScu::resetDefaultParams()
     m_lastCondition =               EC_Normal;
     m_assocExists =                 false;
     m_keepAssocOpen =               false;
+    m_cancelRqst =                  false;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -398,6 +402,13 @@ bool dcmtkBaseScu::addQueryAttribute(int group, int elem, const char* value)
 void dcmtkBaseScu::keepAssociationOpen( bool flag )
 {
     m_keepAssocOpen = flag;
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkBaseScu::sendCancelRequest()
+{
+    m_cancelRqst = true;
 }
 
 //---------------------------------------------------------------------------------------------

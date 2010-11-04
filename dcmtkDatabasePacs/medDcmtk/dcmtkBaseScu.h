@@ -26,6 +26,7 @@ class dcmtkKeyContainer;
  */
 class dcmtkBaseScu : public dcmtkBase
 {
+    Q_OBJECT
 public:
 
    /**
@@ -95,8 +96,6 @@ public:
     */
     dcmtkContainer<dcmtkNode*>* getNodeContainer();
 
-
-
     /**
     * Set this to true if you want to release the association manually. Default: False
     * @params: bool flag if True association will be created only if not previously released
@@ -109,6 +108,18 @@ public:
     * @return   void
     */
     void releaseAssociation();
+
+public slots:
+
+    /**
+    * sendCancelRequest - Stop the current request on the PACS
+    * @return   void
+    */
+    virtual void sendCancelRequest();
+
+signals:
+    void progressed(int);
+    void finished();
 
 protected:
 
@@ -226,6 +237,12 @@ protected:
     eQueryLevel                  m_currentQueryLevel;
     dcmtkContainer<dcmtkNode*>   m_resContainer;
     dcmtkContainer<dcmtkKey*>    m_keyContainer;
+
+    bool                         m_cancelRqst;
+    std::string                  szPeerTitle;
+    std::string                  szOurTitle;
+    std::string                  szPeerIP;
+    std::string                  szOurIP;
 
 };
 

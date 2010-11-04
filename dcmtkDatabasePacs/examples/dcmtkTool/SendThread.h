@@ -5,7 +5,7 @@ class dcmtkStoreScu;
 /**
  * @class SendThread
  * @author Michael Knopke
- * @brief QT Thread to start the store-scu in background
+ * @brief QT Thread to send a threaded c-store-scu request
  */
 class SendThread : public QThread 
 {

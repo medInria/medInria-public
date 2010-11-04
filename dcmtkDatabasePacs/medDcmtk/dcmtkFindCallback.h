@@ -51,6 +51,8 @@ public:
   */
   void setKeyContainer(dcmtkContainer<dcmtkKey*>* cont);
 
+  void sendCancelRequest();
+
 private:
 
    /// if true, C-FIND-RSP datasets will be stored as DICOM files
@@ -62,6 +64,8 @@ private:
    dcmtkContainer<dcmtkResultDataset*>*  m_ds;
 
    dcmtkContainer<dcmtkKey*>*            m_keyCont;
+
+   bool m_cancelRequest;
 
 };
 

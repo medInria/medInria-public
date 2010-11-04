@@ -32,10 +32,11 @@ class dcmtkStoreScp : public dcmtkBaseScp
 public:
 
     /**
-    * dcmtkBaseScu
-    * @return   
+    * Constructor
     */
     dcmtkStoreScp();
+
+    virtual void run();
 
     /*
     * Main function to start the store SCP server. Should be called in a threaded env.
@@ -44,7 +45,7 @@ public:
     * @param ourPort The port number of to listen.
     * @return 0 for success, otherwise errorcode
     */
-    int start(const char* ourTitle, const char* ourIP, unsigned int ourPort);
+    int startService(const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
    /**
     * Overloaded for convenience. starts tge store SCP server.
@@ -52,12 +53,12 @@ public:
     * @see setConnectionParams(const char* , const char* , unsigned int );
     * @return 0 for success or errorcode
     */
-    int start();
+    int startService();
 
    /**
     * Stop the storescp loop and exit normally
     */
-    void stop();
+    void stopService();
 
     /**
     * Set a directory where the store-scp should store its incoming data.

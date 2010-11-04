@@ -1,23 +1,28 @@
 #include "ui_SimpleView.h"
 #include "SimpleView.h"
-#include "ServerThread.h"
-#include "SendThread.h"
 
+// Qt
 #include <QSettings>
 #include <QDockWidget>
 #include <QFileDialog>
+#include <QProgressDialog.h>
 
+// dicom net 
 #include "dcmtkEchoScu.h"
 #include "dcmtkFindScu.h"
 #include "dcmtkMoveScu.h"
+#include "dcmtkStoreScp.h"
+#include "dcmtkStoreScu.h"
 #include "dcmtkResultDataset.h"
 
+// logger
 #include "dcmtkLogger.h"
 #include "LoggerFileOutput.h"
 #include "LoggerConsoleOutput.h"
 #include "LoggerWidgetOutput.h"
 #include "LoggerWidget.h"
 
+// utilities
 #include "dcmtkDump.h"
 
 #include <sstream>
@@ -44,10 +49,10 @@ SimpleView::SimpleView()
 
   m_echoScu = new dcmtkEchoScu();
   m_findScu = new dcmtkFindScu();
-  m_moveScu = new dcmtkMoveScu();
-  
-  m_serverThread = new ServerThread();
-  m_sendThread = new SendThread();
+
+  m_serverThread = new dcmtkStoreScp();
+  m_sendThread = new dcmtkStoreScu();
+  m_moveThread = new dcmtkMoveScu();
 
   m_shellOut = new LoggerConsoleOutput();
   m_fileOut = new LoggerFileOutput();
@@ -66,12 +71,15 @@ SimpleView::SimpleView()
   connect(this->ui->cbLogLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(changeLogLevel(int)));
   connect(this->ui->serverRestartButton, SIGNAL(clicked()), this, SLOT(restartServer()));
   connect(this->ui->dirButton, SIGNAL(clicked()),this,SLOT(setSendDirectory()));
+  connect(this->ui->dirbutton2, SIGNAL(clicked()), this, SLOT(setArchiveDirectory()));
+  connect(this->ui->diredit2, SIGNAL(editingFinished()), this, SLOT(updateServerDir()));
   connect(this->ui->sendButton, SIGNAL(clicked()),this,SLOT(store()));
   connect(this->ui->addButton, SIGNAL(clicked()), this, SLOT(addConn()));
   connect(this->ui->connTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(handleConnSelection()));
   connect(this->ui->peerTitleEdit, SIGNAL(textChanged(QString)), this, SLOT(inputChanged()));
   connect(this->ui->peerIPEdit, SIGNAL(textChanged(QString)), this, SLOT(inputChanged()));
   connect(this->ui->peerPortEdit, SIGNAL(textChanged(QString)), this, SLOT(inputChanged()));
+  connect(m_findScu,SIGNAL(finished()), this, SLOT(fillTreeStudy()));
 
 
   retrieveSettings();
@@ -100,11 +108,10 @@ SimpleView::~SimpleView()
   stopServer();
  
   delete m_findScu;
-  delete m_moveScu;
   delete m_echoScu;
 
-  //delete m_serverThread;
   delete m_sendThread;
+  delete m_moveThread;
 
   delete m_shellOut;
   delete m_fileOut;
@@ -213,59 +220,21 @@ void SimpleView::findStudyLevel()
     dcmtkNode* selNode = selectedNodes->getFirst();
     while (selectedNodes->isValid())
     {
+        QProgressDialog* progress = new QProgressDialog("Looking for images...", "Cancel", 0, 100);
+        progress->setWindowModality(Qt::WindowModal);
+        connect(m_findScu,SIGNAL(progressed(int)), progress,SLOT(setValue(int)));
+        connect(progress,SIGNAL(canceled()),m_findScu,SLOT(sendCancelRequest()));
+        progress->show();
+        progress->repaint();
+
         // do the work
-        dcmtkConnectionData cdata;
-        cdata.title = selNode->title();
-        cdata.ip = selNode->ip();
-        cdata.port = selNode->port();
-
-        m_findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
-
+        m_findScu->wait();
+        m_findScu->setConnectionParams(selNode->title().c_str(),selNode->ip().c_str(),selNode->port(),m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+        m_findScu->start();
+        
         selNode = selectedNodes->getNext();
     }
 
-
-    // now extract information from datasets and build a visual list
-    int sum = 0;
-    ui->treeWidget->clear();
-    dcmtkContainer<dcmtkNode*>* resNodeCont = m_findScu->getNodeContainer();
-    dcmtkNode* myNode = resNodeCont->getFirst();
-    
-    while (resNodeCont->isValid())
-    {
-        dcmtkContainer<dcmtkResultDataset*>* resCont = myNode->getResultDatasetContainer();
-        dcmtkResultDataset* resDs = resCont->getFirst();
-
-        // add the root node containing the name of the DICOM NODE
-        QTreeWidgetItem *topLevelItem = new QTreeWidgetItem();
-        ui->treeWidget->addTopLevelItem(topLevelItem);
-        topLevelItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
-        topLevelItem->setData(1,Qt::UserRole, QPoint(0x0010,0x0010)); // tag
-        topLevelItem->setData(2,Qt::UserRole, patientName); // search value
-        topLevelItem->setText(0,myNode->title().c_str());
-        
-        while ( resCont->isValid())
-        {
-            // add result to list
-            QTreeWidgetItem *pItem = new QTreeWidgetItem(topLevelItem);
-            pItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-            
-            pItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
-            pItem->setData(1,Qt::UserRole, QPoint(0x0020,0x000D)); // tag
-            pItem->setData(2,Qt::UserRole, QString(resDs->getStudyInstanceUID())); // search value
-            
-            pItem->setText(0,resDs->findKeyValue(0x0010,0x0010)); // patient name
-            ui->treeWidget->insertTopLevelItem(0,pItem);
-            resDs = resCont->getNext();
-        }
-        sum = sum + resCont->size();
-        myNode = resNodeCont->getNext();
-        topLevelItem->setExpanded(true);
-
-    }
-
-    // print to logwindow
-    printResults(sum,"studies");
 
     // clean up
     delete selectedNodes;
@@ -448,22 +417,22 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
     ui->logWindow->repaint();
 
     // set up search criteria
-    m_moveScu->clearAllQueryAttributes();
+    m_moveThread->clearAllQueryAttributes();
 
     // find out which query level should be used
     int elem = tag.y();
     switch(elem)
     {
     case 0x0018:
-        m_moveScu->setQueryLevel(dcmtkMoveScu::IMAGE);
+        m_moveThread->setQueryLevel(dcmtkMoveScu::IMAGE);
         break;
 
     case 0x000E:
-        m_moveScu->setQueryLevel(dcmtkMoveScu::SERIES);
+        m_moveThread->setQueryLevel(dcmtkMoveScu::SERIES);
         break;
 
     case 0x000D:
-        m_moveScu->setQueryLevel(dcmtkMoveScu::STUDY);
+        m_moveThread->setQueryLevel(dcmtkMoveScu::STUDY);
         break;
 
     default:
@@ -472,17 +441,18 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
 
 
 
-    m_moveScu->addQueryAttribute(tag.x(), tag.y(), searchStr.toLatin1());
-    
+    m_moveThread->addQueryAttribute(tag.x(), tag.y(), searchStr.toLatin1());
+
     // send the move request using the search crits
-    dcmtkConnectionData cdata;
     dcmtkNode* myNode = mainNodeCont->getAtPos(nodeIndex);
-    cdata.title = myNode->title();
-    cdata.ip = myNode->ip();
-    cdata.port = myNode->port();
-    m_moveScu->sendMoveRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     
-    ui->logWindow->append(tr("All done."));
+    QProgressDialog* progress = new QProgressDialog("Fetching data...", "Cancel", 0, 100);
+    progress->setWindowModality(Qt::WindowModal);
+    connect(m_moveThread,SIGNAL(progressed(int)), progress,SLOT(setValue(int)));
+    connect(progress,SIGNAL(canceled()),m_moveThread,SLOT(sendCancelRequest()));
+    progress->show();
+    m_moveThread->setConnectionParams(myNode->title().c_str(),myNode->ip().c_str(),myNode->port(),m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+    m_moveThread->start();
 
 }
 
@@ -590,6 +560,11 @@ void SimpleView::storeSettings(int type)
         settings.setValue("OUR_PORT", ui->ourPortEdit->text());
         settings.endGroup();
         break;
+    case 2:
+        settings.beginGroup("Server");
+        settings.setValue("ARCHIVE_DIR", ui->diredit2->text());
+        settings.endGroup();
+        break;
     default:
         std::cout << "switch error" << std::endl;
         break;
@@ -602,6 +577,7 @@ void SimpleView::retrieveSettings()
 {
     QString ourTitle, ourIP, ourPort;
     QString peerTitle, peerIP, peerPort;
+    QString archiveDir;
     int count = 0;
     QString countString;
     countString.setNum(count);
@@ -622,6 +598,10 @@ void SimpleView::retrieveSettings()
     ourPort = settings.value("OUR_PORT").value<QString>();
     settings.endGroup();
     
+    settings.beginGroup("Server");
+    archiveDir = settings.value("ARCHIVE_DIR").value<QString>();
+    settings.endGroup();
+
     ui->peerTitleEdit->setText(peerTitle);
     ui->peerIPEdit->setText(peerIP);
     ui->peerPortEdit->setText(peerPort);
@@ -630,6 +610,11 @@ void SimpleView::retrieveSettings()
     if(!ourTitle.isEmpty()) ui->ourTitleEdit->setText(ourTitle);
     if(!ourIP.isEmpty()) ui->ourIPEdit->setText(ourIP);
     if(!ourPort.isEmpty()) ui->ourPortEdit->setText(ourPort);
+    if(!archiveDir.isEmpty()) 
+    {
+        ui->diredit2->setText(archiveDir);
+        updateServerDir();
+    }
 
 }
 
@@ -703,7 +688,7 @@ void SimpleView::stopServer()
 {
     if (m_serverThread->isRunning())
     {
-        m_serverThread->stop();
+        m_serverThread->stopService();
         m_serverThread->exit();
         m_serverThread->wait();
     }
@@ -841,6 +826,81 @@ void SimpleView::printResults(int sum, const char* type)
     number.setNum(sum);
     QString stype = type;
     ui->logWindow->append(number + " " + stype + " found.");
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::fillTreeStudy()
+{
+    QString patientName = ui->searchField->text();
+    patientName.append("*");
+
+    // now extract information from datasets and build a visual list
+    int sum = 0;
+    ui->treeWidget->clear();
+    dcmtkContainer<dcmtkNode*>* resNodeCont = m_findScu->getNodeContainer();
+    dcmtkNode* myNode = resNodeCont->getFirst();
+
+    while (resNodeCont->isValid())
+    {
+        dcmtkContainer<dcmtkResultDataset*>* resCont = myNode->getResultDatasetContainer();
+        dcmtkResultDataset* resDs = resCont->getFirst();
+
+        // add the root node containing the name of the DICOM NODE
+        QTreeWidgetItem *topLevelItem = new QTreeWidgetItem();
+        ui->treeWidget->addTopLevelItem(topLevelItem);
+        topLevelItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
+        topLevelItem->setData(1,Qt::UserRole, QPoint(0x0010,0x0010)); // tag
+        topLevelItem->setData(2,Qt::UserRole, patientName); // search value
+        topLevelItem->setText(0,myNode->title().c_str());
+
+        while ( resCont->isValid())
+        {
+            // add result to list
+            QTreeWidgetItem *pItem = new QTreeWidgetItem(topLevelItem);
+            pItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+
+            pItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
+            pItem->setData(1,Qt::UserRole, QPoint(0x0020,0x000D)); // tag
+            pItem->setData(2,Qt::UserRole, QString(resDs->getStudyInstanceUID())); // search value
+
+            pItem->setText(0,resDs->findKeyValue(0x0010,0x0010)); // patient name
+            ui->treeWidget->insertTopLevelItem(0,pItem);
+            resDs = resCont->getNext();
+        }
+        sum = sum + resCont->size();
+        myNode = resNodeCont->getNext();
+        topLevelItem->setExpanded(true);
+
+    }
+
+    // print to logwindow
+    printResults(sum,"studies");
+
+}
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::setArchiveDirectory()
+{
+    QDir selDir;
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    if (dialog.exec())
+    {
+        selDir = dialog.directory();
+        this->ui->diredit2->setText(selDir.path());
+        updateServerDir();
+    }
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::updateServerDir()
+{
+    m_serverThread->setStorageDirectory(ui->diredit2->text().latin1());
+    restartServer();
+    storeSettings(2);
 }
 
 //---------------------------------------------------------------------------------------------

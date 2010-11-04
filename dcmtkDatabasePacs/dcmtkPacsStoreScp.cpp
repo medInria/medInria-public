@@ -15,7 +15,7 @@ bool dcmtkPacsStoreScp::registered( void )
 
 int dcmtkPacsStoreScp::start( const char* ourTitle, const char* ourIP, unsigned int ourPort )
 {
-    scp.start(ourTitle, ourIP, ourPort);
+    scp.startService(ourTitle, ourIP, ourPort);
     return 1;
 }
 
@@ -32,7 +32,7 @@ dcmtkPacsStoreScp::dcmtkPacsStoreScp()
 
 void dcmtkPacsStoreScp::stop()
 {
-    scp.stop();
+    scp.stopService();
 }
 
 medAbstractPacsStoreScp * createDcmtkStoreScp( void )

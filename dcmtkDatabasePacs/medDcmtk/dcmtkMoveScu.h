@@ -27,7 +27,6 @@ class DcmFileFormat;
     */
 class dcmtkMoveScu : public dcmtkBaseScu
 {
-    Q_OBJECT
 
 public:
 
@@ -40,6 +39,12 @@ public:
     *  Destructor
     */
     ~dcmtkMoveScu();
+
+    /**
+    * run - implementing thread method
+    * @return   void
+    */
+    virtual void run();
 
     /**
     * Performs the C-MOVE request on the peer.
@@ -92,8 +97,6 @@ public:
     */
     void skipWritingFiles(bool flag);
 
-signals:
-    void progressed(int);
 
 protected:
 
@@ -215,6 +218,7 @@ private:
     char*               m_imageFileName;
     DcmFileFormat*      m_dcmff;
     T_ASC_Association*  m_assoc;
+    T_ASC_PresentationContextID presId;
 
 };
 

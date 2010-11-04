@@ -16,7 +16,7 @@ ServerThread::~ServerThread()
 void ServerThread::run()
 {
     dcmtkLogger::infoStream() << "Server listening on port: " << m_ourPort;
-    m_server->start();
+    m_server->startService();
 }
 
 void ServerThread::setConnectionParams(const char* ourTitle, const char* ourIP, unsigned short ourPort)
@@ -27,5 +27,5 @@ void ServerThread::setConnectionParams(const char* ourTitle, const char* ourIP, 
 
 void ServerThread::stop()
 {
-    m_server->stop();
+    m_server->stopService();
 }

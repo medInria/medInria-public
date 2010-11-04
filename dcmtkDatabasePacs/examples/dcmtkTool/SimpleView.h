@@ -11,13 +11,12 @@
 class Ui_SimpleView;
 class QTreeWidgetItem;
 
-class ServerThread;
-class SendThread;
-
 class dcmtkEchoScu;
-class dcmtkMoveScu;
 class dcmtkFindDataset;
 class dcmtkFindScu;
+class dcmtkMoveScu;
+class dcmtkStoreScp;
+class dcmtkStoreScu;
 
 class LoggerConsoleOutput;
 class LoggerFileOutput;
@@ -62,6 +61,9 @@ protected slots:
   void addConn();
   void handleConnSelection();
   void inputChanged();
+  void fillTreeStudy();
+  void setArchiveDirectory();
+  void updateServerDir();
 
 
 private:
@@ -82,10 +84,9 @@ private:
 
   dcmtkEchoScu*                 m_echoScu;
   dcmtkFindScu*                 m_findScu;
-  dcmtkMoveScu*                 m_moveScu;
-
-  ServerThread*                 m_serverThread;
-  SendThread*                   m_sendThread;
+  dcmtkMoveScu*                 m_moveThread;
+  dcmtkStoreScp*                m_serverThread;
+  dcmtkStoreScu*                m_sendThread;
 
   std::vector<dcmtkConnectionData> m_nodes;
 

@@ -12,6 +12,7 @@ dcmtkFindScuCallback::dcmtkFindScuCallback( OFBool extractResponsesToFile, int c
                                             , extractResponsesToFile_(extractResponsesToFile)
                                             , cancelAfterNResponses_(cancelAfterNResponses)
 {
+    m_cancelRequest = false;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -61,12 +62,8 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
 
     m_ds->add(findDs);
 
-
-
     /* should we send a cancel back ?? */
-// TODO: CHECK THIS SETTING!
-    /* 
-    if (cancelAfterNResponses_ == responseCount)
+    if ((cancelAfterNResponses_ == responseCount) || (m_cancelRequest) )
     {
         dcmtkLogger::infoStream() << "Sending Cancel Request, MsgID: " << request->MessageID << ", PresID: " << presId_;
         OFCondition cond = DIMSE_sendCancelRequest(assoc_, presId_, request->MessageID);
@@ -75,8 +72,8 @@ void dcmtkFindScuCallback::callback(T_DIMSE_C_FindRQ *request, int responseCount
             OFString temp_str;
             dcmtkLogger::errorStream() << "Cancel Request Failed: " << DimseCondition::dump(temp_str, cond);
         }
+        m_cancelRequest = false;
     }
-    */
 }
 
 
@@ -93,6 +90,11 @@ void dcmtkFindScuCallback::setResultDatasetContainer(dcmtkContainer<dcmtkResultD
 void dcmtkFindScuCallback::setKeyContainer(dcmtkContainer<dcmtkKey*>* cont )
 {
     m_keyCont = cont;
+}
+
+void dcmtkFindScuCallback::sendCancelRequest( )
+{
+    m_cancelRequest = true;
 }
 
 //---------------------------------------------------------------------------------------------

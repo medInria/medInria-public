@@ -53,8 +53,9 @@ SET (MED_LOGGER_SOURCES
 	
 SET (OTHER_MOC_FILES
 		../../medLogger/LoggerWidget.h
-		../../medDcmtk/dcmtkMoveScu.h
 		../../medDcmtk/dcmtkStoreScp.h
+		../../medDcmtk/dcmtkFindScu.h
+		../../medDcmtk/dcmtkBaseScu.h
 	)
 	
 SET (MED_GENERAL_SOURCES

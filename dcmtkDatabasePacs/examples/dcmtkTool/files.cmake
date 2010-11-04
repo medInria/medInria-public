@@ -54,14 +54,12 @@ SET (MED_LOGGER_SOURCES
 	)
 	
 SET (OTHER_MOC_FILES
-		../../medLogger/LoggerWidget.h
-		../../medDcmtk/dcmtkMoveScu.h
+		../../medLogger/LoggerWidget.h		
 		../../medDcmtk/dcmtkStoreScp.h
+		../../medDcmtk/dcmtkFindScu.h
+		../../medDcmtk/dcmtkBaseScu.h
 	)
 	
 SET (MED_GENERAL_SOURCES
-	    ServerThread.h
-		ServerThread.cpp
-		SendThread.h
-		SendThread.cpp
+
 	)
