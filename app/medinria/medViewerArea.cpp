@@ -94,7 +94,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->viewToolBox = new medToolBoxView(this);
 
     connect(d->viewToolBox, SIGNAL(foregroundLookupTableChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
-    connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
+    // connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
     connect(d->viewToolBox, SIGNAL(lutPresetChanged(QString)), this, SLOT(setupLUTPreset(QString)));
     connect(d->viewToolBox, SIGNAL(tdModeChanged(QString)), this, SLOT(setup3DMode(QString)));
     connect(d->viewToolBox, SIGNAL(tdVRModeChanged(QString)), this, SLOT(setup3DVRMode(QString)));
@@ -336,7 +336,8 @@ void medViewerArea::open(const medDataIndex& index)
     
     view->setData(data);
     view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
-    
+
+    QMutexLocker ( &d->mutex );
     d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
     d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
 	
@@ -550,7 +551,7 @@ void medViewerArea::setupForegroundLookupTable(QString table)
         pool->setViewProperty("LookupTable", table);
     }
 }
-
+/*
 void medViewerArea::setupBackgroundLookupTable(QString table)
 {
     if(!d->view_stacks.count())
@@ -560,7 +561,7 @@ void medViewerArea::setupBackgroundLookupTable(QString table)
         pool->setViewProperty("BackgroundLookupTable", table);
     }
 }
-
+*/
 void medViewerArea::setupAxisVisibility(bool visible)
 {
     if(!d->view_stacks.count())
@@ -577,7 +578,7 @@ void medViewerArea::setupScalarBarVisibility(bool visible)
         return;
   
     if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        visible ? pool->setViewProperty("ScalarBarVisibility", "true") : pool->setViewProperty("ScalarBarVisibility", "false");
+        visible ? pool->setViewProperty("ShowScalarBar", "true") : pool->setViewProperty("ShowScalarBar", "false");
     }
 }
 
@@ -607,7 +608,7 @@ void medViewerArea::setup3DMode(QString mode)
         return;
   
     if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        pool->setViewProperty("Mode", mode);
+        pool->setViewProperty("3DMode", mode);
     }
 }
 
@@ -617,7 +618,7 @@ void medViewerArea::setup3DVRMode(QString mode)
         return;
   
     if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        pool->setViewProperty("VRMode", mode);
+        pool->setViewProperty("Renderer", mode);
     }
 }
 
@@ -648,7 +649,7 @@ void medViewerArea::setupWindowing(bool checked)
         return;
 
     if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        pool->setViewProperty("LeftClickInteraction", "Windowing");
+        pool->setViewProperty("MouseInteraction", "Windowing");
     }
 }
 
@@ -658,7 +659,7 @@ void medViewerArea::setupZooming(bool checked)
         return;
   
     if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        pool->setViewProperty("LeftClickInteraction", "Zooming");
+        pool->setViewProperty("MouseInteraction", "Zooming");
     }
 }
 
@@ -668,7 +669,7 @@ void medViewerArea::setupSlicing(bool checked)
         return;
   
     if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        pool->setViewProperty("LeftClickInteraction", "Slicing");
+        pool->setViewProperty("MouseInteraction", "Slicing");
     }
 }
 
@@ -678,7 +679,7 @@ void medViewerArea::setupMeasuring(bool checked)
         return;
   
     if(medViewPool *pool = d->view_stacks.value(d->current_patient)->current()->pool()) {
-        pool->setViewProperty("LeftClickInteraction", "Measuring");
+        pool->setViewProperty("MouseInteraction", "Measuring");
     }
 }
 

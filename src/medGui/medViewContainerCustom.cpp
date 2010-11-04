@@ -115,32 +115,28 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
     
     this->synchronize_2 (view);
 
-    connect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
     connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));
 }
 
 void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
 {
-  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
-      parent->synchronize_2(view);
-  }
-  else { // top level medViewContainerCustom
-      d->pool->appendView (view);
-      if (d->pool->count()==1) {
-	view->setProperty ("Daddy", "true");
-	connect (d->pool, SIGNAL (linkwl (dtkAbstractView *, bool)), view, SLOT (linkwl (dtkAbstractView *, bool)));
-      }
-  }
+    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+        parent->synchronize_2(view);
+    }
+    else { // top level medViewContainerCustom
+        d->pool->appendView (view);
+    }
 }
 
 void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
 {
-  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
-      parent->desynchronize_2(view);
-  }
-  else { // top level medViewContainerCustom
-      d->pool->removeView (view);
-  }
+    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+        parent->desynchronize_2(view);
+    }
+    else { // top level medViewContainerCustom
+        d->pool->removeView (view);
+    }
 }
 
 void medViewContainerCustom::onViewClosed (void)
@@ -149,7 +145,7 @@ void medViewContainerCustom::onViewClosed (void)
         d->layout->removeWidget (d->view->widget());
 	d->view->widget()->hide();
 	this->desynchronize_2 (d->view);
-	disconnect (d->view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
+	disconnect (d->view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
 	disconnect (d->view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
 	d->view = NULL;
     }

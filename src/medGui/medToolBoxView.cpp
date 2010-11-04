@@ -25,7 +25,7 @@ class medToolBoxViewPrivate
 {
 public:
     QComboBox *foregroundLookupTableComboBox;
-    QComboBox *backgroundLookupTableComboBox;
+  //QComboBox *backgroundLookupTableComboBox;
     QComboBox *presetComboBox;
     QCheckBox *scalarBarVisibilityCheckBox;
     QCheckBox *axisVisibilityCheckBox;
@@ -63,7 +63,7 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     d->foregroundLookupTableComboBox->addItem("Red Vessels");
     d->foregroundLookupTableComboBox->addItem("Bones");
     d->foregroundLookupTableComboBox->addItem("Stern");
-
+    /*
     d->backgroundLookupTableComboBox = new QComboBox(this);
     d->backgroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
     d->backgroundLookupTableComboBox->addItem("Default");
@@ -84,7 +84,7 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     d->backgroundLookupTableComboBox->addItem("Bones");
     d->backgroundLookupTableComboBox->addItem("Stern");
     d->backgroundLookupTableComboBox->hide();
-
+    */
     d->presetComboBox = new QComboBox(this);
     d->presetComboBox->setFocusPolicy(Qt::NoFocus);
     d->presetComboBox->addItem("None");
@@ -154,7 +154,7 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     mouseLayout->addWidget(d->measuringPushButton);
         
     connect(d->foregroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(foregroundLookupTableChanged(QString)));
-    connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(backgroundLookupTableChanged(QString)));
+    // connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(backgroundLookupTableChanged(QString)));
     connect(d->presetComboBox,                SIGNAL(currentIndexChanged(QString)), this, SIGNAL(lutPresetChanged(QString)));
     connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SIGNAL(tdModeChanged(QString)));
     connect(d->view3dVRModeComboBox,          SIGNAL(currentIndexChanged(QString)), this, SIGNAL(tdVRModeChanged(QString)));
@@ -227,16 +227,18 @@ void medToolBoxView::update(dtkAbstractView *view)
     d->foregroundLookupTableComboBox->setCurrentIndex(d->foregroundLookupTableComboBox->findText(view->property("LookupTable")));
     d->foregroundLookupTableComboBox->blockSignals(false);
 
+    /*
     d->backgroundLookupTableComboBox->blockSignals(true);
     d->backgroundLookupTableComboBox->setCurrentIndex(d->backgroundLookupTableComboBox->findText(view->property("BackgroundLookupTable")));
     d->backgroundLookupTableComboBox->blockSignals(false);
+    */
 
     d->axisVisibilityCheckBox->blockSignals(true);
     d->axisVisibilityCheckBox->setChecked(view->property("ShowAxis") == "true");
     d->axisVisibilityCheckBox->blockSignals(false);
 
     d->scalarBarVisibilityCheckBox->blockSignals(true);
-    d->scalarBarVisibilityCheckBox->setChecked(view->property("ScalarBarVisibility") == "true");
+    d->scalarBarVisibilityCheckBox->setChecked(view->property("ShowScalarBar") == "true");
     d->scalarBarVisibilityCheckBox->blockSignals(false);
 
     d->rulerVisibilityCheckBox->blockSignals(true);
@@ -251,13 +253,13 @@ void medToolBoxView::update(dtkAbstractView *view)
     d->zoomingPushButton->blockSignals(true);
     d->slicingPushButton->blockSignals(true);
     d->measuringPushButton->blockSignals(true);
-    if( view->property("LeftClickInteraction")=="Windowing" )
+    if( view->property("MouseInteraction")=="Windowing" )
       d->windowingPushButton->setChecked(true);
-    if( view->property("LeftClickInteraction")=="Zooming" )
+    if( view->property("MouseInteraction")=="Zooming" )
       d->zoomingPushButton->setChecked(true);
-    if( view->property("LeftClickInteraction")=="Slicing" )
+    if( view->property("MouseInteraction")=="Slicing" )
       d->slicingPushButton->setChecked(true);
-    if( view->property("LeftClickInteraction")=="Measuring" )
+    if( view->property("MouseInteraction")=="Measuring" )
       d->measuringPushButton->setChecked(true);
     d->windowingPushButton->blockSignals(false);
     d->zoomingPushButton->blockSignals(false);
@@ -265,11 +267,11 @@ void medToolBoxView::update(dtkAbstractView *view)
     d->measuringPushButton->blockSignals(false);
 
     d->view3dModeComboBox->blockSignals(true);
-    d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("Mode")));
+    d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
     d->view3dModeComboBox->blockSignals(false);
 
     d->view3dVRModeComboBox->blockSignals(true);
-    d->view3dVRModeComboBox->setCurrentIndex(d->view3dVRModeComboBox->findText(view->property("VRMode")));
+    d->view3dVRModeComboBox->setCurrentIndex(d->view3dVRModeComboBox->findText(view->property("Renderer")));
     d->view3dVRModeComboBox->blockSignals(false);
 
     // d->view3dLODSlider->blockSignals(true); 
