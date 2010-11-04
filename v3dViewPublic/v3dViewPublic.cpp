@@ -297,8 +297,8 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
 
     
     connect(d->vtkWidgetAxial, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
-    connect(d->vtkWidget3D, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
-    
+    connect(d->vtkWidget3D,    SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
+    connect(d->slider,         SIGNAL(valueChanged(int)),        this, SLOT(onZSliderValueChanged(int)));   
 }
 
 v3dViewPublic::~v3dViewPublic(void)
@@ -385,7 +385,8 @@ void v3dViewPublic::onDaddyPropertySet (QString value)
     d->registerButton->blockSignals(true);
 
     if (value=="true") {
-		d->view2DAxial->SetLinkWindowLevel ( 1 );
+      
+        d->view2DAxial->SetLinkWindowLevel ( 1 );
 		
         d->anchorButton->setChecked (true);
 
@@ -400,7 +401,8 @@ void v3dViewPublic::onDaddyPropertySet (QString value)
     }
 
     if (value=="false") {
-		d->view2DAxial->SetLinkWindowLevel ( 0 );
+
+        d->view2DAxial->SetLinkWindowLevel ( 0 );
 		
         d->anchorButton->setChecked (false);
 	
@@ -455,7 +457,7 @@ void v3dViewPublic::onOrientationPropertySet(QString value)
 
     // in case the max range becomes smaller than the actual value, a signal is emitted and
     // we don't want it
-    // d->slider->blockSignals (true);
+    d->slider->blockSignals (true);
     
     if (value == "Axial") {
         d->orientation = "Axial";
@@ -463,11 +465,11 @@ void v3dViewPublic::onOrientationPropertySet(QString value)
 	d->view2DAxial->SetOrientation (vtkViewImage2D::AXIAL_ID);
 	d->stackedLayout->setCurrentIndex (0);
 
-	/*
-	if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
+	
+	if (d->imageData) {
 	  d->slider->setRange (0, d->imageData->zDimension()-1);
 	}
-	*/
+	
     }
 	
     if (value == "Sagittal") {
@@ -476,11 +478,11 @@ void v3dViewPublic::onOrientationPropertySet(QString value)
 	d->view2DAxial->SetOrientation (vtkViewImage2D::SAGITTAL_ID);
 	d->stackedLayout->setCurrentIndex (0);
 
-	/*
-	if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
+	
+	if (d->imageData) {
 	  d->slider->setRange (0, d->imageData->xDimension()-1);
 	}
-	*/
+	
     }
 
     if (value == "Coronal") {
@@ -489,21 +491,15 @@ void v3dViewPublic::onOrientationPropertySet(QString value)
 	d->view2DAxial->SetOrientation (vtkViewImage2D::CORONAL_ID);
 	d->stackedLayout->setCurrentIndex (0);
 
-	/*
-	if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
+	
+	if (d->imageData) {
 	  d->slider->setRange (0, d->imageData->yDimension()-1);
 	}
-	*/
+	
     }
 
-    /*
-    if (d->dimensionBox->currentText()==tr("Time") && d->imageData) {
-        d->slider->setRange(0, d->imageData->tDimension()-1);
-    }
-    */
-    
     if (!d->currentView) {
-        // d->slider->blockSignals (false);
+        d->slider->blockSignals (false);
 	return;
     }
 
@@ -520,19 +516,17 @@ void v3dViewPublic::onOrientationPropertySet(QString value)
     // d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL); // seems not needed anymore
 
     // update slider position
-    /*
-    if (d->dimensionBox->currentText()==tr("Space")) {
-      if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
-        unsigned int zslice = view2d->GetSlice();
+    if (vtkViewImage2D *view2d = vtkViewImage2D::SafeDownCast (d->currentView)) {
+        unsigned int zslice = view2d->GetZSlice();
 	d->slider->setValue (zslice);
-      }
     }
-    else if (d->dimensionBox->currentText()==tr("Time")) {
+
+    /*else if (d->dimensionBox->currentText()==tr("Time")) {
       d->slider->setValue(d->currentView->GetTimeIndex());
-    }
-    
-    d->slider->blockSignals (false);
+    }      
     */
+
+    d->slider->blockSignals (false);
 }
 
 void v3dViewPublic::onModePropertySet (QString value)
@@ -550,7 +544,6 @@ void v3dViewPublic::onModePropertySet (QString value)
     }
 
     if (value=="MIP - Maximum") {
-      qDebug() << "Setting: " << value;
         d->view3D->SetRenderingModeToVR();
 	d->view3D->SetVolumeRayCastFunctionToMIP();
     }
@@ -835,6 +828,13 @@ void v3dViewPublic::onCroppingPropertySet (QString value)
 void v3dViewPublic::reset(void)
 {
     d->view2DAxial->SyncReset();
+
+    int zslice = d->view2DAxial->GetZSlice();
+
+    d->slider->blockSignals ( true );
+    d->slider->setValue ( zslice );
+    d->slider->blockSignals ( false );
+    
 }
 
 void v3dViewPublic::update(void)
@@ -1053,26 +1053,19 @@ void v3dViewPublic::setData(dtkAbstractData *data)
         d->view3D->SetSeriesName (seriesName.toAscii().constData());
     }
 	
+	*/
     
     if(d->imageData) {
-        d->slider->blockSignals (true);
-		if (d->dimensionBox->currentText()==tr("Space")) {
-			if( d->orientation=="Axial") {
-				d->slider->setRange(0, d->imageData->zDimension()-1);
-			}
-			else if( d->orientation=="Sagittal") {
-				d->slider->setRange(0, d->imageData->xDimension()-1);
-			}
-			else if( d->orientation=="Coronal") {
-				d->slider->setRange(0, d->imageData->yDimension()-1);
-			}
-		}
-		else if (d->dimensionBox->currentText()==tr("Time")) {
-			d->slider->setRange(0, d->imageData->tDimension()-1);
-		}
-		d->slider->blockSignals (false);
+      d->slider->blockSignals (true);
+      if( d->orientation=="Axial")
+	d->slider->setRange(0, d->imageData->zDimension()-1);
+      else if( d->orientation=="Sagittal")
+	d->slider->setRange(0, d->imageData->xDimension()-1);
+      else if( d->orientation=="Coronal")
+	d->slider->setRange(0, d->imageData->yDimension()-1);
+      d->slider->blockSignals (false);
     }
-	*/
+    
     // this->update(); // update is not the role of the plugin, but of the app
 }
 
@@ -1121,6 +1114,22 @@ void v3dViewPublic::onMousePressEvent(QMouseEvent *event)
     if(event->button() == Qt::RightButton) {
         d->menu->popup (event->globalPos());
     }
+}
+
+void v3dViewPublic::onZSliderValueChanged (int value)
+{
+    if (!d->currentView)
+        return;
+
+    if( vtkViewImage2D *view = vtkViewImage2D::SafeDownCast(d->currentView) ) {
+      //d->observer->lock();
+	view->SyncSetZSlice (value);
+	// view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
+	//d->observer->unlock();
+    }
+    
+    //qApp->processEvents();
+    d->currentView->Render();
 }
 
 void v3dViewPublic::switchToAxial(void)

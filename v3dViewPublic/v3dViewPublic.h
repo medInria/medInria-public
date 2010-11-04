@@ -72,8 +72,9 @@ public slots:
     
 public slots:
     //void play   (bool);
-      void linkwl (dtkAbstractView* view, bool);
-      
+    void linkwl (dtkAbstractView* view, bool);
+
+    void onZSliderValueChanged (int);
     void onMousePressEvent(QMouseEvent *event);
     void switchToAxial(void);
     void switchToSagittal(void);
