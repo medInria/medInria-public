@@ -75,6 +75,10 @@ void medViewPool::appendView (dtkAbstractView *view)
         it.next();
 	view->setProperty (it.key(), it.value());
     }
+
+    if (dtkAbstractView *refView = this->daddy())
+      if (refView != view)
+	refView->link (view);
 }
 
 void medViewPool::removeView (dtkAbstractView *view)
