@@ -82,11 +82,11 @@ class VTK_RENDERINGADDON_EXPORT vtkInteractorStyleImage2D : public vtkInteractor
   //virtual void Pan();
   virtual void DefaultMoveAction();
   
-  void PropagateCameraFocalAndPosition();
-  
  protected:
   vtkInteractorStyleImage2D();
   ~vtkInteractorStyleImage2D();
+
+  void PropagateCameraFocalAndPosition();
 
  private:
   

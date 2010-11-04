@@ -61,7 +61,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DCommand : public vtkCommand
   };
   //ETX
     
- private:
+ protected:
   void ChangeZSlice(vtkInteractorStyleImage2D* p_isi);
   void EndWindowing();
   void Windowing(vtkInteractorStyleImage2D* p_isi);
@@ -70,6 +70,18 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DCommand : public vtkCommand
   void EndPicking (void);
   void Zoom (vtkInteractorStyleImage2D* p_isi);
   void DefaultMove (vtkInteractorStyle*);
+
+  void PropagateWindowLevel (void);
+  void PropagateResetWindowLevel (void);
+  void PropagateStartWindowing (void);
+  void PropagateEndWindowing (void);
+  
+  void PropagateCurrentPoint (void);
+  void PropagateResetCurrentPoint (void);
+
+  void PropagateZoom (void);
+  void PropagateResetZoom (void);
+  
   
  private:
   vtkViewImage2D* View;
