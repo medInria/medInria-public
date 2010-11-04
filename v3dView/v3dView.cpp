@@ -643,6 +643,7 @@ void v3dView::link(dtkAbstractView *other)
 
     this->setProperty ("PositionLinked", "true");
     this->setProperty ("CameraLinked",   "true");
+    this->setProperty ("WindowingLinked","true");
 }
 
 void v3dView::unlink(dtkAbstractView *other)
@@ -655,6 +656,7 @@ void v3dView::unlink(dtkAbstractView *other)
     if (d->linkedViews.count()==0) {
         this->setProperty ("PositionLinked", "false");
 	this->setProperty ("CameraLinked",   "false");
+	this->setProperty ("WindowingLinked","false");
     }
 }
 
