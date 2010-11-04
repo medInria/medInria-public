@@ -641,53 +641,6 @@ void v3dView::link(dtkAbstractView *other)
 
     d->linkedViews.insert (other);
 
-    if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
-      
-        otherView->setProperty ("PositionLinked", "true");
-	otherView->setProperty ("CameraLinked",   "true");
-	
-	otherView->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
-	otherView->viewSagittal()->SetCurrentPoint ( d->currentView->GetCurrentPoint() );
-	otherView->viewCoronal()->SetCurrentPoint  ( d->currentView->GetCurrentPoint() );
-	otherView->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
-
-	otherView->viewAxial()->SetTimeIndex    ( d->currentView->GetTimeIndex() );
-	otherView->viewSagittal()->SetTimeIndex ( d->currentView->GetTimeIndex() );
-	otherView->viewCoronal()->SetTimeIndex  ( d->currentView->GetTimeIndex() );
-	otherView->view3D()->SetTimeIndex       ( d->currentView->GetTimeIndex() );
-		
-		
-	d->collectionAxial->AddItem    ( otherView->viewAxial() );
-	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
-	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
-	//d->collection3D->AddItem       ( otherView->view3D() );
-	
-	// zoom comes first, then pan (==translation)	
-	otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
-	otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
-	
-	otherView->viewSagittal()->SetZoom ( d->view2DSagittal->GetZoom() );
-	otherView->viewSagittal()->SetPan  ( d->view2DSagittal->GetPan() );	
-
-	otherView->viewCoronal()->SetZoom ( d->view2DCoronal->GetZoom() );
-	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
-		
-	/** 3D is more tricky than this */
-	//otherView->view3D()->SetCameraPosition    ( d->view3D->GetCameraPosition() );
-	//otherView->view3D()->SetCameraFocalPoint  ( d->view3D->GetCameraFocalPoint() );
-	//otherView->view3D()->SetZoom              ( d->view3D->GetZoom() );
-	
-	d->collectionPos->AddItem ( d->view2DAxial );
-	d->collectionPos->AddItem ( d->view2DSagittal );
-	d->collectionPos->AddItem ( d->view2DCoronal );
-	d->collectionPos->AddItem ( d->view3D );
-
-	d->collectionPos->AddItem ( otherView->viewAxial() );
-	d->collectionPos->AddItem ( otherView->viewSagittal() );
-	d->collectionPos->AddItem ( otherView->viewCoronal() );
-	d->collectionPos->AddItem ( otherView->view3D() );
-    }
-
     this->setProperty ("PositionLinked", "true");
     this->setProperty ("CameraLinked",   "true");
 }
@@ -697,34 +650,11 @@ void v3dView::unlink(dtkAbstractView *other)
     if(!other || other->description()!=tr("v3dView") || !d->linkedViews.contains (other) ||  other==this)
         return;
 
-    if (v3dView *otherView = dynamic_cast<v3dView*>(other)) {
-
-	otherView->setProperty ("PositionLinked", "false");
-	otherView->setProperty ("CameraLinked",   "false");
-	
-	d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
-	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
-	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
-	//d->collection3D->RemoveItem       ( otherView->view3D() );
-
-	d->collectionPos->RemoveItem ( otherView->viewAxial() );
-	d->collectionPos->RemoveItem ( otherView->viewSagittal() );
-	d->collectionPos->RemoveItem ( otherView->viewCoronal() );
-	d->collectionPos->RemoveItem ( otherView->view3D() );
-
-    }
-
     d->linkedViews.remove (other);
     
     if (d->linkedViews.count()==0) {
         this->setProperty ("PositionLinked", "false");
 	this->setProperty ("CameraLinked",   "false");
-	
-	d->collectionPos->RemoveItem ( d->view2DAxial );
-	d->collectionPos->RemoveItem ( d->view2DSagittal );
-	d->collectionPos->RemoveItem ( d->view2DCoronal );
-	d->collectionPos->RemoveItem ( d->view3D );
-
     }
 }
 
@@ -1009,10 +939,81 @@ void v3dView::play(bool start)
 
 void v3dView::linkPosition (dtkAbstractView *view, bool value)
 {
-  if (value)
-    this->link (view);
-  else
-    this->unlink (view);
+    if (view==this)
+        return;
+  
+  if (v3dView *otherView = dynamic_cast<v3dView*>(view)) {
+
+    if (value) {
+      
+        otherView->setProperty ("PositionLinked", "true");
+	otherView->setProperty ("CameraLinked",   "true");
+	
+	otherView->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
+	otherView->viewSagittal()->SetCurrentPoint ( d->currentView->GetCurrentPoint() );
+	otherView->viewCoronal()->SetCurrentPoint  ( d->currentView->GetCurrentPoint() );
+	otherView->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
+
+	otherView->viewAxial()->SetTimeIndex    ( d->currentView->GetTimeIndex() );
+	otherView->viewSagittal()->SetTimeIndex ( d->currentView->GetTimeIndex() );
+	otherView->viewCoronal()->SetTimeIndex  ( d->currentView->GetTimeIndex() );
+	otherView->view3D()->SetTimeIndex       ( d->currentView->GetTimeIndex() );
+		
+		
+	d->collectionAxial->AddItem    ( otherView->viewAxial() );
+	d->collectionSagittal->AddItem ( otherView->viewSagittal() );
+	d->collectionCoronal->AddItem  ( otherView->viewCoronal() );
+	//d->collection3D->AddItem       ( otherView->view3D() );
+	
+	// zoom comes first, then pan (==translation)	
+	otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
+	otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
+	
+	otherView->viewSagittal()->SetZoom ( d->view2DSagittal->GetZoom() );
+	otherView->viewSagittal()->SetPan  ( d->view2DSagittal->GetPan() );	
+
+	otherView->viewCoronal()->SetZoom ( d->view2DCoronal->GetZoom() );
+	otherView->viewCoronal()->SetPan  ( d->view2DCoronal->GetPan() );
+		
+	// 3D is more tricky than this
+	//otherView->view3D()->SetCameraPosition    ( d->view3D->GetCameraPosition() );
+	//otherView->view3D()->SetCameraFocalPoint  ( d->view3D->GetCameraFocalPoint() );
+	//otherView->view3D()->SetZoom              ( d->view3D->GetZoom() );
+	
+	d->collectionPos->AddItem ( d->view2DAxial );
+	d->collectionPos->AddItem ( d->view2DSagittal );
+	d->collectionPos->AddItem ( d->view2DCoronal );
+	d->collectionPos->AddItem ( d->view3D );
+
+	d->collectionPos->AddItem ( otherView->viewAxial() );
+	d->collectionPos->AddItem ( otherView->viewSagittal() );
+	d->collectionPos->AddItem ( otherView->viewCoronal() );
+	d->collectionPos->AddItem ( otherView->view3D() );
+    }
+    else {
+
+        otherView->setProperty ("PositionLinked", "false");
+	otherView->setProperty ("CameraLinked",   "false");
+	
+	d->collectionAxial->RemoveItem    ( otherView->viewAxial() );
+	d->collectionSagittal->RemoveItem ( otherView->viewSagittal() );
+	d->collectionCoronal->RemoveItem  ( otherView->viewCoronal() );
+	//d->collection3D->RemoveItem       ( otherView->view3D() );
+
+	d->collectionPos->RemoveItem ( otherView->viewAxial() );
+	d->collectionPos->RemoveItem ( otherView->viewSagittal() );
+	d->collectionPos->RemoveItem ( otherView->viewCoronal() );
+	d->collectionPos->RemoveItem ( otherView->view3D() );
+
+	if (d->collectionPos->GetNumberOfItems()==4) {
+	      d->collectionPos->RemoveItem ( d->view2DAxial );
+	      d->collectionPos->RemoveItem ( d->view2DSagittal );
+	      d->collectionPos->RemoveItem ( d->view2DCoronal );
+	      d->collectionPos->RemoveItem ( d->view3D );
+	}
+    }
+  }
+  
 }
 
 void v3dView::linkCamera (dtkAbstractView *view, bool value)
@@ -1022,6 +1023,9 @@ void v3dView::linkCamera (dtkAbstractView *view, bool value)
 
 void v3dView::linkWindowing (dtkAbstractView *view, bool value)
 {
+      if (view==this)
+        return;
+
     if (v3dView *vview = dynamic_cast<v3dView*>(view)) {
       if (value) {
 
