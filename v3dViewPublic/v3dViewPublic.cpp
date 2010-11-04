@@ -61,7 +61,7 @@ public:
 // v3dViewPublic
 // /////////////////////////////////////////////////////////////////
 
-v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPrivate)
+v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPrivate)
 {
     d->data       = 0;
     d->imageData  = 0;
@@ -98,6 +98,7 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
     d->view2DAxial->SetLinkPosition (1);
     d->view2DAxial->SetLinkZoom (1);
     d->view2DAxial->SetLinkWindowLevel (0);
+    d->view2DAxial->SetAboutData("v3dViewPublic plugin");
 
     d->currentView = d->view2DAxial;
 
@@ -115,6 +116,7 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
     double color[3] = {1.0,1.0,1.0};
     d->view3D->SetTextColor(color);
     d->view3D->ShadeOn();
+    d->view3D->SetAboutData("v3dViewPublic plugin");
     
     d->view2DAxial->AddChild( d->view3D );
     //d->view3D->AddChild ( d->view2DAxial );
@@ -181,7 +183,7 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
     d->linkButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->linkButton->setObjectName("tool");
 
-    connect(d->linkButton, SIGNAL(clicked(bool)), this, SIGNAL(sync(bool)));
+    connect(d->linkButton, SIGNAL(clicked(bool)), this, SIGNAL(syncPosition(bool)));
 
     d->linkWLButton = new QPushButton(d->widget);
     d->linkWLButton->setIcon (QIcon(":/icons/link_wl.png"));
@@ -193,7 +195,7 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
     d->linkWLButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->linkWLButton->setObjectName("tool");
 
-    connect(d->linkWLButton, SIGNAL(clicked(bool)), this, SIGNAL(syncWL(bool)));
+    connect(d->linkWLButton, SIGNAL(clicked(bool)), this, SIGNAL(syncWindowing(bool)));
 
     d->registerButton = new QPushButton(d->widget);
     d->registerButton->setIcon (QIcon(":/icons/cog.png"));
@@ -216,7 +218,7 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
     d->closeButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->closeButton->setObjectName("tool");
 
-    connect(d->closeButton, SIGNAL(clicked()), this, SIGNAL(closed()));
+    connect(d->closeButton, SIGNAL(clicked()), this, SIGNAL(closing()));
 
     QButtonGroup *toolButtonGroup = new QButtonGroup(d->widget);
     toolButtonGroup->addButton(d->anchorButton);
@@ -239,61 +241,22 @@ v3dViewPublic::v3dViewPublic(void) : dtkAbstractView(), d(new v3dViewPublicPriva
     layout->addLayout(toolsLayout);
     layout->addLayout(d->stackedLayout);
     
-    QStringList lut;
-    lut << "Default"
-	<< "Black&White"
-	<< "Black&WhiteInversed"
-	<< "Spectrum"
-	<< "HotMetal"
-	<< "GE"
-	<< "Flow"
-	<< "Loni"
-	<< "Loni2"
-	<< "Asymmetry"
-	<< "PValue"
-	<< "blueBlackAlpha"
-	<< "greenBlackAlpha"
-	<< "redBlackAlpha"
-	<< "Muscles&Bones"
-      	<< "Red Vessels"
-      	<< "Bones"
-	<< "Stern";
-    
-    
-    this->addProperty ("Orientation",           QStringList() << "Axial" << "Sagittal" << "Coronal" << "3D");
-    this->addProperty ("ScalarBarVisibility",   QStringList() << "true" << "false");
-    this->addProperty ("LookupTable",           lut);
-    this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
-    this->addProperty ("ShowRuler",             QStringList() << "true" << "false");
-    this->addProperty ("ShowAnnotations",       QStringList() << "true" << "false");
-    this->addProperty ("LeftClickInteraction",  QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
-    this->addProperty ("Mode",                  QStringList() << "VR" << "MPR" << "MIP - Maximum" << "Off");
-    this->addProperty ("UseLOD",                QStringList() << "On" << "Off" );
-    this->addProperty ("Cropping",              QStringList() << "true" << "false");
-    this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
-		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
-		                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
-		                                              << "Red on White" << "Glossy");
-    this->addProperty ("Linked",   QStringList() << "true" << "false");
-    this->addProperty ("LinkedWL", QStringList() << "true" << "false");
-    this->addProperty ("Daddy",    QStringList() << "true" << "false");
-
     // set default properties
     this->setProperty ("Orientation",          "Axial");
-    this->setProperty ("ScalarBarVisibility",  "false");
+    this->setProperty ("ShowScalarBar",        "false");
     this->setProperty ("ShowAxis",             "false");
     this->setProperty ("ShowRuler",            "true");
     this->setProperty ("ShowAnnotations",      "true");
     this->setProperty ("LookupTable",          "Default");
-    this->setProperty ("LeftClickInteraction", "Zooming");
-    this->setProperty ("Mode",                 "VR");
+    this->setProperty ("MouseInteraction",     "Zooming");
+    this->setProperty ("3DMode",               "VR");
     this->setProperty ("UseLOD",               "On");
     this->setProperty ("Cropping",             "false");
     this->setProperty ("Preset",               "None");
 
-    this->setProperty ("Linked",   "false");
-    this->setProperty ("LinkedWL", "false");
-    this->setProperty ("Daddy",    "false");
+    this->setProperty ("PositionLinked",   "false");
+    this->setProperty ("WindowingLinked",  "false");
+    this->setProperty ("Daddy",            "false");
 
     
     connect(d->vtkWidgetAxial, SIGNAL(mouseEvent(QMouseEvent*)), this, SLOT(onMousePressEvent(QMouseEvent*)));
@@ -343,8 +306,8 @@ void v3dViewPublic::onPropertySet(QString key, QString value)
     if(key == "Orientation")
 	this->onOrientationPropertySet(value);
 
-    if(key == "ScalarBarVisibility")
-	this->onScalarBarVisibilityPropertySet(value);
+    if(key == "ShowScalarBar")
+	this->onShowScalarBarPropertySet(value);
 
     if(key == "LookupTable")
 	this->onLookupTablePropertySet(value);
@@ -358,11 +321,11 @@ void v3dViewPublic::onPropertySet(QString key, QString value)
     if(key == "ShowAnnotations")
 	this->onShowAnnotationsPropertySet(value);
 
-    if(key == "LeftClickInteraction")
-	this->onLeftClickInteractionPropertySet(value);
+    if(key == "MouseInteraction")
+	this->onMouseInteractionPropertySet(value);
 
-    if(key == "Mode")
-	this->onModePropertySet(value);
+    if(key == "3DMode")
+	this->on3DModePropertySet(value);
 
     if(key == "Preset")
 	this->onPresetPropertySet(value);
@@ -370,8 +333,11 @@ void v3dViewPublic::onPropertySet(QString key, QString value)
     if(key == "Cropping")
 	this->onCroppingPropertySet(value);
     
-    if(key == "LinkedWL")
-	this->onLinkedWLPropertySet(value);
+    if(key == "WindowingLinked")
+	this->onWindowingLinkedPropertySet(value);
+
+    if(key == "PositionLinked")
+	this->onPositionLinkedPropertySet(value);
     
 
     //this->update(); // never update after setting a property, it is not our role
@@ -397,7 +363,6 @@ void v3dViewPublic::onDaddyPropertySet (QString value)
 	d->linkWLButton->setEnabled(false);
 	d->registerButton->setEnabled(false);
 	d->anchorButton->blockSignals(false);
-	emit becameDaddy(1);
     }
 
     if (value=="false") {
@@ -409,7 +374,6 @@ void v3dViewPublic::onDaddyPropertySet (QString value)
 	d->linkButton->setEnabled(true);
 	d->linkWLButton->setEnabled(true);
 	d->registerButton->setEnabled(true);
-	emit becameDaddy(0);
     }
 
     d->anchorButton->blockSignals(false);
@@ -418,7 +382,22 @@ void v3dViewPublic::onDaddyPropertySet (QString value)
     d->registerButton->blockSignals(false);
 }
 
-void v3dViewPublic::onLinkedWLPropertySet (QString value)
+void v3dViewPublic::onPositionLinkedPropertySet (QString value)
+{
+    d->linkButton->blockSignals(true);
+
+    if (value=="true") {
+        d->linkButton->setChecked (true);
+	d->linkButton->blockSignals(false);
+    }
+
+    if (value=="false") {
+        d->linkButton->setChecked (false);
+	d->linkButton->blockSignals(false);
+    }
+}
+
+void v3dViewPublic::onWindowingLinkedPropertySet (QString value)
 {
     d->linkWLButton->blockSignals(true);
 
@@ -529,7 +508,7 @@ void v3dViewPublic::onOrientationPropertySet(QString value)
     d->slider->blockSignals (false);
 }
 
-void v3dViewPublic::onModePropertySet (QString value)
+void v3dViewPublic::on3DModePropertySet (QString value)
 {
     if (value=="VR") {
         d->view3D->SetRenderingModeToVR();
@@ -556,7 +535,7 @@ void v3dViewPublic::onModePropertySet (QString value)
     } 
 }
 
-void v3dViewPublic::onScalarBarVisibilityPropertySet(QString value)
+void v3dViewPublic::onShowScalarBarPropertySet(QString value)
 {
     if (value == "true") {
       d->view2DAxial->SetScalarBarVisibility(true);
@@ -661,7 +640,7 @@ void v3dViewPublic::onShowAnnotationsPropertySet(QString value)
     d->view3D->SetShowAnnotations ((value == "true"));
 }
 
-void v3dViewPublic::onLeftClickInteractionPropertySet(QString value)
+void v3dViewPublic::onMouseInteractionPropertySet(QString value)
 {
     d->view2DAxial->SetMiddleButtonInteractionStyle(vtkViewImage2D::SELECT_INTERACTION);
   
@@ -1084,12 +1063,37 @@ QWidget *v3dViewPublic::widget(void)
     return d->widget;
 }
 
-void v3dViewPublic::linkwl (dtkAbstractView *view, bool value)
+void v3dViewPublic::linkPosition (dtkAbstractView *view, bool value)
 {
     if (v3dViewPublic *vview = dynamic_cast<v3dViewPublic*>(view)) {
       if (value) {
 
-	  vview->setProperty ("LinkedWL", "true");
+	  vview->setProperty ("PositionLinked", "true");
+	
+	  vview->viewAxial()->SetLinkPosition ( 1 );
+	  
+	  vview->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
+	  vview->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
+      }
+      else {
+
+	  vview->setProperty ("PositionLinked", "false");
+	  vview->viewAxial()->SetLinkPosition ( 0 );
+      }
+  }
+}
+
+void v3dViewPublic::linkCamera (dtkAbstractView *view, bool value)
+{
+  this->linkPosition (view, value);
+}
+
+void v3dViewPublic::linkWindowing (dtkAbstractView *view, bool value)
+{
+    if (v3dViewPublic *vview = dynamic_cast<v3dViewPublic*>(view)) {
+      if (value) {
+
+	  vview->setProperty ("WindowingLinked", "true");
 	
 	  //d->view2DAxial->SetLinkWindowLevel ( 1 );
 	  vview->viewAxial()->SetLinkWindowLevel ( 1 );
@@ -1102,7 +1106,7 @@ void v3dViewPublic::linkwl (dtkAbstractView *view, bool value)
       }
       else {
 
-	  vview->setProperty ("LinkedWL", "false");
+	  vview->setProperty ("WindowingLinked", "false");
 	  vview->viewAxial()->SetLinkWindowLevel ( 0 );
 	  //d->view2DAxial->SetLinkWindowLevel ( 0 );
       }

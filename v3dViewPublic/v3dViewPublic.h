@@ -5,7 +5,7 @@
 #ifndef V3DVIEWPUBLIC_H
 #define V3DVIEWPUBLIC_H
 
-#include <dtkCore/dtkAbstractView.h>
+#include <medCore/medAbstractView.h>
 
 #include "v3dViewPublicPluginExport.h"
 
@@ -13,7 +13,7 @@ class v3dViewPublicPrivate;
 class vtkViewImage2D;
 class vtkViewImage3D;
 
-class V3DVIEWPUBLICPLUGIN_EXPORT v3dViewPublic : public dtkAbstractView
+class V3DVIEWPUBLICPLUGIN_EXPORT v3dViewPublic : public medAbstractView
 {
     Q_OBJECT
 
@@ -24,14 +24,6 @@ public:
     virtual QString description(void) const;
 
     static bool registered(void);
-
-signals:
-    void closed(void);
-    void becomeDaddy (bool);
-    void becameDaddy (bool);
-    void sync (bool);
-    void syncWL (bool);
-    void reg(bool);
 
 public:
     void reset(void);
@@ -57,22 +49,25 @@ public:
 public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);
-    void onModePropertySet                  (QString value);
+    void on3DModePropertySet                (QString value);
     void onPresetPropertySet                (QString value);
-    void onScalarBarVisibilityPropertySet   (QString value);
+    void onShowScalarBarPropertySet         (QString value);
     void onLookupTablePropertySet           (QString value);
     void onShowAxisPropertySet              (QString value);
     void onShowRulerPropertySet             (QString value);
     void onShowAnnotationsPropertySet       (QString value);
-    void onLeftClickInteractionPropertySet  (QString value);
+    void onMouseInteractionPropertySet      (QString value);
     void onCroppingPropertySet              (QString value);
     void onDaddyPropertySet                 (QString value);
-    void onLinkedWLPropertySet              (QString value);
+    void onWindowingLinkedPropertySet       (QString value);
+    void onPositionLinkedPropertySet        (QString value);
 
     
 public slots:
     //void play   (bool);
-    void linkwl (dtkAbstractView* view, bool);
+    void linkPosition  (dtkAbstractView *view, bool value);
+    void linkCamera    (dtkAbstractView *view, bool value);
+    void linkWindowing (dtkAbstractView *view, bool value);
 
     void onZSliderValueChanged (int);
     void onMousePressEvent(QMouseEvent *event);
