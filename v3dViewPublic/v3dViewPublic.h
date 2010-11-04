@@ -74,7 +74,10 @@ public slots:
     void switchToAxial(void);
     void switchToSagittal(void);
     void switchToCoronal(void);
-    void switchTo3D(void);
+    void switchToVR(void);
+    void switchToMPR(void);
+    void onMenuZoomTriggered (void);
+    void onMenuWindowLevelTriggered (void);
     
 
 private:

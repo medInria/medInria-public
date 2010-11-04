@@ -11,6 +11,7 @@
 #include "vtkViewImage.h"
 #include "vtkViewImage2D.h"
 #include "vtkViewImage3D.h"
+#include "vtkViewImage2DCommand.h"
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkCamera.h>
@@ -18,6 +19,64 @@
 #include <vtkOrientedBoxWidget.h>
 
 #include <QVTKWidget.h>
+
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////
+// v3dViewObserver: links a QSlider with the CurrentPointChangedEvent of a vtkImageView instance.
+// /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class v3dViewPublicObserver : public vtkCommand
+{
+public:
+    static v3dViewPublicObserver* New(void) { return new v3dViewPublicObserver; }
+
+    void Execute(vtkObject *caller, unsigned long event, void *callData);
+
+    void setSlider(QSlider *slider) {
+        this->slider = slider;
+    }
+
+    void setView(vtkViewImage2D *view){
+        this->view = view;
+    }
+
+    inline void   lock(void) { this->m_lock = 1; }
+    inline void unlock(void) { this->m_lock = 0; }
+
+protected:
+     v3dViewPublicObserver(void);
+    ~v3dViewPublicObserver(void);
+
+private:
+    int             m_lock;
+    QSlider        *slider;
+    vtkViewImage2D *view;
+};
+
+v3dViewPublicObserver::v3dViewPublicObserver(void)
+{
+    this->slider = 0;
+    this->m_lock = 0;
+}
+
+v3dViewPublicObserver::~v3dViewPublicObserver(void)
+{
+
+}
+
+void v3dViewPublicObserver::Execute(vtkObject *caller, unsigned long event, void *callData)
+{
+    if (this->m_lock)
+        return;
+
+	if (this->slider && this->view) {
+	    unsigned int zslice = this->view->GetZSlice();
+	    this->slider->blockSignals (true);
+	    this->slider->setValue (zslice);
+	    this->slider->update();
+	    this->slider->blockSignals (false);
+	    //qApp->processEvents(); // cause a crash when opening very fast multiple images
+	}
+}
 
 // /////////////////////////////////////////////////////////////////
 // v3dViewPublicPrivate
@@ -55,6 +114,8 @@ public:
     QPushButton *closeButton;
 
     vtkViewImage *lastLinked;
+
+    v3dViewPublicObserver *observer;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -95,8 +156,8 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     d->view2DAxial->Show2DAxisOff();
     d->view2DAxial->SetScalarBarVisibility(0);
     d->view2DAxial->RulerWidgetVisibilityOn();
-    d->view2DAxial->SetLinkPosition (1);
-    d->view2DAxial->SetLinkZoom (1);
+    d->view2DAxial->SetLinkPosition (0);
+    d->view2DAxial->SetLinkZoom (0);
     d->view2DAxial->SetLinkWindowLevel (0);
     d->view2DAxial->SetAboutData("v3dViewPublic plugin");
 
@@ -138,6 +199,15 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
 
     d->view2DAxial->SetRenderWindowInteractor(d->vtkWidgetAxial->GetRenderWindow()->GetInteractor());	
     d->view2DAxial->SetRenderWindow(d->vtkWidgetAxial->GetRenderWindow()); // set the interactor as well
+
+    d->slider = new QSlider(Qt::Horizontal, d->widget);
+    d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->slider->setFocusPolicy(Qt::NoFocus);
+    
+    d->observer = v3dViewPublicObserver::New();
+    d->observer->setSlider(d->slider);
+    d->view2DAxial->AddObserver(vtkViewImage2D::ViewImagePositionChangeEvent, d->observer, 0);
+    d->observer->setView ( d->view2DAxial );
 	
     QAction *axialAct = new QAction(tr("Axial"), d->widget);
     connect(axialAct, SIGNAL(triggered()), this, SLOT(switchToAxial()));
@@ -148,18 +218,36 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     QAction *sagittalAct = new QAction(tr("Sagittal"), d->widget);
     connect(sagittalAct, SIGNAL(triggered()), this, SLOT(switchToSagittal()));
     
-    QAction *vrAct = new QAction(tr("3D"), d->widget);
-    connect(vrAct, SIGNAL(triggered()), this, SLOT(switchTo3D()));
+    QAction *vrAct = new QAction(tr("VR"), d->widget);
+    connect(vrAct, SIGNAL(triggered()), this, SLOT(switchToVR()));
+
+    QAction *mprAct = new QAction(tr("MPR"), d->widget);
+    connect(mprAct, SIGNAL(triggered()), this, SLOT(switchToMPR()));
+
+    // Tools
+    QAction *zoomAct = new QAction(tr("Zoom"), d->widget);
+    connect(zoomAct, SIGNAL(triggered()), this, SLOT(onMenuZoomTriggered()));
+
+    QAction *wlAct = new QAction(tr("Window / Level"), d->widget);
+    connect(wlAct, SIGNAL(triggered()), this, SLOT(onMenuWindowLevelTriggered()));
+
+    QActionGroup *group = new QActionGroup(d->widget);
+    group->addAction(zoomAct);
+    group->addAction(wlAct);
+    wlAct->setChecked(true);
     
     d->menu = new QMenu(d->widget );
     d->menu->addAction(axialAct);
     d->menu->addAction(coronalAct);
     d->menu->addAction(sagittalAct);
-    d->menu->addAction(vrAct);	
 
-    d->slider = new QSlider(Qt::Horizontal, d->widget);
-    d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->slider->setFocusPolicy(Qt::NoFocus);
+    QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
+    tridMenu->addAction (vrAct);
+    tridMenu->addAction (mprAct);
+
+    d->menu->addSeparator();
+    d->menu->addAction(zoomAct);
+    d->menu->addAction(wlAct);
 
     d->anchorButton = new QPushButton(d->widget);
     d->anchorButton->setIcon (QIcon(":/icons/anchor.png"));
@@ -281,6 +369,7 @@ v3dViewPublic::~v3dViewPublic(void)
     //d->view3D->UnInstallInteractor();
     d->view3D->Delete();
     d->renderer3D->Delete();
+    d->observer->Delete();
 	
     delete d;
 	
@@ -836,20 +925,27 @@ void v3dViewPublic::link(dtkAbstractView *other)
         //otherView->setProperty ("Linked", "true");
 
       if (d->lastLinked)
-	d->lastLinked->AddChild ( otherView->viewAxial() );
+	  d->lastLinked->AddChild ( otherView->viewAxial() );
       else
-        d->view2DAxial->AddChild ( otherView->viewAxial() );
+          d->view2DAxial->AddChild ( otherView->viewAxial() );
 
       otherView->viewAxial()->AddChild ( d->view2DAxial );
       d->lastLinked = otherView->viewAxial();
-      
-		
+      		
       otherView->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
       otherView->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
 		
       // zoom comes first, then pan (==translation)	
       otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
       //otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
+
+      d->view2DAxial->SetLinkPosition (1);
+      d->view2DAxial->SetLinkZoom (1);
+      d->view2DAxial->SetLinkWindowLevel (1);
+      
+      this->setProperty ("PositionLinked",  "true");
+      this->setProperty ("CameraLinked",    "true");
+      this->setProperty ("WindowingLinked", "true");
     }
 }
 
@@ -866,8 +962,17 @@ void v3dViewPublic::unlink(dtkAbstractView *other)
       if (d->lastLinked==otherView->viewAxial()) {
 	if (d->linkedViews.count())
 	  d->lastLinked = dynamic_cast<v3dViewPublic *>( d->linkedViews.last() )->viewAxial();
-	else
+	else {
 	  d->lastLinked = 0;
+	  
+	  d->view2DAxial->SetLinkPosition (0);
+	  d->view2DAxial->SetLinkZoom (0);
+	  d->view2DAxial->SetLinkWindowLevel (0);
+      
+	  this->setProperty ("PositionLinked",  "false");
+	  this->setProperty ("CameraLinked",    "false");
+	  this->setProperty ("WindowingLinked", "false");
+	}
       }
     }
 }
@@ -1069,16 +1174,20 @@ void v3dViewPublic::linkPosition (dtkAbstractView *view, bool value)
       if (value) {
 
 	  vview->setProperty ("PositionLinked", "true");
+	  vview->setProperty ("CameraLinked",   "true");
 	
 	  vview->viewAxial()->SetLinkPosition ( 1 );
-	  
+	  vview->viewAxial()->SetLinkZoom ( 1 );
+
 	  vview->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
 	  vview->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
       }
       else {
 
 	  vview->setProperty ("PositionLinked", "false");
+	  vview->setProperty ("CameraLinked",   "false");
 	  vview->viewAxial()->SetLinkPosition ( 0 );
+	  vview->viewAxial()->SetLinkZoom ( 0 );
       }
   }
 }
@@ -1095,7 +1204,6 @@ void v3dViewPublic::linkWindowing (dtkAbstractView *view, bool value)
 
 	  vview->setProperty ("WindowingLinked", "true");
 	
-	  //d->view2DAxial->SetLinkWindowLevel ( 1 );
 	  vview->viewAxial()->SetLinkWindowLevel ( 1 );
 
 	  vview->viewAxial()->SetWindow    ( d->currentView->GetWindow() );
@@ -1108,7 +1216,6 @@ void v3dViewPublic::linkWindowing (dtkAbstractView *view, bool value)
 
 	  vview->setProperty ("WindowingLinked", "false");
 	  vview->viewAxial()->SetLinkWindowLevel ( 0 );
-	  //d->view2DAxial->SetLinkWindowLevel ( 0 );
       }
   }
 }
@@ -1126,10 +1233,10 @@ void v3dViewPublic::onZSliderValueChanged (int value)
         return;
 
     if( vtkViewImage2D *view = vtkViewImage2D::SafeDownCast(d->currentView) ) {
-      //d->observer->lock();
+        d->observer->lock();
 	view->SyncSetZSlice (value);
 	// view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
-	//d->observer->unlock();
+	d->observer->unlock();
     }
     
     //qApp->processEvents();
@@ -1151,9 +1258,26 @@ void v3dViewPublic::switchToCoronal(void)
     this->setProperty ("Orientation", "Coronal");
 }
 
-void v3dViewPublic::switchTo3D(void)
+void v3dViewPublic::switchToVR(void)
 {
+    this->setProperty ("3DMode",      "VR");
     this->setProperty ("Orientation", "3D");
+}
+
+void v3dViewPublic::switchToMPR(void)
+{
+    this->setProperty ("3DMode",      "MPR");
+    this->setProperty ("Orientation", "3D");
+}
+
+void v3dViewPublic::onMenuZoomTriggered (void)
+{
+    this->setProperty ("MouseInteraction", "Zooming");
+}
+
+void v3dViewPublic::onMenuWindowLevelTriggered (void)
+{
+    this->setProperty ("MouseInteraction", "Windowing");
 }
 
 // /////////////////////////////////////////////////////////////////
