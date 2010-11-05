@@ -5,7 +5,7 @@
 #include <QSettings>
 #include <QDockWidget>
 #include <QFileDialog>
-#include <QProgressDialog.h>
+#include <QProgressDialog>
 
 // dicom net 
 #include "dcmtkEchoScu.h"
@@ -832,8 +832,7 @@ void SimpleView::printResults(int sum, const char* type)
 
 void SimpleView::fillTreeStudy()
 {
-    QString patientName = ui->searchField->text();
-    patientName.append("*");
+    QString concatStudInstUID;
 
     // now extract information from datasets and build a visual list
     int sum = 0;
@@ -849,9 +848,6 @@ void SimpleView::fillTreeStudy()
         // add the root node containing the name of the DICOM NODE
         QTreeWidgetItem *topLevelItem = new QTreeWidgetItem();
         ui->treeWidget->addTopLevelItem(topLevelItem);
-        topLevelItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
-        topLevelItem->setData(1,Qt::UserRole, QPoint(0x0010,0x0010)); // tag
-        topLevelItem->setData(2,Qt::UserRole, patientName); // search value
         topLevelItem->setText(0,myNode->title().c_str());
 
         while ( resCont->isValid())
@@ -863,14 +859,22 @@ void SimpleView::fillTreeStudy()
             pItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
             pItem->setData(1,Qt::UserRole, QPoint(0x0020,0x000D)); // tag
             pItem->setData(2,Qt::UserRole, QString(resDs->getStudyInstanceUID())); // search value
-
             pItem->setText(0,resDs->findKeyValue(0x0010,0x0010)); // patient name
             ui->treeWidget->insertTopLevelItem(0,pItem);
+
+            // concatenate all studyInstUIDs belonging to this node
+            concatStudInstUID = QString(resDs->getStudyInstanceUID()) +"\\"+ concatStudInstUID;
+
             resDs = resCont->getNext();
         }
+        // now we add the list of studies to the top-level-item
+        topLevelItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
+        topLevelItem->setData(1,Qt::UserRole, QPoint(0x0020,0x0020)); // tag (studyInstanceUID)
+        topLevelItem->setData(2,Qt::UserRole, concatStudInstUID); // search value
+        topLevelItem->setExpanded(true);
+
         sum = sum + resCont->size();
         myNode = resNodeCont->getNext();
-        topLevelItem->setExpanded(true);
 
     }
 
