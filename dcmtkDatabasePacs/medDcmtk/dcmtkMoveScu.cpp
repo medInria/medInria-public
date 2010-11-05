@@ -105,6 +105,9 @@ int  dcmtkMoveScu::sendMoveRequest(const char* peerTitle, const char* peerIP, in
     // now do the real work
     cond = cmove(assoc, NULL);
 
+    // make sure that we commit full progress
+    emit progressed(100);
+
     // release association and report errors
     return releaseAssociation(cond);
 

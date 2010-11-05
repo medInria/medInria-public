@@ -869,7 +869,7 @@ void SimpleView::fillTreeStudy()
         }
         // now we add the list of studies to the top-level-item
         topLevelItem->setData(0,Qt::UserRole, resNodeCont->index()); //node index
-        topLevelItem->setData(1,Qt::UserRole, QPoint(0x0020,0x0020)); // tag (studyInstanceUID)
+        topLevelItem->setData(1,Qt::UserRole, QPoint(0x0020,0x000D)); // tag (studyInstanceUID)
         topLevelItem->setData(2,Qt::UserRole, concatStudInstUID); // search value
         topLevelItem->setExpanded(true);
 
