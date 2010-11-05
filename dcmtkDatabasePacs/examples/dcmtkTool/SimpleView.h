@@ -23,6 +23,8 @@ class LoggerFileOutput;
 class LoggerWidgetOutput;
 class LoggerWidget;
 
+class QProgressDialog;
+
 class SimpleView : public QMainWindow
 {
   Q_OBJECT
@@ -100,6 +102,8 @@ private:
   LoggerFileOutput*             m_fileOut;
   LoggerWidgetOutput*           m_widgetOut;
   LoggerWidget*                 m_loggerWidget;
+
+  QProgressDialog*              progress;
 };
 
 #endif // SimpleView_H

@@ -808,7 +808,11 @@ void dcmtkMoveScu::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
     // get context
     dcmtkMoveScu* scu = (dcmtkMoveScu*) callbackData;
     // send progress event
-    scu->emitProgressed(responseCount, responseCount + response->NumberOfRemainingSubOperations);
+    int maxImages = response->NumberOfRemainingSubOperations + response->NumberOfFailedSubOperations + response->NumberOfWarningSubOperations + response->NumberOfCompletedSubOperations;
+
+    scu->emitProgressed(responseCount, maxImages);
+
+    std::cout << responseCount << std::endl;
 
     OFCondition cond = EC_Normal;
     OFString temp_str;

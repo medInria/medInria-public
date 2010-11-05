@@ -81,6 +81,11 @@ SimpleView::SimpleView()
   connect(this->ui->peerPortEdit, SIGNAL(textChanged(QString)), this, SLOT(inputChanged()));
   connect(m_findScu,SIGNAL(finished()), this, SLOT(fillTreeStudy()));
 
+  progress = new QProgressDialog("Fetching data...", "Cancel", 0, 100);
+  progress->setWindowModality(Qt::WindowModal);
+  connect(m_moveThread,SIGNAL(progressed(int)), progress,SLOT(setValue(int)));
+  connect(progress,SIGNAL(canceled()),m_moveThread,SLOT(sendCancelRequest()));
+
 
   retrieveSettings();
   setConnectionParams();
@@ -446,10 +451,6 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
     // send the move request using the search crits
     dcmtkNode* myNode = mainNodeCont->getAtPos(nodeIndex);
     
-    QProgressDialog* progress = new QProgressDialog("Fetching data...", "Cancel", 0, 100);
-    progress->setWindowModality(Qt::WindowModal);
-    connect(m_moveThread,SIGNAL(progressed(int)), progress,SLOT(setValue(int)));
-    connect(progress,SIGNAL(canceled()),m_moveThread,SLOT(sendCancelRequest()));
     progress->show();
     m_moveThread->setConnectionParams(myNode->title().c_str(),myNode->ip().c_str(),myNode->port(),m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_moveThread->start();
