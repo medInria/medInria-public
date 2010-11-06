@@ -1779,13 +1779,6 @@ vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARREC
   COR [1][2] = 1;
   COR [2][0] = -1;
 
-  
-
-  std::cout<<"TRA : \n"<<TRA<<std::endl;
-  std::cout<<"SAG : \n"<<SAG<<std::endl;
-  std::cout<<"COR : \n"<<COR<<std::endl;
-  
-
   ShortDirectionType Torientation;
   
   switch(sliceorientation)

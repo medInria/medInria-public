@@ -789,11 +789,6 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
   COR [2][0] = -1;
 
   
-
-  std::cout<<"TRA : \n"<<TRA<<std::endl;
-  std::cout<<"SAG : \n"<<SAG<<std::endl;
-  std::cout<<"COR : \n"<<COR<<std::endl;
-  
   ShortDirectionType Torientation;
   
   switch(sliceorientation)
