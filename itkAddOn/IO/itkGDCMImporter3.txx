@@ -447,7 +447,9 @@ namespace itk
       }
     
       std::cout<<"  secondary division gives "<<mapi.size()<<" subvolumes"<<std::endl;    
-      
+
+      mapi = this->TimeSort (mapi);
+
       typename FileListMapType::iterator it2;
       for (it2 = mapi.begin(); it2 != mapi.end(); ++it2)
       {
@@ -489,7 +491,6 @@ namespace itk
 	    typename FileListMapType::value_type newpair(os.str(),(*it3).second );
 	    it2 = mapi.insert (it2, newpair);
 	  }
-	  
 	}
       }
       // We add the map of volumes in the global "database".
@@ -499,7 +500,7 @@ namespace itk
 
     std::cout<<"sorting finished "<<std::endl;
     m_IsScanned = 1;
-    
+
     this->GenerateOutputs();
   }
 
@@ -752,10 +753,10 @@ namespace itk
     for(it = map.begin(); it != map.end(); ++it)
     {
       const char *filename = (*it).second[0].c_str();
-      bool iskey = this->m_ThirdScanner.IsKey(filename);
+      bool iskey = this->m_SecondScanner.IsKey(filename);
       if( iskey )
       {
-	const char *value = this->m_ThirdScanner.GetValue(filename, gdcm::Tag(0x18,0x1060));
+	const char *value = this->m_SecondScanner.GetValue(filename, gdcm::Tag(0x18,0x1060));
 	if( value )
         {
 	  typename SortedMapType::value_type newpair(std::atof (value), (*it).second);

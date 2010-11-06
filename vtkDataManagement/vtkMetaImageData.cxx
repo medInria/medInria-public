@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkMetaImageData.cxx 1370 2009-12-01 11:59:17Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-12-01 12:59:17 +0100 (Tue, 01 Dec 2009) $
+Date:      $Date: 2009-12-01 11:59:17 +0000 (Tue, 01 Dec 2009) $
 Version:   $Revision: 1370 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -626,7 +626,85 @@ void vtkMetaImageData::SetOrientationMatrix (vtkMatrix4x4* matrix)
 
 
 
+#ifdef vtkINRIA3D_USE_ITK
 
+
+//----------------------------------------------------------------------------
+vtkMetaImageData::FloatImageType::PointType vtkMetaImageData::ExtractPARRECImageOrigin (const char* filename, ShortDirectionType direction)
+{
+
+  typedef ShortDirectionType DirectionType;
+  typedef FloatImageType::PointType PointType;
+  PointType nullorigin;
+  nullorigin[0] = nullorigin[1] = nullorigin[2] = 0.0;
+  
+#ifndef ITK_USE_REVIEW
+  std::cerr<<"cannot correct for PAR-REC angulation without ITK_USE_REVIEW to ON"<<std::endl;
+  return nullorigin;
+#else
+
+
+  itk::PhilipsRECImageIO::Pointer philipsIO = itk::PhilipsRECImageIO::New();
+
+  philipsIO->SetFileName(filename);
+  try
+  {
+    philipsIO->ReadImageInformation();
+  }
+  catch(itk::ExceptionObject &e)
+  {
+    std::cerr << e;
+    throw vtkErrorCode::CannotOpenFileError;
+  }
+
+  itk::MetaDataDictionary PARheader = philipsIO->GetMetaDataDictionary();
+  
+  typedef itk::PhilipsRECImageIO::OffCentreMidSliceType OffCentreType;
+  
+  OffCentreType offcenter;
+  
+  bool valid = itk::ExposeMetaData<OffCentreType>(PARheader, "PAR_OffCentreMidSlice", offcenter);
+  if (!valid)
+  {
+    std::cerr<<"cannot find off-center information in PAR header, no correction"<<std::endl;
+    return nullorigin;
+  }
+
+  double dimensions[3];
+  dimensions[0] = philipsIO->GetDimensions (0);
+  dimensions[1] = philipsIO->GetDimensions (1);
+  dimensions[2] = philipsIO->GetDimensions (2);
+  
+  FloatImageType::SpacingType midoffset;
+  midoffset[0] = philipsIO->GetSpacing (0) * (dimensions[0] - 1) / 2.0;
+  midoffset[1] = philipsIO->GetSpacing (1) * (dimensions[1] - 1) / 2.0;
+  midoffset[2] = philipsIO->GetSpacing (2) * (dimensions[2] - 1) / 2.0;
+  midoffset = direction * midoffset;
+  
+  PointType offcenterpoint;
+  offcenterpoint[0] = offcenter[0];
+  offcenterpoint[1] = offcenter[1];
+  offcenterpoint[2] = offcenter[2];
+  
+  ShortDirectionType AFRtoLPS;
+  AFRtoLPS.Fill (0);
+  AFRtoLPS[0][2] = 1;
+  AFRtoLPS[1][0] = 1;
+  AFRtoLPS[2][1] = 1;
+  
+  offcenterpoint = AFRtoLPS * offcenterpoint;
+  offcenterpoint -= midoffset;
+  
+  return offcenterpoint;
+  
+#endif
+  
+  
+}
+
+
+#endif
+  
 
 #ifdef vtkINRIA3D_USE_ITK
 
@@ -635,7 +713,9 @@ void vtkMetaImageData::SetOrientationMatrix (vtkMatrix4x4* matrix)
 vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrientation (const char* filename)
 {
 
-  ShortDirectionType eyedir;
+  typedef ShortDirectionType DirectionType;
+
+  DirectionType eyedir;
   eyedir.SetIdentity();
 
 #ifndef ITK_USE_REVIEW
@@ -645,20 +725,13 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
 
   
 #else
-  
-  typedef itk::Image<short,3> ImageType;
-  typedef itk::ImageFileReader<ImageType> ReaderType;
-  typedef ImageType::DirectionType DirectionType;
-  
-  ReaderType::Pointer reader = ReaderType::New();
+    
   itk::PhilipsRECImageIO::Pointer philipsIO = itk::PhilipsRECImageIO::New();
 
-  reader->SetImageIO (philipsIO);  
-  reader->SetFileName(filename);
-
+  philipsIO->SetFileName(filename);
   try
   {
-    reader->GenerateOutputInformation();
+    philipsIO->ReadImageInformation();
   }
   catch(itk::ExceptionObject &e)
   {
@@ -687,36 +760,41 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
     return eyedir;
   }
   
-  DirectionType AFRtoLPS;
+  ShortDirectionType AFRtoLPS;
   AFRtoLPS.Fill (0);
   AFRtoLPS[0][2] = 1;
   AFRtoLPS[1][0] = 1;
   AFRtoLPS[2][1] = 1;
 
-  DirectionType magicmatrix;
+  ShortDirectionType magicmatrix;
   magicmatrix.Fill (0);
   magicmatrix [0][0] = -1;
   magicmatrix [1][2] = 1;
   magicmatrix [2][1] = -1;
 
-
-  DirectionType TRA;
+  ShortDirectionType TRA;
   TRA.Fill (0);
   TRA [0][1] = 1;
   TRA [1][0] = -1;
   TRA [2][2] = -1;
-  DirectionType SAG;
+  ShortDirectionType SAG;
   SAG.Fill (0);
   SAG [0][0] = -1;
   SAG [1][2] = 1;
   SAG [2][1] = -1;
-  DirectionType COR;
+  ShortDirectionType COR;
   COR.Fill (0);
   COR [0][1] = 1;
   COR [1][2] = 1;
   COR [2][0] = -1;
 
-  DirectionType Torientation;
+  
+
+  std::cout<<"TRA : \n"<<TRA<<std::endl;
+  std::cout<<"SAG : \n"<<SAG<<std::endl;
+  std::cout<<"COR : \n"<<COR<<std::endl;
+  
+  ShortDirectionType Torientation;
   
   switch(sliceorientation)
   {
@@ -748,7 +826,7 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
   double fh = angulation[1] * vnl_math::pi / 180.0;
   double rl = angulation[2] * vnl_math::pi / 180.0;
 
-  DirectionType Tap;
+  ShortDirectionType Tap;
   Tap.Fill (0);
   Tap[0][0] = 1;
   Tap[1][1] = std::cos (ap);
@@ -756,7 +834,7 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
   Tap[2][1] = std::sin (ap);
   Tap[2][2] = std::cos (ap);
 
-  DirectionType Tfh;
+  ShortDirectionType Tfh;
   Tfh.Fill (0);
   Tfh[1][1] = 1;
   Tfh[0][0] = std::cos (fh);
@@ -764,19 +842,23 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
   Tfh[2][0] = - std::sin (fh);
   Tfh[2][2] = std::cos (fh);
 
-  DirectionType Trl;
+  ShortDirectionType Trl;
   Trl.Fill (0);
   Trl[2][2] = 1;
   Trl[0][0] = std::cos (rl);
   Trl[0][1] = - std::sin (rl);
   Trl[1][0] = std::sin (rl);
   Trl[1][1] = std::cos (rl);
-
   
-  DirectionType TR = AFRtoLPS * Trl * Tap * Tfh * magicmatrix.GetTranspose() * Torientation.GetTranspose();
+  ShortDirectionType TR = AFRtoLPS * Trl * Tap * Tfh * magicmatrix.GetTranspose() * Torientation.GetTranspose();
+  DirectionType retval;
+  retval.SetIdentity();
+  
+  for (unsigned int i=0; i<3; i++)
+    for (unsigned int j=0; j<3; j++)
+      retval[i][j] = TR[i][j];
 
-  return TR;
-
+  return retval;
   
 #endif
   
