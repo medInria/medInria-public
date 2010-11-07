@@ -2151,3 +2151,72 @@ void v3dView::setCameraClippingRange(double near, double far)
     
     camera->SetClippingRange(near, far);
 }
+
+QString v3dView::cameraProjectionMode(void)
+{
+    vtkCamera *camera = NULL;
+
+    if(this->property("Orientation") == "Axial")
+        camera = d->renderer2DAxial->GetActiveCamera();
+
+    if(this->property("Orientation") == "Coronal")
+        camera = d->renderer2DCoronal->GetActiveCamera();   
+
+    if(this->property("Orientation") == "Sagittal")
+        camera = d->renderer2DSagittal->GetActiveCamera();   
+
+    if(this->property("Orientation") == "3D")
+        camera = d->renderer3D->GetActiveCamera();   
+
+    if(!camera)
+        return QString("None");
+
+    if(camera->GetParallelProjection())
+        return QString("Parallel");
+    else
+        return QString("Perspective");
+}
+
+double v3dView::cameraViewAngle(void)
+{
+    vtkCamera *camera = NULL;
+
+    if(this->property("Orientation") == "Axial")
+        camera = d->renderer2DAxial->GetActiveCamera();
+
+    if(this->property("Orientation") == "Coronal")
+        camera = d->renderer2DCoronal->GetActiveCamera();   
+
+    if(this->property("Orientation") == "Sagittal")
+        camera = d->renderer2DSagittal->GetActiveCamera();   
+
+    if(this->property("Orientation") == "3D")
+        camera = d->renderer3D->GetActiveCamera();   
+
+    if(!camera)
+        return 0.0;
+    else
+        return camera->GetViewAngle();
+}
+
+double v3dView::cameraZoom(void)
+{
+    vtkImageView *view = NULL;
+
+    if(this->property("Orientation") == "Axial")
+        view = d->view2DAxial;
+
+    if(this->property("Orientation") == "Coronal")
+        view = d->view2DCoronal;
+
+    if(this->property("Orientation") == "Sagittal")
+        view = d->view2DSagittal;
+
+    if(this->property("Orientation") == "3D")
+        view = d->view3D;
+
+    if(!view)
+        return 1.0;
+    else
+        return view->GetZoom();
+}

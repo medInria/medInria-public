@@ -129,6 +129,10 @@ public:
     void setCameraPosition(double x, double y, double z);
     void setCameraClippingRange(double near, double far);
 
+    QString cameraProjectionMode(void);
+    double cameraViewAngle(void);
+    double cameraZoom(void);
+
 private:
     v3dViewPrivate *d;
 };
