@@ -127,7 +127,7 @@ public:
     void cameraPosition(double *coordinates);
     void cameraFocalPoint(double *coordinates);
     void setCameraPosition(double x, double y, double z);
-    void setCameraClippingRange(double near, double far);
+    void setCameraClippingRange(double nearRange, double farRange);
 
     QString cameraProjectionMode(void);
     double cameraViewAngle(void);
