@@ -61,7 +61,7 @@ SimpleView::SimpleView()
 
   connect(this->ui->actionExit, SIGNAL(triggered()), this, SLOT(quit()));
   connect(this->ui->searchField, SIGNAL(returnPressed()), this, SLOT(findStudyLevel()));
-  connect(this->ui->treeWidget, SIGNAL(itemDoubleClicked ( QTreeWidgetItem* , int )), this, SLOT(move(QTreeWidgetItem *, int)));
+  connect(this->ui->treeWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
   connect(this->ui->treeWidget, SIGNAL(itemExpanded ( QTreeWidgetItem*  )), this, SLOT(findSeriesLevel(QTreeWidgetItem *)));
   connect(this->ui->echoButton, SIGNAL(clicked()), this, SLOT(echo()));
   connect(this->ui->applySettingsButton, SIGNAL(clicked()), this, SLOT(applySettingsSlot()));
@@ -101,6 +101,15 @@ SimpleView::SimpleView()
 
   // start the threaded server
    startServer();
+
+   ui->treeWidget->setFrameStyle(QFrame::NoFrame);
+   ui->treeWidget->setAttribute(Qt::WA_MacShowFocusRect, false);
+   ui->treeWidget->setUniformRowHeights(true);
+   ui->treeWidget->setAlternatingRowColors(true);
+   ui->treeWidget->setSortingEnabled(true);
+   ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+
+   ui->treeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 };
 
@@ -452,6 +461,7 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
     dcmtkNode* myNode = mainNodeCont->getAtPos(nodeIndex);
     
     progress->show();
+    m_moveThread->wait();
     m_moveThread->setConnectionParams(myNode->title().c_str(),myNode->ip().c_str(),myNode->port(),m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
     m_moveThread->start();
 
@@ -910,3 +920,52 @@ void SimpleView::updateServerDir()
 
 //---------------------------------------------------------------------------------------------
 
+void SimpleView::updateContextMenu(const QPoint& point)
+{
+    QModelIndex index = this->ui->treeWidget->indexAt(point);
+
+    if(!index.isValid())
+        return;
+
+    QMenu menu(this);
+    menu.addAction("Import", this, SLOT(moveSelectedItems()));
+    menu.exec(ui->treeWidget->mapToGlobal(point));
+}
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::moveSelectedItems()
+{
+    QList<QTreeWidgetItem*> itemList = ui->treeWidget->selectedItems();
+
+    for (int i = 0; i < itemList.size(); ++i) 
+    {
+        queuedMove(itemList.at(i));
+    }
+}
+
+
+//---------------------------------------------------------------------------------------------
+
+void SimpleView::queuedMove(QTreeWidgetItem* item)
+{
+    dcmtkMoveScu* moveThread = new dcmtkMoveScu();
+    dcmtkContainer<dcmtkNode*>* mainNodeCont =  m_findScu->getNodeContainer();
+
+    // retrieve data
+    int nodeIndex = item->data(0,Qt::UserRole).toInt();
+    QPoint tag = item->data(1,Qt::UserRole).toPoint();
+    QString searchStr = item->data(2,Qt::UserRole).toString();
+
+    // send the move request using the search crits
+    dcmtkNode* myNode = mainNodeCont->getAtPos(nodeIndex);
+    connect(moveThread,SIGNAL(progressed(int)), progress,SLOT(setValue(int)));
+    connect(progress,SIGNAL(canceled()),moveThread,SLOT(sendCancelRequest()));
+    progress->show();
+
+    moveThread->setConnectionParams(myNode->title().c_str(),myNode->ip().c_str(),myNode->port(),m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+    moveThread->addRequestToQueue(tag.x(), tag.y(), searchStr.toLatin1());
+    moveThread->start();
+}
+
+//---------------------------------------------------------------------------------------------

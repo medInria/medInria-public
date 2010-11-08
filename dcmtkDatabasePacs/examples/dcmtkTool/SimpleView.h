@@ -66,6 +66,9 @@ protected slots:
   void fillTreeStudy();
   void setArchiveDirectory();
   void updateServerDir();
+  void updateContextMenu(const QPoint& point);
+  void moveSelectedItems();
+  void queuedMove(QTreeWidgetItem* item);
 
 
 private:

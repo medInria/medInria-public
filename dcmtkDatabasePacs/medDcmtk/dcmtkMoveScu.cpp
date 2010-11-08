@@ -17,6 +17,8 @@
 #include "dcmtk/dcmdata/dcdicent.h"
 #include "dcmtk/dcmdata/dcostrmz.h"   /* for dcmZlibCompressionLevel */
 
+
+#include "dcmtkKey.h"
 #include "dcmtkLogger.h"
 
 //---------------------------------------------------------------------------------------------
@@ -812,8 +814,6 @@ void dcmtkMoveScu::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
 
     scu->emitProgressed(responseCount, maxImages);
 
-    std::cout << responseCount << std::endl;
-
     OFCondition cond = EC_Normal;
     OFString temp_str;
     dcmtkLogger::infoStream() << "Move Response " << responseCount << ":"; 
@@ -891,7 +891,56 @@ void dcmtkMoveScu::skipWritingFiles( bool flag )
 
 void dcmtkMoveScu::run()
 {
-    this->sendMoveRequest();
+    //this->sendMoveRequest();
+    performQueuedMoveRequests();
+}
+
+//---------------------------------------------------------------------------------------------
+
+bool dcmtkMoveScu::addRequestToQueue( int group, int elem, const char* query )
+{
+    dcmtkKey* key = new dcmtkKey;
+    key->elem = elem;
+    key->group = group;
+    key->value = std::string(query);
+
+    m_queuedKeys.add(key);
+
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkMoveScu::performQueuedMoveRequests()
+{
+    dcmtkKey* key = m_queuedKeys.getFirst();
+    while(m_queuedKeys.isValid())
+    {
+        this->clearAllQueryAttributes();
+
+        switch(key->elem)
+        {
+        case 0x0018:
+            this->setQueryLevel(dcmtkMoveScu::IMAGE);
+            break;
+
+        case 0x000E:
+            this->setQueryLevel(dcmtkMoveScu::SERIES);
+            break;
+
+        case 0x000D:
+            this->setQueryLevel(dcmtkMoveScu::STUDY);
+            break;
+
+        default:
+            this->setQueryLevel(dcmtkMoveScu::STUDY);
+        }
+
+        this->addQueryAttribute(key->group, key->elem, key->value.c_str());
+        this->sendMoveRequest();
+        m_queuedKeys.getNext();
+    }
+    m_queuedKeys.clear();
 }
 
 //---------------------------------------------------------------------------------------------

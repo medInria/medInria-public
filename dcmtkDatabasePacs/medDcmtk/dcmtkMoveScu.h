@@ -12,9 +12,11 @@
 
 // fwd
 class DcmFileFormat;
+class dcmtkKey;
 
 // inc
 #include "dcmtkBaseScu.h"
+#include "dcmtkContainer.h"
 
 
     /**
@@ -96,6 +98,22 @@ public:
     * @return   void
     */
     void skipWritingFiles(bool flag);
+
+
+    /**
+    * addRequestToQueue - build a list of requests that can be processed in a queue
+    * @params: int elem
+    * @params: int group
+    * @params: const char * query
+    * @return   bool
+    */
+    bool addRequestToQueue(int group, int elem, const char* query);
+
+    /**
+    * performQueuedMoveRequests - execute all queued requests
+    * @return   void
+    */
+    void performQueuedMoveRequests();
 
 
 protected:
@@ -219,6 +237,8 @@ private:
     DcmFileFormat*      m_dcmff;
     T_ASC_Association*  m_assoc;
     T_ASC_PresentationContextID presId;
+
+    dcmtkContainer<dcmtkKey*> m_queuedKeys;
 
 };
 
