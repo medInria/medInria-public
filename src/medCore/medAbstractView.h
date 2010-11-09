@@ -41,6 +41,21 @@ public:
     virtual void setColorLookupTable(QList<double>scalars,QList<QColor>colors);
 
     virtual QWidget *receiverWidget(void);
+
+signals:
+    void closing       (void);
+    void becomeDaddy   (bool);
+    void syncPosition  (bool);
+    void syncCamera    (bool);
+    void syncWindowing (bool);
+    void reg           (bool);
+
+public slots:
+    virtual void linkPosition  (dtkAbstractView *view, bool value);
+    virtual void linkCamera    (dtkAbstractView *view, bool value);
+    virtual void linkWindowing (dtkAbstractView *view, bool value);
+    
+    
 };
 
 #endif

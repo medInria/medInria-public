@@ -50,6 +50,8 @@ public:
     medClutEditor * transFun;
 
     QStackedWidget *stack;
+
+    QMutex mutex;
   
     QHash<int, medViewerAreaStack *> view_stacks;
 

@@ -45,14 +45,19 @@ public:
     int count (void);
 
 signals:
-    void linkwl (dtkAbstractView *view, bool value);
+    void linkPosition  (dtkAbstractView *view, bool value);
+    void linkCamera    (dtkAbstractView *view, bool value);
+    void linkWindowing (dtkAbstractView *view, bool value);
+    
     void showInfo(QObject*,const QString&,unsigned int timeout);
     void showError(QObject*,const QString&,unsigned int timeout);
+    
 public slots:
-    void onViewDaddy   (bool);
-    void onViewSync    (bool);
-    void onViewSyncWL  (bool);
-	void onViewReg     (bool);
+    void onViewDaddy         (bool);
+    void onViewSyncPosition  (bool);
+    void onViewSyncCamera    (bool);
+    void onViewSyncWindowing (bool);
+    void onViewReg           (bool);
 
 private:
     medViewPoolPrivate *d;
