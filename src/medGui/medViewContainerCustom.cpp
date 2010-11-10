@@ -115,8 +115,7 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
     
     this->synchronize_2 (view);
 
-    connect (view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
-    connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));
+    connect (view, SIGNAL (closing()), this, SLOT (onViewClosed()));
 }
 
 void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
@@ -126,6 +125,7 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
     }
     else { // top level medViewContainerCustom
         d->pool->appendView (view);
+	connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     }
 }
 
@@ -136,6 +136,7 @@ void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
     }
     else { // top level medViewContainerCustom
         d->pool->removeView (view);
+	disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     }
 }
 
@@ -145,8 +146,7 @@ void medViewContainerCustom::onViewClosed (void)
         d->layout->removeWidget (d->view->widget());
 	d->view->widget()->hide();
 	this->desynchronize_2 (d->view);
-	disconnect (d->view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
-	disconnect (d->view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+	disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosed()));
 	d->view = NULL;
     }
 }
