@@ -12,11 +12,20 @@
 
 // fwd
 class DcmFileFormat;
-class dcmtkKey;
 
 // inc
 #include "dcmtkBaseScu.h"
 #include "dcmtkContainer.h"
+#include "dcmtkKey.h"
+#include "dcmtkNode.h"
+
+class MoveCommandItem
+{
+public:
+    dcmtkKey  queryKey;
+    dcmtkNode moveSource;
+    dcmtkNode moveTarget;
+};
 
 
     /**
@@ -107,13 +116,13 @@ public:
     * @params: const char * query
     * @return   bool
     */
-    bool addRequestToQueue(int group, int elem, const char* query);
+    bool addRequestToQueue(int group, int elem, const char* query, dcmtkNode& moveSource, dcmtkNode& moveTarget );
 
     /**
     * performQueuedMoveRequests - execute all queued requests
-    * @return   void
+    * @return   number of errors
     */
-    void performQueuedMoveRequests();
+    int performQueuedMoveRequests();
 
 
 protected:
@@ -238,7 +247,7 @@ private:
     T_ASC_Association*  m_assoc;
     T_ASC_PresentationContextID presId;
 
-    dcmtkContainer<dcmtkKey*> m_queuedKeys;
+    dcmtkContainer<MoveCommandItem*> m_cmdContainer;
 
 };
 

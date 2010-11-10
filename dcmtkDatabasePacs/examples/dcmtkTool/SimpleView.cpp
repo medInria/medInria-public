@@ -86,7 +86,6 @@ SimpleView::SimpleView()
   connect(m_moveThread,SIGNAL(progressed(int)), progress,SLOT(setValue(int)));
   connect(progress,SIGNAL(canceled()),m_moveThread,SLOT(sendCancelRequest()));
 
-
   retrieveSettings();
   setConnectionParams();
 
@@ -97,7 +96,6 @@ SimpleView::SimpleView()
   QDockWidget* loggerDock = new QDockWidget(this);
   loggerDock->setWidget(m_loggerWidget);
   this->addDockWidget(Qt::BottomDockWidgetArea, loggerDock);
-  
 
   // start the threaded server
    startServer();
@@ -172,8 +170,8 @@ void SimpleView::changeLogLevel(int index)
 void SimpleView::setConnectionParams()
 {
 
-    m_ourTitle  = ui->ourTitleEdit->text().toStdString();
-    m_ourIP     = ui->ourIPEdit->text().toStdString();
+    m_ourNode.setTitle(ui->ourTitleEdit->text().toStdString());
+    m_ourNode.setIp(ui->ourIPEdit->text().toStdString());
     m_peerTitle = ui->peerTitleEdit->text().toStdString();
     m_peerIP    = ui->peerIPEdit->text().toStdString();
     
@@ -188,7 +186,7 @@ void SimpleView::setConnectionParams()
 
     try
     {
-        m_ourPort   = ui->ourPortEdit->text().toInt();
+        m_ourNode.setPort(ui->ourPortEdit->text().toInt());
     }
     catch(...)
     {
@@ -196,8 +194,8 @@ void SimpleView::setConnectionParams()
     }
 
 
-    m_echoScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
-    m_serverThread->setConnectionParams(m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+    m_echoScu->setConnectionParams(m_peerTitle.c_str(), m_peerIP.c_str(), m_peerPort, m_ourNode.title().c_str(),m_ourNode.ip().c_str(),m_ourNode.port());
+    m_serverThread->setConnectionParams(m_ourNode.title().c_str(),m_ourNode.ip().c_str(),m_ourNode.port());
 
 }
 
@@ -239,11 +237,11 @@ void SimpleView::findStudyLevel()
         connect(m_findScu,SIGNAL(progressed(int)), progress,SLOT(setValue(int)));
         connect(progress,SIGNAL(canceled()),m_findScu,SLOT(sendCancelRequest()));
         progress->show();
-        progress->repaint();
 
         // do the work
         m_findScu->wait();
-        m_findScu->setConnectionParams(selNode->title().c_str(),selNode->ip().c_str(),selNode->port(),m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+        m_findScu->setConnectionParams(selNode->title().c_str(),selNode->ip().c_str(),selNode->port(),
+                                       m_ourNode.title().c_str(),m_ourNode.ip().c_str(),m_ourNode.port());
         m_findScu->start();
         
         selNode = selectedNodes->getNext();
@@ -268,7 +266,7 @@ void SimpleView::findSeriesLevel(QTreeWidgetItem * item)
         }
     } else return;
 
-    // check if the item alread has children (don't query again)
+    // check if the item already has children (don't query again)
     if (item->child(0) != NULL) return;
 
     // retrieve data
@@ -300,7 +298,7 @@ void SimpleView::findSeriesLevel(QTreeWidgetItem * item)
     findScu->addQueryAttribute(0x0020,0x0052,"\0"); // frame of reference
 
     // do the work
-    findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+    findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourNode.title().c_str(),m_ourNode.ip().c_str(),m_ourNode.port());
 
     // now extract information from datasets and build a visual list
     int sum = 0;
@@ -379,7 +377,7 @@ void SimpleView::findImageLevel(QTreeWidgetItem * item)
     findScu->addQueryAttribute(0x0028,0x0008,"\0"); // number of frames
     
     // do the work
-    findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+    findScu->sendFindRequest(cdata.title.c_str(),cdata.ip.c_str(),cdata.port,m_ourNode.title().c_str(),m_ourNode.ip().c_str(),m_ourNode.port());
 
     // now extract information from datasets and build a visual list
     int sum = 0;
@@ -462,7 +460,7 @@ void SimpleView::move(QTreeWidgetItem * item, int column)
     
     progress->show();
     m_moveThread->wait();
-    m_moveThread->setConnectionParams(myNode->title().c_str(),myNode->ip().c_str(),myNode->port(),m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+    m_moveThread->setConnectionParams(myNode->title().c_str(),myNode->ip().c_str(),myNode->port(),m_ourNode.title().c_str(),m_ourNode.ip().c_str(),m_ourNode.port());
     m_moveThread->start();
 
 }
@@ -491,7 +489,7 @@ void SimpleView::store()
     // set the current node params first
     dcmtkConnectionData* cb = &(m_nodes.at(ui->sendToNodeCB->currentIndex()));
 
-    m_sendThread->setConnectionParams(cb->title.c_str(), cb->ip.c_str(), cb->port, m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
+    m_sendThread->setConnectionParams(cb->title.c_str(), cb->ip.c_str(), cb->port, m_ourNode.title().c_str(),m_ourNode.ip().c_str(),m_ourNode.port());
     
     QDir testDir;
     testDir.setPath(ui->directoryLE->text());
@@ -938,10 +936,12 @@ void SimpleView::moveSelectedItems()
 {
     QList<QTreeWidgetItem*> itemList = ui->treeWidget->selectedItems();
 
-    for (int i = 0; i < itemList.size(); ++i) 
+    for (int i = 0; i < itemList.size(); i++) 
     {
         queuedMove(itemList.at(i));
     }
+    m_moveThread->start();
+
 }
 
 
@@ -949,7 +949,6 @@ void SimpleView::moveSelectedItems()
 
 void SimpleView::queuedMove(QTreeWidgetItem* item)
 {
-    dcmtkMoveScu* moveThread = new dcmtkMoveScu();
     dcmtkContainer<dcmtkNode*>* mainNodeCont =  m_findScu->getNodeContainer();
 
     // retrieve data
@@ -959,13 +958,14 @@ void SimpleView::queuedMove(QTreeWidgetItem* item)
 
     // send the move request using the search crits
     dcmtkNode* myNode = mainNodeCont->getAtPos(nodeIndex);
-    connect(moveThread,SIGNAL(progressed(int)), progress,SLOT(setValue(int)));
-    connect(progress,SIGNAL(canceled()),moveThread,SLOT(sendCancelRequest()));
-    progress->show();
 
-    moveThread->setConnectionParams(myNode->title().c_str(),myNode->ip().c_str(),myNode->port(),m_ourTitle.c_str(), m_ourIP.c_str(), m_ourPort);
-    moveThread->addRequestToQueue(tag.x(), tag.y(), searchStr.toLatin1());
-    moveThread->start();
+    m_moveThread->setConnectionParams(myNode->title().c_str(),myNode->ip().c_str(),myNode->port(),
+                                      m_ourNode.title().c_str(),m_ourNode.ip().c_str(),m_ourNode.port());
+    dcmtkNode peerNode(*myNode);
+    dcmtkNode moveTarget(m_ourNode);
+
+    m_moveThread->addRequestToQueue(tag.x(), tag.y(), searchStr.toLatin1(), peerNode, moveTarget);
+
 }
 
 //---------------------------------------------------------------------------------------------

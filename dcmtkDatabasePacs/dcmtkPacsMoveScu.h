@@ -4,6 +4,8 @@
 #include "dcmtkMoveScu.h"
 #include <medPacs/medAbstractPacsMoveScu.h>
 
+class medAbstractPacsNode;
+
 class dcmtkPacsMoveScu : public medAbstractPacsMoveScu
 {
     Q_OBJECT
@@ -27,6 +29,10 @@ public:
     void useBuildInStoreSCP(bool flag);
 
     bool setStorageDirectory(const char* directory);
+
+    bool addRequestToQueue(int group, int elem, const char* query, medAbstractPacsNode& moveSource, medAbstractPacsNode& moveTarget);
+
+    int performQueuedMoveRequests();
 
 private:
     dcmtkMoveScu scu;

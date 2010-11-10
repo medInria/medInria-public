@@ -897,28 +897,34 @@ void dcmtkMoveScu::run()
 
 //---------------------------------------------------------------------------------------------
 
-bool dcmtkMoveScu::addRequestToQueue( int group, int elem, const char* query )
+bool dcmtkMoveScu::addRequestToQueue( int group, int elem, const char* query, dcmtkNode& moveSource, dcmtkNode& moveTarget )
 {
-    dcmtkKey* key = new dcmtkKey;
-    key->elem = elem;
-    key->group = group;
-    key->value = std::string(query);
+    dcmtkKey key;
+    key.elem = elem;
+    key.group = group;
+    key.value = std::string(query);
 
-    m_queuedKeys.add(key);
+    MoveCommandItem* item = new MoveCommandItem;
+    item->queryKey = key;
+    item->moveSource = moveSource;
+    item->moveTarget = moveTarget;
+    
+    m_cmdContainer.add(item);
 
     return true;
 }
 
 //---------------------------------------------------------------------------------------------
 
-void dcmtkMoveScu::performQueuedMoveRequests()
+int dcmtkMoveScu::performQueuedMoveRequests()
 {
-    dcmtkKey* key = m_queuedKeys.getFirst();
-    while(m_queuedKeys.isValid())
+    int errors = 0;
+    MoveCommandItem* item = m_cmdContainer.getFirst();
+    while(m_cmdContainer.isValid())
     {
         this->clearAllQueryAttributes();
 
-        switch(key->elem)
+        switch(item->queryKey.elem)
         {
         case 0x0018:
             this->setQueryLevel(dcmtkMoveScu::IMAGE);
@@ -936,11 +942,13 @@ void dcmtkMoveScu::performQueuedMoveRequests()
             this->setQueryLevel(dcmtkMoveScu::STUDY);
         }
 
-        this->addQueryAttribute(key->group, key->elem, key->value.c_str());
-        this->sendMoveRequest();
-        m_queuedKeys.getNext();
+        this->addQueryAttribute(item->queryKey.group, item->queryKey.elem, item->queryKey.value.c_str());
+        errors += this->sendMoveRequest(item->moveSource.title().c_str(),item->moveSource.ip().c_str(),item->moveSource.port(),
+                              item->moveTarget.title().c_str(),item->moveTarget.ip().c_str(),item->moveTarget.port());
+        item = m_cmdContainer.getNext();
     }
-    m_queuedKeys.clear();
+    m_cmdContainer.clear();
+    return errors;
 }
 
 //---------------------------------------------------------------------------------------------

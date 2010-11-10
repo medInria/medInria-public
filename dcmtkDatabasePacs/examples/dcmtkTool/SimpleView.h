@@ -96,10 +96,10 @@ private:
   std::vector<dcmtkConnectionData> m_nodes;
 
   std::string m_peerIP, m_peerTitle;
-  std::string m_ourIP, m_ourTitle;
   std::string m_patientName;
+  int m_peerPort;
 
-  int m_peerPort, m_ourPort;
+  dcmtkNode                     m_ourNode;
 
   LoggerConsoleOutput*          m_shellOut;
   LoggerFileOutput*             m_fileOut;
