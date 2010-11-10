@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 15:18:12 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 11:04:54 2010 (+0100)
+ * Last-Updated: Wed Nov 10 15:28:23 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 9
+ *     Update #: 13
  */
 
 /* Commentary: 
@@ -29,6 +29,7 @@ class medToolBoxContainer;
 class medDatabaseNavigator;
 
 class medViewerAreaStack;
+class medViewerToolBoxConfiguration;
 class medViewerToolBoxDiffusion;
 
 class medClutEditor;
@@ -41,6 +42,7 @@ class medViewerAreaPrivate
 {
 public:
     medToolBoxPatient *patientToolBox;
+    medViewerToolBoxConfiguration *configurationToolBox;
     medToolBoxLayout *layoutToolBox;
     medToolBoxView *viewToolBox;
     medViewerToolBoxDiffusion *diffusionToolBox;

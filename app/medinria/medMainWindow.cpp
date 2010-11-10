@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct 14 14:34:59 2010 (+0200)
+ * Last-Updated: Wed Nov 10 15:25:37 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 500
+ *     Update #: 503
  */
 
 /* Commentary: 
@@ -171,16 +171,16 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->shiftToBrowserAreaAction, SIGNAL(triggered()), this, SLOT(switchToBrowserArea()));
     connect(d->shiftToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
 
-    medWorkspaceShifterMenu *menu = new medWorkspaceShifterMenu(this);
-    menu->addAction("Visualization");
-    menu->addAction("Registration");
-    menu->addAction("Diffusion");
+    // medWorkspaceShifterMenu *menu = new medWorkspaceShifterMenu(this);
+    // menu->addAction("Visualization");
+    // menu->addAction("Registration");
+    // menu->addAction("Diffusion");
 
-    connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onConfigurationTriggered(QAction *)));
+    // connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onConfigurationTriggered(QAction *)));
 
     d->shifter = new medWorkspaceShifter(this);
     d->shifter->addAction(d->shiftToBrowserAreaAction);
-    d->shifter->addAction(d->shiftToViewerAreaAction)->setMenu(menu);
+    d->shifter->addAction(d->shiftToViewerAreaAction); //->setMenu(menu);
 
     medStatusQuitButton *quitButton = new medStatusQuitButton(this);
 

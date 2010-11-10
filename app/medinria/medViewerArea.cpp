@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 11:04:24 2010 (+0100)
+ * Last-Updated: Wed Nov 10 15:33:44 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1035
+ *     Update #: 1054
  */
 
 /* Commentary: 
@@ -22,6 +22,7 @@
 #include "medViewerAreaStack.h"
 #include "medViewerConfiguration.h"
 #include "medViewerConfigurator.h"
+#include "medViewerToolBoxConfiguration.h"
 #include "medViewerToolBoxDiffusion.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -80,6 +81,15 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->patientToolBox = new medToolBoxPatient(this);
 
     connect(d->patientToolBox, SIGNAL(patientIndexChanged(int)), this, SLOT(switchToPatient(int)));
+
+    // -- Configuration toolbox --
+
+    d->configurationToolBox = new medViewerToolBoxConfiguration(this);
+    d->configurationToolBox->addConfiguration("Visualization");
+    d->configurationToolBox->addConfiguration("Registration");
+    d->configurationToolBox->addConfiguration("Diffusion");
+
+    connect(d->configurationToolBox, SIGNAL(configurationChanged(QString)), medViewerConfigurator::instance(), SLOT(setConfiguration(QString)));
     
     // -- Layout toolbox --
 
@@ -127,6 +137,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(320);
     d->toolbox_container->addToolBox(d->patientToolBox);
+    d->toolbox_container->addToolBox(d->configurationToolBox);
     d->toolbox_container->addToolBox(d->layoutToolBox);
     d->toolbox_container->addToolBox(d->viewToolBox);
     d->toolbox_container->addToolBox(d->diffusionToolBox);
@@ -199,16 +210,12 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     medViewerConfigurator::instance()->addConfiguration("Registration", registrationConfiguration);
 
-
-    //action for transfer function
-    QAction * transFunAction =
-      new QAction("Toggle Tranfer Function Widget", this);
-    transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier +
-				Qt::Key_L);
-    transFunAction->setCheckable( true );
-    transFunAction->setChecked( false );
-    connect(transFunAction, SIGNAL(toggled(bool)),
-	    this, SLOT(bringUpTransFun(bool)));
+    // action for transfer function
+    QAction * transFunAction = new QAction("Toggle Tranfer Function Widget", this);
+    transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_L);
+    transFunAction->setCheckable(true);
+    transFunAction->setChecked(false);
+    connect(transFunAction, SIGNAL(toggled(bool)), this, SLOT(bringUpTransFun(bool)));
 
     this->addAction(transFunAction);
 }
