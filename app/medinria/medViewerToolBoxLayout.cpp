@@ -1,4 +1,4 @@
-/* medToolBoxLayout.cpp --- 
+/* medViewerToolBoxLayout.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,16 +17,18 @@
  * 
  */
 
-#include "medLayoutChooser.h"
-#include "medToolBoxLayout.h"
-#include "medToolBoxTab.h"
 
-class medToolBoxLayoutPrivate
+#include <medGui/medToolBoxTab.h>
+#include <medGui/medLayoutChooser.h>
+
+#include "medViewerToolBoxLayout.h"
+
+class medViewerToolBoxLayoutPrivate
 {
 public:
 };
 
-medToolBoxLayout::medToolBoxLayout(QWidget *parent) : medToolBox(parent), d(new medToolBoxLayoutPrivate)
+medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxLayoutPrivate)
 {
     QWidget *customPage = new QWidget(this);
 
@@ -95,34 +97,34 @@ medToolBoxLayout::medToolBoxLayout(QWidget *parent) : medToolBox(parent), d(new 
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SIGNAL(split(int,int)));
 }
 
-medToolBoxLayout::~medToolBoxLayout(void)
+medViewerToolBoxLayout::~medViewerToolBoxLayout(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medToolBoxLayout::onButtonAClicked(void)
+void medViewerToolBoxLayout::onButtonAClicked(void)
 {
     emit presetClicked(1);
 }
 
-void medToolBoxLayout::onButtonBClicked(void)
+void medViewerToolBoxLayout::onButtonBClicked(void)
 {
     emit presetClicked(2);
 }
 
-void medToolBoxLayout::onButtonCClicked(void)
+void medViewerToolBoxLayout::onButtonCClicked(void)
 {
     emit presetClicked(3);
 }
 
-void medToolBoxLayout::onButtonDClicked(void)
+void medViewerToolBoxLayout::onButtonDClicked(void)
 {
     emit presetClicked(4);
 }
 
-void medToolBoxLayout::onButtonEClicked(void)
+void medViewerToolBoxLayout::onButtonEClicked(void)
 {
     emit presetClicked(5);
 }

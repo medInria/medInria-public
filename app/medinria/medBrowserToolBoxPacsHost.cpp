@@ -1,4 +1,4 @@
-/* medToolBoxPacsHost.cpp --- 
+/* medBrowserToolBoxPacsHost.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,11 +17,11 @@
  * 
  */
 
-#include "medToolBoxPacsHost.h"
+#include "medBrowserToolBoxPacsHost.h"
 
 #include <QtGui>
 
-class medToolBoxPacsHostPrivate
+class medBrowserToolBoxPacsHostPrivate
 {
 public:
     QLineEdit *title;
@@ -30,7 +30,7 @@ public:
     QPushButton *apply;
 };
 
-medToolBoxPacsHost::medToolBoxPacsHost(QWidget *parent) : medToolBox(parent), d(new medToolBoxPacsHostPrivate)
+medBrowserToolBoxPacsHost::medBrowserToolBoxPacsHost(QWidget *parent) : medToolBox(parent), d(new medBrowserToolBoxPacsHostPrivate)
 {
     QWidget *page = new QWidget(this);
 
@@ -53,7 +53,7 @@ medToolBoxPacsHost::medToolBoxPacsHost(QWidget *parent) : medToolBox(parent), d(
     this->readSettings();
 }
 
-medToolBoxPacsHost::~medToolBoxPacsHost(void)
+medBrowserToolBoxPacsHost::~medBrowserToolBoxPacsHost(void)
 {
     this->writeSettings();
 
@@ -62,42 +62,42 @@ medToolBoxPacsHost::~medToolBoxPacsHost(void)
     d = NULL;
 }
 
-void medToolBoxPacsHost::readSettings(void)
+void medBrowserToolBoxPacsHost::readSettings(void)
 {
     QSettings settings("inria", "medinria");
-    settings.beginGroup("medToolBoxPacsHost");
+    settings.beginGroup("medBrowserToolBoxPacsHost");
     d->title->setText(settings.value("title").toString());
     d->address->setText(settings.value("address").toString());
     d->port->setText(settings.value("port").toString());
     settings.endGroup();
 }
 
-void medToolBoxPacsHost::writeSettings(void)
+void medBrowserToolBoxPacsHost::writeSettings(void)
 {
     QSettings settings("inria", "medinria");
-    settings.beginGroup("medToolBoxPacsHost");
+    settings.beginGroup("medBrowserToolBoxPacsHost");
     settings.setValue("title", d->title->text());
     settings.setValue("address", d->address->text());
     settings.setValue("port", d->port->text());
     settings.endGroup();
 }
 
-QString medToolBoxPacsHost::title(void)
+QString medBrowserToolBoxPacsHost::title(void)
 {
     return d->title->text();
 }
 
-QString medToolBoxPacsHost::address(void)
+QString medBrowserToolBoxPacsHost::address(void)
 {
     return d->address->text();
 }
 
-QString medToolBoxPacsHost::port(void)
+QString medBrowserToolBoxPacsHost::port(void)
 {
     return d->port->text();
 }
 
-void medToolBoxPacsHost::onSettingsApplied(void)
+void medBrowserToolBoxPacsHost::onSettingsApplied(void)
 {
     this->writeSettings();
 }

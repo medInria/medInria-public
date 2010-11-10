@@ -1,4 +1,4 @@
-/* medToolBoxPacsSearch.cpp --- 
+/* medBrowserToolBoxPacsSearch.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,18 +17,18 @@
  * 
  */
 
-#include "medToolBoxPacsSearch.h"
+#include "medBrowserToolBoxPacsSearch.h"
 
 #include <QtGui>
 
-class medToolBoxPacsSearchPrivate
+class medBrowserToolBoxPacsSearchPrivate
 {
 public:
     QLineEdit *edit;
     QPushButton *button;
 };
 
-medToolBoxPacsSearch::medToolBoxPacsSearch(QWidget *parent) : medToolBox(parent), d(new medToolBoxPacsSearchPrivate)
+medBrowserToolBoxPacsSearch::medBrowserToolBoxPacsSearch(QWidget *parent) : medToolBox(parent), d(new medBrowserToolBoxPacsSearchPrivate)
 {
     QWidget *page = new QWidget(this);
 
@@ -46,14 +46,14 @@ medToolBoxPacsSearch::medToolBoxPacsSearch(QWidget *parent) : medToolBox(parent)
     connect(d->button, SIGNAL(clicked()), this, SLOT(onSearch()));
 }
 
-medToolBoxPacsSearch::~medToolBoxPacsSearch(void)
+medBrowserToolBoxPacsSearch::~medBrowserToolBoxPacsSearch(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medToolBoxPacsSearch::onSearch(void)
+void medBrowserToolBoxPacsSearch::onSearch(void)
 {
     QString name = d->edit->text();
     name.append("*");

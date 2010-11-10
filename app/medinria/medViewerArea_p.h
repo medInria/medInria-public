@@ -20,9 +20,9 @@
 #ifndef MEDVIEWERAREA_P_H
 #define MEDVIEWERAREA_P_H
 
-class medToolBoxPatient;
-class medToolBoxLayout;
-class medToolBoxView;
+class medViewerToolBoxPatient;
+class medViewerToolBoxLayout;
+class medViewerToolBoxView;
 class medToolBoxRegistration;
 class medToolBoxContainer;
 
@@ -40,9 +40,9 @@ class QStackedWidget;
 class medViewerAreaPrivate
 {
 public:
-    medToolBoxPatient *patientToolBox;
-    medToolBoxLayout *layoutToolBox;
-    medToolBoxView *viewToolBox;
+    medViewerToolBoxPatient *patientToolBox;
+    medViewerToolBoxLayout *layoutToolBox;
+    medViewerToolBoxView *viewToolBox;
     medViewerToolBoxDiffusion *diffusionToolBox;
     medToolBoxRegistration *registrationToolBox;
     medToolBoxContainer *toolbox_container;

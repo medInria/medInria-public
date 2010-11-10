@@ -1,4 +1,4 @@
-/* medToolBoxPacsNodes.h --- 
+/* medBrowserToolBoxPacsNodes.h ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,20 +17,20 @@
  * 
  */
 
-#ifndef MEDTOOLBOXPACSNODES_H
-#define MEDTOOLBOXPACSNODES_H
+#ifndef medBrowserToolBoxPacsNODES_H
+#define medBrowserToolBoxPacsNODES_H
 
-#include "medToolBox.h"
+#include <medGui/medToolBox.h>
 
-class medToolBoxPacsNodesPrivate;
+class medBrowserToolBoxPacsNodesPrivate;
 
-class MEDGUI_EXPORT medToolBoxPacsNodes : public medToolBox
+class MEDGUI_EXPORT medBrowserToolBoxPacsNodes : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxPacsNodes(QWidget *parent = 0);
-    ~medToolBoxPacsNodes(void);
+     medBrowserToolBoxPacsNodes(QWidget *parent = 0);
+    ~medBrowserToolBoxPacsNodes(void);
 
     void readSettings(void);
     void writeSettings(void);
@@ -41,7 +41,7 @@ public slots:
     void echo(void);
 
 private:
-    medToolBoxPacsNodesPrivate *d;
+    medBrowserToolBoxPacsNodesPrivate *d;
 };
 
 #endif

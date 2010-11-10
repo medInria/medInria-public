@@ -1,4 +1,4 @@
-/* medToolBoxSource.h --- 
+/* medBrowserToolBoxSource.h ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,20 +17,20 @@
  * 
  */
 
-#ifndef MEDTOOLBOXSOURCE_H
-#define MEDTOOLBOXSOURCE_H
+#ifndef MEDBROWSERTOOLBOXSOURCE_H
+#define MEDBROWSERTOOLBOXSOURCE_H
 
-#include "medToolBox.h"
+#include <medGui/medToolBox.h>
 
-class medToolBoxSourcePrivate;
+class medBrowserToolBoxSourcePrivate;
 
-class MEDGUI_EXPORT medToolBoxSource : public medToolBox
+class MEDGUI_EXPORT medBrowserToolBoxSource : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxSource(QWidget *parent = 0);
-    ~medToolBoxSource(void);
+     medBrowserToolBoxSource(QWidget *parent = 0);
+    ~medBrowserToolBoxSource(void);
 
     void setFileSystemWidget(QWidget *widget);
     
@@ -40,7 +40,7 @@ signals:
     // void findPressed();
 
 private:
-    medToolBoxSourcePrivate *d;
+    medBrowserToolBoxSourcePrivate *d;
 };
 
 #endif

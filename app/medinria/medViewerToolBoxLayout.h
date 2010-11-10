@@ -1,4 +1,4 @@
-/* medToolBoxLayout.h --- 
+/* medViewerToolBoxLayout.h ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,20 +17,20 @@
  * 
  */
 
-#ifndef MEDTOOLBOXLAYOUT_H
-#define MEDTOOLBOXLAYOUT_H
+#ifndef MEDVIEWERTOOLBOXLAYOUT_H
+#define MEDVIEWERTOOLBOXLAYOUT_H
 
-#include "medToolBox.h"
+#include <medGui/medToolBox.h>
 
-class medToolBoxLayoutPrivate;
+class medViewerToolBoxLayoutPrivate;
 
-class MEDGUI_EXPORT medToolBoxLayout : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxLayout : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxLayout(QWidget *parent = 0);
-    ~medToolBoxLayout(void);
+     medViewerToolBoxLayout(QWidget *parent = 0);
+    ~medViewerToolBoxLayout(void);
 
 signals:
     void modeChanged(int);
@@ -45,7 +45,7 @@ protected slots:
     void onButtonEClicked(void);
 
 private:
-    medToolBoxLayoutPrivate *d;
+    medViewerToolBoxLayoutPrivate *d;
 };
 
 #endif

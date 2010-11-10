@@ -35,14 +35,8 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxHeader.h
   medToolBoxTab.h
   medToolBoxContainer.h
-  medToolBoxLayout.h
-  medToolBoxPacsHost.h
-  medToolBoxPacsNodes.h
-  medToolBoxPacsSearch.h
   medToolBoxPatient.h
   medToolBoxRegistration.h
-  medToolBoxSource.h
-  medToolBoxView.h
   medViewPool.h
   medViewContainer.h
   medViewContainerCustom.h
@@ -61,14 +55,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxBody.h
   medToolBoxHeader.h
   medToolBoxTab.h
-  medToolBoxLayout.h
-  medToolBoxPacsHost.h
-  medToolBoxPacsNodes.h
-  medToolBoxPacsSearch.h
-  medToolBoxPatient.h
   medToolBoxRegistration.h
-  medToolBoxSource.h
-  medToolBoxView.h
   medViewPool.h
   medViewContainer.h
   medViewContainerCustom.h
@@ -88,14 +75,7 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxHeader.cpp
   medToolBoxTab.cpp
   medToolBoxContainer.cpp
-  medToolBoxLayout.cpp
-  medToolBoxPacsHost.cpp
-  medToolBoxPacsNodes.cpp
-  medToolBoxPacsSearch.cpp
-  medToolBoxPatient.cpp
   medToolBoxRegistration.cpp
-  medToolBoxSource.cpp
-  medToolBoxView.cpp
   medViewPool.cpp
   medViewContainer.cpp
   medViewContainerCustom.cpp
