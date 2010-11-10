@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Thu Mar  4 10:44:47 2010 (+0100)
+ * Last-Updated: Wed Nov 10 14:16:06 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 29
+ *     Update #: 30
  */
 
 /* Commentary: 
@@ -43,8 +43,8 @@ signals:
 public slots:
     void run(void);
 
-    void onMovingImageDropped (void);
-    void onFixedImageDropped (void);
+    void onMovingImageDropped(void);
+    void onFixedImageDropped(void);
     
     void onBlendModeSet(bool value);
     void onCheckerboardModeSet(bool value);
