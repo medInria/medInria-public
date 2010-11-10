@@ -1,4 +1,4 @@
-/* medToolBoxSource.cpp --- 
+/* medBrowserToolBoxSource.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,12 +17,12 @@
  * 
  */
 
-#include "medToolBoxSource.h"
-#include "medToolBoxTab.h"
+#include "medBrowserToolBoxSource.h"
+#include <medGui/medToolBoxTab.h>
 
 #include <QtGui>
 
-class medToolBoxSourcePrivate
+class medBrowserToolBoxSourcePrivate
 {
 public:
     QWidget *database_page;
@@ -32,7 +32,7 @@ public:
     QVBoxLayout *filseystem_layout;
 };
 
-medToolBoxSource::medToolBoxSource(QWidget *parent) : medToolBox(parent), d(new medToolBoxSourcePrivate)
+medBrowserToolBoxSource::medBrowserToolBoxSource(QWidget *parent) : medToolBox(parent), d(new medBrowserToolBoxSourcePrivate)
 {
     d->database_page = new QWidget(this);
     d->filesystem_page = new QWidget(this);
@@ -52,14 +52,14 @@ medToolBoxSource::medToolBoxSource(QWidget *parent) : medToolBox(parent), d(new 
     this->setWidget(tab);
 }
 
-medToolBoxSource::~medToolBoxSource(void)
+medBrowserToolBoxSource::~medBrowserToolBoxSource(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medToolBoxSource::setFileSystemWidget(QWidget *widget)
+void medBrowserToolBoxSource::setFileSystemWidget(QWidget *widget)
 {
     d->filseystem_layout->addWidget(widget);
 }

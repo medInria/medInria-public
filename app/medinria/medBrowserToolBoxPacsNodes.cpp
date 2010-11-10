@@ -1,4 +1,4 @@
-/* medToolBoxPacsNodes.cpp --- 
+/* medBrowserToolBoxPacsNodes.cpp ---
 * 
 * Author: Julien Wintz
 * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,12 +17,12 @@
 * 
 */
 
-#include "medToolBoxPacsNodes.h"
+#include "medBrowserToolBoxPacsNodes.h"
 
 #include <medPacs/medAbstractPacsFactory.h>
 #include <medPacs/medAbstractPacsEchoScu.h>
 
-class medToolBoxPacsNodesPrivate
+class medBrowserToolBoxPacsNodesPrivate
 {
 public:
     QLineEdit *title;
@@ -42,7 +42,7 @@ public:
     medAbstractPacsEchoScu *scu;
 };
 
-medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), d(new medToolBoxPacsNodesPrivate)
+medBrowserToolBoxPacsNodes::medBrowserToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), d(new medBrowserToolBoxPacsNodesPrivate)
 {
     QWidget *page = new QWidget(this);
 
@@ -83,7 +83,7 @@ medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), 
     this->readSettings();
 }
 
-medToolBoxPacsNodes::~medToolBoxPacsNodes(void)
+medBrowserToolBoxPacsNodes::~medBrowserToolBoxPacsNodes(void)
 {
     this->writeSettings();
     if(d->scu) delete d->scu;
@@ -92,7 +92,7 @@ medToolBoxPacsNodes::~medToolBoxPacsNodes(void)
     d = NULL;
 }
 
-void medToolBoxPacsNodes::readSettings(void)
+void medBrowserToolBoxPacsNodes::readSettings(void)
 {
     QList<QVariant> nodes;
 
@@ -104,7 +104,7 @@ void medToolBoxPacsNodes::readSettings(void)
     d->host_port = settings.value("port").toString();
     settings.endGroup();
 
-    settings.beginGroup("medToolBoxPacsNodes");
+    settings.beginGroup("medBrowserToolBoxPacsNodes");
     nodes = settings.value("nodes").toList();
     settings.endGroup();
 
@@ -123,7 +123,7 @@ void medToolBoxPacsNodes::readSettings(void)
     }
 }
 
-void medToolBoxPacsNodes::writeSettings(void)
+void medBrowserToolBoxPacsNodes::writeSettings(void)
 {
     QList<QVariant> nodes;
 
@@ -137,12 +137,12 @@ void medToolBoxPacsNodes::writeSettings(void)
     }
 
     QSettings settings("inria", "medinria");
-    settings.beginGroup("medToolBoxPacsNodes");
+    settings.beginGroup("medBrowserToolBoxPacsNodes");
     settings.setValue("nodes", nodes);
     settings.endGroup();
 }
 
-void medToolBoxPacsNodes::addNode(void)
+void medBrowserToolBoxPacsNodes::addNode(void)
 {
     int row = d->table->rowCount(); d->table->insertRow(row);
 
@@ -153,14 +153,14 @@ void medToolBoxPacsNodes::addNode(void)
     this->writeSettings();
 }
 
-void medToolBoxPacsNodes::remNode(void)
+void medBrowserToolBoxPacsNodes::remNode(void)
 {
     d->table->removeRow(d->table->currentRow());
 
     this->writeSettings();
 }
 
-void medToolBoxPacsNodes::echo(void)
+void medBrowserToolBoxPacsNodes::echo(void)
 {
      this->readSettings();
 

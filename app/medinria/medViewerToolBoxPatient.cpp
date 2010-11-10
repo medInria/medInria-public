@@ -1,4 +1,4 @@
-/* medToolBoxPatient.cpp --- 
+/* medViewerToolBoxPatient.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,19 +17,19 @@
  * 
  */
 
-#include "medToolBoxPatient.h"
+#include "medViewerToolBoxPatient.h"
 
 #include <QtGui>
 
 #include <medCore/medDataIndex.h>
 
-class medToolBoxPatientPrivate
+class medViewerToolBoxPatientPrivate
 {
 public:
     QComboBox *combo;
 };
 
-medToolBoxPatient::medToolBoxPatient(QWidget *parent) : medToolBox(parent), d(new medToolBoxPatientPrivate)
+medViewerToolBoxPatient::medViewerToolBoxPatient(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxPatientPrivate)
 {
     QWidget *central = new QWidget(this);
 
@@ -45,7 +45,7 @@ medToolBoxPatient::medToolBoxPatient(QWidget *parent) : medToolBox(parent), d(ne
     connect(d->combo, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentIndexChanged(int)));
 }
 
-medToolBoxPatient::~medToolBoxPatient(void)
+medViewerToolBoxPatient::~medViewerToolBoxPatient(void)
 {
     delete d;
 
@@ -58,7 +58,7 @@ medToolBoxPatient::~medToolBoxPatient(void)
  *  item. A non persistent id is assigned to the generate item.
  */
 
-void medToolBoxPatient::addItem(const QString& item)
+void medViewerToolBoxPatient::addItem(const QString& item)
 {
     static int data = 99999;
 
@@ -71,7 +71,7 @@ void medToolBoxPatient::addItem(const QString& item)
  *  item. \param data corresponds to the patient's database id.
  */
 
-void medToolBoxPatient::addItem(const QString& item, const QVariant& data)
+void medViewerToolBoxPatient::addItem(const QString& item, const QVariant& data)
 {
     d->combo->addItem(item, data);
 }
@@ -81,7 +81,7 @@ void medToolBoxPatient::addItem(const QString& item, const QVariant& data)
  * 
  */
 
-void medToolBoxPatient::clear(void)
+void medViewerToolBoxPatient::clear(void)
 {
     d->combo->clear();
 }
@@ -92,7 +92,7 @@ void medToolBoxPatient::clear(void)
  *  in the combo box, that is not necessarily the same.
  */
 
-int medToolBoxPatient::patientIndex(void)
+int medViewerToolBoxPatient::patientIndex(void)
 {
     return d->combo->itemData(d->combo->currentIndex()).toInt();
 }
@@ -103,7 +103,7 @@ int medToolBoxPatient::patientIndex(void)
  *  in the combo box, that is not necessarily the same.
  */
 
-int medToolBoxPatient::patientIndex(QString patient)
+int medViewerToolBoxPatient::patientIndex(QString patient)
 {
     return d->combo->itemData(d->combo->findText(patient)).toInt();
 }
@@ -113,7 +113,7 @@ int medToolBoxPatient::patientIndex(QString patient)
  *  \param patientId is the index of a patient in the database.
  */
 
-void medToolBoxPatient::setPatientIndex(int patientId)
+void medViewerToolBoxPatient::setPatientIndex(int patientId)
 {
     d->combo->setCurrentIndex(d->combo->findData(patientId));
 }
@@ -124,7 +124,7 @@ void medToolBoxPatient::setPatientIndex(int patientId)
  * \param index is the index of a data in the database.
  */
 
-void medToolBoxPatient::setPatientIndex(const medDataIndex& index)
+void medViewerToolBoxPatient::setPatientIndex(const medDataIndex& index)
 {
     d->combo->setCurrentIndex(d->combo->findData(index.patientId()));
 }
@@ -135,7 +135,7 @@ void medToolBoxPatient::setPatientIndex(const medDataIndex& index)
  *  the newly displayed patient in the database.
  */
 
-void medToolBoxPatient::onCurrentIndexChanged(int index)
+void medViewerToolBoxPatient::onCurrentIndexChanged(int index)
 {
     emit patientIndexChanged(d->combo->itemData(index).toInt());
 }

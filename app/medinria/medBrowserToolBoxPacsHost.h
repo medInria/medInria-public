@@ -1,4 +1,4 @@
-/* medToolBoxPacsHost.h --- 
+/* medBrowserToolBoxPacsHost.h ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,20 +17,20 @@
  * 
  */
 
-#ifndef MEDTOOLBOXPACSHOST_H
-#define MEDTOOLBOXPACSHOST_H
+#ifndef MEDBROWSERTOOLBOXPACSHOST_H
+#define MEDBROWSERTOOLBOXPACSHOST_H
 
-#include "medToolBox.h"
+#include <medGui/medToolBox.h>
 
-class medToolBoxPacsHostPrivate;
+class medBrowserToolBoxPacsHostPrivate;
 
-class MEDGUI_EXPORT medToolBoxPacsHost : public medToolBox
+class MEDGUI_EXPORT medBrowserToolBoxPacsHost : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxPacsHost(QWidget *parent = 0);
-    ~medToolBoxPacsHost(void);
+     medBrowserToolBoxPacsHost(QWidget *parent = 0);
+    ~medBrowserToolBoxPacsHost(void);
 
     void readSettings(void);
     void writeSettings(void);
@@ -43,7 +43,7 @@ protected slots:
     void onSettingsApplied(void);
 
 private:
-    medToolBoxPacsHostPrivate *d;
+    medBrowserToolBoxPacsHostPrivate *d;
 };
 
 #endif

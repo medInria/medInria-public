@@ -23,10 +23,10 @@
 class medToolBoxContainer;
 
 class medBrowserToolBoxJobs;
-class medToolBoxSource;
-class medToolBoxPacsHost;
-class medToolBoxPacsNodes;
-class medToolBoxPacsSearch;
+class medBrowserToolBoxSource;
+class medBrowserToolBoxPacsHost;
+class medBrowserToolBoxPacsNodes;
+class medBrowserToolBoxPacsSearch;
 
 class medDatabasePreview;
 class medDatabaseModel;
@@ -46,10 +46,10 @@ public:
     medToolBoxContainer *toolbox_container;
 
     medBrowserToolBoxJobs *toolbox_jobs;
-    medToolBoxSource *toolbox_source;
-    medToolBoxPacsHost *toolbox_pacs_host;
-    medToolBoxPacsNodes *toolbox_pacs_nodes;
-    medToolBoxPacsSearch *toolbox_pacs_search;
+    medBrowserToolBoxSource *toolbox_source;
+    medBrowserToolBoxPacsHost *toolbox_pacs_host;
+    medBrowserToolBoxPacsNodes *toolbox_pacs_nodes;
+    medBrowserToolBoxPacsSearch *toolbox_pacs_search;
 
     medDatabasePreview *preview;
     medDatabaseModel *model;

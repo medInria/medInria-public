@@ -24,6 +24,9 @@
 #include "medViewerConfigurator.h"
 #include "medViewerToolBoxConfiguration.h"
 #include "medViewerToolBoxDiffusion.h"
+#include "medViewerToolBoxLayout.h"
+#include "medViewerToolBoxPatient.h"
+#include "medViewerToolBoxView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -48,15 +51,13 @@
 #include <medGui/medClutEditor.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
-#include <medGui/medToolBoxLayout.h>
-#include <medGui/medToolBoxPatient.h>
 #include <medGui/medToolBoxRegistration.h>
-#include <medGui/medToolBoxView.h>
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerCustom.h>
 #include <medGui/medViewContainerMulti.h>
 #include <medGui/medViewContainerSingle.h>
 #include <medGui/medViewPool.h>
+
 
 #include <QtGui>
 #include <QtSql>
@@ -78,7 +79,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // -- Patient toolbox --
 
-    d->patientToolBox = new medToolBoxPatient(this);
+    d->patientToolBox = new medViewerToolBoxPatient(this);
 
     connect(d->patientToolBox, SIGNAL(patientIndexChanged(int)), this, SLOT(switchToPatient(int)));
 
@@ -93,7 +94,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     
     // -- Layout toolbox --
 
-    d->layoutToolBox = new medToolBoxLayout(this);
+    d->layoutToolBox = new medViewerToolBoxLayout(this);
 
     connect(d->layoutToolBox, SIGNAL(modeChanged(int)), this, SLOT(switchToContainer(int)));
     connect(d->layoutToolBox, SIGNAL(split(int, int)), this, SLOT(split(int, int)));
@@ -101,7 +102,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // -- View toolbox --
     
-    d->viewToolBox = new medToolBoxView(this);
+    d->viewToolBox = new medViewerToolBoxView(this);
 
     connect(d->viewToolBox, SIGNAL(foregroundLookupTableChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
     // connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));

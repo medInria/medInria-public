@@ -1,4 +1,4 @@
-/* medToolBoxPatient.h --- 
+/* medViewerToolBoxPatient.h ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,21 +17,21 @@
  * 
  */
 
-#ifndef MEDTOOLBOXPATIENT_H
-#define MEDTOOLBOXPATIENT_H
+#ifndef MEDVIEWERTOOLBOXPATIENT_H
+#define MEDVIEWERTOOLBOXPATIENT_H
 
-#include "medToolBox.h"
+#include <medGui/medToolBox.h>
 
 class medDataIndex;
-class medToolBoxPatientPrivate;
+class medViewerToolBoxPatientPrivate;
 
-class MEDGUI_EXPORT medToolBoxPatient : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxPatient : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxPatient(QWidget *parent = 0);
-    ~medToolBoxPatient(void);
+     medViewerToolBoxPatient(QWidget *parent = 0);
+    ~medViewerToolBoxPatient(void);
 
     void addItem(const QString& item);
     void addItem(const QString& item, const QVariant& data);
@@ -52,7 +52,7 @@ protected slots:
     void onCurrentIndexChanged(int);
 
 private:
-    medToolBoxPatientPrivate *d;
+    medViewerToolBoxPatientPrivate *d;
 };
 
 #endif

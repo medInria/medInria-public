@@ -1,4 +1,4 @@
-/* medToolBoxView.h --- 
+/* medViewerToolBoxView.h ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,21 +17,21 @@
  * 
  */
 
-#ifndef MEDTOOLBOXVIEW_H
-#define MEDTOOLBOXVIEW_H
+#ifndef MEDVIEWERTOOLBOXVIEW_H
+#define MEDVIEWERTOOLBOXVIEW_H
 
-#include "medToolBox.h"
+#include <medGui/medToolBox.h>
 
 class dtkAbstractView;
-class medToolBoxViewPrivate;
+class medViewerToolBoxViewPrivate;
 
-class MEDGUI_EXPORT medToolBoxView : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxView : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxView(QWidget *parent = 0);
-    ~medToolBoxView(void);
+     medViewerToolBoxView(QWidget *parent = 0);
+    ~medViewerToolBoxView(void);
 
     void update(dtkAbstractView *view);
 
@@ -53,7 +53,7 @@ signals:
     void annotationsVisibilityChanged(bool);
 
 private:
-    medToolBoxViewPrivate *d;
+    medViewerToolBoxViewPrivate *d;
 };
 
 #endif

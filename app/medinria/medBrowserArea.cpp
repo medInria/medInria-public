@@ -20,7 +20,9 @@
 #include "medBrowserArea.h"
 #include "medBrowserArea_p.h"
 #include "medBrowserToolBoxJobs.h"
-
+#include "medBrowserToolBoxPacsHost.h"
+#include "medBrowserToolBoxPacsNodes.h"
+#include "medBrowserToolBoxPacsSearch.h"
 #include <QtGui>
 
 #include <dtkCore/dtkGlobal.h>
@@ -38,10 +40,7 @@
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
-#include <medGui/medToolBoxSource.h>
-#include <medGui/medToolBoxPacsHost.h>
-#include <medGui/medToolBoxPacsNodes.h>
-#include <medGui/medToolBoxPacsSearch.h>
+#include "medBrowserToolBoxSource.h"
 
 #include <medPacs/medPacsWidget.h>
 #include <medPacs/medPacsMover.h>
@@ -166,7 +165,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Source toolbox ///////////////////////////////////////////////
 
-    d->toolbox_source = new medToolBoxSource(this);
+    d->toolbox_source = new medBrowserToolBoxSource(this);
     d->toolbox_source->setFileSystemWidget(d->side);
 
     connect(d->toolbox_source, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
@@ -178,17 +177,17 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Toolbox pacs host ///////////////////////////////////////////
 
-    d->toolbox_pacs_host = new medToolBoxPacsHost(this);
+    d->toolbox_pacs_host = new medBrowserToolBoxPacsHost(this);
     d->toolbox_pacs_host->setVisible(false);
 
     // Toolbox pacs nodes //////////////////////////////////////////
 
-    d->toolbox_pacs_nodes = new medToolBoxPacsNodes(this);
+    d->toolbox_pacs_nodes = new medBrowserToolBoxPacsNodes(this);
     d->toolbox_pacs_nodes->setVisible(false);
 
     // Toolbox pacs search //////////////////////////////////////////
 
-    d->toolbox_pacs_search = new medToolBoxPacsSearch(this);
+    d->toolbox_pacs_search = new medBrowserToolBoxPacsSearch(this);
     d->toolbox_pacs_search->setVisible(false);
 
     connect(d->toolbox_pacs_search, SIGNAL(search(QString)), d->pacs, SLOT(search(QString)));

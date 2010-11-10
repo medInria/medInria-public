@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 15:18:12 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 15:28:23 2010 (+0100)
+ * Last-Updated: Wed Nov 10 15:36:45 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 13
+ *     Update #: 17
  */
 
 /* Commentary: 
@@ -20,9 +20,9 @@
 #ifndef MEDVIEWERAREA_P_H
 #define MEDVIEWERAREA_P_H
 
-class medToolBoxPatient;
-class medToolBoxLayout;
-class medToolBoxView;
+class medViewerToolBoxPatient;
+class medViewerToolBoxLayout;
+class medViewerToolBoxView;
 class medToolBoxRegistration;
 class medToolBoxContainer;
 
@@ -41,11 +41,12 @@ class QStackedWidget;
 class medViewerAreaPrivate
 {
 public:
-    medToolBoxPatient *patientToolBox;
+    medViewerToolBoxPatient *patientToolBox;
     medViewerToolBoxConfiguration *configurationToolBox;
-    medToolBoxLayout *layoutToolBox;
-    medToolBoxView *viewToolBox;
+    medViewerToolBoxLayout *layoutToolBox;
+    medViewerToolBoxView *viewToolBox;
     medViewerToolBoxDiffusion *diffusionToolBox;
+
     medToolBoxRegistration *registrationToolBox;
     medToolBoxContainer *toolbox_container;
 

@@ -1,4 +1,4 @@
-/* medToolBoxView.cpp --- 
+/* medViewerToolBoxView.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,12 +17,14 @@
  * 
  */
 
-#include "medToolBoxView.h"
-#include "medToolBoxTab.h"
+#include "medViewerToolBoxView.h"
+
 
 #include <dtkCore/dtkAbstractView.h>
 
-class medToolBoxViewPrivate
+#include <medGui/medToolBoxTab.h>
+
+class medViewerToolBoxViewPrivate
 {
 public:
     QComboBox *foregroundLookupTableComboBox;
@@ -43,7 +45,7 @@ public:
     QPushButton *croppingPushButton;
 };
 
-medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medToolBoxViewPrivate)
+medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxViewPrivate)
 {
     d->foregroundLookupTableComboBox = new QComboBox(this);
     d->foregroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
@@ -215,14 +217,14 @@ medToolBoxView::medToolBoxView(QWidget *parent) : medToolBox(parent), d(new medT
     this->setWidget(viewToolBoxTab);
 }
 
-medToolBoxView::~medToolBoxView(void)
+medViewerToolBoxView::~medViewerToolBoxView(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medToolBoxView::update(dtkAbstractView *view)
+void medViewerToolBoxView::update(dtkAbstractView *view)
 {
     d->foregroundLookupTableComboBox->blockSignals(true);
     d->foregroundLookupTableComboBox->setCurrentIndex(d->foregroundLookupTableComboBox->findText(view->property("LookupTable")));
