@@ -87,6 +87,7 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     this->setAlternatingRowColors(true);
     this->setSortingEnabled(true);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     this->setHeaderLabels(QStringList() << "Name" << "Description" << "Id" << "Modality");
 
@@ -184,7 +185,7 @@ void medPacsWidget::search(QString query)
                                                             << QString(dataset->findKeyValue(0x0008,0x0061)));
                 
                 item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-                item->setData(0,Qt::UserRole, d->index(QString::fromStdString(node->title())));
+                item->setData(0,Qt::UserRole, d->index(node->title()));
                 item->setData(1,Qt::UserRole, QPoint(0x0020,0x000D));
                 item->setData(2,Qt::UserRole, QString(dataset->getStudyInstanceUID()));
             }
@@ -317,26 +318,40 @@ void medPacsWidget::updateContextMenu(const QPoint& point)
 
 void medPacsWidget::onItemImported(void)
 {
-    if(!this->selectedIndexes().count())
-        return;
-    
-    QModelIndex index = this->selectedIndexes().first();
-    
-    if(!index.isValid())
-        return;
-    
-    QTreeWidgetItem *item = itemFromIndex(index);
+    this->readSettings();
+    QList<QTreeWidgetItem*> itemList = this->selectedItems();
 
-    int nodeIndex = item->data(0, Qt::UserRole).toInt();
-    QPoint tag = item->data(1, Qt::UserRole).toPoint();
-    QString query = item->data(2, Qt::UserRole).toString();
+    QHash<int,int>hash;
+    for (int i = 0; i < itemList.size(); ++i) 
+    {
+        if(!(hash.contains(itemList.at(i)->data(0, Qt::UserRole).toInt())))
+            hash.insert(itemList.at(i)->data(0, Qt::UserRole).toInt(),i);
+    }
 
-    // creating a unique path for storing the import data
-    QString ref = QUuid::createUuid().toString();
-    QDir tmp = QDir::temp();
-    //if (!tmp.mkdir(ref))
-    //    qDebug() << "Could not create temp folder!";
-    //tmp.cd(ref);
+    for(int u = 0; u<hash.size();u++)
+    {
 
-    emit move(tag.x(), tag.y(), query, tmp.absolutePath(), nodeIndex);
+    QVector<medMoveCommandItem> cmdList;
+        for (int i = 0; i < itemList.size(); ++i) 
+        {
+            int nodeIndex = itemList.at(i)->data(0, Qt::UserRole).toInt();
+            QPoint tag    = itemList.at(i)->data(1, Qt::UserRole).toPoint();
+            QString query = itemList.at(i)->data(2, Qt::UserRole).toString();
+
+            medMoveCommandItem item;
+            item.group = tag.x();
+            item.elem  = tag.y();
+            item.sourceTitle = d->nodes.at(nodeIndex).at(0);
+            item.sourceIp = d->nodes.at(nodeIndex).at(1);
+            item.sourcePort = d->nodes.at(nodeIndex).at(2).toInt();
+            item.targetTitle = d->host_title;
+            item.targetIp = d->host_address;
+            item.targetPort = d->host_port.toInt();
+            item.query = query;
+
+            if(hash.contains(itemList.at(i)->data(0, Qt::UserRole).toInt()))
+                cmdList.push_back(item);
+        }
+        emit moveList(cmdList);
+    }
 }

@@ -15,11 +15,17 @@ public:
              medAbstractPacsNode(void);
     virtual ~medAbstractPacsNode(void);
 
-    virtual std::string title(void) {
+    virtual void setTitle(QString title);
+    
+    virtual void setIp(QString ip);
+
+    virtual void setPort(unsigned int port);
+
+    virtual QString title(void) {
         return "default title";
     }
 
-    virtual std::string ip(void) {
+    virtual QString ip(void) {
          return "default ip";
     }
     

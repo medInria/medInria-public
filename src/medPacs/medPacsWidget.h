@@ -23,6 +23,7 @@
 #include <QtGui/QTreeWidget>
 
 #include "medPacsExport.h"
+#include "medMoveCommandItem.h"
 
 class medPacsWidgetPrivate;
 
@@ -38,7 +39,7 @@ public:
     void writeSettings(void);
 
 signals:
-    void move(int, int, QString, QString, int);
+    void moveList(const QVector<medMoveCommandItem>&);
     void import(QString);
 
 public slots:

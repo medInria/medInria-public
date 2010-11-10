@@ -36,7 +36,9 @@ set(${PROJECT_NAME}_HEADERS
   medAbstractPacsKey.h
   medPacsMover.h
   medPacsExport.h
-  medPacsWidget.h)
+  medPacsWidget.h
+  medPacsNode.h
+  medMoveCommandItem.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractPacsBaseScu.h
