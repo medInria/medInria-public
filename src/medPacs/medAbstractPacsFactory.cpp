@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Nov  7 15:54:10 2008 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 13:09:06 2010 (+0200)
+ * Last-Updated: Wed Nov 10 14:44:31 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 56
+ *     Update #: 60
  */
 
 /* Commentary: 
@@ -32,8 +32,6 @@ public:
     medAbstractPacsFactory::medAbstractPacsMoveScuCreatorHash move_scu_creators;
     medAbstractPacsFactory::medAbstractPacsStoreScuCreatorHash store_scu_creators; 
     medAbstractPacsFactory::medAbstractPacsStoreScpCreatorHash store_scp_creators;
-
-
 };
 
 medAbstractPacsFactory *medAbstractPacsFactory::instance(void)
@@ -44,7 +42,7 @@ medAbstractPacsFactory *medAbstractPacsFactory::instance(void)
     return s_instance;
 }
 
-medAbstractPacsEchoScu * medAbstractPacsFactory::createEchoScu( QString type )
+medAbstractPacsEchoScu *medAbstractPacsFactory::createEchoScu( QString type )
 {
     if(!d->echo_scu_creators.contains(type))
         return NULL;
@@ -64,7 +62,7 @@ medAbstractPacsFindScu *medAbstractPacsFactory::createFindScu(QString type)
     return scu;
 }
 
-medAbstractPacsMoveScu *medAbstractPacsFactory::createMoveScu( QString type )
+medAbstractPacsMoveScu *medAbstractPacsFactory::createMoveScu(QString type)
 {
     if(!d->move_scu_creators.contains(type))
         return NULL;
@@ -74,7 +72,7 @@ medAbstractPacsMoveScu *medAbstractPacsFactory::createMoveScu( QString type )
     return scu;
 }
 
-medAbstractPacsStoreScu * medAbstractPacsFactory::createStoreScu( QString type )
+medAbstractPacsStoreScu *medAbstractPacsFactory::createStoreScu(QString type)
 {
     if(!d->store_scu_creators.contains(type))
         return NULL;
@@ -94,7 +92,7 @@ medAbstractPacsStoreScp *medAbstractPacsFactory::createStoreScp(QString type)
     return scp;
 }
 
-bool medAbstractPacsFactory::registerEchoScuType( QString type, medAbstractPacsEchoScuCreator func )
+bool medAbstractPacsFactory::registerEchoScuType(QString type, medAbstractPacsEchoScuCreator func)
 {
     if(!d->echo_scu_creators.contains(type)) {
         d->echo_scu_creators.insert(type, func);
@@ -114,7 +112,7 @@ bool medAbstractPacsFactory::registerFindScuType(QString type, medAbstractPacsFi
     return false;
 }
 
-bool medAbstractPacsFactory::registerMoveScuType( QString type, medAbstractPacsMoveScuCreator func )
+bool medAbstractPacsFactory::registerMoveScuType(QString type, medAbstractPacsMoveScuCreator func)
 {
     if(!d->move_scu_creators.contains(type)) {
         d->move_scu_creators.insert(type, func);
@@ -124,7 +122,7 @@ bool medAbstractPacsFactory::registerMoveScuType( QString type, medAbstractPacsM
     return false;
 }
 
-bool medAbstractPacsFactory::registerStoreScpType( QString type, medAbstractPacsStoreScpCreator func )
+bool medAbstractPacsFactory::registerStoreScpType(QString type, medAbstractPacsStoreScpCreator func)
 {
     if(!d->store_scp_creators.contains(type)) {
         d->store_scp_creators.insert(type, func);
@@ -155,6 +153,5 @@ medAbstractPacsFactory::~medAbstractPacsFactory(void)
 
     d = NULL;
 }
-
 
 medAbstractPacsFactory *medAbstractPacsFactory::s_instance = NULL;

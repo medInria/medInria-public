@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Nov  7 15:48:10 2008 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 13:07:55 2010 (+0200)
+ * Last-Updated: Wed Nov 10 13:16:17 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 51
+ *     Update #: 52
  */
 
 /* Commentary:
@@ -41,7 +41,7 @@ public:
     typedef medAbstractPacsFindScu *(*medAbstractPacsFindScuCreator)(void);
     typedef medAbstractPacsEchoScu *(*medAbstractPacsEchoScuCreator)(void);
     typedef medAbstractPacsMoveScu *(*medAbstractPacsMoveScuCreator)(void);
-    typedef medAbstractPacsStoreScu *(*medAbstractPacsStoreScuCreator) (void);
+    typedef medAbstractPacsStoreScu *(*medAbstractPacsStoreScuCreator)(void);
     typedef medAbstractPacsStoreScp *(*medAbstractPacsStoreScpCreator)(void);
 
     typedef QHash<QString, medAbstractPacsFindScuCreator> medAbstractPacsFindScuCreatorHash;
