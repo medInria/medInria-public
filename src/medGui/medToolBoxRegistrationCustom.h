@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 14:16:25 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 14:19:23 2010 (+0100)
+ * Last-Updated: Wed Nov 10 15:46:03 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 9
+ *     Update #: 23
  */
 
 /* Commentary: 
@@ -23,13 +23,24 @@
 #include "medGuiExport.h"
 #include "medToolBox.h"
 
+class medToolBoxRegistration;
+class medToolBoxRegistrationCustomPrivate;
+
 class MEDGUI_EXPORT medToolBoxRegistrationCustom : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxRegistrationCustom(void);
-    ~medToolBoxRegistrationCustom(void);
+             medToolBoxRegistrationCustom(QWidget *parent = 0);
+    virtual ~medToolBoxRegistrationCustom(void);
+
+    void setRegistrationToolBox(medToolBoxRegistration *toolbox);
+
+protected:
+    medToolBoxRegistration *parent(void);
+
+private:
+    medToolBoxRegistrationCustomPrivate *d;
 };
 
 #endif

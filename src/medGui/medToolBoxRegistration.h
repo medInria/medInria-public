@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 14:16:06 2010 (+0100)
+ * Last-Updated: Wed Nov 10 16:36:24 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 30
+ *     Update #: 47
  */
 
 /* Commentary: 
@@ -22,9 +22,12 @@
 
 #include "medToolBox.h"
 
-class medToolBoxRegistrationPrivate;
+class dtkAbstractDataImage;
 class dtkAbstractView;
+
 class medDataIndex;
+
+class medToolBoxRegistrationPrivate;
 
 class MEDGUI_EXPORT medToolBoxRegistration : public medToolBox
 {
@@ -34,21 +37,28 @@ public:
      medToolBoxRegistration(QWidget *parent = 0);
     ~medToolBoxRegistration(void);
 	
+    dtkAbstractView *fixedView(void);
+    dtkAbstractView *movingView(void);
     dtkAbstractView *fuseView(void);
 
+    dtkAbstractDataImage *fixedData(void);
+    dtkAbstractDataImage *movingData(void);
+
 signals:
+    void addToolBox(medToolBox *toolbox);
+
     void setupLayoutCompare(void);
     void setupLayoutFuse(void);
 
 public slots:
-    void run(void);
-
     void onMovingImageDropped(void);
     void onFixedImageDropped(void);
     
     void onBlendModeSet(bool value);
     void onCheckerboardModeSet(bool value);
 	
+    void onToolBoxChosen(const QString&);
+
 private:
     medToolBoxRegistrationPrivate *d;
 };

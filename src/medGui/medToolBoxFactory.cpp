@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 14:33:05 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 14:51:04 2010 (+0100)
+ * Last-Updated: Wed Nov 10 16:06:00 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 29
+ *     Update #: 32
  */
 
 /* Commentary: 
@@ -42,6 +42,11 @@ bool medToolBoxFactory::registerCustomRegistrationToolBox(QString type, medToolB
     }
 
     return false;
+}
+
+QList<QString> medToolBoxFactory::registrationToolBoxes(void)
+{
+    return d->custom_registration_creators.keys();
 }
 
 medToolBoxRegistrationCustom *medToolBoxFactory::createCustomRegistrationToolBox(QString type)

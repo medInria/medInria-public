@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 15:02:00 2010 (+0200)
+ * Last-Updated: Wed Nov 10 16:14:33 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 111
+ *     Update #: 114
  */
 
 /* Commentary: 
@@ -25,6 +25,7 @@
 class dtkAbstractView;
 
 class medDataIndex;
+class medToolBox;
 class medViewContainer;
 class medViewerAreaStack;
 class medViewerAreaPrivate;
@@ -51,6 +52,8 @@ public slots:
     void switchToPatient(int index);
     void switchToContainer(int index);
     void switchToContainerPreset(int index);
+
+    void addToolBox(medToolBox *toolbox);
 
 protected slots:
     void onViewFocused(dtkAbstractView *view);

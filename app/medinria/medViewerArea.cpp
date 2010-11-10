@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 15:33:44 2010 (+0100)
+ * Last-Updated: Wed Nov 10 16:15:44 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1054
+ *     Update #: 1061
  */
 
 /* Commentary: 
@@ -132,6 +132,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(setupLayoutCompare()));
     connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()), this, SLOT(setupLayoutFuse()));
+    connect(d->registrationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
 
     // Setting up toolbox container
 
@@ -468,6 +469,11 @@ void medViewerArea::switchToContainerPreset(int index)
             }
         }
     }
+}
+
+void medViewerArea::addToolBox(medToolBox *toolbox)
+{
+    d->toolbox_container->addToolBox(toolbox);
 }
 
 #include <dtkVr/dtkVrController.h>

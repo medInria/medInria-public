@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 10:28:45 2010 (+0100)
+ * Last-Updated: Wed Nov 10 16:32:30 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 216
+ *     Update #: 272
  */
 
 /* Commentary: 
@@ -20,6 +20,7 @@
 #include "medDropSite.h"
 #include "medToolBoxTab.h"
 #include "medToolBoxRegistration.h"
+#include "medToolBoxRegistrationCustom.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
@@ -33,6 +34,8 @@
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
 
+#include <medGui/medToolBoxFactory.h>
+
 #include <QtGui>
 
 class medToolBoxRegistrationPrivate
@@ -43,6 +46,8 @@ public:
 	
     QRadioButton *blendRadio;
     QRadioButton *checkerboardRadio;
+
+    QComboBox *toolboxes;
 
     dtkAbstractView *fixedView;
     dtkAbstractView *movingView;
@@ -55,13 +60,14 @@ public:
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
 {
     d->fuseView = dtkAbstractViewFactory::instance()->create("v3dView");
+
     if (d->fuseView)
         d->fuseView->enableInteractor("v3dViewFuseInteractor");
     
-    d->fixedData  = 0;
-    d->movingData = 0;
-    d->fixedView  = 0;
-    d->movingView = 0;
+    d->fixedData  = NULL;
+    d->movingData = NULL;
+    d->fixedView  = NULL;
+    d->movingView = NULL;
     
     // Process page
 
@@ -77,13 +83,21 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     processDropSiteLayout->addWidget(d->processDropSiteFixed);
     processDropSiteLayout->addWidget(d->processDropSiteMoving);
 
-    QPushButton *processRunButton = new QPushButton("Run", processPage);
+    // --- Setting up custom toolboxes list ---
 
+    d->toolboxes = new QComboBox(this);
+    d->toolboxes->addItem("Choose algorithm");
+
+    foreach(QString toolbox, medToolBoxFactory::instance()->registrationToolBoxes())
+        d->toolboxes->addItem(toolbox, toolbox);
+
+    connect(d->toolboxes, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
+
+    // ---
+    
     QVBoxLayout *processLayout = new QVBoxLayout(processPage);
     processLayout->addLayout(processDropSiteLayout);
-    processLayout->addWidget(processRunButton);
-
-    connect(processRunButton, SIGNAL(clicked()), this, SLOT(run()));
+    processLayout->addWidget(d->toolboxes);
 
     // Layout page
 
@@ -156,14 +170,19 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
 medToolBoxRegistration::~medToolBoxRegistration(void)
 {
-    if(d->fixedView) delete d->fixedView;
-    if(d->movingView) delete d->movingView;
-    if(d->fuseView)  delete d->fuseView;
-    if(d->fixedData) delete d->fixedData;
-    if(d->movingData) delete d->movingData;
     delete d;
 
     d = NULL;
+}
+
+dtkAbstractView *medToolBoxRegistration::fixedView(void)
+{
+    return d->fixedView;
+}
+
+dtkAbstractView *medToolBoxRegistration::movingView(void)
+{
+    return d->movingView;
 }
 
 dtkAbstractView *medToolBoxRegistration::fuseView(void)
@@ -171,41 +190,14 @@ dtkAbstractView *medToolBoxRegistration::fuseView(void)
     return d->fuseView;
 }
 
-void medToolBoxRegistration::run(void)
+dtkAbstractDataImage *medToolBoxRegistration::fixedData(void)
 {
-    if (!d->fixedData || !d->movingData || !d->movingView)
-        return;
+    return d->fixedData;
+}
 
-    
-    dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
-    if (!process)
-        return;
-    
-    process->setInput(d->fixedData,  0);
-    process->setInput(d->movingData, 1);
-
-    if (process->run()==0) {
-
-        dtkAbstractData *output = process->output();
-
-	if(output) {
-	    d->movingView->setData(output);
-	    //d->movingView->reset(); // do not reset
-	    d->fixedView->unlink (d->movingView);
-	    d->fixedView->link (d->movingView);
-	    d->movingView->update();
-	    
-	    if (d->fuseView) {
-	        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-		    interactor->setData(output, 1);
-		    //d->fuseView->reset();  // do not reset
-		    d->fuseView->update();
-		}
-	    }
-	}
-    }
-    
-    delete process;
+dtkAbstractDataImage *medToolBoxRegistration::movingData(void)
+{
+    return d->movingData;
 }
 
 void medToolBoxRegistration::onBlendModeSet(bool value)
@@ -270,7 +262,7 @@ void medToolBoxRegistration::onMovingImageDropped (void)
     if (!index.isValid())
         return;
 
-    d->movingData = dynamic_cast<dtkAbstractDataImage*>( medDataManager::instance()->data(index) );
+    d->movingData = dynamic_cast<dtkAbstractDataImage*>(medDataManager::instance()->data(index));
   
     if (!d->movingData)
         return;
@@ -287,13 +279,28 @@ void medToolBoxRegistration::onMovingImageDropped (void)
 	d->movingView->update();
     }
 
-    if (d->fuseView)
+    if (d->fuseView) {
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
 	    if (d->fixedData) {
-	            interactor->setData(d->fixedData,   0);
-	            interactor->setData(d->movingData,  1);
-		    d->fuseView->reset();
-		    d->fuseView->update();
+                interactor->setData(d->fixedData,   0);
+                interactor->setData(d->movingData,  1);
+                d->fuseView->reset();
+                d->fuseView->update();
 	    }
 	}
+    }
+}
+
+void medToolBoxRegistration::onToolBoxChosen(const QString& id)
+{
+    medToolBoxRegistrationCustom *toolbox = medToolBoxFactory::instance()->createCustomRegistrationToolBox(id);
+
+    if(!toolbox) {
+        qDebug() << "Unable to instanciate" << id << "toolbox";
+        return;
+    }
+
+    toolbox->setRegistrationToolBox(this);
+
+    emit addToolBox(toolbox);
 }
