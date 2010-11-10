@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Oct 26 10:52:12 2010 (+0200)
+## Last-Updated: Wed Nov 10 11:12:54 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 76
+##     Update #: 86
 ######################################################################
 ## 
 ### Commentary: 
@@ -25,19 +25,25 @@ project(medinria)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserArea.h
+  medBrowserToolBoxJobs.h
   medMainWindow.h
   medViewerArea.h
   medViewerAreaStack.h
   medViewerConfiguration.h
-  medViewerConfigurator.h)
+  medViewerConfigurator.h
+  medViewerToolBoxConfiguration.h
+  medViewerToolBoxDiffusion.h)
 
 set(${PROJECT_NAME}_SOURCES
   medBrowserArea.cpp
+  medBrowserToolBoxJobs.cpp
   medMainWindow.cpp
   medViewerArea.cpp
   medViewerAreaStack.cpp
   medViewerConfiguration.cpp
   medViewerConfigurator.cpp
+  medViewerToolBoxConfiguration.cpp
+  medViewerToolBoxDiffusion.cpp
   main.cpp)
 
 set(${PROJECT_NAME}_RESOURCES medinria.qrc)

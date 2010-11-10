@@ -1,12 +1,12 @@
-/* medToolBoxDiffusion.h --- 
+/* medViewerToolBoxDiffusion.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 11:01:16 2010 (+0100)
+ * Last-Updated: Wed Nov 10 11:03:19 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 7
+ *     Update #: 14
  */
 
 /* Commentary: 
@@ -17,23 +17,21 @@
  * 
  */
 
-#ifndef MEDTOOLBOXDIFFUSION_H
-#define MEDTOOLBOXDIFFUSION_H
+#ifndef MEDVIEWERTOOLBOXDIFFUSION_H
+#define MEDVIEWERTOOLBOXDIFFUSION_H
 
-#include "medToolBox.h"
-
+#include <medGui/medToolBox.h>
 
 class dtkAbstractView;
-class medToolBoxDiffusionPrivate;
+class medViewerToolBoxDiffusionPrivate;
 
-
-class MEDGUI_EXPORT medToolBoxDiffusion : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxDiffusion : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxDiffusion(QWidget *parent = 0);
-    ~medToolBoxDiffusion(void);
+     medViewerToolBoxDiffusion(QWidget *parent = 0);
+    ~medViewerToolBoxDiffusion(void);
 
     void update(dtkAbstractView *view);
     
@@ -52,21 +50,22 @@ public slots:
     void onObjectDropped (void);
 
     void onCoefficientsChanged  (int);
+
     /*
       void onComputeLFA (void);
       void onComputeRA  (void);
       void onComputeADC (void);
       void onComputeL1  (void);
-    void onComputeL2  (void);
-    void onComputeL3  (void);
-    void onComputeCl  (void);
-    void onComputeCp  (void);
-    void onComputeCs  (void);
-    void onComputeVR  (void);
+      void onComputeL2  (void);
+      void onComputeL3  (void);
+      void onComputeCl  (void);
+      void onComputeCp  (void);
+      void onComputeCs  (void);
+      void onComputeVR  (void);
     */
     
 private:
-    medToolBoxDiffusionPrivate *d;
+    medViewerToolBoxDiffusionPrivate *d;
 };
 
 #endif

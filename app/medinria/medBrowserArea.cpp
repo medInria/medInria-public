@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct 26 10:31:28 2010 (+0200)
+ * Last-Updated: Wed Nov 10 11:15:55 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 457
+ *     Update #: 461
  */
 
 /* Commentary: 
@@ -19,6 +19,7 @@
 
 #include "medBrowserArea.h"
 #include "medBrowserArea_p.h"
+#include "medBrowserToolBoxJobs.h"
 
 #include <QtGui>
 
@@ -37,7 +38,6 @@
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
-#include <medGui/medToolBoxJobs.h>
 #include <medGui/medToolBoxSource.h>
 #include <medGui/medToolBoxPacsHost.h>
 #include <medGui/medToolBoxPacsNodes.h>
@@ -173,7 +173,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Jobs //////////////////////////////////////////
 
-    d->toolbox_jobs = new medToolBoxJobs(this);
+    d->toolbox_jobs = new medBrowserToolBoxJobs(this);
     d->toolbox_jobs->setVisible(false);
 
     // Toolbox pacs host ///////////////////////////////////////////

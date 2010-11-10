@@ -1,12 +1,12 @@
-/* medToolBoxConfiguration.cpp --- 
+/* medViewerToolBoxConfiguration.cpp --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 22:57:44 2010 (+0100)
+ * Last-Updated: Wed Nov 10 10:58:26 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 15
  */
 
 /* Commentary: 
@@ -17,15 +17,15 @@
  * 
  */
 
-#include "medToolBoxConfiguration.h"
+#include "medViewerToolBoxConfiguration.h"
 
-class medToolBoxConfigurationPrivate
+class medViewerToolBoxConfigurationPrivate
 {
 public:
     QComboBox *combo;
 };
 
-medToolBoxConfiguration::medToolBoxConfiguration(QWidget *parent) : medToolBox(parent), d(new medToolBoxConfigurationPrivate)
+medViewerToolBoxConfiguration::medViewerToolBoxConfiguration(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxConfigurationPrivate)
 {
     QWidget *central = new QWidget(this);
 
@@ -41,14 +41,14 @@ medToolBoxConfiguration::medToolBoxConfiguration(QWidget *parent) : medToolBox(p
     connect(d->combo, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(configurationChanged(QString)));
 }
 
-medToolBoxConfiguration::~medToolBoxConfiguration(void)
+medViewerToolBoxConfiguration::~medViewerToolBoxConfiguration(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medToolBoxConfiguration::addConfiguration(QString name)
+void medViewerToolBoxConfiguration::addConfiguration(QString name)
 {
     d->combo->addItem(name);
 }

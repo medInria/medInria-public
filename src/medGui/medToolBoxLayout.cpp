@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri May 21 15:26:02 2010 (+0200)
+ * Last-Updated: Wed Nov 10 10:28:27 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 55
+ *     Update #: 56
  */
 
 /* Commentary: 
@@ -19,6 +19,7 @@
 
 #include "medLayoutChooser.h"
 #include "medToolBoxLayout.h"
+#include "medToolBoxTab.h"
 
 class medToolBoxLayoutPrivate
 {

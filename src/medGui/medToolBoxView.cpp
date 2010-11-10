@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Fri Feb 19 10:27:55 2010 (+0100)
+ * Last-Updated: Wed Nov 10 10:29:00 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 18
+ *     Update #: 19
  */
 
 /* Commentary: 
@@ -18,6 +18,7 @@
  */
 
 #include "medToolBoxView.h"
+#include "medToolBoxTab.h"
 
 #include <dtkCore/dtkAbstractView.h>
 

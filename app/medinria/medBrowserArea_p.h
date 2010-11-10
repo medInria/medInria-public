@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 15:03:27 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 18:16:09 2010 (+0200)
+ * Last-Updated: Wed Nov 10 11:14:51 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 14
+ *     Update #: 19
  */
 
 /* Commentary: 
@@ -21,7 +21,8 @@
 #define MEDBROWSERAREA_P_H
 
 class medToolBoxContainer;
-class medToolBoxJobs;
+
+class medBrowserToolBoxJobs;
 class medToolBoxSource;
 class medToolBoxPacsHost;
 class medToolBoxPacsNodes;
@@ -43,7 +44,8 @@ class medBrowserAreaPrivate
 {
 public:
     medToolBoxContainer *toolbox_container;
-    medToolBoxJobs *toolbox_jobs;
+
+    medBrowserToolBoxJobs *toolbox_jobs;
     medToolBoxSource *toolbox_source;
     medToolBoxPacsHost *toolbox_pacs_host;
     medToolBoxPacsNodes *toolbox_pacs_nodes;

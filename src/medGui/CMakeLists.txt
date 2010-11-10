@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Thu Oct  7 11:50:15 2010 (+0200)
+## Last-Updated: Wed Nov 10 11:12:36 2010 (+0100)
 ##           By: Julien Wintz
-##     Update #: 144
+##     Update #: 155
 ######################################################################
 ## 
 ### Commentary: 
@@ -31,10 +31,10 @@ set(${PROJECT_NAME}_HEADERS
   medProgressionStack.h
   medStatusQuitButton.h
   medToolBox.h
+  medToolBoxBody.h
+  medToolBoxHeader.h
+  medToolBoxTab.h
   medToolBoxContainer.h
-  medToolBoxConfiguration.h
-  medToolBoxDiffusion.h
-  medToolBoxJobs.h
   medToolBoxLayout.h
   medToolBoxPacsHost.h
   medToolBoxPacsNodes.h
@@ -58,9 +58,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medProgressionStack.h
   medStatusQuitButton.h
   medToolBox.h
-  medToolBoxConfiguration.h
-  medToolBoxDiffusion.h
-  medToolBoxJobs.h
+  medToolBoxBody.h
+  medToolBoxHeader.h
+  medToolBoxTab.h
   medToolBoxLayout.h
   medToolBoxPacsHost.h
   medToolBoxPacsNodes.h
@@ -74,8 +74,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
-  medWorkspaceShifter.h
-  )
+  medWorkspaceShifter.h)
 
 set(${PROJECT_NAME}_SOURCES
   medClutEditor.cpp
@@ -85,10 +84,10 @@ set(${PROJECT_NAME}_SOURCES
   medProgressionStack.cpp
   medStatusQuitButton.cpp
   medToolBox.cpp
+  medToolBoxBody.cpp
+  medToolBoxHeader.cpp
+  medToolBoxTab.cpp
   medToolBoxContainer.cpp
-  medToolBoxConfiguration.cpp
-  medToolBoxDiffusion.cpp
-  medToolBoxJobs.cpp
   medToolBoxLayout.cpp
   medToolBoxPacsHost.cpp
   medToolBoxPacsNodes.cpp

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Sat Mar  6 11:54:58 2010 (+0100)
+ * Last-Updated: Wed Nov 10 10:28:45 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 215
+ *     Update #: 216
  */
 
 /* Commentary: 
@@ -18,6 +18,7 @@
  */
 
 #include "medDropSite.h"
+#include "medToolBoxTab.h"
 #include "medToolBoxRegistration.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>

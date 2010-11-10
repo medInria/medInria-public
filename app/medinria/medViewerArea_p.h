@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 15:18:12 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Jun 28 15:20:28 2010 (+0200)
+ * Last-Updated: Wed Nov 10 11:04:54 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -23,14 +23,16 @@
 class medToolBoxPatient;
 class medToolBoxLayout;
 class medToolBoxView;
-class medToolBoxDiffusion;
 class medToolBoxRegistration;
 class medToolBoxContainer;
 
 class medDatabaseNavigator;
 
 class medViewerAreaStack;
+class medViewerToolBoxDiffusion;
+
 class medClutEditor;
+
 class QStackedWidget;
 
 #include <QtCore/QHash>
@@ -41,7 +43,7 @@ public:
     medToolBoxPatient *patientToolBox;
     medToolBoxLayout *layoutToolBox;
     medToolBoxView *viewToolBox;
-    medToolBoxDiffusion *diffusionToolBox;
+    medViewerToolBoxDiffusion *diffusionToolBox;
     medToolBoxRegistration *registrationToolBox;
     medToolBoxContainer *toolbox_container;
 

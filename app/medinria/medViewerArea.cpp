@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct 28 15:59:12 2010 (+0200)
+ * Last-Updated: Wed Nov 10 11:04:24 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1030
+ *     Update #: 1035
  */
 
 /* Commentary: 
@@ -22,6 +22,7 @@
 #include "medViewerAreaStack.h"
 #include "medViewerConfiguration.h"
 #include "medViewerConfigurator.h"
+#include "medViewerToolBoxDiffusion.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -48,7 +49,6 @@
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medToolBoxLayout.h>
 #include <medGui/medToolBoxPatient.h>
-#include <medGui/medToolBoxDiffusion.h>
 #include <medGui/medToolBoxRegistration.h>
 #include <medGui/medToolBoxView.h>
 #include <medGui/medViewContainer.h>
@@ -111,7 +111,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // -- Diffusion toolbox --
 
-    d->diffusionToolBox = new medToolBoxDiffusion(this);
+    d->diffusionToolBox = new medViewerToolBoxDiffusion(this);
     d->diffusionToolBox->setVisible(false);
 
     // -- Registration toolbox --

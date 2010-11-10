@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 15:20:03 2010 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct  5 16:07:54 2010 (+0200)
+ * Last-Updated: Wed Nov 10 10:28:53 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 114
+ *     Update #: 115
  */
 
 /* Commentary: 
@@ -18,6 +18,7 @@
  */
 
 #include "medToolBoxSource.h"
+#include "medToolBoxTab.h"
 
 #include <QtGui>
 
