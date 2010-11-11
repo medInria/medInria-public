@@ -926,20 +926,13 @@ void v3dViewPublic::link(dtkAbstractView *other)
         //otherView->setProperty ("Linked", "true");
 
       if (d->lastLinked)
-	  d->lastLinked->AddChild ( otherView->viewAxial() );
+	      d->lastLinked->AddChild ( otherView->viewAxial() );
       else
           d->view2DAxial->AddChild ( otherView->viewAxial() );
 
       otherView->viewAxial()->AddChild ( d->view2DAxial );
       d->lastLinked = otherView->viewAxial();
       		
-      otherView->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
-      otherView->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
-		
-      // zoom comes first, then pan (==translation)	
-      otherView->viewAxial()->SetZoom ( d->view2DAxial->GetZoom() );
-      //otherView->viewAxial()->SetPan  ( d->view2DAxial->GetPan() );
-
       d->view2DAxial->SetLinkPosition (1);
       d->view2DAxial->SetLinkZoom (1);
       d->view2DAxial->SetLinkCameraFocalAndPosition (1);
@@ -962,22 +955,23 @@ void v3dViewPublic::unlink(dtkAbstractView *other)
 
       otherView->viewAxial()->Detach();
       if (d->lastLinked==otherView->viewAxial()) {
-	if (d->linkedViews.count())
-	  d->lastLinked = dynamic_cast<v3dViewPublic *>( d->linkedViews.last() )->viewAxial();
-	else {
-	  d->lastLinked = 0;
-	  
-	  d->view2DAxial->SetLinkPosition (0);
-	  d->view2DAxial->SetLinkZoom (0);
-      d->view2DAxial->SetLinkCameraFocalAndPosition (0);
-	  d->view2DAxial->SetLinkWindowLevel (0);
-      
-	  this->setProperty ("PositionLinked",  "false");
-	  this->setProperty ("CameraLinked",    "false");
-	  this->setProperty ("WindowingLinked", "false");
-	}
+	    if (d->linkedViews.count())
+	      d->lastLinked = dynamic_cast<v3dViewPublic *>( d->linkedViews.last() )->viewAxial();
       }
     }
+	
+	if (d->linkedViews.count()==0) {
+		d->lastLinked = 0;
+		
+		d->view2DAxial->SetLinkPosition (0);
+		d->view2DAxial->SetLinkZoom (0);
+		d->view2DAxial->SetLinkCameraFocalAndPosition (0);
+		d->view2DAxial->SetLinkWindowLevel (0);
+		
+		this->setProperty ("PositionLinked",  "false");
+		this->setProperty ("CameraLinked",    "false");
+		this->setProperty ("WindowingLinked", "false");
+	}
 }
 
 void *v3dViewPublic::view(void)
