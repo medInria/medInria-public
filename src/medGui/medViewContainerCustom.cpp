@@ -41,10 +41,13 @@ void medViewContainerCustom::split(int rows, int cols)
     if (d->layout->count())
         return;
 
-    for(int i = 0 ; i < rows ; i++)
+    for(int i = 0 ; i < rows ; i++) {
+		d->layout->setRowStretch(i, 1);
         for(int j = 0 ; j < cols ; j++) {
 	    medViewContainerCustom *container = new medViewContainerCustom(this);
             d->layout->addWidget(container, i, j);
+			d->layout->setColumnStretch(j, 1);
+		}
 	}
 
     this->setCurrent(NULL);
@@ -62,10 +65,14 @@ void medViewContainerCustom::setPreset(int preset)
     case A:
         d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
         d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
+		d->layout->setColumnStretch(0, 1);
+		d->layout->setColumnStretch(1, 1);			
         break;
     case B:
         d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
         d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
+		d->layout->setRowStretch(0, 1);
+		d->layout->setRowStretch(1, 1);						
         break;
     case C:
         custom1 = new medViewContainerCustom(this);
@@ -90,6 +97,10 @@ void medViewContainerCustom::setPreset(int preset)
         d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
         d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
         d->layout->addWidget(new medViewContainerCustom(this), 1, 1);
+		d->layout->setColumnStretch(0, 1);
+		d->layout->setColumnStretch(1, 1);			
+		d->layout->setRowStretch(0, 1);
+		d->layout->setRowStretch(1, 1);									
         break;
     };
 
