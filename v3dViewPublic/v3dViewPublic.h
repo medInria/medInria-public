@@ -64,7 +64,6 @@ public slots:
 
     
 public slots:
-    //void play   (bool);
     void linkPosition  (dtkAbstractView *view, bool value);
     void linkCamera    (dtkAbstractView *view, bool value);
     void linkWindowing (dtkAbstractView *view, bool value);
@@ -78,6 +77,7 @@ public slots:
     void switchToMPR(void);
     void onMenuZoomTriggered (void);
     void onMenuWindowLevelTriggered (void);
+	void onPlayButtonClicked (bool value);
     
 
 private:

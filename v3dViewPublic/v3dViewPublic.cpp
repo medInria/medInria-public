@@ -111,7 +111,9 @@ public:
     QPushButton *linkButton;
     QPushButton *linkWLButton;
     QPushButton *registerButton;
+    QPushButton *playButton;	
     QPushButton *closeButton;
+    QTimeLine *timeline;	
 
     vtkViewImage *lastLinked;
 
@@ -128,6 +130,10 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     d->imageData  = 0;
     d->orientation = "Axial";
     d->lastLinked = 0;
+	
+	d->timeline = new QTimeLine(1000, this);
+	d->timeline->setLoopCount(0);
+    connect(d->timeline, SIGNAL(frameChanged(int)), this, SLOT(onZSliderValueChanged(int)));	
 	
     d->widget = new QWidget;
 	
@@ -298,6 +304,17 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
 
     connect(d->registerButton, SIGNAL(clicked(bool)), this, SIGNAL(reg(bool)));
 
+    d->playButton = new QPushButton(d->widget);
+    d->playButton->setText(">");
+    d->playButton->setCheckable(true);
+    d->playButton->setMaximumHeight(16);
+    d->playButton->setMaximumWidth(16);
+    d->playButton->setFocusPolicy(Qt::NoFocus);
+    d->playButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->playButton->setObjectName("tool");
+	
+    connect(d->playButton, SIGNAL(clicked(bool)), this, SLOT(onPlayButtonClicked(bool)));
+	
     d->closeButton = new QPushButton(d->widget);
     d->closeButton->setText("x");
     d->closeButton->setCheckable(false);
@@ -317,6 +334,7 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setContentsMargins(0, 0, 0, 0);
     toolsLayout->setSpacing(0);
+    toolsLayout->addWidget(d->playButton);	
     toolsLayout->addWidget(d->slider);
     toolsLayout->addWidget(d->anchorButton);
     toolsLayout->addWidget(d->linkButton);
@@ -954,6 +972,7 @@ void v3dViewPublic::unlink(dtkAbstractView *other)
     if (v3dViewPublic *otherView = dynamic_cast<v3dViewPublic*>(other)) {
 
       otherView->viewAxial()->Detach();
+		
       if (d->lastLinked==otherView->viewAxial()) {
 	    if (d->linkedViews.count())
 	      d->lastLinked = dynamic_cast<v3dViewPublic *>( d->linkedViews.last() )->viewAxial();
@@ -1165,6 +1184,16 @@ QWidget *v3dViewPublic::widget(void)
     return d->widget;
 }
 
+void v3dViewPublic::onPlayButtonClicked(bool start)
+{
+    d->timeline->setFrameRange(d->slider->minimum(), d->slider->maximum() );
+	
+    if(start)
+		d->timeline->start();
+	else
+		d->timeline->stop();
+}
+
 void v3dViewPublic::linkPosition (dtkAbstractView *view, bool value)
 {
     if (v3dViewPublic *vview = dynamic_cast<v3dViewPublic*>(view)) {
@@ -1242,6 +1271,8 @@ void v3dViewPublic::onZSliderValueChanged (int value)
 
     if( vtkViewImage2D *view = vtkViewImage2D::SafeDownCast(d->currentView) ) {
         d->observer->lock();
+	view->SetZSlice (value);
+	if (view->GetLinkCameraFocalAndPosition())
 	view->SyncSetZSlice (value);
 	// view->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::SliceMoveEvent);
 	d->observer->unlock();
