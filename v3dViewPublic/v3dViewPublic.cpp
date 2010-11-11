@@ -158,6 +158,7 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     d->view2DAxial->RulerWidgetVisibilityOn();
     d->view2DAxial->SetLinkPosition (0);
     d->view2DAxial->SetLinkZoom (0);
+    d->view2DAxial->SetLinkCameraFocalAndPosition (0);	
     d->view2DAxial->SetLinkWindowLevel (0);
     d->view2DAxial->SetAboutData("v3dViewPublic plugin");
 
@@ -941,6 +942,7 @@ void v3dViewPublic::link(dtkAbstractView *other)
 
       d->view2DAxial->SetLinkPosition (1);
       d->view2DAxial->SetLinkZoom (1);
+      d->view2DAxial->SetLinkCameraFocalAndPosition (1);
       d->view2DAxial->SetLinkWindowLevel (1);
       
       this->setProperty ("PositionLinked",  "true");
@@ -967,6 +969,7 @@ void v3dViewPublic::unlink(dtkAbstractView *other)
 	  
 	  d->view2DAxial->SetLinkPosition (0);
 	  d->view2DAxial->SetLinkZoom (0);
+      d->view2DAxial->SetLinkCameraFocalAndPosition (0);
 	  d->view2DAxial->SetLinkWindowLevel (0);
       
 	  this->setProperty ("PositionLinked",  "false");
@@ -1178,9 +1181,19 @@ void v3dViewPublic::linkPosition (dtkAbstractView *view, bool value)
 	
 	  vview->viewAxial()->SetLinkPosition ( 1 );
 	  vview->viewAxial()->SetLinkZoom ( 1 );
+      vview->viewAxial()->SetLinkCameraFocalAndPosition (1);		  
 
 	  vview->viewAxial()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
 	  vview->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
+	
+	  vview->viewAxial()->SetZoom    ( d->view2DAxial->GetZoom() );
+	  vview->view3D()->SetZoom    ( d->view3D->GetZoom() );
+		  if (vview->viewAxial()->GetOrientation()==d->view2DAxial->GetOrientation()) {
+			  double pos[3], focal[3];
+			  d->view2DAxial->GetCameraFocalAndPosition(pos, focal);		  			  
+	  vview->viewAxial()->SetCameraFocalAndPosition    ( pos, focal );
+		  }
+	  
       }
       else {
 
@@ -1188,6 +1201,7 @@ void v3dViewPublic::linkPosition (dtkAbstractView *view, bool value)
 	  vview->setProperty ("CameraLinked",   "false");
 	  vview->viewAxial()->SetLinkPosition ( 0 );
 	  vview->viewAxial()->SetLinkZoom ( 0 );
+      vview->viewAxial()->SetLinkCameraFocalAndPosition (0);
       }
   }
 }
