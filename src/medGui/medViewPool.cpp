@@ -186,6 +186,12 @@ void medViewPool::onViewDaddy (bool daddy)
 		d->viewData[view] = NULL;
 		view->update();
 	    }
+			
+		// link with new daddy
+		it = d->views.begin();
+		for( ; it!=d->views.end(); it++)
+			view->link((*it));
+				
 	    connect (this, SIGNAL (linkPosition  (dtkAbstractView *, bool)), view, SLOT (linkPosition  (dtkAbstractView *, bool)));
 	    connect (this, SIGNAL (linkCamera    (dtkAbstractView *, bool)), view, SLOT (linkCamera    (dtkAbstractView *, bool)));
 	    connect (this, SIGNAL (linkWindowing (dtkAbstractView *, bool)), view, SLOT (linkWindowing (dtkAbstractView *, bool)));
