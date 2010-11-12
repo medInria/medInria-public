@@ -211,6 +211,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     layout->setSpacing(0);
     layout->addWidget(d->toolbox_container);
     layout->addWidget(d->stack);
+
+
+    TestImport();
 }
 
 medBrowserArea::~medBrowserArea(void)
@@ -333,4 +336,16 @@ void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
     d->toolbox_jobs->stack()->setLabel(mover, "moving");
 
     QThreadPool::globalInstance()->start(mover);
+}
+
+void medBrowserArea::TestImport()
+{
+    QDir tmp = QDir::temp();
+    tmp.cd("import");
+    QStringList dirs;
+    dirs = tmp.entryList(QDir::AllDirs);
+    for(int i = 0; i< dirs.size(); i++)
+    {
+        onPacsImport(tmp.absolutePath() + "/" + dirs.at(i));
+    }
 }

@@ -61,6 +61,8 @@ void medPacsWidgetPrivate::run(void)
         return;
     }
     QDir tmp = QDir::temp();
+    tmp.mkdir("import");
+    tmp.cd("import");
     this->server->setStorageDirectory(tmp.absolutePath().toLatin1());
     this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), this->host_port.toInt());
 }
