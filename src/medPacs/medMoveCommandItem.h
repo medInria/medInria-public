@@ -20,4 +20,4 @@ struct medMoveCommandItem
 };
 Q_DECLARE_METATYPE(medMoveCommandItem);
 
-#endif MEDMOVECOMMANDITEM_H
+#endif // MEDMOVECOMMANDITEM_H

@@ -6,7 +6,8 @@
 #include <QtCore>
 
 class medPacsMoverPrivate;
-#include "medPacsWidget.h"
+
+#include "medMoveCommandItem.h"
 
 class MEDPACS_EXPORT medPacsMover : public QObject, public QRunnable
 {
