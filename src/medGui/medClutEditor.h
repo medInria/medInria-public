@@ -108,7 +108,7 @@ public:
     QList<medClutEditorVertex *> & vertices();
     const QList<medClutEditorVertex *> & vertices() const;
 
-    void forceGeometricalConstraints( medClutEditorVertex * restrictedX );
+    void forceGeometricalConstraints( medClutEditorVertex * driver );
     void updateCoordinates();
 
     QRectF boundingRect(void) const;
@@ -195,6 +195,8 @@ public:
     medClutEditorTable * table();
     medClutEditorHistogram * histogram();
     medClutEditorView * view();
+
+    QRectF  plotArea();
     QPointF coordinateToValue( QPointF coord );
     QPointF valueToCoordinate( QPointF value );
 

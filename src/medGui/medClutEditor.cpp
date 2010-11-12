@@ -143,12 +143,6 @@ void medClutEditorVertex::paint(QPainter *painter,
     painter->setBrush(d->fgColor);
     painter->drawEllipse( -d->innerRadius,    -d->innerRadius,
 			  2 * d->innerRadius, 2 * d->innerRadius );
-
-    if ( this->isSelected() ) {
-	painter->setPen( Qt::green );
-	QString annotation = QString( "a: %1" ).arg( d->color.alphaF() );
-	painter->drawText( QPointF( 0.0, 0.0 ), annotation );
-    }	
 }
 
 QRectF medClutEditorVertex::boundingRect(void) const
@@ -352,36 +346,32 @@ void medClutEditorTable::range( qreal & min, qreal & max ) const
 }
 
 void medClutEditorTable::forceGeometricalConstraints(
-    medClutEditorVertex * restrictedX )
+    medClutEditorVertex * driver )
 {
     medClutEditorScene * scene =
         dynamic_cast< medClutEditorScene * >( this->scene() );
-    QRectF box = scene->sceneRect();
+    QRectF box = scene->plotArea();
     
+    driver->forceGeometricalConstraints( box );
+    driver->updateValue();
+
     int n = d->vertices.count();
     for ( int i = 0 ; i < n; ++i ) {
-        // qreal left  = box.left() + static_cast< qreal >( i );
-        // qreal right = box.right() - static_cast< qreal >( n - i - 1 );
-	qreal left  = std::numeric_limits< qreal >::min();
-	qreal right = std::numeric_limits< qreal >::max();
-	if ( d->vertices.at( i ) == restrictedX ) {
-	    left  = box.left();
-	    right = box.right();
-	}
+	if ( d->vertices.at( i ) == driver )
+	    continue;
+
+	qreal left  = d->vertices.at( i )->x() - 1.0;
+	qreal right = d->vertices.at( i )->x() + 1.0;
 
         for ( int j = i - 1; j >= 0; --j )
             if ( d->vertices.at( j )->isSelected() ) {
-                qreal l = d->vertices.at( j )->x() +
-		    static_cast< qreal >( i - j );
-                left = qMin( qMax( left, l ), right );
+		left = d->vertices.at( j )->x() + static_cast<qreal>( i - j );
                 break;
             }
 
         for ( int j = i + 1; j < n; ++j )
             if ( d->vertices.at( j )->isSelected() ) {
-                qreal r = d->vertices.at( j )->x() +
-		    static_cast< qreal >( i - j );
-                right = qMax( left, qMin( r, right ) );
+                right = d->vertices.at( j )->x() + static_cast<qreal>( i - j );
                 break;
             }
 
@@ -606,16 +596,14 @@ void medClutEditorTable::paint(QPainter *painter,
         dynamic_cast< medClutEditorScene * >( this->scene() );
     if ( scene == NULL )
 	return;
-    qreal bottom = scene->valueToCoordinate( QPointF( 0.0, 0.0 ) ).y();
+
+    // QPointF origin = scene->valueToCoordinate( QPointF( 0.0, 0.0 ) );
+    QRectF area = scene->plotArea();
 
     int n_points = d->vertices.size();
     QPointF *points = new QPointF[n_points + 2];
-    // points[0]            = QPoint(0, vertices.first()->position().y());
-    // points[n_points + 1] = QPoint(0, vertices.last()->position().y());
-    // points[0]            = QPointF(d->vertices.first()->x(), d->size.height());
-    // points[n_points + 1] = QPointF(d->vertices.last()->x(),  d->size.height());
-    points[0]            = QPointF( d->vertices.first()->x(), bottom );
-    points[n_points + 1] = QPointF( d->vertices.last()->x(),  bottom );
+    points[0]            = QPointF( d->vertices.first()->x(), area.bottom() );
+    points[n_points + 1] = QPointF( d->vertices.last()->x(),  area.bottom() );
     for ( int i = 0 ; i < n_points; i++ )
         points[i+1] = d->vertices.at(i)->pos();
 
@@ -638,6 +626,24 @@ void medClutEditorTable::paint(QPainter *painter,
     painter->setBrush(linearGradient);
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
     painter->drawPolygon(points, n_points + 2);
+
+    QPen(Qt::lightGray, 2);
+    painter->setPen(QPen(Qt::gray, 0));
+    foreach ( medClutEditorVertex * vertex, d->vertices ) {
+	if ( vertex->isSelected() ) {
+	    const QPointF & p = vertex->pos();
+	    painter->drawLine( p, QPointF( p.x(), area.bottom() ) );
+	    painter->drawLine( p, QPointF( area.left(), p.y() ) );
+
+	    QString annotation;
+	    annotation.setNum( vertex->color().alphaF(), 'g', 2 );
+	    painter->drawText( QPointF( area.left() - 40.0, p.y() + 5.0 ),
+			       annotation );
+	    annotation.setNum( vertex->value().x(), 'f', 2 );
+	    painter->drawText( QPointF( p.x() - 20.0, area.bottom() + 20.0 ),
+			       annotation );
+	}
+    }
 
     delete[] points;
 }
@@ -841,6 +847,7 @@ class medClutEditorScenePrivate
 {
 public:
     QSizeF size;
+    qreal leftMargin, rightMargin, topMargin, bottomMargin;
     qreal rangeMin, rangeMax;
 };
 
@@ -850,6 +857,10 @@ medClutEditorScene::medClutEditorScene( QObject * parent )
 {
     d = new medClutEditorScenePrivate;
     d->size = QSizeF( 500.0, 300.0 );
+    d->leftMargin   = 50.0;
+    d->rightMargin  = 10.0;
+    d->topMargin    = 10.0;
+    d->bottomMargin = 30.0;
     d->rangeMin = 0.0;
     d->rangeMax = d->size.width();
     this->setSceneRect( 0.0, 0.0, d->size.width(), d->size.height() );
@@ -890,25 +901,36 @@ medClutEditorHistogram * medClutEditorScene::histogram()
     return NULL;
 }
 
+QRectF medClutEditorScene::plotArea()
+{
+    return this->sceneRect().adjusted( d->leftMargin,   d->topMargin,
+				       -d->rightMargin, -d->bottomMargin );
+}
+
 QPointF medClutEditorScene::coordinateToValue( QPointF coord )
 {
-    qreal valRange  = d->rangeMax - d->rangeMin;
+    qreal  valRange = d->rangeMax - d->rangeMin;
+    QRectF area     = this->plotArea();
 
     QPointF value;
-    value.setX( d->rangeMin + valRange * ( coord.x() / d->size.width() ) );
-    value.setY( ( d->size.height() - coord.y() ) / d->size.height() );
+    value.setX( d->rangeMin +
+		valRange * ( ( coord.x() - d->leftMargin ) / area.width() ) );
+    value.setY( ( area.height() - ( coord.y() - d->topMargin ) ) /
+		area.height() );
 
     return value;
 }
 
 QPointF medClutEditorScene::valueToCoordinate( QPointF value )
 {
-    qreal valRange  = d->rangeMax - d->rangeMin;
+    qreal  valRange = d->rangeMax - d->rangeMin;
+    QRectF area     = this->plotArea();
 
     QPointF coord;
     if ( valRange > 0.0 ) {
-	coord.setX( d->size.width() * ( value.x() - d->rangeMin ) / valRange );
-	coord.setY( d->size.height() - d->size.height() * value.y() );
+	coord.setX( d->leftMargin +
+		    area.width() * ( value.x() - d->rangeMin ) / valRange );
+	coord.setY( d->topMargin + area.height() - area.height() * value.y() );
     }
 
     // qDebug() << "range: (" << d->rangeMin << ", " << d->rangeMax << ")";
