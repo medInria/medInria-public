@@ -30,6 +30,17 @@ public:
 
 
     /**
+    * Default Destructor
+    */
+    ~dcmtkStoreScu();
+
+    /**
+    * run - thread method
+    * @return   void
+    */
+    virtual void run();
+
+    /**
     * Directory to look for DICOM files. Default ist: current directory
     * @param dir path to dicom source files
     * see setScanPattern(const char* pattern) for file exclusion

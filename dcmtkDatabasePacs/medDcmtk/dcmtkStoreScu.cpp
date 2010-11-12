@@ -73,6 +73,20 @@ dcmtkStoreScu::dcmtkStoreScu()
 
 //---------------------------------------------------------------------------------------------
 
+dcmtkStoreScu::~dcmtkStoreScu()
+{
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkStoreScu::run()
+{
+    this->sendStoreRequest();
+}
+
+//---------------------------------------------------------------------------------------------
+
 bool dcmtkStoreScu::setScanDirectory(const char* dir)
 {
     std::string fullPath(dir);
