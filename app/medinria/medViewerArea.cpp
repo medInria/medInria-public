@@ -680,7 +680,7 @@ void medViewerArea::bringUpTransferFunction(bool checked)
       d->transFun->setWindowModality( Qt::WindowModal );
       d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
 
-      d->transFun->setData(static_cast<dtkAbstractData *>(view->data()));
+      // d->transFun->setData(static_cast<dtkAbstractData *>(view->data()));
       d->transFun->setView(dynamic_cast<medAbstractView*>(view));
 
       d->transFun->show();

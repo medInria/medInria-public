@@ -41,11 +41,13 @@ class medClutEditorVertex : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 
 public:
-    medClutEditorVertex(qreal x, qreal y, QColor color = Qt::white,
+    medClutEditorVertex(QPointF value, QPointF coord, QColor color = Qt::white,
 			QGraphicsItem *parent = 0);
     medClutEditorVertex( const medClutEditorVertex & other,
                          QGraphicsItem *parent = 0);
     ~medClutEditorVertex(void);
+
+    const QPointF & value() const;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0);
@@ -55,6 +57,9 @@ public:
     void setColor(QColor color);
     void forceGeometricalConstraints( const QRectF & limits );
     void interpolate( medClutEditorVertex * pred, medClutEditorVertex * next );
+
+    void updateCoordinates();
+    void updateValue();
 
     static bool LessThan(const medClutEditorVertex *v1,
                          const medClutEditorVertex *v2) {
@@ -72,37 +77,6 @@ private :
     medClutEditorVertexPrivate * d;
 };
 
-
-// /////////////////////////////////////////////////////////////////
-// medClutEditorHistogram
-// /////////////////////////////////////////////////////////////////
-class medClutEditorHistogramPrivate;
-
-class medClutEditorHistogram : public QGraphicsItem
-{
-public:
-     medClutEditorHistogram(QGraphicsItem *parent = 0);
-    ~medClutEditorHistogram(void);
-
-    QSizeF size(void) const;
-    void setSize( QSizeF s );
-
-    void addValue(qreal intensity, qreal number);
-    qreal getRangeMin() const;
-    qreal getRangeMax() const;
-    QPointF valueToCoordinate( QPointF value ) const;
-
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-
-public:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget = 0);
-
-    QRectF boundingRect(void) const;
-
-private:
-    medClutEditorHistogramPrivate * d;
-};
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditorTable
@@ -123,18 +97,22 @@ public:
 
     const QString & title() const;
     void setTitle(const QString & title);
+    void setMinSize( const QSizeF & size );
+    const QSizeF & minSize() const;
+    void setMinRange( qreal min, qreal max );
     void setSize( const QSizeF & size );
     const QSizeF & size() const;
-    void setRange( qreal min, qreal max );
-    QPointF coordinateToValue( QPointF coord );
-    QPointF valueToCoordinate( QPointF value );
+    // void setRange( qreal min, qreal max );
 
     void addVertex(medClutEditorVertex *vertex, bool interpolate = false);
-    QList<medClutEditorVertex *> vertices();
-    QList<const medClutEditorVertex *> vertices() const;
-    void forceGeometricalConstraints();
+    QList<medClutEditorVertex *> & vertices();
+    const QList<medClutEditorVertex *> & vertices() const;
+
+    void forceGeometricalConstraints( medClutEditorVertex * restrictedX );
+    void updateCoordinates();
 
     QRectF boundingRect(void) const;
+    void range( qreal & min, qreal & max ) const;
 
     void setSelectedAllVertices( bool isSelected );
     void deleteSelection();
@@ -165,8 +143,48 @@ private:
 
 
 // /////////////////////////////////////////////////////////////////
+// medClutEditorHistogram
+// /////////////////////////////////////////////////////////////////
+class medClutEditorHistogramPrivate;
+
+class medClutEditorHistogram : public QGraphicsItem
+{
+public:
+     medClutEditorHistogram(QGraphicsItem *parent = 0);
+    ~medClutEditorHistogram(void);
+
+    // QSizeF size(void) const;
+    // void setSize( QSizeF s );
+
+    void range( qreal & min, qreal & max ) const;
+    qreal getRangeMin() const;
+    qreal getRangeMax() const;
+    void updateCoordinates();
+
+    const QMap< qreal, qreal > & values();
+    void setValues(const QMap<qreal, qreal> & bins);
+    void addValue(qreal intensity, qreal number);
+    void adjustScales();
+    // QPointF valueToCoordinate( QPointF value ) const;
+
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+public:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget = 0);
+
+    QRectF boundingRect(void) const;
+
+private:
+    medClutEditorHistogramPrivate * d;
+};
+
+
+// /////////////////////////////////////////////////////////////////
 // medClutEditorScene
 // /////////////////////////////////////////////////////////////////
+class medClutEditorView;
+class medClutEditorScenePrivate;
 
 class medClutEditorScene : public QGraphicsScene
 {
@@ -175,7 +193,19 @@ public:
     ~medClutEditorScene(void);
 
     medClutEditorTable * table();
+    medClutEditorHistogram * histogram();
+    medClutEditorView * view();
+    QPointF coordinateToValue( QPointF coord );
+    QPointF valueToCoordinate( QPointF value );
+
+    void updateCoordinates();
+    void setSize( QSizeF size );
+    void setRange( qreal min, qreal max );
+    void adjustRange();
+    void scaleRange( qreal factor );
     // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+private:
+    medClutEditorScenePrivate * d;
 };
 
 
@@ -192,12 +222,12 @@ public:
 protected:
     medClutEditorTable * table();
 
-    void resizeEvent(QResizeEvent *event);
-    void wheelEvent ( QWheelEvent * event );
-    void keyReleaseEvent( QKeyEvent * event);
-    void keyPressEvent( QKeyEvent * event);
-    void mousePressEvent(QMouseEvent * event );
-    void mouseReleaseEvent(QMouseEvent * event );
+    void resizeEvent	   ( QResizeEvent * event );
+    void wheelEvent 	   ( QWheelEvent  * event );
+    void keyReleaseEvent   ( QKeyEvent    * event );
+    void keyPressEvent     ( QKeyEvent    * event );
+    void mousePressEvent   ( QMouseEvent  * event );
+    void mouseReleaseEvent ( QMouseEvent  * event );
 };
 
 

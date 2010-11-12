@@ -89,11 +89,11 @@ void medXMLToLUTReaderPrivate::readNode(medClutEditorTable & table)
          qDebug() << "node not compliant with 6 coordinates scheme";
          return;
      }
-     table.addVertex(new medClutEditorVertex(sl.at(0).toDouble(),
-                                             sl.at(1).toDouble(),
-                                             QColor(sl.at(2).toInt(),
-                                                    sl.at(3).toInt(),
-                                                    sl.at(4).toInt(),
-                                                    sl.at(5).toInt())));
+     // table.addVertex(new medClutEditorVertex(sl.at(0).toDouble(),
+     //                                         sl.at(1).toDouble(),
+     //                                         QColor(sl.at(2).toInt(),
+     //                                                sl.at(3).toInt(),
+     //                                                sl.at(4).toInt(),
+     //                                                sl.at(5).toInt())));
 
  }
