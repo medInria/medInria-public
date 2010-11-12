@@ -28,11 +28,15 @@
 #include <dtkCore/dtkLog.h>
 #include <medSql/medDatabaseController.h>
 
+
 class medDatabaseImporterPrivate
 {
 public:
     QString file;
+    static QMutex mutex;
 };
+
+QMutex medDatabaseImporterPrivate::mutex;
 
 medDatabaseImporter::medDatabaseImporter(const QString& file) : QRunnable(), d(new medDatabaseImporterPrivate)
 {
@@ -48,6 +52,7 @@ medDatabaseImporter::~medDatabaseImporter(void)
 
 void medDatabaseImporter::run(void)
 {
+
     QString file = d->file;
 
     QDir dir(file);
@@ -88,6 +93,8 @@ void medDatabaseImporter::run(void)
 
         dtkAbstractData* dtkdata = 0;
 
+        QMutexLocker locker(&d->mutex);
+
         for (int i=0; i<readers.size(); i++) {
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
             if (dataReader->canRead( fileInfo.filePath() )) {
@@ -100,6 +107,7 @@ void medDatabaseImporter::run(void)
                 break;
             }
         }
+        locker.unlock();
 
         if (!dtkdata)
             continue;
@@ -742,4 +750,5 @@ void medDatabaseImporter::run(void)
     
     emit progressed(100);
     emit success();
+
 }

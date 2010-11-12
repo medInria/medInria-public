@@ -47,7 +47,7 @@ public:
     medDatabaseView *view(void);
     medDatabaseModel *model(void);
 
-    void TestImport();
+    void testImport();
 
 signals:
     void open(const medDataIndex& index);
