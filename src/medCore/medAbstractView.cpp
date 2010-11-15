@@ -4,24 +4,7 @@
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent)
 {
     QStringList lut;
-    lut << "Default"
-	<< "Black&White"
-	<< "Black&WhiteInversed"
-	<< "Spectrum"
-	<< "HotMetal"
-	<< "GE"
-	<< "Flow"
-	<< "Loni"
-	<< "Loni2"
-	<< "Asymmetry"
-	<< "PValue"
-	<< "blueBlackAlpha"
-	<< "greenBlackAlpha"
-	<< "redBlackAlpha"
-	<< "Muscles&Bones"
-      	<< "Red Vessels"
-      	<< "Bones"
-	<< "Stern";
+    lut << "Default";
     
     // properties to keep up to date synchronization
     this->addProperty ("Daddy",    QStringList() << "true" << "false");
@@ -55,7 +38,6 @@ medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(
 {
 
 }
-
 
 void medAbstractView::setColorLookupTable(int min_range,
                                      int max_range,
