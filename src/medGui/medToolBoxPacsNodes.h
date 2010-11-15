@@ -33,7 +33,11 @@ public:
     ~medToolBoxPacsNodes(void);
 
     void readSettings(void);
+
     void writeSettings(void);
+
+signals:
+    void nodesUpdated();
 
 public slots:
     void addNode(void);
@@ -41,6 +45,9 @@ public slots:
     void echo(void);
 
 private:
+
+    void fillWidget( QList<QVariant> nodes );
+
     medToolBoxPacsNodesPrivate *d;
 };
 

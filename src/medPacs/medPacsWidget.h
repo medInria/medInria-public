@@ -35,15 +35,14 @@ public:
      medPacsWidget(QWidget* parent);
     ~medPacsWidget(void);
 
-    void readSettings(void);
-    void writeSettings(void);
-
 signals:
     void moveList(const QVector<medMoveCommandItem>&);
     void import(QString);
+    void requestSelectedNodes();
 
 public slots:
     void search(QString query);
+    void updateSelectedNodes(QVector<int> list);
 
 protected slots:
     void onItemExpanded(QTreeWidgetItem *);
@@ -51,6 +50,8 @@ protected slots:
     void updateContextMenu(const QPoint&);
 
 protected:
+
+  void readSettings(void);
   void findSeriesLevel(QTreeWidgetItem* item);
   void findImageLevel(QTreeWidgetItem* item);
 

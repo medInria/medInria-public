@@ -25,6 +25,7 @@ class medToolBoxJobs;
 class medToolBoxSource;
 class medToolBoxPacsHost;
 class medToolBoxPacsNodes;
+class medPacsSelector;
 class medToolBoxPacsSearch;
 
 class medDatabasePreview;
@@ -47,6 +48,7 @@ public:
     medToolBoxSource *toolbox_source;
     medToolBoxPacsHost *toolbox_pacs_host;
     medToolBoxPacsNodes *toolbox_pacs_nodes;
+    medPacsSelector *pacs_selector;
     medToolBoxPacsSearch *toolbox_pacs_search;
 
     medDatabasePreview *preview;

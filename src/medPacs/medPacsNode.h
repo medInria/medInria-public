@@ -28,9 +28,13 @@ class medPacsNode : public medAbstractPacsNode
             return m_ip;
         }
 
-        inline unsigned int port(void) {
+        unsigned int port(void) {
             return m_port;
         }
+		
+		bool operationSuccessful(){
+			return m_result;
+			}
 
     protected:
 
@@ -39,6 +43,8 @@ class medPacsNode : public medAbstractPacsNode
         QString  m_ip;
         
         unsigned int m_port;
+		
+		bool m_result;
 
 };
 

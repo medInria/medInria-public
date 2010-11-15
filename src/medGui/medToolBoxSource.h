@@ -33,11 +33,11 @@ public:
     ~medToolBoxSource(void);
 
     void setFileSystemWidget(QWidget *widget);
+
+    void setPacsWidget(QWidget* widget);
     
 signals:
     void indexChanged(int);
-    // void echoPressed();
-    // void findPressed();
 
 private:
     medToolBoxSourcePrivate *d;

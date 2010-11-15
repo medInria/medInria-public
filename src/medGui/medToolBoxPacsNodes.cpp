@@ -73,7 +73,7 @@ medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), 
     layout->addWidget(d->table);
     layout->addLayout(buttons_layout);
 
-    this->setTitle("Pacs nodes");
+    this->setTitle("Remote Clients");
     this->setWidget(page);
 
     connect(d->add, SIGNAL(clicked()), this, SLOT(addNode()));
@@ -108,19 +108,8 @@ void medToolBoxPacsNodes::readSettings(void)
     nodes = settings.value("nodes").toList();
     settings.endGroup();
 
-    d->table->clear(); // using clearcontent() seems not to remove the items correctly?!
-    d->table->setRowCount(0);
-    d->table->setColumnCount(3);
-    d->table->setHorizontalHeaderLabels(QStringList() << "Title" << "Address" << "Port");
-    d->table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    fillWidget(nodes);
 
-    foreach(QVariant node, nodes) {
-        int row = d->table->rowCount(); d->table->insertRow(row);
-
-        d->table->setItem(row, 0, new QTableWidgetItem(node.toStringList().at(0)));
-        d->table->setItem(row, 1, new QTableWidgetItem(node.toStringList().at(1)));
-        d->table->setItem(row, 2, new QTableWidgetItem(node.toStringList().at(2)));
-    }
 }
 
 void medToolBoxPacsNodes::writeSettings(void)
@@ -151,6 +140,7 @@ void medToolBoxPacsNodes::addNode(void)
     d->table->setItem(row, 2, new QTableWidgetItem(d->port->text()));
 
     this->writeSettings();
+    emit nodesUpdated();
 }
 
 void medToolBoxPacsNodes::remNode(void)
@@ -158,6 +148,7 @@ void medToolBoxPacsNodes::remNode(void)
     d->table->removeRow(d->table->currentRow());
 
     this->writeSettings();
+    emit nodesUpdated();
 }
 
 void medToolBoxPacsNodes::echo(void)
@@ -189,5 +180,22 @@ void medToolBoxPacsNodes::echo(void)
         } else {
             qDebug() << "echoScu: cannot create instance, maybe module was not loaded?";
         }
+    }
+}
+
+void medToolBoxPacsNodes::fillWidget( QList<QVariant> nodes )
+{
+    d->table->clear(); // using clearcontent() seems not to remove the items correctly?!
+    d->table->setRowCount(0);
+    d->table->setColumnCount(3);
+    d->table->setHorizontalHeaderLabels(QStringList() << "Title" << "Address" << "Port");
+    d->table->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    foreach(QVariant node, nodes) {
+        int row = d->table->rowCount(); d->table->insertRow(row);
+
+        d->table->setItem(row, 0, new QTableWidgetItem(node.toStringList().at(0)));
+        d->table->setItem(row, 1, new QTableWidgetItem(node.toStringList().at(1)));
+        d->table->setItem(row, 2, new QTableWidgetItem(node.toStringList().at(2)));
     }
 }

@@ -41,6 +41,7 @@
 #include <medGui/medToolBoxSource.h>
 #include <medGui/medToolBoxPacsHost.h>
 #include <medGui/medToolBoxPacsNodes.h>
+#include <medGui/medPacsSelector.h>
 #include <medGui/medToolBoxPacsSearch.h>
 
 #include <medPacs/medPacsWidget.h>
@@ -157,25 +158,12 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(d->pacs, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
     connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
 
-
     // /////////////////////////////////////////////////////////////////
 
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(database_widget);
     d->stack->addWidget(filesystem_widget);
     d->stack->addWidget(d->pacs);
-
-    // Source toolbox ///////////////////////////////////////////////
-
-    d->toolbox_source = new medToolBoxSource(this);
-    d->toolbox_source->setFileSystemWidget(d->side);
-
-    connect(d->toolbox_source, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
-
-    // Jobs //////////////////////////////////////////
-
-    d->toolbox_jobs = new medToolBoxJobs(this);
-    d->toolbox_jobs->setVisible(false);
 
     // Toolbox pacs host ///////////////////////////////////////////
 
@@ -187,12 +175,34 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_pacs_nodes = new medToolBoxPacsNodes(this);
     d->toolbox_pacs_nodes->setVisible(false);
 
+    // Pacs Selector //////////////////////////////////////////
+
+    d->pacs_selector = new medPacsSelector(this);
+
+    connect(d->toolbox_pacs_nodes, SIGNAL(nodesUpdated()), d->pacs_selector, SLOT(updateList()));
+    connect(d->pacs_selector, SIGNAL(selectionChanged(QVector<int>)), d->pacs, SLOT(updateSelectedNodes(QVector<int>)));
+
     // Toolbox pacs search //////////////////////////////////////////
 
     d->toolbox_pacs_search = new medToolBoxPacsSearch(this);
     d->toolbox_pacs_search->setVisible(false);
 
     connect(d->toolbox_pacs_search, SIGNAL(search(QString)), d->pacs, SLOT(search(QString)));
+
+
+    // Source toolbox ///////////////////////////////////////////////
+
+    d->toolbox_source = new medToolBoxSource(this);
+    d->toolbox_source->setFileSystemWidget(d->side);
+    d->toolbox_source->setPacsWidget(d->pacs_selector);
+
+    connect(d->toolbox_source, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
+
+    // Jobs //////////////////////////////////////////
+
+    d->toolbox_jobs = new medToolBoxJobs(this);
+    d->toolbox_jobs->setVisible(false);
+
 
     // Toolbox container /////////////////////////////////////////////
 

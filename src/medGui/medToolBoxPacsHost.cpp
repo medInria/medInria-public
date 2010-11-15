@@ -45,7 +45,7 @@ medToolBoxPacsHost::medToolBoxPacsHost(QWidget *parent) : medToolBox(parent), d(
     layout->addRow("Port", d->port);
     layout->addRow(d->apply);
 
-    this->setTitle("Pacs host");
+    this->setTitle("DICOM Server");
     this->setWidget(page);
 
     connect(d->apply, SIGNAL(clicked()), this, SLOT(onSettingsApplied()));

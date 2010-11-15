@@ -30,6 +30,7 @@ set(${PROJECT_NAME}_HEADERS
   medLayoutChooser.h
   medProgressionStack.h
   medStatusQuitButton.h
+  medPacsSelector.h
   medToolBox.h
   medToolBoxContainer.h
   medToolBoxConfiguration.h
@@ -57,13 +58,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medLayoutChooser.h
   medProgressionStack.h
   medStatusQuitButton.h
+  medPacsSelector.h
   medToolBox.h
   medToolBoxConfiguration.h
   medToolBoxDiffusion.h
   medToolBoxJobs.h
   medToolBoxLayout.h
   medToolBoxPacsHost.h
-  medToolBoxPacsNodes.h
+  medToolBoxPacsNodes.h  
   medToolBoxPacsSearch.h
   medToolBoxPatient.h
   medToolBoxRegistration.h
@@ -84,6 +86,7 @@ set(${PROJECT_NAME}_SOURCES
   medLayoutChooser.cpp
   medProgressionStack.cpp
   medStatusQuitButton.cpp
+  medPacsSelector.cpp
   medToolBox.cpp
   medToolBoxContainer.cpp
   medToolBoxConfiguration.cpp
@@ -91,7 +94,7 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxJobs.cpp
   medToolBoxLayout.cpp
   medToolBoxPacsHost.cpp
-  medToolBoxPacsNodes.cpp
+  medToolBoxPacsNodes.cpp  
   medToolBoxPacsSearch.cpp
   medToolBoxPatient.cpp
   medToolBoxRegistration.cpp
