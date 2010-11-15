@@ -158,7 +158,8 @@ void medClutEditorVertex::paint(QPainter *painter,
 
     setAlpha();
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-    painter->setPen( QPen( this->isSelected() ? Qt::lightGray : Qt::black, 2 ));
+    painter->setPen(
+      QPen( this->isSelected() ? Qt::lightGray : Qt::darkGray, 2 ) );
     painter->setBrush(d->bgColor);
     painter->drawEllipse( -d->outerRadius,    -d->outerRadius,
 			  2 * d->outerRadius, 2 * d->outerRadius );
@@ -624,7 +625,7 @@ void medClutEditorTable::shiftWindowCenter( qreal amount )
 {
     qreal min, max;
     this->range( min, max );
-    qreal factor = 1e-4 * ( max - min );
+    qreal factor = 5e-4 * ( max - min );
 
     foreach (medClutEditorVertex * vertex, d->vertices)
 	vertex->shiftValue( factor * amount, false );
