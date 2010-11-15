@@ -1,5 +1,5 @@
-/* medViewerToolBoxDiffusion.h --- 
- * 
+/* medToolBoxDiffusion.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
@@ -9,32 +9,33 @@
  *     Update #: 14
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#ifndef MEDVIEWERTOOLBOXDIFFUSION_H
-#define MEDVIEWERTOOLBOXDIFFUSION_H
+#ifndef MEDTOOLBOXDIFFUSION_H
+#define MEDTOOLBOXDIFFUSION_H
 
-#include <medGui/medToolBox.h>
+#include "medGuiExport.h"
+#include "medToolBox.h"
 
 class dtkAbstractView;
-class medViewerToolBoxDiffusionPrivate;
+class medToolBoxDiffusionPrivate;
 
-class MEDGUI_EXPORT medViewerToolBoxDiffusion : public medToolBox
+class MEDGUI_EXPORT medToolBoxDiffusion : public medToolBox
 {
     Q_OBJECT
-
 public:
-     medViewerToolBoxDiffusion(QWidget *parent = 0);
-    ~medViewerToolBoxDiffusion(void);
+     medToolBoxDiffusion(QWidget *parent = 0);
+    ~medToolBoxDiffusion(void);
 
     void update(dtkAbstractView *view);
-    
+
+
 public slots:
     void run (void);
 
@@ -63,9 +64,10 @@ public slots:
       void onComputeCs  (void);
       void onComputeVR  (void);
     */
-    
+
 private:
-    medViewerToolBoxDiffusionPrivate *d;
+    medToolBoxDiffusionPrivate *d;
+
 };
 
-#endif
+#endif // MEDTOOLBOXDIFFUSION_H

@@ -37,7 +37,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfigurator.h
   medViewerToolBoxConfiguration.h
   medViewerToolBoxLayout.h
-  medViewerToolBoxDiffusion.h
   medViewerToolBoxPatient.h
   medViewerToolBoxView.h)
 
@@ -55,7 +54,6 @@ set(${PROJECT_NAME}_SOURCES
   medViewerConfigurator.cpp
   medViewerToolBoxConfiguration.cpp
   medViewerToolBoxLayout.cpp
-  medViewerToolBoxDiffusion.cpp
   medViewerToolBoxPatient.cpp
   medViewerToolBoxView.cpp
   main.cpp)

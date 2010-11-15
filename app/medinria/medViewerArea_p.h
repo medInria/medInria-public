@@ -30,7 +30,7 @@ class medDatabaseNavigator;
 
 class medViewerAreaStack;
 class medViewerToolBoxConfiguration;
-class medViewerToolBoxDiffusion;
+class medToolBoxDiffusion;
 
 class medClutEditor;
 
@@ -45,7 +45,7 @@ public:
     medViewerToolBoxConfiguration *configurationToolBox;
     medViewerToolBoxLayout *layoutToolBox;
     medViewerToolBoxView *viewToolBox;
-    medViewerToolBoxDiffusion *diffusionToolBox;
+    medToolBoxDiffusion *diffusionToolBox;
 
     medToolBoxRegistration *registrationToolBox;
     medToolBoxContainer *toolbox_container;

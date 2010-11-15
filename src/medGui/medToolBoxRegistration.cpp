@@ -293,6 +293,7 @@ void medToolBoxRegistration::onMovingImageDropped (void)
 
 void medToolBoxRegistration::onToolBoxChosen(const QString& id)
 {
+
     medToolBoxRegistrationCustom *toolbox = medToolBoxFactory::instance()->createCustomRegistrationToolBox(id);
 
     if(!toolbox) {

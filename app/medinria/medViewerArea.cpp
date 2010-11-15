@@ -23,7 +23,7 @@
 #include "medViewerConfiguration.h"
 #include "medViewerConfigurator.h"
 #include "medViewerToolBoxConfiguration.h"
-#include "medViewerToolBoxDiffusion.h"
+
 #include "medViewerToolBoxLayout.h"
 #include "medViewerToolBoxPatient.h"
 #include "medViewerToolBoxView.h"
@@ -52,6 +52,7 @@
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medToolBoxRegistration.h>
+#include <medGui/medToolBoxDiffusion.h>
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerCustom.h>
 #include <medGui/medViewContainerMulti.h>
@@ -122,7 +123,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // -- Diffusion toolbox --
 
-    d->diffusionToolBox = new medViewerToolBoxDiffusion(this);
+    d->diffusionToolBox = new medToolBoxDiffusion(this);
     d->diffusionToolBox->setVisible(false);
 
     // -- Registration toolbox --

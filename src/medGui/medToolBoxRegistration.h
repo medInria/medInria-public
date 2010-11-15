@@ -20,6 +20,7 @@
 #ifndef MEDTOOLBOXREGISTRATION_H
 #define MEDTOOLBOXREGISTRATION_H
 
+#include "medGuiExport.h"
 #include "medToolBox.h"
 
 class dtkAbstractDataImage;
