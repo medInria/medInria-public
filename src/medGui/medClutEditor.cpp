@@ -47,6 +47,9 @@ public:
 
     qreal innerRadius;
     qreal outerRadius;
+
+    bool isMoved;
+    QPointF lastPos;
 };
 
 medClutEditorVertex::medClutEditorVertex(QPointF value, QPointF coord,
@@ -65,6 +68,8 @@ medClutEditorVertex::medClutEditorVertex(QPointF value, QPointF coord,
 
     setAlpha();
     setColor( color );
+
+    d->isMoved = false;
 
     this->setFlag(QGraphicsItem::ItemIsMovable, true);
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -107,11 +112,17 @@ const QPointF & medClutEditorVertex::value() const
 void medClutEditorVertex::shiftValue( qreal amount, bool forceConstraints )
 {
     if ( amount != 0.0 ) {
-	this->setX( this->x() + amount );
+	medClutEditorTable * table =
+	    dynamic_cast< medClutEditorTable * >( this->parentItem() );
+	forceConstraints = forceConstraints && table;
+
 	if ( forceConstraints )
-	    if ( medClutEditorTable * table =
-		 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
-		table->forceGeometricalConstraints( this );
+	    table->initiateMoveSelection();
+	this->setX( this->x() + amount );
+	if ( forceConstraints ) {
+	    table->constrainMoveSelection( this );
+	    table->finalizeMoveSelection();
+	}
 
         this->updateValue();
     }
@@ -192,22 +203,50 @@ void medClutEditorVertex::setAlpha()
 void medClutEditorVertex::updateCoordinates()
 {
     if ( medClutEditorScene * scene =
-	 dynamic_cast< medClutEditorScene * >( this->scene() ) )
+	 dynamic_cast< medClutEditorScene * >( this->scene() ) ) {
 	this->setPos( scene->valueToCoordinate( d->value ) );
+	this->update();
+    }
 }
 
 void medClutEditorVertex::updateValue()
 {
     if ( medClutEditorScene * scene =
-	 dynamic_cast< medClutEditorScene * >( this->scene() ) )
+	 dynamic_cast< medClutEditorScene * >( this->scene() ) ) {
 	d->value = scene->coordinateToValue( this->pos() );
+	this->update();
+    }
 
     this->setAlpha();
 }
 
-void medClutEditorVertex::forceGeometricalConstraints( const QRectF & limits )
+void medClutEditorVertex::initiateMove()
+{
+    d->isMoved = true;
+    d->lastPos = this->pos();
+}
+
+void medClutEditorVertex::finalizeMove()
+{
+    d->isMoved = false;
+}
+
+void medClutEditorVertex::forceGeometricalConstraints( const QRectF & limits,
+						       bool inManhattan )
 {
     bool forced = false;
+
+    if ( inManhattan ) {
+	QPointF move = this->pos() - d->lastPos;
+	if ( abs( move.x() ) > abs( move.y() ) ) {
+	    this->setY( d->lastPos.y() );
+	    forced = true;
+	}
+	if ( abs( move.x() ) < abs( move.y() ) ) {
+	    this->setX( d->lastPos.x() );
+	    forced = true;
+	}
+    }
 
     if ( this->x() < limits.left() ) {
         this->setX( limits.left() );
@@ -226,23 +265,32 @@ void medClutEditorVertex::forceGeometricalConstraints( const QRectF & limits )
         forced = true;
     }
 
-    if ( forced ) {
+    bool moved = forced || ( this->pos() - d->lastPos ) != QPointF( 0.0, 0.0 );
+    if ( moved ) {
 	this->updateValue();
         this->update();
     }
-
-    // if ( this->isUnderMouse() )
-    // 	qDebug() << "[" << (long int) this << "] is under mouse";
 }
 
 void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    // qDebug();
+    // qDebug() << "pos       :" << event->lastPos()
+    // 	     << " - "         << event->pos();
+    // qDebug() << "scenePos  :" << event->lastScenePos()
+    // 	     << " - "         << event->scenePos();
+
     this->QGraphicsItem::mouseMoveEvent( event );
+    // this->setPos( this->pos() + ( event->pos() - event->lastPos() ) );
+
+    bool withShift =
+	static_cast<bool>( event->modifiers() & Qt::ShiftModifier );
 
     if ( medClutEditorTable * table =
          dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
-        table->forceGeometricalConstraints( this );
+        table->constrainMoveSelection( this, withShift );
 
+    // this->updateValue();
     // qDebug() << "[" << (long int) this << "] value: " << d->value;
     // qDebug() << "[" << (long int) this << "] coord: " << this->pos();
 }
@@ -258,10 +306,17 @@ void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    // qDebug() << "press";
+
     if (event->button() == Qt::RightButton)
         event->ignore();
-    else
+    else {
         this->QGraphicsItem::mousePressEvent(event);
+	if ( medClutEditorTable * table =
+	     dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
+	    table->initiateMoveSelection();
+    }
+	
 
     // if (event->button() == Qt::RightButton) {
     //          this->setSelected( !this->isSelected() );
@@ -275,6 +330,16 @@ void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
     // }
 
     // this->QGraphicsItem::mousePressEvent(event);
+}
+
+void medClutEditorVertex::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    this->QGraphicsItem::mouseReleaseEvent(event);
+    if ( medClutEditorTable * table =
+         dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
+	table->finalizeMoveSelection();
+
+    // qDebug() << "release";
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -360,22 +425,41 @@ void medClutEditorTable::range( qreal & min, qreal & max ) const
     max = d->vertices.last()->value().x();
 }
 
-void medClutEditorTable::forceGeometricalConstraints(
-    medClutEditorVertex * driver )
+void medClutEditorTable::initiateMoveSelection()
+{
+    foreach (medClutEditorVertex * vertex, d->vertices)
+        if ( vertex->isSelected() )
+	    vertex->initiateMove();
+}
+
+void medClutEditorTable::constrainMoveSelection( medClutEditorVertex * driver,
+						 bool inManhattan )
 {
     medClutEditorScene * scene =
         dynamic_cast< medClutEditorScene * >( this->scene() );
     QRectF box = scene->plotArea();
-    
-    driver->forceGeometricalConstraints( box );
+
+    foreach (medClutEditorVertex * vertex, d->vertices) {
+	QRectF limits = box;
+        if ( vertex->isSelected() ) {
+	    if ( vertex != driver ) {
+		limits.setLeft(  vertex->x() - 1.0 );
+		limits.setRight( vertex->x() + 1.0 );
+	    }
+	    vertex->forceGeometricalConstraints( limits, inManhattan );
+	    // vertex->updateValue();
+	}
+    }
 
     int n = d->vertices.count();
     for ( int i = 0 ; i < n; ++i ) {
-	if ( d->vertices.at( i ) == driver )
+	medClutEditorVertex * vertex = d->vertices.at( i );
+
+	if ( vertex->isSelected() )
 	    continue;
 
-	qreal left  = d->vertices.at( i )->x() - 1.0;
-	qreal right = d->vertices.at( i )->x() + 1.0;
+	qreal left  = vertex->x() - 1.0;
+	qreal right = vertex->x() + 1.0;
 
         for ( int j = i - 1; j >= 0; --j )
             if ( d->vertices.at( j )->isSelected() ) {
@@ -393,12 +477,20 @@ void medClutEditorTable::forceGeometricalConstraints(
         limits.setLeft( left );
         limits.setRight( right );
 
-        d->vertices.at( i )->forceGeometricalConstraints( limits );
+        vertex->forceGeometricalConstraints( limits );
     }
+}
+
+void medClutEditorTable::finalizeMoveSelection()
+{
+    foreach (medClutEditorVertex * vertex, d->vertices)
+        if ( vertex->isSelected() )
+	    vertex->finalizeMove();
 }
 
 void medClutEditorTable::updateCoordinates()
 {
+    this->prepareGeometryChange();
     foreach (medClutEditorVertex * vertex, d->vertices)
         vertex->updateCoordinates();
 }
@@ -861,6 +953,7 @@ qreal medClutEditorHistogram::getRangeMax(void) const
 
 void medClutEditorHistogram::updateCoordinates()
 {
+    this->prepareGeometryChange();
     d->scaledValues.clear();
 }
 

@@ -56,7 +56,12 @@ public:
     QRectF boundingRect(void) const;
     QColor color(void) const;
     void setColor(QColor color);
-    void forceGeometricalConstraints( const QRectF & limits );
+
+    void initiateMove();
+    void finalizeMove();
+    void forceGeometricalConstraints( const QRectF & limits,
+				      bool inManhattan = false );
+
     void interpolate( medClutEditorVertex * pred, medClutEditorVertex * next );
 
     void updateCoordinates();
@@ -71,7 +76,7 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    // void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private :
     void setAlpha();
@@ -109,7 +114,10 @@ public:
     QList<medClutEditorVertex *> & vertices();
     const QList<medClutEditorVertex *> & vertices() const;
 
-    void forceGeometricalConstraints( medClutEditorVertex * driver );
+    void initiateMoveSelection();
+    void constrainMoveSelection( medClutEditorVertex * driver,
+				 bool inManhattan = false );
+    void finalizeMoveSelection();
     void updateCoordinates();
 
     QRectF boundingRect(void) const;
