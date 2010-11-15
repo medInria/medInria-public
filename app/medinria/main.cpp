@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  7 10:53:01 2010 (+0200)
+ * Last-Updated: Thu Oct 14 14:33:19 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 138
+ *     Update #: 139
  */
 
 /* Commentary: 
@@ -54,8 +54,9 @@ int main(int argc, char *argv[])
     medMainWindow mainwindow;
 
     mainwindow.show();
-    mainwindow.raise();
-    if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen"))
+
+    if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
+    && !dtkApplicationArgumentsContain(&application, "--wall"))
         mainwindow.setFullScreen(true);
 
     if(application.arguments().contains("--wall"))

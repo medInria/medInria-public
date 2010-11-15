@@ -23,6 +23,8 @@
 
 #include <dtkCore/dtkAbstractView.h>
 
+#include <medCore/medAbstractView.h>
+
 medViewContainerCustom::medViewContainerCustom (QWidget *parent) : medViewContainer(parent)
 {
 }
@@ -41,10 +43,13 @@ void medViewContainerCustom::split(int rows, int cols)
     if (d->layout->count())
         return;
 
-    for(int i = 0 ; i < rows ; i++)
+    for(int i = 0 ; i < rows ; i++) {
+		d->layout->setRowStretch(i, 1);
         for(int j = 0 ; j < cols ; j++) {
 	    medViewContainerCustom *container = new medViewContainerCustom(this);
             d->layout->addWidget(container, i, j);
+			d->layout->setColumnStretch(j, 1);
+		}
 	}
 
     this->setCurrent(NULL);
@@ -62,10 +67,14 @@ void medViewContainerCustom::setPreset(int preset)
     case A:
         d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
         d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
+		d->layout->setColumnStretch(0, 1);
+		d->layout->setColumnStretch(1, 1);			
         break;
     case B:
         d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
         d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
+		d->layout->setRowStretch(0, 1);
+		d->layout->setRowStretch(1, 1);						
         break;
     case C:
         custom1 = new medViewContainerCustom(this);
@@ -90,6 +99,10 @@ void medViewContainerCustom::setPreset(int preset)
         d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
         d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
         d->layout->addWidget(new medViewContainerCustom(this), 1, 1);
+		d->layout->setColumnStretch(0, 1);
+		d->layout->setColumnStretch(1, 1);			
+		d->layout->setRowStretch(0, 1);
+		d->layout->setRowStretch(1, 1);									
         break;
     };
 
@@ -115,32 +128,31 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
     
     this->synchronize_2 (view);
 
-    connect (view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
-    connect (view, SIGNAL (becameDaddy(bool)), this, SLOT (repaint()));
+    connect (view, SIGNAL (closing()), this, SLOT (onViewClosed()));
 }
 
 void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
 {
-  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
-      parent->synchronize_2(view);
-  }
-  else { // top level medViewContainerCustom
-      d->pool->appendView (view);
-      if (d->pool->count()==1) {
-	view->setProperty ("Daddy", "true");
-	connect (d->pool, SIGNAL (linkwl (dtkAbstractView *, bool)), view, SLOT (linkwl (dtkAbstractView *, bool)));
-      }
-  }
+    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+        parent->synchronize_2(view);
+    }
+    else { // top level medViewContainerCustom
+		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view) )
+          d->pool->appendView (medView);
+	connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+    }
 }
 
 void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
 {
-  if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
-      parent->desynchronize_2(view);
-  }
-  else { // top level medViewContainerCustom
-      d->pool->removeView (view);
-  }
+    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+        parent->desynchronize_2(view);
+    }
+    else { // top level medViewContainerCustom
+		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view) )
+          d->pool->removeView (medView);
+	disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+    }
 }
 
 void medViewContainerCustom::onViewClosed (void)
@@ -149,8 +161,7 @@ void medViewContainerCustom::onViewClosed (void)
         d->layout->removeWidget (d->view->widget());
 	d->view->widget()->hide();
 	this->desynchronize_2 (d->view);
-	disconnect (d->view, SIGNAL (closed()),          this, SLOT (onViewClosed()));
-	disconnect (d->view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+	disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosed()));
 	d->view = NULL;
     }
 }

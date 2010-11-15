@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Thu Oct  7 13:00:31 2010 (+0200)
+ * Last-Updated: Thu Oct 28 15:59:12 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 967
+ *     Update #: 1030
  */
 
 /* Commentary: 
@@ -29,6 +29,9 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkGlobal.h>
+
+#include <dtkVr/dtkVrHeadRecognizer.h>
+#include <dtkVr/dtkVrGestureRecognizer.h>
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
@@ -91,7 +94,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->viewToolBox = new medToolBoxView(this);
 
     connect(d->viewToolBox, SIGNAL(foregroundLookupTableChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
-    connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
+    // connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
     connect(d->viewToolBox, SIGNAL(lutPresetChanged(QString)), this, SLOT(setupLUTPreset(QString)));
     connect(d->viewToolBox, SIGNAL(tdModeChanged(QString)), this, SLOT(setup3DMode(QString)));
     connect(d->viewToolBox, SIGNAL(tdVRModeChanged(QString)), this, SLOT(setup3DVRMode(QString)));
@@ -156,9 +159,9 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(d->toolbox_container);
-    layout->addWidget(view_container);
     layout->addWidget(navigator_container);
+    layout->addWidget(view_container);
+    layout->addWidget(d->toolbox_container);
 
     // Setting up database
 
@@ -324,14 +327,17 @@ void medViewerArea::open(const medDataIndex& index)
     if(!view)
         view = dtkAbstractViewFactory::instance()->create("v3dView");
     
-    if(!view)
+    if(!view) {
+        qDebug() << "Unable to create a v3dView";
         return;
+    }
 
     medViewManager::instance()->insert(index, view);
     
-	view->setData(data);
-	view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
-    
+    view->setData(data);
+    view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
+
+    QMutexLocker ( &d->mutex );
     d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
     d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
 	
@@ -456,6 +462,8 @@ void medViewerArea::switchToContainerPreset(int index)
     }
 }
 
+#include <dtkVr/dtkVrController.h>
+
 //! View focused callback. 
 /*! 
  *  This method updates the toolboxes according to the focused view.
@@ -463,6 +471,40 @@ void medViewerArea::switchToContainerPreset(int index)
 
 void medViewerArea::onViewFocused(dtkAbstractView *view)
 {
+    // set head recognizer
+
+    static dtkVrHeadRecognizer *head_recognizer = NULL;
+
+    if(dtkApplicationArgumentsContain(qApp, "--tracker")) {
+
+        if(!head_recognizer) {
+            head_recognizer = new dtkVrHeadRecognizer;
+            head_recognizer->startConnection(QUrl(dtkApplicationArgumentsValue(qApp, "--tracker")));
+        }
+
+        if(view->property("Orientation") == "3D")
+            head_recognizer->setView(view);
+        else
+            head_recognizer->setView(NULL);
+    }
+
+    // set gesture recognizer
+
+    static dtkVrGestureRecognizer *gesture_recognizer = NULL;
+
+    if(dtkApplicationArgumentsContain(qApp, "--tracker")) {
+
+        if(!gesture_recognizer) {
+            gesture_recognizer = new dtkVrGestureRecognizer;
+            gesture_recognizer->startConnection(QUrl(dtkApplicationArgumentsValue(qApp, "--tracker")));
+        }
+
+        gesture_recognizer->setView(view);
+        gesture_recognizer->setReceiver(static_cast<medAbstractView *>(view)->receiverWidget());
+    }
+
+    // Update toolboxes
+
     d->viewToolBox->update(view);
     d->diffusionToolBox->update(view);
     this->updateTransferFunction();
@@ -512,7 +554,7 @@ void medViewerArea::setupForegroundLookupTable(QString table)
 
     this->updateTransferFunction();
 }
-
+/*
 void medViewerArea::setupBackgroundLookupTable(QString table)
 {
     if(!d->view_stacks.count())
@@ -524,7 +566,7 @@ void medViewerArea::setupBackgroundLookupTable(QString table)
 
     this->updateTransferFunction();
 }
-
+*/
 void medViewerArea::setupAxisVisibility(bool visible)
 {
     if(!d->view_stacks.count())
@@ -541,7 +583,7 @@ void medViewerArea::setupScalarBarVisibility(bool visible)
         return;
   
     if(medViewPool *pool = this->currentContainer()->pool()) {
-	pool->setViewProperty("ScalarBarVisibility",
+	pool->setViewProperty("ShowScalarBar",
 			      (visible ? "true" : "false"));
     }
 }
@@ -572,7 +614,7 @@ void medViewerArea::setup3DMode(QString mode)
         return;
   
     if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("Mode", mode);
+        pool->setViewProperty("3DMode", mode);
     }
 }
 
@@ -582,7 +624,7 @@ void medViewerArea::setup3DVRMode(QString mode)
         return;
   
     if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("VRMode", mode);
+        pool->setViewProperty("Renderer", mode);
     }
 }
 
@@ -615,7 +657,7 @@ void medViewerArea::setupWindowing(bool checked)
         return;
 
     if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("LeftClickInteraction", "Windowing");
+        pool->setViewProperty("MouseInteraction", "Windowing");
     }
 }
 
@@ -625,7 +667,7 @@ void medViewerArea::setupZooming(bool checked)
         return;
   
     if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("LeftClickInteraction", "Zooming");
+        pool->setViewProperty("MouseInteraction", "Zooming");
     }
 }
 
@@ -635,7 +677,7 @@ void medViewerArea::setupSlicing(bool checked)
         return;
   
     if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("LeftClickInteraction", "Slicing");
+        pool->setViewProperty("MouseInteraction", "Slicing");
     }
 }
 
@@ -645,7 +687,7 @@ void medViewerArea::setupMeasuring(bool checked)
         return;
   
     if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("LeftClickInteraction", "Measuring");
+        pool->setViewProperty("MouseInteraction", "Measuring");
     }
 }
 
@@ -670,8 +712,7 @@ void medViewerArea::bringUpTransferFunction(bool checked)
         }
 	return;
     }
-
-    if( !d->view_stacks.count() )
+    if(!d->view_stacks.count())
         return;
   
     if ( dtkAbstractView *view = this->currentContainerFocused()->view() ) {
