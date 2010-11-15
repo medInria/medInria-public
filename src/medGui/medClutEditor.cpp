@@ -1313,9 +1313,6 @@ void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
 	static_cast<bool>( event->modifiers() & Qt::ControlModifier );
 
     switch (event->key()) {
-    case Qt::Key_Control:
-        this->setDragMode(QGraphicsView::ScrollHandDrag); break;
-
     case Qt::Key_A:
     {
         medClutEditorTable * table = this->table();
