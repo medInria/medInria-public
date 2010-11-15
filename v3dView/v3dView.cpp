@@ -538,12 +538,9 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->menu->addAction(zoomAct);
     d->menu->addAction(wlAct);
 
-    // QStringList lut;
-    // typedef std::vector< std::string > StdStrVec;
-    // StdStrVec presets = vtkTransferFunctionPresets::GetAvailablePresets();
-    // for ( StdStrVec::iterator it( presets.begin() ), end( presets.end() );
-    // 	  it != end; ++it )
-    //   lut << QString::fromStdString( * it );
+    // set property to actually available presets
+    QStringList lut = this->getAvailableTransferFunctionPresets();
+    this->addProperty ("LookupTable",           lut);
     
     // set default properties
     this->setProperty ("Orientation",           "Axial");
@@ -1795,6 +1792,18 @@ void v3dView::onMenuWindowLevelTriggered (void)
 dtkAbstractView *createV3dView(void)
 {
     return new v3dView;
+}
+
+QStringList v3dView::getAvailableTransferFunctionPresets()
+{
+    QStringList lut;
+    typedef std::vector< std::string > StdStrVec;
+    StdStrVec presets = vtkTransferFunctionPresets::GetAvailablePresets();
+    for ( StdStrVec::iterator it( presets.begin() ), end( presets.end() );
+    	  it != end; ++it )
+	lut << QString::fromStdString( * it );
+
+    return lut;
 }
 
 void v3dView::getTransferFunctions( QList<double> & scalars,

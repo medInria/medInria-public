@@ -63,6 +63,7 @@ public:
     vtkRenderer *rendererSagittal(void);
     vtkRenderer *renderer3D(void);
 
+    virtual QStringList getAvailableTransferFunctionPresets();
     virtual void getTransferFunctions( QList<double> & scalars,
 				       QList<QColor> & colors );
     virtual void setTransferFunctions( QList<double> scalars,
