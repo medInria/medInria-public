@@ -1079,6 +1079,9 @@ void v3dView::linkWindowing (dtkAbstractView *view, bool value)
 
 void v3dView::onPropertySet(QString key, QString value)
 {
+    if ( key == "LookupTable" )
+      qDebug() << "v3dView::onPropertySet(" << key << "," << value << ")";
+
     if(key == "Daddy")
 	this->onDaddyPropertySet(value);
     
@@ -1872,7 +1875,7 @@ void v3dView::setTransferFunctions( QList< double > scalars,
     opacity->Delete();
 }
 
-void v3dView::setColorLookupTable(QList<double>scalars, QList<QColor>colors)
+void v3dView::setColorLookupTable(QList<double> scalars, QList<QColor> colors)
 {
     int size= qMin(scalars.count(),colors.count());
     vtkColorTransferFunction * ctf = vtkColorTransferFunction::New();
