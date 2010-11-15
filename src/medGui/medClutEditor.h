@@ -48,6 +48,7 @@ public:
     ~medClutEditorVertex(void);
 
     const QPointF & value() const;
+    void shiftValue( qreal amount, bool forceConstraints = true );
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0);
@@ -118,6 +119,9 @@ public:
     void deleteSelection();
     void setColorOfSelection( const QColor & color );
     void setColorOfSelection();
+
+    void scaleWindowWidth( qreal factor );
+    void shiftWindowCenter( qreal amount );
 
     void setup(float min, float max, int size, int *table);
     void getTransferFunction(QList<double> &scalars, QList<QColor> &colors );
@@ -206,6 +210,7 @@ public:
     void setRange( qreal min, qreal max );
     void adjustRange();
     void scaleRange( qreal factor );
+    void shiftRange( qreal amount );
     // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 private:
     medClutEditorScenePrivate * d;

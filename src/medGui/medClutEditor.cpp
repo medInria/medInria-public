@@ -104,6 +104,19 @@ const QPointF & medClutEditorVertex::value() const
     return d->value;
 }
 
+void medClutEditorVertex::shiftValue( qreal amount, bool forceConstraints )
+{
+    if ( amount != 0.0 ) {
+	this->setX( this->x() + amount );
+	if ( forceConstraints )
+	    if ( medClutEditorTable * table =
+		 dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
+		table->forceGeometricalConstraints( this );
+
+        this->updateValue();
+    }
+}
+
 void medClutEditorVertex::interpolate( medClutEditorVertex * prev,
                                        medClutEditorVertex * next )
 {
@@ -213,8 +226,10 @@ void medClutEditorVertex::forceGeometricalConstraints( const QRectF & limits )
         forced = true;
     }
 
-    if ( forced )
+    if ( forced ) {
+	this->updateValue();
         this->update();
+    }
 
     // if ( this->isUnderMouse() )
     // 	qDebug() << "[" << (long int) this << "] is under mouse";
@@ -353,7 +368,6 @@ void medClutEditorTable::forceGeometricalConstraints(
     QRectF box = scene->plotArea();
     
     driver->forceGeometricalConstraints( box );
-    driver->updateValue();
 
     int n = d->vertices.count();
     for ( int i = 0 ; i < n; ++i ) {
@@ -380,7 +394,6 @@ void medClutEditorTable::forceGeometricalConstraints(
         limits.setRight( right );
 
         d->vertices.at( i )->forceGeometricalConstraints( limits );
-        d->vertices.at( i )->updateValue();
     }
 }
 
@@ -500,6 +513,29 @@ void medClutEditorTable::onDeleteVertex(medClutEditorVertex *vertex)
         qDebug() << "Need at least two nodes, but only "
                  << ( d->vertices.count() - 1 ) << " nodes"
                  << " would be left after deletion!  Not deleting any node.";
+}
+
+void medClutEditorTable::scaleWindowWidth( qreal factor )
+{
+    qreal min, max;
+    this->range( min, max );
+    qreal center = 0.5 * ( min + max );
+    // factor *= 1e-4 * ( max - min );
+
+    foreach (medClutEditorVertex * vertex, d->vertices) {
+	qreal offset = vertex->value().x() - center;
+	vertex->shiftValue( offset * ( factor - 1.0 ), false );
+    }
+}
+
+void medClutEditorTable::shiftWindowCenter( qreal amount )
+{
+    qreal min, max;
+    this->range( min, max );
+    qreal factor = 1e-4 * ( max - min );
+
+    foreach (medClutEditorVertex * vertex, d->vertices)
+	vertex->shiftValue( factor * amount, false );
 }
 
 void medClutEditorTable::setup(float min, float max, int size, int *table)
@@ -1085,6 +1121,17 @@ void medClutEditorScene::scaleRange( qreal factor )
     this->update();
 }
 
+void medClutEditorScene::shiftRange( qreal amount )
+{
+    qreal range  = d->rangeMax - d->rangeMin;
+    qreal factor = 2e-4 * range;
+
+    this->setRange( d->rangeMin + factor * amount,
+		    d->rangeMax + factor * amount );
+
+    this->update();
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditorView
@@ -1133,15 +1180,34 @@ void medClutEditorView::resizeEvent(QResizeEvent *event)
     // qDebug() << "view::resizeEvent: " << this->size();
 }
 
-void medClutEditorView::wheelEvent ( QWheelEvent * event )
+void medClutEditorView::wheelEvent( QWheelEvent * event )
 {
-    qreal factor = exp( 0.001 * static_cast< double >( event->delta() ) );
-    factor = qMax( 0.0, factor );
+    qreal shift = event->delta();
+    qreal scale = exp( 0.001 * static_cast< double >( event->delta() ) );
+    scale = qMax( 0.0, scale );
 
-    medClutEditorScene * scene =
-        dynamic_cast< medClutEditorScene * >( this->scene() );
-    if ( scene != NULL )
-	scene->scaleRange( factor );
+    bool withShift =
+	static_cast<bool>( event->modifiers() & Qt::ShiftModifier );
+    bool withCtrl =
+	static_cast<bool>( event->modifiers() & Qt::ControlModifier );
+
+    if ( !withCtrl ) {
+	medClutEditorScene * scene =
+	    dynamic_cast< medClutEditorScene * >( this->scene() );
+	if ( scene != NULL )
+	    if ( !withShift )
+		scene->scaleRange( scale );
+	    else
+		scene->shiftRange( shift );
+    }
+    else {
+        medClutEditorTable * table = this->table();
+        if ( table != NULL )
+	    if ( !withShift )
+	    	table->scaleWindowWidth( scale );
+	    else
+		table->shiftWindowCenter( shift );
+    }
 
     this->update();
 }
@@ -1357,7 +1423,6 @@ void medClutEditor::setData(dtkAbstractData *data)
 
         d->histogram = new medClutEditorHistogram();
         d->scene->addItem( d->histogram );
-	// d->histSize = QSizeF( 500.0, 300.0 );
         int min_range = image->minRangeValue();
         int max_range = image->maxRangeValue();
 	QMap<qreal, qreal> bins;
@@ -1366,7 +1431,6 @@ void medClutEditor::setData(dtkAbstractData *data)
             qreal count = static_cast< qreal >(
 		image->scalarValueCount( i - min_range ) );
 	    bins.insert( static_cast< qreal >( i ), count );
-            // d->histogram->addValue( static_cast< qreal >( i ), f );
         }
 	d->histogram->setValues( bins );
 
@@ -1404,9 +1468,6 @@ void medClutEditor::initializeTable(void)
     this->deleteTable();
 
     medClutEditorTable *lut = new medClutEditorTable("Unknown");
-    // lut->setMinSize( d->histogram->size() );
-    // lut->setMinRange( d->histogram->getRangeMin(),
-    // 		      d->histogram->getRangeMax() );
     d->scene->addItem( lut );
 
     QRectF area = d->histogram->boundingRect();
@@ -1424,12 +1485,10 @@ void medClutEditor::initializeTable(void)
         new medClutEditorVertex( QPointF( rangemax, 0.4 ),
                                  QPointF( area.right(), 0.4 * area.height() ),
                                  Qt::yellow, lut );
-    // medClutEditorVertex *v4 = new medClutEditorVertex(260,  60, Qt::white);
 
     lut->addVertex(v1);
     lut->addVertex(v2);
     lut->addVertex(v3);
-    // lut->addVertex(v4);
 }
 
 void medClutEditor::deleteTable(void)
