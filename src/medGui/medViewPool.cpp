@@ -301,8 +301,13 @@ void medViewPool::setViewProperty (QString key, QString value)
         return;
 
     d->propertySet[key] = value;
+    if ( key == "LookupTable" )
+      qDebug() << "medViewPool::setViewProperty(" << key << "," << value << ")";
     
+    qDebug() << "#views: " << d->views.count();
     foreach (medAbstractView *lview, d->views) {
+	qDebug() << "[" << (long int) lview << "]"
+		 << ( lview->hasProperty( key ) ? "yes" : "no" );
         if (lview!=this->sender()) {
 	    lview->blockSignals (true);
 	    lview->setProperty (key, value);

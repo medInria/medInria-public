@@ -545,10 +545,13 @@ medViewContainer *medViewerArea::currentContainerFocused(void)
 
 void medViewerArea::setupForegroundLookupTable(QString table)
 {
+    qDebug() << "medViewerArea::setupForegroundLookupTable( " << table << " )";
     if(!d->view_stacks.count())
         return;
 
+    qDebug() << "view stacks present";
     if ( medViewPool *pool = this->currentContainer()->pool() ) {
+        qDebug() << "pool of current container present";
         pool->setViewProperty("LookupTable", table);
     }
 
@@ -730,6 +733,8 @@ void medViewerArea::bringUpTransferFunction(bool checked)
 
 void medViewerArea::updateTransferFunction()
 {
+    qDebug() << "medViewerArea::updateTransferFunction";
+
     dtkAbstractView * view = this->currentContainerFocused()->view();
     if ( d->transFun && view ) {
 	d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );
