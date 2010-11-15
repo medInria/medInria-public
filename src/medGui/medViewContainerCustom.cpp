@@ -23,6 +23,8 @@
 
 #include <dtkCore/dtkAbstractView.h>
 
+#include <medCore/medAbstractView.h>
+
 medViewContainerCustom::medViewContainerCustom (QWidget *parent) : medViewContainer(parent)
 {
 }
@@ -135,7 +137,8 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
         parent->synchronize_2(view);
     }
     else { // top level medViewContainerCustom
-        d->pool->appendView (view);
+		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view) )
+          d->pool->appendView (medView);
 	connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     }
 }
@@ -146,7 +149,8 @@ void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
         parent->desynchronize_2(view);
     }
     else { // top level medViewContainerCustom
-        d->pool->removeView (view);
+		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view) )
+          d->pool->removeView (medView);
 	disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     }
 }

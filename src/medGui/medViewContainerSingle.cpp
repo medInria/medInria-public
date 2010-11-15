@@ -51,7 +51,7 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
 	
     d->view->reset();
 
-    d->pool->appendView (view);
+    // d->pool->appendView (view);
     connect (view, SIGNAL (closing()), this, SLOT (onViewClosed()));
 }
 
@@ -61,7 +61,7 @@ void medViewContainerSingle::onViewClosed (void)
     d->layout->removeWidget(d->view->widget());
     d->view->widget()->hide();
     disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosed()));
-    d->pool->removeView (d->view);
+    // d->pool->removeView (d->view);
     d->view = NULL;
   }
 }

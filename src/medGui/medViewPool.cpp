@@ -19,8 +19,8 @@
 
 #include "medViewPool.h"
 #include <medCore/medMessageController.h>
+#include <medCore/medAbstractView.h>
 
-#include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
@@ -29,8 +29,8 @@
 class medViewPoolPrivate
 {
 public:
-  QList<dtkAbstractView *>                 views;
-  QMap<dtkAbstractView*, dtkAbstractData*> viewData;
+  QList<medAbstractView *>                 views;
+  QMap<medAbstractView*, dtkAbstractData*> viewData;
   QHash<QString, QString>                  propertySet;
 };
 
@@ -45,20 +45,31 @@ medViewPool::medViewPool(void) : d (new medViewPoolPrivate)
 
 medViewPool::~medViewPool(void)
 {
+	if (medAbstractView *refView=this->daddy()) {
+	foreach (medAbstractView *view, d->views) {
+		refView->unlink(view);
+		refView->linkPosition  (view, false);
+	    refView->linkCamera    (view, false);
+	    refView->linkWindowing (view, false);
+		
+		disconnect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
+		disconnect (view, SIGNAL (syncPosition(bool)),            this, SLOT (onViewSyncPosition(bool)));
+		disconnect (view, SIGNAL (syncCamera(bool)),              this, SLOT (onViewSyncCamera(bool)));
+		disconnect (view, SIGNAL (syncWindowing(bool)),           this, SLOT (onViewSyncWindowing(bool)));
+		disconnect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));		
+	}
+	}
     delete d;
     d = NULL;
 }
 
-void medViewPool::appendView (dtkAbstractView *view)
+void medViewPool::appendView (medAbstractView *view)
 {
     if (!view || d->views.contains (view))
         return;
 
     if (d->views.count()==0) { // view will become daddy      
       view->setProperty ("Daddy", "true");
-      connect (this, SIGNAL (linkPosition  (dtkAbstractView *, bool)), view, SLOT (linkPosition  (dtkAbstractView *, bool)));
-      connect (this, SIGNAL (linkCamera    (dtkAbstractView *, bool)), view, SLOT (linkCamera    (dtkAbstractView *, bool)));
-      connect (this, SIGNAL (linkWindowing (dtkAbstractView *, bool)), view, SLOT (linkWindowing (dtkAbstractView *, bool)));
     }
     
     d->views.append (view);
@@ -76,29 +87,29 @@ void medViewPool::appendView (dtkAbstractView *view)
 	view->setProperty (it.key(), it.value());
     }
 
-    if (dtkAbstractView *refView = this->daddy())
+    if (medAbstractView *refView = this->daddy())
       if (refView != view)
 	refView->link (view);
 }
 
-void medViewPool::removeView (dtkAbstractView *view)
+void medViewPool::removeView (medAbstractView *view)
 {
     if (!view || !d->views.contains (view))
         return;
 
     // look if a view is a daddy
-    dtkAbstractView *refView = this->daddy();
+    medAbstractView *refView = this->daddy();
 
     if (refView) {
         if (refView==view) { // we are daddy, we need to unlink, find a new daddy, and link again (if needed)
 	  
 	    // unlink
-	    QList<dtkAbstractView *>::iterator it = d->views.begin();
+	    QList<medAbstractView *>::iterator it = d->views.begin();
 	    for( ; it!=d->views.end(); it++) {
 	        refView->unlink ((*it));
-		emit linkPosition  ((*it), false);
-		emit linkCamera    ((*it), false);
-		emit linkWindowing ((*it), false);
+		refView->linkPosition  ((*it), false);
+		refView->linkCamera    ((*it), false);
+		refView->linkWindowing ((*it), false);
 	    }
 	    
 	    // change daddy
@@ -109,23 +120,14 @@ void medViewPool::removeView (dtkAbstractView *view)
 		    break;
 		}
 
-	    dtkAbstractView *oldDaddy = refView;
+	    medAbstractView *oldDaddy = refView;
 	    oldDaddy->setProperty ("Daddy", "false");
-	    disconnect (this, SIGNAL (linkPosition  (dtkAbstractView *, bool)), oldDaddy, SLOT (linkPosition  (dtkAbstractView *, bool)));
-	    disconnect (this, SIGNAL (linkCamera    (dtkAbstractView *, bool)), oldDaddy, SLOT (linkCamera    (dtkAbstractView *, bool)));
-	    disconnect (this, SIGNAL (linkWindowing (dtkAbstractView *, bool)), oldDaddy, SLOT (linkWindowing (dtkAbstractView *, bool)));
-	    refView = this->daddy();
-	    if (refView) {
-	        connect (this, SIGNAL (linkPosition  (dtkAbstractView *, bool)), refView, SLOT (linkPosition  (dtkAbstractView *, bool)));
-	        connect (this, SIGNAL (linkCamera    (dtkAbstractView *, bool)), refView, SLOT (linkCamera    (dtkAbstractView *, bool)));
-	        connect (this, SIGNAL (linkWindowing (dtkAbstractView *, bool)), refView, SLOT (linkWindowing (dtkAbstractView *, bool)));
-	    }
 	}
 	else { // we are not daddy, just unlink
 	    refView->unlink (view);
-	    emit linkPosition  (view, false);
-	    emit linkCamera    (view, false);
-	    emit linkWindowing (view, false);	    
+	    refView->linkPosition  (view, false);
+	    refView->linkCamera    (view, false);
+	    refView->linkWindowing (view, false);	    
 	}
     }
     
@@ -138,9 +140,9 @@ void medViewPool::removeView (dtkAbstractView *view)
     d->views.removeOne (view);
 }
 
-dtkAbstractView *medViewPool::daddy (void)
+medAbstractView *medViewPool::daddy (void)
 {
-    QList<dtkAbstractView *>::iterator it = d->views.begin();
+    QList<medAbstractView *>::iterator it = d->views.begin();
     for( ; it!=d->views.end(); it++) {
         if ((*it)->property ("Daddy")=="true")
 	  return (*it);
@@ -150,30 +152,24 @@ dtkAbstractView *medViewPool::daddy (void)
 
 void medViewPool::onViewDaddy (bool daddy)
 {
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+    if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
       
         if (daddy) { // view wants to become daddy
 	  
-	    dtkAbstractView *refView = this->daddy();
+	    medAbstractView *refView = this->daddy();
 	    
 	    if (refView) { // if daddy, then unlink first
-	        QList<dtkAbstractView *>::iterator it = d->views.begin();
+	        QList<medAbstractView *>::iterator it = d->views.begin();
 		for( ; it!=d->views.end(); it++) {
 		    refView->unlink((*it));
-		    emit linkPosition  ((*it), false);
-		    emit linkCamera    ((*it), false);
-		    emit linkWindowing ((*it), false);
+		    refView->linkPosition  ((*it), false);
+		    refView->linkCamera    ((*it), false);
+		    refView->linkWindowing ((*it), false);
 		}
 	    }
 
-	    if (refView) {
-	        disconnect (this, SIGNAL (linkPosition  (dtkAbstractView *, bool)), refView, SLOT (linkPosition  (dtkAbstractView *, bool)));
-		disconnect (this, SIGNAL (linkCamera    (dtkAbstractView *, bool)), refView, SLOT (linkCamera    (dtkAbstractView *, bool)));
-	        disconnect (this, SIGNAL (linkWindowing (dtkAbstractView *, bool)), refView, SLOT (linkWindowing (dtkAbstractView *, bool)));
-	    }
-
-	    // tell all views that they are not daddys
-	    QList<dtkAbstractView *>::iterator it = d->views.begin();
+		// tell all views that they are not daddys
+	    QList<medAbstractView *>::iterator it = d->views.begin();
 	    for( ; it!=d->views.end(); it++)
 	        (*it)->setProperty ("Daddy", "false");
 
@@ -191,20 +187,16 @@ void medViewPool::onViewDaddy (bool daddy)
 		it = d->views.begin();
 		for( ; it!=d->views.end(); it++)
 			view->link((*it));
-				
-	    connect (this, SIGNAL (linkPosition  (dtkAbstractView *, bool)), view, SLOT (linkPosition  (dtkAbstractView *, bool)));
-	    connect (this, SIGNAL (linkCamera    (dtkAbstractView *, bool)), view, SLOT (linkCamera    (dtkAbstractView *, bool)));
-	    connect (this, SIGNAL (linkWindowing (dtkAbstractView *, bool)), view, SLOT (linkWindowing (dtkAbstractView *, bool)));
 
 	}
 	else { // view does not want to become daddy
 	    if (view==this->daddy()) {
-	        QList<dtkAbstractView *>::iterator it = d->views.begin();
+	        QList<medAbstractView *>::iterator it = d->views.begin();
 		    for( ; it!=d->views.end(); it++) {
 		        view->unlink((*it));
-			emit linkPosition  ((*it), false);
-			emit linkCamera    ((*it), false);
-			emit linkWindowing ((*it), false);			
+			view->linkPosition  ((*it), false);
+			view->linkCamera    ((*it), false);
+			view->linkWindowing ((*it), false);			
 		    }
 	    }
 	  
@@ -215,11 +207,13 @@ void medViewPool::onViewDaddy (bool daddy)
 
 void medViewPool::onViewSyncPosition (bool value)
 {
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+    if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
       
         if (view->property ("Daddy")=="false") {
-	    emit linkPosition (view, value);
+			if (medAbstractView *refView = this->daddy() ) {
+	    refView->linkPosition (view, value);
 	    view->update();
+			}
 	}
 	
     }
@@ -227,11 +221,13 @@ void medViewPool::onViewSyncPosition (bool value)
 
 void medViewPool::onViewSyncCamera (bool value)
 {
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+    if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
       
         if (view->property ("Daddy")=="false") {
-	    emit linkCamera (view, value);
+			if (medAbstractView *refView = this->daddy() ) {
+	    refView->linkCamera (view, value);
 	    view->update();
+			}
 	}
 	
     }
@@ -239,11 +235,13 @@ void medViewPool::onViewSyncCamera (bool value)
 
 void medViewPool::onViewSyncWindowing (bool value)
 {
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+    if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
       
         if (view->property ("Daddy")=="false") {
-	    emit linkWindowing (view, value);
+			if (medAbstractView *refView = this->daddy() ) {
+	    refView->linkWindowing (view, value);
 	    view->update();
+			}
 	}
 	
     }
@@ -251,10 +249,10 @@ void medViewPool::onViewSyncWindowing (bool value)
 
 void medViewPool::onViewReg(bool value)
 {
-	if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+	if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
       
         if (value) {
-	    dtkAbstractView *refView = this->daddy();
+	    medAbstractView *refView = this->daddy();
 
 	    if (refView==view) // do not register the view with itself
 	        return;
@@ -304,7 +302,7 @@ void medViewPool::setViewProperty (QString key, QString value)
 
     d->propertySet[key] = value;
     
-    foreach (dtkAbstractView *lview, d->views) {
+    foreach (medAbstractView *lview, d->views) {
         if (lview!=this->sender()) {
 	    lview->blockSignals (true);
 	    lview->setProperty (key, value);
