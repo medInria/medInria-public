@@ -585,6 +585,86 @@ void medClutEditorTable::setTransferFunction( QList<double> &scalars,
     scene->adjustRange();
 }
 
+void medClutEditorTable::simplifyTransferFunction()
+{
+    qreal threshold;
+    bool foundThreshold = false;
+
+    d->vertices.first()->setSelected( false );
+    d->vertices.last()->setSelected( false );
+
+    for ( int i = 1, n = d->vertices.count() - 1; i < n; ++i ) {
+	medClutEditorVertex * vertex = d->vertices.at( i );
+        if ( vertex->isSelected() ) {
+	    QColor p = d->vertices.at( i - 1 )->color();
+	    QColor n = d->vertices.at( i + 1 )->color();
+
+	    QColor linear;
+	    linear.setRgbF( 0.5 * ( p.redF()   + n.redF() ),
+			    0.5 * ( p.greenF() + n.greenF() ),
+			    0.5 * ( p.blueF()  + n.blueF() ),
+			    0.5 * ( p.alphaF() + n.alphaF() ) );
+	    QColor c = vertex->color();
+	    qreal  r = linear.redF()   - c.redF();
+	    qreal  g = linear.greenF() - c.greenF();
+	    qreal  b = linear.blueF()  - c.blueF();
+	    qreal  a = linear.alphaF() - c.alphaF();
+	    qreal offset = sqrt( r * r + g * g + b * b + a * a );
+	    if ( !foundThreshold || offset > threshold ) {
+		threshold = offset;
+		foundThreshold = true;
+	    }
+	}
+    }
+
+    if ( !foundThreshold ) {
+	qDebug() << "Select at least one vertex (exept the first or last one)"
+		 << " which is too similar to its neighbors.";
+	return;
+    }
+
+    QList<medClutEditorVertex *> vertices( d->vertices );
+    bool modified = true;
+    while ( modified ) {
+	modified = false;
+
+	QList<medClutEditorVertex *> remaining;
+	remaining.append( vertices.first() );
+	for ( int i = 1, n = vertices.count() - 1; i < n; ++i ) {
+	    medClutEditorVertex * vertex = vertices.at( i );
+	    QColor p = vertices.at( i - 1 )->color();
+	    QColor n = vertices.at( i + 1 )->color();
+
+	    QColor linear;
+	    linear.setRgbF( 0.5 * ( p.redF()   + n.redF() ),
+			    0.5 * ( p.greenF() + n.greenF() ),
+			    0.5 * ( p.blueF()  + n.blueF() ),
+			    0.5 * ( p.alphaF() + n.alphaF() ) );
+	    QColor c = vertex->color();
+	    qreal  r = linear.redF()   - c.redF();
+	    qreal  g = linear.greenF() - c.greenF();
+	    qreal  b = linear.blueF()  - c.blueF();
+	    qreal  a = linear.alphaF() - c.alphaF();
+	    qreal offset = sqrt( r * r + g * g + b * b + a * a );
+
+	    if ( offset > threshold ) {
+		remaining.append( vertex );
+		vertex->setSelected( false );
+	    }
+	    else {
+		vertex->setSelected( true );
+		modified = true;
+		vertex = vertices.at( ++i );
+		vertex->setSelected( false );
+		remaining.append( vertex );
+	    }
+	}
+	remaining.append( vertices.last() );
+	vertices = remaining;
+    }
+    this->update();
+}
+
 void medClutEditorTable::paint(QPainter *painter,
                                const QStyleOptionGraphicsItem *option,
                                QWidget *widget)
@@ -1089,6 +1169,14 @@ void medClutEditorView::keyPressEvent( QKeyEvent * event ) {
         medClutEditorTable * table = this->table();
         if ( table != NULL )
             table->setColorOfSelection();
+        break;
+    }
+
+    case Qt::Key_S:
+    {
+        medClutEditorTable * table = this->table();
+        if ( table != NULL )
+            table->simplifyTransferFunction();
         break;
     }
 

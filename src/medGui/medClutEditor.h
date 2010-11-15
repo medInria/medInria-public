@@ -122,6 +122,7 @@ public:
     void setup(float min, float max, int size, int *table);
     void getTransferFunction(QList<double> &scalars, QList<QColor> &colors );
     void setTransferFunction(QList<double> &scalars, QList<QColor> &colors );
+    void simplifyTransferFunction();
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0);
