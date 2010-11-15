@@ -260,6 +260,7 @@ class VTK_RENDERINGADDON_EXPORT vtkSynchronizedView : public vtkObject
   void AddChildren (std::vector<vtkSynchronizedView*> p_viewlist);
   //ETX
 
+  int GetNumberOfChildren (void) const;
 
   /**
      Returns true if the view has this child in its list.

@@ -74,7 +74,7 @@ void vtkInteractorStyleImage2D::OnMouseMove()
         
       case VTKIS_ZSLICE_MOVE:
         this->FindPokedRenderer(x, y);
-		  this->ZSliceMove();
+	this->ZSliceMove();
         //this->InvokeEvent(vtkCommand::InteractionEvent, NULL);
         break;
         
@@ -816,7 +816,6 @@ void vtkInteractorStyleImage2D::PropagateCameraFocalAndPosition()
   this->GetView()->SyncSetCameraFocalAndPosition (focal, pos);
   this->GetView()->SetLinkCameraFocalAndPosition ( LinkCamera );
 }
-
 
 void vtkInteractorStyleImage2D::DefaultMoveAction()
 {

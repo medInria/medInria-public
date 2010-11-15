@@ -364,14 +364,17 @@ void vtkViewImage::SyncSetSlice(unsigned int p_plan, int p_zslice)
   {
     return;
   }
-  
-  this->SetSlice(p_plan, p_zslice);
+
+  if (this->GetLinkPosition())
+  {
+    this->SetSlice(p_plan, p_zslice);
+  }
   
   this->Lock();
   for( unsigned int i=0; i<this->Children.size(); i++)
   {
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
-    if( view && view->GetLinkPosition())
+    if( view /*&& view->GetLinkPosition()*/)
     {
       view->SyncSetSlice (p_plan, p_zslice);
       view->Update();
@@ -388,13 +391,16 @@ void vtkViewImage::SyncSetZSlice(int p_zslice)
     return;
   }
 
-  this->SetZSlice(p_zslice);
+  if (this->GetLinkPosition())
+  {
+    this->SetZSlice(p_zslice);
+  }
 
   this->Lock();
   for( unsigned int i=0; i<this->Children.size(); i++)
   {
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
-    if( view && view->GetLinkPosition())
+    if( view /*&& view->GetLinkPosition()*/)
     {
       view->SyncSetZSlice (p_zslice);
       view->Update();
@@ -442,14 +448,17 @@ void vtkViewImage::SyncSetCurrentPoint(const double p_point[3])
     return;
   }
 
-  this->SetCurrentPoint (p_point);
+  if (this->GetLinkPosition())
+  {
+    this->SetCurrentPoint (p_point);
+  }
 
   this->Lock();
 
   for( unsigned int i=0; i<this->Children.size(); i++)
   {
     vtkViewImage* view = vtkViewImage::SafeDownCast( this->Children[i] );
-    if( view && view->GetLinkPosition())
+    if( view /*&& view->GetLinkPosition()*/)
     {
       view->SyncSetCurrentPoint (p_point);
       view->Update();
@@ -510,13 +519,16 @@ void vtkViewImage::SyncResetCurrentPoint()
     return;
   }
 
-  this->ResetCurrentPoint();
+  if (this->GetLinkPosition())
+  {
+    this->ResetCurrentPoint();
+  }
   
   this->Lock();
   for( unsigned int i=0; i<this->Children.size(); i++)
   {
     vtkViewImage* view = vtkViewImage::SafeDownCast( this->Children[i] );
-    if( view && view->GetLinkPosition() )
+    if( view /*&& view->GetLinkPosition()*/ )
     {
       view->SyncResetCurrentPoint ();
       view->Update();
@@ -555,7 +567,10 @@ void vtkViewImage::SyncSetWindow (double w)
   }
 
 
-  this->SetWindow (w);
+  if (this->GetLinkWindowLevel())
+  {
+    this->SetWindow (w);
+  }
 
 
   // this boolean is used so that the other observe won't call
@@ -566,7 +581,7 @@ void vtkViewImage::SyncSetWindow (double w)
 
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
 
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncSetWindow (w);
       view->Update();
@@ -585,7 +600,10 @@ void vtkViewImage::SyncStartWindowing ()
   }
 
 
-  this->StartWindowing ();
+  if (this->GetLinkWindowLevel())
+  {
+    this->StartWindowing ();
+  }
 
 
   // this boolean is used so that the other observe won't call
@@ -596,7 +614,7 @@ void vtkViewImage::SyncStartWindowing ()
 
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
 
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncStartWindowing ();
       view->Update();
@@ -614,8 +632,11 @@ void vtkViewImage::SyncEndWindowing ()
     return;
   }
 
-
-  this->EndWindowing ();
+  
+  if (this->GetLinkWindowLevel())
+  {
+    this->EndWindowing ();
+  }
 
 
   // this boolean is used so that the other observe won't call
@@ -626,7 +647,7 @@ void vtkViewImage::SyncEndWindowing ()
 
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
 
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncEndWindowing ();
       view->Update();
@@ -646,7 +667,10 @@ void vtkViewImage::SyncSetLevel (double l)
   }
 
 
-  this->SetLevel (l);
+  if (this->GetLinkWindowLevel())
+  {
+    this->SetLevel (l);
+  }
 
   // this boolean is used so that the other observe won't call
   // SetCurrentPoint again and again and again...
@@ -655,7 +679,7 @@ void vtkViewImage::SyncSetLevel (double l)
   {
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
 
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncSetLevel (l);
       view->Update();
@@ -686,14 +710,16 @@ void vtkViewImage::SyncResetWindowLevel()
     return;
   }
 
-
-  this->ResetWindowLevel();
+  if (this->GetLinkWindowLevel())
+  {
+    this->ResetWindowLevel();
+  }
 
   this->Lock();
   for( unsigned int i=0; i<this->Children.size(); i++)
   {
     vtkViewImage* view = vtkViewImage::SafeDownCast(this->Children[i]);
-    if( view && view->GetLinkWindowLevel() )
+    if( view /*&& view->GetLinkWindowLevel()*/ )
     {
       view->SyncResetWindowLevel ();
       view->Update();
@@ -1186,14 +1212,17 @@ void vtkViewImage::SyncSetZoom (double factor)
     return;
   }
 
-  this->SetZoom (factor);
+  if (this->GetLinkZoom())
+  {
+    this->SetZoom (factor);
+  }
 
   this->Lock();
   for( unsigned int i=0; i<this->Children.size(); i++)
   {
     vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
 
-    if( view && view->GetLinkZoom() )
+    if( view /*&& view->GetLinkZoom()*/ )
     {
       view->SyncSetZoom (factor);
       view->Update();
@@ -1238,7 +1267,10 @@ void vtkViewImage::SyncResetZoom ()
     return;
   }
 
-  this->ResetZoom ();
+  if (this->GetLinkZoom())
+  {
+    this->ResetZoom ();
+  }
 
   this->Lock();
   for( unsigned int i=0; i<this->Children.size(); i++)
@@ -1247,11 +1279,8 @@ void vtkViewImage::SyncResetZoom ()
 
     if( view )
     {
-      if( view->GetLinkZoom() )
-      {
-        view->SyncResetZoom ();
-	view->Update();
-      }
+      view->SyncResetZoom ();
+      view->Update();
     }
   }
 

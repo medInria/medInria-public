@@ -67,41 +67,44 @@ void vtkViewImage2DCommand::Execute(vtkObject*    caller,
 
   if (event == vtkCommand::StartWindowLevelEvent) {
     this->StartWindowing();
+    this->PropagateStartWindowing();
     return;    
   }
   if (event == vtkCommand::EndWindowLevelEvent) {
     this->EndWindowing();
+    this->PropagateEndWindowing();
     return;    
   }
   if (event == vtkCommand::WindowLevelEvent) {
     this->Windowing(vtkInteractorStyleImage2D::SafeDownCast(caller));
+    this->PropagateWindowLevel();
     return;    
   }
   if (event == vtkCommand::ResetWindowLevelEvent) {
     this->StartWindowing();
-    this->View->SyncResetWindowLevel();
-    //this->View->SyncSetWindow ( this->View->GetWindow() );
-    //this->View->SyncSetLevel ( this->View->GetLevel() );
+    this->View->ResetWindowLevel();
+    this->PropagateResetWindowLevel();
     this->EndWindowing();
-    //this->View->Update();
     return;    
   }
   if (event == vtkViewImage2DCommand::ResetPositionEvent) {
-    this->View->SyncResetCurrentPoint();
-    //this->View->Update();
+    this->View->ResetCurrentPoint();
+    this->PropagateResetCurrentPoint();
     return;    
   }
   if (event == vtkViewImage2DCommand::ZoomEvent) {
     this->Zoom(vtkInteractorStyleImage2D::SafeDownCast(caller));
+    this->PropagateZoom();
     return;    
   }
   if (event == vtkViewImage2DCommand::ResetZoomEvent) {
-    this->View->SyncResetZoom();
-    //this->View->Update();
+    this->View->ResetZoom();
+    this->PropagateResetZoom();
     return;    
   }
   if (event == vtkCommand::StartPickEvent) {
     this->StartPicking(vtkInteractorStyleImage::SafeDownCast(caller));
+    this->PropagateCurrentPoint();
     return;    
   }
   if (event == vtkCommand::EndPickEvent) {
@@ -125,6 +128,7 @@ void vtkViewImage2DCommand::Execute(vtkObject*    caller,
   }
   if (event == vtkViewImage2DCommand::ZSliceMoveEvent) {
     this->ChangeZSlice(vtkInteractorStyleImage2D::SafeDownCast(caller));
+    this->PropagateCurrentPoint();
     return;    
   }
   if (event == vtkViewImage2DCommand::EndZSliceMoveEvent) {
@@ -145,7 +149,7 @@ void vtkViewImage2DCommand::StartWindowing()
 {
   this->InitialWindow = this->View->GetColorWindow();
   this->InitialLevel  = this->View->GetColorLevel();
-  this->View->SyncStartWindowing();
+  this->View->StartWindowing();
 }
 
 
@@ -209,15 +213,15 @@ void vtkViewImage2DCommand::Windowing(vtkInteractorStyleImage2D* p_isi)
     newLevel = EPS * (newLevel < 0 ? -1 : 1);
   }
   
-  this->View->SyncSetWindow(newWindow);
-  this->View->SyncSetLevel(newLevel);
+  this->View->SetWindow(newWindow);
+  this->View->SetLevel(newLevel);	
   //this->View->Update();
 }
 
 
 void vtkViewImage2DCommand::EndWindowing()
 {
-  this->View->SyncEndWindowing();
+  this->View->EndWindowing();
 }
 
 
@@ -253,8 +257,7 @@ void vtkViewImage2DCommand::StartPicking(vtkInteractorStyle* p_isi)
     }
     */
     // Set the position
-    this->View->SyncSetCurrentPoint(p_pos);
-    //this->View->SyncSetCurrentPoint(world);
+    this->View->SetCurrentPoint(p_pos);
     //this->View->Update();
   }
   
@@ -283,9 +286,8 @@ void vtkViewImage2DCommand::ChangeZSlice(vtkInteractorStyleImage2D* p_isi)
   double pos[3];
   this->View->GetPositionForSlice ( dest_slice, this->View->GetOrientation(), pos);
 
-  this->View->SyncSetPosition ( pos );
-	//this->View->Update();
-
+  this->View->SetPosition ( pos );
+  //this->View->Update();
 }
 
 
@@ -302,7 +304,7 @@ void vtkViewImage2DCommand::Zoom (vtkInteractorStyleImage2D* p_isi)
     return;
   }
   
-  this->View->SyncSetZoom ( pow((double)1.1, p_isi->GetZoomFactor())*this->View->GetZoom() );
+  this->View->SetZoom ( pow((double)1.1, p_isi->GetZoomFactor())*this->View->GetZoom() );
   //this->View->Update();
 }
 
@@ -336,4 +338,181 @@ void vtkViewImage2DCommand::DefaultMove(vtkInteractorStyle* p_isi)
     }
   }
   
+}
+
+void vtkViewImage2DCommand::PropagateWindowLevel()
+{
+  if( !this->View )
+  {
+    return;
+  }
+
+  if( !this->View->GetRenderer() )
+  {
+    return;
+  }
+
+  double window = this->View->GetWindow();
+  double  level = this->View->GetLevel();
+  
+  bool LinkWindowLevel = this->View->GetLinkWindowLevel();
+  if (LinkWindowLevel)
+  {
+    this->View->SetLinkWindowLevel ( 0 );
+    this->View->SyncSetWindow (window);
+    this->View->SyncSetLevel  (level);
+    this->View->SetLinkWindowLevel ( LinkWindowLevel );
+  }
+}
+
+void vtkViewImage2DCommand::PropagateResetWindowLevel()
+{
+  if( !this->View )
+  {
+    return;
+  }
+
+  if( !this->View->GetRenderer() )
+  {
+    return;
+  }
+
+  bool LinkWindowLevel = this->View->GetLinkWindowLevel();
+  if (LinkWindowLevel)
+  {
+    this->View->SetLinkWindowLevel ( 0 );
+    this->View->SyncResetWindowLevel ();
+    this->View->SetLinkWindowLevel ( LinkWindowLevel );
+  }
+}
+
+void vtkViewImage2DCommand::PropagateStartWindowing()
+{
+  if( !this->View )
+  {
+    return;
+  }
+
+  if( !this->View->GetRenderer() )
+  {
+    return;
+  }
+
+  bool LinkWindowLevel = this->View->GetLinkWindowLevel();
+  if (LinkWindowLevel)
+  {
+    this->View->SetLinkWindowLevel ( 0 );
+    this->View->SyncStartWindowing ();
+    this->View->SetLinkWindowLevel ( LinkWindowLevel );
+  }
+}
+
+void vtkViewImage2DCommand::PropagateEndWindowing()
+{
+  if( !this->View )
+  {
+    return;
+  }
+
+  if( !this->View->GetRenderer() )
+  {
+    return;
+  }
+
+  bool LinkWindowLevel = this->View->GetLinkWindowLevel();
+  if (LinkWindowLevel)
+  {
+    this->View->SetLinkWindowLevel ( 0 );
+    this->View->SyncEndWindowing ();
+    this->View->SetLinkWindowLevel ( LinkWindowLevel );
+  }
+}
+
+void vtkViewImage2DCommand::PropagateCurrentPoint()
+{
+  if( !this->View )
+  {
+    return;
+  }
+
+  if( !this->View->GetRenderer() )
+  {
+    return;
+  }
+
+  double pos[3];
+  this->View->GetCurrentPoint (pos);
+  
+  bool LinkPosition = this->View->GetLinkPosition();
+  if (LinkPosition)
+  {
+    this->View->SetLinkPosition ( 0 );
+    this->View->SyncSetCurrentPoint  (pos);
+    this->View->SetLinkPosition ( LinkPosition );
+  }
+}
+
+void vtkViewImage2DCommand::PropagateResetCurrentPoint()
+{
+  if( !this->View )
+  {
+    return;
+  }
+
+  if( !this->View->GetRenderer() )
+  {
+    return;
+  }
+
+  bool LinkPosition = this->View->GetLinkPosition();
+  if (LinkPosition)
+  {
+    this->View->SetLinkPosition ( 0 );
+    this->View->SyncResetCurrentPoint  ();
+    this->View->SetLinkPosition ( LinkPosition );
+  }
+}
+
+void vtkViewImage2DCommand::PropagateZoom()
+{
+  if( !this->View )
+  {
+    return;
+  }
+
+  if( !this->View->GetRenderer() )
+  {
+    return;
+  }
+
+  double zoom = this->View->GetZoom();
+  
+  bool LinkZoom = this->View->GetLinkZoom();
+  if (LinkZoom)
+  {
+    this->View->SetLinkZoom ( 0 );
+    this->View->SyncSetZoom  (zoom);
+    this->View->SetLinkZoom ( LinkZoom );
+  }
+}
+
+void vtkViewImage2DCommand::PropagateResetZoom()
+{
+  if( !this->View )
+  {
+    return;
+  }
+
+  if( !this->View->GetRenderer() )
+  {
+    return;
+  }
+
+  bool LinkZoom = this->View->GetLinkZoom();
+  if (LinkZoom)
+  {
+    this->View->SetLinkZoom ( 0 );
+    this->View->SyncResetZoom  ();
+    this->View->SetLinkZoom ( LinkZoom );
+  }
 }

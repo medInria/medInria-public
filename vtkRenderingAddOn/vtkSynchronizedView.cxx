@@ -802,14 +802,15 @@ void vtkSynchronizedView::AddChild (vtkSynchronizedView* child)
        a call to Delete(), since the RemoveChild function
        unregsiter the object.
      */
+    
     if( parent )
     {
       parent->RemoveChild (child);
     }
 
-    
-    child->SetParent (this);
+    child->SetParent (this);    
     this->Children.push_back (child);
+    
   }
   
 }
@@ -823,6 +824,12 @@ void vtkSynchronizedView::AddChildren (std::vector<vtkSynchronizedView*> childre
     this->AddChild (children[i]);
   }
   
+}
+
+
+int vtkSynchronizedView::GetNumberOfChildren (void) const
+{
+  return (int)this->Children.size();
 }
 
 
@@ -868,6 +875,7 @@ void vtkSynchronizedView::Detach (void)
   vtkSynchronizedView* parent = this->GetParent();
   if( parent )
   {
+
     parent->AddChildren ( this->Children );
     parent->RemoveChild ( this );
     
