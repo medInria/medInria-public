@@ -158,8 +158,8 @@ void medClutEditorVertex::paint(QPainter *painter,
 
     setAlpha();
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-    painter->setPen(
-      QPen( this->isSelected() ? Qt::lightGray : Qt::darkGray, 2 ) );
+    painter->setPen( this->isSelected() ?
+		     QPen( Qt::lightGray, 3 ) : QPen( Qt::darkGray, 2 ) );
     painter->setBrush(d->bgColor);
     painter->drawEllipse( -d->outerRadius,    -d->outerRadius,
 			  2 * d->outerRadius, 2 * d->outerRadius );
@@ -830,14 +830,13 @@ void medClutEditorTable::paint(QPainter *painter,
         linearGradient.setColorAt(position, color);
     }
 
-    QPen pen(Qt::lightGray, 2);
+    QPen pen( Qt::darkGray, 1 );
     painter->setPen(pen);
     painter->setBrush(linearGradient);
     painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
     painter->drawPolygon(points, n_points + 2);
 
-    QPen(Qt::lightGray, 2);
-    painter->setPen(QPen(Qt::gray, 0));
+    painter->setPen( QPen( Qt::gray, 0 ) );
     foreach ( medClutEditorVertex * vertex, d->vertices ) {
 	if ( vertex->isSelected() ) {
 	    const QPointF & p = vertex->pos();
