@@ -1871,6 +1871,9 @@ void v3dView::setTransferFunctions( QList< double > scalars,
     color->ClampingOff();
     opacity->ClampingOff();
 
+    double * range = color->GetRange();
+    d->collection->SyncSetColorRange( range );
+
     d->collection->SyncSetColorTransferFunction( color );
     d->collection->SyncSetOpacityTransferFunction( opacity );
 
