@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Oct  6 16:03:20 2010 (+0200)
+ * Last-Updated: Tue Oct 26 10:31:28 2010 (+0200)
  *           By: Julien Wintz
- *     Update #: 456
+ *     Update #: 457
  */
 
 /* Commentary: 
@@ -155,6 +155,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->pacs = new medPacsWidget(this);
 
+    connect(d->pacs, SIGNAL(move(int, int, QString, QString, int)), this, SLOT(onPacsMove(int, int, QString, QString, int)));
     connect(d->pacs, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
     connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
 
@@ -164,6 +165,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->stack->addWidget(database_widget);
     d->stack->addWidget(filesystem_widget);
     d->stack->addWidget(d->pacs);
+
+    // Jobs //////////////////////////////////////////
+
+    d->toolbox_jobs = new medToolBoxJobs(this);
+    d->toolbox_jobs->setVisible(false);
 
     // Toolbox pacs host ///////////////////////////////////////////
 
@@ -221,8 +227,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(d->toolbox_container);
     layout->addWidget(d->stack);
+    layout->addWidget(d->toolbox_container);
 
 }
 

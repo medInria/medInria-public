@@ -65,7 +65,7 @@ protected slots:
 //! @name "View Settings" @{
 
     void setupForegroundLookupTable(QString table);
-    void setupBackgroundLookupTable(QString table);
+    // void setupBackgroundLookupTable(QString table);
     void setupAxisVisibility(bool visible);
     void setupScalarBarVisibility(bool visible);
     void setupRulerVisibility(bool visible);

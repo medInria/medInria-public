@@ -25,7 +25,7 @@
 #include "medGuiExport.h"
 
 class medViewPoolPrivate;
-class dtkAbstractView;
+class medAbstractView;
 
 class MEDGUI_EXPORT medViewPool : public QObject
 {
@@ -35,24 +35,31 @@ public:
     medViewPool (void);
     ~medViewPool (void);
 
-    void appendView (dtkAbstractView *view);
-    void removeView (dtkAbstractView *view);
+    void appendView (medAbstractView *view);
+    void removeView (medAbstractView *view);
 
-    dtkAbstractView *daddy (void);
+    medAbstractView *daddy (void);
 
     void setViewProperty (QString key, QString value);
 
     int count (void);
 
 signals:
-    void linkwl (dtkAbstractView *view, bool value);
+	/*
+    void linkPosition  (dtkAbstractView *view, bool value);
+    void linkCamera    (dtkAbstractView *view, bool value);
+    void linkWindowing (dtkAbstractView *view, bool value);
+	 */
+    
     void showInfo(QObject*,const QString&,unsigned int timeout);
     void showError(QObject*,const QString&,unsigned int timeout);
+    
 public slots:
-    void onViewDaddy   (bool);
-    void onViewSync    (bool);
-    void onViewSyncWL  (bool);
-	void onViewReg     (bool);
+    void onViewDaddy         (bool);
+    void onViewSyncPosition  (bool);
+    void onViewSyncCamera    (bool);
+    void onViewSyncWindowing (bool);
+    void onViewReg           (bool);
 
 private:
     medViewPoolPrivate *d;
