@@ -112,13 +112,19 @@ const QPointF & medClutEditorVertex::value() const
 void medClutEditorVertex::shiftValue( qreal amount, bool forceConstraints )
 {
     if ( amount != 0.0 ) {
+
 	medClutEditorTable * table =
 	    dynamic_cast< medClutEditorTable * >( this->parentItem() );
 	forceConstraints = forceConstraints && table;
 
+	medClutEditorScene * scene =
+	    dynamic_cast< medClutEditorScene * >( this->scene() );
+	QPointF value = d->value;
+	value.setX( value.x() + amount );
+
 	if ( forceConstraints )
 	    table->initiateMoveSelection();
-	this->setX( this->x() + amount );
+	this->setPos( scene->valueToCoordinate( value ) );
 	if ( forceConstraints ) {
 	    table->constrainMoveSelection( this );
 	    table->finalizeMoveSelection();
