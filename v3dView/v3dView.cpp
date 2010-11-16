@@ -1079,9 +1079,6 @@ void v3dView::linkWindowing (dtkAbstractView *view, bool value)
 
 void v3dView::onPropertySet(QString key, QString value)
 {
-    if ( key == "LookupTable" )
-      qDebug() << "v3dView::onPropertySet(" << key << "," << value << ")";
-
     if(key == "Daddy")
 	this->onDaddyPropertySet(value);
     
@@ -1299,7 +1296,6 @@ void v3dView::onLookupTablePropertySet(QString value)
 {
     typedef vtkTransferFunctionPresets Presets;
 
-    qDebug() << "v3dView::onLookupTablePropertySet( " << value << " )";
     vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
     Presets::GetTransferFunction( value.toStdString(), rgb, alpha );
@@ -1812,8 +1808,6 @@ QStringList v3dView::getAvailableTransferFunctionPresets()
 void v3dView::getTransferFunctions( QList<double> & scalars,
 				    QList<QColor> & colors )
 {
-    qDebug() << "v3dView::getTransferFunctions";
-
     vtkColorTransferFunction * color   =
       d->currentView->GetColorTransferFunction();
     vtkPiecewiseFunction     * opacity = 
@@ -1853,8 +1847,6 @@ void v3dView::getTransferFunctions( QList<double> & scalars,
 void v3dView::setTransferFunctions( QList< double > scalars,
 				    QList< QColor > colors )
 {
-    qDebug() << "v3dView::setTransferFunctions";
-
     int size = qMin( scalars.count(), colors.count() );
     vtkColorTransferFunction * color   = vtkColorTransferFunction::New();
     vtkPiecewiseFunction     * opacity = vtkPiecewiseFunction::New();
@@ -1912,10 +1904,7 @@ void v3dView::setColorLookupTable(QList<double> scalars, QList<QColor> colors)
 
     lut->SetTableValue( 0, 0.0, 0.0, 0.0, 0.0 );
     for ( int i = 0, j = 0; i < n; ++i, j += 3 )
-    {
         lut->SetTableValue(i+1, table[j], table[j+1], table[j+2], alphaTable[i] );
-        std::cerr<< alphaTable[i]<<std::endl;
-    }
     lut->SetTableValue( n + 1, 0.0, 0.0, 0.0, 0.0 );
 
     d->currentView->SetLookupTable(lut);
