@@ -220,7 +220,6 @@ void vtkTransferFunctionPresets::GetTransferFunctionFromTable(
 void vtkTransferFunctionPresets::GetBWTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetBWTransferFunction" << std::endl;
   rgb->AddRGBPoint( 0.0, 0.0, 0.0, 0.0 );
   rgb->AddRGBPoint( 1.0, 1.0, 1.0, 1.0 );
 
@@ -232,8 +231,6 @@ void vtkTransferFunctionPresets::GetBWTransferFunction(
 void vtkTransferFunctionPresets::GetBWInverseTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetInverseBWTransferFunction"
-	    << std::endl;
   rgb->AddRGBPoint( 0.0, 1.0, 1.0, 1.0 );
   rgb->AddRGBPoint( 1.0, 0.0, 0.0, 0.0 );
 
@@ -245,8 +242,6 @@ void vtkTransferFunctionPresets::GetBWInverseTransferFunction(
 void vtkTransferFunctionPresets::GetSpectrumTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetSpectrumTransferFunction"
-	    << std::endl;
   rgb->AddRGBPoint( 0.0, 1.0, 0.0, 1.0 );
   rgb->AddRGBPoint( 0.2, 0.0, 0.0, 1.0 );
   rgb->AddRGBPoint( 0.4, 0.0, 1.0, 1.0 );
@@ -266,8 +261,6 @@ void vtkTransferFunctionPresets::GetSpectrumTransferFunction(
 void vtkTransferFunctionPresets::GetHotMetalTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetHotMetalTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, HotMetal, false, rgb, alpha );
 
@@ -291,8 +284,6 @@ void vtkTransferFunctionPresets::GetHotMetalTransferFunction(
 void vtkTransferFunctionPresets::GetHotGreenTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetHotGreenTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, HotGreen, true, rgb, alpha );
 }
@@ -301,8 +292,6 @@ void vtkTransferFunctionPresets::GetHotGreenTransferFunction(
 void vtkTransferFunctionPresets::GetHotIronTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetHotIronTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, HotIron, true, rgb, alpha );
 }
@@ -311,8 +300,6 @@ void vtkTransferFunctionPresets::GetHotIronTransferFunction(
 void vtkTransferFunctionPresets::GetGEColorTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetSpectrumTransferFunction"
-	    << std::endl;
   rgb->AddRGBPoint( 0.0,  0.0, 0.0, 0.0 );
   rgb->AddRGBPoint( 0.25, 0.0, 0.5, 0.5 );
   rgb->AddRGBPoint( 0.5,  0.5, 0.0, 1.0 );
@@ -330,8 +317,6 @@ void vtkTransferFunctionPresets::GetGEColorTransferFunction(
 void vtkTransferFunctionPresets::GetFlowTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetFlowTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, Flow, false, rgb, alpha );
 }
@@ -340,8 +325,6 @@ void vtkTransferFunctionPresets::GetFlowTransferFunction(
 void vtkTransferFunctionPresets::GetLONITransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetLONITransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     203, LONI, false, rgb, alpha );
 
@@ -371,8 +354,6 @@ void vtkTransferFunctionPresets::GetLONITransferFunction(
 void vtkTransferFunctionPresets::GetLONI2TransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetLONI2TransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     120, LONI2, false, rgb, alpha );
 
@@ -401,8 +382,6 @@ void vtkTransferFunctionPresets::GetLONI2TransferFunction(
 void vtkTransferFunctionPresets::GetAsymmetryTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetAsymmetryTransferFunction"
-	    << std::endl;
   rgb->AddRGBPoint( 0.0, 0.0, 0.0, 1.0 );
   rgb->AddRGBPoint( 0.2, 0.0, 1.0, 1.0 );
   rgb->AddRGBPoint( 0.4, 0.0, 1.0, 0.0 );
@@ -422,8 +401,6 @@ void vtkTransferFunctionPresets::GetAsymmetryTransferFunction(
 void vtkTransferFunctionPresets::GetPValueTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetPValueTransferFunction"
-	    << std::endl;
   rgb->SetColorSpaceToHSV();
   rgb->AddHSVPoint( 0.0, 0.6667, 0.5, 0.5 );
   rgb->AddHSVPoint( 1.0, 0.8333, 1.0, 1.0 );
@@ -449,8 +426,6 @@ void vtkTransferFunctionPresets::GetPValueTransferFunction(
 void  vtkTransferFunctionPresets::GetRedBlackAlphaTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetRedBlackAlphaTransferFunction"
-	    << std::endl;
   rgb->AddRGBPoint( 0.0, 0.0, 0.0, 0.0 );
   rgb->AddRGBPoint( 1.0, 1.0, 0.0, 0.0 );
 
@@ -464,8 +439,6 @@ void  vtkTransferFunctionPresets::GetRedBlackAlphaTransferFunction(
 void   vtkTransferFunctionPresets::GetGreenBlackAlphaTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetGreenBlackAlphaTransferFunction"
-	    << std::endl;
   rgb->AddRGBPoint( 0.0, 0.0, 0.0, 0.0 );
   rgb->AddRGBPoint( 1.0, 0.0, 1.0, 0.0 );
 
@@ -478,8 +451,6 @@ void   vtkTransferFunctionPresets::GetGreenBlackAlphaTransferFunction(
 void vtkTransferFunctionPresets::GetBlueBlackAlphaTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetBlueBlackAlphaTransferFunction"
-	    << std::endl;
   rgb->AddRGBPoint( 0.0, 0.0, 0.0, 0.0 );
   rgb->AddRGBPoint( 1.0, 0.0, 0.0, 1.0 );
 
@@ -526,8 +497,6 @@ void vtkTransferFunctionPresets::GetBlueBlackAlphaTransferFunction(
 void vtkTransferFunctionPresets::GetVRMusclesBonesTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetVRMusclesBonesTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, VRMusclesBones, true, rgb, alpha );
 
@@ -560,8 +529,6 @@ void vtkTransferFunctionPresets::GetVRMusclesBonesTransferFunction(
 void vtkTransferFunctionPresets::GetVRBonesTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetVRBonesTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, VRBones, true, rgb, alpha );
 }
@@ -570,8 +537,6 @@ void vtkTransferFunctionPresets::GetVRBonesTransferFunction(
 void vtkTransferFunctionPresets::GetVRRedVesselsTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetVRRedVesselsTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, VRRedVessels, true, rgb, alpha );
 }
@@ -580,8 +545,6 @@ void vtkTransferFunctionPresets::GetVRRedVesselsTransferFunction(
 void vtkTransferFunctionPresets::GetCardiacTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetCardiacTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, Cardiac, true, rgb, alpha );
 }
@@ -590,8 +553,6 @@ void vtkTransferFunctionPresets::GetCardiacTransferFunction(
 void vtkTransferFunctionPresets::GetGrayRainbowTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetGrayRainbowTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, GrayRainbow, true, rgb, alpha );
 }
@@ -601,8 +562,6 @@ void vtkTransferFunctionPresets::GetGrayRainbowTransferFunction(
 void vtkTransferFunctionPresets::GetSternTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetSternTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, Stern, true, rgb, alpha );
 }
@@ -611,8 +570,6 @@ void vtkTransferFunctionPresets::GetSternTransferFunction(
 void vtkTransferFunctionPresets::GetBlackBodyTransferFunction(
   vtkColorTransferFunction * rgb, vtkPiecewiseFunction * alpha )
 {
-  std::cerr << "vtkTransferFunctionPresets::GetBlackBodyTransferFunction"
-	    << std::endl;
   vtkTransferFunctionPresets::GetTransferFunctionFromTable(
     256, BlackBody, true, rgb, alpha );
 }
