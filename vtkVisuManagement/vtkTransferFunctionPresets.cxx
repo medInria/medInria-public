@@ -100,6 +100,9 @@ void vtkTransferFunctionPresets::GetTransferFunction(
   else
     alpha->RemoveAllPoints();
 
+  rgb->ClampingOff();
+  alpha->ClampingOff();
+
   typedef vtkTransferFunctionPresets Self;
   if ( name == "Default" )
     Self::GetBWTransferFunction( rgb, alpha );
