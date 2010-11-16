@@ -275,14 +275,7 @@ void medClutEditorVertex::forceGeometricalConstraints( const QRectF & limits,
 
 void medClutEditorVertex::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    // qDebug();
-    // qDebug() << "pos       :" << event->lastPos()
-    // 	     << " - "         << event->pos();
-    // qDebug() << "scenePos  :" << event->lastScenePos()
-    // 	     << " - "         << event->scenePos();
-
     this->QGraphicsItem::mouseMoveEvent( event );
-    // this->setPos( this->pos() + ( event->pos() - event->lastPos() ) );
 
     bool withShift =
 	static_cast<bool>( event->modifiers() & Qt::ShiftModifier );
@@ -307,8 +300,6 @@ void medClutEditorVertex::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void medClutEditorVertex::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    // qDebug() << "press";
-
     if (event->button() == Qt::RightButton)
         event->ignore();
     else {
@@ -339,8 +330,6 @@ void medClutEditorVertex::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     if ( medClutEditorTable * table =
          dynamic_cast< medClutEditorTable * >( this->parentItem() ) )
 	table->finalizeMoveSelection();
-
-    // qDebug() << "release";
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -922,8 +911,6 @@ QRectF medClutEditorHistogram::boundingRect(void) const
 	  scene->valueToCoordinate( QPoint( this->getRangeMin(), 1.0 ) );
 	QPointF lowerRight =
 	  scene->valueToCoordinate( QPoint( this->getRangeMax(), 0.0 ) );
-	// qDebug() << "histogram::boundingRect: "
-	// 	 << QRectF( upperLeft, lowerRight );
 	return QRectF( upperLeft, lowerRight );
     }
 
@@ -1009,8 +996,6 @@ void medClutEditorHistogram::paint(QPainter *painter,
 	return;
 
     if ( d->scaledValues.count() != d->values.count() + 2 ) {
-        // qDebug() << "scaling histogram values";
-
         d->scaledValues.clear();
 	QMap<qreal, qreal>::iterator it = d->values.begin();
 	d->scaledValues << scene->valueToCoordinate( QPointF( it.key(), 0.0 ) );
@@ -1171,8 +1156,6 @@ void medClutEditorScene::setRange( qreal min, qreal max )
     d->rangeMax = max;
 
     this->updateCoordinates();
-    // qDebug() << "scene::setRange( " << d->rangeMin << ", " << d->rangeMax
-    // 	     << ")";
 }
 
 void medClutEditorScene::adjustRange()
@@ -1270,8 +1253,6 @@ void medClutEditorView::resizeEvent(QResizeEvent *event)
         dynamic_cast< medClutEditorScene * >( this->scene() );
     if ( scene != NULL )
 	scene->setSize( this->size() );
-
-    // qDebug() << "view::resizeEvent: " << this->size();
 }
 
 void medClutEditorView::wheelEvent( QWheelEvent * event )
@@ -1550,8 +1531,6 @@ void medClutEditor::setView( medAbstractView *view, bool force )
 	medClutEditorTable * table = d->scene->table();
 	table->setTransferFunction( scalars, colors );
     }
-
-    // qDebug() << "scene->sceneRect: " << d->scene->sceneRect();
 }
 
 void medClutEditor::initializeTable(void)
