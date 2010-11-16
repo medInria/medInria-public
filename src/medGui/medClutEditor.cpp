@@ -725,14 +725,14 @@ void medClutEditorTable::simplifyTransferFunction()
     for ( int i = 1, n = d->vertices.count() - 1; i < n; ++i ) {
 	medClutEditorVertex * vertex = d->vertices.at( i );
         if ( vertex->isSelected() ) {
-	    QColor p = d->vertices.at( i - 1 )->color();
-	    QColor n = d->vertices.at( i + 1 )->color();
+	    QColor prev = d->vertices.at( i - 1 )->color();
+	    QColor next = d->vertices.at( i + 1 )->color();
 
 	    QColor linear;
-	    linear.setRgbF( 0.5 * ( p.redF()   + n.redF() ),
-			    0.5 * ( p.greenF() + n.greenF() ),
-			    0.5 * ( p.blueF()  + n.blueF() ),
-			    0.5 * ( p.alphaF() + n.alphaF() ) );
+	    linear.setRgbF( 0.5 * ( prev.redF()   + next.redF() ),
+			    0.5 * ( prev.greenF() + next.greenF() ),
+			    0.5 * ( prev.blueF()  + next.blueF() ),
+			    0.5 * ( prev.alphaF() + next.alphaF() ) );
 	    QColor c = vertex->color();
 	    qreal  r = linear.redF()   - c.redF();
 	    qreal  g = linear.greenF() - c.greenF();
@@ -761,14 +761,14 @@ void medClutEditorTable::simplifyTransferFunction()
 	remaining.append( vertices.first() );
 	for ( int i = 1, n = vertices.count() - 1; i < n; ++i ) {
 	    medClutEditorVertex * vertex = vertices.at( i );
-	    QColor p = vertices.at( i - 1 )->color();
-	    QColor n = vertices.at( i + 1 )->color();
+	    QColor prev = vertices.at( i - 1 )->color();
+	    QColor next = vertices.at( i + 1 )->color();
 
 	    QColor linear;
-	    linear.setRgbF( 0.5 * ( p.redF()   + n.redF() ),
-			    0.5 * ( p.greenF() + n.greenF() ),
-			    0.5 * ( p.blueF()  + n.blueF() ),
-			    0.5 * ( p.alphaF() + n.alphaF() ) );
+	    linear.setRgbF( 0.5 * ( prev.redF()   + next.redF() ),
+			    0.5 * ( prev.greenF() + next.greenF() ),
+			    0.5 * ( prev.blueF()  + next.blueF() ),
+			    0.5 * ( prev.alphaF() + next.alphaF() ) );
 	    QColor c = vertex->color();
 	    qreal  r = linear.redF()   - c.redF();
 	    qreal  g = linear.greenF() - c.greenF();
@@ -785,7 +785,8 @@ void medClutEditorTable::simplifyTransferFunction()
 		modified = true;
 		vertex = vertices.at( ++i );
 		vertex->setSelected( false );
-		remaining.append( vertex );
+		if ( i < n )
+		    remaining.append( vertex );
 	    }
 	}
 	remaining.append( vertices.last() );

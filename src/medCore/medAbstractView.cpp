@@ -4,7 +4,8 @@
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent)
 {
     QStringList lut;
-    lut << "Default";
+    lut << "Default";		// list of available lookup tables set
+				// by subclass
     
     // properties to keep up to date synchronization
     this->addProperty ("Daddy",    QStringList() << "true" << "false");
