@@ -50,7 +50,7 @@ ExtractImageBufferFilter<TInputImage,TOutputImage>
 
   const typename TInputImage::OffsetValueType *offset = inputPtr->GetOffsetTable();
   
-  unsigned int dimension = TInputImage::ImageDimension-1;  
+  // unsigned int dimension = TInputImage::ImageDimension-1;  
   typename TInputImage::PixelType *buffer = const_cast<typename TInputImage::PixelType*>(inputPtr->GetBufferPointer());
 
   for (unsigned int i=0; i<TInputImage::ImageDimension; i++)
