@@ -55,6 +55,7 @@ dcmtkMoveScu::dcmtkMoveScu()
     overrideKeys = NULL;
     m_useBuildInStoreScp = false;
     m_skipWriting = false;
+    m_abortQueuedMove = false;
 
     this->setQueryLevel(STUDY);
 
@@ -829,6 +830,7 @@ void dcmtkMoveScu::moveCallback(void *callbackData, T_DIMSE_C_MoveRQ *request,
 
         if (cond != EC_Normal) 
             dcmtkLogger::errorStream() << "Cancel Request Failed: " << DimseCondition::dump(temp_str, cond);
+        scu->m_abortQueuedMove = true;
         scu->m_cancelRqst = false;
     }
 }
@@ -920,7 +922,7 @@ int dcmtkMoveScu::performQueuedMoveRequests()
 {
     int errors = 0;
     MoveCommandItem* item = m_cmdContainer.getFirst();
-    while(m_cmdContainer.isValid())
+    while(m_cmdContainer.isValid() && !m_cancelRqst && !m_abortQueuedMove)
     {
         this->clearAllQueryAttributes();
 
@@ -948,6 +950,7 @@ int dcmtkMoveScu::performQueuedMoveRequests()
         item = m_cmdContainer.getNext();
     }
     m_cmdContainer.clear();
+    m_abortQueuedMove= false;
     return errors;
 }
 

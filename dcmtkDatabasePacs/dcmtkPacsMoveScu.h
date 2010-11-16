@@ -19,6 +19,7 @@ public:
     int sendMoveRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, 
                         const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
+    void sendCancelRequest();
 
     bool addQueryAttribute(int group, int elem, const char* value);
 

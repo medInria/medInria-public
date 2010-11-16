@@ -70,6 +70,11 @@ int dcmtkPacsMoveScu::performQueuedMoveRequests()
     return scu.performQueuedMoveRequests();
 }
 
+void dcmtkPacsMoveScu::sendCancelRequest()
+{
+    scu.sendCancelRequest();
+}
+
 medAbstractPacsMoveScu * createDcmtkMoveScu( void )
 {
     return new dcmtkPacsMoveScu;

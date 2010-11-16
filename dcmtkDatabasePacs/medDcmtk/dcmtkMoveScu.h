@@ -248,6 +248,7 @@ private:
     T_ASC_PresentationContextID presId;
 
     dcmtkContainer<MoveCommandItem*> m_cmdContainer;
+    bool              m_abortQueuedMove;
 
 };
 
