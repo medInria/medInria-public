@@ -100,8 +100,8 @@ void vtkTransferFunctionPresets::GetTransferFunction(
   else
     alpha->RemoveAllPoints();
 
-  rgb->ClampingOff();
-  alpha->ClampingOff();
+  // rgb->ClampingOff();
+  // alpha->ClampingOff();
 
   typedef vtkTransferFunctionPresets Self;
   if ( name == "Default" )
