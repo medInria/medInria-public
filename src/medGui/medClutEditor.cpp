@@ -1531,13 +1531,13 @@ void medClutEditor::setData(dtkAbstractData *data)
     }
 }
 
-void medClutEditor::setView(medAbstractView *view)
+void medClutEditor::setView( medAbstractView *view, bool force )
 {
     dtkAbstractDataImage * image =
 	static_cast<dtkAbstractDataImage *>( view->data() );
     this->setData( image );
 
-    if ( view == d->med_view )
+    if ( !force && view == d->med_view )
 	return;
 
     d->med_view = view;

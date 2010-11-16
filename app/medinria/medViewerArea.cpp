@@ -737,8 +737,8 @@ void medViewerArea::updateTransferFunction()
 
     dtkAbstractView * view = this->currentContainerFocused()->view();
     if ( d->transFun && view ) {
-	d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );
-	d->transFun->setView( dynamic_cast<medAbstractView *>( view ) );
+	// d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );
+	d->transFun->setView( dynamic_cast<medAbstractView *>( view ), true );
 	d->transFun->update();
     }
 }

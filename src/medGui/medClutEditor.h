@@ -263,7 +263,7 @@ public:
     ~medClutEditor(void);
 
     void setData(dtkAbstractData *data);
-    void setView(medAbstractView *view);
+    void setView(medAbstractView *view, bool force = false);
     void applyTable(void);
 
 protected:
