@@ -19,8 +19,6 @@
 
 #include "medToolBoxPacsNodes.h"
 
-#include <medPacs/medAbstractPacsFactory.h>
-#include <medPacs/medAbstractPacsEchoScu.h>
 
 class medToolBoxPacsNodesPrivate
 {
@@ -39,14 +37,12 @@ public:
     QString host_address;
     QString host_port;
 
-    medAbstractPacsEchoScu *scu;
 };
 
 medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), d(new medToolBoxPacsNodesPrivate)
 {
     QWidget *page = new QWidget(this);
 
-    d->scu = NULL;
     d->title = new QLineEdit("DCM4CHEE", page);
     d->address = new QLineEdit("jumbo-4.irisa.fr", page);
     d->port = new QLineEdit("10012", page);
@@ -77,7 +73,7 @@ medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), 
     this->setWidget(page);
 
     connect(d->add, SIGNAL(clicked()), this, SLOT(addNode()));
-    connect(d->ech, SIGNAL(clicked()), this, SLOT(echo()));
+    connect(d->ech, SIGNAL(clicked()), this, SIGNAL(echoRequest()));
     connect(d->rem, SIGNAL(clicked()), this, SLOT(remNode()));
 
     this->readSettings();
@@ -86,7 +82,6 @@ medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), 
 medToolBoxPacsNodes::~medToolBoxPacsNodes(void)
 {
     this->writeSettings();
-    if(d->scu) delete d->scu;
     delete d;
 
     d = NULL;
@@ -151,41 +146,9 @@ void medToolBoxPacsNodes::remNode(void)
     emit nodesUpdated();
 }
 
-void medToolBoxPacsNodes::echo(void)
-{
-     this->readSettings();
-
-    for(int i = 0; i < d->table->rowCount(); i++) 
-    {
-
-        if(!d->scu) d->scu = medAbstractPacsFactory::instance()->createEchoScu("dcmtkEchoScu");
-        if(d->scu)
-        {
-            if(!d->scu->sendEchoRequest(
-                d->table->item(i, 0)->text().toAscii().constData(),
-                d->table->item(i, 1)->text().toAscii().constData(),
-                d->table->item(i, 2)->text().toInt(),
-                d->host_title.toAscii().constData(),
-                d->host_address.toAscii().constData(),
-                d->host_port.toInt())) {
-
-                    d->table->item(i, 0)->setBackground(Qt::green);
-                    d->table->item(i, 1)->setBackground(Qt::green);
-                    d->table->item(i, 2)->setBackground(Qt::green);
-            } else {
-                d->table->item(i, 0)->setBackground(Qt::red);
-                d->table->item(i, 1)->setBackground(Qt::red);
-                d->table->item(i, 2)->setBackground(Qt::red);
-            }
-        } else {
-            qDebug() << "echoScu: cannot create instance, maybe module was not loaded?";
-        }
-    }
-}
-
 void medToolBoxPacsNodes::fillWidget( QList<QVariant> nodes )
 {
-    d->table->clear(); // using clearcontent() seems not to remove the items correctly?!
+    d->table->clear(); 
     d->table->setRowCount(0);
     d->table->setColumnCount(3);
     d->table->setHorizontalHeaderLabels(QStringList() << "Title" << "Address" << "Port");
@@ -197,5 +160,27 @@ void medToolBoxPacsNodes::fillWidget( QList<QVariant> nodes )
         d->table->setItem(row, 0, new QTableWidgetItem(node.toStringList().at(0)));
         d->table->setItem(row, 1, new QTableWidgetItem(node.toStringList().at(1)));
         d->table->setItem(row, 2, new QTableWidgetItem(node.toStringList().at(2)));
+    }
+}
+
+void medToolBoxPacsNodes::onEchoResponse( QVector<bool> vect)
+{
+    for(int i=0;i< vect.size(); i++)
+    {
+        if (d->table->rowCount() > i)
+        {
+            if(vect.at(i))
+            {
+               d->table->item(i, 0)->setBackground(Qt::green);
+               d->table->item(i, 1)->setBackground(Qt::green);
+               d->table->item(i, 2)->setBackground(Qt::green);
+            }
+            else 
+            {
+               d->table->item(i, 0)->setBackground(Qt::red);
+               d->table->item(i, 1)->setBackground(Qt::red);
+               d->table->item(i, 2)->setBackground(Qt::red);
+            }
+        }
     }
 }

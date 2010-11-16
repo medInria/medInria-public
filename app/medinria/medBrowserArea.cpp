@@ -174,6 +174,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->toolbox_pacs_nodes = new medToolBoxPacsNodes(this);
     d->toolbox_pacs_nodes->setVisible(false);
+    connect(d->toolbox_pacs_nodes, SIGNAL(echoRequest()), d->pacs, SLOT(onEchoRequest()));
+    connect(d->pacs, SIGNAL(echoResponse(QVector<bool>)), d->toolbox_pacs_nodes, SLOT(onEchoResponse(QVector<bool>)));
 
     // Pacs Selector //////////////////////////////////////////
 
@@ -340,24 +342,12 @@ void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
     connect(mover, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
     connect(mover, SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
     connect(mover, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
+    connect(mover, SIGNAL(cancelled()), d->toolbox_jobs->stack(),SLOT(onCancel()) );
+    connect(d->toolbox_jobs->stack(), SIGNAL(cancelRequest()),mover, SLOT(onCancel()));
 
     d->toolbox_jobs->stack()->setLabel(mover, "moving");
 
     QThreadPool::globalInstance()->start(mover);
 }
 
-void medBrowserArea::testImport()
-{
-    
-    QDir tmp = QDir::temp();
-    tmp.cd("import");
-    QStringList dirs;
-    dirs = tmp.entryList(QDir::NoDot | QDir::NoDotDot | QDir::AllDirs);
-    QString importPath;
-    for(int i = 0; i< dirs.size(); i++)
-    {
-        importPath = tmp.absolutePath() + "/" + dirs.at(i);
-        qDebug() << importPath;
-        onPacsImport(importPath);
-    }
-}
+

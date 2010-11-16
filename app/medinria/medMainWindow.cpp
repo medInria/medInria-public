@@ -203,7 +203,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
 
-    //d->browserArea->testImport();
 }
 
 medMainWindow::~medMainWindow(void)

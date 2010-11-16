@@ -39,6 +39,7 @@ public:
 signals:
     void shown(void);
     void hidden(void);
+    void cancelRequest(void);
 
 public slots:
     void setLabel(QObject *sender, QString label);
@@ -46,8 +47,12 @@ public slots:
     void onSuccess(void);
     void onFailure(void);
     void removeItem();
-    
+    void onCancel();
+
 private:
+
+    void completeNotification(QString label);
+
     medProgressionStackPrivate *d;
 };
 

@@ -28,6 +28,10 @@ signals:
     void success (void);
     void failure (void);
     void showError(QObject*,const QString&,unsigned int timeout);
+    void cancelled(void);
+
+public slots:
+    void onCancel();
 
 private:
     medPacsMoverPrivate *d;

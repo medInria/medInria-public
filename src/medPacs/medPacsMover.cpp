@@ -60,7 +60,20 @@ void medPacsMover::doQueuedMove()
             d->move->addRequestToQueue(d->cmdList.at(i).group, d->cmdList.at(i).elem, d->cmdList.at(i).query.toLatin1(), source, target);
         }
     
-    d->move->performQueuedMoveRequests();
+    if(d->move->performQueuedMoveRequests() == 0)
+            emit success();
+    else
+            emit failure();
+
     }
 
+}
+
+void medPacsMover::onCancel()
+{
+    if(d->move)
+    {
+        d->move->sendCancelRequest();
+    }
+    emit cancelled();
 }

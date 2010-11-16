@@ -47,8 +47,6 @@ public:
     medDatabaseView *view(void);
     medDatabaseModel *model(void);
 
-    void testImport();
-
 signals:
     void open(const medDataIndex& index);
     void open(const QString& file);

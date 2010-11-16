@@ -38,11 +38,12 @@ public:
 
 signals:
     void nodesUpdated();
+    void echoRequest();
 
 public slots:
     void addNode(void);
     void remNode(void);
-    void echo(void);
+    void onEchoResponse(QVector<bool>);
 
 private:
 

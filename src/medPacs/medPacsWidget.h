@@ -39,10 +39,12 @@ signals:
     void moveList(const QVector<medMoveCommandItem>&);
     void import(QString);
     void requestSelectedNodes();
+    void echoResponse(QVector<bool>);
 
 public slots:
     void search(QString query);
     void updateSelectedNodes(QVector<int> list);
+    void onEchoRequest();
 
 protected slots:
     void onItemExpanded(QTreeWidgetItem *);

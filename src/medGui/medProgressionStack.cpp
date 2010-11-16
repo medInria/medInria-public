@@ -48,6 +48,7 @@ public:
     QVBoxLayout *layout;
 
     QHash<QObject *, QProgressBar *> bars;
+    QHash<QObject *, QPushButton*> buttons;
     QHash<QObject *, QWidget *> widgets;
     QQueue<QObject*> itemstoBeRemoved;
 };
@@ -82,16 +83,20 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
     QWidget *widget = new QWidget(this);
 
     QLabel *ilabel = new QLabel(medChop(label), widget);
-    //ilabel->setFixedWidth(100);
-    //ilabel->setAlignment(Qt::AlignRight);
 
     QProgressBar *bar = new QProgressBar(widget);
     bar->setRange(0, 100);
     d->bars.insert(sender, bar);
 
+    QPushButton *button= new QPushButton(widget);
+    button->setText("C");
+    connect(button,SIGNAL(clicked()), this,SIGNAL(cancelRequest()));
+    d->buttons.insert(sender,button);
+
     QHBoxLayout *layout = new QHBoxLayout(widget);
     layout->addWidget(ilabel);
     layout->addWidget(bar);
+    layout->addWidget(button);
     d->widgets.insert(sender, widget);
 
     d->layout->addWidget(widget);
@@ -103,29 +108,46 @@ void medProgressionStack::setProgress(int progress)
 
     if (d->bars.contains(object)) {
 
-        d->bars.value(object)->setValue(progress);
+        if(!d->bars.value(object)->isHidden())
+            d->bars.value(object)->setValue(progress);
     }
 }
 
 void medProgressionStack::onSuccess (void)
 {
-    QObject *object = this->sender();
-
-    if (d->bars.contains(object)) {
-
-        QWidget *widget = d->widgets.value(object);
-
-	//Completed notification
-        QLabel *completeLabel = new QLabel(tr("Successful"),widget);
-	widget->layout()->removeWidget(d->bars.value(object));
-	d->bars.value(object)->hide();
-	widget->layout()->addWidget(completeLabel);
-	d->itemstoBeRemoved.enqueue(object);
-	QTimer::singleShot(3000, this, SLOT(removeItem()));
-    }
+    completeNotification(tr("Successful"));
 }
 
 void medProgressionStack::onFailure (void)
+{
+    completeNotification(tr("Failure"));
+}
+
+void medProgressionStack::removeItem(){
+    try
+    {
+        if(!d->itemstoBeRemoved.isEmpty()){
+            QObject* object = d->itemstoBeRemoved.dequeue();
+            QWidget *widget = d->widgets.value(object);
+            delete d->bars.value(object);
+            d->bars.remove (object);
+            delete d->buttons.value(object);
+            d->buttons.remove(object);
+            d->layout->removeWidget(widget);
+            d->widgets.remove(object);
+            delete widget;
+            if(d->bars.count() == 0)
+                emit(hidden());
+        }
+    }
+    catch (...)
+    {
+        qWarning() << "exception caught while removing item from progression stack";
+    }
+
+}
+
+void medProgressionStack::completeNotification( QString label )
 {
     QObject *object = this->sender();
 
@@ -133,26 +155,23 @@ void medProgressionStack::onFailure (void)
 
         QWidget *widget = d->widgets.value(object);
 
-	//Completed notification
-        QLabel *completeLabel = new QLabel(tr("Failure"),widget);
-	widget->layout()->removeWidget(d->bars.value(object));
-	d->bars.value(object)->hide();
-	widget->layout()->addWidget(completeLabel);
-	d->itemstoBeRemoved.enqueue(object);
-	QTimer::singleShot(3000, this, SLOT(removeItem()));
+        if(!d->bars.value(object)->isHidden())
+        {
+            //Completed notification
+            QLabel *completeLabel = new QLabel(label,widget);
+            widget->layout()->removeWidget(d->bars.value(object));
+            d->bars.value(object)->hide();
+            widget->layout()->removeWidget(d->buttons.value(object));
+            d->buttons.value(object)->hide();
+            widget->layout()->addWidget(completeLabel);
+            d->itemstoBeRemoved.enqueue(object);
+            QTimer::singleShot(3000, this, SLOT(removeItem()));
+        }
+
     }
 }
 
-void medProgressionStack::removeItem(){
-    if(!d->itemstoBeRemoved.isEmpty()){
-        QObject* object = d->itemstoBeRemoved.dequeue();
-        QWidget *widget = d->widgets.value(object);
-	delete d->bars.value(object);
-	d->bars.remove (object);
-        d->layout->removeWidget(widget);
-        d->widgets.remove(object);
-        delete widget;
-        if(d->bars.count() == 0)
-            emit(hidden());
-    }
+void medProgressionStack::onCancel()
+{
+    completeNotification(tr("Cancelled"));
 }

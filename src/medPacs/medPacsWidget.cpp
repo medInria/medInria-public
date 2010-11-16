@@ -50,7 +50,8 @@ public:
     QList<QStringList> nodes;
     QList<QStringList> selectedNodes;
 
-    medAbstractPacsFindScu *find;
+    medAbstractPacsFindScu  *find;
+    medAbstractPacsEchoScu  *echo;
     medAbstractPacsStoreScp *server;
 
 };
@@ -99,6 +100,7 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     this->setHeaderLabels(QStringList() << "Name" << "Description" << "Id" << "Modality");
 
     d->find = NULL;
+    d->echo = NULL;
     d->server = medAbstractPacsFactory::instance()->createStoreScp("dcmtkStoreScp");
     if (!d->server) qDebug() << "Warning server could not be started, pacsmodule not loaded.";
 
@@ -115,6 +117,7 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
 medPacsWidget::~medPacsWidget(void)
 {
     if (d->find) delete d->find;
+    if (d->echo) delete d->echo;
     if (d->isRunning())
     {
         d->server->stop();
@@ -382,4 +385,27 @@ void medPacsWidget::updateSelectedNodes( QVector<int> list )
     {
         d->selectedNodes.push_back(d->nodes.at(list.at(i)));
     }
+}
+
+void medPacsWidget::onEchoRequest()
+{
+    this->readSettings();
+    QVector<bool> response;
+
+    foreach(QStringList node, d->nodes)
+    {
+        if(!d->echo) d->echo = medAbstractPacsFactory::instance()->createEchoScu("dcmtkEchoScu");
+        if(d->echo)
+        {
+            if(!d->echo->sendEchoRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), node.at(2).toInt(), d->host_title.toLatin1(), d->host_address.toLatin1(), d->host_port.toInt()) )
+                response.push_back(true);
+            else
+                response.push_back(false);
+
+        } else {
+            qDebug() << "echoScu: cannot create instance, maybe module was not loaded?";
+        }
+    }
+
+    emit echoResponse(response);
 }

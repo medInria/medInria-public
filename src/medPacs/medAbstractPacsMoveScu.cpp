@@ -61,3 +61,8 @@ int medAbstractPacsMoveScu::performQueuedMoveRequests()
     DTK_DEFAULT_IMPLEMENTATION;
     return 0;
 }
+
+void medAbstractPacsMoveScu::sendCancelRequest()
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
