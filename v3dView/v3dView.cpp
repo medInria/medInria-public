@@ -1860,8 +1860,8 @@ void v3dView::setTransferFunctions( QList< double > scalars,
         opacity->AddPoint( scalars.at( i ), colors.at( i ).alphaF() );
     }
 
-    color->ClampingOff();
-    opacity->ClampingOff();
+    // color->ClampingOff();
+    // opacity->ClampingOff();
 
     double * range = color->GetRange();
     d->collection->SyncSetColorRange( range );
