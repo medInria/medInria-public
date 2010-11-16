@@ -1550,21 +1550,22 @@ void medClutEditor::initializeTable(void)
     int rangemin = d->histogram->getRangeMin();
     int rangemax = d->histogram->getRangeMax();
     medClutEditorVertex * v1 =
-        new medClutEditorVertex( QPointF( rangemin, 0.8 ),
-                                 QPointF( area.left(), 0.8 * area.height() ),
+        new medClutEditorVertex( QPointF( rangemin, 0.4 ),
+                                 QPointF( area.left(), 0.6 * area.height() ),
                                  Qt::blue, lut );
     medClutEditorVertex * v2 =
         new medClutEditorVertex( QPointF( 0.5 * ( rangemin + rangemax ), 0.5 ),
                                  QPointF( area.center().x(), area.center().y()),
                                  Qt::red, lut );
     medClutEditorVertex * v3 =
-        new medClutEditorVertex( QPointF( rangemax, 0.4 ),
-                                 QPointF( area.right(), 0.4 * area.height() ),
+        new medClutEditorVertex( QPointF( rangemax, 0.8 ),
+                                 QPointF( area.right(), 0.2 * area.height() ),
                                  Qt::yellow, lut );
 
     lut->addVertex(v1);
     lut->addVertex(v2);
     lut->addVertex(v3);
+    lut->updateCoordinates();
 }
 
 void medClutEditor::deleteTable(void)
