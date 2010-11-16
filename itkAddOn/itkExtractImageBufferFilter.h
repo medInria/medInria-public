@@ -51,8 +51,7 @@ protected:
   ExtractImageBufferFilter();
   ~ExtractImageBufferFilter() {};
 
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-			    int threadId );
+  void GenerateData(void);
 
 private:
   ExtractImageBufferFilter(const Self&); //purposely not implemented
