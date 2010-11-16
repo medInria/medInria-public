@@ -1868,8 +1868,11 @@ void v3dView::setTransferFunctions( QList< double > scalars,
         opacity->AddPoint( scalars.at( i ), colors.at( i ).alphaF() );
     }
 
-    d->currentView->SetTransferFunctions( color, opacity );
-    d->currentView->Render();
+    color->ClampingOff();
+    opacity->ClampingOff();
+
+    d->collection->SyncSetColorTransferFunction( color );
+    d->collection->SyncSetOpacityTransferFunction( opacity );
 
     color->Delete();
     opacity->Delete();
