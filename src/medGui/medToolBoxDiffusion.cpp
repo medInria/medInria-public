@@ -33,8 +33,10 @@
 #include <medGui/medDropSite.h>
 #include <medGui/medToolBoxTab.h>
 #include <medGui/medProgressionStack.h>
+#include <medGui/medToolBoxFactory.h>
 
 #include "medToolBoxDiffusion.h"
+#include "medToolBoxDiffusionCustom.h"
 
 class medToolBoxDiffusionPrivate
 {
@@ -160,8 +162,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     d->tractographyDropSite = new medDropSite(tractographyPage);
 
-    foreach(QString handler, medPluginManager::instance()->handlers("tractography"))
-        tractographyMethodCombo->addItem(handler);
+
     tractographyMethodCombo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     d->progression_stack = new medProgressionStack(tractographyPage);
@@ -174,7 +175,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     tractographyMethodLayout->addWidget(tractographyMethodLabel);
     tractographyMethodLayout->addWidget(tractographyMethodCombo);
 
-    QPushButton *tractographyRunButton = new QPushButton("Run Tractography", tractographyPage);
+    //QPushButton *tractographyRunButton = new QPushButton("Run Tractography", tractographyPage);
 
 
     QLabel *coefficientsLabel = new QLabel("Coefficient:", tractographyPage);
@@ -235,7 +236,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     QVBoxLayout *tractographyLayout = new QVBoxLayout(tractographyPage);
     tractographyLayout->addWidget(d->tractographyDropSite);
     tractographyLayout->addLayout(tractographyMethodLayout);
-    tractographyLayout->addWidget(tractographyRunButton);
+    //tractographyLayout->addWidget(tractographyRunButton);
     tractographyLayout->addLayout (coefficientsLayout);
     //tractographyLayout->addWidget(coefficientsButton);
     tractographyLayout->addLayout(progressStackLayout);
@@ -249,13 +250,29 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     tab->addTab(bundlingPage, "Bundling");
     tab->addTab(tractographyPage, "Tractography");
 
-    if (dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create ("itkProcessTensorDTITrackPipeline")) {
-        tractographyMethodCombo->addItem( proc->description() );
-        d->methods.append ( proc );
-    }
+    // --- Setting up custom toolboxes list ---
+
+    tractographyMethodCombo->addItem("Choose algorithm");
+
+    /*foreach(QString handler, medPluginManager::instance()->handlers("tractography"))
+    {
+        qDebug()<<handler;
+        if (medToolBoxFactory::instance()->diffusionToolBoxes().contains(handler))
+        tractographyMethodCombo->addItem(handler);
+    } BEN*/
+
+    foreach(QString toolbox, medToolBoxFactory::instance()->diffusionToolBoxes())
+        tractographyMethodCombo->addItem(toolbox, toolbox);
+
+    connect(tractographyMethodCombo, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
+
+    // ---
+
+    //QVBoxLayout *processLayout = new QVBoxLayout(processPage);
+    //processLayout->addLayout(processDropSiteLayout);
+    //processLayout->addWidget(d->toolboxes);
 
     connect (d->tractographyDropSite,  SIGNAL(objectDropped()),          this, SLOT (onObjectDropped()));
-    connect (tractographyRunButton,    SIGNAL(clicked()),                this, SLOT (run()) );
     connect (d->colorCombo,            SIGNAL(currentIndexChanged(int)), this, SLOT (onColorModeChanged (int)));
     connect (d->displayCheckBox,       SIGNAL(stateChanged(int)),        this, SLOT (onGPUActivated (int)));
     connect (d->displayRadioPolylines, SIGNAL(toggled(bool)),            this, SLOT (onLinesRenderingModeSelected (bool)));
@@ -379,29 +396,6 @@ void medToolBoxDiffusion::onObjectDropped()
         connect (proc, SIGNAL (progressed (int)), d->progression_stack,  SLOT (setProgress (int)));
         d->activeMethods.insert(index, proc);
     }
-}
-
-void medToolBoxDiffusion::run (void)
-{
-    medDataIndex index = d->tractographyDropSite->index();
-
-    dtkAbstractProcess *activeMethod = 0;
-    if (d->activeMethods.contains (index))
-        activeMethod = d->activeMethods[index];
-
-    if (!activeMethod)
-        return;
-
-    activeMethod->setProperty ("RequiredOutput", "Fibers");
-
-    d->progression_stack->setLabel(activeMethod, "Progress:");
-
-    if (activeMethod->run()==0 )
-        if (d->view)
-            if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-                d->view->setData ( activeMethod->output() );
-                d->view->update();
-            }
 }
 
 
@@ -571,3 +565,41 @@ void medToolBoxDiffusion::onCoefficientsChanged (int ind)
         }
 }
 
+void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
+{
+    qDebug()<<id;
+    medToolBoxDiffusionCustom *toolbox = medToolBoxFactory::instance()->createCustomDiffusionToolBox(id);
+    if(!toolbox) {
+        qDebug() << "Unable to instanciate" << id << "toolbox";
+        return;
+    }
+    toolbox->setDiffusionToolBox(this);
+    emit addToolBox(toolbox);
+
+    if (dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create (id)) {
+        d->methods.append( proc );
+    }
+}
+
+void medToolBoxDiffusion::run()
+{
+    medDataIndex index = d->tractographyDropSite->index();
+
+    dtkAbstractProcess *activeMethod = 0;
+    if (d->activeMethods.contains (index))
+        activeMethod = d->activeMethods[index];
+
+    if (!activeMethod)
+        return;
+
+    activeMethod->setProperty ("RequiredOutput", "Fibers");
+
+    d->progression_stack->setLabel(activeMethod, "Progress:");
+
+    if (activeMethod->run()==0 )
+        if (d->view)
+            if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+                d->view->setData ( activeMethod->output() );
+                d->view->update();
+            }
+}

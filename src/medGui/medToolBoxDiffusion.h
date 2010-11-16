@@ -25,6 +25,7 @@
 
 class dtkAbstractView;
 class medToolBoxDiffusionPrivate;
+class medDataIndex;
 
 class MEDGUI_EXPORT medToolBoxDiffusion : public medToolBox
 {
@@ -34,7 +35,10 @@ public:
     ~medToolBoxDiffusion(void);
 
     void update(dtkAbstractView *view);
+    medDataIndex dataIndex();
 
+signals:
+    void addToolBox(medToolBox *toolbox);
 
 public slots:
     void run (void);
@@ -52,6 +56,7 @@ public slots:
 
     void onCoefficientsChanged  (int);
 
+    void onToolBoxChosen(const QString&);
     /*
       void onComputeLFA (void);
       void onComputeRA  (void);

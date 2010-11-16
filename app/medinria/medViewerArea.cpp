@@ -134,6 +134,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(setupLayoutCompare()));
     connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()), this, SLOT(setupLayoutFuse()));
     connect(d->registrationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
+    connect(d->diffusionToolBox   , SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
 
     // Setting up toolbox container
 
