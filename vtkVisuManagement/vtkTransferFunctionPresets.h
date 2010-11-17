@@ -23,8 +23,7 @@ PURPOSE.  See the above copyright notices for more information.
 class vtkColorTransferFunction;
 class vtkPiecewiseFunction;
 
-// class VTK_VISUMANAGEMENT_EXPORT vtkTransferFunctionPresets: public vtkObject
-class vtkTransferFunctionPresets: public vtkObject
+class VTK_VISUMANAGEMENT_EXPORT vtkTransferFunctionPresets: public vtkObject
 {
 
  public:
