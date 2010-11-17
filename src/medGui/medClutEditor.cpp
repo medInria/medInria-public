@@ -720,14 +720,19 @@ void medClutEditorTable::simplifyTransferFunction()
     for ( int i = 1, n = d->vertices.count() - 1; i < n; ++i ) {
 	medClutEditorVertex * vertex = d->vertices.at( i );
         if ( vertex->isSelected() ) {
+	    qreal xp = d->vertices.at( i - 1 )->x();
+	    qreal xn = d->vertices.at( i + 1 )->x();
+	    wn = ( vertex->x() - xp ) / ( xn - xp );
+	    wp = 1.0 - wn;
+
 	    QColor prev = d->vertices.at( i - 1 )->color();
 	    QColor next = d->vertices.at( i + 1 )->color();
 
 	    QColor linear;
-	    linear.setRgbF( 0.5 * ( prev.redF()   + next.redF() ),
-			    0.5 * ( prev.greenF() + next.greenF() ),
-			    0.5 * ( prev.blueF()  + next.blueF() ),
-			    0.5 * ( prev.alphaF() + next.alphaF() ) );
+	    linear.setRgbF( ( wp * prev.redF()   + wn * next.redF() ),
+			    ( wp * prev.greenF() + wn * next.greenF() ),
+			    ( wp * prev.blueF()  + wn * next.blueF() ),
+			    ( wp * prev.alphaF() + wn * next.alphaF() ) );
 	    QColor c = vertex->color();
 	    qreal  r = linear.redF()   - c.redF();
 	    qreal  g = linear.greenF() - c.greenF();
@@ -756,14 +761,20 @@ void medClutEditorTable::simplifyTransferFunction()
 	remaining.append( vertices.first() );
 	for ( int i = 1, n = vertices.count() - 1; i < n; ++i ) {
 	    medClutEditorVertex * vertex = vertices.at( i );
+
+	    qreal xp = vertices.at( i - 1 )->x();
+	    qreal xn = vertices.at( i + 1 )->x();
+	    qreal wn = ( vertex->x() - xp ) / ( xn - xp );
+	    qreal wp = 1.0 - wn;
+
 	    QColor prev = vertices.at( i - 1 )->color();
 	    QColor next = vertices.at( i + 1 )->color();
 
 	    QColor linear;
-	    linear.setRgbF( 0.5 * ( prev.redF()   + next.redF() ),
-			    0.5 * ( prev.greenF() + next.greenF() ),
-			    0.5 * ( prev.blueF()  + next.blueF() ),
-			    0.5 * ( prev.alphaF() + next.alphaF() ) );
+	    linear.setRgbF( ( wp * prev.redF()   + wn * next.redF() ),
+			    ( wp * prev.greenF() + wn * next.greenF() ),
+			    ( wp * prev.blueF()  + wn * next.blueF() ),
+			    ( wp * prev.alphaF() + wn * next.alphaF() ) );
 	    QColor c = vertex->color();
 	    qreal  r = linear.redF()   - c.redF();
 	    qreal  g = linear.greenF() - c.greenF();
