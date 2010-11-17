@@ -722,8 +722,8 @@ void medClutEditorTable::simplifyTransferFunction()
         if ( vertex->isSelected() ) {
 	    qreal xp = d->vertices.at( i - 1 )->x();
 	    qreal xn = d->vertices.at( i + 1 )->x();
-	    wn = ( vertex->x() - xp ) / ( xn - xp );
-	    wp = 1.0 - wn;
+	    qreal wn = ( vertex->x() - xp ) / ( xn - xp );
+	    qreal wp = 1.0 - wn;
 
 	    QColor prev = d->vertices.at( i - 1 )->color();
 	    QColor next = d->vertices.at( i + 1 )->color();
