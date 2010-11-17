@@ -15,14 +15,14 @@ BaseLogger* BaseLogger::m_Instance = 0;
 
 BaseLogger::BaseLogger()
 {
-  cout << "BaseLogger::BaseLogger(): BaseLogger instance created." << endl;
+  //cout << "BaseLogger::BaseLogger(): BaseLogger instance created." << endl;
 }
 
 //---------------------------------------------------------------------------------------------
 
 BaseLogger::~BaseLogger()
 {
-  cout << "BaseLogger::~BaseLogger(): BaseLogger instance destroyed." << endl;
+  //cout << "BaseLogger::~BaseLogger(): BaseLogger instance destroyed." << endl;
 }
 
 //---------------------------------------------------------------------------------------------

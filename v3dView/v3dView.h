@@ -63,7 +63,13 @@ public:
     vtkRenderer *rendererSagittal(void);
     vtkRenderer *renderer3D(void);
 
-    void setColorLookupTable(QList<double>scalars,QList<QColor>colors);
+    virtual QStringList getAvailableTransferFunctionPresets();
+    virtual void getTransferFunctions( QList<double> & scalars,
+				       QList<QColor> & colors );
+    virtual void setTransferFunctions( QList<double> scalars,
+				       QList<QColor > colors );
+    virtual void setColorLookupTable( QList< double > scalars,
+				      QList< QColor > colors );
 
 public slots:
     void play          (bool value);
@@ -77,7 +83,7 @@ public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);
     void on3DModePropertySet                (QString value);
-    void onRenderingPropertySet             (QString value);
+    void onRendererPropertySet              (QString value);
     void onUseLODPropertySet                (QString value);
     void onPresetPropertySet                (QString value);
     void onShowScalarBarPropertySet         (QString value);

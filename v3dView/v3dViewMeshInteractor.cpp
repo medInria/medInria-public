@@ -75,7 +75,7 @@ bool v3dViewMeshInteractor::registered(void)
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 {
     if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
-
+	Q_UNUSED( pointSet );
         d->data = data;
         updatePipeline ();
     }

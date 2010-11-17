@@ -1,6 +1,8 @@
 #include "dcmtkPacsMoveScu.h"
 #include "medPacs/medAbstractPacsMoveScu.h"
 #include "medPacs/medAbstractPacsFactory.h"
+#include "medPacs/medAbstractPacsNode.h"
+#include "dcmtkNode.h"
 
 QString dcmtkPacsMoveScu::description( void ) const
 {
@@ -46,6 +48,31 @@ bool dcmtkPacsMoveScu::setStorageDirectory( const char* directory )
 dcmtkPacsMoveScu::dcmtkPacsMoveScu()
 {
     connect(&scu, SIGNAL(progressed(int)), this,SIGNAL(progressed(int)) );
+}
+
+bool dcmtkPacsMoveScu::addRequestToQueue( int group, int elem, const char* query, medAbstractPacsNode& moveSource, medAbstractPacsNode& moveTarget)
+{
+    dcmtkNode source;
+    source.setTitle(moveSource.title().toStdString());
+    source.setIp(moveSource.ip().toStdString());
+    source.setPort(moveSource.port());
+
+    dcmtkNode target;
+    target.setTitle(moveTarget.title().toStdString());
+    target.setIp(moveTarget.ip().toStdString());
+    target.setPort(moveTarget.port());
+
+    return scu.addRequestToQueue(group, elem, query,source,target);
+}
+
+int dcmtkPacsMoveScu::performQueuedMoveRequests()
+{
+    return scu.performQueuedMoveRequests();
+}
+
+void dcmtkPacsMoveScu::sendCancelRequest()
+{
+    scu.sendCancelRequest();
 }
 
 medAbstractPacsMoveScu * createDcmtkMoveScu( void )

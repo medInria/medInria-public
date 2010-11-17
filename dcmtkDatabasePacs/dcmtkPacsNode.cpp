@@ -14,8 +14,8 @@ QVector<medAbstractPacsResultDataset*> dcmtkPacsNode::getResultDatasetContainer(
 
 void dcmtkPacsNode::convert( dcmtkNode* node)
 {
-    this->setTitle(node->title());
-    this->setIp(node->ip());
+    this->setTitle(QString::fromStdString(node->title()));
+    this->setIp(QString::fromStdString(node->ip()));
     this->setPort(node->port());
 
     dcmtkContainer<dcmtkResultDataset*>* container = node->getResultDatasetContainer();

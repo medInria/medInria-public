@@ -27,7 +27,16 @@ class DcmFileFormat;
  */
 class dcmtkStoreScp : public dcmtkBaseScp
 {
+    Q_OBJECT
+
 public:
+
+    /**
+    * Constructor
+    */
+    dcmtkStoreScp();
+
+    virtual void run();
 
     /*
     * Main function to start the store SCP server. Should be called in a threaded env.
@@ -36,7 +45,7 @@ public:
     * @param ourPort The port number of to listen.
     * @return 0 for success, otherwise errorcode
     */
-    int start(const char* ourTitle, const char* ourIP, unsigned int ourPort);
+    int startService(const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
    /**
     * Overloaded for convenience. starts tge store SCP server.
@@ -44,7 +53,12 @@ public:
     * @see setConnectionParams(const char* , const char* , unsigned int );
     * @return 0 for success or errorcode
     */
-    int start();
+    int startService();
+
+   /**
+    * Stop the storescp loop and exit normally
+    */
+    void stopService();
 
     /**
     * Set a directory where the store-scp should store its incoming data.
@@ -53,6 +67,9 @@ public:
     * @return True if directory is valid, false otherwise.
     */
     bool setStorageDirectory(const char* directory);
+
+signals:
+    void endOfStudy(QString);
 
 protected:
 
@@ -189,8 +206,9 @@ protected:
     */
     void mapCharacterAndAppendToString(Uint8 c, OFString &output);
 
-private:
 
+
+private:
 
     /* sort study mode */
     enum E_SortStudyMode
@@ -253,13 +271,12 @@ private:
     int                opt_dimse_timeout;
     int                opt_acse_timeout;
 
-    std::string        m_storeDir;
-
     OFString temp_str;
 
     char*              m_imageFileName;
     DcmFileFormat*     m_dcmff;
     T_ASC_Association* m_assoc;
+    bool               m_stop;
 
 };
 

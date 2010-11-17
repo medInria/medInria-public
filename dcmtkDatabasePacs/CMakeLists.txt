@@ -37,6 +37,9 @@ include(dtkPlugin)
 find_package(medinria REQUIRED)
 include(${medinria_USE_FILE})
 
+find_package(DCMTK2 REQUIRED)
+include_directories(${DCMTK_INCLUDE_DIR})
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -72,8 +75,6 @@ add_definitions(-DHAVE_CONFIG_H)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-find_package(DCMTK2 REQUIRED)
-include_directories(${DCMTK_INCLUDE_DIR})
 
 IF(WIN32)		
 	SET(WIN32_STD_LIBRARIES 

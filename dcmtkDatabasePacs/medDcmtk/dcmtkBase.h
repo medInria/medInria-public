@@ -10,7 +10,7 @@
 #ifndef DCMTKBASE_H
 #define DCMTKBASE_H
 
-#include <QObject>
+#include <QThread>
 
 //#ifndef WIN32
 //#define HAVE_CONFIG_H
@@ -107,8 +107,9 @@ static const char* transferSyntaxes[] = {
  * @brief base class for all SCU/SCP base implementations.
  * Adds common network connection stuff.
  */
-class dcmtkBase: public QObject
+class dcmtkBase: public QThread
 {
+
 public:
 
    /**
