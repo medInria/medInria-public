@@ -33,7 +33,7 @@ class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
 public:
              medToolBoxDiffusionCustom(QWidget *parent = 0);
     virtual ~medToolBoxDiffusionCustom(void);
-    void setDiffusionToolBox(medToolBoxDiffusion *toolbox);
+    virtual void setDiffusionToolBox(medToolBoxDiffusion *toolbox);
 
 protected:
     medToolBoxDiffusion *parent(void);

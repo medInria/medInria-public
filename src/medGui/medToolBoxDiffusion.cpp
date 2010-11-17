@@ -254,12 +254,12 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     tractographyMethodCombo->addItem("Choose algorithm");
 
-    /*foreach(QString handler, medPluginManager::instance()->handlers("tractography"))
+    foreach(QString handler, medPluginManager::instance()->handlers("tractography"))
     {
         qDebug()<<handler;
         if (medToolBoxFactory::instance()->diffusionToolBoxes().contains(handler))
         tractographyMethodCombo->addItem(handler);
-    } BEN*/
+    }
 
     foreach(QString toolbox, medToolBoxFactory::instance()->diffusionToolBoxes())
         tractographyMethodCombo->addItem(toolbox, toolbox);
