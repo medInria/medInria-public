@@ -1817,7 +1817,8 @@ void v3dView::getTransferFunctions( QList<double> & scalars,
       return;
       
     if ( color->GetSize() != opacity->GetSize() )
-      qDebug() << "Sizes of color and opacity transfer functions don't match!";
+	qDebug() << Q_FUNC_INFO << " sizes of color and opacity transfer "
+	    "functions don't match!";
     int size = qMin( color->GetSize(), opacity->GetSize() );
 
     scalars.clear();
@@ -1839,8 +1840,8 @@ void v3dView::getTransferFunctions( QList<double> & scalars,
     }
 
     if ( !ok )
-      qDebug() << " x values of color and opacity transfer functions don't "
-	"match!";
+	qDebug() << Q_FUNC_INFO << " x values of color and opacity transfer "
+	    "functions don't match!";
 }
 
 void v3dView::setTransferFunctions( QList< double > scalars,
