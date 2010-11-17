@@ -27,6 +27,7 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 #include <medSql/medDatabaseController.h>
+#include <medCore/medStorage.h>
 
 
 class medDatabaseImporterPrivate
@@ -224,7 +225,7 @@ void medDatabaseImporter::run(void)
 	s_studyName.replace   (0x00EA, 'e');
 	s_seriesName.replace  (0x00EA, 'e');
 		
-	QString imageFileName = medDatabaseController::instance()->dataLocation() + "/" + 
+        QString imageFileName = medStorage::dataLocation() + "/" +
 		s_patientName + "/" +
 		s_studyName   + "/" +
 		s_seriesName  + uniqueSeriesId;
@@ -439,7 +440,7 @@ void medDatabaseImporter::run(void)
         }
 
         QFileInfo fileInfo (it.key());
-        if (!fileInfo.dir().exists() && !medDatabaseController::instance()->mkpath (fileInfo.dir().path())) {
+        if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path())) {
 	    qDebug() << "Cannot create directory: " << fileInfo.dir().path();
             continue;
         }
@@ -536,7 +537,7 @@ void medDatabaseImporter::run(void)
 	QStringList thumbPaths;
 
         if (thumbnails.count())
-	    if (!medDatabaseController::instance()->mkpath (thumb_dir))
+            if (!medStorage::mkpath (thumb_dir))
 	        qDebug() << "Cannot create directory: " << thumb_dir;
 
 	for (int j=0; j<thumbnails.count(); j++) {

@@ -29,8 +29,8 @@ class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
     Q_OBJECT
 
 public:
-             medAbstractView(medAbstractView * parent = 0);
-             medAbstractView(const medAbstractView& view);
+    medAbstractView(medAbstractView * parent = 0);
+    medAbstractView(const medAbstractView& view);
     virtual ~medAbstractView(void){}
 
     virtual void setColorLookupTable(int min_range,
@@ -38,7 +38,12 @@ public:
                                      int size,
                                      const int & table);
 
-    virtual void setColorLookupTable(QList<double>scalars,QList<QColor>colors);
+    virtual void setColorLookupTable( QList<double> scalars,
+				      QList<QColor> colors );
+    virtual void setTransferFunctions( QList<double> scalars,
+				       QList<QColor> colors );
+    virtual void getTransferFunctions( QList<double> & scalars,
+				       QList<QColor> & colors );
 
     virtual QWidget *receiverWidget(void);
 
@@ -54,8 +59,6 @@ public slots:
     virtual void linkPosition  (dtkAbstractView *view, bool value);
     virtual void linkCamera    (dtkAbstractView *view, bool value);
     virtual void linkWindowing (dtkAbstractView *view, bool value);
-    
-    
 };
 
 #endif
