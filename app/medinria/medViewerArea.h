@@ -54,6 +54,7 @@ public slots:
     void switchToContainerPreset(int index);
 
     void addToolBox(medToolBox *toolbox);
+    void removeToolBox(medToolBox *toolbox);
 
 protected slots:
     void onViewFocused(dtkAbstractView *view);

@@ -126,6 +126,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->diffusionToolBox = new medToolBoxDiffusion(this);
     d->diffusionToolBox->setVisible(false);
 
+    connect(d->diffusionToolBox   , SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
+
     // -- Registration toolbox --
 
     d->registrationToolBox = new medToolBoxRegistration(this);
@@ -134,7 +136,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(setupLayoutCompare()));
     connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()), this, SLOT(setupLayoutFuse()));
     connect(d->registrationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-    connect(d->diffusionToolBox   , SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
+    connect(d->registrationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+
 
     // Setting up toolbox container
 
@@ -477,6 +480,12 @@ void medViewerArea::addToolBox(medToolBox *toolbox)
 {
     d->toolbox_container->addToolBox(toolbox);
 }
+
+void medViewerArea::removeToolBox(medToolBox *toolbox)
+{
+    d->toolbox_container->removeToolBox(toolbox);
+}
+
 
 #include <dtkVr/dtkVrController.h>
 

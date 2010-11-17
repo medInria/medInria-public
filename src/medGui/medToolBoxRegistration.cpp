@@ -55,6 +55,8 @@ public:
 
     dtkAbstractDataImage *fixedData;
     dtkAbstractDataImage *movingData;
+
+    medToolBoxRegistrationCustom * customToolBox;
 };
 
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
@@ -166,6 +168,8 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
     this->setTitle("Registration");
     this->setWidget(tab);
+
+    d->customToolBox = NULL;
 }
 
 medToolBoxRegistration::~medToolBoxRegistration(void)
@@ -302,6 +306,12 @@ void medToolBoxRegistration::onToolBoxChosen(const QString& id)
     }
 
     toolbox->setRegistrationToolBox(this);
-
+    //get rid of old toolBox
+    if (d->customToolBox)
+    {
+        emit removeToolBox(d->customToolBox);
+        delete d->customToolBox;
+    }
+    d->customToolBox = toolbox;
     emit addToolBox(toolbox);
 }

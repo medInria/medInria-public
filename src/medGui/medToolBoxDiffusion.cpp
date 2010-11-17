@@ -63,6 +63,8 @@ public:
     QHash<medDataIndex, dtkAbstractProcess*> activeMethods;
 
     dtkAbstractView *view;
+
+    medToolBoxDiffusionCustom * customToolBox;
 };
 
 medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
@@ -567,15 +569,23 @@ void medToolBoxDiffusion::onCoefficientsChanged (int ind)
 
 void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
 {
-    qDebug()<<id;
     medToolBoxDiffusionCustom *toolbox = medToolBoxFactory::instance()->createCustomDiffusionToolBox(id);
     if(!toolbox) {
-        qDebug() << "Unable to instanciate" << id << "toolbox";
+        //qDebug() << "Unable to instanciate" << id << "toolbox";
         return;
     }
     toolbox->setDiffusionToolBox(this);
-    emit addToolBox(toolbox);
 
+    //get rid of old toolBox
+    if (d->customToolBox)
+    {
+        emit removeToolBox(d->customToolBox);
+        delete d->customToolBox;
+    }
+    d->customToolBox = toolbox;
+
+    emit addToolBox(toolbox);
+    //TODO refactor methods and active methods (here take care of existing methods...)
     if (dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create (id)) {
         d->methods.append( proc );
     }

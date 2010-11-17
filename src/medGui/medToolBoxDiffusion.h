@@ -39,6 +39,7 @@ public:
 
 signals:
     void addToolBox(medToolBox *toolbox);
+    void removeToolBox(medToolBox *toolbox);
 
 public slots:
     void run (void);
