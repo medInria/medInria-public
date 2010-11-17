@@ -20,6 +20,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkLookupTableManager.h>
+#include <vtkTransferFunctionPresets.h>
 #include <vtkImageActor.h>
 #include <vtkImageData.h>
 #include <vtkPointSet.h>
@@ -117,23 +118,23 @@ public:
     vtkImageView3D *view3D;
 
     vtkImageView *currentView;
-  
+
     vtkImageViewCollection *collection;
     vtkImageViewCollection *collectionPos;
     vtkImageViewCollection *collectionWindowLevel;
     vtkImageViewCollection *collectionAxial;
     vtkImageViewCollection *collectionSagittal;
     vtkImageViewCollection *collectionCoronal;
-    //vtkImageViewCollection *collection3D;	
+    //vtkImageViewCollection *collection3D;
     v3dViewObserver *observer;
 
     QWidget    *widget;
     QSlider    *slider;
-	QComboBox  *dimensionBox;
+    QComboBox  *dimensionBox;
     QPushButton *anchorButton;
     QPushButton *linkButton;
     QPushButton *linkWLButton;
-	QPushButton *registerButton;
+    QPushButton *registerButton;
     QPushButton *playButton;
     QPushButton *closeButton;
     QVTKWidget *vtkWidget;
@@ -141,9 +142,9 @@ public:
     QString orientation;
 
     QSet<dtkAbstractView*> linkedViews;
-    
+
     dtkAbstractData      *data;
-	dtkAbstractDataImage *imageData;
+    dtkAbstractDataImage *imageData;
 
     QTimeLine *timeline;
 };
@@ -374,7 +375,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->collection->SetLinkCamera (0);
     d->collection->SetLinkZoom (0);
     d->collection->SetLinkPan (0);
-	d->collection->SetLinkTimeChange (0);
+    d->collection->SetLinkTimeChange (0);
     d->collection->SetLinkRequestedPosition (0);
 
     d->collection->AddItem (d->view2DAxial);
@@ -537,6 +538,10 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->menu->addAction(zoomAct);
     d->menu->addAction(wlAct);
 
+    // set property to actually available presets
+    QStringList lut = this->getAvailableTransferFunctionPresets();
+    this->addProperty ("LookupTable",           lut);
+    
     // set default properties
     this->setProperty ("Orientation",           "Axial");
     this->setProperty ("ShowScalarBar",         "false");
@@ -1289,73 +1294,17 @@ void v3dView::onShowScalarBarPropertySet(QString value)
 
 void v3dView::onLookupTablePropertySet(QString value)
 {
-    if (value == "Default") {
-        d->collection->SyncSetLookupTable(vtkLookupTableManager::GetBWLookupTable());
-    }
+    typedef vtkTransferFunctionPresets Presets;
 
-    if (value == "Black&White") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetBWLookupTable());
-    }
-
-    if (value == "Black&WhiteInversed") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetBWInverseLookupTable());
-    }
-
-    if (value == "Spectrum") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetSpectrumLookupTable());
-    }
-
-    if (value == "HotMetal") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetHotMetalLookupTable());
-    }
-
-    if (value == "GE") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetGEColorLookupTable());
-    }
-
-    if (value == "Loni") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetLONILookupTable());
-    }
-
-    if (value == "Loni2") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetLONI2LookupTable());
-    }
-
-    if (value == "Asymmetry") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetAsymmetryLookupTable());
-    }
-
-    if (value == "PValue") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetPValueLookupTable());
-    }
-
-    if (value == "blueBlackAlpha") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetBlueBlackAlphaLookupTable());
-    }
-
-    if( value == "greenBlackAlpha") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetGreenBlackAlphaLookupTable());
-    }
-
-    if (value == "redBlackAlpha") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetRedBlackAlphaLookupTable());
-    }
-
-    if (value == "Muscles&Bones") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetVRMusclesBonesLookupTable());
-    }
-
-    if (value == "Stern") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetSternLookupTable());
-    }
-
-    if (value == "Red Vessels") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetVRRedVesselsLookupTable());
-    }
-
-    if (value == "Bones") {
-	d->collection->SyncSetLookupTable(vtkLookupTableManager::GetVRBonesLookupTable());
-    }
+    vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
+    vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
+    Presets::GetTransferFunction( value.toStdString(), rgb, alpha );
+    // d->currentView->SetColorTransferFunction( rgb );
+    // d->currentView->SetOpacityTransferFunction( alpha );
+    d->collection->SyncSetColorTransferFunction( rgb );
+    d->collection->SyncSetOpacityTransferFunction( alpha );
+    rgb->Delete();
+    alpha->Delete();
 }
 
 void v3dView::onShowAxisPropertySet(QString value)
@@ -1414,7 +1363,7 @@ void v3dView::onPresetPropertySet (QString value)
 {
     if( value == "VR Muscles&Bones" ) {
 
-      this->setProperty ("LookupTable", "Muscles&Bones");
+      this->setProperty ("LookupTable", "Muscles & Bones");
 
       double color[3] = {0.0, 0.0, 0.0};
 	
@@ -1480,7 +1429,7 @@ void v3dView::onPresetPropertySet (QString value)
 
     if( value == "Standard" ) {
 
-      this->setProperty ("LookupTable", "Muscles&Bones");
+      this->setProperty ("LookupTable", "Muscles & Bones");
 
       double color[3] = {0.0, 0.0, 0.0};
       
@@ -1506,7 +1455,7 @@ void v3dView::onPresetPropertySet (QString value)
 
     if( value == "Soft on White" ) {
 
-      this->setProperty ("LookupTable", "Muscles&Bones");
+      this->setProperty ("LookupTable", "Muscles & Bones");
 
       double color[3] = {1.0,0.98820477724075317,0.98814374208450317};
       
@@ -1518,7 +1467,7 @@ void v3dView::onPresetPropertySet (QString value)
 
     if( value == "Soft on Blue" ) {
 
-      this->setProperty ("LookupTable", "Muscles&Bones");
+      this->setProperty ("LookupTable", "Muscles & Bones");
 
       double color[3]={0.0, 0.27507439255714417, 0.26398107409477234};      
       
@@ -1844,8 +1793,87 @@ dtkAbstractView *createV3dView(void)
     return new v3dView;
 }
 
+QStringList v3dView::getAvailableTransferFunctionPresets()
+{
+    QStringList lut;
+    typedef std::vector< std::string > StdStrVec;
+    StdStrVec presets = vtkTransferFunctionPresets::GetAvailablePresets();
+    for ( StdStrVec::iterator it( presets.begin() ), end( presets.end() );
+    	  it != end; ++it )
+	lut << QString::fromStdString( * it );
 
-void v3dView::setColorLookupTable(QList<double>scalars, QList<QColor>colors)
+    return lut;
+}
+
+void v3dView::getTransferFunctions( QList<double> & scalars,
+				    QList<QColor> & colors )
+{
+    vtkColorTransferFunction * color   =
+      d->currentView->GetColorTransferFunction();
+    vtkPiecewiseFunction     * opacity = 
+      d->currentView->GetOpacityTransferFunction();
+
+    if ( color == NULL || opacity == NULL )
+      return;
+      
+    if ( color->GetSize() != opacity->GetSize() )
+	qDebug() << Q_FUNC_INFO << " sizes of color and opacity transfer "
+	    "functions don't match!";
+    int size = qMin( color->GetSize(), opacity->GetSize() );
+
+    scalars.clear();
+    colors.clear();
+
+    bool ok = true;
+    for ( int i = 0; i < size; i++ )
+    {
+	double xrgb[6], xalpha[4];
+	color->GetNodeValue( i, xrgb );
+	opacity->GetNodeValue( i, xalpha );
+	if ( xrgb[0] != xalpha[0] )
+	  ok = false;
+
+	scalars << xrgb[0];
+	QColor c;
+	c.setRgbF( xrgb[1], xrgb[2], xrgb[3], xalpha[1] );
+	colors << c;
+    }
+
+    if ( !ok )
+	qDebug() << Q_FUNC_INFO << " x values of color and opacity transfer "
+	    "functions don't match!";
+}
+
+void v3dView::setTransferFunctions( QList< double > scalars,
+				    QList< QColor > colors )
+{
+    int size = qMin( scalars.count(), colors.count() );
+    vtkColorTransferFunction * color   = vtkColorTransferFunction::New();
+    vtkPiecewiseFunction     * opacity = vtkPiecewiseFunction::New();
+
+    for ( int i = 0; i < size; i++ )
+    {
+	color->AddRGBPoint( scalars.at( i ),
+			    colors.at( i ).redF(),
+			    colors.at( i ).greenF(),
+			    colors.at( i ).blueF() );
+        opacity->AddPoint( scalars.at( i ), colors.at( i ).alphaF() );
+    }
+
+    // color->ClampingOff();
+    // opacity->ClampingOff();
+
+    double * range = color->GetRange();
+    d->collection->SyncSetColorRange( range );
+
+    d->collection->SyncSetColorTransferFunction( color );
+    d->collection->SyncSetOpacityTransferFunction( opacity );
+
+    color->Delete();
+    opacity->Delete();
+}
+
+void v3dView::setColorLookupTable(QList<double> scalars, QList<QColor> colors)
 {
     int size= qMin(scalars.count(),colors.count());
     vtkColorTransferFunction * ctf = vtkColorTransferFunction::New();
@@ -1876,17 +1904,14 @@ void v3dView::setColorLookupTable(QList<double>scalars, QList<QColor>colors)
 
     lut->SetTableValue( 0, 0.0, 0.0, 0.0, 0.0 );
     for ( int i = 0, j = 0; i < n; ++i, j += 3 )
-    {
         lut->SetTableValue(i+1, table[j], table[j+1], table[j+2], alphaTable[i] );
-        std::cerr<< alphaTable[i]<<std::endl;
-    }
     lut->SetTableValue( n + 1, 0.0, 0.0, 0.0, 0.0 );
 
     d->currentView->SetLookupTable(lut);
     d->currentView->Render();
     lut->Delete();
-    delete table;
-    delete alphaTable;
+    delete [] table;
+    delete [] alphaTable;
 }
 
 // -- head tracking support
