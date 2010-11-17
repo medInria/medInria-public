@@ -1,12 +1,34 @@
-#include "medStorage.h"
-#include <QDesktopServices>
-#include <QDir>
+/* medStorage.cpp --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Wed Nov 17 18:45:13 2010 (+0100)
+ * Version: $Id$
+ * Last-Updated: Wed Nov 17 18:45:56 2010 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 2
+ */
 
-medStorage::medStorage()
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
+#include "medStorage.h"
+
+#include <QtCore/QCoreApplication>
+#include <QtCore/QDir>
+
+#include <QtGui/QDesktopServices>
+
+medStorage::medStorage(void)
 {
 }
 
-medStorage::~medStorage()
+medStorage::~medStorage(void)
 {
 }
 
