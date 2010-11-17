@@ -11,18 +11,19 @@
 class Ui_SimpleView;
 class QTreeWidgetItem;
 
-class ServerThread;
-class SendThread;
-
 class dcmtkEchoScu;
-class dcmtkMoveScu;
 class dcmtkFindDataset;
 class dcmtkFindScu;
+class dcmtkMoveScu;
+class dcmtkStoreScp;
+class dcmtkStoreScu;
 
 class LoggerConsoleOutput;
 class LoggerFileOutput;
 class LoggerWidgetOutput;
 class LoggerWidget;
+
+class QProgressDialog;
 
 class SimpleView : public QMainWindow
 {
@@ -62,6 +63,12 @@ protected slots:
   void addConn();
   void handleConnSelection();
   void inputChanged();
+  void fillTreeStudy();
+  void setArchiveDirectory();
+  void updateServerDir();
+  void updateContextMenu(const QPoint& point);
+  void moveSelectedItems();
+  void queuedMove(QTreeWidgetItem* item);
 
 
 private:
@@ -82,23 +89,24 @@ private:
 
   dcmtkEchoScu*                 m_echoScu;
   dcmtkFindScu*                 m_findScu;
-  dcmtkMoveScu*                 m_moveScu;
-
-  ServerThread*                 m_serverThread;
-  SendThread*                   m_sendThread;
+  dcmtkMoveScu*                 m_moveThread;
+  dcmtkStoreScp*                m_serverThread;
+  dcmtkStoreScu*                m_sendThread;
 
   std::vector<dcmtkConnectionData> m_nodes;
 
   std::string m_peerIP, m_peerTitle;
-  std::string m_ourIP, m_ourTitle;
   std::string m_patientName;
+  int m_peerPort;
 
-  int m_peerPort, m_ourPort;
+  dcmtkNode                     m_ourNode;
 
   LoggerConsoleOutput*          m_shellOut;
   LoggerFileOutput*             m_fileOut;
   LoggerWidgetOutput*           m_widgetOut;
   LoggerWidget*                 m_loggerWidget;
+
+  QProgressDialog*              progress;
 };
 
 #endif // SimpleView_H

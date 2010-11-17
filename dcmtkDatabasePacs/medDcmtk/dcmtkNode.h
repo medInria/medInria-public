@@ -11,36 +11,39 @@ class dcmtkNode
 {
 public:
 
-    inline void setTitle(std::string title) {
+    dcmtkNode(){};
+
+    dcmtkNode(dcmtkNode& node);
+
+    void setTitle(std::string title) {
         m_title = title;
     }
 
-    inline void setIp(std::string ip) {
+    void setIp(std::string ip) {
         m_ip = ip;
     }
     
-    inline void setPort(unsigned int port) {
+    void setPort(unsigned int port) {
         m_port = port;
     }
 
-    inline std::string title(void) {
+    std::string title(void) {
         return m_title;
     }
 
-    inline std::string ip(void) {
+    std::string ip(void) {
         return m_ip;
     }
     
-    inline unsigned int port(void) {
+    unsigned int port(void) {
         return m_port;
     }
 
     dcmtkContainer<dcmtkResultDataset*>* getResultDatasetContainer(void);
 
 protected:
-    dcmtkContainer<dcmtkResultDataset*>  m_dsContainer;
 
-protected:
+    dcmtkContainer<dcmtkResultDataset*>  m_dsContainer;
     std::string  m_title;
     std::string  m_ip;
     unsigned int m_port;

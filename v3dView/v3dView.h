@@ -32,14 +32,6 @@ public:
 
     static bool registered(void);
 
-signals:
-    void closed(void);
-    void becomeDaddy (bool);
-    void becameDaddy (bool);
-    void sync (bool);
-    void syncWL (bool);
-    void reg(bool);
-
 public:
     void reset(void);
     void clear(void);
@@ -71,35 +63,45 @@ public:
     vtkRenderer *rendererSagittal(void);
     vtkRenderer *renderer3D(void);
 
-    void setColorLookupTable(QList<double>scalars,QList<QColor>colors);
+    virtual QStringList getAvailableTransferFunctionPresets();
+    virtual void getTransferFunctions( QList<double> & scalars,
+				       QList<QColor> & colors );
+    virtual void setTransferFunctions( QList<double> scalars,
+				       QList<QColor > colors );
+    virtual void setColorLookupTable( QList< double > scalars,
+				      QList< QColor > colors );
 
 public slots:
-    void play   (bool);
-    void linkwl (dtkAbstractView* view, bool);
+    void play          (bool value);
+    void linkPosition  (dtkAbstractView *view, bool value);
+    void linkCamera    (dtkAbstractView *view, bool value);
+    void linkWindowing (dtkAbstractView *view, bool value);
+
+    // void linkwl (dtkAbstractView* view, bool);
     
 public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);
-    void onModePropertySet                  (QString value);
-    void onVRModePropertySet                (QString value);
+    void on3DModePropertySet                (QString value);
+    void onRenderingPropertySet             (QString value);
     void onUseLODPropertySet                (QString value);
     void onPresetPropertySet                (QString value);
-    void onScalarBarVisibilityPropertySet   (QString value);
+    void onShowScalarBarPropertySet         (QString value);
     void onLookupTablePropertySet           (QString value);
-    void onBackgroundLookupTablePropertySet (QString value);
-    void onOpacityPropertySet               (QString value);
     void onShowAxisPropertySet              (QString value);
     void onShowRulerPropertySet             (QString value);
     void onShowAnnotationsPropertySet       (QString value);
-    void onLeftClickInteractionPropertySet  (QString value);
+    void onMouseInteractionPropertySet      (QString value);
     void onCroppingPropertySet              (QString value);
-    void onMousePressEvent                  (QMouseEvent *event);
-    void onZSliderValueChanged              (int value);
     void onDaddyPropertySet                 (QString value);
-    void onLinkedWLPropertySet              (QString value);
-	void onDimensionBoxChanged              (QString value);
+    void onPositionLinkedPropertySet        (QString value);
+    void onWindowingLinkedPropertySet       (QString value);
 
-    void onMetaDataSet(QString key, QString value);
+public slots:
+    void onMousePressEvent                  (QMouseEvent *event);
+    void onZSliderValueChanged                  (int value);
+    void onDimensionBoxChanged              (QString value);
+    void onMetaDataSet         (QString key, QString value);
 
 public slots: // Menu interface
     void onMenuAxialTriggered               (void);
@@ -127,7 +129,11 @@ public:
     void cameraPosition(double *coordinates);
     void cameraFocalPoint(double *coordinates);
     void setCameraPosition(double x, double y, double z);
-    void setCameraClippingRange(double near, double far);
+    void setCameraClippingRange(double nearRange, double farRange);
+
+    QString cameraProjectionMode(void);
+    double cameraViewAngle(void);
+    double cameraZoom(void);
 
 private:
     v3dViewPrivate *d;
