@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 25 12:23:43 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Tue Oct 26 10:31:28 2010 (+0200)
+ * Last-Updated: Wed Nov 17 13:40:33 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 457
+ *     Update #: 458
  */
 
 /* Commentary: 
@@ -155,7 +155,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->pacs = new medPacsWidget(this);
 
-    connect(d->pacs, SIGNAL(move(int, int, QString, QString, int)), this, SLOT(onPacsMove(int, int, QString, QString, int)));
     connect(d->pacs, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
     connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
 
