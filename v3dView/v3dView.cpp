@@ -1106,8 +1106,8 @@ void v3dView::onPropertySet(QString key, QString value)
     if(key == "3DMode")
 	this->on3DModePropertySet(value);
 
-    if(key == "Rendering")
-	this->onRenderingPropertySet(value);
+    if(key == "Renderer")
+	this->onRendererPropertySet(value);
 
     if(key == "UseLOD")
 	this->onUseLODPropertySet(value);
@@ -1239,23 +1239,23 @@ void v3dView::on3DModePropertySet (QString value)
 
     if (value=="MIP - Maximum") {
         d->view3D->SetRenderingModeToVR();
-	d->view3D->SetVolumeRayCastFunctionToMaximumIntensityProjection();
+        d->view3D->SetVolumeRayCastFunctionToMaximumIntensityProjection();
     }
-
+    
     if (value=="MIP - Minimum") {
         d->view3D->SetRenderingModeToVR();
-	d->view3D->SetVolumeRayCastFunctionToMinimumIntensityProjection();
+        d->view3D->SetVolumeRayCastFunctionToMinimumIntensityProjection();
     }
 	
     if (value=="Off") {
         d->view3D->SetRenderingModeToPlanar();
-	d->view3D->ShowActorXOff();
-	d->view3D->ShowActorYOff();
-	d->view3D->ShowActorZOff();
+        d->view3D->ShowActorXOff();
+        d->view3D->ShowActorYOff();
+        d->view3D->ShowActorZOff();
     } 
 }
 
-void v3dView::onRenderingPropertySet (QString value)
+void v3dView::onRendererPropertySet (QString value)
 {
     if (value=="GPU") 
         d->view3D->SetVolumeMapperToGPU();

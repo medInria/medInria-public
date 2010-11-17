@@ -83,7 +83,7 @@ public slots:
     void onPropertySet         (QString key, QString value);
     void onOrientationPropertySet           (QString value);
     void on3DModePropertySet                (QString value);
-    void onRenderingPropertySet             (QString value);
+    void onRendererPropertySet              (QString value);
     void onUseLODPropertySet                (QString value);
     void onPresetPropertySet                (QString value);
     void onShowScalarBarPropertySet         (QString value);
