@@ -14,6 +14,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkTransferFunctionPresets.h"
 
 #include <time.h>
+#include <string>
+
 
 #include <vtkObjectFactory.h>
 
