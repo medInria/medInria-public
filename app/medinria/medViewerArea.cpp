@@ -211,6 +211,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 	    this, SLOT(bringUpTransferFunction(bool)));
 
     this->addAction(transFunAction);
+
+    d->transFun = NULL;
 }
 
 medViewerArea::~medViewerArea(void)
