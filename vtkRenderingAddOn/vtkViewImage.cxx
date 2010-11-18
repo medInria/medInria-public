@@ -1,7 +1,7 @@
 /*=========================================================================
 
 Program:   vtkINRIA3D
-Module:    $Id: vtkViewImage.cxx 1315 2009-11-03 12:13:28Z acanale $
+Module:    $Id: vtkViewImage.cxx 1315 2009-ViewImage11-03 12:13:28Z acanale $
 Language:  C++
 Author:    $Author: acanale $
 Date:      $Date: 2009-11-03 13:13:28 +0100 (Tue, 03 Nov 2009) $
@@ -57,6 +57,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifdef vtkINRIA3D_USE_ITK
 #include <itkImageToVTKImageFilter.h>
 #include <itkFlipImageFilter.h>
+#include <itkExtractImageBufferFilter.h>
 #include <itkImage.h>
 #include <itkMatrix.h>
 #include <vnl/algo/vnl_qr.h>
@@ -67,9 +68,62 @@ PURPOSE.  See the above copyright notices for more information.
 #include <sstream>
 #include <cmath>
 
-
 vtkCxxRevisionMacro(vtkViewImage, "$Revision: 1315 $");
 vtkStandardNewMacro(vtkViewImage);
+
+
+#ifdef vtkINRIA3D_USE_ITK
+
+// Enumeration for the supported pixel types
+namespace {
+    enum ViewImageType {
+        IMAGE_VIEW_NONE = 0,
+        IMAGE_VIEW_DOUBLE = 1,
+        IMAGE_VIEW_FLOAT,
+        IMAGE_VIEW_INT,
+        IMAGE_VIEW_UNSIGNED_INT,
+        IMAGE_VIEW_SHORT,
+        IMAGE_VIEW_UNSIGNED_SHORT,
+        IMAGE_VIEW_LONG,
+        IMAGE_VIEW_UNSIGNED_LONG,
+        IMAGE_VIEW_CHAR,
+        IMAGE_VIEW_UNSIGNED_CHAR,
+        IMAGE_VIEW_RGBPIXELTYPE,
+        IMAGE_VIEW_RGBAPIXELTYPE,
+        IMAGE_VIEW_UCHARVECTOR3TYPE  };
+}
+
+// pIMPL class for vtkViewImage
+class vtkViewImage::vtkViewImageImplementation {
+public:
+    //! Default constructor
+    vtkViewImageImplementation () : ImageConverter (0), ImageTemporalFilter (0), TemporalFilterType (IMAGE_VIEW_NONE) {}
+    
+    itk::ProcessObject::Pointer ImageConverter;
+    itk::ProcessObject::Pointer ImageTemporalFilter;
+    int TemporalFilterType;
+    
+    public :
+    template < typename T > static ViewImageType GetViewImageType () ;
+public:
+};
+
+// Template specialisations return the enumeration corresponding to the pixel type.
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < double > () { return     IMAGE_VIEW_DOUBLE ; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < float > () { return     IMAGE_VIEW_FLOAT; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < int > () { return     IMAGE_VIEW_INT; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < unsigned int > () { return     IMAGE_VIEW_UNSIGNED_INT; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < short > () { return     IMAGE_VIEW_SHORT; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < unsigned short > () { return     IMAGE_VIEW_UNSIGNED_SHORT; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < long > () { return     IMAGE_VIEW_LONG; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < unsigned long > () { return     IMAGE_VIEW_UNSIGNED_LONG; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < char > () { return     IMAGE_VIEW_CHAR; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < unsigned char > () { return     IMAGE_VIEW_UNSIGNED_CHAR; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < vtkViewImage::RGBPixelType > () { return     IMAGE_VIEW_RGBPIXELTYPE; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < vtkViewImage::RGBAPixelType > () { return     IMAGE_VIEW_RGBAPIXELTYPE; }
+template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < vtkViewImage::UCharVector3Type > () { return     IMAGE_VIEW_UCHARVECTOR3TYPE ; }
+
+#endif
 
 
 vtkViewImage::vtkViewImage()
@@ -84,6 +138,7 @@ vtkViewImage::vtkViewImage()
   this->LinkWindowLevel = 1;
   this->LinkPosition    = 1;
   this->LinkZoom        = 0;
+  this->LinkVolumeIndex = 0;    
   this->FirstImage      = 1;
   this->FirstResetWindowLevel = 1;
 
@@ -137,12 +192,15 @@ vtkViewImage::vtkViewImage()
   //vtkMapper::SetResolveCoincidentTopologyPolygonOffsetParameters(10,10);
 
 #ifdef vtkINRIA3D_USE_ITK
-  this->ImageConverter = 0;
-  this->ITKImage = 0;
+  this->Impl = new vtkViewImageImplementation;    
+  this->ITKImage  = 0;
+  this->ITKImage4 = 0;    
 #endif
 
   this->DirectionMatrix = vtkMatrix4x4::New();
   this->DirectionMatrix->Identity();
+    
+  this->VolumeIndex = 0;
 }
 
 
@@ -164,9 +222,11 @@ vtkViewImage::~vtkViewImage()
   this->RemoveAllDataSet();
 
 #ifdef vtkINRIA3D_USE_ITK
-  this->ImageConverter = 0;
   this->ITKImage = 0;
+  this->ITKImage4 = 0;    
 #endif
+    
+  delete this->Impl;
 
   this->DirectionMatrix->Delete();
 
@@ -1562,34 +1622,178 @@ void vtkViewImage::SetDirectionMatrix (vtkMatrix4x4 *mat)
   
 }
 
+void vtkViewImage::SyncSetVolumeIndex (vtkIdType volumeIndex)
+{
+    if( this->IsLocked() )
+     {
+        return;
+     }
+    
+    if (this->GetLinkVolumeIndex())
+     {
+        this->SetVolumeIndex (volumeIndex);
+     }
+    
+    this->Lock();
+    for( unsigned int i=0; i<this->Children.size(); i++)
+     {
+        vtkViewImage* view = vtkViewImage::SafeDownCast (this->Children[i]);
+        
+        if( view  )
+         {
+            view->SyncSetVolumeIndex (volumeIndex);
+            view->Update();
+         }
+     }
+    
+    this->UnLock();    
+}
+
+template < class T >
+void vtkViewImage::SetVolumeIndex (vtkIdType volumeIndex)
+{
+    typedef typename itk::Image<T, 4> ImageType4d;
+    typedef typename itk::Image<T, 3> ImageType3d;
+    typedef typename itk::ExtractImageBufferFilter< ImageType4d, ImageType3d > ExtractFilterType;
+    
+    // Since we store the extractor type using an enum, the dynamic cast should always succeed, 
+    // unless the Filter was already NULL.
+    ExtractFilterType * extractor = dynamic_cast < ExtractFilterType *> ( this->Impl->ImageTemporalFilter.GetPointer () ) ;
+    if ( extractor )
+     {
+        unsigned int volumeLimit = extractor->GetInput()->GetLargestPossibleRegion().GetSize()[3] -1;
+        if (volumeIndex<0)
+            volumeIndex = 0;
+        if (volumeIndex>(vtkIdType)volumeLimit)
+            volumeIndex = volumeLimit;
+        typename ImageType4d::RegionType region = extractor->GetExtractionRegion ();
+        region.SetIndex (3, volumeIndex);
+        extractor->SetExtractionRegion (region);
+        extractor->UpdateLargestPossibleRegion();
+     }
+}
+
+//----------------------------------------------------------------------------
+void vtkViewImage::SetVolumeIndex ( vtkIdType index )
+{
+    if ( this->VolumeIndex != index ) {
+        
+#ifdef vtkINRIA3D_USE_ITK
+        if ( this->Impl->ImageTemporalFilter.IsNotNull ()) {
+            
+            switch ( this->Impl->TemporalFilterType ) {
+                    
+                default:
+                case IMAGE_VIEW_NONE : break;
+                    // Macro calls template method for correct argument type.
+#define ViewImageCaseEntry( type , enumName )		\
+case enumName :				\
+{						\
+this->SetVolumeIndex < type > ( index );	\
+break ;					\
+}
+                    
+                    ViewImageCaseEntry( double, IMAGE_VIEW_DOUBLE );
+                    ViewImageCaseEntry( float, IMAGE_VIEW_FLOAT );
+                    ViewImageCaseEntry( int, IMAGE_VIEW_INT );
+                    ViewImageCaseEntry( unsigned int, IMAGE_VIEW_UNSIGNED_INT );
+                    ViewImageCaseEntry( short, IMAGE_VIEW_SHORT );
+                    ViewImageCaseEntry( unsigned short, IMAGE_VIEW_UNSIGNED_SHORT );
+                    ViewImageCaseEntry( long, IMAGE_VIEW_LONG );
+                    ViewImageCaseEntry( unsigned long, IMAGE_VIEW_UNSIGNED_LONG );
+                    ViewImageCaseEntry( char, IMAGE_VIEW_CHAR );
+                    ViewImageCaseEntry( unsigned char, IMAGE_VIEW_UNSIGNED_CHAR );
+                    ViewImageCaseEntry( RGBPixelType, IMAGE_VIEW_RGBPIXELTYPE );
+                    ViewImageCaseEntry( RGBAPixelType, IMAGE_VIEW_RGBAPIXELTYPE );
+                    ViewImageCaseEntry( UCharVector3Type, IMAGE_VIEW_UCHARVECTOR3TYPE  );
+                    
+            };
+        }
+#endif        
+        this->VolumeIndex = index;
+        this->GetImage ()->UpdateInformation ();
+        this->GetImage ()->PropagateUpdateExtent ();
+        this->InvokeEvent( vtkViewImage::ViewImageVolumeIndexChangedEvent );
+        this->Modified ();
+    }
+}
+
 #ifdef vtkINRIA3D_USE_ITK
 
+template <class T>
+inline void vtkViewImage::SetITKImage (typename itk::Image<T, 3>::Pointer itkImage)
+{									
+    if( itkImage.IsNull() )						
+     {									
+         return;								
+     }
+    if (this->ITKImage==itkImage)
+        return;
+    
+    typedef itk::ImageToVTKImageFilter< itk::Image<T, 3> > ConverterType; 
+    typename ConverterType::Pointer myConverter = ConverterType::New();		
+    myConverter->SetInput ( itkImage );				
+    myConverter->Update();						
+    typename itk::Image<T, 3>::DirectionType directions = itkImage->GetDirection(); 
+    vtkMatrix4x4 *matrix = vtkMatrix4x4::New();				
+    matrix->Identity();							
+    for (int i=0; i<3; i++)						
+        for (int j=0; j<3; j++)						
+            matrix->SetElement (i, j, directions (i,j));			
+    this->SetDirectionMatrix ( matrix );				
+    matrix->Delete();							
+    this->SetImage ( myConverter->GetOutput() );			
+    this->Impl->ImageConverter = myConverter;					
+    this->ITKImage = itkImage;						
+}
+
+
+template <class T>
+inline void vtkViewImage::SetITKImage4 (typename itk::Image<T, 4>::Pointer itkImage)
+{									
+    if( itkImage.IsNull() )						
+     {									
+         return;								
+     }
+    if (this->ITKImage4 ==itkImage)
+        return;
+    
+    typedef typename itk::Image<T, 4> ImageType4d;
+    typedef typename itk::Image<T, 3> ImageType3d;
+    typedef typename itk::ExtractImageBufferFilter< ImageType4d, ImageType3d > ExtractFilterType;
+    typename ExtractFilterType::Pointer extractor = ExtractFilterType::New();
+    typename ImageType4d::SizeType size = itkImage->GetLargestPossibleRegion().GetSize();
+    
+    unsigned int volumeIndex = this->VolumeIndex;
+    unsigned int volumeLimit = itkImage->GetLargestPossibleRegion().GetSize()[3]-1;
+    if (volumeIndex<0)
+        volumeIndex = 0;
+    if (volumeIndex>volumeLimit)
+        volumeIndex = volumeLimit;
+    
+    typename ImageType4d::IndexType index = {{0,0,0, volumeIndex}};
+    
+    size[3] = 0;
+    typename ImageType4d::RegionType region;
+    region.SetSize (size);
+    region.SetIndex (index);
+    
+    extractor->SetExtractionRegion (region);
+    extractor->SetInput ( itkImage );
+    
+    this->Impl->ImageTemporalFilter = extractor;
+    this->Impl->TemporalFilterType = vtkViewImage::vtkViewImageImplementation::GetViewImageType <T> ();
+    this->ITKImage4 = itkImage;
+    typename ImageType3d::Pointer itkImage3 = extractor->GetOutput ();
+    extractor->UpdateLargestPossibleRegion();
+    this->SetITKImage( itkImage3 );
+}
 
 #define vtkImplementSetITKImageMacro(type)				\
-  void vtkViewImage::SetITKImage (itk::Image<type, 3>::Pointer itkImage) \
-  {									\
-    if( itkImage.IsNull() )						\
-    {									\
-      return;								\
-    }									\
-    typedef itk::ImageToVTKImageFilter< itk::Image<type, 3> > ConverterType; \
-    ConverterType::Pointer myConverter = ConverterType::New();		\
-    myConverter->SetInput ( itkImage );					\
-    myConverter->Update();						\
-    itk::Image<type, 3>::DirectionType directions = itkImage->GetDirection(); \
-    vtkMatrix4x4 *matrix = vtkMatrix4x4::New();				\
-    matrix->Identity();							\
-    for (int i=0; i<3; i++)						\
-      for (int j=0; j<3; j++)						\
-	matrix->SetElement (i, j, directions (i,j));			\
-    this->SetDirectionMatrix ( matrix );				\
-    matrix->Delete();							\
-    this->SetImage ( myConverter->GetOutput() );			\
-    this->ImageConverter = myConverter;					\
-    this->ITKImage = itkImage;						\
-  }
-
-
+void vtkViewImage::SetITKImage(itk::Image<type, 3>::Pointer itkImage) \
+{									\
+SetITKImage < type > (itkImage);					\
+}
 vtkImplementSetITKImageMacro (double);
 vtkImplementSetITKImageMacro (float);
 vtkImplementSetITKImageMacro (int);
@@ -1606,7 +1810,33 @@ vtkImplementSetITKImageMacro (UCharVector3Type);
 
 itk::ImageBase<3>* vtkViewImage::GetITKImage (void) const
 {
-  return this->ITKImage;
+    return this->ITKImage;
 }
+
+#define vtkImplementSetITKImage4Macro(type)				\
+void vtkViewImage::SetITKImage4 (itk::Image<type, 4>::Pointer itkImage) \
+{									\
+SetITKImage4 < type > (itkImage);					\
+}
+
+vtkImplementSetITKImage4Macro (double);
+vtkImplementSetITKImage4Macro (float);
+vtkImplementSetITKImage4Macro (int);
+vtkImplementSetITKImage4Macro (unsigned int);
+vtkImplementSetITKImage4Macro (short);
+vtkImplementSetITKImage4Macro (unsigned short);
+vtkImplementSetITKImage4Macro (long);
+vtkImplementSetITKImage4Macro (unsigned long);
+vtkImplementSetITKImage4Macro (char);
+vtkImplementSetITKImage4Macro (unsigned char);
+vtkImplementSetITKImage4Macro (RGBPixelType);
+vtkImplementSetITKImage4Macro (RGBAPixelType);
+vtkImplementSetITKImage4Macro (UCharVector3Type);
+
+itk::ImageBase<4>* vtkViewImage::GetTemporalITKImage (void) const
+{
+    return this->ITKImage4;
+}
+
 
 #endif

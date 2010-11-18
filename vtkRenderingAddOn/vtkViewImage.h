@@ -94,7 +94,8 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   {
     ViewImagePositionChangeEvent=(vtkCommand::UserEvent+1),
     ViewImageWindowLevelChangeEvent,
-    ViewImageZoomChangeEvent
+    ViewImageZoomChangeEvent,
+    ViewImageVolumeIndexChangedEvent 
   };
   //ETX
 
@@ -162,6 +163,14 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   vtkSetObjectMacro(Image, vtkImageData);
 
 
+  /**
+     
+  */
+  virtual void SetVolumeIndex ( vtkIdType index );
+  vtkGetMacro(VolumeIndex, vtkIdType);
+    
+  void SyncSetVolumeIndex(vtkIdType index);
+    
 #ifdef vtkINRIA3D_USE_ITK
   /**
      When ITK is set ot ON, we propose the following method to open
@@ -186,32 +195,34 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   
   //BTX
   void SetITKImage (itk::Image<double, 3>::Pointer);
-
   void SetITKImage (itk::Image<float, 3>::Pointer);
-
   void SetITKImage (itk::Image<int, 3>::Pointer);
-
   void SetITKImage (itk::Image<unsigned int, 3>::Pointer);
-
   void SetITKImage (itk::Image<short, 3>::Pointer);
-
   void SetITKImage (itk::Image<unsigned short, 3>::Pointer);
-
   void SetITKImage (itk::Image<long, 3>::Pointer);
-
   void SetITKImage (itk::Image<unsigned long, 3>::Pointer);
-
   void SetITKImage (itk::Image<char, 3>::Pointer);
-
   void SetITKImage (itk::Image<unsigned char, 3>::Pointer);
-
   void SetITKImage (itk::Image<RGBPixelType, 3>::Pointer);
-
   void SetITKImage (itk::Image<RGBAPixelType, 3>::Pointer);
-
   void SetITKImage (itk::Image<UCharVector3Type, 3>::Pointer);
-
   itk::ImageBase<3>* GetITKImage (void) const;
+
+  virtual void SetITKImage4 (itk::Image<double, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<float, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<int, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<unsigned int, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<short, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<unsigned short, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<long, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<unsigned long, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<char, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<unsigned char, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<RGBPixelType, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<RGBAPixelType, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<UCharVector3Type, 4>::Pointer input);
+  itk::ImageBase<4>* GetTemporalITKImage (void) const;
   //ETX
 #endif
 
@@ -448,6 +459,12 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   vtkGetMacro (LinkZoom, int);
 
 
+  /**
+     Set the zoom link ON or OFF.
+  */
+  vtkSetMacro (LinkVolumeIndex, int);
+  vtkGetMacro (LinkVolumeIndex, int);
+    
   /**
      Shift/Scale are used to get the true image intensity if the image
      was scaled before being inputed to the view.
@@ -695,6 +712,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   int            LinkWindowLevel;
   int            LinkPosition;
   int            LinkZoom;
+  int            LinkVolumeIndex;
   int            LinkRender;
 
   int            Visibility;
@@ -707,16 +725,37 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   double          Level;
   double          Zoom;
 
+  //! The volume to be displayed.
+  vtkIdType VolumeIndex;
+
 #ifdef vtkINRIA3D_USE_ITK
+    //! Template function which implements SetInput for all types. 
+    // Defined locally and not exposed.
+    template < class T >
+    void SetITKImage (typename itk::Image<T, 3>::Pointer itkImage);
+    
+    //! Template function which implements SetInput4 for all types. 
+    // Defined locally and not exposed.
+    template < class T >
+    void SetITKImage4 (typename itk::Image<T, 4>::Pointer itkImage);
+    
+    //! Template function which sets the time step. 
+    // Defined locally and not exposed.
+    template < class T >
+    void SetVolumeIndex (vtkIdType volumeIndex);
+    
   /**
      This pointer is used to store internally a reference to the
      current ITK->VTK converter, in order to prevent the image buffer
      to be deleted unexpectdely. See the SetITKImageInXXX for more
      information.
    */
-  //BTX
-  itk::ProcessObject::Pointer ImageConverter;
-  itk::ImageBase<3>::Pointer  ITKImage;
+   class vtkViewImageImplementation;
+   vtkViewImageImplementation * Impl;
+
+  //BTX    
+    itk::ImageBase<3>::Pointer  ITKImage;
+    itk::ImageBase<4>::Pointer  ITKImage4;    
   //ETX
 #endif
 
