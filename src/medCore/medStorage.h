@@ -22,7 +22,9 @@
 
 #include <QString>
 
-class medStorage
+#include "medCoreExport.h"
+
+class MEDCORE_EXPORT medStorage
 {
 public:
      medStorage(void);
