@@ -194,34 +194,34 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   typedef itk::Vector<unsigned char, 3> UCharVector3Type;
   
   //BTX
-  void SetITKImage (itk::Image<double, 3>::Pointer);
-  void SetITKImage (itk::Image<float, 3>::Pointer);
-  void SetITKImage (itk::Image<int, 3>::Pointer);
-  void SetITKImage (itk::Image<unsigned int, 3>::Pointer);
-  void SetITKImage (itk::Image<short, 3>::Pointer);
-  void SetITKImage (itk::Image<unsigned short, 3>::Pointer);
-  void SetITKImage (itk::Image<long, 3>::Pointer);
-  void SetITKImage (itk::Image<unsigned long, 3>::Pointer);
-  void SetITKImage (itk::Image<char, 3>::Pointer);
-  void SetITKImage (itk::Image<unsigned char, 3>::Pointer);
-  void SetITKImage (itk::Image<RGBPixelType, 3>::Pointer);
-  void SetITKImage (itk::Image<RGBAPixelType, 3>::Pointer);
-  void SetITKImage (itk::Image<UCharVector3Type, 3>::Pointer);
+  void SetITKImage (itk::Image<double, 3>*);
+  void SetITKImage (itk::Image<float, 3>*);
+  void SetITKImage (itk::Image<int, 3>*);
+  void SetITKImage (itk::Image<unsigned int, 3>*);
+  void SetITKImage (itk::Image<short, 3>*);
+  void SetITKImage (itk::Image<unsigned short, 3>*);
+  void SetITKImage (itk::Image<long, 3>*);
+  void SetITKImage (itk::Image<unsigned long, 3>*);
+  void SetITKImage (itk::Image<char, 3>*);
+  void SetITKImage (itk::Image<unsigned char, 3>*);
+  void SetITKImage (itk::Image<RGBPixelType, 3>*);
+  void SetITKImage (itk::Image<RGBAPixelType, 3>*);
+  void SetITKImage (itk::Image<UCharVector3Type, 3>*);
   itk::ImageBase<3>* GetITKImage (void) const;
 
-  virtual void SetITKImage4 (itk::Image<double, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<float, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<int, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<unsigned int, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<short, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<unsigned short, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<long, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<unsigned long, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<char, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<unsigned char, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<RGBPixelType, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<RGBAPixelType, 4>::Pointer input);
-  virtual void SetITKImage4 (itk::Image<UCharVector3Type, 4>::Pointer input);
+  virtual void SetITKImage4 (itk::Image<double, 4> *input);
+  virtual void SetITKImage4 (itk::Image<float, 4> *input);
+  virtual void SetITKImage4 (itk::Image<int, 4> *input);
+  virtual void SetITKImage4 (itk::Image<unsigned int, 4> *input);
+  virtual void SetITKImage4 (itk::Image<short, 4> *input);
+  virtual void SetITKImage4 (itk::Image<unsigned short, 4> *input);
+  virtual void SetITKImage4 (itk::Image<long, 4> *input);
+  virtual void SetITKImage4 (itk::Image<unsigned long, 4> *input);
+  virtual void SetITKImage4 (itk::Image<char, 4> *input);
+  virtual void SetITKImage4 (itk::Image<unsigned char, 4> *input);
+  virtual void SetITKImage4 (itk::Image<RGBPixelType, 4> *input);
+  virtual void SetITKImage4 (itk::Image<RGBAPixelType, 4> *input);
+  virtual void SetITKImage4 (itk::Image<UCharVector3Type, 4> *input);
   itk::ImageBase<4>* GetTemporalITKImage (void) const;
   //ETX
 #endif
@@ -732,12 +732,12 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
     //! Template function which implements SetInput for all types. 
     // Defined locally and not exposed.
     template < class T >
-    void SetITKImage (typename itk::Image<T, 3>::Pointer itkImage);
+    void SetITKImage (typename itk::Image<T, 3> *itkImage);
     
     //! Template function which implements SetInput4 for all types. 
     // Defined locally and not exposed.
     template < class T >
-    void SetITKImage4 (typename itk::Image<T, 4>::Pointer itkImage);
+    void SetITKImage4 (typename itk::Image<T, 4> *itkImage);
     
     //! Template function which sets the time step. 
     // Defined locally and not exposed.

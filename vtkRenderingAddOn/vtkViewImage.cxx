@@ -1721,9 +1721,9 @@ break ;					\
 #ifdef vtkINRIA3D_USE_ITK
 
 template <class T>
-inline void vtkViewImage::SetITKImage (typename itk::Image<T, 3>::Pointer itkImage)
+inline void vtkViewImage::SetITKImage (typename itk::Image<T, 3> *itkImage)
 {									
-    if( itkImage.IsNull() )						
+    if( !itkImage )
      {									
          return;								
      }
@@ -1749,9 +1749,9 @@ inline void vtkViewImage::SetITKImage (typename itk::Image<T, 3>::Pointer itkIma
 
 
 template <class T>
-inline void vtkViewImage::SetITKImage4 (typename itk::Image<T, 4>::Pointer itkImage)
+inline void vtkViewImage::SetITKImage4 (typename itk::Image<T, 4> *itkImage)
 {									
-    if( itkImage.IsNull() )						
+    if( !itkImage )
      {									
          return;								
      }
@@ -1790,7 +1790,7 @@ inline void vtkViewImage::SetITKImage4 (typename itk::Image<T, 4>::Pointer itkIm
 }
 
 #define vtkImplementSetITKImageMacro(type)				\
-void vtkViewImage::SetITKImage(itk::Image<type, 3>::Pointer itkImage) \
+void vtkViewImage::SetITKImage(itk::Image<type, 3> *itkImage) \
 {									\
 SetITKImage < type > (itkImage);					\
 }
@@ -1814,7 +1814,7 @@ itk::ImageBase<3>* vtkViewImage::GetITKImage (void) const
 }
 
 #define vtkImplementSetITKImage4Macro(type)				\
-void vtkViewImage::SetITKImage4 (itk::Image<type, 4>::Pointer itkImage) \
+void vtkViewImage::SetITKImage4 (itk::Image<type, 4> *itkImage) \
 {									\
 SetITKImage4 < type > (itkImage);					\
 }
