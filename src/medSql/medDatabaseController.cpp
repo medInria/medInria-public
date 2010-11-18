@@ -35,7 +35,7 @@
 #include "medDatabaseReader.h"
 #include <medCore/medStorage.h>
 
-medDatabaseController *medDatabaseController::instance(void)
+QPointer<medDatabaseController> medDatabaseController::instance(void)
 {
     if(!s_instance)
         s_instance = new medDatabaseController;

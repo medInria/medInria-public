@@ -47,7 +47,7 @@ public:
 
     medDatabaseNavigator *navigator;
 
-    medClutEditor * transFun;
+    QPointer<medClutEditor>  transFun;
 
     QStackedWidget *stack;
 

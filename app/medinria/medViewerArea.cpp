@@ -212,7 +212,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     this->addAction(transFunAction);
 
-    d->transFun = NULL;
 }
 
 medViewerArea::~medViewerArea(void)

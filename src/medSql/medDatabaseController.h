@@ -34,7 +34,7 @@ class MEDSQL_EXPORT medDatabaseController : public QObject
     Q_OBJECT
 
 public:
-    static medDatabaseController *instance(void);
+    static QPointer<medDatabaseController> instance(void);
 
     QSqlDatabase *database(void);
 
