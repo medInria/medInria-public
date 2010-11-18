@@ -145,6 +145,11 @@ public:
     // void keyPressEvent(QKeyEvent *event);
     // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
+signals:
+    void vertexChanged(void);
+    void vertexRemoved(void);
+    void vertexAdded(void);
+    
 public slots:
     void onDeleteVertex(medClutEditorVertex * v);
 
@@ -280,6 +285,7 @@ protected slots:
     void onApplyTablesAction(void);
     void onColorAction(void);
     void onDeleteAction(void);
+    void onVertexMoved(void);
 
 private:
     medClutEditorPrivate *d;
