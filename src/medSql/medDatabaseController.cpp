@@ -43,6 +43,14 @@ QPointer<medDatabaseController> medDatabaseController::instance(void)
     return s_instance;
 }
 
+void medDatabaseController::destroy(void)
+{
+    if (s_instance) {
+        delete s_instance;
+        s_instance = 0;
+    }
+}
+
 QSqlDatabase *medDatabaseController::database(void)
 {
     return &m_database;

@@ -202,7 +202,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medMessageController::instance()->attach(this->statusBar());
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
-
 }
 
 medMainWindow::~medMainWindow(void)
@@ -323,6 +322,6 @@ void medMainWindow::closeEvent(QCloseEvent *event)
 {
     this->writeSettings();
     
-    if(medDatabaseController::instance() != NULL)
-        delete medDatabaseController::instance();
+    if (medDatabaseController::instance())
+        medDatabaseController::instance()->destroy();
 }
