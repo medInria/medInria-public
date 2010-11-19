@@ -11,6 +11,7 @@ SET(vtkVisuManagement_SRCS
  vtkFlipTensorImageFilter.cxx
  vtkCompareImageManager.cxx
  vtkLookupTableManager.cxx
+ vtkTransferFunctionPresets.cxx
  vtkTensorVisuManager.cxx
  vtkTensorManager.cxx
  vtkVectorVisuManager.cxx

@@ -530,7 +530,12 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
    */
   vtkGetMacro (SliceNavigation, int);
 
+	
+  void SyncSetCameraFocalAndPosition (double focal[3], double pos[3]);
 
+  void SyncSetCameraFocalAndPosition (double focal[3], double pos[3], unsigned int orientation);
+
+	
   /**
      This function is called right after setting both Renderer and RenderWindow.
      It allows a class to add actors for instance without knowing when the Renderer

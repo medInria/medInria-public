@@ -1819,7 +1819,7 @@ void vtkViewImage2D::SetZoom (double factor)
   //camera->GetParallelScale() / factor );
 
 
-  if ( this->GetRenderWindowInteractor()->GetLightFollowCamera() )
+  if ( this->GetRenderWindowInteractor() && this->GetRenderWindowInteractor()->GetLightFollowCamera() )
   {
     this->GetRenderer()->UpdateLightsGeometryToFollowCamera();
   }
@@ -1915,6 +1915,44 @@ void vtkViewImage2D::SetDirectionMatrix (vtkMatrix4x4 *mat)
 
   this->ResetAndRestablishZoomAndCamera();
   this->Modified();
+}
+
+void vtkViewImage2D::SyncSetCameraFocalAndPosition (double focal[3], double pos[3])
+{
+	this->SyncSetCameraFocalAndPosition( focal, pos, this->Orientation );
+}
+
+void vtkViewImage2D::SyncSetCameraFocalAndPosition (double focal[3], double pos[3], unsigned int orientation)
+{
+    if( this->IsLocked() )
+	{
+		return;
+	}
+	
+	if( this->GetLinkCameraFocalAndPosition() && this->Orientation==orientation)
+	{
+		this->SetCameraFocalAndPosition (focal, pos);
+	}
+	
+	this->Lock();
+	for( unsigned int i=0; i<this->Children.size(); i++)
+	{
+		vtkSynchronizedView* view = vtkSynchronizedView::SafeDownCast (this->Children[i]);
+		
+		if( view )
+		{
+			if (vtkViewImage2D *view2d = vtkViewImage2D::SafeDownCast(view) ) 
+			{
+			  view2d->SyncSetCameraFocalAndPosition(focal, pos, orientation);
+			}
+			else 
+			{
+			  view->SyncSetCameraFocalAndPosition (focal, pos);
+			}
+			view->Update();
+		}
+	}
+	this->UnLock();	
 }
 
 void vtkViewImage2D::ResetAndRestablishZoomAndCamera()
