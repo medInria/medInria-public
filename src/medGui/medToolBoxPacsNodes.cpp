@@ -43,9 +43,12 @@ medToolBoxPacsNodes::medToolBoxPacsNodes(QWidget *parent) : medToolBox(parent), 
 {
     QWidget *page = new QWidget(this);
 
+    QValidator* validator = new QIntValidator( 0, 65535, this );
+
     d->title = new QLineEdit("DCM4CHEE", page);
     d->address = new QLineEdit("jumbo-4.irisa.fr", page);
     d->port = new QLineEdit("10012", page);
+    d->port->setValidator(validator);
 
     d->table = new QTableWidget(page);
 

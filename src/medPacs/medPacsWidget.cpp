@@ -66,7 +66,7 @@ void medPacsWidgetPrivate::run(void)
     tmp.mkdir("import");
     tmp.cd("import");
     this->server->setStorageDirectory(tmp.absolutePath().toLatin1());
-    this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), this->host_port.toInt());
+    this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), tryToInt(this->host_port));
 }
 
 int medPacsWidgetPrivate::index(medAbstractPacsNode& node)
@@ -134,7 +134,7 @@ void medPacsWidget::readSettings(void)
     QSettings settings("inria", "medinria");
     settings.beginGroup("medToolBoxPacsHost");
     d->host_title = settings.value("title").toString();
-    d->host_address = settings.value("address").toString();
+    d->host_address = "localhost";
     d->host_port = settings.value("port").toString();
     settings.endGroup();
 
@@ -176,7 +176,8 @@ void medPacsWidget::search(QString query)
         d->find->addQueryAttribute(0x0020,0x0010, "\0"); // study ID
         
         foreach(QStringList node, d->selectedNodes)
-            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), node.at(2).toInt(), d->host_title.toLatin1(), d->host_address.toLatin1(), d->host_port.toInt());
+            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+                d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
         
         QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
         
@@ -241,7 +242,8 @@ void medPacsWidget::findSeriesLevel(QTreeWidgetItem * item)
         if (i == nodeIndex)
         {
             QStringList node = d->nodes.at(i);
-            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), node.at(2).toInt(), d->host_title.toLatin1(), d->host_address.toLatin1(), d->host_port.toInt());
+            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+                d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
         }
     }
 
@@ -295,7 +297,8 @@ void medPacsWidget::findImageLevel(QTreeWidgetItem *item)
         if (i == nodeIndex)
         {
             QStringList node = d->nodes.at(i);
-            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), node.at(2).toInt(), d->host_title.toLatin1(), d->host_address.toLatin1(), d->host_port.toInt());
+            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+                  d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
         }
     }
 
@@ -364,10 +367,10 @@ void medPacsWidget::onItemImported(void)
             item.elem  = tag.y();
             item.sourceTitle = d->nodes.at(nodeIndex).at(0);
             item.sourceIp = d->nodes.at(nodeIndex).at(1);
-            item.sourcePort = d->nodes.at(nodeIndex).at(2).toInt();
+            item.sourcePort = tryToInt(d->nodes.at(nodeIndex).at(2));
             item.targetTitle = d->host_title;
             item.targetIp = d->host_address;
-            item.targetPort = d->host_port.toInt();
+            item.targetPort = tryToInt(d->host_port);
             item.query = query;
 
             if(hash.contains(itemList.at(i)->data(0, Qt::UserRole).toInt()))
@@ -397,7 +400,8 @@ void medPacsWidget::onEchoRequest()
         if(!d->echo) d->echo = medAbstractPacsFactory::instance()->createEchoScu("dcmtkEchoScu");
         if(d->echo)
         {
-            if(!d->echo->sendEchoRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), node.at(2).toInt(), d->host_title.toLatin1(), d->host_address.toLatin1(), d->host_port.toInt()) )
+            if(!d->echo->sendEchoRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+                    d->host_title.toLatin1(), d->host_address.toLatin1(),tryToInt(d->host_port) ))
                 response.push_back(true);
             else
                 response.push_back(false);
@@ -408,4 +412,20 @@ void medPacsWidget::onEchoRequest()
     }
 
     emit echoResponse(response);
+}
+
+int tryToInt( QString value )
+{
+    int result = 0;
+    bool ok;
+    try
+    {
+        result = value.toInt(&ok,10);
+        if(!ok) result = 0;
+    }
+    catch (...)
+    {
+        result = 0;
+    }
+    return result;
 }

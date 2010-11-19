@@ -48,7 +48,8 @@ public:
     QVBoxLayout *layout;
 
     QHash<QObject *, QProgressBar *> bars;
-    QHash<QObject *, QPushButton*> buttons;
+    QHash<QObject *,QPushButton*> buttons;
+    QHash<QObject*,QObject *> buttonsSender;
     QHash<QObject *, QWidget *> widgets;
     QQueue<QObject*> itemstoBeRemoved;
 };
@@ -90,8 +91,9 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
 
     QPushButton *button= new QPushButton(widget);
     button->setText("C");
-    connect(button,SIGNAL(clicked()), this,SIGNAL(cancelRequest()));
+    connect(button,SIGNAL(clicked()), this,SLOT(sendCancelRequest()));
     d->buttons.insert(sender,button);
+    d->buttonsSender.insert(button, sender);
 
     QHBoxLayout *layout = new QHBoxLayout(widget);
     layout->addWidget(ilabel);
@@ -174,4 +176,10 @@ void medProgressionStack::completeNotification( QString label )
 void medProgressionStack::onCancel()
 {
     completeNotification(tr("Cancelled"));
+}
+
+void medProgressionStack::sendCancelRequest()
+{
+    QObject* object = this->sender();
+    emit cancelRequest(d->buttonsSender.value(object));
 }

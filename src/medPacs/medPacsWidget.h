@@ -61,4 +61,7 @@ private:
     medPacsWidgetPrivate *d;
 };
 
+int  tryToInt(QString value);
+
+
 #endif

@@ -347,8 +347,8 @@ void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
     connect(mover, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
     connect(mover, SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
     connect(mover, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
-    connect(mover, SIGNAL(cancelled()), d->toolbox_jobs->stack(),SLOT(onCancel()) );
-    connect(d->toolbox_jobs->stack(), SIGNAL(cancelRequest()),mover, SLOT(onCancel()));
+    connect(mover, SIGNAL(cancelled()), d->toolbox_jobs->stack(),SLOT(onCancel()), Qt::AutoConnection );
+    connect(d->toolbox_jobs->stack(), SIGNAL(cancelRequest(QObject*)),mover, SLOT(onCancel(QObject*)), Qt::AutoConnection);
 
     d->toolbox_jobs->stack()->setLabel(mover, "moving");
 
