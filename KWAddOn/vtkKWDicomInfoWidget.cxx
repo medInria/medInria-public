@@ -52,6 +52,7 @@ vtkCxxRevisionMacro( vtkKWDicomInfoWidget, "$Revision: 1302 $");
 vtkKWDicomInfoWidget::vtkKWDicomInfoWidget()
 {
   
+  //this->EditableOn();
   this->EditableOn();
   //this->Update();
   this->DicomInfoList = NULL;
@@ -189,7 +190,7 @@ void vtkKWDicomInfoWidget::CreateWidget()
 //   }
 
   this->Pack();
-
+  
 
   this->SearchDialog->SetMasterWindow (this);
   
@@ -204,7 +205,7 @@ void vtkKWDicomInfoWidget::CreateWidget()
   this->SearchDialog->GetEntry()->GetWidget()->SetCommandTrigger(vtkKWEntry::TriggerOnReturnKey);
   
   this->SearchDialog->GetOKButton()->SetCommand(this->SearchDialog, "OK");
-  
+
   
 }
 
