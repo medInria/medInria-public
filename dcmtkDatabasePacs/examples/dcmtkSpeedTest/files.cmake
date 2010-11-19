@@ -24,14 +24,12 @@ SET (MED_DCMTK_SOURCES
 		../../medDcmtk/dcmtkKey.cpp		
 		../../medDcmtk/dcmtkNode.h
 		../../medDcmtk/dcmtkNode.cpp
+		
 		../../medDcmtk/dcmtkBaseScp.h
 		../../medDcmtk/dcmtkBaseScp.cpp
 		../../medDcmtk/dcmtkStoreScp.h
 		../../medDcmtk/dcmtkStoreScp.cpp	
-		../../medDcmtk/dcmtkDump.h
-		../../medDcmtk/dcmtkDump.cpp	
-		../../medDcmtk/dcmtkModify.h
-		../../medDcmtk/dcmtkModify.cpp
+		
 	)
 	
 SET (MED_LOGGER_SOURCES
@@ -54,12 +52,14 @@ SET (MED_LOGGER_SOURCES
 	)
 	
 SET (OTHER_MOC_FILES
-		../../medLogger/LoggerWidget.h		
+		../../medLogger/LoggerWidget.h
 		../../medDcmtk/dcmtkStoreScp.h
 		../../medDcmtk/dcmtkFindScu.h
 		../../medDcmtk/dcmtkBaseScu.h
 	)
 	
 SET (MED_GENERAL_SOURCES
-
+	    main.cpp
+		SpeedTest.h
+		SpeedTest.cpp
 	)

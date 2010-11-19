@@ -26,22 +26,13 @@
 
 //---------------------------------------------------------------------------------------------
 
-int dcmtkStoreScp::start()
+dcmtkStoreScp::dcmtkStoreScp()
 {
-    return start(opt_respondingAETitle, "", opt_port);
-}
-
-//---------------------------------------------------------------------------------------------
-
-int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int ourPort)
-{
-
     opt_showPresentationContexts = OFFalse;
     opt_uniqueFilenames = OFFalse;
     opt_fileNameExtension;
     opt_timeNames = OFFalse;
     timeNameCounter = -1;   // "serial number" to differentiate between files with same timestamp
-    opt_port = ourPort;
     opt_refuseAssociation = OFFalse;
     opt_rejectWithoutImplementationUID = OFFalse;
     opt_sleepAfter = 0;
@@ -68,24 +59,37 @@ int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int o
     lastCallingAETitle;
     calledAETitle;        // called application entity title will be stored here
     lastCalledAETitle;
-    opt_respondingAETitle = ourTitle;
     opt_secureConnection = OFFalse;    // default: no secure connection
     opt_outputDirectory = ".";         // default: output directory equals "."
-    opt_sortStudyMode = ESM_None;      // default: no sorting
-    opt_sortStudyDirPrefix = NULL;     // default: no directory prefix
+    opt_sortStudyMode = ESM_StudyInstanceUID;      // default: no sorting
+    opt_sortStudyDirPrefix = "";     // default: no directory prefix
     opt_execOnReception = NULL;        // default: don't execute anything on reception
-    opt_execOnEndOfStudy = NULL;       // default: don't execute anything on end of study
+    opt_execOnEndOfStudy = "TRUE";       // default: don't execute anything on end of study
     opt_renameOnEndOfStudy = OFFalse;  // default: don't rename any files on end of study
-    opt_endOfStudyTimeout = -1;        // default: no end of study timeout
-    endOfStudyThroughTimeoutEvent = OFFalse;
+    opt_endOfStudyTimeout = 3;        // default: no end of study timeout
+    endOfStudyThroughTimeoutEvent = OFTrue;
     opt_configFile = NULL;
     opt_profileName = NULL;
     opt_blockMode = DIMSE_BLOCKING;
     opt_dimse_timeout = 0;
     opt_acse_timeout = 30;
 
+}
 
+//---------------------------------------------------------------------------------------------
 
+int dcmtkStoreScp::startService()
+{
+    return startService(opt_respondingAETitle, "", opt_port);
+}
+
+//---------------------------------------------------------------------------------------------
+
+int dcmtkStoreScp::startService(const char* ourTitle, const char* ourIP, unsigned int ourPort)
+{
+    m_stop = false;
+    opt_port = ourPort;
+    opt_respondingAETitle = ourTitle;
 
     T_ASC_Network *net;
     DcmAssociationConfiguration asccfg;
@@ -149,7 +153,7 @@ int dcmtkStoreScp::start(const char* ourTitle, const char* ourIP, unsigned int o
 
 
 
-  while (cond.good())
+  while (cond.good() && (!m_stop))
   {
     /* receive an association and acknowledge or reject it. If the association was */
     /* acknowledged, offer corresponding services and invoke one or more if required. */
@@ -197,7 +201,7 @@ OFCondition dcmtkStoreScp::acceptAssociation(T_ASC_Network *net, DcmAssociationC
   // try to receive an association. Here we either want to use blocking or
   // non-blocking, depending on if the option --eostudy-timeout is set.
   if( opt_endOfStudyTimeout == -1 )
-    cond = ASC_receiveAssociation(net, &assoc, opt_maxPDU, NULL, NULL, opt_secureConnection);
+    cond = ASC_receiveAssociation(net, &assoc, opt_maxPDU, NULL, NULL, opt_secureConnection, DUL_NOBLOCK);
   else
     cond = ASC_receiveAssociation(net, &assoc, opt_maxPDU, NULL, NULL, opt_secureConnection, DUL_NOBLOCK, OFstatic_cast(int, opt_endOfStudyTimeout));
 
@@ -625,6 +629,7 @@ OFCondition dcmtkStoreScp::processCommands(T_ASC_Association * assoc)
   // start a loop to be able to receive more than one DIMSE command
   while( cond == EC_Normal || cond == DIMSE_NODATAAVAILABLE || cond == DIMSE_OUTOFRESOURCES )
   {
+
     // receive a DIMSE command over the network
     if( opt_endOfStudyTimeout == -1 )
       cond = DIMSE_receiveCommand(assoc, DIMSE_BLOCKING, 0, &presID, &msg, &statusDetail);
@@ -1162,9 +1167,10 @@ void dcmtkStoreScp::executeEndOfStudyEvents()
   // not equal NULL (i.e. we received all objects that belong to one study, or - in other
   // words - it is the end of one study) we want to execute a certain command which was
   // passed to the application
-  if( opt_execOnEndOfStudy != NULL && !lastStudySubdirectoryPathAndName.empty() )
+  //if( opt_execOnEndOfStudy != NULL && !lastStudySubdirectoryPathAndName.empty() )
+  if(!lastStudySubdirectoryPathAndName.empty())
     executeOnEndOfStudy();
-
+ 
   lastStudySubdirectoryPathAndName.clear();
 }
 
@@ -1282,8 +1288,9 @@ void dcmtkStoreScp::executeOnEndOfStudy()
   // perform substitution for placeholder #c
   cmd = replaceChars( cmd, OFString(CALLED_AETITLE_PLACEHOLDER), (endOfStudyThroughTimeoutEvent) ? calledAETitle : lastCalledAETitle );
 
-  // Execute command in a new process
-//  executeCommand( cmd );
+  std::cout << "STUDY WRITTEN TO: " << lastStudySubdirectoryPathAndName << std::endl;
+
+  emit endOfStudy (QString(lastStudySubdirectoryPathAndName.c_str()));
 }
 
 //---------------------------------------------------------------------------------------------
@@ -1457,7 +1464,7 @@ void dcmtkStoreScp::mapCharacterAndAppendToString(Uint8 c, OFString &output)
 
 bool dcmtkStoreScp::setStorageDirectory(const char* directory)
 {
-    m_storeDir = directory;
+    opt_outputDirectory = directory;
     
     // Todo check if directory is valid
     return true;
@@ -1465,3 +1472,16 @@ bool dcmtkStoreScp::setStorageDirectory(const char* directory)
 
 //---------------------------------------------------------------------------------------------
 
+void dcmtkStoreScp::stopService()
+{
+    m_stop = true;
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkStoreScp::run()
+{
+    startService();
+}
+
+//---------------------------------------------------------------------------------------------

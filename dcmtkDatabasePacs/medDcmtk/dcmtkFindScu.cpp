@@ -26,10 +26,10 @@ dcmtkFindScu::dcmtkFindScu()
     opt_extractResponsesToFile = OFFalse;
     opt_maxReceivePDULength = ASC_DEFAULTMAXPDU;
     opt_networkTransferSyntax = EXS_Unknown;
-    OFCmdUnsignedInt      opt_repeatCount = 1;
-    OFBool                opt_secureConnection = OFFalse; /* default: no secure connection */
+    opt_repeatCount = 1;
+    opt_secureConnection = OFFalse; /* default: no secure connection */
     opt_abstractSyntax = UID_FINDStudyRootQueryRetrieveInformationModel; 
-
+    findCallback = NULL;
 }
 
 //---------------------------------------------------------------------------------------------
@@ -44,6 +44,7 @@ dcmtkFindScu::~dcmtkFindScu()
 int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, 
                                   const char* ourTitle, const char* ourIP, unsigned int ourPort)
 {
+    emit progressed(50);
 
     opt_ourTitle = ourTitle;
     opt_peer = peerIP;
@@ -73,16 +74,15 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
 
 
     // add node to result container
-
     dcmtkNode* node = new dcmtkNode;
     node->setTitle(peerTitle);
     node->setIp(peerIP);
     node->setPort(peerPort);
     
     //own callback
-    dcmtkFindScuCallback myCallback(false, 1);
-    myCallback.setResultDatasetContainer(node->getResultDatasetContainer());
-    myCallback.setKeyContainer(&m_keyContainer);
+    findCallback = new dcmtkFindScuCallback(opt_extractResponsesToFile, opt_cancelAfterNResponses);
+    findCallback->setResultDatasetContainer(node->getResultDatasetContainer());
+    findCallback->setKeyContainer(&m_keyContainer);
 
     // do the main work: negotiate network association, perform C-FIND transaction,
     // process results, and finally tear down the association.
@@ -102,7 +102,7 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
       opt_extractResponsesToFile,
       opt_cancelAfterNResponses,
       &overrideKeys,     
-      &myCallback,
+      findCallback,
       &fileNameList);
 
     m_resContainer.add(node);
@@ -114,6 +114,11 @@ int dcmtkFindScu::sendFindRequest(const char* peerTitle, const char* peerIP, uns
 
     if (cond.bad()) dcmtkLogger::errorStream() << DimseCondition::dump(temp_str, cond);
 
+    emit progressed(100);
+    emit finished();
+
+    delete findCallback;
+    findCallback = NULL;
     return 0;
 }
 
@@ -453,6 +458,21 @@ void dcmtkFindScu::progressCallback(void *callbackData,
 {
     DcmFindSCUDefaultCallback *callback = OFreinterpret_cast(DcmFindSCUDefaultCallback *, callbackData);
     if (callback) callback->callback(request, responseCount, rsp, responseIdentifiers);
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkFindScu::run()
+{
+    sendFindRequest();
+}
+
+//---------------------------------------------------------------------------------------------
+
+void dcmtkFindScu::sendCancelRequest()
+{
+    if (findCallback) 
+        findCallback->sendCancelRequest();
 }
 
 //---------------------------------------------------------------------------------------------

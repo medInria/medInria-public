@@ -20,9 +20,8 @@
 
 // fwd
 class dcmtkResultDataset;
-class dcmtkFindCallback;
 class DcmFindSCUCallback;
-
+class dcmtkFindScuCallback;
 
 /**
  * @class dcmtkFindScu
@@ -33,6 +32,7 @@ class DcmFindSCUCallback;
  */
 class dcmtkFindScu : public dcmtkBaseScu
 {
+    Q_OBJECT
 public:
 
    /*
@@ -44,6 +44,12 @@ public:
     * Destructor
     */
     ~dcmtkFindScu();
+
+    /**
+    * run - thread method
+    * @return   void
+    */
+    virtual void run();
 
    /**
     * Performs the C-FIND request on the peer.
@@ -71,6 +77,13 @@ public:
     */
     void clearAllQueryAttributes();
 
+public slots:
+
+        /**
+        * sendCancelRequest - Stop the current request on the PACS
+        * @return   void
+        */
+        virtual void sendCancelRequest();
 
 protected:
 
@@ -180,6 +193,8 @@ protected:
     OFList<OFString>                        overrideKeys;
     OFList<OFString>                        fileNameList;
 
+ 
+    dcmtkFindScuCallback    *findCallback;
  
 };
 

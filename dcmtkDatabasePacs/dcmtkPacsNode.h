@@ -14,23 +14,24 @@ class dcmtkPacsNode : public medAbstractPacsNode
     Q_OBJECT
 
 public:
-    inline void setTitle(std::string title) {
+
+    void setTitle(QString title) {
         m_title = title;
     }
 
-    inline void setIp(std::string ip) {
+    void setIp(QString ip) {
         m_ip = ip;
     }
     
-    inline void setPort(unsigned int port) {
+    void setPort(unsigned int port) {
         m_port = port;
     }
 
-    inline std::string title(void) {
+    QString title(void) {
         return m_title;
     }
 
-    inline std::string ip(void) {
+    QString ip(void) {
         return m_ip;
     }
     
@@ -43,8 +44,8 @@ public:
     QVector<medAbstractPacsResultDataset*> getResultDatasetContainer(void);
 
 protected:
-    std::string  m_title;
-    std::string  m_ip;
+    QString  m_title;
+    QString  m_ip;
     unsigned int m_port;
 
 private:

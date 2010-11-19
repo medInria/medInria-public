@@ -15,13 +15,24 @@ bool dcmtkPacsStoreScp::registered( void )
 
 int dcmtkPacsStoreScp::start( const char* ourTitle, const char* ourIP, unsigned int ourPort )
 {
-    scp.start(ourTitle, ourIP, ourPort);
+    scp.startService(ourTitle, ourIP, ourPort);
     return 1;
 }
 
 bool dcmtkPacsStoreScp::setStorageDirectory( const char* directory )
 {
     return scp.setStorageDirectory(directory);
+}
+
+dcmtkPacsStoreScp::dcmtkPacsStoreScp()
+{
+    // forward signal
+    connect(&scp, SIGNAL(endOfStudy(QString)), this,SIGNAL(endOfStudy(QString)) );
+}
+
+void dcmtkPacsStoreScp::stop()
+{
+    scp.stopService();
 }
 
 medAbstractPacsStoreScp * createDcmtkStoreScp( void )
