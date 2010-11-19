@@ -353,7 +353,7 @@ public:
 
 medClutEditorTable::medClutEditorTable(const QString & title,
                                        QGraphicsItem *parent)
-: QGraphicsItem(parent)
+  : QGraphicsItem(parent)
 {
     d = new medClutEditorTablePrivate;
     d->title = title;
@@ -365,7 +365,7 @@ medClutEditorTable::medClutEditorTable(const QString & title,
 }
 
 medClutEditorTable::medClutEditorTable(const medClutEditorTable & table)
-: QGraphicsItem( static_cast< QGraphicsItem *>( table.parentItem() ) )
+  : QGraphicsItem( static_cast< QGraphicsItem *>( table.parentItem() ) )
 // : medClutEditorTable (table.title(),table.parent())
 {
     d = new medClutEditorTablePrivate;
@@ -599,18 +599,18 @@ void medClutEditorTable::setColorOfSelection()
         this->setColorOfSelection( color );
 }
 
-void medClutEditorTable::onDeleteVertex(medClutEditorVertex *vertex)
-{
-    if ( d->vertices.count() > 2 ) {
-        d->vertices.removeAll( vertex );
-        delete vertex;
-        emit vertexRemoved();
-    }
-    else
-        qDebug() << "Need at least two nodes, but only "
-                 << ( d->vertices.count() - 1 ) << " nodes"
-                 << " would be left after deletion!  Not deleting any node.";
-}
+// void medClutEditorTable::onDeleteVertex(medClutEditorVertex *vertex)
+// {
+//     if ( d->vertices.count() > 2 ) {
+//         d->vertices.removeAll( vertex );
+//         delete vertex;
+//         emit vertexRemoved();
+//     }
+//     else
+//         qDebug() << "Need at least two nodes, but only "
+//                  << ( d->vertices.count() - 1 ) << " nodes"
+//                  << " would be left after deletion!  Not deleting any node.";
+// }
 
 void medClutEditorTable::scaleWindowWidth( qreal factor )
 {
@@ -1431,12 +1431,13 @@ class medClutEditorPrivate
 {
 public:
     QAction *newAction;
-    QAction *deleteAction;
-    QAction *colorAction;
+    // QAction *deleteAction; // problem: right click deselects vertices
+    // QAction *colorAction;  // problem: right click deselects vertices
     QAction *applyAction;
     QAction *loadTableAction;
-    QAction *deleteTableAction;
     QAction *saveTableAction;
+    // QAction *deleteTableAction;
+    QAction *toggleDirectUpdateAction;
     medClutEditorScene *scene;
     medClutEditorView  *view;
     medClutEditorHistogram *histogram;
@@ -1454,28 +1455,37 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
     d->view->setScene(d->scene);
     d->histogram = NULL;
 
-    d->newAction         = new QAction("New table", this);
-    d->loadTableAction   = new QAction("Load table", this);
-    d->saveTableAction   = new QAction("SaveTable",this);
-    d->deleteTableAction = new QAction("Delete table", this);
-    d->colorAction       = new QAction("Edit color", this);
-    d->deleteAction      = new QAction("Delete selection", this);
-    d->applyAction       = new QAction("Apply", this);
+    d->newAction                = new QAction("New table",    this);
+    d->loadTableAction          = new QAction("Load table",   this);
+    d->saveTableAction          = new QAction("Save table",   this);
+    // d->deleteTableAction        = new QAction("Delete table", this);
+    // d->colorAction              = new QAction("Edit color", this);
+    // d->deleteAction             = new QAction("Delete selection", this);
+    d->applyAction              = new QAction("Apply", this);
+    d->toggleDirectUpdateAction = new QAction("Direct update", this);
 
-    connect(d->newAction,         SIGNAL(triggered()),
-            this,                 SLOT(onNewTableAction()));
-    connect(d->loadTableAction,   SIGNAL(triggered()),
-            this,                 SLOT(onLoadTableAction()));
-    connect(d->saveTableAction,   SIGNAL(triggered()),
-            this,                 SLOT(onSaveTableAction()));
-    connect(d->deleteTableAction, SIGNAL(triggered()),
-            this,                 SLOT(onDeleteTableAction()));
-    connect(d->colorAction,       SIGNAL(triggered()),
-            this,                 SLOT(onColorAction()));
-    connect(d->deleteAction,      SIGNAL(triggered()),
-            this,                 SLOT(onDeleteAction()));
-    connect(d->applyAction,       SIGNAL(triggered()),
-            this,                 SLOT(onApplyTablesAction()));
+    d->loadTableAction->setEnabled( false );
+    d->saveTableAction->setEnabled( false );
+    d->toggleDirectUpdateAction->setCheckable( true );
+    d->toggleDirectUpdateAction->setChecked( true );
+
+    connect(d->newAction,                SIGNAL(triggered()),
+            this,                        SLOT(onNewTableAction()));
+    connect(d->loadTableAction,          SIGNAL(triggered()),
+            this,                        SLOT(onLoadTableAction()));
+    connect(d->saveTableAction,          SIGNAL(triggered()),
+            this,                        SLOT(onSaveTableAction()));
+    // connect(d->deleteTableAction,        SIGNAL(triggered()),
+    //         this,                        SLOT(onDeleteTableAction()));
+    // connect(d->colorAction,              SIGNAL(triggered()),
+    //         this,                        SLOT(onColorAction()));
+    // connect(d->deleteAction,             SIGNAL(triggered()),
+    //         this,                        SLOT(onDeleteAction()));
+    connect(d->applyAction,              SIGNAL(triggered()),
+            this,                        SLOT(onApplyTablesAction()));
+    connect(d->toggleDirectUpdateAction, SIGNAL(triggered()),
+            this,                        SLOT(onToggleDirectUpdateAction()));
+
 
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
@@ -1488,8 +1498,7 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
     QString lutFileName = medStorage::dataLocation();
     lutFileName.append("/LUTs.xml");
     QFile file(lutFileName);
-    if (file.open(QIODevice::ReadOnly))
-    {
+    if (file.open(QIODevice::ReadOnly)) {
         reader.read(&file);
         file.close();
     }
@@ -1501,10 +1510,11 @@ medClutEditor::~medClutEditor(void)
     delete d->newAction;
     delete d->loadTableAction;
     delete d->saveTableAction;
-    delete d->deleteTableAction;
-    delete d->colorAction;
-    delete d->deleteAction;
+    // delete d->deleteTableAction;
+    // delete d->colorAction;
+    // delete d->deleteAction;
     delete d->applyAction;
+    delete d->toggleDirectUpdateAction;
 
     delete d->scene;
     delete d->view;
@@ -1633,17 +1643,19 @@ void medClutEditor::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::RightButton) {
         event->accept();
 
-        QMenu menu("Color Lookup Table", this) ;
-        menu.setWindowOpacity(0.8) ;
+        QMenu menu("Color Lookup Table", this);
+        menu.setWindowOpacity(0.8);
+        if  ( !d->toggleDirectUpdateAction->isChecked() )
+            menu.addAction(d->applyAction);
+        menu.addAction(d->toggleDirectUpdateAction);
+        menu.addSeparator();
         menu.addAction(d->newAction);
         menu.addAction(d->loadTableAction);
         menu.addAction(d->saveTableAction);
-        menu.addAction(d->deleteTableAction);
-        menu.addSeparator();
-        menu.addAction(d->colorAction);
-        menu.addAction(d->deleteAction);
-        menu.addSeparator();
-        menu.addAction(d->applyAction);
+        // menu.addAction(d->deleteTableAction);
+        // menu.addSeparator();
+        // menu.addAction(d->colorAction);
+        // menu.addAction(d->deleteAction);
         menu.exec(mapFrom(this, QCursor::pos()));
         //hack to get the rubber band back after right clicking on the view
         d->view->setDragMode(QGraphicsView::RubberBandDrag);
@@ -1657,26 +1669,34 @@ void medClutEditor::onNewTableAction(void)
         table->triggerVertexChanged();
 }
 
-void medClutEditor::onColorAction(void)
-{
-    if ( medClutEditorTable * table = d->scene->table() )
-        table->setColorOfSelection();
-}
+// void medClutEditor::onColorAction(void)
+// {
+//     if ( medClutEditorTable * table = d->scene->table() )
+//         table->setColorOfSelection();
+// }
 
-void medClutEditor::onDeleteAction(void)
-{
-    if ( medClutEditorTable * table = d->scene->table() )
-        table->deleteSelection();
-}
+// void medClutEditor::onDeleteAction(void)
+// {
+//     if ( medClutEditorTable * table = d->scene->table() )
+//         table->deleteSelection();
+// }
 
 void medClutEditor::onVertexMoved(void)
 {
-    this->applyTable();
+    if ( medClutEditorTable * table = d->scene->table() )
+        if ( d->toggleDirectUpdateAction->isChecked() )
+            this->applyTable();
 }
 
 void medClutEditor::onApplyTablesAction(void)
 {
     this->applyTable();
+}
+
+void medClutEditor::onToggleDirectUpdateAction(void)
+{
+    if  ( d->toggleDirectUpdateAction->isChecked() )
+        this->applyTable();
 }
 
 void medClutEditor::onLoadTableAction(void)
@@ -1741,7 +1761,7 @@ void medClutEditor::onSaveTableAction(void)
     }
 }
 
-void medClutEditor::onDeleteTableAction(void)
-{
+// void medClutEditor::onDeleteTableAction(void)
+// {
 
-}
+// }

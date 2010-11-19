@@ -151,8 +151,8 @@ signals:
     void vertexRemoved(void);
     void vertexAdded(void);
     
-public slots:
-    void onDeleteVertex(medClutEditorVertex * v);
+// public slots:
+//     void onDeleteVertex(medClutEditorVertex * v);
 
 private:
     void deleteAllVertices();
@@ -282,12 +282,12 @@ protected slots:
     void onNewTableAction(void);
     void onLoadTableAction(void);
     void onSaveTableAction(void);
-    void onDeleteTableAction(void);
+    // void onDeleteTableAction(void);
     void onApplyTablesAction(void);
-    void onColorAction(void);
-    void onDeleteAction(void);
+    // void onColorAction(void);
+    // void onDeleteAction(void);
     void onVertexMoved(void);
-
+    void onToggleDirectUpdateAction(void);
 private:
     medClutEditorPrivate *d;
 };
