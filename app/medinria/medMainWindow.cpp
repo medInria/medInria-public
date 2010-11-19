@@ -206,6 +206,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
 medMainWindow::~medMainWindow(void)
 {
+
     delete d;
 
     d = NULL;

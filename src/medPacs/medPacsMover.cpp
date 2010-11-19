@@ -5,6 +5,8 @@
 #include "medAbstractPacsNode.h"
 #include "medPacsNode.h"
 
+#include <iostream>
+
 class medPacsMoverPrivate
 {
 public:
@@ -69,11 +71,11 @@ void medPacsMover::doQueuedMove()
 
 }
 
-void medPacsMover::onCancel()
+void medPacsMover::onCancel(QObject* sender)
 {
-    if(d->move)
+    if(d->move && sender == this)
     {
         d->move->sendCancelRequest();
+        emit cancelled();
     }
-    emit cancelled();
 }

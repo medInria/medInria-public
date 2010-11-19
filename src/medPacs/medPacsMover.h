@@ -31,7 +31,7 @@ signals:
     void cancelled(void);
 
 public slots:
-    void onCancel();
+    void onCancel(QObject*);
 
 private:
     medPacsMoverPrivate *d;

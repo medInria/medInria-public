@@ -39,7 +39,7 @@ public:
 signals:
     void shown(void);
     void hidden(void);
-    void cancelRequest(void);
+    void cancelRequest(QObject*);
 
 public slots:
     void setLabel(QObject *sender, QString label);
@@ -48,6 +48,7 @@ public slots:
     void onFailure(void);
     void removeItem();
     void onCancel();
+    void sendCancelRequest();
 
 private:
 

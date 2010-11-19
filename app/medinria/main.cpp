@@ -29,8 +29,10 @@
 #include <medCore/medPluginManager.h>
 #include <medCore/medDataIndex.h>
 
+
 int main(int argc, char *argv[])
 {
+
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
     QApplication application(argc, argv);
@@ -78,5 +80,6 @@ int main(int argc, char *argv[])
     medPluginManager::instance()->uninitialize();
     dtkScriptManager::instance()->uninitialize();
     
+
     return status;
 }
