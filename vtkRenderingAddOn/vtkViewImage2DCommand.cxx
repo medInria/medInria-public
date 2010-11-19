@@ -163,7 +163,7 @@ void vtkViewImage2DCommand::Windowing(vtkInteractorStyleImage2D* p_isi)
     
   double window = this->InitialWindow;
   double level  = this->InitialLevel;
-  double EPS    = 0.01;
+  double EPS    = 1e-8;
   
   
   double dx = p_isi->GetWindowStep();
