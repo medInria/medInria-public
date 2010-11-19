@@ -142,6 +142,7 @@ public:
     void changeDisplayAlpha( qreal step );
     void resetDisplayAlpha();
 
+    void triggerVertexChanged();
     // void keyPressEvent(QKeyEvent *event);
     // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
