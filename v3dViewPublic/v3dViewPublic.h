@@ -43,7 +43,7 @@ public:
     QWidget *widget(void);
 	
     // access method to internal members for v3dView**Interactor classes
-    vtkViewImage2D *viewAxial(void);
+    vtkViewImage2D *view2D(void);
     vtkViewImage3D *view3D(void);
 	
 public slots:
@@ -78,6 +78,7 @@ public slots:
     void onMenuZoomTriggered (void);
     void onMenuWindowLevelTriggered (void);
 	void onPlayButtonClicked (bool value);
+    void onDimensionBoxChanged (QString value);
     
 
 private:
