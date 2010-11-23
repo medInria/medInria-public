@@ -60,6 +60,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageRGB3.h
   itkDataImageShort4.h)
 
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC})
+
 set(${PROJECT_NAME}_SOURCES
   itkDataImagePlugin.cpp
   itkDataImageChar3.cpp
@@ -78,6 +81,9 @@ set(${PROJECT_NAME}_SOURCES
   itkDataImageRGB3.cpp
   itkDataImageShort4.cpp)
 
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+
 ## #################################################################
 ## Build rules
 ## #################################################################
@@ -86,6 +92,7 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_HEADERS} 
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
