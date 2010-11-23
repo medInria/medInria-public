@@ -1077,8 +1077,9 @@ void v3dView::linkWindowing (dtkAbstractView *view, bool value)
     }
 }
 
-void v3dView::onPropertySet(QString key, QString value)
+void v3dView::onPropertySet(const QString &key, const QString &value)
 {
+  
     if(key == "Daddy")
         this->onDaddyPropertySet(value);
     
@@ -1128,7 +1129,7 @@ void v3dView::onPropertySet(QString key, QString value)
     
 }
 
-void v3dView::onOrientationPropertySet(QString value)
+void v3dView::onOrientationPropertySet(const QString &value)
 {
     if (value==d->orientation)
         return;
@@ -1223,7 +1224,7 @@ void v3dView::onOrientationPropertySet(QString value)
     d->slider->blockSignals (false);
 }
 
-void v3dView::on3DModePropertySet (QString value)
+void v3dView::on3DModePropertySet (const QString &value)
 {
     if (value=="VR") {
         d->view3D->SetRenderingModeToVR();
@@ -1255,7 +1256,7 @@ void v3dView::on3DModePropertySet (QString value)
     } 
 }
 
-void v3dView::onRendererPropertySet (QString value)
+void v3dView::onRendererPropertySet (const QString &value)
 {
     if (value=="GPU") 
         d->view3D->SetVolumeMapperToGPU();
@@ -1273,7 +1274,7 @@ void v3dView::onRendererPropertySet (QString value)
         d->view3D->SetVolumeMapperToDefault();
 }
 
-void v3dView::onUseLODPropertySet (QString value)
+void v3dView::onUseLODPropertySet (const QString &value)
 {
     if (value == "On")
         d->view3D->UseVRQualityOn();
@@ -1281,7 +1282,7 @@ void v3dView::onUseLODPropertySet (QString value)
         d->view3D->UseVRQualityOff();
 }
 
-void v3dView::onShowScalarBarPropertySet(QString value)
+void v3dView::onShowScalarBarPropertySet(const QString &value)
 {
     if (value == "true") {
         d->collection->SyncSetShowScalarBar(true);
@@ -1292,7 +1293,7 @@ void v3dView::onShowScalarBarPropertySet(QString value)
     }
 }
 
-void v3dView::onLookupTablePropertySet(QString value)
+void v3dView::onLookupTablePropertySet(const QString &value)
 {
     typedef vtkTransferFunctionPresets Presets;
     
@@ -1307,7 +1308,7 @@ void v3dView::onLookupTablePropertySet(QString value)
     alpha->Delete();
 }
 
-void v3dView::onShowAxisPropertySet(QString value)
+void v3dView::onShowAxisPropertySet(const QString &value)
 {
     if (value == "true") {
         d->collection->SyncSetShowImageAxis(1);
@@ -1320,17 +1321,17 @@ void v3dView::onShowAxisPropertySet(QString value)
         d->collection->SyncSetShowImageAxis(0);
 }
 
-void v3dView::onShowRulerPropertySet(QString value)
+void v3dView::onShowRulerPropertySet(const QString &value)
 {
     d->collection->SyncSetShowRulerWidget ((value == "true"));  
 }
 
-void v3dView::onShowAnnotationsPropertySet(QString value)
+void v3dView::onShowAnnotationsPropertySet(const QString &value)
 {
     d->collection->SyncSetShowAnnotations ((value == "true"));
 }
 
-void v3dView::onMouseInteractionPropertySet(QString value)
+void v3dView::onMouseInteractionPropertySet(const QString &value)
 {
     d->collection->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
     
@@ -1359,7 +1360,7 @@ void v3dView::onMouseInteractionPropertySet(QString value)
     }
 }
 
-void v3dView::onPresetPropertySet (QString value)
+void v3dView::onPresetPropertySet (const QString &value)
 {
     if( value == "VR Muscles&Bones" ) {
         
@@ -1504,7 +1505,7 @@ void v3dView::onPresetPropertySet (QString value)
     
 }
 
-void v3dView::onCroppingPropertySet (QString value)
+void v3dView::onCroppingPropertySet (const QString &value)
 {
     if ( value=="true" ) {
         if (d->view3D->GetBoxWidget()->GetInteractor()) { // avoid VTK warnings
@@ -1551,7 +1552,7 @@ void v3dView::onZSliderValueChanged (int value)
     d->currentView->Render();
 }
 
-void v3dView::onDaddyPropertySet (QString value)
+void v3dView::onDaddyPropertySet (const QString &value)
 {
     d->anchorButton->blockSignals(true);
 	d->linkButton->blockSignals(true);
@@ -1584,7 +1585,7 @@ void v3dView::onDaddyPropertySet (QString value)
     d->registerButton->blockSignals(false);
 }
 
-void v3dView::onPositionLinkedPropertySet (QString value)
+void v3dView::onPositionLinkedPropertySet (const QString &value)
 {
     d->linkButton->blockSignals(true);
     
@@ -1599,7 +1600,7 @@ void v3dView::onPositionLinkedPropertySet (QString value)
     }
 }
 
-void v3dView::onWindowingLinkedPropertySet (QString value)
+void v3dView::onWindowingLinkedPropertySet (const QString &value)
 {
     d->linkWLButton->blockSignals(true);
     
@@ -1614,7 +1615,7 @@ void v3dView::onWindowingLinkedPropertySet (QString value)
     }
 }
 
-void v3dView::onDimensionBoxChanged (QString value)
+void v3dView::onDimensionBoxChanged (const QString &value)
 {
     if (d->imageData) {
         
@@ -1648,7 +1649,7 @@ void v3dView::onDimensionBoxChanged (QString value)
     }
 }
 
-void v3dView::onMetaDataSet(QString key, QString value)
+void v3dView::onMetaDataSet(const QString &key, const QString &value)
 {
     if (key == "VRQuality")        
         d->view3D->SetVRQuality((float)(value.toInt())/100.0);

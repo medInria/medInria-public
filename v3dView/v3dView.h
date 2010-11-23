@@ -80,28 +80,28 @@ public slots:
     // void linkwl (dtkAbstractView* view, bool);
     
 public slots:
-    void onPropertySet         (QString key, QString value);
-    void onOrientationPropertySet           (QString value);
-    void on3DModePropertySet                (QString value);
-    void onRendererPropertySet              (QString value);
-    void onUseLODPropertySet                (QString value);
-    void onPresetPropertySet                (QString value);
-    void onShowScalarBarPropertySet         (QString value);
-    void onLookupTablePropertySet           (QString value);
-    void onShowAxisPropertySet              (QString value);
-    void onShowRulerPropertySet             (QString value);
-    void onShowAnnotationsPropertySet       (QString value);
-    void onMouseInteractionPropertySet      (QString value);
-    void onCroppingPropertySet              (QString value);
-    void onDaddyPropertySet                 (QString value);
-    void onPositionLinkedPropertySet        (QString value);
-    void onWindowingLinkedPropertySet       (QString value);
+    void onPropertySet         (const QString &key, const QString &value);
+    void onOrientationPropertySet           (const QString &value);
+    void on3DModePropertySet                (const QString &value);
+    void onRendererPropertySet              (const QString &value);
+    void onUseLODPropertySet                (const QString &value);
+    void onPresetPropertySet                (const QString &value);
+    void onShowScalarBarPropertySet         (const QString &value);
+    void onLookupTablePropertySet           (const QString &value);
+    void onShowAxisPropertySet              (const QString &value);
+    void onShowRulerPropertySet             (const QString &value);
+    void onShowAnnotationsPropertySet       (const QString &value);
+    void onMouseInteractionPropertySet      (const QString &value);
+    void onCroppingPropertySet              (const QString &value);
+    void onDaddyPropertySet                 (const QString &value);
+    void onPositionLinkedPropertySet        (const QString &value);
+    void onWindowingLinkedPropertySet       (const QString &value);
 
 public slots:
     void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged                  (int value);
-    void onDimensionBoxChanged              (QString value);
-    void onMetaDataSet         (QString key, QString value);
+    void onDimensionBoxChanged              (const QString &value);
+    void onMetaDataSet         (const QString &key, const QString &value);
 
 public slots: // Menu interface
     void onMenuAxialTriggered               (void);
