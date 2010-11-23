@@ -40,7 +40,7 @@ public:
 
     medAbstractView *daddy (void);
 
-    void setViewProperty (QString key, QString value);
+    void setViewProperty (const QString &key, const QString &value);
 
     int count (void);
 

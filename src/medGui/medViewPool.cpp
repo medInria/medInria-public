@@ -295,7 +295,7 @@ void medViewPool::onViewReg(bool value)
     }
 }
 
-void medViewPool::setViewProperty (QString key, QString value)
+void medViewPool::setViewProperty (const QString &key, const QString &value)
 {
     if (key=="Daddy")
         return;
