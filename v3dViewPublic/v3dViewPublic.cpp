@@ -17,6 +17,7 @@
 #include <vtkCamera.h>
 #include <vtkLookupTableManager.h>
 #include <vtkOrientedBoxWidget.h>
+#include <vtkTransferFunctionPresets.h>
 
 #include <QVTKWidget.h>
 
@@ -353,6 +354,16 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     layout->setSpacing(0);
     layout->addLayout(toolsLayout);
     layout->addLayout(d->stackedLayout);
+    
+    // set property to actually available presets
+    QStringList lut;
+    typedef std::vector< std::string > StdStrVec;
+    StdStrVec presets = vtkTransferFunctionPresets::GetAvailablePresets();
+    for ( StdStrVec::iterator it( presets.begin() ), end( presets.end() );
+         it != end; ++it )
+        lut << QString::fromStdString( * it );
+    
+    this->addProperty ("LookupTable",           lut);
     
     // set default properties
     this->setProperty ("Orientation",          "Axial");
@@ -752,7 +763,7 @@ void v3dViewPublic::onPresetPropertySet (QString value)
 {
     if( value == "VR Muscles&Bones" ) {
         
-        this->setProperty ("LookupTable", "Muscles&Bones");
+        this->setProperty ("LookupTable", "Muscles & Bones");
         
         // double color[3] = {0.0, 0.0, 0.0};	
         // d->view2D->SyncSetBackground( color );
@@ -806,7 +817,7 @@ void v3dViewPublic::onPresetPropertySet (QString value)
     
     if( value == "Standard" ) {
         
-        this->setProperty ("LookupTable", "Muscles&Bones");
+        this->setProperty ("LookupTable", "Muscles & Bones");
         
         // double color[3] = {0.0, 0.0, 0.0};
         // d->collection->SyncSetBackground( color );
@@ -828,7 +839,7 @@ void v3dViewPublic::onPresetPropertySet (QString value)
     
     if( value == "Soft on White" ) {
         
-        this->setProperty ("LookupTable", "Muscles&Bones");
+        this->setProperty ("LookupTable", "Muscles & Bones");
         
         // double color[3] = {1.0,0.98820477724075317,0.98814374208450317};      
         // d->collection->SyncSetBackground( color );
@@ -839,7 +850,7 @@ void v3dViewPublic::onPresetPropertySet (QString value)
     
     if( value == "Soft on Blue" ) {
         
-        this->setProperty ("LookupTable", "Muscles&Bones");
+        this->setProperty ("LookupTable", "Muscles & Bones");
         
         // double color[3]={0.0, 0.27507439255714417, 0.26398107409477234};      
         // d->collection->SyncSetBackground( color );

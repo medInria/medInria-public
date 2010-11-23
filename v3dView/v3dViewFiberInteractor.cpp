@@ -78,10 +78,12 @@ bool v3dViewFiberInteractor::registered(void)
 
 void v3dViewFiberInteractor::setData(dtkAbstractData *data)
 {
+  if (data->description()=="vtkDataFibers") {
     if (vtkPolyData *fibers = dynamic_cast<vtkPolyData *>((vtkDataObject *)(data->data()))) {
         d->manager->SetInput(fibers);
 	d->data = data;
     }
+  }
 }
 
 void v3dViewFiberInteractor::setView(dtkAbstractView *view)
@@ -93,8 +95,8 @@ void v3dViewFiberInteractor::setView(dtkAbstractView *view)
 
 void v3dViewFiberInteractor::enable(void)
 {
-	if (this->enabled())
-		return;
+    if (this->enabled())
+        return;
 	
     if (d->view) {
         d->manager->SetRenderer( d->view->renderer3D() );
@@ -109,8 +111,8 @@ void v3dViewFiberInteractor::enable(void)
 
 void v3dViewFiberInteractor::disable(void)
 {
-	if (!this->enabled())
-		return;
+    if (!this->enabled())
+        return;
 
     if (d->view) {
         d->manager->SetRenderer( 0 );
