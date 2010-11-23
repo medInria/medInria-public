@@ -125,7 +125,7 @@ void v3dViewFiberInteractor::disable(void)
     dtkAbstractViewInteractor::disable();
 }
 
-void v3dViewFiberInteractor::onPropertySet(QString key, QString value)
+void v3dViewFiberInteractor::onPropertySet(const QString& key, const QString& value)
 {
     if (key=="Visibility")
         this->onVisibilityPropertySet (value);
@@ -152,7 +152,7 @@ void v3dViewFiberInteractor::onPropertySet(QString key, QString value)
         d->view->update();
 }
 
-void v3dViewFiberInteractor::onVisibilityPropertySet (QString value)
+void v3dViewFiberInteractor::onVisibilityPropertySet (const QString& value)
 {
     if (value=="true")
         d->manager->SetVisibility(1);
@@ -160,7 +160,7 @@ void v3dViewFiberInteractor::onVisibilityPropertySet (QString value)
         d->manager->SetVisibility(0);
 }
 
-void v3dViewFiberInteractor::onBoxVisibilityPropertySet (QString value)
+void v3dViewFiberInteractor::onBoxVisibilityPropertySet (const QString& value)
 {
     if (value=="true")
         d->manager->SetBoxWidget(1);
@@ -168,7 +168,7 @@ void v3dViewFiberInteractor::onBoxVisibilityPropertySet (QString value)
         d->manager->SetBoxWidget(0);
 }
 
-void v3dViewFiberInteractor::onRenderingModePropertySet (QString value)
+void v3dViewFiberInteractor::onRenderingModePropertySet (const QString& value)
 {
     if (value=="lines") {
         d->manager->SetRenderingModeToPolyLines();
@@ -198,7 +198,7 @@ void v3dViewFiberInteractor::onRenderingModePropertySet (QString value)
     }
 }
 
-void v3dViewFiberInteractor::onGPUModePropertySet (QString value)
+void v3dViewFiberInteractor::onGPUModePropertySet (const QString& value)
 {
     if (value=="true") {
         vtkFibersManager::UseHardwareShadersOn();
@@ -222,7 +222,7 @@ void v3dViewFiberInteractor::onGPUModePropertySet (QString value)
     }
 }
 
-void v3dViewFiberInteractor::onColorModePropertySet (QString value)
+void v3dViewFiberInteractor::onColorModePropertySet (const QString& value)
 {
     if (value=="local")
         d->manager->SetColorModeToLocalFiberOrientation();
@@ -234,7 +234,7 @@ void v3dViewFiberInteractor::onColorModePropertySet (QString value)
         d->manager->SetColorModeToPointArray(1);
 }
 
-void v3dViewFiberInteractor::onBoxBooleanOperationPropertySet (QString value)
+void v3dViewFiberInteractor::onBoxBooleanOperationPropertySet (const QString& value)
 {
     if (value=="plus")
         d->manager->GetVOILimiter()->SetBooleanOperationToAND();
@@ -303,7 +303,7 @@ void v3dViewFiberInteractor::onSelectionValidated(void)
       }
 }
 
-void v3dViewFiberInteractor::onProjectionPropertySet(QString value)
+void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
 {
     if (!d->view)
         return;

@@ -54,21 +54,21 @@ QStringList itkDataImageReaderBase::s_handled(void)
 		       << "itkDataImageRGB3";
 }
 
-bool itkDataImageReaderBase::canRead (QString path)
+bool itkDataImageReaderBase::canRead (const QString& path)
 {
   if (!this->io.IsNull())
     return this->io->CanReadFile ( path.toAscii().constData() );
   return false;
 }
 
-bool itkDataImageReaderBase::canRead (QStringList paths)
+bool itkDataImageReaderBase::canRead (const QStringList& paths)
 {
   if (!paths.count())
     return false;
   return this->canRead ( paths[0].toAscii().constData() );
 }
 
-void itkDataImageReaderBase::readInformation (QString path)
+void itkDataImageReaderBase::readInformation (const QString& path)
 {
   if (this->io.IsNull())
     return;
@@ -232,14 +232,15 @@ void itkDataImageReaderBase::readInformation (QString path)
 }
 
 
-void itkDataImageReaderBase::readInformation (QStringList paths)
+void itkDataImageReaderBase::readInformation (const QStringList& paths)
 {
   if (!paths.count())
     return;
   this->readInformation ( paths[0].toAscii().constData() );
 }
 
-bool itkDataImageReaderBase::read (QString path)
+
+bool itkDataImageReaderBase::read (const QString& path)
 {
   if (this->io.IsNull())
     return false;
@@ -483,7 +484,7 @@ bool itkDataImageReaderBase::read (QString path)
 	
 }
 
-bool itkDataImageReaderBase::read (QStringList paths)
+bool itkDataImageReaderBase::read (const QStringList& paths)
 {
   if (!paths.count())
     return false;

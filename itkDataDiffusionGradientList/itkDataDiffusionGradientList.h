@@ -28,8 +28,8 @@ public:
     virtual void setData(void *data);
 
 public slots:
-    bool read (QString file);
-    bool write(QString file);
+    bool read (const QString& file);
+    bool write(const QString& file);
     
 private:
     itkDataDiffusionGradientListPrivate *d;

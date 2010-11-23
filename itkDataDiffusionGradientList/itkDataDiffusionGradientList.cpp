@@ -65,7 +65,7 @@ void itkDataDiffusionGradientList::setData (void* data)
     d->gradients = *(dynamic_cast<itkDataDiffusionGradientListPrivate::GradientListType*>( static_cast<QObject*>(data) ));
 }
 
-bool itkDataDiffusionGradientList::read (QString filename)
+bool itkDataDiffusionGradientList::read (const QString& filename)
 {
     typedef itkDataDiffusionGradientListPrivate::GradientType     GradientType;
     typedef itkDataDiffusionGradientListPrivate::GradientListType GradientListType;
@@ -195,7 +195,7 @@ bool itkDataDiffusionGradientList::read (QString filename)
     return true;    
 }
 
-bool itkDataDiffusionGradientList::write (QString file)
+bool itkDataDiffusionGradientList::write (const QString& file)
 {
   qDebug() << "itkDataDiffusionGradientList::write() not implemented yet.";
   return false;

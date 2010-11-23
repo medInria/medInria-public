@@ -23,8 +23,8 @@ public:
     static bool registered(void);
     
 public slots:
-    bool write    (QString path);
-    bool canWrite (QString path);
+    bool write    (const QString& path);
+    bool canWrite (const QString& path);
 
  protected:
     vtkDataSetWriter* writer;

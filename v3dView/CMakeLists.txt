@@ -62,6 +62,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewMeshInteractor.h
   )
 
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC})
+
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
   v3dView.cpp
@@ -71,6 +74,9 @@ set(${PROJECT_NAME}_SOURCES
   v3dFiberBundle.cpp
   )
 
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+
 ## #################################################################
 ## Build rules
 ## #################################################################
@@ -79,6 +85,7 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}

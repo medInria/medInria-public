@@ -27,7 +27,7 @@ QStringList vtkDataMeshReader::s_handled(void)
   return QStringList() << "vtkDataMesh";
 }
 
-bool vtkDataMeshReader::canRead (QString path)
+bool vtkDataMeshReader::canRead (const QString& path)
 {
   this->reader->SetFileName (path.toAscii().constData());
 
@@ -41,14 +41,14 @@ bool vtkDataMeshReader::canRead (QString path)
   return false;
 }
 
-bool vtkDataMeshReader::canRead (QStringList paths)
+bool vtkDataMeshReader::canRead (const QStringList& paths)
 {
   if (!paths.count())
     return false;
   return this->canRead ( paths[0].toAscii().constData() );
 }
 
-void vtkDataMeshReader::readInformation (QString path)
+void vtkDataMeshReader::readInformation (const QString& path)
 {
   
   dtkAbstractData* dtkdata = this->data();
@@ -66,14 +66,14 @@ void vtkDataMeshReader::readInformation (QString path)
   dtkdata->description() = "vtkDataMesh";
 }
 
-void vtkDataMeshReader::readInformation (QStringList paths)
+void vtkDataMeshReader::readInformation (const QStringList& paths)
 {
   if (!paths.count())
     return;
   this->readInformation ( paths[0].toAscii().constData() );
 }
 
-bool vtkDataMeshReader::read (QString path)
+bool vtkDataMeshReader::read (const QString& path)
 {
   this->setProgress (0);
   
@@ -99,7 +99,7 @@ bool vtkDataMeshReader::read (QString path)
   
 }
 
-bool vtkDataMeshReader::read (QStringList paths)
+bool vtkDataMeshReader::read (const QStringList& paths)
 {
   if (!paths.count())
     return false;

@@ -106,12 +106,12 @@ QString itkDCMTKDataImageReader::description(void) const
   return "itkDCMTKDataImageReader";
 }
 
-bool itkDCMTKDataImageReader::canRead (QString path)
+bool itkDCMTKDataImageReader::canRead (const QString& path)
 {
   return d->io->CanReadFile ( path.toAscii().constData() );
 }
 
-bool itkDCMTKDataImageReader::canRead (QStringList paths)
+bool itkDCMTKDataImageReader::canRead (const QStringList& paths)
 {
   for (int i=0; i<paths.size(); i++)
     if (!d->io->CanReadFile ( paths[i].toAscii().constData() ))
@@ -119,14 +119,14 @@ bool itkDCMTKDataImageReader::canRead (QStringList paths)
   return true;
 }
 
-void itkDCMTKDataImageReader::readInformation (QString path)
+void itkDCMTKDataImageReader::readInformation (const QString& path)
 {
   QStringList paths;
   paths << path;
   readInformation ( paths );  
 }
 
-void itkDCMTKDataImageReader::readInformation (QStringList paths)
+void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
 {
   if (paths.size()==0)
     return;
@@ -322,7 +322,7 @@ void itkDCMTKDataImageReader::readInformation (QStringList paths)
 }
 
 
-bool itkDCMTKDataImageReader::read (QString path)
+bool itkDCMTKDataImageReader::read (const QString& path)
 {
   QStringList paths;
   paths << path;
@@ -330,7 +330,7 @@ bool itkDCMTKDataImageReader::read (QString path)
 }
 
 
-bool itkDCMTKDataImageReader::read (QStringList paths)
+bool itkDCMTKDataImageReader::read (const QStringList& paths)
 {
   if (paths.size()==0)
     return false;

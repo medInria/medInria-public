@@ -436,11 +436,11 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     return d->thumbnails;						\
   }									\
 									\
-  void itkDataImage##suffix::onMetaDataSet(QString key, QString value) {\
+  void itkDataImage##suffix::onMetaDataSet(const QString& key, const QString& value) {\
   Q_UNUSED(key);                                                        \
   Q_UNUSED(value);                                                      \
   }                                                                     \
-  void itkDataImage##suffix::onPropertySet(QString key, QString value) {\
+  void itkDataImage##suffix::onPropertySet(const QString& key, const QString& value) {\
   Q_UNUSED(key);                                                        \
   Q_UNUSED(value);                                                      \
   }                                                                     \
@@ -591,11 +591,11 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   }									\
   return d->thumbnails;							\
   }									\
-  void itkDataImage##suffix::onMetaDataSet(QString key, QString value) {\
+  void itkDataImage##suffix::onMetaDataSet(const QString& key, const QString& value) {\
   Q_UNUSED(key);                                                        \
   Q_UNUSED(value);                                                      \
   }                                                                     \
-  void itkDataImage##suffix::onPropertySet(QString key, QString value) {\
+  void itkDataImage##suffix::onPropertySet(const QString& key, const QString& value) {\
   Q_UNUSED(key);                                                        \
   Q_UNUSED(value);                                                      \
   }                                                                     \

@@ -31,17 +31,17 @@ public:
 	virtual void disable(void);
 
 signals:
-	void selectionValidated (QString name);
+	void selectionValidated (const QString& name);
 
 public slots:
-	virtual void onPropertySet (QString key, QString value);
-	virtual void onVisibilityPropertySet (QString value);
-	virtual void onBoxVisibilityPropertySet (QString value);
-	virtual void onRenderingModePropertySet (QString value);
-	virtual void onGPUModePropertySet (QString value);
-	virtual void onColorModePropertySet (QString value);
-	virtual void onBoxBooleanOperationPropertySet (QString value);
-	virtual void onProjectionPropertySet (QString value);
+	virtual void onPropertySet (const QString& key, const QString& value);
+	virtual void onVisibilityPropertySet (const QString& value);
+	virtual void onBoxVisibilityPropertySet (const QString& value);
+	virtual void onRenderingModePropertySet (const QString& value);
+	virtual void onGPUModePropertySet (const QString& value);
+	virtual void onColorModePropertySet (const QString& value);
+	virtual void onBoxBooleanOperationPropertySet (const QString& value);
+	virtual void onProjectionPropertySet (const QString& value);
 	virtual void onRadiusSet (int value);
 
 	virtual void onSelectionTagged (void);

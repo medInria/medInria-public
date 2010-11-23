@@ -53,7 +53,7 @@ QStringList itkDataImageWriterBase::s_handled(void)
 			 << "itkDataImageRGB3";
 }
 
-bool itkDataImageWriterBase::canWrite(QString path)
+bool itkDataImageWriterBase::canWrite(const QString& path)
 {
     if (this->io.IsNull())
         return false;
@@ -61,7 +61,7 @@ bool itkDataImageWriterBase::canWrite(QString path)
     return this->io->CanWriteFile ( path.toAscii().constData() );
 }
 
-bool itkDataImageWriterBase::write(QString path)
+bool itkDataImageWriterBase::write(const QString& path)
 {
     if (!this->data())
         return false;

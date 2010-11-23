@@ -35,12 +35,18 @@ set(${PROJECT_NAME}_HEADERS_MOC
 #  vtkDataMeshWriterCommand.h
   vtkDataMeshWriter.h
   )
+
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC})
   
 set(${PROJECT_NAME}_SOURCES
   vtkDataMeshWriterPlugin.cpp
 #  vtkDataMeshWriterCommand.cxx
   vtkDataMeshWriter.cpp
   )
+
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 
 ## #################################################################
 ## Build rules
@@ -50,6 +56,7 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES}
 )
 

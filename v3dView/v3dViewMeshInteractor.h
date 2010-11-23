@@ -37,13 +37,13 @@ protected:
     virtual void updatePipeline ();
 
 signals:
-    void selectionValidated (QString name);
+    void selectionValidated (const QString& name);
 
 public slots:
-    virtual void onPropertySet (QString key, QString value);
-    virtual void onVisibilityPropertySet (QString value);
-    virtual void onEdgeVisibilityPropertySet (QString value);
-    virtual void onRenderingModePropertySet (QString value);
+    virtual void onPropertySet (const QString& key, const QString& value);
+    virtual void onVisibilityPropertySet (const QString& value);
+    virtual void onEdgeVisibilityPropertySet (const QString& value);
+    virtual void onRenderingModePropertySet (const QString& value);
 
 private:
     v3dViewMeshInteractorPrivate *d;

@@ -46,7 +46,7 @@ QString vtkDataFibers::description(void) const
     return "vtkDataFibers";
 }
 
-bool vtkDataFibers::read(QString file)
+bool vtkDataFibers::read(const QString& file)
 {
 	vtkPolyDataReader* reader = vtkPolyDataReader::New();
 	reader->SetFileName( file.toAscii().constData() );
@@ -58,7 +58,7 @@ bool vtkDataFibers::read(QString file)
 	return true;
 }
 
-bool vtkDataFibers::write(QString file)
+bool vtkDataFibers::write(const QString& file)
 {
 	if (!d->data)
 		return false;

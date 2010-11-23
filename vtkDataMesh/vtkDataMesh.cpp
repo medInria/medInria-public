@@ -127,12 +127,12 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
   return d->thumbnails;
 }
 
-void vtkDataMesh::onMetaDataSet(QString key, QString value)
+void vtkDataMesh::onMetaDataSet(const QString& key, const QString& value)
 {  
   Q_UNUSED(key);
   Q_UNUSED(value);
 }
-void vtkDataMesh::onPropertySet(QString key, QString value)
+void vtkDataMesh::onPropertySet(const QString& key, const QString& value)
 { 
   Q_UNUSED(key);
   Q_UNUSED(value);

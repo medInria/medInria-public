@@ -29,12 +29,12 @@ QStringList vtkDataMeshWriter::s_handled(void)
     return QStringList() << "vtkDataMesh";
 }
 
-bool vtkDataMeshWriter::canWrite(QString path)
+bool vtkDataMeshWriter::canWrite(const QString& path)
 {
   return path.endsWith (QString (".vtk"));
 }
 
-bool vtkDataMeshWriter::write(QString path)
+bool vtkDataMeshWriter::write(const QString& path)
 {
   if (!this->data())
     return false;

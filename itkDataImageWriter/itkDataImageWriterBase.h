@@ -18,8 +18,8 @@ public:
     static  QStringList s_handled (void);
     
 public slots:
-    bool write    (QString path);
-    bool canWrite (QString path);
+    bool write    (const QString& path);
+    bool canWrite (const QString& path);
 
  protected:
     itk::ImageIOBase::Pointer io;
