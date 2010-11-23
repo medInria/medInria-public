@@ -20,14 +20,14 @@ public:
   static QStringList s_handled (void);
   
 public slots:
-  virtual bool canRead (const QString & path);
-  virtual bool canRead (const QStringList & paths);
+  virtual bool canRead (const QString& path);
+  virtual bool canRead (const QStringList& paths);
   
-  virtual void readInformation (const QString & path);
-  virtual void readInformation (const QStringList & paths);
+  virtual void readInformation (const QString& path);
+  virtual void readInformation (const QStringList& paths);
   
-  virtual bool read (const QString & path);
-  virtual bool read (const QStringList & paths);
+  virtual bool read (const QString& path);
+  virtual bool read (const QStringList& paths);
   
   virtual void setProgress (int value);
 

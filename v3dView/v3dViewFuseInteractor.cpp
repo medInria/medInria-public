@@ -80,7 +80,7 @@ bool v3dViewFuseInteractor::registered(void)
     return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewFuseInteractor", QStringList() << "v3dView", createV3dViewFuseInteractor);
 }
 
-void v3dViewFuseInteractor::onPropertySet (const QString & key, const QString & value)
+void v3dViewFuseInteractor::onPropertySet (const QString& key, const QString& value)
 {
     if (key=="FusionStyle")
         this->onFusionStylePropertySet (value);
@@ -89,7 +89,7 @@ void v3dViewFuseInteractor::onPropertySet (const QString & key, const QString & 
       //  d->view->update();
 }
 
-void v3dViewFuseInteractor::onFusionStylePropertySet (const QString & value)
+void v3dViewFuseInteractor::onFusionStylePropertySet (const QString& value)
 {
     if (value=="blend")
         if (!d->blender.IsNull())

@@ -29,8 +29,8 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public dtkAbstractDataMesh
     void setData(void* data);
     void update(void);
 
-    void onMetaDataSet(const QString & key, const QString & value);
-    void onPropertySet(const QString & key, const QString & value);
+    void onMetaDataSet(const QString& key, const QString& value);
+    void onPropertySet(const QString& key, const QString& value);
 
 
     int countVertices(void);

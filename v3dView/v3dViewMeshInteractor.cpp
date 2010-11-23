@@ -124,7 +124,7 @@ void v3dViewMeshInteractor::disable(void)
     dtkAbstractViewInteractor::disable();
 }
 
-void v3dViewMeshInteractor::onPropertySet(const QString & key, const QString & value)
+void v3dViewMeshInteractor::onPropertySet(const QString& key, const QString& value)
 {
     if (key=="Visibility")
         this->onVisibilityPropertySet (value);
@@ -139,7 +139,7 @@ void v3dViewMeshInteractor::onPropertySet(const QString & key, const QString & v
         d->view->update();
 }
 
-void v3dViewMeshInteractor::onVisibilityPropertySet (const QString & value)
+void v3dViewMeshInteractor::onVisibilityPropertySet (const QString& value)
 {
     if (value=="true") {
         d->actorAxial->SetVisibility(1);
@@ -154,7 +154,7 @@ void v3dViewMeshInteractor::onVisibilityPropertySet (const QString & value)
     }
 }
 
-void v3dViewMeshInteractor::onEdgeVisibilityPropertySet (const QString & value)
+void v3dViewMeshInteractor::onEdgeVisibilityPropertySet (const QString& value)
 {
     if (value=="true")
         d->actorProperty->SetEdgeVisibility (1);
@@ -162,7 +162,7 @@ void v3dViewMeshInteractor::onEdgeVisibilityPropertySet (const QString & value)
         d->actorProperty->SetEdgeVisibility (0);
 }
 
-void v3dViewMeshInteractor::onRenderingModePropertySet (const QString & value)
+void v3dViewMeshInteractor::onRenderingModePropertySet (const QString& value)
 {
     if (value=="wireframe") {
         d->actorProperty->SetRepresentationToWireframe ();
