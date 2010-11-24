@@ -47,20 +47,20 @@ public:
     vtkViewImage3D *view3D(void);
 	
 public slots:
-    void onPropertySet         (QString key, QString value);
-    void onOrientationPropertySet           (QString value);
-    void on3DModePropertySet                (QString value);
-    void onPresetPropertySet                (QString value);
-    void onShowScalarBarPropertySet         (QString value);
-    void onLookupTablePropertySet           (QString value);
-    void onShowAxisPropertySet              (QString value);
-    void onShowRulerPropertySet             (QString value);
-    void onShowAnnotationsPropertySet       (QString value);
-    void onMouseInteractionPropertySet      (QString value);
-    void onCroppingPropertySet              (QString value);
-    void onDaddyPropertySet                 (QString value);
-    void onWindowingLinkedPropertySet       (QString value);
-    void onPositionLinkedPropertySet        (QString value);
+    void onPropertySet         (const QString &key, const QString &value);
+    void onOrientationPropertySet           (const QString &value);
+    void on3DModePropertySet                (const QString &value);
+    void onPresetPropertySet                (const QString &value);
+    void onShowScalarBarPropertySet         (const QString &value);
+    void onLookupTablePropertySet           (const QString &value);
+    void onShowAxisPropertySet              (const QString &value);
+    void onShowRulerPropertySet             (const QString &value);
+    void onShowAnnotationsPropertySet       (const QString &value);
+    void onMouseInteractionPropertySet      (const QString &value);
+    void onCroppingPropertySet              (const QString &value);
+    void onDaddyPropertySet                 (const QString &value);
+    void onWindowingLinkedPropertySet       (const QString &value);
+    void onPositionLinkedPropertySet        (const QString &value);
 
     
 public slots:
@@ -77,8 +77,8 @@ public slots:
     void switchToMPR(void);
     void onMenuZoomTriggered (void);
     void onMenuWindowLevelTriggered (void);
-	void onPlayButtonClicked (bool value);
-    void onDimensionBoxChanged (QString value);
+    void onPlayButtonClicked (bool value);
+    void onDimensionBoxChanged (const QString &value);
     
 
 private:

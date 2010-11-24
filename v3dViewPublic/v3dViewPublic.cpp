@@ -385,7 +385,7 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     connect(d->vtkWidget2D,  SIGNAL(mouseEvent(QMouseEvent*)),     this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->vtkWidget3D,  SIGNAL(mouseEvent(QMouseEvent*)),     this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,       SIGNAL(valueChanged(int)),            this, SLOT(onZSliderValueChanged(int)));
-    connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(QString)));
+    connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(const QString&)));
 }
 
 v3dViewPublic::~v3dViewPublic(void)
@@ -423,7 +423,7 @@ QString v3dViewPublic::description(void) const
     return "v3dViewPublic";
 }
 
-void v3dViewPublic::onPropertySet(QString key, QString value)
+void v3dViewPublic::onPropertySet(const QString &key, const QString &value)
 {
     if(key == "Daddy")
         this->onDaddyPropertySet(value);
@@ -467,7 +467,7 @@ void v3dViewPublic::onPropertySet(QString key, QString value)
     //this->update(); // never update after setting a property, it is not our role
 }
 
-void v3dViewPublic::onDaddyPropertySet (QString value)
+void v3dViewPublic::onDaddyPropertySet (const QString &value)
 {
     d->anchorButton->blockSignals(true);
     d->linkButton->blockSignals(true);
@@ -504,7 +504,7 @@ void v3dViewPublic::onDaddyPropertySet (QString value)
     d->registerButton->blockSignals(false);
 }
 
-void v3dViewPublic::onPositionLinkedPropertySet (QString value)
+void v3dViewPublic::onPositionLinkedPropertySet (const QString &value)
 {
     d->linkButton->blockSignals(true);
     
@@ -519,7 +519,7 @@ void v3dViewPublic::onPositionLinkedPropertySet (QString value)
     }
 }
 
-void v3dViewPublic::onWindowingLinkedPropertySet (QString value)
+void v3dViewPublic::onWindowingLinkedPropertySet (const QString &value)
 {
     d->linkWLButton->blockSignals(true);
     
@@ -534,7 +534,7 @@ void v3dViewPublic::onWindowingLinkedPropertySet (QString value)
     }
 }
 
-void v3dViewPublic::onOrientationPropertySet(QString value)
+void v3dViewPublic::onOrientationPropertySet(const QString &value)
 {
     if (value==d->orientation)
         return;
@@ -624,7 +624,7 @@ void v3dViewPublic::onOrientationPropertySet(QString value)
     d->slider->blockSignals (false);
 }
 
-void v3dViewPublic::on3DModePropertySet (QString value)
+void v3dViewPublic::on3DModePropertySet (const QString &value)
 {
     if (value=="VR") {
         d->view3D->SetRenderingModeToVR();
@@ -651,7 +651,7 @@ void v3dViewPublic::on3DModePropertySet (QString value)
     } 
 }
 
-void v3dViewPublic::onShowScalarBarPropertySet(QString value)
+void v3dViewPublic::onShowScalarBarPropertySet(const QString &value)
 {
     if (value == "true") {
         d->view2D->SetScalarBarVisibility(true);
@@ -664,7 +664,7 @@ void v3dViewPublic::onShowScalarBarPropertySet(QString value)
     }
 }
 
-void v3dViewPublic::onLookupTablePropertySet(QString value)
+void v3dViewPublic::onLookupTablePropertySet(const QString &value)
 {
     if (value == "Default")
         d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetBWLookupTable());
@@ -718,7 +718,7 @@ void v3dViewPublic::onLookupTablePropertySet(QString value)
         d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetVRBonesLookupTable());
 }
 
-void v3dViewPublic::onShowAxisPropertySet(QString value)
+void v3dViewPublic::onShowAxisPropertySet(const QString &value)
 {
     if (value == "true")
     	d->view2D->SetShow2DAxis(1);
@@ -727,18 +727,18 @@ void v3dViewPublic::onShowAxisPropertySet(QString value)
         d->view2D->SetShow2DAxis(0);
 }
 
-void v3dViewPublic::onShowRulerPropertySet(QString value)
+void v3dViewPublic::onShowRulerPropertySet(const QString &value)
 {
     d->view2D->SetRulerWidgetVisibility ((value == "true"));  
 }
 
-void v3dViewPublic::onShowAnnotationsPropertySet(QString value)
+void v3dViewPublic::onShowAnnotationsPropertySet(const QString &value)
 {
     d->view2D->SetShowAnnotations ((value == "true"));
     d->view3D->SetShowAnnotations ((value == "true"));
 }
 
-void v3dViewPublic::onMouseInteractionPropertySet(QString value)
+void v3dViewPublic::onMouseInteractionPropertySet(const QString &value)
 {
     d->view2D->SetMiddleButtonInteractionStyle(vtkViewImage2D::SELECT_INTERACTION);
     
@@ -759,7 +759,7 @@ void v3dViewPublic::onMouseInteractionPropertySet(QString value)
         d->view2D->DistanceWidgetVisibilityOff();
 }
 
-void v3dViewPublic::onPresetPropertySet (QString value)
+void v3dViewPublic::onPresetPropertySet (const QString &value)
 {
     if( value == "VR Muscles&Bones" ) {
         
@@ -881,7 +881,7 @@ void v3dViewPublic::onPresetPropertySet (QString value)
     }
 }
 
-void v3dViewPublic::onCroppingPropertySet (QString value)
+void v3dViewPublic::onCroppingPropertySet (const QString &value)
 {
     if ( value=="true" ) {
         if (d->view3D->GetBoxWidget()->GetInteractor()) { // avoid VTK warnings
@@ -1168,7 +1168,7 @@ void v3dViewPublic::onPlayButtonClicked(bool start)
 		d->timeline->stop();
 }
 
-void v3dViewPublic::onDimensionBoxChanged (QString value)
+void v3dViewPublic::onDimensionBoxChanged (const QString &value)
 {
     if (d->imageData) {
         
