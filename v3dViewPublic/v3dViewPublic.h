@@ -45,6 +45,7 @@ public:
     // access method to internal members for v3dView**Interactor classes
     vtkViewImage2D *view2D(void);
     vtkViewImage3D *view3D(void);
+
 	
 public slots:
     void onPropertySet         (const QString &key, const QString &value);

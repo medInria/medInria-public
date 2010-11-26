@@ -17,7 +17,6 @@
 #include <vtkCamera.h>
 #include <vtkLookupTableManager.h>
 #include <vtkOrientedBoxWidget.h>
-#include <vtkTransferFunctionPresets.h>
 
 #include <QVTKWidget.h>
 
@@ -132,8 +131,8 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     d->orientation = "Axial";
     d->lastLinked = 0;
 	
-	d->timeline = new QTimeLine(1000, this);
-	d->timeline->setLoopCount(0);
+    d->timeline = new QTimeLine(1000, this);
+    d->timeline->setLoopCount(0);
     connect(d->timeline, SIGNAL(frameChanged(int)), this, SLOT(onZSliderValueChanged(int)));	
 	
     d->widget = new QWidget;
@@ -358,7 +357,7 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     // set property to actually available presets
     QStringList lut;
     typedef std::vector< std::string > StdStrVec;
-    StdStrVec presets = vtkTransferFunctionPresets::GetAvailablePresets();
+    StdStrVec presets = vtkLookupTableManager::GetAvailableLookupTables();
     for ( StdStrVec::iterator it( presets.begin() ), end( presets.end() );
          it != end; ++it )
         lut << QString::fromStdString( * it );
@@ -666,56 +665,9 @@ void v3dViewPublic::onShowScalarBarPropertySet(const QString &value)
 
 void v3dViewPublic::onLookupTablePropertySet(const QString &value)
 {
-    if (value == "Default")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetBWLookupTable());
-    
-    if (value == "Black&White")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetBWLookupTable());
-
-    if (value == "Black&WhiteInversed")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetBWInverseLookupTable());
-
-    if (value == "Spectrum")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetSpectrumLookupTable());
-
-    if (value == "HotMetal")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetHotMetalLookupTable());
-
-    if (value == "GE")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetGEColorLookupTable());
-
-    if (value == "Loni")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetLONILookupTable());
-
-    if (value == "Loni2")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetLONI2LookupTable());
-
-    if (value == "Asymmetry")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetAsymmetryLookupTable());
-
-    if (value == "PValue")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetPValueLookupTable());
-    
-    if (value == "blueBlackAlpha")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetBlueBlackAlphaLookupTable());
-
-    if( value == "greenBlackAlpha")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetGreenBlackAlphaLookupTable());
-
-    if (value == "redBlackAlpha")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetRedBlackAlphaLookupTable());
-
-    if (value == "Muscles&Bones")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetVRMusclesBonesLookupTable());
-
-    if (value == "Stern")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetSternLookupTable());
-
-    if (value == "Red Vessels")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetVRRedVesselsLookupTable());
-
-    if (value == "Bones")
-        d->view2D->SyncSetLookupTable(vtkLookupTableManager::GetVRBonesLookupTable());
+  vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable ( value.toAscii().constData() );
+  d->view2D->SyncSetLookupTable( lut );
+  lut->Delete();
 }
 
 void v3dViewPublic::onShowAxisPropertySet(const QString &value)
