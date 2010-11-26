@@ -162,6 +162,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   /** Set Radius & ribbon width */
   virtual void SetRadius (double r);
 
+  virtual double GetRadius (void) const;
+
   /** Return the fiber ids selected by the box widget */
   virtual vtkCellArray* GetSelectedCells (void) const;
 

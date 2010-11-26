@@ -1032,6 +1032,11 @@ void vtkFibersManager::SetRadius (double r)
   this->RibbonFilter->SetWidth (r);
 }
 
+double vtkFibersManager::GetRadius (void) const
+{
+  this->TubeFilter->GetRadius ();
+}
+
 vtkCellArray* vtkFibersManager::GetSelectedCells (void) const
 {
   return this->Callback->GetFiberLimiter()->GetOutput()->GetLines();
