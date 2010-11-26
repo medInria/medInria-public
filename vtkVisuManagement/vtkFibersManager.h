@@ -20,27 +20,24 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkINRIA3DConfigure.h"
 
-#include <vtkCommand.h>
-#include <vtkBoxWidget.h>
-#include <vtkPolyData.h>
-#include <vtkLimitFibersToVOI.h>
-#include <vtkLimitFibersToROI.h>
-#include <vtkTubeFilter.h>
-#include <vtkRibbonFilter.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkRenderWindowInteractor.h>
+#include <vtkObject.h>
 #include <vtkRenderer.h>
-#include <vtkRendererCollection.h>
-#include <vtkActor.h>
-#include <vtkCellData.h>
-#include <vtkPointData.h>
-#include <vtkScalarsToColors.h>
-#include <vtkMaskPolyData.h>
-#include <vtkProperty.h>
-#include <vtkCornerAnnotation.h>
-#include <vtkCleanPolyData.h>
 
-
+class vtkPolyData;
+class vtkLimitFibersToVOI;
+class vtkLimitFibersToROI;
+class vtkBoxWidget;
+class vtkActor;
+class vtkRenderWindowInteractor;
+class vtkCellArray;
+class vtkImageData;
+class vtkScalarsToColors;
+class vtkMaskPolyData;
+class vtkCleanPolyData;
+class vtkTubeFilter;
+class vtkRibbonFilter;
+class vtkPolyDataMapper;
+class vtkCornerAnnotation;
 class vtkFiberPickerCallback;
 class vtkFiberKeyboardCallback;
 class vtkFibersManagerCallback;

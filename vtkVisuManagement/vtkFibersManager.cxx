@@ -17,9 +17,27 @@ PURPOSE.  See the above copyright notices for more information.
 =========================================================================*/
 #include "vtkFibersManager.h"
 
-#include <vtkProperty.h>
 #include <vtkObjectFactory.h>
+
+#include <vtkCommand.h>
+#include <vtkBoxWidget.h>
+#include <vtkPolyData.h>
+#include <vtkLimitFibersToVOI.h>
+#include <vtkLimitFibersToROI.h>
+#include <vtkTubeFilter.h>
+#include <vtkRibbonFilter.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRendererCollection.h>
+#include <vtkActor.h>
+#include <vtkCellData.h>
 #include <vtkPointData.h>
+#include <vtkScalarsToColors.h>
+#include <vtkMaskPolyData.h>
+#include <vtkProperty.h>
+#include <vtkCornerAnnotation.h>
+#include <vtkCleanPolyData.h>
+#include <vtkProperty.h>
 #include <vtkCellArray.h>
 #include <vtkRenderWindow.h>
 #include <vtkCellPicker.h>
