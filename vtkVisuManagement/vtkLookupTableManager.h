@@ -108,7 +108,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLookupTableManager: public vtkObject
 
   static std::vector<std::string> GetAvailableLookupTables(void);
     
-  static vtkLookupTable* GetLookupTable(const int&);
+  static vtkLookupTable* GetLookupTable(const int &);
+  static vtkLookupTable* GetLookupTable(const std::string &);
 
  protected:
   vtkLookupTableManager();

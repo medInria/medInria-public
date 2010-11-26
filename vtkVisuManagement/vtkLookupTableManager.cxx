@@ -50,29 +50,33 @@ vtkLookupTableManager::~vtkLookupTableManager()
 
 std::vector<std::string> vtkLookupTableManager::GetAvailableLookupTables()
 {
-  std::string lutNames[]={"B/W",
-			  "B/W Inverse",
+  std::string lutNames[]={"Default",
+			  "Black & White",
+			  "Black & White Inversed",
 			  "Spectrum",
-			  "HotMetal",
-			  "HotGreen",
-			  "HotIron",
-			  "GEColor",
+			  "Hot Metal",
+			  "Hot Green",
+			  "Hot Iron",
+			  "GE",
 			  "Flow",
-			  "LONI",
-			  "LONI2",
+			  "Loni",
+			  "Loni 2",
 			  "Asymmetry",
 			  "P-Value",
-			  "ROI",
-			  "VR Muscles-Bones",
-			  "VR Bones",
-			  "VR Red Vessels",
-			  "Black Body",
+			  "Red Black Alpha",
+			  "Green Black Alpha",
+			  "Blue Black Alpha",
+			  "Muscles & Bones",
+			  "Bones",
+			  "Red Vessels",
 			  "Cardiac",
 			  "Gray Rainbow",
-			  "Stern"};
+			  "Stern",
+			  "Black Body"};
+    
 
   std::vector<std::string> v_lutNames;
-  for( int i=0; i<20; i++)
+  for( int i=0; i<23; i++)
   {
     v_lutNames.push_back(lutNames[i]);
   }
@@ -83,95 +87,64 @@ std::vector<std::string> vtkLookupTableManager::GetAvailableLookupTables()
 
 vtkLookupTable* vtkLookupTableManager::GetLookupTable(const int& n)
 {
-  vtkLookupTable* lut = 0;
+  std::vector< std::string > luts = GetAvailableLookupTables();
+  if (n<0 || n>= (int)luts.size())
+    return vtkLookupTableManager::GetBWLookupTable();
 
-  switch(n)
-  {
-      case LUT_BW:
-        lut = vtkLookupTableManager::GetBWLookupTable();
-        break;
+  return GetLookupTable ( luts[n] );
+}
 
-      case LUT_BWINV:
-        lut = vtkLookupTableManager::GetBWInverseLookupTable();
-        break;
 
-      case LUT_SPECTTUM:
-        lut = vtkLookupTableManager::GetSpectrumLookupTable();
-        break;
-
-      case LUT_HOTMETAL:
-        lut = vtkLookupTableManager::GetHotMetalLookupTable();
-        break;
-
-      case LUT_GECOLORS:
-        lut = vtkLookupTableManager::GetGEColorLookupTable();
-        break;
-
-      case LUT_FLOW:
-        lut = vtkLookupTableManager::GetFlowLookupTable();
-        break;
-
-      case LUT_LONI:
-        lut = vtkLookupTableManager::GetLONILookupTable();
-        break;
-
-      case LUT_LONI2:
-        lut = vtkLookupTableManager::GetLONI2LookupTable();
-        break;
-
-      case LUT_ASYMETRY:
-        lut = vtkLookupTableManager::GetAsymmetryLookupTable();
-        break;
-
-      case LUT_PVALUE:
-        lut = vtkLookupTableManager::GetPValueLookupTable();
-        break;
-
-      case LUT_ROI:
-        lut = vtkLookupTableManager::GetROILookupTable();
-        break;
-
-      case LUT_VRMUSCLESBONES:
-	lut = vtkLookupTableManager::GetVRMusclesBonesLookupTable();
-	break;
-
-      case LUT_CARDIAC:
-	lut = vtkLookupTableManager::GetCardiacLookupTable();
-	break;
-
-      case LUT_GRAYRAINBOW:
-	lut = vtkLookupTableManager::GetGrayRainbowLookupTable();
-	break;
-	
-      case LUT_HOTGREEN:
-	lut = vtkLookupTableManager::GetHotGreenLookupTable();
-	break;
-
-      case LUT_HOTIRON:
-	lut = vtkLookupTableManager::GetHotIronLookupTable();
-	break;
-	
-      case LUT_STERN:
-	lut = vtkLookupTableManager::GetSternLookupTable();
-	break;
-	
-      case LUT_VRBONES:
-	lut = vtkLookupTableManager::GetVRBonesLookupTable();
-	break;
-	
-      case LUT_VRREDVESSELS:
-	lut = vtkLookupTableManager::GetVRRedVesselsLookupTable();
-	break;
-	
-      case LUT_BLACKBODY:
-	lut = vtkLookupTableManager::GetBlackBodyLookupTable();
-	break;
-	      
-      default:
-        break;
-  }
-
-  return lut;
+vtkLookupTable* vtkLookupTableManager::GetLookupTable(const std::string & name)
+{
+  if (name=="Default")
+    return vtkLookupTableManager::GetBWLookupTable();
+  else if ( name == "Black & White" )
+    return vtkLookupTableManager::GetBWLookupTable();
+  else if ( name == "Black & White Inversed" )
+    return vtkLookupTableManager::GetBWInverseLookupTable();
+  else if ( name == "Spectrum" )
+    return vtkLookupTableManager::GetSpectrumLookupTable();
+  else if ( name == "Hot Metal" )
+    return vtkLookupTableManager::GetHotMetalLookupTable();
+  else if ( name == "Hot Green" )
+    return vtkLookupTableManager::GetHotGreenLookupTable();
+  else if ( name == "Hot Iron" )
+    return vtkLookupTableManager::GetHotIronLookupTable();
+  else if ( name == "GE" )
+    return vtkLookupTableManager::GetGEColorLookupTable();
+  else if ( name == "Flow" )
+    return vtkLookupTableManager::GetFlowLookupTable();
+  else if ( name == "Loni" )
+    return  vtkLookupTableManager::GetLONILookupTable();
+  else if ( name == "Loni 2" )
+    return vtkLookupTableManager::GetLONI2LookupTable();
+  else if ( name == "Asymmetry" )
+    return vtkLookupTableManager::GetAsymmetryLookupTable();
+  else if ( name == "P-Value" )
+    return vtkLookupTableManager::GetPValueLookupTable();
+  else if ( name == "Red Black Alpha" )
+    return vtkLookupTableManager::GetRedBlackAlphaLookupTable();
+  else if ( name == "Green Black Alpha" )
+    return vtkLookupTableManager::GetGreenBlackAlphaLookupTable();
+  else if ( name == "Blue Black Alpha" )
+    return vtkLookupTableManager::GetBlueBlackAlphaLookupTable();
+  else if ( name == "Muscles & Bones" )
+    return vtkLookupTableManager::GetVRMusclesBonesLookupTable();
+  else if ( name == "Bones" )
+    return vtkLookupTableManager::GetVRBonesLookupTable();
+  else if ( name == "Red Vessels" )
+    return vtkLookupTableManager::GetVRRedVesselsLookupTable();
+  else if ( name == "Cardiac" )
+    return vtkLookupTableManager::GetCardiacLookupTable();
+  else if ( name == "Gray Rainbow" )
+    return vtkLookupTableManager::GetGrayRainbowLookupTable();
+  else if ( name == "Stern" )
+    return vtkLookupTableManager::GetSternLookupTable();
+  else if ( name == "Black Body" )
+    return vtkLookupTableManager::GetBlackBodyLookupTable();
+  else
+    return vtkLookupTableManager::GetBWLookupTable();
 }
 
 

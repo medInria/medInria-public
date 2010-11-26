@@ -1120,11 +1120,18 @@ void vtkViewImage2D::SetLookupTable (vtkScalarsToColors* lut)
                   (v_max-1.5*this->GetShift())/this->GetScale() );
 
 
-  vtkLookupTable* realLut = vtkLookupTable::SafeDownCast (lut);
+  vtkScalarsToColors *windowLevelLUT = 0;
 
-  if( !realLut )
+  if (vtkLookupTable* realLut = vtkLookupTable::SafeDownCast (lut))
   {
-    std::cerr << "Error: Cannot cast vtkScalarsToColors to vtkLookupTable." << std::endl;
+    vtkLookupTable* newLut = vtkLookupTable::New();
+    newLut->DeepCopy (realLut);
+    newLut->SetRange (v_min, v_max);
+    windowLevelLUT = newLut;
+  }
+  else
+  {
+    vtkErrorMacro ( << "Error: Cannot cast vtkScalarsToColors to concrete type.");
     return;
   }
 
@@ -1132,11 +1139,9 @@ void vtkViewImage2D::SetLookupTable (vtkScalarsToColors* lut)
      Due to the same problem as above (shift/scale), one must copy the lut
      so that it does not change values of the shared object.
    */
-  vtkLookupTable* newLut = vtkLookupTable::New();
-  newLut->DeepCopy (realLut);
-  newLut->SetRange (v_min, v_max);
-  this->WindowLevel->SetLookupTable (newLut);
-  newLut->Delete();
+  
+  this->WindowLevel->SetLookupTable (windowLevelLUT);
+  windowLevelLUT->Delete();
 }
 
 
