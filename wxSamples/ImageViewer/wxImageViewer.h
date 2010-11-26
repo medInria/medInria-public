@@ -68,6 +68,7 @@ class IMAGEVIEWER_EXPORT wxImageViewer : public wxPanel
     TOOLBAR_CLUT,
     TOOLBAR_VRCHOICE,
     TOOLBAR_SHADECB,
+    TOOLBAR_AXISCB,
     MENU_EDIT_DELETE_PAGE,
     TOOLBAR_PRESET
   };
@@ -95,6 +96,7 @@ class IMAGEVIEWER_EXPORT wxImageViewer : public wxPanel
   virtual void OnToolBarPreset               (wxCommandEvent &);
   virtual void OnToolBarVRMode               (wxCommandEvent &);
   virtual void OnToolBarShading              (wxCommandEvent &);
+  virtual void OnToolBarAxis                 (wxCommandEvent &);
   
   virtual void OnDeletePage                  (wxAuiNotebookEvent&);
   virtual void OnPageChanged                 (wxAuiNotebookEvent&);

@@ -79,6 +79,7 @@ class IMAGEVIEWER_EXPORT wxImageThumbnail : public wxPanel
   void LinkViews (bool val);
 
   void SetLookupTable (vtkLookupTable* lut);
+  void SetShow2DAxis  (bool value);
   
 
   wxFlexGridSizer* m_Sizer;

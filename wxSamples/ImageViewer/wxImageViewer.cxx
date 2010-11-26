@@ -97,6 +97,9 @@ wxImageViewer::wxImageViewer (wxWindow* parent, int id,
 			  wxBitmap (sagittal_xpm),
 			  wxNullBitmap, wxITEM_CHECK, wxT ("Sagittal view full screen"),
 			  wxT ("Sagittal view full screen"));
+  wxCheckBox* cb4 = new wxCheckBox (m_ToolBarView, TOOLBAR_AXISCB, wxT("2D Axis"));
+  m_ToolBarView->AddControl (cb4);
+  
   m_ToolBarView->AddTool (TOOLBAR_3D, wxT("3D"),
 			  wxBitmap (fullscreen),
 			  wxNullBitmap, wxITEM_CHECK, wxT ("3D view full screen"),
@@ -227,6 +230,7 @@ BEGIN_EVENT_TABLE(wxImageViewer, wxWindow)
   EVT_CHOICE(TOOLBAR_PRESET,                    wxImageViewer::OnToolBarPreset)
   EVT_CHOICE(TOOLBAR_VRCHOICE,                  wxImageViewer::OnToolBarVRMode)
   EVT_CHECKBOX(TOOLBAR_SHADECB,                 wxImageViewer::OnToolBarShading)
+  EVT_CHECKBOX(TOOLBAR_AXISCB,                  wxImageViewer::OnToolBarAxis)
   EVT_AUINOTEBOOK_PAGE_CLOSE(wxID_ANY,          wxImageViewer::OnDeletePage)
   EVT_AUINOTEBOOK_PAGE_CHANGED(wxID_ANY,        wxImageViewer::OnPageChanged)
 END_EVENT_TABLE()
@@ -380,4 +384,9 @@ void wxImageViewer::OnToolBarVRMode(wxCommandEvent& event)
 void wxImageViewer::OnToolBarShading(wxCommandEvent& event)
 {
         std::cout << "wxImageViewer::OnToolBarShading not implemented yet." << std::endl;
+}
+
+void wxImageViewer::OnToolBarAxis(wxCommandEvent& event)
+{
+        std::cout << "wxImageViewer::OnToolBarAxis not implemented yet." << std::endl;
 }

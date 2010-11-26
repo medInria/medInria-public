@@ -70,6 +70,7 @@ class IMAGEVIEWER_EXPORT wxImageViewerInteractor : public wxImageViewer
   void         OnToolBarShading              (wxCommandEvent &);
   virtual void OnFullPageInteractionEvent    (wxCommandEvent &);
   virtual void On3DVolumeRendering           (wxCommandEvent &);
+  virtual void OnToolBarAxis                 (wxCommandEvent &);
   
   virtual void SaveImage (wxVtkPageView* page, const char* filename);
   virtual void OpenImage (const char* filename);

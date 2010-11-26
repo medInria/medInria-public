@@ -120,6 +120,7 @@ void wxImageThumbnail::AddImage (vtkImageData* image, vtkMatrix4x4* matrix, cons
   view->SetRenderWindowInteractor(wxView);
   view->SetRenderer (rend);
   view->ScalarBarVisibilityOff();
+  view->SetShow2DAxis (0);
   view->SetLinkZoom (true);
   view->SetLinkCameraFocalAndPosition(true);
   view->SetInteractionStyle (m_InteractionStyle);
@@ -276,5 +277,13 @@ void wxImageThumbnail::SetLookupTable (vtkLookupTable* lut)
   if( m_ViewList.size()>0 )
   {
      m_ViewList[0]->SyncSetLookupTable (lut);
+  }
+}
+
+void wxImageThumbnail::SetShow2DAxis (bool value)
+{
+  for (unsigned int i=0; i<m_ViewList.size(); i++)
+  {
+     m_ViewList[i]->SetScalarBarVisibility (value);
   }
 }

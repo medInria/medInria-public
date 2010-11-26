@@ -1130,4 +1130,17 @@ void wxImageViewerInteractor::OnToolBarShading (wxCommandEvent& event)
   
 }
 
+void wxImageViewerInteractor::OnToolBarAxis (wxCommandEvent& event)
+{
+  bool val = event.IsChecked();
+
+  wxImageThumbnail* thumbPage = dynamic_cast<wxImageThumbnail*>(m_MainNotebook->GetPage(m_MainNotebook->GetSelection()));
+
+  if( thumbPage )
+  {
+    thumbPage->SetShow2DAxis (val);
+    thumbPage->Render();
+  } 
+}
+
 
