@@ -10,6 +10,7 @@
 #include "vtkPolyData.h"
 #include "vtkPolyDataReader.h"
 #include "vtkPolyDataWriter.h"
+#include "vtkFiberDataSet.h"
 
 // /////////////////////////////////////////////////////////////////
 // vtkDataFibersPrivate
@@ -18,7 +19,7 @@
 class vtkDataFibersPrivate
 {
 public:
-	vtkSmartPointer<vtkPolyData> data;
+    vtkSmartPointer<vtkFiberDataSet> data;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -48,6 +49,7 @@ QString vtkDataFibers::description(void) const
 
 bool vtkDataFibers::read(const QString& file)
 {
+  /*
 	vtkPolyDataReader* reader = vtkPolyDataReader::New();
 	reader->SetFileName( file.toAscii().constData() );
 	if (!reader->IsFilePolyData() )
@@ -55,11 +57,13 @@ bool vtkDataFibers::read(const QString& file)
 	
 	reader->Update();
 	d->data = reader->GetOutput();
-	return true;
+	*/
+	return false;
 }
 
 bool vtkDataFibers::write(const QString& file)
 {
+  /*
 	if (!d->data)
 		return false;
 	vtkPolyDataWriter* writer = vtkPolyDataWriter::New();
@@ -67,18 +71,19 @@ bool vtkDataFibers::write(const QString& file)
 	writer->SetInput( d->data );
 	writer->SetFileTypeToBinary();
 	writer->Update();
-	return true;
+  */
+	return false;
 }
 
 void vtkDataFibers::setData(void *data)
 {
-	if (vtkPolyData *dataset = dynamic_cast<vtkPolyData*>(static_cast<vtkObject*>(data)))
-		d->data = dataset;
+  if (vtkFiberDataSet *dataset = vtkFiberDataSet::SafeDownCast (static_cast<vtkObject*>(data)))
+      d->data = dataset;
 }
 
 void *vtkDataFibers::data(void)
 {
-	return d->data;
+    return d->data;
 }
 
 // /////////////////////////////////////////////////////////////////
