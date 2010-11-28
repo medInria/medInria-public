@@ -10,6 +10,8 @@
 #include <vtkImageView.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
+#include <vtkLimitFibersToVOI.h>
+#include <vtkPointData.h>
 
 #include "v3dView.h"
 #include "v3dFiberBundle.h"
