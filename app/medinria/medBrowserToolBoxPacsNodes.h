@@ -33,14 +33,22 @@ public:
     ~medBrowserToolBoxPacsNodes(void);
 
     void readSettings(void);
+
     void writeSettings(void);
+
+signals:
+    void nodesUpdated();
+    void echoRequest();
 
 public slots:
     void addNode(void);
     void remNode(void);
-    void echo(void);
+    void onEchoResponse(QVector<bool>);
 
 private:
+
+    void fillWidget( QList<QVariant> nodes );
+
     medBrowserToolBoxPacsNodesPrivate *d;
 };
 

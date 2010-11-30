@@ -30,6 +30,7 @@ set(${PROJECT_NAME}_HEADERS
   medLayoutChooser.h
   medProgressionStack.h
   medStatusQuitButton.h
+  medPacsSelector.h
   medToolBox.h
   medToolBoxBody.h
   medToolBoxHeader.h
@@ -46,7 +47,12 @@ set(${PROJECT_NAME}_HEADERS
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
-  medWorkspaceShifter.h)
+  medWorkspaceShifter.h
+  medLUTtoXMLWriter.h
+  medXMLtoLUTReader.h
+  medSaveLUTDialog.h
+  medLoadLUTDialog.h
+)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medClutEditor.h
@@ -55,6 +61,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medLayoutChooser.h
   medProgressionStack.h
   medStatusQuitButton.h
+  medPacsSelector.h
   medToolBox.h
   medToolBoxBody.h
   medToolBoxHeader.h
@@ -69,7 +76,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
-  medWorkspaceShifter.h)
+  medWorkspaceShifter.h
+  medSaveLUTDialog.h
+  medLoadLUTDialog.h)
 
 set(${PROJECT_NAME}_SOURCES
   medClutEditor.cpp
@@ -78,6 +87,7 @@ set(${PROJECT_NAME}_SOURCES
   medLayoutChooser.cpp
   medProgressionStack.cpp
   medStatusQuitButton.cpp
+  medPacsSelector.cpp
   medToolBox.cpp
   medToolBoxBody.cpp
   medToolBoxHeader.cpp
@@ -93,7 +103,11 @@ set(${PROJECT_NAME}_SOURCES
   medViewContainerCustom.cpp
   medViewContainerMulti.cpp
   medViewContainerSingle.cpp
-  medWorkspaceShifter.cpp)
+  medWorkspaceShifter.cpp
+  medLUTToXMLWriter.cpp
+  medXMLToLUTReader.cpp
+  medSaveLUTDialog.cpp
+  medLoadLUTDialog.cpp)
 
 ## #################################################################
 ## Build rules

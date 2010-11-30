@@ -7,20 +7,19 @@
 
 class medPacsMoverPrivate;
 
+#include "medMoveCommandItem.h"
+
 class MEDPACS_EXPORT medPacsMover : public QObject, public QRunnable
 {
     Q_OBJECT
 
 public:
-     medPacsMover(int group, int elem, QString query, QString storageFolder, int nodeIndex);
+     medPacsMover(const QVector<medMoveCommandItem>& cmdList);
     ~medPacsMover(void);
 
     void run(void);
 
-    void doMove();
-
-protected:
-    void readSettings(void);
+    void doQueuedMove();
 
 signals:
     void import(QString);
@@ -29,6 +28,10 @@ signals:
     void success (void);
     void failure (void);
     void showError(QObject*,const QString&,unsigned int timeout);
+    void cancelled(void);
+
+public slots:
+    void onCancel(QObject*);
 
 private:
     medPacsMoverPrivate *d;

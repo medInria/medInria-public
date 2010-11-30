@@ -31,6 +31,8 @@ class medDatabaseView;
 class medDatabaseModel;
 class medBrowserAreaPrivate;
 
+#include "medPacs/medMoveCommandItem.h"
+
 class medBrowserArea : public QWidget
 {
     Q_OBJECT
@@ -55,8 +57,8 @@ public slots:
     void onFileSystemViewClicked(void);
     void onFileImported(void);
     void onSourceIndexChanged(int index);
-    void onPacsMove(int group, int elem, QString query, QString storageFolder, int nodeIndex);
-    void onPacsImport(QString path);
+    void onPacsMove(const QVector<medMoveCommandItem>& cmdList);
+    void onPacsImport(QString);
 
 private:
     friend class medMessageController;

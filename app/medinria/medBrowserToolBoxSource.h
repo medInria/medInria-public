@@ -33,7 +33,8 @@ public:
     ~medBrowserToolBoxSource(void);
 
     void setFileSystemWidget(QWidget *widget);
-    
+    void setPacsWidget(QWidget* widget);
+
 signals:
     void indexChanged(int);
     // void echoPressed();

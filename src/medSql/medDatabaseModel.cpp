@@ -394,6 +394,11 @@ bool medDatabaseModel::insertRows(int position, int rows, const QModelIndex& par
 
 bool medDatabaseModel::removeRows(int position, int rows, const QModelIndex& parent)
 {
+    if (rows <= position){
+        qDebug() << "row index < rows!";
+        return false;
+    }
+
     medDatabaseItem *parentItem = d->item(parent);
 
     bool success = true;

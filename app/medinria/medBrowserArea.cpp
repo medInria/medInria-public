@@ -40,6 +40,7 @@
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
+#include <medGui/medPacsSelector.h>
 #include "medBrowserToolBoxSource.h"
 
 #include <medPacs/medPacsWidget.h>
@@ -153,8 +154,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->pacs = new medPacsWidget(this);
 
-    connect(d->pacs, SIGNAL(move(int, int, QString, QString, int)), this, SLOT(onPacsMove(int, int, QString, QString, int)));
-
+    connect(d->pacs, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
+    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
 
     // /////////////////////////////////////////////////////////////////
 
@@ -184,6 +185,15 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->toolbox_pacs_nodes = new medBrowserToolBoxPacsNodes(this);
     d->toolbox_pacs_nodes->setVisible(false);
+    connect(d->toolbox_pacs_nodes, SIGNAL(echoRequest()), d->pacs, SLOT(onEchoRequest()));
+    connect(d->pacs, SIGNAL(echoResponse(QVector<bool>)), d->toolbox_pacs_nodes, SLOT(onEchoResponse(QVector<bool>)));
+
+    // Pacs Selector //////////////////////////////////////////
+
+    d->pacs_selector = new medPacsSelector(this);
+
+    connect(d->toolbox_pacs_nodes, SIGNAL(nodesUpdated()), d->pacs_selector, SLOT(updateList()));
+    connect(d->pacs_selector, SIGNAL(selectionChanged(QVector<int>)), d->pacs, SLOT(updateSelectedNodes(QVector<int>)));
 
     // Toolbox pacs search //////////////////////////////////////////
 
@@ -191,6 +201,21 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_pacs_search->setVisible(false);
 
     connect(d->toolbox_pacs_search, SIGNAL(search(QString)), d->pacs, SLOT(search(QString)));
+
+
+    // Source toolbox ///////////////////////////////////////////////
+
+    d->toolbox_source = new medBrowserToolBoxSource(this);
+    d->toolbox_source->setFileSystemWidget(d->side);
+    d->toolbox_source->setPacsWidget(d->pacs_selector);
+
+    connect(d->toolbox_source, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
+
+    // Jobs //////////////////////////////////////////
+
+    d->toolbox_jobs = new medBrowserToolBoxJobs(this);
+    d->toolbox_jobs->setVisible(false);
+
 
     // Toolbox container /////////////////////////////////////////////
 
@@ -260,6 +285,7 @@ void medBrowserArea::onFileSystemImportClicked(void)
 
 void medBrowserArea::onPacsImport(QString path)
 {
+    qDebug() << path;
     QFileInfo info(path);
 
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
@@ -315,16 +341,19 @@ void medBrowserArea::onSourceIndexChanged(int index)
     }
 }
 
-void medBrowserArea::onPacsMove( int group, int elem, QString query, QString storageFolder, int nodeIndex )
+void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
 {
-    medPacsMover* mover = new medPacsMover(group, elem, query, storageFolder, nodeIndex);
+
+    medPacsMover* mover = new medPacsMover(cmdList);
 
     connect(mover, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
     connect(mover, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
     connect(mover, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
     connect(mover, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
-    connect(mover,SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
+    connect(mover, SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
     connect(mover, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
+    connect(mover, SIGNAL(cancelled()), d->toolbox_jobs->stack(),SLOT(onCancel()), Qt::AutoConnection );
+    connect(d->toolbox_jobs->stack(), SIGNAL(cancelRequest(QObject*)),mover, SLOT(onCancel(QObject*)), Qt::AutoConnection);
 
     d->toolbox_jobs->stack()->setLabel(mover, "moving");
 

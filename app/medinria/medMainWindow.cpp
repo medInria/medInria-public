@@ -78,7 +78,7 @@ public:
     medWorkspaceShifterAction *shiftToBrowserAreaAction;
     medWorkspaceShifterAction *shiftToViewerAreaAction;
 
-    medMessageControllerMessageQuestion *quitMessage;
+    QPointer<medMessageControllerMessageQuestion> quitMessage;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -206,6 +206,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
 medMainWindow::~medMainWindow(void)
 {
+
     delete d;
 
     d = NULL;
@@ -282,7 +283,20 @@ void medMainWindow::onConfigurationTriggered(QAction *action)
 
 void medMainWindow::onQuit(void)
 {
-    this->statusBar()->removeWidget(d->quitMessage);
+    if(d->quitMessage != 0 )
+    {
+        WId id = d->quitMessage->effectiveWinId();
+
+        if (this->statusBar()->find(id))
+        {
+            this->statusBar()->removeWidget(d->quitMessage);
+            disconnect(d->quitMessage, SIGNAL(accepted()), qApp, SLOT(quit()));
+            disconnect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
+            delete d->quitMessage;
+        }
+
+    }
+
     d->quitMessage = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
 
     connect(d->quitMessage, SIGNAL(accepted()), qApp, SLOT(quit()));
@@ -309,6 +323,6 @@ void medMainWindow::closeEvent(QCloseEvent *event)
 {
     this->writeSettings();
     
-    delete medDatabaseController::instance();
-    // delete medMessageController::instance();
+    if (medDatabaseController::instance())
+        medDatabaseController::instance()->destroy();
 }

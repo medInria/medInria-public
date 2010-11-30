@@ -44,6 +44,7 @@ signals:
 
 private:
     medDatabaseImporterPrivate *d;
+
 };
 
 #endif // MEDDATABASEIMPORTER_H

@@ -1,4 +1,5 @@
 #include "medAbstractPacsMoveScu.h"
+#include "medAbstractPacsNode.h"
 
 #include <dtkCore/dtkGlobal.h>
 
@@ -40,4 +41,28 @@ bool medAbstractPacsMoveScu::setStorageDirectory( const char* directory )
     DTK_DEFAULT_IMPLEMENTATION;
 
     return false;
+}
+
+bool medAbstractPacsMoveScu::addRequestToQueue( int group, int elem, const char* query, medAbstractPacsNode& moveSource, medAbstractPacsNode& moveTarget)
+{
+    DTK_UNUSED(group);
+    DTK_UNUSED(elem);
+    DTK_UNUSED(query);
+    DTK_UNUSED(moveSource);
+    DTK_UNUSED(moveTarget);
+
+    DTK_DEFAULT_IMPLEMENTATION;
+
+    return false;
+}
+
+int medAbstractPacsMoveScu::performQueuedMoveRequests()
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return 0;
+}
+
+void medAbstractPacsMoveScu::sendCancelRequest()
+{
+    DTK_DEFAULT_IMPLEMENTATION;
 }

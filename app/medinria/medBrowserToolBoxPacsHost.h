@@ -36,7 +36,6 @@ public:
     void writeSettings(void);
 
     QString title(void);
-    QString address(void);
     QString port(void);
 
 protected slots:

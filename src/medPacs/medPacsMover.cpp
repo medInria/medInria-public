@@ -2,35 +2,24 @@
 
 #include "medAbstractPacsMoveScu.h"
 #include "medAbstractPacsFactory.h"
+#include "medAbstractPacsNode.h"
+#include "medPacsNode.h"
+
+#include <iostream>
 
 class medPacsMoverPrivate
 {
 public:
 
-    QString host_title;
-    QString host_address;
-    QString host_port;
-
-    int nodeIndex;
-    int group;
-    int elem;
-    QString query; 
-    QString storageFolder;
-
-    QList<QStringList> nodes;
-
     medAbstractPacsMoveScu* move;
+
+    QVector<medMoveCommandItem> cmdList;
 };
 
-medPacsMover::medPacsMover(int group, int elem, QString query, 
-                           QString storageFolder, int nodeIndex ): QRunnable(), 
+medPacsMover::medPacsMover(const QVector<medMoveCommandItem>& cmdList): QRunnable(), 
                            d(new medPacsMoverPrivate)
 {
-    d->group = group;
-    d->elem = elem;
-    d->query = query;
-    d->storageFolder = storageFolder;
-    d->nodeIndex = nodeIndex;
+    d->cmdList = cmdList;
 
     d->move = NULL;
 }
@@ -43,34 +32,12 @@ medPacsMover::~medPacsMover( void )
     d = NULL;
 }
 
-void medPacsMover::readSettings(void)
-{
-    QSettings settings("inria", "medinria");
-    settings.beginGroup("medToolBoxPacsHost");
-    d->host_title = settings.value("title").toString();
-    d->host_address = settings.value("address").toString();
-    d->host_port = settings.value("port").toString();
-    settings.endGroup();
-
-    QList<QVariant> nodes;
-
-    settings.beginGroup("medToolBoxPacsNodes");
-    nodes = settings.value("nodes").toList();
-    settings.endGroup();
-
-    d->nodes.clear();
-
-    foreach(QVariant node, nodes)
-        d->nodes << node.toStringList();
-}
-
 void medPacsMover::run( void )
 {
-    readSettings();
-    doMove();
+    doQueuedMove();
 }
 
-void medPacsMover::doMove()
+void medPacsMover::doQueuedMove()
 {
     if(!d->move)
     {
@@ -80,47 +47,35 @@ void medPacsMover::doMove()
 
     if(d->move)
     {
-        d->move->clearAllQueryAttributes();
-
-        // find out the query level and set it
-        switch(d->elem)
+        for(int i=0; i<d->cmdList.size(); i++)
         {
-        case 0x0018:
-            d->move->setQueryLevel(medAbstractPacsMoveScu::IMAGE);
-            break;
+            medPacsNode source;
+            source.setTitle(d->cmdList.at(i).sourceTitle);
+            source.setIp(d->cmdList.at(i).sourceIp);
+            source.setPort(d->cmdList.at(i).sourcePort);
 
-        case 0x000E:
-            d->move->setQueryLevel(medAbstractPacsMoveScu::SERIES);
-            break;
+            medPacsNode target;
+            target.setTitle(d->cmdList.at(i).targetTitle);
+            target.setIp(d->cmdList.at(i).targetIp);
+            target.setPort(d->cmdList.at(i).targetPort);
 
-        case 0x000D:
-            d->move->setQueryLevel(medAbstractPacsMoveScu::STUDY);
-            break;
-
-        default:
-            qDebug() << "Err: could not determine query level for MOVE_SCU";
+            d->move->addRequestToQueue(d->cmdList.at(i).group, d->cmdList.at(i).elem, d->cmdList.at(i).query.toLatin1(), source, target);
         }
+    
+    if(d->move->performQueuedMoveRequests() == 0)
+            emit success();
+    else
+            emit failure();
 
-        d->move->addQueryAttribute(d->group, d->elem, d->query.toLatin1());
-        d->move->useBuildInStoreSCP(true);
-        d->move->setStorageDirectory(d->storageFolder.toLatin1());
-        if (d->move->sendMoveRequest(
-            d->nodes.at(d->nodeIndex).at(0).toLatin1(),
-            d->nodes.at(d->nodeIndex).at(1).toLatin1(),
-            d->nodes.at(d->nodeIndex).at(2).toInt(),
-            d->host_title.toLatin1(),
-            d->host_address.toLatin1(),
-            d->host_port.toInt()))
-        {
-          QString errorMessage;
-          errorMessage = tr("Failed to move from ") +
-              d->nodes.at(d->nodeIndex).at(0);
-          emit showError(this, errorMessage,5000);
-          emit failure();
-          return;
-        }
-        emit progressed(100);
-        emit success();
-        emit import(d->storageFolder.toLatin1());
+    }
+
+}
+
+void medPacsMover::onCancel(QObject* sender)
+{
+    if(d->move && sender == this)
+    {
+        d->move->sendCancelRequest();
+        emit cancelled();
     }
 }

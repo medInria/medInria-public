@@ -19,6 +19,9 @@ public:
 
     virtual  bool setStorageDirectory(const char* directory);
 
+signals:
+    void endOfStudy(QString);
+
 };
 
 #endif

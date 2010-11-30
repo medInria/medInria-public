@@ -84,7 +84,8 @@ protected slots:
     void setupMeasuring (bool checked);
     void setupCropping (bool checked);
 
-    void bringUpTransFun(bool checked);
+    void bringUpTransferFunction(bool checked);
+    void updateTransferFunction();
 
 //  @}
 

@@ -21,12 +21,12 @@
 #define MEDBROWSERAREA_P_H
 
 class medToolBoxContainer;
-
 class medBrowserToolBoxJobs;
 class medBrowserToolBoxSource;
 class medBrowserToolBoxPacsHost;
 class medBrowserToolBoxPacsNodes;
 class medBrowserToolBoxPacsSearch;
+class medPacsSelector;
 
 class medDatabasePreview;
 class medDatabaseModel;
@@ -44,12 +44,12 @@ class medBrowserAreaPrivate
 {
 public:
     medToolBoxContainer *toolbox_container;
-
     medBrowserToolBoxJobs *toolbox_jobs;
     medBrowserToolBoxSource *toolbox_source;
     medBrowserToolBoxPacsHost *toolbox_pacs_host;
     medBrowserToolBoxPacsNodes *toolbox_pacs_nodes;
     medBrowserToolBoxPacsSearch *toolbox_pacs_search;
+    medPacsSelector *pacs_selector;
 
     medDatabasePreview *preview;
     medDatabaseModel *model;

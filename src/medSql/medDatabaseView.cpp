@@ -32,7 +32,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     this->setAnimated(false);
     this->setSortingEnabled(true);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
-    // this->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    // this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -48,9 +48,10 @@ medDatabaseView::~medDatabaseView(void)
 
 int medDatabaseView::sizeHintForColumn(int column) const
 {
-    Q_UNUSED(column);
-
-    return 150;
+    if (column<3)
+        return 150;
+    
+    return 50;
 }
 
 void medDatabaseView::setModel(medDatabaseModel *model)

@@ -34,18 +34,14 @@ class MEDSQL_EXPORT medDatabaseController : public QObject
     Q_OBJECT
 
 public:
-    static medDatabaseController *instance(void);
+    static QPointer<medDatabaseController> instance(void);
+    
+    void destroy(void);
 
     QSqlDatabase *database(void);
 
     bool createConnection(void);
     bool  closeConnection(void);
-
-    bool mkpath(const QString& dirPath);
-    bool rmpath(const QString& dirPath);
-
-    QString   dataLocation(void) const;
-    QString configLocation(void) const;
 
     medDataIndex indexForPatient(int id);
     medDataIndex indexForStudy  (int id);

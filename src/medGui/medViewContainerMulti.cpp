@@ -23,6 +23,8 @@
 
 #include <dtkCore/dtkAbstractView.h>
 
+#include <medCore/medAbstractView.h>
+
 void medViewContainerSingle2::setView (dtkAbstractView *view)
 {
     d->layout->setContentsMargins(1, 1, 1, 1);    
@@ -95,7 +97,8 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
 
     d->view->reset();
 	
-    d->pool->appendView (view);
+	if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
+      d->pool->appendView (medView);
     connect (view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
     connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
 }
@@ -162,7 +165,8 @@ void medViewContainerMulti::onViewClosed (void)
       disconnect (view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
       disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
       
-      d->pool->removeView (view);
+		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
+      d->pool->removeView (medView);
       
       this->layout (content);
     }

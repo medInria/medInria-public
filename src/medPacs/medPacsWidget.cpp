@@ -40,7 +40,7 @@ protected:
     void run(void);
 
 public:
-    int index(QString node_title);
+    int index(medAbstractPacsNode& node);
 
 public:
     QString host_title;
@@ -48,9 +48,12 @@ public:
     QString host_port;
 
     QList<QStringList> nodes;
+    QList<QStringList> selectedNodes;
 
-    medAbstractPacsFindScu *find;
+    medAbstractPacsFindScu  *find;
+    medAbstractPacsEchoScu  *echo;
     medAbstractPacsStoreScp *server;
+
 };
 
 void medPacsWidgetPrivate::run(void)
@@ -59,18 +62,26 @@ void medPacsWidgetPrivate::run(void)
         qDebug() << "Unable to find a valid implementation of the store scp service.";
         return;
     }
-
-    this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), this->host_port.toInt());
+    QDir tmp = QDir::temp();
+    tmp.mkdir("import");
+    tmp.cd("import");
+    this->server->setStorageDirectory(tmp.absolutePath().toLatin1());
+    this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), tryToInt(this->host_port));
 }
 
-int medPacsWidgetPrivate::index(QString node_title)
+int medPacsWidgetPrivate::index(medAbstractPacsNode& node)
 {
     for(int i = 0; i < this->nodes.count(); i++)
-        if(this->nodes[i].contains(node_title))
+    {
+        QString port;
+        port.setNum(node.port());
+        if( (this->nodes[i].contains(node.title())) && (this->nodes[i].contains(node.ip())) && (this->nodes[i].contains(port)) )
             return i;
+    }
 
     return -1;
 }
+
 
 // /////////////////////////////////////////////////////////////////
 // medPacsWidget
@@ -84,23 +95,29 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     this->setAlternatingRowColors(true);
     this->setSortingEnabled(true);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
+    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     this->setHeaderLabels(QStringList() << "Name" << "Description" << "Id" << "Modality");
 
     d->find = NULL;
+    d->echo = NULL;
     d->server = medAbstractPacsFactory::instance()->createStoreScp("dcmtkStoreScp");
     if (!d->server) qDebug() << "Warning server could not be started, pacsmodule not loaded.";
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
+    connect(this->d->server, SIGNAL(endOfStudy(QString)), this, SIGNAL(import(QString)));
+    
+    this->readSettings();
+    d->start();
+    d->selectedNodes = d->nodes;
 
-    // d->start();
 }
 
 medPacsWidget::~medPacsWidget(void)
 {
-    this->writeSettings();
     if (d->find) delete d->find;
+    if (d->echo) delete d->echo;
     if (d->isRunning())
     {
         d->server->stop();
@@ -117,7 +134,7 @@ void medPacsWidget::readSettings(void)
     QSettings settings("inria", "medinria");
     settings.beginGroup("medToolBoxPacsHost");
     d->host_title = settings.value("title").toString();
-    d->host_address = settings.value("address").toString();
+    d->host_address = "localhost";
     d->host_port = settings.value("port").toString();
     settings.endGroup();
 
@@ -131,12 +148,9 @@ void medPacsWidget::readSettings(void)
 
     foreach(QVariant node, nodes)
         d->nodes << node.toStringList();
-}
-
-void medPacsWidget::writeSettings(void)
-{
 
 }
+
 
 void medPacsWidget::search(QString query)
 {
@@ -161,8 +175,9 @@ void medPacsWidget::search(QString query)
         d->find->addQueryAttribute(0x0020,0x000D, "\0"); // studyInstanceUID
         d->find->addQueryAttribute(0x0020,0x0010, "\0"); // study ID
         
-        foreach(QStringList node, d->nodes)
-            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), node.at(2).toInt(), d->host_title.toLatin1(), d->host_address.toLatin1(), d->host_port.toInt());
+        foreach(QStringList node, d->selectedNodes)
+            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+                d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
         
         QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
         
@@ -179,7 +194,7 @@ void medPacsWidget::search(QString query)
                                                             << QString(dataset->findKeyValue(0x0008,0x0061)));
                 
                 item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-                item->setData(0,Qt::UserRole, d->index(QString::fromStdString(node->title())));
+                item->setData(0,Qt::UserRole, d->index(*node));
                 item->setData(1,Qt::UserRole, QPoint(0x0020,0x000D));
                 item->setData(2,Qt::UserRole, QString(dataset->getStudyInstanceUID()));
             }
@@ -221,9 +236,17 @@ void medPacsWidget::findSeriesLevel(QTreeWidgetItem * item)
     d->find->addQueryAttribute(0x0020,0x0011,"\0"); // series number
     d->find->addQueryAttribute(0x0020,0x0052,"\0"); // frame of reference
 
-    foreach(QStringList node, d->nodes)
-        d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), node.at(2).toInt(), d->host_title.toLatin1(), d->host_address.toLatin1(), d->host_port.toInt());
-    
+
+    for (int i=0; i<d->nodes.count();i++)
+    {
+        if (i == nodeIndex)
+        {
+            QStringList node = d->nodes.at(i);
+            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+                d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
+        }
+    }
+
     QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
     
     foreach(medAbstractPacsNode *node, nodes) {
@@ -269,8 +292,15 @@ void medPacsWidget::findImageLevel(QTreeWidgetItem *item)
     d->find->addQueryAttribute(0x0020,0x1041,"\0"); // slice location
     d->find->addQueryAttribute(0x0028,0x0008,"\0"); // number of frames
 
-    foreach(QStringList node, d->nodes)
-        d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), node.at(2).toInt(), d->host_title.toLatin1(), d->host_address.toLatin1(), d->host_port.toInt());
+    for (int i=0; i<d->nodes.count();i++)
+    {
+        if (i == nodeIndex)
+        {
+            QStringList node = d->nodes.at(i);
+            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+                  d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
+        }
+    }
 
     QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
     
@@ -312,29 +342,90 @@ void medPacsWidget::updateContextMenu(const QPoint& point)
 
 void medPacsWidget::onItemImported(void)
 {
-    if(!this->selectedIndexes().count())
-        return;
-    
-    QModelIndex index = this->selectedIndexes().first();
-    
-    if(!index.isValid())
-        return;
-    
-    QTreeWidgetItem *item = itemFromIndex(index);
+    this->readSettings();
+    QList<QTreeWidgetItem*> itemList = this->selectedItems();
 
-    int nodeIndex = item->data(0, Qt::UserRole).toInt();
-    QPoint tag = item->data(1, Qt::UserRole).toPoint();
-    QString query = item->data(2, Qt::UserRole).toString();
+    QHash<int,int>hash;
+    for (int i = 0; i < itemList.size(); ++i) 
+    {
+        if(!(hash.contains(itemList.at(i)->data(0, Qt::UserRole).toInt())))
+            hash.insert(itemList.at(i)->data(0, Qt::UserRole).toInt(),i);
+    }
 
-    // creating a unique path for storing the import data
-    QString ref = QUuid::createUuid().toString();
-    QDir tmp = QDir::temp();
-    if (!tmp.mkdir(ref))
-        qDebug() << "Could not create temp folder!";
-    tmp.cd(ref);
+    for(int u = 0; u<hash.size();u++)
+    {
 
-    qDebug() << tmp.absolutePath().toLatin1();
+    QVector<medMoveCommandItem> cmdList;
+        for (int i = 0; i < itemList.size(); ++i) 
+        {
+            int nodeIndex = itemList.at(i)->data(0, Qt::UserRole).toInt();
+            QPoint tag    = itemList.at(i)->data(1, Qt::UserRole).toPoint();
+            QString query = itemList.at(i)->data(2, Qt::UserRole).toString();
 
+            medMoveCommandItem item;
+            item.group = tag.x();
+            item.elem  = tag.y();
+            item.sourceTitle = d->nodes.at(nodeIndex).at(0);
+            item.sourceIp = d->nodes.at(nodeIndex).at(1);
+            item.sourcePort = tryToInt(d->nodes.at(nodeIndex).at(2));
+            item.targetTitle = d->host_title;
+            item.targetIp = d->host_address;
+            item.targetPort = tryToInt(d->host_port);
+            item.query = query;
 
-    emit move(tag.x(), tag.y(), query, tmp.absolutePath(), nodeIndex);
+            if(hash.contains(itemList.at(i)->data(0, Qt::UserRole).toInt()))
+                cmdList.push_back(item);
+        }
+        emit moveList(cmdList);
+    }
+}
+
+void medPacsWidget::updateSelectedNodes( QVector<int> list )
+{
+    readSettings();
+    d->selectedNodes.clear();
+    for(int i=0; i<list.count(); i++)
+    {
+        d->selectedNodes.push_back(d->nodes.at(list.at(i)));
+    }
+}
+
+void medPacsWidget::onEchoRequest()
+{
+    this->readSettings();
+    QVector<bool> response;
+
+    foreach(QStringList node, d->nodes)
+    {
+        if(!d->echo) d->echo = medAbstractPacsFactory::instance()->createEchoScu("dcmtkEchoScu");
+        if(d->echo)
+        {
+            if(!d->echo->sendEchoRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+                    d->host_title.toLatin1(), d->host_address.toLatin1(),tryToInt(d->host_port) ))
+                response.push_back(true);
+            else
+                response.push_back(false);
+
+        } else {
+            qDebug() << "echoScu: cannot create instance, maybe module was not loaded?";
+        }
+    }
+
+    emit echoResponse(response);
+}
+
+int tryToInt( QString value )
+{
+    int result = 0;
+    bool ok;
+    try
+    {
+        result = value.toInt(&ok,10);
+        if(!ok) result = 0;
+    }
+    catch (...)
+    {
+        result = 0;
+    }
+    return result;
 }

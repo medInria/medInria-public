@@ -39,7 +39,7 @@ medBrowserToolBoxPacsSearch::medBrowserToolBoxPacsSearch(QWidget *parent) : medT
     layout->addWidget(d->edit);
     layout->addWidget(d->button);
 
-    this->setTitle("Pacs search");
+    this->setTitle("Search");
     this->setWidget(page);
 
     connect(d->edit, SIGNAL(returnPressed()), this, SLOT(onSearch()));

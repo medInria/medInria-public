@@ -20,3 +20,22 @@ QVector<medAbstractPacsResultDataset*> medAbstractPacsNode::getResultDatasetCont
 
     return QVector<medAbstractPacsResultDataset*>();
 }
+
+void medAbstractPacsNode::setTitle( QString title )
+{
+    DTK_UNUSED(title);
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractPacsNode::setIp( QString ip )
+{
+    DTK_UNUSED(ip);
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractPacsNode::setPort( unsigned int port )
+{
+    DTK_UNUSED(port);
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+

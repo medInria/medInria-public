@@ -29,7 +29,8 @@ public:
     QWidget *filesystem_page;
     QWidget *pacs_page;
 
-    QVBoxLayout *filseystem_layout;
+    QVBoxLayout *filesystem_layout;
+    QVBoxLayout *pacs_layout;
 };
 
 medBrowserToolBoxSource::medBrowserToolBoxSource(QWidget *parent) : medToolBox(parent), d(new medBrowserToolBoxSourcePrivate)
@@ -38,10 +39,14 @@ medBrowserToolBoxSource::medBrowserToolBoxSource(QWidget *parent) : medToolBox(p
     d->filesystem_page = new QWidget(this);
     d->pacs_page = new QWidget(this);
 
-    d->filseystem_layout = new QVBoxLayout(d->filesystem_page);
-    d->filseystem_layout->setContentsMargins(0, 0, 0, 0);
-    d->filseystem_layout->setSpacing(0);
-    
+    d->filesystem_layout = new QVBoxLayout(d->filesystem_page);
+    d->filesystem_layout->setContentsMargins(0, 0, 0, 0);
+    d->filesystem_layout->setSpacing(0);
+   
+    d->pacs_layout = new QVBoxLayout(d->pacs_page);
+    d->pacs_layout->setContentsMargins(0, 0, 0, 0);
+    d->pacs_layout->setSpacing(0);
+
     medToolBoxTab *tab = new medToolBoxTab(this);
     tab->addTab(d->database_page, "Db");
     tab->addTab(d->filesystem_page, "Fs");
@@ -61,5 +66,12 @@ medBrowserToolBoxSource::~medBrowserToolBoxSource(void)
 
 void medBrowserToolBoxSource::setFileSystemWidget(QWidget *widget)
 {
-    d->filseystem_layout->addWidget(widget);
+    d->filesystem_layout->addWidget(widget);
 }
+
+void medBrowserToolBoxSource::setPacsWidget( QWidget* widget )
+{
+    d->pacs_layout->addWidget(widget);
+}
+
+

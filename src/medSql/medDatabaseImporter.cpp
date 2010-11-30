@@ -27,12 +27,17 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 #include <medSql/medDatabaseController.h>
+#include <medCore/medStorage.h>
+
 
 class medDatabaseImporterPrivate
 {
 public:
     QString file;
+    static QMutex mutex;
 };
+
+QMutex medDatabaseImporterPrivate::mutex;
 
 medDatabaseImporter::medDatabaseImporter(const QString& file) : QRunnable(), d(new medDatabaseImporterPrivate)
 {
@@ -48,6 +53,7 @@ medDatabaseImporter::~medDatabaseImporter(void)
 
 void medDatabaseImporter::run(void)
 {
+
     QString file = d->file;
 
     QDir dir(file);
@@ -88,6 +94,8 @@ void medDatabaseImporter::run(void)
 
         dtkAbstractData* dtkdata = 0;
 
+        QMutexLocker locker(&d->mutex);
+
         for (int i=0; i<readers.size(); i++) {
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
             if (dataReader->canRead( fileInfo.filePath() )) {
@@ -100,6 +108,7 @@ void medDatabaseImporter::run(void)
                 break;
             }
         }
+        locker.unlock();
 
         if (!dtkdata)
             continue;
@@ -216,7 +225,7 @@ void medDatabaseImporter::run(void)
 	s_studyName.replace   (0x00EA, 'e');
 	s_seriesName.replace  (0x00EA, 'e');
 		
-	QString imageFileName = medDatabaseController::instance()->dataLocation() + "/" + 
+        QString imageFileName = medStorage::dataLocation() + "/" +
 		s_patientName + "/" +
 		s_studyName   + "/" +
 		s_seriesName  + uniqueSeriesId;
@@ -431,7 +440,7 @@ void medDatabaseImporter::run(void)
         }
 
         QFileInfo fileInfo (it.key());
-        if (!fileInfo.dir().exists() && !medDatabaseController::instance()->mkpath (fileInfo.dir().path())) {
+        if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path())) {
 	    qDebug() << "Cannot create directory: " << fileInfo.dir().path();
             continue;
         }
@@ -528,7 +537,7 @@ void medDatabaseImporter::run(void)
 	QStringList thumbPaths;
 
         if (thumbnails.count())
-	    if (!medDatabaseController::instance()->mkpath (thumb_dir))
+            if (!medStorage::mkpath (thumb_dir))
 	        qDebug() << "Cannot create directory: " << thumb_dir;
 
 	for (int j=0; j<thumbnails.count(); j++) {
@@ -742,4 +751,5 @@ void medDatabaseImporter::run(void)
     
     emit progressed(100);
     emit success();
+
 }

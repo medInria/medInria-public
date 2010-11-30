@@ -4,24 +4,8 @@
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent)
 {
     QStringList lut;
-    lut << "Default"
-	<< "Black&White"
-	<< "Black&WhiteInversed"
-	<< "Spectrum"
-	<< "HotMetal"
-	<< "GE"
-	<< "Flow"
-	<< "Loni"
-	<< "Loni2"
-	<< "Asymmetry"
-	<< "PValue"
-	<< "blueBlackAlpha"
-	<< "greenBlackAlpha"
-	<< "redBlackAlpha"
-	<< "Muscles&Bones"
-      	<< "Red Vessels"
-      	<< "Bones"
-	<< "Stern";
+    lut << "Default";		// list of available lookup tables set
+				// by subclass
     
     // properties to keep up to date synchronization
     this->addProperty ("Daddy",    QStringList() << "true" << "false");
@@ -56,7 +40,6 @@ medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(
 
 }
 
-
 void medAbstractView::setColorLookupTable(int min_range,
                                      int max_range,
                                      int size,
@@ -65,7 +48,20 @@ void medAbstractView::setColorLookupTable(int min_range,
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medAbstractView::setColorLookupTable(QList<double>scalars,QList<QColor>colors)
+void medAbstractView::setColorLookupTable( QList<double> scalars,
+					   QList<QColor> colors )
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::setTransferFunctions( QList<double> scalars,
+					    QList<QColor> colors )
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::getTransferFunctions( QList<double> & scalars,
+					    QList<QColor> & colors )
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }

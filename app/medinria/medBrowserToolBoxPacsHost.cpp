@@ -25,7 +25,6 @@ class medBrowserToolBoxPacsHostPrivate
 {
 public:
     QLineEdit *title;
-    QLineEdit *address;
     QLineEdit *port;
     QPushButton *apply;
 };
@@ -34,18 +33,18 @@ medBrowserToolBoxPacsHost::medBrowserToolBoxPacsHost(QWidget *parent) : medToolB
 {
     QWidget *page = new QWidget(this);
 
+    QValidator* validator = new QIntValidator( 0, 65535, this );
     d->title = new QLineEdit(page);
-    d->address = new QLineEdit(page);
     d->port = new QLineEdit(page);
+    d->port->setValidator(validator);
     d->apply = new QPushButton("Apply", page);
 
     QFormLayout *layout = new QFormLayout(page);
     layout->addRow("Title", d->title);
-    layout->addRow("Address", d->address);
     layout->addRow("Port", d->port);
     layout->addRow(d->apply);
 
-    this->setTitle("Pacs host");
+    this->setTitle("DICOM Server");
     this->setWidget(page);
 
     connect(d->apply, SIGNAL(clicked()), this, SLOT(onSettingsApplied()));
@@ -67,7 +66,6 @@ void medBrowserToolBoxPacsHost::readSettings(void)
     QSettings settings("inria", "medinria");
     settings.beginGroup("medBrowserToolBoxPacsHost");
     d->title->setText(settings.value("title").toString());
-    d->address->setText(settings.value("address").toString());
     d->port->setText(settings.value("port").toString());
     settings.endGroup();
 }
@@ -77,7 +75,6 @@ void medBrowserToolBoxPacsHost::writeSettings(void)
     QSettings settings("inria", "medinria");
     settings.beginGroup("medBrowserToolBoxPacsHost");
     settings.setValue("title", d->title->text());
-    settings.setValue("address", d->address->text());
     settings.setValue("port", d->port->text());
     settings.endGroup();
 }
@@ -85,11 +82,6 @@ void medBrowserToolBoxPacsHost::writeSettings(void)
 QString medBrowserToolBoxPacsHost::title(void)
 {
     return d->title->text();
-}
-
-QString medBrowserToolBoxPacsHost::address(void)
-{
-    return d->address->text();
 }
 
 QString medBrowserToolBoxPacsHost::port(void)
