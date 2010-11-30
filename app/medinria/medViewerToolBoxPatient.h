@@ -25,7 +25,7 @@
 class medDataIndex;
 class medViewerToolBoxPatientPrivate;
 
-class MEDGUI_EXPORT medViewerToolBoxPatient : public medToolBox
+class medViewerToolBoxPatient : public medToolBox
 {
     Q_OBJECT
 

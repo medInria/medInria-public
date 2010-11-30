@@ -164,13 +164,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->stack->addWidget(filesystem_widget);
     d->stack->addWidget(d->pacs);
 
-    // Source toolbox ///////////////////////////////////////////////
-
-    d->toolbox_source = new medBrowserToolBoxSource(this);
-    d->toolbox_source->setFileSystemWidget(d->side);
-
-    connect(d->toolbox_source, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
-
     // Jobs //////////////////////////////////////////
 
     d->toolbox_jobs = new medBrowserToolBoxJobs(this);

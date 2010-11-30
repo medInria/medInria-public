@@ -65,9 +65,19 @@ void medBrowserToolBoxPacsHost::readSettings(void)
 {
     QSettings settings("inria", "medinria");
     settings.beginGroup("medBrowserToolBoxPacsHost");
-    d->title->setText(settings.value("title").toString());
-    d->port->setText(settings.value("port").toString());
+    QString title = settings.value("title").toString();
+    QString port = settings.value("port").toString();
     settings.endGroup();
+
+    if (title.isEmpty())
+        d->title->setText(tr("MEDINRIA"));
+    else
+        d->title->setText(title);
+    if (port.isEmpty())
+        d->port->setText(tr("9999"));
+    else
+        d->port->setText(port);
+
 }
 
 void medBrowserToolBoxPacsHost::writeSettings(void)

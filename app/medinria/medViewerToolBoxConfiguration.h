@@ -24,7 +24,7 @@
 
 class medViewerToolBoxConfigurationPrivate;
 
-class MEDGUI_EXPORT medViewerToolBoxConfiguration : public medToolBox
+class medViewerToolBoxConfiguration : public medToolBox
 {
     Q_OBJECT
 

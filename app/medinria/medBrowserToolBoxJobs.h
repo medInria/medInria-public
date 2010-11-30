@@ -25,7 +25,7 @@
 class medProgressionStack;
 class medBrowserToolBoxJobsPrivate;
 
-class MEDGUI_EXPORT medBrowserToolBoxJobs : public medToolBox
+class medBrowserToolBoxJobs : public medToolBox
 {
     Q_OBJECT
 

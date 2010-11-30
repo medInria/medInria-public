@@ -24,7 +24,7 @@
 
 class medBrowserToolBoxPacsNodesPrivate;
 
-class MEDGUI_EXPORT medBrowserToolBoxPacsNodes : public medToolBox
+class medBrowserToolBoxPacsNodes : public medToolBox
 {
     Q_OBJECT
 

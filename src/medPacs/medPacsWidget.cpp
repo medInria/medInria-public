@@ -132,15 +132,24 @@ medPacsWidget::~medPacsWidget(void)
 void medPacsWidget::readSettings(void)
 {
     QSettings settings("inria", "medinria");
-    settings.beginGroup("medToolBoxPacsHost");
-    d->host_title = settings.value("title").toString();
+    settings.beginGroup("medBrowserToolBoxPacsHost");
+    QString title = settings.value("title").toString();
     d->host_address = "localhost";
-    d->host_port = settings.value("port").toString();
+    QString port = settings.value("port").toString();
     settings.endGroup();
+
+    if (title.isEmpty())
+        d->host_title = (tr("MEDINRIA"));
+    else
+        d->host_title = title;
+    if (port.isEmpty())
+        d->host_port = tr("9999");
+    else
+        d->host_port = port;
 
     QList<QVariant> nodes;
 
-    settings.beginGroup("medToolBoxPacsNodes");
+    settings.beginGroup("medBrowserToolBoxPacsNodes");
     nodes = settings.value("nodes").toList();
     settings.endGroup();
 

@@ -24,7 +24,7 @@
 
 class medViewerToolBoxLayoutPrivate;
 
-class MEDGUI_EXPORT medViewerToolBoxLayout : public medToolBox
+class medViewerToolBoxLayout : public medToolBox
 {
     Q_OBJECT
 

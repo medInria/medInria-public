@@ -25,7 +25,7 @@
 class dtkAbstractView;
 class medViewerToolBoxViewPrivate;
 
-class MEDGUI_EXPORT medViewerToolBoxView : public medToolBox
+class medViewerToolBoxView : public medToolBox
 {
     Q_OBJECT
 
