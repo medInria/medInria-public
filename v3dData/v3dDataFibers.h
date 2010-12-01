@@ -24,9 +24,6 @@ public:
     static bool registered(void);
 
 public:
-    bool read(const QString& file);
-    bool write(const QString& file);
-	
     void *data(void);
 	
     void setData(void *data);

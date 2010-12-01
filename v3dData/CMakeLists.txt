@@ -42,7 +42,9 @@ include(${vtkINRIA3D_USE_FILE})
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dDataPlugin.h
   v3dDataImage.h
-  v3dDataFibers.h)
+  v3dDataFibers.h
+  v3dDataFibersReader.h
+  v3dDataFibersWriter.h)
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
@@ -50,7 +52,9 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   v3dDataPlugin.cpp
   v3dDataImage.cpp
-  v3dDataFibers.cpp)
+  v3dDataFibers.cpp
+  v3dDataFibersReader.cpp
+  v3dDataFibersWriter.cpp)
 
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

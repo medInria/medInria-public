@@ -47,34 +47,6 @@ QString v3dDataFibers::description(void) const
     return "v3dDataFibers";
 }
 
-bool v3dDataFibers::read(const QString& file)
-{
-  /*
-	vtkPolyDataReader* reader = vtkPolyDataReader::New();
-	reader->SetFileName( file.toAscii().constData() );
-	if (!reader->IsFilePolyData() )
-		return false;
-	
-	reader->Update();
-	d->data = reader->GetOutput();
-	*/
-	return false;
-}
-
-bool v3dDataFibers::write(const QString& file)
-{
-  /*
-	if (!d->data)
-		return false;
-	vtkPolyDataWriter* writer = vtkPolyDataWriter::New();
-	writer->SetFileName( file.toAscii().constData() );
-	writer->SetInput( d->data );
-	writer->SetFileTypeToBinary();
-	writer->Update();
-  */
-	return false;
-}
-
 void v3dDataFibers::setData(void *data)
 {
   if (vtkFiberDataSet *dataset = vtkFiberDataSet::SafeDownCast (static_cast<vtkObject*>(data)))

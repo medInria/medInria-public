@@ -5,6 +5,7 @@
 #include "v3dDataPlugin.h"
 #include "v3dDataImage.h"
 #include "v3dDataFibers.h"
+#include "v3dDataFibersWriter.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -49,6 +50,9 @@ bool v3dDataPlugin::initialize(void)
 
     if(!v3dDataFibers::registered())
 	dtkWarning() << "Unable to register v3dDataFibers type";
+    
+    if(!v3dDataFibersWriter::registered())
+	dtkWarning() << "Unable to register v3dDataFibersWriter type";
 
     return true;
 }
