@@ -22,10 +22,12 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkFibersManager.h"
 
-#include <map>
 
 class vtkFiberDataSet;
 class vtkActor;
+class vtkRenderWindowInteractor;
+
+class vtkFiberDataSetManagerPrivate;
 
 class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
 {
@@ -33,19 +35,21 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   static vtkFiberDataSetManager *New();
   vtkTypeRevisionMacro(vtkFiberDataSetManager, vtkFibersManager);
 
-  typedef std::map<std::string, vtkActor*> vtkFiberBundleActorListType;
-  
   virtual void SetInput (vtkFiberDataSet *input);
   vtkGetObjectMacro (FiberDataSet, vtkFiberDataSet);
-
-
+  
   // derived from vtkFibersManager
-  virtual void RemoveAllActors (void);
+  virtual void Enable (void);
+  virtual void Disable (void);
+  
+  // virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor *);
+  // virtual void RemoveAllActors (void);
   virtual void SetRenderingModeToPolyLines (void);
   virtual void SetRenderingModeToTubes (void);
   virtual void SetRenderingModeToRibbons (void);
   virtual void ChangeMapperToUseHardwareShaders(void);
   virtual void ChangeMapperToDefault(void);
+  
   /*
     virtual void SetColorModeToLocalFiberOrientation (void);
     virtual void SetColorModelToGlobalFiberOrientation (void);
@@ -53,18 +57,22 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   */
 
   // specific
+  void Validate (const std::string &name, double color[3]);
 
  protected:
   vtkFiberDataSetManager();
   ~vtkFiberDataSetManager();
 
   void CreateBundleRenderingPipeline (void);
+  inline void CreateRenderingPipelineForBundle (const std::string &name);
 
+  void AddBundleActors (void);
+  void RemoveBundleActors (void);
+  
  private:
 
-  vtkFiberDataSet            *FiberDataSet;
-  vtkFiberBundleActorListType FiberBundleActorList;
-  
+  vtkFiberDataSet               *FiberDataSet;
+  vtkFiberDataSetManagerPrivate *d;
 };
 
 #endif

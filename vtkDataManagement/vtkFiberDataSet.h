@@ -55,7 +55,6 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSet : public vtkObject
   vtkGetObjectMacro (Fibers, vtkPolyData);
   
   void AddBundle    (const std::string &name, vtkPolyData *bundle, double color[3]);
-  void AddBundle    (const std::string &name, const vtkFiberBundleType &bundle);
   void RemoveBundle (const std::string &name);
 
   /**
@@ -70,12 +69,10 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSet : public vtkObject
     
   void SetBundleColor (const std::string &name, double color[3]);
   void GetBundleColor (const std::string &name, double color[3]);
- 
 
  protected:
   vtkFiberDataSet();
   ~vtkFiberDataSet();
-
   
  private:
   vtkPolyData           *Fibers;

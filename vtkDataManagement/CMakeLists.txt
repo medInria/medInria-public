@@ -7,6 +7,7 @@
   vtkDataManager.cxx
   vtkMetaDataSetSequence.cxx
   vtkDiffXMLWriter.cxx
+  vtkFiberDataSet.cxx
   )
 
   IF (VTK_MAJOR_VERSION GREATER 4)

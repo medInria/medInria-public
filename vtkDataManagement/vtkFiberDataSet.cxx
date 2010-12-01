@@ -16,41 +16,56 @@ vtkFiberDataSet::~vtkFiberDataSet()
   {
     this->Fibers->Delete();
   }
+
+  vtkFiberBundleListType::iterator it = this->Bundles.begin();
+  while (it!=this->Bundles.end())
+  {
+    (*it).second.Bundle->Delete();
+  }
 }
 
 void vtkFiberDataSet::AddBundle (const std::string &name, vtkPolyData *bundle, double color[3])
 {
-  if (!bundle)
+  if (name=="" || !bundle)
   {
     return;
   }
-
-  vtkFiberDataSet::vtkFiberBundleType p_bundle;
-  p_bundle.Bundle = bundle;
-  p_bundle.Red    = color[0];
-  p_bundle.Green  = color[1];
-  p_bundle.Blue   = color[2];
-
-  this->AddBundle (name, p_bundle);
-}
-
-void vtkFiberDataSet::AddBundle (const std::string &name, const vtkFiberBundleType &bundle)
-{
-  if (name=="")
+  
+  if (bundle!=this->Bundles[name].Bundle)
   {
-    return;
+    if (this->Bundles[name].Bundle)
+    {
+      this->Bundles[name].Bundle->UnRegister (this);
+    }
+    this->Bundles[name].Bundle = bundle;
+    if (this->Bundles[name].Bundle)
+    {
+      this->Bundles[name].Bundle->Register (this);
+    }
   }
-
-  this->Bundles[name] = bundle;
+  
+  this->Bundles[name].Red   = color[0];
+  this->Bundles[name].Green = color[1];
+  this->Bundles[name].Blue  = color[2];
 }
 
 void vtkFiberDataSet::RemoveBundle (const std::string &name)
 {
-  this->Bundles.erase (name);
+  vtkFiberBundleListType::iterator it = this->Bundles.find (name);
+  if (it!=this->Bundles.end())
+  {
+    (*it).second.Bundle->Delete();
+    this->Bundles.erase (it);
+  }
 }
 
 void vtkFiberDataSet::Clear (void)
 {
+  vtkFiberBundleListType::iterator it = this->Bundles.begin();
+  while (it!=this->Bundles.end())
+  {
+    (*it).second.Bundle->Delete();
+  }
   this->Bundles.clear();
 }
 
@@ -71,6 +86,10 @@ vtkFiberDataSet::vtkFiberBundleListType vtkFiberDataSet::GetBundleList (void) co
     
 void vtkFiberDataSet::SetBundleColor (const std::string &name, double color[3])
 {
+  vtkFiberBundleListType::iterator it = this->Bundles.find (name);
+  if (it==this->Bundles.end())
+      return;
+  
   this->Bundles[name].Red   = color[0];
   this->Bundles[name].Green = color[1];
   this->Bundles[name].Blue  = color[2];
@@ -78,6 +97,10 @@ void vtkFiberDataSet::SetBundleColor (const std::string &name, double color[3])
 
 void vtkFiberDataSet::GetBundleColor (const std::string &name, double color[3])
 {
+  vtkFiberBundleListType::iterator it = this->Bundles.find (name);
+  if (it==this->Bundles.end())
+      return;
+  
   color[0] = this->Bundles[name].Red;
   color[1] = this->Bundles[name].Green;
   color[2] = this->Bundles[name].Blue;
