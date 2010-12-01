@@ -15,6 +15,7 @@
 
 #include "v3dView.h"
 #include "v3dFiberBundle.h"
+#include "vtkLookupTableManager.h"
 
 #include <QInputDialog>
 #include <QColorDialog>
@@ -33,19 +34,23 @@ public:
 
 v3dViewFiberInteractor::v3dViewFiberInteractor(): dtkAbstractViewInteractor(), d(new v3dViewFiberInteractorPrivate)
 {
-	d->data = 0;
-	d->view = 0;
-	d->manager = vtkFibersManager::New();
-	d->manager->SetHelpMessageVisibility(0);
-	
-	// addProperty here
-	this->addProperty("Visibility", QStringList() << "true" << "false");
-	this->addProperty("BoxVisibility", QStringList() << "true" << "false");
-	this->addProperty("RenderingMode", QStringList() << "lines" << "ribbons" << "tubes");
-	this->addProperty("GPUMode", QStringList() << "true" << "false");
-	this->addProperty("ColorMode", QStringList() << "local" << "global" << "fa");
-	this->addProperty("BoxBooleanOperation", QStringList() << "plus" << "minus");
-	this->addProperty("Projection", QStringList() << "true" << "false");
+    d->data = 0;
+    d->view = 0;
+    d->manager = vtkFibersManager::New();
+    d->manager->SetHelpMessageVisibility(0);
+
+    vtkLookupTable* lut = vtkLookupTableManager::GetSpectrumLookupTable();
+    d->manager->SetLookupTable(lut);
+    lut->Delete();
+    
+    // addProperty here
+    this->addProperty("Visibility", QStringList() << "true" << "false");
+    this->addProperty("BoxVisibility", QStringList() << "true" << "false");
+    this->addProperty("RenderingMode", QStringList() << "lines" << "ribbons" << "tubes");
+    this->addProperty("GPUMode", QStringList() << "true" << "false");
+    this->addProperty("ColorMode", QStringList() << "local" << "global" << "fa");
+    this->addProperty("BoxBooleanOperation", QStringList() << "plus" << "minus");
+    this->addProperty("Projection", QStringList() << "true" << "false");
 }
 
 v3dViewFiberInteractor::~v3dViewFiberInteractor()
@@ -232,8 +237,15 @@ void v3dViewFiberInteractor::onColorModePropertySet (const QString& value)
     if (value=="global")
         d->manager->SetColorModelToGlobalFiberOrientation();
 
-    if (value=="fa")
-        d->manager->SetColorModeToPointArray(1);
+    if (value=="fa") {
+        for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
+	    if (d->manager->GetPointArrayName (i))
+	        if (strcmp ( d->manager->GetPointArrayName (i), "FA")==0)
+		{
+		    d->manager->SetColorModeToPointArray (i);
+		    break;
+		}
+    }
 }
 
 void v3dViewFiberInteractor::onBoxBooleanOperationPropertySet (const QString& value)
@@ -325,6 +337,9 @@ void v3dViewFiberInteractor::onRadiusSet (int value)
         (*it)->SetRadius (value);
 	++it;
     }
+
+    if (d->view)
+        d->view->update();
 }
 
 // /////////////////////////////////////////////////////////////////
