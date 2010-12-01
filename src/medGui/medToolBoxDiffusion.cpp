@@ -281,9 +281,12 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     connect (d->displayRadioRibbons,   SIGNAL(toggled(bool)),            this, SLOT (onRibbonsRenderingModeSelected (bool)));
     connect (d->displayRadioTubes,     SIGNAL(toggled(bool)),            this, SLOT (onTubesRenderingModeSelected (bool)));
     connect (d->coefficientsCombo,     SIGNAL(activated(int)),           this, SLOT(onCoefficientsChanged(int)));
+    connect (bundlingShowCheckBox,  SIGNAL (stateChanged(int)), this, SLOT (onShowBundlingCheckBoxActivated (int)));
 
     connect (bundleBoxCheckBox, SIGNAL (stateChanged(int)), this, SLOT (onBundlingBoxActivated (int)));
 
+    connect (d->bundlingButtonVdt, SIGNAL(clicked(void)), this, SLOT (onSelectionValidated (void)));
+    
     this->setTitle("Diffusion");
     this->setWidget(tab);
 }
@@ -368,10 +371,10 @@ void medToolBoxDiffusion::onObjectDropped()
         if (view && view!=d->view) {
             if (d->view)
                 if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-                    //disconnect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
-                    disconnect (d->bundlingButtonVdt, SIGNAL (clicked(void)),              interactor, SLOT (onSelectionValidated (void)));
-                    disconnect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
+                    disconnect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
+		    disconnect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
                     disconnect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
+		    disconnect (this,                 SIGNAL(bundleValidated(QString)),    interactor, SLOT (onSelectionValidated(QString)));
                     //disconnect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
                 }
 
@@ -384,11 +387,11 @@ void medToolBoxDiffusion::onObjectDropped()
 
             d->view = view;
 
-            connect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
-            connect (d->bundlingButtonVdt, SIGNAL (clicked(void)),              interactor, SLOT (onSelectionValidated (void)));
+            connect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));            
             connect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
-            connect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
-            connect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
+            connect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));	    
+	    connect (this,                 SIGNAL(bundleValidated(QString)),    interactor, SLOT (onSelectionValidated(QString)));
+            //connect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
         }
     }
 
@@ -520,9 +523,32 @@ void medToolBoxDiffusion::onBundlingBoxActivated (int value)
     }
 }
 
-void medToolBoxDiffusion::onBundleValidated (QString name)
+void medToolBoxDiffusion::onShowBundlingCheckBoxActivated (int value)
 {
-    d->bundlingList->addItem (name);
+  if (!d->view)
+    return;
+
+  if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+    if (value)
+      interactor->enable();
+    else
+      interactor->disable();
+
+      d->view->update();
+  }
+}
+
+void medToolBoxDiffusion::onSelectionValidated (void)
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Enter bundle name"),
+					 tr(""), QLineEdit::Normal, tr(""), &ok);
+
+    if (ok && !text.isEmpty()) {
+        // if (!d->bundlingList->contains (name)) // should popup a warning
+	d->bundlingList->addItem (text);
+	emit bundleValidated (text);
+    }
 }
 
 void medToolBoxDiffusion::onCoefficientsChanged (int ind)
