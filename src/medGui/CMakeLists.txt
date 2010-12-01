@@ -37,13 +37,13 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxTab.h
   medToolBoxFactory.h
   medToolBoxContainer.h
-  medToolBoxPatient.h
   medToolBoxRegistration.h
   medToolBoxRegistrationCustom.h
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
   medViewPool.h
   medViewContainer.h
+  medViewContainer_p.h
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
