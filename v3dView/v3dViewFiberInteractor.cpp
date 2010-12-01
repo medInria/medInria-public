@@ -84,7 +84,7 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
     if (!data)
         return;
   
-    if (data->description()=="vtkDataFibers") {
+    if (data->description()=="v3dDataFibers") {
         if (vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet *>(data->data())) {
 	    d->dataset = dataset;
 	    d->manager->SetInput (d->dataset);
@@ -228,35 +228,15 @@ void v3dViewFiberInteractor::onSelectionReset(void)
     d->manager->Reset();
 }
 
-void v3dViewFiberInteractor::onSelectionValidated(void)
+void v3dViewFiberInteractor::onSelectionValidated(QString name)
 {
     if (d->manager->GetCallbackOutput()->GetNumberOfLines()==0)
         return;
     
-    bool ok;
-    QString text;
-    if (d->view)
-      text = QInputDialog::getText(d->view->widget(), tr("Enter bundle name"),
-				   tr(""), QLineEdit::Normal, tr(""), &ok);
-    else
-      text = QInputDialog::getText(0, tr("Enter bundle name"),
-				   tr(""), QLineEdit::Normal, tr(""), &ok);
-      
-    if (ok && !text.isEmpty()) {
-      /*
-	QColorDialog *cdialog = new QColorDialog(Qt::white, d->view->widget());
-	cdialog->exec();
-	QColor color = cdialog->selectedColor();
-      */
-      //QColor color = QColorDialog::getColor(Qt::white, d->view->widget()); // buggy on Mac
-		  
-        QColor color = QColor::fromHsv(qrand()%360, 255, 210);
-	double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
+    QColor color = QColor::fromHsv(qrand()%360, 255, 210);
+    double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
 	
-	d->manager->Validate (text.toAscii().constData(), color_d);
-	  
-	emit selectionValidated (text);
-    }
+    d->manager->Validate (name.toAscii().constData(), color_d);
 }
 
 void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
