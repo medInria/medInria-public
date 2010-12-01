@@ -60,16 +60,7 @@ if(ITK_BUILD_SHARED)
 set(ITK_LIB_STYLE "SHARED")
 endif (ITK_BUILD_SHARED)
 
-set(ITKDCMTKIO_SOURCES
-  itkDCMTKImageIO.cxx)
-
-add_library(ITKDCMTKIO ${ITK_LIB_STYLE}
-  ${ITKDCMTKIO_SOURCES})
-
-target_link_libraries(ITKDCMTKIO
-  ${DCMTK_LIBRARIES}
-  itkIOAddOn
-  ${ITK_LIBRARIES})
+add_subdirectory(itkDcmtkIO)
 
 ## #################################################################
 ## Input
@@ -224,9 +215,6 @@ if( ITK_BUILD_SHARED )
     install(DIRECTORY ${ITK_LIBRARY_DIRS}/ 
     DESTINATION lib
     FILES_MATCHING PATTERN "lib*")
-    install (TARGETS ITKDCMTKIO 
-    LIBRARY DESTINATION lib
-    )
 else( ITK_BUILD_SHARED )
   install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION plugins
