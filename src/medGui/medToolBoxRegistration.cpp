@@ -46,9 +46,9 @@ public:
 	
     QRadioButton *blendRadio;
     QRadioButton *checkerboardRadio;
-
+    QPushButton * saveImageButton;
+    QPushButton * saveTransButton;
     QComboBox *toolboxes;
-
     dtkAbstractView *fixedView;
     dtkAbstractView *movingView;
     dtkAbstractView *fuseView;
@@ -73,7 +73,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     
     // Process page
 
-    QWidget *processPage = new QWidget;
+    QWidget *processPage = new QWidget(this);
     
     d->processDropSiteFixed  = new medDropSite(processPage);
     d->processDropSiteFixed->setText("Fixed");
@@ -81,9 +81,15 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->processDropSiteMoving = new medDropSite(processPage);
     d->processDropSiteMoving->setText("Moving");
 
-    QHBoxLayout *processDropSiteLayout = new QHBoxLayout;
+    QHBoxLayout *processDropSiteLayout = new QHBoxLayout(this);
     processDropSiteLayout->addWidget(d->processDropSiteFixed);
     processDropSiteLayout->addWidget(d->processDropSiteMoving);
+
+    d->saveImageButton = new QPushButton(tr("Save Image"),this);
+    connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
+    d->saveTransButton = new QPushButton(tr("Save Transformation"),this);
+    connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
+
 
     // --- Setting up custom toolboxes list ---
 
@@ -100,7 +106,8 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QVBoxLayout *processLayout = new QVBoxLayout(processPage);
     processLayout->addLayout(processDropSiteLayout);
     processLayout->addWidget(d->toolboxes);
-
+    processLayout->addWidget(d->saveImageButton);
+    processLayout->addWidget(d->saveTransButton);
     // Layout page
 
     QWidget *layoutPage = new QWidget;
@@ -314,4 +321,21 @@ void medToolBoxRegistration::onToolBoxChosen(const QString& id)
     }
     d->customToolBox = toolbox;
     emit addToolBox(toolbox);
+}
+
+void medToolBoxRegistration::onSaveImage()
+{
+    QString fileName = QFileDialog(this, tr("Save Image"),
+                               QDir::homePath(),
+                               tr("Nifty (*.nii);;Analyse (*.);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files ()"));
+    qDebug() << fileName;
+
+}
+
+void medToolBoxRegistration::onSaveTrans()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Transformation"),
+                               QDir::homePath(),
+                               tr("Transformation (*. *.xpm *.jpg)"));
+    qDebug() << fileName;
 }

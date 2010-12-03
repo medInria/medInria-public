@@ -59,6 +59,8 @@ public slots:
     void onCheckerboardModeSet(bool value);
 	
     void onToolBoxChosen(const QString&);
+    void onSaveImage(void);
+    void onSaveTrans(void);
 
 private:
     medToolBoxRegistrationPrivate *d;
