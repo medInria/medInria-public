@@ -37,10 +37,6 @@ public:
     void update(dtkAbstractView *view);
     medDataIndex dataIndex();
 
-signals:
-    void addToolBox(medToolBox *toolbox);
-    void removeToolBox(medToolBox *toolbox);
-
 public slots:
     void run (void);
 

@@ -35,31 +35,33 @@ public:
     
     virtual QString description(void) const = 0;
     
-    enum medPosition {
-        medLeft,
-        medRight,
-        medTop,
-        medBottom
+    enum LayoutType {
+        LeftDdRightTb,
+        LeftTbRightDb,        
+        TopDdBottomTb,
+        TopTbBottonDb
     };
 
     void addToolBox(medToolBox *toolbox);
+    void removeToolBox(medToolBox *toolbox);
     QList<medToolBox*> toolBoxes(void) const;
     
-    void setToolBoxesLocation(medPosition pos);
-    int  toolBoxesLocation(void) const;
-    
-    void setLayoutType(medLayoutType type);
+    void setLayoutType(LayoutType type);
     int  layoutType(void) const;
+    
+    void setViewLayoutType(int type);
+    int  viewLayoutType(void) const;
     
     void setCustomLayoutType(int value);
     int customLayoutType(void) const;
     
-    void setDatabaseLocation(medPosition pos);
-    int  databaseLocation(void) const;
-    
     void hideDatabase(void);
     void showDatabase(void);
     int databaseVisibility(void) const;
+    
+signals:
+    void toolboxAdded  (medToolBox *tb);
+    void toolboxRemoved(medToolBox *tb);
     
 private:
     medViewerConfigurationPrivate *d;

@@ -37,6 +37,10 @@ public:
     void setWidget(QWidget *widget);
 
     void setTitle(const QString& title);
+    
+signals:
+    void addToolBox   (medToolBox *toolbox);
+    void removeToolBox(medToolBox *toolbox);
 
 private:
     medToolBoxPrivate *d;
