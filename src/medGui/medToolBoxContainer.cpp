@@ -28,17 +28,16 @@ class medToolBoxContainerPrivate
 public:
     QFrame *container;
     QLayout *layout;
-    enum Type{
-        Vertical,
-        Horizontal
-    };
+
+    LayoutOrientation layoutOrientation;
 };
 
 medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent), d(new medToolBoxContainerPrivate)
 {
     d->container = new QFrame(this);
     d->container->setObjectName("medToolBoxContainer");
-
+    // by default create a vertical layout
+    d->layoutOrientation = d->Vertical;
     d->layout = new QVBoxLayout(d->container);
     d->layout->setContentsMargins(2, 4, 0, 0);
     d->layout->addStretch(1);
@@ -77,4 +76,32 @@ void medToolBoxContainer::clear()
     int count = d->layout->count();
     for (int i = 0; i < count ;i++)
         d->layout->widgetAt(count-i-1)->hide();
+}
+
+
+void medToolBoxContainer::setOrientation(LayoutOrientation orient)
+{
+    if (d->layoutOrientation != orient)
+    {
+        d->layoutOrientation = orient;
+        QLayout *layout;
+
+        //remove toolboxes
+        QList<medToolBox> tbs;
+        for (int i; i< d->layout->count();i++)
+        {
+            tbs.append(dynamic_cast<medToolBox*>(d->layout->itemAt(i)));
+        }
+
+        orient == Vertical ? layout = new QVBoxLayout(d->container):
+                             layout = new QHBoxLayout(d->container);
+        delete d->layout;
+        d->layout = layout;
+        d->layout->setContentsMargins(2, 4, 0, 0);
+        d->layout->addStretch(1);
+
+        //put back toolboxes
+        foreach(medToolBox tb, tbs )
+            addToolBox(tb);
+    }
 }

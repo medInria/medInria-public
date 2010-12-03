@@ -29,6 +29,7 @@ class medToolBoxContainerPrivate;
 
 class MEDGUI_EXPORT medToolBoxContainer : public QScrollArea
 {
+    Q_OBJECT
 public:
      medToolBoxContainer(QWidget *parent = 0);
     ~medToolBoxContainer(void);
@@ -36,6 +37,15 @@ public:
     void addToolBox(medToolBox *toolBox);
     void removeToolBox(medToolBox *toolBox);
     void clear(void);
+
+public:
+    enum LayoutOrientation{
+        Vertical,
+        Horizontal
+    };
+
+public slots:
+    void setOrientation(LayoutOrientation orient);
 
 private:
     medToolBoxContainerPrivate *d;
