@@ -17,8 +17,9 @@
  * 
  */
 
-#include "medViewerConfiguration.h"
+#include "medGui/medViewerConfiguration.h"
 #include "medViewerConfigurator.h"
+#include "medViewerConfigurationFactory.h"
 
 class medViewerConfiguratorPrivate
 {
@@ -55,12 +56,29 @@ void medViewerConfigurator::addConfiguration(QString name, medViewerConfiguratio
 
 void medViewerConfigurator::setConfiguration(QString name)
 {
+
+    if (!d->configurations.contains(name))
+    {
+        if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name))
+        {
+            addConfiguration(name, configuration);
+        }
+        else
+        {
+            qDebug()<< "Configuration" << name << "couldn't be created";
+            return;
+        }
+    }
+
+    //clean old config
     if(!d->current.isNull())
         d->configurations.value(d->current)->setdw();
 
     if (d->configurations.keys().contains(name))
+    {
+        //or emit some signal towards medViewerArea
         d->configurations.value(name)->setup();
-
+    }
     d->current = name;
 }
 

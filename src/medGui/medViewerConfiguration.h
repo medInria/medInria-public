@@ -35,12 +35,6 @@ public:
     
     virtual QString description(void) const = 0;
     
-    enum medLayoutType {
-        medLayoutSingle,
-        medLayoutMulti,
-        medLayoutCustom
-    };
-    
     enum medPosition {
         medLeft,
         medRight,

@@ -83,15 +83,11 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medWorkspaceShifter.h
   medSaveLUTDialog.h
   medLoadLUTDialog.h
-<<<<<<< HEAD
   medViewerConfigurationFactory.h
-)
-=======
   medViewerConfiguration.h
   medViewerConfigurationVisualization.h
   medViewerToolBoxLayout.h
   medViewerToolBoxView.h)
->>>>>>> Configuration WIP
 
 set(${PROJECT_NAME}_SOURCES
   medClutEditor.cpp
@@ -121,15 +117,11 @@ set(${PROJECT_NAME}_SOURCES
   medXMLToLUTReader.cpp
   medSaveLUTDialog.cpp
   medLoadLUTDialog.cpp
-<<<<<<< HEAD
   medViewerConfigurationFactory.cpp
- )
-=======
   medViewerConfiguration.cpp
   medViewerConfigurationVisualization.cpp
   medViewerToolBoxLayout.cpp
   medViewerToolBoxView.cpp)
->>>>>>> Configuration WIP
 
 ## #################################################################
 ## Build rules

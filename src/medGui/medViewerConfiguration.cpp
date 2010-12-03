@@ -21,6 +21,8 @@
 
 #include "medToolBox.h"
 #include "medViewerToolBoxLayout.h"
+#include "medViewContainer.h"
+
 
 class medViewerConfigurationPrivate
 {
@@ -75,7 +77,7 @@ int medViewerConfiguration::toolBoxesLocation(void) const
     return d->toolBoxesLocation;
 }
 
-void medViewerConfiguration::setLayoutType(medLayoutType type)
+void medViewerConfiguration::setLayoutType(medViewContainer::Type type)
 {
     d->layoutType = type;
 }

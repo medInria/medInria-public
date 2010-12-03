@@ -35,6 +35,7 @@ public:
 
     void addToolBox(medToolBox *toolBox);
     void removeToolBox(medToolBox *toolBox);
+    void clear(void);
 
 private:
     medToolBoxContainerPrivate *d;

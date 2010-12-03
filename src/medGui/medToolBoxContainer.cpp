@@ -27,7 +27,11 @@ class medToolBoxContainerPrivate
 {
 public:
     QFrame *container;
-    QVBoxLayout *layout;
+    QLayout *layout;
+    enum Type{
+        Vertical,
+        Horizontal
+    };
 };
 
 medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent), d(new medToolBoxContainerPrivate)
@@ -64,4 +68,13 @@ void medToolBoxContainer::addToolBox(medToolBox *toolBox)
 void medToolBoxContainer::removeToolBox(medToolBox *toolBox)
 {
     d->layout->removeWidget(toolBox);
+}
+
+
+void medToolBoxContainer::clear()
+{
+    //maybe faster to delete the layout and re-create it, maybe not as safe?
+    int count = d->layout->count();
+    for (int i = 0; i < count ;i++)
+        d->layout->widgetAt(count-i-1)->hide();
 }

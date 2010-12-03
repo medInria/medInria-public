@@ -20,20 +20,11 @@
 #ifndef MEDVIEWERAREA_P_H
 #define MEDVIEWERAREA_P_H
 
-class medViewerToolBoxPatient;
-class medViewerToolBoxLayout;
-class medViewerToolBoxView;
-class medToolBoxRegistration;
 class medToolBoxContainer;
-
 class medDatabaseNavigator;
-
 class medViewerAreaStack;
-class medViewerToolBoxConfiguration;
-class medToolBoxDiffusion;
-
+class medViewerConfiguration;
 class medClutEditor;
-
 class QStackedWidget;
 
 #include <QtCore/QHash>
@@ -41,15 +32,8 @@ class QStackedWidget;
 class medViewerAreaPrivate
 {
 public:
-    medViewerToolBoxPatient *patientToolBox;
-    medViewerToolBoxConfiguration *configurationToolBox;
-    medViewerToolBoxLayout *layoutToolBox;
-    medViewerToolBoxView *viewToolBox;
-    medToolBoxDiffusion *diffusionToolBox;
 
-    medToolBoxRegistration *registrationToolBox;
     medToolBoxContainer *toolbox_container;
-
     medDatabaseNavigator *navigator;
 
     QPointer<medClutEditor>  transFun;
@@ -59,6 +43,7 @@ public:
     QMutex mutex;
   
     QHash<int, medViewerAreaStack *> view_stacks;
+    QHash<QString,medViewerConfiguration*> configurations;
 
 public:
     int current_patient;

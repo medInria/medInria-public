@@ -23,9 +23,9 @@
 #include "medViewerConfigurator.h"
 #include "medViewerToolBoxConfiguration.h"
 
-#include "medViewerToolBoxLayout.h"
+#include "medGui/medViewerToolBoxLayout.h"
 #include "medViewerToolBoxPatient.h"
-#include "medViewerToolBoxView.h"
+#include "medGui/medViewerToolBoxView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -58,6 +58,7 @@
 #include <medGui/medViewContainerSingle.h>
 #include <medGui/medViewPool.h>
 #include <medGui/medViewerConfiguration.h>
+#include <medGui/medViewerConfigurationFactory.h>
 
 #include <QtGui>
 #include <QtSql>
@@ -71,84 +72,19 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // -- Internal logic
 
     d->current_patient = -1;
+    d->configurations = new QHash<QString,medViewerConfiguration>();
 
     // -- User interface setup
 
     d->stack = new QStackedWidget(this);
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    // -- Patient toolbox --
-
-    d->patientToolBox = new medViewerToolBoxPatient(this);
-
-    connect(d->patientToolBox, SIGNAL(patientIndexChanged(int)), this, SLOT(switchToPatient(int)));
-
-    // -- Configuration toolbox --
-
-    d->configurationToolBox = new medViewerToolBoxConfiguration(this);
-    d->configurationToolBox->addConfiguration("Visualization");
-    d->configurationToolBox->addConfiguration("Registration");
-    d->configurationToolBox->addConfiguration("Diffusion");
-
-    connect(d->configurationToolBox, SIGNAL(configurationChanged(QString)), medViewerConfigurator::instance(), SLOT(setConfiguration(QString)));
-    
-    // -- Layout toolbox --
-
-    d->layoutToolBox = new medViewerToolBoxLayout(this);
-
-    connect(d->layoutToolBox, SIGNAL(modeChanged(int)), this, SLOT(switchToContainer(int)));
-    connect(d->layoutToolBox, SIGNAL(split(int, int)), this, SLOT(split(int, int)));
-    connect(d->layoutToolBox, SIGNAL(presetClicked(int)), this, SLOT(switchToContainerPreset(int)));
-
-    // -- View toolbox --
-    
-    d->viewToolBox = new medViewerToolBoxView(this);
-
-    connect(d->viewToolBox, SIGNAL(foregroundLookupTableChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
-    // connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
-    connect(d->viewToolBox, SIGNAL(lutPresetChanged(QString)), this, SLOT(setupLUTPreset(QString)));
-    connect(d->viewToolBox, SIGNAL(tdModeChanged(QString)), this, SLOT(setup3DMode(QString)));
-    connect(d->viewToolBox, SIGNAL(tdVRModeChanged(QString)), this, SLOT(setup3DVRMode(QString)));
-    connect(d->viewToolBox, SIGNAL(tdLodChanged(int)), this, SLOT(setup3DLOD(int)));
-    connect(d->viewToolBox, SIGNAL(windowingChanged(bool)), this, SLOT(setupWindowing(bool)));
-    connect(d->viewToolBox, SIGNAL(zoomingChanged(bool)), this, SLOT(setupZooming(bool)));
-    connect(d->viewToolBox, SIGNAL(slicingChanged(bool)), this, SLOT(setupSlicing(bool)));
-    connect(d->viewToolBox, SIGNAL(measuringChanged(bool)), this, SLOT(setupMeasuring(bool)));
-    connect(d->viewToolBox, SIGNAL(croppingChanged(bool)), this, SLOT(setupCropping(bool)));
-    connect(d->viewToolBox, SIGNAL(scalarBarVisibilityChanged(bool)), this, SLOT(setupScalarBarVisibility(bool)));
-    connect(d->viewToolBox, SIGNAL(axisVisibilityChanged(bool)), this, SLOT(setupAxisVisibility(bool)));
-    connect(d->viewToolBox, SIGNAL(rulerVisibilityChanged(bool)), this, SLOT(setupRulerVisibility(bool)));
-    connect(d->viewToolBox, SIGNAL(annotationsVisibilityChanged(bool)), this, SLOT(setupAnnotationsVisibility(bool)));
-
-    // -- Diffusion toolbox --
-
-    d->diffusionToolBox = new medToolBoxDiffusion(this);
-    d->diffusionToolBox->setVisible(false);
-
-    connect(d->diffusionToolBox   , SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-
-    // -- Registration toolbox --
-
-    d->registrationToolBox = new medToolBoxRegistration(this);
-    d->registrationToolBox->setVisible(false);
-
-    connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(setupLayoutCompare()));
-    connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()), this, SLOT(setupLayoutFuse()));
-    connect(d->registrationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-    connect(d->registrationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
-
 
     // Setting up toolbox container
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(320);
-    d->toolbox_container->addToolBox(d->patientToolBox);
-    d->toolbox_container->addToolBox(d->configurationToolBox);
-    d->toolbox_container->addToolBox(d->layoutToolBox);
-    d->toolbox_container->addToolBox(d->viewToolBox);
-    d->toolbox_container->addToolBox(d->diffusionToolBox);
-    d->toolbox_container->addToolBox(d->registrationToolBox);
-    
+
     // Setting up view container
 
     QWidget *view_container = new QWidget(this);
@@ -171,51 +107,12 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     navigator_container_layout->addWidget(d->navigator);
     navigator_container_layout->setAlignment(Qt::AlignHCenter);
 
-    // Setting up layout
-
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(navigator_container);
-    layout->addWidget(view_container);
-    layout->addWidget(d->toolbox_container);
-
     // Setting up database
 
-    this->setup();
+    this->setupDatabase();
 
-    connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(setup()));
-    connect(medDatabaseNonPersitentController::instance(), SIGNAL(updated()), this, SLOT(setup()));
-
-    // Setting up visualization configuration
-
-    medViewerConfiguration *visualizationConfiguration = new medViewerConfiguration(this);
-    visualizationConfiguration->attach(d->layoutToolBox, true);
-    visualizationConfiguration->attach(d->viewToolBox, true);
-    visualizationConfiguration->attach(0); // Single container when set up
-
-    medViewerConfigurator::instance()->addConfiguration("Visualization", visualizationConfiguration);
-
-    // Setting up diffusion configuration
-
-    medViewerConfiguration *diffusionConfiguration = new medViewerConfiguration(this);
-    diffusionConfiguration->attach(d->layoutToolBox, false);
-    diffusionConfiguration->attach(d->viewToolBox, true);
-    diffusionConfiguration->attach(d->diffusionToolBox, true);
-    diffusionConfiguration->attach(0); // Single when set up
-
-    medViewerConfigurator::instance()->addConfiguration("Diffusion", diffusionConfiguration);
-
-    // Setting up registration configuration
-
-    medViewerConfiguration *registrationConfiguration = new medViewerConfiguration(this);
-    registrationConfiguration->attach(d->layoutToolBox, false);
-    registrationConfiguration->attach(d->viewToolBox, true);
-    registrationConfiguration->attach(d->registrationToolBox, true);
-    registrationConfiguration->attach(3); // Registration compare container when set up
-
-    medViewerConfigurator::instance()->addConfiguration("Registration", registrationConfiguration);
-
+    connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
+    connect(medDatabaseNonPersitentController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
 
     //action for transfer function
     QAction * transFunAction =
@@ -232,6 +129,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
 medViewerArea::~medViewerArea(void)
 {
+    //TODO: delete
+    delete d->configurations;
     delete d;
 
     d = NULL;
@@ -268,7 +167,7 @@ void medViewerArea::setdw(QStatusBar *status)
  *  corresponds to the one of the patient in the database.
  */
 
-void medViewerArea::setup(void)
+void medViewerArea::setupDatabase(void)
 {
     d->patientToolBox->clear();
     d->patientToolBox->addItem("Choose patient", -1);
@@ -765,23 +664,61 @@ void medViewerArea::updateTransferFunction()
     }
 }
 
-void medViewerArea::setupLayoutCompare(void)
-{
-    if(!d->view_stacks.count())
-        return;
+//void medViewerArea::setupLayoutCompare(void)
+//{
+//    if(!d->view_stacks.count())
+//        return;
 
-    d->view_stacks.value(d->current_patient)->setCurrentIndex(3);
-}
+//    d->view_stacks.value(d->current_patient)->setCurrentIndex(3);
+//}
 
-void medViewerArea::setupLayoutFuse(void)
-{
-    if(!d->view_stacks.count())
-        return;
+//void medViewerArea::setupLayoutFuse(void)
+//{
+//    if(!d->view_stacks.count())
+//        return;
 
-    d->view_stacks.value(d->current_patient)->setCurrentIndex(4);
+//    d->view_stacks.value(d->current_patient)->setCurrentIndex(4);
 	
-    if (d->registrationToolBox->fuseView()) {
-        this->currentContainer()->setView(d->registrationToolBox->fuseView());
-        this->currentContainer()->setFocus(Qt::MouseFocusReason);
+//    if (d->registrationToolBox->fuseView()) {
+//        this->currentContainer()->setView(d->registrationToolBox->fuseView());
+//        this->currentContainer()->setFocus(Qt::MouseFocusReason);
+//    }
+//}
+
+
+void medViewerArea::setupConfiguration(const QString &name)
+{
+    medViewerConfiguration *conf = NULL;
+
+    if (!d->configurations.contains(name))
+    {
+        if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name))
+        {
+            addConfiguration(name, conf);
+        }
+        else
+        {
+            qDebug()<< "Configuration" << name << "couldn't be created";
+            return;
+        }
     }
+
+    //switch
+
+    //setup database visibility
+
+
+    //setup layout type
+    switchToContainer(conf->layoutType());
+    if (conf->layoutType() == medViewContainer::Custom)//TODO check index for custom
+    {
+        switchToContainerPreset(conf->customLayoutType());
+    }
+    //clean toolboxes
+    d->toolbox_container->clearToolBoxes();
+
+    //add new toolboxes
+    foreach (medToolBox * toolbox, conf->toolBoxes() )
+        this->addToolBox(toolbox);
+
 }

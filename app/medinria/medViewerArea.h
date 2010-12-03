@@ -29,6 +29,7 @@ class medToolBox;
 class medViewContainer;
 class medViewerAreaStack;
 class medViewerAreaPrivate;
+class medViewerConfiguration;
 
 class medViewerArea : public QWidget
 {
@@ -41,8 +42,10 @@ public:
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
 
+
 public slots:
-    void setup(void);
+    void setupDatabase(void);
+    void setupConfiguration(medViewerConfiguration * conf);
 
     void split(int rows, int cols);
 
@@ -55,6 +58,7 @@ public slots:
 
     void addToolBox(medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
+
 
 protected slots:
     void onViewFocused(dtkAbstractView *view);
