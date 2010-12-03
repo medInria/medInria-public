@@ -23,27 +23,24 @@
 #include "medViewerToolBoxLayout.h"
 #include "medViewContainer.h"
 
-
 class medViewerConfigurationPrivate
 {
 public:
     QWidget *parent;
     medViewerToolBoxLayout *layoutToolBox;
     QList<medToolBox*> toolboxes;
-    int toolBoxesLocation;
+    int viewLayoutType;
     int layoutType;
     int customLayoutType;
-    int databaseLocation;
     int databaseVisibility;
 };
 
 medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
 {
     d->parent = parent;
-    d->toolBoxesLocation = medRight;
-    d->layoutType = medLayoutSingle;
+    d->layoutType = medViewerConfiguration::LeftDdRightTb;
+    d->viewLayoutType = medViewContainer::Single;
     d->customLayoutType = 0;
-    d->databaseLocation = medLeft;
     d->databaseVisibility = 1;
     
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
@@ -58,8 +55,22 @@ medViewerConfiguration::~medViewerConfiguration(void)
 
 void medViewerConfiguration::addToolBox(medToolBox *toolbox)
 {
-    if (!d->toolboxes.contains(toolbox))
+    if (!d->toolboxes.contains(toolbox)) {
+        connect (toolbox, SIGNAL(addToolBox(medToolBox*)),    this, SIGNAL(toolboxAdded  (medToolBox*)));
+        connect (toolbox, SIGNAL(removeToolBox(medToolBox*)), this, SIGNAL(toolboxRemoved(medToolBox*)));
         d->toolboxes.append(toolbox);
+        emit toolboxAdded(toolbox);
+    }
+}
+
+void medViewerConfiguration::removeToolBox(medToolBox *toolbox)
+{
+    if (d->toolboxes.contains(toolbox)) {
+        disconnect (toolbox, SIGNAL(addToolBox(medToolBox*)),    this, SIGNAL(toolboxAdded  (medToolBox*)));
+        disconnect (toolbox, SIGNAL(removeToolBox(medToolBox*)), this, SIGNAL(toolboxRemoved(medToolBox*)));
+        d->toolboxes.removeOne(toolbox);
+        emit toolboxRemoved(toolbox);
+    }
 }
 
 QList<medToolBox*> medViewerConfiguration::toolBoxes(void) const
@@ -67,17 +78,7 @@ QList<medToolBox*> medViewerConfiguration::toolBoxes(void) const
     return d->toolboxes;
 }
 
-void medViewerConfiguration::setToolBoxesLocation(medPosition pos)
-{
-    d->toolBoxesLocation = pos;
-}
-
-int medViewerConfiguration::toolBoxesLocation(void) const
-{
-    return d->toolBoxesLocation;
-}
-
-void medViewerConfiguration::setLayoutType(medViewContainer::Type type)
+void medViewerConfiguration::setLayoutType(medViewerConfiguration::LayoutType type)
 {
     d->layoutType = type;
 }
@@ -85,6 +86,16 @@ void medViewerConfiguration::setLayoutType(medViewContainer::Type type)
 int medViewerConfiguration::layoutType(void) const
 {
     return d->layoutType;
+}
+
+void medViewerConfiguration::setViewLayoutType(int type)
+{
+    d->viewLayoutType = type;
+}
+
+int medViewerConfiguration::viewLayoutType(void) const
+{
+    return d->viewLayoutType;
 }
 
 void medViewerConfiguration::setCustomLayoutType(int type)
@@ -95,16 +106,6 @@ void medViewerConfiguration::setCustomLayoutType(int type)
 int medViewerConfiguration::customLayoutType(void) const
 {
     return d->customLayoutType;
-}
-
-void medViewerConfiguration::setDatabaseLocation(medPosition pos)
-{
-    d->databaseLocation = pos;
-}
-
-int medViewerConfiguration::databaseLocation(void) const
-{
-    return d->databaseLocation;
 }
 
 void medViewerConfiguration::hideDatabase(void)

@@ -46,8 +46,6 @@ public:
     dtkAbstractDataImage *movingData(void);
 
 signals:
-    void addToolBox(medToolBox *toolbox);
-    void removeToolBox(medToolBox *toolbox);
     void setupLayoutCompare(void);
     void setupLayoutFuse(void);
 
