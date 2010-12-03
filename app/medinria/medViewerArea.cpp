@@ -20,7 +20,6 @@
 #include "medViewerArea.h"
 #include "medViewerArea_p.h"
 #include "medViewerAreaStack.h"
-#include "medViewerConfiguration.h"
 #include "medViewerConfigurator.h"
 #include "medViewerToolBoxConfiguration.h"
 
@@ -58,6 +57,7 @@
 #include <medGui/medViewContainerMulti.h>
 #include <medGui/medViewContainerSingle.h>
 #include <medGui/medViewPool.h>
+#include <medGui/medViewerConfiguration.h>
 
 #include <QtGui>
 #include <QtSql>

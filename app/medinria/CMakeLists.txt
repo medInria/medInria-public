@@ -53,12 +53,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medMainWindow.h
   medViewerArea.h
   medViewerAreaStack.h
-  medViewerConfiguration.h
   medViewerConfigurator.h
   medViewerToolBoxConfiguration.h
-  medViewerToolBoxLayout.h
-  medViewerToolBoxPatient.h
-  medViewerToolBoxView.h)
+  medViewerToolBoxPatient.h)
 
 set(${PROJECT_NAME}_SOURCES
   medBrowserArea.cpp
@@ -70,12 +67,9 @@ set(${PROJECT_NAME}_SOURCES
   medMainWindow.cpp
   medViewerArea.cpp
   medViewerAreaStack.cpp
-  medViewerConfiguration.cpp
   medViewerConfigurator.cpp
   medViewerToolBoxConfiguration.cpp
-  medViewerToolBoxLayout.cpp
   medViewerToolBoxPatient.cpp
-  medViewerToolBoxView.cpp
   main.cpp)
 
 set(${PROJECT_NAME}_RESOURCES medinria.qrc)
