@@ -28,12 +28,12 @@ bool medViewerConfigurationFactory::registerConfiguration(QString type, medViewe
     return false;
 }
 
-QList<QString> medViewerConfigurationFactory::registrationToolBoxes(void)
+QList<QString> medViewerConfigurationFactory::configurations(void)
 {
     return d->configuration_creators.keys();
 }
 
-medViewerConfigurationRegistrationCustom *medViewerConfigurationFactory::createConfiguration(QString type)
+medViewerConfiguration *medViewerConfigurationFactory::createConfiguration(QString type)
 {
     if(!d->configuration_creators.contains(type))
         return NULL;
