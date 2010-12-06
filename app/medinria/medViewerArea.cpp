@@ -675,16 +675,19 @@ void medViewerArea::setupConfiguration(const QString& name)
 
     //switch
     switch (conf->layoutType()){
-        case medViewerConfiguration::LeftDdRightTb:
+        case medViewerConfiguration::LeftDbRightTb:
             //setup orientation
             d->toolbox_container->setOrientation(medToolBoxContainer::Vertical);
             break;
         case medViewerConfiguration::LeftTbRightDb:
-                break;
-        case medViewerConfiguration::TopDdBottomTb:
-                break;
-        case medViewerConfiguration::TopTbBottonDb:
-                break;
+            d->toolbox_container->setOrientation(medToolBoxContainer::Vertical);
+            break;
+        case medViewerConfiguration::TopDbBottomTb:
+            d->toolbox_container->setOrientation(medToolBoxContainer::Horizontal);
+            break;
+        case medViewerConfiguration::TopTbBottomDb:
+            d->toolbox_container->setOrientation(medToolBoxContainer::Horizontal);
+            break;
         default:
             qDebug() << "unhandled case in configuration layout switch";
 

@@ -36,10 +36,10 @@ public:
     virtual QString description(void) const = 0;
     
     enum LayoutType {
-        LeftDdRightTb,
+        LeftDbRightTb,
         LeftTbRightDb,        
-        TopDdBottomTb,
-        TopTbBottonDb
+        TopDbBottomTb,
+        TopTbBottomDb
     };
 
     void addToolBox(medToolBox *toolbox);
