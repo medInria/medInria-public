@@ -47,6 +47,7 @@ signals:
 public slots:
     void setPatientIndex(int patientId);
     void setPatientIndex(const medDataIndex& index);
+    void setupDatabase(void);
 
 protected slots:
     void onCurrentIndexChanged(int);

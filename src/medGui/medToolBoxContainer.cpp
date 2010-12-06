@@ -17,9 +17,10 @@
  * 
  */
 
+#include "medToolBoxContainer.h"
+
 #include "medFlicker.h"
 #include "medToolBox.h"
-#include "medToolBoxContainer.h"
 
 #include <QtGui>
 

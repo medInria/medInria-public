@@ -20,8 +20,14 @@
 #include "medViewerToolBoxPatient.h"
 
 #include <QtGui>
+#include <QSqlQuery>
+
+#include <dtkCore/dtkGlobal.h>
 
 #include <medCore/medDataIndex.h>
+#include <medSql/medDatabaseController.h>
+#include <medSql/medDatabaseNonPersitentController.h>
+#include <medSql/medDatabaseNonPersitentItem.h>
 
 class medViewerToolBoxPatientPrivate
 {
@@ -43,6 +49,15 @@ medViewerToolBoxPatient::medViewerToolBoxPatient(QWidget *parent) : medToolBox(p
     this->setWidget(central);
 
     connect(d->combo, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentIndexChanged(int)));
+
+    // Setting up database
+
+    this->setupDatabase();
+
+    connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
+    connect(medDatabaseNonPersitentController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
+
+
 }
 
 medViewerToolBoxPatient::~medViewerToolBoxPatient(void)
@@ -138,4 +153,41 @@ void medViewerToolBoxPatient::setPatientIndex(const medDataIndex& index)
 void medViewerToolBoxPatient::onCurrentIndexChanged(int index)
 {
     emit patientIndexChanged(d->combo->itemData(index).toInt());
+}
+
+
+//! Query the db for patients.
+/*!
+ *  This methods sets the patient toolbox up by retreiving the list of
+ *  partients from the database, add items using their names, and the
+ *  database patient id as a user data for each item. Beware, the
+ *  index of the patient in the combo box does not necessarily
+ *  corresponds to the one of the patient in the database.
+ */
+
+void medViewerToolBoxPatient::setupDatabase(void)
+{
+    this->clear();
+    this->addItem("Choose patient", -1);
+
+    // Setting up persitent data
+
+    QSqlQuery query(*(medDatabaseController::instance()->database()));
+
+    query.prepare("SELECT name, id FROM patient");
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    while(query.next())
+        this->addItem(query.value(0).toString(), query.value(1));
+
+    // Setting up non persitent data
+
+    QList<QString> patientList;
+    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
+        if (!patientList.contains (item->name())) {
+            this->addItem(item->name(), item->index().patientId());
+            patientList.append (item->name());
+        }
+    }
 }

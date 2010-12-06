@@ -44,7 +44,6 @@ public:
 
 
 public slots:
-    void setupDatabase(void);
     void setupConfiguration(const QString& name);
 
     void split(int rows, int cols);
@@ -95,8 +94,8 @@ protected slots:
 
 //! @name "Registration Settings" @{
 
-    void setupLayoutCompare(void);
-    void setupLayoutFuse(void);
+    //void setupLayoutCompare(void);
+    //void setupLayoutFuse(void);
 
 //  @}
 

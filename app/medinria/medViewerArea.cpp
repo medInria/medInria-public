@@ -108,13 +108,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     navigator_container_layout->addWidget(d->navigator);
     navigator_container_layout->setAlignment(Qt::AlignHCenter);
 
-    // Setting up database
-
-    this->setupDatabase();
-
-    connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
-    connect(medDatabaseNonPersitentController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
-
     //action for transfer function
     QAction * transFunAction =
       new QAction("Toggle Tranfer Function Widget", this);
@@ -159,41 +152,7 @@ void medViewerArea::setdw(QStatusBar *status)
 
 }
 
-//! Viewer area setup.
-/*! 
- *  This methods sets the patient toolbox up by retreiving the list of
- *  partients from the database, add items using their names, and the
- *  database patient id as a user data for each item. Beware, the
- *  index of the patient in the combo box does not necessarily
- *  corresponds to the one of the patient in the database.
- */
 
-void medViewerArea::setupDatabase(void)
-{
-    d->patientToolBox->clear();
-    d->patientToolBox->addItem("Choose patient", -1);
-
-    // Setting up persitent data
-
-    QSqlQuery query(*(medDatabaseController::instance()->database()));
-
-    query.prepare("SELECT name, id FROM patient");
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
-    while(query.next())
-        d->patientToolBox->addItem(query.value(0).toString(), query.value(1));
-
-    // Setting up non persitent data
-
-    QList<QString> patientList;
-    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
-        if (!patientList.contains (item->name())) {
-	    d->patientToolBox->addItem(item->name(), item->index().patientId());
-	    patientList.append (item->name());
-        }
-    }
-}
 
 //! Split the currently displayed custom container.
 /*! 
@@ -333,8 +292,8 @@ void medViewerArea::switchToPatient(int id)
     d->navigator->onPatientClicked(d->current_patient);
 
     // Setup patient toolbox
-
-    d->patientToolBox->setPatientIndex(id);
+    //TODO emit a signal to the Patient Toolbox
+    //emit (setPatientIndex(id));
 
     // Setup layout toolbox
 
@@ -432,9 +391,10 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     }
 
     // Update toolboxes
+    //TODO: Send events instead of methods, here
+    //d->viewToolBox->update(view);
+    //d->diffusionToolBox->update(view);
 
-    d->viewToolBox->update(view);
-    d->diffusionToolBox->update(view);
     this->updateTransferFunction();
 }
 
@@ -664,7 +624,7 @@ void medViewerArea::updateTransferFunction()
 	d->transFun->update();
     }
 }
-
+//TODO: don't know why it's been removed from .h file...
 //void medViewerArea::setupLayoutCompare(void)
 //{
 //    if(!d->view_stacks.count())
@@ -673,6 +633,7 @@ void medViewerArea::updateTransferFunction()
 //    d->view_stacks.value(d->current_patient)->setCurrentIndex(3);
 //}
 
+//TODO: move this to the configuration
 //void medViewerArea::setupLayoutFuse(void)
 //{
 //    if(!d->view_stacks.count())
@@ -696,11 +657,11 @@ void medViewerArea::setupConfiguration(const QString& name)
         return;
     }
 
-    if (!d->configurations.contains(name))
+    if (!d->configurations->contains(name))
     {
         if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name))
         {
-            addConfiguration(name, conf);
+            d->configurations->insert(name, conf);
         }
         else
         {
@@ -710,23 +671,36 @@ void medViewerArea::setupConfiguration(const QString& name)
     }
 
     //clean toolboxes
-    d->toolbox_container->clearToolBoxes();
+    d->toolbox_container->clear();
 
     //switch
+    switch (conf->layoutType()){
+        case medViewerConfiguration::LeftDdRightTb:
+            //setup orientation
+            d->toolbox_container->setOrientation(medToolBoxContainer::Vertical);
+            break;
+        case medViewerConfiguration::LeftTbRightDb:
+                break;
+        case medViewerConfiguration::TopDdBottomTb:
+                break;
+        case medViewerConfiguration::TopTbBottonDb:
+                break;
+        default:
+            qDebug() << "unhandled case in configuration layout switch";
+
+    }
+
+
 
     //setup database visibility
-
+    d->navigator->setVisible(conf->databaseVisibility());
 
     //setup layout type
-    switchToContainer(conf->layoutType());
+    switchToContainer(conf->viewLayoutType());
     if (conf->layoutType() == medViewContainer::Custom)//TODO check index for custom
     {
         switchToContainerPreset(conf->customLayoutType());
     }
-
-
-    //setup orientation
-    d->toolbox_container->setOrientation();
 
     //add new toolboxes
     foreach (medToolBox * toolbox, conf->toolBoxes() )

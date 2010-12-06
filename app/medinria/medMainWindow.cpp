@@ -278,7 +278,7 @@ void medMainWindow::switchToViewerArea(void)
 
 void medMainWindow::onConfigurationTriggered(QAction *action)
 {
-    medViewerConfigurator::instance()->setConfiguration(action->text());
+   d->viewerArea->setupConfiguration(action->text());
 }
 
 void medMainWindow::onQuit(void)
