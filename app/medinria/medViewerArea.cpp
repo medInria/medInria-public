@@ -72,7 +72,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // -- Internal logic
 
     d->current_patient = -1;
-    d->configurations = new QHash<QString,medViewerConfiguration>();
+    d->configurations = new QHash<QString,medViewerConfiguration *>();
+    d->current_configuration = "";
 
     // -- User interface setup
 
@@ -686,9 +687,14 @@ void medViewerArea::updateTransferFunction()
 //}
 
 
-void medViewerArea::setupConfiguration(const QString &name)
+void medViewerArea::setupConfiguration(const QString& name)
 {
     medViewerConfiguration *conf = NULL;
+
+    if (d->current_configuration == name)
+    {
+        return;
+    }
 
     if (!d->configurations.contains(name))
     {
@@ -703,6 +709,9 @@ void medViewerArea::setupConfiguration(const QString &name)
         }
     }
 
+    //clean toolboxes
+    d->toolbox_container->clearToolBoxes();
+
     //switch
 
     //setup database visibility
@@ -714,11 +723,15 @@ void medViewerArea::setupConfiguration(const QString &name)
     {
         switchToContainerPreset(conf->customLayoutType());
     }
-    //clean toolboxes
-    d->toolbox_container->clearToolBoxes();
+
+
+    //setup orientation
+    d->toolbox_container->setOrientation();
 
     //add new toolboxes
     foreach (medToolBox * toolbox, conf->toolBoxes() )
         this->addToolBox(toolbox);
+
+    d->current_configuration = name;
 
 }

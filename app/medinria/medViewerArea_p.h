@@ -43,12 +43,14 @@ public:
     QMutex mutex;
   
     QHash<int, medViewerAreaStack *> view_stacks;
-    QHash<QString,medViewerConfiguration*> configurations;
+    QHash<QString,medViewerConfiguration*> *configurations;
+
 
 public:
     int current_patient;
     int current_container;
     int current_container_preset;
+    QString current_configuration;
 };
 
 #endif

@@ -45,7 +45,7 @@ public:
 
 public slots:
     void setupDatabase(void);
-    void setupConfiguration(medViewerConfiguration * conf);
+    void setupConfiguration(const QString& name);
 
     void split(int rows, int cols);
 

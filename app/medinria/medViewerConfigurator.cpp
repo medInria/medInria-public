@@ -17,9 +17,10 @@
  * 
  */
 
-#include "medGui/medViewerConfiguration.h"
+#include <medGui/medViewerConfiguration.h>
+#include <medGui/medViewerConfigurationFactory.h>
+
 #include "medViewerConfigurator.h"
-#include "medViewerConfigurationFactory.h"
 
 class medViewerConfiguratorPrivate
 {
@@ -57,11 +58,13 @@ void medViewerConfigurator::addConfiguration(QString name, medViewerConfiguratio
 void medViewerConfigurator::setConfiguration(QString name)
 {
 
+    medViewerConfiguration * conf;
+
     if (!d->configurations.contains(name))
     {
         if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name))
         {
-            addConfiguration(name, configuration);
+            addConfiguration(name, conf);
         }
         else
         {
@@ -71,8 +74,9 @@ void medViewerConfigurator::setConfiguration(QString name)
     }
 
     //clean old config
-    if(!d->current.isNull())
-        d->configurations.value(d->current)->setdw();
+//    if(!d->current.isNull())
+//    {
+//        d->configurations.value(d->current)->setdw();
 
     if (d->configurations.keys().contains(name))
     {
