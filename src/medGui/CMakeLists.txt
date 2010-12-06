@@ -71,6 +71,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxHeader.h
   medToolBoxTab.h
   medToolBoxFactory.h
+  medToolBoxContainer.h
   medToolBoxRegistration.h
   medToolBoxRegistrationCustom.h
   medToolBoxDiffusion.h

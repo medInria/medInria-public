@@ -38,7 +38,7 @@ public:
 medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
 {
     d->parent = parent;
-    d->layoutType = medViewerConfiguration::LeftDdRightTb;
+    d->layoutType = medViewerConfiguration::LeftDbRightTb;
     d->viewLayoutType = medViewContainer::Single;
     d->customLayoutType = 0;
     d->databaseVisibility = 1;
