@@ -43,10 +43,14 @@ public:
     QPushButton *slicingPushButton;
     QPushButton *measuringPushButton;
     QPushButton *croppingPushButton;
+    
+    dtkAbstractView *view;
 };
 
 medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxViewPrivate)
 {
+    d->view = 0;
+    
     d->foregroundLookupTableComboBox = new QComboBox(this);
     d->foregroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
     d->foregroundLookupTableComboBox->addItem( "Default"                );
@@ -162,33 +166,33 @@ medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent)
     mouseLayout->addWidget(d->zoomingPushButton);
     mouseLayout->addWidget(d->measuringPushButton);
         
-    connect(d->foregroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(foregroundLookupTableChanged(QString)));
+    connect(d->foregroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onForegroundLookupTableChanged(QString)));
     // connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(backgroundLookupTableChanged(QString)));
-    connect(d->presetComboBox,                SIGNAL(currentIndexChanged(QString)), this, SIGNAL(lutPresetChanged(QString)));
-    connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SIGNAL(tdModeChanged(QString)));
-    connect(d->view3dVRModeComboBox,          SIGNAL(currentIndexChanged(QString)), this, SIGNAL(tdVRModeChanged(QString)));
-    connect(d->view3dLODSlider,               SIGNAL(valueChanged(int)),            this, SIGNAL(tdLodChanged(int)));
-    connect(d->windowingPushButton,           SIGNAL(toggled(bool)),                this, SIGNAL(windowingChanged(bool)));
-    connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SIGNAL(zoomingChanged(bool)));
-    connect(d->slicingPushButton,             SIGNAL(toggled(bool)),                this, SIGNAL(slicingChanged(bool)));
-    connect(d->measuringPushButton,           SIGNAL(toggled(bool)),                this, SIGNAL(measuringChanged(bool)));
-    connect(d->croppingPushButton,            SIGNAL(toggled(bool)),                this, SIGNAL(croppingChanged(bool)));
+    connect(d->presetComboBox,                SIGNAL(currentIndexChanged(QString)), this, SLOT(onLutPresetChanged(QString)));
+    connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SLOT(onModeChanged(QString)));
+    connect(d->view3dVRModeComboBox,          SIGNAL(currentIndexChanged(QString)), this, SLOT(onVRModeChanged(QString)));
+    connect(d->view3dLODSlider,               SIGNAL(valueChanged(int)),            this, SLOT(onLodChanged(int)));
+    connect(d->windowingPushButton,           SIGNAL(toggled(bool)),                this, SLOT(onWindowingChanged(bool)));
+    connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(onZoomingChanged(bool)));
+    connect(d->slicingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(onSlicingChanged(bool)));
+    connect(d->measuringPushButton,           SIGNAL(toggled(bool)),                this, SLOT(onMeasuringChanged(bool)));
+    connect(d->croppingPushButton,            SIGNAL(toggled(bool)),                this, SLOT(onCroppingChanged(bool)));
 
     d->scalarBarVisibilityCheckBox = new QCheckBox(this);
  
-    connect(d->scalarBarVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(scalarBarVisibilityChanged(bool)));
+    connect(d->scalarBarVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onScalarBarVisibilityChanged(bool)));
 
     d->axisVisibilityCheckBox = new QCheckBox(this);
 
-    connect(d->axisVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(axisVisibilityChanged(bool)));
+    connect(d->axisVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onAxisVisibilityChanged(bool)));
 
     d->rulerVisibilityCheckBox = new QCheckBox(this);
     
-    connect(d->rulerVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(rulerVisibilityChanged(bool)));
+    connect(d->rulerVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onRulerVisibilityChanged(bool)));
     
     d->annotationsVisibilityCheckBox = new QCheckBox(this);
     
-    connect(d->annotationsVisibilityCheckBox, SIGNAL(toggled(bool)), this, SIGNAL(annotationsVisibilityChanged(bool)));
+    connect(d->annotationsVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onAnnotationsVisibilityChanged(bool)));
 
     QWidget *viewToolBoxWidget = new QWidget;
     QWidget *view3dToolBoxWidget = new QWidget;
@@ -232,6 +236,11 @@ medViewerToolBoxView::~medViewerToolBoxView(void)
 
 void medViewerToolBoxView::update(dtkAbstractView *view)
 {
+    d->view = view;
+    
+    if (!view)
+        return;
+    
     d->foregroundLookupTableComboBox->blockSignals(true);
     d->foregroundLookupTableComboBox->setCurrentIndex(d->foregroundLookupTableComboBox->findText(view->property("LookupTable")));
     d->foregroundLookupTableComboBox->blockSignals(false);
@@ -297,4 +306,115 @@ void medViewerToolBoxView::update(dtkAbstractView *view)
     else
         d->croppingPushButton->setChecked(false);
     d->croppingPushButton->blockSignals(false);
+}
+
+
+// view settings
+
+void medViewerToolBoxView::onForegroundLookupTableChanged(QString table)
+{
+    if (d->view) {
+        d->view->setProperty("LookupTable", table);
+        d->view->update();
+    }
+}
+
+void medViewerToolBoxView::onAxisVisibilityChanged(bool visible)
+{
+    if (d->view) {
+        d->view->setProperty("ShowAxis", (visible ? "true" : "false"));
+        d->view->update();
+    }
+}
+
+void medViewerToolBoxView::onScalarBarVisibilityChanged(bool visible)
+{
+    if (d->view) {
+        d->view->setProperty("ShowScalarBar", (visible ? "true" : "false"));
+        d->view->update();
+    }
+}
+
+void medViewerToolBoxView::onRulerVisibilityChanged(bool visible)
+{
+    if (d->view) {
+        d->view->setProperty("ShowRuler", (visible ? "true" : "false"));
+        d->view->update();
+    }
+}
+
+void medViewerToolBoxView::onAnnotationsVisibilityChanged(bool visible)
+{
+    if (d->view) {
+        d->view->setProperty("ShowAnnotations", (visible ? "true" : "false"));
+        d->view->update();
+    }
+}
+
+void medViewerToolBoxView::onModeChanged(QString mode)
+{
+    if (d->view) {
+        d->view->setProperty("3DMode", mode);
+        d->view->update();
+    }
+}
+
+void medViewerToolBoxView::onVRModeChanged(QString mode)
+{
+    if (d->view) {
+        d->view->setProperty("Renderer", mode);
+        d->view->update();
+    }
+}
+
+void medViewerToolBoxView::onLutPresetChanged(QString table)
+{
+    if (d->view) {
+        d->view->setProperty("Preset", table);
+        d->view->update();
+    }
+}
+
+void medViewerToolBoxView::onLodChanged(int value)
+{
+    if (d->view) {
+        d->view->setMetaData("LOD", QString::number(value));
+        d->view->update();
+    }
+}
+
+void medViewerToolBoxView::onWindowingChanged(bool checked)
+{
+    if (d->view) {
+        d->view->setProperty("MouseInteraction", "Windowing");
+    }
+}
+
+void medViewerToolBoxView::onZoomingChanged(bool checked)
+{
+    if (d->view) {
+        d->view->setProperty("MouseInteraction", "Zooming");
+    }
+}
+
+void medViewerToolBoxView::onSlicingChanged(bool checked)
+{
+    if (d->view) {
+        d->view->setProperty("MouseInteraction", "Slicing");
+    }
+}
+
+void medViewerToolBoxView::onMeasuringChanged(bool checked)
+{
+    if (d->view) {
+        d->view->setProperty("MouseInteraction", "Measuring");
+    }
+}
+
+void medViewerToolBoxView::onCroppingChanged(bool checked)
+{
+    if (d->view) {
+        d->view->setProperty("Cropping", (checked ? "true" : "false"));
+        d->view->update();
+    }
 }

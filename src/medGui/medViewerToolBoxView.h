@@ -35,22 +35,22 @@ public:
 
     void update(dtkAbstractView *view);
 
-signals:
-    void foregroundLookupTableChanged(QString);
-    void backgroundLookupTableChanged(QString);
-    void lutPresetChanged(QString);
-    void tdModeChanged(QString);
-    void tdVRModeChanged(QString);
-    void tdLodChanged(int);
-    void windowingChanged(bool);
-    void zoomingChanged(bool);
-    void slicingChanged(bool);
-    void measuringChanged(bool);
-    void croppingChanged(bool);
-    void scalarBarVisibilityChanged(bool);
-    void axisVisibilityChanged(bool);
-    void rulerVisibilityChanged(bool);
-    void annotationsVisibilityChanged(bool);
+public slots:
+    void onForegroundLookupTableChanged(QString);
+    //void backgroundLookupTableChanged(QString);
+    void onLutPresetChanged(QString);
+    void onModeChanged(QString);
+    void onVRModeChanged(QString);
+    void onLodChanged(int);
+    void onWindowingChanged(bool);
+    void onZoomingChanged(bool);
+    void onSlicingChanged(bool);
+    void onMeasuringChanged(bool);
+    void onCroppingChanged(bool);
+    void onScalarBarVisibilityChanged(bool);
+    void onAxisVisibilityChanged(bool);
+    void onRulerVisibilityChanged(bool);
+    void onAnnotationsVisibilityChanged(bool);
 
 private:
     medViewerToolBoxViewPrivate *d;
