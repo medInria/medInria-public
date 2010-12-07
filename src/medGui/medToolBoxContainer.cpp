@@ -29,6 +29,7 @@ class medToolBoxContainerPrivate
 public:
     QFrame *container;
     QBoxLayout *layout;
+    QList<medToolBox *> toolboxes;
 
     medToolBoxContainer::LayoutOrientation layoutOrientation;
 };
@@ -62,11 +63,13 @@ medToolBoxContainer::~medToolBoxContainer(void)
 
 void medToolBoxContainer::addToolBox(medToolBox *toolBox)
 {
+    d->toolboxes.append(toolBox);
     d->layout->insertWidget(d->layout->count()-1, toolBox, 0, Qt::AlignTop);
 }
 
 void medToolBoxContainer::removeToolBox(medToolBox *toolBox)
 {
+    d->toolboxes.removeOne( toolBox );
     d->layout->removeWidget(toolBox);
 }
 
@@ -74,11 +77,22 @@ void medToolBoxContainer::removeToolBox(medToolBox *toolBox)
 void medToolBoxContainer::clear()
 {
     //maybe faster to delete the layout and re-create it, maybe not as safe?
+    foreach(medToolBox *tb, d->toolboxes) {
+        tb->hide();
+        d->layout->removeWidget(tb);
+    }
+    d->toolboxes.clear();
+    /*
     int count = d->layout->count();
     for (int i = 0; i < count ;i++)
         d->layout->itemAt(count-i-1)->widget()->hide();
+     */
 }
 
+QList<medToolBox*> medToolBoxContainer::toolBoxes(void) const
+{
+    return d->toolboxes;
+}
 
 void medToolBoxContainer::setOrientation(LayoutOrientation orient)
 {
@@ -87,22 +101,23 @@ void medToolBoxContainer::setOrientation(LayoutOrientation orient)
         d->layoutOrientation = orient;
         QBoxLayout *layout;
 
-        //remove toolboxes
-        QList<medToolBox*> tbs;
-        for (int i; i< d->layout->count();i++)
-        {
-            tbs.append(dynamic_cast<medToolBox*>(d->layout->itemAt(i)->widget()));
-        }
+        delete d->layout;
 
         orient == Vertical ? layout = new QVBoxLayout(d->container):
                              layout = new QHBoxLayout(d->container);
-        delete d->layout;
         d->layout = layout;
         d->layout->setContentsMargins(2, 4, 0, 0);
         d->layout->addStretch(1);
 
         //put back toolboxes
-        foreach(medToolBox * tb, tbs )
-            addToolBox(tb);
+       foreach(medToolBox * tb, d->toolboxes ) {
+           if (orient==Vertical)
+               d->layout->insertWidget(d->layout->count()-1, tb, 0, Qt::AlignTop);
+           else 
+               d->layout->insertWidget(d->layout->count()-1, tb, 0, Qt::AlignLeft);
+       }
+            //addToolBox(tb);
+       
+       this->updateGeometry();
     }
 }

@@ -37,6 +37,8 @@ public:
     void addToolBox(medToolBox *toolBox);
     void removeToolBox(medToolBox *toolBox);
     void clear(void);
+    
+    QList<medToolBox*> toolBoxes(void) const;
 
 public:
     enum LayoutOrientation{
