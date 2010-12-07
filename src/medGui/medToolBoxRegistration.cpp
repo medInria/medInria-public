@@ -33,7 +33,7 @@
 
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
-
+#include <medCore/medMessageController.h>
 #include <medGui/medToolBoxFactory.h>
 
 #include <QtGui>
@@ -56,6 +56,8 @@ public:
     dtkAbstractDataImage *fixedData;
     dtkAbstractDataImage *movingData;
 
+    dtkAbstractProcess * process;
+
     medToolBoxRegistrationCustom * customToolBox;
 };
 
@@ -70,7 +72,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->movingData = NULL;
     d->fixedView  = NULL;
     d->movingView = NULL;
-    
+    d->process = NULL;
     // Process page
 
     QWidget *processPage = new QWidget(this);
@@ -81,7 +83,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->processDropSiteMoving = new medDropSite(processPage);
     d->processDropSiteMoving->setText("Moving");
 
-    QHBoxLayout *processDropSiteLayout = new QHBoxLayout(this);
+    QHBoxLayout *processDropSiteLayout = new QHBoxLayout;
     processDropSiteLayout->addWidget(d->processDropSiteFixed);
     processDropSiteLayout->addWidget(d->processDropSiteMoving);
 
@@ -177,6 +179,10 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     this->setWidget(tab);
 
     d->customToolBox = NULL;
+
+    //Connect Message Controller:
+    connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
 }
 
 medToolBoxRegistration::~medToolBoxRegistration(void)
@@ -286,19 +292,19 @@ void medToolBoxRegistration::onMovingImageDropped (void)
     }
 
     if (d->fixedView) {
-        d->fixedView->link(d->movingView);
-	d->movingView->update();
+//        d->fixedView->link(d->movingView);
+        d->movingView->update();
     }
 
     if (d->fuseView) {
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-	    if (d->fixedData) {
+            if (d->fixedData) {
                 interactor->setData(d->fixedData,   0);
                 interactor->setData(d->movingData,  1);
                 d->fuseView->reset();
                 d->fuseView->update();
-	    }
-	}
+            }
+        }
     }
 }
 
@@ -325,15 +331,37 @@ void medToolBoxRegistration::onToolBoxChosen(const QString& id)
 
 void medToolBoxRegistration::onSaveImage()
 {
-    QString fileName = QFileDialog(this, tr("Save Image"),
+    if (!d->movingData)//TODO: test on registered data
+    {
+        emit showError(this, tr  ("Please Select a moving image before saving"),3000);
+        return;
+    }
+    QFileDialog dialog(this, tr("Save Image"),
                                QDir::homePath(),
                                tr("Nifty (*.nii);;Analyse (*.);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files ()"));
+    dialog.setDefaultSuffix(".mha");
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    QStringList fileName;
+    if (dialog.exec())
+        fileName = dialog.selectedFiles();
+
     qDebug() << fileName;
+
+    if (!fileName.isEmpty())
+    {
+        qDebug()<< (void *) d->movingData;
+        qDebug()<<  d->movingView->data();
+    }
 
 }
 
 void medToolBoxRegistration::onSaveTrans()
 {
+    if (!d->movingData)
+    {
+        emit showError(this, tr  ("Please Select a moving image before saving"),3000);
+        return;
+    }
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Transformation"),
                                QDir::homePath(),
                                tr("Transformation (*. *.xpm *.jpg)"));

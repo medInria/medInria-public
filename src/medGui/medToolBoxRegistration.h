@@ -25,6 +25,7 @@
 
 class dtkAbstractDataImage;
 class dtkAbstractView;
+class dtkAbstractProcess;
 
 class medDataIndex;
 
@@ -45,11 +46,15 @@ public:
     dtkAbstractDataImage *fixedData(void);
     dtkAbstractDataImage *movingData(void);
 
+    dtkAbstractProcess * process();
+    void setProcess(dtkAbstractProcess* process);
+
 signals:
     void addToolBox(medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
     void setupLayoutCompare(void);
     void setupLayoutFuse(void);
+    void showError (QObject*,const QString&,unsigned int timeout);
 
 public slots:
     void onMovingImageDropped(void);
