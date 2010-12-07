@@ -54,6 +54,7 @@ signals:
     void syncCamera    (bool);
     void syncWindowing (bool);
     void reg           (bool);
+    void lutChanged    (void);
 
 public slots:
     virtual void linkPosition  (dtkAbstractView *view, bool value);
