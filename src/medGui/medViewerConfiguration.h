@@ -62,6 +62,9 @@ public:
 signals:
     void toolboxAdded  (medToolBox *tb);
     void toolboxRemoved(medToolBox *tb);
+    void layoutModeChanged (int mode);
+    void layoutSplit(int, int);
+    void layoutPresetClicked(int);
     
 private:
     medViewerConfigurationPrivate *d;
