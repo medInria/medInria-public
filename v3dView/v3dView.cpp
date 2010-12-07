@@ -1306,6 +1306,8 @@ void v3dView::onLookupTablePropertySet(const QString &value)
     d->collection->SyncSetOpacityTransferFunction( alpha );
     rgb->Delete();
     alpha->Delete();
+    
+    emit lutChanged();
 }
 
 void v3dView::onShowAxisPropertySet(const QString &value)
@@ -1362,6 +1364,7 @@ void v3dView::onMouseInteractionPropertySet(const QString &value)
 
 void v3dView::onPresetPropertySet (const QString &value)
 {
+    this->blockSignals(true);
     if( value == "VR Muscles&Bones" ) {
         
         this->setProperty ("LookupTable", "Muscles & Bones");
@@ -1374,8 +1377,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         //d->collection->SyncSetTextColor ( white );
         //d->collection->SyncSetAboutData ("VR Muscles - Bones - Powered by magic Pedro");
     }
-    
-    if( value == "Vascular I" ) {
+    else if( value == "Vascular I" ) {
         
         this->setProperty ("LookupTable", "Stern");
         
@@ -1387,8 +1389,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         //d->collection->SyncSetTextColor ( white );
         //d->view->SetAboutData ("Vascular - Powered by magic Pedro");
     }
-    
-    if( value == "Vascular II" ) {
+    else if( value == "Vascular II" ) {
         
         this->setProperty ("LookupTable", "Red Vessels");
         
@@ -1401,8 +1402,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         //d->collection->SyncSetTextColor ( white );
         //d->view->SetAboutData ("Vascular II - Powered by magic Pedro");
     }
-    
-    if( value == "Vascular III" ) {
+    else if( value == "Vascular III" ) {
         
         this->setProperty ("LookupTable", "Red Vessels");
         
@@ -1414,8 +1414,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         //d->collection->SyncSetTextColor ( white );
         //d->view->SetAboutData ("Vascular III - Powered by magic Pedro");
     }
-    
-    if( value == "Vascular IV" ) {
+    else if( value == "Vascular IV" ) {
         
         this->setProperty ("LookupTable", "Red Vessels");
         
@@ -1427,8 +1426,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         //d->collection->SyncSetTextColor ( white );
         //d->view->SetAboutData ("Vascular IV - Powered by magic Pedro");
     }
-    
-    if( value == "Standard" ) {
+    else if( value == "Standard" ) {
         
         this->setProperty ("LookupTable", "Muscles & Bones");
         
@@ -1440,8 +1438,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         //d->collection->SyncSetTextColor ( white );
         //d->view->SetAboutData ("Standard - Powered by magic Pedro");
     }
-    
-    if( value == "Soft" ) {
+    else if( value == "Soft" ) {
         
         this->setProperty ("LookupTable", "Bones");
         
@@ -1453,8 +1450,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         //d->collection->SyncSetTextColor ( white );
         //d->view->SetAboutData ("Soft - Powered by magic Pedro");
     }
-    
-    if( value == "Soft on White" ) {
+    else if( value == "Soft on White" ) {
         
         this->setProperty ("LookupTable", "Muscles & Bones");
         
@@ -1465,8 +1461,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         d->collection->SyncSetColorLevel (372.8, 0, 1);
         //d->view->SetAboutData ("Soft on White - Powered by magic Pedro");
     }
-    
-    if( value == "Soft on Blue" ) {
+    else if( value == "Soft on Blue" ) {
         
         this->setProperty ("LookupTable", "Muscles & Bones");
         
@@ -1477,8 +1472,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         d->collection->SyncSetColorLevel (372.8, 0, 1);
         //d->collection->SetAboutData ("Soft on Blue - Powered by magic Pedro");
     }
-    
-    if( value == "Red on White" ) {
+    else if( value == "Red on White" ) {
         
         this->setProperty ("LookupTable", "Red Vessels");
         
@@ -1489,8 +1483,7 @@ void v3dView::onPresetPropertySet (const QString &value)
         d->collection->SyncSetColorLevel (372.8, 0, 1);
         //d->view->SetAboutData ("Red on White - Powered by magic Pedro");
     }
-    
-    if( value == "Glossy" ) {
+    else if( value == "Glossy" ) {
         
         this->setProperty ("LookupTable", "Bones");
         
@@ -1502,7 +1495,14 @@ void v3dView::onPresetPropertySet (const QString &value)
         //d->collection->SyncSetTextColor ( white );
         //d->view->SetAboutData ("Glossy - Powered by magic Pedro");
     }
+    else {
+        this->blockSignals(false);
+        return; // to prevent trigger of event lutChanged()
+    }
     
+    this->blockSignals(false);
+    
+    emit lutChanged();
 }
 
 void v3dView::onCroppingPropertySet (const QString &value)
