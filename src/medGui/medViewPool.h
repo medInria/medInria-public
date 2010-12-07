@@ -40,7 +40,7 @@ public:
 
     medAbstractView *daddy (void);
 
-    void setViewProperty (const QString &key, const QString &value);
+    // void setViewProperty (const QString &key, const QString &value);
 
     int count (void);
 
@@ -55,6 +55,7 @@ signals:
     void showError(QObject*,const QString&,unsigned int timeout);
     
 public slots:
+    void onViewPropertySet (const QString &key, const QString &value);
     void onViewDaddy         (bool);
     void onViewSyncPosition  (bool);
     void onViewSyncCamera    (bool);
