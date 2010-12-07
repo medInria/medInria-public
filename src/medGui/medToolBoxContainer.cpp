@@ -63,8 +63,13 @@ medToolBoxContainer::~medToolBoxContainer(void)
 
 void medToolBoxContainer::addToolBox(medToolBox *toolBox)
 {
-    d->toolboxes.append(toolBox);
-    d->layout->insertWidget(d->layout->count()-1, toolBox, 0, Qt::AlignTop);
+    if (!toolBox)
+        return;
+    
+    if (!d->toolboxes.contains(toolBox)) {
+        d->toolboxes.append(toolBox);
+        d->layout->insertWidget(d->layout->count()-1, toolBox, 0, Qt::AlignTop);
+    }
 }
 
 void medToolBoxContainer::removeToolBox(medToolBox *toolBox)
