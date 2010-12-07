@@ -293,7 +293,8 @@ void medViewerArea::switchToPatient(int id)
 
     // Setup navigator
 
-    d->navigator->onPatientClicked(d->current_patient);
+    if (d->navigator)
+        d->navigator->onPatientClicked(d->current_patient);
 
     // Setup patient toolbox
     //TODO emit a signal to the Patient Toolbox
@@ -598,10 +599,10 @@ void medViewerArea::setupConfiguration(QString name)
     
     // Setting up navigator
     
-    //if (d->navigator)
-    //    delete d->navigator;
-    if (!d->navigator)
-        d->navigator = new medDatabaseNavigator(d->navigator_container);
+    if (d->navigator)
+        delete d->navigator;
+    d->navigator = new medDatabaseNavigator(d->navigator_container);
+    d->navigator->onPatientClicked(d->current_patient);
     
     d->navigator_container_layout->setContentsMargins(0, 0, 0, 0);
     d->navigator_container_layout->setSpacing(0);
