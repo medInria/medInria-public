@@ -40,4 +40,6 @@ private:
     medViewerConfigurationVisualizationPrivate *d;
 };
 
+medViewerConfiguration *createMedViewerConfigurationVisualization(void);
+
 #endif

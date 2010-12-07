@@ -60,6 +60,8 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
     
     this->addToolBox( d->viewToolBox );
     
+    //this->setLayoutType( medViewerConfiguration::TopDbBottomTb );
+    
 }
 
 medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)
@@ -70,5 +72,10 @@ medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)
 
 QString medViewerConfigurationVisualization::description(void) const
 {
-    return "Visualization pouet pouet";
+    return "Visualization";
+}
+
+medViewerConfiguration *createMedViewerConfigurationVisualization(void)
+{
+    return new medViewerConfigurationVisualization;
 }
