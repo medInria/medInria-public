@@ -30,14 +30,14 @@ medDatabaseNavigatorView::medDatabaseNavigatorView(QWidget *parent) : QGraphicsV
 {
     this->viewport()->setMouseTracking(true);
 
-    this->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
-
     if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal) {
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     } else {
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
     }
 
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);

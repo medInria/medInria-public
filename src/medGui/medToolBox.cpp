@@ -60,3 +60,8 @@ void medToolBox::setTitle(const QString &title)
 {
     d->header->setTitle(title);
 }
+
+void medToolBox::update(dtkAbstractView *view)
+{
+    Q_UNUSED(view);
+}

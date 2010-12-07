@@ -24,6 +24,8 @@
 
 #include <QtGui>
 
+class dtkAbstractView;
+
 class medToolBoxPrivate;
 
 class MEDGUI_EXPORT medToolBox : public QWidget
@@ -37,6 +39,8 @@ public:
     void setWidget(QWidget *widget);
 
     void setTitle(const QString& title);
+    
+    virtual void update(dtkAbstractView *view);
     
 signals:
     void addToolBox   (medToolBox *toolbox);
