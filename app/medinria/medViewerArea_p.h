@@ -26,6 +26,7 @@ class medViewerAreaStack;
 class medViewerConfiguration;
 class medClutEditor;
 class QStackedWidget;
+class medViewerToolBoxPatient;
 
 #include <QtCore/QHash>
 
@@ -34,6 +35,11 @@ class medViewerAreaPrivate
 public:
 
     medToolBoxContainer *toolbox_container;
+    QFrame *navigator_container;
+    QWidget *view_container;
+    
+    medViewerToolBoxPatient *toolboxPatient;
+    
     medDatabaseNavigator *navigator;
 
     QPointer<medClutEditor>  transFun;

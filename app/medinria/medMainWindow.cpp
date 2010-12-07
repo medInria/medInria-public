@@ -41,6 +41,10 @@
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseItem.h>
 
+#include <medGui/medViewerConfiguration.h>
+#include <medGui/medViewerConfigurationFactory.h>
+#include <medGui/medViewerConfigurationVisualization.h>
+
 #include <QtGui>
 
 // /////////////////////////////////////////////////////////////////
@@ -161,6 +165,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     );
 #endif
 
+    
+    medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
+    
     // Setting up status bar
 
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
@@ -185,10 +192,14 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medStatusQuitButton *quitButton = new medStatusQuitButton(this);
 
     connect(quitButton, SIGNAL(quit()), this, SLOT(onQuit()));
+    
+    QComboBox *configurationSwitcher = new QComboBox(this);
+    configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
 
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
     this->statusBar()->setFixedHeight(31);
+    this->statusBar()->addPermanentWidget(configurationSwitcher);
     this->statusBar()->addPermanentWidget(d->shifter);
     this->statusBar()->addPermanentWidget(quitButton);
 
@@ -201,6 +212,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     medMessageController::instance()->attach(this->statusBar());
 
+    d->viewerArea->setupConfiguration("Visualization");
+    
+    connect(configurationSwitcher, SIGNAL(activated(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
 }
 

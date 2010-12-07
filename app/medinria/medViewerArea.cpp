@@ -46,6 +46,7 @@
 #include <medSql/medDatabaseNonPersitentItem.h>
 #include <medSql/medDatabaseNonPersitentController.h>
 #include <medSql/medDatabaseNavigator.h>
+#include <medSql/medDatabaseNavigatorController.h>
 
 #include <medGui/medClutEditor.h>
 #include <medGui/medToolBox.h>
@@ -84,29 +85,21 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // Setting up toolbox container
 
     d->toolbox_container = new medToolBoxContainer(this);
-    d->toolbox_container->setFixedWidth(320);
 
     // Setting up view container
 
-    QWidget *view_container = new QWidget(this);
+    d->view_container = new QWidget(this);
 
-    QVBoxLayout *view_container_layout = new QVBoxLayout(view_container);
+    QVBoxLayout *view_container_layout = new QVBoxLayout(d->view_container);
     view_container_layout->setContentsMargins(0, 10, 0, 10);
     view_container_layout->addWidget(d->stack);
 
     // Setting up navigator container
 
-    QFrame *navigator_container = new QFrame(this);
-    navigator_container->setObjectName("medNavigatorContainer");
-    navigator_container->setFixedWidth(186);
-
-    d->navigator = new medDatabaseNavigator(navigator_container);
-
-    QVBoxLayout *navigator_container_layout = new QVBoxLayout(navigator_container);
-    navigator_container_layout->setContentsMargins(0, 0, 0, 0);
-    navigator_container_layout->setSpacing(0);
-    navigator_container_layout->addWidget(d->navigator);
-    navigator_container_layout->setAlignment(Qt::AlignHCenter);
+    d->navigator = 0;
+    
+    d->navigator_container = new QFrame(this);
+    d->navigator_container->setObjectName("medNavigatorContainer");
 
     //action for transfer function
     QAction * transFunAction =
@@ -119,6 +112,12 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 	    this, SLOT(bringUpTransferFunction(bool)));
 
     this->addAction(transFunAction);
+    
+    d->toolboxPatient = new medViewerToolBoxPatient(this);
+    d->toolboxPatient->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
+    d->toolboxPatient->setFixedWidth(186);
+    
+    connect (d->toolboxPatient, SIGNAL(patientIndexChanged(int)), this, SLOT(switchToPatient(int)));
 }
 
 medViewerArea::~medViewerArea(void)
@@ -391,9 +390,11 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     }
 
     // Update toolboxes
-    //TODO: Send events instead of methods, here
-    //d->viewToolBox->update(view);
-    //d->diffusionToolBox->update(view);
+    QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
+    foreach( medToolBox *tb, toolboxes)
+        tb->update(view);
+    
+    connect (view, SIGNAL(lutChanged()), this, SLOT(updateTransferFunction()));
 
     this->updateTransferFunction();
 }
@@ -430,7 +431,7 @@ medViewContainer *medViewerArea::currentContainerFocused(void)
 }
 
 // view settings
-
+/*
 void medViewerArea::setupForegroundLookupTable(QString table)
 {
     if(!d->view_stacks.count())
@@ -441,80 +442,6 @@ void medViewerArea::setupForegroundLookupTable(QString table)
 
     this->updateTransferFunction();
 }
-/*
-void medViewerArea::setupBackgroundLookupTable(QString table)
-{
-    if(!d->view_stacks.count())
-        return;
-    
-    if ( medViewPool *pool = this->currentContainer()->pool() ) {
-        pool->setViewProperty("BackgroundLookupTable", table);
-    }
-
-    this->updateTransferFunction();
-}
-*/
-void medViewerArea::setupAxisVisibility(bool visible)
-{
-    if(!d->view_stacks.count())
-        return;
-
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("ShowAxis", (visible ? "true" : "false"));
-    }
-}
-
-void medViewerArea::setupScalarBarVisibility(bool visible)
-{
-    if(!d->view_stacks.count())
-        return;
-  
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-	pool->setViewProperty("ShowScalarBar",
-			      (visible ? "true" : "false"));
-    }
-}
-
-void medViewerArea::setupRulerVisibility(bool visible)
-{
-    if(!d->view_stacks.count())
-        return;
-  
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-	pool->setViewProperty("ShowRuler", (visible ? "true" : "false"));
-    }
-}
-
-void medViewerArea::setupAnnotationsVisibility(bool visible)
-{
-    if(!d->view_stacks.count())
-        return;
-  
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-	pool->setViewProperty("ShowAnnotations", (visible ? "true" : "false"));
-    }
-}
-
-void medViewerArea::setup3DMode(QString mode)
-{
-    if(!d->view_stacks.count())
-        return;
-  
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("3DMode", mode);
-    }
-}
-
-void medViewerArea::setup3DVRMode(QString mode)
-{
-    if(!d->view_stacks.count())
-        return;
-  
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("Renderer", mode);
-    }
-}
-
 void medViewerArea::setupLUTPreset(QString table)
 {
     if(!d->view_stacks.count())
@@ -526,67 +453,7 @@ void medViewerArea::setupLUTPreset(QString table)
 
     this->updateTransferFunction();
 }
-
-void medViewerArea::setup3DLOD(int value)
-{
-    if(!d->view_stacks.count())
-        return;
-
-    if(dtkAbstractView *view =  this->currentContainer()->current()->view()) {
-        view->setMetaData("LOD", QString::number(value));
-	view->update();
-    }
-}
-
-void medViewerArea::setupWindowing(bool checked)
-{
-    if(!d->view_stacks.count())
-        return;
-
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("MouseInteraction", "Windowing");
-    }
-}
-
-void medViewerArea::setupZooming(bool checked)
-{
-    if(!d->view_stacks.count())
-        return;
-  
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("MouseInteraction", "Zooming");
-    }
-}
-
-void medViewerArea::setupSlicing(bool checked)
-{
-    if(!d->view_stacks.count())
-        return;
-  
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("MouseInteraction", "Slicing");
-    }
-}
-
-void medViewerArea::setupMeasuring(bool checked)
-{
-    if(!d->view_stacks.count())
-        return;
-  
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("MouseInteraction", "Measuring");
-    }
-}
-
-void medViewerArea::setupCropping(bool checked)
-{
-    if(!d->view_stacks.count())
-        return;
-  
-    if(medViewPool *pool = this->currentContainer()->pool()) {
-        pool->setViewProperty("Cropping", (checked ? "true" : "false"));
-    }
-}
+*/
 
 void medViewerArea::bringUpTransferFunction(bool checked)
 {
@@ -648,67 +515,99 @@ void medViewerArea::updateTransferFunction()
 //}
 
 
-void medViewerArea::setupConfiguration(const QString& name)
+void medViewerArea::setupConfiguration(QString name)
 {
-    medViewerConfiguration *conf = NULL;
-
     if (d->current_configuration == name)
-    {
         return;
+    
+    medViewerConfiguration *conf = NULL;
+    
+    if (d->configurations->contains(name))
+        conf = d->configurations->operator[](name);
+    else {
+        if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name))
+            d->configurations->insert(name, conf);
+        else
+            qDebug()<< "Configuration" << name << "couldn't be created";
     }
 
-    if (!d->configurations->contains(name))
-    {
-        if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name))
-        {
-            d->configurations->insert(name, conf);
-        }
-        else
-        {
-            qDebug()<< "Configuration" << name << "couldn't be created";
-            return;
-        }
-    }
+    if (!conf)
+        return;
 
     //clean toolboxes
     d->toolbox_container->clear();
 
-    //switch
+    QBoxLayout *layout = 0;
+    QBoxLayout *navigator_container_layout = 0;
+    
+    //setup orientation
     switch (conf->layoutType()){
-        case medViewerConfiguration::LeftDbRightTb:
-            //setup orientation
-            d->toolbox_container->setOrientation(medToolBoxContainer::Vertical);
-            break;
-        case medViewerConfiguration::LeftTbRightDb:
-            d->toolbox_container->setOrientation(medToolBoxContainer::Vertical);
-            break;
         case medViewerConfiguration::TopDbBottomTb:
-            d->toolbox_container->setOrientation(medToolBoxContainer::Horizontal);
-            break;
         case medViewerConfiguration::TopTbBottomDb:
-            d->toolbox_container->setOrientation(medToolBoxContainer::Horizontal);
+           {
+              d->toolbox_container->setOrientation(medToolBoxContainer::Horizontal);
+              d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+              d->toolbox_container->setFixedHeight(200);
+              medDatabaseNavigatorController::instance()->setOrientation( Qt::Horizontal );
+              navigator_container_layout = new QHBoxLayout(d->navigator_container);
+              navigator_container_layout->setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+              d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+              d->navigator_container->setFixedHeight(186);
+              layout = new QVBoxLayout(this);
+              layout->setContentsMargins(0, 0, 0, 0);
+              layout->setSpacing(0);
+           }
             break;
+            
+        case medViewerConfiguration::LeftDbRightTb:
+        case medViewerConfiguration::LeftTbRightDb:
         default:
-            qDebug() << "unhandled case in configuration layout switch";
-
+           {
+              d->toolbox_container->setOrientation(medToolBoxContainer::Vertical);
+              d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+              d->toolbox_container->setFixedWidth(320);
+              medDatabaseNavigatorController::instance()->setOrientation( Qt::Vertical );
+              navigator_container_layout = new QVBoxLayout(d->navigator_container);
+              navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);    
+              d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+              d->navigator_container->setFixedWidth(186);
+              layout = new QHBoxLayout(this);
+              layout->setContentsMargins(0, 0, 0, 0);
+              layout->setSpacing(0);
+           }
     }
 
-
-
     //setup database visibility
-    d->navigator->setVisible(conf->databaseVisibility());
+    d->navigator_container->setVisible( conf->databaseVisibility());
+    
+    // Setting up navigator
+    if (d->navigator)
+        delete d->navigator;
+    d->navigator = new medDatabaseNavigator(d->navigator_container);
+    
+    navigator_container_layout->setContentsMargins(0, 0, 0, 0);
+    navigator_container_layout->setSpacing(0);
+    navigator_container_layout->addWidget(d->toolboxPatient);
+    navigator_container_layout->addWidget(d->navigator);
 
     //setup layout type
     switchToContainer(conf->viewLayoutType());
     if (conf->layoutType() == medViewContainer::Custom)//TODO check index for custom
-    {
         switchToContainerPreset(conf->customLayoutType());
-    }
 
-    //add new toolboxes
+    //add toolboxes
     foreach (medToolBox * toolbox, conf->toolBoxes() )
         this->addToolBox(toolbox);
-
+    
+    layout->addWidget(d->navigator_container);
+    layout->addWidget(d->view_container);
+    layout->addWidget(d->toolbox_container);
+    
+    connect(conf, SIGNAL(layoutModeChanged(int)),   this, SLOT(switchToContainer(int)));
+    connect(conf, SIGNAL(layoutSplit(int,int)),     this, SLOT(split(int,int)));
+    connect(conf, SIGNAL(layoutPresetClicked(int)), this, SLOT(switchToContainerPreset(int)));
+    
     d->current_configuration = name;
-
+    
+    this->updateGeometry();
 }

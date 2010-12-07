@@ -42,9 +42,8 @@ public:
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
 
-
 public slots:
-    void setupConfiguration(const QString& name);
+    void setupConfiguration(QString name);
 
     void split(int rows, int cols);
 
@@ -58,7 +57,6 @@ public slots:
     void addToolBox(medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
 
-
 protected slots:
     void onViewFocused(dtkAbstractView *view);
 
@@ -68,25 +66,6 @@ protected:
     medViewContainer   *currentContainerFocused(void);
 
 protected slots:
-
-//! @name "View Settings" @{
-
-    void setupForegroundLookupTable(QString table);
-    // void setupBackgroundLookupTable(QString table);
-    void setupAxisVisibility(bool visible);
-    void setupScalarBarVisibility(bool visible);
-    void setupRulerVisibility(bool visible);
-    void setupAnnotationsVisibility(bool visible);
-    void setup3DMode (QString mode);
-    void setup3DVRMode (QString mode);
-    void setupLUTPreset (QString table);
-    void setup3DLOD (int value);
-    void setupWindowing (bool checked);
-    void setupZooming (bool checked);
-    void setupSlicing (bool checked);
-    void setupMeasuring (bool checked);
-    void setupCropping (bool checked);
-
     void bringUpTransferFunction(bool checked);
     void updateTransferFunction();
 
