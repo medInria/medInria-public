@@ -18,6 +18,10 @@ public:
 
     virtual QString description(void) const;
 
+public slots:
+    void onSetupLayoutCompare (void);
+    void onSetupLayoutFuse (void);
+
 private:
     medViewerConfigurationRegistrationPrivate *d;
 };

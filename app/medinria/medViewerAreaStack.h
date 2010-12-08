@@ -40,6 +40,8 @@ public:
     medViewContainer *single(void);
     medViewContainer *multi(void);
     medViewContainer *custom(void);
+    medViewContainer *compare (void);
+    medViewContainer *fuse (void);
 
     void setPatientId(int id);
 

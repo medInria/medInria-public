@@ -45,8 +45,9 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     d->registrationToolBox = new medToolBoxRegistration(parent);
 
-    //connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(setupLayoutCompare()));
-    //connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()), this, SLOT(setupLayoutFuse()));
+    connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(onSetupLayoutCompare()));
+    connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()),    this, SLOT(onSetupLayoutFuse()));
+    
     connect(d->registrationToolBox, SIGNAL(addToolBox(medToolBox *)),
             this, SLOT(addToolBox(medToolBox *)));
     connect(d->registrationToolBox, SIGNAL(removeToolBox(medToolBox *)),
@@ -54,8 +55,8 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     this->addToolBox( d->registrationToolBox );
 
-    this->setViewLayoutType(medViewContainer::Custom);
-    this->setCustomLayoutType(medViewContainerCustom::A);
+    this->setViewLayoutType (3);
+
 
 }
 
@@ -68,6 +69,16 @@ medViewerConfigurationRegistration::~medViewerConfigurationRegistration(void)
 QString medViewerConfigurationRegistration::description(void) const
 {
     return "Registration";
+}
+
+void medViewerConfigurationRegistration::onSetupLayoutCompare (void)
+{
+    emit layoutModeChanged (3);
+}
+
+void medViewerConfigurationRegistration::onSetupLayoutFuse (void)
+{
+    emit layoutModeChanged (4);
 }
 
 medViewerConfiguration *createMedViewerConfigurationRegistration(void)

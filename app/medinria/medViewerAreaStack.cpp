@@ -112,3 +112,13 @@ medViewContainer *medViewerAreaStack::custom(void)
 {
     return d->container_custom;
 }
+
+medViewContainer *medViewerAreaStack::compare(void)
+{
+    return d->container_registration_compare;
+}
+
+medViewContainer *medViewerAreaStack::fuse(void)
+{
+    return d->container_registration_fuse;
+}

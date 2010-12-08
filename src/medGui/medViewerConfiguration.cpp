@@ -47,9 +47,9 @@ medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(n
     d->layoutToolBoxVisibility = true;
     
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
-    connect (d->layoutToolBox, SIGNAL(modeChanged(int)), this, SIGNAL(layoutModeChanged(int)));
+    connect (d->layoutToolBox, SIGNAL(modeChanged(int)),   this, SIGNAL(layoutModeChanged(int)));
     connect (d->layoutToolBox, SIGNAL(presetClicked(int)), this, SIGNAL(layoutPresetClicked(int)));
-    connect (d->layoutToolBox, SIGNAL(split(int,int)), this, SIGNAL(layoutSplit(int,int)));    
+    connect (d->layoutToolBox, SIGNAL(split(int,int)),     this, SIGNAL(layoutSplit(int,int)));    
     this->addToolBox(d->layoutToolBox);
 }
 

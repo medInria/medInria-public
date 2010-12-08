@@ -245,11 +245,9 @@ void medViewerToolBoxView::update(dtkAbstractView *view)
     d->foregroundLookupTableComboBox->setCurrentIndex(d->foregroundLookupTableComboBox->findText(view->property("LookupTable")));
     d->foregroundLookupTableComboBox->blockSignals(false);
 
-    /*
-    d->backgroundLookupTableComboBox->blockSignals(true);
-    d->backgroundLookupTableComboBox->setCurrentIndex(d->backgroundLookupTableComboBox->findText(view->property("BackgroundLookupTable")));
-    d->backgroundLookupTableComboBox->blockSignals(false);
-    */
+    // d->backgroundLookupTableComboBox->blockSignals(true);
+    // d->backgroundLookupTableComboBox->setCurrentIndex(d->backgroundLookupTableComboBox->findText(view->property("BackgroundLookupTable")));
+    // d->backgroundLookupTableComboBox->blockSignals(false);
 
     d->axisVisibilityCheckBox->blockSignals(true);
     d->axisVisibilityCheckBox->setChecked(view->property("ShowAxis") == "true");

@@ -224,6 +224,9 @@ void medDatabaseImporter::run(void)
 	s_patientName.replace (0x00EA, 'e');
 	s_studyName.replace   (0x00EA, 'e');
 	s_seriesName.replace  (0x00EA, 'e');
+	s_patientName.replace (0x00E4, 'a');
+	s_studyName.replace   (0x00E4, 'a');
+	s_seriesName.replace  (0x00E4, 'a');	
 		
         QString imageFileName = medStorage::dataLocation() + "/" +
 		s_patientName + "/" +
