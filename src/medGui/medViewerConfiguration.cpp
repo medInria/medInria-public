@@ -22,6 +22,7 @@
 #include "medToolBox.h"
 #include "medViewerToolBoxLayout.h"
 #include "medViewContainer.h"
+#include "medViewContainerCustom.h"
 
 class medViewerConfigurationPrivate
 {
@@ -130,13 +131,11 @@ void medViewerConfiguration::setLayoutToolBoxVisibility(bool visibility)
 
 void medViewerConfiguration::hideLayoutToolBox(void)
 {
-    //d->layoutToolBoxVisibility = false;
     d->layoutToolBox->hide();
 }
 
 void medViewerConfiguration::showLayoutToolBox(void)
 {
-    //d->layoutToolBoxVisibility = true;
     d->layoutToolBox->show();
 }
 

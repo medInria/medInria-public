@@ -21,9 +21,12 @@
 #define MEDVIEWERCONFIGURATION_H
 
 #include <QtCore>
-
+#include "medViewContainer.h"
+#include "medViewContainerCustom.h"
 class medToolBox;
 class medViewerConfigurationPrivate;
+//class medViewContainer;
+//class medViewContainerCustom;
 
 class medViewerConfiguration : public QObject
 {
@@ -49,7 +52,7 @@ public:
     int  layoutType(void) const;
     
     void setViewLayoutType(int type);
-    int  viewLayoutType(void) const;
+    int viewLayoutType(void) const;
     
     void setCustomLayoutType(int value);
     int customLayoutType(void) const;
@@ -61,6 +64,7 @@ public:
     void showLayoutToolBox(void);
     bool isLayoutToolBoxVisible() const;
     bool isLayoutToolBox(const medToolBox * toolbox);
+
 public slots:
     void addToolBox(medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);

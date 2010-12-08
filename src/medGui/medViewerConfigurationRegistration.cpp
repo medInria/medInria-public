@@ -3,6 +3,7 @@
 
 #include "medViewerToolBoxView.h"
 #include "medToolBoxRegistration.h"
+#include <medGui/medViewContainer.h>
 
 class medViewerConfigurationRegistrationPrivate
 {
@@ -15,12 +16,6 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 {
     // -- Layout toolbox --
     setLayoutToolBoxVisibility(false);
-    // d->layoutToolBox = new medViewerToolBoxLayout(parent);
-    /*
-    connect(d->layoutToolBox, SIGNAL(modeChanged(int)), this, SLOT(switchToContainer(int)));
-    connect(d->layoutToolBox, SIGNAL(split(int, int)), this, SLOT(split(int, int)));
-    connect(d->layoutToolBox, SIGNAL(presetClicked(int)), this, SLOT(switchToContainerPreset(int)));
-    */
 
     // -- View toolbox --
 
@@ -49,7 +44,6 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
     // -- Registration toolbox --
 
     d->registrationToolBox = new medToolBoxRegistration(parent);
-    //d->registrationToolBox->setVisible(true);
 
     //connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(setupLayoutCompare()));
     //connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()), this, SLOT(setupLayoutFuse()));
@@ -60,7 +54,8 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     this->addToolBox( d->registrationToolBox );
 
-    //this->setLayoutType( medViewerConfiguration::TopDbBottomTb );
+    this->setViewLayoutType(medViewContainer::Custom);
+    this->setCustomLayoutType(medViewContainerCustom::A);
 
 }
 

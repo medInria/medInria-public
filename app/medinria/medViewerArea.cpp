@@ -611,15 +611,14 @@ void medViewerArea::setupConfiguration(QString name)
 
     //setup layout type
     switchToContainer(conf->viewLayoutType());
-    if (conf->layoutType() == medViewContainer::Custom)//TODO check index for custom
-        switchToContainerPreset(conf->customLayoutType());
 
+    if (conf->viewLayoutType() == medViewContainer::Custom)//TODO check index for custom
+    {
+        //qDebug()<< "set the preset to "<< conf->customLayoutType();
+        switchToContainerPreset(conf->customLayoutType());
+    }
     //add toolboxes
     foreach (medToolBox * toolbox, conf->toolBoxes() ) {
-        //if (conf->isLayoutToolBox(toolbox))
-        //{
-        //
-        //}
         this->addToolBox(toolbox);
         toolbox->show();
     }
