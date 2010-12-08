@@ -285,10 +285,16 @@ void medViewerArea::switchToPatient(int id)
         connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
         d->view_stacks.insert(d->current_patient, view_stack);
         d->stack->addWidget(view_stack);
-    } else {
+    }
+    else {
         view_stack = d->view_stacks.value(d->current_patient);
     }
 
+    if (d->current_configuration) {
+        switchToContainer (d->current_configuration->viewLayoutType());
+	switchToContainerPreset (d->current_configuration->customLayoutType());
+    }
+    
     d->stack->setCurrentWidget(view_stack);
 
     // Setup navigator
