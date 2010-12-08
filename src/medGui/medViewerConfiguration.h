@@ -42,8 +42,7 @@ public:
         TopTbBottomDb
     };
 
-    void addToolBox(medToolBox *toolbox);
-    void removeToolBox(medToolBox *toolbox);
+
     QList<medToolBox*> toolBoxes(void) const;
     
     void setLayoutType(LayoutType type);
@@ -58,7 +57,11 @@ public:
     void hideDatabase(void);
     void showDatabase(void);
     int databaseVisibility(void) const;
-    
+
+public slots:
+    void addToolBox(medToolBox *toolbox);
+    void removeToolBox(medToolBox *toolbox);
+
 signals:
     void toolboxAdded  (medToolBox *tb);
     void toolboxRemoved(medToolBox *tb);

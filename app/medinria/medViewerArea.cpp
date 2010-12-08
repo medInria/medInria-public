@@ -606,7 +606,8 @@ void medViewerArea::setupConfiguration(QString name)
     connect(conf, SIGNAL(layoutModeChanged(int)),   this, SLOT(switchToContainer(int)));
     connect(conf, SIGNAL(layoutSplit(int,int)),     this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)), this, SLOT(switchToContainerPreset(int)));
-    
+    connect(conf,SIGNAL(toolboxAdded(medToolBox*)),this,SLOT(addToolBox(medToolBox*)));
+    connect(conf,SIGNAL(toolboxRemoved(medToolBox*)),this,SLOT(removeToolBox(medToolBox*)));
     d->current_configuration = name;
     
     this->updateGeometry();

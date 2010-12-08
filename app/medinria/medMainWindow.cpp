@@ -44,6 +44,7 @@
 #include <medGui/medViewerConfiguration.h>
 #include <medGui/medViewerConfigurationFactory.h>
 #include <medGui/medViewerConfigurationVisualization.h>
+#include <medGui/medViewerConfigurationRegistration.h>
 
 #include <QtGui>
 
@@ -165,9 +166,10 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     );
 #endif
 
-    
+    // Registering different configurations
     medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
-    
+    medViewerConfigurationFactory::instance()->registerConfiguration("Registration", createMedViewerConfigurationRegistration);
+
     // Setting up status bar
 
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");

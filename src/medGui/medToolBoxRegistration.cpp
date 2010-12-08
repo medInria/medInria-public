@@ -243,10 +243,6 @@ void medToolBoxRegistration::onFixedImageDropped (void)
 	return;
     }
 
-    if (d->movingView) {
-        d->fixedView->link(d->movingView);
-	d->movingView->update();
-    }
 
     if (d->fuseView)
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
@@ -278,10 +274,6 @@ void medToolBoxRegistration::onMovingImageDropped (void)
 	return;
     }
 
-    if (d->fixedView) {
-        d->fixedView->link(d->movingView);
-	d->movingView->update();
-    }
 
     if (d->fuseView) {
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
