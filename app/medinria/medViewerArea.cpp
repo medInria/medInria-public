@@ -595,8 +595,8 @@ void medViewerArea::setupConfiguration(QString name)
     }
 
     //setup database visibility
-    d->navigator_container->setVisible( conf->databaseVisibility());
-    
+    d->navigator_container->setVisible( conf->isDatabaseVisible());
+
     // Setting up navigator
     
     if (d->navigator)
@@ -616,10 +616,17 @@ void medViewerArea::setupConfiguration(QString name)
 
     //add toolboxes
     foreach (medToolBox * toolbox, conf->toolBoxes() ) {
+        //if (conf->isLayoutToolBox(toolbox))
+        //{
+        //
+        //}
         this->addToolBox(toolbox);
         toolbox->show();
     }
     
+    //setup layout Toolbox Visibility
+    conf->isLayoutToolBoxVisible()?conf->showLayoutToolBox():conf->hideLayoutToolBox();
+
     d->layout->addWidget(d->navigator_container);
     d->layout->addWidget(d->view_container);
     d->layout->addWidget(d->toolbox_container);

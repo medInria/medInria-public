@@ -54,10 +54,13 @@ public:
     void setCustomLayoutType(int value);
     int customLayoutType(void) const;
     
-    void hideDatabase(void);
-    void showDatabase(void);
-    int databaseVisibility(void) const;
-
+    void setDatabaseVisibility(bool);
+    bool isDatabaseVisible(void) const;
+    void setLayoutToolBoxVisibility(bool visibility);
+    void hideLayoutToolBox(void);
+    void showLayoutToolBox(void);
+    bool isLayoutToolBoxVisible() const;
+    bool isLayoutToolBox(const medToolBox * toolbox);
 public slots:
     void addToolBox(medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);

@@ -32,7 +32,8 @@ public:
     int viewLayoutType;
     int layoutType;
     int customLayoutType;
-    int databaseVisibility;
+    bool databaseVisibility;
+    bool layoutToolBoxVisibility;
 };
 
 medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
@@ -41,7 +42,8 @@ medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(n
     d->layoutType = medViewerConfiguration::LeftDbRightTb;
     d->viewLayoutType = medViewContainer::Single;
     d->customLayoutType = 0;
-    d->databaseVisibility = 1;
+    d->databaseVisibility = true;
+    d->layoutToolBoxVisibility = true;
     
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
     connect (d->layoutToolBox, SIGNAL(modeChanged(int)), this, SIGNAL(layoutModeChanged(int)));
@@ -111,17 +113,39 @@ int medViewerConfiguration::customLayoutType(void) const
     return d->customLayoutType;
 }
 
-void medViewerConfiguration::hideDatabase(void)
+void medViewerConfiguration::setDatabaseVisibility(bool visibility)
 {
-    d->databaseVisibility = 0;
+    d->databaseVisibility = visibility;
 }
 
-void medViewerConfiguration::showDatabase(void)
-{
-    d->databaseVisibility = 1;
-}
-
-int medViewerConfiguration::databaseVisibility(void) const
+bool medViewerConfiguration::isDatabaseVisible(void) const
 {
     return d->databaseVisibility;
+}
+
+void medViewerConfiguration::setLayoutToolBoxVisibility(bool visibility)
+{
+    d->layoutToolBoxVisibility = visibility;
+}
+
+void medViewerConfiguration::hideLayoutToolBox(void)
+{
+    //d->layoutToolBoxVisibility = false;
+    d->layoutToolBox->hide();
+}
+
+void medViewerConfiguration::showLayoutToolBox(void)
+{
+    //d->layoutToolBoxVisibility = true;
+    d->layoutToolBox->show();
+}
+
+bool medViewerConfiguration::isLayoutToolBoxVisible(void) const
+{
+    return d->layoutToolBoxVisibility;
+}
+
+bool medViewerConfiguration::isLayoutToolBox(const medToolBox * toolbox)
+{
+    return (toolbox == d->layoutToolBox);
 }

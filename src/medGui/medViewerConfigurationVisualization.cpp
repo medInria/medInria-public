@@ -30,6 +30,8 @@ public:
 medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationVisualizationPrivate)
 {
     // -- Layout toolbox --
+    showLayoutToolBox();
+
     // d->layoutToolBox = new medViewerToolBoxLayout(parent);
     /*
     connect(d->layoutToolBox, SIGNAL(modeChanged(int)), this, SLOT(switchToContainer(int)));
