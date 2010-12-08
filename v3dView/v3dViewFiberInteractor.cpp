@@ -237,6 +237,10 @@ void v3dViewFiberInteractor::onSelectionValidated(QString name)
     double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
 	
     d->manager->Validate (name.toAscii().constData(), color_d);
+
+    d->data->enableWriter ("v3dDataFibersWriter");
+    d->data->write ("/volatile/pfillard/Work/data/fibers.xml");
+    
 }
 
 void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
