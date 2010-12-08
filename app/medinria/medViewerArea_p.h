@@ -45,6 +45,9 @@ public:
     QPointer<medClutEditor>  transFun;
 
     QStackedWidget *stack;
+    
+    QBoxLayout *layout;
+    QBoxLayout *navigator_container_layout;
 
     QMutex mutex;
   
@@ -56,7 +59,8 @@ public:
     int current_patient;
     int current_container;
     int current_container_preset;
-    QString current_configuration;
+    QString current_configuration_name;
+    medViewerConfiguration *current_configuration;
 };
 
 #endif

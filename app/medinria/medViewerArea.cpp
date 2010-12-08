@@ -70,11 +70,14 @@
 
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
 {
+    d->layout = 0;
+
     // -- Internal logic
 
     d->current_patient = -1;
     d->configurations = new QHash<QString,medViewerConfiguration *>();
-    d->current_configuration = "";
+    d->current_configuration_name = "";
+    d->current_configuration = 0;
 
     // -- User interface setup
 
@@ -96,10 +99,12 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // Setting up navigator container
 
-    d->navigator = 0;
-    
     d->navigator_container = new QFrame(this);
     d->navigator_container->setObjectName("medNavigatorContainer");
+    
+    d->navigator = 0;//new medDatabaseNavigator(d->navigator_container);
+
+    d->navigator_container_layout = 0;
 
     //action for transfer function
     QAction * transFunAction =
@@ -288,7 +293,8 @@ void medViewerArea::switchToPatient(int id)
 
     // Setup navigator
 
-    d->navigator->onPatientClicked(d->current_patient);
+    if (d->navigator)
+        d->navigator->onPatientClicked(d->current_patient);
 
     // Setup patient toolbox
     //TODO emit a signal to the Patient Toolbox
@@ -315,7 +321,10 @@ void medViewerArea::switchToContainer(int index)
 
     if (d->view_stacks.count())
         if (d->view_stacks.value(d->current_patient))
-	    d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
+            d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
+    
+    if (d->current_configuration)
+        d->current_configuration->setViewLayoutType(index);
 }
 
 //! Set custom view preset
@@ -335,6 +344,9 @@ void medViewerArea::switchToContainerPreset(int index)
             }
         }
     }
+    
+    if (d->current_configuration)
+        d->current_configuration->setCustomLayoutType(index);
 }
 
 void medViewerArea::addToolBox(medToolBox *toolbox)
@@ -517,7 +529,7 @@ void medViewerArea::updateTransferFunction()
 
 void medViewerArea::setupConfiguration(QString name)
 {
-    if (d->current_configuration == name)
+    if (d->current_configuration_name == name)
         return;
     
     medViewerConfiguration *conf = NULL;
@@ -533,12 +545,17 @@ void medViewerArea::setupConfiguration(QString name)
 
     if (!conf)
         return;
+    
+    d->current_configuration = conf;
 
     //clean toolboxes
     d->toolbox_container->clear();
 
-    QBoxLayout *layout = 0;
-    QBoxLayout *navigator_container_layout = 0;
+    if (d->layout)
+        delete d->layout;
+    
+    if (d->navigator_container_layout)
+        delete d->navigator_container_layout;
     
     //setup orientation
     switch (conf->layoutType()){
@@ -549,13 +566,13 @@ void medViewerArea::setupConfiguration(QString name)
               d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
               d->toolbox_container->setFixedHeight(200);
               medDatabaseNavigatorController::instance()->setOrientation( Qt::Horizontal );
-              navigator_container_layout = new QHBoxLayout(d->navigator_container);
-              navigator_container_layout->setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
+              d->navigator_container_layout = new QHBoxLayout(d->navigator_container);
+              d->navigator_container_layout->setAlignment(Qt::AlignVCenter|Qt::AlignLeft);
               d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
               d->navigator_container->setFixedHeight(186);
-              layout = new QVBoxLayout(this);
-              layout->setContentsMargins(0, 0, 0, 0);
-              layout->setSpacing(0);
+              d->layout = new QVBoxLayout(this);
+              d->layout->setContentsMargins(0, 0, 0, 0);
+              d->layout->setSpacing(0);
            }
             break;
             
@@ -567,13 +584,13 @@ void medViewerArea::setupConfiguration(QString name)
               d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
               d->toolbox_container->setFixedWidth(320);
               medDatabaseNavigatorController::instance()->setOrientation( Qt::Vertical );
-              navigator_container_layout = new QVBoxLayout(d->navigator_container);
-              navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);    
+              d->navigator_container_layout = new QVBoxLayout(d->navigator_container);
+              d->navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);    
               d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
               d->navigator_container->setFixedWidth(186);
-              layout = new QHBoxLayout(this);
-              layout->setContentsMargins(0, 0, 0, 0);
-              layout->setSpacing(0);
+              d->layout = new QHBoxLayout(this);
+              d->layout->setContentsMargins(0, 0, 0, 0);
+              d->layout->setSpacing(0);
            }
     }
 
@@ -581,14 +598,16 @@ void medViewerArea::setupConfiguration(QString name)
     d->navigator_container->setVisible( conf->databaseVisibility());
     
     // Setting up navigator
+    
     if (d->navigator)
         delete d->navigator;
     d->navigator = new medDatabaseNavigator(d->navigator_container);
+    d->navigator->onPatientClicked(d->current_patient);
     
-    navigator_container_layout->setContentsMargins(0, 0, 0, 0);
-    navigator_container_layout->setSpacing(0);
-    navigator_container_layout->addWidget(d->toolboxPatient);
-    navigator_container_layout->addWidget(d->navigator);
+    d->navigator_container_layout->setContentsMargins(0, 0, 0, 0);
+    d->navigator_container_layout->setSpacing(0);
+    d->navigator_container_layout->addWidget(d->toolboxPatient);
+    d->navigator_container_layout->addWidget(d->navigator);
 
     //setup layout type
     switchToContainer(conf->viewLayoutType());
@@ -596,19 +615,22 @@ void medViewerArea::setupConfiguration(QString name)
         switchToContainerPreset(conf->customLayoutType());
 
     //add toolboxes
-    foreach (medToolBox * toolbox, conf->toolBoxes() )
+    foreach (medToolBox * toolbox, conf->toolBoxes() ) {
         this->addToolBox(toolbox);
+        toolbox->show();
+    }
     
-    layout->addWidget(d->navigator_container);
-    layout->addWidget(d->view_container);
-    layout->addWidget(d->toolbox_container);
+    d->layout->addWidget(d->navigator_container);
+    d->layout->addWidget(d->view_container);
+    d->layout->addWidget(d->toolbox_container);
     
     connect(conf, SIGNAL(layoutModeChanged(int)),   this, SLOT(switchToContainer(int)));
     connect(conf, SIGNAL(layoutSplit(int,int)),     this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)), this, SLOT(switchToContainerPreset(int)));
     connect(conf,SIGNAL(toolboxAdded(medToolBox*)),this,SLOT(addToolBox(medToolBox*)));
     connect(conf,SIGNAL(toolboxRemoved(medToolBox*)),this,SLOT(removeToolBox(medToolBox*)));
-    d->current_configuration = name;
+
+    d->current_configuration_name = name;
     
     this->updateGeometry();
 }
