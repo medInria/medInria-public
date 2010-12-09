@@ -49,6 +49,8 @@ public slots:
 
     void open(const medDataIndex& index);
     void open(const QString& file);
+    
+    void onViewClosed(void);
 
     void switchToPatient(int index);
     void switchToContainer(int index);

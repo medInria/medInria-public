@@ -24,6 +24,7 @@
 #include <dtkCore/dtkAbstractView.h>
 
 #include <medCore/medAbstractView.h>
+#include <medCore/medViewManager.h>
 
 medViewContainerCustom::medViewContainerCustom (QWidget *parent) : medViewContainer(parent)
 {
@@ -118,7 +119,7 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
         d->layout->removeItem(d->layout->itemAt(0));
 
     if (d->view)
-        this->onViewClosed();
+        this->onViewClosing();
     
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->layout->addWidget(view->widget(), 0, 0);
@@ -128,7 +129,7 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
     
     this->synchronize_2 (view);
 
-    connect (view, SIGNAL (closing()), this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
 }
 
 void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
@@ -155,14 +156,16 @@ void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
     }
 }
 
-void medViewContainerCustom::onViewClosed (void)
+void medViewContainerCustom::onViewClosing (void)
 {
     if (d->view) {
         d->layout->removeWidget (d->view->widget());
-	d->view->widget()->hide();
-	this->desynchronize_2 (d->view);
-	disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosed()));
-	d->view = NULL;
+        this->desynchronize_2 (d->view);
+        disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+                
+        d->view->close();
+        
+        d->view = NULL;
     }
 }
 

@@ -24,6 +24,7 @@
 #include <dtkCore/dtkAbstractView.h>
 
 #include <medCore/medAbstractView.h>
+#include <medCore/medViewManager.h>
 
 void medViewContainerSingle2::setView (dtkAbstractView *view)
 {
@@ -32,17 +33,17 @@ void medViewContainerSingle2::setView (dtkAbstractView *view)
     d->view = view;
 
     // d->pool->appendView (view); // only difference with medViewContainerSingle: do not add the view to the pool
-    connect (view, SIGNAL (closing()), this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
 }
 
-void medViewContainerSingle2::onViewClosed (void)
+void medViewContainerSingle2::onViewClosing (void)
 {
     if (d->view) {
         d->layout->removeWidget(d->view->widget());
-	d->view->widget()->hide();
-	disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosed()));
-	// d->pool->removeView (d->view); // do not reomve it from the pool
-	d->view = NULL;
+        d->view->widget()->hide();
+        disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+        // d->pool->removeView (d->view); // do not remove it from the pool
+        d->view = NULL;
     }
 }
 
@@ -99,13 +100,12 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
 	
 	if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
       d->pool->appendView (medView);
-    connect (view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
     connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
 }
 
 void medViewContainerMulti::layout(QList<QWidget *> content)
 {
-    
     int row = 0;
     int col = 0, colmax = 0;
     
@@ -145,30 +145,34 @@ void medViewContainerMulti::layout(QList<QWidget *> content)
     d->layout->setContentsMargins(1, 1, 1, 1);
 }
 
-void medViewContainerMulti::onViewClosed (void)
+void medViewContainerMulti::onViewClosing (void)
 { 
     if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+        
+        QList<QWidget *> content;
+        for(int i = 0; i < d->layout->rowCount() ; i++) {
+            for(int j = 0; j < d->layout->columnCount() ; j++) {
+                if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+                    if(item->widget()!=view->widget()->parent())
+                        content << item->widget();
+                    else {
+                        item->widget()->hide();
+                    }
 
-      QList<QWidget *> content;
-      for(int i = 0; i < d->layout->rowCount() ; i++) {
-        for(int j = 0; j < d->layout->columnCount() ; j++) {
-	  if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
-	    if(item->widget()!=view->widget()->parent())
-	      content << item->widget();
-	    else
-	      item->widget()->hide();
-	    d->layout->removeItem(item);
-	  }
+                    d->layout->removeItem(item);
+                }
+            }
         }
-      }
-
-      disconnect (view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
-      disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
-      
+        
+        disconnect (view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
+        disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+        
 		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
-      d->pool->removeView (medView);
-      
-      this->layout (content);
+            d->pool->removeView (medView);
+        
+        view->close();
+        
+        this->layout (content);
     }
 }
 

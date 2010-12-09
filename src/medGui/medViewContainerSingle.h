@@ -38,7 +38,7 @@ public:
     virtual void setView(dtkAbstractView *view);
 
 public slots:
-    virtual void onViewClosed (void);
+    virtual void onViewClosing (void);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

@@ -122,7 +122,7 @@ void medViewPool::removeView (medAbstractView *view)
                 }
             
             medAbstractView *oldDaddy = refView;
-            oldDaddy->setProperty ("Daddy", "false");
+            oldDaddy->setProperty ("Daddy", "false"); // not necessary
         }
         else { // we are not daddy, just unlink
             refView->unlink (view);

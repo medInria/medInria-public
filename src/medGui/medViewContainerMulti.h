@@ -34,7 +34,7 @@ public:
     void setView(dtkAbstractView *view);
 
 public slots:
-    virtual void onViewClosed (void);
+    virtual void onViewClosing (void);
 };
 
 
@@ -58,7 +58,7 @@ public:
     void layout (QList<QWidget *> content);
 
 public slots:
-    void onViewClosed (void);
+    void onViewClosing (void);
    
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

@@ -179,76 +179,76 @@ void medViewerArea::open(const medDataIndex& index)
 {
     if(!((medDataIndex)index).isValid())
         return;
-
+    
     this->switchToPatient(index.patientId());
-
+    
     if(((medDataIndex)index).isValidForSeries()) {
-
-    dtkAbstractData *data = NULL;
-    dtkAbstractView *view = NULL;
-
-    if(!data)
-        data = medDataManager::instance()->data(index);
-
-    if(!data)
-        data = medDatabaseNonPersitentController::instance()->data(index);
-
-    if(!data)
-        data = medDatabaseController::instance()->read(index);
-
-    if(!data)
-        return;
-
-    medDataManager::instance()->insert(index, data);
-
-    if(!view)
-        view = d->view_stacks.value(d->current_patient)->current()->current()->view();
-
-    if(!view)
-        view = dtkAbstractViewFactory::instance()->create("v3dView");
-    
-    if(!view) {
-        qDebug() << "Unable to create a v3dView";
-        return;
-    }
-
-    medViewManager::instance()->insert(index, view);
-    
-    view->setData(data);
-    view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
-
-    QMutexLocker ( &d->mutex );
-    d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
-    d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
-	
-	
-    return;
-
-    }
-
-    if(((medDataIndex)index).isValidForPatient()) {
-
-    this->switchToPatient(index.patientId());
-    this->switchToContainer(1);
-
-    QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
-    stQuery.prepare("SELECT * FROM study WHERE patient = :id");
-    stQuery.bindValue(":id", index.patientId());
-    if(!stQuery.exec())
-	qDebug() << DTK_COLOR_FG_RED << stQuery.lastError() << DTK_NO_COLOR;
-
-    while(stQuery.next()) {
-      
-        QSqlQuery seQuery(*(medDatabaseController::instance()->database()));
-        seQuery.prepare("SELECT * FROM series WHERE study = :id");
-        seQuery.bindValue(":id", stQuery.value(0));
-        if(!seQuery.exec())
-	    qDebug() << DTK_COLOR_FG_RED << seQuery.lastError() << DTK_NO_COLOR;
         
-        while(seQuery.next())
-	    this->open(medDataIndex(index.patientId(), stQuery.value(0).toInt(), seQuery.value(0).toInt()));
+        dtkAbstractData *data = NULL;
+        dtkAbstractView *view = NULL;
+        
+        if(!data)
+            data = medDataManager::instance()->data(index);
+        
+        if(!data)
+            data = medDatabaseNonPersitentController::instance()->data(index);
+        
+        if(!data)
+            data = medDatabaseController::instance()->read(index);
+        
+        if(!data)
+            return;
+        
+        medDataManager::instance()->insert(index, data);
+        
+        if(!view)
+            view = d->view_stacks.value(d->current_patient)->current()->current()->view();
+        
+        if(!view) {
+            view = dtkAbstractViewFactory::instance()->create("v3dView");
+            connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
+        }
+        
+        if(!view) {
+            qDebug() << "Unable to create a v3dView";
+            return;
+        }
+        
+        medViewManager::instance()->insert(index, view);
+        
+        view->setData(data);
+        view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
+        
+        QMutexLocker ( &d->mutex );
+        d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
+        d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
+        
+        return;
     }
-
+    
+    if(((medDataIndex)index).isValidForPatient()) {
+        
+        this->switchToPatient(index.patientId());
+        this->switchToContainer(1);
+        
+        QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
+        stQuery.prepare("SELECT * FROM study WHERE patient = :id");
+        stQuery.bindValue(":id", index.patientId());
+        if(!stQuery.exec())
+            qDebug() << DTK_COLOR_FG_RED << stQuery.lastError() << DTK_NO_COLOR;
+        
+        while(stQuery.next()) {
+            
+            QSqlQuery seQuery(*(medDatabaseController::instance()->database()));
+            seQuery.prepare("SELECT * FROM series WHERE study = :id");
+            seQuery.bindValue(":id", stQuery.value(0));
+            if(!seQuery.exec())
+                qDebug() << DTK_COLOR_FG_RED << seQuery.lastError() << DTK_NO_COLOR;
+            
+            while(seQuery.next())
+                this->open(medDataIndex(index.patientId(), stQuery.value(0).toInt(), seQuery.value(0).toInt()));
+        }
+        
     }
 }
 
@@ -262,6 +262,18 @@ void medViewerArea::open(const QString& file)
     this->open(medDatabaseNonPersitentController::instance()->read(file));
 }
 
+void medViewerArea::onViewClosed(void)
+{
+    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView*> (this->sender())) {        
+        QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
+        foreach( medToolBox *tb, toolboxes)
+            tb->update(NULL);
+        
+        medDataIndex index = medViewManager::instance()->index( view );
+        medViewManager::instance()->remove(index, view); // deletes the view
+    }
+}
+
 //! Switch the view area layout to the one of patient with database index \param index.
 /*! 
  * 
@@ -269,7 +281,7 @@ void medViewerArea::open(const QString& file)
 
 void medViewerArea::switchToPatient(int id)
 {
-    if(id < 0)
+    if(id < 0 || d->current_patient==id)
         return;
 
     d->current_patient = id;
@@ -638,11 +650,11 @@ void medViewerArea::setupConfiguration(QString name)
     d->layout->addWidget(d->view_container);
     d->layout->addWidget(d->toolbox_container);
     
-    connect(conf, SIGNAL(layoutModeChanged(int)),   this, SLOT(switchToContainer(int)));
-    connect(conf, SIGNAL(layoutSplit(int,int)),     this, SLOT(split(int,int)));
-    connect(conf, SIGNAL(layoutPresetClicked(int)), this, SLOT(switchToContainerPreset(int)));
-    connect(conf,SIGNAL(toolboxAdded(medToolBox*)),this,SLOT(addToolBox(medToolBox*)));
-    connect(conf,SIGNAL(toolboxRemoved(medToolBox*)),this,SLOT(removeToolBox(medToolBox*)));
+    connect(conf, SIGNAL(layoutModeChanged(int)),     this, SLOT(switchToContainer(int)));
+    connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)));
+    connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));
+    connect(conf, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)));
+    connect(conf, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)));
 
     d->current_configuration_name = name;
     

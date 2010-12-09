@@ -24,6 +24,7 @@
 #include <dtkCore/dtkAbstractView.h>
 
 #include <medCore/medAbstractView.h>
+#include <medCore/medViewManager.h>
 
 medViewContainer::Type medViewContainerSingle::type(void)
 {
@@ -55,19 +56,19 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
 
     if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
         d->pool->appendView (medView);
-    connect (view, SIGNAL (closing()), this, SLOT (onViewClosed()));
+    connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
 }
 
-void medViewContainerSingle::onViewClosed (void)
+void medViewContainerSingle::onViewClosing (void)
 {
-  if (d->view) {
-    d->layout->removeWidget(d->view->widget());
-    d->view->widget()->hide();
-    disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosed()));
-    if (medAbstractView *medView = dynamic_cast<medAbstractView*> (d->view))
-        d->pool->removeView (medView);
-    d->view = NULL;
-  }
+    if (d->view) {
+        d->layout->removeWidget (d->view->widget());
+        disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+        if (medAbstractView *medView = dynamic_cast<medAbstractView*> (d->view))
+            d->pool->removeView (medView);
+        d->view->close();
+        d->view = NULL;
+    }
 }
 
 void medViewContainerSingle::dragEnterEvent(QDragEnterEvent *event)
