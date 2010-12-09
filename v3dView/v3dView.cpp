@@ -325,9 +325,8 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     // if(qApp->arguments().contains("--stereo"))
     //     renwin->SetStereoRender(1);
     
-    
-    
     d->vtkWidget->SetRenderWindow(renwin);
+    renwin->Delete();
     
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setContentsMargins(0, 0, 0, 0);
@@ -594,6 +593,14 @@ v3dView::~v3dView(void)
     d->view3D->UnInstallInteractor();
     d->view3D->Delete();
     d->renderer3D->Delete();
+    
+    d->collection->Delete();
+    d->collectionAxial->Delete();
+    d->collectionSagittal->Delete();
+    d->collectionCoronal->Delete();
+    d->collectionWindowLevel->Delete();
+    d->collectionPos->Delete();
+
     d->observer->Delete();
     
     delete d;
