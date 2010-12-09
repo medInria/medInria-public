@@ -6,6 +6,7 @@
 
 #include "medViewerConfiguration.h"
 
+class medViewContainerStack;
 class medViewerConfigurationRegistrationPrivate;
 
 class medViewerConfigurationRegistration : public medViewerConfiguration
@@ -17,6 +18,8 @@ public:
     ~medViewerConfigurationRegistration(void);
 
     virtual QString description(void) const;
+    
+    void setupViewContainerStack (medViewContainerStack *container);
 
 public slots:
     void onSetupLayoutCompare (void);

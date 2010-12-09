@@ -47,6 +47,7 @@ set(${PROJECT_NAME}_HEADERS
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
+  medViewContainerStack.h
   medWorkspaceShifter.h
   medLUTtoXMLWriter.h
   medXMLtoLUTReader.h
@@ -82,6 +83,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
+  medViewContainerStack.h
   medWorkspaceShifter.h
   medSaveLUTDialog.h
   medLoadLUTDialog.h
@@ -115,6 +117,7 @@ set(${PROJECT_NAME}_SOURCES
   medViewContainerCustom.cpp
   medViewContainerMulti.cpp
   medViewContainerSingle.cpp
+  medViewContainerStack.cpp
   medWorkspaceShifter.cpp
   medLUTToXMLWriter.cpp
   medXMLToLUTReader.cpp

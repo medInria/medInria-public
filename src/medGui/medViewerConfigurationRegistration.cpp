@@ -4,6 +4,10 @@
 #include "medViewerToolBoxView.h"
 #include "medToolBoxRegistration.h"
 #include <medGui/medViewContainer.h>
+#include <medGui/medViewContainerStack.h>
+
+#include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkAbstractView.h>
 
 class medViewerConfigurationRegistrationPrivate
 {
@@ -79,6 +83,24 @@ void medViewerConfigurationRegistration::onSetupLayoutCompare (void)
 void medViewerConfigurationRegistration::onSetupLayoutFuse (void)
 {
     emit layoutModeChanged (4);
+}
+
+void medViewerConfigurationRegistration::setupViewContainerStack(medViewContainerStack *container)
+{
+    if (!container) {
+        return;
+    }
+    
+    medViewContainer *fuseContainer = container->fuse();
+    if (fuseContainer->current()->view()) {
+        d->registrationToolBox->setFuseView ( fuseContainer->current()->view() );
+    } 
+    else {
+        if (dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView")) {
+            fuseContainer->current()->setView (view);
+            d->registrationToolBox->setFuseView (view);
+        }
+    }
 }
 
 medViewerConfiguration *createMedViewerConfigurationRegistration(void)

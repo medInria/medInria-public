@@ -25,8 +25,7 @@
 #include "medViewContainerCustom.h"
 class medToolBox;
 class medViewerConfigurationPrivate;
-//class medViewContainer;
-//class medViewContainerCustom;
+class medViewContainerStack;
 
 class medViewerConfiguration : public QObject
 {
@@ -64,6 +63,8 @@ public:
     void showLayoutToolBox(void);
     bool isLayoutToolBoxVisible() const;
     bool isLayoutToolBox(const medToolBox * toolbox);
+    
+    virtual void setupViewContainerStack(medViewContainerStack *container);
 
 public slots:
     void addToolBox(medToolBox *toolbox);

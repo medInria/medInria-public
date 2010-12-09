@@ -22,7 +22,7 @@
 
 class medToolBoxContainer;
 class medDatabaseNavigator;
-class medViewerAreaStack;
+class medViewContainerStack;
 class medViewerConfiguration;
 class medClutEditor;
 class QStackedWidget;
@@ -51,7 +51,7 @@ public:
 
     QMutex mutex;
   
-    QHash<int, medViewerAreaStack *> view_stacks;
+    QHash<int, medViewContainerStack *> view_stacks;
     QHash<QString,medViewerConfiguration*> *configurations;
 
 

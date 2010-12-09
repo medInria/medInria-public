@@ -19,10 +19,10 @@
 
 #include "medViewerArea.h"
 #include "medViewerArea_p.h"
-#include "medViewerAreaStack.h"
-#include "medViewerConfigurator.h"
+// #include "medViewerConfigurator.h"
 #include "medViewerToolBoxConfiguration.h"
 
+#include "medGui/medViewContainerStack.h"
 #include "medGui/medViewerToolBoxLayout.h"
 #include "medViewerToolBoxPatient.h"
 #include "medGui/medViewerToolBoxView.h"
@@ -276,11 +276,10 @@ void medViewerArea::switchToPatient(int id)
 
     // Setup view container
 
-    medViewerAreaStack *view_stack;
+    medViewContainerStack *view_stack;
 
     if(!d->view_stacks.contains(d->current_patient)) {
-        view_stack = new medViewerAreaStack(this);
-        view_stack->setPatientId(d->current_patient);
+        view_stack = new medViewContainerStack(this);
         connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
         connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
         d->view_stacks.insert(d->current_patient, view_stack);
@@ -291,8 +290,9 @@ void medViewerArea::switchToPatient(int id)
     }
 
     if (d->current_configuration) {
+        d->current_configuration->setupViewContainerStack( view_stack );
         switchToContainer (d->current_configuration->viewLayoutType());
-	switchToContainerPreset (d->current_configuration->customLayoutType());
+        switchToContainerPreset (d->current_configuration->customLayoutType());
     }
     
     d->stack->setCurrentWidget(view_stack);
@@ -422,7 +422,7 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
  *  A stack is a set a view containers for a given patient.
  */
 
-medViewerAreaStack *medViewerArea::currentStack(void)
+medViewContainerStack *medViewerArea::currentStack(void)
 {
     return d->view_stacks.value(d->current_patient);
 }
@@ -615,15 +615,17 @@ void medViewerArea::setupConfiguration(QString name)
     d->navigator_container_layout->addWidget(d->toolboxPatient);
     d->navigator_container_layout->addWidget(d->navigator);
 
-    //setup layout type
+    // setup layout type
+    if (d->view_stacks.contains(d->current_patient)) {
+        conf->setupViewContainerStack( d->view_stacks[d->current_patient] );
+    }
     switchToContainer(conf->viewLayoutType());
 
-    if (conf->viewLayoutType() == medViewContainer::Custom)//TODO check index for custom
-    {
-        //qDebug()<< "set the preset to "<< conf->customLayoutType();
+    if (conf->viewLayoutType() == medViewContainer::Custom) {
         switchToContainerPreset(conf->customLayoutType());
     }
-    //add toolboxes
+    
+    // add toolboxes
     foreach (medToolBox * toolbox, conf->toolBoxes() ) {
         this->addToolBox(toolbox);
         toolbox->show();

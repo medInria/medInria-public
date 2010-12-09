@@ -1,4 +1,4 @@
-/* medViewerAreaStack.h --- 
+/* medViewContainerStack.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,23 +17,23 @@
  * 
  */
 
-#ifndef MEDVIEWERAREASTACK_H
-#define MEDVIEWERAREASTACK_H
+#ifndef MEDVIEWCONTAINERSTACK_H
+#define MEDVIEWCONTAINERSTACK_H
 
 #include <QtGui>
 
 class dtkAbstractView;
 class medDataIndex;
 class medViewContainer;
-class medViewerAreaStackPrivate;
+class medViewContainerStackPrivate;
 
-class medViewerAreaStack : public QStackedWidget
+class medViewContainerStack : public QStackedWidget
 {
     Q_OBJECT
 
 public:
-     medViewerAreaStack(QWidget *parent = 0);
-    ~medViewerAreaStack(void);
+     medViewContainerStack(QWidget *parent = 0);
+    ~medViewContainerStack(void);
 
     medViewContainer *current(void);
 
@@ -43,14 +43,12 @@ public:
     medViewContainer *compare (void);
     medViewContainer *fuse (void);
 
-    void setPatientId(int id);
-
 signals:
     void dropped(const medDataIndex&);
     void focused(dtkAbstractView *);
 
 private:
-    medViewerAreaStackPrivate *d;
+    medViewContainerStackPrivate *d;
 };
 
 #endif

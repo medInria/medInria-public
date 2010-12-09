@@ -61,10 +61,7 @@ public:
 
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
 {
-    d->fuseView = dtkAbstractViewFactory::instance()->create("v3dView");
-
-    if (d->fuseView)
-        d->fuseView->enableInteractor("v3dViewFuseInteractor");
+    d->fuseView = 0; 
     
     d->fixedData  = NULL;
     d->movingData = NULL;
@@ -246,13 +243,13 @@ void medToolBoxRegistration::onFixedImageDropped (void)
 
     if (d->fuseView)
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-	    if (d->movingData) {
-	        interactor->setData(d->fixedData,   0);
-		interactor->setData(d->movingData,  1);
-		d->fuseView->reset();
-		d->fuseView->update();
-	    }
-	}
+            if (d->movingData) {
+                interactor->setData(d->fixedData,   0);
+                interactor->setData(d->movingData,  1);
+                d->fuseView->reset();
+                d->fuseView->update();
+            }
+        }
 }
 
 void medToolBoxRegistration::onMovingImageDropped (void)
@@ -277,19 +274,18 @@ void medToolBoxRegistration::onMovingImageDropped (void)
 
     if (d->fuseView) {
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-	    if (d->fixedData) {
+            if (d->fixedData) {
                 interactor->setData(d->fixedData,   0);
                 interactor->setData(d->movingData,  1);
                 d->fuseView->reset();
                 d->fuseView->update();
-	    }
-	}
+            }
+        }
     }
 }
 
 void medToolBoxRegistration::onToolBoxChosen(const QString& id)
 {
-
     medToolBoxRegistrationCustom *toolbox = medToolBoxFactory::instance()->createCustomRegistrationToolBox(id);
 
     if(!toolbox) {
@@ -306,4 +302,13 @@ void medToolBoxRegistration::onToolBoxChosen(const QString& id)
     }
     d->customToolBox = toolbox;
     emit addToolBox(toolbox);
+}
+
+void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
+{
+    if (!view)
+        return;
+    
+    d->fuseView = view;
+    d->fuseView->enableInteractor("v3dViewFuseInteractor");
 }

@@ -34,9 +34,7 @@ set(${PROJECT_NAME}_HEADERS
   medMainWindow.h
   medViewerArea.h
   medViewerArea_p.h
-  medViewerAreaStack.h
   medViewerConfiguration.h
-# medViewerConfigurator.h
   medViewerToolBoxConfiguration.h
   medViewerToolBoxLayout.h
   medViewerToolBoxPatient.h
@@ -52,8 +50,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserToolBoxSource.h
   medMainWindow.h
   medViewerArea.h
-  medViewerAreaStack.h
-# medViewerConfigurator.h
   medViewerToolBoxConfiguration.h
   medViewerToolBoxPatient.h)
 
@@ -66,8 +62,6 @@ set(${PROJECT_NAME}_SOURCES
   medBrowserToolBoxSource.cpp
   medMainWindow.cpp
   medViewerArea.cpp
-  medViewerAreaStack.cpp
-#  medViewerConfigurator.cpp
   medViewerToolBoxConfiguration.cpp
   medViewerToolBoxPatient.cpp
   main.cpp)

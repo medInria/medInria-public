@@ -1,4 +1,4 @@
-/* medViewerAreaStack.cpp --- 
+/* medViewContainerStack.cpp --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,18 +17,16 @@
  * 
  */
 
-#include "medViewerAreaStack.h"
+#include "medViewContainerStack.h"
 
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerCustom.h>
 #include <medGui/medViewContainerMulti.h>
 #include <medGui/medViewContainerSingle.h>
 
-class medViewerAreaStackPrivate
+class medViewContainerStackPrivate
 {
 public:
-    int id;
-
     medViewContainerSingle *container_single;
     medViewContainerMulti *container_multi;
     medViewContainerCustom *container_custom;
@@ -36,7 +34,7 @@ public:
     medViewContainer *container_registration_fuse;
 };
 
-medViewerAreaStack::medViewerAreaStack(QWidget *parent) : QStackedWidget(parent), d(new medViewerAreaStackPrivate)
+medViewContainerStack::medViewContainerStack(QWidget *parent) : QStackedWidget(parent), d(new medViewContainerStackPrivate)
 {
     d->container_single = new medViewContainerSingle(this);
     d->container_multi = new medViewContainerMulti(this);
@@ -66,19 +64,14 @@ medViewerAreaStack::medViewerAreaStack(QWidget *parent) : QStackedWidget(parent)
     connect(d->container_registration_fuse, SIGNAL(dropped(const medDataIndex&)), this, SIGNAL(dropped(const medDataIndex&)));
 }
 
-medViewerAreaStack::~medViewerAreaStack(void)
+medViewContainerStack::~medViewContainerStack(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medViewerAreaStack::setPatientId(int id)
-{
-    d->id = id;
-}
-
-medViewContainer *medViewerAreaStack::current(void)
+medViewContainer *medViewContainerStack::current(void)
 {
     if(this->currentIndex() == 0)
         return d->container_single;
@@ -98,27 +91,27 @@ medViewContainer *medViewerAreaStack::current(void)
     return NULL;
 }
 
-medViewContainer *medViewerAreaStack::single(void)
+medViewContainer *medViewContainerStack::single(void)
 {
     return d->container_single;
 }
 
-medViewContainer *medViewerAreaStack::multi(void)
+medViewContainer *medViewContainerStack::multi(void)
 {
     return d->container_multi;
 }
 
-medViewContainer *medViewerAreaStack::custom(void)
+medViewContainer *medViewContainerStack::custom(void)
 {
     return d->container_custom;
 }
 
-medViewContainer *medViewerAreaStack::compare(void)
+medViewContainer *medViewContainerStack::compare(void)
 {
     return d->container_registration_compare;
 }
 
-medViewContainer *medViewerAreaStack::fuse(void)
+medViewContainer *medViewContainerStack::fuse(void)
 {
     return d->container_registration_fuse;
 }

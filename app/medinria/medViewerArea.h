@@ -27,7 +27,7 @@ class dtkAbstractView;
 class medDataIndex;
 class medToolBox;
 class medViewContainer;
-class medViewerAreaStack;
+class medViewContainerStack;
 class medViewerAreaPrivate;
 class medViewerConfiguration;
 
@@ -61,9 +61,9 @@ protected slots:
     void onViewFocused(dtkAbstractView *view);
 
 protected:
-    medViewerAreaStack *currentStack(void);
-    medViewContainer   *currentContainer(void);
-    medViewContainer   *currentContainerFocused(void);
+    medViewContainerStack *currentStack(void);
+    medViewContainer      *currentContainer(void);
+    medViewContainer      *currentContainerFocused(void);
 
 protected slots:
     void bringUpTransferFunction(bool checked);

@@ -40,10 +40,12 @@ public:
 	
     dtkAbstractView *fixedView(void);
     dtkAbstractView *movingView(void);
-    dtkAbstractView *fuseView(void);
 
     dtkAbstractDataImage *fixedData(void);
     dtkAbstractDataImage *movingData(void);
+    
+    void setFuseView(dtkAbstractView *view);
+    dtkAbstractView *fuseView(void);
 
 signals:
     void setupLayoutCompare(void);
