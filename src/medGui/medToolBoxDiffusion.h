@@ -24,6 +24,7 @@
 #include "medToolBox.h"
 
 class dtkAbstractView;
+class dtkAbstractData;
 class medToolBoxDiffusionPrivate;
 class medDataIndex;
 
@@ -44,14 +45,7 @@ public slots:
     
     void clear(void);
 
-    void onColorModeChanged      (int index);
-    void onGPUActivated          (int value);
-    void onLinesRenderingModeSelected   (bool value);
-    void onRibbonsRenderingModeSelected (bool value);
-    void onTubesRenderingModeSelected   (bool value);
-    void onBundlingBoxActivated         (int value);
-
-    void onBundleValidated (QString name);
+    void addBundle(QString name);
 
     void onObjectDropped (void);
 
@@ -70,7 +64,21 @@ public slots:
       void onComputeCs  (void);
       void onComputeVR  (void);
     */
+    
+    dtkAbstractData *output(void);
 
+signals:
+    void fiberSelectionValidated(void);
+    void fiberSelectionTagged(void);
+    void fiberSelectionReset(void);
+    void fiberRadiusSet(int);
+    void fiberColorModeChanged(int);
+    void GPUActivated(bool);
+    void lineModeSelected(bool);
+    void ribbonModeSelected(bool);
+    void tubeModeSelected(bool);
+    void bundlingBoxActivated(bool);
+    
 private:
     medToolBoxDiffusionPrivate *d;
 

@@ -61,8 +61,6 @@ public:
     QList<dtkAbstractProcess *>              methods;
     QHash<medDataIndex, dtkAbstractProcess*> activeMethods;
 
-    dtkAbstractView *view;
-    
     medDataIndex currentIndex;
 
     medToolBoxDiffusionCustom * customToolBox;
@@ -70,8 +68,6 @@ public:
 
 medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
 {
-    d->view = 0;
-
     // /////////////////////////////////////////////////////////////////
     // Display page
     // /////////////////////////////////////////////////////////////////
@@ -192,6 +188,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     d->coefficientsCombo->addItem("Lambda 1");
     d->coefficientsCombo->addItem("Lambda 2");
     d->coefficientsCombo->addItem("Lambda 3");
+    d->coefficientsCombo->addItem("Fibers");
 
     QHBoxLayout *coefficientsLayout = new QHBoxLayout;
     coefficientsLayout->addWidget(coefficientsLabel);
@@ -270,20 +267,20 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     // ---
 
-    //QVBoxLayout *processLayout = new QVBoxLayout(processPage);
-    //processLayout->addLayout(processDropSiteLayout);
-    //processLayout->addWidget(d->toolboxes);
-
     connect (d->tractographyDropSite,  SIGNAL(objectDropped()),          this, SLOT (onObjectDropped()));
-    connect (d->colorCombo,            SIGNAL(currentIndexChanged(int)), this, SLOT (onColorModeChanged (int)));
-    connect (d->displayCheckBox,       SIGNAL(stateChanged(int)),        this, SLOT (onGPUActivated (int)));
-    connect (d->displayRadioPolylines, SIGNAL(toggled(bool)),            this, SLOT (onLinesRenderingModeSelected (bool)));
-    connect (d->displayRadioRibbons,   SIGNAL(toggled(bool)),            this, SLOT (onRibbonsRenderingModeSelected (bool)));
-    connect (d->displayRadioTubes,     SIGNAL(toggled(bool)),            this, SLOT (onTubesRenderingModeSelected (bool)));
-    connect (d->coefficientsCombo,     SIGNAL(activated(int)),           this, SLOT(onCoefficientsChanged(int)));
-
-    connect (bundleBoxCheckBox, SIGNAL (stateChanged(int)), this, SLOT (onBundlingBoxActivated (int)));
-
+    connect (d->coefficientsCombo,     SIGNAL(activated(int)),           this, SLOT (onCoefficientsChanged(int)));
+    
+    connect (d->colorCombo,            SIGNAL(currentIndexChanged(int)), this, SIGNAL (fiberColorModeChanged (int)));
+    connect (d->displayCheckBox,       SIGNAL(toggled(bool)),            this, SIGNAL (GPUActivated (bool)));
+    connect (d->displayRadioPolylines, SIGNAL(toggled(bool)),            this, SIGNAL (lineModeSelected (bool)));
+    connect (d->displayRadioRibbons,   SIGNAL(toggled(bool)),            this, SIGNAL (ribbonModeSelected (bool)));
+    connect (d->displayRadioTubes,     SIGNAL(toggled(bool)),            this, SIGNAL (tubeModeSelected (bool)));
+    connect (bundleBoxCheckBox,        SIGNAL(toggled(bool)),            this, SIGNAL (bundlingBoxActivated (bool)));
+    connect (d->radiusSlider,          SIGNAL(valueChanged(int)),        this, SIGNAL (fiberRadiusSet(int)));
+    connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionValidated (void)));
+    connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
+    connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
+    
     this->setTitle("Diffusion");
     this->setWidget(tab);
 }
@@ -376,127 +373,7 @@ void medToolBoxDiffusion::onObjectDropped()
     }
 }
 
-void medToolBoxDiffusion::setView(dtkAbstractView *view)
-{
-    if (!view)
-        return;
-    
-    if (view && view!=d->view) {
-        if (d->view) {
-            if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-                disconnect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
-                disconnect (d->bundlingButtonVdt, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionValidated (void)));
-                disconnect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
-                disconnect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
-                disconnect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
-            }
-        }
-        
-        d->view = view;
-        
-        view->enableInteractor ("v3dViewFiberInteractor");
-        dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor");
-        
-        if (!interactor) {
-            qDebug() << "Cannot enable interactor: v3dViewFiberInteractor";
-            return;
-        }
-            
-        connect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
-        connect (d->bundlingButtonVdt, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionValidated (void)));
-        connect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
-        connect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
-        connect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
-    }
-}
-
-void medToolBoxDiffusion::onColorModeChanged (int index)
-{
-    if (!d->view)
-        return;
-
-    if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-        if (index==0)
-            interactor->setProperty("ColorMode","local");
-        if (index==1)
-            interactor->setProperty("ColorMode","global");
-        if (index==2)
-            interactor->setProperty("ColorMode","fa");
-
-        d->view->update();
-    }
-}
-
-void medToolBoxDiffusion::onGPUActivated (int value)
-{
-    if (!d->view)
-        return;
-
-    if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-        if (value)
-            interactor->setProperty ("GPUMode", "true");
-        else
-            interactor->setProperty ("GPUMode", "false");
-
-        d->view->update();
-    }
-}
-
-void medToolBoxDiffusion::onLinesRenderingModeSelected (bool value)
-{
-    if (!d->view)
-        return;
-
-    if (value)
-        if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-            interactor->setProperty ("RenderingMode", "lines");
-
-            d->view->update();
-        }
-}
-
-void medToolBoxDiffusion::onRibbonsRenderingModeSelected (bool value)
-{
-    if (!d->view)
-        return;
-
-    if (value)
-        if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-            interactor->setProperty ("RenderingMode", "ribbons");
-
-            d->view->update();
-        }
-}
-
-void medToolBoxDiffusion::onTubesRenderingModeSelected (bool value)
-{
-    if (!d->view)
-        return;
-
-    if (value)
-        if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-            interactor->setProperty ("RenderingMode", "tubes");
-
-            d->view->update();
-        }
-}
-
-void medToolBoxDiffusion::onBundlingBoxActivated (int value)
-{
-    if (!d->view)
-        return;
-
-    if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-        if (value)
-            interactor->setProperty ("BoxVisibility", "true");
-        else
-            interactor->setProperty ("BoxVisibility", "false");
-
-        d->view->update();
-    }
-}
-
-void medToolBoxDiffusion::onBundleValidated (QString name)
+void medToolBoxDiffusion::addBundle (QString name)
 {
     d->bundlingList->addItem (name);
 }
@@ -532,15 +409,19 @@ void medToolBoxDiffusion::onCoefficientsChanged (int ind)
         activeMethod->setProperty ("RequiredOutput", "Lambda2");
     else if (ind==9)
         activeMethod->setProperty ("RequiredOutput", "Lambda3");
+    else if (ind==9)
+        activeMethod->setProperty ("RequiredOutput", "Fibers");
 
-    d->progression_stack->setLabel(activeMethod, "Progress:");
+    // d->progression_stack->setLabel(activeMethod, "Progress:");
 
+    /*
     if (activeMethod->run()==0 )
         if (d->view) {
             d->view->setData ( activeMethod->output() );
             d->view->reset();
             d->view->update();
         }
+     */
 }
 
 void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
@@ -578,16 +459,31 @@ void medToolBoxDiffusion::run()
     if (!activeMethod)
         return;
 
-    activeMethod->setProperty ("RequiredOutput", "Fibers");
+    // activeMethod->setProperty ("RequiredOutput", "Fibers");
 
     d->progression_stack->setLabel(activeMethod, "Progress:");
 
-    if (activeMethod->run()==0 )
-        if (d->view)
-            if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-                d->view->setData ( activeMethod->output() );
-                d->view->update();
-            }
+    if (activeMethod->run()==0) {
+        emit success();
+    }
+    else {
+        emit failure();
+    }
+
+}
+
+dtkAbstractData *medToolBoxDiffusion::output(void)
+{
+    medDataIndex index = d->tractographyDropSite->index();
+    
+    dtkAbstractProcess *activeMethod = 0;
+    if (d->activeMethods.contains (index))
+        activeMethod = d->activeMethods[index];
+    
+    if (activeMethod)
+        return activeMethod->output();
+
+    return NULL;
 }
 
 void medToolBoxDiffusion::clear(void)

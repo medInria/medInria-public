@@ -23,6 +23,16 @@ public:
 
 public slots:
     void patientChanged(int patientId);
+    void onViewClosing(void);
+    
+    void onFiberColorModeChanged(int);
+    void onGPUActivated(bool);
+    void onLineModeSelected(bool);
+    void onRibbonModeSelected(bool);
+    void onTubeModeSelected(bool);
+    void onBundlingBoxActivated(bool);
+    
+    void onTBDiffusionSuccess(void);
 
 private:
     medViewerConfigurationDiffusionPrivate *d;

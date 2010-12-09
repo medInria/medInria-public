@@ -45,6 +45,9 @@ public:
 signals:
     void addToolBox   (medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
+    
+    void success(void);
+    void failure(void);
 
 private:
     medToolBoxPrivate *d;
