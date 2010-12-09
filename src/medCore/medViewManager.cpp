@@ -43,8 +43,11 @@ void medViewManager::insert(const medDataIndex& index, dtkAbstractView *view)
 
 void medViewManager::remove(const medDataIndex& index, dtkAbstractView *view)
 {
-    foreach(dtkAbstractView *view, d->views.value(index))
-        delete view;
+    foreach(dtkAbstractView *lview, d->views.value(index))
+        if (lview==view)
+            d->views[index].removeOne(view);
+    
+    delete view;
 }
 
 void medViewManager::remove(const medDataIndex& index)
