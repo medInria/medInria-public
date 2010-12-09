@@ -73,19 +73,19 @@ medViewContainerStack::~medViewContainerStack(void)
 
 medViewContainer *medViewContainerStack::current(void)
 {
-    if(this->currentIndex() == 0)
+    if(this->currentIndex() == medViewContainer::Single)
         return d->container_single;
 
-    if(this->currentIndex() == 1)
+    if(this->currentIndex() == medViewContainer::Multi)
         return d->container_multi;
 
-    if(this->currentIndex() == 2)
+    if(this->currentIndex() == medViewContainer::Custom)
         return d->container_custom;
 	
-    if(this->currentIndex() == 3)
+    if(this->currentIndex() == medViewContainer::Compare)
         return d->container_registration_compare;
     
-    if(this->currentIndex() == 4)
+    if(this->currentIndex() == medViewContainer::Fuse)
         return d->container_registration_fuse;
 
     return NULL;

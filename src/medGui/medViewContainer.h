@@ -39,6 +39,8 @@ public:
         Single,
         Multi,
         Custom,
+        Compare,
+        Fuse,
         Default
     };
 
