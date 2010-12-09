@@ -46,6 +46,7 @@ public:
 	
     QRadioButton *blendRadio;
     QRadioButton *checkerboardRadio;
+    QSlider *layoutFuseSlider;
 
     QComboBox *toolboxes;
 
@@ -115,14 +116,10 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     layoutButtonGroup->addButton(layoutButtonFuse);
     layoutButtonGroup->setExclusive(true);
 
-    QSlider *layoutFuseSlider = new QSlider(Qt::Horizontal, layoutPage);
-    layoutFuseSlider->setRange(1, 100);
-    layoutFuseSlider->setValue(50);
-    if (d->fuseView)
-        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-            connect(layoutFuseSlider, SIGNAL(valueChanged(int)), interactor, SLOT(onBlendAlphaValueSet(int)));
-            connect(layoutFuseSlider, SIGNAL(valueChanged(int)), interactor, SLOT(onCheckerboardDivisionCountValueSet(int)));
-        }
+    d->layoutFuseSlider = new QSlider(Qt::Horizontal, layoutPage);
+    d->layoutFuseSlider->setRange(1, 100);
+    d->layoutFuseSlider->setValue(50);
+
     
     d->blendRadio = new QRadioButton("Blend", layoutPage);
     d->checkerboardRadio = new QRadioButton("Checkerboard", layoutPage);
@@ -144,7 +141,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QVBoxLayout *layoutLayout = new QVBoxLayout(layoutPage);
     layoutLayout->addLayout(layoutButtonLayout);
     layoutLayout->addLayout(radioGroupLayout);
-    layoutLayout->addWidget(layoutFuseSlider);
+    layoutLayout->addWidget(d->layoutFuseSlider);
 
     connect(layoutButtonCompare, SIGNAL(clicked()), this, SIGNAL(setupLayoutCompare()));
     connect(layoutButtonFuse, SIGNAL(clicked()), this, SIGNAL(setupLayoutFuse()));
@@ -311,4 +308,12 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
     
     d->fuseView = view;
     d->fuseView->enableInteractor("v3dViewFuseInteractor");
+    dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor");
+
+    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
+            SLOT(onBlendAlphaValueSet(int)));
+    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
+            SLOT(onCheckerboardDivisionCountValueSet(int)));
+
+
 }
