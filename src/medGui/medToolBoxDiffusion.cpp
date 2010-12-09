@@ -44,25 +44,26 @@ public:
     medDropSite         *tractographyDropSite;
     medProgressionStack *progression_stack;
 
-    QComboBox *colorCombo;
-    QCheckBox *displayCheckBox;
+    // bundler widgets
+    QComboBox    *colorCombo;
+    QCheckBox    *displayCheckBox;
     QRadioButton *displayRadioPolylines;
     QRadioButton *displayRadioRibbons;
     QRadioButton *displayRadioTubes;
     QSlider      *radiusSlider;
-
-    QListWidget *bundlingList;
-    QPushButton *bundlingButtonVdt;
-    QPushButton *bundlingButtonTag;
-    QPushButton *bundlingButtonRst;
+    QListWidget  *bundlingList;
+    QPushButton  *bundlingButtonVdt;
+    QPushButton  *bundlingButtonTag;
+    QPushButton  *bundlingButtonRst;
 
     QComboBox *coefficientsCombo;
 
-    QList<dtkAbstractProcess *> methods;
-
+    QList<dtkAbstractProcess *>              methods;
     QHash<medDataIndex, dtkAbstractProcess*> activeMethods;
 
     dtkAbstractView *view;
+    
+    medDataIndex currentIndex;
 
     medToolBoxDiffusionCustom * customToolBox;
 };
@@ -70,7 +71,6 @@ public:
 medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
 {
     d->view = 0;
-
 
     // /////////////////////////////////////////////////////////////////
     // Display page
@@ -301,7 +301,7 @@ void medToolBoxDiffusion::onObjectDropped()
 
     if (!index.isValid())
         return;
-
+    
     dtkAbstractData *data = medDataManager::instance()->data (index);
     if (!data) {
         data = medDatabaseController::instance()->read(index);
@@ -311,6 +311,8 @@ void medToolBoxDiffusion::onObjectDropped()
 
     if (!data)
         return;
+    
+    d->currentIndex = index;
 
     if (!data->hasMetaData ("DiffusionGradientList")) {
         QMessageBox msgBox;
@@ -363,36 +365,10 @@ void medToolBoxDiffusion::onObjectDropped()
         }
     }
 
-    if (!medViewManager::instance()->views(index).isEmpty() ) {
-        dtkAbstractView *view = medViewManager::instance()->views(index).first();
-        if (view && view!=d->view) {
-            if (d->view)
-                if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-                    //disconnect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
-                    disconnect (d->bundlingButtonVdt, SIGNAL (clicked(void)),              interactor, SLOT (onSelectionValidated (void)));
-                    disconnect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
-                    disconnect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
-                    //disconnect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
-                }
-
-            view->enableInteractor ("v3dViewFiberInteractor");
-            dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor");
-
-            if (!interactor) {
-                qDebug() << "Cannot enable interactor: v3dViewFiberInteractor";
-            }
-
-            d->view = view;
-
-            connect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
-            connect (d->bundlingButtonVdt, SIGNAL (clicked(void)),              interactor, SLOT (onSelectionValidated (void)));
-            connect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
-            connect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
-            connect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
-        }
+    if (d->activeMethods.contains(index)) {
+        // TODO: clear bundle list and fill it with output of appropriate tracto method
     }
-
-    if (!d->activeMethods.contains(index)) {
+    else {
         dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create ("itkProcessTensorDTITrackPipeline");
         proc->setInput (data);
         connect (proc, SIGNAL (progressed (int)), d->progression_stack,  SLOT (setProgress (int)));
@@ -400,38 +376,38 @@ void medToolBoxDiffusion::onObjectDropped()
     }
 }
 
-
-void medToolBoxDiffusion::update (dtkAbstractView *view)
+void medToolBoxDiffusion::setView(dtkAbstractView *view)
 {
-    /*
-      if (!view || view==d->view)
-      return;
-
-      if (d->view)
-      if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-      disconnect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
-      disconnect (d->bundlingButtonVdt, SIGNAL (clicked(void)),              interactor, SLOT (onSelectionValidated (void)));
-      disconnect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
-      disconnect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
-      disconnect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
-      }
-
-      view->enableInteractor ("v3dViewFiberInteractor");
-      dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor");
-
-      if (!interactor) {
-      qDebug() << "Cannot enable interactor: v3dViewFiberInteractor";
-      return;
-      }
-
-      d->view = view;
-
-      connect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
-      connect (d->bundlingButtonVdt, SIGNAL (clicked(void)),              interactor, SLOT (onSelectionValidated (void)));
-      connect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
-      connect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
-      connect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
-    */
+    if (!view)
+        return;
+    
+    if (view && view!=d->view) {
+        if (d->view) {
+            if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+                disconnect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
+                disconnect (d->bundlingButtonVdt, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionValidated (void)));
+                disconnect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
+                disconnect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
+                disconnect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
+            }
+        }
+        
+        d->view = view;
+        
+        view->enableInteractor ("v3dViewFiberInteractor");
+        dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor");
+        
+        if (!interactor) {
+            qDebug() << "Cannot enable interactor: v3dViewFiberInteractor";
+            return;
+        }
+            
+        connect (d->radiusSlider,      SIGNAL(valueChanged(int)),           interactor, SLOT (onRadiusSet(int)));
+        connect (d->bundlingButtonVdt, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionValidated (void)));
+        connect (d->bundlingButtonTag, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionTagged(void)));
+        connect (d->bundlingButtonRst, SIGNAL(clicked(void)),               interactor, SLOT (onSelectionReset(void)));
+        connect (interactor,           SIGNAL(selectionValidated(QString)), this,       SLOT (onBundleValidated(QString)));
+    }
 }
 
 void medToolBoxDiffusion::onColorModeChanged (int index)
@@ -612,4 +588,11 @@ void medToolBoxDiffusion::run()
                 d->view->setData ( activeMethod->output() );
                 d->view->update();
             }
+}
+
+void medToolBoxDiffusion::clear(void)
+{
+    d->tractographyDropSite->clear();
+    d->bundlingList->clear();
+    d->currentIndex = medDataIndex();
 }

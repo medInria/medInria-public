@@ -153,3 +153,8 @@ void medViewerConfiguration::setupViewContainerStack(medViewContainerStack *cont
 {
     Q_UNUSED(container);
 }
+
+void medViewerConfiguration::patientChanged(int patientId)
+{
+    Q_UNUSED(patientId);
+}

@@ -67,8 +67,10 @@ public:
     virtual void setupViewContainerStack(medViewContainerStack *container);
 
 public slots:
-    void addToolBox(medToolBox *toolbox);
-    void removeToolBox(medToolBox *toolbox);
+    virtual void addToolBox(medToolBox *toolbox);
+    virtual void removeToolBox(medToolBox *toolbox);
+    
+    virtual void patientChanged(int patientId);
 
 signals:
     void toolboxAdded  (medToolBox *tb);

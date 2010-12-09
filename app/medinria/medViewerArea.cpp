@@ -102,7 +102,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->navigator_container = new QFrame(this);
     d->navigator_container->setObjectName("medNavigatorContainer");
     
-    d->navigator = 0;//new medDatabaseNavigator(d->navigator_container);
+    d->navigator = 0; //new medDatabaseNavigator(d->navigator_container);
 
     d->navigator_container_layout = 0;
 
@@ -555,8 +555,10 @@ void medViewerArea::setupConfiguration(QString name)
     if (d->configurations->contains(name))
         conf = d->configurations->operator[](name);
     else {
-        if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name))
+        if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name)) {
+            connect(d->toolboxPatient, SIGNAL(patientIndexChanged(int)), conf, SLOT(patientChanged(int)));
             d->configurations->insert(name, conf);
+        }
         else
             qDebug()<< "Configuration" << name << "couldn't be created";
     }
@@ -616,7 +618,6 @@ void medViewerArea::setupConfiguration(QString name)
     d->navigator_container->setVisible( conf->isDatabaseVisible());
 
     // Setting up navigator
-    
     if (d->navigator)
         delete d->navigator;
     d->navigator = new medDatabaseNavigator(d->navigator_container);

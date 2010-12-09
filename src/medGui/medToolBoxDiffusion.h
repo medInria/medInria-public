@@ -34,11 +34,15 @@ public:
      medToolBoxDiffusion(QWidget *parent = 0);
     ~medToolBoxDiffusion(void);
 
-    void update(dtkAbstractView *view);
-    medDataIndex dataIndex();
+    medDataIndex dataIndex(void);
+    
+    void setView(dtkAbstractView *view);
+    dtkAbstractView *view(void);
 
 public slots:
     void run (void);
+    
+    void clear(void);
 
     void onColorModeChanged      (int index);
     void onGPUActivated          (int value);

@@ -45,6 +45,7 @@
 #include <medGui/medViewerConfigurationFactory.h>
 #include <medGui/medViewerConfigurationVisualization.h>
 #include <medGui/medViewerConfigurationRegistration.h>
+#include <medGui/medViewerConfigurationDiffusion.h>
 
 #include <QtGui>
 
@@ -168,8 +169,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     // Registering different configurations
     medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Registration", createMedViewerConfigurationRegistration);
-
+    medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
+    medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
+    
     // Setting up status bar
 
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
@@ -197,6 +199,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     
     QComboBox *configurationSwitcher = new QComboBox(this);
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
+    configurationSwitcher->setFocusPolicy (Qt::NoFocus);
 
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
