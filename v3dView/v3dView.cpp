@@ -576,6 +576,8 @@ v3dView::~v3dView(void)
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
     
+    delete d->widget;
+    
     /*
      d->view2D->SetRenderWindow(0);
      d->view2D->SetRenderWindowInteractor(0);
@@ -2156,4 +2158,10 @@ double v3dView::cameraZoom(void)
         return 1.0;
     else
         return view->GetZoom();
+}
+
+void v3dView::close(void)
+{
+    d->widget->close();
+    medAbstractView::close();
 }

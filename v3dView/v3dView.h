@@ -49,6 +49,8 @@ public:
 
     QWidget *receiverWidget(void);
     QWidget *widget(void);
+    
+    void close(void);
 
     // access method to internal members for v3dView**Interactor classes
     vtkImageView2D *viewAxial(void);
