@@ -99,7 +99,7 @@ QStringList itkDataImageWriterPlugin::types(void) const
 		       << "itkNiftiDataImageWriter"
 		       << "itkAnalyzeDataImageWriter"
 		       << "itkNrrdDataImageWriter"
-		       << "itkGiplDataImageWriterr"
+                       << "itkGiplDataImageWriter"
 		       << "itkVTKDataImageWriter"
 		       << "itkPNGDataImageWriter"
 		       << "itkBMPDataImageWriter"
