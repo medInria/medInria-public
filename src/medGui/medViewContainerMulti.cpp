@@ -164,7 +164,7 @@ void medViewContainerMulti::onViewClosing (void)
             }
         }
         
-        disconnect (view, SIGNAL (closing()),         this, SLOT (onViewClosed()));
+        disconnect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
         disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
         
 		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
