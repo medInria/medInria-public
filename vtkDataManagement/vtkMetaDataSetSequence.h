@@ -269,8 +269,14 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 	for (unsigned int j=0; j<3; j++)
 	  correct4ddirection[i][j] = correct3ddirection[i][j];
       correct4ddirection[3][3] = 1;
-
       reader->GetOutput()->SetDirection (correct4ddirection);
+
+      typename Image3DType::PointType correct3dorigin = this->ExtractPARRECImageOrigin (filename, correct3ddirection);
+      typename Image4DType::PointType correct4dorigin;
+      for (unsigned int i=0; i<3; i++)
+	correct4dorigin[i] = correct3dorigin[i];
+      correct4dorigin[3] = 0.0;
+      reader->GetOutput()->SetOrigin (correct4dorigin);
     }  
 
     
@@ -366,6 +372,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   
 
   ShortDirectionType ExtractPARRECImageOrientation (const char* filename);
+  ShortImageType::PointType ExtractPARRECImageOrigin (const char* filename, ShortDirectionType direction);
   
 
   //ETX

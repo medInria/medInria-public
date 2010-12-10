@@ -1613,6 +1613,90 @@ void vtkMetaDataSetSequence::ComputeTimesFromDuration(void)
 }
 
 
+
+
+
+
+#ifdef vtkINRIA3D_USE_ITK
+
+
+//----------------------------------------------------------------------------
+vtkMetaDataSetSequence::ShortImageType::PointType vtkMetaDataSetSequence::ExtractPARRECImageOrigin (const char* filename, ShortDirectionType direction)
+{
+
+  typedef ShortDirectionType DirectionType;
+  typedef ShortImageType::PointType PointType;
+  PointType nullorigin;
+  nullorigin[0] = nullorigin[1] = nullorigin[2] = 0.0;
+  
+#ifndef ITK_USE_REVIEW
+  std::cerr<<"cannot correct for PAR-REC angulation without ITK_USE_REVIEW to ON"<<std::endl;
+  return nullorigin;
+#else
+
+
+  itk::PhilipsRECImageIO::Pointer philipsIO = itk::PhilipsRECImageIO::New();
+
+  philipsIO->SetFileName(filename);
+  try
+  {
+    philipsIO->ReadImageInformation();
+  }
+  catch(itk::ExceptionObject &e)
+  {
+    std::cerr << e;
+    throw vtkErrorCode::CannotOpenFileError;
+  }
+
+  itk::MetaDataDictionary PARheader = philipsIO->GetMetaDataDictionary();
+  
+  typedef itk::PhilipsRECImageIO::OffCentreMidSliceType OffCentreType;
+  
+  OffCentreType offcenter;
+  
+  bool valid = itk::ExposeMetaData<OffCentreType>(PARheader, "PAR_OffCentreMidSlice", offcenter);
+  if (!valid)
+  {
+    std::cerr<<"cannot find off-center information in PAR header, no correction"<<std::endl;
+    return nullorigin;
+  }
+
+  double dimensions[3];
+  dimensions[0] = philipsIO->GetDimensions (0);
+  dimensions[1] = philipsIO->GetDimensions (1);
+  dimensions[2] = philipsIO->GetDimensions (2);
+  
+  ShortImageType::SpacingType midoffset;
+  midoffset[0] = philipsIO->GetSpacing (0) * (dimensions[0] - 1) / 2.0;
+  midoffset[1] = philipsIO->GetSpacing (1) * (dimensions[1] - 1) / 2.0;
+  midoffset[2] = philipsIO->GetSpacing (2) * (dimensions[2] - 1) / 2.0;
+  midoffset = direction * midoffset;
+  
+  PointType offcenterpoint;
+  offcenterpoint[0] = offcenter[0];
+  offcenterpoint[1] = offcenter[1];
+  offcenterpoint[2] = offcenter[2];
+  
+  ShortDirectionType AFRtoLPS;
+  AFRtoLPS.Fill (0);
+  AFRtoLPS[0][2] = 1;
+  AFRtoLPS[1][0] = 1;
+  AFRtoLPS[2][1] = 1;
+  
+  offcenterpoint = AFRtoLPS * offcenterpoint;
+  offcenterpoint -= midoffset;
+  
+  return offcenterpoint;
+  
+#endif
+  
+  
+}
+
+
+#endif
+  
+
 #ifdef vtkINRIA3D_USE_ITK
 
 
@@ -1620,30 +1704,25 @@ void vtkMetaDataSetSequence::ComputeTimesFromDuration(void)
 vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARRECImageOrientation (const char* filename)
 {
 
-  ShortDirectionType eyedir;
+  typedef ShortDirectionType DirectionType;
+
+  DirectionType eyedir;
   eyedir.SetIdentity();
-  
 
 #ifndef ITK_USE_REVIEW
   std::cerr<<"cannot correct for PAR-REC angulation without ITK_USE_REVIEW to ON"<<std::endl;
+  
   return eyedir;
 
+  
 #else
-  
-  typedef itk::Image<short,3> ImageType;
-  typedef itk::Image<short,4> d_ImageType;
-  typedef itk::ImageFileReader<d_ImageType> d_ReaderType;
-  typedef ImageType::DirectionType DirectionType;
-  
-  d_ReaderType::Pointer d_reader = d_ReaderType::New();
+    
   itk::PhilipsRECImageIO::Pointer philipsIO = itk::PhilipsRECImageIO::New();
 
-  d_reader->SetImageIO (philipsIO);  
-  d_reader->SetFileName(filename);
-
+  philipsIO->SetFileName(filename);
   try
   {
-    d_reader->GenerateOutputInformation();
+    philipsIO->ReadImageInformation();
   }
   catch(itk::ExceptionObject &e)
   {
@@ -1672,36 +1751,35 @@ vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARREC
     return eyedir;
   }
   
-  DirectionType AFRtoLPS;
+  ShortDirectionType AFRtoLPS;
   AFRtoLPS.Fill (0);
   AFRtoLPS[0][2] = 1;
   AFRtoLPS[1][0] = 1;
   AFRtoLPS[2][1] = 1;
 
-  DirectionType magicmatrix;
+  ShortDirectionType magicmatrix;
   magicmatrix.Fill (0);
   magicmatrix [0][0] = -1;
   magicmatrix [1][2] = 1;
   magicmatrix [2][1] = -1;
 
-
-  DirectionType TRA;
+  ShortDirectionType TRA;
   TRA.Fill (0);
   TRA [0][1] = 1;
   TRA [1][0] = -1;
   TRA [2][2] = -1;
-  DirectionType SAG;
+  ShortDirectionType SAG;
   SAG.Fill (0);
   SAG [0][0] = -1;
   SAG [1][2] = 1;
   SAG [2][1] = -1;
-  DirectionType COR;
+  ShortDirectionType COR;
   COR.Fill (0);
   COR [0][1] = 1;
   COR [1][2] = 1;
   COR [2][0] = -1;
 
-  DirectionType Torientation;
+  ShortDirectionType Torientation;
   
   switch(sliceorientation)
   {
@@ -1733,7 +1811,7 @@ vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARREC
   double fh = angulation[1] * vnl_math::pi / 180.0;
   double rl = angulation[2] * vnl_math::pi / 180.0;
 
-  DirectionType Tap;
+  ShortDirectionType Tap;
   Tap.Fill (0);
   Tap[0][0] = 1;
   Tap[1][1] = std::cos (ap);
@@ -1741,7 +1819,7 @@ vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARREC
   Tap[2][1] = std::sin (ap);
   Tap[2][2] = std::cos (ap);
 
-  DirectionType Tfh;
+  ShortDirectionType Tfh;
   Tfh.Fill (0);
   Tfh[1][1] = 1;
   Tfh[0][0] = std::cos (fh);
@@ -1749,7 +1827,7 @@ vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARREC
   Tfh[2][0] = - std::sin (fh);
   Tfh[2][2] = std::cos (fh);
 
-  DirectionType Trl;
+  ShortDirectionType Trl;
   Trl.Fill (0);
   Trl[2][2] = 1;
   Trl[0][0] = std::cos (rl);
@@ -1757,11 +1835,15 @@ vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARREC
   Trl[1][0] = std::sin (rl);
   Trl[1][1] = std::cos (rl);
   
-  DirectionType TR = AFRtoLPS * Trl * Tap * Tfh * magicmatrix.GetTranspose() * Torientation.GetTranspose();
+  ShortDirectionType TR = AFRtoLPS * Trl * Tap * Tfh * magicmatrix.GetTranspose() * Torientation.GetTranspose();
+  DirectionType retval;
+  retval.SetIdentity();
+  
+  for (unsigned int i=0; i<3; i++)
+    for (unsigned int j=0; j<3; j++)
+      retval[i][j] = TR[i][j];
 
-  return TR;
-
-
+  return retval;
   
 #endif
   

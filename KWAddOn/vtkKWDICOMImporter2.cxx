@@ -121,6 +121,9 @@ vtkKWDICOMImporter2::vtkKWDICOMImporter2()
   this->InteractiveStatus = STATUS_DISABLED;
   this->InteractiveVolume = 0;
   
+
+  this->ModalOff();
+  
   
 
 }

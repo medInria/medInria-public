@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkMetaImageData.h 1452 2010-01-27 19:15:29Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2010-01-27 20:15:29 +0100 (Wed, 27 Jan 2010) $
+Date:      $Date: 2010-01-27 19:15:29 +0000 (Wed, 27 Jan 2010) $
 Version:   $Revision: 1452 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -147,6 +147,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     vtkImageData* vtkinput = vtkImageData::New();
     vtkinput->DeepCopy(converter->GetOutput());
 
+    //#ifdef RENDERING_PRIORITY
     /**
        FIX ME:
        In the new rendering system, this origin is taken into consideration
@@ -184,11 +185,13 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
       vtkErrorMacro(<<"cannot read file : "<<filename<<endl);
       throw vtkErrorCode::CannotOpenFileError;
     }
-
+    
     if ( !strcmp (reader->GetImageIO()->GetNameOfClass(), "PhilipsRECImageIO"))
     {
       ShortDirectionType correctdirection = this->ExtractPARRECImageOrientation(filename);
       reader->GetOutput()->SetDirection (correctdirection);
+      FloatImageType::PointType correctorigin = this->ExtractPARRECImageOrigin (filename, correctdirection);
+      reader->GetOutput()->SetOrigin (correctorigin);
     }  
 
     
@@ -311,8 +314,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
 
 
   ShortDirectionType ExtractPARRECImageOrientation (const char* filename);
-  
-
+  FloatImageType::PointType ExtractPARRECImageOrigin (const char* filename, ShortDirectionType direction);
   
   //ETX
   

@@ -266,7 +266,7 @@ int main (int argc, char* argv[])
     vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::New();
     sequence->Read (filename.c_str());
     mytensors = vtkUnstructuredGrid::SafeDownCast (sequence->GetDataSet());
-    tensormanager->SetGlyphScale (20.0);
+    tensormanager->SetGlyphScale (5.0);
     sequence->SetSequenceDuration (1.0);
     //std::cout<<"sequence : "<<(*sequence)<<std::endl;
     command->Sequence = sequence;

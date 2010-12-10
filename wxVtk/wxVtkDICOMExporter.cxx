@@ -43,8 +43,13 @@ wxVtkDICOMExporter::wxVtkDICOMExporter (wxWindow* parent, int id,
   this->ButtonCANCEL             = new wxButton (this, BUTTON_CANCEL, wxT("Cancel"), wxDefaultPosition, wxSize (80,30));
   this->ButtonOK                 = new wxButton (this, BUTTON_OK,     wxT("Write"), wxDefaultPosition, wxSize (80,30));
 
+#if wxCHECK_VERSION(2, 9, 0)
+  this->CheckListBox = new wxCheckListBox (this, CHECKLISTBOX_VOLUMES, wxDefaultPosition, wxDefaultSize, 0, NULL,
+					   wxLB_EXTENDED);
+#else
   this->CheckListBox = new wxCheckListBox (this, CHECKLISTBOX_VOLUMES, wxDefaultPosition, wxDefaultSize, 0,
 					   wxLB_EXTENDED);
+#endif
   
   this->SetProperties();
   this->DoLayout();

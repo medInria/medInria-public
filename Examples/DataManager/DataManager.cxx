@@ -37,9 +37,21 @@ PURPOSE.  See the above copyright notices for more information.
 #include <algorithm>
 #include <vtkErrorCode.h>
 
-
+#ifdef vtkINRIA3D_USE_ITK
+#ifdef ITK_USE_REVIEW
+#include <itkPhilipsRECImageIOFactory.h>
+#endif
+#endif
 int main (int argc, char*argv[])
 {
+
+  
+#ifdef vtkINRIA3D_USE_ITK
+#ifdef ITK_USE_REVIEW
+  itk::PhilipsRECImageIOFactory::RegisterOneFactory();
+#endif
+#endif
+  
 
   if( argc<3 )
   {
