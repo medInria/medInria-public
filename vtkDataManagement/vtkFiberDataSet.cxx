@@ -1,27 +1,35 @@
 #include "vtkFiberDataSet.h"
 
 #include <vtkObjectFactory.h>
+#include <vtkPolyData.h>
+#include <vtkInformation.h>
 
 vtkCxxRevisionMacro(vtkFiberDataSet, "$Revision: 1.0 $");
 vtkStandardNewMacro(vtkFiberDataSet);
 
 vtkFiberDataSet::vtkFiberDataSet()
 {
-  this->Fibers = 0;
 }
 
 vtkFiberDataSet::~vtkFiberDataSet()
 {
-  if (this->Fibers)
-  {
-    this->Fibers->Delete();
-  }
-
+  /*
   vtkFiberBundleListType::iterator it = this->Bundles.begin();
   while (it!=this->Bundles.end())
   {
     (*it).second.Bundle->Delete();
   }
+  */
+}
+
+void vtkFiberDataSet::SetFibers (vtkPolyData *fibers)
+{
+  this->SetBlock (0, fibers);
+}
+
+vtkPolyData *vtkFiberDataSet::GetFibers (void)
+{
+  return vtkPolyData::SafeDownCast ( this->GetBlock (0) );
 }
 
 void vtkFiberDataSet::AddBundle (const std::string &name, vtkPolyData *bundle, double color[3])
@@ -30,23 +38,29 @@ void vtkFiberDataSet::AddBundle (const std::string &name, vtkPolyData *bundle, d
   {
     return;
   }
-  
-  if (bundle!=this->Bundles[name].Bundle)
+
+  int id = this->Bundles[name].Id;
+
+  if (id==-1)
   {
-    if (this->Bundles[name].Bundle)
-    {
-      this->Bundles[name].Bundle->UnRegister (this);
-    }
-    this->Bundles[name].Bundle = bundle;
-    if (this->Bundles[name].Bundle)
-    {
-      this->Bundles[name].Bundle->Register (this);
-    }
+    int childCount = this->GetNumberOfChildren();
+    id = childCount==0?1:childCount;
+    this->Bundles[name].Id = id;
   }
-  
-  this->Bundles[name].Red   = color[0];
-  this->Bundles[name].Green = color[1];
-  this->Bundles[name].Blue  = color[2];
+
+  this->SetBlock (id, bundle);
+
+  this->Bundles[name].Bundle = bundle;
+  this->Bundles[name].Red    = color[0];
+  this->Bundles[name].Green  = color[1];
+  this->Bundles[name].Blue   = color[2];
+
+  /*
+  if (vtkInformation *info = this->GetMetaData (id))
+  {
+    info->AppendUnique ("Name", name.c_str());
+  }
+  */
 }
 
 void vtkFiberDataSet::RemoveBundle (const std::string &name)
@@ -54,8 +68,9 @@ void vtkFiberDataSet::RemoveBundle (const std::string &name)
   vtkFiberBundleListType::iterator it = this->Bundles.find (name);
   if (it!=this->Bundles.end())
   {
-    (*it).second.Bundle->Delete();
+    int id = (*it).second.Id;
     this->Bundles.erase (it);
+    this->RemoveBlock (id);
   }
 }
 
@@ -64,7 +79,7 @@ void vtkFiberDataSet::Clear (void)
   vtkFiberBundleListType::iterator it = this->Bundles.begin();
   while (it!=this->Bundles.end())
   {
-    (*it).second.Bundle->Delete();
+    this->RemoveBlock ( (*it).second.Id );
   }
   this->Bundles.clear();
 }

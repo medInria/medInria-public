@@ -20,29 +20,31 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkINRIA3DConfigure.h"
 
-#include <vtkObject.h>
-#include <vtkPolyData.h>
+#include <vtkMultiBlockDataSet.h>
 
 #include <map>
+
+class vtkPolyData;
 
 /**
    This class carries a set of fibers as vtkPolyData and relative bundles
    as vtkPolyData as well.
  */
 
-class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSet : public vtkObject
+class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
 {
  public:
   static vtkFiberDataSet *New();
-  vtkTypeRevisionMacro(vtkFiberDataSet, vtkObject);
+  vtkTypeRevisionMacro(vtkFiberDataSet, vtkMultiBlockDataSet);
 
   struct vtkFiberBundleType
   {
+    int          Id;
     vtkPolyData *Bundle;
     double       Red;
     double       Green;
     double       Blue;
-    vtkFiberBundleType(): Bundle (0), Red (0.0), Green (0.0), Blue (0.0) {}
+    vtkFiberBundleType(): Id (-1), Bundle (0), Red (0.0), Green (0.0), Blue (0.0) {}
   };
   
   
@@ -51,8 +53,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSet : public vtkObject
    */
   typedef std::map< std::string, vtkFiberBundleType > vtkFiberBundleListType;
 
-  vtkSetObjectMacro (Fibers, vtkPolyData);
-  vtkGetObjectMacro (Fibers, vtkPolyData);
+  void         SetFibers (vtkPolyData *fibers);
+  vtkPolyData *GetFibers (void);
   
   void AddBundle    (const std::string &name, vtkPolyData *bundle, double color[3]);
   void RemoveBundle (const std::string &name);
@@ -75,7 +77,6 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSet : public vtkObject
   ~vtkFiberDataSet();
   
  private:
-  vtkPolyData           *Fibers;
   vtkFiberBundleListType Bundles;
   
   
