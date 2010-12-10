@@ -47,13 +47,13 @@ void medViewManager::remove(const medDataIndex& index, dtkAbstractView *view)
         if (lview==view)
             d->views[index].removeOne(view);
     
-    delete view;
+    dtkAbstractViewFactory::instance()->destroy (view);
 }
 
 void medViewManager::remove(const medDataIndex& index)
 {
     foreach(dtkAbstractView *view, d->views.value(index))
-        delete view;
+        dtkAbstractViewFactory::instance()->destroy (view);
 
     d->views.remove(index);
 }

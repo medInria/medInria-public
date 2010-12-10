@@ -69,17 +69,18 @@ void medViewerConfigurationDiffusion::setupViewContainerStack(medViewContainerSt
     if (!container) {
         return;
     }
-        
+
+    
     dtkAbstractView *view = 0;
     
     medViewContainer *singleContainer = container->single();
     if (singleContainer->current()->view()) {
         view = singleContainer->current()->view();
-    } 
+    }
     else if (view = dtkAbstractViewFactory::instance()->create("v3dView")) {
         singleContainer->current()->setView (view);
     }
-    
+
     if (!view || view==d->view)
         return;
     
@@ -119,8 +120,6 @@ void medViewerConfigurationDiffusion::patientChanged(int patientId)
 void medViewerConfigurationDiffusion::onViewClosing(void)
 {
     if (d->view) {
-        qDebug() << "Fuck the view";
-        
         disconnect(d->view, SIGNAL(closing()), this, SLOT(onViewClosing()));
         if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
             disconnect (interactor, SIGNAL(selectionValidated(QString)), d->diffusionToolBox, SLOT (addBundle(QString)));
