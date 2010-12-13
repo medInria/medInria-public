@@ -40,6 +40,8 @@ public:
     
     QList<medToolBox*> toolBoxes(void) const;
 
+    int orientation (void) const;
+    
 public:
     enum LayoutOrientation{
         Vertical,

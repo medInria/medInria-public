@@ -68,6 +68,7 @@ void medToolBoxContainer::addToolBox(medToolBox *toolBox)
     
     if (!d->toolboxes.contains(toolBox)) {
         d->toolboxes.append(toolBox);
+	toolBox->setParent (d->container);
         d->layout->insertWidget(d->layout->count()-1, toolBox, 0, Qt::AlignTop);
     }
 }
@@ -125,4 +126,9 @@ void medToolBoxContainer::setOrientation(LayoutOrientation orient)
        
        this->updateGeometry();
     }
+}
+
+int medToolBoxContainer::orientation (void) const
+{
+    return d->layoutOrientation;
 }
