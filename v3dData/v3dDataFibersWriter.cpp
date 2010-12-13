@@ -14,54 +14,7 @@
 class v3dDataFibersWriterPrivate
 {
 public:
-  QXmlStreamWriter xml;
-
-  void writeBundles (vtkFiberDataSet *dataset);
 };
-
-void v3dDataFibersWriterPrivate::writeBundles (vtkFiberDataSet *dataset)
-{
-  vtkFiberDataSet::vtkFiberBundleListType bundles = dataset->GetBundleList();
-
-  int bundleCount = dataset->GetNumberOfBundles();
-
-  xml.writeStartElement("BundleList");
-  xml.writeAttribute ("size", QString::number (bundleCount));
-
-  vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundles.begin();
-  while (it!=bundles.end()) {
-    vtkPolyData *bundle = (*it).second.Bundle;
-    
-    xml.writeStartElement("Bundle");
-    xml.writeAttribute ("name", (*it).first.c_str());
-    QString color;
-    color.sprintf("%.4f %.4f %.4f", (*it).second.Red,
-		  (*it).second.Green,
-		  (*it).second.Blue);    
-    xml.writeTextElement ("color", color);
-    xml.writeAttribute ("size", QString::number (bundle->GetNumberOfLines()) );
-    
-    vtkCellArray *lines = bundle->GetLines();
-    lines->InitTraversal();
-    int npt, *pt;
-    
-    while (lines->GetNextCell (npt, pt)) {
-      xml.writeStartElement("line");
-      xml.writeAttribute ("size", QString::number (npt));
-      QString indices;
-      for (int i=0; i<npt; i++)
-      {
-	indices += QString::number (pt[i]);
-	indices += " ";
-      }
-      xml.writeTextElement ("indices", indices);
-      xml.writeEndElement();
-    }
-    xml.writeEndElement();
-  }
-  xml.writeEndElement();
-}
-
 
 v3dDataFibersWriter::v3dDataFibersWriter(): d (new v3dDataFibersWriterPrivate)
 {
