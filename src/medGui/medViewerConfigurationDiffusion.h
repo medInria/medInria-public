@@ -31,7 +31,7 @@ public slots:
     void onRibbonModeSelected(bool);
     void onTubeModeSelected(bool);
     void onBundlingBoxActivated(bool);
-    
+    void onShowBundles (bool);
     void onTBDiffusionSuccess(void);
 
 private:

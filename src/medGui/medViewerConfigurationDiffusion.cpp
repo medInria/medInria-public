@@ -42,9 +42,10 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     connect(d->diffusionToolBox, SIGNAL(fiberColorModeChanged(int)), this, SLOT(onFiberColorModeChanged(int)));
     connect(d->diffusionToolBox, SIGNAL(GPUActivated(bool)),         this, SLOT(onGPUActivated(bool)));
     connect(d->diffusionToolBox, SIGNAL(lineModeSelected(bool)),     this, SLOT(onLineModeSelected(bool)));
-    connect(d->diffusionToolBox, SIGNAL(ribbonModeSelected(bool)),   this, SLOT(onLineModeSelected(bool)));
+    connect(d->diffusionToolBox, SIGNAL(ribbonModeSelected(bool)),   this, SLOT(onRibbonModeSelected(bool)));
     connect(d->diffusionToolBox, SIGNAL(tubeModeSelected(bool)),     this, SLOT(onTubeModeSelected(bool)));
     connect(d->diffusionToolBox, SIGNAL(bundlingBoxActivated(bool)), this, SLOT(onBundlingBoxActivated(bool)));
+    connect(d->diffusionToolBox, SIGNAL(showBundles(bool)),          this, SLOT(onShowBundles(bool)));
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
 
     this->addToolBox( d->viewToolBox );
@@ -207,6 +208,21 @@ void medViewerConfigurationDiffusion::onBundlingBoxActivated (bool value)
             interactor->setProperty ("BoxVisibility", "true");
         else
             interactor->setProperty ("BoxVisibility", "false");
+        
+        d->view->update();
+    }
+}
+
+void medViewerConfigurationDiffusion::onShowBundles (bool value)
+{
+    if (!d->view)
+        return;
+    
+    if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+        if (value)
+	    interactor->enable();
+        else
+            interactor->disable();
         
         d->view->update();
     }
