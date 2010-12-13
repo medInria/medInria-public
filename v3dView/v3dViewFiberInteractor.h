@@ -32,6 +32,7 @@ public:
 
 public slots:
 	virtual void onPropertySet (const QString& key, const QString& value);
+	
 	virtual void onVisibilityPropertySet (const QString& value);
 	virtual void onBoxVisibilityPropertySet (const QString& value);
 	virtual void onRenderingModePropertySet (const QString& value);
