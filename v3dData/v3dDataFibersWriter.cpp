@@ -118,7 +118,7 @@ bool v3dDataFibersWriter::write(const QString& path)
 
   vtkXMLMultiBlockDataWriter *writer = vtkXMLMultiBlockDataWriter::New();
   writer->SetFileName ( path.toAscii().constData() );
-  writer->SetWriteMetaData (1);
+  writer->SetWriteMetaFile (1);
   writer->SetInput ( dataset );
   writer->Write();
 
