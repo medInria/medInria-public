@@ -40,6 +40,9 @@ public:
     void setView(dtkAbstractView *view);
     dtkAbstractView *view(void);
 
+signals:
+    void bundleValidated (QString name);
+    
 public slots:
     void run (void);
     
@@ -52,6 +55,9 @@ public slots:
     void onCoefficientsChanged  (int);
 
     void onToolBoxChosen(const QString&);
+
+    void onBundlingButtonVdtClicked (void);
+    
     /*
       void onComputeLFA (void);
       void onComputeRA  (void);
@@ -68,7 +74,7 @@ public slots:
     dtkAbstractData *output(void);
 
 signals:
-    void fiberSelectionValidated(void);
+    void fiberSelectionValidated(QString name);
     void fiberSelectionTagged(void);
     void fiberSelectionReset(void);
     void fiberRadiusSet(int);
@@ -78,6 +84,7 @@ signals:
     void ribbonModeSelected(bool);
     void tubeModeSelected(bool);
     void bundlingBoxActivated(bool);
+    void showBundles(bool);
     
 private:
     medToolBoxDiffusionPrivate *d;

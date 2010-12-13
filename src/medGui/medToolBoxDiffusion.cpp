@@ -269,7 +269,9 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     connect (d->tractographyDropSite,  SIGNAL(objectDropped()),          this, SLOT (onObjectDropped()));
     connect (d->coefficientsCombo,     SIGNAL(activated(int)),           this, SLOT (onCoefficientsChanged(int)));
-    
+    connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (onBundlingButtonVdtClicked (void)));
+	
+    connect (bundlingShowCheckBox,     SIGNAL(toggled(bool)),            this, SIGNAL (showBundles (bool)));
     connect (d->colorCombo,            SIGNAL(currentIndexChanged(int)), this, SIGNAL (fiberColorModeChanged (int)));
     connect (d->displayCheckBox,       SIGNAL(toggled(bool)),            this, SIGNAL (GPUActivated (bool)));
     connect (d->displayRadioPolylines, SIGNAL(toggled(bool)),            this, SIGNAL (lineModeSelected (bool)));
@@ -277,9 +279,10 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     connect (d->displayRadioTubes,     SIGNAL(toggled(bool)),            this, SIGNAL (tubeModeSelected (bool)));
     connect (bundleBoxCheckBox,        SIGNAL(toggled(bool)),            this, SIGNAL (bundlingBoxActivated (bool)));
     connect (d->radiusSlider,          SIGNAL(valueChanged(int)),        this, SIGNAL (fiberRadiusSet(int)));
-    connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionValidated (void)));
     connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
     connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
+
+    d->customToolBox = 0;
     
     this->setTitle("Diffusion");
     this->setWidget(tab);
@@ -375,7 +378,7 @@ void medToolBoxDiffusion::onObjectDropped()
 
 void medToolBoxDiffusion::addBundle (QString name)
 {
-    d->bundlingList->addItem (name);
+  d->bundlingList->addItem (name);
 }
 
 void medToolBoxDiffusion::onCoefficientsChanged (int ind)
@@ -409,7 +412,7 @@ void medToolBoxDiffusion::onCoefficientsChanged (int ind)
         activeMethod->setProperty ("RequiredOutput", "Lambda2");
     else if (ind==9)
         activeMethod->setProperty ("RequiredOutput", "Lambda3");
-    else if (ind==9)
+    else if (ind==10)
         activeMethod->setProperty ("RequiredOutput", "Fibers");
 
     // d->progression_stack->setLabel(activeMethod, "Progress:");
@@ -444,6 +447,7 @@ void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
     emit addToolBox(toolbox);
     //TODO refactor methods and active methods (here take care of existing methods...)
     if (dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create (id)) {
+        proc->setProperty ("RequiredOutput", "ADC");
         d->methods.append( proc );
     }
 }
@@ -456,8 +460,9 @@ void medToolBoxDiffusion::run()
     if (d->activeMethods.contains (index))
         activeMethod = d->activeMethods[index];
 
-    if (!activeMethod)
+    if (!activeMethod) {
         return;
+    }
 
     // activeMethod->setProperty ("RequiredOutput", "Fibers");
 
@@ -491,4 +496,18 @@ void medToolBoxDiffusion::clear(void)
     d->tractographyDropSite->clear();
     d->bundlingList->clear();
     d->currentIndex = medDataIndex();
+}
+
+void medToolBoxDiffusion::onBundlingButtonVdtClicked (void)
+{
+    bool ok;
+    QString text = QInputDialog::getText(this, tr("Enter bundle name"),
+                                        tr(""), QLineEdit::Normal, tr(""), &ok);
+
+    if (ok && !text.isEmpty()) {
+      // if (!d->bundlingList->contains (name)) // should popup a warning
+      // d->bundlingList->addItem (text);
+	addBundle (text);
+	emit fiberSelectionValidated (text);
+    }
 }

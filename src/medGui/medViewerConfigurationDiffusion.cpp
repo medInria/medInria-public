@@ -87,9 +87,7 @@ void medViewerConfigurationDiffusion::setupViewContainerStack(medViewContainerSt
     if (d->view) {
         disconnect(d->view, SIGNAL(closing()), this, SLOT(onViewClosing()));
         if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-            disconnect (interactor, SIGNAL(selectionValidated(QString)), d->diffusionToolBox, SLOT (addBundle(QString)));
-            
-            disconnect (d->diffusionToolBox, SIGNAL(fiberSelectionValidated()), interactor, SLOT(onSelectionValidated()));
+            disconnect (d->diffusionToolBox, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
             disconnect (d->diffusionToolBox, SIGNAL(fiberSelectionTagged()),    interactor, SLOT(onSelectionTagged()));
             disconnect (d->diffusionToolBox, SIGNAL(fiberSelectionReset()),     interactor, SLOT(onSelectionReset()));
             disconnect (d->diffusionToolBox, SIGNAL(fiberRadiusSet(int)),       interactor, SLOT(onRadiusSet(int)));            
@@ -101,9 +99,7 @@ void medViewerConfigurationDiffusion::setupViewContainerStack(medViewContainerSt
     // d->diffusionToolBox->setView ( d->view );
     d->view->enableInteractor ("v3dViewFiberInteractor");
     if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-        connect (interactor, SIGNAL(selectionValidated(QString)), d->diffusionToolBox, SLOT (addBundle(QString)));
-        
-        connect (d->diffusionToolBox, SIGNAL(fiberSelectionValidated()), interactor, SLOT(onSelectionValidated()));
+        connect (d->diffusionToolBox, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
         connect (d->diffusionToolBox, SIGNAL(fiberSelectionTagged()),    interactor, SLOT(onSelectionTagged()));
         connect (d->diffusionToolBox, SIGNAL(fiberSelectionReset()),     interactor, SLOT(onSelectionReset()));
         connect (d->diffusionToolBox, SIGNAL(fiberRadiusSet(int)),       interactor, SLOT(onRadiusSet(int)));
@@ -122,9 +118,7 @@ void medViewerConfigurationDiffusion::onViewClosing(void)
     if (d->view) {
         disconnect(d->view, SIGNAL(closing()), this, SLOT(onViewClosing()));
         if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-            disconnect (interactor, SIGNAL(selectionValidated(QString)), d->diffusionToolBox, SLOT (addBundle(QString)));
-            
-            disconnect (d->diffusionToolBox, SIGNAL(fiberSelectionValidated()), interactor, SLOT(onSelectionValidated()));
+            disconnect (d->diffusionToolBox, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
             disconnect (d->diffusionToolBox, SIGNAL(fiberSelectionTagged()),    interactor, SLOT(onSelectionTagged()));
             disconnect (d->diffusionToolBox, SIGNAL(fiberSelectionReset()),     interactor, SLOT(onSelectionReset()));
             disconnect (d->diffusionToolBox, SIGNAL(fiberRadiusSet(int)),       interactor, SLOT(onRadiusSet(int)));            
