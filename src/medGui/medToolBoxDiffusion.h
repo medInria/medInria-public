@@ -41,6 +41,9 @@ signals:
     void addToolBox(medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
 
+signals:
+    void bundleValidated (QString name);
+    
 public slots:
     void run (void);
 
@@ -50,8 +53,9 @@ public slots:
     void onRibbonsRenderingModeSelected (bool value);
     void onTubesRenderingModeSelected   (bool value);
     void onBundlingBoxActivated         (int value);
+    void onShowBundlingCheckBoxActivated (int value);
 
-    void onBundleValidated (QString name);
+    void onSelectionValidated (void);
 
     void onObjectDropped (void);
 
