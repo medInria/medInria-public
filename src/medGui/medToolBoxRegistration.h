@@ -55,6 +55,7 @@ signals:
     void setupLayoutCompare(void);
     void setupLayoutFuse(void);
     void showError (QObject*,const QString&,unsigned int timeout);
+    void showInfo(QObject*,const QString&,unsigned int timeout);
 
 public slots:
     void onMovingImageDropped(void);

@@ -172,10 +172,10 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     // /////////////////////////////////////////////////////////////////
 
     medToolBoxTab *tab = new medToolBoxTab(this);
-    tab->addTab(processPage, "Process");
-    tab->addTab(layoutPage, "Layout");
+    tab->addTab(processPage, tr("Process"));
+    tab->addTab(layoutPage, tr("Layout"));
 
-    this->setTitle("Registration");
+    this->setTitle(tr("Registration"));
     this->setWidget(tab);
 
     d->customToolBox = NULL;
@@ -183,6 +183,8 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     //Connect Message Controller:
     connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showInfo(QObject*,const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
 }
 
 medToolBoxRegistration::~medToolBoxRegistration(void)
@@ -329,17 +331,28 @@ void medToolBoxRegistration::onToolBoxChosen(const QString& id)
     emit addToolBox(toolbox);
 }
 
+
+dtkAbstractProcess * medToolBoxRegistration::process(void)
+{
+    return d->process;
+}
+
+void medToolBoxRegistration::setProcess(dtkAbstractProcess* proc)
+{
+    d->process = proc;
+}
+
 void medToolBoxRegistration::onSaveImage()
 {
-    if (!d->movingData)//TODO: test on registered data
+    if (!d->process || !d->movingData)
     {
         emit showError(this, tr  ("Please Select a moving image before saving"),3000);
         return;
     }
     QFileDialog dialog(this, tr("Save Image"),
                                QDir::homePath(),
-                               tr("Nifty (*.nii);;Analyse (*.);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files ()"));
-    dialog.setDefaultSuffix(".mha");
+                               tr("MetaFile (*.mha *.mhd);;Nifty (*.nii);;Analyse (*.hdr);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files (*.mha *.mhd *.nii *.hdr *.nrrd)"));
+    dialog.setDefaultSuffix("mha");
     dialog.setAcceptMode(QFileDialog::AcceptSave);
     QStringList fileName;
     if (dialog.exec())
@@ -349,8 +362,16 @@ void medToolBoxRegistration::onSaveImage()
 
     if (!fileName.isEmpty())
     {
-        qDebug()<< (void *) d->movingData;
-        qDebug()<<  d->movingView->data();
+        //qDebug()<< (void *) d->movingData;
+        //qDebug()<<  d->movingView->data();
+        if (d->process->write(fileName[0]))
+        {
+            emit(showInfo(this, tr  ("Registered Image Saved"),3000));
+        }
+        else
+        {
+            emit(showError(this, tr  ("Image saving failed, no suitable writer found"),3000));
+        }
     }
 
 }
@@ -364,6 +385,6 @@ void medToolBoxRegistration::onSaveTrans()
     }
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Transformation"),
                                QDir::homePath(),
-                               tr("Transformation (*. *.xpm *.jpg)"));
+                               tr("Transformation (*.txt)"));
     qDebug() << fileName;
 }
