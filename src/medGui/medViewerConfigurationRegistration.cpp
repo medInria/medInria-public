@@ -42,6 +42,8 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
     this->addToolBox( d->registrationToolBox );
 
     this->setViewLayoutType (medViewContainer::Compare);
+    
+    this->setLayoutType(medViewerConfiguration::TopDbBottomTb);
 
 
 }

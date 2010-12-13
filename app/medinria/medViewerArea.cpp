@@ -89,7 +89,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
     d->toolboxPatient = new medViewerToolBoxPatient(this);
-    d->toolboxPatient->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Minimum);//, QSizePolicy::Minimum);
+    d->toolboxPatient->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
     d->toolboxPatient->setFixedWidth(176); // 186 - 10
 
     
@@ -112,8 +112,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->navigator_container = new QFrame(this);
     d->navigator_container->setObjectName("medNavigatorContainer");
-    d->navigator_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    d->navigator_container->setMinimumWidth(186);
+    d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    d->navigator_container->setFixedWidth(186);
     
     // d->navigator = 0; //new medDatabaseNavigator(d->navigator_container);
     medDatabaseNavigatorController::instance()->setOrientation( Qt::Horizontal );
@@ -643,8 +643,8 @@ void medViewerArea::setupConfiguration(QString name)
 	     d->layout->removeWidget ( d->toolbox_container );
 
 	     d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	     d->navigator_container->setMinimumHeight(186);
-	     d->navigator_container->setMinimumWidth(QWIDGETSIZE_MAX);
+	     d->navigator_container->setFixedHeight(186);
+	     d->navigator_container->setFixedWidth(QWIDGETSIZE_MAX);
 	     
 	     d->toolbox_container->setOrientation(medToolBoxContainer::Horizontal);
 	     d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -690,8 +690,8 @@ void medViewerArea::setupConfiguration(QString name)
 	     d->layout->removeWidget ( d->toolbox_container );
 
 	     d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	     d->navigator_container->setMinimumWidth(186);
-	     d->navigator_container->setMinimumHeight(QWIDGETSIZE_MAX);
+	     d->navigator_container->setFixedWidth(186);
+	     d->navigator_container->setFixedHeight(QWIDGETSIZE_MAX);
 	      
 	     d->toolbox_container->setOrientation(medToolBoxContainer::Vertical);
 	     d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);

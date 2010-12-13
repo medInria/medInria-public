@@ -46,8 +46,8 @@ public:
 
     QStackedWidget *stack;
     
-    QBoxLayout *layout;
-    QBoxLayout *navigator_container_layout;
+    QGridLayout *layout;
+    QGridLayout *navigator_container_layout;
 
     QMutex mutex;
   
