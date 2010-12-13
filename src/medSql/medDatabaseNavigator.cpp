@@ -37,13 +37,19 @@ class medDatabaseNavigatorPrivate
 public:
     medDatabaseNavigatorScene *scene;
     medDatabaseNavigatorView *view;
+
+    Qt::Orientation orientation;
 };
 
 medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(new medDatabaseNavigatorPrivate)
 {
+    d->orientation = medDatabaseNavigatorController::instance()->orientation();
+  
     d->scene = new medDatabaseNavigatorScene(this);
+    d->scene->setOrientation (d->orientation);
 
     d->view = new medDatabaseNavigatorView(this);
+    d->view->setOrientation (d->orientation);
     d->view->setScene(d->scene);
     d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -55,7 +61,7 @@ medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(
     
     // medDatabaseNavigatorController::instance()->setOrientation(Qt::Vertical);
     medDatabaseNavigatorController::instance()->setItemSize(128, 128);
-    medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
+    d->orientation == Qt::Horizontal
         ? this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
         : this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 }
@@ -112,7 +118,8 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
         studyThumbnail = studyQuery.value(2);
 
         medDatabaseNavigatorItemGroup *group = new medDatabaseNavigatorItemGroup;
-
+	group->setOrientation (d->orientation);
+	
         group->setName(studyName.toString());
 
         // Retrieve series information
@@ -205,4 +212,25 @@ void medDatabaseNavigator::addThumbnail(const QImage& thumbnail)
 
     group->addItem(item);
     d->scene->addGroup(group);    
+}
+
+void medDatabaseNavigator::setOrientation (Qt::Orientation orientation)
+{
+    d->orientation = orientation;
+    if (d->orientation == Qt::Horizontal) {
+        this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
+	this->setFixedWidth(QWIDGETSIZE_MAX);
+    }
+    else {  
+        this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
+	this->setFixedHeight(QWIDGETSIZE_MAX);
+    }
+
+    d->view->setOrientation (d->orientation);
+    d->scene->setOrientation (d->orientation);
+}
+
+Qt::Orientation medDatabaseNavigator::orientation (void) const
+{
+  return d->orientation;
 }

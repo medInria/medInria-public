@@ -45,6 +45,9 @@ public:
 
     void setName(const QString& name);
 
+    void setOrientation (Qt::Orientation orientation);
+    Qt::Orientation orientation (void) const;
+
 public:
     QRectF boundingRect(void) const;
 

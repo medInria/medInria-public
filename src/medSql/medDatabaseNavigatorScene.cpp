@@ -30,11 +30,12 @@ public:
     QList<medDatabaseNavigatorItemGroup *> groups;
 
     QPointF position;
+    Qt::Orientation orientation;
 };
 
 medDatabaseNavigatorScene::medDatabaseNavigatorScene(QObject *parent) : QGraphicsScene(parent), d(new medDatabaseNavigatorScenePrivate)
 {
-
+    d->orientation == medDatabaseNavigatorController::instance()->orientation();
 }
 
 medDatabaseNavigatorScene::~medDatabaseNavigatorScene(void)
@@ -54,16 +55,16 @@ void medDatabaseNavigatorScene::addGroup(medDatabaseNavigatorItemGroup *group)
 
     d->groups << group;
 
-    medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
+    d->orientation == Qt::Horizontal
         ? group->setPos(d->position + QPointF(10,  0))
         : group->setPos(d->position + QPointF( 0, 10));
 
-    medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
+    d->orientation == Qt::Horizontal
         ? d->position = group->pos() + group->boundingRect().topRight() + QPointF(group_spacing, 0)
         : d->position = group->pos() + group->boundingRect().bottomLeft() + QPointF(0, group_spacing);
 
-    medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal
-        ? this->setSceneRect(QRectF(0, 0, d->position.x(), 128))
+    d->orientation == Qt::Horizontal
+        ? this->setSceneRect(QRectF(0, 20, d->position.x(), 128))
         : this->setSceneRect(QRectF(20, 0, 128, d->position.y()));
 }
 
@@ -80,4 +81,27 @@ void medDatabaseNavigatorScene::reset(void)
     d->position.setY(0);
 
     this->setSceneRect(0, 0, 0, 0);
+}
+
+void medDatabaseNavigatorScene::setOrientation (Qt::Orientation orientation)
+{
+    if (d->orientation == orientation)
+        return;
+  
+    d->orientation = orientation;
+    d->position = QPointF (0,0);
+    this->setSceneRect(0, 0, 0, 0);
+    
+    QList<medDatabaseNavigatorItemGroup *> groups = d->groups;
+    d->groups.clear();
+    foreach (medDatabaseNavigatorItemGroup *group, groups) {
+        this->removeItem (group);
+	group->setOrientation (d->orientation);
+        addGroup (group);
+    }
+}
+
+Qt::Orientation medDatabaseNavigatorScene::orientation (void) const
+{
+    return d->orientation;
 }

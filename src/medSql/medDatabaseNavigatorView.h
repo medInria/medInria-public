@@ -37,6 +37,11 @@ public:
 
     void setScene(QGraphicsScene *scene);
 
+    Qt::Orientation orientation (void) const;
+    
+public slots:
+    void setOrientation (Qt::Orientation orientation);
+
 signals:
     void hovered(medDatabaseNavigatorItem *item);
 

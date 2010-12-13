@@ -38,6 +38,8 @@ public:
 
     void reset(void);
 
+    Qt::Orientation orientation (void) const;
+    
 signals:
     void patientClicked(int id);
     void   studyClicked(int id);
@@ -49,6 +51,7 @@ public slots:
     void   onStudyClicked(int id);
     void  onSeriesClicked(int id);
     void   onImageClicked(int id);
+    void   setOrientation(Qt::Orientation orientation);
 
 public slots:
     void addThumbnail(const QImage& thumbnail);

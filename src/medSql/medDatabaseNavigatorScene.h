@@ -35,6 +35,9 @@ public:
 
     void reset(void);
 
+    void setOrientation (Qt::Orientation orientation);
+    Qt::Orientation orientation (void) const;
+
 private:
     medDatabaseNavigatorScenePrivate *d;
 };

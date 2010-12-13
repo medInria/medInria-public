@@ -24,13 +24,16 @@
 class medDatabaseNavigatorViewPrivate
 {
 public:
+  Qt::Orientation orientation;
 };
 
 medDatabaseNavigatorView::medDatabaseNavigatorView(QWidget *parent) : QGraphicsView(parent), d(new medDatabaseNavigatorViewPrivate)
 {
     this->viewport()->setMouseTracking(true);
 
-    if(medDatabaseNavigatorController::instance()->orientation() == Qt::Horizontal) {
+    d->orientation = medDatabaseNavigatorController::instance()->orientation();
+
+    if(d->orientation == Qt::Horizontal) {
         this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         this->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
@@ -68,4 +71,24 @@ void medDatabaseNavigatorView::mouseMoveEvent(QMouseEvent *event)
         return;
 
     emit hovered(target);
+}
+
+void medDatabaseNavigatorView::setOrientation (Qt::Orientation orientation)
+{
+    d->orientation = orientation;
+
+    if(d->orientation == Qt::Horizontal) {
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    } else {
+        this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        this->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    }
+}
+
+Qt::Orientation medDatabaseNavigatorView::orientation (void) const
+{
+    return d->orientation;
 }
