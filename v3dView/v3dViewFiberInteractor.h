@@ -30,9 +30,6 @@ public:
 	virtual void enable(void);
 	virtual void disable(void);
 
-signals:
-	void selectionValidated (const QString& name);
-
 public slots:
 	virtual void onPropertySet (const QString& key, const QString& value);
 	virtual void onVisibilityPropertySet (const QString& value);
@@ -46,7 +43,7 @@ public slots:
 
 	virtual void onSelectionTagged (void);
 	virtual void onSelectionReset (void);
-	virtual void onSelectionValidated (void);	
+	virtual void onSelectionValidated (QString name);
 	
 	/*
 	  virtual void onBundleClicked (QListWidgetItem* item);

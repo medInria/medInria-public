@@ -5,17 +5,19 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
+#include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
-#include <vtkFibersManager.h>
+#include <vtkFiberDataSetManager.h>
 #include <vtkImageView.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkLimitFibersToVOI.h>
 #include <vtkPointData.h>
+#include "vtkLookupTableManager.h"
+#include "vtkFiberDataSet.h"
 
 #include "v3dView.h"
 #include "v3dFiberBundle.h"
-#include "vtkLookupTableManager.h"
 
 #include <QInputDialog>
 #include <QColorDialog>
@@ -23,45 +25,39 @@
 class v3dViewFiberInteractorPrivate
 {
 public:
-    dtkAbstractData  *data;
-    v3dView          *view;
-    dtkAbstractData  *projectionData;
-    vtkFibersManager *manager;
-  
-    QHash<QString, dtkAbstractData*> bundleList;
-    QHash<QString, v3dFiberBundle*>  v3dBundleList;
+    dtkAbstractData        *data;
+    v3dView                *view;
+    dtkAbstractData        *projectionData;
+    vtkFiberDataSetManager *manager;
+    vtkSmartPointer<vtkFiberDataSet> dataset;
 };
 
 v3dViewFiberInteractor::v3dViewFiberInteractor(): dtkAbstractViewInteractor(), d(new v3dViewFiberInteractorPrivate)
 {
-    d->data = 0;
-    d->view = 0;
-    d->manager = vtkFibersManager::New();
+    d->data    = 0;
+    d->dataset = 0;
+    d->view    = 0;
+    d->manager = vtkFiberDataSetManager::New();
     d->manager->SetHelpMessageVisibility(0);
+    d->manager->SetBoxWidget (0);
 
     vtkLookupTable* lut = vtkLookupTableManager::GetSpectrumLookupTable();
     d->manager->SetLookupTable(lut);
     lut->Delete();
     
     // addProperty here
-    this->addProperty("Visibility", QStringList() << "true" << "false");
+    this->addProperty("Visibility",    QStringList() << "true" << "false");
     this->addProperty("BoxVisibility", QStringList() << "true" << "false");
     this->addProperty("RenderingMode", QStringList() << "lines" << "ribbons" << "tubes");
-    this->addProperty("GPUMode", QStringList() << "true" << "false");
-    this->addProperty("ColorMode", QStringList() << "local" << "global" << "fa");
+    this->addProperty("GPUMode",       QStringList() << "true" << "false");
+    this->addProperty("ColorMode",     QStringList() << "local" << "global" << "fa");
     this->addProperty("BoxBooleanOperation", QStringList() << "plus" << "minus");
-    this->addProperty("Projection", QStringList() << "true" << "false");
+    this->addProperty("Projection",    QStringList() << "true" << "false");
 }
 
 v3dViewFiberInteractor::~v3dViewFiberInteractor()
 {
     this->disable();
-    QHash<QString, v3dFiberBundle*>::iterator it = d->v3dBundleList.begin();
-    while (it!=d->v3dBundleList.end()) {
-      (*it)->Delete();
-      ++it;
-    }
-    d->v3dBundleList.clear();
     d->manager->Delete();
 
     delete d;
@@ -70,12 +66,12 @@ v3dViewFiberInteractor::~v3dViewFiberInteractor()
 
 QString v3dViewFiberInteractor::description(void) const
 {
-	return "v3dViewFiberInteractor";
+    return "v3dViewFiberInteractor";
 }
 
 QStringList v3dViewFiberInteractor::handled(void) const
 {
-	return QStringList () << "v3dView";
+    return QStringList () << "v3dView";
 }
 
 bool v3dViewFiberInteractor::registered(void)
@@ -85,18 +81,24 @@ bool v3dViewFiberInteractor::registered(void)
 
 void v3dViewFiberInteractor::setData(dtkAbstractData *data)
 {
-  if (data->description()=="vtkDataFibers") {
-    if (vtkPolyData *fibers = dynamic_cast<vtkPolyData *>((vtkDataObject *)(data->data()))) {
-        d->manager->SetInput(fibers);
-	d->data = data;
+    if (!data)
+        return;
+  
+    if (data->description()=="v3dDataFibers") {
+        if (vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet *>(data->data())) {
+	    d->dataset = dataset;
+	    d->manager->SetInput (d->dataset);
+	    d->data = data;
+	}
     }
-  }
 }
 
 void v3dViewFiberInteractor::setView(dtkAbstractView *view)
 {
     if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
         d->view = v3dview;
+	d->manager->SetRenderer( d->view->renderer3D() );
+	d->manager->SetRenderWindowInteractor( d->view->interactor() );
     }
 }
 
@@ -105,14 +107,9 @@ void v3dViewFiberInteractor::enable(void)
     if (this->enabled())
         return;
 	
-    if (d->view) {
-        d->manager->SetRenderer( d->view->renderer3D() );
-	d->manager->SetRenderWindowInteractor( d->view->interactor() );
-	QHash<QString, v3dFiberBundle*>::iterator it = d->v3dBundleList.begin();
-	while (it!=d->v3dBundleList.end()) {
-	    d->view->renderer3D()->AddViewProp ( (*it)->GetActor() );
-	}
-    }
+    if (d->view)
+        d->manager->Enable();
+    
     dtkAbstractViewInteractor::enable();
 }
 
@@ -121,14 +118,9 @@ void v3dViewFiberInteractor::disable(void)
     if (!this->enabled())
         return;
 
-    if (d->view) {
-        d->manager->SetRenderer( 0 );
-	d->manager->SetRenderWindowInteractor( 0 );
-	QHash<QString, v3dFiberBundle*>::iterator it = d->v3dBundleList.begin();
-	while (it!=d->v3dBundleList.end()) {
-	  d->view->renderer3D()->RemoveViewProp ( (*it)->GetActor() );
-	}
-    }
+    if (d->view)
+        d->manager->Disable();
+    
     dtkAbstractViewInteractor::disable();
 }
 
@@ -154,9 +146,6 @@ void v3dViewFiberInteractor::onPropertySet(const QString& key, const QString& va
 	
     if (key=="Projection")
         this->onProjectionPropertySet (value);
-	
-    if (d->view)
-        d->view->update();
 }
 
 void v3dViewFiberInteractor::onVisibilityPropertySet (const QString& value)
@@ -177,32 +166,14 @@ void v3dViewFiberInteractor::onBoxVisibilityPropertySet (const QString& value)
 
 void v3dViewFiberInteractor::onRenderingModePropertySet (const QString& value)
 {
-    if (value=="lines") {
+    if (value=="lines")
         d->manager->SetRenderingModeToPolyLines();
-	QHash<QString, v3dFiberBundle*>::iterator it = d->v3dBundleList.begin();
-	while (it!=d->v3dBundleList.end()) {
-	    (*it)->SetRenderingModeToPolyLines ();
-	    ++it;
-	}
-    }
 	
-    if (value=="ribbons") {
+    if (value=="ribbons")
 	d->manager->SetRenderingModeToRibbons();
-	QHash<QString, v3dFiberBundle*>::iterator it = d->v3dBundleList.begin();
-	while (it!=d->v3dBundleList.end()) {
-	    (*it)->SetRenderingModeToRibbons ();
-	    ++it;
-	}
-    }
 	
-    if (value=="tubes") {
+    if (value=="tubes")
         d->manager->SetRenderingModeToTubes();
-	QHash<QString, v3dFiberBundle*>::iterator it = d->v3dBundleList.begin();
-	while (it!=d->v3dBundleList.end()) {
-	    (*it)->SetRenderingModeToTubes ();
-	    ++it;
-	}
-    }
 }
 
 void v3dViewFiberInteractor::onGPUModePropertySet (const QString& value)
@@ -210,22 +181,10 @@ void v3dViewFiberInteractor::onGPUModePropertySet (const QString& value)
     if (value=="true") {
         vtkFibersManager::UseHardwareShadersOn();
 	d->manager->ChangeMapperToUseHardwareShaders();
-
-	QHash<QString, v3dFiberBundle*>::iterator it = d->v3dBundleList.begin();
-	while (it!=d->v3dBundleList.end()) {
-	    (*it)->UseHardwareShadersOn ();
-	    ++it;
-	}
     }
     else {
         vtkFibersManager::UseHardwareShadersOff();
 	d->manager->ChangeMapperToDefault();
-
-	QHash<QString, v3dFiberBundle*>::iterator it = d->v3dBundleList.begin();
-	while (it!=d->v3dBundleList.end()) {
-	    (*it)->UseHardwareShadersOff ();
-	    ++it;
-	}
     }
 }
 
@@ -269,52 +228,19 @@ void v3dViewFiberInteractor::onSelectionReset(void)
     d->manager->Reset();
 }
 
-void v3dViewFiberInteractor::onSelectionValidated(void)
+void v3dViewFiberInteractor::onSelectionValidated(QString name)
 {
     if (d->manager->GetCallbackOutput()->GetNumberOfLines()==0)
         return;
     
-    bool ok;
-    QString text;
-    if (d->view)
-      text = QInputDialog::getText(d->view->widget(), tr("Enter bundle name"),
-				   tr(""), QLineEdit::Normal, tr(""), &ok);
-    else
-      text = QInputDialog::getText(0, tr("Enter bundle name"),
-				   tr(""), QLineEdit::Normal, tr(""), &ok);
-      
-    if (ok && !text.isEmpty())
-      if (dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("vtkDataFibers")) {
-	  data->setData ( d->manager->GetCallbackOutput() );
-	  d->bundleList.insert (text, data);
-/*
-	  QColorDialog *cdialog = new QColorDialog(Qt::white, d->view->widget());
-	  cdialog->exec();
-	  QColor color = cdialog->selectedColor();
- */
-	  //QColor color = QColorDialog::getColor(Qt::white, d->view->widget()); // buggy on Mac
-		  
-		  QColor color = QColor::fromHsv(qrand()%360, 255, 210);
-	  float color_d[3] = {(float)color.red()/255.0, (float)color.green()/255.0, (float)color.blue()/255.0};
-	  //float color_d[3] = {(float)qrand()/(float)RAND_MAX, (float)qrand()/(float)RAND_MAX, (float)qrand()/(float)RAND_MAX};
-	  
-	  v3dFiberBundle* fiberBundle = v3dFiberBundle::New();
-	  fiberBundle->SetName ( text.toAscii().constData() );
-	  fiberBundle->SetColor (color_d);
-	  fiberBundle->SetFiberColors ( d->manager->GetInput()->GetPointData()->GetScalars() );
-	  fiberBundle->SetPoints ( d->manager->GetInput()->GetPoints() );
-	  fiberBundle->SetCells ( d->manager->GetSelectedCells() );
-	  fiberBundle->SetUseHardwareShaders ( vtkFibersManager::GetUseHardwareShaders() );
-	  fiberBundle->SetRenderingMode( vtkFibersManager::GetRenderingMode() );
-	  fiberBundle->Create();
+    QColor color = QColor::fromHsv(qrand()%360, 255, 210);
+    double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
+	
+    d->manager->Validate (name.toAscii().constData(), color_d);
 
-	  d->v3dBundleList.insert (text, fiberBundle);
-	    
-	  if (d->view && d->view->renderer3D())
-	      d->view->renderer3D()->AddViewProp ( fiberBundle->GetActor() );
-	  
-	  emit selectionValidated (text);
-      }
+    d->data->enableWriter ("v3dDataFibersWriter");
+    d->data->write ("/volatile/pfillard/Work/data/fibers.xml");
+    
 }
 
 void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
@@ -332,12 +258,7 @@ void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
 void v3dViewFiberInteractor::onRadiusSet (int value)
 {
     d->manager->SetRadius (value);
-    QHash<QString, v3dFiberBundle*>::iterator it = d->v3dBundleList.begin();
-    while (it!=d->v3dBundleList.end()) {
-        (*it)->SetRadius (value);
-	++it;
-    }
-
+ 
     if (d->view)
         d->view->update();
 }

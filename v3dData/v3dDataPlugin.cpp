@@ -4,6 +4,8 @@
 
 #include "v3dDataPlugin.h"
 #include "v3dDataImage.h"
+#include "v3dDataFibers.h"
+#include "v3dDataFibersWriter.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -44,7 +46,13 @@ bool v3dDataPlugin::initialize(void)
     itk::VTKImageIOFactory::RegisterOneFactory();
     
     if(!v3dDataImage::registered())
-	dtkWarning() << "Unable to register v3dImage type";
+	dtkWarning() << "Unable to register v3dDataImage type";
+
+    if(!v3dDataFibers::registered())
+	dtkWarning() << "Unable to register v3dDataFibers type";
+    
+    if(!v3dDataFibersWriter::registered())
+	dtkWarning() << "Unable to register v3dDataFibersWriter type";
 
     return true;
 }
@@ -66,7 +74,7 @@ QString v3dDataPlugin::description(void) const
 
 QStringList v3dDataPlugin::tags(void) const
 {
-    return QStringList() << "v3d" << "data" << "image";
+    return QStringList() << "v3d" << "data";
 }
 
 QStringList v3dDataPlugin::types(void) const
