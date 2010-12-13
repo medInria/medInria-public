@@ -80,6 +80,10 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   };
 
   vtkGetObjectMacro (BoxWidget, vtkBoxWidget);
+
+  virtual void Enable (void);
+
+  virtual void Disable (void);
   
   /** Reset the pipeline, deactivate the CP box and release memory.*/
   virtual void Initialize (void);
@@ -100,7 +104,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   virtual vtkLimitFibersToVOI* GetVOILimiter(void) const;
   
   /** Set the render window interactor */
-  virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin, vtkRenderer* ren=0);
+  virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin);
   vtkGetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
   
   /** Set the default renderer to put actors in. Must be called before SetInput() */
@@ -161,6 +165,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
 
   /** Set Radius & ribbon width */
   virtual void SetRadius (double r);
+
+  virtual double GetRadius (void) const;
 
   /** Return the fiber ids selected by the box widget */
   virtual vtkCellArray* GetSelectedCells (void) const;
@@ -231,6 +237,10 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   
   vtkRenderWindowInteractor *RenderWindowInteractor;
   vtkRenderer               *Renderer;
+
+  static int vtkUseHardwareShaders;
+  static int vtkFiberRenderingStyle;
+
 };
 
 

@@ -24,6 +24,7 @@ SET(vtkVisuManagement_SRCS
  vtkMeshCropManager.cxx
  vtkLandmarkManager.cxx
  vtkLandmarkManagerCallback.cxx
+ vtkFiberDataSetManager.cxx
 )
 
 SET(vtkVisuManagement_LIBS
@@ -32,6 +33,7 @@ SET(vtkVisuManagement_LIBS
  vtkRendering
  vtkWidgets
  vtkRenderingAddOn
+ vtkDataManagement
 )
 
 
