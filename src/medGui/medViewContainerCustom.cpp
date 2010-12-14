@@ -57,18 +57,21 @@ void medViewContainerCustom::split(int rows, int cols)
 {
     if (d->view)
         return;
-
+    
     this->clear();
     
     for(int i = 0 ; i < rows ; i++) {
         d->layout->setRowStretch(i, 1);
         for(int j = 0 ; j < cols ; j++) {
-	    medViewContainerCustom *container = new medViewContainerCustom(this);
-	    d2->children.append (container);
+            medViewContainerCustom *container = new medViewContainerCustom(this);
+            d2->children.append (container);
             d->layout->addWidget(container, i, j);
-	    d->layout->setColumnStretch(j, 1);
-	}
+            d->layout->setColumnStretch(j, 1);
+        }
     }
+    
+    // in split, the preset is no valid anymore
+    d2->preset = 0;
 
     this->setCurrent(NULL);
 }
