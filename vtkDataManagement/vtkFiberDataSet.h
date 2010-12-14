@@ -31,7 +31,7 @@ class vtkPolyData;
    as vtkPolyData as well.
  */
 
-class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
+class VTK_DATAMANAGEMENT_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
 {
  public:
   static vtkFiberDataSet *New();
