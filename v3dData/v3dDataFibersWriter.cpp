@@ -43,7 +43,7 @@ void v3dDataFibersWriterPrivate::writeBundles (vtkFiberDataSet *dataset)
     
     vtkCellArray *lines = bundle->GetLines();
     lines->InitTraversal();
-    int npt, *pt;
+    vtkIdType npt, *pt;
     
     while (lines->GetNextCell (npt, pt)) {
       xml.writeStartElement("line");
