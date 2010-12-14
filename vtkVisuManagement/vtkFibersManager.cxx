@@ -508,7 +508,7 @@ vtkFibersManager::vtkFibersManager()
   this->BoxWidget->RotationEnabledOff();
   this->BoxWidget->SetPlaceFactor (1.0);
   this->BoxWidget->AddObserver (vtkCommand::InteractionEvent, this->Callback);
-  this->BoxWidgetVisibility = true;
+  this->BoxWidgetVisibility = false;
 
   // create the pipeline
   this->Squeezer->ReleaseDataFlagOn();
