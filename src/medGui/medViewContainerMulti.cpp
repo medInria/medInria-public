@@ -93,13 +93,16 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     content << container;
 
     this->layout(content);
+
+    medViewContainer::setView (view);
     
     d->view = view;
 
-    d->view->reset();
+    // d->view->reset();
 	
-	if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
-      d->pool->appendView (medView);
+    if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
+        d->pool->appendView (medView);
+    
     connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
     connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
 }

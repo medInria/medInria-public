@@ -42,6 +42,8 @@ public:
       int                      synchronize;
     */
     medViewPool *pool;
+
+    QHash<QString, QString> viewProperties;
 };
 
 #endif

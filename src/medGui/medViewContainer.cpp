@@ -84,6 +84,13 @@ void medViewContainer::setView(dtkAbstractView *view)
 {
     if (!view)
         return;
+
+    // pass properties to the view
+    QHash<QString,QString>::iterator it = d->viewProperties.begin();
+    while (it!=d->viewProperties.end()) {
+        view->setProperty (it.key(), it.value());
+	++it;
+    }
 }
 
 void medViewContainer::setCurrent(medViewContainer *container)
@@ -168,6 +175,31 @@ void medViewContainer::paintEvent(QPaintEvent *event)
     
     painter.setBrush(QColor(0x38, 0x38, 0x38));
     painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
+
+    if (!this->view() && d->viewProperties.count()) {
+        painter.setPen(Qt::white);
+	QFont font = painter.font();
+	font.setPointSize (18);
+	painter.setFont (font);
+	QString text;
+	QList<QString> keys = d->viewProperties.keys();
+	foreach (QString key, keys)
+	  text += d->viewProperties[key] + "\n";
+	painter.drawText (event->rect(), Qt::AlignCenter, text);
+    }
+    
     painter.end();
 }
 
+void medViewContainer::setViewProperty (const QString &key, const QString &value)
+{
+    d->viewProperties[key] = value;
+}
+
+QString medViewContainer::viewProperty (const QString &key) const
+{
+    if (d->viewProperties.contains (key))
+        return d->viewProperties[key];
+
+    return QString();
+}

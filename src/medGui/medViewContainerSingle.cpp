@@ -43,8 +43,11 @@ void medViewContainerSingle::split(int rows, int cols)
 
 void medViewContainerSingle::setView(dtkAbstractView *view)
 {
-	if (view==d->view)
-		return;
+    if (view==d->view)
+        return;
+
+    medViewContainer::setView (view);
+    
     // if (d->layout->count())
     //     d->layout->takeAt(0)->widget()->hide();
     
@@ -52,7 +55,9 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
 	
-    d->view->reset();
+    // d->view->reset();
+
+    // set the view properties
 
     if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
         d->pool->appendView (medView);

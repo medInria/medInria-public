@@ -55,6 +55,7 @@ set(${PROJECT_NAME}_HEADERS
   medLoadLUTDialog.h
   medViewerConfiguration.h
   medViewerConfigurationVisualization.h
+  medViewerConfigurationVisualization2.h
   medViewerConfigurationRegistration.h
   medViewerConfigurationDiffusion.h
   medViewerToolBoxLayout.h
@@ -91,6 +92,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfigurationFactory.h
   medViewerConfiguration.h
   medViewerConfigurationVisualization.h
+  medViewerConfigurationVisualization2.h
   medViewerConfigurationRegistration.h
   medViewerConfigurationDiffusion.h
   medViewerToolBoxLayout.h
@@ -128,6 +130,7 @@ set(${PROJECT_NAME}_SOURCES
   medViewerConfigurationFactory.cpp
   medViewerConfiguration.cpp
   medViewerConfigurationVisualization.cpp
+  medViewerConfigurationVisualization2.cpp
   medViewerConfigurationRegistration.cpp
   medViewerConfigurationDiffusion.cpp
   medViewerToolBoxLayout.cpp

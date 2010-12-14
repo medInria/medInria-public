@@ -45,13 +45,13 @@ void medViewContainerCustom::split(int rows, int cols)
         return;
     
     for(int i = 0 ; i < rows ; i++) {
-		d->layout->setRowStretch(i, 1);
+        d->layout->setRowStretch(i, 1);
         for(int j = 0 ; j < cols ; j++) {
 	    medViewContainerCustom *container = new medViewContainerCustom(this);
             d->layout->addWidget(container, i, j);
-			d->layout->setColumnStretch(j, 1);
-		}
+	    d->layout->setColumnStretch(j, 1);
 	}
+    }
 
     this->setCurrent(NULL);
 }
@@ -96,14 +96,26 @@ void medViewContainerCustom::setPreset(int preset)
         d->layout->setColumnStretch(1, 2);
         break;
     case E:
-        d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
-        d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
-        d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
-        d->layout->addWidget(new medViewContainerCustom(this), 1, 1);
-	d->layout->setColumnStretch(0, 1);
-	d->layout->setColumnStretch(1, 1);			
-	d->layout->setRowStretch(0, 1);
-	d->layout->setRowStretch(1, 1);									
+        {
+	  medViewContainerCustom *custom1 = new medViewContainerCustom(this);
+	  medViewContainerCustom *custom2 = new medViewContainerCustom(this);
+	  medViewContainerCustom *custom3 = new medViewContainerCustom(this);
+	  medViewContainerCustom *custom4 = new medViewContainerCustom(this);
+
+	  custom1->setViewProperty ("Orientation", "Axial");
+	  custom2->setViewProperty ("Orientation", "Sagittal");
+	  custom3->setViewProperty ("Orientation", "Coronal");
+	  custom4->setViewProperty ("Orientation", "3D");
+	  
+	  d->layout->addWidget(custom1, 0, 0);
+	  d->layout->addWidget(custom2, 0, 1);
+	  d->layout->addWidget(custom3, 1, 0);
+	  d->layout->addWidget(custom4, 1, 1);
+	  d->layout->setColumnStretch(0, 1);
+	  d->layout->setColumnStretch(1, 1);			
+	  d->layout->setRowStretch(0, 1);
+	  d->layout->setRowStretch(1, 1);
+	}
         break;
     };
 
@@ -120,12 +132,14 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 
     if (d->view)
         this->onViewClosing();
+
+    medViewContainer::setView (view);
     
     d->layout->setContentsMargins(1, 1, 1, 1);    
     d->layout->addWidget(view->widget(), 0, 0);
 
     d->view = view;
-    d->view->reset();
+    // d->view->reset();
     
     this->synchronize_2 (view);
 
@@ -138,8 +152,8 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
         parent->synchronize_2(view);
     }
     else { // top level medViewContainerCustom
-		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view) )
-          d->pool->appendView (medView);
+        if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view) )
+            d->pool->appendView (medView);
 	connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     }
 }
@@ -150,8 +164,8 @@ void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
         parent->desynchronize_2(view);
     }
     else { // top level medViewContainerCustom
-		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view) )
-          d->pool->removeView (medView);
+        if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view) )
+            d->pool->removeView (medView);
 	disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     }
 }

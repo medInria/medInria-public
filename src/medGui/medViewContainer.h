@@ -57,12 +57,15 @@ public:
 
     virtual void setView(dtkAbstractView *view);
 
+    virtual QString viewProperty (const QString &key) const;
+    
 signals:
     void dropped(const medDataIndex& index);
     void focused(dtkAbstractView *view);
 
 public slots:
     virtual void split(int rows, int cols);
+    virtual void setViewProperty (const QString &key, const QString &value);
 
 protected:
     void setCurrent(medViewContainer *container);

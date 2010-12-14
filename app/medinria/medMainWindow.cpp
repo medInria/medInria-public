@@ -44,6 +44,7 @@
 #include <medGui/medViewerConfiguration.h>
 #include <medGui/medViewerConfigurationFactory.h>
 #include <medGui/medViewerConfigurationVisualization.h>
+#include <medGui/medViewerConfigurationVisualization2.h>
 #include <medGui/medViewerConfigurationRegistration.h>
 #include <medGui/medViewerConfigurationDiffusion.h>
 
@@ -169,6 +170,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     // Registering different configurations
     medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
+    medViewerConfigurationFactory::instance()->registerConfiguration("Visualization2", createMedViewerConfigurationVisualization2);
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
     
