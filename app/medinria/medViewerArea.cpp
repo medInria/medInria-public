@@ -92,8 +92,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
     d->toolboxPatient = new medViewerToolBoxPatient(this);
-    d->toolboxPatient->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
-    d->toolboxPatient->setMinimumWidth(176); // 186 - 10
+    d->toolboxPatient->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
+    d->toolboxPatient->setFixedWidth(176); // 186 - 10
 
     
     // Setting up toolbox container
@@ -110,6 +110,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QVBoxLayout *view_container_layout = new QVBoxLayout(d->view_container);
     view_container_layout->setContentsMargins(0, 10, 0, 10);
     view_container_layout->addWidget(d->stack);
+
 
     // Setting up navigator container
 
