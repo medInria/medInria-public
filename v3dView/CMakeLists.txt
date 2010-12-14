@@ -94,10 +94,10 @@ target_link_libraries(${PROJECT_NAME}
   medCore
   vtkCommon
   vtkRendering
-#   vtkRenderingAddOn
   vtkRenderingAddOn3
   vtkWidgetsAddOn
   vtkVisuManagement
+  vtkDataManagement
   vtkVolumeRendering
   QVTK)
 

@@ -62,7 +62,6 @@ subdirs(itkDataImageWriter)
 subdirs(vtkDataMesh)
 subdirs(vtkDataMeshReader)
 subdirs(vtkDataMeshWriter)
-subdirs(vtkDataFibers)
 subdirs(itkDataDiffusionGradientList)
 subdirs(dcmtkDatabasePacs)
 
