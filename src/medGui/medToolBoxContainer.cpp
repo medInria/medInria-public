@@ -70,13 +70,11 @@ void medToolBoxContainer::addToolBox(medToolBox *toolBox)
         d->toolboxes.append(toolBox);
 	toolBox->setParent (d->container);
 	if (d->layoutOrientation==Qt::Vertical) {
-	  // toolBox->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Fixed);
 	  d->layout->setRowStretch (d->layout->count(), 0);
 	  d->layout->addWidget(toolBox, d->layout->count(), 0, Qt::AlignTop);
 	  d->layout->setRowStretch (d->layout->count(), 1);
 	}
 	else {
-	  // toolBox->setSizePolicy (QSizePolicy::Fixed, QSizePolicy::Expanding);
 	  d->layout->setColumnStretch (d->layout->count(), 0);
 	  d->layout->addWidget(toolBox, 0, d->layout->count(), Qt::AlignTop);
 	  d->layout->setColumnStretch (d->layout->count(), 1);
@@ -93,6 +91,12 @@ void medToolBoxContainer::removeToolBox(medToolBox *toolBox)
 
 void medToolBoxContainer::clear()
 {
+    for (int i=0; i<=d->layout->count(); i++) {
+      if (d->layoutOrientation==Qt::Vertical)
+	d->layout->setRowStretch (i, 0);
+      else
+	d->layout->setColumnStretch (i, 0);
+    }
     foreach(medToolBox *tb, d->toolboxes) {
         tb->hide();
         d->layout->removeWidget(tb);

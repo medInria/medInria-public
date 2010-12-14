@@ -98,8 +98,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setOrientation(Qt::Vertical);
-    d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    d->toolbox_container->setMinimumWidth(320);
+    d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    d->toolbox_container->setFixedWidth(320);
 
     // Setting up view container
 
@@ -134,8 +134,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->navigator_container_layout->addWidget(d->navigator, 1, 0);
 
     d->layout->addWidget(d->navigator_container, 0, 0);
-    d->layout->addWidget(d->view_container, 0, 1);
-    d->layout->addWidget(d->toolbox_container, 0, 2);
+    d->layout->addWidget(d->view_container,      0, 1);
+    d->layout->addWidget(d->toolbox_container,   0, 2);
     
     
     //action for transfer function
@@ -690,10 +690,10 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 	     d->navigator_container->setFixedHeight(186);
 	     d->navigator_container->setFixedWidth(QWIDGETSIZE_MAX);
 	     
-	     d->toolbox_container->setOrientation(Qt::Horizontal);
 	     d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	     d->toolbox_container->setFixedHeight(200);
 	     d->toolbox_container->setFixedWidth (QWIDGETSIZE_MAX);
+	     d->toolbox_container->setOrientation(Qt::Horizontal);
            }
             break;
             
@@ -717,10 +717,10 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 	     d->navigator_container->setFixedWidth(186);
 	     d->navigator_container->setFixedHeight(QWIDGETSIZE_MAX);
 	      
-	     d->toolbox_container->setOrientation(Qt::Vertical);
 	     d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 	     d->toolbox_container->setFixedWidth(320);
 	     d->toolbox_container->setFixedHeight (QWIDGETSIZE_MAX);
+	     d->toolbox_container->setOrientation(Qt::Vertical);
            }
     }
 
@@ -728,26 +728,26 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
     switch (layout){
         case medViewerConfiguration::TopDbBottomTb:
 	    d->layout->addWidget ( d->navigator_container, 0, 0);
-	    d->layout->addWidget ( d->view_container, 1, 0);
-	    d->layout->addWidget ( d->toolbox_container, 2, 0);
+	    d->layout->addWidget ( d->view_container,      1, 0);
+	    d->layout->addWidget ( d->toolbox_container,   2, 0);
 	    break;
 	    
         case medViewerConfiguration::TopTbBottomDb:
-	    d->layout->addWidget ( d->toolbox_container, 0, 0);
-	    d->layout->addWidget ( d->view_container, 1, 0);
+	    d->layout->addWidget ( d->toolbox_container,   0, 0);
+	    d->layout->addWidget ( d->view_container,      1, 0);
 	    d->layout->addWidget ( d->navigator_container, 2, 0);
 	    break;
 	    
 	case medViewerConfiguration::LeftTbRightDb:
-	    d->layout->addWidget ( d->toolbox_container, 0, 0);
-	    d->layout->addWidget ( d->view_container, 0, 1);
+	    d->layout->addWidget ( d->toolbox_container,   0, 0);
+	    d->layout->addWidget ( d->view_container,      0, 1);
 	    d->layout->addWidget ( d->navigator_container, 0, 2);
 	    break;
 	  
         case medViewerConfiguration::LeftDbRightTb:
         default:
 	    d->layout->addWidget ( d->navigator_container, 0, 0);
-	    d->layout->addWidget ( d->view_container, 0, 1);
-	    d->layout->addWidget ( d->toolbox_container, 0, 2);
+	    d->layout->addWidget ( d->view_container,      0, 1);
+	    d->layout->addWidget ( d->toolbox_container,   0, 2);
     }
 }
