@@ -135,13 +135,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->navigator_container_layout->addWidget(d->toolboxPatient, 0, 0);
     d->navigator_container_layout->addWidget(d->navigator, 1, 0);
 
-<<<<<<< Updated upstream
-    d->layout->addWidget(d->navigator_container, 0, 0);
-    d->layout->addWidget(d->view_container,      0, 1);
-    d->layout->addWidget(d->toolbox_container,   0, 2);
-    
-    
-=======
     //Set up viewer layout
 
 //    d->layout->addWidget(d->navigator_container, 0, 0);
@@ -154,7 +147,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->splitter->addWidget(d->view_container);
     d->splitter->addWidget(d->toolbox_container);
 
->>>>>>> Stashed changes
     //action for transfer function
     QAction * transFunAction =
       new QAction("Toggle Tranfer Function Widget", this);
