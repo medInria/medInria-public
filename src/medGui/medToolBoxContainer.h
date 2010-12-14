@@ -40,16 +40,10 @@ public:
     
     QList<medToolBox*> toolBoxes(void) const;
 
-    int orientation (void) const;
+    Qt::Orientation orientation (void) const;
     
-public:
-    enum LayoutOrientation{
-        Vertical,
-        Horizontal
-    };
-
 public slots:
-    void setOrientation(LayoutOrientation orient);
+    void setOrientation(Qt::Orientation orientation);
 
 private:
     medToolBoxContainerPrivate *d;

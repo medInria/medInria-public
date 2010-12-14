@@ -51,9 +51,10 @@ public:
 
     QMutex mutex;
   
-    QHash<int, medViewContainerStack *> view_stacks;
-    QHash<QString,medViewerConfiguration*> *configurations;
+    QHash<int, medViewContainerStack *>    view_stacks;
+    QHash<QString,medViewerConfiguration*> configurations;
 
+    QPropertyAnimation *navigator_animation;
 
 public:
     int current_patient;
@@ -61,6 +62,7 @@ public:
     int current_container_preset;
     QString current_configuration_name;
     medViewerConfiguration *current_configuration;
+    medViewerConfiguration::LayoutType current_layout;
 };
 
 #endif

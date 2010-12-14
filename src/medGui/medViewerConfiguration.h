@@ -48,7 +48,7 @@ public:
     QList<medToolBox*> toolBoxes(void) const;
     
     void setLayoutType(LayoutType type);
-    int  layoutType(void) const;
+    LayoutType layoutType(void) const;
     
     void setViewLayoutType(int type);
     int viewLayoutType(void) const;
@@ -58,9 +58,14 @@ public:
     
     void setDatabaseVisibility(bool);
     bool isDatabaseVisible(void) const;
+
+    void setToolBoxesVisibility(bool);
+    bool areToolBoxesVisible(void) const;
+
     void setLayoutToolBoxVisibility(bool visibility);
     void hideLayoutToolBox(void);
     void showLayoutToolBox(void);
+    
     bool isLayoutToolBoxVisible() const;
     bool isLayoutToolBox(const medToolBox * toolbox);
     

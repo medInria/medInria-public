@@ -22,6 +22,8 @@
 
 #include <QtGui>
 
+#include <medGui/medViewerConfiguration.h>
+
 class dtkAbstractView;
 
 class medDataIndex;
@@ -29,7 +31,6 @@ class medToolBox;
 class medViewContainer;
 class medViewContainerStack;
 class medViewerAreaPrivate;
-class medViewerConfiguration;
 
 class medViewerArea : public QWidget
 {
@@ -58,6 +59,8 @@ public slots:
 
     void addToolBox(medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
+
+    void switchToLayout (medViewerConfiguration::LayoutType layout);
 
 protected slots:
     void onViewFocused(dtkAbstractView *view);

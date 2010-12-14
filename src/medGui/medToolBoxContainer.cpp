@@ -28,10 +28,10 @@ class medToolBoxContainerPrivate
 {
 public:
     QFrame *container;
-    QBoxLayout *layout;
+    QGridLayout *layout;
     QList<medToolBox *> toolboxes;
 
-    medToolBoxContainer::LayoutOrientation layoutOrientation;
+    Qt::Orientation layoutOrientation;
 };
 
 medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent), d(new medToolBoxContainerPrivate)
@@ -39,10 +39,10 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
     d->container = new QFrame(this);
     d->container->setObjectName("medToolBoxContainer");
     // by default create a vertical layout
-    d->layoutOrientation = Vertical;
-    d->layout = new QVBoxLayout(d->container);
+    d->layoutOrientation = Qt::Vertical;
+    d->layout = new QGridLayout(d->container);
     d->layout->setContentsMargins(2, 4, 0, 0);
-    d->layout->addStretch(1);
+    d->layout->setSizeConstraint (QLayout::SetNoConstraint);
 
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
@@ -69,7 +69,18 @@ void medToolBoxContainer::addToolBox(medToolBox *toolBox)
     if (!d->toolboxes.contains(toolBox)) {
         d->toolboxes.append(toolBox);
 	toolBox->setParent (d->container);
-        d->layout->insertWidget(d->layout->count()-1, toolBox, 0, Qt::AlignTop);
+	if (d->layoutOrientation==Qt::Vertical) {
+	  // toolBox->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Fixed);
+	  d->layout->setRowStretch (d->layout->count(), 0);
+	  d->layout->addWidget(toolBox, d->layout->count(), 0, Qt::AlignTop);
+	  d->layout->setRowStretch (d->layout->count(), 1);
+	}
+	else {
+	  // toolBox->setSizePolicy (QSizePolicy::Fixed, QSizePolicy::Expanding);
+	  d->layout->setColumnStretch (d->layout->count(), 0);
+	  d->layout->addWidget(toolBox, 0, d->layout->count(), Qt::AlignTop);
+	  d->layout->setColumnStretch (d->layout->count(), 1);
+	}
     }
 }
 
@@ -82,17 +93,11 @@ void medToolBoxContainer::removeToolBox(medToolBox *toolBox)
 
 void medToolBoxContainer::clear()
 {
-    //maybe faster to delete the layout and re-create it, maybe not as safe?
     foreach(medToolBox *tb, d->toolboxes) {
         tb->hide();
         d->layout->removeWidget(tb);
     }
     d->toolboxes.clear();
-    /*
-    int count = d->layout->count();
-    for (int i = 0; i < count ;i++)
-        d->layout->itemAt(count-i-1)->widget()->hide();
-     */
 }
 
 QList<medToolBox*> medToolBoxContainer::toolBoxes(void) const
@@ -100,35 +105,22 @@ QList<medToolBox*> medToolBoxContainer::toolBoxes(void) const
     return d->toolboxes;
 }
 
-void medToolBoxContainer::setOrientation(LayoutOrientation orient)
+void medToolBoxContainer::setOrientation(Qt::Orientation orient)
 {
-    if (d->layoutOrientation != orient)
-    {
-        d->layoutOrientation = orient;
-        QBoxLayout *layout;
+    if (d->layoutOrientation==orient)
+        return;
+  
+    d->layoutOrientation = orient;
 
-        delete d->layout;
+    this->clear();
 
-        orient == Vertical ? layout = new QVBoxLayout(d->container):
-                             layout = new QHBoxLayout(d->container);
-        d->layout = layout;
-        d->layout->setContentsMargins(2, 4, 0, 0);
-        d->layout->addStretch(1);
-
-        //put back toolboxes
-       foreach(medToolBox * tb, d->toolboxes ) {
-           if (orient==Vertical)
-               d->layout->insertWidget(d->layout->count()-1, tb, 0, Qt::AlignTop);
-           else 
-               d->layout->insertWidget(d->layout->count()-1, tb, 0, Qt::AlignLeft);
-       }
-            //addToolBox(tb);
-       
-       this->updateGeometry();
+    //put back toolboxes
+    foreach(medToolBox * tb, d->toolboxes ) {
+      addToolBox (tb);
     }
 }
 
-int medToolBoxContainer::orientation (void) const
+Qt::Orientation medToolBoxContainer::orientation (void) const
 {
     return d->layoutOrientation;
 }

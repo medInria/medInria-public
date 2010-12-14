@@ -31,10 +31,11 @@ public:
     medViewerToolBoxLayout *layoutToolBox;
     QList<medToolBox*> toolboxes;
     int viewLayoutType;
-    int layoutType;
+    medViewerConfiguration::LayoutType layoutType;
     int customLayoutType;
     bool databaseVisibility;
     bool layoutToolBoxVisibility;
+    bool toolBoxesVisibility;
 };
 
 medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
@@ -45,6 +46,7 @@ medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(n
     d->customLayoutType = 0;
     d->databaseVisibility = true;
     d->layoutToolBoxVisibility = true;
+    d->toolBoxesVisibility = true;
     
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
     connect (d->layoutToolBox, SIGNAL(modeChanged(int)),   this, SIGNAL(layoutModeChanged(int)));
@@ -89,7 +91,7 @@ void medViewerConfiguration::setLayoutType(medViewerConfiguration::LayoutType ty
     d->layoutType = type;
 }
 
-int medViewerConfiguration::layoutType(void) const
+medViewerConfiguration::LayoutType medViewerConfiguration::layoutType(void) const
 {
     return d->layoutType;
 }
@@ -157,4 +159,14 @@ void medViewerConfiguration::setupViewContainerStack(medViewContainerStack *cont
 void medViewerConfiguration::patientChanged(int patientId)
 {
     Q_UNUSED(patientId);
+}
+
+void medViewerConfiguration::setToolBoxesVisibility (bool value)
+{
+    d->toolBoxesVisibility = value;
+}
+
+bool medViewerConfiguration::areToolBoxesVisible (void) const
+{
+    return d->toolBoxesVisibility;
 }
