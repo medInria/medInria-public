@@ -700,7 +700,7 @@ void vtkViewImage2D::UpdatePosition ()
   std::ostringstream os;
   //os << "Slice: ";
 
-  os2 << "Zoom: " << this->GetZoom()*100.0 << " \%\n";
+  os2 << "Zoom: " << this->GetZoom()*100.0 << " %\n";
     
   switch( this->Orientation )
   {
@@ -1838,7 +1838,7 @@ void vtkViewImage2D::SetZoom (double factor)
     this->GetCurrentPoint (pos);
     int* dims = this->GetImage()->GetDimensions();
     std::ostringstream os;
-    os << "Zoom: " << this->GetZoom()*100.0 << " \%\n";
+    os << "Zoom: " << this->GetZoom()*100.0 << " %\n";
     switch( this->Orientation )
     {
 	case vtkViewImage::AXIAL_ID :
