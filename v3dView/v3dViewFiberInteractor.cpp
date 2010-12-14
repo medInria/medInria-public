@@ -39,7 +39,7 @@ v3dViewFiberInteractor::v3dViewFiberInteractor(): dtkAbstractViewInteractor(), d
     d->view    = 0;
     d->manager = vtkFiberDataSetManager::New();
     d->manager->SetHelpMessageVisibility(0);
-    d->manager->SetBoxWidget (0);
+    // d->manager->SetBoxWidget (0);
 
     vtkLookupTable* lut = vtkLookupTableManager::GetSpectrumLookupTable();
     d->manager->SetLookupTable(lut);

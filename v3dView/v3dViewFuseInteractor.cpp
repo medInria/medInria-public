@@ -394,7 +394,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( converter->GetOutput() );
     }
     else {
-        qDebug() << "Unsupported image type for fusion";
+        qDebug() << "Unsupported image type for fusion: type=" << data->description();
         return;
     }
 
