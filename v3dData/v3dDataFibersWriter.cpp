@@ -95,7 +95,13 @@ bool v3dDataFibersWriter::write(const QString& path)
   if (!dataset)
       return false;
 
+#ifdef _MSC_VER
+  qDebug() << __FUNCSIG__;
+#elif defined __GNUG__
+  qDebug() << __PRETTY_FUNCTION__;
+#else
   qDebug() << __func__;
+#endif
   
   /*
   QFile file (path);
