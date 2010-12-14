@@ -85,23 +85,23 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 //    d->layout->setSpacing(0);
     d->splitter = new QSplitter(Qt::Horizontal,this);
     d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
+    d->splitter->setHandleWidth(3);
     // -- User interface setup
 
     d->stack = new QStackedWidget(this);
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
     d->toolboxPatient = new medViewerToolBoxPatient(this);
-    d->toolboxPatient->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
-    d->toolboxPatient->setFixedWidth(176); // 186 - 10
+    d->toolboxPatient->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
+    d->toolboxPatient->setMinimumWidth(176); // 186 - 10
 
     
     // Setting up toolbox container
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setOrientation(Qt::Vertical);
-    d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    d->toolbox_container->setFixedWidth(320);
+    d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    d->toolbox_container->setMinimumWidth(320);
 
     // Setting up view container
 
@@ -129,7 +129,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // d->navigator_container_layout = 0;
     d->navigator_container_layout = new QGridLayout(d->navigator_container);
-    d->navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);    
+    d->navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
     d->navigator_container_layout->setContentsMargins(0, 0, 0, 0);
     d->navigator_container_layout->setSpacing(0);
     d->navigator_container_layout->addWidget(d->toolboxPatient, 0, 0);
