@@ -604,6 +604,9 @@ void medViewerArea::setupConfiguration(QString name)
     if (!conf)
         return;
 
+    d->current_configuration = conf;
+    d->current_configuration_name = name;
+
     //clean toolboxes
     d->toolbox_container->hide();
     d->toolbox_container->clear();
@@ -657,9 +660,6 @@ void medViewerArea::setupConfiguration(QString name)
     connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));
     connect(conf, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)));
     connect(conf, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)));
-
-    d->current_configuration = conf;
-    d->current_configuration_name = name;    
 }
 
 void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
