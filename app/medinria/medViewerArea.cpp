@@ -255,6 +255,7 @@ void medViewerArea::open(const medDataIndex& index)
     
     if(((medDataIndex)index).isValidForPatient()) {
         
+        this->setupConfiguration("Visualization");
         this->switchToPatient(index.patientId());
         this->switchToContainer(1);
         
