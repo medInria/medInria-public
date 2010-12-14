@@ -575,8 +575,6 @@ v3dView::~v3dView(void)
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2DSagittal);
     d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3D);
     
-    delete d->widget;
-    
     /*
      d->view2D->SetRenderWindow(0);
      d->view2D->SetRenderWindowInteractor(0);
@@ -602,7 +600,9 @@ v3dView::~v3dView(void)
     d->collectionPos->Delete();
 
     d->observer->Delete();
-    
+
+    delete d->widget;
+
     delete d;
     
     d = NULL;
