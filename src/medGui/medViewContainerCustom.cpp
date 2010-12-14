@@ -32,12 +32,14 @@ public:
     QList<medViewContainerCustom*> children;
     int rowMax;
     int columnMax;
+    int preset;
 };
 
 medViewContainerCustom::medViewContainerCustom (QWidget *parent) : medViewContainer(parent), d2 (new medViewContainerCustomPrivate)
 {
     d2->rowMax    = 5;
     d2->columnMax = 5;
+    d2->preset = medViewContainerCustom::A;
 }
 
 medViewContainerCustom::~medViewContainerCustom()
@@ -73,6 +75,11 @@ void medViewContainerCustom::split(int rows, int cols)
 
 void medViewContainerCustom::setPreset(int preset)
 {
+    if (d2->preset == preset)
+        return;
+
+    d2->preset = preset;
+  
     this->clear();
     
     medViewContainerCustom *custom1;
@@ -81,16 +88,6 @@ void medViewContainerCustom::setPreset(int preset)
     medViewContainerCustom *custom4;
 
     switch(preset) {
-    case A:
-        custom1 = new medViewContainerCustom(this);
-        custom2 = new medViewContainerCustom(this);
-	d2->children.append (custom1);
-	d2->children.append (custom2);
-        d->layout->addWidget(custom1, 0, 0);
-        d->layout->addWidget(custom2, 0, 1);
-	d->layout->setColumnStretch(0, 1);
-	d->layout->setColumnStretch(1, 1);			
-        break;
     case B:
         custom1 = new medViewContainerCustom(this);
 	custom2 = new medViewContainerCustom(this);
@@ -148,6 +145,19 @@ void medViewContainerCustom::setPreset(int preset)
 	d->layout->setRowStretch(0, 1);
 	d->layout->setRowStretch(1, 1);
         break;
+	
+    case A:
+	default:
+        custom1 = new medViewContainerCustom(this);
+        custom2 = new medViewContainerCustom(this);
+	d2->children.append (custom1);
+	d2->children.append (custom2);
+        d->layout->addWidget(custom1, 0, 0);
+        d->layout->addWidget(custom2, 0, 1);
+	d->layout->setColumnStretch(0, 1);
+	d->layout->setColumnStretch(1, 1);			
+        break;
+
     };
 
     this->setCurrent(NULL);
