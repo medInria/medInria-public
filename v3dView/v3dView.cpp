@@ -1373,10 +1373,9 @@ void v3dView::onMouseInteractionPropertySet(const QString &value)
 
 void v3dView::onPresetPropertySet (const QString &value)
 {
-    this->blockSignals(true);
     if( value == "VR Muscles&Bones" ) {
         
-        this->setProperty ("LookupTable", "Muscles & Bones");
+        this->onLookupTablePropertySet ("Muscles & Bones");
         
         double color[3] = {0.0, 0.0, 0.0};
         
@@ -1388,7 +1387,7 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Vascular I" ) {
         
-        this->setProperty ("LookupTable", "Stern");
+        this->onLookupTablePropertySet ("Stern");
         
         double color[3] = {0.0, 0.0, 0.0};
         
@@ -1400,7 +1399,7 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Vascular II" ) {
         
-        this->setProperty ("LookupTable", "Red Vessels");
+        this->onLookupTablePropertySet ("Red Vessels");
         
         double color[3] = {0.0, 0.0, 0.0};
         
@@ -1413,7 +1412,7 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Vascular III" ) {
         
-        this->setProperty ("LookupTable", "Red Vessels");
+        this->onLookupTablePropertySet ("Red Vessels");
         
         double color[3] = {0.0, 0.0, 0.0};
         
@@ -1425,7 +1424,7 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Vascular IV" ) {
         
-        this->setProperty ("LookupTable", "Red Vessels");
+        this->onLookupTablePropertySet ("Red Vessels");
         
         double color[3] = {0.0, 0.0, 0.0};
         
@@ -1437,7 +1436,7 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Standard" ) {
         
-        this->setProperty ("LookupTable", "Muscles & Bones");
+        this->onLookupTablePropertySet ("Muscles & Bones");
         
         double color[3] = {0.0, 0.0, 0.0};
         
@@ -1449,7 +1448,7 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Soft" ) {
         
-        this->setProperty ("LookupTable", "Bones");
+        this->onLookupTablePropertySet ("Bones");
         
         double color[3] = {0.0, 0.0, 0.0};
         
@@ -1461,7 +1460,7 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Soft on White" ) {
         
-        this->setProperty ("LookupTable", "Muscles & Bones");
+        this->onLookupTablePropertySet ("Muscles & Bones");
         
         double color[3] = {1.0,0.98820477724075317,0.98814374208450317};
         
@@ -1472,7 +1471,7 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Soft on Blue" ) {
         
-        this->setProperty ("LookupTable", "Muscles & Bones");
+        this->onLookupTablePropertySet ("Muscles & Bones");
         
         double color[3]={0.0, 0.27507439255714417, 0.26398107409477234};      
         
@@ -1483,8 +1482,8 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Red on White" ) {
         
-        this->setProperty ("LookupTable", "Red Vessels");
-        
+        this->onLookupTablePropertySet ("Red Vessels");
+
         double color[3]={1.0, 0.98820477724075317, 0.98814374208450317};
         
         d->collection->SyncSetBackground( color );
@@ -1494,7 +1493,7 @@ void v3dView::onPresetPropertySet (const QString &value)
     }
     else if( value == "Glossy" ) {
         
-        this->setProperty ("LookupTable", "Bones");
+        this->onLookupTablePropertySet ("Bones");
         
         double color[3] = {0.0, 0.0, 0.0};
         
@@ -1505,11 +1504,8 @@ void v3dView::onPresetPropertySet (const QString &value)
         //d->view->SetAboutData ("Glossy - Powered by magic Pedro");
     }
     else {
-        this->blockSignals(false);
         return; // to prevent trigger of event lutChanged()
     }
-    
-    this->blockSignals(false);
     
     emit lutChanged();
 }
