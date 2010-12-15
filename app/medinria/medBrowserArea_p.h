@@ -35,6 +35,7 @@ class medDatabaseView;
 class dtkFinder;
 class dtkFinderPathBar;
 class dtkFinderSideView;
+class dtkFinderToolBar;
 
 class medPacsWidget;
 
@@ -58,6 +59,7 @@ public:
     dtkFinder *finder;
     dtkFinderPathBar *path;
     dtkFinderSideView *side;
+    dtkFinderToolBar *toolbar;
 
     medPacsWidget *pacs;
 

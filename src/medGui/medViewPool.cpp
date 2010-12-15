@@ -309,14 +309,21 @@ void medViewPool::onViewPropertySet (const QString &key, const QString &value)
     
     d->propertySet[key] = value;
     
+    // first, block all signals
+    foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (true);    
+    
+    // second, propagate properties
     foreach (medAbstractView *lview, d->views) {
         if (lview!=this->sender()) {
-            lview->blockSignals (true);
             lview->setProperty (key, value);
             lview->update();
-            lview->blockSignals (false);
         }
     }
+    
+    // third, restore signals
+    foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (false); 
 }
 
 int medViewPool::count (void)
