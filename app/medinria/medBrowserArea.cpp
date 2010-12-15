@@ -80,6 +80,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->path = new dtkFinderPathBar(this);
     d->path->setPath(QDir::homePath());
+    
+    d->toolbar = new dtkFinderToolBar (this);
+    d->toolbar->setPath(QDir::currentPath());
 
     d->side = new dtkFinderSideView(this);
     d->side->setStyleSheet(
@@ -132,23 +135,38 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));
 
     QWidget *filesystem_widget = new QWidget(this);
+    
+    QHBoxLayout *toolbar_layout = new QHBoxLayout;
+    toolbar_layout->setContentsMargins(0, 0, 0, 0);
+    toolbar_layout->setSpacing(0);
+    toolbar_layout->addWidget  (d->toolbar);
+    toolbar_layout->addWidget  (d->path);    
 
     QVBoxLayout *filesystem_layout = new QVBoxLayout(filesystem_widget);
     filesystem_layout->setContentsMargins(10, 10, 10, 10);
     filesystem_layout->setSpacing(0);
+    filesystem_layout->addLayout (toolbar_layout);
     filesystem_layout->addWidget(d->finder);
-    filesystem_layout->addWidget(d->path);
 
     connect(d->finder, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
-
+    connect(d->finder, SIGNAL(changed(QString)), d->toolbar, SLOT(setPath(QString)));
+    
     connect(d->path, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
     connect(d->path, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
-
+    connect(d->path, SIGNAL(changed(QString)), d->toolbar, SLOT(setPath(QString)));
+    
     connect(d->side, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
     connect(d->side, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
-
+    connect(d->side, SIGNAL(changed(QString)), d->toolbar, SLOT(setPath(QString)));
+    
     connect(d->finder, SIGNAL(bookmarked(QString)), d->side, SLOT(addBookmark(QString)));
+    
+    connect (d->toolbar, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
+    connect (d->toolbar, SIGNAL(changed(QString)), d->path,   SLOT(setPath(QString)));
+    
+    connect (d->toolbar, SIGNAL(treeView()),       d->finder, SLOT(switchToTreeView()));
+    connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));    
 
     // Pacs widget ///////////////////////////////////////////////
 
