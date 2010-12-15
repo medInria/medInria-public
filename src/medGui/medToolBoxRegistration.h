@@ -59,6 +59,7 @@ public slots:
     void onCheckerboardModeSet(bool value);
 	
     void onToolBoxChosen(const QString&);
+    void clear(void);
 
 private:
     medToolBoxRegistrationPrivate *d;

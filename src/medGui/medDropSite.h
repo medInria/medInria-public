@@ -40,7 +40,8 @@ public:
 
 public:
     medDataIndex index(void) const;
-
+public slots:
+    void clear(void);
 signals:
     void objectDropped (void);
     

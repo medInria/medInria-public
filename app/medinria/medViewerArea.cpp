@@ -19,7 +19,6 @@
 
 #include "medViewerArea.h"
 #include "medViewerArea_p.h"
-// #include "medViewerConfigurator.h"
 #include "medViewerToolBoxConfiguration.h"
 
 #include "medGui/medViewContainerStack.h"
@@ -378,6 +377,7 @@ void medViewerArea::switchToContainer(int index)
     if (d->view_stacks.count())
       if (d->view_stacks.value(d->current_patient)) {
 	d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
+        //this->currentContainer()->setFocus(Qt::MouseFocusReason);
      }
     
     if (d->current_configuration)
@@ -560,28 +560,6 @@ void medViewerArea::updateTransferFunction()
 	d->transFun->update();
     }
 }
-//TODO: don't know why it's been removed from .h file...
-//void medViewerArea::setupLayoutCompare(void)
-//{
-//    if(!d->view_stacks.count())
-//        return;
-
-//    d->view_stacks.value(d->current_patient)->setCurrentIndex(3);
-//}
-
-//TODO: move this to the configuration
-//void medViewerArea::setupLayoutFuse(void)
-//{
-//    if(!d->view_stacks.count())
-//        return;
-
-//    d->view_stacks.value(d->current_patient)->setCurrentIndex(4);
-	
-//    if (d->registrationToolBox->fuseView()) {
-//        this->currentContainer()->setView(d->registrationToolBox->fuseView());
-//        this->currentContainer()->setFocus(Qt::MouseFocusReason);
-//    }
-//}
 
 
 void medViewerArea::setupConfiguration(QString name)

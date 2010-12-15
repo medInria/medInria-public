@@ -57,6 +57,10 @@ public:
     dtkAbstractDataImage *fixedData;
     dtkAbstractDataImage *movingData;
 
+    QList<dtkAbstractProcess *>              methods;
+    QHash<medDataIndex, dtkAbstractProcess*> activeMethods;
+
+
     medToolBoxRegistrationCustom * customToolBox;
 };
 
@@ -315,5 +319,14 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
     connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
             SLOT(onCheckerboardDivisionCountValueSet(int)));
 
+
+}
+
+void medToolBoxRegistration::clear(void)
+{
+    d->processDropSiteFixed->clear();
+    d->processDropSiteMoving->clear();
+    //maybe clear the customtoolbox?
+    d->customToolBox->clear();
 
 }
