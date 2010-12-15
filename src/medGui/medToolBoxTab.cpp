@@ -22,11 +22,13 @@
 class medToolBoxTabPrivate
 {
 public:
+    Qt::Orientation orientation;
 };
 
 medToolBoxTab::medToolBoxTab(QWidget *parent) : QTabWidget(parent), d(new medToolBoxTabPrivate)
 {
-
+    d->orientation = Qt::Vertical;
+    setTabPosition(North);
 }
 
 medToolBoxTab::~medToolBoxTab(void)
@@ -38,18 +40,29 @@ medToolBoxTab::~medToolBoxTab(void)
 
 void medToolBoxTab::paintEvent(QPaintEvent *event)
 {
-    static int height = 33;
+    int height = 33;
 
     QLinearGradient gradient;
     gradient.setStart(0, 0);
-    gradient.setFinalStop(0, height);
+    if (d->orientation == Qt::Vertical)
+    {
+        gradient.setFinalStop(0, height);
+    }
+    else
+    {
+        gradient.setFinalStop(height, 0);
+        height = 40;
+    }
     gradient.setColorAt(0, QColor("#3b3b3c"));
     gradient.setColorAt(1, QColor("#2d2d2f"));
 
     QPainter painter(this);
-    painter.setPen(QColor("#2c2c2e"));
+    painter.setPen(QColor("#2c2c2e"));//QColor("#2c2c2e")
     painter.setBrush(gradient);
-    painter.drawRect(QRect(0, 0, this->width(), height));
+    if (d->orientation == Qt::Vertical)
+        painter.drawRect(QRect(0, 0, this->width(), height));
+    else
+        painter.drawRect(QRect(0, 0,height , this->parentWidget()->height()));
     painter.end();
 
     QTabWidget::paintEvent(event);
