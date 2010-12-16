@@ -45,7 +45,7 @@ medBrowserToolBoxPacsHost::medBrowserToolBoxPacsHost(QWidget *parent) : medToolB
     layout->addRow(d->apply);
 
     this->setTitle("DICOM Server");
-    this->setWidget(page);
+    this->addWidget(page);
 
     connect(d->apply, SIGNAL(clicked()), this, SLOT(onSettingsApplied()));
 

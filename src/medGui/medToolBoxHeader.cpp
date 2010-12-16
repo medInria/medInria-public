@@ -48,3 +48,9 @@ void medToolBoxHeader::setTitle(const QString& title)
 {
     d->label->setText(title);
 }
+
+
+void medToolBoxHeader::setOrientation(Qt::Orientation orientation)
+{
+    return;
+}

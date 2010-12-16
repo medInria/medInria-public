@@ -35,6 +35,7 @@ public:
     ~medToolBoxHeader(void);
 
     void setTitle(const QString& title);
+    void setOrientation(Qt::Orientation orientation);
 
 signals:
     void clicked(void);

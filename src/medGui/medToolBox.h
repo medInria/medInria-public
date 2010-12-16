@@ -25,7 +25,7 @@
 #include <QtGui>
 
 class dtkAbstractView;
-
+class medToolBoxTab;
 class medToolBoxPrivate;
 
 class MEDGUI_EXPORT medToolBox : public QWidget
@@ -36,12 +36,15 @@ public:
              medToolBox(QWidget *parent = 0);
     virtual ~medToolBox(void);
 
-    void setWidget(QWidget *widget);
+    void addWidget(QWidget *widget);
+    void setTabWidget (medToolBoxTab* tab);
 
     void setTitle(const QString& title);
     
     virtual void update(dtkAbstractView *view);
-    
+    void setOrientation(Qt::Orientation orientation);
+    Qt::Orientation orientation (void) const;
+
 public slots:
     virtual void clear();
 

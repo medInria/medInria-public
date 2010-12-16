@@ -36,6 +36,8 @@ public:
      medToolBoxTab(QWidget *parent = 0);
     ~medToolBoxTab(void);
 
+    void setOrientation(Qt::Orientation);
+
 protected:
     void paintEvent(QPaintEvent *event);
 

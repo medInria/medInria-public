@@ -285,7 +285,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     d->customToolBox = 0;
     
     this->setTitle("Diffusion");
-    this->setWidget(tab);
+    this->setTabWidget(tab);
 }
 
 medToolBoxDiffusion::~medToolBoxDiffusion(void)

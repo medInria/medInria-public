@@ -74,7 +74,7 @@ medBrowserToolBoxPacsNodes::medBrowserToolBoxPacsNodes(QWidget *parent) : medToo
     layout->addLayout(buttons_layout);
 
     this->setTitle("Remote Clients");
-    this->setWidget(page);
+    this->addWidget(page);
 
     connect(d->add, SIGNAL(clicked()), this, SLOT(addNode()));
     connect(d->ech, SIGNAL(clicked()), this, SIGNAL(echoRequest()));

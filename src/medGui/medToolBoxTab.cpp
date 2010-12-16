@@ -57,7 +57,7 @@ void medToolBoxTab::paintEvent(QPaintEvent *event)
     gradient.setColorAt(1, QColor("#2d2d2f"));
 
     QPainter painter(this);
-    painter.setPen(QColor("#2c2c2e"));//QColor("#2c2c2e")
+    painter.setPen(QColor("#2c2c2e"));
     painter.setBrush(gradient);
     if (d->orientation == Qt::Vertical)
         painter.drawRect(QRect(0, 0, this->width(), height));
@@ -66,4 +66,18 @@ void medToolBoxTab::paintEvent(QPaintEvent *event)
     painter.end();
 
     QTabWidget::paintEvent(event);
+}
+
+void medToolBoxTab::setOrientation(Qt::Orientation orient)
+{
+    if (orient == d->orientation)
+        return;
+    if (orient == Qt::Vertical)
+    {
+        setTabPosition(North);
+    }
+    else
+    {
+        setTabPosition(West);
+    }
 }

@@ -25,6 +25,7 @@
 #include <QtGui>
 
 class medToolBoxBodyPrivate;
+class medToolBoxTab;
 
 class MEDGUI_EXPORT medToolBoxBody : public QFrame
 {
@@ -34,7 +35,12 @@ public:
      medToolBoxBody(QWidget *parent = 0);
     ~medToolBoxBody(void);
 
-    void setWidget(QWidget *widget);
+    void addWidget(QWidget *widget);
+
+    void setTabWidget(medToolBoxTab * tab);
+    void clear(void);
+
+    void setOrientation(Qt::Orientation);
 
 private:
     medToolBoxBodyPrivate *d;
