@@ -65,3 +65,8 @@ void medToolBox::update(dtkAbstractView *view)
 {
     Q_UNUSED(view);
 }
+
+void medToolBox::clear()
+{
+    return;
+}

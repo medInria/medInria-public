@@ -26,12 +26,26 @@
 #include <medCore/medAbstractView.h>
 #include <medCore/medViewManager.h>
 
-medViewContainerCustom::medViewContainerCustom (QWidget *parent) : medViewContainer(parent)
+class medViewContainerCustomPrivate
 {
+public:
+    QList<medViewContainerCustom*> children;
+    int rowMax;
+    int columnMax;
+    int preset;
+};
+
+medViewContainerCustom::medViewContainerCustom (QWidget *parent) : medViewContainer(parent), d2 (new medViewContainerCustomPrivate)
+{
+    d2->rowMax    = 5;
+    d2->columnMax = 5;
+    d2->preset = medViewContainerCustom::A;
 }
 
 medViewContainerCustom::~medViewContainerCustom()
 {
+    delete d2;
+    d2 = NULL;
 }
 
 medViewContainer::Type medViewContainerCustom::type(void)
@@ -41,39 +55,49 @@ medViewContainer::Type medViewContainerCustom::type(void)
 
 void medViewContainerCustom::split(int rows, int cols)
 {
-    if (d->layout->count())
+    if (d->view)
         return;
+    
+    this->clear();
     
     for(int i = 0 ; i < rows ; i++) {
         d->layout->setRowStretch(i, 1);
         for(int j = 0 ; j < cols ; j++) {
-	    medViewContainerCustom *container = new medViewContainerCustom(this);
+            medViewContainerCustom *container = new medViewContainerCustom(this);
+            d2->children.append (container);
             d->layout->addWidget(container, i, j);
-	    d->layout->setColumnStretch(j, 1);
-	}
+            d->layout->setColumnStretch(j, 1);
+        }
     }
+    
+    // in split, the preset is no valid anymore
+    d2->preset = 0;
 
     this->setCurrent(NULL);
 }
 
 void medViewContainerCustom::setPreset(int preset)
 {
-    if (d->layout->count())
+    if (d2->preset == preset)
         return;
+
+    d2->preset = preset;
+  
+    this->clear();
     
     medViewContainerCustom *custom1;
     medViewContainerCustom *custom2;
+    medViewContainerCustom *custom3;
+    medViewContainerCustom *custom4;
 
     switch(preset) {
-    case A:
-        d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
-        d->layout->addWidget(new medViewContainerCustom(this), 0, 1);
-	d->layout->setColumnStretch(0, 1);
-	d->layout->setColumnStretch(1, 1);			
-        break;
     case B:
-        d->layout->addWidget(new medViewContainerCustom(this), 0, 0);
-        d->layout->addWidget(new medViewContainerCustom(this), 1, 0);
+        custom1 = new medViewContainerCustom(this);
+	custom2 = new medViewContainerCustom(this);
+	d2->children.append (custom1);
+	d2->children.append (custom2);
+        d->layout->addWidget(custom1, 0, 0);
+        d->layout->addWidget(custom2, 1, 0);
 	d->layout->setRowStretch(0, 1);
 	d->layout->setRowStretch(1, 1);						
         break;
@@ -81,6 +105,8 @@ void medViewContainerCustom::setPreset(int preset)
         custom1 = new medViewContainerCustom(this);
         custom1->split(2, 1);
         custom2 = new medViewContainerCustom(this);
+	d2->children.append (custom1);
+	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
         d->layout->addWidget(custom2, 0, 1);
         d->layout->setColumnStretch(0, 1);
@@ -90,33 +116,51 @@ void medViewContainerCustom::setPreset(int preset)
         custom1 = new medViewContainerCustom(this);
         custom1->split(3, 1);
         custom2 = new medViewContainerCustom(this);
+	d2->children.append (custom1);
+	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
         d->layout->addWidget(custom2, 0, 1);
         d->layout->setColumnStretch(0, 1);
         d->layout->setColumnStretch(1, 2);
         break;
     case E:
-        {
-	  medViewContainerCustom *custom1 = new medViewContainerCustom(this);
-	  medViewContainerCustom *custom2 = new medViewContainerCustom(this);
-	  medViewContainerCustom *custom3 = new medViewContainerCustom(this);
-	  medViewContainerCustom *custom4 = new medViewContainerCustom(this);
+        custom1 = new medViewContainerCustom(this);
+	custom2 = new medViewContainerCustom(this);
+	custom3 = new medViewContainerCustom(this);
+	custom4 = new medViewContainerCustom(this);
 
-	  custom1->setViewProperty ("Orientation", "Axial");
-	  custom2->setViewProperty ("Orientation", "Sagittal");
-	  custom3->setViewProperty ("Orientation", "Coronal");
-	  custom4->setViewProperty ("Orientation", "3D");
-	  
-	  d->layout->addWidget(custom1, 0, 0);
-	  d->layout->addWidget(custom2, 0, 1);
-	  d->layout->addWidget(custom3, 1, 0);
-	  d->layout->addWidget(custom4, 1, 1);
-	  d->layout->setColumnStretch(0, 1);
-	  d->layout->setColumnStretch(1, 1);			
-	  d->layout->setRowStretch(0, 1);
-	  d->layout->setRowStretch(1, 1);
-	}
+	custom1->setViewProperty ("Orientation", "Axial");
+	custom2->setViewProperty ("Orientation", "Sagittal");
+	custom3->setViewProperty ("Orientation", "Coronal");
+	custom4->setViewProperty ("Orientation", "3D");
+
+	d2->children.append (custom1);
+	d2->children.append (custom2);
+	d2->children.append (custom3);
+	d2->children.append (custom4);
+
+	d->layout->addWidget(custom1, 0, 0);
+	d->layout->addWidget(custom2, 0, 1);
+	d->layout->addWidget(custom3, 1, 0);
+	d->layout->addWidget(custom4, 1, 1);
+	d->layout->setColumnStretch(0, 1);
+	d->layout->setColumnStretch(1, 1);			
+	d->layout->setRowStretch(0, 1);
+	d->layout->setRowStretch(1, 1);
         break;
+	
+    case A:
+	default:
+        custom1 = new medViewContainerCustom(this);
+        custom2 = new medViewContainerCustom(this);
+	d2->children.append (custom1);
+	d2->children.append (custom2);
+        d->layout->addWidget(custom1, 0, 0);
+        d->layout->addWidget(custom2, 0, 1);
+	d->layout->setColumnStretch(0, 1);
+	d->layout->setColumnStretch(1, 1);			
+        break;
+
     };
 
     this->setCurrent(NULL);
@@ -219,4 +263,23 @@ void medViewContainerCustom::focusInEvent(QFocusEvent *event)
 void medViewContainerCustom::focusOutEvent(QFocusEvent *event)
 {
     medViewContainer::focusOutEvent(event);
+}
+
+void medViewContainerCustom::clear (void)
+{
+    if (d->view)
+        this->onViewClosing();
+  
+    foreach (medViewContainerCustom *custom, d2->children) {
+        custom->clear();
+	delete custom;
+	d->layout->removeWidget (custom);
+    }
+    d2->children.clear();
+
+    for(int i=0; i<d2->rowMax; i++)
+        d->layout->setRowStretch (i, 0);
+    
+    for(int i=0; i<d2->columnMax; i++)
+        d->layout->setColumnStretch (i, 0);
 }

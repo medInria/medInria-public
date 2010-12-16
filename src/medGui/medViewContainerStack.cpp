@@ -39,6 +39,8 @@ medViewContainerStack::medViewContainerStack(QWidget *parent) : QStackedWidget(p
     d->container_single = new medViewContainerSingle(this);
     d->container_multi = new medViewContainerMulti(this);
     d->container_custom = new medViewContainerCustom(this);
+    d->container_custom->setPreset (medViewContainerCustom::A);
+    
     d->container_registration_compare = new medViewContainerCustom(this);
     d->container_registration_compare->split(1, 2);
     d->container_registration_fuse = new medViewContainerCustom(this);

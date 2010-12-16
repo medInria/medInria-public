@@ -24,6 +24,8 @@
 
 #include "medViewContainer.h"
 
+class medViewContainerCustomPrivate;
+
 class MEDGUI_EXPORT medViewContainerCustom : public medViewContainer
 {
     Q_OBJECT
@@ -49,6 +51,7 @@ public:
 
 public slots:
     void onViewClosing  (void);
+    void clear (void);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -61,6 +64,8 @@ protected:
 
     void synchronize_2 (dtkAbstractView *view);
     void desynchronize_2 (dtkAbstractView *view);
+
+    medViewContainerCustomPrivate *d2;
 };
 
 #endif

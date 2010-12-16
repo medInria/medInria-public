@@ -87,6 +87,11 @@ void medViewerConfigurationRegistration::setupViewContainerStack(medViewContaine
     }
 }
 
+void medViewerConfigurationRegistration::patientChanged(int patientId)
+{
+    d->registrationToolBox->clear();
+}
+
 medViewerConfiguration *createMedViewerConfigurationRegistration(void)
 {
     return new medViewerConfigurationRegistration;

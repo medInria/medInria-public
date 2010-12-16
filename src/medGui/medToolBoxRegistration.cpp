@@ -33,7 +33,7 @@
 
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
-
+#include <medCore/medMessageController.h>
 #include <medGui/medToolBoxFactory.h>
 
 #include <QtGui>
@@ -48,14 +48,17 @@ public:
     QRadioButton *checkerboardRadio;
     QSlider *layoutFuseSlider;
 
+    QPushButton * saveImageButton;
+    QPushButton * saveTransButton;
     QComboBox *toolboxes;
-
     dtkAbstractView *fixedView;
     dtkAbstractView *movingView;
     dtkAbstractView *fuseView;
 
     dtkAbstractDataImage *fixedData;
     dtkAbstractDataImage *movingData;
+
+    dtkAbstractProcess * process;
 
     medToolBoxRegistrationCustom * customToolBox;
 };
@@ -68,10 +71,10 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->movingData = NULL;
     d->fixedView  = NULL;
     d->movingView = NULL;
-    
+    d->process = NULL;
     // Process page
 
-    QWidget *processPage = new QWidget;
+    QWidget *processPage = new QWidget(this);
     
     d->processDropSiteFixed  = new medDropSite(processPage);
     d->processDropSiteFixed->setText("Fixed");
@@ -82,6 +85,12 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QHBoxLayout *processDropSiteLayout = new QHBoxLayout;
     processDropSiteLayout->addWidget(d->processDropSiteFixed);
     processDropSiteLayout->addWidget(d->processDropSiteMoving);
+
+    d->saveImageButton = new QPushButton(tr("Save Image"),this);
+    connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
+    d->saveTransButton = new QPushButton(tr("Save Transformation"),this);
+    connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
+
 
     // --- Setting up custom toolboxes list ---
 
@@ -98,7 +107,8 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QVBoxLayout *processLayout = new QVBoxLayout(processPage);
     processLayout->addLayout(processDropSiteLayout);
     processLayout->addWidget(d->toolboxes);
-
+    processLayout->addWidget(d->saveImageButton);
+    processLayout->addWidget(d->saveTransButton);
     // Layout page
 
     QWidget *layoutPage = new QWidget;
@@ -157,13 +167,19 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     // /////////////////////////////////////////////////////////////////
 
     medToolBoxTab *tab = new medToolBoxTab(this);
-    tab->addTab(processPage, "Process");
-    tab->addTab(layoutPage, "Layout");
+    tab->addTab(processPage, tr("Process"));
+    tab->addTab(layoutPage, tr("Layout"));
 
-    this->setTitle("Registration");
+    this->setTitle(tr("Registration"));
     this->setWidget(tab);
 
     d->customToolBox = NULL;
+
+    //Connect Message Controller:
+    connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showInfo(QObject*,const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
 }
 
 medToolBoxRegistration::~medToolBoxRegistration(void)
@@ -268,6 +284,9 @@ void medToolBoxRegistration::onMovingImageDropped (void)
 	return;
     }
 
+    if (d->fixedView) {
+        d->movingView->update();
+    }
 
     if (d->fuseView) {
         if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
@@ -316,4 +335,75 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
             SLOT(onCheckerboardDivisionCountValueSet(int)));
 
 
+}
+
+void medToolBoxRegistration::clear(void)
+{
+    d->processDropSiteFixed->clear();
+    d->processDropSiteMoving->clear();
+    //maybe clear the customtoolbox?
+    if (d->customToolBox)
+        d->customToolBox->clear();
+}
+
+dtkAbstractProcess * medToolBoxRegistration::process(void)
+{
+    return d->process;
+}
+
+void medToolBoxRegistration::setProcess(dtkAbstractProcess* proc)
+{
+    d->process = proc;
+}
+
+void medToolBoxRegistration::onSaveImage()
+{
+    if ( !d->movingData)
+    {
+        emit showError(this, tr  ("Please Select a moving image before saving"),3000);
+        return;
+    }
+    if (!d->process )
+    {
+        emit showError(this, tr  ("Please run the registration before saving"),3000);
+        return;
+    }
+    QFileDialog dialog(this, tr("Save Image"),
+                               QDir::homePath(),
+                               tr("MetaFile (*.mha *.mhd);;Nifty (*.nii);;Analyse (*.hdr);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files (*.mha *.mhd *.nii *.hdr *.nrrd)"));
+    dialog.setDefaultSuffix("mha");
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    QStringList fileName;
+    if (dialog.exec())
+        fileName = dialog.selectedFiles();
+
+    qDebug() << fileName;
+
+    if (!fileName.isEmpty())
+    {
+        //qDebug()<< (void *) d->movingData;
+        //qDebug()<<  d->movingView->data();
+        if (d->process->write(fileName[0]))
+        {
+            emit(showInfo(this, tr  ("Registered Image Saved"),3000));
+        }
+        else
+        {
+            emit(showError(this, tr  ("Image saving failed, no suitable writer found"),3000));
+        }
+    }
+
+}
+
+void medToolBoxRegistration::onSaveTrans()
+{
+    if (!d->movingData)
+    {
+        emit showError(this, tr  ("Please Select a moving image before saving"),3000);
+        return;
+    }
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Transformation"),
+                               QDir::homePath(),
+                               tr("Transformation (*.txt)"));
+    qDebug() << fileName;
 }
