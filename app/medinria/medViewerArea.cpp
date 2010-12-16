@@ -369,14 +369,17 @@ void medViewerArea::switchToPatient(int id)
 
 void medViewerArea::switchToContainer(int index)
 {
-    if(index < 0)
+    if (d->current_container==index)
         return;
-
+    
     d->current_container = index;
     
+    if(index < 0)
+        return;
+        
     if (d->view_stacks.count())
       if (d->view_stacks.value(d->current_patient)) {
-	d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
+          d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
         //this->currentContainer()->setFocus(Qt::MouseFocusReason);
      }
     

@@ -42,6 +42,11 @@ public:
     medViewContainer *custom(void);
     medViewContainer *compare (void);
     medViewContainer *fuse (void);
+    
+    void addCustomContainer(const QString &name, medViewContainer *container);
+    medViewContainer* customContainer(const QString &name);
+    
+    void setCustomContainer(const QString &name);
 
 signals:
     void dropped(const medDataIndex&);

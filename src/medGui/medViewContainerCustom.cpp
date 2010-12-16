@@ -203,7 +203,7 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 
 dtkAbstractView *medViewContainerCustom::view (void) const
 {
-    return NULL;
+    return d->view;
 }
 
 QList<dtkAbstractView *> medViewContainerCustom::views (void) const
