@@ -148,8 +148,23 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->splitter->addWidget(d->view_container);
     d->splitter->addWidget(d->toolbox_container);
 
+    //restore previous splitter position.
+    QSettings settings("inria","medinria");
+    if (!d->splitter->restoreState(settings.value("ViewerSplitterSizes").toByteArray()))
+    {
+        //viewcontainer size
+        int containerSize = QWIDGETSIZE_MAX - d->navigator->minimumWidth() - d->toolbox_container->minimumWidth();
+        QList<int> sizes;
+        sizes.append(d->navigator->minimumWidth());
+        sizes.append(containerSize);
+        sizes.append(d->toolbox_container->minimumWidth());
+        d->splitter->setSizes(sizes);
+    }
+
+    //store new splitter size when needed
+
     //action for transfer function
-    QAction * transFunAction =
+             QAction * transFunAction =
       new QAction("Toggle Tranfer Function Widget", this);
     transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier +
 				Qt::Key_L);
@@ -165,7 +180,10 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
 medViewerArea::~medViewerArea(void)
 {
-    //TODO: delete
+    QSettings settings("inria","medinria");
+
+    settings.setValue("ViewerSplitterSizes",
+                      d->splitter->saveState());
     delete d;
 
     d = NULL;

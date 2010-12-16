@@ -26,6 +26,7 @@ class medViewContainerStack;
 class medViewerConfiguration;
 class medClutEditor;
 class QStackedWidget;
+class QSplitter;
 class medViewerToolBoxPatient;
 
 #include <QtCore/QHash>
