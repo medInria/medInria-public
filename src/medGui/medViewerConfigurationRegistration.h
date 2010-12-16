@@ -24,6 +24,7 @@ public:
 public slots:
     void onSetupLayoutCompare (void);
     void onSetupLayoutFuse (void);
+    void patientChanged(int patientId);
 
 private:
     medViewerConfigurationRegistrationPrivate *d;

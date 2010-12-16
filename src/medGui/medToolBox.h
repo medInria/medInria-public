@@ -42,6 +42,9 @@ public:
     
     virtual void update(dtkAbstractView *view);
     
+public slots:
+    virtual void clear();
+
 signals:
     void addToolBox   (medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);

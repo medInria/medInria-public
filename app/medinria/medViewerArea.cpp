@@ -19,7 +19,6 @@
 
 #include "medViewerArea.h"
 #include "medViewerArea_p.h"
-// #include "medViewerConfigurator.h"
 #include "medViewerToolBoxConfiguration.h"
 
 #include "medGui/medViewContainerStack.h"
@@ -255,6 +254,7 @@ void medViewerArea::open(const medDataIndex& index)
     
     if(((medDataIndex)index).isValidForPatient()) {
         
+        this->setupConfiguration("Visualization");
         this->switchToPatient(index.patientId());
         this->switchToContainer(1);
         
@@ -340,17 +340,17 @@ void medViewerArea::switchToPatient(int id)
 
     if (d->navigator) {
         d->navigator->onPatientClicked(d->current_patient);
-
-	QRect endGeometry = d->navigator->geometry();
-	QRect startGeometry = endGeometry;
-	if (d->navigator->orientation()==Qt::Vertical)
-	    startGeometry.setY (endGeometry.y()+1000);
-	else
-	    startGeometry.setX (endGeometry.x()+1000);
-
-	d->navigator_animation->setStartValue(startGeometry);
-	d->navigator_animation->setEndValue(endGeometry);
-	d->navigator_animation->start();
+        
+        QRect endGeometry = d->navigator->geometry();
+        QRect startGeometry = endGeometry;
+        if (d->navigator->orientation()==Qt::Vertical)
+            startGeometry.setY (endGeometry.y()+1000);
+        else
+            startGeometry.setX (endGeometry.x()+1000);
+        
+        d->navigator_animation->setStartValue(startGeometry);
+        d->navigator_animation->setEndValue(endGeometry);
+        d->navigator_animation->start();
     }
 
     // Setup patient toolbox
@@ -377,6 +377,7 @@ void medViewerArea::switchToContainer(int index)
     if (d->view_stacks.count())
       if (d->view_stacks.value(d->current_patient)) {
 	d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
+        //this->currentContainer()->setFocus(Qt::MouseFocusReason);
      }
     
     if (d->current_configuration)
@@ -559,28 +560,6 @@ void medViewerArea::updateTransferFunction()
 	d->transFun->update();
     }
 }
-//TODO: don't know why it's been removed from .h file...
-//void medViewerArea::setupLayoutCompare(void)
-//{
-//    if(!d->view_stacks.count())
-//        return;
-
-//    d->view_stacks.value(d->current_patient)->setCurrentIndex(3);
-//}
-
-//TODO: move this to the configuration
-//void medViewerArea::setupLayoutFuse(void)
-//{
-//    if(!d->view_stacks.count())
-//        return;
-
-//    d->view_stacks.value(d->current_patient)->setCurrentIndex(4);
-	
-//    if (d->registrationToolBox->fuseView()) {
-//        this->currentContainer()->setView(d->registrationToolBox->fuseView());
-//        this->currentContainer()->setFocus(Qt::MouseFocusReason);
-//    }
-//}
 
 
 void medViewerArea::setupConfiguration(QString name)
@@ -618,6 +597,7 @@ void medViewerArea::setupConfiguration(QString name)
     if (d->view_stacks.contains(d->current_patient)) {
         conf->setupViewContainerStack( d->view_stacks[d->current_patient] );
     }
+    
     switchToContainer(conf->viewLayoutType());
 
     if (conf->viewLayoutType() == medViewContainer::Custom) {
@@ -640,19 +620,19 @@ void medViewerArea::setupConfiguration(QString name)
     d->toolbox_container->setVisible( conf->areToolBoxesVisible() );
 
     /*
-    if (d->toolbox_container->toolBoxes().count()) {
-        QPropertyAnimation *animation = new QPropertyAnimation(d->toolbox_container, "geometry");
-	animation->setDuration(500);
-	if (d->toolbox_container->orientation()==medToolBoxContainer::Vertical)  {
-	    animation->setStartValue(QRect(d->toolbox_container->x(), 1000, d->toolbox_container->width(), d->toolbox_container->height()));
-	    animation->setEndValue(QRect(d->toolbox_container->x(), 0, d->toolbox_container->width(), d->toolbox_container->height()));
-	}
-	else {
-	    animation->setStartValue(QRect(1000, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
-	    animation->setEndValue(QRect(0, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
-	}
-	animation->setEasingCurve(QEasingCurve::OutQuad);
-	animation->start();
+     if (d->toolbox_container->toolBoxes().count()) {
+     QPropertyAnimation *animation = new QPropertyAnimation(d->toolbox_container, "geometry");
+     animation->setDuration(500);
+     if (d->toolbox_container->orientation()==medToolBoxContainer::Vertical)  {
+     animation->setStartValue(QRect(d->toolbox_container->x(), 1000, d->toolbox_container->width(), d->toolbox_container->height()));
+     animation->setEndValue(QRect(d->toolbox_container->x(), 0, d->toolbox_container->width(), d->toolbox_container->height()));
+     }
+     else {
+     animation->setStartValue(QRect(1000, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
+     animation->setEndValue(QRect(0, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
+     }
+     animation->setEasingCurve(QEasingCurve::OutQuad);
+     animation->start();
 	}*/
 
     connect(conf, SIGNAL(layoutModeChanged(int)),     this, SLOT(switchToContainer(int)));

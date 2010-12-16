@@ -37,6 +37,7 @@ medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePri
     setAcceptDrops(true);
     setBackgroundRole(QPalette::Base);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->index = medDataIndex();
 }
 
 medDropSite::~medDropSite(void)
@@ -97,6 +98,11 @@ void medDropSite::dropEvent(QDropEvent *event)
     event->acceptProposedAction();
     
     emit objectDropped();
+}
+
+void medDropSite::clear(){
+    QLabel::clear();
+    d->index = medDataIndex();
 }
 
 void medDropSite::paintEvent(QPaintEvent *event)
