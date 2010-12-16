@@ -47,7 +47,14 @@ void medViewContainerSingle2::onViewClosing (void)
     }
 }
 
-medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent)
+
+class medViewContainerMultiPrivate
+{
+public:
+    QList<dtkAbstractView *> views;
+};
+
+medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent), d2 (new medViewContainerMultiPrivate)
 {
 }
 
@@ -70,13 +77,24 @@ void medViewContainerMulti::split(int rows, int cols)
     return;
 }
 
-dtkAbstractView *medViewContainerMulti::view(void)
+dtkAbstractView *medViewContainerMulti::view(void) const
 {
     return NULL;
 }
 
+QList<dtkAbstractView*> medViewContainerMulti::views (void) const
+{
+    return d2->views;
+}
+
 void medViewContainerMulti::setView(dtkAbstractView *view)
 {
+    if (!view)
+        return;
+
+    if (d2->views.contains (view))
+        return;
+  
     QList<QWidget *> content;
     for(int i = 0; i < d->layout->rowCount() ; i++) {
         for(int j = 0; j < d->layout->columnCount() ; j++) {
@@ -95,8 +113,10 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     this->layout(content);
 
     medViewContainer::setView (view);
+
+    d2->views << view;
     
-    d->view = view;
+    // d->view = view; // set in medViewContainer::setView(view)
 
     // d->view->reset();
 	
@@ -170,10 +190,12 @@ void medViewContainerMulti::onViewClosing (void)
         disconnect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
         disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
         
-		if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
+	if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
             d->pool->removeView (medView);
         
         view->close();
+
+	d2->views.removeOne (view);
         
         this->layout (content);
     }

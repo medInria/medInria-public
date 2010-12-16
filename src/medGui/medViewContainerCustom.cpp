@@ -21,7 +21,9 @@
 #include "medViewContainerCustom.h"
 #include "medViewPool.h"
 
+#include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkAbstractViewFactory.h>
 
 #include <medCore/medAbstractView.h>
 #include <medCore/medViewManager.h>
@@ -167,27 +169,55 @@ void medViewContainerCustom::setPreset(int preset)
 }
 
 void medViewContainerCustom::setView(dtkAbstractView *view)
+{ 
+    if (d2->children.count()==0) {
+      if (view!=d->view) {
+	if (d->layout->count())
+	  d->layout->removeItem(d->layout->itemAt(0));
+
+	if (d->view)
+	  this->onViewClosing();
+
+	dtkAbstractView *cloneView = dtkAbstractViewFactory::instance()->create (view->description());
+	cloneView->setData ( static_cast<dtkAbstractData*>(view->data()) );
+	cloneView->reset();
+	
+	medViewContainer::setView (cloneView);
+
+	d->layout->setContentsMargins(1, 1, 1, 1);    
+	d->layout->addWidget(cloneView->widget(), 0, 0);
+	
+	d->view = cloneView;
+	// d->view->reset();
+	
+	this->synchronize_2 (cloneView);
+	
+	connect (cloneView, SIGNAL (closing()), this, SLOT (onViewClosing()));
+      }
+    }
+    else {
+      foreach (medViewContainerCustom *container, d2->children)
+	container->setView (view);
+    }    
+}
+
+dtkAbstractView *medViewContainerCustom::view (void) const
 {
-    if (view==d->view)
-        return;
-    
-    if (d->layout->count())
-        d->layout->removeItem(d->layout->itemAt(0));
+    return NULL;
+}
 
-    if (d->view)
-        this->onViewClosing();
-
-    medViewContainer::setView (view);
-    
-    d->layout->setContentsMargins(1, 1, 1, 1);    
-    d->layout->addWidget(view->widget(), 0, 0);
-
-    d->view = view;
-    // d->view->reset();
-    
-    this->synchronize_2 (view);
-
-    connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+QList<dtkAbstractView *> medViewContainerCustom::views (void) const
+{
+    QList<dtkAbstractView *> views;
+    if (d2->children.count()==0) {
+        if (d->view)
+	  views << d->view;
+    }
+    else {
+      foreach (medViewContainerCustom *container, d2->children)
+	  views << container->views();
+    }
+    return views;
 }
 
 void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)

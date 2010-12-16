@@ -51,11 +51,10 @@ public:
 
     medViewContainer *current(void);
 
-    virtual dtkAbstractView *view(void);
-
     medViewPool *pool (void);
 
     virtual void setView(dtkAbstractView *view);
+    virtual dtkAbstractView *view (void) const;
 
     virtual QString viewProperty (const QString &key) const;
     

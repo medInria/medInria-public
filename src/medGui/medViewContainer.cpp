@@ -70,7 +70,7 @@ void medViewContainer::split(int rows, int cols)
     Q_UNUSED(cols);
 }
 
-dtkAbstractView *medViewContainer::view(void)
+dtkAbstractView *medViewContainer::view(void) const
 {
     return d->view;
 }
@@ -84,6 +84,11 @@ void medViewContainer::setView(dtkAbstractView *view)
 {
     if (!view)
         return;
+
+    if (view==d->view)
+        return;
+
+    d->view = view;
 
     // pass properties to the view
     QHash<QString,QString>::iterator it = d->viewProperties.begin();

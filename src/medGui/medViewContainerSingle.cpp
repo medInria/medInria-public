@@ -64,6 +64,11 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
 }
 
+dtkAbstractView *medViewContainerSingle::view (void) const
+{
+    return d->view;
+}
+
 void medViewContainerSingle::onViewClosing (void)
 {
     if (d->view) {

@@ -49,6 +49,9 @@ public:
     void setPreset(int preset);
     void setView(dtkAbstractView *view);
 
+    dtkAbstractView *view (void) const;
+    QList<dtkAbstractView*> views (void) const;
+
 public slots:
     void onViewClosing  (void);
     void clear (void);
