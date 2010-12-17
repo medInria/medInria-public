@@ -62,6 +62,8 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
         d->pool->appendView (medView);
     connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+
+    emit viewAdded (view);
 }
 
 dtkAbstractView *medViewContainerSingle::view (void) const
@@ -76,6 +78,9 @@ void medViewContainerSingle::onViewClosing (void)
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
         if (medAbstractView *medView = dynamic_cast<medAbstractView*> (d->view))
             d->pool->removeView (medView);
+
+	emit viewRemoved (d->view);
+	
         d->view->close();
         d->view = NULL;
     }

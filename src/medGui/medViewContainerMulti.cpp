@@ -126,6 +126,8 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
     connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     connect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
+
+    emit viewAdded (view);
 }
 
 void medViewContainerMulti::layout(QList<QWidget *> content)
@@ -196,11 +198,13 @@ void medViewContainerMulti::onViewClosing (void)
         
 	if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
             d->pool->removeView (medView);
-        
+
+	d2->views.removeOne (view);        
+
+	emit viewRemoved (d->view);
+	
         view->close();
 
-	d2->views.removeOne (view);
-        
         this->layout (content);
     }
 }
