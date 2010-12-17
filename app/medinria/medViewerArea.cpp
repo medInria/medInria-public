@@ -75,8 +75,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->current_configuration_name = "";
     d->current_configuration = 0;
     d->current_layout = medViewerConfiguration::LeftDbRightTb;
-    d->current_container = 0;
-    d->current_container_preset = 0;
 
     d->splitter = new QSplitter(this);
     d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -250,11 +248,12 @@ void medViewerArea::open(const medDataIndex& index)
         medViewManager::instance()->insert(index, view);
         
         view->setData(data);
-        view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
         
         QMutexLocker ( &d->mutex );
-        d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
+        d->view_stacks.value(d->current_patient)->current()->current()->setView(view); //d->view_stacks.value(d->current_patient)->current()->setView(view);
         d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
+
+        view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
         
         return;
     }
@@ -329,6 +328,7 @@ void medViewerArea::switchToPatient(int id)
         connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
         connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
         d->view_stacks.insert(d->current_patient, view_stack);
+	d->current_patient_container.insert (d->current_patient, 0);
         d->stack->addWidget(view_stack);
     }
     else {
@@ -376,14 +376,15 @@ void medViewerArea::switchToPatient(int id)
 
 void medViewerArea::switchToContainer(int index)
 {
-    if (d->current_container==index)
-        return;
+    if (d->current_patient_container.contains (d->current_patient))
+        if (d->current_patient_container[d->current_patient]==index)
+	    return;
     
-    d->current_container = index;
+    d->current_patient_container[d->current_patient] = index;
     
     if(index < 0)
         return;
-        
+
     if (d->view_stacks.count())
       if (d->view_stacks.value(d->current_patient)) {
           d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
@@ -630,21 +631,21 @@ void medViewerArea::setupConfiguration(QString name)
     d->toolbox_container->setVisible( conf->areToolBoxesVisible() );
 
     /*
-     if (d->toolbox_container->toolBoxes().count()) {
-     QPropertyAnimation *animation = new QPropertyAnimation(d->toolbox_container, "geometry");
-     animation->setDuration(500);
-     if (d->toolbox_container->orientation()==medToolBoxContainer::Vertical)  {
-     animation->setStartValue(QRect(d->toolbox_container->x(), 1000, d->toolbox_container->width(), d->toolbox_container->height()));
-     animation->setEndValue(QRect(d->toolbox_container->x(), 0, d->toolbox_container->width(), d->toolbox_container->height()));
-     }
-     else {
-     animation->setStartValue(QRect(1000, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
-     animation->setEndValue(QRect(0, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
-     }
-     animation->setEasingCurve(QEasingCurve::OutQuad);
-     animation->start();
-	}*/
-
+      if (d->toolbox_container->toolBoxes().count()) {
+      QPropertyAnimation *animation = new QPropertyAnimation(d->toolbox_container, "geometry");
+      animation->setDuration(500);
+      if (d->toolbox_container->orientation()==medToolBoxContainer::Vertical)  {
+      animation->setStartValue(QRect(d->toolbox_container->x(), 1000, d->toolbox_container->width(), d->toolbox_container->height()));
+      animation->setEndValue(QRect(d->toolbox_container->x(), 0, d->toolbox_container->width(), d->toolbox_container->height()));
+      }
+      else {
+      animation->setStartValue(QRect(1000, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
+      animation->setEndValue(QRect(0, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
+      }
+      animation->setEasingCurve(QEasingCurve::OutQuad);
+      animation->start();
+      }*/
+    
     connect(conf, SIGNAL(layoutModeChanged(int)),     this, SLOT(switchToContainer(int)));
     connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));

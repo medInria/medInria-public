@@ -75,6 +75,15 @@ dtkAbstractView *medViewContainer::view(void) const
     return d->view;
 }
 
+QList<dtkAbstractView *> medViewContainer::views(void) const
+{
+    QList<dtkAbstractView *> views;
+    if (d->view)
+        views << d->view;
+  
+    return views;
+}
+
 medViewPool *medViewContainer::pool (void)
 {
     return d->pool;

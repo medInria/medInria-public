@@ -45,9 +45,8 @@ signals:
     
 public slots:
     void run (void);
-    
     void clear(void);
-
+    
     void addBundle(QString name);
 
     void onObjectDropped (void);
@@ -57,6 +56,8 @@ public slots:
     void onToolBoxChosen(const QString&);
 
     void onBundlingButtonVdtClicked (void);
+
+    void update (dtkAbstractView *view);
     
     /*
       void onComputeLFA (void);

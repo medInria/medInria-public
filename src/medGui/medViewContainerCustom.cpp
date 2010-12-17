@@ -66,6 +66,8 @@ void medViewContainerCustom::split(int rows, int cols)
         d->layout->setRowStretch(i, 0);
         for(int j = 0 ; j < cols ; j++) {
             medViewContainerCustom *container = new medViewContainerCustom(this);
+	    connect (container, SIGNAL(viewAdded(dtkAbstractView*)),   this, SIGNAL (viewAdded(dtkAbstractView*)));
+	    connect (container, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
             d2->children.append (container);
             d->layout->addWidget(container, i, j);
             d->layout->setColumnStretch(j, 0);
@@ -96,6 +98,10 @@ void medViewContainerCustom::setPreset(int preset)
     case B:
         custom1 = new medViewContainerCustom(this);
 	custom2 = new medViewContainerCustom(this);
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 	d2->children.append (custom1);
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
@@ -107,6 +113,10 @@ void medViewContainerCustom::setPreset(int preset)
         custom1 = new medViewContainerCustom(this);
         custom1->split(2, 1);
         custom2 = new medViewContainerCustom(this);
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 	d2->children.append (custom1);
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
@@ -118,6 +128,10 @@ void medViewContainerCustom::setPreset(int preset)
         custom1 = new medViewContainerCustom(this);
         custom1->split(3, 1);
         custom2 = new medViewContainerCustom(this);
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 	d2->children.append (custom1);
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
@@ -130,6 +144,15 @@ void medViewContainerCustom::setPreset(int preset)
 	custom2 = new medViewContainerCustom(this);
 	custom3 = new medViewContainerCustom(this);
 	custom4 = new medViewContainerCustom(this);
+
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom3, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom4, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom3, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom4, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 
 	custom1->setViewProperty ("Orientation", "Axial");
 	custom2->setViewProperty ("Orientation", "Sagittal");
@@ -155,6 +178,10 @@ void medViewContainerCustom::setPreset(int preset)
 	default:
         custom1 = new medViewContainerCustom(this);
         custom2 = new medViewContainerCustom(this);
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 	d2->children.append (custom1);
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
@@ -194,6 +221,10 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 	
 	connect (cloneView, SIGNAL (closing()), this, SLOT (onViewClosing()));
 	connect (cloneView, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
+
+	qDebug() << "Here!!!";
+	
+	emit viewAdded (cloneView);
       }
     }
     else {
@@ -253,7 +284,9 @@ void medViewContainerCustom::onViewClosing (void)
         this->desynchronize_2 (d->view);
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
 	disconnect (d->view, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
-                
+
+	emit viewRemoved (d->view);
+	
         d->view->close();
         
         d->view = NULL;
