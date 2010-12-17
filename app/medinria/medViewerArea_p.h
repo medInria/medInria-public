@@ -26,6 +26,7 @@ class medViewContainerStack;
 class medViewerConfiguration;
 class medClutEditor;
 class QStackedWidget;
+class QSplitter;
 class medViewerToolBoxPatient;
 
 #include <QtCore/QHash>
@@ -46,7 +47,8 @@ public:
 
     QStackedWidget *stack;
     
-    QGridLayout *layout;
+    //QGridLayout *layout;
+    QSplitter * splitter;
     QGridLayout *navigator_container_layout;
 
     QMutex mutex;

@@ -78,11 +78,9 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->current_container = 0;
     d->current_container_preset = 0;
 
-    // d->layout = 0;
-    d->layout = new QGridLayout(this);
-    d->layout->setContentsMargins(0, 0, 0, 0);
-    d->layout->setSpacing(0);
-
+    d->splitter = new QSplitter(Qt::Horizontal,this);
+    d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    d->splitter->setHandleWidth(3);
     // -- User interface setup
 
     d->stack = new QStackedWidget(this);
@@ -97,8 +95,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setOrientation(Qt::Vertical);
-    d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    d->toolbox_container->setFixedWidth(320);
+    d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    d->toolbox_container->setMinimumWidth(320);
 
     // Setting up view container
 
@@ -108,12 +106,13 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     view_container_layout->setContentsMargins(0, 10, 0, 10);
     view_container_layout->addWidget(d->stack);
 
+
     // Setting up navigator container
 
     d->navigator_container = new QFrame(this);
     d->navigator_container->setObjectName("medNavigatorContainer");
-    d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    d->navigator_container->setFixedWidth(186);
+    d->navigator_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    d->navigator_container->setMinimumWidth(186);
 
     // Setting up navigator
     
@@ -126,19 +125,35 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // d->navigator_container_layout = 0;
     d->navigator_container_layout = new QGridLayout(d->navigator_container);
-    d->navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);    
+    d->navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
     d->navigator_container_layout->setContentsMargins(0, 0, 0, 0);
     d->navigator_container_layout->setSpacing(0);
     d->navigator_container_layout->addWidget(d->toolboxPatient, 0, 0);
     d->navigator_container_layout->addWidget(d->navigator, 1, 0);
 
-    d->layout->addWidget(d->navigator_container, 0, 0);
-    d->layout->addWidget(d->view_container,      0, 1);
-    d->layout->addWidget(d->toolbox_container,   0, 2);
-    
-    
+    //Set up viewer layout
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(d->splitter);
+    setLayout(layout);
+    d->splitter->addWidget(d->navigator_container);
+    d->splitter->addWidget(d->view_container);
+    d->splitter->addWidget(d->toolbox_container);
+
+    //restore previous splitter position.
+//    QSettings settings("inria","medinria");
+//    if (!d->splitter->restoreState(settings.value("ViewerSplitterSizes").toByteArray()))
+//    {
+        //viewcontainer size
+        int containerSize = QWIDGETSIZE_MAX - d->navigator->minimumWidth() - d->toolbox_container->minimumWidth();
+        QList<int> sizes;
+        sizes.append(d->navigator->minimumWidth());
+        sizes.append(containerSize);
+        sizes.append(d->toolbox_container->minimumWidth());
+        d->splitter->setSizes(sizes);
+//    }
+
     //action for transfer function
-    QAction * transFunAction =
+             QAction * transFunAction =
       new QAction("Toggle Tranfer Function Widget", this);
     transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier +
 				Qt::Key_L);
@@ -154,7 +169,10 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
 medViewerArea::~medViewerArea(void)
 {
-    //TODO: delete
+    //No one wants to keep these settings at the moment, but I will persist, one day it will be there, oh yes one day...
+//    QSettings settings("inria","medinria");
+//    settings.setValue("ViewerSplitterSizes",
+//                      d->splitter->saveState());
     delete d;
 
     d = NULL;
@@ -657,6 +675,7 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
         case medViewerConfiguration::TopDbBottomTb:
         case medViewerConfiguration::TopTbBottomDb:
            {
+            d->splitter->setOrientation(Qt::Vertical);
 	     d->navigator_container_layout->removeWidget ( d->toolboxPatient );
 	     d->navigator_container_layout->removeWidget ( d->navigator );
 
@@ -665,18 +684,18 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 	     d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
 	     d->navigator_container_layout->addWidget (d->navigator, 0, 1);
 	      
-	     d->layout->removeWidget ( d->navigator_container );
-	     d->layout->removeWidget ( d->view_container );
-	     d->layout->removeWidget ( d->toolbox_container );
+//	     d->layout->removeWidget ( d->navigator_container );
+//	     d->layout->removeWidget ( d->view_container );
+//	     d->layout->removeWidget ( d->toolbox_container );
 
-	     d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	     d->navigator_container->setFixedHeight(186);
-	     d->navigator_container->setFixedWidth(QWIDGETSIZE_MAX);
+             d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+             d->navigator_container->setMinimumHeight(186);
+             d->navigator_container->setMinimumWidth(QWIDGETSIZE_MAX);
 	     
-	     d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	     d->toolbox_container->setFixedHeight(200);
-	     d->toolbox_container->setFixedWidth (QWIDGETSIZE_MAX);
 	     d->toolbox_container->setOrientation(Qt::Horizontal);
+             d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+             d->toolbox_container->setMinimumHeight(200);
+             d->toolbox_container->setMinimumWidth(QWIDGETSIZE_MAX);
            }
             break;
             
@@ -684,6 +703,7 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
         case medViewerConfiguration::LeftTbRightDb:
         default:
            {
+             d->splitter->setOrientation(Qt::Horizontal);
 	     d->navigator_container_layout->removeWidget ( d->toolboxPatient );
 	     d->navigator_container_layout->removeWidget ( d->navigator );
 
@@ -692,45 +712,52 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 	     d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
 	     d->navigator_container_layout->addWidget (d->navigator, 1, 0);
 
-	     d->layout->removeWidget ( d->navigator_container );
-	     d->layout->removeWidget ( d->view_container );
-	     d->layout->removeWidget ( d->toolbox_container );
+//	     d->layout->removeWidget ( d->navigator_container );
+//	     d->layout->removeWidget ( d->view_container );
+//	     d->layout->removeWidget ( d->toolbox_container );
 
-	     d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	     d->navigator_container->setFixedWidth(186);
-	     d->navigator_container->setFixedHeight(QWIDGETSIZE_MAX);
+             d->navigator_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+             d->navigator_container->setMinimumWidth(186);
+             d->navigator_container->setMinimumHeight(QWIDGETSIZE_MAX);
 	      
-	     d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	     d->toolbox_container->setFixedWidth(320);
-	     d->toolbox_container->setFixedHeight (QWIDGETSIZE_MAX);
 	     d->toolbox_container->setOrientation(Qt::Vertical);
+             d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+             d->toolbox_container->setMinimumWidth(320);
+             d->toolbox_container->setMinimumHeight (QWIDGETSIZE_MAX);
            }
     }
 
 
     switch (layout){
         case medViewerConfiguration::TopDbBottomTb:
-	    d->layout->addWidget ( d->navigator_container, 0, 0);
-	    d->layout->addWidget ( d->view_container,      1, 0);
-	    d->layout->addWidget ( d->toolbox_container,   2, 0);
+        case medViewerConfiguration::LeftDbRightTb:
+//	    d->layout->addWidget ( d->navigator_container, 0, 0);
+//	    d->layout->addWidget ( d->view_container, 1, 0);
+//	    d->layout->addWidget ( d->toolbox_container, 2, 0);
+            d->splitter->insertWidget(0,d->navigator_container);
+            d->splitter->insertWidget(2,d->toolbox_container);
 	    break;
 	    
         case medViewerConfiguration::TopTbBottomDb:
-	    d->layout->addWidget ( d->toolbox_container,   0, 0);
-	    d->layout->addWidget ( d->view_container,      1, 0);
-	    d->layout->addWidget ( d->navigator_container, 2, 0);
+        case medViewerConfiguration::LeftTbRightDb:
+        default:
+//	    d->layout->addWidget ( d->toolbox_container, 0, 0);
+//	    d->layout->addWidget ( d->view_container, 1, 0);
+//	    d->layout->addWidget ( d->navigator_container, 2, 0);
+            d->splitter->insertWidget(0,d->toolbox_container);
+            d->splitter->insertWidget(2,d->navigator_container);
 	    break;
 	    
-	case medViewerConfiguration::LeftTbRightDb:
-	    d->layout->addWidget ( d->toolbox_container,   0, 0);
-	    d->layout->addWidget ( d->view_container,      0, 1);
-	    d->layout->addWidget ( d->navigator_container, 0, 2);
-	    break;
+//	case medViewerConfiguration::LeftTbRightDb:
+//	    d->layout->addWidget ( d->toolbox_container, 0, 0);
+//	    d->layout->addWidget ( d->view_container, 0, 1);
+//	    d->layout->addWidget ( d->navigator_container, 0, 2);
+//	    break;
 	  
-        case medViewerConfiguration::LeftDbRightTb:
-        default:
-	    d->layout->addWidget ( d->navigator_container, 0, 0);
-	    d->layout->addWidget ( d->view_container,      0, 1);
-	    d->layout->addWidget ( d->toolbox_container,   0, 2);
+//        case medViewerConfiguration::LeftDbRightTb:
+//        default:
+//	    d->layout->addWidget ( d->navigator_container, 0, 0);
+//	    d->layout->addWidget ( d->view_container, 0, 1);
+//	    d->layout->addWidget ( d->toolbox_container, 0, 2);
     }
 }
