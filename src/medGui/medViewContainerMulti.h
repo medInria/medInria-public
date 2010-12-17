@@ -61,7 +61,8 @@ public:
     void layout (QList<QWidget *> content);
 
 public slots:
-    void onViewClosing (void);
+    void onViewClosing    (void);
+    void onViewFullScreen (bool value);
    
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

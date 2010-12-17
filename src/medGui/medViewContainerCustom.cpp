@@ -63,12 +63,12 @@ void medViewContainerCustom::split(int rows, int cols)
     this->clear();
     
     for(int i = 0 ; i < rows ; i++) {
-        d->layout->setRowStretch(i, 1);
+        d->layout->setRowStretch(i, 0);
         for(int j = 0 ; j < cols ; j++) {
             medViewContainerCustom *container = new medViewContainerCustom(this);
             d2->children.append (container);
             d->layout->addWidget(container, i, j);
-            d->layout->setColumnStretch(j, 1);
+            d->layout->setColumnStretch(j, 0);
         }
     }
     
@@ -100,8 +100,8 @@ void medViewContainerCustom::setPreset(int preset)
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
         d->layout->addWidget(custom2, 1, 0);
-	d->layout->setRowStretch(0, 1);
-	d->layout->setRowStretch(1, 1);						
+	d->layout->setRowStretch(0, 0);
+	d->layout->setRowStretch(1, 0);						
         break;
     case C:
         custom1 = new medViewContainerCustom(this);
@@ -145,10 +145,10 @@ void medViewContainerCustom::setPreset(int preset)
 	d->layout->addWidget(custom2, 0, 1);
 	d->layout->addWidget(custom3, 1, 0);
 	d->layout->addWidget(custom4, 1, 1);
-	d->layout->setColumnStretch(0, 1);
-	d->layout->setColumnStretch(1, 1);			
-	d->layout->setRowStretch(0, 1);
-	d->layout->setRowStretch(1, 1);
+	d->layout->setColumnStretch(0, 0);
+	d->layout->setColumnStretch(1, 0);			
+	d->layout->setRowStretch(0, 0);
+	d->layout->setRowStretch(1, 0);
         break;
 	
     case A:
@@ -159,8 +159,8 @@ void medViewContainerCustom::setPreset(int preset)
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
         d->layout->addWidget(custom2, 0, 1);
-	d->layout->setColumnStretch(0, 1);
-	d->layout->setColumnStretch(1, 1);			
+	d->layout->setColumnStretch(0, 0);
+	d->layout->setColumnStretch(1, 0);			
         break;
 
     };
@@ -193,6 +193,7 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 	this->synchronize_2 (cloneView);
 	
 	connect (cloneView, SIGNAL (closing()), this, SLOT (onViewClosing()));
+	connect (cloneView, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
       }
     }
     else {
@@ -247,14 +248,51 @@ void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
 void medViewContainerCustom::onViewClosing (void)
 {
     if (d->view) {
+        this->onViewFullScreen2 (false, d->view); // in case view is full screen
         d->layout->removeWidget (d->view->widget());
         this->desynchronize_2 (d->view);
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+	disconnect (d->view, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
                 
         d->view->close();
         
         d->view = NULL;
     }
+}
+
+void medViewContainerCustom::onViewFullScreen (bool value)
+{
+    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+        parent->onViewFullScreen2 (value, dynamic_cast<dtkAbstractView *>(this->sender()) );
+    }
+    else { // top level medViewContainerCustom
+        this->fullScreen (value, dynamic_cast<dtkAbstractView *>(this->sender()));
+    }
+}
+
+void medViewContainerCustom::onViewFullScreen2 (bool value, dtkAbstractView *view)
+{
+    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+        parent->onViewFullScreen2 (value, view );
+    }
+    else { // top level medViewContainerCustom
+        this->fullScreen (value, view);
+    }
+}
+
+void medViewContainerCustom::fullScreen (bool value, dtkAbstractView *view)
+{
+  if (d2->children.count()==0) { // no children = end widget
+      if (!d->view ||(d->view && d->view!=view)) {
+	  if (value)
+	    this->hide();
+	  else
+	    this->show();
+      }
+  }
+
+  foreach (medViewContainerCustom *custom, d2->children)
+      custom->fullScreen (value, view);
 }
 
 void medViewContainerCustom::dragEnterEvent(QDragEnterEvent *event)

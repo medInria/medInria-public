@@ -65,6 +65,7 @@ signals:
 public slots:
     virtual void split(int rows, int cols);
     virtual void setViewProperty (const QString &key, const QString &value);
+    virtual void onViewFullScreen (bool value);
 
 protected:
     void setCurrent(medViewContainer *container);

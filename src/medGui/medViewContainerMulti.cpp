@@ -125,6 +125,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     
     connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
     connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+    connect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
 }
 
 void medViewContainerMulti::layout(QList<QWidget *> content)
@@ -176,11 +177,13 @@ void medViewContainerMulti::onViewClosing (void)
         for(int i = 0; i < d->layout->rowCount() ; i++) {
             for(int j = 0; j < d->layout->columnCount() ; j++) {
                 if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
-                    if(item->widget()!=view->widget()->parent())
-                        content << item->widget();
-                    else {
-                        item->widget()->hide();
-                    }
+		  if(item->widget()!=view->widget()->parent()) {
+		      content << item->widget();
+		      item->widget()->show(); // in case view was hidden
+		  }
+		  else {
+		      item->widget()->hide();
+		  }
 
                     d->layout->removeItem(item);
                 }
@@ -189,6 +192,7 @@ void medViewContainerMulti::onViewClosing (void)
         
         disconnect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
         disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+	disconnect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
         
 	if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
             d->pool->removeView (medView);
@@ -199,6 +203,34 @@ void medViewContainerMulti::onViewClosing (void)
         
         this->layout (content);
     }
+}
+
+void medViewContainerMulti::onViewFullScreen (bool value)
+{
+  if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+      if (value) {
+          QList<QWidget *> content;
+	  for(int i = 0; i < d->layout->rowCount() ; i++) {
+            for(int j = 0; j < d->layout->columnCount() ; j++) {
+	      if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+		if(item->widget()!=view->widget()->parent())
+		  item->widget()->hide();
+	      }
+            }
+	  }        
+      }
+      else {
+	QList<QWidget *> content;
+	for(int i = 0; i < d->layout->rowCount() ; i++) {
+	  for(int j = 0; j < d->layout->columnCount() ; j++) {
+	    if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+	      if(item->widget()!=view->widget()->parent())
+		item->widget()->show();
+	  }
+	  }       
+	}
+      }
+  }
 }
 
 void medViewContainerMulti::dragEnterEvent(QDragEnterEvent *event)

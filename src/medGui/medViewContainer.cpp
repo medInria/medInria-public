@@ -208,3 +208,8 @@ QString medViewContainer::viewProperty (const QString &key) const
 
     return QString();
 }
+
+void medViewContainer::onViewFullScreen (bool value)
+{
+    Q_UNUSED (value);
+}
