@@ -23,7 +23,9 @@ public:
 
 public slots:
     void patientChanged(int patientId);
-    void onViewClosing(void);
+    //void onViewClosing(void);
+    void onViewAdded   (dtkAbstractView *view);
+    void onViewRemoved (dtkAbstractView *view);
     
     void onFiberColorModeChanged(int);
     void onGPUActivated(bool);
