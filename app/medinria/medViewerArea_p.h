@@ -58,6 +58,9 @@ public:
 
     QPropertyAnimation *navigator_animation;
 
+    void restoreSplitterSize(Qt::Orientation orientation);
+    void saveSplitterSize(medViewerConfiguration::LayoutType layout);
+
 public:
     int current_patient;
     int current_container;
