@@ -78,7 +78,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->splitter = new QSplitter(this);
     d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    d->splitter->setHandleWidth(0);
+    d->splitter->setHandleWidth(2);
     // -- User interface setup
 
     d->stack = new QStackedWidget(this);
@@ -109,8 +109,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->navigator_container = new QFrame(this);
     d->navigator_container->setObjectName("medNavigatorContainer");
-    d->navigator_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    d->navigator_container->setMinimumWidth(186);
+    d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    d->navigator_container->setFixedWidth(186);
 
     // Setting up navigator
     
@@ -669,6 +669,7 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
         case medViewerConfiguration::TopDbBottomTb:
         case medViewerConfiguration::TopTbBottomDb:
            {
+
 	     d->navigator_container_layout->removeWidget ( d->toolboxPatient );
 	     d->navigator_container_layout->removeWidget ( d->navigator );
 
@@ -676,15 +677,16 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 	     
 	     d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
 	     d->navigator_container_layout->addWidget (d->navigator, 0, 1);
-	      
-             d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-             d->navigator_container->setMinimumHeight(186);
-             d->navigator_container->setMinimumWidth(QWIDGETSIZE_MAX);
+             //width must be fixed or the navigator doesn't grow
+             //back when changing orientation again
+             d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+             d->navigator_container->setFixedHeight(186);
+             d->navigator_container->setFixedWidth(QWIDGETSIZE_MAX);
 	     
 	     d->toolbox_container->setOrientation(Qt::Horizontal);
              d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
              d->toolbox_container->setMinimumHeight(200);
-             d->toolbox_container->setMinimumWidth(QWIDGETSIZE_MAX);
+             d->toolbox_container->setFixedWidth(QWIDGETSIZE_MAX);
              d->restoreSplitterSize(Qt::Vertical);
            } 
             break;
@@ -702,9 +704,9 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 	     d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
 	     d->navigator_container_layout->addWidget (d->navigator, 1, 0);
 
-             d->navigator_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-             d->navigator_container->setMinimumWidth(186);
-             d->navigator_container->setMinimumHeight(QWIDGETSIZE_MAX);
+             d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+             d->navigator_container->setFixedWidth(186);
+             d->navigator_container->setFixedHeight(QWIDGETSIZE_MAX);
 	      
 	     d->toolbox_container->setOrientation(Qt::Vertical);
              d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
@@ -755,7 +757,6 @@ void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
 {
     QSettings settings("inria","medinria");
     QString value;
-    qDebug()<<"splitter orient before test:" << splitter->orientation();
 
     if (orientation == Qt::Horizontal)
     {
@@ -764,17 +765,16 @@ void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
         if (!splitter->restoreState(settings.value(value).toByteArray()))
         {
             //viewcontainer size
-            int containerSize = QWIDGETSIZE_MAX - navigator->minimumWidth() -
+            int containerSize = QWIDGETSIZE_MAX -
+                                navigator->minimumWidth()-
                                 toolbox_container->minimumWidth();
             QList<int> sizes;
             sizes.append(navigator->minimumWidth());
             sizes.append(containerSize);
             sizes.append(toolbox_container->minimumWidth());
             splitter->setSizes(sizes);
-            qDebug()<<"new values";
         }
         splitter->setOrientation(Qt::Horizontal);
-        qDebug()<<"splitter orient,no H known:" << splitter->orientation();
 
     }
     else
@@ -784,16 +784,17 @@ void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
         if (!splitter->restoreState(settings.value(value).toByteArray()))
         {
             //viewcontainer size
-            int containerSize = QWIDGETSIZE_MAX - navigator->minimumHeight() - toolbox_container->minimumHeight();
+            int containerSize = QWIDGETSIZE_MAX -
+                                navigator->minimumHeight() -
+                                toolbox_container->minimumHeight();
             QList<int> sizes;
             sizes.append(navigator->minimumHeight());
             sizes.append(containerSize);
             sizes.append(toolbox_container->minimumHeight());
             splitter->setSizes(sizes);
-            qDebug()<<"new values";
         }
         splitter->setOrientation(Qt::Vertical);
-        qDebug()<<"splitter orient noV known:" << splitter->orientation();
+
     }
 
 
