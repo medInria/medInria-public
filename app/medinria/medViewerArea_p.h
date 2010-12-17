@@ -58,8 +58,8 @@ public:
 
 public:
     int current_patient;
-    int current_container;
-    int current_container_preset;
+    QHash<int, int> current_patient_container;
+    // QHash<int, int> current_patient_container_preset;
     QString current_configuration_name;
     medViewerConfiguration *current_configuration;
     medViewerConfiguration::LayoutType current_layout;
