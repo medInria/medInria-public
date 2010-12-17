@@ -137,6 +137,7 @@ public:
     QPushButton *registerButton;
     QPushButton *playButton;
     QPushButton *closeButton;
+    QPushButton *fullScreenButton;
     QVTKWidget *vtkWidget;
     QMenu      *menu;
     QString orientation;
@@ -273,8 +274,20 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->linkWLButton->setFocusPolicy(Qt::NoFocus);
     d->linkWLButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->linkWLButton->setObjectName("tool");
-    
+
     connect(d->linkWLButton, SIGNAL(clicked(bool)), this, SIGNAL(syncWindowing(bool)));
+    
+    d->fullScreenButton = new QPushButton(d->widget);
+    // d->fullScreenButton->setIcon (QIcon(":/icons/link_wl.png"));
+    d->fullScreenButton->setText("M");
+    d->fullScreenButton->setCheckable(true);
+    d->fullScreenButton->setMaximumHeight(16);
+    d->fullScreenButton->setMaximumWidth(16);
+    d->fullScreenButton->setFocusPolicy(Qt::NoFocus);
+    d->fullScreenButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->fullScreenButton->setObjectName("tool");
+    
+    connect(d->fullScreenButton, SIGNAL(clicked(bool)), this, SIGNAL(fullScreen(bool)));
     
     d->registerButton = new QPushButton(d->widget);
     d->registerButton->setIcon (QIcon(":/icons/cog.png"));
@@ -338,6 +351,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     toolsLayout->addWidget(d->linkButton);
     toolsLayout->addWidget(d->linkWLButton);
     toolsLayout->addWidget(d->registerButton);
+    toolsLayout->addWidget(d->fullScreenButton);
     toolsLayout->addWidget(d->closeButton);
     
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
