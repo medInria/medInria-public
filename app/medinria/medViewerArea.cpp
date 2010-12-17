@@ -78,10 +78,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->current_container = 0;
     d->current_container_preset = 0;
 
-    // d->layout = 0;
-//    d->layout = new QGridLayout(this);
-//    d->layout->setContentsMargins(0, 0, 0, 0);
-//    d->layout->setSpacing(0);
     d->splitter = new QSplitter(Qt::Horizontal,this);
     d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     d->splitter->setHandleWidth(3);
@@ -136,10 +132,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->navigator_container_layout->addWidget(d->navigator, 1, 0);
 
     //Set up viewer layout
-
-//    d->layout->addWidget(d->navigator_container, 0, 0);
-//    d->layout->addWidget(d->view_container, 0, 1);
-//    d->layout->addWidget(d->toolbox_container, 0, 2);
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(d->splitter);
     setLayout(layout);
@@ -148,9 +140,9 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->splitter->addWidget(d->toolbox_container);
 
     //restore previous splitter position.
-    QSettings settings("inria","medinria");
-    if (!d->splitter->restoreState(settings.value("ViewerSplitterSizes").toByteArray()))
-    {
+//    QSettings settings("inria","medinria");
+//    if (!d->splitter->restoreState(settings.value("ViewerSplitterSizes").toByteArray()))
+//    {
         //viewcontainer size
         int containerSize = QWIDGETSIZE_MAX - d->navigator->minimumWidth() - d->toolbox_container->minimumWidth();
         QList<int> sizes;
@@ -158,9 +150,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
         sizes.append(containerSize);
         sizes.append(d->toolbox_container->minimumWidth());
         d->splitter->setSizes(sizes);
-    }
-
-    //store new splitter size when needed
+//    }
 
     //action for transfer function
              QAction * transFunAction =
@@ -179,10 +169,10 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
 medViewerArea::~medViewerArea(void)
 {
-    QSettings settings("inria","medinria");
-
-    settings.setValue("ViewerSplitterSizes",
-                      d->splitter->saveState());
+    //No one wants to keep these settings at the moment, but I will persist, one day it will be there, oh yes one day...
+//    QSettings settings("inria","medinria");
+//    settings.setValue("ViewerSplitterSizes",
+//                      d->splitter->saveState());
     delete d;
 
     d = NULL;
