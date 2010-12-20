@@ -232,6 +232,9 @@ void v3dViewFiberInteractor::onSelectionReset(void)
 
 void v3dViewFiberInteractor::onSelectionValidated(QString name)
 {
+    if (!d->data)
+        return;
+  
     if (d->manager->GetCallbackOutput()->GetNumberOfLines()==0)
         return;
     
