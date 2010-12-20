@@ -19,8 +19,6 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
@@ -44,18 +42,6 @@ public:
     medDropSite         *tractographyDropSite;
     medProgressionStack *progression_stack;
 
-    // bundler widgets
-    QComboBox    *colorCombo;
-    QCheckBox    *displayCheckBox;
-    QRadioButton *displayRadioPolylines;
-    QRadioButton *displayRadioRibbons;
-    QRadioButton *displayRadioTubes;
-    QSlider      *radiusSlider;
-    QListWidget  *bundlingList;
-    QPushButton  *bundlingButtonVdt;
-    QPushButton  *bundlingButtonTag;
-    QPushButton  *bundlingButtonRst;
-
     QComboBox *coefficientsCombo;
 
     QList<dtkAbstractProcess *>              methods;
@@ -70,89 +56,6 @@ public:
 
 medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
 {
-    // /////////////////////////////////////////////////////////////////
-    // Display page
-    // /////////////////////////////////////////////////////////////////
-    QWidget *displayPage = new QWidget(this);
-
-    QLabel *colorLabel = new QLabel("Color fibers by:", displayPage);
-
-    d->colorCombo = new QComboBox(displayPage);
-    d->colorCombo->addItem("Local orientation");
-    d->colorCombo->addItem("Global orientation");
-    d->colorCombo->addItem("Fractional anisotropy");
-
-    QHBoxLayout *colorLayout = new QHBoxLayout;
-    colorLayout->addWidget(colorLabel);
-    colorLayout->addWidget(d->colorCombo);
-
-    d->displayCheckBox = new QCheckBox("Use hardware acceleration", displayPage);
-
-    d->displayRadioPolylines = new QRadioButton("Display fibers as polylines", displayPage);
-    d->displayRadioRibbons = new QRadioButton("Display fibers as ribbons", displayPage);
-    d->displayRadioTubes = new QRadioButton("Display fibers as tubes", displayPage);
-
-    QButtonGroup *displayRadioGroup = new QButtonGroup(this);
-    displayRadioGroup->addButton(d->displayRadioPolylines);
-    displayRadioGroup->addButton(d->displayRadioRibbons);
-    displayRadioGroup->addButton(d->displayRadioTubes);
-    displayRadioGroup->setExclusive(true);
-
-    QVBoxLayout *displayGroupLayout = new QVBoxLayout;
-    displayGroupLayout->addWidget(d->displayRadioPolylines);
-    displayGroupLayout->addWidget(d->displayRadioRibbons);
-    displayGroupLayout->addWidget(d->displayRadioTubes);
-    displayGroupLayout->addStretch(1);
-
-    d->displayRadioPolylines->setChecked(true);
-
-    QLabel *radiusLabel = new QLabel("Fibers radius:", displayPage);
-
-    d->radiusSlider = new QSlider(Qt::Horizontal, displayPage);
-    d->radiusSlider->setMinimum(1);
-    d->radiusSlider->setMaximum(10);
-
-    QHBoxLayout *radiusLayout = new QHBoxLayout;
-    radiusLayout->addWidget(radiusLabel);
-    radiusLayout->addWidget(d->radiusSlider);
-
-    QVBoxLayout *displayLayout = new QVBoxLayout(displayPage);
-    displayLayout->addLayout(colorLayout);
-    displayLayout->addWidget(d->displayCheckBox);
-    displayLayout->addLayout(displayGroupLayout);
-    displayLayout->addLayout(radiusLayout);
-
-
-    // /////////////////////////////////////////////////////////////////
-    // Bundling page
-    // /////////////////////////////////////////////////////////////////
-    QWidget *bundlingPage = new QWidget(this);
-
-    QCheckBox *bundleBoxCheckBox = new QCheckBox("Activate bundling box", bundlingPage);
-
-    d->bundlingButtonTag = new QPushButton("Tag", bundlingPage);
-    QPushButton *bundlingButtonAdd = new QPushButton("Add", bundlingPage);
-    d->bundlingButtonRst = new QPushButton("Reset", bundlingPage);
-    d->bundlingButtonVdt = new QPushButton("Validate", bundlingPage);
-
-    QHBoxLayout *bundlingButtonsLayout = new QHBoxLayout;
-    bundlingButtonsLayout->addWidget(d->bundlingButtonTag);
-    bundlingButtonsLayout->addWidget(bundlingButtonAdd);
-    bundlingButtonsLayout->addWidget(d->bundlingButtonRst);
-    bundlingButtonsLayout->addWidget(d->bundlingButtonVdt);
-
-    d->bundlingList = new QListWidget(bundlingPage);
-    d->bundlingList->setAlternatingRowColors(true);
-
-    QCheckBox *bundlingShowCheckBox = new QCheckBox("Show all bundles", bundlingPage);
-
-    QVBoxLayout *bundlingLayout = new QVBoxLayout(bundlingPage);
-    bundlingLayout->addWidget(bundleBoxCheckBox);
-    bundlingLayout->addLayout(bundlingButtonsLayout);
-    bundlingLayout->addWidget(d->bundlingList);
-    bundlingLayout->addWidget(bundlingShowCheckBox);
-
-
     // /////////////////////////////////////////////////////////////////
     // Tractography page
     // /////////////////////////////////////////////////////////////////
@@ -246,10 +149,8 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     // /////////////////////////////////////////////////////////////////
     // Setup
     // /////////////////////////////////////////////////////////////////
-    medToolBoxTab *tab = new medToolBoxTab(this);
-    tab->addTab(displayPage, "Display");
-    tab->addTab(bundlingPage, "Bundling");
-    tab->addTab(tractographyPage, "Tractography");
+    // medToolBoxTab *tab = new medToolBoxTab(this);
+    // tab->addTab(tractographyPage, "Tractography");
 
     // --- Setting up custom toolboxes list ---
 
@@ -271,25 +172,13 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     connect (d->tractographyDropSite,  SIGNAL(objectDropped()),          this, SLOT (onObjectDropped()));
     connect (d->coefficientsCombo,     SIGNAL(activated(int)),           this, SLOT (onCoefficientsChanged(int)));
-    connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (onBundlingButtonVdtClicked (void)));
-	
-    connect (bundlingShowCheckBox,     SIGNAL(toggled(bool)),            this, SIGNAL (showBundles (bool)));
-    connect (d->colorCombo,            SIGNAL(currentIndexChanged(int)), this, SIGNAL (fiberColorModeChanged (int)));
-    connect (d->displayCheckBox,       SIGNAL(toggled(bool)),            this, SIGNAL (GPUActivated (bool)));
-    connect (d->displayRadioPolylines, SIGNAL(toggled(bool)),            this, SIGNAL (lineModeSelected (bool)));
-    connect (d->displayRadioRibbons,   SIGNAL(toggled(bool)),            this, SIGNAL (ribbonModeSelected (bool)));
-    connect (d->displayRadioTubes,     SIGNAL(toggled(bool)),            this, SIGNAL (tubeModeSelected (bool)));
-    connect (bundleBoxCheckBox,        SIGNAL(toggled(bool)),            this, SIGNAL (bundlingBoxActivated (bool)));
-    connect (d->radiusSlider,          SIGNAL(valueChanged(int)),        this, SIGNAL (fiberRadiusSet(int)));
-    connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
-    connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
-
+    
     d->customToolBox = 0;
 
     d->view = 0;
     
-    this->setTitle("Diffusion");
-    this->setWidget(tab);
+    this->setTitle("Tractography");
+    this->setWidget(tractographyPage);
 }
 
 medToolBoxDiffusion::~medToolBoxDiffusion(void)
@@ -378,11 +267,6 @@ void medToolBoxDiffusion::onObjectDropped()
         connect (proc, SIGNAL (progressed (int)), d->progression_stack,  SLOT (setProgress (int)));
         d->activeMethods.insert(index, proc);
     }
-}
-
-void medToolBoxDiffusion::addBundle (QString name)
-{
-  d->bundlingList->addItem (name);
 }
 
 void medToolBoxDiffusion::onCoefficientsChanged (int ind)
@@ -499,50 +383,5 @@ dtkAbstractData *medToolBoxDiffusion::output(void)
 void medToolBoxDiffusion::clear(void)
 {
     d->tractographyDropSite->clear();
-    d->bundlingList->clear();
     d->currentIndex = medDataIndex();
-}
-
-void medToolBoxDiffusion::onBundlingButtonVdtClicked (void)
-{
-    bool ok;
-    QString text = QInputDialog::getText(this, tr("Enter bundle name"),
-                                        tr(""), QLineEdit::Normal, tr(""), &ok);
-
-    if (ok && !text.isEmpty()) {
-      // if (!d->bundlingList->contains (name)) // should popup a warning
-      // d->bundlingList->addItem (text);
-	addBundle (text);
-	emit fiberSelectionValidated (text);
-    }
-}
-
-void medToolBoxDiffusion::update (dtkAbstractView *view)
-{
-    if (d->view==view)
-        return;
-
-    if (d->view) {
-        if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-	    disconnect (this, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
-	    disconnect (this, SIGNAL(fiberSelectionTagged()),    interactor, SLOT(onSelectionTagged()));
-	    disconnect (this, SIGNAL(fiberSelectionReset()),     interactor, SLOT(onSelectionReset()));
-	    disconnect (this, SIGNAL(fiberRadiusSet(int)),       interactor, SLOT(onRadiusSet(int)));
-	}
-    }
-
-    if (!view)
-        return;
-
-    if (view->property ("Orientation")!="3D") // only interaction with 3D views is authorized
-        return;
-    
-    d->view = view;
-
-    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-        connect (this, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
-        connect (this, SIGNAL(fiberSelectionTagged()),           interactor, SLOT(onSelectionTagged()));
-        connect (this, SIGNAL(fiberSelectionReset()),            interactor, SLOT(onSelectionReset()));
-        connect (this, SIGNAL(fiberRadiusSet(int)),              interactor, SLOT(onRadiusSet(int)));
-    }
 }

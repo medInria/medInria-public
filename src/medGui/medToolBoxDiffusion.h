@@ -36,28 +36,16 @@ public:
     ~medToolBoxDiffusion(void);
 
     medDataIndex dataIndex(void);
-    
-    void setView(dtkAbstractView *view);
-    dtkAbstractView *view(void);
-
-signals:
-    void bundleValidated (QString name);
-    
+        
 public slots:
     void run (void);
     void clear(void);
     
-    void addBundle(QString name);
-
     void onObjectDropped (void);
 
     void onCoefficientsChanged  (int);
 
     void onToolBoxChosen(const QString&);
-
-    void onBundlingButtonVdtClicked (void);
-
-    void update (dtkAbstractView *view);
     
     /*
       void onComputeLFA (void);
@@ -74,19 +62,6 @@ public slots:
     
     dtkAbstractData *output(void);
 
-signals:
-    void fiberSelectionValidated(QString name);
-    void fiberSelectionTagged(void);
-    void fiberSelectionReset(void);
-    void fiberRadiusSet(int);
-    void fiberColorModeChanged(int);
-    void GPUActivated(bool);
-    void lineModeSelected(bool);
-    void ribbonModeSelected(bool);
-    void tubeModeSelected(bool);
-    void bundlingBoxActivated(bool);
-    void showBundles(bool);
-    
 private:
     medToolBoxDiffusionPrivate *d;
 

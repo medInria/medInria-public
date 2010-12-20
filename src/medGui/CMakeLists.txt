@@ -39,6 +39,8 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxContainer.h
   medToolBoxRegistration.h
   medToolBoxRegistrationCustom.h
+  medToolBoxFiberView.h
+  medToolBoxFiberBundling.h  
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
   medViewPool.h
@@ -78,6 +80,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxContainer.h
   medToolBoxRegistration.h
   medToolBoxRegistrationCustom.h
+  medToolBoxFiberView.h
+  medToolBoxFiberBundling.h  
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
   medViewPool.h
@@ -114,6 +118,8 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxContainer.cpp
   medToolBoxRegistration.cpp
   medToolBoxRegistrationCustom.cpp
+  medToolBoxFiberView.cpp  
+  medToolBoxFiberBundling.cpp
   medToolBoxDiffusion.cpp
   medToolBoxDiffusionCustom.cpp
   medViewPool.cpp
