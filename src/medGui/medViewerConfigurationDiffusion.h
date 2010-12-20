@@ -23,18 +23,18 @@ public:
 
 public slots:
     void patientChanged(int patientId);
-    //void onViewClosing(void);
+    
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
-    
+
     void onFiberColorModeChanged(int);
     void onGPUActivated(bool);
     void onLineModeSelected(bool);
     void onRibbonModeSelected(bool);
     void onTubeModeSelected(bool);
-    void onBundlingBoxActivated(bool);
     void onShowBundles (bool);
     void onTBDiffusionSuccess(void);
+    void refreshInteractors (void);
 
 private:
     medViewerConfigurationDiffusionPrivate *d;

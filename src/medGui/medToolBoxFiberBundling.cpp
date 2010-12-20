@@ -62,8 +62,9 @@ medToolBoxFiberBundling::medToolBoxFiberBundling(QWidget *parent) : medToolBox(p
 
     connect (d->bundlingDropSite,      SIGNAL(objectDropped()),          this, SLOT (onObjectDropped()));
     connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (onBundlingButtonVdtClicked (void)));
+    connect (d->bundleBoxCheckBox,     SIGNAL(toggled(bool)),            this, SLOT (onBundleBoxCheckBoxToggled (bool)));
+	
     connect (d->bundlingShowCheckBox,  SIGNAL(toggled(bool)),            this, SIGNAL (showBundles (bool)));
-    connect (d->bundleBoxCheckBox,     SIGNAL(toggled(bool)),            this, SIGNAL (bundlingBoxActivated (bool)));
     connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
     connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
  
@@ -79,8 +80,6 @@ medToolBoxFiberBundling::~medToolBoxFiberBundling()
 
 void medToolBoxFiberBundling::setInput(dtkAbstractData *data)
 {
-    qDebug() << __func__;
-    
     if (!data)
         return;
     
@@ -106,8 +105,6 @@ void medToolBoxFiberBundling::setInput(dtkAbstractData *data)
 
 void medToolBoxFiberBundling::onObjectDropped(void)
 {
-    qDebug() << __func__;
-    
     medDataIndex index = d->bundlingDropSite->index();
     
     if (!index.isValid())
@@ -131,14 +128,31 @@ void medToolBoxFiberBundling::onBundlingButtonVdtClicked (void)
     
     if (ok && !text.isEmpty()) {
         // if (!d->bundlingList->contains (name)) // should popup a warning
-        // d->bundlingList->addItem (text);
-        this->addBundle (text);
         emit fiberSelectionValidated (text);
+	this->addBundle (text);
     }
+}
+
+void medToolBoxFiberBundling::onBundleBoxCheckBoxToggled (bool value)
+{
+    if (!d->view)
+        return;
+
+    if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+        if (value)
+	    interactor->setProperty ("BoxVisibility", "true");
+        else
+            interactor->setProperty ("BoxVisibility", "false");
+                
+	d->view->update();
+    } 
 }
 
 void medToolBoxFiberBundling::addBundle (QString name)
 {
+    if(!d->data)
+        return;
+  
     d->bundlingList->addItem (name);
 }
 
@@ -146,10 +160,16 @@ void medToolBoxFiberBundling::clear(void)
 {
     d->bundlingDropSite->clear();
     d->bundlingList->clear();
+
+    this->update (0);
+    d->data = 0;
 }
 
 void medToolBoxFiberBundling::update(dtkAbstractView *view)
 {
+    if(!d->data)
+        return;
+  
     if (d->view==view)
         return;
     
@@ -161,11 +181,15 @@ void medToolBoxFiberBundling::update(dtkAbstractView *view)
         }
     }
     
-    if (!view)
+    if (!view) {
+        d->view = 0;
         return;
+    }
     
-    if (view->property ("Orientation")!="3D") // only interaction with 3D views is authorized
+    if (view->property ("Orientation")!="3D") { // only interaction with 3D views is authorized
+        d->view = 0;
         return;
+    }
     
     d->view = view;
     
@@ -173,6 +197,9 @@ void medToolBoxFiberBundling::update(dtkAbstractView *view)
         connect (this, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
         connect (this, SIGNAL(fiberSelectionTagged()),           interactor, SLOT(onSelectionTagged()));
         connect (this, SIGNAL(fiberSelectionReset()),            interactor, SLOT(onSelectionReset()));
+
+	d->bundleBoxCheckBox->blockSignals (true);
+	d->bundleBoxCheckBox->setChecked( interactor->property("BoxVisibility")=="true" );
+	d->bundleBoxCheckBox->blockSignals (false);
     }
-    
 }

@@ -14,14 +14,16 @@ public:
 	~medToolBoxFiberView();
 	
 signals:
-	void fiberRadiusSet(int);
+    void fiberRadiusSet(int);
     void fiberColorModeChanged(int);
     void GPUActivated(bool);
     void lineModeSelected(bool);
     void ribbonModeSelected(bool);
     void tubeModeSelected(bool);
-	
-	
+
+public slots:
+    void update (dtkAbstractView *view);
+    
 protected:
 	medToolBoxFiberViewPrivate *d;
 };

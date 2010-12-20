@@ -21,7 +21,6 @@ signals:
     void fiberSelectionValidated(QString name);
     void fiberSelectionTagged(void);
     void fiberSelectionReset(void);
-    void bundlingBoxActivated(bool);
     void showBundles(bool);
 
 public slots:
@@ -29,8 +28,9 @@ public slots:
     
     void addBundle(QString name);
     void onBundlingButtonVdtClicked (void);
-    void clear(void);
+    void onBundleBoxCheckBoxToggled (bool);
     
+    void clear(void);
     void update (dtkAbstractView *view);
     
 private:

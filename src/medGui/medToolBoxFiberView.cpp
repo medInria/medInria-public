@@ -79,3 +79,7 @@ medToolBoxFiberView::~medToolBoxFiberView()
     delete d;
     d = NULL;
 }
+
+void medToolBoxFiberView::update (dtkAbstractView *view)
+{
+}

@@ -50,8 +50,6 @@ public:
     medDataIndex currentIndex;
 
     medToolBoxDiffusionCustom * customToolBox;
-
-    dtkAbstractView *view;
 };
 
 medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
@@ -175,8 +173,6 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     
     d->customToolBox = 0;
 
-    d->view = 0;
-    
     this->setTitle("Tractography");
     this->setWidget(tractographyPage);
 }
@@ -265,6 +261,8 @@ void medToolBoxDiffusion::onObjectDropped()
         dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create ("itkProcessTensorDTITrackPipeline");
         proc->setInput (data);
         connect (proc, SIGNAL (progressed (int)), d->progression_stack,  SLOT (setProgress (int)));
+	connect (proc, SIGNAL (success()), d->progression_stack,  SLOT (onSuccess ()));
+	connect (proc, SIGNAL (failure()), d->progression_stack,  SLOT (onFailure ()));
         d->activeMethods.insert(index, proc);
     }
 }
@@ -302,17 +300,6 @@ void medToolBoxDiffusion::onCoefficientsChanged (int ind)
         activeMethod->setProperty ("RequiredOutput", "Lambda3");
     else if (ind==10)
         activeMethod->setProperty ("RequiredOutput", "Fibers");
-
-    // d->progression_stack->setLabel(activeMethod, "Progress:");
-
-    /*
-    if (activeMethod->run()==0 )
-        if (d->view) {
-            d->view->setData ( activeMethod->output() );
-            d->view->reset();
-            d->view->update();
-        }
-     */
 }
 
 void medToolBoxDiffusion::onToolBoxChosen(const QString & id)

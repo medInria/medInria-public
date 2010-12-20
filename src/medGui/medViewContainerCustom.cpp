@@ -222,8 +222,6 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 	connect (cloneView, SIGNAL (closing()), this, SLOT (onViewClosing()));
 	connect (cloneView, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
 
-	qDebug() << "Here!!!";
-	
 	emit viewAdded (cloneView);
       }
     }
