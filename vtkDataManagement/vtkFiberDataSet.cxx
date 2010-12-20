@@ -80,6 +80,7 @@ void vtkFiberDataSet::Clear (void)
   while (it!=this->Bundles.end())
   {
     this->RemoveBlock ( (*it).second.Id );
+    ++it;
   }
   this->Bundles.clear();
 }
