@@ -86,10 +86,12 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
   
     if (data->description()=="v3dDataFibers") {
         if (vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet *>(data->data())) {
-	    d->dataset = dataset;
-	    d->manager->SetInput (d->dataset);
-	    d->data = data;
-	}
+            d->dataset = dataset;
+            d->manager->SetInput (d->dataset);
+            if (!data->hasMetaData("BundleList"))
+                data->addMetaData("BundleList", QStringList());
+            d->data = data;
+        }
     }
 }
 
@@ -97,8 +99,8 @@ void v3dViewFiberInteractor::setView(dtkAbstractView *view)
 {
     if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
         d->view = v3dview;
-	d->manager->SetRenderer( d->view->renderer3D() );
-	d->manager->SetRenderWindowInteractor( d->view->interactor() );
+        d->manager->SetRenderer( d->view->renderer3D() );
+        d->manager->SetRenderWindowInteractor( d->view->interactor() );
     }
 }
 
@@ -237,6 +239,8 @@ void v3dViewFiberInteractor::onSelectionValidated(QString name)
     double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
 	
     d->manager->Validate (name.toAscii().constData(), color_d);
+    
+    d->data->addMetaData("BundleList", name);
 
     /*
       d->data->enableWriter ("v3dDataFibersWriter");
@@ -249,11 +253,11 @@ void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
     if (!d->view)
         return;
 	
-      if (value=="true") {
-	  d->view->viewAxial()->AddDataSet( d->manager->GetCallbackOutput() );
-	  d->view->viewSagittal()->AddDataSet( d->manager->GetCallbackOutput() );
-	  d->view->viewCoronal()->AddDataSet( d->manager->GetCallbackOutput() );
-      }
+    if (value=="true") {
+        d->view->viewAxial()->AddDataSet( d->manager->GetCallbackOutput() );
+        d->view->viewSagittal()->AddDataSet( d->manager->GetCallbackOutput() );
+        d->view->viewCoronal()->AddDataSet( d->manager->GetCallbackOutput() );
+    }
 }
 
 void v3dViewFiberInteractor::onRadiusSet (int value)
