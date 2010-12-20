@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 16:30:34 2010 (+0200)
+ * Last-Updated: Mon Dec 20 11:14:52 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 69
+ *     Update #: 70
  */
 
 /* Commentary: 
@@ -71,7 +71,9 @@ void medViewContainerSingle::onViewClosing (void)
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
         if (medAbstractView *medView = dynamic_cast<medAbstractView*> (d->view))
             d->pool->removeView (medView);
-        d->view->close();
+
+        // d->view->close();
+        
         d->view = NULL;
     }
 }

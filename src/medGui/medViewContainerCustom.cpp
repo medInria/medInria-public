@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Jun 15 16:28:13 2010 (+0200)
+ * Last-Updated: Mon Dec 20 11:15:03 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 67
+ *     Update #: 68
  */
 
 /* Commentary: 
@@ -221,7 +221,7 @@ void medViewContainerCustom::onViewClosing (void)
         this->desynchronize_2 (d->view);
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
                 
-        d->view->close();
+        // d->view->close();
         
         d->view = NULL;
     }
