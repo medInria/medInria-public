@@ -16,13 +16,11 @@ public:
     medViewerToolBoxView   *viewToolBox;
     medToolBoxDiffusion    *diffusionToolBox;
     
-    dtkAbstractView *view;
+    QList<dtkAbstractView *> views;
 };
 
 medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationDiffusionPrivate)
 {
-    d->view = 0;
-    
     // -- Layout toolbox --
     setLayoutToolBoxVisibility(false);
 
@@ -51,7 +49,7 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     this->addToolBox( d->viewToolBox );
     this->addToolBox( d->diffusionToolBox );
 
-    this->setViewLayoutType (0); // single
+    this->setViewLayoutType (-1); // single
 }
 
 medViewerConfigurationDiffusion::~medViewerConfigurationDiffusion(void)
@@ -65,16 +63,33 @@ QString medViewerConfigurationDiffusion::description(void) const
     return "Diffusion";
 }
 
-void medViewerConfigurationDiffusion::setupViewContainerStack(medViewContainerStack *container)
+void medViewerConfigurationDiffusion::setupViewContainerStack(medViewContainerStack *container_stack)
 {
-    if (!container) {
+    if (!container_stack) {
         return;
     }
 
+    d->views.clear();
     
+    medViewContainer *diffusionContainer = container_stack->customContainer("Diffusion");
+
+    if (!diffusionContainer) {
+      medViewContainerCustom *custom = new medViewContainerCustom (container_stack);
+      custom->setPreset (medViewContainerCustom::E);
+      connect (custom, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
+      connect (custom, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
+      diffusionContainer = custom;
+
+      container_stack->addCustomContainer ("Diffusion", diffusionContainer);
+    }
+
+    d->views << diffusionContainer->views();
+    
+    container_stack->setCustomContainer ("Diffusion");
+
+    /*
     dtkAbstractView *view = 0;
     
-    medViewContainer *singleContainer = container->single();
     if (singleContainer->current()->view()) {
         view = singleContainer->current()->view();
     }
@@ -107,6 +122,7 @@ void medViewerConfigurationDiffusion::setupViewContainerStack(medViewContainerSt
     }
     
     connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosing()));
+    */
 }
 
 void medViewerConfigurationDiffusion::patientChanged(int patientId)
@@ -114,6 +130,7 @@ void medViewerConfigurationDiffusion::patientChanged(int patientId)
     d->diffusionToolBox->clear();
 }
 
+/*
 void medViewerConfigurationDiffusion::onViewClosing(void)
 {
     if (d->view) {
@@ -126,114 +143,135 @@ void medViewerConfigurationDiffusion::onViewClosing(void)
         }
     }
 }
+*/
+
+void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
+{
+    if (!view)
+        return;
+
+    if (d->views.contains (view))
+        return;
+
+    d->views.append (view);
+
+    view->enableInteractor ("v3dViewFiberInteractor");
+}
+
+void medViewerConfigurationDiffusion::onViewRemoved (dtkAbstractView *view)
+{
+   if (!view)
+        return;
+
+   if (!d->views.contains (view))
+      return;
+
+   // view->disableInteractor ("v3dViewFiberInteractor");
+
+   d->views.removeOne (view);
+}
 
 void medViewerConfigurationDiffusion::onFiberColorModeChanged(int index)
 {
-    if (!d->view)
-        return;
-    
-    if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-        if (index==0)
-            interactor->setProperty("ColorMode","local");
-        if (index==1)
-            interactor->setProperty("ColorMode","global");
-        if (index==2)
-            interactor->setProperty("ColorMode","fa");
+    foreach (dtkAbstractView *view, d->views) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
+	    if (index==0)
+	        interactor->setProperty("ColorMode","local");
+	    if (index==1)
+	      interactor->setProperty("ColorMode","global");
+	    if (index==2)
+	      interactor->setProperty("ColorMode","fa");
         
-        d->view->update();
+	    view->update();
+	}
     }
 }
 
 void medViewerConfigurationDiffusion::onGPUActivated (bool value)
 {
-    if (!d->view)
-        return;
-    
-    if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+    foreach (dtkAbstractView *view, d->views) {
+    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
         if (value)
             interactor->setProperty ("GPUMode", "true");
         else
             interactor->setProperty ("GPUMode", "false");
         
-        d->view->update();
+        view->update();
+    }
     }
 }
 
 void medViewerConfigurationDiffusion::onLineModeSelected (bool value)
 {
-    if (!d->view)
-        return;
-    
+    foreach (dtkAbstractView *view, d->views) {
     if (value)
-        if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+        if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
             interactor->setProperty ("RenderingMode", "lines");
             
-            d->view->update();
+            view->update();
         }
+    }
 }
 
 void medViewerConfigurationDiffusion::onRibbonModeSelected (bool value)
 {
-    if (!d->view)
-        return;
-    
+    foreach (dtkAbstractView *view, d->views) {
     if (value)
-        if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+        if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
             interactor->setProperty ("RenderingMode", "ribbons");
             
-            d->view->update();
+            view->update();
         }
+    }
 }
 
 void medViewerConfigurationDiffusion::onTubeModeSelected (bool value)
 {
-    if (!d->view)
-        return;
-    
+    foreach (dtkAbstractView *view, d->views) {
     if (value)
-        if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+        if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
             interactor->setProperty ("RenderingMode", "tubes");
             
-            d->view->update();
+            view->update();
         }
+    }
 }
 
 void medViewerConfigurationDiffusion::onBundlingBoxActivated (bool value)
 {
-    if (!d->view)
-        return;
-    
-    if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+    foreach (dtkAbstractView *view, d->views) {
+    if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
+      if (view->property ("Orientation")=="3D") {
         if (value)
-            interactor->setProperty ("BoxVisibility", "true");
+	  interactor->setProperty ("BoxVisibility", "true");
         else
-            interactor->setProperty ("BoxVisibility", "false");
+	  interactor->setProperty ("BoxVisibility", "false");
         
-        d->view->update();
+        view->update();
+      }
     }
 }
 
 void medViewerConfigurationDiffusion::onShowBundles (bool value)
 {
-    if (!d->view)
-        return;
-    
-    if(dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+    foreach (dtkAbstractView *view, d->views) {
+      if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
         if (value)
-	    interactor->enable();
+	  interactor->enable();
         else
-            interactor->disable();
+	  interactor->disable();
         
-        d->view->update();
+        view->update();
+      }
     }
 }
 
 void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
 {
-    if (d->view) {
-        d->view->setData( d->diffusionToolBox->output() );
-        d->view->reset();
-        d->view->update();
+    foreach (dtkAbstractView *view, d->views) {
+        view->setData( d->diffusionToolBox->output() );
+        view->reset();
+        view->update();
     }
 }
 

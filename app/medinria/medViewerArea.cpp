@@ -75,14 +75,10 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->current_configuration_name = "";
     d->current_configuration = 0;
     d->current_layout = medViewerConfiguration::LeftDbRightTb;
-    d->current_container = 0;
-    d->current_container_preset = 0;
 
-    // d->layout = 0;
-    d->layout = new QGridLayout(this);
-    d->layout->setContentsMargins(0, 0, 0, 0);
-    d->layout->setSpacing(0);
-
+    d->splitter = new QSplitter(this);
+    d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    d->splitter->setHandleWidth(2);
     // -- User interface setup
 
     d->stack = new QStackedWidget(this);
@@ -97,8 +93,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setOrientation(Qt::Vertical);
-    d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    d->toolbox_container->setFixedWidth(320);
+    d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    d->toolbox_container->setMinimumWidth(320);
 
     // Setting up view container
 
@@ -107,6 +103,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     QVBoxLayout *view_container_layout = new QVBoxLayout(d->view_container);
     view_container_layout->setContentsMargins(0, 10, 0, 10);
     view_container_layout->addWidget(d->stack);
+
 
     // Setting up navigator container
 
@@ -126,19 +123,25 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     // d->navigator_container_layout = 0;
     d->navigator_container_layout = new QGridLayout(d->navigator_container);
-    d->navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);    
+    d->navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
     d->navigator_container_layout->setContentsMargins(0, 0, 0, 0);
     d->navigator_container_layout->setSpacing(0);
     d->navigator_container_layout->addWidget(d->toolboxPatient, 0, 0);
     d->navigator_container_layout->addWidget(d->navigator, 1, 0);
 
-    d->layout->addWidget(d->navigator_container, 0, 0);
-    d->layout->addWidget(d->view_container,      0, 1);
-    d->layout->addWidget(d->toolbox_container,   0, 2);
-    
-    
+    //Set up viewer layout
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(d->splitter);
+    setLayout(layout);
+    d->splitter->addWidget(d->navigator_container);
+    d->splitter->addWidget(d->view_container);
+    d->splitter->addWidget(d->toolbox_container);
+
+    //restore previous splitter position.
+    d->restoreSplitterSize(Qt::Horizontal);
+
     //action for transfer function
-    QAction * transFunAction =
+             QAction * transFunAction =
       new QAction("Toggle Tranfer Function Widget", this);
     transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier +
 				Qt::Key_L);
@@ -154,7 +157,9 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
 medViewerArea::~medViewerArea(void)
 {
-    //TODO: delete
+
+    d->saveSplitterSize(d->current_configuration->layoutType());
+
     delete d;
 
     d = NULL;
@@ -243,11 +248,12 @@ void medViewerArea::open(const medDataIndex& index)
         medViewManager::instance()->insert(index, view);
         
         view->setData(data);
-        view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
         
         QMutexLocker ( &d->mutex );
-        d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
+        d->view_stacks.value(d->current_patient)->current()->current()->setView(view); //d->view_stacks.value(d->current_patient)->current()->setView(view);
         d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
+
+        view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
         
         return;
     }
@@ -322,6 +328,7 @@ void medViewerArea::switchToPatient(int id)
         connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
         connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
         d->view_stacks.insert(d->current_patient, view_stack);
+	d->current_patient_container.insert (d->current_patient, 0);
         d->stack->addWidget(view_stack);
     }
     else {
@@ -369,14 +376,18 @@ void medViewerArea::switchToPatient(int id)
 
 void medViewerArea::switchToContainer(int index)
 {
+    if (d->current_patient_container.contains (d->current_patient))
+        if (d->current_patient_container[d->current_patient]==index)
+	    return;
+    
+    d->current_patient_container[d->current_patient] = index;
+    
     if(index < 0)
         return;
 
-    d->current_container = index;
-    
     if (d->view_stacks.count())
       if (d->view_stacks.value(d->current_patient)) {
-	d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
+          d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
         //this->currentContainer()->setFocus(Qt::MouseFocusReason);
      }
     
@@ -620,21 +631,21 @@ void medViewerArea::setupConfiguration(QString name)
     d->toolbox_container->setVisible( conf->areToolBoxesVisible() );
 
     /*
-     if (d->toolbox_container->toolBoxes().count()) {
-     QPropertyAnimation *animation = new QPropertyAnimation(d->toolbox_container, "geometry");
-     animation->setDuration(500);
-     if (d->toolbox_container->orientation()==medToolBoxContainer::Vertical)  {
-     animation->setStartValue(QRect(d->toolbox_container->x(), 1000, d->toolbox_container->width(), d->toolbox_container->height()));
-     animation->setEndValue(QRect(d->toolbox_container->x(), 0, d->toolbox_container->width(), d->toolbox_container->height()));
-     }
-     else {
-     animation->setStartValue(QRect(1000, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
-     animation->setEndValue(QRect(0, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
-     }
-     animation->setEasingCurve(QEasingCurve::OutQuad);
-     animation->start();
-	}*/
-
+      if (d->toolbox_container->toolBoxes().count()) {
+      QPropertyAnimation *animation = new QPropertyAnimation(d->toolbox_container, "geometry");
+      animation->setDuration(500);
+      if (d->toolbox_container->orientation()==medToolBoxContainer::Vertical)  {
+      animation->setStartValue(QRect(d->toolbox_container->x(), 1000, d->toolbox_container->width(), d->toolbox_container->height()));
+      animation->setEndValue(QRect(d->toolbox_container->x(), 0, d->toolbox_container->width(), d->toolbox_container->height()));
+      }
+      else {
+      animation->setStartValue(QRect(1000, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
+      animation->setEndValue(QRect(0, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
+      }
+      animation->setEasingCurve(QEasingCurve::OutQuad);
+      animation->start();
+      }*/
+    
     connect(conf, SIGNAL(layoutModeChanged(int)),     this, SLOT(switchToContainer(int)));
     connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));
@@ -647,6 +658,10 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
     if (d->current_layout==layout)
         return;
 
+
+    //save previous splitter size
+    d->saveSplitterSize(d->current_layout);
+
     d->current_layout = layout;
 
     //setup orientation
@@ -654,6 +669,7 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
         case medViewerConfiguration::TopDbBottomTb:
         case medViewerConfiguration::TopTbBottomDb:
            {
+
 	     d->navigator_container_layout->removeWidget ( d->toolboxPatient );
 	     d->navigator_container_layout->removeWidget ( d->navigator );
 
@@ -661,26 +677,25 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 	     
 	     d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
 	     d->navigator_container_layout->addWidget (d->navigator, 0, 1);
-	      
-	     d->layout->removeWidget ( d->navigator_container );
-	     d->layout->removeWidget ( d->view_container );
-	     d->layout->removeWidget ( d->toolbox_container );
-
-	     d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	     d->navigator_container->setFixedHeight(186);
-	     d->navigator_container->setFixedWidth(QWIDGETSIZE_MAX);
+             //width must be fixed or the navigator doesn't grow
+             //back when changing orientation again
+             d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+             d->navigator_container->setFixedHeight(186);
+             d->navigator_container->setFixedWidth(QWIDGETSIZE_MAX);
 	     
-	     d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-	     d->toolbox_container->setFixedHeight(200);
-	     d->toolbox_container->setFixedWidth (QWIDGETSIZE_MAX);
 	     d->toolbox_container->setOrientation(Qt::Horizontal);
-           }
+             d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+             d->toolbox_container->setMinimumHeight(200);
+             d->toolbox_container->setFixedWidth(QWIDGETSIZE_MAX);
+             d->restoreSplitterSize(Qt::Vertical);
+           } 
             break;
             
         case medViewerConfiguration::LeftDbRightTb:
         case medViewerConfiguration::LeftTbRightDb:
         default:
            {
+
 	     d->navigator_container_layout->removeWidget ( d->toolboxPatient );
 	     d->navigator_container_layout->removeWidget ( d->navigator );
 
@@ -689,45 +704,98 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 	     d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
 	     d->navigator_container_layout->addWidget (d->navigator, 1, 0);
 
-	     d->layout->removeWidget ( d->navigator_container );
-	     d->layout->removeWidget ( d->view_container );
-	     d->layout->removeWidget ( d->toolbox_container );
-
-	     d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	     d->navigator_container->setFixedWidth(186);
-	     d->navigator_container->setFixedHeight(QWIDGETSIZE_MAX);
+             d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+             d->navigator_container->setFixedWidth(186);
+             d->navigator_container->setFixedHeight(QWIDGETSIZE_MAX);
 	      
-	     d->toolbox_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-	     d->toolbox_container->setFixedWidth(320);
-	     d->toolbox_container->setFixedHeight (QWIDGETSIZE_MAX);
 	     d->toolbox_container->setOrientation(Qt::Vertical);
+             d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+             d->toolbox_container->setMinimumWidth(320);
+             d->toolbox_container->setMinimumHeight (QWIDGETSIZE_MAX);
+             d->restoreSplitterSize(Qt::Horizontal);
            }
+
     }
 
 
     switch (layout){
         case medViewerConfiguration::TopDbBottomTb:
-	    d->layout->addWidget ( d->navigator_container, 0, 0);
-	    d->layout->addWidget ( d->view_container,      1, 0);
-	    d->layout->addWidget ( d->toolbox_container,   2, 0);
+        case medViewerConfiguration::LeftDbRightTb:
+            d->splitter->insertWidget(0,d->navigator_container);
+            d->splitter->insertWidget(2,d->toolbox_container);
 	    break;
 	    
         case medViewerConfiguration::TopTbBottomDb:
-	    d->layout->addWidget ( d->toolbox_container,   0, 0);
-	    d->layout->addWidget ( d->view_container,      1, 0);
-	    d->layout->addWidget ( d->navigator_container, 2, 0);
-	    break;
-	    
-	case medViewerConfiguration::LeftTbRightDb:
-	    d->layout->addWidget ( d->toolbox_container,   0, 0);
-	    d->layout->addWidget ( d->view_container,      0, 1);
-	    d->layout->addWidget ( d->navigator_container, 0, 2);
-	    break;
-	  
-        case medViewerConfiguration::LeftDbRightTb:
+        case medViewerConfiguration::LeftTbRightDb:
         default:
-	    d->layout->addWidget ( d->navigator_container, 0, 0);
-	    d->layout->addWidget ( d->view_container,      0, 1);
-	    d->layout->addWidget ( d->toolbox_container,   0, 2);
+            d->splitter->insertWidget(0,d->toolbox_container);
+            d->splitter->insertWidget(2,d->navigator_container);
+	    break;	    
     }
+
+}
+
+
+void medViewerAreaPrivate::saveSplitterSize(medViewerConfiguration::LayoutType layout)
+{
+    QSettings settings("inria","medinria");
+    if (layout == medViewerConfiguration::TopDbBottomTb ||
+        layout == medViewerConfiguration::TopTbBottomDb)
+    {
+        settings.setValue("ViewerSplitterSizesVertical",
+                      splitter->saveState());
+    }
+    else
+    {
+        settings.setValue("ViewerSplitterSizesHorizontal",
+                      splitter->saveState());
+    }
+
+}
+
+void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
+{
+    QSettings settings("inria","medinria");
+    QString value;
+
+    if (orientation == Qt::Horizontal)
+    {
+
+        value = "ViewerSplitterSizesHorizontal";
+        if (!splitter->restoreState(settings.value(value).toByteArray()))
+        {
+            //viewcontainer size
+            int containerSize = QWIDGETSIZE_MAX -
+                                navigator->minimumWidth()-
+                                toolbox_container->minimumWidth();
+            QList<int> sizes;
+            sizes.append(navigator->minimumWidth());
+            sizes.append(containerSize);
+            sizes.append(toolbox_container->minimumWidth());
+            splitter->setSizes(sizes);
+        }
+        splitter->setOrientation(Qt::Horizontal);
+
+    }
+    else
+    {
+        value = "ViewerSplitterSizesVertical";
+
+        if (!splitter->restoreState(settings.value(value).toByteArray()))
+        {
+            //viewcontainer size
+            int containerSize = QWIDGETSIZE_MAX -
+                                navigator->minimumHeight() -
+                                toolbox_container->minimumHeight();
+            QList<int> sizes;
+            sizes.append(navigator->minimumHeight());
+            sizes.append(containerSize);
+            sizes.append(toolbox_container->minimumHeight());
+            splitter->setSizes(sizes);
+        }
+        splitter->setOrientation(Qt::Vertical);
+
+    }
+
+
 }

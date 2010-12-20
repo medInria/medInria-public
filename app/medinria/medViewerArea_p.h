@@ -26,6 +26,7 @@ class medViewContainerStack;
 class medViewerConfiguration;
 class medClutEditor;
 class QStackedWidget;
+class QSplitter;
 class medViewerToolBoxPatient;
 
 #include <QtCore/QHash>
@@ -46,7 +47,8 @@ public:
 
     QStackedWidget *stack;
     
-    QGridLayout *layout;
+    //QGridLayout *layout;
+    QSplitter * splitter;
     QGridLayout *navigator_container_layout;
 
     QMutex mutex;
@@ -56,10 +58,13 @@ public:
 
     QPropertyAnimation *navigator_animation;
 
+    void restoreSplitterSize(Qt::Orientation orientation);
+    void saveSplitterSize(medViewerConfiguration::LayoutType layout);
+
 public:
     int current_patient;
-    int current_container;
-    int current_container_preset;
+    QHash<int, int> current_patient_container;
+    // QHash<int, int> current_patient_container_preset;
     QString current_configuration_name;
     medViewerConfiguration *current_configuration;
     medViewerConfiguration::LayoutType current_layout;

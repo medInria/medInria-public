@@ -55,6 +55,7 @@ signals:
     void syncWindowing (bool);
     void reg           (bool);
     void lutChanged    (void);
+    void fullScreen    (bool);
 
 public slots:
     virtual void linkPosition  (dtkAbstractView *view, bool value);

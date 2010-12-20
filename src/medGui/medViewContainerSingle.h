@@ -36,6 +36,7 @@ public:
     void split(int rows, int cols);
 
     virtual void setView(dtkAbstractView *view);
+    virtual dtkAbstractView *view (void) const;
 
 public slots:
     virtual void onViewClosing (void);

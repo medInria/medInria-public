@@ -64,6 +64,8 @@ public:
     medDataIndex currentIndex;
 
     medToolBoxDiffusionCustom * customToolBox;
+
+    dtkAbstractView *view;
 };
 
 medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
@@ -283,6 +285,8 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
 
     d->customToolBox = 0;
+
+    d->view = 0;
     
     this->setTitle("Diffusion");
     this->setTabWidget(tab);
@@ -434,6 +438,7 @@ void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
         //qDebug() << "Unable to instanciate" << id << "toolbox";
         return;
     }
+    
     toolbox->setDiffusionToolBox(this);
 
     //get rid of old toolBox
@@ -509,5 +514,35 @@ void medToolBoxDiffusion::onBundlingButtonVdtClicked (void)
       // d->bundlingList->addItem (text);
 	addBundle (text);
 	emit fiberSelectionValidated (text);
+    }
+}
+
+void medToolBoxDiffusion::update (dtkAbstractView *view)
+{
+    if (d->view==view)
+        return;
+
+    if (d->view) {
+        if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
+	    disconnect (this, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
+	    disconnect (this, SIGNAL(fiberSelectionTagged()),    interactor, SLOT(onSelectionTagged()));
+	    disconnect (this, SIGNAL(fiberSelectionReset()),     interactor, SLOT(onSelectionReset()));
+	    disconnect (this, SIGNAL(fiberRadiusSet(int)),       interactor, SLOT(onRadiusSet(int)));
+	}
+    }
+
+    if (!view)
+        return;
+
+    if (view->property ("Orientation")!="3D") // only interaction with 3D views is authorized
+        return;
+    
+    d->view = view;
+
+    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
+        connect (this, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
+        connect (this, SIGNAL(fiberSelectionTagged()),           interactor, SLOT(onSelectionTagged()));
+        connect (this, SIGNAL(fiberSelectionReset()),            interactor, SLOT(onSelectionReset()));
+        connect (this, SIGNAL(fiberRadiusSet(int)),              interactor, SLOT(onRadiusSet(int)));
     }
 }
