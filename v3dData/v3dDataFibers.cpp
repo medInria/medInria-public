@@ -112,7 +112,7 @@ void v3dDataFibers::generateThumbnails (void) const
     mapper->Delete();
     actor->Delete();
     renderer->Delete();
-    // window->Delete(); // crash if window is deleted
+    window->Delete(); // crash if window is deleted
 }
 
 // /////////////////////////////////////////////////////////////////
