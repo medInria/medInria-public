@@ -38,6 +38,7 @@ public slots:
 };
 
 
+class medViewContainerMultiPrivate;
 
 class MEDGUI_EXPORT medViewContainerMulti : public medViewContainer
 {
@@ -51,14 +52,17 @@ public:
 
     void split(int rows, int cols);
 
-    dtkAbstractView *view(void);
+    dtkAbstractView *view(void) const;
+
+    QList<dtkAbstractView*> views (void) const;
 
     void setView(dtkAbstractView *view);
 
     void layout (QList<QWidget *> content);
 
 public slots:
-    void onViewClosing (void);
+    void onViewClosing    (void);
+    void onViewFullScreen (bool value);
    
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -68,6 +72,8 @@ protected:
 
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
+
+    medViewContainerMultiPrivate *d2;
 };
 
 #endif

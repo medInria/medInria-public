@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:46:22 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 10:18:11 2010 (+0100)
+ * Last-Updated: Mon Dec 20 12:57:48 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 209
+ *     Update #: 254
  */
 
 /* Commentary: 
@@ -22,35 +22,34 @@
 #include "medToolBoxBody.h"
 #include "medToolBoxTab.h"
 
+#include <dtkCore/dtkGlobal.h>
+
 class medToolBoxPrivate
 {
 public:
     medToolBoxHeader *header;
     medToolBoxBody *body;
-    QGridLayout * layout;
-    Qt::Orientation layoutOrientation;
-    void clearLayout();
+
+public:
+    QBoxLayout *layout;
 };
 
 medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPrivate)
 {
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
-    d->layoutOrientation = Qt::Vertical;
 
-    d->layout = new QGridLayout(this);
+    d->layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(0);
-    d->layout->addWidget(d->header,0,0,Qt::AlignTop);
-    d->layout->addWidget(d->body,1,0);
+    d->layout->addWidget(d->header);
+    d->layout->addWidget(d->body);
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 medToolBox::~medToolBox(void)
 {
-    delete d->header;
-    delete d->body;
     delete d;
 
     d = NULL;
@@ -60,7 +59,6 @@ void medToolBox::setTabWidget(medToolBoxTab *tab)
 {
     d->body->setTabWidget(tab);
 }
-
 
 void medToolBox::addWidget(QWidget *widget)
 {
@@ -74,53 +72,43 @@ void medToolBox::setTitle(const QString &title)
 
 void medToolBox::update(dtkAbstractView *view)
 {
-    Q_UNUSED(view);
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(view);
 }
 
-void medToolBox::clear()
+void medToolBox::clear(void)
 {
-    return;
+    DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medToolBox::setOrientation(Qt::Orientation orient)
+void medToolBox::setOrientation(Qt::Orientation orientation)
 {
-    qDebug()<<"tb :: setOrientation ";
-    qDebug()<<"hor:"<< Qt::Horizontal;
-    qDebug()<<"switch from"<<d->layoutOrientation;
-
-    if (d->layoutOrientation==orient)
-        return;
-    d->layoutOrientation = orient;
-    qDebug()<<"to"<<orient;
-    d->header->hide();
-    d->body->hide();
-    d->header->setOrientation(orient);
-    d->body->setOrientation(orient);
-
-    if (orient == Qt::Vertical)
-    {
-//        d->layout->setRowStretch (0, 0);
-        d->layout->addWidget(d->header,0,0,Qt::AlignTop);
-//        d->layout->setRowStretch (0, 1);
-//        d->layout->setRowStretch (1, 0);
-        d->layout->addWidget(d->body,1,0);
-//        d->layout->setRowStretch (1, 1);
-
-    }
-    else
-    {
-//        d->layout->setColumnStretch (0, 0);
-        d->layout->addWidget(d->header,0,0,Qt::AlignTop);
-//        d->layout->setColumnStretch (0, 1);
-//        d->layout->setColumnStretch (1, 0);
-        d->layout->addWidget(d->body,0,1);
-//        d->layout->setColumnStretch (1, 1);
-    }
-    d->header->show();
-    d->body->show();
+    switch(orientation) {
+    case Qt::Vertical:
+        if (d->layout->direction() == QBoxLayout::TopToBottom) {
+            return;
+        } else {
+            d->layout->setDirection(QBoxLayout::TopToBottom);
+            d->header->setOrientation(Qt::Vertical);
+            d->body->setOrientation(Qt::Vertical);
+        }
+        break;
+    case Qt::Horizontal:
+        if (d->layout->direction() == QBoxLayout::LeftToRight) {
+            return;
+        } else {
+            d->layout->setDirection(QBoxLayout::LeftToRight);
+            d->header->setOrientation(Qt::Horizontal);
+            d->body->setOrientation(Qt::Horizontal);
+        }
+        break;
+   }
 }
 
 Qt::Orientation medToolBox::orientation (void) const
 {
-    return d->layoutOrientation;
+    if(d->layout->direction() == QBoxLayout::LeftToRight)
+        return Qt::Horizontal;
+    else
+        return Qt::Vertical;
 }

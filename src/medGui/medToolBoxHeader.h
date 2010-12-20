@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 10:10:59 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 10:11:33 2010 (+0100)
+ * Last-Updated: Mon Dec 20 13:45:08 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 8
  */
 
 /* Commentary: 
@@ -34,11 +34,13 @@ public:
      medToolBoxHeader(QWidget *parent = 0);
     ~medToolBoxHeader(void);
 
+    QSize sizeHint(void) const;
+
     void setTitle(const QString& title);
     void setOrientation(Qt::Orientation orientation);
 
-signals:
-    void clicked(void);
+protected:
+    void paintEvent(QPaintEvent *event);
 
 private:
     medToolBoxHeaderPrivate *d;

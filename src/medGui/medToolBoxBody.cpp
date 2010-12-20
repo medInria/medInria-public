@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 10:17:16 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 10:18:50 2010 (+0100)
+ * Last-Updated: Mon Dec 20 16:39:57 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 3
+ *     Update #: 11
  */
 
 /* Commentary: 
@@ -75,7 +75,6 @@ void medToolBoxBody::setTabWidget(medToolBoxTab * tab)
 
     d->tab = tab;
     addWidget(tab);
-
 }
 
 void medToolBoxBody::clear()
@@ -99,11 +98,15 @@ void medToolBoxBody::setOrientation(Qt::Orientation orientation)
 
     d->layoutOrientation = orientation;
 
+    this->setObjectName((d->layoutOrientation == Qt::Vertical) ? "" : "horizontal");
+
     this->clear();
+
     if (d->tab)
     {
         d->tab->setOrientation(orientation);
     }
+
     foreach(QWidget * wid, d->widgets ) {
       //addToolBox also sets the orientation of the toolboxes
       qDebug()<<"adding widget";

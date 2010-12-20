@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Dec 20 11:14:52 2010 (+0100)
+ * Last-Updated: Mon Dec 20 11:25:48 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 70
+ *     Update #: 71
  */
 
 /* Commentary: 
@@ -62,6 +62,13 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
         d->pool->appendView (medView);
     connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+
+    emit viewAdded (view);
+}
+
+dtkAbstractView *medViewContainerSingle::view (void) const
+{
+    return d->view;
 }
 
 void medViewContainerSingle::onViewClosing (void)
@@ -72,8 +79,10 @@ void medViewContainerSingle::onViewClosing (void)
         if (medAbstractView *medView = dynamic_cast<medAbstractView*> (d->view))
             d->pool->removeView (medView);
 
+	emit viewRemoved (d->view);
+	
         // d->view->close();
-        
+
         d->view = NULL;
     }
 }

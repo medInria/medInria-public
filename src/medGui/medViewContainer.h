@@ -51,21 +51,24 @@ public:
 
     medViewContainer *current(void);
 
-    virtual dtkAbstractView *view(void);
-
     medViewPool *pool (void);
 
     virtual void setView(dtkAbstractView *view);
+    virtual dtkAbstractView         *view  (void) const;
+    virtual QList<dtkAbstractView *> views (void) const;
 
     virtual QString viewProperty (const QString &key) const;
     
 signals:
     void dropped(const medDataIndex& index);
     void focused(dtkAbstractView *view);
+    void viewAdded   (dtkAbstractView *view);
+    void viewRemoved (dtkAbstractView *view);
 
 public slots:
     virtual void split(int rows, int cols);
     virtual void setViewProperty (const QString &key, const QString &value);
+    virtual void onViewFullScreen (bool value);
 
 protected:
     void setCurrent(medViewContainer *container);

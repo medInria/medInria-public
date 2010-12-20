@@ -32,6 +32,8 @@ public:
     medViewContainerCustom *container_custom;
     medViewContainer *container_registration_compare;
     medViewContainer *container_registration_fuse;
+    
+    QHash<QString, medViewContainer*> customContainers;
 };
 
 medViewContainerStack::medViewContainerStack(QWidget *parent) : QStackedWidget(parent), d(new medViewContainerStackPrivate)
@@ -75,22 +77,7 @@ medViewContainerStack::~medViewContainerStack(void)
 
 medViewContainer *medViewContainerStack::current(void)
 {
-    if(this->currentIndex() == medViewContainer::Single)
-        return d->container_single;
-
-    if(this->currentIndex() == medViewContainer::Multi)
-        return d->container_multi;
-
-    if(this->currentIndex() == medViewContainer::Custom)
-        return d->container_custom;
-	
-    if(this->currentIndex() == medViewContainer::Compare)
-        return d->container_registration_compare;
-    
-    if(this->currentIndex() == medViewContainer::Fuse)
-        return d->container_registration_fuse;
-
-    return NULL;
+    return dynamic_cast<medViewContainer*> (this->currentWidget());
 }
 
 medViewContainer *medViewContainerStack::single(void)
@@ -117,3 +104,33 @@ medViewContainer *medViewContainerStack::fuse(void)
 {
     return d->container_registration_fuse;
 }
+
+void medViewContainerStack::addCustomContainer(const QString &name, medViewContainer *container)
+{
+    if (!container)
+        return;
+    
+    d->customContainers[name] = container;
+    
+    connect(container, SIGNAL(focused(dtkAbstractView*)),    this, SIGNAL(focused(dtkAbstractView*)));
+    connect(container, SIGNAL(dropped(const medDataIndex&)), this, SIGNAL(dropped(const medDataIndex&)));
+    
+    this->addWidget( container );
+}
+
+medViewContainer* medViewContainerStack::customContainer(const QString &name)
+{
+    if (!d->customContainers.contains(name))
+        return NULL;
+    
+    return d->customContainers[name];
+}
+
+void medViewContainerStack::setCustomContainer(const QString &name)
+{
+    if (!d->customContainers.contains(name))
+        return;
+    
+    this->setCurrentWidget(d->customContainers[name]);
+}
+

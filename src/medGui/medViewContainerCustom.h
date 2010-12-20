@@ -49,8 +49,12 @@ public:
     void setPreset(int preset);
     void setView(dtkAbstractView *view);
 
+    dtkAbstractView *view (void) const;
+    QList<dtkAbstractView*> views (void) const;
+
 public slots:
     void onViewClosing  (void);
+    void onViewFullScreen (bool value);
     void clear (void);
 
 protected:
@@ -64,6 +68,9 @@ protected:
 
     void synchronize_2 (dtkAbstractView *view);
     void desynchronize_2 (dtkAbstractView *view);
+
+    void onViewFullScreen2 (bool value, dtkAbstractView *view);
+    void fullScreen (bool value, dtkAbstractView *view);
 
     medViewContainerCustomPrivate *d2;
 };

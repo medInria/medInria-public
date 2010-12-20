@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Dec 20 11:15:03 2010 (+0100)
+ * Last-Updated: Mon Dec 20 11:26:53 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 68
+ *     Update #: 69
  */
 
 /* Commentary: 
@@ -21,7 +21,9 @@
 #include "medViewContainerCustom.h"
 #include "medViewPool.h"
 
+#include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkAbstractViewFactory.h>
 
 #include <medCore/medAbstractView.h>
 #include <medCore/medViewManager.h>
@@ -61,12 +63,14 @@ void medViewContainerCustom::split(int rows, int cols)
     this->clear();
     
     for(int i = 0 ; i < rows ; i++) {
-        d->layout->setRowStretch(i, 1);
+        d->layout->setRowStretch(i, 0);
         for(int j = 0 ; j < cols ; j++) {
             medViewContainerCustom *container = new medViewContainerCustom(this);
+	    connect (container, SIGNAL(viewAdded(dtkAbstractView*)),   this, SIGNAL (viewAdded(dtkAbstractView*)));
+	    connect (container, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
             d2->children.append (container);
             d->layout->addWidget(container, i, j);
-            d->layout->setColumnStretch(j, 1);
+            d->layout->setColumnStretch(j, 0);
         }
     }
     
@@ -94,17 +98,25 @@ void medViewContainerCustom::setPreset(int preset)
     case B:
         custom1 = new medViewContainerCustom(this);
 	custom2 = new medViewContainerCustom(this);
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 	d2->children.append (custom1);
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
         d->layout->addWidget(custom2, 1, 0);
-	d->layout->setRowStretch(0, 1);
-	d->layout->setRowStretch(1, 1);						
+	d->layout->setRowStretch(0, 0);
+	d->layout->setRowStretch(1, 0);						
         break;
     case C:
         custom1 = new medViewContainerCustom(this);
         custom1->split(2, 1);
         custom2 = new medViewContainerCustom(this);
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 	d2->children.append (custom1);
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
@@ -116,6 +128,10 @@ void medViewContainerCustom::setPreset(int preset)
         custom1 = new medViewContainerCustom(this);
         custom1->split(3, 1);
         custom2 = new medViewContainerCustom(this);
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 	d2->children.append (custom1);
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
@@ -128,6 +144,15 @@ void medViewContainerCustom::setPreset(int preset)
 	custom2 = new medViewContainerCustom(this);
 	custom3 = new medViewContainerCustom(this);
 	custom4 = new medViewContainerCustom(this);
+
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom3, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom4, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom3, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom4, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 
 	custom1->setViewProperty ("Orientation", "Axial");
 	custom2->setViewProperty ("Orientation", "Sagittal");
@@ -143,22 +168,26 @@ void medViewContainerCustom::setPreset(int preset)
 	d->layout->addWidget(custom2, 0, 1);
 	d->layout->addWidget(custom3, 1, 0);
 	d->layout->addWidget(custom4, 1, 1);
-	d->layout->setColumnStretch(0, 1);
-	d->layout->setColumnStretch(1, 1);			
-	d->layout->setRowStretch(0, 1);
-	d->layout->setRowStretch(1, 1);
+	d->layout->setColumnStretch(0, 0);
+	d->layout->setColumnStretch(1, 0);			
+	d->layout->setRowStretch(0, 0);
+	d->layout->setRowStretch(1, 0);
         break;
 	
     case A:
 	default:
         custom1 = new medViewContainerCustom(this);
         custom2 = new medViewContainerCustom(this);
+	connect (custom1, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewAdded(dtkAbstractView*)), this, SIGNAL (viewAdded(dtkAbstractView*)));
+	connect (custom1, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
+	connect (custom2, SIGNAL(viewRemoved(dtkAbstractView*)), this, SIGNAL (viewRemoved(dtkAbstractView*)));
 	d2->children.append (custom1);
 	d2->children.append (custom2);
         d->layout->addWidget(custom1, 0, 0);
         d->layout->addWidget(custom2, 0, 1);
-	d->layout->setColumnStretch(0, 1);
-	d->layout->setColumnStretch(1, 1);			
+	d->layout->setColumnStretch(0, 0);
+	d->layout->setColumnStretch(1, 0);			
         break;
 
     };
@@ -167,27 +196,60 @@ void medViewContainerCustom::setPreset(int preset)
 }
 
 void medViewContainerCustom::setView(dtkAbstractView *view)
+{ 
+    if (d2->children.count()==0) {
+      if (view!=d->view) {
+	if (d->layout->count())
+	  d->layout->removeItem(d->layout->itemAt(0));
+
+	if (d->view)
+	  this->onViewClosing();
+
+	dtkAbstractView *cloneView = dtkAbstractViewFactory::instance()->create (view->description());
+	cloneView->setData ( static_cast<dtkAbstractData*>(view->data()) );
+	cloneView->reset();
+	
+	medViewContainer::setView (cloneView);
+
+	d->layout->setContentsMargins(1, 1, 1, 1);    
+	d->layout->addWidget(cloneView->widget(), 0, 0);
+	
+	d->view = cloneView;
+	// d->view->reset();
+	
+	this->synchronize_2 (cloneView);
+	
+	connect (cloneView, SIGNAL (closing()), this, SLOT (onViewClosing()));
+	connect (cloneView, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
+
+	qDebug() << "Here!!!";
+	
+	emit viewAdded (cloneView);
+      }
+    }
+    else {
+      foreach (medViewContainerCustom *container, d2->children)
+	container->setView (view);
+    }    
+}
+
+dtkAbstractView *medViewContainerCustom::view (void) const
 {
-    if (view==d->view)
-        return;
-    
-    if (d->layout->count())
-        d->layout->removeItem(d->layout->itemAt(0));
+    return d->view;
+}
 
-    if (d->view)
-        this->onViewClosing();
-
-    medViewContainer::setView (view);
-    
-    d->layout->setContentsMargins(1, 1, 1, 1);    
-    d->layout->addWidget(view->widget(), 0, 0);
-
-    d->view = view;
-    // d->view->reset();
-    
-    this->synchronize_2 (view);
-
-    connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+QList<dtkAbstractView *> medViewContainerCustom::views (void) const
+{
+    QList<dtkAbstractView *> views;
+    if (d2->children.count()==0) {
+        if (d->view)
+	  views << d->view;
+    }
+    else {
+      foreach (medViewContainerCustom *container, d2->children)
+	  views << container->views();
+    }
+    return views;
 }
 
 void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
@@ -217,14 +279,53 @@ void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
 void medViewContainerCustom::onViewClosing (void)
 {
     if (d->view) {
+        this->onViewFullScreen2 (false, d->view); // in case view is full screen
         d->layout->removeWidget (d->view->widget());
         this->desynchronize_2 (d->view);
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
-                
+	disconnect (d->view, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
+
+	emit viewRemoved (d->view);
+	
         // d->view->close();
         
         d->view = NULL;
     }
+}
+
+void medViewContainerCustom::onViewFullScreen (bool value)
+{
+    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+        parent->onViewFullScreen2 (value, dynamic_cast<dtkAbstractView *>(this->sender()) );
+    }
+    else { // top level medViewContainerCustom
+        this->fullScreen (value, dynamic_cast<dtkAbstractView *>(this->sender()));
+    }
+}
+
+void medViewContainerCustom::onViewFullScreen2 (bool value, dtkAbstractView *view)
+{
+    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+        parent->onViewFullScreen2 (value, view );
+    }
+    else { // top level medViewContainerCustom
+        this->fullScreen (value, view);
+    }
+}
+
+void medViewContainerCustom::fullScreen (bool value, dtkAbstractView *view)
+{
+  if (d2->children.count()==0) { // no children = end widget
+      if (!d->view ||(d->view && d->view!=view)) {
+	  if (value)
+	    this->hide();
+	  else
+	    this->show();
+      }
+  }
+
+  foreach (medViewContainerCustom *custom, d2->children)
+      custom->fullScreen (value, view);
 }
 
 void medViewContainerCustom::dragEnterEvent(QDragEnterEvent *event)
