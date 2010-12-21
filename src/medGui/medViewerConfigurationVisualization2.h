@@ -24,11 +24,13 @@
 
 #include "medViewerConfiguration.h"
 
+#include "medGuiExport.h"
+
 class medViewContainerStack;
 
 class medViewerConfigurationVisualization2Private;
 
-class medViewerConfigurationVisualization2 : public medViewerConfiguration
+class MEDGUI_EXPORT medViewerConfigurationVisualization2 : public medViewerConfiguration
 {
     Q_OBJECT
 
@@ -44,6 +46,6 @@ private:
     medViewerConfigurationVisualization2Private *d;
 };
 
-medViewerConfiguration *createMedViewerConfigurationVisualization2(void);
+MEDGUI_EXPORT medViewerConfiguration *createMedViewerConfigurationVisualization2(void);
 
 #endif

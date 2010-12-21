@@ -6,10 +6,12 @@
 
 #include "medViewerConfiguration.h"
 
+#include "medGuiExport.h"
+
 class medViewContainerStack;
 class medViewerConfigurationRegistrationPrivate;
 
-class medViewerConfigurationRegistration : public medViewerConfiguration
+class MEDGUI_EXPORT medViewerConfigurationRegistration : public medViewerConfiguration
 {
     Q_OBJECT
 
@@ -30,7 +32,7 @@ private:
     medViewerConfigurationRegistrationPrivate *d;
 };
 
-medViewerConfiguration *createMedViewerConfigurationRegistration(void);
+MEDGUI_EXPORT medViewerConfiguration *createMedViewerConfigurationRegistration(void);
 
 
 #endif // MEDVIEWERCONFIGURATIONREGISTRATION_H
