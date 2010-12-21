@@ -6,10 +6,12 @@
 
 #include "medViewerConfiguration.h"
 
+#include "medGuiExport.h"
+
 class medViewContainerStack;
 class medViewerConfigurationDiffusionPrivate;
 
-class medViewerConfigurationDiffusion : public medViewerConfiguration
+class MEDGUI_EXPORT medViewerConfigurationDiffusion : public medViewerConfiguration
 {
     Q_OBJECT
 
@@ -40,7 +42,7 @@ private:
     medViewerConfigurationDiffusionPrivate *d;
 };
 
-medViewerConfiguration *createMedViewerConfigurationDiffusion(void);
+MEDGUI_EXPORT medViewerConfiguration *createMedViewerConfigurationDiffusion(void);
 
 
 #endif // MEDVIEWERCONFIGURATIONDIFFUSION_H

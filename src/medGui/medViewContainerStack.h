@@ -22,12 +22,14 @@
 
 #include <QtGui>
 
+#include "medGuiExport.h"
+
 class dtkAbstractView;
 class medDataIndex;
 class medViewContainer;
 class medViewContainerStackPrivate;
 
-class medViewContainerStack : public QStackedWidget
+class MEDGUI_EXPORT medViewContainerStack : public QStackedWidget
 {
     Q_OBJECT
 

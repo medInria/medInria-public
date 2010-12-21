@@ -23,11 +23,14 @@
 #include <QtCore>
 #include "medViewContainer.h"
 #include "medViewContainerCustom.h"
+
+#include "medGuiExport.h"
+
 class medToolBox;
 class medViewerConfigurationPrivate;
 class medViewContainerStack;
 
-class medViewerConfiguration : public QObject
+class MEDGUI_EXPORT medViewerConfiguration : public QObject
 {
     Q_OBJECT
 

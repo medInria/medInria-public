@@ -23,7 +23,9 @@
 #include <Qt>
 #include <QtCore>
 
-class medDatabaseNavigatorController : public QObject
+#include "medSqlExport.h"
+
+class MEDSQL_EXPORT medDatabaseNavigatorController : public QObject
 {
 public:
     static medDatabaseNavigatorController *instance(void);
