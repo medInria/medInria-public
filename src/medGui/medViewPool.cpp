@@ -21,6 +21,7 @@
 #include <medCore/medMessageController.h>
 #include <medCore/medAbstractView.h>
 
+#include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
@@ -281,6 +282,7 @@ void medViewPool::onViewReg(bool value)
                     else {
                         emit showError(this, tr  ("Automatic registration failed"),3000);
                     }
+		    delete process;
                 }
                 
             }
@@ -289,8 +291,11 @@ void medViewPool::onViewReg(bool value)
             
             // restore the previous data (if any)
             if ( d->viewData[view] ) {
+	        dtkAbstractData *oldData = static_cast<dtkAbstractData*>( view->data() );
                 view->setData (d->viewData[view]);
                 d->viewData[view] = NULL;
+		if (oldData)
+		    delete oldData;
                 view->update();
             }
         }

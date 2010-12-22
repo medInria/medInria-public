@@ -232,7 +232,7 @@ void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
     }
     
     if (d->diffusionToolBox->output()->description()=="v3dDataFibers")
-        d->fiberBundlingToolBox->setInput( d->diffusionToolBox->output() );
+        d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
 }
 
 void medViewerConfigurationDiffusion::refreshInteractors (void)

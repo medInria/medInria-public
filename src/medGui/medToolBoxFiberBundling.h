@@ -15,7 +15,7 @@ public:
     medToolBoxFiberBundling(QWidget *parent);
     ~medToolBoxFiberBundling();
     
-    void setInput(dtkAbstractData *data);
+    void setData(dtkAbstractData *data);
     
 signals:
     void fiberSelectionValidated(QString name);

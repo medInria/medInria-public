@@ -78,7 +78,7 @@ medToolBoxFiberBundling::~medToolBoxFiberBundling()
     d = NULL;
 }
 
-void medToolBoxFiberBundling::setInput(dtkAbstractData *data)
+void medToolBoxFiberBundling::setData(dtkAbstractData *data)
 {
     if (!data)
         return;
@@ -117,7 +117,7 @@ void medToolBoxFiberBundling::onObjectDropped(void)
             medDataManager::instance()->insert(index, data);
     }
     
-    this->setInput(data);
+    this->setData(data);
 }
 
 void medToolBoxFiberBundling::onBundlingButtonVdtClicked (void)
@@ -167,11 +167,15 @@ void medToolBoxFiberBundling::clear(void)
 
 void medToolBoxFiberBundling::update(dtkAbstractView *view)
 {
-    if(!d->data)
-        return;
+  // if(!d->data)
+  //    return;
   
-    if (d->view==view)
+    if (d->view==view) {
+        if (view)
+	    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
+	        this->setData (interactor->data()); // data may have changed
         return;
+    }
     
     if (d->view) {
         if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
@@ -201,5 +205,7 @@ void medToolBoxFiberBundling::update(dtkAbstractView *view)
 	d->bundleBoxCheckBox->blockSignals (true);
 	d->bundleBoxCheckBox->setChecked( interactor->property("BoxVisibility")=="true" );
 	d->bundleBoxCheckBox->blockSignals (false);
+
+	this->setData ( interactor->data() );
     }
 }
