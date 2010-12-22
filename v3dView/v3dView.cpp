@@ -742,7 +742,7 @@ void v3dView::setData(dtkAbstractData *data)
 {
     if(!data)
         return;
-    
+
 #ifdef vtkINRIA3D_USE_ITK
     if (data->description()=="itkDataImageChar3") {
         if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
@@ -880,7 +880,12 @@ void v3dView::setData(dtkAbstractData *data)
             this->enableInteractor ( "v3dViewMeshInteractor" );
             // This will add the data to the interactor.
             dtkAbstractView::setData(data);
+        }
+	else if ( data->description() == "v3dDataFibers" ) {
             
+            this->enableInteractor ( "v3dViewFiberInteractor" );
+            // This will add the data to the interactor.
+            dtkAbstractView::setData(data);
         }
         else {
             dtkAbstractView::setData(data);
@@ -888,29 +893,29 @@ void v3dView::setData(dtkAbstractData *data)
         }
     
     d->data = data;
-	d->imageData = dynamic_cast<dtkAbstractDataImage*> (data);
+    d->imageData = dynamic_cast<dtkAbstractDataImage*> (data);
     
     if (data->hasMetaData("PatientName")){
         const QString patientName = data->metaDataValues(tr("PatientName"))[0];	
-	    d->view2DAxial->SetPatientName (patientName.toAscii().constData());
-	    d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
-	    d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
+	d->view2DAxial->SetPatientName (patientName.toAscii().constData());
+	d->view2DSagittal->SetPatientName (patientName.toAscii().constData());
+	d->view2DCoronal->SetPatientName (patientName.toAscii().constData());
         d->view3D->SetPatientName (patientName.toAscii().constData());
     }
     
     if( data->hasMetaData("StudyDescription")){
         const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
         d->view2DAxial->SetStudyName (studyName.toAscii().constData());
-	    d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
-	    d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
+	d->view2DSagittal->SetStudyName (studyName.toAscii().constData());
+	d->view2DCoronal->SetStudyName (studyName.toAscii().constData());
         d->view3D->SetStudyName (studyName.toAscii().constData());
     }
     
     if (data->hasMetaData("SeriesDescription")){
         const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
         d->view2DAxial->SetSeriesName (seriesName.toAscii().constData());
-	    d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
-	    d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
+	d->view2DSagittal->SetSeriesName (seriesName.toAscii().constData());
+	d->view2DCoronal->SetSeriesName (seriesName.toAscii().constData());
         d->view3D->SetSeriesName (seriesName.toAscii().constData());
     }
     
@@ -933,7 +938,7 @@ void v3dView::setData(dtkAbstractData *data)
         }
         d->slider->blockSignals (false);
     }
-    
+
     // this->update(); // update is not the role of the plugin, but of the app
 }
 
