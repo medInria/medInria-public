@@ -248,13 +248,19 @@ void medViewerArea::open(const medDataIndex& index)
         medViewManager::instance()->insert(index, view);
         
         view->setData(data);
-        
+	
         QMutexLocker ( &d->mutex );
+	d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (false);
+	d->view_stacks.value(d->current_patient)->current()->setDisabled (true);
+
         d->view_stacks.value(d->current_patient)->current()->current()->setView(view); //d->view_stacks.value(d->current_patient)->current()->setView(view);
         d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
 
-        view->reset(); // called in view_stacks -> setView but seems necessary with the streaming approach
-        
+	view->reset();
+
+	d->view_stacks.value(d->current_patient)->current()->setDisabled (false);
+        d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (true);
+	
         return;
     }
     
