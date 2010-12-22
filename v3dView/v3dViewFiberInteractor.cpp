@@ -95,6 +95,11 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
     }
 }
 
+dtkAbstractData *v3dViewFiberInteractor::data (void)
+{
+    return d->data;
+}
+
 void v3dViewFiberInteractor::setView(dtkAbstractView *view)
 {
     if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
@@ -102,6 +107,11 @@ void v3dViewFiberInteractor::setView(dtkAbstractView *view)
         d->manager->SetRenderer( d->view->renderer3D() );
         d->manager->SetRenderWindowInteractor( d->view->interactor() );
     }
+}
+
+dtkAbstractView *v3dViewFiberInteractor::view (void)
+{
+    return d->view;
 }
 
 void v3dViewFiberInteractor::enable(void)

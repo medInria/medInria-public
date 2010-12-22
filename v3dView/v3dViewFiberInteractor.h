@@ -25,7 +25,10 @@ public:
 	static bool registered(void);
 	
 	virtual void setData(dtkAbstractData *data);
+	dtkAbstractData *data (void);
+		
 	virtual void setView(dtkAbstractView *view);
+	dtkAbstractView *view (void);
 
 	virtual void enable(void);
 	virtual void disable(void);
