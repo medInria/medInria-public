@@ -35,7 +35,7 @@ public:
 
 medDatabaseNavigatorScene::medDatabaseNavigatorScene(QObject *parent) : QGraphicsScene(parent), d(new medDatabaseNavigatorScenePrivate)
 {
-    d->orientation == medDatabaseNavigatorController::instance()->orientation();
+    d->orientation = medDatabaseNavigatorController::instance()->orientation();
 }
 
 medDatabaseNavigatorScene::~medDatabaseNavigatorScene(void)
