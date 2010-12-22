@@ -565,7 +565,7 @@ vtkFibersManager::vtkFibersManager()
     
   this->Mapper->SetInput ( this->Callback->GetOutput() );
   this->Mapper->SetScalarModeToUsePointData();
-  this->Actor->SetMapper (this->Mapper);
+  // this->Actor->SetMapper (this->Mapper); // only when input is set
 
   this->HelpMessage = vtkCornerAnnotation::New();
   this->HelpMessage->SetNonlinearFontScaleFactor (0.25);
@@ -766,6 +766,7 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   this->Input = input;
   
   this->Callback->GetROIFiberLimiter()->SetInput ( this->GetInput() );
+  this->Actor->SetMapper (this->Mapper);
   
   if( this->Renderer )
   {
