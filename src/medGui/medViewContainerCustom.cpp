@@ -205,30 +205,34 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 	if (d->view)
 	  this->onViewClosing();
 
-	dtkAbstractView *cloneView = dtkAbstractViewFactory::instance()->create (view->description());
-	cloneView->setData ( static_cast<dtkAbstractData*>(view->data()) );
-	cloneView->reset();
+	/*
+	  dtkAbstractView *cloneView = dtkAbstractViewFactory::instance()->create (view->description());
+	  cloneView->setData ( static_cast<dtkAbstractData*>(view->data()) );
+	  cloneView->reset();
+	*/
 	
-	medViewContainer::setView (cloneView);
+	medViewContainer::setView (view);
 
 	d->layout->setContentsMargins(1, 1, 1, 1);    
-	d->layout->addWidget(cloneView->widget(), 0, 0);
+	d->layout->addWidget(view->widget(), 0, 0);
 	
-	d->view = cloneView;
+	d->view = view;
 	// d->view->reset();
 	
-	this->synchronize_2 (cloneView);
+	this->synchronize_2 (view);
 	
-	connect (cloneView, SIGNAL (closing()), this, SLOT (onViewClosing()));
-	connect (cloneView, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
+	connect (view, SIGNAL (closing()),        this, SLOT (onViewClosing()));
+	connect (view, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
 
-	emit viewAdded (cloneView);
+	emit viewAdded (view);
       }
     }
+    /*
     else {
       foreach (medViewContainerCustom *container, d2->children)
 	container->setView (view);
-    }    
+    }
+    */
 }
 
 dtkAbstractView *medViewContainerCustom::view (void) const
