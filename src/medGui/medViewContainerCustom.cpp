@@ -325,9 +325,10 @@ void medViewContainerCustom::fullScreen (bool value, dtkAbstractView *view)
 	    this->show();
       }
   }
-
-  foreach (medViewContainerCustom *custom, d2->children)
-      custom->fullScreen (value, view);
+  else {
+      foreach (medViewContainerCustom *custom, d2->children)
+	  custom->fullScreen (value, view);
+  }
 }
 
 void medViewContainerCustom::dragEnterEvent(QDragEnterEvent *event)
@@ -375,8 +376,8 @@ void medViewContainerCustom::clear (void)
   
     foreach (medViewContainerCustom *custom, d2->children) {
         custom->clear();
-	delete custom;
 	d->layout->removeWidget (custom);
+	custom->deleteLater(); // safer than delete custom
     }
     d2->children.clear();
 
