@@ -57,8 +57,21 @@ QString v3dDataFibers::description(void) const
 
 void v3dDataFibers::setData(void *data)
 {
-  if (vtkFiberDataSet *dataset = vtkFiberDataSet::SafeDownCast (static_cast<vtkObject*>(data)))
+  if (vtkFiberDataSet *dataset = vtkFiberDataSet::SafeDownCast (static_cast<vtkObject*>(data))) {
       d->data = dataset;
+
+      QStringList bundles;
+      
+      vtkFiberDataSet::vtkFiberBundleListType bundleList = dataset->GetBundleList();
+      vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundleList.begin();
+      while (it!=bundleList.end())
+      {
+	bundles << (*it).first.c_str();
+	++it;
+      }
+
+      this->setMetaData ("BundleList", bundles);
+  }
 }
 
 void *v3dDataFibers::data(void)

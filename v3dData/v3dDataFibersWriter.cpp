@@ -5,7 +5,7 @@
 
 #include <vtkPolyData.h>
 #include <vtkCellArray.h>
-#include <vtkXMLMultiBlockDataWriter.h>
+#include <vtkXMLFiberDataSetWriter.h>
 #include "vtkFiberDataSet.h"
 
 #include <QFile>
@@ -48,36 +48,10 @@ bool v3dDataFibersWriter::write(const QString& path)
   if (!dataset)
       return false;
 
-#ifdef _MSC_VER
-  qDebug() << __FUNCSIG__;
-#elif defined __GNUG__
-  qDebug() << __PRETTY_FUNCTION__;
-#else
-  qDebug() << __func__;
-#endif
-  
-  /*
-  QFile file (path);
-  d->xml.setDevice(&file);
-  d->xml.writeStartDocument();
-  d->xml.writeDTD("<!DOCTYPE v3dDataFibers>");
-  d->xml.writeStartElement("Fibers");
-  d->xml.writeAttribute("version", "1.0");
-
-  d->xml.writeEndElement();
-  
-  d->writeBundles ( dataset );
-  
-  d->xml.writeEndDocument();
-  */
-
   dataset->Update();
   
-  qDebug() << "Number of blocks: " << dataset->GetNumberOfBlocks();
-
-  vtkXMLMultiBlockDataWriter *writer = vtkXMLMultiBlockDataWriter::New();
+  vtkXMLFiberDataSetWriter *writer = vtkXMLFiberDataSetWriter::New();
   writer->SetFileName ( path.toAscii().constData() );
-  writer->SetWriteMetaFile (1);
   writer->SetInput ( dataset );
   writer->Write();
 
