@@ -35,11 +35,11 @@ public:
      medDataIndex(const medDataIndex& index);
     ~medDataIndex(void);
 
-    bool isValid          (void);
-    bool isValidForPatient(void);
-    bool isValidForStudy  (void);
-    bool isValidForSeries (void);
-    bool isValidForImage  (void);
+    bool isValid          (void) const;
+    bool isValidForPatient(void) const;
+    bool isValidForStudy  (void) const;
+    bool isValidForSeries (void) const;
+    bool isValidForImage  (void) const;
 
     int patientId(void) const;
     int   studyId(void) const;

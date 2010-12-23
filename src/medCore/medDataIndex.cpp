@@ -51,27 +51,27 @@ medDataIndex::~medDataIndex(void)
     d = NULL;
 }
 
-bool medDataIndex::isValid(void)
+bool medDataIndex::isValid(void) const
 {
     return (d->patientId >= 0);
 }
 
-bool medDataIndex::isValidForPatient(void)
+bool medDataIndex::isValidForPatient(void) const
 {
     return (d->patientId >= 0);
 }
 
-bool medDataIndex::isValidForStudy(void)
+bool medDataIndex::isValidForStudy(void) const
 {
     return ((d->patientId >= 0) && (d->studyId >= 0));
 }
 
-bool medDataIndex::isValidForSeries(void)
+bool medDataIndex::isValidForSeries(void) const
 {
     return ((d->patientId >= 0) && (d->studyId >= 0) && (d->seriesId >= 0));
 }
 
-bool medDataIndex::isValidForImage(void)
+bool medDataIndex::isValidForImage(void) const
 {
     return ((d->patientId >= 0) && (d->studyId >= 0) && (d->seriesId >= 0) && (d->imageId >= 0));
 }
