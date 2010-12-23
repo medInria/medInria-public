@@ -26,6 +26,7 @@
 
 class medToolBoxDiffusion;
 class medToolBoxDiffusionCustomPrivate;
+class dtkAbstractProcess;
 
 class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
 {
@@ -35,10 +36,17 @@ public:
     virtual ~medToolBoxDiffusionCustom(void);
     virtual void setDiffusionToolBox(medToolBoxDiffusion *toolbox);
 
+    virtual QString description (void) const = 0;
+
+    virtual dtkAbstractProcess *create (void) = 0;
+
+    void setProcess (dtkAbstractProcess *process);
+    dtkAbstractProcess *process (void) const;
+    
 protected:
     medToolBoxDiffusion *parent(void);
 
-private:
+protected:
     medToolBoxDiffusionCustomPrivate *d;
 };
 

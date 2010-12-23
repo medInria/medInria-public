@@ -25,6 +25,7 @@
 
 class dtkAbstractView;
 class dtkAbstractData;
+class dtkAbstractProcess;
 class medToolBoxDiffusionPrivate;
 class medDataIndex;
 
@@ -36,7 +37,7 @@ public:
     ~medToolBoxDiffusion(void);
 
     medDataIndex dataIndex(void);
-        
+
 public slots:
     void run (void);
     void clear(void);
@@ -61,6 +62,11 @@ public slots:
     */
     
     dtkAbstractData *output(void);
+
+protected:
+    virtual void createProcessForIndex (const medDataIndex &index);
+
+    void setRequiredOutputForProcess (dtkAbstractProcess *proc, int type);
 
 private:
     medToolBoxDiffusionPrivate *d;

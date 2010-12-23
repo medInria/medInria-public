@@ -42,44 +42,38 @@ public:
     medDropSite         *tractographyDropSite;
     medProgressionStack *progression_stack;
 
-    QComboBox *coefficientsCombo;
+    QComboBox   *coefficientsCombo;
+    QPushButton *runButton;
 
-    QList<dtkAbstractProcess *>              methods;
-    QHash<medDataIndex, dtkAbstractProcess*> activeMethods;
-
-    medDataIndex currentIndex;
+    QHash<medDataIndex, dtkAbstractProcess *> activeMethods;
 
     medToolBoxDiffusionCustom * customToolBox;
 };
 
 medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
 {
+    d->customToolBox = 0;
+    
     // /////////////////////////////////////////////////////////////////
     // Tractography page
     // /////////////////////////////////////////////////////////////////
     QWidget   *tractographyPage        = new QWidget(this);
-    QLabel    *tractographyMethodLabel = new QLabel("Use:", tractographyPage);
+    QLabel    *tractographyMethodLabel = new QLabel("Algorithm:", tractographyPage);
     QComboBox *tractographyMethodCombo = new QComboBox(tractographyPage);
 
     d->tractographyDropSite = new medDropSite(tractographyPage);
-
 
     tractographyMethodCombo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     d->progression_stack = new medProgressionStack(tractographyPage);
     QHBoxLayout *progressStackLayout = new QHBoxLayout;
     progressStackLayout->addWidget(d->progression_stack);
-    //QLabel *progressLabel = new QLabel("Progress:", tractographyPage);
-    //progressStackLayout->addWidget(progressLabel);
 
     QHBoxLayout *tractographyMethodLayout = new QHBoxLayout;
     tractographyMethodLayout->addWidget(tractographyMethodLabel);
     tractographyMethodLayout->addWidget(tractographyMethodCombo);
 
-    //QPushButton *tractographyRunButton = new QPushButton("Run Tractography", tractographyPage);
-
-
-    QLabel *coefficientsLabel = new QLabel("Coefficient:", tractographyPage);
+    QLabel *coefficientsLabel = new QLabel("Output:", tractographyPage);
     d->coefficientsCombo = new QComboBox(tractographyPage);
     d->coefficientsCombo->addItem("Apparent Diffusion Coefficient");
     d->coefficientsCombo->addItem("Fractional Anisotropy");
@@ -96,52 +90,17 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     QHBoxLayout *coefficientsLayout = new QHBoxLayout;
     coefficientsLayout->addWidget(coefficientsLabel);
     coefficientsLayout->addWidget(d->coefficientsCombo);
-    //QPushButton *coefficientsButton = new QPushButton("Calculate Coefficient", tractographyPage);
 
-
-    /*
-      QPushButton *faButton  = new QPushButton ("FA", tractographyPage);
-      QPushButton *lfaButton = new QPushButton ("LFA", tractographyPage);
-      QPushButton *raButton  = new QPushButton ("RA", tractographyPage);
-      QPushButton *adcButton = new QPushButton ("ADC", tractographyPage);
-      QPushButton *l1Button  = new QPushButton ("L1", tractographyPage);
-      QPushButton *l2Button  = new QPushButton ("L2", tractographyPage);
-      QPushButton *l3Button  = new QPushButton ("L3", tractographyPage);
-      QPushButton *clButton  = new QPushButton ("Cl", tractographyPage);
-      QPushButton *cpButton  = new QPushButton ("Cp", tractographyPage);
-      QPushButton *csButton  = new QPushButton ("Cs", tractographyPage);
-      QPushButton *vrButton  = new QPushButton ("VR", tractographyPage);
-
-      QHBoxLayout *coefficientsLayout1 = new QHBoxLayout;
-      coefficientsLayout1->addWidget (faButton);
-      coefficientsLayout1->addWidget (lfaButton);
-      coefficientsLayout1->addWidget (raButton);
-      coefficientsLayout1->addWidget (adcButton);
-
-      QHBoxLayout *coefficientsLayout2 = new QHBoxLayout;
-      coefficientsLayout2->addWidget (vrButton);
-      coefficientsLayout2->addWidget (l1Button);
-      coefficientsLayout2->addWidget (l2Button);
-      coefficientsLayout2->addWidget (l3Button);
-
-      QHBoxLayout *coefficientsLayout3 = new QHBoxLayout;
-      coefficientsLayout3->addWidget (clButton);
-      coefficientsLayout3->addWidget (cpButton);
-      coefficientsLayout3->addWidget (csButton);
-
-      QVBoxLayout *coefficientsLayout = new QVBoxLayout;
-      coefficientsLayout->addLayout (coefficientsLayout1);
-      coefficientsLayout->addLayout (coefficientsLayout2);
-      coefficientsLayout->addLayout (coefficientsLayout3);
-    */
-
+    d->runButton = new QPushButton(tr("Run"), tractographyPage);
+    
     QVBoxLayout *tractographyLayout = new QVBoxLayout(tractographyPage);
     tractographyLayout->addWidget(d->tractographyDropSite);
     tractographyLayout->addLayout(tractographyMethodLayout);
     //tractographyLayout->addWidget(tractographyRunButton);
     tractographyLayout->addLayout (coefficientsLayout);
     //tractographyLayout->addWidget(coefficientsButton);
-    tractographyLayout->addLayout(progressStackLayout);
+    tractographyLayout->addWidget (d->runButton);
+    tractographyLayout->addLayout (progressStackLayout);
     tractographyLayout->setAlignment(d->tractographyDropSite, Qt::AlignHCenter);
 
     // /////////////////////////////////////////////////////////////////
@@ -152,7 +111,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     // --- Setting up custom toolboxes list ---
 
-    tractographyMethodCombo->addItem("Choose algorithm");
+    tractographyMethodCombo->addItem("Choose...");
 
     foreach(QString handler, medPluginManager::instance()->handlers("tractography"))
     {
@@ -170,8 +129,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
 
     connect (d->tractographyDropSite,  SIGNAL(objectDropped()),          this, SLOT (onObjectDropped()));
     connect (d->coefficientsCombo,     SIGNAL(activated(int)),           this, SLOT (onCoefficientsChanged(int)));
-    
-    d->customToolBox = 0;
+    connect (d->runButton,             SIGNAL(clicked()),                this, SLOT(run()));
 
     this->setTitle("Tractography");
     this->setWidget(tractographyPage);
@@ -201,8 +159,6 @@ void medToolBoxDiffusion::onObjectDropped()
     if (!data)
         return;
     
-    d->currentIndex = index;
-
     if (!data->hasMetaData ("DiffusionGradientList")) {
         QMessageBox msgBox;
         msgBox.setText("No diffusion gradient attached to the image.");
@@ -254,52 +210,14 @@ void medToolBoxDiffusion::onObjectDropped()
         }
     }
 
-    if (d->activeMethods.contains(index)) {
-        // TODO: clear bundle list and fill it with output of appropriate tracto method
-    }
-    else {
-        dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create ("itkProcessTensorDTITrackPipeline");
-        proc->setInput (data);
-        connect (proc, SIGNAL (progressed (int)), d->progression_stack,  SLOT (setProgress (int)));
-	connect (proc, SIGNAL (success()), d->progression_stack,  SLOT (onSuccess ()));
-	connect (proc, SIGNAL (failure()), d->progression_stack,  SLOT (onFailure ()));
-        d->activeMethods.insert(index, proc);
-    }
+    this->createProcessForIndex ( index );
 }
 
 void medToolBoxDiffusion::onCoefficientsChanged (int ind)
 {
-    medDataIndex index = d->tractographyDropSite->index();
-
-    dtkAbstractProcess *activeMethod = 0;
-    if (d->activeMethods.contains (index))
-        activeMethod = d->activeMethods[index];
-
-    if (!activeMethod)
-        return;
-
-    if (ind==0)
-        activeMethod->setProperty ("RequiredOutput", "ADC");
-    else if (ind==1)
-        activeMethod->setProperty ("RequiredOutput", "FA");
-    else if (ind==2)
-        activeMethod->setProperty ("RequiredOutput", "RA");
-    else if (ind==3)
-        activeMethod->setProperty ("RequiredOutput", "VR");
-    else if (ind==4)
-        activeMethod->setProperty ("RequiredOutput", "Cl");
-    else if (ind==5)
-        activeMethod->setProperty ("RequiredOutput", "Cp");
-    else if (ind==6)
-        activeMethod->setProperty ("RequiredOutput", "Cs");
-    else if (ind==7)
-        activeMethod->setProperty ("RequiredOutput", "Lambda1");
-    else if (ind==8)
-        activeMethod->setProperty ("RequiredOutput", "Lambda2");
-    else if (ind==9)
-        activeMethod->setProperty ("RequiredOutput", "Lambda3");
-    else if (ind==10)
-        activeMethod->setProperty ("RequiredOutput", "Fibers");
+    foreach (dtkAbstractProcess *activeMethod, d->activeMethods) {
+        this->setRequiredOutputForProcess (activeMethod, ind);
+    }
 }
 
 void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
@@ -313,24 +231,24 @@ void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
     toolbox->setDiffusionToolBox(this);
 
     //get rid of old toolBox
-    if (d->customToolBox)
-    {
+    if (d->customToolBox) {
         emit removeToolBox(d->customToolBox);
-        delete d->customToolBox;
+        d->customToolBox->deleteLater();
     }
     d->customToolBox = toolbox;
 
     emit addToolBox(toolbox);
-    //TODO refactor methods and active methods (here take care of existing methods...)
-    if (dtkAbstractProcess *proc = dtkAbstractProcessFactory::instance()->create (id)) {
-        proc->setProperty ("RequiredOutput", "ADC");
-        d->methods.append( proc );
-    }
+
+    medDataIndex index = d->tractographyDropSite->index();
+    this->createProcessForIndex ( index );
 }
 
 void medToolBoxDiffusion::run()
 {
     medDataIndex index = d->tractographyDropSite->index();
+
+    if (!index.isValid())
+        return;
 
     dtkAbstractProcess *activeMethod = 0;
     if (d->activeMethods.contains (index))
@@ -340,17 +258,12 @@ void medToolBoxDiffusion::run()
         return;
     }
 
-    // activeMethod->setProperty ("RequiredOutput", "Fibers");
-
     d->progression_stack->setLabel(activeMethod, "Progress:");
 
-    if (activeMethod->run()==0) {
+    if (activeMethod->run()==0)
         emit success();
-    }
-    else {
+    else
         emit failure();
-    }
-
 }
 
 dtkAbstractData *medToolBoxDiffusion::output(void)
@@ -370,5 +283,70 @@ dtkAbstractData *medToolBoxDiffusion::output(void)
 void medToolBoxDiffusion::clear(void)
 {
     d->tractographyDropSite->clear();
-    d->currentIndex = medDataIndex();
+}
+
+void medToolBoxDiffusion::createProcessForIndex (const medDataIndex &index)
+{
+    if (!index.isValid())
+        return;
+  
+    if (!d->customToolBox)
+        return;
+  
+    if (d->activeMethods.contains (index)) { // we should keep a copy of process / algorithm / index
+        d->customToolBox->setProcess (d->activeMethods[index]);
+        return;
+        /*if (d->activeMethods[index])
+	    delete d->activeMethods[index];
+	d->activeMethods.remove (index);
+	*/
+    }
+    
+    if (dtkAbstractProcess *proc = d->customToolBox->create()) {
+        d->activeMethods[index] = proc;
+	connect (proc, SIGNAL (progressed (int)), d->progression_stack,  SLOT (setProgress (int)));
+	connect (proc, SIGNAL (success()), d->progression_stack,  SLOT (onSuccess ()));
+	connect (proc, SIGNAL (failure()), d->progression_stack,  SLOT (onFailure ()));
+
+	dtkAbstractData *data = medDataManager::instance()->data (index);
+	if (!data) {
+	    data = medDatabaseController::instance()->read(index);
+	    if (data)
+	        medDataManager::instance()->insert(index, data);
+	}
+      
+	if (data)
+	    proc->setInput (data);
+
+	this->setRequiredOutputForProcess (proc, d->coefficientsCombo->currentIndex());
+    }
+}
+
+void medToolBoxDiffusion::setRequiredOutputForProcess (dtkAbstractProcess *proc, int type)
+{
+    if (!proc)
+        return;
+
+    if (type==0)
+        proc->setProperty ("RequiredOutput", "ADC");
+    else if (type==1)
+        proc->setProperty ("RequiredOutput", "FA");
+    else if (type==2)
+        proc->setProperty ("RequiredOutput", "RA");
+    else if (type==3)
+        proc->setProperty ("RequiredOutput", "VR");
+    else if (type==4)
+        proc->setProperty ("RequiredOutput", "Cl");
+    else if (type==5)
+        proc->setProperty ("RequiredOutput", "Cp");
+    else if (type==6)
+        proc->setProperty ("RequiredOutput", "Cs");
+    else if (type==7)
+        proc->setProperty ("RequiredOutput", "Lambda1");
+    else if (type==8)
+        proc->setProperty ("RequiredOutput", "Lambda2");
+    else if (type==9)
+        proc->setProperty ("RequiredOutput", "Lambda3");
+    else if (type==10)
+        proc->setProperty ("RequiredOutput", "Fibers");
 }
