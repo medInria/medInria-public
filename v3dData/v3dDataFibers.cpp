@@ -18,6 +18,8 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 
+#include <QVTKWidget.h>
+
 // /////////////////////////////////////////////////////////////////
 // v3dDataFibersPrivate
 // /////////////////////////////////////////////////////////////////
@@ -99,6 +101,8 @@ void v3dDataFibers::generateThumbnails (void) const
 {
     d->thumbnails.clear();
     
+    QVTKWidget *widget = new QVTKWidget;
+    
     vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
     vtkActor* actor = vtkActor::New();
     vtkRenderer* renderer = vtkRenderer::New();
@@ -106,10 +110,16 @@ void v3dDataFibers::generateThumbnails (void) const
     mapper->SetInput (d->data->GetFibers());
     actor->SetMapper (mapper);
     renderer->AddViewProp(actor);
-    window->SetSize (128,128);
+    // window->SetSize (128,128);
     window->AddRenderer (renderer);
     window->OffScreenRenderingOn();
+    
+    widget->SetRenderWindow(window);
+    widget->setFixedSize(128,128);
+    widget->show();
+    
     renderer->ResetCamera();
+    
     window->Render();
     unsigned int w=128, h=128;
     
@@ -126,6 +136,7 @@ void v3dDataFibers::generateThumbnails (void) const
     actor->Delete();
     renderer->Delete();
     window->Delete(); // crash if window is deleted
+    widget->deleteLater();
 }
 
 // /////////////////////////////////////////////////////////////////
