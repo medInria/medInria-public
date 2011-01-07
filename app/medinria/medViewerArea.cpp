@@ -236,12 +236,12 @@ void medViewerArea::open(const medDataIndex& index)
             view = d->view_stacks.value(d->current_patient)->current()->current()->view();
         
         if(!view) {
-            view = dtkAbstractViewFactory::instance()->create("v3dView");
+            view = dtkAbstractViewFactory::instance()->create("v3dViewPublic");
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
         }
         
         if(!view) {
-            qDebug() << "Unable to create a v3dView";
+            qDebug() << "Unable to create a v3dViewPublic";
             return;
         }
         
