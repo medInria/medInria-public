@@ -185,10 +185,14 @@ void v3dViewPublicMeshInteractor::updatePipeline (void)
             d->actorProperty = v3dViewPublicMeshInteractorPrivate::PropertySmartPointer::New ();
 
             d->actorProperty->SetColor ( 1,0,0 );
-            d->actor2d->SetProperty ( d->actorProperty );
-            d->actor3d->SetProperty ( d->actorProperty );
+            if (d->actor2d)
+                d->actor2d->SetProperty ( d->actorProperty );
+            if (d->actor3d)
+                d->actor3d->SetProperty ( d->actorProperty );
 
-            d->actor2d->GetMapper ()->ScalarVisibilityOff ();
+            if (d->actor2d)
+                d->actor2d->GetMapper ()->ScalarVisibilityOff ();
+            if (d->actor3d)
             d->actor3d->GetMapper ()->ScalarVisibilityOff ();
         }
     }
