@@ -64,6 +64,7 @@ subdirs(vtkDataMeshReader)
 subdirs(vtkDataMeshWriter)
 subdirs(itkDataDiffusionGradientList)
 subdirs(dcmtkDatabasePacs)
+subdirs(v3dViewPublic)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(pack)
