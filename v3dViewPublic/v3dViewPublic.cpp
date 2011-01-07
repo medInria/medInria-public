@@ -983,6 +983,27 @@ vtkViewImage3D *v3dViewPublic::view3D(void)
     return d->view3D;
 }
 
+vtkRenderer *v3dViewPublic::renderer2D(void)
+{
+    return d->renderer2D;
+}
+
+vtkRenderer *v3dViewPublic::renderer3D(void)
+{
+    return d->renderer3D;
+}
+
+vtkRenderWindowInteractor *v3dViewPublic::interactor2D(void)
+{
+    return d->vtkWidget2D->GetRenderWindow()->GetInteractor();
+}
+
+vtkRenderWindowInteractor *v3dViewPublic::interactor3D(void)
+{
+    return d->vtkWidget3D->GetRenderWindow()->GetInteractor();
+}
+
+
 void v3dViewPublic::setData(dtkAbstractData *data)
 {
     if(!data)
@@ -1105,6 +1126,18 @@ void v3dViewPublic::setData(dtkAbstractData *data)
             d->view2D->SetImage(dataset);
             d->view3D->SetImage(dataset);
         }
+    }
+    else if ( data->description() == "vtkDataMesh" ) {
+            
+        this->enableInteractor ( "v3dViewMeshInteractor" );
+	// This will add the data to the interactor.
+	dtkAbstractView::setData(data);
+    }
+    else if ( data->description() == "v3dDataFibers" ) {
+      
+        this->enableInteractor ( "v3dViewFiberInteractor" );
+	// This will add the data to the interactor.
+	dtkAbstractView::setData(data);
     }
     else {
         dtkAbstractView::setData(data);

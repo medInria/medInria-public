@@ -44,11 +44,17 @@ include(${vtkINRIA3D_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPublicPlugin.h
-  v3dViewPublic.h)
+  v3dViewPublic.h
+  v3dViewPublicFiberInteractor.h
+  v3dViewPublicMeshInteractor.h
+  v3dViewPublicFuseInteractor.h)
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPublicPlugin.cpp
-  v3dViewPublic.cpp)
+  v3dViewPublic.cpp
+  v3dViewPublicFiberInteractor.cpp
+  v3dViewPublicMeshInteractor.cpp
+  v3dViewPublicFuseInteractor.cpp)
 
 ## #################################################################
 ## Build rules

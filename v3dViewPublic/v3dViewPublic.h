@@ -12,6 +12,8 @@
 class v3dViewPublicPrivate;
 class vtkViewImage2D;
 class vtkViewImage3D;
+class vtkRenderer;
+class vtkRenderWindowInteractor;
 
 class V3DVIEWPUBLICPLUGIN_EXPORT v3dViewPublic : public medAbstractView
 {
@@ -47,7 +49,10 @@ public:
     // access method to internal members for v3dView**Interactor classes
     vtkViewImage2D *view2D(void);
     vtkViewImage3D *view3D(void);
-
+    vtkRenderer    *renderer2D (void);
+    vtkRenderer    *renderer3D (void);
+    vtkRenderWindowInteractor *interactor2D (void);
+    vtkRenderWindowInteractor *interactor3D (void);
 	
 public slots:
     void onPropertySet         (const QString &key, const QString &value);

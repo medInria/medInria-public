@@ -3,6 +3,9 @@
 // /////////////////////////////////////////////////////////////////
 
 #include "v3dViewPublic.h"
+#include "v3dViewPublicFiberInteractor.h"
+#include "v3dViewPublicMeshInteractor.h"
+#include "v3dViewPublicFuseInteractor.h"
 #include "v3dViewPublicPlugin.h"
 
 #include <dtkCore/dtkLog.h>
@@ -37,6 +40,15 @@ bool v3dViewPublicPlugin::initialize(void)
 {
     if(!v3dViewPublic::registered())
 	dtkWarning() << "Unable to register v3dViewPublic type";
+
+    if(!v3dViewPublicFiberInteractor::registered())
+	dtkWarning() << "Unable to register v3dViewPublicFiberInteractor type";
+
+    if(!v3dViewPublicMeshInteractor::registered())
+	dtkWarning() << "Unable to register v3dViewPublicMeshInteractor type";
+
+    if(!v3dViewPublicFuseInteractor::registered())
+	dtkWarning() << "Unable to register v3dViewPublicFuseInteractor type";
 
     return true;
 }
