@@ -103,13 +103,15 @@ public:
     QList<dtkAbstractView*> linkedViews;	
 	
     QMenu *menu;
-    QStackedLayout *stackedLayout;
+  //QStackedLayout *stackedLayout;
+  QStackedWidget *stackedWidget;
 
     QSlider    *slider;
     QComboBox  *dimensionBox;
     QPushButton *anchorButton;
     QPushButton *linkButton;
     QPushButton *linkWLButton;
+    QPushButton *fullScreenButton;
     QPushButton *registerButton;
     QPushButton *playButton;	
     QPushButton *closeButton;
@@ -136,19 +138,29 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     connect(d->timeline, SIGNAL(frameChanged(int)), this, SLOT(onZSliderValueChanged(int)));	
 	
     d->widget = new QWidget;
-	
-    d->vtkWidget2D = new QVTKWidget(d->widget);
+    d->widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    d->stackedWidget = new QStackedWidget (d->widget);
+    d->stackedWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+    d->vtkWidget2D = new QVTKWidget(d->stackedWidget);
     d->vtkWidget2D->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     d->vtkWidget2D->setFocusPolicy(Qt::NoFocus);
     
-    d->vtkWidget3D = new QVTKWidget(d->widget);
+    d->vtkWidget3D = new QVTKWidget(d->stackedWidget);
     d->vtkWidget3D->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     d->vtkWidget3D->setFocusPolicy(Qt::NoFocus);
-	
-    d->stackedLayout = new QStackedLayout;
-    d->stackedLayout->addWidget(d->vtkWidget2D);
-    d->stackedLayout->addWidget(d->vtkWidget3D);
-    d->stackedLayout->setCurrentIndex(0);
+
+    d->stackedWidget->addWidget(d->vtkWidget2D);
+    d->stackedWidget->addWidget(d->vtkWidget3D);
+    d->stackedWidget->setCurrentIndex(0);
+
+    /*
+      d->stackedLayout = new QStackedLayout;
+      d->stackedLayout->addWidget(d->vtkWidget2D);
+      d->stackedLayout->addWidget(d->vtkWidget3D);
+      d->stackedLayout->setCurrentIndex(0);
+    */
     
     d->renderer2D = vtkRenderer::New();
     d->view2D = vtkViewImage2D::New();    
@@ -199,7 +211,10 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     renwin3D->SetStereoTypeToCrystalEyes();
 	
     d->vtkWidget2D->SetRenderWindow(renwinAxial);
-    d->vtkWidget3D->SetRenderWindow(renwin3D);	
+    d->vtkWidget3D->SetRenderWindow(renwin3D);
+
+    renwinAxial->Delete();
+    renwin3D->Delete();
 	
     d->view3D->SetRenderWindowInteractor(d->vtkWidget3D->GetRenderWindow()->GetInteractor());
     d->view3D->SetRenderWindow(d->vtkWidget3D->GetRenderWindow());
@@ -298,6 +313,18 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
 
     connect(d->linkWLButton, SIGNAL(clicked(bool)), this, SIGNAL(syncWindowing(bool)));
 
+    d->fullScreenButton = new QPushButton(d->widget);
+    // d->fullScreenButton->setIcon (QIcon(":/icons/link_wl.png"));
+    d->fullScreenButton->setText("M");
+    d->fullScreenButton->setCheckable(true);
+    d->fullScreenButton->setMaximumHeight(16);
+    d->fullScreenButton->setMaximumWidth(16);
+    d->fullScreenButton->setFocusPolicy(Qt::NoFocus);
+    d->fullScreenButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    d->fullScreenButton->setObjectName("tool");
+    
+    connect(d->fullScreenButton, SIGNAL(clicked(bool)), this, SIGNAL(fullScreen(bool)));
+
     d->registerButton = new QPushButton(d->widget);
     d->registerButton->setIcon (QIcon(":/icons/cog.png"));
     d->registerButton->setCheckable(true);
@@ -346,13 +373,15 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     toolsLayout->addWidget(d->linkButton);
     toolsLayout->addWidget(d->linkWLButton);
     toolsLayout->addWidget(d->registerButton);
+    toolsLayout->addWidget(d->fullScreenButton);
     toolsLayout->addWidget(d->closeButton);
 
     QVBoxLayout *layout = new QVBoxLayout(d->widget);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addLayout(toolsLayout);
-    layout->addLayout(d->stackedLayout);
+    //layout->addLayout(d->stackedLayout);
+    layout->addWidget (d->stackedWidget);
     
     // set property to actually available presets
     QStringList lut;
@@ -389,9 +418,12 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
 
 v3dViewPublic::~v3dViewPublic(void)
 {
-    d->vtkWidget2D->GetRenderWindow()->RemoveRenderer(d->renderer2D);
-    d->vtkWidget3D->GetRenderWindow()->RemoveRenderer(d->renderer3D);
-	
+    d->view2D->RemoveChild( d->view3D );
+
+    d->vtkWidget2D->SetRenderWindow (0);
+    d->vtkWidget3D->SetRenderWindow (0);
+
+    d->view3D->UninitializeInteractor();
     /*
      d->view2D->SetRenderWindow(0);
      d->view2D->SetRenderWindowInteractor(0);
@@ -401,15 +433,17 @@ v3dViewPublic::~v3dViewPublic(void)
     
     d->view2D->Delete();
     d->renderer2D->Delete();
-    //d->view3D->UnInstallInteractor();
+
     d->view3D->Delete();
     d->renderer3D->Delete();
+
     d->observer->Delete();
-	
+
+    d->widget->deleteLater();
+    
     delete d;
 	
     d = NULL;
-	
 }
 
 bool v3dViewPublic::registered(void)
@@ -550,7 +584,8 @@ void v3dViewPublic::onOrientationPropertySet(const QString &value)
     if (value=="3D") {
         d->orientation = "3D";
         d->currentView = d->view3D;
-        d->stackedLayout->setCurrentIndex (1);
+        //d->stackedLayout->setCurrentIndex (1);
+	d->stackedWidget->setCurrentIndex (1);
     }
 
     // in case the max range becomes smaller than the actual value, a signal is emitted and
@@ -561,7 +596,8 @@ void v3dViewPublic::onOrientationPropertySet(const QString &value)
         d->orientation = "Axial";
         d->currentView = d->view2D;
         d->view2D->SetOrientation (vtkViewImage2D::AXIAL_ID);
-        d->stackedLayout->setCurrentIndex (0);
+        //d->stackedLayout->setCurrentIndex (0);
+	d->stackedWidget->setCurrentIndex (0);
         
         
         if (d->dimensionBox->currentIndex()==0 && d->imageData) {
@@ -574,7 +610,8 @@ void v3dViewPublic::onOrientationPropertySet(const QString &value)
         d->orientation = "Sagittal";
         d->currentView = d->view2D;
         d->view2D->SetOrientation (vtkViewImage2D::SAGITTAL_ID);
-        d->stackedLayout->setCurrentIndex (0);
+        //d->stackedLayout->setCurrentIndex (0);
+	d->stackedWidget->setCurrentIndex (0);
         
         
         if (d->dimensionBox->currentIndex()==0 && d->imageData) {
@@ -587,7 +624,8 @@ void v3dViewPublic::onOrientationPropertySet(const QString &value)
         d->orientation = "Coronal";
         d->currentView = d->view2D;
         d->view2D->SetOrientation (vtkViewImage2D::CORONAL_ID);
-        d->stackedLayout->setCurrentIndex (0);
+        //d->stackedLayout->setCurrentIndex (0);
+	d->stackedWidget->setCurrentIndex (0);
         
         
         if (d->dimensionBox->currentIndex()==0 && d->imageData) {
@@ -1282,6 +1320,12 @@ void v3dViewPublic::onMenuZoomTriggered (void)
 void v3dViewPublic::onMenuWindowLevelTriggered (void)
 {
     this->setProperty ("MouseInteraction", "Windowing");
+}
+
+void v3dViewPublic::close(void)
+{
+    d->widget->close();
+    medAbstractView::close();
 }
 
 // /////////////////////////////////////////////////////////////////

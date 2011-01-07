@@ -41,6 +41,8 @@ public:
 	
     // QWidget *receiverWidget(void);
     QWidget *widget(void);
+
+    void close(void);
 	
     // access method to internal members for v3dView**Interactor classes
     vtkViewImage2D *view2D(void);
