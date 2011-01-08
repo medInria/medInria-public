@@ -54,15 +54,51 @@ include(Dart)
 
 set(DEPENDS_ON_DTK 1)
 
-subdirs(v3dData)
-subdirs(itkDataImage)
-subdirs(itkDataImageReader)
-subdirs(itkDataImageWriter)
-subdirs(vtkDataMesh)
-subdirs(vtkDataMeshReader)
-subdirs(vtkDataMeshWriter)
-subdirs(itkDataDiffusionGradientList)
-subdirs(v3dViewPublic)
+option(MEDINRIA_BUILD_V3DDATA_PLUGIN                      "Build v3dData plugin" "ON")
+option(MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN                "Build v3dViewPublic plugin" "ON")
+option(MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN                 "Build itkDataImge plugin" "ON")
+option(MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN           "Build itkDataImgeReader plugin" "ON")
+option(MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN           "Build itkDataImgeWriter plugin" "ON")
+option(MEDINRIA_BUILD_VTKDATAMESH_PLUGIN                  "Build vtkDataMesh plugin" "ON")
+option(MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN            "Build vtkDataMeshReader plugin" "ON")
+option(MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN            "Build vtkDataMeshWriter plugin" "ON")
+option(MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN "Build itkDataDiffusionGradientList plugin" "ON")
+
+if (MEDINRIA_BUILD_V3DDATA_PLUGIN)
+  subdirs(v3dData)
+endif()
+
+if (MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN)
+  subdirs(v3dViewPublic)
+endif()
+
+if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN)
+  subdirs(itkDataImage)
+endif()
+
+if (MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN)
+  subdirs(itkDataImageReader)
+endif()
+
+if (MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN)
+  subdirs(itkDataImageWriter)
+endif()
+
+if (MEDINRIA_BUILD_VTKDATAMESH_PLUGIN)
+  subdirs(vtkDataMesh)
+endif()
+
+if (MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN)
+  subdirs(vtkDataMeshReader)
+endif()
+
+if (MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN)
+  subdirs(vtkDataMeshWriter)
+endif()
+
+if (MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN)
+  subdirs(itkDataDiffusionGradientList)
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(pack)
