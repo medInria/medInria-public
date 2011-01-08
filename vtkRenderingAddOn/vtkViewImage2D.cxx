@@ -1087,10 +1087,10 @@ void vtkViewImage2D::SetImage(vtkImageData* image)
     this->SetCameraFocalAndPosition (focal, pos);
   }
 
-  if( this->RulerWidgetVisibility )
+  if( this->GetRenderWindowInteractor() && this->RulerWidgetVisibility )
     this->RulerWidget->On();
 
-  if( this->DistanceWidgetVisibility )
+  if( this->GetRenderWindowInteractor() && this->DistanceWidgetVisibility )
     this->DistanceWidget->On();
 
   this->SetFirstImage (0);
@@ -1415,13 +1415,16 @@ int vtkViewImage2D::GetInterpolationMode(void)
 void vtkViewImage2D::SetRulerWidgetVisibility (int val)
 {
   this->RulerWidgetVisibility = val;
-  if( this->RulerWidgetVisibility )
+  if (this->GetRenderWindowInteractor()) 
   {
-    this->RulerWidget->On();
-  }
-  else
-  {
-    this->RulerWidget->Off();
+    if( this->RulerWidgetVisibility )
+    {
+      this->RulerWidget->On();
+    }
+    else
+    {
+      this->RulerWidget->Off();
+    }
   }
 }
 
@@ -1429,13 +1432,16 @@ void vtkViewImage2D::SetRulerWidgetVisibility (int val)
 void vtkViewImage2D::SetDistanceWidgetVisibility (int val)
 {
   this->DistanceWidgetVisibility = val;
-  if( this->DistanceWidgetVisibility )
+  if (this->GetRenderWindowInteractor())
   {
-    this->DistanceWidget->On();
-  }
-  else
-  {
-    this->DistanceWidget->Off();
+    if( this->DistanceWidgetVisibility )
+    {
+      this->DistanceWidget->On();
+    }
+    else
+    {
+      this->DistanceWidget->Off();
+    }
   }
 }
 

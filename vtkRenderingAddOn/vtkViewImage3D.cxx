@@ -297,9 +297,9 @@ vtkViewImage3D::vtkViewImage3D ()
 
 vtkViewImage3D::~vtkViewImage3D()
 {
-  this->Marker->SetEnabled (0);
-  this->BoxWidget->SetEnabled (0);
-  this->PlaneWidget->SetEnabled (0);
+  //this->Marker->SetEnabled (0);
+  //this->BoxWidget->SetEnabled (0);
+  //this->PlaneWidget->SetEnabled (0);
 
   this->BoxWidget->RemoveObserver (this->Callback);
 
@@ -872,34 +872,39 @@ void vtkViewImage3D::SetBoxWidgetVisibility (int a)
 {
   this->BoxWidgetVisibility = a;
 
-  if( this->BoxWidgetVisibility )
+  if (this->GetRenderWindowInteractor())
   {
-    if ( this->GetVisibility() && this->RenderingMode == VOLUME_RENDERING )
+    if( this->BoxWidgetVisibility )
     {
-      this->BoxWidget->On();
+      if ( this->GetVisibility() && this->RenderingMode == VOLUME_RENDERING )
+      {
+        this->BoxWidget->On();
+      }
     }
+    else
+    {
+      this->BoxWidget->Off();
+    }
+    this->Modified();
   }
-  else
-  {
-    this->BoxWidget->Off();
-  }
-
-  this->Modified();
 }
 
 
 void vtkViewImage3D::SetPlaneWidgetVisibility (int a)
 {
   this->PlaneWidgetVisibility = a;
-  if(a)
+  if (this->GetRenderWindowInteractor())
   {
-    this->PlaneWidget->On();
+    if(a)
+	{
+	  this->PlaneWidget->On();
+	}
+	else
+	{
+	  this->PlaneWidget->Off();
+    }
+    this->Modified();
   }
-  else
-  {
-    this->PlaneWidget->Off();
-  }
-  this->Modified();
 }
 
 
