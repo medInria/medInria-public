@@ -63,6 +63,8 @@ option(MEDINRIA_BUILD_VTKDATAMESH_PLUGIN                  "Build vtkDataMesh plu
 option(MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN            "Build vtkDataMeshReader plugin" "ON")
 option(MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN            "Build vtkDataMeshWriter plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN "Build itkDataDiffusionGradientList plugin" "ON")
+option(MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN           "Build itkDataTensorImage plugin" "ON")
+option(MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN     "Build itkDataTensorImageReader plugin" "ON")
 
 if (MEDINRIA_BUILD_V3DDATA_PLUGIN)
   subdirs(v3dData)
@@ -98,6 +100,14 @@ endif()
 
 if (MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN)
   subdirs(itkDataDiffusionGradientList)
+endif()
+
+if (MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN)
+  subdirs(itkDataTensorImage)
+endif()
+
+if (MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN)
+    subdirs(itkDataTensorImageReader)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
