@@ -33,9 +33,12 @@ include(${dtk_USE_FILE})
 include(dtkPlugin)
 
 find_package(ITK REQUIRED)
-if(NOT ITK_USE_REVIEW)
-  message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW to ON")
-endif(NOT ITK_USE_REVIEW)
+  if(NOT ITK_USE_REVIEW)
+    message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW to ON")
+  endif(NOT ITK_USE_REVIEW)
+  if(NOT ITK_USE_REVIEW_STATISTICS)
+    message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW_STATISTICS to ON")
+  endif(NOT ITK_USE_REVIEW_STATISTICS)
 include(${ITK_USE_FILE})
 
 ## #################################################################
