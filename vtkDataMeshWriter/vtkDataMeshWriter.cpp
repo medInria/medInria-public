@@ -54,6 +54,7 @@ bool vtkDataMeshWriter::write(const QString& path)
 
   this->writer->SetFileName(path.toAscii().constData());
   this->writer->SetInput (pointset);
+  this->writer->SetFileTypeToBinary();
   this->writer->Update();
 
   return true;
