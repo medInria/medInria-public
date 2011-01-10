@@ -64,7 +64,8 @@ QStringList itkDataTensorImagePlugin::tags(void) const
 
 QStringList itkDataTensorImagePlugin::types(void) const
 {
-    return QStringList() << "itkDataTensorImageFloat3";
+    return QStringList() << "itkDataTensorImageFloat3"
+			 << "itkDataTensorImageDouble3";
 }
 
 Q_EXPORT_PLUGIN2(itkDataTensorImagePlugin, itkDataTensorImagePlugin)
