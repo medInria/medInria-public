@@ -44,7 +44,7 @@ QString vtkDataMesh::description() const
 
 void vtkDataMesh::setData(void *data)			
 {
-  vtkPointSet* mesh = dynamic_cast<vtkPointSet*>( (vtkObject*) data );
+  vtkPointSet* mesh = vtkPointSet::SafeDownCast( (vtkObject*) data );
   
   if (!mesh)
   {
