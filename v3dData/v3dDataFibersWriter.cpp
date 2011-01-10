@@ -53,6 +53,7 @@ bool v3dDataFibersWriter::write(const QString& path)
   vtkXMLFiberDataSetWriter *writer = vtkXMLFiberDataSetWriter::New();
   writer->SetFileName ( path.toAscii().constData() );
   writer->SetInput ( dataset );
+  writer->SetDataModeToBinary();
   writer->Write();
 
   writer->Delete();
