@@ -1144,7 +1144,6 @@ vtkActor* vtkViewImage3D::AddDataSet (vtkDataSet* dataset, vtkProperty* property
       
     if (doit)
     {
-	
       vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
       vtkPolyDataNormals*      normalextractor = vtkPolyDataNormals::New();
       vtkPolyDataMapper*       mapper = vtkPolyDataMapper::New();
@@ -1153,7 +1152,7 @@ vtkActor* vtkViewImage3D::AddDataSet (vtkDataSet* dataset, vtkProperty* property
       normalextractor->SetFeatureAngle (90);
       ///\todo try to skip the normal extraction filter in order to enhance the visualization speed when the data is time sequence.
       geometryextractor->SetInput (dataset);
-      normalextractor->SetInput (geometryextractor->GetOutput());
+      normalextractor->SetInputConnection (geometryextractor->GetOutputPort());
       mapper->SetInput (normalextractor->GetOutput());
       actor->SetMapper (mapper);
       if (property)
