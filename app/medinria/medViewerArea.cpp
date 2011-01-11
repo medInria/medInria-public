@@ -231,10 +231,12 @@ void medViewerArea::open(const medDataIndex& index)
             return;
         
         medDataManager::instance()->insert(index, data);
-        
-        if(!view)
-            view = d->view_stacks.value(d->current_patient)->current()->current()->view();
-        
+
+        if(!view) {
+	    if (d->view_stacks.value(d->current_patient)->current() && d->view_stacks.value(d->current_patient)->current()->current())
+	        view = d->view_stacks.value(d->current_patient)->current()->current()->view();
+	}
+
         if(!view) {
             view = dtkAbstractViewFactory::instance()->create("v3dViewPublic");
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
@@ -246,20 +248,24 @@ void medViewerArea::open(const medDataIndex& index)
         }
         
         medViewManager::instance()->insert(index, view);
-        
+
         view->setData(data);
 	
         QMutexLocker ( &d->mutex );
-	d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (false);
-	d->view_stacks.value(d->current_patient)->current()->setDisabled (true);
+	if (d->view_stacks.value(d->current_patient)->current()) {
+	    d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (false);
+	    d->view_stacks.value(d->current_patient)->current()->setDisabled (true);
 
-        d->view_stacks.value(d->current_patient)->current()->current()->setView(view); //d->view_stacks.value(d->current_patient)->current()->setView(view);
-        d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
+	    if (d->view_stacks.value(d->current_patient)->current()->current()) {
+	        d->view_stacks.value(d->current_patient)->current()->current()->setView(view); //d->view_stacks.value(d->current_patient)->current()->setView(view);
+		d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
+	    }
 
-	view->reset();
+	    view->reset();
 
-	d->view_stacks.value(d->current_patient)->current()->setDisabled (false);
-        d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (true);
+	    d->view_stacks.value(d->current_patient)->current()->setDisabled (false);
+	    d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (true);
+	}
 	
         return;
     }
