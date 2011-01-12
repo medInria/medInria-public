@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:46:22 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 10:18:11 2010 (+0100)
+ * Last-Updated: Mon Dec 20 12:57:48 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 209
+ *     Update #: 254
  */
 
 /* Commentary: 
@@ -20,12 +20,18 @@
 #include "medToolBox.h"
 #include "medToolBoxHeader.h"
 #include "medToolBoxBody.h"
+#include "medToolBoxTab.h"
+
+#include <dtkCore/dtkGlobal.h>
 
 class medToolBoxPrivate
 {
 public:
     medToolBoxHeader *header;
     medToolBoxBody *body;
+
+public:
+    QBoxLayout *layout;
 };
 
 medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPrivate)
@@ -33,27 +39,30 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    layout->addWidget(d->header);
-    layout->addWidget(d->body);
+    d->layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    d->layout->setContentsMargins(0, 0, 0, 0);
+    d->layout->setSpacing(0);
+    d->layout->addWidget(d->header);
+    d->layout->addWidget(d->body);
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
 medToolBox::~medToolBox(void)
 {
-    delete d->header;
-    delete d->body;
     delete d;
 
     d = NULL;
 }
 
-void medToolBox::setWidget(QWidget *widget)
+void medToolBox::setTabWidget(medToolBoxTab *tab)
 {
-    d->body->setWidget(widget);
+    d->body->setTabWidget(tab);
+}
+
+void medToolBox::addWidget(QWidget *widget)
+{
+    d->body->addWidget(widget);
 }
 
 void medToolBox::setTitle(const QString &title)
@@ -63,10 +72,43 @@ void medToolBox::setTitle(const QString &title)
 
 void medToolBox::update(dtkAbstractView *view)
 {
-    Q_UNUSED(view);
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(view);
 }
 
-void medToolBox::clear()
+void medToolBox::clear(void)
 {
-    return;
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medToolBox::setOrientation(Qt::Orientation orientation)
+{
+    switch(orientation) {
+    case Qt::Vertical:
+        if (d->layout->direction() == QBoxLayout::TopToBottom) {
+            return;
+        } else {
+            d->layout->setDirection(QBoxLayout::TopToBottom);
+            d->header->setOrientation(Qt::Vertical);
+            d->body->setOrientation(Qt::Vertical);
+        }
+        break;
+    case Qt::Horizontal:
+        if (d->layout->direction() == QBoxLayout::LeftToRight) {
+            return;
+        } else {
+            d->layout->setDirection(QBoxLayout::LeftToRight);
+            d->header->setOrientation(Qt::Horizontal);
+            d->body->setOrientation(Qt::Horizontal);
+        }
+        break;
+   }
+}
+
+Qt::Orientation medToolBox::orientation (void) const
+{
+    if(d->layout->direction() == QBoxLayout::LeftToRight)
+        return Qt::Horizontal;
+    else
+        return Qt::Vertical;
 }

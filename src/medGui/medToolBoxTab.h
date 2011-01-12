@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 10:09:39 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 10:10:38 2010 (+0100)
+ * Last-Updated: Mon Dec 20 16:16:56 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 5
+ *     Update #: 9
  */
 
 /* Commentary: 
@@ -29,12 +29,15 @@ class medToolBoxTabPrivate;
 class MEDGUI_EXPORT medToolBoxTab : public QTabWidget
 {
     Q_OBJECT
-
     Q_PROPERTY(int height READ height WRITE setFixedHeight)
 
 public:
-     medToolBoxTab(QWidget *parent = 0);
+     medToolBoxTab(QWidget *parent = NULL);
     ~medToolBoxTab(void);
+
+    QSize sizeHint(void) const;
+
+    void setOrientation(Qt::Orientation orientation);
 
 protected:
     void paintEvent(QPaintEvent *event);
