@@ -785,34 +785,42 @@ namespace itk
     
     
     size_t length = pixelCount;
+    int bitsPerSample = 8;
     switch( this->GetComponentType() )
     {  
 	case CHAR:
 	  length *= sizeof(char);
+	  bitsPerSample = 8;
 	  break;
 	  
 	case UCHAR:
 	  length *= sizeof(Uint8);
+	  bitsPerSample = 8;
 	  break;
 	  
 	case SHORT:
 	  length *= sizeof(Sint16);
+	  bitsPerSample = 16;
 	  break;
 	    
 	case USHORT:
 	  length *= sizeof(Uint16);
+	  bitsPerSample = 16;
 	  break;
 	  
 	case INT:
 	  length *= sizeof(Sint32);
+	  bitsPerSample = 32;
 	  break;
 	  
 	case UINT:
 	  length *= sizeof(Uint32);
+	  bitsPerSample = 32;
 	  break;
 	  
 	case DOUBLE:
 	  length *= sizeof(Float64);
+	  bitsPerSample = 64;
 	  break;
 	  
 	default:
@@ -821,136 +829,32 @@ namespace itk
 
     length *= this->GetNumberOfComponents();
     
-    /**
-       It may happen that several pixelData are present in the DICOM. Then, we select the one whose length is
-       exactly the expected length.
-     */
-    /*
-    DcmPixelData* pixelData = 0;
-    
-    if (dicomFile.search(DCM_PixelData, stack, ESM_fromHere, OFTrue) == EC_Normal)
-    {
-      if( !(pixelData = dynamic_cast<DcmPixelData*>( stack.top() )) )
-      {
-	itkExceptionMacro (<<"Cannot cast DcmElement into PixelData\n");
-      }
-      std::cout << "Length: " << pixelData->getLength() << std::endl;
-    }
-    else
-    {
-      while ( pixelData->getLength()!=length && dicomFile.search(DCM_PixelData, stack, ESM_afterStackTop, OFTrue) == EC_Normal)
-      {
-	pixelData = dynamic_cast<DcmPixelData*>( stack.top() );
-	if( !pixelData )
-	{
-	  itkExceptionMacro (<<"Cannot cast DcmElement into PixelData\n");
-	}
-	std::cout << "Length: " << pixelData->getLength() << std::endl;
-      }
-    }
-    */
-    
-    /*
-    if (pixelData->getLength()!=length)
-    {
-      itkExceptionMacro (<<"Cannot find a pixel data whose number of pixels (" << pixelData->getLength() << ") match what is required (" << length << ")");
-    }
-    */
 
-
-
-    //unsigned char* copyBuffer = 0;
     const Uint8* copyBuffer = 0;
-    //Uint8* ucharBuffer = 0;
-    ////Sint16* shortBuffer = 0; // apparently, getSInt16Array is not implemented in DCMTK
-    //Uint16* ushortBuffer = 0;
-    ////Sint32* intBuffer = 0; // apparently, getSInt32Array is not implemented in DCMTK
-    //Uint32* uintBuffer = 0;
-    //Float64* doubleBuffer = 0;
 
-
-    dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
-    
     /*
-    switch( this->GetComponentType() ){
-	case CHAR:
-	  throw ExceptionObject (__FILE__,__LINE__,"According to dcmtk, int8 pixel type is not a dicom supported format");
-	  break;
-	  
-	case UCHAR:
-	  //pixelData->getUint8Array( ucharBuffer );
-	  //copyBuffer = (Uint8*)( ucharBuffer );
-	  //copyBuffer = (Uint8*)( di->getOutputData(8, 0, 0) );
-	  //copyBuffer = (Uint8*)( di->getInterData()->getData() );
-	  dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
-	  break;
-	  
-	case SHORT:
-	  {
-	    OFCondition of = pixelData->getUint16Array( ushortBuffer );
-	    if ( of.bad() )
-	    {
-	      itkExceptionMacro ( << of.text() );
-	      }
-	    //copyBuffer = (Uint8*)( ushortBuffer );
-	    //copyBuffer = (Uint8*)( di->getOutputData(16, 0, 0) );
-	    //copyBuffer = (Uint8*)( di->getInterData()->getData() );
-	    dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
-	    break;
-	  }
-	  
-	case USHORT:
-	  {
-	    
-	    OFCondition of = pixelData->getUint16Array( ushortBuffer );
-	    if ( of.bad() )
-	    {
-	      itkExceptionMacro ( << of.text() );
-	      }
-	    //copyBuffer = (Uint8*)( ushortBuffer );
-	    //copyBuffer = (Uint8*)( di->getOutputData(16, 0, 0) );
-	    //copyBuffer = (Uint8*)( di->getInterData()->getData() );
-	    dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
-	    break;
-	  }
-	  
-	case INT:
-	  //pixelData->getUint32Array( uintBuffer );
-	  //copyBuffer = (Uint8*)( uintBuffer );
-	  //copyBuffer = (Uint8*)( di->getOutputData(32, 0, 0) );
-	  //copyBuffer = (Uint8*)( di->getInterData()->getData() );
-	  dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
-	  break;
-	  
-	case UINT:
-	  //pixelData->getUint32Array( uintBuffer );
-	  //copyBuffer = (Uint8*)( uintBuffer );
-	  //copyBuffer = (Uint8*)( di->getOutputData(32, 0, 0) );
-	  //copyBuffer = (Uint8*)( di->getInterData()->getData() );
-	  dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
-	  break;
-	  
-	case DOUBLE:
-	  //pixelData->getFloat64Array( doubleBuffer );
-	  //copyBuffer = (Uint8*)( doubleBuffer );
-	  //copyBuffer = (Uint8*)( di->getOutputData(64, 0, 0) );
-	  //copyBuffer = (Uint8*)( di->getInterData()->getData() );
-	  dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
-	  break;
-	  
-	default:
-	  throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
-    }
+      dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
     */
+
+    // We use DicomImage as it rescales the raw values properly for visualization
+    DicomImage *image = new DicomImage(filename.c_str());
+    if (image != NULL)
+    {
+      if (image->getStatus() == EIS_Normal)
+      {
+	copyBuffer = (Uint8 *)(image->getOutputData(bitsPerSample /* bits per sample */));
+      }
+    }
     
-    Uint8* destBuffer = (Uint8*)(buffer);    
+    Uint8* destBuffer = static_cast<Uint8*>(buffer);    
     if (!copyBuffer || !destBuffer)
     {
       itkExceptionMacro ( << "Bad copy or dest buffer" );
     }
     
     std::memcpy (destBuffer + slice*length, copyBuffer, length);
-    
+
+    delete image;
   }
 
   
