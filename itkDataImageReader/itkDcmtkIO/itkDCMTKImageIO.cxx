@@ -863,46 +863,34 @@ namespace itk
     */
 
     // We use DicomImage as it rescales the raw values properly for visualization
-    DicomImage *image = new DicomImage(filename.c_str(), CIF_UseAbsolutePixelRange);
+    DicomImage *image = new DicomImage(filename.c_str(), CIF_UseAbsolutePixelRange/*|CIF_IgnoreModalityTransformation*/);
     if (image != NULL)
     {
       if (image->getStatus() == EIS_Normal)
       {
+	
+	double minValue, maxValue;
+	image->getMinMaxValues (minValue, maxValue);
+
+
+	if (minValue<-1000) // probably wrong pixelRepresentation
+	{
+	  DcmFileFormat *dcm = new DcmFileFormat;
+	  dcm->loadFile (filename.c_str());
+	  DcmDataset *dset = dcm->getDataset();
+	  dset->putAndInsertUint16 (DCM_PixelRepresentation, 0);
+
+	  delete image;
+	  image = new DicomImage (dcm, dset->getOriginalXfer(), CIF_UseAbsolutePixelRange);
+	  delete dcm;
+	}
+	
 	const DiPixel *dmp = image->getInterData();
 	if (!dmp)
 	  itkExceptionMacro ( << "DiPixel object is null" );
-
-	/*
-	switch(dmp->getRepresentation())
-	{
-	    case EPR_Uint8:
-	      std::cout << "Internal representation is Uint8\n";
-	      break;
-	      
-	    case EPR_Sint8:
-	      std::cout << "Internal representation is Sint8\n";
-	      break;
-	      
-	    case EPR_Uint16:
-	      std::cout << "Internal representation is Uint16\n";
-	      break;
-	      
-	    case EPR_Sint16:
-	      std::cout << "Internal representation is Sint16\n";
-	      break;
-	      
-	    case EPR_Uint32:
-	      std::cout << "Internal representation is Uint32\n";
-	      break;
-	      
-	    case EPR_Sint32:
-	      std::cout << "Internal representation is Sint32\n";
-	      break;
-	}
-	*/
 	
 	// copyBuffer = (Uint8 *)(image->getOutputData(bitsPerSample /* bits per sample */));
-	copyBuffer = (Uint8 *)dmp->getData(); 
+	copyBuffer = (Uint8 *)dmp->getData();
       }
     }
     
