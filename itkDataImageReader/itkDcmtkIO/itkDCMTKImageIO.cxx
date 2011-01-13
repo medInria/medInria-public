@@ -194,7 +194,7 @@ namespace itk
     const StringVectorType &rescaleInterceptVec = this->GetMetaDataValueVectorString ("(0028,1052)");
     const StringVectorType &rescaleSlopeVec     = this->GetMetaDataValueVectorString ("(0028,1053)");
 
-    double rescaleIntercept = 0;
+    double rescaleIntercept = 0.0;
     if (rescaleInterceptVec.size())
     {
       std::istringstream intercept_stream ( rescaleInterceptVec[0].c_str() );
@@ -204,7 +204,7 @@ namespace itk
     else
       itkWarningMacro (<< "Missing Rescale Intercept (0028,1052)" << std::endl);
 
-    double rescaleSlope = 1;
+    double rescaleSlope = 1.0;
     if (rescaleSlopeVec.size())
     {
       std::istringstream slope_stream ( rescaleSlopeVec[0].c_str() );
@@ -214,6 +214,11 @@ namespace itk
     else
       itkWarningMacro (<< "Missing Rescale Slope (0028,1053)" << std::endl);
 
+    if (rescaleSlope==0.0)
+    {
+      itkWarningMacro (<< "Rescale Slope is null, setting it to 1.0" << std::endl);
+      rescaleSlope = 1.0;
+    }
 
     if (rescaleIntercept<0.0) // very probably signed representation
       sign = "S";
@@ -868,21 +873,27 @@ namespace itk
     {
       if (image->getStatus() == EIS_Normal)
       {
-	
-	double minValue, maxValue;
-	image->getMinMaxValues (minValue, maxValue);
 
+	DcmFileFormat *dcm = new DcmFileFormat;
+	dcm->loadFile (filename.c_str());
+	DcmDataset *dset = dcm->getDataset();
 
-	if (minValue<-1000) // probably wrong pixelRepresentation
+	OFString ofstr;
+	if (dset->findAndGetOFString(DCM_Modality, ofstr)==EC_Normal)
 	{
-	  DcmFileFormat *dcm = new DcmFileFormat;
-	  dcm->loadFile (filename.c_str());
-	  DcmDataset *dset = dcm->getDataset();
-	  dset->putAndInsertUint16 (DCM_PixelRepresentation, 0);
+	  if (ofstr=="CT")
+	  {
+	    double minValue, maxValue;
+	    image->getMinMaxValues (minValue, maxValue);
 
-	  delete image;
-	  image = new DicomImage (dcm, dset->getOriginalXfer(), CIF_UseAbsolutePixelRange);
-	  delete dcm;
+	    if (minValue<-1000) // probably wrong pixelRepresentation
+	    {
+	      dset->putAndInsertUint16 (DCM_PixelRepresentation, 0);
+	      
+	      delete image;
+	      image = new DicomImage (dcm, dset->getOriginalXfer(), CIF_UseAbsolutePixelRange);
+	    }
+	  }
 	}
 	
 	const DiPixel *dmp = image->getInterData();
@@ -891,6 +902,8 @@ namespace itk
 	
 	// copyBuffer = (Uint8 *)(image->getOutputData(bitsPerSample /* bits per sample */));
 	copyBuffer = (Uint8 *)dmp->getData();
+
+	delete dcm;
       }
     }
     
