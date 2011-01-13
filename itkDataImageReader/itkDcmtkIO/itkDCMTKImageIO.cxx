@@ -170,8 +170,7 @@ namespace itk
     int bitsAllocated = 0;
     if ( !(s_stream >> bitsAllocated) )
       itkExceptionMacro ( << "Cannot convert string to int: " << bitsAllocatedVec[0].c_str() );
-    
-    
+        
     const StringVectorType &signBitsVec = this->GetMetaDataValueVectorString ("(0028,0103)");
     std::string sign = "0";
     if (signBitsVec.size())
@@ -191,6 +190,33 @@ namespace itk
     {
       sign = "S";
     }
+
+    const StringVectorType &rescaleInterceptVec = this->GetMetaDataValueVectorString ("(0028,1052)");
+    const StringVectorType &rescaleSlopeVec     = this->GetMetaDataValueVectorString ("(0028,1053)");
+
+    double rescaleIntercept = 0;
+    if (rescaleInterceptVec.size())
+    {
+      std::istringstream intercept_stream ( rescaleInterceptVec[0].c_str() );
+      if ( !(intercept_stream >> rescaleIntercept) )
+	itkExceptionMacro ( << "Cannot convert string to double: " << rescaleInterceptVec[0].c_str() );
+    }
+    else
+      itkWarningMacro (<< "Missing Rescale Intercept (0028,1052)" << std::endl);
+
+    double rescaleSlope = 1;
+    if (rescaleSlopeVec.size())
+    {
+      std::istringstream slope_stream ( rescaleSlopeVec[0].c_str() );
+      if ( !(slope_stream >> rescaleSlope) )
+	itkExceptionMacro ( << "Cannot convert string to double: " << rescaleSlopeVec[0].c_str() );
+    }
+    else
+      itkWarningMacro (<< "Missing Rescale Slope (0028,1053)" << std::endl);
+
+
+    if (rescaleIntercept<0.0) // very probably signed representation
+      sign = "S";
     
     if( bitsAllocated == 8 && sign=="U" )
     {
@@ -837,12 +863,46 @@ namespace itk
     */
 
     // We use DicomImage as it rescales the raw values properly for visualization
-    DicomImage *image = new DicomImage(filename.c_str());
+    DicomImage *image = new DicomImage(filename.c_str(), CIF_UseAbsolutePixelRange);
     if (image != NULL)
     {
       if (image->getStatus() == EIS_Normal)
       {
-	copyBuffer = (Uint8 *)(image->getOutputData(bitsPerSample /* bits per sample */));
+	const DiPixel *dmp = image->getInterData();
+	if (!dmp)
+	  itkExceptionMacro ( << "DiPixel object is null" );
+
+	/*
+	switch(dmp->getRepresentation())
+	{
+	    case EPR_Uint8:
+	      std::cout << "Internal representation is Uint8\n";
+	      break;
+	      
+	    case EPR_Sint8:
+	      std::cout << "Internal representation is Sint8\n";
+	      break;
+	      
+	    case EPR_Uint16:
+	      std::cout << "Internal representation is Uint16\n";
+	      break;
+	      
+	    case EPR_Sint16:
+	      std::cout << "Internal representation is Sint16\n";
+	      break;
+	      
+	    case EPR_Uint32:
+	      std::cout << "Internal representation is Uint32\n";
+	      break;
+	      
+	    case EPR_Sint32:
+	      std::cout << "Internal representation is Sint32\n";
+	      break;
+	}
+	*/
+	
+	// copyBuffer = (Uint8 *)(image->getOutputData(bitsPerSample /* bits per sample */));
+	copyBuffer = (Uint8 *)dmp->getData(); 
       }
     }
     
