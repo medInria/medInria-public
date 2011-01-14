@@ -159,7 +159,7 @@ namespace itk
 
   void DCMTKImageIO::DeterminePixelType()
   {
-    
+    /*
     const StringVectorType &bitsAllocatedVec = this->GetMetaDataValueVectorString ("(0028,0100)");
     if ( !bitsAllocatedVec.size() )
     {
@@ -253,7 +253,50 @@ namespace itk
     }
     else
       this->SetComponentType (UNKNOWNCOMPONENTTYPE);
+    */
+    
+    DicomImage *image = new DicomImage(m_FileName.c_str(), CIF_UseAbsolutePixelRange);
+    if (image != NULL)
+    {
+      if (image->getStatus() == EIS_Normal)
+      {
+	const DiPixel *dmp = image->getInterData();
+	
+	switch( dmp->getRepresentation() )
+	{
+	    case EPR_Uint8:
+	      this->SetComponentType ( UCHAR );
+	      break;
+	      
+	    case EPR_Sint8:
+	      this->SetComponentType ( CHAR );
+	      break;
+	      
+	    case EPR_Uint16:
+	      this->SetComponentType ( USHORT );
+	      break;
+		
+	    case EPR_Sint16:
+	      this->SetComponentType ( SHORT );
+	      break;
 
+	    case EPR_Uint32:
+	      this->SetComponentType ( UINT );
+	      break;
+
+	    case EPR_Sint32:
+	      this->SetComponentType ( INT );
+	      break;
+
+	    default:
+	       this->SetComponentType (UNKNOWNCOMPONENTTYPE);
+	}
+      }
+      else
+	this->SetComponentType (UNKNOWNCOMPONENTTYPE);
+
+      delete image;
+    }
   }
   
   
@@ -863,17 +906,16 @@ namespace itk
 
     const Uint8* copyBuffer = 0;
 
-    /*
-      dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
-    */
+
+    // dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
+
 
     // We use DicomImage as it rescales the raw values properly for visualization
-    DicomImage *image = new DicomImage(filename.c_str(), CIF_UseAbsolutePixelRange/*|CIF_IgnoreModalityTransformation*/);
+    DicomImage *image = new DicomImage(filename.c_str(), CIF_UseAbsolutePixelRange);
     if (image != NULL)
     {
       if (image->getStatus() == EIS_Normal)
       {
-
 	DcmFileFormat *dcm = new DcmFileFormat;
 	dcm->loadFile (filename.c_str());
 	DcmDataset *dset = dcm->getDataset();
@@ -900,8 +942,12 @@ namespace itk
 	if (!dmp)
 	  itkExceptionMacro ( << "DiPixel object is null" );
 	
-	// copyBuffer = (Uint8 *)(image->getOutputData(bitsPerSample /* bits per sample */));
+	// copyBuffer = (Uint8 *)(image->getOutputData(bitsPerSample));
 	copyBuffer = (Uint8 *)dmp->getData();
+	if (!copyBuffer)
+	{
+	  itkExceptionMacro ( << "Bad copy buffer" );
+	}
 
 	delete dcm;
       }
