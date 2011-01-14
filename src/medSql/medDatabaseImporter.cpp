@@ -103,7 +103,8 @@ void medDatabaseImporter::run(void)
 	      
                 dataReader->readInformation( fileInfo.filePath() );
                 dtkdata = dataReader->data();
-		qDebug() << dtkdata << "\n";
+		if (dtkdata)
+		    qDebug() << dtkdata << "\n";
                 delete dataReader;
                 break;
             }
