@@ -56,6 +56,16 @@ QTextEdit {
 }
 
 /**
+* QSpinBox
+*
+*/
+QSpinBox{
+    color:#CCCCCC;
+    background: #6b6b6b;
+    spacing: 5px;
+}
+
+/**
  * QCheckBox
  *
  */
