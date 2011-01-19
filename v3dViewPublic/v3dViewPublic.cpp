@@ -598,12 +598,6 @@ void v3dViewPublic::onOrientationPropertySet(const QString &value)
         d->view2D->SetOrientation (vtkViewImage2D::AXIAL_ID);
         //d->stackedLayout->setCurrentIndex (0);
 	d->stackedWidget->setCurrentIndex (0);
-        
-        
-        if (d->dimensionBox->currentIndex()==0 && d->imageData) {
-            d->slider->setRange (0, d->imageData->zDimension()-1);
-        }
-        
     }
 	
     if (value == "Sagittal") {
@@ -612,12 +606,6 @@ void v3dViewPublic::onOrientationPropertySet(const QString &value)
         d->view2D->SetOrientation (vtkViewImage2D::SAGITTAL_ID);
         //d->stackedLayout->setCurrentIndex (0);
 	d->stackedWidget->setCurrentIndex (0);
-        
-        
-        if (d->dimensionBox->currentIndex()==0 && d->imageData) {
-            d->slider->setRange (0, d->imageData->xDimension()-1);
-        }
-        
     }
     
     if (value == "Coronal") {
@@ -626,15 +614,12 @@ void v3dViewPublic::onOrientationPropertySet(const QString &value)
         d->view2D->SetOrientation (vtkViewImage2D::CORONAL_ID);
         //d->stackedLayout->setCurrentIndex (0);
 	d->stackedWidget->setCurrentIndex (0);
-        
-        
-        if (d->dimensionBox->currentIndex()==0 && d->imageData) {
-            d->slider->setRange (0, d->imageData->yDimension()-1);
-        }
-        
     }
 
-    if (d->dimensionBox->currentIndex()==1 && d->imageData) {
+    if (d->dimensionBox->currentIndex()==0) {
+        d->slider->setRange (0, d->view2D->GetWholeZMax());
+    }
+    else if (d->dimensionBox->currentIndex()==1 && d->imageData) {
         d->slider->setRange(0, d->imageData->tDimension()-1);
     }
     
@@ -1151,11 +1136,11 @@ void v3dViewPublic::setData(dtkAbstractData *data)
         d->slider->blockSignals (true);
         if (d->dimensionBox->currentIndex()==0) {
             if( d->orientation=="Axial")
-                d->slider->setRange(0, d->imageData->zDimension()-1);
+                d->slider->setRange(0, d->view2D->GetWholeZMax());
             else if( d->orientation=="Sagittal")
-                d->slider->setRange(0, d->imageData->xDimension()-1);
+                d->slider->setRange(0, d->view2D->GetWholeZMax());
             else if( d->orientation=="Coronal")
-                d->slider->setRange(0, d->imageData->yDimension()-1);
+                d->slider->setRange(0, d->view2D->GetWholeZMax());
         }
         else if (d->dimensionBox->currentIndex()==1)
             d->slider->setRange(0, d->imageData->tDimension()-1);
@@ -1198,15 +1183,7 @@ void v3dViewPublic::onDimensionBoxChanged (const QString &value)
         d->slider->blockSignals (true);
         if (value=="Slice") {
             d->observer->unlock();
-            if( d->orientation=="Axial") {
-                d->slider->setRange(0, d->imageData->zDimension()-1);
-            }
-            else if( d->orientation=="Sagittal") {
-                d->slider->setRange(0, d->imageData->xDimension()-1);
-            }
-            else if( d->orientation=="Coronal") {
-                d->slider->setRange(0, d->imageData->yDimension()-1);
-            }
+	    d->slider->setRange(0, d->view2D->GetWholeZMax());
             if (vtkViewImage2D *view2d = vtkViewImage2D::SafeDownCast (d->currentView)) {
                 unsigned int zslice = view2d->GetZSlice();
                 d->slider->setValue (zslice);
