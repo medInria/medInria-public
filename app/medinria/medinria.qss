@@ -56,9 +56,10 @@ QTextEdit {
 }
 
 /**
-* QSpinBox
-*
-*/
+ * QSpinBox
+ *
+ */
+
 QSpinBox{
     color:#CCCCCC;
     background: #6b6b6b;
