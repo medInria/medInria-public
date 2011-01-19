@@ -66,6 +66,7 @@
 
     SET_SOURCE_FILES_PROPERTIES(
      vtkDataManagerCallback.cxx
+     vtkFiberDataSet.cxx
      WRAP_EXCLUDE
     )
     
