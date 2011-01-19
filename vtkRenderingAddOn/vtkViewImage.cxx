@@ -341,7 +341,6 @@ unsigned int vtkViewImage::GetOrthogonalAxis(unsigned int p_plan)
   return 0;
   */
   return axis;
-  
 }
 
 

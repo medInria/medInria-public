@@ -561,7 +561,8 @@ void vtkViewImage2D::UpdatePosition ()
   this->GetCurrentPoint(pos);
   pos[3] = 1.0;
 
-  double* spacing = this->GetImage()->GetSpacing();
+  double spacing[3];
+  this->GetImage()->GetSpacing( spacing );
   //double* origin  = this->GetImage()->GetOrigin();
   
   // check if pos lies inside image bounds
@@ -693,55 +694,48 @@ void vtkViewImage2D::UpdatePosition ()
 
   int imCoor[3];
   this->GetCurrentVoxelCoordinates(imCoor);
+  
   int dims[3];
   this->GetImage()->GetDimensions (dims);
-
-  std::ostringstream os2;
+  
   std::ostringstream os;
-  //os << "Slice: ";
+  std::ostringstream os2;
+  
+  int orthogonalAxis = this->GetOrthogonalAxis (this->Orientation);
 
-  os2 << "Zoom: " << this->GetZoom()*100.0 << " %\n";
-    
+  int xaxis = 0;
+  int yaxis = 1;
+  
   switch( this->Orientation )
   {
-      case vtkViewImage::AXIAL_ID :
-	os << "Image size: " << dims[0] << " x " << dims[1] << "\n";
-	os << "Voxel size: " << spacing[0] << " x " << spacing[1] << "\n";
-	//os << imCoor[2] << " / " << dims[2]-1 << std::endl;
-	os << "X: " << imCoor[0] << " px Y: " << imCoor[1] << " px Value: "
-	   << this->GetCurrentPointDoubleValue() << std::endl;
-	os << "X: " << pos[0] << " mm Y: " << pos[1] << " mm\n";
-	if ( this->ShowSliceNumber )
-	  os2 << "Slice: " << imCoor[2] << " / " << dims[2]-1 << std::endl;
-	os2 << "Location: " << pos[2] << " mm";
+      case vtkViewImage::Z_ID:
+	xaxis = this->GetOrthogonalAxis(SAGITTAL_ID);
+	yaxis = this->GetOrthogonalAxis(CORONAL_ID);
 	break;
 	  
-	
-      case vtkViewImage::CORONAL_ID :
-	os << "Image size: " << dims[0] << " x " << dims[2] << "\n";
-	os << "Voxel size: " << spacing[0] << " x " << spacing[2] << "\n";
-	//os << imCoor[1] << " / " << dims[1]-1 << std::endl;
-	os << "X: " << imCoor[0] << " px Z: " << imCoor[2] << " px Value: "
-	   << this->GetCurrentPointDoubleValue() << std::endl;
-	os << "X: " << pos[0] << " mm Z: " << pos[2] << " mm\n";
-	if ( this->ShowSliceNumber )
-	  os2 << "Slice: " << imCoor[1] << " / " << dims[1]-1 << std::endl;
-	os2 << "Location: " << pos[1] << " mm";
+      case vtkViewImage::Y_ID:
+	xaxis = this->GetOrthogonalAxis(SAGITTAL_ID);
+	yaxis = this->GetOrthogonalAxis(AXIAL_ID);
 	break;
 	
-	
-      case vtkViewImage::SAGITTAL_ID :
-	os << "Image size: " << dims[1] << " x " << dims[2] << "\n";
-	os << "Voxel size: " << spacing[1] << " x " << spacing[2] << "\n";
-	//os << imCoor[0] << " / " << dims[0]-1 << std::endl;
-	os << "Y: " << imCoor[1] << " px Z: " << imCoor[2] << " px Value: "
-	   << this->GetCurrentPointDoubleValue() << std::endl;
-	os << "Y: " << pos[1] << " mm Z: " << pos[2] << " mm\n";
-	if ( this->ShowSliceNumber )
-	  os2 << "Slice: " << imCoor[0] << " / " << dims[0]-1 << std::endl;
-	os2 << "Location: " << pos[0] << " mm";
+      case vtkViewImage::X_ID:
+      default:
+	xaxis = this->GetOrthogonalAxis(CORONAL_ID);
+	yaxis = this->GetOrthogonalAxis(AXIAL_ID);
 	break;
   }
+
+  os << "Image size: " << dims[xaxis] << " x " << dims[yaxis] << "\n";
+  os << "Voxel size: " << spacing[xaxis] << " x " << spacing[yaxis] << "\n";
+  os << "X: " << imCoor[xaxis] << " px Y: " << imCoor[yaxis] << " px Value: "
+     << this->GetCurrentPointDoubleValue() << std::endl;
+  os << "X: " << pos[xaxis] << " mm Y: " << pos[yaxis] << " mm\n";
+
+  os2 << "Zoom: " << this->GetZoom()*100.0 << " %\n";
+  if ( this->ShowSliceNumber )
+    os2 << "Slice: " << imCoor[orthogonalAxis] << " / " << dims[orthogonalAxis]-1 << std::endl;
+  os2 << "Location: " << pos[orthogonalAxis] << " mm";
+
   os << "<window_level>";
   
   this->SetUpLeftAnnotation( os.str().c_str() );
@@ -1845,27 +1839,11 @@ void vtkViewImage2D::SetZoom (double factor)
     int* dims = this->GetImage()->GetDimensions();
     std::ostringstream os;
     os << "Zoom: " << this->GetZoom()*100.0 << " %\n";
-    switch( this->Orientation )
-    {
-	case vtkViewImage::AXIAL_ID :
-	  if ( this->ShowSliceNumber )
-	    os << "Slice: " << imCoor[2] << " / " << dims[2]-1 << std::endl;
-	  os << "Location: " << pos[2] << " mm";
-	  break;
+    int orthogonalAxis = this->GetOrthogonalAxis (this->Orientation);
+    if ( this->ShowSliceNumber )
+      os << "Slice: " << imCoor[orthogonalAxis] << " / " << dims[orthogonalAxis]-1 << std::endl;
+    os << "Location: " << pos[orthogonalAxis] << " mm";
 
-	case vtkViewImage::CORONAL_ID :
-	  if ( this->ShowSliceNumber )
-	    os << "Slice: " << imCoor[1] << " / " << dims[1]-1 << std::endl;
-	  os << "Location: " << pos[1] << " mm";
-	  break;
-	  
-	case vtkViewImage::SAGITTAL_ID :
-	  if ( this->ShowSliceNumber )
-	  os << "Slice: " << imCoor[0] << " / " << dims[0]-1 << std::endl;
-	os << "Location: " << pos[0] << " mm";
-	break;
-    }
-    
     this->SetDownLeftAnnotation( os.str().c_str() );
   }
   
