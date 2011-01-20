@@ -563,34 +563,6 @@ void vtkViewImage2D::UpdatePosition ()
 
   double spacing[3];
   this->GetImage()->GetSpacing( spacing );
-  //double* origin  = this->GetImage()->GetOrigin();
-  
-  // check if pos lies inside image bounds
-  /*
-  double *imBounds = this->GetImage()->GetBounds();
-  if( pos[0]<imBounds[0] || pos[0]>imBounds[1] ||
-      pos[1]<imBounds[2] || pos[1]>imBounds[3] ||
-      pos[2]<imBounds[4] || pos[2]>imBounds[5])
-  {
-    // we are outside image bounds
-    return;
-  }
-  */
-  
-  // round to the nearest integer slice
-  /*
-    pos[0] = vtkMath::Round ((pos[0]-origin[0])/spacing[0] )*spacing[0]+origin[0];
-    pos[1] = vtkMath::Round ((pos[1]-origin[1])/spacing[1] )*spacing[1]+origin[1];
-    pos[2] = vtkMath::Round ((pos[2]-origin[2])/spacing[2] )*spacing[2]+origin[2];
-  */
-  
-  /*
-    double *bounds = this->ImageActor->GetBounds();
-    min_x = bounds[0];
-    max_x = bounds[1];
-    min_y = bounds[2];
-    max_y = bounds[3];
-  */
 
   double min_bounds[4] = { this->GetWholeMinPosition(0),
 			   this->GetWholeMinPosition(1),
@@ -623,64 +595,6 @@ void vtkViewImage2D::UpdatePosition ()
   
   min_x = min_bounds[0];
   min_y = min_bounds[1];
-
-  /*
-  switch (this->Orientation)
-  {
-      case vtkViewImage::SAGITTAL_ID:
-
-        this->ImageReslice->SetResliceAxesOrigin(pos[0],0,0);
-        x = (double)pos[1];vtkViewImage2D::
-        y = (double)pos[2];
-	max_x = bounds[3];
-	max_y = bounds[5];
-	min_x = bounds[2];
-	min_y = bounds[4];
-        break;
-
-      case vtkViewImage::CORONAL_ID:
-
-        this->ImageReslice->SetResliceAxesOrigin(0,pos[1],0);
-        if( this->Conventions==RADIOLOGIC )
-        {
-          x = (double)pos[0];
-          max_x = bounds[1];
-          min_x = bounds[0];
-        }
-        else
-        {
-          x = (double)pos[0]*-1.0;
-          max_x = bounds[1]*-1.0;
-          min_x = bounds[0]*-1.0;
-        }
-        y = (double)pos[2];
-        max_y = bounds[5];
-        min_y = bounds[4];
-        break;
-
-
-      case vtkViewImage::AXIAL_ID:
-
-        this->ImageReslice->SetResliceAxesOrigin(0,0,pos[2]);
-
-        if( this->Conventions==RADIOLOGIC )
-        {
-          x = (double)pos[0];
-          max_x = bounds[1];
-          min_x = bounds[0];
-        }
-        else
-        {
-          x = (double)pos[0]*-1.0;
-          max_x = bounds[1]*-1.0;
-          min_x = bounds[0]*-1.0;
-        }
-        y = (double)pos[1]*-1.0;
-        max_y = bounds[3]*-1.0;
-        min_y = bounds[2]*-1.0;
-        break;
-  }
-  */
 
 
   this->HorizontalLineSource->SetPoint1(min_x, y, 0.001);
@@ -740,13 +654,16 @@ void vtkViewImage2D::UpdatePosition ()
   
   this->SetUpLeftAnnotation( os.str().c_str() );
   this->SetDownLeftAnnotation( os2.str().c_str() );
-  //  }
-  //  else
-  //    this->SetUpRightAnnotation("");
+
+
+  vtkMatrix4x4 *t_direction = this->GetDirectionMatrix();
+  t_direction->MultiplyPoint (reslice, reslice);
   
-  unsigned int direction = this->GetOrthogonalAxis (this->GetOrientation());
   this->DataSetCutPlane->SetOrigin (reslice[0], reslice[1], reslice[2]);
-  
+
+  //unsigned int direction = this->GetOrthogonalAxis (this->GetOrientation());
+  unsigned int direction = this->GetOrientation();
+    
   switch(direction)
   {
       case X_ID :
@@ -765,11 +682,10 @@ void vtkViewImage2D::UpdatePosition ()
       case Z_ID :
         //this->DataSetCutPlane->SetNormal (0,0,1);
 	this->DataSetCutBox->SetBounds (this->GetWholeMinPosition(0),this->GetWholeMaxPosition(0),
-					this->GetWholeMinPosition(1),this->GetWholeMaxPosition(1),
-					this->DataSetCutPlane->GetOrigin()[2],this->DataSetCutPlane->GetOrigin()[2]+this->BoxThickness);
+					this->GetWholeMinPosition(1), this->GetWholeMaxPosition(1),
+					this->DataSetCutPlane->GetOrigin()[2], this->DataSetCutPlane->GetOrigin()[2]+this->BoxThickness);
 	break;
   }
-
 
   if( this->DataSetList.size() )
   {
@@ -1216,16 +1132,12 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
 	break;
 
       case vtkViewImage::AXIAL_ID:
-	resliceMatrix = this->GetAxialResliceMatrix();
-	break;
-
       default:
 	resliceMatrix = this->GetAxialResliceMatrix();
+	break;
   }
 
 
-
-  //vtkMatrix4x4::Multiply4x4 (directions, resliceMatrix, resultMatrix);
   vtkMatrix4x4 *t_directions = vtkMatrix4x4::New();
   vtkMatrix4x4::Transpose (directions, t_directions);
   vtkMatrix4x4::Multiply4x4 (t_directions, resliceMatrix, resultMatrix);
@@ -1249,8 +1161,8 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
   this->ImageReslice->SetResliceAxes ( resultMatrix );
   
 
-  unsigned int direction = this->GetOrthogonalAxis (this->GetOrientation());
-  switch(direction)
+  // unsigned int direction = this->GetOrthogonalAxis (this->GetOrientation());
+  switch(this->Orientation)
   {
       case X_ID :
 	this->DataSetCutPlane->SetNormal (1,0,0);
@@ -1262,6 +1174,29 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
 	this->DataSetCutPlane->SetNormal (0,0,1);
 	break;
   }
+
+  vtkMatrix4x4* matrix = vtkMatrix4x4::New();
+  switch(this->Orientation)
+  {
+      case SAGITTAL_ID:
+	vtkMatrix4x4::Transpose (this->SagittalResliceMatrix, matrix);
+	break;
+	
+      case CORONAL_ID:
+	vtkMatrix4x4::Transpose (this->CoronalResliceMatrix, matrix);
+	break;
+	
+      case AXIAL_ID:
+      default:
+	vtkMatrix4x4::Transpose (this->AxialResliceMatrix, matrix);
+	break;
+  }
+
+  for (unsigned int i=0; i<this->DataSetActorList.size(); i++)
+  {
+    this->DataSetActorList[i]->SetUserMatrix (matrix);
+  }
+
 
   //this->ImageReslice->Modified();
 
@@ -1613,15 +1548,21 @@ vtkActor* vtkViewImage2D::AddDataSet (vtkDataSet* dataset,  vtkProperty* propert
     {
 
       vtkMatrix4x4* matrix = vtkMatrix4x4::New();
-      for (unsigned int i=0; i<3; i++)
+      switch(this->Orientation)
       {
-	for (unsigned int j=0; j<3; j++)
-	{
-	  matrix->SetElement(i,j,this->ImageReslice->GetResliceAxes()->GetElement(j,i));
-	}
-	matrix->SetElement(i,3,0);
+	  case SAGITTAL_ID:
+	    vtkMatrix4x4::Transpose (this->SagittalResliceMatrix, matrix);
+	    break;
+
+	  case CORONAL_ID:
+	    vtkMatrix4x4::Transpose (this->CoronalResliceMatrix, matrix);
+	    break;
+
+	  case AXIAL_ID:
+	  default:
+	    vtkMatrix4x4::Transpose (this->AxialResliceMatrix, matrix);
+	    break;
       }
-      matrix->SetElement(3,3,1);
 
       vtkCutter* cutter = vtkCutter::New();
       cutter->SetCutFunction ( this->DataSetCutPlane );
@@ -1655,6 +1596,7 @@ vtkActor* vtkViewImage2D::AddDataSet (vtkDataSet* dataset,  vtkProperty* propert
       //actor->PickableOff();
 
       this->AddActor (actor);
+
       this->DataSetList.push_back (dataset);
       this->DataSetActorList.push_back (actor);
 
