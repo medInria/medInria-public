@@ -1222,6 +1222,7 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
 
   resultMatrix->Delete();
   t_directions->Delete();
+  matrix->Delete();
   
   this->Modified();
 }
