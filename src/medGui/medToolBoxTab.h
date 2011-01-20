@@ -35,10 +35,6 @@ public:
      medToolBoxTab(QWidget *parent = NULL);
     ~medToolBoxTab(void);
 
-    QSize sizeHint(void) const;
-
-    void setOrientation(Qt::Orientation orientation);
-
 protected:
     void paintEvent(QPaintEvent *event);
 

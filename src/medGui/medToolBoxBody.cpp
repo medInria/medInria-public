@@ -58,7 +58,6 @@ void medToolBoxBody::addWidget(QWidget *widget)
         d->layout->setRowStretch (d->layout->count(), 1);
     }
     else {
-        qDebug()<<"botttom";
         d->layout->setColumnStretch (d->layout->count(), 0);
         d->layout->addWidget(widget, 0,
                              d->layout->count(), Qt::AlignTop);
@@ -92,24 +91,16 @@ void medToolBoxBody::clear()
 }
 void medToolBoxBody::setOrientation(Qt::Orientation orientation)
 {
-    qDebug()<<"Body :: setOrientation ";
     if (d->layoutOrientation==orientation)
         return;
 
     d->layoutOrientation = orientation;
 
-    this->setObjectName((d->layoutOrientation == Qt::Vertical) ? "" : "horizontal");
-
     this->clear();
 
-    if (d->tab)
-    {
-        d->tab->setOrientation(orientation);
-    }
 
     foreach(QWidget * wid, d->widgets ) {
       //addToolBox also sets the orientation of the toolboxes
-      qDebug()<<"adding widget";
       addWidget (wid);
       wid->show();
     }

@@ -88,8 +88,6 @@ void medToolBox::setOrientation(Qt::Orientation orientation)
         if (d->layout->direction() == QBoxLayout::TopToBottom) {
             return;
         } else {
-            d->layout->setDirection(QBoxLayout::TopToBottom);
-            d->header->setOrientation(Qt::Vertical);
             d->body->setOrientation(Qt::Vertical);
         }
         break;
@@ -97,8 +95,6 @@ void medToolBox::setOrientation(Qt::Orientation orientation)
         if (d->layout->direction() == QBoxLayout::LeftToRight) {
             return;
         } else {
-            d->layout->setDirection(QBoxLayout::LeftToRight);
-            d->header->setOrientation(Qt::Horizontal);
             d->body->setOrientation(Qt::Horizontal);
         }
         break;

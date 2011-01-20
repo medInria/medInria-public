@@ -37,7 +37,6 @@ public:
     QSize sizeHint(void) const;
 
     void setTitle(const QString& title);
-    void setOrientation(Qt::Orientation orientation);
 
 protected:
     void paintEvent(QPaintEvent *event);

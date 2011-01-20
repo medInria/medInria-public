@@ -43,8 +43,8 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     this->setViewLayoutType (medViewContainer::Compare);
     
-    //this->setLayoutType(medViewerConfiguration::TopDbBottomTb);
-    this->setLayoutType(medViewerConfiguration::LeftDbRightTb);
+    this->setLayoutType(medViewerConfiguration::TopDbBottomTb);
+    //this->setLayoutType(medViewerConfiguration::LeftDbRightTb);
 
 
 }

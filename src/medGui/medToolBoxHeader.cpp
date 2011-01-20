@@ -25,15 +25,11 @@ class medToolBoxHeaderPrivate
 {
 public:
     QString title;
-
-    Qt::Orientation orientation;
 };
 
 medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medToolBoxHeaderPrivate)
 {
     d->title = "Untitled";
-
-    d->orientation = Qt::Vertical;
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
@@ -47,27 +43,12 @@ medToolBoxHeader::~medToolBoxHeader(void)
 
 QSize medToolBoxHeader::sizeHint(void) const
 {
-    if (d->orientation == Qt::Vertical)
-        return QSize(100, 32);
-    else
-        return QSize(32, 100);
+    return QSize(100, 32);
 }
 
 void medToolBoxHeader::setTitle(const QString& title)
 {
     d->title = title;
-}
-
-void medToolBoxHeader::setOrientation(Qt::Orientation orientation)
-{
-    d->orientation = orientation;
-
-    this->setObjectName((d->orientation == Qt::Vertical) ? "" : "horizontal");
-
-    if(d->orientation == Qt::Vertical)
-        this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    else
-        this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 
 void medToolBoxHeader::paintEvent(QPaintEvent *event)
@@ -79,20 +60,7 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
 
     QRectF rect = this->rect();
 
-    if(d->orientation == Qt::Horizontal) {
-        painter.translate(10, rect.height()-16);
-        painter.rotate(-90.0);
-        
-        QSizeF size = rect.size();
-        size.transpose();
-
-        rect = QRectF(rect.topLeft(), size);
-
-        qDebug() << DTK_PRETTY_FUNCTION << rect;
-        
-    } else {
-        painter.translate(16, 10);
-    }
+    painter.translate(16, 10);
     
     painter.drawText(rect, Qt::AlignLeft, d->title);
     painter.end();

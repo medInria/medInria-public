@@ -65,7 +65,6 @@ void medToolBoxContainer::addToolBox(medToolBox *toolBox)
 {
     if (!toolBox)
         return;
-    qDebug()<<"tbContanier set orientation of new tb";
     toolBox->setOrientation(d->layoutOrientation);
 
     if (!d->toolboxes.contains(toolBox)) {
