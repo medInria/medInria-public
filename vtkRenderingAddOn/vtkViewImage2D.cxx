@@ -1099,14 +1099,29 @@ vtkScalarsToColors* vtkViewImage2D::GetBGLookupTable (void) const
 
 
 void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
-{
-  if( (p_orientation > vtkViewImage::NB_PLAN_IDS - 1) || (this->Orientation == p_orientation) )
-  {
-    return;
-  }
-
-  this->Orientation = p_orientation;
-
+{    
+    unsigned int sliceorientation = 0;
+    double dot = 0;
+    
+    if ( this->GetDirectionMatrix() )
+     {
+        for (unsigned int i=0; i<3; i++)
+         {
+            if (dot < std::abs (this->GetDirectionMatrix()->GetElement (i, p_orientation)))
+             {
+                dot = std::abs (this->GetDirectionMatrix()->GetElement (i, p_orientation));
+                sliceorientation = i;
+             }
+         }
+     }
+    
+    if( (sliceorientation > vtkViewImage::NB_PLAN_IDS - 1) || (this->Orientation == sliceorientation) )
+     {
+        return;
+     }
+    
+    this->Orientation = sliceorientation;
+    
   
   // setup the OrientationMatrix and the ScreenToRealWorldMatrix. Then, we have no
   // need to check the view's orientation to determine what slice to display: a
