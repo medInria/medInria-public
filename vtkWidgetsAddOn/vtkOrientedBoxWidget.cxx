@@ -39,6 +39,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkRenderer.h"
 #include "vtkSphereSource.h"
 #include "vtkTransform.h"
+#include "vtkReverseSense.h"
 
 vtkCxxRevisionMacro(vtkOrientedBoxWidget, "$Revision: 2 $");
 vtkStandardNewMacro(vtkOrientedBoxWidget);
@@ -89,6 +90,23 @@ void vtkOrientedBoxWidget::SetOrientationMatrix(vtkMatrix4x4* matrix)
   
   for (unsigned int i=0; i<7; i++)
     this->Handle[i]->SetUserMatrix (matrix);
+
+  if (matrix->Determinant()<0.0)
+  {
+    for (unsigned int i=0; i<7; i++)
+    {
+      if (vtkPolyData *input = vtkPolyData::SafeDownCast (this->Handle[i]->GetMapper()->GetInput()))
+      {
+	vtkReverseSense *reverse = vtkReverseSense::New();
+	reverse->SetInput (input);
+	reverse->ReverseNormalsOn();
+	reverse->ReverseCellsOff();
+	reverse->Update();
+	vtkPolyDataMapper::SafeDownCast (this->Handle[i]->GetMapper())->SetInput (reverse->GetOutput());
+	reverse->Delete();
+      }
+    }
+  }
   
   if (this->OrientationMatrix)
   { 

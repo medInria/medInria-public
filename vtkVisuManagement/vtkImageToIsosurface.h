@@ -31,7 +31,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageCast.h>
 #include <vtkDecimatePro.h>
 #include <vtkSmoothPolyDataFilter.h>
-
+#include <vtkPolyDataNormals.h>
 
 class VTK_VISUMANAGEMENT_EXPORT vtkImageToIsosurface: public vtkObject
 {
@@ -51,6 +51,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkImageToIsosurface: public vtkObject
 
   void SetParameters (int val, double color[4]);
 
+  void ReverseNormals (void);
+  
   void Update(void);
 
   void SetDecimationOff (void)
@@ -76,6 +78,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkImageToIsosurface: public vtkObject
   vtkContourFilter*        ContourFilter;
   vtkDecimatePro*          Decimate;
   vtkSmoothPolyDataFilter* Smoother;
+  vtkPolyDataNormals*      Normals;
 
   vtkImageData*      Input;
   vtkPolyDataMapper* Mapper;

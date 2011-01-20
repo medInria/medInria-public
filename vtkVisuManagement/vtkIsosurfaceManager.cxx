@@ -195,6 +195,10 @@ void vtkIsosurfaceManager::GenerateData()
 
     if (this->DirectionMatrix)
     {
+      if (this->DirectionMatrix->Determinant()<0.0) // flip normals
+      {
+	ImageToIsosurfaceFilter->ReverseNormals();
+      }
       ImageToIsosurfaceFilter->GetActor()->SetUserMatrix (this->DirectionMatrix);
     }
     
