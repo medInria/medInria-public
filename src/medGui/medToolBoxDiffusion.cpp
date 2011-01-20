@@ -130,11 +130,9 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     connect (d->tractographyDropSite,  SIGNAL(objectDropped()),          this, SLOT (onObjectDropped()));
     connect (d->coefficientsCombo,     SIGNAL(activated(int)),           this, SLOT (onCoefficientsChanged(int)));
     connect (d->runButton,             SIGNAL(clicked()),                this, SLOT(run()));
-
-    d->view = 0;
     
-    this->setTitle("Diffusion");
-    this->setTabWidget(tab);
+    this->setTitle("Tractography");
+    this->addWidget(tractographyPage);
 }
 
 medToolBoxDiffusion::~medToolBoxDiffusion(void)
