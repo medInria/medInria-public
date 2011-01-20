@@ -81,7 +81,7 @@ void medViewerConfigurationRegistration::setupViewContainerStack(medViewContaine
         d->registrationToolBox->setFuseView ( fuseContainer->current()->view() );
     } 
     else {
-        if (dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView")) {
+        if (dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dViewPublic")) {
             fuseContainer->current()->setView (view);
             d->registrationToolBox->setFuseView (view);
         }

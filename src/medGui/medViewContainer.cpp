@@ -45,6 +45,7 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
     this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
+    this->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Expanding);
 }
 
 medViewContainer::~medViewContainer(void)

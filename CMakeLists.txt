@@ -43,3 +43,8 @@ include(medinriaDart)
 
 add_subdirectory(src)
 add_subdirectory(app)
+
+if (APPLE)
+  configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
+                 ${PROJECT_BINARY_DIR}/mac_packager.sh)
+endif()
