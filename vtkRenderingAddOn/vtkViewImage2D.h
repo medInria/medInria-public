@@ -644,6 +644,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
   
   /// Orientation: 0 is XY, 1 is ZY, 2 is XZ
   unsigned int                    Orientation;
+  unsigned int                    ViewOrientation;
   unsigned int                    InteractionStyle;
 
 

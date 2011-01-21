@@ -228,6 +228,7 @@ vtkViewImage2D::vtkViewImage2D()
   this->GetCornerAnnotation()->SetWindowLevel ( this->WindowLevelForCorner );
 
   this->Orientation = vtkViewImage::NB_PLAN_IDS;
+  this->ViewOrientation = vtkViewImage::NB_PLAN_IDS;
   this->SetOrientation ( vtkViewImage::AXIAL_ID );
 
   if( vtkViewImage2D::GetViewImage2DDisplayConventions()==0 )
@@ -1099,7 +1100,9 @@ vtkScalarsToColors* vtkViewImage2D::GetBGLookupTable (void) const
 
 
 void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
-{    
+{
+    this->ViewOrientation = p_orientation;
+  
     unsigned int sliceorientation = 0;
     double dot = 0;
     
@@ -1856,9 +1859,8 @@ void vtkViewImage2D::SetDirectionMatrix (vtkMatrix4x4 *mat)
   vtkViewImage::SetDirectionMatrix (mat);
 
   // force to reset the reslice matrix
-  unsigned int orientation = this->GetOrientation();
   this->Orientation = vtkViewImage::NB_PLAN_IDS;
-  this->SetOrientation ( orientation );
+  this->SetOrientation ( this->ViewOrientation );
 
   this->ResetAndRestablishZoomAndCamera();
   this->Modified();
