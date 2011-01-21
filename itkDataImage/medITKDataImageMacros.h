@@ -184,8 +184,8 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     if ((voxelCount % nvoxels_per_slice) ==  0)
     {
       thumbnails.push_back (
-	qimage->mirrored(img->GetDirection()(0,0) == -1.0,
-			 img->GetDirection()(1,1) == -1.0));
+	qimage->mirrored(img->GetDirection()(0,0) == -1.0, true));
+//			 img->GetDirection()(1,1) == -1.0));
       qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);
       qImageBuffer = qimage->bits();
     }
