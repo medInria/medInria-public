@@ -812,9 +812,12 @@ void vtkInteractorStyleImage2D::PropagateCameraFocalAndPosition()
   double* pos   = camera->GetPosition ();
 
   bool LinkCamera = this->GetView()->GetLinkCameraFocalAndPosition();
-  this->GetView()->SetLinkCameraFocalAndPosition ( 0 );
-  this->GetView()->SyncSetCameraFocalAndPosition (focal, pos);
-  this->GetView()->SetLinkCameraFocalAndPosition ( LinkCamera );
+  if (LinkCamera)
+  {
+    this->GetView()->SetLinkCameraFocalAndPosition ( 0 );
+    this->GetView()->SyncSetCameraFocalAndPosition (focal, pos);
+    this->GetView()->SetLinkCameraFocalAndPosition ( LinkCamera );
+  }
 }
 
 void vtkInteractorStyleImage2D::DefaultMoveAction()
