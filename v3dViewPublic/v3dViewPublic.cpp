@@ -878,23 +878,31 @@ void v3dViewPublic::onCroppingPropertySet (const QString &value)
 void v3dViewPublic::reset(void)
 {
     d->view2D->Reset();
+    d->view3D->Reset();
 
-    /*
     int linkWindowing = d->view2D->GetLinkWindowLevel();
-    d->view2D->SetLinkWindowLevel (0);
-    d->view2D->ResetWindowLevel();
-    d->view2D->SetLinkWindowLevel (linkWindowing);
+    if (linkWindowing)
+    {
+      d->view2D->SetLinkWindowLevel (0);
+      d->view2D->SyncResetWindowLevel();
+      d->view2D->SetLinkWindowLevel (linkWindowing);
+    }
         
     int linkPosition = d->view2D->GetLinkPosition();
-    d->view2D->SetLinkPosition (0);
-    d->view2D->ResetCurrentPoint();
-    d->view2D->SetLinkPosition (linkPosition);
+    if (linkPosition)
+    {
+      d->view2D->SetLinkPosition (0);
+      d->view2D->SyncResetCurrentPoint();
+      d->view2D->SetLinkPosition (linkPosition);
+    }
 
     int linkZoom = d->view2D->GetLinkZoom();
-    d->view2D->SetLinkZoom (0);
-    d->view2D->ResetZoom();
-    d->view2D->SetLinkZoom (linkZoom);
-    */
+    if (linkZoom)
+    {
+      d->view2D->SetLinkZoom (0);
+      d->view2D->SyncResetZoom();
+      d->view2D->SetLinkZoom (linkZoom);
+    }
     
     int zslice = d->view2D->GetZSlice();
     
