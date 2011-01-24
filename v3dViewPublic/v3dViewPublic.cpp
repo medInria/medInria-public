@@ -967,7 +967,9 @@ void v3dViewPublic::unlink(dtkAbstractView *other)
     
     if (v3dViewPublic *otherView = dynamic_cast<v3dViewPublic*>(other)) {
         
+        otherView->view2D()->RemoveChild( otherView->view3D() );
         otherView->view2D()->Detach();
+        otherView->view2D()->AddChild( otherView->view3D() );
 		
         if (d->lastLinked==otherView->view2D()) {
             if (d->linkedViews.count())
