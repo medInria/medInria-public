@@ -27,6 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 class vtkImageData;
 class vtkVolumeTextureMapper3D;
+class vtkVolumeTextureMapper2D;
 class vtkGPUVolumeRayCastMapper;
 class vtkVolumeMapper;
 class vtkPiecewiseFunction;
@@ -171,8 +172,8 @@ public:
   /**
    * Set/Get rendering mapper type
    */
-  virtual void SetVRMapperType(int type);
-  vtkGetMacro (VRMapperType, int);
+  virtual void SetVRMapperType(VRMapperTypeIds type);
+  vtkGetMacro (VRMapperType, VRMapperTypeIds);
 
 
   /**
@@ -385,6 +386,8 @@ private:
 
   // Default mapper in 3D (slow)
   vtkVolumeTextureMapper3D*       VolumeTextureMapper3D;
+    
+  vtkVolumeTextureMapper2D*       VolumeTextureMapper2D;
 
   // GPU mapper in 3D (fast)
   vtkGPUVolumeRayCastMapper*      VolumeGPUMapper3D;

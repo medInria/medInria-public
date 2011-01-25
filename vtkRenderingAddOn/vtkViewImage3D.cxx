@@ -30,6 +30,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkVolumeTextureMapper3D.h>
+#include <vtkVolumeTextureMapper2D.h>
 #include <vtkGPUVolumeRayCastMapper.h>
 #include <vtkVolumeRayCastMapper.h>
 #include <vtkVolumeRayCastCompositeFunction.h>
@@ -183,7 +184,17 @@ vtkViewImage3D::vtkViewImage3D ()
   this->VolumeGPUMapper3D->SetCroppingRegionFlags(0x7ffdfff);
   this->VolumeGPUMapper3D->AutoAdjustSampleDistancesOn();
 
-  this->VolumeMapper3D = this->VolumeTextureMapper3D; //this->VolumeGPUMapper3D;
+  this->VolumeTextureMapper2D = vtkVolumeTextureMapper2D::New();
+  this->VolumeTextureMapper2D->CroppingOn();
+  this->VolumeTextureMapper2D->SetCroppingRegionFlags (0x7ffdfff);
+    
+#ifdef __APPLE__
+  this->VolumeMapper3D = this->VolumeTextureMapper3D;
+  this->VRMapperType = TextureMapper3D;
+#else    
+  this->VolumeMapper3D = this->VolumeGPUMapper3D;
+  this->VRMapperType = GPUMapper3D;
+#endif    
 
   
   this->OpacityFunction->AddPoint (0, 0.0);
@@ -317,6 +328,7 @@ vtkViewImage3D::~vtkViewImage3D()
   this->VolumeActor->Delete();
   this->VolumeTextureMapper3D->Delete();
   this->VolumeGPUMapper3D->Delete();
+  this->VolumeTextureMapper2D->Delete();
   this->VolumeProperty->Delete();
   this->OpacityFunction->Delete();
   //this->ColorFunction->Delete();
@@ -475,7 +487,7 @@ void vtkViewImage3D::SetImage ( vtkImageData* image )
   this->VolumeGPUMapper3D->SetSampleDistance (sampleDistance);
   */
   
-  vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::SafeDownCast ( this->VolumeActor->GetMapper() );
+  vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::SafeDownCast ( this->VolumeMapper3D );
   if( mapper3D && !this->GetRenderWindow()->GetNeverRendered() )
   {
     if( !mapper3D->IsRenderSupported ( this->VolumeProperty
@@ -492,35 +504,30 @@ void vtkViewImage3D::SetImage ( vtkImageData* image )
 #endif
 	    ) )
       {
-        vtkWarningMacro (<<"Warning: 3D texture volume rendering is not supported by your hardware, switching to 2D texture rendering."<<endl);
-
-	vtkVolumeTextureMapper2D* newMapper = vtkVolumeTextureMapper2D::New();
-        newMapper->CroppingOn();
-        newMapper->SetCroppingRegionFlags (0x7ffdfff);
-
-	double* range = this->GetImage()->GetScalarRange();
-	double shift = 0 - range[0];
-	double scale = 65535.0/(range[1] - range[0]);
-	
-	vtkImageShiftScale* scaler = vtkImageShiftScale::New();
-	scaler->SetInput (image);
-	scaler->SetShift (shift);
-	scaler->SetScale (scale);
-	scaler->SetOutputScalarTypeToUnsignedShort();
-	
-	scaler->Update();
-	
-	this->SetShift(scaler->GetShift());
-	this->SetScale(scaler->GetScale());
-	newMapper->SetInput ( scaler->GetOutput() );
-
-	scaler->Delete();
-	
-	this->Callback->SetVolumeMapper (newMapper);
-        
-        mapper3D->Delete();
-        this->VolumeMapper3D = newMapper;
-        this->VolumeActor->SetMapper ( this->VolumeMapper3D );
+         vtkWarningMacro (<<"Warning: 3D texture volume rendering is not supported by your hardware, switching to 2D texture rendering."<<endl);
+         
+         double* range = this->GetImage()->GetScalarRange();
+         double shift = 0 - range[0];
+         double scale = 65535.0/(range[1] - range[0]);
+         
+         vtkImageShiftScale* scaler = vtkImageShiftScale::New();
+         scaler->SetInput (image);
+         scaler->SetShift (shift);
+         scaler->SetScale (scale);
+         scaler->SetOutputScalarTypeToUnsignedShort();
+         
+         scaler->Update();
+         
+         this->SetShift(scaler->GetShift());
+         this->SetScale(scaler->GetScale());
+         
+         this->VolumeTextureMapper2D->SetInput ( scaler->GetOutput() );
+         
+         scaler->Delete();
+         
+         this->VolumeMapper3D = this->VolumeTextureMapper2D;
+         this->VolumeActor->SetMapper ( this->VolumeMapper3D );
+         this->Callback->SetVolumeMapper( this->VolumeMapper3D );
       }    
     }    
   }
@@ -821,21 +828,25 @@ void vtkViewImage3D::SetRenderingMode (int mode)
   this->Modified();
 }
 
-void vtkViewImage3D::SetVRMapperType(int type)
+void vtkViewImage3D::SetVRMapperType(VRMapperTypeIds type)
 {
     if( this->VRMapperType==type )
       return;
+    
+    this->VRMapperType = type;
 
     vtkVolumeMapper *oldMapper = this->VolumeMapper3D;
 
     switch(type)
     {
         case TextureMapper3D:
-            this->VolumeMapper3D = this->VolumeTextureMapper3D;
-            break;
+           this->VolumeMapper3D = this->VolumeTextureMapper3D;
+           break;
+           
         case GPUMapper3D:
             this->VolumeMapper3D = this->VolumeGPUMapper3D;
             break;
+           
         default :
             vtkErrorMacro ( << "Unknown VR Mapper type!");
     };
