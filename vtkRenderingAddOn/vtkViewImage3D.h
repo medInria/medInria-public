@@ -130,15 +130,7 @@ public:
     this->Modified();
   };
 
-//  /**
-//     Set the rendering mode to GPU volume rendering (GPU).
-//  */
-//  virtual void SetRenderingModeToGPU (void)
-//  {
-//    this->SetRenderingMode (GPU_RENDERING);
-//    this->Modified();
-//  };
-//
+
   /**
      Set the rendering mode to planar views.
   */
@@ -147,6 +139,7 @@ public:
     this->SetRenderingMode (PLANAR_RENDERING);
     this->Modified();
   };
+
 
   /**
      Set/Get the rendering mode.
@@ -164,6 +157,7 @@ public:
       this->Modified();
   };
 
+  
   /**
    * Set/Get rendering mapper type to GPU
    */
@@ -173,6 +167,7 @@ public:
       this->Modified();
   };
 
+  
   /**
    * Set/Get rendering mapper type
    */

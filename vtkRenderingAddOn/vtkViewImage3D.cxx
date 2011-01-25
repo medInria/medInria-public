@@ -172,12 +172,6 @@ vtkViewImage3D::vtkViewImage3D ()
   this->Blender->SetOpacity (0, 0.25);
   this->Blender->SetOpacity (1, 0.75);
 
-//  vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::New();
-//  mapper3D->SetSampleDistance(1.0);
-//  mapper3D->SetPreferredMethodToNVidia();
-//  mapper3D->CroppingOn();
-//  mapper3D->SetCroppingRegionFlags (0x7ffdfff);
-
   this->VolumeTextureMapper3D = vtkVolumeTextureMapper3D::New();
   this->VolumeTextureMapper3D->SetSampleDistance(1.0);
   this->VolumeTextureMapper3D->SetPreferredMethodToNVidia();
@@ -191,14 +185,7 @@ vtkViewImage3D::vtkViewImage3D ()
 
   this->VolumeMapper3D = this->VolumeGPUMapper3D;
 
-//  vtkGPUVolumeRayCastMapper * mapper3D = vtkGPUVolumeRayCastMapper::New();
-//  mapper3D->CroppingOn();
-//  mapper3D->SetCroppingRegionFlags(0x7ffdfff);
-//  mapper3D->SetSampleDistance(1.0);
-//
-//  this->VolumeMapper3D = mapper3D;
-
-
+  
   this->OpacityFunction->AddPoint (0, 0.0);
   this->OpacityFunction->AddPoint (255, 1.0);
   this->ColorFunction->AddRGBPoint (0, 0.0, 0.0, 0.0);
@@ -327,9 +314,10 @@ vtkViewImage3D::~vtkViewImage3D()
   this->BoxWidget->RemoveObserver (this->Callback);
 
   // delete all vtk objetcts:
-  this->VolumeMapper3D->Delete();
-  this->VolumeProperty->Delete();
   this->VolumeActor->Delete();
+  this->VolumeTextureMapper3D->Delete();
+  this->VolumeGPUMapper3D->Delete();
+  this->VolumeProperty->Delete();
   this->OpacityFunction->Delete();
   //this->ColorFunction->Delete();
   this->AxialColorMapper->Delete();
@@ -479,11 +467,11 @@ void vtkViewImage3D::SetImage ( vtkImageData* image )
 
   this->VolumeMapper3D->SetInput(this->GetImage());
 
-  /*
-    double* spacing = this->GetImage()->GetSpacing();
-    double  sampleDistance = 0.33*0.1*(spacing[0]+spacing[1]+spacing[2]);
-  */
+  double* spacing = this->GetImage()->GetSpacing();
+  double  sampleDistance = 0.33*0.1*(spacing[0]+spacing[1]+spacing[2]);
 
+  this->VolumeTextureMapper3D->SetSampleDistance (sampleDistance);
+  this->VolumeGPUMapper3D->SetSampleDistance (sampleDistance);
   
   vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::SafeDownCast ( this->VolumeActor->GetMapper() );
   if( mapper3D && !this->GetRenderWindow()->GetNeverRendered() )
@@ -780,7 +768,6 @@ void vtkViewImage3D::UpdatePosition ()
 
 void vtkViewImage3D::SetRenderingMode (int mode)
 {
-
   if( this->RenderingMode==mode )
     return;
   
@@ -788,38 +775,29 @@ void vtkViewImage3D::SetRenderingMode (int mode)
   {
       case VOLUME_RENDERING :
         
-
-          std::cout << "Volume rendering mode selected" << std::endl;
-
         this->RenderingMode = VOLUME_RENDERING;
-
+	
         this->ActorSagittal->SetVisibility (0);
         this->ActorCoronal->SetVisibility (0);
         this->ActorAxial->SetVisibility (0);
-
+	
         this->VolumeActor->SetVisibility ( this->GetVisibility() );
         this->AxesActor->SetVisibility ( this->GetVisibility() && this->AxisVisibility);
 
-//        this->VolumeMapper3D = this->VolumeTextureMapper3D;
-//
-//        this->VolumeMapper3D->Modified();
-//
-//        this->VolumeActor->SetMapper(this->VolumeTextureMapper3D);
-
-          if( this->GetRenderWindow() && !this->GetRenderWindow()->GetNeverRendered() )
+	if( this->GetRenderWindow() && !this->GetRenderWindow()->GetNeverRendered() )
+	{
+	  if( this->GetVisibility() )
 	  {
- 
-	    if( this->GetVisibility() )
-	    {
-	      this->SetBoxWidgetVisibility (this->BoxWidgetVisibility);
-	    }
-	    else
-	    {
-	      this->BoxWidget->Off ();
-	    }
+	    this->SetBoxWidgetVisibility (this->BoxWidgetVisibility);
 	  }
-		
-	  break;
+	  else
+	  {
+	    this->BoxWidget->Off ();
+	    }
+	}
+	
+	break;
+	  
       case PLANAR_RENDERING :
 
         this->RenderingMode = PLANAR_RENDERING;
@@ -828,20 +806,17 @@ void vtkViewImage3D::SetRenderingMode (int mode)
         this->AxesActor->SetVisibility (this->GetVisibility() && this->AxisVisibility);
         this->BoxWidget->Off();
 
-
         this->ActorSagittal->SetVisibility (this->GetVisibility() && this->ShowSagittal);
         this->ActorCoronal->SetVisibility (this->GetVisibility() && this->ShowCoronal);
         this->ActorAxial->SetVisibility (this->GetVisibility() && this->ShowAxial);
 
         break;
 
-
       default :
         vtkErrorMacro ( << "Unknown rendering mode!");
   };
     
   this->Modified();
-  
 }
 
 void vtkViewImage3D::SetVRMapperType(int type)
