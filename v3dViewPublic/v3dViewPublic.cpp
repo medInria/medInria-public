@@ -240,6 +240,7 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     d->dimensionBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->dimensionBox->setMaximumWidth(64);    
 	
+
     QAction *axialAct = new QAction(tr("Axial"), d->widget);
     connect(axialAct, SIGNAL(triggered()), this, SLOT(switchToAxial()));
     
@@ -252,6 +253,9 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     QAction *vrAct = new QAction(tr("VR"), d->widget);
     connect(vrAct, SIGNAL(triggered()), this, SLOT(switchToVR()));
     
+    QAction *vrGPUAct = new QAction(tr("VR (GPU)"), d->widget);
+    connect(vrGPUAct, SIGNAL(triggered()), this, SLOT(switchToVRGPU()));
+
     QAction *mprAct = new QAction(tr("MPR"), d->widget);
     connect(mprAct, SIGNAL(triggered()), this, SLOT(switchToMPR()));
     
@@ -274,6 +278,7 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     
     QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
     tridMenu->addAction (vrAct);
+    tridMenu->addAction (vrGPUAct);
     tridMenu->addAction (mprAct);
 
     d->menu->addSeparator();
@@ -401,7 +406,8 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     this->setProperty ("ShowAnnotations",      "true");
     this->setProperty ("LookupTable",          "Default");
     this->setProperty ("MouseInteraction",     "Zooming");
-    this->setProperty ("3DMode",               "VR");
+//    this->setProperty ("3DMode",               "VR");
+    this->setProperty ("Renderer",               "GPU");
     this->setProperty ("UseLOD",               "On");
     this->setProperty ("Cropping",             "false");
     this->setProperty ("Preset",               "None");
@@ -485,6 +491,9 @@ void v3dViewPublic::onPropertySet(const QString &key, const QString &value)
     if(key == "3DMode")
         this->on3DModePropertySet(value);
     
+    if(key == "Renderer")
+        this->onRendererPropertySet(value);
+
     if(key == "Preset")
         this->onPresetPropertySet(value);
     
@@ -649,6 +658,7 @@ void v3dViewPublic::onOrientationPropertySet(const QString &value)
 void v3dViewPublic::on3DModePropertySet (const QString &value)
 {
     if (value=="VR") {
+        d->view3D->SetVRMapperTypeToTexture();
         d->view3D->SetRenderingModeToVR();
         d->view3D->SetVolumeRayCastFunctionToComposite();
     }
@@ -671,6 +681,16 @@ void v3dViewPublic::on3DModePropertySet (const QString &value)
         d->view3D->ShowSagittalOff();
         d->view3D->ShowCoronalOff();
     } 
+}
+
+void v3dViewPublic::onRendererPropertySet (const QString &value)
+{
+    if (value=="GPU") {
+        qDebug() << "Set rendering mode to GPU";
+        d->view3D->SetVRMapperTypeToGPU();
+        d->view3D->SetRenderingModeToVR();
+//        d->view3D->SetVolumeRayCastFunctionToComposite();
+    }
 }
 
 void v3dViewPublic::onShowScalarBarPropertySet(const QString &value)
@@ -1312,7 +1332,16 @@ void v3dViewPublic::switchToCoronal(void)
 
 void v3dViewPublic::switchToVR(void)
 {
+    qDebug() << "Switch to Texture mode";
     this->setProperty ("3DMode",      "VR");
+    this->setProperty ("Orientation", "3D");
+}
+
+void v3dViewPublic::switchToVRGPU(void)
+{
+    qDebug() << "Switch to GPU mode";
+//    this->setProperty ("3DMode",      "VR");
+    this->setProperty ("Renderer",      "GPU");
     this->setProperty ("Orientation", "3D");
 }
 
