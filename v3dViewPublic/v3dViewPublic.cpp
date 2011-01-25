@@ -180,7 +180,6 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     d->view2D->SetLinkWindowLevel (0);
     d->view2D->SetLinkVolumeIndex (0);
     d->view2D->SetAboutData("v3dViewPublic plugin");
-    
     d->currentView = d->view2D;
     
     // Setting up 3D view
@@ -196,11 +195,15 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     d->view3D->SetScalarBarVisibility(0);
     double color[3] = {1.0,1.0,1.0};
     d->view3D->SetTextColor(color);
-    d->view3D->ShadeOn();
+    d->view3D->ShadeOn();    
+    d->view3D->SetLinkPosition (0);
+    d->view3D->SetLinkZoom (0);
+    d->view3D->SetLinkCameraFocalAndPosition (0);	
+    d->view3D->SetLinkWindowLevel (0);
+    d->view3D->SetLinkVolumeIndex (0);
     d->view3D->SetAboutData("v3dViewPublic plugin");
-    
     d->view2D->AddChild( d->view3D );
-    //d->view3D->AddChild ( d->view2D );
+    // d->view3D->AddChild ( d->view2D );
     
     vtkRenderWindow* renwinAxial = vtkRenderWindow::New();
     renwinAxial->StereoCapableWindowOn();
@@ -406,8 +409,8 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     this->setProperty ("ShowAnnotations",      "true");
     this->setProperty ("LookupTable",          "Default");
     this->setProperty ("MouseInteraction",     "Zooming");
-//    this->setProperty ("3DMode",               "VR");
-    this->setProperty ("Renderer",               "GPU");
+    // this->setProperty ("3DMode",               "VR");
+    this->setProperty ("Renderer",             "GPU");
     this->setProperty ("UseLOD",               "On");
     this->setProperty ("Cropping",             "false");
     this->setProperty ("Preset",               "None");
@@ -690,6 +693,12 @@ void v3dViewPublic::onRendererPropertySet (const QString &value)
         d->view3D->SetRenderingModeToVR();
 //        d->view3D->SetVolumeRayCastFunctionToComposite();
     }
+
+    if (value=="Texture") {
+        d->view3D->SetVRMapperTypeToTexture();
+        d->view3D->SetRenderingModeToVR();
+//        d->view3D->SetVolumeRayCastFunctionToComposite();
+    }
 }
 
 void v3dViewPublic::onShowScalarBarPropertySet(const QString &value)
@@ -893,7 +902,32 @@ void v3dViewPublic::onCroppingPropertySet (const QString &value)
 
 void v3dViewPublic::reset(void)
 {
-    d->view2D->SyncReset();
+    d->view2D->Reset();
+    d->view3D->Reset();
+
+    int linkWindowing = d->view2D->GetLinkWindowLevel();
+    if (linkWindowing)
+    {
+      d->view2D->SetLinkWindowLevel (0);
+      d->view2D->SyncResetWindowLevel();
+      d->view2D->SetLinkWindowLevel (linkWindowing);
+    }
+        
+    int linkPosition = d->view2D->GetLinkPosition();
+    if (linkPosition)
+    {
+      d->view2D->SetLinkPosition (0);
+      d->view2D->SyncResetCurrentPoint();
+      d->view2D->SetLinkPosition (linkPosition);
+    }
+
+    int linkZoom = d->view2D->GetLinkZoom();
+    if (linkZoom)
+    {
+      d->view2D->SetLinkZoom (0);
+      d->view2D->SyncResetZoom();
+      d->view2D->SetLinkZoom (linkZoom);
+    }
     
     int zslice = d->view2D->GetZSlice();
     
@@ -919,24 +953,33 @@ void v3dViewPublic::link(dtkAbstractView *other)
     if (v3dViewPublic *otherView = dynamic_cast<v3dViewPublic*>(other)) {
         
         //otherView->setProperty ("Linked", "true");
-        
+
       if (d->lastLinked)
-	      d->lastLinked->AddChild ( otherView->view2D() );
+	  d->lastLinked->AddChild ( otherView->view2D() );
       else
           d->view2D->AddChild ( otherView->view2D() );
         
         otherView->view2D()->AddChild ( d->view2D );
         d->lastLinked = otherView->view2D();
-        
+
+	/*
         d->view2D->SetLinkPosition (1);
         d->view2D->SetLinkZoom (1);
         d->view2D->SetLinkCameraFocalAndPosition (1);
         d->view2D->SetLinkWindowLevel (1);
         d->view2D->SetLinkVolumeIndex (1);
+
+	d->view3D->SetLinkPosition (1);
+        d->view3D->SetLinkZoom (1);
+        d->view3D->SetLinkCameraFocalAndPosition (1);
+        d->view3D->SetLinkWindowLevel (1);
+        d->view3D->SetLinkVolumeIndex (1);
+	*/
         
         this->setProperty ("PositionLinked",  "true");
         this->setProperty ("CameraLinked",    "true");
         this->setProperty ("WindowingLinked", "true");
+	
     }
 }
 
@@ -949,7 +992,9 @@ void v3dViewPublic::unlink(dtkAbstractView *other)
     
     if (v3dViewPublic *otherView = dynamic_cast<v3dViewPublic*>(other)) {
         
+        otherView->view2D()->RemoveChild( otherView->view3D() );
         otherView->view2D()->Detach();
+        otherView->view2D()->AddChild( otherView->view3D() );
 		
         if (d->lastLinked==otherView->view2D()) {
             if (d->linkedViews.count())
@@ -964,7 +1009,13 @@ void v3dViewPublic::unlink(dtkAbstractView *other)
 		d->view2D->SetLinkZoom (0);
 		d->view2D->SetLinkCameraFocalAndPosition (0);
 		d->view2D->SetLinkWindowLevel (0);
-        d->view2D->SetLinkVolumeIndex (0);
+		d->view2D->SetLinkVolumeIndex (0);
+
+		d->view3D->SetLinkPosition (0);
+		d->view3D->SetLinkZoom (0);
+		d->view3D->SetLinkCameraFocalAndPosition (0);
+		d->view3D->SetLinkWindowLevel (0);
+		d->view3D->SetLinkVolumeIndex (0);
 		
 		this->setProperty ("PositionLinked",  "false");
 		this->setProperty ("CameraLinked",    "false");
@@ -1073,6 +1124,12 @@ void v3dViewPublic::setData(dtkAbstractData *data)
         if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2D->SetITKImage(image);
             d->view3D->SetITKImage(image);
+        }
+    }
+    else if (data->description()=="itkDataImageInt4") {
+        if( itk::Image<int, 4>* image = dynamic_cast<itk::Image<int, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2D->SetITKImage4(image);
+            d->view3D->SetITKImage4(image);
         }
     }
     else if (data->description()=="itkDataImageUInt3") {
@@ -1227,11 +1284,26 @@ void v3dViewPublic::linkPosition (dtkAbstractView *view, bool value)
         if (value) {
             vview->setProperty ("PositionLinked", "true");
             vview->setProperty ("CameraLinked",   "true");
+	    
+	    d->view2D->SetLinkPosition (1);
+	    d->view2D->SetLinkZoom (1);
+	    d->view2D->SetLinkCameraFocalAndPosition (1);
+	    d->view2D->SetLinkVolumeIndex (1);
+	    
+	    d->view3D->SetLinkPosition (1);
+	    d->view3D->SetLinkZoom (1);
+	    d->view3D->SetLinkCameraFocalAndPosition (1);
+	    d->view3D->SetLinkVolumeIndex (1);
             
             vview->view2D()->SetLinkPosition ( 1 );
             vview->view2D()->SetLinkZoom ( 1 );
             vview->view2D()->SetLinkCameraFocalAndPosition (1);
-            vview->view2D()->SetLinkVolumeIndex (1);		  
+            vview->view2D()->SetLinkVolumeIndex (1);
+
+	    vview->view3D()->SetLinkPosition ( 1 );
+            vview->view3D()->SetLinkZoom ( 1 );
+            vview->view3D()->SetLinkCameraFocalAndPosition (1);
+            vview->view3D()->SetLinkVolumeIndex (1);		  
             
             vview->view2D()->SetCurrentPoint    ( d->currentView->GetCurrentPoint() );
             vview->view3D()->SetCurrentPoint       ( d->currentView->GetCurrentPoint() );
@@ -1251,6 +1323,11 @@ void v3dViewPublic::linkPosition (dtkAbstractView *view, bool value)
             vview->view2D()->SetLinkZoom ( 0 );
             vview->view2D()->SetLinkCameraFocalAndPosition (0);
             vview->view2D()->SetLinkVolumeIndex (0);
+
+	    vview->view3D()->SetLinkPosition ( 0 );
+            vview->view3D()->SetLinkZoom ( 0 );
+            vview->view3D()->SetLinkCameraFocalAndPosition (0);
+            vview->view3D()->SetLinkVolumeIndex (0);
         }
     }
 }
@@ -1265,8 +1342,12 @@ void v3dViewPublic::linkWindowing (dtkAbstractView *view, bool value)
     if (v3dViewPublic *vview = dynamic_cast<v3dViewPublic*>(view)) {
         if (value) {
             vview->setProperty ("WindowingLinked", "true");
-            
+
+	    d->view2D->SetLinkWindowLevel (1);
+	    d->view3D->SetLinkWindowLevel (1);
+	    
             vview->view2D()->SetLinkWindowLevel ( 1 );
+	    vview->view3D()->SetLinkWindowLevel ( 1 );
             
             vview->view2D()->SetWindow    ( d->currentView->GetWindow() );
             vview->view3D()->SetWindow       ( d->currentView->GetWindow() );
@@ -1277,6 +1358,7 @@ void v3dViewPublic::linkWindowing (dtkAbstractView *view, bool value)
         else {
             vview->setProperty ("WindowingLinked", "false");
             vview->view2D()->SetLinkWindowLevel ( 0 );
+	    vview->view3D()->SetLinkWindowLevel ( 0 );
         }
     }
 }
