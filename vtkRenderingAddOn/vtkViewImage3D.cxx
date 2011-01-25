@@ -181,9 +181,9 @@ vtkViewImage3D::vtkViewImage3D ()
   this->VolumeGPUMapper3D = vtkGPUVolumeRayCastMapper::New();
   this->VolumeGPUMapper3D->CroppingOn();
   this->VolumeGPUMapper3D->SetCroppingRegionFlags(0x7ffdfff);
-  this->VolumeGPUMapper3D->SetSampleDistance(1.0);
+  this->VolumeGPUMapper3D->AutoAdjustSampleDistancesOn();
 
-  this->VolumeMapper3D = this->VolumeGPUMapper3D;
+  this->VolumeMapper3D = this->VolumeTextureMapper3D; //this->VolumeGPUMapper3D;
 
   
   this->OpacityFunction->AddPoint (0, 0.0);
@@ -467,11 +467,13 @@ void vtkViewImage3D::SetImage ( vtkImageData* image )
 
   this->VolumeMapper3D->SetInput(this->GetImage());
 
+  /*
   double* spacing = this->GetImage()->GetSpacing();
   double  sampleDistance = 0.33*0.1*(spacing[0]+spacing[1]+spacing[2]);
 
   this->VolumeTextureMapper3D->SetSampleDistance (sampleDistance);
   this->VolumeGPUMapper3D->SetSampleDistance (sampleDistance);
+  */
   
   vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::SafeDownCast ( this->VolumeActor->GetMapper() );
   if( mapper3D && !this->GetRenderWindow()->GetNeverRendered() )
@@ -824,6 +826,8 @@ void vtkViewImage3D::SetVRMapperType(int type)
     if( this->VRMapperType==type )
       return;
 
+    vtkVolumeMapper *oldMapper = this->VolumeMapper3D;
+
     switch(type)
     {
         case TextureMapper3D:
@@ -835,10 +839,16 @@ void vtkViewImage3D::SetVRMapperType(int type)
         default :
             vtkErrorMacro ( << "Unknown VR Mapper type!");
     };
+    
+    // copy settings from oldMapper
+    this->VolumeMapper3D->SetInput     ( oldMapper->GetInput() );
+    this->VolumeMapper3D->SetCropping  ( oldMapper->GetCropping() );
+    this->VolumeMapper3D->SetBlendMode ( oldMapper->GetBlendMode() );
+    
+    this->Callback->SetVolumeMapper ( this->VolumeMapper3D );
+    this->VolumeActor->SetMapper    ( this->VolumeMapper3D );
 
-    this->VolumeMapper3D->SetInput (this->GetImage());
-    this->Callback->SetVolumeMapper(this->VolumeMapper3D);
-    this->VolumeActor->SetMapper( this->VolumeMapper3D );
+    this->Callback->Execute (this->BoxWidget, 0, NULL);
 }
 
 void vtkViewImage3D::PrintSelf(ostream& os, vtkIndent indent)
