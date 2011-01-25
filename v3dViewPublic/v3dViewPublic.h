@@ -58,6 +58,7 @@ public slots:
     void onPropertySet         (const QString &key, const QString &value);
     void onOrientationPropertySet           (const QString &value);
     void on3DModePropertySet                (const QString &value);
+    void onRendererPropertySet              (const QString &value);
     void onPresetPropertySet                (const QString &value);
     void onShowScalarBarPropertySet         (const QString &value);
     void onLookupTablePropertySet           (const QString &value);
@@ -82,6 +83,7 @@ public slots:
     void switchToSagittal(void);
     void switchToCoronal(void);
     void switchToVR(void);
+    void switchToVRGPU(void);
     void switchToMPR(void);
     void onMenuZoomTriggered (void);
     void onMenuWindowLevelTriggered (void);
