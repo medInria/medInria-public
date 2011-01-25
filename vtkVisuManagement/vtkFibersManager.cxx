@@ -60,8 +60,8 @@ vtkCxxRevisionMacro(vtkFibersManager, "$Revision: 1467 $");
 vtkStandardNewMacro(vtkFibersManager);
 
 
-static int vtkUseHardwareShaders = 0;
-static int vtkFiberRenderingStyle = 0;
+int vtkFibersManager::vtkUseHardwareShaders  = 0;
+int vtkFibersManager::vtkFiberRenderingStyle = 0;
 
 
 /**
@@ -508,7 +508,7 @@ vtkFibersManager::vtkFibersManager()
   this->BoxWidget->RotationEnabledOff();
   this->BoxWidget->SetPlaceFactor (1.0);
   this->BoxWidget->AddObserver (vtkCommand::InteractionEvent, this->Callback);
-  this->BoxWidgetVisibility = true;
+  this->BoxWidgetVisibility = false;
 
   // create the pipeline
   this->Squeezer->ReleaseDataFlagOn();
@@ -565,7 +565,7 @@ vtkFibersManager::vtkFibersManager()
     
   this->Mapper->SetInput ( this->Callback->GetOutput() );
   this->Mapper->SetScalarModeToUsePointData();
-  this->Actor->SetMapper (this->Mapper);
+  // this->Actor->SetMapper (this->Mapper); // only when input is set
 
   this->HelpMessage = vtkCornerAnnotation::New();
   this->HelpMessage->SetNonlinearFontScaleFactor (0.25);
@@ -594,14 +594,16 @@ vtkFibersManager::vtkFibersManager()
 
 vtkFibersManager::~vtkFibersManager()
 {
+  this->Disable();
+  
   if( this->RenderWindowInteractor )
   {
-    this->RemoveAllActors();
+    // this->RemoveAllActors();
     this->RenderWindowInteractor->Delete();
   }
   
   this->BoxWidget->RemoveObserver (this->Callback);
-  this->BoxWidget->SetInteractor (NULL);
+  // this->BoxWidget->SetInteractor (NULL);
   
   this->BoxWidget->Delete();
   this->Callback->Delete();
@@ -619,17 +621,78 @@ vtkFibersManager::~vtkFibersManager()
   this->Actor->Delete();
 }
 
-void vtkFibersManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin, vtkRenderer *ren)
+void vtkFibersManager::Enable()
+{
+  if (this->RenderWindowInteractor)
+  {
+    vtkCellPicker* picker = vtkCellPicker::New();
+    picker->AddObserver (vtkCommand::EndPickEvent, this->PickerCallback, 0.0 );
+    picker->SetTolerance (0.001);
+    
+    this->RenderWindowInteractor->SetPicker ( picker );
+    this->RenderWindowInteractor->AddObserver (vtkCommand::CharEvent, this->KeyboardCallback, 0.0 );
+    
+    picker->Delete();
+
+    this->BoxWidget->SetInteractor (this->RenderWindowInteractor);
+
+    if (this->BoxWidgetVisibility)
+      this->BoxWidget->On();
+    
+    /*
+    if (!this->Renderer)
+    {
+      int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
+      this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
+    
+      this->Renderer = vtkRenderer::New();
+      this->Renderer->SetLayer ( numLayers );
+
+      this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
+      if (vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem())
+	this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
+    
+      this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
+    
+      this->Renderer->Delete();
+    }
+    */
+  }
+
+  if (this->Renderer)
+  {
+    this->Renderer->AddActor ( this->Actor );
+    this->Renderer->AddActor ( this->PickerCallback->GetPickedActor() );
+    this->Renderer->AddActor ( this->HelpMessage );
+  }
+}
+
+void vtkFibersManager::Disable()
+{
+  if (this->Renderer)
+  {
+    this->Renderer->RemoveActor ( this->Actor );
+    this->Renderer->RemoveActor ( this->PickerCallback->GetPickedActor() );
+    this->Renderer->RemoveActor ( this->HelpMessage );
+  }
+  
+  if( this->RenderWindowInteractor )
+  { 
+    this->RenderWindowInteractor->RemoveObserver(this->KeyboardCallback);
+    this->RenderWindowInteractor->SetPicker (0);
+  }
+  this->BoxWidget->SetInteractor (0);
+}
+
+void vtkFibersManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin)
 {
   if( rwin != this->RenderWindowInteractor )
   {
     if( this->RenderWindowInteractor != NULL )
     {
-      this->RemoveAllActors();
-      this->RenderWindowInteractor->RemoveObserver(this->KeyboardCallback);
+      this->Disable();
       this->RenderWindowInteractor->UnRegister (this);
     }
-    this->BoxWidget->SetInteractor (rwin);
     this->RenderWindowInteractor = rwin;
 	  
     if( this->RenderWindowInteractor )
@@ -638,46 +701,51 @@ void vtkFibersManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwi
     }
   }
 
-  if (ren)
+  this->Enable();
+
+  /*
+  if (this->RenderWindowInteractor)
   {
-    this->Renderer = ren;
+    vtkCellPicker* picker = vtkCellPicker::New();
+    picker->AddObserver (vtkCommand::EndPickEvent, this->PickerCallback, 0.0 );
+    picker->SetTolerance (0.001);
+    
+    this->RenderWindowInteractor->SetPicker ( picker );
+    this->RenderWindowInteractor->AddObserver (vtkCommand::CharEvent, this->KeyboardCallback, 0.0 );
+    
+    picker->Delete();
+
+    if (!this->Renderer)
+    {
+      int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
+      this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
+    
+      this->Renderer = vtkRenderer::New();
+      this->Renderer->SetLayer ( numLayers );
+
+      this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
+      if (vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem())
+	this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
+    
+      this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
+    
+      this->Renderer->Delete();
+    }
+
+    this->Renderer->AddActor ( this->Actor );
+    this->Renderer->AddActor ( this->PickerCallback->GetPickedActor() );
+    this->Renderer->AddActor ( this->HelpMessage );
   }
-  else if (this->RenderWindowInteractor && !this->Renderer)
-  {
-    this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-    vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
-    
-    int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
-    this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
-    
-    this->Renderer = vtkRenderer::New();
-    this->Renderer->SetLayer ( numLayers );
-    if (first_renderer)
-      this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
-    
-    this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
-    
-    this->Renderer->Delete();
-  }
+  */
 }
 
 void vtkFibersManager::RemoveAllActors()
-{
-  if( this->RenderWindowInteractor && this->RenderWindowInteractor->GetRenderWindow() )
+{ 
+  if (this->Renderer)
   {
-    vtkRenderer *renderer = this->Renderer;
-    if (!renderer)
-    {
-      this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-      renderer = this->RenderWindowInteractor->FindPokedRenderer(this->RenderWindowInteractor->GetLastEventPosition()[0],
-								 this->RenderWindowInteractor->GetLastEventPosition()[1]);
-    }
-    if (renderer)
-    {
-      renderer->RemoveActor ( this->Actor );
-      renderer->RemoveActor ( this->PickerCallback->GetPickedActor() );
-      renderer->RemoveActor ( this->HelpMessage );
-    }
+    this->Renderer->RemoveActor ( this->Actor );
+    this->Renderer->RemoveActor ( this->PickerCallback->GetPickedActor() );
+    this->Renderer->RemoveActor ( this->HelpMessage );
   }
 }
 
@@ -688,10 +756,17 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
     return;
   }
 
+  if (!this->RenderWindowInteractor)
+  {
+    vtkErrorMacro ( << "Interactor must be set prior to setting input");
+    return;
+  }
+
   this->Initialize();
   this->Input = input;
   
   this->Callback->GetROIFiberLimiter()->SetInput ( this->GetInput() );
+  this->Actor->SetMapper (this->Mapper);
   
   if( this->Renderer )
   {
@@ -714,36 +789,6 @@ void vtkFibersManager::SetInput(vtkPolyData* input)
   this->Squeezer->SetOnRatio ( (int)ratio );
   this->TubeFilter->SetInputConnection( this->Callback->GetFiberLimiter()->GetOutputPort() );
   this->RibbonFilter->SetInputConnection( this->Callback->GetFiberLimiter()->GetOutputPort() );
-  
-  // add the actor to the rwin
-  if( this->RenderWindowInteractor )
-  {
-    vtkRenderer *renderer = this->Renderer;
-    if (!renderer)
-    {
-      this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-      renderer = this->RenderWindowInteractor->FindPokedRenderer(
-								 this->RenderWindowInteractor->GetLastEventPosition()[0],
-								 this->RenderWindowInteractor->GetLastEventPosition()[1]);
-    }
-    
-    if (renderer)
-    {
-      renderer->AddActor ( this->Actor );
-      renderer->AddActor ( this->PickerCallback->GetPickedActor() );
-      renderer->AddActor ( this->HelpMessage );
-    }
-    
-    vtkCellPicker* picker = vtkCellPicker::New();
-    picker->AddObserver (vtkCommand::EndPickEvent, this->PickerCallback, 0.0 );
-    picker->SetTolerance (0.001);
-    
-    this->RenderWindowInteractor->SetPicker ( picker );
-    
-    this->RenderWindowInteractor->AddObserver (vtkCommand::CharEvent, this->KeyboardCallback, 0.0 );
-    
-    picker->Delete();
-  }
 }
 
 void vtkFibersManager::SwapInputOutput()
@@ -778,7 +823,6 @@ void vtkFibersManager::Reset()
   
   this->Callback->Execute (this->BoxWidget, 0, NULL);
 }
-
 
 void vtkFibersManager::SetVisibility (bool isVisible)
 {
@@ -873,7 +917,6 @@ void vtkFibersManager::SetRenderingMode(int mode)
 {
   switch(mode)
   {
-    
       case RENDER_IS_POLYLINES:
 	this->SetRenderingModeToPolyLines();
 	break;
@@ -1030,6 +1073,11 @@ void vtkFibersManager::SetRadius (double r)
 {
   this->TubeFilter->SetRadius (r);
   this->RibbonFilter->SetWidth (r);
+}
+
+double vtkFibersManager::GetRadius (void) const
+{
+  return this->TubeFilter->GetRadius ();
 }
 
 vtkCellArray* vtkFibersManager::GetSelectedCells (void) const

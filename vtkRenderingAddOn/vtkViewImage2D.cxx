@@ -228,6 +228,7 @@ vtkViewImage2D::vtkViewImage2D()
   this->GetCornerAnnotation()->SetWindowLevel ( this->WindowLevelForCorner );
 
   this->Orientation = vtkViewImage::NB_PLAN_IDS;
+  this->ViewOrientation = vtkViewImage::NB_PLAN_IDS;
   this->SetOrientation ( vtkViewImage::AXIAL_ID );
 
   if( vtkViewImage2D::GetViewImage2DDisplayConventions()==0 )
@@ -561,35 +562,8 @@ void vtkViewImage2D::UpdatePosition ()
   this->GetCurrentPoint(pos);
   pos[3] = 1.0;
 
-  double* spacing = this->GetImage()->GetSpacing();
-  //double* origin  = this->GetImage()->GetOrigin();
-  
-  // check if pos lies inside image bounds
-  /*
-  double *imBounds = this->GetImage()->GetBounds();
-  if( pos[0]<imBounds[0] || pos[0]>imBounds[1] ||
-      pos[1]<imBounds[2] || pos[1]>imBounds[3] ||
-      pos[2]<imBounds[4] || pos[2]>imBounds[5])
-  {
-    // we are outside image bounds
-    return;
-  }
-  */
-  
-  // round to the nearest integer slice
-  /*
-    pos[0] = vtkMath::Round ((pos[0]-origin[0])/spacing[0] )*spacing[0]+origin[0];
-    pos[1] = vtkMath::Round ((pos[1]-origin[1])/spacing[1] )*spacing[1]+origin[1];
-    pos[2] = vtkMath::Round ((pos[2]-origin[2])/spacing[2] )*spacing[2]+origin[2];
-  */
-  
-  /*
-    double *bounds = this->ImageActor->GetBounds();
-    min_x = bounds[0];
-    max_x = bounds[1];
-    min_y = bounds[2];
-    max_y = bounds[3];
-  */
+  double spacing[3];
+  this->GetImage()->GetSpacing( spacing );
 
   double min_bounds[4] = { this->GetWholeMinPosition(0),
 			   this->GetWholeMinPosition(1),
@@ -623,64 +597,6 @@ void vtkViewImage2D::UpdatePosition ()
   min_x = min_bounds[0];
   min_y = min_bounds[1];
 
-  /*
-  switch (this->Orientation)
-  {
-      case vtkViewImage::SAGITTAL_ID:
-
-        this->ImageReslice->SetResliceAxesOrigin(pos[0],0,0);
-        x = (double)pos[1];vtkViewImage2D::
-        y = (double)pos[2];
-	max_x = bounds[3];
-	max_y = bounds[5];
-	min_x = bounds[2];
-	min_y = bounds[4];
-        break;
-
-      case vtkViewImage::CORONAL_ID:
-
-        this->ImageReslice->SetResliceAxesOrigin(0,pos[1],0);
-        if( this->Conventions==RADIOLOGIC )
-        {
-          x = (double)pos[0];
-          max_x = bounds[1];
-          min_x = bounds[0];
-        }
-        else
-        {
-          x = (double)pos[0]*-1.0;
-          max_x = bounds[1]*-1.0;
-          min_x = bounds[0]*-1.0;
-        }
-        y = (double)pos[2];
-        max_y = bounds[5];
-        min_y = bounds[4];
-        break;
-
-
-      case vtkViewImage::AXIAL_ID:
-
-        this->ImageReslice->SetResliceAxesOrigin(0,0,pos[2]);
-
-        if( this->Conventions==RADIOLOGIC )
-        {
-          x = (double)pos[0];
-          max_x = bounds[1];
-          min_x = bounds[0];
-        }
-        else
-        {
-          x = (double)pos[0]*-1.0;
-          max_x = bounds[1]*-1.0;
-          min_x = bounds[0]*-1.0;
-        }
-        y = (double)pos[1]*-1.0;
-        max_y = bounds[3]*-1.0;
-        min_y = bounds[2]*-1.0;
-        break;
-  }
-  */
-
 
   this->HorizontalLineSource->SetPoint1(min_x, y, 0.001);
   this->HorizontalLineSource->SetPoint2(max_x, y, 0.001);
@@ -693,66 +609,62 @@ void vtkViewImage2D::UpdatePosition ()
 
   int imCoor[3];
   this->GetCurrentVoxelCoordinates(imCoor);
+  
   int dims[3];
   this->GetImage()->GetDimensions (dims);
-
-  std::ostringstream os2;
+  
   std::ostringstream os;
-  //os << "Slice: ";
+  std::ostringstream os2;
+  
+  int orthogonalAxis = this->GetOrthogonalAxis (this->Orientation);
 
-  os2 << "Zoom: " << this->GetZoom()*100.0 << " \%\n";
-    
+  int xaxis = 0;
+  int yaxis = 1;
+  
   switch( this->Orientation )
   {
-      case vtkViewImage::AXIAL_ID :
-	os << "Image size: " << dims[0] << " x " << dims[1] << "\n";
-	os << "Voxel size: " << spacing[0] << " x " << spacing[1] << "\n";
-	//os << imCoor[2] << " / " << dims[2]-1 << std::endl;
-	os << "X: " << imCoor[0] << " px Y: " << imCoor[1] << " px Value: "
-	   << this->GetCurrentPointDoubleValue() << std::endl;
-	os << "X: " << pos[0] << " mm Y: " << pos[1] << " mm\n";
-	if ( this->ShowSliceNumber )
-	  os2 << "Slice: " << imCoor[2] << " / " << dims[2]-1 << std::endl;
-	os2 << "Location: " << pos[2] << " mm";
+      case vtkViewImage::Z_ID:
+	xaxis = this->GetOrthogonalAxis(SAGITTAL_ID);
+	yaxis = this->GetOrthogonalAxis(CORONAL_ID);
 	break;
 	  
-	
-      case vtkViewImage::CORONAL_ID :
-	os << "Image size: " << dims[0] << " x " << dims[2] << "\n";
-	os << "Voxel size: " << spacing[0] << " x " << spacing[2] << "\n";
-	//os << imCoor[1] << " / " << dims[1]-1 << std::endl;
-	os << "X: " << imCoor[0] << " px Z: " << imCoor[2] << " px Value: "
-	   << this->GetCurrentPointDoubleValue() << std::endl;
-	os << "X: " << pos[0] << " mm Z: " << pos[2] << " mm\n";
-	if ( this->ShowSliceNumber )
-	  os2 << "Slice: " << imCoor[1] << " / " << dims[1]-1 << std::endl;
-	os2 << "Location: " << pos[1] << " mm";
+      case vtkViewImage::Y_ID:
+	xaxis = this->GetOrthogonalAxis(SAGITTAL_ID);
+	yaxis = this->GetOrthogonalAxis(AXIAL_ID);
 	break;
 	
-	
-      case vtkViewImage::SAGITTAL_ID :
-	os << "Image size: " << dims[1] << " x " << dims[2] << "\n";
-	os << "Voxel size: " << spacing[1] << " x " << spacing[2] << "\n";
-	//os << imCoor[0] << " / " << dims[0]-1 << std::endl;
-	os << "Y: " << imCoor[1] << " px Z: " << imCoor[2] << " px Value: "
-	   << this->GetCurrentPointDoubleValue() << std::endl;
-	os << "Y: " << pos[1] << " mm Z: " << pos[2] << " mm\n";
-	if ( this->ShowSliceNumber )
-	  os2 << "Slice: " << imCoor[0] << " / " << dims[0]-1 << std::endl;
-	os2 << "Location: " << pos[0] << " mm";
+      case vtkViewImage::X_ID:
+      default:
+	xaxis = this->GetOrthogonalAxis(CORONAL_ID);
+	yaxis = this->GetOrthogonalAxis(AXIAL_ID);
 	break;
   }
+
+  os << "Image size: " << dims[xaxis] << " x " << dims[yaxis] << "\n";
+  os << "Voxel size: " << spacing[xaxis] << " x " << spacing[yaxis] << "\n";
+  os << "X: " << imCoor[xaxis] << " px Y: " << imCoor[yaxis] << " px Value: "
+     << this->GetCurrentPointDoubleValue() << std::endl;
+  os << "X: " << pos[xaxis] << " mm Y: " << pos[yaxis] << " mm\n";
+
+  os2 << "Zoom: " << this->GetZoom()*100.0 << " %\n";
+  if ( this->ShowSliceNumber )
+    os2 << "Slice: " << imCoor[orthogonalAxis] << " / " << dims[orthogonalAxis]-1 << std::endl;
+  os2 << "Location: " << pos[orthogonalAxis] << " mm";
+
   os << "<window_level>";
   
   this->SetUpLeftAnnotation( os.str().c_str() );
   this->SetDownLeftAnnotation( os2.str().c_str() );
-  //  }
-  //  else
-  //    this->SetUpRightAnnotation("");
+
+
+  vtkMatrix4x4 *t_direction = this->GetDirectionMatrix();
+  t_direction->MultiplyPoint (reslice, reslice);
   
-  unsigned int direction = this->GetOrthogonalAxis (this->GetOrientation());
   this->DataSetCutPlane->SetOrigin (reslice[0], reslice[1], reslice[2]);
-  
+
+  //unsigned int direction = this->GetOrthogonalAxis (this->GetOrientation());
+  unsigned int direction = this->GetOrientation();
+    
   switch(direction)
   {
       case X_ID :
@@ -771,11 +683,10 @@ void vtkViewImage2D::UpdatePosition ()
       case Z_ID :
         //this->DataSetCutPlane->SetNormal (0,0,1);
 	this->DataSetCutBox->SetBounds (this->GetWholeMinPosition(0),this->GetWholeMaxPosition(0),
-					this->GetWholeMinPosition(1),this->GetWholeMaxPosition(1),
-					this->DataSetCutPlane->GetOrigin()[2],this->DataSetCutPlane->GetOrigin()[2]+this->BoxThickness);
+					this->GetWholeMinPosition(1), this->GetWholeMaxPosition(1),
+					this->DataSetCutPlane->GetOrigin()[2], this->DataSetCutPlane->GetOrigin()[2]+this->BoxThickness);
 	break;
   }
-
 
   if( this->DataSetList.size() )
   {
@@ -1087,10 +998,10 @@ void vtkViewImage2D::SetImage(vtkImageData* image)
     this->SetCameraFocalAndPosition (focal, pos);
   }
 
-  if( this->RulerWidgetVisibility )
+  if( this->GetRenderWindowInteractor() && this->RulerWidgetVisibility )
     this->RulerWidget->On();
 
-  if( this->DistanceWidgetVisibility )
+  if( this->GetRenderWindowInteractor() && this->DistanceWidgetVisibility )
     this->DistanceWidget->On();
 
   this->SetFirstImage (0);
@@ -1190,13 +1101,30 @@ vtkScalarsToColors* vtkViewImage2D::GetBGLookupTable (void) const
 
 void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
 {
-  if( (p_orientation > vtkViewImage::NB_PLAN_IDS - 1) || (this->Orientation == p_orientation) )
-  {
-    return;
-  }
-
-  this->Orientation = p_orientation;
-
+    this->ViewOrientation = p_orientation;
+  
+    unsigned int sliceorientation = 0;
+    double dot = 0;
+    
+    if ( this->GetDirectionMatrix() )
+     {
+        for (unsigned int i=0; i<3; i++)
+         {
+            if (dot < std::abs (this->GetDirectionMatrix()->GetElement (i, p_orientation)))
+             {
+                dot = std::abs (this->GetDirectionMatrix()->GetElement (i, p_orientation));
+                sliceorientation = i;
+             }
+         }
+     }
+    
+    if( (sliceorientation > vtkViewImage::NB_PLAN_IDS - 1) || (this->Orientation == sliceorientation) )
+     {
+        return;
+     }
+    
+    this->Orientation = sliceorientation;
+    
   
   // setup the OrientationMatrix and the ScreenToRealWorldMatrix. Then, we have no
   // need to check the view's orientation to determine what slice to display: a
@@ -1222,16 +1150,12 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
 	break;
 
       case vtkViewImage::AXIAL_ID:
-	resliceMatrix = this->GetAxialResliceMatrix();
-	break;
-
       default:
 	resliceMatrix = this->GetAxialResliceMatrix();
+	break;
   }
 
 
-
-  //vtkMatrix4x4::Multiply4x4 (directions, resliceMatrix, resultMatrix);
   vtkMatrix4x4 *t_directions = vtkMatrix4x4::New();
   vtkMatrix4x4::Transpose (directions, t_directions);
   vtkMatrix4x4::Multiply4x4 (t_directions, resliceMatrix, resultMatrix);
@@ -1255,8 +1179,8 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
   this->ImageReslice->SetResliceAxes ( resultMatrix );
   
 
-  unsigned int direction = this->GetOrthogonalAxis (this->GetOrientation());
-  switch(direction)
+  // unsigned int direction = this->GetOrthogonalAxis (this->GetOrientation());
+  switch(this->Orientation)
   {
       case X_ID :
 	this->DataSetCutPlane->SetNormal (1,0,0);
@@ -1269,6 +1193,29 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
 	break;
   }
 
+  vtkMatrix4x4* matrix = vtkMatrix4x4::New();
+  switch(this->Orientation)
+  {
+      case SAGITTAL_ID:
+	vtkMatrix4x4::Transpose (this->SagittalResliceMatrix, matrix);
+	break;
+	
+      case CORONAL_ID:
+	vtkMatrix4x4::Transpose (this->CoronalResliceMatrix, matrix);
+	break;
+	
+      case AXIAL_ID:
+      default:
+	vtkMatrix4x4::Transpose (this->AxialResliceMatrix, matrix);
+	break;
+  }
+
+  for (unsigned int i=0; i<this->DataSetActorList.size(); i++)
+  {
+    this->DataSetActorList[i]->SetUserMatrix (matrix);
+  }
+
+
   //this->ImageReslice->Modified();
 
   this->UpdateImageActor(); // make sure update extent are up to date
@@ -1278,6 +1225,7 @@ void vtkViewImage2D::SetOrientation(unsigned int p_orientation)
 
   resultMatrix->Delete();
   t_directions->Delete();
+  matrix->Delete();
   
   this->Modified();
 }
@@ -1415,13 +1363,16 @@ int vtkViewImage2D::GetInterpolationMode(void)
 void vtkViewImage2D::SetRulerWidgetVisibility (int val)
 {
   this->RulerWidgetVisibility = val;
-  if( this->RulerWidgetVisibility )
+  if (this->GetRenderWindowInteractor()) 
   {
-    this->RulerWidget->On();
-  }
-  else
-  {
-    this->RulerWidget->Off();
+    if( this->RulerWidgetVisibility )
+    {
+      this->RulerWidget->On();
+    }
+    else
+    {
+      this->RulerWidget->Off();
+    }
   }
 }
 
@@ -1429,13 +1380,16 @@ void vtkViewImage2D::SetRulerWidgetVisibility (int val)
 void vtkViewImage2D::SetDistanceWidgetVisibility (int val)
 {
   this->DistanceWidgetVisibility = val;
-  if( this->DistanceWidgetVisibility )
+  if (this->GetRenderWindowInteractor())
   {
-    this->DistanceWidget->On();
-  }
-  else
-  {
-    this->DistanceWidget->Off();
+    if( this->DistanceWidgetVisibility )
+    {
+      this->DistanceWidget->On();
+    }
+    else
+    {
+      this->DistanceWidget->Off();
+    }
   }
 }
 
@@ -1613,15 +1567,21 @@ vtkActor* vtkViewImage2D::AddDataSet (vtkDataSet* dataset,  vtkProperty* propert
     {
 
       vtkMatrix4x4* matrix = vtkMatrix4x4::New();
-      for (unsigned int i=0; i<3; i++)
+      switch(this->Orientation)
       {
-	for (unsigned int j=0; j<3; j++)
-	{
-	  matrix->SetElement(i,j,this->ImageReslice->GetResliceAxes()->GetElement(j,i));
-	}
-	matrix->SetElement(i,3,0);
+	  case SAGITTAL_ID:
+	    vtkMatrix4x4::Transpose (this->SagittalResliceMatrix, matrix);
+	    break;
+
+	  case CORONAL_ID:
+	    vtkMatrix4x4::Transpose (this->CoronalResliceMatrix, matrix);
+	    break;
+
+	  case AXIAL_ID:
+	  default:
+	    vtkMatrix4x4::Transpose (this->AxialResliceMatrix, matrix);
+	    break;
       }
-      matrix->SetElement(3,3,1);
 
       vtkCutter* cutter = vtkCutter::New();
       cutter->SetCutFunction ( this->DataSetCutPlane );
@@ -1655,6 +1615,7 @@ vtkActor* vtkViewImage2D::AddDataSet (vtkDataSet* dataset,  vtkProperty* propert
       //actor->PickableOff();
 
       this->AddActor (actor);
+
       this->DataSetList.push_back (dataset);
       this->DataSetActorList.push_back (actor);
 
@@ -1838,28 +1799,12 @@ void vtkViewImage2D::SetZoom (double factor)
     this->GetCurrentPoint (pos);
     int* dims = this->GetImage()->GetDimensions();
     std::ostringstream os;
-    os << "Zoom: " << this->GetZoom()*100.0 << " \%\n";
-    switch( this->Orientation )
-    {
-	case vtkViewImage::AXIAL_ID :
-	  if ( this->ShowSliceNumber )
-	    os << "Slice: " << imCoor[2] << " / " << dims[2]-1 << std::endl;
-	  os << "Location: " << pos[2] << " mm";
-	  break;
+    os << "Zoom: " << this->GetZoom()*100.0 << " %\n";
+    int orthogonalAxis = this->GetOrthogonalAxis (this->Orientation);
+    if ( this->ShowSliceNumber )
+      os << "Slice: " << imCoor[orthogonalAxis] << " / " << dims[orthogonalAxis]-1 << std::endl;
+    os << "Location: " << pos[orthogonalAxis] << " mm";
 
-	case vtkViewImage::CORONAL_ID :
-	  if ( this->ShowSliceNumber )
-	    os << "Slice: " << imCoor[1] << " / " << dims[1]-1 << std::endl;
-	  os << "Location: " << pos[1] << " mm";
-	  break;
-	  
-	case vtkViewImage::SAGITTAL_ID :
-	  if ( this->ShowSliceNumber )
-	  os << "Slice: " << imCoor[0] << " / " << dims[0]-1 << std::endl;
-	os << "Location: " << pos[0] << " mm";
-	break;
-    }
-    
     this->SetDownLeftAnnotation( os.str().c_str() );
   }
   
@@ -1914,9 +1859,8 @@ void vtkViewImage2D::SetDirectionMatrix (vtkMatrix4x4 *mat)
   vtkViewImage::SetDirectionMatrix (mat);
 
   // force to reset the reslice matrix
-  unsigned int orientation = this->GetOrientation();
   this->Orientation = vtkViewImage::NB_PLAN_IDS;
-  this->SetOrientation ( orientation );
+  this->SetOrientation ( this->ViewOrientation );
 
   this->ResetAndRestablishZoomAndCamera();
   this->Modified();

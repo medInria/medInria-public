@@ -129,7 +129,7 @@ void vtkDiffXMLWriter::Update(void)
     os<<"\t\t\t\t</Vertices>"<<std::endl;
     
     os<<"\t\t\t\t<Polygons number=\""<<metasurface->GetPolyData()->GetPolys()->GetNumberOfCells()<<"\">"<<std::endl;
-    for(unsigned int i=0;i<metasurface->GetPolyData()->GetPolys()->GetNumberOfCells();++i)
+    for(int i=0;i<metasurface->GetPolyData()->GetPolys()->GetNumberOfCells();++i)
     {
       metasurface->GetPolyData()->GetCellPoints(i, pointids);
       if (pointids->GetNumberOfIds() != 3)

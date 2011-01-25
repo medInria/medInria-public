@@ -27,6 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 class vtkImageData;
 class vtkVolumeTextureMapper3D;
+class vtkGPUVolumeRayCastMapper;
 class vtkVolumeMapper;
 class vtkPiecewiseFunction;
 class vtkColorTransferFunction;
@@ -82,6 +83,13 @@ public:
   };
   //ETX
   
+  // 2 possible mappers for volume rendering
+  enum VRMapperTypeIds
+  {
+    TextureMapper3D,
+    GPUMapper3D
+  };
+
 
   /**
      In some cases, we would like to call some cleaning
@@ -122,7 +130,7 @@ public:
     this->Modified();
   };
 
-  
+
   /**
      Set the rendering mode to planar views.
   */
@@ -138,6 +146,33 @@ public:
   */
   virtual void SetRenderingMode (int mode);
   vtkGetMacro (RenderingMode, int);
+
+
+  /**
+   * Set/Get rendering mapper type to texture
+   */
+  virtual void SetVRMapperTypeToTexture(void)
+  {
+      this->SetVRMapperType(TextureMapper3D);
+      this->Modified();
+  };
+
+  
+  /**
+   * Set/Get rendering mapper type to GPU
+   */
+  virtual void SetVRMapperTypeToGPU(void)
+  {
+      this->SetVRMapperType(GPUMapper3D);
+      this->Modified();
+  };
+
+  
+  /**
+   * Set/Get rendering mapper type
+   */
+  virtual void SetVRMapperType(int type);
+  vtkGetMacro (VRMapperType, int);
 
 
   /**
@@ -348,6 +383,12 @@ private:
   // texture mapper in 3D
   vtkVolumeMapper*                VolumeMapper3D;
 
+  // Default mapper in 3D (slow)
+  vtkVolumeTextureMapper3D*       VolumeTextureMapper3D;
+
+  // GPU mapper in 3D (fast)
+  vtkGPUVolumeRayCastMapper*      VolumeGPUMapper3D;
+
   // volume property
   vtkVolumeProperty*              VolumeProperty;
 
@@ -405,6 +446,9 @@ private:
   
   // rendering mode
   RenderingModeIds                RenderingMode;
+
+  // mapper type
+  VRMapperTypeIds                   VRMapperType;
 
   
   // annotated cube actor

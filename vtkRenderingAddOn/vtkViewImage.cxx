@@ -320,7 +320,10 @@ unsigned int vtkViewImage::GetOrthogonalAxis(unsigned int p_plan)
   
   for (int i=0; i<3; i++)
     if (fabs (axisVec[i])>0.0 )
+    {
       axis = i;
+      break;
+    }
 
   /*
   switch(p_plan)
@@ -341,7 +344,6 @@ unsigned int vtkViewImage::GetOrthogonalAxis(unsigned int p_plan)
   return 0;
   */
   return axis;
-  
 }
 
 

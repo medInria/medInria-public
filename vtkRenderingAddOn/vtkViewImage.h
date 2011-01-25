@@ -68,7 +68,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   /** Indices use in Vtk referentials corresponding to the standard x, y and z unitary vectors. */
   enum DirectionIds
   {
-    X_ID,
+    X_ID = 0,
     Y_ID,
     Z_ID,
     NB_DIRECTION_IDS  // The number of DirectionIds
@@ -81,7 +81,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
       the 3 directions (x,y,z). */
   enum PlanIds
   {
-    SAGITTAL_ID,
+    SAGITTAL_ID = 0,
     CORONAL_ID,
     AXIAL_ID,
     NB_PLAN_IDS  // The number of PlanIds

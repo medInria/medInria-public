@@ -19,5 +19,16 @@ vtkRendering
 vtkIO
 )
 
+ADD_EXECUTABLE(FiberDataSetReader
+FiberDataSetReader.cxx
+)
+
+TARGET_LINK_LIBRARIES(FiberDataSetReader
+vtkDataManagement
+vtkRenderingAddOn
+vtkVisuManagement
+vtkRendering
+vtkIO
+)
 
 

@@ -107,7 +107,13 @@ void vtkInteractorStyleImage2D::OnLeftButtonDown()
   {
     return;
   }
-  
+
+  if (this->Interactor->GetRepeatCount())
+  {
+    this->StartPick();
+    return;
+  }
+
   switch ( this->View->GetLeftButtonInteractionStyle() )
   {
       case vtkViewImage2D::WINDOW_LEVEL_INTERACTION :
@@ -812,14 +818,17 @@ void vtkInteractorStyleImage2D::PropagateCameraFocalAndPosition()
   double* pos   = camera->GetPosition ();
 
   bool LinkCamera = this->GetView()->GetLinkCameraFocalAndPosition();
-  this->GetView()->SetLinkCameraFocalAndPosition ( 0 );
-  this->GetView()->SyncSetCameraFocalAndPosition (focal, pos);
-  this->GetView()->SetLinkCameraFocalAndPosition ( LinkCamera );
+  if (LinkCamera)
+  {
+    this->GetView()->SetLinkCameraFocalAndPosition ( 0 );
+    this->GetView()->SyncSetCameraFocalAndPosition (focal, pos);
+    this->GetView()->SetLinkCameraFocalAndPosition ( LinkCamera );
+  }
 }
 
 void vtkInteractorStyleImage2D::DefaultMoveAction()
 {
   this->InvokeEvent (vtkViewImage2DCommand::DefaultMoveEvent ,this);
-	vtkRenderWindowInteractor *rwi = this->Interactor;
-	rwi->Render();
+  vtkRenderWindowInteractor *rwi = this->Interactor;
+  rwi->Render();
 }

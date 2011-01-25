@@ -7,6 +7,9 @@
   vtkDataManager.cxx
   vtkMetaDataSetSequence.cxx
   vtkDiffXMLWriter.cxx
+  vtkFiberDataSet.cxx
+  vtkXMLFiberDataSetReader.cxx
+  vtkXMLFiberDataSetWriter.cxx
   )
 
   IF (VTK_MAJOR_VERSION GREATER 4)
@@ -63,6 +66,7 @@
 
     SET_SOURCE_FILES_PROPERTIES(
      vtkDataManagerCallback.cxx
+     vtkFiberDataSet.cxx
      WRAP_EXCLUDE
     )
     

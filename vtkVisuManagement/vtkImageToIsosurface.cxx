@@ -19,6 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkProperty.h>
 #include <vtkObjectFactory.h>
+#include <vtkReverseSense.h>
 
 #include <sstream>
 #include <assert.h>
@@ -34,6 +35,7 @@ vtkImageToIsosurface::vtkImageToIsosurface()
   this->ContourFilter      = vtkContourFilter::New();
   this->Decimate           = vtkDecimatePro::New();
   this->Smoother           = vtkSmoothPolyDataFilter::New();
+  this->Normals            = vtkPolyDataNormals::New();
   this->Mapper             = vtkPolyDataMapper::New();
   this->Actor              = vtkActor::New();
   this->Caster             = vtkImageCast::New();
@@ -41,20 +43,22 @@ vtkImageToIsosurface::vtkImageToIsosurface()
   
   this->Input = 0;
   this->Caster->SetOutputScalarTypeToFloat();
-  this->Thresholder->SetInput ( this->Caster->GetOutput() );
-  this->ContourFilter->SetInput (this->Thresholder->GetOutput());
+  this->Thresholder->SetInputConnection   (this->Caster->GetOutputPort());
+  this->ContourFilter->SetInputConnection (this->Thresholder->GetOutputPort());
 
   //this->Smoother->FeatureEdgeSmoothingOn();
   this->Smoother->SetNumberOfIterations(200);
   //this->Smoother->SetInput ( this->Decimate->GetOutput() );
-  this->Smoother->SetInput ( this->ContourFilter->GetOutput() );
+  this->Smoother->SetInputConnection (this->ContourFilter->GetOutputPort());
   
   //this->Decimate->SetInput ( this->ContourFilter->GetOutput() );
-  this->Decimate->SetInput ( this->Smoother->GetOutput() );
+  this->Decimate->SetInputConnection ( this->Smoother->GetOutputPort() );
   this->Decimate->SetTargetReduction(0.9);
   //this->Decimate->PreserveTopologyOn();
 
-  this->Mapper->SetInput (this->Decimate->GetOutput());
+  this->Normals->SetInputConnection (this->Decimate->GetOutputPort());
+
+  this->Mapper->SetInput (this->Normals->GetOutput());
   //this->Mapper->SetInput (this->Smoother->GetOutput());
     
   this->Actor->GetProperty()->SetAmbient (0.1);
@@ -71,6 +75,7 @@ vtkImageToIsosurface::~vtkImageToIsosurface()
   this->Decimate->Delete();
   this->Smoother->Delete();
   this->ContourFilter->Delete();
+  this->Normals->Delete();
   this->Mapper->Delete();
   this->Actor->Delete();
 
@@ -95,8 +100,16 @@ void vtkImageToIsosurface::Update()
   this->Mapper->GetInput()->Update();
   
   this->Actor->SetMapper ( this->Mapper );
- 
-  
+}
+
+void vtkImageToIsosurface::ReverseNormals ()
+{
+  vtkReverseSense *reverse = vtkReverseSense::New();
+  reverse->SetInputConnection ( this->Normals->GetOutputPort() );
+  reverse->ReverseNormalsOn();
+  reverse->ReverseCellsOff();
+  this->Mapper->SetInput (reverse->GetOutput());
+  reverse->Delete();
 }
 
 void vtkImageToIsosurface::SetParameters (int  val, double color[4])

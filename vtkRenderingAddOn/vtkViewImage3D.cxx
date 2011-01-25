@@ -22,6 +22,7 @@ PURPOSE.  See the above copyright notices for more information.
 #  include "vtkVersion.h"
 #endif
 
+#include <vtkSmartPointer.h>
 #include <vtkInteractorStyleTrackball.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRendererCollection.h>
@@ -29,6 +30,9 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkVolumeTextureMapper3D.h>
+#include <vtkGPUVolumeRayCastMapper.h>
+#include <vtkVolumeRayCastMapper.h>
+#include <vtkVolumeRayCastCompositeFunction.h>
 #include <vtkVolumeMapper.h>
 #include <vtkFiniteDifferenceGradientEstimator.h>
 #include <vtkVolumeTextureMapper2D.h>
@@ -168,14 +172,20 @@ vtkViewImage3D::vtkViewImage3D ()
   this->Blender->SetOpacity (0, 0.25);
   this->Blender->SetOpacity (1, 0.75);
 
-  vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::New();
-  mapper3D->SetSampleDistance(1.0);
-  mapper3D->SetPreferredMethodToNVidia();
-  mapper3D->CroppingOn();
-  mapper3D->SetCroppingRegionFlags (0x7ffdfff);
- 
-  this->VolumeMapper3D = mapper3D;
+  this->VolumeTextureMapper3D = vtkVolumeTextureMapper3D::New();
+  this->VolumeTextureMapper3D->SetSampleDistance(1.0);
+  this->VolumeTextureMapper3D->SetPreferredMethodToNVidia();
+  this->VolumeTextureMapper3D->CroppingOn();
+  this->VolumeTextureMapper3D->SetCroppingRegionFlags (0x7ffdfff);
 
+  this->VolumeGPUMapper3D = vtkGPUVolumeRayCastMapper::New();
+  this->VolumeGPUMapper3D->CroppingOn();
+  this->VolumeGPUMapper3D->SetCroppingRegionFlags(0x7ffdfff);
+  this->VolumeGPUMapper3D->AutoAdjustSampleDistancesOn();
+
+  this->VolumeMapper3D = this->VolumeTextureMapper3D; //this->VolumeGPUMapper3D;
+
+  
   this->OpacityFunction->AddPoint (0, 0.0);
   this->OpacityFunction->AddPoint (255, 1.0);
   this->ColorFunction->AddRGBPoint (0, 0.0, 0.0, 0.0);
@@ -297,16 +307,17 @@ vtkViewImage3D::vtkViewImage3D ()
 
 vtkViewImage3D::~vtkViewImage3D()
 {
-  this->Marker->SetEnabled (0);
-  this->BoxWidget->SetEnabled (0);
-  this->PlaneWidget->SetEnabled (0);
+  //this->Marker->SetEnabled (0);
+  //this->BoxWidget->SetEnabled (0);
+  //this->PlaneWidget->SetEnabled (0);
 
   this->BoxWidget->RemoveObserver (this->Callback);
 
   // delete all vtk objetcts:
-  this->VolumeMapper3D->Delete();
-  this->VolumeProperty->Delete();
   this->VolumeActor->Delete();
+  this->VolumeTextureMapper3D->Delete();
+  this->VolumeGPUMapper3D->Delete();
+  this->VolumeProperty->Delete();
   this->OpacityFunction->Delete();
   //this->ColorFunction->Delete();
   this->AxialColorMapper->Delete();
@@ -454,13 +465,15 @@ void vtkViewImage3D::SetImage ( vtkImageData* image )
   //this->RegisterImage (image);
   vtkViewImage::SetImage (image);
 
-  this->VolumeMapper3D->SetInput ( this->GetImage() );
+  this->VolumeMapper3D->SetInput(this->GetImage());
 
   /*
-    double* spacing = this->GetImage()->GetSpacing();
-    double  sampleDistance = 0.33*0.1*(spacing[0]+spacing[1]+spacing[2]);
-  */
+  double* spacing = this->GetImage()->GetSpacing();
+  double  sampleDistance = 0.33*0.1*(spacing[0]+spacing[1]+spacing[2]);
 
+  this->VolumeTextureMapper3D->SetSampleDistance (sampleDistance);
+  this->VolumeGPUMapper3D->SetSampleDistance (sampleDistance);
+  */
   
   vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::SafeDownCast ( this->VolumeActor->GetMapper() );
   if( mapper3D && !this->GetRenderWindow()->GetNeverRendered() )
@@ -757,7 +770,6 @@ void vtkViewImage3D::UpdatePosition ()
 
 void vtkViewImage3D::SetRenderingMode (int mode)
 {
-
   if( this->RenderingMode==mode )
     return;
   
@@ -766,30 +778,28 @@ void vtkViewImage3D::SetRenderingMode (int mode)
       case VOLUME_RENDERING :
         
         this->RenderingMode = VOLUME_RENDERING;
-
+	
         this->ActorSagittal->SetVisibility (0);
         this->ActorCoronal->SetVisibility (0);
         this->ActorAxial->SetVisibility (0);
-
+	
         this->VolumeActor->SetVisibility ( this->GetVisibility() );
         this->AxesActor->SetVisibility ( this->GetVisibility() && this->AxisVisibility);
-        
-          if( this->GetRenderWindow() && !this->GetRenderWindow()->GetNeverRendered() )
+
+	if( this->GetRenderWindow() && !this->GetRenderWindow()->GetNeverRendered() )
+	{
+	  if( this->GetVisibility() )
 	  {
- 
-	    if( this->GetVisibility() )
-	    {
-	      this->SetBoxWidgetVisibility (this->BoxWidgetVisibility);
-	    }
-	    else
-	    {
-	      this->BoxWidget->Off ();
-	    }
+	    this->SetBoxWidgetVisibility (this->BoxWidgetVisibility);
 	  }
-		
-	  break;
-
-
+	  else
+	  {
+	    this->BoxWidget->Off ();
+	    }
+	}
+	
+	break;
+	  
       case PLANAR_RENDERING :
 
         this->RenderingMode = PLANAR_RENDERING;
@@ -798,22 +808,48 @@ void vtkViewImage3D::SetRenderingMode (int mode)
         this->AxesActor->SetVisibility (this->GetVisibility() && this->AxisVisibility);
         this->BoxWidget->Off();
 
-
         this->ActorSagittal->SetVisibility (this->GetVisibility() && this->ShowSagittal);
         this->ActorCoronal->SetVisibility (this->GetVisibility() && this->ShowCoronal);
         this->ActorAxial->SetVisibility (this->GetVisibility() && this->ShowAxial);
 
         break;
 
-
       default :
         vtkErrorMacro ( << "Unknown rendering mode!");
   };
     
   this->Modified();
-  
 }
 
+void vtkViewImage3D::SetVRMapperType(int type)
+{
+    if( this->VRMapperType==type )
+      return;
+
+    vtkVolumeMapper *oldMapper = this->VolumeMapper3D;
+
+    switch(type)
+    {
+        case TextureMapper3D:
+            this->VolumeMapper3D = this->VolumeTextureMapper3D;
+            break;
+        case GPUMapper3D:
+            this->VolumeMapper3D = this->VolumeGPUMapper3D;
+            break;
+        default :
+            vtkErrorMacro ( << "Unknown VR Mapper type!");
+    };
+    
+    // copy settings from oldMapper
+    this->VolumeMapper3D->SetInput     ( oldMapper->GetInput() );
+    this->VolumeMapper3D->SetCropping  ( oldMapper->GetCropping() );
+    this->VolumeMapper3D->SetBlendMode ( oldMapper->GetBlendMode() );
+    
+    this->Callback->SetVolumeMapper ( this->VolumeMapper3D );
+    this->VolumeActor->SetMapper    ( this->VolumeMapper3D );
+
+    this->Callback->Execute (this->BoxWidget, 0, NULL);
+}
 
 void vtkViewImage3D::PrintSelf(ostream& os, vtkIndent indent)
 {
@@ -864,7 +900,9 @@ void vtkViewImage3D::SetVisibility (int isVisible)
     { 
       this->BoxWidget->Off();
     }
-  }  
+  }
+
+
 }
 
 
@@ -872,34 +910,39 @@ void vtkViewImage3D::SetBoxWidgetVisibility (int a)
 {
   this->BoxWidgetVisibility = a;
 
-  if( this->BoxWidgetVisibility )
+  if (this->GetRenderWindowInteractor())
   {
-    if ( this->GetVisibility() && this->RenderingMode == VOLUME_RENDERING )
+    if( this->BoxWidgetVisibility )
     {
-      this->BoxWidget->On();
+      if ( this->GetVisibility() && this->RenderingMode == VOLUME_RENDERING )
+      {
+        this->BoxWidget->On();
+      }
     }
+    else
+    {
+      this->BoxWidget->Off();
+    }
+    this->Modified();
   }
-  else
-  {
-    this->BoxWidget->Off();
-  }
-
-  this->Modified();
 }
 
 
 void vtkViewImage3D::SetPlaneWidgetVisibility (int a)
 {
   this->PlaneWidgetVisibility = a;
-  if(a)
+  if (this->GetRenderWindowInteractor())
   {
-    this->PlaneWidget->On();
+    if(a)
+	{
+	  this->PlaneWidget->On();
+	}
+	else
+	{
+	  this->PlaneWidget->Off();
+    }
+    this->Modified();
   }
-  else
-  {
-    this->PlaneWidget->Off();
-  }
-  this->Modified();
 }
 
 
@@ -1139,7 +1182,6 @@ vtkActor* vtkViewImage3D::AddDataSet (vtkDataSet* dataset, vtkProperty* property
       
     if (doit)
     {
-	
       vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
       vtkPolyDataNormals*      normalextractor = vtkPolyDataNormals::New();
       vtkPolyDataMapper*       mapper = vtkPolyDataMapper::New();
@@ -1148,7 +1190,7 @@ vtkActor* vtkViewImage3D::AddDataSet (vtkDataSet* dataset, vtkProperty* property
       normalextractor->SetFeatureAngle (90);
       ///\todo try to skip the normal extraction filter in order to enhance the visualization speed when the data is time sequence.
       geometryextractor->SetInput (dataset);
-      normalextractor->SetInput (geometryextractor->GetOutput());
+      normalextractor->SetInputConnection (geometryextractor->GetOutputPort());
       mapper->SetInput (normalextractor->GetOutput());
       actor->SetMapper (mapper);
       if (property)
