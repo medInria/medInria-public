@@ -103,7 +103,8 @@ void medDatabaseImporter::run(void)
 	      
                 dataReader->readInformation( fileInfo.filePath() );
                 dtkdata = dataReader->data();
-		qDebug() << dtkdata << "\n";
+		if (dtkdata)
+		    qDebug() << dtkdata << "\n";
                 delete dataReader;
                 break;
             }
@@ -535,8 +536,8 @@ void medDatabaseImporter::run(void)
 
 	// generate and save the thumbnails
 	QList<QImage> &thumbnails = dtkdata->thumbnails();
-	QFileInfo seriesInfo( seriesPath );
-	QString thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.baseName() /*seriesName.simplified()*/ + "/";
+	QFileInfo seriesInfo( it.key() );
+	QString thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() /*seriesName.simplified()*/ + "/";
 	QStringList thumbPaths;
 
         if (thumbnails.count())
