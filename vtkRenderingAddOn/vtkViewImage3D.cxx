@@ -22,6 +22,7 @@ PURPOSE.  See the above copyright notices for more information.
 #  include "vtkVersion.h"
 #endif
 
+#include <vtkSmartPointer.h>
 #include <vtkInteractorStyleTrackball.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRendererCollection.h>
@@ -29,6 +30,9 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkPiecewiseFunction.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkVolumeTextureMapper3D.h>
+#include <vtkGPUVolumeRayCastMapper.h>
+#include <vtkVolumeRayCastMapper.h>
+#include <vtkVolumeRayCastCompositeFunction.h>
 #include <vtkVolumeMapper.h>
 #include <vtkFiniteDifferenceGradientEstimator.h>
 #include <vtkVolumeTextureMapper2D.h>
@@ -168,13 +172,32 @@ vtkViewImage3D::vtkViewImage3D ()
   this->Blender->SetOpacity (0, 0.25);
   this->Blender->SetOpacity (1, 0.75);
 
-  vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::New();
-  mapper3D->SetSampleDistance(1.0);
-  mapper3D->SetPreferredMethodToNVidia();
-  mapper3D->CroppingOn();
-  mapper3D->SetCroppingRegionFlags (0x7ffdfff);
- 
-  this->VolumeMapper3D = mapper3D;
+//  vtkVolumeTextureMapper3D* mapper3D = vtkVolumeTextureMapper3D::New();
+//  mapper3D->SetSampleDistance(1.0);
+//  mapper3D->SetPreferredMethodToNVidia();
+//  mapper3D->CroppingOn();
+//  mapper3D->SetCroppingRegionFlags (0x7ffdfff);
+
+  this->VolumeTextureMapper3D = vtkVolumeTextureMapper3D::New();
+  this->VolumeTextureMapper3D->SetSampleDistance(1.0);
+  this->VolumeTextureMapper3D->SetPreferredMethodToNVidia();
+  this->VolumeTextureMapper3D->CroppingOn();
+  this->VolumeTextureMapper3D->SetCroppingRegionFlags (0x7ffdfff);
+
+  this->VolumeGPUMapper3D = vtkGPUVolumeRayCastMapper::New();
+  this->VolumeGPUMapper3D->CroppingOn();
+  this->VolumeGPUMapper3D->SetCroppingRegionFlags(0x7ffdfff);
+  this->VolumeGPUMapper3D->SetSampleDistance(1.0);
+
+  this->VolumeMapper3D = this->VolumeGPUMapper3D;
+
+//  vtkGPUVolumeRayCastMapper * mapper3D = vtkGPUVolumeRayCastMapper::New();
+//  mapper3D->CroppingOn();
+//  mapper3D->SetCroppingRegionFlags(0x7ffdfff);
+//  mapper3D->SetSampleDistance(1.0);
+//
+//  this->VolumeMapper3D = mapper3D;
+
 
   this->OpacityFunction->AddPoint (0, 0.0);
   this->OpacityFunction->AddPoint (255, 1.0);
@@ -454,7 +477,7 @@ void vtkViewImage3D::SetImage ( vtkImageData* image )
   //this->RegisterImage (image);
   vtkViewImage::SetImage (image);
 
-  this->VolumeMapper3D->SetInput ( this->GetImage() );
+  this->VolumeMapper3D->SetInput(this->GetImage());
 
   /*
     double* spacing = this->GetImage()->GetSpacing();
@@ -765,6 +788,9 @@ void vtkViewImage3D::SetRenderingMode (int mode)
   {
       case VOLUME_RENDERING :
         
+
+          std::cout << "Volume rendering mode selected" << std::endl;
+
         this->RenderingMode = VOLUME_RENDERING;
 
         this->ActorSagittal->SetVisibility (0);
@@ -773,7 +799,13 @@ void vtkViewImage3D::SetRenderingMode (int mode)
 
         this->VolumeActor->SetVisibility ( this->GetVisibility() );
         this->AxesActor->SetVisibility ( this->GetVisibility() && this->AxisVisibility);
-        
+
+//        this->VolumeMapper3D = this->VolumeTextureMapper3D;
+//
+//        this->VolumeMapper3D->Modified();
+//
+//        this->VolumeActor->SetMapper(this->VolumeTextureMapper3D);
+
           if( this->GetRenderWindow() && !this->GetRenderWindow()->GetNeverRendered() )
 	  {
  
@@ -788,8 +820,6 @@ void vtkViewImage3D::SetRenderingMode (int mode)
 	  }
 		
 	  break;
-
-
       case PLANAR_RENDERING :
 
         this->RenderingMode = PLANAR_RENDERING;
@@ -814,6 +844,27 @@ void vtkViewImage3D::SetRenderingMode (int mode)
   
 }
 
+void vtkViewImage3D::SetVRMapperType(int type)
+{
+    if( this->VRMapperType==type )
+      return;
+
+    switch(type)
+    {
+        case TextureMapper3D:
+            this->VolumeMapper3D = this->VolumeTextureMapper3D;
+            break;
+        case GPUMapper3D:
+            this->VolumeMapper3D = this->VolumeGPUMapper3D;
+            break;
+        default :
+            vtkErrorMacro ( << "Unknown VR Mapper type!");
+    };
+
+    this->VolumeMapper3D->SetInput (this->GetImage());
+    this->Callback->SetVolumeMapper(this->VolumeMapper3D);
+    this->VolumeActor->SetMapper( this->VolumeMapper3D );
+}
 
 void vtkViewImage3D::PrintSelf(ostream& os, vtkIndent indent)
 {
@@ -864,7 +915,9 @@ void vtkViewImage3D::SetVisibility (int isVisible)
     { 
       this->BoxWidget->Off();
     }
-  }  
+  }
+
+
 }
 
 
