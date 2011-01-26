@@ -38,6 +38,8 @@ include(${medinria_USE_FILE})
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
+include_directories(../dtkVtkLogForwarder)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -68,6 +70,8 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  dtkItkLogForwarder
+  dtkVtkLogForwarder
   medCore
   dtkCore
   vtkCommon

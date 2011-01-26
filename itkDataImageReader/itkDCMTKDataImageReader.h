@@ -42,7 +42,21 @@ public slots:
     bool read (const QStringList& paths);
 
     void setProgress (int value);
-    
+
+    void addMetaDataRequest(const QString& attribute);
+
+protected:
+
+    // retrieve meta-data from io class and attach it to dtkdata
+    void fillMetaDataDictionary(dtkAbstractData* dtkdata);
+
+    // requests an attribute from the reader and copies it to the metadictionary of dtkData using the metaname provided
+    void requestAndSetFixedMetaData(dtkAbstractData* dtkdata,  std::string metaname, std::string attribute );
+
+    // helper to convert from STL to Qt
+    void setMetaData(dtkAbstractData* data, std::pair<std::string,std::string> value);
+
+
 private:
     itkDCMTKDataImageReaderPrivate *d;
 };

@@ -7,6 +7,8 @@
 #include "itkNiftiDataTensorImageReader.h"
 #include "itkMetaDataTensorImageReader.h"
 
+#include "itkLogForwarder.h"
+
 #include <dtkCore/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -16,7 +18,16 @@
 class itkDataTensorImageReaderPluginPrivate 
 {
 public:
-    // Class variables go here.
+  itkDataTensorImageReaderPluginPrivate()
+  {
+      forwarder = itk::LogForwarder::New();
+  }
+  ~itkDataTensorImageReaderPluginPrivate()
+  {
+
+  }
+  // Class variables go here.
+  itk::LogForwarder::Pointer forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////

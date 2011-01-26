@@ -21,6 +21,7 @@
 #include "itkVTKDataImageReader.h"
 
 #include "itkDataImageReaderPlugin.h"
+#include "itkLogForwarder.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -32,7 +33,16 @@
 class itkDataImageReaderPluginPrivate 
 {
 public:
-  // Class variables go here.
+    itkDataImageReaderPluginPrivate()
+    {
+       forwarder = itk::LogForwarder::New();
+    }
+    ~itkDataImageReaderPluginPrivate()
+    {
+
+    }
+    // Class variables go here.
+    itk::LogForwarder::Pointer forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////

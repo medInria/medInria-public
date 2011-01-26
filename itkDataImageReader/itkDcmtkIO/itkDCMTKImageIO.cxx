@@ -25,6 +25,8 @@
 #include <itksys/Directory.hxx>
 #include <itkByteSwapper.h>
 #include <itkMetaDataDictionary.h>
+#include <itkSemaphore.h>
+#include <itkMutexLockHolder.h>
 
 #include <dcmtk/dcmdata/dcrledrg.h>
 #include <dcmtk/dcmjpeg/djdecode.h>
@@ -38,67 +40,93 @@
 
 #include <fstream>
 
+// anonymous namespace to protect scope of statics.
+namespace
+{
+    int                         DCMTKImageIO_instanceCount (0);
+    itk::SimpleFastMutexLock    DCMTKImageIO_cleanupLock;
+} // anonymous namespace
 
+//---------------------------------------------------------------------------------------------
 
 namespace itk
 {
 
-  double DCMTKImageIO::MAXIMUM_GAP = 999999;
-    
-  DCMTKImageIO::DCMTKImageIO()
-  {
+double DCMTKImageIO::MAXIMUM_GAP = 999999;
+
+DCMTKImageIO::DCMTKImageIO()
+{
+
     this->SetNumberOfDimensions(3);
     this->SetNumberOfComponents (1);
     this->SetPixelType (SCALAR);
     this->SetComponentType (CHAR);
-    
+
     if (ByteSwapper<int>::SystemIsBigEndian())
     {
-      m_ByteOrder = BigEndian;
+        m_ByteOrder = BigEndian;
     }
     else
     {
-      m_ByteOrder = LittleEndian;
+        m_ByteOrder = LittleEndian;
     }
 
     m_Directory = "";
 
-    DcmRLEDecoderRegistration::registerCodecs();
-    DJDecoderRegistration::registerCodecs();
-    
-  }
-  
+    {  // Scope the mutex locker
+        itk::MutexLockHolder <itk::SimpleFastMutexLock> cleanupLocker ( DCMTKImageIO_cleanupLock);
+        if ( DCMTKImageIO_instanceCount == 0 ) {
+            DcmRLEDecoderRegistration::registerCodecs();
+            DJDecoderRegistration::registerCodecs();
+        }
+        ++DCMTKImageIO_instanceCount;    // Mutex protected increment
+    }
 
-  DCMTKImageIO::~DCMTKImageIO()
-  {
-    DcmRLEDecoderRegistration::cleanup();
-    DJDecoderRegistration::cleanup();
-  }
+    m_DirectOrdering = true;
+
+}
+
+//---------------------------------------------------------------------------------------------
 
 
-  void DCMTKImageIO::PrintSelf (std::ostream& os, Indent indent) const
-  {
+DCMTKImageIO::~DCMTKImageIO()
+{
+    {  // Scope the mutex locker
+        itk::MutexLockHolder <itk::SimpleFastMutexLock> cleanupLocker ( DCMTKImageIO_cleanupLock);
+        --DCMTKImageIO_instanceCount;  // Mutex protected decrement.
+        if ( DCMTKImageIO_instanceCount == 0 ) {
+            DcmRLEDecoderRegistration::cleanup();
+            DJDecoderRegistration::cleanup();
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------------------
+
+void DCMTKImageIO::PrintSelf (std::ostream& os, Indent indent) const
+{
     Superclass::PrintSelf (os, indent);
-  }
-  
-  
-  bool DCMTKImageIO::CanReadFile(const char* filename)
-  {
+}
+
+//---------------------------------------------------------------------------------------------
+
+bool DCMTKImageIO::CanReadFile(const char* filename)
+{
     DcmFileFormat dicomFile;
     OFCondition condition = dicomFile.loadFile( filename );
     if ( !condition.good() )
     {
-      return false;
+        return false;
     }
 
     E_TransferSyntax xfer = dicomFile.getDataset()->getOriginalXfer();
-    
+
     if( xfer == EXS_JPEG2000LosslessOnly ||
-	xfer == EXS_JPEG2000 ||
-	xfer == EXS_JPEG2000MulticomponentLosslessOnly ||
-	xfer == EXS_JPEG2000Multicomponent )
+        xfer == EXS_JPEG2000 ||
+        xfer == EXS_JPEG2000MulticomponentLosslessOnly ||
+        xfer == EXS_JPEG2000Multicomponent )
     {
-      return false;
+        return false;
     }
 
     // search for mandatory tags
@@ -106,420 +134,327 @@ namespace itk
     DcmTagKey searchKey;
     unsigned int group = 0x0028; // samples per pixel
     unsigned int elem  = 0x0002; // samples per pixel
-    
+
     searchKey.set(group, elem);    
     if (dicomFile.search(searchKey, stack, ESM_fromHere, OFTrue) != EC_Normal)
-      return false;
+        return false;
 
     group = 0x0028; // pixel type
     elem  = 0x0100; // pixel type
     searchKey.set(group, elem);    
     if (dicomFile.search(searchKey, stack, ESM_fromHere, OFTrue) != EC_Normal)
-      return false;
-    
-    
+        return false;
+
     return true;
-  }
+}
+
+//---------------------------------------------------------------------------------------------
 
 
+void DCMTKImageIO::ReadImageInformation()
+{
 
-  void DCMTKImageIO::DetermineNumberOfPixelComponents()
-  {
+    // parse the DICOM header of each file and store all fields in the Dictionary
+    FileNameVectorType fileNames = this->GetFileNames();
+    int fileCount = (int)( fileNames.size() );
+    int fileIndex =0;
+    m_FilenameToIndexMap.clear();
+    m_IndexToFilenameMap.clear();
 
+    for (FileNameVectorType::const_iterator iter = fileNames.begin(); iter != fileNames.end(); iter++)
+    {
+        std::string filename;
+        if( m_Directory != "" )
+            filename = m_Directory + ITK_FORWARD_PATH_SLASH + (*iter);
+        else
+            filename = (*iter);
+        try
+        {
+            this->ReadHeader( filename, fileIndex, fileCount );
+            m_FilenameToIndexMap.insert(std::pair<std::string, int>(filename, fileIndex));
+            m_IndexToFilenameMap.insert(std::pair<int, std::string>(fileIndex, filename));
+            ++fileIndex;
+        }
+        catch (ExceptionObject &e)
+        {
+            std::cerr << e; // continue to be robust to odd files
+        }
+    }
+
+    // calculate vital image properties (dimension, pixel-spacing etc)
+    this->CalculateImageProperties();
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+void DCMTKImageIO::DetermineNumberOfPixelComponents()
+{
     const StringVectorType &pixelComponentCountVec = this->GetMetaDataValueVectorString ("(0028,0002)");
     if ( !pixelComponentCountVec.size() )
     {
-      itkExceptionMacro ( << "Tag (0028,0002) (SamplesPerPixel) not found" );
+        itkWarningMacro(<< "Tag (0028,0002) (SamplesPerPixel) not found" );
     }
 
     std::istringstream s_stream ( pixelComponentCountVec[0].c_str() );
     int samplesPerPixel = 1;
     if ( !(s_stream >> samplesPerPixel) )
     {
-      itkWarningMacro ( << "Cannot convert string to int: " << pixelComponentCountVec[0].c_str()
-			<< "assuming 1 component per pixel." );
-      this->SetNumberOfComponents (1);
+        itkWarningMacro( << "Cannot convert string to int: " << pixelComponentCountVec[0].c_str()
+            << "assuming 1 component per pixel." );
+        this->SetNumberOfComponents (1);
     }
 
 
     this->SetNumberOfComponents ( samplesPerPixel );
-    
+
     if( samplesPerPixel==1 )
     {
-      this->SetPixelType ( SCALAR );
+        this->SetPixelType ( SCALAR );
     }
     else
     {
-      this->SetPixelType ( RGB );
+        this->SetPixelType ( RGB );
     }
-    
-  }
-  
 
+}
 
-  void DCMTKImageIO::DeterminePixelType()
-  {
-    /*
+//---------------------------------------------------------------------------------------------
+
+void DCMTKImageIO::DeterminePixelType()
+{
     const StringVectorType &bitsAllocatedVec = this->GetMetaDataValueVectorString ("(0028,0100)");
     if ( !bitsAllocatedVec.size() )
     {
-      itkExceptionMacro ( << "Tag (0028,0100) (Pixel Type) not found" );
+        itkExceptionMacro ( << "Tag (0028,0100) (Pixel Type) not found" );
     }
-    
+
     std::istringstream s_stream ( bitsAllocatedVec[0].c_str() );
     int bitsAllocated = 0;
     if ( !(s_stream >> bitsAllocated) )
-      itkExceptionMacro ( << "Cannot convert string to int: " << bitsAllocatedVec[0].c_str() );
-        
+        itkExceptionMacro ( << "Cannot convert string to int: " << bitsAllocatedVec[0].c_str() );
+
+
     const StringVectorType &signBitsVec = this->GetMetaDataValueVectorString ("(0028,0103)");
     std::string sign = "0";
     if (signBitsVec.size())
     {
-      sign = signBitsVec[0];
+        sign = signBitsVec[0];
     }
     else
     {
-      itkWarningMacro (<< "Missing Pixel Representation (0028,0103), assuming unsigned" << std::endl);
+        itkWarningMacro( << "Missing Pixel Representation (0028,0103), assuming unsigned" );
     }
 
     if ( sign == "0" )
     {
-      sign = "U";
+        sign = "U";
     }
     else
     {
-      sign = "S";
+        sign = "S";
     }
 
-    const StringVectorType &rescaleInterceptVec = this->GetMetaDataValueVectorString ("(0028,1052)");
-    const StringVectorType &rescaleSlopeVec     = this->GetMetaDataValueVectorString ("(0028,1053)");
-
-    double rescaleIntercept = 0.0;
-    if (rescaleInterceptVec.size())
-    {
-      std::istringstream intercept_stream ( rescaleInterceptVec[0].c_str() );
-      if ( !(intercept_stream >> rescaleIntercept) )
-	itkExceptionMacro ( << "Cannot convert string to double: " << rescaleInterceptVec[0].c_str() );
-    }
-    else
-      itkWarningMacro (<< "Missing Rescale Intercept (0028,1052)" << std::endl);
-
-    double rescaleSlope = 1.0;
-    if (rescaleSlopeVec.size())
-    {
-      std::istringstream slope_stream ( rescaleSlopeVec[0].c_str() );
-      if ( !(slope_stream >> rescaleSlope) )
-	itkExceptionMacro ( << "Cannot convert string to double: " << rescaleSlopeVec[0].c_str() );
-    }
-    else
-      itkWarningMacro (<< "Missing Rescale Slope (0028,1053)" << std::endl);
-
-    if (rescaleSlope==0.0)
-    {
-      itkWarningMacro (<< "Rescale Slope is null, setting it to 1.0" << std::endl);
-      rescaleSlope = 1.0;
-    }
-
-    if (rescaleIntercept<0.0) // very probably signed representation
-      sign = "S";
-    
     if( bitsAllocated == 8 && sign=="U" )
     {
-      this->SetComponentType ( UCHAR );
+        this->SetComponentType ( UCHAR );
     }
     else if ( bitsAllocated == 8 && sign=="S" )
     {
-      this->SetComponentType ( CHAR );
+        this->SetComponentType ( CHAR );
     }
     else if ( bitsAllocated == 16 && sign=="U")
     {
-      this->SetComponentType ( USHORT );
+        this->SetComponentType ( USHORT );
     }
     else if ( bitsAllocated == 16 && sign=="S")
     {
-      this->SetComponentType ( SHORT );
+        this->SetComponentType ( SHORT );
     }
     else if ( bitsAllocated == 32 && sign=="U")
     {
-      this->SetComponentType ( UINT );
+        this->SetComponentType ( UINT );
     }
     else if ( bitsAllocated == 32 && sign=="S")
     {
-      this->SetComponentType ( INT );
+        this->SetComponentType ( INT );
     }
     else if (bitsAllocated == 64 )
     {
-      this->SetComponentType(DOUBLE);
+        this->SetComponentType(DOUBLE);
     }
     else
-      this->SetComponentType (UNKNOWNCOMPONENTTYPE);
-    */
-    
-    DicomImage *image = new DicomImage(m_FileName.c_str(), CIF_UseAbsolutePixelRange);
-    if (image != NULL)
+        this->SetComponentType (UNKNOWNCOMPONENTTYPE);
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+void DCMTKImageIO::DetermineSpacing()
+{
+    for (int i = 0; i< GetNumberOfDimensions(); i++)
     {
-      if (image->getStatus() == EIS_Normal)
-      {
-	const DiPixel *dmp = image->getInterData();
-	
-	switch( dmp->getRepresentation() )
-	{
-	    case EPR_Uint8:
-	      this->SetComponentType ( UCHAR );
-	      break;
-	      
-	    case EPR_Sint8:
-	      this->SetComponentType ( CHAR );
-	      break;
-	      
-	    case EPR_Uint16:
-	      this->SetComponentType ( USHORT );
-	      break;
-		
-	    case EPR_Sint16:
-	      this->SetComponentType ( SHORT );
-	      break;
-
-	    case EPR_Uint32:
-	      this->SetComponentType ( UINT );
-	      break;
-
-	    case EPR_Sint32:
-	      this->SetComponentType ( INT );
-	      break;
-
-	    default:
-	       this->SetComponentType (UNKNOWNCOMPONENTTYPE);
-	}
-      }
-      else
-	this->SetComponentType (UNKNOWNCOMPONENTTYPE);
-
-      delete image;
+        SetSpacing(i,1.0);
     }
-  }
-  
-  
-  
-  
-  void DCMTKImageIO::DetermineSpacing()
-  {
-    m_Spacing[0] = 1.0;
-    m_Spacing[1] = 1.0;
+
     const StringVectorType &pixSpacingVec = this->GetMetaDataValueVectorString ("(0028,0030)");
     if ( !pixSpacingVec.size() )
     {
-      itkWarningMacro ( << "Tag (0028,0030) (PixelSpacing) was not found, assuming 1.0" << std::endl);
+        itkWarningMacro( << "Tag (0028,0030) (PixelSpacing) was not found, assuming 1.0/1.0" );
     }
     else
     {
-      std::string pixSpacingStr = pixSpacingVec[0];
-      std::istringstream is_stream( pixSpacingStr );
-      if (!(is_stream >> m_Spacing[0]))
-      {
-	itkWarningMacro ( << "Cannot convert string to double: " << pixSpacingStr.c_str() << std::endl);
-      }
-      if (!(is_stream >> m_Spacing[1]))
-      {
-	itkWarningMacro ( << "Cannot convert string to double: " << pixSpacingStr.c_str() << std::endl);
-      }
+        std::string pixSpacingStr = pixSpacingVec[0];
+        std::istringstream is_stream( pixSpacingStr );
+        if (!(is_stream >> m_Spacing[0]))
+        {
+            itkWarningMacro( << "Cannot convert string to double: " << pixSpacingStr.c_str() );
+        }
+        if (!(is_stream >> m_Spacing[1]))
+        {
+            itkWarningMacro( << "Cannot convert string to double: " << pixSpacingStr.c_str() );
+        }
     }
-    
 
 
-    m_Spacing[2] = 1.0;
-
-    const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
-
-    /**
-       Z-spacing is determined by the ImagePositionPatient flag. Compute the distance between
-       2 consecutive slices and project it onto the acquisition axis (normal of the ImageOrientation).
-       Average it over all slices, use a 10% margin to distinguish between volumes in case of 4D images.
-     */
-    if( imagePositions.size()>1 )
+    if(GetNumberOfSlices() > 1)
     {
-      std::vector<double> gaps (imagePositions.size()-1, 0.0);
 
-      vnl_vector<double> normal (3);
-      normal[0] = m_Direction[2][0];
-      normal[1] = m_Direction[2][1];
-      normal[2] = m_Direction[2][2];
+        // take only the first two slices into account
+        std::multimap<double,std::string> distanceMap;
+        this->SortSlices(this->GetFileNames(), &distanceMap);
+ 
+        // calculate zspacing
+        double zSpacing = 0;
+        std::multimap<double, std::string >::iterator it = distanceMap.begin();
+        double dist1, dist2;
+        try
+        {
+            dist1 = (*it).first;
+            it++;
+            dist2 = (*it).first;
+            zSpacing = abs(dist2 - dist1);
+        }
+        catch(std::exception e)
+        {
+            itkExceptionMacro(<<"Exception computing zspacing" << e.what());
+            zSpacing = 1.0;
+        }
 
-      double ref_gap = MAXIMUM_GAP; // choose ref_gap as minimum gap between slices
-      for (unsigned int i=1; i<imagePositions.size(); i++)
-      {
-	std::istringstream is_stream1( imagePositions[i-1].c_str() );
-	vnl_vector<double> pos1 (3);
-	is_stream1 >> pos1[0];
-	is_stream1 >> pos1[1];
-	is_stream1 >> pos1[2];
-	
-	std::istringstream is_stream2( imagePositions[i].c_str() );
-	vnl_vector<double> pos2 (3);
-	is_stream2 >> pos2[0];
-	is_stream2 >> pos2[1];
-	is_stream2 >> pos2[2];
-	
-	vnl_vector<double> v21 = pos2-pos1;
-	
-	gaps[i-1] = fabs ( dot_product (normal, v21) );
-	if (gaps[i-1]<ref_gap && gaps[i-1]>0.0)
-	  ref_gap = gaps[i-1];
-      }
-      double total_gap = ref_gap;
-      double min_gap = 0.9*ref_gap;
-      double max_gap = 1.1*ref_gap;
-      int gapCount = 1;
-      for(unsigned int i=1; i<gaps.size(); i++)
-      {
-	if (gaps[i]>=min_gap && gaps[i]<=max_gap)
-	{
-	  total_gap += gaps[i];
-	  ++gapCount;
-	}
-	else
-	{
-	  ; //itkWarningMacro (<< "Inconsistency in slice spacing: " << ref_gap << " " << gaps[i]);
-	}
-      }
-      if (total_gap==MAXIMUM_GAP)
-	m_Spacing[2] = 1.0;
-      else
-	m_Spacing[2] = total_gap/(double)(gapCount);
+
+        // since we can only work with 3D images, we need to make sure that the spacing is valid
+        if (zSpacing == 0)
+            zSpacing = 1.0;
+
+        // finally setting the z-spacing
+        SetSpacing(2,zSpacing);
     }
-    else // rely on the SpacingBetweenSlices tag
-    {
-      // never use sliceThickness as it has nothing to do with the z spacing
-      /*
-	double sliceThickness = 1.0;
-	const StringVectorType &sliceThicknessVec = this->GetMetaDataValueVectorString ("(0018,0050)");
-	if( sliceThicknessVec.size() )
-	{
-	std::string sliceThicknessStr = sliceThicknessVec[0];
-	std::istringstream is_stream( sliceThicknessStr.c_str() );
-	if (!(is_stream>>sliceThickness))
-	{
-	itkWarningMacro ( << "Cannot convert string to double: " << sliceThicknessStr.c_str() << std::endl );
-	}
-	else
-	{
-	m_Spacing[2] = sliceThickness;
-	}
-	}
-      */
-      
-      double spacingBetweenSlices = 1.0;
-      const StringVectorType &spacingBetweenSlicesVec = this->GetMetaDataValueVectorString ("(0018,0088)");
-      if( spacingBetweenSlicesVec.size() )
-      {
-	std::string spacingBetweenSlicesStr = spacingBetweenSlicesVec[0];
-	std::istringstream is_stream( spacingBetweenSlicesStr.c_str() );
-	if (!(is_stream>>spacingBetweenSlices))
-	{
-	  itkWarningMacro ( << "Cannot convert string to double: " << spacingBetweenSlicesStr.c_str() << std::endl );
-	}
-	else
-	{
-	  m_Spacing[2] = spacingBetweenSlices;
-	}
-      }
-    }
-    
-    if (this->GetNumberOfDimensions()==4)
-      m_Spacing[3] = 1.0; 
-  }
-  
-  
-  
-  void DCMTKImageIO::DetermineDimensions()
-  {
+
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+void DCMTKImageIO::DetermineDimensions()
+{
     const StringVectorType &dimXVec = this->GetMetaDataValueVectorString ("(0028,0011)");
     if (!dimXVec.size())
-      itkExceptionMacro ( << "Tag (0028,0011) (dim X) not found" );
-    
+        itkExceptionMacro ( << "Tag (0028,0011) (dim X) not found" );
+
     std::string dimXStr = dimXVec[0];
     std::istringstream is_streamX (dimXStr.c_str());
     if (!(is_streamX>>m_Dimensions[0]))
-      itkExceptionMacro ( << "Cannot convert string to int: " << dimXStr.c_str()  << "\n");
-    
-    
+        itkExceptionMacro ( << "Cannot convert string to int: " << dimXStr.c_str()  << "\n");
+
+
     const StringVectorType &dimYVec = this->GetMetaDataValueVectorString ("(0028,0010)");
     if (!dimYVec.size())
-      itkExceptionMacro ( << "Tag (0028,0010) (dim Y) not found" );
-    
+        itkExceptionMacro ( << "Tag (0028,0010) (dim Y) not found" );
+
     std::string dimYStr = dimYVec[0];
     std::istringstream is_streamY (dimYStr.c_str());
     if (!(is_streamY>>m_Dimensions[1]))
-      itkExceptionMacro ( << "Cannot convert string to int: " << dimYStr.c_str() << "\n" );
-  }
+        itkExceptionMacro ( << "Cannot convert string to int: " << dimYStr.c_str() << "\n" );
 
 
+    // not taking multiple volumes into account at the moment
+    int numberOfSlices = this->GetNumberOfSlices();
+    // we have to set it at least to 3 dimensions since the datatype assumes this
+    this->SetNumberOfDimensions(3);
+    SetDimensions(2,numberOfSlices);
 
-  void DCMTKImageIO::DetermineOrigin()
-  {
-    m_Origin [0] = 0.0;
-    m_Origin [1] = 0.0;
-    m_Origin [2] = 0.0;
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+void DCMTKImageIO::DetermineOrigin()
+{
+    for(int i = 0; i < GetNumberOfDimensions();i++)
+    {
+        SetOrigin(i,0);
+    }
+
     if( this->GetNumberOfDimensions()==4 )
     {
-      m_Origin [3] = 0.0;
+        m_Origin [3] = 0.0;
     }
 
+    std::string s_origin = this->GetMetaDataValueString("(0020,0032)", 0); // first slice of series
 
-    int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.begin() )->second ];
-	
-    std::string s_origin = this->GetMetaDataValueString("(0020,0032)", startIndex);
     if ( s_origin=="" )
     {
-      itkWarningMacro ( << "Tag (0020,0032) (ImageOrigin) was not found, assuming 0.0/0.0/0.0" << std::endl);
-      return;
+        itkWarningMacro( "Tag (0020,0032) (ImageOrigin) was not found, assuming 0.0/0.0/0.0" );
+        return;
     }
-    
+
     std::istringstream is_stream( s_origin.c_str() );
     if (!(is_stream >> m_Origin[0]))
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() << std::endl );
+        itkWarningMacro( "Cannot convert string to double: " << s_origin.c_str() );
     }
     if (!(is_stream >> m_Origin[1]))
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() << std::endl );
+        itkWarningMacro( "Cannot convert string to double: " << s_origin.c_str() );
     }
-    if (!(is_stream >> m_Origin[2]))
+    if (GetNumberOfDimensions() > 2)
     {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_origin.c_str() << std::endl );
+        if (!(is_stream >> m_Origin[2]))
+        {
+            itkWarningMacro( "Cannot convert string to double: " << s_origin.c_str() );
+        }
     }
-  }
-  
-  
-  
-  
-  void DCMTKImageIO::DetermineOrientation()
-  {
 
+}
+
+//---------------------------------------------------------------------------------------------
+
+void DCMTKImageIO::DetermineOrientation()
+{
     double orientation[6]={1.0, 0.0, 0.0, 0.0, 1.0, 0.0};
     const StringVectorType &orientationVec = this->GetMetaDataValueVectorString("(0020,0037)");
     if (!orientationVec.size())
     {
-      itkWarningMacro ( << "Tag (0020,0037) (PatientOrientation) was not found, assuming identity" << std::endl);
+        itkWarningMacro( << "Tag (0020,0037) (PatientOrientation) was not found, assuming identity" );
     }
     else
     {
-      std::string orientationStr = orientationVec[0];
-      std::istringstream is_stream( orientationStr.c_str() );
-      for( int i=0; i<6; i++ )
-      {
-	if (!(is_stream >> orientation[i]) )
-	{
-	  itkWarningMacro ( << "Cannot convert string to double: " << orientationStr.c_str() << std::endl );
-	}
-      }
+        std::string orientationStr = orientationVec[0];
+        std::istringstream is_stream( orientationStr.c_str() );
+        for( int i=0; i<6; i++ )
+        {
+            if (!(is_stream >> orientation[i]) )
+            {
+                itkWarningMacro( << "Cannot convert string to double: " << orientationStr.c_str() );
+            }
+        }
     }
-    
+
     vnl_vector<double> rowDirection(3), columnDirection(3);
     rowDirection[0] = orientation[0];
     rowDirection[1] = orientation[1];
     rowDirection[2] = orientation[2];
-    
+
     columnDirection[0] = orientation[3];
     columnDirection[1] = orientation[4];
     columnDirection[2] = orientation[5];
@@ -528,775 +463,570 @@ namespace itk
 
     this->SetDirection (0, rowDirection);
     this->SetDirection (1, columnDirection);
-    this->SetDirection (2, sliceDirection);
-    
+    if ( GetNumberOfDimensions() > 2 )
+        this->SetDirection (2, sliceDirection);
+
     if( this->GetNumberOfDimensions()==4 )
     {
-      m_Direction[0][3] = 0.0;
-      m_Direction[1][3] = 0.0;
-      m_Direction[2][3] = 0.0;
-      m_Direction[3][3] = 1.0;
-      m_Direction[3][0] = 0.0;
-      m_Direction[3][1] = 0.0;
-      m_Direction[3][2] = 0.0;
+        m_Direction[0][3] = 0.0;
+        m_Direction[1][3] = 0.0;
+        m_Direction[2][3] = 0.0;
+        m_Direction[3][3] = 1.0;
+        m_Direction[3][0] = 0.0;
+        m_Direction[3][1] = 0.0;
+        m_Direction[3][2] = 0.0;
     }
+}
 
-  }
+//---------------------------------------------------------------------------------------------
 
+const DCMTKImageIO::StringVectorType& DCMTKImageIO::GetOrderedFileNames( void ) const
+{
+    return m_OrderedFileNames;
+}
 
-  double DCMTKImageIO::GetZPositionForImage (int index)
-  {
-    std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
-    double zpos = 0.0;
-    double junk;
-    std::istringstream is_stream( s_position.c_str() );
-    if (!(is_stream >> junk) )
-    {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
-    if (!(is_stream >> junk) )
-    {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
-    if (!(is_stream >> zpos))
-    {
-      itkWarningMacro ( << "Cannot convert string to double: " << s_position.c_str() << std::endl );
-    }
+//---------------------------------------------------------------------------------------------
 
-    return zpos;
-  }
-
-
-  
-  void DCMTKImageIO::ReadImageInformation()
-  {
-
-    /**
-       Using a set, we remove any duplicate filename - should we do this?
-    */
-    NameSetType fileNames;
-    
-    for( unsigned int i=0; i<this->GetFileNames().size(); i++ )
-    {
-      fileNames.insert ( this->GetFileNames()[i] );
-    }
-    
-    int fileCount = (int)( fileNames.size() );
-    if( fileCount == 0 )
-    {
-      itkExceptionMacro (<<"Cannot find any dicom in directory or dicom is not valid");	
-    }
-    
-    
-    m_LocationSet.clear();
-    m_FilenameToIndexMap.clear();
-    m_LocationToFilenamesMap.clear();
-    
-    
-    int    fileIndex = 0;
-    double sliceLocation = 0;
-    
-    
-    
-    /**
-       The purpose of the next loop is to parse the DICOM header of each file, store all
-       fields in the Dictionary, and order filenames depending on their sliceLocation,
-       assuming that the sliceLocation field gives the order dicoms are obtained.
-    */
-    NameSetType::const_iterator f = fileNames.begin(), fe = fileNames.end();
-    
-    while ( f != fe )
-    {
-      std::string filename;
-      if( m_Directory != "" )
-	filename = m_Directory + ITK_FORWARD_PATH_SLASH + *f;
-      else
-	filename = *f;
-      
-      try
-      {
-	this->ReadHeader( filename, fileIndex, fileCount );
-	
-	sliceLocation = 0;
-	std::string vecSlice = this->GetMetaDataValueString ("(0020,1041)", fileIndex );
-	if( vecSlice!="" )
-	{
-	  std::istringstream is_stream ( vecSlice.c_str() );
-	  is_stream >> sliceLocation;
-	}
-	else
-	{
-	  std::string vecSlice2 = this->GetMetaDataValueString ("(0020,0050)", fileIndex);
-	  if( vecSlice2!="" )
-	  {
-	    std::istringstream is_stream ( vecSlice2.c_str() );
-	    is_stream >> sliceLocation;
-	  }
-	else  // instance number
-	{
-	  std::string vecSlice3 = this->GetMetaDataValueString("(0020,0013)", fileIndex);
-	  if (vecSlice3!="")
-	  {
-	    std::istringstream is_stream ( vecSlice3.c_str() );
-	    is_stream >> sliceLocation;
-	  }
-	  else // cannot find the sliceLocation information, then we rely on the order files were inputed.
-	  {
-	    sliceLocation = (double)fileIndex;
-	  }
-	}
-	}
-
-	m_LocationSet.insert( sliceLocation );
-	m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *f ) );
-	m_FilenameToIndexMap[ *f ] = fileIndex;
-	++fileIndex;
-      }
-      catch (ExceptionObject &e)
-      {
-	std::cerr << e; // continue to be robust to odd files
-      }
-      ++f;
-    }
-    
-
-    
-    
-    /**
-       In the next loop, slices are ordered according to their instance number, in case multiple
-       volumes are found.
-     */
-    SliceLocationSetType::const_iterator l = m_LocationSet.begin(), le = m_LocationSet.end();
-    while ( l!=le )
-    {
-      SliceLocationToNamesMultiMapType::iterator n = m_LocationToFilenamesMap.lower_bound( *l ),
-	ne = m_LocationToFilenamesMap.upper_bound( *l );
-      
-      // using that intermediate lut for instance number ordering
-      IndexToNamesMapType instanceNumberToNameMap;
-      
-      while ( n!=ne )
-      {
-	int instanceNumber = 0;
-	std::string instanceNumberString = this->GetMetaDataValueString ("(0020,0013)", m_FilenameToIndexMap[ n->second ]);
-	if( instanceNumberString!="" )
-	{
-	  std::istringstream is_stream ( instanceNumberString.c_str() );
-	  is_stream >> instanceNumber;
-	}
-	// else, we assume all files have the same instance number (0), i.e.: the serie has only one volume
-	
-	instanceNumberToNameMap[instanceNumber].push_back( n->second );
-	++n;
-      }
-	
-
-      // We erase the filename list corresponding to the given location to fill it with the ordered filenames
-      m_LocationToFilenamesMap.erase( *l );
-
-      
-      IndexToNamesMapType::const_iterator in = instanceNumberToNameMap.begin(), ine = instanceNumberToNameMap.end();
-      while ( in!=ine )
-      {
-	std::list< std::string >::const_iterator fn = in->second.begin(), fne = in->second.end();
-	while ( fn!=fne )
-	{
-	  m_LocationToFilenamesMap.insert( std::pair< double, std::string >( *l, *fn ) );
-	  ++fn;
-	}
-	++in;
-      }
-      ++l;
-    }
-
-    
-    
-    // collecting slice count and rank count while doing sanity checks
-    unsigned int sizeZ = m_LocationSet.size();
-    unsigned int sizeT = m_LocationToFilenamesMap.count( *m_LocationSet.begin() );
-
-    // check consistency
-    SliceLocationSetType::const_iterator it = m_LocationSet.begin();
-    while (it!=m_LocationSet.end())
-    {
-      if ( m_LocationToFilenamesMap.count(*it)!=sizeT )
-      {
-	itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
-      }
-      ++it;
-    }
-    
-    if( sizeT > 1 )
-    {
-      this->SetNumberOfDimensions (4);
-      m_Dimensions[3] =  sizeT;
-    }
-    else
-    {
-      this->SetNumberOfDimensions (3);
-    }
-    m_Dimensions[2] =  sizeZ;
-
-    
-
-    /**
-       Now that m_FilenameToIndexMap and m_LocationToFilenamesMap are up-to-date, we may determine
-       the pixel type, spacing, origin and so on.
-     */
-    this->DetermineNumberOfPixelComponents();
-    this->DeterminePixelType();
-    this->DetermineDimensions();
-    this->DetermineOrigin();
-    this->DetermineOrientation();
-    this->DetermineSpacing(); // always called after DetermineOrientation    
-
-
-
-    
-    /**
-       Determine the slice ordering. Depending on the sliceLocation and the imagePatientPosition,
-       we may determine if the acquistion was made from feet-to-head or head-to-feet.
-     */
-    
-    l = m_LocationSet.begin();  
-    SliceLocationSetType::const_reverse_iterator lle = m_LocationSet.rbegin();
-    
-    double startLocation = *l;
-    double endLocation   = *lle;
-    int locSign = endLocation>startLocation?1.0:-1.0;
-    
-    // just check first volume
-    int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *l )->second ];
-    int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *lle )->second ];
-    
-    double startSlice = this->GetZPositionForImage ( startIndex );
-    double endSlice   = this->GetZPositionForImage ( endIndex );
-    
-    int sliceDirection = endSlice>startSlice?locSign:-locSign;
-
-
-
-
-    
-    /**
-       Now order filenames such that we can read them sequentially and build the 3D/4D volume.
-     */
-    m_OrderedFileNames = StringVectorType ( sizeZ * sizeT );
-    
-    int location = 0;
-    int rank     = 0;
-    
-    while ( l!=le )
-    {
-      SliceLocationToNamesMultiMapType::const_iterator n = m_LocationToFilenamesMap.lower_bound( *l ),
-	ne = m_LocationToFilenamesMap.upper_bound( *l );
-      
-      rank = 0;
-      while ( n!=ne )
-      {
-	if( sliceDirection>0 )
-	  m_OrderedFileNames[ rank * sizeZ + location ] = n->second;
-	else
-	  m_OrderedFileNames[ rank * sizeZ + ( sizeZ - 1 - location ) ] = n->second;
-	
-	++rank;
-	++n; 
-      }	
-      ++location;
-      ++l;
-    }
-
-  }
-
-
-  void DCMTKImageIO::ThreadedRead (void* buffer, RegionType region, int threadId)
-  {
+void DCMTKImageIO::ThreadedRead (void* buffer, RegionType region, int threadId)
+{
     unsigned long pixelCount = m_Dimensions[0] * m_Dimensions[1];
-    
+
     int start = region.GetIndex()[0];
     int length = region.GetSize()[0];
 
     for( int i=start; i<start+length; i++)
     {
-      this->InternalRead (buffer, i, pixelCount);
-      if( threadId==0 )
-      {
-	this->SetProgress( (double)(i-start+1)/(double)(length) );
-	this->InvokeEvent ( ProgressEvent() );
-      }
+        this->InternalRead (buffer, i, pixelCount);
+        if( threadId==0 )
+        {
+            this->SetProgress( (double)(i-start+1)/(double)(length) );
+            this->InvokeEvent ( ProgressEvent() );
+        }
     }
-  }
-  
+}
 
+//---------------------------------------------------------------------------------------------
 
-  void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCount)
-  {
+void DCMTKImageIO::InternalRead (void* buffer, int slice, unsigned long pixelCount)
+{
     std::string filename;
     if( m_Directory=="" )
-      filename = m_OrderedFileNames[slice];
+        filename = m_OrderedFileNames[slice];
     else
-      filename = m_Directory + ITK_FORWARD_PATH_SLASH + m_OrderedFileNames[slice];
+        filename = m_Directory + ITK_FORWARD_PATH_SLASH + m_OrderedFileNames[slice];
 
     DcmFileFormat dicomFile;
     DcmStack      stack;
-     
+
 
     OFCondition cond = dicomFile.loadFile(filename.c_str(), EXS_Unknown, EGL_noChange, DCM_MaxReadLength, ERM_autoDetect);
     if (! cond.good())
     {
-      itkExceptionMacro (<< cond.text() );
+        itkExceptionMacro (<< cond.text() );
     }
 
     E_TransferSyntax xfer = dicomFile.getDataset()->getOriginalXfer();
 
     if( xfer == EXS_JPEG2000LosslessOnly ||
-	xfer == EXS_JPEG2000 ||
-	xfer == EXS_JPEG2000MulticomponentLosslessOnly ||
-	xfer == EXS_JPEG2000Multicomponent )
+        xfer == EXS_JPEG2000 ||
+        xfer == EXS_JPEG2000MulticomponentLosslessOnly ||
+        xfer == EXS_JPEG2000Multicomponent )
     {
-      itkExceptionMacro("Jpeg2000 encoding not supported yet.");
-    }
-    
-    
-    size_t length = pixelCount;
-    int bitsPerSample = 8;
-    switch( this->GetComponentType() )
-    {  
-	case CHAR:
-	  length *= sizeof(char);
-	  bitsPerSample = 8;
-	  break;
-	  
-	case UCHAR:
-	  length *= sizeof(Uint8);
-	  bitsPerSample = 8;
-	  break;
-	  
-	case SHORT:
-	  length *= sizeof(Sint16);
-	  bitsPerSample = 16;
-	  break;
-	    
-	case USHORT:
-	  length *= sizeof(Uint16);
-	  bitsPerSample = 16;
-	  break;
-	  
-	case INT:
-	  length *= sizeof(Sint32);
-	  bitsPerSample = 32;
-	  break;
-	  
-	case UINT:
-	  length *= sizeof(Uint32);
-	  bitsPerSample = 32;
-	  break;
-	  
-	case DOUBLE:
-	  length *= sizeof(Float64);
-	  bitsPerSample = 64;
-	  break;
-	  
-	default:
-	  throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
+        itkExceptionMacro("Jpeg2000 encoding not supported yet.");
     }
 
-    length *= this->GetNumberOfComponents();
-    
 
     const Uint8* copyBuffer = 0;
+    dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
 
-
-    // dicomFile.getDataset()->findAndGetUint8Array (DCM_PixelData, copyBuffer);
-
-
-    // We use DicomImage as it rescales the raw values properly for visualization
-    DicomImage *image = new DicomImage(filename.c_str(), CIF_UseAbsolutePixelRange);
-    if (image != NULL)
-    {
-      if (image->getStatus() == EIS_Normal)
-      {
-	DcmFileFormat *dcm = new DcmFileFormat;
-	dcm->loadFile (filename.c_str());
-	DcmDataset *dset = dcm->getDataset();
-
-	OFString ofstr;
-	if (dset->findAndGetOFString(DCM_Modality, ofstr)==EC_Normal)
-	{
-	  if (ofstr=="CT")
-	  {
-	    double minValue, maxValue;
-	    image->getMinMaxValues (minValue, maxValue);
-
-	    if (minValue<-1000) // probably wrong pixelRepresentation
-	    {
-	      dset->putAndInsertUint16 (DCM_PixelRepresentation, 0);
-	      
-	      delete image;
-	      image = new DicomImage (dcm, dset->getOriginalXfer(), CIF_UseAbsolutePixelRange);
-	    }
-	  }
-	}
-	
-	const DiPixel *dmp = image->getInterData();
-	if (!dmp)
-	  itkExceptionMacro ( << "DiPixel object is null" );
-	
-	// copyBuffer = (Uint8 *)(image->getOutputData(bitsPerSample));
-	copyBuffer = (Uint8 *)dmp->getData();
-	if (!copyBuffer)
-	{
-	  itkExceptionMacro ( << "Bad copy buffer" );
-	}
-
-	delete dcm;
-      }
-    }
-    
-    Uint8* destBuffer = static_cast<Uint8*>(buffer);    
+    Uint8* destBuffer = (Uint8*)(GetDataPointerForSlice(buffer, slice));
     if (!copyBuffer || !destBuffer)
     {
-      itkExceptionMacro ( << "Bad copy or dest buffer" );
+        itkExceptionMacro ( << "Bad copy or dest buffer" );
     }
-    
-    std::memcpy (destBuffer + slice*length, copyBuffer, length);
 
-    delete image;
-  }
+    const size_t sliceSizeInBytes = GetSliceSizeInBytes ();
+    std::memcpy (destBuffer, copyBuffer, sliceSizeInBytes);
 
-  
+}
 
-  
+//---------------------------------------------------------------------------------------------
 
-  bool DCMTKImageIO::CanWriteFile( const char* filename)
-  {
-    return false;
-  }
+unsigned int DCMTKImageIO::GetDcmComponentSize() const
+{
+    switch( this->GetComponentType() )
+    {
+    case CHAR:
+        return sizeof(char);
 
+    case UCHAR:
+        return sizeof(Uint8);
 
-  void DCMTKImageIO::WriteImageInformation()
-  {
-  }
+    case SHORT:
+        return sizeof(Sint16);
 
-  
+    case USHORT:
+        return sizeof(Uint16);
 
-  void DCMTKImageIO::Write(const void* buffer)
-  {
-  }
+    case INT:
+        return sizeof(Sint32);
 
+    case UINT:
+        return sizeof(Uint32);
 
-  std::string DCMTKImageIO::GetPatientName() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0010,0010)", 0 );
-    return name;
-  }
+    case DOUBLE:
+        return sizeof(Float64);
 
-  std::string DCMTKImageIO::GetPatientID() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0010,0020)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetPatientSex() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0010,0040)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetPatientAge() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0010,1010)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetStudyID() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0020,000d)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetPatientDOB() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0010,0030)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetStudyDescription() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0008,1030)", 0 );
-    return name;
-  }
+    default:
+        throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
+    }
+    // Should never get here.
+    return 0;
+}
 
-  std::string DCMTKImageIO::GetSeriesDescription() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0008,103e)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetBodyPart() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0018,0015)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetNumberOfSeriesInStudy() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0020,1000)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetNumberOfStudyRelatedSeries() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0020,1206)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetStudyDate() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0008,0020)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetModality() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0008,0060)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetManufacturer() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0008,0070)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetInstitution() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0008,0080)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetModel() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0008,1090)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetScanOptions() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0018,0022)", 0 );
-    return name;
-  }
+size_t DCMTKImageIO::GetSliceSizeInBytes() const
+{
+    const size_t pixelCount = m_Dimensions[0] * m_Dimensions[1];
+    const size_t singleSliceSize = pixelCount
+        * this->GetDcmComponentSize()
+        * this->GetNumberOfComponents();
+    return singleSliceSize;
+}
 
-  std::string DCMTKImageIO::GetSeriesID() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0020,000e)", 0 );
-    return name;
-  }
-  
-  std::string DCMTKImageIO::GetOrientation() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0020,0037)", 0 );
-    return name;
-  }
+void* DCMTKImageIO::GetDataPointerForSlice( void * buffer, int slice ) const
+{
+    // Refuse to offset a null pointer.
+    if ( !buffer )
+        return NULL;
 
-  std::string DCMTKImageIO::GetSeriesNumber() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0020,0011)", 0 );
-    return name;
-  }
+    const size_t singleSliceSize = this->GetSliceSizeInBytes();
 
-  std::string DCMTKImageIO::GetSequenceName() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0018,0024)", 0 );
-    return name;
-  }
+    const ImageIORegion &ioRegion (GetIORegion());
 
-  std::string DCMTKImageIO::GetSliceThickness() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0018,0050)", 0 );
-    return name;
-  }
+    // If we have more than 2 dimensions, then the slice origin for the buffer may be offset.
+    int slice0;
+    if ( ioRegion.GetImageDimension () > 2 ) {
+        slice0 = ioRegion.GetIndex( 2 );
+    } else {
+        slice0 = 0;
+    }
+    const size_t sliceCountOffset = slice - slice0;
 
-  std::string DCMTKImageIO::GetRows() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0028,0010)", 0 );
-    return name;
-  }
+    // So the offset in bytes is...
+    const size_t offset = singleSliceSize * sliceCountOffset;
 
-  std::string DCMTKImageIO::GetColumns() const
-  {
-    std::string name = this->GetMetaDataValueString ( "(0028,0011)", 0 );
-    return name;
-  }
+    // We cannot portably offset a void pointer, must cast to a byte type [assume char == byte] , increment, and cast back.
+    return (static_cast<char*>(buffer) + offset);
+}
 
-  std::string DCMTKImageIO::GetAcquisitionDate() const
-  {
-    return this->GetMetaDataValueString ( "(0008,0022)", 0 );
-  }
+//---------------------------------------------------------------------------------------------
 
-  std::string DCMTKImageIO::GetReferringPhysicianName() const
-  {
-    return this->GetMetaDataValueString ( "(0008,0090)", 0 );
-  }
-
-  std::string DCMTKImageIO::GetPerformingPhysicianName() const
-  {
-    return this->GetMetaDataValueString ( "(0008,1050)", 0 );
-  }
-
-  std::string DCMTKImageIO::GetProtocolName() const
-  {
-    return this->GetMetaDataValueString ( "(0018,1030)", 0 );
-  }
-
-  std::string DCMTKImageIO::GetAcquisitionComments() const
-  {
-    return this->GetMetaDataValueString ( "(0018,4000)", 0 );
-  }
-
-  std::string DCMTKImageIO::GetPatientStatus() const
-  {
-    return this->GetMetaDataValueString ( "(0011,1010)", 0 );
-  }
-
-  void 
-  DCMTKImageIO
-  ::SwapBytesIfNecessary( void* buffer, unsigned long numberOfPixels )
-  {
-  }
-
-
-
-
-  void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, const int& fileCount )
-  {
+void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, const int& fileCount )
+{
 
     DcmFileFormat dicomFile;
     OFCondition condition = dicomFile.loadFile( name.c_str() );
-    
+
     // checking that given file is available
     if ( !condition.good() )
     {
-      itkExceptionMacro ( << condition.text() );
+        itkExceptionMacro ( << condition.text() );
     }
-    
-    // manual call to load data into memory
-    //dicomFile.loadAllDataIntoMemory();
-    
-    
+
     // reading meta info
-    DcmMetaInfo* metaInfo = dicomFile.getMetaInfo();      
+    DcmMetaInfo* metaInfo = dicomFile.getMetaInfo();
     for ( unsigned long e = 0; e < metaInfo->card(); e++ )
     {
-      DcmElement* element = metaInfo->getElement( e );
-      
-      DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(element);
-      if (!pixelData) // don't want to read PixData right now
-      { 
-	this->ReadDicomElement( element, fileIndex, fileCount );
-      }
+        DcmElement* element = metaInfo->getElement( e );
+        DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(element);
+        if (!pixelData) // don't want to read PixData right now
+        {
+            this->ReadDicomElement( element, fileIndex, fileCount );
+        }
     }
-    
-    
+
     // reading data set
-    DcmDataset* dataSet = dicomFile.getDataset();      
+    DcmDataset* dataSet = dicomFile.getDataset();
     for ( unsigned long e = 0; e < dataSet->card(); e++ )
-    {	
-      DcmElement* element = dataSet->getElement( e );
-      
-      DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(element);
-      if (!pixelData) // don't want to read PixData right now
-      {
-	this->ReadDicomElement( element, fileIndex, fileCount );
-      }
+    {
+        DcmElement* element = dataSet->getElement( e );
+
+        DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(element);
+        if (!pixelData) // don't want to read PixData right now
+        {
+            this->ReadDicomElement( element, fileIndex, fileCount );
+        }
     }
-    
-  }
 
+}
 
-  inline void DCMTKImageIO::ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount )
-  {
+//---------------------------------------------------------------------------------------------
+
+inline void DCMTKImageIO::ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount )
+{
 
     DcmTag &dicomTag = const_cast<DcmTag &>(element->getTag());
-    
-    std::string tagName   = dicomTag.getTagName();
-    std::string tagVRName = dicomTag.getVRName();
-    
+
+    // create a name using the group/element
     Uint16 tagGroup   = dicomTag.getGTag();
     Uint16 tagElement = dicomTag.getETag();
-    
     std::ostringstream oss;
     oss << '(' << std::hex << std::setw( 4 ) << std::setfill( '0' )<< tagGroup << ','
-	<< std::hex << std::setw( 4 ) << std::setfill( '0' ) << tagElement << ")";
+        << std::hex << std::setw( 4 ) << std::setfill( '0' ) << tagElement << ")";
     std::string tagKey = oss.str();
-    
-    
-    MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
-    
 
+    // get the tag as string
     OFString ofstring;
     OFCondition cond = element->getOFStringArray (ofstring, 0);
     if ( !cond.good() )
     {
-      //itkWarningMacro ( << "Cannot convert element to string.");
-      //element->print (std::cout);
-      //getchar();
-      return;
+        return;
     }
-    
+
+    // we are removing trailing slashes and replace them with whitespace (is this good?)
     std::string s_value = ofstring.c_str();
     std::replace(s_value.begin(), s_value.end(), '\\', ' ');
-    
+
+    MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
     MetaDataDictionary::Iterator it = dicomDictionary.Find (tagKey);
     if (it!=dicomDictionary.End())
     {
-      MetaDataVectorStringType* vec = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() );
-      StringVectorType& value = const_cast< StringVectorType& >(vec->GetMetaDataObjectValue());	
-      value[fileIndex] = s_value;
+        MetaDataVectorStringType* vec = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() );
+        StringVectorType& value = const_cast< StringVectorType& >(vec->GetMetaDataObjectValue());
+        value[fileIndex] = s_value;
     }
     else
     {
-      StringVectorType vec (fileCount, "");
-      vec[fileIndex] = s_value;
-      EncapsulateMetaData< StringVectorType >(dicomDictionary, tagKey, vec);
+        StringVectorType vec (fileCount, "");
+        vec[fileIndex] = s_value;
+        EncapsulateMetaData< StringVectorType >(dicomDictionary, tagKey, vec);
     }
-  }
+}
 
+//---------------------------------------------------------------------------------------------
 
-  /*
+DCMTKImageIO::StringPairType DCMTKImageIO::GetPairedMetadata( const char* metaName, const char* key) const
+{
+    StringPairType pairObj;
+    pairObj.first  = std::string(metaName);
+    pairObj.second = GetMetaDataValueString (key, 0);
+    return pairObj;
+}
 
-  inline std::string DCMTKImageIO::GetMetaDataValueString (const char* key, int index) const
-  {
+//---------------------------------------------------------------------------------------------
+
+std::string DCMTKImageIO::GetMetaDataValueString( const char* key, int index ) const
+{
     std::string value = "";
     const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
     MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
     if( it!=dicomDictionary.End() )
     {
-      if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
-      {
-	value = metaData->GetMetaDataObjectValue()[index];
-      }
+        if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+        {
+            value = metaData->GetMetaDataObjectValue()[index];
+        }
     }
     return value;
-  }
+}
 
-  */
-  /*
-  inline const DCMTKImageIO::StringVectorType& DCMTKImageIO::GetMetaDataValueVectorString (const char* key) const
-  {
+//---------------------------------------------------------------------------------------------
+
+const DCMTKImageIO::StringVectorType& DCMTKImageIO::GetMetaDataValueVectorString( const char* key ) const
+{
     const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
     MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
     if( it!=dicomDictionary.End() )
     {
-      if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
-      {
-	return metaData->GetMetaDataObjectValue();
-      } else
-      {
-	return m_EmptyVector;
-      }
+        if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+        {
+            return metaData->GetMetaDataObjectValue();
+        }
+        else
+        {
+            return m_EmptyVector;
+        }
     }
     return m_EmptyVector;
-  }
-  */  
 }
+
+//---------------------------------------------------------------------------------------------
+
+DCMTKImageIO::StringPairType DCMTKImageIO::GetAttribute( const std::string attribute ) const
+{
+    return GetPairedMetadata(attribute.c_str(), attribute.c_str());
+}
+
+//---------------------------------------------------------------------------------------------
+
+void DCMTKImageIO::CalculateImageProperties()
+{
+    this->DetermineNumberOfPixelComponents();
+    this->DeterminePixelType();
+    this->DetermineDimensions();
+    this->DetermineOrigin();
+    this->DetermineOrientation();
+    this->DetermineOrdering();
+    this->DetermineSpacing();
+    this->DetermineOrdering();
+}
+
+//---------------------------------------------------------------------------------------------
+
+int DCMTKImageIO::GetNumberOfSlices()
+{
+    return this->GetFileNames().size(); // this does not take multiple volumes at all
+}
+
+//---------------------------------------------------------------------------------------------
+
+void DCMTKImageIO::DetermineOrdering( void )
+{
+
+//    m_OrderedFileNames.clear();
+//    m_OrderedFileNames = SortSlices(this->GetFileNames(), &m_DistanceToFilenameMap);
+
+    std::vector<std::string> ordered  = this->GetFileNames(); // no ordering performed here
+    m_OrderedFileNames.clear();
+    for(int i = 0; i < ordered.size(); i++)
+    {
+        m_OrderedFileNames.push_back(ordered.at(i));
+    }
+
+}
+
+//---------------------------------------------------------------------------------------------
+
+std::vector<std::string> DCMTKImageIO::SortSlices(const std::vector<std::string>& unorderdListOfFiles, std::multimap<double,std::string> *distanceMap)
+{
+
+    std::vector<std::string> orderedList;
+    distanceMap->clear();
+
+    if (unorderdListOfFiles.size() == 0)
+        return orderedList;
+
+    if (unorderdListOfFiles.size() == 1)
+    {
+        orderedList.push_back(unorderdListOfFiles.at(0));
+        return orderedList;
+    }
+
+    Vec3 normal(0,0,0);
+    Vec3 ipp(0,0,0);
+    double dist, min, max;
+
+    for(int sliceIndex=0; sliceIndex < unorderdListOfFiles.size(); sliceIndex++)
+    {
+
+        if ( sliceIndex == 0) // first slice
+        {
+            normal = GetImageNormalFromSlice(0);
+
+            ipp = GetPatientPositionPatientFromSlice(sliceIndex);
+
+            dist = 0;
+            for ( int i = 0; i < 3; ++i )
+            {
+                // dot product to get distance
+                dist += normal.x[i]*ipp.x[i];
+            }
+
+            distanceMap->insert(std::pair<double,std::string>(dist, unorderdListOfFiles.at(sliceIndex)));
+            max = min = dist;
+        }
+        else
+        {
+            ipp = GetPatientPositionPatientFromSlice(sliceIndex);
+
+            dist = 0;
+            for ( int i = 0; i < 3; ++i )
+            {
+                // dot product to get distance
+                dist += normal.x[i]*ipp.x[i];
+            }
+            distanceMap->insert(std::pair<double,std::string>(dist, unorderdListOfFiles.at(sliceIndex)));
+            min = (min < dist) ? min : dist;
+            max = (max > dist) ? max : dist;
+        }
+    }
+
+    // Find out if min/max are coherent
+    if ( min == max )
+    {
+        itkWarningMacro( << "Looks like all images have the exact same image position."
+                         << "No PositionPatientOrdering sort performed" );
+    }
+
+    if(m_DirectOrdering)
+    {
+        for (std::multimap<double, std::string >::iterator it = distanceMap->begin(); it != distanceMap->end(); ++it)
+        {
+            orderedList.push_back( (*it).second );
+        }
+    }
+    else
+    {
+        for (std::multimap<double, std::string >::reverse_iterator it = distanceMap->rbegin(); it != distanceMap->rend(); ++it)
+        {
+            orderedList.push_back( (*it).second );
+        }
+    }
+
+    return orderedList;
+}
+
+//---------------------------------------------------------------------------------------------
+
+bool DCMTKImageIO::SlicesAreParallel( int sliceIndex1, int sliceIndex2 )
+{
+    bool parallel = false;
+    Vec3 normal1Vec = GetImageNormalFromSlice(sliceIndex1);
+    Vec3 normal2Vec = GetImageNormalFromSlice(sliceIndex2);
+
+    parallel = ((fabs(normal1Vec.x[0]-normal2Vec.x[0]) < 0.001)
+             && (fabs(normal1Vec.x[1]-normal2Vec.x[1]) < 0.001)
+             && (fabs(normal1Vec.x[2]-normal2Vec.x[2]) < 0.001));
+    return parallel;
+}
+
+//---------------------------------------------------------------------------------------------
+
+Vec3 DCMTKImageIO::GetImageNormalFromSlice( int index )
+{
+    double orientation[6]={1.0, 0.0, 0.0, 0.0, 1.0, 0.0};
+    const StringVectorType &orientationVec = this->GetMetaDataValueVectorString("(0020,0037)");
+    if (!orientationVec.size())
+    {
+        itkWarningMacro( << "Tag (0020,0037) (PatientOrientation) was not found, assuming identity" );
+    }
+    else
+    {
+        std::string orientationStr = orientationVec[index];
+        std::istringstream is_stream( orientationStr.c_str() );
+        for( int i=0; i<6; i++ )
+        {
+            if (!(is_stream >> orientation[i]) )
+            {
+                itkWarningMacro( << "Cannot convert string to double: " << orientationStr.c_str() );
+            }
+        }
+    }
+
+    // cross product to get normal
+    double normal[3];
+    normal[0] = orientation[1]*orientation[5] - orientation[2]*orientation[4];
+    normal[1] = orientation[2]*orientation[3] - orientation[0]*orientation[5];
+    normal[2] = orientation[0]*orientation[4] - orientation[1]*orientation[3];
+
+    return Vec3(normal[0], normal[1],normal[2]);
+}
+
+//---------------------------------------------------------------------------------------------
+
+Vec3 DCMTKImageIO::GetPatientPositionPatientFromSlice( int index )
+{
+    Vec3 IPP(0,0,0);
+    std::string s_position = this->GetMetaDataValueString("(0020,0032)", index);
+    std::istringstream is_stream( s_position.c_str() );
+    is_stream >> IPP.x[0];
+    is_stream >> IPP.x[1];
+    is_stream >> IPP.x[2];
+
+    return IPP;
+}
+
+//---------------------------------------------------------------------------------------------
+
+int DCMTKImageIO::SplitRequestedRegion (int id, int total, RegionType& region)
+{
+    const ImageIORegion &ioRegion (GetIORegion());
+
+    int fileCount (0);
+    int firstFileIndex (0);
+    if ( ioRegion.GetImageDimension() < 3 ) {
+        fileCount = 1;
+        firstFileIndex = 0;
+    } else {
+        fileCount = 1;
+        firstFileIndex = ioRegion.GetIndex(2);
+        for(int i(2); i<ioRegion.GetImageDimension(); ++i ) {
+            fileCount *= ioRegion.GetSize(i);
+        }
+    }
+    if (fileCount > (int)( this->GetFileNames().size() ) ) {
+      itkExceptionMacro("Requested region exceeds size that can be read.");
+    }
+
+    int threadFileCount = (int)::ceil( fileCount/(double)total );
+
+    RegionType::IndexType start;
+    start[0] = id * threadFileCount;
+    RegionType::SizeType length;
+    length[0] = threadFileCount;
+
+    int maxThreadInUse = (int)::ceil(fileCount/(double)threadFileCount) - 1;
+
+    // in the case that there are more threads than slices, the start index may overflow.
+    if( start[0] + length[0] > fileCount ) {
+
+        if ( start [0] < fileCount) {
+            length[0] = fileCount - start[0];
+        } else {
+            start[0] = fileCount -1;
+            length[0] = 0;
+        }
+    }
+    start[0] += firstFileIndex;
+
+    region.SetIndex (start);
+    region.SetSize (length);
+
+    return maxThreadInUse+1;
+}
+
+//---------------------------------------------------------------------------------------------
+
+bool DCMTKImageIO::CanStreamRead( void )
+{
+    return true;
+}
+
+//---------------------------------------------------------------------------------------------
+
+ImageIORegion DCMTKImageIO::GenerateStreamableReadRegionFromRequestedRegion( const ImageIORegion & requestedRegion ) const
+{
+    // This implementation returns the requestedRegion if
+    // "UseStreamedReading" is enabled
+
+    ImageIORegion streamableRegion(this->m_NumberOfDimensions);
+    if( this->GetUseStreamedReading () )
+    {
+        for( unsigned int i=0; i < this->m_NumberOfDimensions; i++ )
+        {
+            if ( i < 2 ) {
+                streamableRegion.SetSize( i, this->m_Dimensions[i] );
+                streamableRegion.SetIndex( i, 0 );
+            } else {
+                streamableRegion.SetSize( i, requestedRegion.GetSize (i) );
+                streamableRegion.SetIndex( i, requestedRegion.GetIndex (i) );
+            }
+        }
+        //    streamableRegion = requestedRegion;
+    }
+    else
+    {
+        for( unsigned int i=0; i < this->m_NumberOfDimensions; i++ )
+        {
+            streamableRegion.SetSize( i, this->m_Dimensions[i] );
+            streamableRegion.SetIndex( i, 0 );
+        }
+    }
+
+    return streamableRegion;
+}
+
+//---------------------------------------------------------------------------------------------
+
+
+} // itk namespace

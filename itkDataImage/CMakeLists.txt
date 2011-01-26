@@ -41,6 +41,8 @@ find_package(ITK REQUIRED)
   endif(NOT ITK_USE_REVIEW_STATISTICS)
 include(${ITK_USE_FILE})
 
+include_directories(../dtkItkLogForwarder)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -101,6 +103,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
+  dtkItkLogForwarder
   ${ITK_LIBRARIES})
 
 if (BUILD_TESTING)

@@ -35,6 +35,9 @@ include(dtkPlugin)
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
+include_directories(../dtkItkLogForwarder)
+include_directories(../dtkVtkLogForwarder)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -72,6 +75,8 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   dtkCore
+  dtkItkLogForwarder
+  dtkVtkLogForwarder
   vtkDataManagement
   QVTK
   vtkCommon

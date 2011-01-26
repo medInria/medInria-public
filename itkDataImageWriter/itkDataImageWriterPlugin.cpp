@@ -16,6 +16,7 @@
 #include "itkVTKDataImageWriter.h"
 
 #include <dtkCore/dtkLog.h>
+#include "itkLogForwarder.h"
 
 // /////////////////////////////////////////////////////////////////
 // itkDataImageWriterPluginPrivate
@@ -24,7 +25,16 @@
 class itkDataImageWriterPluginPrivate 
 {
 public:
+    itkDataImageWriterPluginPrivate()
+    {
+        forwarder = itk::LogForwarder::New();
+    }
+    ~itkDataImageWriterPluginPrivate()
+    {
+
+    }
     // Class variables go here.
+    itk::LogForwarder::Pointer forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////

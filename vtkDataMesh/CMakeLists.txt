@@ -31,6 +31,8 @@ include(dtkPlugin)
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
+include_directories(../dtkVtkLogForwarder)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -57,6 +59,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  dtkVtkLogForwarder
   dtkCore
   vtkCommon
   vtkFiltering
