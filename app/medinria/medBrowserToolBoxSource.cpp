@@ -54,7 +54,7 @@ medBrowserToolBoxSource::medBrowserToolBoxSource(QWidget *parent) : medToolBox(p
     connect(tab, SIGNAL(currentChanged(int)), this, SIGNAL(indexChanged(int)));
 
     this->setTitle("Source selector");
-    this->setWidget(tab);
+    this->setTabWidget(tab);
 }
 
 medBrowserToolBoxSource::~medBrowserToolBoxSource(void)

@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 10:15:58 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 10:16:53 2010 (+0100)
+ * Last-Updated: Mon Dec 20 15:58:20 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 4
+ *     Update #: 156
  */
 
 /* Commentary: 
@@ -19,22 +19,19 @@
 
 #include "medToolBoxHeader.h"
 
+#include <dtkCore/dtkGlobal.h>
+
 class medToolBoxHeaderPrivate
 {
 public:
-    QLabel *label;
+    QString title;
 };
 
 medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medToolBoxHeaderPrivate)
 {
-    d->label = new QLabel(this);
-    d->label->setText("Untitled");
-    d->label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    d->title = "Untitled";
 
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setContentsMargins(5, 0, 5, 0);
-    layout->setSpacing(0);
-    layout->addWidget(d->label);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
 
 medToolBoxHeader::~medToolBoxHeader(void)
@@ -44,7 +41,27 @@ medToolBoxHeader::~medToolBoxHeader(void)
     d = NULL;
 }
 
+QSize medToolBoxHeader::sizeHint(void) const
+{
+    return QSize(100, 32);
+}
+
 void medToolBoxHeader::setTitle(const QString& title)
 {
-    d->label->setText(title);
+    d->title = title;
+}
+
+void medToolBoxHeader::paintEvent(QPaintEvent *event)
+{
+    QFrame::paintEvent(event);
+
+    QPainter painter(this);
+    painter.setPen(QColor("#bbbbbb"));
+
+    QRectF rect = this->rect();
+
+    painter.translate(16, 10);
+    
+    painter.drawText(rect, Qt::AlignLeft, d->title);
+    painter.end();
 }

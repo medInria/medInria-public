@@ -65,10 +65,12 @@ void medToolBoxContainer::addToolBox(medToolBox *toolBox)
 {
     if (!toolBox)
         return;
-    
+    toolBox->setOrientation(d->layoutOrientation);
+
     if (!d->toolboxes.contains(toolBox)) {
         d->toolboxes.append(toolBox);
 	toolBox->setParent (d->container);
+
 	if (d->layoutOrientation==Qt::Vertical) {
 	  d->layout->setRowStretch (d->layout->count(), 0);
 	  d->layout->addWidget(toolBox, d->layout->count(), 0, Qt::AlignTop);
@@ -113,15 +115,18 @@ void medToolBoxContainer::setOrientation(Qt::Orientation orient)
 {
     if (d->layoutOrientation==orient)
         return;
-  
+
     d->layoutOrientation = orient;
 
     this->clear();
 
     //put back toolboxes
-    foreach(medToolBox * tb, d->toolboxes ) {
-      addToolBox (tb);
-    }
+    //never used:   the switch of configuration is done while no tb is present...
+    //              + clear removes the tbs...
+//    foreach(medToolBox * tb, d->toolboxes ) {
+//      //addToolBox also sets the orientation of the toolboxes
+//      addToolBox (tb);
+//    }
 }
 
 Qt::Orientation medToolBoxContainer::orientation (void) const

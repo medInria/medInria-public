@@ -171,7 +171,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     tab->addTab(layoutPage, tr("Layout"));
 
     this->setTitle(tr("Registration"));
-    this->setWidget(tab);
+    this->setTabWidget(tab);
 
     d->customToolBox = NULL;
 
