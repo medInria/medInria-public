@@ -259,20 +259,44 @@ int SynchronizedViewsTest(int argc, char* argv[])
   
   double performance_windowlevel = ( (double)(t3-t2) * 1000.0) / (2.0 * (double)(N) * (double)CLOCKS_PER_SEC);  
   std::cout << "performance_windowlevel: " << performance_windowlevel << " ms."<< std::endl;
-
   
   view4->SetDownRightAnnotation ("SyncReset ()");
   for( unsigned int i=0; i<N; i++){
-  view4->SyncReset ();
-  view4->SyncRender();
+    view4->SyncReset ();
+    view4->SyncRender();
   }
-
   
   clock_t t4 = clock();
   
   double performance_reset = ( (double)(t4-t3) * 1000.0) / (1.0 * (double)(N) * (double)CLOCKS_PER_SEC);  
   std::cout << "performance_reset: " << performance_reset << " ms."<< std::endl;
   
+  view4->SetDownRightAnnotation ("SyncRender ()");
+  for( unsigned int i=0; i<N; i++){
+    view4->SyncRender();
+  }
+
+  clock_t t5 = clock();
+  
+  double performance_render = ( (double)(t5-t4) * 1000.0) / (1.0 * (double)(N) * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_render: " << performance_render << " ms."<< std::endl;
+
+  
+  view4->SetDownRightAnnotation ("VR ()");
+  view4->SetRenderingModeToVR();
+  view4->SyncReset();
+
+  for( unsigned int i=0; i<n_2; i++){
+    view4->SyncSetLevel ( view4->GetLevel() / zfactor );
+    view4->SyncRender();
+  }  
+
+  clock_t t6 = clock();
+  
+  double performance_volumerendering = ( (double)(t6-t5) * 1000.0) / (0.5 * (double)(N) * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_volumerendering: " << performance_volumerendering << " ms."<< std::endl;
+
+
   
   view1->Detach();
   view2->Detach();
