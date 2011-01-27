@@ -70,22 +70,21 @@ int SynchronizedViewsTest(int argc, char* argv[])
   view3->SetRenderer ( renderer3 );
   view4->SetRenderer ( renderer4 );
 
-  view1->SetInteractionStyle (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
-  view2->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
-  view3->SetInteractionStyle (vtkViewImage2D::ZOOM_INTERACTION);
+  // view1->SetInteractionStyle (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
+  // view2->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
+  // view3->SetInteractionStyle (vtkViewImage2D::ZOOM_INTERACTION);
 
   view1->SetLinkZoom (true);
   view2->SetLinkZoom (true);
   view3->SetLinkZoom (true);
   view4->SetLinkZoom (true);
 
-  view1->Show2DAxisOff();
-  view2->Show2DAxisOff();
-  view3->Show2DAxisOff();
-  view1->ShowAnnotationsOff();
-  view2->ShowAnnotationsOff();
-  view3->ShowAnnotationsOff();
-  
+  view1->Show2DAxisOn();
+  view2->Show2DAxisOn();
+  view3->Show2DAxisOn();
+  view1->ShowAnnotationsOn();
+  view2->ShowAnnotationsOn();
+  view3->ShowAnnotationsOn();
   
   view1->SetOrientation (vtkViewImage2D::AXIAL_ID);
   view2->SetOrientation (vtkViewImage2D::CORONAL_ID);
@@ -100,10 +99,10 @@ int SynchronizedViewsTest(int argc, char* argv[])
   view4->SetCubeVisibility(1);
   
 
-  view1->SetAboutData ("Powered by vtkINRIA3D");
-  view2->SetAboutData ("Powered by vtkINRIA3D");
-  view3->SetAboutData ("Powered by vtkINRIA3D");
-  view4->SetAboutData ("Powered by vtkINRIA3D");
+  // view1->SetAboutData ("Powered by vtkINRIA3D");
+  // view2->SetAboutData ("Powered by vtkINRIA3D");
+  // view3->SetAboutData ("Powered by vtkINRIA3D");
+  // view4->SetAboutData ("Powered by vtkINRIA3D");
   view1->ScalarBarVisibilityOn();
   view2->ScalarBarVisibilityOn();
   view3->ScalarBarVisibilityOn();
@@ -131,11 +130,36 @@ int SynchronizedViewsTest(int argc, char* argv[])
   view3->SetImage (image);
   view4->SetImage (image);
 
+  rwin1->SetPosition (20, 20);
+  rwin2->SetPosition (300, 20);
+  rwin3->SetPosition (20, 300);
+  rwin4->SetPosition (300, 300);
 
-  view1->Render();
-  view2->Render();
-  view3->Render();
-  view4->Render();
+  
+  /**
+     Reset the window/level and the current position.
+  */
+  view1->SyncResetCurrentPoint();
+  view1->SyncResetWindowLevel();
+  view1->SyncReset();
+  
+  rwin1->Render();
+  rwin2->Render();
+  rwin3->Render();
+  rwin4->Render();
+
+  view1->SetShow2DAxis (0);
+  view2->SetShow2DAxis (0);
+  view3->SetShow2DAxis (0);
+  view1->SetShowAnnotations (0);
+  view2->SetShowAnnotations (0);
+  view3->SetShowAnnotations (0);
+  view1->SetRulerWidgetVisibility (0);
+  view2->SetRulerWidgetVisibility (0);
+  view3->SetRulerWidgetVisibility (0);
+  
+  
+  //iren1->Start();
 
   view1->SyncResetCurrentPoint();
   view1->SyncResetWindowLevel();
@@ -157,7 +181,7 @@ int SynchronizedViewsTest(int argc, char* argv[])
   rwin3->SetPosition (20, 300);
   rwin4->SetPosition (300, 300);
   
-  const unsigned int N = 500;
+  const unsigned int N = 100;
   
   double positions[N][3];
   srand( time(NULL) );
@@ -172,30 +196,41 @@ int SynchronizedViewsTest(int argc, char* argv[])
     positions[i][1] = scale2 * 128;
     positions[i][2] = scale3 * 128;
   }
+
+
+  clock_t t1 = clock();
+
   
   for( unsigned int i=0; i<N; i++)
   {
     view1->SyncSetPosition ( positions[i] );
     view1->SyncRender();
     
-    // test if the other views have the same coordinate.
-    for( int j=0; j<4; j++)
-    {
-      const double* pos = vecViews[j]->GetCurrentPoint();
-      if( pos[0]!=positions[i][0] || pos[1]!=positions[i][1] || pos[2]!=positions[i][2] )
-      {
-        return 1;
-      }
-    }
+    // // test if the other views have the same coordinate.
+    // for( int j=0; j<4; j++)
+    // {
+    //   const double* pos = vecViews[j]->GetCurrentPoint();
+    //   if( pos[0]!=positions[i][0] || pos[1]!=positions[i][1] || pos[2]!=positions[i][2] )
+    //   {
+    //     return 1;
+    //   }
+    // }
     
   }
+
+
+  clock_t t2 = clock();
   
-  double zfactor = 0.99;
+  double performance_settingpoint = ( (double)(t2-t1) * 1000.0) / (1.0 * (double)N * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_settingpoint: " << performance_settingpoint << " ms."<< std::endl;
+
+    
+  double zfactor = 0.95;
 
   view4->SetWindow (178);
   view4->SetLevel (51);
 
-  unsigned int n_2 = vtkMath::Round ((double)(N) / 3.0);
+  unsigned int n_2 = vtkMath::Round ((double)(N) / 2.0);
   
   view4->SetDownRightAnnotation ("SyncSetWindow (decreasing)");
   for( unsigned int i=0; i<n_2; i++){
@@ -219,12 +254,26 @@ int SynchronizedViewsTest(int argc, char* argv[])
     view4->SyncSetLevel ( view4->GetLevel () / zfactor );
   view4->SyncRender();
   }
-    
+
+  clock_t t3 = clock();
+  
+  double performance_windowlevel = ( (double)(t3-t2) * 1000.0) / (2.0 * (double)(N) * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_windowlevel: " << performance_windowlevel << " ms."<< std::endl;
+
+  
   view4->SetDownRightAnnotation ("SyncReset ()");
   for( unsigned int i=0; i<N; i++){
   view4->SyncReset ();
   view4->SyncRender();
   }
+
+  
+  clock_t t4 = clock();
+  
+  double performance_reset = ( (double)(t4-t3) * 1000.0) / (1.0 * (double)(N) * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_reset: " << performance_reset << " ms."<< std::endl;
+  
+  
   view1->Detach();
   view2->Detach();
   view3->Detach();
