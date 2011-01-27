@@ -769,6 +769,7 @@ void DCMTKImageIO::CalculateImageProperties()
     this->DetermineOrdering();
     this->DetermineSpacing();
     this->DetermineOrdering();
+
 }
 
 //---------------------------------------------------------------------------------------------
@@ -783,10 +784,10 @@ int DCMTKImageIO::GetNumberOfSlices()
 void DCMTKImageIO::DetermineOrdering( void )
 {
 
-//    m_OrderedFileNames.clear();
-//    m_OrderedFileNames = SortSlices(this->GetFileNames(), &m_DistanceToFilenameMap);
 
-    std::vector<std::string> ordered  = this->GetFileNames(); // no ordering performed here
+    //std::vector<std::string> ordered  = this->GetFileNames(); // no ordering performed here
+    std::multimap<double,std::string> distanceMap;
+    std::vector<std::string> ordered = SortSlices(this->GetFileNames(), &distanceMap);
     m_OrderedFileNames.clear();
     for(int i = 0; i < ordered.size(); i++)
     {
