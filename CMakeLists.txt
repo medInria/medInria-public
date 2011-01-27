@@ -31,6 +31,11 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
+if(WIN32)
+  option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" FALSE)
+endif()
+  
+
 enable_testing()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
