@@ -17,21 +17,9 @@
 
 class DcmElement;
 
+
 namespace itk
 {
-
-  struct Vec3 
-  {
-      Vec3(double a, double b, double c)
-      {
-          x[0] = a;
-          x[1] = b;
-          x[2] = c;
-      }
-
-      double x[3];
-  };
-
 
   class ITKDCMTKIO_EXPORT DCMTKImageIO : public MultiThreadedImageIOBase
   {
@@ -45,166 +33,154 @@ namespace itk
     itkNewMacro (Self);
     itkTypeMacro(DCMTKImageIO, MultiThreadedImageIOBase);
 
-    // some container typedefs
-    typedef std::vector<std::string>                     StringVectorType;
-    typedef std::pair<std::string,std::string>           StringPairType;
-    typedef std::map<std::string, int>                   NameToIndexMapType;
-    typedef std::map<int, std::string>                   IndexToNameMapType;
+
+    typedef std::map< std::string, std::vector< std::string > > StringMap;
+
     typedef MetaDataObject <std::string>                 MetaDataStringType;
     typedef MetaDataObject <std::vector<std::string> >   MetaDataVectorStringType;
 
     typedef MultiThreadedImageIOBase::RegionType         RegionType;
 
+    typedef std::vector<std::string>                     StringVectorType;
+    
+    typedef std::map<std::string, int>                   NameToIndexMapType;
+    typedef std::map<int, std::list<std::string> >       IndexToNamesMapType;
+    typedef std::set< double >                           SliceLocationSetType;
+    typedef std::set< std::string >                      NameSetType;
+    typedef std::multimap< double, std::string >         SliceLocationToNamesMultiMapType;
 
-    /**
-    * CanReadFile - check if the file is DICOM and supported
-    * @params: const char * - path to file
-    * @return   bool - true if able to read
-    */
+
+    static double MAXIMUM_GAP;
+    
+    
     bool CanReadFile(const char*);
     
     
-    /**
-    * ReadImageInformation - parse for meta-information 
-    */
     void ReadImageInformation();
+    
 
-    /**
-    * CalculateImageProperties - calculate and set important image properties like dimension, pixel-spacing
-    * @return   void
-    */
-    void CalculateImageProperties();
+    bool CanWriteFile(const char*);
+    
 
-    /**
-    * CanWriteFile - check if its possible to create new DICOM (not implemented)
-    * @params: const char *
-    * @return   bool - return true if able to write
-    */
-    bool CanWriteFile(const char*){return false;};
-
-    /**
-    * WriteImageInformation - write metadata (not implemented)
-    */
-    void WriteImageInformation(){};
+    void WriteImageInformation();
 
     
-    /**
-    * Write - write the buffer (not implemented)
-    * @params: const void * buffer
-    */
-    void Write(const void* buffer){};
+    void Write(const void* buffer);    
 
 
-    /**
-    * GetAttribute - parse for 
-    * @params: const std::string attribute
-    * @return   itk::DCMTKImageIO::StringPairType
-    */
-    StringPairType GetAttribute(const std::string attribute) const;
+    // DICOM related stuff
+    std::string GetPatientName() const;
+    std::string GetPatientID() const;
+    std::string GetPatientSex() const;
+    std::string GetPatientAge() const;
+    std::string GetStudyID() const;
+    std::string GetPatientDOB() const;
+    std::string GetStudyDescription() const;
+    std::string GetSeriesDescription() const;
+    std::string GetBodyPart() const;
+    std::string GetNumberOfSeriesInStudy() const;
+    std::string GetNumberOfStudyRelatedSeries() const;
+    std::string GetStudyDate() const;
+    std::string GetModality() const;
+    std::string GetManufacturer() const;
+    std::string GetInstitution() const;
+    std::string GetModel() const;
+    std::string GetScanOptions() const;
+    std::string GetAcquisitionDate() const;
+    std::string GetReferringPhysicianName () const;
+    std::string GetPerformingPhysicianName () const;
+    std::string GetProtocolName() const;
+    std::string GetAcquisitionComments() const;
+    std::string GetPatientStatus() const;
 
-    /**
-    * GetOrderedFileNames - return list of pre-ordered filenames
-    * @return   const StringVectorType& - list of files
-    */
-    const StringVectorType& GetOrderedFileNames (void) const;
-
-   
-    /**
-    * GetMetaDataValueString - get the DICOM metadata if included in the file
-    * Use the following format: ("group,elem") where group and elem are hex values of DICOM attributes.
-    * @params: const char * key - key to look for
-    * @params: int index - file index in case of multiple files, 0 in single file case
-    * @return   std::string return String with result value
-    */
-    inline std::string GetMetaDataValueString (const char* key, int index) const;
-
-   
-    /**
-    * GetMetaDataValueVectorString -get the DICOM metadata if included in the file
-    * Use the following format: ("group,elem") where group and elem are hex values of DICOM attributes.
-    * @params: const char * key - key to look for
-    * @return   const StringVectorType& - return Stringlist with result value
-    */
-    inline const StringVectorType& GetMetaDataValueVectorString (const char* key) const;
+    // new
+    std::string GetSeriesID() const;
+    std::string GetOrientation() const;
+    std::string GetSeriesNumber() const;
+    std::string GetSequenceName() const;
+    std::string GetSliceThickness() const;
+    std::string GetRows() const;
+    std::string GetColumns() const;
 
 
-    static double                    MAXIMUM_GAP;
+    const StringVectorType& GetOrderedFileNames (void) const
+    { return m_OrderedFileNames; }
 
-    /** Override itk::MultiThreadedImageIOBase */
-    virtual int SplitRequestedRegion (int id, int total, RegionType& region);
 
-    /** Override itk::ImageIOBase */
-    virtual ImageIORegion GenerateStreamableReadRegionFromRequestedRegion( const ImageIORegion & requested ) const;
+    inline std::string GetMetaDataValueString (const char* key, int index) const
+    {
+      std::string value = "";
+      const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+      MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
+      if( it!=dicomDictionary.End() )
+      {
+	if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+	{
+	  value = metaData->GetMetaDataObjectValue()[index];
+	}
+      }
+      return value;
+    }
+    
+    inline const StringVectorType& GetMetaDataValueVectorString (const char* key) const
+    {
+      const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+      MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
+      if( it!=dicomDictionary.End() )
+      {
+	if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+	{
+	  return metaData->GetMetaDataObjectValue();
+	}
+	else
+	{
+	  return m_EmptyVector;
+	}
+      }
+      return m_EmptyVector;
+    }
 
-    /** see super class for documentation
-    *
-    *   overridden to return true */
-    virtual bool CanStreamRead( void );
 
   protected:
     
     DCMTKImageIO();
     ~DCMTKImageIO();
-
     void PrintSelf(std::ostream& os, Indent indent) const;
-    void ThreadedRead (void* buffer, RegionType region, int threadId);
+
+    void ThreadedRead (void* buffer, RegionType region, int threadId);    
     void InternalRead (void* buffer, int slice, unsigned long pixelCount);
 
-    std::vector<std::string>  SortSlices(const std::vector<std::string>& unorderdListOfFiles, std::multimap<double,std::string> *distanceMap );
 
-    void DetermineNumberOfPixelComponents (void); //single
-    void DeterminePixelType (void); //single
-    void DetermineSpacing (void); // single and multi
-    void DetermineDimensions (void); // single
-    void DetermineOrigin (void); //multi only 
-    void DetermineOrientation (void); // single
-    void DetermineOrdering(void);
-    
-    // read the "DICOM-header"
+    void SwapBytesIfNecessary(void* buffer, unsigned long numberOfPixels);
+
+
+    void DetermineNumberOfPixelComponents (void);
+    void DeterminePixelType (void);
+    void DetermineSpacing (void);
+    void DetermineDimensions (void);
+    void DetermineOrigin (void);
+    void DetermineOrientation (void);
+
+    double GetZPositionForImage (int);
+
     void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
-    
-    // get value from attribute and fill it into own dictionary
     inline void ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount );
-
-    //helper
-    inline StringPairType GetPairedMetadata( const char* metaName, const char* key) const;
-
-    // return the number of slices
-    int GetNumberOfSlices();
-
-    // check if the image normal between to slices is the same
-    bool SlicesAreParallel(int sliceIndex1, int sliceIndex2);
-
-    /** Get the IPP vector converted to Vec3 */
-    Vec3 GetPatientPositionPatientFromSlice(int index);
-
-    /** Get the image normal computed from IOP */
-    Vec3 GetImageNormalFromSlice(int index);
-
-    /** Get the size of each pixel in bytes */
-    unsigned int GetDcmComponentSize() const;
-
-    /** Offset the given buffer pointer to point to the start of the slice given.*/
-    void* GetDataPointerForSlice( void * buffer, int slice ) const;
-
-    /** Get size of a single slice in bytes.*/
-    size_t GetSliceSizeInBytes() const;
+    
+        
   private:
-
     DCMTKImageIO(const Self&);
     void operator=(const Self&);
-
-    StringVectorType                    m_OrderedFileNames;
-    std::string                         m_Directory;
-    NameToIndexMapType                  m_FilenameToIndexMap;
-    IndexToNameMapType                  m_IndexToFilenameMap;
-    StringVectorType                    m_EmptyVector;
-
-    bool m_DirectOrdering;
+    
+    StringVectorType           m_OrderedFileNames;
+    std::string                m_Directory;
 
 
-    //SliceLocationSetType             m_LocationSet;
-    //SliceLocationToNamesMultiMapType m_LocationToFilenamesMap;
+    SliceLocationSetType             m_LocationSet;
+    NameToIndexMapType               m_FilenameToIndexMap;
+    SliceLocationToNamesMultiMapType m_LocationToFilenamesMap;
+    
+    
+    StringVectorType           m_EmptyVector;
   };
   
   
