@@ -81,6 +81,14 @@ void medViewPool::appendView (medAbstractView *view)
     connect (view, SIGNAL (syncCamera(bool)),              this, SLOT (onViewSyncCamera(bool)));
     connect (view, SIGNAL (syncWindowing(bool)),           this, SLOT (onViewSyncWindowing(bool)));
     connect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));
+
+    connect (view, SIGNAL (positionChanged (const QVector3D  &)), this, SLOT (onViewPositionChanged (const QVector3D  &)));
+    connect (view, SIGNAL (zoomChanged(double)), this, SLOT (onViewZoomChanged(double)));
+    connect (view, SIGNAL (panChanged (const QVector2D &)), this, SLOT (onViewPanChanged (const QVector2D  &)));
+    connect (view, SIGNAL (windowingChanged (double, double)), this, SLOT (onViewWindowingChanged (double, double)));
+    
+    connect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &)),
+	     this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &)));
     
     // set properties
     QHashIterator<QString, QString> it(d->propertySet);
@@ -329,6 +337,146 @@ void medViewPool::onViewPropertySet (const QString &key, const QString &value)
     // third, restore signals
     foreach (medAbstractView *lview, d->views)
         lview->blockSignals (false); 
+}
+
+void medViewPool::onViewPositionChanged (const QVector3D &position)
+{
+    medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
+    
+    if (!vsender) {
+        qDebug() << "Sender seems not to be a medAbstractView";
+	return;
+    }
+
+    if (vsender->positionLinked()) {
+        // first, block all signals
+        foreach (medAbstractView *lview, d->views)
+	    lview->blockSignals (true);    
+    
+	// second, propagate properties
+	foreach (medAbstractView *lview, d->views) {
+	  if (lview!=this->sender() && lview->positionLinked()) {
+	    lview->setPosition (position);
+            lview->update();
+	  }
+	}
+	
+	// third, restore signals
+	foreach (medAbstractView *lview, d->views)
+	  lview->blockSignals (false);
+    }
+}
+
+void medViewPool::onViewCameraChanged (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal)
+{
+    medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
+    
+    if (!vsender) {
+        qDebug() << "Sender seems not to be a medAbstractView";
+	return;
+    }
+
+    if (vsender->cameraLinked()) {
+      // first, block all signals
+      foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (true);    
+    
+      // second, propagate properties
+      foreach (medAbstractView *lview, d->views) {
+        if (lview!=this->sender() && lview->cameraLinked()) {
+	  lview->setCamera (position, viewup, focal);
+	  lview->update();
+        }
+      }
+      
+      // third, restore signals
+      foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (false);
+    }
+}
+
+void medViewPool::onViewZoomChanged (double zoom)
+{
+    medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
+    
+    if (!vsender) {
+        qDebug() << "Sender seems not to be a medAbstractView";
+	return;
+    }
+
+    if (vsender->cameraLinked()) {
+      // first, block all signals
+      foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (true);    
+      
+      // second, propagate properties
+      foreach (medAbstractView *lview, d->views) {
+        if (lview!=this->sender() && lview->cameraLinked()) {
+	  lview->setZoom (zoom);
+	  lview->update();
+        }
+      }
+      
+      // third, restore signals
+      foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (false);
+    }
+}
+
+void medViewPool::onViewPanChanged (const QVector2D &pan)
+{
+    medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
+    
+    if (!vsender) {
+        qDebug() << "Sender seems not to be a medAbstractView";
+	return;
+    }
+
+    if (vsender->cameraLinked()) {
+      // first, block all signals
+      foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (true);    
+      
+      // second, propagate properties
+      foreach (medAbstractView *lview, d->views) {
+        if (lview!=this->sender() && lview->cameraLinked()) {
+	  lview->setPan (pan);
+	  lview->update();
+        }
+      }
+      
+      // third, restore signals
+      foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (false);
+    }
+}
+
+void medViewPool::onViewWindowingChanged (double level, double window)
+{
+    medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
+    
+    if (!vsender) {
+        qDebug() << "Sender seems not to be a medAbstractView";
+	return;
+    }
+
+    if (vsender->windowingLinked()) {
+      // first, block all signals
+      foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (true);    
+      
+      // second, propagate properties
+      foreach (medAbstractView *lview, d->views) {
+        if (lview!=this->sender() && lview->windowingLinked()) {
+	  lview->setWindowLevel (level, window);
+	  lview->update();
+        }
+      }
+      
+      // third, restore signals
+      foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (false);
+    }
 }
 
 int medViewPool::count (void)

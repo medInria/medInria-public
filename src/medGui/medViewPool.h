@@ -62,6 +62,12 @@ public slots:
     void onViewSyncWindowing (bool);
     void onViewReg           (bool);
 
+    void onViewPositionChanged    (const QVector3D &position);
+    void onViewCameraChanged      (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal);
+    void onViewZoomChanged        (double zoom);
+    void onViewPanChanged         (const QVector2D &pan);
+    void onViewWindowingChanged   (double level, double window);
+
 private:
     medViewPoolPrivate *d;
   

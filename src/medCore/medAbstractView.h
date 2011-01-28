@@ -24,6 +24,8 @@
 
 #include "medCoreExport.h"
 
+class medAbstractViewPrivate;
+
 class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 {
     Q_OBJECT
@@ -57,10 +59,39 @@ signals:
     void lutChanged    (void);
     void fullScreen    (bool);
 
+    // 2D
+    void positionChanged  (const QVector3D &position);
+    void zoomChanged      (double zoom);
+    void panChanged       (const QVector2D &pan);
+    void windowingChanged (double level, double window);
+
+    // 3D
+    void cameraChanged    (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal);
+
 public slots:
+
+    virtual void setLinkPosition (bool value);
+    bool positionLinked (void) const;
+
+    virtual void setLinkWindowing (bool value);
+    bool windowingLinked (void) const;
+
+    virtual void setLinkCamera (bool value);
+    bool cameraLinked (void) const;
+    
     virtual void linkPosition  (dtkAbstractView *view, bool value);
     virtual void linkCamera    (dtkAbstractView *view, bool value);
     virtual void linkWindowing (dtkAbstractView *view, bool value);
+
+    virtual void setPosition    (const QVector3D &position);
+    virtual void setZoom        (double zoom);
+    virtual void setPan         (const QVector2D &pan);
+    virtual void setWindowLevel (double level, double window);
+    
+    virtual void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal);
+
+private:
+    medAbstractViewPrivate *d;
 };
 
 #endif
