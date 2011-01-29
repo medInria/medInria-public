@@ -66,7 +66,7 @@ signals:
     void windowingChanged (double level, double window);
 
     // 3D
-    void cameraChanged    (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal);
+    void cameraChanged    (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
 
 public slots:
 
@@ -88,7 +88,15 @@ public slots:
     virtual void setPan         (const QVector2D &pan);
     virtual void setWindowLevel (double level, double window);
     
-    virtual void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal);
+    virtual void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+    
+public:
+    void emitViewPositionChangedEvent(const QVector3D &position);
+    void emitViewZoomChangedEvent(double zoom);
+    void emitViewPanChangedEvent(const QVector2D &pan);
+    void emitViewWindowingChangedEvent(double level, double window);
+    void emitViewCameraChangedEvent(const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+
 
 private:
     medAbstractViewPrivate *d;

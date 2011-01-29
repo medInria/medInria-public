@@ -44,26 +44,17 @@ public:
 
     int count (void);
 
-signals:
-	/*
-    void linkPosition  (dtkAbstractView *view, bool value);
-    void linkCamera    (dtkAbstractView *view, bool value);
-    void linkWindowing (dtkAbstractView *view, bool value);
-	 */
-    
+signals:    
     void showInfo(QObject*,const QString&,unsigned int timeout);
     void showError(QObject*,const QString&,unsigned int timeout);
     
 public slots:
     void onViewPropertySet (const QString &key, const QString &value);
     void onViewDaddy         (bool);
-    void onViewSyncPosition  (bool);
-    void onViewSyncCamera    (bool);
-    void onViewSyncWindowing (bool);
     void onViewReg           (bool);
 
     void onViewPositionChanged    (const QVector3D &position);
-    void onViewCameraChanged      (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal);
+    void onViewCameraChanged      (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
     void onViewZoomChanged        (double zoom);
     void onViewPanChanged         (const QVector2D &pan);
     void onViewWindowingChanged   (double level, double window);

@@ -150,7 +150,32 @@ void medAbstractView::setWindowLevel (double level, double window)
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medAbstractView::setCamera (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal)
+void medAbstractView::setCamera (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
 {
     DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
+{
+    emit positionChanged(position);
+}
+
+void medAbstractView::emitViewZoomChangedEvent(double zoom)
+{
+    emit zoomChanged(zoom);
+}
+
+void medAbstractView::emitViewPanChangedEvent(const QVector2D &pan)
+{
+    emit panChanged(pan);
+}
+
+void medAbstractView::emitViewWindowingChangedEvent(double level, double window)
+{
+    emit windowingChanged(level,window);
+}
+
+void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
+{
+    emit cameraChanged(position, viewup, focal, parallelScale);
 }
