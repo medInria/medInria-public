@@ -52,9 +52,6 @@ public:
 signals:
     void closing       (void);
     void becomeDaddy   (bool);
-    void syncPosition  (bool);
-    void syncCamera    (bool);
-    void syncWindowing (bool);
     void reg           (bool);
     void lutChanged    (void);
     void fullScreen    (bool);
@@ -69,7 +66,6 @@ signals:
     void cameraChanged    (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
 
 public slots:
-
     virtual void setLinkPosition (bool value);
     bool positionLinked (void) const;
 
@@ -79,10 +75,6 @@ public slots:
     virtual void setLinkCamera (bool value);
     bool cameraLinked (void) const;
     
-    virtual void linkPosition  (dtkAbstractView *view, bool value);
-    virtual void linkCamera    (dtkAbstractView *view, bool value);
-    virtual void linkWindowing (dtkAbstractView *view, bool value);
-
     virtual void setPosition    (const QVector3D &position);
     virtual void setZoom        (double zoom);
     virtual void setPan         (const QVector2D &pan);
@@ -90,13 +82,12 @@ public slots:
     
     virtual void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
     
-public:
+protected:
     void emitViewPositionChangedEvent(const QVector3D &position);
     void emitViewZoomChangedEvent(double zoom);
     void emitViewPanChangedEvent(const QVector2D &pan);
     void emitViewWindowingChangedEvent(double level, double window);
     void emitViewCameraChangedEvent(const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
-
 
 private:
     medAbstractViewPrivate *d;

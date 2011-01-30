@@ -115,21 +115,6 @@ bool medAbstractView::cameraLinked (void) const
     return d->linkCamera;
 }
 
-void medAbstractView::linkPosition (dtkAbstractView *view, bool value)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::linkCamera (dtkAbstractView *view, bool value)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::linkWindowing (dtkAbstractView *view, bool value)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
 void medAbstractView::setPosition (const QVector3D &position)
 {
     DTK_DEFAULT_IMPLEMENTATION;
