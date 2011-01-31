@@ -80,9 +80,6 @@ void medViewPool::appendView (medAbstractView *view)
         view->setProperty (it.key(), it.value());
     }
     
-    if (medAbstractView *refView = this->daddy())
-        if (refView != view)
-            refView->link (view);
 }
 
 void medViewPool::removeView (medAbstractView *view)
