@@ -56,14 +56,14 @@ signals:
     void lutChanged    (void);
     void fullScreen    (bool);
 
-    // 2D
     void positionChanged  (const QVector3D &position);
     void zoomChanged      (double zoom);
     void panChanged       (const QVector2D &pan);
     void windowingChanged (double level, double window);
-
-    // 3D
-    void cameraChanged    (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+    void cameraChanged    (const QVector3D &position,
+			   const QVector3D &viewup,
+			   const QVector3D &focal,
+			   double parallelScale);
 
 public slots:
     virtual void setLinkPosition (bool value);
@@ -83,11 +83,14 @@ public slots:
     virtual void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
     
 protected:
-    void emitViewPositionChangedEvent(const QVector3D &position);
-    void emitViewZoomChangedEvent(double zoom);
-    void emitViewPanChangedEvent(const QVector2D &pan);
+    void emitViewPositionChangedEvent (const QVector3D &position);
+    void emitViewZoomChangedEvent     (double zoom);
+    void emitViewPanChangedEvent      (const QVector2D &pan);
     void emitViewWindowingChangedEvent(double level, double window);
-    void emitViewCameraChangedEvent(const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+    void emitViewCameraChangedEvent   (const QVector3D &position,
+				       const QVector3D &viewup,
+				       const QVector3D &focal,
+				       double parallelScale);
 
 private:
     medAbstractViewPrivate *d;
