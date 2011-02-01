@@ -79,6 +79,7 @@ bool itkDCMTKDataImageReader::registered(void)
 								    << "itkDataImageShort4"
 								    << "itkDataImageUChar3"
 								    << "itkDataImageChar3"
+								    << "itkDataImageChar4"
 								    << "itkDataImageRGB3",
 								    createItkDCMTKDataImageReader);
 }
@@ -98,6 +99,7 @@ QStringList itkDCMTKDataImageReader::handled(void) const
 		       << "itkDataImageShort4"
 		       << "itkDataImageUChar3"
 		       << "itkDataImageChar3"
+		       << "itkDataImageChar4"
 		       << "itkDataImageRGB3";
 }
 
@@ -377,6 +379,8 @@ bool itkDCMTKDataImageReader::read (const QStringList& paths)
     { ReadImageMacro (unsigned short, 4); }
     else if (dtkdata->description()=="itkDataImageShort4")
     { ReadImageMacro (short, 4); }	
+    else if (dtkdata->description()=="itkDataImageChar4")
+        { ReadImageMacro (char, 4); }
     else
     {
       qWarning() << "Unrecognized pixel type";

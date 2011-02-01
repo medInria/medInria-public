@@ -32,6 +32,7 @@ QStringList itkDataImageWriterBase::handled(void) const
 			 << "itkDataImageShort4"	
 			 << "itkDataImageUChar3"
 			 << "itkDataImageChar3"
+			 << "itkDataImageChar4"
 			 << "itkDataImageRGB3";
 }
 
@@ -50,6 +51,7 @@ QStringList itkDataImageWriterBase::s_handled(void)
 			 << "itkDataImageShort4"	
 			 << "itkDataImageUChar3"
 			 << "itkDataImageChar3"
+			 << "itkDataImageChar4"
 			 << "itkDataImageRGB3";
 }
 
@@ -162,6 +164,23 @@ bool itkDataImageWriterBase::write(const QString& path)
 	    if (image.IsNull())
 	        return false;
 	    itk::ImageFileWriter < itk::Image<short, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<short, 4> >::New();
+	    writer->SetImageIO ( this->io );
+	    writer->SetFileName ( path.toAscii().constData() );
+	    writer->SetInput ( image );
+	    try {
+	        writer->Update();
+	    }
+	    catch(itk::ExceptionObject &e) {
+	        qDebug() << e.GetDescription();
+	        return false;
+	    }
+	}
+
+	else if(dtkdata->description()=="itkDataImageChar4") {
+	    itk::Image<char, 4>::Pointer image = dynamic_cast< itk::Image<char, 4>* >( (itk::Object*)(this->data()->output()) );
+	    if (image.IsNull())
+	        return false;
+	    itk::ImageFileWriter < itk::Image<char, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<char, 4> >::New();
 	    writer->SetImageIO ( this->io );
 	    writer->SetFileName ( path.toAscii().constData() );
 	    writer->SetInput ( image );
