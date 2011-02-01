@@ -61,9 +61,9 @@ signals:
     void panChanged       (const QVector2D &pan);
     void windowingChanged (double level, double window);
     void cameraChanged    (const QVector3D &position,
-			   const QVector3D &viewup,
-			   const QVector3D &focal,
-			   double parallelScale);
+                           const QVector3D &viewup,
+                           const QVector3D &focal,
+                           double parallelScale);
 
 public slots:
     virtual void setLinkPosition (bool value);
@@ -88,9 +88,9 @@ protected:
     void emitViewPanChangedEvent      (const QVector2D &pan);
     void emitViewWindowingChangedEvent(double level, double window);
     void emitViewCameraChangedEvent   (const QVector3D &position,
-				       const QVector3D &viewup,
-				       const QVector3D &focal,
-				       double parallelScale);
+                                       const QVector3D &viewup,
+                                       const QVector3D &focal,
+                                       double parallelScale);
 
 private:
     medAbstractViewPrivate *d;

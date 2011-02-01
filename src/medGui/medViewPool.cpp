@@ -71,7 +71,7 @@ void medViewPool::appendView (medAbstractView *view)
     connect (view, SIGNAL (windowingChanged (double, double)),     this, SLOT (onViewWindowingChanged (double, double)));
     
     connect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &, double)),
-	     this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double)));
+             this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double)));
     
     // set properties
     QHashIterator<QString, QString> it(d->propertySet);
