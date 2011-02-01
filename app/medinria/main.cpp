@@ -48,7 +48,13 @@ int main(int argc, char *argv[])
     }
 
     QSplashScreen splash(QPixmap(":/pixmaps/medinria-splash.png"), Qt::WindowStaysOnTopHint);
+
+    // Do not show the splash screen in debug builds because it hogs the 
+    // foreground, hiding all other windows. This makes debugging the startup 
+    // operations difficult.
+#if ! defined( _DEBUG ) // && defined( WINDOWS )
     splash.show();
+#endif
 
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
