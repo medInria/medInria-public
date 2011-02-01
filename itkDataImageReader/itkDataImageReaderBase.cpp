@@ -29,6 +29,7 @@ QStringList itkDataImageReaderBase::handled(void) const
 		       << "itkDataImageInt3"
 		       << "itkDataImageUShort3"
 		       << "itkDataImageUShort4"
+		       << "itkDataImageUChar4"
 		       << "itkDataImageShort3"
 		       << "itkDataImageShort4"	
 		       << "itkDataImageUChar3"
@@ -51,6 +52,7 @@ QStringList itkDataImageReaderBase::s_handled(void)
 		       << "itkDataImageShort3"
 		       << "itkDataImageShort4"	
 		       << "itkDataImageUChar3"
+		       << "itkDataImageUChar4"
 		       << "itkDataImageChar3"
 		       << "itkDataImageChar4"
 		       << "itkDataImageRGB3";
@@ -95,7 +97,11 @@ void itkDataImageReaderBase::readInformation (const QString& path)
       switch (this->io->GetComponentType()) {
 					
 	  case itk::ImageIOBase::UCHAR:
-	    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUChar3");
+	      if ( this->io->GetNumberOfDimensions()<=3 )
+		dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUChar3");
+	      else if ( this->io->GetNumberOfDimensions()==4 )
+		dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUChar4");
+
 	    if (dtkdata)
 	      this->setData ( dtkdata );
 	    break;
@@ -327,6 +333,22 @@ bool itkDataImageReaderBase::read (const QString& path)
 	return false;
       }
     }
+
+    else if (dtkdata->description()=="itkDataImageUChar4") {
+      itk::ImageFileReader< itk::Image<unsigned char, 4> >::Pointer ucharReader = itk::ImageFileReader< itk::Image<unsigned char, 4> >::New();
+      ucharReader->SetImageIO ( this->io );
+      ucharReader->SetFileName ( path.toAscii().constData() );
+      ucharReader->SetUseStreaming(true);
+      dtkdata->setData ( ucharReader->GetOutput() );
+      try {
+	ucharReader->Update();
+      }
+      catch (itk::ExceptionObject &e) {
+	qDebug() << e.GetDescription();
+	return false;
+      }
+    }
+
 
     else if (dtkdata->description()=="itkDataImageChar4") {
       itk::ImageFileReader< itk::Image<char, 4> >::Pointer charReader = itk::ImageFileReader< itk::Image<char, 4> >::New();

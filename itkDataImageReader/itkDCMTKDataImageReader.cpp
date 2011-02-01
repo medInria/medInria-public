@@ -75,6 +75,7 @@ bool itkDCMTKDataImageReader::registered(void)
 								    << "itkDataImageInt3"
 								    << "itkDataImageUShort3"
 								    << "itkDataImageUShort4"
+								    << "itkDataImageUChar4"
 								    << "itkDataImageShort3"
 								    << "itkDataImageShort4"
 								    << "itkDataImageUChar3"
@@ -98,6 +99,7 @@ QStringList itkDCMTKDataImageReader::handled(void) const
 		       << "itkDataImageShort3"
 		       << "itkDataImageShort4"
 		       << "itkDataImageUChar3"
+		       << "itkDataImageUChar4"
 		       << "itkDataImageChar3"
 		       << "itkDataImageChar4"
 		       << "itkDataImageRGB3";
@@ -377,6 +379,8 @@ bool itkDCMTKDataImageReader::read (const QStringList& paths)
     { ReadImageMacro (itk::RGBPixel<unsigned char>, 3); }
     else if (dtkdata->description()=="itkDataImageUShort4")
     { ReadImageMacro (unsigned short, 4); }
+    else if (dtkdata->description()=="itkDataImageUChar4")
+    { ReadImageMacro (unsigned char, 4); }
     else if (dtkdata->description()=="itkDataImageShort4")
     { ReadImageMacro (short, 4); }	
     else if (dtkdata->description()=="itkDataImageChar4")
