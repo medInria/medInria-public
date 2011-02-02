@@ -150,7 +150,8 @@ void medViewPool::onViewDaddy (bool daddy)
             if ( d->viewData[view] ) {
                 view->setData (d->viewData[view]);
                 d->viewData[view] = NULL;
-                view->update();
+		if (view->widget()->isVisible())
+		    view->update();
             }
         }
         else { // view does not want to become daddy
@@ -187,7 +188,8 @@ void medViewPool::onViewReg(bool value)
                         dtkAbstractData *output = process->output();
                         d->viewData[view] = data2;
                         view->setData (output);
-                        view->update();
+			if (view->widget()->isVisible())
+			    view->update();
                         emit showInfo (this, tr ("Automatic registration successful"),3000);
                     }
                     else {
@@ -205,7 +207,8 @@ void medViewPool::onViewReg(bool value)
                 d->viewData[view] = NULL;
                 if (oldData)
                     delete oldData;
-                view->update();
+		if (view->widget()->isVisible())
+		    view->update();
             }
         }
     }
@@ -231,7 +234,8 @@ void medViewPool::onViewPropertySet (const QString &key, const QString &value)
     foreach (medAbstractView *lview, d->views) {
         if (lview!=this->sender()) {
             lview->setProperty (key, value);
-            lview->update();
+	    if (lview->widget()->isVisible())
+	        lview->update();
         }
     }
     
@@ -258,7 +262,8 @@ void medViewPool::onViewPositionChanged (const QVector3D &position)
         foreach (medAbstractView *lview, d->views) {
             if (lview!=this->sender() && lview->positionLinked()) {
                 lview->setPosition (position);
-                lview->update();
+		if (lview->widget()->isVisible())
+		    lview->update();
             }
         }
         
@@ -286,7 +291,8 @@ void medViewPool::onViewCameraChanged (const QVector3D &position, const QVector3
         foreach (medAbstractView *lview, d->views) {
             if (lview!=this->sender() && lview->cameraLinked()) {
                 lview->setCamera (position, viewup, focal, parallelScale);
-                lview->update();
+		if (lview->widget()->isVisible())
+		    lview->update();
             }
         }
         
@@ -314,7 +320,8 @@ void medViewPool::onViewZoomChanged (double zoom)
         foreach (medAbstractView *lview, d->views) {
             if (lview!=this->sender() && lview->cameraLinked()) {
                 lview->setZoom (zoom);
-                lview->update();
+		if (lview->widget()->isVisible())
+		    lview->update();
             }
         }
         
@@ -342,7 +349,8 @@ void medViewPool::onViewPanChanged (const QVector2D &pan)
         foreach (medAbstractView *lview, d->views) {
             if (lview!=this->sender() && lview->cameraLinked()) {
                 lview->setPan (pan);
-                lview->update();
+		if (lview->widget()->isVisible())
+		    lview->update();
             }
         }
         
@@ -370,7 +378,8 @@ void medViewPool::onViewWindowingChanged (double level, double window)
         foreach (medAbstractView *lview, d->views) {
             if (lview!=this->sender() && lview->windowingLinked()) {
                 lview->setWindowLevel (level, window);
-                lview->update();
+		if (lview->widget()->isVisible())
+		    lview->update();
             }
         }
         
