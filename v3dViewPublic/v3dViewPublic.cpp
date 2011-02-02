@@ -1107,6 +1107,12 @@ void v3dViewPublic::setData(dtkAbstractData *data)
             d->view2D->SetITKImage4(image);
             d->view3D->SetITKImage4(image);
         }
+    }
+    else if (data->description()=="itkDataImageInt4") {
+        if( itk::Image<int, 4>* image = dynamic_cast<itk::Image<int, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2D->SetITKImage4(image);
+            d->view3D->SetITKImage4(image);
+        }
     }    
     else if (data->description()=="itkDataImageChar4") {
         if( itk::Image<char, 4>* image = dynamic_cast<itk::Image<char, 4>*>( (itk::Object*)( data->data() ) ) ) {
