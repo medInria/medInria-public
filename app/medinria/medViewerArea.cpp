@@ -262,6 +262,7 @@ void medViewerArea::open(const medDataIndex& index)
 	    }
 
 	    view->reset();
+	    view->update();
 
 	    d->view_stacks.value(d->current_patient)->current()->setDisabled (false);
 	    d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (true);
