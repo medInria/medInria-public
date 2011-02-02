@@ -69,6 +69,33 @@ public:
 
     virtual QWidget *receiverWidget(void);
 
+    /**
+       Set the view position, i.e., focus on a particular spatial coordinate.
+       @position is expressed in real world coordinates.
+     **/
+    void setPosition    (const QVector3D &position);
+
+    /**
+       Set the view zoom factor.
+    **/
+    void setZoom        (double zoom);
+
+    /**
+       Set the view pan.
+    **/
+    void setPan         (const QVector2D &pan);
+
+    /**
+       Set the window/level of the view.
+    **/
+    void setWindowLevel (double level, double window);
+
+    /**
+       Set the camera settings of the view.
+    **/
+    void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+    
+
 signals:
     /**
        This signal is emitted when a view is about to close.
@@ -156,31 +183,15 @@ public slots:
     virtual void setLinkCamera (bool value);
     bool cameraLinked (void) const;
 
-    /**
-       Set the view position, i.e., focus on a particular spatial coordinate.
-       @position is expressed in real world coordinates.
-     **/
-    virtual void setPosition    (const QVector3D &position);
-
-    /**
-       Set the view zoom factor.
-    **/
-    virtual void setZoom        (double zoom);
-
-    /**
-       Set the view pan.
-    **/
-    virtual void setPan         (const QVector2D &pan);
-
-    /**
-       Set the window/level of the view.
-    **/
-    virtual void setWindowLevel (double level, double window);
-
-    /**
-       Set the camera settings of the view.
-    **/
-    virtual void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+    virtual void onPositionChanged  (const QVector3D &position);
+    virtual void onZoomChanged      (double zoom);
+    virtual void onPanChanged       (const QVector2D &pan);
+    virtual void onWindowingChanged (double level, double window);
+    virtual void onCameraChanged    (const QVector3D &position,
+				     const QVector3D &viewup,
+				     const QVector3D &focal,
+				     double parallelScale);
+    
     
 protected:
     void emitViewPositionChangedEvent (const QVector3D &position);
