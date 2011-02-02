@@ -31,6 +31,7 @@ QStringList itkDataImageReaderBase::handled(void) const
 		       << "itkDataImageUShort3"
 		       << "itkDataImageUShort4"
 		       << "itkDataImageUChar4"
+		       << "itkDataImageUInt4"
 		       << "itkDataImageShort3"
 		       << "itkDataImageShort4"	
 		       << "itkDataImageUChar3"
@@ -49,6 +50,7 @@ QStringList itkDataImageReaderBase::s_handled(void)
 		       << "itkDataImageUInt3"
 		       << "itkDataImageInt3"
 		       << "itkDataImageInt4"
+		       << "itkDataImageUInt4"
 		       << "itkDataImageUShort3"
 		       << "itkDataImageUShort4"
 		       << "itkDataImageShort3"
@@ -145,7 +147,10 @@ void itkDataImageReaderBase::readInformation (const QString& path)
 	    break;
 		  
 	  case itk::ImageIOBase::UINT:
-	    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUInt3");
+	      if ( this->io->GetNumberOfDimensions()<=3 )
+		dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUInt3");
+	      else if ( this->io->GetNumberOfDimensions()==4 )
+		dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageUInt4");
 	    if (dtkdata)
 	      this->setData ( dtkdata );
 	    break;
@@ -339,6 +344,22 @@ bool itkDataImageReaderBase::read (const QString& path)
 	return false;
       }
     }
+
+    else if (dtkdata->description()=="itkDataImageUInt4") {
+      itk::ImageFileReader< itk::Image<unsigned int, 4> >::Pointer uintReader = itk::ImageFileReader< itk::Image<unsigned int, 4> >::New();
+      uintReader->SetImageIO ( this->io );
+      uintReader->SetFileName ( path.toAscii().constData() );
+      uintReader->SetUseStreaming(true);
+      dtkdata->setData ( uintReader->GetOutput() );
+      try {
+	uintReader->Update();
+      }
+      catch (itk::ExceptionObject &e) {
+	qDebug() << e.GetDescription();
+	return false;
+      }
+    }
+
 
     else if (dtkdata->description()=="itkDataImageUChar4") {
       itk::ImageFileReader< itk::Image<unsigned char, 4> >::Pointer ucharReader = itk::ImageFileReader< itk::Image<unsigned char, 4> >::New();
