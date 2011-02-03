@@ -28,6 +28,7 @@ QStringList itkDataImageReaderBase::handled(void) const
 		       << "itkDataImageUInt3"
 		       << "itkDataImageInt3"
 		       << "itkDataImageInt4"
+		       << "itkDataImageLong4"
 		       << "itkDataImageUShort3"
 		       << "itkDataImageUShort4"
 		       << "itkDataImageUChar4"
@@ -47,6 +48,7 @@ QStringList itkDataImageReaderBase::s_handled(void)
 			   << "itkDataImageFloat4"	
 		       << "itkDataImageULong3"
 		       << "itkDataImageLong3"
+		       << "itkDataImageLong4"
 		       << "itkDataImageUInt3"
 		       << "itkDataImageInt3"
 		       << "itkDataImageInt4"
@@ -172,7 +174,10 @@ void itkDataImageReaderBase::readInformation (const QString& path)
 	    break;
 		  
 	  case itk::ImageIOBase::LONG:
-	    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageLong3");
+		if ( this->io->GetNumberOfDimensions()<=3 )
+			dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageLong3");
+		else if ( this->io->GetNumberOfDimensions()==4 )
+			dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageLong4");
 	    if (dtkdata)
 	      this->setData ( dtkdata );
 	    break;
@@ -385,6 +390,21 @@ bool itkDataImageReaderBase::read (const QString& path)
       dtkdata->setData ( charReader->GetOutput() );
       try {
 	charReader->Update();
+      }
+      catch (itk::ExceptionObject &e) {
+	qDebug() << e.GetDescription();
+	return false;
+      }
+    }
+
+    else if (dtkdata->description()=="itkDataImageLong4") {
+      itk::ImageFileReader< itk::Image<long, 4> >::Pointer longReader = itk::ImageFileReader< itk::Image<long, 4> >::New();
+      longReader->SetImageIO ( this->io );
+      longReader->SetFileName ( path.toAscii().constData() );
+      longReader->SetUseStreaming(true);
+      dtkdata->setData ( longReader->GetOutput() );
+      try {
+	longReader->Update();
       }
       catch (itk::ExceptionObject &e) {
 	qDebug() << e.GetDescription();
