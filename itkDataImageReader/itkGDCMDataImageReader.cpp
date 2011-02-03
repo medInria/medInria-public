@@ -178,6 +178,7 @@ bool itkGDCMDataImageReader::registered(void)
 								    << "itkDataImageInt4"
 								    << "itkDataImageLong4"
 								    << "itkDataImageUInt4"
+								    << "itkDataImageULong4"
 								    << "itkDataImageUShort3"
 								    << "itkDataImageUShort4"
 								    << "itkDataImageShort3"
@@ -201,6 +202,7 @@ QStringList itkGDCMDataImageReader::handled(void) const
 		       << "itkDataImageInt3"
 		       << "itkDataImageInt4"
 		       << "itkDataImageUInt4"
+		       << "itkDataImageULong4"
 		       << "itkDataImageLong4"
 		       << "itkDataImageUShort3"
 		       << "itkDataImageUShort4"
@@ -467,6 +469,8 @@ bool itkGDCMDataImageReader::read (QStringList paths)
     { Read4DImageMacro(short); }
     else if (dtkdata->description() == "itkDataImageUInt4")
     { Read4DImageMacro(unsigned int); }
+    else if (dtkdata->description() == "itkDataImageULong4")
+    { Read4DImageMacro(unsigned long); }
     else if (dtkdata->description() == "itkDataImageInt4")
     { Read4DImageMacro(int); }
     else if (dtkdata->description() == "itkDataImageLong4")

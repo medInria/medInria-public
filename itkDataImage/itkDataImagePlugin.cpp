@@ -15,6 +15,7 @@
 #include "itkDataImageInt4.h"
 #include "itkDataImageLong4.h"
 #include "itkDataImageUInt4.h"
+#include "itkDataImageULong4.h"
 #include "itkDataImageUInt3.h"
 #include "itkDataImageLong3.h"
 #include "itkDataImageULong3.h"
@@ -65,6 +66,7 @@ bool itkDataImagePlugin::initialize(void)
   if(!itkDataImageUShort3::registered()) qDebug() << "Unable to register itkDataImageUShort3 type";
   if(!itkDataImageUShort4::registered()) qDebug() << "Unable to register itkDataImageUShort4 type";
   if(!itkDataImageUInt4::registered()) qDebug() << "Unable to register itkDataImageUInt4 type";
+  if(!itkDataImageULong4::registered()) qDebug() << "Unable to register itkDataImageULong4 type";
   if(!itkDataImageInt3::registered()) qDebug() << "Unable to register itkDataImageInt3 type";
   if(!itkDataImageUInt3::registered()) qDebug() << "Unable to register itkDataImageUInt3 type";
   if(!itkDataImageLong3::registered()) qDebug() << "Unable to register itkDataImageLong3 type";
@@ -112,6 +114,7 @@ QStringList itkDataImagePlugin::types(void) const
 		       << "itkDataImageInt4"
 		       << "itkDataImageLong4"
 		       << "itkDataImageUInt4"
+		       << "itkDataImageULong4"
 		       << "itkDataImageUInt3"
 		       << "itkDataImageLong3"
 		       << "itkDataImageULong3"
