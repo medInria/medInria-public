@@ -14,8 +14,7 @@ public:
              itkDataImageWriterBase(void);
     virtual ~itkDataImageWriterBase(void);
 
-    virtual QStringList handled(void) const;
-    static  QStringList s_handled (void);
+    virtual QStringList handled(void) const = 0;
     
 public slots:
     bool write    (const QString& path);

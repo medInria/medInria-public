@@ -17,56 +17,6 @@ itkDataImageWriterBase::~itkDataImageWriterBase()
 {
 }
 
-QStringList itkDataImageWriterBase::handled(void) const
-{
-    return QStringList() << "itkDataImageDouble3"
-			 << "itkDataImageFloat3"
-			 << "itkDataImageFloat4"
-			 << "itkDataImageDouble4"
-	<< "itkDataImageULong3"
-			 << "itkDataImageLong3"
-			 << "itkDataImageUInt3"
-			 << "itkDataImageUInt4"
-			 << "itkDataImageULong4"
-			 << "itkDataImageLong4"
-			 << "itkDataImageInt3"
-			 << "itkDataImageUShort3"
-			 << "itkDataImageUShort4"
-			 << "itkDataImageShort3"
-			 << "itkDataImageShort4"
-			 << "itkDataImageInt4"
-			 << "itkDataImageUChar3"
-			 << "itkDataImageUChar4"
-			 << "itkDataImageChar3"
-			 << "itkDataImageChar4"
-			 << "itkDataImageRGB3";
-}
-
-QStringList itkDataImageWriterBase::s_handled(void)
-{
-    return QStringList() << "itkDataImageDouble3"
-			 << "itkDataImageFloat3"
-			 << "itkDataImageFloat4"
-			 << "itkDataImageDouble4"
-			 << "itkDataImageULong3"
-			 << "itkDataImageLong3"
-			 << "itkDataImageUInt3"
-			 << "itkDataImageLong4"
-			 << "itkDataImageInt3"
-			 << "itkDataImageInt4"
-			 << "itkDataImageUInt4"
-			 << "itkDataImageULong4"
-			 << "itkDataImageUShort3"
-			 << "itkDataImageUShort4"
-			 << "itkDataImageShort3"
-			 << "itkDataImageShort4"	
-			 << "itkDataImageUChar3"
-			 << "itkDataImageUChar4"
-			 << "itkDataImageChar3"
-			 << "itkDataImageChar4"
-			 << "itkDataImageRGB3";
-}
-
 bool itkDataImageWriterBase::canWrite(const QString& path)
 {
     if (this->io.IsNull())
