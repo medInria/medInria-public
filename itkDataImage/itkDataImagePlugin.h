@@ -9,7 +9,7 @@
 
 #include "itkDataImagePluginExport.h"
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImagePluginPrivate;
+class itkDataImagePluginPrivate;
 
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImagePlugin : public dtkPlugin
 {

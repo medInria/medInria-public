@@ -11,7 +11,7 @@ class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageWriterBase : public dtkAbstrac
     Q_OBJECT
 
 public:
-             itkDataImageWriterBase(void);
+    itkDataImageWriterBase(void);
     virtual ~itkDataImageWriterBase(void);
 
     virtual QStringList handled(void) const = 0;
@@ -20,7 +20,7 @@ public slots:
     bool write    (const QString& path);
     bool canWrite (const QString& path);
 
- protected:
+protected:
     itk::ImageIOBase::Pointer io;
     
 };

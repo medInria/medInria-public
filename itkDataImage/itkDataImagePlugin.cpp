@@ -56,30 +56,30 @@ itkDataImagePlugin::~itkDataImagePlugin(void)
 
 bool itkDataImagePlugin::initialize(void)
 {
-  if(!itkDataImageChar3::registered()) qDebug() << "Unable to register itkDataImageChar3 type";
-  if(!itkDataImageChar4::registered()) qDebug() << "Unable to register itkDataImageChar4 type";
-  if(!itkDataImageInt4::registered()) qDebug() << "Unable to register itkDataImageInt4 type";
-  if(!itkDataImageLong4::registered()) qDebug() << "Unable to register itkDataImageLong4 type";
-  if(!itkDataImageUChar4::registered()) qDebug() << "Unable to register itkDataImageUChar4 type";
-  if(!itkDataImageUChar3::registered()) qDebug() << "Unable to register itkDataImageUChar3 type";
-  if(!itkDataImageShort3::registered()) qDebug() << "Unable to register itkDataImageShort3 type";
-  if(!itkDataImageShort4::registered()) qDebug() << "Unable to register itkDataImageShort4 type";
-  if(!itkDataImageUShort3::registered()) qDebug() << "Unable to register itkDataImageUShort3 type";
-  if(!itkDataImageUShort4::registered()) qDebug() << "Unable to register itkDataImageUShort4 type";
-  if(!itkDataImageUInt4::registered()) qDebug() << "Unable to register itkDataImageUInt4 type";
-  if(!itkDataImageULong4::registered()) qDebug() << "Unable to register itkDataImageULong4 type";
-  if(!itkDataImageInt3::registered()) qDebug() << "Unable to register itkDataImageInt3 type";
-  if(!itkDataImageUInt3::registered()) qDebug() << "Unable to register itkDataImageUInt3 type";
-  if(!itkDataImageLong3::registered()) qDebug() << "Unable to register itkDataImageLong3 type";
-  if(!itkDataImageULong3::registered()) qDebug() << "Unable to register itkDataImageULong3 type";
-  if(!itkDataImageFloat3::registered()) qDebug() << "Unable to register itkDataImageFloat3 type";
-  if(!itkDataImageFloat4::registered()) qDebug() << "Unable to register itkDataImageFloat4 type";	
-  if(!itkDataImageDouble3::registered()) qDebug() << "Unable to register itkDataImageDouble3 type";
-  if(!itkDataImageDouble4::registered()) qDebug() << "Unable to register itkDataImageDouble4 type";
-  if(!itkDataImageVector3::registered()) qDebug() << "Unable to register itkDataImageVector3 type";
-  if(!itkDataImageRGB3::registered()) qDebug() << "Unable to register itkDataImageRGB3 type";
-  
-  return true;
+    if(!itkDataImageChar3::registered()) qDebug() << "Unable to register itkDataImageChar3 type";
+    if(!itkDataImageChar4::registered()) qDebug() << "Unable to register itkDataImageChar4 type";
+    if(!itkDataImageInt4::registered()) qDebug() << "Unable to register itkDataImageInt4 type";
+    if(!itkDataImageLong4::registered()) qDebug() << "Unable to register itkDataImageLong4 type";
+    if(!itkDataImageUChar4::registered()) qDebug() << "Unable to register itkDataImageUChar4 type";
+    if(!itkDataImageUChar3::registered()) qDebug() << "Unable to register itkDataImageUChar3 type";
+    if(!itkDataImageShort3::registered()) qDebug() << "Unable to register itkDataImageShort3 type";
+    if(!itkDataImageShort4::registered()) qDebug() << "Unable to register itkDataImageShort4 type";
+    if(!itkDataImageUShort3::registered()) qDebug() << "Unable to register itkDataImageUShort3 type";
+    if(!itkDataImageUShort4::registered()) qDebug() << "Unable to register itkDataImageUShort4 type";
+    if(!itkDataImageUInt4::registered()) qDebug() << "Unable to register itkDataImageUInt4 type";
+    if(!itkDataImageULong4::registered()) qDebug() << "Unable to register itkDataImageULong4 type";
+    if(!itkDataImageInt3::registered()) qDebug() << "Unable to register itkDataImageInt3 type";
+    if(!itkDataImageUInt3::registered()) qDebug() << "Unable to register itkDataImageUInt3 type";
+    if(!itkDataImageLong3::registered()) qDebug() << "Unable to register itkDataImageLong3 type";
+    if(!itkDataImageULong3::registered()) qDebug() << "Unable to register itkDataImageULong3 type";
+    if(!itkDataImageFloat3::registered()) qDebug() << "Unable to register itkDataImageFloat3 type";
+    if(!itkDataImageFloat4::registered()) qDebug() << "Unable to register itkDataImageFloat4 type";
+    if(!itkDataImageDouble3::registered()) qDebug() << "Unable to register itkDataImageDouble3 type";
+    if(!itkDataImageDouble4::registered()) qDebug() << "Unable to register itkDataImageDouble4 type";
+    if(!itkDataImageVector3::registered()) qDebug() << "Unable to register itkDataImageVector3 type";
+    if(!itkDataImageRGB3::registered()) qDebug() << "Unable to register itkDataImageRGB3 type";
+
+    return true;
 }
 
 bool itkDataImagePlugin::uninitialize(void)
@@ -99,33 +99,33 @@ QString itkDataImagePlugin::description(void) const
 
 QStringList itkDataImagePlugin::tags(void) const
 {
-  return QStringList() << "itk" << "data" << "image";
+    return QStringList() << "itk" << "data" << "image";
 }
 
 QStringList itkDataImagePlugin::types(void) const
 {
-  return QStringList() << "itkDataImageChar3"
-		       << "itkDataImageChar4"
-		       << "itkDataImageUChar3"
-		       << "itkDataImageUChar4"
-		       << "itkDataImageShort3"
-			   << "itkDataImageShort4"
-			   << "itkDataImageUShort4"
-		       << "itkDataImageUShort3"
-		       << "itkDataImageInt3"
-		       << "itkDataImageInt4"
-		       << "itkDataImageLong4"
-		       << "itkDataImageUInt4"
-		       << "itkDataImageULong4"
-		       << "itkDataImageUInt3"
-		       << "itkDataImageLong3"
-		       << "itkDataImageULong3"
-		       << "itkDataImageFloat3"
-		       << "itkDataImageFloat4"
-		       << "itkDataImageDouble3"
-		       << "itkDataImageDouble4"
-		       << "itkDataImageVector3"
-		       << "itkDataImageRGB3";
+    return QStringList() << "itkDataImageChar3"
+            << "itkDataImageChar4"
+            << "itkDataImageUChar3"
+            << "itkDataImageUChar4"
+            << "itkDataImageShort3"
+            << "itkDataImageShort4"
+            << "itkDataImageUShort4"
+            << "itkDataImageUShort3"
+            << "itkDataImageInt3"
+            << "itkDataImageInt4"
+            << "itkDataImageLong4"
+            << "itkDataImageUInt4"
+            << "itkDataImageULong4"
+            << "itkDataImageUInt3"
+            << "itkDataImageLong3"
+            << "itkDataImageULong3"
+            << "itkDataImageFloat3"
+            << "itkDataImageFloat4"
+            << "itkDataImageDouble3"
+            << "itkDataImageDouble4"
+            << "itkDataImageVector3"
+            << "itkDataImageRGB3";
 }
 
 Q_EXPORT_PLUGIN2(itkDataImagePlugin, itkDataImagePlugin)

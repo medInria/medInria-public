@@ -36,20 +36,20 @@ bool itkDataImageWriterBase::write(const QString& path)
     if (dtkAbstractData *dtkdata = this->data() ) {
 
         if(dtkdata->description()=="itkDataImageUChar3") {
-	  itk::Image<unsigned char, 3>::Pointer image = dynamic_cast< itk::Image<unsigned char, 3>* >( (itk::Object*)(this->data()->output()) );
-	  if (image.IsNull())
-	      return false;
-	  itk::ImageFileWriter < itk::Image<unsigned char, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned char, 3> >::New();
-	  writer->SetImageIO ( this->io );
-	  writer->SetFileName ( path.toAscii().constData() );
-	  writer->SetInput ( image );
-	  try {
-	    writer->Update();
-	  }
-	  catch(itk::ExceptionObject &e) {
-	    qDebug() << e.GetDescription();
-	    return false;
-	  }
+            itk::Image<unsigned char, 3>::Pointer image = dynamic_cast< itk::Image<unsigned char, 3>* >( (itk::Object*)(this->data()->output()) );
+            if (image.IsNull())
+                return false;
+            itk::ImageFileWriter < itk::Image<unsigned char, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned char, 3> >::New();
+            writer->SetImageIO ( this->io );
+            writer->SetFileName ( path.toAscii().constData() );
+            writer->SetInput ( image );
+            try {
+                writer->Update();
+            }
+            catch(itk::ExceptionObject &e) {
+                qDebug() << e.GetDescription();
+                return false;
+            }
 	}
 
 	else if(dtkdata->description()=="itkDataImageChar3") {
@@ -393,11 +393,11 @@ bool itkDataImageWriterBase::write(const QString& path)
 	    }
 	}
 
-         else {
-	     qWarning() << "Unrecognized pixel type";
-	     return false;
-	 }
-      
+        else {
+            qWarning() << "Unrecognized pixel type";
+            return false;
+        }
+
     }
     
     

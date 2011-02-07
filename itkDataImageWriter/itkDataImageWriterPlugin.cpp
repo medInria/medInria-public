@@ -45,7 +45,7 @@ itkDataImageWriterPlugin::~itkDataImageWriterPlugin(void)
 
 bool itkDataImageWriterPlugin::initialize(void)
 {
-  /*
+    /*
     if(!itkDataImageChar3Writer::registered()) dtkWarning() << "Unable to register itkDataImageChar3Writer type";
     if(!itkDataImageUChar3Writer::registered()) dtkWarning() << "Unable to register itkDataImageUChar3Writer type";
     if(!itkDataImageShort3Writer::registered()) dtkWarning() << "Unable to register itkDataImageShort3Writer type";
@@ -95,16 +95,16 @@ QStringList itkDataImageWriterPlugin::tags(void) const
 
 QStringList itkDataImageWriterPlugin::types(void) const
 {
-  return QStringList() << "itkMetaDataImageWriter"
-		       << "itkNiftiDataImageWriter"
-		       << "itkAnalyzeDataImageWriter"
-		       << "itkNrrdDataImageWriter"
-                       << "itkGiplDataImageWriter"
-		       << "itkVTKDataImageWriter"
-		       << "itkPNGDataImageWriter"
-		       << "itkBMPDataImageWriter"
-		       << "itkJPEGDataImageWriter"
-		       << "itkTIFFDataImageWriter";
+    return QStringList() << "itkMetaDataImageWriter"
+            << "itkNiftiDataImageWriter"
+            << "itkAnalyzeDataImageWriter"
+            << "itkNrrdDataImageWriter"
+            << "itkGiplDataImageWriter"
+            << "itkVTKDataImageWriter"
+            << "itkPNGDataImageWriter"
+            << "itkBMPDataImageWriter"
+            << "itkJPEGDataImageWriter"
+            << "itkTIFFDataImageWriter";
 }
 
 Q_EXPORT_PLUGIN2(itkDataImageWriterPlugin, itkDataImageWriterPlugin)

@@ -17,7 +17,7 @@ class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageWriterPlugin : public dtkPlugi
     Q_INTERFACES(dtkPlugin)
 
 public:
-     itkDataImageWriterPlugin(QObject *parent = 0);
+            itkDataImageWriterPlugin(QObject *parent = 0);
     ~itkDataImageWriterPlugin(void);
 
     virtual bool initialize(void);
@@ -30,7 +30,7 @@ public:
     virtual QStringList types(void) const;
 
 private:
-     itkDataImageWriterPluginPrivate *d;
+    itkDataImageWriterPluginPrivate *d;
 };
 
 #endif
