@@ -17,57 +17,6 @@ itkDataImageReaderBase::~itkDataImageReaderBase(void)
 {
 }
 
-
-QStringList itkDataImageReaderBase::handled(void) const
-{
-  return QStringList() << "itkDataImageDouble3"
-		       << "itkDataImageFloat3"
-			   << "itkDataImageFloat4"
-			   << "itkDataImageDouble4"
-			   << "itkDataImageULong3"
-		       << "itkDataImageLong3"
-		       << "itkDataImageUInt3"
-		       << "itkDataImageInt3"
-		       << "itkDataImageInt4"
-		       << "itkDataImageLong4"
-		       << "itkDataImageUShort3"
-		       << "itkDataImageUShort4"
-		       << "itkDataImageUChar4"
-		       << "itkDataImageUInt4"
-		       << "itkDataImageULong4"
-		       << "itkDataImageShort3"
-		       << "itkDataImageShort4"	
-		       << "itkDataImageUChar3"
-		       << "itkDataImageChar3"
-		       << "itkDataImageChar4"
-		       << "itkDataImageRGB3";
-}
-
-QStringList itkDataImageReaderBase::s_handled(void)
-{
-  return QStringList() << "itkDataImageDouble3"
-		       << "itkDataImageFloat3"
-			   << "itkDataImageFloat4"
-			   << "itkDataImageDouble4"
-		       << "itkDataImageULong3"
-		       << "itkDataImageLong3"
-		       << "itkDataImageLong4"
-		       << "itkDataImageUInt3"
-		       << "itkDataImageInt3"
-		       << "itkDataImageInt4"
-		       << "itkDataImageUInt4"
-		       << "itkDataImageULong4"
-		       << "itkDataImageUShort3"
-		       << "itkDataImageUShort4"
-		       << "itkDataImageShort3"
-		       << "itkDataImageShort4"	
-		       << "itkDataImageUChar3"
-		       << "itkDataImageUChar4"
-		       << "itkDataImageChar3"
-		       << "itkDataImageChar4"
-		       << "itkDataImageRGB3";
-}
-
 bool itkDataImageReaderBase::canRead (const QString& path)
 {
   if (!this->io.IsNull())

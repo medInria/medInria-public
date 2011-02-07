@@ -15,6 +15,10 @@ public:
 	
     virtual QString description(void) const;
 	
+    QStringList handled(void) const;
+
+    static QStringList s_handled (void);
+
     static bool registered(void);	
 };
 

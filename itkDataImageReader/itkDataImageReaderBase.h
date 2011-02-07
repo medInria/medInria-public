@@ -14,9 +14,7 @@ public:
     itkDataImageReaderBase(void);
     virtual ~itkDataImageReaderBase(void);
 
-    virtual QStringList handled(void) const;
-    
-    static QStringList s_handled (void);
+    virtual QStringList handled(void) const = 0;
 	
 public slots:
     virtual bool canRead (const QString& path);
