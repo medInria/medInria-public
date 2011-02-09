@@ -56,6 +56,7 @@ set(DEPENDS_ON_DTK 1)
 
 option(MEDINRIA_BUILD_V3DDATA_PLUGIN                      "Build v3dData plugin" "ON")
 option(MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN                "Build v3dViewPublic plugin" "ON")
+option(MEDINRIA_BUILD_V3DVIEW_PLUGIN                      "Build v3dView plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN                 "Build itkDataImge plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN           "Build itkDataImgeReader plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN           "Build itkDataImgeWriter plugin" "ON")
@@ -72,6 +73,10 @@ endif()
 
 if (MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN)
   subdirs(v3dViewPublic)
+endif()
+
+if (MEDINRIA_BUILD_V3DVIEW_PLUGIN)
+  subdirs(v3dView)
 endif()
 
 if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN)
@@ -112,6 +117,7 @@ endif()
 
 if (MEDINRIA_BUILD_V3DDATA_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN OR
+    MEDINRIA_BUILD_V3DVIEW_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESH_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN)
