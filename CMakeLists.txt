@@ -328,6 +328,7 @@ SET(vtkINRIA3D_DIR "${PROJECT_BINARY_DIR}" CACHE INTERNAL "")
 
 
 add_subdirectory(vtkDataManagement)
+add_subdirectory(vtkImageView)
 add_subdirectory(vtkRenderingAddOn)
 add_subdirectory(vtkWidgetsAddOn)
 add_subdirectory(vtkVisuManagement)

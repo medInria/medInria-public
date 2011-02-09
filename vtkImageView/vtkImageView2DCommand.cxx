@@ -1,0 +1,269 @@
+/*=========================================================================
+
+Program:   vtkINRIA3D
+Module:    $Id: vtkImageView2DCommand.cxx 1368 2009-11-30 18:58:27Z filus $
+Language:  C++
+Author:    $Author: filus $
+Date:      $Date: 2009-11-30 19:58:27 +0100 (lun, 30 nov 2009) $
+Version:   $Revision: 1368 $
+
+Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
+See Copyright.txt for details.
+
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
+#ifdef _MSC_VER
+#  pragma warning (disable : 4018) 
+#endif
+
+#include "vtkImageView2DCommand.h"
+
+#include <vtkInteractorStyle.h>
+#include <vtkAssemblyPath.h>
+#include <vtkCamera.h>
+#include <vtkImageView2D.h>
+#include <vtkInteractorStyleImageView2D.h>
+#include "vtkAbstractPropPicker.h"
+#include "vtkRenderer.h"
+#include "vtkRenderWindow.h"
+#include "vtkRenderWindowInteractor.h"
+#include "vtkImageData.h"
+#include "vtkImageViewCornerAnnotation.h"
+#include "vtkCornerAnnotation.h"
+
+#include <string>
+#include <sstream>
+
+vtkImageView2DCommand::vtkImageView2DCommand()
+{
+  this->Viewer = NULL;
+}
+
+vtkImageView2DCommand::~vtkImageView2DCommand()
+{
+}
+
+ 
+void
+vtkImageView2DCommand::Execute(vtkObject*    caller,
+                                 unsigned long event,
+                                 void*         callData)
+{
+  vtkInteractorStyleImageView2D *isi =
+    static_cast<vtkInteractorStyleImageView2D *>(caller);
+
+  if (!isi || !this->Viewer || !this->Viewer->GetInput())
+  {
+    return;
+  }
+
+  // Reset
+  if (event == vtkImageView2DCommand::ResetViewerEvent)
+  {
+    this->Viewer->Reset();
+    this->Viewer->Render();
+    return;
+  }
+  // Reset
+  if (event == vtkImageView2DCommand::ResetWindowLevelEvent)
+  {
+    this->Viewer->ResetWindowLevel();
+    this->Viewer->Render();
+    return;
+  }
+  
+  // Start
+  if (event == vtkImageView2DCommand::StartWindowLevelEvent)
+  {
+    this->InitialWindow = this->Viewer->GetColorWindow();
+    this->InitialLevel = this->Viewer->GetColorLevel();
+    return;
+  }
+
+  // Adjust the window level here
+  if (event == vtkImageView2DCommand::WindowLevelEvent)
+  {
+
+    int *size = this->Viewer->GetRenderWindow()->GetSize();  
+
+    double* range = this->Viewer->GetInput()->GetScalarRange();
+    double windowImage = range[1]-range[0];
+    double levelImage = 0.5*(range[1]+range[0]);
+
+    double window = this->InitialWindow;
+    double level = this->InitialLevel;
+
+    double mouseToLevelSpeed = 0.25;
+
+    // Compute normalized delta
+    double dx = 4.0 *
+      (isi->GetWindowLevelCurrentPosition()[0] -
+       isi->GetWindowLevelStartPosition()[0]) / size[0];
+    double dy = 4.0 *
+      (isi->GetWindowLevelStartPosition()[1] -
+       isi->GetWindowLevelCurrentPosition()[1]) / size[1];
+
+    // The problem with the following code is that it could get stucked near 0
+    // // Scale by current values
+    // if (fabs(window) > 0.01)
+    //   dx = dx * window;
+    // else
+    //   dx = dx * (window < 0 ? -0.01 : 0.01);
+    // if (fabs(level) > 0.01)
+    //   dy = dy * level;
+    // else
+    //   dy = dy * (level < 0 ? -0.01 : 0.01);
+
+    // // Abs so that direction does not flip
+    // if (window < 0.0)
+    //   dx = -1*dx;
+    // if (level < 0.0)
+    //   dy = -1*dy;
+    // double slowingEffectCoef = 1.0;
+    // if(window / windowImage <= speedInflectionRatio){
+    //   slowingEffectCoef = exp((window / windowImage / speedInflectionRatio - 1.0)*10);
+    //   std::cout << "slowingEffectCoef  "  << slowingEffectCoef << std::endl;
+    // }
+
+    dx = dx * windowImage * mouseToLevelSpeed;
+    dy = dy * levelImage * mouseToLevelSpeed;
+
+
+    // Compute new window level
+    double newWindow = dx + window;
+    double newLevel = level - dy;
+
+    // Stay away from zero and really
+    // if (fabs(newWindow) < 0.01)
+    //   newWindow = 0.01*(newWindow < 0 ? -1 : 1);
+    // if (fabs(newLevel) < 0.01)
+    //   newLevel = 0.01*(newLevel < 0 ? -1 : 1);
+
+
+    // Keep window values above 0.1
+    if (newWindow < 0.1)
+      newWindow = 0.1;
+
+
+
+    this->Viewer->SetColorWindow(newWindow);
+    this->Viewer->SetColorLevel(newLevel);
+    this->Viewer->Render();
+
+    return;
+  }
+
+  if (event == vtkImageView2DCommand::CharEvent)
+  {
+    vtkRenderWindowInteractor *rwi = this->Viewer->GetRenderWindow()->GetInteractor();
+
+    if (rwi->GetKeyCode() == 't')
+    {
+      this->Viewer->SetSliceOrientation ((this->Viewer->GetSliceOrientation()+1)%3);
+      this->Viewer->Render();
+    }
+    else if (rwi->GetKeyCode() == 'n')
+    {
+      this->Viewer->SetInterpolate ((this->Viewer->GetInterpolate() + 1)%2);
+      this->Viewer->Render();
+    }
+//     else if (rwi->GetKeyCode() == 'c')
+//     {
+//       this->Viewer->SetCursorFollowMouse (!this->Viewer->GetCursorFollowMouse());
+//     }
+//     else if (rwi->GetKeyCode() == 'a')
+//     {
+//       this->Viewer->SetShowImageAxis (!this->Viewer->GetShowImageAxis());
+//     }
+    
+    return;
+  }
+
+  // Start Slice Move
+  if (event == vtkImageView2DCommand::StartSliceMoveEvent)
+  {
+    return;
+  }
+
+  // End Slice Move
+  if (event == vtkImageView2DCommand::EndSliceMoveEvent)
+  {
+    return;
+  }
+
+  // Move Slice
+  if (event == vtkImageView2DCommand::SliceMoveEvent)
+  {
+    this->Viewer->SetSlice (this->Viewer->GetSlice()+isi->GetSliceStep());
+    this->Viewer->Render();
+    return;
+  }
+	
+	// Start Slice Move
+	if (event == vtkImageView2DCommand::StartTimeChangeEvent)
+	{
+		return;
+	}
+	
+	// End Slice Move
+	if (event == vtkImageView2DCommand::EndTimeChangeEvent)
+	{
+		return;
+	}
+	
+	// Move Slice
+	if (event == vtkImageView2DCommand::TimeChangeEvent)
+	{
+		this->Viewer->SetTimeIndex (this->Viewer->GetTimeIndex()+isi->GetSliceStep());
+		this->Viewer->Render();
+		return;
+	}
+
+  // Position requested
+  if (event == vtkImageView2DCommand::RequestedPositionEvent)
+  {
+    double position[3];
+    this->Viewer->GetWorldCoordinatesFromDisplayPosition (isi->GetRequestedPosition (), position);
+    this->Viewer->SetCurrentPoint(position);
+    this->Viewer->Render();
+    return;
+  }
+  
+  // default move : align cursor and update annotation accordingly
+  if( event == vtkImageView2DCommand::DefaultMoveEvent)
+  {
+    vtkRenderWindowInteractor *rwi = this->Viewer->GetInteractor();
+    if (!rwi)
+      return;
+    
+    int* xy = rwi->GetEventPosition();
+    double position[3];
+    this->Viewer->GetWorldCoordinatesFromDisplayPosition (xy, position);
+    this->Viewer->SetCurrentPoint(position);
+    if (isi->GetState() == VTKIS_NONE)
+      this->Viewer->Render();
+    
+    return;
+  }
+
+  // Zooming
+  if (event == vtkImageView2DCommand::CameraZoomEvent)
+  {
+    this->Viewer->Modified();
+    return;
+  }
+
+  // Panning
+  if (event == vtkImageView2DCommand::CameraPanEvent)
+  {
+    this->Viewer->Modified();
+    return;
+    
+  }
+
+}
+
+

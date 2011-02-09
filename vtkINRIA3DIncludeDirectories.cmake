@@ -31,4 +31,5 @@ ${vtkINRIA3D_SOURCE_DIR}/itkAddOn/IO/
 ${vtkINRIA3D_SOURCE_DIR}/wxSamples/HelloWorld/
 ${vtkINRIA3D_SOURCE_DIR}/wxSamples/ImageViewer/
 ${vtkINRIA3D_SOURCE_DIR}/vtkRenderingAddOn/
+${vtkINRIA3D_SOURCE_DIR}/vtkImageView/
 )

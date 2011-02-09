@@ -1,0 +1,1567 @@
+/*=========================================================================
+
+  Program:   vtkINRIA3D
+  Module:    $Id: vtkViewImage.cxx 917 2008-08-27 10:37:34Z ntoussaint $
+  Language:  C++
+  Author:    $Author: ntoussaint $
+  Date:      $Date: 2008-08-27 12:37:34 +0200 (Wed, 27 Aug 2008) $
+  Version:   $Revision: 917 $
+
+  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
+  See Copyright.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
+
+  =========================================================================*/
+#include "vtkImageView.h"
+
+#include "vtkObjectFactory.h"
+#include "vtkMath.h"
+#include "vtkMatrix4x4.h"
+#include "vtkMatrixToLinearTransform.h"
+
+#include "vtkImageData.h"
+
+#include "vtkRenderer.h"
+#include "vtkRenderWindow.h"
+#include "vtkRenderWindowInteractor.h"
+#include "vtkInteractorStyle.h"
+#include "vtkImageViewCornerAnnotation.h"
+#include "vtkTextProperty.h"
+#include "vtkCamera.h"
+
+#include "vtkLookupTable.h"
+#include "vtkColorTransferFunction.h"
+#include "vtkPiecewiseFunction.h"
+#include "vtkImageMapToColors.h"
+#include "vtkScalarBarActor.h"
+
+#include "vtkCommand.h"
+#include "vtkImageView2DCommand.h"
+
+#ifdef vtkINRIA3D_USE_ITK
+#include <itkExtractImageBufferFilter.h>
+#include <itkImageToVTKImageFilter.h>
+#include <itkMatrix.h>
+//#include <vnl/algo/vnl_qr.h>
+#endif
+
+vtkCxxRevisionMacro(vtkImageView, "$Revision: 1 $");
+//vtkStandardNewMacro(vtkImageView);
+
+#ifdef vtkINRIA3D_USE_ITK
+
+// Enumeration for the supported pixel types
+namespace {
+  enum ImageViewType {
+    IMAGE_VIEW_NONE = 0,
+    IMAGE_VIEW_DOUBLE = 1,
+    IMAGE_VIEW_FLOAT,
+    IMAGE_VIEW_INT,
+    IMAGE_VIEW_UNSIGNED_INT,
+    IMAGE_VIEW_SHORT,
+    IMAGE_VIEW_UNSIGNED_SHORT,
+    IMAGE_VIEW_LONG,
+    IMAGE_VIEW_UNSIGNED_LONG,
+    IMAGE_VIEW_CHAR,
+    IMAGE_VIEW_UNSIGNED_CHAR,
+    IMAGE_VIEW_RGBPIXELTYPE,
+    IMAGE_VIEW_RGBAPIXELTYPE,
+    IMAGE_VIEW_UCHARVECTOR3TYPE  };
+}
+
+// pIMPL class for vtkImageView
+class vtkImageView::vtkImageViewImplementation {
+public:
+  //! Default constructor
+  vtkImageViewImplementation () : ImageConverter (0), ImageTemporalFilter (0), TemporalFilterType (IMAGE_VIEW_NONE) {}
+
+  itk::ProcessObject::Pointer ImageConverter;
+  itk::ProcessObject::Pointer ImageTemporalFilter;
+  int TemporalFilterType;
+
+public :
+  template < typename T > static ImageViewType GetImageViewType () ;
+public:
+};
+
+// Template specialisations return the enumeration corresponding to the pixel type.
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < double > () { return     IMAGE_VIEW_DOUBLE ; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < float > () { return     IMAGE_VIEW_FLOAT; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < int > () { return     IMAGE_VIEW_INT; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < unsigned int > () { return     IMAGE_VIEW_UNSIGNED_INT; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < short > () { return     IMAGE_VIEW_SHORT; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < unsigned short > () { return     IMAGE_VIEW_UNSIGNED_SHORT; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < long > () { return     IMAGE_VIEW_LONG; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < unsigned long > () { return     IMAGE_VIEW_UNSIGNED_LONG; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < char > () { return     IMAGE_VIEW_CHAR; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < unsigned char > () { return     IMAGE_VIEW_UNSIGNED_CHAR; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::RGBPixelType > () { return     IMAGE_VIEW_RGBPIXELTYPE; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::RGBAPixelType > () { return     IMAGE_VIEW_RGBAPIXELTYPE; }
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::UCharVector3Type > () { return     IMAGE_VIEW_UCHARVECTOR3TYPE ; }
+
+#endif
+
+vtkImageView::vtkImageView()
+{
+  this->OrientationMatrix       = vtkMatrix4x4::New();
+  this->InvertOrientationMatrix = vtkMatrix4x4::New();
+  this->OrientationTransform    = vtkMatrixToLinearTransform::New();
+
+  this->CornerAnnotation        = vtkImageViewCornerAnnotation::New();
+  this->TextProperty            = vtkTextProperty::New();
+
+  // either use transfer functions or lookup table, the members not
+  // in use are set to NULL.
+  this->ColorTransferFunction   = NULL;
+  this->OpacityTransferFunction = NULL;
+  this->LookupTable             = NULL;
+
+  this->WindowLevel             = vtkImageMapToColors::New();
+  this->ScalarBar               = vtkScalarBarActor::New();
+    
+  this->Renderer               = 0;
+  this->RenderWindow           = 0;
+  this->Interactor             = 0;
+  this->Input                  = 0;
+  this->InternalMTime          = 0;
+  this->InteractorStyle        = 0;
+  this->IsInteractorInstalled  = 0;
+
+#ifdef vtkINRIA3D_USE_ITK
+  this->Impl = new vtkImageViewImplementation;
+  this->ITKInput = 0;
+  this->ITKInput4 = 0;
+#endif
+  
+  this->CornerAnnotation->SetNonlinearFontScaleFactor (0.3);
+  this->CornerAnnotation->SetTextProperty ( this->TextProperty );
+  this->CornerAnnotation->SetMaximumFontSize (46);
+  this->CornerAnnotation->SetImageView (this);
+  this->CornerAnnotation->PickableOff();
+  this->CornerAnnotation->SetText (3, "<patient>\n<study>\n<series>");
+  
+  this->ScalarBar->SetLabelFormat ("%.0f");
+  this->ScalarBar->SetNumberOfLabels (3);
+  this->ScalarBar->GetPositionCoordinate()->
+    SetCoordinateSystemToNormalizedViewport();
+  this->ScalarBar->SetLabelTextProperty (this->TextProperty);
+  this->ScalarBar->GetLabelTextProperty()->SetFontSize (1);
+  this->ScalarBar->GetLabelTextProperty()->BoldOff();
+  this->ScalarBar->GetLabelTextProperty()->ShadowOff();
+  this->ScalarBar->GetLabelTextProperty()->ItalicOff();
+  this->ScalarBar->SetWidth (0.1);
+  this->ScalarBar->SetHeight (0.5);
+  this->ScalarBar->SetPosition (0.9,0.3);
+  this->ScalarBar->PickableOff();
+  this->ScalarBar->VisibilityOn();
+  
+  for(int i=0; i<3; i++)
+    this->CurrentPoint[i] = 0.0; //TK_DOUBLE_MIN;
+
+  this->PatientName = "";
+  this->StudyName   = "";
+  this->SeriesName  = "";
+
+  this->ShowAnnotations = true;
+  this->ShowScalarBar = true;
+
+  this->OrientationTransform->SetInput (this->OrientationMatrix);
+
+  this->ColorWindow = VTK_DOUBLE_MAX;
+  this->ColorLevel  = 0;  
+  
+  // use default maps, sets color map of WindowLevel and ScalarBar
+  this->UseLookupTable = false;
+  this->SetTransferFunctions( NULL, NULL );
+
+  this->WindowLevel->SetOutputFormatToRGB();
+
+  this->TimeIndex = 0;
+}
+
+
+vtkImageView::~vtkImageView()
+{
+
+  this->OrientationTransform->SetInput ( NULL );
+
+  this->OrientationMatrix->Delete();  
+  this->InvertOrientationMatrix->Delete();  
+  this->OrientationTransform->Delete();  
+
+  this->CornerAnnotation->Delete();
+  this->TextProperty->Delete();
+
+  if ( this->LookupTable != NULL )
+    this->LookupTable->Delete();
+  if ( this->ColorTransferFunction != NULL )
+    this->ColorTransferFunction->Delete();
+  if ( this->OpacityTransferFunction != NULL )
+    this->OpacityTransferFunction->Delete();
+
+  this->ScalarBar->Delete();
+  this->WindowLevel->Delete();
+  
+  if( this->RenderWindow )
+  {
+    this->RenderWindow->Delete();
+    this->RenderWindow = 0;
+  }
+  if( this->Renderer )
+  {
+    this->Renderer->Delete();
+    this->Renderer = 0;
+  }
+  if( this->Interactor )
+  {
+    this->Interactor->Delete();
+    this->Interactor = 0;
+  }
+  if (this->InteractorStyle)
+  {
+    this->InteractorStyle->Delete();
+    this->InteractorStyle = 0;
+  }
+  if (this->Input)
+  {
+    this->Input->Delete();
+    this->Input = 0;
+  }
+
+  delete this->Impl;
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
+{
+  this->UnInstallPipeline();
+  
+  vtkSetObjectBodyMacro (Interactor, vtkRenderWindowInteractor, arg);
+  
+  this->InstallPipeline();
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
+{
+  this->UnInstallPipeline();
+  
+  vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);
+  
+  if (this->RenderWindow && this->RenderWindow->GetInteractor())
+  {
+    this->SetupInteractor (this->RenderWindow->GetInteractor());
+  }  
+  this->InstallPipeline();
+}
+
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetRenderer(vtkRenderer *arg)
+{
+  this->UnInstallPipeline();
+
+  vtkSetObjectBodyMacro (Renderer, vtkRenderer, arg);
+  
+  this->InstallPipeline();
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::Render()
+{
+  if (this->RenderWindow)
+  {
+      if ( this->GetColorWindow () == VTK_DOUBLE_MAX ) {
+
+          this->ResetWindowLevel();
+      }
+
+    if (!this->RenderWindow->GetNeverRendered())
+    {
+      if( this->GetMTime()>this->InternalMTime )
+      {
+	this->RenderWindow->Render();
+	this->InternalMTime = this->GetMTime();
+      }
+    }
+    else
+    {
+        this->RenderWindow->Render();
+    }
+  }
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetInput(vtkImageData *arg) 
+{
+  vtkSetObjectBodyMacro (Input, vtkImageData, arg);
+  this->WindowLevel->SetInput(arg);
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetInputConnection(vtkAlgorithmOutput* arg) 
+{
+  //   vtkSetObjectBodyMacro (Input, vtkImageData, arg);
+  this->WindowLevel->SetInputConnection(arg);
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::InstallPipeline()
+{
+  if (this->RenderWindow && this->Renderer && !this->RenderWindow->HasRenderer (this->Renderer))
+  {
+    this->RenderWindow->AddRenderer(this->Renderer);
+  }
+  
+  if (this->Interactor)
+  {
+    this->Interactor->SetRenderWindow(this->RenderWindow);
+  }
+  
+  if (this->Renderer)
+  {
+    this->Renderer->AddViewProp ( this->CornerAnnotation );
+    this->Renderer->AddViewProp ( this->ScalarBar );
+    
+    this->Renderer->GetActiveCamera()->ParallelProjectionOn();
+  }
+  
+  this->InstallInteractor();
+  
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::UnInstallPipeline()
+{
+  this->UnInstallInteractor();
+  
+  if (this->Renderer)
+  {
+    this->Renderer->RemoveViewProp(this->CornerAnnotation);
+    this->Renderer->RemoveViewProp(this->ScalarBar);
+  }
+  
+  if (this->RenderWindow && this->Renderer)
+  {
+    this->RenderWindow->RemoveRenderer(this->Renderer);
+  }
+  
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetCurrentPoint (double pos[3])
+{
+  /*
+  if (this->CurrentPoint[0] == pos[0] &&
+      this->CurrentPoint[1] == pos[1] &&
+      this->CurrentPoint[2] == pos[2])
+    return;
+  */
+  this->CurrentPoint[0] = pos[0];
+  this->CurrentPoint[1] = pos[1];
+  this->CurrentPoint[2] = pos[2];
+  this->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL);
+  this->Modified();
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::ResetCurrentPoint (void)
+{
+  if (!this->GetInput())
+    return;
+
+  this->GetInput()->UpdateInformation();
+  int * wholeExtent = this->GetInput()->GetWholeExtent();
+  //this->GetInput()->PropagateUpdateExtent ();	
+  //this->GetInput()->Update();
+
+  //int* dimensions = this->GetInput()->GetDimensions ();
+
+  int center[3];
+  for (unsigned int i=0; i<3; i++)
+    center[i] = vtkMath::Round((double)(wholeExtent [2*i+1] - wholeExtent[2*i])/2.0);
+  double position[3];
+  this->GetWorldCoordinatesFromImageCoordinates (center, position);
+  this->SetCurrentPoint (position);
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetOrientationMatrix (vtkMatrix4x4* matrix)
+{
+  vtkMatrix4x4* matrixcopy = vtkMatrix4x4::New();
+  matrixcopy->DeepCopy (matrix);
+  vtkSetObjectBodyMacro (OrientationMatrix, vtkMatrix4x4, matrixcopy);
+  this->OrientationTransform->SetInput (this->OrientationMatrix);
+  vtkMatrix4x4::Invert (this->OrientationMatrix, this->InvertOrientationMatrix);
+  
+  matrixcopy->Delete();
+}
+
+//----------------------------------------------------------------------------
+vtkColorTransferFunction * vtkImageView::GetDefaultColorTransferFunction()
+{
+  vtkColorTransferFunction * rgb = vtkColorTransferFunction::New();
+  rgb->AddRGBPoint( 0.0, 0.0, 0.0, 0.0 );
+  rgb->AddRGBPoint( 1.0, 1.0, 1.0, 1.0 );
+  return rgb;
+}
+
+//----------------------------------------------------------------------------
+vtkPiecewiseFunction * vtkImageView::GetDefaultOpacityTransferFunction()
+{
+  vtkPiecewiseFunction * alpha = vtkPiecewiseFunction::New();
+  alpha->AddPoint( 0.0, 0.0 );
+  alpha->AddPoint( 1.0, 1.0 );
+  return alpha;
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetTransferFunctions( vtkColorTransferFunction * color,
+					 vtkPiecewiseFunction * opacity )
+{
+  if ( color   == NULL && this->ColorTransferFunction   == NULL &&
+       opacity == NULL && this->OpacityTransferFunction == NULL &&
+       this->LookupTable != NULL )
+  {
+    this->SetLookupTable( this->LookupTable );
+    return;
+  }
+
+  this->UseLookupTable = false;
+
+  // color
+  vtkColorTransferFunction * rgb = NULL;
+  if ( color != NULL )
+  {
+    rgb = vtkColorTransferFunction::New();
+    rgb->DeepCopy( color );
+  }
+  else if ( this->ColorTransferFunction == NULL )
+    rgb = this->GetDefaultColorTransferFunction();
+
+  if ( rgb != NULL )
+  {
+    vtkSetObjectBodyMacro( ColorTransferFunction, vtkColorTransferFunction,
+			   rgb );
+    rgb->Delete();
+  }
+
+  // opacity
+  vtkPiecewiseFunction * alpha = NULL;
+  if ( opacity != NULL )
+  {
+    alpha = vtkPiecewiseFunction::New();
+    alpha->DeepCopy( opacity );
+  }
+  else if ( this->OpacityTransferFunction == NULL )
+    alpha = this->GetDefaultOpacityTransferFunction();
+
+  if ( alpha != NULL )
+  {
+    vtkSetObjectBodyMacro( OpacityTransferFunction, vtkPiecewiseFunction,
+			   alpha );
+    alpha->Delete();
+  }
+
+  // clean up
+  if ( this->LookupTable != NULL )
+  {
+    // remove lookup table not in use
+    this->LookupTable->Delete();
+    this->LookupTable = NULL;
+  }
+
+  this->SetTransferFunctionRangeFromWindowSettings();
+
+  this->WindowLevel->SetLookupTable( this->ColorTransferFunction );
+  this->ScalarBar->SetLookupTable( this->ColorTransferFunction );
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetColorTransferFunction( vtkColorTransferFunction * ctf )
+{
+  this->SetTransferFunctions( ctf, NULL );
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetOpacityTransferFunction( vtkPiecewiseFunction * otf )
+{
+  this->SetTransferFunctions( NULL, otf );
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable)
+{
+  this->UseLookupTable = true;
+
+  vtkSetObjectBodyMacro (LookupTable, vtkLookupTable, lookuptable);
+
+  this->WindowLevel->SetLookupTable( this->LookupTable );
+  this->ScalarBar->SetLookupTable( this->LookupTable );
+
+  if ( this->ColorTransferFunction != NULL )
+  {
+    this->ColorTransferFunction->Delete();
+    this->ColorTransferFunction = NULL;
+  }
+  if ( this->OpacityTransferFunction != NULL )
+  {
+    this->OpacityTransferFunction->Delete();
+    this->OpacityTransferFunction = NULL;
+  }
+
+  this->SetTransferFunctionRangeFromWindowSettings();
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetTransferFunctionRangeFromWindowSettings()
+{
+  double targetRange[2];
+  this->GetColorRange( targetRange );
+
+  bool touched = false;
+
+  // lookup table
+  if ( this->UseLookupTable && this->LookupTable != NULL )
+  {
+    const double * currentRange = this->LookupTable->GetRange();
+    if ( currentRange[0] != targetRange[0] ||
+	 currentRange[1] != targetRange[1] )
+    {
+      this->LookupTable->SetRange( targetRange );
+      touched = true;
+    }
+  }
+
+  // color transfer function
+  if ( !this->UseLookupTable && this->ColorTransferFunction != NULL )
+  {
+    const double * currentRange = this->ColorTransferFunction->GetRange();
+    if ( currentRange[0] != targetRange[0] ||
+	 currentRange[1] != targetRange[1] )
+    {
+      double currentWidth = currentRange[1] - currentRange[0];
+      double targetWidth  = targetRange[1]  - targetRange[0];
+
+      unsigned int n = this->ColorTransferFunction->GetSize();
+      if ( n > 0 && currentWidth == 0.0 )
+	currentWidth = 1.0;
+
+      for ( unsigned int i = 0; i < n; ++i )
+      {
+	double val[6];
+	this->ColorTransferFunction->GetNodeValue( i, val );
+	// from current range to [0,1] interval
+	val[0] = ( val[0] - currentRange[0] ) / currentWidth;
+	// from [0,1] interval to target range
+	val[0] = val[0] * targetWidth + targetRange[0];
+	this->ColorTransferFunction->SetNodeValue( i, val );
+      }
+
+      // work around to update the range (which is not public in
+      // vtkColorTransferFunction)
+      if ( n > 0 )
+      {
+	double val[6];
+	this->ColorTransferFunction->GetNodeValue( n - 1, val );
+	this->ColorTransferFunction->AddRGBPoint( val[0], val[1], val[2],
+						  val[3], val[4], val[5] );
+      }
+
+      touched = true;
+    }
+  }
+
+  // opacity transfer function
+  if ( !this->UseLookupTable && this->OpacityTransferFunction != NULL )
+  {
+    const double * currentRange = this->OpacityTransferFunction->GetRange();
+    if ( currentRange[0] != targetRange[0] ||
+	 currentRange[1] != targetRange[1] )
+    {
+      double currentWidth = currentRange[1] - currentRange[0];
+      double targetWidth  = targetRange[1]  - targetRange[0];
+
+      if ( currentWidth == 0.0 )
+	currentWidth = 1.0;
+
+      unsigned int n = this->OpacityTransferFunction->GetSize();
+      for ( unsigned int i = 0; i < n; ++i )
+      {
+	double val[4];
+	this->OpacityTransferFunction->GetNodeValue( i, val );
+	// from current range to [0,1] interval
+	val[0] = ( val[0] - currentRange[0] ) / currentWidth;
+	// from [0,1] interval to target range
+	val[0] = val[0] * targetWidth + targetRange[0];
+	this->OpacityTransferFunction->SetNodeValue( i, val );
+      }
+
+      // work around to update the range (which is not public in
+      // vtkPiecewiseFunction)
+      if ( n > 0 )
+      {
+	double val[4];
+	this->OpacityTransferFunction->GetNodeValue( n - 1, val );
+	this->OpacityTransferFunction->AddPoint( val[0], val[1],
+						 val[2], val[3] );
+      }
+
+      touched = true;
+    }
+  }
+
+  if ( touched )
+  {
+    this->WindowLevel->Modified();
+    this->ScalarBar->Modified();
+  }
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetWindowSettingsFromTransferFunction()
+{
+  double currentRange[2];
+  this->GetColorRange( currentRange );
+  double * targetRange = NULL;
+
+  bool touched = false;
+
+  // lookup table
+  if ( this->UseLookupTable && this->LookupTable != NULL )
+  {
+    targetRange = this->LookupTable->GetRange();
+    if ( currentRange[0] != targetRange[0] ||
+	 currentRange[1] != targetRange[1] )
+      touched = true;
+  }
+
+  // color transfer function
+  if ( !this->UseLookupTable && this->ColorTransferFunction != NULL )
+  {
+    targetRange = this->ColorTransferFunction->GetRange();
+    if ( currentRange[0] != targetRange[0] ||
+	 currentRange[1] != targetRange[1] )
+      touched = true;
+  }
+
+  // opacity transfer function
+  if ( !this->UseLookupTable && this->OpacityTransferFunction != NULL )
+  {
+    double * targetRange2 = this->OpacityTransferFunction->GetRange();
+    if ( touched )
+    {
+      if ( targetRange[0] != targetRange2[0] ||
+	   targetRange[1] != targetRange2[1] )
+      {
+	vtkErrorMacro( "ranges of color and opacity function don't match!" );
+	return;
+      }
+    }
+    else
+    {
+      targetRange[0] = targetRange2[0];
+      targetRange[1] = targetRange2[1];
+
+      if ( currentRange[0] != targetRange[0] ||
+	   currentRange[1] != targetRange[1] )
+	touched = true;
+    }
+  }
+
+  if ( touched )
+  {
+    this->SetColorRange( targetRange );
+
+    this->WindowLevel->Modified();
+    this->ScalarBar->Modified();
+  }
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetColorWindow(double s) 
+{
+  if (s < 0)
+    s = 0;
+
+  if (s == this->ColorWindow)
+    return;
+
+  this->ColorWindow = s;
+
+  this->SetTransferFunctionRangeFromWindowSettings();
+
+  this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetColorLevel(double s) 
+{
+  if (s == this->ColorLevel)
+    return;
+
+  this->ColorLevel = s;
+
+  this->SetTransferFunctionRangeFromWindowSettings();
+
+  this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
+  this->Modified();
+}
+
+void vtkImageView::SetColorRange( double r[2] )
+{
+  double level  = 0.5 * ( r[0] + r[1] );
+  double window = r[1] - r[0];
+
+  this->SetColorLevel( level );
+  this->SetColorWindow( window );
+}
+
+void vtkImageView::GetColorRange( double r[2] )
+{
+  r[0] = this->GetColorLevel() - 0.5 * this->GetColorWindow();
+  r[1] = this->GetColorLevel() + 0.5 * this->GetColorWindow();
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetTextProperty (vtkTextProperty* textproperty)
+{
+  vtkSetObjectBodyMacro (TextProperty, vtkTextProperty, textproperty);
+  this->CornerAnnotation->SetTextProperty (this->TextProperty);
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::GetWorldCoordinatesFromImageCoordinates(int indices[3], double* position)
+{
+  if (!this->GetInput())
+  {
+    position[0] = 0; position[1] = 0; position[2] = 0;
+    return;
+  }
+
+  // Get information
+  double* spacing = this->GetInput()->GetSpacing();
+  double* origin = this->GetInput()->GetOrigin();
+
+  double orientedposition[4];
+  for (unsigned int i=0; i<3; i++)
+    orientedposition[i] = origin[i] + spacing[i]*indices[i];
+  orientedposition[3] = 1;
+
+  this->GetOrientationMatrix()->MultiplyPoint (orientedposition, orientedposition);
+  for( unsigned int i=0; i<3; i++)
+    position[i] = orientedposition[i];
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::GetImageCoordinatesFromWorldCoordinates(double position[3], int* indices)
+{
+  if (!this->GetInput())
+  {
+    indices[0] = 0; indices[1] = 0; indices[2] = 0;
+    return;
+  }
+
+  // Get information
+  double unorientedposition[4] = {position[0], position[1], position[2], 1};
+  double* spacing = this->GetInput()->GetSpacing();
+  double* origin = this->GetInput()->GetOrigin();
+
+  // apply inverted orientation matrix to the world-coordinate position
+  this->InvertOrientationMatrix->MultiplyPoint (unorientedposition, unorientedposition);
+  
+  for (unsigned int i=0; i<3;i++)
+  {
+    if (fabs (spacing[i]) > 1e-15)
+      indices[i] = vtkMath::Round((unorientedposition[i]-origin[i])/spacing[i]);
+    else
+      indices[i] = 0;
+  }
+}
+
+//----------------------------------------------------------------------------
+double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int component )
+{
+  if (!this->GetInput())
+    return 0.0;
+  
+  int indices[3];
+  this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
+  int* w_extent = this->GetInput()->GetWholeExtent();
+  if ( (indices[0] < w_extent[0]) ||
+       (indices[0] > w_extent[1]) ||
+       (indices[1] < w_extent[2]) ||
+       (indices[1] > w_extent[3]) ||
+       (indices[2] < w_extent[4]) ||
+       (indices[2] > w_extent[5]) )
+    return 0;
+
+  // Is the requested point in the currently loaded data extent? If not, attempt to update.
+  int* extent = this->GetInput()->GetExtent ();
+  if ( (indices[0] < extent[0]) ||
+       (indices[0] > extent[1]) ||
+       (indices[1] < extent[2]) ||
+       (indices[1] > extent[3]) ||
+       (indices[2] < extent[4]) ||
+       (indices[2] > extent[5]) ) 
+  {
+
+    int* u_extent = this->GetInput()->GetUpdateExtent ();
+    if ( (indices[0] < u_extent[0]) ||
+	 (indices[0] > u_extent[1]) ||
+	 (indices[1] < u_extent[2]) ||
+	 (indices[1] > u_extent[3]) ||
+	 (indices[2] < u_extent[4]) ||
+	 (indices[2] > u_extent[5]) ) 
+    {
+
+      int pointExtent [6] = { indices [0], indices [0], indices [1], indices [1], indices [2], indices [2] };
+      this->GetInput()->SetUpdateExtent(pointExtent);
+      this->GetInput()->PropagateUpdateExtent();
+      this->GetInput()->UpdateData();
+
+    } else {
+
+      this->GetInput ()->Update ();
+
+      int* new_extent = this->GetInput()->GetExtent ();
+      if ( (indices[0] < new_extent[0]) ||
+	   (indices[0] > new_extent[1]) ||
+	   (indices[1] < new_extent[2]) ||
+	   (indices[1] > new_extent[3]) ||
+	   (indices[2] < new_extent[4]) ||
+	   (indices[2] > new_extent[5]) ) 
+      {
+        vtkErrorMacro( "data not in slice extent after update" );
+      } 
+
+    }
+  } else {
+
+      // Need to be sure that the input is up to date. Otherwise we may be requesting bad data.
+      this->GetInput()->Update ();
+  }
+
+  return this->GetInput()->GetScalarComponentAsDouble (indices[0], indices[1], indices[2], component);
+
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetPosition(int a,int b) 
+{
+  if (this->RenderWindow)
+    this->RenderWindow->SetPosition(a, b);
+}
+
+//----------------------------------------------------------------------------
+int* vtkImageView::GetPosition() const
+{
+  if (this->RenderWindow)  
+    return this->RenderWindow->GetPosition();
+  return NULL;
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetSize(int a,int b) 
+{
+  if (this->RenderWindow)
+    this->RenderWindow->SetSize(a, b);
+}
+
+//----------------------------------------------------------------------------
+int* vtkImageView::GetSize() const
+{
+  if (!this->RenderWindow)
+    return this->RenderWindow->GetSize();
+  return NULL;
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::Enable (void)
+{
+  if (this->Interactor)
+    this->Interactor->Enable();
+}
+//----------------------------------------------------------------------------
+void vtkImageView::Disable (void)
+{
+  if (this->Interactor)
+    this->Interactor->Disable();
+}
+//----------------------------------------------------------------------------
+int vtkImageView::GetEnabled (void) const
+{
+  if (this->Interactor)
+    return this->Interactor->GetEnabled();
+  return -1;
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::Start (void)
+{
+  if (this->Interactor)
+    this->Interactor->Start();
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetBackground(double rgb[3])
+{
+  if (this->Renderer)
+    this->Renderer->SetBackground(rgb);
+}
+//----------------------------------------------------------------------------
+double* vtkImageView::GetBackground() const
+{
+  if (this->Renderer)
+    return this->Renderer->GetBackground();
+  return NULL;
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetZoom (double arg)
+{
+  if (!this->GetInput())
+    return;
+  
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return;
+
+  // Ensure that the spacing and dimensions are up-to-date.
+  this->GetInput()->UpdateInformation();
+  this->GetInput()->PropagateUpdateExtent ();
+  
+  // It seems that the above still does not succeed in getting the dimensions in all cases. 
+  // int* dimensions = this->GetInput()->GetDimensions();
+  const int* extent = this->GetInput()->GetUpdateExtent ();
+
+  double* spacing = this->GetInput()->GetSpacing();
+  double xyz[3] = {0,0,0};  
+  for (unsigned int i=0; i<3; i++)
+    xyz[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;  
+  double val = std::max (std::max (xyz[0], xyz[1]), xyz[2]);
+  
+  // Just in case no data, avoid setting scale to zero.
+  val = ( val == 0. ) ? 1. : val;
+	
+  cam->SetParallelScale (val / arg);
+
+  this->InvokeEvent (vtkImageView::ZoomChangedEvent);
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
+double vtkImageView::GetZoom (void)
+{
+  if (!this->GetInput())
+    return 1.0;
+  
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return 1.0;
+  
+  // Ensure that the spacing and dimensions are up-to-date.
+  this->GetInput()->UpdateInformation();
+  this->GetInput()->PropagateUpdateExtent ();	
+	
+  //int* dimensions = this->GetInput()->GetDimensions();
+  const int* extent = this->GetInput()->GetUpdateExtent ();
+  double* spacing = this->GetInput()->GetSpacing();
+  double xyz[3] = {0,0,0};  
+  for (unsigned int i=0; i<3; i++)
+    xyz[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;
+  //xyz[i] = dimensions[i] * spacing[i] / 2.0;
+  double val = std::max (std::max (xyz[0], xyz[1]), xyz[2]);
+    
+  return (val / cam->GetParallelScale());
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::ResetCamera (void)
+{
+  if (this->Renderer)
+  {
+    //  ResetCamera calls ResetCameraClippingRange anyway...
+    //      this->Renderer->ResetCameraClippingRange();
+
+      if ( this->GetInput () ) 
+      {
+          double bounds [6];
+          this->GetInputBoundsInWorldCoordinates (bounds);			  
+          this->Renderer->ResetCamera (bounds);
+      } else {
+
+          // No op.
+      }
+  }
+  this->SetZoom (1.0);
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetCameraPosition (double* arg)
+{
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return;
+  cam->SetPosition (arg);
+  this->InvokeEvent (vtkImageView::CameraChangedEvent);
+  this->Modified();
+  
+}
+
+double* vtkImageView::GetCameraPosition (void) const
+{
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return NULL;
+  return cam->GetPosition ();
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetCameraFocalPoint (double* arg)
+{
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return;
+  cam->SetFocalPoint (arg);
+  this->InvokeEvent (vtkImageView::CameraChangedEvent);
+  this->Modified();
+  
+}
+
+//----------------------------------------------------------------------------
+double* vtkImageView::GetCameraFocalPoint (void) const
+{
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return NULL;
+  return cam->GetFocalPoint ();
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetCameraViewUp (double* arg)
+{
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return;
+  cam->SetViewUp (arg);
+  this->InvokeEvent (vtkImageView::CameraChangedEvent);
+  this->Modified();
+  
+}
+
+//----------------------------------------------------------------------------
+double* vtkImageView::GetCameraViewUp (void) const
+{
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return NULL;
+  return cam->GetViewUp ();
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetCameraParallelScale (double arg)
+{
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return;
+  cam->SetParallelScale (arg);
+  this->InvokeEvent (vtkImageView::CameraChangedEvent);
+  this->Modified();
+  
+}
+
+//----------------------------------------------------------------------------
+double vtkImageView::GetCameraParallelScale (void) const
+{
+  vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
+  if (!cam)
+    return NULL;
+  return cam->GetParallelScale ();
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::Reset (void)
+{
+  this->ResetCurrentPoint();
+//  this->ResetWindowLevel();
+  this->SetColorWindow (VTK_DOUBLE_MAX);
+  this->ResetCamera();	
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetShowAnnotations (int val)
+{
+  this->ShowAnnotations = val;
+  this->CornerAnnotation->SetVisibility (val);
+}
+//----------------------------------------------------------------------------
+void vtkImageView::SetShowScalarBar (int val)
+{
+  this->ShowScalarBar = val;
+  this->ScalarBar->SetVisibility (val);
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::ResetWindowLevel()
+{
+  if (!this->GetInput())
+  {
+    return;
+  }
+
+  if( this->GetInput()->GetScalarType()==VTK_UNSIGNED_CHAR  &&
+      (this->GetInput()->GetNumberOfScalarComponents()==3 || this->GetInput()->GetNumberOfScalarComponents()==4) )
+  {
+    return;
+  }
+	
+  this->GetInput()->Update();
+	
+  double* range = this->GetInput()->GetScalarRange();
+  double window = range[1]-range[0];
+  double level = 0.5*(range[1]+range[0]);
+
+  // std::cerr << "vtkImageView::ResetWindowLevel" << std::endl;
+  // std::cerr << "range: " << range[0] << " - " << range[1] << " ("
+  // 	    << range[1] - range[0] << ")" << std::endl;
+
+  this->SetColorWindow ( window );
+  this->SetColorLevel ( level );
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetPatientName (const char *name)
+{
+  this->PatientName = name;
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
+const char *vtkImageView::GetPatientName() const
+{
+  return this->PatientName.c_str();
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetStudyName (const char *name)
+{
+  this->StudyName = name;
+  this->Modified();
+}
+
+
+//----------------------------------------------------------------------------
+const char *vtkImageView::GetStudyName() const
+{
+  return this->StudyName.c_str();
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetSeriesName (const char *name)
+{
+  this->SeriesName = name;
+  this->Modified();
+}
+
+
+//----------------------------------------------------------------------------
+const char *vtkImageView::GetSeriesName() const
+{
+  return this->SeriesName.c_str();
+}
+
+//----------------------------------------------------------------------------
+vtkIdType vtkImageView::GetTimeIndex ()
+{
+  return TimeIndex;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////// NOTE ON TIME HANDLING AND ITK-BRIDGE ////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/// Nicolas Toussaint.
+
+/// All of this pipelines of time handling, extraction etc
+/// have been implemented both for images and meshes in
+/// a vtk class called vtkMetaDataSetSequence.
+/// Note also that in the vtkMetaDataSetSequence implementation
+/// the template switch case between scalar type has ALSO been implemented,
+/// as well as all setITKInput APIs and the corr. macros...
+///
+/// I believe that the bridge between ITK and VTK should be implemented
+/// outside of the views, from an external class, such as vtkMetaDataSet(Sequence).
+/// The fact that all of these are implemented here again will make difficult the
+/// maintenance of both APIs...
+
+
+//----------------------------------------------------------------------------
+template < class T >
+void vtkImageView::SetTimeIndex (vtkIdType timeIndex)
+{
+  typedef typename itk::Image<T, 4> ImageType4d;
+  typedef typename itk::Image<T, 3> ImageType3d;
+  typedef typename itk::ExtractImageBufferFilter< ImageType4d, ImageType3d > ExtractFilterType;
+
+  // Since we store the extractor type using an enum, the dynamic cast should always succeed, 
+  // unless the Filter was already NULL.
+  ExtractFilterType * extractor = dynamic_cast < ExtractFilterType *> ( this->Impl->ImageTemporalFilter.GetPointer () ) ;
+  if ( extractor )
+  {
+    unsigned int timeLimit = extractor->GetInput()->GetLargestPossibleRegion().GetSize()[3] -1;
+    if (timeIndex<0)
+      timeIndex = 0;
+    if (timeIndex>(vtkIdType)timeLimit)
+      timeIndex = timeLimit;
+    typename ImageType4d::RegionType region = extractor->GetExtractionRegion ();
+    region.SetIndex (3, timeIndex);
+    extractor->SetExtractionRegion (region);
+    extractor->UpdateLargestPossibleRegion();
+  }
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetTimeIndex ( vtkIdType index )
+{
+  if ( this->TimeIndex != index ) {
+
+#ifdef vtkINRIA3D_USE_ITK
+    if ( this->Impl->ImageTemporalFilter.IsNotNull ()) {
+
+      switch ( this->Impl->TemporalFilterType ) {
+
+	  default:
+	  case IMAGE_VIEW_NONE : break;
+	    // Macro calls template method for correct argument type.
+#define ImageViewCaseEntry( type , enumName )		\
+	    case enumName :				\
+	      {						\
+		this->SetTimeIndex < type > ( index );	\
+		break ;					\
+	      }
+
+	    ImageViewCaseEntry( double, IMAGE_VIEW_DOUBLE );
+	    ImageViewCaseEntry( float, IMAGE_VIEW_FLOAT );
+	    ImageViewCaseEntry( int, IMAGE_VIEW_INT );
+	    ImageViewCaseEntry( unsigned int, IMAGE_VIEW_UNSIGNED_INT );
+	    ImageViewCaseEntry( short, IMAGE_VIEW_SHORT );
+	    ImageViewCaseEntry( unsigned short, IMAGE_VIEW_UNSIGNED_SHORT );
+	    ImageViewCaseEntry( long, IMAGE_VIEW_LONG );
+	    ImageViewCaseEntry( unsigned long, IMAGE_VIEW_UNSIGNED_LONG );
+	    ImageViewCaseEntry( char, IMAGE_VIEW_CHAR );
+	    ImageViewCaseEntry( unsigned char, IMAGE_VIEW_UNSIGNED_CHAR );
+	    ImageViewCaseEntry( RGBPixelType, IMAGE_VIEW_RGBPIXELTYPE );
+	    ImageViewCaseEntry( RGBAPixelType, IMAGE_VIEW_RGBAPIXELTYPE );
+	    ImageViewCaseEntry( UCharVector3Type, IMAGE_VIEW_UCHARVECTOR3TYPE  );
+
+      };
+    }
+#endif        
+    this->TimeIndex = index;
+    this->GetInput ()->UpdateInformation ();
+    this->GetInput ()->PropagateUpdateExtent ();
+    this->InvokeEvent( vtkImageView2DCommand::TimeChangeEvent );
+    this->Modified ();
+  }
+}
+//----------------------------------------------------------------------------
+
+#ifdef vtkINRIA3D_USE_ITK
+
+/////////////////////////////////////////////////////////////////////
+///////////////// One comment on the origin handling ////////////////
+/////////////////////////////////////////////////////////////////////
+
+/// The 4th column of the OrientationMatrix instance is intensively	
+/// used in this class in order to estimate world coordinate position 
+/// and other conversions. The fact that vtkImageData class does not	
+/// handle any orientation matrix makes this class weak, compared to	
+/// ITK version. Therefore I think that ALL orientation AND origin	
+/// information should be stored in the same instance, i.e. a vtkMatrix4x4. 
+/// Thus impliing that the origin in a vtkImageData should be forced to 0. 
+/// If we mix the information between vtkImageData "origin" and the	
+/// vtkMatrix4x4 instances, it will be VERY confusing. and it will	
+/// introduce misbehaviours in the position evaluation in this class.
+
+//----------------------------------------------------------------------------
+template < class T >
+inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkImage)
+{									
+  if( itkImage.IsNull() )
+  {
+    return;
+  }
+  if (this->ITKInput==itkImage)
+    return;
+  typedef itk::ImageToVTKImageFilter< itk::Image<T, 3> > ConverterType;
+  typename ConverterType::Pointer myConverter = ConverterType::New();
+  myConverter->SetInput ( itkImage );
+  myConverter->UpdateOutputInformation();
+  typename itk::Image<T, 3>::DirectionType directions = itkImage->GetDirection();
+  typename itk::Image<T, 3>::PointType origin = itkImage->GetOrigin();
+  vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
+  matrix->Identity();
+  for (int i=0; i<3; i++)
+    for (int j=0; j<3; j++)
+      matrix->SetElement (i, j, directions (i,j));
+  double v_origin[4], v_origin2[4];
+  for (int i=0; i<3; i++)
+    v_origin[i] = origin[i];
+  v_origin[3] = 1.0;
+  matrix->MultiplyPoint (v_origin, v_origin2);
+  for (int i=0; i<3; i++)
+    matrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+  this->SetOrientationMatrix (matrix);
+  this->SetInput ( myConverter->GetOutput() );
+  this->Impl->ImageConverter = myConverter;
+  this->ITKInput = itkImage;
+  this->Modified();
+  matrix->Delete();
+}
+
+template < class T >
+inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage)
+{									
+  if( itkImage.IsNull() )
+  {
+    return;
+  }
+
+  // if (this->ITKInput4==itkImage) // if SetITKInput is called after SetITKInput4, pointer is not changed
+  // return;                        // and image is not displayed
+
+
+  typedef typename itk::Image<T, 4> ImageType4d;
+  typedef typename itk::Image<T, 3> ImageType3d;
+  typedef typename itk::ExtractImageBufferFilter< ImageType4d, ImageType3d > ExtractFilterType;
+
+  typename ExtractFilterType::Pointer extractor (ExtractFilterType::New());
+  // extractor->SetNumberOfThreads(1); // not thread safe, to correct // extractor is now not multi-threaded
+  typename ImageType4d::SizeType size = itkImage->GetLargestPossibleRegion().GetSize();
+	  
+  unsigned int timeIndex = this->TimeIndex;
+  unsigned int timeLimit = itkImage->GetLargestPossibleRegion().GetSize()[3]-1;
+  if (timeIndex<0)
+    timeIndex = 0;
+  if (timeIndex>timeLimit)
+    timeIndex = timeLimit;
+	  
+  typename ImageType4d::IndexType index = {{0,0,0, timeIndex}};
+
+  size[3] = 0;
+  typename ImageType4d::RegionType region;
+  region.SetSize (size);
+  region.SetIndex (index);
+  
+  extractor->SetExtractionRegion (region);
+  extractor->SetInput ( itkImage );
+
+  this->Impl->ImageTemporalFilter = extractor;
+  this->Impl->TemporalFilterType = vtkImageView::vtkImageViewImplementation::GetImageViewType <T> ();
+  this->ITKInput4 = itkImage;
+  typename ImageType3d::Pointer itkImage3 = extractor->GetOutput ();
+  extractor->UpdateLargestPossibleRegion();
+  this->SetITKInput ( itkImage3 );
+  // itkImage3->DisconnectPipeline();
+}
+
+#define vtkImplementSetITKInputMacro(type)				\
+  void vtkImageView::SetITKInput (itk::Image<type, 3>::Pointer itkImage) \
+  {									\
+    SetITKInput < type > (itkImage);					\
+  }
+vtkImplementSetITKInputMacro (double);
+vtkImplementSetITKInputMacro (float);
+vtkImplementSetITKInputMacro (int);
+vtkImplementSetITKInputMacro (unsigned int);
+vtkImplementSetITKInputMacro (short);
+vtkImplementSetITKInputMacro (unsigned short);
+vtkImplementSetITKInputMacro (long);
+vtkImplementSetITKInputMacro (unsigned long);
+vtkImplementSetITKInputMacro (char);
+vtkImplementSetITKInputMacro (unsigned char);
+vtkImplementSetITKInputMacro (RGBPixelType);
+vtkImplementSetITKInputMacro (RGBAPixelType);
+vtkImplementSetITKInputMacro (UCharVector3Type);
+
+itk::ImageBase<3>* vtkImageView::GetITKInput (void) const
+{
+  return this->ITKInput;
+}
+
+#define vtkImplementSetITKInput4Macro(type)				\
+  void vtkImageView::SetITKInput4 (itk::Image<type, 4>::Pointer itkImage) \
+  {									\
+    SetITKInput4 < type > (itkImage);					\
+  }
+
+vtkImplementSetITKInput4Macro (double);
+vtkImplementSetITKInput4Macro (float);
+vtkImplementSetITKInput4Macro (int);
+vtkImplementSetITKInput4Macro (unsigned int);
+vtkImplementSetITKInput4Macro (short);
+vtkImplementSetITKInput4Macro (unsigned short);
+vtkImplementSetITKInput4Macro (long);
+vtkImplementSetITKInput4Macro (unsigned long);
+vtkImplementSetITKInput4Macro (char);
+vtkImplementSetITKInput4Macro (unsigned char);
+vtkImplementSetITKInput4Macro (RGBPixelType);
+vtkImplementSetITKInput4Macro (RGBAPixelType);
+vtkImplementSetITKInput4Macro (UCharVector3Type);
+
+itk::ImageBase<4>* vtkImageView::GetTemporalITKInput (void) const
+{
+  return this->ITKInput4;
+}
+
+#endif
+
+void vtkImageView::GetInputBounds ( double * bounds )
+{
+  this->GetInput()->UpdateInformation ();
+
+  // GetWholeBoundingBox may not be updated by UpdateInformation
+  //this->GetInput()->GetWholeBoundingBox (bounds);
+
+  const int * wholeExtent = this->GetInput ()->GetWholeExtent ();
+  const double * spacing = this->GetInput ()->GetSpacing ();
+  const double * origin = this->GetInput ()->GetOrigin ();
+	
+  for ( int i(0); i < 3; ++i ) 
+  {
+	bounds[ 2*i     ] = spacing [ i ]*wholeExtent [ 2*i     ] + origin [ i ];
+	bounds[ 2*i + 1 ] = spacing [ i ]*wholeExtent [ 2*i + 1 ] + origin [ i ];		
+  }
+
+}
+
+void vtkImageView::GetInputBoundsInWorldCoordinates ( double * bounds )
+{
+  double imageBounds [6];
+  this->GetInput()->UpdateInformation ();
+
+  const int * wholeExtent = this->GetInput ()->GetWholeExtent ();
+  const double * spacing = this->GetInput ()->GetSpacing ();
+  const double * origin = this->GetInput ()->GetOrigin ();
+	
+  for ( int i(0); i < 3; ++i ) 
+  {
+	imageBounds[ 2*i     ] = spacing [ i ]*wholeExtent [ 2*i     ] + origin [i];
+	imageBounds[ 2*i + 1 ] = spacing [ i ]*wholeExtent [ 2*i + 1 ] + origin [i];		
+  }
+
+  // Loop over the eight points that define the external vertices of the bounding cuboid.
+  double testPoint[4];
+  bounds [0] = VTK_DOUBLE_MAX;
+  bounds [1] = VTK_DOUBLE_MIN;
+  bounds [2] = VTK_DOUBLE_MAX;
+  bounds [3] = VTK_DOUBLE_MIN;
+  bounds [4] = VTK_DOUBLE_MAX;
+  bounds [5] = VTK_DOUBLE_MIN;
+    for ( int k(0); k<2; ++k ) {
+        for ( int j(0); j<2; ++j ) {
+            for ( int i(0); i<2; ++i ) {
+
+                testPoint [0] = imageBounds [i  ];   // x coordinate
+                testPoint [1] = imageBounds [2+j];   // y coordinate
+                testPoint [2] = imageBounds [4+k];   // z coordinate
+                testPoint [3] = 1.;
+
+                // Transform to world coordinates
+                this->GetOrientationMatrix()->MultiplyPoint (testPoint, testPoint);
+            
+                // Compare min / max for each coordinate.
+                for ( int m(0); m < 3; ++m ) {
+
+                    if ( bounds [2*m] > testPoint [m] )
+                        bounds [2*m] = testPoint [m];
+                    if ( bounds [2*m + 1] < testPoint [m] )
+                        bounds [2*m + 1] = testPoint [m];
+                        
+                }
+            }
+        }
+    }
+/*
+    for ( int i(0); i < 3; ++i ) {
+	  bounds [ 2*i     ] = imageBounds [2*i];
+	  bounds [ 2*i + 1 ] = imageBounds [2*i + 1];
+    }
+*/
+    /*
+    for ( int i(0); i < 3; ++i ) {
+	  bounds [ 2*i     ] += origin [i]; 
+	  bounds [ 2*i + 1 ] += origin [i]; 
+    }
+    */
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::PrintSelf(ostream& os, vtkIndent indent)
+{
+  this->Superclass::PrintSelf(os, indent);
+
+  os << indent << "OrientationMatrix:\n";
+  this->OrientationMatrix->PrintSelf(os,indent.GetNextIndent());
+
+  if ( this->LookupTable != NULL )
+  {
+    os << indent << "LookupTable:\n";
+    this->LookupTable->PrintSelf(os,indent.GetNextIndent());
+  }
+
+  if ( this->ColorTransferFunction != NULL )
+  {
+    os << indent << "ColorTransferFunction:\n";
+    this->ColorTransferFunction->PrintSelf(os,indent.GetNextIndent());
+  }
+
+  if ( this->OpacityTransferFunction != NULL )
+  {
+    os << indent << "OpacityTransferFunction:\n";
+    this->OpacityTransferFunction->PrintSelf(os,indent.GetNextIndent());
+  }
+  
+  os << indent << "WindowLevel:\n";
+  this->WindowLevel->PrintSelf(os,indent.GetNextIndent());
+
+  if (this->Input)
+  {
+    os << indent << "Input:\n";
+    this->Input->PrintSelf(os,indent.GetNextIndent());
+  }
+  if (this->RenderWindow)
+  {
+    os << indent << "RenderWindow:\n";
+    this->RenderWindow->PrintSelf(os,indent.GetNextIndent());
+  }
+  if (this->Renderer)
+  {
+    os << indent << "Renderer:\n";
+    this->Renderer->PrintSelf(os,indent.GetNextIndent());
+  }  
+  if (this->InteractorStyle)
+  {
+    os << indent << "InteractorStyle:\n";
+    this->InteractorStyle->PrintSelf(os,indent.GetNextIndent());
+  }
+}
