@@ -232,9 +232,6 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->view3d->ShowScalarBarOff();
     d->view3d->GetTextProperty()->SetColor(1.0, 1.0, 1.0);
     d->view3d->ShadeOn();
-    d->view3d->UseJitteringOn();
-    d->view3d->UseAdaptiveStepwidthOff();
-    d->view3d->UseCachingOn();
     
     d->currentView = d->view2d;
 
@@ -1028,10 +1025,10 @@ void v3dView::onRendererPropertySet (const QString &value)
 
 void v3dView::onUseLODPropertySet (const QString &value)
 {
-    if (value == "On")
-        d->view3d->UseVRQualityOn();
-    else
-        d->view3d->UseVRQualityOff();
+    // if (value == "On")
+    //     d->view3d->UseVRQualityOn();
+    // else
+    //     d->view3d->UseVRQualityOff();
 }
 
 void v3dView::onShowScalarBarPropertySet(const QString &value)
@@ -1379,11 +1376,11 @@ void v3dView::onDimensionBoxChanged (const QString &value)
 
 void v3dView::onMetaDataSet(const QString &key, const QString &value)
 {
-    if (key == "VRQuality")        
-        d->view3d->SetVRQuality((float)(value.toInt())/100.0);
+    // if (key == "VRQuality")        
+    //     d->view3d->SetVRQuality((float)(value.toInt())/100.0);
     
-    if (key == "LOD")        
-        d->view3d->SetVRQuality((float)(value.toInt())/100.0);
+    // if (key == "LOD")        
+    //     d->view3d->SetVRQuality((float)(value.toInt())/100.0);
 }
 
 void v3dView::onMenuAxialTriggered (void)
