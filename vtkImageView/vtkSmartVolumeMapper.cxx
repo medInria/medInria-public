@@ -254,7 +254,11 @@ void vtkSmartVolumeMapper::Initialize(vtkRenderer *ren, vtkVolume *vol)
     {
     this->ConnectMapperInput(this->TextureMapper);
     this->TextureSupported = this->TextureMapper->IsRenderSupported(
-      vol->GetProperty(),ren);
+      vol->GetProperty()
+#if (VTK_MAJOR_VERSION == 5 && ((VTK_MINOR_VERSION >= 6 && VTK_BUILD_VERSION >= 1)) || VTK_MINOR_VERSION >= 7) || VTK_MAJOR_VERSION > 5
+      ,ren
+#endif
+      );
     }
 
   this->GPUSupported = this->GPUMapper->IsRenderSupported(win,

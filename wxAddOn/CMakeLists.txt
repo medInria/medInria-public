@@ -1,3 +1,5 @@
+project(wxAddOn)
+
 IF(wxWidgets_FOUND)
 
   ADD_DEFINITIONS(-DCHECKBOXVIEW=1)

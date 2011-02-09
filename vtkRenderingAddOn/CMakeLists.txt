@@ -1,3 +1,4 @@
+project(vtkRenderingAddOn)
 
   SET(vtkRenderingAddOn_SRCS
     vtkFillImageWithPolyData.cxx

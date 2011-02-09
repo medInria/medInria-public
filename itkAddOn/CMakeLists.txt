@@ -1,3 +1,4 @@
+project(itkAddOn)
 
 IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
   ADD_LIBRARY(getoptcompatlib STATIC

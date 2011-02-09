@@ -1,3 +1,5 @@
+project(vtkDataManagement)
+
   SET(vtkDataManagement_SRCS
   vtkDataManagerCallback.cxx
   vtkMetaDataSet.cxx

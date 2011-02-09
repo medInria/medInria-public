@@ -1,3 +1,5 @@
+project(vtkVisuManagement)
+
 SET(vtkVisuManagement_SRCS
  vtkLimitFibersToVOI.cxx
  vtkLimitFibersToMesh.cxx

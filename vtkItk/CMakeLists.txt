@@ -1,3 +1,5 @@
+project(vtkItk)
+
 IF(NOT vtkINRIA3D_INSTALL_NO_DEVELOPMENT)
   FILE(GLOB __files1 "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
   FILE(GLOB __files2 "${CMAKE_CURRENT_SOURCE_DIR}/*.txx")

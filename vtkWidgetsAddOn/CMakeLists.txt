@@ -1,3 +1,4 @@
+project(vtkWidgetsAddOn)
 
 SET(vtkWidgetsAddOn_SRCS
 vtkDistanceWidget2.cxx
