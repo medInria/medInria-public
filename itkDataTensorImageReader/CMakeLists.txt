@@ -38,6 +38,8 @@ include(${TTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+include_directories(../dtkItkLogForwarder)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -69,6 +71,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
+  dtkItkLogForwarder
   dtkCore)
 
 ## #################################################################

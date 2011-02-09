@@ -6,8 +6,8 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 
-#include <itkAnalyzeImageIOFactory.h>
-#include <itkVTKImageIOFactory.h>
+//#include <itkAnalyzeImageIOFactory.h>
+//#include <itkVTKImageIOFactory.h>
 
 #include "vtkSmartPointer.h"
 #include <vtkImageData.h>

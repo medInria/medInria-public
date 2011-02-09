@@ -9,6 +9,7 @@
 #include "v3dDataFibersReader.h"
 
 #include <dtkCore/dtkLog.h>
+#include "vtkLogForwarder.h"
 
 #include <itkAnalyzeImageIOFactory.h>
 #include <itkGDCMImageIOFactory.h>
@@ -21,7 +22,16 @@
 class v3dDataPluginPrivate 
 {
 public:
+    v3dDataPluginPrivate()
+    {
+        forwarder = vtkLogForwarder::New();
+    }
+    ~v3dDataPluginPrivate()
+    {
+        forwarder->Delete();
+    }
     // Class variables go here.
+    vtkLogForwarder* forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////

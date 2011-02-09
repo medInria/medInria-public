@@ -2,6 +2,7 @@
 
 #include "vtkDataMeshReaderPlugin.h"
 
+#include "vtkLogForwarder.h"
 #include <dtkCore/dtkLog.h>
 
 
@@ -12,7 +13,16 @@
 class vtkDataMeshReaderPluginPrivate 
 {
 public:
+  vtkDataMeshReaderPluginPrivate()
+  {
+      forwarder = vtkLogForwarder::New();
+  }
+  ~vtkDataMeshReaderPluginPrivate()
+  {
+      forwarder->Delete();
+  }
   // Class variables go here.
+  vtkLogForwarder* forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////

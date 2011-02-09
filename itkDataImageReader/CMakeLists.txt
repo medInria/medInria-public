@@ -65,6 +65,8 @@ endif()
 find_package(VTK)
 include(${VTK_USE_FILE})
 
+include_directories(../dtkItkLogForwarder)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -143,6 +145,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  dtkItkLogForwarder
   dtkCore
   ${ITK_LIBRARIES})
 

@@ -27,6 +27,7 @@
 #include "itkDataImageRGB3.h"
 
 #include <dtkCore/dtkLog.h>
+#include "itkLogForwarder.h"
 
 // /////////////////////////////////////////////////////////////////
 // itkDataImagePluginPrivate
@@ -35,7 +36,16 @@
 class itkDataImagePluginPrivate 
 {
 public:
+    itkDataImagePluginPrivate()
+    {
+        forwarder = itk::LogForwarder::New();
+    }
+    ~itkDataImagePluginPrivate()
+    {
+
+    }
     // Class variables go here.
+    itk::LogForwarder::Pointer forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////

@@ -40,6 +40,8 @@ include(${vtkINRIA3D_USE_FILE})
 find_package(VTK)
 include(${VTK_USE_FILE})
 
+include_directories(../dtkVtkLogForwarder)
+
 
 set(${PROJECT_NAME}_HEADERS_MOC
   vtkDataMeshReaderPlugin.h
@@ -72,6 +74,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  dtkVtkLogForwarder
   dtkCore
   vtkCommon
   vtkFiltering
