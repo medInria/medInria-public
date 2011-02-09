@@ -1941,4 +1941,6 @@ void v3dView::onCameraChanged (const QVector3D &position, const QVector3D &viewu
     d->renderer3d->GetActiveCamera()->SetParallelScale(parallelScale);
     
     d->renderer3d->ResetCameraClippingRange();
+
+    d->view3d->Modified();
 }
