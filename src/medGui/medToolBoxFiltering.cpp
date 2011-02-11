@@ -39,7 +39,7 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
     
     QLabel *filterLabel = new QLabel("Filters :", displayWidget);    
     
-    QHBoxLayout *filterLayout = new QHBoxLayout;
+    QFormLayout *filterLayout = new QFormLayout(displayWidget);
     filterLayout->addWidget(filterLabel);
     filterLayout->addWidget(d->chooseFilter);
         
