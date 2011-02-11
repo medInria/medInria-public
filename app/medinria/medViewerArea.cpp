@@ -238,12 +238,12 @@ void medViewerArea::open(const medDataIndex& index)
 	}
 
         if(!view) {
-            view = dtkAbstractViewFactory::instance()->create("v3dViewPublic");
+            view = dtkAbstractViewFactory::instance()->create("v3dView");
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
         }
         
         if(!view) {
-            qDebug() << "Unable to create a v3dViewPublic";
+            qDebug() << "Unable to create a v3dView";
             return;
         }
         
@@ -262,6 +262,7 @@ void medViewerArea::open(const medDataIndex& index)
 	    }
 
 	    view->reset();
+	    view->update();
 
 	    d->view_stacks.value(d->current_patient)->current()->setDisabled (false);
 	    d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (true);

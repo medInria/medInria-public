@@ -203,7 +203,7 @@ void medViewContainerMulti::onViewClosing (void)
 
 	emit viewRemoved (d->view);
 	
-        // view->close();
+        view->close();
 
         this->layout (content);
     }

@@ -81,7 +81,7 @@ void medViewContainerSingle::onViewClosing (void)
 
 	emit viewRemoved (d->view);
 	
-        // d->view->close();
+        d->view->close();
 
         d->view = NULL;
     }
