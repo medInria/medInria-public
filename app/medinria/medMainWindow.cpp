@@ -47,6 +47,7 @@
 #include <medGui/medViewerConfigurationVisualization2.h>
 #include <medGui/medViewerConfigurationRegistration.h>
 #include <medGui/medViewerConfigurationDiffusion.h>
+#include <medGui/medViewerConfigurationFiltering.h>
 
 #include <QtGui>
 
@@ -172,6 +173,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
+    medViewerConfigurationFactory::instance()->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
     
     // Setting up status bar
 
