@@ -91,7 +91,7 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
     layoutToolBoxTab->addTab(customPage, "Custom");
 
     this->setTitle("Layout");
-    this->setWidget(layoutToolBoxTab);
+    this->setTabWidget(layoutToolBoxTab);
 
     connect(layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SIGNAL(modeChanged(int)));
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SIGNAL(split(int,int)));

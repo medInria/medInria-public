@@ -84,8 +84,11 @@
         <file>pixmaps/scrollbar-vertical-subline.png</file>
         <file>pixmaps/treeview-frame.png</file>
         <file>pixmaps/toolbox-body.png</file>
+        <!--<file>pixmaps/toolbox-body-horizontal.png</file>-->
         <file>pixmaps/toolbox-header.png</file>
+        <!--<file>pixmaps/toolbox-header-horizontal.png</file>-->
         <file>pixmaps/tabwidget-pane.png</file>
+        <!--<file>pixmaps/tabwidget-pane-horizontal.png</file>-->
         <file>pixmaps/checkbox.png</file>
         <file>pixmaps/checkbox-checked.png</file>
         <file>pixmaps/checkbox-partial.png</file>

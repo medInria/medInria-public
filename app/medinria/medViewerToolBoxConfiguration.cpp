@@ -36,7 +36,7 @@ medViewerToolBoxConfiguration::medViewerToolBoxConfiguration(QWidget *parent) : 
     layout->addWidget(d->combo);
 
     this->setTitle("Configuration");
-    this->setWidget(central);
+    this->addWidget(central);
 
     connect(d->combo, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(configurationChanged(QString)));
 }

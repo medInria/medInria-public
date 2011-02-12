@@ -24,6 +24,28 @@
 
 #include "medCoreExport.h"
 
+class medAbstractViewPrivate;
+
+/**
+ * @class medAbstractView
+ * @brief Base class for view types in medinria
+ * medAbstractView specializes a dtkAbstractView in the context of medinria.
+ * Two concepts are added: view synchronization and color lookup.
+ *
+ * View synchronization is achieved via the Qt signal/slot mecanism. 5 signals
+ * were added: positionChanged(), zoomChanged(), panChanged(), windowingChanged(),
+ * cameraChanged() with the corresponding slots: setPosition(), setZoom(),
+ * setPan(), setWindowLevel() and setCamera(). Any subclass of medAbstractView
+ * should implement those slots and emit signals when apropriate. One can activate/
+ * deactivate synchronization using the corresponding setLinkPosition(),
+ * setLinkWindowing(), setLinkPan(), setLinkZoom() and setLinkCamera() slots. This
+ * class should be used in conjunction with the class @medViewPool, which realizes
+ * the synchronization.
+ *
+ * Color lookup tables are specified with a QList of scalars and corresponding
+ * colors using the setColorLookupTable() or setTransferFunctions() methods.
+ **/
+
 class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 {
     Q_OBJECT
@@ -47,20 +69,142 @@ public:
 
     virtual QWidget *receiverWidget(void);
 
+    /**
+       Set the view position, i.e., focus on a particular spatial coordinate.
+       @position is expressed in real world coordinates.
+     **/
+    void setPosition    (const QVector3D &position);
+
+    /**
+       Set the view zoom factor.
+    **/
+    void setZoom        (double zoom);
+
+    /**
+       Set the view pan.
+    **/
+    void setPan         (const QVector2D &pan);
+
+    /**
+       Set the window/level of the view.
+    **/
+    void setWindowLevel (double level, double window);
+
+    /**
+       Set the camera settings of the view.
+    **/
+    void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+    
+
 signals:
+    /**
+       This signal is emitted when a view is about to close.
+     **/
     void closing       (void);
+
+    /**
+       In medinria, the daddy is the reference view (contoured in red). Only one
+       per pool is authorized. Emit this signal when the view wants to become the
+       daddy.
+     **/
     void becomeDaddy   (bool);
-    void syncPosition  (bool);
-    void syncCamera    (bool);
-    void syncWindowing (bool);
+
+    /**
+       This signal is emitted when a view wants to register its data to the daddy.
+       A registration plugin must be available. Registration is handled in the
+       @medViewPool.
+     **/
     void reg           (bool);
+
+    /**
+       This signal is emitted when the color lookup table has changed.
+     **/
     void lutChanged    (void);
+
+    /**
+       This signal is emitted when the view wants to be displayed in full screen.
+     **/
     void fullScreen    (bool);
 
+    /**
+       This signal is emitted when the current position pointed by the view has changed.
+       This is the case, for instance, when the slice of a 3D image was changed, or when
+       the user cliked on a specific voxel.
+       The position is expressed in physical coordinates.
+     **/
+    void positionChanged  (const QVector3D &position);
+
+    /**
+       This signal is emitted when the zoom factor of the view has changed.
+     **/
+    void zoomChanged      (double zoom);
+
+    /**
+       This signal is emitted when the pan (=translation) of the view has
+       changed.
+     **/
+    void panChanged       (const QVector2D &pan);
+
+    /**
+       This signal is emitted when the windowing (window/level controlling the image
+       contrast) has changed.
+     **/
+    void windowingChanged (double level, double window);
+
+    /**
+       This signal is emitted when the camera of the view has changed. The camera settings
+       are expressed in 4 parameters:
+       @position: the physical position of the camera
+       @viewup: the view up direction
+       @focal: the focal position of the camera
+       @parallelScale: the scaling factor in parallel projection
+    **/
+    void cameraChanged    (const QVector3D &position,
+                           const QVector3D &viewup,
+                           const QVector3D &focal,
+                           double parallelScale);
+
 public slots:
-    virtual void linkPosition  (dtkAbstractView *view, bool value);
-    virtual void linkCamera    (dtkAbstractView *view, bool value);
-    virtual void linkWindowing (dtkAbstractView *view, bool value);
+    /**
+       Tells the view (not to) synchronize its position with other views.
+     **/
+    virtual void setLinkPosition (bool value);
+    bool positionLinked (void) const;
+
+    /**
+       Tells the view (not to) synchronize its window/level with other views.
+     **/
+    virtual void setLinkWindowing (bool value);
+    bool windowingLinked (void) const;
+
+    /**
+       Tells the view (not to) synchronize its camera settings with other views.
+    **/
+    virtual void setLinkCamera (bool value);
+    bool cameraLinked (void) const;
+
+    virtual void onPositionChanged  (const QVector3D &position);
+    virtual void onZoomChanged      (double zoom);
+    virtual void onPanChanged       (const QVector2D &pan);
+    virtual void onWindowingChanged (double level, double window);
+    virtual void onCameraChanged    (const QVector3D &position,
+				     const QVector3D &viewup,
+				     const QVector3D &focal,
+				     double parallelScale);
+    
+    
+protected:
+    void emitViewPositionChangedEvent (const QVector3D &position);
+    void emitViewZoomChangedEvent     (double zoom);
+    void emitViewPanChangedEvent      (const QVector2D &pan);
+    void emitViewWindowingChangedEvent(double level, double window);
+    void emitViewCameraChangedEvent   (const QVector3D &position,
+                                       const QVector3D &viewup,
+                                       const QVector3D &focal,
+                                       double parallelScale);
+
+private:
+    medAbstractViewPrivate *d;
 };
 
 #endif

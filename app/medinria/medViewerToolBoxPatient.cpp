@@ -46,7 +46,7 @@ medViewerToolBoxPatient::medViewerToolBoxPatient(QWidget *parent) : medToolBox(p
     layout->addWidget(d->combo);
 
     this->setTitle("Patient");
-    this->setWidget(central);
+    this->addWidget(central);
 
     connect(d->combo, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentIndexChanged(int)));
 

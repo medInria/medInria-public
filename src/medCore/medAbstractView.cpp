@@ -1,8 +1,19 @@
 #include "medAbstractView.h"
 
-
-medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent)
+class medAbstractViewPrivate
 {
+public:
+  bool linkPosition;
+  bool linkCamera;
+  bool linkWindowing;
+};
+
+medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
+{
+    d->linkPosition  = false;
+    d->linkCamera    = false;
+    d->linkWindowing = false;
+  
     QStringList lut;
     lut << "Default";		// list of available lookup tables set
 				// by subclass
@@ -37,7 +48,8 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 
 medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(view)
 {
-
+    delete d;
+    d = NULL;
 }
 
 void medAbstractView::setColorLookupTable(int min_range,
@@ -73,17 +85,115 @@ QWidget *medAbstractView::receiverWidget(void)
     return NULL;
 }
 
-void medAbstractView::linkPosition (dtkAbstractView *view, bool value)
+void medAbstractView::setLinkPosition (bool value)
+{
+    d->linkPosition = value;
+}
+
+bool medAbstractView::positionLinked (void) const
+{
+    return d->linkPosition;
+}
+
+void medAbstractView::setLinkWindowing (bool value)
+{
+    d->linkWindowing = value;
+}
+
+bool medAbstractView::windowingLinked (void) const
+{
+    return d->linkWindowing;
+}
+
+void medAbstractView::setLinkCamera (bool value)
+{
+    d->linkCamera = value;
+}
+
+bool medAbstractView::cameraLinked (void) const
+{
+    return d->linkCamera;
+}
+
+void medAbstractView::setPosition (const QVector3D &position)
+{
+    this->onPositionChanged (position);
+    emit positionChanged (position);
+}
+
+void medAbstractView::setZoom (double zoom)
+{
+    this->onZoomChanged (zoom);
+    emit zoomChanged (zoom);
+}
+
+void medAbstractView::setPan (const QVector2D &pan)
+{
+    this->onPanChanged (pan);
+    emit panChanged (pan);
+}
+
+void medAbstractView::setWindowLevel (double level, double window)
+{
+    this->onWindowingChanged (level, window);
+    emit windowingChanged (level, window);
+}
+
+void medAbstractView::setCamera (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
+{
+    this->onCameraChanged (position, viewup, focal, parallelScale);
+    emit cameraChanged (position, viewup, focal, parallelScale);
+}
+
+void medAbstractView::onPositionChanged (const QVector3D &position)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medAbstractView::linkCamera (dtkAbstractView *view, bool value)
+void medAbstractView::onZoomChanged (double zoom)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medAbstractView::linkWindowing (dtkAbstractView *view, bool value)
+void medAbstractView::onPanChanged (const QVector2D &pan)
 {
     DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::onWindowingChanged (double level, double window)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::onCameraChanged (const QVector3D &position,
+				       const QVector3D &viewup,
+				       const QVector3D &focal,
+				       double parallelScale)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
+{
+    emit positionChanged(position);
+}
+
+void medAbstractView::emitViewZoomChangedEvent(double zoom)
+{
+    emit zoomChanged(zoom);
+}
+
+void medAbstractView::emitViewPanChangedEvent(const QVector2D &pan)
+{
+    emit panChanged(pan);
+}
+
+void medAbstractView::emitViewWindowingChangedEvent(double level, double window)
+{
+    emit windowingChanged(level,window);
+}
+
+void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
+{
+    emit cameraChanged(position, viewup, focal, parallelScale);
 }

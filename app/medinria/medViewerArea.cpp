@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 16:15:44 2010 (+0100)
+ * Last-Updated: Mon Dec 20 17:24:07 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 1061
+ *     Update #: 1062
  */
 
 /* Commentary: 
@@ -238,12 +238,12 @@ void medViewerArea::open(const medDataIndex& index)
 	}
 
         if(!view) {
-            view = dtkAbstractViewFactory::instance()->create("v3dViewPublic");
+            view = dtkAbstractViewFactory::instance()->create("v3dView");
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
         }
         
         if(!view) {
-            qDebug() << "Unable to create a v3dViewPublic";
+            qDebug() << "Unable to create a v3dView";
             return;
         }
         
@@ -262,6 +262,7 @@ void medViewerArea::open(const medDataIndex& index)
 	    }
 
 	    view->reset();
+	    view->update();
 
 	    d->view_stacks.value(d->current_patient)->current()->setDisabled (false);
 	    d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (true);

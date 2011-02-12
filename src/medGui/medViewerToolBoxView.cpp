@@ -224,7 +224,7 @@ medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent)
     viewToolBoxTab->addTab(view3dToolBoxWidget, "3D");
 
     this->setTitle("View");
-    this->setWidget(viewToolBoxTab);
+    this->setTabWidget(viewToolBoxTab);
 }
 
 medViewerToolBoxView::~medViewerToolBoxView(void)
