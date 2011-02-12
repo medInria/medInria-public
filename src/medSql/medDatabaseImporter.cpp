@@ -236,6 +236,8 @@ void medDatabaseImporter::run(void)
 	
 	if (dtkdata->description() == "vtkDataMesh")
             imageFileName = imageFileName + ".vtk";
+	else if (dtkdata->description().contains("vistal"))
+						imageFileName = imageFileName + ".dim";
 	else
             imageFileName = imageFileName + ".mha";
 
