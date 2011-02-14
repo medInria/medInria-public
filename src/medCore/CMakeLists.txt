@@ -31,6 +31,7 @@ set(${PROJECT_NAME}_HEADERS
   medPluginManager.h
   medAbstractView.h
   medStorage.h
+  medSettingsManager.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -40,6 +41,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewManager.h
   medPluginManager.h
   medAbstractView.h
+  medSettingsManager.h
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -50,6 +52,7 @@ set(${PROJECT_NAME}_SOURCES
   medPluginManager.cpp
   medAbstractView.cpp
   medStorage.cpp
+  medSettingsManager.cpp
 )
 
 ## #################################################################

@@ -131,7 +131,7 @@ medPacsWidget::~medPacsWidget(void)
 
 void medPacsWidget::readSettings(void)
 {
-    QSettings settings("inria", "medinria");
+    QSettings settings;
     settings.beginGroup("medBrowserToolBoxPacsHost");
     QString title = settings.value("title").toString();
     d->host_address = "localhost";
