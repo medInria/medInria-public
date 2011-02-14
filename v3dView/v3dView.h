@@ -41,6 +41,7 @@ public:
     void *view(void);
 
     void setData(dtkAbstractData *data);
+    void setData(dtkAbstractData *data, int layer);
     void *data (void);
 
     QWidget *receiverWidget(void);

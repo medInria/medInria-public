@@ -631,14 +631,22 @@ void v3dView::setData(dtkAbstractData *data)
         return;
     
     int layer = 0;
-    while(d->view2d->GetImageInput(layer))
-    {
+    while(d->view2d->GetImageInput(layer)) {
         layer++;
     }
     
     qDebug() << "Openging at layer: " << layer;
     
+    this->setData( data, layer);
+    
+    // this->update(); // update is not the role of the plugin, but of the app
+}
 
+void v3dView::setData(dtkAbstractData *data, int layer)
+{
+    if(!data)
+        return;
+    
 #ifdef vtkINRIA3D_USE_ITK
     if (data->description()=="itkDataImageChar3") {
         if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
@@ -745,7 +753,7 @@ void v3dView::setData(dtkAbstractData *data)
             // This will add the data to the interactor.
             dtkAbstractView::setData(data);
         }
-	else if ( data->description() == "v3dDataFibers" ) {
+        else if ( data->description() == "v3dDataFibers" ) {
             
             this->enableInteractor ( "v3dViewFiberInteractor" );
             // This will add the data to the interactor.
@@ -756,48 +764,49 @@ void v3dView::setData(dtkAbstractData *data)
             return;
         }
     
-    d->data = data;
-    d->imageData = dynamic_cast<dtkAbstractDataImage*> (data);
-    
-    if (data->hasMetaData("PatientName")){
-        const QString patientName = data->metaDataValues(tr("PatientName"))[0];	
-        d->view2d->SetPatientName (patientName.toAscii().constData());
-        d->view3d->SetPatientName (patientName.toAscii().constData());
-    }
-    
-    if( data->hasMetaData("StudyDescription")){
-        const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
-        d->view2d->SetStudyName (studyName.toAscii().constData());
-        d->view3d->SetStudyName (studyName.toAscii().constData());
-    }
-    
-    if (data->hasMetaData("SeriesDescription")){
-        const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
-        d->view2d->SetSeriesName (seriesName.toAscii().constData());
-        d->view3d->SetSeriesName (seriesName.toAscii().constData());
-    }
-    
-    
-    if(d->imageData) {
-        d->slider->blockSignals (true);
-        if (d->dimensionBox->currentText()==tr("Space")) {
-            if( d->orientation=="Axial") {
-                d->slider->setRange(0, d->imageData->zDimension()-1);
-            }
-            else if( d->orientation=="Sagittal") {
-                d->slider->setRange(0, d->imageData->xDimension()-1);
-            }
-            else if( d->orientation=="Coronal") {
-                d->slider->setRange(0, d->imageData->yDimension()-1);
-            }
+    if (layer==0)
+    {
+        d->data = data;
+        d->imageData = dynamic_cast<dtkAbstractDataImage*> (data);
+        
+        if (data->hasMetaData("PatientName")){
+            const QString patientName = data->metaDataValues(tr("PatientName"))[0];	
+            d->view2d->SetPatientName (patientName.toAscii().constData());
+            d->view3d->SetPatientName (patientName.toAscii().constData());
         }
-        else if (d->dimensionBox->currentText()==tr("Time")) {
-            d->slider->setRange(0, d->imageData->tDimension()-1);
+        
+        if( data->hasMetaData("StudyDescription")){
+            const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
+            d->view2d->SetStudyName (studyName.toAscii().constData());
+            d->view3d->SetStudyName (studyName.toAscii().constData());
         }
-        d->slider->blockSignals (false);
-    }
-
-    // this->update(); // update is not the role of the plugin, but of the app
+        
+        if (data->hasMetaData("SeriesDescription")){
+            const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
+            d->view2d->SetSeriesName (seriesName.toAscii().constData());
+            d->view3d->SetSeriesName (seriesName.toAscii().constData());
+        }
+        
+        
+        if(d->imageData) {
+            d->slider->blockSignals (true);
+            if (d->dimensionBox->currentText()==tr("Space")) {
+                if( d->orientation=="Axial") {
+                    d->slider->setRange(0, d->imageData->zDimension()-1);
+                }
+                else if( d->orientation=="Sagittal") {
+                    d->slider->setRange(0, d->imageData->xDimension()-1);
+                }
+                else if( d->orientation=="Coronal") {
+                    d->slider->setRange(0, d->imageData->yDimension()-1);
+                }
+            }
+            else if (d->dimensionBox->currentText()==tr("Time")) {
+                d->slider->setRange(0, d->imageData->tDimension()-1);
+            }
+            d->slider->blockSignals (false);
+        }
+    }   
 }
 
 void *v3dView::data (void)
