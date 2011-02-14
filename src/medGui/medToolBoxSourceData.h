@@ -15,7 +15,7 @@ public:
 	virtual ~medToolBoxSourceData(void);
 	
 protected:
-	medToolBox *parent(void);
+	QWidget *parent(void);
 	
 private:
 	medToolBoxSourceDataPrivate *d;

@@ -14,10 +14,10 @@ public:
 	medAbstractSourceDataPlugin(QObject *parent = 0);
 	~medAbstractSourceDataPlugin(void);
 
-	QWidget *widget() = 0;
+	virtual QWidget *widget() = 0;
 	
 public slots:
-	void onImportData(void) = 0;
+	virtual void onImportData(void) = 0;
 	
 private:
 	medAbstractSourceDataPluginPrivate *d;

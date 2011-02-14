@@ -43,6 +43,7 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxFiberBundling.h  
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
+  medToolBoxSourceData.h
   medViewPool.h
   medViewContainer.h
   medViewContainer_p.h
@@ -62,7 +63,8 @@ set(${PROJECT_NAME}_HEADERS
   medViewerConfigurationDiffusion.h
   medViewerToolBoxLayout.h
   medViewerToolBoxView.h
-  medViewerConfigurationFactory.h)
+  medViewerConfigurationFactory.h
+)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medClutEditor.h
@@ -84,6 +86,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxFiberBundling.h  
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
+  medToolBoxSourceData.h
   medViewPool.h
   medViewContainer.h
   medViewContainerCustom.h
@@ -100,7 +103,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfigurationRegistration.h
   medViewerConfigurationDiffusion.h
   medViewerToolBoxLayout.h
-  medViewerToolBoxView.h)
+  medViewerToolBoxView.h
+)
 
 set(${PROJECT_NAME}_SOURCES
   medClutEditor.cpp
@@ -122,6 +126,7 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxFiberBundling.cpp
   medToolBoxDiffusion.cpp
   medToolBoxDiffusionCustom.cpp
+  medToolBoxSourceData.cpp
   medViewPool.cpp
   medViewContainer.cpp
   medViewContainerCustom.cpp
@@ -140,7 +145,8 @@ set(${PROJECT_NAME}_SOURCES
   medViewerConfigurationRegistration.cpp
   medViewerConfigurationDiffusion.cpp
   medViewerToolBoxLayout.cpp
-  medViewerToolBoxView.cpp)
+  medViewerToolBoxView.cpp
+)
 
 ## #################################################################
 ## Build rules

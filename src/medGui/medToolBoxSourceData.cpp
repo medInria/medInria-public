@@ -3,7 +3,7 @@
 class medToolBoxSourceDataPrivate
 {
 public:
-	medToolBox *parent;
+	QWidget *parent;
 };
 
 medToolBoxSourceData::medToolBoxSourceData(QWidget *parent) : medToolBox(parent), d(new medToolBoxSourceDataPrivate)
@@ -19,7 +19,7 @@ medToolBoxSourceData::~medToolBoxSourceData(void)
 	d = NULL;
 }
 
-medToolBox *medToolBoxSourceData::parent(void)
+QWidget *medToolBoxSourceData::parent(void)
 {
 	return d->parent;
 }
