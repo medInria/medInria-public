@@ -1,5 +1,5 @@
-### CMakeLists.txt --- 
-## 
+### CMakeLists.txt ---
+##
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
@@ -8,13 +8,13 @@
 ##           By: Julien Wintz
 ##     Update #: 167
 ######################################################################
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ######################################################################
-## 
+##
 ### Change log:
-## 
+##
 ######################################################################
 
 project(medGui)
@@ -24,6 +24,7 @@ project(medGui)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS
+  medSettingsWidget.h
   medClutEditor.h
   medDropSite.h
   medFlicker.h
@@ -40,7 +41,7 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxRegistration.h
   medToolBoxRegistrationCustom.h
   medToolBoxFiberView.h
-  medToolBoxFiberBundling.h  
+  medToolBoxFiberBundling.h
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
   medViewPool.h
@@ -65,6 +66,7 @@ set(${PROJECT_NAME}_HEADERS
   medViewerConfigurationFactory.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
+  medSettingsWidget.h
   medClutEditor.h
   medDropSite.h
   medFlicker.h
@@ -81,7 +83,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxRegistration.h
   medToolBoxRegistrationCustom.h
   medToolBoxFiberView.h
-  medToolBoxFiberBundling.h  
+  medToolBoxFiberBundling.h
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
   medViewPool.h
@@ -103,6 +105,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerToolBoxView.h)
 
 set(${PROJECT_NAME}_SOURCES
+  medSettingsWidget.cpp
   medClutEditor.cpp
   medDropSite.cpp
   medFlicker.cpp
@@ -118,7 +121,7 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxContainer.cpp
   medToolBoxRegistration.cpp
   medToolBoxRegistrationCustom.cpp
-  medToolBoxFiberView.cpp  
+  medToolBoxFiberView.cpp
   medToolBoxFiberBundling.cpp
   medToolBoxDiffusion.cpp
   medToolBoxDiffusionCustom.cpp
