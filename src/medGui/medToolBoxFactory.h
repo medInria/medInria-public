@@ -30,6 +30,7 @@ class medToolBox;
 class medToolBoxFactoryPrivate;
 class medToolBoxRegistrationCustom;
 class medToolBoxDiffusionCustom;
+class medToolBoxSourceDataCustom;
 
 class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
 {
@@ -38,22 +39,27 @@ class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
 public:
     typedef medToolBoxRegistrationCustom *(*medToolBoxRegistrationCustomCreator)(void);
     typedef medToolBoxDiffusionCustom *(*medToolBoxDiffusionCustomCreator)(void);
+    typedef medToolBoxSourceDataCustom *(*medToolBoxSourceDataCustomCreator)(void);
 
     typedef QHash<QString, medToolBoxRegistrationCustomCreator> medToolBoxRegistrationCustomCreatorHash;
     typedef QHash<QString, medToolBoxDiffusionCustomCreator> medToolBoxDiffusionCustomCreatorHash;
+    typedef QHash<QString, medToolBoxSourceDataCustomCreator> medToolBoxSourceDataCustomCreatorHash;
 
 public:
     static medToolBoxFactory *instance(void);
 
     bool registerCustomRegistrationToolBox(QString type, medToolBoxRegistrationCustomCreator func);
     bool registerCustomDiffusionToolBox(QString type, medToolBoxDiffusionCustomCreator func);
+    bool registerCustomSourceDataToolBox(QString type, medToolBoxSourceDataCustomCreator func);
 
     QList<QString> registrationToolBoxes(void);
     QList<QString> diffusionToolBoxes(void);
+    QList<QString> sourcedataToolBoxes(void);
 
 public slots:
     medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString type);
     medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString type);
+    medToolBoxSourceDataCustom *createCustomSourceDataToolBox(QString type);
 
 protected:
      medToolBoxFactory(void);
