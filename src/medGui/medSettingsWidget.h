@@ -17,7 +17,6 @@ public slots:
 
 private:
   medSettingsWidgetPrivate *d;
-  void createSystemWidget();
 };
 
 #endif // MEDSETTINGSWIDGET_H

@@ -23,6 +23,7 @@
 class medToolBoxContainer;
 class medBrowserToolBoxJobs;
 class medBrowserToolBoxSource;
+class medBrowserToolBoxSettings;
 class medBrowserToolBoxPacsHost;
 class medBrowserToolBoxPacsNodes;
 class medBrowserToolBoxPacsSearch;
@@ -47,6 +48,7 @@ public:
     medToolBoxContainer *toolbox_container;
     medBrowserToolBoxJobs *toolbox_jobs;
     medBrowserToolBoxSource *toolbox_source;
+    medBrowserToolBoxSettings *toolbox_settings;
     medBrowserToolBoxPacsHost *toolbox_pacs_host;
     medBrowserToolBoxPacsNodes *toolbox_pacs_nodes;
     medBrowserToolBoxPacsSearch *toolbox_pacs_search;
