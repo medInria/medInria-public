@@ -9,7 +9,7 @@ class medSettingsWidget;
 class medSettingsWidgetFactoryPrivate;
 
 /**
- * @brief
+ * @brief This factory creates Widgets that are pages in the medSettingsEditor widget.
  *
 */
 class medSettingsWidgetFactory : public dtkAbstractFactory
@@ -18,35 +18,35 @@ class medSettingsWidgetFactory : public dtkAbstractFactory
 
 public:
   /**
-   * @brief
+   * @brief This function pointer designates functions allocating memory
    *
   */
   typedef medSettingsWidget*(*medSettingsWidgetCreator)(void);
 
   /**
-   * @brief
+   * @brief Type designating the internal has table containing the creator functions.
    *
   */
   typedef QHash<QString, medSettingsWidgetCreator> medSettingsWidgetCreatorHash;
 
 public:
   /**
-   * @brief
+   * @brief Gets an instance of the factory.
    *
    * @param void
-   * @return medSettingsWidgetFactory *
+   * @return medSettingsWidgetFactory * Factory instance
   */
   static medSettingsWidgetFactory * instance(void);
   /**
-   * @brief
+   * @brief Registers a new widget type, and its creator function.
    *
-   * @param type
-   * @param func
-   * @return bool
+   * @param type name of the widget type.
+   * @param func creator function
+   * @return bool true if type was not registered already, false if it exists.
   */
   bool registerSettingsWidget (QString type,medSettingsWidgetCreator func);
   /**
-   * @brief
+   * @brief Gets a list of registered type names.
    *
    * @return QList<QString>
   */
@@ -54,23 +54,27 @@ public:
 
 public slots:
   /**
-   * @brief
+   * @brief Creates a new widget.
    *
-   * @param type
-   * @return medSettingsWidget *
+   * @param type the type to instanciate
+   * @return medSettingsWidget * the newly allocated widget.
   */
   medSettingsWidget * createSettingsWidget(QString type);
 
 protected:
   /**
-   * @brief
+   * @brief Constructor, not to be used by users.
+   *
+   * Use the instance() method instead to get a singleton.
    *
    * @param void
   */
   medSettingsWidgetFactory(void);
 
   /**
-   * @brief
+   * @brief Destructor, not to be used by users.
+   *
+   * The singleton will be deleted at appplication closing time.
    *
    * @param void
   */
