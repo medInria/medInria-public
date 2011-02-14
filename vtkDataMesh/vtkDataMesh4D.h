@@ -1,20 +1,20 @@
-#ifndef _vtk_DataMesh_h_
-#define _vtk_DataMesh_h_
+#ifndef _vtk_DataMesh4D_h_
+#define _vtk_DataMesh4D_h_
 
 #include <dtkCore/dtkAbstractDataMesh.h>
 #include <dtkCore/dtkGlobal.h>
 
-#include "vtkDataMeshPluginExport.h"
+#include "vtkDataMesh4DPluginExport.h"
 
-class vtkDataMeshPrivate;
+class vtkDataMesh4DPrivate;
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public dtkAbstractDataMesh
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public dtkAbstractDataMesh
 {
   Q_OBJECT
     
  public:
-    vtkDataMesh(void);
-    ~vtkDataMesh(void);
+    vtkDataMesh4D(void);
+    ~vtkDataMesh4D(void);
     virtual QString description(void) const;
     static bool registered(void);
 
@@ -40,10 +40,10 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public dtkAbstractDataMesh
     
  private:
 
-    vtkDataMeshPrivate* d;
+    vtkDataMesh4DPrivate* d;
   
 };
 
-dtkAbstractData* createVtkDataMesh (void);
+dtkAbstractData* createVtkDataMesh4D (void);
 
 #endif
