@@ -34,6 +34,7 @@ public:
 
     void setFileSystemWidget(QWidget *widget);
     void setPacsWidget(QWidget* widget);
+		void addAdditionalTab(QString tabName, QWidget *widget);
 
 signals:
     void indexChanged(int);

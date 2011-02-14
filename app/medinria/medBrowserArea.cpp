@@ -237,6 +237,19 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_container->addToolBox(d->toolbox_pacs_nodes);
     d->toolbox_container->addToolBox(d->toolbox_pacs_search);
     d->toolbox_container->addToolBox(d->toolbox_jobs);
+	
+	  // Additional toolboxes for source data ////////////////
+	
+		foreach(QString toolbox, medToolBoxFactory::instance()->sourcedataToolBoxes())
+		{
+			medToolBoxSourceData *dataToolBox = medToolBoxFactory::instance()->createCustomSourceDataToolBox(toolbox);
+			d->stack->addWidget(dataToolBox->plugin()->widget());
+			d->toolbox_source->addAdditionalTab(dataToolBox->plugin()->tabName(),dataToolBox->plugin()->sourceSelectorWidget());
+			d->toolbox_container->addToolBox(dataToolBox);
+		}
+	
+		connect(d->toolboxes, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
+	
 
     // Layout /////////////////////////////////////////////
 

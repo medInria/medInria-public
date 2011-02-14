@@ -15,6 +15,8 @@ public:
 	~medAbstractSourceDataPlugin(void);
 
 	virtual QWidget *widget() = 0;
+	virtual QWidget *sourceSelectorWidget() = 0;
+	virtual QString tabName() = 0;
 	
 public slots:
 	virtual void onImportData(void) = 0;

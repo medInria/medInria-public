@@ -28,6 +28,9 @@ public:
     QWidget *database_page;
     QWidget *filesystem_page;
     QWidget *pacs_page;
+		QList <QWidget *> additional_widgets;
+	
+		medToolBoxTab *tab;
 
     QVBoxLayout *filesystem_layout;
     QVBoxLayout *pacs_layout;
@@ -47,14 +50,14 @@ medBrowserToolBoxSource::medBrowserToolBoxSource(QWidget *parent) : medToolBox(p
     d->pacs_layout->setContentsMargins(0, 0, 0, 0);
     d->pacs_layout->setSpacing(0);
 
-    medToolBoxTab *tab = new medToolBoxTab(this);
-    tab->addTab(d->database_page, "Db");
-    tab->addTab(d->filesystem_page, "Fs");
-    tab->addTab(d->pacs_page, "Pc");
-    connect(tab, SIGNAL(currentChanged(int)), this, SIGNAL(indexChanged(int)));
+    d->tab = new medToolBoxTab(this);
+    d->tab->addTab(d->database_page, "Db");
+    d->tab->addTab(d->filesystem_page, "Fs");
+    d->tab->addTab(d->pacs_page, "Pc");
+    connect(d->tab, SIGNAL(currentChanged(int)), this, SIGNAL(indexChanged(int)));
 
     this->setTitle("Source selector");
-    this->setTabWidget(tab);
+    this->setTabWidget(d->tab);
 }
 
 medBrowserToolBoxSource::~medBrowserToolBoxSource(void)
@@ -62,6 +65,12 @@ medBrowserToolBoxSource::~medBrowserToolBoxSource(void)
     delete d;
 
     d = NULL;
+}
+
+void medBrowserToolBoxSource::addAdditionalTab(QString tabName, QWidget *widget)
+{
+	d->additional_widgets.push_back(widget);
+	d->tab->addTab(d->additional_widgets.back(), tabName);
 }
 
 void medBrowserToolBoxSource::setFileSystemWidget(QWidget *widget)
