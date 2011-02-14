@@ -10,7 +10,6 @@ class medSettingsWidget : public QWidget
     Q_OBJECT
 public:
     explicit medSettingsWidget(QWidget *parent = 0);
-    void createSystemWidget();
 
 signals:
 
@@ -20,4 +19,4 @@ private:
   medSettingsWidgetPrivate *d;
 };
 
-#endif // MEDSETTINGSEDITOR_H
+#endif // MEDSETTINGSWIDGET_H
