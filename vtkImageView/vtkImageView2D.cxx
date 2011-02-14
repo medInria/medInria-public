@@ -661,7 +661,7 @@ void vtkImageView2D::SetViewOrientation(int orientation)
 void vtkImageView2D::SetOrientationMatrix (vtkMatrix4x4* matrix)
 {
   this->Superclass::SetOrientationMatrix (matrix);
-  this->ImageActor->SetUserMatrix (this->OrientationMatrix);
+  this->ImageDisplayMap.at(0)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
   this->UpdateOrientation();
   
   // The slice might have changed in the process
@@ -1482,10 +1482,11 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
             this->GetRenderWindow()->AddRenderer(renderer);
             renderer->SetActiveCamera(this->GetRenderer()->GetActiveCamera());
             vtkLookupTable *lut = vtkLookupTableManager::GetSpectrumLookupTable();
-            lut->SetTableRange(0.0, 3.0);
+            lut->SetTableRange(0.0, 1000.0);
             lut->SetAlphaRange(0.0, 1.0);
             ImageDisplayMap.at(layer)->SetLookupTable(lut);
             ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(1.0);
+            ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
         }
     
     renderer->AddViewProp(ImageDisplayMap.at(layer)->GetImageActor());
