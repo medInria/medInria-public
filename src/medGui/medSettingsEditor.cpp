@@ -37,5 +37,5 @@ medSettingsWidget::medSettingsWidget(QWidget *parent) :
   //Process manager widget
 
 
-  d->tabWidget->addTab(d->SystemWidget,tr("System"));
+  d->tabWidget->addTab(d->SystemSettingsWidget,tr("System"));
 }
