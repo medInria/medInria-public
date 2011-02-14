@@ -229,7 +229,7 @@ void medDatabaseImporter::run(void)
 	s_studyName.replace   (0x00E4, 'a');
 	s_seriesName.replace  (0x00E4, 'a');	
 		
-        QString imageFileName = medStorage::dataLocation() + "/" +
+        QString imageFileName = "/" +
 		s_patientName + "/" +
 		s_studyName   + "/" +
 		s_seriesName  + uniqueSeriesId;
@@ -442,8 +442,8 @@ void medDatabaseImporter::run(void)
              emit showError(this, tr ("Could not read data: ") + it.value()[0],5000);
             continue;
         }
-
-        QFileInfo fileInfo (it.key());
+        
+        QFileInfo fileInfo ( medStorage::dataLocation() + it.key());
         if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path())) {
 	    qDebug() << "Cannot create directory: " << fileInfo.dir().path();
             continue;
@@ -465,10 +465,10 @@ void medDatabaseImporter::run(void)
 	    qDebug() << "success with " << dataWriter->description();
             dataWriter->setData (imData);
 
-	    qDebug() << "trying to write in file : "<<it.key();
+	    qDebug() << "trying to write in file : "<< medStorage::dataLocation() + it.key();
 	    
-            if (dataWriter->canWrite( it.key() )) {
-                if (dataWriter->write( it.key() )) {
+            if (dataWriter->canWrite( medStorage::dataLocation() + it.key() )) {
+                if (dataWriter->write( medStorage::dataLocation() + it.key() )) {
                     dtkDataList.push_back (imData);
 		    writeSuccess = 1;
                     delete dataWriter;
@@ -541,18 +541,18 @@ void medDatabaseImporter::run(void)
 	QStringList thumbPaths;
 
         if (thumbnails.count())
-            if (!medStorage::mkpath (thumb_dir))
+            if (!medStorage::mkpath (medStorage::dataLocation() + thumb_dir))
 	        qDebug() << "Cannot create directory: " << thumb_dir;
 
 	for (int j=0; j<thumbnails.count(); j++) {
 	    QString thumb_name = thumb_dir + QString().setNum (j) + ".jpg";
-	    thumbnails[j].save(thumb_name, "JPG");
+	    thumbnails[j].save(medStorage::dataLocation() + thumb_name, "JPG");
 	    thumbPaths << thumb_name;
 	}
 
 	QImage thumbnail = dtkdata->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
 	QString thumbPath = thumb_dir + "ref.jpg";
-	thumbnail.save (thumbPath, "JPG");
+	thumbnail.save (medStorage::dataLocation() + thumbPath, "JPG");
 	
 	
         ////////////////////////////////////////////////////////////////// PATIENT
