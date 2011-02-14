@@ -1469,11 +1469,11 @@ void vtkImageView::GetInputBoundsInWorldCoordinates ( double * bounds )
   const int * wholeExtent = this->GetInput ()->GetWholeExtent ();
   const double * spacing = this->GetInput ()->GetSpacing ();
   const double * origin = this->GetInput ()->GetOrigin ();
-	
+    
   for ( int i(0); i < 3; ++i ) 
   {
-	imageBounds[ 2*i     ] = spacing [ i ]*wholeExtent [ 2*i     ] + origin [i];
-	imageBounds[ 2*i + 1 ] = spacing [ i ]*wholeExtent [ 2*i + 1 ] + origin [i];		
+      imageBounds[ 2*i     ] = spacing [ i ]*wholeExtent [ 2*i     ] + origin [i];
+      imageBounds[ 2*i + 1 ] = spacing [ i ]*wholeExtent [ 2*i + 1 ] + origin [i];		
   }
 
   // Loop over the eight points that define the external vertices of the bounding cuboid.

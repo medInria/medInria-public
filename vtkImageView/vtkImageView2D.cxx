@@ -1000,7 +1000,7 @@ void vtkImageView2D::SetPan (double* arg)
   this->Renderer->SetWorldPoint (focalpoint[0], focalpoint[1], focalpoint[2], 1.0);
   this->Renderer->WorldToDisplay();
   focaldepth = this->Renderer->GetDisplayPoint()[2];
-    
+  
   this->Renderer->ComputeVisiblePropBounds (bounds);
   center[0] = (bounds[0] + bounds[1])/2.0;
   center[1] = (bounds[2] + bounds[3])/2.0;
@@ -1020,13 +1020,20 @@ void vtkImageView2D::SetPan (double* arg)
   motion[1] = focalpoint[1] - this->Renderer->GetWorldPoint()[1];
   motion[2] = focalpoint[2] - this->Renderer->GetWorldPoint()[2];
     
-  camera->SetFocalPoint(- motion[0] + focalpoint[0],
-			- motion[1] + focalpoint[1],
-			- motion[2] + focalpoint[2]);
+    /*
+     camera->SetFocalPoint(- motion[0] + focalpoint[0],
+     - motion[1] + focalpoint[1],
+     - motion[2] + focalpoint[2]);
+     */
+    
+  camera->SetFocalPoint(this->Renderer->GetWorldPoint()[0],
+                        this->Renderer->GetWorldPoint()[1],
+                        this->Renderer->GetWorldPoint()[2]);
+    
   camera->SetPosition(- motion[0] + position[0],
-		      - motion[1] + position[1],
-		      - motion[2] + position[2]);
-         
+                      - motion[1] + position[1],
+                      - motion[2] + position[2]);
+    
   if (this->Interactor && this->Interactor->GetLightFollowCamera()) 
   {
     this->Renderer->UpdateLightsGeometryToFollowCamera();
@@ -1119,7 +1126,7 @@ void vtkImageView2D::InstallPipeline()
 
   if (this->Renderer)
   {
-    this->Renderer->AddViewProp( this->ImageActor );
+    //this->Renderer->AddViewProp( this->ImageActor );
     this->Renderer->AddViewProp( this->OrientationAnnotation );
     this->Renderer->GetActiveCamera()->ParallelProjectionOn();
   }
@@ -1164,7 +1171,7 @@ void vtkImageView2D::UnInstallPipeline()
 {
   if ( this->GetRenderer() )
   {
-    this->GetRenderer()->RemoveViewProp ( this->ImageActor );
+    //this->GetRenderer()->RemoveViewProp ( this->ImageActor );
     this->GetRenderer()->RemoveViewProp ( this->OrientationAnnotation );
     //this->ImageActor->SetInput (NULL);
   }
