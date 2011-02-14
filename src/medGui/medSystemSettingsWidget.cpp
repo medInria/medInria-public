@@ -22,7 +22,9 @@ medSystemSettingsWidgetPrivate::~medSystemSettingsWidgetPrivate()
 }
 
 
-medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) : medSettingsWidget(parent), d(new medSystemSettingsWidgetPrivate())
+medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) :
+		medSettingsWidget(parent),
+		d(new medSystemSettingsWidgetPrivate())
 {
     d->pluginPathField = new QLineEdit(this);
     setSection("System");

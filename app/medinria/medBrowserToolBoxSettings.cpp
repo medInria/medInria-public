@@ -27,7 +27,7 @@ medBrowserToolBoxSettings::medBrowserToolBoxSettings(QWidget *parent) : medToolB
 }
 
 medBrowserToolBoxSettings::~medBrowserToolBoxSettings(void)
-{
+{//popup->resize(700,700);
     delete d;
 
     d = NULL;
@@ -40,9 +40,9 @@ void medBrowserToolBoxSettings::onClick()
 //	 msgBox.exec();
 
 	QFrame* popup = new QFrame(this, Qt::Popup | Qt::Window );
-	popup->resize(500,500);
-
 	medSettingsEditor* editor = new medSettingsEditor(popup);
+	editor->setGeometry(100,100, 500, 500);
+	//editor->setFocus();
 
 	popup->show();
 

@@ -39,7 +39,6 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
   //Logging widget
   //Process manager widget
 
-
   d->tabWidget->addTab(d->systemSettingsWidget,
                        d->systemSettingsWidget->section());
 }
