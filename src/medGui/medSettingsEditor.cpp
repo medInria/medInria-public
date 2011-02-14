@@ -1,15 +1,18 @@
 #include "medSettingsEditor.h"
-#include "medSystemSettingsWidget.h"
+
+
 #include <QtGui>
 #include <QWidget>
 
+#include <medGui/medSystemSettingsWidget.h>
+#include <medGui/medSettingsWidgetFactory.h>
 
 class medSettingsEditorPrivate {
 
 public:
   QWidget* parent;
   QTabWidget* tabWidget;
-  QWidget * systemSettingsWidget;
+  medSettingsWidget * systemSettingsWidget;
 
   medSettingsEditorPrivate();
   ~medSettingsEditorPrivate();
@@ -30,12 +33,13 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
   d->tabWidget->setTabPosition(QTabWidget::West);
 
   //System widget
-  d->systemSettingsWidget = new medSystemSettingsWidget();
+  d->systemSettingsWidget = medSettingsWidgetFactory::instance()->createSettingsWidget("System",this);
   //Dicom widget
   //Startup widget
   //Logging widget
   //Process manager widget
 
 
-  d->tabWidget->addTab(d->systemSettingsWidget,tr("System"));
+  d->tabWidget->addTab(d->systemSettingsWidget,
+                       d->systemSettingsWidget->section());
 }

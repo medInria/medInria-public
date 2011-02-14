@@ -9,10 +9,10 @@ class medSettingsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit medSettingsWidget(const QString& section,
-                               QWidget *parent = 0);
+    explicit medSettingsWidget(QWidget *parent = 0);
 
     virtual bool save(void);
+    const QString& section()const;
 
 signals:
     void showError(QObject *sender, const QString& text,unsigned int timeout=0);
@@ -21,7 +21,7 @@ public slots:
 
 protected:
     virtual bool validate(void);
-
+    void setSection(QString section);
 
 private:
     medSettingsWidgetPrivate *d;

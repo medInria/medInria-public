@@ -21,14 +21,16 @@ medSystemSettingsWidgetPrivate::~medSystemSettingsWidgetPrivate()
 {
 }
 
-medSystemSettingsWidget* medSystemSettingsWidget::createSystemSettingsWidget(QWidget *parent){
-	return new medSystemSettingsWidget(parent);
-}
 
 medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) : medSettingsWidget(parent), d(new medSystemSettingsWidgetPrivate())
 {
-	d->pluginPathField = new QLineEdit(this);
+    d->pluginPathField = new QLineEdit(this);
+    setSection("System");
+    QFormLayout* layout = new QFormLayout;
+    layout->addRow(tr("Plugin Path"),d->pluginPathField);
+}
 
-	QFormLayout* layout = new QFormLayout;
-	layout->addRow(tr("Plugin Path"),d->pluginPathField);
+
+medSettingsWidget* createSystemSettingsWidget(QWidget *parent){
+    return new medSystemSettingsWidget(parent);
 }

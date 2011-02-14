@@ -9,21 +9,20 @@ class medSettingsWidgetPrivate {
 public:
     QWidget* Parent;
     QString section;
-    medSettingsWidgetPrivate(const QString& section);
+    medSettingsWidgetPrivate();
     ~medSettingsWidgetPrivate();
 };
 
-medSettingsWidgetPrivate::medSettingsWidgetPrivate(const QString& section)
+medSettingsWidgetPrivate::medSettingsWidgetPrivate()
 {
-    this->section = QString(section);
+    this->section = QString();
 }
 
 medSettingsWidgetPrivate::~medSettingsWidgetPrivate()
 {
 }
 
-medSettingsWidget::medSettingsWidget(const QString& section,
-                                     QWidget *parent) : QWidget(parent), d(new medSettingsWidgetPrivate(section))
+medSettingsWidget::medSettingsWidget(QWidget *parent) : QWidget(parent), d(new medSettingsWidgetPrivate())
 {
     connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
         medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
@@ -50,4 +49,14 @@ bool medSettingsWidget::save()
         //do the saving
         return true;
     }
+}
+
+void medSettingsWidget::setSection(QString section)
+{
+    d->section = section;
+}
+
+const QString& medSettingsWidget::section()const
+{
+    return d->section;
 }
