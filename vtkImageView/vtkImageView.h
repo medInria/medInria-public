@@ -174,6 +174,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   
   // Description:
   // Set/Get the input image to the viewer.
+  // LAYER
   virtual void SetInput(vtkImageData *arg);
   virtual void SetInputConnection(vtkAlgorithmOutput* arg);
   vtkGetObjectMacro (Input, vtkImageData);
@@ -182,15 +183,15 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   // Get the internal render window, renderer,
   // image map and interactor instances.
   vtkGetObjectMacro(RenderWindow,vtkRenderWindow);
-  vtkGetObjectMacro(Renderer, vtkRenderer);
-  vtkGetObjectMacro(WindowLevel,vtkImageMapToColors);
+  vtkGetObjectMacro(Renderer, vtkRenderer); // LAYER
+  vtkGetObjectMacro(WindowLevel,vtkImageMapToColors); // LAYER
   vtkGetObjectMacro(InteractorStyle, vtkInteractorStyle);
   vtkGetObjectMacro(Interactor, vtkRenderWindowInteractor);
 
   // Description:
   // Set your own renderwindow and renderer
   virtual void SetRenderWindow(vtkRenderWindow *arg);
-  virtual void SetRenderer(vtkRenderer *arg);
+  virtual void SetRenderer(vtkRenderer *arg); // LAYER
 
   // Description:
   // Attach an interactor for the internal render window.
@@ -238,9 +239,9 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      provide this origin information in the OrientationMatrix.
 
   */
-  vtkGetObjectMacro (OrientationMatrix, vtkMatrix4x4);
-  virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
-  vtkGetObjectMacro (InvertOrientationMatrix, vtkMatrix4x4);
+  vtkGetObjectMacro (OrientationMatrix, vtkMatrix4x4); // LAYER
+  virtual void SetOrientationMatrix (vtkMatrix4x4* matrix); // LAYER
+  vtkGetObjectMacro (InvertOrientationMatrix, vtkMatrix4x4); // LAYER
 
   /**
    * Transfer functions define the mapping of the intensity or color

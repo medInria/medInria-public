@@ -31,6 +31,7 @@ vtkRendering
 vtkWidgets
 vtkWidgetsAddOn
 vtkVolumeRendering
+vtkVisuManagement
 )
 
 IF( vtkINRIA3D_USE_ITK )
@@ -46,7 +47,7 @@ ${PROJECT_NAME}
 
 
 IF(BUILD_TESTING)
-  add_executable(vtkImageViewTest
+  add_executable(vtkImageViewTest MACOSX_BUNDLE
     vtkImageViewTest.cxx
 )
   target_link_libraries(vtkImageViewTest

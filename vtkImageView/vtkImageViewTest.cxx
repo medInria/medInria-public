@@ -29,7 +29,7 @@ PURPOSE.  See the above copyright notices for more information.
 int main (int argc, char* argv[])
 {
 
-  if (argc < 2)
+  if (argc < 3)
   {
     std::cout << "Usage: " << std::endl;
     std::cout << "\t" << argv[0] << " <image file>" << std::endl;
@@ -47,6 +47,7 @@ int main (int argc, char* argv[])
   vtkImageView2D* view1 = vtkImageView2D::New();
   view1->SetSliceOrientation (vtkImageView2D::SLICE_ORIENTATION_XY );
   //view1->SetSliceOrientation (vtkImageView2D::SLICE_ORIENTATION_AXIAL );
+    view1->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
   view1->SetPatientName ("Patient");
   view1->SetStudyName ("Study");
   view1->SetSeriesName ("Series");
@@ -115,6 +116,14 @@ int main (int argc, char* argv[])
   view3->SetInput  (reader->GetOutput());
   view4->SetInput  (reader->GetOutput());
   
+    vtkStructuredPointsReader* reader2 = vtkStructuredPointsReader::New();
+    reader2->SetFileName (argv[2]);
+    reader2->GetOutput()->Update();
+    
+    view1->SetInput  (reader2->GetOutput(), 1);
+    view2->SetInput  (reader2->GetOutput(), 1);
+    view3->SetInput  (reader2->GetOutput(), 1);
+    
 
   vtkImageViewCollection *collection = vtkImageViewCollection::New();
   collection->AddItem (view1);

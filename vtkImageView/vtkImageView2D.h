@@ -112,7 +112,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2D : public vtkImageView
   
   // Description:
   // Set/Get the input image to the viewer.
-  virtual void SetInput (vtkImageData *image);
+  virtual void SetInput (vtkImageData *image, int layer=0);
   virtual void SetInputConnection(vtkAlgorithmOutput* arg);
 
   // Description:
@@ -596,6 +596,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2D : public vtkImageView
   vtkImageView2DCommand* Command;
   
   vtkImageActor       *ImageActor;
+    
+    vtkImageActor *SecondImageActor;
 
   /**
      local instances
