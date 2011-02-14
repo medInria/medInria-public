@@ -1,12 +1,11 @@
 #include "medSettingsWidgetFactory.h"
 
 #include "medSettingsWidget.h"
-#include "medViewerConfigurationFactory.h"
 
-class medViewerConfigurationFactoryPrivate
+class medSettingsWidgetFactoryPrivate
 {
 public:
-    medSettingsWidgetFactory::medSettingsWidgetCreatorHash configuration_creators;
+    medSettingsWidgetFactory::medSettingsWidgetCreatorHash settingsWidget_creators;
 };
 
 medSettingsWidgetFactory *medSettingsWidgetFactory::instance(void)
@@ -17,27 +16,27 @@ medSettingsWidgetFactory *medSettingsWidgetFactory::instance(void)
     return s_instance;
 }
 
-bool medSettingsWidgetFactory::registerConfiguration(QString type, medSettingsWidgetCreator func)
+bool medSettingsWidgetFactory::registerSettingsWidget(QString type, medSettingsWidgetCreator func)
 {
-    if(!d->configuration_creators.contains(type)) {
-        d->configuration_creators.insert(type, func);
+    if(!d->settingsWidget_creators.contains(type)) {
+        d->settingsWidget_creators.insert(type, func);
         return true;
     }
 
     return false;
 }
 
-QList<QString> medSettingsWidgetFactory::configurations(void)
+QList<QString> medSettingsWidgetFactory::settingsWidgets(void)
 {
-    return d->configuration_creators.keys();
+    return d->settingsWidget_creators.keys();
 }
 
-medSettingsWidget *medSettingsWidgetFactory::createConfiguration(QString type)
+medSettingsWidget *medSettingsWidgetFactory::createSettingsWidget(QString type)
 {
-    if(!d->configuration_creators.contains(type))
+    if(!d->settingsWidget_creators.contains(type))
         return NULL;
 
-    medSettingsWidget *conf = d->configuration_creators[type]();
+    medSettingsWidget *conf = d->settingsWidget_creators[type]();
 
     return conf;
 }

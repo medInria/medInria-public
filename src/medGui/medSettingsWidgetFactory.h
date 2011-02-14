@@ -50,7 +50,7 @@ public:
    *
    * @return QList<QString>
   */
-  QList<QString> widgets();
+  QList<QString> settingsWidgets();
 
 public slots:
   /**
