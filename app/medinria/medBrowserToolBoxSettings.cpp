@@ -2,7 +2,9 @@
 
 #include <QtGui>
 #include <QMessageBox>
-
+#include <medGui/medSettingsEditor.h>
+#include <medGui/medToolBox.h>
+#include <medGui/medSystemSettingsWidget.h>
 
 class medBrowserToolBoxSettingsPrivate
 {
@@ -33,7 +35,15 @@ medBrowserToolBoxSettings::~medBrowserToolBoxSettings(void)
 
 void medBrowserToolBoxSettings::onClick()
 {
-	 QMessageBox msgBox;
-	 msgBox.setText("Cool.");
-	 msgBox.exec();
+//	 QMessageBox msgBox;
+//	 msgBox.setText("Cool.");
+//	 msgBox.exec();
+
+	QFrame* popup = new QFrame(this, Qt::Popup | Qt::Window );
+	popup->resize(500,500);
+
+	medSettingsEditor* editor = new medSettingsEditor(popup);
+
+	popup->show();
+
 }

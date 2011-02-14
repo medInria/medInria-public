@@ -11,6 +11,7 @@ class medSystemSettingsWidget : public medSettingsWidget
     Q_OBJECT
 public:
     medSystemSettingsWidget(QWidget *parent = 0);
+    medSystemSettingsWidget* createSystemSettingsWidget(QWidget *parent);
 
 signals:
 

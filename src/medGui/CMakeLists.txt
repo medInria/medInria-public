@@ -111,8 +111,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerToolBoxView.h)
 
 set(${PROJECT_NAME}_SOURCES
-  medSettingsEditor.h
-  medSystemSettingsWidget.h
+  medSettingsEditor.cpp
+  medSystemSettingsWidget.cpp
   medSettingsWidget.cpp
   medSettingsWidgetFactory.cpp
   medClutEditor.cpp

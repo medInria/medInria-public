@@ -9,7 +9,7 @@ class medSettingsEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit medSettingsEditor(QWidget *parent = 0);
+    medSettingsEditor(QWidget *parent = 0);
 
 signals:
 

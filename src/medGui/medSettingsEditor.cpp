@@ -23,8 +23,8 @@ medSettingsEditorPrivate::~medSettingsEditorPrivate()
 {
 }
 
-medSettingsWidget::medSettingsWidget(QWidget *parent) :
-    QWidget(parent),d(new medSettingsWidgetPrivate())
+medSettingsEditor::medSettingsEditor(QWidget *parent) :
+    QWidget(parent),d(new medSettingsEditorPrivate())
 {
   d->tabWidget = new QTabWidget (this);
   d->tabWidget->setTabPosition(QTabWidget::West);
@@ -37,5 +37,5 @@ medSettingsWidget::medSettingsWidget(QWidget *parent) :
   //Process manager widget
 
 
-  d->tabWidget->addTab(d->SystemSettingsWidget,tr("System"));
+  d->tabWidget->addTab(d->systemSettingsWidget,tr("System"));
 }
