@@ -1562,6 +1562,19 @@ void vtkImageView2D::SetInputConnection (vtkAlgorithmOutput *input, vtkMatrix4x4
   }
 }
 
+vtkImageData *vtkImageView2D::GetImageInput(int layer) const
+{
+    std::map<int, vtkImage2DDisplay*>::const_iterator it = this->ImageDisplayMap.begin();
+    while(it!=this->ImageDisplayMap.end())
+    {
+        if (it->first==layer)
+            return it->second->GetInput();
+        ++it;
+    }
+    
+    return NULL;
+}
+
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetShowRulerWidget (int val)
 {

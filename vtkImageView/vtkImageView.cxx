@@ -1338,6 +1338,7 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
     matrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
   //this->SetOrientationMatrix (matrix);
   this->SetInput ( myConverter->GetOutput(), matrix, layer);
+    myConverter->SetReferenceCount(2); // DIRTY
   this->Impl->ImageConverter = myConverter;
   this->ITKInput = itkImage;
   this->Modified();
