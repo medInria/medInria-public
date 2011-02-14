@@ -25,6 +25,7 @@ project(medGui)
 
 set(${PROJECT_NAME}_HEADERS
   medSettingsWidget.h
+  medSettingsWidgetFactory.h
   medClutEditor.h
   medDropSite.h
   medFlicker.h
@@ -67,6 +68,7 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medSettingsWidget.h
+  medSettingsWidgetFactory.h
   medClutEditor.h
   medDropSite.h
   medFlicker.h
@@ -106,6 +108,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_SOURCES
   medSettingsWidget.cpp
+  medSettingsWidgetFactory.cpp
   medClutEditor.cpp
   medDropSite.cpp
   medFlicker.cpp
