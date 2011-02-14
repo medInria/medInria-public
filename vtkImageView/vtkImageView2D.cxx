@@ -110,6 +110,7 @@ vtkStandardNewMacro(vtkImage2DDisplay);
 
 vtkImage2DDisplay::vtkImage2DDisplay()
 {
+    this->Input = 0;
     this->ImageActor        = vtkImageActor::New();
     this->WindowLevel       = vtkImageMapToColors::New();
     this->WindowLevel->SetOutputFormatToRGBA();
@@ -141,19 +142,11 @@ vtkImage2DDisplay::SetInput(vtkImageData * image)
     this->WindowLevel->SetInput(image);
 }
 
-/*
-void
-vtkImage2DDisplay::SetWindowLevel(vtkImageMapToColors * color)
-{
-    this->WindowLevel = color;
-}*/
-
 void
 vtkImage2DDisplay::SetLookupTable(vtkLookupTable * lut)
 {
     this->LUT = lut;
     this->WindowLevel->SetLookupTable(this->LUT);
-//    this->WindowLevel->Update();
 }
 
 vtkImageActor *
@@ -170,9 +163,6 @@ vtkImage2DDisplay::GetImageActor()
 vtkImageView2D::vtkImageView2D()
 {
   this->ImageActor          = vtkImageActor::New();
-    this->SecondImageActor  = vtkImageActor::New();
-    this->SecondImageActor->SetOpacity(0.5);
-    //this->ImageActor->SetOpacity(0.5);
   this->Axes2DWidget        = vtkAxes2DWidget::New();
   this->RulerWidget         = vtkRulerWidget::New();
   this->DistanceWidget      = vtkDistanceWidget::New();
@@ -244,7 +234,6 @@ vtkImageView2D::vtkImageView2D()
 vtkImageView2D::~vtkImageView2D()
 {
   this->ImageActor->Delete();
-  this->SecondImageActor->Delete();
   this->Axes2DWidget->Delete();
   this->RulerWidget->Delete();
   this->DistanceWidget->Delete();
@@ -437,13 +426,8 @@ void vtkImageView2D::UpdateDisplayExtent()
       return;
 
   input->UpdateInformation();
+
   int *w_ext = input->GetWholeExtent();
-    
-    int *w_ext2;
-    if (this->SecondImageActor->GetInput()) {
-        this->SecondImageActor->GetInput()->UpdateInformation();
-        w_ext2 = this->SecondImageActor->GetInput()->GetWholeExtent();
-    }
 
   int slice = this->Slice;
   int *range = this->GetSliceRange();
@@ -511,83 +495,6 @@ void vtkImageView2D::UpdateDisplayExtent()
            }
          }
   }
-
-
-//  vtkImageData *input = this->GetInput();
-//  if (!input)
-//    return;
-//
-//  input->UpdateInformation();
-//  int *w_ext = input->GetWholeExtent();
-//
-//  // get and clamp the slice if necessary
-//  int  slice = this->Slice;
-//  // Stay within range
-//  int *range = this->GetSliceRange();
-//  if (range)
-//  {
-//    slice = std::max (slice, range[0]);
-//    slice = std::min (slice, range[1]);
-//  }
-//
-//  if (slice != this->Slice)
-//  {
-//    // vtkWarningMacro (<<"WARNING: asking to display an out of bound extent"<<endl);
-//  }
-//
-//  switch (this->SliceOrientation)
-//  {
-//      case vtkImageView2D::SLICE_ORIENTATION_XY:
-//          this->ImageActor->SetDisplayExtent(w_ext[0], w_ext[1], w_ext[2], w_ext[3], slice, slice);
-//          this->SecondImageActor->SetDisplayExtent(w_ext[0], w_ext[1], w_ext[2], w_ext[3], slice, slice);
-//          break;
-//
-//      case vtkImageView2D::SLICE_ORIENTATION_XZ:
-//          this->ImageActor->SetDisplayExtent(w_ext[0], w_ext[1], slice, slice, w_ext[4], w_ext[5]);
-//          this->SecondImageActor->SetDisplayExtent(w_ext[0], w_ext[1], slice, slice, w_ext[4], w_ext[5]);
-//          break;
-//
-//      case vtkImageView2D::SLICE_ORIENTATION_YZ:
-//      default:
-//          this->ImageActor->SetDisplayExtent(slice, slice, w_ext[2], w_ext[3], w_ext[4], w_ext[5]);
-//          this->SecondImageActor->SetDisplayExtent(slice, slice, w_ext[2], w_ext[3], w_ext[4], w_ext[5]);
-//          break;
-//  }
-//
-//  if ( ! CompareExtents ( input->GetUpdateExtent (), this->ImageActor->GetDisplayExtent () ) ) {
-//
-//    input->SetUpdateExtent(this->ImageActor->GetDisplayExtent ());
-//
-//    // SetUpdateExtent does not call modified. There is a comment relating to this in
-//    // vtkDataObject::SetUpdateExtent
-//    input->Modified ();
-//    input->PropagateUpdateExtent();
-//  }
-//
-//  // Figure out the correct clipping range
-//  if (this->Renderer)
-//  {
-//    if (this->InteractorStyle &&
-//        this->InteractorStyle->GetAutoAdjustCameraClippingRange())
-//    {
-//      this->Renderer->ResetCameraClippingRange();
-//    }
-//    else
-//    {
-//      vtkCamera *cam = this->Renderer->GetActiveCamera();
-//      if (cam)
-//      {
-//        double bounds[6];
-//        this->ImageActor->GetBounds(bounds);
-//        double spos = bounds[this->SliceOrientation * 2];
-//        double cpos = cam->GetPosition()[this->SliceOrientation];
-//        double range = fabs(spos - cpos);
-//        double *spacing = input->GetSpacing();
-//        double avg_spacing = (spacing[0] + spacing[1] + spacing[2]) / 3.0;
-//        cam->SetClippingRange(range - avg_spacing * 3.0, range + avg_spacing * 3.0);
-//      }
-//    }
-//  }
 
 }
 
@@ -1497,53 +1404,6 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     // this->UpdateCenter();
     this->UpdateSlicePlane();
     this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
-
-//    if (layer==0) {
-//        this->Superclass::SetInput( image );
-//
-//        if (image)
-//            image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
-//
-//        this->ImageActor->SetInput( this->WindowLevel->GetOutput() );
-//
-//        // The slice might have changed in the process
-//        if (this->Input)
-//        {
-//            this->Input->UpdateInformation();
-//            this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
-//            this->UpdateDisplayExtent();
-//            // this->UpdateCenter();
-//            this->UpdateSlicePlane();
-//            this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
-//        }
-//    }
-//    else { // layer >0
-//        if (this->GetRenderWindow())
-//        {
-//            /*
-//            this->GetRenderWindow()->SetNumberOfLayers( layer+1 );
-//            vtkRenderer *renderer = vtkRenderer::New();
-//            renderer->SetLayer(layer);
-//            renderer->SetActiveCamera( this->GetRenderer()->GetActiveCamera() );
-//
-//            this->GetRenderWindow()->AddRenderer( renderer );
-//            renderer->Delete();
-//            */
-//            vtkImageMapToColors *color = vtkImageMapToColors::New();
-//            color->SetInput(image);
-//            color->SetOutputFormatToRGB();
-//            vtkLookupTable *lut = vtkLookupTableManager::GetSpectrumLookupTable();
-//            lut->SetTableRange(0.0, 3.0);
-//            color->SetLookupTable(lut);
-//            color->Update();
-//
-//            this->SecondImageActor->SetInput( color->GetOutput() );
-//            //renderer->AddViewProp( this->SecondImageActor );
-//            this->Renderer->AddViewProp( this->SecondImageActor );
-//            this->UpdateDisplayExtent();
-//            color->Delete();
-//        }
-//    }
 }
 
 //----------------------------------------------------------------------------
