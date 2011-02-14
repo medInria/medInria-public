@@ -1274,11 +1274,13 @@ void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPi
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int layer)
 {
+    if (image)
+        image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
+
+    
     if (layer==0) {
         this->Superclass::SetInput( image, matrix, layer);
 
-        if (image)
-            image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
 
 //        this->ImageDisplayMap.insert(std::pair<int, vtkImage2DDisplay*>(layer, vtkImage2DDisplay::New()));
 //        ImageDisplayMap.at(0)->SetInput(image);
@@ -1330,7 +1332,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
             double origin[4], origin2[4];
             this->GetInput()->GetOrigin(origin);
             image->GetOrigin(origin2);
-            
+                        
             for (int i=0; i<3; i++)
                 origin2[i] -= origin[i];
             origin2[3] = 0.0;
@@ -1349,8 +1351,8 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
                 ext_min[i] = static_cast<double> (w_ext[i*2]);
                 ext_max[i] = static_cast<double> (w_ext[i*2+1]);
             }
-            ext_min[3] = 1.0;
-            ext_max[3] = 1.0;
+            ext_min[3] = 0.0;
+            ext_max[3] = 0.0;
             
             auxMatrix->MultiplyPoint(ext_min, ext_min);
             auxMatrix->MultiplyPoint(ext_max, ext_max);
