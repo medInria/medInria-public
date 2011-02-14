@@ -25,6 +25,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageCast.h>
 #include "vtkImageViewCollection.h"
 #include "vtkLookupTableManager.h"
+#include "vtkMatrix4x4.h"
 
 int main (int argc, char* argv[])
 {
@@ -120,19 +121,42 @@ int main (int argc, char* argv[])
     reader2->SetFileName (argv[2]);
     reader2->GetOutput()->Update();
 
-    view1->SetInput  (reader2->GetOutput(), 1);
-    view2->SetInput  (reader2->GetOutput(), 1);
-    view3->SetInput  (reader2->GetOutput(), 1);
+    vtkMatrix4x4 *testMat = vtkMatrix4x4::New();
+    testMat->SetElement(0,0,0.93);
+    testMat->SetElement(1,0,0.34);
+    testMat->SetElement(2,0,0.0);
+    testMat->SetElement(3,0,0.0);
+    
+    testMat->SetElement(0,1,-0.34);
+    testMat->SetElement(1,1,0.93);
+    testMat->SetElement(2,1,0.0);
+    testMat->SetElement(3,1,0.0);
+    
+    testMat->SetElement(0,2,0.0);
+    testMat->SetElement(1,2,0.0);
+    testMat->SetElement(2,2,1.0);
+    testMat->SetElement(3,2,0.0);
+    
+    testMat->SetElement(0,3,0.0);
+    testMat->SetElement(1,3,0.0);
+    testMat->SetElement(2,3,0.0);
+    testMat->SetElement(3,3,1.0);
+    
+    
+    
+    view1->SetInput  (reader2->GetOutput(), testMat, 1);
+    view2->SetInput  (reader2->GetOutput(), testMat, 1);
+    view3->SetInput  (reader2->GetOutput(), testMat, 1);
 
 
     vtkStructuredPointsReader* reader3 = vtkStructuredPointsReader::New();
     reader3->SetFileName (argv[3]);
     reader3->GetOutput()->Update();
 
-    view1->SetInput  (reader3->GetOutput(), 2);
-    view2->SetInput  (reader3->GetOutput(), 2);
-    view3->SetInput  (reader3->GetOutput(), 2);
-
+    view1->SetInput  (reader3->GetOutput(),testMat, 2);
+    view2->SetInput  (reader3->GetOutput(),testMat,  2);
+    view3->SetInput  (reader3->GetOutput(),testMat,  2);
+        
 
   vtkImageViewCollection *collection = vtkImageViewCollection::New();
   collection->AddItem (view1);

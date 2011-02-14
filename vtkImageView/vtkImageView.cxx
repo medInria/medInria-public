@@ -298,16 +298,20 @@ void vtkImageView::Render()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetInput(vtkImageData *arg) 
+void vtkImageView::SetInput(vtkImageData *arg, vtkMatrix4x4 *matrix, int layer) 
 {
   vtkSetObjectBodyMacro (Input, vtkImageData, arg);
+    if (layer==0)
+        this->SetOrientationMatrix(matrix);
   this->WindowLevel->SetInput(arg);
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetInputConnection(vtkAlgorithmOutput* arg) 
+void vtkImageView::SetInputConnection(vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix, int layer) 
 {
   //   vtkSetObjectBodyMacro (Input, vtkImageData, arg);
+    if (layer==0)
+        this->SetOrientationMatrix(matrix);
   this->WindowLevel->SetInputConnection(arg);
 }
 
@@ -398,6 +402,9 @@ void vtkImageView::ResetCurrentPoint (void)
 //----------------------------------------------------------------------------
 void vtkImageView::SetOrientationMatrix (vtkMatrix4x4* matrix)
 {
+    if (!matrix)
+        return;
+    
   vtkMatrix4x4* matrixcopy = vtkMatrix4x4::New();
   matrixcopy->DeepCopy (matrix);
   vtkSetObjectBodyMacro (OrientationMatrix, vtkMatrix4x4, matrixcopy);
@@ -1303,7 +1310,7 @@ void vtkImageView::SetTimeIndex ( vtkIdType index )
 
 //----------------------------------------------------------------------------
 template < class T >
-inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkImage)
+inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkImage, int layer)
 {									
   if( itkImage.IsNull() )
   {
@@ -1329,8 +1336,8 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   matrix->MultiplyPoint (v_origin, v_origin2);
   for (int i=0; i<3; i++)
     matrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
-  this->SetOrientationMatrix (matrix);
-  this->SetInput ( myConverter->GetOutput() );
+  //this->SetOrientationMatrix (matrix);
+  this->SetInput ( myConverter->GetOutput(), matrix, layer);
   this->Impl->ImageConverter = myConverter;
   this->ITKInput = itkImage;
   this->Modified();
@@ -1338,7 +1345,7 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
 }
 
 template < class T >
-inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage)
+inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage, int layer)
 {									
   if( itkImage.IsNull() )
   {
@@ -1379,14 +1386,14 @@ inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkIm
   this->ITKInput4 = itkImage;
   typename ImageType3d::Pointer itkImage3 = extractor->GetOutput ();
   extractor->UpdateLargestPossibleRegion();
-  this->SetITKInput ( itkImage3 );
+  this->SetITKInput ( itkImage3, layer);
   // itkImage3->DisconnectPipeline();
 }
 
 #define vtkImplementSetITKInputMacro(type)				\
-  void vtkImageView::SetITKInput (itk::Image<type, 3>::Pointer itkImage) \
+  void vtkImageView::SetITKInput (itk::Image<type, 3>::Pointer itkImage, int layer) \
   {									\
-    SetITKInput < type > (itkImage);					\
+    SetITKInput < type > (itkImage, layer);					\
   }
 vtkImplementSetITKInputMacro (double);
 vtkImplementSetITKInputMacro (float);
@@ -1408,9 +1415,9 @@ itk::ImageBase<3>* vtkImageView::GetITKInput (void) const
 }
 
 #define vtkImplementSetITKInput4Macro(type)				\
-  void vtkImageView::SetITKInput4 (itk::Image<type, 4>::Pointer itkImage) \
+  void vtkImageView::SetITKInput4 (itk::Image<type, 4>::Pointer itkImage, int layer) \
   {									\
-    SetITKInput4 < type > (itkImage);					\
+    SetITKInput4 < type > (itkImage, layer);					\
   }
 
 vtkImplementSetITKInput4Macro (double);

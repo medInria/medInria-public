@@ -348,9 +348,9 @@ void vtkImageView3D::UnInstallInteractor()
 
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetInput(vtkImageData* image)
+void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int layer)
 {
-  this->Superclass::SetInput (image);
+  this->Superclass::SetInput (image, matrix, layer);
 
   if( !image )
   {

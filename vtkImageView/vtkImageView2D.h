@@ -115,8 +115,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2D : public vtkImageView
   
   // Description:
   // Set/Get the input image to the viewer.
-  virtual void SetInput (vtkImageData *image, int layer=0);
-  virtual void SetInputConnection(vtkAlgorithmOutput* arg);
+  virtual void SetInput (vtkImageData *image, vtkMatrix4x4 *matrix = 0, int layer=0);
+  virtual void SetInputConnection(vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix = 0, int layer=0);
 
   // Description:
   // Start/Stop the interactor relation with the view.

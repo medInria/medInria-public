@@ -71,6 +71,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageCast.h>
 #include "vtkLookupTableManager.h"
 #include <vtkColorTransferFunction.h>
+#include <vtkImageReslice.h>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -437,6 +438,12 @@ void vtkImageView2D::UpdateDisplayExtent()
 
   input->UpdateInformation();
   int *w_ext = input->GetWholeExtent();
+    
+    int *w_ext2;
+    if (this->SecondImageActor->GetInput()) {
+        this->SecondImageActor->GetInput()->UpdateInformation();
+        w_ext2 = this->SecondImageActor->GetInput()->GetWholeExtent();
+    }
 
   int slice = this->Slice;
   int *range = this->GetSliceRange();
@@ -1358,10 +1365,10 @@ void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPi
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::SetInput (vtkImageData *image, int layer)
+void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int layer)
 {
     if (layer==0) {
-        this->Superclass::SetInput( image );
+        this->Superclass::SetInput( image, matrix, layer);
 
         if (image)
             image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
@@ -1389,14 +1396,13 @@ void vtkImageView2D::SetInput (vtkImageData *image, int layer)
 
 //        ImageDisplayMap.insert(layer, vtkImage2DDisplay::New());
 
-    ImageDisplayMap.at(layer)->SetInput(image);
-
-    std::map<int,vtkImage2DDisplay *>::iterator it;
-    for (it = ImageDisplayMap.begin(); it != ImageDisplayMap.end(); it++)
-    {
+//    std::map<int,vtkImage2DDisplay *>::iterator it;
+  //  for (it = ImageDisplayMap.begin(); it != ImageDisplayMap.end(); it++)
+    //{
         vtkRenderer * renderer = 0;
         if (layer == 0)
         {
+            ImageDisplayMap.at(layer)->SetInput(image);
             renderer = this->GetRenderer(); //vtkRenderer::New();
 //            vtkLookupTable *lut = vtkLookupTableManager::GetGrayRainbowLookupTable();
 //            lut->SetTableRange(0.0, 3.0);
@@ -1404,9 +1410,75 @@ void vtkImageView2D::SetInput (vtkImageData *image, int layer)
         }
         else
         {
+            vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
+            if (matrix)
+                auxMatrix->DeepCopy(matrix);
+            else {
+                auxMatrix->Identity();
+            }
+            
+            
+            vtkMatrix4x4::Multiply4x4(this->InvertOrientationMatrix, auxMatrix, auxMatrix);
+            
+            double origin[4], origin2[4];
+            this->GetInput()->GetOrigin(origin);
+            image->GetOrigin(origin2);
+            
+            for (int i=0; i<3; i++)
+                origin2[i] -= origin[i];
+            origin2[3] = 0.0;
+            
+            this->InvertOrientationMatrix->MultiplyPoint (origin2, origin2);
+            
+            for (int i=0; i<3; i++)
+            {
+                auxMatrix->SetElement(i, 3, origin2[i]);
+            }
+            
+            int *w_ext = image->GetWholeExtent();
+            double ext_min[4], ext_max[4];
+            for (int i=0; i<3; i++)
+            {
+                ext_min[i] = static_cast<double> (w_ext[i*2]);
+                ext_max[i] = static_cast<double> (w_ext[i*2+1]);
+            }
+            ext_min[3] = 1.0;
+            ext_max[3] = 1.0;
+            
+            auxMatrix->MultiplyPoint(ext_min, ext_min);
+            auxMatrix->MultiplyPoint(ext_max, ext_max);
+            
+            int new_extent[6];
+            
+            int *eextent = this->GetInput()->GetWholeExtent();
+            
+            for (int i=0; i<3; i++)
+            {
+                new_extent[i*2] = vtkMath::Round(ext_min[i]);
+                new_extent[i*2+1] = vtkMath::Round(ext_max[i]);
+                
+                if (new_extent[i*2]>eextent[i*2])
+                    new_extent[i*2] = eextent[i*2];
+                
+                if (new_extent[i*2+1]<eextent[i*2+1])
+                    new_extent[i*2+1] = eextent[i*2+1];
+            }
+            
+            vtkImageReslice *reslice = vtkImageReslice::New();
+            reslice->SetInput(image);
+            reslice->SetResliceAxes(auxMatrix);
+            reslice->SetOutputOrigin(this->GetInput()->GetOrigin());
+            reslice->SetOutputSpacing(this->GetInput()->GetSpacing());
+            reslice->SetOutputExtent(new_extent);
+            
+            auxMatrix->Delete();
+            //reslice->Update();
+            
+            ImageDisplayMap.at(layer)->SetInput(reslice->GetOutput());
+            
             this->GetRenderWindow()->SetNumberOfLayers(ImageDisplayMap.size());
             renderer = vtkRenderer::New();
-            renderer->SetLayer((*it).first);
+            renderer->SetLayer(layer);
             this->GetRenderWindow()->AddRenderer(renderer);
             renderer->SetActiveCamera(this->GetRenderer()->GetActiveCamera());
             vtkLookupTable *lut = vtkLookupTableManager::GetSpectrumLookupTable();
@@ -1415,8 +1487,8 @@ void vtkImageView2D::SetInput (vtkImageData *image, int layer)
             ImageDisplayMap.at(layer)->SetLookupTable(lut);
             ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(1.0);
         }
-        renderer->AddViewProp((*it).second->GetImageActor());
-    }
+    
+    renderer->AddViewProp(ImageDisplayMap.at(layer)->GetImageActor());
 
     ImageDisplayMap.at(layer)->GetInput()->UpdateInformation();
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
@@ -1474,9 +1546,9 @@ void vtkImageView2D::SetInput (vtkImageData *image, int layer)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::SetInputConnection (vtkAlgorithmOutput *input)
+void vtkImageView2D::SetInputConnection (vtkAlgorithmOutput *input, vtkMatrix4x4 *matrix, int layer)
 {
-  this->Superclass::SetInputConnection( input );
+  this->Superclass::SetInputConnection( input, matrix, layer);
   this->ImageActor->SetInput( this->WindowLevel->GetOutput() );
 
   // The slice might have changed in the process

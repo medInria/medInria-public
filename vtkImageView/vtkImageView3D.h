@@ -178,7 +178,7 @@ public:
   // vtkGetMacro (CroppingMode, int);
   virtual unsigned int GetCroppingMode ();
   
-  virtual void SetInput (vtkImageData* input);
+  virtual void SetInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0, int layer = 0);
   virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
   // Description:
   // Set window and level for mapping pixels to colors.
