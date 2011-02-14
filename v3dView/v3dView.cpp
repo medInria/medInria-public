@@ -629,96 +629,105 @@ void v3dView::setData(dtkAbstractData *data)
 {
     if(!data)
         return;
+    
+    int layer = 0;
+    while(d->view2d->GetImageInput(layer))
+    {
+        layer++;
+    }
+    
+    qDebug() << "Openging at layer: " << layer;
+    
 
 #ifdef vtkINRIA3D_USE_ITK
     if (data->description()=="itkDataImageChar3") {
         if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageUChar3") {
         if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageShort3") {
         if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageShort4") {
         if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            d->view2d->SetITKInput4(image, layer);
+            d->view3d->SetITKInput4(image, layer);
         }
     }
     else if (data->description()=="itkDataImageUShort3") {
         if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageUShort4") {
         if( itk::Image<unsigned short, 4>* image = dynamic_cast<itk::Image<unsigned short, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            d->view2d->SetITKInput4(image, layer);
+            d->view3d->SetITKInput4(image, layer);
         }
     }
     else if (data->description()=="itkDataImageFloat4") {
         if( itk::Image<float, 4>* image = dynamic_cast<itk::Image<float, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            d->view2d->SetITKInput4(image, layer);
+            d->view3d->SetITKInput4(image, layer);
 		}
     }	
     else if (data->description()=="itkDataImageInt3") {
         if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageUInt3") {
         if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageLong3") {
         if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageULong3") {
         if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageFloat3") {
         if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageDouble3") {
         if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageRGB3") {
         if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else if (data->description()=="itkDataImageVector3") {
         if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image);
-            d->view3d->SetITKInput(image);
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
         }
     }
     else
@@ -726,8 +735,8 @@ void v3dView::setData(dtkAbstractData *data)
         if (data->description()=="v3dDataImage") {
             if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data()))) {
                 //d->collection->SyncSetInput(dataset);
-                d->view2d->SetInput(dataset);
-                d->view3d->SetInput(dataset);
+                d->view2d->SetInput(dataset, 0, layer);
+                d->view3d->SetInput(dataset, 0, layer);
             }
         }
         else if ( data->description() == "vtkDataMesh" ) {
