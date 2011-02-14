@@ -23,6 +23,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkInteractorStyleImageView2D.h"
 
 #include <vector>
+#include <map>
 
 class vtkImageActor;
 class vtkAxes2DWidget;
@@ -38,6 +39,8 @@ class vtkImageView2DCommand;
 class vtkTransform;
 class vtkPolyData;
 
+
+class vtkImage2DDisplay;
 
 
 
@@ -121,6 +124,9 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2D : public vtkImageView
   virtual void InstallInteractor(void);
   virtual void UnInstallInteractor(void);
   
+
+  virtual void SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity);
+
   /**
      Description:
      The orientation of the view is a abstract representation of the object
@@ -625,6 +631,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2D : public vtkImageView
 	
   std::vector<vtkDataSet2DWidget*> DataSetWidgets;
   
+  std::map<int, vtkImage2DDisplay *> ImageDisplayMap;
+
  private:
   vtkImageView2D(const vtkImageView2D&);  // Not implemented.
   void operator=(const vtkImageView2D&);    // Not implemented.

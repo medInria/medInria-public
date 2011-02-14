@@ -29,7 +29,7 @@ PURPOSE.  See the above copyright notices for more information.
 int main (int argc, char* argv[])
 {
 
-  if (argc < 3)
+  if (argc < 2)
   {
     std::cout << "Usage: " << std::endl;
     std::cout << "\t" << argv[0] << " <image file>" << std::endl;
@@ -119,11 +119,20 @@ int main (int argc, char* argv[])
     vtkStructuredPointsReader* reader2 = vtkStructuredPointsReader::New();
     reader2->SetFileName (argv[2]);
     reader2->GetOutput()->Update();
-    
+
     view1->SetInput  (reader2->GetOutput(), 1);
     view2->SetInput  (reader2->GetOutput(), 1);
     view3->SetInput  (reader2->GetOutput(), 1);
-    
+
+
+    vtkStructuredPointsReader* reader3 = vtkStructuredPointsReader::New();
+    reader3->SetFileName (argv[3]);
+    reader3->GetOutput()->Update();
+
+    view1->SetInput  (reader3->GetOutput(), 2);
+    view2->SetInput  (reader3->GetOutput(), 2);
+    view3->SetInput  (reader3->GetOutput(), 2);
+
 
   vtkImageViewCollection *collection = vtkImageViewCollection::New();
   collection->AddItem (view1);
