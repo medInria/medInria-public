@@ -1,0 +1,24 @@
+#include <medAbstractSourceDataPlugin.h>
+
+// /////////////////////////////////////////////////////////////////
+// medAbstractSourceDataPluginPrivate
+// /////////////////////////////////////////////////////////////////
+
+class medAbstractSourceDataPluginPrivate
+{
+public:
+};
+
+// /////////////////////////////////////////////////////////////////
+// medAbstractSourceDataPlugin
+// /////////////////////////////////////////////////////////////////
+
+medAbstractSourceDataPlugin::medAbstractSourceDataPlugin(QObject *parent) : dtkPlugin(parent), d(new medAbstractSourceDataPluginPrivate)
+{
+	
+}
+
+medAbstractSourceDataPlugin::~medAbstractSourceDataPlugin(void)
+{
+	
+}
