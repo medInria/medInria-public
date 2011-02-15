@@ -68,6 +68,12 @@ public:
     virtual void setColorLookupTable( QList< double > scalars,
 				      QList< QColor > colors );
 
+    virtual void setVisibility(int visible, int layer);
+    virtual int visibility(int layer);
+
+    virtual void setOpacity(double opacity, int layer);
+    virtual double opacity(int layer);
+
 public slots:
     void play          (bool value);
     
@@ -77,6 +83,7 @@ public slots:
     void onWindowingChanged (double level, double window);
     void onCameraChanged (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
     
+    void onVisibilitySet(bool visible, int layer = 0);
     // void linkwl (dtkAbstractView* view, bool);
     
 public slots:
