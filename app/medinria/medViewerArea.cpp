@@ -25,6 +25,7 @@
 #include "medGui/medViewerToolBoxLayout.h"
 #include "medViewerToolBoxPatient.h"
 #include "medGui/medViewerToolBoxView.h"
+#include "medGui/medViewerToolBoxViewProperties.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -249,6 +250,8 @@ void medViewerArea::open(const medDataIndex& index)
         
         medViewManager::instance()->insert(index, view);
 
+
+        this->onViewFocused(view);
         view->setData(data);
 	
         QMutexLocker ( &d->mutex );

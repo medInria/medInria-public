@@ -95,6 +95,27 @@ public:
     **/
     void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
     
+    /**
+     * Set the visibility of the data on the corresponding layer
+     */
+    virtual void setVisibility (int visibility, int layer) {};
+
+    /**
+     * Get the visibility of the data on the corresponding layer
+     */
+    virtual int visibility(int layer) {return 0;};
+
+    /**
+     * Set the visibility of the data on the corresponding layer
+     */
+    virtual void setOpacity (double opacity, int layer) {};
+
+    /**
+     * Get the visibility of the data on the corresponding layer
+     */
+    virtual double opacity(int layer) {return 0.0;};
+
+
 
 signals:
     /**
@@ -164,6 +185,11 @@ signals:
                            const QVector3D &focal,
                            double parallelScale);
 
+    /**
+     *  This signal is emitted when the user add a data in the view
+     */
+    void dataAdded (int layer);
+
 public slots:
     /**
        Tells the view (not to) synchronize its position with other views.
@@ -192,6 +218,8 @@ public slots:
 				     const QVector3D &focal,
 				     double parallelScale);
     
+    virtual void onVisibilitySet(bool visible) {};
+
     
 protected:
     void emitViewPositionChangedEvent (const QVector3D &position);
