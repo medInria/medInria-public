@@ -132,7 +132,7 @@ public:
   virtual void UnInstallInteractor(void);
   
   
-  virtual void SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity);
+  virtual void SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity, int layer);
   
   /**
    Description:

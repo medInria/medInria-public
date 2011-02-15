@@ -208,7 +208,7 @@ vtkImageView2D::vtkImageView2D()
   this->SetInteractorStyle ( style );
   style->Delete();
   
-  this->SetTransferFunctions(NULL, NULL);
+  this->SetTransferFunctions(NULL, NULL, 0);
 }
 
 //----------------------------------------------------------------------------
@@ -1292,13 +1292,18 @@ int vtkImageView2D::GetInterpolate(void)
   return this->GetImageActor(0)->GetInterpolate();
 }
 
-void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity)
+void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity, int layer)
 {
-  this->Superclass::SetTransferFunctions(color, opacity);
-  
-  if (this->ImageDisplayMap.size() != 0)
+  if (layer==0)
   {
+    this->Superclass::SetTransferFunctions(color, opacity);
     this->ImageDisplayMap.at(0)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
+  }
+  else if ((int)this->ImageDisplayMap.size() > layer)
+  {
+      if (color) {
+          this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(color);
+      }
   }
 }
 
@@ -1355,7 +1360,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     }
     renderer->SetActiveCamera (this->GetRenderer()->GetActiveCamera());
     
-    this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
+    this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable (this->GetColorTransferFunction());
     this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(0.5);
     this->ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
     
