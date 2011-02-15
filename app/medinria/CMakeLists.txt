@@ -1,5 +1,5 @@
-### CMakeLists.txt --- 
-## 
+### CMakeLists.txt ---
+##
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
@@ -8,13 +8,13 @@
 ##           By: Julien Wintz
 ##     Update #: 86
 ######################################################################
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ######################################################################
-## 
+##
 ### Change log:
-## 
+##
 ######################################################################
 
 project(medinria)
@@ -83,7 +83,7 @@ IF(APPLE)
   set(DEPLOYMENT_SYSTEM MACOSX_BUNDLE)
 endif()
 if(WIN32)
-  if( NOT ${MED_SHOW_CONSOLE} ) 
+  if( NOT ${MED_SHOW_CONSOLE} )
     set(DEPLOYMENT_SYSTEM WIN32)
   endif()
   set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES} ${PROJECT_NAME}.rc)

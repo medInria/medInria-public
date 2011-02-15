@@ -50,7 +50,11 @@ signals:
     void showError(QObject *sender, const QString& text,unsigned int timeout=0);
 
 public slots:
-
+    /**
+     * @brief Reads its data from the QSettings.
+     *
+    */
+    virtual void read()=0;
 protected:
     /**
      * @brief Validates the form before saving the data.

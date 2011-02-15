@@ -15,6 +15,7 @@ public:
 signals:
 
 public slots:
+    void read();
 
 protected:
 	/**

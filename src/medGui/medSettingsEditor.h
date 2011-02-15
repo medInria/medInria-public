@@ -14,7 +14,9 @@ public:
 signals:
 
 public slots:
-
+    void onSaveClicked();
+    void onCancelClicked();
+    void onResetClicked();
 private:
   medSettingsEditorPrivate *d;
   void createSystemSettingsWidget();

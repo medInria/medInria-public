@@ -27,8 +27,8 @@ medSystemSettingsWidgetPrivate::~medSystemSettingsWidgetPrivate()
 
 
 medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) :
-		medSettingsWidget(parent),
-		d(new medSystemSettingsWidgetPrivate())
+        medSettingsWidget(parent),
+        d(new medSystemSettingsWidgetPrivate())
 {
 	setSection("System");
 	d->pluginsPathField = new QLineEdit(this);
@@ -38,6 +38,7 @@ medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) :
     layout->addRow(tr("Plugins Path"),d->pluginsPathField);
     layout->addRow(tr("Modules Path"),d->modulesPathField);
     layout->addRow(tr("Scripts Path"),d->scriptsPathField);
+    this->setLayout(layout);
 }
 
 
@@ -74,4 +75,9 @@ bool medSystemSettingsWidget::validatePaths(QString paths)
 	}
 
 	return true;
+
+void medSettingsWidget::read()
+{
+    qDebug()<<"reading QSettings";
+
 }

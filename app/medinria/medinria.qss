@@ -602,7 +602,7 @@ QMenu::item:selected:!active {
  *
  */
 
-QTabWidget::pane {
+medToolBoxTab::pane{
     border-image: url(:/pixmaps/tabwidget-pane.png) 16 16 22 16 repeat-x;
     border-left-width: 16px;
     border-right-width: 16px;
@@ -611,12 +611,12 @@ QTabWidget::pane {
     border-bottom-width: 22px;
 }
 
-QTabWidget::tab-bar {
+medToolBoxTab::tab-bar {
     top: 6px;
     left: 11px;
 }
 
-QTabBar::tab {
+medToolBoxTab QTabBar::tab {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #505050, stop: 1.0 #494949);
     border: 1px solid #2a2a2a;
     border-bottom-color: #2a2a2a;
@@ -628,7 +628,7 @@ QTabBar::tab {
     min-width: 100px;
 }
 
-QTabBar::tab:selected, QTabBar::tab:hover {
+medToolBoxTab QTabBar::tab:selected, QTabBar::tab:hover {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #505050, stop: 1.0 #5c5c5c);
     border: 1px solid #2a2a2a;
     border-bottom-color: #5c5c5c;
