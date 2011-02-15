@@ -1,20 +1,20 @@
 /*=========================================================================
-
-Program:   vtkINRIA3D
-Module:    $Id: vtkImageView2D.cxx 1367 2009-11-30 11:23:21Z ntoussaint $
-Language:  C++
-Author:    $Author: ntoussaint $
-Date:      $Date: 2009-11-30 12:23:21 +0100 (lun, 30 nov 2009) $
-Version:   $Revision: 1367 $
-
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
+ 
+ Program:   vtkINRIA3D
+ Module:    $Id: vtkImageView2D.cxx 1367 2009-11-30 11:23:21Z ntoussaint $
+ Language:  C++
+ Author:    $Author: ntoussaint $
+ Date:      $Date: 2009-11-30 12:23:21 +0100 (lun, 30 nov 2009) $
+ Version:   $Revision: 1367 $
+ 
+ Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
+ See Copyright.txt for details.
+ 
+ This software is distributed WITHOUT ANY WARRANTY; without even
+ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the above copyright notices for more information.
+ 
+ =========================================================================*/
 #include "vtkImageView2D.h"
 
 
@@ -72,90 +72,81 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkLookupTableManager.h"
 #include <vtkColorTransferFunction.h>
 #include <vtkImageReslice.h>
+
 #include <vector>
 #include <string>
 #include <sstream>
 #include <cmath>
 
-
 vtkCxxRevisionMacro(vtkImageView2D, "$Revision: 3 $");
 vtkStandardNewMacro(vtkImageView2D);
-
 
 class vtkImage2DDisplay : public vtkObject
 {
 public:
-    static vtkImage2DDisplay * New();
-        
-    virtual void SetInput(vtkImageData * image);
-    vtkGetObjectMacro(Input, vtkImageData);
-
-    virtual void SetLookupTable(vtkLookupTable * lut);
-    
-    vtkSetObjectMacro(Renderer, vtkRenderer);
-    vtkGetObjectMacro(Renderer, vtkRenderer);
-
-    vtkGetObjectMacro(ImageActor, vtkImageActor);
-    
-    vtkGetObjectMacro(WindowLevel, vtkImageMapToColors);
-
+  static vtkImage2DDisplay * New();
+  
+  virtual void SetInput(vtkImageData * image);
+  vtkGetObjectMacro(Input, vtkImageData);
+  
+  virtual void SetLookupTable(vtkLookupTable * lut);
+  
+  vtkSetObjectMacro(Renderer, vtkRenderer);
+  vtkGetObjectMacro(Renderer, vtkRenderer);
+  
+  vtkGetObjectMacro(ImageActor, vtkImageActor);
+  
+  vtkGetObjectMacro(WindowLevel, vtkImageMapToColors);
+  
 protected:
-    vtkImage2DDisplay();
-    ~vtkImage2DDisplay();    
-    
-private :
-    vtkImageMapToColors*            WindowLevel;
-    vtkImageData*                   Input;
-    vtkImageActor*                  ImageActor;
-    vtkRenderer *Renderer;
+  vtkImage2DDisplay();
+  ~vtkImage2DDisplay();    
+  
+  private :
+  vtkImageMapToColors*            WindowLevel;
+  vtkImageData*                   Input;
+  vtkImageActor*                  ImageActor;
+  vtkRenderer *Renderer;
 };
 
 vtkStandardNewMacro(vtkImage2DDisplay);
 
 vtkImage2DDisplay::vtkImage2DDisplay()
 {
-    this->Input = 0;
-    this->Renderer = vtkRenderer::New();
-    this->ImageActor        = vtkImageActor::New();
-    this->WindowLevel       = vtkImageMapToColors::New();
-    this->WindowLevel->SetOutputFormatToRGBA();
+  this->Input = 0;
+  this->Renderer = vtkRenderer::New();
+  this->ImageActor        = vtkImageActor::New();
+  this->WindowLevel       = vtkImageMapToColors::New();
+  this->WindowLevel->SetOutputFormatToRGBA();
 }
 
 vtkImage2DDisplay::~vtkImage2DDisplay()
 {
-    this->WindowLevel->Delete();
-    this->ImageActor->Delete();
-    if (this->Renderer)
-        this->Renderer->Delete();
+  this->WindowLevel->Delete();
+  this->ImageActor->Delete();
+  if (this->Renderer)
+    this->Renderer->Delete();
 }
 
-void
-vtkImage2DDisplay::SetInput(vtkImageData * image)
+void vtkImage2DDisplay::SetInput(vtkImageData * image)
 {
-    this->Input = image;
-
-    if (image)
-        image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
-
-    this->ImageActor->SetInput( this->WindowLevel->GetOutput() );
-    this->WindowLevel->SetInput(image);
+  this->Input = image;
+  
+  if (image)
+    image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
+  
+  this->ImageActor->SetInput( this->WindowLevel->GetOutput() );
+  this->WindowLevel->SetInput(image);
 }
 
-void
-vtkImage2DDisplay::SetLookupTable(vtkLookupTable * lut)
+void vtkImage2DDisplay::SetLookupTable(vtkLookupTable * lut)
 {
-    this->WindowLevel->SetLookupTable(lut);
+  this->WindowLevel->SetLookupTable(lut);
 }
-
-// End vtkImage2DDisplay
-
-
-
 
 //----------------------------------------------------------------------------
 vtkImageView2D::vtkImageView2D()
 {
-  //this->ImageActor          = vtkImageActor::New();
   this->Axes2DWidget        = vtkAxes2DWidget::New();
   this->RulerWidget         = vtkRulerWidget::New();
   this->DistanceWidget      = vtkDistanceWidget::New();
@@ -164,18 +155,16 @@ vtkImageView2D::vtkImageView2D()
   this->SlicePlane          = vtkPolyData::New();
   this->Command             = vtkImageView2DCommand::New();
   this->OrientationAnnotation = vtkOrientationAnnotation::New();
-
+  
   this->ImageDisplayMap.insert( std::pair<int, vtkImage2DDisplay *> (0, vtkImage2DDisplay::New()) );
-
+  
   this->SliceOrientation = vtkImageView2D::SLICE_ORIENTATION_XY;
-
-  // this->ImageActor->SetInput(this->WindowLevel->GetOutput()); // do not set input to prevent VTK warning
-    
+  
   this->Command->SetViewer (this);
-
+  
   this->OrientationAnnotation->SetNonlinearFontScaleFactor (0.25);
   this->OrientationAnnotation->SetTextProperty ( this->TextProperty );
-
+  
   this->ViewConvention  = vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL;
   this->ViewOrientation = vtkImageView2D::VIEW_ORIENTATION_AXIAL;
   this->ViewCenter[0] = this->ViewCenter[1] = this->ViewCenter[2] = 0;
@@ -193,18 +182,18 @@ vtkImageView2D::vtkImageView2D()
   this->ShowAngleWidget      = 0;
   this->AnnotationStyle      = AnnotationStyle1;
   this->CursorFollowMouse    = 0;
-
+  
   this->CornerAnnotation->SetImageActor (this->GetImageActor(0));
   this->CornerAnnotation->ShowSliceAndImageOn();
-
+  
   this->RulerWidget->KeyPressActivationOff();
-
+  
   this->DistanceWidget->KeyPressActivationOn();
   this->DistanceWidget->CreateDefaultRepresentation();
   this->DistanceWidget->SetKeyPressActivationValue ('d');
   vtkDistanceRepresentation2D* rep1 = vtkDistanceRepresentation2D::SafeDownCast (this->DistanceWidget->GetRepresentation());
   rep1->GetAxis()->SetTickLength (6);
-
+  
   this->AngleWidget->KeyPressActivationOn();
   this->AngleWidget->SetKeyPressActivationValue ('o');
   this->AngleWidget->CreateDefaultRepresentation();
@@ -212,27 +201,24 @@ vtkImageView2D::vtkImageView2D()
   rep2->GetRay1()->GetProperty()->SetColor (0,1,0);
   rep2->GetRay2()->GetProperty()->SetColor (0,1,0);
   rep2->GetArc()->GetProperty()->SetColor (0,1,0);
-
+  
   this->SetAnnotationsFromOrientation();
   
   vtkInteractorStyle* style = vtkInteractorStyleImageView2D::New();
   this->SetInteractorStyle ( style );
   style->Delete();
-
+  
   this->SetTransferFunctions(NULL, NULL);
-
 }
 
 //----------------------------------------------------------------------------
 vtkImageView2D::~vtkImageView2D()
 {
-  //this->ImageActor->Delete();
-    
   for (unsigned int i=0; i<this->ImageDisplayMap.size(); i++)
   {
     this->ImageDisplayMap[i]->Delete();
   }
-    
+  
   this->Axes2DWidget->Delete();
   this->RulerWidget->Delete();
   this->DistanceWidget->Delete();
@@ -245,7 +231,6 @@ vtkImageView2D::~vtkImageView2D()
   {
     this->DataSetWidgets[i]->Delete();
   }
-
 }
 
 //----------------------------------------------------------------------------
@@ -295,6 +280,7 @@ int vtkImageView2D::GetSliceMax()
   return 0;
 }
 
+//----------------------------------------------------------------------------
 int vtkImageView2D::GetSlice (void)
 {
   return this->Slice;
@@ -316,7 +302,7 @@ void vtkImageView2D::SetSlice(int slice)
     slice = std::max (slice, range[0]);
     slice = std::min (slice, range[1]);
   }
-
+  
   // Verify slice is actually changing.
   int old_slice = this->GetSlice();
   
@@ -325,25 +311,25 @@ void vtkImageView2D::SetSlice(int slice)
   double* spacing = this->GetInput()->GetSpacing();
   displacement[this->SliceOrientation] = (slice - old_slice) * spacing[this->SliceOrientation];
   this->GetOrientationMatrix()->MultiplyPoint (displacement, displacement);
-
+  
   vtkSmartPointer < vtkTransform > pointTransform = vtkSmartPointer < vtkTransform >::New ();
-
+  
   pointTransform->Translate ( displacement );
-
+  
   // Update the instances according to displacement.
   double pos[3];
   pointTransform->TransformPoint ( this->CurrentPoint , pos );
-//  for (unsigned int i=0; i<3; i++)
-//    pos[i] = this->CurrentPoint[i] + displacement[i];
+  //  for (unsigned int i=0; i<3; i++)
+  //    pos[i] = this->CurrentPoint[i] + displacement[i];
   // NB: Modified() and InvokeEvent( vtkImageView::CurrentPointChangedEvent ) are
   // callled in SetCurrentPoint()
-
+  
   // Shift the camera with the slice, so that the slice does not go behind the camera.
   vtkCamera *camera = this->Renderer->GetActiveCamera();
   if (camera)
   {
-      // This shifts both the camera position and the focal point. 
-      camera->ApplyTransform ( pointTransform );
+    // This shifts both the camera position and the focal point. 
+    camera->ApplyTransform ( pointTransform );
   }
 	
   this->SetCurrentPoint (pos);
@@ -361,11 +347,11 @@ void vtkImageView2D::SetSliceOrientation(int orientation)
   
   if (this->SliceOrientation == orientation)
     return;
-
+  
   this->SliceOrientation = orientation;
-
+  
   this->UpdateOrientation();
-
+  
   // The slice might have changed in the process
   if (this->Input)
   {
@@ -375,7 +361,7 @@ void vtkImageView2D::SetSliceOrientation(int orientation)
     this->UpdateSlicePlane();
     this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
   }
-      
+  
   this->InvokeEvent (vtkImageView2D::OrientationChangedEvent);
   this->Modified();
 }
@@ -407,27 +393,28 @@ void vtkImageView2D::UpdateOrientation()
 //----------------------------------------------------------------------------
 bool CompareExtents ( const int * extentA, const int *extentB )
 {
-    return ( extentA [0] == extentB [0] ) &&
-        ( extentA [1] == extentB [1] ) &&
-        ( extentA [2] == extentB [2] ) &&
-        ( extentA [3] == extentB [3] ) &&
-        ( extentA [4] == extentB [4] ) &&
-        ( extentA [5] == extentB [5] ) ;
+  return ( extentA [0] == extentB [0] ) &&
+  ( extentA [1] == extentB [1] ) &&
+  ( extentA [2] == extentB [2] ) &&
+  ( extentA [3] == extentB [3] ) &&
+  ( extentA [4] == extentB [4] ) &&
+  ( extentA [5] == extentB [5] ) ;
 }
+
 //----------------------------------------------------------------------------
 void vtkImageView2D::UpdateDisplayExtent()
 {
   if (this->ImageDisplayMap.size() == 0)
-      return;
-
+    return;
+  
   vtkImageData * input = this->ImageDisplayMap.at(0)->GetInput();
   if (!input)
-      return;
-
+    return;
+  
   input->UpdateInformation();
-
+  
   int *w_ext = input->GetWholeExtent();
-
+  
   int slice = this->Slice;
   int *range = this->GetSliceRange();
   if (range)
@@ -435,105 +422,106 @@ void vtkImageView2D::UpdateDisplayExtent()
     slice = std::max (slice, range[0]);
     slice = std::min (slice, range[1]);
   }
-
+  
   if (slice != this->Slice)
   {
     // vtkWarningMacro (<<"WARNING: asking to display an out of bound extent"<<endl);
   }
-
+  
   std::map<int,vtkImage2DDisplay *>::iterator it;
   for (it = this->ImageDisplayMap.begin(); it != this->ImageDisplayMap.end(); it++)
   {
-      switch (this->SliceOrientation)
-       {
-           case vtkImageView2D::SLICE_ORIENTATION_XY:
-               (*it).second->GetImageActor()->SetDisplayExtent(w_ext[0], w_ext[1], w_ext[2], w_ext[3], slice, slice);
-               break;
-
-           case vtkImageView2D::SLICE_ORIENTATION_XZ:
-               (*it).second->GetImageActor()->SetDisplayExtent(w_ext[0], w_ext[1], slice, slice, w_ext[4], w_ext[5]);
-               break;
-
-           case vtkImageView2D::SLICE_ORIENTATION_YZ:
-           default:
-               (*it).second->GetImageActor()->SetDisplayExtent(slice, slice, w_ext[2], w_ext[3], w_ext[4], w_ext[5]);
-               break;
-       }
-
-       if ( ! CompareExtents ( input->GetUpdateExtent (), (*it).second->GetImageActor()->GetDisplayExtent () ) ) {
-
-         input->SetUpdateExtent((*it).second->GetImageActor()->GetDisplayExtent ());
-
-         // SetUpdateExtent does not call modified. There is a comment relating to this in
-         // vtkDataObject::SetUpdateExtent
-         input->Modified ();
-         input->PropagateUpdateExtent();
-       }
-  }
-  // Figure out the correct clipping range
-    if (this->Renderer)
+    vtkImageData *imageInput = (*it).second->GetInput();
+    switch (this->SliceOrientation)
     {
-        if (this->InteractorStyle &&
-            this->InteractorStyle->GetAutoAdjustCameraClippingRange())
-        {
-            this->Renderer->ResetCameraClippingRange();
-        }
-        else
-        {
-            vtkCamera *cam = this->Renderer->GetActiveCamera();
-            if (cam)
-            {
-                double bounds[6];
-                this->ImageDisplayMap.at(0)->GetImageActor()->GetBounds(bounds);
-                double spos = bounds[this->SliceOrientation * 2];
-                double cpos = cam->GetPosition()[this->SliceOrientation];
-                double range = fabs(spos - cpos);
-                double *spacing = input->GetSpacing();
-                double avg_spacing = (spacing[0] + spacing[1] + spacing[2]) / 3.0;
-                cam->SetClippingRange(range - avg_spacing * 3.0, range + avg_spacing * 3.0);
-            }
-        }
-    }    
+      case vtkImageView2D::SLICE_ORIENTATION_XY:
+        (*it).second->GetImageActor()->SetDisplayExtent(w_ext[0], w_ext[1], w_ext[2], w_ext[3], slice, slice);
+        break;
+        
+      case vtkImageView2D::SLICE_ORIENTATION_XZ:
+        (*it).second->GetImageActor()->SetDisplayExtent(w_ext[0], w_ext[1], slice, slice, w_ext[4], w_ext[5]);
+        break;
+        
+      case vtkImageView2D::SLICE_ORIENTATION_YZ:
+      default:
+        (*it).second->GetImageActor()->SetDisplayExtent(slice, slice, w_ext[2], w_ext[3], w_ext[4], w_ext[5]);
+        break;
+    }
+    
+    if ( ! CompareExtents ( imageInput->GetUpdateExtent (), (*it).second->GetImageActor()->GetDisplayExtent () ) ) {
+      
+      imageInput->SetUpdateExtent((*it).second->GetImageActor()->GetDisplayExtent ());
+      
+      // SetUpdateExtent does not call modified. There is a comment relating to this in
+      // vtkDataObject::SetUpdateExtent
+      imageInput->Modified ();
+      imageInput->PropagateUpdateExtent();
+    }
+  }
+  
+  // Figure out the correct clipping range
+  if (this->Renderer)
+  {
+    if (this->InteractorStyle &&
+        this->InteractorStyle->GetAutoAdjustCameraClippingRange())
+    {
+      this->Renderer->ResetCameraClippingRange();
+    }
+    else
+    {
+      vtkCamera *cam = this->Renderer->GetActiveCamera();
+      if (cam)
+      {
+        double bounds[6];
+        this->ImageDisplayMap.at(0)->GetImageActor()->GetBounds(bounds);
+        double spos = bounds[this->SliceOrientation * 2];
+        double cpos = cam->GetPosition()[this->SliceOrientation];
+        double range = fabs(spos - cpos);
+        double *spacing = input->GetSpacing();
+        double avg_spacing = (spacing[0] + spacing[1] + spacing[2]) / 3.0;
+        cam->SetClippingRange(range - avg_spacing * 3.0, range + avg_spacing * 3.0);
+      }
+    }
+  }    
 }
-
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetViewConvention(int convention)
 {
   if ( (convention < vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL))
     return;
-
+  
   this->ViewConvention = convention;
-
+  
   this->ConventionMatrix->SetElement (2,0, 1);
   this->ConventionMatrix->SetElement (2,1, 1);
   this->ConventionMatrix->SetElement (1,2, -1);
-
+  
   int x_watcher, y_watcher, z_watcher;
-
+  
   switch(convention)
   {
-      case vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL:
-      default:
-	x_watcher =  1;
-	y_watcher = -1;
-	z_watcher = -1;
-	break;
-      case vtkImageView2D::VIEW_CONVENTION_NEUROLOGICAL:
-	x_watcher = 1;
-	y_watcher = 1;
-	z_watcher = 1;
-	break;
-	/// \todo We can define oblique convention points of view
-	/// that would match cardiologic conventions.
-	/// i.e. - A cardiologist looks a heart from short axis (R.V in the righ of plane)
-	/// i.e. - A cardiologist looks a heart from 4 chamber  (R.V in the left of plane)
-	/// ...
+    case vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL:
+    default:
+      x_watcher =  1;
+      y_watcher = -1;
+      z_watcher = -1;
+      break;
+    case vtkImageView2D::VIEW_CONVENTION_NEUROLOGICAL:
+      x_watcher = 1;
+      y_watcher = 1;
+      z_watcher = 1;
+      break;
+      /// \todo We can define oblique convention points of view
+      /// that would match cardiologic conventions.
+      /// i.e. - A cardiologist looks a heart from short axis (R.V in the righ of plane)
+      /// i.e. - A cardiologist looks a heart from 4 chamber  (R.V in the left of plane)
+      /// ...
   }
   this->ConventionMatrix->SetElement (0,3, x_watcher);
   this->ConventionMatrix->SetElement (1,3, y_watcher);
   this->ConventionMatrix->SetElement (2,3, z_watcher);
-
+  
   this->UpdateOrientation();  
 }
 
@@ -543,18 +531,18 @@ void vtkImageView2D::SetViewOrientation(int orientation)
   /// \todo: in terms of view orientation here we can add some cardiac specific: short axis, long axis, and 4-chambers !!! exiting !
   if ( (orientation < vtkImageView2D::VIEW_ORIENTATION_SAGITTAL) || orientation == this->ViewOrientation)
     return;
-
+  
   unsigned int sliceorientation = 0;
   double dot = 0;
-
+  
   if ( this->GetOrientationMatrix() )
   {
     for (unsigned int i=0; i<3; i++)
     {
       if (dot < std::abs (this->GetOrientationMatrix()->GetElement (orientation, i)))
       {
-	dot = std::abs (this->GetOrientationMatrix()->GetElement (orientation, i));
-	sliceorientation = i;
+        dot = std::abs (this->GetOrientationMatrix()->GetElement (orientation, i));
+        sliceorientation = i;
       }
     }
   }
@@ -592,7 +580,7 @@ void vtkImageView2D::InitializeSlicePlane(void)
   points->InsertNextPoint (0, 1, 0);
   points->InsertNextPoint (1, 1, 0);
   this->SlicePlane->Allocate (4);
-
+  
   vtkIdType pts[3];
   pts[0] = 0; pts[1] = 1; pts[2] = 2;
   this->SlicePlane->InsertNextCell (VTK_TRIANGLE, 3, pts);
@@ -603,7 +591,7 @@ void vtkImageView2D::InitializeSlicePlane(void)
   pts[0] = 0; pts[1] = 2; pts[2] = 3;
   this->SlicePlane->InsertNextCell (VTK_TRIANGLE, 3, pts);
   points->Delete();
-
+  
   vtkUnsignedCharArray* array = vtkUnsignedCharArray::New();
   array->SetName ("Colors");
   array->SetNumberOfComponents (3);
@@ -613,7 +601,7 @@ void vtkImageView2D::InitializeSlicePlane(void)
   array->InsertNextTupleValue (vals);
   array->InsertNextTupleValue (vals);
   array->InsertNextTupleValue (vals);
-
+  
   this->SlicePlane->GetPointData()->SetScalars (array);
   array->Delete();
 }
@@ -622,10 +610,10 @@ void vtkImageView2D::InitializeSlicePlane(void)
 void vtkImageView2D::SetCurrentPoint(double pos[3])
 {
   this->Superclass::SetCurrentPoint (pos);
-		
+  
   int old_slice = this->Slice;
   int new_slice = this->GetSliceForWorldCoordinates (pos);
-
+  
   if(new_slice != old_slice)
   {
     this->Slice = new_slice;
@@ -639,7 +627,6 @@ void vtkImageView2D::SetCurrentPoint(double pos[3])
 //----------------------------------------------------------------------------
 int vtkImageView2D::SetCameraFromOrientation(void)
 {
-
   // We entirely rely on the slice orientation this->SliceOrientation
   // The ViewOrientation is "estimated", returned as id
   
@@ -667,7 +654,7 @@ int vtkImageView2D::SetCameraFromOrientation(void)
     conventionposition[i] = this->ConventionMatrix->GetElement (i,3);
     conventionview[i] = this->ConventionMatrix->GetElement (i, this->SliceOrientation);
   }
-
+  
   // Points VS vectors: uniform coordinates
   position[3] = 1;
   focalpoint[3] = 1;
@@ -683,35 +670,35 @@ int vtkImageView2D::SetCameraFromOrientation(void)
     this->OrientationMatrix->MultiplyPoint (conventionview, conventionview);
     this->OrientationMatrix->MultiplyPoint (conventionposition, conventionposition);
   }
-
+  
   // Compute the vector perpendicular to the view
   for (unsigned int i=0; i<3; i++)
     focaltoposition[i] = position[i] - focalpoint[i];
-
+  
   // Deal with the position :
   // invert it if necessary (symetry among the focal point)
   inverseposition = (vtkMath::Dot (focaltoposition, conventionposition) < 0);
   if (inverseposition)
     for (unsigned int i=0; i<3; i++)
       position[i] -= 2*focaltoposition[i];
-
+  
   // Now we now we have 4 choices for the View-Up information
   for(unsigned int i=0; i<3; i++)
   {
     first[i] = conventionview[i];
     second[i] = -conventionview[i];
   }
-
+  
   vtkMath::Cross (first, focaltoposition, third);
   vtkMath::Cross (second, focaltoposition, fourth);
   vtkMath::Normalize (third);
   vtkMath::Normalize (fourth);
-
+  
   viewupchoices.push_back (first);
   viewupchoices.push_back (second);
   viewupchoices.push_back (third);
   viewupchoices.push_back (fourth);
-
+  
   // To choose between these choices, first we find the axis
   // the closest to the focaltoposition vector
   unsigned int id = 0;
@@ -724,12 +711,12 @@ int vtkImageView2D::SetCameraFromOrientation(void)
       id = i;
     }
   }
-
+  
   // Then we choose the convention matrix vector correspondant to the
   // one we just found
   for (unsigned int i=0; i<3; i++)
     conventionview[i] = this->ConventionMatrix->GetElement (i, id);
-
+  
   // Then we pick from the 4 solutions the closest to the
   // vector just found
   unsigned int id2 = 0;
@@ -740,17 +727,17 @@ int vtkImageView2D::SetCameraFromOrientation(void)
       dot2 = vtkMath::Dot (viewupchoices[i], conventionview);
       id2 = i;
     }
-
+  
   // We found the solution
   for (unsigned int i=0; i<3; i++)
     viewup[i] = viewupchoices[id2][i];
-
+  
   cam->SetPosition(position[0], position[1], position[2]);
   cam->SetFocalPoint(focalpoint[0], focalpoint[1], focalpoint[2]);
   cam->SetViewUp(viewup[0], viewup[1], viewup[2]);
   
   this->InvokeEvent (vtkImageView::CameraChangedEvent);
-
+  
   return id;
 }
 
@@ -764,23 +751,22 @@ void vtkImageView2D::SetAnnotationStyle(unsigned int arg)
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetAnnotationsFromOrientation(void)
 {
-
   // This method has to be called after the camera
   // has been set according to orientation and convention.
   // We rely on the camera settings to compute the oriention
   // annotations.
-
+  
   std::string solution[4]={"L","P","R","A"};
-
+  
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (cam)
   {
-
+    
     std::string matrix[3][2];
     matrix[0][0] = "R";matrix[0][1] = "L";
     matrix[1][0] = "A";matrix[1][1] = "P";
     matrix[2][0] = "I";matrix[2][1] = "S";
-
+    
     ///\todo surely there is a simpler way to do all of that !
     
     double* viewup = cam->GetViewUp();
@@ -799,18 +785,18 @@ void vtkImageView2D::SetAnnotationsFromOrientation(void)
     {
       if (dot1 <= std::abs (viewup[i]))
       {
-	dot1 = std::abs (viewup[i]);
-	id1 = i;
+        dot1 = std::abs (viewup[i]);
+        id1 = i;
       }
       if (dot2 <= std::abs (rightvector[i]))
       {
-	dot2 = std::abs (rightvector[i]);
-	id2 = i;
-    }
+        dot2 = std::abs (rightvector[i]);
+        id2 = i;
+      }
       if (dot3 <= std::abs (normal[i]))
       {
-	dot3 = std::abs (normal[i]);
-	id3 = i;
+        dot3 = std::abs (normal[i]);
+        id3 = i;
       }
     }
     
@@ -839,33 +825,33 @@ void vtkImageView2D::SetAnnotationsFromOrientation(void)
   std::ostringstream osSW;
   std::ostringstream osSE;
   std::ostringstream osNE;
-
+  
   switch(this->AnnotationStyle)
   {
-      case AnnotationStyle2:
-	osNW << "<size>\n"
-	     << "<spacing>\n"
-	     << "<xyz>\n"
-	     << "<value>\n";
-	osSW << "<zoom>";
-	osNE << "<slice_and_max>\n<window>\n<level>";
-	break;
-
-      case AnnotationStyle1:
-      default:
-	
-	osSW << "<zoom>\n";
-	osSW << "<slice_and_max>\n";
-	osNW<< "Image size: " << "<size_x>x<size_y>\n";
-	osNW<< "Voxel size: " << "<spacing_x>x<spacing_y>\n";
-	osNW<< "X: " << "<coord_x>" << " px Y: " << "<coord_y>" << " px " << "<value>\n";
-	osNW<< "X: " << "<pos_x>" << " mm Y: " << "<pos_y> mm\n";
-	osSW<< "Location: " << "<pos_z>" << " mm";
-	osNW<< "<window_level>";
-	osNE << "<patient>\n<study>\n<series>";
-  
-	switch( this->ViewOrientation )
-	{
+    case AnnotationStyle2:
+      osNW << "<size>\n"
+      << "<spacing>\n"
+      << "<xyz>\n"
+      << "<value>\n";
+      osSW << "<zoom>";
+      osNE << "<slice_and_max>\n<window>\n<level>";
+      break;
+      
+    case AnnotationStyle1:
+    default:
+      
+      osSW << "<zoom>\n";
+      osSW << "<slice_and_max>\n";
+      osNW<< "Image size: " << "<size_x>x<size_y>\n";
+      osNW<< "Voxel size: " << "<spacing_x>x<spacing_y>\n";
+      osNW<< "X: " << "<coord_x>" << " px Y: " << "<coord_y>" << " px " << "<value>\n";
+      osNW<< "X: " << "<pos_x>" << " mm Y: " << "<pos_y> mm\n";
+      osSW<< "Location: " << "<pos_z>" << " mm";
+      osNW<< "<window_level>";
+      osNE << "<patient>\n<study>\n<series>";
+      
+      switch( this->ViewOrientation )
+    {
 	    case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
 	      osSE << "Axial View";
 	      break;
@@ -875,10 +861,10 @@ void vtkImageView2D::SetAnnotationsFromOrientation(void)
 	    case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
 	      osSE << "Sagittal View";
 	      break;
-	}
-	break;
+    }
+      break;
   }
-
+  
   this->GetCornerAnnotation()->SetText (2, osNW.str().c_str());
   this->GetCornerAnnotation()->SetText (1, osSE.str().c_str());
   this->GetCornerAnnotation()->SetText (0, osSW.str().c_str());
@@ -891,9 +877,9 @@ void vtkImageView2D::SetSlicePlaneFromOrientation(void)
   if (this->ViewOrientation<VIEW_ORIENTATION_SAGITTAL || this->ViewOrientation>VIEW_ORIENTATION_AXIAL)
     return;
   /**
-     These lines tell the slice plane which color it should be
-     ///\todo We should allow more colors...
-  */
+   These lines tell the slice plane which color it should be
+   ///\todo We should allow more colors...
+   */
   unsigned char vals[3] = {0,0,0};
   vals[this->ViewOrientation] = 255;
   vtkUnsignedCharArray* array = vtkUnsignedCharArray::SafeDownCast (this->SlicePlane->GetPointData()->GetScalars());
@@ -903,15 +889,15 @@ void vtkImageView2D::SetSlicePlaneFromOrientation(void)
   array->SetTupleValue (1, vals);
   array->SetTupleValue (2, vals);
   array->SetTupleValue (3, vals);
-
+  
   this->UpdateSlicePlane();
-
+  
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::UpdateSlicePlane (void)
 {
-
+  
   if( !this->GetInput() ) // if input is not set yet, no way we can now the display bounds
     return;
   
@@ -921,7 +907,7 @@ void vtkImageView2D::UpdateSlicePlane (void)
   double* bounds = this->GetImageActor(0)->GetDisplayBounds ();
   unsigned int added1;
   unsigned int added2;
-
+  
   for (unsigned int i=0; i<4; i++)
   {
     added1 = (!(i%2)) ? 1 : 0;
@@ -946,14 +932,14 @@ void vtkImageView2D::UpdateCenter (void)
   if (!cam)
     return;
   int* dimensions = this->GetInput()->GetDimensions();
-
+  
   int indices[3] = {0,0,0};
   for (unsigned int i=0; i<3; i++)
   {
     indices[i] = (int)((double)dimensions[i] / 2.0);
   }
   indices[this->SliceOrientation] = this->GetSlice();
-
+  
   this->GetWorldCoordinatesFromImageCoordinates (indices, this->ViewCenter);
 }
 
@@ -991,10 +977,10 @@ void vtkImageView2D::SetPan (double* arg)
   double focaldepth, focalpoint[4], position[4], motion[4];
   double bounds[6];
   double center[3];
-
+  
   camera->GetFocalPoint (focalpoint);
   camera->GetPosition(position);
-
+  
   this->Renderer->SetWorldPoint (focalpoint[0], focalpoint[1], focalpoint[2], 1.0);
   this->Renderer->WorldToDisplay();
   focaldepth = this->Renderer->GetDisplayPoint()[2];
@@ -1003,40 +989,34 @@ void vtkImageView2D::SetPan (double* arg)
   center[0] = (bounds[0] + bounds[1])/2.0;
   center[1] = (bounds[2] + bounds[3])/2.0;
   center[2] = (bounds[4] + bounds[5])/2.0;
-    
+  
   this->Renderer->SetWorldPoint (center[0], center[1], center[2], 1.0);
   this->Renderer->WorldToDisplay();
   this->Renderer->GetDisplayPoint (center);
   center[0] += this->Pan[0];
   center[1] += this->Pan[1];
-    
+  
   this->Renderer->SetDisplayPoint (center[0], center[1], focaldepth);  
   this->Renderer->DisplayToWorld();
-    
+  
   // Camera motion is reversed    
   motion[0] = focalpoint[0] - this->Renderer->GetWorldPoint()[0];
   motion[1] = focalpoint[1] - this->Renderer->GetWorldPoint()[1];
   motion[2] = focalpoint[2] - this->Renderer->GetWorldPoint()[2];
-    
-    /*
-     camera->SetFocalPoint(- motion[0] + focalpoint[0],
-     - motion[1] + focalpoint[1],
-     - motion[2] + focalpoint[2]);
-     */
-    
+  
   camera->SetFocalPoint(this->Renderer->GetWorldPoint()[0],
                         this->Renderer->GetWorldPoint()[1],
                         this->Renderer->GetWorldPoint()[2]);
-    
+  
   camera->SetPosition(- motion[0] + position[0],
                       - motion[1] + position[1],
                       - motion[2] + position[2]);
-    
+  
   if (this->Interactor && this->Interactor->GetLightFollowCamera()) 
   {
     this->Renderer->UpdateLightsGeometryToFollowCamera();
   }
-
+  
   this->InvokeEvent (vtkImageView::PanChangedEvent);
   this->Modified();
 }
@@ -1058,7 +1038,7 @@ void vtkImageView2D::GetPan (double pan[2])
     pan[1] = this->Pan[1];
     return;
   }
-
+  
   double bounds[6], center[3], viewFocus[4];
   
   camera->GetFocalPoint(viewFocus);
@@ -1121,57 +1101,46 @@ void vtkImageView2D::GetWorldCoordinatesFromDisplayPosition (int xy[2], double* 
 void vtkImageView2D::InstallPipeline()
 {
   this->Superclass::InstallPipeline();
-
+  
   if (this->Renderer)
   {
     //this->Renderer->AddViewProp( this->ImageActor );
     this->Renderer->AddViewProp( this->OrientationAnnotation );
     this->Renderer->GetActiveCamera()->ParallelProjectionOn();
   }
-    /*
-    for (unsigned int i=0; i<this->ImageDisplayMap.size(); i++)
-    {
-        vtkRenderer *renderer = this->ImageDisplayMap.at(i)->GetRenderer();
-        if (this->RenderWindow && renderer)
-        {
-            this->RenderWindow->AddRenderer(renderer);
-        }
-     }*/
-    
-
+  
   if( this->InteractorStyle )
   {
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command, 10);
-
-	if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command) )
-	  this->InteractorStyle->AddObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command, 10);
-
+    
+    if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command) )
+      this->InteractorStyle->AddObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command, 10);
+    
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command, 10);
-
+    
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command, 10);
-
+    
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::StartWindowLevelEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::StartWindowLevelEvent, this->Command, 10);
-
+    
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::WindowLevelEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::WindowLevelEvent, this->Command, 10);
-
+    
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::CharEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::CharEvent, this->Command, 10);
     
     if( this->CursorFollowMouse && !this->InteractorStyle->HasObserver (vtkImageView2DCommand::DefaultMoveEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::DefaultMoveEvent, this->Command, 10);
-
+    
     if( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::CameraZoomEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::CameraZoomEvent, this->Command, 10);
-
+    
     // if( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::CameraPanEvent, this->Command) )
     //   this->InteractorStyle->AddObserver (vtkImageView2DCommand::CameraPanEvent, this->Command, 10);
   }
-
 }
 
 //----------------------------------------------------------------------------
@@ -1183,19 +1152,10 @@ void vtkImageView2D::UnInstallPipeline()
     this->GetRenderer()->RemoveViewProp ( this->OrientationAnnotation );          
     //this->ImageActor->SetInput (NULL);
   }
-    
-  for (unsigned int i=0; i<this->ImageDisplayMap.size(); i++)
-  {
-      vtkRenderer *renderer = this->ImageDisplayMap.at(i)->GetRenderer();
-      if (this->RenderWindow && renderer)
-      {
-          this->RenderWindow->RemoveRenderer(renderer);
-      }
-  }
-    
-
+  
   if( this->InteractorStyle )
-  {/*
+  {
+    /*
     this->InteractorStyle->RemoveObservers(vtkImageView2DCommand::SliceMoveEvent);
     this->InteractorStyle->RemoveObservers(vtkImageView2DCommand::RequestedPositionEvent);
     this->InteractorStyle->RemoveObservers(vtkImageView2DCommand::ResetViewerEvent);
@@ -1205,11 +1165,11 @@ void vtkImageView2D::UnInstallPipeline()
     this->InteractorStyle->RemoveObservers(vtkImageView2DCommand::DefaultMoveEvent);
     this->InteractorStyle->RemoveObservers(vtkImageView2DCommand::CameraZoomEvent);
     this->InteractorStyle->RemoveObservers(vtkImageView2DCommand::CameraPanEvent);
-   */
+    */
     this->InteractorStyle->RemoveObserver ( this->Command );
   }
   
-
+  
   this->Superclass::UnInstallPipeline();
 }
 
@@ -1220,7 +1180,7 @@ void vtkImageView2D::InstallInteractor()
   {
     this->Interactor->SetInteractorStyle ( this->InteractorStyle );
   }
-
+  
   if( this->Interactor && this->RenderWindow)
   {    
     this->Interactor->SetRenderWindow   (this->RenderWindow);
@@ -1228,7 +1188,15 @@ void vtkImageView2D::InstallInteractor()
     this->DistanceWidget->SetInteractor (this->GetInteractor());
     this->AngleWidget->SetInteractor    (this->GetInteractor());
   }
-
+  
+  for (unsigned int i=1; i<this->ImageDisplayMap.size(); i++)
+  {
+    vtkRenderer *renderer = this->ImageDisplayMap.at(i)->GetRenderer();
+    if (this->RenderWindow && renderer)
+    {
+      this->RenderWindow->AddRenderer(renderer);
+    }
+  }
   
   if ( this->RulerWidget->GetInteractor() && this->ShowRulerWidget)
     this->RulerWidget->On();
@@ -1236,7 +1204,7 @@ void vtkImageView2D::InstallInteractor()
     this->DistanceWidget->On();
   if ( this->AngleWidget->GetInteractor() && this->ShowAngleWidget)
     this->AngleWidget->On();
-
+  
   this->Axes2DWidget->SetImageView (this);
   if( this->ShowImageAxis && this->RenderWindow && this->Renderer)
     this->Axes2DWidget->On();
@@ -1250,7 +1218,6 @@ void vtkImageView2D::InstallInteractor()
   this->IsInteractorInstalled = 1;
 }
 
-
 //----------------------------------------------------------------------------
 void vtkImageView2D::UnInstallInteractor()
 {
@@ -1258,12 +1225,21 @@ void vtkImageView2D::UnInstallInteractor()
   this->DistanceWidget->SetInteractor ( NULL );
   this->AngleWidget->SetInteractor ( NULL );
   this->Axes2DWidget->SetImageView ( NULL );
-
+  
   if (this->Interactor)
   {
     this->Interactor->SetRenderWindow (NULL);
     this->Interactor->SetInteractorStyle (NULL);
   }
+  
+  for (unsigned int i=1; i<this->ImageDisplayMap.size(); i++)
+  {
+    vtkRenderer *renderer = this->ImageDisplayMap.at(i)->GetRenderer();
+    if (this->RenderWindow && renderer)
+    {
+      this->RenderWindow->RemoveRenderer(renderer);
+    }
+  }    
 	
   for (unsigned int i=0; i<this->DataSetWidgets.size(); i++)
   {
@@ -1288,81 +1264,81 @@ int vtkImageView2D::GetInterpolate(void)
 
 void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity)
 {
-    this->Superclass::SetTransferFunctions(color, opacity);
-
-    if (this->ImageDisplayMap.size() != 0)
-    {
-        this->ImageDisplayMap.at(0)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
-    }
+  this->Superclass::SetTransferFunctions(color, opacity);
+  
+  if (this->ImageDisplayMap.size() != 0)
+  {
+    this->ImageDisplayMap.at(0)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
+  }
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int layer)
 {
-    if (image)
-        image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
-
-    if (layer==0) 
-    {
-      this->Superclass::SetInput (image, matrix, layer);
-    }
-
-    vtkRenderer *renderer = 0;
-    if (layer == 0)
-    {
-        this->ImageDisplayMap.at(0)->SetInput(image);
-        this->ImageDisplayMap.at(0)->SetRenderer( this->GetRenderer() );
-        renderer = this->GetRenderer();
-    }
-    else
-    {
-        this->ImageDisplayMap.insert(std::pair<int, vtkImage2DDisplay*>(layer, vtkImage2DDisplay::New()));
-        
-        vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
-        if (matrix)
-            auxMatrix->DeepCopy(matrix);
-        else {
-            auxMatrix->Identity();
-        }
-                
-        vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
-        
-        vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
-                    
-        vtkImageReslice *reslice = vtkImageReslice::New();
-        reslice->SetInput(image);
-        reslice->SetResliceAxes(auxMatrix);
-        reslice->SetOutputOrigin  (this->GetInput()->GetOrigin());
-        reslice->SetOutputSpacing (this->GetInput()->GetSpacing());
-        reslice->SetOutputExtent  (this->GetInput()->GetWholeExtent());
-        
-        auxMatrix->Delete();
-        
-        this->ImageDisplayMap.at(layer)->SetInput(reslice->GetOutput());
-        
-        this->GetRenderWindow()->SetNumberOfLayers(this->ImageDisplayMap.size());
-        renderer = this->ImageDisplayMap.at(layer)->GetRenderer();
-        renderer->SetLayer(layer);
-        if (this->GetRenderWindow())
-        {
-            this->GetRenderWindow()->AddRenderer(renderer);
-        }
-        renderer->SetActiveCamera (this->GetRenderer()->GetActiveCamera());
-
-        this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
-        this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(0.5);
-        this->ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
-        
-        this->ImageDisplayMap.at(layer)->GetInput()->UpdateInformation();
+  if (image)
+    image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
+  
+  if (layer==0) 
+  {
+    this->Superclass::SetInput (image, matrix, layer);
+  }
+  
+  vtkRenderer *renderer = 0;
+  if (layer == 0)
+  {
+    this->ImageDisplayMap.at(0)->SetInput(image);
+    this->ImageDisplayMap.at(0)->SetRenderer( this->GetRenderer() );
+    renderer = this->GetRenderer();
+  }
+  else
+  {
+    this->ImageDisplayMap.insert(std::pair<int, vtkImage2DDisplay*>(layer, vtkImage2DDisplay::New()));
+    
+    vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
+    if (matrix)
+      auxMatrix->DeepCopy(matrix);
+    else {
+      auxMatrix->Identity();
     }
     
-    renderer->AddViewProp (this->ImageDisplayMap.at(layer)->GetImageActor());
+    vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
     
-    this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
-    this->UpdateDisplayExtent();
-    // this->UpdateCenter();
-    this->UpdateSlicePlane();
-    this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
+    vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
+    
+    vtkImageReslice *reslice = vtkImageReslice::New();
+    reslice->SetInput(image);
+    reslice->SetResliceAxes(auxMatrix);
+    reslice->SetOutputOrigin  (this->GetInput()->GetOrigin());
+    reslice->SetOutputSpacing (this->GetInput()->GetSpacing());
+    reslice->SetOutputExtent  (this->GetInput()->GetWholeExtent());
+    
+    auxMatrix->Delete();
+    
+    this->ImageDisplayMap.at(layer)->SetInput(reslice->GetOutput());
+    
+    this->GetRenderWindow()->SetNumberOfLayers(this->ImageDisplayMap.size());
+    renderer = this->ImageDisplayMap.at(layer)->GetRenderer();
+    renderer->SetLayer(layer);
+    if (this->GetRenderWindow())
+    {
+      this->GetRenderWindow()->AddRenderer(renderer);
+    }
+    renderer->SetActiveCamera (this->GetRenderer()->GetActiveCamera());
+    
+    this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
+    this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(0.5);
+    this->ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+    
+    this->ImageDisplayMap.at(layer)->GetInput()->UpdateInformation();
+  }
+  
+  renderer->AddViewProp (this->ImageDisplayMap.at(layer)->GetImageActor());
+  
+  this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
+  this->UpdateDisplayExtent();
+  // this->UpdateCenter();
+  this->UpdateSlicePlane();
+  this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
 }
 
 //----------------------------------------------------------------------------
@@ -1370,7 +1346,7 @@ void vtkImageView2D::SetInputConnection (vtkAlgorithmOutput *input, vtkMatrix4x4
 {
   this->Superclass::SetInputConnection( input, matrix, layer);
   // this->ImageActor->SetInput( this->WindowLevel->GetOutput() );
-
+  
   // The slice might have changed in the process
   if (this->Input)
   {
@@ -1384,23 +1360,23 @@ void vtkImageView2D::SetInputConnection (vtkAlgorithmOutput *input, vtkMatrix4x4
 
 vtkImageActor *vtkImageView2D::GetImageActor(int layer) const
 {
-    if ((int)this->ImageDisplayMap.size()<layer+1)
-        return NULL;
-    
-    return this->ImageDisplayMap.at(layer)->GetImageActor();
+  if ((int)this->ImageDisplayMap.size()<layer+1)
+    return NULL;
+  
+  return this->ImageDisplayMap.at(layer)->GetImageActor();
 }
 
 vtkImageData *vtkImageView2D::GetImageInput(int layer) const
 {
-    std::map<int, vtkImage2DDisplay*>::const_iterator it = this->ImageDisplayMap.begin();
-    while(it!=this->ImageDisplayMap.end())
-    {
-        if (it->first==layer)
-            return it->second->GetInput();
-        ++it;
-    }
-    
-    return NULL;
+  std::map<int, vtkImage2DDisplay*>::const_iterator it = this->ImageDisplayMap.begin();
+  while(it!=this->ImageDisplayMap.end())
+  {
+    if (it->first==layer)
+      return it->second->GetInput();
+    ++it;
+  }
+  
+  return NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -1413,7 +1389,7 @@ void vtkImageView2D::SetShowRulerWidget (int val)
       this->RulerWidget->On();
     else
       this->RulerWidget->Off();
-
+    
     this->Modified();
   }
 }
@@ -1428,7 +1404,7 @@ void vtkImageView2D::SetShowDistanceWidget (int val)
       this->DistanceWidget->On();
     else
       this->DistanceWidget->Off();
-
+    
     this->Modified();
   }
 }
@@ -1443,7 +1419,7 @@ void vtkImageView2D::SetShowAngleWidget (int val)
       this->AngleWidget->On();
     else
       this->AngleWidget->Off();
-
+    
     this->Modified();
   }
 }
@@ -1472,34 +1448,30 @@ void vtkImageView2D::SetCursorFollowMouse (int val)
   }
   this->Modified();
 }
-  
+
 //----------------------------------------------------------------------------
 void vtkImageView2D::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-
+  
   os << indent << "RenderWindow:\n";
   this->RenderWindow->PrintSelf(os,indent.GetNextIndent());
   os << indent << "Renderer:\n";
   this->Renderer->PrintSelf(os,indent.GetNextIndent());
-  // os << indent << "ImageActor:\n";
-  // this->ImageActor->PrintSelf(os,indent.GetNextIndent());
-  // os << indent << "WindowLevel:\n" << endl;
-  // this->WindowLevel->PrintSelf(os,indent.GetNextIndent());
   os << indent << "Slice: " << this->GetSlice() << endl;
   os << indent << "SliceOrientation: " << this->SliceOrientation << endl;
   os << indent << "InteractorStyle: " << endl;
   if (this->InteractorStyle)
-    {
+  {
     os << "\n";
     this->InteractorStyle->PrintSelf(os,indent.GetNextIndent());
-    }
+  }
   else
-    {
+  {
     os << "None";
-    }
+  }
 }
-  
+
 //----------------------------------------------------------------------------
 vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
 {
@@ -1507,12 +1479,12 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   widget->GetActor()->SetProperty (prop);
   widget->SetSource (arg);
   widget->SetImageView (this);
-
+  
   if ( this->GetIsInteractorInstalled () )  {
-
+    
     widget->On();
   }
   this->DataSetWidgets.push_back( widget );
-
+  
   return widget->GetActor();
 }
