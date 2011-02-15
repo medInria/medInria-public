@@ -30,6 +30,7 @@ public slots:
     void onVisibilitySet(int state);
     void onOpacitySet(double opacity);
     void onOpacitySliderSet(int opacity);
+    void onLUTChanged(int index);
 
 signals:
     void setVisibility(bool visible, int layer);

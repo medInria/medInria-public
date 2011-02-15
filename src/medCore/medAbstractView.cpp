@@ -177,7 +177,7 @@ void medAbstractView::setCurrentLayer(int layer)
 
 int medAbstractView::currentLayer(void) const
 {
-    return 1; //d->currentLayer;
+    return d->currentLayer;
 }
 
 void medAbstractView::onPositionChanged (const QVector3D &position)

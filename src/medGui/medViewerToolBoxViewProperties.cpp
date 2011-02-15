@@ -16,6 +16,7 @@ public:
         medAbstractView *view;
         QWidget* propertiesToolBoxWidget;
         QComboBox * dataComboBox;
+        QComboBox * lutComboBox;
         QCheckBox * visible;
         QDoubleSpinBox * opacity;
         QSlider * opacitySlider;
@@ -27,16 +28,42 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     d->dataComboBox = new QComboBox(this);
     d->dataComboBox->setFocusPolicy(Qt::NoFocus);
 
+    d->lutComboBox = new QComboBox(this);
+    d->lutComboBox->setFocusPolicy(Qt::NoFocus);
+    d->lutComboBox->addItem( "Default"                );
+    d->lutComboBox->addItem( "Black & White"          );
+    d->lutComboBox->addItem( "Black & White Inversed" );
+    d->lutComboBox->addItem( "Spectrum"               );
+    d->lutComboBox->addItem( "Hot Metal"              );
+    d->lutComboBox->addItem( "Hot Green"              );
+    d->lutComboBox->addItem( "Hot Iron"               );
+    d->lutComboBox->addItem( "GE"                     );
+    d->lutComboBox->addItem( "Flow"                   );
+    d->lutComboBox->addItem( "Loni"                   );
+    d->lutComboBox->addItem( "Loni 2"                 );
+    d->lutComboBox->addItem( "Asymmetry"              );
+    d->lutComboBox->addItem( "P-Value"                );
+    d->lutComboBox->addItem( "Red Black Alpha"        );
+    d->lutComboBox->addItem( "Green Black Alpha"      );
+    d->lutComboBox->addItem( "Blue Black Alpha"       );
+    d->lutComboBox->addItem( "Muscles & Bones"        );
+    d->lutComboBox->addItem( "Bones"                  );
+    d->lutComboBox->addItem( "Red Vessels"            );
+    d->lutComboBox->addItem( "Cardiac"                );
+    d->lutComboBox->addItem( "Gray Rainbow"           );
+    d->lutComboBox->addItem( "Stern"                  );
+    d->lutComboBox->addItem( "Black Body"             );
+
     d->visible = new QCheckBox(this);
 
     d->opacitySlider = new QSlider(this);
-    d->opacitySlider->setRange(0,10);
-    d->opacitySlider->setValue(10);
+    d->opacitySlider->setRange(0,100);
+    d->opacitySlider->setValue(100);
     d->opacitySlider->setOrientation(Qt::Horizontal);
 
     d->opacity = new QDoubleSpinBox(this);
     d->opacity->setRange(0.0,1.0);
-    d->opacity->setSingleStep(0.1);
+    d->opacity->setSingleStep(0.01);
     d->opacity->setValue(1.0);
 
     d->propertiesToolBoxWidget = new QWidget;
@@ -51,6 +78,7 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     viewPropertiesLayout->addRow("Visible :", d->visible);
 //    viewPropertiesLayout->addRow("Opacity :", d->opacity);
     viewPropertiesLayout->addRow("Opacity :", opacityLayout);
+    viewPropertiesLayout->addRow("LUT :", d->lutComboBox);
     viewPropertiesLayout->setFormAlignment(Qt::AlignHCenter);
 
     this->setTitle("View properties");
@@ -60,6 +88,7 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     QObject::connect(d->visible, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
     QObject::connect(d->opacity, SIGNAL(valueChanged(double)), this, SLOT(onOpacitySet(double)));
     QObject::connect(d->opacitySlider, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
+    QObject::connect(d->lutComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
 }
 
 medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
@@ -103,6 +132,7 @@ void medViewerToolBoxViewProperties::onDataSelected(int index)
 {
     if (!d->view || (index == -1))
         return;
+    d->view->setCurrentLayer(index);
     d->view->setVisibility(d->view->visibility(index), index);
     d->visible->setChecked((d->view->visibility(index) == 1));
     d->view->setOpacity(d->view->opacity(index), index);
@@ -126,7 +156,7 @@ void medViewerToolBoxViewProperties::onOpacitySet(double opacity)
         return;
 
     d->opacitySlider->blockSignals(true);
-    d->opacitySlider->setValue((int)(d->opacity->value() * 10));
+    d->opacitySlider->setValue((int)(d->opacity->value() * 100));
     d->opacitySlider->blockSignals(false);
     d->view->setOpacity(opacity, d->dataComboBox->currentIndex());
 }
@@ -135,6 +165,19 @@ void medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
 {
     if ( (!d->view) || (d->dataComboBox->currentIndex() == -1))
         return;
-    d->opacity->setValue(d->opacitySlider->value()/10.0);
+    d->opacity->setValue(d->opacitySlider->value()/100.0);
 }
+
+void medViewerToolBoxViewProperties::onLUTChanged(int index)
+{
+    if ( (!d->view) || (d->dataComboBox->currentIndex() == -1))
+        return;
+
+    if (d->view) {
+        d->view->setProperty("LookupTable", d->lutComboBox->itemText(index));
+        d->view->update();
+    }
+}
+
+
 
