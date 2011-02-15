@@ -116,6 +116,9 @@ public:
   virtual void SetVisibility(int visible, int layer);
   virtual int GetVisibility(int layer);
 
+  virtual void SetOpacity(double opacity, int layer);
+  virtual double GetOpacity(int layer);
+
   // Description:
   // Set/Get the input image to the viewer.
   virtual void SetInput (vtkImageData *image, vtkMatrix4x4 *matrix = 0, int layer=0);

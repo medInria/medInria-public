@@ -248,6 +248,21 @@ int vtkImageView2D::GetVisibility(int layer)
     return ImageDisplayMap.at(layer)->GetImageActor()->GetVisibility();
 }
 
+void vtkImageView2D::SetOpacity(double opacity, int layer)
+{
+    if (layer > (int)ImageDisplayMap.size())
+        return;
+    ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(opacity);
+    this->GetRenderWindow()->Render();
+}
+
+double vtkImageView2D::GetOpacity(int layer)
+{
+    if (layer > (int)ImageDisplayMap.size())
+        return 0.0;
+    return ImageDisplayMap.at(layer)->GetImageActor()->GetOpacity();
+}
+
 //----------------------------------------------------------------------------
 void vtkImageView2D::GetSliceRange(int &min, int &max)
 {
