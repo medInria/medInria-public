@@ -26,10 +26,7 @@ medSettingsEditorPrivate::medSettingsEditorPrivate()
 
 medSettingsEditorPrivate::~medSettingsEditorPrivate()
 {
-    foreach(medSettingsWidget* widget, settingsWidgets)
-    {
-        delete widget;
-    }
+
 }
 
 medSettingsEditor::medSettingsEditor(QWidget *parent) :
@@ -37,7 +34,7 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
 {
     QVBoxLayout * vLayout = new QVBoxLayout(this);
     setLayout(vLayout);
-    this->setFixedSize(QSize(500,500));
+    this->setFixedSize(QSize(200,500));
     d->tabWidget = new QTabWidget (this);
     d->tabWidget->setTabPosition(QTabWidget::West);
     d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -68,14 +65,17 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
 
     //Process manager widget
     medSettingsWidget * setWid;
+    QScrollArea * scroll;
     foreach (QString widgetStyle, settingsFactory->settingsWidgets())
     {
         if (!d->settingsWidgets.contains(widgetStyle))
         {
             setWid = settingsFactory->createSettingsWidget(widgetStyle,d->tabWidget);
-
-            d->tabWidget->addTab(startupSettingsWidget,
-                             startupSettingsWidget->section());
+            scroll = new QScrollArea(this);
+            scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+            scroll->setWidget(setWid);
+            d->tabWidget->addTab(setWid,
+                             setWid->section());
             d->settingsWidgets.insert(widgetStyle, setWid);
         }
     }
