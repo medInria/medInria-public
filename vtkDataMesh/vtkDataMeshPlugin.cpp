@@ -42,6 +42,7 @@ vtkDataMeshPlugin::~vtkDataMeshPlugin(void)
 bool vtkDataMeshPlugin::initialize(void)
 {
   if(!vtkDataMesh::registered()) qDebug() << "Unable to register vtkDataMesh type";
+  if(!vtkDataMesh4D::registered()) qDebug() << "Unable to register vtkDataMesh4D type";
   return true;
 }
 
