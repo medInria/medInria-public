@@ -85,27 +85,28 @@ vtkStandardNewMacro(vtkImageView2D);
 
 class vtkImage2DDisplay : public vtkObject
 {
-    public:
-        static vtkImage2DDisplay * New();
-        vtkImage2DDisplay();
-        ~vtkImage2DDisplay();
+public:
+    static vtkImage2DDisplay * New();
+        
+    virtual void SetInput(vtkImageData * image);
+    vtkGetObjectMacro(Input, vtkImageData);
 
-        virtual void SetInput(vtkImageData * image);
-        virtual vtkImageData * GetInput();
-        // virtual void SetWindowLevel(vtkImageMapToColors * color);
-        virtual void SetLookupTable(vtkLookupTable * lut);
-        virtual vtkImageActor * GetImageActor();
-        vtkGetObjectMacro(WindowLevel, vtkImageMapToColors);
+    virtual void SetLookupTable(vtkLookupTable * lut);
 
+    vtkGetObjectMacro(ImageActor, vtkImageActor);
+    
+    vtkGetObjectMacro(WindowLevel, vtkImageMapToColors);
 
-    private :
-        vtkImageMapToColors*            WindowLevel;
-        vtkLookupTable*                 LUT;
-        vtkImageData*                   Input;
-        vtkImageActor*                  ImageActor;
+protected:
+    vtkImage2DDisplay();
+    ~vtkImage2DDisplay();    
+    
+private :
+    vtkImageMapToColors*            WindowLevel;
+    vtkImageData*                   Input;
+    vtkImageActor*                  ImageActor;
 };
 
-//vtkCxxRevisionMacro(vtkImage2DDisplay, "$Revision: 3 $");
 vtkStandardNewMacro(vtkImage2DDisplay);
 
 vtkImage2DDisplay::vtkImage2DDisplay()
@@ -114,20 +115,12 @@ vtkImage2DDisplay::vtkImage2DDisplay()
     this->ImageActor        = vtkImageActor::New();
     this->WindowLevel       = vtkImageMapToColors::New();
     this->WindowLevel->SetOutputFormatToRGBA();
-    this->LUT               = vtkLookupTable::New();
 }
 
 vtkImage2DDisplay::~vtkImage2DDisplay()
 {
-    this->LUT->Delete();
     this->WindowLevel->Delete();
     this->ImageActor->Delete();
-    this->Input->Delete();
-}
-
-vtkImageData * vtkImage2DDisplay::GetInput()
-{
-    return this->Input;
 }
 
 void
@@ -145,15 +138,9 @@ vtkImage2DDisplay::SetInput(vtkImageData * image)
 void
 vtkImage2DDisplay::SetLookupTable(vtkLookupTable * lut)
 {
-    this->LUT = lut;
-    this->WindowLevel->SetLookupTable(this->LUT);
+    this->WindowLevel->SetLookupTable(lut);
 }
 
-vtkImageActor *
-vtkImage2DDisplay::GetImageActor()
-{
-    return this->ImageActor;
-}
 // End vtkImage2DDisplay
 
 
@@ -471,31 +458,30 @@ void vtkImageView2D::UpdateDisplayExtent()
          input->PropagateUpdateExtent();
        }
   }
-       // Figure out the correct clipping range
-       if (this->Renderer)
-       {
-         if (this->InteractorStyle &&
-             this->InteractorStyle->GetAutoAdjustCameraClippingRange())
-         {
-           this->Renderer->ResetCameraClippingRange();
-         }
-         else
-         {
-           vtkCamera *cam = this->Renderer->GetActiveCamera();
-           if (cam)
-           {
-             double bounds[6];
-             ImageDisplayMap.at(0)->GetImageActor()->GetBounds(bounds);
-             double spos = bounds[this->SliceOrientation * 2];
-             double cpos = cam->GetPosition()[this->SliceOrientation];
-             double range = fabs(spos - cpos);
-             double *spacing = input->GetSpacing();
-             double avg_spacing = (spacing[0] + spacing[1] + spacing[2]) / 3.0;
-             cam->SetClippingRange(range - avg_spacing * 3.0, range + avg_spacing * 3.0);
-           }
-         }
-  }
-
+  // Figure out the correct clipping range
+    if (this->Renderer)
+    {
+        if (this->InteractorStyle &&
+            this->InteractorStyle->GetAutoAdjustCameraClippingRange())
+        {
+            this->Renderer->ResetCameraClippingRange();
+        }
+        else
+        {
+            vtkCamera *cam = this->Renderer->GetActiveCamera();
+            if (cam)
+            {
+                double bounds[6];
+                ImageDisplayMap.at(0)->GetImageActor()->GetBounds(bounds);
+                double spos = bounds[this->SliceOrientation * 2];
+                double cpos = cam->GetPosition()[this->SliceOrientation];
+                double range = fabs(spos - cpos);
+                double *spacing = input->GetSpacing();
+                double avg_spacing = (spacing[0] + spacing[1] + spacing[2]) / 3.0;
+                cam->SetClippingRange(range - avg_spacing * 3.0, range + avg_spacing * 3.0);
+            }
+        }
+    }    
 }
 
 
@@ -1284,129 +1270,100 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     if (image)
         image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
 
-    
-    if (layer==0) {
-        this->Superclass::SetInput( image, matrix, layer);
-
-
-//        this->ImageDisplayMap.insert(std::pair<int, vtkImage2DDisplay*>(layer, vtkImage2DDisplay::New()));
-//        ImageDisplayMap.at(0)->SetInput(image);
-//        // The slice might have changed in the process
-//        if (this->ImageDisplayMap.at(0)->GetInput())
-//        {
-//            this->ImageDisplayMap.at(0)->GetInput()->UpdateInformation();
-//            this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
-//            this->UpdateDisplayExtent();
-//            // this->UpdateCenter();
-//            this->UpdateSlicePlane();
-//            this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
-//        }
+    if (layer==0) 
+    {
+      this->Superclass::SetInput( image, matrix, layer);
     }
 
-
-//    if (ImageDisplayMap.size() == 0)
-//        ImageDisplayMap.insert(std::pair<int, vtkImage2DDisplay*>(layer, vtkImage2DDisplay::New()));
-
-//    if ( !ImageDisplayMap.at(layer))
-        ImageDisplayMap.insert(std::pair<int, vtkImage2DDisplay*>(layer, vtkImage2DDisplay::New()));
-
-//        ImageDisplayMap.insert(layer, vtkImage2DDisplay::New());
-
-//    std::map<int,vtkImage2DDisplay *>::iterator it;
-  //  for (it = ImageDisplayMap.begin(); it != ImageDisplayMap.end(); it++)
-    //{
-        vtkRenderer * renderer = 0;
-        if (layer == 0)
-        {
-            ImageDisplayMap.at(layer)->SetInput(image);
-            renderer = this->GetRenderer(); //vtkRenderer::New();
-//            vtkLookupTable *lut = vtkLookupTableManager::GetGrayRainbowLookupTable();
-//            lut->SetTableRange(0.0, 3.0);
-//            ImageDisplayMap.at(layer)->SetLookupTable(lut);
+    ImageDisplayMap.insert(std::pair<int, vtkImage2DDisplay*>(layer, vtkImage2DDisplay::New()));
+    vtkRenderer * renderer = 0;
+    if (layer == 0)
+    {
+        ImageDisplayMap.at(layer)->SetInput(image);
+        renderer = this->GetRenderer(); //vtkRenderer::New();
+    }
+    else
+    {
+        vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
+        if (matrix)
+            auxMatrix->DeepCopy(matrix);
+        else {
+            auxMatrix->Identity();
         }
-        else
-        {
-            vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
-            if (matrix)
-                auxMatrix->DeepCopy(matrix);
-            else {
-                auxMatrix->Identity();
-            }
             
+        vtkMatrix4x4::Multiply4x4(this->InvertOrientationMatrix, auxMatrix, auxMatrix);
             
-            vtkMatrix4x4::Multiply4x4(this->InvertOrientationMatrix, auxMatrix, auxMatrix);
-            
-            double origin[4], origin2[4];
-            this->GetInput()->GetOrigin(origin);
-            image->GetOrigin(origin2);
+        double origin[4], origin2[4];
+        this->GetInput()->GetOrigin(origin);
+        image->GetOrigin(origin2);
                         
-            for (int i=0; i<3; i++)
-                origin2[i] -= origin[i];
-            origin2[3] = 0.0;
+        for (int i=0; i<3; i++)
+            origin2[i] -= origin[i];
+        origin2[3] = 0.0;
             
-            this->InvertOrientationMatrix->MultiplyPoint (origin2, origin2);
+        this->InvertOrientationMatrix->MultiplyPoint (origin2, origin2);
             
-            for (int i=0; i<3; i++)
-            {
-                auxMatrix->SetElement(i, 3, origin2[i]);
-            }
-            
-            int *w_ext = image->GetWholeExtent();
-            double ext_min[4], ext_max[4];
-            for (int i=0; i<3; i++)
-            {
-                ext_min[i] = static_cast<double> (w_ext[i*2]);
-                ext_max[i] = static_cast<double> (w_ext[i*2+1]);
-            }
-            ext_min[3] = 0.0;
-            ext_max[3] = 0.0;
-            
-            auxMatrix->MultiplyPoint(ext_min, ext_min);
-            auxMatrix->MultiplyPoint(ext_max, ext_max);
-            
-            int new_extent[6];
-            
-            int *eextent = this->GetInput()->GetWholeExtent();
-            
-            for (int i=0; i<3; i++)
-            {
-                new_extent[i*2] = vtkMath::Round(ext_min[i]);
-                new_extent[i*2+1] = vtkMath::Round(ext_max[i]);
-                
-                if (new_extent[i*2]>eextent[i*2])
-                    new_extent[i*2] = eextent[i*2];
-                
-                if (new_extent[i*2+1]<eextent[i*2+1])
-                    new_extent[i*2+1] = eextent[i*2+1];
-            }
-            
-            vtkImageReslice *reslice = vtkImageReslice::New();
-            reslice->SetInput(image);
-            reslice->SetResliceAxes(auxMatrix);
-            reslice->SetOutputOrigin(this->GetInput()->GetOrigin());
-            reslice->SetOutputSpacing(this->GetInput()->GetSpacing());
-            reslice->SetOutputExtent(new_extent);
-            
-            auxMatrix->Delete();
-            //reslice->Update();
-            
-            ImageDisplayMap.at(layer)->SetInput(reslice->GetOutput());
-            
-            this->GetRenderWindow()->SetNumberOfLayers(ImageDisplayMap.size());
-            renderer = vtkRenderer::New();
-            renderer->SetLayer(layer);
-            this->GetRenderWindow()->AddRenderer(renderer);
-            renderer->SetActiveCamera(this->GetRenderer()->GetActiveCamera());
-            vtkLookupTable *lut = vtkLookupTableManager::GetSpectrumLookupTable();
-            lut->SetTableRange(0.0, 1000.0);
-            lut->SetAlphaRange(0.0, 1.0);
-            ImageDisplayMap.at(layer)->SetLookupTable(lut);
-            ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(1.0);
-            ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+        for (int i=0; i<3; i++)
+        {
+            auxMatrix->SetElement(i, 3, origin2[i]);
         }
+            
+        int *w_ext = image->GetWholeExtent();
+        double ext_min[4], ext_max[4];
+        for (int i=0; i<3; i++)
+        {
+            ext_min[i] = static_cast<double> (w_ext[i*2]);
+            ext_max[i] = static_cast<double> (w_ext[i*2+1]);
+        }
+        ext_min[3] = 0.0;
+        ext_max[3] = 0.0;
+        
+        auxMatrix->MultiplyPoint(ext_min, ext_min);
+        auxMatrix->MultiplyPoint(ext_max, ext_max);
+            
+        int new_extent[6];
+        
+        int *eextent = this->GetInput()->GetWholeExtent();
+        
+        for (int i=0; i<3; i++)
+        {
+            new_extent[i*2] = vtkMath::Round(ext_min[i]);
+            new_extent[i*2+1] = vtkMath::Round(ext_max[i]);
+            
+            if (new_extent[i*2]>eextent[i*2])
+                new_extent[i*2] = eextent[i*2];
+            
+            if (new_extent[i*2+1]<eextent[i*2+1])
+                new_extent[i*2+1] = eextent[i*2+1];
+        }
+        
+        vtkImageReslice *reslice = vtkImageReslice::New();
+        reslice->SetInput(image);
+        reslice->SetResliceAxes(auxMatrix);
+        reslice->SetOutputOrigin(this->GetInput()->GetOrigin());
+        reslice->SetOutputSpacing(this->GetInput()->GetSpacing());
+        reslice->SetOutputExtent(new_extent);
+        
+        auxMatrix->Delete();
+        //reslice->Update();
+        
+        ImageDisplayMap.at(layer)->SetInput(reslice->GetOutput());
+        
+        this->GetRenderWindow()->SetNumberOfLayers(ImageDisplayMap.size());
+        renderer = vtkRenderer::New();
+        renderer->SetLayer(layer);
+        this->GetRenderWindow()->AddRenderer(renderer);
+        renderer->SetActiveCamera(this->GetRenderer()->GetActiveCamera());
+        vtkLookupTable *lut = vtkLookupTableManager::GetSpectrumLookupTable();
+        lut->SetTableRange(0.0, 3.0);
+        lut->SetAlphaRange(0.0, 1.0);
+        ImageDisplayMap.at(layer)->SetLookupTable(lut);
+        ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(1.0);
+        ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+    }
     
     renderer->AddViewProp(ImageDisplayMap.at(layer)->GetImageActor());
-
+    
     ImageDisplayMap.at(layer)->GetInput()->UpdateInformation();
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
     this->UpdateDisplayExtent();
