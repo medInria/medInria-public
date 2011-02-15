@@ -4,7 +4,7 @@
 #include <dtkCore/dtkAbstractDataMesh.h>
 #include <dtkCore/dtkGlobal.h>
 
-#include "vtkDataMesh4DPluginExport.h"
+#include "vtkDataMeshPluginExport.h"
 
 class vtkDataMesh4DPrivate;
 

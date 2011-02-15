@@ -96,7 +96,7 @@ QList<QImage> & vtkDataMesh4D::thumbnails (void) const
 
   vtkPointSet* mesh = vtkPointSet::SafeDownCast (d->meshsequence->GetDataSet());
   
-  if (!mesh->GetNumberOfPoints())
+  if (!mesh || !mesh->GetNumberOfPoints())
     return d->thumbnails;
   
   vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
@@ -105,7 +105,7 @@ QList<QImage> & vtkDataMesh4D::thumbnails (void) const
   vtkProperty* prop = vtkProperty::New();
   vtkRenderer* renderer = vtkRenderer::New();
   vtkRenderWindow* window = vtkRenderWindow::New();
-  vtkWindowToImageFilter* filter = vtkWindowToImageFilter::New();
+  // vtkWindowToImageFilter* filter = vtkWindowToImageFilter::New();
   geometryextractor->SetInput (mesh);
   mapper->SetInput (geometryextractor->GetOutput());
   actor->SetMapper (mapper);

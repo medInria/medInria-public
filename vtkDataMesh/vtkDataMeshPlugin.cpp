@@ -1,5 +1,6 @@
 #include "vtkDataMeshPlugin.h"
 #include "vtkDataMesh.h"
+#include "vtkDataMesh4D.h"
 
 #include "vtkLogForwarder.h"
 
@@ -63,7 +64,7 @@ QString vtkDataMeshPlugin::description(void) const
 
 QStringList vtkDataMeshPlugin::tags(void) const
 {
-  return QStringList() << "vtk" << "data" << "mesh";
+  return QStringList() << "vtk" << "data" << "mesh" << "4D";
 }
 
 QStringList vtkDataMeshPlugin::types(void) const
