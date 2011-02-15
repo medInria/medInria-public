@@ -98,23 +98,34 @@ public:
     /**
      * Set the visibility of the data on the corresponding layer
      */
-    virtual void setVisibility (int visibility, int layer) {};
+    virtual void setVisibility (int visibility, int layer);
 
     /**
      * Get the visibility of the data on the corresponding layer
      */
-    virtual int visibility(int layer) {return 0;};
+    virtual int visibility(int layer) const;
 
     /**
      * Set the visibility of the data on the corresponding layer
      */
-    virtual void setOpacity (double opacity, int layer) {};
+    virtual void setOpacity (double opacity, int layer);
 
     /**
      * Get the visibility of the data on the corresponding layer
      */
-    virtual double opacity(int layer) {return 0.0;};
+    virtual double opacity(int layer) const;
 
+    /**
+     * Set the current layer. The current layer is used to determine which layer will receive
+     * property changed.
+     */
+    virtual void setCurrentLayer(int layer);
+  
+    /**
+     * Get the current layer. The current layer is used to determine which layer will receive
+     * property changed.
+     */
+    virtual int currentLayer(void) const;
 
 
 signals:

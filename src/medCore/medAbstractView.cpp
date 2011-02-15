@@ -6,6 +6,8 @@ public:
   bool linkPosition;
   bool linkCamera;
   bool linkWindowing;
+  
+  int currentLayer;
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
@@ -13,6 +15,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->linkPosition  = false;
     d->linkCamera    = false;
     d->linkWindowing = false;
+    d->currentLayer = 0;
   
     QStringList lut;
     lut << "Default";		// list of available lookup tables set
@@ -143,6 +146,38 @@ void medAbstractView::setCamera (const QVector3D &position, const QVector3D &vie
 {
     this->onCameraChanged (position, viewup, focal, parallelScale);
     emit cameraChanged (position, viewup, focal, parallelScale);
+}
+
+void medAbstractView::setVisibility(int visibility, int layer)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+int medAbstractView::visibility(int layer) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return 1;
+}
+
+void medAbstractView::setOpacity(double opacity, int layer)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+double medAbstractView::opacity(int layer) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return 1.0;
+}
+
+void medAbstractView::setCurrentLayer(int layer)
+{
+    d->currentLayer = layer;
+}
+
+int medAbstractView::currentLayer(void) const
+{
+    return 1; //d->currentLayer;
 }
 
 void medAbstractView::onPositionChanged (const QVector3D &position)
