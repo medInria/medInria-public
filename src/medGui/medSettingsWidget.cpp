@@ -1,7 +1,7 @@
 #include "medSettingsWidget.h"
 
 #include <QWidget>
-#include <medCore/medMessageController.h>
+#include <QtGui>
 
 
 class medSettingsWidgetPrivate {
@@ -25,35 +25,12 @@ medSettingsWidgetPrivate::~medSettingsWidgetPrivate()
 medSettingsWidget::medSettingsWidget(QWidget *parent) : QWidget(parent), d(new medSettingsWidgetPrivate())
 {
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
-        medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
-
 }
 
 
 bool medSettingsWidget::validate()
 {
     return false;
-}
-
-bool medSettingsWidget::save()
-{
-    if (!validate())
-    {
-        qDebug()<<"validation of section"<< d->section <<
-                "failed";
-        QString error = "Error in validation of section";
-        error.append(d->section);
-        emit (showError(this,error,3));
-        return false;
-    }
-    else
-    {
-        //do the saving
-        qDebug()<<"validation of section"<< d->section <<
-                "successful";
-        return true;
-    }
 }
 
 void medSettingsWidget::setSection(QString section)
@@ -66,4 +43,8 @@ const QString& medSettingsWidget::section()const
     return d->section;
 }
 
+void medSettingsWidget::read()
+{
+    qDebug() << "read QSettings";
+}
 

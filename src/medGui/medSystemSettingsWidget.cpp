@@ -1,9 +1,11 @@
 #include "medSystemSettingsWidget.h"
+
 #include <QWidget>
 #include <QtGui>
 #include <QDir>
 #include <QtCore>
 
+#include <medCore/medSettingsManager.h>
 
 class medSystemSettingsWidgetPrivate {
 
@@ -84,5 +86,21 @@ bool medSystemSettingsWidget::validatePaths(QString paths)
 void medSystemSettingsWidget::read()
 {
     qDebug()<<"reading QSettings";
+    medSettingsManager * mnger = medSettingsManager::instance();
+    d->modulesPathField->setText(mnger->value("scripts","modules_path").toString());
+     d->modulesPathField->setText(mnger->value("scripts","scripts_path").toString());
+
+
+
+    d->pluginsPathField->setText(mnger->value("plugins","path").toString());
 
 }
+
+bool medSystemSettingsWidget::write()
+{
+    medSettingsManager * mnger = medSettingsManager::instance();
+    mnger->setValue("plugins","path",d->modulesPathField->text());
+    mnger->setValue("scripts","modules_path",d->modulesPathField->text());
+    mnger->setValue("scripts","scripts_path",d->scriptsPathField->text());
+}
+

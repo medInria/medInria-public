@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <QWidget>
 
+#include <medCore/medMessageController.h>
 #include <medGui/medSystemSettingsWidget.h>
 #include <medGui/medSettingsWidgetFactory.h>
 
@@ -84,16 +85,38 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
   buttonLayout->addWidget(cancel);
   buttonLayout->addWidget(save);
   vLayout->addLayout(buttonLayout);
+
+  connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
+      medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
+
+  foreach(medSettingsWidget * setting, d->settingsWidgets)
+  {
+      setting->read();
+  }
 }
 
 
 void medSettingsEditor::onSaveClicked(){
+
+
+
     foreach(medSettingsWidget * setting, d->settingsWidgets)
     {
-        //maybe call validate (and make it public) instead
-        //to avoid half saved solutions, or keep on saving others?
-        if (!setting->save())
-            break;
+        if (!setting->validate())
+        {
+            qDebug()<<"validation of section"<< setting->section() <<
+                    "failed";
+            QString error = "Error in validation of section";
+            error.append(setting->section());
+            emit (showError(this,error,3));
+        }
+        else
+        {
+            //do the saving
+            setting->write();
+            qDebug()<<"validation of section"<< setting->section() <<
+                    "successful";
+        }
     }
 }
 

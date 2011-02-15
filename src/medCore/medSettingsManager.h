@@ -9,14 +9,6 @@
 class medSettingsManagerPrivate;
 
 
-enum ESections {
-    SEC_NONE,
-    SEC_GENERAL,
-    SEC_SYSTEM,
-    SEC_DICOM,
-    SEC_STARTUP,
-    SEC_LOGGING
-};
 
 class MEDCORE_EXPORT medSettingsManager : public QObject
 {
@@ -40,26 +32,25 @@ public:
     * @params: const QVariant & value
     * @return   void
     */
-    void setValue( ESections section, const QString & key, const QVariant & value );
+    void setValue( const QString & section, const QString & key, const QVariant & value );
 
     /**
     * value
+    * @params: const QString & section
     * @params: const QString & key
     * @params: const QVariant & defaultValue
     * @return   QT_NAMESPACE::QVariant
     */
-    QVariant value ( ESections section, const QString & key, const QVariant & defaultValue = QVariant() );
+    QVariant value ( const QString & section, const QString & key, const QVariant & defaultValue = QVariant() );
 
 signals:
-    void settingsChanged( ESections );
+    void settingsChanged( const QString & );
 
 protected:
     medSettingsManager(void);
     ~medSettingsManager(void);
 
 private:
-    // converts the enum to a string to be used internally
-    QString sectionEnumToString(ESections section);
 
     static medSettingsManager *s_instance;
 
