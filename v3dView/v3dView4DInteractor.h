@@ -47,13 +47,13 @@ protected:
     virtual void updatePipeline ();
 
 signals:
-    void selectionValidated (const QString& name);
+    /* void selectionValidated (const QString& name); */
 
 public slots:
-    virtual void onPropertySet (const QString& key, const QString& value);
-    virtual void onVisibilityPropertySet (const QString& value);
-    virtual void onEdgeVisibilityPropertySet (const QString& value);
-    virtual void onRenderingModePropertySet (const QString& value);
+    //virtual void onPropertySet (const QString& key, const QString& value);
+    //virtual void onVisibilityPropertySet (const QString& value);
+    //virtual void onEdgeVisibilityPropertySet (const QString& value);
+    //virtual void onRenderingModePropertySet (const QString& value);
 
 private:
     v3dView4DInteractorPrivate *d;

@@ -4,6 +4,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkLog.h>
 
 #include <vtkActor.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -101,12 +102,13 @@ bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 
 void v3dView4DInteractor::enable(void)
 {
-    if (this->enabled())
-        return;
+  dtkWarning() << "enabling v3dView4DInteractor" ;
+  if (this->enabled())
+    return;
+  updatePipeline ();
+  dtkAbstractViewInteractor::enable();
+  dtkWarning() << "enabled " ;
 
-    updatePipeline ();
-
-    dtkAbstractViewInteractor::enable();
 }
 
 
@@ -141,22 +143,27 @@ dtkAbstractViewInteractor *createV3dView4DInteractor(void)
 
 void v3dView4DInteractor::updatePipeline (void)
 {
+  dtkWarning() << "v3dView4DInteractor::updatePipeline()";
+  
   for (int i=0; i<sequenceList->GetNumberOfItems(); i++)
   {
     vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(sequenceList->GetItemAsObject (i));
     if (!sequence)
       continue;
 
+    dtkWarning() << "sequence ()" << i;
     switch (sequence->GetType())
     {
 	case vtkMetaDataSet::VTK_META_IMAGE_DATA:
 	  d->view->view2d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
 	  d->view->view3d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
+	  dtkWarning() << "sequence ()" << i << " is an image";
 	  break;
 	case vtkMetaDataSet::VTK_META_SURFACE_MESH:
 	case vtkMetaDataSet::VTK_META_VOLUME_MESH:
 	  d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
 	  d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
+	  dtkWarning() << "sequence ()" << i << " is a mesh and has been added";
 	  break;  
 	default:
 	  break;

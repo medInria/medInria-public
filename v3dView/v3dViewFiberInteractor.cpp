@@ -59,7 +59,6 @@ v3dViewFiberInteractor::~v3dViewFiberInteractor()
 {
     this->disable();
     d->manager->Delete();
-
     delete d;
     d = 0;
 }
