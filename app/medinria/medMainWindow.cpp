@@ -31,6 +31,7 @@
 #include <dtkGui/dtkSpacer.h>
 
 #include <medCore/medMessageController.h>
+#include <medCore/medSettingsManager.h>
 
 #include <medGui/medStatusQuitButton.h>
 #include <medGui/medWorkspaceShifter.h>
@@ -230,6 +231,19 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medMessageController::instance()->attach(this->statusBar());
 
     d->viewerArea->setupConfiguration("Visualization");
+
+	// if the user configured a default area we need to show it
+    medSettingsManager * mnger = medSettingsManager::instance();
+	QVariant vArea = mnger->value("startup", "default_starting_area");
+
+    if (!vArea.isNull()){
+		QString area = vArea.toString();
+
+		if (area.compare("Browser") == 0)
+    		switchToBrowserArea();
+    	else if (area.compare("Viewer") == 0)
+    		switchToViewerArea();
+    }
 
     connect(configurationSwitcher, SIGNAL(activated(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
