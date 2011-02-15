@@ -34,7 +34,7 @@ public:
     ~medMainWindow(void);
 
     void readSettings(void);
-    void writeSettings(void);
+    void writeSettings();
 
 public slots:
     void setWallScreen(bool full);

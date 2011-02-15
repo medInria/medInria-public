@@ -268,12 +268,21 @@ void medMainWindow::readSettings(void)
     settings.endGroup();
 }
 
-void medMainWindow::writeSettings(void)
+void medMainWindow::writeSettings()
 {
     QSettings settings("inria", "medinria");
     settings.beginGroup("medinria");
-    settings.setValue("pos", pos());
-    settings.setValue("size", size());
+
+    // if the app is in full screen mode we do not want to save the pos and size
+    // as there is a setting that defines either the user wants to open the app in FS or not
+    // so, if he/she chose not to and quit the app while in FS mode, we skip the settings saving
+    if (!this->isFullScreen())
+    {
+        settings.setValue("pos", pos());
+        settings.setValue("size", size());
+    }
+
+
     settings.endGroup();
 }
 
