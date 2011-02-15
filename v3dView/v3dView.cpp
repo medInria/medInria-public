@@ -636,8 +636,6 @@ void v3dView::setData(dtkAbstractData *data)
         layer++;
     }
     
-    qDebug() << "Openging at layer: " << layer;
-    
     this->setData( data, layer);
     emit dataAdded(layer);
     
@@ -1672,7 +1670,7 @@ void v3dView::setVisibility(int visible, int layer)
     d->view2d->SetVisibility(visible, layer);
 }
 
-int v3dView::visibility(int layer)
+int v3dView::visibility(int layer) const
 {
     return d->view2d->GetVisibility(layer);
 }
@@ -1682,7 +1680,7 @@ void v3dView::setOpacity(double opacity, int layer)
     d->view2d->SetOpacity(opacity, layer);
 }
 
-double v3dView::opacity(int layer)
+double v3dView::opacity(int layer) const
 {
     return d->view2d->GetOpacity(layer);
 }
@@ -2000,7 +1998,6 @@ void v3dView::onCameraChanged (const QVector3D &position, const QVector3D &viewu
 
 void v3dView::onVisibilitySet(bool visible, int layer)
 {
-    qDebug() << "Visibility is set to : " << visible;
     if (visible)
         d->view2d->SetVisibility(1,layer);
     else

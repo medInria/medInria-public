@@ -69,10 +69,10 @@ public:
 				      QList< QColor > colors );
 
     virtual void setVisibility(int visible, int layer);
-    virtual int visibility(int layer);
+    virtual int visibility(int layer) const;
 
     virtual void setOpacity(double opacity, int layer);
-    virtual double opacity(int layer);
+    virtual double opacity(int layer) const;
 
 public slots:
     void play          (bool value);
