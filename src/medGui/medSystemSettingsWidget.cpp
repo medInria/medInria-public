@@ -62,6 +62,10 @@ bool medSystemSettingsWidget::validate()
 
 bool medSystemSettingsWidget::validatePaths(QString paths)
 {
+	//empty paths are allowed, the user hasn't configured them yet
+	if (paths.isEmpty())
+		return true;
+
     QStringList splitted = paths.split(":");
 
     foreach (QString path, splitted) {
