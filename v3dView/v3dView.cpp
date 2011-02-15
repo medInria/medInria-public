@@ -21,6 +21,7 @@
 #include <vtkRenderWindow.h>
 #include <vtkLookupTableManager.h>
 #include <vtkTransferFunctionPresets.h>
+#include <vtkColorTransferFunction.h>
 #include <vtkImageActor.h>
 #include <vtkImageData.h>
 #include <vtkPointSet.h>
@@ -1068,14 +1069,27 @@ void v3dView::onLookupTablePropertySet(const QString &value)
     vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
     Presets::GetTransferFunction( value.toStdString(), rgb, alpha );
+  
     // d->currentView->SetColorTransferFunction( rgb );
     // d->currentView->SetOpacityTransferFunction( alpha );
-    d->collection->SyncSetColorTransferFunction( rgb );
-    d->collection->SyncSetOpacityTransferFunction( alpha );
+
+    // d->collection->SyncSetColorTransferFunction( rgb );
+    // d->collection->SyncSetOpacityTransferFunction( alpha );
+
+    d->view2d->SetTransferFunctions (rgb, 0, this->currentLayer());
+    d->view2d->SetTransferFunctions (0, alpha, this->currentLayer());
+    
+    if (this->currentLayer()==0)
+    {
+        d->view3d->SetTransferFunctions (rgb, 0);
+        d->view3d->SetTransferFunctions (0, alpha);
+    }
+  
     rgb->Delete();
     alpha->Delete();
     
-    emit lutChanged();
+    if (this->currentLayer()==0)
+        emit lutChanged();
 }
 
 void v3dView::onShowAxisPropertySet(const QString &value)
