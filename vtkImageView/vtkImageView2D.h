@@ -188,7 +188,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2D : public vtkImageView
   /**
      Return the vtkImageActor's instance.
   */
-  vtkGetObjectMacro (ImageActor, vtkImageActor);
+  vtkImageActor *GetImageActor(int layer=0) const;
 
   vtkGetMacro(SliceOrientation, int);
   virtual void SetSliceOrientation(int orientation);

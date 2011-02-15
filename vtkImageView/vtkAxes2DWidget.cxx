@@ -210,7 +210,7 @@ void vtkAxes2DWidget::SetEnabled(int enabling)
 void vtkAxes2DWidget::ComputePlanes(void)
 {
 
-  if (!this->ImageView || !this->ImageView->GetRenderer())
+  if (!this->ImageView || !this->ImageView->GetRenderer() || !this->ImageView->GetImageActor())
     return;
 
   unsigned char red[3]   = {0,0,0};
