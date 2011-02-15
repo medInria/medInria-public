@@ -17,9 +17,6 @@ public:
 	
 	virtual medAbstractSourceDataPlugin *plugin() = 0;
 	
-signals:
-	void import();
-	
 protected:
 	QWidget *parent(void);
 	

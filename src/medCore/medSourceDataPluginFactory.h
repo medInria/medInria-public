@@ -27,7 +27,7 @@ public:
 	QList<QString> sourcedata_plugins(void);
 	
 	public slots:
-	medAbstractSourceDataPlugin *createSourceDataPlugin(QString type);
+	medAbstractSourceDataPlugin *create(QString type);
 	
 protected:
 	medSourceDataPluginFactory(void);

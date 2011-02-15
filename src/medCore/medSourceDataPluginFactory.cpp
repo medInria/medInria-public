@@ -30,7 +30,7 @@ QList<QString> medSourceDataPluginFactory::sourcedata_plugins(void)
 	return d->sourcedata_creators.keys();
 }
 
-medAbstractSourceDataPlugin *medSourceDataPluginFactory::createSourceDataPlugin(QString type)
+medAbstractSourceDataPlugin *medSourceDataPluginFactory::create(QString type)
 {
 	if(!d->sourcedata_creators.contains(type))
 		return NULL;
