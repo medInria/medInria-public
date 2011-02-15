@@ -243,13 +243,19 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 	
 	  // Additional toolboxes for source data ////////////////
 	
+	qDebug() << "Getting to the dirty part...";
+	
 		foreach(QString toolbox, medToolBoxFactory::instance()->sourcedataToolBoxes())
 		{
+			qDebug() << toolbox;
 			medToolBoxSourceData *dataToolBox = medToolBoxFactory::instance()->createSourceDataToolBox(toolbox);
+			qDebug() << "Toolbox created";
 			d->stack->addWidget(dataToolBox->plugin()->widget());
+			qDebug() << "Widget added";
 			d->toolbox_source->addAdditionalTab(dataToolBox->plugin()->tabName(),dataToolBox->plugin()->sourceSelectorWidget());
+			qDebug() << "Additional tab added";
 			d->toolbox_container->addToolBox(dataToolBox);
-			connect(dataToolBox, SIGNAL(import()), dataToolBox->plugin(), SLOT(onImportData(const QString&)));
+			qDebug() << "End";
 		}	
 
     // Layout /////////////////////////////////////////////
