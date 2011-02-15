@@ -29,6 +29,7 @@ public slots:
     void onDataSelected(int index);
     void onVisibilitySet(int state);
     void onOpacitySet(double opacity);
+    void onOpacitySliderSet(int opacity);
 
 signals:
     void setVisibility(bool visible, int layer);

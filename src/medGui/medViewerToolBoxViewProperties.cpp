@@ -14,9 +14,11 @@ class medViewerToolBoxViewPropertiesPrivate
 {
 public:
         medAbstractView *view;
+        QWidget* propertiesToolBoxWidget;
         QComboBox * dataComboBox;
         QCheckBox * visible;
         QDoubleSpinBox * opacity;
+        QSlider * opacitySlider;
 };
 
 medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
@@ -27,25 +29,37 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
 
     d->visible = new QCheckBox(this);
 
+    d->opacitySlider = new QSlider(this);
+    d->opacitySlider->setRange(0,10);
+    d->opacitySlider->setValue(10);
+    d->opacitySlider->setOrientation(Qt::Horizontal);
+
     d->opacity = new QDoubleSpinBox(this);
     d->opacity->setRange(0.0,1.0);
     d->opacity->setSingleStep(0.1);
     d->opacity->setValue(1.0);
 
-    QWidget *propertiesToolBoxWidget = new QWidget;
+    d->propertiesToolBoxWidget = new QWidget;
+    d->propertiesToolBoxWidget->setEnabled(false);
 
-    QFormLayout * viewPropertiesLayout = new QFormLayout(propertiesToolBoxWidget);
+    QHBoxLayout * opacityLayout = new QHBoxLayout;
+    opacityLayout->addWidget(d->opacitySlider);
+    opacityLayout->addWidget(d->opacity);
+
+    QFormLayout * viewPropertiesLayout = new QFormLayout(d->propertiesToolBoxWidget);
     viewPropertiesLayout->addRow("Select data :", d->dataComboBox);
     viewPropertiesLayout->addRow("Visible :", d->visible);
-    viewPropertiesLayout->addRow("Opacity :", d->opacity);
+//    viewPropertiesLayout->addRow("Opacity :", d->opacity);
+    viewPropertiesLayout->addRow("Opacity :", opacityLayout);
     viewPropertiesLayout->setFormAlignment(Qt::AlignHCenter);
 
     this->setTitle("View properties");
-    this->addWidget(propertiesToolBoxWidget);
+    this->addWidget(d->propertiesToolBoxWidget);
 
     QObject::connect(d->dataComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataSelected(int)));
     QObject::connect(d->visible, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
     QObject::connect(d->opacity, SIGNAL(valueChanged(double)), this, SLOT(onOpacitySet(double)));
+    QObject::connect(d->opacitySlider, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
 }
 
 medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
@@ -70,6 +84,7 @@ void medViewerToolBoxViewProperties::onDataAdded(int layer)
     if (!d->view)
         return;
 
+    d->propertiesToolBoxWidget->setEnabled(true);
     d->view->setVisibility(1, layer);
     d->view->setOpacity(1.0, layer);
     d->visible->setChecked(true);
@@ -110,6 +125,16 @@ void medViewerToolBoxViewProperties::onOpacitySet(double opacity)
     if ( (!d->view) || (d->dataComboBox->currentIndex() == -1))
         return;
 
+    d->opacitySlider->blockSignals(true);
+    d->opacitySlider->setValue((int)(d->opacity->value() * 10));
+    d->opacitySlider->blockSignals(false);
     d->view->setOpacity(opacity, d->dataComboBox->currentIndex());
+}
+
+void medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
+{
+    if ( (!d->view) || (d->dataComboBox->currentIndex() == -1))
+        return;
+    d->opacity->setValue(d->opacitySlider->value()/10.0);
 }
 
