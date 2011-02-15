@@ -1279,8 +1279,8 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     vtkRenderer * renderer = 0;
     if (layer == 0)
     {
-        ImageDisplayMap.at(layer)->SetInput(image);
-        renderer = this->GetRenderer(); //vtkRenderer::New();
+        ImageDisplayMap.at(0)->SetInput(image);
+        renderer = this->GetRenderer();
     }
     else
     {
@@ -1290,65 +1290,19 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
         else {
             auxMatrix->Identity();
         }
-            
-        vtkMatrix4x4::Multiply4x4(this->InvertOrientationMatrix, auxMatrix, auxMatrix);
-            
-        double origin[4], origin2[4];
-        this->GetInput()->GetOrigin(origin);
-        image->GetOrigin(origin2);
-        origin2[3] = 1.0;
+                
+        vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
         
-        auxMatrix->MultiplyPoint(origin2, origin2);
-        
-        for (int i=0; i<3; i++)
-            origin2[i] -= origin[i];
-        origin2[3] = 0.0;
-            
-        this->InvertOrientationMatrix->MultiplyPoint (origin2, origin2);
-            
-        for (int i=0; i<3; i++)
-        {
-            auxMatrix->SetElement(i, 3, origin2[i]);
-        }
-            
-        int *w_ext = image->GetWholeExtent();
-        double ext_min[4], ext_max[4];
-        for (int i=0; i<3; i++)
-        {
-            ext_min[i] = static_cast<double> (w_ext[i*2]);
-            ext_max[i] = static_cast<double> (w_ext[i*2+1]);
-        }
-        ext_min[3] = 0.0;
-        ext_max[3] = 0.0;
-        
-        auxMatrix->MultiplyPoint(ext_min, ext_min);
-        auxMatrix->MultiplyPoint(ext_max, ext_max);
-            
-        int new_extent[6];
-        
-        int *eextent = this->GetInput()->GetWholeExtent();
-        
-        for (int i=0; i<3; i++)
-        {
-            new_extent[i*2] = vtkMath::Round(ext_min[i]);
-            new_extent[i*2+1] = vtkMath::Round(ext_max[i]);
-            
-            if (new_extent[i*2]>eextent[i*2])
-                new_extent[i*2] = eextent[i*2];
-            
-            if (new_extent[i*2+1]<eextent[i*2+1])
-                new_extent[i*2+1] = eextent[i*2+1];
-        }
-        
+        vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
+                    
         vtkImageReslice *reslice = vtkImageReslice::New();
         reslice->SetInput(image);
         reslice->SetResliceAxes(auxMatrix);
-        reslice->SetOutputOrigin(this->GetInput()->GetOrigin());
-        reslice->SetOutputSpacing(this->GetInput()->GetSpacing());
-        reslice->SetOutputExtent(new_extent);
+        reslice->SetOutputOrigin  (this->GetInput()->GetOrigin());
+        reslice->SetOutputSpacing (this->GetInput()->GetSpacing());
+        reslice->SetOutputExtent  (this->GetInput()->GetWholeExtent());
         
         auxMatrix->Delete();
-        //reslice->Update();
         
         ImageDisplayMap.at(layer)->SetInput(reslice->GetOutput());
         
@@ -1357,10 +1311,8 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
         renderer->SetLayer(layer);
         this->GetRenderWindow()->AddRenderer(renderer);
         renderer->SetActiveCamera(this->GetRenderer()->GetActiveCamera());
-//        vtkLookupTable *lut = vtkLookupTableManager::GetSpectrumLookupTable();
-//        lut->SetTableRange(0.0, 1000.0);
-//        lut->SetAlphaRange(0.0, 1.0);
-        ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());;
+
+        ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
         ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(0.5);
         ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
     }
