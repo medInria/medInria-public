@@ -1302,6 +1302,8 @@ void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPi
   else if ((int)this->ImageDisplayMap.size() > layer)
   {
       if (color) {
+          double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
+          this->SetTransferFunctionRangeFromWindowSettings(color, 0, range[0], range[1]);
           this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(color);
       }
   }

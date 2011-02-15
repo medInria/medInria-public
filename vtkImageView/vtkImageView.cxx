@@ -517,6 +517,85 @@ void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable)
 }
 
 //----------------------------------------------------------------------------
+void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFunction *cf, 
+                                                              vtkPiecewiseFunction *of,
+                                                              double minRange, double maxRange)
+{
+    if (cf)
+    {
+        const double * currentRange = cf->GetRange();
+        if ( currentRange[0] != minRange ||
+            currentRange[1] != maxRange )
+        {
+            double currentWidth = currentRange[1] - currentRange[0];
+            double targetWidth  = maxRange  - minRange;
+            
+            unsigned int n = cf->GetSize();
+            if ( n > 0 && currentWidth == 0.0 )
+                currentWidth = 1.0;
+            
+            for ( unsigned int i = 0; i < n; ++i )
+            {
+                double val[6];
+                cf->GetNodeValue( i, val );
+                // from current range to [0,1] interval
+                val[0] = ( val[0] - currentRange[0] ) / currentWidth;
+                // from [0,1] interval to target range
+                val[0] = val[0] * targetWidth + minRange;
+                cf->SetNodeValue( i, val );
+            }
+            
+            // work around to update the range (which is not public in
+            // vtkColorTransferFunction)
+            if ( n > 0 )
+            {
+                double val[6];
+                cf->GetNodeValue( n - 1, val );
+                cf->AddRGBPoint( val[0], val[1], val[2],
+                                val[3], val[4], val[5] );
+            }
+            
+        }
+    }
+        
+    if (of)
+    {    
+        const double * currentRange = of->GetRange();
+        if ( currentRange[0] != minRange ||
+            currentRange[1] != maxRange )
+        {
+            double currentWidth = currentRange[1] - currentRange[0];
+            double targetWidth  = maxRange  - minRange;
+            
+            if ( currentWidth == 0.0 )
+                currentWidth = 1.0;
+            
+            unsigned int n = of->GetSize();
+            for ( unsigned int i = 0; i < n; ++i )
+            {
+                double val[4];
+                of->GetNodeValue( i, val );
+                // from current range to [0,1] interval
+                val[0] = ( val[0] - currentRange[0] ) / currentWidth;
+                // from [0,1] interval to target range
+                val[0] = val[0] * targetWidth + minRange;
+                of->SetNodeValue( i, val );
+            }
+            
+            // work around to update the range (which is not public in
+            // vtkPiecewiseFunction)
+            if ( n > 0 )
+            {
+                double val[4];
+                of->GetNodeValue( n - 1, val );
+                of->AddPoint( val[0], val[1],
+                             val[2], val[3] );
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
 void vtkImageView::SetTransferFunctionRangeFromWindowSettings()
 {
   double targetRange[2];
@@ -537,81 +616,14 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings()
   }
   
   // color transfer function
-  if ( !this->UseLookupTable && this->ColorTransferFunction != NULL )
+  if ( !this->UseLookupTable )
   {
-    const double * currentRange = this->ColorTransferFunction->GetRange();
-    if ( currentRange[0] != targetRange[0] ||
-        currentRange[1] != targetRange[1] )
-    {
-      double currentWidth = currentRange[1] - currentRange[0];
-      double targetWidth  = targetRange[1]  - targetRange[0];
-      
-      unsigned int n = this->ColorTransferFunction->GetSize();
-      if ( n > 0 && currentWidth == 0.0 )
-        currentWidth = 1.0;
-      
-      for ( unsigned int i = 0; i < n; ++i )
-      {
-        double val[6];
-        this->ColorTransferFunction->GetNodeValue( i, val );
-        // from current range to [0,1] interval
-        val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-        // from [0,1] interval to target range
-        val[0] = val[0] * targetWidth + targetRange[0];
-        this->ColorTransferFunction->SetNodeValue( i, val );
-      }
-      
-      // work around to update the range (which is not public in
-      // vtkColorTransferFunction)
-      if ( n > 0 )
-      {
-        double val[6];
-        this->ColorTransferFunction->GetNodeValue( n - 1, val );
-        this->ColorTransferFunction->AddRGBPoint( val[0], val[1], val[2],
-                                                 val[3], val[4], val[5] );
-      }
-      
+      this->SetTransferFunctionRangeFromWindowSettings(this->ColorTransferFunction,
+                                                       this->OpacityTransferFunction,
+                                                       targetRange[0],
+                                                       targetRange[1]);
+                                                       
       touched = true;
-    }
-  }
-  
-  // opacity transfer function
-  if ( !this->UseLookupTable && this->OpacityTransferFunction != NULL )
-  {
-    const double * currentRange = this->OpacityTransferFunction->GetRange();
-    if ( currentRange[0] != targetRange[0] ||
-        currentRange[1] != targetRange[1] )
-    {
-      double currentWidth = currentRange[1] - currentRange[0];
-      double targetWidth  = targetRange[1]  - targetRange[0];
-      
-      if ( currentWidth == 0.0 )
-        currentWidth = 1.0;
-      
-      unsigned int n = this->OpacityTransferFunction->GetSize();
-      for ( unsigned int i = 0; i < n; ++i )
-      {
-        double val[4];
-        this->OpacityTransferFunction->GetNodeValue( i, val );
-        // from current range to [0,1] interval
-        val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-        // from [0,1] interval to target range
-        val[0] = val[0] * targetWidth + targetRange[0];
-        this->OpacityTransferFunction->SetNodeValue( i, val );
-      }
-      
-      // work around to update the range (which is not public in
-      // vtkPiecewiseFunction)
-      if ( n > 0 )
-      {
-        double val[4];
-        this->OpacityTransferFunction->GetNodeValue( n - 1, val );
-        this->OpacityTransferFunction->AddPoint( val[0], val[1],
-                                                val[2], val[3] );
-      }
-      
-      touched = true;
-    }
   }
   
   if ( touched )
