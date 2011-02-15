@@ -70,6 +70,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkFiltering
   vtkRendering
   vtkDataManagement
+  itksys
   )
 
 #if (BUILD_TESTING)
