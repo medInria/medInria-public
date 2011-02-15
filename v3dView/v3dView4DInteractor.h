@@ -28,7 +28,6 @@ public:
     
     static bool registered(void);
     
-    virtual void appendData(dtkAbstractData *data);
     virtual void setData(dtkAbstractData *data);
     virtual void setView(dtkAbstractView *view);
 
@@ -38,8 +37,8 @@ public:
     //! Override dtkAbstractViewInteractor.
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
 
-    virtual void setCurrentTime (double time);
-    virtual double getCurrentTime (void)
+    void setCurrentTime (double time);
+    double getCurrentTime (void)
     { return this->currentTime; }
     
     void sequencesRange (double* range)
@@ -49,14 +48,10 @@ protected:
     virtual void updatePipeline ();
 
 signals:
-    /* void selectionValidated (const QString& name); */
 
 public slots:
-    //virtual void onPropertySet (const QString& key, const QString& value);
-    //virtual void onVisibilityPropertySet (const QString& value);
-    //virtual void onEdgeVisibilityPropertySet (const QString& value);
-    //virtual void onRenderingModePropertySet (const QString& value);
-
+    virtual void appendData(dtkAbstractData *data);
+    
 private:
     v3dView4DInteractorPrivate *d;
 

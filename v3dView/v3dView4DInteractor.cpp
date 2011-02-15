@@ -90,6 +90,8 @@ void v3dView4DInteractor::setView(dtkAbstractView *view)
   if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
     d->view = v3dview;
   }
+
+  //connect (view, SIGNAL (setData (dtkAbstractData*)), this, SLOT (appendData (dtkAbstractData*)));
 }
 
 bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
