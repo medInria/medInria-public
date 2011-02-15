@@ -18,14 +18,15 @@ public slots:
     void read();
 
 protected:
-	/**
-	 * @brief Performs the validation of each control inside the widget.
-	 *
-	 * @param void
-	 * @return true is the validation is successful, false otherwise.
-	*/
+    /**
+     * @brief Performs the validation of each control inside the widget.
+     *
+     * @param void
+     * @return true is the validation is successful, false otherwise.
+    */
     bool validate(void);
 
+    bool write();
 private:
     medStartupSettingsWidgetPrivate *d;
 

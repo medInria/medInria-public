@@ -64,9 +64,9 @@ bool medSystemSettingsWidget::validate()
 
 bool medSystemSettingsWidget::validatePaths(QString paths)
 {
-	//empty paths are allowed, the user hasn't configured them yet
-	if (paths.isEmpty())
-		return true;
+    //empty paths are allowed, the user hasn't configured them yet
+    if (paths.isEmpty())
+        return true;
 
     QStringList splitted = paths.split(":");
 
@@ -102,5 +102,6 @@ bool medSystemSettingsWidget::write()
     mnger->setValue("plugins","path",d->modulesPathField->text());
     mnger->setValue("scripts","modules_path",d->modulesPathField->text());
     mnger->setValue("scripts","scripts_path",d->scriptsPathField->text());
+    return true;
 }
 
