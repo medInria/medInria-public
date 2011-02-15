@@ -30,10 +30,10 @@ medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) :
         medSettingsWidget(parent),
         d(new medSystemSettingsWidgetPrivate())
 {
-	setSection("System");
-	d->pluginsPathField = new QLineEdit(this);
-	d->modulesPathField = new QLineEdit(this);
-	d->scriptsPathField = new QLineEdit(this);
+    setSection("System");
+    d->pluginsPathField = new QLineEdit(this);
+    d->modulesPathField = new QLineEdit(this);
+    d->scriptsPathField = new QLineEdit(this);
     QFormLayout* layout = new QFormLayout;
     layout->addRow(tr("Plugins Path"),d->pluginsPathField);
     layout->addRow(tr("Modules Path"),d->modulesPathField);
@@ -48,35 +48,36 @@ medSettingsWidget* createSystemSettingsWidget(QWidget *parent){
 
 bool medSystemSettingsWidget::validate()
 {
-	if (!validatePaths(d->pluginsPathField->text()))
-		return false;
+    if (!validatePaths(d->pluginsPathField->text()))
+        return false;
 
-	if (!validatePaths(d->modulesPathField->text()))
-		return false;
+    if (!validatePaths(d->modulesPathField->text()))
+        return false;
 
-	if (!validatePaths(d->scriptsPathField->text()))
-		return false;
+    if (!validatePaths(d->scriptsPathField->text()))
+        return false;
 
     return true;
 }
 
 bool medSystemSettingsWidget::validatePaths(QString paths)
 {
-	QStringList splitted = paths.split(":");
+    QStringList splitted = paths.split(":");
 
-	foreach (QString path, splitted) {
-		// two consecutive colons won't be allowed
-		if (path.isEmpty())
-			return false;
+    foreach (QString path, splitted) {
+        // two consecutive colons won't be allowed
+        if (path.isEmpty())
+            return false;
 
-		// path is not empty, does it exist in the system?
-		if (!QDir(path).exists())
-			return false;
-	}
+        // path is not empty, does it exist in the system?
+        if (!QDir(path).exists())
+            return false;
+    }
 
-	return true;
+    return true;
+}
 
-void medSettingsWidget::read()
+void medSystemSettingsWidget::read()
 {
     qDebug()<<"reading QSettings";
 
