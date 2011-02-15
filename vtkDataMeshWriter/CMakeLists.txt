@@ -26,6 +26,10 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
+
+find_package(vtkINRIA3D REQUIRED)
+include(${vtkINRIA3D_USE_FILE})
+
 find_package(VTK)
 include(${VTK_USE_FILE})
 
@@ -45,6 +49,7 @@ set(${PROJECT_NAME}_SOURCES
   vtkDataMeshWriterPlugin.cpp
 #  vtkDataMeshWriterCommand.cxx
   vtkDataMeshWriter.cpp
+  vtkDataMesh4DWriter.cpp
   )
 
 # Include header files for Visual Studio.
