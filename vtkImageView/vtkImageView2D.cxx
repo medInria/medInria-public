@@ -1357,11 +1357,11 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
         renderer->SetLayer(layer);
         this->GetRenderWindow()->AddRenderer(renderer);
         renderer->SetActiveCamera(this->GetRenderer()->GetActiveCamera());
-        vtkLookupTable *lut = vtkLookupTableManager::GetSpectrumLookupTable();
-        lut->SetTableRange(0.0, 1000.0);
-        lut->SetAlphaRange(0.0, 1.0);
-        ImageDisplayMap.at(layer)->SetLookupTable(lut);
-        ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(1.0);
+//        vtkLookupTable *lut = vtkLookupTableManager::GetSpectrumLookupTable();
+//        lut->SetTableRange(0.0, 1000.0);
+//        lut->SetAlphaRange(0.0, 1.0);
+        ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());;
+        ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(0.5);
         ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
     }
     
