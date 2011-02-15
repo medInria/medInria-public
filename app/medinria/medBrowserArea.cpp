@@ -39,9 +39,12 @@
 
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
+#include <medGui/medToolBoxFactory.h>
+#include <medGui/medToolBoxSourceData.h>
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medPacsSelector.h>
 #include "medBrowserToolBoxSource.h"
+#include <medCore/medAbstractSourceDataPlugin.h>
 
 #include <medPacs/medPacsWidget.h>
 #include <medPacs/medPacsMover.h>
@@ -242,14 +245,12 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 	
 		foreach(QString toolbox, medToolBoxFactory::instance()->sourcedataToolBoxes())
 		{
-			medToolBoxSourceData *dataToolBox = medToolBoxFactory::instance()->createCustomSourceDataToolBox(toolbox);
+			medToolBoxSourceData *dataToolBox = medToolBoxFactory::instance()->createSourceDataToolBox(toolbox);
 			d->stack->addWidget(dataToolBox->plugin()->widget());
 			d->toolbox_source->addAdditionalTab(dataToolBox->plugin()->tabName(),dataToolBox->plugin()->sourceSelectorWidget());
 			d->toolbox_container->addToolBox(dataToolBox);
-		}
-	
-		connect(d->toolboxes, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
-	
+			connect(dataToolBox, SIGNAL(import()), dataToolBox->plugin(), SLOT(onImportData(const QString&)));
+		}	
 
     // Layout /////////////////////////////////////////////
 
@@ -363,6 +364,12 @@ void medBrowserArea::onSourceIndexChanged(int index)
         d->toolbox_pacs_nodes->setVisible(false);
         d->toolbox_pacs_search->setVisible(false);
     }
+	
+	if (index > 2)
+	{
+		// Dirty management of indexes, there are 5 widgets in stack before adding any additional source data plugin
+		d->toolbox_container->toolBoxes().value(5 + index - 3)->setVisible(true);
+	}
 }
 
 void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)

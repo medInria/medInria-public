@@ -25,7 +25,7 @@ class medToolBoxFactoryPrivate
 public:
     medToolBoxFactory::medToolBoxRegistrationCustomCreatorHash custom_registration_creators;
     medToolBoxFactory::medToolBoxDiffusionCustomCreatorHash custom_diffusion_creators;
-    medToolBoxFactory::medToolBoxSourceDataCustomCreatorHash custom_sourcedata_creators;
+    medToolBoxFactory::medToolBoxSourceDataCreatorHash sourcedata_creators;
 };
 
 medToolBoxFactory *medToolBoxFactory::instance(void)
@@ -88,10 +88,10 @@ medToolBoxDiffusionCustom *medToolBoxFactory::createCustomDiffusionToolBox(QStri
 
 
 
-bool medToolBoxFactory::registerCustomSourceDataToolBox(QString type, medToolBoxSourceDataCustomCreator func)
+bool medToolBoxFactory::registerSourceDataToolBox(QString type, medToolBoxSourceDataCreator func)
 {
-    if(!d->custom_registration_creators.contains(type)) {
-        d->custom_registration_creators.insert(type, func);
+    if(!d->sourcedata_creators.contains(type)) {
+        d->sourcedata_creators.insert(type, func);
         return true;
     }
 
@@ -100,15 +100,15 @@ bool medToolBoxFactory::registerCustomSourceDataToolBox(QString type, medToolBox
 
 QList<QString> medToolBoxFactory::sourcedataToolBoxes(void)
 {
-    return d->custom_sourcedata_creators.keys();
+    return d->sourcedata_creators.keys();
 }
 
-medToolBoxSourceDataCustom *medToolBoxFactory::createCustomSourceDataToolBox(QString type)
+medToolBoxSourceData *medToolBoxFactory::createSourceDataToolBox(QString type)
 {
-    if(!d->custom_sourcedata_creators.contains(type))
+    if(!d->sourcedata_creators.contains(type))
         return NULL;
 
-    medToolBoxSourceDataCustom *toolbox = d->custom_sourcedata_creators[type]();
+    medToolBoxSourceData *toolbox = d->sourcedata_creators[type]();
 
     return toolbox;
 }

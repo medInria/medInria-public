@@ -5,6 +5,7 @@
 #include "medToolBox.h"
 
 class medToolBoxSourceDataPrivate;
+class medAbstractSourceDataPlugin;
 
 class MEDGUI_EXPORT medToolBoxSourceData : public medToolBox
 {
@@ -13,6 +14,11 @@ class MEDGUI_EXPORT medToolBoxSourceData : public medToolBox
 public:
 	medToolBoxSourceData(QWidget *parent = 0);
 	virtual ~medToolBoxSourceData(void);
+	
+	virtual medAbstractSourceDataPlugin *plugin() = 0;
+	
+signals:
+	void import();
 	
 protected:
 	QWidget *parent(void);

@@ -4,11 +4,13 @@ class medToolBoxSourceDataPrivate
 {
 public:
 	QWidget *parent;
+	medAbstractSourceDataPlugin *plugin;
 };
 
 medToolBoxSourceData::medToolBoxSourceData(QWidget *parent) : medToolBox(parent), d(new medToolBoxSourceDataPrivate)
 {
 	d->parent = parent;
+	d->plugin = NULL;
 }
 
 medToolBoxSourceData::~medToolBoxSourceData(void)
