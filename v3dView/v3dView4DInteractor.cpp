@@ -35,7 +35,7 @@ public:
     v3dView          *view;
 };
 
-v3dView4DInteractor::v3dView4DInteractor(): dtkAbstractViewInteractor(), d(new v3dView4DInteractorPrivate)
+v3dView4DInteractor::v3dView4DInteractor(): med4DAbstractViewInteractor(), d(new v3dView4DInteractorPrivate)
 {
     d->data = NULL;
     d->view = NULL;
@@ -107,7 +107,7 @@ void v3dView4DInteractor::enable(void)
   if (this->enabled())
     return;
   updatePipeline ();
-  dtkAbstractViewInteractor::enable();
+  med4DAbstractViewInteractor::enable();
 }
 
 
@@ -128,7 +128,7 @@ void v3dView4DInteractor::disable(void)
 	// d->view->view3d ()->RemoveDataset (sequence->GetDataSet());
       }
     }
-    dtkAbstractViewInteractor::disable();
+    med4DAbstractViewInteractor::disable();
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ void v3dView4DInteractor::disable(void)
 
 dtkAbstractViewInteractor *createV3dView4DInteractor(void)
 {
-    return new v3dView4DInteractor;
+  return new v3dView4DInteractor;
 }
 
 void v3dView4DInteractor::updatePipeline (void)
@@ -148,19 +148,16 @@ void v3dView4DInteractor::updatePipeline (void)
     if (!sequence)
       continue;
 
-    dtkWarning() << "sequence ()" << i;
     switch (sequence->GetType())
     {
 	case vtkMetaDataSet::VTK_META_IMAGE_DATA:
 	  d->view->view2d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
 	  d->view->view3d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
-	  dtkWarning() << "sequence ()" << i << " is an image";
 	  break;
 	case vtkMetaDataSet::VTK_META_SURFACE_MESH:
 	case vtkMetaDataSet::VTK_META_VOLUME_MESH:
 	  d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
 	  d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
-	  dtkWarning() << "sequence ()" << i << " is a mesh and has been added";
 	  break;  
 	default:
 	  break;

@@ -649,17 +649,17 @@ void v3dView::setData(dtkAbstractData *data)
 	d->view3d->SetITKInput(image);
       }
     }
-    else if (data->description()=="itkDataImageShort4") {
-	this->enableInteractor ( "v3dView4DInteractor" );
-	// This will add the data to the interactor.
-	dtkAbstractView::setData(data);
-    }
     // else if (data->description()=="itkDataImageShort4") {
-    //   if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
-    // 	d->view2d->SetITKInput4(image);
-    // 	d->view3d->SetITKInput4(image);
-    //   }
+    // 	this->enableInteractor ( "v3dView4DInteractor" );
+    // 	// This will add the data to the interactor.
+    // 	dtkAbstractView::setData(data);
     // }
+    else if (data->description()=="itkDataImageShort4") {
+      if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
+    	d->view2d->SetITKInput4(image);
+    	d->view3d->SetITKInput4(image);
+      }
+    }
     else if (data->description()=="itkDataImageUShort3") {
       if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
 	d->view2d->SetITKInput(image);

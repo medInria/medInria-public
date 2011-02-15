@@ -1,7 +1,7 @@
 #ifndef V3DVIEW4DINTERACTOR_H
 #define V3DVIEW4DINTERACTOR_H
 
-#include <dtkCore/dtkAbstractViewInteractor.h>
+#include <medCore/med4DAbstractViewInteractor.h>
 
 #include "v3dViewPluginExport.h"
 
@@ -14,7 +14,7 @@ class vtkCollection;
 class vtkMetaDataSetSequence;
 
 
-class V3DVIEWPLUGIN_EXPORT v3dView4DInteractor: public dtkAbstractViewInteractor
+class V3DVIEWPLUGIN_EXPORT v3dView4DInteractor: public med4DAbstractViewInteractor
 {
 
     Q_OBJECT
@@ -42,6 +42,8 @@ public:
     virtual double getCurrentTime (void)
     { return this->currentTime; }
     
+    void sequencesRange (double* range)
+    {};
     
 protected:
     virtual void updatePipeline ();
