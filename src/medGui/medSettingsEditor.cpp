@@ -40,17 +40,30 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
   d->tabWidget = new QTabWidget (this);
   d->tabWidget->setTabPosition(QTabWidget::West);
   d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
   //System widget
   medSettingsWidget * systemSettingsWidget = medSettingsWidgetFactory::instance()->createSettingsWidget("System",NULL);
 
   d->tabWidget->addTab(systemSettingsWidget,
                        systemSettingsWidget->section());
   d->settingsWidgets.append(systemSettingsWidget);
-  this->layout()->addWidget(d->tabWidget);
+
   //Dicom widget
+
   //Startup widget
+
+  medSettingsWidget * startupSettingsWidget = medSettingsWidgetFactory::instance()->createSettingsWidget("Startup",NULL);
+
+	d->tabWidget->addTab(startupSettingsWidget,
+						startupSettingsWidget->section());
+	d->settingsWidgets.append(startupSettingsWidget);
+
+
   //Logging widget
+
   //Process manager widget
+
+  this->layout()->addWidget(d->tabWidget);
 
   //save button
   QPushButton * save = new QPushButton (tr("Save"),this);
