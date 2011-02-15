@@ -37,6 +37,7 @@ public:
     ~medViewerConfigurationVisualization(void);
     
     virtual QString description(void) const;
+    void setupViewContainerStack (medViewContainerStack *container);
         
 private:
     medViewerConfigurationVisualizationPrivate *d;

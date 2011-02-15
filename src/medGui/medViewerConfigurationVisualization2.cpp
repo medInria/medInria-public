@@ -20,6 +20,7 @@
 #include "medViewerConfigurationVisualization2.h"
 
 #include "medViewerToolBoxView.h"
+#include "medViewerToolBoxTime.h"
 
 class medViewerConfigurationVisualization2Private
 {
@@ -34,6 +35,7 @@ medViewerConfigurationVisualization2::medViewerConfigurationVisualization2(QWidg
     // -- View toolbox --
 
     this->addToolBox( new medViewerToolBoxView(parent) );
+    this->addToolBox( new medViewerToolBoxTime(parent) );
 
     this->setViewLayoutType  (medViewContainer::Custom);
     this->setCustomLayoutType(medViewContainerCustom::E);

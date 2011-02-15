@@ -38,7 +38,6 @@ set(${PROJECT_NAME}_HEADERS
   medViewerToolBoxConfiguration.h
   medViewerToolBoxLayout.h
   medViewerToolBoxPatient.h
-  medViewerToolBoxView.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC

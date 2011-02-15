@@ -91,7 +91,7 @@ void medViewerConfigurationDiffusion::setupViewContainerStack(medViewContainerSt
 
     if (!diffusionContainer) {
       medViewContainerCustom *custom = new medViewContainerCustom (container_stack);
-      custom->setPreset (medViewContainerCustom::E);
+      // custom->setPreset (medViewContainerCustom::E);
       connect (custom, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
       connect (custom, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
       diffusionContainer = custom;

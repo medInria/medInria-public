@@ -19,12 +19,18 @@
 
 #include "medViewerConfigurationVisualization.h"
 
+#include <medGui/medViewContainer.h>
+#include <medGui/medViewContainerStack.h>
+
+
 #include "medViewerToolBoxView.h"
+#include "medViewerToolBoxTime.h"
 
 class medViewerConfigurationVisualizationPrivate
 {
 public:
     medViewerToolBoxView   *viewToolBox;
+    medViewerToolBoxTime   *timeToolBox;
 };
 
 medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationVisualizationPrivate)
@@ -42,6 +48,7 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
     // -- View toolbox --
     
     d->viewToolBox = new medViewerToolBoxView(parent);
+    d->timeToolBox = new medViewerToolBoxTime(parent);
     /*
     connect(d->viewToolBox, SIGNAL(foregroundLookupTableChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
     // connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
@@ -61,6 +68,7 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
      */
     
     this->addToolBox( d->viewToolBox );
+    this->addToolBox( d->timeToolBox );
     
     //this->setLayoutType( medViewerConfiguration::TopDbBottomTb );
     
@@ -72,12 +80,33 @@ medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)
     d = NULL;
 }
 
+void medViewerConfigurationVisualization::setupViewContainerStack(medViewContainerStack *container_stack)
+{
+  if (!container_stack) {
+    return;
+  }
+  
+  medViewContainer *visualizationContainer = container_stack->customContainer("Visualization");
+  
+  if (!visualizationContainer) {
+    medViewContainerCustom *custom = new medViewContainerCustom (container_stack);
+    custom->setPreset (medViewContainerCustom::E);
+    connect (custom, SIGNAL (viewAdded (dtkAbstractView*)),   d->timeToolBox, SLOT (onViewAdded (dtkAbstractView*)));
+    connect (custom, SIGNAL (viewRemoved (dtkAbstractView*)), d->timeToolBox, SLOT (onViewRemoved (dtkAbstractView*)));
+    visualizationContainer = custom;
+    container_stack->addCustomContainer ("Visualization", visualizationContainer);
+  }
+  
+  container_stack->setCustomContainer ("Visualization");
+}
+
+
 QString medViewerConfigurationVisualization::description(void) const
 {
-    return "Visualization";
+  return "Visualization";
 }
 
 medViewerConfiguration *createMedViewerConfigurationVisualization(void)
 {
-    return new medViewerConfigurationVisualization;
+  return new medViewerConfigurationVisualization;
 }
