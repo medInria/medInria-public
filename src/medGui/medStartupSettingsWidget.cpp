@@ -3,6 +3,7 @@
 #include <QtGui>
 #include <QtCore>
 
+#include <medCore/medSettingsManager.h>
 
 class medStartupSettingsWidgetPrivate {
 
@@ -41,15 +42,19 @@ medSettingsWidget* createStartupSettingsWidget(QWidget *parent){
 
 bool medStartupSettingsWidget::validate()
 {
-    return false;
+    return true;
 }
 
 void medStartupSettingsWidget::read()
 {
     qDebug()<<"reading QSettings";
+    medSettingsManager * mnger = medSettingsManager::instance();
+	d->startInFullScreen->setChecked(mnger->value("startup", "start_in_full_screen").toBool());
 }
 
 bool medStartupSettingsWidget::write()
 {
+    medSettingsManager * mnger = medSettingsManager::instance();
+    mnger->setValue("startup","start_in_full_screen", d->startInFullScreen->isChecked());
     return true;
 }

@@ -29,6 +29,8 @@
 #include <medCore/medPluginManager.h>
 #include <medCore/medDataIndex.h>
 #include <medSql/medDatabaseController.h>
+#include <medCore/medSettingsManager.h>
+
 
 int main(int argc, char *argv[])
 {
@@ -69,10 +71,11 @@ int main(int argc, char *argv[])
     mainwindow.show();
    
 
-
     if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
-    && !dtkApplicationArgumentsContain(&application, "--wall"))
-        mainwindow.setFullScreen(true);
+    && !dtkApplicationArgumentsContain(&application, "--wall")){
+    	bool fullScreen  = medSettingsManager::instance()->value("startup", "start_in_full_screen").toBool();
+    	mainwindow.setFullScreen(fullScreen);
+    }
 
     if(application.arguments().contains("--wall"))
         mainwindow.setWallScreen(true);
