@@ -1,5 +1,5 @@
-/* medMainWindow.cpp --- 
- * 
+/* medMainWindow.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 503
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medBrowserArea.h"
@@ -23,7 +23,6 @@
 #include "medViewerConfigurator.h"
 
 #include <dtkCore/dtkGlobal.h>
-
 #include <dtkScript/dtkScriptInterpreter.h>
 #include <dtkScript/dtkScriptInterpreterPool.h>
 #include <dtkScript/dtkScriptInterpreterPython.h>
@@ -47,6 +46,9 @@
 #include <medGui/medViewerConfigurationVisualization2.h>
 #include <medGui/medViewerConfigurationRegistration.h>
 #include <medGui/medViewerConfigurationDiffusion.h>
+#include <medGui/medSettingsWidgetFactory.h>
+#include <medGui/medSystemSettingsWidget.h>
+#include <medGui/medStartupSettingsWidget.h>
 
 #include <QtGui>
 
@@ -129,8 +131,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
-    
-#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)    
+
+#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
     // Setting up core python module
 
     dtkScriptInterpreterPythonModuleManager::instance()->registerInitializer(&init_core);
@@ -172,7 +174,16 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
-    
+
+    //Register settingsWidgets
+    medSettingsWidgetFactory::instance()->
+            registerSettingsWidget("System",
+                                   createSystemSettingsWidget);
+
+    medSettingsWidgetFactory::instance()->
+            registerSettingsWidget("Startup",
+                                   createStartupSettingsWidget);
+
     // Setting up status bar
 
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
@@ -197,7 +208,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medStatusQuitButton *quitButton = new medStatusQuitButton(this);
 
     connect(quitButton, SIGNAL(quit()), this, SLOT(onQuit()));
-    
+
     QComboBox *configurationSwitcher = new QComboBox(this);
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
     configurationSwitcher->setFocusPolicy (Qt::NoFocus);
@@ -219,7 +230,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medMessageController::instance()->attach(this->statusBar());
 
     d->viewerArea->setupConfiguration("Visualization");
-    
+
     connect(configurationSwitcher, SIGNAL(activated(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
 }
@@ -342,7 +353,7 @@ void medMainWindow::open(const QString& file)
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
     this->writeSettings();
-    
+
     if (medDatabaseController::instance())
         medDatabaseController::instance()->destroy();
 }

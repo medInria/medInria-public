@@ -21,7 +21,7 @@ public:
    * @brief This function pointer designates functions allocating memory
    *
   */
-  typedef medSettingsWidget*(*medSettingsWidgetCreator)(void);
+  typedef medSettingsWidget*(*medSettingsWidgetCreator)(QWidget *);
 
   /**
    * @brief Type designating the internal has table containing the creator functions.
@@ -44,7 +44,8 @@ public:
    * @param func creator function
    * @return bool true if type was not registered already, false if it exists.
   */
-  bool registerSettingsWidget (QString type,medSettingsWidgetCreator func);
+  bool registerSettingsWidget (const QString& type,
+                               medSettingsWidgetCreator func);
   /**
    * @brief Gets a list of registered type names.
    *
@@ -59,7 +60,8 @@ public slots:
    * @param type the type to instanciate
    * @return medSettingsWidget * the newly allocated widget.
   */
-  medSettingsWidget * createSettingsWidget(QString type);
+  medSettingsWidget * createSettingsWidget(QString type,
+                                           QWidget * parent);
 
 protected:
   /**

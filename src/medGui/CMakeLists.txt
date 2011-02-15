@@ -24,6 +24,9 @@ project(medGui)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS
+  medSettingsEditor.h
+  medSystemSettingsWidget.h
+  medStartupSettingsWidget.h
   medSettingsWidget.h
   medSettingsWidgetFactory.h
   medClutEditor.h
@@ -67,6 +70,9 @@ set(${PROJECT_NAME}_HEADERS
   medViewerConfigurationFactory.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
+  medSettingsEditor.h
+  medSystemSettingsWidget.h
+  medStartupSettingsWidget.h
   medSettingsWidget.h
   medSettingsWidgetFactory.h
   medClutEditor.h
@@ -107,6 +113,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerToolBoxView.h)
 
 set(${PROJECT_NAME}_SOURCES
+  medSettingsEditor.cpp
+  medStartupSettingsWidget.cpp
+  medSystemSettingsWidget.cpp
   medSettingsWidget.cpp
   medSettingsWidgetFactory.cpp
   medClutEditor.cpp

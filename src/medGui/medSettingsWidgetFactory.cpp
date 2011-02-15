@@ -16,7 +16,7 @@ medSettingsWidgetFactory *medSettingsWidgetFactory::instance(void)
     return s_instance;
 }
 
-bool medSettingsWidgetFactory::registerSettingsWidget(QString type, medSettingsWidgetCreator func)
+bool medSettingsWidgetFactory::registerSettingsWidget(const QString& type, medSettingsWidgetCreator func)
 {
     if(!d->settingsWidget_creators.contains(type)) {
         d->settingsWidget_creators.insert(type, func);
@@ -31,12 +31,12 @@ QList<QString> medSettingsWidgetFactory::settingsWidgets(void)
     return d->settingsWidget_creators.keys();
 }
 
-medSettingsWidget *medSettingsWidgetFactory::createSettingsWidget(QString type)
+medSettingsWidget *medSettingsWidgetFactory::createSettingsWidget(QString type,QWidget * parent)
 {
     if(!d->settingsWidget_creators.contains(type))
         return NULL;
 
-    medSettingsWidget *conf = d->settingsWidget_creators[type]();
+    medSettingsWidget *conf = d->settingsWidget_creators[type](parent);
 
     return conf;
 }

@@ -9,12 +9,14 @@ class medSettingsEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit medSettingsEditor(QWidget *parent = 0);
+    medSettingsEditor(QWidget *parent = 0);
 
 signals:
 
 public slots:
-
+    void onSaveClicked();
+    void onCancelClicked();
+    void onResetClicked();
 private:
   medSettingsEditorPrivate *d;
   void createSystemSettingsWidget();
