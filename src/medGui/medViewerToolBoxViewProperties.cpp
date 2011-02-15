@@ -84,11 +84,11 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     this->setTitle("View properties");
     this->addWidget(d->propertiesToolBoxWidget);
 
-    QObject::connect(d->dataComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataSelected(int)));
-    QObject::connect(d->visible, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
-    QObject::connect(d->opacity, SIGNAL(valueChanged(double)), this, SLOT(onOpacitySet(double)));
-    QObject::connect(d->opacitySlider, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
-    QObject::connect(d->lutComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
+    QObject::connect(d->dataComboBox,  SIGNAL(currentIndexChanged(int)), this, SLOT(onDataSelected(int)));
+    QObject::connect(d->visible,       SIGNAL(stateChanged(int)),        this, SLOT(onVisibilitySet(int)));
+    QObject::connect(d->opacity,       SIGNAL(valueChanged(double)),     this, SLOT(onOpacitySet(double)));
+    QObject::connect(d->opacitySlider, SIGNAL(valueChanged(int)),        this, SLOT(onOpacitySliderSet(int)));
+    QObject::connect(d->lutComboBox,   SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
 }
 
 medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
@@ -114,12 +114,13 @@ void medViewerToolBoxViewProperties::onDataAdded(int layer)
         return;
 
     d->propertiesToolBoxWidget->setEnabled(true);
-    d->view->setVisibility(1, layer);
-    d->view->setOpacity(1.0, layer);
+    //d->view->setVisibility(1, layer);
+    //d->view->setOpacity(1.0, layer); // why forcing visibility and opacity?
     d->visible->setChecked(true);
     d->dataComboBox->insertItem(layer, QString::number(layer));
+    d->dataComboBox->blockSignals(true); // if not blocked, combobox slot is called. Is it what is expected?
     d->dataComboBox->setCurrentIndex(layer);
-
+    d->dataComboBox->blockSignals(false);
 }
 
 void medViewerToolBoxViewProperties::onViewClosed(void)
@@ -132,11 +133,22 @@ void medViewerToolBoxViewProperties::onDataSelected(int index)
 {
     if (!d->view || (index == -1))
         return;
+    
+    // this method should update toolbox's GUI w.r.t selected data settings
+    // to me, it should not set data settings (only current layer)
     d->view->setCurrentLayer(index);
-    d->view->setVisibility(d->view->visibility(index), index);
+    
+    // d->view->setVisibility(d->view->visibility(index), index);
+    
+    d->visible->blockSignals(true);
     d->visible->setChecked((d->view->visibility(index) == 1));
-    d->view->setOpacity(d->view->opacity(index), index);
+    d->visible->blockSignals(false);
+    // d->view->setOpacity(d->view->opacity(index), index);
+    
+    d->opacity->blockSignals(true);
     d->opacity->setValue(d->view->opacity(index));
+    d->opacitySlider->setValue((int)(d->opacity->value() * 100));
+    d->opacity->blockSignals(false);
 }
 
 void medViewerToolBoxViewProperties::onVisibilitySet(int state)
@@ -148,6 +160,7 @@ void medViewerToolBoxViewProperties::onVisibilitySet(int state)
         d->view->setVisibility(1, d->dataComboBox->currentIndex());
     else
         d->view->setVisibility(0, d->dataComboBox->currentIndex());
+    d->view->update();
 }
 
 void medViewerToolBoxViewProperties::onOpacitySet(double opacity)
@@ -158,14 +171,23 @@ void medViewerToolBoxViewProperties::onOpacitySet(double opacity)
     d->opacitySlider->blockSignals(true);
     d->opacitySlider->setValue((int)(d->opacity->value() * 100));
     d->opacitySlider->blockSignals(false);
+    
     d->view->setOpacity(opacity, d->dataComboBox->currentIndex());
+    d->view->update();
 }
 
 void medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
 {
     if ( (!d->view) || (d->dataComboBox->currentIndex() == -1))
         return;
-    d->opacity->setValue(d->opacitySlider->value()/100.0);
+    
+    d->opacity->blockSignals(true);
+    double d_opacity = static_cast<double>(opacity)/100.0;
+    d->opacity->setValue(d_opacity);
+    d->opacity->blockSignals(false);
+    
+    d->view->setOpacity(d_opacity, d->dataComboBox->currentIndex());
+    d->view->update();
 }
 
 void medViewerToolBoxViewProperties::onLUTChanged(int index)
