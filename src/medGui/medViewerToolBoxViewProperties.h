@@ -28,9 +28,11 @@ public slots:
     void onViewClosed(void);
     void onDataSelected(int index);
     void onVisibilitySet(int state);
+    void onOpacitySet(double opacity);
 
 signals:
     void setVisibility(bool visible, int layer);
+    void setOpacity(double opacity, int layer);
 
 private:
     medViewerToolBoxViewPropertiesPrivate *d;

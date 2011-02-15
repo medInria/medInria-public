@@ -16,6 +16,7 @@ public:
         medAbstractView *view;
         QComboBox * dataComboBox;
         QCheckBox * visible;
+        QDoubleSpinBox * opacity;
 };
 
 medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
@@ -25,21 +26,26 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     d->dataComboBox->setFocusPolicy(Qt::NoFocus);
 
     d->visible = new QCheckBox(this);
-//    d->visible->setChecked(true);
+
+    d->opacity = new QDoubleSpinBox(this);
+    d->opacity->setRange(0.0,1.0);
+    d->opacity->setSingleStep(0.1);
+    d->opacity->setValue(1.0);
 
     QWidget *propertiesToolBoxWidget = new QWidget;
 
     QFormLayout * viewPropertiesLayout = new QFormLayout(propertiesToolBoxWidget);
     viewPropertiesLayout->addRow("Select data :", d->dataComboBox);
     viewPropertiesLayout->addRow("Visible :", d->visible);
+    viewPropertiesLayout->addRow("Opacity :", d->opacity);
     viewPropertiesLayout->setFormAlignment(Qt::AlignHCenter);
-
 
     this->setTitle("View properties");
     this->addWidget(propertiesToolBoxWidget);
 
     QObject::connect(d->dataComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataSelected(int)));
     QObject::connect(d->visible, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
+    QObject::connect(d->opacity, SIGNAL(valueChanged(double)), this, SLOT(onOpacitySet(double)));
 }
 
 medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
@@ -65,6 +71,7 @@ void medViewerToolBoxViewProperties::onDataAdded(int layer)
         return;
 
     d->view->setVisibility(1, layer);
+    d->view->setOpacity(1.0, layer);
     d->visible->setChecked(true);
     d->dataComboBox->insertItem(layer, QString::number(layer));
     d->dataComboBox->setCurrentIndex(layer);
@@ -83,6 +90,8 @@ void medViewerToolBoxViewProperties::onDataSelected(int index)
         return;
     d->view->setVisibility(d->view->visibility(index), index);
     d->visible->setChecked((d->view->visibility(index) == 1));
+    d->view->setOpacity(d->view->opacity(index), index);
+    d->opacity->setValue(d->view->opacity(index));
 }
 
 void medViewerToolBoxViewProperties::onVisibilitySet(int state)
@@ -94,5 +103,13 @@ void medViewerToolBoxViewProperties::onVisibilitySet(int state)
         d->view->setVisibility(1, d->dataComboBox->currentIndex());
     else
         d->view->setVisibility(0, d->dataComboBox->currentIndex());
+}
+
+void medViewerToolBoxViewProperties::onOpacitySet(double opacity)
+{
+    if ( (!d->view) || (d->dataComboBox->currentIndex() == -1))
+        return;
+
+    d->view->setOpacity(opacity, d->dataComboBox->currentIndex());
 }
 
