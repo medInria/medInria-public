@@ -12,7 +12,7 @@ class medSettingsWidgetFactoryPrivate;
  * @brief This factory creates Widgets that are pages in the medSettingsEditor widget.
  *
 */
-class medSettingsWidgetFactory : public dtkAbstractFactory
+class MEDGUI_EXPORT medSettingsWidgetFactory : public dtkAbstractFactory
 {
   Q_OBJECT
 

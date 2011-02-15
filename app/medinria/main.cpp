@@ -28,11 +28,12 @@
 
 #include <medCore/medPluginManager.h>
 #include <medCore/medDataIndex.h>
+#include <medSql/medDatabaseController.h>
+#include <medCore/medSettingsManager.h>
 
 
 int main(int argc, char *argv[])
 {
-
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
     QApplication application(argc, argv);
@@ -53,19 +54,28 @@ int main(int argc, char *argv[])
     // foreground, hiding all other windows. This makes debugging the startup 
     // operations difficult.
 #if ! defined( _DEBUG ) // && defined( WINDOWS )
+    QObject::connect(medDatabaseController::instance().data(), SIGNAL(copyMessage(QString, int, QColor)), &splash, SLOT(showMessage(QString, int, QColor)) ); 
     splash.show();
 #endif
 
+
+    //if (!medDatabaseController::instance()->moveDatabase("c:/database"))
+      //  qDebug() << "moving db failed";
+
+
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
-
+    
+ 
     medMainWindow mainwindow;
-
     mainwindow.show();
+   
 
     if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
-    && !dtkApplicationArgumentsContain(&application, "--wall"))
-        mainwindow.setFullScreen(true);
+    && !dtkApplicationArgumentsContain(&application, "--wall")){
+    	bool fullScreen  = medSettingsManager::instance()->value("startup", "start_in_full_screen").toBool();
+    	mainwindow.setFullScreen(fullScreen);
+    }
 
     if(application.arguments().contains("--wall"))
         mainwindow.setWallScreen(true);

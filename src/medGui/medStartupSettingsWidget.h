@@ -1,12 +1,13 @@
 #ifndef MEDSTARTUPSETTINGSWIDGET_H
 #define MEDSTARTUPSETTINGSWIDGET_H
 
+#include <medGui/medGuiExport.h>
 #include <QWidget>
 #include "medSettingsWidget.h"
 
 class medStartupSettingsWidgetPrivate;
 
-class medStartupSettingsWidget : public medSettingsWidget
+class MEDGUI_EXPORT medStartupSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
 public:
@@ -32,5 +33,5 @@ private:
 
 };
 
-medSettingsWidget* createStartupSettingsWidget(QWidget *parent);
+MEDGUI_EXPORT medSettingsWidget* createStartupSettingsWidget(QWidget *parent);
 #endif // MEDSTARTUPSETTINGSWIDGET_H

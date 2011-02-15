@@ -35,6 +35,12 @@ public:
 
     static QString   dataLocation(void);
     static QString configLocation(void);
+
+    static void setDataLocation(QString);
+
+private:
+    static QString m_dataLocation;
+
 };
 
 #endif // MEDSTORAGE_H
