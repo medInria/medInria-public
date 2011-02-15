@@ -40,6 +40,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   vtkDataMeshWriterPlugin.h
 #  vtkDataMeshWriterCommand.h
   vtkDataMeshWriter.h
+  vtkDataMesh4DWriter.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -74,6 +75,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkCommon
   vtkFiltering
   vtkIO
+  vtkDataManagement
 )
 
 ## #################################################################

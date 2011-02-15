@@ -31,7 +31,7 @@ QStringList vtkDataMesh4DWriter::s_handled(void)
 
 bool vtkDataMesh4DWriter::canWrite(const QString& path)
 {
-  return path.endsWith (QString (".vtk"));
+  return path.endsWith (QString (".v4d"));
 }
 
 bool vtkDataMesh4DWriter::write(const QString& path)

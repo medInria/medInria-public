@@ -54,6 +54,7 @@ set(${PROJECT_NAME}_HEADERS
   
 set(${PROJECT_NAME}_SOURCES
   vtkDataMeshReaderPlugin.cpp
+  vtkDataMeshReader.cpp
   vtkDataMesh4DReader.cpp
   )
 
@@ -78,6 +79,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkCommon
   vtkFiltering
   vtkIO
+  vtkDataManagement
 )
 
 ## #################################################################
