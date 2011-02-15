@@ -247,15 +247,12 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 	
 		foreach(QString toolbox, medToolBoxFactory::instance()->sourcedataToolBoxes())
 		{
-			qDebug() << toolbox;
 			medToolBoxSourceData *dataToolBox = medToolBoxFactory::instance()->createSourceDataToolBox(toolbox);
-			qDebug() << "Toolbox created";
 			d->stack->addWidget(dataToolBox->plugin()->widget());
-			qDebug() << "Widget added";
 			d->toolbox_source->addAdditionalTab(dataToolBox->plugin()->tabName(),dataToolBox->plugin()->sourceSelectorWidget());
-			qDebug() << "Additional tab added";
 			d->toolbox_container->addToolBox(dataToolBox);
-			qDebug() << "End";
+			dataToolBox->setVisible(false);
+			connect(dataToolBox->plugin(),SIGNAL(importedSuccess()),this,SLOT(onFileImported()));
 		}	
 
     // Layout /////////////////////////////////////////////
@@ -359,6 +356,10 @@ void medBrowserArea::onFileImported(void)
 
 void medBrowserArea::onSourceIndexChanged(int index)
 {
+	if (d->stack->currentIndex() > 2)
+		d->toolbox_container->toolBoxes().value(5 + d->stack->currentIndex() - 3)->setVisible(false);
+		
+		
     d->stack->setCurrentIndex(index);
 
     if(index == 2) {

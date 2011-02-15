@@ -17,6 +17,9 @@ public:
 	virtual QWidget *widget() = 0;
 	virtual QWidget *sourceSelectorWidget() = 0;
 	virtual QString tabName() = 0;
+
+signals:	
+	void importedSuccess();
 	
 public slots:
 	virtual void onImportData(void) = 0;
