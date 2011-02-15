@@ -28,7 +28,7 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
         d(new medStartupSettingsWidgetPrivate())
 {
     setSection("Startup");
-	d->startInFullScreen = new QCheckBox(this);
+    d->startInFullScreen = new QCheckBox(this);
     QFormLayout* layout = new QFormLayout;
     layout->addRow(tr("Shall medINRIA start in full screen?"),d->startInFullScreen);
     this->setLayout(layout);
@@ -47,4 +47,9 @@ bool medStartupSettingsWidget::validate()
 void medStartupSettingsWidget::read()
 {
     qDebug()<<"reading QSettings";
+}
+
+bool medStartupSettingsWidget::write()
+{
+    return true;
 }
