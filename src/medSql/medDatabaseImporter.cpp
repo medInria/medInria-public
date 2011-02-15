@@ -233,12 +233,19 @@ void medDatabaseImporter::run(void)
 		s_patientName + "/" +
 		s_studyName   + "/" +
 		s_seriesName  + uniqueSeriesId;
+	QString description = dtkdata->description();
 	
-	if (dtkdata->description() == "vtkDataMesh")
-            imageFileName = imageFileName + ".vtk";
+	if (description == "vtkDataMesh")
+	  imageFileName = imageFileName + ".vtk";
+	else if (description == "vtkDataMesh4D")
+	  imageFileName = imageFileName + ".v4d";
+	else if (description.contains ("Image"))
+	  imageFileName = imageFileName + ".mha";
 	else
-            imageFileName = imageFileName + ".mha";
-
+	{
+	  emit showError(this, tr ("Could not save data file (unhandled type: ") + description,5000);
+	}
+	
 	// Check if PATIENT/STUDY/SERIES/IMAGE already exists in the database
 
 	bool imageExists = false;
