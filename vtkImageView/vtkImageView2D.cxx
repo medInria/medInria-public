@@ -1296,7 +1296,10 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
         double origin[4], origin2[4];
         this->GetInput()->GetOrigin(origin);
         image->GetOrigin(origin2);
-                        
+        origin2[3] = 1.0;
+        
+        auxMatrix->MultiplyPoint(origin2, origin2);
+        
         for (int i=0; i<3; i++)
             origin2[i] -= origin[i];
         origin2[3] = 0.0;
@@ -1355,7 +1358,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
         this->GetRenderWindow()->AddRenderer(renderer);
         renderer->SetActiveCamera(this->GetRenderer()->GetActiveCamera());
         vtkLookupTable *lut = vtkLookupTableManager::GetSpectrumLookupTable();
-        lut->SetTableRange(0.0, 3.0);
+        lut->SetTableRange(0.0, 1000.0);
         lut->SetAlphaRange(0.0, 1.0);
         ImageDisplayMap.at(layer)->SetLookupTable(lut);
         ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(1.0);
