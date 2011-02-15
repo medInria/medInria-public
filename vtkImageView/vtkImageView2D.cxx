@@ -233,6 +233,21 @@ vtkImageView2D::~vtkImageView2D()
   }
 }
 
+void vtkImageView2D::SetVisibility(int visible, int layer)
+{
+    if (layer > (int)ImageDisplayMap.size())
+        return;
+    ImageDisplayMap.at(layer)->GetImageActor()->SetVisibility(visible);
+    this->GetRenderWindow()->Render();
+}
+
+int vtkImageView2D::GetVisibility(int layer)
+{
+    if (layer > (int)ImageDisplayMap.size())
+        return 0;
+    return ImageDisplayMap.at(layer)->GetImageActor()->GetVisibility();
+}
+
 //----------------------------------------------------------------------------
 void vtkImageView2D::GetSliceRange(int &min, int &max)
 {
