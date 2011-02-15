@@ -1,6 +1,7 @@
 #ifndef MEDSETTINGSWIDGET_H
 #define MEDSETTINGSWIDGET_H
 
+#include <medGui/medGuiExport.h>
 #include <QWidget>
 
 class medSettingsWidgetPrivate;
@@ -12,7 +13,7 @@ class medSettingsWidgetPrivate;
  *
  *
 */
-class medSettingsWidget : public QWidget
+class MEDGUI_EXPORT medSettingsWidget : public QWidget
 {
     Q_OBJECT
 public:

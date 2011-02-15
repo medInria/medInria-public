@@ -1,11 +1,12 @@
 #ifndef MEDSETTINGSEDITOR_H
 #define MEDSETTINGSEDITOR_H
 
+#include <medGui/medGuiExport.h>
 #include <QWidget>
 
 class medSettingsEditorPrivate;
 
-class medSettingsEditor : public QWidget
+class MEDGUI_EXPORT medSettingsEditor : public QWidget
 {
     Q_OBJECT
 public:

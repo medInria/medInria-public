@@ -1,12 +1,13 @@
 #ifndef MEDSYSTEMSETTINGSWIDGET_H
 #define MEDSYSTEMSETTINGSWIDGET_H
 
+#include <medGui/medGuiExport.h>
 #include <QWidget>
 #include "medSettingsWidget.h"
 
 class medSystemSettingsWidgetPrivate;
 
-class medSystemSettingsWidget : public medSettingsWidget
+class MEDGUI_EXPORT medSystemSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
 public:
@@ -45,5 +46,5 @@ private:
   bool validatePaths(QString paths);
 };
 
-medSettingsWidget* createSystemSettingsWidget(QWidget *parent);
+MEDGUI_EXPORT medSettingsWidget* createSystemSettingsWidget(QWidget *parent);
 #endif // MEDSYSTEMSETTINGSWIDGET_H
