@@ -530,7 +530,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   vtkPiecewiseFunction * GetDefaultOpacityTransferFunction();
 
   virtual void SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFunction *cf, vtkPiecewiseFunction *of,
-                                                          double window, double level);
+                                                          double minRange, double maxRange);
   virtual void SetTransferFunctionRangeFromWindowSettings();
   virtual void SetWindowSettingsFromTransferFunction();
 

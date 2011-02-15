@@ -235,32 +235,29 @@ vtkImageView2D::~vtkImageView2D()
 
 void vtkImageView2D::SetVisibility(int visible, int layer)
 {
-    if (layer > (int)ImageDisplayMap.size())
-        return;
-    ImageDisplayMap.at(layer)->GetImageActor()->SetVisibility(visible);
-    this->GetRenderWindow()->Render();
+    if (layer < (int)ImageDisplayMap.size())
+        ImageDisplayMap.at(layer)->GetImageActor()->SetVisibility(visible);
 }
 
 int vtkImageView2D::GetVisibility(int layer)
 {
-    if (layer > (int)ImageDisplayMap.size())
-        return 0;
-    return ImageDisplayMap.at(layer)->GetImageActor()->GetVisibility();
+    if (layer < (int)ImageDisplayMap.size())
+        return ImageDisplayMap.at(layer)->GetImageActor()->GetVisibility();
+    
+    return 0;
 }
 
 void vtkImageView2D::SetOpacity(double opacity, int layer)
 {
-    if (layer > (int)ImageDisplayMap.size())
-        return;
-    ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(opacity);
-    this->GetRenderWindow()->Render();
+    if (layer < (int)ImageDisplayMap.size())
+        ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(opacity);
 }
 
 double vtkImageView2D::GetOpacity(int layer)
 {
-    if (layer > (int)ImageDisplayMap.size())
-        return 0.0;
-    return ImageDisplayMap.at(layer)->GetImageActor()->GetOpacity();
+    if (layer < (int)ImageDisplayMap.size())
+        return ImageDisplayMap.at(layer)->GetImageActor()->GetOpacity();
+    return 0.0;
 }
 
 //----------------------------------------------------------------------------
