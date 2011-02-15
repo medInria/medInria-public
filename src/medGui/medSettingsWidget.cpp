@@ -24,7 +24,8 @@ medSettingsWidgetPrivate::~medSettingsWidgetPrivate()
 
 medSettingsWidget::medSettingsWidget(QWidget *parent) : QWidget(parent), d(new medSettingsWidgetPrivate())
 {
-    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+
 }
 
 
