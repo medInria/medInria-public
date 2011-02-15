@@ -602,7 +602,7 @@ QMenu::item:selected:!active {
  *
  */
 
-medToolBoxTab::pane{
+QTabWidget::pane{
     border-image: url(:/pixmaps/tabwidget-pane.png) 16 16 22 16 repeat-x;
     border-left-width: 16px;
     border-right-width: 16px;
@@ -616,19 +616,21 @@ medToolBoxTab::tab-bar {
     left: 11px;
 }
 
-medToolBoxTab QTabBar::tab {
+QTabBar::tab {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #505050, stop: 1.0 #494949);
-    border: 1px solid #2a2a2a;
-    border-bottom-color: #2a2a2a;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
     color: #b2b8b2;
     font-size: 10pt;
+}
+
+medToolBoxTab QTabBar::tab {
     height: 22px;
     min-width: 100px;
 }
 
-medToolBoxTab QTabBar::tab:selected, QTabBar::tab:hover {
+QTabBar::tab:selected, QTabBar::tab:hover {
+}
+
+medToolBoxTabBar::tab:selected, medToolBoxTabBar::tab:hover {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #505050, stop: 1.0 #5c5c5c);
     border: 1px solid #2a2a2a;
     border-bottom-color: #5c5c5c;
@@ -638,6 +640,24 @@ medToolBoxTab QTabBar::tab:selected, QTabBar::tab:hover {
     font-size: 10pt;
 }
 
+
+medSettingsEditor {
+  alternate-background-color: #505050;
+
+    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+    border-top-width: 16px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-bottom-width: 16px;
+
+    padding-top: -7px;
+    padding-left: -4px;
+    padding-right: -5px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
 /**
  * QScrollBar
  *

@@ -87,12 +87,10 @@ void medSystemSettingsWidget::read()
 {
     qDebug()<<"reading QSettings";
     medSettingsManager * mnger = medSettingsManager::instance();
+    d->pluginsPathField->setText(mnger->value("scripts","modules_path").toString());
     d->modulesPathField->setText(mnger->value("scripts","modules_path").toString());
-     d->modulesPathField->setText(mnger->value("scripts","script_path").toString());
+    d->scriptsPathField->setText(mnger->value("scripts","script_path").toString());
 
-
-
-    d->pluginsPathField->setText(mnger->value("plugins","path").toString());
 
 }
 

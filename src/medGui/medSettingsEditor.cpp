@@ -13,7 +13,7 @@ class medSettingsEditorPrivate {
 public:
   QWidget* parent;
   QTabWidget* tabWidget;
-  QList<medSettingsWidget*> settingsWidgets;
+  QHash<QString,medSettingsWidget*> settingsWidgets;
   //medSettingsWidget * systemSettingsWidget;
 
   medSettingsEditorPrivate();
@@ -37,62 +37,78 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
 {
     QVBoxLayout * vLayout = new QVBoxLayout(this);
     setLayout(vLayout);
-    this->setFixedSize(QSize(300,300));
-  d->tabWidget = new QTabWidget (this);
-  d->tabWidget->setTabPosition(QTabWidget::West);
-  d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    this->setFixedSize(QSize(500,500));
+    d->tabWidget = new QTabWidget (this);
+    d->tabWidget->setTabPosition(QTabWidget::West);
+    d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-  //System widget
-  medSettingsWidget * systemSettingsWidget = medSettingsWidgetFactory::instance()->createSettingsWidget("System",NULL);
+    medSettingsWidgetFactory * settingsFactory =
+            medSettingsWidgetFactory::instance();
+    //System widget
+    medSettingsWidget * systemSettingsWidget = settingsFactory->createSettingsWidget("System",d->tabWidget);
 
-  d->tabWidget->addTab(systemSettingsWidget,
-                       systemSettingsWidget->section());
-  d->settingsWidgets.append(systemSettingsWidget);
+    d->tabWidget->addTab(systemSettingsWidget,
+                         systemSettingsWidget->section());
+    d->settingsWidgets.insert("System",systemSettingsWidget);
 
-  //Dicom widget
+    //Dicom widget
 
-  //Startup widget
+    //Startup widget
 
-  medSettingsWidget * startupSettingsWidget = medSettingsWidgetFactory::instance()->createSettingsWidget("Startup",NULL);
+    medSettingsWidget * startupSettingsWidget = settingsFactory->createSettingsWidget ("Startup",
+                                                                                      d->tabWidget);
 
-	d->tabWidget->addTab(startupSettingsWidget,
-						startupSettingsWidget->section());
-	d->settingsWidgets.append(startupSettingsWidget);
+    d->tabWidget->addTab(startupSettingsWidget,
+                         startupSettingsWidget->section());
+    d->settingsWidgets.insert("Startup",
+                              startupSettingsWidget);
 
 
-  //Logging widget
+    //Logging widget
 
-  //Process manager widget
+    //Process manager widget
+    medSettingsWidget * setWid;
+    foreach (QString widgetStyle, settingsFactory->settingsWidgets())
+    {
+        if (!d->settingsWidgets.contains(widgetStyle))
+        {
+            setWid = settingsFactory->createSettingsWidget(widgetStyle,d->tabWidget);
 
-  this->layout()->addWidget(d->tabWidget);
+            d->tabWidget->addTab(startupSettingsWidget,
+                             startupSettingsWidget->section());
+            d->settingsWidgets.insert(widgetStyle, setWid);
+        }
+    }
 
-  //save button
-  QPushButton * save = new QPushButton (tr("Save"),this);
-  connect(save,SIGNAL(clicked()),
-          this,SLOT(onSaveClicked()));
+    this->layout()->addWidget(d->tabWidget);
 
-  //cancel button
-  QPushButton * cancel = new QPushButton (tr("Cancel"),this);
-  connect(cancel,SIGNAL(clicked()),
-          this,SLOT(onCancelClicked()));
-  //reset button
-  QPushButton * reset = new QPushButton (tr("Reset"), this);
-  connect(reset,SIGNAL(clicked()),
-          this,SLOT(onResetClicked()));
+    //save button
+    QPushButton * save = new QPushButton (tr("Save"),this);
+    connect(save,SIGNAL(clicked()),
+            this,SLOT(onSaveClicked()));
 
-  QHBoxLayout * buttonLayout = new QHBoxLayout(this);
-  buttonLayout->addWidget(reset);
-  buttonLayout->addWidget(cancel);
-  buttonLayout->addWidget(save);
-  vLayout->addLayout(buttonLayout);
+    //cancel button
+    QPushButton * cancel = new QPushButton (tr("Cancel"),this);
+    connect(cancel,SIGNAL(clicked()),
+            this,SLOT(onCancelClicked()));
+    //reset button
+    QPushButton * reset = new QPushButton (tr("Reset"), this);
+    connect(reset,SIGNAL(clicked()),
+            this,SLOT(onResetClicked()));
 
-  connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
-      medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
+    QHBoxLayout * buttonLayout = new QHBoxLayout(this);
+    buttonLayout->addWidget(reset);
+    buttonLayout->addWidget(cancel);
+    buttonLayout->addWidget(save);
+    vLayout->addLayout(buttonLayout);
 
-  foreach(medSettingsWidget * setting, d->settingsWidgets)
-  {
-      setting->read();
-  }
+    connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
+
+    foreach(medSettingsWidget * setting, d->settingsWidgets)
+    {
+        setting->read();
+    }
 }
 
 
