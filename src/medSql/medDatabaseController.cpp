@@ -35,6 +35,124 @@
 #include "medDatabaseReader.h"
 #include <medCore/medStorage.h>
 
+void medDatabaseController::recurseAddDir(QDir d, QStringList & list) 
+{
+
+    QStringList qsl = d.entryList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+
+    foreach (QString file, qsl) {
+
+        QFileInfo finfo(QString("%1/%2").arg(d.path()).arg(file));
+
+        if (finfo.isSymLink())
+            return;
+
+        if (finfo.isDir()) {
+
+            QString dirname = finfo.fileName();
+            QDir sd(finfo.filePath());
+
+            recurseAddDir(sd, list);
+
+        } else
+            list << QDir::toNativeSeparators(finfo.filePath());
+    }
+}
+
+bool medDatabaseController::createDestination(QStringList sourceList, QStringList& destList, QString sourceDir, QString destDir)
+{
+    bool res = true;
+    
+    if (!QDir(destDir).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty())
+    {
+        qDebug() << "Directory not empty: " << destDir;
+        return false;
+    }
+
+    int trimCount = sourceDir.length();
+    foreach (QString sourceFile, sourceList)
+    {
+        sourceFile.remove(0,trimCount);
+
+        QString destination = destDir + sourceFile;
+
+        // check if this is a directory
+        QFileInfo completeFile (destination);
+        QDir fileInfo(completeFile.path());
+
+        if (!fileInfo.exists() && !medStorage::mkpath (fileInfo.path())) {
+            qDebug() << "Cannot create directory: " << fileInfo.path();
+            res = false;
+        }
+
+        destList.append(destination);
+    }
+
+    return res;
+}
+
+bool medDatabaseController::copyFiles(QStringList sourceList, QStringList destList)
+{
+ 
+    if (destList.count() != sourceList.count())
+        return false;
+
+    // just copy not using a dialog
+    for (int i = 0; i < sourceList.count(); i++) 
+    {
+      
+        // coping
+        if (!QFile::copy(sourceList.at(i), destList.at(i))) 
+        {
+            qDebug() << "[Failure] copying file: " << sourceList.at(i) << " to " << destList.at(i);
+            return false;
+        }       
+        else
+        {   
+            QString message;
+            message = tr("copying files ") + QString::number(i) + " of " + QString::number(sourceList.count()); 
+            emit copyMessage(message, Qt::AlignBottom, QColor((Qt::white)));
+        }
+      
+    }
+
+    return true;
+}
+
+
+bool medDatabaseController::removeDir(QString dirName)
+{
+
+    bool result = true;
+    QDir dir(dirName);
+
+    if (dir.exists(dirName)) {
+        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+            if (info.isDir()) {
+                result = removeDir(info.absoluteFilePath());
+            }
+            else {
+                QString message;
+                message = tr("removing files ") + info.baseName(); 
+                emit copyMessage(message, Qt::AlignBottom, QColor((Qt::white)));
+                result = QFile::remove(info.absoluteFilePath());
+            }
+
+            if (!result) {
+                return result;
+            }
+        }
+        result = dir.rmdir(dirName);
+    }
+
+    if (result)
+        emit copyMessage(tr("deleting old database: success"), Qt::AlignBottom, QColor((Qt::white)));
+    else
+        emit copyMessage(tr("deleting old database: failure"), Qt::AlignBottom, QColor((Qt::red)));
+    
+    return result;
+}
+
 QPointer<medDatabaseController> medDatabaseController::instance(void)
 {
     if(!s_instance)
@@ -60,12 +178,18 @@ bool medDatabaseController::createConnection(void)
 {
     medStorage::mkpath(medStorage::dataLocation() + "/");
 
-    this->m_database = QSqlDatabase::addDatabase("QSQLITE");
+    if (this->m_database.databaseName().isEmpty())
+        this->m_database = QSqlDatabase::addDatabase("QSQLITE");
     this->m_database.setDatabaseName(medStorage::dataLocation() + "/" + "db");
 
     if (!m_database.open()) {
         qDebug() << DTK_COLOR_FG_RED << "Cannot open database: Unable to establish a database connection." << DTK_NO_COLOR;
         return false;
+    }
+    else
+    {
+        qDebug() << "Database opened at: " << m_database.databaseName();
+        m_isConnected = true;
     }
 
     createPatientTable();
@@ -79,7 +203,7 @@ bool medDatabaseController::createConnection(void)
 bool medDatabaseController::closeConnection(void)
 {
     m_database.close();
-
+    m_isConnected = false;
     return true;
 }
 
@@ -280,4 +404,82 @@ void medDatabaseController::createImageTable(void)
             );
 }
 
+bool medDatabaseController::moveDatabase( QString newLocation)
+{
+    bool res = true;
+    QString oldLocation = medStorage::dataLocation();
+
+    // now copy all the images and thumbnails
+    QStringList sourceList;
+    recurseAddDir(QDir(oldLocation), sourceList);
+    
+    // create destination filelist
+    QStringList destList;
+    if (!createDestination(sourceList,destList,oldLocation, newLocation))
+    {
+        res = false;
+    }
+    else
+    {
+        // now copy
+        if (!copyFiles(sourceList, destList))
+            res = false;
+    }
+
+    if (res)
+        emit copyMessage(tr("copying database: success"), Qt::AlignBottom, QColor((Qt::white)));
+    else
+        emit copyMessage(tr("copying database: failure"), Qt::AlignBottom, QColor((Qt::red)));
+
+
+    // only switch to the new location if copying succeeded
+    if( res )
+    {
+        // close connection if necessary
+        bool needsRestart = false;
+        if (this->isConnected())
+        {
+            this->closeConnection();
+            needsRestart = true;
+        }
+
+        // now update the datastorage path and make sure to reconnect
+        medStorage::setDataLocation(newLocation);
+
+        // restart if necessary
+        if (needsRestart)
+        {
+            qDebug() << "Restarting connection...";
+            this->createConnection();
+        }
+
+        // now delete the old archive
+        removeDir(oldLocation);
+     
+    }
+
+    if (res)
+        emit copyMessage(tr("relocating database successful"), Qt::AlignBottom, QColor((Qt::white)));
+    else
+        emit copyMessage(tr("relocating database failed"), Qt::AlignBottom, QColor((Qt::red)));
+    return res;
+}
+
+bool medDatabaseController::isConnected()
+{
+    return m_isConnected;
+}
+
+medDatabaseController::medDatabaseController()
+{
+    m_isConnected = false;
+}
+
+medDatabaseController::~medDatabaseController()
+{
+
+}
+
+
 medDatabaseController *medDatabaseController::s_instance = NULL;
+bool medDatabaseController::m_isConnected = false;

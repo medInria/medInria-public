@@ -26,6 +26,8 @@
 
 medStorage::medStorage(void)
 {
+    
+
 }
 
 medStorage::~medStorage(void)
@@ -44,13 +46,18 @@ bool medStorage::rmpath(const QString& dirPath)
 
 QString medStorage::dataLocation(void)
 {
+    if (m_dataLocation == NULL)
+    {    
 #ifdef Q_WS_MAC
     return QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation))
-            .remove(QCoreApplication::applicationName())
-            .append(QCoreApplication::applicationName());
+        .remove(QCoreApplication::applicationName())
+        .append(QCoreApplication::applicationName());
 #else
     return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
+    }
+    else
+        return m_dataLocation;
 }
 
 QString medStorage::configLocation(void)
@@ -61,3 +68,13 @@ QString medStorage::configLocation(void)
     return(dataLocation());
 #endif
 }
+
+void medStorage::setDataLocation( QString newLocation)
+{
+    // should store it to qsettings
+    m_dataLocation = newLocation;
+}
+
+QString medStorage::m_dataLocation;
+
+
