@@ -34,34 +34,13 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
 {
     QVBoxLayout * vLayout = new QVBoxLayout(this);
     setLayout(vLayout);
-    this->setFixedSize(QSize(200,500));
+    this->setFixedSize(QSize(500,500));
     d->tabWidget = new QTabWidget (this);
     d->tabWidget->setTabPosition(QTabWidget::West);
     d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     medSettingsWidgetFactory * settingsFactory =
             medSettingsWidgetFactory::instance();
-    //System widget
-    medSettingsWidget * systemSettingsWidget = settingsFactory->createSettingsWidget("System",d->tabWidget);
-
-    d->tabWidget->addTab(systemSettingsWidget,
-                         systemSettingsWidget->section());
-    d->settingsWidgets.insert("System",systemSettingsWidget);
-
-    //Dicom widget
-
-    //Startup widget
-
-    medSettingsWidget * startupSettingsWidget = settingsFactory->createSettingsWidget ("Startup",
-                                                                                      d->tabWidget);
-
-    d->tabWidget->addTab(startupSettingsWidget,
-                         startupSettingsWidget->section());
-    d->settingsWidgets.insert("Startup",
-                              startupSettingsWidget);
-
-
-    //Logging widget
 
     //Process manager widget
     medSettingsWidget * setWid;
@@ -72,9 +51,9 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
         {
             setWid = settingsFactory->createSettingsWidget(widgetStyle,d->tabWidget);
             scroll = new QScrollArea(this);
-            scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
             scroll->setWidget(setWid);
-            d->tabWidget->addTab(setWid,
+            d->tabWidget->addTab(scroll,
                              setWid->section());
             d->settingsWidgets.insert(widgetStyle, setWid);
         }

@@ -37,8 +37,8 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     d->defaultStartingArea->addItem("Viewer", "Viewer");
 
     QFormLayout* layout = new QFormLayout;
-    layout->addRow(tr("Shall medINRIA start in full screen?"),d->startInFullScreen);
-    layout->addRow(tr("Area selected on startup:"),d->defaultStartingArea);
+    layout->addRow(tr("fullscreen"),d->startInFullScreen);
+    d->startInFullScreen->setToolTip(tr("Shall medINRIA start in full screen?"));
     this->setLayout(layout);
 }
 
@@ -58,17 +58,17 @@ void medStartupSettingsWidget::read()
     medSettingsManager * mnger = medSettingsManager::instance();
     d->startInFullScreen->setChecked(mnger->value("startup", "start_in_full_screen").toBool());
 
-	QVariant vArea = mnger->value("startup", "default_starting_area");
-	//if nothing is configured then Browser is the default area
-	int areaIndex = 0;
-	if (!vArea.isNull())
-		areaIndex = d->defaultStartingArea->findText(vArea.toString());
+    QVariant vArea = mnger->value("startup", "default_starting_area");
+    //if nothing is configured then Browser is the default area
+    int areaIndex = 0;
+    if (!vArea.isNull())
+        areaIndex = d->defaultStartingArea->findText(vArea.toString());
 
-	//in case nothing is found, ensure to select a proper index
-	if (areaIndex == -1)
-		areaIndex = 0;
+    //in case nothing is found, ensure to select a proper index
+    if (areaIndex == -1)
+        areaIndex = 0;
 
-	d->defaultStartingArea->setCurrentIndex(areaIndex);
+    d->defaultStartingArea->setCurrentIndex(areaIndex);
 }
 
 bool medStartupSettingsWidget::write()
