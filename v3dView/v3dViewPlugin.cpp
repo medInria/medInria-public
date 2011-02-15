@@ -6,6 +6,7 @@
 #include "v3dViewFiberInteractor.h"
 #include "v3dViewFuseInteractor.h"
 #include "v3dViewMeshInteractor.h"
+#include "v3dView4DInteractor.h"
 #include "v3dViewPlugin.h"
 
 #include <dtkCore/dtkLog.h>
@@ -42,6 +43,7 @@ bool v3dViewPlugin::initialize(void)
     if (!v3dViewFiberInteractor::registered()) dtkWarning() << "Unable to register v3dViewFiberInteractor type";
     if (!v3dViewFuseInteractor::registered()) dtkWarning() << "Unable to register v3dViewFuseInteractor type";
     if (!v3dViewMeshInteractor::registered()) dtkWarning() << "Unable to register v3dViewMeshInteractor type";
+    if (!v3dView4DInteractor::registered()) dtkWarning() << "Unable to register v3dView4DInteractor type";
       
     return true;
 }

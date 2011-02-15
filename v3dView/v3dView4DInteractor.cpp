@@ -40,29 +40,31 @@ v3dView4DInteractor::v3dView4DInteractor(): dtkAbstractViewInteractor(), d(new v
     d->data = NULL;
     d->view = NULL;
     this->currentTime = 0.0;
+    this->sequenceList = vtkCollection::New();
 }
 
 v3dView4DInteractor::~v3dView4DInteractor()
 {
-    this->disable();
-
-    delete d;
-    d = 0;
+  this->disable();
+  this->sequenceList->Delete();
+  
+  delete d;
+  d = 0;
 }
 
 QString v3dView4DInteractor::description(void) const
 {
-    return "v3dView4DInteractor";
+  return "v3dView4DInteractor";
 }
 
 QStringList v3dView4DInteractor::handled(void) const
 {
-    return QStringList () << "v3dView";
+  return QStringList () << "v3dView";
 }
 
 bool v3dView4DInteractor::registered(void)
 {
-    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dView4DInteractor", QStringList() << "v3dView", createV3dView4DInteractor);
+  return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dView4DInteractor", QStringList() << "v3dView", createV3dView4DInteractor);
 }
 
 void v3dView4DInteractor::setData(dtkAbstractData *data)
@@ -85,30 +87,27 @@ void v3dView4DInteractor::appendData(dtkAbstractData *data)
 
 void v3dView4DInteractor::setView(dtkAbstractView *view)
 {
-    if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
-        d->view = v3dview;
-    }
+  if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
+    d->view = v3dview;
+  }
 }
 
 bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
-    if ( data->description() == "vtkData4D" ) {
-
-        this->enable ();
-        return true;
-    }
+  if ( data->description() == "vtkDataMesh4D" ) {
+    
+    this->enable ();
+    return true;
+  }
     return false;
 }
 
 void v3dView4DInteractor::enable(void)
 {
-  dtkWarning() << "enabling v3dView4DInteractor" ;
   if (this->enabled())
     return;
   updatePipeline ();
   dtkAbstractViewInteractor::enable();
-  dtkWarning() << "enabled " ;
-
 }
 
 
@@ -143,8 +142,6 @@ dtkAbstractViewInteractor *createV3dView4DInteractor(void)
 
 void v3dView4DInteractor::updatePipeline (void)
 {
-  dtkWarning() << "v3dView4DInteractor::updatePipeline()";
-  
   for (int i=0; i<sequenceList->GetNumberOfItems(); i++)
   {
     vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(sequenceList->GetItemAsObject (i));
