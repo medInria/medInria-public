@@ -47,13 +47,21 @@ bool medStorage::rmpath(const QString& dirPath)
 
 QString medStorage::dataLocation(void)
 {
-    if (m_dataLocation != NULL)
-    	return m_dataLocation;
+    // first check if someone set the data location, then try to pull the actual database
+    if(m_dataLocation == NULL)
+    {
+        QVariant vDbLoc = medSettingsManager::instance()->value("medDatabaseSettingsWidget", "actual_database_location");
+        if (!vDbLoc.isNull()) 
+        {
+            setDataLocation(vDbLoc.toString());            
+        }
 
-    QVariant vDbLoc = medSettingsManager::instance()->value("database", "actual_database_location");
-    if (!vDbLoc.isNull()) {
-    	QString dbLoc = vDbLoc.toString();
-    	return dbLoc;
+    }
+
+    // if the datalocation is still not set we will return the default
+    if (m_dataLocation != NULL)
+    {
+    	return m_dataLocation;
     }
     else
     {

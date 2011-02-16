@@ -1,5 +1,5 @@
-/* medDatabaseImporter.cpp ---
- *
+/* medDatabaseImporter.cpp --- 
+ * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:42:32 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 48
  */
 
-/* Commentary:
- *
+/* Commentary: 
+ * 
  */
 
 /* Change log:
- *
+ * 
  */
 
 #include "medDatabaseImporter.h"
@@ -75,7 +75,7 @@ void medDatabaseImporter::run(void)
     QMap<QString, QStringList> imagesToWriteMap;
 
     typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-
+    
     QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
 
     int fileCount = fileList.count();
@@ -100,7 +100,7 @@ void medDatabaseImporter::run(void)
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
             if (dataReader->canRead( fileInfo.filePath() )) {
           qDebug() << "datareader is able to read : " << fileInfo.filePath() << "\n";
-
+          
                 dataReader->readInformation( fileInfo.filePath() );
                 dtkdata = dataReader->data();
         if (dtkdata)
@@ -125,7 +125,7 @@ void medDatabaseImporter::run(void)
 
     if(!dtkdata->hasMetaData("StudyID"))
             dtkdata->addMetaData("StudyID", QStringList() << "");
-
+    
     if(!dtkdata->hasMetaData("SeriesID"))
             dtkdata->addMetaData("SeriesID", QStringList() << "");
 
@@ -143,7 +143,7 @@ void medDatabaseImporter::run(void)
 
     if(!dtkdata->hasMetaData("Rows"))
             dtkdata->addMetaData("Rows", QStringList() << "");
-
+        
     if(!dtkdata->hasMetaData("Columns"))
             dtkdata->addMetaData("Columns", QStringList() << "");
 
@@ -221,19 +221,19 @@ void medDatabaseImporter::run(void)
     QString s_patientName = patientName.simplified();
     QString s_studyName   = studyName.simplified();
     QString s_seriesName  = seriesName.simplified();
-
+        
     s_patientName.replace (0x00EA, 'e');
     s_studyName.replace   (0x00EA, 'e');
     s_seriesName.replace  (0x00EA, 'e');
     s_patientName.replace (0x00E4, 'a');
     s_studyName.replace   (0x00E4, 'a');
-    s_seriesName.replace  (0x00E4, 'a');
-
-        QString imageFileName = medStorage::dataLocation() + "/" +
+    s_seriesName.replace  (0x00E4, 'a');	
+        
+        QString imageFileName = "/" +
         s_patientName + "/" +
         s_studyName   + "/" +
         s_seriesName  + uniqueSeriesId;
-
+    
     if (dtkdata->description() == "vtkDataMesh")
             imageFileName = imageFileName + ".vtk";
     else
@@ -246,7 +246,7 @@ void medDatabaseImporter::run(void)
     query.bindValue(":name", patientName);
     if(!query.exec())
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
+    
     if(query.first()) {
             id = query.value(0);
 
@@ -270,7 +270,7 @@ void medDatabaseImporter::run(void)
         query.bindValue(":sliceThickness", sliceThickness);
         query.bindValue(":rows", rows);
         query.bindValue(":columns", columns);
-
+                
         if(!query.exec())
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
@@ -290,12 +290,12 @@ void medDatabaseImporter::run(void)
                 }
             }
     }
-
+    
     if (!imageExists)
         imagesToWriteMap[imageFileName] << fileInfo.filePath();
 
     delete dtkdata;
-
+    
     }
 
 
@@ -306,16 +306,16 @@ void medDatabaseImporter::run(void)
       return;
     }
 
-
-    QMap<QString, int>::const_iterator itk = keyToInt.begin();
-
+    
+    QMap<QString, int>::const_iterator itk = keyToInt.begin();    
+    
     // read and write images in mhd format
 
     QList<dtkAbstractData*> dtkDataList;
     QList<dtkAbstractDataTypeHandler> writers = dtkAbstractDataFactory::instance()->writers();
 
     QMap<QString, QStringList>::const_iterator it = imagesToWriteMap.begin();
-
+    
     int imagesCount = imagesToWriteMap.count();
     int imageIndex = 0;
 
@@ -335,7 +335,7 @@ void medDatabaseImporter::run(void)
                 //connect (dataReader, SIGNAL (progressed (int)), this, SLOT (setImportProgress(int)));
 
                 if (dataReader->read( it.value() )) {
-                    imData = dataReader->data();
+                    imData = dataReader->data();					
 
                     if (imData) {
                         if (!imData->hasMetaData ("FilePaths"))
@@ -343,10 +343,10 @@ void medDatabaseImporter::run(void)
 
                         if (!imData->hasMetaData ("PatientName"))
                             imData->addMetaData  ("PatientName", QStringList() << "John Doe");
-
+            
                         if (!imData->hasMetaData ("StudyDescription"))
                             imData->addMetaData  ("StudyDescription", QStringList() << "EmptyStudy");
-
+            
                         if (!imData->hasMetaData ("SeriesDescription"))
                             imData->addMetaData  ("SeriesDescription", QStringList() << QFileInfo (it.value()[0]).baseName());
 
@@ -361,7 +361,7 @@ void medDatabaseImporter::run(void)
 
             if(!imData->hasMetaData ("StudyID"))
                         imData->addMetaData ("StudyID", QStringList() << "");
-
+    
             if(!imData->hasMetaData ("SeriesID"))
                 imData->addMetaData ("SeriesID", QStringList() << "");
 
@@ -379,7 +379,7 @@ void medDatabaseImporter::run(void)
 
             if(!imData->hasMetaData ("Rows"))
                 imData->addMetaData ("Rows", QStringList() << "");
-
+    
             if(!imData->hasMetaData ("Columns"))
                 imData->addMetaData ("Columns", QStringList() << "");
 
@@ -391,10 +391,10 @@ void medDatabaseImporter::run(void)
 
             if(!imData->hasMetaData("Gender"))
                 imData->addMetaData("Gender", QStringList() << "");
-
+            
             if(!imData->hasMetaData("Description"))
                 imData->addMetaData("Description", QStringList() << "");
-
+            
             if(!imData->hasMetaData("Modality"))
                 imData->addMetaData("Modality", QStringList() << "");
 
@@ -406,29 +406,29 @@ void medDatabaseImporter::run(void)
 
             if(!imData->hasMetaData("Status"))
                 imData->addMetaData("Status", QStringList() << "");
-
+            
             if(!imData->hasMetaData("AcquisitionDate"))
                 imData->addMetaData("AcquisitionDate", QStringList() << "");
-
+            
             if(!imData->hasMetaData("ImportationDate"))
                 imData->addMetaData("ImportationDate", QStringList() << "");
-
+            
             if(!imData->hasMetaData("Referee"))
                 imData->addMetaData("Referee", QStringList() << "");
-
+            
             if(!imData->hasMetaData("Performer"))
                 imData->addMetaData("Performer", QStringList() << "");
-
+            
             if(!imData->hasMetaData("Institution"))
                 imData->addMetaData("Institution", QStringList() << "");
-
+            
             if(!imData->hasMetaData("Report"))
                 imData->addMetaData("Report", QStringList() << "");
-
+            
                         imData->addMetaData ("FileName", it.key() );
-
+            
                         delete dataReader;
-
+            
                         break;
                     }
                 }
@@ -442,33 +442,33 @@ void medDatabaseImporter::run(void)
              emit showError(this, tr ("Could not read data: ") + it.value()[0],5000);
             continue;
         }
-
-        QFileInfo fileInfo (it.key());
+        
+        QFileInfo fileInfo ( medStorage::dataLocation() + it.key());
         if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path())) {
         qDebug() << "Cannot create directory: " << fileInfo.dir().path();
             continue;
         }
 
     int writeSuccess = 0;
-
+    
         for (int i=0; i<writers.size(); i++)
     {
             dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
         qDebug() << "trying " << dataWriter->description();
-
+        
         if (! dataWriter->handled().contains(imData->description()))
         {
           qDebug() << "failed with " << dataWriter->description();
           continue;
         }
-
+        
         qDebug() << "success with " << dataWriter->description();
             dataWriter->setData (imData);
 
-        qDebug() << "trying to write in file : "<<it.key();
-
-            if (dataWriter->canWrite( it.key() )) {
-                if (dataWriter->write( it.key() )) {
+        qDebug() << "trying to write in file : "<< medStorage::dataLocation() + it.key();
+        
+            if (dataWriter->canWrite( medStorage::dataLocation() + it.key() )) {
+                if (dataWriter->write( medStorage::dataLocation() + it.key() )) {
                     dtkDataList.push_back (imData);
             writeSuccess = 1;
                     delete dataWriter;
@@ -482,11 +482,11 @@ void medDatabaseImporter::run(void)
             emit showError(this, tr ("Could not save data file: ") + it.value()[0],5000);
         continue;
     }
-
+    
 
     // Now, populate the database
     if (imData) {
-
+      
       dtkAbstractData *dtkdata = imData; //dtkDataList[i];
 
         QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0].simplified();
@@ -496,7 +496,7 @@ void medDatabaseImporter::run(void)
     QString studyId        = dtkdata->metaDataValues(tr("StudyID"))[0];
     QString seriesId       = dtkdata->metaDataValues(tr("SeriesID"))[0];
     int size               = dtkdata->metaDataValues(tr("Size"))[0].toInt();
-
+    
     QString orientation    = dtkdata->metaDataValues(tr("Orientation"))[0];
     QString seriesNumber   = dtkdata->metaDataValues(tr("SeriesNumber"))[0];
     QString sequenceName   = dtkdata->metaDataValues(tr("SequenceName"))[0];
@@ -526,7 +526,7 @@ void medDatabaseImporter::run(void)
     if (dtkdata->hasMetaData(tr("(0010,1010)")))
         s_age=dtkdata->metaDataValues(tr("(0010,1010)"))[0];
     */
-
+    
     //QString patientPath;
     //QString studyPath;
     QString seriesPath = dtkdata->metaDataValues (tr("FileName"))[0];
@@ -541,20 +541,20 @@ void medDatabaseImporter::run(void)
     QStringList thumbPaths;
 
         if (thumbnails.count())
-            if (!medStorage::mkpath (thumb_dir))
+            if (!medStorage::mkpath (medStorage::dataLocation() + thumb_dir))
             qDebug() << "Cannot create directory: " << thumb_dir;
 
     for (int j=0; j<thumbnails.count(); j++) {
         QString thumb_name = thumb_dir + QString().setNum (j) + ".jpg";
-        thumbnails[j].save(thumb_name, "JPG");
+        thumbnails[j].save(medStorage::dataLocation() + thumb_name, "JPG");
         thumbPaths << thumb_name;
     }
 
     QImage thumbnail = dtkdata->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
     QString thumbPath = thumb_dir + "ref.jpg";
-    thumbnail.save (thumbPath, "JPG");
-
-
+    thumbnail.save (medStorage::dataLocation() + thumbPath, "JPG");
+    
+    
         ////////////////////////////////////////////////////////////////// PATIENT
 
         query.prepare("SELECT id FROM patient WHERE name = :name");
@@ -580,8 +580,8 @@ void medDatabaseImporter::run(void)
           qDebug() << "Cannot create directory: " << patientPath;
         */
     }
-
-
+    
+    
     ////////////////////////////////////////////////////////////////// STUDY
 
     query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :studyID");
@@ -590,7 +590,7 @@ void medDatabaseImporter::run(void)
     query.bindValue(":studyID", studyId);
     if(!query.exec())
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
+    
     if(query.first()) {
             id = query.value(0);
             //studyPath = patientPath + "/" + QString().setNum (id.toInt());
@@ -606,7 +606,7 @@ void medDatabaseImporter::run(void)
           query.bindValue(":thumbnail", "");
         */
             query.exec(); id = query.lastInsertId();
-
+        
             //studyPath = patientPath + "/" + QString().setNum (id.toInt());
             /*
           if (!QDir (studyPath).exists() && !this->mkpath (studyPath))
@@ -614,9 +614,9 @@ void medDatabaseImporter::run(void)
         */
     }
 
-
+    
     ///////////////////////////////////////////////////////////////// SERIES
-
+    
     query.prepare("SELECT * FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
         query.bindValue(":id", id);
         query.bindValue(":name", seriesName);
@@ -630,7 +630,7 @@ void medDatabaseImporter::run(void)
 
     if(!query.exec())
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
+    
     if(query.first()) {
             id = query.value(0);
             QVariant seCount = query.value (2);
@@ -674,8 +674,8 @@ void medDatabaseImporter::run(void)
 
             //seriesPath = studyPath + "/" + QString().setNum (id.toInt()) + ".mhd";
     }
-
-
+    
+    
     ///////////////////////////////////////////////////////////////// IMAGE
 
     if (filePaths.count()==1 && thumbPaths.count()>1) // special case to 1 image and multiple thumbnails
@@ -687,10 +687,10 @@ void medDatabaseImporter::run(void)
             query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
         query.bindValue(":id", id);
         query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
-
+        
         if(!query.exec())
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
+        
         if(query.first()) {
             ; //qDebug() << "Image" << file << "already in database";
         }
@@ -703,15 +703,15 @@ void medDatabaseImporter::run(void)
             query.bindValue(":path", fileInfo.filePath());
             query.bindValue(":instance_path", seriesPath);
             query.bindValue(":thumbnail", thumbPaths[j]);
-
+        
             if(!query.exec())
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         }
         }
-
+        
     }
     else {
-
+    
         for (int j=0; j<filePaths.count(); j++) {
 
             QFileInfo fileInfo( filePaths[j] );
@@ -719,15 +719,15 @@ void medDatabaseImporter::run(void)
         query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
         query.bindValue(":id", id);
         query.bindValue(":name", fileInfo.fileName());
-
+        
         if(!query.exec())
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
+        
         if(query.first()) {
             ; //qDebug() << "Image" << file << "already in database";
         }
         else {
-
+          
             query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
             query.bindValue(":series", id);
             query.bindValue(":size", 64);
@@ -738,21 +738,21 @@ void medDatabaseImporter::run(void)
                 query.bindValue(":thumbnail", thumbPaths[j]);
             else
                 query.bindValue(":thumbnail", "");
-
+        
             if(!query.exec())
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         }
         }
     }
-
-
+    
+    
     delete imData;
     imData = NULL;
-
+    
     }
     }
-
-
+    
+    
     emit progressed(100);
     emit success();
 

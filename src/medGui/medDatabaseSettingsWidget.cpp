@@ -3,6 +3,8 @@
 #include <QtGui>
 #include <QtCore>
 
+#include <medCore/medStorage.h>
+
 #include <medCore/medSettingsManager.h>
 
 class medDatabaseSettingsWidgetPrivate {
@@ -70,20 +72,15 @@ bool medDatabaseSettingsWidget::validate()
 void medDatabaseSettingsWidget::read()
 {
     qDebug()<<"reading QSettings";
-    medSettingsManager * mnger = medSettingsManager::instance();
 
-    // Database location
-
-    // actual_database_location setting is never null as it is filled during
-    // the initial database routine
-    QString dbLoc = mnger->value("database", "actual_database_location").toString();
-    d->dbPath->setText(dbLoc);
+    // we always show the datalocation here, the medStorage class takes care of retrieving the correct one
+    d->dbPath->setText(medStorage::dataLocation());
 }
 
 bool medDatabaseSettingsWidget::write()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
-    mnger->setValue("database","new_database_location", d->dbPath->text());
+    mnger->setValue(this->description(),"new_database_location", d->dbPath->text());
     return true;
 }
 

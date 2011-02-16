@@ -61,22 +61,23 @@ int main(int argc, char *argv[])
 
     // DATABASE INITIAL ROUTINE
     medSettingsManager* mnger = medSettingsManager::instance();
-
-    // at the very beginning the db is in the default location
-    // so we fill the actual_location_database value in the settings with it
-    QString dbLoc = medStorage::dataLocation();
-    mnger->setValue("database", "actual_database_location", dbLoc);
+    // first compare the current with the new data location
+    QString currentLocation = medStorage::dataLocation();
 
     // if the user configured a new location for the database in the settings editor, we'll need to move it
-    QVariant vNewDbLoc = mnger->value("database", "new_database_location");
-	if (!vNewDbLoc.isNull()) {
-		QString newLoc = vNewDbLoc.toString();
-
+    QString newLocation = mnger->value("medDatabaseSettingsWidget", "new_database_location").toString();
+	if (!newLocation.isEmpty()) {
+		
 		// if the locations are different we need to move the db to the new location
-		if (dbLoc.compare(newLoc) != 0) {
-			if(!medDatabaseController::instance()->moveDatabase(newLoc)){
-				qDebug() << "Failed to move the database from " << dbLoc << " to " << newLoc;
-			}
+		if (currentLocation.compare(newLocation) != 0) {
+			if(!medDatabaseController::instance()->moveDatabase(newLocation)){
+				qDebug() << "Failed to move the database from " << currentLocation << " to " << newLocation;
+                // the new location is invalid so set it to zero
+                newLocation = "";
+            }
+        mnger->setValue("medDatabaseSettingsWidget", "actual_database_location", newLocation);
+        // we need to reset the new Location to prevent doing it all the time
+        mnger->setValue("medDatabaseSettingsWidget", "new_database_location","");
 		}
 	}
 	// END OF DATABASE INITIAL ROUTINE

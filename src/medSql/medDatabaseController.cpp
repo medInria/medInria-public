@@ -407,6 +407,7 @@ void medDatabaseController::createImageTable(void)
 bool medDatabaseController::moveDatabase( QString newLocation)
 {
     bool res = true;
+
     QString oldLocation = medStorage::dataLocation();
 
     // now copy all the images and thumbnails
