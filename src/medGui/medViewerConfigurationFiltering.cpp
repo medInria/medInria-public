@@ -100,6 +100,9 @@ void medViewerConfigurationFiltering::onProcessSuccess()
 
         d->filterOutput = d->filteringToolBox->customToolbox()->processOutput();
 
+        if(!d->filterOutput)
+            return;
+
         dtkAbstractView* view = dtkAbstractViewFactory::instance()->create("v3dView");
         view->setData(d->filterOutput);
 

@@ -67,7 +67,7 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
     connect(d->dropSite,SIGNAL(objectDropped()),this,SLOT(onObjectDropped()));
     
     this->setTitle("Filtering View");
-    this->setWidget(displayWidget);
+    this->addWidget(displayWidget);
     
     d->customToolBox = NULL;
     d->data = NULL;
