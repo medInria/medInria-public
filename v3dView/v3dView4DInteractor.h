@@ -59,8 +59,6 @@ public slots:
 private:
     v3dView4DInteractorPrivate *d;
 
-    vtkCollection* sequenceList;
-
     double currentTime;
 };
 

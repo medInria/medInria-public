@@ -33,9 +33,7 @@ public:
 
     dtkAbstractData  *data;
     v3dView          *view;
-
     vtkCollection* sequenceList;
-    QList<dtkAbstractData*> dataList;
 };
 
 v3dView4DInteractor::v3dView4DInteractor(): med4DAbstractViewInteractor(), d(new v3dView4DInteractorPrivate)
