@@ -118,6 +118,8 @@ public:
 
   virtual void SetOpacity(double opacity, int layer);
   virtual double GetOpacity(int layer);
+    
+  virtual int GetNumberOfLayers(void);
 
   // Description:
   // Set/Get the input image to the viewer.

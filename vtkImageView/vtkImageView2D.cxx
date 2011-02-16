@@ -260,6 +260,15 @@ double vtkImageView2D::GetOpacity(int layer)
     return 0.0;
 }
 
+int vtkImageView2D::GetNumberOfLayers(void)
+{
+  if (this->GetRenderWindow())
+  {
+    return this->GetRenderWindow()->GetNumberOfLayers();
+  }
+  return 0;
+}
+
 //----------------------------------------------------------------------------
 void vtkImageView2D::GetSliceRange(int &min, int &max)
 {
