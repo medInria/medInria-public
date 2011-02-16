@@ -264,7 +264,7 @@ int vtkImageView2D::GetNumberOfLayers(void)
 {
   if (this->GetRenderWindow())
   {
-    return this->GetRenderWindow()->GetNumberOfLayers();
+    return this->ImageDisplayMap.size();
   }
   return 0;
 }
