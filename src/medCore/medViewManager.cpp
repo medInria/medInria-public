@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 12:47:51 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Mar 17 18:40:02 2010 (+0100)
+ * Last-Updated: Mon Dec 20 08:52:49 2010 (+0100)
  *           By: Julien Wintz
- *     Update #: 36
+ *     Update #: 38
  */
 
 /* Commentary: 
@@ -52,8 +52,8 @@ void medViewManager::remove(const medDataIndex& index, dtkAbstractView *view)
 
 void medViewManager::remove(const medDataIndex& index)
 {
-    foreach(dtkAbstractView *view, d->views.value(index))
-        dtkAbstractViewFactory::instance()->destroy (view);
+     foreach(dtkAbstractView *view, d->views.value(index))
+         dtkAbstractViewFactory::instance()->destroy (view);
 
     d->views.remove(index);
 }

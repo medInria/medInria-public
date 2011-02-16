@@ -37,7 +37,7 @@ medBrowserToolBoxJobs::medBrowserToolBoxJobs(QWidget *parent) : medToolBox(paren
     connect(d->stack, SIGNAL(hidden()), this, SLOT(hide()));
 
     this->setTitle("Jobs");
-    this->setWidget(d->stack);
+    this->addWidget(d->stack);
 }
 
 medBrowserToolBoxJobs::~medBrowserToolBoxJobs(void)

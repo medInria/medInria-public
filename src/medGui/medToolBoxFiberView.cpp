@@ -71,7 +71,7 @@ medToolBoxFiberView::medToolBoxFiberView(QWidget *parent) : medToolBox(parent), 
     connect (d->radiusSlider,          SIGNAL(valueChanged(int)),        this, SIGNAL (fiberRadiusSet(int)));
     
     this->setTitle("Fiber View");
-    this->setWidget(displayWidget);
+    this->addWidget(displayWidget);
 }
 
 medToolBoxFiberView::~medToolBoxFiberView()

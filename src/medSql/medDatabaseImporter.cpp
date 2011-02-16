@@ -236,6 +236,8 @@ void medDatabaseImporter::run(void)
 	
 	if (dtkdata->description() == "vtkDataMesh")
             imageFileName = imageFileName + ".vtk";
+	else if (dtkdata->description().contains("vistal"))
+						imageFileName = imageFileName + ".dim";
 	else
             imageFileName = imageFileName + ".mha";
 
@@ -536,8 +538,8 @@ void medDatabaseImporter::run(void)
 
 	// generate and save the thumbnails
 	QList<QImage> &thumbnails = dtkdata->thumbnails();
-	QFileInfo seriesInfo( seriesPath );
-	QString thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.baseName() /*seriesName.simplified()*/ + "/";
+	QFileInfo seriesInfo( it.key() );
+	QString thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() /*seriesName.simplified()*/ + "/";
 	QStringList thumbPaths;
 
         if (thumbnails.count())

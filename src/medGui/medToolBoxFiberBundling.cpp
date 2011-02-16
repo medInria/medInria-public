@@ -69,7 +69,7 @@ medToolBoxFiberBundling::medToolBoxFiberBundling(QWidget *parent) : medToolBox(p
     connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
  
     this->setTitle("Fiber Bundling");
-    this->setWidget(bundlingPage);
+    this->addWidget(bundlingPage);
 }
 
 medToolBoxFiberBundling::~medToolBoxFiberBundling()
