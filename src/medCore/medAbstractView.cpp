@@ -180,6 +180,12 @@ int medAbstractView::currentLayer(void) const
     return d->currentLayer;
 }
 
+int medAbstractView::layerCount(void) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return 0;
+}
+
 void medAbstractView::onPositionChanged (const QVector3D &position)
 {
     DTK_DEFAULT_IMPLEMENTATION;

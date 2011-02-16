@@ -127,6 +127,11 @@ public:
      */
     virtual int currentLayer(void) const;
 
+    /**
+     * Get the number of layers of the view.
+     */    
+    virtual int layerCount(void) const;
+
 
 signals:
     /**
