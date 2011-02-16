@@ -82,7 +82,7 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     viewPropertiesLayout->addRow("LUT :", d->lutComboBox);
     viewPropertiesLayout->setFormAlignment(Qt::AlignHCenter);
 
-    this->setTitle("View properties");
+    this->setTitle("View Properties");
     this->addWidget(d->propertiesToolBoxWidget);
 
     QObject::connect(d->dataComboBox,   SIGNAL(currentIndexChanged(int)),       this, SLOT(onDataSelected(int)));
@@ -113,10 +113,29 @@ medViewerToolBoxViewProperties::update(dtkAbstractView *view)
     {        
         d->view = medView;
 
+        int count = d->view->layerCount();
+        int current = d->view->currentLayer();
+
+        d->dataComboBox->blockSignals(true);
+        for (int i = 0; i < count; i++)
+        {
+            d->dataComboBox->insertItem(i, QString::number(i));
+        }
+        d->dataComboBox->setCurrentIndex(current);
+        d->dataComboBox->blockSignals(false);
+        d->propertiesToolBoxWidget->setEnabled(true);
+        d->visible->blockSignals(true);
+        d->visible->setChecked((d->view->visibility(current) == 1));
+        d->visible->blockSignals(false);
+        d->opacity->blockSignals(true);
+        d->opacity->setValue(d->view->opacity(current));
+        d->opacity->blockSignals(false);
+        d->opacitySlider->blockSignals(true);
+        d->opacitySlider->setValue((int) (d->view->opacity(current) * 100));
+        d->opacitySlider->blockSignals(false);
+
         QObject::connect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)), Qt::UniqueConnection);
         QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
-        
-        d->propertiesToolBoxWidget->setEnabled(true);
     }
 }
 
@@ -129,7 +148,8 @@ medViewerToolBoxViewProperties::onDataAdded(int layer)
     //d->view->setVisibility(1, layer);
     //d->view->setOpacity(1.0, layer); // why forcing visibility and opacity?
     d->visible->setChecked(true);
-    d->dataComboBox->insertItem(layer, QString::number(layer));
+    if (d->dataComboBox->findText(QString::number(layer)) == -1)
+        d->dataComboBox->insertItem(layer, QString::number(layer));
     d->dataComboBox->blockSignals(true); // if not blocked, combobox slot is called. Is it what is expected?
     d->dataComboBox->setCurrentIndex(layer);
     d->dataComboBox->blockSignals(false);
@@ -155,6 +175,7 @@ medViewerToolBoxViewProperties::onViewClosed(void)
     d->opacity->setValue(1.0);
     d->opacitySlider->setValue(100);
     d->visible->setChecked(true);
+    d->lutComboBox->setCurrentIndex(0);
     d->propertiesToolBoxWidget->setEnabled(false);
     
     d->view = 0;
