@@ -21,17 +21,32 @@
 #include "medToolBoxFilteringCustom.h"
 
 #include <medGui/medToolBoxFactory.h>
+#include <medGui/medDropSite.h>
+#include <medGui/medViewContainerStack.h>
+#include <medGui/medViewerConfigurationFiltering.h>
+
+#include <medCore/medDataManager.h>
+#include <medSql/medDatabaseController.h>
+
+#include <dtkCore/dtkAbstractData.h>
+
+
 
 class medToolBoxFilteringPrivate
 {
 public:
 	QComboBox    *chooseFilter;
 	medToolBoxFilteringCustom *customToolBox;
+	medDropSite *dropSite;
+	dtkAbstractData *data;
 };
 
 
 medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), d(new medToolBoxFilteringPrivate)
 {
+
+    d->dropSite = new medDropSite(this);
+
     QWidget *displayWidget = new QWidget(this);
     
     d->chooseFilter = new QComboBox(this);
@@ -39,22 +54,23 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
     
     QLabel *filterLabel = new QLabel("Filters :", displayWidget);    
     
-    QFormLayout *filterLayout = new QFormLayout(displayWidget);
+    QVBoxLayout *filterLayout = new QVBoxLayout(displayWidget);
+    filterLayout->addWidget(d->dropSite);
     filterLayout->addWidget(filterLabel);
     filterLayout->addWidget(d->chooseFilter);
-        
-
+    filterLayout->setAlignment(d->dropSite,Qt::AlignHCenter);
     
-    // TO DO : connections
     foreach(QString toolbox, medToolBoxFactory::instance()->filteringToolBoxes())
         d->chooseFilter->addItem(toolbox, toolbox);
 
     connect(d->chooseFilter, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
+    connect(d->dropSite,SIGNAL(objectDropped()),this,SLOT(onObjectDropped()));
     
     this->setTitle("Filtering View");
     this->setWidget(displayWidget);
     
     d->customToolBox = NULL;
+    d->data = NULL;
 }
 
 medToolBoxFiltering::~medToolBoxFiltering()
@@ -62,6 +78,17 @@ medToolBoxFiltering::~medToolBoxFiltering()
     delete d;
     d = NULL;
 }
+
+medToolBoxFilteringCustom* medToolBoxFiltering::customToolbox(void)
+{
+        return d->customToolBox;
+}
+
+dtkAbstractData*  medToolBoxFiltering::data()
+{
+        return d->data;
+}
+
 
 // void medToolBoxFiltering::update (dtkAbstractView *view)
 // {
@@ -86,8 +113,29 @@ void medToolBoxFiltering::onToolBoxChosen(const QString& id)
     }
     d->customToolBox = toolbox;
     emit addToolBox(toolbox);
+
+    connect(toolbox,SIGNAL(success()),this,SIGNAL(processFinished()));
 }
 
+
+void medToolBoxFiltering::onObjectDropped(void)
+{
+    medDataIndex index = d->dropSite->index();
+
+    if (!index.isValid())
+        return;
+
+    d->data = medDataManager::instance()->data (index);
+    if (!d->data) {
+        d->data = medDatabaseController::instance()->read(index);
+        if (d->data)    medToolBoxFilteringCustom* customToolbox(void);
+            medDataManager::instance()->insert(index, d->data);
+    }
+
+    if (!d->data)
+        return;
+
+}
 
 // TO DO : to complete
 void medToolBoxFiltering::clear(void)
@@ -116,7 +164,7 @@ void medToolBoxFiltering::clear(void)
 
 
 
-
+medToolBoxFilteringCustom* customToolbox(void);
 
 
 

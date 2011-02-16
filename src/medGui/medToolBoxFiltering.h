@@ -24,6 +24,8 @@
 #include "medToolBox.h"
 
 class medToolBoxFilteringPrivate;
+class dtkAbstractData;
+class medToolBoxFilteringCustom;
 
 class MEDGUI_EXPORT medToolBoxFiltering : public medToolBox
 {
@@ -32,13 +34,18 @@ public:
 	medToolBoxFiltering(QWidget *parent);
 	~medToolBoxFiltering();
 	
-//signals:
+	dtkAbstractData* data(void);
+	medToolBoxFilteringCustom* customToolbox(void);
+
+signals:
+	void processFinished();
  
 public slots:
     
 	void onToolBoxChosen(const QString&);
 	void clear(void);
-	//void onSaveOutputImage(void);
+	void onObjectDropped(void);
+
     
 protected:
 	medToolBoxFilteringPrivate *d;

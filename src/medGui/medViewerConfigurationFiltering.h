@@ -27,6 +27,7 @@
 #include "medGuiExport.h"
 
 class medViewerConfigurationFilteringPrivate;
+class medViewContainerStack;
 
 class MEDGUI_EXPORT medViewerConfigurationFiltering : public medViewerConfiguration
 {
@@ -42,7 +43,8 @@ public:
 
 public slots:    
     void patientChanged(int patientId);
-        
+    void onProcessSuccess(void);
+
 private:
     medViewerConfigurationFilteringPrivate *d;
 };

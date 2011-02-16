@@ -25,6 +25,7 @@
 
 class medToolBoxFiltering;
 class medToolBoxFilteringCustomPrivate;
+class dtkAbstractData;
 
 class MEDGUI_EXPORT medToolBoxFilteringCustom : public medToolBox
 {
@@ -35,6 +36,8 @@ public:
     virtual ~medToolBoxFilteringCustom(void);
 
     void setFilteringToolBox(medToolBoxFiltering *toolbox);
+
+    virtual dtkAbstractData* processOutput() = 0;
 
 protected:
     medToolBoxFiltering *parent(void);

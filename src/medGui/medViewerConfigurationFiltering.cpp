@@ -23,11 +23,20 @@
 
 #include "medToolBoxFiltering.h"
 
+#include <medGui/medViewContainerStack.h>
+#include <medGui/medViewContainer.h>
+#include <medGui/medToolBoxFilteringCustom.h>
+
+#include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkAbstractViewFactory.h>
+
 class medViewerConfigurationFilteringPrivate
 {
 public:
     medViewerToolBoxView   *viewToolBox;
     medToolBoxFiltering *filteringToolBox;
+    dtkAbstractData* filterOutput;
+    QList<dtkAbstractView *> views;
 };
 
 medViewerConfigurationFiltering::medViewerConfigurationFiltering(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationFilteringPrivate)
@@ -44,7 +53,8 @@ medViewerConfigurationFiltering::medViewerConfigurationFiltering(QWidget *parent
     
     //TO DO : connections with filteringToolBox
     connect(d->filteringToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-    connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));    
+    connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+    connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
     
 }
 
@@ -55,17 +65,48 @@ medViewerConfigurationFiltering::~medViewerConfigurationFiltering(void)
 }
 
 // TO DO : method to complete
-void medViewerConfigurationFiltering::setupViewContainerStack(medViewContainerStack *container)
+void medViewerConfigurationFiltering::setupViewContainerStack(medViewContainerStack *container_stack)
 {
-    if (!container) {
+    if (!container_stack) {
         return;
     }
+
+    d->views.clear();
+
+    medViewContainer *filteringContainer = container_stack->customContainer("Filtering");
+
+    if (!filteringContainer) {
+      medViewContainerCustom *custom = new medViewContainerCustom (container_stack);
+      custom->setPreset (medViewContainerCustom::E);
+      filteringContainer = custom;
+
+      container_stack->addCustomContainer ("Filtering", filteringContainer);
+    }
+
+    d->views << filteringContainer->views();
+
+    container_stack->setCustomContainer ("Filtering");
 }
 
 void medViewerConfigurationFiltering::patientChanged(int patientId)
 {
     d->filteringToolBox->clear();
 }
+
+void medViewerConfigurationFiltering::onProcessSuccess()
+{
+
+        //affiche resultat dans la vue principale
+
+        d->filterOutput = d->filteringToolBox->customToolbox()->processOutput();
+
+        dtkAbstractView* view = dtkAbstractViewFactory::instance()->create("v3dView");
+        view->setData(d->filterOutput);
+
+        d->views.append(view); //d->views.clear() ?
+
+}
+
 
 
 QString medViewerConfigurationFiltering::description(void) const
