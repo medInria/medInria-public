@@ -221,7 +221,8 @@ void medViewPool::onViewPropertySet (const QString &key, const QString &value)
         key=="PositionLinked" ||
         key=="CameraLinked" ||
         key=="WindowingLinked" ||
-        key=="Orientation")
+        key=="Orientation" ||
+        key=="LookupTable")
         return;
     
     d->propertySet[key] = value;
