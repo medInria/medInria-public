@@ -100,14 +100,24 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
 
 void
 medViewerToolBoxViewProperties::update(dtkAbstractView *view)
-{
-    d->view = dynamic_cast<medAbstractView *> (view);
+{    
+    if (d->view)
+    {
+        QObject::disconnect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)));
+        QObject::disconnect(d->view, SIGNAL(closing()),      this, SLOT(onViewClosed()));
+        
+        this->onViewClosed();
+    }
+    
+    if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view))
+    {        
+        d->view = medView;
 
-    if (!d->view)
-        return;
-
-    QObject::connect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)), Qt::UniqueConnection);
-    QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
+        QObject::connect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)), Qt::UniqueConnection);
+        QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
+        
+        d->propertiesToolBoxWidget->setEnabled(true);
+    }
 }
 
 void
@@ -116,7 +126,6 @@ medViewerToolBoxViewProperties::onDataAdded(int layer)
     if (!d->view)
         return;
 
-    d->propertiesToolBoxWidget->setEnabled(true);
     //d->view->setVisibility(1, layer);
     //d->view->setOpacity(1.0, layer); // why forcing visibility and opacity?
     d->visible->setChecked(true);
@@ -147,6 +156,8 @@ medViewerToolBoxViewProperties::onViewClosed(void)
     d->opacitySlider->setValue(100);
     d->visible->setChecked(true);
     d->propertiesToolBoxWidget->setEnabled(false);
+    
+    d->view = 0;
 }
 
 void
