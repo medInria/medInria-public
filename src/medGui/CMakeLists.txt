@@ -24,6 +24,7 @@ project(medGui)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS
+  medDatabaseSettingsWidget.h
   medSettingsEditor.h
   medSystemSettingsWidget.h
   medStartupSettingsWidget.h
@@ -71,6 +72,7 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medSettingsEditor.h
+  medDatabaseSettingsWidget.h
   medSystemSettingsWidget.h
   medStartupSettingsWidget.h
   medSettingsWidget.h
@@ -114,6 +116,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_SOURCES
   medSettingsEditor.cpp
+  medDatabaseSettingsWidget.cpp
   medStartupSettingsWidget.cpp
   medSystemSettingsWidget.cpp
   medSettingsWidget.cpp

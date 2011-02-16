@@ -50,6 +50,7 @@
 #include <medGui/medSettingsWidgetFactory.h>
 #include <medGui/medSystemSettingsWidget.h>
 #include <medGui/medStartupSettingsWidget.h>
+#include <medGui/medDatabaseSettingsWidget.h>
 
 #include <QtGui>
 
@@ -184,6 +185,10 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medSettingsWidgetFactory::instance()->
             registerSettingsWidget("Startup",
                                    createStartupSettingsWidget);
+
+    medSettingsWidgetFactory::instance()->
+            registerSettingsWidget("Database",
+                                   createDatabaseSettingsWidget);
 
     // Setting up status bar
 
