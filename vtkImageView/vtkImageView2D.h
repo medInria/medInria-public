@@ -133,6 +133,7 @@ public:
   
   
   virtual void SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity, int layer);
+  virtual void SetLookupTable (vtkLookupTable* lookuptable, int layer);
   
   /**
    Description:

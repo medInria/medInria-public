@@ -1289,6 +1289,7 @@ int vtkImageView2D::GetInterpolate(void)
   return this->GetImageActor(0)->GetInterpolate();
 }
 
+//----------------------------------------------------------------------------
 void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity, int layer)
 {
   if (layer==0)
@@ -1304,6 +1305,24 @@ void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPi
           this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(color);
       }
   }
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView2D::SetLookupTable(vtkLookupTable* lut, int layer)
+{
+    if (layer==0)
+    {
+        this->Superclass::SetLookupTable(lut);
+        this->ImageDisplayMap.at(0)->GetWindowLevel()->SetLookupTable(lut);
+    }
+    else if ((int)this->ImageDisplayMap.size() > layer)
+    {
+        if (lut) {
+            double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
+            lut->SetTableRange(range[0], range[1]);
+            this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(lut);
+        }
+    }
 }
 
 //----------------------------------------------------------------------------
