@@ -31,14 +31,15 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
 {
     setTabName("Startup");
     d->startInFullScreen = new QCheckBox(this);
+    d->startInFullScreen->setToolTip(tr("Shall medINRIA start in full screen?"));
 
     d->defaultStartingArea = new QComboBox();
     d->defaultStartingArea->addItem("Browser", "Browser");
     d->defaultStartingArea->addItem("Viewer", "Viewer");
 
     QFormLayout* layout = new QFormLayout;
-    layout->addRow(tr("fullscreen"),d->startInFullScreen);
-    d->startInFullScreen->setToolTip(tr("Shall medINRIA start in full screen?"));
+    layout->addRow(tr("Fullscreen"),d->startInFullScreen);
+    layout->addRow(tr("Starting area"), d->defaultStartingArea);
     this->setLayout(layout);
 }
 
@@ -83,5 +84,3 @@ QString medStartupSettingsWidget::description() const
 {
     return "startup";
 }
-
-
