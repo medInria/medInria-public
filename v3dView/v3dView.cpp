@@ -1074,13 +1074,19 @@ void v3dView::onLookupTablePropertySet(const QString &value)
     // d->collection->SyncSetColorTransferFunction( rgb );
     // d->collection->SyncSetOpacityTransferFunction( alpha );
 
-    d->view2d->SetTransferFunctions (rgb, 0, this->currentLayer());
-    d->view2d->SetTransferFunctions (0, alpha, this->currentLayer());
+    if (this->currentLayer()==0) {
+        d->view2d->SetTransferFunctions (rgb, alpha, this->currentLayer());
+    }
+    else {
+        vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable(value.toStdString());
+        d->view2d->SetLookupTable (lut, this->currentLayer());
+        lut->Delete();
+    }
+
     
     if (this->currentLayer()==0)
     {
-        d->view3d->SetTransferFunctions (rgb, 0);
-        d->view3d->SetTransferFunctions (0, alpha);
+        d->view3d->SetTransferFunctions (rgb, alpha);
     }
   
     rgb->Delete();
