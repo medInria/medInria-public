@@ -1318,6 +1318,7 @@ void vtkImageView2D::SetLookupTable(vtkLookupTable* lut, int layer)
     else if ((int)this->ImageDisplayMap.size() > layer)
     {
         if (lut) {
+            this->ImageDisplayMap.at(layer)->GetInput()->Update();
             double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
             lut->SetTableRange(range[0], range[1]);
             this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(lut);
@@ -1381,7 +1382,6 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable (this->GetColorTransferFunction());
     this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(0.5);
     this->ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
-    
     this->ImageDisplayMap.at(layer)->GetInput()->UpdateInformation();
   }
   
