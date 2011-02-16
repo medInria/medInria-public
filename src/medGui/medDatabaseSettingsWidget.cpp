@@ -71,13 +71,18 @@ void medDatabaseSettingsWidget::read()
 {
     qDebug()<<"reading QSettings";
     medSettingsManager * mnger = medSettingsManager::instance();
-    //d->startInFullScreen->setChecked(mnger->value("startup", "start_in_full_screen").toBool());
 
+    // Database location
+
+    // actual_database_location setting is never null as it is filled during
+    // the initial database routine
+    QString dbLoc = mnger->value("database", "actual_database_location").toString();
+    d->dbPath->setText(dbLoc);
 }
 
 bool medDatabaseSettingsWidget::write()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
-//    mnger->setValue("startup","start_in_full_screen", d->startInFullScreen->isChecked());
+    mnger->setValue("database","new_database_location", d->dbPath->text());
     return true;
 }

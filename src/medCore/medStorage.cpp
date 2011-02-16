@@ -23,6 +23,7 @@
 #include <QtCore/QDir>
 
 #include <QtGui/QDesktopServices>
+#include "medSettingsManager.h"
 
 medStorage::medStorage(void)
 {
@@ -46,8 +47,16 @@ bool medStorage::rmpath(const QString& dirPath)
 
 QString medStorage::dataLocation(void)
 {
-    if (m_dataLocation == NULL)
-    {    
+    if (m_dataLocation != NULL)
+    	return m_dataLocation;
+
+    QVariant vDbLoc = medSettingsManager::instance()->value("database", "actual_database_location");
+    if (!vDbLoc.isNull()) {
+    	QString dbLoc = vDbLoc.toString();
+    	return dbLoc;
+    }
+    else
+    {
 #ifdef Q_WS_MAC
     return QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation))
         .remove(QCoreApplication::applicationName())
@@ -56,8 +65,6 @@ QString medStorage::dataLocation(void)
     return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
 #endif
     }
-    else
-        return m_dataLocation;
 }
 
 QString medStorage::configLocation(void)
@@ -71,8 +78,9 @@ QString medStorage::configLocation(void)
 
 void medStorage::setDataLocation( QString newLocation)
 {
-    // should store it to qsettings
     m_dataLocation = newLocation;
+
+    medSettingsManager::instance()->setValue("database", "actual_database_location", newLocation);
 }
 
 QString medStorage::m_dataLocation;

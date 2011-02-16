@@ -30,6 +30,7 @@
 #include <medCore/medDataIndex.h>
 #include <medSql/medDatabaseController.h>
 #include <medCore/medSettingsManager.h>
+#include <medCore/medStorage.h>
 
 
 int main(int argc, char *argv[])
@@ -58,10 +59,27 @@ int main(int argc, char *argv[])
     splash.show();
 #endif
 
+    // DATABASE INITIAL ROUTINE
+    medSettingsManager* mnger = medSettingsManager::instance();
 
-    //if (!medDatabaseController::instance()->moveDatabase("c:/database"))
-      //  qDebug() << "moving db failed";
+    // at the very beginning the db is in the default location
+    // so we fill the actual_location_database value in the settings with it
+    QString dbLoc = medStorage::dataLocation();
+    mnger->setValue("database", "actual_database_location", dbLoc);
 
+    // if the user configured a new location for the database in the settings editor, we'll need to move it
+    QVariant vNewDbLoc = mnger->value("database", "new_database_location");
+	if (!vNewDbLoc.isNull()) {
+		QString newLoc = vNewDbLoc.toString();
+
+		// if the locations are different we need to move the db to the new location
+		if (dbLoc.compare(newLoc) != 0) {
+			if(!medDatabaseController::instance()->moveDatabase(newLoc)){
+				qDebug() << "Failed to move the database from " << dbLoc << " to " << newLoc;
+			}
+		}
+	}
+	// END OF DATABASE INITIAL ROUTINE
 
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
