@@ -85,11 +85,11 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     this->setTitle("View properties");
     this->addWidget(d->propertiesToolBoxWidget);
 
-    QObject::connect(d->dataComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataSelected(int)));
-    QObject::connect(d->visible, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
-    QObject::connect(d->opacity, SIGNAL(valueChanged(double)), this, SLOT(onOpacitySet(double)));
-    QObject::connect(d->opacitySlider, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
-    QObject::connect(d->lutComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
+    QObject::connect(d->dataComboBox,   SIGNAL(currentIndexChanged(int)),       this, SLOT(onDataSelected(int)));
+    QObject::connect(d->visible,        SIGNAL(stateChanged(int)),              this, SLOT(onVisibilitySet(int)));
+    QObject::connect(d->opacity,        SIGNAL(valueChanged(double)),           this, SLOT(onOpacitySet(double)));
+    QObject::connect(d->opacitySlider,  SIGNAL(valueChanged(int)),              this, SLOT(onOpacitySliderSet(int)));
+    QObject::connect(d->lutComboBox,    SIGNAL(currentIndexChanged(int)),       this, SLOT(onLUTChanged(int)));
 }
 
 medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
@@ -103,11 +103,11 @@ medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
     d->view = dynamic_cast<medAbstractView *> (view);
 
-    if (!view)
+    if (!d->view)
         return;
 
     QObject::connect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)), Qt::UniqueConnection);
-    QObject::connect(d->view, SIGNAL(closed()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
+    QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
 }
 
 void
@@ -142,8 +142,11 @@ medViewerToolBoxViewProperties::onDataAdded(int layer)
 void
 medViewerToolBoxViewProperties::onViewClosed(void)
 {
-    qDebug() << "Clear combo box";
     d->dataComboBox->clear();
+    d->opacity->setValue(1.0);
+    d->opacitySlider->setValue(100);
+    d->visible->setChecked(true);
+    d->propertiesToolBoxWidget->setEnabled(false);
 }
 
 void
