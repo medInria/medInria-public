@@ -164,6 +164,8 @@ signals:
                            const QVector3D &focal,
                            double parallelScale);
 
+    void dataAdded (dtkAbstractData* data);
+
 public slots:
     /**
        Tells the view (not to) synchronize its position with other views.
