@@ -71,8 +71,7 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
             scroll = new QScrollArea(this);
 
             scroll->setWidget(setWid);
-            d->tabWidget->addTab(scroll,
-                             setWid->section());
+            d->tabWidget->addTab(scroll, setWid->tabName());
             d->settingsWidgets.insert(widgetStyle, setWid);
         }
     }
@@ -133,10 +132,10 @@ void medSettingsEditor::onSaveClicked(){
         {
             if (!setting->validate())
             {
-                qDebug()<<"validation of section"<< setting->section() <<
+                qDebug()<<"validation of tabname"<< setting->tabName() <<
                         "failed";
-                QString error = tr("Error in validation of section ");
-                error.append(setting->section());
+                QString error = tr("Error in validation of tabname ");
+                error.append(setting->tabName());
                 emit (showError(this,error,3000));
                 success = false;
             }
@@ -144,7 +143,7 @@ void medSettingsEditor::onSaveClicked(){
             {
                 //do the saving
                 setting->write();
-                qDebug()<<"validation of section"<< setting->section() <<
+                qDebug()<<"validation of tabname"<< setting->tabName() <<
                         "successful";
             }
         }

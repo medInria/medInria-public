@@ -34,12 +34,12 @@ bool medSettingsWidget::validate()
     return false;
 }
 
-void medSettingsWidget::setSection(QString section)
+void medSettingsWidget::setTabName(QString section)
 {
     d->section = section;
 }
 
-const QString& medSettingsWidget::section()const
+QString medSettingsWidget::tabName()const
 {
     return d->section;
 }
@@ -48,4 +48,6 @@ void medSettingsWidget::read()
 {
     qDebug() << "read QSettings";
 }
+
+
 

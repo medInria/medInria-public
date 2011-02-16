@@ -32,7 +32,7 @@ medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) :
         medSettingsWidget(parent),
         d(new medSystemSettingsWidgetPrivate())
 {
-    setSection("System");
+    setTabName("System");
     d->pluginsPathField = new QLineEdit(this);
     d->modulesPathField = new QLineEdit(this);
     d->scriptsPathField = new QLineEdit(this);
@@ -102,4 +102,10 @@ bool medSystemSettingsWidget::write()
     mnger->setValue("scripts","script_path",d->scriptsPathField->text());
     return true;
 }
+
+QString medSystemSettingsWidget::description() const
+{
+    return "";
+}
+
 

@@ -26,12 +26,18 @@ public:
 
 
     /**
-     * @brief Gets the section name of this Widget.
-     * This is the tab title, as well as the section name in the QSettings.
-     *
-     * @return const QString &
+    * description - mandatory method to describe the plug-in
+    * Should be used as the section name (QSettings) when using the setttingsmanager
+    * @return   QString
     */
-    const QString& section()const;
+    virtual QString description( void ) const = 0;
+
+
+    /**
+     * @brief Gets the name as it should appear in the settingsEditor.
+     * @return QString
+    */
+    QString tabName() const;
 
     /**
      * @brief Save the form into the QSettings.
@@ -59,15 +65,13 @@ public slots:
 
 protected:
 
-
-
-
     /**
-     * @brief Sets the section name. MUST be used by inherited classes.
+     * @brief Sets the name of the tab appearing in the settingsEditor. 
+     * MUST be used by inherited classes.
      *
      * @param section
     */
-    void setSection(QString section);
+    void setTabName(QString section);
 
 private:
     medSettingsWidgetPrivate *d; /**< TODO */

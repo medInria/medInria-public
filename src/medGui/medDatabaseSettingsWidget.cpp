@@ -29,7 +29,7 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
         medSettingsWidget(parent),
         d(new medDatabaseSettingsWidgetPrivate())
 {
-    setSection("Database");
+    setTabName("Database");
 
     d->dbPath = new QLineEdit(this);
     d->btChooseDir = new QPushButton(tr("Select directory..."), this);
@@ -85,4 +85,9 @@ bool medDatabaseSettingsWidget::write()
     medSettingsManager * mnger = medSettingsManager::instance();
     mnger->setValue("database","new_database_location", d->dbPath->text());
     return true;
+}
+
+QString medDatabaseSettingsWidget::description() const
+{
+    return "medDatabaseSettingsWidget";
 }

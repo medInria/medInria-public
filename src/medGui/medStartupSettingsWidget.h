@@ -13,6 +13,8 @@ class MEDGUI_EXPORT medStartupSettingsWidget : public medSettingsWidget
 public:
     medStartupSettingsWidget(QWidget *parent = 0);
 
+    QString description() const;
+
 signals:
 
 public slots:

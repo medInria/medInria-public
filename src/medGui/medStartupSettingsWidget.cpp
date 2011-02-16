@@ -29,7 +29,7 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
         medSettingsWidget(parent),
         d(new medStartupSettingsWidgetPrivate())
 {
-    setSection("Startup");
+    setTabName("Startup");
     d->startInFullScreen = new QCheckBox(this);
 
     d->defaultStartingArea = new QComboBox();
@@ -78,3 +78,10 @@ bool medStartupSettingsWidget::write()
     mnger->setValue("startup","default_starting_area", d->defaultStartingArea->itemText(d->defaultStartingArea->currentIndex()));
     return true;
 }
+
+QString medStartupSettingsWidget::description() const
+{
+    return "startup";
+}
+
+
