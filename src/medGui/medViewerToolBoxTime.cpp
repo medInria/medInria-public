@@ -19,6 +19,9 @@ public:
   QList<med4DAbstractViewInteractor*> interactors;
   QTimeLine *timeLine;
 
+  double minTime;
+  double minTimeStep;
+  
 };
 
 medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxTimePrivate)
@@ -28,7 +31,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
   d->timeSlider = new QSlider (Qt::Horizontal, this);
   d->timeSlider->setRange (0, 100);
   d->timeSlider->setValue (100);
-  //d->timeSlider->setTracking( false );
+  d->timeSlider->setTracking( false );
   
   d->playSequencesPushButton = new QPushButton("", this);
   d->playSequencesPushButton->setIcon (QIcon (":/icons/wlww.tiff"));
@@ -40,8 +43,6 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
   d->timeLine->setCurveShape (QTimeLine::LinearCurve);
   
   connect(d->timeLine, SIGNAL(frameChanged(int)), d->timeSlider, SLOT(setValue(int)));
-  // connect(d->timeLine, SIGNAL(frameChanged(int)), this, SLOT(onTimeChanged(int)));
-
   
   QVBoxLayout* boxlayout = new QVBoxLayout (this);
   boxlayout->addWidget (d->playSequencesPushButton);
@@ -55,8 +56,8 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
   box->setLayout (boxlayout);
   this->addWidget (box);
 
-  this->minTime = 0.0;
-  this->minTimeStep = 1.0;
+  d->minTime = 0.0;
+  d->minTimeStep = 1.0;
   
 }
 
@@ -84,7 +85,7 @@ void medViewerToolBoxTime::onViewAdded (dtkAbstractView *view)
     connect (view, SIGNAL ( dataAdded(dtkAbstractData*)),   this, SLOT (onDataAdded (dtkAbstractData*)));
   }
 
-  this->UpdateRange();
+  this->updateRange();
 }
 
 void medViewerToolBoxTime::onDataAdded (dtkAbstractData *data)
@@ -94,7 +95,7 @@ void medViewerToolBoxTime::onDataAdded (dtkAbstractData *data)
   if (!data)
     return;
 
-  this->UpdateRange();
+  this->updateRange();
 }
 
 void medViewerToolBoxTime::onViewRemoved (dtkAbstractView *view)
@@ -108,7 +109,7 @@ void medViewerToolBoxTime::onViewRemoved (dtkAbstractView *view)
     d->interactors.removeOne (interactor);
   }  
 
-  this->UpdateRange();
+  this->updateRange();
   
 }
 
@@ -134,7 +135,7 @@ void medViewerToolBoxTime::update(dtkAbstractView *view)
 
 void medViewerToolBoxTime::onPlaySequences (bool val)
 {
-  this->UpdateRange();
+  this->updateRange();
   
   if(val)
     d->timeLine->start();
@@ -156,18 +157,18 @@ void medViewerToolBoxTime::onTimeChanged (int val)
 
 double medViewerToolBoxTime::getTimeFromSliderValue (unsigned int s)
 {
-  double value = this->minTime + (double)(s) * (this->minTimeStep);
+  double value = d->minTime + (double)(s) * (d->minTimeStep);
   return value;  
 }
 
 unsigned int medViewerToolBoxTime::getSliderValueFromTime (double t)
 {
-  unsigned int value = std::ceil ((t - this->minTime) / (this->minTimeStep));
+  unsigned int value = std::ceil ((t - d->minTime) / (d->minTimeStep));
   return value;
 }
 
 
-void medViewerToolBoxTime::UpdateRange (void)
+void medViewerToolBoxTime::updateRange (void)
 {
   if (!d->interactors.size())
     return;
@@ -180,8 +181,6 @@ void medViewerToolBoxTime::UpdateRange (void)
   {
     double range[2]={0,0};
     d->interactors[i]->sequencesRange (range);
-    qWarning() << "sequence range = " << range[0]<<" :: "<<range[1];
-    qWarning() << "sequence min time step = " << d->interactors[i]->sequencesMinTimeStep ();
     mintimestep = std::min (mintimestep, d->interactors[i]->sequencesMinTimeStep ());
     mintime = std::min (mintime, range[0]);
     maxtime = std::max (maxtime, range[1]);
@@ -192,13 +191,7 @@ void medViewerToolBoxTime::UpdateRange (void)
   d->timeSlider->setRange (0, numberofsteps - 1);
   d->timeLine->setFrameRange(d->timeSlider->minimum(), d->timeSlider->maximum() );  
   
-  this->minTime = mintime;
-  this->minTimeStep = mintimestep;
-
-  qWarning() << "numberofsteps = " << numberofsteps;
-  qWarning() << "mintime = " << mintime;
-  qWarning() << "maxtime = " << maxtime;
-  qWarning() << "mintimestep = " << mintimestep;
-  
+  d->minTime = mintime;
+  d->minTimeStep = mintimestep;  
 }
 

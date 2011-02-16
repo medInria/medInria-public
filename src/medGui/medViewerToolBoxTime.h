@@ -31,15 +31,13 @@ public slots:
     void AddInteractor (med4DAbstractViewInteractor* interactor);
     void RemoveInteractor (med4DAbstractViewInteractor* interactor);
 
-    void UpdateRange (void);
+    void updateRange (void);
 
     double getTimeFromSliderValue (unsigned int);
     unsigned int getSliderValueFromTime (double);
     
 private:
     medViewerToolBoxTimePrivate *d;
-    double minTime;
-    double minTimeStep;
     
 };
 
