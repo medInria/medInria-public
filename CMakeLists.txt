@@ -47,8 +47,17 @@ include(${dtk_USE_FILE})
 include(medinriaPack)
 include(medinriaDart)
 
+option(BUILD_DOCUMENTATION "Build documentation"    true)
+
+
 add_subdirectory(src)
 add_subdirectory(app)
+
+if(BUILD_DOCUMENTATION)
+  add_subdirectory(doc)
+endif(BUILD_DOCUMENTATION)
+
+
 
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
