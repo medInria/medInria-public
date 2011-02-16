@@ -42,6 +42,8 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
 
     connect(d->btChooseDir, SIGNAL(clicked()), this, SLOT(selectDbDirectory()));
 
+    databaseLocation->setContentsMargins(0,-8,0,0);
+
     QFormLayout* layout = new QFormLayout;
     layout->addRow(tr("Database location:"), databaseLocation);
     this->setLayout(layout);
