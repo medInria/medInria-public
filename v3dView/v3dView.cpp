@@ -1691,6 +1691,11 @@ double v3dView::opacity(int layer) const
     return d->view2d->GetOpacity(layer);
 }
 
+int v3dView::layerCount(void) const
+{
+    return d->view2d->GetNumberOfLayers();
+}
+
 // -- head tracking support
 
 void v3dView::enableInteraction(void)

@@ -73,6 +73,8 @@ public:
 
     virtual void setOpacity(double opacity, int layer);
     virtual double opacity(int layer) const;
+    
+    virtual int layerCount(void) const;
 
 public slots:
     void play          (bool value);
