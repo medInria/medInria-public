@@ -41,13 +41,13 @@ v3dView4DInteractor::v3dView4DInteractor(): med4DAbstractViewInteractor(), d(new
     d->data = NULL;
     d->view = NULL;
     this->currentTime = 0.0;
-    this->sequenceList = vtkCollection::New();
+    d->sequenceList = vtkCollection::New();
 }
 
 v3dView4DInteractor::~v3dView4DInteractor()
 {
   this->disable();
-  this->sequenceList->Delete();
+  d->sequenceList->Delete();
   
   delete d;
   d = 0;
@@ -75,21 +75,17 @@ void v3dView4DInteractor::setData(dtkAbstractData *data)
 
 void v3dView4DInteractor::appendData(dtkAbstractData *data)
 {
-    if (vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()))) {
-
-      if (!this->sequenceList->IsItemPresent (sequence))
-	this->sequenceList->AddItem (sequence);
-      
-      //Q_UNUSED( sequence );
-      //d->data = data;
-
-      updatePipeline ();
-    }
+  if (vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data())))
+  {
+    d->sequenceList->AddItem (sequence);
+    this->updatePipeline ();
+  }
 }
 
 void v3dView4DInteractor::setView(dtkAbstractView *view)
 {
-  if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
+  if (v3dView *v3dview = dynamic_cast<v3dView*>(view) )
+  {
     d->view = v3dview;
     connect (view, SIGNAL (dataAdded (dtkAbstractData*)), this, SLOT (onDataAdded (dtkAbstractData*)));
   }
@@ -98,38 +94,32 @@ void v3dView4DInteractor::setView(dtkAbstractView *view)
 
 void v3dView4DInteractor::onDataAdded(dtkAbstractData *data)
 {
-  if ( data->description() == "vtkDataMesh4D" ) {  
+  if ( data->description() == "vtkDataMesh4D" )
+  {  
     this->appendData(data);
-  } else {
-    if ( data->description().contains ("4") ) {
-      dtkWarning() << "adding an image";
- }
-
-    itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) );
-
-    if (image)
-    {
-      dtkWarning() << "adding the sequence";
-      vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::New();    
-      sequence->SetITKDataSet<short> (image);
-      if (!this->sequenceList->IsItemPresent (sequence))
-	this->sequenceList->AddItem (sequence);
-      sequence->Delete();
-    }
-
-    this->updatePipeline();
   }
-  
-    
+  else
+  {
+    if ( data->description().contains ("4") )
+    {
+      itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) );
+      
+      if (image)
+      {
+	vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::New();    
+	sequence->SetITKDataSet<short> (image);
+	d->sequenceList->AddItem (sequence);
+	sequence->Delete();
+      }
+      
+      this->updatePipeline();
+    }
+  }
 }
 
 bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
   if ( data->description().contains ("4") ) {
-
-    dtkWarning() << "isautoenable" ;
-
-    
     this->enable ();
     return true;
   }
@@ -139,10 +129,9 @@ bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 
 void v3dView4DInteractor::enable(void)
 {
-  dtkWarning() << "::enable" ;
   if (this->enabled())
     return;
-  updatePipeline ();
+  this->updatePipeline ();
   med4DAbstractViewInteractor::enable();
 }
 
@@ -154,9 +143,9 @@ void v3dView4DInteractor::disable(void)
 
     if (d->view)
     {
-      for (int i=0; i<sequenceList->GetNumberOfItems(); i++)
+      for (int i=0; i<d->sequenceList->GetNumberOfItems(); i++)
       {
-	vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(sequenceList->GetItemAsObject(i));
+	vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject(i));
 	if (!sequence)
 	  continue;
 	
@@ -178,19 +167,15 @@ dtkAbstractViewInteractor *createV3dView4DInteractor(void)
 
 void v3dView4DInteractor::updatePipeline (void)
 {
-  dtkWarning() << "::updatePipeline" ;
-
-  for (int i=0; i<sequenceList->GetNumberOfItems(); i++)
+  for (int i=0; i<d->sequenceList->GetNumberOfItems(); i++)
   {
-    vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(sequenceList->GetItemAsObject (i));
+    vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject (i));
     if (!sequence)
       continue;
 
     switch (sequence->GetType())
     {
 	case vtkMetaDataSet::VTK_META_IMAGE_DATA:
-	  dtkWarning() << "image in 4D detected, adding it to the views" ;
-	  
 	  d->view->view2d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
 	  d->view->view3d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
 	  break;
@@ -218,9 +203,9 @@ void v3dView4DInteractor::setCurrentTime (double time)
 
   this->currentTime = time;
 
-  for (int i=0; i<this->sequenceList->GetNumberOfItems(); i++)
+  for (int i=0; i<d->sequenceList->GetNumberOfItems(); i++)
   {
-    vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast(sequenceList->GetItemAsObject (i));
+    vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject (i));
     if (!sequence)
       continue;
     sequence->UpdateToTime (time);
@@ -233,7 +218,7 @@ void v3dView4DInteractor::setCurrentTime (double time)
 
 void v3dView4DInteractor::sequencesRange (double* range)
 {
-  if (!this->sequenceList->GetNumberOfItems())
+  if (!d->sequenceList->GetNumberOfItems())
   {
     range[0] = 0;
     range[1] = 1.0;
@@ -243,9 +228,9 @@ void v3dView4DInteractor::sequencesRange (double* range)
   double mintime = 3000;
   double maxtime = -3000;
   
-  for (int i=0; i<this->sequenceList->GetNumberOfItems(); i++)
+  for (int i=0; i<d->sequenceList->GetNumberOfItems(); i++)
   {
-    vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast(sequenceList->GetItemAsObject (i));
+    vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject (i));
     if (!sequence)
       continue;
     mintime = std::min (mintime, sequence->GetMinTime());
@@ -259,16 +244,16 @@ void v3dView4DInteractor::sequencesRange (double* range)
 
 double v3dView4DInteractor::sequencesMinTimeStep (void)
 {
-  if (!this->sequenceList->GetNumberOfItems())
+  if (!d->sequenceList->GetNumberOfItems())
   {
     return 0.01;
   }
   
   double step = 3000;
   
-  for (int i=0; i<this->sequenceList->GetNumberOfItems(); i++)
+  for (int i=0; i<d->sequenceList->GetNumberOfItems(); i++)
   {
-    vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast(sequenceList->GetItemAsObject (i));
+    vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject (i));
     if (!sequence)
       continue;
     double mintime = sequence->GetMinTime();
