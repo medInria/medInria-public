@@ -651,11 +651,9 @@ void v3dView::setData(dtkAbstractData *data)
       }
     }
     else if (data->description()=="itkDataImageShort4") {
-      dtkWarning() << "short 4 detected" ;
-    	this->enableInteractor ( "v3dView4DInteractor" );
+        this->enableInteractor ( "v3dView4DInteractor" );
     	// This will add the data to the interactor.
     	dtkAbstractView::setData(data);
-      
     }
     // else if (data->description()=="itkDataImageShort4") {
     //   if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
