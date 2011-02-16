@@ -1,7 +1,7 @@
 #ifndef V3DVIEW4DINTERACTOR_H
 #define V3DVIEW4DINTERACTOR_H
 
-#include <dtkCore/dtkAbstractViewInteractor.h>
+#include <medCore/med4DAbstractViewInteractor.h>
 
 #include "v3dViewPluginExport.h"
 
@@ -14,7 +14,7 @@ class vtkCollection;
 class vtkMetaDataSetSequence;
 
 
-class V3DVIEWPLUGIN_EXPORT v3dView4DInteractor: public dtkAbstractViewInteractor
+class V3DVIEWPLUGIN_EXPORT v3dView4DInteractor: public med4DAbstractViewInteractor
 {
 
     Q_OBJECT
@@ -28,7 +28,6 @@ public:
     
     static bool registered(void);
     
-    virtual void appendData(dtkAbstractData *data);
     virtual void setData(dtkAbstractData *data);
     virtual void setView(dtkAbstractView *view);
 
@@ -38,27 +37,27 @@ public:
     //! Override dtkAbstractViewInteractor.
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
 
-    virtual void setCurrentTime (double time);
-    virtual double getCurrentTime (void)
+    void setCurrentTime (double time);
+    double getCurrentTime (void)
     { return this->currentTime; }
+    
+    void sequencesRange (double* range);
+    double sequencesMinTimeStep (void);
+
+public slots:
+    void onDataAdded (dtkAbstractData* data);
     
     
 protected:
     virtual void updatePipeline ();
 
 signals:
-    /* void selectionValidated (const QString& name); */
 
 public slots:
-    //virtual void onPropertySet (const QString& key, const QString& value);
-    //virtual void onVisibilityPropertySet (const QString& value);
-    //virtual void onEdgeVisibilityPropertySet (const QString& value);
-    //virtual void onRenderingModePropertySet (const QString& value);
-
+    virtual void appendData(dtkAbstractData *data);
+    
 private:
     v3dView4DInteractorPrivate *d;
-
-    vtkCollection* sequenceList;
 
     double currentTime;
 };

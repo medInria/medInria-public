@@ -14,6 +14,7 @@
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCore/dtkLog.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -650,9 +651,11 @@ void v3dView::setData(dtkAbstractData *data)
       }
     }
     else if (data->description()=="itkDataImageShort4") {
-	this->enableInteractor ( "v3dView4DInteractor" );
-	// This will add the data to the interactor.
-	dtkAbstractView::setData(data);
+      dtkWarning() << "short 4 detected" ;
+    	this->enableInteractor ( "v3dView4DInteractor" );
+    	// This will add the data to the interactor.
+    	dtkAbstractView::setData(data);
+      
     }
     // else if (data->description()=="itkDataImageShort4") {
     //   if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
@@ -799,6 +802,8 @@ void v3dView::setData(dtkAbstractData *data)
         d->slider->blockSignals (false);
     }
 
+    emit dataAdded (data);
+    
     // this->update(); // update is not the role of the plugin, but of the app
 }
 
