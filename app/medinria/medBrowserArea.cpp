@@ -243,8 +243,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 	
 	  // Additional toolboxes for source data ////////////////
 	
-	qDebug() << "Getting to the dirty part...";
-	
 		foreach(QString toolbox, medToolBoxFactory::instance()->sourcedataToolBoxes())
 		{
 			medToolBoxSourceData *dataToolBox = medToolBoxFactory::instance()->createSourceDataToolBox(toolbox);
