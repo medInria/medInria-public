@@ -41,8 +41,12 @@ public:
     double getCurrentTime (void)
     { return this->currentTime; }
     
-    void sequencesRange (double* range)
-    {};
+    void sequencesRange (double* range);
+    double sequencesMinTimeStep (void);
+
+public slots:
+    void onDataAdded (dtkAbstractData* data);
+    
     
 protected:
     virtual void updatePipeline ();
