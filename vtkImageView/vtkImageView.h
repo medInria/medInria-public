@@ -19,7 +19,7 @@
 #define _vtkImageView_h_
 
 #include "vtkINRIA3DConfigure.h"
-#include "vtkObject.h"
+#include <vtkObject.h>
 #include <vtkCommand.h>
 #include <cstring>
 #include "vtkInteractorStyle.h"
@@ -147,6 +147,9 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   //static vtkImageView* New();
   vtkTypeRevisionMacro(vtkImageView, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
+  
+  // Override vtkObject - return the maximum mtime of this and any objects owned by this.
+  unsigned long GetMTime();
 
   /**
      List of events the image view is able to invoke.
@@ -510,7 +513,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL) = 0;
   
   vtkGetMacro(IsInteractorInstalled, int);
-	
+
  protected:
   vtkImageView();
   ~vtkImageView();
