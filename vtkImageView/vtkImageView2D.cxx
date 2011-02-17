@@ -1374,6 +1374,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     reslice->SetOutputOrigin  (this->GetInput()->GetOrigin());
     reslice->SetOutputSpacing (this->GetInput()->GetSpacing());
     reslice->SetOutputExtent  (this->GetInput()->GetWholeExtent());
+     reslice->SetInterpolationModeToLinear();
     
     auxMatrix->Delete();
     
