@@ -90,6 +90,8 @@ project(HWShading)
 		  )
 
 
+  FIND_PACKAGE(OpenGL REQUIRED)
+  
   ADD_LIBRARY(vtkHWShading ${vtkINRIA3D_LIBS_STYLE}
   ${HWShading_SRCS} 
   )
@@ -97,6 +99,7 @@ project(HWShading)
   TARGET_LINK_LIBRARIES(vtkHWShading 
   vtkRendering 
   vtkHelpers 
+  ${OPENGL_LIBRARIES}
   )
 
   IF( BUILD_TESTING )
