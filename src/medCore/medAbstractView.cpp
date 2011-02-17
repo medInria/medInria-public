@@ -148,20 +148,22 @@ void medAbstractView::setCamera (const QVector3D &position, const QVector3D &vie
     emit cameraChanged (position, viewup, focal, parallelScale);
 }
 
-void medAbstractView::setVisibility(int visibility, int layer)
+void medAbstractView::setVisibility(bool visibility, int layer)
 {
-    DTK_DEFAULT_IMPLEMENTATION;
+    this->onVisibilityChanged(visibility, layer);
+    emit visibilityChanged(visibility, layer);
 }
 
-int medAbstractView::visibility(int layer) const
+bool medAbstractView::visibility(int layer) const
 {
     DTK_DEFAULT_IMPLEMENTATION;
-    return 1;
+    return true;
 }
 
 void medAbstractView::setOpacity(double opacity, int layer)
 {
-    DTK_DEFAULT_IMPLEMENTATION;
+    this->onOpacityChanged(opacity, layer);
+    emit opacityChanged(opacity, layer);
 }
 
 double medAbstractView::opacity(int layer) const
@@ -210,6 +212,16 @@ void medAbstractView::onCameraChanged (const QVector3D &position,
 				       const QVector3D &viewup,
 				       const QVector3D &focal,
 				       double parallelScale)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::onVisibilityChanged(bool visibility, int layer)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::onOpacityChanged(double opacity, int layer)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }

@@ -98,20 +98,20 @@ public:
     /**
      * Set the visibility of the data on the corresponding layer
      */
-    virtual void setVisibility (int visibility, int layer);
+    virtual void setVisibility (bool visibility, int layer);
 
     /**
      * Get the visibility of the data on the corresponding layer
      */
-    virtual int visibility(int layer) const;
+    virtual bool visibility(int layer) const;
 
     /**
-     * Set the visibility of the data on the corresponding layer
+     * Set the opacity of the data on the corresponding layer
      */
     virtual void setOpacity (double opacity, int layer);
 
     /**
-     * Get the visibility of the data on the corresponding layer
+     * Get the opacity of the data on the corresponding layer
      */
     virtual double opacity(int layer) const;
 
@@ -200,9 +200,19 @@ signals:
                            const QVector3D &viewup,
                            const QVector3D &focal,
                            double parallelScale);
+    
+    /**
+     * This signal is emitted when the visibility of a layer has changed.
+     */
+    void visibilityChanged(bool visibility, int layer);
+    
+    /**
+     * This signal is emitted when the opacity of a layer has changed.
+     */
+    void opacityChanged(double value, int layer);
 
     /**
-     *  This signal is emitted when the user add a data in the view
+     *  This signal is emitted when the user adds a data to the view
      */
     void dataAdded (int layer);
 
@@ -234,7 +244,9 @@ public slots:
 				     const QVector3D &focal,
 				     double parallelScale);
     
-    virtual void onVisibilitySet(bool visible) {};
+    virtual void onVisibilityChanged(bool visible, int layer);
+    
+    virtual void onOpacityChanged(double opacity, int layer);
 
     
 protected:
