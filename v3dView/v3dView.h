@@ -21,6 +21,13 @@ class vtkImageView3D;
 class vtkRenderer;
 class vtkRenderWindowInteractor;
 
+/**
+ * @class v3dView
+ * @brief Concrete implementation of a medAbstractView using vtkinria3d's vtkImageView system.
+ * v3dView stands for vtkinria3dView. It embeds in a QVTKWidget a visualization system for 2D
+ * and 3D images.
+ **/
+
 class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractView
 {
     Q_OBJECT
@@ -34,6 +41,7 @@ public:
     static bool registered(void);
 
 public:
+    // inherited from medAbstractView
     void reset(void);
     void clear(void);
     void update(void);
@@ -50,13 +58,26 @@ public:
     void close(void);
 
     // access method to internal members for v3dView**Interactor classes
+    
+    /**
+     * Returns pointers to internal instances of vtkImageView2D/3D.
+     */
     vtkImageView2D *view2d(void);
     vtkImageView3D *view3d(void);
     
+    /**
+     * Returns a pointer to the current view, being 2D or 3D.
+     */
     vtkImageView *currentView(void);
     
+    /**
+     * Returns the vtkRenderWindowInteractor instance.
+     */
     vtkRenderWindowInteractor *interactor(void);
     
+    /**
+     * Access methods to vtkRenderer members.
+     */
     vtkRenderer *renderer2d(void);
     vtkRenderer *renderer3d(void);
 
@@ -68,27 +89,37 @@ public:
     virtual void setColorLookupTable( QList< double > scalars,
 				      QList< QColor > colors );
 
-    virtual void setVisibility(int visible, int layer);
-    virtual int visibility(int layer) const;
+    /**
+     * Set/Get the visibility of the image at layer given by @layer.
+     */
+    virtual bool visibility(int layer) const;
 
-    virtual void setOpacity(double opacity, int layer);
+    /**
+     * Set/Get the opacity of the image at layer given by @layer.
+     */
     virtual double opacity(int layer) const;
     
+    /**
+     * Returns the total number of layers of the vtkImageView2D instance.
+     */
     virtual int layerCount(void) const;
 
 public slots:
-    void play          (bool value);
-    
-    void onPositionChanged (const QVector3D &position);
-    void onZoomChanged (double zoom);
-    void onPanChanged (const QVector2D &pan);
+    // inherited from medAbstractView
+    void onPositionChanged  (const  QVector3D &position);
+    void onZoomChanged      (double zoom);
+    void onPanChanged       (const  QVector2D &pan);
     void onWindowingChanged (double level, double window);
-    void onCameraChanged (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+    void onCameraChanged    (const  QVector3D &position, 
+                             const  QVector3D &viewup, 
+                             const  QVector3D &focal, 
+                             double parallelScale);
     
-    void onVisibilitySet(bool visible, int layer = 0);
-    // void linkwl (dtkAbstractView* view, bool);
+    void onVisibilityChanged(bool   visible, int layer);
+    void onOpacityChanged   (double opacity, int layer);
     
 public slots:
+    void play          (bool value);
     void onPropertySet         (const QString &key, const QString &value);
     void onOrientationPropertySet           (const QString &value);
     void on3DModePropertySet                (const QString &value);
@@ -108,7 +139,7 @@ public slots:
 
 public slots:
     void onMousePressEvent                  (QMouseEvent *event);
-    void onZSliderValueChanged                  (int value);
+    void onZSliderValueChanged              (int value);
     void onDimensionBoxChanged              (const QString &value);
     void onMetaDataSet         (const QString &key, const QString &value);
 

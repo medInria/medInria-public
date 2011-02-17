@@ -637,7 +637,6 @@ void v3dView::setData(dtkAbstractData *data)
     }
     
     this->setData( data, layer);
-    emit dataAdded(layer);
     
     // this->update(); // update is not the role of the plugin, but of the app
 }
@@ -747,19 +746,13 @@ void v3dView::setData(dtkAbstractData *data, int layer)
                 d->view3d->SetInput(dataset, 0, layer);
             }
         }
-        else if ( data->description() == "vtkDataMesh" ) {
-            
-            this->enableInteractor ( "v3dViewMeshInteractor" );
-            // This will add the data to the interactor.
-            dtkAbstractView::setData(data);
-        }
-        else if ( data->description() == "v3dDataFibers" ) {
-            
-            this->enableInteractor ( "v3dViewFiberInteractor" );
-            // This will add the data to the interactor.
-            dtkAbstractView::setData(data);
-        }
         else {
+            if ( data->description() == "vtkDataMesh" )
+                this->enableInteractor ( "v3dViewMeshInteractor" );
+            else if ( data->description() == "v3dDataFibers" )
+                this->enableInteractor ( "v3dViewFiberInteractor" );
+            
+            // This will add the data to one interactor
             dtkAbstractView::setData(data);
             return;
         }
@@ -806,7 +799,9 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
             d->slider->blockSignals (false);
         }
-    }   
+    }
+    
+    emit dataAdded(layer);
 }
 
 void *v3dView::data (void)
@@ -1671,19 +1666,9 @@ void v3dView::setColorLookupTable(QList<double> scalars, QList<QColor> colors)
     delete [] alphaTable;
 }
 
-void v3dView::setVisibility(int visible, int layer)
-{
-    d->view2d->SetVisibility(visible, layer);
-}
-
-int v3dView::visibility(int layer) const
+bool v3dView::visibility(int layer) const
 {
     return d->view2d->GetVisibility(layer);
-}
-
-void v3dView::setOpacity(double opacity, int layer)
-{
-    d->view2d->SetOpacity(opacity, layer);
 }
 
 double v3dView::opacity(int layer) const
@@ -2007,10 +1992,16 @@ void v3dView::onCameraChanged (const QVector3D &position, const QVector3D &viewu
     d->view3d->Modified();
 }
 
-void v3dView::onVisibilitySet(bool visible, int layer)
+void v3dView::onVisibilityChanged(bool visible, int layer)
 {
     if (visible)
         d->view2d->SetVisibility(1,layer);
     else
         d->view2d->SetVisibility(0,layer);
 }
+
+void v3dView::onOpacityChanged(double opacity, int layer)
+{
+    d->view2d->SetOpacity(opacity, layer);
+}
+
