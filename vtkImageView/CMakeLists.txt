@@ -8,6 +8,20 @@ project(vtkImageView)
 #   include(${ITK_USE_FILE})
 # endif(vtkINRIA3D_USE_ITK)
 
+set(${PROJECT_NAME}_HEADERS
+vtkImageView.h
+vtkImageView2D.h
+vtkImageView3D.h
+vtkInteractorStyleImageView2D.h
+vtkImageView2DCommand.h
+vtkImageViewCornerAnnotation.h
+vtkAxes2DWidget.h
+vtkDataSet2DWidget.h
+vtkImageViewCollection.h
+vtkImageView3DCroppingBoxCallback.h
+vtkSmartVolumeMapper.h
+)
+
 set(${PROJECT_NAME}_SOURCES
 vtkImageView.cxx
 vtkImageView2D.cxx
@@ -24,6 +38,7 @@ vtkSmartVolumeMapper.cxx
 
 add_library(${PROJECT_NAME} ${vtkINRIA3D_LIBS_STYLE}
 ${${PROJECT_NAME}_SOURCES}
+${${PROJECT_NAME}_HEADERS}
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -62,6 +77,8 @@ IF(BUILD_TESTING)
   ADD_SUBDIRECTORY(Testing)
 ENDIF(BUILD_TESTING)
 
+# include header files in group for visual studio
+SOURCE_GROUP( "Header Files" FILES ${${PROJECT_NAME}_HEADERS})
 
 if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
   install(TARGETS vtkImageView

@@ -104,7 +104,10 @@ public:
   static vtkImageView2D *New();
   vtkTypeRevisionMacro (vtkImageView2D, vtkImageView);
   void PrintSelf(ostream& os, vtkIndent indent);
-  
+
+  // Override vtkObject - return the maximum mtime of this and any objects owned by this.
+  unsigned long GetMTime();
+
   //BTX
   enum EventIds
   {

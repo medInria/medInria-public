@@ -268,7 +268,35 @@ int vtkImageView2D::GetNumberOfLayers(void)
   }
   return 0;
 }
+//----------------------------------------------------------------------------
+unsigned long vtkImageView2D::GetMTime()
+{
+    typedef unsigned long MTimeType;
 
+    MTimeType mTime = Superclass::GetMTime();
+
+    vtkObject * objectsToInclude[] = {
+        this->GetImageActor(0),
+        this->Axes2DWidget,
+        this->RulerWidget,
+        this->DistanceWidget,
+        this->AngleWidget,
+        this->ConventionMatrix,
+        this->SlicePlane,
+        this->OrientationAnnotation };
+
+        const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
+
+        for ( int i(0); i<numObjects; ++i ) {
+            vtkObject * object = objectsToInclude[i];
+            if (object) {
+                const MTimeType testMtime = object->GetMTime();
+                if ( testMtime > mTime )
+                    mTime = testMtime;
+            }
+        }
+        return mTime;
+}
 //----------------------------------------------------------------------------
 void vtkImageView2D::GetSliceRange(int &min, int &max)
 {

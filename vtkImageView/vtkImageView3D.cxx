@@ -127,6 +127,38 @@ vtkImageView3D::~vtkImageView3D()
 }
 
 //----------------------------------------------------------------------------
+unsigned long vtkImageView3D::GetMTime()
+{
+    typedef unsigned long MTimeType;
+
+    MTimeType mTime = Superclass::GetMTime();
+
+    vtkObject * objectsToInclude[] = {
+        this->VolumeMapper,
+        this->VolumeProperty,
+        this->VolumeActor,
+        this->BoxWidget,
+        this->Cube,
+        this->Marker,
+        this->PlaneWidget,
+        this->ActorX,
+        this->ActorY,
+        this->ActorZ};
+
+        const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
+
+        for ( int i(0); i<numObjects; ++i ) {
+            vtkObject * object = objectsToInclude[i];
+            if (object) {
+                const MTimeType testMtime = object->GetMTime();
+                if ( testMtime > mTime )
+                    mTime = testMtime;
+            }
+        }
+        return mTime;
+}
+
+//----------------------------------------------------------------------------
 void vtkImageView3D::SetVolumeMapperTo3DTexture (void)
 {
   this->VolumeMapper->SetRequestedRenderMode(
