@@ -89,6 +89,7 @@ project(HWShading)
 		   "${vtkINRIA3D_BINARY_DIR}/Shaders/BuildShadowMapLinesFragmentText.h"
 		  )
 
+  FIND_PACKAGE(OpenGL REQUIRED)
 
   FIND_PACKAGE(OpenGL REQUIRED)
   

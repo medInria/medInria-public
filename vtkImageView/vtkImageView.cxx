@@ -233,8 +233,31 @@ vtkImageView::~vtkImageView()
 
   delete this->Impl;
 }
+//----------------------------------------------------------------------------
+unsigned long vtkImageView::GetMTime()
+{
+    typedef unsigned long MTimeType;
 
+    MTimeType mTime = Superclass::GetMTime();
 
+    vtkObject * objectsToInclude[] = {
+        // Renderer, RenderWindow,Interactor,
+        InteractorStyle,WindowLevel, OrientationTransform, ScalarBar, OrientationMatrix,
+        InvertOrientationMatrix, CornerAnnotation, TextProperty, ColorTransferFunction, OpacityTransferFunction, LookupTable,
+        ScalarBar };
+
+        const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
+
+        for ( int i(0); i<numObjects; ++i ) {
+            vtkObject * object = objectsToInclude[i];
+            if (object) {
+                const MTimeType testMtime = object->GetMTime();
+                if ( testMtime > mTime )
+                    mTime = testMtime;
+            }
+        }
+        return mTime;
+}
 //----------------------------------------------------------------------------
 void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 {
@@ -1001,6 +1024,7 @@ void vtkImageView::ResetCamera (void)
           double bounds [6];
           this->GetInputBoundsInWorldCoordinates (bounds);			  
           this->Renderer->ResetCamera (bounds);
+          this->InvokeEvent (vtkImageView::CameraChangedEvent);
       } else {
 
           // No op.
