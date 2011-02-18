@@ -1668,7 +1668,7 @@ void v3dView::setColorLookupTable(QList<double> scalars, QList<QColor> colors)
 
 bool v3dView::visibility(int layer) const
 {
-    return d->view2d->GetVisibility(layer);
+    return (d->view2d->GetVisibility(layer) == 1);
 }
 
 double v3dView::opacity(int layer) const
