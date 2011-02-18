@@ -8,6 +8,8 @@ public:
   bool linkWindowing;
   
   int currentLayer;
+  QList<dtkAbstractData *> dataList;
+
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
@@ -187,6 +189,24 @@ int medAbstractView::layerCount(void) const
     DTK_DEFAULT_IMPLEMENTATION;
     return 0;
 }
+
+//void medAbstractView::addDataInList(dtkAbstractData * data)
+//{
+//    d->dataList.append(data);
+//}
+//
+//dtkAbstractData * medAbstractView::dataInList(int layer)
+//{
+//    if (layer < d->dataList.size())
+//        return d->dataList.at(layer);
+//
+//    return NULL;
+//}
+//
+//void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
+//{
+//    d->dataList[layer] = data;
+//}
 
 void medAbstractView::onPositionChanged (const QVector3D &position)
 {

@@ -11,6 +11,7 @@
 #include <medGui/medToolBox.h>
 
 class dtkAbstractView;
+class dtkAbstractData;
 class medViewerToolBoxViewPropertiesPrivate;
 
 class medViewerToolBoxViewProperties : public medToolBox

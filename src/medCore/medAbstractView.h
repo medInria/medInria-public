@@ -132,6 +132,20 @@ public:
      */    
     virtual int layerCount(void) const;
 
+//    /**
+//     * Insert abstractData in the data list
+//     */
+//    virtual void addDataInList(dtkAbstractData * data);
+//
+//    /**
+//     * Get abstractData at layer position in the data list
+//     */
+//    virtual dtkAbstractData * dataInList(int layer);
+//
+//    /**
+//     * Set abstractData at layer position in the data list
+//     */
+//    virtual void setDataInList(int layer, dtkAbstractData * data);
 
 signals:
     /**
