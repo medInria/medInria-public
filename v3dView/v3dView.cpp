@@ -896,7 +896,7 @@ void v3dView::onOrientationPropertySet(const QString &value)
         timeIndex = d->currentView->GetTimeIndex();
         
         d->currentView->UnInstallInteractor();
-        // d->currentView->SetRenderWindow( 0 );
+        d->currentView->SetRenderWindow( 0 );
         
         // d->currentView->GetInteractorStyle()->RemoveObserver(d->observer);
         d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->currentView->GetRenderer());
@@ -1079,10 +1079,10 @@ void v3dView::onLookupTablePropertySet(const QString &value)
     }
 
     
-    if (this->currentLayer()==0)
-    {
-        d->view3d->SetTransferFunctions (rgb, alpha);
-    }
+    //if (this->currentLayer()==0)
+    //{
+        d->view3d->SetTransferFunctions (rgb, alpha, this->currentLayer());
+    //}
   
     rgb->Delete();
     alpha->Delete();
@@ -1994,14 +1994,19 @@ void v3dView::onCameraChanged (const QVector3D &position, const QVector3D &viewu
 
 void v3dView::onVisibilityChanged(bool visible, int layer)
 {
-    if (visible)
+    if (visible) {
         d->view2d->SetVisibility(1,layer);
-    else
+        d->view3d->SetVisibility(1,layer);
+    }
+    else {
         d->view2d->SetVisibility(0,layer);
+        d->view3d->SetVisibility(0,layer);
+    }
 }
 
 void v3dView::onOpacityChanged(double opacity, int layer)
 {
     d->view2d->SetOpacity(opacity, layer);
+    d->view3d->SetOpacity(opacity, layer);
 }
 
