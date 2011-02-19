@@ -37,6 +37,7 @@
 #include "vtkPiecewiseFunction.h"
 #include "vtkImageMapToColors.h"
 #include "vtkScalarBarActor.h"
+#include <vtkImageReslice.h>
 
 #include "vtkCommand.h"
 #include "vtkImageView2DCommand.h"
@@ -232,6 +233,7 @@ vtkImageView::~vtkImageView()
   
   delete this->Impl;
 }
+
 //----------------------------------------------------------------------------
 unsigned long vtkImageView::GetMTime()
 {
@@ -257,6 +259,7 @@ unsigned long vtkImageView::GetMTime()
         }
         return mTime;
 }
+
 //----------------------------------------------------------------------------
 void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 {
@@ -266,7 +269,6 @@ void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
   
   this->InstallPipeline();
 }
-
 
 //----------------------------------------------------------------------------
 void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
@@ -281,8 +283,6 @@ void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
   }  
   this->InstallPipeline();
 }
-
-
 
 //----------------------------------------------------------------------------
 void vtkImageView::SetRenderer(vtkRenderer *arg)
@@ -317,6 +317,89 @@ void vtkImageView::Render()
       this->RenderWindow->Render();
     }
   }
+}
+
+//----------------------------------------------------------------------------
+bool vtkImageView::Compare(double *array1, double *array2, int size)
+{
+    bool result = true;
+    for (int i=0; i<size; i++)
+        if (array1[i]!=array2[i])
+         {
+            result = false;
+            break;
+         }
+    
+    return result;
+}
+
+//----------------------------------------------------------------------------
+bool vtkImageView::Compare(int *array1, int *array2, int size)
+{
+    bool result = true;
+    for (int i=0; i<size; i++)
+        if (array1[i]!=array2[i])
+         {
+            result = false;
+            break;
+         }
+    
+    return result;
+}
+
+//----------------------------------------------------------------------------
+bool vtkImageView::Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2)
+{
+    bool result = true;
+    for (int i=0; i<4; i++)
+        for (int j=0; j<4; j++)
+            if (mat1->GetElement(i,j)!=mat2->GetElement(i,j))
+             {
+                result = false;
+                break;
+             }
+    
+    return result;
+}
+
+//----------------------------------------------------------------------------
+vtkImageData *vtkImageView::ResliceImageToInput(vtkImageData *image, vtkMatrix4x4 *matrix)
+{
+    if (!image || !this->GetInput())
+        return NULL;
+    
+    if ( this->Compare(image->GetOrigin(),  this->GetInput()->GetOrigin(), 3) &&
+         this->Compare(image->GetSpacing(), this->GetInput()->GetSpacing(), 3) &&
+         this->Compare(image->GetDimensions(), this->GetInput()->GetDimensions(), 3) &&
+         (matrix && this->Compare(matrix, this->OrientationMatrix)) )
+     {
+        return image;
+     }
+    
+    vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
+    if (matrix)
+     {
+        auxMatrix->DeepCopy(matrix);
+        vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
+     }
+    else 
+     {
+        auxMatrix->Identity();
+     }
+    
+    vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
+    
+    vtkImageReslice *reslicer = vtkImageReslice::New();
+    reslicer->SetInput         (image);
+    reslicer->SetResliceAxes   (auxMatrix);
+    reslicer->SetOutputOrigin  (this->GetInput()->GetOrigin());
+    reslicer->SetOutputSpacing (this->GetInput()->GetSpacing());
+    reslicer->SetOutputExtent  (this->GetInput()->GetWholeExtent());
+    reslicer->SetInterpolationModeToLinear();
+    
+    auxMatrix->Delete();
+    
+    return reslicer->GetOutput();
 }
 
 //----------------------------------------------------------------------------
@@ -612,7 +695,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
                 double val[4];
                 of->GetNodeValue( n - 1, val );
                 of->AddPoint( val[0], val[1],
-                             val[2], val[3] );
+                              val[2], val[3] );
             }
         }
     }
