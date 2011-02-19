@@ -524,7 +524,7 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
             cast->SetOutputScalarType ( this->GetInput()->GetScalarType() );
             //cast->Update();
             
-            appender->SetInputConnection(1, cast->GetOutputPort());
+            appender->SetInput(1, cast->GetOutput());
             //cast->Delete();
          }
         else {
