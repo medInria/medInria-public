@@ -1081,7 +1081,7 @@ void v3dView::onLookupTablePropertySet(const QString &value)
     
     if (this->currentLayer()==0)
     {
-        d->view3d->SetTransferFunctions (rgb, alpha);
+        d->view3d->SetTransferFunctions (rgb, alpha, this->currentLayer());
     }
   
     rgb->Delete();
