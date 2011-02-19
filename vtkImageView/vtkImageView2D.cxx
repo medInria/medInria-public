@@ -262,11 +262,7 @@ double vtkImageView2D::GetOpacity(int layer)
 
 int vtkImageView2D::GetNumberOfLayers(void)
 {
-  if (this->GetRenderWindow())
-  {
-    return this->ImageDisplayMap.size();
-  }
-  return 0;
+  return this->ImageDisplayMap.size();
 }
 //----------------------------------------------------------------------------
 unsigned long vtkImageView2D::GetMTime()
@@ -1384,35 +1380,14 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
   else
   {
     this->ImageDisplayMap.insert(std::pair<int, vtkImage2DDisplay*>(layer, vtkImage2DDisplay::New()));
+     
+    this->ImageDisplayMap.at(layer)->SetInput( this->ResliceImageToInput(image, matrix) );
     
-    vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
-    if (matrix)
-      auxMatrix->DeepCopy(matrix);
-    else {
-      auxMatrix->Identity();
-    }
-    
-    vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
-    
-    vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
-    
-    vtkImageReslice *reslice = vtkImageReslice::New();
-    reslice->SetInput(image);
-    reslice->SetResliceAxes(auxMatrix);
-    reslice->SetOutputOrigin  (this->GetInput()->GetOrigin());
-    reslice->SetOutputSpacing (this->GetInput()->GetSpacing());
-    reslice->SetOutputExtent  (this->GetInput()->GetWholeExtent());
-     reslice->SetInterpolationModeToLinear();
-    
-    auxMatrix->Delete();
-    
-    this->ImageDisplayMap.at(layer)->SetInput(reslice->GetOutput());
-    
-    this->GetRenderWindow()->SetNumberOfLayers(this->ImageDisplayMap.size());
     renderer = this->ImageDisplayMap.at(layer)->GetRenderer();
     renderer->SetLayer(layer);
     if (this->GetRenderWindow())
     {
+      this->GetRenderWindow()->SetNumberOfLayers(this->ImageDisplayMap.size());
       this->GetRenderWindow()->AddRenderer(renderer);
     }
     renderer->SetActiveCamera (this->GetRenderer()->GetActiveCamera());
