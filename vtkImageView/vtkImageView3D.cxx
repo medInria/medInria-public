@@ -66,6 +66,47 @@
 #include <vtkImageMapToColors.h>
 #include "vtkScalarBarActor.h"
 #include "vtkSmartVolumeMapper.h"
+#include <vtkImageAppendComponents.h>
+#include <vtkImageCast.h>
+
+class vtkImage3DDisplay : public vtkObject
+{
+public:
+    static vtkImage3DDisplay *New();
+    
+    vtkSetObjectMacro(Input, vtkImageData);
+    vtkGetObjectMacro(Input, vtkImageData);
+    
+    vtkSetMacro(Opacity, double);
+    vtkGetMacro(Opacity, double);
+    
+    vtkSetMacro(Visibility, int);
+    vtkGetMacro(Visibility, int);
+    
+protected:
+    vtkImage3DDisplay();
+    ~vtkImage3DDisplay();
+    
+private:
+    vtkImageData         *Input;
+    double Opacity;
+    int    Visibility;
+};
+
+vtkStandardNewMacro(vtkImage3DDisplay);
+
+vtkImage3DDisplay::vtkImage3DDisplay()
+{
+    this->Input = 0;
+    this->Opacity = 1.0;
+    this->Visibility = 1;
+}
+
+vtkImage3DDisplay::~vtkImage3DDisplay()
+{
+    if (this->Input)
+        this->Input->Delete();
+}
 
 vtkCxxRevisionMacro(vtkImageView3D, "$Revision: 1324 $");
 vtkStandardNewMacro(vtkImageView3D);
@@ -100,6 +141,9 @@ vtkImageView3D::vtkImageView3D()
   this->ShowActorX = 1;
   this->ShowActorY = 1;
   this->ShowActorZ = 1;
+    
+    this->Opacity = 1.0;
+    this->Visibility = 1;
   
   this->CroppingMode = CROPPING_OFF;
   
@@ -233,7 +277,7 @@ void vtkImageView3D::SetInterpolationToLinear (void)
 void vtkImageView3D::SetupVolumeRendering()
 {
 #ifdef __APPLE__
-  this->VolumeMapper->SetRequestedRenderMode( vtkSmartVolumeMapper::RayCastAndTextureRenderMode );
+  this->VolumeMapper->SetRequestedRenderMode( vtkSmartVolumeMapper::RayCastRenderMode );
 #else
   this->VolumeMapper->SetRequestedRenderMode( vtkSmartVolumeMapper::DefaultRenderMode );
 #endif
@@ -248,8 +292,8 @@ void vtkImageView3D::SetupVolumeRendering()
   this->VolumeProperty->SetSpecularPower (15.0);
   if ( !this->UseLookupTable )
   {
-    this->VolumeProperty->SetScalarOpacity( this->OpacityTransferFunction );
-    this->VolumeProperty->SetColor( this->ColorTransferFunction );
+    this->VolumeProperty->SetScalarOpacity(0, this->OpacityTransferFunction );
+    this->VolumeProperty->SetColor(0, this->ColorTransferFunction );
   }
   
   this->VolumeActor->SetProperty ( this->VolumeProperty );
@@ -380,15 +424,16 @@ void vtkImageView3D::UnInstallInteractor()
     this->Interactor->SetRenderWindow (NULL);
     this->Interactor->SetInteractorStyle (NULL);
   }
+  this->IsInteractorInstalled = 0;    
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int layer)
 {
-  if (layer!=0)
-    return;
-  
+    if(layer==0)
+     {
   this->Superclass::SetInput (image, matrix, layer);
+     }
   
   if( !image )
   {
@@ -396,6 +441,9 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
   }
   
   image->UpdateInformation ();
+    
+    if(layer==0)
+     {
   
   // Get whole extent : More reliable than dimensions if not up-to-date.
   int * w_extent = image->GetWholeExtent ();
@@ -456,6 +504,43 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
   this->PlaneWidget->PlaceWidget(bounds);
   
   this->UpdateDisplayExtent();
+     }
+    else // layer>0
+     {
+        this->ImageDisplayMap.insert( std::pair<int, vtkImage3DDisplay*>(layer, vtkImage3DDisplay::New()));
+        
+        vtkImageData *resliceImage = this->ResliceImageToInput(image, matrix);
+        resliceImage->UpdateInformation();
+        
+        this->ImageDisplayMap.at(layer)->SetInput( resliceImage );
+
+        vtkImageAppendComponents *appender = vtkImageAppendComponents::New();
+        appender->SetInput(0, this->GetInput());
+
+        if (image->GetScalarType()!=this->GetInput()->GetScalarType())
+         {
+            vtkImageCast *cast = vtkImageCast::New();
+            cast->SetInput  ( resliceImage );
+            cast->SetOutputScalarType ( this->GetInput()->GetScalarType() );
+            //cast->Update();
+            
+            appender->SetInputConnection(1, cast->GetOutputPort());
+            //cast->Delete();
+         }
+        else {
+            appender->SetInput(1, resliceImage);
+        }
+        
+        appender->UpdateWholeExtent();
+        
+        this->VolumeProperty->SetShade(layer, 1);
+        this->VolumeProperty->SetComponentWeight(layer, 0.5);
+        
+        this->SetInput( appender->GetOutput(), matrix, 0);
+        
+        //appender->Delete();
+    }
+
 }
 
 //----------------------------------------------------------------------------
@@ -478,12 +563,91 @@ void vtkImageView3D::SetLookupTable (vtkLookupTable* lookuptable)
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetTransferFunctions( vtkColorTransferFunction * color,
-                                          vtkPiecewiseFunction * opacity )
+                                          vtkPiecewiseFunction * opacity, int layer)
 {
+    if(layer==0)
+     {
   this->Superclass::SetTransferFunctions( color, opacity );
   // superclass generates a default function if one of the arguments is NULL
-  this->VolumeProperty->SetColor( this->ColorTransferFunction );
-  this->VolumeProperty->SetScalarOpacity( this->OpacityTransferFunction );
+  this->VolumeProperty->SetColor(0, this->ColorTransferFunction );
+  this->VolumeProperty->SetScalarOpacity(0, this->OpacityTransferFunction );
+     }
+    else if (layer <= (int)this->ImageDisplayMap.size())
+     {
+      //double *range = this->GetInput()->GetScalarRange();
+      double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
+      this->SetTransferFunctionRangeFromWindowSettings(color, opacity, range[0], range[1]);
+      this->VolumeProperty->SetColor(layer, color );
+      this->VolumeProperty->SetScalarOpacity(layer, opacity );
+     }
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView3D::SetOpacity (double opacity, int layer)
+{
+    if (layer==0) 
+     {
+        this->Opacity = opacity;
+        this->VolumeProperty->SetComponentWeight(0, opacity);
+    }
+    else if (layer <= (int)this->ImageDisplayMap.size()) 
+     {
+        this->VolumeProperty->SetComponentWeight(layer, opacity);
+        this->ImageDisplayMap[layer]->SetOpacity(opacity);
+     }
+}
+
+//----------------------------------------------------------------------------
+double vtkImageView3D::GetOpacity(int layer) const
+{
+    if (layer==0)
+        return this->Opacity;
+    else if (layer <= (int)this->ImageDisplayMap.size())
+        return this->ImageDisplayMap.at(layer)->GetOpacity();
+    
+    return 0.0;
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView3D::SetVisibility (int visibility, int layer)
+{
+    if (layer==0) 
+     {
+        if (visibility)
+         {
+            this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
+         }
+        else 
+         {
+            this->VolumeProperty->SetComponentWeight(layer, 0);
+         }
+        this->Visibility = visibility;
+        
+     }
+    else if (layer <= (int)this->ImageDisplayMap.size()) 
+     {
+        if (visibility)
+         {
+            this->VolumeProperty->SetComponentWeight(layer, this->GetOpacity(layer));
+         }
+        else 
+         {
+            this->VolumeProperty->SetComponentWeight(layer, 0);
+         }
+        this->ImageDisplayMap[layer]->SetVisibility(visibility);
+     }
+}
+
+//----------------------------------------------------------------------------
+int vtkImageView3D::GetVisibility (int layer) const
+{
+    if (layer==0)
+        return this->Visibility;
+        
+    else if (layer <= (int)this->ImageDisplayMap.size())
+        return this->ImageDisplayMap.at(layer)->GetVisibility();
+        
+    return 0;
 }
 
 //----------------------------------------------------------------------------
@@ -507,9 +671,9 @@ void vtkImageView3D::UpdateVolumeFunctions()
     return;
   
   vtkColorTransferFunction * color   =
-  this->VolumeProperty->GetRGBTransferFunction();
+  this->VolumeProperty->GetRGBTransferFunction(0);
   vtkPiecewiseFunction     * opacity =
-  this->VolumeProperty->GetScalarOpacity( );
+  this->VolumeProperty->GetScalarOpacity(0);
   
   double colorValue[6]   = { 0.0, 0.0, 0.0, 0.0, 0.5, 0.0 };
   double opacityValue[4] = { 0.0, 0.0,           0.5, 0.0 };

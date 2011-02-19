@@ -44,6 +44,7 @@ class vtkViewImage2D;
 class vtkScalarsToColors;
 class vtkColorTransferFunction;
 class vtkSmartVolumeMapper;
+class vtkImage3DDisplay;
 
 /**
    \class vtkImageView3D vtkImageView3D.h "vtkImageView3D.h"
@@ -193,8 +194,14 @@ public:
    * Transfer functions define the mapping of the intensity or color
    * values in the image to colors and opacity displayed on the screen.
    */
-  virtual void SetTransferFunctions( vtkColorTransferFunction * color,
-				     vtkPiecewiseFunction * opacity );
+  virtual void SetTransferFunctions(vtkColorTransferFunction * color,
+                                    vtkPiecewiseFunction * opacity, int layer);
+
+  virtual void SetOpacity(double opacity, int layer);
+  virtual double GetOpacity(int layer) const;
+
+  virtual void SetVisibility(int visibility, int layer);
+  virtual int  GetVisibility(int layer) const;
 
   // /** toggle use of VRQuality */
   // void SetUseVRQuality (bool on);
@@ -293,6 +300,11 @@ protected:
   int          LastNodeIndex;
 
   int          CroppingMode;
+    
+    double Opacity;
+    int Visibility;
+    
+  std::map<int, vtkImage3DDisplay*> ImageDisplayMap;
 
  private:
   vtkImageView3D(const vtkImageView3D&);  // Not implemented.
