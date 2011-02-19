@@ -303,9 +303,11 @@ medViewerToolBoxViewProperties::onDataSelected(int index)
     // d->view->setOpacity(d->view->opacity(index), index);
 
     d->opacity->blockSignals(true);
+    d->opacitySlider->blockSignals(true);
     d->opacity->setValue(d->view->opacity(index));
     d->opacitySlider->setValue((int) (d->opacity->value() * 100));
     d->opacity->blockSignals(false);
+    d->opacitySlider->blockSignals(false);
 }
 
 void
