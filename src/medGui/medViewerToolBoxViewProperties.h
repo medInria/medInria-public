@@ -27,11 +27,11 @@ public:
 public slots:
     void onDataAdded(int layer);
     void onViewClosed(void);
-    void onDataSelected(int index);
     void onVisibilitySet(int state);
     void onOpacitySet(double opacity);
     void onOpacitySliderSet(int opacity);
     void onLUTChanged(int index);
+    void onItemPressed(QTreeWidgetItem * item, int column);
 
 signals:
     void setVisibility(bool visible, int layer);

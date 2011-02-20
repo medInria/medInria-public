@@ -15,107 +15,38 @@ class medViewerToolBoxViewPropertiesPrivate
 {
     public:
         medAbstractView *view;
-        QWidget* propertiesToolBoxWidget;
-        QComboBox * dataComboBox;
-        QComboBox * lutComboBox;
-        QCheckBox * visible;
-        QDoubleSpinBox * opacity;
-        QSlider * opacitySlider;
         QTreeWidget * propertiesTree;
+        QStringList lutList;
+        int currentLayer;
 };
 
 medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) :
     medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 {
     d->view = 0;
+    d->currentLayer = 0;
+
+    d->lutList << "Default" << "Black & White" << "Black & White Inversed" << "Spectrum" << "Hot Metal" << "Hot Green"
+               << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
+               << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
+               << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body";
 
     d->propertiesTree = new QTreeWidget(this);
-//    QString style = QString("border-image: '';")
-//                  + QString("border-top-width: 0px;")
-//                  + QString("border-left-width: 0px;")
-//                  + QString("border-right-width: 0px;")
-//                  + QString("border-bottom-width: 0px;")
-//                  + QString("padding-top: -7px;")
-//                  + QString("padding-left: -4px;")
-//                  + QString("padding-right: -5px;")
-//                  + QString("color: #b2b8b2;")
-//                  + QString("background: #313131;");
-//
-//    d->propertiesTree->setStyleSheet(style);
+
     d->propertiesTree->setColumnCount(3);
     d->propertiesTree->setColumnWidth(0,50);
+    d->propertiesTree->setSelectionMode(QAbstractItemView::NoSelection);
     QStringList headers;
     headers << "Layer" << "Name" << "Value";
     d->propertiesTree->setHeaderLabels(headers);
-//    d->propertiesTree->setAnimated(true);
+    d->propertiesTree->setAnimated(true);
     d->propertiesTree->setAlternatingRowColors(true);
-
-    d->dataComboBox = new QComboBox(this);
-    d->dataComboBox->setFocusPolicy(Qt::NoFocus);
-
-    d->lutComboBox = new QComboBox(this);
-    d->lutComboBox->setFocusPolicy(Qt::NoFocus);
-    d->lutComboBox->addItem("Default");
-    d->lutComboBox->addItem("Black & White");
-    d->lutComboBox->addItem("Black & White Inversed");
-    d->lutComboBox->addItem("Spectrum");
-    d->lutComboBox->addItem("Hot Metal");
-    d->lutComboBox->addItem("Hot Green");
-    d->lutComboBox->addItem("Hot Iron");
-    d->lutComboBox->addItem("GE");
-    d->lutComboBox->addItem("Flow");
-    d->lutComboBox->addItem("Loni");
-    d->lutComboBox->addItem("Loni 2");
-    d->lutComboBox->addItem("Asymmetry");
-    d->lutComboBox->addItem("P-Value");
-    d->lutComboBox->addItem("Red Black Alpha");
-    d->lutComboBox->addItem("Green Black Alpha");
-    d->lutComboBox->addItem("Blue Black Alpha");
-    d->lutComboBox->addItem("Muscles & Bones");
-    d->lutComboBox->addItem("Bones");
-    d->lutComboBox->addItem("Red Vessels");
-    d->lutComboBox->addItem("Cardiac");
-    d->lutComboBox->addItem("Gray Rainbow");
-    d->lutComboBox->addItem("Stern");
-    d->lutComboBox->addItem("Black Body");
-
-    d->visible = new QCheckBox(this);
-
-    d->opacitySlider = new QSlider(this);
-    d->opacitySlider->setRange(0, 100);
-    d->opacitySlider->setValue(100);
-    d->opacitySlider->setOrientation(Qt::Horizontal);
-
-    d->opacity = new QDoubleSpinBox(this);
-    d->opacity->setRange(0.0, 1.0);
-    d->opacity->setSingleStep(0.01);
-    d->opacity->setValue(1.0);
-
-    d->propertiesToolBoxWidget = new QWidget;
-    d->propertiesToolBoxWidget->setEnabled(false);
-
-    QHBoxLayout * opacityLayout = new QHBoxLayout;
-    opacityLayout->addWidget(d->opacitySlider);
-    opacityLayout->addWidget(d->opacity);
-
-    QFormLayout * viewPropertiesLayout = new QFormLayout(d->propertiesToolBoxWidget);
-    viewPropertiesLayout->addRow("Select data :", d->dataComboBox);
-    viewPropertiesLayout->addRow("Visible :", d->visible);
-    //    viewPropertiesLayout->addRow("Opacity :", d->opacity);
-    viewPropertiesLayout->addRow("Opacity :", opacityLayout);
-    viewPropertiesLayout->addRow("LUT :", d->lutComboBox);
-    viewPropertiesLayout->setFormAlignment(Qt::AlignHCenter);
+    d->propertiesTree->setRootIsDecorated(false);
 
     this->setTitle("View Properties");
-    this->addWidget(d->propertiesToolBoxWidget);
     this->addWidget(d->propertiesTree);
 
-    QObject::connect(d->dataComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onDataSelected(int)));
-    QObject::connect(d->visible, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
-    QObject::connect(d->opacity, SIGNAL(valueChanged(double)), this, SLOT(onOpacitySet(double)));
-    QObject::connect(d->opacitySlider, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
-    QObject::connect(d->lutComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
-
+    QObject::connect(d->propertiesTree, SIGNAL(itemPressed(QTreeWidgetItem *, int)), this, SLOT(onItemPressed(QTreeWidgetItem *, int)));
     this->hide();
 }
 
@@ -128,9 +59,8 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
 void
 medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
-    //    d->propertiesTree->clear();
-
-    if (d->view) {
+    if ((d->view) && (d->view != dynamic_cast<medAbstractView *> (view)) )
+    {
         QObject::disconnect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)));
         QObject::disconnect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()));
 
@@ -138,36 +68,71 @@ medViewerToolBoxViewProperties::update(dtkAbstractView *view)
     }
 
     if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view)) {
+        if ((d->view == dynamic_cast<medAbstractView *> (view)))
+            return;
+
         d->view = medView;
 
-        this->show();
+        for (int i = 0; i < d->view->layerCount(); i++)
+        {
+            QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
+            layerItem->setText(0, QString::number(i));
+            layerItem->setIcon(0,QIcon(":icons/layer.png"));
 
-        //        dtkAbstractData * data =  0;
-        //        QString seriesName;
+            QTreeWidgetItem * visibleItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
+            visibleItem->setText(1, "Visible");
+            QCheckBox * visibleBox = new QCheckBox();
+            visibleBox->setChecked(d->view->visibility(i));
+            d->propertiesTree->setItemWidget(visibleItem, 2, visibleBox);
+            QObject::connect(visibleBox, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
 
-        int count = d->view->layerCount();
-        int current = d->view->currentLayer();
+            QTreeWidgetItem * opacityItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
+            opacityItem->setText(1, "Opacity");
+            QSlider * opacityBox = new QSlider(Qt::Horizontal);
+            opacityBox->setRange(0,100);
+            opacityBox->setValue(d->view->opacity(i) * 100);
+            d->propertiesTree->setItemWidget(opacityItem, 2, opacityBox);
+            QObject::connect(opacityBox, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
 
-        d->dataComboBox->blockSignals(true);
-        for (int i = 0; i < count; i++) {
-            //            d->propertiesTree->ad
-            //            data = d->view->dataInList(i);
-            //            seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
-            //            seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
-            d->dataComboBox->insertItem(i, QString::number(i));
+            QTreeWidgetItem * lutItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
+            lutItem->setText(1, "LUT");
+            QComboBox * lutBox = new QComboBox();
+            lutBox->setFocusPolicy(Qt::NoFocus);
+            lutBox->addItem("Default");
+            lutBox->addItem("Black & White");
+            lutBox->addItem("Black & White Inversed");
+            lutBox->addItem("Spectrum");
+            lutBox->addItem("Hot Metal");
+            lutBox->addItem("Hot Green");
+            lutBox->addItem("Hot Iron");
+            lutBox->addItem("GE");
+            lutBox->addItem("Flow");
+            lutBox->addItem("Loni");
+            lutBox->addItem("Loni 2");
+            lutBox->addItem("Asymmetry");
+            lutBox->addItem("P-Value");
+            lutBox->addItem("Red Black Alpha");
+            lutBox->addItem("Green Black Alpha");
+            lutBox->addItem("Blue Black Alpha");
+            lutBox->addItem("Muscles & Bones");
+            lutBox->addItem("Bones");
+            lutBox->addItem("Red Vessels");
+            lutBox->addItem("Cardiac");
+            lutBox->addItem("Gray Rainbow");
+            lutBox->addItem("Stern");
+            lutBox->addItem("Black Body");
+
+            d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
+            lutBox->setCurrentIndex(0);
+
+            d->view->setCurrentLayer(i);
+            d->view->setProperty("LookupTable", "Default");
+            d->view->update();
+
+            QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
+
+            d->propertiesTree->collapseAll();
         }
-        d->dataComboBox->setCurrentIndex(current);
-        d->dataComboBox->blockSignals(false);
-        d->propertiesToolBoxWidget->setEnabled(true);
-        d->visible->blockSignals(true);
-        d->visible->setChecked((d->view->visibility(current) == 1));
-        d->visible->blockSignals(false);
-        d->opacity->blockSignals(true);
-        d->opacity->setValue(d->view->opacity(current));
-        d->opacity->blockSignals(false);
-        d->opacitySlider->blockSignals(true);
-        d->opacitySlider->setValue((int) (d->view->opacity(current) * 100));
-        d->opacitySlider->blockSignals(false);
 
         QObject::connect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)), Qt::UniqueConnection);
         QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
@@ -180,61 +145,33 @@ medViewerToolBoxViewProperties::onDataAdded(int layer)
     if (!d->view)
         return;
 
-    //data->property("SeriesName");
-    //
-    //    qDebug() << "Data added";
-    //
-    //    dtkAbstractData * data = d->view->dataInList(layer);
-    //    const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
+//        dtkAbstractData * data = d->view->dataInList(layer);
+//        const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
     //    const QString seriesName = data->name();
 
-    //d->view->setVisibility(1, layer);
-    //d->view->setOpacity(1.0, layer); // why forcing visibility and opacity?
-    d->visible->setChecked(true);
+    if (d->view->layerCount() == 1)
+        return;
 
-    //    if (d->dataComboBox->findText(seriesName) == -1)
-    //        d->dataComboBox->insertItem(layer, seriesName);
-
-    if (d->dataComboBox->findText(QString::number(layer)) == -1)
-        d->dataComboBox->insertItem(layer, QString::number(layer));
-    d->dataComboBox->blockSignals(true); // if not blocked, combobox slot is called. Is it what is expected?
-    d->dataComboBox->setCurrentIndex(layer);
-    d->dataComboBox->blockSignals(false);
-    d->opacity->blockSignals(true);
-    d->opacity->setValue(d->view->opacity(layer));
-    d->opacity->blockSignals(false);
-    d->opacitySlider->blockSignals(true);
-    d->opacitySlider->setValue(d->view->opacity(layer) * 100);
-    d->opacitySlider->blockSignals(false);
-
-    d->view->setCurrentLayer(layer);
-    d->lutComboBox->blockSignals(true);
-    d->lutComboBox->setCurrentIndex(0);
-    d->lutComboBox->blockSignals(false);
-    d->view->setProperty("LookupTable", "Default");
-    d->view->update();
-
-    QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem());//(d->propertiesTree);
+    QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
     layerItem->setText(0, QString::number(layer));
+    layerItem->setIcon(0,QIcon(":icons/layer.png"));
 
-
-    QTreeWidgetItem * visibleItem = new QTreeWidgetItem(layerItem);
+    QTreeWidgetItem * visibleItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
     visibleItem->setText(1, "Visible");
     QCheckBox * visibleBox = new QCheckBox();
-    visibleBox->setChecked(d->visible->isChecked());
+    visibleBox->setChecked(true);
     d->propertiesTree->setItemWidget(visibleItem, 2, visibleBox);
     QObject::connect(visibleBox, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
 
-
-    QTreeWidgetItem * opacityItem = new QTreeWidgetItem(layerItem);
+    QTreeWidgetItem * opacityItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
     opacityItem->setText(1, "Opacity");
     QSlider * opacityBox = new QSlider(Qt::Horizontal);
     opacityBox->setRange(0,100);
-    opacityBox->setValue(d->opacitySlider->value());
+    opacityBox->setValue(d->view->opacity(layer) * 100);
     d->propertiesTree->setItemWidget(opacityItem, 2, opacityBox);
     QObject::connect(opacityBox, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
 
-    QTreeWidgetItem * lutItem = new QTreeWidgetItem(layerItem);
+    QTreeWidgetItem * lutItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
     lutItem->setText(1, "LUT");
     QComboBox * lutBox = new QComboBox();
     lutBox->setFocusPolicy(Qt::NoFocus);
@@ -263,102 +200,84 @@ medViewerToolBoxViewProperties::onDataAdded(int layer)
     lutBox->addItem("Black Body");
 
     d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
+    lutBox->setCurrentIndex(0);
+
+    d->view->setCurrentLayer(layer);
+    d->view->setProperty("LookupTable", "Default");
+    d->view->update();
 
     QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
 
-    this->show();
+    d->propertiesTree->collapseAll();
 }
 
 void
 medViewerToolBoxViewProperties::onViewClosed(void)
 {
-//    d->propertiesTree->clear();
-    d->dataComboBox->clear();
-    d->opacity->setValue(1.0);
-    d->opacitySlider->setValue(100);
-    d->visible->setChecked(true);
-    d->lutComboBox->setCurrentIndex(0);
-    d->propertiesToolBoxWidget->setEnabled(false);
-
+    d->propertiesTree->clear();
     d->view = 0;
-
-    //    this->hide();
-}
-
-void
-medViewerToolBoxViewProperties::onDataSelected(int index)
-{
-    if (!d->view || (index == -1))
-        return;
-
-    // this method should update toolbox's GUI w.r.t selected data settings
-    // to me, it should not set data settings (only current layer)
-    d->view->setCurrentLayer(index);
-
-    // d->view->setVisibility(d->view->visibility(index), index);
-
-    d->visible->blockSignals(true);
-    d->visible->setChecked((d->view->visibility(index) == 1));
-    d->visible->blockSignals(false);
-    // d->view->setOpacity(d->view->opacity(index), index);
-
-    d->opacity->blockSignals(true);
-    d->opacitySlider->blockSignals(true);
-    d->opacity->setValue(d->view->opacity(index));
-    d->opacitySlider->setValue((int) (d->opacity->value() * 100));
-    d->opacity->blockSignals(false);
-    d->opacitySlider->blockSignals(false);
 }
 
 void
 medViewerToolBoxViewProperties::onVisibilitySet(int state)
 {
-    if ((!d->view) || (d->dataComboBox->currentIndex() == -1))
+    if (!d->view)
         return;
 
     if (state == Qt::Checked)
-        d->view->setVisibility(1, d->dataComboBox->currentIndex());
+        d->view->setVisibility(1, d->currentLayer);
     else
-        d->view->setVisibility(0, d->dataComboBox->currentIndex());
+        d->view->setVisibility(0, d->currentLayer);
     d->view->update();
 }
 
 void
 medViewerToolBoxViewProperties::onOpacitySet(double opacity)
 {
-    if ((!d->view) || (d->dataComboBox->currentIndex() == -1))
+    if (!d->view)
         return;
 
-    d->opacitySlider->blockSignals(true);
-    d->opacitySlider->setValue((int) (d->opacity->value() * 100));
-    d->opacitySlider->blockSignals(false);
-
-    d->view->setOpacity(opacity, d->dataComboBox->currentIndex());
+    d->view->setOpacity(opacity, d->currentLayer);
     d->view->update();
 }
 
 void
 medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
 {
-    if ((!d->view) || (d->dataComboBox->currentIndex() == -1))
+    if (!d->view)
         return;
 
-    d->opacity->blockSignals(true);
     double d_opacity = static_cast<double> (opacity) / 100.0;
-    d->opacity->setValue(d_opacity);
-    d->opacity->blockSignals(false);
-
-    d->view->setOpacity(d_opacity, d->dataComboBox->currentIndex());
+    d->view->setOpacity(d_opacity, d->currentLayer);
     d->view->update();
 }
 
 void
 medViewerToolBoxViewProperties::onLUTChanged(int index)
 {
-    if ((!d->view) || (d->dataComboBox->currentIndex() == -1))
+    if (!d->view)
         return;
 
-    d->view->setProperty("LookupTable", d->lutComboBox->itemText(index));
+    d->view->setCurrentLayer(d->currentLayer);
+    d->view->setProperty("LookupTable", d->lutList.at(index));
     d->view->update();
+}
+
+void
+medViewerToolBoxViewProperties::onItemPressed(QTreeWidgetItem * item, int column)
+{
+    if (item->type() == QTreeWidgetItem::UserType + 1)
+    {
+        if (item->isExpanded())
+            d->propertiesTree->collapseItem(item);
+        else
+        {
+            d->propertiesTree->collapseAll();
+            d->propertiesTree->expandItem(item);
+            d->currentLayer = item->text(0).toInt();
+        }
+    }
+
+
 }
 
