@@ -425,6 +425,8 @@ QTreeWidget::branch:open:has-children:has-siblings  {
 } 
 
 
+
+
 /**
  * QPushButton
  *
@@ -1068,3 +1070,55 @@ dtkFinderTreeView::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
 }
+
+
+/**
+ * medViewerToolBoxViewProperties QTreeWidget
+ *
+ */
+
+medViewerToolBoxViewProperties QTreeWidget {
+    alternate-background-color: #505050;
+
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    
+    font-size: 10px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:has-children:!has-siblings:closed,
+medViewerToolBoxViewProperties QTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+} 
+
+
