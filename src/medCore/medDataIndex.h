@@ -50,7 +50,11 @@ public:
 
     friend MEDCORE_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
     friend MEDCORE_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
-
+	
+	/** The less than operator can be used with STL maps.
+     *  Ordering is by patientId, then studyId, then seriesId, then imageId.
+     */  
+    friend MEDCORE_EXPORT bool operator<(const medDataIndex& index1, const medDataIndex& index2);
     friend MEDCORE_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
     friend MEDCORE_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);
 
@@ -64,6 +68,7 @@ private:
 
 MEDCORE_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
 MEDCORE_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
+MEDCORE_EXPORT bool operator<(const medDataIndex& index1, const medDataIndex& index2);
 
 MEDCORE_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
 MEDCORE_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);

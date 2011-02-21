@@ -134,6 +134,28 @@ QDebug operator<<(QDebug debug, medDataIndex *index)
     return debug.space();
 }
 
+bool operator<(const medDataIndex& index1, const medDataIndex& index2)
+{
+    if (index1.patientId() < index2.patientId()) 
+        return true;
+    else if (index2.patientId() < index1.patientId()) 
+        return false;
+    else if (index1.studyId() < index2.studyId())
+        return true;
+    else if (index2.studyId() < index1.studyId())
+        return false;
+    else if (index1.seriesId() < index2.seriesId()) 
+        return true;
+    else if (index2.seriesId() < index1.seriesId()) 
+        return false;
+    else if (index1.imageId() < index2.imageId())
+        return true;
+    else if (index2.imageId() < index1.imageId())
+        return false;
+    // Equality if we get here.
+    return false;
+}
+
 // /////////////////////////////////////////////////////////////////
 // Hash functions
 // /////////////////////////////////////////////////////////////////
