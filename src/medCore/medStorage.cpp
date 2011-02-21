@@ -47,32 +47,31 @@ bool medStorage::rmpath(const QString& dirPath)
 
 QString medStorage::dataLocation(void)
 {
+    QString vDbLoc;
+    
     // first check if someone set the data location, then try to pull the actual database
-    if(m_dataLocation == NULL)
-    {
-        QVariant vDbLoc = medSettingsManager::instance()->value("medDatabaseSettingsWidget", "actual_database_location");
-        if (!vDbLoc.isNull()) 
-        {
-            setDataLocation(vDbLoc.toString());            
-        }
-
-    }
-
-    // if the datalocation is still not set we will return the default
     if (m_dataLocation != NULL)
     {
-    	return m_dataLocation;
+        return m_dataLocation;
     }
     else
     {
+        vDbLoc = medSettingsManager::instance()->value("medDatabaseSettingsWidget", "actual_database_location").toString();
+
+        // if the location is still not set we return the default paths
+        if ( vDbLoc.isEmpty() )
+        {
 #ifdef Q_WS_MAC
-    return QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation))
-        .remove(QCoreApplication::applicationName())
-        .append(QCoreApplication::applicationName());
+            vDbLoc = QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation))
+                .remove(QCoreApplication::applicationName())
+                .append(QCoreApplication::applicationName());
 #else
-    return QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-#endif
+            vDbLoc = QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
+#endif   
+        }
+        setDataLocation(vDbLoc);
     }
+    return vDbLoc;
 }
 
 QString medStorage::configLocation(void)
@@ -86,11 +85,16 @@ QString medStorage::configLocation(void)
 
 void medStorage::setDataLocation( QString newLocation)
 {
+    // return without writing if the location ist the same
+    if(m_dataLocation != NULL)
+        if(m_dataLocation.compare(newLocation) == 0)
+            return;
+
     m_dataLocation = newLocation;
 
     medSettingsManager::instance()->setValue("database", "actual_database_location", newLocation);
 }
 
-QString medStorage::m_dataLocation;
+QString medStorage::m_dataLocation = NULL;
 
 

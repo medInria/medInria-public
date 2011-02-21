@@ -20,10 +20,9 @@ bool medSettingsWidgetFactory::registerSettingsWidget(const QString& type, medSe
 {
     if(!d->settingsWidget_creators.contains(type)) {
         d->settingsWidget_creators.insert(type, func);
-        qDebug() << "registering" << type;
         return true;
     }
-    qDebug() << "failed" << type;
+    qWarning() << "failed registering" << type;
 
     return false;
 }
