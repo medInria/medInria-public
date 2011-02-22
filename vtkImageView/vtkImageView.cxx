@@ -38,6 +38,7 @@
 #include "vtkImageMapToColors.h"
 #include "vtkScalarBarActor.h"
 #include <vtkImageReslice.h>
+#include <vtkSmartPointer.h>
 
 #include "vtkCommand.h"
 #include "vtkImageView2DCommand.h"
@@ -50,7 +51,7 @@
 #endif
 
 vtkCxxRevisionMacro(vtkImageView, "$Revision: 1 $");
-//vtkStandardNewMacro(vtkImageView);
+//vtkStandardNewMacro(vtkImageView); // pure virtual class
 
 #ifdef vtkINRIA3D_USE_ITK
 
@@ -365,41 +366,43 @@ bool vtkImageView::Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2)
 //----------------------------------------------------------------------------
 vtkImageData *vtkImageView::ResliceImageToInput(vtkImageData *image, vtkMatrix4x4 *matrix)
 {
-    if (!image || !this->GetInput())
-        return NULL;
+  if (!image || !this->GetInput())
+    return NULL;
     
-    if ( this->Compare(image->GetOrigin(),  this->GetInput()->GetOrigin(), 3) &&
-         this->Compare(image->GetSpacing(), this->GetInput()->GetSpacing(), 3) &&
-         this->Compare(image->GetDimensions(), this->GetInput()->GetDimensions(), 3) &&
-         (matrix && this->Compare(matrix, this->OrientationMatrix)) )
-     {
-        return image;
-     }
+  if ( this->Compare(image->GetOrigin(),  this->GetInput()->GetOrigin(), 3) &&
+      this->Compare(image->GetSpacing(), this->GetInput()->GetSpacing(), 3) &&
+      this->Compare(image->GetDimensions(), this->GetInput()->GetDimensions(), 3) &&
+      (matrix && this->Compare(matrix, this->OrientationMatrix)) )
+  {
+    return image;
+  }
+  
+  vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
+  if (matrix)
+  {
+    auxMatrix->DeepCopy(matrix);
+    vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
+  }
+  else 
+  {
+    auxMatrix->Identity();
+  }
+  
+  vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
     
-    vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
-    if (matrix)
-     {
-        auxMatrix->DeepCopy(matrix);
-        vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
-     }
-    else 
-     {
-        auxMatrix->Identity();
-     }
-    
-    vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
-    
-    vtkImageReslice *reslicer = vtkImageReslice::New();
-    reslicer->SetInput         (image);
-    reslicer->SetResliceAxes   (auxMatrix);
-    reslicer->SetOutputOrigin  (this->GetInput()->GetOrigin());
-    reslicer->SetOutputSpacing (this->GetInput()->GetSpacing());
-    reslicer->SetOutputExtent  (this->GetInput()->GetWholeExtent());
-    reslicer->SetInterpolationModeToLinear();
-    
-    auxMatrix->Delete();
-    
-    return reslicer->GetOutput();
+  //vtkSmartPointer<vtkImageReslice> reslicer = vtkImageReslice::New();
+  vtkImageReslice* reslicer = vtkImageReslice::New();
+  reslicer->SetInput         (image);
+  reslicer->SetResliceAxes   (auxMatrix);
+  reslicer->SetOutputOrigin  (this->GetInput()->GetOrigin());
+  reslicer->SetOutputSpacing (this->GetInput()->GetSpacing());
+  reslicer->SetOutputExtent  (this->GetInput()->GetWholeExtent());
+  reslicer->SetInterpolationModeToLinear();
+  reslicer->Update();
+  
+  auxMatrix->Delete();
+  
+  return reslicer->GetOutput();
 }
 
 //----------------------------------------------------------------------------
@@ -414,7 +417,6 @@ void vtkImageView::SetInput(vtkImageData *arg, vtkMatrix4x4 *matrix, int layer)
 //----------------------------------------------------------------------------
 void vtkImageView::SetInputConnection(vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix, int layer) 
 {
-  //   vtkSetObjectBodyMacro (Input, vtkImageData, arg);
   if (layer==0)
     this->SetOrientationMatrix(matrix);
   this->WindowLevel->SetInputConnection(arg);
@@ -442,7 +444,6 @@ void vtkImageView::InstallPipeline()
   }
   
   this->InstallInteractor();
-  
 }
 
 //----------------------------------------------------------------------------
@@ -525,8 +526,8 @@ vtkPiecewiseFunction * vtkImageView::GetDefaultOpacityTransferFunction()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetTransferFunctions( vtkColorTransferFunction * color,
-                                        vtkPiecewiseFunction * opacity )
+void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
+                                         vtkPiecewiseFunction     *opacity)
 {
   if ( color   == NULL && this->ColorTransferFunction   == NULL &&
       opacity == NULL && this->OpacityTransferFunction == NULL &&
@@ -627,78 +628,78 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
                                                               vtkPiecewiseFunction *of,
                                                               double minRange, double maxRange)
 {
-    if (cf)
+  if (cf)
+  {
+    const double * currentRange = cf->GetRange();
+    if ( currentRange[0] != minRange ||
+        currentRange[1] != maxRange )
     {
-        const double * currentRange = cf->GetRange();
-        if ( currentRange[0] != minRange ||
-            currentRange[1] != maxRange )
-        {
-            double currentWidth = currentRange[1] - currentRange[0];
-            double targetWidth  = maxRange  - minRange;
-            
-            unsigned int n = cf->GetSize();
-            if ( n > 0 && currentWidth == 0.0 )
-                currentWidth = 1.0;
-            
-            for ( unsigned int i = 0; i < n; ++i )
-            {
-                double val[6];
-                cf->GetNodeValue( i, val );
-                // from current range to [0,1] interval
-                val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-                // from [0,1] interval to target range
-                val[0] = val[0] * targetWidth + minRange;
-                cf->SetNodeValue( i, val );
-            }
-            
-            // work around to update the range (which is not public in
-            // vtkColorTransferFunction)
-            if ( n > 0 )
-            {
-                double val[6];
-                cf->GetNodeValue( n - 1, val );
-                cf->AddRGBPoint( val[0], val[1], val[2],
-                                val[3], val[4], val[5] );
-            }
-            
-        }
+      double currentWidth = currentRange[1] - currentRange[0];
+      double targetWidth  = maxRange  - minRange;
+      
+      unsigned int n = cf->GetSize();
+      if ( n > 0 && currentWidth == 0.0 )
+        currentWidth = 1.0;
+      
+      for ( unsigned int i = 0; i < n; ++i )
+      {
+        double val[6];
+        cf->GetNodeValue( i, val );
+        // from current range to [0,1] interval
+        val[0] = ( val[0] - currentRange[0] ) / currentWidth;
+        // from [0,1] interval to target range
+        val[0] = val[0] * targetWidth + minRange;
+        cf->SetNodeValue( i, val );
+      }
+      
+      // work around to update the range (which is not public in
+      // vtkColorTransferFunction)
+      if ( n > 0 )
+      {
+        double val[6];
+        cf->GetNodeValue( n - 1, val );
+        cf->AddRGBPoint( val[0], val[1], val[2],
+                        val[3], val[4], val[5] );
+      }
+      
     }
-        
-    if (of)
-    {    
-        const double * currentRange = of->GetRange();
-        if ( currentRange[0] != minRange ||
-            currentRange[1] != maxRange )
-        {
-            double currentWidth = currentRange[1] - currentRange[0];
-            double targetWidth  = maxRange  - minRange;
+  }
+  
+  if (of)
+  {    
+    const double * currentRange = of->GetRange();
+    if ( currentRange[0] != minRange ||
+        currentRange[1] != maxRange )
+    {
+      double currentWidth = currentRange[1] - currentRange[0];
+      double targetWidth  = maxRange  - minRange;
             
-            if ( currentWidth == 0.0 )
-                currentWidth = 1.0;
-            
-            unsigned int n = of->GetSize();
-            for ( unsigned int i = 0; i < n; ++i )
-            {
-                double val[4];
-                of->GetNodeValue( i, val );
-                // from current range to [0,1] interval
-                val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-                // from [0,1] interval to target range
-                val[0] = val[0] * targetWidth + minRange;
-                of->SetNodeValue( i, val );
-            }
-            
-            // work around to update the range (which is not public in
-            // vtkPiecewiseFunction)
-            if ( n > 0 )
-            {
-                double val[4];
-                of->GetNodeValue( n - 1, val );
-                of->AddPoint( val[0], val[1],
-                              val[2], val[3] );
-            }
-        }
+      if ( currentWidth == 0.0 )
+        currentWidth = 1.0;
+      
+      unsigned int n = of->GetSize();
+      for ( unsigned int i = 0; i < n; ++i )
+      {
+        double val[4];
+        of->GetNodeValue( i, val );
+        // from current range to [0,1] interval
+        val[0] = ( val[0] - currentRange[0] ) / currentWidth;
+        // from [0,1] interval to target range
+        val[0] = val[0] * targetWidth + minRange;
+        of->SetNodeValue( i, val );
+      }
+      
+      // work around to update the range (which is not public in
+      // vtkPiecewiseFunction)
+      if ( n > 0 )
+      {
+        double val[4];
+        of->GetNodeValue( n - 1, val );
+        of->AddPoint( val[0], val[1],
+                     val[2], val[3] );
+      }
     }
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -1113,7 +1114,6 @@ void vtkImageView::ResetCamera (void)
           this->Renderer->ResetCamera (bounds);
           this->InvokeEvent (vtkImageView::CameraChangedEvent);
       } else {
-
           // No op.
       }
   }
@@ -1129,9 +1129,9 @@ void vtkImageView::SetCameraPosition (double* arg)
   cam->SetPosition (arg);
   this->InvokeEvent (vtkImageView::CameraChangedEvent);
   this->Modified();
-  
 }
 
+//----------------------------------------------------------------------------
 double* vtkImageView::GetCameraPosition (void) const
 {
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
@@ -1149,7 +1149,6 @@ void vtkImageView::SetCameraFocalPoint (double* arg)
   cam->SetFocalPoint (arg);
   this->InvokeEvent (vtkImageView::CameraChangedEvent);
   this->Modified();
-  
 }
 
 //----------------------------------------------------------------------------
@@ -1170,7 +1169,6 @@ void vtkImageView::SetCameraViewUp (double* arg)
   cam->SetViewUp (arg);
   this->InvokeEvent (vtkImageView::CameraChangedEvent);
   this->Modified();
-  
 }
 
 //----------------------------------------------------------------------------
@@ -1192,7 +1190,6 @@ void vtkImageView::SetCameraParallelScale (double arg)
   cam->SetParallelScale (arg);
   this->InvokeEvent (vtkImageView::CameraChangedEvent);
   this->Modified();
-  
 }
 
 //----------------------------------------------------------------------------
@@ -1219,6 +1216,7 @@ void vtkImageView::SetShowAnnotations (int val)
   this->ShowAnnotations = val;
   this->CornerAnnotation->SetVisibility (val);
 }
+
 //----------------------------------------------------------------------------
 void vtkImageView::SetShowScalarBar (int val)
 {
@@ -1294,11 +1292,26 @@ const char *vtkImageView::GetSeriesName() const
 }
 
 //----------------------------------------------------------------------------
-vtkIdType vtkImageView::GetTimeIndex ()
+void vtkImageView::AddLayer(int layer)
 {
-  return TimeIndex;
 }
 
+//----------------------------------------------------------------------------
+void vtkImageView::RemoveLayer(int layer)
+{
+}
+
+//----------------------------------------------------------------------------
+bool vtkImageView::HasLayer(int layer) const
+{
+  return false;
+}
+
+//----------------------------------------------------------------------------
+int vtkImageView::GetNumberOfLayers(void) const
+{
+  return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////// NOTE ON TIME HANDLING AND ITK-BRIDGE ////////////////////

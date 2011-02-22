@@ -38,11 +38,7 @@ class vtkPlane;
 class vtkImageView2DCommand;
 class vtkTransform;
 class vtkPolyData;
-
-
 class vtkImage2DDisplay;
-
-
 
 /**
  
@@ -91,11 +87,6 @@ class vtkImage2DDisplay;
  up to date.
  
  J) still some work to do on the annotations
- 
- 
- 
- 
- 
  */
 
 class VTK_IMAGEVIEW_EXPORT vtkImageView2D : public vtkImageView
@@ -117,17 +108,19 @@ public:
   //ETX
   
   virtual void SetVisibility(int visible, int layer);
-  virtual int GetVisibility(int layer);
+  virtual int  GetVisibility(int layer);
 
-  virtual void SetOpacity(double opacity, int layer);
+  virtual void   SetOpacity(double opacity, int layer);
   virtual double GetOpacity(int layer);
-    
-  virtual int GetNumberOfLayers(void);
 
   // Description:
   // Set/Get the input image to the viewer.
-  virtual void SetInput (vtkImageData *image, vtkMatrix4x4 *matrix = 0, int layer=0);
-  virtual void SetInputConnection(vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix = 0, int layer=0);
+  virtual void SetInput (vtkImageData *image, 
+                         vtkMatrix4x4 *matrix = 0, 
+                         int layer=0);
+  virtual void SetInputConnection (vtkAlgorithmOutput* arg, 
+                                   vtkMatrix4x4 *matrix = 0, 
+                                   int layer=0);
   vtkImageData *GetImageInput(int layer) const;
   
   // Description:
@@ -137,7 +130,9 @@ public:
   virtual void UnInstallInteractor(void);
   
   
-  virtual void SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity, int layer);
+  virtual void SetTransferFunctions (vtkColorTransferFunction* color, 
+                                     vtkPiecewiseFunction *opacity, 
+                                     int layer);
   virtual void SetLookupTable (vtkLookupTable* lookuptable, int layer);
   
   /**
@@ -507,6 +502,11 @@ public:
   
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
   
+  virtual void AddLayer(int);
+  virtual void RemoveLayer(int layer);
+  virtual bool HasLayer(int layer) const;
+  virtual int GetNumberOfLayers(void) const;
+  
 protected:
   vtkImageView2D();
   ~vtkImageView2D();
@@ -641,6 +641,7 @@ protected:
   std::vector<vtkDataSet2DWidget*> DataSetWidgets;
   
   std::map<int, vtkImage2DDisplay *> ImageDisplayMap;
+  std::map<int, vtkRenderer *>       RendererMap;
   
 private:
   vtkImageView2D(const vtkImageView2D&);  // Not implemented.

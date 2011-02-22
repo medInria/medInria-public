@@ -129,6 +129,8 @@ vtkImageView3D::vtkImageView3D()
   this->ActorY = vtkImageActor::New();
   this->ActorZ = vtkImageActor::New();
   
+  this->Appender = vtkImageAppendComponents::New();
+    
   this->SetupVolumeRendering();
   this->SetupWidgets();  
   
@@ -168,6 +170,7 @@ vtkImageView3D::~vtkImageView3D()
   this->ActorX->Delete();
   this->ActorY->Delete();
   this->ActorZ->Delete();
+  this->Appender->Delete();
 }
 
 //----------------------------------------------------------------------------
@@ -187,7 +190,8 @@ unsigned long vtkImageView3D::GetMTime()
         this->PlaneWidget,
         this->ActorX,
         this->ActorY,
-        this->ActorZ};
+        this->ActorZ,
+        this->Appender};
 
         const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
 
@@ -430,10 +434,11 @@ void vtkImageView3D::UnInstallInteractor()
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int layer)
 {
-    if(layer==0)
-     {
-  this->Superclass::SetInput (image, matrix, layer);
-     }
+  if(layer==0)
+  {
+    this->Superclass::SetInput (image, matrix, layer);
+    this->Appender->SetInput (0, this->GetInput());
+  }
   
   if( !image )
   {
@@ -441,9 +446,6 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
   }
   
   image->UpdateInformation ();
-    
-    if(layer==0)
-     {
   
   // Get whole extent : More reliable than dimensions if not up-to-date.
   int * w_extent = image->GetWholeExtent ();
@@ -451,10 +453,9 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
   int size [3] = { w_extent [1] - w_extent[0], w_extent [3] - w_extent[2], w_extent [5] - w_extent[4] };
   
   //  int* size = image->GetDimensions();
-  
   if ( (size[0] < 2) ||
-       (size[1] < 2) ||
-       (size[2] < 2) )
+      (size[1] < 2) ||
+      (size[2] < 2) )
   {
     vtkWarningMacro ( <<"Cannot do volume rendering for a single slice, skipping"<<endl);
     this->ActorX->SetInput ( (vtkImageData*)0 );
@@ -468,19 +469,80 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
     return;
   }
   
-  this->VolumeMapper->SetInput ( this->GetInput() );
+  vtkImageData *input = 0;
+  
+  if(layer==0)
+  {
+    input = this->GetInput();
+  }
+  else if (layer<4) // layer>0
+  {
+    if (!this->GetInput())
+    {
+      vtkErrorMacro (<< "Set input prior to adding layers");
+      return;
+    }
+    
+    this->ImageDisplayMap.insert( std::pair<int, vtkImage3DDisplay*>(layer, vtkImage3DDisplay::New()));
+    
+    vtkImageData *reslicedImage = this->ResliceImageToInput(image, matrix); //vtkImageData::New();
+    //reslicedImage->ShallowCopy (this->ResliceImageToInput(image, matrix));
+    //reslicedImage->UpdateInformation();
+    
+    this->ImageDisplayMap.at(layer)->SetInput( reslicedImage );
+    
+    if (image->GetScalarType()!=this->GetInput()->GetScalarType())
+    {
+      vtkImageCast *cast = vtkImageCast::New();
+      cast->SetInput  (reslicedImage);
+      cast->SetOutputScalarType ( this->GetInput()->GetScalarType() );
+      cast->Update();
+      
+      //vtkImageData *castData = vtkImageData::New();
+      //castData->ShallowCopy( cast->GetOutput() );
+      //castData->UpdateInformation();
+      
+      this->Appender->AddInputConnection(0, cast->GetOutputPort());
+      
+      //cast->Delete();
+      //castData->Delete();
+    }
+    else 
+    {
+      this->Appender->AddInput(reslicedImage);
+    }
+    
+    this->Appender->Update();
+    
+    this->VolumeProperty->SetShade(layer, 1);
+    this->VolumeProperty->SetComponentWeight(layer, 0.5);
+    
+    input = this->Appender->GetOutput();
+    
+    reslicedImage->Delete();
+  }
+  else // layer >=4
+  {
+    vtkErrorMacro( <<"Only 4 layers are supported in 3D fusion" );
+    return;
+  }
+  
+  if (!input)
+    return;
+  
+  this->VolumeMapper->SetInput ( input );
   
   // If an image is already of type unsigned char, there is no need to
   // map it through a lookup table
-  if ( this->GetInput()->GetScalarType() == VTK_UNSIGNED_CHAR &&
-      ( this->GetInput()->GetNumberOfScalarComponents() == 3 ||
-       this->GetInput()->GetNumberOfScalarComponents() == 4 ) )
+  if ( input->GetScalarType() == VTK_UNSIGNED_CHAR &&
+      ( input->GetNumberOfScalarComponents() == 3 ||
+       input->GetNumberOfScalarComponents() == 4 ) )
   {
     this->VolumeProperty->IndependentComponentsOff();
     
-    this->ActorX->SetInput ( this->GetInput() );
-    this->ActorY->SetInput ( this->GetInput() );
-    this->ActorZ->SetInput ( this->GetInput() );
+    this->ActorX->SetInput ( input );
+    this->ActorY->SetInput ( input );
+    this->ActorZ->SetInput ( input );
   }
   else
   {
@@ -489,58 +551,20 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
     this->ActorX->SetInput ( this->WindowLevel->GetOutput() );
     this->ActorY->SetInput ( this->WindowLevel->GetOutput() );
     this->ActorZ->SetInput ( this->WindowLevel->GetOutput() );
-    
   }
   
   // Read bounds and use these to place widget, rather than force whole dataset to be read.
   double bounds [6];
   this->GetInputBounds ( bounds );
   
-  this->BoxWidget->SetInput (this->GetInput());
+  this->BoxWidget->SetInput (input);
   this->BoxWidget->PlaceWidget(bounds);
   this->Callback->Execute (this->BoxWidget, 0, bounds);
   
-  this->PlaneWidget->SetInput (this->GetInput());
+  this->PlaneWidget->SetInput (input);
   this->PlaneWidget->PlaceWidget(bounds);
   
   this->UpdateDisplayExtent();
-     }
-    else // layer>0
-     {
-        this->ImageDisplayMap.insert( std::pair<int, vtkImage3DDisplay*>(layer, vtkImage3DDisplay::New()));
-        
-        vtkImageData *resliceImage = this->ResliceImageToInput(image, matrix);
-        resliceImage->UpdateInformation();
-        
-        this->ImageDisplayMap.at(layer)->SetInput( resliceImage );
-
-        vtkImageAppendComponents *appender = vtkImageAppendComponents::New();
-        appender->SetInput(0, this->GetInput());
-
-        if (image->GetScalarType()!=this->GetInput()->GetScalarType())
-         {
-            vtkImageCast *cast = vtkImageCast::New();
-            cast->SetInput  ( resliceImage );
-            cast->SetOutputScalarType ( this->GetInput()->GetScalarType() );
-            //cast->Update();
-            
-            appender->SetInput(1, cast->GetOutput());
-            //cast->Delete();
-         }
-        else {
-            appender->SetInput(1, resliceImage);
-        }
-        
-        appender->UpdateWholeExtent();
-        
-        this->VolumeProperty->SetShade(layer, 1);
-        this->VolumeProperty->SetComponentWeight(layer, 0.5);
-        
-        this->SetInput( appender->GetOutput(), matrix, 0);
-        
-        //appender->Delete();
-    }
-
 }
 
 //----------------------------------------------------------------------------
@@ -565,89 +589,89 @@ void vtkImageView3D::SetLookupTable (vtkLookupTable* lookuptable)
 void vtkImageView3D::SetTransferFunctions( vtkColorTransferFunction * color,
                                           vtkPiecewiseFunction * opacity, int layer)
 {
-    if(layer==0)
-     {
-  this->Superclass::SetTransferFunctions( color, opacity );
-  // superclass generates a default function if one of the arguments is NULL
-  this->VolumeProperty->SetColor(0, this->ColorTransferFunction );
-  this->VolumeProperty->SetScalarOpacity(0, this->OpacityTransferFunction );
-     }
-    else if (layer <= (int)this->ImageDisplayMap.size())
-     {
-      //double *range = this->GetInput()->GetScalarRange();
-      double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
-      this->SetTransferFunctionRangeFromWindowSettings(color, opacity, range[0], range[1]);
-      this->VolumeProperty->SetColor(layer, color );
-      this->VolumeProperty->SetScalarOpacity(layer, opacity );
-     }
+  if(layer==0)
+  {
+    this->Superclass::SetTransferFunctions( color, opacity );
+    // superclass generates a default function if one of the arguments is NULL
+    this->VolumeProperty->SetColor(0, this->ColorTransferFunction );
+    this->VolumeProperty->SetScalarOpacity(0, this->OpacityTransferFunction );
+  }
+  else if (layer <= (int)this->ImageDisplayMap.size())
+  {
+    //double *range = this->GetInput()->GetScalarRange();
+    double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
+    this->SetTransferFunctionRangeFromWindowSettings(color, opacity, range[0], range[1]);
+    this->VolumeProperty->SetColor(layer, color );
+    this->VolumeProperty->SetScalarOpacity(layer, opacity );
+  }
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetOpacity (double opacity, int layer)
 {
-    if (layer==0) 
-     {
-        this->Opacity = opacity;
-        this->VolumeProperty->SetComponentWeight(0, opacity);
-    }
-    else if (layer <= (int)this->ImageDisplayMap.size()) 
-     {
-        this->VolumeProperty->SetComponentWeight(layer, opacity);
-        this->ImageDisplayMap[layer]->SetOpacity(opacity);
-     }
+  if (layer==0) 
+  {
+    this->Opacity = opacity;
+    this->VolumeProperty->SetComponentWeight(0, opacity);
+  }
+  else if (layer <= (int)this->ImageDisplayMap.size()) 
+  {
+    this->VolumeProperty->SetComponentWeight(layer, opacity);
+    this->ImageDisplayMap[layer]->SetOpacity(opacity);
+  }
 }
 
 //----------------------------------------------------------------------------
 double vtkImageView3D::GetOpacity(int layer) const
 {
-    if (layer==0)
-        return this->Opacity;
-    else if (layer <= (int)this->ImageDisplayMap.size())
-        return this->ImageDisplayMap.at(layer)->GetOpacity();
-    
-    return 0.0;
+  if (layer==0)
+    return this->Opacity;
+  else if (layer <= (int)this->ImageDisplayMap.size())
+    return this->ImageDisplayMap.at(layer)->GetOpacity();
+  
+  return 0.0;
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVisibility (int visibility, int layer)
 {
-    if (layer==0) 
-     {
-        if (visibility)
-         {
-            this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
-         }
-        else 
-         {
-            this->VolumeProperty->SetComponentWeight(layer, 0);
-         }
-        this->Visibility = visibility;
-        
-     }
-    else if (layer <= (int)this->ImageDisplayMap.size()) 
-     {
-        if (visibility)
-         {
-            this->VolumeProperty->SetComponentWeight(layer, this->GetOpacity(layer));
-         }
-        else 
-         {
-            this->VolumeProperty->SetComponentWeight(layer, 0);
-         }
-        this->ImageDisplayMap[layer]->SetVisibility(visibility);
-     }
+  if (layer==0) 
+  {
+    if (visibility)
+    {
+      this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
+    }
+    else 
+    {
+      this->VolumeProperty->SetComponentWeight(layer, 0);
+    }
+    this->Visibility = visibility;
+    
+  }
+  else if (layer <= (int)this->ImageDisplayMap.size()) 
+  {
+    if (visibility)
+    {
+      this->VolumeProperty->SetComponentWeight(layer, this->GetOpacity(layer));
+    }
+    else 
+    {
+      this->VolumeProperty->SetComponentWeight(layer, 0);
+    }
+    this->ImageDisplayMap[layer]->SetVisibility(visibility);
+  }
 }
 
 //----------------------------------------------------------------------------
 int vtkImageView3D::GetVisibility (int layer) const
 {
-    if (layer==0)
-        return this->Visibility;
-        
-    else if (layer <= (int)this->ImageDisplayMap.size())
-        return this->ImageDisplayMap.at(layer)->GetVisibility();
-        
-    return 0;
+  if (layer==0)
+    return this->Visibility;
+  
+  else if (layer <= (int)this->ImageDisplayMap.size())
+    return this->ImageDisplayMap.at(layer)->GetVisibility();
+  
+  return 0;
 }
 
 //----------------------------------------------------------------------------

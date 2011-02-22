@@ -45,6 +45,7 @@ class vtkScalarsToColors;
 class vtkColorTransferFunction;
 class vtkSmartVolumeMapper;
 class vtkImage3DDisplay;
+class vtkImageAppendComponents;
 
 /**
    \class vtkImageView3D vtkImageView3D.h "vtkImageView3D.h"
@@ -57,11 +58,8 @@ class vtkImage3DDisplay;
    remote plan can also be used, so can be an orientation cube, ...
 */
 
-
-
 class VTK_IMAGEVIEW_EXPORT vtkImageView3D : public vtkImageView
-{
-  
+{  
 public:
 
   static vtkImageView3D* New();
@@ -301,15 +299,17 @@ protected:
 
   int          CroppingMode;
     
-    double Opacity;
-    int Visibility;
+  double Opacity;
+  int Visibility;
+    
+  vtkImageAppendComponents *Appender;
     
   std::map<int, vtkImage3DDisplay*> ImageDisplayMap;
-
- private:
+  
+private:
   vtkImageView3D(const vtkImageView3D&);  // Not implemented.
   void operator=(const vtkImageView3D&);    // Not implemented.
-
+  
 };
   
 
