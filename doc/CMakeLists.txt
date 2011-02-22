@@ -41,7 +41,7 @@ IF( DOXYGEN_FOUND )
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/img      ${CMAKE_CURRENT_BINARY_DIR}/html/img
 
       COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake"
-      COMMAND qhelpgenerator html/index.qhp -o medinria.qch
+      COMMAND ${QT_BINARY_DIR}/qhelpgenerator html/index.qhp -o medinria.qch
       COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} medinria.qhcp -o medinria.qhc
 
       DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake"
