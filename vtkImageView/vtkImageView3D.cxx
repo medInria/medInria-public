@@ -547,7 +547,7 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
 
     // set default display properties
     this->VolumeProperty->SetShade(layer, 1);
-    this->VolumeProperty->SetComponentWeight(layer, 0.5);
+    this->VolumeProperty->SetComponentWeight(layer, 1.0);
 
     vtkColorTransferFunction *rgb   = this->GetDefaultColorTransferFunction();
     vtkPiecewiseFunction     *alpha = this->GetDefaultOpacityTransferFunction();

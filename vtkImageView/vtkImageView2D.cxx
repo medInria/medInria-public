@@ -250,12 +250,14 @@ vtkImageView2D::~vtkImageView2D()
   }
 }
 
+//----------------------------------------------------------------------------
 void vtkImageView2D::SetVisibility(int visible, int layer)
 {
   if (this->HasLayer(layer))
     this->ImageDisplayMap.at(layer)->GetImageActor()->SetVisibility(visible);
 }
 
+//----------------------------------------------------------------------------
 int vtkImageView2D::GetVisibility(int layer)
 {
   if (this->HasLayer(layer))
@@ -264,12 +266,14 @@ int vtkImageView2D::GetVisibility(int layer)
   return 0;
 }
 
+//----------------------------------------------------------------------------
 void vtkImageView2D::SetOpacity(double opacity, int layer)
 {
   if (this->HasLayer(layer))
     this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(opacity);
 }
 
+//----------------------------------------------------------------------------
 double vtkImageView2D::GetOpacity(int layer)
 {
   if (this->HasLayer(layer))
@@ -466,17 +470,6 @@ void vtkImageView2D::UpdateOrientation()
 }
 
 //----------------------------------------------------------------------------
-bool CompareExtents ( const int * extentA, const int *extentB )
-{
-  return ( extentA [0] == extentB [0] ) &&
-  ( extentA [1] == extentB [1] ) &&
-  ( extentA [2] == extentB [2] ) &&
-  ( extentA [3] == extentB [3] ) &&
-  ( extentA [4] == extentB [4] ) &&
-  ( extentA [5] == extentB [5] ) ;
-}
-
-//----------------------------------------------------------------------------
 void vtkImageView2D::UpdateDisplayExtent()
 {
   if (this->ImageDisplayMap.size()==0)
@@ -523,7 +516,7 @@ void vtkImageView2D::UpdateDisplayExtent()
         break;
     }
     
-    if ( ! CompareExtents ( imageInput->GetUpdateExtent (), (*it).second->GetImageActor()->GetDisplayExtent () ) ) {
+    if ( ! this->Compare ( imageInput->GetUpdateExtent (), (*it).second->GetImageActor()->GetDisplayExtent (), 6 ) ) {
       
       imageInput->SetUpdateExtent((*it).second->GetImageActor()->GetDisplayExtent ());
       
@@ -1425,10 +1418,11 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
 
     vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable("Default");
     lut->SetTableRange (range[0], range[1]);
+    // lut->SetAlphaRange (1.0, 1.0);
     
     this->ImageDisplayMap.at(layer)->SetInput (reslicedImage);
     this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable (lut);
-    this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(0.5);
+    this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(1.0);
     this->ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
     // this->ImageDisplayMap.at(layer)->GetInput()->UpdateInformation();
     
@@ -1465,6 +1459,7 @@ void vtkImageView2D::SetInputConnection (vtkAlgorithmOutput *input, vtkMatrix4x4
   }
 }
 
+//----------------------------------------------------------------------------
 vtkImageActor *vtkImageView2D::GetImageActor(int layer) const
 {
   if (!this->HasLayer(layer))
@@ -1473,6 +1468,7 @@ vtkImageActor *vtkImageView2D::GetImageActor(int layer) const
   return this->ImageDisplayMap.at(layer)->GetImageActor();
 }
 
+//----------------------------------------------------------------------------
 vtkImageData *vtkImageView2D::GetImageInput(int layer) const
 {
   if (!this->HasLayer(layer))
