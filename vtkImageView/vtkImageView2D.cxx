@@ -156,7 +156,7 @@ vtkImageView2D::vtkImageView2D()
   this->OrientationAnnotation = vtkOrientationAnnotation::New();
   
   this->ImageDisplayMap.insert (std::pair<int, vtkImage2DDisplay *> (0, vtkImage2DDisplay::New()));
-  this->RendererMap.insert     (std::pair<int, vtkRenderer*>        (0, NULL));
+  this->RendererMap.insert     (std::pair<int, vtkRenderer*>        (0, (vtkRenderer*)NULL));
   
   this->SliceOrientation = vtkImageView2D::SLICE_ORIENTATION_XY;
   
