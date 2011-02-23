@@ -65,6 +65,9 @@ option(MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN            "Build vtkDataMeshWrit
 option(MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN "Build itkDataDiffusionGradientList plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN           "Build itkDataTensorImage plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN     "Build itkDataTensorImageReader plugin" "ON")
+option(BUILD_DOCUMENTATION "Build documentation"    true)
+
+
 
 if (MEDINRIA_BUILD_V3DDATA_PLUGIN)
   subdirs(v3dData)
@@ -136,6 +139,10 @@ endif()
 if ( ${MEDINRIA_REQUIRES_VTK} )
     subdirs(dtkVtkLogForwarder)
 endif()
+
+if(BUILD_DOCUMENTATION)
+  add_subdirectory(doc)
+endif(BUILD_DOCUMENTATION)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(pack)
