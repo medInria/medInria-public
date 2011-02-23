@@ -1,7 +1,7 @@
 #ifndef MEDSETTINGSEDITOR_H
 #define MEDSETTINGSEDITOR_H
 
-#include <medGui/medGuiExport.h>
+#include "medGuiExport.h"
 #include <QWidget>
 
 class medSettingsEditorPrivate;

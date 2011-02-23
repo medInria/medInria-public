@@ -4,14 +4,12 @@
 
 #include <QtCore>
 
-#include "medViewerConfiguration.h"
-
-#include "medGuiExport.h"
+#include <medGui/medViewerConfiguration.h>
 
 class medViewContainerStack;
 class medViewerConfigurationDiffusionPrivate;
 
-class MEDGUI_EXPORT medViewerConfigurationDiffusion : public medViewerConfiguration
+class medViewerConfigurationDiffusion : public medViewerConfiguration
 {
     Q_OBJECT
 
@@ -42,7 +40,7 @@ private:
     medViewerConfigurationDiffusionPrivate *d;
 };
 
-MEDGUI_EXPORT medViewerConfiguration *createMedViewerConfigurationDiffusion(void);
+medViewerConfiguration *createMedViewerConfigurationDiffusion(void);
 
 
 #endif // MEDVIEWERCONFIGURATIONDIFFUSION_H

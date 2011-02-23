@@ -19,12 +19,11 @@
 
 #include "medViewerArea.h"
 #include "medViewerArea_p.h"
-#include "medViewerToolBoxConfiguration.h"
+//#include "medViewerToolBoxConfiguration.h"
 
 #include "medGui/medViewContainerStack.h"
 #include "medGui/medViewerToolBoxLayout.h"
 #include "medViewerToolBoxPatient.h"
-#include "medGui/medViewerToolBoxView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -50,14 +49,15 @@
 #include <medGui/medClutEditor.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
-#include <medGui/medToolBoxRegistration.h>
-#include <medGui/medToolBoxDiffusion.h>
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerCustom.h>
 #include <medGui/medViewContainerMulti.h>
 #include <medGui/medViewContainerSingle.h>
 #include <medGui/medViewPool.h>
 #include <medGui/medViewerConfigurationFactory.h>
+
+#include "medToolBoxDiffusion.h"
+#include "medToolBoxRegistration.h"
 
 #include <QtGui>
 #include <QtSql>

@@ -22,13 +22,12 @@
 
 #include <QtCore>
 
-#include "medViewerConfiguration.h"
+#include <medGui/medViewerConfiguration.h>
 
-#include "medGuiExport.h"
 
 class medViewerConfigurationVisualizationPrivate;
 
-class MEDGUI_EXPORT medViewerConfigurationVisualization : public medViewerConfiguration
+class medViewerConfigurationVisualization : public medViewerConfiguration
 {
     Q_OBJECT
 
@@ -42,6 +41,6 @@ private:
     medViewerConfigurationVisualizationPrivate *d;
 };
 
-MEDGUI_EXPORT medViewerConfiguration *createMedViewerConfigurationVisualization(void);
+medViewerConfiguration *createMedViewerConfigurationVisualization(void);
 
 #endif

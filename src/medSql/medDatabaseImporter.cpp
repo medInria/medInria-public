@@ -39,7 +39,7 @@ public:
 
 QMutex medDatabaseImporterPrivate::mutex;
 
-medDatabaseImporter::medDatabaseImporter(const QString& file) : QRunnable(), d(new medDatabaseImporterPrivate)
+medDatabaseImporter::medDatabaseImporter(const QString& file) :medJobItem(), d(new medDatabaseImporterPrivate)
 {
     d->file = file;
 }
@@ -86,7 +86,7 @@ void medDatabaseImporter::run(void)
 
     foreach (QString file, fileList) {
 
-        emit progressed(((qreal)fileIndex/(qreal)fileCount)*50.0);
+        emit progressed(this,((qreal)fileIndex/(qreal)fileCount)*50.0);
 
         fileIndex++;
 
@@ -302,7 +302,7 @@ void medDatabaseImporter::run(void)
     if (imagesToWriteMap.count()==0)
     {
       emit showError(this, tr("No compatible or new image was found"),5000);
-      emit failure();
+      emit failure(this);
       return;
     }
 
@@ -321,7 +321,7 @@ void medDatabaseImporter::run(void)
 
     for (it; it!=imagesToWriteMap.end(); it++) {
 
-        emit progressed(((qreal)imageIndex/(qreal)imagesCount)*50.0 + 50.0);
+        emit progressed(this,((qreal)imageIndex/(qreal)imagesCount)*50.0 + 50.0);
 
         imageIndex++;
 
@@ -753,7 +753,7 @@ void medDatabaseImporter::run(void)
     }
     
     
-    emit progressed(100);
-    emit success();
+    emit progressed(this,100);
+    emit success(this);
 
 }

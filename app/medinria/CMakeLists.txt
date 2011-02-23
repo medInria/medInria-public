@@ -36,10 +36,22 @@ set(${PROJECT_NAME}_HEADERS
   medViewerArea_p.h
   medViewerConfiguration.h
   medViewerToolBoxConfiguration.h
-  medViewerToolBoxLayout.h
+  
   medViewerToolBoxPatient.h
   medViewerToolBoxView.h
   medViewerToolBoxSettings.h
+  medToolBoxFiberBundling.h
+  medToolBoxDiffusion.h
+  medToolBoxDiffusionCustom.h
+  medViewerConfigurationDiffusion.h
+  medToolBoxRegistration.h
+  medToolBoxRegistrationCustom.h
+  medViewerConfigurationVisualization.h
+  medViewerConfigurationVisualization2.h
+  medViewerConfigurationRegistration.h 
+  medToolBoxFiberView.h   
+  medViewerToolBoxLayout.h
+  medViewerToolBoxView.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -53,7 +65,19 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerArea.h
   medViewerToolBoxConfiguration.h
   medViewerToolBoxPatient.h
-  medBrowserToolBoxSettings.h)
+  medBrowserToolBoxSettings.h
+  medToolBoxFiberBundling.h
+  medToolBoxDiffusion.h
+  medToolBoxDiffusionCustom.h
+  medViewerConfigurationDiffusion.h
+  medToolBoxRegistration.h
+  medToolBoxRegistrationCustom.h
+  medViewerConfigurationVisualization.h
+  medViewerConfigurationVisualization2.h
+  medViewerConfigurationRegistration.h
+  medToolBoxFiberView.h     
+  medViewerToolBoxView.h
+  )
 
 set(${PROJECT_NAME}_SOURCES
   medBrowserArea.cpp
@@ -67,7 +91,19 @@ set(${PROJECT_NAME}_SOURCES
   medViewerToolBoxConfiguration.cpp
   medViewerToolBoxPatient.cpp
   main.cpp
-  medBrowserToolBoxSettings.cpp)
+  medBrowserToolBoxSettings.cpp
+  medToolBoxFiberBundling.cpp
+  medToolBoxDiffusion.cpp
+  medToolBoxDiffusionCustom.cpp
+  medViewerConfigurationDiffusion.cpp
+  medToolBoxRegistration.cpp
+  medToolBoxRegistrationCustom.cpp
+  medViewerConfigurationVisualization.cpp
+  medViewerConfigurationVisualization2.cpp
+  medViewerConfigurationRegistration.cpp
+  medToolBoxFiberView.cpp  
+  medViewerToolBoxView.cpp
+  )
 
 set(${PROJECT_NAME}_RESOURCES medinria.qrc)
 

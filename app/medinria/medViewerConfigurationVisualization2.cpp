@@ -18,7 +18,6 @@
  */
 
 #include "medViewerConfigurationVisualization2.h"
-
 #include "medViewerToolBoxView.h"
 
 class medViewerConfigurationVisualization2Private

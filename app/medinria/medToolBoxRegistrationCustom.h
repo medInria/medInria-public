@@ -20,13 +20,12 @@
 #ifndef MEDTOOLBOXREGISTRATIONCUSTOM_H
 #define MEDTOOLBOXREGISTRATIONCUSTOM_H
 
-#include "medGuiExport.h"
-#include "medToolBox.h"
+#include <medGui/medToolBox.h>
 
 class medToolBoxRegistration;
 class medToolBoxRegistrationCustomPrivate;
 
-class MEDGUI_EXPORT medToolBoxRegistrationCustom : public medToolBox
+class medToolBoxRegistrationCustom : public medToolBox
 {
     Q_OBJECT
 

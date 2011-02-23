@@ -1,14 +1,13 @@
 #ifndef MEDTOOLBOXFIBERBUNDLING_H
 #define MEDTOOLBOXFIBERBUNDLING_H
 
-#include "medGuiExport.h"
-#include "medToolBox.h"
+#include <medGui/medToolBox.h>
 
 class dtkAbstractView;
 class dtkAbstractData;
 class medToolBoxFiberBundlingPrivate;
 
-class MEDGUI_EXPORT medToolBoxFiberBundling : public medToolBox
+class medToolBoxFiberBundling : public medToolBox
 {
     Q_OBJECT
 public:

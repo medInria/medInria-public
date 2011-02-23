@@ -19,10 +19,10 @@
 
 #include "medViewContainerStack.h"
 
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerCustom.h>
-#include <medGui/medViewContainerMulti.h>
-#include <medGui/medViewContainerSingle.h>
+#include "medViewContainer.h"
+#include "medViewContainerCustom.h"
+#include "medViewContainerMulti.h"
+#include "medViewContainerSingle.h"
 
 class medViewContainerStackPrivate
 {

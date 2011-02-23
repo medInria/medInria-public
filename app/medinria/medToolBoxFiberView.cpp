@@ -3,7 +3,7 @@
 class medToolBoxFiberViewPrivate
 {
 public:
-	QComboBox    *colorCombo;
+    QComboBox    *colorCombo;
     QCheckBox    *displayCheckBox;
     QRadioButton *displayRadioPolylines;
     QRadioButton *displayRadioRibbons;

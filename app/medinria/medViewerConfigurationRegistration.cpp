@@ -1,13 +1,13 @@
 #include "medViewerConfigurationRegistration.h"
 
+#include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkAbstractView.h>
 
-#include "medViewerToolBoxView.h"
-#include "medToolBoxRegistration.h"
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerStack.h>
 
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
+#include "medViewerToolBoxView.h"
+#include "medToolBoxRegistration.h"
 
 class medViewerConfigurationRegistrationPrivate
 {

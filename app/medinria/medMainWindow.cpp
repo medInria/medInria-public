@@ -43,14 +43,16 @@
 
 #include <medGui/medViewerConfiguration.h>
 #include <medGui/medViewerConfigurationFactory.h>
-#include <medGui/medViewerConfigurationVisualization.h>
-#include <medGui/medViewerConfigurationVisualization2.h>
-#include <medGui/medViewerConfigurationRegistration.h>
-#include <medGui/medViewerConfigurationDiffusion.h>
 #include <medGui/medSettingsWidgetFactory.h>
 #include <medGui/medSystemSettingsWidget.h>
 #include <medGui/medStartupSettingsWidget.h>
 #include <medGui/medDatabaseSettingsWidget.h>
+
+#include "medViewerConfigurationVisualization.h"
+#include "medViewerConfigurationVisualization2.h"
+#include "medViewerConfigurationRegistration.h"
+#include "medViewerConfigurationDiffusion.h"
+
 
 #include <QtGui>
 

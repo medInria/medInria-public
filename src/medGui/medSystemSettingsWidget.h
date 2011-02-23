@@ -1,9 +1,9 @@
 #ifndef MEDSYSTEMSETTINGSWIDGET_H
 #define MEDSYSTEMSETTINGSWIDGET_H
 
-#include <medGui/medGuiExport.h>
-#include <QWidget>
+#include "medGuiExport.h"
 #include "medSettingsWidget.h"
+#include <QWidget>
 
 class medSystemSettingsWidgetPrivate;
 

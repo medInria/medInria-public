@@ -28,8 +28,10 @@ set(${PROJECT_NAME}_HEADERS
   medSettingsEditor.h
   medSystemSettingsWidget.h
   medStartupSettingsWidget.h
+  
   medSettingsWidget.h
   medSettingsWidgetFactory.h
+  
   medClutEditor.h
   medDropSite.h
   medFlicker.h
@@ -37,18 +39,14 @@ set(${PROJECT_NAME}_HEADERS
   medProgressionStack.h
   medStatusQuitButton.h
   medPacsSelector.h
+  
   medToolBox.h
   medToolBoxBody.h
   medToolBoxHeader.h
   medToolBoxTab.h
   medToolBoxFactory.h
   medToolBoxContainer.h
-  medToolBoxRegistration.h
-  medToolBoxRegistrationCustom.h
-  medToolBoxFiberView.h
-  medToolBoxFiberBundling.h
-  medToolBoxDiffusion.h
-  medToolBoxDiffusionCustom.h
+  
   medViewPool.h
   medViewContainer.h
   medViewContainer_p.h
@@ -61,20 +59,17 @@ set(${PROJECT_NAME}_HEADERS
   medXMLtoLUTReader.h
   medSaveLUTDialog.h
   medLoadLUTDialog.h
-  medViewerConfiguration.h
-  medViewerConfigurationVisualization.h
-  medViewerConfigurationVisualization2.h
-  medViewerConfigurationRegistration.h
-  medViewerConfigurationDiffusion.h
+  medViewerConfiguration.h  
+  medViewerConfigurationFactory.h
   medViewerToolBoxLayout.h
-  medViewerToolBoxView.h
-  medViewerConfigurationFactory.h)
+  )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medSettingsEditor.h
   medDatabaseSettingsWidget.h
   medSystemSettingsWidget.h
   medStartupSettingsWidget.h
+  
   medSettingsWidget.h
   medSettingsWidgetFactory.h
   medClutEditor.h
@@ -84,18 +79,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medProgressionStack.h
   medStatusQuitButton.h
   medPacsSelector.h
+  
   medToolBox.h
   medToolBoxBody.h
   medToolBoxHeader.h
   medToolBoxTab.h
   medToolBoxFactory.h
   medToolBoxContainer.h
-  medToolBoxRegistration.h
-  medToolBoxRegistrationCustom.h
-  medToolBoxFiberView.h
-  medToolBoxFiberBundling.h
-  medToolBoxDiffusion.h
-  medToolBoxDiffusionCustom.h
+  
   medViewPool.h
   medViewContainer.h
   medViewContainerCustom.h
@@ -107,12 +98,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medLoadLUTDialog.h
   medViewerConfigurationFactory.h
   medViewerConfiguration.h
-  medViewerConfigurationVisualization.h
-  medViewerConfigurationVisualization2.h
-  medViewerConfigurationRegistration.h
-  medViewerConfigurationDiffusion.h
-  medViewerToolBoxLayout.h
-  medViewerToolBoxView.h)
+  medViewerToolBoxLayout.h  
+  )
 
 set(${PROJECT_NAME}_SOURCES
   medSettingsEditor.cpp
@@ -128,18 +115,14 @@ set(${PROJECT_NAME}_SOURCES
   medProgressionStack.cpp
   medStatusQuitButton.cpp
   medPacsSelector.cpp
+  
   medToolBox.cpp
   medToolBoxBody.cpp
   medToolBoxHeader.cpp
   medToolBoxTab.cpp
   medToolBoxFactory.cpp
-  medToolBoxContainer.cpp
-  medToolBoxRegistration.cpp
-  medToolBoxRegistrationCustom.cpp
-  medToolBoxFiberView.cpp
-  medToolBoxFiberBundling.cpp
-  medToolBoxDiffusion.cpp
-  medToolBoxDiffusionCustom.cpp
+  medToolBoxContainer.cpp 
+  
   medViewPool.cpp
   medViewContainer.cpp
   medViewContainerCustom.cpp
@@ -153,12 +136,8 @@ set(${PROJECT_NAME}_SOURCES
   medLoadLUTDialog.cpp
   medViewerConfigurationFactory.cpp
   medViewerConfiguration.cpp
-  medViewerConfigurationVisualization.cpp
-  medViewerConfigurationVisualization2.cpp
-  medViewerConfigurationRegistration.cpp
-  medViewerConfigurationDiffusion.cpp
   medViewerToolBoxLayout.cpp
-  medViewerToolBoxView.cpp)
+  )
 
 ## #################################################################
 ## Build rules
@@ -178,10 +157,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkGui
-  medCore
-  medGui
-  medPacs
-  medSql)
+  medCore)
 
 ## #################################################################
 ## Installation

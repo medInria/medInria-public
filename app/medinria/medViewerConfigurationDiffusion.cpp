@@ -1,10 +1,5 @@
 #include "medViewerConfigurationDiffusion.h"
 
-
-#include "medViewerToolBoxView.h"
-#include "medToolBoxDiffusion.h"
-#include "medToolBoxFiberView.h"
-#include "medToolBoxFiberBundling.h"
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerStack.h>
 
@@ -12,6 +7,11 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
+
+#include "medViewerToolBoxView.h"
+#include "medToolBoxFiberView.h"
+#include "medToolBoxDiffusion.h"
+#include "medToolBoxFiberBundling.h"
 
 class medViewerConfigurationDiffusionPrivate
 {

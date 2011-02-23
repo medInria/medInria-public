@@ -1,18 +1,17 @@
 #ifndef MEDTOOLBOXFIBERVIEW_H
 #define MEDTOOLBOXFIBERVIEW_H
 
-#include "medGuiExport.h"
-#include "medToolBox.h"
+#include <medGui/medToolBox.h>
 
 class medToolBoxFiberViewPrivate;
 
-class MEDGUI_EXPORT medToolBoxFiberView : public medToolBox
+class medToolBoxFiberView : public medToolBox
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	medToolBoxFiberView(QWidget *parent);
-	~medToolBoxFiberView();
-	
+    medToolBoxFiberView(QWidget *parent);
+    ~medToolBoxFiberView();
+    
 signals:
     void fiberRadiusSet(int);
     void fiberColorModeChanged(int);
@@ -25,7 +24,7 @@ public slots:
     void update (dtkAbstractView *view);
     
 protected:
-	medToolBoxFiberViewPrivate *d;
+    medToolBoxFiberViewPrivate *d;
 };
 
 #endif

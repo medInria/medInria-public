@@ -4,7 +4,6 @@
 #include <QtCore>
 
 #include <medCore/medStorage.h>
-
 #include <medCore/medSettingsManager.h>
 
 class medDatabaseSettingsWidgetPrivate {
@@ -53,12 +52,12 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
 
 void medDatabaseSettingsWidget::selectDbDirectory()
 {
-	QFileDialog dialog(this);
-	dialog.setFileMode(QFileDialog::DirectoryOnly);
+    QFileDialog dialog(this);
+    dialog.setFileMode(QFileDialog::DirectoryOnly);
 
-	 QString path;
-	 if (dialog.exec())
-		 d->dbPath->setText(dialog.selectedFiles().first());
+     QString path;
+     if (dialog.exec())
+         d->dbPath->setText(dialog.selectedFiles().first());
 }
 
 
