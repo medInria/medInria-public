@@ -125,10 +125,14 @@ medViewerToolBoxViewProperties::update(dtkAbstractView *view)
             d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
             lutBox->setCurrentIndex(0);
 
-            d->view->setCurrentLayer(i);
-            d->view->setProperty("LookupTable", "Default");
-            d->view->update();
-
+	    // here we should not change the view settings but rather populate
+	    // the GUI with the current view settings
+	    /*
+	      d->view->setCurrentLayer(i);
+	      d->view->setProperty("LookupTable", "Default");
+	      d->view->update();
+	    */
+	    
             QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
 
             d->propertiesTree->collapseAll();
@@ -203,8 +207,9 @@ medViewerToolBoxViewProperties::onDataAdded(int layer)
     lutBox->setCurrentIndex(0);
 
     d->view->setCurrentLayer(layer);
-    d->view->setProperty("LookupTable", "Default");
-    d->view->update();
+    // we should not change the view settigns but adapt the GUI to them
+    // d->view->setProperty("LookupTable", "Default");
+    // d->view->update();
 
     QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
 
