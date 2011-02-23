@@ -323,44 +323,44 @@ void vtkImageView::Render()
 //----------------------------------------------------------------------------
 bool vtkImageView::Compare(double *array1, double *array2, int size)
 {
-    bool result = true;
-    for (int i=0; i<size; i++)
-        if (array1[i]!=array2[i])
-         {
-            result = false;
-            break;
-         }
-    
-    return result;
+  bool result = true;
+  for (int i=0; i<size; i++)
+    if (array1[i]!=array2[i])
+    {
+      result = false;
+      break;
+    }
+  
+  return result;
 }
 
 //----------------------------------------------------------------------------
 bool vtkImageView::Compare(int *array1, int *array2, int size)
 {
-    bool result = true;
-    for (int i=0; i<size; i++)
-        if (array1[i]!=array2[i])
-         {
-            result = false;
-            break;
-         }
-    
-    return result;
+  bool result = true;
+  for (int i=0; i<size; i++)
+    if (array1[i]!=array2[i])
+    {
+      result = false;
+      break;
+    }
+  
+  return result;
 }
 
 //----------------------------------------------------------------------------
 bool vtkImageView::Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2)
 {
-    bool result = true;
-    for (int i=0; i<4; i++)
-        for (int j=0; j<4; j++)
-            if (mat1->GetElement(i,j)!=mat2->GetElement(i,j))
-             {
-                result = false;
-                break;
-             }
-    
-    return result;
+  bool result = true;
+  for (int i=0; i<4; i++)
+    for (int j=0; j<4; j++)
+      if (mat1->GetElement(i,j)!=mat2->GetElement(i,j))
+      {
+	result = false;
+	break;
+      }
+  
+  return result;
 }
 
 //----------------------------------------------------------------------------
@@ -368,41 +368,50 @@ vtkImageData *vtkImageView::ResliceImageToInput(vtkImageData *image, vtkMatrix4x
 {
   if (!image || !this->GetInput())
     return NULL;
+
+  vtkImageData *output = 0;
+  
+  if ( this->Compare(image->GetOrigin(),      this->GetInput()->GetOrigin(), 3) &&
+       this->Compare(image->GetSpacing(),     this->GetInput()->GetSpacing(), 3) &&
+       this->Compare(image->GetWholeExtent(), this->GetInput()->GetWholeExtent(), 6) &&
+       (matrix && this->Compare(matrix, this->OrientationMatrix)) )
+  {
+    output = image;
+    output->Register(this); // hack to make vtk believe output is referenced here
+  }
+  else
+  {
+    vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
+    if (matrix)
+    {
+      auxMatrix->DeepCopy(matrix);
+      vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
+    }
+    else 
+    {
+      auxMatrix->Identity();
+    }
+  
+    vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
     
-  if ( this->Compare(image->GetOrigin(),  this->GetInput()->GetOrigin(), 3) &&
-      this->Compare(image->GetSpacing(), this->GetInput()->GetSpacing(), 3) &&
-      this->Compare(image->GetDimensions(), this->GetInput()->GetDimensions(), 3) &&
-      (matrix && this->Compare(matrix, this->OrientationMatrix)) )
-  {
-    return image;
+    vtkImageReslice *reslicer = vtkImageReslice::New();
+    reslicer->SetInput         (image);
+    reslicer->SetResliceAxes   (auxMatrix);
+    reslicer->SetOutputOrigin  (this->GetInput()->GetOrigin());
+    reslicer->SetOutputSpacing (this->GetInput()->GetSpacing());
+    reslicer->SetOutputExtent  (this->GetInput()->GetWholeExtent());
+    reslicer->SetInterpolationModeToLinear();
+    reslicer->Update();
+  
+    output = reslicer->GetOutput();
+    output->Register (this); // hack to make vtk believe output is referenced here
+    // otherwise, next call to reslicer->Delete() would discard its output
+  
+    reslicer->Delete();
+    auxMatrix->Delete();
   }
   
-  vtkMatrix4x4 *auxMatrix = vtkMatrix4x4::New();
-  if (matrix)
-  {
-    auxMatrix->DeepCopy(matrix);
-    vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
-  }
-  else 
-  {
-    auxMatrix->Identity();
-  }
-  
-  vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
-    
-  //vtkSmartPointer<vtkImageReslice> reslicer = vtkImageReslice::New();
-  vtkImageReslice* reslicer = vtkImageReslice::New();
-  reslicer->SetInput         (image);
-  reslicer->SetResliceAxes   (auxMatrix);
-  reslicer->SetOutputOrigin  (this->GetInput()->GetOrigin());
-  reslicer->SetOutputSpacing (this->GetInput()->GetSpacing());
-  reslicer->SetOutputExtent  (this->GetInput()->GetWholeExtent());
-  reslicer->SetInterpolationModeToLinear();
-  reslicer->Update();
-  
-  auxMatrix->Delete();
-  
-  return reslicer->GetOutput();
+  return output;
 }
 
 //----------------------------------------------------------------------------

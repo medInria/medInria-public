@@ -461,11 +461,6 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
       Get the bounding box of the input image in world coordinates.
   */
   virtual void GetInputBoundsInWorldCoordinates ( double * bounds );
-    
-  /**
-   Reslice an image onto the input image.
-   */
-  virtual vtkImageData *ResliceImageToInput(vtkImageData *image, vtkMatrix4x4 *matrix);
   
   /**
    * Add a new layer. Returns the id of the layer created. Should be reimplemented in subclasses.
@@ -586,6 +581,11 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual bool Compare(double *array1, double *array2, int size);
   virtual bool Compare(int *array1,    int *array2,    int size);
   virtual bool Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2);  
+
+  /**
+     Reslice an image onto the input image. Internal use only.
+  */
+  virtual vtkImageData *ResliceImageToInput(vtkImageData *image, vtkMatrix4x4 *matrix);
 
   private:
 #ifdef vtkINRIA3D_USE_ITK
