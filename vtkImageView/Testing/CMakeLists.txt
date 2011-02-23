@@ -1,6 +1,7 @@
 SET(KIT vtkImageView)
 
 SET(vtkImageViewTests
+  vtkImageViewTest1.cxx
   SynchronizedViews3Test.cxx
   )
 
