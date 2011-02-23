@@ -1079,10 +1079,17 @@ void v3dView::onLookupTablePropertySet(const QString &value)
     }
 
     
+<<<<<<< HEAD
+    if (this->currentLayer()==0)
+    {
+        d->view3d->SetTransferFunctions (rgb, alpha, this->currentLayer());
+    }
+=======
     //if (this->currentLayer()==0)
     //{
         d->view3d->SetTransferFunctions (rgb, alpha, this->currentLayer());
     //}
+>>>>>>> hack/image-overlays
   
     rgb->Delete();
     alpha->Delete();
