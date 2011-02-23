@@ -249,6 +249,8 @@ public:
 
 
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
+
+  virtual bool HasLayer (int layer) const;
     
 protected: 
 
