@@ -46,6 +46,9 @@ include(${vtkINRIA3D_USE_FILE})
 #   include(${ITK_USE_FILE})
 # endif(vtkINRIA3D_USE_ITK)
 
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
+
 if (NOT VTK_USE_QT)
   message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
 endif(NOT VTK_USE_QT)
@@ -60,6 +63,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewFiberInteractor.h
   v3dViewFuseInteractor.h
   v3dViewMeshInteractor.h
+  v3dViewTensorInteractor.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -72,6 +76,7 @@ set(${PROJECT_NAME}_SOURCES
   v3dViewFuseInteractor.cpp
   v3dViewMeshInteractor.cpp
   v3dFiberBundle.cpp
+  v3dViewTensorInteractor.cpp
   )
 
 # Include header files for Visual Studio.
