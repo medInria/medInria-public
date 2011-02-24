@@ -190,6 +190,11 @@ int medAbstractView::layerCount(void) const
     return 0;
 }
 
+void medAbstractView::removeOverlay(int layer)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
 //void medAbstractView::addDataInList(dtkAbstractData * data)
 //{
 //    d->dataList.append(data);

@@ -132,6 +132,11 @@ public:
      */    
     virtual int layerCount(void) const;
 
+    /**
+     * remove overlay
+     */
+    virtual void removeOverlay(int layer);
+
 //    /**
 //     * Insert abstractData in the data list
 //     */

@@ -31,7 +31,10 @@ public slots:
     void onOpacitySet(double opacity);
     void onOpacitySliderSet(int opacity);
     void onLUTChanged(int index);
-    void onItemPressed(QTreeWidgetItem * item, int column);
+    void onItemClicked(QTreeWidgetItem * item, int column);
+    void onContextTreeMenu( const QPoint point );
+    void onDeleteLayer();
+
 
 signals:
     void setVisibility(bool visible, int layer);

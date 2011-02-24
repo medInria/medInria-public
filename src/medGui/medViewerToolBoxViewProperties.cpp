@@ -42,11 +42,13 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     d->propertiesTree->setAnimated(true);
     d->propertiesTree->setAlternatingRowColors(true);
     d->propertiesTree->setRootIsDecorated(false);
+    d->propertiesTree->setContextMenuPolicy(Qt::CustomContextMenu);
 
     this->setTitle("View Properties");
     this->addWidget(d->propertiesTree);
 
-    QObject::connect(d->propertiesTree, SIGNAL(itemPressed(QTreeWidgetItem *, int)), this, SLOT(onItemPressed(QTreeWidgetItem *, int)));
+    QObject::connect(d->propertiesTree, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
+    QObject::connect(d->propertiesTree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextTreeMenu(QPoint)));
     this->hide();
 }
 
@@ -269,8 +271,9 @@ medViewerToolBoxViewProperties::onLUTChanged(int index)
 }
 
 void
-medViewerToolBoxViewProperties::onItemPressed(QTreeWidgetItem * item, int column)
+medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item, int column)
 {
+    d->propertiesTree->clearSelection();
     if (item->type() == QTreeWidgetItem::UserType + 1)
     {
         if (item->isExpanded())
@@ -282,7 +285,46 @@ medViewerToolBoxViewProperties::onItemPressed(QTreeWidgetItem * item, int column
             d->currentLayer = item->text(0).toInt();
         }
     }
+}
 
+void medViewerToolBoxViewProperties::onContextTreeMenu( const QPoint point )
+{
+    QTreeWidgetItem * item = 0;
+    item = d->propertiesTree->itemAt(point);
 
+    if (!item)
+        return;
+
+    if (item->type() != QTreeWidgetItem::UserType + 1)
+        return;
+
+    if (item->text(0).toInt() == 0)
+        return;
+
+    d->currentLayer = item->text(0).toInt();
+
+    item->setSelected(true);
+
+    QMenu * menu = new QMenu(d->propertiesTree);
+    QAction * deleteLayer = new QAction(this);
+    deleteLayer->setIconVisibleInMenu(true);
+    deleteLayer->setText(tr("Delete"));
+    deleteLayer->setIcon(QIcon(":icons/cross.png"));
+    QObject::connect(deleteLayer, SIGNAL(triggered()), this, SLOT(onDeleteLayer()));
+    menu->addAction(deleteLayer);
+
+    menu->exec(d->propertiesTree->mapToGlobal(point));
+    delete menu;
+}
+
+void medViewerToolBoxViewProperties::onDeleteLayer()
+{
+    d->view->removeOverlay(d->currentLayer);
+    d->view->update();
+
+    if (d->currentLayer != 0)
+        d->propertiesTree->invisibleRootItem()->removeChild(d->propertiesTree->selectedItems()[0]);
+
+    d->propertiesTree->clearSelection();
 }
 
