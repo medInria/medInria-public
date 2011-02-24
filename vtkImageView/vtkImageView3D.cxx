@@ -579,6 +579,17 @@ void vtkImageView3D::InternalUpdate (void)
     appender->Delete();
   }
 
+  // hack: modify the input MTime such that it is higher
+  // than the VolumeMapper's one to force it to refresh
+  // (see vtkSmartVolumeMapper::ConnectMapperInput(vtkVolumeMapper *m))
+  if (this->VolumeMapper->GetInput())
+  {
+    unsigned long mtime = this->VolumeMapper->GetInput()->GetMTime();
+    
+    while (input->GetMTime()<=mtime)
+      input->Modified();
+  }
+  
   this->VolumeMapper->SetInput (input);
   this->VolumeMapper->Modified();
   
