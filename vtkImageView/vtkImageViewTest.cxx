@@ -15,21 +15,20 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#include "vtkImageView2D.h"
-#include "vtkImageView3D.h"
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkStructuredPointsReader.h>
 #include <vtkStructuredPoints.h>
 #include <vtkImageCast.h>
+
 #include "vtkImageViewCollection.h"
+#include "vtkImageView2D.h"
+#include "vtkImageView3D.h"
 #include "vtkLookupTableManager.h"
-#include "vtkMatrix4x4.h"
 
 int main (int argc, char* argv[])
 {
-
   if (argc < 2)
   {
     std::cout << "Usage: " << std::endl;
@@ -38,40 +37,36 @@ int main (int argc, char* argv[])
     std::cout << "\t" << argv[0] << " [vtkINRIA3D_DATA_DIR]/MRI.vtk" << std::endl;
     exit (-1);
   }
-
-
+  
+  
   /**
      Create 3 views, each of them will have a different orientation, .i.e.
      axial, sagittal and coronal.
      Create one 3D view.
-   */
+  */
   vtkImageView2D* view1 = vtkImageView2D::New();
   view1->SetSliceOrientation (vtkImageView2D::SLICE_ORIENTATION_XY );
-  //view1->SetSliceOrientation (vtkImageView2D::SLICE_ORIENTATION_AXIAL );
-    view1->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  view1->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
   view1->SetPatientName ("Patient");
-  view1->SetStudyName ("Study");
-  view1->SetSeriesName ("Series");
-
+  view1->SetStudyName   ("Study");
+  view1->SetSeriesName  ("Series");
 
   vtkImageView2D* view2 = vtkImageView2D::New();
   view2->SetSliceOrientation (vtkImageView2D::SLICE_ORIENTATION_XZ );
   view2->SetPatientName ("Patient");
-  view2->SetStudyName ("Study");
-  view2->SetSeriesName ("Series");
-
+  view2->SetStudyName   ("Study");
+  view2->SetSeriesName  ("Series");
 
   vtkImageView2D* view3 = vtkImageView2D::New();
   view3->SetSliceOrientation (vtkImageView2D::SLICE_ORIENTATION_YZ );
   view3->SetPatientName ("Patient");
-  view3->SetStudyName ("Study");
-  view3->SetSeriesName ("Series");
+  view3->SetStudyName   ("Study");
+  view3->SetSeriesName  ("Series");
 
   vtkImageView3D* view4 = vtkImageView3D::New();
   view4->SetPatientName ("Patient");
-  view4->SetStudyName ("Study");
-  view4->SetSeriesName ("Series");
-
+  view4->SetStudyName   ("Study");
+  view4->SetSeriesName  ("Series");
   
   vtkRenderWindowInteractor* iren1 = vtkRenderWindowInteractor::New();
   vtkRenderWindowInteractor* iren2 = vtkRenderWindowInteractor::New();
@@ -111,52 +106,26 @@ int main (int argc, char* argv[])
   vtkStructuredPointsReader* reader = vtkStructuredPointsReader::New();
   reader->SetFileName (argv[1]);
   reader->GetOutput()->Update();
-
+  
   view1->SetInput  (reader->GetOutput());
   view2->SetInput  (reader->GetOutput());
   view3->SetInput  (reader->GetOutput());
   view4->SetInput  (reader->GetOutput());
-  
-    vtkStructuredPointsReader* reader2 = vtkStructuredPointsReader::New();
-    reader2->SetFileName (argv[2]);
-    reader2->GetOutput()->Update();
 
-    vtkMatrix4x4 *testMat = vtkMatrix4x4::New();
-    testMat->SetElement(0,0,0.93);
-    testMat->SetElement(1,0,0.34);
-    testMat->SetElement(2,0,0.0);
-    testMat->SetElement(3,0,0.0);
-    
-    testMat->SetElement(0,1,-0.34);
-    testMat->SetElement(1,1,0.93);
-    testMat->SetElement(2,1,0.0);
-    testMat->SetElement(3,1,0.0);
-    
-    testMat->SetElement(0,2,0.0);
-    testMat->SetElement(1,2,0.0);
-    testMat->SetElement(2,2,1.0);
-    testMat->SetElement(3,2,0.0);
-    
-    testMat->SetElement(0,3,0.0);
-    testMat->SetElement(1,3,0.0);
-    testMat->SetElement(2,3,0.0);
-    testMat->SetElement(3,3,1.0);
-    
-    
-    
-    view1->SetInput  (reader2->GetOutput(), testMat, 1);
-    view2->SetInput  (reader2->GetOutput(), testMat, 1);
-    view3->SetInput  (reader2->GetOutput(), testMat, 1);
+  int position[2] = {0, 0};  
+  view1->SetPosition (position);
+  position[0] = 400;
+  position[1] = 0;
+  view2->SetPosition (position);
+  position[0] = 0;
+  position[1] = 400;
+  view3->SetPosition (position);
+  position[0] = 400;
+  position[1] = 400;
+  view4->SetPosition (position);
 
-
-    vtkStructuredPointsReader* reader3 = vtkStructuredPointsReader::New();
-    reader3->SetFileName (argv[3]);
-    reader3->GetOutput()->Update();
-
-    view1->SetInput  (reader3->GetOutput(),testMat, 2);
-    view2->SetInput  (reader3->GetOutput(),testMat,  2);
-    view3->SetInput  (reader3->GetOutput(),testMat,  2);
-        
+  double color[3] = {0.9, 0.9, 0.9};
+  view4->SetBackground (color);
 
   vtkImageViewCollection *collection = vtkImageViewCollection::New();
   collection->AddItem (view1);
@@ -164,42 +133,31 @@ int main (int argc, char* argv[])
   collection->AddItem (view3);
   collection->AddItem (view4);
 
-
-  double color[3]={0.9,0.9,0.9};
-  int position[2] = {0, 0};  
   collection->SyncSetShowAnnotations (1);
-  view1->SetPosition (position);
-  position[0] = 400; position[1] = 0;
-  view2->SetPosition (position);
-  position[0] = 0; position[1] = 400;
-  view3->SetPosition (position);
-  position[0] = 400; position[1] = 400;
-  view4->SetPosition (position);
-  view4->SetBackground (color);
-  // view4->SetRenderingModeToVR();
-  // view4->SetVolumeRayCastFunctionToMIP();
-
-//   collection->SyncResetCurrentPoint();
-//   collection->SyncResetWindowLevel();
-//   collection->SyncResetCamera();
-  collection->SyncReset();
-
   collection->SyncSetShowImageAxis (1);
-  
-//   collection->SyncRender();
-  
-  rwin1->Render();
-  rwin2->Render();
-  rwin3->Render();
-  rwin4->Render();
-  
+
+  collection->SyncReset();
+  collection->SyncRender();
+
   iren1->Start();
 
+  collection->Delete();
   view1->Delete();
-
+  view2->Delete();
+  view3->Delete();
+  view4->Delete();
   rwin1->Delete();
+  rwin2->Delete();
+  rwin3->Delete();
+  rwin4->Delete();
   iren1->Delete();
+  iren2->Delete();
+  iren3->Delete();
+  iren4->Delete();
   renderer1->Delete();
+  renderer2->Delete();
+  renderer3->Delete();
+  renderer4->Delete();
   reader->Delete();
   
   return 0;
