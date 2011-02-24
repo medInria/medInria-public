@@ -44,6 +44,12 @@ int vtkImageViewTest2(int argc, char *argv[])
   view->SetRenderer (renderer);
   
   view->SetShowScalarBar(0);
+  view->SetRenderingModeToVR();
+  //view->SetVolumeMapperToRayCast();
+  view->SetCroppingModeToOff();
+
+  double color[3] = {1.0, 1.0, 1.0};
+  view->SetBackground (color);
   
   vtkImageEllipsoidSource* imageSource = vtkImageEllipsoidSource::New();
   imageSource->SetWholeExtent (0, 63, 0, 63, 0, 63);
@@ -102,12 +108,12 @@ int vtkImageViewTest2(int argc, char *argv[])
   view->SetInput (image, mat1);
   view->Reset();
   view->Render();
-
+  
   // same image twice
   view->SetInput (image, mat1);
   view->Reset();
   view->Render();
-
+  
   // other image
   view->SetInput (image2, mat2);
   view->Reset();
@@ -120,6 +126,7 @@ int vtkImageViewTest2(int argc, char *argv[])
 
   // other image, no matrix
   view->SetInput (image);
+  view->GetCornerAnnotation()->SetText (3, "No matrix");
   view->Reset();
   view->Render();
 
@@ -132,19 +139,21 @@ int vtkImageViewTest2(int argc, char *argv[])
   // change transfer functions
   vtkColorTransferFunction *rgb1   = vtkColorTransferFunction::New();
   vtkPiecewiseFunction     *alpha1 = vtkPiecewiseFunction::New();
-  vtkTransferFunctionPresets::GetTransferFunction("Spectrum", rgb1, alpha1);
+  vtkTransferFunctionPresets::GetTransferFunction("Hot Metal", rgb1, alpha1);
   view->SetTransferFunctions(rgb1, alpha1, 0);
   view->Render();
 
-  /*
-  vtkLookupTable *lut2 = vtkLookupTableManager::GetHotIronLookupTable();
-  view->SetLookupTable(lut2, 1);
+  vtkColorTransferFunction *rgb2   = vtkColorTransferFunction::New();
+  vtkPiecewiseFunction     *alpha2 = vtkPiecewiseFunction::New();
+  vtkTransferFunctionPresets::GetTransferFunction("Flow", rgb2, alpha2);
+  view->SetTransferFunctions(rgb2, alpha2, 1);
   view->Render();
 
-  vtkLookupTable *lut3 = vtkLookupTableManager::GetHotGreenLookupTable();
-  view->SetLookupTable(lut3, 2);
+  vtkColorTransferFunction *rgb3   = vtkColorTransferFunction::New();
+  vtkPiecewiseFunction     *alpha3 = vtkPiecewiseFunction::New();
+  vtkTransferFunctionPresets::GetTransferFunction("Hot Green", rgb3, alpha3);
+  view->SetTransferFunctions(rgb3, alpha3, 2);
   view->Render();
-  */
 
   // add/remove  cone
   view->AddDataSet (cone);
@@ -152,7 +161,6 @@ int vtkImageViewTest2(int argc, char *argv[])
   
   view->RemoveDataSet (cone);
   view->Render();
-
   
   // opacity / visibility
   view->SetVisibility (0, 0);
@@ -163,26 +171,25 @@ int vtkImageViewTest2(int argc, char *argv[])
 
   view->SetVisibility (0, 1);
   view->Render();
-
+ 
   view->SetVisibility (1, 1);
   view->Render();
-
+  
   view->SetVisibility (0, 2);
   view->Render();
-
+ 
   view->SetVisibility (1, 2);
   view->Render();
-
+ 
   view->SetVisibility (0, 1000);
   view->Render();
-
+  
   view->SetVisibility (1, 1000);
   view->Render();
 
-
   view->SetOpacity (0.5, 0);
   view->Render();
-
+  
   view->SetOpacity (1.0, 0);
   view->Render();
 
@@ -203,7 +210,6 @@ int vtkImageViewTest2(int argc, char *argv[])
 
   view->SetOpacity (1.0, 1000);   // dummy value
   view->Render();
-
   
   // remove layers
   view->RemoveLayer (1);
@@ -216,7 +222,6 @@ int vtkImageViewTest2(int argc, char *argv[])
   
   view->RemoveLayer (10); // dummy
   view->Render();
-  
 
   view->Delete();
   iren->Delete();
@@ -231,6 +236,10 @@ int vtkImageViewTest2(int argc, char *argv[])
   mat3->Delete();
   rgb1->Delete();
   alpha1->Delete();
+  rgb2->Delete();
+  alpha2->Delete();
+  rgb3->Delete();
+  alpha3->Delete();
   
   return EXIT_SUCCESS;
 }
