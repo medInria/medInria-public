@@ -38,6 +38,9 @@ include(${medinria_USE_FILE})
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
+
 include_directories(../dtkVtkLogForwarder)
 
 ## #################################################################
@@ -49,14 +52,16 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPublic.h
   v3dViewPublicFiberInteractor.h
   v3dViewPublicMeshInteractor.h
-  v3dViewPublicFuseInteractor.h)
+  v3dViewPublicFuseInteractor.h
+  v3dViewPublicTensorInteractor.h)
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPublicPlugin.cpp
   v3dViewPublic.cpp
   v3dViewPublicFiberInteractor.cpp
   v3dViewPublicMeshInteractor.cpp
-  v3dViewPublicFuseInteractor.cpp)
+  v3dViewPublicFuseInteractor.cpp
+  v3dViewPublicTensorInteractor.cpp)
 
 ## #################################################################
 ## Build rules
