@@ -1,0 +1,80 @@
+/*dtk.css --- 
+;; 
+;; Author: Julien Wintz
+;; Copyright (C) 2008 - Julien Wintz, Inria.
+;; Created: Sat Feb  6 13:57:51 2010 (+0100)
+;; Version: $Id$
+;; Last-Updated: Mon Feb  8 09:36:22 2010 (+0100)
+;;           By: Julien Wintz
+;;     Update #: 4
+*/
+
+/*Commentary: 
+;; 
+*/
+
+/*Change log:
+;; 
+*/
+
+body {
+    font-family: Arial, Geneva, Helvetica, sans-serif;
+}
+
+h1 {
+    font-size: 160%;
+    text-align: center;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 130%;
+    text-align: left;
+    font-weight: bold;
+}
+
+hr {
+    background-color: rgb(221, 221, 221);
+    color: rgb(221, 221, 221);
+    border-style: none;
+    height: 1px;
+}
+
+a {
+    color: rgb(0, 70, 173);
+    text-decoration: none;
+}
+
+code {
+    background-color: rgb(238, 238, 238);
+    border-color: rgb(221, 221, 221);
+    border-style: solid;
+    border-width: 1px;
+    padding: 2px; 10px; 2px; 10px;
+    display: block;
+}
+
+.memname tr {
+    display: table-cell;
+}
+
+.memname code {
+    border-style: none;
+    padding: 0px;
+    display: inline;
+    font-size: 130%;
+}
+
+.memproto {
+    background-color: rgb(238, 238, 238);
+    border-color: rgb(221, 221, 221);
+    border-style: solid;
+    border-width: 1px;
+    font-weight: bold;
+    margin: 42px 0px 0px 0px;
+    display: block;
+}
+
+br.typebreak {
+    display: none;
+}
