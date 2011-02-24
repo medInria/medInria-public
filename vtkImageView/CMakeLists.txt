@@ -56,22 +56,6 @@ IF( vtkINRIA3D_USE_ITK )
    )
 ENDIF( vtkINRIA3D_USE_ITK )
 
-target_link_libraries(
-${PROJECT_NAME}
-)
-
-
-IF(BUILD_TESTING)
-  add_executable(vtkImageViewTest MACOSX_BUNDLE
-    vtkImageViewTest.cxx
-)
-  target_link_libraries(vtkImageViewTest
-    ${PROJECT_NAME}
-#vtkVisuManagement
-)
-ENDIF(BUILD_TESTING)
-
-
 
 IF(BUILD_TESTING)
   ADD_SUBDIRECTORY(Testing)
