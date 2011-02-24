@@ -45,7 +45,6 @@ class vtkScalarsToColors;
 class vtkColorTransferFunction;
 class vtkSmartVolumeMapper;
 class vtkImage3DDisplay;
-class vtkImageAppendComponents;
 
 /**
    \class vtkImageView3D vtkImageView3D.h "vtkImageView3D.h"
@@ -250,7 +249,10 @@ public:
 
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
 
+  virtual void AddLayer (int layer);
   virtual bool HasLayer (int layer) const;
+  virtual void RemoveLayer (int layer);
+  virtual void RemoveAllLayers (void);
     
 protected: 
 
@@ -265,6 +267,8 @@ protected:
   virtual void SetupVolumeRendering();
   virtual void SetupWidgets();
   virtual void UpdateVolumeFunctions();
+
+  virtual void InternalUpdate (void);
 
   // plane actors
   vtkImageActor* ActorX;
@@ -303,8 +307,6 @@ protected:
     
   double Opacity;
   int Visibility;
-    
-  vtkImageAppendComponents *Appender;
     
   std::map<int, vtkImage3DDisplay*> ImageDisplayMap;
   
