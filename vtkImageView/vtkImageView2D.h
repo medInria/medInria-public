@@ -306,16 +306,18 @@ public:
   vtkGetObjectMacro (Command, vtkImageView2DCommand);
   //ETX
   /**
-   Get/Set weither or not the interpolation between pixels should be activated.
-   It is On by default
-   */
-  virtual void SetInterpolate (int val);
-  virtual int GetInterpolate ();
+     Get/Set weither or not the interpolation between pixels should be activated.
+     It is On by default
+  */
+  virtual void SetInterpolate (int val, int layer=0);
+  virtual int  GetInterpolate (int layer = 0);
   vtkBooleanMacro (Interpolate, int);
+  
   /**
-   Show/Hide the annotations (CornerAnnotation AND OrientationAnnotation)
-   */
+     Show/Hide the annotations (CornerAnnotation AND OrientationAnnotation)
+  */
   virtual void SetShowAnnotations (int);
+  
   /**
    Access to the position of the center of the view.
    CAUTION: for the moment this feature is de-activated because updating it
@@ -501,9 +503,12 @@ public:
   vtkGetMacro (AnnotationStyle, unsigned int);
   
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
+
+  virtual void RemoveDataSet (vtkPointSet *arg);
   
   virtual void AddLayer(int);
   virtual void RemoveLayer(int layer);
+  virtual void RemoveAllLayers (void);
   virtual bool HasLayer(int layer) const;
   virtual int GetNumberOfLayers(void) const;
   
@@ -638,7 +643,7 @@ protected:
   vtkDistanceWidget  *DistanceWidget;
   vtkAngleWidget     *AngleWidget;
 	
-  std::vector<vtkDataSet2DWidget*> DataSetWidgets;
+  std::list<vtkDataSet2DWidget*> DataSetWidgets;
   
   std::map<int, vtkImage2DDisplay *> ImageDisplayMap;
   std::map<int, vtkRenderer *>       RendererMap;

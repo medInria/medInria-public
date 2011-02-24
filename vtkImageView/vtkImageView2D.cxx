@@ -244,9 +244,12 @@ vtkImageView2D::~vtkImageView2D()
   this->SlicePlane->Delete();
   this->Command->Delete();
   this->OrientationAnnotation->Delete();
-  for (unsigned int i=0; i<this->DataSetWidgets.size(); i++)
+  
+  std::list<vtkDataSet2DWidget*>::iterator it3 = this->DataSetWidgets.begin();
+  while (it3!=this->DataSetWidgets.end())
   {
-    this->DataSetWidgets[i]->Delete();
+    (*it3)->Delete();
+    ++it3;
   }
 }
 
@@ -254,14 +257,19 @@ vtkImageView2D::~vtkImageView2D()
 void vtkImageView2D::SetVisibility(int visible, int layer)
 {
   if (this->HasLayer(layer))
+  {
     this->ImageDisplayMap.at(layer)->GetImageActor()->SetVisibility(visible);
+    this->Modified();
+  }
 }
 
 //----------------------------------------------------------------------------
 int vtkImageView2D::GetVisibility(int layer)
 {
   if (this->HasLayer(layer))
+  {
     return this->ImageDisplayMap.at(layer)->GetImageActor()->GetVisibility();
+  }
   
   return 0;
 }
@@ -270,14 +278,19 @@ int vtkImageView2D::GetVisibility(int layer)
 void vtkImageView2D::SetOpacity(double opacity, int layer)
 {
   if (this->HasLayer(layer))
+  {
     this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(opacity);
+    this->Modified();
+  }
 }
 
 //----------------------------------------------------------------------------
 double vtkImageView2D::GetOpacity(int layer)
 {
   if (this->HasLayer(layer))
+  {
     return this->ImageDisplayMap.at(layer)->GetImageActor()->GetOpacity();
+  }
   
   return 0.0;
 }
@@ -1281,11 +1294,13 @@ void vtkImageView2D::InstallInteractor()
   this->Axes2DWidget->SetImageView (this);
   if( this->ShowImageAxis && this->RenderWindow && this->Renderer)
     this->Axes2DWidget->On();
-  
-  for (unsigned int i=0; i<this->DataSetWidgets.size(); i++)
+
+  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
+  while (it!=this->DataSetWidgets.end())
   {
-    this->DataSetWidgets[i]->SetImageView(this);
-    this->DataSetWidgets[i]->On();
+    (*it)->SetImageView(this);
+    (*it)->On();
+    ++it;
   }
 	
   this->IsInteractorInstalled = 1;
@@ -1317,26 +1332,35 @@ void vtkImageView2D::UnInstallInteractor()
        ++it;
      } 
    }
-	
-  for (unsigned int i=0; i<this->DataSetWidgets.size(); i++)
+
+  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
+  while (it!=this->DataSetWidgets.end())
   {
-    this->DataSetWidgets[i]->SetImageView(0);
+    (*it)->SetImageView(0);
+    (*it)->Off();
+    ++it;
   }
 	
   this->IsInteractorInstalled = 0;
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::SetInterpolate(int val)
+void vtkImageView2D::SetInterpolate(int val, int layer)
 {
-  this->GetImageActor(0)->SetInterpolate (val);
+  if (!this->HasLayer (layer))
+    return;
+
+  this->ImageDisplayMap.at(layer)->GetImageActor()->SetInterpolate (val);
   this->Modified();
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::GetInterpolate(void)
+int vtkImageView2D::GetInterpolate(int layer)
 {
-  return this->GetImageActor(0)->GetInterpolate();
+  if (this->HasLayer (layer))
+    return this->ImageDisplayMap.at(layer)->GetImageActor()->GetInterpolate();
+  
+  return 0;
 }
 
 //----------------------------------------------------------------------------
@@ -1352,6 +1376,7 @@ void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPi
     double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
     this->SetTransferFunctionRangeFromWindowSettings(color, 0, range[0], range[1]);
     this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(color);
+    this->Modified();
   }
 }
 
@@ -1369,6 +1394,7 @@ void vtkImageView2D::SetLookupTable(vtkLookupTable* lut, int layer)
     double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
     lut->SetTableRange(range[0], range[1]);
     this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(lut);
+    this->Modified();
   }
 }
 
@@ -1380,6 +1406,10 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
   
   if (layer==0) 
   {
+    if (this->GetInput())
+    {
+      this->RemoveAllLayers();
+    }
     this->ImageDisplayMap.at(0)->SetInput(image);
     this->Superclass::SetInput (image, matrix, layer);
   }
@@ -1578,13 +1608,33 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   widget->SetSource (arg);
   widget->SetImageView (this);
   
-  if ( this->GetIsInteractorInstalled () )  {
-    
+  if ( this->GetIsInteractorInstalled () )
+  {  
     widget->On();
+    this->Modified();
   }
   this->DataSetWidgets.push_back( widget );
   
   return widget->GetActor();
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView2D::RemoveDataSet (vtkPointSet *arg)
+{
+  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
+  while (it!=this->DataSetWidgets.end())
+  {
+    if ((*it)->GetSource()==arg)
+    {
+      (*it)->Off();
+      (*it)->SetImageView (NULL);
+      (*it)->Delete();
+      this->DataSetWidgets.erase (it);
+      this->Modified();
+      break;
+    }
+    ++it;
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -1617,12 +1667,13 @@ void vtkImageView2D::RemoveLayer(int layer)
   if (layer==0) // do not remove layer 0
     return;
   
-  vtkRenderer *renderer = this->RendererMap.at(layer);
+  vtkRenderer       *renderer = this->RendererMap.at(layer);
   vtkImage2DDisplay *display  = this->ImageDisplayMap.at(layer);
   
   if (this->GetRenderWindow())
   {
     this->GetRenderWindow()->RemoveRenderer(renderer);
+    this->Modified();
   }
   
   renderer->Delete();
@@ -1630,6 +1681,17 @@ void vtkImageView2D::RemoveLayer(int layer)
   
   this->RendererMap.erase(layer);
   this->ImageDisplayMap.erase(layer);
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView2D::RemoveAllLayers (void)
+{
+  std::map<int, vtkRenderer*>::iterator it = this->RendererMap.begin();
+  while (it!=this->RendererMap.end())
+  {
+    this->RemoveLayer (it->first);
+    ++it;
+  }
 }
 
 //----------------------------------------------------------------------------

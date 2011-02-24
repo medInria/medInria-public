@@ -419,7 +419,19 @@ void vtkImageView::SetInput(vtkImageData *arg, vtkMatrix4x4 *matrix, int layer)
 {
   vtkSetObjectBodyMacro (Input, vtkImageData, arg);
   if (layer==0)
-    this->SetOrientationMatrix(matrix);
+  {
+    if (matrix)
+    {
+      this->SetOrientationMatrix(matrix);
+    }
+    else
+    {
+      vtkMatrix4x4 *identity = vtkMatrix4x4::New();
+      identity->Identity();
+      this->SetOrientationMatrix (identity);
+      identity->Delete();
+    }
+  }
   this->WindowLevel->SetInput(arg);
 }
 
@@ -1311,6 +1323,11 @@ void vtkImageView::RemoveLayer(int layer)
 }
 
 //----------------------------------------------------------------------------
+void vtkImageView::RemoveAllLayers(void)
+{
+}
+
+//----------------------------------------------------------------------------
 bool vtkImageView::HasLayer(int layer) const
 {
   return false;
@@ -1320,6 +1337,11 @@ bool vtkImageView::HasLayer(int layer) const
 int vtkImageView::GetNumberOfLayers(void) const
 {
   return 0;
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView::RemoveDataSet (vtkPointSet *arg)
+{
 }
 
 /////////////////////////////////////////////////////////////////////////////

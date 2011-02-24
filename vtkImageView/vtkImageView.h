@@ -471,6 +471,11 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    * Remove a layer. Should be reimplemented in subclasses.
    */
   virtual void RemoveLayer(int layer);
+
+  /**
+   * Remove all layers. Should be reimplemented in subclasses.
+   */
+  virtual void RemoveAllLayers (void);
   
   /**
    * Check whether layer exists. Should be reimplemented in subclasses.
@@ -549,10 +554,12 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   const char *GetSeriesName (void) const;
 
   /**
-    Abstract method to add a dataset to the view (has to be subclass of vtkPointSet).
-    A vtkProperty of the dataset can be specified.
+     Abstract method to add a dataset to the view (has to be subclass of vtkPointSet).
+     A vtkProperty of the dataset can be specified.
   */
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL) = 0;
+
+  virtual void RemoveDataSet (vtkPointSet *arg);
   
   vtkGetMacro(IsInteractorInstalled, int);
 
