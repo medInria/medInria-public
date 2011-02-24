@@ -104,6 +104,11 @@ public:
      */
     virtual int layerCount(void) const;
 
+    /**
+     * remove overlay number layer
+     */
+    virtual void removeOverlay(int layer);
+
 public slots:
     // inherited from medAbstractView
     void onPositionChanged  (const  QVector3D &position);

@@ -1681,6 +1681,12 @@ int v3dView::layerCount(void) const
     return d->view2d->GetNumberOfLayers();
 }
 
+void v3dView::removeOverlay(int layer)
+{
+    d->view2d->RemoveLayer(layer);
+    d->view3d->RemoveLayer(layer);
+}
+
 // -- head tracking support
 
 void v3dView::enableInteraction(void)
