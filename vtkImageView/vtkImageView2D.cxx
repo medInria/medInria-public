@@ -1686,8 +1686,9 @@ void vtkImageView2D::RemoveLayer(int layer)
 //----------------------------------------------------------------------------
 void vtkImageView2D::RemoveAllLayers (void)
 {
-  std::map<int, vtkRenderer*>::iterator it = this->RendererMap.begin();
-  while (it!=this->RendererMap.end())
+  std::map<int, vtkRenderer*> rendererMap = this->RendererMap;
+  std::map<int, vtkRenderer*>::iterator it = rendererMap.begin();
+  while (it!=rendererMap.end())
   {
     this->RemoveLayer (it->first);
     ++it;
