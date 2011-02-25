@@ -98,7 +98,7 @@ public:
     /**
      * Set the visibility of the data on the corresponding layer
      */
-    virtual void setVisibility (bool visibility, int layer);
+    void setVisibility (bool visibility, int layer);
 
     /**
      * Get the visibility of the data on the corresponding layer
@@ -108,7 +108,7 @@ public:
     /**
      * Set the opacity of the data on the corresponding layer
      */
-    virtual void setOpacity (double opacity, int layer);
+    void setOpacity (double opacity, int layer);
 
     /**
      * Get the opacity of the data on the corresponding layer
@@ -119,7 +119,7 @@ public:
      * Set the current layer. The current layer is used to determine which layer will receive
      * property changed.
      */
-    virtual void setCurrentLayer(int layer);
+    void setCurrentLayer(int layer);
   
     /**
      * Get the current layer. The current layer is used to determine which layer will receive
