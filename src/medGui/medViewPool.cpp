@@ -148,7 +148,7 @@ void medViewPool::onViewDaddy (bool daddy)
             
             // restore the previous data (if any)
             if ( d->viewData[view] ) {
-                view->setData (d->viewData[view]);
+	      view->setData (d->viewData[view], 0);
                 d->viewData[view] = NULL;
 		if (view->widget()->isVisible())
 		    view->update();
@@ -187,7 +187,7 @@ void medViewPool::onViewReg(bool value)
                     if (process->run()==0) {
                         dtkAbstractData *output = process->output();
                         d->viewData[view] = data2;
-                        view->setData (output);
+                        view->setData (output, 0);
 			if (view->widget()->isVisible())
 			    view->update();
                         emit showInfo (this, tr ("Automatic registration successful"),3000);
@@ -203,7 +203,7 @@ void medViewPool::onViewReg(bool value)
         else { // restore the previous data (if any)
             if ( d->viewData[view] ) {
                 dtkAbstractData *oldData = static_cast<dtkAbstractData*>( view->data() );
-                view->setData (d->viewData[view]);
+                view->setData (d->viewData[view], 0);
                 d->viewData[view] = NULL;
                 if (oldData)
                     delete oldData;
