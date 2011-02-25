@@ -126,31 +126,16 @@ public:
      * property changed.
      */
     virtual int currentLayer(void) const;
-
+    
     /**
      * Get the number of layers of the view.
      */    
     virtual int layerCount(void) const;
 
     /**
-     * remove overlay
+     * Remove an overlay.
      */
     virtual void removeOverlay(int layer);
-
-//    /**
-//     * Insert abstractData in the data list
-//     */
-//    virtual void addDataInList(dtkAbstractData * data);
-//
-//    /**
-//     * Get abstractData at layer position in the data list
-//     */
-//    virtual dtkAbstractData * dataInList(int layer);
-//
-//    /**
-//     * Set abstractData at layer position in the data list
-//     */
-//    virtual void setDataInList(int layer, dtkAbstractData * data);
 
 signals:
     /**
