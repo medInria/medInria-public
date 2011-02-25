@@ -467,14 +467,24 @@ namespace itk
 
 
     int startIndex = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.begin() )->second ];
+    int endIndex   = m_FilenameToIndexMap[ m_LocationToFilenamesMap.lower_bound ( *m_LocationSet.rbegin() )->second ];
+
+    double startZ = this->GetZPositionForImage (startIndex);
+    double endZ   = this->GetZPositionForImage (endIndex);
+
+    int index = startIndex;
+    if (endZ<startZ)
+    {
+      index = endIndex;
+    }
 	
-    std::string s_origin = this->GetMetaDataValueString("(0020,0032)", startIndex);
+    std::string s_origin = this->GetMetaDataValueString("(0020,0032)", index);
     if ( s_origin=="" )
     {
       itkWarningMacro ( << "Tag (0020,0032) (ImageOrigin) was not found, assuming 0.0/0.0/0.0" << std::endl);
       return;
     }
-    
+
     std::istringstream is_stream( s_origin.c_str() );
     if (!(is_stream >> m_Origin[0]))
     {
