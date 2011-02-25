@@ -1,0 +1,31 @@
+/* modules.dox --- 
+ * 
+ * Author: Julien Wintz
+ * Copyright (C) 2008 - Julien Wintz, Inria.
+ * Created: Sat Feb  6 14:37:24 2010 (+0100)
+ * Version: $Id$
+ * Last-Updated: Sat Feb  6 14:54:02 2010 (+0100)
+ *           By: Julien Wintz
+ *     Update #: 5
+ */
+
+/* Commentary: 
+ * 
+ */
+
+/* Change log:
+ * 
+ */
+
+/*! \page modules medinria Modules
+
+  Also referred to as layers, medinria modules decompose the source tree into the following structure
+
+  <ul>
+  <li> \subpage medCore: the core module contains ... </li>
+  <li> \subpage medGui: the script module contains ...</li>
+  <li> \subpage medPacs: the PACS module contains ...</li>
+  <li> \subpage medSql: the SQL module contains ... </li>
+  </ul>
+
+ */
