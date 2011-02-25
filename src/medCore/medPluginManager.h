@@ -1,5 +1,4 @@
-/* medPluginManager.h --- 
- * 
+/* medPluginManager.h -
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Oct 28 15:36:13 2009 (+0100)
@@ -40,7 +39,8 @@ public:
     void writeSettings(void);
 
     QStringList handlers(const QString& category);
-
+    void setPath(const QString& path);
+     
 public slots:
     void onPluginLoaded(const QString& name);
 

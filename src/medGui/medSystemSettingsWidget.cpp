@@ -5,6 +5,9 @@
 #include <QDir>
 #include <QtCore>
 
+#include <dtkScript/dtkScriptManager.h>
+
+#include <medCore/medPluginManager.h>
 #include <medCore/medSettingsManager.h>
 
 class medSystemSettingsWidgetPrivate {
@@ -67,7 +70,7 @@ bool medSystemSettingsWidget::validatePaths(QString paths)
     //empty paths are allowed, the user hasn't configured them yet
     if (paths.isEmpty())
         return true;
-    
+
     // splitting on a colon only obviously can not be considered safe on windows! skipping for the moment
     /*
     QStringList splitted = paths.split(":");
@@ -101,6 +104,11 @@ bool medSystemSettingsWidget::write()
     mnger->setValue("plugins","path",d->pluginsPathField->text());
     mnger->setValue("scripts","modules_path",d->modulesPathField->text());
     mnger->setValue("scripts","script_path",d->scriptsPathField->text());
+
+    medPluginManager::instance()->setPath(d->pluginsPathField->text());
+    //dtkScriptManager::instance()->setScriptPath(d->scriptsPathField->text());
+    //dtkScriptManager::instance()->setModulePath(d->modulePathField->text());
+
     return true;
 }
 

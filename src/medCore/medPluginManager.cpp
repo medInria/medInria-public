@@ -56,6 +56,12 @@ void medPluginManager::writeSettings(void)
     dtkPluginManager::instance()->writeSettings();
 }
 
+void medPluginManager::setPath(const QString& path)
+{
+    dtkPluginManager::instance()->setPath(path);
+}
+
+
 QStringList medPluginManager::handlers(const QString& category)
 {
     if (d->handlers.contains(category))
