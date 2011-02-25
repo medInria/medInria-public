@@ -46,6 +46,7 @@ include(${vtkINRIA3D_USE_FILE})
 #   include(${ITK_USE_FILE})
 # endif(vtkINRIA3D_USE_ITK)
 
+# the Tensor ToolKit is required by the tensor interactor: v3dViewTensorInteractor
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 

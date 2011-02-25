@@ -26,10 +26,12 @@ class v3dViewTensorInteractorPrivate
 {
 public:
     dtkAbstractData        *data;
-    v3dView          *view;
+    v3dView         	   *view;
     vtkTensorManager       *manager;
+    // the manager handles tensors in vtk format
 	vtkStructuredPoints    *tensors;
 
+	// the filters will convert from itk tensor image format to vtkStructuredPoint (format handled by the tensor manager)
     itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::Pointer filterFloat;
     TensorImagePointerFloat      datasetFloat;
 
@@ -85,6 +87,8 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
     QString description = data->description();
 
+    // up to the moment 2 itk tensor image formats are supported
+    // we need to convert them to vtkStructuredPoints so it's understood by the tensor manager
     if (description.compare("itkDataTensorImageFloat3") == 0) {
 		if (TensorImageTypeFloat *dataset = static_cast<TensorImageTypeFloat *>(data->data())) {
 
@@ -149,6 +153,8 @@ void v3dViewTensorInteractor::setView(dtkAbstractView *view)
 {
     if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
         d->view = v3dview;
+        // be careful not to forget setting the same renderer for the interactor and the view
+        // otherwise a new renderer is created
         d->manager->SetRenderWindowInteractor( d->view->interactor(), d->view->renderer3d() );
     }
 }
