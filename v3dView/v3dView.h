@@ -100,12 +100,12 @@ public:
     virtual double opacity(int layer) const;
     
     /**
-     * Returns the total number of layers of the vtkImageView2D instance.
+     * Returns the total number of layers of the vtkImageView* instance.
      */
     virtual int layerCount(void) const;
 
     /**
-     * remove overlay number layer
+     * Removes an overlay given the layer id.
      */
     virtual void removeOverlay(int layer);
 
