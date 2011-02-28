@@ -5,6 +5,7 @@
 #include "medToolBoxDiffusion.h"
 #include "medToolBoxFiberView.h"
 #include "medToolBoxFiberBundling.h"
+#include "medToolBoxTensor.h"
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerStack.h>
 
@@ -20,6 +21,7 @@ public:
     medToolBoxFiberView     *fiberViewToolBox;
     medToolBoxFiberBundling *fiberBundlingToolBox;
     medToolBoxDiffusion     *diffusionToolBox;    
+    medToolBoxTensor        *tensorToolBox;
     
     QList<dtkAbstractView *> views;
 };
@@ -46,6 +48,9 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     connect(d->diffusionToolBox, SIGNAL(removeToolBox(medToolBox *)),
             this, SLOT(removeToolBox(medToolBox *)));
     
+    // -- Tensor tb --
+    d->tensorToolBox = new medToolBoxTensor(parent);
+
     // -- Fiber view tb --
     d->fiberViewToolBox = new medToolBoxFiberView(parent);
 
@@ -61,9 +66,11 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
 
     this->addToolBox( d->viewToolBox );
+    this->addToolBox( d->tensorToolBox );
     this->addToolBox( d->fiberViewToolBox );
     this->addToolBox( d->diffusionToolBox );
     this->addToolBox( d->fiberBundlingToolBox );
+
 
     this->setViewLayoutType (-1); // single
 }
