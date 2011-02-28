@@ -26,6 +26,9 @@ class vtkRenderWindowInteractor;
  * @brief Concrete implementation of a medAbstractView using vtkinria3d's vtkImageView system.
  * v3dView stands for vtkinria3dView. It embeds in a QVTKWidget a visualization system for 2D
  * and 3D images.
+ * Multiple overlays are supported: in 2D, overlays are layers of images displayed on top of 
+ * each others. Layer N is always drawn on top of layer N-1. Opacity, LUT and visibility can
+ * be set per layer. In 3D, only VR is supported.
  **/
 
 class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractView
@@ -48,8 +51,27 @@ public:
 
     void *view(void);
 
-    void setData(dtkAbstractData *data);
+    /**
+     * Inputs the data to the vtkImageView2D/3D.
+     * @param layer - specifies at which layer the image is inputed.
+     * Layer N if always shown on top of layer N-1. By playing with
+     * visibility and opacity, it is possible to show multiple images
+     * on top of each others.
+     */
     void setData(dtkAbstractData *data, int layer);
+
+    /**
+     * Inputs the data to the vtkImageView2D/3D instances.
+     * Calling setData(data) will automatically position the data in
+     * the next available layer. Example:
+     * - first call  -> layer 0
+     * - second call -> layer 1
+     * ...
+     * To set the data at a specific layer, call setData(data, layer).
+     * To set the data to the first layer, call setData(data, 0).
+     */
+    void setData(dtkAbstractData *data);
+        
     void *data (void);
 
     QWidget *receiverWidget(void);
@@ -90,12 +112,12 @@ public:
 				      QList< QColor > colors );
 
     /**
-     * Set/Get the visibility of the image at layer given by @layer.
+     * Set/Get the visibility of the image at layer given by @param layer.
      */
     virtual bool visibility(int layer) const;
 
     /**
-     * Set/Get the opacity of the image at layer given by @layer.
+     * Set/Get the opacity of the image at layer given by @param layer.
      */
     virtual double opacity(int layer) const;
     
