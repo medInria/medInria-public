@@ -95,6 +95,47 @@ public:
     **/
     void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
     
+    /**
+     * Set the visibility of the data on the corresponding layer
+     */
+    void setVisibility (bool visibility, int layer);
+
+    /**
+     * Get the visibility of the data on the corresponding layer
+     */
+    virtual bool visibility(int layer) const;
+
+    /**
+     * Set the opacity of the data on the corresponding layer
+     */
+    void setOpacity (double opacity, int layer);
+
+    /**
+     * Get the opacity of the data on the corresponding layer
+     */
+    virtual double opacity(int layer) const;
+
+    /**
+     * Set the current layer. The current layer is used to determine which layer will receive
+     * property changed.
+     */
+    void setCurrentLayer(int layer);
+  
+    /**
+     * Get the current layer. The current layer is used to determine which layer will receive
+     * property changed.
+     */
+    virtual int currentLayer(void) const;
+    
+    /**
+     * Get the number of layers of the view.
+     */    
+    virtual int layerCount(void) const;
+
+    /**
+     * Remove an overlay.
+     */
+    virtual void removeOverlay(int layer);
 
 signals:
     /**
@@ -163,6 +204,21 @@ signals:
                            const QVector3D &viewup,
                            const QVector3D &focal,
                            double parallelScale);
+    
+    /**
+     * This signal is emitted when the visibility of a layer has changed.
+     */
+    void visibilityChanged(bool visibility, int layer);
+    
+    /**
+     * This signal is emitted when the opacity of a layer has changed.
+     */
+    void opacityChanged(double value, int layer);
+
+    /**
+     *  This signal is emitted when the user adds a data to the view
+     */
+    void dataAdded (int layer);
 
 public slots:
     /**
@@ -192,6 +248,10 @@ public slots:
 				     const QVector3D &focal,
 				     double parallelScale);
     
+    virtual void onVisibilityChanged(bool visible, int layer);
+    
+    virtual void onOpacityChanged(double opacity, int layer);
+
     
 protected:
     void emitViewPositionChangedEvent (const QVector3D &position);

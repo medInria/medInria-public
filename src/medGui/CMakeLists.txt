@@ -62,6 +62,7 @@ set(${PROJECT_NAME}_HEADERS
   medViewerConfigurationDiffusion.h
   medViewerToolBoxLayout.h
   medViewerToolBoxView.h
+  medViewerToolBoxViewProperties.h
   medViewerConfigurationFactory.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -100,6 +101,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfigurationRegistration.h
   medViewerConfigurationDiffusion.h
   medViewerToolBoxLayout.h
+  medViewerToolBoxViewProperties.h
   medViewerToolBoxView.h)
 
 set(${PROJECT_NAME}_SOURCES
@@ -140,6 +142,7 @@ set(${PROJECT_NAME}_SOURCES
   medViewerConfigurationRegistration.cpp
   medViewerConfigurationDiffusion.cpp
   medViewerToolBoxLayout.cpp
+  medViewerToolBoxViewProperties.cpp
   medViewerToolBoxView.cpp)
 
 ## #################################################################
