@@ -20,17 +20,16 @@
 #ifndef MEDTOOLBOXREGISTRATION_H
 #define MEDTOOLBOXREGISTRATION_H
 
-#include <medGui/medToolBox.h>
+#include "medToolBox.h"
+#include "medGuiExport.h"
 
 class dtkAbstractDataImage;
 class dtkAbstractView;
 class dtkAbstractProcess;
-
 class medDataIndex;
-
 class medToolBoxRegistrationPrivate;
 
-class medToolBoxRegistration : public medToolBox
+class MEDGUI_EXPORT medToolBoxRegistration : public medToolBox
 {
     Q_OBJECT
 

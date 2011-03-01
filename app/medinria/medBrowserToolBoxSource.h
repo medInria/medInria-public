@@ -37,8 +37,6 @@ public:
 
 signals:
     void indexChanged(int);
-    // void echoPressed();
-    // void findPressed();
 
 private:
     medBrowserToolBoxSourcePrivate *d;

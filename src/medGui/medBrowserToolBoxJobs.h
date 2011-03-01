@@ -20,12 +20,13 @@
 #ifndef MEDBROWSERTOOLBOXJOBS_H
 #define MEDBROWSERTOOLBOXJOBS_H
 
-#include <medGui/medToolBox.h>
+#include "medToolBox.h"
+#include "medGuiExport.h"
 
 class medProgressionStack;
 class medBrowserToolBoxJobsPrivate;
 
-class medBrowserToolBoxJobs : public medToolBox
+class MEDGUI_EXPORT medBrowserToolBoxJobs : public medToolBox
 {
     Q_OBJECT
 

@@ -106,6 +106,19 @@ medDataIndex& medDataIndex::operator=(const medDataIndex& index)
 	return *this;
 }
 
+QString medDataIndex::asString() const
+{
+    QString returnString = QString::number(d->patientId) + " | " 
+        + QString::number(d->studyId) + " | " 
+        + QString::number(d->seriesId) + " | " 
+        + QString::number(d->imageId);
+    return returnString;
+}
+
+
+
+
+
 // /////////////////////////////////////////////////////////////////
 // Convenience operators
 // /////////////////////////////////////////////////////////////////

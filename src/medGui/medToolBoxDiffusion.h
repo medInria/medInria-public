@@ -20,7 +20,8 @@
 #ifndef MEDTOOLBOXDIFFUSION_H
 #define MEDTOOLBOXDIFFUSION_H
 
-#include <medGui/medToolBox.h>
+#include "medToolBox.h"
+#include "medGuiExport.h"
 
 class dtkAbstractView;
 class dtkAbstractData;
@@ -28,7 +29,7 @@ class dtkAbstractProcess;
 class medToolBoxDiffusionPrivate;
 class medDataIndex;
 
-class medToolBoxDiffusion : public medToolBox
+class MEDGUI_EXPORT medToolBoxDiffusion : public medToolBox
 {
     Q_OBJECT
 public:

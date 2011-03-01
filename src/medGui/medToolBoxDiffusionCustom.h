@@ -21,13 +21,14 @@
 #ifndef MEDTOOLBOXDIFFUSIONCUSTOM_H
 #define MEDTOOLBOXDIFFUSIONCUSTOM_H
 
-#include <medGui/medToolBox.h>
+#include "medToolBox.h"
+#include "medGuiExport.h"
 
 class medToolBoxDiffusion;
 class medToolBoxDiffusionCustomPrivate;
 class dtkAbstractProcess;
 
-class medToolBoxDiffusionCustom : public medToolBox
+class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
 {
     Q_OBJECT
 public:

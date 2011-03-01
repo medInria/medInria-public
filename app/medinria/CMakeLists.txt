@@ -23,89 +23,65 @@ project(medinria)
 ## Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS
-  medBrowserArea.h
-  medBrowserArea_p.h
-  medBrowserToolBoxJobs.h
+set(${PROJECT_NAME}_HEADERS_MOC
+  medBrowserArea.h  
   medBrowserToolBoxPacsHost.h
   medBrowserToolBoxPacsNodes.h
   medBrowserToolBoxPacsSearch.h
   medBrowserToolBoxSource.h
+  medBrowserToolBoxSettings.h
+  
   medMainWindow.h
   medViewerArea.h
-  medViewerArea_p.h
-  medViewerConfiguration.h
-  medViewerToolBoxConfiguration.h
-  
-  medViewerToolBoxPatient.h
-  medViewerToolBoxView.h
-  medViewerToolBoxSettings.h
-  medToolBoxFiberBundling.h
-  medToolBoxDiffusion.h
-  medToolBoxDiffusionCustom.h
+    
+  # specific configurations
   medViewerConfigurationDiffusion.h
-  medToolBoxRegistration.h
-  medToolBoxRegistrationCustom.h
   medViewerConfigurationVisualization.h
   medViewerConfigurationVisualization2.h
   medViewerConfigurationRegistration.h 
-  medToolBoxFiberView.h   
-  medViewerToolBoxLayout.h
-  medViewerToolBoxView.h
-)
-
-set(${PROJECT_NAME}_HEADERS_MOC
-  medBrowserArea.h
-  medBrowserToolBoxJobs.h
-  medBrowserToolBoxPacsHost.h
-  medBrowserToolBoxPacsNodes.h
-  medBrowserToolBoxPacsSearch.h
-  medBrowserToolBoxSource.h
-  medMainWindow.h
-  medViewerArea.h
-  medViewerToolBoxConfiguration.h
-  medViewerToolBoxPatient.h
-  medBrowserToolBoxSettings.h
-  medToolBoxFiberBundling.h
-  medToolBoxDiffusion.h
-  medToolBoxDiffusionCustom.h
-  medViewerConfigurationDiffusion.h
-  medToolBoxRegistration.h
-  medToolBoxRegistrationCustom.h
-  medViewerConfigurationVisualization.h
-  medViewerConfigurationVisualization2.h
-  medViewerConfigurationRegistration.h
-  medToolBoxFiberView.h     
-  medViewerToolBoxView.h
+  
+  medViewerToolBoxConfiguration.h  
+  medViewerToolBoxPatient.h  
+  
   )
 
+set(${PROJECT_NAME}_HEADERS
+  medViewerArea_p.h
+  medBrowserArea_p.h
+  ${${PROJECT_NAME}_HEADERS_MOC}  
+)
+
 set(${PROJECT_NAME}_SOURCES
+  main.cpp
   medBrowserArea.cpp
-  medBrowserToolBoxJobs.cpp
+  
   medBrowserToolBoxPacsHost.cpp
   medBrowserToolBoxPacsNodes.cpp
   medBrowserToolBoxPacsSearch.cpp
+  
   medBrowserToolBoxSource.cpp
+  medBrowserToolBoxSettings.cpp  
+  
   medMainWindow.cpp
   medViewerArea.cpp
-  medViewerToolBoxConfiguration.cpp
-  medViewerToolBoxPatient.cpp
-  main.cpp
-  medBrowserToolBoxSettings.cpp
-  medToolBoxFiberBundling.cpp
-  medToolBoxDiffusion.cpp
-  medToolBoxDiffusionCustom.cpp
+    
   medViewerConfigurationDiffusion.cpp
-  medToolBoxRegistration.cpp
-  medToolBoxRegistrationCustom.cpp
   medViewerConfigurationVisualization.cpp
   medViewerConfigurationVisualization2.cpp
-  medViewerConfigurationRegistration.cpp
-  medToolBoxFiberView.cpp  
-  medViewerToolBoxView.cpp
+  medViewerConfigurationRegistration.cpp  
+  
+  medViewerToolBoxConfiguration.cpp
+  medViewerToolBoxPatient.cpp  
   )
 
 set(${PROJECT_NAME}_RESOURCES medinria.qrc)
+
+# Include header files for Visual Studio.
+FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )
+set(${PROJECT_NAME}_SOURCES
+	${${PROJECT_NAME}_SOURCES}
+	${${PROJECT_NAME}_HEADERS_MOC}
+	)
 
 ## #################################################################
 ## Build rules

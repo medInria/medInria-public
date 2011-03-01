@@ -1,4 +1,4 @@
-#include "medToolBoxFiberBundling.h"
+#include "medToolBoxDiffusionFiberBundling.h"
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -7,9 +7,9 @@
 
 #include <medGui/medDropSite.h>
 #include <medCore/medDataManager.h>
-#include <medSql/medDatabaseController.h>
+//#include <medSql/medDatabaseController.h>
 
-class medToolBoxFiberBundlingPrivate
+class medToolBoxDiffusionFiberBundlingPrivate
 {
 public:
     QListWidget  *bundlingList;
@@ -26,7 +26,7 @@ public:
     dtkAbstractData *data;
 };
 
-medToolBoxFiberBundling::medToolBoxFiberBundling(QWidget *parent) : medToolBox(parent), d(new medToolBoxFiberBundlingPrivate)
+medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionFiberBundlingPrivate)
 {
     d->view = 0;
     d->data = 0;
@@ -72,13 +72,13 @@ medToolBoxFiberBundling::medToolBoxFiberBundling(QWidget *parent) : medToolBox(p
     this->addWidget(bundlingPage);
 }
 
-medToolBoxFiberBundling::~medToolBoxFiberBundling()
+medToolBoxDiffusionFiberBundling::~medToolBoxDiffusionFiberBundling()
 {
     delete d;
     d = NULL;
 }
 
-void medToolBoxFiberBundling::setData(dtkAbstractData *data)
+void medToolBoxDiffusionFiberBundling::setData(dtkAbstractData *data)
 {
     if (!data)
         return;
@@ -103,7 +103,7 @@ void medToolBoxFiberBundling::setData(dtkAbstractData *data)
     }
 }
 
-void medToolBoxFiberBundling::onObjectDropped(void)
+void medToolBoxDiffusionFiberBundling::onObjectDropped(void)
 {
     medDataIndex index = d->bundlingDropSite->index();
     
@@ -112,15 +112,13 @@ void medToolBoxFiberBundling::onObjectDropped(void)
     
     dtkAbstractData *data = medDataManager::instance()->data (index);
     if (!data) {
-        data = medDatabaseController::instance()->read(index);
-        if (data)
-            medDataManager::instance()->insert(index, data);
+        return;
     }
     
     this->setData(data);
 }
 
-void medToolBoxFiberBundling::onBundlingButtonVdtClicked (void)
+void medToolBoxDiffusionFiberBundling::onBundlingButtonVdtClicked (void)
 {
     bool ok;
     QString text = QInputDialog::getText(this, tr("Enter bundle name"),
@@ -133,7 +131,7 @@ void medToolBoxFiberBundling::onBundlingButtonVdtClicked (void)
     }
 }
 
-void medToolBoxFiberBundling::onBundleBoxCheckBoxToggled (bool value)
+void medToolBoxDiffusionFiberBundling::onBundleBoxCheckBoxToggled (bool value)
 {
     if (!d->view)
         return;
@@ -148,7 +146,7 @@ void medToolBoxFiberBundling::onBundleBoxCheckBoxToggled (bool value)
     } 
 }
 
-void medToolBoxFiberBundling::addBundle (QString name)
+void medToolBoxDiffusionFiberBundling::addBundle (QString name)
 {
     if(!d->data)
         return;
@@ -156,7 +154,7 @@ void medToolBoxFiberBundling::addBundle (QString name)
     d->bundlingList->addItem (name);
 }
 
-void medToolBoxFiberBundling::clear(void)
+void medToolBoxDiffusionFiberBundling::clear(void)
 {
     d->bundlingDropSite->clear();
     d->bundlingList->clear();
@@ -165,7 +163,7 @@ void medToolBoxFiberBundling::clear(void)
     d->data = 0;
 }
 
-void medToolBoxFiberBundling::update(dtkAbstractView *view)
+void medToolBoxDiffusionFiberBundling::update(dtkAbstractView *view)
 {
   // if(!d->data)
   //    return;

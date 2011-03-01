@@ -17,8 +17,8 @@
  * 
  */
 
-#ifndef MEDDATABASEREADER_H
-#define MEDDATABASEREADER_H
+#ifndef MEDDATABASENONPERSISTENTREADER_H
+#define MEDDATABASENONPERSISTENTREADER_H
 
 #include <QtCore/QObject>
 
@@ -26,15 +26,15 @@
 
 class dtkAbstractData;
 
-class medDatabaseNonPersitentReaderPrivate;
+class medDatabaseNonPersistentReaderPrivate;
 
-class medDatabaseNonPersitentReader : public QObject
+class medDatabaseNonPersistentReader : public QObject
 {
     Q_OBJECT
 
 public:
-     medDatabaseNonPersitentReader(const QString& file);
-    ~medDatabaseNonPersitentReader(void);
+     medDatabaseNonPersistentReader(const QString& file);
+    ~medDatabaseNonPersistentReader(void);
 
     medDataIndex run(void);
 
@@ -44,7 +44,7 @@ signals:
     void progressed(int);
 
 private:
-    medDatabaseNonPersitentReaderPrivate *d;
+    medDatabaseNonPersistentReaderPrivate *d;
 };
 
 #endif

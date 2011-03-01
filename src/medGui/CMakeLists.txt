@@ -23,15 +23,19 @@ project(medGui)
 ## Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS
+set(${PROJECT_NAME}_HEADERS_MOC
+  
+  # general setting classes  
+  medSettingsWidget.h
+  medSettingsWidgetFactory.h
+  
+  # specific setting classes
   medDatabaseSettingsWidget.h
   medSettingsEditor.h
   medSystemSettingsWidget.h
   medStartupSettingsWidget.h
-  
-  medSettingsWidget.h
-  medSettingsWidgetFactory.h
-  
+ 
+  medBrowserToolBoxJobs.h
   medClutEditor.h
   medDropSite.h
   medFlicker.h
@@ -40,6 +44,7 @@ set(${PROJECT_NAME}_HEADERS
   medStatusQuitButton.h
   medPacsSelector.h
   
+  # general toolbox classes
   medToolBox.h
   medToolBoxBody.h
   medToolBoxHeader.h
@@ -47,67 +52,52 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxFactory.h
   medToolBoxContainer.h
   
+  # specific toolbox classes
+  medToolBoxDiffusion.h
+  medToolBoxDiffusionCustom.h
+  medToolBoxDiffusionFiberView.h   
+  medToolBoxDiffusionFiberBundling.h
+  medToolBoxRegistration.h
+  medToolBoxRegistrationCustom.h
+  
+  # viewer stuff
   medViewPool.h
   medViewContainer.h
-  medViewContainer_p.h
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
   medViewContainerStack.h
-  medWorkspaceShifter.h
-  medLUTtoXMLWriter.h
-  medXMLtoLUTReader.h
+  
+  medWorkspaceShifter.h 
   medSaveLUTDialog.h
   medLoadLUTDialog.h
+  
+  # general configuration classes
   medViewerConfiguration.h  
   medViewerConfigurationFactory.h
   medViewerToolBoxLayout.h
+  medViewerToolBoxView.h
+
+  )
+set(${PROJECT_NAME}_HEADERS
+  medLUTtoXMLWriter.h
+  medXMLtoLUTReader.h
+  medViewContainer_p.h
+  ${${PROJECT_NAME}_HEADERS_MOC}
   )
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  medSettingsEditor.h
-  medDatabaseSettingsWidget.h
-  medSystemSettingsWidget.h
-  medStartupSettingsWidget.h
-  
-  medSettingsWidget.h
-  medSettingsWidgetFactory.h
-  medClutEditor.h
-  medDropSite.h
-  medFlicker.h
-  medLayoutChooser.h
-  medProgressionStack.h
-  medStatusQuitButton.h
-  medPacsSelector.h
-  
-  medToolBox.h
-  medToolBoxBody.h
-  medToolBoxHeader.h
-  medToolBoxTab.h
-  medToolBoxFactory.h
-  medToolBoxContainer.h
-  
-  medViewPool.h
-  medViewContainer.h
-  medViewContainerCustom.h
-  medViewContainerMulti.h
-  medViewContainerSingle.h
-  medViewContainerStack.h
-  medWorkspaceShifter.h
-  medSaveLUTDialog.h
-  medLoadLUTDialog.h
-  medViewerConfigurationFactory.h
-  medViewerConfiguration.h
-  medViewerToolBoxLayout.h  
-  )
+
 
 set(${PROJECT_NAME}_SOURCES
+  medSettingsWidget.cpp
+  medSettingsWidgetFactory.cpp 
+  
   medSettingsEditor.cpp
   medDatabaseSettingsWidget.cpp
   medStartupSettingsWidget.cpp
   medSystemSettingsWidget.cpp
-  medSettingsWidget.cpp
-  medSettingsWidgetFactory.cpp
+
+  medBrowserToolBoxJobs.cpp
   medClutEditor.cpp
   medDropSite.cpp
   medFlicker.cpp
@@ -123,6 +113,13 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxFactory.cpp
   medToolBoxContainer.cpp 
   
+  medToolBoxDiffusion.cpp
+  medToolBoxDiffusionCustom.cpp
+  medToolBoxDiffusionFiberView.cpp   
+  medToolBoxDiffusionFiberBundling.cpp
+  medToolBoxRegistration.cpp
+  medToolBoxRegistrationCustom.cpp
+  
   medViewPool.cpp
   medViewContainer.cpp
   medViewContainerCustom.cpp
@@ -134,10 +131,19 @@ set(${PROJECT_NAME}_SOURCES
   medXMLToLUTReader.cpp
   medSaveLUTDialog.cpp
   medLoadLUTDialog.cpp
+  
   medViewerConfigurationFactory.cpp
   medViewerConfiguration.cpp
   medViewerToolBoxLayout.cpp
+  medViewerToolBoxView.cpp
   )
+
+# Include header files for Visual Studio.
+FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )
+set(${PROJECT_NAME}_SOURCES
+	${${PROJECT_NAME}_SOURCES}
+	${${PROJECT_NAME}_HEADERS_MOC}
+	)
 
 ## #################################################################
 ## Build rules

@@ -1,24 +1,24 @@
 #include "medViewerConfigurationDiffusion.h"
 
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerStack.h>
-
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include "medViewerToolBoxView.h"
-#include "medToolBoxFiberView.h"
-#include "medToolBoxDiffusion.h"
-#include "medToolBoxFiberBundling.h"
+#include <medGui/medViewContainer.h>
+#include <medGui/medViewContainerStack.h>
+#include <medGui/medViewerToolBoxView.h>
+#include <medGui/medToolBoxDiffusion.h>
+#include <medGui/medToolBoxDiffusionFiberView.h>
+#include <medGui/medToolBoxDiffusionFiberBundling.h>
+
 
 class medViewerConfigurationDiffusionPrivate
 {
 public:
     medViewerToolBoxView    *viewToolBox;
-    medToolBoxFiberView     *fiberViewToolBox;
-    medToolBoxFiberBundling *fiberBundlingToolBox;
+    medToolBoxDiffusionFiberView     *fiberViewToolBox;
+    medToolBoxDiffusionFiberBundling *fiberBundlingToolBox;
     medToolBoxDiffusion     *diffusionToolBox;    
     
     QList<dtkAbstractView *> views;
@@ -35,7 +35,7 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
 
     // -- Bundling  toolbox --
     
-    d->fiberBundlingToolBox = new medToolBoxFiberBundling(parent);
+    d->fiberBundlingToolBox = new medToolBoxDiffusionFiberBundling(parent);
     
     // -- Diffusion toolbox --
 
@@ -47,7 +47,7 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
             this, SLOT(removeToolBox(medToolBox *)));
     
     // -- Fiber view tb --
-    d->fiberViewToolBox = new medToolBoxFiberView(parent);
+    d->fiberViewToolBox = new medToolBoxDiffusionFiberView(parent);
 
     connect(d->fiberViewToolBox, SIGNAL(fiberColorModeChanged(int)), this, SLOT(onFiberColorModeChanged(int)));
     connect(d->fiberViewToolBox, SIGNAL(GPUActivated(bool)),         this, SLOT(onGPUActivated(bool)));

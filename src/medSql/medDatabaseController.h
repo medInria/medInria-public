@@ -21,82 +21,34 @@
 #define MEDDATABASECONTROLLER_H
 
 #include "medSqlExport.h"
+#include "medDatabaseControllerImpl.h"
 
-#include <medCore/medDataIndex.h>
+class medAbstractDbController;
 
-#include <QtCore>
-#include <QtSql>
-
-class dtkAbstractData;
-
+/**
+ * This is just a singleton that instantiates one medDatabaseControllerImpl implementation
+ */
 class MEDSQL_EXPORT medDatabaseController : public QObject
 {
     Q_OBJECT
 
 public:
-    static QPointer<medDatabaseController> instance(void);
-    
-    void destroy(void);
-
-    QSqlDatabase *database(void);
-
-    bool createConnection(void);
-    bool  closeConnection(void);
-
-    medDataIndex indexForPatient(int id);
-    medDataIndex indexForStudy  (int id);
-    medDataIndex indexForSeries (int id);
-    medDataIndex indexForImage  (int id);
-
-    QStringList patientNames(void);
-
-    dtkAbstractData *read(const QString& file);
-    dtkAbstractData *read(const medDataIndex& index);
-    dtkAbstractData *read(int patientId, int studyId, int seriesId);
-    dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId);
 
     /**
-    * moveDatabase - Change the database directory location
-    * @params: QString newLocation - needs to be a valid directory name
-    * @return   bool
+    * get an instance of medDatabaseControllerImpl, not of medDatabaseController
+    * @return QPointer<medDbController>
     */
-    bool moveDatabase(QString newLocation);
-
-    bool isConnected();
-
-signals:
-    void updated(void);
-    void copyMessage(QString, int, QColor);
-
-public slots:
-    void import(const QString& file);
-
-protected:
-    medDatabaseController();
-    ~medDatabaseController();
-
-    // some helpers
-    bool copyFiles(QStringList sourceList, QStringList destList);
-    bool createDestination(QStringList sourceList, QStringList& destList, QString sourceDir, QString destDir);
-    void recurseAddDir(QDir d, QStringList & list);
-    bool removeDir(QString dirName);
-
-
-
-
+    static QPointer<medDatabaseControllerImpl> instance(void);
+    
+    /**
+    * destroy instance of medDbController
+    */
+    static void destroy(void);
 
 private:
-    void createPatientTable(void);
-    void   createStudyTable(void);
-    void  createSeriesTable(void);
-    void   createImageTable(void);
-
-private:
-    QSqlDatabase m_database;
-    static bool         m_isConnected;
-
-private:
-    static medDatabaseController *s_instance;
+    static medDatabaseControllerImpl *s_instance;
 };
+
+MEDSQL_EXPORT medAbstractDbController* createDbController();
 
 #endif

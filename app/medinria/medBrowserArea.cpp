@@ -19,7 +19,7 @@
 
 #include "medBrowserArea.h"
 #include "medBrowserArea_p.h"
-#include "medBrowserToolBoxJobs.h"
+
 #include "medBrowserToolBoxPacsHost.h"
 #include "medBrowserToolBoxPacsNodes.h"
 #include "medBrowserToolBoxPacsSearch.h"
@@ -45,6 +45,7 @@
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medPacsSelector.h>
+#include <medGui/medBrowserToolBoxJobs.h>
 
 #include <medPacs/medPacsWidget.h>
 #include <medPacs/medPacsMover.h>

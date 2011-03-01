@@ -19,7 +19,7 @@
 
 #include "medViewerConfigurationVisualization.h"
 
-#include "medViewerToolBoxView.h"
+#include <medGui/medViewerToolBoxView.h>
 
 class medViewerConfigurationVisualizationPrivate
 {

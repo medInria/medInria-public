@@ -1,18 +1,19 @@
-#ifndef MEDTOOLBOXFIBERBUNDLING_H
-#define MEDTOOLBOXFIBERBUNDLING_H
+#ifndef MEDTOOLBOXDIFFUSIONFIBERBUNDLING_H
+#define MEDTOOLBOXDIFFUSIONFIBERBUNDLING_H
 
-#include <medGui/medToolBox.h>
+#include "medToolBox.h"
+#include "medGuiExport.h"
 
 class dtkAbstractView;
 class dtkAbstractData;
-class medToolBoxFiberBundlingPrivate;
+class medToolBoxDiffusionFiberBundlingPrivate;
 
-class medToolBoxFiberBundling : public medToolBox
+class MEDGUI_EXPORT medToolBoxDiffusionFiberBundling : public medToolBox
 {
     Q_OBJECT
 public:
-    medToolBoxFiberBundling(QWidget *parent);
-    ~medToolBoxFiberBundling();
+    medToolBoxDiffusionFiberBundling(QWidget *parent);
+    ~medToolBoxDiffusionFiberBundling();
     
     void setData(dtkAbstractData *data);
     
@@ -33,7 +34,7 @@ public slots:
     void update (dtkAbstractView *view);
     
 private:
-    medToolBoxFiberBundlingPrivate *d;
+    medToolBoxDiffusionFiberBundlingPrivate *d;
     
 };
 

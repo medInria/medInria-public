@@ -41,6 +41,8 @@ public:
     bool isValidForSeries (void) const;
     bool isValidForImage  (void) const;
 
+    QString asString() const;
+
     int patientId(void) const;
     int   studyId(void) const;
     int  seriesId(void) const;

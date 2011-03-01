@@ -24,8 +24,8 @@
 #include "medDatabaseNavigatorItemGroup.h"
 #include "medDatabaseNavigatorScene.h"
 #include "medDatabaseNavigatorView.h"
-#include "medSql/medDatabaseNonPersitentItem.h"
-#include "medSql/medDatabaseNonPersitentController.h"
+#include "medSql/medDatabaseNonPersistentItem.h"
+#include "medSql/medDatabaseNonPersistentController.h"
 
 #include <medCore/medStorage.h>
 
@@ -161,7 +161,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 
     QMap<QString, medDatabaseNavigatorItemGroup*> groupMap;
 
-    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
+    foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items()) {
 
         if(item->index().patientId() == patientId) {
 

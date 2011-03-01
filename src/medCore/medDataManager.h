@@ -30,6 +30,10 @@ class dtkAbstractDataFactory;
 
 class medDataManagerPrivate;
 
+/**
+ * This class is the global access point to data stored in the database. 
+ * It tries to use several database-controllers to provide data
+ */
 class MEDCORE_EXPORT medDataManager : public QObject
 {
     Q_OBJECT

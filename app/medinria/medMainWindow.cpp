@@ -32,10 +32,12 @@
 
 #include <medCore/medMessageController.h>
 #include <medCore/medSettingsManager.h>
+#include <medCore/medDbControllerFactory.h>
 
 #include <medGui/medStatusQuitButton.h>
 #include <medGui/medWorkspaceShifter.h>
 
+#include <medSql/medDatabaseControllerImpl.h>
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseModel.h>
@@ -180,20 +182,14 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
 
     //Register settingsWidgets
-    medSettingsWidgetFactory::instance()->
-            registerSettingsWidget("System",
-                                   createSystemSettingsWidget);
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
 
-    medSettingsWidgetFactory::instance()->
-            registerSettingsWidget("Startup",
-                                   createStartupSettingsWidget);
-
-    medSettingsWidgetFactory::instance()->
-            registerSettingsWidget("Database",
-                                   createDatabaseSettingsWidget);
+    //Register dbController from singleton
+    medDbControllerFactory::instance()->registerDbController("dbController", createDbController);
 
     // Setting up status bar
-
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
     d->shiftToViewerAreaAction = new medWorkspaceShifterAction("Viewer");
 
@@ -239,17 +235,17 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     d->viewerArea->setupConfiguration("Visualization");
 
-	// if the user configured a default area we need to show it
+    // if the user configured a default area we need to show it
     medSettingsManager * mnger = medSettingsManager::instance();
-	QVariant vArea = mnger->value("startup", "default_starting_area");
+    QVariant vArea = mnger->value("startup", "default_starting_area");
 
     if (!vArea.isNull()){
-		QString area = vArea.toString();
+        QString area = vArea.toString();
 
-		if (area.compare("Browser") == 0)
-    		switchToBrowserArea();
-    	else if (area.compare("Viewer") == 0)
-    		switchToViewerArea();
+        if (area.compare("Browser") == 0)
+            switchToBrowserArea();
+        else if (area.compare("Viewer") == 0)
+            switchToViewerArea();
     }
 
     connect(configurationSwitcher, SIGNAL(activated(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
@@ -384,6 +380,5 @@ void medMainWindow::closeEvent(QCloseEvent *event)
 {
     this->writeSettings();
 
-    if (medDatabaseController::instance())
-        medDatabaseController::instance()->destroy();
+    medDatabaseController::destroy();
 }

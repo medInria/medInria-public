@@ -1,6 +1,6 @@
-#include "medToolBoxFiberView.h"
+#include "medToolBoxDiffusionFiberView.h"
 
-class medToolBoxFiberViewPrivate
+class medToolBoxDiffusionFiberViewPrivate
 {
 public:
     QComboBox    *colorCombo;
@@ -12,7 +12,7 @@ public:
 };
 
 
-medToolBoxFiberView::medToolBoxFiberView(QWidget *parent) : medToolBox(parent), d(new medToolBoxFiberViewPrivate)
+medToolBoxDiffusionFiberView::medToolBoxDiffusionFiberView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionFiberViewPrivate)
 {
     QWidget *displayWidget = new QWidget(this);
     
@@ -74,12 +74,12 @@ medToolBoxFiberView::medToolBoxFiberView(QWidget *parent) : medToolBox(parent), 
     this->addWidget(displayWidget);
 }
 
-medToolBoxFiberView::~medToolBoxFiberView()
+medToolBoxDiffusionFiberView::~medToolBoxDiffusionFiberView()
 {
     delete d;
     d = NULL;
 }
 
-void medToolBoxFiberView::update (dtkAbstractView *view)
+void medToolBoxDiffusionFiberView::update (dtkAbstractView *view)
 {
 }

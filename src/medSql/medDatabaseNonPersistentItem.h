@@ -17,8 +17,8 @@
  * 
  */
 
-#ifndef MEDDATABASENONPERSITENTITEM_H
-#define MEDDATABASENONPERSITENTITEM_H
+#ifndef MEDDATABASENONPERSISTENTITEM_H
+#define MEDDATABASENONPERSISTENTITEM_H
 
 #include "medSqlExport.h"
 
@@ -29,15 +29,15 @@
 
 class dtkAbstractData;
 
-class medDatabaseNonPersitentItemPrivate;
+class medDatabaseNonPersistentItemPrivate;
 
-class MEDSQL_EXPORT medDatabaseNonPersitentItem : public QObject
+class MEDSQL_EXPORT medDatabaseNonPersistentItem : public QObject
 {
     Q_OBJECT
 
 public:
-     medDatabaseNonPersitentItem(void);
-    ~medDatabaseNonPersitentItem(void);
+     medDatabaseNonPersistentItem(void);
+    ~medDatabaseNonPersistentItem(void);
 
     const QString& name(void) const;
     const QString& studyName(void) const;
@@ -50,10 +50,10 @@ public:
 
 private:
     friend class medDatabaseNonPersitentController;
-    friend class medDatabaseNonPersitentReader;
+    friend class medDatabaseNonPersistentReader;
 
 private:
-    medDatabaseNonPersitentItemPrivate *d;
+    medDatabaseNonPersistentItemPrivate *d;
 };
 
 #endif

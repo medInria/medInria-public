@@ -5,9 +5,8 @@
 
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerStack.h>
-
-#include "medViewerToolBoxView.h"
-#include "medToolBoxRegistration.h"
+#include <medGui/medViewerToolBoxView.h>
+#include <medGui/medToolBoxRegistration.h>
 
 class medViewerConfigurationRegistrationPrivate
 {

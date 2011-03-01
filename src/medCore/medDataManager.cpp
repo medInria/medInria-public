@@ -22,12 +22,33 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
+#include "medDbControllerFactory.h"
+#include "medAbstractDbController.h"
+
 #include <QtCore>
 
 class medDataManagerPrivate
 {
 public:
+
+    medDataManagerPrivate()
+    {
+        dbController = NULL;
+    }
+
     QHash<medDataIndex, dtkAbstractData *> datas;
+
+    medAbstractDbController* getDbController()
+    {
+        if (dbController == NULL)
+        {
+         dbController = medDbControllerFactory::instance()->createDbController("dbController");
+        }
+        return dbController;
+    }
+
+private:
+    medAbstractDbController* dbController; 
 };
 
 medDataManager *medDataManager::instance(void)
@@ -52,7 +73,26 @@ void medDataManager::remove(const medDataIndex& index)
 
 dtkAbstractData *medDataManager::data(const medDataIndex& index)
 {
-    return d->datas.value(index);
+    // try to load the data from db
+    medAbstractDbController* db = d->getDbController();
+
+    if (!db)
+    {
+        qWarning() << "No dbController registered, cannot read data";
+        return NULL;
+    }
+
+    dtkAbstractData* dtkdata = db->read(index);
+
+    if (dtkdata)
+    {
+        return dtkdata;
+    }
+    else
+    {
+        qWarning() << "unable to open images with index:" << index.asString();
+        return NULL;
+    }
 }
 
 QList<dtkAbstractData *> medDataManager::dataForPatient(int id)

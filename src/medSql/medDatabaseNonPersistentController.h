@@ -17,10 +17,10 @@
  * 
  */
 
-#ifndef MEDDATABASENONPERSITENTCONTROLLER_H
-#define MEDDATABASENONPERSITENTCONTROLLER_H
+#ifndef MEDDATABASENONPERSISTENTCONTROLLER_H
+#define MEDDATABASENONPERSISTENTCONTROLLER_H
 
-#include "medDatabaseNonPersitentItem.h"
+#include "medDatabaseNonPersistentItem.h"
 #include "medSqlExport.h"
 
 #include <medCore/medDataIndex.h>
@@ -30,23 +30,23 @@
 
 class dtkAbstractData;
 
-class medDatabaseNonPersitentControllerPrivate;
+class medDatabaseNonPersistentControllerPrivate;
 
-class MEDSQL_EXPORT medDatabaseNonPersitentController : public QObject
+class MEDSQL_EXPORT medDatabaseNonPersistentController : public QObject
 {
     Q_OBJECT
 
 public:
-    static medDatabaseNonPersitentController *instance(void);
+    static medDatabaseNonPersistentController *instance(void);
 
     static int& patientId(void);
     static int&   studyId(void);
     static int&  seriesId(void);
     static int&   imageId(void);
 
-    QList<medDatabaseNonPersitentItem *> items(void);
+    QList<medDatabaseNonPersistentItem *> items(void);
 
-    void insert(medDataIndex index, medDatabaseNonPersitentItem *item);
+    void insert(medDataIndex index, medDatabaseNonPersistentItem *item);
 
     dtkAbstractData *data(const medDataIndex& index);
 
@@ -57,17 +57,17 @@ public slots:
     medDataIndex read(const QString& file);
 
 public:
-    static int nonPersitentDataStartingIndex(void);
+    static int nonPersistentDataStartingIndex(void);
 
 protected:
-     medDatabaseNonPersitentController(void);
-    ~medDatabaseNonPersitentController(void);
+     medDatabaseNonPersistentController(void);
+    ~medDatabaseNonPersistentController(void);
 
 private:
-    static medDatabaseNonPersitentController *s_instance;
+    static medDatabaseNonPersistentController *s_instance;
 
 private:
-    medDatabaseNonPersitentControllerPrivate *d;
+    medDatabaseNonPersistentControllerPrivate *d;
 };
 
 #endif

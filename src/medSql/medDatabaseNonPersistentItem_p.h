@@ -17,8 +17,8 @@
  * 
  */
 
-#ifndef MEDDATABASENONPERSITENTITEM_P_H
-#define MEDDATABASENONPERSITENTITEM_P_H
+#ifndef MEDDATABASENONPERSISTENTITEM_P_H
+#define MEDDATABASENONPERSISTENTITEM_P_H
 
 #include <medCore/medDataIndex.h>
 
@@ -27,7 +27,7 @@
 
 class dtkAbstractData;
 
-class medDatabaseNonPersitentItemPrivate
+class medDatabaseNonPersistentItemPrivate
 {
 public:
     QString name;
