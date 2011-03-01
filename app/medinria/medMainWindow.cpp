@@ -37,8 +37,8 @@
 #include <medGui/medStatusQuitButton.h>
 #include <medGui/medWorkspaceShifter.h>
 
-#include <medSql/medDatabaseControllerImpl.h>
 #include <medSql/medDatabaseController.h>
+#include <medSql/medDatabaseNonPersistentController.h>
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseItem.h>
@@ -186,8 +186,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
 
-    //Register dbController from singleton
-    medDbControllerFactory::instance()->registerDbController("dbController", createDbController);
+    //Register dbController 
+    medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
+    medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
 
     // Setting up status bar
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");

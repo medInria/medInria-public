@@ -73,7 +73,7 @@ void medDatabaseNavigatorItemGroup::addItem(medDatabaseNavigatorItem *item)
 
     d->item_count++;
 
-    if(item->patientId() >= medDatabaseNonPersistentController::nonPersistentDataStartingIndex())
+    if(item->patientId() >= medDatabaseNonPersistentController::instance()->nonPersistentDataStartingIndex())
         d->non_persitent = true;
 }
 

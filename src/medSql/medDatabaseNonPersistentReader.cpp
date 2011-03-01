@@ -269,7 +269,7 @@ medDataIndex medDatabaseNonPersistentReader::run(void)
         }
 
     if (patientId==-1)
-        patientId = medDatabaseNonPersistentController::patientId()++;
+        patientId = medDatabaseNonPersistentController::instance()->patientId(true);
 
     int studyId = -1;
     QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
@@ -280,9 +280,9 @@ medDataIndex medDatabaseNonPersistentReader::run(void)
         }
 
     if (studyId==-1)
-        studyId = medDatabaseNonPersistentController::studyId()++;
+        studyId = medDatabaseNonPersistentController::instance()->studyId(true);
     
-    index = medDataIndex (patientId, studyId, medDatabaseNonPersistentController::seriesId()++, 0);
+    index = medDataIndex (patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), 0);
 
         QFileInfo info(d->file);
 

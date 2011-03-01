@@ -38,6 +38,7 @@ set(${PROJECT_NAME}_HEADERS
   medDatabaseNavigatorScene.h
   medDatabaseNavigatorView.h
   medDatabaseNonPersistentController.h
+  medDatabaseNonPersistentControllerImpl.h
   medDatabaseNonPersistentItem.h
   medDatabaseNonPersistentReader.h
   medDatabasePreview.h
@@ -66,6 +67,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseNavigatorItemLoader.h
   medDatabaseNavigatorView.h
   medDatabaseNonPersistentController.h
+  medDatabaseNonPersistentControllerImpl.h
   medDatabaseNonPersistentItem.h
   medDatabaseNonPersistentReader.h
   medDatabasePreview.h
@@ -95,6 +97,7 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseNavigatorScene.cpp
   medDatabaseNavigatorView.cpp
   medDatabaseNonPersistentController.cpp
+  medDatabaseNonPersistentControllerImpl.cpp
   medDatabaseNonPersistentItem.cpp
   medDatabaseNonPersistentReader.cpp
   medDatabasePreview.cpp

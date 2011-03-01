@@ -29,20 +29,15 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserToolBoxPacsNodes.h
   medBrowserToolBoxPacsSearch.h
   medBrowserToolBoxSource.h
-  medBrowserToolBoxSettings.h
-  
+  medBrowserToolBoxSettings.h  
   medMainWindow.h
-  medViewerArea.h
-    
-  # specific configurations
+  medViewerArea.h    
   medViewerConfigurationDiffusion.h
   medViewerConfigurationVisualization.h
   medViewerConfigurationVisualization2.h
-  medViewerConfigurationRegistration.h 
-  
+  medViewerConfigurationRegistration.h   
   medViewerToolBoxConfiguration.h  
-  medViewerToolBoxPatient.h  
-  
+  medViewerToolBoxPatient.h    
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -53,25 +48,20 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_SOURCES
   main.cpp
-  medBrowserArea.cpp
-  
+  medBrowserArea.cpp  
   medBrowserToolBoxPacsHost.cpp
   medBrowserToolBoxPacsNodes.cpp
-  medBrowserToolBoxPacsSearch.cpp
-  
+  medBrowserToolBoxPacsSearch.cpp  
   medBrowserToolBoxSource.cpp
-  medBrowserToolBoxSettings.cpp  
-  
+  medBrowserToolBoxSettings.cpp    
   medMainWindow.cpp
-  medViewerArea.cpp
-    
+  medViewerArea.cpp    
+  medViewerToolBoxConfiguration.cpp
+  medViewerToolBoxPatient.cpp  
   medViewerConfigurationDiffusion.cpp
   medViewerConfigurationVisualization.cpp
   medViewerConfigurationVisualization2.cpp
   medViewerConfigurationRegistration.cpp  
-  
-  medViewerToolBoxConfiguration.cpp
-  medViewerToolBoxPatient.cpp  
   )
 
 set(${PROJECT_NAME}_RESOURCES medinria.qrc)

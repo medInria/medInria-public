@@ -34,6 +34,7 @@ public:
     medDataManagerPrivate()
     {
         dbController = NULL;
+        nonPersDbController = NULL;
     }
 
     QHash<medDataIndex, dtkAbstractData *> datas;
@@ -42,13 +43,28 @@ public:
     {
         if (dbController == NULL)
         {
-         dbController = medDbControllerFactory::instance()->createDbController("dbController");
+         dbController = medDbControllerFactory::instance()->createDbController("DbController");
+         if (!dbController)
+             qWarning() << "No dbController registered!";
         }
         return dbController;
     }
 
+    medAbstractDbController* getNonPersDbController()
+    {
+        if (nonPersDbController == NULL)
+        {
+            nonPersDbController  = medDbControllerFactory::instance()->createDbController("NonPersistentDbController");
+            if (!nonPersDbController)
+                qWarning() << "No nonPersistentDbController registered!";
+        }
+        return nonPersDbController ;
+    }
+
 private:
     medAbstractDbController* dbController; 
+    medAbstractDbController* nonPersDbController; 
+
 };
 
 medDataManager *medDataManager::instance(void)
@@ -73,16 +89,24 @@ void medDataManager::remove(const medDataIndex& index)
 
 dtkAbstractData *medDataManager::data(const medDataIndex& index)
 {
+    dtkAbstractData* dtkdata = NULL;
+
     // try to load the data from db
     medAbstractDbController* db = d->getDbController();
-
-    if (!db)
+    if (db)
     {
-        qWarning() << "No dbController registered, cannot read data";
-        return NULL;
+        dtkdata = db->read(index);
     }
 
-    dtkAbstractData* dtkdata = db->read(index);
+    //if the data is still invalid we continue in the non-pers db
+    if (!dtkdata)
+    {
+        medAbstractDbController* npDb = d->getNonPersDbController();
+        if(npDb)
+        {
+            dtkdata = npDb->read(index);
+        }
+    }
 
     if (dtkdata)
     {
