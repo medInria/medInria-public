@@ -105,7 +105,7 @@ bool medSystemSettingsWidget::write()
     mnger->setValue("scripts","modules_path",d->modulesPathField->text());
     mnger->setValue("scripts","script_path",d->scriptsPathField->text());
 
-    medPluginManager::instance()->setPath(d->pluginsPathField->text());
+    //medPluginManager::instance()->setPath(d->pluginsPathField->text());
     //dtkScriptManager::instance()->setScriptPath(d->scriptsPathField->text());
     //dtkScriptManager::instance()->setModulePath(d->modulePathField->text());
 
