@@ -3,7 +3,7 @@
         <file>medinria.ico</file>
         <file>icons/quit.png</file>
         <file>icons/anchor.png</file>
-	<file>icons/cog.png</file>
+<file>icons/cog.png</file>
         <file>icons/cropping.png</file>
         <file>icons/error.png</file>
         <file>icons/error_add.png</file>
@@ -71,7 +71,12 @@
         <file>icons/zoom.tiff</file>
         <file>icons/zoom_in.png</file>
         <file>icons/zoom_out.png</file>
-        <file>medinria.qss</file>
+        <file>icons/backward.png</file>
+        <file>icons/forward.png</file>
+      <file>icons/pause.jpg</file>
+      <file>icons/play.jpg</file>
+      <file>icons/stop.ico</file>
+      <file>medinria.qss</file>
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/frame.png</file>
         <file>pixmaps/scrollbar-horizontal-addline.png</file>

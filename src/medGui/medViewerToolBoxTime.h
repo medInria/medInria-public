@@ -3,9 +3,22 @@
 
 #include <medGui/medToolBox.h>
 
+
 class dtkAbstractView;
 class dtkAbstractData;
 class medViewerToolBoxTimePrivate;
+/* medViewerToolBoxTime.h ---
+ * 
+ * Author: Fatih Arslan and Nicolas Toussaint
+
+/* Commentary: 
+ * Class Declaration for 4D Image Support
+ */
+
+/* Change log:
+ * 
+ */
+
 class med4DAbstractViewInteractor;
 
 class medViewerToolBoxTime : public medToolBox
@@ -17,14 +30,20 @@ public:
     ~medViewerToolBoxTime(void);
 
     void update(dtkAbstractView *view);
-
+	
 public slots:
     
-    void onPlaySequences(bool);
+    void onPlaySequences();
+	void onNextFrame(bool);
+	void onPreviousFrame(bool);
     void onTimeChanged(int);
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
     void onDataAdded (dtkAbstractData* data);
+	void onSpinBoxChanged(int);
+	void onStopButton();
+	void onStepIncreased( );
+	
 
  protected:
 
@@ -35,9 +54,13 @@ public slots:
 
     double getTimeFromSliderValue (unsigned int);
     unsigned int getSliderValueFromTime (double);
+	void mouseReleaseEvent ( QMouseEvent *  );
     
 private:
     medViewerToolBoxTimePrivate *d;
+	bool isViewAdded;
+	QString DoubleToQString(double); 
+    
     
 };
 
