@@ -50,15 +50,21 @@ public:
 
     bool registerCustomRegistrationToolBox(QString type, medToolBoxRegistrationCustomCreator func);
     bool registerCustomDiffusionToolBox(QString type, medToolBoxDiffusionCustomCreator func);
+	
+	  /** Register a new source data toolbox (called by the plugin when registering itself) */
     bool registerSourceDataToolBox(QString type, medToolBoxSourceDataCreator func);
 
     QList<QString> registrationToolBoxes(void);
     QList<QString> diffusionToolBoxes(void);
+	
+	  /** Get list of all source data toolboxes */ 
     QList<QString> sourcedataToolBoxes(void);
 
 public slots:
     medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString type);
     medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString type);
+	
+		/** Slot to create a dynamic source data medToolBoxSourceData */
     medToolBoxSourceData *createSourceDataToolBox(QString type);
 
 protected:
