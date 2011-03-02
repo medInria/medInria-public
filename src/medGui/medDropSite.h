@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 17:39:32 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Mon Feb 22 21:14:38 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 9
+ * Last-Updated: Wed Mar  2 15:44:37 2011 (+0100)
+ *           By: Jaime Garcia_Guevara
+ *     Update #: 10
  */
 
 /* Commentary: 
@@ -40,8 +40,10 @@ public:
 
 public:
     medDataIndex index(void) const;
+
 public slots:
     void clear(void);
+
 signals:
     void objectDropped (void);
     
