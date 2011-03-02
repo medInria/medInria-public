@@ -49,7 +49,6 @@ include(medinriaDart)
 
 option(BUILD_DOCUMENTATION "Build documentation"    true)
 
-
 add_subdirectory(src)
 add_subdirectory(app)
 
