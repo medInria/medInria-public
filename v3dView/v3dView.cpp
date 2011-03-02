@@ -667,18 +667,28 @@ void v3dView::setData(dtkAbstractData *data)
 	d->view3d->SetITKInput(image);
       }
     }
-    else if (data->description()=="itkDataImageUShort4") {
+    /*else if (data->description()=="itkDataImageUShort4") {
       if( itk::Image<unsigned short, 4>* image = dynamic_cast<itk::Image<unsigned short, 4>*>( (itk::Object*)( data->data() ) ) ) {
 	d->view2d->SetITKInput4(image);
 	d->view3d->SetITKInput4(image);
       }
+    }*/
+	else if (data->description()=="itkDataImageUShort4") {
+        this->enableInteractor ( "v3dView4DInteractor" );
+    	// This will add the data to the interactor.
+    	dtkAbstractView::setData(data);
     }
-    else if (data->description()=="itkDataImageFloat4") {
+    /*else if (data->description()=="itkDataImageFloat4") {
       if( itk::Image<float, 4>* image = dynamic_cast<itk::Image<float, 4>*>( (itk::Object*)( data->data() ) ) ) {
 	d->view2d->SetITKInput4(image);
 	d->view3d->SetITKInput4(image);
       }
-    }	
+    }*/
+	else if (data->description()=="itkDataImageFloat4") {
+        this->enableInteractor ( "v3dView4DInteractor" );
+    	// This will add the data to the interactor.
+    	dtkAbstractView::setData(data);
+    }
     else if (data->description()=="itkDataImageInt3") {
       if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
 	d->view2d->SetITKInput(image);
@@ -739,6 +749,7 @@ void v3dView::setData(dtkAbstractData *data)
       else if ( data->description() == "vtkDataMesh" ) {
 	
 	this->enableInteractor ( "v3dViewMeshInteractor" );
+	
 	// This will add the data to the interactor.
 	dtkAbstractView::setData(data);
       }

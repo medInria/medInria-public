@@ -1,3 +1,14 @@
+/* v3dView4DInteractor.h ---
+ * 
+ * Author: Nicolas Toussaint
+
+/* Commentary: 
+ * Class Declaration for the interactor of 4D Image Support 
+ */
+
+/* Change log:
+ * 
+ */
 #ifndef V3DVIEW4DINTERACTOR_H
 #define V3DVIEW4DINTERACTOR_H
 
@@ -40,8 +51,9 @@ public:
     void setCurrentTime (double time);
     double getCurrentTime (void)
     { return this->currentTime; }
-    
+    //Assigns ranfe array the minimum and maximum time of the sequence
     void sequencesRange (double* range);
+	//Returns minimum time step for the sequence 
     double sequencesMinTimeStep (void);
 
 public slots:
@@ -54,6 +66,7 @@ protected:
 signals:
 
 public slots:
+	//Add image to the sequence
     virtual void appendData(dtkAbstractData *data);
     
 private:
