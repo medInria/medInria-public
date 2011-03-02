@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 11:02:58 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 126
+ * Last-Updated: Wed Mar  2 16:57:02 2011 (+0100)
+ *           By: Jaime Garcia_Guevara
+ *     Update #: 133
  */
 
 /* Commentary:
@@ -142,6 +142,11 @@ medToolBoxDiffusion::~medToolBoxDiffusion(void)
     d = NULL;
 }
 
+medDataIndex medToolBoxDiffusion::dataIndex(void)
+{
+    return d->tractographyDropSite->index();
+}
+
 void medToolBoxDiffusion::onObjectDropped()
 {
     medDataIndex index = d->tractographyDropSite->index();
@@ -251,12 +256,12 @@ void medToolBoxDiffusion::run()
         return;
 
     dtkAbstractProcess *activeMethod = 0;
+
     if (d->activeMethods.contains (index))
         activeMethod = d->activeMethods[index];
 
-    if (!activeMethod) {
+    if (!activeMethod) 
         return;
-    }
 
     d->progression_stack->setLabel(activeMethod, "Progress:");
 
@@ -271,6 +276,7 @@ dtkAbstractData *medToolBoxDiffusion::output(void)
     medDataIndex index = d->tractographyDropSite->index();
     
     dtkAbstractProcess *activeMethod = 0;
+
     if (d->activeMethods.contains (index))
         activeMethod = d->activeMethods[index];
     
@@ -319,6 +325,8 @@ void medToolBoxDiffusion::createProcessForIndex (const medDataIndex &index)
 	    proc->setInput (data);
 
 	this->setRequiredOutputForProcess (proc, d->coefficientsCombo->currentIndex());
+
+        d->customToolBox->setProcess(d->activeMethods[index]);
     }
 }
 
