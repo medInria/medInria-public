@@ -135,6 +135,7 @@ void medToolBoxFiltering::onObjectDropped(void)
     if (!d->data)
         return;
 
+	emit dataSelected(d->data);	
 }
 
 // TO DO : to complete

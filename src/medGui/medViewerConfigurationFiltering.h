@@ -28,6 +28,7 @@
 
 class medViewerConfigurationFilteringPrivate;
 class medViewContainerStack;
+class dtkAbstractData;
 
 class MEDGUI_EXPORT medViewerConfigurationFiltering : public medViewerConfiguration
 {
@@ -44,6 +45,7 @@ public:
 public slots:    
     void patientChanged(int patientId);
     void onProcessSuccess(void);
+	void onInputDataSelected(dtkAbstractData *data);
 
 private:
     medViewerConfigurationFilteringPrivate *d;

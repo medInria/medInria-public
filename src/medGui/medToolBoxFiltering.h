@@ -39,6 +39,7 @@ public:
 
 signals:
 	void processFinished();
+	void dataSelected(dtkAbstractData *data);
  
 public slots:
     
