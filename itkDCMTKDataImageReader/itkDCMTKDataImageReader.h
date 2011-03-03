@@ -7,7 +7,7 @@
 
 #include <dtkCore/dtkAbstractDataReader.h>
 
-#include "itkDataImageReaderPluginExport.h"
+#include "itkDCMTKDataImageReaderPluginExport.h"
 
 class itkDCMTKDataImageReaderPrivate;
 
@@ -16,7 +16,7 @@ namespace itk
     class SliceReadCommand;
 }
 
-class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDCMTKDataImageReader : public dtkAbstractDataReader
+class ITKDCMTKDATAIMAGEREADERPLUGIN_EXPORT itkDCMTKDataImageReader : public dtkAbstractDataReader
 {
     Q_OBJECT
 

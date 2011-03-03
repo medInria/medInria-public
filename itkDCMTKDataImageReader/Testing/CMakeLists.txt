@@ -1,0 +1,35 @@
+SET(PLUGIN_NAME itkDCMTKDataImageReaderPlugin)
+
+SET(${PLUGIN_NAME}Tests
+  itkDCMTKDataImageReaderTest.cxx
+)
+
+CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
+  ${${PLUGIN_NAME}Tests}
+  )
+
+ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests 
+  ${Tests}
+  )
+
+TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
+  dtkCore
+  ${QT_LIBRARIES}
+  )
+
+set(CXX_TEST_PATH        ${EXECUTABLE_OUTPUT_PATH})
+set(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH})
+if(MSVC)
+  set(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH}/Release)
+endif(MSVC)
+
+message("${CXX_TEST_PLUGIN_PATH}")
+
+find_path(DICOM_DATA_ROOT "dicom.lst")
+
+if (DICOM_DATA_ROOT)
+  file(STRINGS "${DICOM_DATA_ROOT}/dicom.lst" DICOM_LIST)
+  foreach(DICOM_DIR ${DICOM_LIST})
+    ADD_TEST(${PLUGIN_NAME}_${DICOM_DIR} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${PLUGIN_NAME} ${CXX_TEST_PLUGIN_PATH} "${DICOM_DATA_ROOT}/${DICOM_DIR}")
+  endforeach()
+endif(DICOM_DATA_ROOT)
