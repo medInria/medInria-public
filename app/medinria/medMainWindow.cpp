@@ -382,4 +382,5 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     this->writeSettings();
 
     medDatabaseController::destroy();
+    medDatabaseNonPersistentController::destroy();
 }

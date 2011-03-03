@@ -54,8 +54,8 @@ medViewerToolBoxPatient::medViewerToolBoxPatient(QWidget *parent) : medToolBox(p
 
     this->setupDatabase();
 
-    connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
-    connect(medDatabaseNonPersistentController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
+    connect(medDatabaseController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(setupDatabase()));
+    connect(medDatabaseNonPersistentController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(setupDatabase()));
 
 
 }

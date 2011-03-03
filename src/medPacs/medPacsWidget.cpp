@@ -59,7 +59,7 @@ public:
 void medPacsWidgetPrivate::run(void)
 {
     if(!this->server) {
-        qDebug() << "Unable to find a valid implementation of the store scp service.";
+        qWarning() << "DICOM server could not be started! pacsmodule not loaded?";
         return;
     }
     QDir tmp = QDir::temp();
@@ -102,7 +102,10 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     d->find = NULL;
     d->echo = NULL;
     d->server = medAbstractPacsFactory::instance()->createStoreScp("dcmtkStoreScp");
-    if (!d->server) qDebug() << "Warning server could not be started, pacsmodule not loaded.";
+    if (!d->server) {
+        qWarning() << "Unable to find a valid implementation of the store scp service.";
+        return;
+    }
 
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));

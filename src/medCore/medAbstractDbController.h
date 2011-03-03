@@ -10,7 +10,7 @@
 class dtkAbstractData;
 
 /**
- * Abstract sql-db controller class for medDatabaseController implementations
+ * Abstract dbController class. Implementation needs to adhere to the common interface
  */
 class MEDCORE_EXPORT medAbstractDbController : public QObject
 {
@@ -18,62 +18,47 @@ class MEDCORE_EXPORT medAbstractDbController : public QObject
 
 public:
 
-    /**
-    * get the database
-    * @return QSqlDatabase *pointer to qSqlDatabase
-    */
-    //virtual QSqlDatabase *database(void) = 0;
 
     /**
-    * Open database and create connection
-    * @return bool true on success
+    * Get the status of the Db connection
+    * @return bool true if connected
     */
-    //virtual bool createConnection(void) = 0;
+    virtual bool isConnected() = 0;
+
+signals:
     
     /**
-    * Close database and destroy connection
-    * @return bool true on success
-    */
-    //virtual bool  closeConnection(void) = 0;
+     * signal each time the db gets modified, giving the dataindex that was involved
+     */
+    void updated(medDataIndex);
 
-    //virtual medDataIndex indexForPatient(int id) = 0;
-    //virtual medDataIndex indexForStudy  (int id) = 0;
-    //virtual medDataIndex indexForSeries (int id) = 0;
-    //virtual medDataIndex indexForImage  (int id) = 0;
+public slots:
 
     /**
     * Returns pointer to dtkAbstractData read from db or NULL
     * @params const medDataIndex & index Index for data
     * @return dtkAbstractData * the data
     */
-    virtual dtkAbstractData *read(const medDataIndex& index) = 0;
-    //virtual dtkAbstractData *read(int patientId, int studyId, int seriesId) = 0;
-    //virtual dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId) = 0;
-
-    /**
-    * Move the database location somewhere else
-    * @params QString newLocation Path to new location, must be empty
-    * @return bool true on success
-    */
-    //virtual bool moveDatabase(QString newLocation) = 0;
-
-    /**
-    * Get the status of the Db connection
-    * @return bool true if connected
-    */
-    //virtual bool isConnected() = 0;
-
-signals:
-    void updated(void);
-    void copyMessage(QString, int, QColor);
-
-public slots:
+    virtual dtkAbstractData *read(const medDataIndex& index) const = 0;
+ 
     /**
     * Import a file into the db
     * @params const QString & file Filename
+    * @return medDataIndex that was assigned
     */
-    //virtual void import(const QString& file) = 0;
+    virtual medDataIndex import(const QString& file) = 0;
 
+    /**
+    * Import a data into the db
+    * @params const dtkAbstractData& data reference to data
+    * @return medDataIndex that was assigned
+    */
+    virtual medDataIndex import(const dtkAbstractData& data) = 0;
+
+    /**
+     * This method allows importing data from other databases
+     */
+    virtual medDataIndex import(const medDataIndex& index, const medAbstractDbController& controller);
 
 };
 

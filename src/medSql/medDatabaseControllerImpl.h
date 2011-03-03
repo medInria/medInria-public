@@ -6,7 +6,11 @@
 #include <medCore/medAbstractDbController.h>
 
 class dtkAbstractData;
+class SigEmitter;
 
+/**
+ * Concrete dbController implementation adhering to abstract base class
+ */
 class MEDSQL_EXPORT medDatabaseControllerImpl: public medAbstractDbController 
 {
     Q_OBJECT
@@ -28,7 +32,6 @@ public:
 
     QStringList patientNames(void);
 
-    dtkAbstractData *read(const medDataIndex& index);
     dtkAbstractData *read(int patientId, int studyId, int seriesId);
     dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId);
 
@@ -36,15 +39,20 @@ public:
 
     bool isConnected();
 
+signals:
+    /**
+     * Status message from controller to some user interface
+     */
+    void copyMessage(QString, int, QColor);
+
+
 public slots:
-    void import(const QString& file);
+    dtkAbstractData *read(const medDataIndex& index) const;
+    medDataIndex import(const QString& file);
+    medDataIndex import(const dtkAbstractData& data);
 
 protected slots:
-    // some helpers
-    bool copyFiles(QStringList sourceList, QStringList destList);
-    bool createDestination(QStringList sourceList, QStringList& destList, QString sourceDir, QString destDir);
-    void recurseAddDir(QDir d, QStringList & list);
-    bool removeDir(QString dirName);
+    void forwardMessage(QString);
 
 private:
     void createPatientTable(void);
@@ -52,8 +60,16 @@ private:
     void  createSeriesTable(void);
     void   createImageTable(void);
 
+    /*
+    bool copyFiles(QStringList sourceList, QStringList destList);
+    bool createDestination(QStringList sourceList, QStringList& destList, QString sourceDir, QString destDir);
+    void recurseAddDir(QDir d, QStringList & list);
+    bool removeDir(QString dirName);
+    */
+
     QSqlDatabase m_database;
     bool m_isConnected;
+    SigEmitter* emitter;
 };
 
 #endif

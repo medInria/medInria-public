@@ -51,15 +51,30 @@ public:
 
     void insert(medDataIndex index, medDatabaseNonPersistentItem *item);
 
-    dtkAbstractData* data(const medDataIndex& index);
-
-    dtkAbstractData* read(const medDataIndex& index);
-
-signals:
-    void updated(void);
+    bool isConnected();
 
 public slots:
     medDataIndex read(const QString& file);
+
+    /**
+     * get the data out of the virtual database (cache)
+     */
+    dtkAbstractData* data(const medDataIndex& index) const;
+
+    /**
+     * satisfies base class, just redirects to data function
+     */
+    dtkAbstractData* read(const medDataIndex& index) const;
+
+    /**
+     * Read and store data temporarily referenced by temp index
+     */
+    medDataIndex import(const QString& file);
+
+    /**
+     * Store data temporarily referenced by temp index
+     */
+    medDataIndex import(const dtkAbstractData& data);
 
 private:
     medDatabaseNonPersistentControllerImplPrivate *d;

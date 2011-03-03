@@ -54,6 +54,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medSettingsManager.h
   medDbControllerFactory.h
   medAbstractDbController.h
+  medStorage.h
 )
 
 set(${PROJECT_NAME}_SOURCES

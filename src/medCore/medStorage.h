@@ -20,9 +20,24 @@
 #ifndef MEDSTORAGE_H
 #define MEDSTORAGE_H
 
+#include <QtCore>
 #include <QString>
 
 #include "medCoreExport.h"
+
+class MEDCORE_EXPORT SigEmitter: public QObject
+{
+    Q_OBJECT
+
+public:
+    void doEmit(QString msg)
+    {
+        emit message(msg);
+    }
+
+signals:
+        void message(QString);
+};
 
 class MEDCORE_EXPORT medStorage
 {
@@ -37,6 +52,11 @@ public:
     static QString configLocation(void);
 
     static void setDataLocation(QString);
+
+    static bool copyFiles(QStringList sourceList, QStringList destList, SigEmitter* emitter = NULL);
+    static bool createDestination(QStringList sourceList, QStringList& destList, QString sourceDir, QString destDir);
+    static void recurseAddDir(QDir d, QStringList & list);
+    static bool removeDir(QString dirName, SigEmitter* emitter = NULL);
 
 private:
     static QString m_dataLocation;

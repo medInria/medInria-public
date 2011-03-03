@@ -91,7 +91,7 @@ void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatab
     d->items.insert(index, item);
 }
 
-dtkAbstractData *medDatabaseNonPersistentControllerImpl::data(const medDataIndex& index)
+dtkAbstractData *medDatabaseNonPersistentControllerImpl::data(const medDataIndex& index) const
 {
     if(d->items.keys().contains(index))
         return d->items.value(index)->data();
@@ -113,12 +113,12 @@ medDataIndex medDatabaseNonPersistentControllerImpl::read(const QString& file)
 
     medDataIndex index = reader->run();
 
-    emit updated();
+    emit updated(index);
 
     return index;
 }
 
-dtkAbstractData* medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index )
+dtkAbstractData* medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
 {
    return this->data(index);
 }
@@ -146,4 +146,27 @@ medDatabaseNonPersistentControllerImpl::~medDatabaseNonPersistentControllerImpl(
 
     d = NULL;
 }
+
+bool medDatabaseNonPersistentControllerImpl::isConnected()
+{
+    // always connected as there is no database to control
+    return true;
+}
+
+medDataIndex medDatabaseNonPersistentControllerImpl::import( const QString& file )
+{
+    Q_UNUSED(file);
+
+    return medDataIndex();
+}
+
+medDataIndex medDatabaseNonPersistentControllerImpl::import( const dtkAbstractData& data )
+{
+    Q_UNUSED(data);
+
+    return medDataIndex();
+}
+
+
+
 

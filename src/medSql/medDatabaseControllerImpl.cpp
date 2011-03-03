@@ -17,6 +17,7 @@
 #include "medDatabaseExporter.h"
 #include "medDatabaseReader.h"
 
+/*
 void medDatabaseControllerImpl::recurseAddDir(QDir d, QStringList & list) 
 {
 
@@ -134,7 +135,7 @@ bool medDatabaseControllerImpl::removeDir(QString dirName)
 
     return result;
 }
-
+*/
 
 QSqlDatabase *medDatabaseControllerImpl::database(void)
 {
@@ -259,14 +260,22 @@ medDataIndex medDatabaseControllerImpl::indexForImage(int id)
     return medDataIndex(patientId.toInt(), studyId.toInt(), seriesId.toInt(), id);
 }
 
-void medDatabaseControllerImpl::import(const QString& file)
+medDataIndex medDatabaseControllerImpl::import(const QString& file)
 {
     Q_UNUSED(file);
 
-    emit(updated());
+    emit(updated(medDataIndex()));
+
+    return medDataIndex();
 }
 
-dtkAbstractData *medDatabaseControllerImpl::read(const medDataIndex& index)
+medDataIndex medDatabaseControllerImpl::import( const dtkAbstractData& data )
+{
+    return medDataIndex();
+}
+
+
+dtkAbstractData *medDatabaseControllerImpl::read(const medDataIndex& index) const
 {
     medDatabaseReader *reader = new medDatabaseReader(index);
 
@@ -379,18 +388,18 @@ bool medDatabaseControllerImpl::moveDatabase( QString newLocation)
 
     // now copy all the images and thumbnails
     QStringList sourceList;
-    recurseAddDir(QDir(oldLocation), sourceList);
+    medStorage::recurseAddDir(QDir(oldLocation), sourceList);
 
     // create destination filelist
     QStringList destList;
-    if (!createDestination(sourceList,destList,oldLocation, newLocation))
+    if (!medStorage::createDestination(sourceList,destList,oldLocation, newLocation))
     {
         res = false;
     }
     else
     {
         // now copy
-        if (!copyFiles(sourceList, destList))
+        if (!medStorage::copyFiles(sourceList, destList, emitter))
             res = false;
     }
 
@@ -422,7 +431,10 @@ bool medDatabaseControllerImpl::moveDatabase( QString newLocation)
         }
 
         // now delete the old archive
-        removeDir(oldLocation);
+        if(medStorage::removeDir(oldLocation, emitter))
+            emit copyMessage(tr("deleting old database: success"), Qt::AlignBottom, QColor((Qt::white)));
+        else
+            emit copyMessage(tr("deleting old database: failure"), Qt::AlignBottom, QColor((Qt::red)));
 
     }
 
@@ -441,9 +453,17 @@ bool medDatabaseControllerImpl::isConnected()
 medDatabaseControllerImpl::medDatabaseControllerImpl()
 {
     m_isConnected = false;
+    emitter = new SigEmitter();
+    connect(emitter, SIGNAL(message(QString)), this, SLOT(forwardMessage(QString)));
+
 }
 
 medDatabaseControllerImpl::~medDatabaseControllerImpl()
 {
+    delete emitter;
+}
 
+void medDatabaseControllerImpl::forwardMessage( QString msg)
+{
+    copyMessage(msg, Qt::AlignBottom, QColor(Qt::white));
 }

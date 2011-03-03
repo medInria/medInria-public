@@ -25,10 +25,10 @@
 #include <QtGui/QDesktopServices>
 #include "medSettingsManager.h"
 
+QString medStorage::m_dataLocation = NULL;
+
 medStorage::medStorage(void)
 {
-    
-
 }
 
 medStorage::~medStorage(void)
@@ -95,6 +95,119 @@ void medStorage::setDataLocation( QString newLocation)
     medSettingsManager::instance()->setValue("database", "actual_database_location", newLocation);
 }
 
-QString medStorage::m_dataLocation = NULL;
 
+void medStorage::recurseAddDir(QDir d, QStringList & list) 
+{
+
+    QStringList qsl = d.entryList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+
+    foreach (QString file, qsl) {
+
+        QFileInfo finfo(QString("%1/%2").arg(d.path()).arg(file));
+
+        if (finfo.isSymLink())
+            return;
+
+        if (finfo.isDir()) {
+
+            QString dirname = finfo.fileName();
+            QDir sd(finfo.filePath());
+
+            recurseAddDir(sd, list);
+
+        } else
+            list << QDir::toNativeSeparators(finfo.filePath());
+    }
+}
+
+bool medStorage::createDestination(QStringList sourceList, QStringList& destList, QString sourceDir, QString destDir)
+{
+    bool res = true;
+
+    if (!QDir(destDir).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty())
+    {
+        qWarning() << "Directory not empty: " << destDir;
+        return false;
+    }
+
+    int trimCount = sourceDir.length();
+    foreach (QString sourceFile, sourceList)
+    {
+        sourceFile.remove(0,trimCount);
+
+        QString destination = destDir + sourceFile;
+
+        // check if this is a directory
+        QFileInfo completeFile (destination);
+        QDir fileInfo(completeFile.path());
+
+        if (!fileInfo.exists() && !medStorage::mkpath (fileInfo.path())) {
+            qWarning() << "Cannot create directory: " << fileInfo.path();
+            res = false;
+        }
+
+        destList.append(destination);
+    }
+
+    return res;
+}
+
+bool medStorage::copyFiles(QStringList sourceList, QStringList destList, SigEmitter* emitter)
+{
+    if (destList.count() != sourceList.count())
+        return false;
+
+    // just copy not using a dialog
+    for (int i = 0; i < sourceList.count(); i++) 
+    {
+
+        // coping
+        if (!QFile::copy(sourceList.at(i), destList.at(i))) 
+        {
+            qWarning() << "[Failure] copying file: " << sourceList.at(i) << " to " << destList.at(i);
+            return false;
+        }
+        else
+        {
+            if (emitter)
+            {
+                QString message;
+                message = "copying files " + QString::number(i) + " of " + QString::number(sourceList.count()); 
+                emitter->doEmit(message);
+            }
+        }
+    }
+
+    return true;
+}
+
+bool medStorage::removeDir(QString dirName, SigEmitter* emitter)
+{
+    bool result = true;
+    QDir dir(dirName);
+
+    if (dir.exists(dirName)) {
+        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
+            if (info.isDir()) {
+                result = removeDir(info.absoluteFilePath());
+            }
+            else {
+                result = QFile::remove(info.absoluteFilePath());
+                if (emitter)
+                {
+                    QString message;
+                    message = "removing files " + info.baseName();
+                    emitter->doEmit(message);
+                }
+
+            }
+
+            if (!result) {
+                return result;
+            }
+        }
+        result = dir.rmdir(dirName);
+    }
+    return result;
+}
 

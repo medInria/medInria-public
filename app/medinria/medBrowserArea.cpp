@@ -177,7 +177,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->pacs = new medPacsWidget(this);
 
     connect(d->pacs, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
-    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
+    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onFileImport(QString)));
 
     // /////////////////////////////////////////////////////////////////
 
