@@ -29,8 +29,6 @@ public slots:
     void *data(void);
     void setData(void* data);
     
-    bool write(const QString &file);
-    
 public:
     // derived from dtkAbstractDataImage
     int xDimension(void);
