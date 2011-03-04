@@ -24,8 +24,10 @@
 #include "medDatabaseNavigatorItemGroup.h"
 #include "medDatabaseNavigatorScene.h"
 #include "medDatabaseNavigatorView.h"
-#include "medSql/medDatabaseNonPersitentItem.h"
-#include "medSql/medDatabaseNonPersitentController.h"
+#include "medSql/medDatabaseNonPersistentItem.h"
+#include "medSql/medDatabaseNonPersistentController.h"
+
+#include <medCore/medStorage.h>
 
 #include <QtCore>
 #include <QtGui>
@@ -140,7 +142,9 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
             seriesName = seriesQuery.value(1);
             seriesThumbnail = seriesQuery.value(2);
 
-            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(patientId, studyId.toInt(), seriesId.toInt(), -1, seriesThumbnail.toString());
+            QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
+            qDebug() << thumbPath;
+            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(patientId, studyId.toInt(), seriesId.toInt(), -1, thumbPath);
 
             connect(item, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
             connect(item, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
@@ -157,7 +161,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 
     QMap<QString, medDatabaseNavigatorItemGroup*> groupMap;
 
-    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
+    foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items()) {
 
         if(item->index().patientId() == patientId) {
 

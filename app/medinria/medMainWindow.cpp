@@ -1,5 +1,5 @@
-/* medMainWindow.cpp --- 
- * 
+/* medMainWindow.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:48:07 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 503
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medBrowserArea.h"
@@ -23,7 +23,6 @@
 #include "medViewerConfigurator.h"
 
 #include <dtkCore/dtkGlobal.h>
-
 #include <dtkScript/dtkScriptInterpreter.h>
 #include <dtkScript/dtkScriptInterpreterPool.h>
 #include <dtkScript/dtkScriptInterpreterPython.h>
@@ -32,21 +31,31 @@
 #include <dtkGui/dtkSpacer.h>
 
 #include <medCore/medMessageController.h>
+#include <medCore/medSettingsManager.h>
+#include <medCore/medDbControllerFactory.h>
+#include <medCore/medJobManager.h>
 
 #include <medGui/medStatusQuitButton.h>
 #include <medGui/medWorkspaceShifter.h>
 
 #include <medSql/medDatabaseController.h>
+#include <medSql/medDatabaseNonPersistentController.h>
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseItem.h>
 
 #include <medGui/medViewerConfiguration.h>
 #include <medGui/medViewerConfigurationFactory.h>
-#include <medGui/medViewerConfigurationVisualization.h>
-#include <medGui/medViewerConfigurationVisualization2.h>
-#include <medGui/medViewerConfigurationRegistration.h>
-#include <medGui/medViewerConfigurationDiffusion.h>
+#include <medGui/medSettingsWidgetFactory.h>
+#include <medGui/medSystemSettingsWidget.h>
+#include <medGui/medStartupSettingsWidget.h>
+#include <medGui/medDatabaseSettingsWidget.h>
+
+#include "medViewerConfigurationVisualization.h"
+#include "medViewerConfigurationVisualization2.h"
+#include "medViewerConfigurationRegistration.h"
+#include "medViewerConfigurationDiffusion.h"
+
 
 #include <QtGui>
 
@@ -129,8 +138,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
-    
-#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)    
+
+#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
     // Setting up core python module
 
     dtkScriptInterpreterPythonModuleManager::instance()->registerInitializer(&init_core);
@@ -172,9 +181,17 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
-    
-    // Setting up status bar
 
+    //Register settingsWidgets
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
+
+    //Register dbController 
+    medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
+    medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
+
+    // Setting up status bar
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
     d->shiftToViewerAreaAction = new medWorkspaceShifterAction("Viewer");
 
@@ -197,7 +214,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medStatusQuitButton *quitButton = new medStatusQuitButton(this);
 
     connect(quitButton, SIGNAL(quit()), this, SLOT(onQuit()));
-    
+
     QComboBox *configurationSwitcher = new QComboBox(this);
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
     configurationSwitcher->setFocusPolicy (Qt::NoFocus);
@@ -219,7 +236,20 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medMessageController::instance()->attach(this->statusBar());
 
     d->viewerArea->setupConfiguration("Visualization");
-    
+
+    // if the user configured a default area we need to show it
+    medSettingsManager * mnger = medSettingsManager::instance();
+    QVariant vArea = mnger->value("startup", "default_starting_area");
+
+    if (!vArea.isNull()){
+        QString area = vArea.toString();
+
+        if (area.compare("Browser") == 0)
+            switchToBrowserArea();
+        else if (area.compare("Viewer") == 0)
+            switchToViewerArea();
+    }
+
     connect(configurationSwitcher, SIGNAL(activated(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
 }
@@ -243,12 +273,21 @@ void medMainWindow::readSettings(void)
     settings.endGroup();
 }
 
-void medMainWindow::writeSettings(void)
+void medMainWindow::writeSettings()
 {
     QSettings settings("inria", "medinria");
     settings.beginGroup("medinria");
-    settings.setValue("pos", pos());
-    settings.setValue("size", size());
+
+    // if the app is in full screen mode we do not want to save the pos and size
+    // as there is a setting that defines either the user wants to open the app in FS or not
+    // so, if he/she chose not to and quit the app while in FS mode, we skip the settings saving
+    if (!this->isFullScreen())
+    {
+        settings.setValue("pos", pos());
+        settings.setValue("size", size());
+    }
+
+
     settings.endGroup();
 }
 
@@ -303,6 +342,8 @@ void medMainWindow::onConfigurationTriggered(QAction *action)
 
 void medMainWindow::onQuit(void)
 {
+
+    // remove old quit message
     if(d->quitMessage != 0 )
     {
         WId id = d->quitMessage->effectiveWinId();
@@ -310,7 +351,7 @@ void medMainWindow::onQuit(void)
         if (this->statusBar()->find(id))
         {
             this->statusBar()->removeWidget(d->quitMessage);
-            disconnect(d->quitMessage, SIGNAL(accepted()), qApp, SLOT(quit()));
+            disconnect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
             disconnect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
             delete d->quitMessage;
         }
@@ -319,7 +360,7 @@ void medMainWindow::onQuit(void)
 
     d->quitMessage = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
 
-    connect(d->quitMessage, SIGNAL(accepted()), qApp, SLOT(quit()));
+    connect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
     connect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
 
     this->statusBar()->addWidget(d->quitMessage);
@@ -341,8 +382,38 @@ void medMainWindow::open(const QString& file)
 
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
+
+    if (QThreadPool::globalInstance()->activeThreadCount() > 0)
+    {
+        switch(QMessageBox::information( this, "System message", "Running background jobs detected! Quit anyway?",
+            "Quit", "WaitForDone", "Cancel",0, 1 ) ) 
+        {
+        case 0:
+            // send cancel request to all running jobs, then wait for them
+            // Note: most Jobs don't have the cancel method implemented, so this will be effectively the same as waitfordone.
+            this->hide();
+            medJobManager::instance()->dispatchGlobalCancelEvent();
+            QThreadPool::globalInstance()->waitForDone();
+            event->accept();
+            break;
+
+        case 1:
+            // just hide the window and wait
+            this->hide();
+            QThreadPool::globalInstance()->waitForDone();
+            event->accept();
+            break;
+
+        default:
+            event->ignore();
+            return;
+            break;
+        }
+
+    }
+
     this->writeSettings();
-    
-    if (medDatabaseController::instance())
-        medDatabaseController::instance()->destroy();
+
+    medDatabaseController::destroy();
+    medDatabaseNonPersistentController::destroy();
 }
