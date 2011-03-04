@@ -24,7 +24,6 @@
 #include "medBrowserToolBoxPacsNodes.h"
 #include "medBrowserToolBoxPacsSearch.h"
 #include "medBrowserToolBoxSource.h"
-#include "medBrowserToolBoxSettings.h"
 
 #include <QtGui>
 
@@ -226,9 +225,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     connect(d->toolbox_source, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
 
-    // Settings toolbox ///////////////////////////////////////////////
-
-    d->toolbox_settings = new medBrowserToolBoxSettings(this);
 
     // Jobs //////////////////////////////////////////
 
@@ -241,7 +237,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setFixedWidth(300);
     d->toolbox_container->addToolBox(d->toolbox_source);
-    d->toolbox_container->addToolBox(d->toolbox_settings);
     d->toolbox_container->addToolBox(d->toolbox_pacs_host);
     d->toolbox_container->addToolBox(d->toolbox_pacs_nodes);
     d->toolbox_container->addToolBox(d->toolbox_pacs_search);
