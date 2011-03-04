@@ -33,6 +33,7 @@
 #include <medCore/medMessageController.h>
 #include <medCore/medSettingsManager.h>
 #include <medCore/medDbControllerFactory.h>
+#include <medCore/medJobManager.h>
 
 #include <medGui/medStatusQuitButton.h>
 #include <medGui/medWorkspaceShifter.h>
@@ -341,6 +342,8 @@ void medMainWindow::onConfigurationTriggered(QAction *action)
 
 void medMainWindow::onQuit(void)
 {
+
+    // remove old quit message
     if(d->quitMessage != 0 )
     {
         WId id = d->quitMessage->effectiveWinId();
@@ -348,7 +351,7 @@ void medMainWindow::onQuit(void)
         if (this->statusBar()->find(id))
         {
             this->statusBar()->removeWidget(d->quitMessage);
-            disconnect(d->quitMessage, SIGNAL(accepted()), qApp, SLOT(quit()));
+            disconnect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
             disconnect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
             delete d->quitMessage;
         }
@@ -357,7 +360,7 @@ void medMainWindow::onQuit(void)
 
     d->quitMessage = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
 
-    connect(d->quitMessage, SIGNAL(accepted()), qApp, SLOT(quit()));
+    connect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
     connect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
 
     this->statusBar()->addWidget(d->quitMessage);
@@ -379,6 +382,36 @@ void medMainWindow::open(const QString& file)
 
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
+
+    if (QThreadPool::globalInstance()->activeThreadCount() > 0)
+    {
+        switch(QMessageBox::information( this, "System message", "Running background jobs detected! Quit anyway?",
+            "Quit", "WaitForDone", "Cancel",0, 1 ) ) 
+        {
+        case 0:
+            // send cancel request to all running jobs, then wait for them
+            // Note: most Jobs don't have the cancel method implemented, so this will be effectively the same as waitfordone.
+            this->hide();
+            medJobManager::instance()->dispatchGlobalCancelEvent();
+            QThreadPool::globalInstance()->waitForDone();
+            event->accept();
+            break;
+
+        case 1:
+            // just hide the window and wait
+            this->hide();
+            QThreadPool::globalInstance()->waitForDone();
+            event->accept();
+            break;
+
+        default:
+            event->ignore();
+            return;
+            break;
+        }
+
+    }
+
     this->writeSettings();
 
     medDatabaseController::destroy();

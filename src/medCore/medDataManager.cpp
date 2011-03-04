@@ -75,6 +75,7 @@ medDataManager *medDataManager::instance(void)
     return s_instance;
 }
 
+/*
 void medDataManager::insert(const medDataIndex& index, dtkAbstractData *data)
 {
     d->datas.insert(index, data);
@@ -86,25 +87,43 @@ void medDataManager::remove(const medDataIndex& index)
 
     d->datas.remove(index);
 }
+*/
 
 dtkAbstractData *medDataManager::data(const medDataIndex& index)
 {
     dtkAbstractData* dtkdata = NULL;
 
-    // try to load the data from db
-    medAbstractDbController* db = d->getDbController();
-    if (db)
+    // try to get it from cache first
+    if ( d->datas.contains(index) )
     {
-        dtkdata = db->read(index);
+        qDebug() << "Reading from cache";
+        dtkdata = d->datas.value(index);
     }
-
-    //if the data is still invalid we continue in the non-pers db
-    if (!dtkdata)
+    else
     {
-        medAbstractDbController* npDb = d->getNonPersDbController();
-        if(npDb)
+        qDebug() << "Reading from db";
+
+        // try to load the data from db
+        medAbstractDbController* db = d->getDbController();
+        if (db)
         {
-            dtkdata = npDb->read(index);
+            dtkdata = db->read(index);
+        }
+
+        //if the data is still invalid we continue in the non-pers db
+        if (!dtkdata)
+        {
+            medAbstractDbController* npDb = d->getNonPersDbController();
+            if(npDb)
+            {
+                dtkdata = npDb->read(index);
+            }
+        }
+
+        // store it
+        if (dtkdata)
+        {
+            d->datas[index] = dtkdata;
         }
     }
 
@@ -118,7 +137,7 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
         return NULL;
     }
 }
-
+/*
 QList<dtkAbstractData *> medDataManager::dataForPatient(int id)
 {
     QList<dtkAbstractData *> data;
@@ -162,7 +181,7 @@ QList<dtkAbstractData *> medDataManager::dataForImage(int id)
 
     return data;
 }
-
+*/
 medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 {
 

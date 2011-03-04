@@ -311,7 +311,7 @@ void medViewerArea::open(const medDataIndex& index)
 
 void medViewerArea::open(const QString& file)
 {
-    this->open(medDatabaseNonPersistentController::instance()->read(file));
+    this->open(medDatabaseNonPersistentController::instance()->import(file));
 }
 
 void medViewerArea::onViewClosed(void)

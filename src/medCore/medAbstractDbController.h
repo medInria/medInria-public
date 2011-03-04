@@ -35,12 +35,14 @@ signals:
 public slots:
 
     /**
-    * Returns pointer to dtkAbstractData read from db or NULL
+    * Returns pointer to dtkAbstractData read from db (physical or virtual) or NULL
+    * @Note There is no read(QString file) method, as you can achieve this using import(QString) and read(index) 
+    * using the index returned from the import
     * @params const medDataIndex & index Index for data
     * @return dtkAbstractData * the data
     */
-    virtual dtkAbstractData *read(const medDataIndex& index) const = 0;
- 
+    virtual dtkAbstractData* read(const medDataIndex& index) const = 0;
+
     /**
     * Import a file into the db
     * @params const QString & file Filename
@@ -55,9 +57,13 @@ public slots:
     */
     virtual medDataIndex import(const dtkAbstractData& data) = 0;
 
+   
     /**
-     * This method allows importing data from other databases
-     */
+    * This method allows importing data from other databases
+    * @params const medDataIndex & index The data index used in the referenced db (source)
+    * @params const medAbstractDbController & controller  The referenced db (source)
+    * @return medDataIndex New assigned dataIndex in target (this) db
+    */
     virtual medDataIndex import(const medDataIndex& index, const medAbstractDbController& controller);
 
 };

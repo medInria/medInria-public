@@ -99,10 +99,9 @@ void medDatabaseImporter::run(void)
         for (int i=0; i<readers.size(); i++) {
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
             if (dataReader->canRead( fileInfo.filePath() )) {
-          qDebug() << "datareader is able to read : " << fileInfo.filePath() << "\n";
-          
-                dataReader->readInformation( fileInfo.filePath() );
-                dtkdata = dataReader->data();
+            qDebug() << "datareader is able to read : " << fileInfo.filePath() << "\n";
+            dataReader->readInformation( fileInfo.filePath() );
+            dtkdata = dataReader->data();
         if (dtkdata)
             qDebug() << dtkdata << "\n";
                 delete dataReader;
@@ -111,17 +110,17 @@ void medDatabaseImporter::run(void)
         }
         locker.unlock();
 
-        if (!dtkdata)
-            continue;
+    if (!dtkdata)
+        continue;
 
-        if(!dtkdata->hasMetaData("PatientName"))
-            dtkdata->addMetaData("PatientName", QStringList() << "John Doe");
+    if(!dtkdata->hasMetaData("PatientName"))
+        dtkdata->addMetaData("PatientName", QStringList() << "John Doe");
 
-        if(!dtkdata->hasMetaData("StudyDescription"))
-            dtkdata->addMetaData("StudyDescription", QStringList() << "EmptyStudy");
+    if(!dtkdata->hasMetaData("StudyDescription"))
+        dtkdata->addMetaData("StudyDescription", QStringList() << "EmptyStudy");
 
-        if(!dtkdata->hasMetaData("SeriesDescription"))
-            dtkdata->addMetaData("SeriesDescription", QStringList() << fileInfo.baseName());
+    if(!dtkdata->hasMetaData("SeriesDescription"))
+        dtkdata->addMetaData("SeriesDescription", QStringList() << fileInfo.baseName());
 
     if(!dtkdata->hasMetaData("StudyID"))
             dtkdata->addMetaData("StudyID", QStringList() << "");
@@ -253,7 +252,7 @@ void medDatabaseImporter::run(void)
             query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :studyID");
             query.bindValue(":id", id);
             query.bindValue(":name", studyName);
-        query.bindValue(":studyID", studyId);
+            query.bindValue(":studyID", studyId);
             if(!query.exec())
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
@@ -263,14 +262,14 @@ void medDatabaseImporter::run(void)
                 query.prepare("SELECT id FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
                 query.bindValue(":id", id);
                 query.bindValue(":name", seriesName);
-        query.bindValue(":seriesID", seriesId);
-        query.bindValue(":orientation", orientation);
-        query.bindValue(":seriesNumber", seriesNumber);
-        query.bindValue(":sequenceName", sequenceName);
-        query.bindValue(":sliceThickness", sliceThickness);
-        query.bindValue(":rows", rows);
-        query.bindValue(":columns", columns);
-                
+                query.bindValue(":seriesID", seriesId);
+                query.bindValue(":orientation", orientation);
+                query.bindValue(":seriesNumber", seriesNumber);
+                query.bindValue(":sequenceName", sequenceName);
+                query.bindValue(":sliceThickness", sliceThickness);
+                query.bindValue(":rows", rows);
+                query.bindValue(":columns", columns);
+                    
         if(!query.exec())
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
@@ -487,9 +486,9 @@ void medDatabaseImporter::run(void)
     // Now, populate the database
     if (imData) {
       
-      dtkAbstractData *dtkdata = imData; //dtkDataList[i];
+    dtkAbstractData *dtkdata = imData; //dtkDataList[i];
 
-        QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0].simplified();
+    QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0].simplified();
     QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0].simplified();
     QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0].simplified();
 
@@ -618,8 +617,8 @@ void medDatabaseImporter::run(void)
     ///////////////////////////////////////////////////////////////// SERIES
     
     query.prepare("SELECT * FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
-        query.bindValue(":id", id);
-        query.bindValue(":name", seriesName);
+    query.bindValue(":id", id);
+    query.bindValue(":name", seriesName);
     query.bindValue(":seriesID", seriesId);
     query.bindValue(":orientation", orientation);
     query.bindValue(":seriesNumber", seriesNumber);
@@ -641,11 +640,11 @@ void medDatabaseImporter::run(void)
     }
     else {
 
-            query.prepare("INSERT INTO series (study, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) VALUES (:study, :size, :name, :path, :seriesID, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :thumbnail, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)");
-            query.bindValue(":study",          id);
-            query.bindValue(":size",           size);
-            query.bindValue(":name",           seriesName);
-            query.bindValue(":path",           seriesPath);
+        query.prepare("INSERT INTO series (study, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) VALUES (:study, :size, :name, :path, :seriesID, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :thumbnail, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)");
+        query.bindValue(":study",          id);
+        query.bindValue(":size",           size);
+        query.bindValue(":name",           seriesName);
+        query.bindValue(":path",           seriesPath);
         query.bindValue(":seriesID",       seriesId);
         query.bindValue(":orientation",    orientation);
         query.bindValue(":seriesNumber",   seriesNumber);
@@ -696,7 +695,7 @@ void medDatabaseImporter::run(void)
         }
         else {
 
-                query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
+            query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
             query.bindValue(":series", id);
             query.bindValue(":size", 64);
             query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));

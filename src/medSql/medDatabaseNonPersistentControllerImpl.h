@@ -40,41 +40,61 @@ public:
     medDatabaseNonPersistentControllerImpl(void);
     ~medDatabaseNonPersistentControllerImpl(void);
 
+    
+    /**
+    * Get the table indices 
+    * @params bool increment if true auto-increment the counter
+    * @return int return the id (before incrementation)
+    */
     int patientId(bool increment=false);
     int   studyId(bool increment=false);
     int  seriesId(bool increment=false);
     int   imageId(bool increment=false);
 
+    /**
+    * Return offset needed to separate data indices between databases
+    * @params void
+    * @return int
+    */
     int nonPersistentDataStartingIndex(void);
 
+    /* proprietary method, should be avoided */
     QList<medDatabaseNonPersistentItem *> items(void);
 
+    /* proprietary method, should be avoided */
     void insert(medDataIndex index, medDatabaseNonPersistentItem *item);
 
+    /**
+    * Status of connection, should always be true
+    * @return bool
+    */
     bool isConnected();
 
 public slots:
-    medDataIndex read(const QString& file);
 
     /**
-     * get the data out of the virtual database (cache)
-     */
-    dtkAbstractData* data(const medDataIndex& index) const;
-
-    /**
-     * satisfies base class, just redirects to data function
-     */
+    * Read data from nonPersistent storage using the index
+    * @params const medDataIndex & index Index to look for
+    * @return dtkAbstractData* data
+    */
     dtkAbstractData* read(const medDataIndex& index) const;
 
     /**
-     * Read and store data temporarily referenced by temp index
-     */
-    medDataIndex import(const QString& file);
+    * Store data temporarily referenced by temp index
+    * @Note _NOT_IMPLEMENTED_YET
+    * @params const dtkAbstractData & data data to be stored
+    * @return medDataIndex assigned index
+    */
+    medDataIndex import(const dtkAbstractData& data);
+
 
     /**
-     * Store data temporarily referenced by temp index
-     */
-    medDataIndex import(const dtkAbstractData& data);
+    * Store data temporarily referenced by temp index
+    * @params const QString & file data stored at file path
+    * @return medDataIndex - assigned index
+    */
+    medDataIndex import(const QString& file);
+
 
 private:
     medDatabaseNonPersistentControllerImplPrivate *d;

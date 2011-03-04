@@ -91,15 +91,7 @@ void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatab
     d->items.insert(index, item);
 }
 
-dtkAbstractData *medDatabaseNonPersistentControllerImpl::data(const medDataIndex& index) const
-{
-    if(d->items.keys().contains(index))
-        return d->items.value(index)->data();
-
-    return NULL;
-}
-
-medDataIndex medDatabaseNonPersistentControllerImpl::read(const QString& file)
+medDataIndex medDatabaseNonPersistentControllerImpl::import(const QString& file)
 {
     medDatabaseNonPersistentReader *reader = new medDatabaseNonPersistentReader(file);
 
@@ -120,13 +112,15 @@ medDataIndex medDatabaseNonPersistentControllerImpl::read(const QString& file)
 
 dtkAbstractData* medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
 {
-   return this->data(index);
-}
+    if(d->items.keys().contains(index))
+        return d->items.value(index)->data();
 
+    return NULL;
+}
 
 int medDatabaseNonPersistentControllerImpl::nonPersistentDataStartingIndex(void)
 {
-    return 10000;
+    return 100000000;
 }
 
 medDatabaseNonPersistentControllerImpl::medDatabaseNonPersistentControllerImpl(void): d(new medDatabaseNonPersistentControllerImplPrivate)
@@ -151,13 +145,6 @@ bool medDatabaseNonPersistentControllerImpl::isConnected()
 {
     // always connected as there is no database to control
     return true;
-}
-
-medDataIndex medDatabaseNonPersistentControllerImpl::import( const QString& file )
-{
-    Q_UNUSED(file);
-
-    return medDataIndex();
 }
 
 medDataIndex medDatabaseNonPersistentControllerImpl::import( const dtkAbstractData& data )

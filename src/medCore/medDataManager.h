@@ -32,23 +32,43 @@ class medDataManagerPrivate;
 
 /**
  * This class is the global access point to data stored in the database. 
- * It tries to use several database-controllers to provide data
+ * It tries to use several database-controllers to provide/store data
+ * Another role is to cache data to provide faster access (work in progress)
  */
 class MEDCORE_EXPORT medDataManager : public QObject
 {
     Q_OBJECT
 
 public:
-    static medDataManager *instance(void);
+        static medDataManager *instance(void);
 
-    void insert(const medDataIndex& index, dtkAbstractData *data);
-    void remove(const medDataIndex& index);
+    /*
+        void insert(const medDataIndex& index, dtkAbstractData *data);
+        void remove(const medDataIndex& index);
+    */
 
-          dtkAbstractData *  data(const medDataIndex& index);
-    QList<dtkAbstractData *> dataForPatient(int id);
-    QList<dtkAbstractData *> dataForStudy  (int id);
-    QList<dtkAbstractData *> dataForSeries (int id);
-    QList<dtkAbstractData *> dataForImage  (int id);
+      /**
+      * Ask the data-manager to provide the data belonging to this index using it's registered controllers
+      * @params const medDataIndex & index medDataIndex for data
+      * @return dtkAbstractData * the data
+      */
+      dtkAbstractData* data(const medDataIndex& index);
+
+      /**
+      * Use this function to insert data into the database, 
+      * Do *not* use the concrete database controller implementation for it
+      * The data-manager will take over this task
+      * @params const dtkAbstractData & data
+      * @return medDataIndex*
+      */
+      medDataIndex* import(const dtkAbstractData& data);
+
+    /*
+        QList<dtkAbstractData *> dataForPatient(int id);
+        QList<dtkAbstractData *> dataForStudy  (int id);
+        QList<dtkAbstractData *> dataForSeries (int id);
+        QList<dtkAbstractData *> dataForImage  (int id);
+    */
 
 protected:
      medDataManager(void);

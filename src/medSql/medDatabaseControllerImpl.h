@@ -17,6 +17,7 @@ class MEDSQL_EXPORT medDatabaseControllerImpl: public medAbstractDbController
 
 public:
 
+    /* constructor */
     medDatabaseControllerImpl();
     ~medDatabaseControllerImpl();
 
@@ -25,18 +26,27 @@ public:
     bool createConnection(void);
     bool  closeConnection(void);
 
+    /* create dataIndices out of partial ids */
     medDataIndex indexForPatient(int id);
     medDataIndex indexForStudy  (int id);
     medDataIndex indexForSeries (int id);
     medDataIndex indexForImage  (int id);
 
-    QStringList patientNames(void);
-
+    /* some overloads of read(medDataIndex) */
     dtkAbstractData *read(int patientId, int studyId, int seriesId);
     dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId);
 
+    /**
+    * Change the storage location of the database by copy, verify, delete
+    * @params QString newLocation path of new storage location, must be empty
+    * @return bool true on success
+    */
     bool moveDatabase(QString newLocation);
 
+    /**
+    * Status of connection
+    * @return bool true on success
+    */
     bool isConnected();
 
 signals:
@@ -47,25 +57,40 @@ signals:
 
 
 public slots:
+    
+
+    /**
+    * Read the data from db
+    * @params const medDataIndex & index Index pointing to data
+    * @return dtkAbstractData * the data stored
+    */
     dtkAbstractData *read(const medDataIndex& index) const;
+
+    /**
+    * Import data into the db read from file
+    * @Note _NOT_IMPLEMENTED_YET
+    * @params const QString & file The file containing the data
+    * @return medDataIndex the assigned index
+    */
     medDataIndex import(const QString& file);
+
+    /**
+    * Import data into the db read from memory
+    * @Note _NOT_IMPLEMENTED_YET
+    * @params const dtkAbstractData & data dataObject
+    * @return medDataIndex the assigned index
+    */
     medDataIndex import(const dtkAbstractData& data);
 
 protected slots:
     void forwardMessage(QString);
 
 private:
+    // helper to create tables
     void createPatientTable(void);
     void   createStudyTable(void);
     void  createSeriesTable(void);
     void   createImageTable(void);
-
-    /*
-    bool copyFiles(QStringList sourceList, QStringList destList);
-    bool createDestination(QStringList sourceList, QStringList& destList, QString sourceDir, QString destDir);
-    void recurseAddDir(QDir d, QStringList & list);
-    bool removeDir(QString dirName);
-    */
 
     QSqlDatabase m_database;
     bool m_isConnected;

@@ -17,126 +17,6 @@
 #include "medDatabaseExporter.h"
 #include "medDatabaseReader.h"
 
-/*
-void medDatabaseControllerImpl::recurseAddDir(QDir d, QStringList & list) 
-{
-
-    QStringList qsl = d.entryList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
-
-    foreach (QString file, qsl) {
-
-        QFileInfo finfo(QString("%1/%2").arg(d.path()).arg(file));
-
-        if (finfo.isSymLink())
-            return;
-
-        if (finfo.isDir()) {
-
-            QString dirname = finfo.fileName();
-            QDir sd(finfo.filePath());
-
-            recurseAddDir(sd, list);
-
-        } else
-            list << QDir::toNativeSeparators(finfo.filePath());
-    }
-}
-
-bool medDatabaseControllerImpl::createDestination(QStringList sourceList, QStringList& destList, QString sourceDir, QString destDir)
-{
-    bool res = true;
-
-    if (!QDir(destDir).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty())
-    {
-        qDebug() << "Directory not empty: " << destDir;
-        return false;
-    }
-
-    int trimCount = sourceDir.length();
-    foreach (QString sourceFile, sourceList)
-    {
-        sourceFile.remove(0,trimCount);
-
-        QString destination = destDir + sourceFile;
-
-        // check if this is a directory
-        QFileInfo completeFile (destination);
-        QDir fileInfo(completeFile.path());
-
-        if (!fileInfo.exists() && !medStorage::mkpath (fileInfo.path())) {
-            qDebug() << "Cannot create directory: " << fileInfo.path();
-            res = false;
-        }
-
-        destList.append(destination);
-    }
-
-    return res;
-}
-
-bool medDatabaseControllerImpl::copyFiles(QStringList sourceList, QStringList destList)
-{
-
-    if (destList.count() != sourceList.count())
-        return false;
-
-    // just copy not using a dialog
-    for (int i = 0; i < sourceList.count(); i++) 
-    {
-
-        // coping
-        if (!QFile::copy(sourceList.at(i), destList.at(i))) 
-        {
-            qDebug() << "[Failure] copying file: " << sourceList.at(i) << " to " << destList.at(i);
-            return false;
-        }       
-        else
-        {   
-            QString message;
-            message = tr("copying files ") + QString::number(i) + " of " + QString::number(sourceList.count()); 
-            emit copyMessage(message, Qt::AlignBottom, QColor((Qt::white)));
-        }
-
-    }
-
-    return true;
-}
-
-
-bool medDatabaseControllerImpl::removeDir(QString dirName)
-{
-
-    bool result = true;
-    QDir dir(dirName);
-
-    if (dir.exists(dirName)) {
-        Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst)) {
-            if (info.isDir()) {
-                result = removeDir(info.absoluteFilePath());
-            }
-            else {
-                QString message;
-                message = tr("removing files ") + info.baseName(); 
-                emit copyMessage(message, Qt::AlignBottom, QColor((Qt::white)));
-                result = QFile::remove(info.absoluteFilePath());
-            }
-
-            if (!result) {
-                return result;
-            }
-        }
-        result = dir.rmdir(dirName);
-    }
-
-    if (result)
-        emit copyMessage(tr("deleting old database: success"), Qt::AlignBottom, QColor((Qt::white)));
-    else
-        emit copyMessage(tr("deleting old database: failure"), Qt::AlignBottom, QColor((Qt::red)));
-
-    return result;
-}
-*/
-
 QSqlDatabase *medDatabaseControllerImpl::database(void)
 {
     return &m_database;
@@ -174,8 +54,6 @@ bool medDatabaseControllerImpl::closeConnection(void)
     m_isConnected = false;
     return true;
 }
-
-
 
 medDataIndex medDatabaseControllerImpl::indexForPatient(int id)
 {
@@ -271,9 +149,10 @@ medDataIndex medDatabaseControllerImpl::import(const QString& file)
 
 medDataIndex medDatabaseControllerImpl::import( const dtkAbstractData& data )
 {
+    Q_UNUSED(data);
+
     return medDataIndex();
 }
-
 
 dtkAbstractData *medDatabaseControllerImpl::read(const medDataIndex& index) const
 {
@@ -455,7 +334,6 @@ medDatabaseControllerImpl::medDatabaseControllerImpl()
     m_isConnected = false;
     emitter = new SigEmitter();
     connect(emitter, SIGNAL(message(QString)), this, SLOT(forwardMessage(QString)));
-
 }
 
 medDatabaseControllerImpl::~medDatabaseControllerImpl()
