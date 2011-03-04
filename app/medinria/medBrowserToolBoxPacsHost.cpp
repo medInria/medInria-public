@@ -66,8 +66,6 @@ medBrowserToolBoxPacsHost::~medBrowserToolBoxPacsHost(void)
 void medBrowserToolBoxPacsHost::readSettings(void)
 {
     QSettings settings;
-    std::cout << "TEST" << std::endl;
-    qDebug() << settings.applicationName();
     settings.beginGroup("medBrowserToolBoxPacsHost");
     QString title = settings.value("title").toString();
     QString port = settings.value("port").toString();
