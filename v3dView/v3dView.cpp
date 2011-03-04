@@ -784,6 +784,12 @@ void v3dView::setData(dtkAbstractData *data)
             // This will add the data to the interactor.
             dtkAbstractView::setData(data);
         }
+    else if ( data->description().contains("itkDataTensorImage", Qt::CaseSensitive)) {
+
+            this->enableInteractor ( "v3dViewTensorInteractor" );
+            // This will add the data to the interactor.
+            dtkAbstractView::setData(data);
+        }
         else {
             dtkAbstractView::setData(data);
             return;
