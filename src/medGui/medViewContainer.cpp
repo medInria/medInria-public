@@ -50,6 +50,7 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
 medViewContainer::~medViewContainer(void)
 {
+    d->pool->deleteLater();
     delete d;
 
     d = NULL;

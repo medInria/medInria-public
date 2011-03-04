@@ -6,6 +6,10 @@ public:
   bool linkPosition;
   bool linkCamera;
   bool linkWindowing;
+  
+  int currentLayer;
+  QList<dtkAbstractData *> dataList;
+
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
@@ -13,6 +17,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->linkPosition  = false;
     d->linkCamera    = false;
     d->linkWindowing = false;
+    d->currentLayer = 0;
   
     QStringList lut;
     lut << "Default";		// list of available lookup tables set
@@ -145,6 +150,69 @@ void medAbstractView::setCamera (const QVector3D &position, const QVector3D &vie
     emit cameraChanged (position, viewup, focal, parallelScale);
 }
 
+void medAbstractView::setVisibility(bool visibility, int layer)
+{
+    this->onVisibilityChanged(visibility, layer);
+    emit visibilityChanged(visibility, layer);
+}
+
+bool medAbstractView::visibility(int layer) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return true;
+}
+
+void medAbstractView::setOpacity(double opacity, int layer)
+{
+    this->onOpacityChanged(opacity, layer);
+    emit opacityChanged(opacity, layer);
+}
+
+double medAbstractView::opacity(int layer) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return 1.0;
+}
+
+void medAbstractView::setCurrentLayer(int layer)
+{
+    d->currentLayer = layer;
+}
+
+int medAbstractView::currentLayer(void) const
+{
+    return d->currentLayer;
+}
+
+int medAbstractView::layerCount(void) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return 0;
+}
+
+void medAbstractView::removeOverlay(int layer)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+//void medAbstractView::addDataInList(dtkAbstractData * data)
+//{
+//    d->dataList.append(data);
+//}
+//
+//dtkAbstractData * medAbstractView::dataInList(int layer)
+//{
+//    if (layer < d->dataList.size())
+//        return d->dataList.at(layer);
+//
+//    return NULL;
+//}
+//
+//void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
+//{
+//    d->dataList[layer] = data;
+//}
+
 void medAbstractView::onPositionChanged (const QVector3D &position)
 {
     DTK_DEFAULT_IMPLEMENTATION;
@@ -169,6 +237,16 @@ void medAbstractView::onCameraChanged (const QVector3D &position,
 				       const QVector3D &viewup,
 				       const QVector3D &focal,
 				       double parallelScale)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::onVisibilityChanged(bool visibility, int layer)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::onOpacityChanged(double opacity, int layer)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }

@@ -42,6 +42,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medLayoutChooser.h
   medProgressionStack.h
   medStatusQuitButton.h
+  medSettingsButton.h
   medPacsSelector.h
   
   # general toolbox classes
@@ -76,8 +77,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfiguration.h  
   medViewerConfigurationFactory.h
   medViewerToolBoxLayout.h
+  medViewerToolBoxViewProperties.h
   medViewerToolBoxView.h
-
   )
 set(${PROJECT_NAME}_HEADERS
   medLUTtoXMLWriter.h
@@ -85,7 +86,6 @@ set(${PROJECT_NAME}_HEADERS
   medViewContainer_p.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
-
 
 
 set(${PROJECT_NAME}_SOURCES
@@ -104,6 +104,7 @@ set(${PROJECT_NAME}_SOURCES
   medLayoutChooser.cpp
   medProgressionStack.cpp
   medStatusQuitButton.cpp
+  medSettingsButton.cpp
   medPacsSelector.cpp
   
   medToolBox.cpp
@@ -135,6 +136,7 @@ set(${PROJECT_NAME}_SOURCES
   medViewerConfigurationFactory.cpp
   medViewerConfiguration.cpp
   medViewerToolBoxLayout.cpp
+  medViewerToolBoxViewProperties.cpp
   medViewerToolBoxView.cpp
   )
 

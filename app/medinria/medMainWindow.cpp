@@ -36,6 +36,7 @@
 #include <medCore/medJobManager.h>
 
 #include <medGui/medStatusQuitButton.h>
+#include <medGui/medSettingsButton.h>
 #include <medGui/medWorkspaceShifter.h>
 
 #include <medSql/medDatabaseController.h>
@@ -50,6 +51,7 @@
 #include <medGui/medSystemSettingsWidget.h>
 #include <medGui/medStartupSettingsWidget.h>
 #include <medGui/medDatabaseSettingsWidget.h>
+#include <medGui/medSettingsEditor.h>
 
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationVisualization2.h"
@@ -89,11 +91,13 @@ public:
 
     medBrowserArea *browserArea;
     medViewerArea  *viewerArea;
-
+    
     medWorkspaceShifter *shifter;
     medWorkspaceShifterAction *shiftToBrowserAreaAction;
     medWorkspaceShifterAction *shiftToViewerAreaAction;
 
+    medSettingsEditor * settingsEditor;
+    
     QPointer<medMessageControllerMessageQuestion> quitMessage;
 };
 
@@ -125,7 +129,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->addAction(windowFullScreenAction);
 
     // Setting up widgets
-
+    d->settingsEditor = NULL;
     d->browserArea = new medBrowserArea(this);
     d->viewerArea = new medViewerArea(this);
 
@@ -214,6 +218,10 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medStatusQuitButton *quitButton = new medStatusQuitButton(this);
 
     connect(quitButton, SIGNAL(quit()), this, SLOT(onQuit()));
+    
+    medSettingsButton *settingsButton = new medSettingsButton(this);
+
+    connect(settingsButton, SIGNAL(editSettings()), this, SLOT(onEditSettings()));
 
     QComboBox *configurationSwitcher = new QComboBox(this);
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
@@ -224,6 +232,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->statusBar()->setFixedHeight(31);
     this->statusBar()->addPermanentWidget(configurationSwitcher);
     this->statusBar()->addPermanentWidget(d->shifter);
+    this->statusBar()->addPermanentWidget(settingsButton);
     this->statusBar()->addPermanentWidget(quitButton);
 
     this->readSettings();
@@ -367,6 +376,21 @@ void medMainWindow::onQuit(void)
     connect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
 
     this->statusBar()->addWidget(d->quitMessage);
+}
+
+void medMainWindow::onEditSettings()
+{
+    if (d->settingsEditor)
+    {
+        d->settingsEditor->show();
+        return;
+    }
+
+    d->settingsEditor = new medSettingsEditor(this);
+    d->settingsEditor->setGeometry(100,100, 500, 500);
+    d->settingsEditor->setWindowFlags(Qt::Tool);
+
+    d->settingsEditor->show();
 }
 
 void medMainWindow::open(const medDataIndex& index)

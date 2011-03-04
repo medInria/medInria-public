@@ -20,10 +20,6 @@
 #include "medViewerArea.h"
 #include "medViewerArea_p.h"
 
-#include "medGui/medViewContainerStack.h"
-#include "medGui/medViewerToolBoxLayout.h"
-#include "medViewerToolBoxPatient.h"
-
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -57,6 +53,11 @@
 #include <medGui/medViewerConfigurationFactory.h>
 #include <medGui/medToolBoxDiffusion.h>
 #include <medGui/medToolBoxRegistration.h>
+#include <medGui/medViewContainerStack.h>
+#include <medGui/medViewerToolBoxLayout.h>
+#include <medViewerToolBoxPatient.h>
+#include <medGui/medViewerToolBoxView.h>
+#include <medGui/medViewerToolBoxViewProperties.h>
 
 
 #include <QtGui>
@@ -240,6 +241,8 @@ void medViewerArea::open(const medDataIndex& index)
         
         medViewManager::instance()->insert(index, view);
 
+
+        this->onViewFocused(view);
         view->setData(data);
     
         QMutexLocker ( &d->mutex );
