@@ -132,7 +132,7 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
         connect(d->fiberViewToolBox, SIGNAL(fiberRadiusSet(int)), interactor, SLOT(onRadiusSet(int)));
     
-    view->setData( d->diffusionToolBox->output() );
+    view->setData( d->diffusionToolBox->output(), 0 );
 }
 
 void medViewerConfigurationDiffusion::onViewRemoved (dtkAbstractView *view)
@@ -233,13 +233,13 @@ void medViewerConfigurationDiffusion::onShowBundles (bool value)
 void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
 {
     foreach (dtkAbstractView *view, d->views) {
-        view->setData( d->diffusionToolBox->output() );
+      view->setData( d->diffusionToolBox->output(), 0 );
         view->reset();
         view->update();
     }
     
     if (d->diffusionToolBox->output()->description()=="v3dDataFibers")
-        d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
+      d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
 }
 
 void medViewerConfigurationDiffusion::refreshInteractors (void)

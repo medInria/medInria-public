@@ -20,11 +20,14 @@
 #include "medViewerConfigurationVisualization.h"
 
 #include "medViewerToolBoxView.h"
+#include "medViewerToolBoxViewProperties.h"
 
 class medViewerConfigurationVisualizationPrivate
 {
 public:
-    medViewerToolBoxView   *viewToolBox;
+    medViewerToolBoxView                *viewToolBox;
+    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
+
 };
 
 medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationVisualizationPrivate)
@@ -42,6 +45,8 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
     // -- View toolbox --
     
     d->viewToolBox = new medViewerToolBoxView(parent);
+
+    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     /*
     connect(d->viewToolBox, SIGNAL(foregroundLookupTableChanged(QString)), this, SLOT(setupForegroundLookupTable(QString)));
     // connect(d->viewToolBox, SIGNAL(backgroundLookupTableChanged(QString)), this, SLOT(setupBackgroundLookupTable(QString)));
@@ -61,6 +66,7 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
      */
     
     this->addToolBox( d->viewToolBox );
+    this->addToolBox(d->viewPropertiesToolBox);
     
     //this->setLayoutType( medViewerConfiguration::TopDbBottomTb );
     

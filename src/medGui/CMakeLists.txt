@@ -62,8 +62,10 @@ set(${PROJECT_NAME}_HEADERS
   medViewerConfigurationDiffusion.h
   medViewerToolBoxLayout.h
   medViewerToolBoxView.h
+  medViewerToolBoxViewProperties.h
   medViewerConfigurationFactory.h
-  medToolBoxTensor.h)
+  medToolBoxTensor.h
+  )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medClutEditor.h
@@ -102,7 +104,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfigurationDiffusion.h
   medViewerToolBoxLayout.h
   medViewerToolBoxView.h
-  medToolBoxTensor.h)
+  medViewerToolBoxViewProperties.h
+  medToolBoxTensor.h
+  )
 
 set(${PROJECT_NAME}_SOURCES
   medClutEditor.cpp
@@ -142,8 +146,10 @@ set(${PROJECT_NAME}_SOURCES
   medViewerConfigurationRegistration.cpp
   medViewerConfigurationDiffusion.cpp
   medViewerToolBoxLayout.cpp
-  medViewerToolBoxView.cpp
-  medToolBoxTensor.cpp)
+  medViewerToolBoxView.cpp  
+  medViewerToolBoxViewProperties.cpp
+  medToolBoxTensor.cpp
+  )
 
 ## #################################################################
 ## Build rules
