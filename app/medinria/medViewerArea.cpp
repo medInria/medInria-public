@@ -34,6 +34,7 @@
 #include <dtkVr/dtkVrHeadRecognizer.h>
 #include <dtkVr/dtkVrGestureRecognizer.h>
 
+#include <medCore/medSettingsManager.h>
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
@@ -219,29 +220,13 @@ void medViewerArea::open(const medDataIndex& index)
         
         // the data-manager should be used to read data
         data = medDataManager::instance()->data(index);
-
-        if(!data)
-        {
+        if ( !data )
             return;
-        }
-        
-        /*
-        if(!data)
-            data = medDatabaseNonPersitentController::instance()->data(index);
-        
-        if(!data)
-            data = medDatabaseController::instance()->read(index);
-        
-        if(!data)
-            return;
-        
-        medDataManager::instance()->insert(index, data);
-*/
 
         if(!view) {
         if (d->view_stacks.value(d->current_patient)->current() && d->view_stacks.value(d->current_patient)->current()->current())
             view = d->view_stacks.value(d->current_patient)->current()->current()->view();
-    }
+        }
 
         if(!view) {
             view = dtkAbstractViewFactory::instance()->create("v3dView");
@@ -757,36 +742,32 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 
 void medViewerAreaPrivate::saveSplitterSize(medViewerConfiguration::LayoutType layout)
 {
-    QSettings settings("inria","medinria");
     if (layout == medViewerConfiguration::TopDbBottomTb ||
         layout == medViewerConfiguration::TopTbBottomDb)
     {
-        settings.setValue("ViewerSplitterSizesVertical",
-                      splitter->saveState());
+        medSettingsManager::instance()->setValue("application","ViewerSplitterSizeVertical",
+            splitter->saveState());
     }
     else
     {
-        settings.setValue("ViewerSplitterSizesHorizontal",
-                      splitter->saveState());
+        medSettingsManager::instance()->setValue("application","ViewerSplitterSizeHorizontal",
+            splitter->saveState());
     }
 
 }
 
 void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
 {
-    QSettings settings("inria","medinria");
-    QString value;
-
     if (orientation == Qt::Horizontal)
     {
 
-        value = "ViewerSplitterSizesHorizontal";
-        if (!splitter->restoreState(settings.value(value).toByteArray()))
+        if (!splitter->restoreState(medSettingsManager::instance()->value("application",
+            "ViewerSplitterSizeHorizontal").toByteArray()))
         {
             //viewcontainer size
             int containerSize = QWIDGETSIZE_MAX -
-                                navigator->minimumWidth()-
-                                toolbox_container->minimumWidth();
+                navigator->minimumWidth()-
+                toolbox_container->minimumWidth();
             QList<int> sizes;
             sizes.append(navigator->minimumWidth());
             sizes.append(containerSize);
@@ -798,14 +779,13 @@ void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
     }
     else
     {
-        value = "ViewerSplitterSizesVertical";
-
-        if (!splitter->restoreState(settings.value(value).toByteArray()))
+        if (!splitter->restoreState(medSettingsManager::instance()->value("application",
+            "ViewerSplitterSizeVertical").toByteArray()))
         {
             //viewcontainer size
             int containerSize = QWIDGETSIZE_MAX -
-                                navigator->minimumHeight() -
-                                toolbox_container->minimumHeight();
+                navigator->minimumHeight() -
+                toolbox_container->minimumHeight();
             QList<int> sizes;
             sizes.append(navigator->minimumHeight());
             sizes.append(containerSize);
@@ -815,6 +795,5 @@ void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
         splitter->setOrientation(Qt::Vertical);
 
     }
-
 
 }

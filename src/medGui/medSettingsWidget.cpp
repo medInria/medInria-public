@@ -46,7 +46,6 @@ QString medSettingsWidget::tabName()const
 
 void medSettingsWidget::read()
 {
-    qDebug() << "read QSettings";
 }
 
 

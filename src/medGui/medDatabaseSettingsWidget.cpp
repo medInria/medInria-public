@@ -72,8 +72,6 @@ bool medDatabaseSettingsWidget::validate()
 
 void medDatabaseSettingsWidget::read()
 {
-    qDebug()<<"reading QSettings";
-
     // we always show the datalocation here, the medStorage class takes care of retrieving the correct one
     d->dbPath->setText(medStorage::dataLocation());
 }
