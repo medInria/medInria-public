@@ -44,6 +44,21 @@ QListView {
 }
 
 /**
+ * QTreeView
+ *
+ */
+
+QTreeView {
+    color: #CCCCCC;
+    background: #6b6b6b;
+    border: 1px solid darkgray;
+    padding: 0px 0px 0px 0px;
+    gridline-color: gray;
+
+    alternate-background-color: #606060;
+}
+
+/**
  * QTextEdit
  *
  */
@@ -65,6 +80,18 @@ QSpinBox{
     background: #6b6b6b;
     spacing: 5px;
 }
+
+/**
+ * QDoubleSpinBox
+ *
+ */
+
+QDoubleSpinBox{
+    color:#CCCCCC;
+    background: #6b6b6b;
+    spacing: 5px;
+}
+
 
 /**
  * QCheckBox
@@ -396,6 +423,8 @@ QTreeWidget::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
 } 
+
+
 
 
 /**
@@ -1041,3 +1070,55 @@ dtkFinderTreeView::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
 }
+
+
+/**
+ * medViewerToolBoxViewProperties QTreeWidget
+ *
+ */
+
+medViewerToolBoxViewProperties QTreeWidget {
+    alternate-background-color: #505050;
+
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    
+    font-size: 10px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:has-children:!has-siblings:closed,
+medViewerToolBoxViewProperties QTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+} 
+
+
