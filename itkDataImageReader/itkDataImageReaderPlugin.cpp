@@ -3,9 +3,6 @@
 // /////////////////////////////////////////////////////////////////
 
 //#include "itkDataImageReader.h"
-#ifdef MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT
-#include "itkDCMTKDataImageReader.h"
-#endif
 #ifdef ITK_USE_SYSTEM_GDCM
 #include "itkGDCMDataImageReader.h"
 #endif
@@ -63,9 +60,6 @@ itkDataImageReaderPlugin::~itkDataImageReaderPlugin(void)
 bool itkDataImageReaderPlugin::initialize(void)
 {
     if(!itkMetaDataImageReader::registered())     dtkWarning() << "Unable to register itkMetaDataImageReader type";
-#ifdef MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT
-    if(!itkDCMTKDataImageReader::registered())    dtkWarning() << "Unable to register itkDCMTKDataImageReader type";
-#endif
 #ifdef ITK_USE_SYSTEM_GDCM
     if(!itkGDCMDataImageReader::registered())     dtkWarning() << "Unable to register  itkGDCMDataImageReader type";
 #endif
@@ -108,9 +102,6 @@ QStringList itkDataImageReaderPlugin::types(void) const
 #ifdef ITK_USE_SYSTEM_GDCM    
             << "itkGDCMDataImageReader"
 #endif    
-#ifdef MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT
-            << "itkDCMTKDataImageReader"
-#endif
             << "itkNiftiDataImageReader"
             << "itkAnalyzeDataImageReader"
             << "itkNrrdDataImageReader"
