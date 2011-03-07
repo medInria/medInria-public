@@ -62,7 +62,7 @@ public:
     dtkFinderToolBar *toolbar;
 
     medPacsWidget *pacs;
-
+    
     QStackedWidget *stack;
     QStatusBar *status;
 };

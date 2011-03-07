@@ -19,6 +19,7 @@
 
 #include "medDatabaseController.h"
 #include "medDatabaseReader.h"
+#include <medCore/medStorage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -90,7 +91,7 @@ dtkAbstractData *medDatabaseReader::run(void)
 
     while(query.next()) {
         filenames << query.value(2).toString();
-        filename = query.value(3).toString();
+        filename = medStorage::dataLocation() + query.value(3).toString();
     }
 
     typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;

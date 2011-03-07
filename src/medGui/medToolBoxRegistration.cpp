@@ -17,10 +17,7 @@
  * 
  */
 
-#include "medDropSite.h"
-#include "medToolBoxTab.h"
 #include "medToolBoxRegistration.h"
-#include "medToolBoxRegistrationCustom.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
@@ -34,7 +31,13 @@
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
 #include <medCore/medMessageController.h>
+
+#include <medGui/medDropSite.h>
+#include <medGui/medToolBoxTab.h>
 #include <medGui/medToolBoxFactory.h>
+
+#include "medToolBoxRegistrationCustom.h"
+
 
 #include <QtGui>
 

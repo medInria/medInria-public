@@ -17,7 +17,8 @@
 ## 
 ######################################################################
 
-cmake_minimum_required(VERSION 2.6)
+# Require 2.8 for correct behaviour of if( FALSE ).
+cmake_minimum_required(VERSION 2.8)
 
 project(medinria)
 
@@ -31,6 +32,11 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
+if(WIN32)
+  option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
+endif()
+  
+
 enable_testing()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
@@ -41,8 +47,16 @@ include(${dtk_USE_FILE})
 include(medinriaPack)
 include(medinriaDart)
 
+option(BUILD_DOCUMENTATION "Build documentation"    true)
+
 add_subdirectory(src)
 add_subdirectory(app)
+
+if(BUILD_DOCUMENTATION)
+  add_subdirectory(doc)
+endif(BUILD_DOCUMENTATION)
+
+
 
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in

@@ -19,15 +19,19 @@
 
 #include "medBrowserArea.h"
 #include "medBrowserArea_p.h"
-#include "medBrowserToolBoxJobs.h"
+
 #include "medBrowserToolBoxPacsHost.h"
 #include "medBrowserToolBoxPacsNodes.h"
 #include "medBrowserToolBoxPacsSearch.h"
+#include "medBrowserToolBoxSource.h"
+
 #include <QtGui>
 
 #include <dtkCore/dtkGlobal.h>
-
 #include <dtkGui/dtkFinder.h>
+
+#include <medCore/medMessageController.h>
+#include <medCore/medJobManager.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseExporter.h>
@@ -35,13 +39,12 @@
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabasePreview.h>
-#include <medCore/medMessageController.h>
 
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medPacsSelector.h>
-#include "medBrowserToolBoxSource.h"
+#include <medGui/medBrowserToolBoxJobs.h>
 
 #include <medPacs/medPacsWidget.h>
 #include <medPacs/medPacsMover.h>
@@ -173,7 +176,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->pacs = new medPacsWidget(this);
 
     connect(d->pacs, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
-    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
+    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onFileImport(QString)));
 
     // /////////////////////////////////////////////////////////////////
 
@@ -221,6 +224,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_source->setPacsWidget(d->pacs_selector);
 
     connect(d->toolbox_source, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
+
 
     // Jobs //////////////////////////////////////////
 
@@ -277,39 +281,24 @@ medDatabaseModel *medBrowserArea::model(void)
     return d->model;
 }
 
+
 void medBrowserArea::onFileSystemImportClicked(void)
 {
     QFileInfo info(d->finder->selectedPath());
-
-    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
-
-    connect(importer, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)), Qt::BlockingQueuedConnection);
-    connect(importer, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
-    connect(importer, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
-    connect(importer, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
-    connect(importer,SIGNAL(showError(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
-    d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
-
-    QThreadPool::globalInstance()->start(importer);
+    this->onFileImport(info.absoluteFilePath());
 }
 
-void medBrowserArea::onPacsImport(QString path)
+void medBrowserArea::onFileImport(QString path)
 {
     qDebug() << path;
     QFileInfo info(path);
 
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
-
-    connect(importer, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)), Qt::BlockingQueuedConnection);
-    connect(importer, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
-    connect(importer, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
-    connect(importer, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
-    connect(importer,SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
-
-    d->toolbox_jobs->stack()->setLabel(importer, info.baseName());
-
+    connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+    d->toolbox_jobs->stack()->AddJobItem(importer, info.baseName());
+    medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
+
 }
 
 void medBrowserArea::onFileSystemExportClicked(void)
@@ -354,19 +343,10 @@ void medBrowserArea::onSourceIndexChanged(int index)
 
 void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
 {
-
     medPacsMover* mover = new medPacsMover(cmdList);
-
-    connect(mover, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
-    connect(mover, SIGNAL(success()), this, SLOT(onFileImported()), Qt::BlockingQueuedConnection);
-    connect(mover, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
-    connect(mover, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
-    connect(mover, SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
-    connect(mover, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
-    connect(mover, SIGNAL(cancelled()), d->toolbox_jobs->stack(),SLOT(onCancel()), Qt::AutoConnection );
-    connect(d->toolbox_jobs->stack(), SIGNAL(cancelRequest(QObject*)),mover, SLOT(onCancel(QObject*)), Qt::AutoConnection);
-
-    d->toolbox_jobs->stack()->setLabel(mover, "moving");
-
-    QThreadPool::globalInstance()->start(mover);
+    connect(mover, SIGNAL(import(QString)), this, SLOT(onFileImport(QString)));
+    d->toolbox_jobs->stack()->AddJobItem(mover, "Retrieving");
+    medJobManager::instance()->registerJobItem(mover);
+    QThreadPool::globalInstance()->start(mover);    
 }
+

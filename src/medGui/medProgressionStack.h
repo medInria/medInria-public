@@ -24,8 +24,15 @@
 
 #include <QtGui/QWidget>
 
+class medJobItem;
 class medProgressionStackPrivate;
 
+/**
+ * @class medProgressionStack
+ * @brief Creates JobWidgets that represent the progression of a jobItem.
+ * All visible jobs will be managed here. The class stores pointers in hashTables to identify the sender of status messages
+ * It provides methods to communicate with the jobItems (e.g. to cancel the job)
+ */
 class MEDGUI_EXPORT medProgressionStack : public QWidget
 {
     Q_OBJECT
@@ -36,6 +43,13 @@ public:
 
     QSize sizeHint(void) const;
 
+    /**
+    * AddJobItem - Add a new subclass of medJobItem to the Stack to create the connection between them
+    * @params: medJobItem * job - instance of medJobItem
+    * @params: QString label - the label shown on the jobToolBox
+    */
+    void AddJobItem(medJobItem* job, QString label);
+
 signals:
     void shown(void);
     void hidden(void);
@@ -43,16 +57,20 @@ signals:
 
 public slots:
     void setLabel(QObject *sender, QString label);
-    void setProgress(int progress);
-    void onSuccess(void);
-    void onFailure(void);
+    void setProgress(QObject *sender, int progress);
+    void onSuccess(QObject* sender);
+    void onFailure(QObject* sender);
+    void onCancel(QObject* sender);
     void removeItem();
-    void onCancel();
+
+private slots:
+    /** send a cancel request to the job that the cancelbutton is connected to **/
     void sendCancelRequest();
+    
 
 private:
-
-    void completeNotification(QString label);
+    /** show a final status and remove the Widget after a defined time **/
+    void completeNotification(QObject* sender, QString label);
 
     medProgressionStackPrivate *d;
 };
