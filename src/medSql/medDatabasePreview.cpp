@@ -27,6 +27,8 @@
 #include "medDatabasePreviewTooltip.h"
 #include "medDatabasePreviewView.h"
 
+#include <medCore/medStorage.h>
+
 #include <QtCore>
 #include <QtGui>
 
@@ -175,7 +177,7 @@ void medDatabasePreview::onPatientClicked(int id)
                 first = 0;
             }
             
-            d->series_group->addItem(new medDatabasePreviewItem(id, stId.toInt(), seId.toInt(), -1, seThumb.toString()));
+            d->series_group->addItem(new medDatabasePreviewItem(id, stId.toInt(), seId.toInt(), -1,medStorage::dataLocation() + seThumb.toString()));
         }
     }
 
@@ -226,7 +228,7 @@ void medDatabasePreview::onSeriesClicked(int id)
         QVariant seName  = query.value(1);
         QVariant seThumb = query.value(2);
         
-        d->series_group->addItem(new medDatabasePreviewItem(patientId.toInt(), studyId.toInt(), seId.toInt(), -1, seThumb.toString()));
+        d->series_group->addItem(new medDatabasePreviewItem(patientId.toInt(), studyId.toInt(), seId.toInt(), -1, medStorage::dataLocation() + seThumb.toString()));
     }
     
     // Image level
@@ -254,7 +256,7 @@ void medDatabasePreview::onSeriesClicked(int id)
             first = 0;
         }
 
-        d->image_group->addItem(new medDatabasePreviewItem(patientId.toInt(), studyId.toInt(), id, imageId.toInt(), imageThumbnail.toString()));
+        d->image_group->addItem(new medDatabasePreviewItem(patientId.toInt(), studyId.toInt(), id, imageId.toInt(),medStorage::dataLocation() + imageThumbnail.toString()));
     }
 
     d->scene->setSceneRect(d->image_group->boundingRect());

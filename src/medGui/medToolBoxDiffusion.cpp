@@ -26,7 +26,7 @@
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
 
-#include <medSql/medDatabaseController.h>
+//#include <medSql/medDatabaseController.h>
 
 #include <medGui/medDropSite.h>
 #include <medGui/medToolBoxTab.h>
@@ -151,9 +151,7 @@ void medToolBoxDiffusion::onObjectDropped()
     
     dtkAbstractData *data = medDataManager::instance()->data (index);
     if (!data) {
-        data = medDatabaseController::instance()->read(index);
-        if (data)
-            medDataManager::instance()->insert(index, data);
+        return;
     }
 
     if (!data)
@@ -297,28 +295,23 @@ void medToolBoxDiffusion::createProcessForIndex (const medDataIndex &index)
         d->customToolBox->setProcess (d->activeMethods[index]);
         return;
         /*if (d->activeMethods[index])
-	    delete d->activeMethods[index];
-	d->activeMethods.remove (index);
-	*/
+        delete d->activeMethods[index];
+    d->activeMethods.remove (index);
+    */
     }
     
     if (dtkAbstractProcess *proc = d->customToolBox->create()) {
         d->activeMethods[index] = proc;
-	connect (proc, SIGNAL (progressed (int)), d->progression_stack,  SLOT (setProgress (int)));
-	connect (proc, SIGNAL (success()), d->progression_stack,  SLOT (onSuccess ()));
-	connect (proc, SIGNAL (failure()), d->progression_stack,  SLOT (onFailure ()));
+    connect (proc, SIGNAL (progressed (int)), d->progression_stack,  SLOT (setProgress (int)));
+    connect (proc, SIGNAL (success()), d->progression_stack,  SLOT (onSuccess ()));
+    connect (proc, SIGNAL (failure()), d->progression_stack,  SLOT (onFailure ()));
 
-	dtkAbstractData *data = medDataManager::instance()->data (index);
-	if (!data) {
-	    data = medDatabaseController::instance()->read(index);
-	    if (data)
-	        medDataManager::instance()->insert(index, data);
-	}
+    dtkAbstractData *data = medDataManager::instance()->data (index);
       
-	if (data)
-	    proc->setInput (data);
+    if (data)
+        proc->setInput (data);
 
-	this->setRequiredOutputForProcess (proc, d->coefficientsCombo->currentIndex());
+    this->setRequiredOutputForProcess (proc, d->coefficientsCombo->currentIndex());
     }
 }
 
