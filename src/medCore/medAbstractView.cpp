@@ -140,6 +140,12 @@ bool medAbstractView::cameraLinked (void) const
     return d->linkCamera;
 }
 
+void medAbstractView::setSlice (int slice)
+{
+    this->onSliceChanged (slice);
+    emit sliceChanged (slice);
+}
+
 void medAbstractView::setPosition (const QVector3D &position)
 {
     this->onPositionChanged (position);
@@ -271,6 +277,11 @@ void medAbstractView::removeOverlay(int layer)
 //    d->dataList[layer] = data;
 //}
 
+void medAbstractView::onSliceChanged (int slice)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
 void medAbstractView::onPositionChanged (const QVector3D &position)
 {
     DTK_DEFAULT_IMPLEMENTATION;
@@ -307,6 +318,11 @@ void medAbstractView::onVisibilityChanged(bool visibility, int layer)
 void medAbstractView::onOpacityChanged(double opacity, int layer)
 {
     DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::emitViewSliceChangedEvent(int slice)
+{
+    emit sliceChanged(slice);
 }
 
 void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
