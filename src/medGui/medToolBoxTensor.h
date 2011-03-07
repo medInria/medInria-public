@@ -19,6 +19,8 @@ signals:
 public slots:
     void update (dtkAbstractView *view);
 
+    void onGlyphShapeChanged(QString shape);
+
 protected:
     medToolBoxTensorPrivate *d;
 };
