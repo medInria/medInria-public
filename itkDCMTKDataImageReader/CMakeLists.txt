@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkDataImageReaderPlugin)
+project(itkDCMTKDataImageReaderPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -28,25 +28,24 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
-
 find_package(dtk REQUIRED)
+
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-if(ITK_USE_SYSTEM_GDCM)
-  add_definitions(-DITK_USE_SYSTEM_GDCM)
-endif()
-#else(ITK_USE_SYSTEM_GDCM)
-#  message(WARNING "The DICOM GDCM reader plugin needs ITK to compile with SYSTEM_GDCM. If you don't want to use GDCM, discard this warning. Otherwise, #please set the option ITK_USE_SYSTEM_GDCM:ON in ITK and re-compile")
-#endif(ITK_USE_SYSTEM_GDCM)
+find_package(vtkINRIA3D REQUIRED) # for itkMultiThreadedImageIO
+include(${vtkINRIA3D_USE_FILE})
 
 find_package(VTK)
 include(${VTK_USE_FILE})
 
+add_subdirectory(ITKDCMTKIO)
+# add_definitions(-D MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
+
+include_directories(ITKDCMTKIO)
 include_directories(../dtkItkLogForwarder)
 
 ## #################################################################
@@ -54,53 +53,15 @@ include_directories(../dtkItkLogForwarder)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataImageReaderPlugin.h
-  itkDataImageReaderBase.h
-  itkMetaDataImageReader.h
-  itkAnalyzeDataImageReader.h
-  itkPNGDataImageReader.h
-  itkBMPDataImageReader.h
-  itkJPEGDataImageReader.h
-  itkTIFFDataImageReader.h
-  itkNiftiDataImageReader.h
-  itkNrrdDataImageReader.h
-  itkGiplDataImageReader.h
-  itkVTKDataImageReader.h
-  )
-if(ITK_USE_SYSTEM_GDCM)
-  set(${PROJECT_NAME}_HEADERS_MOC
-    ${${PROJECT_NAME}_HEADERS_MOC}
-    itkGDCMDataImageReader.h
-    )
-endif(ITK_USE_SYSTEM_GDCM)
-  
+  itkDCMTKDataImageReaderPlugin.h
+  itkDCMTKDataImageReader.h)
+
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
-  itkDataImageReaderPlugin.cpp
-  itkDataImageReaderCommand.cxx
-  itkDataImageReaderBase.cpp
-  itkMetaDataImageReader.cpp
-  itkAnalyzeDataImageReader.cpp
-  itkPNGDataImageReader.cpp
-  itkBMPDataImageReader.cpp
-  itkJPEGDataImageReader.cpp
-  itkTIFFDataImageReader.cpp
-  itkNiftiDataImageReader.cpp
-  itkNrrdDataImageReader.cpp
-  itkGiplDataImageReader.cpp
-  itkVTKDataImageReader.cpp
-  )
-if(ITK_USE_SYSTEM_GDCM)
-  set(${PROJECT_NAME}_SOURCES
-    ${${PROJECT_NAME}_SOURCES}
-    itkGDCMDataImageReader.cpp
-    )
-endif(ITK_USE_SYSTEM_GDCM)
-
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+  itkDCMTKDataImageReaderPlugin.cpp
+  itkDCMTKDataImageReader.cpp)
 
 ## #################################################################
 ## Build rules
@@ -109,29 +70,70 @@ SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES})
+  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_HEADERS})
 
 target_link_libraries(${PROJECT_NAME}
+  ITKDCMTKIO
   ${QT_LIBRARIES}
-  dtkItkLogForwarder
   dtkCore
-  ${ITK_LIBRARIES})
+)
 
-add_executable(itkGenerateThumbnails
-  itkGenerateThumbnails.cxx)
+add_executable(itkDCMTKConvert
+  itkDCMTKConvert.cxx
+)
   
-target_link_libraries(itkGenerateThumbnails
-  ${ITK_LIBRARIES})
+target_link_libraries(itkDCMTKConvert
+  ITKDCMTKIO
+  ${ITK_LIBRARIES}
+)
+
+if(VTK_FOUND)
+
+  add_executable(itkDCMTKReaderTest
+    itkDCMTKReaderTest.cxx
+  )
+  
+  target_link_libraries(itkDCMTKReaderTest
+    vtkRenderingAddOn
+    vtkWidgetsAddOn
+    vtkWidgets
+    vtkRendering
+    vtkIO
+    vtkDataManagement
+    ITKDCMTKIO
+    ${ITK_LIBRARIES}
+  )
+
+  add_executable(itkDCMTKReadWriteBenchmark
+    itkDCMTKReadWriteBenchmark.cxx
+  )
+  
+  target_link_libraries(itkDCMTKReadWriteBenchmark
+    ITKDCMTKIO
+    ${ITK_LIBRARIES}
+  )
+
+endif (VTK_FOUND)
 
 if (BUILD_TESTING)
   add_subdirectory(Testing)
 endif (BUILD_TESTING)
 
+dtk_build_doc(itkDCMTKDataImageReaderPlugin)
+
+## #################################################################
+## Source file layout in development environments like Visual Studio
+## #################################################################
+
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+
 ## #################################################################
 ## Install rules
 ## #################################################################
+
 if( ITK_BUILD_SHARED )
     install(TARGETS ${PROJECT_NAME}  
     RUNTIME DESTINATION plugins
@@ -146,5 +148,3 @@ else( ITK_BUILD_SHARED )
     LIBRARY DESTINATION plugins
     ARCHIVE DESTINATION plugins)
 endif( ITK_BUILD_SHARED )
-
-

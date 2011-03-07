@@ -57,9 +57,10 @@ set(DEPENDS_ON_DTK 1)
 option(MEDINRIA_BUILD_V3DDATA_PLUGIN                      "Build v3dData plugin" "ON")
 option(MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN                "Build v3dViewPublic plugin" "ON")
 option(MEDINRIA_BUILD_V3DVIEW_PLUGIN                      "Build v3dView plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN                 "Build itkDataImge plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN           "Build itkDataImgeReader plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN           "Build itkDataImgeWriter plugin" "ON")
+option(MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN                 "Build itkDataImage plugin" "ON")
+option(MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN           "Build itkDataImageReader plugin" "ON")
+option(MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN      "Build itkDCMTKDataImageReader plugin" "ON")
+option(MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN           "Build itkDataImageWriter plugin" "ON")
 option(MEDINRIA_BUILD_VTKDATAMESH_PLUGIN                  "Build vtkDataMesh plugin" "ON")
 option(MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN            "Build vtkDataMeshReader plugin" "ON")
 option(MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN            "Build vtkDataMeshWriter plugin" "ON")
@@ -68,7 +69,6 @@ option(MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN           "Build itkDataTensorIm
 option(MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN     "Build itkDataTensorImageReader plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN     "Build itkDataTensorImageWriter plugin" "ON")
 option(BUILD_DOCUMENTATION "Build documentation"    true)
-
 
 
 if (MEDINRIA_BUILD_V3DDATA_PLUGIN)
@@ -89,6 +89,10 @@ endif()
 
 if (MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN)
   subdirs(itkDataImageReader)
+endif()
+
+if (MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN)
+  subdirs(itkDCMTKDataImageReader)
 endif()
 
 if (MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN)
@@ -139,7 +143,9 @@ if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN OR
     MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN OR
-    MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN)
+    MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN OR
+    MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN
+    )
     
     set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()

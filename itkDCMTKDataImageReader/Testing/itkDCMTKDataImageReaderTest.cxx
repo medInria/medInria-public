@@ -16,6 +16,10 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
         std::cerr << "Not enough arguments" << std::endl;
 	return EXIT_FAILURE;
     }
+
+    QApplication application(argc, argv);
+
+    qDebug() << "Path: " << argv[1];
     
     dtkPluginManager::instance()->setPath (argv[1]);
     dtkPluginManager::instance()->initialize();
@@ -33,7 +37,7 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
     foreach (QString file, dir.entryList()) {
       dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
       if (!data) {
-        std::cerr << "Cannot create data object from plugin" << std::endl;
+        qDebug() << "Cannot create data object from plugin";
 	return EXIT_FAILURE;
       }
       data->enableReader ("itkDCMTKDataImageReader");

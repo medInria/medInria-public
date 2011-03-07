@@ -7,13 +7,71 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
-
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
 #include <itkDCMTKImageIO.h>
 #include <itkMetaDataDictionary.h>
 #include <itkObjectFactoryBase.h>
-#include "itkDataImageReaderCommand.h"
+#include <itkCommand.h>
+
+// implement an observer
+namespace itk
+{
+  class DCMTKDataImageReaderCommand : public Command
+  {
+    
+  public:
+
+    typedef DCMTKDataImageReaderCommand     Self;
+    typedef Command                        Superclass;
+    typedef itk::SmartPointer<Self>        Pointer;
+    typedef itk::SmartPointer<const Self>  ConstPointer;
+    
+    itkTypeMacro(DCMTKDataImageReaderCommand, Command );
+    itkNewMacro (Self);
+    
+    void Execute(Object *caller, const EventObject &event);
+    void Execute(const Object *caller, const EventObject &event);
+    
+    void SetDataImageReader (dtkAbstractDataReader* reader)
+    { m_Reader = reader; }
+
+  protected:
+    DCMTKDataImageReaderCommand(){ m_Reader = 0; };
+    virtual ~DCMTKDataImageReaderCommand(){};
+    
+  private:
+    dtkAbstractDataReader* m_Reader;
+  };
+
+  void DCMTKDataImageReaderCommand::Execute (Object *caller, const EventObject &event)
+  {
+      ImageIOBase *po = dynamic_cast<ImageIOBase *>(caller);
+    
+      if (!po)
+	  return;
+    
+      if(typeid(event) == typeid(itk::ProgressEvent))
+      {
+	  if (m_Reader)
+	      m_Reader->setProgress((int)(po->GetProgress()*100.0));
+      }
+  }
+  
+  void DCMTKDataImageReaderCommand::Execute (const Object *caller, const EventObject &event)
+  {
+      ImageIOBase *po = dynamic_cast<ImageIOBase *>(const_cast<Object *>(caller) );
+      if (! po)
+	  return;
+        
+      if( typeid(event) == typeid ( itk::ProgressEvent  )  )
+      {
+	  if (m_Reader)
+	      m_Reader->setProgress ( (int)(po->GetProgress()*100.0) );
+      }
+  }
+}
+
 
 #define ReadImageMacro(type, dimension)					\
   itk::ImageFileReader< itk::Image<type, dimension> >::Pointer Reader = itk::ImageFileReader< itk::Image<type, dimension> >::New(); \
@@ -356,7 +414,7 @@ bool itkDCMTKDataImageReader::read (const QStringList& paths)
     }
   */
 
-  itk::DataImageReaderCommand::Pointer command = itk::DataImageReaderCommand::New();
+  itk::DCMTKDataImageReaderCommand::Pointer command = itk::DCMTKDataImageReaderCommand::New();
   command->SetDataImageReader ( this );
   d->io->AddObserver ( itk::ProgressEvent(), command);
 
