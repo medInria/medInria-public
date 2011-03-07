@@ -21,6 +21,8 @@
 
 #include <QtGui>
 
+#include <iostream>
+
 class medBrowserToolBoxPacsHostPrivate
 {
 public:
@@ -63,7 +65,7 @@ medBrowserToolBoxPacsHost::~medBrowserToolBoxPacsHost(void)
 
 void medBrowserToolBoxPacsHost::readSettings(void)
 {
-    QSettings settings("inria", "medinria");
+    QSettings settings;
     settings.beginGroup("medBrowserToolBoxPacsHost");
     QString title = settings.value("title").toString();
     QString port = settings.value("port").toString();
@@ -82,7 +84,7 @@ void medBrowserToolBoxPacsHost::readSettings(void)
 
 void medBrowserToolBoxPacsHost::writeSettings(void)
 {
-    QSettings settings("inria", "medinria");
+    QSettings settings;
     settings.beginGroup("medBrowserToolBoxPacsHost");
     settings.setValue("title", d->title->text());
     settings.setValue("port", d->port->text());

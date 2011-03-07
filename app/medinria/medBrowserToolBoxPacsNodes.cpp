@@ -95,7 +95,7 @@ void medBrowserToolBoxPacsNodes::readSettings(void)
 {
     QList<QVariant> nodes;
 
-    QSettings settings("inria", "medinria");
+    QSettings settings;
 
     settings.beginGroup("medBrowserToolBoxPacsHost");
     d->host_title = settings.value("title").toString();
@@ -124,7 +124,7 @@ void medBrowserToolBoxPacsNodes::writeSettings(void)
         nodes << node;
     }
 
-    QSettings settings("inria", "medinria");
+    QSettings settings;
     settings.beginGroup("medBrowserToolBoxPacsNodes");
     settings.setValue("nodes", nodes);
     settings.endGroup();
