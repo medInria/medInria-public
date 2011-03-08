@@ -280,7 +280,7 @@ medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item, int column
             d->propertiesTree->collapseItem(item);
         else
         {
-            d->propertiesTree->collapseAll();
+            //d->propertiesTree->collapseAll();
             d->propertiesTree->expandItem(item);
             d->currentLayer = item->text(0).toInt();
         }
