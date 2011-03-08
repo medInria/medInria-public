@@ -3,6 +3,8 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 
+#include <medGui/medViewerToolBoxViewProperties.h>
+#include <medGui/medToolBoxRegistration.h>
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerStack.h>
 #include <medGui/medViewerToolBoxView.h>
@@ -13,6 +15,7 @@ class medViewerConfigurationRegistrationPrivate
 public:
     medViewerToolBoxView   *viewToolBox;
     medToolBoxRegistration * registrationToolBox;
+    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 };
 
 medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationRegistrationPrivate)
@@ -24,8 +27,9 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     d->viewToolBox = new medViewerToolBoxView(parent);
     this->addToolBox( d->viewToolBox );
-
-
+    
+    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
+    this->addToolBox(d->viewPropertiesToolBox);
     // -- Registration toolbox --
 
     d->registrationToolBox = new medToolBoxRegistration(parent);
@@ -42,8 +46,8 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     this->setViewLayoutType (medViewContainer::Compare);
     
-    this->setLayoutType(medViewerConfiguration::TopDbBottomTb);
-    //this->setLayoutType(medViewerConfiguration::LeftDbRightTb);
+    //this->setLayoutType(medViewerConfiguration::TopDbBottomTb);
+    this->setLayoutType(medViewerConfiguration::LeftDbRightTb);
 
 
 }

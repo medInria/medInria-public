@@ -24,13 +24,12 @@
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
 #include <medCore/medMessageController.h>
+#include <medCore/medAbstractView.h>
 
 #include <medGui/medDropSite.h>
 #include <medGui/medToolBoxTab.h>
@@ -54,9 +53,9 @@ public:
     QPushButton * saveImageButton;
     QPushButton * saveTransButton;
     QComboBox *toolboxes;
-    dtkAbstractView *fixedView;
-    dtkAbstractView *movingView;
-    dtkAbstractView *fuseView;
+    medAbstractView *fixedView;
+    medAbstractView *movingView;
+    medAbstractView *fuseView;
 
     dtkAbstractDataImage *fixedData;
     dtkAbstractDataImage *movingData;
@@ -249,7 +248,8 @@ void medToolBoxRegistration::onFixedImageDropped (void)
     if (!d->fixedData)
         return;
 
-    d->fixedView = medViewManager::instance()->views(index).first();
+    d->fixedView = dynamic_cast<medAbstractView*>
+                   (medViewManager::instance()->views(index).first());
 
     if(!d->fixedView) {
         qDebug() << "Unable to retrieve fixed view";
@@ -258,14 +258,29 @@ void medToolBoxRegistration::onFixedImageDropped (void)
 
 
     if (d->fuseView)
-        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-            if (d->movingData) {
-                interactor->setData(d->fixedData,   0);
-                interactor->setData(d->movingData,  1);
-                d->fuseView->reset();
-                d->fuseView->update();
-            }
+//        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+//            if (d->movingData) {
+//                interactor->setData(d->fixedData,   0);
+//                interactor->setData(d->movingData,  1);
+//                d->fuseView->reset();
+//                d->fuseView->update();
+//            }
+//        }
+    {
+        if (d->movingView && d->fuseView->layerCount()==1)
+        {
+            //only the moving view has been set: shift it to layer 1
+            d->fuseView->setData(d->fixedData,0);
+            d->fuseView->setData(d->movingData,1);
         }
+        else
+        {
+            //either both views are set, or only the fixed view
+            d->fuseView->setData(d->fixedData,0);
+        }
+        d->fuseView->reset();
+        d->fuseView->update();
+    }
 }
 
 void medToolBoxRegistration::onMovingImageDropped (void)
@@ -280,27 +295,41 @@ void medToolBoxRegistration::onMovingImageDropped (void)
     if (!d->movingData)
         return;
 
-    d->movingView = medViewManager::instance()->views(d->processDropSiteMoving->index()).first();
+    d->movingView = dynamic_cast<medAbstractView*>
+                    (medViewManager::instance()->views
+                     (d->processDropSiteMoving->index()).first());
 
     if(!d->movingView) {
         qDebug() << "Unable to retrieve moving view";
 	return;
     }
-
+    
     if (d->fixedView) {
         d->movingView->update();
     }
 
-    if (d->fuseView) {
-        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-            if (d->fixedData) {
-                interactor->setData(d->fixedData,   0);
-                interactor->setData(d->movingData,  1);
-                d->fuseView->reset();
-                d->fuseView->update();
-            }
-        }
+//    if (d->fuseView) {
+//        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+//            if (d->fixedData) {
+//                interactor->setData(d->fixedData,   0);
+//                interactor->setData(d->movingData,  1);
+//                d->fuseView->reset();
+//                d->fuseView->update();
+//            }
+//        }
+//    }
+    if (d->fixedView)
+    {
+        //already one layer present
+        d->fuseView->setData(d->movingData,1);
     }
+    else
+    {
+        //only the moving view is set
+        d->fuseView->setData(d->movingData,0);
+    }
+    //d->fuseView->reset();
+    d->fuseView->update();
 }
 
 void medToolBoxRegistration::onToolBoxChosen(const QString& id)
@@ -328,16 +357,14 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
     if (!view)
         return;
     
-    d->fuseView = view;
-    d->fuseView->enableInteractor("v3dViewFuseInteractor");
-    dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor");
+    d->fuseView = dynamic_cast <medAbstractView*> (view);
+//    d->fuseView->enableInteractor("v3dViewFuseInteractor");
+//    dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor");
 
-    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
-            SLOT(onBlendAlphaValueSet(int)));
-    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
-            SLOT(onCheckerboardDivisionCountValueSet(int)));
-
-
+//    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
+//            SLOT(onBlendAlphaValueSet(int)));
+//    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
+//            SLOT(onCheckerboardDivisionCountValueSet(int)));
 }
 
 void medToolBoxRegistration::clear(void)
