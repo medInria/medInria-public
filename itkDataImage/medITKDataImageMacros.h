@@ -19,9 +19,8 @@
 #include <QtGui>
 
 template< typename TPixel, int VDimension >
-void
-generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
-		    int xydim, bool singlez, QList<QImage> & thumbnails)
+void generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
+                         int xydim, bool singlez, QList<QImage> & thumbnails)
 {
   if (VDimension < 3)
     return;
@@ -30,6 +29,9 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
 
   typedef itk::Image<TPixel, VDimension> ImageType;
   typename ImageType::Pointer  img  = image;
+
+  img->SetRequestedRegion(img->GetLargestPossibleRegion());
+  img->Update();
   typename ImageType::SizeType size = img->GetLargestPossibleRegion().GetSize();
 
   if ((( singlez && thumbnails.length() == 1) ||
@@ -39,12 +41,9 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
       thumbnails[0].width()  == xydim)
     return;
 
-  thumbnails.clear();
-
-  qDebug() << "generating thumbnails...";
-
   if (singlez)
   {
+    
     typename ImageType::SizeType newSize = size;
     newSize[2]    = 1;
     typename ImageType::IndexType index;
@@ -97,7 +96,7 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
 
     typename ImageType::PointType origin = img->GetOrigin();
     origin[!index] -= 0.5 * (newSize[!index] * newSpacing[!index] -
-			     size[!index] * spacing[!index]);
+                 size[!index] * spacing[!index]);
 
     typedef itk::Image<float, VDimension> FloatImageType;
     typedef itk::RecursiveGaussianImageFilter<ImageType, FloatImageType>
@@ -116,8 +115,7 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     smoother1->SetInput( smoother0->GetOutput() );
     typename SmootherType1::Pointer smoother = smoother1;
 
-    typedef typename itk::ResampleImageFilter<FloatImageType, ImageType>
-      FilterType;
+    typedef typename itk::ResampleImageFilter<FloatImageType, ImageType> FilterType;
     typename FilterType::Pointer resampler = FilterType::New();
     resampler->SetInput (smoother->GetOutput());
     resampler->SetSize (newSize);
@@ -138,25 +136,24 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     img = resampler->GetOutput();
   }
 
-  typedef itk::RGBPixel<unsigned char>        RGBPixelType;
+  typedef itk::RGBPixel<unsigned char> RGBPixelType;
   typedef itk::Image<RGBPixelType, VDimension> RGBImageType;
-  typedef itk::ScalarToRGBColormapImageFilter<ImageType, RGBImageType>
-    RGBFilterType;
+  typedef itk::ScalarToRGBColormapImageFilter<ImageType, RGBImageType> RGBFilterType;
   typename RGBFilterType::Pointer rgbfilter = RGBFilterType::New();
   rgbfilter->SetColormap (RGBFilterType::Grey);
   rgbfilter->GetColormap()->SetMinimumRGBComponentValue (0);
   rgbfilter->GetColormap()->SetMaximumRGBComponentValue (255);
   rgbfilter->UseInputImageExtremaForScalingOn ();
   rgbfilter->SetInput (img);
-
+  
   try
   {
-    rgbfilter->Update();
+      rgbfilter->Update();
   }
   catch (itk::ExceptionObject &e)
   {
-    qDebug() << e.GetDescription();
-    return;
+      qDebug() << e.GetDescription();
+      return;
   }
 
   thumbnails.clear();
@@ -164,12 +161,10 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   size = rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize();
   unsigned long	 nvoxels_per_slice = size[0] * size[1];
   unsigned long	 voxelCount	   = 0;
-  QImage	*qimage		   = new QImage (size[0], size[1],
-						 QImage::Format_ARGB32);
-  uchar		*qImageBuffer	   = qimage->bits();
-  itk::ImageRegionIterator<RGBImageType> it (
-    rgbfilter->GetOutput(),
-    rgbfilter->GetOutput()->GetLargestPossibleRegion());
+  QImage *qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);
+  uchar	 *qImageBuffer = qimage->bits();
+  itk::ImageRegionIterator<RGBImageType> it (rgbfilter->GetOutput(),
+                                             rgbfilter->GetOutput()->GetLargestPossibleRegion());
 
   while (!it.IsAtEnd())
   {
@@ -183,13 +178,12 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
 
     if ((voxelCount % nvoxels_per_slice) ==  0)
     {
-        thumbnails.push_back (qimage->mirrored(img->GetDirection()(0,0) == -1.0,
-                                               img->GetDirection()(1,1) == -1.0));
-        qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);
-        qImageBuffer = qimage->bits();
+      thumbnails.push_back (qimage->mirrored(img->GetDirection()(0,0) == -1.0, img->GetDirection()(1,1) == -1.0));
+      qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);
+      qImageBuffer = qimage->bits();
     }
   }
-  qDebug() << "...generated " << thumbnails.length() << " thumbnails";
+
 }
 
 #define medImplementITKDataImage(type, dimension, suffix)		\
@@ -282,10 +276,10 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   {									\
     if ( d->range_computed )						\
       return;								\
-									\
+                                    \
     if ( d->image->GetLargestPossibleRegion().GetNumberOfPixels() == 0 ) \
       return;								\
-									\
+                                    \
     typedef itkDataImage##suffix##Private::ImageType ImageType;		\
     typedef itk::MinimumMaximumImageCalculator<ImageType>		\
       MinMaxCalculatorType;						\
@@ -331,7 +325,7 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   int itkDataImage##suffix::scalarValueCount(int value)			\
   {									\
     typedef itkDataImage##suffix##Private::ScalarType ScalarType;	\
-									\
+                                    \
     computeValueCounts();						\
     if( (ScalarType)value>=d->range_min && (ScalarType)value<=d->range_max ) \
     {									\
@@ -344,11 +338,11 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     if( d->histogram.IsNull() )						\
     {									\
       computeRange();							\
-									\
+                                    \
       typedef itkDataImage##suffix##Private::HistogramGeneratorType	\
-	HistogramGeneratorType;						\
+    HistogramGeneratorType;						\
       HistogramGeneratorType::Pointer histogramGenerator =		\
-	HistogramGeneratorType::New();					\
+    HistogramGeneratorType::New();					\
       histogramGenerator->SetInput( d->image );				\
       histogramGenerator->SetNumberOfBins(d->range_max - d->range_min + 1); \
       histogramGenerator->SetMarginalScale( 1.0 );			\
@@ -356,30 +350,30 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
       histogramGenerator->SetHistogramMax( d->range_max );		\
       try								\
       {									\
-	std::cerr << "calculating histogram...";			\
-	histogramGenerator->Compute();					\
-	std::cerr << "done" << std::endl;				\
+    std::cerr << "calculating histogram...";			\
+    histogramGenerator->Compute();					\
+    std::cerr << "done" << std::endl;				\
       }									\
       catch (itk::ExceptionObject &e)					\
       {									\
-	std::cerr << e;							\
-	return;								\
+    std::cerr << e;							\
+    return;								\
       }									\
-									\
+                                    \
       typedef HistogramGeneratorType::HistogramType  HistogramType;	\
       typedef HistogramType::AbsoluteFrequencyType   FrequencyType;	\
       d->histogram =							\
-	const_cast<HistogramType*>( histogramGenerator->GetOutput() );	\
+    const_cast<HistogramType*>( histogramGenerator->GetOutput() );	\
       FrequencyType min = itk::NumericTraits< FrequencyType >::max();	\
       FrequencyType max = itk::NumericTraits< FrequencyType >::min();	\
-									\
+                                    \
       typedef HistogramType::Iterator Iterator;				\
       for ( Iterator it = d->histogram->Begin(), end = d->histogram->End(); \
-	    it != end; ++it )						\
+        it != end; ++it )						\
       {									\
-	FrequencyType c = it.GetFrequency();				\
-	if ( min > c ) min = c;						\
-	if ( max < c ) max = c;						\
+    FrequencyType c = it.GetFrequency();				\
+    if ( min > c ) min = c;						\
+    if ( max < c ) max = c;						\
       }									\
       d->histogram_min = static_cast< int >( min );			\
       d->histogram_max = static_cast< int >( max );			\
@@ -399,42 +393,42 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   {									\
     return new itkDataImage##suffix;					\
   }									\
-									\
+                                    \
   QImage & itkDataImage##suffix::thumbnail (void) const			\
   {									\
   if (d->image.IsNull())						\
     return dtkAbstractDataImage::thumbnail();				\
-									\
+                                    \
   int xydim = 128;							\
   if (d->thumbnails.isEmpty()            ||				\
       d->thumbnails[0].height() != xydim ||				\
       d->thumbnails[0].width()  != xydim )				\
     generateThumbnails<type, dimension>(d->image, xydim, true,		\
-					d->thumbnails);			\
-									\
+                    d->thumbnails);			\
+                                    \
   int index = 0;							\
   if (dimension > 2) {							\
-	itkDataImage##suffix##Private::ImageType::SizeType size = d->image->GetLargestPossibleRegion().GetSize(); \
+    itkDataImage##suffix##Private::ImageType::SizeType size = d->image->GetLargestPossibleRegion().GetSize(); \
     index = size[2] / 2;					\
   } \
-									\
-  qDebug() << "thumbnail " << index << " / " << d->thumbnails.length(); \
+                                    \
+                                    \
   if (index < d->thumbnails.length())					\
     return d->thumbnails[index];					\
   else if (d->thumbnails.size()>0)									\
     return d->thumbnails[0];						\
   else \
-	return d->defaultThumbnail; \
+    return d->defaultThumbnail; \
   }									\
-									\
+                                    \
   QList<QImage> & itkDataImage##suffix::thumbnails (void) const		\
   {									\
     unsigned int xydim = 128;						\
     generateThumbnails<type, dimension>(d->image, xydim, false,		\
-					d->thumbnails);			\
+                    d->thumbnails);			\
     return d->thumbnails;						\
   }									\
-									\
+                                    \
   void itkDataImage##suffix::onMetaDataSet(const QString& key, const QString& value) {\
   Q_UNUSED(key);                                                        \
   Q_UNUSED(value);                                                      \
@@ -481,10 +475,14 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   }									\
   void *itkDataImage##suffix::output(void)				\
   {									\
+    if (d->image.IsNull())						\
+      return NULL;							\
     return d->image.GetPointer();					\
   }									\
   void *itkDataImage##suffix::data(void)				\
   {									\
+    if (d->image.IsNull())						\
+      return NULL;							\
     return d->image.GetPointer();					\
   }									\
   void itkDataImage##suffix::update(void)				\
@@ -492,14 +490,20 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
   }									\
   int itkDataImage##suffix::xDimension(void)				\
   {									\
+    if (d->image.IsNull())						\
+      return -1;							\
     return d->image->GetLargestPossibleRegion().GetSize()[0];		\
   }									\
   int itkDataImage##suffix::yDimension(void)				\
   {									\
+    if (d->image.IsNull())						\
+      return -1;							\
     return d->image->GetLargestPossibleRegion().GetSize()[1];		\
   }									\
   int itkDataImage##suffix::zDimension(void)				\
   {									\
+    if (d->image.IsNull())						\
+      return -1;							\
     return d->image->GetLargestPossibleRegion().GetSize()[2];		\
   }									\
   int itkDataImage##suffix::tDimension(void)				\
@@ -566,7 +570,7 @@ generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
       return d->thumbnails;						\
     }									\
     image = filter->GetOutput();					\
-	delete [] sfactor; \
+    delete [] sfactor; \
   }									\
   ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize(); \
   itk::ImageRegionIterator<ImageType> it (image, image->GetLargestPossibleRegion()); \
