@@ -1,13 +1,13 @@
-#include "medToolBoxTensor.h"
+#include "medToolBoxDiffusionTensorView.h"
 
-class medToolBoxTensorPrivate
+class medToolBoxDiffusionTensorViewPrivate
 {
 public:
     QComboBox	 *glyphShape;
 };
 
 
-medToolBoxTensor::medToolBoxTensor(QWidget *parent) : medToolBox(parent), d(new medToolBoxTensorPrivate)
+medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
 {
     QWidget *displayWidget = new QWidget(this);
 
@@ -28,21 +28,21 @@ medToolBoxTensor::medToolBoxTensor(QWidget *parent) : medToolBox(parent), d(new 
     //connect (d->displayCheckBox,       SIGNAL(toggled(bool)),            this, SIGNAL (GPUActivated (bool)));
     connect(d->glyphShape,               SIGNAL(currentIndexChanged(QString)), this, SLOT(onGlyphShapeChanged(QString)));
 
-    this->setTitle("Tensor");
+    this->setTitle("Tensor View");
     this->addWidget(displayWidget);
 }
 
-medToolBoxTensor::~medToolBoxTensor()
+medToolBoxDiffusionTensorView::~medToolBoxDiffusionTensorView()
 {
     delete d;
     d = NULL;
 }
 
-void medToolBoxTensor::update (dtkAbstractView *view)
+void medToolBoxDiffusionTensorView::update (dtkAbstractView *view)
 {
 }
 
-void medToolBoxTensor::onGlyphShapeChanged(QString shape)
+void medToolBoxDiffusionTensorView::onGlyphShapeChanged(QString shape)
 {
 //    if (d->view) {
 //        d->view->setProperty("Preset", table);

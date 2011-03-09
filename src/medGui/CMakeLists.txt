@@ -60,7 +60,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxDiffusionFiberBundling.h
   medToolBoxRegistration.h
   medToolBoxRegistrationCustom.h
-  medToolBoxTensor.h
+  medToolBoxDiffusionTensorView.h
   
   # viewer stuff
   medViewPool.h
@@ -121,7 +121,7 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxDiffusionFiberBundling.cpp
   medToolBoxRegistration.cpp
   medToolBoxRegistrationCustom.cpp
-  medToolBoxTensor.cpp
+  medToolBoxDiffusionTensorView.cpp
   
   medViewPool.cpp
   medViewContainer.cpp
