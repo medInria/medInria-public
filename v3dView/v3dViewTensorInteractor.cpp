@@ -53,7 +53,11 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): dtkAbstractViewInteractor(),
 	d->filterDouble = 0;
 
 	// set default glyph shape
-	d->manager->SetGlyphShapeToCube();
+	// TODO: lines are selected as the default glyph shape as it's the first item in the tensor view toolbox's glyph combobox
+	// this should be changed to synchronize at initialization time
+	d->manager->SetGlyphShapeToLine();
+
+    this->addProperty("GlyphShape", QStringList() << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics");
 }
 
 v3dViewTensorInteractor::~v3dViewTensorInteractor()
@@ -182,7 +186,40 @@ void v3dViewTensorInteractor::disable(void)
 
 void v3dViewTensorInteractor::onPropertySet(const QString& key, const QString& value)
 {
+    if (key=="GlyphShape")
+        this->onGlyphShapePropertySet (value);
+}
 
+void v3dViewTensorInteractor::onGlyphShapePropertySet (const QString& value)
+{
+    if (value == "Lines")
+    {
+        d->manager->SetGlyphShapeToLine();
+    }
+    else if (value == "Disks")
+    {
+        d->manager->SetGlyphShapeToDisk();
+    }
+    else if (value == "Arrows")
+    {
+        d->manager->SetGlyphShapeToArrow();
+    }
+    else if (value == "Cubes")
+    {
+        d->manager->SetGlyphShapeToCube();
+    }
+    else if (value == "Cylinders")
+    {
+        d->manager->SetGlyphShapeToCylinder();
+    }
+    else if (value == "Ellipsoids")
+    {
+        d->manager->SetGlyphShapeToSphere();
+    }
+    else if (value == "Superquadrics")
+    {
+        d->manager->SetGlyphShapeToSuperquadric();
+    }
 }
 
 // /////////////////////////////////////////////////////////////////
