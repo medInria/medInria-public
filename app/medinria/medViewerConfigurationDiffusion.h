@@ -36,6 +36,11 @@ public slots:
     void onTBDiffusionSuccess(void);
     void refreshInteractors (void);
 
+    // slots for tensor interactions
+
+    /** Event called when a new glyph shape is selected in the tensor toolbox */
+    void onGlyphShapeChanged(const QString& glyphShape);
+
 private:
     medViewerConfigurationDiffusionPrivate *d;
 };

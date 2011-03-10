@@ -49,6 +49,8 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     // -- Tensor tb --
     d->tensorViewToolBox = new medToolBoxDiffusionTensorView(parent);
 
+    connect(d->tensorViewToolBox, SIGNAL(glyphShapeChanged(const QString&)), this, SLOT(onGlyphShapeChanged(const QString&)));
+
     // -- Fiber view tb --
     d->fiberViewToolBox = new medToolBoxDiffusionFiberView(parent);
 
@@ -239,6 +241,21 @@ void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
     if (d->diffusionToolBox->output()->description()=="v3dDataFibers")
       d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
 }
+
+// tensor interaction related methods
+
+void medViewerConfigurationDiffusion::onGlyphShapeChanged(const QString& glyphShape)
+{
+    foreach (dtkAbstractView *view, d->views) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
+            interactor->setProperty("GlyphShape", glyphShape);
+
+            view->update();
+        }
+    }
+}
+
+// end of tensor interaction related methods
 
 void medViewerConfigurationDiffusion::refreshInteractors (void)
 {
