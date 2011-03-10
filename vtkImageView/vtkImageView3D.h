@@ -192,7 +192,14 @@ public:
    * values in the image to colors and opacity displayed on the screen.
    */
   virtual void SetTransferFunctions(vtkColorTransferFunction * color,
-                                    vtkPiecewiseFunction * opacity, int layer);
+                                    vtkPiecewiseFunction * opacity,
+				    int layer);
+
+  /**
+   * This function is equivalent to setTransferFunctions(color, opacity, 0)
+   */
+  virtual void SetTransferFunctions(vtkColorTransferFunction * color,
+                                    vtkPiecewiseFunction * opacity);
 
   virtual void SetOpacity(double opacity, int layer);
   virtual double GetOpacity(int layer) const;

@@ -1364,6 +1364,12 @@ int vtkImageView2D::GetInterpolate(int layer)
 }
 
 //----------------------------------------------------------------------------
+void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity)
+{
+    this->SetTransferFunctions (color, opacity, 0);
+}
+
+//----------------------------------------------------------------------------
 void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity, int layer)
 {
   if (layer==0)
