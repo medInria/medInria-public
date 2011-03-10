@@ -93,11 +93,11 @@ bool itkDataTensorImageWriterBase::write(const QString& path, PixelType dummyArg
     myTensorImage->SetOrigin (image->GetOrigin());
     myTensorImage->SetDirection (image->GetDirection());
     try {
-     myTensorImage->Allocate();
+        myTensorImage->Allocate();
     }
     catch (itk::ExceptionObject &e) {
-     std::cerr << e;
-     throw itk::ExceptionObject (__FILE__,__LINE__,"Error during memory allocation.");
+        std::cerr << e;
+        throw itk::ExceptionObject (__FILE__,__LINE__,"Error during memory allocation.");
     }
 
     typedef itk::ImageRegionConstIterator<TensorImageType> IteratorType;
@@ -107,16 +107,16 @@ bool itkDataTensorImageWriterBase::write(const QString& path, PixelType dummyArg
 
     while( !it.IsAtEnd() )
     {
-     TensorType tensor = it.Get();
-     VectorType vec;
+        TensorType tensor = it.Get();
+        VectorType vec;
 
-     for( unsigned int i=0; i<6; i++) {
-       vec[i] = static_cast<float>(tensor[i]);
-     }
-     itOut.Set (vec);
+        for( unsigned int i=0; i<6; i++) {
+            vec[i] = static_cast<float>(tensor[i]);
+        }
+        itOut.Set (vec);
 
-     ++it;
-     ++itOut;
+        ++it;
+        ++itOut;
     }
 
     typedef typename itk::ImageFileWriter<VectorImageType>::Pointer ImageFileWriterPointer;
@@ -124,13 +124,12 @@ bool itkDataTensorImageWriterBase::write(const QString& path, PixelType dummyArg
     myWriter->SetFileName(path.toAscii().constData());
     myWriter->SetInput(myTensorImage);
     try {
-       myWriter->Write();
+        myWriter->Write();
     }
     catch(itk::ExceptionObject &e) {
-     qDebug() << e.GetDescription();
-     return false;
+        qDebug() << e.GetDescription();
+        return false;
     }
 
     return true;
-
 }
