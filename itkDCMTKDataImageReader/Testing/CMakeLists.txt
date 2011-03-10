@@ -23,8 +23,6 @@ if(MSVC)
   set(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH}/Release)
 endif(MSVC)
 
-message("${CXX_TEST_PLUGIN_PATH}")
-
 find_path(DICOM_DATA_ROOT "dicom.lst")
 
 if (DICOM_DATA_ROOT)
