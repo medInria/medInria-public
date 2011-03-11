@@ -222,6 +222,16 @@ void v3dViewTensorInteractor::onGlyphShapePropertySet (const QString& value)
     }
 }
 
+void v3dViewTensorInteractor::onSampleRatePropertySet (int sampleRate)
+{
+    d->manager->SetSampleRate(sampleRate, sampleRate, sampleRate);
+
+    // TODO we need to move this after extending dtk for supporting int properties
+    // as now the update of the view is being done in 2 different places (here and in the configuration)
+    if (d->view)
+        d->view->update();
+}
+
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////

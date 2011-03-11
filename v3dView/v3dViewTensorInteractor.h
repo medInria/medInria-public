@@ -45,7 +45,8 @@ public:
 public slots:
 	virtual void onPropertySet (const QString& key, const QString& value);
 
-	void onGlyphShapePropertySet (const QString& value);
+	void onGlyphShapePropertySet (const QString& glyphShape);
+	void onSampleRatePropertySet (int sampleRate);
 
 private:
     v3dViewTensorInteractorPrivate *d;
