@@ -149,7 +149,7 @@ void medToolBoxDiffusion::onObjectDropped()
     if (!index.isValid())
         return;
     
-    dtkAbstractData *data = medDataManager::instance()->data (index);
+    dtkAbstractData *data = medDataManager::instance()->data (index).data();
     if (!data) {
         return;
     }
@@ -306,7 +306,7 @@ void medToolBoxDiffusion::createProcessForIndex (const medDataIndex &index)
     connect (proc, SIGNAL (success()), d->progression_stack,  SLOT (onSuccess ()));
     connect (proc, SIGNAL (failure()), d->progression_stack,  SLOT (onFailure ()));
 
-    dtkAbstractData *data = medDataManager::instance()->data (index);
+    dtkAbstractData *data = medDataManager::instance()->data (index).data();
       
     if (data)
         proc->setInput (data);

@@ -33,8 +33,8 @@ public:
     medDataIndex indexForImage  (int id);
 
     /* some overloads of read(medDataIndex) */
-    dtkAbstractData *read(int patientId, int studyId, int seriesId);
-    dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId);
+    QSharedPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId);
+    QSharedPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId, int imageId);
 
     /**
     * Change the storage location of the database by copy, verify, delete
@@ -64,7 +64,7 @@ public slots:
     * @params const medDataIndex & index Index pointing to data
     * @return dtkAbstractData * the data stored
     */
-    dtkAbstractData *read(const medDataIndex& index) const;
+    QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
     * Import data into the db read from file

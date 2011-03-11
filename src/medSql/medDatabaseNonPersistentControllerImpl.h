@@ -77,7 +77,7 @@ public slots:
     * @params const medDataIndex & index Index to look for
     * @return dtkAbstractData* data
     */
-    dtkAbstractData* read(const medDataIndex& index) const;
+    QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
     * Store data temporarily referenced by temp index

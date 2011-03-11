@@ -41,7 +41,7 @@ public slots:
     * @params const medDataIndex & index Index for data
     * @return dtkAbstractData * the data
     */
-    virtual dtkAbstractData* read(const medDataIndex& index) const = 0;
+    virtual QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const = 0;
 
     /**
     * Import a file into the db

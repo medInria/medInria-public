@@ -110,7 +110,7 @@ void medToolBoxDiffusionFiberBundling::onObjectDropped(void)
     if (!index.isValid())
         return;
     
-    dtkAbstractData *data = medDataManager::instance()->data (index);
+    dtkAbstractData *data = medDataManager::instance()->data (index).data();
     if (!data) {
         return;
     }

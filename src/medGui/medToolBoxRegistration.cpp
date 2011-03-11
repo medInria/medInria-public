@@ -244,7 +244,7 @@ void medToolBoxRegistration::onFixedImageDropped (void)
     if (!index.isValid())
         return;
 
-    d->fixedData = dynamic_cast<dtkAbstractDataImage*>( medDataManager::instance()->data(index) );
+    d->fixedData = dynamic_cast<dtkAbstractDataImage*>( medDataManager::instance()->data(index).data() );
   
     if (!d->fixedData)
         return;
@@ -275,7 +275,7 @@ void medToolBoxRegistration::onMovingImageDropped (void)
     if (!index.isValid())
         return;
 
-    d->movingData = dynamic_cast<dtkAbstractDataImage*>(medDataManager::instance()->data(index));
+    d->movingData = dynamic_cast<dtkAbstractDataImage*>(medDataManager::instance()->data(index).data());
   
     if (!d->movingData)
         return;

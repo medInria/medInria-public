@@ -220,7 +220,7 @@ void medViewerArea::open(const medDataIndex& index)
         dtkAbstractView *view = NULL;
         
         // the data-manager should be used to read data
-        data = medDataManager::instance()->data(index);
+        data = medDataManager::instance()->data(index).data();
         if ( !data )
             return;
 
@@ -232,6 +232,7 @@ void medViewerArea::open(const medDataIndex& index)
         if(!view) {
             view = dtkAbstractViewFactory::instance()->create("v3dView");
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
+            d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
         }
         
         if(!view) {
@@ -335,7 +336,7 @@ void medViewerArea::switchToPatient(int id)
         connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
         connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
         d->view_stacks.insert(d->current_patient, view_stack);
-    d->current_patient_container.insert (d->current_patient, 0);
+        d->current_patient_container.insert (d->current_patient, 0);
         d->stack->addWidget(view_stack);
     }
     else {

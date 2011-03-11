@@ -40,19 +40,14 @@ class MEDCORE_EXPORT medDataManager : public QObject
     Q_OBJECT
 
 public:
-        static medDataManager *instance(void);
-
-    /*
-        void insert(const medDataIndex& index, dtkAbstractData *data);
-        void remove(const medDataIndex& index);
-    */
-
+      static medDataManager *instance(void);
+      static void destroy(void);
       /**
       * Ask the data-manager to provide the data belonging to this index using it's registered controllers
       * @params const medDataIndex & index medDataIndex for data
       * @return dtkAbstractData * the data
       */
-      dtkAbstractData* data(const medDataIndex& index);
+      QSharedPointer<dtkAbstractData> data(const medDataIndex& index);
 
       /**
       * Use this function to insert data into the database, 
@@ -62,13 +57,6 @@ public:
       * @return medDataIndex*
       */
       medDataIndex* import(const dtkAbstractData& data);
-
-    /*
-        QList<dtkAbstractData *> dataForPatient(int id);
-        QList<dtkAbstractData *> dataForStudy  (int id);
-        QList<dtkAbstractData *> dataForSeries (int id);
-        QList<dtkAbstractData *> dataForImage  (int id);
-    */
 
 protected:
      medDataManager(void);

@@ -36,8 +36,8 @@ public:
         dbController = NULL;
         nonPersDbController = NULL;
     }
-
-    QHash<medDataIndex, dtkAbstractData *> datas;
+    // this is the view cache
+    QHash<medDataIndex, QSharedPointer<dtkAbstractData>> dataCache;
 
     medAbstractDbController* getDbController()
     {
@@ -75,29 +75,16 @@ medDataManager *medDataManager::instance(void)
     return s_instance;
 }
 
-/*
-void medDataManager::insert(const medDataIndex& index, dtkAbstractData *data)
-{
-    d->datas.insert(index, data);
-}
 
-void medDataManager::remove(const medDataIndex& index)
+QSharedPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 {
-    delete d->datas.value(index);
-
-    d->datas.remove(index);
-}
-*/
-
-dtkAbstractData *medDataManager::data(const medDataIndex& index)
-{
-    dtkAbstractData* dtkdata = NULL;
+    QSharedPointer<dtkAbstractData>  dtkdata;
 
     // try to get it from cache first
-    if ( d->datas.contains(index) )
+    if ( d->dataCache.contains(index) )
     {
         qDebug() << "Reading from cache";
-        dtkdata = d->datas.value(index);
+        dtkdata = d->dataCache.value(index);
     }
     else
     {
@@ -120,68 +107,21 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
             }
         }
 
-        // store it
+        // store it in the cache
         if (dtkdata)
         {
-            d->datas[index] = dtkdata;
+            d->dataCache[index] = dtkdata;
         }
     }
 
-    if (dtkdata)
-    {
-        return dtkdata;
-    }
-    else
+    if (!dtkdata)
     {
         qWarning() << "unable to open images with index:" << index.asString();
-        return NULL;
     }
-}
-/*
-QList<dtkAbstractData *> medDataManager::dataForPatient(int id)
-{
-    QList<dtkAbstractData *> data;
+    return dtkdata;
 
-    foreach(medDataIndex index, d->datas.keys())
-        if(index.patientId() == id)
-            data << d->datas.value(index);
-
-    return data;
 }
 
-QList<dtkAbstractData *> medDataManager::dataForStudy(int id)
-{
-    QList<dtkAbstractData *> data;
-
-    foreach(medDataIndex index, d->datas.keys())
-        if(index.studyId() == id)
-            data << d->datas.value(index);
-
-    return data;
-}
-
-QList<dtkAbstractData *> medDataManager::dataForSeries(int id)
-{
-    QList<dtkAbstractData *> data;
-
-    foreach(medDataIndex index, d->datas.keys())
-        if(index.seriesId() == id)
-            data << d->datas.value(index);
-
-    return data;
-}
-
-QList<dtkAbstractData *> medDataManager::dataForImage(int id)
-{
-    QList<dtkAbstractData *> data;
-
-    foreach(medDataIndex index, d->datas.keys())
-        if(index.imageId() == id)
-            data << d->datas.value(index);
-
-    return data;
-}
-*/
 medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 {
 
@@ -193,5 +133,11 @@ medDataManager::~medDataManager(void)
 
     d = NULL;
 }
+
+void medDataManager::destroy( void )
+{
+
+}
+
 
 medDataManager *medDataManager::s_instance = NULL;
