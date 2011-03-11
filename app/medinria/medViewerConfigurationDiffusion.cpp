@@ -128,10 +128,16 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
     d->views.append (view);
 
     view->enableInteractor ("v3dViewFiberInteractor");
+    view->enableInteractor ("v3dViewTensorInteractor");
 
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
         connect(d->fiberViewToolBox, SIGNAL(fiberRadiusSet(int)), interactor, SLOT(onRadiusSet(int)));
     
+    // TODO this need to be refactored as in this case the interactor does the view->update
+    // and not this class (as for all the other methods)
+    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor"))
+        connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), interactor, SLOT(onSampleRatePropertySet(int)));
+
     view->setData( d->diffusionToolBox->output(), 0 );
 }
 

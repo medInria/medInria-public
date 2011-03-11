@@ -26,6 +26,10 @@ signals:
     /** Emitted when a glyph shape is selected from the combobox */
     void glyphShapeChanged(const QString& shape);
 
+    /** Emitted when a the sample rate change */
+    void sampleRateChanged(int sampleRate);
+
+
 public slots:
     void update (dtkAbstractView *view);
 
