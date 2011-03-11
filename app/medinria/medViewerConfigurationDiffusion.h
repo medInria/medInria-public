@@ -41,6 +41,15 @@ public slots:
     /** Event called when a new glyph shape is selected in the tensor toolbox */
     void onGlyphShapeChanged(const QString& glyphShape);
 
+    /** Event called when user wants to flip X axis */
+    void onFlipXChanged(bool flipX);
+
+    /** Event called when user wants to flip Y axis */
+    void onFlipYChanged(bool flipY);
+
+    /** Event called when user wants to flip Z axis */
+    void onFlipZChanged(bool flipZ);
+
 private:
     medViewerConfigurationDiffusionPrivate *d;
 };

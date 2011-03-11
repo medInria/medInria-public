@@ -50,6 +50,9 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     d->tensorViewToolBox = new medToolBoxDiffusionTensorView(parent);
 
     connect(d->tensorViewToolBox, SIGNAL(glyphShapeChanged(const QString&)), this, SLOT(onGlyphShapeChanged(const QString&)));
+    connect(d->tensorViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onFlipXChanged(bool)));
+    connect(d->tensorViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onFlipYChanged(bool)));
+    connect(d->tensorViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onFlipZChanged(bool)));
 
     // -- Fiber view tb --
     d->fiberViewToolBox = new medToolBoxDiffusionFiberView(parent);
@@ -255,6 +258,51 @@ void medViewerConfigurationDiffusion::onGlyphShapeChanged(const QString& glyphSh
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
             interactor->setProperty("GlyphShape", glyphShape);
+
+            view->update();
+        }
+    }
+}
+
+void medViewerConfigurationDiffusion::onFlipXChanged(bool flipX)
+{
+    foreach (dtkAbstractView *view, d->views) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
+
+            if (flipX)
+                interactor->setProperty("FlipX", "true");
+            else
+                interactor->setProperty("FlipX", "false");
+
+            view->update();
+        }
+    }
+}
+
+void medViewerConfigurationDiffusion::onFlipYChanged(bool flipY)
+{
+    foreach (dtkAbstractView *view, d->views) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
+
+            if (flipY)
+                interactor->setProperty("FlipY", "true");
+            else
+                interactor->setProperty("FlipY", "false");
+
+            view->update();
+        }
+    }
+}
+
+void medViewerConfigurationDiffusion::onFlipZChanged(bool flipZ)
+{
+    foreach (dtkAbstractView *view, d->views) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
+
+            if (flipZ)
+                interactor->setProperty("FlipZ", "true");
+            else
+                interactor->setProperty("FlipZ", "false");
 
             view->update();
         }

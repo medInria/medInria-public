@@ -26,12 +26,27 @@ signals:
     /** Emitted when a glyph shape is selected from the combobox */
     void glyphShapeChanged(const QString& shape);
 
-    /** Emitted when a the sample rate change */
+    /** Emitted when the sample rate change */
     void sampleRateChanged(int sampleRate);
 
+    /** Emitted when the user wants to flip the X axis */
+    void flipX(bool flipX);
+
+    /** Emitted when the user wants to flip the Y axis */
+    void flipY(bool flipY);
+
+    /** Emitted when the user wants to flip the Z axis */
+    void flipZ(bool flipZ);
 
 public slots:
     void update (dtkAbstractView *view);
+
+private slots:
+    // functions used to translate checkboxes from Qt::CheckState
+    // to boolean values, and then emitting the signals
+    void onFlipXCheckBoxStateChanged(int state);
+    void onFlipYCheckBoxStateChanged(int state);
+    void onFlipZCheckBoxStateChanged(int state);
 
 protected:
     medToolBoxDiffusionTensorViewPrivate *d;
