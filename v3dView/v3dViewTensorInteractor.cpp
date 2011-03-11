@@ -58,6 +58,9 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): dtkAbstractViewInteractor(),
 	d->manager->SetGlyphShapeToLine();
 
     this->addProperty("GlyphShape", QStringList() << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics");
+    this->addProperty("FlipX", QStringList() << "true" << "false");
+    this->addProperty("FlipY", QStringList() << "true" << "false");
+    this->addProperty("FlipZ", QStringList() << "true" << "false");
 }
 
 v3dViewTensorInteractor::~v3dViewTensorInteractor()
@@ -187,7 +190,21 @@ void v3dViewTensorInteractor::disable(void)
 void v3dViewTensorInteractor::onPropertySet(const QString& key, const QString& value)
 {
     if (key=="GlyphShape")
+    {
         this->onGlyphShapePropertySet (value);
+    }
+    else if (key=="FlipX")
+    {
+        this->onFlipXPropertySet (value);
+    }
+    else if (key=="FlipY")
+    {
+        this->onFlipYPropertySet (value);
+    }
+    else if (key=="FlipZ")
+    {
+        this->onFlipZPropertySet (value);
+    }
 }
 
 void v3dViewTensorInteractor::onGlyphShapePropertySet (const QString& value)
@@ -230,6 +247,30 @@ void v3dViewTensorInteractor::onSampleRatePropertySet (int sampleRate)
     // as now the update of the view is being done in 2 different places (here and in the configuration)
     if (d->view)
         d->view->update();
+}
+
+void v3dViewTensorInteractor::onFlipXPropertySet (const QString& flipX)
+{
+    if (flipX == "true")
+        d->manager->FlipX(true);
+    else
+        d->manager->FlipX(false);
+}
+
+void v3dViewTensorInteractor::onFlipYPropertySet (const QString& flipY)
+{
+    if (flipY == "true")
+        d->manager->FlipY(true);
+    else
+        d->manager->FlipY(false);
+}
+
+void v3dViewTensorInteractor::onFlipZPropertySet (const QString& flipZ)
+{
+    if (flipZ == "true")
+        d->manager->FlipZ(true);
+    else
+        d->manager->FlipZ(false);
 }
 
 // /////////////////////////////////////////////////////////////////

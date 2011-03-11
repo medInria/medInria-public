@@ -45,8 +45,20 @@ public:
 public slots:
 	virtual void onPropertySet (const QString& key, const QString& value);
 
+	/** Change glyph shape */
 	void onGlyphShapePropertySet (const QString& glyphShape);
+
+	/** Modify sample rate */
 	void onSampleRatePropertySet (int sampleRate);
+
+    /** Flip tensors along the X axis */
+    void onFlipXPropertySet (const QString& flipX);
+
+    /** Flip tensors along the Y axis */
+    void onFlipYPropertySet (const QString& flipY);
+
+    /** Flip tensors along the Z axis */
+    void onFlipZPropertySet (const QString& flipZ);
 
 private:
     v3dViewTensorInteractorPrivate *d;
