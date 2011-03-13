@@ -128,8 +128,13 @@ public:
   // it basically plug or unplug the interactor.
   virtual void InstallInteractor(void);
   virtual void UnInstallInteractor(void);
-  
-  
+
+  /**
+   * This function is equivalent to setTransferFunctions(color, opacity, 0)
+   */
+  virtual void SetTransferFunctions (vtkColorTransferFunction* color, 
+                                     vtkPiecewiseFunction *opacity);
+    
   virtual void SetTransferFunctions (vtkColorTransferFunction* color, 
                                      vtkPiecewiseFunction *opacity, 
                                      int layer);

@@ -648,6 +648,13 @@ void vtkImageView3D::SetLookupTable (vtkLookupTable* lookuptable)
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
+					   vtkPiecewiseFunction * opacity)
+{
+  this->SetTransferFunctions (color, opacity, 0);
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
 					   vtkPiecewiseFunction * opacity, int layer)
 {
   if(layer==0)
