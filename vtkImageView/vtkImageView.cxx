@@ -1136,6 +1136,7 @@ void vtkImageView::ResetCamera (void)
           this->InvokeEvent (vtkImageView::CameraChangedEvent);
       } else {
           // No op.
+          this->Renderer->ResetCamera();
       }
   }
   this->SetZoom (1.0);
