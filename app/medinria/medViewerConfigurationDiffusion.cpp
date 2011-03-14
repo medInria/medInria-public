@@ -126,7 +126,7 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
         connect(d->fiberViewToolBox, SIGNAL(fiberRadiusSet(int)), interactor, SLOT(onRadiusSet(int)));
     
-    view->setData( d->diffusionToolBox->output(), 0 );
+    // view->setData( d->diffusionToolBox->output(), 0 );
 }
 
 void medViewerConfigurationDiffusion::onViewRemoved (dtkAbstractView *view)
