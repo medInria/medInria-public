@@ -44,6 +44,9 @@ signals:
     /** Emitted when a new eigen vector is selected */
     void reverseBackgroundColor(bool reverseBackgroundColor);
 
+    /** Emitted when the glyph resolution change */
+    void glyphResolutionChanged(int glyphResolution);
+
 public slots:
     void update (dtkAbstractView *view);
 
