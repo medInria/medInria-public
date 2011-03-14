@@ -41,6 +41,9 @@ signals:
     /** Emitted when a new eigen vector is selected */
     void eigenVectorChanged(int eigenVector);
 
+    /** Emitted when a new eigen vector is selected */
+    void reverseBackgroundColor(bool reverseBackgroundColor);
+
 public slots:
     void update (dtkAbstractView *view);
 

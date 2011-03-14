@@ -11,6 +11,7 @@ public:
     QRadioButton* eigenVectorV1;
     QRadioButton* eigenVectorV2;
     QRadioButton* eigenVectorV3;
+    QCheckBox*    reverseBackgroundColor;
 };
 
 medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
@@ -76,16 +77,22 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
     d->eigenVectorV1->setChecked(true);
 
+    // reverse background
+
+    d->reverseBackgroundColor = new QCheckBox("Reverse Background Color", displayWidget);
+
     // layout all the controls in the toolbox
     QVBoxLayout* layout = new QVBoxLayout(displayWidget);
     layout->addLayout(glyphShapeLayout);
     layout->addLayout(sampleRateLayout);
     layout->addLayout(flipAxesLayout);
     layout->addLayout(eigenLayout);
+    layout->addWidget(d->reverseBackgroundColor);
 
     // connect all the signals
-    connect(d->glyphShape,      SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
-    connect(d->sampleRate,      SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
+    connect(d->glyphShape,              SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
+    connect(d->sampleRate,              SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
+    connect(d->reverseBackgroundColor,  SIGNAL(stateChanged(int)),                   this, SIGNAL(reverseBackgroundColor(bool)));
 
     // the axes signals require one more step to translate from Qt::CheckState to bool
     connect(d->flipX,           SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));
