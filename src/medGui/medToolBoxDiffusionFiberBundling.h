@@ -24,8 +24,6 @@ signals:
     void showBundles(bool);
 
 public slots:
-    void onObjectDropped (void);
-    
     void addBundle(QString name);
     void onBundlingButtonVdtClicked (void);
     void onBundleBoxCheckBoxToggled (bool);

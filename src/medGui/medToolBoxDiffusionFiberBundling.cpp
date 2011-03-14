@@ -5,7 +5,6 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include <medGui/medDropSite.h>
 #include <medCore/medDataManager.h>
 //#include <medSql/medDatabaseController.h>
 
@@ -20,8 +19,6 @@ public:
     QCheckBox    *bundleBoxCheckBox;
     QPushButton  *bundlingButtonAdd;
     
-    medDropSite  *bundlingDropSite;
-    
     dtkAbstractView *view;
     dtkAbstractData *data;
 };
@@ -32,8 +29,6 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     d->data = 0;
     
     QWidget *bundlingPage = new QWidget(this);
-    
-    d->bundlingDropSite = new medDropSite(bundlingPage);
     
     d->bundlingButtonTag = new QPushButton("Tag", bundlingPage);
     d->bundlingButtonAdd = new QPushButton("Add", bundlingPage);
@@ -53,14 +48,11 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     d->bundleBoxCheckBox = new QCheckBox("Activate bundling box", bundlingPage);
         
     QVBoxLayout *bundlingLayout = new QVBoxLayout(bundlingPage);
-    bundlingLayout->addWidget(d->bundlingDropSite);
     bundlingLayout->addWidget(d->bundleBoxCheckBox);
     bundlingLayout->addLayout(bundlingButtonsLayout);
     bundlingLayout->addWidget(d->bundlingList);
     bundlingLayout->addWidget(d->bundlingShowCheckBox);
-    bundlingLayout->setAlignment(d->bundlingDropSite, Qt::AlignHCenter);
 
-    connect (d->bundlingDropSite,      SIGNAL(objectDropped()),          this, SLOT (onObjectDropped()));
     connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (onBundlingButtonVdtClicked (void)));
     connect (d->bundleBoxCheckBox,     SIGNAL(toggled(bool)),            this, SLOT (onBundleBoxCheckBoxToggled (bool)));
 	
@@ -84,7 +76,6 @@ void medToolBoxDiffusionFiberBundling::setData(dtkAbstractData *data)
         return;
     
     if (data->description()!="v3dDataFibers") {
-        d->bundlingDropSite->clear();
         return;
     }
     
@@ -93,29 +84,12 @@ void medToolBoxDiffusionFiberBundling::setData(dtkAbstractData *data)
     
     d->data = data;
     
-    d->bundlingDropSite->setPixmap( QPixmap::fromImage(data->thumbnail()) );
-    
     d->bundlingList->clear();
     if (data->hasMetaData("BundleList")) {
         QStringList bundleNames = data->metaDataValues("BundleList");
         foreach(QString name, bundleNames)
             this->addBundle(name);
     }
-}
-
-void medToolBoxDiffusionFiberBundling::onObjectDropped(void)
-{
-    medDataIndex index = d->bundlingDropSite->index();
-    
-    if (!index.isValid())
-        return;
-    
-    dtkAbstractData *data = medDataManager::instance()->data (index);
-    if (!data) {
-        return;
-    }
-    
-    this->setData(data);
 }
 
 void medToolBoxDiffusionFiberBundling::onBundlingButtonVdtClicked (void)
@@ -156,7 +130,6 @@ void medToolBoxDiffusionFiberBundling::addBundle (QString name)
 
 void medToolBoxDiffusionFiberBundling::clear(void)
 {
-    d->bundlingDropSite->clear();
     d->bundlingList->clear();
 
     this->update (0);
