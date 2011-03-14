@@ -260,6 +260,16 @@ void v3dViewTensorInteractor::onEigenVectorPropertySet (int eigenVector)
         d->view->update();
 }
 
+void v3dViewTensorInteractor::onGlyphResolutionPropertySet (int glyphResolution)
+{
+    d->manager->SetGlyphResolution(glyphResolution);
+
+    // TODO we need to move this after extending dtk for supporting int properties
+    // as now the update of the view is being done in 2 different places (here and in the configuration)
+    if (d->view)
+        d->view->update();
+}
+
 void v3dViewTensorInteractor::onFlipXPropertySet (const QString& flipX)
 {
     if (flipX == "true")

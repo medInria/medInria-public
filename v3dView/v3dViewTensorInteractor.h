@@ -63,6 +63,9 @@ public slots:
     /** A new eigenvector for mapping the color mode is set */
     void onEigenVectorPropertySet (int eigenVector);
 
+    /** Glyph resolution changed */
+    void onGlyphResolutionPropertySet (int glyphResolution);
+
 private:
     v3dViewTensorInteractorPrivate *d;
 
