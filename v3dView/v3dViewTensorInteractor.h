@@ -66,8 +66,11 @@ public slots:
     /** Glyph resolution changed */
     void onGlyphResolutionPropertySet (int glyphResolution);
 
-    /** Glyph resolution changed */
+    /** Background color reverted */
     void onReverseBackgroundColorPropertySet (bool isWhite);
+
+    /** Scaling changed */
+    void onScalingPropertySet (double scale);
 
 private:
     v3dViewTensorInteractorPrivate *d;
