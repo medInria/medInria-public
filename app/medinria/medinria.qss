@@ -578,6 +578,14 @@ QGroupBox::title {
     font-size: 10pt;
 }
 
+QGroupBox::indicator::checked {
+    image: url(:/pixmaps/checkbox-checked.png);
+}
+
+QGroupBox::indicator::unchecked {
+    image: url(:/pixmaps/checkbox.png);
+}
+
 /**
  * QMenu
  *
