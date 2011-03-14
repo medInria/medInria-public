@@ -6,6 +6,7 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 #include <medGui/medViewContainer.h>
+#include <medGui/medViewContainerSingle.h>
 #include <medGui/medViewContainerStack.h>
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medToolBoxDiffusion.h>
@@ -90,8 +91,8 @@ void medViewerConfigurationDiffusion::setupViewContainerStack(medViewContainerSt
     medViewContainer *diffusionContainer = container_stack->customContainer("Diffusion");
 
     if (!diffusionContainer) {
-      medViewContainerCustom *custom = new medViewContainerCustom (container_stack);
-      custom->setPreset (medViewContainerCustom::E);
+      medViewContainerSingle *custom = new medViewContainerSingle (container_stack);
+      // custom->setPreset (medViewContainerCustom::E);
       connect (custom, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
       connect (custom, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
       diffusionContainer = custom;
