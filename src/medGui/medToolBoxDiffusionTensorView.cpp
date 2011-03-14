@@ -1,4 +1,5 @@
 #include "medToolBoxDiffusionTensorView.h"
+#include <math.h>
 
 class medToolBoxDiffusionTensorViewPrivate
 {
@@ -159,8 +160,6 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     connect(d->sampleRate,              SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
     connect(d->reverseBackgroundColor,  SIGNAL(stateChanged(int)),                   this, SLOT(onReverseBackgroundColorChanged(int)));
     connect(d->glyphResolution,         SIGNAL(valueChanged(int)),                   this, SIGNAL(glyphResolutionChanged(int)));
-    connect(d->minorScaling,            SIGNAL(valueChanged(int)),                   this, SIGNAL(minorScalingChanged(int)));
-    connect(d->majorScaling,            SIGNAL(valueChanged(int)),                   this, SIGNAL(majorScalingChanged(int)));
 
     // the axes signals require one more step to translate from Qt::CheckState to bool
     connect(d->flipX,           SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));
@@ -171,6 +170,10 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     connect(d->eigenVectorV1,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV1Toggled(bool)));
     connect(d->eigenVectorV2,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV2Toggled(bool)));
     connect(d->eigenVectorV3,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV3Toggled(bool)));
+
+    // we need to calculate one single number for the scale, out of the minor and major scales
+    connect(d->minorScaling,            SIGNAL(valueChanged(int)),                   this, SLOT(onMinorScalingChanged(int)));
+    connect(d->majorScaling,            SIGNAL(valueChanged(int)),                   this, SLOT(onMajorScalingChanged(int)));
 
     this->setTitle("Tensor View");
     this->addWidget(displayWidget);
@@ -234,4 +237,20 @@ void medToolBoxDiffusionTensorView::onEigenVectorV3Toggled(bool isSelected)
 {
     if (isSelected)
         emit eigenVectorChanged(3);
+}
+
+void medToolBoxDiffusionTensorView::onMinorScalingChanged(int minorScale)
+{
+    int majorScaleExponent = d->majorScaling->value();
+    double majorScale = pow(10.0, majorScaleExponent);
+    double scale = majorScale * minorScale;
+    emit scalingChanged(scale);
+}
+
+void medToolBoxDiffusionTensorView::onMajorScalingChanged(int majorScaleExponent)
+{
+    int minorScale = d->minorScaling->value();
+    double majorScale = pow(10.0, majorScaleExponent);
+    double scale = majorScale * minorScale;
+    emit scalingChanged(scale);
 }

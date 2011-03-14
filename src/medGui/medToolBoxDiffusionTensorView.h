@@ -48,10 +48,7 @@ signals:
     void glyphResolutionChanged(int glyphResolution);
 
     /** Emitted when the minor scaling change */
-    void minorScalingChanged(int minorScaling);
-
-    /** Emitted when the major scaling change */
-    void majorScalingChanged(int majorScaling);
+    void scalingChanged(double scale);
 
 public slots:
     void update (dtkAbstractView *view);
@@ -68,6 +65,9 @@ private slots:
     void onEigenVectorV3Toggled(bool isSelected);
 
     void onReverseBackgroundColorChanged(int state);
+
+    void onMinorScalingChanged(int minorScale);
+    void onMajorScalingChanged(int majorScaleExponent);
 
 protected:
     medToolBoxDiffusionTensorViewPrivate *d;
