@@ -324,6 +324,25 @@ void medViewerArea::switchToPatient(int id)
     if(id < 0 || d->current_patient==id)
         return;
 
+
+    if (d->current_patient >=0 ) {
+      
+    // warn the user that previous results might be discarded
+    switch(QMessageBox::information( this, "System message", "Changing patient will discard unsaved data. Continue?",
+				     "Yes", "No", 0, 1 ) ) 
+    {
+	case 0:
+	    break;
+
+        case 1:
+	default:
+	    return;
+            break;
+    }
+
+    }
+
+
     d->current_patient = id;
 
     // Setup view container
