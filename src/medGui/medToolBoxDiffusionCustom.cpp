@@ -57,3 +57,9 @@ dtkAbstractProcess *medToolBoxDiffusionCustom::process (void) const
 {
     return d->process;
 }
+
+dtkAbstractData *medToolBoxDiffusionCustom::output (void) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return NULL;
+}

@@ -38,13 +38,17 @@ public:
 
     medDataIndex dataIndex(void);
 
-public slots:
-    void run (void);
-    void clear(void);
+    dtkAbstractData *output(void) const;
     
+public slots:
+    // void run (void);
+    void clear(void);
+
+    /*
     void onObjectDropped (void);
 
     void onCoefficientsChanged  (int);
+    */
 
     void onToolBoxChosen(const QString&);
     
@@ -60,13 +64,11 @@ public slots:
       void onComputeCs  (void);
       void onComputeVR  (void);
     */
-    
-    dtkAbstractData *output(void);
 
 protected:
-    virtual void createProcessForIndex (const medDataIndex &index);
+    // virtual void createProcessForIndex (const medDataIndex &index);
 
-    void setRequiredOutputForProcess (dtkAbstractProcess *proc, int type);
+    // void setRequiredOutputForProcess (dtkAbstractProcess *proc, int type);
 
 private:
     medToolBoxDiffusionPrivate *d;
