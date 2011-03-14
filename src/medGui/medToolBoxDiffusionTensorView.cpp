@@ -16,6 +16,7 @@ public:
 
     // labels for showing the slider's actual value
     QLabel* sampleRateLabel;
+    QLabel* glyphResolutionLabel;
 };
 
 medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
@@ -94,12 +95,15 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->glyphResolution->setMaximum(20);
     d->glyphResolution->setSingleStep(1);
     d->glyphResolution->setValue(6);
-    //d->glyphResolution->setTickPosition(QSlider::TicksAbove);
 
+    d->glyphResolutionLabel = new QLabel("6", displayWidget);
 
     QHBoxLayout* glyphResolutionLayout = new QHBoxLayout;
     glyphResolutionLayout->addWidget(new QLabel("Glyph resolution: "));
     glyphResolutionLayout->addWidget(d->glyphResolution);
+    glyphResolutionLayout->addWidget(d->glyphResolutionLabel);
+
+    connect(d->glyphResolution, SIGNAL(valueChanged(int)), d->glyphResolutionLabel, SLOT(setNum(int)));
 
     // layout all the controls in the toolbox
     QVBoxLayout* layout = new QVBoxLayout(displayWidget);
