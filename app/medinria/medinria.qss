@@ -234,6 +234,10 @@ QRadioButton {
     spacing: 5px;
 }
 
+QRadioButton:disabled {
+    color: #000000;
+}
+
 QRadioButton::indicator {
     width: 15px;
     height: 15px;
