@@ -28,6 +28,8 @@ class dtkAbstractView;
 
 class medToolBoxTab;
 class medToolBoxPrivate;
+class medToolBoxBody;
+class medToolBoxHeader;
 
 class MEDGUI_EXPORT medToolBox : public QWidget
 {
@@ -44,6 +46,9 @@ public:
     void setOrientation(Qt::Orientation orientation);    
 
     Qt::Orientation orientation(void) const;
+    
+    medToolBoxHeader *header(void) const;
+    medToolBoxBody   *body(void)   const;
 
 signals:
     void    addToolBox(medToolBox *toolbox);
