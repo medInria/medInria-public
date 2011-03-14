@@ -71,3 +71,10 @@ void medRunnableProcess::onProgressed (int value)
 {
     emit progressed (this, value);
 }
+
+void medRunnableProcess::onCancel (QObject *sender)
+{
+    if (d->process) {
+        d->process->cancel();
+    }
+}

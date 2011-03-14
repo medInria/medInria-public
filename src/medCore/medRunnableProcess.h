@@ -43,6 +43,8 @@ public slots:
     void onSuccess    (void);
     void onFailure    (void);
     void onProgressed (int);
+
+    void onCancel (QObject*);
     
 private:
     medRunnableProcessPrivate *d;
