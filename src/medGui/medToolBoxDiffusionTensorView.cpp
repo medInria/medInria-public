@@ -13,10 +13,6 @@ public:
     QRadioButton* eigenVectorV3;
     QCheckBox*    reverseBackgroundColor;
     QSlider*      glyphResolution;
-
-    // labels for showing the slider's actual value
-    QLabel* sampleRateLabel;
-    QLabel* glyphResolutionLabel;
 };
 
 medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
@@ -44,14 +40,14 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->sampleRate->setSingleStep(1);
     d->sampleRate->setValue(1);
 
-    d->sampleRateLabel = new QLabel("1", displayWidget);
+    QLabel* sampleRateLabel = new QLabel("1", displayWidget);
 
     QHBoxLayout* sampleRateLayout = new QHBoxLayout;
     sampleRateLayout->addWidget(new QLabel("Sample rate: "));
     sampleRateLayout->addWidget(d->sampleRate);
-    sampleRateLayout->addWidget(d->sampleRateLabel);
+    sampleRateLayout->addWidget(sampleRateLabel);
 
-    connect(d->sampleRate, SIGNAL(valueChanged(int)), d->sampleRateLabel, SLOT(setNum(int)));
+    connect(d->sampleRate, SIGNAL(valueChanged(int)), sampleRateLabel, SLOT(setNum(int)));
 
     // flipX, flipY and flipZ checkboxes
     d->flipX = new QCheckBox("Flip X", displayWidget);
@@ -96,14 +92,14 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->glyphResolution->setSingleStep(1);
     d->glyphResolution->setValue(6);
 
-    d->glyphResolutionLabel = new QLabel("6", displayWidget);
+    QLabel* glyphResolutionLabel = new QLabel("6", displayWidget);
 
     QHBoxLayout* glyphResolutionLayout = new QHBoxLayout;
     glyphResolutionLayout->addWidget(new QLabel("Glyph resolution: "));
     glyphResolutionLayout->addWidget(d->glyphResolution);
-    glyphResolutionLayout->addWidget(d->glyphResolutionLabel);
+    glyphResolutionLayout->addWidget(glyphResolutionLabel);
 
-    connect(d->glyphResolution, SIGNAL(valueChanged(int)), d->glyphResolutionLabel, SLOT(setNum(int)));
+    connect(d->glyphResolution, SIGNAL(valueChanged(int)), glyphResolutionLabel, SLOT(setNum(int)));
 
     // layout all the controls in the toolbox
     QVBoxLayout* layout = new QVBoxLayout(displayWidget);
