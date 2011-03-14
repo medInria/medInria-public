@@ -50,6 +50,15 @@ signals:
     /** Emitted when the minor scaling change */
     void scalingChanged(double scale);
 
+    /** Emitted when user wants to hide or show axial plane */
+    void hideShowAxial(bool show);
+
+    /** Emitted when user wants to hide or show coronal plane */
+    void hideShowCoronal(bool show);
+
+    /** Emitted when user wants to hide or show Sagittal plane */
+    void hideShowSagittal(bool show);
+
 public slots:
     void update (dtkAbstractView *view);
 
@@ -68,6 +77,10 @@ private slots:
 
     void onMinorScalingChanged(int minorScale);
     void onMajorScalingChanged(int majorScaleExponent);
+
+    void onHideShowAxialChanged(int checkBoxState);
+    void onHideShowCoronalChanged(int checkBoxState);
+    void onHideShowSagittalChanged(int checkBoxState);
 
 protected:
     medToolBoxDiffusionTensorViewPrivate *d;

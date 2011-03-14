@@ -16,6 +16,9 @@ public:
     QSlider*      glyphResolution;
     QSlider*      minorScaling;
     QSlider*      majorScaling;
+    QCheckBox*    hideShowAxial;
+    QCheckBox*    hideShowCoronal;
+    QCheckBox*    hideShowSagittal;
 };
 
 medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
@@ -138,11 +141,20 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     //majorScalingLabel->resize(70,70); //this is not working...
 
     QHBoxLayout* majorScalingLayout = new QHBoxLayout;
-    majorScalingLayout->addWidget(new QLabel("Major scaling: "));
+    majorScalingLayout->addWidget(new QLabel("Major scaling (10^n): "));
     majorScalingLayout->addWidget(d->majorScaling);
     majorScalingLayout->addWidget(majorScalingLabel);
 
     connect(d->majorScaling, SIGNAL(valueChanged(int)), majorScalingLabel, SLOT(setNum(int)));
+
+    // hide or show axial, coronal, and sagittal
+    d->hideShowAxial = new QCheckBox("Hide/Show Axial", displayWidget);
+    d->hideShowCoronal = new QCheckBox("Hide/Show Coronal", displayWidget);
+    d->hideShowSagittal = new QCheckBox("Hide/Show Sagittal", displayWidget);
+
+    d->hideShowAxial->setChecked(true);
+    d->hideShowCoronal->setChecked(true);
+    d->hideShowSagittal->setChecked(true);
 
     // layout all the controls in the toolbox
     QVBoxLayout* layout = new QVBoxLayout(displayWidget);
@@ -154,17 +166,24 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     layout->addLayout(glyphResolutionLayout);
     layout->addLayout(minorScalingLayout);
     layout->addLayout(majorScalingLayout);
+    layout->addWidget(d->hideShowAxial);
+    layout->addWidget(d->hideShowCoronal);
+    layout->addWidget(d->hideShowSagittal);
+
 
     // connect all the signals
     connect(d->glyphShape,              SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
     connect(d->sampleRate,              SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
-    connect(d->reverseBackgroundColor,  SIGNAL(stateChanged(int)),                   this, SLOT(onReverseBackgroundColorChanged(int)));
     connect(d->glyphResolution,         SIGNAL(valueChanged(int)),                   this, SIGNAL(glyphResolutionChanged(int)));
 
-    // the axes signals require one more step to translate from Qt::CheckState to bool
-    connect(d->flipX,           SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));
-    connect(d->flipY,           SIGNAL(stateChanged(int)),                   this, SLOT(onFlipYCheckBoxStateChanged(int)));
-    connect(d->flipZ,           SIGNAL(stateChanged(int)),                   this, SLOT(onFlipZCheckBoxStateChanged(int)));
+    // some signals (checkboxes) require one more step to translate from Qt::CheckState to bool
+    connect(d->flipX,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));
+    connect(d->flipY,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipYCheckBoxStateChanged(int)));
+    connect(d->flipZ,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipZCheckBoxStateChanged(int)));
+    connect(d->reverseBackgroundColor,  SIGNAL(stateChanged(int)),                   this, SLOT(onReverseBackgroundColorChanged(int)));
+    connect(d->hideShowAxial,           SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowAxialChanged(int)));
+    connect(d->hideShowCoronal,         SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowCoronalChanged(int)));
+    connect(d->hideShowSagittal,        SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowSagittalChanged(int)));
 
     // we also need to translate radio buttons boolean states to an eigen vector
     connect(d->eigenVectorV1,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV1Toggled(bool)));
@@ -253,4 +272,28 @@ void medToolBoxDiffusionTensorView::onMajorScalingChanged(int majorScaleExponent
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     emit scalingChanged(scale);
+}
+
+void medToolBoxDiffusionTensorView::onHideShowAxialChanged(int checkBoxState)
+{
+    if (checkBoxState == Qt::Unchecked)
+        emit hideShowAxial(false);
+    else if (checkBoxState == Qt::Checked)
+        emit hideShowAxial(true);
+}
+
+void medToolBoxDiffusionTensorView::onHideShowCoronalChanged(int checkBoxState)
+{
+    if (checkBoxState == Qt::Unchecked)
+        emit hideShowCoronal(false);
+    else if (checkBoxState == Qt::Checked)
+        emit hideShowCoronal(true);
+}
+
+void medToolBoxDiffusionTensorView::onHideShowSagittalChanged(int checkBoxState)
+{
+    if (checkBoxState == Qt::Unchecked)
+        emit hideShowSagittal(false);
+    else if (checkBoxState == Qt::Checked)
+        emit hideShowSagittal(true);
 }
