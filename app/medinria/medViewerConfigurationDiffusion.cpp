@@ -64,8 +64,6 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     this->addToolBox( d->fiberViewToolBox );
     this->addToolBox( d->diffusionToolBox );
     this->addToolBox( d->fiberBundlingToolBox );
-
-    this->setViewLayoutType (-1); // single
 }
 
 medViewerConfigurationDiffusion::~medViewerConfigurationDiffusion(void)
@@ -79,29 +77,29 @@ QString medViewerConfigurationDiffusion::description(void) const
     return "Diffusion";
 }
 
-void medViewerConfigurationDiffusion::setupViewContainerStack(medViewContainerStack *container_stack)
+void medViewerConfigurationDiffusion::setupViewContainerStack()
 {
-    if (!container_stack) {
-        return;
-    }
-
     d->views.clear();
-    
-    medViewContainer *diffusionContainer = container_stack->customContainer("Diffusion");
-
-    if (!diffusionContainer) {
-      medViewContainerCustom *custom = new medViewContainerCustom (container_stack);
-      custom->setPreset (medViewContainerCustom::E);
-      connect (custom, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
-      connect (custom, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
-      diffusionContainer = custom;
-
-      container_stack->addCustomContainer ("Diffusion", diffusionContainer);
+    medViewContainer * diffusionContainer;
+    //the stack has been instantiated in constructor
+    if (!this->stackedViewContainers()->count())
+    {
+        medViewContainerCustom *custom = new medViewContainerCustom ();
+        custom->setPreset (medViewContainerCustom::E);
+        connect (custom, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
+        connect (custom, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
+        //ownership of custom is transferred to the stackedWidget.
+        this->stackedViewContainers()->addContainer (description(), custom);
+        diffusionContainer = custom;
     }
-
-    d->views << diffusionContainer->views();
+    else
+    {
+        diffusionContainer = this->stackedViewContainers()->container(description());
+        //TODO: maybe clear views here too?
+    }
     
-    container_stack->setCustomContainer ("Diffusion");
+    d->views << diffusionContainer->views();
+    this->stackedViewContainers()->setContainer (description());
 }
 
 void medViewerConfigurationDiffusion::patientChanged(int patientId)

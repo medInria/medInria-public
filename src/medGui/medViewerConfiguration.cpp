@@ -23,6 +23,9 @@
 #include "medViewerToolBoxLayout.h"
 #include "medViewContainer.h"
 #include "medViewContainerCustom.h"
+#include "medViewContainerSingle.h"
+#include "medViewContainerMulti.h"
+#include "medViewContainerStack.h"
 
 class medViewerConfigurationPrivate
 {
@@ -30,26 +33,27 @@ public:
     QWidget *parent;
     medViewerToolBoxLayout *layoutToolBox;
     QList<medToolBox*> toolboxes;
-    int viewLayoutType;
     medViewerConfiguration::LayoutType layoutType;
     int customLayoutType;
     bool databaseVisibility;
     bool layoutToolBoxVisibility;
     bool toolBoxesVisibility;
+    medViewContainerStack * viewContainerStack;
+    
 };
 
 medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
 {
     d->parent = parent;
+    d->viewContainerStack = new medViewContainerStack(parent);
     d->layoutType = medViewerConfiguration::LeftDbRightTb;
-    d->viewLayoutType = medViewContainer::Single;
     d->customLayoutType = 0;
     d->databaseVisibility = true;
     d->layoutToolBoxVisibility = true;
     d->toolBoxesVisibility = true;
     
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
-    connect (d->layoutToolBox, SIGNAL(modeChanged(int)),   this, SIGNAL(layoutModeChanged(int)));
+    connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),   this, SIGNAL(layoutModeChanged(const QString&)));
     connect (d->layoutToolBox, SIGNAL(presetClicked(int)), this, SIGNAL(layoutPresetClicked(int)));
     connect (d->layoutToolBox, SIGNAL(split(int,int)),     this, SIGNAL(layoutSplit(int,int)));    
     this->addToolBox(d->layoutToolBox);
@@ -96,14 +100,9 @@ medViewerConfiguration::LayoutType medViewerConfiguration::layoutType(void) cons
     return d->layoutType;
 }
 
-void medViewerConfiguration::setViewLayoutType(int type)
+void medViewerConfiguration::setCurrentViewContainer(const QString& name)
 {
-    d->viewLayoutType = type;
-}
-
-int medViewerConfiguration::viewLayoutType(void) const
-{
-    return d->viewLayoutType;
+    d->viewContainerStack->setContainer(name);
 }
 
 void medViewerConfiguration::setCustomLayoutType(int type)
@@ -151,10 +150,49 @@ bool medViewerConfiguration::isLayoutToolBox(const medToolBox * toolbox)
     return (toolbox == d->layoutToolBox);
 }
 
-void medViewerConfiguration::setupViewContainerStack(medViewContainerStack *container)
+void medViewerConfiguration::setupViewContainerStack()
 {
-    Q_UNUSED(container);
 }
+
+medViewContainer* medViewerConfiguration::currentViewContainer() const
+{
+    return d->viewContainerStack->current();
+}
+
+QString medViewerConfiguration::currentViewContainerName() const
+{
+    return d->viewContainerStack->currentName();
+}
+
+medViewContainerStack* medViewerConfiguration::stackedViewContainers() const
+{
+    return d->viewContainerStack;
+}
+
+void medViewerConfiguration::addSingleContainer(const QString& name)
+{
+    if (!this->stackedViewContainers()->container(name))
+        this->stackedViewContainers()->addContainer (name, new medViewContainerSingle());
+    else
+        qDebug() << "Container" << name << "already exists in this configurations";
+}
+
+void medViewerConfiguration::addMultiContainer(const QString& name)
+{
+    if (!this->stackedViewContainers()->container(name))
+        this->stackedViewContainers()->addContainer (name, new medViewContainerMulti());
+    else
+        qDebug() << "Container" << name << "already exists in this configurations";
+}
+
+void medViewerConfiguration::addCustomContainer(const QString& name)
+{
+    if (!this->stackedViewContainers()->container(name))
+        this->stackedViewContainers()->addContainer (name, new medViewContainerCustom());
+    else
+        qDebug() << "Container" << name << "already exists in this configurations";
+}
+
 
 void medViewerConfiguration::patientChanged(int patientId)
 {

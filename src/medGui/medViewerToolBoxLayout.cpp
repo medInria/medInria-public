@@ -92,7 +92,7 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
     this->setTitle("Layout");
     this->setTabWidget(layoutToolBoxTab);
 
-    connect(layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SIGNAL(modeChanged(int)));
+    connect(layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SLOT(modeChanged(int)));
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SIGNAL(split(int,int)));
 }
 
@@ -126,4 +126,19 @@ void medViewerToolBoxLayout::onButtonDClicked(void)
 void medViewerToolBoxLayout::onButtonEClicked(void)
 {
     emit presetClicked(5);
+}
+
+void medViewerToolBoxLayout::modeChanged(int tabIndex)
+{
+    switch (tabIndex){
+    case 1: 
+        emit (modeChanged("Multi"));
+        break;
+    case 2:
+        emit (modeChanged("Custom"));
+        break;
+    case 0:
+    default:
+        emit (modeChanged("Single"));
+    }            
 }
