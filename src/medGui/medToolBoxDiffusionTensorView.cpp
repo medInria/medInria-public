@@ -157,7 +157,7 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     // connect all the signals
     connect(d->glyphShape,              SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
     connect(d->sampleRate,              SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
-    connect(d->reverseBackgroundColor,  SIGNAL(stateChanged(int)),                   this, SIGNAL(reverseBackgroundColor(bool)));
+    connect(d->reverseBackgroundColor,  SIGNAL(stateChanged(int)),                   this, SLOT(onReverseBackgroundColorChanged(int)));
     connect(d->glyphResolution,         SIGNAL(valueChanged(int)),                   this, SIGNAL(glyphResolutionChanged(int)));
     connect(d->minorScaling,            SIGNAL(valueChanged(int)),                   this, SIGNAL(minorScalingChanged(int)));
     connect(d->majorScaling,            SIGNAL(valueChanged(int)),                   this, SIGNAL(majorScalingChanged(int)));
@@ -208,6 +208,14 @@ void medToolBoxDiffusionTensorView::onFlipZCheckBoxStateChanged(int checkBoxStat
         emit flipZ(false);
     else if (checkBoxState == Qt::Checked)
         emit flipZ(true);
+}
+
+void medToolBoxDiffusionTensorView::onReverseBackgroundColorChanged(int checkBoxState)
+{
+    if (checkBoxState == Qt::Unchecked)
+        emit reverseBackgroundColor(false);
+    else if (checkBoxState == Qt::Checked)
+        emit reverseBackgroundColor(true);
 }
 
 void medToolBoxDiffusionTensorView::onEigenVectorV1Toggled(bool isSelected)

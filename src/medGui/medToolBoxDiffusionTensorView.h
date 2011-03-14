@@ -67,6 +67,8 @@ private slots:
     void onEigenVectorV2Toggled(bool isSelected);
     void onEigenVectorV3Toggled(bool isSelected);
 
+    void onReverseBackgroundColorChanged(int state);
+
 protected:
     medToolBoxDiffusionTensorViewPrivate *d;
 };
