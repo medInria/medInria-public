@@ -8,6 +8,9 @@ public:
     QCheckBox*    flipX;
     QCheckBox*    flipY;
     QCheckBox*    flipZ;
+    QRadioButton* eigenVectorV1;
+    QRadioButton* eigenVectorV2;
+    QRadioButton* eigenVectorV3;
 };
 
 medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
@@ -49,11 +52,36 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     flipAxesLayout->addWidget(d->flipY);
     flipAxesLayout->addWidget(d->flipZ);
 
+    // eigen vectors
+
+    d->eigenVectorV1 = new QRadioButton("v1", displayWidget);
+    d->eigenVectorV2 = new QRadioButton("v2", displayWidget);
+    d->eigenVectorV3 = new QRadioButton("v3", displayWidget);
+
+    QButtonGroup *eigenVectorRadioGroup = new QButtonGroup(displayWidget);
+    eigenVectorRadioGroup->addButton(d->eigenVectorV1);
+    eigenVectorRadioGroup->addButton(d->eigenVectorV2);
+    eigenVectorRadioGroup->addButton(d->eigenVectorV3);
+    eigenVectorRadioGroup->setExclusive(true);
+
+    QHBoxLayout *eigenVectorGroupLayout = new QHBoxLayout;
+    eigenVectorGroupLayout->addWidget(d->eigenVectorV1);
+    eigenVectorGroupLayout->addWidget(d->eigenVectorV2);
+    eigenVectorGroupLayout->addWidget(d->eigenVectorV3);
+    //eigenVectorGroupLayout->addStretch(1);
+
+    QVBoxLayout* eigenLayout = new QVBoxLayout;
+    eigenLayout->addWidget(new QLabel("Eigen Vector for color-coding:"));
+    eigenLayout->addLayout(eigenVectorGroupLayout);
+
+    d->eigenVectorV1->setChecked(true);
+
     // layout all the controls in the toolbox
     QVBoxLayout* layout = new QVBoxLayout(displayWidget);
     layout->addLayout(glyphShapeLayout);
     layout->addLayout(sampleRateLayout);
     layout->addLayout(flipAxesLayout);
+    layout->addLayout(eigenLayout);
 
     // connect all the signals
     connect(d->glyphShape,      SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
@@ -63,6 +91,11 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     connect(d->flipX,           SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));
     connect(d->flipY,           SIGNAL(stateChanged(int)),                   this, SLOT(onFlipYCheckBoxStateChanged(int)));
     connect(d->flipZ,           SIGNAL(stateChanged(int)),                   this, SLOT(onFlipZCheckBoxStateChanged(int)));
+
+    // we also need to translate radio buttons boolean states to an eigen vector
+    connect(d->eigenVectorV1,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV1Toggled(bool)));
+    connect(d->eigenVectorV2,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV2Toggled(bool)));
+    connect(d->eigenVectorV3,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV3Toggled(bool)));
 
     this->setTitle("Tensor View");
     this->addWidget(displayWidget);
@@ -100,4 +133,22 @@ void medToolBoxDiffusionTensorView::onFlipZCheckBoxStateChanged(int checkBoxStat
         emit flipZ(false);
     else if (checkBoxState == Qt::Checked)
         emit flipZ(true);
+}
+
+void medToolBoxDiffusionTensorView::onEigenVectorV1Toggled(bool isSelected)
+{
+    if (isSelected)
+        emit eigenVectorChanged(1);
+}
+
+void medToolBoxDiffusionTensorView::onEigenVectorV2Toggled(bool isSelected)
+{
+    if (isSelected)
+        emit eigenVectorChanged(2);
+}
+
+void medToolBoxDiffusionTensorView::onEigenVectorV3Toggled(bool isSelected)
+{
+    if (isSelected)
+        emit eigenVectorChanged(3);
 }

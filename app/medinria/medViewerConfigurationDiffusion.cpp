@@ -139,7 +139,10 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
     // TODO this need to be refactored as in this case the interactor does the view->update
     // and not this class (as for all the other methods)
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor"))
+    {
         connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), interactor, SLOT(onSampleRatePropertySet(int)));
+        connect(d->tensorViewToolBox, SIGNAL(eigenVectorChanged(int)), interactor, SLOT(onEigenVectorPropertySet(int)));
+    }
 
     view->setData( d->diffusionToolBox->output(), 0 );
 }

@@ -38,6 +38,9 @@ signals:
     /** Emitted when the user wants to flip the Z axis */
     void flipZ(bool flipZ);
 
+    /** Emitted when a new eigen vector is selected */
+    void eigenVectorChanged(int eigenVector);
+
 public slots:
     void update (dtkAbstractView *view);
 
@@ -47,6 +50,10 @@ private slots:
     void onFlipXCheckBoxStateChanged(int state);
     void onFlipYCheckBoxStateChanged(int state);
     void onFlipZCheckBoxStateChanged(int state);
+
+    void onEigenVectorV1Toggled(bool isSelected);
+    void onEigenVectorV2Toggled(bool isSelected);
+    void onEigenVectorV3Toggled(bool isSelected);
 
 protected:
     medToolBoxDiffusionTensorViewPrivate *d;
