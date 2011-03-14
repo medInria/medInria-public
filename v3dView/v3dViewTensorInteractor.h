@@ -72,6 +72,15 @@ public slots:
     /** Scaling changed */
     void onScalingPropertySet (double scale);
 
+    /** Hide or show axial slice */
+    void onHideShowAxialPropertySet(bool show);
+
+    /** Hide or show coronal slice */
+    void onHideShowCoronalPropertySet(bool show);
+
+    /** Hide or show sagittal slice */
+    void onHideShowSagittalPropertySet(bool show);
+
 private:
     v3dViewTensorInteractorPrivate *d;
 

@@ -296,6 +296,45 @@ void v3dViewTensorInteractor::onScalingPropertySet (double scale)
         d->view->update();
 }
 
+void v3dViewTensorInteractor::onHideShowAxialPropertySet(bool show)
+{
+    if(show)
+        d->manager->SetAxialSliceVisibility(1);
+    else
+        d->manager->SetAxialSliceVisibility(0);
+
+    // TODO we need to move this after extending dtk for supporting int properties
+    // as now the update of the view is being done in 2 different places (here and in the configuration)
+    if (d->view)
+        d->view->update();
+}
+
+void v3dViewTensorInteractor::onHideShowCoronalPropertySet(bool show)
+{
+    if(show)
+        d->manager->SetCoronalSliceVisibility(1);
+    else
+        d->manager->SetCoronalSliceVisibility(0);
+
+    // TODO we need to move this after extending dtk for supporting int properties
+    // as now the update of the view is being done in 2 different places (here and in the configuration)
+    if (d->view)
+        d->view->update();
+}
+
+void v3dViewTensorInteractor::onHideShowSagittalPropertySet(bool show)
+{
+    if(show)
+        d->manager->SetSagittalSliceVisibility(1);
+    else
+        d->manager->SetSagittalSliceVisibility(0);
+
+    // TODO we need to move this after extending dtk for supporting int properties
+    // as now the update of the view is being done in 2 different places (here and in the configuration)
+    if (d->view)
+        d->view->update();
+}
+
 void v3dViewTensorInteractor::onFlipXPropertySet (const QString& flipX)
 {
     if (flipX == "true")
