@@ -563,6 +563,7 @@ QHelpSearchQueryWidget QToolButton::menu-indicator {
 QGroupBox {
     border: 2px solid gray;
     border-radius: 3px;
+    margin-top: 1ex;
 
     color: #b2b8b2;
     font-size: 10pt;
@@ -570,8 +571,9 @@ QGroupBox {
 
 QGroupBox::title {
     subcontrol-origin: margin;
-    subcontrol-position: top right;
-
+    subcontrol-position: top center;
+    padding: 0 3px;
+	 
     color: #b2b8b2;
     font-size: 10pt;
 }
