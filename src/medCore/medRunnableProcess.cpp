@@ -77,4 +77,6 @@ void medRunnableProcess::onCancel (QObject *sender)
     if (d->process) {
         d->process->cancel();
     }
+
+    emit (cancelled (this));
 }
