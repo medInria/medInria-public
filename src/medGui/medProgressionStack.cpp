@@ -84,6 +84,11 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
     if(d->bars.count() == 0)
         emit(shown());
 
+    if (d->bars.contains (sender)) {
+        qWarning () << "progression stack already has a label assigned to process " << sender << ", not assigning a new one";
+	return;
+    }
+
     QWidget *widget = new QWidget(this);
 
     QLabel *ilabel = new QLabel(medChop(label), widget);
