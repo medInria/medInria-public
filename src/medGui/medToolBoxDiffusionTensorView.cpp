@@ -13,6 +13,8 @@ public:
     QRadioButton* eigenVectorV3;
     QCheckBox*    reverseBackgroundColor;
     QSlider*      glyphResolution;
+    QSlider*      minorScaling;
+    QSlider*      majorScaling;
 };
 
 medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
@@ -41,6 +43,8 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->sampleRate->setValue(1);
 
     QLabel* sampleRateLabel = new QLabel("1", displayWidget);
+    // TODO fix the size of the label so the slider does not change it's size when the label changes from 1 digit to 2 (and viceversa)
+    //sampleRateLabel->resize(70,70); //this is not working...
 
     QHBoxLayout* sampleRateLayout = new QHBoxLayout;
     sampleRateLayout->addWidget(new QLabel("Sample rate: "));
@@ -93,6 +97,8 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->glyphResolution->setValue(6);
 
     QLabel* glyphResolutionLabel = new QLabel("6", displayWidget);
+    // TODO fix the size of the label so the slider does not change it's size when the label changes from 1 digit to 2 (and viceversa)
+    //glyphResolutionLabel->resize(70,70); //this is not working...
 
     QHBoxLayout* glyphResolutionLayout = new QHBoxLayout;
     glyphResolutionLayout->addWidget(new QLabel("Glyph resolution: "));
@@ -100,6 +106,42 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     glyphResolutionLayout->addWidget(glyphResolutionLabel);
 
     connect(d->glyphResolution, SIGNAL(valueChanged(int)), glyphResolutionLabel, SLOT(setNum(int)));
+
+    // minor scaling
+    d->minorScaling =  new QSlider(Qt::Horizontal, displayWidget);
+    d->minorScaling->setMinimum(1);
+    d->minorScaling->setMaximum(9);
+    d->minorScaling->setSingleStep(1);
+    d->minorScaling->setValue(1);
+
+    QLabel* minorScalingLabel = new QLabel("1", displayWidget);
+    // TODO fix the size of the label so the slider does not change it's size when the label changes from 1 digit to 2 (and viceversa)
+    //minorScalingLabel->resize(70,70); //this is not working...
+
+    QHBoxLayout* minorScalingLayout = new QHBoxLayout;
+    minorScalingLayout->addWidget(new QLabel("Minor scaling: "));
+    minorScalingLayout->addWidget(d->minorScaling);
+    minorScalingLayout->addWidget(minorScalingLabel);
+
+    connect(d->minorScaling, SIGNAL(valueChanged(int)), minorScalingLabel, SLOT(setNum(int)));
+
+    // major scaling
+    d->majorScaling =  new QSlider(Qt::Horizontal, displayWidget);
+    d->majorScaling->setMinimum(-10);
+    d->majorScaling->setMaximum(10);
+    d->majorScaling->setSingleStep(1);
+    d->majorScaling->setValue(0);
+
+    QLabel* majorScalingLabel = new QLabel("0", displayWidget);
+    // TODO fix the size of the label so the slider does not change it's size when the label changes from 1 digit to 2 (and viceversa)
+    //majorScalingLabel->resize(70,70); //this is not working...
+
+    QHBoxLayout* majorScalingLayout = new QHBoxLayout;
+    majorScalingLayout->addWidget(new QLabel("Major scaling: "));
+    majorScalingLayout->addWidget(d->majorScaling);
+    majorScalingLayout->addWidget(majorScalingLabel);
+
+    connect(d->majorScaling, SIGNAL(valueChanged(int)), majorScalingLabel, SLOT(setNum(int)));
 
     // layout all the controls in the toolbox
     QVBoxLayout* layout = new QVBoxLayout(displayWidget);
@@ -109,12 +151,16 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     layout->addLayout(eigenLayout);
     layout->addWidget(d->reverseBackgroundColor);
     layout->addLayout(glyphResolutionLayout);
+    layout->addLayout(minorScalingLayout);
+    layout->addLayout(majorScalingLayout);
 
     // connect all the signals
     connect(d->glyphShape,              SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
     connect(d->sampleRate,              SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
     connect(d->reverseBackgroundColor,  SIGNAL(stateChanged(int)),                   this, SIGNAL(reverseBackgroundColor(bool)));
     connect(d->glyphResolution,         SIGNAL(valueChanged(int)),                   this, SIGNAL(glyphResolutionChanged(int)));
+    connect(d->minorScaling,            SIGNAL(valueChanged(int)),                   this, SIGNAL(minorScalingChanged(int)));
+    connect(d->majorScaling,            SIGNAL(valueChanged(int)),                   this, SIGNAL(majorScalingChanged(int)));
 
     // the axes signals require one more step to translate from Qt::CheckState to bool
     connect(d->flipX,           SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));

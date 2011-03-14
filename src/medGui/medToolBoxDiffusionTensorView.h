@@ -47,6 +47,12 @@ signals:
     /** Emitted when the glyph resolution change */
     void glyphResolutionChanged(int glyphResolution);
 
+    /** Emitted when the minor scaling change */
+    void minorScalingChanged(int minorScaling);
+
+    /** Emitted when the major scaling change */
+    void majorScalingChanged(int majorScaling);
+
 public slots:
     void update (dtkAbstractView *view);
 
