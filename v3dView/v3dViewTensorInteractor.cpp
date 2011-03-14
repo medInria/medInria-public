@@ -249,6 +249,17 @@ void v3dViewTensorInteractor::onSampleRatePropertySet (int sampleRate)
         d->view->update();
 }
 
+void v3dViewTensorInteractor::onEigenVectorPropertySet (int eigenVector)
+{
+    // we need to substract 1 because the manager receives an index
+    d->manager->SetColorModeToEigenvector(eigenVector-1);
+
+    // TODO we need to move this after extending dtk for supporting int properties
+    // as now the update of the view is being done in 2 different places (here and in the configuration)
+    if (d->view)
+        d->view->update();
+}
+
 void v3dViewTensorInteractor::onFlipXPropertySet (const QString& flipX)
 {
     if (flipX == "true")

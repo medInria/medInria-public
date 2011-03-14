@@ -60,6 +60,9 @@ public slots:
     /** Flip tensors along the Z axis */
     void onFlipZPropertySet (const QString& flipZ);
 
+    /** A new eigenvector for mapping the color mode is set */
+    void onEigenVectorPropertySet (int eigenVector);
+
 private:
     v3dViewTensorInteractorPrivate *d;
 
