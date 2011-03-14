@@ -48,16 +48,6 @@ medToolBoxDiffusion *medToolBoxDiffusionCustom::parent(void)
     return d->parent;
 }
 
-void medToolBoxDiffusionCustom::setProcess (dtkAbstractProcess *process)
-{
-    d->process = process;
-}
-
-dtkAbstractProcess *medToolBoxDiffusionCustom::process (void) const
-{
-    return d->process;
-}
-
 dtkAbstractData *medToolBoxDiffusionCustom::output (void) const
 {
     DTK_DEFAULT_IMPLEMENTATION;

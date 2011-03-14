@@ -39,12 +39,7 @@ public:
 
     virtual QString description (void) const = 0;
 
-    virtual dtkAbstractProcess *create (void) = 0;
-
     virtual dtkAbstractData *output (void) const;
-
-    void setProcess (dtkAbstractProcess *process);
-    dtkAbstractProcess *process (void) const;
     
 protected:
     medToolBoxDiffusion *parent(void);
