@@ -270,6 +270,22 @@ void v3dViewTensorInteractor::onGlyphResolutionPropertySet (int glyphResolution)
         d->view->update();
 }
 
+void v3dViewTensorInteractor::onReverseBackgroundColorPropertySet (bool isWhite)
+{
+    if (!d->view)
+        return;
+
+    if(isWhite)
+        d->view->setBackgroundColor(1.0,1.0,1.0);
+    else
+        d->view->setBackgroundColor(0.0,0.0,0.0);
+
+    // TODO we need to move this after extending dtk for supporting int properties
+    // as now the update of the view is being done in 2 different places (here and in the configuration)
+    if (d->view)
+        d->view->update();
+}
+
 void v3dViewTensorInteractor::onFlipXPropertySet (const QString& flipX)
 {
     if (flipX == "true")
