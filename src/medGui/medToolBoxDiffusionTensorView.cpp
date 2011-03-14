@@ -13,6 +13,9 @@ public:
     QRadioButton* eigenVectorV3;
     QCheckBox*    reverseBackgroundColor;
     QSlider*      glyphResolution;
+
+    // labels for showing the slider's actual value
+    QLabel* sampleRateLabel;
 };
 
 medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
@@ -40,9 +43,14 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->sampleRate->setSingleStep(1);
     d->sampleRate->setValue(1);
 
+    d->sampleRateLabel = new QLabel("1", displayWidget);
+
     QHBoxLayout* sampleRateLayout = new QHBoxLayout;
     sampleRateLayout->addWidget(new QLabel("Sample rate: "));
     sampleRateLayout->addWidget(d->sampleRate);
+    sampleRateLayout->addWidget(d->sampleRateLabel);
+
+    connect(d->sampleRate, SIGNAL(valueChanged(int)), d->sampleRateLabel, SLOT(setNum(int)));
 
     // flipX, flipY and flipZ checkboxes
     d->flipX = new QCheckBox("Flip X", displayWidget);
