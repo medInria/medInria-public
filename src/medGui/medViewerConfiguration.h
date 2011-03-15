@@ -29,6 +29,7 @@
 class medToolBox;
 class medViewerConfigurationPrivate;
 class medViewContainerStack;
+class medDataIndex;
 
 class MEDGUI_EXPORT medViewerConfiguration : public QObject
 {
@@ -85,7 +86,7 @@ public slots:
     virtual void addToolBox(medToolBox *toolbox);
     virtual void removeToolBox(medToolBox *toolbox);
     
-    virtual void patientChanged(int patientId);
+    virtual void patientChanged(const medDataIndex& id);
 
 signals:
     void toolboxAdded  (medToolBox *tb);

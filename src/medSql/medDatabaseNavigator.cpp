@@ -80,7 +80,7 @@ void medDatabaseNavigator::reset(void)
     d->scene->reset();
 }
 
-void medDatabaseNavigator::onPatientClicked(int patientId)
+void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 {
     this->reset();
 
@@ -94,7 +94,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
     QString patientThumbnail;
 
     patientQuery.prepare("SELECT name, thumbnail FROM patient WHERE id = :id");
-    patientQuery.bindValue(":id", patientId);
+    patientQuery.bindValue(":id", index.patientId());
     if(!patientQuery.exec())
         qDebug() << DTK_COLOR_FG_RED << patientQuery.lastError() << DTK_NO_COLOR;
 
@@ -110,7 +110,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
     QVariant studyThumbnail;
 
     studyQuery.prepare("SELECT id, name, thumbnail FROM study WHERE patient = :patient");
-    studyQuery.bindValue(":patient", patientId);
+    studyQuery.bindValue(":patient", index.patientId());
     if(!studyQuery.exec())
         qDebug() << DTK_COLOR_FG_RED << studyQuery.lastError() << DTK_NO_COLOR;
 
@@ -144,7 +144,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
             qDebug() << thumbPath;
-            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(patientId, studyId.toInt(), seriesId.toInt(), -1, thumbPath);
+            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(index.patientId(), studyId.toInt(), seriesId.toInt(), -1, thumbPath);
 
             connect(item, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
             connect(item, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
@@ -163,7 +163,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 
     foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items()) {
 
-        if(item->index().patientId() == patientId) {
+        if(item->index().patientId() == index.patientId()) {
 
             medDatabaseNavigatorItem *nitem = new medDatabaseNavigatorItem(
                 item->index().patientId(), 

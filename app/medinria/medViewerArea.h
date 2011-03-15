@@ -53,7 +53,7 @@ public slots:
     
     void onViewClosed(void);
 
-    void switchToPatient(int index);
+    void switchToPatient(const medDataIndex& index);
     void switchToStackedViewContainers(medViewContainerStack* stack);
     void switchToContainer(const QString& name);
     void switchToContainerPreset(int index);

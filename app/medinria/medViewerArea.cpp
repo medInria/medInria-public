@@ -72,7 +72,7 @@
 medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
 {
     // -- Internal logic
-    d->current_patient = -1;
+    d->current_patient;
     d->current_configuration_name = "";
     d->current_configuration = 0;
     d->current_layout = medViewerConfiguration::LeftDbRightTb;
@@ -153,7 +153,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     this->addAction(transFunAction);
     
-    connect (d->toolboxPatient, SIGNAL(patientIndexChanged(int)), this, SLOT(switchToPatient(int)));
+    connect (d->toolboxPatient, SIGNAL(patientIndexChanged(const medDataIndex&)), this, SLOT(switchToPatient(const medDataIndex&)));
 }
 
 medViewerArea::~medViewerArea(void)
@@ -213,7 +213,7 @@ void medViewerArea::open(const medDataIndex& index)
     if(!((medDataIndex)index).isValid())
         return;
     
-    this->switchToPatient(index.patientId());
+    this->switchToPatient(index);
     
     if(((medDataIndex)index).isValidForSeries()) {
         
@@ -271,11 +271,10 @@ void medViewerArea::open(const medDataIndex& index)
         return;
     }
     
-    if(((medDataIndex)index).isValidForPatient()) {
-        
+    if(((medDataIndex)index).isValidForPatient()) 
+    {
+        // For the moment switch to visualization, later we will be cleverer    
         this->setupConfiguration("Visualization");
-        //TODO: check next 2 lines.
-        //this->switchToPatient(index.patientId());
         this->switchToContainer("Multi");
         
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
@@ -326,10 +325,10 @@ void medViewerArea::onViewClosed(void)
  * 
  */
 
-void medViewerArea::switchToPatient(int id)
+void medViewerArea::switchToPatient(const medDataIndex& id )
 {
-    qDebug()<<"SWITCHING";
-    if(id < 0 || d->current_patient==id)
+    if(!id.isValid()  || d->current_patient.patientId() == id.patientId() ||
+       id.patientId() < 0)
         return;
 
     d->current_patient = id;
@@ -606,7 +605,7 @@ void medViewerArea::setupConfiguration(QString name)
         conf = d->configurations[name];
     else {
         if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name)) {
-            connect(d->toolboxPatient, SIGNAL(patientIndexChanged(int)), conf, SLOT(patientChanged(int)));
+            connect(d->toolboxPatient, SIGNAL(patientIndexChanged(const medDataIndex&)), conf, SLOT(patientChanged(const medDataIndex&)));
             d->configurations.insert(name, conf);
         }
         else

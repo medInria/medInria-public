@@ -152,7 +152,7 @@ void medViewerToolBoxPatient::setPatientIndex(const medDataIndex& index)
 
 void medViewerToolBoxPatient::onCurrentIndexChanged(int index)
 {
-    emit patientIndexChanged(d->combo->itemData(index).toInt());
+    emit patientIndexChanged(medDataIndex(d->combo->itemData(index).toInt()));
 }
 
 

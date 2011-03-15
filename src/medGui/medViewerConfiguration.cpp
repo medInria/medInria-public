@@ -17,6 +17,8 @@
  * 
  */
 
+#include <medCore/medDataIndex.h>
+
 #include "medViewerConfiguration.h"
 
 #include "medToolBox.h"
@@ -194,9 +196,9 @@ void medViewerConfiguration::addCustomContainer(const QString& name)
 }
 
 
-void medViewerConfiguration::patientChanged(int patientId)
+void medViewerConfiguration::patientChanged(const medDataIndex& id)
 {
-    Q_UNUSED(patientId);
+    Q_UNUSED(id);
 }
 
 void medViewerConfiguration::setToolBoxesVisibility (bool value)
