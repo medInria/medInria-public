@@ -8,13 +8,14 @@
 #ifndef MEDVIEWERTOOLBOXVIEWPROPERTIES_H_
 #define MEDVIEWERTOOLBOXVIEWPROPERTIES_H_
 
+#include "medGuiExport.h"
 #include <medGui/medToolBox.h>
 
 class dtkAbstractView;
 class dtkAbstractData;
 class medViewerToolBoxViewPropertiesPrivate;
 
-class medViewerToolBoxViewProperties : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxViewProperties : public medToolBox
 {
     Q_OBJECT
 

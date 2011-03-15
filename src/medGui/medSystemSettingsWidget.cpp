@@ -91,7 +91,6 @@ bool medSystemSettingsWidget::validatePaths(QString paths)
 
 void medSystemSettingsWidget::read()
 {
-    qDebug()<<"reading QSettings";
     medSettingsManager * mnger = medSettingsManager::instance();
     d->pluginsPathField->setText(mnger->value("plugins","path").toString());
     d->modulesPathField->setText(mnger->value("scripts","modules_path").toString());
@@ -104,11 +103,6 @@ bool medSystemSettingsWidget::write()
     mnger->setValue("plugins","path",d->pluginsPathField->text());
     mnger->setValue("scripts","modules_path",d->modulesPathField->text());
     mnger->setValue("scripts","script_path",d->scriptsPathField->text());
-
-    //medPluginManager::instance()->setPath(d->pluginsPathField->text());
-    //dtkScriptManager::instance()->setScriptPath(d->scriptsPathField->text());
-    //dtkScriptManager::instance()->setModulePath(d->modulePathField->text());
-
     return true;
 }
 
