@@ -46,16 +46,19 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->sampleRate->setSingleStep(1);
     d->sampleRate->setValue(1);
 
-    QLabel* sampleRateLabel = new QLabel("1", displayWidget);
-    // TODO fix the size of the label so the slider does not change it's size when the label changes from 1 digit to 2 (and viceversa)
-    //sampleRateLabel->resize(70,70); //this is not working...
+    QSpinBox* sampleRateSpinBox = new QSpinBox(displayWidget);
+    sampleRateSpinBox->setMinimum(1);
+    sampleRateSpinBox->setMaximum(10);
+    sampleRateSpinBox->setSingleStep(1);
+    sampleRateSpinBox->setValue(1);
 
     QHBoxLayout* sampleRateLayout = new QHBoxLayout;
     sampleRateLayout->addWidget(new QLabel("Sample rate: "));
     sampleRateLayout->addWidget(d->sampleRate);
-    sampleRateLayout->addWidget(sampleRateLabel);
+    sampleRateLayout->addWidget(sampleRateSpinBox);
 
-    connect(d->sampleRate, SIGNAL(valueChanged(int)), sampleRateLabel, SLOT(setNum(int)));
+    connect(d->sampleRate, SIGNAL(valueChanged(int)), sampleRateSpinBox, SLOT(setValue(int)));
+    connect(sampleRateSpinBox, SIGNAL(valueChanged(int)), d->sampleRate, SLOT(setValue(int)));
 
     // flipX, flipY and flipZ checkboxes
     d->flipX = new QCheckBox("Flip X", displayWidget);
@@ -100,16 +103,19 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->glyphResolution->setSingleStep(1);
     d->glyphResolution->setValue(6);
 
-    QLabel* glyphResolutionLabel = new QLabel("6", displayWidget);
-    // TODO fix the size of the label so the slider does not change it's size when the label changes from 1 digit to 2 (and viceversa)
-    //glyphResolutionLabel->resize(70,70); //this is not working...
+    QSpinBox* glyphResolutionSpinBox = new QSpinBox(displayWidget);
+    glyphResolutionSpinBox->setMinimum(2);
+    glyphResolutionSpinBox->setMaximum(20);
+    glyphResolutionSpinBox->setSingleStep(1);
+    glyphResolutionSpinBox->setValue(6);
 
     QHBoxLayout* glyphResolutionLayout = new QHBoxLayout;
     glyphResolutionLayout->addWidget(new QLabel("Glyph resolution: "));
     glyphResolutionLayout->addWidget(d->glyphResolution);
-    glyphResolutionLayout->addWidget(glyphResolutionLabel);
+    glyphResolutionLayout->addWidget(glyphResolutionSpinBox);
 
-    connect(d->glyphResolution, SIGNAL(valueChanged(int)), glyphResolutionLabel, SLOT(setNum(int)));
+    connect(d->glyphResolution, SIGNAL(valueChanged(int)), glyphResolutionSpinBox, SLOT(setValue(int)));
+    connect(glyphResolutionSpinBox, SIGNAL(valueChanged(int)), d->glyphResolution, SLOT(setValue(int)));
 
     // minor scaling
     d->minorScaling =  new QSlider(Qt::Horizontal, displayWidget);
@@ -118,16 +124,19 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->minorScaling->setSingleStep(1);
     d->minorScaling->setValue(1);
 
-    QLabel* minorScalingLabel = new QLabel("1", displayWidget);
-    // TODO fix the size of the label so the slider does not change it's size when the label changes from 1 digit to 2 (and viceversa)
-    //minorScalingLabel->resize(70,70); //this is not working...
+    QSpinBox* minorScalingSpinBox = new QSpinBox(displayWidget);
+    minorScalingSpinBox->setMinimum(1);
+    minorScalingSpinBox->setMaximum(9);
+    minorScalingSpinBox->setSingleStep(1);
+    minorScalingSpinBox->setValue(1);
 
     QHBoxLayout* minorScalingLayout = new QHBoxLayout;
     minorScalingLayout->addWidget(new QLabel("Minor scaling: "));
     minorScalingLayout->addWidget(d->minorScaling);
-    minorScalingLayout->addWidget(minorScalingLabel);
+    minorScalingLayout->addWidget(minorScalingSpinBox);
 
-    connect(d->minorScaling, SIGNAL(valueChanged(int)), minorScalingLabel, SLOT(setNum(int)));
+    connect(d->minorScaling, SIGNAL(valueChanged(int)), minorScalingSpinBox, SLOT(setValue(int)));
+    connect(minorScalingSpinBox, SIGNAL(valueChanged(int)), d->minorScaling, SLOT(setValue(int)));
 
     // major scaling
     d->majorScaling =  new QSlider(Qt::Horizontal, displayWidget);
@@ -136,16 +145,19 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->majorScaling->setSingleStep(1);
     d->majorScaling->setValue(0);
 
-    QLabel* majorScalingLabel = new QLabel("0", displayWidget);
-    // TODO fix the size of the label so the slider does not change it's size when the label changes from 1 digit to 2 (and viceversa)
-    //majorScalingLabel->resize(70,70); //this is not working...
+    QSpinBox* majorScalingSpinBox = new QSpinBox(displayWidget);
+    majorScalingSpinBox->setMinimum(-10);
+    majorScalingSpinBox->setMaximum(10);
+    majorScalingSpinBox->setSingleStep(1);
+    majorScalingSpinBox->setValue(0);
 
     QHBoxLayout* majorScalingLayout = new QHBoxLayout;
     majorScalingLayout->addWidget(new QLabel("Major scaling (10^n): "));
     majorScalingLayout->addWidget(d->majorScaling);
-    majorScalingLayout->addWidget(majorScalingLabel);
+    majorScalingLayout->addWidget(majorScalingSpinBox);
 
-    connect(d->majorScaling, SIGNAL(valueChanged(int)), majorScalingLabel, SLOT(setNum(int)));
+    connect(d->majorScaling, SIGNAL(valueChanged(int)), majorScalingSpinBox, SLOT(setValue(int)));
+    connect(majorScalingSpinBox, SIGNAL(valueChanged(int)), d->majorScaling, SLOT(setValue(int)));
 
     // hide or show axial, coronal, and sagittal
     d->hideShowAxial = new QCheckBox("Hide/Show Axial", displayWidget);
