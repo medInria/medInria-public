@@ -198,9 +198,9 @@ void medViewerArea::setdw(QStatusBar *status)
 
 void medViewerArea::split(int rows, int cols)
 {
-    //TODO: test for existence of the conf
-    //if (d->view_stacks.count())
-    d->current_configuration->currentViewContainer()->split(rows, cols);
+    if (d->current_configuration && 
+        d->current_configuration->currentViewContainer())
+        d->current_configuration->currentViewContainer()->split(rows, cols);
 }
 
 //! Open data corresponding to index \param index.
@@ -224,30 +224,35 @@ void medViewerArea::open(const medDataIndex& index)
         data = medDataManager::instance()->data(index);
         if ( !data )
             return;
-
-        if(!view) {
-        if (d->current_configuration->currentViewContainer() && d->current_configuration->currentViewContainer()->current())
-            view = d->current_configuration->currentViewContainer()->current()->view();
+        
+        if(!view) 
+        {
+            if (d->current_configuration->currentViewContainer() &&
+                d->current_configuration->currentViewContainer()->current())
+                view = d->current_configuration->currentViewContainer()->current()->view();
         }
-
-        if(!view) {
+        
+        if(!view)
+        {
             view = dtkAbstractViewFactory::instance()->create("v3dView");
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
         }
         
-        if(!view) {
+        if(!view)
+        {
             qDebug() << "Unable to create a v3dView";
             return;
         }
         
         medViewManager::instance()->insert(index, view);
-
-
+        
+        
         this->onViewFocused(view);
         view->setData(data);
-    
+        
         QMutexLocker ( &d->mutex );
-        if (d->current_configuration->currentViewContainer()) {
+        if (d->current_configuration->currentViewContainer()) 
+        {
             d->current_configuration->currentViewContainer()->setUpdatesEnabled (false);
             d->current_configuration->currentViewContainer()->setDisabled (true);
             
@@ -262,15 +267,16 @@ void medViewerArea::open(const medDataIndex& index)
             d->current_configuration->currentViewContainer()->setDisabled (false);
             d->current_configuration->currentViewContainer()->setUpdatesEnabled (true);
         }
-    
+        
         return;
     }
     
     if(((medDataIndex)index).isValidForPatient()) {
         
         this->setupConfiguration("Visualization");
-        this->switchToPatient(index.patientId());
-        this->switchToContainer("Visualization");
+        //TODO: check next 2 lines.
+        //this->switchToPatient(index.patientId());
+        this->switchToContainer("Multi");
         
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
         stQuery.prepare("SELECT * FROM study WHERE patient = :id");
@@ -322,34 +328,11 @@ void medViewerArea::onViewClosed(void)
 
 void medViewerArea::switchToPatient(int id)
 {
+    qDebug()<<"SWITCHING";
     if(id < 0 || d->current_patient==id)
         return;
 
     d->current_patient = id;
-
-    // Setup view container
-
-    medViewContainerStack *view_stack;
-
-//    if(!d->view_stacks.contains(d->current_patient)) {
-//        view_stack = new medViewContainerStack(this);
-//        connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
-//        connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
-//        d->view_stacks.insert(d->current_patient, view_stack);
-//    d->current_patient_container.insert (d->current_patient, 0);
-//        d->stack->addWidget(view_stack);
-//    }
-//    else {
-//        view_stack = d->view_stacks.value(d->current_patient);
-//    }
-
-//    if (d->current_configuration) {
-//        d->current_configuration->setupViewContainerStack( view_stack );
-//        switchToContainer (d->current_configuration->viewLayoutType());
-//        switchToContainerPreset (d->current_configuration->customLayoutType());
-//    }
-
-//    d->stack->setCurrentWidget(view_stack);
 
     // Setup navigator
 
@@ -370,7 +353,7 @@ void medViewerArea::switchToPatient(int id)
 
     // Setup patient toolbox
     //TODO emit a signal to the Patient Toolbox
-    //emit (setPatientIndex(id));
+    d->toolboxPatient->setPatientIndex (id);
 
     // Setup layout toolbox
 }
