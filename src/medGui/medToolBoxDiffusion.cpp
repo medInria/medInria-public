@@ -101,6 +101,7 @@ void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
     else {
         toolbox = medToolBoxFactory::instance()->createCustomDiffusionToolBox(id);
         if (toolbox) {
+	    toolbox->setStyleSheet("medToolBoxBody {border:none}");
             toolbox->header()->hide();
             
             connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
