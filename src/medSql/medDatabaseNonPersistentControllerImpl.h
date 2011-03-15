@@ -85,7 +85,7 @@ public slots:
     * @params const dtkAbstractData & data data to be stored
     * @return medDataIndex assigned index
     */
-    medDataIndex import(const dtkAbstractData& data);
+    medDataIndex import(dtkAbstractData *data);
 
 
     /**

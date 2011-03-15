@@ -51,6 +51,7 @@ public:
 private:
     friend class medDatabaseNonPersitentController;
     friend class medDatabaseNonPersistentReader;
+    friend class medDatabaseNonPersistentImporter;
 
 private:
     medDatabaseNonPersistentItemPrivate *d;

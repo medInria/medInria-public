@@ -60,6 +60,24 @@ medDataIndex medDatabaseControllerImpl::indexForPatient(int id)
     return medDataIndex(id);
 }
 
+medDataIndex medDatabaseControllerImpl::indexForPatient (const QString &patientName)
+{
+    QSqlQuery query(m_database);
+    QVariant patientId = -1;
+
+    query.prepare("SELECT id FROM patient WHERE name = :name");
+    query.bindValue(":name", patientName);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    if(query.first()) {
+        patientId = query.value(0);
+	return medDataIndex (patientId.toInt());
+    }
+
+    return medDataIndex();
+}
+
 medDataIndex medDatabaseControllerImpl::indexForStudy(int id)
 {
     QSqlQuery query(m_database);
@@ -75,6 +93,38 @@ medDataIndex medDatabaseControllerImpl::indexForStudy(int id)
         patientId = query.value(0);
 
     return medDataIndex(patientId.toInt(), id);
+}
+
+medDataIndex medDatabaseControllerImpl::indexForStudy(const QString &patientName, const QString &studyName)
+{
+    QSqlQuery query(m_database);
+
+    QVariant patientId = -1;
+    QVariant studyId   = -1;
+
+    query.prepare("SELECT id FROM patient WHERE name = :name");
+    query.bindValue(":name", patientName);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    if(query.first())
+        patientId = query.value(0);
+    else
+        return medDataIndex();
+
+    query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name");
+    query.bindValue(":id",   patientId);
+    query.bindValue(":name", studyName);
+
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    
+    if(query.first()) {
+        studyId = query.value(0);
+	return medDataIndex(patientId.toInt(), studyId.toInt());
+    }
+
+    return medDataIndex();
 }
 
 medDataIndex medDatabaseControllerImpl::indexForSeries(int id)
@@ -147,7 +197,7 @@ medDataIndex medDatabaseControllerImpl::import(const QString& file)
     return medDataIndex();
 }
 
-medDataIndex medDatabaseControllerImpl::import( const dtkAbstractData& data )
+medDataIndex medDatabaseControllerImpl::import( dtkAbstractData *data )
 {
     Q_UNUSED(data);
 

@@ -32,6 +32,12 @@ public:
     medDataIndex indexForSeries (int id);
     medDataIndex indexForImage  (int id);
 
+    medDataIndex indexForPatient (const QString &patientName);
+    medDataIndex indexForStudy   (const QString &patientName, const QString &seriesName);
+    // medDataIndex indexForSeries  (const QString &patientName, const QString &seriesName, const QString &seriesName);
+    // medDataIndex indexForImage   (const QString &patientName, const QString &seriesName,
+    // 			  const QString &seriesName,  const QString &imageName);
+
     /* some overloads of read(medDataIndex) */
     dtkAbstractData *read(int patientId, int studyId, int seriesId);
     dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId);
@@ -80,7 +86,7 @@ public slots:
     * @params const dtkAbstractData & data dataObject
     * @return medDataIndex the assigned index
     */
-    medDataIndex import(const dtkAbstractData& data);
+    medDataIndex import(dtkAbstractData *data);
 
 protected slots:
     void forwardMessage(QString);

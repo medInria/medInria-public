@@ -154,6 +154,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     this->addAction(transFunAction);
     
     connect (d->toolboxPatient, SIGNAL(patientIndexChanged(int)), this, SLOT(switchToPatient(int)));
+    connect (medDataManager::instance(), SIGNAL (dataAdded (int)), d->navigator, SLOT (onPatientClicked (int)));
 }
 
 medViewerArea::~medViewerArea(void)
@@ -220,7 +221,10 @@ void medViewerArea::open(const medDataIndex& index)
         dtkAbstractView *view = NULL;
         
         // the data-manager should be used to read data
+	medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
+	medDataManager::instance()->blockSignals (false);
+	
         if ( !data )
             return;
 

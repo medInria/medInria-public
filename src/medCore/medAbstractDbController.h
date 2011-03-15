@@ -55,7 +55,7 @@ public slots:
     * @params const dtkAbstractData& data reference to data
     * @return medDataIndex that was assigned
     */
-    virtual medDataIndex import(const dtkAbstractData& data) = 0;
+    virtual medDataIndex import(dtkAbstractData *data) = 0;
 
    
     /**

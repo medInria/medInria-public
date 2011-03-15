@@ -20,6 +20,7 @@
 #include "medDatabaseNonPersistentItem.h"
 #include "medDatabaseNonPersistentControllerImpl.h"
 #include "medDatabaseNonPersistentReader.h"
+#include "medDatabaseNonPersistentImporter.h"
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medMessageController.h>
@@ -126,9 +127,9 @@ int medDatabaseNonPersistentControllerImpl::nonPersistentDataStartingIndex(void)
 medDatabaseNonPersistentControllerImpl::medDatabaseNonPersistentControllerImpl(void): d(new medDatabaseNonPersistentControllerImplPrivate)
 {
     d->pt_index = nonPersistentDataStartingIndex();
-    d->st_index = 0;
-    d->se_index = 0;
-    d->im_index = 0;
+    d->st_index = nonPersistentDataStartingIndex();
+    d->se_index = nonPersistentDataStartingIndex();
+    d->im_index = nonPersistentDataStartingIndex();
 }
 
 medDatabaseNonPersistentControllerImpl::~medDatabaseNonPersistentControllerImpl(void)
@@ -147,13 +148,21 @@ bool medDatabaseNonPersistentControllerImpl::isConnected()
     return true;
 }
 
-medDataIndex medDatabaseNonPersistentControllerImpl::import( const dtkAbstractData& data )
+medDataIndex medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data)
 {
-    Q_UNUSED(data);
+    medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data);
 
-    return medDataIndex();
+    connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(importer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(importer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
+    connect(importer, SIGNAL(failure(QObject *)), importer, SLOT(deleteLater()));
+
+    medMessageController::instance()->showProgress(importer, "Importing data item");
+
+    medDataIndex index = importer->run();
+
+    emit updated(index);
+
+    return index;
 }
-
-
-
-

@@ -5,6 +5,8 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
+#include <medCore/medDataManager.h>
+
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerSingle.h>
 #include <medGui/medViewContainerStack.h>
@@ -227,13 +229,15 @@ void medViewerConfigurationDiffusion::onShowBundles (bool value)
 void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
 {
     foreach (dtkAbstractView *view, d->views) {
-      view->setData( d->diffusionToolBox->output(), 0 );
+        view->setData( d->diffusionToolBox->output(), 0 );
         view->reset();
         view->update();
     }
     
     if (d->diffusionToolBox->output()->description()=="v3dDataFibers")
-      d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
+        d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
+
+    medDataManager::instance()->import ( d->diffusionToolBox->output() );
 }
 
 void medViewerConfigurationDiffusion::refreshInteractors (void)

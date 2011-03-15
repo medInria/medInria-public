@@ -59,9 +59,9 @@ public:
       * Do *not* use the concrete database controller implementation for it
       * The data-manager will take over this task
       * @params const dtkAbstractData & data
-      * @return medDataIndex*
+      * @return medDataIndex
       */
-      medDataIndex* import(const dtkAbstractData& data);
+      medDataIndex import(dtkAbstractData *data);
 
     /*
         QList<dtkAbstractData *> dataForPatient(int id);
@@ -70,6 +70,9 @@ public:
         QList<dtkAbstractData *> dataForImage  (int id);
     */
 
+signals:
+      void dataAdded (int patientId);
+      
 protected:
      medDataManager(void);
     ~medDataManager(void);

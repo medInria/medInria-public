@@ -93,6 +93,8 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
 {
     dtkAbstractData* dtkdata = NULL;
 
+    bool newData = false;
+    
     // try to get it from cache first
     if ( d->datas.contains(index) )
     {
@@ -124,11 +126,14 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
         if (dtkdata)
         {
             d->datas[index] = dtkdata;
+	    newData = true;
         }
     }
 
     if (dtkdata)
     {
+        if (newData)
+	    emit dataAdded (index.patientId());
         return dtkdata;
     }
     else
@@ -137,6 +142,43 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
         return NULL;
     }
 }
+
+medDataIndex medDataManager::import (dtkAbstractData *data)
+{
+    if (!data)
+        return medDataIndex();
+
+    foreach (dtkAbstractData *dtkdata, d->datas) {
+        if (data==dtkdata) {
+	    qWarning() << "data already in manager, skipping";
+	    return medDataIndex();
+	}
+    }
+
+    bool newData = false;
+    
+    medDataIndex index;
+    
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    if(npDb)
+    {
+        index = npDb->import(data);
+    }
+
+    if (d->datas.contains (index)) {
+        qWarning() << "data already in manager, skipping";
+	return index;
+    }
+    else
+        newData = true;
+
+    d->datas[index] = data;
+
+    emit dataAdded (index.patientId());
+    
+    return index;
+}
+
 /*
 QList<dtkAbstractData *> medDataManager::dataForPatient(int id)
 {
