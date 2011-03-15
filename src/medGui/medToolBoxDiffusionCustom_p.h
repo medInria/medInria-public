@@ -23,13 +23,11 @@
 #include <QtGui>
 
 class medToolBoxDiffusion;
-class dtkAbstractProcess;
 
 class medToolBoxDiffusionCustomPrivate
 {
 public:
     medToolBoxDiffusion *parent;
-    dtkAbstractProcess  *process;
 };
 
 #endif
