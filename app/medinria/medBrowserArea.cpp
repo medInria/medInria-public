@@ -186,11 +186,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->stack->addWidget(filesystem_widget);
     d->stack->addWidget(d->pacs);
 
-    // Jobs //////////////////////////////////////////
-
-    d->toolbox_jobs = new medBrowserToolBoxJobs(this);
-    d->toolbox_jobs->setVisible(false);
-
     // Toolbox pacs host ///////////////////////////////////////////
 
     d->toolbox_pacs_host = new medBrowserToolBoxPacsHost(this);
@@ -231,7 +226,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_jobs = new medBrowserToolBoxJobs(this);
     d->toolbox_jobs->setVisible(false);
 
-
     // Toolbox container /////////////////////////////////////////////
 
     d->toolbox_container = new medToolBoxContainer(this);
@@ -240,7 +234,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_container->addToolBox(d->toolbox_pacs_host);
     d->toolbox_container->addToolBox(d->toolbox_pacs_nodes);
     d->toolbox_container->addToolBox(d->toolbox_pacs_search);
-    d->toolbox_container->addToolBox(d->toolbox_jobs);
 	
 	  // Additional toolboxes for source data ////////////////
 	
@@ -259,6 +252,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
 			 connect(dataSource,SIGNAL(dataImport(QString)),this,SLOT(onFileImport(QString)));
 		}	
+  
+    // Jobs should be added as the last item so that they appear at the bottom
+    d->toolbox_container->addToolBox(d->toolbox_jobs);
 
     // Layout /////////////////////////////////////////////
 
