@@ -16,6 +16,7 @@
 #include "medDatabaseImporter.h"
 #include "medDatabaseExporter.h"
 #include "medDatabaseReader.h"
+#include "medDatabaseWriter.h"
 
 QSqlDatabase *medDatabaseControllerImpl::database(void)
 {
@@ -199,9 +200,17 @@ medDataIndex medDatabaseControllerImpl::import(const QString& file)
 
 medDataIndex medDatabaseControllerImpl::import( dtkAbstractData *data )
 {
-    Q_UNUSED(data);
+    medDatabaseWriter *writer = new medDatabaseWriter(data);
 
-    return medDataIndex();
+    connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(writer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(writer, SIGNAL(success(QObject *)), writer, SLOT(deleteLater()));
+    connect(writer, SIGNAL(failure(QObject *)), writer, SLOT(deleteLater()));
+
+    medMessageController::instance()->showProgress(writer, "Saving database item");
+
+    return writer->run();
 }
 
 dtkAbstractData *medDatabaseControllerImpl::read(const medDataIndex& index) const
