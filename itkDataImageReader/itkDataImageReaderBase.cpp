@@ -29,8 +29,9 @@ bool itkDataImageReaderBase::canRead (const QString& path)
     else
     {
         // regular image readers can only read images with 4 or less
-        // components. image with more will be handled by more specific
-        // image readers (e.g. tensors if 6 or 9 components)
+        // components if the pixel type is vector. images with more
+        // will be handled by more specific image readers
+        // (e.g. tensors if 6 or 9 components)
 
         this->io->SetFileName( path.toAscii().constData() );
         try {
@@ -41,7 +42,14 @@ bool itkDataImageReaderBase::canRead (const QString& path)
            return false;
         }
 
-        return this->io->GetNumberOfComponents() <= 4 ;
+        if (this->io->GetPixelType() == itk::ImageIOBase::VECTOR)
+        {
+            return this->io->GetNumberOfComponents() <= 4 ;
+        }
+        else
+        {
+            return true;
+        }
     }
 }
 
