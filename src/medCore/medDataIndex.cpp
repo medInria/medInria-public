@@ -76,6 +76,26 @@ bool medDataIndex::isValidForImage(void) const
     return ((d->patientId >= 0) && (d->studyId >= 0) && (d->seriesId >= 0) && (d->imageId >= 0));
 }
 
+void medDataIndex::setPatientId (int id)
+{
+    d->patientId = id;
+}
+
+void medDataIndex::setStudyId (int id)
+{
+    d->studyId = id;
+}
+
+void medDataIndex::setSeriesId (int id)
+{
+    d->seriesId = id;
+}
+
+void medDataIndex::setImageId (int id)
+{
+    d->imageId = id;
+}
+
 int medDataIndex::patientId(void) const
 {
     return d->patientId;
