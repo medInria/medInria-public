@@ -44,8 +44,10 @@ void medRunnableProcess::setProcess (dtkAbstractProcess *proc)
     d->process = proc;
 
     if (d->process) {
-	connect (d->process, SIGNAL (success()),       this, SLOT (onSuccess()),       Qt::BlockingQueuedConnection);
-	connect (d->process, SIGNAL (failure()),       this, SLOT (onFailure()),       Qt::BlockingQueuedConnection);
+        // QueuedConnection does not seem to work (never called). Changing it to BlockingQueuedConnection
+        // may result in a dead lock. Then, it is better to emit those directly from the run() method.
+        // connect (d->process, SIGNAL (success()),       this, SLOT (onSuccess()), Qt::QueuedConnection);
+        // connect (d->process, SIGNAL (failure()),       this, SLOT (onFailure()), Qt::QueuedConnection);
 	connect (d->process, SIGNAL (progressed(int)), this, SLOT (onProgressed(int)), Qt::QueuedConnection);
     }
 }
@@ -53,7 +55,10 @@ void medRunnableProcess::setProcess (dtkAbstractProcess *proc)
 void medRunnableProcess::run (void)
 {
     if (d->process) {
-        d->process->run();
+        if (d->process->update()==0)
+	    emit success (this);
+	else
+	    emit failure (this);
     }
 }
 
@@ -75,7 +80,7 @@ void medRunnableProcess::onProgressed (int value)
 void medRunnableProcess::onCancel (QObject *sender)
 {
     if (d->process) {
-        d->process->cancel();
+        d->process->onCanceled();
     }
 
     emit (cancelled (this));
