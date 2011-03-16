@@ -73,10 +73,20 @@ public:
       medDataIndex importNonPersistent(dtkAbstractData *data);
 
       /**
-       * Use this functions to store all volatile data in the data manager
-       * to the sql database.
-       */
+      * Use this functions to store all volatile data in the data manager
+      * to the sql database.
+      */
       void storeNonPersistentDataToDatabase (void);
+
+      /**
+      * Returns the number of non-persistent data referenced in the data manager
+      */
+      int nonPersistentDataCount (void) const;
+
+      /**
+      * Clear the list of non-persistent data
+      */
+      void clearNonPersistentData (void);
 
     /*
         QList<dtkAbstractData *> dataForPatient(int id);

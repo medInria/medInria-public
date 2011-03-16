@@ -228,7 +228,21 @@ void medDataManager::storeNonPersistentDataToDatabase (void)
     if (medAbstractDbController* npDb = d->getNonPersDbController())
         npDb->clear();
 
-    d->volatileDatas.clear(); // should we delete them?
+    d->volatileDatas.clear();
+}
+
+
+int medDataManager::nonPersistentDataCount (void) const
+{
+    return d->volatileDatas.count();
+}
+
+void medDataManager::clearNonPersistentData (void)
+{
+    if (medAbstractDbController* npDb = d->getNonPersDbController())
+        npDb->clear();
+
+    d->volatileDatas.clear();
 }
 
 /*

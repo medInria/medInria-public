@@ -325,29 +325,32 @@ void medViewerArea::onViewClosed(void)
 
 void medViewerArea::switchToPatient(int id)
 {
-    if(id < 0 || d->current_patient==id)
+    if(id <= 0 || d->current_patient==id)
         return;
 
 
     if (d->current_patient >=0 ) {
-      
-    // warn the user that previous results might be discarded
-    switch(QMessageBox::information( this, "System message", "Changing patient will discard unsaved data. Continue?",
-				     "Yes", "No", "Save data in database", 0, 1) ) 
-    {
-	case 0:
-	    break;
 
-	case 2:
-	    medDataManager::instance()->storeNonPersistentDataToDatabase();
-	    break;
-	    
-        case 1:
-	default:
-	    return;
-            break;
-    }
-
+      if (medDataManager::instance()->nonPersistentDataCount()) {
+	// warn the user that previous results might be discarded
+	switch(QMessageBox::information( this, "System message", "Changing patient will discard unsaved data. Continue?",
+					 "Yes", "No", "Save data in database", 0, 1) ) 
+	{
+	    case 0:
+	      medDataManager::instance()->clearNonPersistentData();
+	      break;
+	      
+	    case 2:
+	      medDataManager::instance()->storeNonPersistentDataToDatabase();
+	      break;
+	      
+	    case 1:
+	    default:
+	      return;
+	      break;
+	}
+	
+      }
     }
 
 
@@ -370,6 +373,7 @@ void medViewerArea::switchToPatient(int id)
     }
 
     if (d->current_configuration) {
+        d->current_configuration->patientChanged(d->current_patient);
         d->current_configuration->setupViewContainerStack( view_stack );
         switchToContainer (d->current_configuration->viewLayoutType());
         switchToContainerPreset (d->current_configuration->customLayoutType());
@@ -618,7 +622,7 @@ void medViewerArea::setupConfiguration(QString name)
         conf = d->configurations[name];
     else {
         if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name)) {
-            connect(d->toolboxPatient, SIGNAL(patientIndexChanged(int)), conf, SLOT(patientChanged(int)));
+	  // connect(d->toolboxPatient, SIGNAL(patientIndexChanged(int)), conf, SLOT(patientChanged(int)));
             d->configurations.insert(name, conf);
         }
         else
