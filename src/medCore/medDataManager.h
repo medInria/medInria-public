@@ -63,6 +63,21 @@ public:
       */
       medDataIndex import(dtkAbstractData *data);
 
+      /**
+      * Use this function to insert data into the non-persistent database, 
+      * Do *not* use the concrete database controller implementation for it
+      * The data-manager will take over this task
+      * @params const dtkAbstractData & data
+      * @return medDataIndex
+      */
+      medDataIndex importNonPersistent(dtkAbstractData *data);
+
+      /**
+       * Use this functions to store all volatile data in the data manager
+       * to the sql database.
+       */
+      void storeNonPersistentDataToDatabase (void);
+
     /*
         QList<dtkAbstractData *> dataForPatient(int id);
         QList<dtkAbstractData *> dataForStudy  (int id);

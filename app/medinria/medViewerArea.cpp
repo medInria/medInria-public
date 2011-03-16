@@ -333,11 +333,15 @@ void medViewerArea::switchToPatient(int id)
       
     // warn the user that previous results might be discarded
     switch(QMessageBox::information( this, "System message", "Changing patient will discard unsaved data. Continue?",
-				     "Yes", "No", 0, 1 ) ) 
+				     "Yes", "No", "Save data in database", 0, 1) ) 
     {
 	case 0:
 	    break;
 
+	case 2:
+	    medDataManager::instance()->storeNonPersistentDataToDatabase();
+	    break;
+	    
         case 1:
 	default:
 	    return;
