@@ -95,6 +95,11 @@ public slots:
     */
     medDataIndex import(const QString& file);
 
+    /**
+    * Removes any reference to non-persistent data. Do not actually free memory.
+    */
+    void clear (void);
+
 
 private:
     medDatabaseNonPersistentControllerImplPrivate *d;

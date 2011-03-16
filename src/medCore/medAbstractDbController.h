@@ -65,6 +65,11 @@ public slots:
     * @return medDataIndex New assigned dataIndex in target (this) db
     */
     virtual medDataIndex import(const medDataIndex& index, const medAbstractDbController& controller);
+    
+    /**
+    * This method clears data already loaded in the database.
+    */
+    virtual void clear (void);
 
 };
 

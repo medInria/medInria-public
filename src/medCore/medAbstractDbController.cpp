@@ -5,3 +5,7 @@ medDataIndex medAbstractDbController::import( const medDataIndex& index, const m
     dtkAbstractData* data = controller.read(index);
     return import(data);
 }
+
+void medAbstractDbController::clear (void)
+{
+}

@@ -166,3 +166,12 @@ medDataIndex medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *dat
 
     return index;
 }
+
+void medDatabaseNonPersistentControllerImpl::clear(void)
+{
+    d->items.clear();
+    d->pt_index = nonPersistentDataStartingIndex();
+    d->st_index = nonPersistentDataStartingIndex();
+    d->se_index = nonPersistentDataStartingIndex();
+    d->im_index = nonPersistentDataStartingIndex();
+}
