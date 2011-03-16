@@ -5,7 +5,6 @@
 #include "medToolBox.h"
 
 class medToolBoxSourceDataPrivate;
-class medAbstractSourceDataPlugin;
 
 /** 
  * @class medToolBoxSourceData
@@ -20,10 +19,7 @@ class MEDGUI_EXPORT medToolBoxSourceData : public medToolBox
 public:
 	medToolBoxSourceData(QWidget *parent = 0);
 	virtual ~medToolBoxSourceData(void);
-	
-	/** Returns a pointer to the parent plugin (needs to be reimplemented) */
-	virtual medAbstractSourceDataPlugin *plugin() = 0;
-	
+		
 protected:
 	/** Parent Qt widget */
 	QWidget *parent(void);

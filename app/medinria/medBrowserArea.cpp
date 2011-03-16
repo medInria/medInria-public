@@ -44,7 +44,8 @@
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medPacsSelector.h>
 #include "medBrowserToolBoxSource.h"
-#include <medCore/medAbstractSourceDataPlugin.h>
+#include <medCore/medAbstractDataSource.h>
+#include <medCore/medAbstractDataSourceFactory.h>
 
 #include <medPacs/medPacsWidget.h>
 #include <medPacs/medPacsMover.h>
@@ -176,7 +177,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->pacs = new medPacsWidget(this);
 
     connect(d->pacs, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
-    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
+    connect(d->pacs, SIGNAL(import(QString)), this, SLOT(onFileImport(QString)));
 
     // /////////////////////////////////////////////////////////////////
 
@@ -243,14 +244,20 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 	
 	  // Additional toolboxes for source data ////////////////
 	
-		foreach(QString toolbox, medToolBoxFactory::instance()->sourcedataToolBoxes())
+		foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->sourcedata_plugins())
 		{
-			medToolBoxSourceData *dataToolBox = medToolBoxFactory::instance()->createSourceDataToolBox(toolbox);
-			d->stack->addWidget(dataToolBox->plugin()->widget());
-			d->toolbox_source->addAdditionalTab(dataToolBox->plugin()->tabName(),dataToolBox->plugin()->sourceSelectorWidget());
-			d->toolbox_container->addToolBox(dataToolBox);
-			dataToolBox->setVisible(false);
-			connect(dataToolBox->plugin(),SIGNAL(importedSuccess()),this,SLOT(onFileImported()));
+			medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName);
+      d->data_sources.push_back(dataSource);
+			d->stack->addWidget(dataSource->widget());
+			d->toolbox_source->addAdditionalTab(dataSource->tabName(),dataSource->sourceSelectorWidget());
+
+      for (unsigned int i = 0;i < dataSource->getNumberOfAdditionalToolBoxes();++i)
+      {
+        d->toolbox_container->addToolBox(dataSource->getAdditionalToolBox(i));
+        dataSource->getAdditionalToolBox(i)->setVisible(false);
+      }
+
+			 connect(dataSource,SIGNAL(dataImport(QString)),this,SLOT(onFileImport(QString)));
 		}	
 
     // Layout /////////////////////////////////////////////
@@ -309,9 +316,9 @@ void medBrowserArea::onFileSystemImportClicked(void)
     QThreadPool::globalInstance()->start(importer);
 }
 
-void medBrowserArea::onPacsImport(QString path)
+void medBrowserArea::onFileImport(QString path)
 {
-    qDebug() << path;
+    //qDebug() << path;
     QFileInfo info(path);
 
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
@@ -353,28 +360,30 @@ void medBrowserArea::onFileImported(void)
 }
 
 void medBrowserArea::onSourceIndexChanged(int index)
-{
-	if (d->stack->currentIndex() > 2)
-		d->toolbox_container->toolBoxes().value(5 + d->stack->currentIndex() - 3)->setVisible(false);
-		
-		
-    d->stack->setCurrentIndex(index);
-
-    if(index == 2) {
-        d->toolbox_pacs_host->setVisible(true);
-        d->toolbox_pacs_nodes->setVisible(true);
-        d->toolbox_pacs_search->setVisible(true);
-    } else {
-        d->toolbox_pacs_host->setVisible(false);
-        d->toolbox_pacs_nodes->setVisible(false);
-        d->toolbox_pacs_search->setVisible(false);
-    }
-	
-	if (index > 2)
+{	
+  if (d->stack->currentIndex() > 2)
 	{
-		// Dirty management of indexes, there are 5 widgets in stack before adding any additional source data plugin
-		d->toolbox_container->toolBoxes().value(5 + index - 3)->setVisible(true);
-	}
+    for (unsigned int i = 0;i < d->data_sources[d->stack->currentIndex() - 3]->getNumberOfAdditionalToolBoxes();++i)
+      d->data_sources[d->stack->currentIndex() - 3]->getAdditionalToolBox(i)->setVisible(false);
+  }		
+		
+  d->stack->setCurrentIndex(index);
+
+  if(index == 2) {
+    d->toolbox_pacs_host->setVisible(true);
+    d->toolbox_pacs_nodes->setVisible(true);
+    d->toolbox_pacs_search->setVisible(true);
+  } else {
+    d->toolbox_pacs_host->setVisible(false);
+    d->toolbox_pacs_nodes->setVisible(false);
+    d->toolbox_pacs_search->setVisible(false);
+  }
+	
+  if (index > 2)
+  {
+    for (unsigned int i = 0;i < d->data_sources[index - 3]->getNumberOfAdditionalToolBoxes();++i)
+      d->data_sources[index - 3]->getAdditionalToolBox(i)->setVisible(true);
+  }
 }
 
 void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
@@ -387,7 +396,7 @@ void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
     connect(mover, SIGNAL(success()), d->toolbox_jobs->stack(), SLOT(onSuccess()), Qt::BlockingQueuedConnection);
     connect(mover, SIGNAL(failure()), d->toolbox_jobs->stack(), SLOT(onFailure()), Qt::BlockingQueuedConnection);
     connect(mover, SIGNAL(showError(QObject*,const QString&,unsigned int)), medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
-    connect(mover, SIGNAL(import(QString)), this, SLOT(onPacsImport(QString)));
+    connect(mover, SIGNAL(import(QString)), this, SLOT(onFileImport(QString)));
     connect(mover, SIGNAL(cancelled()), d->toolbox_jobs->stack(),SLOT(onCancel()), Qt::AutoConnection );
     connect(d->toolbox_jobs->stack(), SIGNAL(cancelRequest(QObject*)),mover, SLOT(onCancel(QObject*)), Qt::AutoConnection);
 

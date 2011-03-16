@@ -42,8 +42,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewManager.h
   medPluginManager.h
   medAbstractView.h
-  medAbstractSourceDataPlugin.h
-  medSourceDataPluginFactory.h
+  medAbstractDataSource.h
+  medAbstractDataSourceFactory.h
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -54,8 +54,8 @@ set(${PROJECT_NAME}_SOURCES
   medPluginManager.cpp
   medAbstractView.cpp
   medStorage.cpp
-  medAbstractSourceDataPlugin.cpp
-  medSourceDataPluginFactory.cpp
+  medAbstractDataSource.cpp
+  medAbstractDataSourceFactory.cpp
 )
 
 ## #################################################################

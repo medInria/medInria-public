@@ -1,25 +1,26 @@
-#ifndef MEDABSTRACTSOURCEDATAPLUGIN_H
-#define MEDABSTRACTSOURCEDATAPLUGIN_H
+#ifndef MEDABSTRACTDATASOURCE_H
+#define MEDABSTRACTDATASOURCE_H
 
 #include <dtkCore/dtkAbstractObject.h>
 #include "medCoreExport.h"
 
-class medAbstractSourceDataPluginPrivate;
+class medAbstractDataSourcePrivate;
+class medToolBoxSourceData;
 
 /** 
- * @class medAbstractSourceDataPlugin
+ * @class medAbstractDataSource
  * @brief Abstract base class for dynamic source plugins (e.g. Shanoir, PACS, ...)
  * This class adds specific methods to populate the browser area and import data.
  * A dynamic source data plugin derives from this class instead of dtkPlugin.
  **/
 
-class MEDCORE_EXPORT medAbstractSourceDataPlugin : public dtkAbstractObject
+class MEDCORE_EXPORT medAbstractDataSource : public dtkAbstractObject
 {
 	Q_OBJECT
 	
 public:
-	medAbstractSourceDataPlugin(void);
-	~medAbstractSourceDataPlugin(void);
+	medAbstractDataSource(void);
+	~medAbstractDataSource(void);
 
 	/** Returns the main widget (explorer area of the source data plugin, on the left side of the browser area) */
 	virtual QWidget *widget() = 0;
@@ -29,17 +30,24 @@ public:
 	
 	/** Returns the tab name for the source selector panel */
 	virtual QString tabName() = 0;
+  
+  /** Returns the list of toolboxes owned by the source data plugin */
+  virtual unsigned int getNumberOfAdditionalToolBoxes() = 0;
+  
+  /** Returns the list of toolboxes owned by the source data plugin */
+  virtual medToolBoxSourceData * getAdditionalToolBox(unsigned int i) = 0;
 
 signals:
   /** A source data plugin emits a signal when it succesfully imported a data */
-	void importedSuccess();
+	void dataImport(QString dataName);
 	
 public slots:
-	/** Actually does the import of the selected data */
+	/** Prepares the data for import by the database in medinria. For example, this can 
+   *  download the data from a server andthen will call dataImport to send it to the database importer */
 	virtual void onImportData(void) = 0;
 	
 private:
-	medAbstractSourceDataPluginPrivate *d;
+	medAbstractDataSourcePrivate *d;
 };
 
 #endif

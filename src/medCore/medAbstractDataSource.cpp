@@ -1,10 +1,10 @@
-#include <medAbstractSourceDataPlugin.h>
+#include <medAbstractDataSource.h>
 
 // /////////////////////////////////////////////////////////////////
-// medAbstractSourceDataPluginPrivate
+// medAbstractDataSourcePrivate
 // /////////////////////////////////////////////////////////////////
 
-class medAbstractSourceDataPluginPrivate
+class medAbstractDataSourcePrivate
 {
 public:
 };
@@ -13,12 +13,12 @@ public:
 // medAbstractSourceDataPlugin
 // /////////////////////////////////////////////////////////////////
 
-medAbstractSourceDataPlugin::medAbstractSourceDataPlugin(void) : dtkAbstractObject(), d(new medAbstractSourceDataPluginPrivate)
+medAbstractDataSource::medAbstractDataSource(void) : dtkAbstractObject(), d(new medAbstractDataSourcePrivate)
 {
 	
 }
 
-medAbstractSourceDataPlugin::~medAbstractSourceDataPlugin(void)
+medAbstractDataSource::~medAbstractDataSource(void)
 {
 	
 }

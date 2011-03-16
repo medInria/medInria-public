@@ -39,32 +39,37 @@ class dtkFinderToolBar;
 
 class medPacsWidget;
 
+class medAbstractDataSource;
+
 class QStatusBar;
 
 class medBrowserAreaPrivate
 {
 public:
-    medToolBoxContainer *toolbox_container;
-    medBrowserToolBoxJobs *toolbox_jobs;
-    medBrowserToolBoxSource *toolbox_source;
-    medBrowserToolBoxPacsHost *toolbox_pacs_host;
-    medBrowserToolBoxPacsNodes *toolbox_pacs_nodes;
-    medBrowserToolBoxPacsSearch *toolbox_pacs_search;
-    medPacsSelector *pacs_selector;
-
-    medDatabasePreview *preview;
-    medDatabaseModel *model;
-    medDatabaseView *view;
-
-    dtkFinder *finder;
-    dtkFinderPathBar *path;
-    dtkFinderSideView *side;
-    dtkFinderToolBar *toolbar;
-
-    medPacsWidget *pacs;
-
-    QStackedWidget *stack;
-    QStatusBar *status;
+  medToolBoxContainer *toolbox_container;
+  medBrowserToolBoxJobs *toolbox_jobs;
+  medBrowserToolBoxSource *toolbox_source;
+  medBrowserToolBoxPacsHost *toolbox_pacs_host;
+  medBrowserToolBoxPacsNodes *toolbox_pacs_nodes;
+  medBrowserToolBoxPacsSearch *toolbox_pacs_search;
+  
+  QList <medAbstractDataSource *> data_sources;
+  
+  medPacsSelector *pacs_selector;
+  
+  medDatabasePreview *preview;
+  medDatabaseModel *model;
+  medDatabaseView *view;
+  
+  dtkFinder *finder;
+  dtkFinderPathBar *path;
+  dtkFinderSideView *side;
+  dtkFinderToolBar *toolbar;
+  
+  medPacsWidget *pacs;
+  
+  QStackedWidget *stack;
+  QStatusBar *status;
 };
 
 #endif
