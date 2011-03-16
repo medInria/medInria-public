@@ -95,6 +95,18 @@ int itkDataTensorImageDouble3::zDimension (void)
     return -1;
 }
 
+QImage& itkDataTensorImageDouble3::thumbnail  (void) const
+{
+    // TODO: TEMPORARY black image just to allow drag and drop
+    QImage* temp = new QImage(80, 80, QImage::Format_RGB32);
+    temp->fill(3);
+    return *temp;
+}
+
+QList<QImage>& itkDataTensorImageDouble3::thumbnails (void) const
+{
+    return QList<QImage>() << thumbnail();
+}
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

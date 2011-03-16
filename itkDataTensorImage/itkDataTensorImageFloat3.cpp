@@ -95,6 +95,18 @@ int itkDataTensorImageFloat3::zDimension (void)
     return -1;
 }
 
+QImage& itkDataTensorImageFloat3::thumbnail  (void) const
+{
+    // TODO: TEMPORARY black image just to allow drag and drop
+    QImage* temp = new QImage(80, 80, QImage::Format_RGB32);
+    temp->fill(3);
+    return *temp;
+}
+
+QList<QImage>& itkDataTensorImageFloat3::thumbnails (void) const
+{
+    return QList<QImage>() << thumbnail();
+}
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

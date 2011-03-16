@@ -34,7 +34,10 @@ public:
     int xDimension(void);
     int yDimension(void);
     int zDimension(void);
- 
+
+    /** TODO the image which is being returned right now is JUST A STUB to allow drag and drop */
+    virtual QImage        &thumbnail  (void) const;
+    virtual QList<QImage> &thumbnails (void) const;
 
 private:
     itkDataTensorImageDouble3Private *d;
