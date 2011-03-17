@@ -24,7 +24,7 @@ public:
     ~medViewerToolBoxViewProperties(void);
 
     void update(dtkAbstractView *view);
-
+    
 public slots:
     void onDataAdded(int layer);
     void onViewClosed(void);
@@ -35,7 +35,7 @@ public slots:
     void onItemClicked(QTreeWidgetItem * item, int column);
     void onContextTreeMenu( const QPoint point );
     void onDeleteLayer();
-
+    void clear();
 
 signals:
     void setVisibility(bool visible, int layer);
