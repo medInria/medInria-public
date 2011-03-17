@@ -188,14 +188,14 @@ void medViewPool::onViewReg(bool value)
                         dtkAbstractData *output = process->output();
                         d->viewData[view] = data2;
                         view->setData (output, 0);
-			if (view->widget()->isVisible())
-			    view->update();
+                        if (view->widget()->isVisible())
+                            view->update();
                         emit showInfo (this, tr ("Automatic registration successful"),3000);
                     }
                     else {
                         emit showError(this, tr  ("Automatic registration failed"),3000);
                     }
-                    delete process;
+                    process->deleteLater();
                 }
                 
             }
@@ -206,9 +206,9 @@ void medViewPool::onViewReg(bool value)
                 view->setData (d->viewData[view], 0);
                 d->viewData[view] = NULL;
                 if (oldData)
-                    delete oldData;
-		if (view->widget()->isVisible())
-		    view->update();
+                    oldData->deleteLater();
+                if (view->widget()->isVisible())
+                    view->update();
             }
         }
     }
