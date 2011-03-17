@@ -5,7 +5,7 @@
 #include "medCoreExport.h"
 
 class medAbstractDataSourcePrivate;
-class medToolBoxSourceData;
+class medToolBox;
 
 /** 
  * @class medAbstractDataSource
@@ -35,7 +35,7 @@ public:
   virtual unsigned int getNumberOfAdditionalToolBoxes() = 0;
   
   /** Returns the list of toolboxes owned by the source data plugin */
-  virtual medToolBoxSourceData * getAdditionalToolBox(unsigned int i) = 0;
+  virtual medToolBox * getAdditionalToolBox(unsigned int i) = 0;
 
 signals:
   /** A source data plugin emits a signal when it succesfully imported a data */

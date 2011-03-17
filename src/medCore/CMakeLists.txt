@@ -31,8 +31,8 @@ set(${PROJECT_NAME}_HEADERS
   medPluginManager.h
   medAbstractView.h
   medStorage.h
-  medAbstractSourceDataPlugin.h
-  medSourceDataPluginFactory.h
+  medAbstractDataSource.h
+  medAbstractDataSourceFactory.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC

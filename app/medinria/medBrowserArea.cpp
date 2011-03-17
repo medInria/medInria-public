@@ -40,7 +40,6 @@
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxFactory.h>
-#include <medGui/medToolBoxSourceData.h>
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medPacsSelector.h>
 #include "medBrowserToolBoxSource.h"

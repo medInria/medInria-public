@@ -43,7 +43,6 @@ set(${PROJECT_NAME}_HEADERS
   medToolBoxFiberBundling.h  
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
-  medToolBoxSourceData.h
   medViewPool.h
   medViewContainer.h
   medViewContainer_p.h
@@ -86,7 +85,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxFiberBundling.h  
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
-  medToolBoxSourceData.h
   medViewPool.h
   medViewContainer.h
   medViewContainerCustom.h
@@ -126,7 +124,6 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxFiberBundling.cpp
   medToolBoxDiffusion.cpp
   medToolBoxDiffusionCustom.cpp
-  medToolBoxSourceData.cpp
   medViewPool.cpp
   medViewContainer.cpp
   medViewContainerCustom.cpp

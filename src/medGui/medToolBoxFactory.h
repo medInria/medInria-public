@@ -30,7 +30,6 @@ class medToolBox;
 class medToolBoxFactoryPrivate;
 class medToolBoxRegistrationCustom;
 class medToolBoxDiffusionCustom;
-class medToolBoxSourceData;
 
 class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
 {
@@ -39,11 +38,9 @@ class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
 public:
     typedef medToolBoxRegistrationCustom *(*medToolBoxRegistrationCustomCreator)(void);
     typedef medToolBoxDiffusionCustom *(*medToolBoxDiffusionCustomCreator)(void);
-    typedef medToolBoxSourceData *(*medToolBoxSourceDataCreator)(void);
 
     typedef QHash<QString, medToolBoxRegistrationCustomCreator> medToolBoxRegistrationCustomCreatorHash;
     typedef QHash<QString, medToolBoxDiffusionCustomCreator> medToolBoxDiffusionCustomCreatorHash;
-    typedef QHash<QString, medToolBoxSourceDataCreator> medToolBoxSourceDataCreatorHash;
 
 public:
     static medToolBoxFactory *instance(void);
@@ -51,22 +48,13 @@ public:
     bool registerCustomRegistrationToolBox(QString type, medToolBoxRegistrationCustomCreator func);
     bool registerCustomDiffusionToolBox(QString type, medToolBoxDiffusionCustomCreator func);
 	
-	  /** Register a new source data toolbox (called by the plugin when registering itself) */
-    bool registerSourceDataToolBox(QString type, medToolBoxSourceDataCreator func);
-
     QList<QString> registrationToolBoxes(void);
     QList<QString> diffusionToolBoxes(void);
 	
-	  /** Get list of all source data toolboxes */ 
-    QList<QString> sourcedataToolBoxes(void);
-
 public slots:
     medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString type);
     medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString type);
 	
-		/** Slot to create a dynamic source data medToolBoxSourceData */
-    medToolBoxSourceData *createSourceDataToolBox(QString type);
-
 protected:
      medToolBoxFactory(void);
     ~medToolBoxFactory(void);
