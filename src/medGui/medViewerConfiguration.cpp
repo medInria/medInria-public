@@ -152,9 +152,10 @@ bool medViewerConfiguration::isLayoutToolBox(const medToolBox * toolbox)
     return (toolbox == d->layoutToolBox);
 }
 
-void medViewerConfiguration::setupViewContainerStack()
-{
-}
+//void medViewerConfiguration::setupViewContainerStack()
+//{
+//    qDebug()<< "pfffff";
+//}
 
 medViewContainer* medViewerConfiguration::currentViewContainer() const
 {
@@ -196,9 +197,22 @@ void medViewerConfiguration::addCustomContainer(const QString& name)
 }
 
 
-void medViewerConfiguration::patientChanged(const medDataIndex& id)
+//void medViewerConfiguration::patientChanged(const medDataIndex& id)
+//{
+//    Q_UNUSED(id);
+//}
+
+void medViewerConfiguration::clear()
 {
-    Q_UNUSED(id);
+    //medViewContainer* container;
+    QList<QString> names = d->viewContainerStack->keys();
+    foreach(QString name ,names)
+    {
+        d->viewContainerStack->removeContainer(name);
+    }
+    setupViewContainerStack();
+    clearToolBoxes();
+    return;
 }
 
 void medViewerConfiguration::setToolBoxesVisibility (bool value)
@@ -209,4 +223,13 @@ void medViewerConfiguration::setToolBoxesVisibility (bool value)
 bool medViewerConfiguration::areToolBoxesVisible (void) const
 {
     return d->toolBoxesVisibility;
+}
+
+
+void medViewerConfiguration::clearToolBoxes()
+{
+    foreach(medToolBox* tb,d->toolboxes)
+    {
+        tb->clear();
+    }
 }

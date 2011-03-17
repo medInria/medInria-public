@@ -72,7 +72,7 @@ public:
     bool isLayoutToolBoxVisible() const;
     bool isLayoutToolBox(const medToolBox * toolbox);
     
-    virtual void setupViewContainerStack();
+    virtual void setupViewContainerStack()=0;
 
     void addSingleContainer(const QString& name="Single");
     void addMultiContainer(const QString& name="Multi");
@@ -86,8 +86,9 @@ public slots:
     virtual void addToolBox(medToolBox *toolbox);
     virtual void removeToolBox(medToolBox *toolbox);
     
-    virtual void patientChanged(const medDataIndex& id);
-
+    //virtual void patientChanged(const medDataIndex& id);
+    virtual void clear();
+    
 signals:
     void toolboxAdded  (medToolBox *tb);
     void toolboxRemoved(medToolBox *tb);
@@ -95,6 +96,8 @@ signals:
     void layoutSplit(int, int);
     void layoutPresetClicked(int);
     
+protected:
+    void clearToolBoxes();
 private:
     medViewerConfigurationPrivate *d;
 };

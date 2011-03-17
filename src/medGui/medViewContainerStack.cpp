@@ -89,3 +89,19 @@ QString medViewContainerStack::currentName(void) const
 {
     return d->currentName;
 }
+
+QList<QString> medViewContainerStack::keys()
+{
+    return d->containers.keys();
+}
+
+void medViewContainerStack::removeContainer(const QString& name)
+{
+    if (d->containers.contains(name))
+    {
+        medViewContainer* container = d->containers[name];
+        removeWidget(container);
+        delete container;
+        d->containers.remove(name);
+    }
+}

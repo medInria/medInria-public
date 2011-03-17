@@ -22,7 +22,6 @@ public:
     void setupViewContainerStack ();
 
 public slots:
-    void patientChanged(int patientId);
     
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);

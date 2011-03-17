@@ -21,6 +21,7 @@
 
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medViewerToolBoxViewProperties.h>
+#include <medGui/medViewContainerStack.h>
 
 class medViewerConfigurationVisualizationPrivate
 {
@@ -51,13 +52,22 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
     this->addToolBox( d->viewToolBox );
     this->addToolBox(d->viewPropertiesToolBox);
  
-    //Containers:
-    addSingleContainer();
-    addMultiContainer();
-    addCustomContainer();
+    
     
     //this->setLayoutType( medViewerConfiguration::TopDbBottomTb );
     
+}
+
+void medViewerConfigurationVisualization::setupViewContainerStack()
+{
+    qDebug()<<"yop yip";
+    if (!stackedViewContainers()->count())
+    {
+        //Containers:
+        addSingleContainer();
+        addMultiContainer();
+        addCustomContainer();   
+    }
 }
 
 medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)

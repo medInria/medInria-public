@@ -50,6 +50,11 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 
 medViewContainer::~medViewContainer(void)
 {
+    foreach(dtkAbstractView* view,views())
+    {
+        view->close();
+    }
+
     d->pool->deleteLater();
     delete d;
 
