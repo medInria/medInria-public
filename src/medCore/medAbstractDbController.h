@@ -56,7 +56,6 @@ public slots:
     * @return medDataIndex that was assigned
     */
     virtual medDataIndex import(dtkAbstractData *data) = 0;
-
    
     /**
     * This method allows importing data from other databases

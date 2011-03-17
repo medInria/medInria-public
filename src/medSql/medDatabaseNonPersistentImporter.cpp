@@ -84,9 +84,9 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
     else {
         for (int i=0; i<items.count(); i++)
 	    if (items[i]->name()==patientName) {
-	      patientId = items[i]->index().patientId();
-	      break;
-	    }
+            patientId = items[i]->index().patientId();
+            break;
+        }
     }
 
     if (patientId==-1)
@@ -103,9 +103,9 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
     else {
         for (int i=0; i<items.count(); i++)
 	    if (items[i]->name()==patientName && items[i]->studyName()==studyName) {
-	        studyId = items[i]->index().studyId();
-		break;
-	    }
+            studyId = items[i]->index().studyId();
+            break;
+        }
     }
     
     if (studyId==-1)
@@ -114,8 +114,6 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
     index = medDataIndex (patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
     QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
-    
-    // QFileInfo info(d->file);
 
     medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 
@@ -133,6 +131,7 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
 
     medDatabaseNonPersistentController::instance()->insert(index, item);
 
+    emit progressed(100);
     emit success(this);
 
     return index;

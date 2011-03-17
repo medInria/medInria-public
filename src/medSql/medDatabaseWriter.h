@@ -29,6 +29,16 @@
 class dtkAbstractData;
 class medDatabaseWriterPrivate;
 
+/**
+ * @class medDatabaseWriter
+ * @author Pierre Fillard
+ * @brief Stores an instance of a dtkAbstractData to the SQL database.
+ * This class stores an instance of a dtkAbstractData to the SQL database.
+ * The metadata PatientName / StudyDescription are used to retrieve the
+ * patient Id in the database. If none is given, John Doe / EmptyStudy will
+ * be used. The SeriesDescription is mandatory and import will fail it not
+ * found.
+ */
 class medDatabaseWriter : public QObject
 {
     Q_OBJECT

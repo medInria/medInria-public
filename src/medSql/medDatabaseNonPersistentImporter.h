@@ -28,6 +28,14 @@ class dtkAbstractData;
 
 class medDatabaseNonPersistentImporterPrivate;
 
+/**
+ * @class medDatabaseNonPersistentImporter
+ * @author Pierre Fillard
+ * @brief Import an instance of a dtkAbstractData into the non-persistent database
+ * This class imports an instance of a dtkAbstractData into the non-persistent
+ * database. The metaData PatientName, StudyDescription and SeriesDescription
+ * must be set, otherwise import will fail.
+ */
 class medDatabaseNonPersistentImporter : public QObject
 {
     Q_OBJECT

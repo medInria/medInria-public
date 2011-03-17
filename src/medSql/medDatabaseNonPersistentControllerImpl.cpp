@@ -169,11 +169,15 @@ medDataIndex medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *dat
 
 void medDatabaseNonPersistentControllerImpl::clear(void)
 {
+    // since we are not managing memory, no deletion should be made here
+    // as we don't know if the data is still in use
+    /*
     foreach (medDatabaseNonPersistentItem *item, d->items) {
       dtkAbstractData *data = item->data();
       if (data)
 	  data->deleteLater();
     }
+    */
     
     d->items.clear();
     d->pt_index = nonPersistentDataStartingIndex();
