@@ -249,7 +249,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
         dataSource->getAdditionalToolBox(i)->setVisible(false);
       }
 
-			 connect(dataSource,SIGNAL(dataImport(QString)),this,SLOT(onFileImport(QString)));
+      connect(dataSource,SIGNAL(dataImport(QString)),this,SLOT(onFileImport(QString)));
+      connect(dataSource,SIGNAL(getDataFailed(QString)), this, SLOT(onGetDataFailed(QString)));
 		}	
   
     // Jobs should be added as the last item so that they appear at the bottom
@@ -352,6 +353,11 @@ void medBrowserArea::onFileImported(void)
     d->preview->reset();
     d->preview->init();
     d->preview->update();
+}
+
+void medBrowserArea::onGetDataFailed(QString fileName)
+{
+  // For now, doing nothing, best would be either to display a message in the bar at the bottom or use the jobs toolbox
 }
 
 void medBrowserArea::onSourceIndexChanged(int index)

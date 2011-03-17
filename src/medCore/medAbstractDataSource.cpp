@@ -10,7 +10,7 @@ public:
 };
 
 // /////////////////////////////////////////////////////////////////
-// medAbstractSourceDataPlugin
+// medAbstractDataSource
 // /////////////////////////////////////////////////////////////////
 
 medAbstractDataSource::medAbstractDataSource(void) : dtkAbstractObject(), d(new medAbstractDataSourcePrivate)

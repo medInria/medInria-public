@@ -38,8 +38,11 @@ public:
   virtual medToolBox * getAdditionalToolBox(unsigned int i) = 0;
 
 signals:
-  /** A source data plugin emits a signal when it succesfully imported a data */
+  /** A source data emits a signal when it succesfully got a data and is ready for the browser to import it*/
 	void dataImport(QString dataName);
+  
+  /** A source data emits a signal when it failed to get a data so that the browser does the appropriate thing */
+	void getDataFailed(QString dataName);
 	
 public slots:
 	/** Prepares the data for import by the database in medinria. For example, this can 
