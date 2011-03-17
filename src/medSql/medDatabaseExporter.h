@@ -22,22 +22,20 @@
 
 #include "medSqlExport.h"
 
-#include <QtCore>
+#include <medCore/medJobItem.h>
 
+class dtkAbstractData;
 class medDatabaseExporterPrivate;
 
-class MEDSQL_EXPORT medDatabaseExporter : public QObject, public QRunnable
+class MEDSQL_EXPORT medDatabaseExporter : public medJobItem
 {
     Q_OBJECT
 
 public:
-     medDatabaseExporter(void);
+     medDatabaseExporter(dtkAbstractData *data, const QString &filename);
     ~medDatabaseExporter(void);
 
     void run(void);
-
-signals:
-    void progressed(int);
 
 private:
     medDatabaseExporterPrivate *d;

@@ -32,6 +32,7 @@
 
 #include <medCore/medMessageController.h>
 #include <medCore/medJobManager.h>
+#include <medCore/medDataManager.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseExporter.h>
@@ -64,6 +65,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
+    connect(d->view, SIGNAL(exportData(const medDataIndex&)), this, SLOT(onExportData(const medDataIndex&)));
     connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
 
     // Database widget /////////////////////////////////////////////////
@@ -303,9 +305,30 @@ void medBrowserArea::onFileImport(QString path)
 
 void medBrowserArea::onFileSystemExportClicked(void)
 {
+    /*
     medDatabaseExporter *exporter = new medDatabaseExporter;
 
     connect(exporter, SIGNAL(progressed(int)), d->toolbox_jobs->stack(), SLOT(setProgress(int)));
+
+    QThreadPool::globalInstance()->start(exporter);
+    */
+}
+
+void medBrowserArea::onExportData(const medDataIndex &index)
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save as"), "", "*.*");
+
+    if (fileName.isEmpty())
+        return;
+
+    dtkAbstractData *data = medDataManager::instance()->data(index);
+
+    if (!data)
+        return;
+
+    medDatabaseExporter *exporter = new medDatabaseExporter (data, fileName);
+
+    connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 
     QThreadPool::globalInstance()->start(exporter);
 }

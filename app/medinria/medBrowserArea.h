@@ -59,6 +59,7 @@ public slots:
     void onSourceIndexChanged(int index);
     void onPacsMove(const QVector<medMoveCommandItem>& cmdList);
     void onFileImport(QString path);
+    void onExportData(const medDataIndex &index);
 
 private:
     friend class medMessageController;
