@@ -62,8 +62,9 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
     }
 
     if (!data->hasMetaData ("PatientName") ||
-	!data->hasMetaData ("StudyDescription")) {
-        qDebug() << "metaData PatientName or StudyDescription are missing, cannot proceed";
+	!data->hasMetaData ("StudyDescription") ||
+	!data->hasMetaData ("SeriesDescription") ) {
+        qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
 	emit failure (this);
 	return medDataIndex();
     }
@@ -112,6 +113,8 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
 
     index = medDataIndex (patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
+    QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
+    
     // QFileInfo info(d->file);
 
     medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
@@ -121,11 +124,12 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
     else
         item->d->name = "John Doe";
 
-    item->d->studyName = studyName;
-    item->d->file      = "";
-    item->d->thumb     = data->thumbnail();
-    item->d->index     = index;
-    item->d->data      = data;
+    item->d->studyName  = studyName;
+    item->d->seriesName = seriesName;
+    item->d->file       = "";
+    item->d->thumb      = data->thumbnail();
+    item->d->index      = index;
+    item->d->data       = data;
 
     medDatabaseNonPersistentController::instance()->insert(index, item);
 

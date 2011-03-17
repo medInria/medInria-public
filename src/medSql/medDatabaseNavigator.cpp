@@ -144,7 +144,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
             qDebug() << thumbPath;
-            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(index.patientId(), studyId.toInt(), seriesId.toInt(), -1, thumbPath);
+            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(index.patientId(), studyId.toInt(), seriesId.toInt(), -1, thumbPath, seriesName.toString());
 
             connect(item, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
             connect(item, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
@@ -170,8 +170,9 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
                 item->index().studyId(), 
                 item->index().seriesId(), 
                 item->index().imageId(), 
-                item->thumb());
-            
+                item->thumb(),
+		item->seriesName());
+
             connect(nitem, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
             connect(nitem, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
             connect(nitem, SIGNAL(seriesClicked(int)), this, SIGNAL(seriesClicked(int)));
@@ -186,7 +187,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 		groupMap.insert(item->studyName(), group);		
 	    }
 	                
-            group->addItem(nitem);
+            group->addItem (nitem);
         }
     }
 

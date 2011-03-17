@@ -302,6 +302,8 @@ medDataIndex medDatabaseNonPersistentReader::run(void)
     
 	index = medDataIndex (patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
+	QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
+	
         QFileInfo info(d->file);
 
 	medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
@@ -312,6 +314,7 @@ medDataIndex medDatabaseNonPersistentReader::run(void)
             item->d->name = info.baseName();
 
 	item->d->studyName = studyName;
+	item->d->seriesName = seriesName;
 	item->d->file = d->file;
 	item->d->thumb = data->thumbnail();
 	item->d->index = index;
