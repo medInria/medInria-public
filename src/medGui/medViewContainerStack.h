@@ -91,6 +91,21 @@ public:
     */
     void setContainer(const QString &name);
 
+    
+    /**
+     * @brief 
+     *
+     * @return QList<QString>
+    */
+    QList<QString> keys();
+    
+    /**
+     * @brief 
+     *
+     * @param name
+    */
+    void removeContainer(const QString& name);
+    
 signals:
     /**
      * @brief 

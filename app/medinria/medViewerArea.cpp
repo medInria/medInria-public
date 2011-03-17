@@ -336,28 +336,49 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
         return;
 
 
-    if (d->current_patient.isValid()) {
-
-      if (medDataManager::instance()->nonPersistentDataCount()) {
-	// warn the user that previous results might be discarded
-	switch(QMessageBox::information( this, "System message", "Changing patient will discard unsaved data. Continue?",
-					 "Yes", "No", "Save data in database", 0, 1) ) 
-	{
-	    case 0:
-	      medDataManager::instance()->clearNonPersistentData();
-	      break;
-	      
-	    case 2:
-	      medDataManager::instance()->storeNonPersistentDataToDatabase();
-	      break;
-	      
-	    case 1:
-	    default:
-	      return;
-	      break;
-	}
-	
-      }
+    if (d->current_patient.isValid()) 
+    {
+        //clear the confs if needed:
+        medSettingsManager * mnger = medSettingsManager::instance();
+        bool clear = mnger->value("system","clearOnPatientChange",QVariant(false)).toBool();
+        if (clear)
+        {
+            
+            if (medDataManager::instance()->nonPersistentDataCount()) 
+            {
+                // warn the user that previous results might be discarded
+                switch(QMessageBox::information( this, "System message", 
+                        "Changing patient will discard unsaved data. Continue?",
+                        "Yes", "No", "Save data in database", 0, 1) ) 
+                {
+                case 0:
+                    medDataManager::instance()->clearNonPersistentData();
+                    emit (clearOnPatientChange());
+                    break;
+                    
+                case 2:
+                    medDataManager::instance()->storeNonPersistentDataToDatabase();
+                    emit (clearOnPatientChange());
+                    break;
+                    
+                case 1:
+                default:
+                    //not switching
+                    //set the patietn toolbox back to the current patient 
+                    d->toolboxPatient->blockSignals (true);
+                    d->toolboxPatient->setPatientIndex(d->current_patient);
+                    d->toolboxPatient->blockSignals (false);
+                    return;
+                    break;
+                }
+            }
+            else
+            {
+                //there is no hanging data: let's clear 
+                emit (clearOnPatientChange());
+            }
+            
+        }
     }
 
 
@@ -381,12 +402,10 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
     }
 
     // Setup patient toolbox
-    //TODO emit a signal to the Patient Toolbox
     d->toolboxPatient->blockSignals (true);
     d->toolboxPatient->setPatientIndex (id);
     d->toolboxPatient->blockSignals (false);
-
-    // Setup layout toolbox
+    
 }
 
 void medViewerArea::switchToStackedViewContainers(medViewContainerStack* stack)
@@ -399,16 +418,10 @@ void medViewerArea::switchToStackedViewContainers(medViewContainerStack* stack)
        
     if (-1 == d->stack->indexOf(stack))
     {   
-        //TODO: Maybe unconnect previous ones??
         connect(stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
         connect(stack, SIGNAL(focused(dtkAbstractView*)),
                 this,  SLOT(onViewFocused(dtkAbstractView*)));
-        qDebug() << "add stack of Containers to the stackWidget";
         d->stack->addWidget(stack);
-    }
-    else
-    {
-        qDebug() << "No switch needed";
     }
     d->stack->setCurrentWidget(stack);
 }
@@ -422,29 +435,16 @@ void medViewerArea::switchToStackedViewContainers(medViewContainerStack* stack)
 
 void medViewerArea::switchToContainer(const QString& name)
 {
-//    if (d->current_patient_container.contains (d->current_patient))
-//        if (d->current_patient_container[d->current_patient]==index)
-//        return;
 
-    
-    
-//    d->current_patient_container[d->current_patient] = index;
-    
-//    if(index < 0)
-//        return;
-
-//    if (d->view_stacks.count())
-//      if (d->view_stacks.value(d->current_patient)) {
-//          d->view_stacks.value(d->current_patient)->setCurrentIndex(index);
-//        //this->currentContainer()->setFocus(Qt::MouseFocusReason);
-//     }
-    
     if (d->current_configuration)
     {
         if (d->current_configuration->currentViewContainer() &&
             d->current_configuration->currentViewContainer()== 
             d->current_configuration->stackedViewContainers()->container(name))
+        {
+            //same conf, do nothing
             return;
+        }
         qDebug() << "switching from" << 
                 d->current_configuration->currentViewContainerName() << 
                 "to configuration" << name;
@@ -454,6 +454,7 @@ void medViewerArea::switchToContainer(const QString& name)
     }
     else
     {
+        //should not happen
         qDebug() << "no currentConfiguration";
     }
 }
@@ -541,15 +542,6 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     this->updateTransferFunction();
 }
 
-////! Returns the currently displayed container of the currently displayed stack.
-///*! 
-// * 
-// */
-
-//medViewContainer *medViewerArea::currentContainer(void)
-//{
-//    return d->view_stacks.value(d->current_patient)->current();
-//}
 
 //! Returns the currently focused child container.
 /*! 
@@ -637,7 +629,8 @@ void medViewerArea::setupConfiguration(QString name)
         conf = d->configurations[name];
     else {
         if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name)) {
-            connect(d->toolboxPatient, SIGNAL(patientIndexChanged(const medDataIndex&)), conf, SLOT(patientChanged(const medDataIndex&)));
+            connect(this, SIGNAL(clearOnPatientChange()),
+                    conf, SLOT(clear()));
             d->configurations.insert(name, conf);
         }
         else
@@ -658,7 +651,18 @@ void medViewerArea::setupConfiguration(QString name)
     switchToLayout (conf->layoutType());
     
     // setup layout type
-    conf->setupViewContainerStack();
+    //clear the confs if needed:
+    medSettingsManager * mnger = medSettingsManager::instance();
+    bool clear = mnger->value("system","clearOnPatientChange",QVariant(false)).toBool();
+    if (clear)
+    {
+        qDebug()<<"clearing the containers on configuration switch";
+        conf->clear();
+    }
+    else
+    {
+        conf->setupViewContainerStack();
+    }
 
     switchToStackedViewContainers(conf->stackedViewContainers());
 

@@ -83,6 +83,9 @@ protected slots:
 
 //  @}
 
+signals:
+    void clearOnPatientChange();
+    
 private:
     friend class medMessageController;
 
