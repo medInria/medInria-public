@@ -3,7 +3,10 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 
+#include <medGui/medViewerToolBoxViewProperties.h>
+#include <medGui/medToolBoxRegistration.h>
 #include <medGui/medViewContainer.h>
+#include <medGui/medViewContainerSingle.h>
 #include <medGui/medViewContainerStack.h>
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medToolBoxRegistration.h>
@@ -13,6 +16,7 @@ class medViewerConfigurationRegistrationPrivate
 public:
     medViewerToolBoxView   *viewToolBox;
     medToolBoxRegistration * registrationToolBox;
+    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 };
 
 medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationRegistrationPrivate)
@@ -24,8 +28,9 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     d->viewToolBox = new medViewerToolBoxView(parent);
     this->addToolBox( d->viewToolBox );
-
-
+    
+    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
+    this->addToolBox(d->viewPropertiesToolBox);
     // -- Registration toolbox --
 
     d->registrationToolBox = new medToolBoxRegistration(parent);
@@ -40,12 +45,9 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     this->addToolBox( d->registrationToolBox );
 
-    this->setViewLayoutType (medViewContainer::Compare);
     
-    this->setLayoutType(medViewerConfiguration::TopDbBottomTb);
-    //this->setLayoutType(medViewerConfiguration::LeftDbRightTb);
-
-
+    //this->setLayoutType(medViewerConfiguration::TopDbBottomTb);
+    this->setLayoutType(medViewerConfiguration::LeftDbRightTb);
 }
 
 medViewerConfigurationRegistration::~medViewerConfigurationRegistration(void)
@@ -61,29 +63,35 @@ QString medViewerConfigurationRegistration::description(void) const
 
 void medViewerConfigurationRegistration::onSetupLayoutCompare (void)
 {
-    emit layoutModeChanged (medViewContainer::Compare);
+    emit layoutModeChanged ("Compare");
 }
 
 void medViewerConfigurationRegistration::onSetupLayoutFuse (void)
 {
-    emit layoutModeChanged (medViewContainer::Fuse);
+    emit layoutModeChanged ("Fuse");
 }
 
-void medViewerConfigurationRegistration::setupViewContainerStack(medViewContainerStack *container)
-{
-    if (!container) {
-        return;
-    }
-    
-    medViewContainer *fuseContainer = container->fuse();
-    if (fuseContainer->current()->view()) {
-        d->registrationToolBox->setFuseView ( fuseContainer->current()->view() );
-    } 
-    else {
-        if (dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView")) {
-            fuseContainer->current()->setView (view);
+void medViewerConfigurationRegistration::setupViewContainerStack()
+{   
+    //the stack has been instantiated in constructor
+    if (!this->stackedViewContainers()->count())
+    {
+        //create the fuse container
+        medViewContainerSingle *fuseContainer = new medViewContainerSingle(
+                this->stackedViewContainers());
+        if (dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView"))
+        {
+            fuseContainer->setView (view);
             d->registrationToolBox->setFuseView (view);
         }
+        
+        //create the compare container
+        medViewContainerCustom * compareContainer = new medViewContainerCustom(
+                this->stackedViewContainers());
+        compareContainer->split(1, 2);
+        this->stackedViewContainers()->addContainer("Compare",compareContainer);
+        this->stackedViewContainers()->addContainer("Fuse",fuseContainer);
+        setCurrentViewContainer("Compare");   
     }
 }
 

@@ -29,29 +29,81 @@ class medDataIndex;
 class medViewContainer;
 class medViewContainerStackPrivate;
 
+/**
+ * @brief 
+ *
+*/
 class MEDGUI_EXPORT medViewContainerStack : public QStackedWidget
 {
     Q_OBJECT
 
 public:
+     /**
+      * @brief 
+      *
+      * @param parent
+     */
      medViewContainerStack(QWidget *parent = 0);
+     
+    /**
+     * @brief 
+     *
+     * @param void
+    */
     ~medViewContainerStack(void);
 
-    medViewContainer *current(void);
-
-    medViewContainer *single(void);
-    medViewContainer *multi(void);
-    medViewContainer *custom(void);
-    medViewContainer *compare (void);
-    medViewContainer *fuse (void);
+    /**
+     * @brief 
+     *
+     * @param void
+     * @return medViewContainer *
+    */
+    medViewContainer *current(void) const;
     
-    void addCustomContainer(const QString &name, medViewContainer *container);
-    medViewContainer* customContainer(const QString &name);
+    /**
+     * @brief 
+     *
+     * @param void
+     * @return QString
+    */
+    QString currentName(void) const;
     
-    void setCustomContainer(const QString &name);
+    /**
+     * @brief 
+     *
+     * @param name
+     * @param container
+    */
+    void addContainer(const QString &name, medViewContainer *container);
+    
+    /**
+     * @brief 
+     *
+     * @param name
+     * @return medViewContainer *
+    */
+    medViewContainer* container(const QString &name) const;
+    
+    /**
+     * @brief 
+     *
+     * @param name
+    */
+    void setContainer(const QString &name);
 
 signals:
+    /**
+     * @brief 
+     *
+     * @param 
+    */
     void dropped(const medDataIndex&);
+    
+    /**
+     * @brief 
+     *
+     * @param 
+    */
     void focused(dtkAbstractView *);
 
 private:

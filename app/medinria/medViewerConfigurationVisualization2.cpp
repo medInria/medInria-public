@@ -20,6 +20,7 @@
 #include "medViewerConfigurationVisualization2.h"
 
 #include <medGui/medViewerToolBoxView.h>
+#include <medGui/medViewContainerStack.h>
 
 class medViewerConfigurationVisualization2Private
 {
@@ -34,9 +35,8 @@ medViewerConfigurationVisualization2::medViewerConfigurationVisualization2(QWidg
     // -- View toolbox --
 
     this->addToolBox( new medViewerToolBoxView(parent) );
+    
 
-    this->setViewLayoutType  (medViewContainer::Custom);
-    this->setCustomLayoutType(medViewContainerCustom::E);
 }
 
 medViewerConfigurationVisualization2::~medViewerConfigurationVisualization2(void)
@@ -50,11 +50,14 @@ QString medViewerConfigurationVisualization2::description(void) const
     return "Visualization";
 }
 
-void medViewerConfigurationVisualization2::setupViewContainerStack(medViewContainerStack *container)
+void medViewerConfigurationVisualization2::setupViewContainerStack()
 {
-    if (!container) {
-        return;
+    if (!this->stackedViewContainers()->count())
+    {
+            addCustomContainer();
     }
+    this->setCustomLayoutType(medViewContainerCustom::E);
+    //TODO reset Views?
 }
 
 medViewerConfiguration *createMedViewerConfigurationVisualization2(void)

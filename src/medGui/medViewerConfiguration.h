@@ -29,6 +29,7 @@
 class medToolBox;
 class medViewerConfigurationPrivate;
 class medViewContainerStack;
+class medDataIndex;
 
 class MEDGUI_EXPORT medViewerConfiguration : public QObject
 {
@@ -53,8 +54,7 @@ public:
     void setLayoutType(LayoutType type);
     LayoutType layoutType(void) const;
     
-    void setViewLayoutType(int type);
-    int viewLayoutType(void) const;
+    void setCurrentViewContainer(const QString& name);
     
     void setCustomLayoutType(int value);
     int customLayoutType(void) const;
@@ -72,18 +72,26 @@ public:
     bool isLayoutToolBoxVisible() const;
     bool isLayoutToolBox(const medToolBox * toolbox);
     
-    virtual void setupViewContainerStack(medViewContainerStack *container);
+    virtual void setupViewContainerStack();
 
+    void addSingleContainer(const QString& name="Single");
+    void addMultiContainer(const QString& name="Multi");
+    void addCustomContainer(const QString& name="Custom");
+    
+    medViewContainer* currentViewContainer() const;
+    QString currentViewContainerName() const;
+    medViewContainerStack * stackedViewContainers() const;
+    
 public slots:
     virtual void addToolBox(medToolBox *toolbox);
     virtual void removeToolBox(medToolBox *toolbox);
     
-    virtual void patientChanged(int patientId);
+    virtual void patientChanged(const medDataIndex& id);
 
 signals:
     void toolboxAdded  (medToolBox *tb);
     void toolboxRemoved(medToolBox *tb);
-    void layoutModeChanged (int mode);
+    void layoutModeChanged (const QString& mode);
     void layoutSplit(int, int);
     void layoutPresetClicked(int);
     

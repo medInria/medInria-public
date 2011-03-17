@@ -96,7 +96,7 @@ public:
     */
 
 signals:
-      void dataAdded (int patientId);
+      void dataAdded (const medDataIndex&);
       
 protected:
      medDataManager(void);

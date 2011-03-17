@@ -138,7 +138,7 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
     if (dtkdata)
     {
         if (newData)
-	    emit dataAdded (index.patientId());
+	    emit dataAdded (index);
         return dtkdata;
     }
     else
@@ -170,7 +170,7 @@ medDataIndex medDataManager::import (dtkAbstractData *data)
 
     d->datas[index] = data;
 
-    emit dataAdded (index.patientId());
+    emit dataAdded (index);
     
     return index;
 }
@@ -214,7 +214,7 @@ medDataIndex medDataManager::importNonPersistent (dtkAbstractData *data)
 
     d->volatileDatas[index] = data;
 
-    emit dataAdded (index.patientId());
+    emit dataAdded (index);
     
     return index;
 }

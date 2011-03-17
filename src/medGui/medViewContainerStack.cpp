@@ -17,6 +17,8 @@
  * 
  */
 
+#include <QtCore>
+
 #include "medViewContainerStack.h"
 
 #include "medViewContainer.h"
@@ -27,45 +29,13 @@
 class medViewContainerStackPrivate
 {
 public:
-    medViewContainerSingle *container_single;
-    medViewContainerMulti *container_multi;
-    medViewContainerCustom *container_custom;
-    medViewContainer *container_registration_compare;
-    medViewContainer *container_registration_fuse;
-    
-    QHash<QString, medViewContainer*> customContainers;
+   QHash<QString, medViewContainer*> containers;
+   QString currentName;
 };
 
 medViewContainerStack::medViewContainerStack(QWidget *parent) : QStackedWidget(parent), d(new medViewContainerStackPrivate)
 {
-    d->container_single = new medViewContainerSingle(this);
-    d->container_multi = new medViewContainerMulti(this);
-    d->container_custom = new medViewContainerCustom(this);
-    d->container_custom->setPreset (medViewContainerCustom::A);
     
-    d->container_registration_compare = new medViewContainerCustom(this);
-    d->container_registration_compare->split(1, 2);
-    d->container_registration_fuse = new medViewContainerCustom(this);
-
-    this->addWidget(d->container_single);
-    this->addWidget(d->container_multi);
-    this->addWidget(d->container_custom);
-    this->addWidget(d->container_registration_compare);
-    this->addWidget(d->container_registration_fuse);
-
-    this->setCurrentIndex(0);
-
-    connect(d->container_single, SIGNAL(focused(dtkAbstractView*)), this, SIGNAL(focused(dtkAbstractView*)));
-    connect(d->container_multi,  SIGNAL(focused(dtkAbstractView*)), this, SIGNAL(focused(dtkAbstractView*)));
-    connect(d->container_custom, SIGNAL(focused(dtkAbstractView*)), this, SIGNAL(focused(dtkAbstractView*)));
-    connect(d->container_registration_compare, SIGNAL(focused(dtkAbstractView*)), this, SIGNAL(focused(dtkAbstractView*)));
-    connect(d->container_registration_fuse, SIGNAL(focused(dtkAbstractView*)), this, SIGNAL(focused(dtkAbstractView*)));
-
-    connect(d->container_single, SIGNAL(dropped(const medDataIndex&)), this, SIGNAL(dropped(const medDataIndex&)));
-    connect(d->container_multi,  SIGNAL(dropped(const medDataIndex&)), this, SIGNAL(dropped(const medDataIndex&)));
-    connect(d->container_custom, SIGNAL(dropped(const medDataIndex&)), this, SIGNAL(dropped(const medDataIndex&)));
-    connect(d->container_registration_compare, SIGNAL(dropped(const medDataIndex&)), this, SIGNAL(dropped(const medDataIndex&)));
-    connect(d->container_registration_fuse, SIGNAL(dropped(const medDataIndex&)), this, SIGNAL(dropped(const medDataIndex&)));
 }
 
 medViewContainerStack::~medViewContainerStack(void)
@@ -75,62 +45,47 @@ medViewContainerStack::~medViewContainerStack(void)
     d = NULL;
 }
 
-medViewContainer *medViewContainerStack::current(void)
-{
-    return dynamic_cast<medViewContainer*> (this->currentWidget());
-}
-
-medViewContainer *medViewContainerStack::single(void)
-{
-    return d->container_single;
-}
-
-medViewContainer *medViewContainerStack::multi(void)
-{
-    return d->container_multi;
-}
-
-medViewContainer *medViewContainerStack::custom(void)
-{
-    return d->container_custom;
-}
-
-medViewContainer *medViewContainerStack::compare(void)
-{
-    return d->container_registration_compare;
-}
-
-medViewContainer *medViewContainerStack::fuse(void)
-{
-    return d->container_registration_fuse;
-}
-
-void medViewContainerStack::addCustomContainer(const QString &name, medViewContainer *container)
+void medViewContainerStack::addContainer(const QString &name, medViewContainer *container)
 {
     if (!container)
         return;
     
-    d->customContainers[name] = container;
+    d->containers[name] = container;
     
     connect(container, SIGNAL(focused(dtkAbstractView*)),    this, SIGNAL(focused(dtkAbstractView*)));
     connect(container, SIGNAL(dropped(const medDataIndex&)), this, SIGNAL(dropped(const medDataIndex&)));
     
+    if (!this->count()) 
+        d->currentName = name;
     this->addWidget( container );
 }
 
-medViewContainer* medViewContainerStack::customContainer(const QString &name)
+medViewContainer* medViewContainerStack::container(const QString &name) const
 {
-    if (!d->customContainers.contains(name))
+    if (!d->containers.contains(name))
         return NULL;
     
-    return d->customContainers[name];
+    return d->containers[name];
 }
 
-void medViewContainerStack::setCustomContainer(const QString &name)
+void medViewContainerStack::setContainer(const QString &name)
 {
-    if (!d->customContainers.contains(name))
+    if (!d->containers.contains(name))
+    {
+        qWarning()<<"container does not contain any container of name:" << name;
         return;
+    }
     
-    this->setCurrentWidget(d->customContainers[name]);
+    d->currentName = name;
+    this->setCurrentWidget(d->containers[name]);
 }
 
+medViewContainer *medViewContainerStack::current(void) const
+{
+    return dynamic_cast<medViewContainer*> (currentWidget());
+}
+
+QString medViewContainerStack::currentName(void) const
+{
+    return d->currentName;
+}

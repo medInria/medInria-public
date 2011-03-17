@@ -34,7 +34,7 @@ public:
     ~medViewerToolBoxLayout(void);
 
 signals:
-    void modeChanged(int);
+    void modeChanged(const QString&);
     void split(int, int);
     void presetClicked(int);
 
@@ -44,6 +44,7 @@ protected slots:
     void onButtonCClicked(void);
     void onButtonDClicked(void);
     void onButtonEClicked(void);
+    void modeChanged(int);
 
 private:
     medViewerToolBoxLayoutPrivate *d;

@@ -53,8 +53,9 @@ public slots:
     
     void onViewClosed(void);
 
-    void switchToPatient(int index);
-    void switchToContainer(int index);
+    void switchToPatient(const medDataIndex& index);
+    void switchToStackedViewContainers(medViewContainerStack* stack);
+    void switchToContainer(const QString& name);
     void switchToContainerPreset(int index);
 
     void addToolBox(medToolBox *toolbox);
@@ -66,7 +67,6 @@ protected slots:
     void onViewFocused(dtkAbstractView *view);
 
 protected:
-    medViewContainerStack *currentStack(void);
     medViewContainer      *currentContainer(void);
     medViewContainer      *currentContainerFocused(void);
 

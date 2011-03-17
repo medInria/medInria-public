@@ -39,7 +39,7 @@ public:
     
     virtual QString description(void) const;
 
-    void setupViewContainerStack (medViewContainerStack *container);
+    void setupViewContainerStack ();
         
 private:
     medViewerConfigurationVisualization2Private *d;
