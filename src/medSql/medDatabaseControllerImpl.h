@@ -39,7 +39,7 @@ public:
     medDataIndex indexForStudy   (const QString &patientName, const QString &studyName);
     medDataIndex indexForSeries  (const QString &patientName, const QString &studyName,
                                   const QString &seriesName);
-    medDataIndex indexForImage   (const QString &patientName, const QString &seriesName,
+    medDataIndex indexForImage   (const QString &patientName, const QString &studyName,
                                   const QString &seriesName,  const QString &imageName);
 
     /* some overloads of read(medDataIndex) */
