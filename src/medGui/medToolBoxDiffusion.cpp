@@ -76,7 +76,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     }
     
     foreach(QString toolbox, medToolBoxFactory::instance()->diffusionToolBoxes())
-    d->tractographyMethodCombo->addItem(toolbox, toolbox);
+        d->tractographyMethodCombo->addItem(toolbox, toolbox);
     
     connect(d->tractographyMethodCombo, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
     
@@ -95,11 +95,10 @@ void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
 {
     medToolBoxDiffusionCustom *toolbox = NULL;
     
-    if (d->toolBoxes.contains (id)) {
+    if (d->toolBoxes.contains (id))
         toolbox = d->toolBoxes[id];
-    }
     else {
-        toolbox = medToolBoxFactory::instance()->createCustomDiffusionToolBox(id);
+        toolbox = medToolBoxFactory::instance()->createCustomDiffusionToolBox(id, this);
         if (toolbox) {
 	    toolbox->setStyleSheet("medToolBoxBody {border:none}");
             toolbox->header()->hide();
@@ -147,9 +146,8 @@ dtkAbstractData *medToolBoxDiffusion::output(void) const
 
 void medToolBoxDiffusion::clear(void)
 {
-    foreach (medToolBoxDiffusionCustom *tb, d->toolBoxes) {
+    foreach (medToolBoxDiffusionCustom *tb, d->toolBoxes)
         tb->deleteLater();
-    }
     
     d->toolBoxes.clear();
     

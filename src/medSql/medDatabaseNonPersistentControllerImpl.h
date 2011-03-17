@@ -81,8 +81,7 @@ public slots:
 
     /**
     * Store data temporarily referenced by temp index
-    * @Note _NOT_IMPLEMENTED_YET
-    * @params const dtkAbstractData & data data to be stored
+    * @params dtkAbstractData * data data to be stored
     * @return medDataIndex assigned index
     */
     medDataIndex import(dtkAbstractData *data);

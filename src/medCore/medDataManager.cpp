@@ -94,16 +94,14 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
 {
     dtkAbstractData* dtkdata = NULL;
 
-    bool newData = false;
-
     // try to get it from cache first
     if ( d->datas.contains(index) || d->volatileDatas.contains (index) )
     {
         qDebug() << "Reading from cache";
 	if (d->datas.contains(index))
-	  dtkdata = d->datas.value(index);
+            dtkdata = d->datas.value(index);
 	else
-	  dtkdata = d->volatileDatas.value(index);
+            dtkdata = d->volatileDatas.value(index);
     }
     else
     {
@@ -114,10 +112,8 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
         if (db)
         {
             dtkdata = db->read(index);
-	    if (dtkdata) {
+            if (dtkdata)
 	        d->datas[index] = dtkdata;
-		newData = true;
-	    }
         }
 
         //if the data is still invalid we continue in the non-pers db
@@ -127,20 +123,14 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
             if(npDb)
             {
                 dtkdata = npDb->read(index);
-		if (dtkdata) {
+                if (dtkdata)
 		    d->volatileDatas[index] = dtkdata;
-		    newData = true;
-		}
             }
         }
     }
 
     if (dtkdata)
-    {
-        if (newData)
-	    emit dataAdded (index);
         return dtkdata;
-    }
     else
     {
         qWarning() << "unable to open images with index:" << index.asString();
@@ -153,8 +143,6 @@ medDataIndex medDataManager::import (dtkAbstractData *data)
     if (!data)
         return medDataIndex();
 
-    bool newData = false;
-    
     medDataIndex index;
     
     medAbstractDbController* db = d->getDbController();

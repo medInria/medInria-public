@@ -130,17 +130,17 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
 
 void medViewerConfigurationDiffusion::onViewRemoved (dtkAbstractView *view)
 {
-   if (!view)
+    if (!view)
         return;
 
-   if (!d->views.contains (view))
-      return;
+    if (!d->views.contains (view))
+        return;
 
-   // view->disableInteractor ("v3dViewFiberInteractor");
-   if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
+    // view->disableInteractor ("v3dViewFiberInteractor");
+    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
         disconnect(d->fiberViewToolBox, SIGNAL(fiberRadiusSet(int)), interactor, SLOT(onRadiusSet(int)));
 
-   d->views.removeOne (view);
+    d->views.removeOne (view);
 }
 
 void medViewerConfigurationDiffusion::onFiberColorModeChanged(int index)
@@ -178,10 +178,10 @@ void medViewerConfigurationDiffusion::onLineModeSelected (bool value)
     foreach (dtkAbstractView *view, d->views) {
         if (value)
             if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-                interactor->setProperty ("RenderingMode", "lines");
-                
-                view->update();
-            }
+            interactor->setProperty ("RenderingMode", "lines");
+
+            view->update();
+        }
     }
 }
 
@@ -190,10 +190,10 @@ void medViewerConfigurationDiffusion::onRibbonModeSelected (bool value)
     foreach (dtkAbstractView *view, d->views) {
         if (value)
             if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-                interactor->setProperty ("RenderingMode", "ribbons");
-                
-                view->update();
-            }
+            interactor->setProperty ("RenderingMode", "ribbons");
+
+            view->update();
+        }
     }
 }
 
@@ -202,24 +202,24 @@ void medViewerConfigurationDiffusion::onTubeModeSelected (bool value)
     foreach (dtkAbstractView *view, d->views) {
         if (value)
             if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-                interactor->setProperty ("RenderingMode", "tubes");
-                
-                view->update();
-            }
+            interactor->setProperty ("RenderingMode", "tubes");
+
+            view->update();
+        }
     }
 }
 
 void medViewerConfigurationDiffusion::onShowBundles (bool value)
 {
     foreach (dtkAbstractView *view, d->views) {
-      if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-          if (value)
-              interactor->enable();
-          else
-              interactor->disable();
-          
-          view->update();
-      }
+        if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
+            if (value)
+                interactor->enable();
+            else
+                interactor->disable();
+
+            view->update();
+        }
     }
 }
 
@@ -240,10 +240,10 @@ void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
 void medViewerConfigurationDiffusion::refreshInteractors (void)
 {
     foreach (dtkAbstractView *view, d->views) {
-      if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-	  // interactor->update(); // TO BE IMPLEMENTED
-          view->update();
-      }
+        if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
+            // interactor->update(); // TO BE IMPLEMENTED
+            view->update();
+        }
     }
 }
 

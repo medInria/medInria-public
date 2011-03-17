@@ -60,7 +60,6 @@ medDataIndex medDatabaseWriter::run(void)
 	emit failure (this);
 	return medDataIndex();
     }
-
     
     // copied from medDatabaseImporter::run()
     
@@ -93,7 +92,7 @@ medDataIndex medDatabaseWriter::run(void)
 
     if(!d->data->hasMetaData("Rows"))
         d->data->addMetaData("Rows", QStringList() << "");
-        
+
     if(!d->data->hasMetaData("Columns"))
         d->data->addMetaData("Columns", QStringList() << "");
 
@@ -213,7 +212,7 @@ medDataIndex medDatabaseWriter::run(void)
 	    query.bindValue(":sliceThickness", sliceThickness);
 	    query.bindValue(":rows",           rows);
 	    query.bindValue(":columns",        columns);
-                    
+
 	    if(!query.exec())
 	        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
@@ -239,7 +238,7 @@ medDataIndex medDatabaseWriter::run(void)
     QString s_patientName = patientName.simplified();
     QString s_studyName   = studyName.simplified();
     QString s_seriesName  = seriesName.simplified();
-        
+
     s_patientName.replace (0x00EA, 'e');
     s_studyName.replace   (0x00EA, 'e');
     s_seriesName.replace  (0x00EA, 'e');
@@ -248,9 +247,9 @@ medDataIndex medDatabaseWriter::run(void)
     s_seriesName.replace  (0x00E4, 'a');	
 
     QString imageFileName = "/" +
-      s_patientName + "/" +
-      s_studyName   + "/" +
-      s_seriesName  + ".mha";
+                            s_patientName + "/" +
+                            s_studyName   + "/" +
+                            s_seriesName  + ".mha";
 
 
     d->data->addMetaData ("FileName", imageFileName);
@@ -434,10 +433,10 @@ medDataIndex medDatabaseWriter::run(void)
             query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
 	    query.bindValue(":id", id);
 	    query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
-        
+
 	    if(!query.exec())
 	        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-        
+
 	    if(query.first()) {
 	        ; //qDebug() << "Image" << file << "already in database";
 	    }
@@ -449,7 +448,7 @@ medDataIndex medDatabaseWriter::run(void)
 		query.bindValue(":path", fileInfo.filePath());
 		query.bindValue(":instance_path", seriesPath);
 		query.bindValue(":thumbnail", thumbPaths[j]);
-        
+
 		if(!query.exec())
 		    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	    }
@@ -462,10 +461,10 @@ medDataIndex medDatabaseWriter::run(void)
 	    query.prepare  ("SELECT id FROM image WHERE series = :id AND name = :name");
 	    query.bindValue(":id",   id);
 	    query.bindValue(":name", fileInfo.fileName());
-        
+
 	    if(!query.exec())
 	        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-        
+
 	    if(query.first()) {
 	        ; //qDebug() << "Image" << file << "already in database";
 	    }
@@ -480,7 +479,7 @@ medDataIndex medDatabaseWriter::run(void)
 		    query.bindValue(":thumbnail", thumbPaths[j]);
 		else
 		    query.bindValue(":thumbnail", "");
-        
+
 		if(!query.exec())
 		    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 	    }
