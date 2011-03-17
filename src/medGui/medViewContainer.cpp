@@ -49,13 +49,12 @@ medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new med
 }
 
 medViewContainer::~medViewContainer(void)
-{
-    foreach(dtkAbstractView* view,views())
-    {
-        view->close();
-    }
-
+{    
     d->pool->deleteLater();
+    
+    if (d->view)
+        d->view->close();
+    
     delete d;
 
     d = NULL;
@@ -98,19 +97,18 @@ medViewPool *medViewContainer::pool (void)
 
 void medViewContainer::setView(dtkAbstractView *view)
 {
-    if (!view)
-        return;
-
     if (view==d->view)
         return;
 
     d->view = view;
 
     // pass properties to the view
-    QHash<QString,QString>::iterator it = d->viewProperties.begin();
-    while (it!=d->viewProperties.end()) {
-        view->setProperty (it.key(), it.value());
-	++it;
+    if (d->view) {
+        QHash<QString,QString>::iterator it = d->viewProperties.begin();
+        while (it!=d->viewProperties.end()) {
+            view->setProperty (it.key(), it.value());
+            ++it;
+        }
     }
 }
 
@@ -167,6 +165,7 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
 	if (former)
         former->update();
+    
     this->update();
 }
 
