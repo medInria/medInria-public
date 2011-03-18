@@ -255,6 +255,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
   
     // Jobs should be added as the last item so that they appear at the bottom
     d->toolbox_container->addToolBox(d->toolbox_jobs);
+  
+    connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
 
     // Layout /////////////////////////////////////////////
 
@@ -357,7 +360,7 @@ void medBrowserArea::onFileImported(void)
 
 void medBrowserArea::onGetDataFailed(QString fileName)
 {
-  // For now, doing nothing, best would be either to display a message in the bar at the bottom or use the jobs toolbox
+  emit(showError(this, tr("Unable to get from source the data named ") + fileName,3000));
 }
 
 void medBrowserArea::onSourceIndexChanged(int index)

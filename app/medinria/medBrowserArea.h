@@ -50,6 +50,7 @@ public:
 signals:
     void open(const medDataIndex& index);
     void open(const QString& file);
+    void showError (QObject*,const QString&,unsigned int timeout);
 
 public slots:
     void onFileSystemImportClicked(void);
