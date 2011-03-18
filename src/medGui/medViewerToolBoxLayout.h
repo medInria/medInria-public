@@ -38,6 +38,9 @@ signals:
     void split(int, int);
     void presetClicked(int);
 
+public slots:
+    void clear(void);
+    
 protected slots:
     void onButtonAClicked(void);
     void onButtonBClicked(void);

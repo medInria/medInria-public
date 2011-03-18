@@ -60,7 +60,6 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
 
 void medViewerConfigurationVisualization::setupViewContainerStack()
 {
-    qDebug()<<"yop yip";
     if (!stackedViewContainers()->count())
     {
         //Containers:
