@@ -72,6 +72,7 @@ protected:
     void onViewFullScreen2 (bool value, dtkAbstractView *view);
     void fullScreen (bool value, dtkAbstractView *view);
 
+    QList<medViewContainerCustom*> children() const;
     medViewContainerCustomPrivate *d2;
 };
 

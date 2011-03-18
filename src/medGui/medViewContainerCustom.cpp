@@ -387,3 +387,8 @@ void medViewContainerCustom::clear (void)
     for(int i=0; i<d2->columnMax; i++)
         d->layout->setColumnStretch (i, 0);
 }
+
+QList<medViewContainerCustom*> medViewContainerCustom::children() const
+{
+    return d2->children;
+}

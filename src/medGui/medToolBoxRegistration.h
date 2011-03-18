@@ -56,8 +56,8 @@ signals:
     void showInfo(QObject*,const QString&,unsigned int timeout);
 
 public slots:
-    void onMovingImageDropped(void);
-    void onFixedImageDropped(void);
+    void onMovingImageDropped(const medDataIndex& index);
+    void onFixedImageDropped(const medDataIndex& index);
     
     void onBlendModeSet(bool value);
     void onCheckerboardModeSet(bool value);
@@ -66,7 +66,7 @@ public slots:
     void clear(void);
     void onSaveImage(void);
     void onSaveTrans(void);
-
+    void onSuccess(void);
 private:
     medToolBoxRegistrationPrivate *d;
 };

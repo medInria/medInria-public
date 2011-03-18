@@ -7,6 +7,7 @@
 #include <medGui/medToolBoxRegistration.h>
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerSingle.h>
+#include <medGui/medViewContainerCompare.h>
 #include <medGui/medViewContainerStack.h>
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medToolBoxRegistration.h>
@@ -86,9 +87,13 @@ void medViewerConfigurationRegistration::setupViewContainerStack()
         }
         
         //create the compare container
-        medViewContainerCustom * compareContainer = new medViewContainerCustom(
+        medViewContainerCompare * compareContainer = new medViewContainerCompare(
                 this->stackedViewContainers());
-        compareContainer->split(1, 2);
+        connect(compareContainer,SIGNAL(droppedFixed(medDataIndex)),
+                d->registrationToolBox,SLOT(onFixedImageDropped(medDataIndex)));
+        connect(compareContainer,SIGNAL(droppedMoving(medDataIndex)),
+                d->registrationToolBox,SLOT(onMovingImageDropped(medDataIndex)));
+        
         this->stackedViewContainers()->addContainer("Compare",compareContainer);
         this->stackedViewContainers()->addContainer("Fuse",fuseContainer);
         setCurrentViewContainer("Compare");   
@@ -104,3 +109,4 @@ medViewerConfiguration *createMedViewerConfigurationRegistration(void)
 {
     return new medViewerConfigurationRegistration;
 }
+

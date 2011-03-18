@@ -74,20 +74,8 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->fixedView  = NULL;
     d->movingView = NULL;
     d->process = NULL;
-    // Process page
-
-    QWidget *processPage = new QWidget(this);
     
-    d->processDropSiteFixed  = new medDropSite(processPage);
-    d->processDropSiteFixed->setText("Fixed");
-
-    d->processDropSiteMoving = new medDropSite(processPage);
-    d->processDropSiteMoving->setText("Moving");
-
-    QHBoxLayout *processDropSiteLayout = new QHBoxLayout;
-    processDropSiteLayout->addWidget(d->processDropSiteFixed);
-    processDropSiteLayout->addWidget(d->processDropSiteMoving);
-
+    // Process section
     d->saveImageButton = new QPushButton(tr("Save Image"),this);
     connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
     d->saveTransButton = new QPushButton(tr("Save Transformation"),this);
@@ -104,77 +92,70 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
     connect(d->toolboxes, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
 
-    // ---
     
-    QVBoxLayout *processLayout = new QVBoxLayout(processPage);
-    processLayout->addLayout(processDropSiteLayout);
-    processLayout->addWidget(d->toolboxes);
-    processLayout->addWidget(d->saveImageButton);
-    processLayout->addWidget(d->saveTransButton);
-    // Layout page
+    // Layout section
 
-    QWidget *layoutPage = new QWidget;
-
-    QPushButton *layoutButtonCompare = new QPushButton("Compare", layoutPage);
+    QPushButton *layoutButtonCompare = new QPushButton("Compare", this);
     layoutButtonCompare->setCheckable(true);
     layoutButtonCompare->setChecked(true);
 
-    QPushButton *layoutButtonFuse = new QPushButton("Fuse", layoutPage);
+    QPushButton *layoutButtonFuse = new QPushButton("Fuse", this);
     layoutButtonFuse->setCheckable(true);
     layoutButtonFuse->setChecked(false);
-
-    QButtonGroup *layoutButtonGroup = new QButtonGroup(layoutPage);
+    
+    QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
     layoutButtonGroup->addButton(layoutButtonCompare);
     layoutButtonGroup->addButton(layoutButtonFuse);
     layoutButtonGroup->setExclusive(true);
-
-    d->layoutFuseSlider = new QSlider(Qt::Horizontal, layoutPage);
+    
+    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
     d->layoutFuseSlider->setRange(1, 100);
     d->layoutFuseSlider->setValue(50);
-
     
-    d->blendRadio = new QRadioButton("Blend", layoutPage);
-    d->checkerboardRadio = new QRadioButton("Checkerboard", layoutPage);
-    d->blendRadio->setChecked(true);
+//    d->blendRadio = new QRadioButton("Blend", this);
+//    d->checkerboardRadio = new QRadioButton("Checkerboard", this);
+//    d->blendRadio->setChecked(true);
 
-    QButtonGroup *radioGroup = new QButtonGroup(this);
-    radioGroup->addButton(d->blendRadio);
-    radioGroup->addButton(d->checkerboardRadio);
-    radioGroup->setExclusive(true);	
+//    QButtonGroup *radioGroup = new QButtonGroup(this);
+//    radioGroup->addButton(d->blendRadio);
+//    radioGroup->addButton(d->checkerboardRadio);
+//    radioGroup->setExclusive(true);	
 
-    QHBoxLayout *radioGroupLayout = new QHBoxLayout;
-    radioGroupLayout->addWidget(d->blendRadio);
-    radioGroupLayout->addWidget(d->checkerboardRadio);
+//    QHBoxLayout *radioGroupLayout = new QHBoxLayout;
+//    radioGroupLayout->addWidget(d->blendRadio);
+//    radioGroupLayout->addWidget(d->checkerboardRadio);
     
     QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
     layoutButtonLayout->addWidget(layoutButtonCompare);
     layoutButtonLayout->addWidget(layoutButtonFuse);
-
-    QVBoxLayout *layoutLayout = new QVBoxLayout(layoutPage);
+    
+    QVBoxLayout *layoutLayout = new QVBoxLayout(this);
     layoutLayout->addLayout(layoutButtonLayout);
-    layoutLayout->addLayout(radioGroupLayout);
+//    layoutLayout->addLayout(radioGroupLayout);
     layoutLayout->addWidget(d->layoutFuseSlider);
-
+    QWidget * layoutSection = new QWidget(this);
+    layoutSection->setLayout(layoutLayout);
+    
     connect(layoutButtonCompare, SIGNAL(clicked()), this, SIGNAL(setupLayoutCompare()));
     connect(layoutButtonFuse, SIGNAL(clicked()), this, SIGNAL(setupLayoutFuse()));
     
-    connect(d->blendRadio, SIGNAL(toggled(bool)), this, SLOT(onBlendModeSet(bool)));
-    connect(d->checkerboardRadio, SIGNAL(toggled(bool)), this, SLOT(onCheckerboardModeSet(bool)));
+//    connect(d->blendRadio, SIGNAL(toggled(bool)), this, SLOT(onBlendModeSet(bool)));
+//    connect(d->checkerboardRadio, SIGNAL(toggled(bool)), this, SLOT(onCheckerboardModeSet(bool)));
 
-    connect (d->processDropSiteFixed,  SIGNAL (objectDropped ()), this, SLOT (onFixedImageDropped ()));
-    connect (d->processDropSiteMoving, SIGNAL (objectDropped ()), this, SLOT (onMovingImageDropped ()));
     
     // /////////////////////////////////////////////////////////////////
     // Setup
     // /////////////////////////////////////////////////////////////////
 
-    medToolBoxTab *tab = new medToolBoxTab(this);
-    tab->addTab(processPage, tr("Process"));
-    tab->addTab(layoutPage, tr("Layout"));
+    
+    // ---
+    addWidget(layoutSection);
+    addWidget(d->toolboxes);
+    addWidget(d->saveImageButton);
+    addWidget(d->saveTransButton);
+    
 
     this->setTitle(tr("Registration"));
-    this->setTabWidget(tab);
-
     d->customToolBox = NULL;
 
     //Connect Message Controller:
@@ -236,9 +217,8 @@ void medToolBoxRegistration::onCheckerboardModeSet(bool value)
             }
 }
 
-void medToolBoxRegistration::onFixedImageDropped (void)
+void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 {
-    medDataIndex index = d->processDropSiteFixed->index();
   
     if (!index.isValid())
         return;
@@ -283,9 +263,8 @@ void medToolBoxRegistration::onFixedImageDropped (void)
     }
 }
 
-void medToolBoxRegistration::onMovingImageDropped (void)
+void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
 {
-    medDataIndex index = d->processDropSiteMoving->index();
   
     if (!index.isValid())
         return;
@@ -297,7 +276,7 @@ void medToolBoxRegistration::onMovingImageDropped (void)
 
     d->movingView = dynamic_cast<medAbstractView*>
                     (medViewManager::instance()->views
-                     (d->processDropSiteMoving->index()).first());
+                     (index).first());
 
     if(!d->movingView) {
         qDebug() << "Unable to retrieve moving view";
@@ -349,7 +328,11 @@ void medToolBoxRegistration::onToolBoxChosen(const QString& id)
         delete d->customToolBox;
     }
     d->customToolBox = toolbox;
+    toolbox->show();
     emit addToolBox(toolbox);
+    
+    connect (toolbox, SIGNAL (success()), this, SLOT (onSuccess()));
+    connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
 }
 
 void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
@@ -436,4 +419,21 @@ void medToolBoxRegistration::onSaveTrans()
                                QDir::homePath(),
                                tr("Transformation (*.txt)"));
     qDebug() << fileName;
+}
+
+
+void medToolBoxRegistration::onSuccess()
+{
+    dtkAbstractData *output = d->process->output();
+
+	if(output) 
+    {
+	    d->movingView->setData(output,0);
+	    d->fixedView->unlink (d->movingView);
+	    d->fixedView->link (d->movingView);
+	    d->movingView->update();
+	    d->fuseView->setData(output,1);
+        d->fuseView->update();
+
+    }
 }
