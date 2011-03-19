@@ -18,13 +18,13 @@ public:
     void setData(dtkAbstractData *data);
     
 signals:
-    void fiberSelectionValidated(QString name);
+    void fiberSelectionValidated(const QString &name, const QColor &color);
     void fiberSelectionTagged(void);
     void fiberSelectionReset(void);
     void showBundles(bool);
 
 public slots:
-    void addBundle(QString name);
+    void addBundle(const QString &name, const QColor &color);
     void onBundlingButtonVdtClicked (void);
     void onBundleBoxCheckBoxToggled (bool);
     

@@ -59,7 +59,7 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     connect(d->fiberViewToolBox, SIGNAL(tubeModeSelected(bool)),     this, SLOT(onTubeModeSelected(bool)));
     
     connect(d->fiberBundlingToolBox, SIGNAL(showBundles(bool)),                this, SLOT(onShowBundles(bool)));
-    connect(d->fiberBundlingToolBox, SIGNAL(fiberSelectionValidated(QString)), this, SLOT(refreshInteractors()));
+    connect(d->fiberBundlingToolBox, SIGNAL(fiberSelectionValidated(const QString&, const QColor&)), this, SLOT(refreshInteractors()));
     
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
 
