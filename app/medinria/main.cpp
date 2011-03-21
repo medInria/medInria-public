@@ -66,21 +66,21 @@ int main(int argc, char *argv[])
 
     // if the user configured a new location for the database in the settings editor, we'll need to move it
     QString newLocation = mnger->value("medDatabaseSettingsWidget", "new_database_location").toString();
-	if (!newLocation.isEmpty()) {
-		
-		// if the locations are different we need to move the db to the new location
-		if (currentLocation.compare(newLocation) != 0) {
-			if(!medDatabaseController::instance()->moveDatabase(newLocation)){
-				qDebug() << "Failed to move the database from " << currentLocation << " to " << newLocation;
+    if (!newLocation.isEmpty()) {
+        
+        // if the locations are different we need to move the db to the new location
+        if (currentLocation.compare(newLocation) != 0) {
+            if(!medDatabaseController::instance()->moveDatabase(newLocation)){
+                qDebug() << "Failed to move the database from " << currentLocation << " to " << newLocation;
                 // the new location is invalid so set it to zero
                 newLocation = "";
             }
         mnger->setValue("medDatabaseSettingsWidget", "actual_database_location", newLocation);
         // we need to reset the new Location to prevent doing it all the time
         mnger->setValue("medDatabaseSettingsWidget", "new_database_location","");
-		}
-	}
-	// END OF DATABASE INITIAL ROUTINE
+        }
+    }
+    // END OF DATABASE INITIAL ROUTINE
 
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
@@ -92,8 +92,8 @@ int main(int argc, char *argv[])
 
     if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
     && !dtkApplicationArgumentsContain(&application, "--wall")){
-    	bool fullScreen  = medSettingsManager::instance()->value("startup", "start_in_full_screen").toBool();
-    	mainwindow.setFullScreen(fullScreen);
+        bool fullScreen  = medSettingsManager::instance()->value("startup", "fullscreen", true).toBool();
+        mainwindow.setFullScreen(fullScreen);
     }
 
     if(application.arguments().contains("--wall"))

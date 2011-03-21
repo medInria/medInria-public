@@ -164,8 +164,9 @@ void medViewPool::onViewReg(bool value)
 {
 	if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
         
-        if (value) {
-            medAbstractView *refView = this->daddy();
+		medAbstractView *refView = this->daddy();
+        
+		if (value) {
             
             if (refView==view) // do not register the view with itself
                 return;
@@ -188,14 +189,24 @@ void medViewPool::onViewReg(bool value)
                         dtkAbstractData *output = process->output();
                         d->viewData[view] = data2;
                         view->setData (output, 0);
-			if (view->widget()->isVisible())
-			    view->update();
+						view->blockSignals(true);
+						view->setPosition(refView->position());
+						view->setZoom(refView->zoom());
+						view->setPan(refView->pan());
+						QVector3D position, viewup, focal;
+						double parallelScale;
+						refView->camera(position, viewup, focal, parallelScale);
+						view->setCamera(position, viewup, focal, parallelScale);
+						view->blockSignals(false);
+
+                        if (view->widget()->isVisible())
+                            view->update();
                         emit showInfo (this, tr ("Automatic registration successful"),3000);
                     }
                     else {
                         emit showError(this, tr  ("Automatic registration failed"),3000);
                     }
-                    delete process;
+                    process->deleteLater();
                 }
                 
             }
@@ -204,9 +215,18 @@ void medViewPool::onViewReg(bool value)
             if ( d->viewData[view] ) {
                 dtkAbstractData *oldData = static_cast<dtkAbstractData*>( view->data() );
                 view->setData (d->viewData[view], 0);
+				view->blockSignals(true);
+						view->setPosition(refView->position());
+						view->setZoom(refView->zoom());
+						view->setPan(refView->pan());
+						QVector3D position, viewup, focal;
+						double parallelScale;
+						refView->camera(position, viewup, focal, parallelScale);
+						view->setCamera(position, viewup, focal, parallelScale);
+						view->blockSignals(false);
                 d->viewData[view] = NULL;
                 if (oldData)
-                    delete oldData;
+					oldData->deleteLater();
 		if (view->widget()->isVisible())
 		    view->update();
             }

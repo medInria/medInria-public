@@ -31,11 +31,11 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
 {
     setTabName("Startup");
     d->startInFullScreen = new QCheckBox(this);
-    d->startInFullScreen->setToolTip(tr("Shall medINRIA start in full screen?"));
+    d->startInFullScreen->setToolTip(tr("Start application in full screen mode?"));
 
     d->defaultStartingArea = new QComboBox();
-    d->defaultStartingArea->addItem("Browser", "Browser");
-    d->defaultStartingArea->addItem("Viewer", "Viewer");
+    d->defaultStartingArea->addItem(tr("Browser"));
+    d->defaultStartingArea->addItem(tr("Viewer"));
 
     QFormLayout* layout = new QFormLayout;
     layout->addRow(tr("Fullscreen"),d->startInFullScreen);
@@ -55,19 +55,17 @@ bool medStartupSettingsWidget::validate()
 
 void medStartupSettingsWidget::read()
 {
-    qDebug()<<"reading QSettings";
     medSettingsManager * mnger = medSettingsManager::instance();
-    d->startInFullScreen->setChecked(mnger->value("startup", "start_in_full_screen").toBool());
+    d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen", true).toBool());
 
-    QVariant vArea = mnger->value("startup", "default_starting_area");
     //if nothing is configured then Browser is the default area
-    int areaIndex = 0;
-    if (!vArea.isNull())
-        areaIndex = d->defaultStartingArea->findText(vArea.toString());
+    int areaIndex = mnger->value("startup", "default_starting_area", 0).toInt();
 
-    //in case nothing is found, ensure to select a proper index
-    if (areaIndex == -1)
+    // clamp range
+    if (areaIndex < 0)
         areaIndex = 0;
+    if (areaIndex > d->defaultStartingArea->count() -1)
+        areaIndex = d->defaultStartingArea->count() -1;
 
     d->defaultStartingArea->setCurrentIndex(areaIndex);
 }
@@ -75,8 +73,8 @@ void medStartupSettingsWidget::read()
 bool medStartupSettingsWidget::write()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
-    mnger->setValue("startup","start_in_full_screen", d->startInFullScreen->isChecked());
-    mnger->setValue("startup","default_starting_area", d->defaultStartingArea->itemText(d->defaultStartingArea->currentIndex()));
+    mnger->setValue("startup","fullscreen", d->startInFullScreen->isChecked());
+    mnger->setValue("startup","default_starting_area", d->defaultStartingArea->currentIndex());
     return true;
 }
 

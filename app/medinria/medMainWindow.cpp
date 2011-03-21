@@ -240,24 +240,10 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->setStyle(new medMainWindowStyle);
     this->setStyleSheet(dtkReadFile(":/medinria.qss"));
     this->setWindowTitle("medinria");
-    this->switchToBrowserArea();
 
     medMessageController::instance()->attach(this->statusBar());
 
     d->viewerArea->setupConfiguration("Visualization");
-
-    // if the user configured a default area we need to show it
-    medSettingsManager * mnger = medSettingsManager::instance();
-    QVariant vArea = mnger->value("startup", "default_starting_area");
-
-    if (!vArea.isNull()){
-        QString area = vArea.toString();
-
-        if (area.compare("Browser") == 0)
-            switchToBrowserArea();
-        else if (area.compare("Viewer") == 0)
-            switchToViewerArea();
-    }
 
     connect(configurationSwitcher, SIGNAL(activated(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
@@ -273,31 +259,48 @@ medMainWindow::~medMainWindow(void)
 
 void medMainWindow::readSettings(void)
 {
-    QSettings settings("inria", "medinria");
-    settings.beginGroup("medinria");
-    QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
-    QSize size = settings.value("size", QSize(600, 400)).toSize();
-    move(pos);
-    resize(size);
-    settings.endGroup();
+    // if the user configured a default area we need to show it
+    medSettingsManager * mnger = medSettingsManager::instance();
+
+    //if nothing is configured then Browser is the default area
+    int areaIndex = mnger->value("startup", "default_starting_area", 0).toInt();
+
+    switch (areaIndex)
+    {
+    case 0:
+        this->switchToBrowserArea();
+        break;
+
+    case 1: 
+        this->switchToViewerArea();
+        break;
+
+    default:
+        this->switchToBrowserArea();
+        break;
+    }
+
+    // restore size
+    if (!this->isFullScreen())
+    {
+        QPoint pos = mnger->value("application", "pos", QPoint(200, 200)).toPoint();
+        QSize size = mnger->value("application", "size", QSize(600, 400)).toSize();
+        move(pos);
+        resize(size);
+    }
+
 }
 
 void medMainWindow::writeSettings()
 {
-    QSettings settings("inria", "medinria");
-    settings.beginGroup("medinria");
-
     // if the app is in full screen mode we do not want to save the pos and size
     // as there is a setting that defines either the user wants to open the app in FS or not
     // so, if he/she chose not to and quit the app while in FS mode, we skip the settings saving
     if (!this->isFullScreen())
     {
-        settings.setValue("pos", pos());
-        settings.setValue("size", size());
+        medSettingsManager::instance()->setValue("application","pos", pos());
+        medSettingsManager::instance()->setValue("application","size", size());
     }
-
-
-    settings.endGroup();
 }
 
 void medMainWindow::setWallScreen(bool full)
