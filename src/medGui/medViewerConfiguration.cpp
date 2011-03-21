@@ -107,12 +107,12 @@ void medViewerConfiguration::setCurrentViewContainer(const QString& name)
     d->viewContainerStack->setContainer(name);
 }
 
-void medViewerConfiguration::setCustomLayoutType(int type)
+void medViewerConfiguration::setCustomPreset(int type)
 {
     d->customLayoutType = type;
 }
 
-int medViewerConfiguration::customLayoutType(void) const
+int medViewerConfiguration::customLayoutPreset(void) const
 {
     return d->customLayoutType;
 }
@@ -145,11 +145,6 @@ void medViewerConfiguration::showLayoutToolBox(void)
 bool medViewerConfiguration::isLayoutToolBoxVisible(void) const
 {
     return d->layoutToolBoxVisibility;
-}
-
-bool medViewerConfiguration::isLayoutToolBox(const medToolBox * toolbox)
-{
-    return (toolbox == d->layoutToolBox);
 }
 
 medViewContainer* medViewerConfiguration::currentViewContainer() const

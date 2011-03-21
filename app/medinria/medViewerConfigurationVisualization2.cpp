@@ -56,7 +56,7 @@ void medViewerConfigurationVisualization2::setupViewContainerStack()
     {
             addCustomContainer();
     }
-    this->setCustomLayoutType(medViewContainerCustom::E);
+    this->setCustomPreset(medViewContainerCustom::E);
     //TODO reset Views?
 }
 

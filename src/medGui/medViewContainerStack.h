@@ -30,7 +30,8 @@ class medViewContainer;
 class medViewContainerStackPrivate;
 
 /**
- * @brief 
+ * @brief A QStackedWidget that contains medViewContainers.
+ * There is one such stack per medViewConfiguration. 
  *
 */
 class MEDGUI_EXPORT medViewContainerStack : public QStackedWidget
@@ -53,7 +54,7 @@ public:
     ~medViewContainerStack(void);
 
     /**
-     * @brief 
+     * @brief Gets the currently displayed container.
      *
      * @param void
      * @return medViewContainer *
@@ -61,7 +62,8 @@ public:
     medViewContainer *current(void) const;
     
     /**
-     * @brief 
+     * @brief Gets the name of the current container.
+     * Containers are referenced by name in a private hash table
      *
      * @param void
      * @return QString
@@ -69,38 +71,38 @@ public:
     QString currentName(void) const;
     
     /**
-     * @brief 
+     * @brief Adds a container to the stack.
      *
-     * @param name
-     * @param container
+     * @param name The name that will identify this container in the stack.
+     * @param container 
     */
     void addContainer(const QString &name, medViewContainer *container);
     
     /**
-     * @brief 
+     * @brief Gets the container identified in the stack by this string.
      *
      * @param name
-     * @return medViewContainer *
+     * @return medViewContainer * the container or NULL the name does not match.
     */
     medViewContainer* container(const QString &name) const;
     
     /**
-     * @brief 
-     *
+     * @brief Puts the container with this name on top of the stack.
+     * Does nothing if the name is not contained.
      * @param name
     */
     void setContainer(const QString &name);
 
     
     /**
-     * @brief 
+     * @brief Gets the list of containers in the stack.
      *
      * @return QList<QString>
     */
     QList<QString> keys();
     
     /**
-     * @brief 
+     * @brief Removes one container from the stack.
      *
      * @param name
     */
@@ -108,14 +110,16 @@ public:
     
 signals:
     /**
-     * @brief 
+     * @brief Emits this signal when one of the containers has emitted 
+     * the same signal.
      *
      * @param 
     */
     void dropped(const medDataIndex&);
     
     /**
-     * @brief 
+     * @brief Emits this signal when one of the containers has emitted 
+     * the same signal.
      *
      * @param 
     */

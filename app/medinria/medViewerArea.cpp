@@ -167,35 +167,15 @@ medViewerArea::~medViewerArea(void)
     d = NULL;
 }
 
-//! Status bar setup
-/*! 
- *  Called whenever the viewer area is switched to. Add viewer area
- *  specific status widgets on the left of the status bar.
- */
-
 void medViewerArea::setup(QStatusBar *status)
 {
 
 }
 
-//! Status bar setdown
-/*! 
- *  Called whenever the viewer area is left. Remove viewer area
- *  specific status widgets from the left of the status bar.
- */
-
 void medViewerArea::setdw(QStatusBar *status)
 {
 
 }
-
-
-
-//! Split the currently displayed custom container.
-/*! 
- *  This slots make the connection between the layout toolbox gui and
- *  the actual custom view container.
- */
 
 void medViewerArea::split(int rows, int cols)
 {
@@ -203,11 +183,6 @@ void medViewerArea::split(int rows, int cols)
         d->current_configuration->currentViewContainer())
         d->current_configuration->currentViewContainer()->split(rows, cols);
 }
-
-//! Open data corresponding to index \param index.
-/*! 
- * 
- */
 
 void medViewerArea::open(const medDataIndex& index)
 {
@@ -302,11 +277,6 @@ void medViewerArea::open(const medDataIndex& index)
     }
 }
 
-//! Open file on the local filesystem.
-/*! 
- * 
- */
-
 void medViewerArea::open(const QString& file)
 {
     this->open(medDatabaseNonPersistentController::instance()->import(file));
@@ -324,10 +294,6 @@ void medViewerArea::onViewClosed(void)
     }
 }
 
-//! Switch the view area layout to the one of patient with database index \param index.
-/*! 
- * 
- */
 
 void medViewerArea::switchToPatient(const medDataIndex& id )
 {
@@ -364,7 +330,7 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
                 case 1:
                 default:
                     //not switching
-                    //set the patietn toolbox back to the current patient 
+                    //set the patient toolbox back to the current patient 
                     d->toolboxPatient->blockSignals (true);
                     d->toolboxPatient->setPatientIndex(d->current_patient);
                     d->toolboxPatient->blockSignals (false);
@@ -426,12 +392,6 @@ void medViewerArea::switchToStackedViewContainers(medViewContainerStack* stack)
     d->stack->setCurrentWidget(stack);
 }
 
-//! Set stack index.
-/*! 
- *  This method actually allows one to switch between the
- *  single/multi/custom modes for the currently displayed view
- *  stack. A view stack is composed of a single/custom/multi layout.
- */
 
 void medViewerArea::switchToContainer(const QString& name)
 {
@@ -459,10 +419,6 @@ void medViewerArea::switchToContainer(const QString& name)
     }
 }
 
-//! Set custom view preset
-/*! 
- *  Presets are defined in src/medGui/medViewContainerCustom.
- */
 
 void medViewerArea::switchToContainerPreset(int index)
 {
@@ -475,7 +431,7 @@ void medViewerArea::switchToContainerPreset(int index)
         if(medViewContainerCustom *custom = dynamic_cast<medViewContainerCustom *>(
                 d->current_configuration->currentViewContainer())) {
                 custom->setPreset(index);
-                d->current_configuration->setCustomLayoutType(index);
+                d->current_configuration->setCustomPreset(index);
             }
     }    
 }
@@ -492,11 +448,6 @@ void medViewerArea::removeToolBox(medToolBox *toolbox)
 
 
 #include <dtkVr/dtkVrController.h>
-
-//! View focused callback. 
-/*! 
- *  This method updates the toolboxes according to the focused view.
- */
 
 void medViewerArea::onViewFocused(dtkAbstractView *view)
 {
@@ -542,12 +493,10 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     this->updateTransferFunction();
 }
 
-
-//! Returns the currently focused child container.
-/*! 
- *  Note that container are hierarchical structures. This methods
- *  returns a container that can contain a view.
- */
+medViewContainer *medViewerArea::currentContainer(void)
+{
+    return d->current_configuration->currentViewContainer();
+}
 
 medViewContainer *medViewerArea::currentContainerFocused(void)
 {
@@ -667,7 +616,7 @@ void medViewerArea::setupConfiguration(QString name)
     switchToStackedViewContainers(conf->stackedViewContainers());
 
     if (dynamic_cast<medViewContainerCustom *>(conf->currentViewContainer())) {
-        switchToContainerPreset(conf->customLayoutType());
+        switchToContainerPreset(conf->customLayoutPreset());
     }
 
     //setup database visibility
