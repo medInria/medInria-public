@@ -348,3 +348,10 @@ void medDatabaseControllerImpl::forwardMessage( QString msg)
 {
     copyMessage(msg, Qt::AlignBottom, QColor(Qt::white));
 }
+
+qint64 medDatabaseControllerImpl::getEstimatedSize( const medDataIndex& index ) const
+{
+    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
+    uint size = reader->getDataSize();
+    return size + (size/100 * 3); // add 3% margin
+}

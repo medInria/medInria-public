@@ -216,22 +216,23 @@ void medViewerArea::open(const medDataIndex& index)
     
     if(((medDataIndex)index).isValidForSeries()) {
         
-        dtkAbstractData *data = NULL;
-        dtkAbstractView *view = NULL;
+        QSharedPointer<dtkAbstractData> data;
+        medAbstractView *view = NULL;
         
         // the data-manager should be used to read data
-        data = medDataManager::instance()->data(index).data();
-        if ( !data )
+        data = medDataManager::instance()->data(index);
+        if ( data.isNull() )
             return;
 
         if(!view) {
         if (d->view_stacks.value(d->current_patient)->current() && d->view_stacks.value(d->current_patient)->current()->current())
-            view = d->view_stacks.value(d->current_patient)->current()->current()->view();
+            view = dynamic_cast<medAbstractView*>(d->view_stacks.value(d->current_patient)->current()->current()->view());
         }
 
         if(!view) {
-            view = dtkAbstractViewFactory::instance()->create("v3dView");
+            view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
+            // insert into hash
             d->view_stacks.value(d->current_patient)->current()->current()->setView(view);
         }
         
@@ -240,32 +241,37 @@ void medViewerArea::open(const medDataIndex& index)
             return;
         }
         
+        // another hash?!
         medViewManager::instance()->insert(index, view);
 
 
         this->onViewFocused(view);
-        view->setData(data);
-    
+        
+        // set the data to the view
+        view->setSharedDataPointer(data);
+       
+        // call update
         QMutexLocker ( &d->mutex );
-    if (d->view_stacks.value(d->current_patient)->current()) {
-        d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (false);
-        d->view_stacks.value(d->current_patient)->current()->setDisabled (true);
+        if (d->view_stacks.value(d->current_patient)->current()) {
+            d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (false);
+            d->view_stacks.value(d->current_patient)->current()->setDisabled (true);
 
-        if (d->view_stacks.value(d->current_patient)->current()->current()) {
-            d->view_stacks.value(d->current_patient)->current()->current()->setView(view); //d->view_stacks.value(d->current_patient)->current()->setView(view);
-        d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
-        }
+            if (d->view_stacks.value(d->current_patient)->current()->current()) {
+                d->view_stacks.value(d->current_patient)->current()->current()->setView(view); 
+                d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
+            }
 
         view->reset();
         view->update();
 
         d->view_stacks.value(d->current_patient)->current()->setDisabled (false);
         d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (true);
-    }
-    
+        }
+
         return;
     }
     
+    // make it valid for series and try again
     if(((medDataIndex)index).isValidForPatient()) {
         
         this->setupConfiguration("Visualization");

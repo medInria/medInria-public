@@ -70,6 +70,8 @@ public:
     */
     bool isConnected();
 
+    qint64 getEstimatedSize(const medDataIndex& index) const;
+
 public slots:
 
     /**

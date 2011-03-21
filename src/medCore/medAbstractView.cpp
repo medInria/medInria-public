@@ -1,5 +1,7 @@
 #include "medAbstractView.h"
 
+#include <dtkCore/dtkAbstractData.h>
+
 class medAbstractViewPrivate
 {
 public:
@@ -10,6 +12,7 @@ public:
   int currentLayer;
   QList<dtkAbstractData *> dataList;
 
+  QSharedPointer<dtkAbstractData> sharedData;
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
@@ -274,4 +277,13 @@ void medAbstractView::emitViewWindowingChangedEvent(double level, double window)
 void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
 {
     emit cameraChanged(position, viewup, focal, parallelScale);
+}
+
+void medAbstractView::setSharedDataPointer( QSharedPointer<dtkAbstractData> data )
+{
+    // set a reference to our view that gets destroyed when the view terminates
+    d->sharedData = data;
+
+    dtkAbstractData *dtkdata = d->sharedData.data();
+    this->setData(dtkdata);
 }

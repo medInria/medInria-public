@@ -154,6 +154,13 @@ medDataIndex medDatabaseNonPersistentControllerImpl::import( const dtkAbstractDa
     return medDataIndex();
 }
 
+qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIndex& index ) const
+{
+    Q_UNUSED(index);
+    return 0;
+}
+
+
 
 
 

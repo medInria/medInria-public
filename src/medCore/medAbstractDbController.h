@@ -7,7 +7,7 @@
 #include <QtCore>
 #include <QtSql>
 
-class dtkAbstractData;
+#include <dtkCore/dtkAbstractData.h>
 
 /**
  * Abstract dbController class. Implementation needs to adhere to the common interface
@@ -24,6 +24,8 @@ public:
     * @return bool true if connected
     */
     virtual bool isConnected() = 0;
+
+    virtual qint64 getEstimatedSize(const medDataIndex& index) const = 0;
 
 signals:
     

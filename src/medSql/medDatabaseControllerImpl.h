@@ -49,6 +49,8 @@ public:
     */
     bool isConnected();
 
+    qint64 getEstimatedSize(const medDataIndex& index) const;
+
 signals:
     /**
      * Status message from controller to some user interface
