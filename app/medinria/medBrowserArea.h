@@ -62,6 +62,9 @@ public slots:
     void onFileImport(QString);
     void onGetDataFailed(QString fileName);
 
+protected:
+    void setToolBoxesVisible(int index, bool visible);
+
 private:
     friend class medMessageController;
 

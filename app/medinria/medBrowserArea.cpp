@@ -233,25 +233,23 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->toolbox_container->addToolBox(d->toolbox_pacs_host);
     d->toolbox_container->addToolBox(d->toolbox_pacs_nodes);
     d->toolbox_container->addToolBox(d->toolbox_pacs_search);
-	
-	  // Additional toolboxes for source data ////////////////
-	
-		foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->sourcedata_plugins())
-		{
-			medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName);
-      d->data_sources.push_back(dataSource);
-			d->stack->addWidget(dataSource->widget());
-			d->toolbox_source->addAdditionalTab(dataSource->tabName(),dataSource->sourceSelectorWidget());
+    
+    // Additional toolboxes for source data ////////////////
+    foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins()) {
+        medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName);
+        d->data_sources.push_back(dataSource);
+        d->stack->addWidget(dataSource->mainViewWidget());
+        d->toolbox_source->addAdditionalTab(dataSource->tabName(),dataSource->sourceSelectorWidget());
 
-      for (unsigned int i = 0;i < dataSource->getNumberOfAdditionalToolBoxes();++i)
-      {
-        d->toolbox_container->addToolBox(dataSource->getAdditionalToolBox(i));
-        dataSource->getAdditionalToolBox(i)->setVisible(false);
-      }
+        QList<medToolBox*> toolBoxes = dataSource->getToolBoxes();
+        foreach(medToolBox* toolBox, toolBoxes) {
+            toolBox->setVisible(false);
+            d->toolbox_container->addToolBox(toolBox);
+        }
 
-      connect(dataSource,SIGNAL(dataImport(QString)),this,SLOT(onFileImport(QString)));
-      connect(dataSource,SIGNAL(getDataFailed(QString)), this, SLOT(onGetDataFailed(QString)));
-		}	
+      connect(dataSource,SIGNAL(dataReceived(QString)),this,SLOT(onFileImport(QString)));
+      connect(dataSource,SIGNAL(dataReceivingFailed(QString)), this, SLOT(onGetDataFailed(QString)));
+    }
   
     // Jobs should be added as the last item so that they appear at the bottom
     d->toolbox_container->addToolBox(d->toolbox_jobs);
@@ -364,30 +362,12 @@ void medBrowserArea::onGetDataFailed(QString fileName)
 }
 
 void medBrowserArea::onSourceIndexChanged(int index)
-{	
-  if (d->stack->currentIndex() > 2)
-	{
-    for (unsigned int i = 0;i < d->data_sources[d->stack->currentIndex() - 3]->getNumberOfAdditionalToolBoxes();++i)
-      d->data_sources[d->stack->currentIndex() - 3]->getAdditionalToolBox(i)->setVisible(false);
-  }		
-		
-  d->stack->setCurrentIndex(index);
-
-  if(index == 2) {
-    d->toolbox_pacs_host->setVisible(true);
-    d->toolbox_pacs_nodes->setVisible(true);
-    d->toolbox_pacs_search->setVisible(true);
-  } else {
-    d->toolbox_pacs_host->setVisible(false);
-    d->toolbox_pacs_nodes->setVisible(false);
-    d->toolbox_pacs_search->setVisible(false);
-  }
-	
-  if (index > 2)
-  {
-    for (unsigned int i = 0;i < d->data_sources[index - 3]->getNumberOfAdditionalToolBoxes();++i)
-      d->data_sources[index - 3]->getAdditionalToolBox(i)->setVisible(true);
-  }
+{
+    qDebug() << index;
+    qDebug() << d->stack->currentIndex();
+    setToolBoxesVisible(d->stack->currentIndex(),false);
+    setToolBoxesVisible(index, true);
+    d->stack->setCurrentIndex(index);
 }
 
 void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
@@ -407,4 +387,19 @@ void medBrowserArea::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
     d->toolbox_jobs->stack()->setLabel(mover, "moving");
 
     QThreadPool::globalInstance()->start(mover);
+}
+
+void medBrowserArea::setToolBoxesVisible(int index, bool visible )
+{
+    if(index == 2) {
+        d->toolbox_pacs_host->setVisible(visible);
+        d->toolbox_pacs_nodes->setVisible(visible);
+        d->toolbox_pacs_search->setVisible(visible);
+    }
+
+    if (index > 2) {
+        QList<medToolBox*> toolBoxes = d->data_sources[index-3]->getToolBoxes();
+        foreach(medToolBox* toolBox, toolBoxes)
+            toolBox->setVisible(visible);
+    }
 }
