@@ -21,57 +21,34 @@
 #define MEDDATABASECONTROLLER_H
 
 #include "medSqlExport.h"
+#include "medDatabaseControllerImpl.h"
 
-#include <medCore/medDataIndex.h>
+class medAbstractDbController;
 
-#include <QtCore>
-#include <QtSql>
-
-class dtkAbstractData;
-
+/**
+ * This is just a singleton that instantiates one medDatabaseControllerImpl implementation
+ */
 class MEDSQL_EXPORT medDatabaseController : public QObject
 {
     Q_OBJECT
 
 public:
-    static QPointer<medDatabaseController> instance(void);
+
+    /**
+    * get an instance of medDatabaseControllerImpl, not of medDatabaseController
+    * @return QPointer<medDbController>
+    */
+    static QPointer<medDatabaseControllerImpl> instance(void);
     
-    void destroy(void);
-
-    QSqlDatabase *database(void);
-
-    bool createConnection(void);
-    bool  closeConnection(void);
-
-    medDataIndex indexForPatient(int id);
-    medDataIndex indexForStudy  (int id);
-    medDataIndex indexForSeries (int id);
-    medDataIndex indexForImage  (int id);
-
-    QStringList patientNames(void);
-
-    dtkAbstractData *read(const QString& file);
-    dtkAbstractData *read(const medDataIndex& index);
-    dtkAbstractData *read(int patientId, int studyId, int seriesId);
-    dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId);
-
-signals:
-    void updated(void);
-
-public slots:
-    void import(const QString& file);
+    /**
+    * destroy instance of medDbController
+    */
+    static void destroy(void);
 
 private:
-    void createPatientTable(void);
-    void   createStudyTable(void);
-    void  createSeriesTable(void);
-    void   createImageTable(void);
-
-private:
-    QSqlDatabase m_database;
-
-private:
-    static medDatabaseController *s_instance;
+    static medDatabaseControllerImpl *s_instance;
 };
+
+MEDSQL_EXPORT medAbstractDbController* createDbController();
 
 #endif

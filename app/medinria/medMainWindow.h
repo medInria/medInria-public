@@ -34,7 +34,7 @@ public:
     ~medMainWindow(void);
 
     void readSettings(void);
-    void writeSettings(void);
+    void writeSettings();
 
 public slots:
     void setWallScreen(bool full);
@@ -45,7 +45,8 @@ public slots:
 
     void onConfigurationTriggered(QAction *action);
     void onQuit(void);
-
+    void onEditSettings(void);
+    
     void open(const medDataIndex& index);
     void open(const QString& file);
 

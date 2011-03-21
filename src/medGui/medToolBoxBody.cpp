@@ -18,7 +18,7 @@
  */
 
 #include "medToolBoxBody.h"
-#include <medGui/medToolBoxTab.h>
+#include "medToolBoxTab.h"
 
 class medToolBoxBodyPrivate
 {

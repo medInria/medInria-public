@@ -20,8 +20,8 @@
 #ifndef MEDTOOLBOXREGISTRATIONCUSTOM_H
 #define MEDTOOLBOXREGISTRATIONCUSTOM_H
 
-#include "medGuiExport.h"
 #include "medToolBox.h"
+#include "medGuiExport.h"
 
 class medToolBoxRegistration;
 class medToolBoxRegistrationCustomPrivate;

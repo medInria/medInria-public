@@ -25,6 +25,7 @@ project(medSql)
 
 set(${PROJECT_NAME}_HEADERS
   medDatabaseController.h
+  medDatabaseControllerImpl.h
   medDatabaseExporter.h
   medDatabaseImporter.h
   medDatabaseItem.h
@@ -36,9 +37,10 @@ set(${PROJECT_NAME}_HEADERS
   medDatabaseNavigatorItemLoader.h
   medDatabaseNavigatorScene.h
   medDatabaseNavigatorView.h
-  medDatabaseNonPersitentController.h
-  medDatabaseNonPersitentItem.h
-  medDatabaseNonPersitentReader.h
+  medDatabaseNonPersistentController.h
+  medDatabaseNonPersistentControllerImpl.h
+  medDatabaseNonPersistentItem.h
+  medDatabaseNonPersistentReader.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
   medDatabasePreviewController.h
@@ -49,10 +51,12 @@ set(${PROJECT_NAME}_HEADERS
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
   medDatabasePreviewView.h
-  medDatabaseReader.h)
+  medDatabaseReader.h
+  )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseController.h
+  medDatabaseControllerImpl.h
   medDatabaseExporter.h
   medDatabaseImporter.h
   medDatabaseModel.h
@@ -62,9 +66,10 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseNavigatorItemGroup.h
   medDatabaseNavigatorItemLoader.h
   medDatabaseNavigatorView.h
-  medDatabaseNonPersitentController.h
-  medDatabaseNonPersitentItem.h
-  medDatabaseNonPersitentReader.h
+  medDatabaseNonPersistentController.h
+  medDatabaseNonPersistentControllerImpl.h
+  medDatabaseNonPersistentItem.h
+  medDatabaseNonPersistentReader.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
   medDatabasePreviewItem.h
@@ -73,10 +78,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
   medDatabasePreviewView.h
-  medDatabaseReader.h)
+  medDatabaseReader.h
+  )
 
 set(${PROJECT_NAME}_SOURCES
   medDatabaseController.cpp
+  medDatabaseControllerImpl.cpp
   medDatabaseExporter.cpp
   medDatabaseImporter.cpp
   medDatabaseItem.cpp
@@ -89,9 +96,10 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseNavigatorItemLoader.cpp
   medDatabaseNavigatorScene.cpp
   medDatabaseNavigatorView.cpp
-  medDatabaseNonPersitentController.cpp
-  medDatabaseNonPersitentItem.cpp
-  medDatabaseNonPersitentReader.cpp
+  medDatabaseNonPersistentController.cpp
+  medDatabaseNonPersistentControllerImpl.cpp
+  medDatabaseNonPersistentItem.cpp
+  medDatabaseNonPersistentReader.cpp
   medDatabasePreview.cpp
   medDatabasePreviewArrow.cpp
   medDatabasePreviewController.cpp
@@ -102,7 +110,8 @@ set(${PROJECT_NAME}_SOURCES
   medDatabasePreviewSelector.cpp
   medDatabasePreviewTooltip.cpp
   medDatabasePreviewView.cpp
-  medDatabaseReader.cpp)
+  medDatabaseReader.cpp
+  )
 
 ## #################################################################
 ## Build rules

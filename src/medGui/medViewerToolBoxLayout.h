@@ -20,11 +20,12 @@
 #ifndef MEDVIEWERTOOLBOXLAYOUT_H
 #define MEDVIEWERTOOLBOXLAYOUT_H
 
-#include <medGui/medToolBox.h>
+#include "medGuiExport.h"
+#include "medToolBox.h"
 
 class medViewerToolBoxLayoutPrivate;
 
-class medViewerToolBoxLayout : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxLayout : public medToolBox
 {
     Q_OBJECT
 

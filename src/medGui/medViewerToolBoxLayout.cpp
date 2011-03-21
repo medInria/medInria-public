@@ -18,9 +18,8 @@
  */
 
 
-#include <medGui/medToolBoxTab.h>
-#include <medGui/medLayoutChooser.h>
-
+#include "medToolBoxTab.h"
+#include "medLayoutChooser.h"
 #include "medViewerToolBoxLayout.h"
 
 class medViewerToolBoxLayoutPrivate
