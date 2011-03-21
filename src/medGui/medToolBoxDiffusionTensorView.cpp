@@ -1,4 +1,6 @@
 #include "medToolBoxDiffusionTensorView.h"
+#include <dtkCore/dtkAbstractViewInteractor.h>
+#include <dtkCore/dtkAbstractView.h>
 #include <math.h>
 
 class medToolBoxDiffusionTensorViewPrivate
@@ -19,21 +21,20 @@ public:
     QCheckBox*    hideShowAxial;
     QCheckBox*    hideShowCoronal;
     QCheckBox*    hideShowSagittal;
+
+    QStringList glyphShapes;
 };
 
 medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
 {
     QWidget* displayWidget = new QWidget(this);
 
+    d->glyphShapes = *(new QStringList());
+    d->glyphShapes << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics";
+
     // combobox to control the glyph shape
     d->glyphShape = new QComboBox(displayWidget);
-    d->glyphShape->addItem("Lines");
-    d->glyphShape->addItem("Arrows");
-    d->glyphShape->addItem("Disks");
-    d->glyphShape->addItem("Cylinders");
-    d->glyphShape->addItem("Cubes");
-    d->glyphShape->addItem("Ellipsoids");
-    d->glyphShape->addItem("Superquadrics");
+    d->glyphShape->addItems(d->glyphShapes);
 
     QHBoxLayout* glyphShapeLayout = new QHBoxLayout;
     glyphShapeLayout->addWidget(new QLabel("Shape: "));
@@ -216,8 +217,74 @@ medToolBoxDiffusionTensorView::~medToolBoxDiffusionTensorView()
     d = NULL;
 }
 
-void medToolBoxDiffusionTensorView::update (dtkAbstractView *view)
+QString medToolBoxDiffusionTensorView::glyphShape(void)
 {
+    return d->glyphShape->currentText();
+}
+
+int medToolBoxDiffusionTensorView::sampleRate(void)
+{
+    return d->sampleRate->value();
+}
+
+bool medToolBoxDiffusionTensorView::isFlipX(void)
+{
+    return d->flipX->checkState() == Qt::Checked;
+}
+
+bool medToolBoxDiffusionTensorView::isFlipY(void)
+{
+    return d->flipY->checkState() == Qt::Checked;
+}
+
+bool medToolBoxDiffusionTensorView::isFlipZ(void)
+{
+    return d->flipZ->checkState() == Qt::Checked;
+}
+
+int medToolBoxDiffusionTensorView::eigenVector(void)
+{
+    if (d->eigenVectorV1->isChecked())
+    {
+        return 1;
+    }
+    else if (d->eigenVectorV2->isChecked())
+    {
+        return 2;
+    }
+    else if (d->eigenVectorV3->isChecked())
+    {
+        return 3;
+    }
+}
+
+int medToolBoxDiffusionTensorView::glyphResolution(void)
+{
+    return d->glyphResolution->value();
+}
+
+double medToolBoxDiffusionTensorView::scale(void)
+{
+    int minorScale = d->minorScaling->value();
+    int majorScaleExponent = d->majorScaling->value();
+    double majorScale = pow(10.0, majorScaleExponent);
+    double scale = majorScale * minorScale;
+    return scale;
+}
+
+bool medToolBoxDiffusionTensorView::isShowAxial(void)
+{
+    return d->hideShowAxial->checkState() == Qt::Checked;
+}
+
+bool medToolBoxDiffusionTensorView::isShowCoronal(void)
+{
+    return d->hideShowCoronal->checkState() == Qt::Checked;
+}
+
+bool medToolBoxDiffusionTensorView::isShowSagittal(void)
+{
+    return d->hideShowSagittal->checkState() == Qt::Checked;
 }
 
 void medToolBoxDiffusionTensorView::onFlipXCheckBoxStateChanged(int checkBoxState)
@@ -308,4 +375,28 @@ void medToolBoxDiffusionTensorView::onHideShowSagittalChanged(int checkBoxState)
         emit hideShowSagittal(false);
     else if (checkBoxState == Qt::Checked)
         emit hideShowSagittal(true);
+}
+
+void medToolBoxDiffusionTensorView::update (dtkAbstractView *view)
+{
+    if (!view)
+        return;
+
+    // the tensor view toolbox is expected to control all tensors
+    // i.e. is general to all tensors, hence we do not update its values
+    // for every view
+
+//    //dtkAbstractViewInteractor* interactor = view->interactor("Tensor");
+//    dtkAbstractViewInteractor* interactor = view->interactor("v3dViewTensorInteractor");
+//
+//    if(interactor)
+//    {
+//        QString glyphShape = interactor->property("GlyphShape");
+//
+//        int index = d->glyphShapes.indexOf(glyphShape);
+//
+//        d->glyphShape->blockSignals(true);
+//        d->glyphShape->setCurrentIndex(index);
+//        d->glyphShape->blockSignals(false);
+//    }
 }

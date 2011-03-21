@@ -148,9 +148,52 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
         connect(d->tensorViewToolBox, SIGNAL(hideShowAxial(bool)), interactor, SLOT(onHideShowAxialPropertySet(bool)));
         connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), interactor, SLOT(onHideShowCoronalPropertySet(bool)));
         connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), interactor, SLOT(onHideShowSagittalPropertySet(bool)));
+
+        updateTensorInteractorWithToolboxValues(interactor, d->tensorViewToolBox);
     }
 
     view->setData( d->diffusionToolBox->output(), 0 );
+}
+
+void medViewerConfigurationDiffusion::updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox)
+{
+    // we are temporary using Qt's reflection in this function to call the slots in the interactor
+    // without casting to a specific type (which is in a plugin)
+    // this code will be modified once a refactor in dtk property system is done
+    // (we might switch to QVariant instead of strings)
+    // TODO refactor this...
+
+    interactor->setProperty("GlyphShape", tensorViewToolBox->glyphShape());
+
+    int sampleRate = tensorViewToolBox->sampleRate();
+    QMetaObject::invokeMethod( interactor, "onSampleRatePropertySet", Qt::QueuedConnection, Q_ARG( int, sampleRate ) );
+
+    bool isFlipX = tensorViewToolBox->isFlipX();
+    interactor->setProperty("FlipX", isFlipX ? "true" : "false");
+
+    bool isFlipY = tensorViewToolBox->isFlipY();
+    interactor->setProperty("FlipY", isFlipY ? "true" : "false");
+
+    bool isFlipZ = tensorViewToolBox->isFlipZ();
+    interactor->setProperty("FlipZ", isFlipZ ? "true" : "false");
+
+    int eigenVector = tensorViewToolBox->eigenVector();
+    QMetaObject::invokeMethod( interactor, "onEigenVectorPropertySet", Qt::QueuedConnection, Q_ARG( int, eigenVector ) );
+
+    int glyphResolution = tensorViewToolBox->glyphResolution();
+    QMetaObject::invokeMethod( interactor, "onGlyphResolutionPropertySet", Qt::QueuedConnection, Q_ARG( int, glyphResolution ) );
+
+    double scale = tensorViewToolBox->scale();
+    QMetaObject::invokeMethod( interactor, "onScalingPropertySet", Qt::QueuedConnection, Q_ARG( double, scale ) );
+
+    bool isShowAxial = tensorViewToolBox->isShowAxial();
+    QMetaObject::invokeMethod( interactor, "onHideShowAxialPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowAxial ) );
+
+    bool isShowCoronal = tensorViewToolBox->isShowCoronal();
+    QMetaObject::invokeMethod( interactor, "onHideShowCoronalPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowCoronal ) );
+
+    bool isShowSagittal = tensorViewToolBox->isShowSagittal();
+    QMetaObject::invokeMethod( interactor, "onHideShowSagittalPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowSagittal ) );
 }
 
 void medViewerConfigurationDiffusion::onViewRemoved (dtkAbstractView *view)

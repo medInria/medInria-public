@@ -5,6 +5,9 @@
 #include <QtCore>
 
 #include <medGui/medViewerConfiguration.h>
+#include <medGui/medToolBoxDiffusionTensorView.h>
+#include <dtkCore/dtkAbstractViewInteractor.h>
+
 
 class medViewContainerStack;
 class medViewerConfigurationDiffusionPrivate;
@@ -52,6 +55,9 @@ public slots:
 
 private:
     medViewerConfigurationDiffusionPrivate *d;
+
+    /** Updates the controls in the tensor toolbox with the current values of the interactor. */
+    void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox);
 };
 
 medViewerConfiguration *createMedViewerConfigurationDiffusion(void);
