@@ -58,6 +58,8 @@ public:
     virtual QList<dtkAbstractView *> views (void) const;
 
     virtual QString viewProperty (const QString &key) const;
+    void setInfo(const QString& info);
+    QString info(void);
     
 signals:
     void dropped(const medDataIndex& index);

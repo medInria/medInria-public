@@ -196,16 +196,24 @@ void medViewContainer::paintEvent(QPaintEvent *event)
     painter.setBrush(QColor(0x38, 0x38, 0x38));
     painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
 
-    if (!this->view() && d->viewProperties.count()) {
+    if (!this->view() && (d->viewProperties.count() ||
+                          !d->viewInfo.isEmpty()) ) 
+    {
         painter.setPen(Qt::white);
-	QFont font = painter.font();
-	font.setPointSize (18);
-	painter.setFont (font);
-	QString text;
-	QList<QString> keys = d->viewProperties.keys();
-	foreach (QString key, keys)
-	  text += d->viewProperties[key] + "\n";
-	painter.drawText (event->rect(), Qt::AlignCenter, text);
+        QFont font = painter.font();
+        font.setPointSize (18);
+        painter.setFont (font);
+        QString text;
+        
+        //Add View Info:
+        if (!d->viewInfo.isEmpty())
+            //    Debug()<< "viewInfo" << d->viewInfo;
+            text += d->viewInfo + "\n";
+        
+        QList<QString> keys = d->viewProperties.keys();
+        foreach (QString key, keys)
+            text += d->viewProperties[key] + "\n";
+        painter.drawText (event->rect(), Qt::AlignCenter, text);
     }
     
     painter.end();
@@ -227,4 +235,14 @@ QString medViewContainer::viewProperty (const QString &key) const
 void medViewContainer::onViewFullScreen (bool value)
 {
     Q_UNUSED (value);
+}
+
+void medViewContainer::setInfo(const QString& info)
+{
+    d->viewInfo = info;
+}
+
+QString medViewContainer::info()
+{
+    return d->viewInfo;
 }
