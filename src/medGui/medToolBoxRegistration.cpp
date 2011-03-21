@@ -31,7 +31,6 @@
 #include <medCore/medMessageController.h>
 #include <medCore/medAbstractView.h>
 
-#include <medGui/medDropSite.h>
 #include <medGui/medToolBoxTab.h>
 #include <medGui/medToolBoxFactory.h>
 
@@ -43,12 +42,12 @@
 class medToolBoxRegistrationPrivate
 {
 public:
-    medDropSite *processDropSiteFixed;
-    medDropSite *processDropSiteMoving;
+//    medDropSite *processDropSiteFixed;
+//    medDropSite *processDropSiteMoving;
 	
-    QRadioButton *blendRadio;
-    QRadioButton *checkerboardRadio;
-    QSlider *layoutFuseSlider;
+//    QRadioButton *blendRadio;
+//    QRadioButton *checkerboardRadio;
+//    QSlider *layoutFuseSlider;
 
     QPushButton * saveImageButton;
     QPushButton * saveTransButton;
@@ -108,9 +107,9 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     layoutButtonGroup->addButton(layoutButtonFuse);
     layoutButtonGroup->setExclusive(true);
     
-    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
-    d->layoutFuseSlider->setRange(1, 100);
-    d->layoutFuseSlider->setValue(50);
+//    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
+//    d->layoutFuseSlider->setRange(1, 100);
+//    d->layoutFuseSlider->setValue(50);
     
 //    d->blendRadio = new QRadioButton("Blend", this);
 //    d->checkerboardRadio = new QRadioButton("Checkerboard", this);
@@ -129,10 +128,10 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     layoutButtonLayout->addWidget(layoutButtonCompare);
     layoutButtonLayout->addWidget(layoutButtonFuse);
     
-    QVBoxLayout *layoutLayout = new QVBoxLayout(this);
+    QVBoxLayout *layoutLayout = new QVBoxLayout;
     layoutLayout->addLayout(layoutButtonLayout);
 //    layoutLayout->addLayout(radioGroupLayout);
-    layoutLayout->addWidget(d->layoutFuseSlider);
+//    layoutLayout->addWidget(d->layoutFuseSlider);
     QWidget * layoutSection = new QWidget(this);
     layoutSection->setLayout(layoutLayout);
     
@@ -197,25 +196,25 @@ dtkAbstractDataImage *medToolBoxRegistration::movingData(void)
     return d->movingData;
 }
 
-void medToolBoxRegistration::onBlendModeSet(bool value)
-{
-    if (value)
-        if (d->fuseView)
-            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-                interactor->setProperty("FusionStyle", "blend");
-                d->fuseView->update();
-            }
-}
+//void medToolBoxRegistration::onBlendModeSet(bool value)
+//{
+//    if (value)
+//        if (d->fuseView)
+//            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+//                interactor->setProperty("FusionStyle", "blend");
+//                d->fuseView->update();
+//            }
+//}
 
-void medToolBoxRegistration::onCheckerboardModeSet(bool value)
-{
-    if (value)
-        if (d->fuseView)
-            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-                interactor->setProperty("FusionStyle", "checkerboard");
-                d->fuseView->update();
-            }
-}
+//void medToolBoxRegistration::onCheckerboardModeSet(bool value)
+//{
+//    if (value)
+//        if (d->fuseView)
+//            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+//                interactor->setProperty("FusionStyle", "checkerboard");
+//                d->fuseView->update();
+//            }
+//}
 
 void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 {
@@ -238,14 +237,6 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 
 
     if (d->fuseView)
-//        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-//            if (d->movingData) {
-//                interactor->setData(d->fixedData,   0);
-//                interactor->setData(d->movingData,  1);
-//                d->fuseView->reset();
-//                d->fuseView->update();
-//            }
-//        }
     {
         if (d->movingView && d->fuseView->layerCount()==1)
         {
@@ -352,8 +343,7 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
 
 void medToolBoxRegistration::clear(void)
 {
-    d->processDropSiteFixed->clear();
-    d->processDropSiteMoving->clear();
+    
     //maybe clear the customtoolbox?
     if (d->customToolBox)
         d->customToolBox->clear();

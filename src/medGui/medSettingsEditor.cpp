@@ -99,7 +99,7 @@ medSettingsEditor::medSettingsEditor(QWidget *parent) :
     connect(d->reset,SIGNAL(clicked()),
             this,SLOT(onResetClicked()));
 
-    QHBoxLayout * buttonLayout = new QHBoxLayout(this);
+    QHBoxLayout * buttonLayout = new QHBoxLayout;
     buttonLayout->addWidget(d->advanced);
     buttonLayout->addWidget(d->reset);
     buttonLayout->addWidget(d->cancel);

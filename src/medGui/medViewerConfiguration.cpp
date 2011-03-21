@@ -152,11 +152,6 @@ bool medViewerConfiguration::isLayoutToolBox(const medToolBox * toolbox)
     return (toolbox == d->layoutToolBox);
 }
 
-//void medViewerConfiguration::setupViewContainerStack()
-//{
-//    qDebug()<< "pfffff";
-//}
-
 medViewContainer* medViewerConfiguration::currentViewContainer() const
 {
     return d->viewContainerStack->current();

@@ -59,8 +59,8 @@ public slots:
     void onMovingImageDropped(const medDataIndex& index);
     void onFixedImageDropped(const medDataIndex& index);
     
-    void onBlendModeSet(bool value);
-    void onCheckerboardModeSet(bool value);
+//    void onBlendModeSet(bool value);
+//    void onCheckerboardModeSet(bool value);
 	
     void onToolBoxChosen(const QString&);
     void clear(void);
