@@ -26,12 +26,10 @@ class v3dViewTensorInteractorPrivate
 {
 public:
     dtkAbstractData        *data;
-    v3dView         	   *view;
+    v3dView                *view;
     vtkTensorManager       *manager;
-    // the manager handles tensors in vtk format
-	vtkStructuredPoints    *tensors;
 
-	// the filters will convert from itk tensor image format to vtkStructuredPoint (format handled by the tensor manager)
+    // the filters will convert from itk tensor image format to vtkStructuredPoint (format handled by the tensor manager)
     itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::Pointer filterFloat;
     TensorImagePointerFloat      datasetFloat;
 
@@ -44,13 +42,12 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): dtkAbstractViewInteractor(),
     d->data    = 0;
     d->view    = 0;
     d->manager = vtkTensorManager::New();
-	d->tensors = vtkStructuredPoints::New();
 
-	d->datasetFloat = 0;
-	d->filterFloat = 0;
+    d->datasetFloat = 0;
+    d->filterFloat = 0;
 
-	d->datasetDouble = 0;
-	d->filterDouble = 0;
+    d->datasetDouble = 0;
+    d->filterDouble = 0;
 
     this->addProperty("GlyphShape", QStringList() << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics");
     this->addProperty("FlipX", QStringList() << "true" << "false");
@@ -96,57 +93,57 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
     // up to the moment 2 itk tensor image formats are supported
     // we need to convert them to vtkStructuredPoints so it's understood by the tensor manager
     if (description.compare("itkDataTensorImageFloat3") == 0) {
-		if (TensorImageTypeFloat *dataset = static_cast<TensorImageTypeFloat *>(data->data())) {
+        if (TensorImageTypeFloat *dataset = static_cast<TensorImageTypeFloat *>(data->data())) {
 
-			d->datasetFloat = dataset;
+            d->datasetFloat = dataset;
 
-			d->filterFloat = itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::New();
+            d->filterFloat = itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::New();
 
-			d->filterFloat->SetInput(dataset);
+            d->filterFloat->SetInput(dataset);
 
-			// this line generates the vtkTensors, otherwise is not generated, even if the next filter
-			// in the pipeline is connected and Update() is called
-			d->filterFloat->Update();
+            // this line generates the vtkTensors, otherwise is not generated, even if the next filter
+            // in the pipeline is connected and Update() is called
+            d->filterFloat->Update();
 
-			// we need to call this function because GetOutput() just returns the input
-			d->tensors = d->filterFloat->GetVTKTensors();
+            // we need to call this function because GetOutput() just returns the input
+            vtkStructuredPoints* tensors = d->filterFloat->GetVTKTensors();
 
-			d->manager->SetInput(d->tensors);
+            d->manager->SetInput(tensors);
 
-			// TODO this should not be here once the toolbox is coded
-			d->manager->ResetPosition();
+            // TODO this should not be here once the toolbox is coded
+            d->manager->ResetPosition();
 
-			d->manager->Update();
+            d->manager->Update();
 
-			d->data = data;
-		}
+            d->data = data;
+        }
     } else if (description.compare("itkDataTensorImageDouble3") == 0) {
-		if (TensorImageTypeDouble *dataset = static_cast<TensorImageTypeDouble *>(data->data())) {
+        if (TensorImageTypeDouble *dataset = static_cast<TensorImageTypeDouble *>(data->data())) {
 
-			d->datasetDouble = dataset;
+            d->datasetDouble = dataset;
 
-			d->filterDouble = itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeDouble>::New();
+            d->filterDouble = itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeDouble>::New();
 
-			d->filterDouble->SetInput(dataset);
+            d->filterDouble->SetInput(dataset);
 
-			// this line generates the vtkTensors, otherwise is not generated, even if the next filter
-			// in the pipeline is connected and Update() is called
-			d->filterDouble->Update();
+            // this line generates the vtkTensors, otherwise is not generated, even if the next filter
+            // in the pipeline is connected and Update() is called
+            d->filterDouble->Update();
 
-			// we need to call this function because GetOutput() just returns the input
-			d->tensors = d->filterDouble->GetVTKTensors();
+            // we need to call this function because GetOutput() just returns the input
+            vtkStructuredPoints* tensors = d->filterDouble->GetVTKTensors();
 
-			d->manager->SetInput(d->tensors);
+            d->manager->SetInput(tensors);
 
-			// TODO this should not be here once the toolbox is coded
-			d->manager->ResetPosition();
+            // TODO this should not be here once the toolbox is coded
+            d->manager->ResetPosition();
 
-			d->manager->Update();
+            d->manager->Update();
 
-			d->data = data;
-		}
+            d->data = data;
+        }
     } else {
-    	qDebug() << "Unrecognized tensor data type: " << description;
+        qDebug() << "Unrecognized tensor data type: " << description;
     }
 }
 

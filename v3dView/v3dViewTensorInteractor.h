@@ -22,34 +22,34 @@ class dtkAbstractView;
 class V3DVIEWPLUGIN_EXPORT v3dViewTensorInteractor: public dtkAbstractViewInteractor
 {
 
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	v3dViewTensorInteractor();
-	virtual ~v3dViewTensorInteractor();
+    v3dViewTensorInteractor();
+    virtual ~v3dViewTensorInteractor();
 
-	virtual QString description(void) const;
-	virtual QStringList handled(void) const;
+    virtual QString description(void) const;
+    virtual QStringList handled(void) const;
 
-	static bool registered(void);
+    static bool registered(void);
 
-	virtual void setData(dtkAbstractData *data);
-	dtkAbstractData *data (void);
+    virtual void setData(dtkAbstractData *data);
+    dtkAbstractData *data (void);
 
-	virtual void setView(dtkAbstractView *view);
-	dtkAbstractView *view (void);
+    virtual void setView(dtkAbstractView *view);
+    dtkAbstractView *view (void);
 
-	virtual void enable(void);
-	virtual void disable(void);
+    virtual void enable(void);
+    virtual void disable(void);
 
 public slots:
-	virtual void onPropertySet (const QString& key, const QString& value);
+    virtual void onPropertySet (const QString& key, const QString& value);
 
-	/** Change glyph shape */
-	void onGlyphShapePropertySet (const QString& glyphShape);
+    /** Change glyph shape */
+    void onGlyphShapePropertySet (const QString& glyphShape);
 
-	/** Modify sample rate */
-	void onSampleRatePropertySet (int sampleRate);
+    /** Modify sample rate */
+    void onSampleRatePropertySet (int sampleRate);
 
     /** Flip tensors along the X axis */
     void onFlipXPropertySet (const QString& flipX);
