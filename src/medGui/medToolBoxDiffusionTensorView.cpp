@@ -161,27 +161,32 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     connect(majorScalingSpinBox, SIGNAL(valueChanged(int)), d->majorScaling, SLOT(setValue(int)));
 
     // hide or show axial, coronal, and sagittal
-    d->hideShowAxial = new QCheckBox("Hide/Show Axial", displayWidget);
-    d->hideShowCoronal = new QCheckBox("Hide/Show Coronal", displayWidget);
-    d->hideShowSagittal = new QCheckBox("Hide/Show Sagittal", displayWidget);
+    d->hideShowAxial = new QCheckBox("Axial", displayWidget);
+    d->hideShowCoronal = new QCheckBox("Coronal", displayWidget);
+    d->hideShowSagittal = new QCheckBox("Sagittal", displayWidget);
 
     d->hideShowAxial->setChecked(true);
     d->hideShowCoronal->setChecked(true);
     d->hideShowSagittal->setChecked(true);
 
+    QHBoxLayout* slicesLayout = new QHBoxLayout;
+    slicesLayout->addWidget(d->hideShowAxial);
+    slicesLayout->addWidget(d->hideShowCoronal);
+    slicesLayout->addWidget(d->hideShowSagittal);
+
     // layout all the controls in the toolbox
     QVBoxLayout* layout = new QVBoxLayout(displayWidget);
     layout->addLayout(glyphShapeLayout);
     layout->addLayout(sampleRateLayout);
+    //layout->addWidget(new QLabel("Flip axes:"));
     layout->addLayout(flipAxesLayout);
     layout->addLayout(eigenLayout);
     layout->addWidget(d->reverseBackgroundColor);
     layout->addLayout(glyphResolutionLayout);
     layout->addLayout(minorScalingLayout);
     layout->addLayout(majorScalingLayout);
-    layout->addWidget(d->hideShowAxial);
-    layout->addWidget(d->hideShowCoronal);
-    layout->addWidget(d->hideShowSagittal);
+    layout->addWidget(new QLabel("Hide or show slices:"));
+    layout->addLayout(slicesLayout);
 
 
     // connect all the signals
