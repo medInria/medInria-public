@@ -52,15 +52,14 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): dtkAbstractViewInteractor(),
 	d->datasetDouble = 0;
 	d->filterDouble = 0;
 
-	// set default glyph shape
-	// TODO: lines are selected as the default glyph shape as it's the first item in the tensor view toolbox's glyph combobox
-	// this should be changed to synchronize at initialization time
-	d->manager->SetGlyphShapeToLine();
-
     this->addProperty("GlyphShape", QStringList() << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics");
     this->addProperty("FlipX", QStringList() << "true" << "false");
     this->addProperty("FlipY", QStringList() << "true" << "false");
     this->addProperty("FlipZ", QStringList() << "true" << "false");
+
+    // set default properties
+    d->manager->SetGlyphShapeToLine();
+    this->setProperty("GlyphShape", "Lines");
 }
 
 v3dViewTensorInteractor::~v3dViewTensorInteractor()
