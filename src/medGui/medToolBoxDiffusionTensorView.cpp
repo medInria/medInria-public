@@ -6,46 +6,46 @@
 class medToolBoxDiffusionTensorViewPrivate
 {
 public:
-    QComboBox*    glyphShape;
-    QSlider*      sampleRate;
-    QCheckBox*    flipX;
-    QCheckBox*    flipY;
-    QCheckBox*    flipZ;
-    QRadioButton* eigenVectorV1;
-    QRadioButton* eigenVectorV2;
-    QRadioButton* eigenVectorV3;
-    QCheckBox*    reverseBackgroundColor;
-    QSlider*      glyphResolution;
-    QSlider*      minorScaling;
-    QSlider*      majorScaling;
-    QCheckBox*    hideShowAxial;
-    QCheckBox*    hideShowCoronal;
-    QCheckBox*    hideShowSagittal;
+    QComboBox*    glyphShapeComboBox;
+    QSlider*      sampleRateSlider;
+    QCheckBox*    flipXCheckBox;
+    QCheckBox*    flipYCheckBox;
+    QCheckBox*    flipZCheckBox;
+    QRadioButton* eigenVectorV1RadioButton;
+    QRadioButton* eigenVectorV2RadioButton;
+    QRadioButton* eigenVectorV3RadioButton;
+    QCheckBox*    reverseBackgroundColorCheckBox;
+    QSlider*      glyphResolutionSlider;
+    QSlider*      minorScalingSlider;
+    QSlider*      majorScalingSlider;
+    QCheckBox*    hideShowAxialCheckBox;
+    QCheckBox*    hideShowCoronalCheckBox;
+    QCheckBox*    hideShowSagittalCheckBox;
 
-    QStringList glyphShapes;
+    QStringList glyphShapesList;
 };
 
 medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
 {
     QWidget* displayWidget = new QWidget(this);
 
-    d->glyphShapes = *(new QStringList());
-    d->glyphShapes << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics";
+    d->glyphShapesList = *(new QStringList());
+    d->glyphShapesList << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics";
 
     // combobox to control the glyph shape
-    d->glyphShape = new QComboBox(displayWidget);
-    d->glyphShape->addItems(d->glyphShapes);
+    d->glyphShapeComboBox = new QComboBox(displayWidget);
+    d->glyphShapeComboBox->addItems(d->glyphShapesList);
 
     QHBoxLayout* glyphShapeLayout = new QHBoxLayout;
     glyphShapeLayout->addWidget(new QLabel("Shape: "));
-    glyphShapeLayout->addWidget(d->glyphShape);
+    glyphShapeLayout->addWidget(d->glyphShapeComboBox);
 
     // slider to control sample rate
-    d->sampleRate =  new QSlider(Qt::Horizontal, displayWidget);
-    d->sampleRate->setMinimum(1);
-    d->sampleRate->setMaximum(10);
-    d->sampleRate->setSingleStep(1);
-    d->sampleRate->setValue(1);
+    d->sampleRateSlider =  new QSlider(Qt::Horizontal, displayWidget);
+    d->sampleRateSlider->setMinimum(1);
+    d->sampleRateSlider->setMaximum(10);
+    d->sampleRateSlider->setSingleStep(1);
+    d->sampleRateSlider->setValue(1);
 
     QSpinBox* sampleRateSpinBox = new QSpinBox(displayWidget);
     sampleRateSpinBox->setMinimum(1);
@@ -55,54 +55,54 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
     QHBoxLayout* sampleRateLayout = new QHBoxLayout;
     sampleRateLayout->addWidget(new QLabel("Sample rate: "));
-    sampleRateLayout->addWidget(d->sampleRate);
+    sampleRateLayout->addWidget(d->sampleRateSlider);
     sampleRateLayout->addWidget(sampleRateSpinBox);
 
-    connect(d->sampleRate, SIGNAL(valueChanged(int)), sampleRateSpinBox, SLOT(setValue(int)));
-    connect(sampleRateSpinBox, SIGNAL(valueChanged(int)), d->sampleRate, SLOT(setValue(int)));
+    connect(d->sampleRateSlider, SIGNAL(valueChanged(int)), sampleRateSpinBox, SLOT(setValue(int)));
+    connect(sampleRateSpinBox, SIGNAL(valueChanged(int)), d->sampleRateSlider, SLOT(setValue(int)));
 
     // flipX, flipY and flipZ checkboxes
-    d->flipX = new QCheckBox("Flip X", displayWidget);
-    d->flipY = new QCheckBox("Flip Y", displayWidget);
-    d->flipZ = new QCheckBox("Flip Z", displayWidget);
+    d->flipXCheckBox = new QCheckBox("Flip X", displayWidget);
+    d->flipYCheckBox = new QCheckBox("Flip Y", displayWidget);
+    d->flipZCheckBox = new QCheckBox("Flip Z", displayWidget);
 
     QHBoxLayout* flipAxesLayout = new QHBoxLayout;
-    flipAxesLayout->addWidget(d->flipX);
-    flipAxesLayout->addWidget(d->flipY);
-    flipAxesLayout->addWidget(d->flipZ);
+    flipAxesLayout->addWidget(d->flipXCheckBox);
+    flipAxesLayout->addWidget(d->flipYCheckBox);
+    flipAxesLayout->addWidget(d->flipZCheckBox);
 
     // eigen vectors
-    d->eigenVectorV1 = new QRadioButton("v1", displayWidget);
-    d->eigenVectorV2 = new QRadioButton("v2", displayWidget);
-    d->eigenVectorV3 = new QRadioButton("v3", displayWidget);
+    d->eigenVectorV1RadioButton = new QRadioButton("v1", displayWidget);
+    d->eigenVectorV2RadioButton = new QRadioButton("v2", displayWidget);
+    d->eigenVectorV3RadioButton = new QRadioButton("v3", displayWidget);
 
     QButtonGroup *eigenVectorRadioGroup = new QButtonGroup(displayWidget);
-    eigenVectorRadioGroup->addButton(d->eigenVectorV1);
-    eigenVectorRadioGroup->addButton(d->eigenVectorV2);
-    eigenVectorRadioGroup->addButton(d->eigenVectorV3);
+    eigenVectorRadioGroup->addButton(d->eigenVectorV1RadioButton);
+    eigenVectorRadioGroup->addButton(d->eigenVectorV2RadioButton);
+    eigenVectorRadioGroup->addButton(d->eigenVectorV3RadioButton);
     eigenVectorRadioGroup->setExclusive(true);
 
     QHBoxLayout *eigenVectorGroupLayout = new QHBoxLayout;
-    eigenVectorGroupLayout->addWidget(d->eigenVectorV1);
-    eigenVectorGroupLayout->addWidget(d->eigenVectorV2);
-    eigenVectorGroupLayout->addWidget(d->eigenVectorV3);
+    eigenVectorGroupLayout->addWidget(d->eigenVectorV1RadioButton);
+    eigenVectorGroupLayout->addWidget(d->eigenVectorV2RadioButton);
+    eigenVectorGroupLayout->addWidget(d->eigenVectorV3RadioButton);
     //eigenVectorGroupLayout->addStretch(1);
 
     QVBoxLayout* eigenLayout = new QVBoxLayout;
     eigenLayout->addWidget(new QLabel("Eigen Vector for color-coding:"));
     eigenLayout->addLayout(eigenVectorGroupLayout);
 
-    d->eigenVectorV1->setChecked(true);
+    d->eigenVectorV1RadioButton->setChecked(true);
 
     // reverse background color
-    d->reverseBackgroundColor = new QCheckBox("Reverse Background Color", displayWidget);
+    d->reverseBackgroundColorCheckBox = new QCheckBox("Reverse Background Color", displayWidget);
 
     // slider to control glyph resolution
-    d->glyphResolution =  new QSlider(Qt::Horizontal, displayWidget);
-    d->glyphResolution->setMinimum(2);
-    d->glyphResolution->setMaximum(20);
-    d->glyphResolution->setSingleStep(1);
-    d->glyphResolution->setValue(6);
+    d->glyphResolutionSlider =  new QSlider(Qt::Horizontal, displayWidget);
+    d->glyphResolutionSlider->setMinimum(2);
+    d->glyphResolutionSlider->setMaximum(20);
+    d->glyphResolutionSlider->setSingleStep(1);
+    d->glyphResolutionSlider->setValue(6);
 
     QSpinBox* glyphResolutionSpinBox = new QSpinBox(displayWidget);
     glyphResolutionSpinBox->setMinimum(2);
@@ -112,18 +112,18 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
     QHBoxLayout* glyphResolutionLayout = new QHBoxLayout;
     glyphResolutionLayout->addWidget(new QLabel("Glyph resolution: "));
-    glyphResolutionLayout->addWidget(d->glyphResolution);
+    glyphResolutionLayout->addWidget(d->glyphResolutionSlider);
     glyphResolutionLayout->addWidget(glyphResolutionSpinBox);
 
-    connect(d->glyphResolution, SIGNAL(valueChanged(int)), glyphResolutionSpinBox, SLOT(setValue(int)));
-    connect(glyphResolutionSpinBox, SIGNAL(valueChanged(int)), d->glyphResolution, SLOT(setValue(int)));
+    connect(d->glyphResolutionSlider, SIGNAL(valueChanged(int)), glyphResolutionSpinBox, SLOT(setValue(int)));
+    connect(glyphResolutionSpinBox, SIGNAL(valueChanged(int)), d->glyphResolutionSlider, SLOT(setValue(int)));
 
     // minor scaling
-    d->minorScaling =  new QSlider(Qt::Horizontal, displayWidget);
-    d->minorScaling->setMinimum(1);
-    d->minorScaling->setMaximum(9);
-    d->minorScaling->setSingleStep(1);
-    d->minorScaling->setValue(1);
+    d->minorScalingSlider =  new QSlider(Qt::Horizontal, displayWidget);
+    d->minorScalingSlider->setMinimum(1);
+    d->minorScalingSlider->setMaximum(9);
+    d->minorScalingSlider->setSingleStep(1);
+    d->minorScalingSlider->setValue(1);
 
     QSpinBox* minorScalingSpinBox = new QSpinBox(displayWidget);
     minorScalingSpinBox->setMinimum(1);
@@ -133,18 +133,18 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
     QHBoxLayout* minorScalingLayout = new QHBoxLayout;
     minorScalingLayout->addWidget(new QLabel("Minor scaling: "));
-    minorScalingLayout->addWidget(d->minorScaling);
+    minorScalingLayout->addWidget(d->minorScalingSlider);
     minorScalingLayout->addWidget(minorScalingSpinBox);
 
-    connect(d->minorScaling, SIGNAL(valueChanged(int)), minorScalingSpinBox, SLOT(setValue(int)));
-    connect(minorScalingSpinBox, SIGNAL(valueChanged(int)), d->minorScaling, SLOT(setValue(int)));
+    connect(d->minorScalingSlider, SIGNAL(valueChanged(int)), minorScalingSpinBox, SLOT(setValue(int)));
+    connect(minorScalingSpinBox, SIGNAL(valueChanged(int)), d->minorScalingSlider, SLOT(setValue(int)));
 
     // major scaling
-    d->majorScaling =  new QSlider(Qt::Horizontal, displayWidget);
-    d->majorScaling->setMinimum(-10);
-    d->majorScaling->setMaximum(10);
-    d->majorScaling->setSingleStep(1);
-    d->majorScaling->setValue(0);
+    d->majorScalingSlider =  new QSlider(Qt::Horizontal, displayWidget);
+    d->majorScalingSlider->setMinimum(-10);
+    d->majorScalingSlider->setMaximum(10);
+    d->majorScalingSlider->setSingleStep(1);
+    d->majorScalingSlider->setValue(0);
 
     QSpinBox* majorScalingSpinBox = new QSpinBox(displayWidget);
     majorScalingSpinBox->setMinimum(-10);
@@ -154,25 +154,25 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
     QHBoxLayout* majorScalingLayout = new QHBoxLayout;
     majorScalingLayout->addWidget(new QLabel("Major scaling (10^n): "));
-    majorScalingLayout->addWidget(d->majorScaling);
+    majorScalingLayout->addWidget(d->majorScalingSlider);
     majorScalingLayout->addWidget(majorScalingSpinBox);
 
-    connect(d->majorScaling, SIGNAL(valueChanged(int)), majorScalingSpinBox, SLOT(setValue(int)));
-    connect(majorScalingSpinBox, SIGNAL(valueChanged(int)), d->majorScaling, SLOT(setValue(int)));
+    connect(d->majorScalingSlider, SIGNAL(valueChanged(int)), majorScalingSpinBox, SLOT(setValue(int)));
+    connect(majorScalingSpinBox, SIGNAL(valueChanged(int)), d->majorScalingSlider, SLOT(setValue(int)));
 
     // hide or show axial, coronal, and sagittal
-    d->hideShowAxial = new QCheckBox("Axial", displayWidget);
-    d->hideShowCoronal = new QCheckBox("Coronal", displayWidget);
-    d->hideShowSagittal = new QCheckBox("Sagittal", displayWidget);
+    d->hideShowAxialCheckBox = new QCheckBox("Axial", displayWidget);
+    d->hideShowCoronalCheckBox = new QCheckBox("Coronal", displayWidget);
+    d->hideShowSagittalCheckBox = new QCheckBox("Sagittal", displayWidget);
 
-    d->hideShowAxial->setChecked(true);
-    d->hideShowCoronal->setChecked(true);
-    d->hideShowSagittal->setChecked(true);
+    d->hideShowAxialCheckBox->setChecked(true);
+    d->hideShowCoronalCheckBox->setChecked(true);
+    d->hideShowSagittalCheckBox->setChecked(true);
 
     QHBoxLayout* slicesLayout = new QHBoxLayout;
-    slicesLayout->addWidget(d->hideShowAxial);
-    slicesLayout->addWidget(d->hideShowCoronal);
-    slicesLayout->addWidget(d->hideShowSagittal);
+    slicesLayout->addWidget(d->hideShowAxialCheckBox);
+    slicesLayout->addWidget(d->hideShowCoronalCheckBox);
+    slicesLayout->addWidget(d->hideShowSagittalCheckBox);
 
     // layout all the controls in the toolbox
     QVBoxLayout* layout = new QVBoxLayout(displayWidget);
@@ -181,7 +181,7 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     //layout->addWidget(new QLabel("Flip axes:"));
     layout->addLayout(flipAxesLayout);
     layout->addLayout(eigenLayout);
-    layout->addWidget(d->reverseBackgroundColor);
+    layout->addWidget(d->reverseBackgroundColorCheckBox);
     layout->addLayout(glyphResolutionLayout);
     layout->addLayout(minorScalingLayout);
     layout->addLayout(majorScalingLayout);
@@ -190,27 +190,27 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
 
     // connect all the signals
-    connect(d->glyphShape,              SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
-    connect(d->sampleRate,              SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
-    connect(d->glyphResolution,         SIGNAL(valueChanged(int)),                   this, SIGNAL(glyphResolutionChanged(int)));
+    connect(d->glyphShapeComboBox,              SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
+    connect(d->sampleRateSlider,              SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
+    connect(d->glyphResolutionSlider,         SIGNAL(valueChanged(int)),                   this, SIGNAL(glyphResolutionChanged(int)));
 
     // some signals (checkboxes) require one more step to translate from Qt::CheckState to bool
-    connect(d->flipX,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));
-    connect(d->flipY,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipYCheckBoxStateChanged(int)));
-    connect(d->flipZ,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipZCheckBoxStateChanged(int)));
-    connect(d->reverseBackgroundColor,  SIGNAL(stateChanged(int)),                   this, SLOT(onReverseBackgroundColorChanged(int)));
-    connect(d->hideShowAxial,           SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowAxialChanged(int)));
-    connect(d->hideShowCoronal,         SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowCoronalChanged(int)));
-    connect(d->hideShowSagittal,        SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowSagittalChanged(int)));
+    connect(d->flipXCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));
+    connect(d->flipYCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipYCheckBoxStateChanged(int)));
+    connect(d->flipZCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipZCheckBoxStateChanged(int)));
+    connect(d->reverseBackgroundColorCheckBox,  SIGNAL(stateChanged(int)),                   this, SLOT(onReverseBackgroundColorChanged(int)));
+    connect(d->hideShowAxialCheckBox,           SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowAxialChanged(int)));
+    connect(d->hideShowCoronalCheckBox,         SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowCoronalChanged(int)));
+    connect(d->hideShowSagittalCheckBox,        SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowSagittalChanged(int)));
 
     // we also need to translate radio buttons boolean states to an eigen vector
-    connect(d->eigenVectorV1,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV1Toggled(bool)));
-    connect(d->eigenVectorV2,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV2Toggled(bool)));
-    connect(d->eigenVectorV3,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV3Toggled(bool)));
+    connect(d->eigenVectorV1RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV1Toggled(bool)));
+    connect(d->eigenVectorV2RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV2Toggled(bool)));
+    connect(d->eigenVectorV3RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV3Toggled(bool)));
 
     // we need to calculate one single number for the scale, out of the minor and major scales
-    connect(d->minorScaling,            SIGNAL(valueChanged(int)),                   this, SLOT(onMinorScalingChanged(int)));
-    connect(d->majorScaling,            SIGNAL(valueChanged(int)),                   this, SLOT(onMajorScalingChanged(int)));
+    connect(d->minorScalingSlider,            SIGNAL(valueChanged(int)),                   this, SLOT(onMinorScalingChanged(int)));
+    connect(d->majorScalingSlider,            SIGNAL(valueChanged(int)),                   this, SLOT(onMajorScalingChanged(int)));
 
     this->setTitle("Tensor View");
     this->addWidget(displayWidget);
@@ -224,40 +224,40 @@ medToolBoxDiffusionTensorView::~medToolBoxDiffusionTensorView()
 
 QString medToolBoxDiffusionTensorView::glyphShape(void)
 {
-    return d->glyphShape->currentText();
+    return d->glyphShapeComboBox->currentText();
 }
 
 int medToolBoxDiffusionTensorView::sampleRate(void)
 {
-    return d->sampleRate->value();
+    return d->sampleRateSlider->value();
 }
 
 bool medToolBoxDiffusionTensorView::isFlipX(void)
 {
-    return d->flipX->checkState() == Qt::Checked;
+    return d->flipXCheckBox->checkState() == Qt::Checked;
 }
 
 bool medToolBoxDiffusionTensorView::isFlipY(void)
 {
-    return d->flipY->checkState() == Qt::Checked;
+    return d->flipYCheckBox->checkState() == Qt::Checked;
 }
 
 bool medToolBoxDiffusionTensorView::isFlipZ(void)
 {
-    return d->flipZ->checkState() == Qt::Checked;
+    return d->flipZCheckBox->checkState() == Qt::Checked;
 }
 
 int medToolBoxDiffusionTensorView::eigenVector(void)
 {
-    if (d->eigenVectorV1->isChecked())
+    if (d->eigenVectorV1RadioButton->isChecked())
     {
         return 1;
     }
-    else if (d->eigenVectorV2->isChecked())
+    else if (d->eigenVectorV2RadioButton->isChecked())
     {
         return 2;
     }
-    else if (d->eigenVectorV3->isChecked())
+    else if (d->eigenVectorV3RadioButton->isChecked())
     {
         return 3;
     }
@@ -265,13 +265,13 @@ int medToolBoxDiffusionTensorView::eigenVector(void)
 
 int medToolBoxDiffusionTensorView::glyphResolution(void)
 {
-    return d->glyphResolution->value();
+    return d->glyphResolutionSlider->value();
 }
 
 double medToolBoxDiffusionTensorView::scale(void)
 {
-    int minorScale = d->minorScaling->value();
-    int majorScaleExponent = d->majorScaling->value();
+    int minorScale = d->minorScalingSlider->value();
+    int majorScaleExponent = d->majorScalingSlider->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     return scale;
@@ -279,17 +279,17 @@ double medToolBoxDiffusionTensorView::scale(void)
 
 bool medToolBoxDiffusionTensorView::isShowAxial(void)
 {
-    return d->hideShowAxial->checkState() == Qt::Checked;
+    return d->hideShowAxialCheckBox->checkState() == Qt::Checked;
 }
 
 bool medToolBoxDiffusionTensorView::isShowCoronal(void)
 {
-    return d->hideShowCoronal->checkState() == Qt::Checked;
+    return d->hideShowCoronalCheckBox->checkState() == Qt::Checked;
 }
 
 bool medToolBoxDiffusionTensorView::isShowSagittal(void)
 {
-    return d->hideShowSagittal->checkState() == Qt::Checked;
+    return d->hideShowSagittalCheckBox->checkState() == Qt::Checked;
 }
 
 void medToolBoxDiffusionTensorView::onFlipXCheckBoxStateChanged(int checkBoxState)
@@ -344,7 +344,7 @@ void medToolBoxDiffusionTensorView::onEigenVectorV3Toggled(bool isSelected)
 
 void medToolBoxDiffusionTensorView::onMinorScalingChanged(int minorScale)
 {
-    int majorScaleExponent = d->majorScaling->value();
+    int majorScaleExponent = d->majorScalingSlider->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     emit scalingChanged(scale);
@@ -352,7 +352,7 @@ void medToolBoxDiffusionTensorView::onMinorScalingChanged(int minorScale)
 
 void medToolBoxDiffusionTensorView::onMajorScalingChanged(int majorScaleExponent)
 {
-    int minorScale = d->minorScaling->value();
+    int minorScale = d->minorScalingSlider->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     emit scalingChanged(scale);
