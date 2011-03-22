@@ -81,6 +81,9 @@ public slots:
     /** Hide or show sagittal slice */
     void onHideShowSagittalPropertySet(bool show);
 
+    /** Change position of the slices */
+    void onPositionChanged(const QVector3D& position);
+
 private:
     v3dViewTensorInteractorPrivate *d;
 
