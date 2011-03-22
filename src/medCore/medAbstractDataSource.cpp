@@ -4,7 +4,7 @@
 // medAbstractDataSource
 // /////////////////////////////////////////////////////////////////
 
-medAbstractDataSource::medAbstractDataSource(void) : dtkAbstractObject()
+medAbstractDataSource::medAbstractDataSource(QWidget *parent) : QObject()
 {
 }
 
