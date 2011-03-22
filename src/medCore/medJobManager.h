@@ -26,9 +26,10 @@ public:
     /**
     * registerJobItem - register a job item if you want that the manager sends cancel events to them (highly suggested!)
     * @params: const medJobItem & item
+    * @params: QString jobName short name that will be visible on the progression toolboxes
     * @return   bool
     */
-    bool registerJobItem(medJobItem* item);
+    bool registerJobItem(medJobItem* item, QString jobName= "");
 
     /**
     * unRegisterJobItem - remove the job from the hash
@@ -45,6 +46,8 @@ public:
 
 signals:
     void cancel(QObject*);
+
+    void jobRegistered(medJobItem* item, QString jobName);
  
 protected:
     medJobManager(void);
