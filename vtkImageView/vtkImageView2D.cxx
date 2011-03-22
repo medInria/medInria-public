@@ -17,6 +17,7 @@
  =========================================================================*/
 #include "vtkImageView2D.h"
 
+#include "vtkBoundingBox.h"
 #include "vtkCamera.h"
 #include "vtkCommand.h"
 #include "vtkImageActor.h"
@@ -1615,6 +1616,29 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   }
   this->DataSetWidgets.push_back( widget );
   
+  // If this is the first widget to be added, reset camera
+  if ( (! this->GetInput()) && (this->DataSetWidgets.size() == 1)) {
+
+      vtkBoundingBox box;
+      typedef std::list<vtkDataSet2DWidget*> WidgetListType;
+
+      // Find bounds of all input data.
+      for ( WidgetListType::const_iterator it( this->DataSetWidgets.begin() );
+          it != this->DataSetWidgets.end();
+          ++it ) {
+          
+          box.AddBounds( widget->GetSource()->GetBounds() );
+      }
+
+    double center[3];
+    box.GetCenter(center);
+    this->SetCurrentPoint(center);
+    double bounds[6];
+    box.GetBounds(bounds);
+    this->Renderer->ResetCamera(bounds);
+
+  }
+
   return widget->GetActor();
 }
 

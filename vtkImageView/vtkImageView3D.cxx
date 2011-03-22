@@ -21,6 +21,7 @@
 #  include "vtkVersion.h"
 #endif
 
+#include <vtkBoundingBox.h>
 #include <vtkInteractorStyleTrackball.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRendererCollection.h>
@@ -990,6 +991,21 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   normalextractor->Delete();
   geometryextractor->Delete();
   actor->Delete();
+
+  // If this is the first widget to be added, reset camera
+  if ( ! this->GetInput() ) {
+
+      vtkBoundingBox box;
+      box.AddBounds( arg->GetBounds() );
+
+    double center[3];
+    box.GetCenter(center);
+    this->SetCurrentPoint(center);
+    double bounds[6];
+    box.GetBounds(bounds);
+    this->Renderer->ResetCamera(bounds);
+
+  }
   
   // the actor is actually not deleted as it has
   // been referenced in the renderer, so we can
