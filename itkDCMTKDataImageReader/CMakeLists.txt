@@ -87,6 +87,7 @@ add_executable(itkDCMTKConvert
 target_link_libraries(itkDCMTKConvert
   ITKDCMTKIO
   ${ITK_LIBRARIES}
+  ${QT_LIBRARIES}
 )
 
 if(VTK_FOUND)
