@@ -57,7 +57,7 @@ void medDatabaseImporter::run(void)
     QString file = d->file;
 
     QDir dir(file);
-    dir.setFilter(QDir::Files);
+    dir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot);
 
     QStringList fileList;
     if (dir.exists()) {
@@ -195,7 +195,7 @@ void medDatabaseImporter::run(void)
 
         QString studyId = dtkdata->metaDataValues(tr("StudyID"))[0];
         QString seriesId = dtkdata->metaDataValues(tr("SeriesID"))[0];
-        QString orientation = dtkdata->metaDataValues(tr("Orientation"))[0];
+        QString orientation = dtkdata->metaDataValues(tr("Orientation"))[0]; // orientation sometimes differ by a few digits, thus this is not reliable
         QString seriesNumber = dtkdata->metaDataValues(tr("SeriesNumber"))[0];
         QString sequenceName = dtkdata->metaDataValues(tr("SequenceName"))[0];
         QString sliceThickness = dtkdata->metaDataValues(tr("SliceThickness"))[0];
@@ -205,6 +205,7 @@ void medDatabaseImporter::run(void)
         // define a unique key string to identify which volume an image belongs to.
         // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
         QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
+
         if (!keyToInt.contains(key)) {
             keyToInt[key] = currentIndex;
             currentIndex++;
@@ -227,6 +228,9 @@ void medDatabaseImporter::run(void)
         s_patientName.replace (0x00E4, 'a');
         s_studyName.replace   (0x00E4, 'a');
         s_seriesName.replace  (0x00E4, 'a');
+        s_patientName.replace ('/', '_');
+        s_studyName.replace   ('/', '_');
+        s_seriesName.replace  ('/', '_');
         
         QString imageFileName = "/" +
                                 s_patientName + "/" +
@@ -538,10 +542,10 @@ void medDatabaseImporter::run(void)
             QFileInfo seriesInfo( it.key() );
             QString thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() /*seriesName.simplified()*/ + "/";
             QStringList thumbPaths;
-
-            if (thumbnails.count())
-                if (!medStorage::mkpath (medStorage::dataLocation() + thumb_dir))
-                    qDebug() << "Cannot create directory: " << thumb_dir;
+            
+            //if (thumbnails.count())
+            if (!medStorage::mkpath (medStorage::dataLocation() + thumb_dir))
+                qDebug() << "Cannot create directory: " << thumb_dir;
 
             for (int j=0; j<thumbnails.count(); j++) {
                 QString thumb_name = thumb_dir + QString().setNum (j) + ".jpg";
