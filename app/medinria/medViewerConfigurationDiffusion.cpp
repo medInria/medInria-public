@@ -136,8 +136,6 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
         connect(d->fiberViewToolBox, SIGNAL(fiberRadiusSet(int)), interactor, SLOT(onRadiusSet(int)));
     
-    // TODO this needs to be refactored (once dtk supports QVariant properties) as in this case
-    // the interactor does the view->update and not this class (as for all the other methods)
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor"))
     {
         connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), interactor, SLOT(onSampleRatePropertySet(int)));
@@ -148,6 +146,19 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
         connect(d->tensorViewToolBox, SIGNAL(hideShowAxial(bool)), interactor, SLOT(onHideShowAxialPropertySet(bool)));
         connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), interactor, SLOT(onHideShowCoronalPropertySet(bool)));
         connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), interactor, SLOT(onHideShowSagittalPropertySet(bool)));
+
+        // each change triggers and update of the view
+        // TODO we need to unify the view->update() as now some updates are done here and some
+        // are performed in the 'translate' function of the signal emitted by the toolbox
+        // (e.g. onFlipXChanged) ... maybe after dtk is extended to support QVariant properties
+        connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), view, SLOT(update(void)));
+        connect(d->tensorViewToolBox, SIGNAL(eigenVectorChanged(int)), view, SLOT(update(void)));
+        connect(d->tensorViewToolBox, SIGNAL(glyphResolutionChanged(int)), view, SLOT(update(void)));
+        connect(d->tensorViewToolBox, SIGNAL(reverseBackgroundColor(bool)), view, SLOT(update(void)));
+        connect(d->tensorViewToolBox, SIGNAL(scalingChanged(double)), view, SLOT(update(void)));
+        connect(d->tensorViewToolBox, SIGNAL(hideShowAxial(bool)), view, SLOT(update(void)));
+        connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), view, SLOT(update(void)));
+        connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), view, SLOT(update(void)));
 
         connect(view, SIGNAL(positionChanged(const QVector3D&)), interactor, SLOT(onPositionChanged(const QVector3D&)));
 
