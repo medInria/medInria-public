@@ -21,10 +21,11 @@
 #define MEDBROWSERTOOLBOXPACSHOST_H
 
 #include <medGui/medToolBox.h>
+#include "medGuiExport.h"
 
 class medBrowserToolBoxPacsHostPrivate;
 
-class medBrowserToolBoxPacsHost : public medToolBox
+class MEDGUI_EXPORT medBrowserToolBoxPacsHost : public medToolBox
 {
     Q_OBJECT
 
