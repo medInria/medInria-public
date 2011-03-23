@@ -238,32 +238,17 @@ void v3dViewTensorInteractor::onGlyphShapePropertySet (const QString& value)
 void v3dViewTensorInteractor::onSampleRatePropertySet (int sampleRate)
 {
     d->manager->SetSampleRate(sampleRate, sampleRate, sampleRate);
-
-    // TODO we need to move this after extending dtk for supporting int properties
-    // as now the update of the view is being done in 2 different places (here and in the configuration)
-    if (d->view)
-        d->view->update();
 }
 
 void v3dViewTensorInteractor::onEigenVectorPropertySet (int eigenVector)
 {
     // we need to substract 1 because the manager receives an index
     d->manager->SetColorModeToEigenvector(eigenVector-1);
-
-    // TODO we need to move this after extending dtk for supporting int properties
-    // as now the update of the view is being done in 2 different places (here and in the configuration)
-    if (d->view)
-        d->view->update();
 }
 
 void v3dViewTensorInteractor::onGlyphResolutionPropertySet (int glyphResolution)
 {
     d->manager->SetGlyphResolution(glyphResolution);
-
-    // TODO we need to move this after extending dtk for supporting int properties
-    // as now the update of the view is being done in 2 different places (here and in the configuration)
-    if (d->view)
-        d->view->update();
 }
 
 void v3dViewTensorInteractor::onReverseBackgroundColorPropertySet (bool isWhite)
@@ -275,21 +260,11 @@ void v3dViewTensorInteractor::onReverseBackgroundColorPropertySet (bool isWhite)
         d->view->setBackgroundColor(1.0,1.0,1.0);
     else
         d->view->setBackgroundColor(0.0,0.0,0.0);
-
-    // TODO we need to move this after extending dtk for supporting int properties
-    // as now the update of the view is being done in 2 different places (here and in the configuration)
-    if (d->view)
-        d->view->update();
 }
 
 void v3dViewTensorInteractor::onScalingPropertySet (double scale)
 {
     d->manager->SetGlyphScale((float)scale);
-
-    // TODO we need to move this after extending dtk for supporting int properties
-    // as now the update of the view is being done in 2 different places (here and in the configuration)
-    if (d->view)
-        d->view->update();
 }
 
 void v3dViewTensorInteractor::onHideShowAxialPropertySet(bool show)
@@ -298,11 +273,6 @@ void v3dViewTensorInteractor::onHideShowAxialPropertySet(bool show)
         d->manager->SetAxialSliceVisibility(1);
     else
         d->manager->SetAxialSliceVisibility(0);
-
-    // TODO we need to move this after extending dtk for supporting int properties
-    // as now the update of the view is being done in 2 different places (here and in the configuration)
-    if (d->view)
-        d->view->update();
 }
 
 void v3dViewTensorInteractor::onHideShowCoronalPropertySet(bool show)
@@ -311,11 +281,6 @@ void v3dViewTensorInteractor::onHideShowCoronalPropertySet(bool show)
         d->manager->SetCoronalSliceVisibility(1);
     else
         d->manager->SetCoronalSliceVisibility(0);
-
-    // TODO we need to move this after extending dtk for supporting int properties
-    // as now the update of the view is being done in 2 different places (here and in the configuration)
-    if (d->view)
-        d->view->update();
 }
 
 void v3dViewTensorInteractor::onHideShowSagittalPropertySet(bool show)
@@ -324,11 +289,6 @@ void v3dViewTensorInteractor::onHideShowSagittalPropertySet(bool show)
         d->manager->SetSagittalSliceVisibility(1);
     else
         d->manager->SetSagittalSliceVisibility(0);
-
-    // TODO we need to move this after extending dtk for supporting int properties
-    // as now the update of the view is being done in 2 different places (here and in the configuration)
-    if (d->view)
-        d->view->update();
 }
 
 void v3dViewTensorInteractor::onFlipXPropertySet (const QString& flipX)
