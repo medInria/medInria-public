@@ -46,6 +46,8 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     
     typename ImageType::SizeType newSize = size;
     newSize[2]    = 1;
+    if (VDimension==4)
+        newSize[3] = 1;
     typename ImageType::IndexType index;
     index.Fill( 0 );
     index[2] = size[2] / 2;
@@ -98,10 +100,10 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     origin[!index] -= 0.5 * (newSize[!index] * newSpacing[!index] -
                  size[!index] * spacing[!index]);
 
-    typedef itk::Image<float, VDimension> FloatImageType;
-    typedef itk::RecursiveGaussianImageFilter<ImageType, FloatImageType>
+    //typedef itk::Image<float, VDimension> FloatImageType;
+    typedef itk::RecursiveGaussianImageFilter<ImageType, ImageType>
       SmootherType0;
-    typedef itk::RecursiveGaussianImageFilter<FloatImageType, FloatImageType>
+    typedef itk::RecursiveGaussianImageFilter<ImageType, ImageType>
       SmootherType1;
     typename SmootherType0::Pointer smoother0 = SmootherType0::New();
     typename SmootherType1::Pointer smoother1 = SmootherType1::New();
@@ -115,7 +117,7 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     smoother1->SetInput( smoother0->GetOutput() );
     typename SmootherType1::Pointer smoother = smoother1;
 
-    typedef typename itk::ResampleImageFilter<FloatImageType, ImageType> FilterType;
+    typedef typename itk::ResampleImageFilter<ImageType, ImageType> FilterType;
     typename FilterType::Pointer resampler = FilterType::New();
     resampler->SetInput (smoother->GetOutput());
     resampler->SetSize (newSize);
