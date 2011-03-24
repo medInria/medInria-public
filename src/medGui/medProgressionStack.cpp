@@ -189,8 +189,11 @@ void medProgressionStack::sendCancelRequest()
     emit cancelRequest(d->buttonsSender.value(sender));
 }
 
-void medProgressionStack::AddJobItem(medJobItem* job, QString label)
+void medProgressionStack::addJobItem(medJobItem* job, QString label)
 {
+    if (label.isEmpty())
+        return;
+
     connect(job, SIGNAL(progressed(QObject*, int)), this, SLOT(setProgress(QObject*, int)), Qt::QueuedConnection);
     connect(job, SIGNAL(success(QObject*)), this, SLOT(onSuccess(QObject*)), Qt::QueuedConnection);
     connect(job, SIGNAL(failure(QObject*)), this, SLOT(onFailure(QObject*)), Qt::QueuedConnection);

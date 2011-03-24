@@ -30,8 +30,8 @@ class medDataIndex;
 class medDatabaseView;
 class medDatabaseModel;
 class medBrowserAreaPrivate;
+class medAbstractDataSource;
 
-#include "medPacs/medMoveCommandItem.h"
 
 class medBrowserArea : public QWidget
 {
@@ -44,25 +44,21 @@ public:
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
 
-    medDatabaseView *view(void);
-    medDatabaseModel *model(void);
-
 signals:
     void open(const medDataIndex& index);
     void open(const QString& file);
+    void showError (QObject*,const QString&,unsigned int timeout);
 
 public slots:
-    void onFileSystemImportClicked(void);
-    void onFileSystemExportClicked(void);
-    void onFileSystemViewClicked(void);
     void onFileImported(void);
     void onSourceIndexChanged(int index);
-    void onPacsMove(const QVector<medMoveCommandItem>& cmdList);
-    void onFileImport(QString path);
+    void onFileImport(QString);
+    void onDataReceivingFailed(QString fileName);
     void onExportData(const medDataIndex &index);
 
-private:
-    friend class medMessageController;
+protected:
+    void setToolBoxesVisible(int index, bool visible);
+    void addDataSource(medAbstractDataSource* dataSource);
 
 private:
     medBrowserAreaPrivate *d;

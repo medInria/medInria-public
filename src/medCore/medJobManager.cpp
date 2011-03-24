@@ -28,10 +28,12 @@ medJobManager::~medJobManager( void )
     d = NULL;
 }
 
-bool medJobManager::registerJobItem( medJobItem* item )
+bool medJobManager::registerJobItem( medJobItem* item, QString jobName)
 {
     d->itemList.append(item);
     connect(this, SIGNAL(cancel(QObject*)), item, SLOT(onCancel(QObject*)) );
+    emit jobRegistered(item, jobName);
+    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(item));
     return true;
 }
 

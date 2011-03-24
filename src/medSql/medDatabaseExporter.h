@@ -21,6 +21,7 @@
 #define MEDDATABASEEXPORTER_H
 
 #include "medSqlExport.h"
+#include <QtCore>
 
 #include <medCore/medJobItem.h>
 

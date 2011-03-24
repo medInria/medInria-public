@@ -43,12 +43,6 @@ public:
 
     QSize sizeHint(void) const;
 
-    /**
-    * AddJobItem - Add a new subclass of medJobItem to the Stack to create the connection between them
-    * @params: medJobItem * job - instance of medJobItem
-    * @params: QString label - the label shown on the jobToolBox
-    */
-    void AddJobItem(medJobItem* job, QString label);
 
 signals:
     void shown(void);
@@ -56,6 +50,15 @@ signals:
     void cancelRequest(QObject*);
 
 public slots:
+
+    /**
+    * AddJobItem - Add a new subclass of medJobItem to the Stack to create the connection between them
+    * @params: medJobItem * job - instance of medJobItem
+    * @params: QString label - the label shown on the jobToolBox
+    * if no label was given the job will not be added
+    */
+    void addJobItem(medJobItem* job, QString label);
+
     void setLabel(QObject *sender, QString label);
     void setProgress(QObject *sender, int progress);
     void onSuccess(QObject* sender);
