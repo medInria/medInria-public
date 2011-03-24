@@ -21,10 +21,11 @@
 #define medBrowserToolBoxPacsNODES_H
 
 #include <medGui/medToolBox.h>
+#include "medGuiExport.h"
 
 class medBrowserToolBoxPacsNodesPrivate;
 
-class medBrowserToolBoxPacsNodes : public medToolBox
+class MEDGUI_EXPORT medBrowserToolBoxPacsNodes : public medToolBox
 {
     Q_OBJECT
 

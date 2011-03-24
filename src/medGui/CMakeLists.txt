@@ -79,6 +79,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerToolBoxLayout.h
   medViewerToolBoxViewProperties.h
   medViewerToolBoxView.h
+  
+  # pacs toolboxes
+  medBrowserToolBoxPacsHost.h
+  medBrowserToolBoxPacsNodes.h
+  medBrowserToolBoxPacsSearch.h
+ 
   )
 set(${PROJECT_NAME}_HEADERS
   medLUTtoXMLWriter.h
@@ -138,6 +144,10 @@ set(${PROJECT_NAME}_SOURCES
   medViewerToolBoxLayout.cpp
   medViewerToolBoxViewProperties.cpp
   medViewerToolBoxView.cpp
+  
+  medBrowserToolBoxPacsHost.cpp
+  medBrowserToolBoxPacsNodes.cpp
+  medBrowserToolBoxPacsSearch.cpp    
   )
 
 # Include header files for Visual Studio.
