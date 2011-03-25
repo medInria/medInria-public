@@ -27,7 +27,7 @@
 #include "medViewContainerCustom.h"
 #include "medViewContainerSingle.h"
 #include "medViewContainerMulti.h"
-#include "medViewContainerStack.h"
+#include "medStackedViewContainers.h"
 
 class medViewerConfigurationPrivate
 {
@@ -40,14 +40,14 @@ public:
     bool databaseVisibility;
     bool layoutToolBoxVisibility;
     bool toolBoxesVisibility;
-    medViewContainerStack * viewContainerStack;
+    medStackedViewContainers * viewContainerStack;
     
 };
 
 medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
 {
     d->parent = parent;
-    d->viewContainerStack = new medViewContainerStack(parent);
+    d->viewContainerStack = new medStackedViewContainers(parent);
     d->layoutType = medViewerConfiguration::LeftDbRightTb;
     d->customLayoutType = 0;
     d->databaseVisibility = true;
@@ -157,7 +157,7 @@ QString medViewerConfiguration::currentViewContainerName() const
     return d->viewContainerStack->currentName();
 }
 
-medViewContainerStack* medViewerConfiguration::stackedViewContainers() const
+medStackedViewContainers* medViewerConfiguration::stackedViewContainers() const
 {
     return d->viewContainerStack;
 }

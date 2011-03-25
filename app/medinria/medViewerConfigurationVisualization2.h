@@ -25,7 +25,7 @@
 #include <medGui/medViewerConfiguration.h>
 
 
-class medViewContainerStack;
+class medStackedViewContainers;
 
 class medViewerConfigurationVisualization2Private;
 

@@ -8,7 +8,7 @@
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerSingle.h>
 #include <medGui/medViewContainerCompare.h>
-#include <medGui/medViewContainerStack.h>
+#include <medGui/medStackedViewContainers.h>
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medToolBoxRegistration.h>
 

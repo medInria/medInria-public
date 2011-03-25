@@ -1,4 +1,4 @@
-/* medViewContainerStack.h --- 
+/* medStackedViewContainers.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -27,14 +27,14 @@
 class dtkAbstractView;
 class medDataIndex;
 class medViewContainer;
-class medViewContainerStackPrivate;
+class medStackedViewContainersPrivate;
 
 /**
  * @brief A QStackedWidget that contains medViewContainers.
  * There is one such stack per medViewConfiguration. 
  *
 */
-class MEDGUI_EXPORT medViewContainerStack : public QStackedWidget
+class MEDGUI_EXPORT medStackedViewContainers : public QStackedWidget
 {
     Q_OBJECT
 
@@ -44,14 +44,14 @@ public:
       *
       * @param parent
      */
-     medViewContainerStack(QWidget *parent = 0);
+     medStackedViewContainers(QWidget *parent = 0);
      
     /**
      * @brief 
      *
      * @param void
     */
-    ~medViewContainerStack(void);
+    ~medStackedViewContainers(void);
 
     /**
      * @brief Gets the currently displayed container.
@@ -126,7 +126,7 @@ signals:
     void focused(dtkAbstractView *);
 
 private:
-    medViewContainerStackPrivate *d;
+    medStackedViewContainersPrivate *d;
 };
 
 #endif

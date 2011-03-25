@@ -25,7 +25,7 @@
 
 class medToolBoxContainer;
 class medDatabaseNavigator;
-class medViewContainerStack;
+class medStackedViewContainers;
 class medViewerConfiguration;
 class medClutEditor;
 class QStackedWidget;

@@ -68,7 +68,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewContainerMulti.h
   medViewContainerSingle.h
   medViewContainerCompare.h
-  medViewContainerStack.h
+  medStackedViewContainers.h
   
   medWorkspaceShifter.h 
   medSaveLUTDialog.h
@@ -134,7 +134,7 @@ set(${PROJECT_NAME}_SOURCES
   medViewContainerMulti.cpp
   medViewContainerSingle.cpp
   medViewContainerCompare.cpp
-  medViewContainerStack.cpp
+  medStackedViewContainers.cpp
   medWorkspaceShifter.cpp
   medLUTToXMLWriter.cpp
   medXMLToLUTReader.cpp

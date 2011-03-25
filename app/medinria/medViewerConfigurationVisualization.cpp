@@ -21,7 +21,7 @@
 
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medViewerToolBoxViewProperties.h>
-#include <medGui/medViewContainerStack.h>
+#include <medGui/medStackedViewContainers.h>
 
 class medViewerConfigurationVisualizationPrivate
 {

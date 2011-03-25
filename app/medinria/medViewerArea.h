@@ -29,7 +29,7 @@ class dtkAbstractView;
 class medDataIndex;
 class medToolBox;
 class medViewContainer;
-class medViewContainerStack;
+class medStackedViewContainers;
 class medViewerAreaPrivate;
 
 /**
@@ -140,7 +140,7 @@ public slots:
      * Called from the setupConfiguration method.
      * @param stack
     */
-    void switchToStackedViewContainers(medViewContainerStack* stack);
+    void switchToStackedViewContainers(medStackedViewContainers* stack);
     
     /**
      * @brief Switches between medViewContainers.
@@ -200,7 +200,7 @@ protected:
      * @brief Returns the current view container.
      *
      * Note that container are hierarchical structures. 
-     * This methods returns the root container in the current medViewContainerStack.
+     * This methods returns the root container in the current medStackedViewContainers.
      *
      * @param void
      * @return medViewContainer *

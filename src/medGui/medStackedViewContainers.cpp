@@ -1,4 +1,4 @@
-/* medViewContainerStack.cpp --- 
+/* medStackedViewContainers.cpp --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -19,33 +19,33 @@
 
 #include <QtCore>
 
-#include "medViewContainerStack.h"
+#include "medStackedViewContainers.h"
 
 #include "medViewContainer.h"
 #include "medViewContainerCustom.h"
 #include "medViewContainerMulti.h"
 #include "medViewContainerSingle.h"
 
-class medViewContainerStackPrivate
+class medStackedViewContainersPrivate
 {
 public:
    QHash<QString, medViewContainer*> containers;
    QString currentName;
 };
 
-medViewContainerStack::medViewContainerStack(QWidget *parent) : QStackedWidget(parent), d(new medViewContainerStackPrivate)
+medStackedViewContainers::medStackedViewContainers(QWidget *parent) : QStackedWidget(parent), d(new medStackedViewContainersPrivate)
 {
     
 }
 
-medViewContainerStack::~medViewContainerStack(void)
+medStackedViewContainers::~medStackedViewContainers(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medViewContainerStack::addContainer(const QString &name, medViewContainer *container)
+void medStackedViewContainers::addContainer(const QString &name, medViewContainer *container)
 {
     if (!container)
         return;
@@ -60,7 +60,7 @@ void medViewContainerStack::addContainer(const QString &name, medViewContainer *
     this->addWidget( container );
 }
 
-medViewContainer* medViewContainerStack::container(const QString &name) const
+medViewContainer* medStackedViewContainers::container(const QString &name) const
 {
     if (!d->containers.contains(name))
         return NULL;
@@ -68,7 +68,7 @@ medViewContainer* medViewContainerStack::container(const QString &name) const
     return d->containers[name];
 }
 
-void medViewContainerStack::setContainer(const QString &name)
+void medStackedViewContainers::setContainer(const QString &name)
 {
     if (!d->containers.contains(name))
     {
@@ -80,22 +80,22 @@ void medViewContainerStack::setContainer(const QString &name)
     this->setCurrentWidget(d->containers[name]);
 }
 
-medViewContainer *medViewContainerStack::current(void) const
+medViewContainer *medStackedViewContainers::current(void) const
 {
     return dynamic_cast<medViewContainer*> (currentWidget());
 }
 
-QString medViewContainerStack::currentName(void) const
+QString medStackedViewContainers::currentName(void) const
 {
     return d->currentName;
 }
 
-QList<QString> medViewContainerStack::keys()
+QList<QString> medStackedViewContainers::keys()
 {
     return d->containers.keys();
 }
 
-void medViewContainerStack::removeContainer(const QString& name)
+void medStackedViewContainers::removeContainer(const QString& name)
 {
     if (d->containers.contains(name))
     {

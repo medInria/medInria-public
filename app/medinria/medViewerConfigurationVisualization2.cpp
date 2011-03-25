@@ -20,7 +20,7 @@
 #include "medViewerConfigurationVisualization2.h"
 
 #include <medGui/medViewerToolBoxView.h>
-#include <medGui/medViewContainerStack.h>
+#include <medGui/medStackedViewContainers.h>
 
 class medViewerConfigurationVisualization2Private
 {
