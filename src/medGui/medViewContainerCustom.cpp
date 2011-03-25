@@ -50,10 +50,6 @@ medViewContainerCustom::~medViewContainerCustom()
     d2 = NULL;
 }
 
-medViewContainer::Type medViewContainerCustom::type(void)
-{
-    return medViewContainer::Custom;
-}
 
 void medViewContainerCustom::split(int rows, int cols)
 {

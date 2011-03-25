@@ -42,7 +42,6 @@ public:
     medViewContainerCustom(QWidget *parent = 0);
     ~medViewContainerCustom(void);
 
-    Type type(void);
 
     void split(int rows, int cols);
 

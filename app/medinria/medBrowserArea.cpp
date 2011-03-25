@@ -210,7 +210,7 @@ void medBrowserArea::onExportData(const medDataIndex &index)
         return;
 
     medDatabaseExporter *exporter = new medDatabaseExporter (data, fileName);
-
+    
     connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 
     QThreadPool::globalInstance()->start(exporter);

@@ -34,7 +34,12 @@ class medDataIndex;
 /**
  * @brief A Configuration holds medToolBoxes, medViewContainers and their relations.
  * 
- * A configuration is usually instantiated by a factory.
+ *The main role of a configuration is to provide a coherent set of toolboxes and containers that interact with each other.
+ *
+ * A configuration is usually instantiated by a factory. 
+ * It owns several medViewContainers in a medViewContainerStack. 
+ * It also owns toolboxes, but does not place them, the medViewerArea does it when
+ * medViewerArea::setupConfiguration is called. 
  *
 */
 class MEDGUI_EXPORT medViewerConfiguration : public QObject
@@ -163,7 +168,7 @@ public:
     bool areToolBoxesVisible(void) const;
 
     /**
-     * @brief Sets the visibility of the medViewerToolBoxLayout
+     * @brief Sets the visibility of the medViewerToolBoxLayout.
      *
      * The value is really applied when the configuration 
      * is set in the medViewArea::setupConfiguration method.
@@ -186,7 +191,7 @@ public:
     void showLayoutToolBox(void);
     
     /**
-     * @brief Gets the visibility of the medViewerToolBoxLayout
+     * @brief Gets the visibility of the medViewerToolBoxLayout.
      *
      * @return bool
     */

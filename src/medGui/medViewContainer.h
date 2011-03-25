@@ -41,19 +41,7 @@ class MEDGUI_EXPORT medViewContainer : public QWidget
     Q_OBJECT
 
 public:
-    /**
-     * @brief Apart from Custom, this enum is mostly deprecated and useless.
-     *
-*/
-    enum Type {
-        Single,
-        Multi,
-        Custom,
-        Compare,
-        Fuse,
-        Default
-    };
-
+   
      /**
       * @brief Creates a new container.
       *
@@ -71,15 +59,7 @@ public:
     */
     ~medViewContainer(void);
 
-    /**
-     * @brief Gets the Type of this container.
-     *
-     * the default is Type::Default, and should not happen.
-     *
-     * @param void
-     * @return Type
-    */
-    Type type(void);
+    
 
     /**
      * @brief Gets the current container.

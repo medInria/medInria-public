@@ -50,7 +50,6 @@ public:
     medViewContainerMulti(QWidget *parent = 0);
    ~medViewContainerMulti();
 
-    Type type(void);
 
     void split(int rows, int cols);
 

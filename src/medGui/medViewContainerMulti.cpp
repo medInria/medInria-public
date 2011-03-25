@@ -69,11 +69,7 @@ medViewContainerMulti::~medViewContainerMulti()
     delete d2;
     d2 = NULL;
 }
-  
-medViewContainer::Type medViewContainerMulti::type(void)
-{
-    return medViewContainer::Multi;
-}
+
 
 void medViewContainerMulti::split(int rows, int cols)
 {

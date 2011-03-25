@@ -60,10 +60,6 @@ medViewContainer::~medViewContainer(void)
     d = NULL;
 }
 
-medViewContainer::Type medViewContainer::type(void)
-{
-    return Default;
-}
 
 medViewContainer *medViewContainer::current(void)
 {
