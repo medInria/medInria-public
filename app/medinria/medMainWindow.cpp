@@ -389,7 +389,8 @@ void medMainWindow::onEditSettings()
     d->settingsEditor = new medSettingsEditor(this);
     d->settingsEditor->setGeometry(100,100, 500, 500);
     d->settingsEditor->setWindowFlags(Qt::Tool);
-
+    d->settingsEditor->initialize();
+    d->settingsEditor->queryWidgets();
     d->settingsEditor->show();
 }
 
