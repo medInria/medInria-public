@@ -90,10 +90,9 @@ void medSettingsEditor::initialize()
         return;
 
     QVBoxLayout * vLayout = new QVBoxLayout(this);
-    setLayout(vLayout);
-    d->stack = new QStackedWidget(this);
-    d->tabWidget = new QTabWidget (this);
-    d->tabWidget->setTabPosition(QTabWidget::West);
+    d->stack = new QStackedWidget();
+    d->tabWidget = new QTabWidget ();
+    d->tabWidget->setTabPosition(QTabWidget::West);    
     d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     //use stackedWidget to display the advanced or normal editor
@@ -101,8 +100,7 @@ void medSettingsEditor::initialize()
 
     d->editor = new dtkSettingsEditor(this);
     d->stack->addWidget(d->editor);
-
-    this->layout()->addWidget(d->stack);
+    vLayout->addWidget(d->stack);
 
     int buttonWidth = 100;
 
@@ -137,6 +135,8 @@ void medSettingsEditor::initialize()
     buttonLayout->addWidget(d->cancel,1);
     buttonLayout->addWidget(d->save,1);
     vLayout->addLayout(buttonLayout);
+
+    setLayout(vLayout);
 
     connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
         medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));

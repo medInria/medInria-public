@@ -57,7 +57,17 @@ void medDatabaseSettingsWidget::selectDbDirectory()
 
      QString path;
      if (dialog.exec())
-         d->dbPath->setText(dialog.selectedFiles().first());
+     {
+         QString path = dialog.selectedFiles().first();
+         if (!QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty())
+         {
+             QMessageBox::information( this, tr("Directory not empty"), tr("The archive directory needs to be empty! \nPlease choose another one."));
+         }
+         else
+         {
+             d->dbPath->setText(path);
+         }
+     }
 }
 
 
