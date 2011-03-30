@@ -20,8 +20,8 @@
 #ifndef MEDTOOLBOXDIFFUSION_H
 #define MEDTOOLBOXDIFFUSION_H
 
-#include "medGuiExport.h"
 #include "medToolBox.h"
+#include "medGuiExport.h"
 
 class dtkAbstractView;
 class dtkAbstractData;

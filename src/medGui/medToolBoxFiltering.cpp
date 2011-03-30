@@ -23,7 +23,6 @@
 #include <medGui/medToolBoxFactory.h>
 #include <medGui/medDropSite.h>
 #include <medGui/medViewContainerStack.h>
-#include <medGui/medViewerConfigurationFiltering.h>
 
 #include <medCore/medDataManager.h>
 #include <medSql/medDatabaseController.h>
@@ -120,21 +119,19 @@ void medToolBoxFiltering::onToolBoxChosen(const QString& id)
 
 void medToolBoxFiltering::onObjectDropped(void)
 {
-    medDataIndex index = d->dropSite->index();
-
-    if (!index.isValid())
-        return;
-
-    d->data = medDataManager::instance()->data (index);
-    if (!d->data) {
-        d->data = medDatabaseController::instance()->read(index);
-        if (d->data)    medToolBoxFilteringCustom* customToolbox(void);
-            medDataManager::instance()->insert(index, d->data);
-    }
-
-    if (!d->data)
-        return;
-
+  medDataIndex index = d->dropSite->index();
+  
+  if (!index.isValid())
+    return;
+  
+  d->data = medDataManager::instance()->data (index);
+  
+  if (d->data)
+    medToolBoxFilteringCustom* customToolbox(void);
+  
+  if (!d->data)
+    return;
+  
 	emit dataSelected(d->data);	
 }
 

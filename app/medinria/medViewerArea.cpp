@@ -19,12 +19,6 @@
 
 #include "medViewerArea.h"
 #include "medViewerArea_p.h"
-#include "medViewerToolBoxConfiguration.h"
-
-#include "medGui/medViewContainerStack.h"
-#include "medGui/medViewerToolBoxLayout.h"
-#include "medViewerToolBoxPatient.h"
-#include "medGui/medViewerToolBoxView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -36,28 +30,35 @@
 #include <dtkVr/dtkVrHeadRecognizer.h>
 #include <dtkVr/dtkVrGestureRecognizer.h>
 
+#include <medCore/medSettingsManager.h>
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
 #include <medCore/medAbstractView.h>
 
 #include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseNonPersitentItem.h>
-#include <medSql/medDatabaseNonPersitentController.h>
+#include <medSql/medDatabaseNonPersistentItem.h>
+#include <medSql/medDatabaseNonPersistentController.h>
 #include <medSql/medDatabaseNavigator.h>
 #include <medSql/medDatabaseNavigatorController.h>
 
 #include <medGui/medClutEditor.h>
 #include <medGui/medToolBox.h>
 #include <medGui/medToolBoxContainer.h>
-#include <medGui/medToolBoxRegistration.h>
-#include <medGui/medToolBoxDiffusion.h>
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerCustom.h>
 #include <medGui/medViewContainerMulti.h>
 #include <medGui/medViewContainerSingle.h>
 #include <medGui/medViewPool.h>
 #include <medGui/medViewerConfigurationFactory.h>
+#include <medGui/medToolBoxDiffusion.h>
+#include <medGui/medToolBoxRegistration.h>
+#include <medGui/medViewContainerStack.h>
+#include <medGui/medViewerToolBoxLayout.h>
+#include <medViewerToolBoxPatient.h>
+#include <medGui/medViewerToolBoxView.h>
+#include <medGui/medViewerToolBoxViewProperties.h>
+
 
 #include <QtGui>
 #include <QtSql>
@@ -144,11 +145,11 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
              QAction * transFunAction =
       new QAction("Toggle Tranfer Function Widget", this);
     transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier +
-				Qt::Key_L);
+                Qt::Key_L);
     transFunAction->setCheckable( true );
     transFunAction->setChecked( false );
     connect(transFunAction, SIGNAL(toggled(bool)),
-	    this, SLOT(bringUpTransferFunction(bool)));
+        this, SLOT(bringUpTransferFunction(bool)));
 
     this->addAction(transFunAction);
     
@@ -218,24 +219,15 @@ void medViewerArea::open(const medDataIndex& index)
         dtkAbstractData *data = NULL;
         dtkAbstractView *view = NULL;
         
-        if(!data)
-            data = medDataManager::instance()->data(index);
-        
-        if(!data)
-            data = medDatabaseNonPersitentController::instance()->data(index);
-        
-        if(!data)
-            data = medDatabaseController::instance()->read(index);
-        
-        if(!data)
+        // the data-manager should be used to read data
+        data = medDataManager::instance()->data(index);
+        if ( !data )
             return;
-        
-        medDataManager::instance()->insert(index, data);
 
         if(!view) {
-	    if (d->view_stacks.value(d->current_patient)->current() && d->view_stacks.value(d->current_patient)->current()->current())
-	        view = d->view_stacks.value(d->current_patient)->current()->current()->view();
-	}
+        if (d->view_stacks.value(d->current_patient)->current() && d->view_stacks.value(d->current_patient)->current()->current())
+            view = d->view_stacks.value(d->current_patient)->current()->current()->view();
+        }
 
         if(!view) {
             view = dtkAbstractViewFactory::instance()->create("v3dView");
@@ -249,25 +241,27 @@ void medViewerArea::open(const medDataIndex& index)
         
         medViewManager::instance()->insert(index, view);
 
+
+        this->onViewFocused(view);
         view->setData(data);
-	
+    
         QMutexLocker ( &d->mutex );
-	if (d->view_stacks.value(d->current_patient)->current()) {
-	    d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (false);
-	    d->view_stacks.value(d->current_patient)->current()->setDisabled (true);
+    if (d->view_stacks.value(d->current_patient)->current()) {
+        d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (false);
+        d->view_stacks.value(d->current_patient)->current()->setDisabled (true);
 
-	    if (d->view_stacks.value(d->current_patient)->current()->current()) {
-	        d->view_stacks.value(d->current_patient)->current()->current()->setView(view); //d->view_stacks.value(d->current_patient)->current()->setView(view);
-		d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
-	    }
+        if (d->view_stacks.value(d->current_patient)->current()->current()) {
+            d->view_stacks.value(d->current_patient)->current()->current()->setView(view); //d->view_stacks.value(d->current_patient)->current()->setView(view);
+        d->view_stacks.value(d->current_patient)->current()->current()->setFocus(Qt::MouseFocusReason);
+        }
 
-	    view->reset();
-	    view->update();
+        view->reset();
+        view->update();
 
-	    d->view_stacks.value(d->current_patient)->current()->setDisabled (false);
-	    d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (true);
-	}
-	
+        d->view_stacks.value(d->current_patient)->current()->setDisabled (false);
+        d->view_stacks.value(d->current_patient)->current()->setUpdatesEnabled (true);
+    }
+    
         return;
     }
     
@@ -305,7 +299,7 @@ void medViewerArea::open(const medDataIndex& index)
 
 void medViewerArea::open(const QString& file)
 {
-    this->open(medDatabaseNonPersitentController::instance()->read(file));
+    this->open(medDatabaseNonPersistentController::instance()->import(file));
 }
 
 void medViewerArea::onViewClosed(void)
@@ -341,7 +335,7 @@ void medViewerArea::switchToPatient(int id)
         connect(view_stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
         connect(view_stack, SIGNAL(focused(dtkAbstractView*)), this, SLOT(onViewFocused(dtkAbstractView*)));
         d->view_stacks.insert(d->current_patient, view_stack);
-	d->current_patient_container.insert (d->current_patient, 0);
+    d->current_patient_container.insert (d->current_patient, 0);
         d->stack->addWidget(view_stack);
     }
     else {
@@ -391,7 +385,7 @@ void medViewerArea::switchToContainer(int index)
 {
     if (d->current_patient_container.contains (d->current_patient))
         if (d->current_patient_container[d->current_patient]==index)
-	    return;
+        return;
     
     d->current_patient_container[d->current_patient] = index;
     
@@ -420,7 +414,7 @@ void medViewerArea::switchToContainerPreset(int index)
 
     if (d->view_stacks.count()) {
         if (d->view_stacks.value(d->current_patient)) {
-	    if(medViewContainerCustom *custom = dynamic_cast<medViewContainerCustom *>(d->view_stacks.value(d->current_patient)->custom())) {
+        if(medViewContainerCustom *custom = dynamic_cast<medViewContainerCustom *>(d->view_stacks.value(d->current_patient)->custom())) {
                 custom->setPreset(index);
             }
         }
@@ -557,7 +551,7 @@ void medViewerArea::bringUpTransferFunction(bool checked)
             delete d->transFun ;
             d->transFun=NULL;
         }
-	return;
+    return;
     }
     if(!d->view_stacks.count())
         return;
@@ -579,9 +573,9 @@ void medViewerArea::updateTransferFunction()
 {
     dtkAbstractView * view = this->currentContainerFocused()->view();
     if ( d->transFun && view ) {
-	// d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );
-	d->transFun->setView( dynamic_cast<medAbstractView *>( view ), true );
-	d->transFun->update();
+    // d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );
+    d->transFun->setView( dynamic_cast<medAbstractView *>( view ), true );
+    d->transFun->update();
     }
 }
 
@@ -683,20 +677,20 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
         case medViewerConfiguration::TopTbBottomDb:
            {
 
-	     d->navigator_container_layout->removeWidget ( d->toolboxPatient );
-	     d->navigator_container_layout->removeWidget ( d->navigator );
+         d->navigator_container_layout->removeWidget ( d->toolboxPatient );
+         d->navigator_container_layout->removeWidget ( d->navigator );
 
-	     d->navigator->setOrientation (Qt::Horizontal);
-	     
-	     d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
-	     d->navigator_container_layout->addWidget (d->navigator, 0, 1);
+         d->navigator->setOrientation (Qt::Horizontal);
+         
+         d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
+         d->navigator_container_layout->addWidget (d->navigator, 0, 1);
              //width must be fixed or the navigator doesn't grow
              //back when changing orientation again
              d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
              d->navigator_container->setFixedHeight(186);
              d->navigator_container->setFixedWidth(QWIDGETSIZE_MAX);
-	     
-	     d->toolbox_container->setOrientation(Qt::Horizontal);
+         
+         d->toolbox_container->setOrientation(Qt::Horizontal);
              d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
              d->toolbox_container->setMinimumHeight(200);
              d->toolbox_container->setFixedWidth(QWIDGETSIZE_MAX);
@@ -709,19 +703,19 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
         default:
            {
 
-	     d->navigator_container_layout->removeWidget ( d->toolboxPatient );
-	     d->navigator_container_layout->removeWidget ( d->navigator );
+         d->navigator_container_layout->removeWidget ( d->toolboxPatient );
+         d->navigator_container_layout->removeWidget ( d->navigator );
 
-	     d->navigator->setOrientation (Qt::Vertical);
-	     
-	     d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
-	     d->navigator_container_layout->addWidget (d->navigator, 1, 0);
+         d->navigator->setOrientation (Qt::Vertical);
+         
+         d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
+         d->navigator_container_layout->addWidget (d->navigator, 1, 0);
 
              d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
              d->navigator_container->setFixedWidth(186);
              d->navigator_container->setFixedHeight(QWIDGETSIZE_MAX);
-	      
-	     d->toolbox_container->setOrientation(Qt::Vertical);
+          
+         d->toolbox_container->setOrientation(Qt::Vertical);
              d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
              d->toolbox_container->setMinimumWidth(320);
              d->toolbox_container->setMinimumHeight (QWIDGETSIZE_MAX);
@@ -736,14 +730,14 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
         case medViewerConfiguration::LeftDbRightTb:
             d->splitter->insertWidget(0,d->navigator_container);
             d->splitter->insertWidget(2,d->toolbox_container);
-	    break;
-	    
+        break;
+        
         case medViewerConfiguration::TopTbBottomDb:
         case medViewerConfiguration::LeftTbRightDb:
         default:
             d->splitter->insertWidget(0,d->toolbox_container);
             d->splitter->insertWidget(2,d->navigator_container);
-	    break;	    
+        break;	    
     }
 
 }
@@ -751,36 +745,32 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 
 void medViewerAreaPrivate::saveSplitterSize(medViewerConfiguration::LayoutType layout)
 {
-    QSettings settings("inria","medinria");
     if (layout == medViewerConfiguration::TopDbBottomTb ||
         layout == medViewerConfiguration::TopTbBottomDb)
     {
-        settings.setValue("ViewerSplitterSizesVertical",
-                      splitter->saveState());
+        medSettingsManager::instance()->setValue("application","ViewerSplitterSizeVertical",
+            splitter->saveState());
     }
     else
     {
-        settings.setValue("ViewerSplitterSizesHorizontal",
-                      splitter->saveState());
+        medSettingsManager::instance()->setValue("application","ViewerSplitterSizeHorizontal",
+            splitter->saveState());
     }
 
 }
 
 void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
 {
-    QSettings settings("inria","medinria");
-    QString value;
-
     if (orientation == Qt::Horizontal)
     {
 
-        value = "ViewerSplitterSizesHorizontal";
-        if (!splitter->restoreState(settings.value(value).toByteArray()))
+        if (!splitter->restoreState(medSettingsManager::instance()->value("application",
+            "ViewerSplitterSizeHorizontal").toByteArray()))
         {
             //viewcontainer size
             int containerSize = QWIDGETSIZE_MAX -
-                                navigator->minimumWidth()-
-                                toolbox_container->minimumWidth();
+                navigator->minimumWidth()-
+                toolbox_container->minimumWidth();
             QList<int> sizes;
             sizes.append(navigator->minimumWidth());
             sizes.append(containerSize);
@@ -792,14 +782,13 @@ void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
     }
     else
     {
-        value = "ViewerSplitterSizesVertical";
-
-        if (!splitter->restoreState(settings.value(value).toByteArray()))
+        if (!splitter->restoreState(medSettingsManager::instance()->value("application",
+            "ViewerSplitterSizeVertical").toByteArray()))
         {
             //viewcontainer size
             int containerSize = QWIDGETSIZE_MAX -
-                                navigator->minimumHeight() -
-                                toolbox_container->minimumHeight();
+                navigator->minimumHeight() -
+                toolbox_container->minimumHeight();
             QList<int> sizes;
             sizes.append(navigator->minimumHeight());
             sizes.append(containerSize);
@@ -809,6 +798,5 @@ void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
         splitter->setOrientation(Qt::Vertical);
 
     }
-
 
 }

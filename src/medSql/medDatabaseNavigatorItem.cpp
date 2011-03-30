@@ -77,6 +77,13 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, i
     this->setAcceptHoverEvents(true);
 }
 
+medDatabaseNavigatorItem::medDatabaseNavigatorItem()
+{
+    //call the overloaded constructor
+    medDatabaseNavigatorItem(-1,-1,-1,-1, QString(), 0);
+}
+
+
 medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
 {
     delete d;
@@ -86,7 +93,7 @@ medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
 
 medDatabaseNavigatorItem *medDatabaseNavigatorItem::clone(void)
 {
-    return new medDatabaseNavigatorItem(d->patientId, d->studyId, d->seriesId, d->imageId, d->path);
+    return new medDatabaseNavigatorItem(d->patientId, d->studyId, d->seriesId, d->imageId, d->path, 0);
 }
 
 void medDatabaseNavigatorItem::setup(void)

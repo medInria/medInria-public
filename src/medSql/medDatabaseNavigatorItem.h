@@ -35,8 +35,9 @@ class medDatabaseNavigatorItem : public QObject, public QGraphicsPixmapItem
     Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 
 public:
-     medDatabaseNavigatorItem(int patientId = -1, int studyId = -1, int seriesId = -1, int imageId = -1, const QString& path = QString(), QGraphicsItem *parent = 0);
-     medDatabaseNavigatorItem(int patientId = -1, int studyId = -1, int seriesId = -1, int imageId = -1, const QImage& image = QImage(), QGraphicsItem *parent = 0);
+     medDatabaseNavigatorItem();
+     medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QString& path, QGraphicsItem *parent = 0);
+     medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QImage& image, QGraphicsItem *parent = 0);
     ~medDatabaseNavigatorItem(void);
 
     medDatabaseNavigatorItem *clone(void);
