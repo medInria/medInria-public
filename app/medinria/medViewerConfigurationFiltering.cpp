@@ -115,7 +115,6 @@ void medViewerConfigurationFiltering::patientChanged(int patientId)
 
 void medViewerConfigurationFiltering::onInputDataSelected(dtkAbstractData *data)
 {
-  qDebug() << "adding data: " << data;
 	d->views[0]->setData(data,0);
 	d->views[0]->reset();
 	d->views[0]->update();
@@ -131,9 +130,7 @@ void medViewerConfigurationFiltering::onProcessSuccess()
 	if(!d->filterOutput)
 		return;
 
-  qDebug() << d->filterOutput->description();
 	d->views[1]->setData(d->filterOutput,0);
-  qDebug() << "done setting res image";
 	d->views[1]->reset();
 	d->views[1]->update();
 }
