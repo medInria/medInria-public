@@ -48,11 +48,17 @@ void medPluginManager::readSettings(void)
     // qSettings should use what is defined in the application (organization and appName)
 
     settings.beginGroup("plugins");
-#ifdef Q_WS_WIN
-    setPath (settings.value("path", "C:\\Program Files\\inria\\plugins").toString());
-#else
-    setPath (settings.value("path", "/usr/local/inria/plugins").toString());
-#endif
+    QDir plugins_dir = qApp->applicationDirPath() + "/../plugins";
+    qDebug()<<"plugins default path:"<<plugins_dir.absolutePath();
+    
+    setPath (settings.value("path", plugins_dir.absolutePath()).toString());
+
+    
+    if (!settings.contains("path"))
+    {
+        qDebug()<<"fill in empty path in settings";
+        settings.setValue("path", plugins_dir.absolutePath());
+    }
 
     settings.endGroup();
 
