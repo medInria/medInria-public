@@ -671,6 +671,24 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->view3d->SetITKInput4(image, layer);
         }
     }
+	else if (data->description()=="itkDataImageInt4") {
+		if( itk::Image<int, 4>* image = dynamic_cast<itk::Image<int, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput4(image);
+            d->view3d->SetITKInput4(image);
+		}
+	}
+    else if (data->description()=="itkDataImageLong4") {
+        if( itk::Image<long, 4>* image = dynamic_cast<itk::Image<long, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput4(image);
+            d->view3d->SetITKInput4(image);
+        }
+    }
+	else if (data->description()=="itkDataImageChar4") {
+		if( itk::Image<char, 4>* image = dynamic_cast<itk::Image<char, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput4(image);
+            d->view3d->SetITKInput4(image);
+		}
+	}
     else if (data->description()=="itkDataImageUShort3") {
         if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
@@ -688,7 +706,25 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->view2d->SetITKInput4(image, layer);
             d->view3d->SetITKInput4(image, layer);
 		}
-    }	
+    }
+    else if (data->description()=="itkDataImageUInt4") {
+        if( itk::Image<unsigned int, 4>* image = dynamic_cast<itk::Image<unsigned int, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput4(image);
+            d->view3d->SetITKInput4(image);
+        }
+    }
+    else if (data->description()=="itkDataImageULong4") {
+        if( itk::Image<unsigned long, 4>* image = dynamic_cast<itk::Image<unsigned long, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput4(image);
+            d->view3d->SetITKInput4(image);
+        }
+    }
+    else if (data->description()=="itkDataImageUChar4") {
+        if( itk::Image<unsigned char, 4>* image = dynamic_cast<itk::Image<unsigned char, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput4(image);
+            d->view3d->SetITKInput4(image);
+        }
+    }
     else if (data->description()=="itkDataImageInt3") {
         if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
@@ -719,6 +755,12 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->view3d->SetITKInput(image, layer);
         }
     }
+    else if (data->description()=="itkDataImageDouble4") {
+        if( itk::Image<double, 4>* image = dynamic_cast<itk::Image<double, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput4(image);
+            d->view3d->SetITKInput4(image);
+        }
+    }
     else if (data->description()=="itkDataImageDouble3") {
         if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
@@ -745,6 +787,24 @@ void v3dView::setData(dtkAbstractData *data, int layer)
                 d->view2d->SetInput(dataset, 0, layer);
                 d->view3d->SetInput(dataset, 0, layer);
             }
+        }
+        else if ( data->description() == "vtkDataMesh" ) {
+            
+            this->enableInteractor ( "v3dViewMeshInteractor" );
+            // This will add the data to the interactor.
+            dtkAbstractView::setData(data);
+        }
+	else if ( data->description() == "v3dDataFibers" ) {
+            
+            this->enableInteractor ( "v3dViewFiberInteractor" );
+            // This will add the data to the interactor.
+            dtkAbstractView::setData(data);
+        }
+       else if ( data->description().contains("itkDataTensorImage", Qt::CaseSensitive)) {
+
+            this->enableInteractor ( "v3dViewTensorInteractor" );
+            // This will add the data to the interactor.
+            dtkAbstractView::setData(data);
         }
         else {
             if ( data->description() == "vtkDataMesh" )
@@ -1537,7 +1597,7 @@ void v3dView::onMenuWindowLevelTriggered (void)
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
 dtkAbstractView *createV3dView(void)

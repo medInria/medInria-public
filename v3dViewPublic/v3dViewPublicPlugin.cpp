@@ -6,6 +6,7 @@
 #include "v3dViewPublicFiberInteractor.h"
 #include "v3dViewPublicMeshInteractor.h"
 #include "v3dViewPublicFuseInteractor.h"
+#include "v3dViewPublicTensorInteractor.h"
 #include "v3dViewPublicPlugin.h"
 #include "vtkLogForwarder.h"
 
@@ -59,6 +60,9 @@ bool v3dViewPublicPlugin::initialize(void)
 
     if(!v3dViewPublicFuseInteractor::registered())
 	dtkWarning() << "Unable to register v3dViewPublicFuseInteractor type";
+
+    if(!v3dViewPublicTensorInteractor::registered())
+	dtkWarning() << "Unable to register v3dViewPublicTensorInteractor type";
 
     return true;
 }

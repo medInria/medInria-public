@@ -19,9 +19,38 @@ itkDataImageReaderBase::~itkDataImageReaderBase(void)
 
 bool itkDataImageReaderBase::canRead (const QString& path)
 {
-    if (!this->io.IsNull())
-        return this->io->CanReadFile ( path.toAscii().constData() );
-    return false;
+    if (this->io.IsNull())
+        return false;
+
+    if (!this->io->CanReadFile( path.toAscii().constData() ))
+    {
+        return false;
+    }
+    else
+    {
+        // regular image readers can only read images with 4 or less
+        // components if the pixel type is vector. images with more
+        // will be handled by more specific image readers
+        // (e.g. tensors if 6 or 9 components)
+
+        this->io->SetFileName( path.toAscii().constData() );
+        try {
+           this->io->ReadImageInformation();
+        }
+        catch (itk::ExceptionObject &e) {
+           qDebug() << e.GetDescription();
+           return false;
+        }
+
+        if (this->io->GetPixelType() == itk::ImageIOBase::VECTOR)
+        {
+            return this->io->GetNumberOfComponents() <= 4 ;
+        }
+        else
+        {
+            return true;
+        }
+    }
 }
 
 bool itkDataImageReaderBase::canRead (const QStringList& paths)

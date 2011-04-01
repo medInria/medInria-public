@@ -274,7 +274,7 @@ void v3dViewPublicFiberInteractor::onRadiusSet (int value)
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
 dtkAbstractViewInteractor *createV3dViewPublicFiberInteractor(void)

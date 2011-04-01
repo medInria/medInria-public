@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(v3dViewPlugin)
+project(itkDataTensorImageWriterPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -29,59 +29,32 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #################################################################
 
 find_package(dtk REQUIRED)
+
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(medinria REQUIRED)
-include(${medinria_USE_FILE})
-
-# find_package(VTK REQUIRED)
-# include(${VTK_USE_FILE})
-
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
-
-# if(vtkINRIA3D_USE_ITK)
-#   find_package(ITK REQUIRED)
-#   include(${ITK_USE_FILE})
-# endif(vtkINRIA3D_USE_ITK)
-
-# the Tensor ToolKit is required by the tensor interactor: v3dViewTensorInteractor
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 
-if (NOT VTK_USE_QT)
-  message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
-endif(NOT VTK_USE_QT)
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  v3dViewPlugin.h
-  v3dView.h
-  v3dViewFiberInteractor.h
-  v3dViewFuseInteractor.h
-  v3dViewMeshInteractor.h
-  v3dViewTensorInteractor.h
-  )
+  itkDataTensorImageWriterPlugin.h
+  itkDataTensorImageWriterBase.h
+  itkMetaDataTensorImageWriter.h)
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
-  v3dViewPlugin.cpp
-  v3dView.cpp
-  v3dViewFiberInteractor.cpp
-  v3dViewFuseInteractor.cpp
-  v3dViewMeshInteractor.cpp
-  v3dFiberBundle.cpp
-  v3dViewTensorInteractor.cpp
-  )
-
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+  itkDataTensorImageWriterPlugin.cpp
+  itkDataTensorImageWriterBase.cpp
+  itkMetaDataTensorImageWriter.cpp)
 
 ## #################################################################
 ## Build rules
@@ -91,33 +64,22 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES})
+  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_HEADERS})
 
 target_link_libraries(${PROJECT_NAME}
+  ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
-  dtkCore
-  medCore
-  vtkCommon
-  vtkRendering
-  vtkImageView
-  vtkWidgetsAddOn
-  vtkVisuManagement
-  vtkDataManagement
-  vtkVolumeRendering
-  QVTK)
+  dtkCore)
 
-if (vtkINRIA3D_USE_ITK)
-  target_link_libraries(${PROJECT_NAME} ${ITK_LIBRARIES})
-endif (vtkINRIA3D_USE_ITK)
+dtk_build_doc(itkDataTensorImageWriterPlugin)
 
-if (vtkINRIA3D_USE_HWSHADING)
-  target_link_libraries(${PROJECT_NAME} vtkHWShading vtkHelpers)
-endif (vtkINRIA3D_USE_HWSHADING)
+## #################################################################
+## Source file layout in development environments like Visual Studio
+## #################################################################
 
-if (BUILD_TESTING)
-  add_subdirectory(Testing)
-endif (BUILD_TESTING)
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

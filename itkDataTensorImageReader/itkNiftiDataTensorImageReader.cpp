@@ -30,7 +30,7 @@ QString itkNiftiDataTensorImageReader::description(void) const
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
 dtkAbstractDataReader *createItkNiftiDataTensorImageReader(void)
