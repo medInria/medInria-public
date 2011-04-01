@@ -90,6 +90,8 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
             d->manager->SetInput (d->dataset);
             if (!data->hasMetaData("BundleList"))
                 data->addMetaData("BundleList", QStringList());
+            if (!data->hasMetaData("BundleColorList"))
+                data->addMetaData("BundleColorList", QStringList());
             d->data = data;
         }
     }
@@ -240,25 +242,17 @@ void v3dViewFiberInteractor::onSelectionReset(void)
     d->manager->Reset();
 }
 
-void v3dViewFiberInteractor::onSelectionValidated(QString name)
+void v3dViewFiberInteractor::onSelectionValidated(const QString &name, const QColor &color)
 {
     if (!d->data)
         return;
-  
-    if (d->manager->GetCallbackOutput()->GetNumberOfLines()==0)
-        return;
-    
-    QColor color = QColor::fromHsv(qrand()%360, 255, 210);
+      
     double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
 	
     d->manager->Validate (name.toAscii().constData(), color_d);
     
     d->data->addMetaData("BundleList", name);
-
-    /*
-      d->data->enableWriter ("v3dDataFibersWriter");
-      d->data->write ("/volatile/pfillard/Work/data/fibers.xml");
-    */
+    d->data->addMetaData("BundleColorList", color.name());
 }
 
 void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)

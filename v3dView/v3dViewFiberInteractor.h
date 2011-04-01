@@ -47,7 +47,7 @@ public slots:
 
 	virtual void onSelectionTagged (void);
 	virtual void onSelectionReset (void);
-	virtual void onSelectionValidated (QString name);
+        virtual void onSelectionValidated (const QString &name, const QColor &color);
 	
 	/*
 	  virtual void onBundleClicked (QListWidgetItem* item);
