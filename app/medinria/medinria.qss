@@ -44,6 +44,21 @@ QListView {
 }
 
 /**
+ * QTreeView
+ *
+ */
+
+QTreeView {
+    color: #CCCCCC;
+    background: #6b6b6b;
+    border: 1px solid darkgray;
+    padding: 0px 0px 0px 0px;
+    gridline-color: gray;
+
+    alternate-background-color: #606060;
+}
+
+/**
  * QTextEdit
  *
  */
@@ -65,6 +80,18 @@ QSpinBox{
     background: #6b6b6b;
     spacing: 5px;
 }
+
+/**
+ * QDoubleSpinBox
+ *
+ */
+
+QDoubleSpinBox{
+    color:#CCCCCC;
+    background: #6b6b6b;
+    spacing: 5px;
+}
+
 
 /**
  * QCheckBox
@@ -205,6 +232,10 @@ QRadioButton {
     color: #b2b8b2;
     font-size: 10px;
     spacing: 5px;
+}
+
+QRadioButton:disabled {
+    color: #000000;
 }
 
 QRadioButton::indicator {
@@ -398,6 +429,8 @@ QTreeWidget::branch:open:has-children:has-siblings  {
 } 
 
 
+
+
 /**
  * QPushButton
  *
@@ -534,6 +567,7 @@ QHelpSearchQueryWidget QToolButton::menu-indicator {
 QGroupBox {
     border: 2px solid gray;
     border-radius: 3px;
+    margin-top: 1ex;
 
     color: #b2b8b2;
     font-size: 10pt;
@@ -541,10 +575,19 @@ QGroupBox {
 
 QGroupBox::title {
     subcontrol-origin: margin;
-    subcontrol-position: top right;
-
+    subcontrol-position: top center;
+    padding: 0 3px;
+	 
     color: #b2b8b2;
     font-size: 10pt;
+}
+
+QGroupBox::indicator::checked {
+    image: url(:/pixmaps/checkbox-checked.png);
+}
+
+QGroupBox::indicator::unchecked {
+    image: url(:/pixmaps/checkbox.png);
 }
 
 /**
@@ -602,33 +645,31 @@ QMenu::item:selected:!active {
  *
  */
 
-QTabWidget::pane {
+QTabWidget::pane{
     border-image: url(:/pixmaps/tabwidget-pane.png) 16 16 22 16 repeat-x;
     border-left-width: 16px;
     border-right-width: 16px;
-
     border-top-width: 16px;
     border-bottom-width: 22px;
 }
 
-QTabWidget::tab-bar {
+medToolBoxTab::tab-bar {
     top: 6px;
     left: 11px;
 }
 
-QTabBar::tab {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #505050, stop: 1.0 #494949);
-    border: 1px solid #2a2a2a;
-    border-bottom-color: #2a2a2a;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    color: #b2b8b2;
-    font-size: 10pt;
+
+
+medToolBoxTab QTabBar::tab {
+    background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #505050, stop: 1.0 #494949);
     height: 22px;
     min-width: 100px;
+    color: #b2b8b2;
 }
 
-QTabBar::tab:selected, QTabBar::tab:hover {
+
+
+medToolBoxTabBar::tab:selected, medToolBoxTabBar::tab:hover {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #505050, stop: 1.0 #5c5c5c);
     border: 1px solid #2a2a2a;
     border-bottom-color: #5c5c5c;
@@ -636,6 +677,50 @@ QTabBar::tab:selected, QTabBar::tab:hover {
     border-top-right-radius: 4px;
     color: #b2b8b2;
     font-size: 10pt;
+}
+
+
+
+/**
+ * medSettingsEditor
+ *
+ */
+medSettingsEditor {
+  alternate-background-color: #505050;
+
+    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+    border-top-width: 16px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-bottom-width: 16px;
+
+    padding-top: -7px;
+    padding-left: -4px;
+    padding-right: -5px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+medSettingsEditor QTabBar::tab:selected, QTabBar::tab:hover {
+   background:	qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #505050, stop: 1.0 #5c5c5c);
+}
+
+medSettingsEditor QTabBar::tab {
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #505050, stop: 1.0 #494949);
+    color: #b2b8b2;
+    /*font-size: 10pt;
+    padding: 10px;*/
+}
+
+/**
+ * medSettingsWidget
+ *
+ */
+medSettingsWidget, medSettingsEditor QScrollArea {
+  color: #b2b8b2;
+  background: #505050;
 }
 
 /**
@@ -1041,3 +1126,55 @@ dtkFinderTreeView::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
 }
+
+
+/**
+ * medViewerToolBoxViewProperties QTreeWidget
+ *
+ */
+
+medViewerToolBoxViewProperties QTreeWidget {
+    alternate-background-color: #505050;
+
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    
+    font-size: 10px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:has-children:!has-siblings:closed,
+medViewerToolBoxViewProperties QTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+medViewerToolBoxViewProperties QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+} 
+
+

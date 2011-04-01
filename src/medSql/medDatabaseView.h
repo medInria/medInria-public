@@ -49,13 +49,15 @@ signals:
     void  seriesDoubleClicked(int id);
 
     void open(const medDataIndex&);
-  
+    void exportData(const medDataIndex &index);
+
 public slots:
     void onPatientClicked(int id);
     void onStudyClicked(int id);
     void onSeriesClicked(int id);
     void onImageClicked(int id);
     void onMenuViewClicked(void);
+    void onMenuExportClicked(void);
 
 protected slots:
     void updateContextMenu(const QPoint&);

@@ -19,14 +19,21 @@
 
 #include "medDatabaseExporter.h"
 
+#include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractDataWriter.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
+
 class medDatabaseExporterPrivate
 {
 public:
+    dtkAbstractData *data;
+    QString          filename;
 };
 
-medDatabaseExporter::medDatabaseExporter(void) : QRunnable(), d(new medDatabaseExporterPrivate)
+medDatabaseExporter::medDatabaseExporter(dtkAbstractData *data, const QString &filename) : medJobItem(), d(new medDatabaseExporterPrivate)
 {
-
+    d->data     = data;
+    d->filename = filename;
 }
 
 medDatabaseExporter::~medDatabaseExporter(void)
@@ -38,7 +45,34 @@ medDatabaseExporter::~medDatabaseExporter(void)
 
 void medDatabaseExporter::run(void)
 {
-    for(int i = 0; i <= 100; i++) {
-        emit progressed(i);
+    if (!d->data) {
+        emit showError(this, "Cannot export data", 3000);
+        return;
+    }
+
+    if (d->filename.isEmpty()) {
+        emit showError(this, "File name is empty", 3000);
+        return;
+    }
+
+    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
+
+    QList<dtkAbstractDataTypeHandler> writers = dtkAbstractDataFactory::instance()->writers();
+
+    for (int i=0; i<writers.size(); i++)
+    {
+        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
+
+        if (! dataWriter->handled().contains(d->data->description()))
+            continue;
+
+        dataWriter->setData (d->data);
+
+        if (dataWriter->canWrite( d->filename )) {
+            if (dataWriter->write( d->filename )) {
+                dataWriter->deleteLater();
+                break;
+            }
+        }
     }
 }

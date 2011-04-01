@@ -21,7 +21,7 @@ class medViewerToolBoxTimePrivate;
 
 class med4DAbstractViewInteractor;
 
-class medViewerToolBoxTime : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxTime : public medToolBox
 {
     Q_OBJECT
 
@@ -54,7 +54,6 @@ public slots:
 	void onSpinBoxChanged(int);
 	void onStopButton();
 	void onStepIncreased( );
-	
 
  protected:
 

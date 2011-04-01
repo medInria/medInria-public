@@ -22,12 +22,50 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
+#include "medDbControllerFactory.h"
+#include "medAbstractDbController.h"
+
 #include <QtCore>
 
 class medDataManagerPrivate
 {
 public:
+
+    medDataManagerPrivate()
+    {
+        dbController = NULL;
+        nonPersDbController = NULL;
+    }
+
     QHash<medDataIndex, dtkAbstractData *> datas;
+    QHash<medDataIndex, dtkAbstractData *> volatileDatas;
+
+    medAbstractDbController* getDbController()
+    {
+        if (dbController == NULL)
+        {
+         dbController = medDbControllerFactory::instance()->createDbController("DbController");
+         if (!dbController)
+             qWarning() << "No dbController registered!";
+        }
+        return dbController;
+    }
+
+    medAbstractDbController* getNonPersDbController()
+    {
+        if (nonPersDbController == NULL)
+        {
+            nonPersDbController  = medDbControllerFactory::instance()->createDbController("NonPersistentDbController");
+            if (!nonPersDbController)
+                qWarning() << "No nonPersistentDbController registered!";
+        }
+        return nonPersDbController ;
+    }
+
+private:
+    medAbstractDbController* dbController; 
+    medAbstractDbController* nonPersDbController; 
+
 };
 
 medDataManager *medDataManager::instance(void)
@@ -38,6 +76,7 @@ medDataManager *medDataManager::instance(void)
     return s_instance;
 }
 
+/*
 void medDataManager::insert(const medDataIndex& index, dtkAbstractData *data)
 {
     d->datas.insert(index, data);
@@ -49,12 +88,152 @@ void medDataManager::remove(const medDataIndex& index)
 
     d->datas.remove(index);
 }
+*/
 
 dtkAbstractData *medDataManager::data(const medDataIndex& index)
 {
-    return d->datas.value(index);
+    dtkAbstractData* dtkdata = NULL;
+
+    // try to get it from cache first
+    if ( d->datas.contains(index) || d->volatileDatas.contains (index) )
+    {
+        qDebug() << "Reading from cache";
+	if (d->datas.contains(index))
+            dtkdata = d->datas.value(index);
+	else
+            dtkdata = d->volatileDatas.value(index);
+    }
+    else
+    {
+        qDebug() << "Reading from db";
+
+        // try to load the data from db
+        medAbstractDbController* db = d->getDbController();
+        if (db)
+        {
+            dtkdata = db->read(index);
+            if (dtkdata)
+	        d->datas[index] = dtkdata;
+        }
+
+        //if the data is still invalid we continue in the non-pers db
+        if (!dtkdata)
+        {
+            medAbstractDbController* npDb = d->getNonPersDbController();
+            if(npDb)
+            {
+                dtkdata = npDb->read(index);
+                if (dtkdata)
+		    d->volatileDatas[index] = dtkdata;
+            }
+        }
+    }
+
+    if (dtkdata)
+        return dtkdata;
+    else
+    {
+        qWarning() << "unable to open images with index:" << index.asString();
+        return NULL;
+    }
 }
 
+medDataIndex medDataManager::import (dtkAbstractData *data)
+{
+    if (!data)
+        return medDataIndex();
+
+    medDataIndex index;
+    
+    medAbstractDbController* db = d->getDbController();
+    if(db)
+    {
+        index = db->import(data);
+    }
+
+    if (!index.isValid()) {
+        qWarning() << "index is not valid";
+        return index;
+    }
+
+    d->datas[index] = data;
+
+    emit dataAdded (index);
+    
+    return index;
+}
+
+medDataIndex medDataManager::importNonPersistent (dtkAbstractData *data)
+{
+    if (!data)
+        return medDataIndex();
+
+    foreach (dtkAbstractData *dtkdata, d->datas) {
+        if (data==dtkdata) {
+	    qWarning() << "data already in manager, skipping";
+	    return medDataIndex();
+	}
+    }
+
+    foreach (dtkAbstractData *dtkdata, d->volatileDatas) {
+        if (data==dtkdata) {
+	    qWarning() << "data already in manager, skipping";
+	    return medDataIndex();
+	}
+    }
+
+    medDataIndex index;
+    
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    if(npDb)
+    {
+        index = npDb->import(data);
+    }
+
+    if (!index.isValid()) {
+        qWarning() << "index is not valid";
+        return index;
+    }
+    
+    if (d->volatileDatas.contains (index)) {
+        qWarning() << "index already in manager, skipping";
+	return index;
+    }
+
+    d->volatileDatas[index] = data;
+
+    emit dataAdded (index);
+    
+    return index;
+}
+
+void medDataManager::storeNonPersistentDataToDatabase (void)
+{
+    foreach (dtkAbstractData *dtkdata, d->volatileDatas) {
+        this->import (dtkdata);
+    }
+    
+    if (medAbstractDbController* npDb = d->getNonPersDbController())
+        npDb->clear();
+
+    d->volatileDatas.clear();
+}
+
+
+int medDataManager::nonPersistentDataCount (void) const
+{
+    return d->volatileDatas.count();
+}
+
+void medDataManager::clearNonPersistentData (void)
+{
+    if (medAbstractDbController* npDb = d->getNonPersDbController())
+        npDb->clear();
+
+    d->volatileDatas.clear();
+}
+
+/*
 QList<dtkAbstractData *> medDataManager::dataForPatient(int id)
 {
     QList<dtkAbstractData *> data;
@@ -98,7 +277,7 @@ QList<dtkAbstractData *> medDataManager::dataForImage(int id)
 
     return data;
 }
-
+*/
 medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 {
 

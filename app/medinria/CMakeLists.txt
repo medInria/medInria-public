@@ -1,5 +1,5 @@
-### CMakeLists.txt --- 
-## 
+### CMakeLists.txt ---
+##
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Thu Sep 17 07:53:29 2009 (+0200)
@@ -8,13 +8,13 @@
 ##           By: Julien Wintz
 ##     Update #: 86
 ######################################################################
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ######################################################################
-## 
+##
 ### Change log:
-## 
+##
 ######################################################################
 
 project(medinria)
@@ -23,49 +23,54 @@ project(medinria)
 ## Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS
-  medBrowserArea.h
-  medBrowserArea_p.h
-  medBrowserToolBoxJobs.h
-  medBrowserToolBoxPacsHost.h
-  medBrowserToolBoxPacsNodes.h
-  medBrowserToolBoxPacsSearch.h
+set(${PROJECT_NAME}_HEADERS_MOC
+  medBrowserArea.h  
   medBrowserToolBoxSource.h
+  medBrowserToolBoxSettings.h  
   medMainWindow.h
-  medViewerArea.h
+  medViewerArea.h    
+  medViewerConfigurationDiffusion.h
+  medViewerConfigurationVisualization.h
+  medViewerConfigurationVisualization2.h
+  medViewerConfigurationRegistration.h   
+  medViewerToolBoxConfiguration.h  
+  medViewerToolBoxPatient.h    
+  medPacsDataSource.h 
+  medFileSystemDataSource.h  
+  medDatabaseDataSource.h
+  )
+
+set(${PROJECT_NAME}_HEADERS
   medViewerArea_p.h
-  medViewerConfiguration.h
-  medViewerToolBoxConfiguration.h
-  medViewerToolBoxLayout.h
-  medViewerToolBoxPatient.h
+  ${${PROJECT_NAME}_HEADERS_MOC}  
 )
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  medBrowserArea.h
-  medBrowserToolBoxJobs.h
-  medBrowserToolBoxPacsHost.h
-  medBrowserToolBoxPacsNodes.h
-  medBrowserToolBoxPacsSearch.h
-  medBrowserToolBoxSource.h
-  medMainWindow.h
-  medViewerArea.h
-  medViewerToolBoxConfiguration.h
-  medViewerToolBoxPatient.h)
-
 set(${PROJECT_NAME}_SOURCES
-  medBrowserArea.cpp
-  medBrowserToolBoxJobs.cpp
-  medBrowserToolBoxPacsHost.cpp
-  medBrowserToolBoxPacsNodes.cpp
-  medBrowserToolBoxPacsSearch.cpp
+  main.cpp
+  medBrowserArea.cpp  
   medBrowserToolBoxSource.cpp
+  medBrowserToolBoxSettings.cpp    
   medMainWindow.cpp
-  medViewerArea.cpp
+  medViewerArea.cpp    
   medViewerToolBoxConfiguration.cpp
-  medViewerToolBoxPatient.cpp
-  main.cpp)
+  medViewerToolBoxPatient.cpp  
+  medViewerConfigurationDiffusion.cpp
+  medViewerConfigurationVisualization.cpp
+  medViewerConfigurationVisualization2.cpp
+  medViewerConfigurationRegistration.cpp   
+  medPacsDataSource.cpp  
+  medFileSystemDataSource.cpp
+  medDatabaseDataSource.cpp
+  )
 
 set(${PROJECT_NAME}_RESOURCES medinria.qrc)
+
+# Include header files for Visual Studio.
+FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )
+set(${PROJECT_NAME}_SOURCES
+	${${PROJECT_NAME}_SOURCES}
+	${${PROJECT_NAME}_HEADERS_MOC}
+	)
 
 ## #################################################################
 ## Build rules
@@ -79,7 +84,9 @@ IF(APPLE)
   set(DEPLOYMENT_SYSTEM MACOSX_BUNDLE)
 endif()
 if(WIN32)
-  set(DEPLOYMENT_SYSTEM WIN32)
+  if( NOT ${MED_SHOW_CONSOLE} )
+    set(DEPLOYMENT_SYSTEM WIN32)
+  endif()
   set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES} ${PROJECT_NAME}.rc)
 endif()
 

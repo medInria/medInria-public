@@ -148,7 +148,7 @@ void medViewPool::onViewDaddy (bool daddy)
             
             // restore the previous data (if any)
             if ( d->viewData[view] ) {
-                view->setData (d->viewData[view]);
+	      view->setData (d->viewData[view], 0);
                 d->viewData[view] = NULL;
 		if (view->widget()->isVisible())
 		    view->update();
@@ -164,8 +164,9 @@ void medViewPool::onViewReg(bool value)
 {
 	if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
         
-        if (value) {
-            medAbstractView *refView = this->daddy();
+		medAbstractView *refView = this->daddy();
+        
+		if (value) {
             
             if (refView==view) // do not register the view with itself
                 return;
@@ -187,15 +188,24 @@ void medViewPool::onViewReg(bool value)
                     if (process->run()==0) {
                         dtkAbstractData *output = process->output();
                         d->viewData[view] = data2;
-                        view->setData (output);
-			if (view->widget()->isVisible())
-			    view->update();
+                        view->setData (output, 0);
+						view->blockSignals(true);
+						view->setPosition(refView->position());
+						view->setZoom(refView->zoom());
+						view->setPan(refView->pan());
+						QVector3D position, viewup, focal;
+						double parallelScale;
+						refView->camera(position, viewup, focal, parallelScale);
+						view->setCamera(position, viewup, focal, parallelScale);
+						view->blockSignals(false);
+                        if (view->widget()->isVisible())
+                            view->update();
                         emit showInfo (this, tr ("Automatic registration successful"),3000);
                     }
                     else {
                         emit showError(this, tr  ("Automatic registration failed"),3000);
                     }
-                    delete process;
+                    process->deleteLater();
                 }
                 
             }
@@ -203,12 +213,21 @@ void medViewPool::onViewReg(bool value)
         else { // restore the previous data (if any)
             if ( d->viewData[view] ) {
                 dtkAbstractData *oldData = static_cast<dtkAbstractData*>( view->data() );
-                view->setData (d->viewData[view]);
+                view->setData (d->viewData[view], 0);
+				view->blockSignals(true);
+						view->setPosition(refView->position());
+						view->setZoom(refView->zoom());
+						view->setPan(refView->pan());
+						QVector3D position, viewup, focal;
+						double parallelScale;
+						refView->camera(position, viewup, focal, parallelScale);
+						view->setCamera(position, viewup, focal, parallelScale);
+						view->blockSignals(false);
                 d->viewData[view] = NULL;
                 if (oldData)
-                    delete oldData;
-		if (view->widget()->isVisible())
-		    view->update();
+                    oldData->deleteLater();
+                if (view->widget()->isVisible())
+                    view->update();
             }
         }
     }
@@ -221,7 +240,8 @@ void medViewPool::onViewPropertySet (const QString &key, const QString &value)
         key=="PositionLinked" ||
         key=="CameraLinked" ||
         key=="WindowingLinked" ||
-        key=="Orientation")
+        key=="Orientation" ||
+        key=="LookupTable")
         return;
     
     d->propertySet[key] = value;

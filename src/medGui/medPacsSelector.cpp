@@ -33,7 +33,7 @@ void medPacsSelector::readSettings( void )
 
     QList<QVariant> nodes;
 
-    QSettings settings("inria", "medinria");
+    QSettings settings;
 
     settings.beginGroup("medBrowserToolBoxPacsNodes");
     nodes = settings.value("nodes").toList();

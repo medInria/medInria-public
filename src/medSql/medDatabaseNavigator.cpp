@@ -24,8 +24,10 @@
 #include "medDatabaseNavigatorItemGroup.h"
 #include "medDatabaseNavigatorScene.h"
 #include "medDatabaseNavigatorView.h"
-#include "medSql/medDatabaseNonPersitentItem.h"
-#include "medSql/medDatabaseNonPersitentController.h"
+#include "medSql/medDatabaseNonPersistentItem.h"
+#include "medSql/medDatabaseNonPersistentController.h"
+
+#include <medCore/medStorage.h>
 
 #include <QtCore>
 #include <QtGui>
@@ -78,7 +80,7 @@ void medDatabaseNavigator::reset(void)
     d->scene->reset();
 }
 
-void medDatabaseNavigator::onPatientClicked(int patientId)
+void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 {
     this->reset();
 
@@ -92,7 +94,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
     QString patientThumbnail;
 
     patientQuery.prepare("SELECT name, thumbnail FROM patient WHERE id = :id");
-    patientQuery.bindValue(":id", patientId);
+    patientQuery.bindValue(":id", index.patientId());
     if(!patientQuery.exec())
         qDebug() << DTK_COLOR_FG_RED << patientQuery.lastError() << DTK_NO_COLOR;
 
@@ -108,7 +110,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
     QVariant studyThumbnail;
 
     studyQuery.prepare("SELECT id, name, thumbnail FROM study WHERE patient = :patient");
-    studyQuery.bindValue(":patient", patientId);
+    studyQuery.bindValue(":patient", index.patientId());
     if(!studyQuery.exec())
         qDebug() << DTK_COLOR_FG_RED << studyQuery.lastError() << DTK_NO_COLOR;
 
@@ -140,7 +142,9 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
             seriesName = seriesQuery.value(1);
             seriesThumbnail = seriesQuery.value(2);
 
-            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(patientId, studyId.toInt(), seriesId.toInt(), -1, seriesThumbnail.toString());
+            QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
+            qDebug() << thumbPath;
+            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(index.patientId(), studyId.toInt(), seriesId.toInt(), -1, thumbPath, seriesName.toString());
 
             connect(item, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
             connect(item, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
@@ -157,17 +161,18 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 
     QMap<QString, medDatabaseNavigatorItemGroup*> groupMap;
 
-    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
+    foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items()) {
 
-        if(item->index().patientId() == patientId) {
+        if(item->index().patientId() == index.patientId()) {
 
             medDatabaseNavigatorItem *nitem = new medDatabaseNavigatorItem(
                 item->index().patientId(), 
                 item->index().studyId(), 
                 item->index().seriesId(), 
                 item->index().imageId(), 
-                item->thumb());
-            
+                item->thumb(),
+		item->seriesName());
+
             connect(nitem, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
             connect(nitem, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
             connect(nitem, SIGNAL(seriesClicked(int)), this, SIGNAL(seriesClicked(int)));
@@ -182,7 +187,7 @@ void medDatabaseNavigator::onPatientClicked(int patientId)
 		groupMap.insert(item->studyName(), group);		
 	    }
 	                
-            group->addItem(nitem);
+            group->addItem (nitem);
         }
     }
 

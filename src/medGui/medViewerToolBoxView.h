@@ -25,7 +25,7 @@
 class dtkAbstractView;
 class medViewerToolBoxViewPrivate;
 
-class medViewerToolBoxView : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxView : public medToolBox
 {
     Q_OBJECT
 
@@ -51,7 +51,8 @@ public slots:
     void onAxisVisibilityChanged(bool);
     void onRulerVisibilityChanged(bool);
     void onAnnotationsVisibilityChanged(bool);
-
+    void clear();
+    
 private:
     medViewerToolBoxViewPrivate *d;
 };

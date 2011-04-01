@@ -36,8 +36,8 @@ class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
     Q_OBJECT
 
 public:
-    typedef medToolBoxRegistrationCustom *(*medToolBoxRegistrationCustomCreator)(void);
-    typedef medToolBoxDiffusionCustom *(*medToolBoxDiffusionCustomCreator)(void);
+    typedef medToolBoxRegistrationCustom *(*medToolBoxRegistrationCustomCreator)(QWidget *parent);
+    typedef medToolBoxDiffusionCustom    *(*medToolBoxDiffusionCustomCreator)(QWidget *parent);
 
     typedef QHash<QString, medToolBoxRegistrationCustomCreator> medToolBoxRegistrationCustomCreatorHash;
     typedef QHash<QString, medToolBoxDiffusionCustomCreator> medToolBoxDiffusionCustomCreatorHash;
@@ -47,13 +47,13 @@ public:
 
     bool registerCustomRegistrationToolBox(QString type, medToolBoxRegistrationCustomCreator func);
     bool registerCustomDiffusionToolBox(QString type, medToolBoxDiffusionCustomCreator func);
-
+	
     QList<QString> registrationToolBoxes(void);
     QList<QString> diffusionToolBoxes(void);
-
+	
 public slots:
-    medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString type);
-    medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString type);
+    medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString type, QWidget *parent=0);
+    medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString type, QWidget *parent=0);
 
 protected:
      medToolBoxFactory(void);
