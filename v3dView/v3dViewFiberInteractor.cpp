@@ -13,11 +13,16 @@
 #include <vtkImageView3D.h>
 #include <vtkLimitFibersToVOI.h>
 #include <vtkPointData.h>
-#include "vtkLookupTableManager.h"
-#include "vtkFiberDataSet.h"
+#include <vtkLookupTableManager.h>
+#include <vtkFiberDataSet.h>
+#include <vtkMatrix4x4.h>
+#include <vtkLimitFibersToROI.h>
+
+#include <itkImage.h>
+#include <itkImageToVTKImageFilter.h>
+#include <itkFiberBundleToScalarFunction.h>
 
 #include "v3dView.h"
-#include "v3dFiberBundle.h"
 
 #include <QInputDialog>
 #include <QColorDialog>
@@ -32,7 +37,7 @@ public:
     vtkSmartPointer<vtkFiberDataSet> dataset;
 };
 
-v3dViewFiberInteractor::v3dViewFiberInteractor(): dtkAbstractViewInteractor(), d(new v3dViewFiberInteractorPrivate)
+v3dViewFiberInteractor::v3dViewFiberInteractor(): medAbstractViewFiberInteractor(), d(new v3dViewFiberInteractorPrivate)
 {
     d->data    = 0;
     d->dataset = 0;
@@ -92,6 +97,10 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
                 data->addMetaData("BundleList", QStringList());
             if (!data->hasMetaData("BundleColorList"))
                 data->addMetaData("BundleColorList", QStringList());
+            if (!data->hasMetaData("BundleFAList"))
+                data->addMetaData("BundleFAList", QStringList());
+            if (!data->hasMetaData("BundleADCList"))
+                data->addMetaData("BundleADCList", QStringList());
             d->data = data;
         }
     }
@@ -250,9 +259,25 @@ void v3dViewFiberInteractor::onSelectionValidated(const QString &name, const QCo
     double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
 	
     d->manager->Validate (name.toAscii().constData(), color_d);
-    
+
+    itk::FiberBundleToScalarFunction::Pointer statCalculator = itk::FiberBundleToScalarFunction::New();
+    statCalculator->SetInput (d->dataset->GetBundle (name.toAscii().constData()).Bundle);
+    try
+    {
+        statCalculator->Compute();
+    }
+    catch(itk::ExceptionObject &e)
+    {
+        qDebug() << e.GetDescription();
+    }
+
+    double fa  = statCalculator->GetMeanFA();
+    double adc = statCalculator->GetMeanADC();
+
     d->data->addMetaData("BundleList", name);
     d->data->addMetaData("BundleColorList", color.name());
+    d->data->addMetaData("BundleFAList",  QString::number(fa));
+    d->data->addMetaData("BundleADCList", QString::number(adc));
 }
 
 void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
@@ -271,6 +296,49 @@ void v3dViewFiberInteractor::onRadiusSet (int value)
  
     if (d->view)
         d->view->update();
+}
+
+void v3dViewFiberInteractor::setROI(dtkAbstractData *data)
+{
+    if (!data)
+        return;
+
+    if (data->description()!="itkDataImageUChar3")
+        return;
+
+    typedef itk::Image<unsigned char, 3> ROIType;
+
+    ROIType::Pointer roiImage = static_cast<ROIType*>(data->data());
+
+    if (!roiImage.IsNull()) {
+        itk::ImageToVTKImageFilter<ROIType>::Pointer converter = itk::ImageToVTKImageFilter<ROIType>::New();
+        converter->SetReferenceCount(2);
+        converter->SetInput(roiImage);
+        converter->Update();
+
+        ROIType::DirectionType directions = roiImage->GetDirection();
+        vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
+        matrix->Identity();
+        for (int i=0; i<3; i++)
+            for (int j=0; j<3; j++)
+                matrix->SetElement (i, j, directions (i,j));
+
+        d->manager->GetROILimiter()->SetMaskImage (converter->GetOutput());
+        d->manager->GetROILimiter()->SetDirectionMatrix (matrix);
+        d->manager->GetROILimiter()->Update();
+
+        matrix->Delete();
+    }
+}
+
+void v3dViewFiberInteractor::setRoiBoolean(int roi, int meaning)
+{
+    d->manager->GetROILimiter()->SetBooleanOperation (roi, meaning);
+}
+
+int v3dViewFiberInteractor::roiBoolean(int roi)
+{
+    return d->manager->GetROILimiter()->GetBooleanOperationVector()[roi+1];
 }
 
 // /////////////////////////////////////////////////////////////////

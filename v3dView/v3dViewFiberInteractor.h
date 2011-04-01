@@ -1,7 +1,7 @@
 #ifndef V3DVIEWFIBERINTERACTOR_H
 #define V3DVIEWFIBERINTERACTOR_H
 
-#include <dtkCore/dtkAbstractViewInteractor.h>
+#include <medCore/medAbstractViewFiberInteractor.h>
 
 #include "v3dViewPluginExport.h"
 
@@ -10,7 +10,7 @@ class v3dViewFiberInteractorPrivate;
 class dtkAbstractData;
 class dtkAbstractView;
 
-class V3DVIEWPLUGIN_EXPORT v3dViewFiberInteractor: public dtkAbstractViewInteractor
+class V3DVIEWPLUGIN_EXPORT v3dViewFiberInteractor: public medAbstractViewFiberInteractor
 {
 
 	Q_OBJECT
@@ -32,6 +32,11 @@ public:
 
 	virtual void enable(void);
 	virtual void disable(void);
+
+        virtual void setROI(dtkAbstractData *data);
+
+        virtual void setRoiBoolean (int roi, int meaning);
+        virtual int  roiBoolean (int roi);
 
 public slots:
 	virtual void onPropertySet (const QString& key, const QString& value);
