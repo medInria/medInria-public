@@ -6,7 +6,9 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 #include <medCore/medDataManager.h>
-//#include <medSql/medDatabaseController.h>
+#include <medCore/medAbstractViewFiberInteractor.h>
+
+#include <medSql/medDatabaseNonPersistentController.h>
 
 class medToolBoxDiffusionFiberBundlingPrivate
 {
@@ -20,6 +22,10 @@ public:
     QCheckBox    *bundlingShowCheckBox;
     QCheckBox    *bundleBoxCheckBox;
     QPushButton  *bundlingButtonAdd;
+    QComboBox    *roiComboBox;
+    QRadioButton *andButton;
+    QRadioButton *notButton;
+    QRadioButton *nullButton;
     
     dtkAbstractView *view;
     dtkAbstractData *data;
@@ -31,6 +37,33 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     d->data = 0;
     
     QWidget *bundlingPage = new QWidget(this);
+
+    QPushButton *openRoiButton = new QPushButton("Open ROI", bundlingPage);
+    d->roiComboBox = new QComboBox(bundlingPage);
+    for (int i=0; i<255; i++)
+        d->roiComboBox->addItem(tr("ROI ")+QString::number(i+1));
+    d->roiComboBox->setCurrentIndex(0);
+
+    QGroupBox *boolGroup = new QGroupBox(bundlingPage);
+    boolGroup->setStyleSheet("border:0;");
+    boolGroup->setContentsMargins(0, 0, 0, 0);
+    boolGroup->setAlignment(Qt::AlignHCenter);
+
+    d->andButton  = new QRadioButton(tr("AND"), bundlingPage);
+    d->notButton  = new QRadioButton(tr("NOT"), bundlingPage);
+    d->nullButton = new QRadioButton(tr("NULL"), bundlingPage);
+
+    QHBoxLayout *boolLayout = new QHBoxLayout;
+    boolLayout->addWidget(d->andButton);
+    boolLayout->addWidget(d->notButton);
+    boolLayout->addWidget(d->nullButton);
+    d->andButton->setChecked(true);
+
+    boolGroup->setLayout(boolLayout);
+
+    QHBoxLayout *roiLayout = new QHBoxLayout;
+    roiLayout->addWidget(d->roiComboBox);
+    roiLayout->addWidget(boolGroup);
     
     d->bundlingButtonTag = new QPushButton("Tag", bundlingPage);
     d->bundlingButtonAdd = new QPushButton("Add", bundlingPage);
@@ -59,6 +92,8 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     d->bundleBoxCheckBox = new QCheckBox("Activate bundling box", bundlingPage);
         
     QVBoxLayout *bundlingLayout = new QVBoxLayout(bundlingPage);
+    bundlingLayout->addWidget(openRoiButton);
+    bundlingLayout->addLayout(roiLayout);
     bundlingLayout->addWidget(d->bundleBoxCheckBox);
     bundlingLayout->addLayout(bundlingButtonsLayout);
     bundlingLayout->addWidget(d->bundlingList);
@@ -70,6 +105,12 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     connect (d->bundlingShowCheckBox,  SIGNAL(toggled(bool)),            this, SIGNAL (showBundles (bool)));
     connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
     connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
+
+    connect (openRoiButton,  SIGNAL(clicked()),                this, SLOT(onOpenRoiButtonClicked()));
+    connect (d->roiComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRoiComboIndexChanged(int)));
+    connect (d->andButton,   SIGNAL(toggled(bool)),            this, SLOT(onAddButtonToggled(bool)));
+    connect (d->notButton,   SIGNAL(toggled(bool)),            this, SLOT(onNotButtonToggled(bool)));
+    connect (d->nullButton,  SIGNAL(toggled(bool)),            this, SLOT(onNullButtonToggled(bool)));
  
     this->setTitle("Fiber Bundling");
     this->addWidget(bundlingPage);
@@ -166,6 +207,104 @@ void medToolBoxDiffusionFiberBundling::addBundle (const QString &name, const QCo
                               color, Qt::DecorationRole);
 
     //d->bundlingList->update();
+}
+
+void medToolBoxDiffusionFiberBundling::onOpenRoiButtonClicked(void)
+{
+    if (!d->view)
+        return;
+
+    QString roiFileName = QFileDialog::getOpenFileName(this, tr("Open ROI"), "", tr("Image file (*.*)"));
+
+    if (roiFileName.isEmpty())
+        return;
+
+    medDataIndex index = medDatabaseNonPersistentController::instance()->import(roiFileName);
+
+    dtkAbstractData *data = medDataManager::instance()->data(index);
+
+    if (!data)
+        return;
+
+    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+        interactor->setROI(data);
+        d->view->update();
+    }
+
+}
+
+void medToolBoxDiffusionFiberBundling::onRoiComboIndexChanged (int value)
+{
+    if (!d->view)
+        return;
+
+    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+        int boolean = interactor->roiBoolean (value);
+        switch (boolean) {
+        case 2:
+            d->andButton->blockSignals (true);
+            d->andButton->setChecked   (true);
+            d->andButton->blockSignals (false);
+            break;
+
+        case 1:
+            d->notButton->blockSignals (true);
+            d->notButton->setChecked   (true);
+            d->notButton->blockSignals (false);
+            break;
+
+        case 0:
+        default:
+            d->nullButton->blockSignals (true);
+            d->nullButton->setChecked   (true);
+            d->nullButton->blockSignals (false);
+            break;
+        }
+    }
+
+    d->view->update();
+}
+
+void medToolBoxDiffusionFiberBundling::onAddButtonToggled (bool value)
+{
+    if (!d->view)
+        return;
+
+    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+        int roi = d->roiComboBox->currentIndex();
+        if (value)
+            interactor->setRoiBoolean(roi+1, 2);
+    }
+
+    d->view->update();
+}
+
+void medToolBoxDiffusionFiberBundling::onNotButtonToggled (bool value)
+{
+    if (!d->view)
+        return;
+
+    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+        int roi = d->roiComboBox->currentIndex();
+        if (value)
+            interactor->setRoiBoolean(roi+1, 1);
+    }
+
+    d->view->update();
+}
+
+void medToolBoxDiffusionFiberBundling::onNullButtonToggled (bool value)
+{
+    if (!d->view)
+        return;
+
+    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+        int roi = d->roiComboBox->currentIndex();
+        if (value)
+            interactor->setRoiBoolean(roi+1, 0);
+    }
+
+    d->view->update();
 }
 
 void medToolBoxDiffusionFiberBundling::clear(void)

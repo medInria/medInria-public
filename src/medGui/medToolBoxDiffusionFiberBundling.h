@@ -27,6 +27,12 @@ public slots:
     void addBundle(const QString &name, const QColor &color);
     void onBundlingButtonVdtClicked (void);
     void onBundleBoxCheckBoxToggled (bool);
+
+    void onOpenRoiButtonClicked (void);
+    void onRoiComboIndexChanged (int value);
+    void onAddButtonToggled (bool value);
+    void onNotButtonToggled (bool value);
+    void onNullButtonToggled (bool value);
     
     void clear(void);
     void update (dtkAbstractView *view);
