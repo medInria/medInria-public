@@ -49,20 +49,20 @@ bool itkDataTensorImageReaderBase::canRead (const QString &path)
 {
     if (!this->io.IsNull()) {
         if (!this->io->CanReadFile ( path.toAscii().constData() ))
-	    return false;
+            return false;
 
-	this->io->SetFileName (path.toAscii().constData());
-	try {
-	    this->io->ReadImageInformation();
-	}
-	catch (itk::ExceptionObject &e) {
-	    qDebug() << e.GetDescription();
-	    return false;
-	}
+        this->io->SetFileName (path.toAscii().constData());
+        try {
+            this->io->ReadImageInformation();
+        }
+        catch (itk::ExceptionObject &e) {
+            qDebug() << e.GetDescription();
+            return false;
+        }
 
-	if (this->io->GetNumberOfComponents()!=6 && this->io->GetNumberOfComponents()!=9)
-	    return false;
-	
+        if (this->io->GetNumberOfComponents()!=6 && this->io->GetNumberOfComponents()!=9)
+            return false;
+
         return true;
     }
     return false;

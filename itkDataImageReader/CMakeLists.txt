@@ -44,24 +44,6 @@ endif()
 #  message(WARNING "The DICOM GDCM reader plugin needs ITK to compile with SYSTEM_GDCM. If you don't want to use GDCM, discard this warning. Otherwise, #please set the option ITK_USE_SYSTEM_GDCM:ON in ITK and re-compile")
 #endif(ITK_USE_SYSTEM_GDCM)
 
-set(ITK_LIB_STYLE "STATIC")
-if(ITK_BUILD_SHARED)
-  set(ITK_LIB_STYLE "SHARED")
-endif (ITK_BUILD_SHARED)
-
-option (MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT "Build dcmtk support for itkDataImageReader (requires dcmtk and vtkinria3d)" "ON")
-
-if (MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
-  find_package(DCMTK2 REQUIRED)
-  include_directories(${DCMTK_INCLUDE_DIR})
-
-  find_package(vtkINRIA3D REQUIRED) # for itkMultiThreadedImageIO
-  include(${vtkINRIA3D_USE_FILE})
-
-  add_subdirectory(itkDcmtkIO)
-  add_definitions(-D MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
-endif()
-
 find_package(VTK)
 include(${VTK_USE_FILE})
 
@@ -91,12 +73,6 @@ if(ITK_USE_SYSTEM_GDCM)
     itkGDCMDataImageReader.h
     )
 endif(ITK_USE_SYSTEM_GDCM)
-if (MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
-  set(${PROJECT_NAME}_HEADERS_MOC
-    ${${PROJECT_NAME}_HEADERS_MOC}
-    itkDCMTKDataImageReader.h
-    )
-endif()
   
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
@@ -122,12 +98,6 @@ if(ITK_USE_SYSTEM_GDCM)
     itkGDCMDataImageReader.cpp
     )
 endif(ITK_USE_SYSTEM_GDCM)
-if (MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
-  set(${PROJECT_NAME}_SOURCES
-    ${${PROJECT_NAME}_SOURCES}
-    itkDCMTKDataImageReader.cpp
-    )
-endif()
 
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
@@ -149,50 +119,11 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   ${ITK_LIBRARIES})
 
-if (MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
-  target_link_libraries(${PROJECT_NAME}
-  ITKDCMTKIO)
-endif()
-
 add_executable(itkGenerateThumbnails
   itkGenerateThumbnails.cxx)
   
 target_link_libraries(itkGenerateThumbnails
   ${ITK_LIBRARIES})
-
-
-if (MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
-  add_executable(itkDCMTKConvert
-  itkDCMTKConvert.cxx)
-  
-  target_link_libraries(itkDCMTKConvert
-  ITKDCMTKIO
-  ${ITK_LIBRARIES})
-
-  if(VTK_FOUND)
-
-  add_executable(itkDCMTKReaderTest
-  itkDCMTKReaderTest.cxx)
-  
-  target_link_libraries(itkDCMTKReaderTest
-  vtkRenderingAddOn
-  vtkWidgetsAddOn
-  vtkWidgets
-  vtkRendering
-  vtkIO
-  vtkDataManagement
-  ITKDCMTKIO
-  ${ITK_LIBRARIES})
-
-  add_executable(itkDCMTKReadWriteBenchmark
-  itkDCMTKReadWriteBenchmark.cxx)
-  
-  target_link_libraries(itkDCMTKReadWriteBenchmark
-  ITKDCMTKIO
-  ${ITK_LIBRARIES})
-
-  endif (VTK_FOUND)
-endif()
 
 if (BUILD_TESTING)
   add_subdirectory(Testing)

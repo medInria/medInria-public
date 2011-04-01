@@ -132,6 +132,7 @@ void v3dView4DInteractor::enable(void)
   if (this->enabled())
     return;
   this->updatePipeline ();
+  qDebug()<<" v3dView4DInteractor::enable";
   med4DAbstractViewInteractor::enable();
 }
 
