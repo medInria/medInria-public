@@ -31,7 +31,7 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
         d(new medDatabaseSettingsWidgetPrivate())
 {
     setTabName("Database");
-
+   
     d->dbPath = new QLineEdit(this);
     d->btChooseDir = new QPushButton(tr("Select directory..."), this);
 
@@ -45,9 +45,10 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
 
     databaseLocation->setContentsMargins(0,-8,0,0);
 
-    QFormLayout* layout = new QFormLayout;
-    layout->addRow(tr("Database location:"), databaseLocation);
-    this->setLayout(layout);
+    QFormLayout* formLayout = new QFormLayout;
+    formLayout->addRow(tr("Database location:"), databaseLocation);
+    this->setLayout(formLayout);
+
 }
 
 void medDatabaseSettingsWidget::selectDbDirectory()
