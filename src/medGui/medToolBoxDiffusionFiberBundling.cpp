@@ -98,9 +98,7 @@ void medToolBoxDiffusionFiberBundling::setData(dtkAbstractData *data)
     //d->bundlingList->clear();
     //d->bundlingModel->clear();
     d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
-    
-    qDebug() << "Here!!";
-    
+        
     if (data->hasMetaData("BundleList") && data->hasMetaData("BundleColorList")) {
         
         QStringList bundleNames  = data->metaDataValues("BundleList");
