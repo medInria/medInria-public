@@ -333,6 +333,10 @@ void vtkFiberDataSetManager::Validate (const std::string &name, double color[3])
   bundle->Initialize();
   bundle->SetPoints ( this->FiberDataSet->GetFibers()->GetPoints() );
   bundle->GetPointData()->SetScalars ( this->FiberDataSet->GetFibers()->GetPointData()->GetScalars() );
+  for( int i=0; i<this->FiberDataSet->GetFibers()->GetPointData()->GetNumberOfArrays(); i++)
+  {
+    bundle->GetPointData()->AddArray ( this->FiberDataSet->GetFibers()->GetPointData()->GetArray (i) );
+  }
   bundle->SetLines ( this->GetSelectedCells() );
 
   this->FiberDataSet->AddBundle (name, bundle, color);
