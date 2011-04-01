@@ -195,7 +195,7 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
   t_direction->Identity();
   if (this->DirectionMatrix)
   {
-    vtkMatrix4x4::Transpose (this->DirectionMatrix, t_direction);
+    vtkMatrix4x4::Invert (this->DirectionMatrix, t_direction);
   }
  
   
@@ -319,4 +319,9 @@ int vtkLimitFibersToROI::RequestData (vtkInformation *vtkNotUsed(request),
 
   return 1;
   
+}
+
+void vtkLimitFibersToROI::SetBooleanOperation(int id, int value)
+{
+    this->BooleanOperationVector[id] = value;
 }

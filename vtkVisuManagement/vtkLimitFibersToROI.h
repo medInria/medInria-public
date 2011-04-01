@@ -54,6 +54,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLimitFibersToROI: public vtkPolyDataAlgorithm
       this->BooleanOperationVector[i] = vec[i];
     }
   }
+
+  void SetBooleanOperation (int id, int value);
+
   int* GetBooleanOperationVector (void)
   {
     return this->BooleanOperationVector;
