@@ -6,6 +6,8 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 #include <medCore/medDataManager.h>
+#include <medCore/medAbstractDbController.h>
+#include <medCore/medDbControllerFactory.h>
 #include <medCore/medAbstractViewFiberInteractor.h>
 
 #include <medSql/medDatabaseNonPersistentController.h>
@@ -177,7 +179,7 @@ void medToolBoxDiffusionFiberBundling::onBundleBoxCheckBoxToggled (bool value)
         else
             interactor->setProperty ("BoxVisibility", "false");
                 
-	d->view->update();
+        d->view->update();
     } 
 }
 
@@ -219,7 +221,13 @@ void medToolBoxDiffusionFiberBundling::onOpenRoiButtonClicked(void)
     if (roiFileName.isEmpty())
         return;
 
-    medDataIndex index = medDatabaseNonPersistentController::instance()->import(roiFileName);
+    medAbstractDbController *nonPersDbController  = medDbControllerFactory::instance()->createDbController("NonPersistentDbController");
+    if (!nonPersDbController) {
+        qWarning() << "No nonPersistentDbController registered!";
+        return;
+    }
+    
+    medDataIndex index = nonPersDbController->import(roiFileName);
 
     dtkAbstractData *data = medDataManager::instance()->data(index);
 
