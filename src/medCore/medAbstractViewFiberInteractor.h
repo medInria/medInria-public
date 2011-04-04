@@ -6,6 +6,7 @@
 #include "medCoreExport.h"
 
 class dtkAbstractData;
+class medAbstractViewFiberInteractorPrivate;
 
 /**
  * \class medAbstractViewFiberInteractor
@@ -34,6 +35,53 @@ public:
     */
     virtual void setRoiBoolean(int roi, int meaning);
     virtual int  roiBoolean (int roi);
+
+    void bundleFAStatistics (const QString &name,
+                             double &mean,
+                             double &min,
+                             double &max,
+                             double &var);
+
+    void bundleADCStatistics (const QString &name,
+                              double &mean,
+                              double &min,
+                              double &max,
+                              double &var);
+
+    void bundleLengthStatistics (const QString &name,
+                                 double &mean,
+                                 double &min,
+                                 double &max,
+                                 double &var);
+
+    virtual void setBundleVisibility(const QString &name, bool visibility);
+    virtual bool bundleVisibility(const QString &name) const;
+
+    virtual void setBundleVisibility(bool visibility);
+
+protected:
+    virtual void computeBundleFAStatistics (const QString &name,
+                                            double &mean,
+                                            double &min,
+                                            double &max,
+                                            double &var);
+
+    virtual void computeBundleADCStatistics (const QString &name,
+                                             double &mean,
+                                             double &min,
+                                             double &max,
+                                             double &var);
+
+    virtual void computeBundleLengthStatistics (const QString &name,
+                                                double &mean,
+                                                double &min,
+                                                double &max,
+                                                double &var);
+
+    void clearStatistics (void);
+
+private:
+    medAbstractViewFiberInteractorPrivate *d2;
 };
 
 #endif
