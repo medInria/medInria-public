@@ -49,7 +49,13 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   virtual void SetRenderingModeToRibbons (void);
   virtual void ChangeMapperToUseHardwareShaders(void);
   virtual void ChangeMapperToDefault(void);
+
+  virtual void SetBundleVisibility(const std::string &name, int visibility);
+  virtual int  GetBundleVisibility(const std::string &name);
   
+  virtual void ShowAllBundles(void);
+  virtual void HideAllBundles(void);
+
   /*
     virtual void SetColorModeToLocalFiberOrientation (void);
     virtual void SetColorModelToGlobalFiberOrientation (void);

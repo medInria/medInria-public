@@ -368,3 +368,42 @@ void vtkFiberDataSetManager::Validate (const std::string &name, double color[3])
     this->GetRenderer()->AddViewProp ( d->FiberBundlePipelineList[name]->Actor );
   }
 }
+
+void vtkFiberDataSetManager::SetBundleVisibility(const std::string &name, int visibility)
+{
+    vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.find (name);
+    if (it!=d->FiberBundlePipelineList.end())
+    {
+        (it->second)->Actor->SetVisibility(visibility);
+    }
+}
+
+int vtkFiberDataSetManager::GetBundleVisibility(const std::string &name)
+{
+    vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.find (name);
+    if (it!=d->FiberBundlePipelineList.end())
+    {
+        return (it->second)->Actor->GetVisibility();
+    }
+    return 0;
+}
+
+void vtkFiberDataSetManager::ShowAllBundles()
+{
+    vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.begin();
+    while (it!=d->FiberBundlePipelineList.end())
+    {
+        it->second->Actor->SetVisibility(1);
+        ++it;
+    }
+}
+
+void vtkFiberDataSetManager::HideAllBundles()
+{
+    vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.begin();
+    while (it!=d->FiberBundlePipelineList.end())
+    {
+        it->second->Actor->SetVisibility(0);
+        ++it;
+    }
+}
