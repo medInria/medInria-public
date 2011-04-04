@@ -72,6 +72,27 @@ vtkIsosurfaceManager::~vtkIsosurfaceManager()
   
 }
 
+void vtkIsosurfaceManager::Enable()
+{
+    if( this->RenderWindowInteractor )
+    {
+      this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
+      vtkRenderer* first_renderer = this->RenderWindowInteractor->FindPokedRenderer(this->RenderWindowInteractor->GetLastEventPosition()[0],
+                                                                                    this->RenderWindowInteractor->GetLastEventPosition()[1]);
+      if (first_renderer)
+      {
+        for( unsigned int i=0; i<this->Isosurfaces.size(); i++)
+        {
+          first_renderer->AddViewProp ( this->Isosurfaces[i]->GetActor() );
+        }
+      }
+    }
+}
+
+void vtkIsosurfaceManager::Disable()
+{
+    this->RemoveAllActors();
+}
 
 void vtkIsosurfaceManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin)
 {

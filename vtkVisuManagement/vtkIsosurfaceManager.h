@@ -101,6 +101,10 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
 
   /** Set the decimation On/Off */
   void SetDecimationOff (void);
+
+  void Enable(void);
+
+  void Disable(void);
   
  protected:
   
