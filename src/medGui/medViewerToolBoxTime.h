@@ -12,7 +12,7 @@ class medViewerToolBoxTimePrivate;
  * Author: Fatih Arslan and Nicolas Toussaint
 
 /* Commentary: 
- * Class Declaration for 4D Image Support
+ * Class Declaration for 4D Image Support ToolBox
  */
 
 /* Change log:
@@ -32,14 +32,25 @@ public:
     void update(dtkAbstractView *view);
 	
 public slots:
-    
+ /*
+ * Slot when the sequence is in play, icons will be changed according to the state
+ */
     void onPlaySequences();
+/*
+ * Slot for next and previous frame
+ */
 	void onNextFrame(bool);
 	void onPreviousFrame(bool);
+/*
+ * parameters updated when time is changed
+ */
     void onTimeChanged(int);
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
     void onDataAdded (dtkAbstractData* data);
+/*
+ * parameters updated when the spinbox is changed
+ */
 	void onSpinBoxChanged(int);
 	void onStopButton();
 	void onStepIncreased( );
@@ -49,11 +60,16 @@ public slots:
 
     void AddInteractor (med4DAbstractViewInteractor* interactor);
     void RemoveInteractor (med4DAbstractViewInteractor* interactor);
-
+/*
+ * update range and associated objects like labels
+ */
     void updateRange (void);
 
     double getTimeFromSliderValue (unsigned int);
     unsigned int getSliderValueFromTime (double);
+/*
+ * for popup menu mouseRelaseEvent is overriden
+ */
 	void mouseReleaseEvent ( QMouseEvent *  );
     
 private:

@@ -3,7 +3,7 @@
  * Author: Fatih Arslan and Nicolas Toussaint
 
 /* Commentary: 
- * Class Declaration for 4D Image Support
+ * Class Declaration for 4D Image Support ToolBox
  */
 
 /* Change log:
@@ -50,9 +50,7 @@ public:
 	
 
 };
-/**
- * class constructor
- */
+
 medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxTimePrivate)
 {
 	QWidget *box = new QWidget (this);
@@ -75,19 +73,19 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 
 	d->nextFramePushButton = new QPushButton("", this);
 	d->nextFramePushButton->setIcon (QIcon(":/icons/forward.png"));
-	d->nextFramePushButton->setCheckable (true);
+	//d->nextFramePushButton->setCheckable (true);
 	d->nextFramePushButton->setMinimumWidth ( 20 );
 	d->nextFramePushButton->setToolTip( tr("Next Frame"));
 
 	d->previousFramePushButton = new QPushButton("", this);
 	d->previousFramePushButton->setIcon (QIcon(":/icons/backward.png"));
-	d->previousFramePushButton->setCheckable (true);
+	//d->previousFramePushButton->setCheckable (true);
 	d->previousFramePushButton->setMinimumWidth ( 20 );
 	d->previousFramePushButton->setToolTip( tr("Previous Frame"));
 
 	d->stopPushButton = new QPushButton("", this);
 	d->stopPushButton->setIcon (QIcon(":/icons/stop.ico"));
-	d->stopPushButton->setCheckable (true);
+	//d->stopPushButton->setCheckable (true);
 	d->stopPushButton->setMinimumWidth ( 20 );
 	d->stopPushButton->setToolTip( tr("Stop Sequence"));
 
@@ -237,9 +235,7 @@ void medViewerToolBoxTime::update(dtkAbstractView *view)
 
 	// //this->AddInteractor(...)
 }
-/**
- * Slot when the sequence is in play, icons will be changed according to the state
- */
+
 
 void medViewerToolBoxTime::onPlaySequences ()
 {
@@ -272,31 +268,29 @@ void medViewerToolBoxTime::onPlaySequences ()
 
 void medViewerToolBoxTime::onStopButton ()
 {
-
+	if ( this->isViewAdded){
 	d->timeLine->stop();
 	d->timeSlider->setValue(0);
-
+	}
 }
-/**
- * Slot for next and previous frame
- */
+
 void medViewerToolBoxTime::onNextFrame (bool val)
 {
+	if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()+1);
 }
 void medViewerToolBoxTime::onPreviousFrame (bool val)
-{  
+{   
+	if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()-1);
 }
-/**
- * parameters updated when time is changed
- */
+
 void medViewerToolBoxTime::onTimeChanged (int val)
 {
 
 	double time = this->getTimeFromSliderValue (val);
-	qDebug()<<"Time : "<<time;
-	//  dtkWarning() << "time is "<< val;  
+	//qDebug()<<"Time : "<<time;
+	//dtkWarning() << "time is "<< val;  
 	for (unsigned int i=0; i<d->interactors.size(); i++)
 	{
 		d->interactors[i]->setCurrentTime (time);
@@ -307,14 +301,11 @@ void medViewerToolBoxTime::onTimeChanged (int val)
 	
 
 }
-/**
- * parameters updated when the spinbox is changed
- */
+
 void medViewerToolBoxTime::onSpinBoxChanged(int time)
 {
 	this->updateRange();
-	//qDebug()<<"d->maxTime : "<<d->maxTime;
-	//qDebug()<<"d->minTimeStep : "<<d->minTimeStep;
+	
 	d->timeLine->setDuration((d->maxTime + d->minTimeStep)*(1000/(time/100.0)));
 
 }
@@ -331,9 +322,7 @@ unsigned int medViewerToolBoxTime::getSliderValueFromTime (double t)
 	return value;
 }
 
-/**
- * update range and associated objects like labels
- */
+
 void medViewerToolBoxTime::updateRange (void)
 {
 	if (!d->interactors.size())
@@ -379,9 +368,7 @@ QString medViewerToolBoxTime::DoubleToQString (double val)
 	return QString(str.c_str());
 }
 
-/**
- * for popup menu mouseRelaseEvent is overriden
- */
+
 void medViewerToolBoxTime::mouseReleaseEvent ( QMouseEvent *  mouseEvent)
 {
 	if(mouseEvent->button() == Qt::RightButton)

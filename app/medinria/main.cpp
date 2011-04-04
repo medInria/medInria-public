@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
 {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
-	qDebug() << "efe";
     QApplication application(argc, argv);
     application.setApplicationName("medinria");
     application.setApplicationVersion("0.0.1");
