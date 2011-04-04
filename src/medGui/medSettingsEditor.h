@@ -24,7 +24,7 @@ public:
      *
      * @param parent
     */
-    medSettingsEditor(QWidget *parent = 0);
+    medSettingsEditor(QWidget *parent = 0, bool useAdvancedWidget = false);
 
     /**
      * @brief initialize layout
@@ -35,6 +35,7 @@ public:
      * @brief add settings widgets from factory
      */
     virtual void queryWidgets();
+
 
 signals:
     /**
@@ -57,6 +58,11 @@ signals:
      * @param timeout The timeout before the message disapears.
     */
     void showInfo(QObject *sender, const QString& text,unsigned int timeout=0);
+
+    /**
+    * Emitted if the dialog should disappear
+    */
+    void finished(void);
 
 public slots:
     /**
@@ -89,6 +95,9 @@ public slots:
 
 protected:
 
+    /**
+     * Call save on all child widgets and return the status
+     */
     virtual bool save();
 
 private:

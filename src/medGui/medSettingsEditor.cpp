@@ -27,16 +27,16 @@ public:
   QPushButton* reset;
   QPushButton* cancel;
   QHash<QString,medSettingsWidget*> settingsWidgets;
-  bool isInitialized;  
+  bool isInitialized;
+  bool isUsingAdvancedWidget;
 };
 
 
-medSettingsEditor::medSettingsEditor(QWidget *parent) :
+medSettingsEditor::medSettingsEditor(QWidget *parent, bool useAdvancedWidget) :
     QWidget(parent),d(new medSettingsEditorPrivate())
 {
     d->isInitialized = false;
-
-
+    d->isUsingAdvancedWidget = useAdvancedWidget;
 }
 
 void medSettingsEditorPrivate::read()
@@ -49,13 +49,15 @@ void medSettingsEditorPrivate::read()
 
 void medSettingsEditor::onSaveClicked()
 {
-    if(this->save())
-        this->close();
+    if (this->save())
+    {
+        emit finished();
+    }
 }
 
 void medSettingsEditor::onCancelClicked()
 {
-    this->close();
+    emit finished();
 }
 
 void medSettingsEditor::onResetClicked()
@@ -71,6 +73,7 @@ void medSettingsEditor::onAdvancedClicked()
         d->cancel->show();
         d->reset->show();
         d->advanced->setText(tr("Advanced"));
+        d->editor->setVisible(false);
         d->stack->setCurrentIndex(0);
     }
     else{
@@ -78,6 +81,7 @@ void medSettingsEditor::onAdvancedClicked()
         d->cancel->hide();
         d->reset->hide();
         QSettings settings;
+        d->editor->setVisible(true);
         d->editor->setSettings(settings.organizationName(), settings.applicationName());
         d->stack->setCurrentIndex(1);
     }
@@ -89,26 +93,35 @@ void medSettingsEditor::initialize()
     if (d->isInitialized)
         return;
 
-    QVBoxLayout * vLayout = new QVBoxLayout(this);
+    QVBoxLayout * vLayout = new QVBoxLayout();
     d->stack = new QStackedWidget();
     d->tabWidget = new QTabWidget ();
-    d->tabWidget->setTabPosition(QTabWidget::West);    
+    d->tabWidget->setTabPosition(QTabWidget::West);
     d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     //use stackedWidget to display the advanced or normal editor
     d->stack->addWidget(d->tabWidget);
 
-    d->editor = new dtkSettingsEditor(this);
-    d->stack->addWidget(d->editor);
+    if (d->isUsingAdvancedWidget)
+    {
+        d->editor = new dtkSettingsEditor(this);
+        d->editor->setVisible(false);
+        d->stack->addWidget(d->editor);
+    }
+    
     vLayout->addWidget(d->stack);
+
 
     int buttonWidth = 100;
 
     //advanced button
-    d->advanced = new QPushButton (tr("Advanced"),this);
-    d->advanced->setMaximumWidth(buttonWidth);
-    connect(d->advanced,SIGNAL(clicked()),
-        this,SLOT(onAdvancedClicked()));
+    if(d->isUsingAdvancedWidget)
+    {
+        d->advanced = new QPushButton (tr("Advanced"),this);
+        d->advanced->setMaximumWidth(buttonWidth);
+        connect(d->advanced,SIGNAL(clicked()),
+            this,SLOT(onAdvancedClicked()));
+    }
 
     //save button
     d->save = new QPushButton (tr("Save"),this);
@@ -128,9 +141,11 @@ void medSettingsEditor::initialize()
     connect(d->reset,SIGNAL(clicked()),
         this,SLOT(onResetClicked()));
 
+    // the row of buttons
     QHBoxLayout * buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch(1);
-    buttonLayout->addWidget(d->advanced,1);
+    if (d->isUsingAdvancedWidget)
+        buttonLayout->addWidget(d->advanced,1);
     buttonLayout->addWidget(d->reset,1);
     buttonLayout->addWidget(d->cancel,1);
     buttonLayout->addWidget(d->save,1);
@@ -138,6 +153,7 @@ void medSettingsEditor::initialize()
 
     setLayout(vLayout);
 
+    // connections
     connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
         medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(QObject*,const        QString&,unsigned int)),
@@ -160,7 +176,9 @@ void medSettingsEditor::queryWidgets()
         {
             setWid = settingsFactory->createSettingsWidget(widgetStyle,d->tabWidget);
             scroll = new QScrollArea(this);
-
+            // we need to call this otherwise the scroll-
+            // area limits the widgets to their minimum sizes
+            scroll->setWidgetResizable(true); 
             scroll->setWidget(setWid);
             d->tabWidget->addTab(scroll, setWid->tabName());
             d->settingsWidgets.insert(widgetStyle, setWid);
@@ -203,3 +221,4 @@ bool medSettingsEditor::save()
 
     return success;
 }
+

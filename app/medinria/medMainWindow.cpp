@@ -383,11 +383,14 @@ void medMainWindow::onEditSettings()
         return;
     }
 
-    d->settingsEditor = new medSettingsEditor(this);
+    d->settingsEditor = new medSettingsEditor(this, true);
     d->settingsEditor->setGeometry(100,100, 500, 500);
     d->settingsEditor->setWindowFlags(Qt::Tool);
     d->settingsEditor->initialize();
     d->settingsEditor->queryWidgets();
+    
+    connect(d->settingsEditor, SIGNAL(finished()), d->settingsEditor, SLOT(close()) );
+    
     d->settingsEditor->show();
 }
 
