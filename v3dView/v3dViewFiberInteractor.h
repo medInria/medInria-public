@@ -12,7 +12,6 @@ class dtkAbstractView;
 
 class V3DVIEWPLUGIN_EXPORT v3dViewFiberInteractor: public medAbstractViewFiberInteractor
 {
-
 	Q_OBJECT
 	
 public:
@@ -38,6 +37,11 @@ public:
         virtual void setRoiBoolean (int roi, int meaning);
         virtual int  roiBoolean (int roi);
 
+        virtual void setBundleVisibility(const QString &name, bool visibility);
+        virtual bool bundleVisibility(const QString &name) const;
+
+        virtual void setBundleVisibility(bool visibility);
+
 public slots:
 	virtual void onPropertySet (const QString& key, const QString& value);
 	
@@ -53,6 +57,8 @@ public slots:
 	virtual void onSelectionTagged (void);
 	virtual void onSelectionReset (void);
         virtual void onSelectionValidated (const QString &name, const QColor &color);
+
+        virtual void onBundlingBoxBooleanOperatorChanged(int value);
 	
 	/*
 	  virtual void onBundleClicked (QListWidgetItem* item);
@@ -64,6 +70,24 @@ public slots:
 	  virtual void onBundleColorClicked (void);
 	  virtual void onBundleNameChanged (void);
 	*/	
+protected:
+        virtual void computeBundleFAStatistics (const QString &name,
+                                                double &mean,
+                                                double &min,
+                                                double &max,
+                                                double &var);
+
+        virtual void computeBundleADCStatistics (const QString &name,
+                                                 double &mean,
+                                                 double &min,
+                                                 double &max,
+                                                 double &var);
+
+        virtual void computeBundleLengthStatistics (const QString &name,
+                                                    double &mean,
+                                                    double &min,
+                                                    double &max,
+                                                    double &var);
 private:
     v3dViewFiberInteractorPrivate *d;
 
