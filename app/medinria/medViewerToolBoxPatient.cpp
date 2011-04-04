@@ -26,8 +26,8 @@
 
 #include <medCore/medDataIndex.h>
 #include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseNonPersitentController.h>
-#include <medSql/medDatabaseNonPersitentItem.h>
+#include <medSql/medDatabaseNonPersistentController.h>
+#include <medSql/medDatabaseNonPersistentItem.h>
 
 class medViewerToolBoxPatientPrivate
 {
@@ -54,8 +54,8 @@ medViewerToolBoxPatient::medViewerToolBoxPatient(QWidget *parent) : medToolBox(p
 
     this->setupDatabase();
 
-    connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
-    connect(medDatabaseNonPersitentController::instance(), SIGNAL(updated()), this, SLOT(setupDatabase()));
+    connect(medDatabaseController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(setupDatabase()));
+    connect(medDatabaseNonPersistentController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(setupDatabase()));
 
 
 }
@@ -184,7 +184,7 @@ void medViewerToolBoxPatient::setupDatabase(void)
     // Setting up non persitent data
 
     QList<QString> patientList;
-    foreach(medDatabaseNonPersitentItem *item, medDatabaseNonPersitentController::instance()->items()) {
+    foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items()) {
         if (!patientList.contains (item->name())) {
             this->addItem(item->name(), item->index().patientId());
             patientList.append (item->name());

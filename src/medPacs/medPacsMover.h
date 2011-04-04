@@ -1,15 +1,15 @@
 #ifndef MEDPACSMOVER_H
 #define MEDPACSMOVER_H
 
-#include "medPacsExport.h"
 
-#include <QtCore>
+#include <medCore/medJobItem.h>
+#include "medPacsExport.h"
+#include "medMoveCommandItem.h"
 
 class medPacsMoverPrivate;
 
-#include "medMoveCommandItem.h"
 
-class MEDPACS_EXPORT medPacsMover : public QObject, public QRunnable
+class MEDPACS_EXPORT medPacsMover : public medJobItem
 {
     Q_OBJECT
 
@@ -23,15 +23,12 @@ public:
 
 signals:
     void import(QString);
-
-    void progressed(int);
-    void success (void);
-    void failure (void);
-    void showError(QObject*,const QString&,unsigned int timeout);
-    void cancelled(void);
-
+   
 public slots:
     void onCancel(QObject*);
+
+private slots:
+    void progressForward(int);
 
 private:
     medPacsMoverPrivate *d;

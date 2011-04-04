@@ -21,8 +21,8 @@
 #ifndef MEDTOOLBOXDIFFUSIONCUSTOM_H
 #define MEDTOOLBOXDIFFUSIONCUSTOM_H
 
-#include "medGuiExport.h"
 #include "medToolBox.h"
+#include "medGuiExport.h"
 
 class medToolBoxDiffusion;
 class medToolBoxDiffusionCustomPrivate;

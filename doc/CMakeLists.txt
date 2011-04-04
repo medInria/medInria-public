@@ -1,53 +1,63 @@
-### CMakeLists.txt --- 
-## 
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Tue Feb  2 20:18:37 2010 (+0100)
-## Version: $Id$
-## Last-Updated: Fri Apr  2 11:23:11 2010 (+0200)
-##           By: Julien Wintz
-##     Update #: 39
-######################################################################
-## 
-### Commentary: 
-## 
-######################################################################
-## 
-### Change log:
-## 
-######################################################################
+FIND_PACKAGE( Doxygen QUIET)
 
-## #################################################################
-## Retrieve dependencies
-## #################################################################
+# inpired by work done on the CTK and the dtk source.
 
-set(DOXYGEN_FIND_QUIETLY TRUE)
+IF( DOXYGEN_FOUND )
+  IF( DOXYGEN_DOT_FOUND )
 
-find_package(Doxygen)
+    # Automatically generate documentation at build time
+    SET(all_arg)
+    IF (DOCUMENTATION_TARGET_IN_ALL)
+      SET(all_arg "ALL")
+    ENDIF()
 
-## #################################################################
-## Build rules
-## #################################################################
+    #
+    # Documentation
+    #
+    SET( DOCUMENTATION_HTML_TARZ TRUE)
+    SET( DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
-if (DOXYGEN_FOUND)
-  configure_file(Doxyfile.in     ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile IMMEDIATE @ONLY)
-  configure_file(qhc/medinria.qhcp.in ${CMAKE_CURRENT_BINARY_DIR}/medinria.qhcp IMMEDIATE @ONLY)
+    CONFIGURE_FILE( Doxyfile.txt.in
+      ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.txt
+      )
 
-  add_custom_target(doc
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenLayout.xml  ${CMAKE_CURRENT_BINARY_DIR}/DoxygenLayout.xml
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenHeader.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenHeader.html
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenFooter.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/img      ${CMAKE_CURRENT_BINARY_DIR}/html/img
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/css      ${CMAKE_CURRENT_BINARY_DIR}/html/css
-    COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
-    COMMAND qhelpgenerator html/index.qhp -o medinria.qch
-    COMMAND qcollectiongenerator medinria.qhcp -o medinria.qhc
-    COMMENT "-- Generating embedded documentation"
-    )
+    CONFIGURE_FILE(
+      ${CMAKE_CURRENT_SOURCE_DIR}/generate_doc.cmake.in
+      ${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake
+      @ONLY
+      )
+    CONFIGURE_FILE(
+      ${CMAKE_CURRENT_SOURCE_DIR}/qhc/medinria.qhcp.in 
+      ${CMAKE_CURRENT_BINARY_DIR}/medinria.qhcp IMMEDIATE @ONLY)
+ 
 
-  install(FILES ${CMAKE_BINARY_DIR}/doc/medinria.qhc DESTINATION doc)
-  install(DIRECTORY ${CMAKE_BINARY_DIR}/doc/html DESTINATION doc)
-else (DOXYGEN_FOUND)
-  message(INFO "Can't find doxygen. Can't build documentation")
-endif (DOXYGEN_FOUND)
+    SET(doc_output "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
+
+    # Run doxygen as a custom command driven by a custom target.
+    ADD_CUSTOM_COMMAND(
+      OUTPUT ${doc_output}
+      #COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenHeader.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenHeader.html
+      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenFooter.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html
+      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/img      ${CMAKE_CURRENT_BINARY_DIR}/html/img
+
+      COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake"
+      COMMAND ${QT_BINARY_DIR}/qhelpgenerator html/index.qhp -o medinria.qch
+      COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} medinria.qhcp -o medinria.qhc
+
+      DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.txt"
+              "${CMAKE_CURRENT_BINARY_DIR}/medinria.qhcp"
+      )
+
+    ADD_CUSTOM_TARGET(doc ${all_arg} DEPENDS ${doc_output})
+    SET_TARGET_PROPERTIES(doc PROPERTIES LABELS Documentation)
+ 
+  ELSE( DOXYGEN_DOT_FOUND )
+    MESSAGE( WARNING
+      "Warning: Dot not found - Documentation will not be created"
+      )
+  ENDIF( DOXYGEN_DOT_FOUND )
+ ELSE( DOXYGEN_FOUND )
+  MESSAGE(WARNING
+     "Warning: Doxygen not found - Documentation will not be created")
+ENDIF( DOXYGEN_FOUND )
