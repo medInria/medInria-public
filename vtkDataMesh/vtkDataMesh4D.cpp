@@ -1,10 +1,11 @@
-#include "vtkDataMesh.h"
+#include "vtkDataMesh4D.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include "vtkSmartPointer.h"
 #include "vtkPolyData.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkMetaDataSetSequence.h"
 
 #include <vtkPNGWriter.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -15,67 +16,73 @@
 #include <vtkRenderWindow.h>
 #include <vtkWindowToImageFilter.h>
 
-class vtkDataMeshPrivate
+class vtkDataMesh4DPrivate
 {
 public:
-  vtkSmartPointer<vtkPointSet> mesh;
-  QList<QImage>          thumbnails;
+  vtkSmartPointer<vtkMetaDataSetSequence> meshsequence;
+  QList<QImage>                           thumbnails;
 };
 
-vtkDataMesh::vtkDataMesh(): dtkAbstractDataMesh(), d (new vtkDataMeshPrivate)
+vtkDataMesh4D::vtkDataMesh4D(): dtkAbstractDataMesh(), d (new vtkDataMesh4DPrivate)
 {
-  d->mesh = 0;
+  d->meshsequence = 0;
 }
-vtkDataMesh::~vtkDataMesh()
+vtkDataMesh4D::~vtkDataMesh4D()
 {
   delete d;
   d = 0;
 }
 
-bool vtkDataMesh::registered()				
+bool vtkDataMesh4D::registered()				
 {
-  return dtkAbstractDataFactory::instance()->registerDataType("vtkDataMesh", createVtkDataMesh);
+  return dtkAbstractDataFactory::instance()->registerDataType("vtkDataMesh4D", createVtkDataMesh4D);
 }
 
-QString vtkDataMesh::description() const
+QString vtkDataMesh4D::description() const
 {
-  return "vtkDataMesh";
+  return "vtkDataMesh4D";
 }
 
-void vtkDataMesh::setData(void *data)			
+void vtkDataMesh4D::setData(void *data)			
 {
-  vtkPointSet* mesh = vtkPointSet::SafeDownCast( (vtkObject*) data );
-  
-  if (!mesh)
+  vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast( (vtkObject*) data );
+  if (!sequence)
+  {
+    qDebug() << "Cannot cast data to correct data type";
+    return;		
+  }
+
+  if ( (sequence->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH) &&
+       (sequence->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH) )
   {
     qDebug() << "Cannot cast data to correct data type";
     return;		
   }
   
-  d->mesh = mesh;
+  d->meshsequence = sequence;
 }
 
-void *vtkDataMesh::output(void)				
+void *vtkDataMesh4D::output(void)				
 {
-  return d->mesh;
+  return d->meshsequence;
 }
 
-void *vtkDataMesh::data(void)
+void *vtkDataMesh4D::data(void)
 {
-  return d->mesh;
+  return d->meshsequence;
 }
 
-void vtkDataMesh::update(void)				
+void vtkDataMesh4D::update(void)				
 {
 
 }
 
-dtkAbstractData *createVtkDataMesh(void)
+dtkAbstractData *createVtkDataMesh4D(void)
 {
-  return new vtkDataMesh;
+  return new vtkDataMesh4D;
 }
 
-QImage & vtkDataMesh::thumbnail (void) const
+QImage & vtkDataMesh4D::thumbnail (void) const
 {
   if (!d->thumbnails.size())
     return dtkAbstractDataMesh::thumbnail();
@@ -83,11 +90,13 @@ QImage & vtkDataMesh::thumbnail (void) const
   return (d->thumbnails[0]);
 }
 
-QList<QImage> & vtkDataMesh::thumbnails (void) const
+QList<QImage> & vtkDataMesh4D::thumbnails (void) const
 {
   d->thumbnails.clear();
 
-  if (!d->mesh->GetNumberOfPoints())
+  vtkPointSet* mesh = vtkPointSet::SafeDownCast (d->meshsequence->GetDataSet());
+  
+  if (!mesh || !mesh->GetNumberOfPoints())
     return d->thumbnails;
   
   vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
@@ -97,7 +106,7 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
   vtkRenderer* renderer = vtkRenderer::New();
   vtkRenderWindow* window = vtkRenderWindow::New();
   // vtkWindowToImageFilter* filter = vtkWindowToImageFilter::New();
-  geometryextractor->SetInput (d->mesh);
+  geometryextractor->SetInput (mesh);
   mapper->SetInput (geometryextractor->GetOutput());
   actor->SetMapper (mapper);
   actor->SetProperty (prop);  
@@ -127,23 +136,23 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
   return d->thumbnails;
 }
 
-void vtkDataMesh::onMetaDataSet(const QString& key, const QString& value)
+void vtkDataMesh4D::onMetaDataSet(const QString& key, const QString& value)
 {  
   Q_UNUSED(key);
   Q_UNUSED(value);
 }
-void vtkDataMesh::onPropertySet(const QString& key, const QString& value)
+void vtkDataMesh4D::onPropertySet(const QString& key, const QString& value)
 { 
   Q_UNUSED(key);
   Q_UNUSED(value);
 }
 
-int vtkDataMesh::countVertices(void)
+int vtkDataMesh4D::countVertices(void)
 {
   return 0;
 }
 
-int vtkDataMesh::countEdges(void)
+int vtkDataMesh4D::countEdges(void)
 {
   return 0;
 }

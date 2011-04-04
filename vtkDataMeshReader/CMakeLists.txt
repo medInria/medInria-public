@@ -45,8 +45,8 @@ include_directories(../dtkVtkLogForwarder)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   vtkDataMeshReaderPlugin.h
-#  vtkDataMeshReaderCommand.h
   vtkDataMeshReader.h
+  vtkDataMesh4DReader.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -54,8 +54,8 @@ set(${PROJECT_NAME}_HEADERS
   
 set(${PROJECT_NAME}_SOURCES
   vtkDataMeshReaderPlugin.cpp
-#  vtkDataMeshReaderCommand.cxx
   vtkDataMeshReader.cpp
+  vtkDataMesh4DReader.cpp
   )
 
 # Include header files for Visual Studio.
@@ -79,6 +79,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkCommon
   vtkFiltering
   vtkIO
+  vtkDataManagement
 )
 
 ## #################################################################

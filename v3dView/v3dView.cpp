@@ -862,6 +862,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     }
     
     emit dataAdded(layer);
+    emit dataAdded(data);
 }
 
 void *v3dView::data (void)
