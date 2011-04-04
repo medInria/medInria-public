@@ -124,6 +124,10 @@ void vtkXMLFiberDataSetReader::ReadComposite(vtkXMLDataElement* element,
       {
 	bundle->SetPoints(fiberDataSet->GetFibers()->GetPoints());
 	bundle->GetPointData()->SetScalars(fiberDataSet->GetFibers()->GetPointData()->GetScalars());
+        for( int i=0; i<fiberDataSet->GetFibers()->GetPointData()->GetNumberOfArrays(); i++)
+        {
+          bundle->GetPointData()->AddArray ( fiberDataSet->GetFibers()->GetPointData()->GetArray (i) );
+        }
       }
       fiberDataSet->AddBundle(bundleName, bundle, color);
       }
