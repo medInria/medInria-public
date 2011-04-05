@@ -668,29 +668,25 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     }
     else if (data->description()=="itkDataImageShort4") {
         if( itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            dtkAbstractView::setData(data);
 			this->enableInteractor ( "v3dView4DInteractor" );
         }
     }
 	else if (data->description()=="itkDataImageInt4") {
 		if( itk::Image<int, 4>* image = dynamic_cast<itk::Image<int, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+			dtkAbstractView::setData(data);
 			this->enableInteractor ( "v3dView4DInteractor" );
 		}
 	}
     else if (data->description()=="itkDataImageLong4") {
         if( itk::Image<long, 4>* image = dynamic_cast<itk::Image<long, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            dtkAbstractView::setData(data);
 			this->enableInteractor ( "v3dView4DInteractor" );
         }
     }
 	else if (data->description()=="itkDataImageChar4") {
 		if( itk::Image<char, 4>* image = dynamic_cast<itk::Image<char, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            dtkAbstractView::setData(data);
 			this->enableInteractor ( "v3dView4DInteractor" );
 		}
 	}
@@ -702,36 +698,31 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     }
     else if (data->description()=="itkDataImageUShort4") {
         if( itk::Image<unsigned short, 4>* image = dynamic_cast<itk::Image<unsigned short, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            dtkAbstractView::setData(data);
 			this->enableInteractor ( "v3dView4DInteractor" );
         }
     }
     else if (data->description()=="itkDataImageFloat4") {
         if( itk::Image<float, 4>* image = dynamic_cast<itk::Image<float, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
-			this->enableInteractor ( "v3dView4DInteractor" );
+            dtkAbstractView::setData(data);
+		    this->enableInteractor ( "v3dView4DInteractor" );
 		}
     }
     else if (data->description()=="itkDataImageUInt4") {
         if( itk::Image<unsigned int, 4>* image = dynamic_cast<itk::Image<unsigned int, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            dtkAbstractView::setData(data);
 			this->enableInteractor ( "v3dView4DInteractor" );
         }
     }
     else if (data->description()=="itkDataImageULong4") {
         if( itk::Image<unsigned long, 4>* image = dynamic_cast<itk::Image<unsigned long, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            dtkAbstractView::setData(data);
 			this->enableInteractor ( "v3dView4DInteractor" );
         }
     }
     else if (data->description()=="itkDataImageUChar4") {
         if( itk::Image<unsigned char, 4>* image = dynamic_cast<itk::Image<unsigned char, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            dtkAbstractView::setData(data);
 			this->enableInteractor ( "v3dView4DInteractor" );
         }
     }
@@ -767,8 +758,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     }
     else if (data->description()=="itkDataImageDouble4") {
         if( itk::Image<double, 4>* image = dynamic_cast<itk::Image<double, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput4(image);
-            d->view3d->SetITKInput4(image);
+            dtkAbstractView::setData(data);
 			this->enableInteractor ( "v3dView4DInteractor" );
         }
     }
@@ -879,7 +869,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
     }
     emit dataAdded(layer);
-
+    emit dataAdded(data);
 }
 
 void *v3dView::data (void)

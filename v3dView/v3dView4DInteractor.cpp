@@ -75,9 +75,11 @@ void v3dView4DInteractor::setData(dtkAbstractData *data)
 
 void v3dView4DInteractor::appendData(dtkAbstractData *data)
 {
+    qDebug()<<"v3dView4DInteractor::appendData";
   if (vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data())))
   {
     d->sequenceList->AddItem (sequence);
+    qDebug()<<"sequence is populated";
     this->updatePipeline ();
   }
 }
@@ -94,6 +96,7 @@ void v3dView4DInteractor::setView(dtkAbstractView *view)
 
 void v3dView4DInteractor::onDataAdded(dtkAbstractData *data)
 {
+    qDebug()<<"v3dView4DInteractor::onDataAdded";  
   if ( data->description() == "vtkDataMesh4D" )
   {  
     this->appendData(data);
@@ -102,6 +105,7 @@ void v3dView4DInteractor::onDataAdded(dtkAbstractData *data)
   {
     if ( data->description().contains ("4") )
     {
+      
       itk::Image<short, 4>* image = dynamic_cast<itk::Image<short, 4>*>( (itk::Object*)( data->data() ) );
       
       if (image)
@@ -168,9 +172,11 @@ dtkAbstractViewInteractor *createV3dView4DInteractor(void)
 
 void v3dView4DInteractor::updatePipeline (void)
 {
+    
   for (int i=0; i<d->sequenceList->GetNumberOfItems(); i++)
   {
-    vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject (i));
+    qDebug()<<"v3dView4DInteractor::updatePipeline";
+      vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject (i));
     if (!sequence)
       continue;
 
@@ -179,6 +185,7 @@ void v3dView4DInteractor::updatePipeline (void)
 	case vtkMetaDataSet::VTK_META_IMAGE_DATA:
 	  d->view->view2d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
 	  d->view->view3d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
+      
 	  break;
 	case vtkMetaDataSet::VTK_META_SURFACE_MESH:
 	case vtkMetaDataSet::VTK_META_VOLUME_MESH:
