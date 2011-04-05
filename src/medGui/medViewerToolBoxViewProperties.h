@@ -31,6 +31,7 @@ public slots:
     void onVisibilitySet(int state);
     void onOpacitySet(double opacity);
     void onOpacitySliderSet(int opacity);
+    void on2LayersOpacitySliderSet(int opacity);
     void onLUTChanged(int index);
     void onItemClicked(QTreeWidgetItem * item, int column);
     void onContextTreeMenu( const QPoint point );
@@ -43,7 +44,7 @@ signals:
 
 private:
     medViewerToolBoxViewPropertiesPrivate *d;
-
+    void raiseSlider(bool isVisible, double opacity = -1.0);
 };
 
 #endif /* MEDVIEWERTOOLBOXVIEWPROPERTIES_H_ */

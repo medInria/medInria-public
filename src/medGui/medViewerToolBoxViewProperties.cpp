@@ -18,6 +18,7 @@ class medViewerToolBoxViewPropertiesPrivate
         QTreeWidget * propertiesTree;
         QStringList lutList;
         int currentLayer;
+        QSlider * slider;
 };
 
 medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) :
@@ -49,7 +50,17 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
 
     QObject::connect(d->propertiesTree, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
     QObject::connect(d->propertiesTree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextTreeMenu(QPoint)));
+    
+    //add slider
+    d->slider = new QSlider(Qt::Horizontal,this);
+    d->slider->setRange(0,100);
+    d->slider->setValue(50);
+    QObject::connect(d->slider, SIGNAL(valueChanged(int)), this, SLOT(on2LayersOpacitySliderSet(int)));
+    this->addWidget(d->slider);
+    d->slider->hide();
+    
     this->hide();
+    
 }
 
 medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
@@ -142,6 +153,9 @@ medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 
         QObject::connect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)), Qt::UniqueConnection);
         QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
+        
+        raiseSlider(d->view->layerCount() == 2);
+       
     }
 }
 
@@ -216,6 +230,7 @@ medViewerToolBoxViewProperties::onDataAdded(int layer)
     QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
 
     d->propertiesTree->collapseAll();
+    raiseSlider(d->view->layerCount() == 2,0.5);
 }
 
 void
@@ -258,6 +273,19 @@ medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
     d->view->setOpacity(d_opacity, d->currentLayer);
     d->view->update();
 }
+
+void
+medViewerToolBoxViewProperties::on2LayersOpacitySliderSet(int opacity)
+{
+    if (!d->view)
+        return;
+
+    double d_opacity = static_cast<double> (opacity) / 100.0;
+    d->view->setOpacity(d_opacity, 1);
+    d->view->setOpacity(1.0 - d_opacity, 0);
+    d->view->update();
+}
+
 
 void
 medViewerToolBoxViewProperties::onLUTChanged(int index)
@@ -326,10 +354,30 @@ void medViewerToolBoxViewProperties::onDeleteLayer()
         d->propertiesTree->invisibleRootItem()->removeChild(d->propertiesTree->selectedItems()[0]);
 
     d->propertiesTree->clearSelection();
+    raiseSlider(d->view->layerCount() == 2);
 }
 
 void medViewerToolBoxViewProperties::clear()
 {
     d->currentLayer = 0;
     onViewClosed();
+}
+
+void medViewerToolBoxViewProperties::raiseSlider(bool isVisible,double opacity)
+{
+    if (isVisible)
+    {
+        if (opacity < 0 || opacity > 1)
+        {
+            opacity = d->view->opacity(1);
+        }
+            
+        //set opacity to layer 1's
+        d->slider->setValue( opacity * 100);
+        d->slider->show();
+    }
+    else
+    {
+        d->slider->hide();
+    }
 }
