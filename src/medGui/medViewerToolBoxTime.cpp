@@ -192,8 +192,6 @@ void medViewerToolBoxTime::onViewAdded (dtkAbstractView *view)
 
 void medViewerToolBoxTime::onDataAdded (dtkAbstractData *data)
 {
-	dtkWarning() << "medViewerToolBoxTime::onDataAdded" ;
-
 	if (!data)
 		return;
 
@@ -289,8 +287,6 @@ void medViewerToolBoxTime::onTimeChanged (int val)
 {
 
 	double time = this->getTimeFromSliderValue (val);
-	//qDebug()<<"Time : "<<time;
-	//dtkWarning() << "time is "<< val;  
 	for (unsigned int i=0; i<d->interactors.size(); i++)
 	{
 		d->interactors[i]->setCurrentTime (time);
