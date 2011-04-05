@@ -28,7 +28,7 @@ class medViewerToolBoxTimePrivate;
  * The toolbox has a list of med4DAbstractViewInteractor
  * that do the main part of the work.
  * 
- * \sa med4DAbstractViewInteractor
+ * \see med4DAbstractViewInteractor
  */
 
 class med4DAbstractViewInteractor;
@@ -52,10 +52,10 @@ public slots:
     void onNextFrame(bool);
     void onPreviousFrame(bool);
 
-    /* parameters updated when time is changed */
+    /** parameters updated when time is changed */
     void onTimeChanged(int);
 
-    /* parameters updated when either views or data environments have changed */
+    /** parameters updated when either views or data environments have changed */
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
     void onDataAdded (dtkAbstractData* data);
