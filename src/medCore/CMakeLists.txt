@@ -52,6 +52,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPluginManager.h
   medProgressFilter.h
   medAbstractView.h
+  med4DAbstractViewInteractor.h
   medJobItem.h
   medJobManager.h
   medSettingsManager.h

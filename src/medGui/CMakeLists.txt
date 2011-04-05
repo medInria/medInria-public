@@ -79,6 +79,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfiguration.h  
   medViewerConfigurationFactory.h
   medViewerToolBoxLayout.h
+  medViewerToolBoxView.h
+  medViewerToolBoxTime.h
   medViewerToolBoxViewProperties.h
   medViewerToolBoxView.h
   
@@ -94,7 +96,6 @@ set(${PROJECT_NAME}_HEADERS
   medViewContainer_p.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
-
 
 set(${PROJECT_NAME}_SOURCES
   medSettingsWidget.cpp
@@ -146,6 +147,8 @@ set(${PROJECT_NAME}_SOURCES
   medViewerConfigurationFactory.cpp
   medViewerConfiguration.cpp
   medViewerToolBoxLayout.cpp
+  medViewerToolBoxTime.cpp
+  medViewerToolBoxView.cpp
   medViewerToolBoxViewProperties.cpp
   medViewerToolBoxView.cpp
   

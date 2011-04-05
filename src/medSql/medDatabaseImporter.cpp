@@ -188,7 +188,6 @@ void medDatabaseImporter::run(void)
         if(!dtkdata->hasMetaData("Report"))
             dtkdata->addMetaData("Report", QStringList() << "");
 
-
         QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
         QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
         QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
