@@ -56,7 +56,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # specific toolbox classes
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
-<<<<<<< HEAD
   medToolBoxDiffusionFiberView.h   
   medToolBoxDiffusionFiberBundling.h
   medToolBoxRegistration.h

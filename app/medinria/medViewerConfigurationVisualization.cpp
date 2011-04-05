@@ -21,7 +21,6 @@
 
 #include <medGui/medViewerToolBoxViewProperties.h>
 #include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerStack.h>
 #include <medGui/medStackedViewContainers.h>
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medViewerToolBoxTime.h>

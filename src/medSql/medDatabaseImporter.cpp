@@ -209,27 +209,6 @@ void medDatabaseImporter::run(void)
             keyToInt[key] = currentIndex;
             currentIndex++;
         }
-
-	QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
-	QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
-	QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
-	
-	QString studyId = dtkdata->metaDataValues(tr("StudyID"))[0];
-	QString seriesId = dtkdata->metaDataValues(tr("SeriesID"))[0];
-	QString orientation = dtkdata->metaDataValues(tr("Orientation"))[0];
-	QString seriesNumber = dtkdata->metaDataValues(tr("SeriesNumber"))[0];
-	QString sequenceName = dtkdata->metaDataValues(tr("SequenceName"))[0];
-	QString sliceThickness = dtkdata->metaDataValues(tr("SliceThickness"))[0];
-	QString rows = dtkdata->metaDataValues(tr("Rows"))[0];
-	QString columns = dtkdata->metaDataValues(tr("Columns"))[0];
-	
-	// define a unique key string to identify which volume an image belongs to.
-	// we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
-	QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
-	if (!keyToInt.contains(key)) {
-	  keyToInt[key] = currentIndex;
-	  currentIndex++;
-	}
 	
 	QSqlQuery query(*(medDatabaseController::instance()->database()));
 	QVariant id;
