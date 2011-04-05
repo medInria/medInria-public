@@ -229,9 +229,14 @@ void medDatabaseImporter::run(void)
 	s_patientName.replace (0x00E4, 'a');
 	s_studyName.replace   (0x00E4, 'a');
 	s_seriesName.replace  (0x00E4, 'a');	
-	
+	/*
 	QString imageFileName = medStorage::dataLocation() + "/" +
 	  s_patientName + "/" +
+	  s_studyName   + "/" +
+	  s_seriesName  + uniqueSeriesId;
+	QString description = dtkdata->description();
+*/
+	QString imageFileName = "/" + s_patientName + "/" +
 	  s_studyName   + "/" +
 	  s_seriesName  + uniqueSeriesId;
 	QString description = dtkdata->description();
@@ -241,12 +246,15 @@ void medDatabaseImporter::run(void)
 	   of data.
 	   \todo The image type is weakly recognized (contains("Image")). to be improved
 	 */
-	if (description == "vtkDataMesh")
+	if (description == "vtkDataMesh"){
 	  imageFileName = imageFileName + ".vtk";
-	else if (description == "vtkDataMesh4D")
+      qDebug()<<"vtkDataMesh";}
+	else if (description == "vtkDataMesh4D"){
 	  imageFileName = imageFileName + ".v4d";
-	else if (description.contains ("Image"))
+      qDebug()<<"vtkDataMesh4D";}
+	else if (description.contains ("Image")){
 	  imageFileName = imageFileName + ".mha";
+      qDebug()<<"Image";}
 	else
 	{
 	  emit showError(this, tr ("Could not save data file (unhandled type: ") + description,5000);
