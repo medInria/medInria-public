@@ -7,11 +7,13 @@ class dtkAbstractView;
 class dtkAbstractData;
 class medViewerToolBoxTimePrivate;
 
-/* \class medViewerToolBoxTime
+/**
+ * \class medViewerToolBoxTime
  * 
- * \author: Fatih Arslan and Nicolas Toussaint
+ * \author Fatih Arslan and Nicolas Toussaint
  * 
- * Class Declaration for 4D Image Support ToolBox
+ * \brief Class Declaration for 4D Image/Mesh Support ToolBox
+ * 
  * The time toolbox is dedicated to the handling of a 4th
  * dimension of objects that are visualized in the set of 
  * views currently loaded.
@@ -29,6 +31,7 @@ class medViewerToolBoxTimePrivate;
  * that do the main part of the work.
  * 
  * \see med4DAbstractViewInteractor
+ *
  */
 
 class med4DAbstractViewInteractor;
