@@ -37,6 +37,11 @@ medViewerConfigurationVisualization2::medViewerConfigurationVisualization2(QWidg
 
     this->addToolBox( new medViewerToolBoxView(parent) );
     this->addToolBox( new medViewerToolBoxTime(parent) );
+// =======
+
+//     this->setViewLayoutType  (medViewContainer::Custom);
+//     this->setCustomLayoutType(medViewContainerCustom::E);
+// >>>>>>> 303a874e4395532d9335f49ba32749935ee6dc94
 }
 
 medViewerConfigurationVisualization2::~medViewerConfigurationVisualization2(void)

@@ -56,6 +56,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # specific toolbox classes
   medToolBoxDiffusion.h
   medToolBoxDiffusionCustom.h
+<<<<<<< HEAD
   medToolBoxDiffusionFiberView.h   
   medToolBoxDiffusionFiberBundling.h
   medToolBoxRegistration.h
@@ -87,9 +88,10 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # pacs toolboxes
   medBrowserToolBoxPacsHost.h
   medBrowserToolBoxPacsNodes.h
-  medBrowserToolBoxPacsSearch.h
- 
-  )
+  medBrowserToolBoxPacsSearch.h    
+
+)
+
 set(${PROJECT_NAME}_HEADERS
   medLUTtoXMLWriter.h
   medXMLtoLUTReader.h
@@ -144,18 +146,17 @@ set(${PROJECT_NAME}_SOURCES
   medSaveLUTDialog.cpp
   medLoadLUTDialog.cpp
   
-  medViewerConfigurationFactory.cpp
   medViewerConfiguration.cpp
+  medViewerConfigurationFactory.cpp
   medViewerToolBoxLayout.cpp
   medViewerToolBoxTime.cpp
-  medViewerToolBoxView.cpp
   medViewerToolBoxViewProperties.cpp
   medViewerToolBoxView.cpp
   
   medBrowserToolBoxPacsHost.cpp
   medBrowserToolBoxPacsNodes.cpp
   medBrowserToolBoxPacsSearch.cpp    
-  )
+)
 
 # Include header files for Visual Studio.
 FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )

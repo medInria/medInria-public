@@ -19,17 +19,20 @@
 
 #include "medViewerConfigurationVisualization.h"
 
-#include <medGui/medViewerToolBoxView.h>
 #include <medGui/medViewerToolBoxViewProperties.h>
-#include <medGui/medViewerToolBoxTime.h>
+#include <medGui/medViewContainer.h>
+#include <medGui/medViewContainerStack.h>
 #include <medGui/medStackedViewContainers.h>
+#include <medGui/medViewerToolBoxView.h>
+#include <medGui/medViewerToolBoxTime.h>
 
 class medViewerConfigurationVisualizationPrivate
 {
 public:
+    medViewerToolBoxTime                *timeToolBox;
     medViewerToolBoxView                *viewToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
-    medViewerToolBoxTime   *timeToolBox;
+
 };
 
 medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationVisualizationPrivate)
@@ -52,11 +55,6 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
     this->addToolBox( d->viewToolBox );
     this->addToolBox(d->viewPropertiesToolBox);
     this->addToolBox( d->timeToolBox );
- 
-    
-    
-    //this->setLayoutType( medViewerConfiguration::TopDbBottomTb );
-    
 }
 
 void medViewerConfigurationVisualization::setupViewContainerStack()

@@ -210,48 +210,73 @@ void medDatabaseImporter::run(void)
             currentIndex++;
         }
 
-        QSqlQuery query(*(medDatabaseController::instance()->database()));
-        QVariant id;
-
-        // we append the uniqueID at the end of the filename to have unique filenames for each volume
-        QString uniqueSeriesId;
-        uniqueSeriesId.setNum(keyToInt[key]);
-
-        QString s_patientName = patientName.simplified();
-        QString s_studyName   = studyName.simplified();
-        QString s_seriesName  = seriesName.simplified();
-        
-        s_patientName.replace (0x00EA, 'e');
-        s_studyName.replace   (0x00EA, 'e');
-        s_seriesName.replace  (0x00EA, 'e');
-        s_patientName.replace (0x00E4, 'a');
-        s_studyName.replace   (0x00E4, 'a');
-        s_seriesName.replace  (0x00E4, 'a');
-        s_patientName.replace ('/', '_');
-        s_studyName.replace   ('/', '_');
-        s_seriesName.replace  ('/', '_');
-        
-        QString imageFileName = "/" +
-                                s_patientName + "/" +
-                                s_studyName   + "/" +
-                                s_seriesName  + uniqueSeriesId;
-
-        if (dtkdata->description() == "vtkDataMesh")
-            imageFileName = imageFileName + ".vtk";
-        else
-            imageFileName = imageFileName + ".mha";
-
-        // Check if PATIENT/STUDY/SERIES/IMAGE already exists in the database
-
-        bool imageExists = false;
-        query.prepare("SELECT id FROM patient WHERE name = :name");
-        query.bindValue(":name", patientName);
-        if(!query.exec())
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
+	QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
+	QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
+	QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
+	
+	QString studyId = dtkdata->metaDataValues(tr("StudyID"))[0];
+	QString seriesId = dtkdata->metaDataValues(tr("SeriesID"))[0];
+	QString orientation = dtkdata->metaDataValues(tr("Orientation"))[0];
+	QString seriesNumber = dtkdata->metaDataValues(tr("SeriesNumber"))[0];
+	QString sequenceName = dtkdata->metaDataValues(tr("SequenceName"))[0];
+	QString sliceThickness = dtkdata->metaDataValues(tr("SliceThickness"))[0];
+	QString rows = dtkdata->metaDataValues(tr("Rows"))[0];
+	QString columns = dtkdata->metaDataValues(tr("Columns"))[0];
+	
+	// define a unique key string to identify which volume an image belongs to.
+	// we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
+	QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
+	if (!keyToInt.contains(key)) {
+	  keyToInt[key] = currentIndex;
+	  currentIndex++;
+	}
+	
+	QSqlQuery query(*(medDatabaseController::instance()->database()));
+	QVariant id;
+	
+	// we append the uniqueID at the end of the filename to have unique filenames for each volume
+	QString uniqueSeriesId;
+	uniqueSeriesId.setNum(keyToInt[key]);
+	
+	QString s_patientName = patientName.simplified();
+	QString s_studyName   = studyName.simplified();
+	QString s_seriesName  = seriesName.simplified();
+	
+	s_patientName.replace (0x00EA, 'e');
+	s_studyName.replace   (0x00EA, 'e');
+	s_seriesName.replace  (0x00EA, 'e');
+	s_patientName.replace (0x00E4, 'a');
+	s_studyName.replace   (0x00E4, 'a');
+	s_seriesName.replace  (0x00E4, 'a');	
+	
+	QString imageFileName = medStorage::dataLocation() + "/" +
+	  s_patientName + "/" +
+	  s_studyName   + "/" +
+	  s_seriesName  + uniqueSeriesId;
+	QString description = dtkdata->description();
+	
+	if (description == "vtkDataMesh")
+	  imageFileName = imageFileName + ".vtk";
+	else if (description == "vtkDataMesh4D")
+	  imageFileName = imageFileName + ".v4d";
+	else if (description.contains ("Image"))
+	  imageFileName = imageFileName + ".mha";
+	else
+	{
+	  emit showError(this, tr ("Could not save data file (unhandled type: ") + description,5000);
+	}
+	
+	// Check if PATIENT/STUDY/SERIES/IMAGE already exists in the database
+	
+	bool imageExists = false;
+	query.prepare("SELECT id FROM patient WHERE name = :name");
+	query.bindValue(":name", patientName);
+	if(!query.exec())
+	  qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+	
         if(query.first()) {
-            id = query.value(0);
-
+	    id = query.value(0);
+	  
             query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :studyID");
             query.bindValue(":id", id);
             query.bindValue(":name", studyName);
