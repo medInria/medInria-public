@@ -6,8 +6,8 @@
 #include "v3dViewFiberInteractor.h"
 #include "v3dViewFuseInteractor.h"
 #include "v3dViewMeshInteractor.h"
-#include "v3dView4DInteractor.h"
 #include "v3dViewTensorInteractor.h"
+#include "v3dView4DInteractor.h"
 #include "v3dViewPlugin.h"
 
 #include <dtkCore/dtkLog.h>

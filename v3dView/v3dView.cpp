@@ -14,7 +14,6 @@
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkLog.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -868,6 +867,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->slider->blockSignals (false);
         }
     }
+
     emit dataAdded(layer);
     emit dataAdded(data);
 }
