@@ -66,7 +66,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 	d->timeSlider->setToolTip(tr("Follow The Sequence"));
 
 	d->playSequencesPushButton = new QPushButton("", this);
-	d->playSequencesPushButton->setIcon (QIcon(":/icons/play.jpg"));
+	d->playSequencesPushButton->setIcon (QIcon(":/icons/play.png"));
 	d->playSequencesPushButton->setCheckable (true);
 	d->playSequencesPushButton->setMinimumWidth ( 20 );
 	d->playSequencesPushButton->setToolTip( tr("Play Sequence"));
@@ -84,7 +84,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 	d->previousFramePushButton->setToolTip( tr("Previous Frame"));
 
 	d->stopPushButton = new QPushButton("", this);
-	d->stopPushButton->setIcon (QIcon(":/icons/stop.ico"));
+	d->stopPushButton->setIcon (QIcon(":/icons/stop.png"));
 	//d->stopPushButton->setCheckable (true);
 	d->stopPushButton->setMinimumWidth ( 20 );
 	d->stopPushButton->setToolTip( tr("Stop Sequence"));
