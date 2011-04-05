@@ -2,11 +2,7 @@
  * 
  * Author: Nicolas Toussaint
 
-/* Commentary: 
- * Class Declaration for the interactor of 4D Image Support 
- */
-
-/* Change log:
+ * Change log:
  * 
  */
 #ifndef V3DVIEW4DINTERACTOR_H
