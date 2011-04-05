@@ -56,7 +56,7 @@ void vtkDataMesh4D::setData(void *data)
        (sequence->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH) )
   {
     qDebug() << "Cannot cast data to correct data type";
-    return;		
+    return;
   }
   
   d->meshsequence = sequence;
@@ -105,7 +105,6 @@ QList<QImage> & vtkDataMesh4D::thumbnails (void) const
   vtkProperty* prop = vtkProperty::New();
   vtkRenderer* renderer = vtkRenderer::New();
   vtkRenderWindow* window = vtkRenderWindow::New();
-  // vtkWindowToImageFilter* filter = vtkWindowToImageFilter::New();
   geometryextractor->SetInput (mesh);
   mapper->SetInput (geometryextractor->GetOutput());
   actor->SetMapper (mapper);

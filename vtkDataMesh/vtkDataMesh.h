@@ -27,6 +27,7 @@ class vtkDataMeshPrivate;
     which should not happen.
     
     \see vtkDataMesh4D vtkDataMeshReader itkDataImage vtkPointSet
+    \author Nicolas Toussaint
 */
 
 class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public dtkAbstractDataMesh
