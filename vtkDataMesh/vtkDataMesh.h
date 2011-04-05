@@ -8,6 +8,27 @@
 
 class vtkDataMeshPrivate;
 
+
+
+/**
+    
+    \class vtkDataMesh
+    \brief This class describes the data type that handles
+    a mesh in the vtk format.
+
+    It integrates the vtk pipeline in order to create thumbnails
+
+    The class keeps a smart pointer over the vtkPointSet instance
+    which is the base class for surface meshes (vtkPolyData) and
+    volumetric meshes (vtkUnstructuredGrid)
+    
+    \todo There is a problem in the thumbnail creation as it uses
+    a vtkRenderer, therefore opens up a vtkWindow to create thumbnail,
+    which should not happen.
+    
+    \see vtkDataMesh4D vtkDataMeshReader itkDataImage vtkPointSet
+*/
+
 class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public dtkAbstractDataMesh
 {
   Q_OBJECT
