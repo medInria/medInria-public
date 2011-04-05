@@ -2,11 +2,7 @@
  * 
  * Author: Fatih Arslan and Nicolas Toussaint
 
-/* Commentary: 
- * Class Declaration for 4D Image Support ToolBox
- */
-
-/* Change log:
+ * Change log:
  * 
  */
 
@@ -89,14 +85,9 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 	d->stopPushButton->setMinimumWidth ( 20 );
 	d->stopPushButton->setToolTip( tr("Stop Sequence"));
 
-	
-
-
 	d->timeLine = new QTimeLine();
 	d->timeLine->setLoopCount(0);
 	d->timeLine->setCurveShape (QTimeLine::LinearCurve);
-
-
 
 	d->spinBox = new QSpinBox();
 	d->spinBox->setRange(10,400);
@@ -142,7 +133,6 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 	connect(d->timeSlider, SIGNAL(sliderMoved(int)), this, SLOT(onTimeChanged(int)));
 	connect(d->timeSlider, SIGNAL(valueChanged(int)), this, SLOT(onTimeChanged(int)));
 	connect(d->playSequencesPushButton, SIGNAL(toggled(bool)), this, SLOT(onPlaySequences()));
-	
 
 	connect(d->nextFramePushButton, SIGNAL(clicked(bool)), this, SLOT(onNextFrame(bool)));
 	connect(d->previousFramePushButton, SIGNAL(clicked(bool)), this, SLOT(onPreviousFrame(bool)));
@@ -174,7 +164,6 @@ void medViewerToolBoxTime::onViewAdded (dtkAbstractView *view)
 	if (!view)
 		return;
 	dtkWarning() << "medViewerToolBoxTime::onViewAdded" ;
-
 
 	if (med4DAbstractViewInteractor *interactor = dynamic_cast<med4DAbstractViewInteractor*>(view->interactor ("v3dView4DInteractor")))
 	{
@@ -211,7 +200,6 @@ void medViewerToolBoxTime::onViewRemoved (dtkAbstractView *view)
 
 	this->updateRange();
 	this->isViewAdded = false;
-
 }
 
 void medViewerToolBoxTime::AddInteractor (med4DAbstractViewInteractor* interactor)
@@ -226,12 +214,7 @@ void medViewerToolBoxTime::RemoveInteractor (med4DAbstractViewInteractor* intera
 
 void medViewerToolBoxTime::update(dtkAbstractView *view)
 {
-	// // find all interactors
-	// QList<dtkAbstractView *> views = currentStack()->current()->views();
-	// for (unsigned int i=0; i<views.size(); i++)
-	//   this->onViewAdded (views[i]);
 
-	// //this->AddInteractor(...)
 }
 
 
@@ -259,8 +242,6 @@ void medViewerToolBoxTime::onPlaySequences ()
 			d->playSequencesPushButton->setIcon (QIcon(":/icons/play.jpg"));
 			d->playSequencesPushButton->setToolTip( tr("Play Sequence"));
 		}
-
-
 	}
 }
 
@@ -285,17 +266,13 @@ void medViewerToolBoxTime::onPreviousFrame (bool val)
 
 void medViewerToolBoxTime::onTimeChanged (int val)
 {
-
 	double time = this->getTimeFromSliderValue (val);
 	for (unsigned int i=0; i<d->interactors.size(); i++)
 	{
 		d->interactors[i]->setCurrentTime (time);
 	}
 
-
 	d->labelcurr->setText( DoubleToQString(( time ) / (d->spinBox->value()/100.0)) + QString(" sec") );
-	
-
 }
 
 void medViewerToolBoxTime::onSpinBoxChanged(int time)
@@ -303,7 +280,6 @@ void medViewerToolBoxTime::onSpinBoxChanged(int time)
 	this->updateRange();
 	
 	d->timeLine->setDuration((d->maxTime + d->minTimeStep)*(1000/(time/100.0)));
-
 }
 
 double medViewerToolBoxTime::getTimeFromSliderValue (unsigned int s)
@@ -317,7 +293,6 @@ unsigned int medViewerToolBoxTime::getSliderValueFromTime (double t)
 	unsigned int value = std::ceil ((t - d->minTime) / (d->minTimeStep));
 	return value;
 }
-
 
 void medViewerToolBoxTime::updateRange (void)
 {
@@ -348,12 +323,8 @@ void medViewerToolBoxTime::updateRange (void)
 
 	d->timeLine->setDuration((maxtime+mintimestep)*1000);
 
-
-
 	d->labelmin->setText( DoubleToQString(( mintime ) / (d->spinBox->value()/100.0)) + QString(" sec"));
 	d->labelmax->setText( DoubleToQString(( maxtime ) / (d->spinBox->value()/100.0)) + QString(" sec"));
-	
-
 }
 
 QString medViewerToolBoxTime::DoubleToQString (double val) 
@@ -381,18 +352,12 @@ void medViewerToolBoxTime::mouseReleaseEvent ( QMouseEvent *  mouseEvent)
 			menu->addAction(d->actionlist[i]);
 
 		}
-
-
-		menu->exec(mouseEvent->globalPos());
-
 		
-
-
+		menu->exec(mouseEvent->globalPos());
 	}
 }
 void medViewerToolBoxTime::onStepIncreased()
 {
-
 	if (QObject::sender() == d->actionlist[0])
 		d->spinBox->setSingleStep(1);
 	else if (QObject::sender() == d->actionlist[1])
@@ -403,5 +368,4 @@ void medViewerToolBoxTime::onStepIncreased()
 		d->spinBox->setSingleStep(25);
 	else if (QObject::sender() == d->actionlist[4])
 		d->spinBox->setSingleStep(50);
-
 }
