@@ -90,7 +90,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 	d->timeLine->setCurveShape (QTimeLine::LinearCurve);
 
 	d->spinBox = new QSpinBox();
-	d->spinBox->setRange(10,400);
+	d->spinBox->setRange(1,5000);
 	d->spinBox->setSingleStep(10);
 	d->spinBox->setValue(100);
 	d->spinBox->setToolTip(tr("Control the display speed"));
@@ -163,7 +163,6 @@ void medViewerToolBoxTime::onViewAdded (dtkAbstractView *view)
 {
 	if (!view)
 		return;
-	dtkWarning() << "medViewerToolBoxTime::onViewAdded" ;
 
 	if (med4DAbstractViewInteractor *interactor = dynamic_cast<med4DAbstractViewInteractor*>(view->interactor ("v3dView4DInteractor")))
 	{
@@ -227,19 +226,19 @@ void medViewerToolBoxTime::onPlaySequences ()
 		if(d->timeLine->state() == QTimeLine::NotRunning)
 		{
 			d->timeLine->start();
-			d->playSequencesPushButton->setIcon (QIcon(":/icons/pause.jpg"));
+			d->playSequencesPushButton->setIcon (QIcon(":/icons/pause.png"));
 			d->playSequencesPushButton->setToolTip( tr("Pause Sequence"));
 		}
 		else if(d->timeLine->state() == QTimeLine::Paused )
 		{
 			d->timeLine->resume();
-			d->playSequencesPushButton->setIcon (QIcon(":/icons/pause.jpg"));
+			d->playSequencesPushButton->setIcon (QIcon(":/icons/pause.png"));
 			d->playSequencesPushButton->setToolTip( tr("Pause Sequence"));
 		}
 		else if(d->timeLine->state() == QTimeLine::Running)
 		{
 			d->timeLine->setPaused(true);
-			d->playSequencesPushButton->setIcon (QIcon(":/icons/play.jpg"));
+			d->playSequencesPushButton->setIcon (QIcon(":/icons/play.png"));
 			d->playSequencesPushButton->setToolTip( tr("Play Sequence"));
 		}
 	}
