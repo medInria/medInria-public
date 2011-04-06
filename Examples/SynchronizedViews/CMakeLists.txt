@@ -16,7 +16,7 @@ else(APPLE)
 endif()
 
 TARGET_LINK_LIBRARIES(SynchronizedViews
-  vtkRenderingAddOn
+  vtkImageView
   vtkRendering
   vtkIO
   vtkDataManagement
