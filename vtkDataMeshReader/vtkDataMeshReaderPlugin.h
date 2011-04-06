@@ -11,7 +11,6 @@ class VTKDATAMESHREADERPLUGIN_EXPORT vtkDataMeshReaderPlugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
-
 public:
      vtkDataMeshReaderPlugin(QObject *parent = 0);
     ~vtkDataMeshReaderPlugin(void);

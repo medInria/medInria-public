@@ -4,6 +4,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkLog.h>
 
 #include <vtkActor.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -98,6 +99,8 @@ bool v3dViewMeshInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 
 void v3dViewMeshInteractor::enable(void)
 {
+    dtkWarning() << "enabling v3dViewMeshInteractor" ;
+
     if (this->enabled())
         return;
 
