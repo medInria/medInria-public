@@ -196,7 +196,13 @@ public:
    Return the vtkImageActor's instance.
    */
   vtkImageActor *GetImageActor(int layer=0) const;
-  
+  /**
+     Return the SlicePlane vtkPolyData instance. This polydata consists on 4 points linked
+     as a square, placed at the corners of the ImageActor. It can be used to follow the position
+     of the slice in space.
+  */
+  vtkGetObjectMacro (SlicePlane, vtkPolyData);
+
   vtkGetMacro(SliceOrientation, int);
   virtual void SetSliceOrientation(int orientation);
   virtual void SetSliceOrientationToXY()
@@ -503,7 +509,6 @@ public:
   vtkGetMacro (AnnotationStyle, unsigned int);
   
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
-
   virtual void RemoveDataSet (vtkPointSet *arg);
   
   virtual void AddLayer(int);
@@ -617,8 +622,11 @@ protected:
    This instance is in charge of observing the interactorstyle (GetInteractorStyle())
    and update things accordingly in the view (i.e. the slice number when moving slice).
    */  
-  vtkImageView2DCommand* Command;
-  
+  vtkImageView2DCommand* Command;  
+
+  //BTX
+  std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
+  //ETX
   /**
    local instances
    */

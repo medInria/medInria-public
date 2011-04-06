@@ -79,9 +79,9 @@ vtkImageViewCollection::vtkImageViewCollection()
   this->LinkCamera = 0;
   this->LinkZoom = 1;
   this->LinkPan = 1;
-  
   this->LinkCurrentPoint = 1;
-  this->ShowAxes = 1;
+
+  this->ShowSlicePlanes = 0;
 }
 
 
@@ -94,24 +94,19 @@ vtkImageViewCollection::~vtkImageViewCollection()
 
 void vtkImageViewCollection::AddItem(vtkImageView *a)
 {
-  if (this->IsItemPresent (a))
-      return;
+  if (!a || this->IsItemPresent (a))
+    return;
 
 	
-	if (a) {		
-		if (this->LinkTimeChange)
-			a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command);
-
-		vtkImageView2D* a2d = vtkImageView2D::SafeDownCast (a);
-		//vtkImageView3D* a3d = vtkImageView3D::SafeDownCast (a);
+  vtkImageView2D* a2d = vtkImageView2D::SafeDownCast (a);
   
-		if (a2d && a->GetInteractorStyle())
-		{
-			a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CharEvent, this->Command);
-
-	if (this->LinkSliceMove)
-		a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command);			
-    if (this->LinkColorWindowLevel) 
+  if (a2d && a->GetInteractorStyle())
+  {
+    a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CharEvent, this->Command);
+    
+    if (this->LinkSliceMove)
+      a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command);			
+    if (this->LinkColorWindowLevel)
       a->GetInteractorStyle()->AddObserver (vtkCommand::WindowLevelEvent, this->Command);
     if (this->LinkResetWindowLevel)
       a->GetInteractorStyle()->AddObserver (vtkCommand::ResetWindowLevelEvent, this->Command);
@@ -127,8 +122,9 @@ void vtkImageViewCollection::AddItem(vtkImageView *a)
       a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CameraPanEvent, this->Command);
     if (this->LinkCurrentPoint)
       a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::DefaultMoveEvent, this->Command);
-		}
-	}
+    if (this->LinkTimeChange)
+      a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command);
+  }
 
 	this->Superclass::AddItem (a);
   
@@ -176,7 +172,32 @@ void vtkImageViewCollection::RemoveItem(int i)
   this->Superclass::RemoveItem (i);
 }
 
+void vtkImageViewCollection::SetShowSlicePlanes(unsigned int arg)
+{
+  this->ShowSlicePlanes = arg;
 
+  for (int i=0; i<this->GetNumberOfItems(); i++)
+  {
+    for (int j=0; j<this->GetNumberOfItems(); j++)
+    {
+      vtkImageView2D* v1 = vtkImageView2D::SafeDownCast (this->GetItem(i));
+      vtkImageView2D* v2 = vtkImageView2D::SafeDownCast (this->GetItem(j));
+      if (v1 && v2)
+      {
+	if (arg)
+	{
+	  v1->AddDataSet (v2->GetSlicePlane());
+	  v2->AddDataSet (v1->GetSlicePlane());
+	}
+	else
+	{
+	  v1->RemoveDataSet (v2->GetSlicePlane());
+	  v2->RemoveDataSet (v1->GetSlicePlane());
+	}
+      }
+    }
+  }
+}
 void vtkImageViewCollection::SyncSetPan(double* arg, vtkImageView* caller)
 {
   this->InitTraversal();						
@@ -286,28 +307,11 @@ void vtkImageViewCollection::SyncResetCamera(vtkImageView *caller)
 }
 
 
-// void vtkImageViewCollection::SyncSetCameraFocalAndPosition (double *focal, double *position, vtkImageView *caller)
-// {
-//   vtkImageView2D *caller2d = vtkImageView2D::SafeDownCast (caller);
-  
-//   this->InitTraversal();
-//   vtkImageView* item = this->GetNextItem();
-//   while(item)
-//   {
-//     if(item!=caller)
-//     {
-//       vtkImageView2D *item2d = vtkImageView2D::SafeDownCast(item);
-//       if( item2d && caller2d)
-//       {
-// 	if( item2d->GetSliceOrientation()==caller2d->GetSliceOrientation() )
-// 	  item->SetCameraFocalAndPosition (focal, position);
-//       }
-//       else
-// 	item->SetCameraFocalAndPosition (focal, position);
-//     }
-//     item = this->GetNextItem();
-//   }
-// }
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
+////////////////////// Collection Callback ////////////////////////////
+///////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////
 
 /*
 void vtkImageViewCollection::SyncStart(void)
@@ -398,7 +402,7 @@ void vtkImageViewCollectionCommand::Execute(vtkObject *caller,
     this->Collection->SyncRender(viewer, 1);
   }
 
-  // Reset
+  // Char events
   if (event == vtkCommand::CharEvent)
   {
     switch(rwi->GetKeyCode())
@@ -414,6 +418,10 @@ void vtkImageViewCollectionCommand::Execute(vtkObject *caller,
 	  this->Collection->SetLinkCurrentPoint (viewer->GetCursorFollowMouse());
 	  this->Collection->SyncRender();
 	  break;
+	case 's':
+	  this->Collection->SetShowSlicePlanes (!this->Collection->GetShowSlicePlanes());
+	  this->Collection->SyncRender();
+	break;
 	default:
 	  break;
     }
@@ -729,12 +737,23 @@ void vtkImageViewCollection::SetLinkCurrentPoint(unsigned int v)
 //----------------------------------------------------------------------------
 void vtkImageViewCollection::SyncAddDataSet (vtkPointSet* arg, vtkProperty* prop)
 {
-
   this->InitTraversal();
   vtkImageView* item = this->GetNextItem();
   while(item)
   {
     item->AddDataSet (arg, prop);
+    item = this->GetNextItem();
+  }  
+}
+
+//----------------------------------------------------------------------------
+void vtkImageViewCollection::SyncRemoveDataSet (vtkPointSet* arg)
+{
+  this->InitTraversal();
+  vtkImageView* item = this->GetNextItem();
+  while(item)
+  {
+    item->RemoveDataSet (arg);
     item = this->GetNextItem();
   }  
 }

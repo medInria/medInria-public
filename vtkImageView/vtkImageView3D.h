@@ -45,6 +45,7 @@ class vtkScalarsToColors;
 class vtkColorTransferFunction;
 class vtkSmartVolumeMapper;
 class vtkImage3DDisplay;
+class vtkProp3DCollection;
 
 /**
    \class vtkImageView3D vtkImageView3D.h "vtkImageView3D.h"
@@ -88,6 +89,7 @@ public:
   vtkGetObjectMacro (ActorX, vtkImageActor);
   vtkGetObjectMacro (ActorY, vtkImageActor);
   vtkGetObjectMacro (ActorZ, vtkImageActor);
+  vtkGetObjectMacro (ExtraPlaneCollection, vtkProp3DCollection);
   
   virtual void SetVolumeMapperTo3DTexture (void);
   virtual void SetVolumeMapperToRayCast (void);
@@ -248,6 +250,17 @@ public:
 
 
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
+  virtual void RemoveDataSet (vtkPointSet* arg);
+
+  /**
+     Add an extra plane to the 3D view. the argument is an image actor
+     that supposingly follows a vtkImageView2D instance. The actor will
+     be displayed in the 3D scene and will be fully synchronized with
+     the actor it came from.
+  */
+  virtual void AddExtraPlane (vtkImageActor* input); 
+  virtual void RemoveExtraPlane (vtkImageActor* input); 
+
 
   virtual void AddLayer (int layer);
   virtual bool HasLayer (int layer) const;
@@ -295,6 +308,25 @@ protected:
   vtkAnnotatedCubeActor* Cube;
   vtkOrientationMarkerWidget* Marker;
 
+  
+  /**
+     The ExtraPlaneCollection is a collection gathering the ImageActor
+     instances that are currently displayed in addition to common ones
+     (ActorX, ActorY, ActorZ).
+     ExtraPlaneInputCollection is "read-only" collection to be able to
+     know which inputs the ExtraPlaneCollection instances are actually
+     following.
+  */
+  vtkProp3DCollection* ExtraPlaneCollection;
+  /**
+     The ExtraPlaneCollection is a collection gathering the ImageActor
+     instances that are currently displayed in addition to common ones
+     (ActorX, ActorY, ActorZ).
+     ExtraPlaneInputCollection is "read-only" collection to be able to
+     know which inputs the ExtraPlaneCollection instances are actually
+     following.
+  */
+  vtkProp3DCollection* ExtraPlaneInputCollection;
   
   unsigned int RenderingMode;
   unsigned int ShowActorX;

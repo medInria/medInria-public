@@ -176,6 +176,7 @@ vtkImageView2D::vtkImageView2D()
   this->SetViewConvention (vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL);
   
   this->InitializeSlicePlane();
+  
   this->InitialParallelScale = 1.0;
   this->ShowRulerWidget      = 1;
   this->ShowImageAxis        = 1;
@@ -184,7 +185,7 @@ vtkImageView2D::vtkImageView2D()
   this->AnnotationStyle      = AnnotationStyle1;
   this->CursorFollowMouse    = 0;
   
-  this->CornerAnnotation->SetImageActor (this->GetImageActor(0));
+  this->CornerAnnotation->SetImageActor (this->GetImageActor());
   this->CornerAnnotation->ShowSliceAndImageOn();
   
   this->RulerWidget->KeyPressActivationOff();
@@ -956,7 +957,7 @@ void vtkImageView2D::SetAnnotationsFromOrientation(void)
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetSlicePlaneFromOrientation(void)
 {
-  if (this->ViewOrientation<VIEW_ORIENTATION_SAGITTAL || this->ViewOrientation>VIEW_ORIENTATION_AXIAL)
+  if (this->ViewOrientation < VIEW_ORIENTATION_SAGITTAL || this->ViewOrientation > VIEW_ORIENTATION_AXIAL)
     return;
   /**
    These lines tell the slice plane which color it should be
@@ -985,7 +986,7 @@ void vtkImageView2D::UpdateSlicePlane (void)
   vtkPoints* oldpoints = vtkPoints::New();
   vtkPoints* points = vtkPoints::New();
   double x[3];
-  double* bounds = this->GetImageActor(0)->GetDisplayBounds ();
+  double* bounds = this->GetImageActor()->GetDisplayBounds ();
   unsigned int added1;
   unsigned int added2;
   
@@ -1604,6 +1605,9 @@ void vtkImageView2D::PrintSelf(ostream& os, vtkIndent indent)
 //----------------------------------------------------------------------------
 vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
 {
+  if (this->FindDataSetWidget (arg) != this->DataSetWidgets.end())
+    return NULL;
+  
   vtkDataSet2DWidget* widget = vtkDataSet2DWidget::New();
   widget->GetActor()->SetProperty (prop);
   widget->SetSource (arg);
@@ -1659,6 +1663,23 @@ void vtkImageView2D::RemoveDataSet (vtkPointSet *arg)
     }
     ++it;
   }
+}
+
+
+//----------------------------------------------------------------------------
+std::list<vtkDataSet2DWidget*>::iterator vtkImageView2D::FindDataSetWidget(vtkPointSet* arg)
+{
+  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
+  
+  while (it != this->DataSetWidgets.end())
+  {
+    vtkDataSet2DWidget* widget = (*it);
+    if (widget->GetSource() == arg)
+      return it;
+    ++it;
+  }
+  
+  return this->DataSetWidgets.end();
 }
 
 //----------------------------------------------------------------------------
