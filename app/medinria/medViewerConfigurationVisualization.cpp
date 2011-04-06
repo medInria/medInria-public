@@ -19,13 +19,16 @@
 
 #include "medViewerConfigurationVisualization.h"
 
-#include <medGui/medViewerToolBoxView.h>
 #include <medGui/medViewerToolBoxViewProperties.h>
+#include <medGui/medViewContainer.h>
 #include <medGui/medStackedViewContainers.h>
+#include <medGui/medViewerToolBoxView.h>
+#include <medGui/medViewerToolBoxTime.h>
 
 class medViewerConfigurationVisualizationPrivate
 {
 public:
+    medViewerToolBoxTime                *timeToolBox;
     medViewerToolBoxView                *viewToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 
@@ -46,16 +49,11 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
     // -- View toolbox --
     
     d->viewToolBox = new medViewerToolBoxView(parent);
-
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
-       
+    d->timeToolBox = new medViewerToolBoxTime(parent);
     this->addToolBox( d->viewToolBox );
     this->addToolBox(d->viewPropertiesToolBox);
- 
-    
-    
-    //this->setLayoutType( medViewerConfiguration::TopDbBottomTb );
-    
+    this->addToolBox( d->timeToolBox );
 }
 
 void medViewerConfigurationVisualization::setupViewContainerStack()
@@ -65,8 +63,21 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
         //Containers:
         addSingleContainer();
         addMultiContainer();
-        addCustomContainer();   
+        addCustomContainer();
+        connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
+            d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
+        connect(stackedViewContainers()->container("Multi"),SIGNAL(viewAdded(dtkAbstractView*)),
+			d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
+        connect(stackedViewContainers()->container("Custom"),SIGNAL(viewAdded(dtkAbstractView*)),
+			d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
+        connect(stackedViewContainers()->container("Single"),SIGNAL(viewRemoved(dtkAbstractView*)),
+            d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
+        connect(stackedViewContainers()->container("Multi"),SIGNAL(viewRemoved(dtkAbstractView*)),
+                d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
+        connect(stackedViewContainers()->container("Custom"),SIGNAL(viewRemoved(dtkAbstractView*)),
+                d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
     }
+
 }
 
 medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)

@@ -225,6 +225,8 @@ signals:
      */
     void dataAdded (int layer);
 
+    void dataAdded (dtkAbstractData* data);
+
 public slots:
     /**
        Tells the view (not to) synchronize its position with other views.
