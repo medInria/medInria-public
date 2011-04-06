@@ -21,10 +21,11 @@
 #define medBrowserToolBoxPacsSEARCH_H
 
 #include <medGui/medToolBox.h>
+#include "medGuiExport.h"
 
 class medBrowserToolBoxPacsSearchPrivate;
 
-class medBrowserToolBoxPacsSearch : public medToolBox
+class MEDGUI_EXPORT medBrowserToolBoxPacsSearch : public medToolBox
 {
     Q_OBJECT
 

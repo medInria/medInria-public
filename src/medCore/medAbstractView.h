@@ -75,26 +75,31 @@ public:
        @position is expressed in real world coordinates.
      **/
     void setPosition    (const QVector3D &position);
+	QVector3D position(void) const;
 
     /**
        Set the view zoom factor.
     **/
     void setZoom        (double zoom);
+	double zoom(void) const;
 
     /**
        Set the view pan.
     **/
     void setPan         (const QVector2D &pan);
+	QVector2D pan(void) const;
 
     /**
        Set the window/level of the view.
     **/
     void setWindowLevel (double level, double window);
+	void windowLevel(double &level, double &window) const;
 
     /**
        Set the camera settings of the view.
     **/
     void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+	void camera(QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale) const;
     
     /**
      * Set the visibility of the data on the corresponding layer

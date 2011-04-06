@@ -36,8 +36,7 @@
 #include <medCore/medJobManager.h>
 #include <medCore/medDataManager.h>
 
-#include <medGui/medStatusQuitButton.h>
-#include <medGui/medSettingsButton.h>
+#include <medGui/medButton.h>
 #include <medGui/medWorkspaceShifter.h>
 
 #include <medSql/medDatabaseController.h>
@@ -216,13 +215,11 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->shifter->addAction(d->shiftToBrowserAreaAction);
     d->shifter->addAction(d->shiftToViewerAreaAction); //->setMenu(menu);
 
-    medStatusQuitButton *quitButton = new medStatusQuitButton(this);
-
-    connect(quitButton, SIGNAL(quit()), this, SLOT(onQuit()));
+    medButton *quitButton = new medButton(this,":/icons/quit.png", tr("Quit Application"));
+    connect(quitButton, SIGNAL(triggered()), this, SLOT(onQuit()));
     
-    medSettingsButton *settingsButton = new medSettingsButton(this);
-
-    connect(settingsButton, SIGNAL(editSettings()), this, SLOT(onEditSettings()));
+    medButton *settingsButton = new medButton(this, ":/icons/settings.png", tr("Edit Application Settings"));
+    connect(settingsButton, SIGNAL(triggered()), this, SLOT(onEditSettings()));
 
     QComboBox *configurationSwitcher = new QComboBox(this);
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
@@ -238,7 +235,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     this->readSettings();
     this->setCentralWidget(d->stack);
-    this->setStyle(new medMainWindowStyle);
+    this->setStyle(new QPlastiqueStyle());
     this->setStyleSheet(dtkReadFile(":/medinria.qss"));
     this->setWindowTitle("medinria");
 
@@ -387,10 +384,14 @@ void medMainWindow::onEditSettings()
         return;
     }
 
-    d->settingsEditor = new medSettingsEditor(this);
+    d->settingsEditor = new medSettingsEditor(this, true);
     d->settingsEditor->setGeometry(100,100, 500, 500);
     d->settingsEditor->setWindowFlags(Qt::Tool);
-
+    d->settingsEditor->initialize();
+    d->settingsEditor->queryWidgets();
+    
+    connect(d->settingsEditor, SIGNAL(finished()), d->settingsEditor, SLOT(close()) );
+    
     d->settingsEditor->show();
 }
 
