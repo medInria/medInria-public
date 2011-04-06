@@ -5,8 +5,11 @@
 #include <QtCore>
 
 #include <medGui/medViewerConfiguration.h>
+#include <medGui/medToolBoxDiffusionTensorView.h>
+#include <dtkCore/dtkAbstractViewInteractor.h>
 
-class medViewContainerStack;
+
+class medStackedViewContainers;
 class medViewerConfigurationDiffusionPrivate;
 
 class medViewerConfigurationDiffusion : public medViewerConfiguration
@@ -19,10 +22,9 @@ public:
 
     virtual QString description(void) const;
     
-    void setupViewContainerStack (medViewContainerStack *container);
+    void setupViewContainerStack ();
 
 public slots:
-    void patientChanged(int patientId);
     
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
@@ -36,8 +38,25 @@ public slots:
     void onTBDiffusionSuccess(void);
     void refreshInteractors (void);
 
+    // slots for tensor interactions
+
+    /** Event called when a new glyph shape is selected in the tensor toolbox */
+    void onGlyphShapeChanged(const QString& glyphShape);
+
+    /** Event called when user wants to flip X axis */
+    void onFlipXChanged(bool flipX);
+
+    /** Event called when user wants to flip Y axis */
+    void onFlipYChanged(bool flipY);
+
+    /** Event called when user wants to flip Z axis */
+    void onFlipZChanged(bool flipZ);
+
 private:
     medViewerConfigurationDiffusionPrivate *d;
+
+    /** Updates the controls in the tensor toolbox with the current values of the interactor. */
+    void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox);
 };
 
 medViewerConfiguration *createMedViewerConfigurationDiffusion(void);

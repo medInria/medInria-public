@@ -22,13 +22,11 @@
 #include "medToolBoxDiffusionCustom.h"
 #include "medToolBoxDiffusionCustom_p.h"
 
-#include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCore/dtkAbstractObject.h>
 
 medToolBoxDiffusionCustom::medToolBoxDiffusionCustom(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionCustomPrivate)
 {
     d->parent  = NULL;
-    d->process = NULL;
 }
 
 medToolBoxDiffusionCustom::~medToolBoxDiffusionCustom(void)
@@ -48,12 +46,8 @@ medToolBoxDiffusion *medToolBoxDiffusionCustom::parent(void)
     return d->parent;
 }
 
-void medToolBoxDiffusionCustom::setProcess (dtkAbstractProcess *process)
+dtkAbstractData *medToolBoxDiffusionCustom::output (void) const
 {
-    d->process = process;
-}
-
-dtkAbstractProcess *medToolBoxDiffusionCustom::process (void) const
-{
-    return d->process;
+    DTK_DEFAULT_IMPLEMENTATION;
+    return NULL;
 }

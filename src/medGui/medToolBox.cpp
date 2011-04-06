@@ -70,6 +70,16 @@ void medToolBox::setTitle(const QString &title)
     d->header->setTitle(title);
 }
 
+medToolBoxHeader *medToolBox::header(void) const
+{
+    return d->header;
+}
+
+medToolBoxBody *medToolBox::body(void) const
+{
+    return d->body;
+}
+
 void medToolBox::update(dtkAbstractView *view)
 {
     DTK_DEFAULT_IMPLEMENTATION;

@@ -50,12 +50,12 @@ QList<QString> medToolBoxFactory::registrationToolBoxes(void)
     return d->custom_registration_creators.keys();
 }
 
-medToolBoxRegistrationCustom *medToolBoxFactory::createCustomRegistrationToolBox(QString type)
+medToolBoxRegistrationCustom *medToolBoxFactory::createCustomRegistrationToolBox(QString type, QWidget *parent)
 {
     if(!d->custom_registration_creators.contains(type))
         return NULL;
 
-    medToolBoxRegistrationCustom *toolbox = d->custom_registration_creators[type]();
+    medToolBoxRegistrationCustom *toolbox = d->custom_registration_creators[type](parent);
 
     return toolbox;
 }
@@ -75,12 +75,12 @@ QList<QString> medToolBoxFactory::diffusionToolBoxes(void)
     return d->custom_diffusion_creators.keys();
 }
 
-medToolBoxDiffusionCustom *medToolBoxFactory::createCustomDiffusionToolBox(QString type)
+medToolBoxDiffusionCustom *medToolBoxFactory::createCustomDiffusionToolBox(QString type, QWidget *parent)
 {
     if(!d->custom_diffusion_creators.contains(type))
         return NULL;
 
-    medToolBoxDiffusionCustom *toolbox = d->custom_diffusion_creators[type]();
+    medToolBoxDiffusionCustom *toolbox = d->custom_diffusion_creators[type](parent);
 
     return toolbox;
 }

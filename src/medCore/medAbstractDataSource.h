@@ -6,6 +6,7 @@
 #include "medCoreExport.h"
 
 class medToolBox;
+class medDataIndex;
 
 /** 
  * @class medAbstractDataSource
@@ -47,6 +48,13 @@ signals:
     /** A data source emits a signal when it failed to get the data*/
     void dataReceivingFailed(QString pathToData);
 
+    /**
+     * @brief Emits this signal when the source wants to export some data to a file.
+     *
+     * The medBrowserArea will treat the demand based on the medDataIndex.
+     * @param index
+    */
+    void exportData(const medDataIndex& index);
 };
 
 #endif

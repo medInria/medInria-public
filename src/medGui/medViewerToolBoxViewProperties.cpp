@@ -328,3 +328,8 @@ void medViewerToolBoxViewProperties::onDeleteLayer()
     d->propertiesTree->clearSelection();
 }
 
+void medViewerToolBoxViewProperties::clear()
+{
+    d->currentLayer = 0;
+    onViewClosed();
+}

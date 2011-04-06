@@ -416,3 +416,8 @@ void medViewerToolBoxView::onCroppingChanged(bool checked)
         d->view->update();
     }
 }
+
+void medViewerToolBoxView::clear()
+{
+    d->view=0;
+}

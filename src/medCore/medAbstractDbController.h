@@ -55,8 +55,7 @@ public slots:
     * @params const dtkAbstractData& data reference to data
     * @return medDataIndex that was assigned
     */
-    virtual medDataIndex import(const dtkAbstractData& data) = 0;
-
+    virtual medDataIndex import(dtkAbstractData *data) = 0;
    
     /**
     * This method allows importing data from other databases
@@ -65,6 +64,11 @@ public slots:
     * @return medDataIndex New assigned dataIndex in target (this) db
     */
     virtual medDataIndex import(const medDataIndex& index, const medAbstractDbController& controller);
+    
+    /**
+    * This method clears data already loaded in the database.
+    */
+    virtual void clear (void);
 
 };
 

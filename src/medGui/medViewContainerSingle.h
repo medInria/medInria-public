@@ -31,7 +31,6 @@ class MEDGUI_EXPORT medViewContainerSingle : public medViewContainer
 public:
     medViewContainerSingle(QWidget *parent = 0) : medViewContainer(parent) {}
 
-    Type type(void);
 
     void split(int rows, int cols);
 

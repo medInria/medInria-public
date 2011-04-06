@@ -21,23 +21,28 @@
 #define MEDDATABASEEXPORTER_H
 
 #include "medSqlExport.h"
-
 #include <QtCore>
 
+#include <medCore/medJobItem.h>
+
+class dtkAbstractData;
 class medDatabaseExporterPrivate;
 
-class MEDSQL_EXPORT medDatabaseExporter : public QObject, public QRunnable
+class MEDSQL_EXPORT medDatabaseExporter : public medJobItem
 {
     Q_OBJECT
 
 public:
-     medDatabaseExporter(void);
+     medDatabaseExporter(dtkAbstractData *data, const QString &filename);
     ~medDatabaseExporter(void);
-
+    
+    /**
+     * @brief Starts the job and writes to the file system. 
+     *
+     * @param void
+     * @todo enrich the signals in the exporter (the writer progress signal is not forwarded to the explorer)
+    */
     void run(void);
-
-signals:
-    void progressed(int);
 
 private:
     medDatabaseExporterPrivate *d;

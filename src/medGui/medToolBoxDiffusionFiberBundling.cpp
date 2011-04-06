@@ -5,22 +5,21 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include <medGui/medDropSite.h>
 #include <medCore/medDataManager.h>
 //#include <medSql/medDatabaseController.h>
 
 class medToolBoxDiffusionFiberBundlingPrivate
 {
 public:
-    QListWidget  *bundlingList;
+    //QListWidget  *bundlingList;
+    QListView  *bundlingList;
+    QStandardItemModel *bundlingModel;
     QPushButton  *bundlingButtonVdt;
     QPushButton  *bundlingButtonTag;
     QPushButton  *bundlingButtonRst;
     QCheckBox    *bundlingShowCheckBox;
     QCheckBox    *bundleBoxCheckBox;
     QPushButton  *bundlingButtonAdd;
-    
-    medDropSite  *bundlingDropSite;
     
     dtkAbstractView *view;
     dtkAbstractData *data;
@@ -33,8 +32,6 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     
     QWidget *bundlingPage = new QWidget(this);
     
-    d->bundlingDropSite = new medDropSite(bundlingPage);
-    
     d->bundlingButtonTag = new QPushButton("Tag", bundlingPage);
     d->bundlingButtonAdd = new QPushButton("Add", bundlingPage);
     d->bundlingButtonRst = new QPushButton("Reset", bundlingPage);
@@ -46,21 +43,27 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     bundlingButtonsLayout->addWidget(d->bundlingButtonRst);
     bundlingButtonsLayout->addWidget(d->bundlingButtonVdt);
     
-    d->bundlingList = new QListWidget(bundlingPage);
+    // d->bundlingList = new QListWidget(bundlingPage);
+    
+    d->bundlingModel = new QStandardItemModel(0, 1, bundlingPage);
+    d->bundlingModel->setHeaderData(0, Qt::Horizontal, tr("Fiber bundles"));
+            
+    QItemSelectionModel *selectionModel = new QItemSelectionModel(d->bundlingModel);
+    
+    d->bundlingList = new QListView(bundlingPage);
     d->bundlingList->setAlternatingRowColors(true);
+    d->bundlingList->setModel (d->bundlingModel);
+    d->bundlingList->setSelectionModel(selectionModel);
     
     d->bundlingShowCheckBox = new QCheckBox("Show all bundles", bundlingPage);
     d->bundleBoxCheckBox = new QCheckBox("Activate bundling box", bundlingPage);
         
     QVBoxLayout *bundlingLayout = new QVBoxLayout(bundlingPage);
-    bundlingLayout->addWidget(d->bundlingDropSite);
     bundlingLayout->addWidget(d->bundleBoxCheckBox);
     bundlingLayout->addLayout(bundlingButtonsLayout);
     bundlingLayout->addWidget(d->bundlingList);
     bundlingLayout->addWidget(d->bundlingShowCheckBox);
-    bundlingLayout->setAlignment(d->bundlingDropSite, Qt::AlignHCenter);
 
-    connect (d->bundlingDropSite,      SIGNAL(objectDropped()),          this, SLOT (onObjectDropped()));
     connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (onBundlingButtonVdtClicked (void)));
     connect (d->bundleBoxCheckBox,     SIGNAL(toggled(bool)),            this, SLOT (onBundleBoxCheckBoxToggled (bool)));
 	
@@ -84,7 +87,6 @@ void medToolBoxDiffusionFiberBundling::setData(dtkAbstractData *data)
         return;
     
     if (data->description()!="v3dDataFibers") {
-        d->bundlingDropSite->clear();
         return;
     }
     
@@ -93,29 +95,19 @@ void medToolBoxDiffusionFiberBundling::setData(dtkAbstractData *data)
     
     d->data = data;
     
-    d->bundlingDropSite->setPixmap( QPixmap::fromImage(data->thumbnail()) );
-    
-    d->bundlingList->clear();
-    if (data->hasMetaData("BundleList")) {
-        QStringList bundleNames = data->metaDataValues("BundleList");
-        foreach(QString name, bundleNames)
-            this->addBundle(name);
+    //d->bundlingList->clear();
+    //d->bundlingModel->clear();
+    d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
+        
+    if (data->hasMetaData("BundleList") && data->hasMetaData("BundleColorList")) {
+        
+        QStringList bundleNames  = data->metaDataValues("BundleList");
+        QStringList bundleColors = data->metaDataValues("BundleColorList");
+        if (bundleNames.count()==bundleColors.count()) {
+            for (int i=0; i<bundleNames.count(); i++)
+                this->addBundle(bundleNames[i], QColor(bundleColors[i]));
+        }
     }
-}
-
-void medToolBoxDiffusionFiberBundling::onObjectDropped(void)
-{
-    medDataIndex index = d->bundlingDropSite->index();
-    
-    if (!index.isValid())
-        return;
-    
-    dtkAbstractData *data = medDataManager::instance()->data (index);
-    if (!data) {
-        return;
-    }
-    
-    this->setData(data);
 }
 
 void medToolBoxDiffusionFiberBundling::onBundlingButtonVdtClicked (void)
@@ -126,8 +118,10 @@ void medToolBoxDiffusionFiberBundling::onBundlingButtonVdtClicked (void)
     
     if (ok && !text.isEmpty()) {
         // if (!d->bundlingList->contains (name)) // should popup a warning
-        emit fiberSelectionValidated (text);
-	this->addBundle (text);
+        QColor color = QColor::fromHsv(qrand()%360, 255, 210);
+        
+        emit fiberSelectionValidated (text, color);
+        this->addBundle (text, color);
     }
 }
 
@@ -146,38 +140,60 @@ void medToolBoxDiffusionFiberBundling::onBundleBoxCheckBoxToggled (bool value)
     } 
 }
 
-void medToolBoxDiffusionFiberBundling::addBundle (QString name)
-{
+void medToolBoxDiffusionFiberBundling::addBundle (const QString &name, const QColor &color)
+{/*
     if(!d->data)
         return;
-  
-    d->bundlingList->addItem (name);
+  */
+    //d->bundlingList->addItem (name);
+    
+    //d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
+    
+    int row = d->bundlingModel->rowCount();
+    QStandardItem *item = new QStandardItem;
+    item->setCheckable(true);
+    d->bundlingModel->insertRow(row, item);
+    
+    //d->bundlingModel->addItem (name);
+    
+    d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
+                              name);
+    
+    d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
+                              true, Qt::CheckStateRole);
+
+    d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
+                              color, Qt::DecorationRole);
+
+    //d->bundlingList->update();
 }
 
 void medToolBoxDiffusionFiberBundling::clear(void)
 {
-    d->bundlingDropSite->clear();
-    d->bundlingList->clear();
+    //d->bundlingList->clear();
+    //d->bundlingModel->clear();
+    d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
 
-    this->update (0);
+    //this->update (0);
+    d->view = 0;
     d->data = 0;
 }
 
 void medToolBoxDiffusionFiberBundling::update(dtkAbstractView *view)
 {
-  // if(!d->data)
-  //    return;
-  
     if (d->view==view) {
         if (view)
-	    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
-	        this->setData (interactor->data()); // data may have changed
+            if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
+                this->setData (interactor->data()); // data may have changed
         return;
     }
     
+    d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
+    
     if (d->view) {
         if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
-            disconnect (this, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
+            disconnect (this, SIGNAL(fiberSelectionValidated(const QString&, const QColor&)), 
+                        interactor, SLOT(onSelectionValidated(const QString&, const QColor&)));
             disconnect (this, SIGNAL(fiberSelectionTagged()),    interactor, SLOT(onSelectionTagged()));
             disconnect (this, SIGNAL(fiberSelectionReset()),     interactor, SLOT(onSelectionReset()));
         }
@@ -185,25 +201,28 @@ void medToolBoxDiffusionFiberBundling::update(dtkAbstractView *view)
     
     if (!view) {
         d->view = 0;
+        d->data = 0;
         return;
     }
     
     if (view->property ("Orientation")!="3D") { // only interaction with 3D views is authorized
         d->view = 0;
+        d->data = 0;
         return;
     }
     
     d->view = view;
     
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-        connect (this, SIGNAL(fiberSelectionValidated(QString)), interactor, SLOT(onSelectionValidated(QString)));
+        connect (this, SIGNAL(fiberSelectionValidated(const QString&, const QColor&)), 
+                 interactor, SLOT(onSelectionValidated(const QString&, const QColor&)));
         connect (this, SIGNAL(fiberSelectionTagged()),           interactor, SLOT(onSelectionTagged()));
         connect (this, SIGNAL(fiberSelectionReset()),            interactor, SLOT(onSelectionReset()));
 
-	d->bundleBoxCheckBox->blockSignals (true);
-	d->bundleBoxCheckBox->setChecked( interactor->property("BoxVisibility")=="true" );
-	d->bundleBoxCheckBox->blockSignals (false);
-
-	this->setData ( interactor->data() );
+        d->bundleBoxCheckBox->blockSignals (true);
+        d->bundleBoxCheckBox->setChecked( interactor->property("BoxVisibility")=="true" );
+        d->bundleBoxCheckBox->blockSignals (false);
+        
+        this->setData (interactor->data());
     }
 }
