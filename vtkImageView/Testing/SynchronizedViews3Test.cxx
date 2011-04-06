@@ -1,20 +1,20 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: SynchronizedViewsTest.cxx 1211 2009-07-29 14:57:22Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2009-07-29 15:57:22 +0100 (Wed, 29 Jul 2009) $
-Version:   $Revision: 1211 $
+  Program:   vtkINRIA3D
+  Module:    $Id: SynchronizedViewsTest.cxx 1211 2009-07-29 14:57:22Z filus $
+  Language:  C++
+  Author:    $Author: filus $
+  Date:      $Date: 2009-07-29 15:57:22 +0100 (Wed, 29 Jul 2009) $
+  Version:   $Revision: 1211 $
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
+  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
+  See Copyright.txt for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
 
-=========================================================================*/
+  =========================================================================*/
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkImageViewCollection.h>
@@ -72,14 +72,6 @@ int SynchronizedViews3Test(int argc, char* argv[])
   view2->SetRenderer ( renderer2 );
   view3->SetRenderer ( renderer3 );
   view4->SetRenderer ( renderer4 );
-
-  
-
-  /*
-    view1->SetInteractionStyle (vtkInteractorStyleImageView2D::MOUSE_INTERACTION_WINDOWING);
-    view2->SetInteractionStyle (vtkInteractorStyleImageView2D::MOUSE_INTERACTION_SLICENAVIGATION);
-    view3->SetInteractionStyle (vtkInteractorStyleImageView2D::MOUSE_INTERACTION_ZOOMING);
-  */
   
   view1->SetSliceOrientation (vtkImageView2D::SLICE_ORIENTATION_XY);
   view2->SetSliceOrientation (vtkImageView2D::SLICE_ORIENTATION_XZ);
@@ -89,18 +81,12 @@ int SynchronizedViews3Test(int argc, char* argv[])
   view4->SetBackground (bcolor);
   
   view4->SetRenderingModeToPlanar();
-  view4->SetShowCube(1);  
-
-  /*
-  view1->SetAboutData ("Powered by vtkINRIA3D");
-  view2->SetAboutData ("Powered by vtkINRIA3D");
-  view3->SetAboutData ("Powered by vtkINRIA3D");
-  view4->SetAboutData ("Powered by vtkINRIA3D");
-  */
+  view4->SetShowCube(1);
+  view4->SetVolumeMapperTo3DTexture();
   
   /**
      Link the views together for synchronization.
-   */
+  */
   vtkImageViewCollection* pool = vtkImageViewCollection::New();
   pool->AddItem (view1);
   pool->AddItem (view2);
@@ -120,17 +106,6 @@ int SynchronizedViews3Test(int argc, char* argv[])
   pool->SyncReset();
   pool->SyncRender();
 
-  pool->SyncSetShowAnnotations (0);
-  view1->ShowRulerWidgetOff();
-  view2->ShowRulerWidgetOff();
-  view3->ShowRulerWidgetOff();
-
-  
-//   view4->ShowActorXOff();
-//   view4->ShowActorYOff();
-//   view4->ShowActorZOff();
-  
-
   std::vector<vtkImageView*> vecViews;
   vecViews.push_back (view1);
   vecViews.push_back (view2);
@@ -147,10 +122,38 @@ int SynchronizedViews3Test(int argc, char* argv[])
   rwin3->Render();
   rwin4->Render();
 
-  pool->SyncSetShowImageAxis (1);
+  pool->SetLinkSliceMove (1);
+  pool->SetLinkTimeChange (0);
+  pool->SetLinkColorWindowLevel (1);
+  pool->SetLinkResetWindowLevel (0);
+  pool->SetLinkResetViewer (0);
+  pool->SetLinkRequestedPosition (0);
+  pool->SetLinkCamera (0);
+  pool->SetLinkZoom (0);
+  pool->SetLinkPan (0);
+  pool->SetLinkCurrentPoint (0);
+
+  pool->SyncSetShowImageAxis (0);
+  pool->SyncSetShowAnnotations (0);
+  pool->SyncSetCursorFollowMouse (0);
+  pool->SyncSetShowRulerWidget (0);
+  pool->SyncSetShowScalarBar (0);
+  // pool->SyncSetUseLookupTable (0);
+  pool->SyncSetAnnotationStyle (vtkImageView2D::AnnotationStyle2);
   pool->SyncReset();
+  view4->SetZoom (0.6);
   
-  const unsigned int N = 500;
+  view4->SetShowActorX (0);
+  view4->SetShowActorY (0);
+  view4->SetShowActorZ (0);
+  view4->AddExtraPlane (view1->GetImageActor());
+  view4->AddExtraPlane (view2->GetImageActor());
+  view4->AddExtraPlane (view3->GetImageActor());
+  pool->SetShowSlicePlanes (0);
+  
+  const unsigned int N = 100;
+  unsigned int n_2 = vtkMath::Round ((double)(N) / 2.0);
+  double zfactor = 0.95;
   
   double positions[N][3];
   srand( time(NULL) );
@@ -165,34 +168,48 @@ int SynchronizedViews3Test(int argc, char* argv[])
     positions[i][1] = scale2 * 128;
     positions[i][2] = scale3 * 128;
   }
-	
-	clock_t t1 = clock();
+  
+  clock_t t0 = clock();
+  
+  int range[2];
+  view1->GetSliceRange (range);
+  double number_of_rounds = 1;
+  double position[3]={64,64,64};
+  pool->SyncSetCurrentPoint (position);
+  view4->SetZoom (0.6);
+  
+  for (unsigned int j=0; j<(unsigned int)(number_of_rounds); j++)
+  {
+    for( int i=range[0]; i<range[1]; i++)
+    {
+      view1->GetWorldCoordinatesForSlice (i, position);
+      pool->SyncSetCurrentPoint (position);
+      pool->SyncRender();
+    }
+  }
+    
+  clock_t t1 = clock();
+  double performance_settingslice = ( (double)(t1-t0) * 1000.0) / (number_of_rounds * (double)(range[1] - range[0]) * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_settingslice: " << performance_settingslice << " ms."<< std::endl;
+  view4->SetZoom (0.6);
   
   for( unsigned int i=0; i<N; i++)
   {
     pool->SyncSetCurrentPoint ( positions[i] );
     pool->SyncRender();
-
-    // test if the other views have the same coordinate.
-    for( int j=0; j<4; j++)
-    {
-      const double* pos = vecViews[j]->GetCurrentPoint();
-      if( pos[0]!=positions[i][0] || pos[1]!=positions[i][1] || pos[2]!=positions[i][2] )
-      {
-        return 1;
-      }
-    }
   }
-
-  double zfactor = 0.95;
-
+  
+  clock_t t2 = clock();
+  
+  double performance_settingpoint = ( (double)(t2-t1) * 1000.0) / (1.0 * (double)N * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_settingpoint: " << performance_settingpoint << " ms."<< std::endl;
+  
   pool->SyncReset();
   pool->SyncSetColorWindow (178);
   pool->SyncSetColorLevel (51);
 
-  unsigned int n_2 = vtkMath::Round ((double)(N) / 2.0);
-
   view4->GetCornerAnnotation()->SetText (3, "SyncSetWindow (decreasing)");
+  view4->SetZoom (0.6);
   for( unsigned int i=0; i<n_2; i++){
     pool->SyncSetColorWindow ( view4->GetColorWindow() * zfactor );
     pool->SyncRender();
@@ -202,15 +219,17 @@ int SynchronizedViews3Test(int argc, char* argv[])
   pool->SyncSetColorLevel (51);
 
   view4->GetCornerAnnotation()->SetText (3, "SyncSetWindow (increasing)");
+  view4->SetZoom (0.6);
   for( unsigned int i=0; i<n_2; i++){
-  pool->SyncSetColorWindow ( view4->GetColorWindow() / zfactor );
-  pool->SyncRender();
+    pool->SyncSetColorWindow ( view4->GetColorWindow() / zfactor );
+    pool->SyncRender();
   }
 
   pool->SyncSetColorWindow (178);
   pool->SyncSetColorLevel (51);
 
   view4->GetCornerAnnotation()->SetText (3, "SyncSetLevel (decreasing)");
+  view4->SetZoom (0.6);
   for( unsigned int i=0; i<n_2; i++){
     pool->SyncSetColorLevel ( view4->GetColorLevel() * zfactor );
     pool->SyncRender();
@@ -220,21 +239,55 @@ int SynchronizedViews3Test(int argc, char* argv[])
   pool->SyncSetColorLevel (51);
 
   view4->GetCornerAnnotation()->SetText (3, "SyncSetLevel (increasing)");
+  view4->SetZoom (0.6);
   for( unsigned int i=0; i<n_2; i++){
-  pool->SyncSetColorLevel ( view4->GetColorLevel() / zfactor );
-  pool->SyncRender();
+    pool->SyncSetColorLevel ( view4->GetColorLevel() / zfactor );
+    pool->SyncRender();
   }
 
-  view4->GetCornerAnnotation()->SetText (3, "SyncReset ()");
-  for( unsigned int i=0; i<N; i++){
-  pool->SyncReset ();
-  pool->SyncRender();
-  }
-	
-	clock_t t2 = clock();
-	
-	std::cout << "Time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC << std::endl;
+  clock_t t3 = clock();
   
+  double performance_windowlevel = ( (double)(t3-t2) * 1000.0) / (2.0 * (double)(N) * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_windowlevel: " << performance_windowlevel << " ms."<< std::endl;
+  
+  view4->GetCornerAnnotation()->SetText (3, "SyncReset ()");
+  view4->SetZoom (0.6);
+  for( unsigned int i=0; i<N; i++){
+    pool->SyncReset ();
+    pool->SyncRender();
+  }
+
+  clock_t t4 = clock();
+  
+  double performance_reset = ( (double)(t4-t3) * 1000.0) / (1.0 * (double)(N) * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_reset: " << performance_reset << " ms."<< std::endl;
+
+  view4->GetCornerAnnotation()->SetText (3, "SyncRender ()");
+  view4->SetZoom (0.6);
+  for( unsigned int i=0; i<N; i++){
+    pool->SyncRender();
+  }
+
+  clock_t t5 = clock();
+  
+  double performance_render = ( (double)(t5-t4) * 1000.0) / (1.0 * (double)(N) * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_render: " << performance_render << " ms."<< std::endl;
+
+  view4->SetRenderingModeToVR();
+  pool->SyncReset();
+  
+  view4->GetCornerAnnotation()->SetText (3, "VR ()");
+  view4->SetZoom (0.5);
+  for( unsigned int i=0; i<n_2; i++){
+    pool->SyncSetColorLevel ( view4->GetColorLevel() / zfactor );
+    pool->SyncRender();
+  }
+
+  clock_t t6 = clock();
+  
+  double performance_volumerendering = ( (double)(t6-t5) * 1000.0) / (0.5 * (double)(N) * (double)CLOCKS_PER_SEC);  
+  std::cout << "performance_volumerendering: " << performance_volumerendering << " ms."<< std::endl;
+
   view1->Delete();
   view2->Delete();
   view3->Delete();
