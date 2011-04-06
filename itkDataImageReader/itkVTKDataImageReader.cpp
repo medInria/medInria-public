@@ -33,7 +33,7 @@ QStringList itkVTKDataImageReader::s_handled(void)
             << "itkDataImageULong3" << "itkDataImageULong4"
             << "itkDataImageFloat3" << "itkDataImageFloat4"
             << "itkDataImageDouble3" << "itkDataImageDouble4"
-            << "itkDataImageRGB3";
+            << "itkDataImageRGB3" << "itkDataImageRGB3";
 }
 
 bool itkVTKDataImageReader::registered(void)

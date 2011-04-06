@@ -33,7 +33,7 @@ QStringList itkGiplDataImageReader::s_handled(void)
             << "itkDataImageULong3" << "itkDataImageULong4"
             << "itkDataImageFloat3" << "itkDataImageFloat4"
             << "itkDataImageDouble3" << "itkDataImageDouble4"
-            << "itkDataImageRGB3";
+            << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
 bool itkGiplDataImageReader::registered(void)
