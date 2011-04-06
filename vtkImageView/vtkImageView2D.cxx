@@ -129,8 +129,16 @@ void vtkImage2DDisplay::SetInput(vtkImageData * image)
   if (image)
     image->UpdateInformation();
   
-  this->ImageActor->SetInput( this->WindowLevel->GetOutput() );
-  this->WindowLevel->SetInput(image);
+  if (image->GetScalarType()==VTK_UNSIGNED_CHAR &&
+      ( image->GetNumberOfScalarComponents()==3 || image->GetNumberOfScalarComponents()==4) )
+  {
+    this->ImageActor->SetInput( image );
+  }
+  else
+  {
+    this->ImageActor->SetInput( this->WindowLevel->GetOutput() );
+    this->WindowLevel->SetInput(image);
+  }
 }
 
 void vtkImage2DDisplay::SetLookupTable(vtkLookupTable * lut)
