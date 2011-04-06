@@ -71,8 +71,10 @@ target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkCore)
-
-dtk_build_doc(itkDataTensorImageWriterPlugin)
+  
+if(BUILD_DOCUMENTATION)
+	dtk_build_doc(${PROJECT_NAME})
+endif(BUILD_DOCUMENTATION)
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio
