@@ -18,7 +18,11 @@ class medViewerToolBoxViewPropertiesPrivate
         QTreeWidget * propertiesTree;
         QStringList lutList;
         int currentLayer;
+        QWidget * twoLayersWidget;
         QSlider * slider;
+        QString textLayer0;
+        QString textLayer1;
+        QPushButton * switchLayersButton;
 };
 
 medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) :
@@ -26,6 +30,9 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
 {
     d->view = 0;
     d->currentLayer = 0;
+    d->textLayer0 = tr("Switch to layer 0 only");
+    d->textLayer1 = tr("Switch to layer 1 only");
+    
 
     d->lutList << "Default" << "Black & White" << "Black & White Inversed" << "Spectrum" << "Hot Metal" << "Hot Green"
                << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
@@ -51,13 +58,28 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     QObject::connect(d->propertiesTree, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
     QObject::connect(d->propertiesTree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextTreeMenu(QPoint)));
     
-    //add slider
+    //add 2 layers opacity slider and switcher.
+    d->twoLayersWidget = new QWidget(this);
+    QGridLayout * twoLayersLayout = new QGridLayout(this);
+    d->twoLayersWidget->setLayout(twoLayersLayout);
+    
     d->slider = new QSlider(Qt::Horizontal,this);
     d->slider->setRange(0,100);
     d->slider->setValue(50);
     QObject::connect(d->slider, SIGNAL(valueChanged(int)), this, SLOT(on2LayersOpacitySliderSet(int)));
-    this->addWidget(d->slider);
-    d->slider->hide();
+    twoLayersLayout->addWidget(new QLabel(tr("Layers' opacity:"),this),
+                               0,0,1,3,Qt::AlignLeft);
+    twoLayersLayout->addWidget(new QLabel(tr("Layer 0"),this),1,0,1,1);
+    twoLayersLayout->addWidget(d->slider,1,1,1,1);
+    twoLayersLayout->addWidget(new QLabel(tr("Layer 1"),this),1,2,1,1);
+    d->switchLayersButton = new QPushButton(d->textLayer0,this);
+    twoLayersLayout->addWidget(d->switchLayersButton,2,0,1,3);
+    
+    QObject::connect(d->switchLayersButton,SIGNAL(clicked()),
+                     this,SLOT(onSwitchLayersButtonClicked()));
+    
+    this->addWidget(d->twoLayersWidget);
+    d->twoLayersWidget->hide();
     
     this->hide();
     
@@ -374,10 +396,24 @@ void medViewerToolBoxViewProperties::raiseSlider(bool isVisible,double opacity)
             
         //set opacity to layer 1's
         d->slider->setValue( opacity * 100);
-        d->slider->show();
+        d->twoLayersWidget->show();
     }
     else
     {
-        d->slider->hide();
+        d->twoLayersWidget->hide();
+    }
+}
+
+void medViewerToolBoxViewProperties::onSwitchLayersButtonClicked()
+{
+    if (d->switchLayersButton->text() == d->textLayer0)
+    {
+        d->switchLayersButton->setText(d->textLayer1);
+        raiseSlider(true,0.0);
+    }
+    else
+    {
+        d->switchLayersButton->setText(d->textLayer0);
+        raiseSlider(true,1.0);
     }
 }

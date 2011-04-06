@@ -36,6 +36,7 @@ public slots:
     void onItemClicked(QTreeWidgetItem * item, int column);
     void onContextTreeMenu( const QPoint point );
     void onDeleteLayer();
+    void onSwitchLayersButtonClicked();
     void clear();
 
 signals:
