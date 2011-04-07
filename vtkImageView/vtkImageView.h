@@ -526,6 +526,15 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetITKInput (itk::Image<UCharVector3Type, 3>::Pointer input, int layer=0);
   itk::ImageBase<3>* GetITKInput (void) const;
 
+  /**
+     NT: A view is NOT conceptually able to display the 4th dimension. It is only able
+     to display one or several 3D objects in space. the 4th dimension should be handled
+     externally by browsing 4th dimension indexes and put the right index (this time 3D)
+     in the view. OR putting a SINGLE instance of itkImage or vtkImageData as input
+     where the scalars (voxel values) matches dynamically the 4th dimension indexes.
+
+     Therefore I think that the 4th dimension does not have its place in this class.
+   */
   virtual void SetITKInput4 (itk::Image<double, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<float, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<int, 4>::Pointer input, int layer=0);
@@ -603,11 +612,13 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
 
     //! Template function which implements SetInput4 for all types. 
     // Defined locally and not exposed.
+    // NT: Should not be handled in this class.  
       template < class T >
          void SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage, int layer=0);
 
     //! Template function which sets the time step. 
     // Defined locally and not exposed.
+    // NT: Should not be handled in this class.  
       template < class T >
          void SetTimeIndex (vtkIdType timeIndex);
 #endif
