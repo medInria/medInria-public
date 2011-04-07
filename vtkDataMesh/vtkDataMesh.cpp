@@ -96,7 +96,6 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
   vtkProperty* prop = vtkProperty::New();
   vtkRenderer* renderer = vtkRenderer::New();
   vtkRenderWindow* window = vtkRenderWindow::New();
-  // vtkWindowToImageFilter* filter = vtkWindowToImageFilter::New();
   geometryextractor->SetInput (d->mesh);
   mapper->SetInput (geometryextractor->GetOutput());
   actor->SetMapper (mapper);
