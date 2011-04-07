@@ -181,9 +181,11 @@ dtkAbstractViewInteractor *createV3dViewMeshInteractor(void)
 
 void v3dViewMeshInteractor::updatePipeline (void)
 {
+  
     if (d->view && d->data) {
 
         if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(d->data->data()))) {
+	  
             d->actor2d = d->view->view2d ()->AddDataSet (pointset);
             d->actor3d = d->view->view3d ()->AddDataSet(pointset);
 
