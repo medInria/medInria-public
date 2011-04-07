@@ -188,6 +188,7 @@ void medViewerToolBoxTime::onDataAdded (dtkAbstractData *data)
 
 void medViewerToolBoxTime::onViewRemoved (dtkAbstractView *view)
 {
+    qDebug()<<__func__;
 	if (!view)
 		return;
 
@@ -367,4 +368,14 @@ void medViewerToolBoxTime::onStepIncreased()
 		d->spinBox->setSingleStep(25);
 	else if (QObject::sender() == d->actionlist[4])
 		d->spinBox->setSingleStep(50);
+}
+
+void medViewerToolBoxTime::clear()
+{
+    d->minTime = 0.0;
+    d->minTimeStep = 1.0;
+    d->maxTime = 0.0;
+
+    d->interactors.clear();
+    d->views.clear();
 }
