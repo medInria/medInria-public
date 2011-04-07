@@ -632,9 +632,9 @@ void v3dView::setData(dtkAbstractData *data)
         return;
     
     int layer = 0;
-    while(d->view2d->GetImageInput(layer)) {
+   /* while(d->view2d->GetImageInput(layer)) {
         layer++;
-    }
+    }*/
     
     this->setData( data, layer);
     
@@ -651,72 +651,98 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageChar3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageUChar3") {
         if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageUChar3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageShort3") {
         if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image, layer);
-            d->view3d->SetITKInput(image, layer);
+           // d->view2d->RemoveAllLayers();
+            d->view2d->SetITKInput(image,layer);
+            d->view3d->SetITKInput(image,layer);
+            // d->view2d->SetVisibility(0,1);
+            d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageUShort3") {
+
         if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageUShort3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageInt3") {
         if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageInt3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageUInt3") {
         if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageUInt3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageLong3") {
         if( itk::Image<long, 3>* image = dynamic_cast<itk::Image<long, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageLong3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageULong3") {
         if( itk::Image<unsigned long, 3>* image = dynamic_cast<itk::Image<unsigned long, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageULong3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageFloat3") {
         if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageFloat3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageDouble3") {
         if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageDouble3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageRGB3") {
         if( itk::Image<itk::RGBPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageRGB3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageVector3") {
         if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
+            qDebug()<<"itkDataImageVector3";
+            //d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageShort4") {
@@ -731,6 +757,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
+
     else if (data->description()=="itkDataImageChar4") {
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );

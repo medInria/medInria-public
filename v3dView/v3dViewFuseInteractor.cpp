@@ -44,7 +44,6 @@ v3dViewFuseInteractor::v3dViewFuseInteractor(): dtkAbstractViewInteractor(), d(n
     d->data1 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageShort3") );
     d->data2 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageShort3") );
     d->view = 0;
-
     d->alpha = 0.5;
     d->pattern = 50;
     

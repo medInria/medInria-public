@@ -9,6 +9,7 @@ class v3dViewMeshInteractorPrivate;
 
 class dtkAbstractData;
 class dtkAbstractView;
+class vtkImageActor;
 
 class V3DVIEWPLUGIN_EXPORT v3dViewMeshInteractor: public dtkAbstractViewInteractor
 {
@@ -47,6 +48,7 @@ public slots:
 
 private:
     v3dViewMeshInteractorPrivate *d;
+
 
 };
 
