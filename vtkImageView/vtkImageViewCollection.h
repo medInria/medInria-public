@@ -158,6 +158,12 @@ class VTK_IMAGEVIEW_EXPORT vtkImageViewCollection : public vtkCollection
   // Remove all objects from the list.
   void RemoveAllItems();
 
+  // Description:
+  // Show the intersections between slices (SlicePlanes).
+  vtkGetMacro     (ShowSlicePlanes, unsigned int);
+  void SetShowSlicePlanes (unsigned int arg);
+  vtkBooleanMacro (ShowSlicePlanes, unsigned int);
+  
   //BTX
   vtkGetObjectMacro (Command, vtkImageViewCollectionCommand);
   //ETX
@@ -169,6 +175,9 @@ class VTK_IMAGEVIEW_EXPORT vtkImageViewCollection : public vtkCollection
   vtkSyncSetMacro (ShowAnnotations, int);
   /// Description: Synchronize show scalar bar between views
   vtkSyncSetMacro (ShowScalarBar, int);
+  /// Description: Synchronize use lookup table between views
+  // vtkSyncSetMacro (UseLookupTable, int);
+  
   /// Description: Synchronize color window between views
   vtkSyncSetMacro (ColorWindow, double);
   /// Description: Synchronize color level between views
@@ -258,6 +267,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageViewCollection : public vtkCollection
 
   /// Description: Synchronize add dataset
   virtual void SyncAddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
+  virtual void SyncRemoveDataSet (vtkPointSet* arg);
 
   // Decide weither or not the collection will link interactions
 
@@ -348,8 +358,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageViewCollection : public vtkCollection
   unsigned int LinkZoom;
   unsigned int LinkPan;
   unsigned int LinkCurrentPoint;
-  unsigned int ShowAxes;
-  
+  unsigned int ShowSlicePlanes;
 };
 
 

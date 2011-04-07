@@ -21,6 +21,7 @@
 #  include "vtkVersion.h"
 #endif
 
+#include <vtkBoundingBox.h>
 #include <vtkInteractorStyleTrackball.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRendererCollection.h>
@@ -70,6 +71,7 @@
 #include <vtkImageAppend.h>
 #include <vtkImageCast.h>
 #include <vtkSmartPointer.h>
+#include <vtkProp3DCollection.h>
 
 class vtkImage3DDisplay : public vtkObject
 {
@@ -140,6 +142,9 @@ vtkImageView3D::vtkImageView3D()
   this->ActorY = vtkImageActor::New();
   this->ActorZ = vtkImageActor::New();
 
+  this->ExtraPlaneCollection = vtkProp3DCollection::New();
+  this->ExtraPlaneInputCollection = vtkProp3DCollection::New();
+  
   this->VolumeActor->SetVisibility (0);
   
   this->SetupVolumeRendering();
@@ -192,6 +197,8 @@ vtkImageView3D::~vtkImageView3D()
   this->ActorX->Delete();
   this->ActorY->Delete();
   this->ActorZ->Delete();
+  this->ExtraPlaneCollection->Delete();
+  this->ExtraPlaneInputCollection->Delete();
 }
 
 //----------------------------------------------------------------------------
@@ -835,9 +842,12 @@ void vtkImageView3D::SetRenderingMode(int arg)
 {
   this->RenderingMode = arg;
   this->VolumeActor->SetVisibility (arg == vtkImageView3D::VOLUME_RENDERING);
-  this->ActorX->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorX);
-  this->ActorY->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorY);
-  this->ActorZ->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorZ);
+  if (arg == vtkImageView3D::PLANAR_RENDERING)
+  {
+    this->ActorX->SetVisibility (this->ShowActorX);
+    this->ActorY->SetVisibility (this->ShowActorY);
+    this->ActorZ->SetVisibility (this->ShowActorZ);
+  }
 }
 
 // //---------------------------------------------------------------------------
@@ -928,7 +938,7 @@ void vtkImageView3D::SetCurrentPoint (double pos[3])
 {
   this->Superclass::SetCurrentPoint (pos);
   //if (this->GetRenderingMode() == vtkImageView3D::PLANAR_RENDERING) // No! Because
-  // if suddenly you switch from VR to MPR, you are screw
+  // if suddenly you switch from VR to MPR, you are screwed
   this->UpdateDisplayExtent();
 }
 
@@ -997,12 +1007,37 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   normalextractor->Delete();
   geometryextractor->Delete();
   actor->Delete();
+
+  // If this is the first widget to be added, reset camera
+  if ( ! this->GetInput() ) {
+
+      vtkBoundingBox box;
+      box.AddBounds( arg->GetBounds() );
+
+    double center[3];
+    box.GetCenter(center);
+    this->SetCurrentPoint(center);
+    double bounds[6];
+    box.GetBounds(bounds);
+    this->Renderer->ResetCamera(bounds);
+
+  }
   
   // the actor is actually not deleted as it has
   // been referenced in the renderer, so we can
   // safely return it. well hopefully.
   return actor;
 }
+
+
+//----------------------------------------------------------------------------
+void vtkImageView3D::RemoveDataSet(vtkPointSet* arg)
+{
+  ///\todo implement this
+  vtkErrorMacro (<<"This method is not implemented yet."<<endl);
+}
+
+
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::AddLayer (int layer)
@@ -1053,5 +1088,123 @@ void vtkImageView3D::RemoveAllLayers (void)
   {
     this->RemoveLayer (it->first);
     ++it;
+  }
+}
+
+
+
+
+//----------------------------------------------------------------------------
+class ImageActorCallback : public vtkCommand
+{
+public:
+  static ImageActorCallback *New()
+  { return new ImageActorCallback; }
+  
+  void Execute(vtkObject *caller, 
+               unsigned long event, 
+               void *vtkNotUsed(callData))
+  {
+    if (this->Actor != NULL)
+    {
+      vtkImageActor* imagecaller = vtkImageActor::SafeDownCast (caller);
+      if (imagecaller && (event == vtkCommand::ModifiedEvent))
+      {
+	this->Actor->SetDisplayExtent (imagecaller->GetDisplayExtent());
+	this->Actor->SetVisibility(imagecaller->GetVisibility());
+	this->Actor->SetInput(imagecaller->GetInput());
+	this->Actor->SetInterpolate(imagecaller->GetInterpolate());
+	this->Actor->SetOpacity(imagecaller->GetOpacity());
+	this->Actor->SetUserMatrix (imagecaller->GetUserMatrix());
+      }
+    }
+  }
+
+  void SetActor (vtkImageActor* arg)
+  {
+    if (this->Actor == arg)
+      return;
+    if (this->Actor)
+      this->Actor->UnRegister (this);
+    this->Actor = arg;
+    if (this->Actor)
+      this->Actor->Register(this);
+  }
+  
+  vtkImageActor* GetActor()
+  {
+    return this->Actor;
+  }
+  
+protected:
+  ImageActorCallback()
+  {
+    this->Actor = NULL;
+  }
+  ~ImageActorCallback()
+  {
+    if (this->Actor)
+      this->Actor->Delete ();
+  }
+  
+  vtkImageActor* Actor;
+  
+};
+
+
+//----------------------------------------------------------------------------
+void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
+{
+
+  if (!this->GetRenderer())
+    return;
+  
+  ImageActorCallback* cbk = ImageActorCallback::New();
+  vtkImageActor* actor = vtkImageActor::New();
+  cbk->SetActor (actor);
+  actor->SetInput (input->GetInput());
+  actor->SetDisplayExtent (input->GetDisplayExtent());
+  actor->SetUserMatrix (input->GetUserMatrix());
+  actor->SetInterpolate(input->GetInterpolate());
+  actor->SetOpacity(input->GetOpacity());
+  actor->SetVisibility (input->GetVisibility());
+
+  input->AddObserver (vtkCommand::ModifiedEvent, cbk);
+  
+  this->GetRenderer()->AddViewProp (actor);
+
+  this->ExtraPlaneCollection->AddItem (actor);
+  this->ExtraPlaneInputCollection->AddItem (input);
+  
+  actor->Delete();
+  cbk->Delete();
+
+  /**
+     IMPORTANT NOTE
+     
+     Adding a 2D actor in the 3D scene should be as simple as the next line
+     instead of the code above...
+     
+     Unfortunately it does not seem to work properly. But this is something
+     we should investigate in because it would be much simpler
+  */
+//  this->GetRenderer()->AddActor (input);
+  
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView3D::RemoveExtraPlane (vtkImageActor* input)
+{
+  if (!this->GetRenderer())
+    return;
+  
+  vtkProp3D* item = this->ExtraPlaneCollection->GetNextProp3D();
+  vtkProp3D* iteminput = this->ExtraPlaneInputCollection->GetNextProp3D();
+  while(item && iteminput)
+  {
+    if ( iteminput == input)
+      this->GetRenderer()->RemoveViewProp (item);
+    item = this->ExtraPlaneCollection->GetNextProp3D();
+    iteminput = this->ExtraPlaneCollection->GetNextProp3D();
   }
 }

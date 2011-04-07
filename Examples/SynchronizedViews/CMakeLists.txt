@@ -16,22 +16,6 @@ else(APPLE)
 endif()
 
 TARGET_LINK_LIBRARIES(SynchronizedViews
-  vtkRenderingAddOn
-  vtkRendering
-  vtkIO
+  vtkImageView
   vtkDataManagement
-)     
-
-if (APPLE)
-  add_executable(SynchronizedViews2
-    SynchronizedViews2.cxx
-  )
-else(APPLE)
-  add_executable(SynchronizedViews2 MACOSX_BUNDLE
-    SynchronizedViews2.cxx
-  )
-endif()
-
-target_link_libraries(SynchronizedViews2
- vtkImageView
 )
