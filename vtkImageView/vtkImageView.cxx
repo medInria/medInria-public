@@ -324,7 +324,6 @@ void vtkImageView::Render()
 }
 
 //----------------------------------------------------------------------------
-// ???
 bool vtkImageView::Compare(double *array1, double *array2, int size)
 {
   bool result = true;
@@ -339,7 +338,6 @@ bool vtkImageView::Compare(double *array1, double *array2, int size)
 }
 
 //----------------------------------------------------------------------------
-// ???
 bool vtkImageView::Compare(int *array1, int *array2, int size)
 {
   bool result = true;
@@ -354,7 +352,6 @@ bool vtkImageView::Compare(int *array1, int *array2, int size)
 }
 
 //----------------------------------------------------------------------------
-// ???
 bool vtkImageView::Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2)
 {
   bool result = true;
