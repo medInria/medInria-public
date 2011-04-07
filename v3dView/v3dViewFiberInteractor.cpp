@@ -68,7 +68,6 @@ v3dViewFiberInteractor::~v3dViewFiberInteractor()
     this->disable();
     d->manager->Delete();
     d->roiManager->Delete();
-
     delete d;
     d = 0;
 }
