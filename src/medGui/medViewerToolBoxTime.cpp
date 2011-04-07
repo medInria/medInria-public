@@ -188,6 +188,9 @@ void medViewerToolBoxTime::onDataAdded (dtkAbstractData *data)
 
 void medViewerToolBoxTime::onViewRemoved (dtkAbstractView *view)
 {
+    d->timeLine->stop();
+    d->timeSlider->setValue(0);
+
     if (!view)
         return;
 
@@ -246,10 +249,8 @@ void medViewerToolBoxTime::onPlaySequences ()
 
 void medViewerToolBoxTime::onStopButton ()
 {
-    if ( this->isViewAdded){
-	d->timeLine->stop();
-	d->timeSlider->setValue(0);
-    }
+    d->timeLine->stop();
+    d->timeSlider->setValue(0);
 }
 
 void medViewerToolBoxTime::onNextFrame (bool val)
