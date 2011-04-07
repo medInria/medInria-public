@@ -56,6 +56,7 @@ vtkCxxRevisionMacro(vtkImageView, "$Revision: 1 $");
 #ifdef vtkINRIA3D_USE_ITK
 
 // Enumeration for the supported pixel types
+// NT: why not using the vtk IO definitions ?
 namespace {
   enum ImageViewType {
     IMAGE_VIEW_NONE = 0,
@@ -81,6 +82,7 @@ public:
   vtkImageViewImplementation () : TemporalFilterType (IMAGE_VIEW_NONE) {}
   
   std::map<int, itk::ProcessObject::Pointer> ImageConverter;
+  // should not be handled in this class.
   std::map<int, itk::ProcessObject::Pointer> ImageTemporalFilter;
   int TemporalFilterType;
   
@@ -90,6 +92,7 @@ public:
 };
 
 // Template specialisations return the enumeration corresponding to the pixel type.
+// NT: Use the VTK_DOUBLE/SHORT/etc definitions ?... or the itkImageIO:ComponentType since we have ITK there
 template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < double > () { return     IMAGE_VIEW_DOUBLE ; }
 template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < float > () { return     IMAGE_VIEW_FLOAT; }
 template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < int > () { return     IMAGE_VIEW_INT; }
@@ -161,7 +164,7 @@ vtkImageView::vtkImageView()
   this->ScalarBar->VisibilityOn();
   
   for(int i=0; i<3; i++)
-    this->CurrentPoint[i] = 0.0; //TK_DOUBLE_MIN;
+    this->CurrentPoint[i] = 0.0; //VTK_DOUBLE_MIN;
   
   this->PatientName = "";
   this->StudyName   = "";
@@ -1232,7 +1235,7 @@ void vtkImageView::Reset (void)
 {
   this->ResetCurrentPoint();
   //  this->ResetWindowLevel();
-  this->SetColorWindow (VTK_DOUBLE_MAX);
+  this->SetColorWindow (VTK_DOUBLE_MAX); // NT: ?? --> when i press reset I would like the windowlevels to be "reset" ?
   this->ResetCamera();	
 }
 
@@ -1366,6 +1369,7 @@ void vtkImageView::RemoveDataSet (vtkPointSet *arg)
 /// The fact that all of these are implemented here again will make difficult the
 /// maintenance of both APIs...
 
+/// time should not be handled in this class.
 
 //----------------------------------------------------------------------------
 template < class T >
@@ -1475,6 +1479,19 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   typename ConverterType::Pointer myConverter = ConverterType::New();
   myConverter->SetInput ( itkImage );
   myConverter->UpdateOutputInformation();
+
+  /**
+     The origin in ITK pipeline is taken into account in a different
+     way than in the VTK equivalent.
+     A first hack would be to force the vtkImageData instance to have
+     a null origin, and put the ITK origin in the 4th column of the
+     OrientationMatrix instance. BUT, when the ITK pipeline is updated,
+     then the ITK origin is put back in place in the vtkImageData instance.
+
+     Therefore we need to keep the vtkImageData's origin the same as the
+     ITK one. And, we need to correct for this misbehaviour through a hack
+     in the OrientationMatrix 4th column, a sort of corrected origin.
+  */
   typename itk::Image<T, 3>::DirectionType directions = itkImage->GetDirection();
   typename itk::Image<T, 3>::PointType origin = itkImage->GetOrigin();
   vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
@@ -1489,10 +1506,13 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   matrix->MultiplyPoint (v_origin, v_origin2);
   for (int i=0; i<3; i++)
     matrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+  /**
+     The matrix instance is from now on corrected.
+  */
   this->SetInput ( myConverter->GetOutput(), matrix, layer);
   this->Impl->ImageConverter[layer] = myConverter;
   if (layer==0)
-	this->ITKInput = itkImage;
+    this->ITKInput = itkImage;
   this->Modified();
   matrix->Delete();
 }
@@ -1538,6 +1558,7 @@ inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkIm
   this->ITKInput4 = itkImage;
   typename ImageType3d::Pointer itkImage3 = extractor->GetOutput ();
   extractor->UpdateLargestPossibleRegion();
+  // where is the orientation here ???
   this->SetITKInput ( itkImage3, layer);
   // itkImage3->DisconnectPipeline();
 }

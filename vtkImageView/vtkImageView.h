@@ -526,6 +526,12 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetITKInput (itk::Image<UCharVector3Type, 3>::Pointer input, int layer=0);
   itk::ImageBase<3>* GetITKInput (void) const;
 
+  /**
+     NT: 
+     \todo The 4th dimension might have to be moved to another class as it is
+     a bit overloading the code of this class with a concept which can be placed
+     in a dedicated class.
+  */
   virtual void SetITKInput4 (itk::Image<double, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<float, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<int, 4>::Pointer input, int layer=0);

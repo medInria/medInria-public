@@ -137,6 +137,7 @@ void vtkDataSet2DWidget::SetEnabled(int enabling)
 
     if (!this->ImageView->HasObserver (vtkImageView2D::SliceChangedEvent, this->Command))
     {
+      this->ImageView->AddObserver (vtkImageView2D::CurrentPointChangedEvent, this->Command);
       this->ImageView->AddObserver (vtkImageView2D::SliceChangedEvent, this->Command);
       this->ImageView->AddObserver (vtkImageView2D::OrientationChangedEvent, this->Command);
     }
@@ -173,7 +174,8 @@ void vtkDataSet2DWidgetCommand::Execute(vtkObject *caller,
 				     void *callData)
 {
 
-  if (event == vtkImageView2D::SliceChangedEvent)
+  if (event == vtkImageView2D::SliceChangedEvent ||
+      event == vtkImageView2D::CurrentPointChangedEvent )
   {
     if (!this->Widget || !this->Widget->GetImageView())
       return;

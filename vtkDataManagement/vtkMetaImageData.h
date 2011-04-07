@@ -133,8 +133,29 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     for (unsigned int x=0; x<3; x++)
       for (unsigned int y=0; y<3; y++)
 	matrix->SetElement (x,y,direction[x][y]);
-    for (unsigned int x=0; x<3; x++)
-      matrix->SetElement (x,3,origin[x]);
+
+    /**
+     The origin in ITK pipeline is taken into account in a different
+     way than in the VTK equivalent.
+     A first hack would be to force the vtkImageData instance to have
+     a null origin, and put the ITK origin in the 4th column of the
+     OrientationMatrix instance. BUT, when the ITK pipeline is updated,
+     then the ITK origin is put back in place in the vtkImageData instance.
+
+     Therefore we need to keep the vtkImageData's origin the same as the
+     ITK one. And, we need to correct for this misbehaviour through a hack
+     in the OrientationMatrix 4th column, a sort of corrected origin.
+    */
+    double v_origin[4], v_origin2[4];
+    for (int i=0; i<3; i++)
+      v_origin[i] = origin[i];
+    v_origin[3] = 1.0;
+    matrix->MultiplyPoint (v_origin, v_origin2);
+    for (int i=0; i<3; i++)
+      matrix->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+    /**
+       The matrix instance is from now on corrected.
+    */
 
     this->SetOrientationMatrix (matrix);
  
@@ -146,18 +167,6 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     converter->Update();
     vtkImageData* vtkinput = vtkImageData::New();
     vtkinput->DeepCopy(converter->GetOutput());
-
-    //#ifdef RENDERING_PRIORITY
-    /**
-       FIX ME:
-       In the new rendering system, this origin is taken into consideration
-       directly in the 4x4 OrientationMatrix as its translation part.
-       However in the classic rendering one, this matrix is not taken into
-       consideration hence the origin has to be contained in the vtkImageData
-       object. I need more coherence here ;-) !
-    */
-    vtkinput->SetOrigin (0,0,0);
-    //#endif
     
     this->SetDataSet (vtkinput);
     vtkinput->Delete();
