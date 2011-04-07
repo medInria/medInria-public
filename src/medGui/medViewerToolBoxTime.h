@@ -64,6 +64,8 @@ public slots:
     void onSpinBoxChanged(int);
     void onStopButton();
     void onStepIncreased( );
+
+    void clear();
     
  protected:
 
