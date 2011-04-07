@@ -41,6 +41,7 @@ set(${PROJECT_NAME}_HEADERS
   medRunnableProcess.h
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
+  med4DAbstractViewInteractor.h
   medAbstractViewFiberInteractor.h
 )
 

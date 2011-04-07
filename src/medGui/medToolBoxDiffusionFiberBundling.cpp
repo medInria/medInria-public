@@ -321,6 +321,7 @@ void medToolBoxDiffusionFiberBundling::onClearRoiButtonClicked(void)
         interactor->setROI(data);
         d->view->update();
     }
+    data->deleteLater();
 }
 
 void medToolBoxDiffusionFiberBundling::onRoiComboIndexChanged (int value)
@@ -399,11 +400,8 @@ void medToolBoxDiffusionFiberBundling::onNullButtonToggled (bool value)
 
 void medToolBoxDiffusionFiberBundling::clear(void)
 {
-    //d->bundlingList->clear();
-    //d->bundlingModel->clear();
     d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
 
-    //this->update (0);
     d->view = 0;
     d->data = 0;
 }
