@@ -649,6 +649,12 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
                                                               vtkPiecewiseFunction *of,
                                                               double minRange, double maxRange)
 {
+  double targetWidth  = maxRange  - minRange;
+  // in case targetWidth is null, return otherwise all values will collapse and further
+  // windowing will become impossible
+  if (targetWidth==0.0)
+    return;
+
   if (cf)
   {
     const double * currentRange = cf->GetRange();
@@ -656,7 +662,6 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
         currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
-      double targetWidth  = maxRange  - minRange;
       
       unsigned int n = cf->GetSize();
       if ( n > 0 && currentWidth == 0.0 )
@@ -693,7 +698,6 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
         currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
-      double targetWidth  = maxRange  - minRange;
             
       if ( currentWidth == 0.0 )
         currentWidth = 1.0;
