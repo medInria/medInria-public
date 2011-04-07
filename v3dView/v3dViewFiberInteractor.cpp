@@ -91,7 +91,7 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
 {
     if (!data)
         return;
-  
+
     if (data->description()=="v3dDataFibers") {
         if (vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet *>(data->data())) {
             d->dataset = dataset;
@@ -158,22 +158,22 @@ void v3dViewFiberInteractor::onPropertySet(const QString& key, const QString& va
 {
     if (key=="Visibility")
         this->onVisibilityPropertySet (value);
-	
+
     if (key=="BoxVisibility")
         this->onBoxVisibilityPropertySet (value);
-	
+
     if (key=="RenderingMode")
         this->onRenderingModePropertySet (value);
-	
+
     if (key=="GPUMode")
         this->onGPUModePropertySet (value);
-	
+
     if (key=="ColorMode")
         this->onColorModePropertySet (value);
-	
+
     if (key=="BoxBooleanOperation")
         this->onBoxBooleanOperationPropertySet (value);
-	
+
     if (key=="Projection")
         this->onProjectionPropertySet (value);
 }
@@ -198,10 +198,10 @@ void v3dViewFiberInteractor::onRenderingModePropertySet (const QString& value)
 {
     if (value=="lines")
         d->manager->SetRenderingModeToPolyLines();
-	
+
     if (value=="ribbons")
 	d->manager->SetRenderingModeToRibbons();
-	
+
     if (value=="tubes")
         d->manager->SetRenderingModeToTubes();
 }
@@ -222,7 +222,7 @@ void v3dViewFiberInteractor::onColorModePropertySet (const QString& value)
 {
     if (value=="local")
         d->manager->SetColorModeToLocalFiberOrientation();
-	
+
     if (value=="global")
         d->manager->SetColorModelToGlobalFiberOrientation();
 
@@ -231,9 +231,9 @@ void v3dViewFiberInteractor::onColorModePropertySet (const QString& value)
 	    if (d->manager->GetPointArrayName (i))
 	        if (strcmp ( d->manager->GetPointArrayName (i), "FA")==0)
 		{
-		    d->manager->SetColorModeToPointArray (i);
-		    break;
-		}
+            d->manager->SetColorModeToPointArray (i);
+            break;
+        }
     }
 }
 
@@ -244,7 +244,7 @@ void v3dViewFiberInteractor::onBoxBooleanOperationPropertySet (const QString& va
     
     if (value=="minus")
         d->manager->GetVOILimiter()->SetBooleanOperationToNOT();
-	
+
     d->manager->GetVOILimiter()->Modified();
 }
 
@@ -262,9 +262,9 @@ void v3dViewFiberInteractor::onSelectionValidated(const QString &name, const QCo
 {
     if (!d->data)
         return;
-      
+
     double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
-	
+
     d->manager->Validate (name.toAscii().constData(), color_d);
 
     d->data->addMetaData("BundleList", name);
@@ -300,10 +300,10 @@ void v3dViewFiberInteractor::computeBundleFAStatistics (const QString &name,
 }
 
 void v3dViewFiberInteractor::computeBundleADCStatistics (const QString &name,
-                                                        double &mean,
-                                                        double &min,
-                                                        double &max,
-                                                        double &var)
+                                                         double &mean,
+                                                         double &min,
+                                                         double &max,
+                                                         double &var)
 {
     itk::FiberBundleStatisticsCalculator::Pointer statCalculator = itk::FiberBundleStatisticsCalculator::New();
     statCalculator->SetInput (d->dataset->GetBundle (name.toAscii().constData()).Bundle);
@@ -353,7 +353,7 @@ void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
 {
     if (!d->view)
         return;
-	
+
     if (value=="true") {
         d->view->view2d()->AddDataSet( d->manager->GetCallbackOutput() );
     }
@@ -362,7 +362,7 @@ void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
 void v3dViewFiberInteractor::onRadiusSet (int value)
 {
     d->manager->SetRadius (value);
- 
+
     if (d->view)
         d->view->update();
 }
@@ -404,11 +404,11 @@ void v3dViewFiberInteractor::setROI(dtkAbstractData *data)
                 matrix2->SetElement (i, j, directions (i,j));
         double v_origin[4], v_origin2[4];
         for (int i=0; i<3; i++)
-          v_origin[i] = origin[i];
+            v_origin[i] = origin[i];
         v_origin[3] = 1.0;
         matrix->MultiplyPoint (v_origin, v_origin2);
         for (int i=0; i<3; i++)
-          matrix2->SetElement (i, 3, v_origin[i]-v_origin2[i]);
+            matrix2->SetElement (i, 3, v_origin[i]-v_origin2[i]);
 
         d->roiManager->SetInput (converter->GetOutput());
         d->roiManager->SetDirectionMatrix (matrix2);
