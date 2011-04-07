@@ -205,7 +205,7 @@ void medViewContainerMulti::onViewClosing (void)
 
 	d2->views.removeOne (view);        
 
-	emit viewRemoved (d->view);
+        emit viewRemoved (view);
 	
         view->close();
 
