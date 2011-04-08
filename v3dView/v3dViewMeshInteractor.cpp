@@ -205,16 +205,6 @@ dtkAbstractViewInteractor *createV3dViewMeshInteractor(void)
 
 void v3dViewMeshInteractor::updatePipeline (void)
 {
-
-
-
-
-
-
-
-
-
-
 	if (d->view && d->data) {
 		if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(d->data->data()))) {
 
@@ -231,9 +221,6 @@ void v3dViewMeshInteractor::updatePipeline (void)
 
 			d->actor2d->GetMapper ()->ScalarVisibilityOff ();
 			d->actor3d->GetMapper ()->ScalarVisibilityOff ();
-
-
-
 
 		}
 	}

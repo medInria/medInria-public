@@ -632,9 +632,9 @@ void v3dView::setData(dtkAbstractData *data)
         return;
     
     int layer = 0;
-   /* while(d->view2d->GetImageInput(layer)) {
+    while(d->view2d->GetImageInput(layer)) {
         layer++;
-    }*/
+    }
     
     this->setData( data, layer);
     
