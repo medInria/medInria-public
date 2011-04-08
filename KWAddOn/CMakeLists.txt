@@ -58,8 +58,6 @@ INCLUDE(
 )
 KWWidgets_WRAP_TCL(KWAddOn KWAddOnTCL_SRCS "${KWAddOn_SRCS}" "")
 
-
-
 ADD_LIBRARY(KWAddOn ${vtkINRIA3D_LIBS_STYLE}
   ${KWAddOnTCL_SRCS}
   ${KWAddOn_SRCS}
@@ -69,8 +67,8 @@ SET(KWAddOn_LIBRARIES
   vtkCommon
   vtkDataManagement
   vtkDataManagementTCL
-  vtkRenderingAddOn
-  vtkRenderingAddOnTCL
+  vtkImageView
+  vtkImageViewTCL
   vtkVisuManagement
 )
 
@@ -175,7 +173,7 @@ ENDIF(NOT KWWidgets_SOURCE_DIR)
 
 
   IF( BUILD_TESTING )
-    ADD_SUBDIRECTORY(Testing)
+#    ADD_SUBDIRECTORY(Testing)
   ENDIF( BUILD_TESTING )
 
 

@@ -16,6 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
+#include <itkGDCMImporter.h>
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
 #include <kwcommon.h>
@@ -36,12 +37,14 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageData.h>
 #include <vtkKWApplication.h>
 #include <vtkKWApplication.h>
-
+#include <vtkKWDICOMExporter.h>
+#include <vtkKWDICOMImporter2.h>
 #include <vtkKWDataManagerWidget.h>
 #include <vtkKWDragAndDropTargetSet.h>
 #include <vtkKWEntry.h>
 #include <vtkKWEntryWithLabel.h>
 #include <vtkKWFrameWithLabel.h>
+#include <vtkKWInfoToolBox.h>
 #include <vtkKWInternationalization.h>
 #include <vtkKWLabel.h>
 #include <vtkKWLandmarkManagerWidget.h>
@@ -89,8 +92,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridReader.h>
 #include <vtkUnstructuredGridWriter.h>
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 #include <vtkVolumeProperty.h>
 #include <vtkDataSetSurfaceFilter.h>
 #include <vtkIdList.h>
@@ -99,20 +102,13 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkDelaunay3D.h>
 #include <vtkSelectPolyData.h>
 
-#include <vtkDiffXMLWriter.h>
-#include <vtkDataArrayCollection.h>
-#include <vtkCellArray.h>
+#include <vtkKWDicomInfoWidget.h>
 
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/stl/string>
 #include <vtksys/stl/vector>
-
-#ifndef ITK_USE_SYSTEM_GDCM
-#include <vtkKWDICOMExporter.h>
-#include <vtkKWDICOMImporter2.h>
-#include <vtkKWInfoToolBox.h>
-#endif
-
+// #include <vtkKWMetaDataSetControlWidget.h>
+// #include <vtkMetaDataSetVisuManager.h>
 
 #if VTK_MAJOR_VERSION>=5 && VTK_MINOR_VERSION>=1
 #include <vtkDataManagerWriter.h>
@@ -383,7 +379,7 @@ void vtkKWMainWindowInteractor::CreateWidget()
 
   this->PanelSplitFrame->SetParent(this->GetMainPanelFrame());
   this->PanelSplitFrame->Create();
-  this->PanelSplitFrame->SetOrientationToVertical();
+  this->PanelSplitFrame->SetViewOrientationToVertical();
   this->PanelSplitFrame->SetReliefToFlat();
   this->PanelSplitFrame->SetBorderWidth(2);
   this->PanelSplitFrame->SetExpandableFrameToBothFrames();
@@ -453,13 +449,11 @@ void vtkKWMainWindowInteractor::CreateWidget()
   this->MainPanelVisibilityOn();
   this->SecondaryPanelVisibilityOff();
   
-
-#ifndef ITK_USE_SYSTEM_GDCM  
+  
   vtkKWInfoToolBox* information = vtkKWInfoToolBox::New();
   this->LoadToolBox(information, "Information");
   this->ToolboxManager->SelectToolboxCallback(0);
   information->Delete();
-#endif
   
   vtkKWSequencer* Sequencer = vtkKWSequencer::New();
   this->LoadToolBox(Sequencer, "Sequencer");
@@ -501,6 +495,8 @@ std::vector<vtkKWToolBox*> vtkKWMainWindowInteractor::GetToolBoxList()
 {
   return this->ToolboxManager->GetToolBoxList();
 }
+
+
 
 //-----------------------------------------------------------------------------
 vtkKWToolBox* vtkKWMainWindowInteractor::GetToolboxByID(unsigned int id)
@@ -859,8 +855,6 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
       
       if (!filepath.size())
       {
-		  
-		  std::cout<<"I am in"<<std::endl;
 	vtkKWPopupWarningMessage (this, "dataset not written, please save to file");
 	vtkKWLoadSaveDialog *dialog2 = vtkKWLoadSaveDialog::New() ;
 	
@@ -877,8 +871,6 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 	
 	std::string ext;
 	
-		  bool doThis = false;
-		  
 	switch (val)
 	{
 	    case vtkMetaDataSet::VTK_META_IMAGE_DATA :
@@ -887,8 +879,6 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 	      
 	    case vtkMetaDataSet::VTK_META_SURFACE_MESH :
 	    case vtkMetaDataSet::VTK_META_VOLUME_MESH :
-			doThis = true;
-			
 	      ext = kwsupportedmeshformats_global + kwsupportedmeshformats;
 	      break;
 	    default :
@@ -930,7 +920,8 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 	vtkKWPopupWarningMessage (this, "skipping dataset");
 	continue;
       }
-	
+
+      
       os <<"$m_manager ReadFile "<<filepath.c_str()<<" "<<metadata->GetName()<<"\n";
     
     }
@@ -952,50 +943,6 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 #endif // VTK_MAJOR_VERSION>=5 && VTK_MINOR_VERSION>=1
   
   
-}
-
-
-
-//----------------------------------------------------------------------------
-void vtkKWMainWindowInteractor::SaveDiffXMLCallback()
-{
-
-  
-  vtkKWLoadSaveDialog *dialog = vtkKWLoadSaveDialog::New() ;
-  
-  dialog->SetParent(this);
-  dialog->Create();
-  dialog->MultipleSelectionOff();
-  dialog->SaveDialogOn ();
-  dialog->RetrieveLastPathFromRegistry("DataPath");
-  dialog->SetTitle ("Save the manager to file");
-
-  std::string managerformat = "{{Diff XML file} {.xml .diff}}";
-  
-  dialog->SetFileTypes (managerformat.c_str());
-  
-  if ( dialog->Invoke () == 0 )
-  {
-    dialog->Delete();
-    return;
-  }
-
-  std::string managerfile = dialog->GetFileName();
-  std::string ext = vtksys::SystemTools::GetFilenameLastExtension (managerfile.c_str());
-
-  dialog->Delete();
-  
-  if ( strcmp(ext.c_str(), ".xml") &&
-       strcmp(ext.c_str(), ".diff") )
-  {
-    managerfile+=".diff";
-  }
-	
-  vtkDiffXMLWriter* writer = vtkDiffXMLWriter::New();
-  writer->SetInput (this->GetDataManager());
-  writer->SetFileName (managerfile.c_str());
-  writer->Update();
-  writer->Delete();  
 }
 
 
@@ -1181,7 +1128,6 @@ void vtkKWMainWindowInteractor::OnMenuFileOpenDICOM ()
 
 
   
-#ifndef ITK_USE_SYSTEM_GDCM
   vtkKWDICOMImporter2 *dlg = vtkKWDICOMImporter2::New();
   dlg->SetMasterWindow (this);
   dlg->Create();
@@ -1206,7 +1152,6 @@ void vtkKWMainWindowInteractor::OnMenuFileOpenDICOM ()
   dlg->Delete();
 
   this->Update();
-#endif
   
 }
 
@@ -1559,7 +1504,6 @@ void vtkKWMainWindowInteractor::OnMenuFileSaveDICOM ()
 {
   
   
-#ifndef ITK_USE_SYSTEM_GDCM
   vtkKWDICOMExporter *dlg = vtkKWDICOMExporter::New();
   dlg->SetMasterWindow (this);
   
@@ -1580,7 +1524,6 @@ void vtkKWMainWindowInteractor::OnMenuFileSaveDICOM ()
 
 
   dlg->Delete();
-#endif
 
 
 }
@@ -1595,13 +1538,13 @@ void vtkKWMainWindowInteractor::OnSelectInteraction()
   
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetInteractionMode(vtkViewImage2D::SELECT_INTERACTION);
+    this->PreviewPage->SetInteractionMode(vtkImageView2D::SELECT_INTERACTION);
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
+  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkImageView2D::SELECT_INTERACTION);
+  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkImageView2D::SELECT_INTERACTION);
+  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkImageView2D::SELECT_INTERACTION);
 
 
 }
@@ -1610,33 +1553,33 @@ void vtkKWMainWindowInteractor::OnWindowLevelInteraction()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetInteractionMode (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
+    this->PreviewPage->SetInteractionMode (vtkImageView2D::WINDOW_LEVEL_INTERACTION);
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
+  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkImageView2D::WINDOW_LEVEL_INTERACTION);
+  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkImageView2D::WINDOW_LEVEL_INTERACTION);
+  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkImageView2D::WINDOW_LEVEL_INTERACTION);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnZoomInteraction()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetInteractionMode (vtkViewImage2D::ZOOM_INTERACTION);
+    this->PreviewPage->SetInteractionMode (vtkImageView2D::ZOOM_INTERACTION);
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkViewImage2D::ZOOM_INTERACTION);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkViewImage2D::ZOOM_INTERACTION);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkViewImage2D::ZOOM_INTERACTION);
+  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkImageView2D::ZOOM_INTERACTION);
+  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkImageView2D::ZOOM_INTERACTION);
+  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkImageView2D::ZOOM_INTERACTION);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnRenderingModeToVR()
 {
   if (!this->GetCurrentPage())
     return;
-  if ( this->GetCurrentPage()->GetView4()->GetRenderingMode() == vtkViewImage3D::VOLUME_RENDERING)
+  if ( this->GetCurrentPage()->GetView4()->GetRenderingMode() == vtkImageView3D::VOLUME_RENDERING)
     this->GetCurrentPage()->GetView4()->SetRenderingModeToPlanar();
   else
     this->GetCurrentPage()->GetView4()->SetRenderingModeToVR();
@@ -1661,7 +1604,7 @@ void vtkKWMainWindowInteractor::OnFullScreenAxial()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetOrientationMode (vtkViewImage::AXIAL_ID);
+    this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_AXIAL);
     return;
   }
   
@@ -1673,7 +1616,7 @@ void vtkKWMainWindowInteractor::OnFullScreenCoronal()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetOrientationMode (vtkViewImage::CORONAL_ID);
+    this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_CORONAL);
     return;
   }
   
@@ -1685,7 +1628,7 @@ void vtkKWMainWindowInteractor::OnFullScreenSagittal()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetOrientationMode (vtkViewImage::SAGITTAL_ID);
+    this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_SAGITTAL);
     return;
   }
   this->GetCurrentPage()->ToggleFullScreenSagittal();
@@ -1850,7 +1793,7 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
     return;
   }
 
-  vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->GetCurrentPage()->GetActiveView());
+  vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->GetCurrentPage()->GetActiveView());
   if (view)
   {
     char buffer[1024];

@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWInfoToolBox.cxx 928 2008-09-04 16:43:57Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-09-04 18:43:57 +0200 (Thu, 04 Sep 2008) $
+Date:      $Date: 2008-09-04 17:43:57 +0100 (Thu, 04 Sep 2008) $
 Version:   $Revision: 928 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -45,8 +45,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtksys/SystemTools.hxx>
 #include <vtkErrorCode.h>
 
-#include <vtkViewImage3D.h>
-#include <vtkViewImage2D.h>
+#include <vtkImageView3D.h>
+#include <vtkImageView2D.h>
 #include <vtkKWPageView.h>
 
 #include <vtkMetaSurfaceMesh.h>
@@ -547,7 +547,6 @@ void vtkKWInfoToolBox::ButtonRequestTagsCallback()
   toplevel->SetDeleteWindowProtocolCommand(toplevel, "Withdraw");
 
   vtkKWDicomInfoWidget* widget = vtkKWDicomInfoWidget::New();
-  
   
   widget->SetParent(toplevel);
   widget->Create();

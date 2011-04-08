@@ -54,7 +54,7 @@
 #include <vtkRenderer.h>
 #include <vtkImageData.h>
 
-#include "vtkViewImage2D.h"
+#include <vtkImageView/vtkImageView2D.h>
 #include <vtkDICOMImageReader.h>
 
 #include <vtksys/stl/string>
@@ -91,7 +91,7 @@ vtkKWDICOMImporter2::vtkKWDICOMImporter2()
   this->GDCMImporter = ImporterType::New();
   this->GDCMImporter->RecursiveScanOn();
 
-  this->Preview      = vtkViewImage2D::New();
+  this->Preview      = vtkImageView2D::New();
   this->RenderWidget = vtkKWRenderWidget::New();
   
 //   this->OpenDirectoryButton   = vtkKWPushButton::New();
@@ -121,11 +121,10 @@ vtkKWDICOMImporter2::vtkKWDICOMImporter2()
   this->InteractiveStatus = STATUS_DISABLED;
   this->InteractiveVolume = 0;
   
+  
 
   this->ModalOff();
   
-  
-
 }
 
 //----------------------------------------------------------------------------
@@ -172,11 +171,7 @@ void vtkKWDICOMImporter2::CreatePreview()
 
   
   
-  this->Preview->SetRenderWindow(this->RenderWidget->GetRenderWindow());
-  this->Preview->SetRenderer(this->RenderWidget->GetRenderer());
-  this->Preview->SetRenderWindowInteractor(this->RenderWidget->GetRenderWindow()->GetInteractor());
-  this->Preview->SetOrientation(vtkViewImage::AXIAL_ID);
-  this->Preview->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
+  this->Preview->SetupInteractor (this->RenderWidget->GetRenderWindow()->GetInteractor());
 
   this->Preview->SetAboutData ("");
   this->Preview->SetBackgroundColor (0,0,0);
@@ -879,6 +874,7 @@ void vtkKWDICOMImporter2::StartInteractive()
   }
   
   this->Preview->SetITKImage (static_cast<ImageType*>(image));
+
   this->Preview->Reset();
   this->Preview->Render();    
   
@@ -886,7 +882,8 @@ void vtkKWDICOMImporter2::StartInteractive()
   vtkTimerLog* TimerLog = vtkTimerLog::New();
   double time = 0.0;
   double absolutetime = 0.0;
-  int slice = this->Preview->GetZSlice();
+  int slice = this->Preview->GetSlice();
+
   int e = 1;
   double timebetweenslices = 0.1;
   
@@ -915,12 +912,12 @@ void vtkKWDICOMImporter2::StartInteractive()
       continue;
     time = 0;
 
-    this->Preview->SetZSlice(slice);
+    this->Preview->SetSlice(slice);
     this->Preview->Render();
     slice+=e;
-    if (slice == this->Preview->GetWholeZMin())
+    if (slice == this->Preview->GetSliceMin())
       e = 1;
-    if (slice == this->Preview->GetWholeZMax())
+    if (slice == this->Preview->GetSliceMax())
       e = -1;
     
   }
@@ -949,22 +946,22 @@ void vtkKWDICOMImporter2::DoubleClickCallback()
 
   vtkKWTopLevel* toplevel = vtkKWTopLevel::New();
   
-  toplevel->SetMasterWindow(this);
+  toplevel->SetMasterWindow(this->GetParentTopLevel());
   toplevel->SetApplication(this->GetApplication());
   toplevel->Create();
   toplevel->SetTitle(image->GetName());
   toplevel->SetDeleteWindowProtocolCommand(toplevel, "Withdraw");
-
+  
   vtkKWDicomInfoWidget* widget = vtkKWDicomInfoWidget::New();
   widget->SetParent(toplevel);
   widget->Create();
   this->Script("pack %s -fill both -side top -expand t", 
 	       widget->GetWidgetName());
-  
-
+  widget->Update();
   itk::DicomTagManager::Pointer tagmanager = itk::DicomTagManager::New();
   tagmanager->ImportTagList ((*image->GetFileList())[0]);
   widget->SetDicomTagList(tagmanager->GetTagList());
+  widget->Delete();
   
   // Get the position of the mouse, the size of the top level window.
 
@@ -998,7 +995,6 @@ void vtkKWDICOMImporter2::DoubleClickCallback()
   toplevel->DeIconify();
   toplevel->Raise();
 
-  widget->Delete();
 }
 
 
@@ -1024,7 +1020,7 @@ void vtkKWDICOMImporter2::UpdatePreview (DICOMImageType::Pointer volume)
   ImporterType::ReaderType::Pointer reader = ImporterType::ReaderType::New();
   reader->SetFileName(filename.c_str());
   reader->Update();
-  
+  this->Preview->SetITKImage(reader->GetOutput());
   this->Preview->Reset();
   this->Preview->Show2DAxisOff();
   this->Preview->Render();

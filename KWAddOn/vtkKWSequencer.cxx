@@ -4,7 +4,7 @@
   Module:    $Id: vtkKWSequencer.cxx 966 2008-09-29 16:40:25Z ntoussaint $
   Language:  C++
   Author:    $Author: ntoussaint $
-  Date:      $Date: 2008-09-29 18:40:25 +0200 (Mon, 29 Sep 2008) $
+  Date:      $Date: 2008-09-29 17:40:25 +0100 (Mon, 29 Sep 2008) $
   Version:   $Revision: 966 $
 
   Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -55,8 +55,8 @@
 #include <vtkKWLandmarkManagerWidget.h>
 #include <vtkKWTimeTableWidget.h>
 #include <vtkKWPreviewPage.h>
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 #include <vtkDataArrayCollection.h>
 #include <vtkDoubleArray.h>
 #include <vtkKWSnapshotHandler.h>

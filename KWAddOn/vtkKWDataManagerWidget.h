@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWDataManagerWidget.h 874 2008-05-29 16:43:34Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-05-29 18:43:34 +0200 (Thu, 29 May 2008) $
+Date:      $Date: 2008-05-29 17:43:34 +0100 (Thu, 29 May 2008) $
 Version:   $Revision: 874 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.

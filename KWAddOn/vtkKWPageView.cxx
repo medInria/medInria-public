@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWPageView.cxx 1350 2009-11-19 15:16:30Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-11-19 16:16:30 +0100 (Thu, 19 Nov 2009) $
+Date:      $Date: 2009-11-19 15:16:30 +0000 (Thu, 19 Nov 2009) $
 Version:   $Revision: 1350 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -28,9 +28,10 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageResample.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
-#include "vtkViewImage2D.h"
-#include "vtkViewImage2DWithTracer.h"
-#include "vtkViewImage3D.h"
+#include <vtkImageView/vtkImageView2D.h>
+#include <vtkImageView/vtkImageView3D.h>
+#include <vtkImageView/vtkImageViewCollection.h>
+
 #include <vtkPlaneWidget.h>
 
 #include <vtkDataSet.h>
@@ -52,10 +53,10 @@ vtkCxxRevisionMacro( vtkKWPageView, "$Revision: 1350 $");
 //----------------------------------------------------------------------------
 vtkKWPageView::vtkKWPageView()
 {
-  this->View1         = vtkViewImage2D::New();
-  this->View2         = vtkViewImage2D::New();
-  this->View3         = vtkViewImage2D::New();
-  this->View4         = vtkViewImage3D::New();
+  this->View1         = vtkImageView2D::New();
+  this->View2         = vtkImageView2D::New();
+  this->View3         = vtkImageView2D::New();
+  this->View4         = vtkImageView3D::New();
 
   this->RenderWidget1 = vtkKWRenderWidget::New();
   this->RenderWidget2 = vtkKWRenderWidget::New();
@@ -64,6 +65,8 @@ vtkKWPageView::vtkKWPageView()
 
   m_OrientationMatrix = vtkMatrix4x4::New();
   
+  m_Pool = 0;
+
   this->IsFullScreen = 0;
 
   this->ID = -1;
@@ -92,10 +95,8 @@ vtkKWPageView::~vtkKWPageView()
 
   m_OrientationMatrix->Delete();
   
-  this->View1->Detach();
-  this->View2->Detach();
-  this->View3->Detach();
-  this->View4->Detach();
+  if( m_Pool )
+    m_Pool->Delete();
   
   this->View1->Delete();
   this->View2->Delete();
@@ -132,16 +133,12 @@ void vtkKWPageView::CreateRenderWidgets()
 
 
 //----------------------------------------------------------------------------
-void vtkKWPageView::ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget)
+void vtkKWPageView::ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget)
 {
+  
+  view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
+  vtkRenderer* renderer = view->GetRenderer();
 
-//   view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
-  view->SetRenderWindowInteractor (widget->GetRenderWindow()->GetInteractor());
-  
-  // vtkRenderer* renderer = view->GetRenderer();
-  vtkRenderer* renderer = vtkRenderer::New();
-  view->SetRenderer (renderer);
-  
   vtkRendererCollection* collection = widget->GetRenderWindow()->GetRenderers();
   collection->RemoveAllItems();
   widget->GetRenderWindow()->AddRenderer (renderer);
@@ -149,9 +146,6 @@ void vtkKWPageView::ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget)
   widget->AddRenderer (renderer);
   widget->SetRenderModeToInteractive();
   view->SetRenderWindow (widget->GetRenderWindow());
-
-  // view->SetRenderer (renderer);
-  renderer->Delete();
 }
 
 //----------------------------------------------------------------------------
@@ -171,19 +165,21 @@ void vtkKWPageView::Create4Views()
   this->ConfigureView (this->View3, this->RenderWidget3);
   this->ConfigureView (this->View4, this->RenderWidget4);  
 
-  this->View2->AddChild (this->View1);
-  this->View3->AddChild (this->View2);
-  this->View4->AddChild (this->View3);  
-  this->View1->AddChild (this->View4);
+  m_Pool = vtkImageViewCollection::New();
+  
+  m_Pool->AddItem (this->View1);
+  m_Pool->AddItem (this->View2);
+  m_Pool->AddItem (this->View3);
+  m_Pool->AddItem (this->View4);
 }
 
 //----------------------------------------------------------------------------
 void vtkKWPageView::SetProperties()
 {
   
-  this->View1->SetOrientation (vtkViewImage::AXIAL_ID);
-  this->View2->SetOrientation (vtkViewImage::CORONAL_ID);
-  this->View3->SetOrientation (vtkViewImage::SAGITTAL_ID);
+  this->View1->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_AXIAL);
+  this->View2->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
+  this->View3->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
 
   this->View1->SetAboutData ("INRIA 2008 - CardioViz3D");
   this->View2->SetAboutData ("INRIA 2008 - CardioViz3D");
@@ -349,18 +345,18 @@ void vtkKWPageView::SetImage (vtkImageData* image, vtkMatrix4x4* orientationmatr
 
   if (!image)
     return;  
-  
-
-  this->View1->SetDirectionMatrix ( orientationmatrix );
-  this->View2->SetDirectionMatrix ( orientationmatrix );
-  this->View3->SetDirectionMatrix ( orientationmatrix );
-  this->View4->SetDirectionMatrix ( orientationmatrix );
 
   
-  this->View1->SetImage(image);
-  this->View2->SetImage(image);
-  this->View3->SetImage(image);
-  this->View4->SetImage ( image );
+  m_Pool->SyncSetInput(image);
+  if (orientationmatrix)
+    m_Pool->SyncSetOrientationMatrix (orientationmatrix);
+  this->View1->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_AXIAL);
+  this->View2->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_CORONAL);
+  this->View3->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
+  if (orientationmatrix)
+    this->View4->SetOrientationMatrix (orientationmatrix);
+  
+  m_Pool->SyncReset();
 
   this->SetOrientationMatrix (orientationmatrix);
 
@@ -554,7 +550,7 @@ void vtkKWPageView::SetFullScreenView (int id)
   this->Script ("grid remove %s",
 		this->RenderWidget4->GetWidgetName());
   
-  vtkViewImage* view = 0;
+  vtkImageView* view = 0;
   vtkKWRenderWidget* widget = 0;
   
   switch (id)
@@ -765,17 +761,6 @@ std::vector<vtkActor*> vtkKWPageView::AddPolyData(vtkPolyData* dataset, vtkPrope
 {
   
   std::vector<vtkActor*> list;
-
-  vtkActor* actor1 = NULL;
-  vtkActor* actor2 = NULL;
-  vtkActor* actor3 = NULL;
-  actor1 = this->View1->AddPolyData(dataset, property, thickness);
-  actor2 = this->View2->AddPolyData(dataset, property, thickness);
-  actor3 = this->View3->AddPolyData(dataset, property, thickness);
-  if (actor1) list.push_back(actor1);
-  if (actor2) list.push_back(actor2);
-  if (actor3) list.push_back(actor3);
-
   return list;
 }
 
@@ -801,7 +786,7 @@ vtkKWRenderWidget* vtkKWPageView::GetActiveRenderWidget ()
 }
 
 
-vtkViewImage* vtkKWPageView::GetActiveView ()
+vtkImageView* vtkKWPageView::GetActiveView ()
 {
 
   switch(this->IsFullScreen)

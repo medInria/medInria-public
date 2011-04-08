@@ -28,7 +28,7 @@ PURPOSE.  See the above copyright notices for more information.
 class vtkDataManager;
 class vtkImageData;
 class vtkDataSet;
-class vtkViewImage;
+class vtkImageView;
 class vtkKWToolBox;
 class vtkDataManagerCallback;
 class vtkKWMainCallback;
@@ -91,7 +91,6 @@ public:
   virtual void OnMenuFileOpenDICOM();
   virtual void OnMenuFileSaveDICOM();
   virtual void SaveManagerCallback (void);
-  virtual void SaveDiffXMLCallback (void);
   
   virtual void OnDataSetSave();
   virtual void OnDataSetDelete();

@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWSequenceImporter.cxx 1006 2008-11-13 15:58:19Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-11-13 16:58:19 +0100 (Thu, 13 Nov 2008) $
+Date:      $Date: 2008-11-13 15:58:19 +0000 (Thu, 13 Nov 2008) $
 Version:   $Revision: 1006 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.

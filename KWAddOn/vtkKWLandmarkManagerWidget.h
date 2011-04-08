@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWLandmarkManagerWidget.h 993 2008-10-27 09:29:25Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-10-27 10:29:25 +0100 (Mon, 27 Oct 2008) $
+Date:      $Date: 2008-10-27 09:29:25 +0000 (Mon, 27 Oct 2008) $
 Version:   $Revision: 993 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.

@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWMetaInfoWidget.cxx 1294 2009-10-20 16:12:00Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-10-20 18:12:00 +0200 (Tue, 20 Oct 2009) $
+Date:      $Date: 2009-10-20 17:12:00 +0100 (Tue, 20 Oct 2009) $
 Version:   $Revision: 1294 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -46,8 +46,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkMetaVolumeMesh.h>
 
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 
 #include <vtkProperty.h>
 #include <vtkMapper.h>
@@ -155,8 +155,8 @@ void vtkKWMetaInfoWidget::CreatePreviewTo2D()
     this->Preview = NULL;
   }
 
-  this->Preview = vtkViewImage2D::New();
-  vtkViewImage2D* view2d = vtkViewImage2D::SafeDownCast(this->Preview);
+  this->Preview = vtkImageView2D::New();
+  vtkImageView2D* view2d = vtkImageView2D::SafeDownCast(this->Preview);
 
   if (!view2d)
   {
@@ -168,12 +168,12 @@ void vtkKWMetaInfoWidget::CreatePreviewTo2D()
   view2d->SetRenderer(this->RenderWidget->GetRenderer());
   view2d->SetRenderWindowInteractor(this->RenderWidget->GetRenderWindow()->GetInteractor());
   view2d->SetAboutData ("");
-  view2d->SetOrientation(vtkViewImage::AXIAL_ID);
+  view2d->SetViewOrientation(vtkImageView::VIEW_ORIENTATION_AXIAL);
   view2d->SetBackgroundColor (0,0,0);
   view2d->SetShowAnnotations (false);
   view2d->Show2DAxisOff();
   view2d->SetShowDirections(false);
-  view2d->SetInteractionStyle (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
+  view2d->SetInteractionStyle (vtkImageView2D::WINDOW_LEVEL_INTERACTION);
 }
 
 void vtkKWMetaInfoWidget::CreatePreviewTo3D()
@@ -185,8 +185,8 @@ void vtkKWMetaInfoWidget::CreatePreviewTo3D()
     this->Preview = NULL;
   }
 
-  this->Preview = vtkViewImage3D::New();
-  vtkViewImage3D* view3d = vtkViewImage3D::SafeDownCast(this->Preview);
+  this->Preview = vtkImageView3D::New();
+  vtkImageView3D* view3d = vtkImageView3D::SafeDownCast(this->Preview);
 
   if (!view3d)
   {

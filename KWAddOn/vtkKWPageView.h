@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWPageView.h 1302 2009-10-27 21:57:16Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-10-27 22:57:16 +0100 (Tue, 27 Oct 2009) $
+Date:      $Date: 2009-10-27 21:57:16 +0000 (Tue, 27 Oct 2009) $
 Version:   $Revision: 1302 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -30,9 +30,9 @@ PURPOSE.  See the above copyright notices for more information.
 
 class vtkKWRenderWidget;
 class vtkKWIcon;
-class vtkViewImage;
-class vtkViewImage2D;
-class vtkViewImage3D;
+class vtkImageView;
+class vtkImageView2D;
+class vtkImageView3D;
 class vtkRenderWindow;
 class vtkImageData;
 class vtkDataSet;
@@ -43,7 +43,7 @@ class vtkPolyData;
 class vtkLandmarkManager;
 class vtkMatrix4x4;
 
-class vtkViewImageCollection;
+class vtkImageViewCollection;
 
 
 class KW_ADDON_EXPORT vtkKWPageView : public vtkKWFrame
@@ -78,7 +78,7 @@ public:
   vtkMatrix4x4* GetOrientationMatrix (void)
   { return m_OrientationMatrix; }
 
-  vtkViewImageCollection* GetPool (void) const
+  vtkImageViewCollection* GetPool (void) const
   { return m_Pool; }
   
   // Description:
@@ -91,10 +91,10 @@ public:
   vtkGetMacro(ID, int);
   vtkSetMacro(ID, int);
   
-  vtkGetObjectMacro (View1, vtkViewImage2D);
-  vtkGetObjectMacro (View2, vtkViewImage2D);
-  vtkGetObjectMacro (View3, vtkViewImage2D);
-  vtkGetObjectMacro (View4, vtkViewImage3D); 
+  vtkGetObjectMacro (View1, vtkImageView2D);
+  vtkGetObjectMacro (View2, vtkImageView2D);
+  vtkGetObjectMacro (View3, vtkImageView2D);
+  vtkGetObjectMacro (View4, vtkImageView3D); 
 
   vtkGetObjectMacro (RenderWidget1, vtkKWRenderWidget);
   vtkGetObjectMacro (RenderWidget2, vtkKWRenderWidget);
@@ -149,7 +149,7 @@ public:
   void RemoveMetaDataSet(vtkMetaDataSet* metadataset);
 
   vtkKWRenderWidget* GetActiveRenderWidget (void);
-  vtkViewImage* GetActiveView (void);
+  vtkImageView* GetActiveView (void);
 
   bool HasDataSet (vtkDataSet* dataset);
   
@@ -172,17 +172,17 @@ protected:
   int BuildScreenshotFromImage(vtkImageData *image, vtkKWIcon* screenshot, int size = 0);
   int BuildScreenshotFromRenderWindow(vtkRenderWindow *win, vtkKWIcon* screenshot, int size = 0);
 
-  void ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget);
+  void ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget);
 
   vtkMatrix4x4* m_OrientationMatrix;
     
-  vtkViewImageCollection* m_Pool;
+  vtkImageViewCollection* m_Pool;
   
 
-  vtkViewImage2D*      View1;
-  vtkViewImage2D*      View2;
-  vtkViewImage2D*      View3;
-  vtkViewImage3D*      View4;
+  vtkImageView2D*      View1;
+  vtkImageView2D*      View2;
+  vtkImageView2D*      View3;
+  vtkImageView3D*      View4;
   vtkKWRenderWidget*   RenderWidget1;
   vtkKWRenderWidget*   RenderWidget2;
   vtkKWRenderWidget*   RenderWidget3;

@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWDicomInfoWidget.cxx 1302 2009-10-27 21:57:16Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-10-27 22:57:16 +0100 (Tue, 27 Oct 2009) $
+Date:      $Date: 2009-10-27 21:57:16 +0000 (Tue, 27 Oct 2009) $
 Version:   $Revision: 1302 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -52,7 +52,6 @@ vtkCxxRevisionMacro( vtkKWDicomInfoWidget, "$Revision: 1302 $");
 vtkKWDicomInfoWidget::vtkKWDicomInfoWidget()
 {
   
-  //this->EditableOn();
   this->EditableOn();
   //this->Update();
   this->DicomInfoList = NULL;
@@ -191,7 +190,6 @@ void vtkKWDicomInfoWidget::CreateWidget()
 
   this->Pack();
   
-
   this->SearchDialog->SetMasterWindow (this);
   
 //   this->SearchDialog->SetApplication (this->GetApplication());
@@ -205,7 +203,7 @@ void vtkKWDicomInfoWidget::CreateWidget()
   this->SearchDialog->GetEntry()->GetWidget()->SetCommandTrigger(vtkKWEntry::TriggerOnReturnKey);
   
   this->SearchDialog->GetOKButton()->SetCommand(this->SearchDialog, "OK");
-
+  
   
 }
 

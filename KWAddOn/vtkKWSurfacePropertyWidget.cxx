@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWSurfacePropertyWidget.cxx 489 2007-11-22 12:05:54Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2007-11-22 13:05:54 +0100 (Thu, 22 Nov 2007) $
+Date:      $Date: 2007-11-22 12:05:54 +0000 (Thu, 22 Nov 2007) $
 Version:   $Revision: 489 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -68,8 +68,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkStringArray.h>
 
 // #include "vtkKWMainWindowInteractor.h"
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 #include <vtkLookupTableManager.h>
 #include <pixmap/KWAddOnResources.h>
 
@@ -218,7 +218,7 @@ void vtkKWSurfacePropertyWidget::CreateWidget()
   this->ScaleSet->SetMaximumNumberOfWidgetsInPackingDirection(2);
 
   this->OpacityScale = this->ScaleSet->AddWidget(0);
-  this->OpacityScale->SetOrientationToHorizontal();
+  this->OpacityScale->SetViewOrientationToHorizontal();
   this->OpacityScale->SetLabelText("Opacity");
   this->OpacityScale->SetRange (0,100);
   this->OpacityScale->SetResolution (1);
@@ -231,7 +231,7 @@ void vtkKWSurfacePropertyWidget::CreateWidget()
 
   
   this->LineWidthScale = this->ScaleSet->AddWidget(1);
-  this->LineWidthScale->SetOrientationToHorizontal();
+  this->LineWidthScale->SetViewOrientationToHorizontal();
   this->LineWidthScale->SetLabelText("Line Width");
   this->LineWidthScale->SetRange (1,10);
   this->LineWidthScale->SetResolution (1);

@@ -28,10 +28,10 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageResample.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
-#include <vtkViewImage2D.h>
-#include <vtkViewImage2DWithTracer.h>
-#include <vtkViewImage2DWithOrientedPoint.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView2DWithTracer.h>
+#include <vtkImageView2DWithOrientedPoint.h>
+#include <vtkImageView3D.h>
 
 #include <vtkDataSet.h>
 #include <vtkRenderWindowInteractor.h>
@@ -50,7 +50,7 @@ vtkCxxRevisionMacro( vtkKWViewImage2DDialog, "$Revision: 483 $");
 //----------------------------------------------------------------------------
 vtkKWViewImage2DDialog::vtkKWViewImage2DDialog()
 {
-  this->View         = vtkViewImage2D::New();
+  this->View         = vtkImageView2D::New();
   this->RenderWidget = vtkKWRenderWidget::New();
   
 }

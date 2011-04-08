@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWInfoToolBox.h 866 2008-05-27 13:59:57Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-05-27 15:59:57 +0200 (Tue, 27 May 2008) $
+Date:      $Date: 2008-05-27 14:59:57 +0100 (Tue, 27 May 2008) $
 Version:   $Revision: 866 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.

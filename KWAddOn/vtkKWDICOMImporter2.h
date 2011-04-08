@@ -30,7 +30,7 @@ class vtkKWPushButton;
 class vtkKWFrame;
 class vtkKWCheckButtonWithLabel;
 class vtkKWEntryWithLabel;
-class vtkViewImage2D;
+class vtkImageView2D;
 class vtkKWRenderWidget;
 class vtkKWMultiColumnList;
 class vtkKWFrameWithLabel;
@@ -159,7 +159,7 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   vtkKWCheckButtonWithLabel* InteractiveModeButton;
   
   vtkKWRenderWidget*      RenderWidget;
-  vtkViewImage2D*           Preview;
+  vtkImageView2D*           Preview;
 
   vtkKWMultiColumnList* MultiColumnList;
 

@@ -1,11 +1,11 @@
 /*=========================================================================
 
 Program:   vtkINRIA3D
-Module:    $Id: vtkKWVisualizationToolBox.cxx 1302 2009-10-27 21:57:16Z ntoussaint $
+Module:    $Id: vtkKWVisualizationToolBox.cxx 1487 2010-03-15 11:53:07Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-10-27 22:57:16 +0100 (Tue, 27 Oct 2009) $
-Version:   $Revision: 1302 $
+Date:      $Date: 2010-03-15 11:53:07 +0000 (Mon, 15 Mar 2010) $
+Version:   $Revision: 1487 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
 See Copyright.txt for details.
@@ -37,8 +37,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkDataArrayCollection.h>
 #include <vtksys/SystemTools.hxx>
 #include <vtkErrorCode.h>
-#include <vtkViewImage3D.h>
-#include <vtkViewImage2D.h>
+#include <vtkImageView3D.h>
+#include <vtkImageView2D.h>
 #include <vtkKWPageView.h>
 #include <vtkMetaSurfaceMesh.h>
 #include <vtkMetaDataSetSequence.h>
@@ -84,9 +84,11 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWRange.h>
 #include <vtkTextProperty.h>
 
+#include <vtkImageViewCollection.h>
+
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWVisualizationToolBox );
-vtkCxxRevisionMacro( vtkKWVisualizationToolBox, "$Revision: 1302 $");
+vtkCxxRevisionMacro( vtkKWVisualizationToolBox, "$Revision: 1487 $");
 
 //----------------------------------------------------------------------------
 void vtkKWVisualizationCallback::Execute(vtkObject *   caller, 
@@ -94,11 +96,11 @@ void vtkKWVisualizationCallback::Execute(vtkObject *   caller,
 					 void *        callData)
 {
 
-    if (event == vtkViewImage::ViewImageWindowLevelChangeEvent)
+    if (event == vtkCommand::WindowLevelEvent)
     {
     if ( !this->WindowLevelLock )
     {
-      vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (caller);
+      vtkImageView2D* view = vtkImageView2D::SafeDownCast (caller);
       if (view)
       {
 	if (this->Toolbox)
@@ -106,7 +108,7 @@ void vtkKWVisualizationCallback::Execute(vtkObject *   caller,
 	  double min = view->GetLevel() - 0.5*view->GetWindow();
 	  double max = view->GetLevel() + 0.5*view->GetWindow();
 	  this->Toolbox->GetImageWindowLevelRange()->DisableCommandsOn();
-	  this->Toolbox->GetImageWindowLevelRange()->SetRange (min, max);
+	  // this->Toolbox->GetImageWindowLevelRange()->SetRange (min, max);
 	  this->Toolbox->GetImageWindowLevelRange()->DisableCommandsOff();
 	}
       }
@@ -319,7 +321,7 @@ void vtkKWVisualizationToolBox::CreateMeshVisuFrame()
 	       this->ScaleSet->GetWidgetName());
 
   this->OpacityScale = this->ScaleSet->AddWidget(0);
-  this->OpacityScale->SetOrientationToHorizontal();
+  this->OpacityScale->SetViewOrientationToHorizontal();
   this->OpacityScale->SetLabelText("Opacity");
   this->OpacityScale->SetRange (0,100);
   this->OpacityScale->SetResolution (1);
@@ -330,7 +332,7 @@ void vtkKWVisualizationToolBox::CreateMeshVisuFrame()
   this->OpacityScale->SetBalloonHelpString ("Set the opacity of the dataset");
   
   this->LineWidthScale = this->ScaleSet->AddWidget(1);
-  this->LineWidthScale->SetOrientationToHorizontal();
+  this->LineWidthScale->SetViewOrientationToHorizontal();
   this->LineWidthScale->SetLabelText("Line Width");
   this->LineWidthScale->SetRange (1,10);
   this->LineWidthScale->SetResolution (1);
@@ -382,7 +384,7 @@ void vtkKWVisualizationToolBox::CreateMeshVisuFrame()
   separator1->SetParent(this->MeshVisuFrame->GetFrame());
   separator1->Create();
   separator1->SetWidth (300);
-  separator1->SetOrientationToHorizontal();
+  separator1->SetViewOrientationToHorizontal();
   separator1->SetThickness(2);
   this->Script( "pack %s -side top -anchor nw -expand yes -fill x -padx 0 -pady 2",
 		separator1->GetWidgetName());
@@ -447,8 +449,8 @@ void vtkKWVisualizationToolBox::CreateMeshVisuFrame()
   this->MeshScalarRange->SetParent (this->MeshVisuFrame->GetFrame());
   this->MeshScalarRange->Create();
   this->MeshScalarRange->SetLabelText ("scalar range");
-  this->MeshScalarRange->SetWholeRange (0.0, 255.0);
-  this->MeshScalarRange->SetRange (0.0, 255.0);
+  // this->MeshScalarRange->SetWholeRange (0.0, 255.0);
+  // this->MeshScalarRange->SetRange (0.0, 255.0);
   this->MeshScalarRange->SetResolution(0.5);
   this->MeshScalarRange->SetReliefToGroove();
   this->MeshScalarRange->SliderCanPushOn();
@@ -540,8 +542,8 @@ void vtkKWVisualizationToolBox::CreateImageVisuFrame()
   this->ImageWindowLevelRange->SetParent (tmp3);
   this->ImageWindowLevelRange->Create();
   this->ImageWindowLevelRange->SetLabelText ("windowing");
-  this->ImageWindowLevelRange->SetWholeRange (0.0, 255.0);
-  this->ImageWindowLevelRange->SetRange (20.0, 155.0);
+  // this->ImageWindowLevelRange->SetWholeRange (-255.0, 255.0);
+  // this->ImageWindowLevelRange->SetRange (20.0, 155.0);
   this->ImageWindowLevelRange->SetResolution(0.5);
   this->ImageWindowLevelRange->SetReliefToGroove();
   this->ImageWindowLevelRange->SliderCanPushOn();
@@ -676,10 +678,10 @@ void vtkKWVisualizationToolBox::Update()
 	{
 	  double min = page->GetView1()->GetLevel() - 0.5*page->GetView1()->GetWindow();
 	  double max = page->GetView1()->GetLevel() + 0.5*page->GetView1()->GetWindow();
-	  this->ImageWindowLevelRange->SetRange (min, max);
-	  page->GetView1()->AddObserver (vtkViewImage::ViewImageWindowLevelChangeEvent, this->Callback);
-	  page->GetView2()->AddObserver (vtkViewImage::ViewImageWindowLevelChangeEvent, this->Callback);
-	  page->GetView3()->AddObserver (vtkViewImage::ViewImageWindowLevelChangeEvent, this->Callback);
+	  // this->ImageWindowLevelRange->SetRange (min, max);
+	  page->GetView1()->AddObserver (vtkCommand::WindowLevelEvent, this->Callback);
+	  page->GetView2()->AddObserver (vtkCommand::WindowLevelEvent, this->Callback);
+	  page->GetView3()->AddObserver (vtkCommand::WindowLevelEvent, this->Callback);
 	}
 
 	this->CroppingBoxCheckbox->GetWidget()->SetSelectedState (page->GetView4()->GetBoxWidgetVisibility());
@@ -688,12 +690,12 @@ void vtkKWVisualizationToolBox::Update()
 	
 	switch(page->GetView4()->GetRenderingMode())
 	{
-	    case vtkViewImage3D::VOLUME_RENDERING :
+	    case vtkImageView3D::VOLUME_RENDERING :
 	      this->ImageRenderingModeComboBox->SetValue ("Volume Rendering");
 	      this->CroppingBoxCheckbox->GetWidget()->SetStateToNormal();
 	      this->ShadingCheckbox->GetWidget()->SetStateToNormal();
 	      break;
-	    case vtkViewImage3D::PLANAR_RENDERING :
+	    case vtkImageView3D::PLANAR_RENDERING :
 	      this->ImageRenderingModeComboBox->SetValue ("Multi Planar");
 	      this->CroppingBoxCheckbox->GetWidget()->SetStateToDisabled();
 	      this->ShadingCheckbox->GetWidget()->SetStateToDisabled();
@@ -1024,7 +1026,7 @@ void vtkKWVisualizationToolBox::ImageRenderingModeCallback (const char* value)
     if (strcmp (value, "MIP") == 0)
     {
 //       page->GetView4()->SetVolumeMapperToRayCast();
-      page->GetView4()->SetVolumeRayCastFunctionToMIP();
+//       page->GetView4()->SetVolumeRayCastFunctionToMIP();
       page->GetView4()->SetRenderingModeToVR();
     }
   }
@@ -1109,8 +1111,8 @@ void vtkKWVisualizationToolBox::ImageWindowLevelRangeCallback (double min, doubl
     
     double window = max-min;
     double level = min + 0.5*window;
-    page->GetView1()->SyncSetWindow (window);
-    page->GetView1()->SyncSetLevel (level);
+    page->GetPool()->SyncSetColorWindow (window);
+    page->GetPool()->SyncSetColorLevel (level);
 
   }
   
@@ -1409,7 +1411,7 @@ void vtkKWVisualizationToolBox::StanleyFunction (void)
   vtkKWPageView* page = this->ParentObject->GetPage (this->MetaDataSet->GetTag());
   if (!page)
     return;
-  vtkViewImage3D* view = page->GetView4();
+  vtkImageView3D* view = page->GetView4();
 
   for (unsigned int i = 0; i < this->MetaDataSet->GetNumberOfActors(); i++)
   {

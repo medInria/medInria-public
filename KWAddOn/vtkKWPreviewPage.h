@@ -26,7 +26,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vector>
 #include <string>
 
-#include <vtkViewImage2D.h>
+#include <vtkImageView/vtkImageView2D.h>
+#include <vtkImageView/vtkImageViewCollection.h>
 
 class vtkKWRenderWidget;
 class vtkKWIcon;
@@ -93,8 +94,8 @@ protected:
   virtual void CreateWidget();
   virtual void PackSelf();
 
-  virtual vtkViewImage2D* FindView(vtkImageData* imagedata, int &cookie);
-  virtual void ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget);
+  virtual vtkImageView2D* FindView(vtkImageData* imagedata, int &cookie);
+  virtual void ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget);
 
 private:
   vtkKWPreviewPage(const vtkKWPreviewPage&);   // Not implemented.
@@ -110,6 +111,7 @@ private:
   int MaxNumberOfColumns;
   int InteractionMode;
   
+  vtkImageViewCollection* Pool;
   
   vtkKWFrameWithScrollbar* InternalFrame;
 

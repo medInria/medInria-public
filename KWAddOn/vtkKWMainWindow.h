@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWMainWindow.h 877 2008-06-04 16:10:40Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-06-04 18:10:40 +0200 (Wed, 04 Jun 2008) $
+Date:      $Date: 2008-06-04 17:10:40 +0100 (Wed, 04 Jun 2008) $
 Version:   $Revision: 877 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -45,7 +45,6 @@ public:
   virtual void OnMenuFileOpenDICOM();
   virtual void OnMenuFileSaveDICOM();
   virtual void SaveManagerCallback (void);
-  virtual void SaveDiffXMLCallback (void);
   
   virtual void OnDataSetSave();
   virtual void OnDataSetDelete();

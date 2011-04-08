@@ -18,7 +18,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkKWPreviewPage.h"
 #include "vtkObjectFactory.h"
 
-#include <vtkViewImage2D.h>
+#include <vtkImageView/vtkImageViewCollection.h>
+#include <vtkImageView/vtkImageView2D.h>
 
 #include "vtkKWApplication.h"
 #include "vtkKWRenderWidget.h"
@@ -26,8 +27,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkKWIcon.h"
 #include "vtkKWFrameWithScrollbar.h"
 
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 #include <vtkLookupTableManager.h>
 
 #include <vtkRenderWindow.h>
@@ -51,6 +52,9 @@ vtkKWPreviewPage::vtkKWPreviewPage()
 
   this->InternalFrame = vtkKWFrameWithScrollbar::New();
 
+  this->Pool = vtkImageViewCollection::New();
+  this->Pool->LinkCameraOn();
+  this->Pool->LinkPositionOff();
   
   this->ViewList = vtkCollection::New();
   this->RenderWidgetList = vtkCollection::New();
@@ -62,7 +66,7 @@ vtkKWPreviewPage::vtkKWPreviewPage()
   this->LinkViews = true;
   this->OrientationMode = 2;
   this->MaxNumberOfColumns = 5;
-  this->InteractionMode = vtkViewImage2D::SELECT_INTERACTION;
+  this->InteractionMode = vtkImageView2D::SELECT_INTERACTION;
 }
 
 //----------------------------------------------------------------------------
@@ -72,9 +76,9 @@ vtkKWPreviewPage::~vtkKWPreviewPage()
 
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
+    vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
-    view->Detach();
+    this->Pool->RemoveItem (view);
     widget->SetParent (NULL);
   }
 
@@ -82,11 +86,13 @@ vtkKWPreviewPage::~vtkKWPreviewPage()
   this->RenderWidgetList->Delete();
 
   this->InternalFrame->Delete();
+
+  this->Pool->Delete();
   
 }
 
 //----------------------------------------------------------------------------
-void vtkKWPreviewPage::ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget)
+void vtkKWPreviewPage::ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget)
 {
   vtkRenderer* renderer = vtkRenderer::New();
   vtkRendererCollection* collection = widget->GetRenderWindow()->GetRenderers();
@@ -103,7 +109,7 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
 {
 
 
-  vtkViewImage2D* view = vtkViewImage2D::New();
+  vtkImageView2D* view = vtkImageView2D::New();
   vtkKWRenderWidget* widget = vtkKWRenderWidget::New();
   
   widget->SetParent (this->InternalFrame->GetFrame());
@@ -112,10 +118,7 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
   //widget->SetHeight (800);
   widget->SetBorderWidth (1);
 
-  this->ConfigureView (view, widget);
-  view->SetLinkZoom (true);
-  view->ScalarBarVisibilityOff();
-  view->SetLinkCameraFocalAndPosition(true);  
+  view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
   
   view->SetImage (image);
   view->SetAboutData (name);
@@ -127,27 +130,10 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
     view->SetDirectionMatrix (matrix);
   view->ResetCurrentPoint();
   view->ResetWindowLevel();
-
-  
-  view->SetOrientation (this->GetOrientationMode());
-  
   
   this->ViewList->AddItem (view);
   this->RenderWidgetList->AddItem (widget);
 
-  if (this->GetNumberOfPreviews() > 1)
-  {
-    vtkViewImage2D* previous_view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (this->GetNumberOfPreviews()-2));
-    vtkViewImage2D* first_view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (0));
-    if (previous_view && first_view)
-    {
-      previous_view->RemoveChild (first_view);
-      previous_view->AddChild (view);
-      view->AddChild (first_view);
-    }
-  }
-  
-  
   view->Delete();
   widget->Delete();
 
@@ -167,10 +153,10 @@ void vtkKWPreviewPage::RemovePreviewImage (vtkImageData* image)
   if (id == -1)
     return;
   
-  vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (id));
+  vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject (id));
   vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (id));
 
-  view->Detach();
+  this->Pool->RemoveItem (view);
 
   widget->SetParent (NULL);
   
@@ -196,15 +182,8 @@ void vtkKWPreviewPage::Render (void)
 
 
 //----------------------------------------------------------------------------
-void vtkKWPreviewPage::SetOrientationMode (int mode)
+void vtkKWPreviewPage::SetViewOrientationMode (int mode)
 {
-  for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
-  {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
-    view->SetOrientation (mode);
-  }
-
-  this->OrientationMode = mode;
   this->Render();
   
 }
@@ -215,7 +194,7 @@ void vtkKWPreviewPage::SetInteractionMode (int mode)
 {
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
+    vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
     view->SetInteractionStyle (mode);
   }
 
@@ -229,13 +208,8 @@ void vtkKWPreviewPage::SetInteractionMode (int mode)
 void vtkKWPreviewPage::SetLookupTable (vtkLookupTable* lut)
 {
   
-  for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
-  {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
-    view->SetLookupTable (lut);
-  }
+  this->Pool->SyncSetLookupTable (lut);
   this->LookupTable = lut;  
-  
 }
 
 
@@ -252,11 +226,11 @@ void vtkKWPreviewPage::Update (void)
 
 
 //----------------------------------------------------------------------------
-vtkViewImage2D* vtkKWPreviewPage::FindView(vtkImageData* imagedata, int &cookie)
+vtkImageView2D* vtkKWPreviewPage::FindView(vtkImageData* imagedata, int &cookie)
 {
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast(this->ViewList->GetItemAsObject(i));
+    vtkImageView2D* view = vtkImageView2D::SafeDownCast(this->ViewList->GetItemAsObject(i));
     if (view)
     {
       if (view->GetImage() == imagedata)
