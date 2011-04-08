@@ -188,25 +188,25 @@ itk::ImageBase<3>* vtkMetaImageData::GetItkImage(void)
     unsigned int componenttype = this->GetComponentType();
   
     if (componenttype == VTK_UNSIGNED_CHAR)
-      this->ConvertImage<unsigned char>(this->GetImageData(), this->m_ItkImage); 
+      this->ConvertImage<unsigned char>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
     else if (componenttype == VTK_CHAR)
-      this->ConvertImage<char>(this->GetImageData(), this->m_ItkImage); 
+      this->ConvertImage<char>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
     else if (componenttype == VTK_UNSIGNED_SHORT)
-      this->ConvertImage<unsigned short>(this->GetImageData(), this->m_ItkImage); 
+      this->ConvertImage<unsigned short>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
     else if (componenttype == VTK_SHORT)
-      this->ConvertImage<short>(this->GetImageData(), this->m_ItkImage); 
+      this->ConvertImage<short>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
     else if (componenttype == VTK_UNSIGNED_INT)
-      this->ConvertImage<unsigned int>(this->GetImageData(), this->m_ItkImage);
+      this->ConvertImage<unsigned int>(this->GetImageData(), this->m_ItkImage, this->m_Converter);
     else if (componenttype == VTK_INT)
-      this->ConvertImage<int>(this->GetImageData(), this->m_ItkImage); 
+      this->ConvertImage<int>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
     else if (componenttype == VTK_UNSIGNED_LONG)
-      this->ConvertImage<unsigned long>(this->GetImageData(), this->m_ItkImage); 
+      this->ConvertImage<unsigned long>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
     else if (componenttype == VTK_LONG)
-      this->ConvertImage<long>(this->GetImageData(), this->m_ItkImage); 
+      this->ConvertImage<long>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
     else if (componenttype == VTK_FLOAT)
-      this->ConvertImage<float>(this->GetImageData(), this->m_ItkImage); 
+      this->ConvertImage<float>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
     else if (componenttype == VTK_DOUBLE)
-      this->ConvertImage<double>(this->GetImageData(), this->m_ItkImage); 
+      this->ConvertImage<double>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
   }
 
   return this->m_ItkImage;

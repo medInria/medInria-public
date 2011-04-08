@@ -111,7 +111,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
      Reads a file and creates a image of a given scalar component type.
      Use with care. Please prefer using Read()
   */
-  template <typename type> inline void ConvertImage (vtkImageData* vtkimage, itk::ImageBase<3>::Pointer& itkimage)
+  template <typename type> inline void ConvertImage (vtkImageData* vtkimage, itk::ImageBase<3>::Pointer& itkimage, itk::ProcessObject::Pointer& itkconverter)
   {
     typedef typename itk::Image<type, 3> ImageType;
     typedef typename itk::VTKImageToImageFilter<ImageType> ConverterType;
@@ -128,7 +128,9 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
       vtkErrorMacro(<<"cannot convert image "<<endl);
     }
 
+    itkconverter = converter;
     itkimage = converter->GetOutput();
+    
   }
   
   /**
@@ -188,7 +190,8 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     this->SetDataSet (converter->GetOutput());
     
     this->m_ItkImage = input;
-
+    this->m_Converter = converter;
+    
     this->Modified();
     
   }
@@ -370,6 +373,8 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
 #ifdef vtkINRIA3D_USE_ITK
   //BTX
   itk::ImageBase<3>::Pointer m_ItkImage;
+  itk::ProcessObject::Pointer m_Converter;
+  
   DictionaryType DicomDictionary;
   //ETX
 
