@@ -29,6 +29,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkSuperquadricSource.h>
 #include <vtkProperty.h>
 #include <vtkMath.h>
+#include <vtkMatrix4x4.h>
 
 #include "vtkLookupTableManager.h"
 
@@ -61,6 +62,7 @@ vtkTensorVisuManager::vtkTensorVisuManager()
   
   this->Actor = vtkActor::New();
   this->Actor->SetMapper( this->Mapper );
+
   /*
   this->Actor->GetProperty()->SetAmbient (1.0);
   this->Actor->GetProperty()->SetDiffuse (0.0);
@@ -321,7 +323,7 @@ void vtkTensorVisuManager::SetMaxGlyphSize(const float& f)
 }
 
 
-void vtkTensorVisuManager::SetInput(vtkStructuredPoints* data )
+void vtkTensorVisuManager::SetInput(vtkStructuredPoints* data, vtkMatrix4x4 *matrix)
 {
   
   if( !data ) // OTHERS THING TO CHECK!
@@ -345,6 +347,11 @@ void vtkTensorVisuManager::SetInput(vtkStructuredPoints* data )
   {    
     this->SetScalars (0);
   }
+
+  if (matrix)
+  {
+    this->Actor->SetUserMatrix(matrix);
+  }
   
   this->Fliper->SetInput ( this->Input );
   this->VOI->SetInput ( this->Fliper->GetOutput() );
@@ -352,7 +359,7 @@ void vtkTensorVisuManager::SetInput(vtkStructuredPoints* data )
 }
 
 
-void vtkTensorVisuManager::SetInput(vtkUnstructuredGrid* data )
+void vtkTensorVisuManager::SetInput(vtkUnstructuredGrid* data, vtkMatrix4x4 *matrix)
 {
   
   if( !data )
@@ -375,6 +382,11 @@ void vtkTensorVisuManager::SetInput(vtkUnstructuredGrid* data )
   else
   {    
     this->SetScalars (0);
+  }
+
+  if (matrix)
+  {
+    this->Actor->SetUserMatrix(matrix);
   }
   
   this->Glyph->SetInput( data );

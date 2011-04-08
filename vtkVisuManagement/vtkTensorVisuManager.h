@@ -36,6 +36,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkUnsignedIntArray.h"
 #include "vtkDoubleArray.h"
 
+class vtkMatrix4x4;
+
 class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
 {
  public:
@@ -60,12 +62,12 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
   /** Set the input as a vtkStructuredPoints dataset. It is then
       mapped through a vtkExtractVOI to limit the visualization
       to one slice. */	
-  void SetInput(vtkStructuredPoints* data);
+  void SetInput(vtkStructuredPoints* data, vtkMatrix4x4 *matrix = 0);
   
   /** Set the input as a vtkUnstructuredGrid dataset. It consists
       in a set of tensors and positions. Allows to display sparse
       tensors. */	
-  void SetInput(vtkUnstructuredGrid* data);
+  void SetInput(vtkUnstructuredGrid* data, vtkMatrix4x4 *matrix = 0);
   
   /** Set the glyph shape */
   void SetGlyphShape (int i);

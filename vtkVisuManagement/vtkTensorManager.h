@@ -27,6 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkRenderWindow.h>
 #include <vtkStructuredPoints.h>
 #include <vtkLookupTable.h>
+#include <vtkMatrix4x4.h>
 
 #include "vtkTensorVisuManager.h"
 
@@ -46,10 +47,12 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
   vtkSetObjectMacro (Input, vtkStructuredPoints);
   vtkGetObjectMacro (Input, vtkStructuredPoints);
 
+  void SetDirectionMatrix(vtkMatrix4x4 *mat);
+  vtkGetObjectMacro (DirectionMatrix, vtkMatrix4x4);
 
-  vtkGetObjectMacro (TensorVisuManagerAxial, vtkTensorVisuManager);
+  vtkGetObjectMacro (TensorVisuManagerAxial,    vtkTensorVisuManager);
   vtkGetObjectMacro (TensorVisuManagerSagittal, vtkTensorVisuManager);
-  vtkGetObjectMacro (TensorVisuManagerCoronal, vtkTensorVisuManager);
+  vtkGetObjectMacro (TensorVisuManagerCoronal,  vtkTensorVisuManager);
 
 
 
@@ -142,6 +145,12 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
   /** Set the current position in voxel coordinates. */
   void SetCurrentPosition (int pos[3]);
 
+  /** Set the current position in physical coordinates. */
+  void SetCurrentPosition(const double&, const double&, const double&);
+
+  /** Set the current position in physical coordinates. */
+  void SetCurrentPosition(double pos[3]);
+
   /** Get the current position. */
   const int* GetCurrentPosition (void) const
   { return this->CurrentPosition; }
@@ -183,6 +192,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
   vtkTensorVisuManager* TensorVisuManagerAxial;
   vtkTensorVisuManager* TensorVisuManagerSagittal;
   vtkTensorVisuManager* TensorVisuManagerCoronal;
+
+  vtkMatrix4x4 *DirectionMatrix;
+  vtkMatrix4x4 *PhysicalToVoxelCoordinatesTransformMatrix;
 
   int CurrentPosition[3];
   
