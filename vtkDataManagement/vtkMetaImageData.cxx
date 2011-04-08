@@ -1,20 +1,20 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkMetaImageData.cxx 1370 2009-12-01 11:59:17Z ntoussaint $
-Language:  C++
-Author:    $Author: ntoussaint $
-Date:      $Date: 2009-12-01 11:59:17 +0000 (Tue, 01 Dec 2009) $
-Version:   $Revision: 1370 $
+  Program:   vtkINRIA3D
+  Module:    $Id: vtkMetaImageData.cxx 1370 2009-12-01 11:59:17Z ntoussaint $
+  Language:  C++
+  Author:    $Author: ntoussaint $
+  Date:      $Date: 2009-12-01 11:59:17 +0000 (Tue, 01 Dec 2009) $
+  Version:   $Revision: 1370 $
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
+  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
+  See Copyright.txt for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
 
-=========================================================================*/
+  =========================================================================*/
 #include <vtkMetaImageData.h>
 #include "vtkObjectFactory.h"
 
@@ -50,9 +50,7 @@ vtkCxxRevisionMacro(vtkMetaImageData, "$Revision: 1370 $");
 vtkMetaImageData::vtkMetaImageData()
 {
 #ifdef vtkINRIA3D_USE_ITK
-  this->ComponentType = itk::ImageIOBase::UNKNOWNCOMPONENTTYPE;
-  m_ItkImage = NULL;
-  m_ItkConverter = ItkConverterType::New();
+  this->m_ItkImage  = 0;
 #endif
   this->Type = vtkMetaDataSet::VTK_META_IMAGE_DATA;
 
@@ -68,34 +66,12 @@ vtkMetaImageData::~vtkMetaImageData()
 }
 
 //----------------------------------------------------------------------------
-void vtkMetaImageData::Initialize (void)
-{
-  //nothing to do
-  this->Superclass::LinkFilters();
-  this->LinkFilters();
-  
-}
-
-//----------------------------------------------------------------------------
 void vtkMetaImageData::SetDataSet(vtkDataSet* dataset)
 {
-  // TO DO
-  // THINK OF A GOOD STRATEGY
-  // CONCERNING PIXEL-TYPE HANDLING 
-  vtkImageData* image = vtkImageData::SafeDownCast(dataset);
-
-  if (!image || !(image->GetScalarType() == VTK_FLOAT))
-  {
-    // this is OK now as we can handle any type of scalar !!
-    //vtkWarningMacro(<<"this pixel type is not float, \nand might induce some errors in further process"<<endl);
-  }
+  if (!vtkImageData::SafeDownCast(dataset))
+    vtkWarningMacro(<<"data type is not image"<<endl);
   this->Superclass::SetDataSet (dataset);
-  
-      
-  
 }
-
-  
 
 //----------------------------------------------------------------------------
 vtkImageData* vtkMetaImageData::GetImageData (void) const
@@ -104,131 +80,6 @@ vtkImageData* vtkMetaImageData::GetImageData (void) const
     return NULL;
   return vtkImageData::SafeDownCast (this->DataSet);
 }
-
-// //----------------------------------------------------------------------------
-// void vtkMetaImageData::Read (const char* filename)
-// {
-
-// #ifndef vtkINRIA3D_USE_ITK
-//   vtkErrorMacro(<<"cannot read file without ITK"<<endl);
-//   throw vtkErrorCode::UserError;
-// #else
-
-//   /*
-//     we assume here that the user did called "CanReadFile" before entering
-//     this prevent us from running the 4F image test once more.
-//   */
-
-//   // Read image in float type
-//   typedef FloatImageType RealImageType;
-//   typedef itk::ImageFileReader<RealImageType> RealReaderType;		
-// //   typedef itk::ImageFileReader<itk::Image<unsigned char, 3> > RealReaderType;		
-//   RealReaderType::Pointer reader = RealReaderType::New();		
-//   reader->SetFileName(filename);					
-//   try
-//   {
-//     std::cout<<"reading "<<filename<<"... ";			
-//     reader->Update();
-//     std::cout<<"done."<<std::endl;
-//   }
-//   catch(itk::ExceptionObject &e)  {
-//     std::cerr << e;
-//     vtkErrorMacro(<<"cannot read file : "<<filename<<endl);
-//     throw vtkErrorCode::CannotOpenFileError;
-//   }
-//   try
-//   {
-//     this->SetItkImage<unsigned char>(reader->GetOutput());    
-// //     this->SetDataSetAsItkImage(reader->GetOutput());    
-//   }
-//   catch (vtkErrorCode::ErrorIds)
-//   {
-//     throw vtkErrorCode::UserError;
-//   }
-  
-//   this->LinkFilters();
-
-//   // remember the path of the file
-//   this->SetFilePath ((vtksys::SystemTools::GetFilenamePath (filename)).c_str());
-// #endif
-// }
-
-
-// //----------------------------------------------------------------------------
-// void vtkMetaImageData::Write (const char* filename)
-// {
-
-// #ifndef vtkINRIA3D_USE_ITK
-//   vtkErrorMacro(<<"cannot write file without ITK"<<endl);
-//   throw vtkErrorCode::UserError;
-// #else
-
-//   if (this->GetItkImage().IsNull())
-//   {
-//     vtkErrorMacro(<<"No data to save");
-//     throw vtkErrorCode::UserError;
-//   }
-
-//   std::string realname = filename;
-  
-//   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
-//   if (!ext.size())
-//     realname += ".hdr";
-  
-//   // ITK stuff to be able to write analyze format
-  
-//   itk::Matrix<double,3,3> cosines;
-//   cosines[0][0]= 1;
-//   cosines[0][1]= 0;
-//   cosines[0][2]= 0;
-//   cosines[1][0]= 0;
-//   cosines[1][1]=-1;
-//   cosines[1][2]= 0;
-//   cosines[2][0]= 0;
-//   cosines[2][1]= 0;
-//   cosines[2][2]= 1;
-//   this->GetItkImage()->SetDirection(cosines);
-  
-//   typedef FloatImageType RealImageType;
-//   typedef itk::ImageFileWriter<RealImageType> RealWriterType;
-//   RealWriterType::Pointer writer = RealWriterType::New();
-//   writer->SetFileName(realname.c_str());
-//   writer->SetInput(this->GetItkImage());
-
-//   try
-//   {
-//     std::cout<<"writing "<<realname.c_str()<<"... ";
-//     writer->Write();
-//     std::cout<<"done."<<std::endl;
-//   }
-//   catch(itk::ExceptionObject &e)
-//   {
-//     std::cerr << e;
-//     vtkErrorMacro(<<"cannot write file : "<<realname.c_str()<<endl);
-//     throw vtkErrorCode::UserError;
-//   }
-  
-
-//   // remember the path of the file
-//   this->SetFilePath ((vtksys::SystemTools::GetFilenamePath (realname.c_str())).c_str());
-// #endif
-// }
-
-
-void vtkMetaImageData::LinkFilters (void)
-{
-  this->Superclass::LinkFilters();
-  
-#ifdef vtkINRIA3D_USE_ITK
-
-  vtkImageData* c_image = this->GetImageData();
-  if (c_image)
-  {
-    m_ItkConverter->SetInput (c_image);
-  }
-#endif
-}
-
 
 //----------------------------------------------------------------------------
 bool vtkMetaImageData::IsColorExtension (const char* ext)
@@ -291,7 +142,7 @@ unsigned int vtkMetaImageData::CanReadFile (const char* filename)
   }
   catch (itk::ExceptionObject &e)
   {
-	  std::cerr << e;
+    std::cerr << e;
     return 0;
   }  
   
@@ -313,80 +164,52 @@ unsigned int vtkMetaImageData::CanReadFile (const char* filename)
   return 0;
 }
 
-  
-#ifdef vtkINRIA3D_USE_ITK
-void vtkMetaImageData::SetDataSetAsItkImage(vtkMetaImageData::FloatImageType::Pointer image)
+
+unsigned long vtkMetaImageData::GetComponentType (void)
 {
-
-
-  if (image.IsNull())
-    return;
-
+  if (this->GetImageData())
+    return 0;
   
-  typedef itk::ImageToVTKImageFilter<FloatImageType> ConverterType;
-  ConverterType::Pointer converter = ConverterType::New();  
-  converter->SetInput (image);
-
-  try
-  {
-    converter->Update();
-  }
-  catch(itk::ExceptionObject &e)
-  {
-    std::cerr << e;
-    vtkErrorMacro(<<"error when linking filters"<<endl);
-    throw vtkErrorCode::UserError;
-  }
-
-  // we have to copy the image
-  vtkImageData* input = vtkImageData::New();
-  input->DeepCopy(converter->GetOutput());  
-  this->SetDataSet (input);
-  input->Delete();
-  this->LinkFilters();
-
-  this->m_ItkImage = image;
-
-  
+  return this->GetImageData()->GetScalarType();
 }
 
-vtkMetaImageData::FloatImageType::Pointer vtkMetaImageData::GetItkImage()
+
+#ifdef vtkINRIA3D_USE_ITK
+
+itk::ImageBase<3>* vtkMetaImageData::GetItkImage(void)
 {
-  if (!this->GetDataSet())
+  if (!this->GetImageData())
   {
     return NULL;
   }
 
   if (m_ItkImage.IsNull())
   {
-    
-    vtkImageCast* caster = vtkImageCast::New();
-    caster->SetOutputScalarTypeToFloat ();
-    caster->SetInput (this->GetImageData());
-    caster->Update();
-
-    this->m_ItkConverter->SetInput (caster->GetOutput());
-    
-    try
-    {
-      this->m_ItkConverter->Update();
-    }
-    catch(itk::ExceptionObject &e)
-    {
-      std::cerr << e;
-      vtkErrorMacro(<<"error when converting"<<endl);
-      caster->Delete();
-      return NULL;
-    }
-
-    this->m_ItkImage = this->m_ItkConverter->GetOutput();
-    caster->Delete();
+    unsigned int componenttype = this->GetComponentType();
+  
+    if (componenttype == VTK_UNSIGNED_CHAR)
+      this->ConvertImage<unsigned char>(this->GetImageData(), this->m_ItkImage); 
+    else if (componenttype == VTK_CHAR)
+      this->ConvertImage<char>(this->GetImageData(), this->m_ItkImage); 
+    else if (componenttype == VTK_UNSIGNED_SHORT)
+      this->ConvertImage<unsigned short>(this->GetImageData(), this->m_ItkImage); 
+    else if (componenttype == VTK_SHORT)
+      this->ConvertImage<short>(this->GetImageData(), this->m_ItkImage); 
+    else if (componenttype == VTK_UNSIGNED_INT)
+      this->ConvertImage<unsigned int>(this->GetImageData(), this->m_ItkImage);
+    else if (componenttype == VTK_INT)
+      this->ConvertImage<int>(this->GetImageData(), this->m_ItkImage); 
+    else if (componenttype == VTK_UNSIGNED_LONG)
+      this->ConvertImage<unsigned long>(this->GetImageData(), this->m_ItkImage); 
+    else if (componenttype == VTK_LONG)
+      this->ConvertImage<long>(this->GetImageData(), this->m_ItkImage); 
+    else if (componenttype == VTK_FLOAT)
+      this->ConvertImage<float>(this->GetImageData(), this->m_ItkImage); 
+    else if (componenttype == VTK_DOUBLE)
+      this->ConvertImage<double>(this->GetImageData(), this->m_ItkImage); 
   }
 
   return this->m_ItkImage;
-    
-  
-  
 }
 
 
@@ -513,9 +336,6 @@ void vtkMetaImageData::Read (const char* filename)
     {
       vtkWarningMacro (<<"The image type is not scalar, "<<endl<<"restricting reading to the first component !"<<endl);
     }
-
-  
-    
     
     // finally read the image : try all types
     if (componenttype == itk::ImageIOBase::UCHAR)
@@ -564,13 +384,11 @@ void vtkMetaImageData::Write (const char* filename)
     throw vtkErrorCode::UserError;
   }
 
-//   this->WriteFile<unsigned char>(filename);
-//   return;
+  //   this->WriteFile<unsigned char>(filename);
+  //   return;
   
-
+  unsigned int componenttype = this->GetComponentType();
   
-  unsigned int componenttype = this->GetImageData()->GetScalarType();
-
   if (componenttype == VTK_UNSIGNED_CHAR)
     this->WriteFile<unsigned char>(filename); 
   else if (componenttype == VTK_CHAR)
@@ -630,10 +448,9 @@ void vtkMetaImageData::SetOrientationMatrix (vtkMatrix4x4* matrix)
 
 
 //----------------------------------------------------------------------------
-vtkMetaImageData::FloatImageType::PointType vtkMetaImageData::ExtractPARRECImageOrigin (const char* filename, ShortDirectionType direction)
+vtkMetaImageData::FloatImageType::PointType vtkMetaImageData::ExtractPARRECImageOrigin (const char* filename, DirectionType direction)
 {
 
-  typedef ShortDirectionType DirectionType;
   typedef FloatImageType::PointType PointType;
   PointType nullorigin;
   nullorigin[0] = nullorigin[1] = nullorigin[2] = 0.0;
@@ -686,7 +503,7 @@ vtkMetaImageData::FloatImageType::PointType vtkMetaImageData::ExtractPARRECImage
   offcenterpoint[1] = offcenter[1];
   offcenterpoint[2] = offcenter[2];
   
-  ShortDirectionType AFRtoLPS;
+  DirectionType AFRtoLPS;
   AFRtoLPS.Fill (0);
   AFRtoLPS[0][2] = 1;
   AFRtoLPS[1][0] = 1;
@@ -710,10 +527,10 @@ vtkMetaImageData::FloatImageType::PointType vtkMetaImageData::ExtractPARRECImage
 
 
 //----------------------------------------------------------------------------
-vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrientation (const char* filename)
+vtkMetaImageData::DirectionType vtkMetaImageData::ExtractPARRECImageOrientation (const char* filename)
 {
 
-  typedef ShortDirectionType DirectionType;
+  typedef DirectionType DirectionType;
 
   DirectionType eyedir;
   eyedir.SetIdentity();
@@ -760,59 +577,59 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
     return eyedir;
   }
   
-  ShortDirectionType AFRtoLPS;
+  DirectionType AFRtoLPS;
   AFRtoLPS.Fill (0);
   AFRtoLPS[0][2] = 1;
   AFRtoLPS[1][0] = 1;
   AFRtoLPS[2][1] = 1;
 
-  ShortDirectionType magicmatrix;
+  DirectionType magicmatrix;
   magicmatrix.Fill (0);
   magicmatrix [0][0] = -1;
   magicmatrix [1][2] = 1;
   magicmatrix [2][1] = -1;
 
-  ShortDirectionType TRA;
+  DirectionType TRA;
   TRA.Fill (0);
   TRA [0][1] = 1;
   TRA [1][0] = -1;
   TRA [2][2] = -1;
-  ShortDirectionType SAG;
+  DirectionType SAG;
   SAG.Fill (0);
   SAG [0][0] = -1;
   SAG [1][2] = 1;
   SAG [2][1] = -1;
-  ShortDirectionType COR;
+  DirectionType COR;
   COR.Fill (0);
   COR [0][1] = 1;
   COR [1][2] = 1;
   COR [2][0] = -1;
 
   
-  ShortDirectionType Torientation;
+  DirectionType Torientation;
   
   switch(sliceorientation)
   {
     
-    case PAR_SLICE_ORIENTATION_TRANSVERSAL: 
-      // Transverse - the REC data appears to be stored as right-left, 
-      // anterior-posterior, and inferior-superior.
-      // Verified using a marker on right side of brain.
-      Torientation = TRA;      
-      break;
-    case PAR_SLICE_ORIENTATION_SAGITTAL: 
-      // Sagittal - the REC data appears to be stored as anterior-posterior, 
-      // superior-inferior, and right-left.
-      // Verified using marker on right side of brain.
-      Torientation = SAG;
-      break;
-    case PAR_SLICE_ORIENTATION_CORONAL: 
-      // Coronal - the REC data appears to be stored as right-left, 
-      // superior-inferior, and anterior-posterior.
-      // Verified using marker on right side of brain.
-      // fall thru
-    default:
-      Torientation = COR;
+      case PAR_SLICE_ORIENTATION_TRANSVERSAL: 
+	// Transverse - the REC data appears to be stored as right-left, 
+	// anterior-posterior, and inferior-superior.
+	// Verified using a marker on right side of brain.
+	Torientation = TRA;      
+	break;
+      case PAR_SLICE_ORIENTATION_SAGITTAL: 
+	// Sagittal - the REC data appears to be stored as anterior-posterior, 
+	// superior-inferior, and right-left.
+	// Verified using marker on right side of brain.
+	Torientation = SAG;
+	break;
+      case PAR_SLICE_ORIENTATION_CORONAL: 
+	// Coronal - the REC data appears to be stored as right-left, 
+	// superior-inferior, and anterior-posterior.
+	// Verified using marker on right side of brain.
+	// fall thru
+      default:
+	Torientation = COR;
   
   }
 
@@ -821,7 +638,7 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
   double fh = angulation[1] * vnl_math::pi / 180.0;
   double rl = angulation[2] * vnl_math::pi / 180.0;
 
-  ShortDirectionType Tap;
+  DirectionType Tap;
   Tap.Fill (0);
   Tap[0][0] = 1;
   Tap[1][1] = std::cos (ap);
@@ -829,7 +646,7 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
   Tap[2][1] = std::sin (ap);
   Tap[2][2] = std::cos (ap);
 
-  ShortDirectionType Tfh;
+  DirectionType Tfh;
   Tfh.Fill (0);
   Tfh[1][1] = 1;
   Tfh[0][0] = std::cos (fh);
@@ -837,7 +654,7 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
   Tfh[2][0] = - std::sin (fh);
   Tfh[2][2] = std::cos (fh);
 
-  ShortDirectionType Trl;
+  DirectionType Trl;
   Trl.Fill (0);
   Trl[2][2] = 1;
   Trl[0][0] = std::cos (rl);
@@ -845,7 +662,7 @@ vtkMetaImageData::ShortDirectionType vtkMetaImageData::ExtractPARRECImageOrienta
   Trl[1][0] = std::sin (rl);
   Trl[1][1] = std::cos (rl);
   
-  ShortDirectionType TR = AFRtoLPS * Trl * Tap * Tfh * magicmatrix.GetTranspose() * Torientation.GetTranspose();
+  DirectionType TR = AFRtoLPS * Trl * Tap * Tfh * magicmatrix.GetTranspose() * Torientation.GetTranspose();
   DirectionType retval;
   retval.SetIdentity();
   

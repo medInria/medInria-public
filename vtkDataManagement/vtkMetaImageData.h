@@ -1,20 +1,20 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkMetaImageData.h 1452 2010-01-27 19:15:29Z ntoussaint $
-Language:  C++
-Author:    $Author: ntoussaint $
-Date:      $Date: 2010-01-27 19:15:29 +0000 (Wed, 27 Jan 2010) $
-Version:   $Revision: 1452 $
+  Program:   vtkINRIA3D
+  Module:    $Id: vtkMetaImageData.h 1452 2010-01-27 19:15:29Z ntoussaint $
+  Language:  C++
+  Author:    $Author: ntoussaint $
+  Date:      $Date: 2010-01-27 19:15:29 +0000 (Wed, 27 Jan 2010) $
+  Version:   $Revision: 1452 $
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
+  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
+  See Copyright.txt for details.
 
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.  See the above copyright notices for more information.
 
-=========================================================================*/
+  =========================================================================*/
 #ifndef _vtkMetaImageData_h_
 #define _vtkMetaImageData_h_
 
@@ -35,8 +35,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <itkImage.h>
 #include <itkCastImageFilter.h>
 #endif
-
-
 
 class vtkImageData;
 class vtkVolumeProperty;
@@ -84,21 +82,16 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   typedef float ImageComponentType;
   typedef itk::Image<ImageComponentType, 3> FloatImageType;
   typedef itk::Image<ImageComponentType, 4> FloatImage4DType;
-  typedef itk::VTKImageToImageFilter<FloatImageType> ItkConverterType;
   typedef itk::MetaDataDictionary DictionaryType;
 
-  typedef FloatImageType::DirectionType ShortDirectionType;
+  typedef FloatImageType::DirectionType DirectionType;
   
   
   /**
      Access directly to the itk image in float scalar component type
      For other use please refer to templated method GetItkImage()
   */
-  FloatImageType::Pointer GetItkImage (void);
-  /**
-     Not used anymore : use SetItkImage instead
-  */
-  void SetDataSetAsItkImage(FloatImageType::Pointer image);
+  itk::ImageBase<3>* GetItkImage (void);
   /**
      Access to the DICOM dictionary of this image
      Note that this dictionary is not filled automatically when ITK image is set.
@@ -115,6 +108,30 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   void SetDicomDictionary (DictionaryType dictionary)
   { this->DicomDictionary = dictionary; }
   /**
+     Reads a file and creates a image of a given scalar component type.
+     Use with care. Please prefer using Read()
+  */
+  template <typename type> inline void ConvertImage (vtkImageData* vtkimage, itk::ImageBase<3>::Pointer& itkimage)
+  {
+    typedef typename itk::Image<type, 3> ImageType;
+    typedef typename itk::VTKImageToImageFilter<ImageType> ConverterType;
+
+    typename ConverterType::Pointer converter = ConverterType::New();
+    converter->SetInput (vtkimage);
+    try
+    {
+      converter->Update();
+    }
+    catch(itk::ExceptionObject &e)
+    {
+      std::cerr << e;
+      vtkErrorMacro(<<"cannot convert image "<<endl);
+    }
+
+    itkimage = converter->GetOutput();
+  }
+  
+  /**
      Sets the dataset as an ITK image.
      template type is the image scalar component type (i.e. unsigned char, float, etc)
      This method converts the itk image into a corresponding type of vtkImageData
@@ -123,7 +140,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   template <typename type> inline void SetItkImage (typename itk::Image<type, 3>::Pointer input)
   {
     typedef typename itk::Image<type, 3> ImageType;
-    
+
     typename ImageType::DirectionType direction = input->GetDirection();
     typedef typename itk::Point<typename ImageType::DirectionType::ValueType, ImageType::ImageDimension> PointType;
     PointType origin = input->GetOrigin();
@@ -135,16 +152,16 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
 	matrix->SetElement (x,y,direction[x][y]);
 
     /**
-     The origin in ITK pipeline is taken into account in a different
-     way than in the VTK equivalent.
-     A first hack would be to force the vtkImageData instance to have
-     a null origin, and put the ITK origin in the 4th column of the
-     OrientationMatrix instance. BUT, when the ITK pipeline is updated,
-     then the ITK origin is put back in place in the vtkImageData instance.
+       The origin in ITK pipeline is taken into account in a different
+       way than in the VTK equivalent.
+       A first hack would be to force the vtkImageData instance to have
+       a null origin, and put the ITK origin in the 4th column of the
+       OrientationMatrix instance. BUT, when the ITK pipeline is updated,
+       then the ITK origin is put back in place in the vtkImageData instance.
 
-     Therefore we need to keep the vtkImageData's origin the same as the
-     ITK one. And, we need to correct for this misbehaviour through a hack
-     in the OrientationMatrix 4th column, a sort of corrected origin.
+       Therefore we need to keep the vtkImageData's origin the same as the
+       ITK one. And, we need to correct for this misbehaviour through a hack
+       in the OrientationMatrix 4th column, a sort of corrected origin.
     */
     double v_origin[4], v_origin2[4];
     for (int i=0; i<3; i++)
@@ -165,13 +182,15 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     typename ConverterType::Pointer converter = ConverterType::New();
     converter->SetInput (input);
     converter->Update();
-    vtkImageData* vtkinput = vtkImageData::New();
-    vtkinput->DeepCopy(converter->GetOutput());
+    /* vtkImageData* vtkinput = vtkImageData::New(); */
+    /* vtkinput->DeepCopy(converter->GetOutput()); */
     
-    this->SetDataSet (vtkinput);
-    vtkinput->Delete();
-    this->LinkFilters();
+    this->SetDataSet (converter->GetOutput());
+    
+    this->m_ItkImage = input;
 
+    this->Modified();
+    
   }
   /**
      Reads a file and creates a image of a given scalar component type.
@@ -197,16 +216,15 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     
     if ( !strcmp (reader->GetImageIO()->GetNameOfClass(), "PhilipsRECImageIO"))
     {
-      ShortDirectionType correctdirection = this->ExtractPARRECImageOrientation(filename);
+      DirectionType correctdirection = this->ExtractPARRECImageOrientation(filename);
       reader->GetOutput()->SetDirection (correctdirection);
       FloatImageType::PointType correctorigin = this->ExtractPARRECImageOrigin (filename, correctdirection);
       reader->GetOutput()->SetOrigin (correctorigin);
-    }  
-
+    }
     
     try
     {
-      this->SetItkImage<type>(reader->GetOutput());    
+      this->SetItkImage<type>(reader->GetOutput());
     }
     catch (vtkErrorCode::ErrorIds)
     {
@@ -241,18 +259,6 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
       realname += ".mha";
     writer->SetFileName(realname.c_str());
 
-/*     // ITK stuff to be able to write analyze format */
-/*     itk::Matrix<double,3,3> cosines; */
-/*     cosines[0][0]= 1; */
-/*     cosines[0][1]= 0; */
-/*     cosines[0][2]= 0; */
-/*     cosines[1][0]= 0; */
-/*     cosines[1][1]=-1; */
-/*     cosines[1][2]= 0; */
-/*     cosines[2][0]= 0; */
-/*     cosines[2][1]= 0; */
-/*     cosines[2][2]= 1; */
-/*     itkimage->SetDirection(cosines); */
     writer->SetInput(itkimage);
     
     try
@@ -271,7 +277,6 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     this->SetFilePath ((vtksys::SystemTools::GetFilenamePath (realname.c_str())).c_str());
 
   }
-
   
   /**
      Access to the dataset as an ITK image.
@@ -287,43 +292,21 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
       return false;
     
     typedef typename itk::Image<type, 3> ImageType;
-    typedef typename itk::CastImageFilter<FloatImageType, ImageType> CastFilterType;
 
-    typename CastFilterType::Pointer myCast = CastFilterType::New();
-    myCast->SetInput (this->GetItkImage());
+    typename ImageType::Pointer goodtypedimage = dynamic_cast<ImageType*>(this->GetItkImage());
 
-    try
+    if (!goodtypedimage)
     {
-      myCast->Update();
-    }
-    catch(itk::ExceptionObject &e)
-    {
-      std::cerr << e;
-      vtkErrorMacro(<<"error when converting"<<endl);
       return false;
     }
-    ret = myCast->GetOutput();
 
-    typedef typename itk::Point<typename ImageType::DirectionType::ValueType, ImageType::ImageDimension> PointType;
-    typename ImageType::DirectionType direction;
-    PointType origin;
-    vtkMatrix4x4* matrix = this->GetOrientationMatrix();
-
-    for (unsigned int x=0; x<3; x++)
-      for (unsigned int y=0; y<3; y++)
-	direction[x][y] = matrix->GetElement (x, y);
-    for (unsigned int x=0; x<3; x++)
-      origin[x] = matrix->GetElement (x, 3);
-    
-    ret->SetOrigin(origin);
-    ret->SetDirection(direction);
-    
+    ret = goodtypedimage;
     return true;
   }
 
 
-  ShortDirectionType ExtractPARRECImageOrientation (const char* filename);
-  FloatImageType::PointType ExtractPARRECImageOrigin (const char* filename, ShortDirectionType direction);
+  DirectionType ExtractPARRECImageOrientation (const char* filename);
+  FloatImageType::PointType ExtractPARRECImageOrigin (const char* filename, DirectionType direction);
   
   //ETX
   
@@ -369,42 +352,24 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   
   static unsigned int CanReadFile (const char* filename);
 
-  vtkGetMacro (ComponentType, unsigned long);
-  vtkSetMacro (ComponentType, unsigned long);
-  
-
+  unsigned long GetComponentType (void);
   
  protected:
   vtkMetaImageData();
   ~vtkMetaImageData();
 
-  /**
-     Method called everytime the dataset changes for connexion updates
-  */
-  virtual void LinkFilters (void);
-  /**
-     Method called everytime the dataset changes for initialization
-   */
-  virtual void Initialize (void);
-
   vtkVolumeProperty* VolumeProperty;
-
-
-  
   
  private:
   
   vtkMetaImageData(const vtkMetaImageData&);      // Not implemented.
   void operator=(const vtkMetaImageData&);        // Not implemented.
 
-  unsigned long ComponentType;
-
   vtkMatrix4x4* OrientationMatrix;
   
 #ifdef vtkINRIA3D_USE_ITK
   //BTX
-  FloatImageType::Pointer m_ItkImage;
-  ItkConverterType::Pointer m_ItkConverter;
+  itk::ImageBase<3>::Pointer m_ItkImage;
   DictionaryType DicomDictionary;
   //ETX
 
