@@ -36,12 +36,12 @@ class dtkAbstractView;
   d->sequenceList->AddItem (sequence);					\
   vtkMetaImageData* metaimage =						\
     vtkMetaImageData::SafeDownCast (sequence->GetMetaDataSet ((unsigned int)0)); \
-  vtkImageData* image =							\
+  vtkImageData* vtkimage =							\
     vtkImageData::SafeDownCast (sequence->GetDataSet());		\
-  d->view->view2d()->SetInput (image,					\
+  d->view->view2d()->SetInput (vtkimage,					\
 			       metaimage->GetOrientationMatrix(),	\
 			       layer);					\
-  d->view->view3d()->SetInput (image,					\
+  d->view->view3d()->SetInput (vtkimage,					\
 			       metaimage->GetOrientationMatrix(),	\
 			       layer);					\
   sequence->Delete();							\
