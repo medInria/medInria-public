@@ -31,13 +31,13 @@ SET(KWAddOn_SRCS
   vtkKWSequenceEditorWidget.cxx
   vtkKWTimeTableWidget.cxx
   vtkKWSnapshotHandler.cxx
+  vtkKWMainWindowInteractor.cxx
 )
 
 
 IF (NOT ITK_USE_SYSTEM_GDCM)
 SET(KWAddOn_SRCS
   ${KWAddOn_SRCS}
-  vtkKWMainWindowInteractor.cxx
   vtkKWDICOMImporter2.cxx
   vtkKWDICOMExporter.cxx
   vtkKWDicomInfoWidget.cxx
@@ -151,7 +151,7 @@ IF(NOT KWWidgets_SOURCE_DIR)
 ENDIF(NOT KWWidgets_SOURCE_DIR)
 
 
-IF (NOT ITK_USE_SYSTEM_GDCM)
+#IF (NOT ITK_USE_SYSTEM_GDCM)
 
   ADD_EXECUTABLE(INRIAviz4D WIN32 
     INRIAviz4D.cxx
@@ -179,7 +179,7 @@ IF (NOT ITK_USE_SYSTEM_GDCM)
   ENDIF( BUILD_TESTING )
 
 
-ENDIF (NOT ITK_USE_SYSTEM_GDCM)
+#ENDIF (NOT ITK_USE_SYSTEM_GDCM)
 
 # If needed, copy the Tcl/Tk support files required at run-time 
 # to initialize Tcl/Tk. This is only triggered if VTK was built

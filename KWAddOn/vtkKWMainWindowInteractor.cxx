@@ -36,14 +36,12 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageData.h>
 #include <vtkKWApplication.h>
 #include <vtkKWApplication.h>
-#include <vtkKWDICOMExporter.h>
-#include <vtkKWDICOMImporter2.h>
+
 #include <vtkKWDataManagerWidget.h>
 #include <vtkKWDragAndDropTargetSet.h>
 #include <vtkKWEntry.h>
 #include <vtkKWEntryWithLabel.h>
 #include <vtkKWFrameWithLabel.h>
-#include <vtkKWInfoToolBox.h>
 #include <vtkKWInternationalization.h>
 #include <vtkKWLabel.h>
 #include <vtkKWLandmarkManagerWidget.h>
@@ -108,8 +106,13 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/stl/string>
 #include <vtksys/stl/vector>
-// #include <vtkKWMetaDataSetControlWidget.h>
-// #include <vtkMetaDataSetVisuManager.h>
+
+#ifndef ITK_USE_SYSTEM_GDCM
+#include <vtkKWDICOMExporter.h>
+#include <vtkKWDICOMImporter2.h>
+#include <vtkKWInfoToolBox.h>
+#endif
+
 
 #if VTK_MAJOR_VERSION>=5 && VTK_MINOR_VERSION>=1
 #include <vtkDataManagerWriter.h>
@@ -450,11 +453,13 @@ void vtkKWMainWindowInteractor::CreateWidget()
   this->MainPanelVisibilityOn();
   this->SecondaryPanelVisibilityOff();
   
-  
+
+#ifndef ITK_USE_SYSTEM_GDCM  
   vtkKWInfoToolBox* information = vtkKWInfoToolBox::New();
   this->LoadToolBox(information, "Information");
   this->ToolboxManager->SelectToolboxCallback(0);
   information->Delete();
+#endif
   
   vtkKWSequencer* Sequencer = vtkKWSequencer::New();
   this->LoadToolBox(Sequencer, "Sequencer");
@@ -496,8 +501,6 @@ std::vector<vtkKWToolBox*> vtkKWMainWindowInteractor::GetToolBoxList()
 {
   return this->ToolboxManager->GetToolBoxList();
 }
-
-
 
 //-----------------------------------------------------------------------------
 vtkKWToolBox* vtkKWMainWindowInteractor::GetToolboxByID(unsigned int id)
@@ -1178,6 +1181,7 @@ void vtkKWMainWindowInteractor::OnMenuFileOpenDICOM ()
 
 
   
+#ifndef ITK_USE_SYSTEM_GDCM
   vtkKWDICOMImporter2 *dlg = vtkKWDICOMImporter2::New();
   dlg->SetMasterWindow (this);
   dlg->Create();
@@ -1202,6 +1206,7 @@ void vtkKWMainWindowInteractor::OnMenuFileOpenDICOM ()
   dlg->Delete();
 
   this->Update();
+#endif
   
 }
 
@@ -1554,6 +1559,7 @@ void vtkKWMainWindowInteractor::OnMenuFileSaveDICOM ()
 {
   
   
+#ifndef ITK_USE_SYSTEM_GDCM
   vtkKWDICOMExporter *dlg = vtkKWDICOMExporter::New();
   dlg->SetMasterWindow (this);
   
@@ -1574,6 +1580,7 @@ void vtkKWMainWindowInteractor::OnMenuFileSaveDICOM ()
 
 
   dlg->Delete();
+#endif
 
 
 }
