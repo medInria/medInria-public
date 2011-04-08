@@ -106,9 +106,11 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
             d->filterFloat->Update();
 
             // we need to call this function because GetOutput() just returns the input
-            vtkStructuredPoints* tensors = d->filterFloat->GetVTKTensors();
+            vtkStructuredPoints *tensors = d->filterFloat->GetVTKTensors();
+            vtkMatrix4x4 *matrix = d->filterFloat->GetDirectionMatrix();
 
             d->manager->SetInput(tensors);
+            d->manager->SetDirectionMatrix(matrix);
 
             // TODO this should not be here once the toolbox is coded
             d->manager->ResetPosition();
@@ -132,8 +134,10 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
             // we need to call this function because GetOutput() just returns the input
             vtkStructuredPoints* tensors = d->filterDouble->GetVTKTensors();
+            vtkMatrix4x4 *matrix = d->filterDouble->GetDirectionMatrix();
 
             d->manager->SetInput(tensors);
+            d->manager->SetDirectionMatrix(matrix);
 
             // TODO this should not be here once the toolbox is coded
             d->manager->ResetPosition();

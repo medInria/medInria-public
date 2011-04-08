@@ -26,6 +26,9 @@ public:
     typedef itk::Image<TensorType, 3> TensorImageType;
   
     TensorImageType::Pointer tensors;
+
+    QImage        thumbnail;
+    QList<QImage> thumbnails;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -35,6 +38,8 @@ public:
 itkDataTensorImageFloat3::itkDataTensorImageFloat3(void) : dtkAbstractDataImage(), d(new itkDataTensorImageFloat3Private)
 {
     d->tensors = 0;
+    d->thumbnail = QImage(128, 128, QImage::Format_RGB32);
+    d->thumbnails << d->thumbnail;
 }
 
 itkDataTensorImageFloat3::~itkDataTensorImageFloat3(void)
@@ -97,15 +102,13 @@ int itkDataTensorImageFloat3::zDimension (void)
 
 QImage& itkDataTensorImageFloat3::thumbnail  (void) const
 {
-    // TODO: TEMPORARY black image just to allow drag and drop
-    QImage* temp = new QImage(80, 80, QImage::Format_RGB32);
-    temp->fill(3);
-    return *temp;
+    // TODO: TEMPORARY black image just to allow drag and drop    
+    return d->thumbnail;
 }
 
 QList<QImage>& itkDataTensorImageFloat3::thumbnails (void) const
 {
-    return QList<QImage>() << thumbnail();
+    return d->thumbnails;
 }
 
 // /////////////////////////////////////////////////////////////////
