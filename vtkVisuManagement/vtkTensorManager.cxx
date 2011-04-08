@@ -18,6 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkTensorManager.h"
 
 #include <vtkObjectFactory.h>
+#include <vtkMath.h>
 
 vtkCxxRevisionMacro(vtkTensorManager, "$Revision: 1016 $");
 vtkStandardNewMacro(vtkTensorManager);
@@ -33,6 +34,11 @@ vtkTensorManager::vtkTensorManager()
   this->TensorVisuManagerAxial    = vtkTensorVisuManager::New();
   this->TensorVisuManagerSagittal = vtkTensorVisuManager::New();
   this->TensorVisuManagerCoronal  = vtkTensorVisuManager::New();
+
+  this->DirectionMatrix = 0;
+
+  this->PhysicalToVoxelCoordinatesTransformMatrix = vtkMatrix4x4::New();
+  this->PhysicalToVoxelCoordinatesTransformMatrix->Identity();
 
   for( int i=0; i<3; i++)
   {
@@ -62,7 +68,11 @@ vtkTensorManager::~vtkTensorManager()
   this->TensorVisuManagerAxial->Delete();
   this->TensorVisuManagerSagittal->Delete();
   this->TensorVisuManagerCoronal->Delete();
-  
+
+  if (this->DirectionMatrix)
+    this->DirectionMatrix->Delete();
+
+  this->PhysicalToVoxelCoordinatesTransformMatrix->Delete();
 }
 
 
@@ -147,12 +157,10 @@ void vtkTensorManager::Initialize()
 
 void vtkTensorManager::Update()
 {
-
   if( !this->Input || !this->RenderWindowInteractor )
   {
     return;
-  }
-  
+  }  
   
   this->Initialize();
   
@@ -174,50 +182,27 @@ void vtkTensorManager::Update()
   
 
   // finally set the data
-  this->TensorVisuManagerAxial->SetInput( this->Input );
-  this->TensorVisuManagerSagittal->SetInput( this->Input );
-  this->TensorVisuManagerCoronal->SetInput( this->Input );
-  
-
-  /*
-    this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-    vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
-    if (first_renderer)
-    {
-    first_renderer->AddActor ( this->TensorVisuManagerAxial->GetActor() );
-    first_renderer->AddActor ( this->TensorVisuManagerSagittal->GetActor() );
-    first_renderer->AddActor ( this->TensorVisuManagerCoronal->GetActor() );
-    }
-  */
-  
-  /*
-  if ( !this->Renderer )
-  {
-    this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-    vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
-
-    int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
-    this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
-    this->Renderer = vtkRenderer::New();
-	this->Renderer->SetLayer ( numLayers );
-    this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
-	this->Renderer->AddActor ( this->TensorVisuManagerAxial->GetActor() );
-    this->Renderer->AddActor ( this->TensorVisuManagerSagittal->GetActor() );
-    this->Renderer->AddActor ( this->TensorVisuManagerCoronal->GetActor() );
-	this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
-  }
-  */
+  this->TensorVisuManagerAxial->SetInput    (this->Input, this->DirectionMatrix);
+  this->TensorVisuManagerSagittal->SetInput (this->Input, this->DirectionMatrix);
+  this->TensorVisuManagerCoronal->SetInput  (this->Input, this->DirectionMatrix);
   
   if ( this->Renderer )
   {
-	this->Renderer->AddActor ( this->TensorVisuManagerAxial->GetActor() );
+    this->Renderer->AddActor ( this->TensorVisuManagerAxial->GetActor() );
     this->Renderer->AddActor ( this->TensorVisuManagerSagittal->GetActor() );
     this->Renderer->AddActor ( this->TensorVisuManagerCoronal->GetActor() );
-  }
-    
+  }   
 }
 
+void vtkTensorManager::SetDirectionMatrix(vtkMatrix4x4 *mat)
+{
+    if (!mat)
+        return;
 
+    vtkSetObjectBodyMacro(DirectionMatrix, vtkMatrix4x4, mat);
+
+    vtkMatrix4x4::Invert(this->DirectionMatrix, this->PhysicalToVoxelCoordinatesTransformMatrix);
+}
 
 void vtkTensorManager::SetCurrentPosition (const int& X, const int& Y, const int& Z)
 {
@@ -252,6 +237,39 @@ void vtkTensorManager::SetCurrentPosition (int pos[3])
   this->SetCurrentPosition (pos[0], pos[1], pos[2]);
 }
 
+
+void vtkTensorManager::SetCurrentPosition (const double& X, const double& Y, const double& Z)
+{
+  if( !this->Input )
+  {
+    return;
+  }
+
+  double *spacing = this->Input->GetSpacing();
+
+  double pos[4]={X, Y, Z, 1.0};
+
+  vtkMatrix4x4 *aux = vtkMatrix4x4::New();
+  aux->DeepCopy(this->PhysicalToVoxelCoordinatesTransformMatrix);
+
+  for (int i=0; i<3; i++)
+      aux->SetElement(i, i, aux->GetElement(i, i)/spacing[i]);
+
+  aux->MultiplyPoint(pos, pos);
+
+  int vox_pos[3];
+  for (int i=0; i<3; i++)
+      vox_pos[i] = vtkMath::Round(pos[i]);
+
+  this->SetCurrentPosition(vox_pos[0], vox_pos[1], vox_pos[2]);
+
+  aux->Delete();
+}
+
+void vtkTensorManager::SetCurrentPosition (double pos[3])
+{
+  this->SetCurrentPosition (pos[0], pos[1], pos[2]);
+}
 
 
 void vtkTensorManager::ResetPosition()
