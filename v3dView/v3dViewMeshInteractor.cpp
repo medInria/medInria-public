@@ -81,52 +81,15 @@ bool v3dViewMeshInteractor::registered(void)
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 {
 
-	qDebug()<<"v3dViewMeshInteractor::setData";
 	if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
 		if(!d->view->data())
 		{
 			vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
 			imagegenerator->SetInput (pointSet);
 			vtkImageData * image = imagegenerator->GetOutput();
-
-            qDebug()<<"Number of Layers : "<<d->view->view2d()->GetNumberOfLayers();
             d->view->view2d()->SetInput(image);
-			vtkImageActor *actor = d->view->view2d()->GetImageActor();
+			vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
 			actor->SetOpacity(0.0);	
-
-			//typedef itk::Vector< unsigned char, 3 >    PixelType;
-   //         typedef itk::Image< PixelType, 3 >    ImageType;
-   //         ImageType::Pointer image = ImageType::New();
-
-   //         ImageType::IndexType start;
-   //         ImageType::SizeType  size;
-   //         double spacing[ ImageType::ImageDimension ];
-   //         spacing[0] = 0.626; // spacing in mm along X
-   //         spacing[1] = 0.626; // spacing in mm along Y
-   //         spacing[2] = 0.813; // spacing in mm along Z
-   //         image->SetSpacing( spacing );
-
-   //         size[0]  = 128;  // size along X
-   //         size[1]  = 128;  // size along Y
-   //         size[2]  = 128;  // size along Z
-
-   //         start[0] =   0;  // first index on X
-   //         start[1] =   0;  // first index on Y
-   //         start[2] =   0;  // first index on Z
-
-   //         double bounds[6];
-   //         pointSet->GetBounds(bounds);
-
-   //         ImageType::RegionType region;
-   //         region.SetSize( size );
-   //         region.SetIndex( start );
-
-   //         // Pixel data is allocated
-   //         image->SetRegions( region );
-   //         image->Allocate();
-
-   //         d->view->view2d()->SetITKInput(image);
-		 //   d->view->view2d()->GetImageActor()->SetOpacity(0.0);
 		}
 		Q_UNUSED( pointSet );
 		d->data = data;
