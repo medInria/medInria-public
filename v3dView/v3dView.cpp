@@ -636,7 +636,7 @@ void v3dView::setData(dtkAbstractData *data)
         layer++;
     }
     
-    this->setData( data, layer);
+        this->setData( data, layer);
     
     // this->update(); // update is not the role of the plugin, but of the app
 }
