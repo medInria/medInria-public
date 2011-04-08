@@ -31,14 +31,13 @@ public:
     typedef vtkSmartPointer <vtkActor>  ActorSmartPointer;
     typedef vtkSmartPointer <vtkProperty>  PropertySmartPointer;
 
-    dtkAbstractData  *data;
     v3dView          *view;
     vtkCollection* sequenceList;
+    QList<dtkAbstractData*> dataList;
 };
 
 v3dView4DInteractor::v3dView4DInteractor(): med4DAbstractViewInteractor(), d(new v3dView4DInteractorPrivate)
 {
-    d->data = NULL;
     d->view = NULL;
     this->currentTime = 0.0;
     d->sequenceList = vtkCollection::New();
@@ -75,12 +74,67 @@ void v3dView4DInteractor::setData(dtkAbstractData *data)
 
 void v3dView4DInteractor::appendData(dtkAbstractData *data)
 {
-  if (vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data())))
+  if (d->dataList.contains (data))
+    return;
+  if (data->description() == "vtkDataMesh4D" )
   {
-    d->sequenceList->AddItem (sequence);
-    this->updatePipeline ();
+    vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
+    
+    if (!sequence || d->sequenceList->IsItemPresent (sequence))
+      return;
+    
+    switch (sequence->GetType())
+    {
+	case vtkMetaDataSet::VTK_META_SURFACE_MESH:
+	case vtkMetaDataSet::VTK_META_VOLUME_MESH:
+	  d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
+	  d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
+	  d->sequenceList->AddItem (sequence);
+	  d->dataList.push_back (data);
+	  break;
+	default:
+	  break;
+    }
   }
+  else if ( data->description().contains ("Image") &&
+	    data->description().contains ("4"))
+  {
+    if (itk::Image<char, 4>* image = dynamic_cast< itk::Image<char, 4>* > ( (itk::Object*)( data->data() ) ) )
+    {
+      AppendImageSequenceMacro (char);
+    }
+    else if (itk::Image<unsigned char, 4>* image = dynamic_cast< itk::Image<unsigned char, 4>* > ( (itk::Object*)( data->data() ) ) )
+    {
+      AppendImageSequenceMacro (unsigned char);
+    }
+    else if (itk::Image<short, 4>* image = dynamic_cast< itk::Image<short, 4>* > ( (itk::Object*)( data->data() ) ) )
+    {
+      AppendImageSequenceMacro (short);
+    }
+    else if (itk::Image<unsigned short, 4>* image = dynamic_cast< itk::Image<unsigned short, 4>* > ( (itk::Object*)( data->data() ) ) )
+    {
+      AppendImageSequenceMacro (unsigned short);
+    }
+    else if (itk::Image<float, 4>* image = dynamic_cast< itk::Image<float, 4>* > ( (itk::Object*)( data->data() ) ) )
+    {
+      AppendImageSequenceMacro (float);
+    }
+    else if (itk::Image<double, 4>* image = dynamic_cast< itk::Image<double, 4>* > ( (itk::Object*)( data->data() ) ) )
+    {
+      AppendImageSequenceMacro (double);
+    }
+    else
+    {
+      // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->description(), 5000);
+    }
+  }
+  else
+  {
+    // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->description(), 5000);
+  }
+
 }
+
 
 void v3dView4DInteractor::setView(dtkAbstractView *view)
 {
@@ -91,82 +145,33 @@ void v3dView4DInteractor::setView(dtkAbstractView *view)
   }
 }
 
-
 void v3dView4DInteractor::onDataAdded(dtkAbstractData *data)
 {
-  if ( data->description() == "vtkDataMesh4D" )
-  {  
-      this->appendData(data);
-  }
-  else
-  {
-    if ( data->description().contains ("4") )
-    {
-      /**
-	 Note that in the AppendImageSequenceMacro() macro there is
-	 no appendData() called. This is because the dtkAbstractData
-	 hold in an image in the 4D case is still an itk object instead
-	 of a vtkMetaDataSetSequence object. May be to be improved.
-      */
-      if (itk::Image<char, 4>* image = dynamic_cast< itk::Image<char, 4>* > ( (itk::Object*)( data->data() ) ) )
-      {
-	AppendImageSequenceMacro (char);
-      }
-      else if (itk::Image<unsigned char, 4>* image = dynamic_cast< itk::Image<unsigned char, 4>* > ( (itk::Object*)( data->data() ) ) )
-      {
-	AppendImageSequenceMacro (unsigned char);
-      }
-      else if (itk::Image<short, 4>* image = dynamic_cast< itk::Image<short, 4>* > ( (itk::Object*)( data->data() ) ) )
-      {
-        AppendImageSequenceMacro (short);
-      }
-      else if (itk::Image<unsigned short, 4>* image = dynamic_cast< itk::Image<unsigned short, 4>* > ( (itk::Object*)( data->data() ) ) )
-      {
-	AppendImageSequenceMacro (unsigned short);
-      }
-      else if (itk::Image<float, 4>* image = dynamic_cast< itk::Image<float, 4>* > ( (itk::Object*)( data->data() ) ) )
-      {
-	AppendImageSequenceMacro (float);
-      }
-      else if (itk::Image<double, 4>* image = dynamic_cast< itk::Image<double, 4>* > ( (itk::Object*)( data->data() ) ) )
-      {
-	AppendImageSequenceMacro (double);
-      }
-      else
-      {
-	// emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->description(), 5000);
-      }
-    }
-  }
-  
+  this->appendData(data);
 }
 
 bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
   
-  if ( data->description() == "vtkDataMesh4D" )
-  {  
-      this->enable ();
-      return true;
-  }
-  else if ( data->description().contains ("4") )
+  if ( ( data->description() == "vtkDataMesh4D" ) ||
+       ( data->description().contains ("Image") &&
+	 data->description().contains ("4") ) )
   {
-      this->enable ();
-      return true;
+    this->appendData(data);
+    this->enable ();
+    return true;
   }
-  else
-      return false;
+  
+  return false;
 }
 
 void v3dView4DInteractor::enable(void)
 {
   if (this->enabled())
     return;
-  this->updatePipeline ();
   
   med4DAbstractViewInteractor::enable();
 }
-
 
 void v3dView4DInteractor::disable(void)
 {
@@ -198,32 +203,6 @@ dtkAbstractViewInteractor *createV3dView4DInteractor(void)
   return new v3dView4DInteractor;
 }
 
-void v3dView4DInteractor::updatePipeline (void)
-{
-    
-  for (int i=0; i<d->sequenceList->GetNumberOfItems(); i++)
-  {
-    vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject (i));
-    if (!sequence)
-      continue;
-
-    switch (sequence->GetType())
-    {
-	case vtkMetaDataSet::VTK_META_IMAGE_DATA:
-	  d->view->view2d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
-	  d->view->view3d()->SetInput (vtkImageData::SafeDownCast (sequence->GetDataSet()));
-	  break;
-	case vtkMetaDataSet::VTK_META_SURFACE_MESH:
-	case vtkMetaDataSet::VTK_META_VOLUME_MESH:
-	  d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
-	  d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
-	  break;  
-	default:
-	  break;
-    }
-  }
-}
-
 void v3dView4DInteractor::setCurrentTime (double time)
 {
   if (!d->view)
@@ -249,7 +228,6 @@ void v3dView4DInteractor::setCurrentTime (double time)
   d->view->currentView()->Render();
 }
 
-
 void v3dView4DInteractor::sequencesRange (double* range)
 {
   if (!d->sequenceList->GetNumberOfItems())
@@ -274,7 +252,6 @@ void v3dView4DInteractor::sequencesRange (double* range)
   range[0] = mintime;
   range[1] = maxtime;
 }
-
 
 double v3dView4DInteractor::sequencesMinTimeStep (void)
 {
