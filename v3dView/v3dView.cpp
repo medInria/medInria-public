@@ -198,11 +198,11 @@ public:
 v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 {
     d->data       = 0;
-	d->imageData  = 0;
+    d->imageData  = 0;
     d->orientation = "Axial";
     
     d->timeline = new QTimeLine(1000, this);
-	d->timeline->setLoopCount(0);
+    d->timeline->setLoopCount(0);
     connect(d->timeline, SIGNAL(frameChanged(int)), this, SLOT(onZSliderValueChanged(int)));
     
     // Setting up 2D view
@@ -222,9 +222,9 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
         
     // Setting up 3D view
     d->renderer3d = vtkRenderer::New();
-    d->renderer3d->GetActiveCamera()->SetPosition(0, -1, 0);
-    d->renderer3d->GetActiveCamera()->SetViewUp(0, 0, 1);
-    d->renderer3d->GetActiveCamera()->SetFocalPoint(0, 0, 0);
+    d->renderer3d->GetActiveCamera()->SetPosition   ( 0.0, -1.0, 0.0 );
+    d->renderer3d->GetActiveCamera()->SetViewUp     ( 0.0,  0.0, 1.0 );
+    d->renderer3d->GetActiveCamera()->SetFocalPoint ( 0.0,  0.0, 0.0 );
     
     d->view3d = vtkImageView3D::New();
     d->view3d->SetRenderer(d->renderer3d);
