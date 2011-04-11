@@ -50,9 +50,9 @@ public:
     }
     
     // this is the view cache
-    QHash<medDataIndex, QSharedPointer<dtkAbstractData>> dataCache;
+    QHash<medDataIndex, QSharedPointer<dtkAbstractData> > dataCache;
     // this is our temporary weakPtr cache
-    QHash<medDataIndex, QWeakPointer<dtkAbstractData>> tempCache;
+    QHash<medDataIndex, QWeakPointer<dtkAbstractData> > tempCache;
 
     medAbstractDbController* getDbController()
     {
