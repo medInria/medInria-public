@@ -76,8 +76,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 
 medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(view)
 {
-    delete d;
-    d = NULL;
+    qWarning() << "copy constructor for medAbstractView not implemented";
 }
 
 void medAbstractView::setColorLookupTable(int min_range,
@@ -353,4 +352,10 @@ void medAbstractView::setSharedDataPointer( QSharedPointer<dtkAbstractData> data
 
     dtkAbstractData *dtkdata = d->sharedData.data();
     this->setData(dtkdata);
+}
+
+medAbstractView::~medAbstractView( void )
+{
+    delete d;
+    d = NULL;
 }

@@ -285,7 +285,7 @@ void medViewerArea::open(const QString& file)
 
 void medViewerArea::onViewClosed(void)
 {
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView*> (this->sender())) {        
+    if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
         QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
             tb->update(NULL);

@@ -137,7 +137,7 @@ QSharedPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
             }
         }
   
-        qDebug() << "Memory after reading:" << getProcessMemoryUsage();
+        qDebug() << "Memory after reading:" << getProcessMemoryUsage() / 1000000;
 
         // store it in the cache
         if (dtkdata)
@@ -199,14 +199,14 @@ void medDataManager::tryFreeMemory()
         if (!weakPtr.isNull())
             d->dataCache.insert(index, d->tempCache.value(index).toStrongRef());
         else
-            qDebug() << "Reference lost, freeing memory...";
+            qDebug() << "Reference lost, memory freed successfully...";
     }
 
     int itemsNow = d->dataCache.count();
     if (itemsBefore != itemsNow)
         qDebug() << "Data-cache reduced from:" << itemsBefore << "to" << itemsNow << " items";
     else
-        qDebug() << "Not possible to free any items";
+        qDebug() << "Not possible to free any items, current cache count is: " << itemsNow << "items";
 
 }
 
@@ -216,18 +216,22 @@ bool medDataManager::manageMemoryUsage(const medDataIndex& index, medAbstractDbC
     qint64 processMem = getProcessMemoryUsage();
     qint64 dataMem = controller->getEstimatedSize(index);
 
-    qDebug() << "Current memory usage:" << processMem;
-    qDebug() << "Estimated memory need:" << processMem + dataMem;
+    qDebug() << "Current memory usage:" << processMem / 1000000;
+    qDebug() << "Estimated memory need:" << (processMem + dataMem) / 1000000;
 
     // check against our threshold
     if (getUpperMemoryThreshold() < (processMem + dataMem))
     {
         tryFreeMemory();
-        qDebug() << "new memory usage after cleaning:" << getProcessMemoryUsage();
+        processMem =  getProcessMemoryUsage();
+        qDebug() << "new memory usage after cleaning:" << (processMem/1000000);
 
         // check again to see if we succeeded
-        if (getUpperMemoryThreshold() < getProcessMemoryUsage() )
+        if (getUpperMemoryThreshold() < (processMem + dataMem))
+        {
             res = false; //should be set to false, debugging only
+            qWarning() << "Estimated memory usage (" << processMem + dataMem<< ") does not fit boundaries.";
+        }
     }
     
     return res;
@@ -307,7 +311,7 @@ int medDataManager::ReadStatmFromProcFS( int* size, int* res, int* shared, int* 
 
 size_t medDataManager::getUpperMemoryThreshold()
 {
-    return 1100000000; //1.1gb
+    return 950000000; //0.9 gb
 }
 
 medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
