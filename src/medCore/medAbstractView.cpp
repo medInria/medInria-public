@@ -73,8 +73,8 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 
 medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(view)
 {
-    delete d;
-    d = NULL;
+    // copy constructor not implemented!
+    DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractView::setColorLookupTable(int min_range,
@@ -341,4 +341,10 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
 	d->camFocal = focal;
 	d->camParallelScale = parallelScale;
     emit cameraChanged(position, viewup, focal, parallelScale);
+}
+
+medAbstractView::~medAbstractView( void )
+{
+    delete d;
+    d = NULL;
 }

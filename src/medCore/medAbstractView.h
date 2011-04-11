@@ -53,7 +53,7 @@ class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 public:
     medAbstractView(medAbstractView * parent = 0);
     medAbstractView(const medAbstractView& view);
-    virtual ~medAbstractView(void){}
+    virtual ~medAbstractView(void);
 
     virtual void setColorLookupTable(int min_range,
                                      int max_range,
