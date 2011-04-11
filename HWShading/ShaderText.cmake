@@ -14,7 +14,10 @@ STRING (REGEX REPLACE
   FILE_CONTENTS "${FILE_CONTENTS}"
 )
 
-SET(OUTPUT_FILE ${HeaderFile})
+# Construct the file in a temporary location, compare with existing and copy if different.
+SET(TemporaryFile ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeTmp/ShadToHead.tmp)
+
+SET(OUTPUT_FILE ${TemporaryFile})
 SET(DEFINE_NAME  "_${ShaderName}_h_")
 STRING(REGEX REPLACE "/" "_" DEFINE_NAME ${DEFINE_NAME})
 STRING(REGEX REPLACE "\\." "_" DEFINE_NAME ${DEFINE_NAME})
@@ -26,5 +29,8 @@ FILE(APPEND ${OUTPUT_FILE} "#define bmia_${DEFINE_NAME}\n\n")
 FILE(APPEND ${OUTPUT_FILE} "#define ${ShaderName} \"${FILE_CONTENTS}\"\n\n")
 
 FILE(APPEND ${OUTPUT_FILE} "#endif // bmia_${DEFINE_NAME}\n")
+
+# Copy fresh header file only if contents differ from a previously generated version.
+EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${TemporaryFile}" "${HeaderFile}")
 
 ENDMACRO(SHADER_TO_HEADER)

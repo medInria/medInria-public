@@ -90,8 +90,6 @@ project(HWShading)
 		  )
 
   FIND_PACKAGE(OpenGL REQUIRED)
-
-  FIND_PACKAGE(OpenGL REQUIRED)
   
   ADD_LIBRARY(vtkHWShading ${vtkINRIA3D_LIBS_STYLE}
   ${HWShading_SRCS} 
