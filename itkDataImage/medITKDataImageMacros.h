@@ -6,6 +6,7 @@
 #include <itkMinimumMaximumImageCalculator.h>
 #include <itkScalarImageToHistogramGenerator.h>
 #include <itkRGBPixel.h>
+#include <itkRGBAPixel.h>
 #include <itkGreyColormapFunctor.h>
 #include <itkScalarToRGBColormapImageFilter.h>
 #include <itkRegionOfInterestImageFilter.h>
@@ -179,10 +180,13 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
     if ((voxelCount % nvoxels_per_slice) ==  0)
     {
       thumbnails.push_back (qimage->mirrored(img->GetDirection()(0,0) == -1.0, img->GetDirection()(1,1) == -1.0));
+      delete qimage;
       qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);
       qImageBuffer = qimage->bits();
     }
   }
+
+  delete qimage;
 
 }
 

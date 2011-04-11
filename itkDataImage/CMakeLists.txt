@@ -70,6 +70,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageDouble3.h
   itkDataImageVector3.h
   itkDataImageRGB3.h
+  itkDataImageRGBA3.h
   itkDataImageShort4.h)
 
 set(${PROJECT_NAME}_HEADERS
@@ -98,6 +99,7 @@ set(${PROJECT_NAME}_SOURCES
   itkDataImageDouble3.cpp
   itkDataImageVector3.cpp
   itkDataImageRGB3.cpp
+  itkDataImageRGBA3.cpp
   itkDataImageShort4.cpp)
 
 # Include header files for Visual Studio.

@@ -1,5 +1,6 @@
 #include "vtkDataMeshPlugin.h"
 #include "vtkDataMesh.h"
+#include "vtkDataMesh4D.h"
 
 #include "vtkLogForwarder.h"
 
@@ -42,6 +43,7 @@ vtkDataMeshPlugin::~vtkDataMeshPlugin(void)
 bool vtkDataMeshPlugin::initialize(void)
 {
   if(!vtkDataMesh::registered()) qDebug() << "Unable to register vtkDataMesh type";
+  if(!vtkDataMesh4D::registered()) qDebug() << "Unable to register vtkDataMesh4D type";
   return true;
 }
 
@@ -62,7 +64,7 @@ QString vtkDataMeshPlugin::description(void) const
 
 QStringList vtkDataMeshPlugin::tags(void) const
 {
-  return QStringList() << "vtk" << "data" << "mesh";
+  return QStringList() << "vtk" << "data" << "mesh" << "4D";
 }
 
 QStringList vtkDataMeshPlugin::types(void) const

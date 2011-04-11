@@ -25,6 +25,7 @@
 #include "itkDataImageDouble3.h"
 #include "itkDataImageVector3.h"
 #include "itkDataImageRGB3.h"
+#include "itkDataImageRGBA3.h"
 
 #include <dtkCore/dtkLog.h>
 #include "itkLogForwarder.h"
@@ -88,6 +89,7 @@ bool itkDataImagePlugin::initialize(void)
     if(!itkDataImageDouble4::registered()) qDebug() << "Unable to register itkDataImageDouble4 type";
     if(!itkDataImageVector3::registered()) qDebug() << "Unable to register itkDataImageVector3 type";
     if(!itkDataImageRGB3::registered()) qDebug() << "Unable to register itkDataImageRGB3 type";
+    if(!itkDataImageRGBA3::registered()) qDebug() << "Unable to register itkDataImageRGBA3 type";
 
     return true;
 }
@@ -135,7 +137,8 @@ QStringList itkDataImagePlugin::types(void) const
             << "itkDataImageDouble3"
             << "itkDataImageDouble4"
             << "itkDataImageVector3"
-            << "itkDataImageRGB3";
+            << "itkDataImageRGB3"
+            << "itkDataImageRGBA3";
 }
 
 Q_EXPORT_PLUGIN2(itkDataImagePlugin, itkDataImagePlugin)

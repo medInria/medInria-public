@@ -5,6 +5,7 @@
 
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
+#include <itkRGBAPixel.h>
 #include <itkObjectFactoryBase.h>
 
 itkDataImageReaderBase::itkDataImageReaderBase(void) : dtkAbstractDataReader()
@@ -163,6 +164,19 @@ void itkDataImageReaderBase::readInformation (const QString& path)
                 dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageRGB3");
                 break;
 		
+            default:
+                qDebug() << "Unrecognized component type";
+                return;
+            }
+        }
+        else if ( this->io->GetPixelType()==itk::ImageIOBase::RGBA ) {
+
+            switch (this->io->GetComponentType()) {
+
+            case itk::ImageIOBase::UCHAR:
+                dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageRGBA3");
+                break;
+
             default:
                 qDebug() << "Unrecognized component type";
                 return;
@@ -542,6 +556,21 @@ bool itkDataImageReaderBase::read (const QString& path)
 
         else if (dtkdata->description()=="itkDataImageRGB3") {
             itk::ImageFileReader< itk::Image<itk::RGBPixel<unsigned char>, 3> >::Pointer rgbReader = itk::ImageFileReader< itk::Image<itk::RGBPixel<unsigned char>, 3> >::New();
+            rgbReader->SetImageIO ( this->io );
+            rgbReader->SetFileName ( path.toAscii().constData() );
+            rgbReader->SetUseStreaming(true);
+            dtkdata->setData ( rgbReader->GetOutput() );
+            try {
+                rgbReader->Update();
+            }
+            catch (itk::ExceptionObject &e) {
+                qDebug() << e.GetDescription();
+                return false;
+            }
+        }
+
+        else if (dtkdata->description()=="itkDataImageRGBA3") {
+            itk::ImageFileReader< itk::Image<itk::RGBAPixel<unsigned char>, 3> >::Pointer rgbReader = itk::ImageFileReader< itk::Image<itk::RGBAPixel<unsigned char>, 3> >::New();
             rgbReader->SetImageIO ( this->io );
             rgbReader->SetFileName ( path.toAscii().constData() );
             rgbReader->SetUseStreaming(true);
