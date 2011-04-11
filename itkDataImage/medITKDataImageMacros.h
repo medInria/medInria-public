@@ -6,6 +6,7 @@
 #include <itkMinimumMaximumImageCalculator.h>
 #include <itkScalarImageToHistogramGenerator.h>
 #include <itkRGBPixel.h>
+#include <itkRGBAPixel.h>
 #include <itkGreyColormapFunctor.h>
 #include <itkScalarToRGBColormapImageFilter.h>
 #include <itkRegionOfInterestImageFilter.h>

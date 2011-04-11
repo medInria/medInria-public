@@ -713,6 +713,12 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->view3d->SetITKInput(image, layer);
         }
     }
+    else if (data->description()=="itkDataImageRGBA3") {
+        if( itk::Image<itk::RGBAPixel<unsigned char>, 3> *image = dynamic_cast<itk::Image<itk::RGBAPixel<unsigned char>, 3>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
+        }
+    }
     else if (data->description()=="itkDataImageVector3") {
         if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
