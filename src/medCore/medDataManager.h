@@ -51,17 +51,50 @@ public:
       */
       QSharedPointer<dtkAbstractData> data(const medDataIndex& index);
 
-      /**
-      * Use this function to insert data into the database, 
-      * Do *not* use the concrete database controller implementation for it
-      * The data-manager will take over this task
-      * @params const dtkAbstractData & data
-      * @return medDataIndex*
-      */
-      medDataIndex* import(const dtkAbstractData& data);
+    /**
+    * Use this function to insert data into the database,
+    * Do *not* use the concrete database controller implementation for it
+    * The data-manager will take over this task
+    * @params const dtkAbstractData & data
+    * @return medDataIndex
+    */
+    medDataIndex import(dtkAbstractData *data);
+
+    /**
+    * Use this function to insert data into the non-persistent database,
+    * Do *not* use the concrete database controller implementation for it
+    * The data-manager will take over this task
+    * @params const dtkAbstractData & data
+    * @return medDataIndex
+    */
+    medDataIndex importNonPersistent(dtkAbstractData *data);
+
+    /**
+    * Use this functions to save all non-persistent data to the sql database.
+    * The list of non-persistent data will then be cleared, and any subsequent
+    * access to those data will trigger a reading from the database.
+    */
+    void storeNonPersistentDataToDatabase (void);
+
+    /**
+    * Returns the number of non-persistent data contained in the data manager
+    */
+    int nonPersistentDataCount (void) const;
+
+    /**
+    * Clear the list of non-persistent data
+    */
+    void clearNonPersistentData (void);
 
 
 
+signals:
+    /**
+    * This signal is emitted whenever a data was added in either the persistent
+    * or non persistent database by calling import() or importNonPersistentData().
+    */
+    void dataAdded (const medDataIndex&);
+      
 protected:
      medDataManager(void);
     ~medDataManager(void);

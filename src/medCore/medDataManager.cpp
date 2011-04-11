@@ -136,7 +136,7 @@ QSharedPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
                 dtkdata = npDb->read(index);
             }
         }
-
+  
         qDebug() << "Memory after reading:" << getProcessMemoryUsage();
 
         // store it in the cache
@@ -309,6 +309,30 @@ size_t medDataManager::getUpperMemoryThreshold()
 {
     return 1100000000; //1.1gb
 }
+
+medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
+{
+    return medDataIndex();
+}
+
+void medDataManager::storeNonPersistentDataToDatabase( void )
+{
+
+}
+
+int medDataManager::nonPersistentDataCount( void ) const
+{
+    return 0;
+}
+
+void medDataManager::clearNonPersistentData( void )
+{
+
+}
+
+
+
+
 
 
 

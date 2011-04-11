@@ -41,6 +41,7 @@ public:
 
     const QString& name(void) const;
     const QString& studyName(void) const;
+    const QString& seriesName(void) const;
     const QString& file(void) const;
     const QImage& thumb(void) const;
 
@@ -51,6 +52,7 @@ public:
 private:
     friend class medDatabaseNonPersitentController;
     friend class medDatabaseNonPersistentReader;
+    friend class medDatabaseNonPersistentImporter;
 
 private:
     medDatabaseNonPersistentItemPrivate *d;

@@ -32,6 +32,16 @@ public:
     medDataIndex indexForSeries (int id);
     medDataIndex indexForImage  (int id);
 
+    /**
+    * Returns the index of a data given patient, study, series and image name
+    */
+    medDataIndex indexForPatient (const QString &patientName);
+    medDataIndex indexForStudy   (const QString &patientName, const QString &studyName);
+    medDataIndex indexForSeries  (const QString &patientName, const QString &studyName,
+                                  const QString &seriesName);
+    medDataIndex indexForImage   (const QString &patientName, const QString &studyName,
+                                  const QString &seriesName,  const QString &imageName);
+
     /* some overloads of read(medDataIndex) */
     QSharedPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId);
     QSharedPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId, int imageId);
@@ -78,11 +88,10 @@ public slots:
 
     /**
     * Import data into the db read from memory
-    * @Note _NOT_IMPLEMENTED_YET
-    * @params const dtkAbstractData & data dataObject
+    * @params dtkAbstractData * data dataObject
     * @return medDataIndex the assigned index
     */
-    medDataIndex import(const dtkAbstractData& data);
+    medDataIndex import(dtkAbstractData *data);
 
 protected slots:
     void forwardMessage(QString);

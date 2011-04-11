@@ -152,7 +152,7 @@ void medViewerToolBoxPatient::setPatientIndex(const medDataIndex& index)
 
 void medViewerToolBoxPatient::onCurrentIndexChanged(int index)
 {
-    emit patientIndexChanged(d->combo->itemData(index).toInt());
+    emit patientIndexChanged(medDataIndex(d->combo->itemData(index).toInt()));
 }
 
 
@@ -167,9 +167,13 @@ void medViewerToolBoxPatient::onCurrentIndexChanged(int index)
 
 void medViewerToolBoxPatient::setupDatabase(void)
 {
+    d->combo->blockSignals (true);
+    
     this->clear();
     this->addItem("Choose patient", -1);
 
+    QList<QString> patientList;
+    
     // Setting up persitent data
 
     QSqlQuery query(*(medDatabaseController::instance()->database()));
@@ -178,16 +182,19 @@ void medViewerToolBoxPatient::setupDatabase(void)
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
-    while(query.next())
+    while(query.next()) {
         this->addItem(query.value(0).toString(), query.value(1));
+	patientList.append (query.value(0).toString());
+    }
 
     // Setting up non persitent data
 
-    QList<QString> patientList;
     foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items()) {
         if (!patientList.contains (item->name())) {
             this->addItem(item->name(), item->index().patientId());
             patientList.append (item->name());
         }
     }
+
+    d->combo->blockSignals (false);
 }

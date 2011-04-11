@@ -83,11 +83,10 @@ public slots:
 
     /**
     * Store data temporarily referenced by temp index
-    * @Note _NOT_IMPLEMENTED_YET
-    * @params const dtkAbstractData & data data to be stored
+    * @params dtkAbstractData * data data to be stored
     * @return medDataIndex assigned index
     */
-    medDataIndex import(const dtkAbstractData& data);
+    medDataIndex import(dtkAbstractData *data);
 
 
     /**
@@ -96,6 +95,11 @@ public slots:
     * @return medDataIndex - assigned index
     */
     medDataIndex import(const QString& file);
+
+    /**
+    * Removes any reference to non-persistent data. Do not actually free memory.
+    */
+    void clear (void);
 
 
 private:

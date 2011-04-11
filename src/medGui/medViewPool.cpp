@@ -198,7 +198,6 @@ void medViewPool::onViewReg(bool value)
 						refView->camera(position, viewup, focal, parallelScale);
 						view->setCamera(position, viewup, focal, parallelScale);
 						view->blockSignals(false);
-
                         if (view->widget()->isVisible())
                             view->update();
                         emit showInfo (this, tr ("Automatic registration successful"),3000);
@@ -226,9 +225,9 @@ void medViewPool::onViewReg(bool value)
 						view->blockSignals(false);
                 d->viewData[view] = NULL;
                 if (oldData)
-					oldData->deleteLater();
-		if (view->widget()->isVisible())
-		    view->update();
+                    oldData->deleteLater();
+                if (view->widget()->isVisible())
+                    view->update();
             }
         }
     }

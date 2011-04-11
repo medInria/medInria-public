@@ -42,7 +42,7 @@ public:
     int patientIndex(QString patient);
 
 signals:
-    void patientIndexChanged(int);
+    void patientIndexChanged(const medDataIndex&);
 
 public slots:
     void setPatientIndex(int patientId);

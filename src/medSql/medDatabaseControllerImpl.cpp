@@ -16,6 +16,7 @@
 #include "medDatabaseImporter.h"
 #include "medDatabaseExporter.h"
 #include "medDatabaseReader.h"
+#include "medDatabaseWriter.h"
 
 
 QSqlDatabase *medDatabaseControllerImpl::database(void)
@@ -61,6 +62,24 @@ medDataIndex medDatabaseControllerImpl::indexForPatient(int id)
     return medDataIndex(id);
 }
 
+medDataIndex medDatabaseControllerImpl::indexForPatient (const QString &patientName)
+{
+    QSqlQuery query(m_database);
+    QVariant patientId = -1;
+
+    query.prepare("SELECT id FROM patient WHERE name = :name");
+    query.bindValue(":name", patientName);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    if(query.first()) {
+        patientId = query.value(0);
+	return medDataIndex (patientId.toInt());
+    }
+
+    return medDataIndex();
+}
+
 medDataIndex medDatabaseControllerImpl::indexForStudy(int id)
 {
     QSqlQuery query(m_database);
@@ -76,6 +95,33 @@ medDataIndex medDatabaseControllerImpl::indexForStudy(int id)
         patientId = query.value(0);
 
     return medDataIndex(patientId.toInt(), id);
+}
+
+medDataIndex medDatabaseControllerImpl::indexForStudy(const QString &patientName, const QString &studyName)
+{
+    medDataIndex index = this->indexForPatient(patientName);
+    if (!index.isValid())
+        return index;
+
+    QSqlQuery query(m_database);
+
+    QVariant patientId = index.patientId();
+    QVariant studyId   = -1;
+
+    query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name");
+    query.bindValue(":id",   patientId);
+    query.bindValue(":name", studyName);
+
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    
+    if(query.first()) {
+        studyId = query.value(0);
+        index.setStudyId(studyId.toInt());
+        return index;
+    }
+
+    return medDataIndex();
 }
 
 medDataIndex medDatabaseControllerImpl::indexForSeries(int id)
@@ -102,6 +148,33 @@ medDataIndex medDatabaseControllerImpl::indexForSeries(int id)
         patientId = query.value(0);
 
     return medDataIndex(patientId.toInt(), studyId.toInt(), id);
+}
+
+medDataIndex medDatabaseControllerImpl::indexForSeries(const QString &patientName, const QString &studyName,
+                                                       const QString &seriesName)
+{
+    medDataIndex index = this->indexForStudy(patientName, studyName);
+    if (!index.isValid())
+        return index;
+
+    QSqlQuery query(m_database);
+
+    QVariant studyId   = index.studyId();
+
+    query.prepare("SELECT id FROM series WHERE study = :id AND name = :name");
+    query.bindValue(":id",   studyId);
+    query.bindValue(":name", seriesName);
+
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    if(query.first()) {
+        QVariant seriesId = query.value(0);
+        index.setSeriesId(seriesId.toInt());
+        return index;
+    }
+
+    return medDataIndex();
 }
 
 medDataIndex medDatabaseControllerImpl::indexForImage(int id)
@@ -139,6 +212,33 @@ medDataIndex medDatabaseControllerImpl::indexForImage(int id)
     return medDataIndex(patientId.toInt(), studyId.toInt(), seriesId.toInt(), id);
 }
 
+medDataIndex medDatabaseControllerImpl::indexForImage(const QString &patientName, const QString &studyName,
+                                                      const QString &seriesName,  const QString &imageName)
+{
+    medDataIndex index = this->indexForSeries(patientName, studyName, seriesName);
+    if (!index.isValid())
+        return index;
+
+    QSqlQuery query(m_database);
+
+    QVariant seriesId = index.seriesId();
+
+    query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
+    query.bindValue(":id",   seriesId);
+    query.bindValue(":name", imageName);
+
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    if(query.first()) {
+        QVariant imageId = query.value(0);
+        index.setImageId(imageId .toInt());
+        return index;
+    }
+
+    return medDataIndex();
+}
+
 medDataIndex medDatabaseControllerImpl::import(const QString& file)
 {
     Q_UNUSED(file);
@@ -148,11 +248,19 @@ medDataIndex medDatabaseControllerImpl::import(const QString& file)
     return medDataIndex();
 }
 
-medDataIndex medDatabaseControllerImpl::import( const dtkAbstractData& data )
+medDataIndex medDatabaseControllerImpl::import( dtkAbstractData *data )
 {
-    Q_UNUSED(data);
+    medDatabaseWriter *writer = new medDatabaseWriter(data);
 
-    return medDataIndex();
+    connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(writer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(writer, SIGNAL(success(QObject *)), writer, SLOT(deleteLater()));
+    connect(writer, SIGNAL(failure(QObject *)), writer, SLOT(deleteLater()));
+
+    medMessageController::instance()->showProgress(writer, "Saving database item");
+
+    return writer->run();
 }
 
 QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
@@ -186,14 +294,14 @@ void medDatabaseControllerImpl::createPatientTable(void)
 {
     QSqlQuery query(*(this->database()));
     query.exec(
-        "CREATE TABLE patient ("
-        " id       INTEGER PRIMARY KEY,"
-        " name        TEXT,"
-        " thumbnail   TEXT,"
-        " birthdate   TEXT,"
-        " gender      TEXT"
-        ");"
-        );
+            "CREATE TABLE patient ("
+            " id       INTEGER PRIMARY KEY,"
+            " name        TEXT,"
+            " thumbnail   TEXT,"
+            " birthdate   TEXT,"
+            " gender      TEXT"
+            ");"
+            );
 }
 
 void medDatabaseControllerImpl::createStudyTable(void)
@@ -201,65 +309,65 @@ void medDatabaseControllerImpl::createStudyTable(void)
     QSqlQuery query(*(this->database()));
 
     query.exec(
-        "CREATE TABLE study ("
-        " id        INTEGER      PRIMARY KEY,"
-        " patient   INTEGER," // FOREIGN KEY
-        " name         TEXT,"
-        " uid          TEXT,"
-        " thumbnail    TEXT"
-        ");"
-        );
+            "CREATE TABLE study ("
+            " id        INTEGER      PRIMARY KEY,"
+            " patient   INTEGER," // FOREIGN KEY
+            " name         TEXT,"
+            " uid          TEXT,"
+            " thumbnail    TEXT"
+            ");"
+            );
 }
 
 void medDatabaseControllerImpl::createSeriesTable(void)
 {
     QSqlQuery query(*(this->database()));
     query.exec(
-        "CREATE TABLE series ("
-        " id       INTEGER      PRIMARY KEY,"
-        " study    INTEGER," // FOREIGN KEY
-        " size     INTEGER,"
-        " name            TEXT,"
-        " path            TEXT,"
-        " uid             TEXT,"
-        " orientation     TEXT,"
-        " seriesNumber    TEXT,"
-        " sequenceName    TEXT,"
-        " sliceThickness  TEXT,"
-        " rows            TEXT,"
-        " columns         TEXT,"
-        " thumbnail       TEXT,"
-        " age             TEXT,"
-        " description     TEXT,"
-        " modality        TEXT,"
-        " protocol        TEXT,"
-        " comments        TEXT,"
-        " status          TEXT,"
-        " acquisitiondate TEXT,"
-        " importationdate TEXT,"
-        " referee         TEXT,"
-        " performer       TEXT,"
-        " institution     TEXT,"
-        " report          TEXT"
-        ");"
-        );
+            "CREATE TABLE series ("
+            " id       INTEGER      PRIMARY KEY,"
+            " study    INTEGER," // FOREIGN KEY
+            " size     INTEGER,"
+            " name            TEXT,"
+            " path            TEXT,"
+            " uid             TEXT,"
+            " orientation     TEXT,"
+            " seriesNumber    TEXT,"
+            " sequenceName    TEXT,"
+            " sliceThickness  TEXT,"
+            " rows            TEXT,"
+            " columns         TEXT,"
+            " thumbnail       TEXT,"
+            " age             TEXT,"
+            " description     TEXT,"
+            " modality        TEXT,"
+            " protocol        TEXT,"
+            " comments        TEXT,"
+            " status          TEXT,"
+            " acquisitiondate TEXT,"
+            " importationdate TEXT,"
+            " referee         TEXT,"
+            " performer       TEXT,"
+            " institution     TEXT,"
+            " report          TEXT"
+            ");"
+            );
 }
 
 void medDatabaseControllerImpl::createImageTable(void)
 {
     QSqlQuery query(*(this->database()));
     query.exec(
-        "CREATE TABLE image ("
-        " id         INTEGER      PRIMARY KEY,"
-        " series     INTEGER," // FOREIGN KEY
-        " size       INTEGER,"
-        " name          TEXT,"
-        " path          TEXT,"
-        " instance_path TEXT,"
-        " thumbnail     TEXT,"
-        " slice      INTEGER"
-        ");"
-        );
+            "CREATE TABLE image ("
+            " id         INTEGER      PRIMARY KEY,"
+            " series     INTEGER," // FOREIGN KEY
+            " size       INTEGER,"
+            " name          TEXT,"
+            " path          TEXT,"
+            " instance_path TEXT,"
+            " thumbnail     TEXT,"
+            " slice      INTEGER"
+            ");"
+            );
 }
 
 bool medDatabaseControllerImpl::moveDatabase( QString newLocation)

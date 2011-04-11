@@ -32,6 +32,7 @@ class medDatabaseNonPersistentItemPrivate
 public:
     QString name;
     QString studyName;
+    QString seriesName;
     QString file;
     QImage thumb;
 

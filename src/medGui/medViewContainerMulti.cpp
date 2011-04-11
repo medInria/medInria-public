@@ -26,6 +26,10 @@
 #include <medCore/medAbstractView.h>
 #include <medCore/medViewManager.h>
 
+medViewContainerSingle2::~medViewContainerSingle2()
+{
+}
+
 void medViewContainerSingle2::setView (dtkAbstractView *view)
 {
     d->layout->setContentsMargins(1, 1, 1, 1);    
@@ -60,12 +64,12 @@ medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContaine
 
 medViewContainerMulti::~medViewContainerMulti()
 {
-}
+    medViewContainer::setView(0);
   
-medViewContainer::Type medViewContainerMulti::type(void)
-{
-    return medViewContainer::Multi;
+    delete d2;
+    d2 = NULL;
 }
+
 
 void medViewContainerMulti::split(int rows, int cols)
 {
@@ -201,7 +205,7 @@ void medViewContainerMulti::onViewClosing (void)
 
 	d2->views.removeOne (view);        
 
-	emit viewRemoved (d->view);
+        emit viewRemoved (view);
 	
         view->close();
 

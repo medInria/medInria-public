@@ -54,7 +54,6 @@
 #include <medGui/medSettingsEditor.h>
 
 #include "medViewerConfigurationVisualization.h"
-#include "medViewerConfigurationVisualization2.h"
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
 

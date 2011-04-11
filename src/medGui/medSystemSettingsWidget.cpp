@@ -17,6 +17,7 @@ public:
   QLineEdit* pluginsPathField;
   QLineEdit* modulesPathField;
   QLineEdit* scriptsPathField;
+  QCheckBox* clearOnPatientField;
 
   medSystemSettingsWidgetPrivate();
   ~medSystemSettingsWidgetPrivate();
@@ -39,11 +40,12 @@ medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) :
     d->pluginsPathField = new QLineEdit(this);
     d->modulesPathField = new QLineEdit(this);
     d->scriptsPathField = new QLineEdit(this);
+    d->clearOnPatientField = new QCheckBox(this);
     QFormLayout* layout = new QFormLayout;
     layout->addRow(tr("Plugins Path"),d->pluginsPathField);
     layout->addRow(tr("Modules Path"),d->modulesPathField);
     layout->addRow(tr("Scripts Path"),d->scriptsPathField);
-
+    layout->addRow(tr("Clear on patient change"),d->clearOnPatientField);
     this->setLayout(layout);
 }
 
@@ -62,7 +64,6 @@ bool medSystemSettingsWidget::validate()
 
     if (!validatePaths(d->scriptsPathField->text()))
         return false;
-
     return true;
 }
 
@@ -96,6 +97,8 @@ void medSystemSettingsWidget::read()
     d->pluginsPathField->setText(mnger->value("plugins","path").toString());
     d->modulesPathField->setText(mnger->value("scripts","modules_path").toString());
     d->scriptsPathField->setText(mnger->value("scripts","script_path").toString());
+    bool clear = mnger->value("system","clearOnPatientChange").toBool();
+    d->clearOnPatientField->setCheckState(clear?Qt::Checked:Qt::Unchecked);
 }
 
 bool medSystemSettingsWidget::write()
@@ -104,6 +107,7 @@ bool medSystemSettingsWidget::write()
     mnger->setValue("plugins","path",d->pluginsPathField->text());
     mnger->setValue("scripts","modules_path",d->modulesPathField->text());
     mnger->setValue("scripts","script_path",d->scriptsPathField->text());
+    mnger->setValue("system","clearOnPatientChange",d->clearOnPatientField->isChecked());
     return true;
 }
 

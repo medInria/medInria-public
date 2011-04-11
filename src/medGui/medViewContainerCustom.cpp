@@ -50,10 +50,6 @@ medViewContainerCustom::~medViewContainerCustom()
     d2 = NULL;
 }
 
-medViewContainer::Type medViewContainerCustom::type(void)
-{
-    return medViewContainer::Custom;
-}
 
 void medViewContainerCustom::split(int rows, int cols)
 {
@@ -386,4 +382,9 @@ void medViewContainerCustom::clear (void)
     
     for(int i=0; i<d2->columnMax; i++)
         d->layout->setColumnStretch (i, 0);
+}
+
+QList<medViewContainerCustom*> medViewContainerCustom::children() const
+{
+    return d2->children;
 }

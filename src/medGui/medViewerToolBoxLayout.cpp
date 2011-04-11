@@ -25,6 +25,7 @@
 class medViewerToolBoxLayoutPrivate
 {
 public:
+    medToolBoxTab *layoutToolBoxTab;
 };
 
 medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxLayoutPrivate)
@@ -84,15 +85,15 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
     customPageLayout->addWidget(buttonE, 1, 1);
     customPageLayout->addWidget(buttonF, 1, 2);
 
-    medToolBoxTab *layoutToolBoxTab = new medToolBoxTab(this);
-    layoutToolBoxTab->addTab(new QWidget, "Single");
-    layoutToolBoxTab->addTab(new QWidget, "Multi");
-    layoutToolBoxTab->addTab(customPage, "Custom");
+    d->layoutToolBoxTab = new medToolBoxTab(this);
+    d->layoutToolBoxTab->addTab(new QWidget, "Single");
+    d->layoutToolBoxTab->addTab(new QWidget, "Multi");
+    d->layoutToolBoxTab->addTab(customPage, "Custom");
 
     this->setTitle("Layout");
-    this->setTabWidget(layoutToolBoxTab);
+    this->setTabWidget(d->layoutToolBoxTab);
 
-    connect(layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SIGNAL(modeChanged(int)));
+    connect(d->layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SLOT(modeChanged(int)));
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SIGNAL(split(int,int)));
 }
 
@@ -126,4 +127,26 @@ void medViewerToolBoxLayout::onButtonDClicked(void)
 void medViewerToolBoxLayout::onButtonEClicked(void)
 {
     emit presetClicked(5);
+}
+
+void medViewerToolBoxLayout::modeChanged(int tabIndex)
+{
+    switch (tabIndex){
+    case 1: 
+        emit (modeChanged("Multi"));
+        break;
+    case 2:
+        emit (modeChanged("Custom"));
+        break;
+    case 0:
+    default:
+        emit (modeChanged("Single"));
+    }            
+}
+
+void medViewerToolBoxLayout::clear()
+{
+    blockSignals(true);
+    d->layoutToolBoxTab->setCurrentIndex(0);
+    blockSignals(false);
 }

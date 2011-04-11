@@ -36,38 +36,14 @@ public:
      medToolBoxDiffusion(QWidget *parent = 0);
     ~medToolBoxDiffusion(void);
 
-    medDataIndex dataIndex(void);
-
-public slots:
-    void run (void);
-    void clear(void);
+    dtkAbstractData *output(void) const;
     
-    void onObjectDropped (void);
-
-    void onCoefficientsChanged  (int);
+public slots:
+    // void run (void);
+    void clear(void);
 
     void onToolBoxChosen(const QString&);
     
-    /*
-      void onComputeLFA (void);
-      void onComputeRA  (void);
-      void onComputeADC (void);
-      void onComputeL1  (void);
-      void onComputeL2  (void);
-      void onComputeL3  (void);
-      void onComputeCl  (void);
-      void onComputeCp  (void);
-      void onComputeCs  (void);
-      void onComputeVR  (void);
-    */
-    
-    dtkAbstractData *output(void);
-
-protected:
-    virtual void createProcessForIndex (const medDataIndex &index);
-
-    void setRequiredOutputForProcess (dtkAbstractProcess *proc, int type);
-
 private:
     medToolBoxDiffusionPrivate *d;
 
