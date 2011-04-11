@@ -41,6 +41,8 @@ set(${PROJECT_NAME}_HEADERS
   medRunnableProcess.h
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
+  med4DAbstractViewInteractor.h
+  medAbstractViewFiberInteractor.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -62,6 +64,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractDataSourceFactory.h
   medStorage.h
   medRunnableProcess.h
+  medAbstractViewFiberInteractor.h
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -82,6 +85,7 @@ set(${PROJECT_NAME}_SOURCES
   medRunnableProcess.cpp
   medAbstractDataSource.cpp
   medAbstractDataSourceFactory.cpp
+  medAbstractViewFiberInteractor.cpp
 )
 
 ## #################################################################

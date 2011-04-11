@@ -80,7 +80,8 @@ void medRunnableProcess::onProgressed (int value)
 void medRunnableProcess::onCancel (QObject *sender)
 {
     if (d->process) {
-        d->process->onCanceled();
+        //d->process->onCanceled();
+        d->process->cancel();
     }
 
     emit (cancelled (this));
