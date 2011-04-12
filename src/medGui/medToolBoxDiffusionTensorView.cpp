@@ -245,6 +245,8 @@ int medToolBoxDiffusionTensorView::eigenVector(void)
     {
         return 1;
     }
+    qWarning() << "medTollBoxDiffusionTensorView::eigenVector() returning wrong value";
+    return 1;
 }
 
 int medToolBoxDiffusionTensorView::glyphResolution(void)

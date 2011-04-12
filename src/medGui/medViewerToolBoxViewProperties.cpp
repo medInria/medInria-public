@@ -60,7 +60,7 @@ medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) 
     
     //add 2 layers opacity slider and switcher.
     d->twoLayersWidget = new QWidget(this);
-    QGridLayout * twoLayersLayout = new QGridLayout(this);
+    QGridLayout * twoLayersLayout = new QGridLayout();
     d->twoLayersWidget->setLayout(twoLayersLayout);
     
     d->slider = new QSlider(Qt::Horizontal,this);

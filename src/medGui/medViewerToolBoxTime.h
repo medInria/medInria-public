@@ -84,7 +84,7 @@ public slots:
     void updateRange (void);
 
     /** recover time information from slider (integer) value and vice-versa */
-    double getTimeFromSliderValue (unsigned int);
+    double getTimeFromSliderValue (int);
     unsigned int getSliderValueFromTime (double);
 
     /** override the mouse release function for the slider */

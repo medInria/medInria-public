@@ -266,11 +266,11 @@ void medViewerToolBoxTime::onPreviousFrame (bool val)
 
 void medViewerToolBoxTime::onTimeChanged (int val)
 {
-    double time = this->getTimeFromSliderValue (val);
-    for (unsigned int i=0; i<d->interactors.size(); i++)
-    {
-        d->interactors[i]->setCurrentTime (time);
-    }
+	double time = this->getTimeFromSliderValue (val);
+	for (int i=0; i<d->interactors.size(); i++)
+	{
+		d->interactors[i]->setCurrentTime (time);
+	}
 
     d->labelcurr->setText( DoubleToQString(( time ) / (d->spinBox->value()/100.0)) + QString(" sec") );
 }
@@ -282,7 +282,7 @@ void medViewerToolBoxTime::onSpinBoxChanged(int time)
     d->timeLine->setDuration((d->maxTime + d->minTimeStep)*(1000/(time/100.0)));
 }
 
-double medViewerToolBoxTime::getTimeFromSliderValue (unsigned int s)
+double medViewerToolBoxTime::getTimeFromSliderValue (int s)
 {
     double value = d->minTime + (double)(s) * (d->minTimeStep);
     return value;
@@ -303,14 +303,14 @@ void medViewerToolBoxTime::updateRange (void)
     double maxtime = -3000;
     double mintimestep = 3000;
 
-    for (unsigned int i=0; i<d->interactors.size(); i++)
-    {
-        double range[2]={0,0};
-        d->interactors[i]->sequencesRange (range);
-        mintimestep = std::min (mintimestep, d->interactors[i]->sequencesMinTimeStep ());
-        mintime = std::min (mintime, range[0]);
-        maxtime = std::max (maxtime, range[1]);
-    }
+	for (unsigned int i=0; i<d->interactors.size(); i++)
+	{
+		double range[2]={0,0};
+		d->interactors[i]->sequencesRange (range);
+		mintimestep = std::min (mintimestep, d->interactors[i]->sequencesMinTimeStep ());
+		mintime = std::min (mintime, range[0]);
+		maxtime = std::max (maxtime, range[1]);
+	}
 
     unsigned int numberofsteps = std::ceil ((maxtime - mintime) / (mintimestep) + 1.0);
 

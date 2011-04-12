@@ -29,7 +29,7 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
         medSettingsWidget(parent),
         d(new medStartupSettingsWidgetPrivate())
 {
-    setTabName("Startup");
+    setTabName(tr("Startup"));
     d->startInFullScreen = new QCheckBox(this);
     d->startInFullScreen->setToolTip(tr("Start application in full screen mode?"));
 

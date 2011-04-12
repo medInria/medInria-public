@@ -73,8 +73,8 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 
 medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(view)
 {
-    delete d;
-    d = NULL;
+    // copy constructor not implemented!
+    DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractView::setColorLookupTable(int min_range,
@@ -138,6 +138,12 @@ void medAbstractView::setLinkCamera (bool value)
 bool medAbstractView::cameraLinked (void) const
 {
     return d->linkCamera;
+}
+
+void medAbstractView::setSlice (int slice)
+{
+    this->onSliceChanged (slice);
+    emit sliceChanged (slice);
 }
 
 void medAbstractView::setPosition (const QVector3D &position)
@@ -271,6 +277,11 @@ void medAbstractView::removeOverlay(int layer)
 //    d->dataList[layer] = data;
 //}
 
+void medAbstractView::onSliceChanged (int slice)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
 void medAbstractView::onPositionChanged (const QVector3D &position)
 {
     DTK_DEFAULT_IMPLEMENTATION;
@@ -309,6 +320,11 @@ void medAbstractView::onOpacityChanged(double opacity, int layer)
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
+void medAbstractView::emitViewSliceChangedEvent(int slice)
+{
+    emit sliceChanged(slice);
+}
+
 void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
 {
 	d->position = position;
@@ -341,4 +357,10 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
 	d->camFocal = focal;
 	d->camParallelScale = parallelScale;
     emit cameraChanged(position, viewup, focal, parallelScale);
+}
+
+medAbstractView::~medAbstractView( void )
+{
+    delete d;
+    d = NULL;
 }

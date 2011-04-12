@@ -1,7 +1,7 @@
 #ifndef MEDABSTRACTDATASOURCE_H
 #define MEDABSTRACTDATASOURCE_H
 
-//#include <dtkCore/dtkAbstractObject.h>
+#include <QWidget>
 #include <QtCore>
 #include "medCoreExport.h"
 
@@ -15,7 +15,7 @@ class medDataIndex;
  * a source selection widget and several toolboxes.
  * All dynamic data source implementation should derive from this class.
  **/
-class MEDCORE_EXPORT medAbstractDataSource : public QObject
+class MEDCORE_EXPORT medAbstractDataSource : public QWidget
 {
     Q_OBJECT
     
