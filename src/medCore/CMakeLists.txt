@@ -23,28 +23,6 @@ project(medCore)
 ## Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS
-  medDataIndex.h
-  medDataManager.h
-  medMessageController.h
-  medMetaDataHelper.h
-  medViewManager.h
-  medPluginManager.h
-  medProgressFilter.h
-  medAbstractView.h
-  medStorage.h
-  medJobItem.h
-  medJobManager.h
-  medSettingsManager.h
-  medDbControllerFactory.h
-  medAbstractDbController.h
-  medRunnableProcess.h
-  medAbstractDataSource.h
-  medAbstractDataSourceFactory.h
-  med4DAbstractViewInteractor.h
-  medAbstractViewFiberInteractor.h
-)
-
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataIndex.h
   medDataManager.h
@@ -60,12 +38,19 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medSettingsManager.h
   medDbControllerFactory.h
   medAbstractDbController.h
+  medAbstractData.h
+  medAbstractDataCollection.h
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
   medStorage.h
   medRunnableProcess.h
   medAbstractViewFiberInteractor.h
 )
+
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC}
+)
+
 
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
@@ -83,6 +68,8 @@ set(${PROJECT_NAME}_SOURCES
   medDbControllerFactory.cpp
   medAbstractDbController.cpp
   medRunnableProcess.cpp
+  medAbstractData.cpp
+  medAbstractDataCollection.cpp
   medAbstractDataSource.cpp
   medAbstractDataSourceFactory.cpp
   medAbstractViewFiberInteractor.cpp
