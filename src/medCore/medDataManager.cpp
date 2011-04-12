@@ -58,7 +58,7 @@ public:
     QHash<medDataIndex, QSharedPointer<dtkAbstractData>> volatileDataCache;
 
     // this is our temporary weakPtr cache
-    QHash<medDataIndex, QWeakPointer<dtkAbstractData>> tempCache;
+    QHash<medDataIndex, QWeakPointer<dtkAbstractData> > tempCache;
 
     medAbstractDbController* getDbController()
     {
@@ -258,8 +258,7 @@ bool medDataManager::manageMemoryUsage(const medDataIndex& index, medAbstractDbC
     qint64 optimalMem = getOptimalMemoryThreshold();
     qint64 maxMem = getUpperMemoryThreshold();
 
-    //qDebug() << "Current memory usage:" << processMem / divider;
-    //qDebug() << "Required memory need:" << requiredMem / divider;
+    qDebug() << "Current memory usage:" << processMem / divider << "Required memory need:" << requiredMem / divider;
 
     // check against our optimal threshold
     if (optimalMem < requiredMem)
@@ -270,12 +269,15 @@ bool medDataManager::manageMemoryUsage(const medDataIndex& index, medAbstractDbC
             tryFreeMemory(optimalMem); // purge to optimal
 
         requiredMem= getProcessMemoryUsage() + estMem;
-        
+
+        qDebug() << "Current memory usage:" << processMem / divider << "Required memory need:" << requiredMem / divider;
+
         // check again to see if we succeeded
         if (maxMem < requiredMem)
         {
-            res = false; //should be set to false, debugging only
-            qWarning() << "Required memory usage (" << requiredMem / divider << "mb) does not fit boundaries.";
+            res = false; 
+            qWarning() << "Required memory usage (" << requiredMem / divider 
+                << "mb) does not fit boundaries (" << maxMem / divider << " mb)";
         }
     }
     
