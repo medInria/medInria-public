@@ -699,19 +699,26 @@ void vtkImageView2D::InitializeSlicePlane(void)
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetCurrentPoint(double pos[3])
-{
-  this->Superclass::SetCurrentPoint (pos);
-  
+{    
   int old_slice = this->Slice;
   int new_slice = this->GetSliceForWorldCoordinates (pos);
   
+  bool sliceChanged = false;
+
   if(new_slice != old_slice)
   {
     this->Slice = new_slice;
-    this->UpdateDisplayExtent();
-    // this->UpdateCenter();
-    this->UpdateSlicePlane();
-    this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
+    sliceChanged = true;
+  }
+
+  this->Superclass::SetCurrentPoint (pos);
+
+  if (sliceChanged)
+  {
+      this->UpdateDisplayExtent();
+      // this->UpdateCenter();
+      this->UpdateSlicePlane();
+      this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
   }
 }
 
