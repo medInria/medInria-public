@@ -40,7 +40,6 @@ public:
 
     QString getFilePath();
 
-
     qint64 getDataSize();
 
 signals:

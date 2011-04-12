@@ -39,6 +39,8 @@
 #include <unistd.h>
 #endif 
 
+const int divider = 1000000;
+
 class medDataManagerPrivate
 {
 public:
@@ -137,7 +139,7 @@ QSharedPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
             }
         }
   
-        qDebug() << "Memory after reading:" << getProcessMemoryUsage() / 1000000;
+        //qDebug() << "Memory after reading:" << getProcessMemoryUsage() / divider;
 
         // store it in the cache
         if (dtkdata)
@@ -161,7 +163,7 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 
 medDataManager::~medDataManager(void)
 {
-    tryFreeMemory();
+    tryFreeMemory(getUpperMemoryThreshold());
     delete d;
 
     d = NULL;
@@ -175,22 +177,31 @@ void medDataManager::destroy( void )
     }
 }
 
-void medDataManager::tryFreeMemory()
+void medDataManager::tryFreeMemory(size_t memoryLimit)
 {
-    qDebug() << "trying to free memory";
+    size_t procMem = getProcessMemoryUsage();
+    if (procMem < memoryLimit)
+        return;
+
+    qDebug() << "****** TRY_FREE_MEM_BEGIN: " << procMem / divider << " to reach: " << memoryLimit / divider;
 
     // clear the temp cache
     d->tempCache.clear();
     int itemsBefore = d->dataCache.count();
 
-    // iterate over the cache and copy strongRefs to weakRefs
+    // iterate over the cache until we reach our threshold or all items are iterated
     foreach(medDataIndex index, d->dataCache.keys())
     {
+        // copy strongRefs to weakRefs
         d->tempCache.insert(index,d->dataCache.value(index).toWeakRef());
-    }
 
-    // clear our cache (this could be done iteratively)
-    d->dataCache.clear();
+        // remove reference to free it
+        d->dataCache.remove(index);
+
+        // check memory usage and stop the loop at the optimal threshold
+        if (getProcessMemoryUsage() < memoryLimit)
+            break;
+    }
 
     // restore the cache with items that survived
     foreach(medDataIndex index, d->tempCache.keys())
@@ -198,8 +209,8 @@ void medDataManager::tryFreeMemory()
         QWeakPointer<dtkAbstractData> weakPtr = d->tempCache.value(index);
         if (!weakPtr.isNull())
             d->dataCache.insert(index, d->tempCache.value(index).toStrongRef());
-        else
-            qDebug() << "Reference lost, memory freed successfully...";
+        //else
+            //qDebug() << "Reference lost, memory freed successfully...";
     }
 
     int itemsNow = d->dataCache.count();
@@ -208,29 +219,37 @@ void medDataManager::tryFreeMemory()
     else
         qDebug() << "Not possible to free any items, current cache count is: " << itemsNow << "items";
 
+    qDebug() << "****** TRY_FREE_MEM_END: " << getProcessMemoryUsage() / divider;
+
 }
 
 bool medDataManager::manageMemoryUsage(const medDataIndex& index, medAbstractDbController* controller)
 {
     bool res = true;
     qint64 processMem = getProcessMemoryUsage();
-    qint64 dataMem = controller->getEstimatedSize(index);
+    qint64 estMem = controller->getEstimatedSize(index);
+    qint64 requiredMem = processMem + estMem;
+    qint64 optimalMem = getOptimalMemoryThreshold();
+    qint64 maxMem = getUpperMemoryThreshold();
 
-    qDebug() << "Current memory usage:" << processMem / 1000000;
-    qDebug() << "Estimated memory need:" << (processMem + dataMem) / 1000000;
+    //qDebug() << "Current memory usage:" << processMem / divider;
+    //qDebug() << "Required memory need:" << requiredMem / divider;
 
-    // check against our threshold
-    if (getUpperMemoryThreshold() < (processMem + dataMem))
+    // check against our optimal threshold
+    if (optimalMem < requiredMem)
     {
-        tryFreeMemory();
-        processMem =  getProcessMemoryUsage();
-        qDebug() << "new memory usage after cleaning:" << (processMem/1000000);
+        if (estMem > optimalMem)
+            tryFreeMemory(0); // purge all
+        else
+            tryFreeMemory(optimalMem); // purge to optimal
 
+        requiredMem= getProcessMemoryUsage() + estMem;
+        
         // check again to see if we succeeded
-        if (getUpperMemoryThreshold() < (processMem + dataMem))
+        if (maxMem < requiredMem)
         {
             res = false; //should be set to false, debugging only
-            qWarning() << "Estimated memory usage (" << processMem + dataMem<< ") does not fit boundaries.";
+            qWarning() << "Required memory usage (" << requiredMem / divider << "mb) does not fit boundaries.";
         }
     }
     
@@ -297,6 +316,9 @@ size_t medDataManager::getTotalSizeOfPhysicalRam()
 int medDataManager::ReadStatmFromProcFS( int* size, int* res, int* shared, int* text, int* sharedLibs, int* stack, int* dirtyPages )
 {
     int ret = 0;
+
+#ifndef _MSC_VER
+
     FILE* f;
     f = fopen( "/proc/self/statm", "r" );
     if( f ) {
@@ -306,12 +328,27 @@ int medDataManager::ReadStatmFromProcFS( int* size, int* res, int* shared, int* 
     } else {
         ret = -1;
     }
+
+#endif // _MSC_VER
+
     return ret;
 }
 
 size_t medDataManager::getUpperMemoryThreshold()
 {
-    return 950000000; //0.9 gb
+    if ( is32Bit() )
+    {
+        return 950000000; //0.95 gb
+    }
+    else
+    {
+        // max virtual address space for 64bit varies on platforms (1TB for Windows)
+#ifndef _Wp64
+        return 4200000000; // to avoid compiler warnings
+#else
+        return 500000000000;
+#endif
+    }
 }
 
 medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
@@ -334,12 +371,40 @@ void medDataManager::clearNonPersistentData( void )
 
 }
 
+bool medDataManager::is32Bit( void )
+{
+    if ( sizeof(void *) == 4 )
+        return true;
+    else
+        return false;
+}
 
+size_t medDataManager::getOptimalMemoryThreshold()
+{
+    size_t optimalValue;
+    size_t physicalValue = getTotalSizeOfPhysicalRam();
+    size_t upperValue = getUpperMemoryThreshold();
 
+    //qDebug() << "Physical memory is: " << physicalValue / divider;
 
+    if ( is32Bit() )
+    {
+        // for 32bit we try to keep the cache half of the max memory
+        // unless we have less physical memory available
+        if ( physicalValue < (upperValue / 2) ) 
+            optimalValue = physicalValue / 2;
+        else
+            optimalValue = upperValue / 2;
+    }
+    else
+    {
+       // for 64bit we use half of the physical memory
+       optimalValue = physicalValue / 2;
+    }
 
-
-
+    //qDebug() << "optimal memory limit is: " << optimalValue / divider;
+    return optimalValue;
+}
 
 
 

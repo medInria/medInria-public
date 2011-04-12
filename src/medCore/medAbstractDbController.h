@@ -24,7 +24,12 @@ public:
     * @return bool true if connected
     */
     virtual bool isConnected() = 0;
-
+    
+    /**
+    * return the size that the data behind the medDataIndex in byte
+    * @param const medDataIndex& index the index for the data
+    * @return estimated size of data
+    */
     virtual qint64 getEstimatedSize(const medDataIndex& index) const = 0;
 
 signals:

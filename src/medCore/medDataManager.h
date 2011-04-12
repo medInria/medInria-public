@@ -86,7 +86,10 @@ public:
     */
     void clearNonPersistentData (void);
 
-
+    /**
+     * Check if the program was compiled using 32bit compiler
+     */
+    bool is32Bit(void);
 
 signals:
     /**
@@ -101,23 +104,23 @@ protected:
 
       /**
       * Releases all own references to let all stored smartpointers get out of scope
-      * All remaining references will be restored (probably not threadsafe)
+      * All remaining references will be restored (probably not thread safe)
       * @return void
       */
-      void tryFreeMemory();
+      void tryFreeMemory(size_t memoryLimit);
 
       /** 
       * Returns the memory usage of the current process in bytes.
       * On linux, this refers to the virtual memory allocated by 
       * the process (the VIRT column in top).
-      * On windows, this refery to the size in bytes of the working 
+      * On windows, this refers to the size in bytes of the working 
       * set pages (the "Memory" column in the task manager).
       * Code taken from mitk (bsd)
       */
       size_t getProcessMemoryUsage();
 
       /**
-      * Returns the total size of phyiscal memory in bytes
+      * Returns the total size of physical memory in bytes
       */
       size_t getTotalSizeOfPhysicalRam();
 
@@ -132,7 +135,19 @@ protected:
        */
       int ReadStatmFromProcFS( int* size, int* res, int* shared, int* text, int* sharedLibs, int* stack, int* dirtyPages );
 
+      /**
+       * Return the hard limit the process can allocate
+       * Result depends on the platform
+       * If this threshold is crossed the manager will not 
+       * allocate memory to ensure system stability
+       */
       size_t getUpperMemoryThreshold();
+
+      /**
+       * Return the memory limit where the system should try to stay
+       * This ensures optimal memory usage to avoid paging
+       */
+      size_t getOptimalMemoryThreshold();
 
 protected:
     static medDataManager *s_instance;

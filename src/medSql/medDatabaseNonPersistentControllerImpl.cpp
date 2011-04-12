@@ -113,7 +113,6 @@ medDataIndex medDatabaseNonPersistentControllerImpl::import(const QString& file)
 
 QSharedPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
 {
-    //if(d->items.keys().contains(index))
     QSharedPointer<dtkAbstractData> ret(d->items.value(index)->data());
 
     return ret;

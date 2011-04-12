@@ -70,6 +70,11 @@ public:
     */
     bool isConnected();
 
+    /**
+    * return the size that the data behind the medDataIndex in byte
+    * @param const medDataIndex& index the index for the data
+    * @return estimated size of data
+    */
     qint64 getEstimatedSize(const medDataIndex& index) const;
 
 public slots:
