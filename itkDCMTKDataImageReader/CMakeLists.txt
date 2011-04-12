@@ -85,7 +85,7 @@ if (BUILD_TESTING)
 endif (BUILD_TESTING)
 
 IF(BUILD_EXAMPLES)
-	subdirs(examples)
+        subdirs(Examples)
 ENDIF(BUILD_EXAMPLES)
 
 if(BUILD_DOCUMENTATION)
