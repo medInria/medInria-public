@@ -191,24 +191,24 @@ signals:
        the user cliked on a specific voxel.
        The position is expressed in physical coordinates.
      **/
-    void positionChanged  (const QVector3D &position);
+    void positionChanged  (const QVector3D &position, bool propagate);
 
     /**
        This signal is emitted when the zoom factor of the view has changed.
      **/
-    void zoomChanged      (double zoom);
+    void zoomChanged      (double zoom, bool propagate);
 
     /**
        This signal is emitted when the pan (=translation) of the view has
        changed.
      **/
-    void panChanged       (const QVector2D &pan);
+    void panChanged       (const QVector2D &pan, bool propagate);
 
     /**
        This signal is emitted when the windowing (window/level controlling the image
        contrast) has changed.
      **/
-    void windowingChanged (double level, double window);
+    void windowingChanged (double level, double window, bool propagate);
 
     /**
        This signal is emitted when the camera of the view has changed. The camera settings
@@ -221,7 +221,8 @@ signals:
     void cameraChanged    (const QVector3D &position,
                            const QVector3D &viewup,
                            const QVector3D &focal,
-                           double parallelScale);
+                           double parallelScale,
+                           bool propagate);
     
     /**
      * This signal is emitted when the visibility of a layer has changed.

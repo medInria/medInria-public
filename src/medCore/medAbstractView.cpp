@@ -150,19 +150,19 @@ void medAbstractView::setPosition (const QVector3D &position)
 {
     this->onPositionChanged (position);
 	d->position = position;
-    emit positionChanged (position);
+    emit positionChanged (position, d->linkPosition);
 }
 
 QVector3D medAbstractView::position(void) const
 {
-	return d->position;
+    return d->position;
 }
 
 void medAbstractView::setZoom (double zoom)
 {
     this->onZoomChanged (zoom);
 	d->zoom = zoom;
-    emit zoomChanged (zoom);
+    emit zoomChanged (zoom, d->linkCamera);
 }
 
 double medAbstractView::zoom(void) const
@@ -174,7 +174,7 @@ void medAbstractView::setPan (const QVector2D &pan)
 {
     this->onPanChanged (pan);
 	d->pan = pan;
-    emit panChanged (pan);
+    emit panChanged (pan, d->linkCamera);
 }
 
 QVector2D medAbstractView::pan(void) const
@@ -187,7 +187,7 @@ void medAbstractView::setWindowLevel (double level, double window)
     this->onWindowingChanged (level, window);
 	d->level = level;
 	d->window = window;
-    emit windowingChanged (level, window);
+    emit windowingChanged (level, window, d->linkWindowing);
 }
 
 void medAbstractView::windowLevel(double &level, double &window) const
@@ -203,7 +203,7 @@ void medAbstractView::setCamera (const QVector3D &position, const QVector3D &vie
 	d->camViewup = viewup;
 	d->camFocal = focal;
 	d->camParallelScale = parallelScale;
-    emit cameraChanged (position, viewup, focal, parallelScale);
+    emit cameraChanged (position, viewup, focal, parallelScale, d->linkCamera);
 }
 
 void medAbstractView::camera (QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale) const
@@ -327,36 +327,36 @@ void medAbstractView::emitViewSliceChangedEvent(int slice)
 
 void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
 {
-	d->position = position;
-    emit positionChanged(position);
+    d->position = position;
+    emit positionChanged(position, d->linkPosition);
 }
 
 void medAbstractView::emitViewZoomChangedEvent(double zoom)
 {
-	d->zoom = zoom;
-    emit zoomChanged(zoom);
+    d->zoom = zoom;
+    emit zoomChanged(zoom, d->linkCamera);
 }
 
 void medAbstractView::emitViewPanChangedEvent(const QVector2D &pan)
 {
-	d->pan = pan;
-    emit panChanged(pan);
+    d->pan = pan;
+    emit panChanged(pan, d->linkCamera);
 }
 
 void medAbstractView::emitViewWindowingChangedEvent(double level, double window)
 {
-	d->level = level;
-	d->window = window;
-    emit windowingChanged(level,window);
+    d->level = level;
+    d->window = window;
+    emit windowingChanged(level,window, d->linkWindowing);
 }
 
 void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
 {
-	d->camPosition = position;
-	d->camViewup = viewup;
-	d->camFocal = focal;
-	d->camParallelScale = parallelScale;
-    emit cameraChanged(position, viewup, focal, parallelScale);
+    d->camPosition = position;
+    d->camViewup = viewup;
+    d->camFocal = focal;
+    d->camParallelScale = parallelScale;
+    emit cameraChanged(position, viewup, focal, parallelScale, d->linkCamera);
 }
 
 medAbstractView::~medAbstractView( void )
