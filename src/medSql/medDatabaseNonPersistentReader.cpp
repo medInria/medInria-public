@@ -101,6 +101,7 @@ medDataIndex medDatabaseNonPersistentReader::run(void)
                 delete dataReader;
                 break;
             }
+            delete dataReader;
         }
 
         if (!dtkdata)

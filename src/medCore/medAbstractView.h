@@ -53,7 +53,7 @@ class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 public:
     medAbstractView(medAbstractView * parent = 0);
     medAbstractView(const medAbstractView& view);
-    virtual ~medAbstractView(void){}
+    virtual ~medAbstractView(void);
 
     virtual void setColorLookupTable(int min_range,
                                      int max_range,
@@ -68,6 +68,11 @@ public:
 				       QList<QColor> & colors );
 
     virtual QWidget *receiverWidget(void);
+
+    /**
+       Set the view slice.
+    **/
+    void setSlice       (int slice);
 
     /**
        Set the view position, i.e., focus on a particular spatial coordinate.
@@ -173,6 +178,14 @@ signals:
     void fullScreen    (bool);
 
     /**
+       This signal is emitted when the shown slice of the view has
+       changed.  A changed slice always comes along with a changed
+       position, but the positionChanged signal is sent before the new
+       slice number is computed in vtkImageView2D.
+     **/
+    void sliceChanged     (int slice);
+
+    /**
        This signal is emitted when the current position pointed by the view has changed.
        This is the case, for instance, when the slice of a 3D image was changed, or when
        the user cliked on a specific voxel.
@@ -246,6 +259,7 @@ public slots:
     virtual void setLinkCamera (bool value);
     bool cameraLinked (void) const;
 
+    virtual void onSliceChanged     (int slice);
     virtual void onPositionChanged  (const QVector3D &position);
     virtual void onZoomChanged      (double zoom);
     virtual void onPanChanged       (const QVector2D &pan);
@@ -261,6 +275,7 @@ public slots:
 
     
 protected:
+    void emitViewSliceChangedEvent    (int slice);
     void emitViewPositionChangedEvent (const QVector3D &position);
     void emitViewZoomChangedEvent     (double zoom);
     void emitViewPanChangedEvent      (const QVector2D &pan);
