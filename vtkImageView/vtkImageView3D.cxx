@@ -842,12 +842,9 @@ void vtkImageView3D::SetRenderingMode(int arg)
 {
   this->RenderingMode = arg;
   this->VolumeActor->SetVisibility (arg == vtkImageView3D::VOLUME_RENDERING);
-  if (arg == vtkImageView3D::PLANAR_RENDERING)
-  {
-    this->ActorX->SetVisibility (this->ShowActorX);
-    this->ActorY->SetVisibility (this->ShowActorY);
-    this->ActorZ->SetVisibility (this->ShowActorZ);
-  }
+  this->ActorX->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorX);
+  this->ActorY->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorY);
+  this->ActorZ->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorZ);
 }
 
 // //---------------------------------------------------------------------------
