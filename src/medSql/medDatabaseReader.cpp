@@ -108,7 +108,7 @@ dtkAbstractData *medDatabaseReader::run(void)
     
         if (dataReader->canRead(filename)) {
 
-            qDebug() << "Reading using" << dataReader->description() << "reader";
+            //qDebug() << "Reading using" << dataReader->description() << "reader";
 
             dataReader->read(filename);
             data = dataReader->data();
