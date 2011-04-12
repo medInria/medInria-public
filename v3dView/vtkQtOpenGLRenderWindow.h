@@ -24,6 +24,7 @@ PURPOSE.  See the above copyright notice for more information.
 #include <QCursor>
 #include <QGLWidget>            // needs to be included before
                                 // vtkXOpenGLRenderWindow.h on linux
+#include "vtkConfigure.h"
 #include "vtkToolkits.h"        // defines VTK_USE_*
 
 class QVtkGraphicsView;
