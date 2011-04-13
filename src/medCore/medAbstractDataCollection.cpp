@@ -1,6 +1,7 @@
 #include "medAbstractDataCollection.h"
 
 #include "medAbstractData.h"
+#include "medAttachedData.h"
 
 #include <QtCore/QVector>
 
@@ -9,6 +10,7 @@ class medAbstractDataCollectionPrivate
 public:
     QVector<QSharedPointer<medAbstractData>>     dataVector;
     QVector<QSharedPointer<medAbstractData>>::iterator dataIterator;
+    QSharedPointer<medAttachedData>* attachedData;
 };
 
 medAbstractDataCollection::medAbstractDataCollection() : d(new medAbstractDataCollectionPrivate)
@@ -20,6 +22,9 @@ medAbstractDataCollection::medAbstractDataCollection() : d(new medAbstractDataCo
 medAbstractDataCollection::~medAbstractDataCollection()
 {
     d->dataVector.clear();
+    if (d->attachedData != NULL)
+        delete d->attachedData;
+
     delete d;
     d = NULL;
 }
@@ -50,4 +55,21 @@ medAbstractData* medAbstractDataCollection::at( int index )
         return d->dataVector.at(index).data();
     else
         return NULL;
+}
+
+void medAbstractDataCollection::addData( medAbstractData* data )
+{
+    d->dataVector.push_back(QSharedPointer<medAbstractData>(data));
+}
+
+void medAbstractDataCollection::setAttachData( medAttachedData* attachedData )
+{
+    if (d->attachedData != NULL)
+        delete d->attachedData;
+    d->attachedData = new QSharedPointer<medAttachedData> (attachedData);
+}
+
+medAttachedData* medAbstractDataCollection::attachedData()
+{
+    return d->attachedData->data();
 }

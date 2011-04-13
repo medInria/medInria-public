@@ -11,6 +11,8 @@ class medAbstractDataPrivate;
  */
 class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 {
+    Q_OBJECT
+
 public:
     medAbstractData( medAbstractData *parent = 0);
     medAbstractData(const medAbstractData& data);

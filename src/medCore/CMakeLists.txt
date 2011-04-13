@@ -38,10 +38,10 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medSettingsManager.h
   medDbControllerFactory.h
   medAbstractDbController.h
-  medAbstractData.h
-  medAbstractDataCollection.h
+  medAbstractData.h  
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
+  medAttachedData.h
   medStorage.h
   medRunnableProcess.h
   medAbstractViewFiberInteractor.h
@@ -49,6 +49,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
+  medAbstractDataCollection.h
 )
 
 
@@ -67,6 +68,7 @@ set(${PROJECT_NAME}_SOURCES
   medSettingsManager.cpp
   medDbControllerFactory.cpp
   medAbstractDbController.cpp
+  medAttachedData.cpp
   medRunnableProcess.cpp
   medAbstractData.cpp
   medAbstractDataCollection.cpp
