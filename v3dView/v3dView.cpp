@@ -92,7 +92,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
     if (this->m_lock)
         return;
     
-	if (!this->slider || !this->view)
+    if (!this->slider || !this->view)
         return;
         
     switch(event)
@@ -102,7 +102,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
               unsigned int zslice = this->view->view2d()->GetSlice();
               this->slider->blockSignals (true);
               this->slider->setValue (zslice);
-              this->slider->update();
+              // this->slider->update();
               this->slider->blockSignals (false);
               
               double *pos = this->view->currentView()->GetCurrentPoint();
@@ -198,11 +198,11 @@ public:
 v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 {
     d->data       = 0;
-	d->imageData  = 0;
+    d->imageData  = 0;
     d->orientation = "Axial";
     
     d->timeline = new QTimeLine(1000, this);
-	d->timeline->setLoopCount(0);
+    d->timeline->setLoopCount(0);
     connect(d->timeline, SIGNAL(frameChanged(int)), this, SLOT(onZSliderValueChanged(int)));
     
     // Setting up 2D view
@@ -1367,7 +1367,7 @@ void v3dView::onZSliderValueChanged (int value)
             
             double *pos = view->GetCurrentPoint();
             QVector3D position (pos[0], pos[1], pos[2]);
-            emit positionChanged(position);
+            emit positionChanged(position, this->positionLinked());
         }
     }
     else if (d->dimensionBox->currentText()==tr("Time")) {
@@ -1994,7 +1994,9 @@ void v3dView::onPositionChanged(const QVector3D &position)
     pos[0] = position.x();
     pos[1] = position.y();
     pos[2] = position.z();
+    d->observer->lock();
     d->currentView->SetCurrentPoint(pos);
+    d->observer->unlock();
     
     // update slider, if currentView is 2D view
     if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast(d->currentView)) {
@@ -2007,7 +2009,9 @@ void v3dView::onPositionChanged(const QVector3D &position)
 
 void v3dView::onZoomChanged(double zoom)
 {
+    d->observer->lock();
     d->view2d->SetZoom(zoom);
+    d->observer->unlock();
 }
 
 void v3dView::onPanChanged (const QVector2D &pan)
@@ -2016,13 +2020,17 @@ void v3dView::onPanChanged (const QVector2D &pan)
     ppan[0] = pan.x();
     ppan[1] = pan.y();
     
+    d->observer->lock();
     d->view2d->SetPan(ppan);
+    d->observer->unlock();
 }
 
 void v3dView::onWindowingChanged (double level, double window)
 {
+    d->observer->lock();
     d->currentView->SetColorWindow(window);
     d->currentView->SetColorLevel(level);
+    d->observer->unlock();
 }
 
 void v3dView::onCameraChanged (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
@@ -2040,12 +2048,14 @@ void v3dView::onCameraChanged (const QVector3D &position, const QVector3D &viewu
     foc[1] = focal.y();
     foc[2] = focal.z();
     
+    d->observer->lock();
     d->renderer3d->GetActiveCamera()->SetPosition(pos);
     d->renderer3d->GetActiveCamera()->SetViewUp(vup);
     d->renderer3d->GetActiveCamera()->SetFocalPoint(foc);
     d->renderer3d->GetActiveCamera()->SetParallelScale(parallelScale);
     
     d->renderer3d->ResetCameraClippingRange();
+    d->observer->unlock();
 
     d->view3d->Modified();
 }
