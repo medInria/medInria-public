@@ -319,7 +319,7 @@ void v3dViewTensorInteractor::onFlipZPropertySet (const QString& flipZ)
         d->manager->FlipZ(false);
 }
 
-void v3dViewTensorInteractor::onPositionChanged(const QVector3D& position)
+void v3dViewTensorInteractor::onPositionChanged(const QVector3D& position, bool propagate)
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
 }
