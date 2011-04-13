@@ -183,7 +183,7 @@ signals:
        position, but the positionChanged signal is sent before the new
        slice number is computed in vtkImageView2D.
      **/
-    void sliceChanged     (int slice);
+    void sliceChanged     (int slice, bool propagate);
 
     /**
        This signal is emitted when the current position pointed by the view has changed.

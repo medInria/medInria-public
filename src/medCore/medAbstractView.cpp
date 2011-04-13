@@ -143,7 +143,7 @@ bool medAbstractView::cameraLinked (void) const
 void medAbstractView::setSlice (int slice)
 {
     this->onSliceChanged (slice);
-    emit sliceChanged (slice);
+    emit sliceChanged (slice, d->linkPosition);
 }
 
 void medAbstractView::setPosition (const QVector3D &position)
