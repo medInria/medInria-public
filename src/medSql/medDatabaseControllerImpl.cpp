@@ -18,6 +18,7 @@
 #include "medDatabaseReader.h"
 #include "medDatabaseWriter.h"
 
+
 QSqlDatabase *medDatabaseControllerImpl::database(void)
 {
     return &m_database;
@@ -262,27 +263,29 @@ medDataIndex medDatabaseControllerImpl::import( dtkAbstractData *data )
     return writer->run();
 }
 
-dtkAbstractData *medDatabaseControllerImpl::read(const medDataIndex& index) const
+QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
 {
-    medDatabaseReader *reader = new medDatabaseReader(index);
+    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
 
-    connect(reader, SIGNAL(progressed(int)), medMessageController::instance(), SLOT(setProgress(int)));
-    connect(reader, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(reader, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(reader, SIGNAL(success(QObject *)), reader, SLOT(deleteLater()));
-    connect(reader, SIGNAL(failure(QObject *)), reader, SLOT(deleteLater()));
+    connect(reader.data(), SIGNAL(progressed(int)), medMessageController::instance(), SLOT(setProgress(int)));
+    connect(reader.data(), SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(reader.data(), SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(reader.data(), SIGNAL(success(QObject *)), reader.data(), SLOT(deleteLater()));
+    connect(reader.data(), SIGNAL(failure(QObject *)), reader.data(), SLOT(deleteLater()));
 
-    medMessageController::instance()->showProgress(reader, "Opening database item");
+    medMessageController::instance()->showProgress(reader.data(), "Opening database item");
 
-    return reader->run();
+    dtkAbstractData* data = reader->run();
+    QSharedPointer<dtkAbstractData> ret(data);
+    return ret;
 }
 
-dtkAbstractData *medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId)
+QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId)
 {
     return read(medDataIndex(patientId, studyId, seriesId));
 }
 
-dtkAbstractData *medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId, int imageId)
+QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId, int imageId)
 {
     return read(medDataIndex(patientId, studyId, seriesId, imageId));
 }
@@ -452,4 +455,11 @@ medDatabaseControllerImpl::~medDatabaseControllerImpl()
 void medDatabaseControllerImpl::forwardMessage( QString msg)
 {
     copyMessage(msg, Qt::AlignBottom, QColor(Qt::white));
+}
+
+qint64 medDatabaseControllerImpl::getEstimatedSize( const medDataIndex& index ) const
+{
+    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
+    uint size = reader->getDataSize();
+    return size + (size/100 * 3); // add 3% margin
 }

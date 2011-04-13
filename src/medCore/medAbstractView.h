@@ -22,6 +22,7 @@
 
 #include <dtkCore/dtkAbstractView.h>
 
+#include <QSharedPointer>
 #include "medCoreExport.h"
 
 class medAbstractViewPrivate;
@@ -61,11 +62,11 @@ public:
                                      const int & table);
 
     virtual void setColorLookupTable( QList<double> scalars,
-				      QList<QColor> colors );
+                      QList<QColor> colors );
     virtual void setTransferFunctions( QList<double> scalars,
-				       QList<QColor> colors );
+                       QList<QColor> colors );
     virtual void getTransferFunctions( QList<double> & scalars,
-				       QList<QColor> & colors );
+                       QList<QColor> & colors );
 
     virtual QWidget *receiverWidget(void);
 
@@ -146,6 +147,11 @@ public:
      * Remove an overlay.
      */
     virtual void removeOverlay(int layer);
+
+    /**
+     * Setting data using a qSharedPointer
+     */
+    void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
 
 signals:
     /**
@@ -266,9 +272,9 @@ public slots:
     virtual void onPanChanged       (const QVector2D &pan);
     virtual void onWindowingChanged (double level, double window);
     virtual void onCameraChanged    (const QVector3D &position,
-				     const QVector3D &viewup,
-				     const QVector3D &focal,
-				     double parallelScale);
+                     const QVector3D &viewup,
+                     const QVector3D &focal,
+                     double parallelScale);
     
     virtual void onVisibilityChanged(bool visible, int layer);
     

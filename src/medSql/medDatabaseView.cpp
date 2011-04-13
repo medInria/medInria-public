@@ -160,11 +160,11 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 
     if(item)
         if(item->table() == "patient")
-	    emit open(medDatabaseController::instance()->indexForPatient(item->value(20).toInt()));
+            emit open(medDatabaseController::instance()->indexForPatient(item->value(20).toInt()));
         else if(item->table() == "study")
             ;
         else if(item->table() == "series")
-	    emit open(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
+            emit open(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
         else
             ;
 }

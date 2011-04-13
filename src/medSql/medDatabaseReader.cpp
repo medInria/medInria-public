@@ -59,31 +59,31 @@ dtkAbstractData *medDatabaseReader::run(void)
     QString patientName;
     QString studyName;
     QString seriesName;
-    
+
     query.prepare("SELECT name FROM patient WHERE id = :id");
     query.bindValue(":id", patientId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if (query.first())
         patientName = query.value(0).toString();
-    
+
     query.prepare("SELECT name FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if (query.first())
         studyName = query.value(0).toString();
-    
+
     query.prepare("SELECT name FROM series WHERE id = :id");
     query.bindValue(":id", seriesId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if (query.first())
         seriesName = query.value(0).toString();
-    
+
     QStringList filenames;
     QString     filename;
-    
+
     query.prepare("SELECT name, id, path, instance_path FROM image WHERE series = :series");
     query.bindValue(":series", seriesId);
     if(!query.exec())
@@ -93,6 +93,7 @@ dtkAbstractData *medDatabaseReader::run(void)
         filenames << query.value(2).toString();
         filename = medStorage::dataLocation() + query.value(3).toString();
     }
+
 
     typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
 
@@ -107,7 +108,7 @@ dtkAbstractData *medDatabaseReader::run(void)
     
         if (dataReader->canRead(filename)) {
 
-            qDebug() << "Reading using" << dataReader->description() << "reader";
+            //qDebug() << "Reading using" << dataReader->description() << "reader";
 
             dataReader->read(filename);
             data = dataReader->data();
@@ -128,4 +129,34 @@ dtkAbstractData *medDatabaseReader::run(void)
     }
 
     return data;
+}
+
+qint64 medDatabaseReader::getDataSize()
+{
+    QString filename = getFilePath();
+    QFileInfo info(filename);
+    return info.size();
+}
+
+QString medDatabaseReader::getFilePath()
+{
+    QVariant patientId = d->index.patientId();
+    QVariant   studyId = d->index.studyId();
+    QVariant  seriesId = d->index.seriesId();
+    QVariant   imageId = d->index.imageId();
+
+    QSqlQuery query((*(medDatabaseController::instance()->database())));
+
+    QString     filename;
+
+    query.prepare("SELECT instance_path FROM image WHERE series = :series");
+    query.bindValue(":series", seriesId);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    while(query.next()) {
+        filename = medStorage::dataLocation() + query.value(0).toString();
+    }
+
+    return filename;
 }
