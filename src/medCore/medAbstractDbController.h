@@ -7,7 +7,7 @@
 #include <QtCore>
 #include <QtSql>
 
-class dtkAbstractData;
+#include <dtkCore/dtkAbstractData.h>
 
 /**
  * Abstract dbController class. Implementation needs to adhere to the common interface
@@ -24,6 +24,13 @@ public:
     * @return bool true if connected
     */
     virtual bool isConnected() = 0;
+    
+    /**
+    * return the size that the data behind the medDataIndex in byte
+    * @param const medDataIndex& index the index for the data
+    * @return estimated size of data
+    */
+    virtual qint64 getEstimatedSize(const medDataIndex& index) const = 0;
 
 signals:
     
@@ -41,7 +48,7 @@ public slots:
     * @params const medDataIndex & index Index for data
     * @return dtkAbstractData * the data
     */
-    virtual dtkAbstractData* read(const medDataIndex& index) const = 0;
+    virtual QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const = 0;
 
     /**
     * Import a file into the db

@@ -29,6 +29,7 @@ class dtkAbstractData;
 class dtkAbstractDataFactory;
 
 class medDataManagerPrivate;
+class medAbstractDbController;
 
 /**
  * This class is the global access point to data stored in the database. 
@@ -40,19 +41,15 @@ class MEDCORE_EXPORT medDataManager : public QObject
     Q_OBJECT
 
 public:
-    static medDataManager *instance(void);
-
-    /*
-        void insert(const medDataIndex& index, dtkAbstractData *data);
-        void remove(const medDataIndex& index);
-    */
+      static medDataManager *instance(void);
+      static void destroy(void);
 
     /**
     * Ask the data-manager to provide the data belonging to this index using it's registered controllers
     * @params const medDataIndex & index medDataIndex for data
     * @return dtkAbstractData * the data
     */
-    dtkAbstractData* data(const medDataIndex& index);
+    QSharedPointer<dtkAbstractData> data(const medDataIndex& index);
 
     /**
     * Use this function to insert data into the database,
@@ -89,12 +86,47 @@ public:
     */
     void clearNonPersistentData (void);
 
-    /*
-        QList<dtkAbstractData *> dataForPatient(int id);
-        QList<dtkAbstractData *> dataForStudy  (int id);
-        QList<dtkAbstractData *> dataForSeries (int id);
-        QList<dtkAbstractData *> dataForImage  (int id);
+    /**
+    * Releases all own references to let all stored smartpointers get out of scope
+    * All remaining references will be restored (probably not thread safe)
+    * @return void
     */
+    void tryFreeMemory(size_t memoryLimit);
+
+    /**
+     * Check if the program was compiled using 32bit compiler
+     */
+    static bool is32Bit(void);
+
+    /** 
+    * Returns the memory usage of the current process in bytes.
+    * On linux, this refers to the virtual memory allocated by 
+    * the process (the VIRT column in top).
+    * On windows, this refers to the size in bytes of the working 
+    * set pages (the "Memory" column in the task manager).
+    * Code taken from mitk (bsd)
+    */
+    static size_t getProcessMemoryUsage();
+
+    /**
+    * Returns the total size of physical memory in bytes
+    */
+    static size_t getTotalSizeOfPhysicalRam();
+
+    /**
+    * Return the hard limit the process can allocate
+    * Result depends on the platform
+    * If this threshold is crossed the manager will not 
+    * allocate memory to ensure system stability
+    */
+    static size_t getUpperMemoryThreshold();
+
+    /**
+    * Return the memory limit where the system should try to stay
+    * This ensures optimal memory usage to avoid paging
+    */
+    static size_t getOptimalMemoryThreshold();
+
 
 signals:
     /**
@@ -106,6 +138,20 @@ signals:
 protected:
      medDataManager(void);
     ~medDataManager(void);
+
+
+    /**
+    * Compares the process memory usage with the upper threshold, frees memory to reach lower threshold
+    * @return bool success or failure
+    */
+    bool manageMemoryUsage(const medDataIndex& index, medAbstractDbController* controller);
+
+    /**
+    * Helper for linux
+    */
+    int ReadStatmFromProcFS( int* size, int* res, int* shared, int* text, int* sharedLibs, int* stack, int* dirtyPages );
+
+
 
 protected:
     static medDataManager *s_instance;

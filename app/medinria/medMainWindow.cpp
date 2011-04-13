@@ -34,6 +34,7 @@
 #include <medCore/medSettingsManager.h>
 #include <medCore/medDbControllerFactory.h>
 #include <medCore/medJobManager.h>
+#include <medCore/medDataManager.h>
 
 #include <medGui/medButton.h>
 #include <medGui/medWorkspaceShifter.h>
@@ -443,4 +444,5 @@ void medMainWindow::closeEvent(QCloseEvent *event)
 
     medDatabaseController::destroy();
     medDatabaseNonPersistentController::destroy();
+    medDataManager::destroy();
 }
