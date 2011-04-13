@@ -93,13 +93,12 @@ void medViewPool::removeView (medAbstractView *view)
     if (refView) {
         if (refView==view) { // we are daddy, we need to find a new daddy
             // change daddy
-            QList<medAbstractView *>::iterator it = d->views.begin();
-            for( ; it!=d->views.end(); it++)
-                if ((*it)!=refView && (*it)->property ("Daddy")=="false") {
-                (*it)->setProperty ("Daddy", "true");
-                break;
+            foreach(medAbstractView *lview, d->views) {
+                if (lview!=refView && lview->property ("Daddy")=="false") {
+                    lview->setProperty ("Daddy", "true");
+                    break;
+                }
             }
-            
             medAbstractView *oldDaddy = refView;
             oldDaddy->setProperty ("Daddy", "false"); // not necessary
         }
@@ -241,7 +240,8 @@ void medViewPool::onViewPropertySet (const QString &key, const QString &value)
         key=="CameraLinked" ||
         key=="WindowingLinked" ||
         key=="Orientation" ||
-        key=="LookupTable")
+        key=="LookupTable" ||
+        key=="Preset")
         return;
     
     d->propertySet[key] = value;
