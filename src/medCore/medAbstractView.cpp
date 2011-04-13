@@ -32,15 +32,15 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->linkWindowing = false;
     d->currentLayer = 0;
   
-	d->position = QVector3D(0.0, 0.0, 0.0);
-	d->pan = QVector2D(0.0, 0.0);
-	d->zoom = 1.0;
-	d->level = 0.0;
-	d->window = 0.0;
-	d->camPosition = QVector3D(0.0, 0.0, 0.0);
-	d->camViewup = QVector3D(0.0, 0.0, 0.0);
-	d->camFocal = QVector3D(0.0, 0.0, 0.0);
-	d->camParallelScale = 1.0;
+    d->position = QVector3D(0.0, 0.0, 0.0);
+    d->pan = QVector2D(0.0, 0.0);
+    d->zoom = 1.0;
+    d->level = 0.0;
+    d->window = 0.0;
+    d->camPosition = QVector3D(0.0, 0.0, 0.0);
+    d->camViewup = QVector3D(0.0, 0.0, 0.0);
+    d->camFocal = QVector3D(0.0, 0.0, 0.0);
+    d->camParallelScale = 1.0;
 
     QStringList lut;
     lut << "Default";		// list of available lookup tables set
@@ -164,7 +164,7 @@ QVector3D medAbstractView::position(void) const
 void medAbstractView::setZoom (double zoom)
 {
     this->onZoomChanged (zoom);
-	d->zoom = zoom;
+    d->zoom = zoom;
     emit zoomChanged (zoom, d->linkCamera);
 }
 
@@ -325,7 +325,7 @@ void medAbstractView::onOpacityChanged(double opacity, int layer)
 
 void medAbstractView::emitViewSliceChangedEvent(int slice)
 {
-    emit sliceChanged(slice);
+    emit sliceChanged(slice, d->linkPosition);
 }
 
 void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
