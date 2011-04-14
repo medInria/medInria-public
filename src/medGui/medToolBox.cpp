@@ -29,6 +29,7 @@ class medToolBoxPrivate
 public:
     medToolBoxHeader *header;
     medToolBoxBody *body;
+    bool isMinimized;
 
 public:
     QBoxLayout *layout;
@@ -44,6 +45,8 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->layout->setSpacing(0);
     d->layout->addWidget(d->header);
     d->layout->addWidget(d->body);
+    d->isMinimized = false;
+    connect(d->header,SIGNAL(triggered()),this,SLOT(switchMinimize()));
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
@@ -117,4 +120,18 @@ Qt::Orientation medToolBox::orientation (void) const
         return Qt::Horizontal;
     else
         return Qt::Vertical;
+}
+
+void medToolBox::switchMinimize()
+{
+    if (d->isMinimized)
+    {
+        d->body->show();
+        d->isMinimized = false;
+    }
+    else
+    {
+        d->body->hide();
+        d->isMinimized = true;
+    }
 }

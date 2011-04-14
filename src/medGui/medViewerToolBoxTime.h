@@ -52,8 +52,8 @@ public slots:
     void onPlaySequences();
 
     /** Slot for next and previous frame */
-    void onNextFrame(bool);
-    void onPreviousFrame(bool);
+    void onNextFrame();
+    void onPreviousFrame();
 
     /** parameters updated when time is changed */
     void onTimeChanged(int);
