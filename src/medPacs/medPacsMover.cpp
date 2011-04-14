@@ -16,7 +16,7 @@ public:
     QVector<medMoveCommandItem> cmdList;
 };
 
-medPacsMover::medPacsMover(const QVector<medMoveCommandItem>& cmdList): QRunnable(), 
+medPacsMover::medPacsMover(const QVector<medMoveCommandItem>& cmdList): medJobItem(), 
                            d(new medPacsMoverPrivate)
 {
     d->cmdList = cmdList;
@@ -42,7 +42,7 @@ void medPacsMover::doQueuedMove()
     if(!d->move)
     {
         d->move = medAbstractPacsFactory::instance()->createMoveScu("dcmtkMoveScu");
-        connect(d->move,SIGNAL(progressed(int)),this, SIGNAL(progressed(int)));
+        connect(d->move,SIGNAL(progressed(int)),this, SLOT(progressForward(int)));
     }
 
     if(d->move)
@@ -63,9 +63,9 @@ void medPacsMover::doQueuedMove()
         }
     
     if(d->move->performQueuedMoveRequests() == 0)
-            emit success();
+            emit success(this);
     else
-            emit failure();
+            emit failure(this);
 
     }
 
@@ -76,6 +76,11 @@ void medPacsMover::onCancel(QObject* sender)
     if(d->move && sender == this)
     {
         d->move->sendCancelRequest();
-        emit cancelled();
+        emit cancelled(this);
     }
+}
+
+void medPacsMover::progressForward( int progress)
+{
+    emit progressed(this, progress);
 }

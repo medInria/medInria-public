@@ -42,17 +42,20 @@ public:
     int studyId;
     int seriesId;
     int imageId;
+    QString text;
 
     QString path;
 };
 
-medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QString &path, QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
+medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QString &path, const QString &text, QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
 {
     d->patientId = patientId;
     d->studyId = studyId;
     d->seriesId = seriesId;
     d->imageId = imageId;
 
+    d->text = text;
+    
     d->path = path;
 
     medDatabaseNavigatorItemLoader *loader = new medDatabaseNavigatorItemLoader(path);
@@ -64,18 +67,27 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, i
     this->setAcceptHoverEvents(true);
 }
 
-medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QImage &image, QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
+medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QImage &image, const QString &text, QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
 {
     d->patientId = patientId;
     d->studyId = studyId;
     d->seriesId = seriesId;
     d->imageId = imageId;
 
+    d->text = text;
+    
     d->path = QString();
 
     this->setImage(image);
     this->setAcceptHoverEvents(true);
 }
+
+medDatabaseNavigatorItem::medDatabaseNavigatorItem()
+{
+    //call the overloaded constructor
+    medDatabaseNavigatorItem(-1,-1,-1,-1, QString(), QString(), 0);
+}
+
 
 medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
 {
@@ -86,7 +98,7 @@ medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
 
 medDatabaseNavigatorItem *medDatabaseNavigatorItem::clone(void)
 {
-    return new medDatabaseNavigatorItem(d->patientId, d->studyId, d->seriesId, d->imageId, d->path);
+    return new medDatabaseNavigatorItem(d->patientId, d->studyId, d->seriesId, d->imageId, d->path, 0);
 }
 
 void medDatabaseNavigatorItem::setup(void)
@@ -112,6 +124,11 @@ int medDatabaseNavigatorItem::seriesId(void) const
 int medDatabaseNavigatorItem::imageId(void) const
 {
     return d->imageId;
+}
+
+QString medDatabaseNavigatorItem::text(void) const
+{
+    return d->text;
 }
 
 QString medDatabaseNavigatorItem::path(void) const
@@ -146,4 +163,12 @@ void medDatabaseNavigatorItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 #endif
     drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
     drag->start();
+}
+
+void medDatabaseNavigatorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    QGraphicsPixmapItem::paint (painter, option, widget);
+
+    painter->setPen(Qt::white);
+    painter->drawText(option->rect.adjusted(5, 5, -5, option->rect.height()-5), Qt::AlignRight | Qt::TextSingleLine, d->text);
 }

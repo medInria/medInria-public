@@ -3,7 +3,7 @@
         <file>medinria.ico</file>
         <file>icons/quit.png</file>
         <file>icons/anchor.png</file>
-	<file>icons/cog.png</file>
+        <file>icons/cog.png</file>
         <file>icons/cropping.png</file>
         <file>icons/error.png</file>
         <file>icons/error_add.png</file>
@@ -13,6 +13,7 @@
         <file>icons/eye.png</file>
         <file>icons/help.png</file>
         <file>icons/information.png</file>
+        <file>icons/layer.png</file>
         <file>icons/length.tiff</file>
         <file>icons/lightbulb.png</file>
         <file>icons/lightbulb_add.png</file>
@@ -29,7 +30,7 @@
         <file>icons/link_edit.png</file>
         <file>icons/link_error.png</file>
         <file>icons/link_go.png</file>
-	<file>icons/link_wl.png</file>
+        <file>icons/link_wl.png</file>
         <file>icons/lock.png</file>
         <file>icons/lock_add.png</file>
         <file>icons/lock_break.png</file>
@@ -71,6 +72,8 @@
         <file>icons/zoom.tiff</file>
         <file>icons/zoom_in.png</file>
         <file>icons/zoom_out.png</file>
+        <file>icons/backward.png</file>
+        <file>icons/forward.png</file>
         <file>medinria.qss</file>
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/frame.png</file>
@@ -84,11 +87,8 @@
         <file>pixmaps/scrollbar-vertical-subline.png</file>
         <file>pixmaps/treeview-frame.png</file>
         <file>pixmaps/toolbox-body.png</file>
-        <!--<file>pixmaps/toolbox-body-horizontal.png</file>-->
         <file>pixmaps/toolbox-header.png</file>
-        <!--<file>pixmaps/toolbox-header-horizontal.png</file>-->
         <file>pixmaps/tabwidget-pane.png</file>
-        <!--<file>pixmaps/tabwidget-pane-horizontal.png</file>-->
         <file>pixmaps/checkbox.png</file>
         <file>pixmaps/checkbox-checked.png</file>
         <file>pixmaps/checkbox-partial.png</file>
@@ -109,5 +109,9 @@
         <file>pixmaps/mediseen-logo.png</file>
         <file>pixmaps/medinria-logo.png</file>
         <file>pixmaps/medinria-splash.png</file>
+        <file>icons/settings.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/play.png</file>
     </qresource>
 </RCC>

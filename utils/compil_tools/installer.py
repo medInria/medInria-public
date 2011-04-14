@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from optparse import OptionParser
-import sys,os,zipfile,ConfigParser,platform, shutil
+import sys,os,zipfile,ConfigParser,platform, shutil,urllib
 from exceptions import OSError,NotImplementedError
-import re, commands
+import re,subprocess
 import types
 
 ################################################################################
@@ -11,6 +11,26 @@ import types
 #
 #
 ################################################################################
+
+if not "check_output" in subprocess.__dict__:
+
+    def check_output(*popenargs, **kwargs):
+
+        if 'stdout' in kwargs:
+            raise ValueError('stdout argument not allowed, it will be overridden.')
+        process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+        output, unused_err = process.communicate()
+        retcode = process.poll()
+        if retcode:
+            cmd = kwargs.get("args")
+            if cmd is None:
+                cmd = popenargs[0]
+            raise CalledProcessError(retcode, cmd, output=output)
+        return output
+else:
+    from subprocess import check_output
+
+
 def _extract_all(self, destdir):
     namelist = self.namelist()
     namelist.sort()
@@ -30,6 +50,27 @@ def unzip(src, dest):
     zipfile.ZipFile.extract_all = _extract_all
     zipo = zipfile.ZipFile(src, 'r')
     zipo.extract_all(dest)
+
+def reporthook(a,b,c):
+    # ',' at the end of the line is important!
+    print "% 3.1f%% of %d bytes\r" % (min(100, float(a * b) / c * 100), c),
+    #you can also use sys.stdout.write
+    #sys.stdout.write("\r% 3.1f%% of %d bytes"
+    #                 % (min(100, float(a * b) / c * 100), c)
+    sys.stdout.flush()
+
+def url_get_file(url,file_path):
+    """
+    gets files using a url.
+    @param url: address where to fetch the file.
+    @param file: destination file.
+    """
+    #i = url.rfind('/')
+    #file = url[i+1:]
+    print url, "->", file_path
+    urllib.urlretrieve(url, file_path, reporthook)
+    sys.stdout.flush()
+    return
 
 def find_architecture():
     """
@@ -135,11 +176,12 @@ def build(project,config,architecture="linux"):
     os.chdir(config.get(project,"build_dir"))
     make_command = config.get("commands","make")
     if architecture == 'win' or architecture == 'win32' or architecture == 'win64':
-        if config.get(project,"build_type")=="Release":
-            win32_config = "Release\|Win32"
-        else : win32_config = ""
+        win32_config= config.get(project,"win32_configuration")
 
-        generator_type = config.get("win_spec","generator_type")
+        if not win32_config and config.get(project,"build_type")=="Release":
+            win32_config = "Release\|Win32"
+
+        generator_type = config.get(project,"generator_type")
         if generator_type == 'NMake Makefiles':
                 cmd = make_command + ' -f Makefile'
         else:
@@ -160,20 +202,55 @@ def build(project,config,architecture="linux"):
 
     return
 
+def uncomp_tar(project,config,file):
+    """
+    Uncompresses a file to the corresponding project's destination_dir
+    """
+    import tarfile
+    tar = tarfile.open(file)
+    dest_dir = config.get(project,"destination_dir")
+    tar.extractall(dest_dir)
+    tar.close()
+    return
+
+
+
 def wget(project,config):
     """
     Gets a source package from the web and Uncompress it if needed.
-    Uses the "wget" and te uncompress_command specified in
+    Uses the "wget" and the uncompress_command specified in
     the config file under the project's section.
+
+    If the wget command is "python",
+    then a python function is called to download the file,
+    Only if it doesn't exist yet.
     """
     wget_c = config.get("commands","wget")
+
     source_file = config.get(project,"source_file")
     source = config.get(project,"source_host")+"/"+source_file
-    os.system(wget_c + " "+ source)
+    archive_dir = config.get(project,"archive_dir")
+    target_file = os.path.join(archive_dir,source_file)
+    print "arc_dir:",archive_dir,"file:",target_file
+
+    if wget_c == "python":
+        if not os.path.isfile(target_file):
+            url_get_file(source,target_file)
+        else:
+            print "file",target_file,"already exists, skipping download"
+    else:
+        os.system(wget_c + " "+ source)
     #uncompress in the right directory...
     uncomp_cmd = config.get(project,"uncompress_command")
     print uncomp_cmd
-    os.system(uncomp_cmd)
+    #len(python_)=7
+    if len(uncomp_cmd)>7 and uncomp_cmd[0:7]== "python_" :
+        option = uncomp_cmd[7:]
+        print "uncompress file type:",option
+        if option == "tar":
+            uncomp_tar(project,config,target_file)
+    else:
+        os.system(uncomp_cmd)
     return
 
 def _git_path(project,config):
@@ -267,9 +344,9 @@ def _git_checkout(project, config):
     """
     git_command = config.get("commands", "git")
 
-    git_output      = commands.getoutput(git_command + " branch")
+    git_output      = check_output([git_command,"branch"])
     local_branches  = _git_parse_branches(git_output)
-    git_output      = commands.getoutput(git_command + " branch -r")
+    git_output      = check_output([git_command,"branch","-r"])
     remote_branches = _git_parse_branches(git_output)
 
     target          = config.get(project,"branch")
@@ -321,7 +398,9 @@ def svn_checkout(project,config):
     #os.chdir()
     svn_command = config.get("commands","svn")
     path = _svn_path(project,config)
-    svn_cmd=svn_command+' checkout '+ path
+    dest_dir =  config.get(project,"destination_dir")
+
+    svn_cmd=svn_command+' checkout '+ path + " " + dest_dir
     print svn_cmd
     os.system(svn_cmd)
 
@@ -379,16 +458,22 @@ def install(project,config,architecture):
     make_command = config.get("commands","make")
     if architecture == 'win' or architecture == 'win32' \
             or architecture == 'win64':
-        if config.get(project,"build_type")=="Release":
-            win32_config = "Release\|Win32"
-        else : win32_config = ""
 
-        generator_type = config.get("win_spec","generator_type")
+        win32_config= config.get(project,"win32_configuration")
+
+        if not win32_config and config.get(project,"build_type")=="Release":
+            win32_config = "Release\|Win32"
+
+        generator_type = config.get(project,"generator_type")
         if generator_type == 'NMake Makefiles':
             cmd = make_command + ' -f Makefile install'
-        else:
+        elif generator_type == "Visual Studio 10":
+            cmd =  config.get("commands",
+                    "visual_build") +' install.vcxproj ' + win32_config
+        else :
             cmd =  config.get("commands",
                     "visual_build") +' install.vcproj ' + win32_config
+
     else:
         cmd = make_command+' install'
 
@@ -434,16 +519,36 @@ def build_package(project,config,architecture):
         os.system(extra_package_cmd)
     return
 
+def doc(project,config,architecture):
+    """
+    Runs the documentation command.
+    @warnign: Only linux for now.
+    """
+
+    print "doc package: " + project
+    os.chdir(config.get(project,"build_dir"))
+
+    make=config.get("commands","make")
+    doc_output = check_output([make,"doc"])
+    print doc_output
+
+    extra_doc_cmd=config.get(project,"extra_doc_cmd")
+    if len(extra_doc_cmd):
+        print "Execute extra doc command:",extra_doc_cmd
+        os.system(extra_doc_cmd)
+    return
+
+
 def confirm_action( prompt = None ):
     """prompts for response from the user. Returns True for continue and
     False for skip, exits for abort.
     """
-    
+
     if prompt is None:
         prompt = 'Continue, Skip or Abort?'
 
     prompt = '%s ([c],s,a): ' % prompt
-        
+
     while True:
         ans = raw_input(prompt)
         if not ans:
@@ -470,7 +575,7 @@ def confirm_action( prompt = None ):
 ################################################################################
 def main(argv):
     #generate everything in the config file.
-    version = "%prog 2.0"
+    version = "%prog 2.1"
     usage = "usage %prog [options]"
     parser = OptionParser(usage=usage, version = version)
 
@@ -541,6 +646,12 @@ def main(argv):
             action="store_false",
             default=True,
             help="Do not create packages for the projects")
+    # build doc
+    parser.add_option("-o","--doc", dest="doc",
+            action="store_true",
+            default=False,
+            help="build the docs for the projects (disabled by default)")
+
 
     # interactive mode
     parser.add_option("--interactive",
@@ -590,7 +701,7 @@ def main(argv):
         install_package_deps(config)
     else:
         print "skip installation of package dependencies"
-        
+
 
     # create main directory
     projects_dir = os.path.abspath(config.get("DEFAULT","projects_dir"))
@@ -641,6 +752,13 @@ def main(argv):
             print "building " + project + "..."
             if confirm_fun():
                 build(project,config,architecture)
+
+        os.chdir(cwd)
+        if choose_fun('doc'):
+            print "doc " + project + "..."
+            if confirm_fun():
+                doc(project,config,architecture)
+
 
         os.chdir(cwd)
         if choose_fun('install'):

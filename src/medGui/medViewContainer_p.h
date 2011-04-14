@@ -44,6 +44,7 @@ public:
     medViewPool *pool;
 
     QHash<QString, QString> viewProperties;
+    QString viewInfo;
 };
 
 #endif

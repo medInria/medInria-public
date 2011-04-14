@@ -27,29 +27,65 @@ set(${PROJECT_NAME}_HEADERS
   medDataIndex.h
   medDataManager.h
   medMessageController.h
+  medMetaDataHelper.h
   medViewManager.h
   medPluginManager.h
+  medProgressFilter.h
   medAbstractView.h
   medStorage.h
+  medJobItem.h
+  medJobManager.h
+  medSettingsManager.h
+  medDbControllerFactory.h
+  medAbstractDbController.h
+  medRunnableProcess.h
+  medAbstractDataSource.h
+  medAbstractDataSourceFactory.h
+  med4DAbstractViewInteractor.h
+  medAbstractViewFiberInteractor.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataIndex.h
   medDataManager.h
   medMessageController.h
+  medMetaDataHelper.h
   medViewManager.h
   medPluginManager.h
+  medProgressFilter.h
   medAbstractView.h
+  med4DAbstractViewInteractor.h
+  medJobItem.h
+  medJobManager.h
+  medSettingsManager.h
+  medDbControllerFactory.h
+  medAbstractDbController.h
+  medAbstractDataSource.h
+  medAbstractDataSourceFactory.h
+  medStorage.h
+  medRunnableProcess.h
+  medAbstractViewFiberInteractor.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
   medMessageController.cpp
+  medMetaDataHelper.cpp
   medViewManager.cpp
   medPluginManager.cpp
+  medProgressFilter.cpp
   medAbstractView.cpp
   medStorage.cpp
+  medJobItem.cpp
+  medJobManager.cpp  
+  medSettingsManager.cpp
+  medDbControllerFactory.cpp
+  medAbstractDbController.cpp
+  medRunnableProcess.cpp
+  medAbstractDataSource.cpp
+  medAbstractDataSourceFactory.cpp
+  medAbstractViewFiberInteractor.cpp
 )
 
 ## #################################################################
@@ -83,6 +119,7 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES_WRAP})
 
 target_link_libraries(${PROJECT_NAME} 
@@ -96,6 +133,13 @@ if(PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
 endif(PYTHONLIBS_FOUND)
 
+IF(WIN32)		
+  target_link_libraries(${PROJECT_NAME} psapi.lib)
+ENDIF(WIN32)
+
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Handling of generated script modules

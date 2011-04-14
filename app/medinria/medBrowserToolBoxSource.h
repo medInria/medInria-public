@@ -32,13 +32,10 @@ public:
      medBrowserToolBoxSource(QWidget *parent = 0);
     ~medBrowserToolBoxSource(void);
 
-    void setFileSystemWidget(QWidget *widget);
-    void setPacsWidget(QWidget* widget);
+    void addTab(QString tabName, QWidget *widget);
 
 signals:
     void indexChanged(int);
-    // void echoPressed();
-    // void findPressed();
 
 private:
     medBrowserToolBoxSourcePrivate *d;

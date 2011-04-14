@@ -76,6 +76,26 @@ bool medDataIndex::isValidForImage(void) const
     return ((d->patientId >= 0) && (d->studyId >= 0) && (d->seriesId >= 0) && (d->imageId >= 0));
 }
 
+void medDataIndex::setPatientId (int id)
+{
+    d->patientId = id;
+}
+
+void medDataIndex::setStudyId (int id)
+{
+    d->studyId = id;
+}
+
+void medDataIndex::setSeriesId (int id)
+{
+    d->seriesId = id;
+}
+
+void medDataIndex::setImageId (int id)
+{
+    d->imageId = id;
+}
+
 int medDataIndex::patientId(void) const
 {
     return d->patientId;
@@ -106,6 +126,19 @@ medDataIndex& medDataIndex::operator=(const medDataIndex& index)
 	return *this;
 }
 
+QString medDataIndex::asString() const
+{
+    QString returnString = QString::number(d->patientId) + " | " 
+        + QString::number(d->studyId) + " | " 
+        + QString::number(d->seriesId) + " | " 
+        + QString::number(d->imageId);
+    return returnString;
+}
+
+
+
+
+
 // /////////////////////////////////////////////////////////////////
 // Convenience operators
 // /////////////////////////////////////////////////////////////////
@@ -132,6 +165,28 @@ QDebug operator<<(QDebug debug, medDataIndex *index)
     debug.nospace() << "(" << index->d->patientId << ", " << index->d->studyId << ", " << index->d->seriesId << ", " << index->d->imageId << ")";
 
     return debug.space();
+}
+
+bool operator<(const medDataIndex& index1, const medDataIndex& index2)
+{
+    if (index1.patientId() < index2.patientId()) 
+        return true;
+    else if (index2.patientId() < index1.patientId()) 
+        return false;
+    else if (index1.studyId() < index2.studyId())
+        return true;
+    else if (index2.studyId() < index1.studyId())
+        return false;
+    else if (index1.seriesId() < index2.seriesId()) 
+        return true;
+    else if (index2.seriesId() < index1.seriesId()) 
+        return false;
+    else if (index1.imageId() < index2.imageId())
+        return true;
+    else if (index2.imageId() < index1.imageId())
+        return false;
+    // Equality if we get here.
+    return false;
 }
 
 // /////////////////////////////////////////////////////////////////

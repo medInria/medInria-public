@@ -20,16 +20,18 @@
 #ifndef MEDVIEWERAREA_P_H
 #define MEDVIEWERAREA_P_H
 
+#include <QtCore/QHash>
+#include <medCore/medDataIndex.h>
+
 class medToolBoxContainer;
 class medDatabaseNavigator;
-class medViewContainerStack;
+class medStackedViewContainers;
 class medViewerConfiguration;
 class medClutEditor;
 class QStackedWidget;
 class QSplitter;
 class medViewerToolBoxPatient;
 
-#include <QtCore/QHash>
 
 class medViewerAreaPrivate
 {
@@ -53,7 +55,6 @@ public:
 
     QMutex mutex;
   
-    QHash<int, medViewContainerStack *>    view_stacks;
     QHash<QString,medViewerConfiguration*> configurations;
 
     QPropertyAnimation *navigator_animation;
@@ -62,9 +63,8 @@ public:
     void saveSplitterSize(medViewerConfiguration::LayoutType layout);
 
 public:
-    int current_patient;
+    medDataIndex current_patient;
     QHash<int, int> current_patient_container;
-    // QHash<int, int> current_patient_container_preset;
     QString current_configuration_name;
     medViewerConfiguration *current_configuration;
     medViewerConfiguration::LayoutType current_layout;

@@ -108,7 +108,7 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
 
     populate(d->root);
 
-    connect(medDatabaseController::instance(), SIGNAL(updated()), this, SLOT(clear()));
+    connect(medDatabaseController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(clear()));
 }
 
 medDatabaseModel::~medDatabaseModel(void)

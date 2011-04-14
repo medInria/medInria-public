@@ -22,6 +22,7 @@
 
 #include <dtkCore/dtkAbstractView.h>
 
+#include <QSharedPointer>
 #include "medCoreExport.h"
 
 class medAbstractViewPrivate;
@@ -53,7 +54,7 @@ class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 public:
     medAbstractView(medAbstractView * parent = 0);
     medAbstractView(const medAbstractView& view);
-    virtual ~medAbstractView(void){}
+    virtual ~medAbstractView(void);
 
     virtual void setColorLookupTable(int min_range,
                                      int max_range,
@@ -61,40 +62,96 @@ public:
                                      const int & table);
 
     virtual void setColorLookupTable( QList<double> scalars,
-				      QList<QColor> colors );
+                      QList<QColor> colors );
     virtual void setTransferFunctions( QList<double> scalars,
-				       QList<QColor> colors );
+                       QList<QColor> colors );
     virtual void getTransferFunctions( QList<double> & scalars,
-				       QList<QColor> & colors );
+                       QList<QColor> & colors );
 
     virtual QWidget *receiverWidget(void);
+
+    /**
+       Set the view slice.
+    **/
+    void setSlice       (int slice);
 
     /**
        Set the view position, i.e., focus on a particular spatial coordinate.
        @position is expressed in real world coordinates.
      **/
     void setPosition    (const QVector3D &position);
+	QVector3D position(void) const;
 
     /**
        Set the view zoom factor.
     **/
     void setZoom        (double zoom);
+	double zoom(void) const;
 
     /**
        Set the view pan.
     **/
     void setPan         (const QVector2D &pan);
+	QVector2D pan(void) const;
 
     /**
        Set the window/level of the view.
     **/
     void setWindowLevel (double level, double window);
+	void windowLevel(double &level, double &window) const;
 
     /**
        Set the camera settings of the view.
     **/
     void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
+	void camera(QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale) const;
     
+    /**
+     * Set the visibility of the data on the corresponding layer
+     */
+    void setVisibility (bool visibility, int layer);
+
+    /**
+     * Get the visibility of the data on the corresponding layer
+     */
+    virtual bool visibility(int layer) const;
+
+    /**
+     * Set the opacity of the data on the corresponding layer
+     */
+    void setOpacity (double opacity, int layer);
+
+    /**
+     * Get the opacity of the data on the corresponding layer
+     */
+    virtual double opacity(int layer) const;
+
+    /**
+     * Set the current layer. The current layer is used to determine which layer will receive
+     * property changed.
+     */
+    void setCurrentLayer(int layer);
+  
+    /**
+     * Get the current layer. The current layer is used to determine which layer will receive
+     * property changed.
+     */
+    virtual int currentLayer(void) const;
+    
+    /**
+     * Get the number of layers of the view.
+     */    
+    virtual int layerCount(void) const;
+
+    /**
+     * Remove an overlay.
+     */
+    virtual void removeOverlay(int layer);
+
+    /**
+     * Setting data using a qSharedPointer
+     */
+    void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
 
 signals:
     /**
@@ -125,6 +182,14 @@ signals:
        This signal is emitted when the view wants to be displayed in full screen.
      **/
     void fullScreen    (bool);
+
+    /**
+       This signal is emitted when the shown slice of the view has
+       changed.  A changed slice always comes along with a changed
+       position, but the positionChanged signal is sent before the new
+       slice number is computed in vtkImageView2D.
+     **/
+    void sliceChanged     (int slice);
 
     /**
        This signal is emitted when the current position pointed by the view has changed.
@@ -163,6 +228,23 @@ signals:
                            const QVector3D &viewup,
                            const QVector3D &focal,
                            double parallelScale);
+    
+    /**
+     * This signal is emitted when the visibility of a layer has changed.
+     */
+    void visibilityChanged(bool visibility, int layer);
+    
+    /**
+     * This signal is emitted when the opacity of a layer has changed.
+     */
+    void opacityChanged(double value, int layer);
+
+    /**
+     *  This signal is emitted when the user adds a data to the view
+     */
+    void dataAdded (int layer);
+
+    void dataAdded (dtkAbstractData* data);
 
 public slots:
     /**
@@ -183,17 +265,23 @@ public slots:
     virtual void setLinkCamera (bool value);
     bool cameraLinked (void) const;
 
+    virtual void onSliceChanged     (int slice);
     virtual void onPositionChanged  (const QVector3D &position);
     virtual void onZoomChanged      (double zoom);
     virtual void onPanChanged       (const QVector2D &pan);
     virtual void onWindowingChanged (double level, double window);
     virtual void onCameraChanged    (const QVector3D &position,
-				     const QVector3D &viewup,
-				     const QVector3D &focal,
-				     double parallelScale);
+                     const QVector3D &viewup,
+                     const QVector3D &focal,
+                     double parallelScale);
     
+    virtual void onVisibilityChanged(bool visible, int layer);
+    
+    virtual void onOpacityChanged(double opacity, int layer);
+
     
 protected:
+    void emitViewSliceChangedEvent    (int slice);
     void emitViewPositionChangedEvent (const QVector3D &position);
     void emitViewZoomChangedEvent     (double zoom);
     void emitViewPanChangedEvent      (const QVector2D &pan);

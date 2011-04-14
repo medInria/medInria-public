@@ -65,3 +65,8 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
     painter.drawText(rect, Qt::AlignLeft, d->title);
     painter.end();
 }
+
+void medToolBoxHeader::mousePressEvent( QMouseEvent *event )
+{
+    emit triggered();
+}

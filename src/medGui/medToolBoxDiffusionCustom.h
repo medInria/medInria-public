@@ -21,12 +21,13 @@
 #ifndef MEDTOOLBOXDIFFUSIONCUSTOM_H
 #define MEDTOOLBOXDIFFUSIONCUSTOM_H
 
-#include "medGuiExport.h"
 #include "medToolBox.h"
+#include "medGuiExport.h"
 
 class medToolBoxDiffusion;
 class medToolBoxDiffusionCustomPrivate;
 class dtkAbstractProcess;
+class dtkAbstractData;
 
 class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
 {
@@ -40,10 +41,7 @@ public:
 
     virtual QString description (void) const = 0;
 
-    virtual dtkAbstractProcess *create (void) = 0;
-
-    void setProcess (dtkAbstractProcess *process);
-    dtkAbstractProcess *process (void) const;
+    virtual dtkAbstractData *output (void) const;
     
 protected:
     medToolBoxDiffusion *parent(void);

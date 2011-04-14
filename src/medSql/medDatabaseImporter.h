@@ -22,25 +22,20 @@
 
 #include "medSqlExport.h"
 
+#include <medCore/medJobItem.h>
 #include <QtCore>
 
 class medDatabaseImporterPrivate;
 
-class MEDSQL_EXPORT medDatabaseImporter : public QObject, public QRunnable
+class MEDSQL_EXPORT medDatabaseImporter : public medJobItem
 {
     Q_OBJECT
 
 public:
-     medDatabaseImporter(const QString& file);
+    medDatabaseImporter(const QString& file);
     ~medDatabaseImporter(void);
 
     void run(void);
-
-signals:
-    void progressed(int);
-    void success (void);
-    void failure (void);
-    void showError(QObject*,const QString&,unsigned int timeout);
 
 private:
     medDatabaseImporterPrivate *d;
