@@ -193,27 +193,24 @@ void medViewerArea::open(const medDataIndex& index)
     
     if(((medDataIndex)index).isValidForSeries()) {
         
-        dtkAbstractData *data = NULL;
-        dtkAbstractView *view = NULL;
+        QSharedPointer<dtkAbstractData> data;
+        medAbstractView *view = NULL;
         
         // the data-manager should be used to read data
-	medDataManager::instance()->blockSignals (true);
+        medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
-	medDataManager::instance()->blockSignals (false);
-	
-        if ( !data )
+        if ( data.isNull() )
             return;
         
         if(!view) 
         {
             if (d->current_configuration->currentViewContainer() &&
                 d->current_configuration->currentViewContainer()->current())
-                view = d->current_configuration->currentViewContainer()->current()->view();
+                view = dynamic_cast<medAbstractView*>(d->current_configuration->currentViewContainer()->current()->view());
         }
-        
-        if(!view)
-        {
-            view = dtkAbstractViewFactory::instance()->create("v3dView");
+
+        if(!view) {
+            view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
         }
         
@@ -223,12 +220,16 @@ void medViewerArea::open(const medDataIndex& index)
             return;
         }
         
+        // another hash?!
         medViewManager::instance()->insert(index, view);
         
         
         this->onViewFocused(view);
-        view->setData(data);
         
+        // set the data to the view
+        view->setSharedDataPointer(data);
+       
+        // call update
         QMutexLocker ( &d->mutex );
         if (d->current_configuration->currentViewContainer()) 
         {
@@ -284,7 +285,7 @@ void medViewerArea::open(const QString& file)
 
 void medViewerArea::onViewClosed(void)
 {
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView*> (this->sender())) {        
+    if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
         QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
             tb->update(NULL);
@@ -578,8 +579,7 @@ void medViewerArea::setupConfiguration(QString name)
         conf = d->configurations[name];
     else {
         if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name)) {
-            connect(this, SIGNAL(clearOnPatientChange()),
-                    conf, SLOT(clear()));
+            connect(this, SIGNAL(clearOnPatientChange()), conf, SLOT(clear()));
             d->configurations.insert(name, conf);
         }
         else

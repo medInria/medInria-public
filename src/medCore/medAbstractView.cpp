@@ -1,5 +1,7 @@
 #include "medAbstractView.h"
 
+#include <dtkCore/dtkAbstractData.h>
+
 class medAbstractViewPrivate
 {
 public:
@@ -20,6 +22,7 @@ public:
   int currentLayer;
   QList<dtkAbstractData *> dataList;
 
+  QSharedPointer<dtkAbstractData> sharedData;
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
@@ -73,8 +76,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 
 medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(view)
 {
-    // copy constructor not implemented!
-    DTK_DEFAULT_IMPLEMENTATION;
+    qWarning() << "copy constructor for medAbstractView not implemented";
 }
 
 void medAbstractView::setColorLookupTable(int min_range,
@@ -357,6 +359,15 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
 	d->camFocal = focal;
 	d->camParallelScale = parallelScale;
     emit cameraChanged(position, viewup, focal, parallelScale);
+}
+
+void medAbstractView::setSharedDataPointer( QSharedPointer<dtkAbstractData> data )
+{
+    // set a reference to our view that gets destroyed when the view terminates
+    d->sharedData = data;
+
+    dtkAbstractData *dtkdata = d->sharedData.data();
+    this->setData(dtkdata);
 }
 
 medAbstractView::~medAbstractView( void )

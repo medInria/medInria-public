@@ -82,7 +82,7 @@ medToolBoxBody *medToolBox::body(void) const
 
 void medToolBox::update(dtkAbstractView *view)
 {
-    DTK_DEFAULT_IMPLEMENTATION;
+    //DTK_DEFAULT_IMPLEMENTATION;
     DTK_UNUSED(view);
 }
 

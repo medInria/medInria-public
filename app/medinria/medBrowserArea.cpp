@@ -204,7 +204,7 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     if (fileName.isEmpty())
         return;
 
-    dtkAbstractData *data = medDataManager::instance()->data(index);
+    dtkAbstractData *data = medDataManager::instance()->data(index).data();
 
     if (!data)
         return;
