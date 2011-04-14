@@ -1473,6 +1473,7 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   {
     return;
   }
+  itkImage->UpdateOutputInformation();
   if (this->ITKInput==itkImage)
     return;
   typedef itk::ImageToVTKImageFilter< itk::Image<T, 3> > ConverterType;
@@ -1558,7 +1559,6 @@ inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkIm
   this->ITKInput4 = itkImage;
   typename ImageType3d::Pointer itkImage3 = extractor->GetOutput ();
   extractor->UpdateLargestPossibleRegion();
-  // where is the orientation here ???
   this->SetITKInput ( itkImage3, layer);
   // itkImage3->DisconnectPipeline();
 }
