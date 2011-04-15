@@ -155,23 +155,28 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     int memusage = 0;
     int leak = 0;
 
-    // creating one 
+/*
+//------------- MEM LEAK TEST BEGIN -----------------//
+
+    // creating one that loads the dll
     medAbstractView* dummy = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
-    delete dummy;
+    dtkAbstractViewFactory::instance()->destroy(dummy);
 
     int beforeMem = medDataManager::getProcessMemoryUsage();
-    // create view to speed up
     for (int i = 0; i < 20; i++)
     {
-    memusage = medDataManager::getProcessMemoryUsage();
-    medAbstractView* view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
-    //dtkAbstractViewFactory::instance()->destroy(view);
-    delete view;
-    leak = medDataManager::getProcessMemoryUsage() - memusage;
-    qDebug() << "leaking: " << leak / 1000 << " Kbytes";
+        memusage = medDataManager::getProcessMemoryUsage();
+        medAbstractView* view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
+        dtkAbstractViewFactory::instance()->destroy(view);
+        leak = medDataManager::getProcessMemoryUsage() - memusage;
+        qDebug() << "leaking: " << leak / 1000 << " Kbytes";
     }
     int afterMem = medDataManager::getProcessMemoryUsage();
     qDebug() << "total leakage" << (afterMem-beforeMem)  / 1000 << " Kbytes"; 
+
+//--------------MEM LEAK TEST END ------------------//
+*/
+
 
 }
 
