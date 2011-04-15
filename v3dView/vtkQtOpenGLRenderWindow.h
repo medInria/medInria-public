@@ -28,7 +28,7 @@ PURPOSE.  See the above copyright notice for more information.
 #include "vtkToolkits.h"        // defines VTK_USE_*
 
 class QVtkGraphicsView;
-#if 0
+#if 1
     #include <vtkOpenGLRenderWindow.h>
     typedef vtkOpenGLRenderWindow vtkQtOpenGLRenderWindowBase;
 #elif defined( _WIN32 )
@@ -57,6 +57,11 @@ public:
   static vtkQtOpenGLRenderWindow *New();
   vtkTypeRevisionMacro(vtkQtOpenGLRenderWindow,vtkQtOpenGLRenderWindowBase);
   void PrintSelf(ostream& os, vtkIndent indent);
+
+  // Description:
+  // End the rendering process and display the image.
+  // Overrides Superclass.
+  void Frame(void);
 
   // Description:
   // Initialize the rendering window.  This will setup all system-specific
@@ -126,12 +131,37 @@ protected:
 
   virtual void BuildStandardCursors();
 
+  // Implement vtkRenderWindow
+  virtual void Start();
+  virtual void SetDisplayId(void *);
+  virtual void SetWindowId(void *) ;
+  virtual void SetNextWindowId(void *);
+  virtual void SetParentId(void *) ;
+  virtual void *GetGenericDisplayId();
+  virtual void *GetGenericWindowId();
+  virtual void *GetGenericParentId();
+  virtual void *GetGenericContext();
+  virtual void *GetGenericDrawable();
+  virtual void SetWindowInfo(char *);
+  virtual void SetNextWindowInfo(char *);
+  virtual void SetParentInfo(char *);
+  virtual void HideCursor();
+  virtual void ShowCursor();
+  virtual void SetCursorPosition(int , int );
+  virtual void WindowRemap();
+  virtual void SetFullScreen(int);
+  virtual int GetEventPending();
+
+  // Implement vtkWindow
+  virtual int     *GetScreenSize();
+
 protected:
     QVtkGraphicsView * m_qtWidget;
     typedef vtkstd::map< int , QCursor > CursorMapType;
     CursorMapType m_cursorMap;
     bool m_initiatedRepaint; // true when we ask our window to repaint.
 
+    int ScreenSize[2];
 private:
   vtkQtOpenGLRenderWindow(const vtkQtOpenGLRenderWindow&);  // Not implemented.
   void operator=(const vtkQtOpenGLRenderWindow&);  // Not implemented.

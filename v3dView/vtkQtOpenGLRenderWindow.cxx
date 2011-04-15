@@ -15,7 +15,9 @@ PURPOSE.  See the above copyright notice for more information.
 #include "vtkQtOpenGLRenderWindow.h"
 
 #include <QGraphicsView>
+#include <QApplication>
 #include <QCursor>
+#include <QDesktopWidget>
 
 #ifdef VTK_USE_OGLR
     #include <QX11Info>
@@ -45,6 +47,8 @@ vtkQtOpenGLRenderWindow::vtkQtOpenGLRenderWindow() :
     vtkInteractorStylePointer s (vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New());
     iren->Enable();
     this->GetInteractor()->SetInteractorStyle(s);
+
+    this->DoubleBufferOff();
 }
 
 vtkQtOpenGLRenderWindow::~vtkQtOpenGLRenderWindow()
@@ -84,42 +88,6 @@ void vtkQtOpenGLRenderWindow::PrintSelf(ostream& os, vtkIndent indent)
 
 void vtkQtOpenGLRenderWindow::Initialize(void)
 {
-
-#ifdef _WIN32
-    if ( m_qtWidget ) {
-//        QGLWidget * w = qobject_cast<QGLWidget*>(this->m_qtWidget->viewport());
-//        Q_ASSERT(w);
-//        this->WindowId = this->m_qtWidget->viewport()->winId();
-//        this->DeviceContext = this->m_qtWidget->viewport()->getDC();
-////        this->ContextId = ::wglGetCurrentContext();
-        this->DeviceContext = this->m_qtWidget->getDC();
-        this->WindowId = this->m_qtWidget->viewport()->winId();
-        this->OwnWindow = 1;
-        if (IsCurrent() ) {
-
-           GLenum errorCode=glGetError();
-           if( errorCode!=GL_NO_ERROR )
-           {
-               vtkWarningMacro( "vtkQtOpenGLRenderWindow::Initialize glGetError returned " << (int) errorCode );
-           }
-        }
-    } else {
-        this->DeviceContext = NULL ;
-        this->WindowId = NULL;
-    }
-#endif
-
-#ifdef VTK_USE_OGLR
-    if ( m_qtWidget ) {
-        this->WindowId = this->m_qtWidget->viewport()->winId();
-        this->OwnWindow = 1;
-        this->DisplayId = QX11Info::display();
-    } else {
-        this->WindowId = NULL;
-        this->DisplayId = NULL;
-    }
-#endif
-
     if ( m_qtWidget ) {
         this->SetSize(this->m_qtWidget->viewport()->width(), this->m_qtWidget->viewport()->height());
     }
@@ -221,3 +189,124 @@ void vtkQtOpenGLRenderWindow::BuildStandardCursors()
     SetQtCursorForVtkCursorId( QCursor( Qt::PointingHandCursor ), VTK_CURSOR_HAND );
 }
 
+void vtkQtOpenGLRenderWindow::Frame( void )
+{
+    glFlush();
+}
+
+void vtkQtOpenGLRenderWindow::Start()
+{
+    // set the current window
+    this->MakeCurrent();
+}
+
+void vtkQtOpenGLRenderWindow::SetDisplayId( void * )
+{
+
+}
+
+void vtkQtOpenGLRenderWindow::SetWindowId( void * )
+{
+
+}
+
+void vtkQtOpenGLRenderWindow::SetNextWindowId( void * )
+{
+
+}
+
+void vtkQtOpenGLRenderWindow::SetParentId( void * )
+{
+
+}
+
+void * vtkQtOpenGLRenderWindow::GetGenericDisplayId()
+{
+    return NULL;
+}
+
+void * vtkQtOpenGLRenderWindow::GetGenericWindowId()
+{
+    if ( m_qtWidget ) {
+        return (void*) this->m_qtWidget->viewport();
+    }
+    return NULL;
+}
+
+void * vtkQtOpenGLRenderWindow::GetGenericParentId()
+{
+    if ( m_qtWidget ) {
+        return (void*) this->m_qtWidget;
+    }
+    return NULL;
+}
+
+void * vtkQtOpenGLRenderWindow::GetGenericContext()
+{
+    return NULL;
+}
+
+void * vtkQtOpenGLRenderWindow::GetGenericDrawable()
+{
+    return NULL;
+}
+
+void vtkQtOpenGLRenderWindow::SetWindowInfo( char * )
+{
+
+}
+
+void vtkQtOpenGLRenderWindow::SetNextWindowInfo( char * )
+{
+
+}
+
+void vtkQtOpenGLRenderWindow::SetParentInfo( char * )
+{
+
+}
+
+void vtkQtOpenGLRenderWindow::HideCursor()
+{
+    if ( m_qtWidget ) {
+        //this->m_qtWidget->setCursor( ???? );
+    }
+}
+
+void vtkQtOpenGLRenderWindow::ShowCursor()
+{
+    if ( m_qtWidget ) {
+        //this->m_qtWidget->setCursor( ???? );
+    }
+}
+
+void vtkQtOpenGLRenderWindow::SetCursorPosition( int , int )
+{
+    if ( m_qtWidget ) {
+        //this->m_qtWidget->setCursor( ???? );
+    }
+}
+
+void vtkQtOpenGLRenderWindow::WindowRemap()
+{
+
+}
+
+void vtkQtOpenGLRenderWindow::SetFullScreen( int )
+{
+
+}
+
+int vtkQtOpenGLRenderWindow::GetEventPending()
+{
+    return 0;
+}
+
+int     * vtkQtOpenGLRenderWindow::GetScreenSize()
+{
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    this->ScreenSize[0] = screenGeometry.width();;
+    this->ScreenSize[1] = screenGeometry.height();;
+
+    return this->ScreenSize;
+}
