@@ -54,8 +54,8 @@ public:
     }
     
     // this is the data cache for persistent and non-persistent data
-    QHash<medDataIndex, QSharedPointer<dtkAbstractData>> dataCache;
-    QHash<medDataIndex, QSharedPointer<dtkAbstractData>> volatileDataCache;
+    QHash<medDataIndex, QSharedPointer<dtkAbstractData> > dataCache;
+    QHash<medDataIndex, QSharedPointer<dtkAbstractData> > volatileDataCache;
 
     medAbstractDbController* getDbController()
     {

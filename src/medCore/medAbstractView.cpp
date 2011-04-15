@@ -78,7 +78,8 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 
 medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(view)
 {
-    qWarning() << "copy constructor for medAbstractView not implemented";
+    // copy constructor not implemented!
+    DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractView::setColorLookupTable(int min_range,
@@ -144,11 +145,17 @@ bool medAbstractView::cameraLinked (void) const
     return d->linkCamera;
 }
 
+void medAbstractView::setSlice (int slice)
+{
+    this->onSliceChanged (slice);
+    emit sliceChanged (slice, d->linkPosition);
+}
+
 void medAbstractView::setPosition (const QVector3D &position)
 {
     this->onPositionChanged (position);
-    d->position = position;
-    emit positionChanged (position);
+	d->position = position;
+    emit positionChanged (position, d->linkPosition);
 }
 
 QVector3D medAbstractView::position(void) const
@@ -160,19 +167,19 @@ void medAbstractView::setZoom (double zoom)
 {
     this->onZoomChanged (zoom);
     d->zoom = zoom;
-    emit zoomChanged (zoom);
+    emit zoomChanged (zoom, d->linkCamera);
 }
 
 double medAbstractView::zoom(void) const
 {
-    return d->zoom;
+	return d->zoom;
 }
 
 void medAbstractView::setPan (const QVector2D &pan)
 {
     this->onPanChanged (pan);
-    d->pan = pan;
-    emit panChanged (pan);
+	d->pan = pan;
+    emit panChanged (pan, d->linkCamera);
 }
 
 QVector2D medAbstractView::pan(void) const
@@ -183,9 +190,9 @@ QVector2D medAbstractView::pan(void) const
 void medAbstractView::setWindowLevel (double level, double window)
 {
     this->onWindowingChanged (level, window);
-    d->level = level;
-    d->window = window;
-    emit windowingChanged (level, window);
+	d->level = level;
+	d->window = window;
+    emit windowingChanged (level, window, d->linkWindowing);
 }
 
 void medAbstractView::windowLevel(double &level, double &window) const
@@ -197,11 +204,11 @@ void medAbstractView::windowLevel(double &level, double &window) const
 void medAbstractView::setCamera (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
 {
     this->onCameraChanged (position, viewup, focal, parallelScale);
-    d->camPosition = position;
-    d->camViewup = viewup;
-    d->camFocal = focal;
-    d->camParallelScale = parallelScale;
-    emit cameraChanged (position, viewup, focal, parallelScale);
+	d->camPosition = position;
+	d->camViewup = viewup;
+	d->camFocal = focal;
+	d->camParallelScale = parallelScale;
+    emit cameraChanged (position, viewup, focal, parallelScale, d->linkCamera);
 }
 
 void medAbstractView::camera (QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale) const
@@ -275,6 +282,11 @@ void medAbstractView::removeOverlay(int layer)
 //    d->dataList[layer] = data;
 //}
 
+void medAbstractView::onSliceChanged (int slice)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
 void medAbstractView::onPositionChanged (const QVector3D &position)
 {
     DTK_DEFAULT_IMPLEMENTATION;
@@ -313,29 +325,34 @@ void medAbstractView::onOpacityChanged(double opacity, int layer)
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
+void medAbstractView::emitViewSliceChangedEvent(int slice)
+{
+    emit sliceChanged(slice, d->linkPosition);
+}
+
 void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
 {
     d->position = position;
-    emit positionChanged(position);
+    emit positionChanged(position, d->linkPosition);
 }
 
 void medAbstractView::emitViewZoomChangedEvent(double zoom)
 {
     d->zoom = zoom;
-    emit zoomChanged(zoom);
+    emit zoomChanged(zoom, d->linkCamera);
 }
 
 void medAbstractView::emitViewPanChangedEvent(const QVector2D &pan)
 {
     d->pan = pan;
-    emit panChanged(pan);
+    emit panChanged(pan, d->linkCamera);
 }
 
 void medAbstractView::emitViewWindowingChangedEvent(double level, double window)
 {
     d->level = level;
     d->window = window;
-    emit windowingChanged(level,window);
+    emit windowingChanged(level,window, d->linkWindowing);
 }
 
 void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
@@ -344,7 +361,7 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
     d->camViewup = viewup;
     d->camFocal = focal;
     d->camParallelScale = parallelScale;
-    emit cameraChanged(position, viewup, focal, parallelScale);
+    emit cameraChanged(position, viewup, focal, parallelScale, d->linkCamera);
 }
 
 void medAbstractView::setSharedDataPointer( QSharedPointer<dtkAbstractData> data )

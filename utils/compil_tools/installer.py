@@ -531,6 +531,11 @@ def doc(project,config,architecture):
     make=config.get("commands","make")
     doc_output = check_output([make,"doc"])
     print doc_output
+
+    extra_doc_cmd=config.get(project,"extra_doc_cmd")
+    if len(extra_doc_cmd):
+        print "Execute extra doc command:",extra_doc_cmd
+        os.system(extra_doc_cmd)
     return
 
 

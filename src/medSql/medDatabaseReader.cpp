@@ -115,6 +115,8 @@ dtkAbstractData *medDatabaseReader::run(void)
             delete dataReader;
             break;
         }
+
+        delete dataReader;
     }
     
     if (data) {
