@@ -27,6 +27,8 @@ PURPOSE.  See the above copyright notice for more information.
 #include <vtkInteractorStyleTrackballCamera.h>
 #include "vtkSmartPointer.h"
 
+//#include "vtkgl.h"
+
 vtkCxxRevisionMacro(vtkQtOpenGLRenderWindow, "0");
 vtkStandardNewMacro(vtkQtOpenGLRenderWindow);
 
@@ -55,6 +57,24 @@ void vtkQtOpenGLRenderWindow::MakeCurrent()
     if ( this->m_qtWidget ) {
         this->m_qtWidget->makeCurrent();
     }
+    this->Initialize();
+}
+
+bool vtkQtOpenGLRenderWindow::IsCurrent()
+{
+    if ( this->m_qtWidget ) {
+        return this->m_qtWidget->isCurrent();
+    }
+    return false;
+}
+
+int vtkQtOpenGLRenderWindow::IsDirect()
+{
+    if ( this->m_qtWidget ) {
+        int scResult = Superclass::IsDirect();
+        return 1;
+    }
+    return 0;
 }
 
 void vtkQtOpenGLRenderWindow::PrintSelf(ostream& os, vtkIndent indent)
@@ -64,28 +84,51 @@ void vtkQtOpenGLRenderWindow::PrintSelf(ostream& os, vtkIndent indent)
 
 void vtkQtOpenGLRenderWindow::Initialize(void)
 {
-    if ( ! m_qtWidget ) {
-        return;
-    }
 
 #ifdef _WIN32
-    this->DeviceContext = this->m_qtWidget->getDC();
-    this->WindowId = this->m_qtWidget->viewport()->winId();
-    this->OwnWindow = 1;
+    if ( m_qtWidget ) {
+//        QGLWidget * w = qobject_cast<QGLWidget*>(this->m_qtWidget->viewport());
+//        Q_ASSERT(w);
+//        this->WindowId = this->m_qtWidget->viewport()->winId();
+//        this->DeviceContext = this->m_qtWidget->viewport()->getDC();
+////        this->ContextId = ::wglGetCurrentContext();
+        this->DeviceContext = this->m_qtWidget->getDC();
+        this->WindowId = this->m_qtWidget->viewport()->winId();
+        this->OwnWindow = 1;
+        if (IsCurrent() ) {
+
+           GLenum errorCode=glGetError();
+           if( errorCode!=GL_NO_ERROR )
+           {
+               vtkWarningMacro( "vtkQtOpenGLRenderWindow::Initialize glGetError returned " << (int) errorCode );
+           }
+        }
+    } else {
+        this->DeviceContext = NULL ;
+        this->WindowId = NULL;
+    }
 #endif
 
 #ifdef VTK_USE_OGLR
-    this->WindowId = this->m_qtWidget->viewport()->winId();
-    this->OwnWindow = 1;
-    this->DisplayId = QX11Info::display();
+    if ( m_qtWidget ) {
+        this->WindowId = this->m_qtWidget->viewport()->winId();
+        this->OwnWindow = 1;
+        this->DisplayId = QX11Info::display();
+    } else {
+        this->WindowId = NULL;
+        this->DisplayId = NULL;
+    }
 #endif
 
-    this->SetSize(this->m_qtWidget->viewport()->width(), this->m_qtWidget->viewport()->height());
+    if ( m_qtWidget ) {
+        this->SetSize(this->m_qtWidget->viewport()->width(), this->m_qtWidget->viewport()->height());
+    }
 }
 
 void vtkQtOpenGLRenderWindow::Finalize(void)
 {
     // Consider removing renderers here
+    // Superclass::Finalize();
 }
 
 // This overrides the base class. We do not need to create a window as Qt does that
@@ -129,6 +172,7 @@ void vtkQtOpenGLRenderWindow::SetQtWidget( QVtkGraphicsView * w)
 {
     this->m_qtWidget = w;
     if ( m_qtWidget ) {
+        this->Initialize();
         this->m_qtWidget->setCursor( GetCurrentQtCursor() );
     }
 }

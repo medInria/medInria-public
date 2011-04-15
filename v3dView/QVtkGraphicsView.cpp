@@ -77,7 +77,7 @@ QVtkGraphicsView::QVtkGraphicsView(QWidget* p)
     mCacheVtkBackground(true),
     mLastRenderMTime(0)
 {
-    setViewport(new QGLWidget(p) );
+    setViewport(new QGLWidget(this) );
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -286,8 +286,10 @@ void QVtkGraphicsView::drawBackground(QPainter *painter, const QRectF& rect )
 
             if ( !mFBO || sz != mFBO->size() )
             {
-                if(mFBO)
+                if(mFBO) {
                     delete mFBO;
+                    mFBO = NULL;
+                }
 
                 if(!sz.isEmpty())
                     mFBO = new QGLFramebufferObject(sz, QGLFramebufferObject::Depth);
@@ -1002,6 +1004,13 @@ void QVtkGraphicsView::makeCurrent()
     QGLWidget * w = qobject_cast<QGLWidget*>(viewport());
     Q_ASSERT(w);
     w->makeCurrent();
+}
+
+bool QVtkGraphicsView::isCurrent()
+{
+    QGLWidget * w = qobject_cast<QGLWidget*>(viewport());
+    Q_ASSERT(w);
+    return w->context() == QGLContext::currentContext() && w->context()->isValid();
 }
 
 void QVtkGraphicsView::setCacheVtkBackground( bool value )

@@ -546,6 +546,10 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 
 v3dView::~v3dView(void)
 {
+    if ( d->renderer2d)
+        d->renderer2d->SetRenderWindow(NULL);
+    if ( d->renderer3d)
+        d->renderer3d->SetRenderWindow(NULL);
     d->renwin2d->RemoveRenderer(d->renderer2d);
     d->renwin3d->RemoveRenderer(d->renderer3d);
     
@@ -569,7 +573,13 @@ v3dView::~v3dView(void)
 
     d->observer->Delete();
 
-    d->widget->deleteLater();
+    if ( !d->widget->parent() ) {
+        // If the widget has no parent then delete now.
+        delete d->widget;
+    } else {
+        // this can only be used if an event loop is (still) running.
+        d->widget->deleteLater();
+    }
 
     delete d;
     

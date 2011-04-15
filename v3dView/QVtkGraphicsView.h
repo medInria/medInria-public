@@ -143,6 +143,8 @@ public:
 
   // Make the GL context current
   virtual void makeCurrent();
+  //Is the current openGL context ours?
+  virtual bool isCurrent();
 
   void setCacheVtkBackground( bool value);
   bool cacheVtkBackground() const { return mCacheVtkBackground; }

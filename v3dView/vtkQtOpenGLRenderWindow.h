@@ -28,8 +28,10 @@ PURPOSE.  See the above copyright notice for more information.
 #include "vtkToolkits.h"        // defines VTK_USE_*
 
 class QVtkGraphicsView;
-
-#if defined( _WIN32 )
+#if 0
+    #include <vtkOpenGLRenderWindow.h>
+    typedef vtkOpenGLRenderWindow vtkQtOpenGLRenderWindowBase;
+#elif defined( _WIN32 )
     #include <vtkWin32OpenGLRenderWindow.h>
     typedef vtkWin32OpenGLRenderWindow vtkQtOpenGLRenderWindowBase;
 #elif defined( VTK_USE_OGLR )
@@ -76,6 +78,17 @@ public:
   // Overrides base class (vtkRenderWindow)
   virtual void MakeCurrent(); 
 
+  // Description:
+  // Is this render window using hardware acceleration? 0-false, 1-true
+  // Overrides vtkRenderWindow.
+  int IsDirect();
+
+  // Description:
+  // Tells if this window is the current OpenGL context for the calling thread.
+  // Overrides base class
+  bool IsCurrent();
+
+  /** Set the Qt Widget that this render window is paired with.*/
   void SetQtWidget( QVtkGraphicsView * w);
 
   // Called by widget when we actually want to paint.
@@ -94,6 +107,7 @@ public:
   const QCursor & GetQtCursorForVtkCursorId(int shape) const;
 
   bool IsInitiatedRepaint() const { return m_initiatedRepaint; }
+
 protected:
   vtkQtOpenGLRenderWindow();
   ~vtkQtOpenGLRenderWindow();
