@@ -35,11 +35,10 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 if(WIN32)
   option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
 endif()
-  
 
 enable_testing()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
@@ -55,8 +54,6 @@ add_subdirectory(app)
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
-
-
 
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
