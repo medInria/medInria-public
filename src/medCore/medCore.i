@@ -25,6 +25,14 @@
 #include <QtDebug>
 #include <QtCore>
 
+#undef Q_OBJECT
+#undef signals
+#undef slots
+
+#define Q_OBJECT
+#define signals public
+#define slots
+
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
 %}
