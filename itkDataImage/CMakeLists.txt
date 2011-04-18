@@ -41,6 +41,8 @@ find_package(ITK REQUIRED)
   endif(NOT ITK_USE_REVIEW_STATISTICS)
 include(${ITK_USE_FILE})
 
+include_directories(../dtkItkLogForwarder)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -48,19 +50,27 @@ include(${ITK_USE_FILE})
 set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImagePlugin.h
   itkDataImageChar3.h
+  itkDataImageChar4.h
+  itkDataImageUChar4.h
   itkDataImageUChar3.h
   itkDataImageShort3.h
   itkDataImageUShort3.h
   itkDataImageUShort4.h
   itkDataImageInt3.h
+  itkDataImageInt4.h
+  itkDataImageLong4.h
   itkDataImageUInt3.h
+  itkDataImageUInt4.h
+  itkDataImageULong4.h
   itkDataImageLong3.h
   itkDataImageULong3.h
   itkDataImageFloat3.h
   itkDataImageFloat4.h
+  itkDataImageDouble4.h
   itkDataImageDouble3.h
   itkDataImageVector3.h
   itkDataImageRGB3.h
+  itkDataImageRGBA3.h
   itkDataImageShort4.h)
 
 set(${PROJECT_NAME}_HEADERS
@@ -69,19 +79,27 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   itkDataImagePlugin.cpp
   itkDataImageChar3.cpp
+  itkDataImageChar4.cpp
+  itkDataImageUChar4.cpp
   itkDataImageUChar3.cpp
   itkDataImageShort3.cpp
   itkDataImageUShort3.cpp
   itkDataImageUShort4.cpp
   itkDataImageInt3.cpp
+  itkDataImageInt4.cpp
+  itkDataImageLong4.cpp
+  itkDataImageUInt4.cpp
+  itkDataImageULong4.cpp
   itkDataImageUInt3.cpp
   itkDataImageLong3.cpp
   itkDataImageULong3.cpp
   itkDataImageFloat3.cpp
   itkDataImageFloat4.cpp
+  itkDataImageDouble4.cpp
   itkDataImageDouble3.cpp
   itkDataImageVector3.cpp
   itkDataImageRGB3.cpp
+  itkDataImageRGBA3.cpp
   itkDataImageShort4.cpp)
 
 # Include header files for Visual Studio.
@@ -101,6 +119,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
+  dtkItkLogForwarder
   ${ITK_LIBRARIES})
 
 if (BUILD_TESTING)

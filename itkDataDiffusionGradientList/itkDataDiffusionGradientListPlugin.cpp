@@ -5,6 +5,8 @@
 #include "itkDataDiffusionGradientList.h"
 #include "itkDataDiffusionGradientListPlugin.h"
 
+#include "itkLogForwarder.h"
+
 #include <dtkCore/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -14,7 +16,16 @@
 class itkDataDiffusionGradientListPluginPrivate 
 {
 public:
-    // Class variables go here.
+  itkDataDiffusionGradientListPluginPrivate()
+  {
+      forwarder = itk::LogForwarder::New();
+  }
+  ~itkDataDiffusionGradientListPluginPrivate()
+  {
+
+  }
+  // Class variables go here.
+  itk::LogForwarder::Pointer forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////

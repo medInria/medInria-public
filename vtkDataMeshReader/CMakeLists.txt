@@ -40,11 +40,13 @@ include(${vtkINRIA3D_USE_FILE})
 find_package(VTK)
 include(${VTK_USE_FILE})
 
+include_directories(../dtkVtkLogForwarder)
+
 
 set(${PROJECT_NAME}_HEADERS_MOC
   vtkDataMeshReaderPlugin.h
-#  vtkDataMeshReaderCommand.h
   vtkDataMeshReader.h
+  vtkDataMesh4DReader.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -52,8 +54,8 @@ set(${PROJECT_NAME}_HEADERS
   
 set(${PROJECT_NAME}_SOURCES
   vtkDataMeshReaderPlugin.cpp
-#  vtkDataMeshReaderCommand.cxx
   vtkDataMeshReader.cpp
+  vtkDataMesh4DReader.cpp
   )
 
 # Include header files for Visual Studio.
@@ -72,10 +74,13 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  dtkVtkLogForwarder
   dtkCore
   vtkCommon
   vtkFiltering
   vtkIO
+  vtkDataManagement
+  itksys
 )
 
 ## #################################################################

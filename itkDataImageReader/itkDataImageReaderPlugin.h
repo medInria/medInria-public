@@ -17,7 +17,7 @@ class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageReaderPlugin : public dtkPlugi
     Q_INTERFACES(dtkPlugin)
 
 public:
-     itkDataImageReaderPlugin(QObject *parent = 0);
+            itkDataImageReaderPlugin(QObject *parent = 0);
     ~itkDataImageReaderPlugin(void);
 
     virtual bool initialize(void);
@@ -30,7 +30,7 @@ public:
     virtual QStringList types(void) const;
 
 private:
-     itkDataImageReaderPluginPrivate *d;
+    itkDataImageReaderPluginPrivate *d;
 };
 
 #endif

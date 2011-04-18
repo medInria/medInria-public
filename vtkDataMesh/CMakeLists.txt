@@ -31,6 +31,11 @@ include(dtkPlugin)
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
+find_package(vtkINRIA3D REQUIRED)
+include(${vtkINRIA3D_USE_FILE})
+
+include_directories(../dtkVtkLogForwarder)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -38,11 +43,13 @@ include(${VTK_USE_FILE})
 set(${PROJECT_NAME}_HEADERS_MOC
   vtkDataMeshPlugin.h
   vtkDataMesh.h
+  vtkDataMesh4D.h
   )
 
 set(${PROJECT_NAME}_SOURCES
   vtkDataMeshPlugin.cpp
   vtkDataMesh.cpp
+  vtkDataMesh4D.cpp
   )
 
 ## #################################################################
@@ -57,10 +64,13 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  dtkVtkLogForwarder
   dtkCore
   vtkCommon
   vtkFiltering
   vtkRendering
+  vtkDataManagement
+  itksys
   )
 
 #if (BUILD_TESTING)

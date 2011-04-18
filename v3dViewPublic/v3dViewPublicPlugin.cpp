@@ -6,7 +6,9 @@
 #include "v3dViewPublicFiberInteractor.h"
 #include "v3dViewPublicMeshInteractor.h"
 #include "v3dViewPublicFuseInteractor.h"
+#include "v3dViewPublicTensorInteractor.h"
 #include "v3dViewPublicPlugin.h"
+#include "vtkLogForwarder.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -17,7 +19,16 @@
 class v3dViewPublicPluginPrivate 
 {
 public:
-    // Class variables go here.
+  v3dViewPublicPluginPrivate()
+  {
+      forwarder = vtkLogForwarder::New();
+  }
+  ~v3dViewPublicPluginPrivate()
+  {
+      forwarder->Delete();
+  }
+  // Class variables go here.
+  vtkLogForwarder* forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -49,6 +60,9 @@ bool v3dViewPublicPlugin::initialize(void)
 
     if(!v3dViewPublicFuseInteractor::registered())
 	dtkWarning() << "Unable to register v3dViewPublicFuseInteractor type";
+
+    if(!v3dViewPublicTensorInteractor::registered())
+	dtkWarning() << "Unable to register v3dViewPublicTensorInteractor type";
 
     return true;
 }

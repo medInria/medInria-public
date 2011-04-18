@@ -11,9 +11,9 @@ class itkDataImageDouble3Private;
 
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageDouble3 : public dtkAbstractDataImage
 {
-  Q_OBJECT
+    Q_OBJECT
     
- public:
+public:
     itkDataImageDouble3(void);
     ~itkDataImageDouble3(void);
     virtual QString description(void) const;
@@ -22,7 +22,7 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageDouble3 : public dtkAbstractDataImag
     virtual QImage        &thumbnail(void)   const;
     virtual QList<QImage> &thumbnails (void) const;
 
- public slots:
+public slots:
     // derived from dtkAbstractData
     
     void *output(void);
@@ -33,13 +33,13 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageDouble3 : public dtkAbstractDataImag
     void onMetaDataSet(const QString& key, const QString& value);
     void onPropertySet(const QString& key, const QString& value);
 
- public:
+public:
     // derived from dtkAbstractDataImage
 
     int xDimension(void);
     int yDimension(void);
     int zDimension(void);
-	int tDimension(void);
+    int tDimension(void);
 
     int minRangeValue(void);
     int maxRangeValue(void);
@@ -48,12 +48,12 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageDouble3 : public dtkAbstractDataImag
     int scalarValueMinCount(void);
     int scalarValueMaxCount(void);
     
- private:
+private:
     void computeRange(void);
     void computeValueCounts(void);
 
     itkDataImageDouble3Private* d;
-  
+
 };
 
 dtkAbstractData* createItkDataImageDouble3 (void);

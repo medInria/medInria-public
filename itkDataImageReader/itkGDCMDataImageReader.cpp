@@ -175,12 +175,18 @@ bool itkGDCMDataImageReader::registered(void)
 								    << "itkDataImageLong3"
 								    << "itkDataImageUInt3"
 								    << "itkDataImageInt3"
+								    << "itkDataImageInt4"
+								    << "itkDataImageLong4"
+								    << "itkDataImageUInt4"
+								    << "itkDataImageULong4"
 								    << "itkDataImageUShort3"
 								    << "itkDataImageUShort4"
 								    << "itkDataImageShort3"
 								    << "itkDataImageShort4"
 								    << "itkDataImageUChar3"
+								    << "itkDataImageUChar4"
 								    << "itkDataImageChar3"
+								    << "itkDataImageChar4"
 								    << "itkDataImageRGB3",
 								    createItkGDCMDataImageReader);
 }
@@ -194,12 +200,18 @@ QStringList itkGDCMDataImageReader::handled(void) const
 		       << "itkDataImageLong3"
 		       << "itkDataImageUInt3"
 		       << "itkDataImageInt3"
+		       << "itkDataImageInt4"
+		       << "itkDataImageUInt4"
+		       << "itkDataImageULong4"
+		       << "itkDataImageLong4"
 		       << "itkDataImageUShort3"
 		       << "itkDataImageUShort4"
 		       << "itkDataImageShort3"
 		       << "itkDataImageShort4"
 		       << "itkDataImageUChar3"
+		       << "itkDataImageUChar4"
 		       << "itkDataImageChar3"
+		       << "itkDataImageChar4"
 		       << "itkDataImageRGB3";
 }
 
@@ -449,10 +461,22 @@ bool itkGDCMDataImageReader::read (QStringList paths)
     { Read3DImageMacro(float); }
     else if (dtkdata->description() == "itkDataImageDouble3")
     { Read3DImageMacro(double); }
+    else if (dtkdata->description() == "itkDataImageUChar4")
+    { Read4DImageMacro(unsigned char); }
     else if (dtkdata->description() == "itkDataImageUShort4")
     { Read4DImageMacro(unsigned short); }
     else if (dtkdata->description() == "itkDataImageShort4")
     { Read4DImageMacro(short); }
+    else if (dtkdata->description() == "itkDataImageUInt4")
+    { Read4DImageMacro(unsigned int); }
+    else if (dtkdata->description() == "itkDataImageULong4")
+    { Read4DImageMacro(unsigned long); }
+    else if (dtkdata->description() == "itkDataImageInt4")
+    { Read4DImageMacro(int); }
+    else if (dtkdata->description() == "itkDataImageLong4")
+    { Read4DImageMacro(long); }
+    else if (dtkdata->description() == "itkDataImageChar4")
+    { Read4DImageMacro(char); }
     else if (dtkdata->description() == "itkDataImageDouble4")
     {
       /**
@@ -657,7 +681,7 @@ void itkGDCMDataImageReader::setProgress (int value)
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
 dtkAbstractDataReader *createItkGDCMDataImageReader(void)

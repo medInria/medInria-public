@@ -6,6 +6,8 @@
 #include "itkDataTensorImageFloat3.h"
 #include "itkDataTensorImagePlugin.h"
 
+#include "itkLogForwarder.h"
+
 #include <dtkCore/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -15,7 +17,16 @@
 class itkDataTensorImagePluginPrivate 
 {
 public:
-    // Class variables go here.
+  itkDataTensorImagePluginPrivate()
+  {
+      forwarder = itk::LogForwarder::New();
+  }
+  ~itkDataTensorImagePluginPrivate()
+  {
+
+  }
+  // Class variables go here.
+  itk::LogForwarder::Pointer forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////

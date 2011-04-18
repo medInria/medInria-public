@@ -6,8 +6,8 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 
-#include <itkAnalyzeImageIOFactory.h>
-#include <itkVTKImageIOFactory.h>
+//#include <itkAnalyzeImageIOFactory.h>
+//#include <itkVTKImageIOFactory.h>
 
 #include "vtkSmartPointer.h"
 #include <vtkImageData.h>
@@ -128,7 +128,7 @@ int v3dDataImage::zDimension (void)
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
 dtkAbstractData *createV3dDataImage(void)

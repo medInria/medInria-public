@@ -26,6 +26,9 @@ public:
     typedef itk::Image<TensorType, 3> TensorImageType;
   
     TensorImageType::Pointer tensors;
+
+    QImage        thumbnail;
+    QList<QImage> thumbnails;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -35,6 +38,8 @@ public:
 itkDataTensorImageFloat3::itkDataTensorImageFloat3(void) : dtkAbstractDataImage(), d(new itkDataTensorImageFloat3Private)
 {
     d->tensors = 0;
+    d->thumbnail = QImage(128, 128, QImage::Format_RGB32);
+    d->thumbnails << d->thumbnail;
 }
 
 itkDataTensorImageFloat3::~itkDataTensorImageFloat3(void)
@@ -95,67 +100,19 @@ int itkDataTensorImageFloat3::zDimension (void)
     return -1;
 }
 
-bool itkDataTensorImageFloat3::write (const QString &path)
+QImage& itkDataTensorImageFloat3::thumbnail  (void) const
 {
-    if(d->tensors.IsNull())
-        return false;
+    // TODO: TEMPORARY black image just to allow drag and drop    
+    return d->thumbnail;
+}
 
-    typedef itk::Vector<float, 6>     VectorType;
-    typedef itk::Image<VectorType, 3> VectorImageType;
-    typedef itkDataTensorImageFloat3Private::TensorType TensorType;
-    typedef itkDataTensorImageFloat3Private::TensorImageType TensorImageType;
-
-    VectorImageType::Pointer myTensorImage = VectorImageType::New();
-    
-    TensorImageType::RegionType region = d->tensors->GetLargestPossibleRegion();
-    
-    myTensorImage->SetRegions (region);
-    myTensorImage->SetSpacing (d->tensors->GetSpacing());
-    myTensorImage->SetOrigin (d->tensors->GetOrigin());
-    myTensorImage->SetDirection (d->tensors->GetDirection());
-    try {
-      myTensorImage->Allocate();
-    }
-    catch (itk::ExceptionObject &e) {
-      std::cerr << e;
-      throw itk::ExceptionObject (__FILE__,__LINE__,"Error during memory allocation.");
-    }
-
-    typedef itk::ImageRegionConstIterator<TensorImageType> IteratorType;
-    IteratorType it (d->tensors, d->tensors->GetLargestPossibleRegion());
-    
-    itk::ImageRegionIteratorWithIndex<VectorImageType> itOut(myTensorImage, myTensorImage->GetLargestPossibleRegion());
-
-    while( !it.IsAtEnd() )
-    {
-      TensorType tensor = it.Get();
-      VectorType vec;
-	  
-      for( unsigned int i=0; i<6; i++) {
-        vec[i] = static_cast<float>(tensor[i]);
-      }      
-      itOut.Set (vec);
-      
-      ++it;
-      ++itOut;
-    }
-    
-    itk::ImageFileWriter<VectorImageType>::Pointer myWriter = itk::ImageFileWriter<VectorImageType>::New();
-    myWriter->SetFileName(path.toAscii().constData());
-    myWriter->SetInput(myTensorImage);
-    try {
-        myWriter->Write();
-    }
-    catch(itk::ExceptionObject &e) {
-      qDebug() << e.GetDescription();
-      return false;
-    }
-
-    return true;
+QList<QImage>& itkDataTensorImageFloat3::thumbnails (void) const
+{
+    return d->thumbnails;
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
 dtkAbstractData *createItkDataTensorImageFloat3(void)

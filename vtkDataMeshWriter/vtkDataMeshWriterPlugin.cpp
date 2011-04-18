@@ -1,5 +1,8 @@
 #include "vtkDataMeshWriterPlugin.h"
 #include "vtkDataMeshWriter.h"
+#include "vtkDataMesh4DWriter.h"
+
+#include "vtkLogForwarder.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -10,7 +13,16 @@
 class vtkDataMeshWriterPluginPrivate 
 {
 public:
-    // Class variables go here.
+  vtkDataMeshWriterPluginPrivate()
+  {
+      forwarder = vtkLogForwarder::New();
+  }
+  ~vtkDataMeshWriterPluginPrivate()
+  {
+      forwarder->Delete();
+  }
+  // Class variables go here.
+  vtkLogForwarder* forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -30,6 +42,7 @@ vtkDataMeshWriterPlugin::~vtkDataMeshWriterPlugin(void)
 bool vtkDataMeshWriterPlugin::initialize(void)
 {
   if(!vtkDataMeshWriter::registered()) dtkWarning() << "Unable to register vtkDataMeshWriter type";
+  if(!vtkDataMesh4DWriter::registered()) dtkWarning() << "Unable to register vtkDataMeshWriter type";
     
   return true;
 }

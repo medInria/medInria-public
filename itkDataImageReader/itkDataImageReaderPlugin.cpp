@@ -3,9 +3,6 @@
 // /////////////////////////////////////////////////////////////////
 
 //#include "itkDataImageReader.h"
-#ifdef MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT
-#include "itkDCMTKDataImageReader.h"
-#endif
 #ifdef ITK_USE_SYSTEM_GDCM
 #include "itkGDCMDataImageReader.h"
 #endif
@@ -21,6 +18,7 @@
 #include "itkVTKDataImageReader.h"
 
 #include "itkDataImageReaderPlugin.h"
+#include "itkLogForwarder.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -32,7 +30,16 @@
 class itkDataImageReaderPluginPrivate 
 {
 public:
-  // Class variables go here.
+    itkDataImageReaderPluginPrivate()
+    {
+       forwarder = itk::LogForwarder::New();
+    }
+    ~itkDataImageReaderPluginPrivate()
+    {
+
+    }
+    // Class variables go here.
+    itk::LogForwarder::Pointer forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -46,71 +53,64 @@ itkDataImageReaderPlugin::itkDataImageReaderPlugin(QObject *parent) : dtkPlugin(
 
 itkDataImageReaderPlugin::~itkDataImageReaderPlugin(void)
 {
-  delete d;
-
-  d = NULL;
+    delete d;
+    d = NULL;
 }
 
 bool itkDataImageReaderPlugin::initialize(void)
 {
-  if(!itkMetaDataImageReader::registered())     dtkWarning() << "Unable to register itkMetaDataImageReader type";
-#ifdef MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT
-  if(!itkDCMTKDataImageReader::registered())    dtkWarning() << "Unable to register itkDCMTKDataImageReader type";  
-#endif
+    if(!itkMetaDataImageReader::registered())     dtkWarning() << "Unable to register itkMetaDataImageReader type";
 #ifdef ITK_USE_SYSTEM_GDCM
-  if(!itkGDCMDataImageReader::registered())     dtkWarning() << "Unable to register  itkGDCMDataImageReader type";
+    if(!itkGDCMDataImageReader::registered())     dtkWarning() << "Unable to register  itkGDCMDataImageReader type";
 #endif
-  if(!itkNiftiDataImageReader::registered())    dtkWarning() << "Unable to register itkNiftiDataImageReader type";
-  if(!itkAnalyzeDataImageReader::registered())  dtkWarning() << "Unable to register itkAnalyzeDataImageReader type";
-  if(!itkNrrdDataImageReader::registered())     dtkWarning() << "Unable to register itkNrrdDataImageReader type";
-  if(!itkGiplDataImageReader::registered())     dtkWarning() << "Unable to register itkGiplDataImageReader type";
-  if(!itkVTKDataImageReader::registered())      dtkWarning() << "Unable to register itkVTKDataImageReader type";
-  if(!itkPNGDataImageReader::registered())      dtkWarning() << "Unable to register itkPNGDataImageReader type";
-  if(!itkBMPDataImageReader::registered())      dtkWarning() << "Unable to register itkBMPDataImageReader type";
-  if(!itkJPEGDataImageReader::registered())     dtkWarning() << "Unable to register itkJPEGDataImageReader type";
-  if(!itkTIFFDataImageReader::registered())     dtkWarning() << "Unable to register itkTIFFDataImageReader type";    
-  
-  return true;
+    if(!itkNiftiDataImageReader::registered())    dtkWarning() << "Unable to register itkNiftiDataImageReader type";
+    if(!itkAnalyzeDataImageReader::registered())  dtkWarning() << "Unable to register itkAnalyzeDataImageReader type";
+    if(!itkNrrdDataImageReader::registered())     dtkWarning() << "Unable to register itkNrrdDataImageReader type";
+    if(!itkGiplDataImageReader::registered())     dtkWarning() << "Unable to register itkGiplDataImageReader type";
+    if(!itkVTKDataImageReader::registered())      dtkWarning() << "Unable to register itkVTKDataImageReader type";
+    if(!itkPNGDataImageReader::registered())      dtkWarning() << "Unable to register itkPNGDataImageReader type";
+    if(!itkBMPDataImageReader::registered())      dtkWarning() << "Unable to register itkBMPDataImageReader type";
+    if(!itkJPEGDataImageReader::registered())     dtkWarning() << "Unable to register itkJPEGDataImageReader type";
+    if(!itkTIFFDataImageReader::registered())     dtkWarning() << "Unable to register itkTIFFDataImageReader type";
+
+    return true;
 }
 
 bool itkDataImageReaderPlugin::uninitialize(void)
 {
-  return true;
+    return true;
 }
 
 QString itkDataImageReaderPlugin::name(void) const
 {
-  return "itkDataImageReaderPlugin";
+    return "itkDataImageReaderPlugin";
 }
 
 QString itkDataImageReaderPlugin::description(void) const
 {
-  return "Readers for any ITK image data type.";
+    return "Readers for any ITK image data type.";
 }
 
 QStringList itkDataImageReaderPlugin::tags(void) const
 {
-  return QStringList() << "itk" << "data" << "image" << "reader";
+    return QStringList() << "itk" << "data" << "image" << "reader";
 }
 
 QStringList itkDataImageReaderPlugin::types(void) const
 {
-  return QStringList() << "itkMetaDataImageReader"
+    return QStringList() << "itkMetaDataImageReader"
 #ifdef ITK_USE_SYSTEM_GDCM    
-		       << "itkGDCMDataImageReader"
+            << "itkGDCMDataImageReader"
 #endif    
-#ifdef MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT
-		       << "itkDCMTKDataImageReader"
-#endif
-		       << "itkNiftiDataImageReader"
-		       << "itkAnalyzeDataImageReader"
-		       << "itkNrrdDataImageReader"
-		       << "itkGiplDataImageReader"
-		       << "itkVTKDataImageReader"
-		       << "itkPNGDataImageReader"
-		       << "itkBMPDataImageReader"
-		       << "itkJPEGDataImageReader"
-		       << "itkTIFFDataImageReader";
+            << "itkNiftiDataImageReader"
+            << "itkAnalyzeDataImageReader"
+            << "itkNrrdDataImageReader"
+            << "itkGiplDataImageReader"
+            << "itkVTKDataImageReader"
+            << "itkPNGDataImageReader"
+            << "itkBMPDataImageReader"
+            << "itkJPEGDataImageReader"
+            << "itkTIFFDataImageReader";
 }
 
 Q_EXPORT_PLUGIN2(itkDataImageReaderPlugin, itkDataImageReaderPlugin)

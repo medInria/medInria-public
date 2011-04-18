@@ -9,15 +9,13 @@
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageReaderBase : public dtkAbstractDataReader
 {
     Q_OBJECT
-	
+
 public:
     itkDataImageReaderBase(void);
     virtual ~itkDataImageReaderBase(void);
 
-    virtual QStringList handled(void) const;
-    
-    static QStringList s_handled (void);
-	
+    virtual QStringList handled(void) const = 0;
+
 public slots:
     virtual bool canRead (const QString& path);
     virtual bool canRead (const QStringList& paths);
@@ -33,7 +31,7 @@ public slots:
 protected:
     itk::ImageIOBase::Pointer io;
 
-	
+
 };
 
 #endif

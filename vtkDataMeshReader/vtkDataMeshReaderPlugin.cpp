@@ -1,7 +1,9 @@
-#include "vtkDataMeshReader.h"
-
 #include "vtkDataMeshReaderPlugin.h"
+#include "vtkDataMeshReader.h"
+#include "vtkDataMesh4DReader.h"
 
+
+#include "vtkLogForwarder.h"
 #include <dtkCore/dtkLog.h>
 
 
@@ -12,7 +14,16 @@
 class vtkDataMeshReaderPluginPrivate 
 {
 public:
+  vtkDataMeshReaderPluginPrivate()
+  {
+      forwarder = vtkLogForwarder::New();
+  }
+  ~vtkDataMeshReaderPluginPrivate()
+  {
+      forwarder->Delete();
+  }
   // Class variables go here.
+  vtkLogForwarder* forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -34,6 +45,7 @@ vtkDataMeshReaderPlugin::~vtkDataMeshReaderPlugin(void)
 bool vtkDataMeshReaderPlugin::initialize(void)
 {
   if(!vtkDataMeshReader::registered())     dtkWarning() << "Unable to register vtkDataMeshReader type";
+  if(!vtkDataMesh4DReader::registered())     dtkWarning() << "Unable to register vtkDataMeshReader type";
   return true;
 }
 

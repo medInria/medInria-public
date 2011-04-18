@@ -6,14 +6,13 @@
 
 #include "itkDataImagePluginExport.h"
 
-
 class itkDataImageRGB3Private;
 
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageRGB3 : public dtkAbstractDataImage
 {
-  Q_OBJECT
+    Q_OBJECT
     
- public:
+public:
     itkDataImageRGB3(void);
     ~itkDataImageRGB3(void);
     virtual QString description(void) const;
@@ -21,7 +20,7 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageRGB3 : public dtkAbstractDataImage
 
     virtual QList<QImage> &thumbnails (void) const;
 
- public slots:
+public slots:
     // derived from dtkAbstractData
     
     void *output(void);
@@ -32,13 +31,13 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageRGB3 : public dtkAbstractDataImage
     void onMetaDataSet(const QString& key, const QString& value);
     void onPropertySet(const QString& key, const QString& value);
 
- public:
+public:
     // derived from dtkAbstractDataImage
 
     int xDimension(void);
     int yDimension(void);
     int zDimension(void);
-	int tDimension(void);
+    int tDimension(void);
 
     int minRangeValue(void);
     int maxRangeValue(void);
@@ -47,10 +46,10 @@ class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageRGB3 : public dtkAbstractDataImage
     int scalarValueMinCount(void);
     int scalarValueMaxCount(void);
     
- private:
+private:
 
     itkDataImageRGB3Private* d;
-  
+
 };
 
 dtkAbstractData* createItkDataImageRGB3 (void);

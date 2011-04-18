@@ -89,9 +89,9 @@ bool vtkDataMeshReader::read (const QString& path)
     if (!(dtkdata->description()=="vtkDataMesh"))
       return false;
 
-    reader->SetFileName (path.toAscii().constData());
-    reader->Update();
-    dtkdata->setData (reader->GetOutput() );
+    this->reader->SetFileName (path.toAscii().constData());
+    this->reader->Update();
+    dtkdata->setData (this->reader->GetOutput() );
   }
 
   this->setProgress (100);
@@ -122,7 +122,7 @@ QString vtkDataMeshReader::description(void) const
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
 dtkAbstractDataReader *createVtkDataMeshReader(void)

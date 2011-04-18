@@ -423,6 +423,7 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     connect(d->vtkWidget3D,  SIGNAL(mouseEvent(QMouseEvent*)),     this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,       SIGNAL(valueChanged(int)),            this, SLOT(onZSliderValueChanged(int)));
     connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(const QString&)));
+
 }
 
 v3dViewPublic::~v3dViewPublic(void)
@@ -1107,7 +1108,25 @@ void v3dViewPublic::setData(dtkAbstractData *data)
             d->view2D->SetITKImage4(image);
             d->view3D->SetITKImage4(image);
         }
+    }
+    else if (data->description()=="itkDataImageInt4") {
+        if( itk::Image<int, 4>* image = dynamic_cast<itk::Image<int, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2D->SetITKImage4(image);
+            d->view3D->SetITKImage4(image);
+        }
+    }
+    else if (data->description()=="itkDataImageLong4") {
+        if( itk::Image<long, 4>* image = dynamic_cast<itk::Image<long, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2D->SetITKImage4(image);
+            d->view3D->SetITKImage4(image);
+        }
     }    
+    else if (data->description()=="itkDataImageChar4") {
+        if( itk::Image<char, 4>* image = dynamic_cast<itk::Image<char, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2D->SetITKImage4(image);
+            d->view3D->SetITKImage4(image);
+        }
+    }
     else if (data->description()=="itkDataImageUShort3") {
         if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2D->SetITKImage(image);
@@ -1119,17 +1138,29 @@ void v3dViewPublic::setData(dtkAbstractData *data)
             d->view2D->SetITKImage4(image);
             d->view3D->SetITKImage4(image);
         }
+    }
+    else if (data->description()=="itkDataImageUInt4") {
+        if( itk::Image<unsigned int, 4>* image = dynamic_cast<itk::Image<unsigned int, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2D->SetITKImage4(image);
+            d->view3D->SetITKImage4(image);
+        }
     }    
+    else if (data->description()=="itkDataImageULong4") {
+        if( itk::Image<unsigned long, 4>* image = dynamic_cast<itk::Image<unsigned long, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2D->SetITKImage4(image);
+            d->view3D->SetITKImage4(image);
+        }
+    }
+    else if (data->description()=="itkDataImageUChar4") {
+        if( itk::Image<unsigned char, 4>* image = dynamic_cast<itk::Image<unsigned char, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2D->SetITKImage4(image);
+            d->view3D->SetITKImage4(image);
+        }
+    }
     else if (data->description()=="itkDataImageInt3") {
         if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2D->SetITKImage(image);
             d->view3D->SetITKImage(image);
-        }
-    }
-    else if (data->description()=="itkDataImageInt4") {
-        if( itk::Image<int, 4>* image = dynamic_cast<itk::Image<int, 4>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2D->SetITKImage4(image);
-            d->view3D->SetITKImage4(image);
         }
     }
     else if (data->description()=="itkDataImageUInt3") {
@@ -1162,6 +1193,12 @@ void v3dViewPublic::setData(dtkAbstractData *data)
             d->view3D->SetITKImage4(image);
         }
     }    
+    else if (data->description()=="itkDataImageDouble4") {
+        if( itk::Image<double, 4>* image = dynamic_cast<itk::Image<double, 4>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2D->SetITKImage4(image);
+            d->view3D->SetITKImage4(image);
+        }
+    }
     else if (data->description()=="itkDataImageDouble3") {
         if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2D->SetITKImage(image);
@@ -1446,7 +1483,7 @@ void v3dViewPublic::close(void)
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
 dtkAbstractView *createV3dViewPublic(void)
