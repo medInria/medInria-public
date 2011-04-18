@@ -27,9 +27,10 @@ public:
     
 public slots:
     void onDataAdded(int layer);
+    void onDataAdded(dtkAbstractData*);
+    void onDataAdded(dtkAbstractData *data, int layer);
     void onViewClosed(void);
     void onVisibilitySet(int state);
-    void onOpacitySet(double opacity);
     void onOpacitySliderSet(int opacity);
     void on2LayersOpacitySliderSet(int opacity);
     void onLUTChanged(int index);
@@ -38,6 +39,13 @@ public slots:
     void onDeleteLayer();
     void onSwitchLayersButtonClicked();
     void clear();
+
+   
+    
+    void onMeshLUTChanged (int value);
+
+    void onEdgeVisibilitySet(int state);
+    void onRenderingChanged (int state);
 
 signals:
     void setVisibility(bool visible, int layer);

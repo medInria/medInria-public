@@ -1,5 +1,6 @@
 #include "medAbstractView.h"
 
+
 class medAbstractViewPrivate
 {
 public:
@@ -18,7 +19,11 @@ public:
   double camParallelScale;
   
   int currentLayer;
+  int currentMeshLayer;
+  int meshLayerCount;
   QList<dtkAbstractData *> dataList;
+  
+  
 
 };
 
@@ -28,7 +33,9 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->linkCamera    = false;
     d->linkWindowing = false;
     d->currentLayer = 0;
-  
+    d->currentMeshLayer = 0;
+    d->meshLayerCount = 0;
+    
 	d->position = QVector3D(0.0, 0.0, 0.0);
 	d->pan = QVector2D(0.0, 0.0);
 	d->zoom = 1.0;
@@ -38,7 +45,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 	d->camViewup = QVector3D(0.0, 0.0, 0.0);
 	d->camFocal = QVector3D(0.0, 0.0, 0.0);
 	d->camParallelScale = 1.0;
-
+    
     QStringList lut;
     lut << "Default";		// list of available lookup tables set
 				// by subclass
@@ -66,7 +73,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 		                                              << "Red on White" << "Glossy");
     // image interaction
     this->addProperty ("MouseInteraction",      QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
-
+    
     // do not set properties, leave it to subclass
 }
 
@@ -248,28 +255,49 @@ int medAbstractView::layerCount(void) const
     return 0;
 }
 
+void medAbstractView::setCurrentMeshLayer(int meshLayer)
+{
+    d->currentMeshLayer = meshLayer;
+}
+
+int medAbstractView::currentMeshLayer(void) const
+{
+    return d->currentMeshLayer;
+}
+
+void medAbstractView::setMeshLayerCount(int meshLayerCount) 
+{
+   d->meshLayerCount = meshLayerCount;
+}
+
+int medAbstractView::meshLayerCount(void) const
+{
+    return d->meshLayerCount;
+}
+
+
 void medAbstractView::removeOverlay(int layer)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-//void medAbstractView::addDataInList(dtkAbstractData * data)
-//{
-//    d->dataList.append(data);
-//}
-//
-//dtkAbstractData * medAbstractView::dataInList(int layer)
-//{
-//    if (layer < d->dataList.size())
-//        return d->dataList.at(layer);
-//
-//    return NULL;
-//}
-//
-//void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
-//{
-//    d->dataList[layer] = data;
-//}
+void medAbstractView::addDataInList(dtkAbstractData * data)
+{
+    d->dataList.append(data);
+}
+
+dtkAbstractData * medAbstractView::dataInList(int layer)
+{
+    if (layer < d->dataList.size())
+        return d->dataList.at(layer);
+
+    return NULL;
+}
+
+void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
+{
+    d->dataList[layer] = data;
+}
 
 void medAbstractView::onPositionChanged (const QVector3D &position)
 {

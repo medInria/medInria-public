@@ -55,6 +55,7 @@ public:
     medAbstractView(const medAbstractView& view);
     virtual ~medAbstractView(void){}
 
+
     virtual void setColorLookupTable(int min_range,
                                      int max_range,
                                      int size,
@@ -142,6 +143,14 @@ public:
      */
     virtual void removeOverlay(int layer);
 
+    void setCurrentMeshLayer(int meshLayer);
+    virtual int currentMeshLayer(void) const;
+    void setMeshLayerCount(int meshLayerCount);
+    virtual int meshLayerCount(void) const;
+
+    void addDataInList(dtkAbstractData * data);
+    dtkAbstractData* dataInList(int layer);
+    void setDataInList(int layer, dtkAbstractData * data);
 signals:
     /**
        This signal is emitted when a view is about to close.
@@ -226,6 +235,8 @@ signals:
     void dataAdded (int layer);
 
     void dataAdded (dtkAbstractData* data);
+
+    void dataAdded (dtkAbstractData* data, int layer);
 
 public slots:
     /**
