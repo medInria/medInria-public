@@ -130,6 +130,8 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxDiffusionFiberBundling.cpp
   medToolBoxRegistration.cpp
   medToolBoxRegistrationCustom.cpp
+  medToolBoxFilteringCustom.cpp
+  medToolBoxFiltering.cpp
   medToolBoxDiffusionTensorView.cpp
   
   medViewPool.cpp
