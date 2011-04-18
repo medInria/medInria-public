@@ -27,16 +27,87 @@ PURPOSE.  See the above copyright notice for more information.
 
 #include "vtkObjectFactory.h"
 #include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkOpenGLRenderer.h>
+#include "vtkRendererCollection.h"
 #include "vtkSmartPointer.h"
 
-//#include "vtkgl.h"
+#include "vtkgl.h"
+
+#include <sstream>
 
 vtkCxxRevisionMacro(vtkQtOpenGLRenderWindow, "0");
 vtkStandardNewMacro(vtkQtOpenGLRenderWindow);
 
+namespace {
+    //-----------------------------------------------------------------------------
+    // Return a string matching the OpenGL errorCode. The returned string will
+    // not be null.
+    //-----------------------------------------------------------------------------
+    const char * OpenGLErrorMessage( unsigned int errorCode )
+    {
+        const char * result = NULL;
+        switch ( static_cast<GLenum>( errorCode ) )
+        {
+        case GL_NO_ERROR:
+            result = "GL_NO_ERROR : No error";
+            break;
+        case GL_INVALID_ENUM:
+            result = "GL_INVALID_ENUM : Invalid enum";
+            break;
+        case GL_INVALID_VALUE:
+            result = "GL_INVALID_VALUE : Invalid value";
+            break;
+        case GL_INVALID_OPERATION:
+            result = "GL_INVALID_OPERATION : Invalid operation";
+            break;
+        case GL_STACK_OVERFLOW:
+            result = "GL_STACK_OVERFLOW : stack overflow";
+            break;
+        case GL_STACK_UNDERFLOW:
+            result = "GL_STACK_UNDERFLOW : stack underflow";
+            break;
+        case GL_OUT_OF_MEMORY:
+            result = "GL_OUT_OF_MEMORY : out of memory";
+            break;
+        case vtkgl::TABLE_TOO_LARGE:
+            // GL_ARB_imaging
+            result = "vtkgl::TABLE_TOO_LARGE : Table too large";
+            break;
+        case vtkgl::INVALID_FRAMEBUFFER_OPERATION_EXT:
+            // GL_EXT_framebuffer_object, 310
+            result = "vtkgl::INVALID_FRAMEBUFFER_OPERATION_EXT : invalid framebuffer operation ext";
+            break;
+        case vtkgl::TEXTURE_TOO_LARGE_EXT:
+            // GL_EXT_texture
+            result = "vtkgl::TEXTURE_TOO_LARGE_EXT : Texture too large";
+            break;
+        default:
+            result = "unknown error";
+            break;
+        }
+        return result;
+    }
+
+    void PrintOpenGLError( const char * headerMessage )
+    {
+        GLenum errorCode = glGetError();
+        if ( errorCode != GL_NO_ERROR )
+        {
+            if ( headerMessage )
+                std::cerr << headerMessage;
+            std::cerr << ": ERROR (x" << std::hex << errorCode << ")  " << std::dec
+                << OpenGLErrorMessage( static_cast<unsigned int>( errorCode ) )
+                // << " : " << (const char *)gluErrorString(errorCode)
+                << std::endl;
+        }
+    }
+
+}
 vtkQtOpenGLRenderWindow::vtkQtOpenGLRenderWindow() :
    m_qtWidget (NULL),
-   m_initiatedRepaint(false)
+   m_initiatedRepaint(false),
+   InitializedOpenGl(false),
+   IsCursorHidden(false)
 {
     BuildStandardCursors ();
     typedef vtkSmartPointer< QVTKInteractor > QVTKInteractorPointer;
@@ -49,6 +120,13 @@ vtkQtOpenGLRenderWindow::vtkQtOpenGLRenderWindow() :
     this->GetInteractor()->SetInteractorStyle(s);
 
     this->DoubleBufferOff();
+    this->FrontBuffer     = vtkgl::COLOR_ATTACHMENT0_EXT;
+    this->FrontLeftBuffer = vtkgl::COLOR_ATTACHMENT0_EXT;
+    this->FrontRightBuffer= vtkgl::COLOR_ATTACHMENT0_EXT;
+    this->BackBuffer      = vtkgl::COLOR_ATTACHMENT0_EXT;
+    this->BackLeftBuffer  = vtkgl::COLOR_ATTACHMENT0_EXT;
+    this->BackRightBuffer = vtkgl::COLOR_ATTACHMENT0_EXT;
+
 }
 
 vtkQtOpenGLRenderWindow::~vtkQtOpenGLRenderWindow()
@@ -61,7 +139,33 @@ void vtkQtOpenGLRenderWindow::MakeCurrent()
     if ( this->m_qtWidget ) {
         this->m_qtWidget->makeCurrent();
     }
-    this->Initialize();
+    if ( !this->InitializedOpenGl
+        && this->m_qtWidget
+        && this->m_qtWidget->isCurrent() ) {
+
+        PrintOpenGLError("vtkQtOpenGLRenderWindow::MakeCurrent0.1()");
+
+        // To avoid recursion, need to set m_initializedOpenGl before calling OpenGlInit.
+        this->InitializedOpenGl = true;
+
+        // wipe out any existing display lists
+        vtkRenderer* ren;
+        vtkCollectionSimpleIterator rsit;
+        for (this->Renderers->InitTraversal(rsit);
+            (ren = this->Renderers->GetNextRenderer(rsit));)
+        {
+            ren->SetRenderWindow(NULL);
+            ren->SetRenderWindow(this);
+        }
+
+        std::cerr << "OpenGLInit" << std::endl;
+        PrintOpenGLError("vtkQtOpenGLRenderWindow::MakeCurrent0.2()");
+        this->OpenGLInit();
+        PrintOpenGLError("vtkQtOpenGLRenderWindow::MakeCurrent0.3()");
+    }
+    if ( this->IsCurrent() ) {
+        PrintOpenGLError("vtkQtOpenGLRenderWindow::MakeCurrent1()");
+    }
 }
 
 bool vtkQtOpenGLRenderWindow::IsCurrent()
@@ -97,6 +201,19 @@ void vtkQtOpenGLRenderWindow::Finalize(void)
 {
     // Consider removing renderers here
     // Superclass::Finalize();
+    // tell each of the renderers that this render window/graphics context
+    // is being removed (the RendererCollection is removed by vtkRenderWindow's
+    // destructor)
+    vtkRenderer* ren;
+    this->Renderers->InitTraversal();
+    for ( ren = vtkOpenGLRenderer::SafeDownCast(this->Renderers->GetNextItemAsObject());
+        ren != NULL;
+        ren = vtkOpenGLRenderer::SafeDownCast(this->Renderers->GetNextItemAsObject())  )
+    {
+        ren->SetRenderWindow(NULL);
+        ren->SetRenderWindow(this);
+    }
+    this->InitializedOpenGl = false;
 }
 
 // This overrides the base class. We do not need to create a window as Qt does that
@@ -114,10 +231,9 @@ void vtkQtOpenGLRenderWindow::Render()
 {
     if ( m_qtWidget )
     {
-      QVtkGraphicsView * qvtkview =
-        qobject_cast< QVtkGraphicsView * >( m_qtWidget );
-      if ( qvtkview->isProcessingPaintEvent() )
+      if ( m_qtWidget->isProcessingPaintEvent() )
       {
+          this->MakeCurrent();
         vtkQtOpenGLRenderWindowBase::Render ();
       }
       else
@@ -138,17 +254,37 @@ void vtkQtOpenGLRenderWindow::NativePaint ()
 
 void vtkQtOpenGLRenderWindow::SetQtWidget( QVtkGraphicsView * w)
 {
+    if ( this->m_qtWidget == w )
+        return;
+
     this->m_qtWidget = w;
     if ( m_qtWidget ) {
         this->Initialize();
         this->m_qtWidget->setCursor( GetCurrentQtCursor() );
+        this->SetMapped( 1 );
+    } else {
+        this->SetMapped( 0 );
     }
+
+    // wipe out any existing display lists
+    vtkRenderer* ren;
+    vtkCollectionSimpleIterator rsit;
+    for (this->Renderers->InitTraversal(rsit);
+        (ren = this->Renderers->GetNextRenderer(rsit));)
+    {
+        ren->SetRenderWindow(NULL);
+        ren->SetRenderWindow(this);
+    }
+
+    InitializedOpenGl = false;
 }
+//---------------------------------------------------------------------
+// Cursor-related functions
 
 void vtkQtOpenGLRenderWindow::SetCurrentCursor(int shape)
 {
     this->vtkRenderWindow::SetCurrentCursor(shape);
-    if ( m_qtWidget ) {
+    if ( m_qtWidget && !this->IsCursorHidden) {
         this->m_qtWidget->setCursor( GetQtCursorForVtkCursorId(shape) );
     }
 }
@@ -189,6 +325,40 @@ void vtkQtOpenGLRenderWindow::BuildStandardCursors()
     SetQtCursorForVtkCursorId( QCursor( Qt::PointingHandCursor ), VTK_CURSOR_HAND );
 }
 
+void vtkQtOpenGLRenderWindow::HideCursor()
+{
+    if (this->IsCursorHidden )
+        return;
+
+    if ( m_qtWidget ) {
+        this->m_qtWidget->setCursor( Qt::BlankCursor );
+    }
+
+    this->IsCursorHidden = true;
+    this->Modified();
+}
+
+void vtkQtOpenGLRenderWindow::ShowCursor()
+{
+    if (!this->IsCursorHidden )
+        return;
+
+    if ( m_qtWidget ) {
+        this->m_qtWidget->setCursor( this->GetCurrentQtCursor() );
+    }
+    this->IsCursorHidden = false;
+    this->Modified();
+}
+
+void vtkQtOpenGLRenderWindow::SetCursorPosition( int x, int y)
+{
+    if ( m_qtWidget ) {
+        QCursor::setPos(x,y);
+    }
+}
+// End of Cursor-related functions
+//---------------------------------------------------------------------
+
 void vtkQtOpenGLRenderWindow::Frame( void )
 {
     glFlush();
@@ -198,6 +368,7 @@ void vtkQtOpenGLRenderWindow::Start()
 {
     // set the current window
     this->MakeCurrent();
+    PrintOpenGLError("vtkQtOpenGLRenderWindow::Start()");
 }
 
 void vtkQtOpenGLRenderWindow::SetDisplayId( void * )
@@ -266,35 +437,20 @@ void vtkQtOpenGLRenderWindow::SetParentInfo( char * )
 
 }
 
-void vtkQtOpenGLRenderWindow::HideCursor()
-{
-    if ( m_qtWidget ) {
-        //this->m_qtWidget->setCursor( ???? );
-    }
-}
-
-void vtkQtOpenGLRenderWindow::ShowCursor()
-{
-    if ( m_qtWidget ) {
-        //this->m_qtWidget->setCursor( ???? );
-    }
-}
-
-void vtkQtOpenGLRenderWindow::SetCursorPosition( int , int )
-{
-    if ( m_qtWidget ) {
-        //this->m_qtWidget->setCursor( ???? );
-    }
-}
-
 void vtkQtOpenGLRenderWindow::WindowRemap()
 {
 
 }
 
-void vtkQtOpenGLRenderWindow::SetFullScreen( int )
+void vtkQtOpenGLRenderWindow::SetFullScreen( int isFullScreen )
 {
-
+    if ( this->m_qtWidget ) {
+        if ( isFullScreen ) {
+            this->m_qtWidget->showFullScreen();
+        } else{
+            this->m_qtWidget->showNormal();
+        }
+    }
 }
 
 int vtkQtOpenGLRenderWindow::GetEventPending()

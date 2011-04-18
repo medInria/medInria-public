@@ -147,9 +147,9 @@ protected:
   virtual void SetParentInfo(char *);
   virtual void HideCursor();
   virtual void ShowCursor();
-  virtual void SetCursorPosition(int , int );
+  virtual void SetCursorPosition(int x, int y);
   virtual void WindowRemap();
-  virtual void SetFullScreen(int);
+  virtual void SetFullScreen(int isFullScreen);
   virtual int GetEventPending();
 
   // Implement vtkWindow
@@ -162,6 +162,11 @@ protected:
     bool m_initiatedRepaint; // true when we ask our window to repaint.
 
     int ScreenSize[2];
+
+    // We can only call openGl during a render.
+    bool InitializedOpenGl;
+
+    bool IsCursorHidden;
 private:
   vtkQtOpenGLRenderWindow(const vtkQtOpenGLRenderWindow&);  // Not implemented.
   void operator=(const vtkQtOpenGLRenderWindow&);  // Not implemented.
