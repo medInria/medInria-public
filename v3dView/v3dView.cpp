@@ -636,8 +636,13 @@ void v3dView::setData(dtkAbstractData *data)
         layer++;
     }
     
-        this->setData( data, layer);
-    
+    if (data->description().contains("vtkDataMesh") && layer)
+    {
+        layer--;
+        qDebug()<<"data->description() ==  && layer !=0";
+    }
+    this->setData( data, layer);
+    qDebug()<<"Layer : "<<layer;
     // this->update(); // update is not the role of the plugin, but of the app
 }
 
@@ -757,7 +762,6 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
-
     else if (data->description()=="itkDataImageChar4") {
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
@@ -795,7 +799,6 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
         }
         else if ( data->description() == "vtkDataMesh" ) {
-            
             this->enableInteractor ( "v3dViewMeshInteractor" );
             // This will add the data to the interactor.
             dtkAbstractView::setData(data);
@@ -873,8 +876,9 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
     }
 
-    emit dataAdded(layer);
+   // emit dataAdded(layer);
     emit dataAdded(data);
+    emit dataAdded(data, layer);
 }
 
 void *v3dView::data (void)
