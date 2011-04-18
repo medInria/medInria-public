@@ -765,6 +765,54 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
+    else if (data->description()=="vistalDataImageChar3") {
+      if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->convert("itkDataImageChar3") ) ) ) {
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
+      }
+    }
+    else if (data->description()=="vistalDataImageUChar3") {
+      if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->convert("itkDataImageUChar3") ) ) ) {
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
+      }
+    }
+    else if (data->description()=="vistalDataImageShort3") {
+      if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->convert("itkDataImageShort3") ) ) ) {
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
+      }
+    }
+    else if (data->description()=="vistalDataImageUShort3") {
+      if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->convert("itkDataImageUShort3") ) ) ) {
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
+      }
+    }
+    else if (data->description()=="vistalDataImageInt3") {
+      if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->convert("itkDataImageInt3") ) ) ) {
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
+      }
+    }
+    else if (data->description()=="vistalDataImageUInt3") {
+      if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->convert("itkDataImageUInt3") ) ) ) {
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
+      }
+    }
+    else if (data->description()=="vistalDataImageFloat3") {
+      if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->convert("itkDataImageFloat3") ) ) ) {
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
+      }
+    }
+    else if (data->description()=="vistalDataImageDouble3") {
+      if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->convert("itkDataImageDouble3") ) ) ) {
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
+      }
+    }
     else
 #endif
         if (data->description()=="v3dDataImage") {
