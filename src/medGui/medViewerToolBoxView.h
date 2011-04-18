@@ -51,7 +51,8 @@ public slots:
     void onAxisVisibilityChanged(bool);
     void onRulerVisibilityChanged(bool);
     void onAnnotationsVisibilityChanged(bool);
-
+    void clear();
+    
 private:
     medViewerToolBoxViewPrivate *d;
 };

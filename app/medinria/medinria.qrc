@@ -72,6 +72,8 @@
         <file>icons/zoom.tiff</file>
         <file>icons/zoom_in.png</file>
         <file>icons/zoom_out.png</file>
+        <file>icons/backward.png</file>
+        <file>icons/forward.png</file>
         <file>medinria.qss</file>
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/frame.png</file>
@@ -108,5 +110,8 @@
         <file>pixmaps/medinria-logo.png</file>
         <file>pixmaps/medinria-splash.png</file>
         <file>icons/settings.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/play.png</file>
     </qresource>
 </RCC>

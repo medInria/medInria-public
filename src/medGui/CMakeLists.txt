@@ -41,9 +41,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medFlicker.h
   medLayoutChooser.h
   medProgressionStack.h
-  medStatusQuitButton.h
-  medSettingsButton.h
   medPacsSelector.h
+  medButton.h  
   
   # general toolbox classes
   medToolBox.h
@@ -60,6 +59,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxDiffusionFiberBundling.h
   medToolBoxRegistration.h
   medToolBoxRegistrationCustom.h
+  medToolBoxDiffusionTensorView.h
   
   # viewer stuff
   medViewPool.h
@@ -67,7 +67,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
-  medViewContainerStack.h
+  medViewContainerCompare.h
+  medStackedViewContainers.h
   
   medWorkspaceShifter.h 
   medSaveLUTDialog.h
@@ -77,22 +78,24 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfiguration.h  
   medViewerConfigurationFactory.h
   medViewerToolBoxLayout.h
+  medViewerToolBoxView.h
+  medViewerToolBoxTime.h
   medViewerToolBoxViewProperties.h
   medViewerToolBoxView.h
   
   # pacs toolboxes
   medBrowserToolBoxPacsHost.h
   medBrowserToolBoxPacsNodes.h
-  medBrowserToolBoxPacsSearch.h
- 
-  )
+  medBrowserToolBoxPacsSearch.h    
+
+)
+
 set(${PROJECT_NAME}_HEADERS
   medLUTtoXMLWriter.h
   medXMLtoLUTReader.h
   medViewContainer_p.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
-
 
 set(${PROJECT_NAME}_SOURCES
   medSettingsWidget.cpp
@@ -109,9 +112,8 @@ set(${PROJECT_NAME}_SOURCES
   medFlicker.cpp
   medLayoutChooser.cpp
   medProgressionStack.cpp
-  medStatusQuitButton.cpp
-  medSettingsButton.cpp
   medPacsSelector.cpp
+  medButton.cpp
   
   medToolBox.cpp
   medToolBoxBody.cpp
@@ -126,29 +128,32 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxDiffusionFiberBundling.cpp
   medToolBoxRegistration.cpp
   medToolBoxRegistrationCustom.cpp
+  medToolBoxDiffusionTensorView.cpp
   
   medViewPool.cpp
   medViewContainer.cpp
   medViewContainerCustom.cpp
   medViewContainerMulti.cpp
   medViewContainerSingle.cpp
-  medViewContainerStack.cpp
+  medViewContainerCompare.cpp
+  medStackedViewContainers.cpp
   medWorkspaceShifter.cpp
   medLUTToXMLWriter.cpp
   medXMLToLUTReader.cpp
   medSaveLUTDialog.cpp
   medLoadLUTDialog.cpp
   
-  medViewerConfigurationFactory.cpp
   medViewerConfiguration.cpp
+  medViewerConfigurationFactory.cpp
   medViewerToolBoxLayout.cpp
+  medViewerToolBoxTime.cpp
   medViewerToolBoxViewProperties.cpp
   medViewerToolBoxView.cpp
   
   medBrowserToolBoxPacsHost.cpp
   medBrowserToolBoxPacsNodes.cpp
   medBrowserToolBoxPacsSearch.cpp    
-  )
+)
 
 # Include header files for Visual Studio.
 FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )

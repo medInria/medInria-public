@@ -32,7 +32,7 @@ class MEDSQL_EXPORT medDatabaseImporter : public medJobItem
     Q_OBJECT
 
 public:
-     medDatabaseImporter(const QString& file);
+    medDatabaseImporter(const QString& file);
     ~medDatabaseImporter(void);
 
     void run(void);

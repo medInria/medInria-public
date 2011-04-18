@@ -127,7 +127,8 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
 
     if(item && item->table() == "series") {    
         QMenu menu(this);
-        menu.addAction("View", this, SLOT(onMenuViewClicked()));
+        menu.addAction("View",   this, SLOT(onMenuViewClicked()));
+        menu.addAction("Export", this, SLOT(onMenuExportClicked()));
         menu.exec(mapToGlobal(point));
     }
 }
@@ -159,11 +160,11 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 
     if(item)
         if(item->table() == "patient")
-	    emit open(medDatabaseController::instance()->indexForPatient(item->value(20).toInt()));
+            emit open(medDatabaseController::instance()->indexForPatient(item->value(20).toInt()));
         else if(item->table() == "study")
             ;
         else if(item->table() == "series")
-	    emit open(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
+            emit open(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
         else
             ;
 }
@@ -190,6 +191,32 @@ void medDatabaseView::onMenuViewClicked(void)
             ;
         else if(item->table() == "series")
             emit open(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
+        else
+            ;
+}
+
+void medDatabaseView::onMenuExportClicked(void)
+{
+    if(!this->selectedIndexes().count())
+        return;
+
+    QModelIndex index = this->selectedIndexes().first();
+
+    if(!index.isValid())
+        return;
+
+    medDatabaseItem *item = NULL;
+
+    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(index.internalPointer());
+
+    if(item)
+        if(item->table() == "patient")
+            ;
+        else if(item->table() == "study")
+            ;
+        else if(item->table() == "series")
+            emit exportData(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
         else
             ;
 }

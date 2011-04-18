@@ -1,8 +1,11 @@
 #include "medDatabaseDataSource.h"
 
+#include <medCore/medDataManager.h>
+
 #include <medSql/medDatabasePreview.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
+#include <medSql/medDatabaseExporter.h>
 
 class medDatabaseDataSourcePrivate
 {
@@ -35,6 +38,8 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
     connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
+    connect(d->view, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
+
 
 }
 
@@ -71,3 +76,4 @@ void medDatabaseDataSource::update()
     d->preview->init();
     d->preview->update();
 }
+

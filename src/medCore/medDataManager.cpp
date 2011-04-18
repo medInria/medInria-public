@@ -27,6 +27,22 @@
 
 #include <QtCore>
 
+#if _MSC_VER || __MINGW32__
+#include <windows.h>
+#include <psapi.h>
+#elif defined(__APPLE__)
+#include <mach/task.h>
+#include <mach/mach_init.h>
+#include <mach/mach_host.h>
+#else
+#include <sys/sysinfo.h>
+#include <unistd.h>
+#endif 
+
+const int divider = 1000000;
+
+//-------------------------------------------------------------------------------------------------------
+
 class medDataManagerPrivate
 {
 public:
@@ -36,8 +52,13 @@ public:
         dbController = NULL;
         nonPersDbController = NULL;
     }
+    
+    // this is the data cache for persistent and non-persistent data
+    QHash<medDataIndex, QSharedPointer<dtkAbstractData> > dataCache;
+    QHash<medDataIndex, QSharedPointer<dtkAbstractData> > volatileDataCache;
 
-    QHash<medDataIndex, dtkAbstractData *> datas;
+    // this is our temporary weakPtr cache
+    QHash<medDataIndex, QWeakPointer<dtkAbstractData> > tempCache;
 
     medAbstractDbController* getDbController()
     {
@@ -67,6 +88,8 @@ private:
 
 };
 
+//-------------------------------------------------------------------------------------------------------
+
 medDataManager *medDataManager::instance(void)
 {
     if(!s_instance)
@@ -75,39 +98,44 @@ medDataManager *medDataManager::instance(void)
     return s_instance;
 }
 
-/*
-void medDataManager::insert(const medDataIndex& index, dtkAbstractData *data)
-{
-    d->datas.insert(index, data);
-}
+//-------------------------------------------------------------------------------------------------------
 
-void medDataManager::remove(const medDataIndex& index)
+QSharedPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 {
-    delete d->datas.value(index);
-
-    d->datas.remove(index);
-}
-*/
-
-dtkAbstractData *medDataManager::data(const medDataIndex& index)
-{
-    dtkAbstractData* dtkdata = NULL;
+    QSharedPointer<dtkAbstractData>  dtkdata;
 
     // try to get it from cache first
-    if ( d->datas.contains(index) )
+    if ( d->dataCache.contains(index) || d->volatileDataCache.contains(index) )
     {
         qDebug() << "Reading from cache";
-        dtkdata = d->datas.value(index);
+
+        if (d->dataCache.contains(index))
+            dtkdata = d->dataCache.value(index);
+        else
+            dtkdata = d->volatileDataCache.value(index);
     }
     else
     {
+
         qDebug() << "Reading from db";
 
         // try to load the data from db
         medAbstractDbController* db = d->getDbController();
         if (db)
         {
+            // check available free memory and clean up if necessary
+            if (!manageMemoryUsage(index, db))
+            {
+                qDebug() << "could not free enough memory, aborting data reading"; 
+                return dtkdata;
+            }
+
             dtkdata = db->read(index);
+
+            if (dtkdata)
+            {
+                d->dataCache[index] = dtkdata;
+            }
         }
 
         //if the data is still invalid we continue in the non-pers db
@@ -116,82 +144,394 @@ dtkAbstractData *medDataManager::data(const medDataIndex& index)
             medAbstractDbController* npDb = d->getNonPersDbController();
             if(npDb)
             {
+                // check available free memory and clean up if necessary
+                if (!manageMemoryUsage(index, npDb))
+                {
+                    qDebug() << "could not free enough memory, aborting data reading"; 
+                    return dtkdata;
+                }
+
                 dtkdata = npDb->read(index);
+
+                if (dtkdata)
+                {
+                    d->volatileDataCache[index] = dtkdata;
+                }
             }
         }
+  
+        //qDebug() << "Memory after reading:" << getProcessMemoryUsage() / divider;
 
-        // store it
-        if (dtkdata)
-        {
-            d->datas[index] = dtkdata;
-        }
     }
 
-    if (dtkdata)
-    {
-        return dtkdata;
-    }
-    else
+    if (!dtkdata)
     {
         qWarning() << "unable to open images with index:" << index.asString();
-        return NULL;
     }
-}
-/*
-QList<dtkAbstractData *> medDataManager::dataForPatient(int id)
-{
-    QList<dtkAbstractData *> data;
+    return dtkdata;
 
-    foreach(medDataIndex index, d->datas.keys())
-        if(index.patientId() == id)
-            data << d->datas.value(index);
-
-    return data;
 }
 
-QList<dtkAbstractData *> medDataManager::dataForStudy(int id)
-{
-    QList<dtkAbstractData *> data;
+//-------------------------------------------------------------------------------------------------------
 
-    foreach(medDataIndex index, d->datas.keys())
-        if(index.studyId() == id)
-            data << d->datas.value(index);
-
-    return data;
-}
-
-QList<dtkAbstractData *> medDataManager::dataForSeries(int id)
-{
-    QList<dtkAbstractData *> data;
-
-    foreach(medDataIndex index, d->datas.keys())
-        if(index.seriesId() == id)
-            data << d->datas.value(index);
-
-    return data;
-}
-
-QList<dtkAbstractData *> medDataManager::dataForImage(int id)
-{
-    QList<dtkAbstractData *> data;
-
-    foreach(medDataIndex index, d->datas.keys())
-        if(index.imageId() == id)
-            data << d->datas.value(index);
-
-    return data;
-}
-*/
 medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 {
 
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 medDataManager::~medDataManager(void)
 {
+    tryFreeMemory(getUpperMemoryThreshold());
     delete d;
 
     d = NULL;
 }
+
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::destroy( void )
+{
+    if (s_instance) {
+        delete s_instance;
+        s_instance = 0;
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::tryFreeMemory(size_t memoryLimit)
+{
+    size_t procMem = getProcessMemoryUsage();
+    if (procMem < memoryLimit)
+        return;
+
+    qDebug() << "****** TRY_FREE_MEM_BEGIN: " << procMem / divider << " to reach: " << memoryLimit / divider;
+
+    // clear the temp cache
+    d->tempCache.clear();
+    int itemsBefore = d->dataCache.count();
+
+    // iterate over the cache until we reach our threshold or all items are iterated
+    foreach(medDataIndex index, d->dataCache.keys())
+    {
+        // copy strongRefs to weakRefs
+        d->tempCache.insert(index,d->dataCache.value(index).toWeakRef());
+
+        // remove reference to free it
+        d->dataCache.remove(index);
+
+        // check memory usage and stop the loop at the optimal threshold
+        if (getProcessMemoryUsage() < memoryLimit)
+            break;
+    }
+
+    // restore the cache with items that survived
+    foreach(medDataIndex index, d->tempCache.keys())
+    {
+        QWeakPointer<dtkAbstractData> weakPtr = d->tempCache.value(index);
+        if (!weakPtr.isNull())
+            d->dataCache.insert(index, d->tempCache.value(index).toStrongRef());
+        //else
+            //qDebug() << "Reference lost, memory freed successfully...";
+    }
+
+    int itemsNow = d->dataCache.count();
+    if (itemsBefore != itemsNow)
+        qDebug() << "Data-cache reduced from:" << itemsBefore << "to" << itemsNow << " items";
+    else
+        qDebug() << "Not possible to free any items, current cache count is: " << itemsNow << "items";
+
+    qDebug() << "****** TRY_FREE_MEM_END: " << getProcessMemoryUsage() / divider;
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+bool medDataManager::manageMemoryUsage(const medDataIndex& index, medAbstractDbController* controller)
+{
+    bool res = true;
+    qint64 processMem = getProcessMemoryUsage();
+    qint64 estMem = controller->getEstimatedSize(index);
+    qint64 requiredMem = processMem + estMem;
+    qint64 optimalMem = getOptimalMemoryThreshold();
+    qint64 maxMem = getUpperMemoryThreshold();
+
+    qDebug() << "Current memory usage:" << processMem / divider << "Required memory need:" << requiredMem / divider;
+
+    // check against our optimal threshold
+    if (optimalMem < requiredMem)
+    {
+        if (estMem > optimalMem)
+            tryFreeMemory(0); // purge all
+        else
+            tryFreeMemory(optimalMem); // purge to optimal
+
+        requiredMem= getProcessMemoryUsage() + estMem;
+
+        qDebug() << "Current memory usage:" << processMem / divider << "Required memory need:" << requiredMem / divider;
+
+        // check again to see if we succeeded
+        if (maxMem < requiredMem)
+        {
+            res = false; 
+            qWarning() << "Required memory usage (" << requiredMem / divider 
+                << "mb) does not fit boundaries (" << maxMem / divider << " mb)";
+        }
+    }
+    
+    return res;
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+size_t medDataManager::getProcessMemoryUsage()
+{
+#if _MSC_VER || __MINGW32__
+    size_t size = 0;
+    DWORD pid = GetCurrentProcessId();
+    PROCESS_MEMORY_COUNTERS pmc;
+    HANDLE hProcess = OpenProcess(  PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid );
+    if ( hProcess == NULL )
+        return 0;
+    if ( GetProcessMemoryInfo( hProcess, &pmc, sizeof(pmc)) )
+    {
+        size = pmc.WorkingSetSize;
+    }
+    CloseHandle( hProcess );
+    return size;
+#elif defined(__APPLE__)
+    struct task_basic_info t_info;
+    mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
+    task_info(current_task(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count);
+    size_t size = t_info.virtual_size;
+    return size;
+#else
+    int size, res, shared, text, sharedLibs, stack, dirtyPages;
+    if ( ! ReadStatmFromProcFS( &size, &res, &shared, &text, &sharedLibs, &stack, &dirtyPages ) )
+        return (size_t) size * getpagesize();
+    else
+        return 0;
+#endif 
+    return 0;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+size_t medDataManager::getTotalSizeOfPhysicalRam()
+{
+#if _MSC_VER || __MINGW32__
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof (statex);
+    GlobalMemoryStatusEx (&statex);
+    return (size_t) statex.ullTotalPhys;
+#elif defined(__APPLE__)
+    kern_return_t kr;
+    host_basic_info_data_t hostinfo;
+    int count = HOST_BASIC_INFO_COUNT;
+    kr = host_info(mach_host_self(), HOST_BASIC_INFO, (host_info_t)&hostinfo, (mach_msg_type_number_t*)&count);
+    if(kr == KERN_SUCCESS)
+        return (size_t)hostinfo.memory_size;
+    else
+        return 0;
+#else
+    struct sysinfo info;
+    if ( ! sysinfo( &info ) )
+        return info.totalram * info.mem_unit;
+    else
+        return 0;
+#endif 
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+int medDataManager::ReadStatmFromProcFS( int* size, int* res, int* shared, int* text, int* sharedLibs, int* stack, int* dirtyPages )
+{
+    int ret = 0;
+
+#ifndef _MSC_VER
+
+    FILE* f;
+    f = fopen( "/proc/self/statm", "r" );
+    if( f ) {
+        size_t ignored = fscanf( f, "%d %d %d %d %d %d %d", size, res, shared, text, sharedLibs, stack, dirtyPages );
+        ++ignored;
+        fclose( f );
+    } else {
+        ret = -1;
+    }
+
+#endif // _MSC_VER
+
+    return ret;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+size_t medDataManager::getUpperMemoryThreshold()
+{
+    if ( is32Bit() )
+    {
+        return 950000000; //0.95 gb
+    }
+    else
+    {
+        // max virtual address space for 64bit varies on platforms (1TB for Windows)
+#ifndef _Wp64
+        return 4200000000; // to avoid compiler warnings
+#else
+        return 500000000000;
+#endif
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
+{
+    if (!data)
+        return medDataIndex();
+
+    foreach (QSharedPointer<dtkAbstractData> dtkdata, d->dataCache) {
+        if (data == dtkdata.data()) {
+            qWarning() << "data already in manager, skipping";
+            return medDataIndex();
+        }
+    }
+
+    foreach (QSharedPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
+        if (data == dtkdata.data()) {
+            qWarning() << "data already in manager, skipping";
+            return medDataIndex();
+        }
+    }
+
+    medDataIndex index;
+
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    if(npDb)
+    {
+        index = npDb->import(data);
+    }
+
+    if (!index.isValid()) {
+        qWarning() << "index is not valid";
+        return index;
+    }
+
+    if (d->volatileDataCache.contains (index)) {
+        qWarning() << "index already in manager, skipping";
+        return index;
+    }
+
+    d->volatileDataCache[index] = QSharedPointer<dtkAbstractData>(data);
+
+    emit dataAdded (index);
+
+    return index;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::storeNonPersistentDataToDatabase( void )
+{
+    foreach (QSharedPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
+        this->import (dtkdata.data());
+    }
+
+    if (medAbstractDbController* npDb = d->getNonPersDbController())
+        npDb->clear();
+
+    d->volatileDataCache.clear();
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+int medDataManager::nonPersistentDataCount( void ) const
+{
+    return d->volatileDataCache.count();
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::clearNonPersistentData( void )
+{
+    if (medAbstractDbController* npDb = d->getNonPersDbController())
+        npDb->clear();
+
+    d->volatileDataCache.clear();
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+bool medDataManager::is32Bit( void )
+{
+    if ( sizeof(void *) == 4 )
+        return true;
+    else
+        return false;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+size_t medDataManager::getOptimalMemoryThreshold()
+{
+    size_t optimalValue;
+    size_t physicalValue = getTotalSizeOfPhysicalRam();
+    size_t upperValue = getUpperMemoryThreshold();
+
+    //qDebug() << "Physical memory is: " << physicalValue / divider;
+
+    if ( is32Bit() )
+    {
+        // for 32bit we try to keep the cache half of the max memory
+        // unless we have less physical memory available
+        if ( physicalValue < (upperValue / 2) ) 
+            optimalValue = physicalValue / 2;
+        else
+            optimalValue = upperValue / 2;
+    }
+    else
+    {
+       // for 64bit we use half of the physical memory
+       // should be changed to use the available memory instead
+       optimalValue = physicalValue / 2;
+    }
+
+    //qDebug() << "optimal memory limit is: " << optimalValue / divider;
+    return optimalValue;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+medDataIndex medDataManager::import( dtkAbstractData *data )
+{
+    if (!data)
+        return medDataIndex();
+
+    medDataIndex index;
+
+    medAbstractDbController* db = d->getDbController();
+    if(db)
+    {
+        index = db->import(data);
+    }
+
+    if (!index.isValid()) {
+        qWarning() << "index is not valid";
+        return index;
+    }
+
+    d->dataCache[index] = QSharedPointer<dtkAbstractData> (data);
+
+    emit dataAdded (index);
+
+    return index;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 
 medDataManager *medDataManager::s_instance = NULL;

@@ -31,7 +31,7 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
         d(new medDatabaseSettingsWidgetPrivate())
 {
     setTabName("Database");
-
+   
     d->dbPath = new QLineEdit(this);
     d->btChooseDir = new QPushButton(tr("Select directory..."), this);
 
@@ -45,9 +45,10 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
 
     databaseLocation->setContentsMargins(0,-8,0,0);
 
-    QFormLayout* layout = new QFormLayout;
-    layout->addRow(tr("Database location:"), databaseLocation);
-    this->setLayout(layout);
+    QFormLayout* formLayout = new QFormLayout;
+    formLayout->addRow(tr("Database location:"), databaseLocation);
+    this->setLayout(formLayout);
+
 }
 
 void medDatabaseSettingsWidget::selectDbDirectory()
@@ -57,7 +58,17 @@ void medDatabaseSettingsWidget::selectDbDirectory()
 
      QString path;
      if (dialog.exec())
-         d->dbPath->setText(dialog.selectedFiles().first());
+     {
+         QString path = dialog.selectedFiles().first();
+         if (!QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files).isEmpty())
+         {
+             QMessageBox::information( this, tr("Directory not empty"), tr("The archive directory needs to be empty! \nPlease choose another one."));
+         }
+         else
+         {
+             d->dbPath->setText(path);
+         }
+     }
 }
 
 

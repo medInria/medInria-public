@@ -31,6 +31,7 @@
 
 #include <medCore/medMessageController.h>
 #include <medCore/medJobManager.h>
+#include <medCore/medDataManager.h>
 #include <medCore/medAbstractDataSource.h>
 #include <medCore/medAbstractDataSourceFactory.h>
 
@@ -148,8 +149,12 @@ void medBrowserArea::onFileImport(QString path)
     QFileInfo info(path);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
     connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
-    medJobManager::instance()->registerJobItem(importer, info.baseName());
+    d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
+    medJobManager::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
+
 }
+
 
 void medBrowserArea::onFileImported(void)
 {
@@ -189,5 +194,24 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
 
     connect(dataSource,SIGNAL(dataReceived(QString)),this,SLOT(onFileImport(QString)));
     connect(dataSource,SIGNAL(dataReceivingFailed(QString)), this, SLOT(onDataReceivingFailed(QString)));
+    connect(dataSource, SIGNAL(exportData(const medDataIndex&)), this, SLOT(onExportData(const medDataIndex&)));
+}
 
+void medBrowserArea::onExportData(const medDataIndex &index)
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save as"), "", "*.*");
+
+    if (fileName.isEmpty())
+        return;
+
+    dtkAbstractData *data = medDataManager::instance()->data(index).data();
+
+    if (!data)
+        return;
+
+    medDatabaseExporter *exporter = new medDatabaseExporter (data, fileName);
+    
+    connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
+
+    QThreadPool::globalInstance()->start(exporter);
 }

@@ -1,11 +1,12 @@
 #ifndef MEDABSTRACTDATASOURCE_H
 #define MEDABSTRACTDATASOURCE_H
 
-//#include <dtkCore/dtkAbstractObject.h>
+#include <QWidget>
 #include <QtCore>
 #include "medCoreExport.h"
 
 class medToolBox;
+class medDataIndex;
 
 /** 
  * @class medAbstractDataSource
@@ -14,7 +15,7 @@ class medToolBox;
  * a source selection widget and several toolboxes.
  * All dynamic data source implementation should derive from this class.
  **/
-class MEDCORE_EXPORT medAbstractDataSource : public QObject
+class MEDCORE_EXPORT medAbstractDataSource : public QWidget
 {
     Q_OBJECT
     
@@ -47,6 +48,13 @@ signals:
     /** A data source emits a signal when it failed to get the data*/
     void dataReceivingFailed(QString pathToData);
 
+    /**
+     * @brief Emits this signal when the source wants to export some data to a file.
+     *
+     * The medBrowserArea will treat the demand based on the medDataIndex.
+     * @param index
+    */
+    void exportData(const medDataIndex& index);
 };
 
 #endif

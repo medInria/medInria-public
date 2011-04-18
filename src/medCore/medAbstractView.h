@@ -22,6 +22,7 @@
 
 #include <dtkCore/dtkAbstractView.h>
 
+#include <QSharedPointer>
 #include "medCoreExport.h"
 
 class medAbstractViewPrivate;
@@ -53,7 +54,7 @@ class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 public:
     medAbstractView(medAbstractView * parent = 0);
     medAbstractView(const medAbstractView& view);
-    virtual ~medAbstractView(void){}
+    virtual ~medAbstractView(void);
 
     virtual void setColorLookupTable(int min_range,
                                      int max_range,
@@ -61,13 +62,18 @@ public:
                                      const int & table);
 
     virtual void setColorLookupTable( QList<double> scalars,
-				      QList<QColor> colors );
+                      QList<QColor> colors );
     virtual void setTransferFunctions( QList<double> scalars,
-				       QList<QColor> colors );
+                       QList<QColor> colors );
     virtual void getTransferFunctions( QList<double> & scalars,
-				       QList<QColor> & colors );
+                       QList<QColor> & colors );
 
     virtual QWidget *receiverWidget(void);
+
+    /**
+       Set the view slice.
+    **/
+    void setSlice       (int slice);
 
     /**
        Set the view position, i.e., focus on a particular spatial coordinate.
@@ -142,6 +148,11 @@ public:
      */
     virtual void removeOverlay(int layer);
 
+    /**
+     * Setting data using a qSharedPointer
+     */
+    void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
+
 signals:
     /**
        This signal is emitted when a view is about to close.
@@ -171,6 +182,14 @@ signals:
        This signal is emitted when the view wants to be displayed in full screen.
      **/
     void fullScreen    (bool);
+
+    /**
+       This signal is emitted when the shown slice of the view has
+       changed.  A changed slice always comes along with a changed
+       position, but the positionChanged signal is sent before the new
+       slice number is computed in vtkImageView2D.
+     **/
+    void sliceChanged     (int slice);
 
     /**
        This signal is emitted when the current position pointed by the view has changed.
@@ -225,6 +244,8 @@ signals:
      */
     void dataAdded (int layer);
 
+    void dataAdded (dtkAbstractData* data);
+
 public slots:
     /**
        Tells the view (not to) synchronize its position with other views.
@@ -244,14 +265,15 @@ public slots:
     virtual void setLinkCamera (bool value);
     bool cameraLinked (void) const;
 
+    virtual void onSliceChanged     (int slice);
     virtual void onPositionChanged  (const QVector3D &position);
     virtual void onZoomChanged      (double zoom);
     virtual void onPanChanged       (const QVector2D &pan);
     virtual void onWindowingChanged (double level, double window);
     virtual void onCameraChanged    (const QVector3D &position,
-				     const QVector3D &viewup,
-				     const QVector3D &focal,
-				     double parallelScale);
+                     const QVector3D &viewup,
+                     const QVector3D &focal,
+                     double parallelScale);
     
     virtual void onVisibilityChanged(bool visible, int layer);
     
@@ -259,6 +281,7 @@ public slots:
 
     
 protected:
+    void emitViewSliceChangedEvent    (int slice);
     void emitViewPositionChangedEvent (const QVector3D &position);
     void emitViewZoomChangedEvent     (double zoom);
     void emitViewPanChangedEvent      (const QVector2D &pan);

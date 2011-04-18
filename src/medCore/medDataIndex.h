@@ -43,6 +43,11 @@ public:
 
     QString asString() const;
 
+    void setPatientId (int id);
+    void setStudyId   (int id);
+    void setSeriesId  (int id);
+    void setImageId   (int id);
+    
     int patientId(void) const;
     int   studyId(void) const;
     int  seriesId(void) const;

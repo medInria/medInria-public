@@ -38,8 +38,11 @@ set(${PROJECT_NAME}_HEADERS
   medSettingsManager.h
   medDbControllerFactory.h
   medAbstractDbController.h
+  medRunnableProcess.h
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
+  med4DAbstractViewInteractor.h
+  medAbstractViewFiberInteractor.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -51,6 +54,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPluginManager.h
   medProgressFilter.h
   medAbstractView.h
+  med4DAbstractViewInteractor.h
   medJobItem.h
   medJobManager.h
   medSettingsManager.h
@@ -59,6 +63,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
   medStorage.h
+  medRunnableProcess.h
+  medAbstractViewFiberInteractor.h
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -76,8 +82,10 @@ set(${PROJECT_NAME}_SOURCES
   medSettingsManager.cpp
   medDbControllerFactory.cpp
   medAbstractDbController.cpp
+  medRunnableProcess.cpp
   medAbstractDataSource.cpp
   medAbstractDataSourceFactory.cpp
+  medAbstractViewFiberInteractor.cpp
 )
 
 ## #################################################################
@@ -124,6 +132,10 @@ endif(TCL_FOUND)
 if(PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
 endif(PYTHONLIBS_FOUND)
+
+IF(WIN32)		
+  target_link_libraries(${PROJECT_NAME} psapi.lib)
+ENDIF(WIN32)
 
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

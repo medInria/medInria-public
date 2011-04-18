@@ -24,15 +24,13 @@
 #include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
 #include <medCore/medMessageController.h>
+#include <medCore/medAbstractView.h>
 
-#include <medGui/medDropSite.h>
 #include <medGui/medToolBoxTab.h>
 #include <medGui/medToolBoxFactory.h>
 
@@ -44,19 +42,19 @@
 class medToolBoxRegistrationPrivate
 {
 public:
-    medDropSite *processDropSiteFixed;
-    medDropSite *processDropSiteMoving;
+//    medDropSite *processDropSiteFixed;
+//    medDropSite *processDropSiteMoving;
 	
-    QRadioButton *blendRadio;
-    QRadioButton *checkerboardRadio;
-    QSlider *layoutFuseSlider;
+//    QRadioButton *blendRadio;
+//    QRadioButton *checkerboardRadio;
+//    QSlider *layoutFuseSlider;
 
     QPushButton * saveImageButton;
     QPushButton * saveTransButton;
     QComboBox *toolboxes;
-    dtkAbstractView *fixedView;
-    dtkAbstractView *movingView;
-    dtkAbstractView *fuseView;
+    medAbstractView *fixedView;
+    medAbstractView *movingView;
+    medAbstractView *fuseView;
 
     dtkAbstractDataImage *fixedData;
     dtkAbstractDataImage *movingData;
@@ -75,20 +73,8 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->fixedView  = NULL;
     d->movingView = NULL;
     d->process = NULL;
-    // Process page
-
-    QWidget *processPage = new QWidget(this);
     
-    d->processDropSiteFixed  = new medDropSite(processPage);
-    d->processDropSiteFixed->setText("Fixed");
-
-    d->processDropSiteMoving = new medDropSite(processPage);
-    d->processDropSiteMoving->setText("Moving");
-
-    QHBoxLayout *processDropSiteLayout = new QHBoxLayout;
-    processDropSiteLayout->addWidget(d->processDropSiteFixed);
-    processDropSiteLayout->addWidget(d->processDropSiteMoving);
-
+    // Process section
     d->saveImageButton = new QPushButton(tr("Save Image"),this);
     connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
     d->saveTransButton = new QPushButton(tr("Save Transformation"),this);
@@ -105,77 +91,70 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
     connect(d->toolboxes, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
 
-    // ---
     
-    QVBoxLayout *processLayout = new QVBoxLayout(processPage);
-    processLayout->addLayout(processDropSiteLayout);
-    processLayout->addWidget(d->toolboxes);
-    processLayout->addWidget(d->saveImageButton);
-    processLayout->addWidget(d->saveTransButton);
-    // Layout page
+    // Layout section
 
-    QWidget *layoutPage = new QWidget;
-
-    QPushButton *layoutButtonCompare = new QPushButton("Compare", layoutPage);
+    QPushButton *layoutButtonCompare = new QPushButton("Compare", this);
     layoutButtonCompare->setCheckable(true);
     layoutButtonCompare->setChecked(true);
 
-    QPushButton *layoutButtonFuse = new QPushButton("Fuse", layoutPage);
+    QPushButton *layoutButtonFuse = new QPushButton("Fuse", this);
     layoutButtonFuse->setCheckable(true);
     layoutButtonFuse->setChecked(false);
-
-    QButtonGroup *layoutButtonGroup = new QButtonGroup(layoutPage);
+    
+    QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
     layoutButtonGroup->addButton(layoutButtonCompare);
     layoutButtonGroup->addButton(layoutButtonFuse);
     layoutButtonGroup->setExclusive(true);
-
-    d->layoutFuseSlider = new QSlider(Qt::Horizontal, layoutPage);
-    d->layoutFuseSlider->setRange(1, 100);
-    d->layoutFuseSlider->setValue(50);
-
     
-    d->blendRadio = new QRadioButton("Blend", layoutPage);
-    d->checkerboardRadio = new QRadioButton("Checkerboard", layoutPage);
-    d->blendRadio->setChecked(true);
+//    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
+//    d->layoutFuseSlider->setRange(1, 100);
+//    d->layoutFuseSlider->setValue(50);
+    
+//    d->blendRadio = new QRadioButton("Blend", this);
+//    d->checkerboardRadio = new QRadioButton("Checkerboard", this);
+//    d->blendRadio->setChecked(true);
 
-    QButtonGroup *radioGroup = new QButtonGroup(this);
-    radioGroup->addButton(d->blendRadio);
-    radioGroup->addButton(d->checkerboardRadio);
-    radioGroup->setExclusive(true);	
+//    QButtonGroup *radioGroup = new QButtonGroup(this);
+//    radioGroup->addButton(d->blendRadio);
+//    radioGroup->addButton(d->checkerboardRadio);
+//    radioGroup->setExclusive(true);	
 
-    QHBoxLayout *radioGroupLayout = new QHBoxLayout;
-    radioGroupLayout->addWidget(d->blendRadio);
-    radioGroupLayout->addWidget(d->checkerboardRadio);
+//    QHBoxLayout *radioGroupLayout = new QHBoxLayout;
+//    radioGroupLayout->addWidget(d->blendRadio);
+//    radioGroupLayout->addWidget(d->checkerboardRadio);
     
     QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
     layoutButtonLayout->addWidget(layoutButtonCompare);
     layoutButtonLayout->addWidget(layoutButtonFuse);
-
-    QVBoxLayout *layoutLayout = new QVBoxLayout(layoutPage);
+    
+    QVBoxLayout *layoutLayout = new QVBoxLayout;
     layoutLayout->addLayout(layoutButtonLayout);
-    layoutLayout->addLayout(radioGroupLayout);
-    layoutLayout->addWidget(d->layoutFuseSlider);
-
+//    layoutLayout->addLayout(radioGroupLayout);
+//    layoutLayout->addWidget(d->layoutFuseSlider);
+    QWidget * layoutSection = new QWidget(this);
+    layoutSection->setLayout(layoutLayout);
+    
     connect(layoutButtonCompare, SIGNAL(clicked()), this, SIGNAL(setupLayoutCompare()));
     connect(layoutButtonFuse, SIGNAL(clicked()), this, SIGNAL(setupLayoutFuse()));
     
-    connect(d->blendRadio, SIGNAL(toggled(bool)), this, SLOT(onBlendModeSet(bool)));
-    connect(d->checkerboardRadio, SIGNAL(toggled(bool)), this, SLOT(onCheckerboardModeSet(bool)));
+//    connect(d->blendRadio, SIGNAL(toggled(bool)), this, SLOT(onBlendModeSet(bool)));
+//    connect(d->checkerboardRadio, SIGNAL(toggled(bool)), this, SLOT(onCheckerboardModeSet(bool)));
 
-    connect (d->processDropSiteFixed,  SIGNAL (objectDropped ()), this, SLOT (onFixedImageDropped ()));
-    connect (d->processDropSiteMoving, SIGNAL (objectDropped ()), this, SLOT (onMovingImageDropped ()));
     
     // /////////////////////////////////////////////////////////////////
     // Setup
     // /////////////////////////////////////////////////////////////////
 
-    medToolBoxTab *tab = new medToolBoxTab(this);
-    tab->addTab(processPage, tr("Process"));
-    tab->addTab(layoutPage, tr("Layout"));
+    
+    // ---
+    addWidget(layoutSection);
+    addWidget(d->toolboxes);
+    addWidget(d->saveImageButton);
+    addWidget(d->saveTransButton);
+    
 
     this->setTitle(tr("Registration"));
-    this->setTabWidget(tab);
-
     d->customToolBox = NULL;
 
     //Connect Message Controller:
@@ -217,39 +196,39 @@ dtkAbstractDataImage *medToolBoxRegistration::movingData(void)
     return d->movingData;
 }
 
-void medToolBoxRegistration::onBlendModeSet(bool value)
-{
-    if (value)
-        if (d->fuseView)
-            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-                interactor->setProperty("FusionStyle", "blend");
-                d->fuseView->update();
-            }
-}
+//void medToolBoxRegistration::onBlendModeSet(bool value)
+//{
+//    if (value)
+//        if (d->fuseView)
+//            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+//                interactor->setProperty("FusionStyle", "blend");
+//                d->fuseView->update();
+//            }
+//}
 
-void medToolBoxRegistration::onCheckerboardModeSet(bool value)
-{
-    if (value)
-        if (d->fuseView)
-            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-                interactor->setProperty("FusionStyle", "checkerboard");
-                d->fuseView->update();
-            }
-}
+//void medToolBoxRegistration::onCheckerboardModeSet(bool value)
+//{
+//    if (value)
+//        if (d->fuseView)
+//            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+//                interactor->setProperty("FusionStyle", "checkerboard");
+//                d->fuseView->update();
+//            }
+//}
 
-void medToolBoxRegistration::onFixedImageDropped (void)
+void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 {
-    medDataIndex index = d->processDropSiteFixed->index();
   
     if (!index.isValid())
         return;
 
-    d->fixedData = dynamic_cast<dtkAbstractDataImage*>( medDataManager::instance()->data(index) );
+    d->fixedData = dynamic_cast<dtkAbstractDataImage*>( medDataManager::instance()->data(index).data() );
   
     if (!d->fixedData)
         return;
 
-    d->fixedView = medViewManager::instance()->views(index).first();
+    d->fixedView = dynamic_cast<medAbstractView*>
+                   (medViewManager::instance()->views(index).first());
 
     if(!d->fixedView) {
         qDebug() << "Unable to retrieve fixed view";
@@ -258,49 +237,69 @@ void medToolBoxRegistration::onFixedImageDropped (void)
 
 
     if (d->fuseView)
-        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-            if (d->movingData) {
-                interactor->setData(d->fixedData,   0);
-                interactor->setData(d->movingData,  1);
-                d->fuseView->reset();
-                d->fuseView->update();
-            }
+    {
+        if (d->movingView && d->fuseView->layerCount()==1)
+        {
+            //only the moving view has been set: shift it to layer 1
+            d->fuseView->setData(d->fixedData,0);
+            d->fuseView->setData(d->movingData,1);
         }
+        else
+        {
+            //either both views are set, or only the fixed view
+            d->fuseView->setData(d->fixedData,0);
+        }
+        d->fuseView->reset();
+        d->fuseView->update();
+    }
 }
 
-void medToolBoxRegistration::onMovingImageDropped (void)
+void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
 {
-    medDataIndex index = d->processDropSiteMoving->index();
   
     if (!index.isValid())
         return;
 
-    d->movingData = dynamic_cast<dtkAbstractDataImage*>(medDataManager::instance()->data(index));
+    d->movingData = dynamic_cast<dtkAbstractDataImage*>(medDataManager::instance()->data(index).data());
   
     if (!d->movingData)
         return;
 
-    d->movingView = medViewManager::instance()->views(d->processDropSiteMoving->index()).first();
+    d->movingView = dynamic_cast<medAbstractView*>
+                    (medViewManager::instance()->views
+                     (index).first());
 
     if(!d->movingView) {
         qDebug() << "Unable to retrieve moving view";
 	return;
     }
-
+    
     if (d->fixedView) {
         d->movingView->update();
     }
 
-    if (d->fuseView) {
-        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-            if (d->fixedData) {
-                interactor->setData(d->fixedData,   0);
-                interactor->setData(d->movingData,  1);
-                d->fuseView->reset();
-                d->fuseView->update();
-            }
-        }
+//    if (d->fuseView) {
+//        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
+//            if (d->fixedData) {
+//                interactor->setData(d->fixedData,   0);
+//                interactor->setData(d->movingData,  1);
+//                d->fuseView->reset();
+//                d->fuseView->update();
+//            }
+//        }
+//    }
+    if (d->fixedView)
+    {
+        //already one layer present
+        d->fuseView->setData(d->movingData,1);
     }
+    else
+    {
+        //only the moving view is set
+        d->fuseView->setData(d->movingData,0);
+    }
+    //d->fuseView->reset();
+    d->fuseView->update();
 }
 
 void medToolBoxRegistration::onToolBoxChosen(const QString& id)
@@ -320,7 +319,11 @@ void medToolBoxRegistration::onToolBoxChosen(const QString& id)
         delete d->customToolBox;
     }
     d->customToolBox = toolbox;
+    toolbox->show();
     emit addToolBox(toolbox);
+    
+    connect (toolbox, SIGNAL (success()), this, SLOT (onSuccess()));
+    connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
 }
 
 void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
@@ -328,22 +331,19 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
     if (!view)
         return;
     
-    d->fuseView = view;
-    d->fuseView->enableInteractor("v3dViewFuseInteractor");
-    dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor");
+    d->fuseView = dynamic_cast <medAbstractView*> (view);
+//    d->fuseView->enableInteractor("v3dViewFuseInteractor");
+//    dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor");
 
-    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
-            SLOT(onBlendAlphaValueSet(int)));
-    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
-            SLOT(onCheckerboardDivisionCountValueSet(int)));
-
-
+//    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
+//            SLOT(onBlendAlphaValueSet(int)));
+//    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
+//            SLOT(onCheckerboardDivisionCountValueSet(int)));
 }
 
 void medToolBoxRegistration::clear(void)
 {
-    d->processDropSiteFixed->clear();
-    d->processDropSiteMoving->clear();
+    
     //maybe clear the customtoolbox?
     if (d->customToolBox)
         d->customToolBox->clear();
@@ -409,4 +409,21 @@ void medToolBoxRegistration::onSaveTrans()
                                QDir::homePath(),
                                tr("Transformation (*.txt)"));
     qDebug() << fileName;
+}
+
+
+void medToolBoxRegistration::onSuccess()
+{
+    dtkAbstractData *output = d->process->output();
+
+	if(output) 
+    {
+	    d->movingView->setData(output,0);
+	    d->fixedView->unlink (d->movingView);
+	    d->fixedView->link (d->movingView);
+	    d->movingView->update();
+	    d->fuseView->setData(output,1);
+        d->fuseView->update();
+
+    }
 }
