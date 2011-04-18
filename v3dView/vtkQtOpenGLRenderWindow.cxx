@@ -14,95 +14,23 @@ PURPOSE.  See the above copyright notice for more information.
 =========================================================================*/
 #include "vtkQtOpenGLRenderWindow.h"
 
-#include <QGraphicsView>
 #include <QApplication>
 #include <QCursor>
 #include <QDesktopWidget>
-
-#ifdef VTK_USE_OGLR
-    #include <QX11Info>
-#endif
-#include <QVTKWidget.h>
+#include <QGraphicsView>
 #include <QVtkGraphicsView.h>
+#include <QVTKWidget.h>
 
-#include "vtkObjectFactory.h"
+#include <vtkgl.h>
 #include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkObjectFactory.h>
 #include <vtkOpenGLRenderer.h>
-#include "vtkRendererCollection.h"
-#include "vtkSmartPointer.h"
-
-#include "vtkgl.h"
-
-#include <sstream>
+#include <vtkRendererCollection.h>
+#include <vtkSmartPointer.h>
 
 vtkCxxRevisionMacro(vtkQtOpenGLRenderWindow, "0");
 vtkStandardNewMacro(vtkQtOpenGLRenderWindow);
 
-namespace {
-    //-----------------------------------------------------------------------------
-    // Return a string matching the OpenGL errorCode. The returned string will
-    // not be null.
-    //-----------------------------------------------------------------------------
-    const char * OpenGLErrorMessage( unsigned int errorCode )
-    {
-        const char * result = NULL;
-        switch ( static_cast<GLenum>( errorCode ) )
-        {
-        case GL_NO_ERROR:
-            result = "GL_NO_ERROR : No error";
-            break;
-        case GL_INVALID_ENUM:
-            result = "GL_INVALID_ENUM : Invalid enum";
-            break;
-        case GL_INVALID_VALUE:
-            result = "GL_INVALID_VALUE : Invalid value";
-            break;
-        case GL_INVALID_OPERATION:
-            result = "GL_INVALID_OPERATION : Invalid operation";
-            break;
-        case GL_STACK_OVERFLOW:
-            result = "GL_STACK_OVERFLOW : stack overflow";
-            break;
-        case GL_STACK_UNDERFLOW:
-            result = "GL_STACK_UNDERFLOW : stack underflow";
-            break;
-        case GL_OUT_OF_MEMORY:
-            result = "GL_OUT_OF_MEMORY : out of memory";
-            break;
-        case vtkgl::TABLE_TOO_LARGE:
-            // GL_ARB_imaging
-            result = "vtkgl::TABLE_TOO_LARGE : Table too large";
-            break;
-        case vtkgl::INVALID_FRAMEBUFFER_OPERATION_EXT:
-            // GL_EXT_framebuffer_object, 310
-            result = "vtkgl::INVALID_FRAMEBUFFER_OPERATION_EXT : invalid framebuffer operation ext";
-            break;
-        case vtkgl::TEXTURE_TOO_LARGE_EXT:
-            // GL_EXT_texture
-            result = "vtkgl::TEXTURE_TOO_LARGE_EXT : Texture too large";
-            break;
-        default:
-            result = "unknown error";
-            break;
-        }
-        return result;
-    }
-
-    void PrintOpenGLError( const char * headerMessage )
-    {
-        GLenum errorCode = glGetError();
-        if ( errorCode != GL_NO_ERROR )
-        {
-            if ( headerMessage )
-                std::cerr << headerMessage;
-            std::cerr << ": ERROR (x" << std::hex << errorCode << ")  " << std::dec
-                << OpenGLErrorMessage( static_cast<unsigned int>( errorCode ) )
-                // << " : " << (const char *)gluErrorString(errorCode)
-                << std::endl;
-        }
-    }
-
-}
 vtkQtOpenGLRenderWindow::vtkQtOpenGLRenderWindow() :
    m_qtWidget (NULL),
    m_initiatedRepaint(false),
@@ -143,8 +71,6 @@ void vtkQtOpenGLRenderWindow::MakeCurrent()
         && this->m_qtWidget
         && this->m_qtWidget->isCurrent() ) {
 
-        PrintOpenGLError("vtkQtOpenGLRenderWindow::MakeCurrent0.1()");
-
         // To avoid recursion, need to set m_initializedOpenGl before calling OpenGlInit.
         this->InitializedOpenGl = true;
 
@@ -158,14 +84,13 @@ void vtkQtOpenGLRenderWindow::MakeCurrent()
             ren->SetRenderWindow(this);
         }
 
-        std::cerr << "OpenGLInit" << std::endl;
-        PrintOpenGLError("vtkQtOpenGLRenderWindow::MakeCurrent0.2()");
         this->OpenGLInit();
-        PrintOpenGLError("vtkQtOpenGLRenderWindow::MakeCurrent0.3()");
     }
-    if ( this->IsCurrent() ) {
-        PrintOpenGLError("vtkQtOpenGLRenderWindow::MakeCurrent1()");
-    }
+
+    // Consider enclosing this in ifdef _DEBUG.
+    // Note that it has a side-effect of resetting the OpenGL error status though.
+    if (this->IsCurrent())
+        this->CheckAndPrintGraphicError( __FILE__, __LINE__ );
 }
 
 bool vtkQtOpenGLRenderWindow::IsCurrent()
@@ -179,7 +104,6 @@ bool vtkQtOpenGLRenderWindow::IsCurrent()
 int vtkQtOpenGLRenderWindow::IsDirect()
 {
     if ( this->m_qtWidget ) {
-        int scResult = Superclass::IsDirect();
         return 1;
     }
     return 0;
@@ -187,7 +111,7 @@ int vtkQtOpenGLRenderWindow::IsDirect()
 
 void vtkQtOpenGLRenderWindow::PrintSelf(ostream& os, vtkIndent indent)
 {
-    vtkQtOpenGLRenderWindowBase::PrintSelf( os, indent );
+    Superclass::PrintSelf( os, indent );
 }
 
 void vtkQtOpenGLRenderWindow::Initialize(void)
@@ -233,8 +157,8 @@ void vtkQtOpenGLRenderWindow::Render()
     {
       if ( m_qtWidget->isProcessingPaintEvent() )
       {
-          this->MakeCurrent();
-        vtkQtOpenGLRenderWindowBase::Render ();
+        this->MakeCurrent();
+        Superclass::Render ();
       }
       else
       {
@@ -249,7 +173,7 @@ void vtkQtOpenGLRenderWindow::Render()
 // The widget tells us to paint.
 void vtkQtOpenGLRenderWindow::NativePaint ()
 {
-    vtkQtOpenGLRenderWindowBase::Render ();
+    Superclass::Render ();
 }
 
 void vtkQtOpenGLRenderWindow::SetQtWidget( QVtkGraphicsView * w)
@@ -260,7 +184,11 @@ void vtkQtOpenGLRenderWindow::SetQtWidget( QVtkGraphicsView * w)
     this->m_qtWidget = w;
     if ( m_qtWidget ) {
         this->Initialize();
-        this->m_qtWidget->setCursor( GetCurrentQtCursor() );
+        if ( this->IsCursorHidden ) {
+            this->m_qtWidget->setCursor( Qt::BlankCursor );
+        } else {
+            this->m_qtWidget->setCursor( GetCurrentQtCursor() );
+        }
         this->SetMapped( 1 );
     } else {
         this->SetMapped( 0 );
@@ -368,7 +296,6 @@ void vtkQtOpenGLRenderWindow::Start()
 {
     // set the current window
     this->MakeCurrent();
-    PrintOpenGLError("vtkQtOpenGLRenderWindow::Start()");
 }
 
 void vtkQtOpenGLRenderWindow::SetDisplayId( void * )
@@ -465,4 +392,32 @@ int     * vtkQtOpenGLRenderWindow::GetScreenSize()
     this->ScreenSize[1] = screenGeometry.height();;
 
     return this->ScreenSize;
+}
+
+void vtkQtOpenGLRenderWindow::CheckAndPrintGraphicError(
+  const char * headerMessage , int line)
+{
+    if ( !this->IsCurrent() ) {
+        if ( headerMessage )
+            std::cerr << headerMessage;
+        if ( line >= 0 )
+            std::cerr << "(" << line << ") :";
+        std::cerr << "The vtkQtOpenGLRenderWindow does not have "
+          "the current OpenGL Context" << std::endl;
+        return;
+    }
+
+    // Calls glGetError and sets this->LastGraphicError.
+    this->CheckGraphicError();
+
+    if ( this->HasGraphicError() )
+    {
+        if ( headerMessage )
+            std::cerr << headerMessage;
+        if ( line >= 0 )
+            std::cerr << "(" << line << ") :";
+        std::cerr << ": ERROR (x" << std::hex << this->LastGraphicError
+                  << ")  " << std::dec << this->GetLastGraphicErrorString()
+                  << std::endl;
+    }
 }

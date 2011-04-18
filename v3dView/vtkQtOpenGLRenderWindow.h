@@ -28,34 +28,16 @@ PURPOSE.  See the above copyright notice for more information.
 #include "vtkToolkits.h"        // defines VTK_USE_*
 
 class QVtkGraphicsView;
-#if 1
-    #include <vtkOpenGLRenderWindow.h>
-    typedef vtkOpenGLRenderWindow vtkQtOpenGLRenderWindowBase;
-#elif defined( _WIN32 )
-    #include <vtkWin32OpenGLRenderWindow.h>
-    typedef vtkWin32OpenGLRenderWindow vtkQtOpenGLRenderWindowBase;
-#elif defined( VTK_USE_OGLR )
-    #include <vtkXOpenGLRenderWindow.h>
-    typedef vtkXOpenGLRenderWindow      vtkQtOpenGLRenderWindowBase;
-#elif defined (VTK_USE_CARBON)
-    #include <vtkCarbonRenderWindow.h>
-    typedef vtkCarbonRenderWindow       vtkQtOpenGLRenderWindowBase;
-#elif defined (VTK_USE_COCOA)
-    #include <vtkCocoaRenderWindow.h>
-    typedef vtkCocoaRenderWindow        vtkQtOpenGLRenderWindowBase;
-#else
-    // VTK_USE_OSMESA and others
-    #error Not yet implemented for your system.
-#endif
+#include <vtkOpenGLRenderWindow.h>
 
 #include <map>
 
 
-class vtkQtOpenGLRenderWindow : public vtkQtOpenGLRenderWindowBase
+class vtkQtOpenGLRenderWindow : public vtkOpenGLRenderWindow
 {
 public:
   static vtkQtOpenGLRenderWindow *New();
-  vtkTypeRevisionMacro(vtkQtOpenGLRenderWindow,vtkQtOpenGLRenderWindowBase);
+  vtkTypeRevisionMacro(vtkQtOpenGLRenderWindow,vtkOpenGLRenderWindow);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -112,6 +94,15 @@ public:
   const QCursor & GetQtCursorForVtkCursorId(int shape) const;
 
   bool IsInitiatedRepaint() const { return m_initiatedRepaint; }
+
+  /** Test the current OpenGL state and print an error if it is not GL_NO_ERROR.
+   * \param headerMessage - optional string to be printed with the error
+   * \param line          - optional line number
+   * You may want to use
+   * TestAndPrintOpenGLError( __FILE__ , __LINE__ )
+   * \sa vtkOpenGLRenderWindow::LastGraphicError, vtkOpenGLRenderWindow::GetLastGraphicErrorString
+    */
+  void CheckAndPrintGraphicError( const char * headerMessage = NULL, int line = -1);
 
 protected:
   vtkQtOpenGLRenderWindow();
