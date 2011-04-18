@@ -27,8 +27,7 @@ public:
     QPushButton * switchLayersButton;
     QList<medMeshAbstractViewInteractor*> interactors;
     medAbstractView *view;
-
-
+    
     bool isMesh;
     int currentInteractor;
 
@@ -44,7 +43,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->textLayer0 = tr("Switch to layer 0 only");
     d->textLayer1 = tr("Switch to layer 1 only");
     d->isMesh = false;
-
+    d->currentInteractor = 0;
     d->lutList << "Default" << "Black & White" << "Black & White Inversed" << "Spectrum" << "Hot Metal" << "Hot Green"
         << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
         << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
@@ -105,31 +104,31 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
 void
     medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
-    qDebug()<<"medViewerToolBoxViewProperties::updateBOK";
+
     if ((d->view) && (d->view != dynamic_cast<medAbstractView *> (view)) )
     {
-        QObject::disconnect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)));
+        QObject::disconnect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)));
         QObject::disconnect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()));
 
         this->onViewClosed();
     }
-    
-    
-    
+
     if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view)) {
         if ((d->view == dynamic_cast<medAbstractView *> (view)))
             return;
         d->view = medView;
-        if(d->view->meshLayerCount()!=0)
-            if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
-            {   
-                d->currentInteractor = d->interactors.indexOf(interactor);
-            
-            }
-        for (int i = 0; i < d->view->layerCount(); i++)
+        
+        for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
+            QString layerItemString = QString::number(0);
+            if(d->view->layerCount() > 1 || d->view->meshLayerCount() > 0 )
+                if(d->view->dataInList(i)->description().contains("vtkDataMesh"))
+                    layerItemString = "Mesh " + QString::number(meshNumber++);
+                else 
+                    layerItemString = QString::number(imageNumber++);
+
             QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
-            layerItem->setText(0, QString::number(i));
+            layerItem->setText(0, layerItemString);
             layerItem->setIcon(0,QIcon(":icons/layer.png"));
 
             QTreeWidgetItem * visibleItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
@@ -178,116 +177,56 @@ void
             d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
             lutBox->setCurrentIndex(0);
 
-            // here we should not change the view settings but rather populate
-            // the GUI with the current view settings
-            /*
-            d->view->setCurrentLayer(i);
-            d->view->setProperty("LookupTable", "Default");
-            d->view->update();
-            */
+
+            if (layerItemString.contains("Mesh"))
+            {
+                QTreeWidgetItem * edgeVisibleItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
+                edgeVisibleItem->setText(1, "Edge Visible");
+                QCheckBox * edgeVisibleBox = new QCheckBox();
+                edgeVisibleBox->setChecked(true);
+                d->propertiesTree->setItemWidget(edgeVisibleItem, 2, edgeVisibleBox);
+                QObject::connect(edgeVisibleBox, SIGNAL(stateChanged(int)), this, SLOT(onEdgeVisibilitySet(int)));
+
+                QTreeWidgetItem * renderingItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
+                renderingItem->setText(1, "Rendering");
+                QComboBox * renderingBox = new QComboBox();
+                renderingBox->setFocusPolicy(Qt::NoFocus);
+                renderingBox->addItem("Default");
+                renderingBox->addItem("Wire frame");
+                renderingBox->addItem("Surface");
+                renderingBox->addItem("Points");
+
+                d->propertiesTree->setItemWidget(renderingItem, 2, renderingBox);
+                renderingBox->setCurrentIndex(0);
+                lutItem->setHidden(true);
+                QObject::connect(renderingBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRenderingChanged(int)));
+            }
 
             QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
 
             d->propertiesTree->collapseAll();
         }
 
-        for (int i = 0; i < d->view->meshLayerCount(); i++)
-        {
-            QString layerItemString = QString::number(i);
-            layerItemString = "Mesh " + QString::number(i);
-
-            QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
-            layerItem->setText(0, layerItemString);
-            layerItem->setIcon(0,QIcon(":icons/layer.png"));
-
-            QTreeWidgetItem * visibleItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
-            visibleItem->setText(1, "Visible");
-            QCheckBox * visibleBox = new QCheckBox();
-            visibleBox->setChecked(true);
-            d->propertiesTree->setItemWidget(visibleItem, 2, visibleBox);
-            QObject::connect(visibleBox, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
-
-
-            QTreeWidgetItem * opacityItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
-            opacityItem->setText(1, "Opacity");
-            QSlider * opacityBox = new QSlider(Qt::Horizontal);
-            opacityBox->setRange(0,100);
-            opacityBox->setValue(d->view->opacity(i) * 100);
-            d->propertiesTree->setItemWidget(opacityItem, 2, opacityBox);
-            QObject::connect(opacityBox, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
-
-            QTreeWidgetItem * lutItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
-            lutItem->setText(1, "LUT");
-            QComboBox * lutBox = new QComboBox();
-            lutBox->setFocusPolicy(Qt::NoFocus);
-            lutBox->addItem("Default");
-            lutBox->addItem("Black & White");
-            lutBox->addItem("Black & White Inversed");
-            lutBox->addItem("Spectrum");
-            lutBox->addItem("Hot Metal");
-            lutBox->addItem("Hot Green");
-            lutBox->addItem("Hot Iron");
-            lutBox->addItem("GE");
-            lutBox->addItem("Flow");
-            lutBox->addItem("Loni");
-            lutBox->addItem("Loni 2");
-            lutBox->addItem("Asymmetry");
-            lutBox->addItem("P-Value");
-            lutBox->addItem("Red Black Alpha");
-            lutBox->addItem("Green Black Alpha");
-            lutBox->addItem("Blue Black Alpha");
-            lutBox->addItem("Muscles & Bones");
-            lutBox->addItem("Bones");
-            lutBox->addItem("Red Vessels");
-            lutBox->addItem("Cardiac");
-            lutBox->addItem("Gray Rainbow");
-            lutBox->addItem("Stern");
-            lutBox->addItem("Black Body");
-
-            d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
-            lutBox->setCurrentIndex(0);
-            QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onMeshLUTChanged(int)));
-            QTreeWidgetItem * edgeVisibleItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
-            edgeVisibleItem->setText(1, "Edge Visible");
-            QCheckBox * edgeVisibleBox = new QCheckBox();
-            edgeVisibleBox->setChecked(true);
-            d->propertiesTree->setItemWidget(edgeVisibleItem, 2, edgeVisibleBox);
-            QObject::connect(edgeVisibleBox, SIGNAL(stateChanged(int)), this, SLOT(onEdgeVisibilitySet(int)));
-
-            QTreeWidgetItem * renderingItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
-            renderingItem->setText(1, "Rendering");
-            QComboBox * renderingBox = new QComboBox();
-            renderingBox->setFocusPolicy(Qt::NoFocus);
-            renderingBox->addItem("Default");
-            renderingBox->addItem("Wire frame");
-            renderingBox->addItem("Surface");
-            renderingBox->addItem("Points");
-
-            d->propertiesTree->setItemWidget(renderingItem, 2, renderingBox);
-            renderingBox->setCurrentIndex(0);
-            lutItem->setHidden(true);
-            QObject::connect(renderingBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRenderingChanged(int)));
-
-        }
-        // QObject::connect(d->view, SIGNAL(dataAdded(int)), this, SLOT(onDataAdded(int)), Qt::UniqueConnection);
-        // QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*)), this, SLOT(onDataAdded(dtkAbstractData*)), Qt::UniqueConnection);
         QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)), Qt::UniqueConnection);
         QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
 
         raiseSlider(d->view->layerCount() == 2);
 
+        if(d->view->meshLayerCount()!=0)
+            if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
+            {   
+                d->currentInteractor = d->interactors.indexOf(interactor);
+            }
     }
 }
 void
     medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data)
 {
-    if(data->description()=="vtkDataMesh")
-        qDebug()<<"vtkDataMesh";
+
 }
 void medViewerToolBoxViewProperties::onDataAdded( int layer)
 {
 
-    qDebug()<<"vtkDataMesh"<<"layer";
 }
 void
     medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data, int layer)
@@ -300,9 +239,10 @@ void
     //        const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
     //    const QString seriesName = data->name();
 
+    d->view->addDataInList(data);
+
     if (d->view->layerCount() == 1 && !data->description().contains("vtkDataMesh"))
         return;
-    
 
     QString layerItemString = QString::number(layer);
 
@@ -314,10 +254,7 @@ void
                 d->interactors.append (interactor);
             }
             layerItemString = "Mesh " + QString::number(d->view->meshLayerCount());
-            qDebug()<<"d->currentMeshLayer"<<d->view->currentMeshLayer();
             d->view->setMeshLayerCount(d->view->meshLayerCount()+1);
-
-            qDebug()<<"d->meshLayerCount"<<d->view->meshLayerCount();
     }
 
     QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
@@ -330,7 +267,6 @@ void
     visibleBox->setChecked(true);
     d->propertiesTree->setItemWidget(visibleItem, 2, visibleBox);
     QObject::connect(visibleBox, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
-
 
     QTreeWidgetItem * opacityItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
     opacityItem->setText(1, "Opacity");
