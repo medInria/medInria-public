@@ -252,9 +252,12 @@ void medDatabaseImporter::run(void)
 	else if (description == "vtkDataMesh4D"){
 	  imageFileName = imageFileName + ".v4d";
       qDebug()<<"vtkDataMesh4D";}
+	else if (description.contains ("vistal")){
+	  imageFileName = imageFileName + ".dim";
+    qDebug()<<"Vistal Image";}
 	else if (description.contains ("Image")){
 	  imageFileName = imageFileName + ".mha";
-      qDebug()<<"Image";}
+    qDebug()<<"Image";}
 	else
 	{
 	  emit showError(this, tr ("Could not save data file (unhandled type: ") + description,5000);
