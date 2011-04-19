@@ -21,6 +21,8 @@ medAbstractDataCollection::medAbstractDataCollection(medAbstractDataCollection *
 
 medAbstractDataCollection::~medAbstractDataCollection()
 {
+    foreach (dtkAbstractData* data, d->dataVector)
+        delete data;
     d->dataVector.clear();
 
     delete d;
