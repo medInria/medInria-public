@@ -22,7 +22,10 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageActor.h>
 #include <vtkCommand.h>
 #include <vtkInteractorStyleImage.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
+#include <vtkImageViewCornerAnnotation.h>
+#include <vtkImageViewCollection.h>
 #include <vtkCamera.h>
 #include <vtksys/SystemTools.hxx>
 #include <vtkMatrix4x4.h>
@@ -33,6 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkProperty.h>
 #include <vtkErrorCode.h>
 #include "vtkDataSetReader.h"
+#include "vtkPointSet.h"
 #include "vtkUnstructuredGridReader.h"
 #include "vtkTensorVisuManager.h"
 
@@ -170,13 +174,26 @@ public:
 	TensorGlyph->SetGlyphScale (newscale);
 	View->Render();
       }
-      
+ 
+      if (rwi->GetKeyCode() == '/')
+      {
+	int newresolution = TensorGlyph->GetGlyphResolution() + 1;
+	TensorGlyph->SetGlyphResolution (newresolution);
+	View->Render();
+      }
+      if (rwi->GetKeyCode() == '*')
+      {
+	int newresolution = TensorGlyph->GetGlyphResolution() - 1;
+	TensorGlyph->SetGlyphResolution (newresolution);
+	View->Render();
+      }
+           
 	
     }
     
   }
 
-  vtkViewImage* View;
+  vtkImageView* View;
   vtkTensorVisuManager* TensorGlyph;
   vtkMetaDataSetSequence* Sequence;
   vtkDataManager* Manager;
@@ -197,7 +214,7 @@ public:
 int main (int argc, char* argv[])
 {
 
-  int do_tensor_sequence = 1;
+  int do_tensor_sequence = 0;
   
   if (argc < 2)
   {
@@ -208,9 +225,11 @@ int main (int argc, char* argv[])
     exit (-1);
   }
 
+  int position[2] = {0, 0};  
+  vtkImageViewCollection* pool = vtkImageViewCollection::New();
   vtkDataManager* manager = vtkDataManager::New();
 
-  vtkViewImage3D* view3d = vtkViewImage3D::New();
+  vtkImageView3D* view3d = vtkImageView3D::New();
   vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
   vtkRenderWindow* rwin = vtkRenderWindow::New();
   vtkRenderer* renderer = vtkRenderer::New();
@@ -218,6 +237,20 @@ int main (int argc, char* argv[])
   rwin->AddRenderer (renderer);
   view3d->SetRenderWindow ( rwin );
   view3d->SetRenderer ( renderer );
+  double color[3]={0.9,0.9,0.9};
+  view3d->SetBackground (color);
+  position[0] = 400; position[1] = 420;
+  view3d->SetPosition (position);
+  view3d->SetShowActorX (0);
+  view3d->SetShowActorY (0);
+  view3d->SetShowActorZ (0);
+
+  
+  vtkTensorVisuManager* tensormanager = vtkTensorVisuManager::New();
+  vtkMyCommand* command = vtkMyCommand::New();
+  command->View = view3d;
+  command->TensorGlyph = tensormanager;
+  view3d->GetInteractor()->AddObserver(vtkCommand::CharEvent, command);
   
   for (int i=0; i<argc - 2; i++)
   {
@@ -241,25 +274,55 @@ int main (int argc, char* argv[])
 
       matrix = metaimage->GetOrientationMatrix();
 
-      view3d->SetImage (image);
+      
+      vtkImageView2D* view = vtkImageView2D::New();
+      vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
+      vtkRenderWindow* rwin = vtkRenderWindow::New();
+      vtkRenderer* ren = vtkRenderer::New();
+      position[0] = 0; position[1] = 0;
+      iren->SetRenderWindow(rwin);
+      rwin->AddRenderer (ren);
+      
+      view->SetRenderWindow(rwin);
+      view->SetRenderer(ren);
+      view->SetPosition (position);
+      view->SetInput (image);
+      view->SetOrientationMatrix(matrix);
+      view->GetCornerAnnotation()->SetText (0, filename.c_str());
+
+      view3d->AddExtraPlane (view->GetImageActor());
+
+      pool->AddItem (view);
     }
     else
     {
       vtkProperty* prop = vtkProperty::SafeDownCast( metadataset->GetProperty() );
       prop->SetColor (0.3,0.3,0.3);
-      prop->SetOpacity (0.15);
-      view3d->AddDataSet( metadataset->GetDataSet(), prop );
+      if (vtkPointSet::SafeDownCast (metadataset->GetDataSet())->GetNumberOfPoints() > 5000)
+	prop->SetOpacity (0.15);
+      else
+	prop->SetOpacity (0.50);
+	
+      pool->SyncAddDataSet( vtkPointSet::SafeDownCast (metadataset->GetDataSet()), prop );
+      metadataset->SetScalarVisibility(1);
     }
 
   }
 
+  
+  vtkImageView* firstview = pool->GetItem (0);
+
+  if (firstview)
+  {
+    view3d->SetInput (firstview->GetInput());
+    view3d->SetOrientationMatrix(firstview->GetOrientationMatrix());
+  }
+
+  pool->AddItem (view3d);
+
   std::string filename = argv[argc - 1];
 
   vtkUnstructuredGrid* mytensors = 0;
-  vtkTensorVisuManager* tensormanager = vtkTensorVisuManager::New();
-  vtkMyCommand* command = vtkMyCommand::New();
-  command->View = view3d;
-  command->TensorGlyph = tensormanager;
   
   if (do_tensor_sequence)
   {
@@ -268,10 +331,8 @@ int main (int argc, char* argv[])
     mytensors = vtkUnstructuredGrid::SafeDownCast (sequence->GetDataSet());
     tensormanager->SetGlyphScale (5.0);
     sequence->SetSequenceDuration (1.0);
-    //std::cout<<"sequence : "<<(*sequence)<<std::endl;
     command->Sequence = sequence;
     command->Manager = manager;
-
     manager->AddMetaDataSet (sequence);
   }
   else
@@ -280,23 +341,32 @@ int main (int argc, char* argv[])
     reader->SetFileName (filename.c_str());
     reader->Update();
     mytensors = reader->GetOutput();
-    tensormanager->SetGlyphScale (3.5);
+    tensormanager->SetGlyphScale (1);
+    tensormanager->SetGlyphResolution (14);
     tensormanager->SetGlyphShapeToArrow();
   }
-
-  
   
   tensormanager->SetInput (mytensors);
   
   view3d->GetRenderer()->AddViewProp (tensormanager->GetActor());
   view3d->GetRenderer()->Modified();
-  // int size[2] = {600, 600};
-  // view3d->SetSize (size);
-  // int vposition[2] = {400, 400 };
-  // view3d->SetPosition (vposition);  
-  view3d->GetRenderWindowInteractor()->AddObserver(vtkCommand::CharEvent, command);
 
-  view3d->GetRenderWindowInteractor()->Start();
+  pool->SyncReset();
+  pool->SyncSetShowAnnotations (1);
+  pool->SyncSetShowRulerWidget (0);
+  pool->SyncSetShowImageAxis (1);
+  pool->SetLinkColorWindowLevel (0);
+  
+  pool->SyncSetAnnotationStyle (vtkImageView2D::AnnotationStyle2);
+  pool->SyncSetWheelInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+  //pool->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeTime);
+  int size[2]={370, 370};
+  pool->SyncSetSize (size);
+  pool->SyncRender();
+  
+  // pool->SyncSetUseLookupTable (1);
+  
+  pool->SyncStart();
   
   view3d->Delete();
   manager->Delete();
