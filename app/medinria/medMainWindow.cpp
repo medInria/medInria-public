@@ -220,9 +220,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medButton *quitButton = new medButton(this,":/icons/quit.png", tr("Quit Application"));
     connect(quitButton, SIGNAL(triggered()), this, SLOT(onQuit()));
 
-    medSettingsButton *settingsButton = new medSettingsButton(this);
-
-    connect(settingsButton, SIGNAL(editSettings()), this, SLOT(onEditSettings()));
+    medButton *settingsButton = new medButton(this, ":/icons/settings.png", tr("Edit Application Settings"));
+    connect(settingsButton, SIGNAL(triggered()), this, SLOT(onEditSettings()));
 
     QComboBox *configurationSwitcher = new QComboBox(this);
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
