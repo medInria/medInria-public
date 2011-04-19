@@ -41,9 +41,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medFlicker.h
   medLayoutChooser.h
   medProgressionStack.h
-  medStatusQuitButton.h
-  medSettingsButton.h
   medPacsSelector.h
+  medButton.h  
   
   # general toolbox classes
   medToolBox.h
@@ -113,9 +112,8 @@ set(${PROJECT_NAME}_SOURCES
   medFlicker.cpp
   medLayoutChooser.cpp
   medProgressionStack.cpp
-  medStatusQuitButton.cpp
-  medSettingsButton.cpp
   medPacsSelector.cpp
+  medButton.cpp
   
   medToolBox.cpp
   medToolBoxBody.cpp

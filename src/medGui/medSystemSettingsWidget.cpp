@@ -36,7 +36,7 @@ medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) :
         medSettingsWidget(parent),
         d(new medSystemSettingsWidgetPrivate())
 {
-    setTabName("System");
+    setTabName(tr("System"));
     d->pluginsPathField = new QLineEdit(this);
     d->modulesPathField = new QLineEdit(this);
     d->scriptsPathField = new QLineEdit(this);

@@ -131,6 +131,10 @@ QLabel {
     font-size: 10px;
 }
 
+QLabel:disabled {
+    color: #000000;
+}
+
 /**
  * QTableWidget
  *
