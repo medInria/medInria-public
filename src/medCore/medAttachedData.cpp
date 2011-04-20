@@ -10,12 +10,6 @@ medAttachedData::medAttachedData( medAttachedData *parent /*= 0*/ ) : dtkAbstrac
 
 }
 
-medAttachedData::medAttachedData( const medAttachedData& data )
-{
-    this->setParent(data.parent());
-    dtkAbstractData::dtkAbstractData(data);
-}
-
 medAttachedData::~medAttachedData( void )
 {
     delete d;
