@@ -84,4 +84,5 @@ void medPacsDataSource::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
     medPacsMover* mover = new medPacsMover(cmdList);
     connect(mover, SIGNAL(import(QString)), this, SIGNAL(dataReceived(QString)));
     medJobManager::instance()->registerJobItem(mover, tr("Moving"));
+    QThreadPool::globalInstance()->start(mover);
 }

@@ -1,7 +1,8 @@
 #include "medAbstractDataCollection.h"
 
-//#include "dtkAbstractData.h"
 #include "medAttachedData.h"
+
+#include <dtkCore/dtkAbstractData.h>
 
 #include <QtCore/QVector>
 
@@ -13,7 +14,7 @@ public:
     QSharedPointer<medAttachedData>* attachedData;
 };
 
-medAbstractDataCollection::medAbstractDataCollection(medAbstractDataCollection *parent ): dtkAbstractData(parent), d(new medAbstractDataCollectionPrivate)
+medAbstractDataCollection::medAbstractDataCollection(medAbstractDataCollection *parent ): medAbstractData(parent), d(new medAbstractDataCollectionPrivate)
 {
     // init iterator
     first();

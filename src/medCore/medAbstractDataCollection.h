@@ -2,9 +2,9 @@
 #define medAbstractDataCollection_h__
 
 #include "medCoreExport.h"
-#include <dtkCore/dtkAbstractData.h>
+#include "medAbstractData.h"
 
-//class dtkAbstractData;
+class dtkAbstractData;
 class medAttachedData;
 class medAbstractDataCollectionPrivate;
 
@@ -12,12 +12,14 @@ class medAbstractDataCollectionPrivate;
  * Collection type of dtkAbstractData
  * using qVector internally
  */
-class MEDCORE_EXPORT medAbstractDataCollection : public dtkAbstractData
+class MEDCORE_EXPORT medAbstractDataCollection : public medAbstractData
 {
 
 public:
     medAbstractDataCollection(medAbstractDataCollection *parent = 0);
     ~medAbstractDataCollection();
+
+    // satisfying dtkAbstractData
 
     virtual QString description(void) const;
 
@@ -85,24 +87,6 @@ public:
 
 public:
     virtual bool casts(const QString& type);
-/*
-    virtual operator bool   (void);
-    virtual operator int    (void);
-    virtual operator float  (void);
-    virtual operator double (void);
-*/
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
