@@ -11,11 +11,6 @@ medAbstractData::medAbstractData( medAbstractData *parent /*= 0*/ ) : dtkAbstrac
     d->isTrueVolumetric = false;
 }
 
-medAbstractData::medAbstractData( const medAbstractData& data )
-{
-    this->setParent(data.parent());
-    dtkAbstractData::dtkAbstractData(data);
-}
 
 medAbstractData::~medAbstractData( void )
 {

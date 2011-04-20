@@ -16,7 +16,6 @@ class MEDCORE_EXPORT medAttachedData : public dtkAbstractData
 
 public:
     medAttachedData( medAttachedData *parent = 0);
-    medAttachedData(const medAttachedData& data);
     virtual ~medAttachedData(void);
 
 private:
