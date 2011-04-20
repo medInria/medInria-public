@@ -49,7 +49,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkTimerLog.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkMultiThreader.h>
-
+#include <vtkProp3DCollection.h>
 
 #include <vtkWindowToImageFilter.h>
 
@@ -60,6 +60,15 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkPNGWriter.h>
 
 #include "vtkCamera.h"
+
+#ifdef vtkINRIA3D_USE_ITK
+#include "itkTransformFileReader.h"
+#include "itkTransformFileWriter.h"
+#include "itkTranslationTransform.h"
+#include <itkMatrixOffsetTransformBase.h>
+#include <itkRigid3DTransform.h>
+#include "itkTransformFactory.h"
+#endif
 
 
 // -----------------------------------------------------------------------------
@@ -121,7 +130,6 @@ public:
 	    filter->Delete();
 	    writer->Delete();
 	  }
-	  
 	  
 	  TimerLog->StopTimer();
 	  double delay = TimerLog->GetElapsedTime();
@@ -187,16 +195,78 @@ public:
 	TensorGlyph->SetGlyphResolution (newresolution);
 	View->Render();
       }
+
+
+      
+#ifdef vtkINRIA3D_USE_ITK
+      if (rwi->GetKeyCode() == 's')
+      {
+	typedef itk::TransformFileWriter TransformWriterType;
+	typedef itk::MatrixOffsetTransformBase<double, 3, 3> TransformType;
+	
+	typedef TransformType::ParametersType ParametersType;
+	
+	TransformType::Pointer transform = TransformType::New();
+	ParametersType params;
+	params.SetSize (12);
+	TransformWriterType::Pointer writer = TransformWriterType::New();
+	writer->SetInput (transform);
+	
+	vtkMetaImageData* metaimage = this->MetaImage;
+	
+	std::cout<<"gathering orientation... "<<std::endl;
+	
+	vtkMatrix4x4* orientation = metaimage->GetOrientationMatrix();
+	vtkMatrix4x4* A = vtkMatrix4x4::New();
+	vtkMatrix4x4* inv_orientation = vtkMatrix4x4::New();
+	orientation->Invert (orientation, inv_orientation);
+	
+	vtkMatrix4x4* M = vtkMatrix4x4::New();
+	A->Zero();
+	
+	std::cout<<"gathering actor... "<<std::endl;
+	M->DeepCopy (vtkProp3D::SafeDownCast (this->View->GetExtraPlaneCollection()->GetItemAsObject (0))->GetUserMatrix());
+	
+	std::cout<<"estimating modification... "<<std::endl;
+	
+	vtkMatrix4x4::Multiply4x4 (M,inv_orientation, A);
+	A->Print (std::cout);
+	
+	// saving only the translation
+	unsigned int counter = 0;
+	// for (unsigned int j=0; j<3; j++)
+	//   params (counter++) = M->GetElement (j,3) - orientation1->GetElement (j,3);
+	for (unsigned int j=0; j<3; j++)
+	  for (unsigned int k=0; k<3; k++)
+	    params (counter++) = A->GetElement (j,k);
+	params (counter++) = A->GetElement (0, 3);
+	params (counter++) = A->GetElement (1, 3);
+	params (counter++) = A->GetElement (2, 3);
+	
+	std::cout<<"writing matrix... "<<std::endl;
+	transform->SetParameters (params);
+	std::ostringstream ostr;
+	ostr << metaimage->GetName()<<"-transform.mat";
+	std::cout<<"writing translation to : "<<ostr.str().c_str()<<std::endl;
+	
+	writer->SetFileName (ostr.str().c_str());
+	writer->Update ();
+
+	A->Delete();
+	M->Delete();	
+      }
+#endif
            
 	
     }
     
   }
 
-  vtkImageView* View;
+  vtkImageView3D* View;
   vtkTensorVisuManager* TensorGlyph;
   vtkMetaDataSetSequence* Sequence;
   vtkDataManager* Manager;
+  vtkMetaImageData* MetaImage;
   
  protected:
   vtkMyCommand()
@@ -244,7 +314,6 @@ int main (int argc, char* argv[])
   view3d->SetShowActorX (0);
   view3d->SetShowActorY (0);
   view3d->SetShowActorZ (0);
-
   
   vtkTensorVisuManager* tensormanager = vtkTensorVisuManager::New();
   vtkMyCommand* command = vtkMyCommand::New();
@@ -257,6 +326,7 @@ int main (int argc, char* argv[])
     std::string filename = argv[i+1];
 
     vtkMetaDataSet* metadataset = manager->ReadFile(filename.c_str());
+    // manager->AddMetaDataSet (metadataset);
 
     if ( metadataset->GetType() == vtkMetaDataSet::VTK_META_IMAGE_DATA )
     {
@@ -272,6 +342,8 @@ int main (int argc, char* argv[])
       else
         image = metaimage->GetImageData();
 
+      command->MetaImage = metaimage;
+      
       matrix = metaimage->GetOrientationMatrix();
 
       
