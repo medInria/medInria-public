@@ -29,6 +29,7 @@
 
 #include <dtkVr/dtkVrHeadRecognizer.h>
 #include <dtkVr/dtkVrGestureRecognizer.h>
+#include <dtkVr/dtkVrController.h>
 
 #include <medCore/medSettingsManager.h>
 #include <medCore/medDataIndex.h>
@@ -80,8 +81,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->splitter = new QSplitter(this);
     d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     d->splitter->setHandleWidth(2);
-    // -- User interface setup
 
+    // -- User interface setup
     d->stack = new QStackedWidget(this);
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
@@ -91,30 +92,25 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     
     // Setting up toolbox container
-
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setOrientation(Qt::Vertical);
     d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     d->toolbox_container->setMinimumWidth(320);
 
     // Setting up view container
-
     d->view_container = new QWidget(this);
-
     QVBoxLayout *view_container_layout = new QVBoxLayout(d->view_container);
     view_container_layout->setContentsMargins(0, 10, 0, 10);
     view_container_layout->addWidget(d->stack);
 
 
     // Setting up navigator container
-
     d->navigator_container = new QFrame(this);
     d->navigator_container->setObjectName("medNavigatorContainer");
     d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     d->navigator_container->setFixedWidth(186);
 
     // Setting up navigator
-    
     medDatabaseNavigatorController::instance()->setOrientation( Qt::Vertical );
     d->navigator = new medDatabaseNavigator(d->navigator_container);
 
@@ -142,10 +138,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->restoreSplitterSize(Qt::Horizontal);
 
     //action for transfer function
-             QAction * transFunAction =
-      new QAction("Toggle Tranfer Function Widget", this);
-    transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier +
-                Qt::Key_L);
+    QAction * transFunAction = new QAction("Toggle Tranfer Function Widget", this);
+    transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_L);
     transFunAction->setCheckable( true );
     transFunAction->setChecked( false );
     connect(transFunAction, SIGNAL(toggled(bool)),
@@ -153,8 +147,37 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     this->addAction(transFunAction);
     
-    connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)), this, SLOT(switchToPatient(const medDataIndex&)));
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator, SLOT (onPatientClicked (const medDataIndex&)));
+    connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)), 
+        this, SLOT(switchToPatient(const medDataIndex&)));
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator, 
+        SLOT (onPatientClicked (const medDataIndex&)));
+
+    int memusage = 0;
+    int leak = 0;
+
+/*
+//------------- MEM LEAK TEST BEGIN -----------------//
+
+    // creating one that loads the dll
+    medAbstractView* dummy = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
+    dtkAbstractViewFactory::instance()->destroy(dummy);
+
+    int beforeMem = medDataManager::getProcessMemoryUsage();
+    for (int i = 0; i < 20; i++)
+    {
+        memusage = medDataManager::getProcessMemoryUsage();
+        medAbstractView* view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
+        dtkAbstractViewFactory::instance()->destroy(view);
+        leak = medDataManager::getProcessMemoryUsage() - memusage;
+        qDebug() << "leaking: " << leak / 1000 << " Kbytes";
+    }
+    int afterMem = medDataManager::getProcessMemoryUsage();
+    qDebug() << "total leakage" << (afterMem-beforeMem)  / 1000 << " Kbytes"; 
+
+//--------------MEM LEAK TEST END ------------------//
+*/
+
+
 }
 
 medViewerArea::~medViewerArea(void)
@@ -446,9 +469,6 @@ void medViewerArea::removeToolBox(medToolBox *toolbox)
 {
     d->toolbox_container->removeToolBox(toolbox);
 }
-
-
-#include <dtkVr/dtkVrController.h>
 
 void medViewerArea::onViewFocused(dtkAbstractView *view)
 {

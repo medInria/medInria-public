@@ -26,6 +26,10 @@
 #include <QtCore>
 
 class medDatabaseImporterPrivate;
+class dtkAbstractData;
+class QFileInfo;
+class dtkAbstractDataReader;
+class dtkAbstractDataWriter;
 
 class MEDSQL_EXPORT medDatabaseImporter : public medJobItem
 {
@@ -37,7 +41,21 @@ public:
 
     void run(void);
 
+public slots:
+    void onCancel(QObject*);
+
 private:
+    
+    QString populateMissingMetadata( dtkAbstractData* dtkdata, const QFileInfo* fileInfo );
+
+    bool checkIfExists(dtkAbstractData* dtkdata, const QFileInfo * fileInfo );
+
+    void popupateDatabase( dtkAbstractData* dtkdata, const QFileInfo * seriesInfo);
+
+    dtkAbstractDataReader* getSuitableReader(QStringList filename);
+
+    dtkAbstractDataWriter* getSuitableWriter(QString filename, dtkAbstractData* dtkdata);
+
     medDatabaseImporterPrivate *d;
 
 };
