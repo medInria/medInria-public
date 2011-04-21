@@ -66,14 +66,14 @@ public:
   virtual void MakeCurrent(); 
 
   // Description:
-  // Is this render window using hardware acceleration? 0-false, 1-true
-  // Overrides vtkRenderWindow.
-  int IsDirect();
-
-  // Description:
   // Tells if this window is the current OpenGL context for the calling thread.
   // Overrides base class
   bool IsCurrent();
+
+  // Description:
+  // Is this render window using hardware acceleration? 0-false, 1-true
+  // Overrides vtkRenderWindow.
+  int IsDirect();
 
   /** Set the Qt Widget that this render window is paired with.*/
   void SetQtWidget( QVtkGraphicsView * w);
