@@ -9,7 +9,7 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 
-class medViewContainerStack;
+class medStackedViewContainers;
 class medViewerConfigurationDiffusionPrivate;
 
 class medViewerConfigurationDiffusion : public medViewerConfiguration
@@ -22,10 +22,9 @@ public:
 
     virtual QString description(void) const;
     
-    void setupViewContainerStack (medViewContainerStack *container);
+    void setupViewContainerStack ();
 
 public slots:
-    void patientChanged(int patientId);
     
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
@@ -35,7 +34,6 @@ public slots:
     void onLineModeSelected(bool);
     void onRibbonModeSelected(bool);
     void onTubeModeSelected(bool);
-    void onShowBundles (bool);
     void onTBDiffusionSuccess(void);
     void refreshInteractors (void);
 

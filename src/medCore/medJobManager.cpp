@@ -7,6 +7,7 @@ class medJobManagerPrivate
 {
 public:
     QList<medJobItem*> itemList;
+    bool m_IsActive;
 };
 
 medJobManager *medJobManager::instance(void)
@@ -19,6 +20,7 @@ medJobManager *medJobManager::instance(void)
 
 medJobManager::medJobManager( void ) : d(new medJobManagerPrivate)
 {
+    d->m_IsActive = true;
 }
 
 medJobManager::~medJobManager( void )
@@ -30,11 +32,14 @@ medJobManager::~medJobManager( void )
 
 bool medJobManager::registerJobItem( medJobItem* item, QString jobName)
 {
-    d->itemList.append(item);
-    connect(this, SIGNAL(cancel(QObject*)), item, SLOT(onCancel(QObject*)) );
-    emit jobRegistered(item, jobName);
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(item));
-    return true;
+    if(d->m_IsActive)
+    {
+        d->itemList.append(item);
+        connect(this, SIGNAL(cancel(QObject*)), item, SLOT(onCancel(QObject*)) );
+        emit jobRegistered(item, jobName);
+        return true;
+    }
+    return false;
 }
 
 bool medJobManager::unRegisterJobItem( medJobItem* item )
@@ -49,8 +54,10 @@ bool medJobManager::unRegisterJobItem( medJobItem* item )
     return false;
 }
 
-void medJobManager::dispatchGlobalCancelEvent()
+void medJobManager::dispatchGlobalCancelEvent(bool ignoreNewJobItems)
 {
+    if (ignoreNewJobItems)
+        d->m_IsActive = false;
     foreach( medJobItem* item, d->itemList )
         emit cancel( item );
 }

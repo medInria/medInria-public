@@ -13,9 +13,9 @@ import types
 ################################################################################
 
 if not "check_output" in subprocess.__dict__:
-   
+
     def check_output(*popenargs, **kwargs):
-       
+
         if 'stdout' in kwargs:
             raise ValueError('stdout argument not allowed, it will be overridden.')
         process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
@@ -51,11 +51,11 @@ def unzip(src, dest):
     zipo = zipfile.ZipFile(src, 'r')
     zipo.extract_all(dest)
 
-def reporthook(a,b,c): 
+def reporthook(a,b,c):
     # ',' at the end of the line is important!
     print "% 3.1f%% of %d bytes\r" % (min(100, float(a * b) / c * 100), c),
     #you can also use sys.stdout.write
-    #sys.stdout.write("\r% 3.1f%% of %d bytes" 
+    #sys.stdout.write("\r% 3.1f%% of %d bytes"
     #                 % (min(100, float(a * b) / c * 100), c)
     sys.stdout.flush()
 
@@ -177,7 +177,7 @@ def build(project,config,architecture="linux"):
     make_command = config.get("commands","make")
     if architecture == 'win' or architecture == 'win32' or architecture == 'win64':
         win32_config= config.get(project,"win32_configuration")
-        
+
         if not win32_config and config.get(project,"build_type")=="Release":
             win32_config = "Release\|Win32"
 
@@ -220,13 +220,13 @@ def wget(project,config):
     Gets a source package from the web and Uncompress it if needed.
     Uses the "wget" and the uncompress_command specified in
     the config file under the project's section.
-    
-    If the wget command is "python", 
+
+    If the wget command is "python",
     then a python function is called to download the file,
     Only if it doesn't exist yet.
     """
     wget_c = config.get("commands","wget")
-            
+
     source_file = config.get(project,"source_file")
     source = config.get(project,"source_host")+"/"+source_file
     archive_dir = config.get(project,"archive_dir")
@@ -327,7 +327,7 @@ def _git_parse_branches(git_output):
     output.  The name may contain several shlashes,
     e.g. 'origin/master'.
     """
-    
+
     def _parse_branch_line(line):
         p = re.compile(r"(\*?)\s+((?:.+/)?([^/]+))")
         active, full, name = p.match(line).groups()
@@ -343,7 +343,7 @@ def _git_checkout(project, config):
     local branch.
     """
     git_command = config.get("commands", "git")
-    
+
     git_output      = check_output([git_command,"branch"])
     local_branches  = _git_parse_branches(git_output)
     git_output      = check_output([git_command,"branch","-r"])
@@ -460,7 +460,7 @@ def install(project,config,architecture):
             or architecture == 'win64':
 
         win32_config= config.get(project,"win32_configuration")
-        
+
         if not win32_config and config.get(project,"build_type")=="Release":
             win32_config = "Release\|Win32"
 
@@ -519,16 +519,36 @@ def build_package(project,config,architecture):
         os.system(extra_package_cmd)
     return
 
+def doc(project,config,architecture):
+    """
+    Runs the documentation command.
+    @warnign: Only linux for now.
+    """
+
+    print "doc package: " + project
+    os.chdir(config.get(project,"build_dir"))
+
+    make=config.get("commands","make")
+    doc_output = check_output([make,"doc"])
+    print doc_output
+
+    extra_doc_cmd=config.get(project,"extra_doc_cmd")
+    if len(extra_doc_cmd):
+        print "Execute extra doc command:",extra_doc_cmd
+        os.system(extra_doc_cmd)
+    return
+
+
 def confirm_action( prompt = None ):
     """prompts for response from the user. Returns True for continue and
     False for skip, exits for abort.
     """
-    
+
     if prompt is None:
         prompt = 'Continue, Skip or Abort?'
 
     prompt = '%s ([c],s,a): ' % prompt
-        
+
     while True:
         ans = raw_input(prompt)
         if not ans:
@@ -626,6 +646,12 @@ def main(argv):
             action="store_false",
             default=True,
             help="Do not create packages for the projects")
+    # build doc
+    parser.add_option("-o","--doc", dest="doc",
+            action="store_true",
+            default=False,
+            help="build the docs for the projects (disabled by default)")
+
 
     # interactive mode
     parser.add_option("--interactive",
@@ -675,7 +701,7 @@ def main(argv):
         install_package_deps(config)
     else:
         print "skip installation of package dependencies"
-        
+
 
     # create main directory
     projects_dir = os.path.abspath(config.get("DEFAULT","projects_dir"))
@@ -726,6 +752,13 @@ def main(argv):
             print "building " + project + "..."
             if confirm_fun():
                 build(project,config,architecture)
+
+        os.chdir(cwd)
+        if choose_fun('doc'):
+            print "doc " + project + "..."
+            if confirm_fun():
+                doc(project,config,architecture)
+
 
         os.chdir(cwd)
         if choose_fun('install'):

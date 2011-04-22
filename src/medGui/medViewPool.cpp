@@ -65,13 +65,13 @@ void medViewPool::appendView (medAbstractView *view)
     connect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
     connect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));
 
-    connect (view, SIGNAL (positionChanged  (const QVector3D  &)), this, SLOT (onViewPositionChanged  (const QVector3D  &)));
-    connect (view, SIGNAL (zoomChanged      (double)),             this, SLOT (onViewZoomChanged      (double)));
-    connect (view, SIGNAL (panChanged       (const QVector2D &)),  this, SLOT (onViewPanChanged       (const QVector2D  &)));
-    connect (view, SIGNAL (windowingChanged (double, double)),     this, SLOT (onViewWindowingChanged (double, double)));
+    connect (view, SIGNAL (positionChanged  (const QVector3D  &, bool)), this, SLOT (onViewPositionChanged  (const QVector3D  &, bool)));
+    connect (view, SIGNAL (zoomChanged      (double, bool)),             this, SLOT (onViewZoomChanged      (double, bool)));
+    connect (view, SIGNAL (panChanged       (const QVector2D &, bool)),  this, SLOT (onViewPanChanged       (const QVector2D  &, bool)));
+    connect (view, SIGNAL (windowingChanged (double, double, bool)),     this, SLOT (onViewWindowingChanged (double, double, bool)));
     
-    connect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &, double)),
-             this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double)));
+    connect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)),
+             this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)));
     
     // set properties
     QHashIterator<QString, QString> it(d->propertySet);
@@ -93,13 +93,12 @@ void medViewPool::removeView (medAbstractView *view)
     if (refView) {
         if (refView==view) { // we are daddy, we need to find a new daddy
             // change daddy
-            QList<medAbstractView *>::iterator it = d->views.begin();
-            for( ; it!=d->views.end(); it++)
-                if ((*it)!=refView && (*it)->property ("Daddy")=="false") {
-                    (*it)->setProperty ("Daddy", "true");
+            foreach(medAbstractView *lview, d->views) {
+                if (lview!=refView && lview->property ("Daddy")=="false") {
+                    lview->setProperty ("Daddy", "true");
                     break;
                 }
-            
+            }
             medAbstractView *oldDaddy = refView;
             oldDaddy->setProperty ("Daddy", "false"); // not necessary
         }
@@ -109,13 +108,13 @@ void medViewPool::removeView (medAbstractView *view)
     disconnect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
     disconnect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));
     
-    disconnect (view, SIGNAL (positionChanged  (const QVector3D  &)), this, SLOT (onViewPositionChanged  (const QVector3D  &)));
-    disconnect (view, SIGNAL (zoomChanged      (double)),             this, SLOT (onViewZoomChanged      (double)));
-    disconnect (view, SIGNAL (panChanged       (const QVector2D &)),  this, SLOT (onViewPanChanged       (const QVector2D  &)));
-    disconnect (view, SIGNAL (windowingChanged (double, double)),     this, SLOT (onViewWindowingChanged (double, double)));
+    disconnect (view, SIGNAL (positionChanged  (const QVector3D  &, bool)), this, SLOT (onViewPositionChanged  (const QVector3D  &, bool)));
+    disconnect (view, SIGNAL (zoomChanged      (double, bool)),             this, SLOT (onViewZoomChanged      (double, bool)));
+    disconnect (view, SIGNAL (panChanged       (const QVector2D &, bool)),  this, SLOT (onViewPanChanged       (const QVector2D  &, bool)));
+    disconnect (view, SIGNAL (windowingChanged (double, double, bool)),     this, SLOT (onViewWindowingChanged (double, double, bool)));
     
-    disconnect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &, double)),
-             this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double)));
+    disconnect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)),
+                this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)));
     
     d->views.removeOne (view);
 }
@@ -148,7 +147,7 @@ void medViewPool::onViewDaddy (bool daddy)
             
             // restore the previous data (if any)
             if ( d->viewData[view] ) {
-	      view->setData (d->viewData[view], 0);
+                view->setData (d->viewData[view], 0);
                 d->viewData[view] = NULL;
 		if (view->widget()->isVisible())
 		    view->update();
@@ -162,11 +161,11 @@ void medViewPool::onViewDaddy (bool daddy)
 
 void medViewPool::onViewReg(bool value)
 {
-	if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
+    if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
         
-		medAbstractView *refView = this->daddy();
+        medAbstractView *refView = this->daddy();
         
-		if (value) {
+        if (value) {
             
             if (refView==view) // do not register the view with itself
                 return;
@@ -189,16 +188,15 @@ void medViewPool::onViewReg(bool value)
                         dtkAbstractData *output = process->output();
                         d->viewData[view] = data2;
                         view->setData (output, 0);
-						view->blockSignals(true);
-						view->setPosition(refView->position());
-						view->setZoom(refView->zoom());
-						view->setPan(refView->pan());
-						QVector3D position, viewup, focal;
-						double parallelScale;
-						refView->camera(position, viewup, focal, parallelScale);
-						view->setCamera(position, viewup, focal, parallelScale);
-						view->blockSignals(false);
-
+                        view->blockSignals(true);
+                        view->setPosition(refView->position());
+                        view->setZoom(refView->zoom());
+                        view->setPan(refView->pan());
+                        QVector3D position, viewup, focal;
+                        double parallelScale;
+                        refView->camera(position, viewup, focal, parallelScale);
+                        view->setCamera(position, viewup, focal, parallelScale);
+                        view->blockSignals(false);
                         if (view->widget()->isVisible())
                             view->update();
                         emit showInfo (this, tr ("Automatic registration successful"),3000);
@@ -215,20 +213,20 @@ void medViewPool::onViewReg(bool value)
             if ( d->viewData[view] ) {
                 dtkAbstractData *oldData = static_cast<dtkAbstractData*>( view->data() );
                 view->setData (d->viewData[view], 0);
-				view->blockSignals(true);
-						view->setPosition(refView->position());
-						view->setZoom(refView->zoom());
-						view->setPan(refView->pan());
-						QVector3D position, viewup, focal;
-						double parallelScale;
-						refView->camera(position, viewup, focal, parallelScale);
-						view->setCamera(position, viewup, focal, parallelScale);
-						view->blockSignals(false);
+                view->blockSignals(true);
+                view->setPosition(refView->position());
+                view->setZoom(refView->zoom());
+                view->setPan(refView->pan());
+                QVector3D position, viewup, focal;
+                double parallelScale;
+                refView->camera(position, viewup, focal, parallelScale);
+                view->setCamera(position, viewup, focal, parallelScale);
+                view->blockSignals(false);
                 d->viewData[view] = NULL;
                 if (oldData)
-					oldData->deleteLater();
-		if (view->widget()->isVisible())
-		    view->update();
+                    oldData->deleteLater();
+                if (view->widget()->isVisible())
+                    view->update();
             }
         }
     }
@@ -242,7 +240,8 @@ void medViewPool::onViewPropertySet (const QString &key, const QString &value)
         key=="CameraLinked" ||
         key=="WindowingLinked" ||
         key=="Orientation" ||
-        key=="LookupTable")
+        key=="LookupTable" ||
+        key=="Preset")
         return;
     
     d->propertySet[key] = value;
@@ -265,8 +264,11 @@ void medViewPool::onViewPropertySet (const QString &key, const QString &value)
         lview->blockSignals (false); 
 }
 
-void medViewPool::onViewPositionChanged (const QVector3D &position)
+void medViewPool::onViewPositionChanged (const QVector3D &position, bool propagate)
 {
+    if (!propagate)
+        return;
+
     medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
     
     if (!vsender) {
@@ -274,28 +276,24 @@ void medViewPool::onViewPositionChanged (const QVector3D &position)
         return;
     }
 
-    if (vsender->positionLinked()) {
-        // first, block all signals
-        foreach (medAbstractView *lview, d->views)
-	    lview->blockSignals (true);    
-    
-        // second, propagate properties
-        foreach (medAbstractView *lview, d->views) {
-            if (lview!=this->sender() && lview->positionLinked()) {
-                lview->setPosition (position);
-		if (lview->widget()->isVisible())
-		    lview->update();
-            }
+    foreach (medAbstractView *lview, d->views) {
+        if ( lview != vsender && lview->positionLinked() ) {
+            lview->onPositionChanged(position);
+            if (lview->widget()->isVisible())
+                lview->update();
         }
-        
-        // third, restore signals
-        foreach (medAbstractView *lview, d->views)
-        lview->blockSignals (false);
     }
 }
 
-void medViewPool::onViewCameraChanged (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
+void medViewPool::onViewCameraChanged (const QVector3D &position,
+                                       const QVector3D &viewup,
+                                       const QVector3D &focal,
+                                       double parallelScale,
+                                       bool propagate)
 {
+    if (!propagate)
+        return;
+
     medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
     
     if (!vsender) {
@@ -303,28 +301,20 @@ void medViewPool::onViewCameraChanged (const QVector3D &position, const QVector3
         return;
     }
     
-    if (vsender->cameraLinked()) {
-      // first, block all signals
-        foreach (medAbstractView *lview, d->views)
-        lview->blockSignals (true);    
-        
-        // second, propagate properties
-        foreach (medAbstractView *lview, d->views) {
-            if (lview!=this->sender() && lview->cameraLinked()) {
-                lview->setCamera (position, viewup, focal, parallelScale);
-		if (lview->widget()->isVisible())
-		    lview->update();
-            }
+    foreach (medAbstractView *lview, d->views) {
+        if (lview!=this->sender() && lview->cameraLinked()) {
+            lview->onCameraChanged(position, viewup, focal, parallelScale);
+            if (lview->widget()->isVisible())
+                lview->update();
         }
-        
-        // third, restore signals
-        foreach (medAbstractView *lview, d->views)
-        lview->blockSignals (false);
     }
 }
 
-void medViewPool::onViewZoomChanged (double zoom)
+void medViewPool::onViewZoomChanged (double zoom, bool propagate)
 {
+    if (!propagate)
+        return;
+
     medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
     
     if (!vsender) {
@@ -332,28 +322,20 @@ void medViewPool::onViewZoomChanged (double zoom)
         return;
     }
     
-    if (vsender->cameraLinked()) {
-        // first, block all signals
-        foreach (medAbstractView *lview, d->views)
-        lview->blockSignals (true);    
-        
-        // second, propagate properties
-        foreach (medAbstractView *lview, d->views) {
-            if (lview!=this->sender() && lview->cameraLinked()) {
-                lview->setZoom (zoom);
-		if (lview->widget()->isVisible())
-		    lview->update();
-            }
+    foreach (medAbstractView *lview, d->views) {
+        if (lview!=this->sender() && lview->cameraLinked()) {
+            lview->onZoomChanged(zoom);
+            if (lview->widget()->isVisible())
+                lview->update();
         }
-        
-        // third, restore signals
-        foreach (medAbstractView *lview, d->views)
-        lview->blockSignals (false);
     }
 }
 
-void medViewPool::onViewPanChanged (const QVector2D &pan)
+void medViewPool::onViewPanChanged (const QVector2D &pan, bool propagate)
 {
+    if (!propagate)
+        return;
+
     medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
     
     if (!vsender) {
@@ -361,28 +343,20 @@ void medViewPool::onViewPanChanged (const QVector2D &pan)
         return;
     }
     
-    if (vsender->cameraLinked()) {
-        // first, block all signals
-        foreach (medAbstractView *lview, d->views)
-        lview->blockSignals (true);    
-        
-        // second, propagate properties
-        foreach (medAbstractView *lview, d->views) {
-            if (lview!=this->sender() && lview->cameraLinked()) {
-                lview->setPan (pan);
-		if (lview->widget()->isVisible())
-		    lview->update();
-            }
+    foreach (medAbstractView *lview, d->views) {
+        if (lview!=this->sender() && lview->cameraLinked()) {
+            lview->onPanChanged(pan);
+            if (lview->widget()->isVisible())
+                lview->update();
         }
-        
-        // third, restore signals
-        foreach (medAbstractView *lview, d->views)
-        lview->blockSignals (false);
     }
 }
 
-void medViewPool::onViewWindowingChanged (double level, double window)
+void medViewPool::onViewWindowingChanged (double level, double window, bool propagate)
 {
+    if (!propagate)
+        return;
+
     medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
     
     if (!vsender) {
@@ -390,23 +364,12 @@ void medViewPool::onViewWindowingChanged (double level, double window)
         return;
     }
     
-    if (vsender->windowingLinked()) {
-        // first, block all signals
-        foreach (medAbstractView *lview, d->views)
-        lview->blockSignals (true);    
-      
-        // second, propagate properties
-        foreach (medAbstractView *lview, d->views) {
-            if (lview!=this->sender() && lview->windowingLinked()) {
-                lview->setWindowLevel (level, window);
-		if (lview->widget()->isVisible())
-		    lview->update();
-            }
+    foreach (medAbstractView *lview, d->views) {
+        if (lview!=this->sender() && lview->windowingLinked()) {
+            lview->onWindowingChanged(level, window);
+            if (lview->widget()->isVisible())
+                lview->update();
         }
-        
-        // third, restore signals
-        foreach (medAbstractView *lview, d->views)
-        lview->blockSignals (false);
     }
 }
 

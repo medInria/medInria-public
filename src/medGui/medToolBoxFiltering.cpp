@@ -22,7 +22,6 @@
 
 #include <medGui/medToolBoxFactory.h>
 #include <medGui/medDropSite.h>
-#include <medGui/medViewContainerStack.h>
 
 #include <medCore/medDataManager.h>
 #include <medSql/medDatabaseController.h>
@@ -124,7 +123,7 @@ void medToolBoxFiltering::onObjectDropped(void)
   if (!index.isValid())
     return;
   
-  d->data = medDataManager::instance()->data (index);
+  d->data = medDataManager::instance()->data (index).data();
   
   if (d->data)
     medToolBoxFilteringCustom* customToolbox(void);

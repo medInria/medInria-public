@@ -23,9 +23,9 @@
 
 #include <medGui/medToolBoxFiltering.h>
 
-#include <medGui/medViewContainerStack.h>
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerMulti.h>
+#include <medGui/medStackedViewContainers.h>
 #include <medGui/medToolBoxFilteringCustom.h>
 
 #include <dtkCore/dtkAbstractData.h>
@@ -43,26 +43,25 @@ public:
 
 medViewerConfigurationFiltering::medViewerConfigurationFiltering(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationFilteringPrivate)
 {
-
-    setLayoutToolBoxVisibility(false);
-
+  setLayoutToolBoxVisibility(false);
+  
 	//d->filteringContainer = NULL;
 	
-    d->viewToolBox = new medViewerToolBoxView(parent);
-    
-    this->addToolBox( d->viewToolBox );
-    
-    d->filteringToolBox = new medToolBoxFiltering(parent);
-   
-    this->addToolBox( d->filteringToolBox );    
-    
-    //TO DO : connections with filteringToolBox
-    connect(d->filteringToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-    connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
-		connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
+  d->viewToolBox = new medViewerToolBoxView(parent);
+  
+  this->addToolBox( d->viewToolBox );
+  
+  d->filteringToolBox = new medToolBoxFiltering(parent);
+  
+  this->addToolBox( d->filteringToolBox );    
+  
+  
+  connect(d->filteringToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
+  connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+  connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
 	connect(d->filteringToolBox,SIGNAL(dataSelected(dtkAbstractData *)),this,SLOT(onInputDataSelected(dtkAbstractData *)));
 	
-		this->setViewLayoutType (-1);
+  //this->setViewLayoutType (-1);
 }
 
 medViewerConfigurationFiltering::~medViewerConfigurationFiltering(void)
@@ -71,26 +70,23 @@ medViewerConfigurationFiltering::~medViewerConfigurationFiltering(void)
     d = NULL;
 }
 
-// TO DO : method to complete
-void medViewerConfigurationFiltering::setupViewContainerStack(medViewContainerStack *container_stack)
+void medViewerConfigurationFiltering::setupViewContainerStack()
 {
-    if (!container_stack) {
-        return;
-    }
-
     d->views.clear();
 
-		medViewContainer *filteringContainer = container_stack->customContainer("Filtering");
+		medViewContainer *filteringContainer;
 
-    if (!filteringContainer) {
-      medViewContainerMulti *custom = new medViewContainerMulti (container_stack);
+    if (!this->stackedViewContainers()->count()) {
+      medViewContainerMulti *custom = new medViewContainerMulti ();
       //custom->setPreset (medViewContainerCustom::A);
 			custom->setAcceptDrops(false);
       filteringContainer = custom;
 
-      container_stack->addCustomContainer ("Filtering", filteringContainer);
+      this->stackedViewContainers()->addContainer (description(), filteringContainer);
     }
-
+    else
+      filteringContainer = this->stackedViewContainers()->container(description());
+  
 	d->views = filteringContainer->views();
 	
 	if (d->views.size() < 2)
@@ -105,7 +101,7 @@ void medViewerConfigurationFiltering::setupViewContainerStack(medViewContainerSt
 		}
 	}
 
-	container_stack->setCustomContainer ("Filtering");
+  this->stackedViewContainers()->setContainer (description());
 }
 
 void medViewerConfigurationFiltering::patientChanged(int patientId)

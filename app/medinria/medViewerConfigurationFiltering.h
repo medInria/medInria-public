@@ -38,7 +38,7 @@ public:
     
     virtual QString description(void) const;
     
-    void setupViewContainerStack (medViewContainerStack *container);
+    void setupViewContainerStack ();
 
 public slots:    
     void patientChanged(int patientId);

@@ -54,6 +54,15 @@ public slots:
     void onSourceIndexChanged(int index);
     void onFileImport(QString);
     void onDataReceivingFailed(QString fileName);
+    
+    /**
+     * @brief Export data from a selected medDataIndex in a data source.
+     *
+     * Opens a file dialog and tries writers based 
+     * on the file extension given by the user.
+     * @param index
+    */
+    void onExportData(const medDataIndex &index);
 
 protected:
     void setToolBoxesVisible(int index, bool visible);

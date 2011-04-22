@@ -30,7 +30,9 @@ class MEDGUI_EXPORT medViewContainerSingle2 : public medViewContainerSingle
     Q_OBJECT
 
 public:
-    medViewContainerSingle2(QWidget *parent = 0) : medViewContainerSingle(parent) {}
+     medViewContainerSingle2(QWidget *parent = 0) : medViewContainerSingle(parent) {}
+    ~medViewContainerSingle2();
+    
     void setView(dtkAbstractView *view);
 
 public slots:
@@ -48,7 +50,6 @@ public:
     medViewContainerMulti(QWidget *parent = 0);
    ~medViewContainerMulti();
 
-    Type type(void);
 
     void split(int rows, int cols);
 

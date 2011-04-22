@@ -42,7 +42,6 @@ public:
     medViewContainerCustom(QWidget *parent = 0);
     ~medViewContainerCustom(void);
 
-    Type type(void);
 
     void split(int rows, int cols);
 
@@ -72,6 +71,7 @@ protected:
     void onViewFullScreen2 (bool value, dtkAbstractView *view);
     void fullScreen (bool value, dtkAbstractView *view);
 
+    QList<medViewContainerCustom*> children() const;
     medViewContainerCustomPrivate *d2;
 };
 

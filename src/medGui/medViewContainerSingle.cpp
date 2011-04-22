@@ -26,10 +26,6 @@
 #include <medCore/medAbstractView.h>
 #include <medCore/medViewManager.h>
 
-medViewContainer::Type medViewContainerSingle::type(void)
-{
-    return medViewContainer::Single;
-}
 
 void medViewContainerSingle::split(int rows, int cols)
 {

@@ -23,25 +23,6 @@ project(medCore)
 ## Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS
-  medDataIndex.h
-  medDataManager.h
-  medMessageController.h
-  medMetaDataHelper.h
-  medViewManager.h
-  medPluginManager.h
-  medProgressFilter.h
-  medAbstractView.h
-  medStorage.h
-  medJobItem.h
-  medJobManager.h
-  medSettingsManager.h
-  medDbControllerFactory.h
-  medAbstractDbController.h
-  medAbstractDataSource.h
-  medAbstractDataSourceFactory.h
-)
-
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataIndex.h
   medDataManager.h
@@ -51,15 +32,26 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPluginManager.h
   medProgressFilter.h
   medAbstractView.h
+  med4DAbstractViewInteractor.h
   medJobItem.h
   medJobManager.h
   medSettingsManager.h
   medDbControllerFactory.h
   medAbstractDbController.h
+  medAbstractData.h  
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
+  medAttachedData.h
   medStorage.h
+  medRunnableProcess.h
+  medAbstractViewFiberInteractor.h
 )
+
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  medAbstractDataCollection.h
+)
+
 
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
@@ -76,8 +68,13 @@ set(${PROJECT_NAME}_SOURCES
   medSettingsManager.cpp
   medDbControllerFactory.cpp
   medAbstractDbController.cpp
+  medAttachedData.cpp
+  medRunnableProcess.cpp
+  medAbstractData.cpp
+  medAbstractDataCollection.cpp
   medAbstractDataSource.cpp
   medAbstractDataSourceFactory.cpp
+  medAbstractViewFiberInteractor.cpp
 )
 
 ## #################################################################
@@ -124,6 +121,10 @@ endif(TCL_FOUND)
 if(PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
 endif(PYTHONLIBS_FOUND)
+
+IF(WIN32)		
+  target_link_libraries(${PROJECT_NAME} psapi.lib)
+ENDIF(WIN32)
 
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

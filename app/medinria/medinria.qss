@@ -131,6 +131,10 @@ QLabel {
     font-size: 10px;
 }
 
+QLabel:disabled {
+    color: #000000;
+}
+
 /**
  * QTableWidget
  *
@@ -232,6 +236,10 @@ QRadioButton {
     color: #b2b8b2;
     font-size: 10px;
     spacing: 5px;
+}
+
+QRadioButton:disabled {
+    color: #000000;
 }
 
 QRadioButton::indicator {
@@ -563,6 +571,7 @@ QHelpSearchQueryWidget QToolButton::menu-indicator {
 QGroupBox {
     border: 2px solid gray;
     border-radius: 3px;
+    margin-top: 1ex;
 
     color: #b2b8b2;
     font-size: 10pt;
@@ -570,10 +579,19 @@ QGroupBox {
 
 QGroupBox::title {
     subcontrol-origin: margin;
-    subcontrol-position: top right;
-
+    subcontrol-position: top center;
+    padding: 0 3px;
+	 
     color: #b2b8b2;
     font-size: 10pt;
+}
+
+QGroupBox::indicator::checked {
+    image: url(:/pixmaps/checkbox-checked.png);
+}
+
+QGroupBox::indicator::unchecked {
+    image: url(:/pixmaps/checkbox.png);
 }
 
 /**

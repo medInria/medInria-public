@@ -19,13 +19,15 @@
 
 #include "medViewManager.h"
 
+#include "medAbstractView.h"
+
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
 class medViewManagerPrivate
 {
 public:
-    QHash<medDataIndex, QList<dtkAbstractView *> > views;
+    QHash<medDataIndex, QList<medAbstractView *> > views;
 };
 
 medViewManager *medViewManager::instance(void)
@@ -36,36 +38,36 @@ medViewManager *medViewManager::instance(void)
     return s_instance;
 }
 
-void medViewManager::insert(const medDataIndex& index, dtkAbstractView *view)
+void medViewManager::insert(const medDataIndex& index, medAbstractView *view)
 {
     d->views[index].prepend (view);
 }
 
-void medViewManager::remove(const medDataIndex& index, dtkAbstractView *view)
+void medViewManager::remove(const medDataIndex& index, medAbstractView *view)
 {
-    foreach(dtkAbstractView *lview, d->views.value(index))
+    foreach(medAbstractView *lview, d->views.value(index))
         if (lview==view)
             d->views[index].removeOne(view);
     
-    dtkAbstractViewFactory::instance()->destroy (view);
+    dtkAbstractViewFactory::instance()->destroy (dynamic_cast<dtkAbstractView*>(view));
 }
 
 void medViewManager::remove(const medDataIndex& index)
 {
-     foreach(dtkAbstractView *view, d->views.value(index))
-         dtkAbstractViewFactory::instance()->destroy (view);
+     foreach(medAbstractView *view, d->views.value(index))
+         dtkAbstractViewFactory::instance()->destroy (dynamic_cast<dtkAbstractView*>(view));
 
     d->views.remove(index);
 }
 
-QList<dtkAbstractView *> medViewManager::views(const medDataIndex& index)
+QList<medAbstractView *> medViewManager::views(const medDataIndex& index)
 {
     return d->views.value(index);
 }
 
-QList<dtkAbstractView *> medViewManager::viewsForPatient(int id)
+QList<medAbstractView *> medViewManager::viewsForPatient(int id)
 {
-    QList<dtkAbstractView *> views;
+    QList<medAbstractView *> views;
 
     foreach(medDataIndex index, d->views.keys())
         if(index.patientId() == id)
@@ -74,9 +76,9 @@ QList<dtkAbstractView *> medViewManager::viewsForPatient(int id)
     return views;
 }
 
-QList<dtkAbstractView *> medViewManager::viewsForStudy(int id)
+QList<medAbstractView *> medViewManager::viewsForStudy(int id)
 {
-    QList<dtkAbstractView *> views;
+    QList<medAbstractView *> views;
 
     foreach(medDataIndex index, d->views.keys())
         if(index.studyId() == id)
@@ -85,9 +87,9 @@ QList<dtkAbstractView *> medViewManager::viewsForStudy(int id)
     return views;
 }
 
-QList<dtkAbstractView *> medViewManager::viewsForSeries(int id)
+QList<medAbstractView *> medViewManager::viewsForSeries(int id)
 {
-    QList<dtkAbstractView *> views;
+    QList<medAbstractView *> views;
 
     foreach(medDataIndex index, d->views.keys())
         if(index.seriesId() == id)
@@ -96,9 +98,9 @@ QList<dtkAbstractView *> medViewManager::viewsForSeries(int id)
     return views;
 }
 
-QList<dtkAbstractView *> medViewManager::viewsForImage(int id)
+QList<medAbstractView *> medViewManager::viewsForImage(int id)
 {
-    QList<dtkAbstractView *> views;
+    QList<medAbstractView *> views;
 
     foreach(medDataIndex index, d->views.keys())
         if(index.imageId() == id)
@@ -113,10 +115,10 @@ QList<dtkAbstractView *> medViewManager::viewsForImage(int id)
  *  possible.
  */
 
-medDataIndex medViewManager::index(dtkAbstractView *view)
+medDataIndex medViewManager::index(medAbstractView *view)
 {
     foreach(medDataIndex index, d->views.keys())
-        foreach(dtkAbstractView *v, d->views.value(index))
+        foreach(medAbstractView *v, d->views.value(index))
             if(v == view)
                 return index;
 

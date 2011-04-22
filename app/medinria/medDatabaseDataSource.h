@@ -31,6 +31,7 @@ public:
 signals:
     void open(const medDataIndex&);
 
+
 private:
     medDatabaseDataSourcePrivate* d;
 

@@ -6,7 +6,7 @@
 
 #include <medGui/medViewerConfiguration.h>
 
-class medViewContainerStack;
+class medStackedViewContainers;
 class medViewerConfigurationRegistrationPrivate;
 
 class medViewerConfigurationRegistration : public medViewerConfiguration
@@ -19,7 +19,7 @@ public:
 
     virtual QString description(void) const;
     
-    void setupViewContainerStack (medViewContainerStack *container);
+    void setupViewContainerStack ();
 
 public slots:
     void onSetupLayoutCompare (void);

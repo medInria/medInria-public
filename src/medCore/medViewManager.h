@@ -25,8 +25,8 @@
 #include "medCoreExport.h"
 #include "medDataIndex.h"
 
-class dtkAbstractView;
-class dtkAbstractViewFactory;
+class medAbstractView;
+class medAbstractViewFactory;
 
 class medViewManagerPrivate;
 
@@ -37,17 +37,17 @@ class MEDCORE_EXPORT medViewManager : public QObject
 public:
     static medViewManager *instance(void);
 
-    void insert(const medDataIndex& index, dtkAbstractView *view);
-    void remove(const medDataIndex& index, dtkAbstractView *view);
+    void insert(const medDataIndex& index, medAbstractView *view);
+    void remove(const medDataIndex& index, medAbstractView *view);
     void remove(const medDataIndex& index);
 
-    QList<dtkAbstractView *> views(const medDataIndex& index);
-    QList<dtkAbstractView *> viewsForPatient(int id);
-    QList<dtkAbstractView *> viewsForStudy  (int id);
-    QList<dtkAbstractView *> viewsForSeries (int id);
-    QList<dtkAbstractView *> viewsForImage  (int id);
+    QList<medAbstractView *> views(const medDataIndex& index);
+    QList<medAbstractView *> viewsForPatient(int id);
+    QList<medAbstractView *> viewsForStudy  (int id);
+    QList<medAbstractView *> viewsForSeries (int id);
+    QList<medAbstractView *> viewsForImage  (int id);
 
-    medDataIndex index(dtkAbstractView *view);
+    medDataIndex index(medAbstractView *view);
 
 protected:
      medViewManager(void);
