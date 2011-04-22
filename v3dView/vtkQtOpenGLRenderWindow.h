@@ -101,8 +101,9 @@ public:
    * You may want to use
    * TestAndPrintOpenGLError( __FILE__ , __LINE__ )
    * \sa vtkOpenGLRenderWindow::LastGraphicError, vtkOpenGLRenderWindow::GetLastGraphicErrorString
-    */
-  void CheckAndPrintGraphicError( const char * headerMessage = NULL, int line = -1);
+   */
+  void CheckAndPrintGraphicError( const char * headerMessage = NULL,
+                                  int line = -1 );
 
 protected:
   vtkQtOpenGLRenderWindow();

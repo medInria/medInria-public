@@ -217,11 +217,12 @@ void QVtkGraphicsView::resizeEvent(QResizeEvent* e)
         // give the size to the interactor and vtk window
         renWin->SetSize(viewRect.width(), viewRect.height());
 
-        // The renderwindow sets the interactor size, so we do not need to do it too.
-        //if(renWin->GetInteractor())
-        //{
-        //    renWin->GetInteractor()->SetSize(this->width(), this->height());
-        //}
+        // The renderwindow doesn't set the interactor size, so we
+        // need to do it.
+        if(renWin->GetInteractor())
+        {
+           renWin->GetInteractor()->SetSize(this->width(), this->height());
+        }
     }
 
     emit sizeChanged( this->width(), this->height());
