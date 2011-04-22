@@ -84,12 +84,13 @@ void vtkQtOpenGLRenderWindow::Finalize(void)
   // tell each of the renderers that this render window/graphics context
   // is being removed (the RendererCollection is removed by vtkRenderWindow's
   // destructor)
-  vtkRenderer* ren;
+  vtkObject * obj;
   this->Renderers->InitTraversal();
-  for ( ren = this->Renderers->GetNextItemAsObject(); ren != NULL;
-        ren = this->Renderers->GetNextItemAsObject() )
+  for ( obj = this->Renderers->GetNextItemAsObject(); obj != NULL;
+        obj = this->Renderers->GetNextItemAsObject() )
   {
-    if (vtkOpenGLRenderer::SafeDownCast(ren) != NULL)
+  vtkRenderer * ren = vtkOpenGLRenderer::SafeDownCast( obj );
+    if ( ren != NULL )
     {
       ren->SetRenderWindow(NULL);
       ren->SetRenderWindow(this);
