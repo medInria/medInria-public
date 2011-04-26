@@ -39,6 +39,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkPointSet.h"
 #include "vtkUnstructuredGridReader.h"
 #include "vtkTensorVisuManager.h"
+#include "vtkDataSetCollection.h"
 
 #include <vtkImageData.h>
 #include <vtkCommand.h>
@@ -212,23 +213,35 @@ public:
 	TransformWriterType::Pointer writer = TransformWriterType::New();
 	writer->SetInput (transform);
 	
+	std::cout<<"gathering orientation... "<<std::endl;
+	vtkMatrix4x4* inv_orientation = vtkMatrix4x4::New();
+	inv_orientation->Identity();
+	
 	vtkMetaImageData* metaimage = this->MetaImage;
 	
-	std::cout<<"gathering orientation... "<<std::endl;
-	
-	vtkMatrix4x4* orientation = metaimage->GetOrientationMatrix();
-	vtkMatrix4x4* A = vtkMatrix4x4::New();
-	vtkMatrix4x4* inv_orientation = vtkMatrix4x4::New();
-	orientation->Invert (orientation, inv_orientation);
+	if (metaimage)
+	{
+	  vtkMatrix4x4* orientation = metaimage->GetOrientationMatrix();
+	  orientation->Invert (orientation, inv_orientation);
+	}
 	
 	vtkMatrix4x4* M = vtkMatrix4x4::New();
-	A->Zero();
-	
-	std::cout<<"gathering actor... "<<std::endl;
-	M->DeepCopy (vtkProp3D::SafeDownCast (this->View->GetExtraPlaneCollection()->GetItemAsObject (0))->GetUserMatrix());
+	if (metaimage)
+	{
+	  vtkProp3D* prop = NULL;
+	  prop = vtkProp3D::SafeDownCast (this->View->GetExtraPlaneCollection()->GetItemAsObject (0));
+	  M->DeepCopy (prop->GetUserMatrix());
+	}
+	else
+	{ 
+	  vtkProp3D* prop = NULL;
+	  prop = this->View->FindDataSetActor (this->View->GetDataSetCollection()->GetDataSet ((int)(0)));
+	  M = prop->GetMatrix();
+	}
 	
 	std::cout<<"estimating modification... "<<std::endl;
 	
+	vtkMatrix4x4* A = vtkMatrix4x4::New();
 	vtkMatrix4x4::Multiply4x4 (M,inv_orientation, A);
 	A->Print (std::cout);
 	
@@ -246,12 +259,16 @@ public:
 	std::cout<<"writing matrix... "<<std::endl;
 	transform->SetParameters (params);
 	std::ostringstream ostr;
-	ostr << metaimage->GetName()<<"-transform.mat";
+	if (metaimage)
+	  ostr << metaimage->GetName()<<"-transform.mat";
+	else
+	  ostr << "transform.mat";
+	  
 	std::cout<<"writing translation to : "<<ostr.str().c_str()<<std::endl;
 	
 	writer->SetFileName (ostr.str().c_str());
 	writer->Update ();
-
+	
 	A->Delete();
 	M->Delete();	
       }
@@ -314,7 +331,10 @@ int main (int argc, char* argv[])
   view3d->SetShowActorX (0);
   view3d->SetShowActorY (0);
   view3d->SetShowActorZ (0);
+
   
+  pool->AddItem (view3d);
+
   vtkTensorVisuManager* tensormanager = vtkTensorVisuManager::New();
   vtkMyCommand* command = vtkMyCommand::New();
   command->View = view3d;
@@ -390,8 +410,6 @@ int main (int argc, char* argv[])
     view3d->SetOrientationMatrix(firstview->GetOrientationMatrix());
   }
 
-  pool->AddItem (view3d);
-
   std::string filename = argv[argc - 1];
 
   vtkUnstructuredGrid* mytensors = 0;
@@ -425,6 +443,7 @@ int main (int argc, char* argv[])
 
   pool->SyncReset();
   pool->SyncSetShowAnnotations (1);
+  pool->SyncSetShowScalarBar (0);
   pool->SyncSetShowRulerWidget (0);
   pool->SyncSetShowImageAxis (1);
   pool->SetLinkColorWindowLevel (0);
