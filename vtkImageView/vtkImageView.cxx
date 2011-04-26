@@ -23,6 +23,7 @@
 #include "vtkMatrixToLinearTransform.h"
 
 #include "vtkImageData.h"
+#include "vtkPointSet.h"
 
 #include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
@@ -31,6 +32,8 @@
 #include "vtkImageViewCornerAnnotation.h"
 #include "vtkTextProperty.h"
 #include "vtkCamera.h"
+#include "vtkDataSetCollection.h"
+#include "vtkProp3DCollection.h"
 
 #include "vtkLookupTable.h"
 #include "vtkColorTransferFunction.h"
@@ -117,6 +120,9 @@ vtkImageView::vtkImageView()
   
   this->CornerAnnotation        = vtkImageViewCornerAnnotation::New();
   this->TextProperty            = vtkTextProperty::New();
+
+  this->DataSetCollection       = vtkDataSetCollection::New();
+  this->DataSetActorCollection  = vtkProp3DCollection::New();
   
   // either use transfer functions or lookup table, the members not
   // in use are set to NULL.
@@ -163,6 +169,7 @@ vtkImageView::vtkImageView()
   this->ScalarBar->PickableOff();
   this->ScalarBar->VisibilityOn();
   
+  
   for(int i=0; i<3; i++)
     this->CurrentPoint[i] = 0.0; //VTK_DOUBLE_MIN;
   
@@ -198,6 +205,9 @@ vtkImageView::~vtkImageView()
   
   this->CornerAnnotation->Delete();
   this->TextProperty->Delete();
+
+  this->DataSetCollection->Delete();
+  this->DataSetActorCollection->Delete();
   
   if ( this->LookupTable != NULL )
     this->LookupTable->Delete();
@@ -735,6 +745,11 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings()
 {
   double targetRange[2];
   this->GetColorRange( targetRange );
+  if (targetRange[1] - targetRange[0] <= 0.0)
+  {
+    targetRange[0] = 0.0;
+    targetRange[1] = 1.0;
+  }
   
   bool touched = false;
   
@@ -1350,7 +1365,21 @@ int vtkImageView::GetNumberOfLayers(void) const
 //----------------------------------------------------------------------------
 void vtkImageView::RemoveDataSet (vtkPointSet *arg)
 {
+  this->DataSetActorCollection->RemoveItem (this->FindDataSetActor (arg));
+  this->DataSetCollection->RemoveItem (arg);
 }
+
+//----------------------------------------------------------------------------
+vtkProp3D* vtkImageView::FindDataSetActor (vtkDataSet* arg) 
+{
+  int id = this->DataSetCollection->IsItemPresent (arg);
+  if (id == 0)
+    return NULL;
+
+  return vtkProp3D::SafeDownCast (this->DataSetActorCollection->GetItemAsObject (id-1));
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////// NOTE ON TIME HANDLING AND ITK-BRIDGE ////////////////////
