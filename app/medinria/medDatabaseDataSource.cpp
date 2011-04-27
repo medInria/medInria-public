@@ -2,10 +2,13 @@
 
 #include <medCore/medDataManager.h>
 
+#include <medGui/medDatabaseSearchPanel.h>
+
 #include <medSql/medDatabasePreview.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseExporter.h>
+#include <medSql/medDatabaseProxyModel.h>
 
 class medDatabaseDataSourcePrivate
 {
@@ -14,6 +17,10 @@ public:
     medDatabasePreview *preview;
     medDatabaseModel *model;
     medDatabaseView *view;
+    medDatabaseProxyModel *proxy;
+
+    QList<medToolBox*> toolboxes;
+    medDatabaseSearchPanel *searchPanel;
    
 };
 
@@ -23,9 +30,11 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
 
     d->model = new medDatabaseModel;
 
-    d->view = new medDatabaseView(parent);
-    d->view->setModel(d->model);
+    d->proxy = new medDatabaseProxyModel(parent);
+    d->proxy->setSourceModel(d->model);
 
+    d->view = new medDatabaseView(parent);
+    d->view->setModel(d->proxy);
 
     d->database_widget = new QWidget(parent);
 
@@ -35,11 +44,16 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     database_layout->addWidget(d->view);
     database_layout->addWidget(d->preview);
 
+    d->searchPanel = new medDatabaseSearchPanel(parent);
+    d->searchPanel->setColumnNames(d->model->attributes());
+    d->toolboxes.push_back(d->searchPanel);
+
     connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
     connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
     connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
     connect(d->view, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
 
+    connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)));
 
 }
 
@@ -67,7 +81,7 @@ QString medDatabaseDataSource::tabName()
 QList<medToolBox*> medDatabaseDataSource::getToolboxes()
 {
     //nothing at the moment
-    return QList<medToolBox*>(); 
+    return d->toolboxes; 
 }
 
 void medDatabaseDataSource::update()
@@ -76,4 +90,11 @@ void medDatabaseDataSource::update()
     d->preview->init();
     d->preview->update();
 }
+
+void medDatabaseDataSource::onFilter( const QString &text, int column )
+{
+    d->proxy->setFilterKeyColumn(column);
+    d->proxy->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard));
+}
+
 

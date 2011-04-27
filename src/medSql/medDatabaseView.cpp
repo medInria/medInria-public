@@ -17,10 +17,25 @@
  * 
  */
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseModel.h>
-#include <medSql/medDatabaseView.h>
-#include <medSql/medDatabaseItem.h>
+#include "medDatabaseController.h"
+#include "medDatabaseModel.h"
+#include "medDatabaseView.h"
+#include "medDatabaseItem.h"
+#include "medDatabaseProxyModel.h"
+
+class NoFocusDelegate : public QStyledItemDelegate
+{
+protected:
+    void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+};
+
+void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const
+{
+    QStyleOptionViewItem itemOption(option);
+    if (itemOption.state & QStyle::State_HasFocus)
+        itemOption.state = itemOption.state ^ QStyle::State_HasFocus;
+    QStyledItemDelegate::paint(painter, itemOption, index);
+}
 
 medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
 {
@@ -32,18 +47,19 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     this->setAnimated(false);
     this->setSortingEnabled(true);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
-    // this->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
-
-    connect(this, SIGNAL(      clicked(const QModelIndex&)), this, SLOT(onItemClicked(const QModelIndex&)));
+    //connect(this, SIGNAL(      clicked(const QModelIndex&)), this, SLOT(onItemClicked(const QModelIndex&))); // obsolete with selectionModel changed signal
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
+
+    NoFocusDelegate* delegate = new NoFocusDelegate();
+    this->setItemDelegate(delegate);
 }
 
 medDatabaseView::~medDatabaseView(void)
 {
-
 }
 
 int medDatabaseView::sizeHintForColumn(int column) const
@@ -54,64 +70,15 @@ int medDatabaseView::sizeHintForColumn(int column) const
     return 50;
 }
 
-void medDatabaseView::setModel(medDatabaseModel *model)
+void medDatabaseView::setModel(QAbstractItemModel *model)
 {
     QTreeView::setModel(model);
 
     for(int i = 0; i < model->columnCount(); this->resizeColumnToContents(i), i++);
+    connect( this->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(selectionChanged(const QModelIndex&, const QModelIndex&)));
 
-    this->hideColumn(20);
 }
 
-void medDatabaseView::onPatientClicked(int id)
-{
-    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model())) {
-        QModelIndex index = model->indexForPatient(id);
-        this->collapseAll();
-        this->setExpanded(index, true);
-        selectionModel()->clearSelection();
-        selectionModel()->select(index, QItemSelectionModel::Select);
-    }
-}
-
-void medDatabaseView::onStudyClicked(int id)
-{
-    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model())) {
-        QModelIndex index = model->indexForStudy(id);
-        this->collapseAll();
-        this->setExpanded(index.parent(), true);
-        this->setExpanded(index, true);
-        selectionModel()->clearSelection();
-        selectionModel()->select(index, QItemSelectionModel::Select);
-    }
-}
-
-void medDatabaseView::onSeriesClicked(int id)
-{
-    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model())) {
-        QModelIndex index = model->indexForSeries(id);
-        this->collapseAll();
-        this->setExpanded(index.parent().parent(), true);
-        this->setExpanded(index.parent(), true);
-        this->setExpanded(index, true);
-        selectionModel()->clearSelection();
-        selectionModel()->select(index, QItemSelectionModel::Select);
-    }
-}
-
-void medDatabaseView::onImageClicked(int id)
-{
-    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model())) {
-        QModelIndex index = model->indexForImage(id);
-        this->collapseAll();
-        this->setExpanded(index.parent().parent().parent(), true);
-        this->setExpanded(index.parent().parent(), true);
-        this->setExpanded(index.parent(), true);
-        this->setExpanded(index, true);
-        selectionModel()->clearSelection();
-        selectionModel()->select(index, QItemSelectionModel::Select);
-    }
-}
 
 void medDatabaseView::updateContextMenu(const QPoint& point)
 {
@@ -122,51 +89,66 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
 
     medDatabaseItem *item = NULL;
 
-    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
         item = static_cast<medDatabaseItem *>(index.internalPointer());
 
-    if(item && item->table() == "series") {    
+
+    if (item) {
         QMenu menu(this);
-        menu.addAction("View",   this, SLOT(onMenuViewClicked()));
-        menu.addAction("Export", this, SLOT(onMenuExportClicked()));
-        menu.exec(mapToGlobal(point));
+        if( item->dataIndex().isValidForSeries())
+        {
+            menu.addAction(tr("View"), this, SLOT(onMenuViewClicked()));
+            menu.addAction(tr("Export"), this, SLOT(onMenuExportClicked()));
+            menu.exec(mapToGlobal(point));
+        }
     }
+
 }
 
 void medDatabaseView::onItemClicked(const QModelIndex& index)
 {
+
     medDatabaseItem *item = NULL;
 
-    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
         item = static_cast<medDatabaseItem *>(index.internalPointer());
 
-    if(item)
-        if(item->table() == "patient")
-	    emit patientClicked(item->value(20).toInt());
-        else if(item->table() == "study")
-            emit studyClicked(item->value(20).toInt());
-        else if(item->table() == "series")
-            emit seriesClicked(item->value(20).toInt());
-        else
-            emit imageClicked(item->value(20).toInt());
+    if (!item)
+        return;
+
+    if (item->dataIndex().isValidForSeries())
+    {
+        this->collapseAll();
+        this->setExpanded(index.parent().parent(), true);
+        this->setExpanded(index.parent(), true);
+        this->setExpanded(index, true);
+        emit seriesClicked(item->dataIndex ().seriesId ());
+    }
+    else if (item->dataIndex().isValidForPatient())
+    {
+        this->collapseAll();
+        this->setExpanded(index, true);
+        emit patientClicked(item->dataIndex ().patientId ());
+    }
+
+
 }
 
 void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 {
     medDatabaseItem *item = NULL;
 
-    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
         item = static_cast<medDatabaseItem *>(index.internalPointer());
 
-    if(item)
-        if(item->table() == "patient")
-            emit open(medDatabaseController::instance()->indexForPatient(item->value(20).toInt()));
-        else if(item->table() == "study")
-            ;
-        else if(item->table() == "series")
-            emit open(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
-        else
-            ;
+    if (item)
+        emit (open(item->dataIndex()));
 }
 
 void medDatabaseView::onMenuViewClicked(void)
@@ -181,18 +163,13 @@ void medDatabaseView::onMenuViewClicked(void)
 
     medDatabaseItem *item = NULL;
 
-    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(index.internalPointer());
+    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
-    if(item)
-        if(item->table() == "patient")
-            ;
-        else if(item->table() == "study")
-            ;
-        else if(item->table() == "series")
-            emit open(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
-        else
-            ;
+    if (item && (item->dataIndex().isValidForSeries()))
+    {        
+        emit open(medDatabaseController::instance()->indexForSeries(item->dataIndex ().seriesId ()));
+    }
 }
 
 void medDatabaseView::onMenuExportClicked(void)
@@ -209,6 +186,8 @@ void medDatabaseView::onMenuExportClicked(void)
 
     if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
         item = static_cast<medDatabaseItem *>(index.internalPointer());
+    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(index.internalPointer());
 
     if(item)
         if(item->table() == "patient")
@@ -219,4 +198,10 @@ void medDatabaseView::onMenuExportClicked(void)
             emit exportData(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
         else
             ;
+}
+
+
+void medDatabaseView::selectionChanged( const QModelIndex& current, const QModelIndex& previous)
+{
+    emit onItemClicked(current);
 }
