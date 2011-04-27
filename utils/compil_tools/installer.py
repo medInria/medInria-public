@@ -1,9 +1,50 @@
 #!/usr/bin/env python
 from optparse import OptionParser
-import sys,os,zipfile,ConfigParser,platform, shutil,urllib
+import sys,os,zipfile,ConfigParser,platform, shutil,urllib,string
 from exceptions import OSError,NotImplementedError
 import re,subprocess
 import types
+
+################################################################################
+#
+# Logger settings
+#
+################################################################################
+import logging
+def config_logging(log, config):
+    """
+    Configure the logging for the project
+    """
+    fileName=config.get("logging","filename")
+
+    if (log and fileName):
+        #logging.basicConfig(filename=fileName,level=logging.DEBUG)
+        import logging.config
+
+        logging.config.fileConfig(fileName)
+
+        # create logger
+        logger = logging.getLogger('root')
+    else:
+        # create logger
+        logger = logging.getLogger('root')
+        logger.setLevel(logging.DEBUG)
+
+        # create console handler and set level to debug
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+
+        # create formatter
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+        # add formatter to ch
+        ch.setFormatter(formatter)
+
+        # add ch to logger
+        logger.addHandler(ch)
+        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+
+
 
 ################################################################################
 #
@@ -30,13 +71,28 @@ if not "check_output" in subprocess.__dict__:
 else:
     from subprocess import check_output
 
+def run_and_log(*popenargs, **kwargs):
+    if 'stderr' in kwargs:
+            raise ValueError('stderr argument not allowed, it will be overridden.')
+    if 'stdout' in kwargs:
+            raise ValueError('stdout argument not allowed, it will be overridden.')
+
+    process = subprocess.Popen(stderr=subprocess.STDOUT,
+                    stdout=subprocess.PIPE, *popenargs, **kwargs)
+    output, unused_err = process.communicate()
+    retcode = process.poll()
+    if retcode:
+        logging.error(output)
+        return
+    logging.info(output)
+
 
 def _extract_all(self, destdir):
     namelist = self.namelist()
     namelist.sort()
     for name in namelist:
         if name.endswith('/'):
-            print name
+            logging.debug(name);
             os.makedirs(os.path.join(destdir, name))
         else:
             outfile = open(os.path.join(destdir, name), 'wb')
@@ -67,7 +123,7 @@ def url_get_file(url,file_path):
     """
     #i = url.rfind('/')
     #file = url[i+1:]
-    print url, "->", file_path
+    logging.info( "%s -> %s",url, file_path)
     urllib.urlretrieve(url, file_path, reporthook)
     sys.stdout.flush()
     return
@@ -92,7 +148,7 @@ def find_architecture():
             ARCHITECTURE=ARCHITECTURE+'64'
         else:
             ARCHITECTURE=ARCHITECTURE+'32'
-    print 'found the architecture : ' + ARCHITECTURE
+    logging.info( 'found the architecture : %s',ARCHITECTURE)
     return ARCHITECTURE
 
 def install_package_deps(config):
@@ -109,8 +165,8 @@ def install_package_deps(config):
         cmd=""
     else:
         raise "unknown package manager"
-    print cmd
-    os.system(cmd)
+    logging.info( cmd)
+    run_and_log(cmd.split())
 
 def load_config_files(filenames=[]):
     """
@@ -123,7 +179,7 @@ def load_config_files(filenames=[]):
     config=ConfigParser.ConfigParser()
     config.optionxform = str
     config.readfp(open("default_param.cfg"))
-    print config.read(filenames)
+    logging.info(config.read(filenames))
     return config
 
 def configure_project(project,config,architecture='linux'):
@@ -163,8 +219,8 @@ def configure_project(project,config,architecture='linux'):
             if not config.has_option("DEFAULT",k):
                 command+=k+"="+v+" "
 
-    print command
-    os.system(command)
+    logging.info( command)
+    run_and_log(command.split())
 
 def build(project,config,architecture="linux"):
     """
@@ -189,14 +245,13 @@ def build(project,config,architecture="linux"):
                     "visual_build") +' ' + project_name + '.sln ' + win32_config
     else:
          cmd = make_command+' -j'+config.get(project,"cpus") + ' -k'
-    print cmd
-    os.system(cmd)
+    logging.info(cmd)
+    run_and_log(cmd.split)
 
     extra_build_cmd=config.get(project,"extra_build_cmd")
     if len(extra_build_cmd):
-        print "#####\n#######\n######\n######\n######\n######\n######\n####\n"
-        print extra_build_cmd
-        os.system(extra_build_cmd)
+        logging.info(extra_build_cmd)
+        run_and_log (extra_build_cmd.split())
 
     os.chdir('..')
 
@@ -231,26 +286,27 @@ def wget(project,config):
     source = config.get(project,"source_host")+"/"+source_file
     archive_dir = config.get(project,"archive_dir")
     target_file = os.path.join(archive_dir,source_file)
-    print "arc_dir:",archive_dir,"file:",target_file
+    logging.debug("arc_dir: %s, file: %s",archive_dir,target_file)
 
     if wget_c == "python":
         if not os.path.isfile(target_file):
             url_get_file(source,target_file)
         else:
-            print "file",target_file,"already exists, skipping download"
+            logging.warn("file %s already exists, skipping download",target_file)
     else:
-        os.system(wget_c + " "+ source)
+        wget_c = wget_c + " " + source
+        run_and_log(wget_c.split())
     #uncompress in the right directory...
     uncomp_cmd = config.get(project,"uncompress_command")
-    print uncomp_cmd
+    logging.info(uncomp_cmd)
     #len(python_)=7
     if len(uncomp_cmd)>7 and uncomp_cmd[0:7]== "python_" :
         option = uncomp_cmd[7:]
-        print "uncompress file type:",option
+        logginv.info( "uncompress file type:%s",option)
         if option == "tar":
             uncomp_tar(project,config,target_file)
     else:
-        os.system(uncomp_cmd)
+        run_and_log(uncomp_cmd.split())
     return
 
 def _git_path(project,config):
@@ -299,8 +355,9 @@ def git_clone(project,config):
     git_command = config.get("commands","git")
     dest_dir = config.get(project,"destination_dir")
     url = _git_path(project,config)
-    print url
-    os.system(git_command + " clone "+ url + " " + dest_dir)
+    logging.debug(url)
+    cmd = git_command + " clone "+ url + " " + dest_dir
+    run_and_log(cmd.split())
     os.chdir(dest_dir)
     _git_checkout(project, config)
     os.chdir("..")
@@ -373,7 +430,7 @@ def _git_checkout(project, config):
             git_co_com += " " + active[0]
 
     # print git_command
-    os.system(git_co_com)
+    run_and_log(git_co_com.split())
 
     return
 
@@ -467,7 +524,7 @@ def install(project,config,architecture):
         generator_type = config.get(project,"generator_type")
         if generator_type == 'NMake Makefiles':
             cmd = make_command + ' -f Makefile install'
-        elif generator_type == "Visual Studio 10":
+        elif not (-1 == string.find(generator_type,"Visual Studio 10")):
             cmd =  config.get("commands",
                     "visual_build") +' install.vcxproj ' + win32_config
         else :
@@ -529,8 +586,8 @@ def doc(project,config,architecture):
     os.chdir(config.get(project,"build_dir"))
 
     make=config.get("commands","make")
-    doc_output = check_output([make,"doc"])
-    print doc_output
+    doc_output = run_and_log([make,"doc"])
+    #print doc_output
 
     extra_doc_cmd=config.get(project,"extra_doc_cmd")
     if len(extra_doc_cmd):
@@ -676,6 +733,12 @@ def main(argv):
                               Debugging tool. Returns right after \
                               displaying the configuration."
                       )
+    parser.add_option("-l","--log",
+                      dest = "log",
+                      action = "store_true",
+                      default = False,
+                      help = "Log all output in a file instead of the console"
+                      )
 
 
     (options, args) = parser.parse_args()
@@ -687,6 +750,9 @@ def main(argv):
     #    filenames = options.filenames.split(":")
     config = load_config_files(filenames)
     architecture = find_architecture()
+
+    # configure logging
+    config_logging(options.log,config)
 
     # debug function: shows config values:
     if options.show_conf:
@@ -780,3 +846,4 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv)
+    logging.shutdown()
