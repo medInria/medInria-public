@@ -2,15 +2,15 @@
 from optparse import OptionParser
 import sys,os,zipfile,ConfigParser,platform, shutil,urllib,string
 from exceptions import OSError,NotImplementedError
-import re,subprocess
-import types
+import re,subprocess,exceptions
+import types,shlex
+import logging, logging.config
 
 ################################################################################
 #
 # Logger settings
 #
 ################################################################################
-import logging
 def config_logging(log, config):
     """
     Configure the logging for the project
@@ -19,7 +19,6 @@ def config_logging(log, config):
 
     if (log and fileName):
         #logging.basicConfig(filename=fileName,level=logging.DEBUG)
-        import logging.config
 
         logging.config.fileConfig(fileName)
 
@@ -27,23 +26,10 @@ def config_logging(log, config):
         logger = logging.getLogger('root')
     else:
         # create logger
+        print ("yo")
+        logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
+                level=logging.DEBUG)
         logger = logging.getLogger('root')
-        logger.setLevel(logging.DEBUG)
-
-        # create console handler and set level to debug
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
-
-        # create formatter
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-        # add formatter to ch
-        ch.setFormatter(formatter)
-
-        # add ch to logger
-        logger.addHandler(ch)
-        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
-
 
 
 ################################################################################
@@ -92,7 +78,7 @@ def _extract_all(self, destdir):
     namelist.sort()
     for name in namelist:
         if name.endswith('/'):
-            logging.debug(name);
+            logging.info(name);
             os.makedirs(os.path.join(destdir, name))
         else:
             outfile = open(os.path.join(destdir, name), 'wb')
@@ -148,7 +134,9 @@ def find_architecture():
             ARCHITECTURE=ARCHITECTURE+'64'
         else:
             ARCHITECTURE=ARCHITECTURE+'32'
-    logging.info( 'found the architecture : %s',ARCHITECTURE)
+    logger = logging.getLogger('root')
+    logger.info( 'found the architecture : %s',ARCHITECTURE)
+    logger.info("test")
     return ARCHITECTURE
 
 def install_package_deps(config):
@@ -179,7 +167,7 @@ def load_config_files(filenames=[]):
     config=ConfigParser.ConfigParser()
     config.optionxform = str
     config.readfp(open("default_param.cfg"))
-    logging.info(config.read(filenames))
+    print(config.read(filenames))
     return config
 
 def configure_project(project,config,architecture='linux'):
@@ -203,24 +191,24 @@ def configure_project(project,config,architecture='linux'):
         os.makedirs(build_dir)
         os.chdir(build_dir)
 
-        command= cmake_command
+        command= shlex.split(cmake_command)
         for k,v in config.items("cmake-common"):
             #prevent defaults to pollute the command line
             if not config.has_option("DEFAULT",k):
-                command+=' -D'+k+':'+v
+                command.append('-D'+k+':'+v)
         for k,v in config.items(project+"-cmake"):
             if not config.has_option("DEFAULT",k):
-                command+=' -D'+k+':'+v
-        command = command + ' ' + src_dir
+                command.append('-D'+k+':'+v)
+        command.append(src_dir)
     elif config.get(project,"configure_type")== "autoconf":
-        command = "./configure "
+        command = [os.path.abspath("./configure")]
         for k,v in config.items(project+"-configure"):
             #prevent defaults to pollute the command line
             if not config.has_option("DEFAULT",k):
-                command+=k+"="+v+" "
+                command.append(k+"="+v)
 
     logging.info( command)
-    run_and_log(command.split())
+    run_and_log(command)
 
 def build(project,config,architecture="linux"):
     """
@@ -246,7 +234,7 @@ def build(project,config,architecture="linux"):
     else:
          cmd = make_command+' -j'+config.get(project,"cpus") + ' -k'
     logging.info(cmd)
-    run_and_log(cmd.split)
+    run_and_log(cmd.split())
 
     extra_build_cmd=config.get(project,"extra_build_cmd")
     if len(extra_build_cmd):
@@ -286,7 +274,7 @@ def wget(project,config):
     source = config.get(project,"source_host")+"/"+source_file
     archive_dir = config.get(project,"archive_dir")
     target_file = os.path.join(archive_dir,source_file)
-    logging.debug("arc_dir: %s, file: %s",archive_dir,target_file)
+    logging.info("arc_dir: %s, file: %s",archive_dir,target_file)
 
     if wget_c == "python":
         if not os.path.isfile(target_file):
@@ -302,7 +290,7 @@ def wget(project,config):
     #len(python_)=7
     if len(uncomp_cmd)>7 and uncomp_cmd[0:7]== "python_" :
         option = uncomp_cmd[7:]
-        logginv.info( "uncompress file type:%s",option)
+        logging.info( "uncompress file type:%s",option)
         if option == "tar":
             uncomp_tar(project,config,target_file)
     else:
@@ -370,8 +358,12 @@ def git_pull(project,config):
     git_command = config.get("commands","git")
     dest_dir = config.get(project,"destination_dir")
     os.chdir(dest_dir)
-    os.system(git_command+ " checkout master")
-    os.system(git_command+ " pull")
+    cmd = git_command.split()
+    cmd.extend(["checkout","master"])
+    run_and_log(cmd)
+    cmd = git_command.split()
+    cmd.append("pull")
+    run_and_log(cmd)
     _git_checkout(project, config)
     os.chdir("..")
     return
@@ -441,7 +433,9 @@ def svn_update(project,config):
     svn_command = config.get("commands","svn")
     dest_dir = config.get(project,"destination_dir")
     os.chdir(dest_dir)
-    os.system(svn_command+' update')
+    cmd = svn_command.split()
+    cmd.append("update")
+    run_and_log(cmd)
     os.chdir('..')
     return
 
@@ -457,10 +451,9 @@ def svn_checkout(project,config):
     path = _svn_path(project,config)
     dest_dir =  config.get(project,"destination_dir")
 
-    svn_cmd=svn_command+' checkout '+ path + " " + dest_dir
-    print svn_cmd
-    os.system(svn_cmd)
-
+    svn_cmd=[svn_command,'checkout', path, dest_dir]
+    logging.info( svn_cmd)
+    run_and_log(svn_cmd)
     return
 
 def create_dirs(project,config):
@@ -483,8 +476,8 @@ def create_dirs(project,config):
         raise "don't know how to get the source code for : " + project
     extra_create_dirs_cmd=config.get(project,"extra_create_dirs_cmd")
     if len(extra_create_dirs_cmd):
-        print extra_create_dirs_cmd
-        os.system(extra_create_dirs_cmd)
+        logging.info( extra_create_dirs_cmd)
+        run_and_log(extra_create_dirs_cmd,shell=True)
 
     return
 
@@ -512,30 +505,35 @@ def install(project,config,architecture):
     based.
     """
     os.chdir(config.get(project,"build_dir"))
-    make_command = config.get("commands","make")
+    make_command = [config.get("commands","make")]
+    cmd = list()
     if architecture == 'win' or architecture == 'win32' \
             or architecture == 'win64':
 
-        win32_config= config.get(project,"win32_configuration")
+        win32_config= config.get(project,"win32_configuration").split()
 
         if not win32_config and config.get(project,"build_type")=="Release":
-            win32_config = "Release\|Win32"
+            win32_config = ["Release\|Win32"]
 
         generator_type = config.get(project,"generator_type")
         if generator_type == 'NMake Makefiles':
-            cmd = make_command + ' -f Makefile install'
+            cmd.extend(make_command)
+            cmd.extend(['-f', 'Makefile', 'install'])
         elif not (-1 == string.find(generator_type,"Visual Studio 10")):
-            cmd =  config.get("commands",
-                    "visual_build") +' install.vcxproj ' + win32_config
+            cmd.extend  ([config.get("commands",
+                    "visual_build"), 'install.vcxproj'])
+            cmd.extend(win32_config)
         else :
-            cmd =  config.get("commands",
-                    "visual_build") +' install.vcproj ' + win32_config
+            cmd.extend ([config.get("commands",
+                    "visual_build"),'install.vcproj'])
+            cmd.extend(win32_config)
 
     else:
-        cmd = make_command+' install'
+        cmd.extend(make_command)
+        cmd.append('install')
 
-    print cmd
-    os.system(cmd)
+    logging.info( cmd)
+    run_and_log(cmd)
 
     """extra_build_cmd=config.get(project,"extra_build_cmd")
     if len(extra_build_cmd):
@@ -550,30 +548,30 @@ def build_package(project,config,architecture):
     Runs the package creation command on the project. Only cpack for now.
     """
 
-    print "build package: " + project
+    logging.info("build package: " + project)
     os.chdir(config.get(project,"build_dir"))
-    print architecture,
+    logging.debug(architecture)
     if architecture =='win' or architecture == 'win32' \
             or architecture == 'win64':
 
-        cmd = config.get("commands","make") + " package"
-        print cmd
+        cmd = [config.get("commands","make"),"package"]
+        logging.info(cmd)
 
-        os.system(cmd)
+        run_and_log(cmd)
     else:
         cpack_cmd = config.get("commands","cpack")
         pkg_mngr = config.get("package_deps","package_manager")
-        print pkg_mngr
+        logging.info( pkg_mngr)
         gen = "RPM"
         if pkg_mngr == "apt":
             gen = "DEB"
-        cmd = cpack_cmd + " -G " + gen
-        os.system(cmd)
+        cmd = [cpack_cmd, "-G ", gen]
+        run_and_log(cmd)
 
     extra_package_cmd=config.get(project,"extra_package_cmd")
     if len(extra_package_cmd):
-        print "Execute extra package command:",extra_package_cmd
-        os.system(extra_package_cmd)
+        logging.info( "Execute extra package command:"+extra_package_cmd)
+        run_and_log(extra_package_cmd,shell=True)
     return
 
 def doc(project,config,architecture):
@@ -591,8 +589,8 @@ def doc(project,config,architecture):
 
     extra_doc_cmd=config.get(project,"extra_doc_cmd")
     if len(extra_doc_cmd):
-        print "Execute extra doc command:",extra_doc_cmd
-        os.system(extra_doc_cmd)
+        logging.info( "Execute extra doc command: "+ extra_doc_cmd)
+        run_and_log(extra_doc_cmd,shell=True)
     return
 
 
@@ -620,6 +618,7 @@ def confirm_action( prompt = None ):
         if ans == 's' or ans == 'S':
             return False
         if ans == 'a' or ans == 'A':
+            logging.shutdown()
             sys.exit()
 
 
@@ -749,10 +748,11 @@ def main(argv):
 
     #    filenames = options.filenames.split(":")
     config = load_config_files(filenames)
-    architecture = find_architecture()
-
     # configure logging
     config_logging(options.log,config)
+
+    architecture = find_architecture()
+
 
     # debug function: shows config values:
     if options.show_conf:
@@ -763,10 +763,10 @@ def main(argv):
 
     # install dependencies through the package management system.
     if options.pkg_dep and config.getint('package_deps', 'install') == 1:
-        print "installing package dependencies..."
+        logging.info( "installing package dependencies...")
         install_package_deps(config)
     else:
-        print "skip installation of package dependencies"
+        logging.info("skip installation of package dependencies")
 
 
     # create main directory
@@ -775,13 +775,13 @@ def main(argv):
     try:
         os.makedirs(projects_dir)
     except OSError,e:
-        print e
-        print '...no problem, continuing'
+        logging.debug( e)
+        logging.debug( '...no problem, continuing')
     try:
         os.makedirs(archive_dir)
     except OSError,e:
-        print e
-        print '...no problem, continuing'
+        logging.debug( e)
+        logging.debug( '...no problem, continuing')
 
     # run the requested actions for each project
     projects_str = config.get("projects","projects")
@@ -798,52 +798,55 @@ def main(argv):
         os.chdir(projects_dir)
 
         if choose_fun('create_dirs'):
-            print "Creating directory for " + project + "..."
+            logging.info( "Creating directory for " + project + "...")
             if confirm_fun():
                 create_dirs(project,config)
         elif choose_fun('update_dirs'):
-            print "Updating directory for " + project + "..."
+            logging.info("Updating directory for " + project + "...")
             if confirm_fun():
                 update_dirs(project,config)
 
         cwd = os.path.join(projects_dir, config.get(project,"destination_dir"))
         os.chdir(cwd)
         if choose_fun('configure'):
-            print "configuring " + project + "..."
+            logging.info( "configuring " + project + "...")
             if confirm_fun():
                 configure_project(project,config,architecture)
 
         os.chdir(cwd)
         if choose_fun('build'):
-            print "building " + project + "..."
+            logging.info( "building " + project + "...")
             if confirm_fun():
                 build(project,config,architecture)
 
         os.chdir(cwd)
         if choose_fun('doc'):
-            print "doc " + project + "..."
+            logging.info( "doc " + project + "...")
             if confirm_fun():
                 doc(project,config,architecture)
 
 
         os.chdir(cwd)
         if choose_fun('install'):
-            print "installing " + project + "..."
+            logging.info( "installing " + project + "...")
             if confirm_fun():
                 install(project,config,architecture)
 
         os.chdir(cwd)
         if choose_fun('package'):
-            print "packaging " + project + "..."
+            logging.info( "packaging " + project + "...")
             if confirm_fun():
                 build_package(project,config,architecture)
 
         os.chdir(cwd)
 
-        print project
+        logging.info(project)
     return
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        main(sys.argv)
+    except exceptions.Exception, e:
+        logging.error(e)
     logging.shutdown()
