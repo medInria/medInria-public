@@ -220,3 +220,4 @@ void vtkQtOpenGLRenderWindow::BuildStandardCursors()
     SetQtCursorForVtkCursorId( QCursor( Qt::SizeAllCursor ), VTK_CURSOR_SIZEALL );
     SetQtCursorForVtkCursorId( QCursor( Qt::PointingHandCursor ), VTK_CURSOR_HAND );
 }
+
