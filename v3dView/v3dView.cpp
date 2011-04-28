@@ -2089,7 +2089,7 @@ void v3dView::onPositionChanged(const QVector3D &position)
         d->slider->blockSignals (false);
     }
 
-    d->scene->onPositionChanged( position );
+    // d->scene->onPositionChanged( position, false );
 }
 
 void v3dView::onZoomChanged(double zoom)
@@ -2097,7 +2097,7 @@ void v3dView::onZoomChanged(double zoom)
     d->observer->lock();
     d->view2d->SetZoom(zoom);
     d->observer->unlock();
-    d->scene->onZoomChanged( zoom );
+    // d->scene->onZoomChanged( zoom, false );
 }
 
 void v3dView::onPanChanged (const QVector2D &pan)
@@ -2109,7 +2109,7 @@ void v3dView::onPanChanged (const QVector2D &pan)
     d->observer->lock();
     d->view2d->SetPan(ppan);
     d->observer->unlock();
-    d->scene->onPanChanged( pan );
+    // d->scene->onPanChanged( pan, false );
 }
 
 void v3dView::onWindowingChanged (double level, double window)
@@ -2145,7 +2145,7 @@ void v3dView::onCameraChanged (const QVector3D &position, const QVector3D &viewu
     d->observer->unlock();
 
     d->view3d->Modified();
-    d->scene->onCameraChanged( position, viewup, focal, parallelScale );
+    // d->scene->onCameraChanged( position, viewup, focal, parallelScale, false );
 }
 
 void v3dView::onVisibilityChanged(bool visible, int layer)

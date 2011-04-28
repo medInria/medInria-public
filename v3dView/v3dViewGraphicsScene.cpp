@@ -32,20 +32,22 @@ v3dViewGraphicsScene::v3dViewGraphicsScene( v3dView * view, QWidget * parent )
     d->view = view;
     d->itemsVisible = ( d->view->currentView() == d->view->view2d() );
 
-    // connect( d->view, SIGNAL( sliceChanged( int ) ),
-    //          this,    SLOT( onSliceChanged( int ) ) );
-    connect( d->view, SIGNAL( positionChanged( const QVector3D & ) ),
-             this,    SLOT( onPositionChanged( const QVector3D & ) ) );
-    connect( d->view, SIGNAL( zoomChanged( double ) ),
-             this,    SLOT( onZoomChanged( double ) ) );
-    connect( d->view, SIGNAL( panChanged( const QVector2D &) ),
-             this,    SLOT( onPanChanged( const QVector2D &)) );
+    connect( d->view, SIGNAL( sliceChanged( int, bool ) ),
+             this,    SLOT( onSliceChanged( int, bool ) ) );
+    connect( d->view, SIGNAL( positionChanged( const QVector3D &, bool ) ),
+             this,    SLOT( onPositionChanged( const QVector3D &, bool ) ) );
+    connect( d->view, SIGNAL( zoomChanged( double, bool ) ),
+             this,    SLOT( onZoomChanged( double, bool ) ) );
+    connect( d->view, SIGNAL( panChanged( const QVector2D &, bool ) ),
+             this,    SLOT( onPanChanged( const QVector2D &, bool ) ) );
     connect( d->view, SIGNAL( cameraChanged( const QVector3D &,
                                              const QVector3D &,
-                                             const QVector3D &, double ) ),
+                                             const QVector3D &,
+                                             double, bool ) ),
              this,    SLOT( onCameraChanged( const QVector3D &,
                                              const QVector3D &,
-                                             const QVector3D &, double ) ) );
+                                             const QVector3D &,
+                                             double, bool ) ) );
 
     QVtkGraphicsView * qView =
         dynamic_cast< QVtkGraphicsView *>( view->receiverWidget() );
@@ -85,39 +87,46 @@ void v3dViewGraphicsScene::onSceneRectChanged( const QRectF & rect )
     d->circAnn->updateSceneCoords();
 }
 
-void v3dViewGraphicsScene::onSliceChanged( int slice )
+void v3dViewGraphicsScene::onSliceChanged( int slice, bool propagate )
 {
     Q_UNUSED( slice );
+    Q_UNUSED( propagate );
     d->circAnn->updateSceneCoords();
 }
 
-void v3dViewGraphicsScene::onPositionChanged( const QVector3D &position )
+void v3dViewGraphicsScene::onPositionChanged( const QVector3D & position,
+                                              bool propagate )
 {
     Q_UNUSED( position );
+    Q_UNUSED( propagate );
     d->circAnn->updateSceneCoords();
 }
 
-void v3dViewGraphicsScene::onZoomChanged( double zoom )
+void v3dViewGraphicsScene::onZoomChanged( double zoom, bool propagate )
 {
     Q_UNUSED( zoom );
+    Q_UNUSED( propagate );
     d->circAnn->updateSceneCoords();
 }
 
-void v3dViewGraphicsScene::onPanChanged( const QVector2D &pan )
+void v3dViewGraphicsScene::onPanChanged( const QVector2D & pan, bool propagate )
 {
     Q_UNUSED( pan );
+    Q_UNUSED( propagate );
     d->circAnn->updateSceneCoords();
 }
 
 void v3dViewGraphicsScene::onCameraChanged( const QVector3D & position,
                                             const QVector3D & viewup,
                                             const QVector3D & focal,
-                                            double parallelScale )
+                                            double parallelScale,
+                                            bool propagate )
 {
     Q_UNUSED( position );
     Q_UNUSED( viewup );
     Q_UNUSED( focal );
     Q_UNUSED( parallelScale );
+    Q_UNUSED( propagate );
 
     d->circAnn->updateSceneCoords();
 }

@@ -36,25 +36,25 @@ public slots:
      * Full description
      * @param     slice
      */
-    void onSliceChanged (int slice);
+    void onSliceChanged (int slice, bool propagate);
     /**
      * Brief description
      * Full description
      * @param     position   
      */
-    void onPositionChanged (const QVector3D &position);
+    void onPositionChanged (const QVector3D &position, bool propagate);
     /**
      * Brief description
      * Full description
      * @param     zoom  
      */
-    void onZoomChanged (double zoom);
+    void onZoomChanged (double zoom, bool propagate);
     /**
      * Brief description
      * Full description
      * @param     pan   
      */
-    void onPanChanged (const QVector2D &pan);
+    void onPanChanged (const QVector2D &pan, bool propagate);
 
     /**
      * Brief description
@@ -67,7 +67,7 @@ public slots:
     void onCameraChanged (const QVector3D &position,
                           const QVector3D &viewup,
                           const QVector3D &focal,
-                          double parallelScale);
+                          double parallelScale, bool propagate);
 
     void onSizeChanged( int width, int height);
 
