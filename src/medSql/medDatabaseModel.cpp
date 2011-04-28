@@ -16,7 +16,7 @@
 /* Change log:
  * 
  */
-
+#include <QtGui>
 #include <QtCore>
 #include <QtSql>
 
@@ -456,13 +456,16 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     
 void medDatabaseModel::repopulate(void)
 {
+    beginRemoveRows(QModelIndex(),0,rowCount());
     if (rowCount() > 0)
-        removeRows(0, rowCount());
+        this->removeRows(0, this->rowCount(QModelIndex()), QModelIndex());
+    endRemoveRows();
+
+    beginInsertRows(QModelIndex(),0,0);
+    populate(d->root);
+    endInsertRows();
 
     reset();
-
-    populate(d->root);
-
 }
 
 //! Model population.
