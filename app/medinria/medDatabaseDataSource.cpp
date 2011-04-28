@@ -80,7 +80,6 @@ QString medDatabaseDataSource::tabName()
 
 QList<medToolBox*> medDatabaseDataSource::getToolboxes()
 {
-    //nothing at the moment
     return d->toolboxes; 
 }
 
@@ -93,8 +92,11 @@ void medDatabaseDataSource::update()
 
 void medDatabaseDataSource::onFilter( const QString &text, int column )
 {
-    d->proxy->setFilterKeyColumn(column);
-    d->proxy->setFilterRegExp(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard));
+    // adding or overriding filter on column
+    d->proxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
 }
+
+
+
 
 

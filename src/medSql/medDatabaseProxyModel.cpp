@@ -14,17 +14,47 @@ medDatabaseProxyModel::~medDatabaseProxyModel()
 
 bool medDatabaseProxyModel::filterAcceptsRow( int source_row, const QModelIndex & source_parent ) const
 {
-    // return if no filter was set
-    if(filterRegExp().isEmpty())
-        return true;
+    // checking all stored keys
+    QHash<int, QRegExp>::const_iterator i = filterVector.constBegin();
+    while (i != filterVector.constEnd()) 
+    {
+        currentKey = i.key();
+        currentValue = i.value();
+        if (!customFilterAcceptsRow(source_row, source_parent))
+            return false;
+        i++;
+    }
+    return true;
 
-    // get the current modelindex
+ 
+}
+
+bool medDatabaseProxyModel::filterAcceptsColumn( int source_column, const QModelIndex &source_parent ) const
+{
+    return QSortFilterProxyModel::filterAcceptsColumn(source_column, source_parent);
+}
+
+void medDatabaseProxyModel::setFilterRegExpWithColumn( const QRegExp &regExp, int column )
+{
+    filterVector[column] = regExp;
+    filterChanged();
+}
+
+void medDatabaseProxyModel::clearAllFilters()
+{
+    filterVector.clear();
+}
+
+bool medDatabaseProxyModel::customFilterAcceptsRow( int source_row, const QModelIndex & source_parent ) const
+{
+
+    // get the current model index
     QModelIndex current(sourceModel()->index(source_row, 0, source_parent));
 
     // show all children if parent is valid
     if (source_parent.isValid() && !isCheckingChild)
     {
-        if(filterAcceptsRow(source_row, current))
+        if(customFilterAcceptsRow(source_row, current))
             return true;
     }
 
@@ -39,18 +69,24 @@ bool medDatabaseProxyModel::filterAcceptsRow( int source_row, const QModelIndex 
             if(!child.isValid())
                 break;
             isCheckingChild = true;
-            atLeastOneValidChild = filterAcceptsRow(i, current);
+            atLeastOneValidChild = customFilterAcceptsRow(i, current);
             isCheckingChild = false;
             i++;
         }
         if (atLeastOneValidChild)
-           return true;
+            return true;
     }
 
-    return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
-}
+    // get the data we want to check
+    QModelIndex index = sourceModel()->index(source_row, currentKey, source_parent);
+    
+    // ignoring invalid items
+    if (!current.isValid() || !index.isValid())
+        return true;
 
-bool medDatabaseProxyModel::filterAcceptsColumn( int source_column, const QModelIndex &source_parent ) const
-{
-    return QSortFilterProxyModel::filterAcceptsColumn(source_column, source_parent);
+    // pattern to data check
+    if (!sourceModel()->data(index).toString().contains(currentValue))
+        return false;
+
+    return true;
 }

@@ -7,6 +7,26 @@
 
 class medDatabaseSearchPanelPrivate;
 
+class EditCombo : public QWidget
+{
+    Q_OBJECT
+public:
+    EditCombo(QString _text, int _column);
+    ~EditCombo();
+signals:
+
+    void textChanged(const QString& , int);
+
+protected slots:
+    void onTextChanged(const QString&);
+
+private:
+    QLineEdit edit;
+    QLabel label;
+    int column;
+
+};
+
 class MEDGUI_EXPORT medDatabaseSearchPanel : public medToolBox
 {
     Q_OBJECT
@@ -20,6 +40,9 @@ signals:
     void filter(const QString &text, int column);
 
 protected slots:
+
+    void addBox();
+    void removeBox();
     void onSetFilter(const QString &text);
 
 private:
