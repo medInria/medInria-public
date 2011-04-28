@@ -7,6 +7,7 @@
 #include <itkImage.h>
 #include <itkImageFileWriter.h>
 #include <itkRGBPixel.h>
+#include <itkRGBAPixel.h>
 
 itkDataImageWriterBase::itkDataImageWriterBase()
 {
@@ -392,6 +393,23 @@ bool itkDataImageWriterBase::write(const QString& path)
 	        return false;
 	    }
 	}
+
+        else if(dtkdata->description()=="itkDataImageRGB3") {
+            itk::Image< itk::RGBAPixel<unsigned char>, 3>::Pointer image = dynamic_cast< itk::Image< itk::RGBAPixel<unsigned char>, 3>* >( (itk::Object*)(this->data()->output()) );
+            if (image.IsNull())
+                return false;
+            itk::ImageFileWriter < itk::Image< itk::RGBAPixel<unsigned char>, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image< itk::RGBAPixel<unsigned char>, 3> >::New();
+            writer->SetImageIO ( this->io );
+            writer->SetFileName ( path.toAscii().constData() );
+            writer->SetInput ( image );
+            try {
+                writer->Update();
+            }
+            catch(itk::ExceptionObject &e) {
+                qDebug() << e.GetDescription();
+                return false;
+            }
+        }
 
         else {
             qWarning() << "Unrecognized pixel type";

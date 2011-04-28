@@ -91,7 +91,9 @@ if (vtkINRIA3D_USE_ITK)
   target_link_libraries(${PROJECT_NAME} ${ITK_LIBRARIES})
 endif (vtkINRIA3D_USE_ITK)
 
-dtk_build_doc(v3dViewPublicPlugin)
+if(BUILD_DOCUMENTATION)
+	dtk_build_doc(${PROJECT_NAME})
+endif(BUILD_DOCUMENTATION)
 
 ## #################################################################
 ## Install rules

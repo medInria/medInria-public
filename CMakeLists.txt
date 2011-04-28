@@ -43,6 +43,7 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 ## #################################################################
 
 enable_testing()
+OPTION(BUILD_EXAMPLES "Enable this if you want to build the exmples" OFF)
 
 mark_as_advanced(DART_ROOT)
 
