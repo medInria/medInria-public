@@ -5,6 +5,7 @@
 medDatabaseProxyModel::medDatabaseProxyModel( QObject *parent /*= 0*/ )
 {
     isCheckingChild = false;
+    isCheckingParent = false;
 }
 
 medDatabaseProxyModel::~medDatabaseProxyModel()
@@ -24,9 +25,9 @@ bool medDatabaseProxyModel::filterAcceptsRow( int source_row, const QModelIndex 
             return false;
         i++;
     }
-    return true;
 
- 
+    // all good
+    return true;
 }
 
 bool medDatabaseProxyModel::filterAcceptsColumn( int source_column, const QModelIndex &source_parent ) const
@@ -50,16 +51,19 @@ bool medDatabaseProxyModel::customFilterAcceptsRow( int source_row, const QModel
 
     // get the current model index
     QModelIndex current(sourceModel()->index(source_row, 0, source_parent));
+    // get the data we want to check
+    QModelIndex index = sourceModel()->index(source_row, currentKey, source_parent);
 
     // show all children if parent is valid
-    if (source_parent.isValid() && !isCheckingChild)
+    if (current.parent().isValid() && !isCheckingChild && !isCheckingParent)
     {
-        if(customFilterAcceptsRow(source_row, current))
+        isCheckingParent = true;
+        if(customFilterAcceptsRow(current.parent().row(), current.parent().parent()))
             return true;
     }
 
     // show the parent if one child is valid 
-    if(sourceModel()->hasChildren(current))
+    if(sourceModel()->hasChildren(current) && !isCheckingChild && !isCheckingParent )
     {
         bool atLeastOneValidChild = false;
         int i = 0;
@@ -70,16 +74,16 @@ bool medDatabaseProxyModel::customFilterAcceptsRow( int source_row, const QModel
                 break;
             isCheckingChild = true;
             atLeastOneValidChild = customFilterAcceptsRow(i, current);
-            isCheckingChild = false;
             i++;
         }
         if (atLeastOneValidChild)
             return true;
     }
 
-    // get the data we want to check
-    QModelIndex index = sourceModel()->index(source_row, currentKey, source_parent);
-    
+    // set back
+    isCheckingParent = false;
+    isCheckingChild = false;
+
     // ignoring invalid items
     if (!current.isValid() || !index.isValid())
         return true;
@@ -88,5 +92,6 @@ bool medDatabaseProxyModel::customFilterAcceptsRow( int source_row, const QModel
     if (!sourceModel()->data(index).toString().contains(currentValue))
         return false;
 
+    // if we make it up to here we are good
     return true;
 }

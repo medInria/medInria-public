@@ -73,11 +73,6 @@ medDatabaseSearchPanel::~medDatabaseSearchPanel()
 
 }
 
-void medDatabaseSearchPanel::onSetFilter( const QString &text )
-{
-    emit filter(text, d->columnBox->currentIndex());
-}
-
 void medDatabaseSearchPanel::setColumnNames( const QStringList &columns )
 {
     if (columns.isEmpty())
@@ -90,6 +85,7 @@ void medDatabaseSearchPanel::setColumnNames( const QStringList &columns )
         d->columnBox->addItem(columnName);
     }
 
+    //d->columnBox->setCurrentIndex(2); // debug
     addBox(); // add patient name
 
 }

@@ -29,6 +29,7 @@ protected slots:
     bool customFilterAcceptsRow ( int source_row, const QModelIndex & source_parent ) const;
 private:
     mutable bool isCheckingChild;
+    mutable bool isCheckingParent;
     QHash<int,QRegExp> filterVector;
     mutable int currentKey;
     mutable QRegExp currentValue;

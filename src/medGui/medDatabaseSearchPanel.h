@@ -43,7 +43,6 @@ protected slots:
 
     void addBox();
     void removeBox();
-    void onSetFilter(const QString &text);
 
 private:
     medDatabaseSearchPanelPrivate* d;
