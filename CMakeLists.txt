@@ -38,6 +38,9 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+
 ## #################################################################
 ## Dashboard settings
 ## #################################################################
@@ -55,6 +58,8 @@ include(Dart)
 
 set(DEPENDS_ON_DTK 1)
 
+option(MEDINRIA_BUILD_TOOLS                               "Build Tools" "OFF")
+
 option(MEDINRIA_BUILD_V3DDATA_PLUGIN                      "Build v3dData plugin" "ON")
 option(MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN                "Build v3dViewPublic plugin" "ON")
 option(MEDINRIA_BUILD_V3DVIEW_PLUGIN                      "Build v3dView plugin" "ON")
@@ -70,63 +75,70 @@ option(MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN           "Build itkDataTensorIm
 option(MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN     "Build itkDataTensorImageReader plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN     "Build itkDataTensorImageWriter plugin" "ON")
 option(BUILD_DOCUMENTATION "Build documentation"    true)
+option(MEDINRIA_BUILD_REGISTRATION_PLUGINS                "Build Registration plugins" "ON")
 
+add_subdirectory(src)
+
+if (MEDINRIA_BUILD_TOOLS)
+    add_subdirectory(tools)
+endif()
 
 if (MEDINRIA_BUILD_V3DDATA_PLUGIN)
-  subdirs(v3dData)
+  add_subdirectory(v3dData)
 endif()
 
 if (MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN)
-  subdirs(v3dViewPublic)
+  add_subdirectory(v3dViewPublic)
 endif()
 
 if (MEDINRIA_BUILD_V3DVIEW_PLUGIN)
-  subdirs(v3dView)
+  add_subdirectory(v3dView)
 endif()
 
 if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN)
-  subdirs(itkDataImage)
+  add_subdirectory(itkDataImage)
 endif()
 
 if (MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN)
-  subdirs(itkDataImageReader)
+  add_subdirectory(itkDataImageReader)
 endif()
 
 if (MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN)
-  subdirs(itkDCMTKDataImageReader)
+  add_subdirectory(itkDCMTKDataImageReader)
 endif()
 
 if (MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN)
-  subdirs(itkDataImageWriter)
+  add_subdirectory(itkDataImageWriter)
 endif()
 
 if (MEDINRIA_BUILD_VTKDATAMESH_PLUGIN)
-  subdirs(vtkDataMesh)
+  add_subdirectory(vtkDataMesh)
 endif()
 
 if (MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN)
-  subdirs(vtkDataMeshReader)
+  add_subdirectory(vtkDataMeshReader)
 endif()
 
 if (MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN)
-  subdirs(vtkDataMeshWriter)
+  add_subdirectory(vtkDataMeshWriter)
 endif()
 
 if (MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN)
-  subdirs(itkDataDiffusionGradientList)
+  add_subdirectory(itkDataDiffusionGradientList)
 endif()
 
 if (MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN)
-  subdirs(itkDataTensorImage)
+  add_subdirectory(itkDataTensorImage)
 endif()
 
 if (MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN)
-    subdirs(itkDataTensorImageReader)
+    add_subdirectory(itkDataTensorImageReader)
 endif()
 
 if (MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN)
-    subdirs(itkDataTensorImageWriter)
+    add_subdirectory(itkDataTensorImageWriter)
 endif()
+
 
 if (MEDINRIA_BUILD_V3DDATA_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN OR
@@ -152,19 +164,22 @@ if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN OR
 endif()
 
 if ( ${MEDINRIA_REQUIRES_VTK} )
-    subdirs(dtkItkLogForwarder)
+    add_subdirectory(dtkItkLogForwarder)
 endif()
 
 if ( ${MEDINRIA_REQUIRES_VTK} )
-    subdirs(dtkVtkLogForwarder)
+    add_subdirectory(dtkVtkLogForwarder)
 endif()
 
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(pack)
+
+find_package(dtk REQUIRED)
+include(${dtk_USE_FILE})
+
 
 ## #################################################################
 ## Build settings
