@@ -12,9 +12,13 @@ class medJobItem;
 /**
  * @class medJobManager
  * @author Michael Knopke
- * @brief Manages safe termination of medJobItems (QRunnables) 
+ * @brief Manages safe termination of medJobItems (QRunnables).
+ *
  * All medJobItems that are registered here will receive a distributed cancel events when closing the application at will.
- * The JobItems need to make sure to have implemented the Cancel() method
+ *
+ * The JobItems need to make sure to have implemented the Cancel() method.
+ *
+ * @see medJobItem
  */
 class MEDCORE_EXPORT medJobManager : public QObject
 {
@@ -50,7 +54,7 @@ signals:
     void cancel(QObject*);
 
     void jobRegistered(medJobItem* item, QString jobName);
- 
+
 protected:
     medJobManager(void);
     ~medJobManager(void);
