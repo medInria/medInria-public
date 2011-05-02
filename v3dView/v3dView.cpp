@@ -1135,7 +1135,6 @@ void v3dView::onShowScalarBarPropertySet(const QString &value)
 void v3dView::onLookupTablePropertySet(const QString &value)
 {
     typedef vtkTransferFunctionPresets Presets;
-    
     vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
     Presets::GetTransferFunction( value.toStdString(), rgb, alpha );
@@ -1154,7 +1153,7 @@ void v3dView::onLookupTablePropertySet(const QString &value)
         d->view2d->SetLookupTable (lut, this->currentLayer());
         lut->Delete();
     }
-
+    
     
     //if (this->currentLayer()==0)
     //{

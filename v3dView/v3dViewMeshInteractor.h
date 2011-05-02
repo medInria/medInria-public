@@ -50,7 +50,7 @@ public slots:
     virtual void onRenderingModePropertySet (const QString& value, int meshLayer);
     virtual void onOpacityModePropertySet (double value, int meshLayer);
     virtual void onLUTModePropertySet (const QString& value, int meshLayer);
-    
+    virtual void onColorPropertySet (const QColor& color, int meshLayer);
 
 private:
     v3dViewMeshInteractorPrivate *d;
