@@ -648,10 +648,7 @@ void medViewerArea::setupConfiguration(QString name)
         this->addToolBox(toolbox);
         toolbox->show();
     }
-    
-    //setup layout Toolbox Visibility
-    conf->isLayoutToolBoxVisible()?conf->showLayoutToolBox():conf->hideLayoutToolBox();
-    
+
     d->toolbox_container->setVisible( conf->areToolBoxesVisible() );
 
     /*

@@ -22,12 +22,14 @@
 #include <medGui/medViewerToolBoxViewProperties.h>
 #include <medGui/medViewContainer.h>
 #include <medGui/medStackedViewContainers.h>
+#include <medGui/medViewerToolBoxLayout.h>
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medViewerToolBoxTime.h>
 
 class medViewerConfigurationVisualizationPrivate
 {
 public:
+    medViewerToolBoxLayout              *layoutToolBox;
     medViewerToolBoxTime                *timeToolBox;
     medViewerToolBoxView                *viewToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
@@ -37,22 +39,24 @@ public:
 medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationVisualizationPrivate)
 {
     // -- Layout toolbox --
-    showLayoutToolBox();
+    d->layoutToolBox = new medViewerToolBoxLayout(parent);
+    
+    connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),
+             this,             SIGNAL(layoutModeChanged(const QString&)));
+    connect (d->layoutToolBox, SIGNAL(presetClicked(int)),
+             this,             SIGNAL(layoutPresetClicked(int)));
+    connect (d->layoutToolBox, SIGNAL(split(int,int)),
+             this,             SIGNAL(layoutSplit(int,int)));    
 
-    // d->layoutToolBox = new medViewerToolBoxLayout(parent);
-    /*
-    connect(d->layoutToolBox, SIGNAL(modeChanged(int)), this, SLOT(switchToContainer(int)));
-    connect(d->layoutToolBox, SIGNAL(split(int, int)), this, SLOT(split(int, int)));
-    connect(d->layoutToolBox, SIGNAL(presetClicked(int)), this, SLOT(switchToContainerPreset(int)));
-    */
+    this->addToolBox( d->layoutToolBox );
     
     // -- View toolbox --
     
-    d->viewToolBox = new medViewerToolBoxView(parent);
+    d->viewToolBox           = new medViewerToolBoxView(parent);
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
-    d->timeToolBox = new medViewerToolBoxTime(parent);
+    d->timeToolBox           = new medViewerToolBoxTime(parent);
     this->addToolBox( d->viewToolBox );
-    this->addToolBox(d->viewPropertiesToolBox);
+    this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->timeToolBox );
 }
 
