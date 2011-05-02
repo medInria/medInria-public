@@ -39,6 +39,8 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+find_package(dtk REQUIRED)
+include(${dtk_USE_FILE})
 
 
 ## #################################################################
@@ -177,8 +179,6 @@ endif(BUILD_DOCUMENTATION)
 
 include(pack)
 
-find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
 
 
 ## #################################################################
