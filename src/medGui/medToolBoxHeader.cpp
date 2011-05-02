@@ -43,7 +43,7 @@ medToolBoxHeader::~medToolBoxHeader(void)
 
 QSize medToolBoxHeader::sizeHint(void) const
 {
-    return QSize(100, 32);
+    return QSize(100, 20);
 }
 
 void medToolBoxHeader::setTitle(const QString& title)
@@ -56,11 +56,9 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
     QFrame::paintEvent(event);
 
     QPainter painter(this);
-    painter.setPen(QColor("#bbbbbb"));
-
     QRectF rect = this->rect();
 
-    painter.translate(16, 10);
+    painter.translate(4, 1);
     
     painter.drawText(rect, Qt::AlignLeft, d->title);
     painter.end();
