@@ -79,11 +79,11 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     d->stopButton = new medButton(this,":/icons/stop.png",
                                   tr("Stop Sequence"));
 
-    d->timeLine = new QTimeLine();
+    d->timeLine = new QTimeLine(1000, this);
     d->timeLine->setLoopCount(0);
     d->timeLine->setCurveShape (QTimeLine::LinearCurve);
 
-    d->spinBox = new QSpinBox();
+    d->spinBox = new QSpinBox(this);
     d->spinBox->setRange(1,5000);
     d->spinBox->setSingleStep(10);
     d->spinBox->setValue(100);
@@ -91,7 +91,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 
     connect(d->timeLine, SIGNAL(frameChanged(int)), d->timeSlider, SLOT(setValue(int)));
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    QHBoxLayout *buttonLayout = new QHBoxLayout(this);
     buttonLayout->addWidget( d->previousFrameButton,1,Qt::AlignHCenter);
     buttonLayout->addWidget (d->playSequencesButton,1,Qt::AlignHCenter);
     buttonLayout->addWidget( d->nextFrameButton,1,Qt::AlignHCenter);
@@ -99,20 +99,20 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 
     buttonLayout->addWidget( d->stopButton,1,Qt::AlignHCenter);
 
-    QHBoxLayout *labelLayout = new QHBoxLayout();
+    QHBoxLayout *labelLayout = new QHBoxLayout(this);
     labelLayout->addWidget( d->labelmin);
     labelLayout->addStretch();
     labelLayout->addWidget( d->labelcurr);
     labelLayout->addStretch();
     labelLayout->addWidget( d->labelmax);
 
-    QHBoxLayout *topLayout = new QHBoxLayout();
+    QHBoxLayout *topLayout = new QHBoxLayout(this);
 
     topLayout->addStretch();
     topLayout->addWidget(d->labelspeed);
     topLayout->addWidget(d->spinBox);
 
-    QVBoxLayout* boxlayout = new QVBoxLayout ();
+    QVBoxLayout* boxlayout = new QVBoxLayout (this);
     boxlayout->addLayout(topLayout);
     boxlayout->addLayout( buttonLayout );
     boxlayout->addWidget (d->timeSlider);
