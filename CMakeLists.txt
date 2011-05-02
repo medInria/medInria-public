@@ -1,5 +1,5 @@
-### CMakeLists.txt --- 
-## 
+### CMakeLists.txt ---
+##
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Mon Sep 21 14:48:02 2009 (+0200)
@@ -8,13 +8,13 @@
 ##           By: Julien Wintz
 ##     Update #: 25
 ######################################################################
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ######################################################################
-## 
+##
 ### Change log:
-## 
+##
 ######################################################################
 
 cmake_minimum_required(VERSION 2.8.1)
@@ -76,8 +76,14 @@ option(MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN "Build itkDataDiffusio
 option(MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN           "Build itkDataTensorImage plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN     "Build itkDataTensorImageReader plugin" "ON")
 option(MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN     "Build itkDataTensorImageWriter plugin" "ON")
-option(BUILD_DOCUMENTATION "Build documentation"    true)
+
+## Registration plugins
 option(MEDINRIA_BUILD_REGISTRATION_PLUGINS                "Build Registration plugins" "ON")
+option(MEDINRIA_BUILD_REG_DIFF_DEMONS_PLUGIN "Build the diffeomorphic demons plugin" "ON")
+
+
+option(BUILD_DOCUMENTATION "Build documentation"    true)
+
 
 
 if (MEDINRIA_BUILD_V3DDATA_PLUGIN OR
@@ -86,7 +92,7 @@ if (MEDINRIA_BUILD_V3DDATA_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESH_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN)
-    
+
     set(MEDINRIA_REQUIRES_VTK TRUE)
 endif()
 
@@ -163,6 +169,11 @@ endif()
 if (MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN)
     add_subdirectory(itkDataTensorImageWriter)
 endif()
+
+if (MEDINRIA_BUILD_REG_DIFF_DEMONS_PLUGIN)
+    add_subdirectory(itkProcessRegistrationDiffeoMorphicDemons)
+endif()
+
 
 
 if(BUILD_DOCUMENTATION)

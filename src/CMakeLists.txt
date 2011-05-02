@@ -1,13 +1,11 @@
-
-
 ###############################################################################
-# 
+#
 # Libraries used by many plugins.
 #
 ###############################################################################
 
 
-if (BUILD_REGISTRATION_PLUGINS)
+if (MEDINRIA_BUILD_REGISTRATION_PLUGINS)
     add_subdirectory(itkProcessRegistration)
 endif()
 
