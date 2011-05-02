@@ -16,13 +16,13 @@
 #include "itkVTKDataImageWriter.h"
 
 #include <dtkCore/dtkLog.h>
-#include "itkLogForwarder.h"
+#include <dtkItkLogForwarder/itkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkDataImageWriterPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class itkDataImageWriterPluginPrivate 
+class itkDataImageWriterPluginPrivate
 {
 public:
     itkDataImageWriterPluginPrivate()
@@ -79,7 +79,7 @@ bool itkDataImageWriterPlugin::initialize(void)
     if(!itkBMPDataImageWriter::registered()) dtkWarning() << "Unable to register itkBMPDataImageWriter type";
     if(!itkJPEGDataImageWriter::registered()) dtkWarning() << "Unable to register itkJPEGDataImageWriter type";
     if(!itkTIFFDataImageWriter::registered()) dtkWarning() << "Unable to register itkTIFFDataImageWriter type";
-    
+
     return true;
 }
 

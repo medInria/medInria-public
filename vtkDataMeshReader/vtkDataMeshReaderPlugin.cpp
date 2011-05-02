@@ -2,16 +2,15 @@
 #include "vtkDataMeshReader.h"
 #include "vtkDataMesh4DReader.h"
 
-
-#include "vtkLogForwarder.h"
 #include <dtkCore/dtkLog.h>
 
+#include <dtkVtkLogForwarder/vtkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////
 // vtkDataMeshReaderPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class vtkDataMeshReaderPluginPrivate 
+class vtkDataMeshReaderPluginPrivate
 {
 public:
   vtkDataMeshReaderPluginPrivate()

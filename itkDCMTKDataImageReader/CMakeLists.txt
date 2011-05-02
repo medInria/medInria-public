@@ -42,11 +42,7 @@ include(${vtkINRIA3D_USE_FILE})
 find_package(VTK)
 include(${VTK_USE_FILE})
 
-add_subdirectory(ITKDCMTKIO)
 # add_definitions(-D MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
-
-include_directories(ITKDCMTKIO)
-include_directories(../dtkItkLogForwarder)
 
 ## #################################################################
 ## Input
