@@ -198,7 +198,7 @@ void
 
                 d->propertiesTree->setItemWidget(renderingItem, 2, renderingBox);
                 renderingBox->setCurrentIndex(0);
-                lutItem->setHidden(true);
+                //lutItem->setHidden(true);
                 QObject::connect(renderingBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRenderingChanged(int)));
             }
 
@@ -313,9 +313,7 @@ void
     // d->view->setProperty("LookupTable", "Default");
     // d->view->update();
 
-    if (data->description().contains("vtkDataMesh"))
-        QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onMeshLUTChanged(int)));
-    else 
+    //if (data->description().contains("vtkDataMesh"))
         QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
 
     if (data->description().contains("vtkDataMesh"))
@@ -326,6 +324,39 @@ void
         edgeVisibleBox->setChecked(true);
         d->propertiesTree->setItemWidget(edgeVisibleItem, 2, edgeVisibleBox);
         QObject::connect(edgeVisibleBox, SIGNAL(stateChanged(int)), this, SLOT(onEdgeVisibilitySet(int)));
+
+        QTreeWidgetItem * coloringItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
+        coloringItem->setText(1, "Color");
+        QComboBox *comboBox = new QComboBox();
+        comboBox->addItem("Custom Color..");
+        comboBox->addItem(createIcon("#000000"),"#000000",QColor("#000000"));
+        comboBox->addItem(createIcon("#FFFFFF"),"#FFFFFF",QColor("#FFFFFF"));
+        comboBox->addItem(createIcon("#808080"),"#808080",QColor("#808080"));
+        comboBox->addItem(createIcon("#800000"),"#800000",QColor("#800000"));
+        comboBox->addItem(createIcon("#804040"),"#804040",QColor("#804040"));
+        comboBox->addItem(createIcon("#FF8080"),"#FF8080",QColor("#FF8080"));
+        comboBox->addItem(createIcon("#FF0000"),"#FF0000",QColor("#FF0000"));
+        comboBox->addItem(createIcon("#FFFF80"),"#FFFF80",QColor("#FFFF80"));
+        comboBox->addItem(createIcon("#FFFF00"),"#FFFF00",QColor("#FFFF00"));
+        comboBox->addItem(createIcon("#FF8040"),"#FF8040",QColor("#FF8040"));
+        comboBox->addItem(createIcon("#FF8000"),"#FF8000",QColor("#FF8000"));
+        comboBox->addItem(createIcon("#80FF80"),"#80FF80",QColor("#80FF80"));
+        comboBox->addItem(createIcon("#80FF00"),"#80FF00",QColor("#80FF00"));
+        comboBox->addItem(createIcon("#00FF00"),"#00FF00",QColor("#00FF00"));
+        comboBox->addItem(createIcon("#80FFFF"),"#80FFFF",QColor("#80FFFF"));
+        comboBox->addItem(createIcon("#00FFFF"),"#00FFFF",QColor("#00FFFF"));
+        comboBox->addItem(createIcon("#004080"),"#004080",QColor("#004080"));
+        comboBox->addItem(createIcon("#0000FF"),"#0000FF",QColor("#0000FF"));
+        comboBox->addItem(createIcon("#0080FF"),"#0080FF",QColor("#0080FF"));
+        comboBox->addItem(createIcon("#0080C0"),"#0080C0",QColor("#0080C0"));
+        d->propertiesTree->setItemWidget(coloringItem, 2, comboBox); 
+        connect(comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(on_comboBox_currentIndexChanged(int)));
+        /*QTreeWidgetItem * coloringItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
+        coloringItem->setText(1, "Color");
+        QColorDialog *colordialog = new QColorDialog();
+        d->propertiesTree->setItemWidget(coloringItem, 2, colordialog); 
+        colordialog->open();
+        QObject::connect(colordialog, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(onColorSelected(const QColor&)));*/
 
         QTreeWidgetItem * renderingItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
         renderingItem->setText(1, "Rendering");
@@ -338,7 +369,7 @@ void
 
         d->propertiesTree->setItemWidget(renderingItem, 2, renderingBox);
         renderingBox->setCurrentIndex(0);
-        lutItem->setHidden(true);
+        //lutItem->setHidden(true);
         QObject::connect(renderingBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRenderingChanged(int)));
     }
 
@@ -352,13 +383,40 @@ void
     d->propertiesTree->clear();
     d->view = 0;
 }
-
+void medViewerToolBoxViewProperties::on_comboBox_currentIndexChanged(int selection)
+{
+    QColor color;
+    qDebug()<<"Selection : "<<selection;
+    switch(selection)
+    {
+    case 1: color = QColor("#000000");break;
+        case 2: color = QColor("#FFFFFF");break;
+        case 3: color = QColor("#808080");break;
+        case 4: color = QColor("#800000");break;
+        case 5: color = QColor("#804040");break;
+        case 6: color = QColor("#FF8080");break;
+        case 7: color = QColor("#FF0000");break;
+        case 8: color = QColor("#FFFF80");break;
+        case 9: color = QColor("#FFFF00");break;
+        case 10: color = QColor("#FF8040");break;
+        case 11: color = QColor("#FF8000");break;
+        case 12: color = QColor("#80FF80");break;
+        case 13: color = QColor("#80FF00");break;
+        case 14: color = QColor("#00FF00");break;
+        case 15: color = QColor("#80FFFF");break;
+        case 16: color = QColor("#00FFFF");break;
+        case 17: color = QColor("#004080");break;
+        case 18: color = QColor("#0000FF");break;
+        case 19: color = QColor("#0080FF");break;
+        case 20: color = QColor("#0080C0");break;
+    }
+        d->interactors[d->currentInteractor]->onColorPropertySet(color, d->view->currentMeshLayer());
+}
 void
     medViewerToolBoxViewProperties::onVisibilitySet(int state)
 {
     if (!d->view)
         return;
-
     if(!d->isMesh)
         if (state == Qt::Checked)
             d->view->setVisibility(1, d->currentLayer);
@@ -375,7 +433,15 @@ void
     d->view->update();
 }
 
-
+void medViewerToolBoxViewProperties::onColorSelected(const QColor& color)
+{
+    if (!d->view)
+        return;
+    if(!d->isMesh)
+        return;
+    d->interactors[d->currentInteractor]->onColorPropertySet(color, d->view->currentMeshLayer());
+    qDebug()<<" medViewerToolBoxViewProperties::onColorSelected";
+}
 void
     medViewerToolBoxViewProperties::onEdgeVisibilitySet(int state)
 {
@@ -402,7 +468,9 @@ void
     {
         QString propertyString = "OpacityMode" + QString::number(d->view->currentMeshLayer());
         d->interactors[d->currentInteractor]->onPropertySet(propertyString, QString::number(d_opacity));
+        
     }
+
     d->view->update();
 }
 
@@ -425,9 +493,17 @@ void
 {
     if (!d->view)
         return;
-
-    d->view->setCurrentLayer(d->currentLayer);
-    d->view->setProperty("LookupTable", d->lutList.at(index));
+    if(!d->isMesh)
+    {
+        d->view->setCurrentLayer(d->currentLayer);
+        d->view->setProperty("LookupTable", d->lutList.at(index));
+    }
+    else
+    {
+        QString propertyString = "LUTMode" + QString::number(d->view->currentMeshLayer());
+        d->interactors[d->currentInteractor]->onPropertySet(propertyString, d->lutList.at(index));
+    }
+   // medToolBox::update((dtkAbstractView*)d->view);    
     d->view->update();
 }
 void
@@ -558,3 +634,10 @@ void medViewerToolBoxViewProperties::onSwitchLayersButtonClicked()
     }
 }
 
+QIcon medViewerToolBoxViewProperties::createIcon(QString colorName)
+{
+    QPixmap iconPixmap(32,32);
+    iconPixmap.fill(QColor(colorName));
+    QIcon itemIcon(iconPixmap);
+    return itemIcon;
+}

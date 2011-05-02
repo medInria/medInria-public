@@ -39,14 +39,16 @@ public slots:
     void onDeleteLayer();
     void onSwitchLayersButtonClicked();
     void clear();
-
+    
+    
+    void onColorSelected(const QColor& color);
    
     
     void onMeshLUTChanged (int value);
 
     void onEdgeVisibilitySet(int state);
     void onRenderingChanged (int state);
-
+    void on_comboBox_currentIndexChanged(int selection);
 signals:
     void setVisibility(bool visible, int layer);
     void setOpacity(double opacity, int layer);
@@ -54,6 +56,7 @@ signals:
 private:
     medViewerToolBoxViewPropertiesPrivate *d;
     void raiseSlider(bool isVisible, double opacity = -1.0);
+    QIcon createIcon(QString colorName);
 };
 
 #endif /* MEDVIEWERTOOLBOXVIEWPROPERTIES_H_ */
