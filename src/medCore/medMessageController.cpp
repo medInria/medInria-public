@@ -185,7 +185,7 @@ medMessageControllerMessageQuestion::medMessageControllerMessageQuestion(QObject
 
 medMessageControllerMessageQuestion::~medMessageControllerMessageQuestion(void)
 {
-
+    delete d;
 }
 
 // /////////////////////////////////////////////////////////////////
