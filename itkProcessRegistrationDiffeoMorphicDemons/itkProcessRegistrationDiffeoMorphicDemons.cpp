@@ -279,7 +279,24 @@ bool itkProcessRegistrationDiffeoMorphicDemonsPrivate::write(const QString&)
 
 bool itkProcessRegistrationDiffeoMorphicDemons::writeTransform(const QString& file)
 {
-    return false;
+    typedef float PixelType;
+    typedef float TransformScalarType;
+    typedef itk::Image< PixelType, 3 > RegImageType;
+    //normaly should use long switch cases, but here we know we work with float3 data.
+    typename rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =
+            (typename rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *)d->registrationMethod;
+    try{
+
+        rpi::writeDisplacementFieldTransformation<TransformScalarType, RegImageType::ImageDimension>(
+                    registration->GetTransformation(),
+                    file.toStdString());
+    }
+    catch (std::exception)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 //bool itkProcessRegistrationDiffeoMorphicDemons::writeTransform(const QString& file)
