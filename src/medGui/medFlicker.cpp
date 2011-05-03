@@ -48,6 +48,8 @@ medFlicker::medFlicker(QObject *parent): QObject(parent)
 
 medFlicker::~medFlicker(void)
 {
+    qDeleteAll( d->flickData );  // Calls delete on all values.
+    d->flickData.clear();
     delete d;
 }
 
