@@ -21,6 +21,8 @@ v3dDataFibersReader::v3dDataFibersReader(): d (new v3dDataFibersReaderPrivate)
 v3dDataFibersReader::~v3dDataFibersReader()
 {
   d->reader->Delete();
+  delete d;
+  d = NULL;
 }
 
 QStringList v3dDataFibersReader::handled(void) const
