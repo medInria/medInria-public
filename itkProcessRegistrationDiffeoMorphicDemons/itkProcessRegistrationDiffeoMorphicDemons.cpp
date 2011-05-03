@@ -64,6 +64,12 @@ itkProcessRegistrationDiffeoMorphicDemons::itkProcessRegistrationDiffeoMorphicDe
 {
     d->proc = this;
     d->registrationMethod = NULL ;
+    d->updateRule = 0;
+    d->gradientType = 0;
+    d->maximumUpdateStepLength = 2.0;
+    d->updateFieldStandardDeviation = 0.0;
+    d->displacementFieldStandardDeviation = 1.5;
+    d->useHistogramMatching = false;
 }
 
 itkProcessRegistrationDiffeoMorphicDemons::~itkProcessRegistrationDiffeoMorphicDemons(void)
@@ -96,37 +102,82 @@ template <typename PixelType>
 {
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
-//    typedef itk::Image< long, 3 >  FixedImageType;
-//    typedef itk::Image< long, 3 >  MovingImageType;
-//    typedef float TransformScalarType;
-    typedef rpi::DiffeomorphicDemons< FixedImageType, MovingImageType>//,
-//                    TransformScalarType >
-                        RegistrationType;
+
+
+    //unfortunately diffeomorphic demons only work with double or float types...
+    // so we need to use a cast filter.
+    typedef itk::Image< float, 3 > RegImageType;
+    typedef float TransformScalarType;
+    typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                    TransformScalarType > RegistrationType;
     RegistrationType * registration = new RegistrationType ();
 
     registrationMethod = registration;
 
-    registration->SetFixedImage((const FixedImageType*) proc->fixedImage().GetPointer());
-    registration->SetMovingImage((const MovingImageType*) proc->movingImage().GetPointer());
+    //convert image type so that we can still register...
+
+    typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+    typename CastFilterType::Pointer  caster =  CastFilterType::New();
+    caster->SetInput((const FixedImageType*)proc->fixedImage().GetPointer());
+
+    registration->SetFixedImage(caster->GetOutput());
+    typedef itk::CastImageFilter< MovingImageType, RegImageType > CastFilterMovingType;
+    typename CastFilterType::Pointer  casterMov =  CastFilterType::New();
+    casterMov->SetInput((const MovingImageType*)proc->movingImage().GetPointer());
+
+    registration->SetMovingImage(casterMov->GetOutput());
 
     registration->SetNumberOfIterations(iterations);
-    //registration->SetUpdateRule(updateRule);
-    //registration->SetGradientType(gradientType);
     registration->SetMaximumUpdateStepLength(maximumUpdateStepLength);
     registration->SetUpdateFieldStandardDeviation(updateFieldStandardDeviation);
     registration->SetDisplacementFieldStandardDeviation(displacementFieldStandardDeviation);
     registration->SetUseHistogramMatching(useHistogramMatching);
 
+
+    // Set update rule
+    switch( updateRule )
+    {
+    case 0:
+        registration->SetUpdateRule( RegistrationType::UPDATE_DIFFEOMORPHIC ); break;
+    case 1:
+        registration->SetUpdateRule( RegistrationType::UPDATE_ADDITIVE );      break;
+    case 2:
+        registration->SetUpdateRule( RegistrationType::UPDATE_COMPOSITIVE );   break;
+    default:
+        throw std::runtime_error( "Update rule must fit in the range [0,2]." );
+    }
+
+
+    // Set gradient type
+    switch( gradientType )
+    {
+    case 0:
+        registration->SetGradientType( RegistrationType::GRADIENT_SYMMETRIZED );
+        break;
+    case 1:
+        registration->SetGradientType( RegistrationType::GRADIENT_FIXED_IMAGE );
+        break;
+    case 2:
+        registration->SetGradientType( RegistrationType::GRADIENT_WARPED_MOVING_IMAGE );
+        break;
+    case 3:
+        registration->SetGradientType( RegistrationType::GRADIENT_MAPPED_MOVING_IMAGE );
+        break;
+    default:
+        throw std::runtime_error( "Gradient type must fit in the range [0,3]." );
+    }
+
     // Print method parameters
-        qDebug() << "METHOD PARAMETERS";
-//        qDebug() << "  Max number of iterations   : " << registration->GetNumberOfIterations();
-//        std::cout << "  Iterations                            : " << rpi::VectorToString<unsigned int>( registration->GetNumberOfIterations() ) << std::endl;
-            std::cout << "  Update rule                           : " << registration->GetUpdateRule()                                              << std::endl;
-            std::cout << "  Maximum step length                   : " << registration->GetMaximumUpdateStepLength()              << " (voxel unit)" << std::endl;
-            std::cout << "  Gradient type                         : " << registration->GetGradientType()                                            << std::endl;
-            std::cout << "  Update field standard deviation       : " << registration->GetUpdateFieldStandardDeviation()         << " (voxel unit)" << std::endl;
-            std::cout << "  Displacement field standard deviation : " << registration->GetDisplacementFieldStandardDeviation()   << " (voxel unit)" << std::endl;
-            std::cout << "  Use histogram matching?               : " << rpi::BooleanToString( registration->GetUseHistogramMatching() )            << std::endl << std::endl;
+    qDebug() << "METHOD PARAMETERS";
+
+    qDebug() << "  Max number of iterations   : " << QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations()));
+
+    qDebug() << "  Update rule                           : " << registration->GetUpdateRule();
+    qDebug() << "  Maximum step length                   : " << registration->GetMaximumUpdateStepLength()<< " (voxel unit)";
+    qDebug() << "  Gradient type                         : " << registration->GetGradientType();
+    qDebug() << "  Update field standard deviation       : " << registration->GetUpdateFieldStandardDeviation()         << " (voxel unit)";
+    qDebug() << "  Displacement field standard deviation : " << registration->GetDisplacementFieldStandardDeviation()   << " (voxel unit)";
+    qDebug() << "  Use histogram matching?               : " << registration->GetUseHistogramMatching();
 
 
 
@@ -145,7 +196,7 @@ template <typename PixelType>
 
     qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
 
-    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType >    ResampleFilterType;
+    typedef itk::ResampleImageFilter< MovingImageType,RegImageType,TransformScalarType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(registration->GetTransformation());
     resampler->SetInput((const MovingImageType*)proc->movingImage().GetPointer());
@@ -155,36 +206,6 @@ template <typename PixelType>
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
-
-  // typedef  float  OutputPixelType;
-  // typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-  // typedef itk::CastImageFilter< FixedImageType, OutputImageType > CastFilterType;
-  // typedef itk::ImageFileWriter< OutputImageType >  WriterType;
-
-  // WriterType::Pointer      writer =  WriterType::New();
-  // CastFilterType::Pointer  caster =  CastFilterType::New();
-  // const char* outputImageFilename = "/Users/jwintz/Desktop/output.nhdr";
-
-  // writer->SetFileName( outputImageFilename );
-  // caster->SetInput( resampler->GetOutput() );
-  // writer->SetInput( caster->GetOutput()   );
-  // writer->Update();
-
-  // std::ofstream outfile;
-  // const char* transformationMatrixFilename = "/Users/jwintz/Desktop/transfoMat.txt";
-  // outfile.open(transformationMatrixFilename, std::ofstream::out);
-  // outfile << matrix[0][0] << " " <<  matrix[0][1] << " " <<  matrix[0][2]
-  //       		 << " " << offset[0]d->write< FixedImageType,MovingImageType >  (file);
-  //       		 << std::endl
-  //       		 << matrix[1][0] << " " <<  matrix[1][1] << " " <<  matrix[1][2]
-  //       		 << " " << offset[1]
-  //       		 << std::endl
-  //       		 << matrix[2][0] << " " <<  matrix[2][1] << " " <<  matrix[2][2]
-  //       		 << " " << offset[2]
-  //       		 << std::endl
-  //       		 << "0 0 0 1"
-  //       		 << std::endl;
-  // outfile.close();
 
     try {
         resampler->Update();
@@ -208,30 +229,32 @@ int itkProcessRegistrationDiffeoMorphicDemons::update(itkProcessRegistration::Im
     if(fixedImage().IsNull() || movingImage().IsNull())
         return 1;
     switch (imgType){
-//    case itkProcessRegistration::UCHAR:
-//        return d->update<unsigned char>();
-//        break;
+    //unfortunately diffeomorphic demons only work on float or double pixels...
+
+    case itkProcessRegistration::UCHAR:
+        return d->update<unsigned char>();
+        break;
     case itkProcessRegistration::CHAR:
         return d->update<char>();
         break;
-//    case itkProcessRegistration::USHORT:
-//        return d->update<unsigned short>();
+    case itkProcessRegistration::USHORT:
+        return d->update<unsigned short>();
         break;
     case itkProcessRegistration::SHORT:
         return d->update<short>();
         break;
-//    case itkProcessRegistration::UINT:
-//       return d->update<unsigned int>();
-//       break;
+    case itkProcessRegistration::UINT:
+       return d->update<unsigned int>();
+       break;
     case itkProcessRegistration::INT:
         return d->update<int>();
         break;
-//    case itkProcessRegistration::ULONG:
-//       return d->update<unsigned long>();
-//       break;
-//    case itkProcessRegistration::LONG:
-//        return d->update<long>();
-//        break;
+    case itkProcessRegistration::ULONG:
+       return d->update<unsigned long>();
+       break;
+    case itkProcessRegistration::LONG:
+        return d->update<long>();
+        break;
     case itkProcessRegistration::DOUBLE:
         return d->update<double>();
         break;

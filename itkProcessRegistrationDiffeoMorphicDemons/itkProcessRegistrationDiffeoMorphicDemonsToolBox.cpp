@@ -38,6 +38,7 @@
 #include <medGui/medToolBoxRegistration.h>
 #include <medGui/medProgressionStack.h>
 
+#include <rpiCommonTools.hxx>
 
 class itkProcessRegistrationDiffeoMorphicDemonsToolBoxPrivate
 {
@@ -50,6 +51,7 @@ public:
     QDoubleSpinBox * disFieldStdDevBox;
     QDoubleSpinBox * updateFieldStdDevBox;
     QCheckBox * useHistogramBox;
+    QLineEdit * iterationsBox;
 };
 
 itkProcessRegistrationDiffeoMorphicDemonsToolBox::itkProcessRegistrationDiffeoMorphicDemonsToolBox(QWidget *parent) : medToolBoxRegistrationCustom(parent), d(new itkProcessRegistrationDiffeoMorphicDemonsToolBoxPrivate)
@@ -59,6 +61,10 @@ itkProcessRegistrationDiffeoMorphicDemonsToolBox::itkProcessRegistrationDiffeoMo
     QPushButton *runButton = new QPushButton(tr("Run"), this);
 
     QFormLayout *layout = new QFormLayout(widget);
+
+    d->iterationsBox = new QLineEdit(this);
+    d->iterationsBox->setText("15x10x5");
+    d->iterationsBox->setToolTip(tr("Each number of iteration per level must be separated by \"x\". From coarser to finest levels"));
 
     d->maxStepLengthBox = new QDoubleSpinBox(this);
     d->maxStepLengthBox->setMinimum(0);
@@ -92,7 +98,8 @@ itkProcessRegistrationDiffeoMorphicDemonsToolBox::itkProcessRegistrationDiffeoMo
     d->useHistogramBox =  new QCheckBox(this);
     d->useHistogramBox->setChecked(false);
 
-    this->setTitle("itkProcessRegistrationDiffeoMorphicDemonsToolBox");
+    this->setTitle("Diffeomorphic Demons");
+    layout->addRow(new QLabel(tr("Iterations per level of res."),this),d->iterationsBox);
     layout->addRow(new QLabel(tr("Update Rule"),this),d->updateRuleBox);
     layout->addRow(new QLabel(tr("Gradient Type"),this),d->gradientTypeBox);
     layout->addRow(new QLabel(tr("Max. Update Step Length"),this),d->maxStepLengthBox);
@@ -158,8 +165,20 @@ void itkProcessRegistrationDiffeoMorphicDemonsToolBox::run(void)
     // Many choices here
 
     itkProcessRegistrationDiffeoMorphicDemons *process_Registration = dynamic_cast<itkProcessRegistrationDiffeoMorphicDemons *>(process);
-//    process_Registration->setNumberOfHistogramBins(d->binsBox->value());
-
+    process_Registration->setDisplacementFieldStandardDeviation(d->disFieldStdDevBox->value());
+    process_Registration->setGradientType(d->gradientTypeBox->currentIndex());
+    process_Registration->setUpdateRule(d->updateRuleBox->currentIndex());
+    process_Registration->setUpdateFieldStandardDeviation(d->updateFieldStdDevBox->value());
+    process_Registration->setMaximumUpdateLength(d->maxStepLengthBox->value());
+    process_Registration->setUseHistogramMatching(d->useHistogramBox->isChecked());
+    try {
+        process_Registration->setNumberOfIterations(rpi::StringToVector<unsigned int>(d->iterationsBox->text().toStdString()));
+    }
+    catch ( std::exception & err )
+    {
+        qDebug() << "wrong iteration format";
+        return;
+    }
 
     // process->setMyWonderfullParameter(fronTheGui);
     // process->setMyWonderfullParameter(fronTheGui);
