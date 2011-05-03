@@ -26,7 +26,6 @@ def config_logging(log, config):
         logger = logging.getLogger('root')
     else:
         # create logger
-        print ("yo")
         logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                 level=logging.DEBUG)
         logger = logging.getLogger('root')
@@ -153,6 +152,7 @@ def install_package_deps(config):
         cmd=""
     else:
         raise "unknown package manager"
+    if not cmd: return
     logging.info( cmd)
     run_and_log(cmd.split())
 
@@ -188,6 +188,7 @@ def configure_project(project,config,architecture='linux'):
         if (architecture == "win"):
             src_dir=config.get(project,"cyg_drive")+src_dir
         shutil.rmtree(build_dir,True)
+        print("making dir %s",build_dir )
         os.makedirs(build_dir)
         os.chdir(build_dir)
 
@@ -556,8 +557,8 @@ def build_package(project,config,architecture):
 
         cmd = [config.get("commands","make"),"package"]
         logging.info(cmd)
-
-        run_and_log(cmd)
+        # do not run the make package on this platform, only the extra_package_command
+        #run_and_log(cmd)
     else:
         cpack_cmd = config.get("commands","cpack")
         pkg_mngr = config.get("package_deps","package_manager")
