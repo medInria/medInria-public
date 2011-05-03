@@ -16,7 +16,7 @@
 /* Change log:
  * 
  */
-
+#include <medCore/medDataIndex.h>
 #include <medSql/medDatabaseItem.h>
 
 class medDatabaseItemPrivate
@@ -28,10 +28,12 @@ public:
     QString            table;
     QList<QVariant> attrData;
     QList<QVariant> itemData;
+    medDataIndex index;
 };
 
-medDatabaseItem::medDatabaseItem(const QString& table, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent) : d(new medDatabaseItemPrivate)
+medDatabaseItem::medDatabaseItem(medDataIndex index, const QString& table, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent) : d(new medDatabaseItemPrivate)
 {
+    d->index = index;
     d->table = table;
     d->attrData = attributes;
     d->itemData = data;
@@ -102,7 +104,7 @@ bool medDatabaseItem::insertChildren(int position, int count, int columns)
         QString table;
         QList<QVariant> attr;
         QList<QVariant> data;
-        medDatabaseItem * item = new medDatabaseItem(table, attr, data, this);
+        medDatabaseItem * item = new medDatabaseItem(medDataIndex(), table, attr, data, this);
         d->childItems.insert(position, item);
     }
 
@@ -177,4 +179,9 @@ QVariant medDatabaseItem::value(int column)
         return QVariant();
 
     return d->itemData.at(column);
+}
+
+const medDataIndex & medDatabaseItem::dataIndex() const
+{
+    return d->index;
 }
