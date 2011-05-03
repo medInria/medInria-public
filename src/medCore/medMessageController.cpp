@@ -141,7 +141,8 @@ medMessageControllerMessageProgress::medMessageControllerMessageProgress(
 
 medMessageControllerMessageProgress::~medMessageControllerMessageProgress(void)
 {
-
+    delete d;
+    d = NULL;
 }
 
 void medMessageControllerMessageProgress::setProgress(int value)
