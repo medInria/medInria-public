@@ -91,7 +91,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 
     connect(d->timeLine, SIGNAL(frameChanged(int)), d->timeSlider, SLOT(setValue(int)));
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout(this);
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout->addWidget( d->previousFrameButton,1,Qt::AlignHCenter);
     buttonLayout->addWidget (d->playSequencesButton,1,Qt::AlignHCenter);
     buttonLayout->addWidget( d->nextFrameButton,1,Qt::AlignHCenter);
@@ -99,20 +99,20 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 
     buttonLayout->addWidget( d->stopButton,1,Qt::AlignHCenter);
 
-    QHBoxLayout *labelLayout = new QHBoxLayout(this);
+    QHBoxLayout *labelLayout = new QHBoxLayout();
     labelLayout->addWidget( d->labelmin);
     labelLayout->addStretch();
     labelLayout->addWidget( d->labelcurr);
     labelLayout->addStretch();
     labelLayout->addWidget( d->labelmax);
 
-    QHBoxLayout *topLayout = new QHBoxLayout(this);
+    QHBoxLayout *topLayout = new QHBoxLayout();
 
     topLayout->addStretch();
     topLayout->addWidget(d->labelspeed);
     topLayout->addWidget(d->spinBox);
 
-    QVBoxLayout* boxlayout = new QVBoxLayout (this);
+    QVBoxLayout* boxlayout = new QVBoxLayout ();
     boxlayout->addLayout(topLayout);
     boxlayout->addLayout( buttonLayout );
     boxlayout->addWidget (d->timeSlider);
