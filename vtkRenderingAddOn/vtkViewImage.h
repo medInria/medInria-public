@@ -21,7 +21,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkINRIA3DConfigure.h"
 
-#include <vtkRenderingAddOn/vtkSynchronizedView.h>
+#include <vtkSynchronizedView.h>
 
 #include <vtkCommand.h>
 #include <vtkTransform.h>
