@@ -79,11 +79,11 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     d->stopButton = new medButton(this,":/icons/stop.png",
                                   tr("Stop Sequence"));
 
-    d->timeLine = new QTimeLine();
+    d->timeLine = new QTimeLine(1000, this);
     d->timeLine->setLoopCount(0);
     d->timeLine->setCurveShape (QTimeLine::LinearCurve);
 
-    d->spinBox = new QSpinBox();
+    d->spinBox = new QSpinBox(this);
     d->spinBox->setRange(1,5000);
     d->spinBox->setSingleStep(10);
     d->spinBox->setValue(100);

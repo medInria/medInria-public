@@ -145,6 +145,9 @@ if (SWIG_FOUND)
     endif(PYTHONLIBS_FOUND)
 endif(SWIG_FOUND)
 
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Installation

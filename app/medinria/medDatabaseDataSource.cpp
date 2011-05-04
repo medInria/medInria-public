@@ -45,6 +45,8 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
 
 medDatabaseDataSource::~medDatabaseDataSource()
 {
+    delete d->model;
+    d->model = NULL;
     delete d;
     d = NULL;
 }
