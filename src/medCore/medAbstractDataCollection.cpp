@@ -205,12 +205,12 @@ void medAbstractDataCollection::update( void )
     (*d->dataIterator)->update();
 }
 
-void medAbstractDataCollection::addReader( dtkAbstractDataReader *reader )
+void medAbstractDataCollection::addReader( const QString& reader )
 {
     (*d->dataIterator)->addReader(reader);
 }
 
-void medAbstractDataCollection::addWriter( dtkAbstractDataWriter *writer )
+void medAbstractDataCollection::addWriter( const QString& writer )
 {
     (*d->dataIterator)->addWriter(writer);
 }
