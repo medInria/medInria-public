@@ -31,6 +31,9 @@ public:
 signals:
     void open(const medDataIndex&);
 
+protected slots:
+    void onFilter(const QString &text, int column);
+
 
 private:
     medDatabaseDataSourcePrivate* d;

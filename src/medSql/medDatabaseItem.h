@@ -25,12 +25,14 @@
 #include <QtDebug>
 #include <QtGui>
 
+#include <medCore/medDataIndex.h>
+
 class medDatabaseItemPrivate;
 
 class MEDSQL_EXPORT medDatabaseItem
 {
 public:
-     medDatabaseItem(const QString &table, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent = 0);
+     medDatabaseItem(medDataIndex index, const QString &table, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent = 0);
     ~medDatabaseItem(void);
 
     medDatabaseItem *child(int row);
@@ -52,6 +54,11 @@ public:
     bool removeColumns(int position, int columns);
 
     bool setData(int column, const QVariant& value);
+
+   /**
+    * Returns the data index for this item
+    */
+    const medDataIndex & dataIndex () const;
 
 public:
     QVariant     table(void);
