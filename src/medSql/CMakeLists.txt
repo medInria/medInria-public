@@ -52,6 +52,7 @@ set(${PROJECT_NAME}_HEADERS
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
   medDatabasePreviewView.h
+  medDatabaseProxyModel.h
   medDatabaseReader.h
   medDatabaseWriter.h
   )
@@ -81,6 +82,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
   medDatabasePreviewView.h
+  medDatabaseProxyModel.h
   medDatabaseReader.h
   medDatabaseWriter.h
   )
@@ -115,6 +117,7 @@ set(${PROJECT_NAME}_SOURCES
   medDatabasePreviewSelector.cpp
   medDatabasePreviewTooltip.cpp
   medDatabasePreviewView.cpp
+  medDatabaseProxyModel.cpp
   medDatabaseReader.cpp
   medDatabaseWriter.cpp
   )
