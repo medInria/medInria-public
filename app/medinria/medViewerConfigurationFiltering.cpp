@@ -72,6 +72,7 @@ medViewerConfigurationFiltering::~medViewerConfigurationFiltering(void)
 
 void medViewerConfigurationFiltering::setupViewContainerStack()
 {
+
     d->views.clear();
 
 		medViewContainer *filteringContainer;
@@ -82,12 +83,15 @@ void medViewerConfigurationFiltering::setupViewContainerStack()
 			custom->setAcceptDrops(false);
       filteringContainer = custom;
 
+
       this->stackedViewContainers()->addContainer (description(), filteringContainer);
+
     }
     else
       filteringContainer = this->stackedViewContainers()->container(description());
   
 	d->views = filteringContainer->views();
+
 	
 	if (d->views.size() < 2)
 	{
@@ -95,11 +99,12 @@ void medViewerConfigurationFiltering::setupViewContainerStack()
 		for (unsigned int i = oldSize;i < 2;++i)
 		{
 			d->views.append(dtkAbstractViewFactory::instance()->create("v3dView"));
-			d->views[oldSize + i]->clear();
-			d->views[oldSize + i]->reset();
+			//d->views[oldSize + i]->clear();
+			//d->views[oldSize + i]->reset();
 			filteringContainer->setView(d->views[oldSize + i]);
 		}
 	}
+
 
   this->stackedViewContainers()->setContainer (description());
 }
