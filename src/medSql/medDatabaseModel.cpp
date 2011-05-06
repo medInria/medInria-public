@@ -16,7 +16,7 @@
 /* Change log:
  * 
  */
-
+#include <QtGui>
 #include <QtCore>
 #include <QtSql>
 
@@ -47,7 +47,7 @@ medDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
     if (index.isValid()) {
         medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer());
         if (item) 
-	    return item;
+        return item;
     }
 
     return root;
@@ -104,11 +104,11 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
         << ""
         << "";
 
-    d->root = new medDatabaseItem("", d->attributes, d->attributes);
+    d->root = new medDatabaseItem(medDataIndex(), "", d->attributes, d->attributes);
 
     populate(d->root);
 
-    connect(medDatabaseController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(clear()));
+    connect(medDatabaseController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(repopulate()));
 }
 
 medDatabaseModel::~medDatabaseModel(void)
@@ -145,8 +145,8 @@ int medDatabaseModel::columnCount(const QModelIndex& parent) const
 int medDatabaseModel::columnIndex(const QString& title) const
 {
     for(int i = 0 ; i < d->root->columnCount() ; i++)
-	if(d->root->data(i).toString() == title)
-	    return i;
+    if(d->root->data(i).toString() == title)
+        return i;
 
     return -1;
 }
@@ -394,11 +394,6 @@ bool medDatabaseModel::insertRows(int position, int rows, const QModelIndex& par
 
 bool medDatabaseModel::removeRows(int position, int rows, const QModelIndex& parent)
 {
-    if (rows <= position){
-        qDebug() << "row index < rows!";
-        return false;
-    }
-
     medDatabaseItem *parentItem = d->item(parent);
 
     bool success = true;
@@ -459,13 +454,18 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 // Initialization
 // /////////////////////////////////////////////////////////////////
     
-void medDatabaseModel::clear(void)
+void medDatabaseModel::repopulate(void)
 {
-    removeRows(0, rowCount());
+    beginRemoveRows(QModelIndex(),0,rowCount());
+    if (rowCount() > 0)
+        this->removeRows(0, this->rowCount(QModelIndex()), QModelIndex());
+    endRemoveRows();
+
+    beginInsertRows(QModelIndex(),0,0);
+    populate(d->root);
+    endInsertRows();
 
     reset();
-
-    populate(d->root);
 }
 
 //! Model population.
@@ -487,16 +487,16 @@ void medDatabaseModel::populate(medDatabaseItem *root)
     while(ptQuery.next()) { // ---------------------------------------------------- Retrieving patients
         QVariant   ptId      = ptQuery.value(0);
         QVariant ptName      = ptQuery.value(1);
-	QVariant ptBirthdate = ptQuery.value(3);
-	QVariant ptGender    = ptQuery.value(4);
+        QVariant ptBirthdate = ptQuery.value(3);
+        QVariant ptGender    = ptQuery.value(4);
 
         QList<QVariant> ptData;
         ptData << d->data;
         ptData[0] = ptName;
-	ptData[5] = ptBirthdate;
-	ptData[6] = ptGender;
+        ptData[5] = ptBirthdate;
+        ptData[6] = ptGender;
         ptData[20] = ptId;
-        medDatabaseItem *ptItem = new medDatabaseItem("patient", d->attributes, ptData, root);
+        medDatabaseItem *ptItem = new medDatabaseItem(medDataIndex(ptId.toInt()), "patient", d->attributes, ptData, root);
 
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
         stQuery.prepare("SELECT * FROM study WHERE patient = :id");
@@ -525,54 +525,54 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                 QVariant   seId            = seQuery.value(0);
                 QVariant seSize            = seQuery.value(2);
                 QVariant seName            = seQuery.value(3);
-		QVariant sePath            = seQuery.value(4);	
-		QVariant seUID             = seQuery.value(5);
-		QVariant seOrientation     = seQuery.value(6);
+                QVariant sePath            = seQuery.value(4);	
+                QVariant seUID             = seQuery.value(5);
+                QVariant seOrientation     = seQuery.value(6);
                 QVariant seSeriesNumber    = seQuery.value(7);
-		QVariant seSequenceName    = seQuery.value(8);
-		QVariant seSliceThickness  = seQuery.value(9);
-		QVariant seRows            = seQuery.value(10);
-		QVariant seColumns         = seQuery.value(11);
-		QVariant seThumbnail       = seQuery.value(12);
-		QVariant seAge             = seQuery.value(13);
-		QVariant seDesc            = seQuery.value(14);
-		QVariant seModality        = seQuery.value(15);
-		QVariant seProtocol        = seQuery.value(16);
-		QVariant seComments        = seQuery.value(17);
-		QVariant seStatus          = seQuery.value(18);
-		QVariant seAcqDate         = seQuery.value(19);
-		QVariant seImportDate      = seQuery.value(20);
-		QVariant seReferee         = seQuery.value(21);
-		QVariant sePerformer       = seQuery.value(22);
-		QVariant seInstitution     = seQuery.value(23);
-		QVariant seReport          = seQuery.value(24);
+                QVariant seSequenceName    = seQuery.value(8);
+                QVariant seSliceThickness  = seQuery.value(9);
+                QVariant seRows            = seQuery.value(10);
+                QVariant seColumns         = seQuery.value(11);
+                QVariant seThumbnail       = seQuery.value(12);
+                QVariant seAge             = seQuery.value(13);
+                QVariant seDesc            = seQuery.value(14);
+                QVariant seModality        = seQuery.value(15);
+                QVariant seProtocol        = seQuery.value(16);
+                QVariant seComments        = seQuery.value(17);
+                QVariant seStatus          = seQuery.value(18);
+                QVariant seAcqDate         = seQuery.value(19);
+                QVariant seImportDate      = seQuery.value(20);
+                QVariant seReferee         = seQuery.value(21);
+                QVariant sePerformer       = seQuery.value(22);
+                QVariant seInstitution     = seQuery.value(23);
+                QVariant seReport          = seQuery.value(24);
 
                 QList<QVariant> seData;
                 seData << d->data;
                 seData[20] = seId;
                 seData[1] = stName;
                 seData[2] = seName;
-		// seData[3] = seName; // image name
-		seData[3] = seSize; // count
+                // seData[3] = seName; // image name
+                seData[3] = seSize; // count
                 seData[4] = seAge;
-		//seData[5] = seBirthdate;
-		//ptData[5] = seBirthdate;
-		//seData[6] = seGender;
-		//ptData[6] = seGender;
-		seData[7] = seDesc;
-		seData[8] = seModality;
-		// seData[9] = seBirthdate; // protocol
-		// seData[10] = seBirthdate; // comments
-		// seData[11] = seBirthdate; // status
-		seData[12] = seAcqDate;
-		seData[13] = seImportDate;
-		// seData[14] = seBirthdate; // last opened
-		seData[15] = seReferee;
-		seData[16] = sePerformer;
-		seData[17] = seInstitution;
-		seData[18] = seReport;
+                //seData[5] = seBirthdate;
+                //ptData[5] = seBirthdate;
+                //seData[6] = seGender;
+                //ptData[6] = seGender;
+                seData[7] = seDesc;
+                seData[8] = seModality;
+                // seData[9] = seBirthdate; // protocol
+                // seData[10] = seBirthdate; // comments
+                // seData[11] = seBirthdate; // status
+                seData[12] = seAcqDate;
+                seData[13] = seImportDate;
+                // seData[14] = seBirthdate; // last opened
+                seData[15] = seReferee;
+                seData[16] = sePerformer;
+                seData[17] = seInstitution;
+                seData[18] = seReport;
 
-                medDatabaseItem *seItem = new medDatabaseItem("series", d->attributes, seData, ptItem);
+                medDatabaseItem *seItem = new medDatabaseItem(medDataIndex(ptId.toInt(), stId.toInt(), seId.toInt()), "series", d->attributes, seData, ptItem);
                 
                 QSqlQuery imQuery(*(medDatabaseController::instance()->database()));
                 imQuery.prepare("SELECT * FROM image WHERE series = :id");
@@ -595,12 +595,21 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                 //     seItem->append(imItem);
                 // }
 
-		
+        
                 ptItem->append(seItem);
             }
             // ptItem->append(stItem);
         }
 
-	root->append(ptItem);
+    root->append(ptItem);
     }
+}
+
+QStringList medDatabaseModel::attributes()
+{
+    QStringList list;
+
+    foreach(QVariant attribute, d->attributes)
+        list.append(attribute.toString());
+    return list;
 }

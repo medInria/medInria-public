@@ -126,6 +126,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     layout->addWidget(d->stack);
     layout->addWidget(d->toolbox_container);
 
+    // make toolboxes visible
+    onSourceIndexChanged(d->stack->currentIndex());
+
  }
 
 medBrowserArea::~medBrowserArea(void)
@@ -149,6 +152,7 @@ void medBrowserArea::onFileImport(QString path)
     QFileInfo info(path);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
     connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+    connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
     d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
