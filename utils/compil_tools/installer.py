@@ -584,8 +584,9 @@ def doc(project,config,architecture):
     print "doc package: " + project
     os.chdir(config.get(project,"build_dir"))
 
-    make=config.get("commands","make")
-    doc_output = run_and_log([make,"doc"])
+    make = config.get("commands","make")
+    doc = config.get(project,"doc_command")
+    doc_output = run_and_log([make,doc])
     #print doc_output
 
     extra_doc_cmd=config.get(project,"extra_doc_cmd")
