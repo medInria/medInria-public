@@ -1241,7 +1241,7 @@ double vtkImageView::GetCameraParallelScale (void) const
 {
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!cam)
-    return NULL;
+    return 1.0;
   return cam->GetParallelScale ();
 }
 
