@@ -182,7 +182,7 @@ vtkImageView::vtkImageView()
   
   this->OrientationTransform->SetInput (this->OrientationMatrix);
   
-  this->ColorWindow = VTK_DOUBLE_MAX;
+  this->ColorWindow = 1e-3 * VTK_DOUBLE_MAX;
   this->ColorLevel  = 0;  
   
   // use default maps, sets color map of WindowLevel and ScalarBar
@@ -670,7 +670,8 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
 
   if (cf)
   {
-    const double * currentRange = cf->GetRange();
+    double currentRange[2];
+    cf->GetRange( currentRange );
     if ( currentRange[0] != minRange ||
          currentRange[1] != maxRange )
     {
@@ -686,8 +687,9 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
         cf->GetNodeValue( i, val );
         // from current range to [0,1] interval
         val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-        // from [0,1] interval to target range
-        val[0] = val[0] * targetWidth + minRange;
+        // from [0,1] interval to target range (avoid overflow by
+        // doing the division before the multiplication)
+        val[0] = ( val[0] + minRange / targetWidth ) * targetWidth;
         cf->SetNodeValue( i, val );
       }
       
@@ -706,7 +708,8 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
   
   if (of)
   {    
-    const double * currentRange = of->GetRange();
+    double currentRange[2];
+    cf->GetRange( currentRange );
     if ( currentRange[0] != minRange ||
          currentRange[1] != maxRange )
     {
@@ -722,8 +725,9 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
         of->GetNodeValue( i, val );
         // from current range to [0,1] interval
         val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-        // from [0,1] interval to target range
-        val[0] = val[0] * targetWidth + minRange;
+        // from [0,1] interval to target range (avoid overflow by
+        // doing the division before the multiplication)
+        val[0] = ( val[0] + minRange / targetWidth ) * targetWidth;
         of->SetNodeValue( i, val );
       }
       
