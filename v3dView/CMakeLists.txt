@@ -54,6 +54,8 @@ if (NOT VTK_USE_QT)
   message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
 endif(NOT VTK_USE_QT)
 
+find_package(OpenGL REQUIRED)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -66,6 +68,10 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewMeshInteractor.h
   v3dView4DInteractor.h
   v3dViewTensorInteractor.h
+  QVtkGraphicsView.h
+  v3dViewGraphicsScene.h
+  v3dViewGraphicsView.h
+  v3dViewCircleAnnotation.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -80,6 +86,11 @@ set(${PROJECT_NAME}_SOURCES
   v3dView4DInteractor.cpp
   v3dFiberBundle.cpp
   v3dViewTensorInteractor.cpp
+  QVtkGraphicsView.cpp
+  v3dViewGraphicsScene.cpp
+  v3dViewGraphicsView.cpp
+  v3dViewCircleAnnotation.cpp
+  vtkQtOpenGLRenderWindow.cxx  
   )
 
 # Include header files for Visual Studio.
@@ -98,6 +109,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  ${OPENGL_LIBRARIES}
   ttkAlgorithms
   dtkCore
   medCore
