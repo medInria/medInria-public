@@ -60,6 +60,13 @@ void medPluginManager::readSettings(void)
         settings.setValue("path", plugins_dir.absolutePath());
     }
 
+    const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
+    QByteArray pluginVarArray = qgetenv ( PLUGIN_PATH_VAR_NAME );
+    if ( !pluginVarArray.isEmpty() ) {
+        setPath( QString(pluginVarArray.constData()));
+    }
+    qDebug() << " Plugins path : " << path();
+
     settings.endGroup();
 
     if(path().isEmpty()) {
@@ -88,6 +95,8 @@ QStringList medPluginManager::handlers(const QString& category)
 
 void medPluginManager::onPluginLoaded(const QString& name)
 {
+    qDebug() << " Loading plugin : " << name;
+
     dtkPlugin *plug = plugin(name);
 
     QStringList categories;
