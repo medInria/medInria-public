@@ -658,14 +658,15 @@ void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFunction *cf, 
-                                                              vtkPiecewiseFunction *of,
-                                                              double minRange, double maxRange)
+void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
+  vtkColorTransferFunction * cf,
+  vtkPiecewiseFunction     * of,
+  double minRange, double maxRange)
 {
   double targetWidth  = maxRange  - minRange;
   // in case targetWidth is null, return otherwise all values will collapse and further
   // windowing will become impossible
-  if (targetWidth==0.0)
+  if ( targetWidth == 0.0 )
     return;
 
   if (cf)
@@ -676,7 +677,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
          currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
-      
+
       unsigned int n = cf->GetSize();
       if ( n > 0 && currentWidth == 0.0 )
         currentWidth = 1.0;
@@ -699,13 +700,12 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
       {
         double val[6];
         cf->GetNodeValue( n - 1, val );
-        cf->AddRGBPoint( val[0], val[1], val[2],
-                        val[3], val[4], val[5] );
+        cf->AddRGBPoint( val[0], val[1], val[2], val[3], val[4], val[5] );
       }
       
     }
   }
-  
+
   if (of)
   {    
     double currentRange[2];
@@ -714,10 +714,10 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
          currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
-            
+
       if ( currentWidth == 0.0 )
         currentWidth = 1.0;
-      
+
       unsigned int n = of->GetSize();
       for ( unsigned int i = 0; i < n; ++i )
       {
@@ -730,15 +730,14 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
         val[0] = ( val[0] + minRange / targetWidth ) * targetWidth;
         of->SetNodeValue( i, val );
       }
-      
+
       // work around to update the range (which is not public in
       // vtkPiecewiseFunction)
       if ( n > 0 )
       {
         double val[4];
         of->GetNodeValue( n - 1, val );
-        of->AddPoint( val[0], val[1],
-                     val[2], val[3] );
+        of->AddPoint( val[0], val[1], val[2], val[3] );
       }
     }
   }
