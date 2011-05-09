@@ -33,20 +33,30 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
+#Require medinria for base classes
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
+  medSegmentationConfiguration.h
+  medToolBoxSegmentationView.h
   medViewSegmentationPlugin.h
-  medViewSegmentation.h)
+  medViewSegmentation.h
+  )
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
+  medSegmentationConfiguration.cpp
+  medToolBoxSegmentationView.cpp
   medViewSegmentationPlugin.cpp
-  medViewSegmentation.cpp)
+  medViewSegmentation.cpp
+  )
 
 ## #################################################################
 ## Build rules
@@ -61,7 +71,10 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore)
+  dtkCore
+#  medCore
+  medGui
+  )
 
 dtk_build_doc(medViewSegmentationPlugin)
 

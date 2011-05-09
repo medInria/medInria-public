@@ -5,6 +5,8 @@
 #include "medViewSegmentation.h"
 #include "medViewSegmentationPlugin.h"
 
+#include "medSegmentationConfiguration.h"
+
 #include <dtkCore/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -29,16 +31,18 @@ medViewSegmentationPlugin::medViewSegmentationPlugin(QObject *parent) : dtkPlugi
 medViewSegmentationPlugin::~medViewSegmentationPlugin(void)
 {
     delete d;
-
     d = NULL;
 }
 
 bool medViewSegmentationPlugin::initialize(void)
 {
+    bool ret (true);
     if(!medViewSegmentation::registered())
-	dtkWarning() << "Unable to register medViewSegmentation type";
+        dtkWarning() << "Unable to register medViewSegmentation type";
 
-    return true;
+    ret &= medSegmentationConfiguration::registerWithViewerConfigurationFactory();
+
+    return ret;
 }
 
 bool medViewSegmentationPlugin::uninitialize(void)
@@ -53,7 +57,7 @@ QString medViewSegmentationPlugin::name(void) const
 
 QString medViewSegmentationPlugin::description(void) const
 {
-    return "";
+    return "medViewSegmentationPlugin";
 }
 
 QStringList medViewSegmentationPlugin::tags(void) const

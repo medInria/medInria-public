@@ -6,6 +6,8 @@
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 
+#include "medSegmentationConfiguration.h"
+
 // /////////////////////////////////////////////////////////////////
 // medViewSegmentationPrivate
 // /////////////////////////////////////////////////////////////////
@@ -26,12 +28,13 @@ medViewSegmentation::medViewSegmentation(void) : dtkAbstractView(), d(new medVie
 
 medViewSegmentation::~medViewSegmentation(void)
 {
-
+    delete d;
+    d = NULL;
 }
 
 bool medViewSegmentation::registered(void)
 {
-    return dtkAbstractViewFactory::instance()->registerViewType("medViewSegmentation", createMedViewSegmentation);
+    return dtkAbstractViewFactory::instance()->registerViewType("medViewSegmentation", medViewSegmentation::createMedViewSegmentation);
 }
 
 QString medViewSegmentation::description(void) const
@@ -42,8 +45,8 @@ QString medViewSegmentation::description(void) const
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
-
-dtkAbstractView *createMedViewSegmentation(void)
+//static
+dtkAbstractView *medViewSegmentation::createMedViewSegmentation(void)
 {
     return new medViewSegmentation;
 }

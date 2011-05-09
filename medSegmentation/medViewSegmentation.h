@@ -23,10 +23,10 @@ public:
 
     static bool registered(void);
 
+    static dtkAbstractView *createMedViewSegmentation(void);
+
 private:
     medViewSegmentationPrivate *d;
 };
-
-dtkAbstractView *createMedViewSegmentation(void);
 
 #endif
