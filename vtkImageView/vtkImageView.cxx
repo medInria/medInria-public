@@ -564,8 +564,8 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
                                          vtkPiecewiseFunction     *opacity)
 {
   if ( color   == NULL && this->ColorTransferFunction   == NULL &&
-      opacity == NULL && this->OpacityTransferFunction == NULL &&
-      this->LookupTable != NULL )
+       opacity == NULL && this->OpacityTransferFunction == NULL &&
+       this->LookupTable != NULL )
   {
     this->SetLookupTable( this->LookupTable );
     return;
@@ -586,7 +586,7 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
   if ( rgb != NULL )
   {
     vtkSetObjectBodyMacro( ColorTransferFunction, vtkColorTransferFunction,
-                          rgb );
+                           rgb );
     rgb->Delete();
   }
   
@@ -603,7 +603,7 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
   if ( alpha != NULL )
   {
     vtkSetObjectBodyMacro( OpacityTransferFunction, vtkPiecewiseFunction,
-                          alpha );
+                           alpha );
     alpha->Delete();
   }
   
@@ -672,7 +672,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
   {
     const double * currentRange = cf->GetRange();
     if ( currentRange[0] != minRange ||
-        currentRange[1] != maxRange )
+         currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
       
@@ -708,7 +708,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFu
   {    
     const double * currentRange = of->GetRange();
     if ( currentRange[0] != minRange ||
-        currentRange[1] != maxRange )
+         currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
             
@@ -789,27 +789,27 @@ void vtkImageView::SetWindowSettingsFromTransferFunction()
   double currentRange[2];
   this->GetColorRange( currentRange );
   double * targetRange = NULL;
-  
+
   bool touched = false;
-  
+
   // lookup table
   if ( this->UseLookupTable && this->LookupTable != NULL )
   {
     targetRange = this->LookupTable->GetRange();
     if ( currentRange[0] != targetRange[0] ||
-        currentRange[1] != targetRange[1] )
+         currentRange[1] != targetRange[1] )
       touched = true;
   }
-  
+
   // color transfer function
   if ( !this->UseLookupTable && this->ColorTransferFunction != NULL )
   {
     targetRange = this->ColorTransferFunction->GetRange();
     if ( currentRange[0] != targetRange[0] ||
-        currentRange[1] != targetRange[1] )
+         currentRange[1] != targetRange[1] )
       touched = true;
   }
-  
+
   // opacity transfer function
   if ( !this->UseLookupTable && this->OpacityTransferFunction != NULL )
   {
@@ -817,7 +817,7 @@ void vtkImageView::SetWindowSettingsFromTransferFunction()
     if ( touched )
     {
       if ( targetRange[0] != targetRange2[0] ||
-          targetRange[1] != targetRange2[1] )
+           targetRange[1] != targetRange2[1] )
       {
         vtkErrorMacro( "ranges of color and opacity function don't match!" );
         return;
@@ -827,13 +827,13 @@ void vtkImageView::SetWindowSettingsFromTransferFunction()
     {
       targetRange[0] = targetRange2[0];
       targetRange[1] = targetRange2[1];
-      
+
       if ( currentRange[0] != targetRange[0] ||
-          currentRange[1] != targetRange[1] )
+           currentRange[1] != targetRange[1] )
         touched = true;
     }
   }
-  
+
   if ( touched )
   {
     this->SetColorRange( targetRange );
