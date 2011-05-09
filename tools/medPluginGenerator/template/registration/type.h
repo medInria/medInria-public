@@ -11,7 +11,7 @@
 class %1Private;
 
 /**
- * @brief Registration process using diffeomorphic demons from itk.
+ * @brief Registration process.
  *
  * This plugin uses the registration programming interface (RPI).
  * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medinria/src/medGui.

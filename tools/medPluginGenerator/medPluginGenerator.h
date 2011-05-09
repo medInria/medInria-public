@@ -48,6 +48,8 @@ protected:
    bool generateCMakeLists(void);
    bool generateTypeHeaderFile(void);
    bool generateTypeSourceFile(void);
+   bool generateTypeToolBoxHeaderFile(void);
+   bool generateTypeToolBoxSourceFile(void);
    bool generatePluginHeaderFile(void);
    bool generatePluginSourceFile(void);
    bool generateExportHeaderFile(void);

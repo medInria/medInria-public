@@ -21,7 +21,7 @@
 
 #include "time.h"
 
-#include <%2/rpi%2.hxx>
+#include <%4/rpi%4.hxx>
 #include <rpiCommonTools.hxx>
 
 // /////////////////////////////////////////////////////////////////
@@ -85,8 +85,8 @@ template <typename PixelType>
     typedef itk::Image< PixelType, 3 >  MovingImageType;
 
 
-    typename rpi::%2<FixedImageType,MovingImageType> * registration =
-            new rpi::%2<FixedImageType,MovingImageType> ();
+    typename rpi::%4<FixedImageType,MovingImageType> * registration =
+            new rpi::%4<FixedImageType,MovingImageType> ();
 
     registrationMethod = dynamic_cast<itk::ProcessObject*>(registration);
 
@@ -182,8 +182,8 @@ bool %1Private::writeTransform(const QString& file)
     typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
 
-    typename rpi::%2<RegImageType,RegImageType,TransformScalarType> * registration =
-            dynamic_cast<rpi::%2<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod);
+    typename rpi::%4<RegImageType,RegImageType,TransformScalarType> * registration =
+            dynamic_cast<rpi::%4<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod);
     try{
 
         rpi::writeDisplacementFieldTransformation<TransformScalarType, 3>(
