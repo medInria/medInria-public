@@ -1,5 +1,5 @@
-/* medPluginGenerator.cpp --- 
- * 
+/* medPluginGenerator.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Mar  9 21:41:18 2009 (+0100)
@@ -9,15 +9,33 @@
  *     Update #: 176
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medPluginGenerator.h"
+
+class medPluginGeneratorPrivate
+{
+public:
+    QString plugin;
+    medPluginGenerator::PluginFamily pluginFamily;
+    QString pluginFamilyString;
+    QString output;
+    QString prefix;
+    QString suffix;
+    QString type;
+    QString description;
+    QString license;
+
+    QDir parent;
+    QDir target;
+};
+
 
 medPluginGenerator::medPluginGenerator(void)
 {
@@ -28,6 +46,23 @@ medPluginGenerator::~medPluginGenerator(void)
 {
     delete this->d;
     this->d = NULL;
+}
+
+void medPluginGenerator::setPluginFamily(const medPluginGenerator::PluginFamily family)
+{
+    d->pluginFamily = family;
+    switch (family)
+    {
+        case medPluginGenerator::REGISTRATION:
+            d->pluginFamilyString = "registration";
+            break;
+        case medPluginGenerator::GENERIC:
+        default:
+            d->pluginFamilyString = "generic";
+            break;
+    }
+
+
 }
 
 void medPluginGenerator::setOutputDirectory(const QString& directory)
@@ -85,7 +120,7 @@ bool medPluginGenerator::run(void)
         qWarning() << "medPluginGenerator: unable to move to target directory.";
         return false;
     }
-    
+
     return generateCMakeLists()
         && generateTypeHeaderFile()
         && generateTypeSourceFile()
@@ -111,7 +146,7 @@ bool medPluginGenerator::generateCMakeLists(void)
 	return false;
     }
 
-    QFile templateFile(":template/cmake");
+    QFile templateFile(QString(":template/%1/cmake").arg(d->pluginFamilyString));
 
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -142,7 +177,7 @@ bool medPluginGenerator::generateTypeHeaderFile(void)
 	return false;
     }
 
-    QFile templateFile(":template/type.h");
+    QFile templateFile(QString(":template/%1/type.h").arg(d->pluginFamilyString));
 
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -150,15 +185,15 @@ bool medPluginGenerator::generateTypeHeaderFile(void)
     }
 
     QTextStream stream(&targetFile);
-    
+
     stream << QString(templateFile.readAll())
         .arg(QString(d->plugin))
 	.arg(QString(d->plugin).toUpper())
 	.arg(QString(d->type))
 	.arg(QString(d->plugin).remove(d->prefix).prepend(QString(d->prefix).replace(0, 1, QString(d->prefix).left(1).toUpper())));
-    
+
     targetFile.close();
-    
+
     templateFile.close();
 
     return true;
@@ -177,7 +212,7 @@ bool medPluginGenerator::generateTypeSourceFile(void)
 	return false;
     }
 
-    QFile templateFile(":template/type.cpp");
+    QFile templateFile(QString(":template/%1/type.cpp").arg(d->pluginFamilyString));
 
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -185,14 +220,14 @@ bool medPluginGenerator::generateTypeSourceFile(void)
     }
 
     QTextStream stream(&targetFile);
-    
+
     stream << QString(templateFile.readAll())
         .arg(QString(d->plugin))
 	.arg(QString(d->type))
 	.arg(QString(d->plugin).remove(d->prefix).prepend(QString(d->prefix).replace(0, 1, QString(d->prefix).left(1).toUpper())));
-    
+
     targetFile.close();
-    
+
     templateFile.close();
 
     return true;
@@ -211,7 +246,7 @@ bool medPluginGenerator::generatePluginHeaderFile(void)
 	return false;
     }
 
-    QFile templateFile(":template/plugin.h");
+    QFile templateFile(QString(":template/%1/plugin.h").arg(d->pluginFamilyString));
 
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -219,13 +254,13 @@ bool medPluginGenerator::generatePluginHeaderFile(void)
     }
 
     QTextStream stream(&targetFile);
-    
+
     stream << QString(templateFile.readAll())
         .arg(QString(d->plugin))
 	.arg(QString(d->plugin).toUpper());
-    
+
     targetFile.close();
-    
+
     templateFile.close();
 
     return true;
@@ -244,7 +279,7 @@ bool medPluginGenerator::generatePluginSourceFile(void)
 	return false;
     }
 
-    QFile templateFile(":template/plugin.cpp");
+    QFile templateFile(QString(":template/%1/plugin.cpp").arg(d->pluginFamilyString));
 
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -252,11 +287,11 @@ bool medPluginGenerator::generatePluginSourceFile(void)
     }
 
     QTextStream stream(&targetFile);
-    
+
     stream << QString(templateFile.readAll()).arg(QString(d->plugin));
-    
+
     targetFile.close();
-    
+
     templateFile.close();
 
     return true;
@@ -283,11 +318,11 @@ bool medPluginGenerator::generateExportHeaderFile(void)
     }
 
     QTextStream stream(&targetFile);
-    
+
     stream << QString(templateFile.readAll()).arg(QString(d->plugin)).arg(QString(d->plugin).toUpper());
-    
+
     targetFile.close();
-    
+
     templateFile.close();
 
     return true;
@@ -314,11 +349,11 @@ bool medPluginGenerator::generateHelpCollectionFile(void)
     }
 
     QTextStream stream(&targetFile);
-    
+
     stream << QString(templateFile.readAll());
-    
+
     targetFile.close();
-    
+
     templateFile.close();
 
     return true;
@@ -346,11 +381,11 @@ bool medPluginGenerator::generateHelpConfigurationFile(void)
     }
 
     QTextStream stream(&targetFile);
-    
+
     stream << QString(templateFile.readAll());
-    
+
     targetFile.close();
-    
+
     templateFile.close();
 
     return true;
@@ -405,3 +440,4 @@ bool medPluginGenerator::generateCopyingFile(void)
 
     return true;
 }
+

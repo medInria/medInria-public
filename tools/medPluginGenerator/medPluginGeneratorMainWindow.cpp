@@ -1,5 +1,5 @@
-/* medPluginGeneratorMainWindow.cpp --- 
- * 
+/* medPluginGeneratorMainWindow.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Mar  9 22:23:06 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 72
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include    "medPluginGenerator.h"
@@ -48,7 +48,7 @@ medPluginGeneratorMainWindow::medPluginGeneratorMainWindow(QWidget *parent) : QM
     connect(d->ui.suffixLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(onSuffixChanged()));
     connect(d->ui.descriptionTextEdit, SIGNAL(textChanged()), this, SLOT(onDescriptionChanged()));
     connect(d->ui.pluginLicenseCombo, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPluginLicenseChanged()));
-
+    connect(d->ui.FamilyCombo, SIGNAL(currentIndexChanged(const int&)), this, SLOT(onFamilyChanged(int)));
     connect(d->ui.generateAction, SIGNAL(triggered()), this, SLOT(generate()));
     connect(d->ui.quitAction,     SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(d->ui.aboutAction,    SIGNAL(triggered()), this, SLOT(about()));
@@ -75,7 +75,7 @@ void medPluginGeneratorMainWindow::onOutputPathClicked(void)
     d->output = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
                                                       ".",
                                                       QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-        
+
     d->ui.pathLineEdit->setText(d->output);
 
     update();
@@ -157,6 +157,7 @@ void medPluginGeneratorMainWindow::generate(void)
     }
 
     medPluginGenerator generator;
+    generator.setPluginFamily(static_cast<medPluginGenerator::PluginFamily>(d->ui.FamilyCombo->currentIndex()));
     generator.setOutputDirectory(d->output);
     generator.setPrefix(d->prefix);
     generator.setSuffix(d->suffix);
@@ -168,4 +169,18 @@ void medPluginGeneratorMainWindow::generate(void)
         statusBar()->showMessage("Generation succeeded", 2000);
     else
         QMessageBox::warning(this, "Plugin generation", "Generation failed.");
+}
+
+void medPluginGeneratorMainWindow::onFamilyChanged(int index)
+{
+    if (index !=0)
+    {
+        d->ui.pluginTypeCombo->setCurrentIndex(2);
+        d->ui.pluginTypeCombo->setEnabled(false);
+    }
+    else
+    {
+        d->ui.pluginTypeCombo->setCurrentIndex(0);
+        d->ui.pluginTypeCombo->setEnabled(true);
+    }
 }

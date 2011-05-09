@@ -1,5 +1,5 @@
-/* medPluginGeneratorMainWindow.h --- 
- * 
+/* medPluginGeneratorMainWindow.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 10 00:11:13 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 6
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef DTKPLUGINGENERATORMAINWINDOW_H
@@ -45,7 +45,7 @@ public slots:
     void onDescriptionChanged();
     void onPluginLicenseChanged();
     void update(void);
-
+    void onFamilyChanged(int);
 private:
     medPluginGeneratorMainWindowPrivate *d;
 };

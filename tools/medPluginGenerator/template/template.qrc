@@ -1,17 +1,22 @@
 <!DOCTYPE RCC><RCC version="1.0">
   <qresource prefix="template">
-    <file>cmake</file>
-    <file>doxyfile</file>
-    <file>export.h</file>
-    <file>plugin.cpp</file>
-    <file>plugin.h</file>
-    <file>qhcp</file>
-    <file>type.cpp</file>
-    <file>type.h</file>
     <file>license/Apache</file>
     <file>license/Artistic</file>
     <file>license/Cecill</file>
     <file>license/GPL</file>
     <file>license/LGPL</file>
+    <file>generic/cmake</file>
+    <file>qhcp</file>
+    <file>doxyfile</file>
+    <file>export.h</file>
+    <file>generic/plugin.cpp</file>
+    <file>generic/plugin.h</file>
+    <file>generic/type.cpp</file>
+    <file>generic/type.h</file>
+    <file>registration/plugin.cpp</file>
+    <file>registration/plugin.h</file>
+    <file>registration/type.cpp</file>
+    <file>registration/type.h</file>
+    <file>registration/cmake</file>
   </qresource>
 </RCC>

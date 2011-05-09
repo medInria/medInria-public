@@ -13,20 +13,10 @@
 // /////////////////////////////////////////////////////////////////
 
 #include "itkImageRegistrationMethod.h"
-#include "itkMattesMutualInformationImageToImageMetric.h"
-#include "itkLinearInterpolateImageFunction.h"
-#include "itkEuler3DTransform.h"
-#include "itkCenteredTransformInitializer.h"
 
 #include "itkImage.h"
-#include "itkImageFileReader.h"
-#include "itkImageFileWriter.h"
-#include "itkMetaImageIO.h"
 #include "itkResampleImageFilter.h"
 #include "itkCastImageFilter.h"
-#include "itkExtractImageFilter.h"
-
-#include "itkCommand.h"
 
 #include "time.h"
 
@@ -45,8 +35,8 @@ public:
             int update(void);
     template < typename TFixedImage, typename TMovingImage >
            bool write(const QString&);
-    void * registrationMethod ;
-    void deleteRegMethod(void);
+    itk::ProcessObject* registrationMethod ;
+
     std::vector<unsigned int> iterations;
     unsigned char updateRule;
     unsigned char gradientType;
@@ -75,7 +65,7 @@ itkProcessRegistrationDiffeoMorphicDemons::itkProcessRegistrationDiffeoMorphicDe
 itkProcessRegistrationDiffeoMorphicDemons::~itkProcessRegistrationDiffeoMorphicDemons(void)
 {
     d->proc = NULL;
-    //d->deleteRegMethod();
+    d->registrationMethod->Delete();
     d->registrationMethod = NULL;
     delete d;
     d = NULL;
@@ -91,6 +81,7 @@ QString itkProcessRegistrationDiffeoMorphicDemons::description(void) const
 {
     return "itkProcessRegistrationDiffeoMorphicDemons";
 }
+
 
 // /////////////////////////////////////////////////////////////////
 // Templated Version of update
@@ -112,19 +103,22 @@ template <typename PixelType>
                     TransformScalarType > RegistrationType;
     RegistrationType * registration = new RegistrationType ();
 
-    registrationMethod = registration;
+    registrationMethod = dynamic_cast<itk::ProcessObject *>(registration);
 
     //convert image type so that we can still register...
 
     typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
     typename CastFilterType::Pointer  caster =  CastFilterType::New();
     caster->SetInput((const FixedImageType*)proc->fixedImage().GetPointer());
-
+    caster->Update();
     registration->SetFixedImage(caster->GetOutput());
+
+
+
     typedef itk::CastImageFilter< MovingImageType, RegImageType > CastFilterMovingType;
     typename CastFilterType::Pointer  casterMov =  CastFilterType::New();
     casterMov->SetInput((const MovingImageType*)proc->movingImage().GetPointer());
-
+    casterMov->Update();
     registration->SetMovingImage(casterMov->GetOutput());
 
     registration->SetNumberOfIterations(iterations);
@@ -196,11 +190,10 @@ template <typename PixelType>
 
     qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
 
-    typedef itk::ResampleImageFilter< MovingImageType,RegImageType,TransformScalarType >    ResampleFilterType;
+    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(registration->GetTransformation());
     resampler->SetInput((const MovingImageType*)proc->movingImage().GetPointer());
-    //typename FixedImageType::Pointer fixedImage = fixedImage;
     resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
     resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
@@ -216,6 +209,7 @@ template <typename PixelType>
     }
 
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
+    qDebug() << "Resampled? ";
     result->DisconnectPipeline();
 
 
@@ -266,17 +260,6 @@ int itkProcessRegistrationDiffeoMorphicDemons::update(itkProcessRegistration::Im
 
 
 
-template <typename FixedPixelType,typename MovingPixelType>
-bool itkProcessRegistrationDiffeoMorphicDemonsPrivate::write(const QString&)
-{
-//    typename rpi::DiffeoMorphicDemons<FixedImageType,MovingImageType> * registration =
-//            (typename rpi::DiffeoMorphicDemons<FixedImageType,MovingImageType> *)registrationMethod;
-
-    return true;
-}
-
-
-
 bool itkProcessRegistrationDiffeoMorphicDemons::writeTransform(const QString& file)
 {
     typedef float PixelType;
@@ -299,27 +282,9 @@ bool itkProcessRegistrationDiffeoMorphicDemons::writeTransform(const QString& fi
     return true;
 }
 
-//bool itkProcessRegistrationDiffeoMorphicDemons::writeTransform(const QString& file)
-//{
-//    return false;
-//}
-
-void itkProcessRegistrationDiffeoMorphicDemons::setNumberOfIterations(std::vector<unsigned int> iterations)
-{
-    d->iterations = iterations;
-}
-
-
-
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Process parameters
 // /////////////////////////////////////////////////////////////////
-
-dtkAbstractProcess *createitkProcessRegistrationDiffeoMorphicDemons(void)
-{
-    return new itkProcessRegistrationDiffeoMorphicDemons;
-}
-
 void itkProcessRegistrationDiffeoMorphicDemons::setUpdateRule(unsigned char updateRule)
 {
     d->updateRule = updateRule;
@@ -349,3 +314,20 @@ void itkProcessRegistrationDiffeoMorphicDemons::setUseHistogramMatching(bool use
 {
     d->useHistogramMatching = useHistogramMatching;
 }
+
+void itkProcessRegistrationDiffeoMorphicDemons::setNumberOfIterations(std::vector<unsigned int> iterations)
+{
+    d->iterations = iterations;
+}
+
+
+
+// /////////////////////////////////////////////////////////////////
+// Type instanciation
+// /////////////////////////////////////////////////////////////////
+
+dtkAbstractProcess *createitkProcessRegistrationDiffeoMorphicDemons(void)
+{
+    return new itkProcessRegistrationDiffeoMorphicDemons;
+}
+

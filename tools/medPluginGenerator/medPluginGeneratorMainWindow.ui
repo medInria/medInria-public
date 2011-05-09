@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>468</width>
-    <height>191</height>
+    <height>427</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,7 +27,7 @@
     <property name="fieldGrowthPolicy">
      <enum>QFormLayout::FieldsStayAtSizeHint</enum>
     </property>
-    <item row="3" column="0">
+    <item row="5" column="0">
      <widget class="QLabel" name="outputPathLabel">
       <property name="text">
        <string>Output directory:</string>
@@ -37,7 +37,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="5" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="spacing">
        <number>0</number>
@@ -76,7 +76,7 @@
       </item>
      </layout>
     </item>
-    <item row="0" column="0">
+    <item row="2" column="0">
      <widget class="QLabel" name="pluginTypeLabel">
       <property name="text">
        <string>Plugin type:</string>
@@ -86,7 +86,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="2" column="1">
      <widget class="QComboBox" name="pluginTypeCombo">
       <property name="minimumSize">
        <size>
@@ -116,7 +116,7 @@
       </item>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="3" column="0">
      <widget class="QLabel" name="prefixLabel">
       <property name="text">
        <string>Prefix:</string>
@@ -126,7 +126,7 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="3" column="1">
      <widget class="QLineEdit" name="prefixLineEdit">
       <property name="minimumSize">
        <size>
@@ -136,7 +136,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
+    <item row="4" column="0">
      <widget class="QLabel" name="suffixLabel">
       <property name="text">
        <string>Suffix:</string>
@@ -146,7 +146,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
+    <item row="4" column="1">
      <widget class="QLineEdit" name="suffixLineEdit">
       <property name="minimumSize">
        <size>
@@ -156,7 +156,7 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
+    <item row="6" column="1">
      <widget class="QTextEdit" name="descriptionTextEdit">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -176,12 +176,12 @@
         <height>16777215</height>
        </size>
       </property>
-      <property name="text">
+      <property name="text" stdset="0">
        <string/>
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
+    <item row="7" column="0">
      <widget class="QLabel" name="pluginLicenseLabel">
       <property name="text">
        <string>Plugin license:</string>
@@ -191,7 +191,7 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="1">
+    <item row="7" column="1">
      <widget class="QComboBox" name="pluginLicenseCombo">
       <property name="minimumSize">
        <size>
@@ -216,6 +216,11 @@
       </item>
       <item>
        <property name="text">
+        <string>BSD</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Cecill</string>
        </property>
       </item>
@@ -231,14 +236,14 @@
       </item>
      </widget>
     </item>
-    <item row="6" column="0">
+    <item row="8" column="0">
      <widget class="QLabel" name="outputPluginLabel">
       <property name="text">
        <string>Plugin name:</string>
       </property>
      </widget>
     </item>
-    <item row="6" column="1">
+    <item row="8" column="1">
      <widget class="QLabel" name="outputNameLabel">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -269,11 +274,32 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
+    <item row="6" column="0">
      <widget class="QLabel" name="descriptionLabel">
       <property name="text">
        <string>Description:</string>
       </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Plugin family</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="FamilyCombo">
+      <item>
+       <property name="text">
+        <string>Generic</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Registration</string>
+       </property>
+      </item>
      </widget>
     </item>
    </layout>
@@ -284,7 +310,7 @@
      <x>0</x>
      <y>0</y>
      <width>468</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

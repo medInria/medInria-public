@@ -1,5 +1,5 @@
-/* medPluginGenerator.h --- 
- * 
+/* medPluginGenerator.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Mar  9 21:40:22 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 28
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef DTKPLUGINGENERATOR_H
@@ -22,23 +22,15 @@
 
 #include <QtCore>
 
-class medPluginGeneratorPrivate
-{
-public:
-    QString plugin;
-    QString output;
-    QString prefix;
-    QString suffix;
-    QString type;
-    QString description;
-    QString license;
-
-    QDir parent;
-    QDir target;
-};
+class medPluginGeneratorPrivate;
 
 class medPluginGenerator
 {
+public:
+    enum PluginFamily {
+        GENERIC, /** generic plugin*/
+        REGISTRATION /** registration plugin*/
+    };
 public:
     medPluginGenerator(void);
    ~medPluginGenerator(void);
@@ -49,7 +41,7 @@ public:
    void setType(const QString& type);
    void setDescription(const QString& desc);
    void setLicense(const QString& desc);
-
+   void setPluginFamily(const PluginFamily family);
    bool run(void);
 
 protected:
