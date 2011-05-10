@@ -272,7 +272,19 @@ QStringList medAbstractDataCollection::paths( void )
 
 QImage & medAbstractDataCollection::thumbnail( void ) const
 {
-    return (*d->dataIterator)->thumbnail();
+    if (d->dataIterator != d->dataVector.end())
+    {
+        try
+        {
+            return (*d->dataIterator)->thumbnail();
+        }
+        catch(...)
+        {
+            return *(new QImage());
+        }
+    }
+    else
+        return *(new QImage());
 }
 
 QList<QImage>& medAbstractDataCollection::thumbnails( void ) const
