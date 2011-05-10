@@ -43,7 +43,7 @@ public:
 
     this->setTitle("%2");
     //layout->addRow(new QLabel(tr(""),this),d->iterationsBox);
-    
+
     // progression stack
     d->progression_stack = new medProgressionStack(widget);
     QHBoxLayout *progressStackLayout = new QHBoxLayout;
@@ -116,7 +116,7 @@ void %1ToolBox::run(void)
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }
 
-medToolBoxRegistrationCustom *createItkProcessRegistrationDiffeoMorphicDemonsToolBox(QWidget *parent)
+medToolBoxRegistrationCustom *create%3ToolBox(QWidget *parent)
 {
     return new %1ToolBox (parent);
 }
