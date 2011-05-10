@@ -41,7 +41,7 @@ medViewContainerCustom::medViewContainerCustom (QWidget *parent) : medViewContai
 {
     d2->rowMax    = 5;
     d2->columnMax = 5;
-    d2->preset = medViewContainerCustom::A;
+    d2->preset = 0;
 }
 
 medViewContainerCustom::~medViewContainerCustom()
