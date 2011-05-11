@@ -185,7 +185,8 @@ public:
     QMenu      *menu;
     QString orientation;
     
-    dtkAbstractData      *data;
+    dtkAbstractData *data;
+	QMap<int, QSharedPointer<dtkAbstractData> > sharedData;
     dtkAbstractDataImage *imageData;
     
     QTimeLine *timeline;
@@ -626,6 +627,18 @@ vtkRenderer *v3dView::renderer3d(void)
     return d->renderer3d;
 }
 
+void v3dView::setSharedDataPointer(QSharedPointer<dtkAbstractData> data)
+{
+	int layer = 0;
+    while(d->view2d->GetImageInput(layer)) {
+        layer++;
+    }
+
+	d->sharedData[layer] = data;
+
+	this->setData (data.data(), layer);
+}
+
 void v3dView::setData(dtkAbstractData *data)
 {
     if(!data)
@@ -726,44 +739,44 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
     }
     else if (data->description()=="itkDataImageShort4") {
-        dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
+		this->enableInteractor ( "v3dView4DInteractor" );
+        dtkAbstractView::setData(data);	
     }
     else if (data->description()=="itkDataImageInt4") {
+		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageLong4") {
+		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageChar4") {
+		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUShort4") {
+		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageFloat4") {
+		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUInt4") {
+		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageULong4") {
+		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUChar4") {
+		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageDouble4") {
+		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
-	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="vistalDataImageChar3") {
       if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->convert("itkDataImageChar3")->data() ) ) ) {
@@ -900,8 +913,8 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
     }
 
-    emit dataAdded(layer);
-    emit dataAdded(data);
+	emit dataAdded(data);
+    emit dataAdded(layer);    
 }
 
 void *v3dView::data (void)

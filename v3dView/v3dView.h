@@ -60,6 +60,8 @@ public:
      */
     void setData(dtkAbstractData *data, int layer);
 
+	void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
+
     /**
      * Inputs the data to the vtkImageView2D/3D instances.
      * Calling setData(data) will automatically position the data in
