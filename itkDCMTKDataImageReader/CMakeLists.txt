@@ -80,49 +80,17 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
 )
 
-add_executable(itkDCMTKConvert
-  itkDCMTKConvert.cxx
-)
-  
-target_link_libraries(itkDCMTKConvert
-  ITKDCMTKIO
-  ${ITK_LIBRARIES}
-  ${QT_LIBRARIES}
-)
-
-if(VTK_FOUND)
-
-  add_executable(itkDCMTKReaderTest
-    itkDCMTKReaderTest.cxx
-  )
-  
-  target_link_libraries(itkDCMTKReaderTest
-    vtkRenderingAddOn
-    vtkWidgetsAddOn
-    vtkWidgets
-    vtkRendering
-    vtkIO
-    vtkDataManagement
-    ITKDCMTKIO
-    ${ITK_LIBRARIES}
-  )
-
-  add_executable(itkDCMTKReadWriteBenchmark
-    itkDCMTKReadWriteBenchmark.cxx
-  )
-  
-  target_link_libraries(itkDCMTKReadWriteBenchmark
-    ITKDCMTKIO
-    ${ITK_LIBRARIES}
-  )
-
-endif (VTK_FOUND)
-
 if (BUILD_TESTING)
   add_subdirectory(Testing)
 endif (BUILD_TESTING)
 
-dtk_build_doc(itkDCMTKDataImageReaderPlugin)
+IF(BUILD_EXAMPLES)
+        subdirs(Examples)
+ENDIF(BUILD_EXAMPLES)
+
+if(BUILD_DOCUMENTATION)
+	dtk_build_doc(${PROJECT_NAME})
+endif(BUILD_DOCUMENTATION)
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio

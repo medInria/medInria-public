@@ -82,7 +82,7 @@ public slots:
     void onHideShowSagittalPropertySet(bool show);
 
     /** Change position of the slices */
-    void onPositionChanged(const QVector3D& position);
+    void onPositionChanged(const QVector3D& position, bool propagate);
 
 private:
     v3dViewTensorInteractorPrivate *d;
