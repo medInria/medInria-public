@@ -280,6 +280,7 @@ public slots:
     
     virtual void onOpacityChanged(double opacity, int layer);
 
+    void setFullScreen( bool state );
     
 protected:
     void emitViewSliceChangedEvent    (int slice);

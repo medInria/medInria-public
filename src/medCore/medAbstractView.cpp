@@ -364,6 +364,11 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
     emit cameraChanged(position, viewup, focal, parallelScale, d->linkCamera);
 }
 
+void medAbstractView::setFullScreen( bool state )
+{
+    emit fullScreen( state );
+}
+
 void medAbstractView::setSharedDataPointer( QSharedPointer<dtkAbstractData> data )
 {
     // set a reference to our view that gets destroyed when the view terminates
