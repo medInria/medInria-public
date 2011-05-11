@@ -1,42 +1,42 @@
-#ifndef _vtk_DataMesh_h_
-#define _vtk_DataMesh_h_
+#ifndef _vtk_DataMesh4D_h_
+#define _vtk_DataMesh4D_h_
 
 #include <dtkCore/dtkAbstractDataMesh.h>
 #include <dtkCore/dtkGlobal.h>
 
 #include "vtkDataMeshPluginExport.h"
 
-class vtkDataMeshPrivate;
-
+class vtkDataMesh4DPrivate;
 
 
 /**
     
-    \class vtkDataMesh
+    \class vtkDataMesh4D
     \brief This class describes the data type that handles
-    a mesh in the vtk format.
+    a sequence of meshes in the vtk format.
 
-    It integrates the vtk pipeline in order to create thumbnails
-
-    The class keeps a smart pointer over the vtkPointSet instance
-    which is the base class for surface meshes (vtkPolyData) and
-    volumetric meshes (vtkUnstructuredGrid)
+    It integrates the vtk pipeline in order to create a single 
+    thumbnail from the first iteration of the sequence
+    
+    The class keeps a smart pointer over the vtkMetaDataSetSequence
+    instance (in vtkINRIA3D repository) that handles a list of either
+    surface or volumetric meshes.
     
     \todo There is a problem in the thumbnail creation as it uses
     a vtkRenderer, therefore opens up a vtkWindow to create thumbnail,
     which should not happen.
     
-    \see vtkDataMesh4D vtkDataMeshReader itkDataImage vtkPointSet
+    \see vtkDataMesh vtkDataMeshReader vtkMetaDataSetSequence
     \author Nicolas Toussaint
 */
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public dtkAbstractDataMesh
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public dtkAbstractDataMesh
 {
   Q_OBJECT
     
  public:
-    vtkDataMesh(void);
-    ~vtkDataMesh(void);
+    vtkDataMesh4D(void);
+    ~vtkDataMesh4D(void);
     virtual QString description(void) const;
     static bool registered(void);
 
@@ -62,10 +62,10 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public dtkAbstractDataMesh
     
  private:
 
-    vtkDataMeshPrivate* d;
+    vtkDataMesh4DPrivate* d;
   
 };
 
-dtkAbstractData* createVtkDataMesh (void);
+dtkAbstractData* createVtkDataMesh4D (void);
 
 #endif

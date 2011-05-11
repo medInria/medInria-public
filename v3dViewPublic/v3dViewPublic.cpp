@@ -648,8 +648,8 @@ void v3dViewPublic::onOrientationPropertySet(const QString &value)
     
     
     // update slider position
-    if (vtkViewImage2D *view2d = vtkViewImage2D::SafeDownCast (d->currentView)) {
-        unsigned int zslice = view2d->GetZSlice();
+    if (vtkViewImage2D *view2D = vtkViewImage2D::SafeDownCast (d->currentView)) {
+        unsigned int zslice = view2D->GetZSlice();
         d->slider->setValue (zslice);
     }
     else if (d->dimensionBox->currentIndex()==1) {
@@ -1217,6 +1217,54 @@ void v3dViewPublic::setData(dtkAbstractData *data)
             d->view3D->SetITKImage(image);
         }
     }
+    else if (data->description()=="vistalDataImageChar3") {
+      if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->convert("itkDataImageChar3")->data() ) ) ) {
+        d->view2D->SetITKImage(image);
+        d->view3D->SetITKImage(image);
+      }
+    }
+    else if (data->description()=="vistalDataImageUChar3") {
+      if( itk::Image<unsigned char, 3>* image = dynamic_cast<itk::Image<unsigned char, 3>*>( (itk::Object*)( data->convert("itkDataImageUChar3")->data() ) ) ) {
+        d->view2D->SetITKImage(image);
+        d->view3D->SetITKImage(image);
+      }
+    }
+    else if (data->description()=="vistalDataImageShort3") {
+      if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->convert("itkDataImageShort3")->data() ) ) ) {
+        d->view2D->SetITKImage(image);
+        d->view3D->SetITKImage(image);
+      }
+    }
+    else if (data->description()=="vistalDataImageUShort3") {
+      if( itk::Image<unsigned short, 3>* image = dynamic_cast<itk::Image<unsigned short, 3>*>( (itk::Object*)( data->convert("itkDataImageUShort3")->data() ) ) ) {
+        d->view2D->SetITKImage(image);
+        d->view3D->SetITKImage(image);
+      }
+    }
+    else if (data->description()=="vistalDataImageInt3") {
+      if( itk::Image<int, 3>* image = dynamic_cast<itk::Image<int, 3>*>( (itk::Object*)( data->convert("itkDataImageInt3")->data() ) ) ) {
+        d->view2D->SetITKImage(image);
+        d->view3D->SetITKImage(image);
+      }
+    }
+    else if (data->description()=="vistalDataImageUInt3") {
+      if( itk::Image<unsigned int, 3>* image = dynamic_cast<itk::Image<unsigned int, 3>*>( (itk::Object*)( data->convert("itkDataImageUInt3")->data() ) ) ) {
+        d->view2D->SetITKImage(image);
+        d->view3D->SetITKImage(image);
+      }
+    }
+    else if (data->description()=="vistalDataImageFloat3") {
+      if( itk::Image<float, 3>* image = dynamic_cast<itk::Image<float, 3>*>( (itk::Object*)( data->convert("itkDataImageFloat3")->data() ) ) ) {
+        d->view2D->SetITKImage(image);
+        d->view3D->SetITKImage(image);
+      }
+    }
+    else if (data->description()=="vistalDataImageDouble3") {
+      if( itk::Image<double, 3>* image = dynamic_cast<itk::Image<double, 3>*>( (itk::Object*)( data->convert("itkDataImageDouble3")->data() ) ) ) {
+        d->view2D->SetITKImage(image);
+        d->view3D->SetITKImage(image);
+      }
+    }
     else
 #endif
     if (data->description()=="v3dDataImage") {
@@ -1297,8 +1345,8 @@ void v3dViewPublic::onDimensionBoxChanged (const QString &value)
         if (value=="Slice") {
             d->observer->unlock();
 	    d->slider->setRange(0, d->view2D->GetWholeZMax());
-            if (vtkViewImage2D *view2d = vtkViewImage2D::SafeDownCast (d->currentView)) {
-                unsigned int zslice = view2d->GetZSlice();
+            if (vtkViewImage2D *view2D = vtkViewImage2D::SafeDownCast (d->currentView)) {
+                unsigned int zslice = view2D->GetZSlice();
                 d->slider->setValue (zslice);
             }
         }
@@ -1456,8 +1504,7 @@ void v3dViewPublic::switchToVR(void)
 
 void v3dViewPublic::switchToVRGPU(void)
 {
-//    this->setProperty ("3DMode",      "VR");
-    this->setProperty ("Renderer",    "GPU");
+    this->setProperty ("Renderer",      "GPU");
     this->setProperty ("Orientation", "3D");
 }
 

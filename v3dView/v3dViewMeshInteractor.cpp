@@ -4,6 +4,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkLog.h>
 
 #include <vtkActor.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -98,6 +99,8 @@ bool v3dViewMeshInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 
 void v3dViewMeshInteractor::enable(void)
 {
+    dtkWarning() << "enabling v3dViewMeshInteractor" ;
+
     if (this->enabled())
         return;
 
@@ -178,9 +181,11 @@ dtkAbstractViewInteractor *createV3dViewMeshInteractor(void)
 
 void v3dViewMeshInteractor::updatePipeline (void)
 {
+  
     if (d->view && d->data) {
 
         if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(d->data->data()))) {
+	  
             d->actor2d = d->view->view2d ()->AddDataSet (pointset);
             d->actor3d = d->view->view3d ()->AddDataSet(pointset);
 

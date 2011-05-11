@@ -11,6 +11,9 @@ IF( DOXYGEN_FOUND )
       SET(all_arg "ALL")
     ENDIF()
 
+    find_package(Qt4 4.6.0 REQUIRED)
+    include(${QT_USE_FILE})
+
     #
     # Documentation
     #

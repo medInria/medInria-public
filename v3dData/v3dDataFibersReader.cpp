@@ -4,6 +4,7 @@
 #include "dtkCore/dtkAbstractDataFactory.h"
 
 #include "vtkXMLFiberDataSetReader.h"
+#include "vtkFiberDataSet.h"
 
 class v3dDataFibersReaderPrivate
 {
@@ -20,6 +21,8 @@ v3dDataFibersReader::v3dDataFibersReader(): d (new v3dDataFibersReaderPrivate)
 v3dDataFibersReader::~v3dDataFibersReader()
 {
   d->reader->Delete();
+  delete d;
+  d = NULL;
 }
 
 QStringList v3dDataFibersReader::handled(void) const
@@ -73,6 +76,27 @@ bool v3dDataFibersReader::read (const QString& path)
   {
     d->reader->SetFileName (path.toAscii().constData());
     d->reader->Update();
+
+    if (vtkFiberDataSet *dataset = d->reader->GetOutput()) {
+
+        QStringList bundles;
+        QStringList bundleColors;
+
+        vtkFiberDataSet::vtkFiberBundleListType bundleList   = dataset->GetBundleList();
+        vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundleList.begin();
+        while (it!=bundleList.end())
+        {
+          bundles << (*it).first.c_str();
+          QColor color (static_cast<int>((*it).second.Red * 255.0),
+                        static_cast<int>((*it).second.Green * 255.0),
+                        static_cast<int>((*it).second.Blue * 255.0));
+          bundleColors << color.name();
+          ++it;
+        }
+
+        dtkdata->setMetaData ("BundleList",      bundles);
+        dtkdata->setMetaData ("BundleColorList", bundleColors);
+    }
 
     dtkdata->setData ( d->reader->GetOutput() );
   }
