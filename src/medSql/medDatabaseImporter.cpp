@@ -789,10 +789,9 @@ dtkAbstractDataWriter* medDatabaseImporter::getSuitableWriter( QString filename,
         dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
         if (d->lastSuccessfulReaderDescription == dataWriter->description()) {
 
-            if (! dataWriter->handled().contains(dtkdata->description()))
-                continue;
+            if ( dataWriter->handled().contains(dtkdata->description()) &&
+                 dataWriter->canWrite( filename ) ) {
 
-            if (dataWriter->canWrite( filename )) {
                 d->lastSuccessfulWriterDescription = dataWriter->description();
                 return dataWriter;
             }
@@ -805,10 +804,9 @@ dtkAbstractDataWriter* medDatabaseImporter::getSuitableWriter( QString filename,
     for (int i=0; i<writers.size(); i++) {
         dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
 
-        if (! dataWriter->handled().contains(dtkdata->description()))
-            continue;
+        if ( dataWriter->handled().contains(dtkdata->description()) &&
+             dataWriter->canWrite( filename ) ) {
 
-        if (dataWriter->canWrite( filename )) {
             d->lastSuccessfulWriterDescription = dataWriter->description();
             return dataWriter;
         }
