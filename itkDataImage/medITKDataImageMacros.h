@@ -20,176 +20,284 @@
 #include <QtGui>
 
 template< typename TPixel, int VDimension >
-void generateThumbnails (typename itk::Image<TPixel, VDimension>::Pointer image,
+void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
                          int xydim, bool singlez, QList<QImage> & thumbnails)
 {
-  if (VDimension < 3)
-    return;
-  if (image.IsNull())
-    return;
+    if (VDimension < 3)
+        return;
 
-  typedef itk::Image<TPixel, VDimension> ImageType;
-  typename ImageType::Pointer  img  = image;
+    if (!image)
+        return;
 
-  img->SetRequestedRegion(img->GetLargestPossibleRegion());
-  img->Update();
-  typename ImageType::SizeType size = img->GetLargestPossibleRegion().GetSize();
+    typedef itk::Image<TPixel, VDimension> ImageType;
+    typename ImageType::Pointer  img  = image;
 
-  if ((( singlez && thumbnails.length() == 1) ||
-       (!singlez && thumbnails.length() == static_cast< int >( size[2] ))) &&
-      thumbnails.length()    >  1     &&
-      thumbnails[0].height() == xydim &&
-      thumbnails[0].width()  == xydim)
-    return;
+    img->SetRequestedRegion(img->GetLargestPossibleRegion());
+    img->Update();
+    typename ImageType::SizeType size = img->GetLargestPossibleRegion().GetSize();
 
-  if (singlez)
-  {
+    if ((( singlez && thumbnails.length() == 1) ||
+        (!singlez && thumbnails.length() == static_cast< int >( size[2] ))) &&
+        thumbnails.length()    >  1     &&
+        thumbnails[0].height() == xydim &&
+        thumbnails[0].width()  == xydim)
+        return;
+
+    if (singlez)
+    {   
+        typename ImageType::SizeType newSize = size;
+        newSize[2] = 1;
+   
+        if (VDimension==4)
+            newSize[3] = 1;
     
-    typename ImageType::SizeType newSize = size;
-    newSize[2]    = 1;
-    if (VDimension==4)
-        newSize[3] = 1;
-    typename ImageType::IndexType index;
-    index.Fill( 0 );
-    index[2] = size[2] / 2;
-    typename ImageType::RegionType region = img->GetLargestPossibleRegion(); 
-    region.SetIndex( index );
-    region.SetSize( newSize );
+        typename ImageType::IndexType index;
+        index.Fill( 0 );
+        index[2] = size[2] / 2;
+        typename ImageType::RegionType region = img->GetLargestPossibleRegion(); 
+        region.SetIndex( index );
+        region.SetSize( newSize );
 
-    typedef itk::RegionOfInterestImageFilter<ImageType, ImageType> FilterType;
-    typename FilterType::Pointer extractor = FilterType::New();
-    extractor->SetInput( img );
-    extractor->SetRegionOfInterest( region );
-    try
-    {
-      extractor->Update();
+        typedef itk::RegionOfInterestImageFilter<ImageType, ImageType> FilterType;
+        typename FilterType::Pointer extractor = FilterType::New();
+        extractor->SetInput( img );
+        extractor->SetRegionOfInterest( region );
+        try
+        {
+            extractor->Update();
+        }
+        catch (itk::ExceptionObject &e)
+        {
+            qDebug() << e.GetDescription();
+            return;
+        }
+
+        img = extractor->GetOutput();
+        size = img->GetLargestPossibleRegion().GetSize();
+	    img->DisconnectPipeline();
     }
-    catch (itk::ExceptionObject &e)
-    {
-      qDebug() << e.GetDescription();
-      return;
+    
+    /*
+    QTime time;
+    time.start();
+    */
+
+    thumbnails.clear();
+
+    typedef itk::Image<TPixel, 2> Image2DType;
+    typedef itk::Image<float, 2>  FloatImage2DType;
+
+    typedef itk::ExtractImageFilter<ImageType, Image2DType> ExtractFilterType;
+    typename ExtractFilterType::Pointer extractor = ExtractFilterType::New();        
+
+    typename ImageType::RegionType extractionRegion = img->GetLargestPossibleRegion();
+    extractionRegion.SetIndex(2, 0);
+    extractionRegion.SetSize (2, 0);
+
+    if (VDimension==4) {
+        extractionRegion.SetIndex(3, 0);
+        extractionRegion.SetSize (3, 0);
     }
 
-    img = extractor->GetOutput();
-    size = img->GetLargestPossibleRegion().GetSize();
-  }
+    extractor->SetExtractionRegion (extractionRegion);
+    extractor->SetInput(img);
 
-  if (size[0] > static_cast<unsigned int>(xydim) ||
-      size[1] > static_cast<unsigned int>(xydim) )
-  {
-    typename ImageType::SizeType    newSize    = size;
-    typename ImageType::SpacingType spacing    = img->GetSpacing();
-    typename ImageType::SpacingType newSpacing = spacing;
+    extractor->UpdateOutputInformation();
 
-    newSize[0] = 128;
-    newSize[1] = 128;
+    // setup resampling pipeline
+    typename Image2DType::SpacingType spacing    = extractor->GetOutput()->GetSpacing();
+    typename Image2DType::SpacingType newSpacing = spacing;
+    typename Image2DType::SizeType    newSize    = extractor->GetOutput()->GetLargestPossibleRegion().GetSize();
+    newSize[0] = xydim;
+    newSize[1] = xydim;
 
-    typename ImageType::SpacingType sfactor;
-    typename ImageType::SpacingType sigma, variance;
-    for (unsigned int i = 0; i < VDimension; ++i)
-    {
-      sfactor[i]     = (double)size[i] / (double)newSize[i];
-      newSpacing[i] *= sfactor[i];
-      sigma[i]       = 0.5 * sfactor[i];
-    }
+    typename Image2DType::SpacingType sfactor, sigma, variance;
+    
+    for (unsigned int i = 0; i < 2; ++i)
+	{
+		sfactor[i]     = (double)size[i] / (double)newSize[i];
+		newSpacing[i] *= sfactor[i];
+		sigma[i]       = 0.5 * sfactor[i];
+	}
+			    
     int index	       = size[0] > size[1] ? 0 : 1;
-    sfactor[!index]    = sfactor[index];
-    variance[!index]   = variance[index];
-    newSpacing[!index] = newSpacing[index];
+	sfactor[!index]    = sfactor[index];
+	variance[!index]   = variance[index];
+	newSpacing[!index] = newSpacing[index];
 
-    typename ImageType::PointType origin = img->GetOrigin();
-    origin[!index] -= 0.5 * (newSize[!index] * newSpacing[!index] -
-                 size[!index] * spacing[!index]);
+	typename Image2DType::PointType origin = extractor->GetOutput()->GetOrigin();
+	origin[!index] -= 0.5 * (newSize[!index] * newSpacing[!index] -
+        size[!index] * spacing[!index]);
 
-    //typedef itk::Image<float, VDimension> FloatImageType;
-    typedef itk::RecursiveGaussianImageFilter<ImageType, ImageType>
-      SmootherType0;
-    typedef itk::RecursiveGaussianImageFilter<ImageType, ImageType>
-      SmootherType1;
-    typename SmootherType0::Pointer smoother0 = SmootherType0::New();
-    typename SmootherType1::Pointer smoother1 = SmootherType1::New();
+    typedef itk::RecursiveGaussianImageFilter<Image2DType, FloatImage2DType>
+		SmootherType0;
+	typedef itk::RecursiveGaussianImageFilter<FloatImage2DType, FloatImage2DType>
+		SmootherType1;
+	typename SmootherType0::Pointer smoother0 = SmootherType0::New();
+	typename SmootherType1::Pointer smoother1 = SmootherType1::New();
     smoother0->SetSigma ( sigma[0] * spacing[0]);
     smoother1->SetSigma ( sigma[1] * spacing[1]);
     smoother0->SetDirection (0);
     smoother1->SetDirection (1);
     smoother0->SetOrder (SmootherType0::ZeroOrder);
     smoother1->SetOrder (SmootherType1::ZeroOrder);
-    smoother0->SetInput( img );
+    //smoother0->SetInput( extractor->GetOutput() );
     smoother1->SetInput( smoother0->GetOutput() );
     typename SmootherType1::Pointer smoother = smoother1;
 
-    typedef typename itk::ResampleImageFilter<ImageType, ImageType> FilterType;
+    typedef typename itk::ResampleImageFilter<FloatImage2DType, Image2DType> FilterType;
     typename FilterType::Pointer resampler = FilterType::New();
     resampler->SetInput (smoother->GetOutput());
     resampler->SetSize (newSize);
     resampler->SetOutputSpacing (newSpacing);
     resampler->SetOutputOrigin (origin);
-    resampler->SetOutputDirection (img->GetDirection());
+    resampler->SetOutputDirection (extractor->GetOutput()->GetDirection());        
 
-    try
-    {
-      resampler->Update();
+    // setup color mapping
+    typedef itk::RGBPixel<unsigned char> RGBPixelType;
+    typedef itk::Image<RGBPixelType, 2>  RGBImage2DType;
+    typedef itk::ScalarToRGBColormapImageFilter<Image2DType, RGBImage2DType> RGBFilterType;
+    typename RGBFilterType::Pointer rgbfilter = RGBFilterType::New();
+    rgbfilter->SetColormap (RGBFilterType::Grey);
+    rgbfilter->GetColormap()->SetMinimumRGBComponentValue (0);
+    rgbfilter->GetColormap()->SetMaximumRGBComponentValue (255);
+    rgbfilter->UseInputImageExtremaForScalingOn ();
+
+    if (VDimension==3) {
+
+        for (int slice=0; slice<size[2]; slice++) {
+
+            extractionRegion.SetIndex(2, slice);
+            extractor->SetExtractionRegion (extractionRegion);
+
+            extractor->Update();
+
+            typename Image2DType::Pointer img2d = extractor->GetOutput();            
+
+            if (size[0] > static_cast<unsigned int>(xydim) ||
+                size[1] > static_cast<unsigned int>(xydim) ) {			              
+               
+                smoother0->SetInput( extractor->GetOutput() );
+                smoother0->Modified();
+
+                try
+                {
+                    resampler->Update();
+                }
+                catch (itk::ExceptionObject &e)
+                {
+                    qDebug() << e.GetDescription();
+                    return;
+                }
+
+                img2d = resampler->GetOutput();
+	            img2d->DisconnectPipeline();
+            }
+
+            rgbfilter->SetInput (img2d);
+            rgbfilter->Modified();
+
+            try
+            {
+                rgbfilter->Update();
+            }
+            catch (itk::ExceptionObject &e)
+            {
+                qDebug() << e.GetDescription();
+                return;
+            }
+
+            // qDebug() << "Time elapsed: " << time.elapsed();            
+
+            QImage *qimage = new QImage (newSize[0], newSize[1], QImage::Format_ARGB32);
+            uchar  *qImageBuffer = qimage->bits();
+            itk::ImageRegionIterator<RGBImage2DType> it (rgbfilter->GetOutput(),
+                                                         rgbfilter->GetOutput()->GetLargestPossibleRegion());
+
+            while (!it.IsAtEnd())
+            {
+                *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetRed());
+                *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetGreen());
+                *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetBlue());
+                *qImageBuffer++ = 0xFF;
+
+                ++it;
+            }
+
+            thumbnails.push_back (qimage->mirrored(img2d->GetDirection()(0,0) == -1.0, img2d->GetDirection()(1,1) == -1.0));
+            delete qimage;
+        }
     }
-    catch (itk::ExceptionObject &e)
+    else if (VDimension==4)
     {
-      qDebug() << e.GetDescription();
-      return;
+        for (int volume=0; volume<size[3]; volume++) {
+            for (int slice=0; slice<size[2]; slice++) {
+
+                extractionRegion.SetIndex(2, slice);
+                extractionRegion.SetIndex(3, volume);
+                extractor->SetExtractionRegion (extractionRegion);
+
+                extractor->Update();
+
+                typename Image2DType::Pointer img2d = extractor->GetOutput();            
+
+                if (size[0] > static_cast<unsigned int>(xydim) ||
+                    size[1] > static_cast<unsigned int>(xydim) ) {			              
+               
+                    smoother0->SetInput( extractor->GetOutput() );
+                    smoother0->Modified();
+
+                    try
+                    {
+                        resampler->Update();
+                    }
+                    catch (itk::ExceptionObject &e)
+                    {
+                        qDebug() << e.GetDescription();
+                        return;
+                    }
+
+                    img2d = resampler->GetOutput();
+	                img2d->DisconnectPipeline();
+                }
+                
+                rgbfilter->SetInput (img2d);
+                rgbfilter->Modified();
+
+                try
+                {
+                    rgbfilter->Update();
+                }
+                catch (itk::ExceptionObject &e)
+                {
+                    qDebug() << e.GetDescription();
+                    return;
+                }
+
+                // qDebug() << "Time elapsed: " << time.elapsed();            
+
+                QImage *qimage = new QImage (newSize[0], newSize[1], QImage::Format_ARGB32);
+                uchar  *qImageBuffer = qimage->bits();
+                itk::ImageRegionIterator<RGBImage2DType> it (rgbfilter->GetOutput(),
+                                                             rgbfilter->GetOutput()->GetLargestPossibleRegion());
+
+                while (!it.IsAtEnd())
+                {
+                    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetRed());
+                    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetGreen());
+                    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetBlue());
+                    *qImageBuffer++ = 0xFF;
+
+                    ++it;
+                }
+
+                thumbnails.push_back (qimage->mirrored(img2d->GetDirection()(0,0) == -1.0, img2d->GetDirection()(1,1) == -1.0));
+                delete qimage;
+            }
+        }
     }
 
-    img = resampler->GetOutput();
-  }
-
-  typedef itk::RGBPixel<unsigned char> RGBPixelType;
-  typedef itk::Image<RGBPixelType, VDimension> RGBImageType;
-  typedef itk::ScalarToRGBColormapImageFilter<ImageType, RGBImageType> RGBFilterType;
-  typename RGBFilterType::Pointer rgbfilter = RGBFilterType::New();
-  rgbfilter->SetColormap (RGBFilterType::Grey);
-  rgbfilter->GetColormap()->SetMinimumRGBComponentValue (0);
-  rgbfilter->GetColormap()->SetMaximumRGBComponentValue (255);
-  rgbfilter->UseInputImageExtremaForScalingOn ();
-  rgbfilter->SetInput (img);
-  
-  try
-  {
-      rgbfilter->Update();
-  }
-  catch (itk::ExceptionObject &e)
-  {
-      qDebug() << e.GetDescription();
-      return;
-  }
-
-  thumbnails.clear();
-
-  size = rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize();
-  unsigned long	 nvoxels_per_slice = size[0] * size[1];
-  unsigned long	 voxelCount	   = 0;
-  QImage *qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);
-  uchar	 *qImageBuffer = qimage->bits();
-  itk::ImageRegionIterator<RGBImageType> it (rgbfilter->GetOutput(),
-                                             rgbfilter->GetOutput()->GetLargestPossibleRegion());
-
-  while (!it.IsAtEnd())
-  {
-    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetRed());
-    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetGreen());
-    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetBlue());
-    *qImageBuffer++ = 0xFF;
-
-    ++it;
-    ++voxelCount;
-
-    if ((voxelCount % nvoxels_per_slice) ==  0)
-    {
-      thumbnails.push_back (qimage->mirrored(img->GetDirection()(0,0) == -1.0, img->GetDirection()(1,1) == -1.0));
-      delete qimage;
-      qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);
-      qImageBuffer = qimage->bits();
-    }
-  }
-
-  delete qimage;
-
+    // qDebug() << "Time elapsed: " << time.elapsed();
 }
 
 #define medImplementITKDataImage(type, dimension, suffix)		\
