@@ -61,36 +61,35 @@ include(Dart)
 
 set(DEPENDS_ON_DTK 1)
 
-option(MEDINRIA_BUILD_TOOLS                               "Build Tools" "OFF")
-option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overriding selection)" OFF)
+option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" OFF)
 
 
-## ADD here any new plugin you want to include in the build.
+## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST v3dData v3dViewPublic v3dView itkDataImage itkDataImageReader itkDCMTKDataImageReader vtkDataMesh vtkDataMeshReader vtkDataMeshWriter itkDataDiffusionGradientList itkDataTensorImageWriter itkDataTensorImageReader )
 
+## This has no effect, if someone knows how to flip the plugin options when MEDINRIA_BUILD_ALL_PLUGINS is turned on...
 if (MEDINRIA_BUILD_ALL_PLUGINS)
     set(PLUGIN_DEFAULT_BUILD_VALUE ON)
 else()
     set(PLUGIN_DEFAULT_BUILD_VALUE OFF)
 endif()
 
+## Add plugins options to the cmake list. The option's value is overriden by MEDINRIA_BUILD_ALL_PLUGINS.
 foreach (PLUGIN_ITEM  ${PLUGIN_LIST})
     MACRO_ADD_PLUGIN (${PLUGIN_ITEM} PLUGIN_DEFAULT_BUILD_VALUE)
 endforeach()
 
 
-## Registration plugins
+## Registration plugins, registration plugins are only built if this option is
+## enabled or MEDINRIA_BUILD_ALL_PLUGINS is ON.
 option(MEDINRIA_ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "OFF")
 if (MEDINRIA_ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
+
+    #Put here your registration plugin directory/project name.
     set(REG_PLUGIN_LIST itkProcessRegistrationDiffeoMorphicDemons )
     foreach (PLUGIN_ITEM  ${REG_PLUGIN_LIST})
         MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ON)
     endforeach()
-#else()
-#    foreach (PLUGIN_ITEM  ${REG_PLUGIN_LIST})
-#        string(TOUPPER ${P_NAME} UPPER_CASE_NAME)
-#        set (MEDINRIA_BUILD_${UPPER_CASE_NAME}_PLUGIN OFF)
-#    endforeach()
 endif()
 
 
@@ -117,15 +116,16 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()
 
+## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK 
+## to be set before  being included.
 add_subdirectory(src)
 
-
+option(MEDINRIA_BUILD_TOOLS  "Build Tools" "OFF")
 if (MEDINRIA_BUILD_TOOLS)
     add_subdirectory(tools)
 endif()
 
 option(BUILD_DOCUMENTATION "Build documentation"    true)
-
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
