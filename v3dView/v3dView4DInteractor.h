@@ -29,8 +29,8 @@ class dtkAbstractView;
 //BTX
 #define AppendImageSequenceMacro(type)					\
   unsigned int layer = d->view->layerCount();				\
-  if ((layer == 1) && !d->view->view2d()->GetInput())			\
-    layer = 0;								\
+  if (layer==1 && !d->view->view2d()->GetInput()) \
+    layer = 0; \
   vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::New();	\
   sequence->SetITKDataSet<type> (image);				\
   d->sequenceList->AddItem (sequence);					\
