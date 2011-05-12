@@ -44,17 +44,17 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
         return;
 
     if (singlez)
-    {   
+    {
         typename ImageType::SizeType newSize = size;
         newSize[2] = 1;
-   
+
         if (VDimension==4)
             newSize[3] = 1;
-    
+
         typename ImageType::IndexType index;
         index.Fill( 0 );
         index[2] = size[2] / 2;
-        typename ImageType::RegionType region = img->GetLargestPossibleRegion(); 
+        typename ImageType::RegionType region = img->GetLargestPossibleRegion();
         region.SetIndex( index );
         region.SetSize( newSize );
 
@@ -76,7 +76,7 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
         size = img->GetLargestPossibleRegion().GetSize();
 	    img->DisconnectPipeline();
     }
-    
+
     /*
     QTime time;
     time.start();
@@ -88,7 +88,7 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
     typedef itk::Image<float, 2>  FloatImage2DType;
 
     typedef itk::ExtractImageFilter<ImageType, Image2DType> ExtractFilterType;
-    typename ExtractFilterType::Pointer extractor = ExtractFilterType::New();        
+    typename ExtractFilterType::Pointer extractor = ExtractFilterType::New();
 
     typename ImageType::RegionType extractionRegion = img->GetLargestPossibleRegion();
     extractionRegion.SetIndex(2, 0);
@@ -112,14 +112,14 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
     newSize[1] = xydim;
 
     typename Image2DType::SpacingType sfactor, sigma, variance;
-    
+
     for (unsigned int i = 0; i < 2; ++i)
 	{
 		sfactor[i]     = (double)size[i] / (double)newSize[i];
 		newSpacing[i] *= sfactor[i];
 		sigma[i]       = 0.5 * sfactor[i];
 	}
-			    
+
     int index	       = size[0] > size[1] ? 0 : 1;
 	sfactor[!index]    = sfactor[index];
 	variance[!index]   = variance[index];
@@ -151,7 +151,7 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
     resampler->SetSize (newSize);
     resampler->SetOutputSpacing (newSpacing);
     resampler->SetOutputOrigin (origin);
-    resampler->SetOutputDirection (extractor->GetOutput()->GetDirection());        
+    resampler->SetOutputDirection (extractor->GetOutput()->GetDirection());
 
     // setup color mapping
     typedef itk::RGBPixel<unsigned char> RGBPixelType;
@@ -165,18 +165,18 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
 
     if (VDimension==3) {
 
-        for (int slice=0; slice<size[2]; slice++) {
+        for (unsigned int slice=0; slice<size[2]; slice++) {
 
             extractionRegion.SetIndex(2, slice);
             extractor->SetExtractionRegion (extractionRegion);
 
             extractor->Update();
 
-            typename Image2DType::Pointer img2d = extractor->GetOutput();            
+            typename Image2DType::Pointer img2d = extractor->GetOutput();
 
             if (size[0] > static_cast<unsigned int>(xydim) ||
-                size[1] > static_cast<unsigned int>(xydim) ) {			              
-               
+                size[1] > static_cast<unsigned int>(xydim) ) {
+
                 smoother0->SetInput( extractor->GetOutput() );
                 smoother0->Modified();
 
@@ -207,7 +207,7 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
                 return;
             }
 
-            // qDebug() << "Time elapsed: " << time.elapsed();            
+            // qDebug() << "Time elapsed: " << time.elapsed();
 
             QImage *qimage = new QImage (newSize[0], newSize[1], QImage::Format_ARGB32);
             uchar  *qImageBuffer = qimage->bits();
@@ -230,8 +230,8 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
     }
     else if (VDimension==4)
     {
-        for (int volume=0; volume<size[3]; volume++) {
-            for (int slice=0; slice<size[2]; slice++) {
+        for (unsigned int volume=0; volume<size[3]; volume++) {
+            for (unsigned int slice=0; slice<size[2]; slice++) {
 
                 extractionRegion.SetIndex(2, slice);
                 extractionRegion.SetIndex(3, volume);
@@ -239,11 +239,11 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
 
                 extractor->Update();
 
-                typename Image2DType::Pointer img2d = extractor->GetOutput();            
+                typename Image2DType::Pointer img2d = extractor->GetOutput();
 
                 if (size[0] > static_cast<unsigned int>(xydim) ||
-                    size[1] > static_cast<unsigned int>(xydim) ) {			              
-               
+                    size[1] > static_cast<unsigned int>(xydim) ) {
+
                     smoother0->SetInput( extractor->GetOutput() );
                     smoother0->Modified();
 
@@ -260,7 +260,7 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
                     img2d = resampler->GetOutput();
 	                img2d->DisconnectPipeline();
                 }
-                
+
                 rgbfilter->SetInput (img2d);
                 rgbfilter->Modified();
 
@@ -274,7 +274,7 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
                     return;
                 }
 
-                // qDebug() << "Time elapsed: " << time.elapsed();            
+                // qDebug() << "Time elapsed: " << time.elapsed();
 
                 QImage *qimage = new QImage (newSize[0], newSize[1], QImage::Format_ARGB32);
                 uchar  *qImageBuffer = qimage->bits();
@@ -716,52 +716,52 @@ void generateThumbnails (typename itk::Image<TPixel, VDimension> *image,
   Q_UNUSED(key);                                                        \
   Q_UNUSED(value);                                                      \
   }                                                                     \
-  
+
 #endif
 
 
-/*    
+/*
 */
 
-// if(!image.IsNull()) {							
-//  d->image = image;							
-//  typedef itk::MinimumMaximumImageCalculator<ImageType> MinMaxCalculatorType; 
-//  MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New(); 
-//  calculator->SetImage ( image );					
-//  try									
-//  {									
-//    calculator->Compute();						
-//  }									
-//  catch (itk::ExceptionObject &e)					
-//  {									
-//    std::cerr << e;							
-//    return;								
-//  }									
-//  d->range_min = calculator->GetMinimum();				
-//  d->range_max = calculator->GetMaximum();				
-//  std::cout << "Image min/max: " << d->range_min << " " << d->range_max << std::endl; 
-// }									
+// if(!image.IsNull()) {
+//  d->image = image;
+//  typedef itk::MinimumMaximumImageCalculator<ImageType> MinMaxCalculatorType;
+//  MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
+//  calculator->SetImage ( image );
+//  try
+//  {
+//    calculator->Compute();
+//  }
+//  catch (itk::ExceptionObject &e)
+//  {
+//    std::cerr << e;
+//    return;
+//  }
+//  d->range_min = calculator->GetMinimum();
+//  d->range_max = calculator->GetMaximum();
+//  std::cout << "Image min/max: " << d->range_min << " " << d->range_max << std::endl;
+// }
 
-//typedef itkDataImage##suffix##Private::HistogramGeneratorType HistogramGeneratorType; 
-//HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New(); 
-//histogramGenerator->SetInput( image );				
-//histogramGenerator->SetNumberOfBins( d->range_max - d->range_min + 1 ); 
-//histogramGenerator->SetMarginalScale( 1.0 );				
-//histogramGenerator->SetHistogramMin( d->range_min );			
-//histogramGenerator->SetHistogramMax( d->range_max );			
-//try									
-//{									
-//histogramGenerator->Compute();					
-//}									
-//catch (itk::ExceptionObject &e)					
-//{									
-//std::cerr << e;							
-//return;								
-//}									
-//typedef HistogramGeneratorType::HistogramType  HistogramType;		
-//d->histogram = const_cast<HistogramType*>( histogramGenerator->GetOutput() ); 
-//d->histogram_min = d->histogram->GetFrequency( d->range_min, 0 );	
-//d->histogram_max = d->histogram->GetFrequency( d->range_max, 0 );	
+//typedef itkDataImage##suffix##Private::HistogramGeneratorType HistogramGeneratorType;
+//HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New();
+//histogramGenerator->SetInput( image );
+//histogramGenerator->SetNumberOfBins( d->range_max - d->range_min + 1 );
+//histogramGenerator->SetMarginalScale( 1.0 );
+//histogramGenerator->SetHistogramMin( d->range_min );
+//histogramGenerator->SetHistogramMax( d->range_max );
+//try
+//{
+//histogramGenerator->Compute();
+//}
+//catch (itk::ExceptionObject &e)
+//{
+//std::cerr << e;
+//return;
+//}
+//typedef HistogramGeneratorType::HistogramType  HistogramType;
+//d->histogram = const_cast<HistogramType*>( histogramGenerator->GetOutput() );
+//d->histogram_min = d->histogram->GetFrequency( d->range_min, 0 );
+//d->histogram_max = d->histogram->GetFrequency( d->range_max, 0 );
 
 
 
