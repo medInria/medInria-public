@@ -151,7 +151,7 @@ public:
     /**
      * Setting data using a qSharedPointer
      */
-    void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
+    virtual void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
 
 signals:
     /**
