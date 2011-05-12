@@ -401,8 +401,19 @@ QString medDatabaseImporter::populateMissingMetadata( dtkAbstractData * dtkdata,
     QString rows = dtkdata->metaDataValues(tr("Rows"))[0];
     QString columns = dtkdata->metaDataValues(tr("Columns"))[0];
 
+    QStringList orientations = orientation.split(" ");
+
+    orientation = "";
+
+    foreach(QString orient, orientations)
+    {
+        double d_orient = orient.toDouble();        
+        orientation += QString::number(d_orient, 'g', 5);
+    }
+
     // define a unique key string to identify which volume an image belongs to.
-    // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
+    // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. 
+    // All images of the same volume should share similar values of these parameters
     QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
 
     return key;
