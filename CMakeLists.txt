@@ -39,6 +39,7 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+include(medinria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
@@ -61,42 +62,50 @@ include(Dart)
 set(DEPENDS_ON_DTK 1)
 
 option(MEDINRIA_BUILD_TOOLS                               "Build Tools" "OFF")
+option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overriding selection)" OFF)
 
-option(MEDINRIA_BUILD_V3DDATA_PLUGIN                      "Build v3dData plugin" "ON")
-option(MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN                "Build v3dViewPublic plugin" "ON")
-option(MEDINRIA_BUILD_V3DVIEW_PLUGIN                      "Build v3dView plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN                 "Build itkDataImage plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN           "Build itkDataImageReader plugin" "ON")
-option(MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN      "Build itkDCMTKDataImageReader plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN           "Build itkDataImageWriter plugin" "ON")
-option(MEDINRIA_BUILD_VTKDATAMESH_PLUGIN                  "Build vtkDataMesh plugin" "ON")
-option(MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN            "Build vtkDataMeshReader plugin" "ON")
-option(MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN            "Build vtkDataMeshWriter plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN "Build itkDataDiffusionGradientList plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN           "Build itkDataTensorImage plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN     "Build itkDataTensorImageReader plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN     "Build itkDataTensorImageWriter plugin" "ON")
+
+## ADD here any new plugin you want to include in the build.
+set(PLUGIN_LIST v3dData v3dViewPublic v3dView itkDataImage itkDataImageReader itkDCMTKDataImageReader vtkDataMesh vtkDataMeshReader vtkDataMeshWriter itkDataDiffusionGradientList itkDataTensorImageWriter itkDataTensorImageReader )
+
+if (MEDINRIA_BUILD_ALL_PLUGINS)
+    set(PLUGIN_DEFAULT_BUILD_VALUE ON)
+else()
+    set(PLUGIN_DEFAULT_BUILD_VALUE OFF)
+endif()
+
+foreach (PLUGIN_ITEM  ${PLUGIN_LIST})
+    MACRO_ADD_PLUGIN (${PLUGIN_ITEM} PLUGIN_DEFAULT_BUILD_VALUE)
+endforeach()
+
 
 ## Registration plugins
-option(MEDINRIA_BUILD_REGISTRATION_PLUGINS                "Build Registration plugins" "ON")
-option(MEDINRIA_BUILD_REG_DIFF_DEMONS_PLUGIN "Build the diffeomorphic demons plugin" "ON")
+option(MEDINRIA_ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "OFF")
+if (MEDINRIA_ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
+    set(REG_PLUGIN_LIST itkProcessRegistrationDiffeoMorphicDemons )
+    foreach (PLUGIN_ITEM  ${REG_PLUGIN_LIST})
+        MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ON)
+    endforeach()
+#else()
+#    foreach (PLUGIN_ITEM  ${REG_PLUGIN_LIST})
+#        string(TOUPPER ${P_NAME} UPPER_CASE_NAME)
+#        set (MEDINRIA_BUILD_${UPPER_CASE_NAME}_PLUGIN OFF)
+#    endforeach()
+endif()
 
 
-option(BUILD_DOCUMENTATION "Build documentation"    true)
-
-
-
-if (MEDINRIA_BUILD_V3DDATA_PLUGIN OR
+if (MEDINRIA_BUILD_ALL_PLUGINS OR
+    MEDINRIA_BUILD_V3DDATA_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEW_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESH_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN)
-
     set(MEDINRIA_REQUIRES_VTK TRUE)
 endif()
 
-if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN OR
+if (MEDINRIA_BUILD_ALL_PLUGINS OR
+    MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN OR
     MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN OR
     MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN OR
     MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN OR
@@ -110,71 +119,12 @@ endif()
 
 add_subdirectory(src)
 
+
 if (MEDINRIA_BUILD_TOOLS)
     add_subdirectory(tools)
 endif()
 
-if (MEDINRIA_BUILD_V3DDATA_PLUGIN)
-  add_subdirectory(v3dData)
-endif()
-
-if (MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN)
-  add_subdirectory(v3dViewPublic)
-endif()
-
-if (MEDINRIA_BUILD_V3DVIEW_PLUGIN)
-  add_subdirectory(v3dView)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN)
-  add_subdirectory(itkDataImage)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN)
-  add_subdirectory(itkDataImageReader)
-endif()
-
-if (MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN)
-  add_subdirectory(itkDCMTKDataImageReader)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN)
-  add_subdirectory(itkDataImageWriter)
-endif()
-
-if (MEDINRIA_BUILD_VTKDATAMESH_PLUGIN)
-  add_subdirectory(vtkDataMesh)
-endif()
-
-if (MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN)
-  add_subdirectory(vtkDataMeshReader)
-endif()
-
-if (MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN)
-  add_subdirectory(vtkDataMeshWriter)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN)
-  add_subdirectory(itkDataDiffusionGradientList)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN)
-  add_subdirectory(itkDataTensorImage)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN)
-    add_subdirectory(itkDataTensorImageReader)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN)
-    add_subdirectory(itkDataTensorImageWriter)
-endif()
-
-if (MEDINRIA_BUILD_REG_DIFF_DEMONS_PLUGIN)
-    add_subdirectory(itkProcessRegistrationDiffeoMorphicDemons)
-endif()
-
-
+option(BUILD_DOCUMENTATION "Build documentation"    true)
 
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
