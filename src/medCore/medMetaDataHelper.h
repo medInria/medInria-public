@@ -37,6 +37,7 @@ public:
 
 
     /** Define the actual keys to use */
+    MED_DEFINE_METADATA_ENTRY( TransferSyntaxUID);
 
     // PATIENT
     MED_DEFINE_METADATA_ENTRY( PatientID );
