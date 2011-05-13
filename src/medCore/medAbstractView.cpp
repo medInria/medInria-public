@@ -23,6 +23,7 @@ public:
   QList<dtkAbstractData *> dataList;
 
   QSharedPointer<dtkAbstractData> sharedData;
+  QColor color; // The color used to represent this view in other views.
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
@@ -243,6 +244,19 @@ double medAbstractView::opacity(int layer) const
     return 1.0;
 }
 
+void medAbstractView::setColor(const QColor & color)
+{
+    if ( d->color != color) {
+        d->color = color;
+        emitColorChangedEvent();
+    }
+}
+
+QColor medAbstractView::color() const
+{
+    return d->color;
+}
+
 void medAbstractView::setCurrentLayer(int layer)
 {
     d->currentLayer = layer;
@@ -330,6 +344,11 @@ void medAbstractView::emitViewSliceChangedEvent(int slice)
     emit sliceChanged(slice, d->linkPosition);
 }
 
+void medAbstractView::onObliqueSettingsChanged(const medAbstractView * vsender)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
 void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
 {
     d->position = position;
@@ -377,4 +396,24 @@ medAbstractView::~medAbstractView( void )
 {
     delete d;
     d = NULL;
+}
+
+void medAbstractView::emitObliqueSettingsChangedEvent()
+{
+    emit obliqueSettingsChanged();
+}
+
+void medAbstractView::emitColorChangedEvent()
+{
+    emit colorChanged();
+}
+
+void medAbstractView::onRemoveViewFromPool( medAbstractView * viewLeaving )
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::onAppendViewToPool( medAbstractView * viewAppended )
+{
+    DTK_DEFAULT_IMPLEMENTATION;
 }
