@@ -174,7 +174,7 @@ void itkProcessRegistrationDiffeoMorphicDemonsToolBox::run(void)
     try {
         process_Registration->setNumberOfIterations(rpi::StringToVector<unsigned int>(d->iterationsBox->text().toStdString()));
     }
-    catch ( std::exception & err )
+    catch ( std::exception & )
     {
         qDebug() << "wrong iteration format";
         return;

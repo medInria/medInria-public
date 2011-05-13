@@ -70,6 +70,8 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
+  RPIDiffeomorphicDemons
+  itkProcessRegistration
   ${QT_LIBRARIES}
   dtkCore
   medCore
@@ -78,9 +80,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIO
   ITKStatistics
   ITKNumerics
-  ITKAlgorithms
-  RPIDiffeomorphicDemons
-  itkProcessRegistration
+  ITKAlgorithms  
 )
 
 dtk_build_doc(${PROJECT_NAME})
