@@ -52,8 +52,14 @@ void medStackedViewContainers::addContainer(const QString &name, medViewContaine
     
     d->containers[name] = container;
     
-    connect(container, SIGNAL(focused(dtkAbstractView*)),    this, SIGNAL(focused(dtkAbstractView*)));
-    connect(container, SIGNAL(dropped(const medDataIndex&)), this, SIGNAL(dropped(const medDataIndex&)));
+    connect( container, SIGNAL( focused( dtkAbstractView * ) ),
+             this,      SIGNAL( focused( dtkAbstractView * ) ) );
+    connect( container, SIGNAL( dropped( const medDataIndex & ) ),
+             this,      SIGNAL( dropped( const medDataIndex & ) ) );
+    connect( container, SIGNAL( viewAdded( dtkAbstractView * ) ),
+             this,      SIGNAL( viewAdded( dtkAbstractView * ) ) );
+    connect( container, SIGNAL( viewRemoved( dtkAbstractView * ) ),
+             this,      SIGNAL( viewRemoved( dtkAbstractView * ) ) );
     
     if (!this->count()) 
         d->currentName = name;

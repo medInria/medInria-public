@@ -125,6 +125,22 @@ signals:
     */
     void focused(dtkAbstractView *);
 
+    /**
+     * @brief Emits this signal when one of the containers has emitted 
+     * the same signal.
+     * 
+     * @param view
+    */
+    void viewAdded( dtkAbstractView * );
+    
+    /**
+     * @brief Emits this signal when one of the containers has emitted 
+     * the same signal.
+     *
+     * @param view
+    */
+    void viewRemoved( dtkAbstractView * );
+
 private:
     medStackedViewContainersPrivate *d;
 };
