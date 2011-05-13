@@ -62,6 +62,12 @@ void medPluginManager::readSettings(void)
 
     settings.endGroup();
 
+    const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
+    QByteArray pluginVarArray = qgetenv ( PLUGIN_PATH_VAR_NAME );
+    if ( !pluginVarArray.isEmpty() ) {
+        setPath( QString(pluginVarArray.constData()));
+    }
+
     if(path().isEmpty()) {
         qWarning() << "Your dtk config does not seem to be set correctly.";
         qWarning() << "Please set plugins.path.";
