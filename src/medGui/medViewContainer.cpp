@@ -63,6 +63,11 @@ medViewContainer::~medViewContainer(void)
 
 medViewContainer *medViewContainer::current(void)
 {
+    medViewContainer * parent =
+        dynamic_cast<medViewContainer *>( this->parentWidget() );
+    if ( parent != NULL )
+        return parent->current();
+
     return d->current;
 }
 
@@ -183,7 +188,7 @@ void medViewContainer::paintEvent(QPaintEvent *event)
     if (this->view() && this->view()->property ("Daddy")=="true")
         painter.setPen(Qt::red);
     else {
-      if (d->current == this)
+      if (this->current() == this)
         painter.setPen(QColor(0x9a, 0xb3, 0xd5));
       else
         painter.setPen(Qt::darkGray);
