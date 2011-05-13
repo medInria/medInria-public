@@ -153,7 +153,7 @@ public:
     /**
      * Setting data using a qSharedPointer
      */
-    void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
+    virtual void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
 
     /** The color used to represent the extent or space of this view in another view */
     virtual QColor color() const;
