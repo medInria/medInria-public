@@ -115,7 +115,9 @@ void medViewContainer::setView(dtkAbstractView *view)
 
 void medViewContainer::setCurrent(medViewContainer *container)
 {
-    if(medViewContainer *parent = dynamic_cast<medViewContainer *>(this->parentWidget()))
+    medViewContainer * parent =
+        dynamic_cast<medViewContainer *>( this->parentWidget() );
+    if ( parent != NULL )
         parent->setCurrent(container);
     else
         d->current = container;
@@ -157,14 +159,14 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 {
     Q_UNUSED(event);
 
-    medViewContainer *former = this->current();
+    medViewContainer * former = this->current();
 
     this->setCurrent(this);
 
-    if(dtkAbstractView *view = this->view())
+    if (dtkAbstractView *view = this->view())
         emit focused(view);
 
-	if (former)
+    if (former)
         former->update();
     
     this->update();
