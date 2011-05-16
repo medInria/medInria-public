@@ -6,7 +6,7 @@
 #define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGINEXPORT_H
 
 #ifdef WIN32
-    #ifdef itkProcessRegistrationDiffeoMorphicDemonsPlugin_EXPORTS
+    #ifdef itkProcessRegistrationDiffeomorphicDemonsPlugin_EXPORTS
         #define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT __declspec(dllexport) 
     #else
         #define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT __declspec(dllimport) 

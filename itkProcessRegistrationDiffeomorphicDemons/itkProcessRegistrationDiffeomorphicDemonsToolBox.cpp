@@ -1,4 +1,4 @@
-/* itkProcessRegistrationDiffeoMorphicDemonsToolBox.cpp ---
+/* itkProcessRegistrationDiffeomorphicDemonsToolBox.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,8 +17,8 @@
  *
  */
 
-#include "itkProcessRegistrationDiffeoMorphicDemons.h"
-#include "itkProcessRegistrationDiffeoMorphicDemonsToolBox.h"
+#include "itkProcessRegistrationDiffeomorphicDemons.h"
+#include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
 
 #include <QtGui>
 
@@ -40,7 +40,7 @@
 
 #include <rpiCommonTools.hxx>
 
-class itkProcessRegistrationDiffeoMorphicDemonsToolBoxPrivate
+class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate
 {
 public:
 
@@ -54,7 +54,7 @@ public:
     QLineEdit * iterationsBox;
 };
 
-itkProcessRegistrationDiffeoMorphicDemonsToolBox::itkProcessRegistrationDiffeoMorphicDemonsToolBox(QWidget *parent) : medToolBoxRegistrationCustom(parent), d(new itkProcessRegistrationDiffeoMorphicDemonsToolBoxPrivate)
+itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medToolBoxRegistrationCustom(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 
@@ -121,21 +121,21 @@ itkProcessRegistrationDiffeoMorphicDemonsToolBox::itkProcessRegistrationDiffeoMo
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
 
-itkProcessRegistrationDiffeoMorphicDemonsToolBox::~itkProcessRegistrationDiffeoMorphicDemonsToolBox(void)
+itkProcessRegistrationDiffeomorphicDemonsToolBox::~itkProcessRegistrationDiffeomorphicDemonsToolBox(void)
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkProcessRegistrationDiffeoMorphicDemonsToolBox::registered(void)
+bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered(void)
 {
     return medToolBoxFactory::instance()->
-            registerCustomRegistrationToolBox("itkProcessRegistrationDiffeoMorphicDemonsToolBox",
-                                 createItkProcessRegistrationDiffeoMorphicDemonsToolBox);
+            registerCustomRegistrationToolBox("itkProcessRegistrationDiffeomorphicDemonsToolBox",
+                                 createItkProcessRegistrationDiffeomorphicDemonsToolBox);
 }
 
-void itkProcessRegistrationDiffeoMorphicDemonsToolBox::run(void)
+void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
 {
 
     if(!this->parent())
@@ -149,7 +149,7 @@ void itkProcessRegistrationDiffeoMorphicDemonsToolBox::run(void)
     }
     else
     {
-        process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeoMorphicDemons");
+        process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons");
         this->parent()->setProcess(process);
     }
     dtkAbstractData *fixedData = this->parent()->fixedData();
@@ -164,7 +164,7 @@ void itkProcessRegistrationDiffeoMorphicDemonsToolBox::run(void)
 
     // Many choices here
 
-    itkProcessRegistrationDiffeoMorphicDemons *process_Registration = dynamic_cast<itkProcessRegistrationDiffeoMorphicDemons *>(process);
+    itkProcessRegistrationDiffeomorphicDemons *process_Registration = dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
     process_Registration->setDisplacementFieldStandardDeviation(d->disFieldStdDevBox->value());
     process_Registration->setGradientType(d->gradientTypeBox->currentIndex());
     process_Registration->setUpdateRule(d->updateRuleBox->currentIndex());
@@ -185,7 +185,7 @@ void itkProcessRegistrationDiffeoMorphicDemonsToolBox::run(void)
 
     // or ...
 
-    // itkProcessRegistrationDiffeoMorphicDemons *process = new itkProcessRegistrationDiffeoMorphicDemons;
+    // itkProcessRegistrationDiffeomorphicDemons *process = new itkProcessRegistrationDiffeomorphicDemons;
     // process->setMyWonderfullParameter(fronTheGui);
     // process->setMyWonderfullParameter(fronTheGui);
 
@@ -207,7 +207,7 @@ void itkProcessRegistrationDiffeoMorphicDemonsToolBox::run(void)
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }
 
-medToolBoxRegistrationCustom *createItkProcessRegistrationDiffeoMorphicDemonsToolBox(QWidget *parent)
+medToolBoxRegistrationCustom *createItkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent)
 {
-    return new itkProcessRegistrationDiffeoMorphicDemonsToolBox (parent);
+    return new itkProcessRegistrationDiffeomorphicDemonsToolBox (parent);
 }

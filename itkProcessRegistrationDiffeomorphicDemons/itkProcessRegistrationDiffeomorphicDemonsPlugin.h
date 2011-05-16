@@ -7,18 +7,18 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkProcessRegistrationDiffeoMorphicDemonsPluginExport.h"
+#include "itkProcessRegistrationDiffeomorphicDemonsPluginExport.h"
 
-class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeoMorphicDemonsPluginPrivate;
+class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPluginPrivate;
 
-class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeoMorphicDemonsPlugin : public dtkPlugin
+class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPlugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-     itkProcessRegistrationDiffeoMorphicDemonsPlugin(QObject *parent = 0);
-    ~itkProcessRegistrationDiffeoMorphicDemonsPlugin(void);
+     itkProcessRegistrationDiffeomorphicDemonsPlugin(QObject *parent = 0);
+    ~itkProcessRegistrationDiffeomorphicDemonsPlugin(void);
 
     virtual bool initialize(void);
     virtual bool uninitialize(void);
@@ -30,7 +30,7 @@ public:
     virtual QStringList types(void) const;
 
 private:
-     itkProcessRegistrationDiffeoMorphicDemonsPluginPrivate *d;
+     itkProcessRegistrationDiffeomorphicDemonsPluginPrivate *d;
 };
 
 #endif

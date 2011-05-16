@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkProcessRegistrationDiffeoMorphicDemonsPlugin)
+project(itkProcessRegistrationDiffeomorphicDemonsPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -49,14 +49,14 @@ include(${RPI_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkProcessRegistrationDiffeoMorphicDemonsPlugin.h
-  itkProcessRegistrationDiffeoMorphicDemonsToolBox.h
-  itkProcessRegistrationDiffeoMorphicDemons.h)
+  itkProcessRegistrationDiffeomorphicDemonsPlugin.h
+  itkProcessRegistrationDiffeomorphicDemonsToolBox.h
+  itkProcessRegistrationDiffeomorphicDemons.h)
 
 set(${PROJECT_NAME}_SOURCES
-  itkProcessRegistrationDiffeoMorphicDemonsPlugin.cpp
-  itkProcessRegistrationDiffeoMorphicDemonsToolBox.cpp
-  itkProcessRegistrationDiffeoMorphicDemons.cpp
+  itkProcessRegistrationDiffeomorphicDemonsPlugin.cpp
+  itkProcessRegistrationDiffeomorphicDemonsToolBox.cpp
+  itkProcessRegistrationDiffeomorphicDemons.cpp
   )
 
 ## #################################################################

@@ -1,4 +1,4 @@
-/* itkProcessRegistrationDiffeoMorphicDemonsToolBox.h ---
+/* itkProcessRegistrationDiffeomorphicDemonsToolBox.h ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -22,15 +22,15 @@
 
 #include <medGui/medToolBoxRegistrationCustom.h>
 
-class itkProcessRegistrationDiffeoMorphicDemonsToolBoxPrivate;
+class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate;
 
-class itkProcessRegistrationDiffeoMorphicDemonsToolBox : public medToolBoxRegistrationCustom
+class itkProcessRegistrationDiffeomorphicDemonsToolBox : public medToolBoxRegistrationCustom
 {
     Q_OBJECT
 
 public:
-     itkProcessRegistrationDiffeoMorphicDemonsToolBox(QWidget *parent = 0);
-    ~itkProcessRegistrationDiffeoMorphicDemonsToolBox(void);
+     itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent = 0);
+    ~itkProcessRegistrationDiffeomorphicDemonsToolBox(void);
 
 public:
     static bool registered(void);
@@ -39,9 +39,9 @@ public slots:
     void run(void);
 
 private:
-    itkProcessRegistrationDiffeoMorphicDemonsToolBoxPrivate *d;
+    itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate *d;
 };
 
-medToolBoxRegistrationCustom *createItkProcessRegistrationDiffeoMorphicDemonsToolBox(QWidget *parent);
+medToolBoxRegistrationCustom *createItkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent);
 
 #endif

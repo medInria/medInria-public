@@ -86,7 +86,7 @@ option(MEDINRIA_ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "OFF")
 if (MEDINRIA_ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
 
     #Put here your registration plugin directory/project name.
-    set(REG_PLUGIN_LIST itkProcessRegistrationDiffeoMorphicDemons )
+    set(REG_PLUGIN_LIST itkProcessRegistrationDiffeomorphicDemons )
     foreach (PLUGIN_ITEM  ${REG_PLUGIN_LIST})
         MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ON)
     endforeach()

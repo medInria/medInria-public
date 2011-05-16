@@ -6,9 +6,9 @@
 #define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONS_H
 
 #include <itkProcessRegistration/itkProcessRegistration.h>
-#include "itkProcessRegistrationDiffeoMorphicDemonsPluginExport.h"
+#include "itkProcessRegistrationDiffeomorphicDemonsPluginExport.h"
 
-class itkProcessRegistrationDiffeoMorphicDemonsPrivate;
+class itkProcessRegistrationDiffeomorphicDemonsPrivate;
 
 /**
  * @brief Registration process using diffeomorphic demons from itk.
@@ -17,7 +17,7 @@ class itkProcessRegistrationDiffeoMorphicDemonsPrivate;
  * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medinria/src/medGui.
  *
 */
-class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeoMorphicDemons : public itkProcessRegistration
+class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemons : public itkProcessRegistration
 {
     Q_OBJECT
 
@@ -27,14 +27,14 @@ public:
      *
      * @param void
      */
-    itkProcessRegistrationDiffeoMorphicDemons(void);
+    itkProcessRegistrationDiffeomorphicDemons(void);
 
     /**
      * @brief
      *
      * @param void
     */
-    virtual ~itkProcessRegistrationDiffeoMorphicDemons(void);
+    virtual ~itkProcessRegistrationDiffeomorphicDemons(void);
 
     /**
      * @brief Description of the plugin.
@@ -64,7 +64,7 @@ public:
     /**
      * @brief
      *
-     * @see rpiDiffeoMorphicDemons
+     * @see rpiDiffeomorphicDemons
      *
      * @param iterations
     */
@@ -72,42 +72,42 @@ public:
 
     /**
      * @brief
-     * @see rpiDiffeoMorphicDemons
+     * @see rpiDiffeomorphicDemons
      * @param updateRule
     */
     void setUpdateRule( unsigned char updateRule);
 
     /**
      * @brief
-     * @see rpiDiffeoMorphicDemons
+     * @see rpiDiffeomorphicDemons
      * @param gradientType
     */
     void setGradientType (unsigned char gradientType);
 
     /**
      * @brief
-     * @see rpiDiffeoMorphicDemons
+     * @see rpiDiffeomorphicDemons
      * @param maximumUpdateStepLength
     */
     void setMaximumUpdateLength (float maximumUpdateStepLength);
 
     /**
      * @brief
-     * @see rpiDiffeoMorphicDemons
+     * @see rpiDiffeomorphicDemons
      * @param updateFieldStandardDeviation
     */
     void setUpdateFieldStandardDeviation(float updateFieldStandardDeviation);
 
     /**
      * @brief
-     * @see rpiDiffeoMorphicDemons
+     * @see rpiDiffeomorphicDemons
      * @param displacementFieldStandardDeviation
     */
     void setDisplacementFieldStandardDeviation(float displacementFieldStandardDeviation);
 
     /**
      * @brief
-     * @see rpiDiffeoMorphicDemons
+     * @see rpiDiffeomorphicDemons
      * @param useHistogramMatching
     */
     void setUseHistogramMatching(bool useHistogramMatching);
@@ -123,7 +123,7 @@ protected :
     virtual bool writeTransform(const QString& file);
 
 private:
-    itkProcessRegistrationDiffeoMorphicDemonsPrivate *d;
+    itkProcessRegistrationDiffeomorphicDemonsPrivate *d;
 
 };
 
@@ -133,6 +133,6 @@ private:
  *
  * @param void
 */
-dtkAbstractProcess *createitkProcessRegistrationDiffeoMorphicDemons(void);
+dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons(void);
 
 #endif
