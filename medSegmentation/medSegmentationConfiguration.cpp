@@ -6,20 +6,80 @@
 
 #include "medToolBoxSegmentationView.h"
 
+// TODO : sort out include dir.
+#include "../medAbstractViewExtension/medAbstractViewScene.h"
+
+#include <medCore/medAbstractView.h>
+
 #include <medGui/medStackedViewContainers.h>
 #include <medGui/medViewerConfigurationFactory.h>
+#include <medGui/medViewContainer.h>
 #include <medGui/medViewerToolBoxView.h>
+
+#include <dtkCore/dtkLog.h>
+
+class EventInterceptor : public QGraphicsObject {
+public:
+    EventInterceptor( medSegmentationConfiguration * config ) 
+        :  m_segmentationConfig (config)
+    {
+// By default accepts all mouse buttons
+        this->setAcceptedMouseButtons(Qt::LeftButton);
+    }
+    // from QGraphicsItem
+    bool contains ( const QPointF & point ) const { return true; }
+
+    // Implement QGraphicsItem
+    QRectF boundingRect() const { return this->scene()->sceneRect(); }
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0) 
+    {
+        return;
+    }
+
+    void mousePressEvent ( QGraphicsSceneMouseEvent * mouseEvent );
+    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * mouseEvent );
+
+private:
+    medSegmentationConfiguration * m_segmentationConfig;
+};
+
+void EventInterceptor::mousePressEvent( QGraphicsSceneMouseEvent * mouseEvent )
+{
+    m_segmentationConfig->mousePressEvent( mouseEvent );
+}
+
+void EventInterceptor::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent )
+{
+    m_segmentationConfig->mouseReleaseEvent( mouseEvent );
+}
 
 // /////////////////////////////////////////////////////////////////
 // medSegmentationConfigurationPrivate
 // /////////////////////////////////////////////////////////////////
-
 class medSegmentationConfigurationPrivate
 {
 public:
     medViewerToolBoxView                *viewToolBox;
     medToolBoxSegmentationView          *segmentationToolBox;
+
+    static medAbstractViewScene * viewScene( dtkAbstractView * view );
+    QScopedPointer< EventInterceptor > viewEventHandler;
 };
+
+
+medAbstractViewScene * medSegmentationConfigurationPrivate::viewScene( dtkAbstractView * view )
+{
+    medAbstractView * mview = qobject_cast< medAbstractView * >( view );
+    if ( ! mview ) {
+        dtkLog::debug() << "Failed to get a view";
+        return NULL;
+    }
+
+    QGraphicsView * qview = qobject_cast < QGraphicsView * >( mview->receiverWidget() );
+    medAbstractViewScene * ret  = qobject_cast < medAbstractViewScene * >( qview->scene() );
+    return ret;
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // medSegmentationConfiguration
@@ -34,6 +94,7 @@ medSegmentationConfiguration::medSegmentationConfiguration(QWidget * parent /* =
 medViewerConfiguration(parent), d(new medSegmentationConfigurationPrivate)
 {
     d->segmentationToolBox = new medToolBoxSegmentationView( parent );
+    d->viewEventHandler.reset( new EventInterceptor(this) );
 
     this->addToolBox( d->segmentationToolBox );
 
@@ -66,10 +127,11 @@ void medSegmentationConfiguration::setupViewContainerStack()
     {
         //Containers:
         addSingleContainer();
-        addMultiContainer();
-        addCustomContainer();
-        //connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
-        //    d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
+        // addMultiContainer();
+        // addCustomContainer();
+        connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
+            this,SLOT(onViewAdded(dtkAbstractView*)));
+        connect( d->segmentationToolBox, SIGNAL( addSeedPointPressed()), this, SLOT( beginAddSeedPoint() ) );
     }
 }
 
@@ -79,6 +141,39 @@ QString medSegmentationConfiguration::description( void ) const
     static QString descString( "medSegmentationConfiguration" );
     return descString;
 }
+
+void medSegmentationConfiguration::onViewAdded( dtkAbstractView* view )
+{
+
+}
+
+void medSegmentationConfiguration::beginAddSeedPoint()
+{
+
+    medAbstractViewScene * scene = medSegmentationConfigurationPrivate::viewScene( stackedViewContainers()->container("Single")->view() );
+
+    if ( !scene ) 
+        return;
+
+    scene->addItem( d->viewEventHandler.data() );
+}
+
+void medSegmentationConfiguration::mousePressEvent( QGraphicsSceneMouseEvent * mouseEvent )
+{
+    medAbstractViewScene * scene = medSegmentationConfigurationPrivate::viewScene( stackedViewContainers()->container("Single")->view() );
+    mouseEvent->accept();
+}
+
+void medSegmentationConfiguration::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent )
+{
+    medAbstractViewScene * scene = medSegmentationConfigurationPrivate::viewScene( stackedViewContainers()->container("Single")->view() );
+    scene->removeItem( d->viewEventHandler.data() );
+    mouseEvent->accept();
+}
+
+
+
+
 
 
 

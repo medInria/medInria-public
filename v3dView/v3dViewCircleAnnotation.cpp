@@ -17,8 +17,6 @@
 class v3dViewCircleAnnotationPrivate
 {
 public:
-    v3dView * view;
-
     qreal     radiusWorld;
     QVector3D centerWorld;
 
@@ -34,7 +32,7 @@ public:
 
 v3dViewCircleAnnotation::v3dViewCircleAnnotation( v3dView       * view,
                                                   QGraphicsItem * parent )
-    : BaseClass( parent )
+    : BaseClass( view, parent )
     , d( new v3dViewCircleAnnotationPrivate )
 {
     this->setFlag( QGraphicsItem::ItemIsSelectable, false );
@@ -42,8 +40,6 @@ v3dViewCircleAnnotation::v3dViewCircleAnnotation( v3dView       * view,
     this->setFlag( QGraphicsItem::ItemIsMovable,    false );
 
     this->setVisible( false );
-
-    d->view        = view;
 
     d->radiusWorld = 1.0;
     d->centerWorld = QVector3D( 0.0, 0.0, 0.0 );
@@ -78,9 +74,10 @@ void v3dViewCircleAnnotation::setRadius( qreal r )
 void v3dViewCircleAnnotation::setSlice( QString orientation,
                                         int slice )
 {
-    vtkImageView2D * view2d = d->view->view2d();
+    v3dView * view = qobject_cast< v3dView * >( this->view() );
+    vtkImageView2D * view2d = view->view2d();
     if ( view2d == NULL ||
-         view2d != dynamic_cast< vtkImageView2D * >( d->view->currentView() ) )
+         view2d != dynamic_cast< vtkImageView2D * >( view->currentView() ) )
         return;
 
     bool wasOnSlice = d->isOnSlice;
@@ -145,10 +142,11 @@ void v3dViewCircleAnnotation::paint( QPainter * painter,
 
 void v3dViewCircleAnnotation::updateSceneCoords()
 {
-    vtkImageView2D       * view2d = d->view->view2d();
+    v3dView * view = qobject_cast< v3dView * >( this->view() );
+    vtkImageView2D       * view2d = view->view2d();
     v3dViewGraphicsScene * scene  =
         dynamic_cast< v3dViewGraphicsScene * >( this->scene() );
-    if ( view2d == NULL || view2d != d->view->currentView() )
+    if ( view2d == NULL || view2d != view->currentView() )
         return;
 
     QString viewOrientation;
@@ -173,47 +171,15 @@ void v3dViewCircleAnnotation::updateSceneCoords()
     if ( !d->isOnSlice )
         return;
 
-    qreal posWorld[3];
-    posWorld[0] = d->centerWorld.x();
-    posWorld[1] = d->centerWorld.y();
-    posWorld[2] = d->centerWorld.z();
-    // Convert current point in world coordinates to display
-    // coordinates (VTK).  Setting the world point is only necessary
-    // to perform the coordinate conversion - it has no side effects
-    // (hopefully!)
-    vtkRenderer * ren = d->view->currentView()->GetRenderer();
-    ren->SetWorldPoint( const_cast< qreal * >( posWorld ) );
-    ren->WorldToDisplay();
-    qreal posDisplay[3];
-    ren->GetDisplayPoint( posDisplay );
+    d->centerScene = this->worldToScene( d->centerWorld );
 
-    // Convert VTK display coordinates to Qt (flipped in Y)
-    qreal ysize = scene->sceneRect().height();
-    QPointF p( posDisplay[0], ysize - 1.0 - posDisplay[1] );
-
-    d->centerScene = p;
-
-    qreal viewUp[3];
-    d->view->cameraUp( viewUp );
+    QVector3D vup(this->viewUp()) ;
     QVector3D v =  d->centerWorld + d->radiusWorld *
-        QVector3D( viewUp[0], viewUp[1], viewUp[2] ).normalized();
+        vup.normalized();
 
-    posWorld[0] = v.x();
-    posWorld[1] = v.y();
-    posWorld[2] = v.z();
-    // Convert current point in world coordinates to display
-    // coordinates (VTK).  Setting the world point is only necessary
-    // to perform the coordinate conversion - it has no side effects
-    // (hopefully!)
-    ren->SetWorldPoint( const_cast< qreal * >( posWorld ) );
-    ren->WorldToDisplay();
-    ren->GetDisplayPoint( posDisplay );
+    QPointF edgePoint( this->worldToScene( v ) );
 
-    // Convert VTK display coordinates to Qt (flipped in Y)
-    p = QPointF( posDisplay[0], ysize - 1.0 - posDisplay[1] );
-
-
-    d->radiusScene = QVector2D( d->centerScene - p ).length();
+    d->radiusScene = QVector2D( d->centerScene - edgePoint ).length();
 
     this->prepareGeometryChange();
     this->setPos( d->centerScene );

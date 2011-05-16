@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(medViewSegmentationPlugin)
+project(medAbstractViewExtension)
 
 ## #################################################################
 ## Setup version numbering
@@ -29,36 +29,28 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #################################################################
 
 find_package(dtk REQUIRED)
-
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-#Require medinria for base classes
 find_package(medinria REQUIRED)
 include(${medinria_USE_FILE})
-
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  medSegmentationConfiguration.h
-  medToolBoxSegmentationView.h
-  medViewSegmentationPlugin.h
-  medViewSegmentation.h
+  medAbstractViewAnnotation.h
+  medAbstractViewScene.h
   )
 
 set(${PROJECT_NAME}_HEADERS
+  medViewWidgetsExport.h
   ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
-  medSegmentationConfiguration.cpp
-  medToolBoxSegmentationView.cpp
-  medViewSegmentationPlugin.cpp
-  medViewSegmentation.cpp
+  medAbstractViewAnnotation.cpp
+  medAbstractViewScene.cpp
   )
 
 ## #################################################################
@@ -69,24 +61,20 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_HEADERS})
+  ${${PROJECT_NAME}_HEADERS}
+  ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
-#  medCore
-  medAbstractViewExtension
-  medGui
-  ${ITK_LIBRARIES}
+  medCore
   )
 
-dtk_build_doc(medViewSegmentationPlugin)
+#if (BUILD_TESTING)
+#  add_subdirectory(Testing)
+#endif (BUILD_TESTING)
 
-## #################################################################
-## Source file layout in development environments like Visual Studio
-## #################################################################
-
+# Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 

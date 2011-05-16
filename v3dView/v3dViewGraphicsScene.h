@@ -3,6 +3,7 @@
 
 #include <QtGui>
 
+#include <medAbstractViewScene.h>
 #include "v3dViewPluginExport.h"
 
 class dtkAbstractDataImage;
@@ -10,9 +11,9 @@ class vtkImageView2D;
 class v3dView;
 class v3dViewGraphicsScenePrivate;
 
-class v3dViewGraphicsScene : public QGraphicsScene
+class v3dViewGraphicsScene : public medAbstractViewScene
 {
-    typedef QGraphicsScene BaseClass;
+    typedef medAbstractViewScene BaseClass;
 
     Q_OBJECT;
 
@@ -77,6 +78,19 @@ protected:
     void showItems();
     void hideItems();
     void setItemsVisible( bool state );
+
+
+    // Implement medAbstractViewScene
+    //! Convert from world coordinates to scene coordinates.
+    virtual QPointF worldToScene( const QVector3D & worldVec ) const;
+    //! Convert from scene coordinates to world coordinates.
+    virtual QVector3D sceneToWorld( const QPointF & sceneVec ) const;
+    //! Get the view plane normal vector in world space.
+    virtual QVector3D viewPlaneNormal() const;
+    //! Get the view plane up direction
+    virtual QVector3D viewUp() const;
+    //! Is the scene 2D (true) or 3D (false)
+    virtual bool isScene2D() const;
 
 private:
     v3dViewGraphicsScenePrivate * d;

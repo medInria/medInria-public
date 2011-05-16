@@ -3,14 +3,14 @@
 
 #include "v3dViewPluginExport.h"
 
-#include <QGraphicsObject>
+#include "medAbstractViewAnnotation.h"
 
 class v3dView;
 class v3dViewCircleAnnotationPrivate;
 
-class v3dViewCircleAnnotation : public QGraphicsObject
+class v3dViewCircleAnnotation : public medAbstractViewAnnotation
 {
-    typedef QGraphicsObject BaseClass;
+    typedef medAbstractViewAnnotation BaseClass;
 
     Q_OBJECT;
 

@@ -5,7 +5,9 @@
 
 #include <dtkCore/dtkAbstractDataImage.h>
 
+#include <vtkCamera.h>
 #include <vtkRenderer.h>
+#include <vtkWindow.h>
 
 #include <vtkImageView.h>
 #include <vtkImageView2D.h>
@@ -25,7 +27,7 @@ class v3dViewGraphicsScenePrivate
 };
 
 v3dViewGraphicsScene::v3dViewGraphicsScene( v3dView * view, QWidget * parent )
-  : QGraphicsScene( parent )
+  : BaseClass( view, parent )
   , d( new v3dViewGraphicsScenePrivate )
 {
     // view
@@ -161,4 +163,90 @@ void v3dViewGraphicsScene::setItemsVisible( bool state )
     d->itemsVisible = state;
 
     d->circAnn->setVisible( d->itemsVisible );
+}
+
+QPointF v3dViewGraphicsScene::worldToScene( const QVector3D & worldVec ) const
+{
+    vtkRenderer * ren = d->view->currentView()->GetRenderer();
+
+    /* get physical window dimensions */
+    vtkWindow * win = ren->GetVTKWindow();
+
+    if ( !win )
+        return QPointF();
+
+    double wx = worldVec.x();
+    double wy = worldVec.y();
+    double wz = worldVec.z();
+
+    ren->WorldToView( wx, wy, wz );
+
+    /* get physical window dimensions */
+    const int * size = win->GetSize();
+    int sizex = size[0];
+    int sizey = size[1];
+
+    const double * viewport = ren->GetViewport( );
+
+    double dx = (wx + 1.0) *
+        (sizex*(viewport[2]-viewport[0])) / 2.0 +
+        sizex*viewport[0];
+    double dy = (wy + 1.0) *
+        (sizey*(viewport[3]-viewport[1])) / 2.0 +
+        sizey*viewport[1];
+
+    // Convert VTK display coordinates to Qt (flipped in Y)
+    return QPointF( dx, sizey - 1 - dy );
+}
+
+QVector3D v3dViewGraphicsScene::sceneToWorld( const QPointF & sceneVec) const
+{
+    vtkRenderer * ren = d->view->currentView()->GetRenderer();
+
+    /* get physical window dimensions */
+    vtkWindow * win = ren->GetVTKWindow();
+
+    if ( !win )
+        return QVector3D();
+
+    const int * size = win->GetSize();
+    int sizex = size[0];
+    int sizey = size[1];
+
+    const double * viewport = ren->GetViewport( );
+
+    // Convert Qt display coordinates to VTK (flipped in Y)
+    const double dx = sceneVec.x();
+    const double dy = sizey - 1 - sceneVec.y();
+
+    double vx = 2.0 * (dx - sizex*viewport[0])/
+            (sizex*(viewport[2]-viewport[0])) - 1.0;
+    double vy = 2.0 * (dy - sizey*viewport[1])/
+            (sizey*(viewport[3]-viewport[1])) - 1.0;
+    double vz = 0.;
+
+    ren->ViewToWorld(vx,vy,vz);
+    return QVector3D( vx, vy, vz );
+
+}
+
+QVector3D v3dViewGraphicsScene::viewPlaneNormal() const
+{
+    vtkRenderer * ren = d->view->currentView()->GetRenderer();
+    double vpn[3];
+    ren->GetActiveCamera()->GetViewPlaneNormal( vpn );
+    return QVector3D( vpn[0], vpn[1], vpn[2] );
+}
+
+QVector3D v3dViewGraphicsScene::viewUp() const
+{
+    vtkRenderer * ren = d->view->currentView()->GetRenderer();
+    double vup[3];
+    ren->GetActiveCamera()->GetViewUp( vup );
+    return QVector3D( vup[0], vup[1], vup[2] );
+}
+
+bool v3dViewGraphicsScene::isScene2D() const
+{
+    return (d->view->currentView() == d->view->view2d() );
 }

@@ -9,6 +9,8 @@
 
 #include "medViewSegmentationPluginExport.h"
 
+class QGraphicsSceneMouseEvent;
+
 class medSegmentationConfigurationPrivate;
 
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medSegmentationConfiguration : public medViewerConfiguration
@@ -30,6 +32,13 @@ public:
 
     //! Return the name associated with this configuration
     static QString ConfigurationName();
+
+public slots:
+    void onViewAdded(dtkAbstractView* view);
+    void beginAddSeedPoint();
+
+    void mousePressEvent ( QGraphicsSceneMouseEvent * mouseEvent );
+    void mouseReleaseEvent ( QGraphicsSceneMouseEvent * mouseEvent );
 
 protected:
     // Creator function

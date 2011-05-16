@@ -414,19 +414,14 @@ void QVtkGraphicsView::drawBackground(QPainter *painter, const QRectF& rect )
  */
 void QVtkGraphicsView::mousePressEvent(QMouseEvent* e)
 {
-
-  // Emit a mouse press event for anyone who might be interested
-    //emit mouseEvent(e);
-    if(this->itemAt(e->pos()))
+    e->ignore();
+    BaseClass::mousePressEvent(e);
+    if ( e->isAccepted() )
     {
-        e->ignore();
-        QGraphicsView::mousePressEvent(e);
-        if ( e->isAccepted() )
-        {
-          mMouseEventCategory = MouseEventCategory_Item;
-          return;
-        }
+        mMouseEventCategory = MouseEventCategory_Item;
+        return;
     }
+
     mMouseEventCategory = MouseEventCategory_Background;
 
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
@@ -468,18 +463,14 @@ void QVtkGraphicsView::mousePressEvent(QMouseEvent* e)
 void QVtkGraphicsView::mouseDoubleClickEvent(QMouseEvent* e)
 {
 
-  // Emit a mouse press event for anyone who might be interested
-    //emit mouseEvent(e);
-    if(this->itemAt(e->pos()))
+    e->ignore();
+    BaseClass::mousePressEvent(e);
+    if ( e->isAccepted() )
     {
-        e->ignore();
-        QGraphicsView::mousePressEvent(e);
-        if ( e->isAccepted() )
-        {
-          mMouseEventCategory = MouseEventCategory_Item;
-          return;
-        }
+        mMouseEventCategory = MouseEventCategory_Item;
+        return;
     }
+
     mMouseEventCategory = MouseEventCategory_Background;
 
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
@@ -519,14 +510,10 @@ void QVtkGraphicsView::mouseDoubleClickEvent(QMouseEvent* e)
  */
 void QVtkGraphicsView::mouseMoveEvent(QMouseEvent* e)
 {
-    if(mMouseEventCategory == MouseEventCategory_Item )
+    if(mMouseEventCategory == MouseEventCategory_Item ||
+       mMouseEventCategory == MouseEventCategory_None )
     {
-        QGraphicsView::mouseMoveEvent(e);
-        return;
-    } else if ( mMouseEventCategory == MouseEventCategory_None &&
-        this->itemAt(e->pos()) )
-    {
-        QGraphicsView::mouseMoveEvent(e);
+        BaseClass::mouseMoveEvent(e);
         return;
     }
 
@@ -582,7 +569,8 @@ void QVtkGraphicsView::leaveEvent(QEvent* e)
  */
 void QVtkGraphicsView::mouseReleaseEvent(QMouseEvent* e)
 {
-    if( mMouseEventCategory == MouseEventCategory_Item )
+    if( mMouseEventCategory == MouseEventCategory_Item ||
+        mMouseEventCategory == MouseEventCategory_None )
     {
         QGraphicsView::mouseReleaseEvent(e);
         mMouseEventCategory = MouseEventCategory_None;
@@ -626,6 +614,13 @@ void QVtkGraphicsView::mouseReleaseEvent(QMouseEvent* e)
  */
 void QVtkGraphicsView::keyPressEvent(QKeyEvent* e)
 {
+    e->ignore();
+    BaseClass::keyPressEvent(e);
+    if ( e->isAccepted() )
+    {
+        return;
+    }
+
   vtkRenderWindowInteractor* iren = GetRenderWindowInteractor();
   
   if(!iren || !iren->GetEnabled())
@@ -658,6 +653,12 @@ void QVtkGraphicsView::keyPressEvent(QKeyEvent* e)
  */
 void QVtkGraphicsView::keyReleaseEvent(QKeyEvent* e)
 {
+    e->ignore();
+    BaseClass::keyReleaseEvent(e);
+    if ( e->isAccepted() )
+    {
+        return;
+    }
 
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
   
@@ -684,6 +685,13 @@ void QVtkGraphicsView::keyReleaseEvent(QKeyEvent* e)
 #ifndef QT_NO_WHEELEVENT
 void QVtkGraphicsView::wheelEvent(QWheelEvent* e)
 {
+    e->ignore();
+    BaseClass::wheelEvent(e);
+    if ( e->isAccepted() )
+    {
+        return;
+    }
+
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
   
   if(!iren || !iren->GetEnabled())
@@ -711,13 +719,19 @@ void QVtkGraphicsView::wheelEvent(QWheelEvent* e)
 #endif
 
 #if 0
-void QVtkGraphicsView::focusInEvent(QFocusEvent*)
+void QVtkGraphicsView::focusInEvent(QFocusEvent*e)
 {
   // These prevent updates when the window 
   // gains or loses focus.  By default, Qt
   // does an update because the color group's 
   // active status changes.  We don't even use
   // color groups so we do nothing here.
+    e->ignore();
+    BaseClass::focusInEvent(e);
+    if ( e->isAccepted() )
+    {
+        return;
+    }
   
   // For 3Dconnexion devices:
   QVTKInteractor* iren = this->GetInteractor();
@@ -738,7 +752,12 @@ void QVtkGraphicsView::focusOutEvent(QFocusEvent*)
   // does an update because the color group's 
   // active status changes.  We don't even use
   // color groups so we do nothing here.
-  
+    e->ignore();
+    BaseClass::focusOutEvent(e);
+    if ( e->isAccepted() )
+    {
+        return;
+    }
   // For 3DConnexion devices:
   QVTKInteractor* iren = this->GetInteractor();
   // Note that this class can have interactor of type
@@ -752,6 +771,12 @@ void QVtkGraphicsView::focusOutEvent(QFocusEvent*)
 
 void QVtkGraphicsView::contextMenuEvent(QContextMenuEvent* e)
 {
+    e->ignore();
+    BaseClass::contextMenuEvent(e);
+    if ( e->isAccepted() )
+    {
+        return;
+    }
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
   
   if(!iren || !iren->GetEnabled())
@@ -773,6 +798,13 @@ void QVtkGraphicsView::contextMenuEvent(QContextMenuEvent* e)
 
 void QVtkGraphicsView::dragEnterEvent(QDragEnterEvent* e)
 {
+    e->ignore();
+    BaseClass::dragEnterEvent(e);
+    if ( e->isAccepted() )
+    {
+        return;
+    }
+
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
   
   if(!iren || !iren->GetEnabled())
@@ -786,6 +818,13 @@ void QVtkGraphicsView::dragEnterEvent(QDragEnterEvent* e)
 
 void QVtkGraphicsView::dragMoveEvent(QDragMoveEvent* e)
 {
+    e->ignore();
+    BaseClass::dragMoveEvent(e);
+    if ( e->isAccepted() )
+    {
+        return;
+    }
+
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
   
   if(!iren || !iren->GetEnabled())
@@ -802,6 +841,13 @@ void QVtkGraphicsView::dragMoveEvent(QDragMoveEvent* e)
 
 void QVtkGraphicsView::dragLeaveEvent(QDragLeaveEvent* e)
 {
+    e->ignore();
+    BaseClass::dragLeaveEvent(e);
+    if ( e->isAccepted() )
+    {
+        return;
+    }
+
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
   
   if(!iren || !iren->GetEnabled())
@@ -817,11 +863,10 @@ void QVtkGraphicsView::dragLeaveEvent(QDragLeaveEvent* e)
 
 void QVtkGraphicsView::dropEvent(QDropEvent* e)
 {
-    if(this->itemAt(e->pos()))
+    e->ignore();
+    BaseClass::dropEvent(e);
+    if ( !e->isAccepted() )
     {
-        QGraphicsView::dropEvent(e);
-        return;
-    } else {
         QWidget::dropEvent(e);
     }
 

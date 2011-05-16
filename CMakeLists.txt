@@ -82,6 +82,7 @@ if (MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN)
 endif()
 
 if (MEDINRIA_BUILD_V3DVIEW_PLUGIN)
+  subdirs(medAbstractViewExtension)
   subdirs(v3dView)
 endif()
 

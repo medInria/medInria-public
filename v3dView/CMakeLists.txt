@@ -93,9 +93,6 @@ set(${PROJECT_NAME}_SOURCES
   vtkQtOpenGLRenderWindow.cxx  
   )
 
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-
 ## #################################################################
 ## Build rules
 ## #################################################################
@@ -107,12 +104,15 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES})
 
+include_directories(${CMAKE_SOURCE_DIR}/medAbstractViewExtension)
+
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ttkAlgorithms
   dtkCore
   medCore
+  medAbstractViewExtension
   vtkCommon
   vtkRendering
   vtkImageView
@@ -133,6 +133,10 @@ endif (vtkINRIA3D_USE_HWSHADING)
 if (BUILD_TESTING)
   add_subdirectory(Testing)
 endif (BUILD_TESTING)
+
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules
