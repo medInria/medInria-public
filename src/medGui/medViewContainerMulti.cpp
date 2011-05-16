@@ -177,40 +177,75 @@ void medViewContainerMulti::layout(QList<QWidget *> content)
 }
 
 void medViewContainerMulti::onViewClosing (void)
-{ 
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
-        
+{
+    if (dtkAbstractView *view =
+        dynamic_cast<dtkAbstractView *>(this->sender())) {
+
+        // needed for selecting another container as current afterwards
+        QWidget * predContainer   = NULL;
+        QWidget * succContainer   = NULL;
+        bool      closedItemFound = false;
+
+        QWidget * closedContainer =
+            dynamic_cast< QWidget * >( view->widget()->parent() );
         QList<QWidget *> content;
-        for(int i = 0; i < d->layout->rowCount() ; i++) {
-            for(int j = 0; j < d->layout->columnCount() ; j++) {
-                if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
-		  if(item->widget()!=view->widget()->parent()) {
-		      content << item->widget();
-		      item->widget()->show(); // in case view was hidden
-		  }
-		  else {
-		      item->widget()->hide();
-		  }
+        for (int i = 0; i < d->layout->rowCount(); i++) {
+            for (int j = 0; j < d->layout->columnCount(); j++) {
+                QLayoutItem * item = d->layout->itemAtPosition(i, j);
+                if ( item != NULL ) {
+                    QWidget * container = item->widget();
+                    if ( container != closedContainer ) {
+                        content << container;
+                        container->show(); // in case view was hidden
+
+                        // remember the predecessor resp. successor of
+                        // the closed container
+                        if ( closedItemFound ) {
+                            if ( succContainer == NULL )
+                                succContainer = container;
+                        }
+                        else
+                            predContainer = container;
+                    }
+                    else {
+                        container->hide();
+                        closedItemFound = true;
+                    }
 
                     d->layout->removeItem(item);
                 }
             }
         }
-        
-        disconnect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
-        disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
-	disconnect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
-        
-	if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
+
+        disconnect (view, SIGNAL (closing()),
+                    this, SLOT (onViewClosing()));
+        disconnect (view, SIGNAL (becomeDaddy(bool)),
+                    this, SLOT (repaint()));
+        disconnect (view, SIGNAL (fullScreen(bool)),
+                    this, SLOT (onViewFullScreen(bool)));
+
+        if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
             d->pool->removeView (medView);
 
-	d2->views.removeOne (view);        
+        d2->views.removeOne (view);
 
         emit viewRemoved (view);
-	
+
         view->close();
 
         this->layout (content);
+
+        medViewContainer * current =
+            dynamic_cast< medViewContainer * >( succContainer );
+        if ( current == NULL )
+            current = dynamic_cast< medViewContainer * >( predContainer );
+
+        if ( current != NULL )
+            this->setCurrent( current );
+        else
+            this->setCurrent( this );
+
+        this->update();
     }
 }
 
