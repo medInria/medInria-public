@@ -131,6 +131,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     connect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
 
+    this->setCurrent( container );
     emit viewAdded (view);
 }
 
