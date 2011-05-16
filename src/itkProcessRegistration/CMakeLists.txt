@@ -55,8 +55,8 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/)
-
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${medinria-plugins_LIBRARY_OUTPUT_DIRECTORY})
+MESSAGE(LIBRARY_OUTPUT_PATH: ${LIBRARY_OUTPUT_PATH})
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
@@ -80,6 +80,6 @@ target_link_libraries(${PROJECT_NAME}
 ## #################################################################
 
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+  RUNTIME DESTINATION ${medinria-plugins_BINARY_OUTPUT_DIRECTORY}
+  LIBRARY DESTINATION ${medinria-plugins_LIBRARY_OUTPUT_DIRECTORY}
+  ARCHIVE DESTINATION ${medinria-plugins_ARCHIVE_OUTPUT_DIRECTORY})
