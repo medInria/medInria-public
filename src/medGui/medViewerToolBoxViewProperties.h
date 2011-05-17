@@ -45,7 +45,7 @@ public slots:
    
     
     void onMeshLUTChanged (int value);
-
+    void onAttrBoxChanged(int index);
     void onEdgeVisibilitySet(int state);
     void onRenderingChanged (int state);
     void on_comboBox_currentIndexChanged(int selection);
