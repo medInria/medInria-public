@@ -1,5 +1,25 @@
 #include "itkDataImageUChar3.h"
 
-#include "medITKDataImageMacros.h"
+#include "itkDataImagePrivate.h"
 
-medImplementITKDataImage (unsigned char,  3, UChar3);
+#include <dtkCore/dtkAbstractDataFactory.h>
+
+itkDataImageUChar3::itkDataImageUChar3() 
+    : itkDataImageBase( "itkDataImageUChar3", new itkDataImagePrivate< char, 3 >(this) )
+{
+}
+
+itkDataImageUChar3::~itkDataImageUChar3()
+{
+}
+
+dtkAbstractData *createitkDataImageUChar3(void)
+{
+    return new itkDataImageUChar3;
+}
+
+bool itkDataImageUChar3::registered()
+{
+    return dtkAbstractDataFactory::instance()->registerDataType("itkDataImageUChar3", createitkDataImageUChar3);
+}
+

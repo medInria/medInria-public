@@ -1,5 +1,25 @@
 #include "itkDataImageFloat3.h"
 
-#include "medITKDataImageMacros.h"
+#include "itkDataImagePrivate.h"
 
-medImplementITKDataImage (float,          3, Float3);
+#include <dtkCore/dtkAbstractDataFactory.h>
+
+itkDataImageFloat3::itkDataImageFloat3() 
+    : itkDataImageBase( "itkDataImageFloat3", new itkDataImagePrivate< char, 3 >(this) )
+{
+}
+
+itkDataImageFloat3::~itkDataImageFloat3()
+{
+}
+
+dtkAbstractData *createitkDataImageFloat3(void)
+{
+    return new itkDataImageFloat3;
+}
+
+bool itkDataImageFloat3::registered()
+{
+    return dtkAbstractDataFactory::instance()->registerDataType("itkDataImageFloat3", createitkDataImageFloat3);
+}
+
