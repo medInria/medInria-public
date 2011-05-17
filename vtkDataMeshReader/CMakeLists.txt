@@ -86,19 +86,9 @@ target_link_libraries(${PROJECT_NAME}
 ## #################################################################
 ## Install rules
 ## #################################################################
-if( VTK_BUILD_SHARED )
-  install(TARGETS ${PROJECT_NAME}  
+install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION plugins
     LIBRARY DESTINATION plugins
-    ARCHIVE DESTINATION plugins)
-  install(DIRECTORY ${VTK_LIBRARY_DIRS}/ 
-    DESTINATION lib
-    FILES_MATCHING PATTERN "lib*")
-else( VTK_BUILD_SHARED )
-  install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION plugins
-    LIBRARY DESTINATION plugins
-    ARCHIVE DESTINATION plugins)
-endif( VTK_BUILD_SHARED )
+    ARCHIVE DESTINATION lib)
 
 

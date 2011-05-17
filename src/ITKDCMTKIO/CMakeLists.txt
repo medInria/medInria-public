@@ -33,7 +33,10 @@ include_directories(${DCMTK_INCLUDE_DIR})
 find_package(vtkINRIA3D REQUIRED) # for itkMultiThreadedImageIO
 include(${vtkINRIA3D_USE_FILE})
 
-set(ITKDCMTKIO_SOURCES
+set (${PROJECT_NAME}_HEADERS 
+    itkDCMTKImageIO.h)
+
+set(${PROJECT_NAME}_SOURCES
   itkDCMTKImageIO.cxx
 )
 
@@ -53,9 +56,9 @@ target_link_libraries(ITKDCMTKIO
   ${ITK_LIBRARIES}
 )
 
-if(ITK_BUILD_SHARED)
-    install (TARGETS ITKDCMTKIO  
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
+install (TARGETS ITKDCMTKIO  
     RUNTIME DESTINATION ${medinria-plugins_BINARY_OUTPUT_DIRECTORY}
     LIBRARY DESTINATION ${medinria-plugins_LIBRARY_OUTPUT_DIRECTORY}
     ARCHIVE DESTINATION ${medinria-plugins_ARCHIVE_OUTPUT_DIRECTORY} )
-endif(ITK_BUILD_SHARED)
+

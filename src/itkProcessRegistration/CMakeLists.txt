@@ -47,6 +47,9 @@ endif(ITK_FOUND)
 set(${PROJECT_NAME}_HEADERS_MOC
   itkProcessRegistration.h)
 
+set(${PROJECT_NAME}_HEADERS
+    ${${PROJECT_NAME}_HEADERS_MOC})
+
 set(${PROJECT_NAME}_SOURCES
   itkProcessRegistration.cpp
   )
@@ -56,7 +59,6 @@ set(${PROJECT_NAME}_SOURCES
 ## #################################################################
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${medinria-plugins_LIBRARY_OUTPUT_DIRECTORY})
-MESSAGE(LIBRARY_OUTPUT_PATH: ${LIBRARY_OUTPUT_PATH})
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
@@ -83,3 +85,5 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION ${medinria-plugins_BINARY_OUTPUT_DIRECTORY}
   LIBRARY DESTINATION ${medinria-plugins_LIBRARY_OUTPUT_DIRECTORY}
   ARCHIVE DESTINATION ${medinria-plugins_ARCHIVE_OUTPUT_DIRECTORY})
+
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
