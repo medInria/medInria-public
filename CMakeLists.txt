@@ -65,7 +65,7 @@ option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individ
 
 
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
-set(PLUGIN_LIST v3dData v3dViewPublic v3dView itkDataImage itkDataImageReader itkDCMTKDataImageReader vtkDataMesh vtkDataMeshReader vtkDataMeshWriter itkDataDiffusionGradientList itkDataTensorImageWriter itkDataTensorImageReader )
+set(PLUGIN_LIST v3dData v3dViewPublic v3dView itkDataImage itkDataImageReader itkDataImageWriter itkDCMTKDataImageReader vtkDataMesh vtkDataMeshReader vtkDataMeshWriter itkDataDiffusionGradientList itkDataTensorImageWriter itkDataTensorImageReader )
 
 ## This has no effect, if someone knows how to flip the plugin options when MEDINRIA_BUILD_ALL_PLUGINS is turned on...
 if (MEDINRIA_BUILD_ALL_PLUGINS)
