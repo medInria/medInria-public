@@ -80,10 +80,9 @@ target_link_libraries(${PROJECT_NAME}
 ## #################################################################
 ## Install rules
 ## #################################################################
-
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION ${medinria-plugins_BINARY_OUTPUT_DIRECTORY}
-  LIBRARY DESTINATION ${medinria-plugins_LIBRARY_OUTPUT_DIRECTORY}
-  ARCHIVE DESTINATION ${medinria-plugins_ARCHIVE_OUTPUT_DIRECTORY})
+  RUNTIME DESTINATION bin 
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
 
 install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
