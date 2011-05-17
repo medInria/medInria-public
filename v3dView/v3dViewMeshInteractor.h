@@ -6,6 +6,7 @@
 
 #include "v3dViewPluginExport.h"
 
+
 class v3dViewMeshInteractorPrivate;
 
 class dtkAbstractData;
@@ -34,7 +35,7 @@ public:
 
     //! Override dtkAbstractViewInteractor.
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
-    
+    char* getLUTQuery (int meshLayer);
     
 
 protected:
@@ -51,6 +52,7 @@ public slots:
     virtual void onOpacityModePropertySet (double value, int meshLayer);
     virtual void onLUTModePropertySet (const QString& value, int meshLayer);
     virtual void onColorPropertySet (const QColor& color, int meshLayer);
+    
 
 private:
     v3dViewMeshInteractorPrivate *d;

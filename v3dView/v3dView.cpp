@@ -751,42 +751,52 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
     }
     else if (data->description()=="itkDataImageShort4") {
-        dtkAbstractView::setData(data);
+        qDebug()<<"itkDataImageShort4";
+        //dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageInt4") {
+        qDebug()<<"2";
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageLong4") {
+        qDebug()<<"3";
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageChar4") {
+        qDebug()<<"4";
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUShort4") {
+        qDebug()<<"5";
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageFloat4") {
+        qDebug()<<"6";
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUInt4") {
+        qDebug()<<"7";
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageULong4") {
+        qDebug()<<"8";
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUChar4") {
+        qDebug()<<"9";
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageDouble4") {
+        qDebug()<<"10";
         dtkAbstractView::setData(data);
 	this->enableInteractor ( "v3dView4DInteractor" );
     }
@@ -804,7 +814,9 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             dtkAbstractView::setData(data);
         }
 	else if ( data->description() == "vtkDataMesh4D" ) {
-	    this->enableInteractor ( "v3dView4DInteractor" );
+	    this->enableInteractor ( "v3dViewMeshInteractor" );
+        //this->enableInteractor ( "v3dView4DInteractor" );
+        
 	    // This will add the data to the interactor.
 	    dtkAbstractView::setData(data);
 	}

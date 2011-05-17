@@ -9,7 +9,7 @@
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkCollection.h>
-
+#include <vtkProperty.h>
 #include <vtkImageView.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -79,7 +79,7 @@ void v3dView4DInteractor::appendData(dtkAbstractData *data)
   if (data->description() == "vtkDataMesh4D" )
   {
     vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
-    
+    vtkProperty *prop = vtkProperty::New();
     if (!sequence || d->sequenceList->IsItemPresent (sequence))
       return;
     
@@ -87,10 +87,14 @@ void v3dView4DInteractor::appendData(dtkAbstractData *data)
     {
 	case vtkMetaDataSet::VTK_META_SURFACE_MESH:
 	case vtkMetaDataSet::VTK_META_VOLUME_MESH:
-	  d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
-	  d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
+      
+      //prop->SetColor(1,0,1);
+      
+      //d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));//->SetProperty(prop);
+	  //d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));//->SetProperty(prop);
 	  d->sequenceList->AddItem (sequence);
 	  d->dataList.push_back (data);
+      
 	  break;
 	default:
 	  break;
@@ -140,7 +144,8 @@ void v3dView4DInteractor::setView(dtkAbstractView *view)
 {
   if (v3dView *v3dview = dynamic_cast<v3dView*>(view) )
   {
-      d->view = v3dview;
+      //d->view = v3dview;
+      d->view = dynamic_cast<v3dView*>(view);
       connect (view, SIGNAL (dataAdded (dtkAbstractData*)), this, SLOT (onDataAdded (dtkAbstractData*)));
   }
 }
