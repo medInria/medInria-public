@@ -49,6 +49,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxSegmentationView.h
   medViewSegmentationPlugin.h
   medViewSegmentation.h
+  msegAlgorithmConnectedThreshold.h
+  msegAlgorithmGeneric.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -59,6 +61,8 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxSegmentationView.cpp
   medViewSegmentationPlugin.cpp
   medViewSegmentation.cpp
+  msegAlgorithmConnectedThreshold.cpp
+  msegAlgorithmGeneric.cpp
   )
 
 ## #################################################################
