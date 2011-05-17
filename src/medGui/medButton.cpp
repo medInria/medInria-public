@@ -35,7 +35,7 @@ medButton::medButton( QWidget *parent, QPixmap pixmap, QString toolTip ):
 
 medButton::~medButton( void )
 {
-
+    delete d;
 }
 
 QSize medButton::sizeHint( void ) const

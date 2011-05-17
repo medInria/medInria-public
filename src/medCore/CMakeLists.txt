@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Jun 29 15:03:53 2010 (+0200)
+## Last-Updated: Wed May  4 10:55:34 2011 (+0200)
 ##           By: Julien Wintz
-##     Update #: 39
+##     Update #: 43
 ######################################################################
 ## 
 ### Commentary: 
@@ -50,6 +50,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
   medAbstractDataCollection.h
+  medCoreExport.h
 )
 
 
