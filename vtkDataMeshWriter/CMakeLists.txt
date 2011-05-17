@@ -85,5 +85,5 @@ target_link_libraries(${PROJECT_NAME}
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION plugins
     LIBRARY DESTINATION plugins
-    ARCHIVE DESTINATION libs)
+    ARCHIVE DESTINATION lib)
 

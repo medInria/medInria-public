@@ -130,7 +130,7 @@ if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
 
-include(pack)
+include(${PROJECT_NAME}Pack)
 
 
 
