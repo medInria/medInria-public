@@ -27,6 +27,8 @@
 
 class medAbstractViewPrivate;
 
+class QColor;
+
 /**
  * @class medAbstractView
  * @brief Base class for view types in medinria
@@ -153,6 +155,10 @@ public:
      */
     virtual void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
 
+    /** The color used to represent the extent or space of this view in another view */
+    virtual QColor color() const;
+    virtual void setColor( const QColor & color);
+
 signals:
     /**
        This signal is emitted when a view is about to close.
@@ -247,6 +253,11 @@ signals:
 
     void dataAdded (dtkAbstractData* data);
 
+    /** Emitted when the oblique view settings change */
+    void obliqueSettingsChanged();
+
+    void colorChanged();
+
 public slots:
     /**
        Tells the view (not to) synchronize its position with other views.
@@ -280,7 +291,15 @@ public slots:
     
     virtual void onOpacityChanged(double opacity, int layer);
 
-    
+    /** When another linked view changes it's oblique settings the pool calls this:*/
+    virtual void onObliqueSettingsChanged(const medAbstractView * vsender);
+
+    /** Called when another view leaves the pool */
+    virtual void onAppendViewToPool( medAbstractView * viewAppended );
+
+    /** Called when another view leaves the pool */
+    virtual void onRemoveViewFromPool( medAbstractView * viewRemoved );
+
 protected:
     void emitViewSliceChangedEvent    (int slice);
     void emitViewPositionChangedEvent (const QVector3D &position);
@@ -291,6 +310,10 @@ protected:
                                        const QVector3D &viewup,
                                        const QVector3D &focal,
                                        double parallelScale);
+    void emitObliqueSettingsChangedEvent();
+
+    // Emitted whenever the plane color changes.
+    void emitColorChangedEvent();
 
 private:
     medAbstractViewPrivate *d;
