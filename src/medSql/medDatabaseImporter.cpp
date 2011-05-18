@@ -94,6 +94,12 @@ void medDatabaseImporter::run(void)
 
         QMutexLocker locker(&d->mutex);
 
+        if (readers.size()==0) {
+            emit showError(this, tr("No reader plugin"), 5000);
+            emit failure(this);
+            return;
+        }
+
         for (int i=0; i<readers.size(); i++) {
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
             if (dataReader->canRead( fileInfo.filePath() )) {
@@ -318,8 +324,7 @@ void medDatabaseImporter::run(void)
         delete dtkdata;
     }
 
-    if (imagesToWriteMap.count()==0)
-    {
+    if (imagesToWriteMap.count()==0) {
         emit showError(this, tr("No compatible or new image was found"),5000);
         emit failure(this);
         return;
@@ -469,24 +474,19 @@ void medDatabaseImporter::run(void)
 
         int writeSuccess = 0;
 
-        for (int i=0; i<writers.size(); i++)
-        {
+        for (int i=0; i<writers.size(); i++) {
             dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
-            qDebug() << "trying " << dataWriter->description();
 
             if (! dataWriter->handled().contains(imData->description()))
-            {
-                qDebug() << "failed with " << dataWriter->description();
                 continue;
-            }
 
-            qDebug() << "success with " << dataWriter->description();
             dataWriter->setData (imData);
 
-            qDebug() << "trying to write in file : "<< medStorage::dataLocation() + it.key();
+            qDebug() << "Trying to write in file: "<< medStorage::dataLocation() + it.key();
 
             if (dataWriter->canWrite( medStorage::dataLocation() + it.key() )) {
                 if (dataWriter->write( medStorage::dataLocation() + it.key() )) {
+                    qDebug() << "Success with " << dataWriter->description();
                     dtkDataList.push_back (imData);
                     writeSuccess = 1;
                     delete dataWriter;

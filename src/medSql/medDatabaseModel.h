@@ -61,6 +61,7 @@ public:
 
     bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
     bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
+    bool removeAllRows();
 
     QStringList mimeTypes(void) const;
 

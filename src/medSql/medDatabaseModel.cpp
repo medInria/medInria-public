@@ -365,6 +365,13 @@ bool medDatabaseModel::insertColumns(int position, int columns, const QModelInde
     return success;
 }
 
+bool medDatabaseModel::removeAllRows() {
+    bool success = true;
+    if (rowCount()!=0)
+        success = removeRows(0, rowCount());
+    return success;
+}
+
 bool medDatabaseModel::removeColumns(int position, int columns, const QModelIndex& parent)
 {
     bool success;
@@ -373,8 +380,10 @@ bool medDatabaseModel::removeColumns(int position, int columns, const QModelInde
     success = d->root->removeColumns(position, columns);
     endRemoveColumns();
 
-    if (d->root->columnCount() == 0)
-        removeRows(0, rowCount());
+    if (d->root->columnCount() == 0) {
+        const bool succ = removeAllRows();
+        success = success && succ;
+    }
 
     return success;
 }
@@ -395,7 +404,7 @@ bool medDatabaseModel::insertRows(int position, int rows, const QModelIndex& par
 bool medDatabaseModel::removeRows(int position, int rows, const QModelIndex& parent)
 {
     if (rows <= position){
-        qDebug() << "row index < rows!";
+        qDebug() << "row index (" << position << ") < rows (" << rows << ")!";
         return false;
     }
 
@@ -461,10 +470,8 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
     
 void medDatabaseModel::clear(void)
 {
-    removeRows(0, rowCount());
-
+    removeAllRows();
     reset();
-
     populate(d->root);
 }
 
