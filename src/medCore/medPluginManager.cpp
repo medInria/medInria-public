@@ -49,22 +49,20 @@ void medPluginManager::readSettings(void)
 
     settings.beginGroup("plugins");
     QDir plugins_dir = qApp->applicationDirPath() + "/../plugins";
-    qDebug()<<"plugins default path:"<<plugins_dir.absolutePath();
-    
-    setPath (settings.value("path", plugins_dir.absolutePath()).toString());
 
-    
     if (!settings.contains("path"))
     {
-        qDebug()<<"fill in empty path in settings";
+        qDebug()<<"Fill in empty path in settings with default path:"
+                  << plugins_dir.absolutePath();
         settings.setValue("path", plugins_dir.absolutePath());
     }
-
+    setPath (settings.value("path", plugins_dir.absolutePath()).toString());
     settings.endGroup();
 
     if(path().isEmpty()) {
-        qWarning() << "Your dtk config does not seem to be set correctly.";
+        qWarning() << "Your config does not seem to be set correctly.";
         qWarning() << "Please set plugins.path.";
+        qWarning() << "Default directory would be: " << plugins_dir.absolutePath();
     }
 }
 
