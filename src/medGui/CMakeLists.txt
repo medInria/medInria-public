@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Mon Dec 20 13:33:18 2010 (+0100)
+## Last-Updated: Wed May  4 14:43:36 2011 (+0200)
 ##           By: Julien Wintz
-##     Update #: 167
+##     Update #: 168
 ######################################################################
 ##
 ### Commentary:
@@ -87,6 +87,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserToolBoxPacsHost.h
   medBrowserToolBoxPacsNodes.h
   medBrowserToolBoxPacsSearch.h    
+  
+  medDatabaseSearchPanel.h
 
 )
 
@@ -94,6 +96,7 @@ set(${PROJECT_NAME}_HEADERS
   medLUTtoXMLWriter.h
   medXMLtoLUTReader.h
   medViewContainer_p.h
+  medGuiExport.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
 
@@ -152,7 +155,9 @@ set(${PROJECT_NAME}_SOURCES
   
   medBrowserToolBoxPacsHost.cpp
   medBrowserToolBoxPacsNodes.cpp
-  medBrowserToolBoxPacsSearch.cpp    
+  medBrowserToolBoxPacsSearch.cpp
+
+  medDatabaseSearchPanel.cpp 
 )
 
 # Include header files for Visual Studio.
