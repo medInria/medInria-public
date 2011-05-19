@@ -104,7 +104,7 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES})
 
-include_directories(${CMAKE_SOURCE_DIR}/medAbstractViewExtension)
+include_directories(${CMAKE_SOURCE_DIR}/src/medAbstractViewExtension)
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
@@ -145,4 +145,4 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION plugins
   LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION plugins)
+  ARCHIVE DESTINATION lib)

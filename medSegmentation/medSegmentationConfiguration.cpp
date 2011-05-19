@@ -162,6 +162,22 @@ void medSegmentationConfiguration::mousePressEvent( QGraphicsSceneMouseEvent * m
 {
     medAbstractViewScene * scene = medSegmentationConfigurationPrivate::viewScene( stackedViewContainers()->container("Single")->view() );
     mouseEvent->accept();
+
+    if (scene->isScene2D()) {
+        // Convert mouse click to a 3D point in the image.
+
+        QVector3D posWorld = scene->sceneToWorld( mouseEvent->pos() );
+        QVector3D viewPos = scene->view()->position();
+
+        //Project vector onto plane
+
+    Create a segmentation algorithm, pass it the data and 
+        run it. 
+        gather the output.
+        register the output in the non-persistent db
+        Add the output as a layer to the view
+
+
 }
 
 void medSegmentationConfiguration::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent )

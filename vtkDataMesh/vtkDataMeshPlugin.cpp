@@ -2,15 +2,15 @@
 #include "vtkDataMesh.h"
 #include "vtkDataMesh4D.h"
 
-#include "vtkLogForwarder.h"
-
 #include <dtkCore/dtkLog.h>
+
+#include <dtkVtkLogForwarder/vtkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////
 // vtkDataMeshPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class vtkDataMeshPluginPrivate 
+class vtkDataMeshPluginPrivate
 {
 public:
   vtkDataMeshPluginPrivate()

@@ -36,6 +36,8 @@ private:
     double m_lowThreshold;
     double m_highThreshold;
 
+
+
 };
 
 } // namespace mseg

@@ -23,7 +23,9 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-
+#include <QtCore>
+#include <QDir>
+#include <QString>
 
 int main (int narg, char* arg[])
 {
@@ -33,11 +35,31 @@ int main (int narg, char* arg[])
         std::cerr << "Usage: " << arg[0] << " <dicom1 dicom2 ... dicomN> <output>\n";
         return -1;
     }
-  
+
     std::vector<std::string> fileNames;
+
+    if (narg==3) { // special case of directory
+        QFileInfo finfo(arg[1]);
+        if (finfo.isDir())
+        {
+            QDir dir (arg[1]);
+            dir.setFilter(QDir::Files | QDir::NoSymLinks | QDir::NoDotAndDotDot);
+            foreach (QString file, dir.entryList()) {
+                if (!file.isEmpty()) {
+                QString fullname = finfo.filePath() + "/" + file;
+                qDebug() << "inserting: " << fullname;
+                fileNames.push_back(fullname.toAscii().constData());
+                }
+            }
+        }
+        else
+            fileNames.push_back(arg[1]);
+    }
+    else {
     for( int i=1; i<narg-1; i++){
         std::cout << "Inserting: " << arg[i] << std::endl;
         fileNames.push_back ( arg[i] );
+    }
     }
 
     const char* output = arg[narg-1];
@@ -67,7 +89,7 @@ int main (int narg, char* arg[])
 	      typedef itk::Image<char, 3> ImageType;
 	      itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
 	      reader->SetImageIO ( io );
-	      reader->SetFileName ( arg[1] );
+          reader->SetFileName ( fileNames[0].c_str() );
 	      try
 	      {
 		reader->Update();
@@ -98,7 +120,7 @@ int main (int narg, char* arg[])
 	      typedef itk::Image<unsigned char, 3> ImageType;
 	      itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
 	      reader->SetImageIO ( io );
-	      reader->SetFileName ( arg[1] );
+	      reader->SetFileName ( fileNames[0].c_str() );
 	      try
 	      {
 		reader->Update();
@@ -129,7 +151,7 @@ int main (int narg, char* arg[])
 	      typedef itk::Image<short, 3> ImageType;
 	      itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
 	      reader->SetImageIO ( io );
-	      reader->SetFileName ( arg[1] );
+	      reader->SetFileName ( fileNames[0].c_str() );
 	      try
 	      {
 		reader->Update();
@@ -160,7 +182,7 @@ int main (int narg, char* arg[])
 	      typedef itk::Image<unsigned short, 3> ImageType;
 	      itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
 	      reader->SetImageIO ( io );
-	      reader->SetFileName ( arg[1] );
+	      reader->SetFileName ( fileNames[0].c_str() );
 	      try
 	      {
 		reader->Update();
@@ -205,7 +227,7 @@ int main (int narg, char* arg[])
 	      typedef itk::Image<char, 4> ImageType;
 	      itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
 	      reader->SetImageIO ( io );
-	      reader->SetFileName ( arg[1] );
+	      reader->SetFileName ( fileNames[0].c_str() );
 	      try
 	      {
 		reader->Update();
@@ -236,7 +258,7 @@ int main (int narg, char* arg[])
 	      typedef itk::Image<unsigned char, 4> ImageType;
 	      itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
 	      reader->SetImageIO ( io );
-	      reader->SetFileName ( arg[1] );
+	      reader->SetFileName ( fileNames[0].c_str() );
 	      try
 	      {
 		reader->Update();
@@ -267,7 +289,7 @@ int main (int narg, char* arg[])
 	      typedef itk::Image<short, 4> ImageType;
 	      itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
 	      reader->SetImageIO ( io );
-	      reader->SetFileName ( arg[1] );
+	      reader->SetFileName ( fileNames[0].c_str() );
 	      try
 	      {
 		reader->Update();
@@ -298,7 +320,7 @@ int main (int narg, char* arg[])
 	      typedef itk::Image<unsigned short, 4> ImageType;
 	      itk::ImageFileReader<ImageType>::Pointer reader = itk::ImageFileReader<ImageType>::New();
 	      reader->SetImageIO ( io );
-	      reader->SetFileName ( arg[1] );
+	      reader->SetFileName ( fileNames[0].c_str() );
 	      try
 	      {
 		reader->Update();

@@ -28,13 +28,13 @@
 #include "itkDataImageRGBA3.h"
 
 #include <dtkCore/dtkLog.h>
-#include "itkLogForwarder.h"
+#include <dtkItkLogForwarder/itkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkDataImagePluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class itkDataImagePluginPrivate 
+class itkDataImagePluginPrivate
 {
 public:
     itkDataImagePluginPrivate()

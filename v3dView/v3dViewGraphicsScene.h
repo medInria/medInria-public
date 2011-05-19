@@ -91,6 +91,7 @@ protected:
     virtual QVector3D viewUp() const;
     //! Is the scene 2D (true) or 3D (false)
     virtual bool isScene2D() const;
+    virtual QVector3D sceneToImagePos(const QPointF &) const;
 
 private:
     v3dViewGraphicsScenePrivate * d;

@@ -5,15 +5,15 @@
 #include "itkDataDiffusionGradientList.h"
 #include "itkDataDiffusionGradientListPlugin.h"
 
-#include "itkLogForwarder.h"
-
 #include <dtkCore/dtkLog.h>
+
+#include <dtkItkLogForwarder/itkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkDataDiffusionGradientListPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class itkDataDiffusionGradientListPluginPrivate 
+class itkDataDiffusionGradientListPluginPrivate
 {
 public:
   itkDataDiffusionGradientListPluginPrivate()

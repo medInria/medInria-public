@@ -1,5 +1,5 @@
-### CMakeLists.txt --- 
-## 
+### CMakeLists.txt ---
+##
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Mon Sep 21 14:48:02 2009 (+0200)
@@ -8,13 +8,13 @@
 ##           By: Julien Wintz
 ##     Update #: 25
 ######################################################################
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ######################################################################
-## 
+##
 ### Change log:
-## 
+##
 ######################################################################
 
 cmake_minimum_required(VERSION 2.8.1)
@@ -38,6 +38,12 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+include(medinria-pluginsMacros)
+find_package(dtk REQUIRED)
+include(${dtk_USE_FILE})
+
+
 ## #################################################################
 ## Dashboard settings
 ## #################################################################
@@ -55,96 +61,54 @@ include(Dart)
 
 set(DEPENDS_ON_DTK 1)
 
-option(MEDINRIA_BUILD_V3DDATA_PLUGIN                      "Build v3dData plugin" "ON")
-option(MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN                "Build v3dViewPublic plugin" "ON")
-option(MEDINRIA_BUILD_V3DVIEW_PLUGIN                      "Build v3dView plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN                 "Build itkDataImage plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN           "Build itkDataImageReader plugin" "ON")
-option(MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN      "Build itkDCMTKDataImageReader plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN           "Build itkDataImageWriter plugin" "ON")
-option(MEDINRIA_BUILD_VTKDATAMESH_PLUGIN                  "Build vtkDataMesh plugin" "ON")
-option(MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN            "Build vtkDataMeshReader plugin" "ON")
-option(MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN            "Build vtkDataMeshWriter plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN "Build itkDataDiffusionGradientList plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN           "Build itkDataTensorImage plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN     "Build itkDataTensorImageReader plugin" "ON")
-option(MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN     "Build itkDataTensorImageWriter plugin" "ON")
-option(MEDINRIA_BUILD_SEGMENTATION_PLUGIN                 "Build segmentation plugin" "ON")
-option(BUILD_DOCUMENTATION "Build documentation"    true)
+option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" OFF)
 
 
-if (MEDINRIA_BUILD_V3DDATA_PLUGIN)
-  subdirs(v3dData)
+## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
+set(PLUGIN_LIST v3dData v3dViewPublic v3dView itkDataImage 
+    itkDataImageReader itkDataImageWriter itkDCMTKDataImageReader 
+    vtkDataMesh vtkDataMeshReader vtkDataMeshWriter itkDataDiffusionGradientList 
+    itkDataTensorImageWriter itkDataTensorImageReader
+    medSegmentation
+)
+
+## This has no effect, if someone knows how to flip the plugin options when MEDINRIA_BUILD_ALL_PLUGINS is turned on...
+if (MEDINRIA_BUILD_ALL_PLUGINS)
+    set(PLUGIN_DEFAULT_BUILD_VALUE ON)
+else()
+    set(PLUGIN_DEFAULT_BUILD_VALUE OFF)
 endif()
 
-if (MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN)
-  subdirs(v3dViewPublic)
+## Add plugins options to the cmake list. The option's value is overriden by MEDINRIA_BUILD_ALL_PLUGINS.
+foreach (PLUGIN_ITEM  ${PLUGIN_LIST})
+    MACRO_ADD_PLUGIN (${PLUGIN_ITEM} PLUGIN_DEFAULT_BUILD_VALUE)
+endforeach()
+
+
+## Registration plugins, registration plugins are only built if this option is
+## enabled or MEDINRIA_BUILD_ALL_PLUGINS is ON.
+option(MEDINRIA_ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "OFF")
+if (MEDINRIA_ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
+
+    #Put here your registration plugin directory/project name.
+    set(REG_PLUGIN_LIST itkProcessRegistrationDiffeomorphicDemons )
+    foreach (PLUGIN_ITEM  ${REG_PLUGIN_LIST})
+        MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ON)
+    endforeach()
 endif()
 
-if (MEDINRIA_BUILD_V3DVIEW_PLUGIN)
-  subdirs(medAbstractViewExtension)
-  subdirs(v3dView)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN)
-  subdirs(itkDataImage)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN)
-  subdirs(itkDataImageReader)
-endif()
-
-if (MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN)
-  subdirs(itkDCMTKDataImageReader)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN)
-  subdirs(itkDataImageWriter)
-endif()
-
-if (MEDINRIA_BUILD_VTKDATAMESH_PLUGIN)
-  subdirs(vtkDataMesh)
-endif()
-
-if (MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN)
-  subdirs(vtkDataMeshReader)
-endif()
-
-if (MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN)
-  subdirs(vtkDataMeshWriter)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN)
-  subdirs(itkDataDiffusionGradientList)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN)
-  subdirs(itkDataTensorImage)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN)
-    subdirs(itkDataTensorImageReader)
-endif()
-
-if (MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN)
-    subdirs(itkDataTensorImageWriter)
-endif()
-
-if (MEDINRIA_BUILD_SEGMENTATION_PLUGIN)
-    subdirs(medSegmentation)
-endif()
-
-if (MEDINRIA_BUILD_V3DDATA_PLUGIN OR
+if (MEDINRIA_BUILD_ALL_PLUGINS OR
+    MEDINRIA_BUILD_V3DDATA_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEW_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESH_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN)
-    
     set(MEDINRIA_REQUIRES_VTK TRUE)
 endif()
 
-if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN OR
+if (MEDINRIA_BUILD_ALL_PLUGINS OR
+    MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN OR
     MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN OR
     MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN OR
     MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN OR
@@ -154,24 +118,26 @@ if (MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN OR
     MEDINRIA_BUILD_SEGMENTATION_PLUGIN OR
     MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN
     )
-    
     set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()
 
-if ( ${MEDINRIA_REQUIRES_VTK} )
-    subdirs(dtkItkLogForwarder)
+## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK 
+## to be set before  being included.
+add_subdirectory(src)
+
+option(MEDINRIA_BUILD_TOOLS  "Build Tools" "OFF")
+if (MEDINRIA_BUILD_TOOLS)
+    add_subdirectory(tools)
 endif()
 
-if ( ${MEDINRIA_REQUIRES_VTK} )
-    subdirs(dtkVtkLogForwarder)
-endif()
-
+option(BUILD_DOCUMENTATION "Build documentation"    true)
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-include(pack)
+include(${PROJECT_NAME}Pack)
+
+
 
 ## #################################################################
 ## Build settings

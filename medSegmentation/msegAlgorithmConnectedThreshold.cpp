@@ -7,10 +7,23 @@
 
 namespace mseg {
 
+template < typename TPixel, unsigned int N > struct ConnectedThresholdHandler : public HandlerFunc {
+    ConnectedThresholdHandler( AlgorithmConnectedThreshold * self_ ) : self(self_) { }
+
+    // Override base.
+    int run( dtkAbstractData * data );
+    AlgorithmConnectedThreshold * self;
+};
+
+template < typename TPixel, unsigned int N > 
+int ConnectedThresholdHandler< TPixel,N > ::run( dtkAbstractData * data )
+{
+    return DTK_SUCCEED;
+}
 
 AlgorithmConnectedThreshold::AlgorithmConnectedThreshold()
 {
-
+    MSEG_ADD_HANDLERS_FOR_ALL_SCALAR_3D_TYPES( ConnectedThresholdHandler, this );
 }
 
 AlgorithmConnectedThreshold::~AlgorithmConnectedThreshold()
@@ -20,7 +33,7 @@ AlgorithmConnectedThreshold::~AlgorithmConnectedThreshold()
 
 void AlgorithmConnectedThreshold::run()
 {
-    dtkAbstractData * absData;
+    this->callHandler(this->input() );
 }
 
 template < typename TPixel, unsigned int VDimension > 

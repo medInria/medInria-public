@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/template">
+        <file>license/Apache</file>
+        <file>license/Artistic</file>
+        <file>license/Cecill</file>
+        <file>license/GPL</file>
+        <file>license/LGPL</file>
+        <file>generic/cmake</file>
+        <file>qhcp</file>
+        <file>doxyfile</file>
+        <file>export.h</file>
+        <file>generic/plugin.cpp</file>
+        <file>generic/plugin.h</file>
+        <file>generic/type.cpp</file>
+        <file>generic/type.h</file>
+        <file>registration/plugin.cpp</file>
+        <file>registration/plugin.h</file>
+        <file>registration/type.cpp</file>
+        <file>registration/type.h</file>
+        <file>registration/cmake</file>
+        <file>license/BSD</file>
+        <file>registration/typeToolBox.cpp</file>
+        <file>registration/typeToolBox.h</file>
+    </qresource>
+</RCC>

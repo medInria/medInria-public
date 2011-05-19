@@ -250,3 +250,19 @@ bool v3dViewGraphicsScene::isScene2D() const
 {
     return (d->view->currentView() == d->view->view2d() );
 }
+
+QVector3D v3dViewGraphicsScene::sceneToImagePos( const QPointF & point) const
+{
+    if (! this->isScene2D()) {
+        return QVector3D();
+    }
+
+    int xy[2];
+    xy[0] = point.x();
+    xy[1] = point.y();
+
+    double worldPosition[3];
+    d->view->view2d()->GetWorldCoordinatesFromDisplayPosition ( xy, worldPosition);
+    return QVector3D( worldPosition[0], worldPosition[1], worldPosition[2] );
+
+}

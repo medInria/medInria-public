@@ -26,13 +26,15 @@ public:
     //! Convert from world coordinates to scene coordinates.
     virtual QPointF worldToScene( const QVector3D & worldVec ) const = 0;
     //! Convert from scene coordinates to world coordinates.
-    virtual QVector3D sceneToWorld( const QPointF & sceneVec ) const = 0;
+    virtual QVector3D sceneToWorld( const QPointF & scenePoint ) const = 0;
     //! Get the view plane normal vector in world space.
     virtual QVector3D viewPlaneNormal() const = 0;
     //! Get the view plane up vector in world space.
     virtual QVector3D viewUp() const = 0;
     //! Is the scene 2D (true) or 3D (false)
     virtual bool isScene2D() const = 0;
+    //! Get the image position for the given scene position. Valid only for 2D views.
+    virtual QVector3D sceneToImagePos(const QPointF & scenePoint) const = 0;
 
 
     virtual void addAnnotation( medAbstractViewAnnotation * annotation);
