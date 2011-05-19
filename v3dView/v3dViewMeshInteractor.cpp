@@ -82,17 +82,17 @@ bool v3dViewMeshInteractor::registered(void)
 }
 
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
-{   
+{
     if (d->dataList.contains (data))
         return;
     if(data->description() == "vtkDataMesh4D")
     {
-        vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
-        vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
+        //vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
+        //vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
         d->dataList.append(data);
-        
+
         updatePipeline(d->dataList.size()-1);
-        
+
     }
     else if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
         if(!d->view->data())
@@ -107,7 +107,7 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         Q_UNUSED( pointSet );
         d->dataList.append(data);
         updatePipeline(d->dataList.size()-1);
-        
+
     }
 }
 
@@ -196,7 +196,7 @@ void v3dViewMeshInteractor::onVisibilityPropertySet (const QString& value, int m
 void v3dViewMeshInteractor::onColorPropertySet (const QColor& color, int meshLayer)
 {
     int r,g,b=0;
-    
+
     color.getRgb(&r,&g,&b);
     d->actorPropertyList[meshLayer]->SetColor((double)r/(255.0),(double)g/(255.0),(double)b/(255.0));
     d->view->update();
@@ -227,7 +227,7 @@ void v3dViewMeshInteractor::onOpacityModePropertySet (double value, int meshLaye
 }
 char* v3dViewMeshInteractor::getLUTQuery (int meshLayer)
 {
-    
+
     if(vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(d->dataList[meshLayer]->data())))
     {
         vtkDataArray * dataArray = pointSet->GetPointData()->GetArray(0);
@@ -247,10 +247,10 @@ void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value, int mesh
         {
             collection->AddItem(pointSet->GetPointData()->GetArray (i));
         }*/
-        
+
         //qDebug()<<"I : "<<pointSet->GetPointData()->GetNumberOfArrays();
         vtkDataArray * dataArray = pointSet->GetPointData()->GetArray(0);
-       
+
         if (!dataArray)
             return;
 
@@ -270,7 +270,7 @@ void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value, int mesh
             attributes = pointSet->GetPointData();
         }
         else
-        {  
+        {
             //junk = pointSet->GetCellData()->GetArray (dataArray->GetName());
             //attributes = pointSet->GetCellData();
         }
@@ -286,21 +286,21 @@ void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value, int mesh
         vtkLookupTable* lut = vtkLookupTableManager::GetLookupTable(value.toStdString());
         if (lut)
         {
-            lut->SetRange (min, max);	  
+            lut->SetRange (min, max);
             junk->SetLookupTable (lut);
         }
 
         attributes->SetActiveScalars(dataArray->GetName());
-        ////vtkActor *actor = d->actor2dList[meshLayer]; 
+        ////vtkActor *actor = d->actor2dList[meshLayer];
 
         if (!d->actor2dList[meshLayer])
             return;
-        
+
 
         if (!array_is_in_points)
             d->actor2dList[meshLayer]->GetMapper ()->SetScalarModeToUseCellFieldData();
         else
-            d->actor2dList[meshLayer]->GetMapper ()->SetScalarModeToUsePointFieldData();    
+            d->actor2dList[meshLayer]->GetMapper ()->SetScalarModeToUsePointFieldData();
 
         if (lut)
         {
@@ -313,13 +313,13 @@ void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value, int mesh
         d->actor2dList[meshLayer]->GetMapper ()->SetScalarRange (min, max);
         d->actor2dList[meshLayer]->GetMapper ()->SelectColorArray (dataArray->GetName());
 
-        
+
     }
-   
+
    // d->view->update();
-   
-    
-    
+
+
+
 }
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
@@ -332,14 +332,14 @@ dtkAbstractViewInteractor *createV3dViewMeshInteractor(void)
 
 void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
 {
-    
+
     if (d->view && !d->dataList.isEmpty() ) {
-        
+
 
         if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(d->dataList[meshLayer]->data()))) {
 
            qDebug()<<"pointset";
-            
+
             d->actor2dList.append(d->view->view2d ()->AddDataSet(pointset));
             d->actor3dList.append(d->view->view3d ()->AddDataSet(pointset));
             //pointset->Print(std::cout);
@@ -368,17 +368,17 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
             d->actor2dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
             d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
             qDebug()<<"d->actor2dList.size() : "<<d->actor2dList.size();
-        
+
         }*/
         else if (vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(d->dataList[meshLayer]->data()))){
             qDebug()<<"sequence->GetDataSet()->GetClassName() : "<<sequence->GetDataSet()->GetClassName();
             if(vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet()))
         {
             qDebug()<<"vtkMetaDataSetSequence downcasted to vtkPointSet";
-            
+
             d->actor2dList.append(d->view->view2d ()->AddDataSet(pointSet));
             d->actor3dList.append(d->view->view3d ()->AddDataSet(pointSet));
-        
+
 
             //d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()))->SetProperty(prop);
             //d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()))->SetProperty(prop);
@@ -386,13 +386,13 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
 
             d->actorPropertyList.append(v3dViewMeshInteractorPrivate::PropertySmartPointer::New ());
 
-       
+
             d->actor2dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
             d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
-            
+
             //d->actor2dList[meshLayer]->GetMapper ()->ScalarVisibilityOff ();
            // d->actor3dList[meshLayer]->GetMapper ()->ScalarVisibilityOff ();
-        
+
          }}
 
     }
