@@ -184,10 +184,8 @@ void medDatabaseView::onMenuExportClicked(void)
 
     medDatabaseItem *item = NULL;
 
-    if(medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(index.internalPointer());
-    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(index.internalPointer());
+    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     if(item)
         if(item->table() == "patient")
