@@ -5,7 +5,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 itkDataImageULong3::itkDataImageULong3() 
-    : itkDataImageBase( "itkDataImageULong3", new itkDataImagePrivate< char, 3 >(this) )
+    : itkDataImageBase( "itkDataImageULong3", new itkDataImagePrivate< unsigned long, 3 >(this) )
 {
 }
 

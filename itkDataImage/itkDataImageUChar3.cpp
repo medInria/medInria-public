@@ -5,7 +5,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 itkDataImageUChar3::itkDataImageUChar3() 
-    : itkDataImageBase( "itkDataImageUChar3", new itkDataImagePrivate< char, 3 >(this) )
+    : itkDataImageBase( "itkDataImageUChar3", new itkDataImagePrivate< unsigned char, 3 >(this) )
 {
 }
 

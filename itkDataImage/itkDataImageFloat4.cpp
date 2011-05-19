@@ -5,7 +5,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 itkDataImageFloat4::itkDataImageFloat4() 
-    : itkDataImageBase( "itkDataImageFloat4", new itkDataImagePrivate< char, 3 >(this) )
+    : itkDataImageBase( "itkDataImageFloat4", new itkDataImagePrivate< float, 4 >(this) )
 {
 }
 
