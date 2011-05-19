@@ -1,0 +1,170 @@
+#include "dtkCore/dtkPluginManager.h"
+#include "dtkCore/dtkAbstractDataFactory.h"
+#include <dtkCore/dtkAbstractDataReader.h>
+#include "dtkCore/dtkAbstractData.h"
+#include "dtkCore/dtkAbstractDataImage.h"
+#include <dtkCore/dtkLog.h>
+
+#include <itkImage.h>
+#include <itkRGBAPixel.h>
+#include <itkRGBPixel.h>
+
+#include <exception>
+#include <string>
+
+typedef itk::RGBAPixel<unsigned char>  RGBAPixelType;
+typedef itk::RGBPixel<unsigned char>  RGBPixelType;
+typedef itk::Vector<unsigned char, 3> UCharVectorType;
+
+struct testRunBase {
+    explicit testRunBase( const QString & dataTypeName) : m_dataTypeName(dataTypeName) {}
+    virtual ~testRunBase() {}
+    virtual int run() = 0;
+    QString m_dataTypeName;
+};
+
+
+template< class T, unsigned int N > struct testRunner : public testRunBase {
+    typedef T PixelType;
+    enum { VDimension = N };
+
+    testRunner( const QString & dataTypeName ) : testRunBase(dataTypeName) {}
+    int run();
+};
+
+template< class T, unsigned int N >
+int testRunner<T,N>::run() {
+
+    typedef itk::Image<PixelType, VDimension> ImageType;
+
+    // create an ITK image and feed a data plugin with it
+    ImageType::Pointer image(ImageType::New());
+    ImageType::RegionType region;
+    ImageType::SizeType   imageSize;
+    for (int i(0); i<VDimension; ++i) {
+        imageSize[i] = 10 + i;
+    }
+
+    ImageType::IndexType  index;
+    index.Fill(0);
+
+    region.SetSize (imageSize);
+    region.SetIndex (index);
+    image->SetRegions (region);
+    image->Allocate();
+
+    dtkAbstractDataImage *dataInDtk = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create (this->m_dataTypeName) );
+    if (!dataInDtk) {
+        dtkDebug() << "Cannot create data object from plugin";
+        return EXIT_FAILURE;
+    }
+
+    dataInDtk->setData ( image.GetPointer() );
+
+    ImageType::Pointer image2 = dynamic_cast<ImageType*>( (itk::Object*)(dataInDtk->data()) );
+    if (image2.IsNull()) {
+        dtkDebug() << "Cannot cast data() to ITK image";
+        return EXIT_FAILURE;
+    }
+
+    image2 = dynamic_cast<ImageType*>( (itk::Object*)(dataInDtk->output()) );
+    if (image2.IsNull()) {
+        dtkDebug() << "Cannot cast output() to ITK image";
+        return EXIT_FAILURE;
+    }
+
+    if ((int)imageSize[0]!=dataInDtk->xDimension()) {
+        dtkDebug() << "Bad X dimension";
+        return EXIT_FAILURE;
+    }
+    if ((int)imageSize[1]!=dataInDtk->yDimension()) {
+        dtkDebug() << "Bad Y dimension";
+        return EXIT_FAILURE;
+    }
+    if (VDimension > 2 && (int)imageSize[2]!=dataInDtk->zDimension()) {
+        dtkDebug() << "Bad Z dimension";
+        return EXIT_FAILURE;
+    }
+
+    if (VDimension > 3 && (int)imageSize[3]!=dataInDtk->tDimension()) {
+        dtkDebug() << "Bad T dimension";
+        return EXIT_FAILURE;
+    }
+
+    if ( dataInDtk->description() != this->m_dataTypeName ) {
+        dtkDebug() << "Bad data description";
+        return EXIT_FAILURE;
+    }
+
+    dataInDtk->release();
+    return EXIT_SUCCESS;
+}
+
+int itkDataImageTest (int argc, char* argv[])
+{
+    QApplication testApp( argc, argv );
+
+    QVector<testRunBase *> testsForEachType;
+    int ret = EXIT_FAILURE;
+
+    try {
+        if (argc<2) {
+            throw std::runtime_error( "Please specify plugin path as an argument" );
+        }
+
+        dtkPluginManager::instance()->setPath (argv[1]);
+        dtkPluginManager::instance()->initialize();
+
+        testsForEachType.push_back( new testRunner< RGBAPixelType, 3>("itkDataImageRGBA3") );
+        testsForEachType.push_back( new testRunner< RGBPixelType, 3>("itkDataImageRGB3") );
+        testsForEachType.push_back( new testRunner< UCharVectorType, 3>("itkDataImageVector3") );
+        testsForEachType.push_back( new testRunner< char, 3>("itkDataImageChar3") );
+        testsForEachType.push_back( new testRunner< char, 4>("itkDataImageChar4") );
+        testsForEachType.push_back( new testRunner< double, 3>("itkDataImageDouble3") );
+        testsForEachType.push_back( new testRunner< double, 4>("itkDataImageDouble4") );
+        testsForEachType.push_back( new testRunner< float, 3>("itkDataImageFloat3") );
+        testsForEachType.push_back( new testRunner< float, 4>("itkDataImageFloat4") );
+        testsForEachType.push_back( new testRunner< int, 3>("itkDataImageInt3") );
+        testsForEachType.push_back( new testRunner< int, 4>("itkDataImageInt4") );
+        testsForEachType.push_back( new testRunner< long, 3>("itkDataImageLong3") );
+        testsForEachType.push_back( new testRunner< long, 4>("itkDataImageLong4") );
+        testsForEachType.push_back( new testRunner< short, 3>("itkDataImageShort3") );
+        testsForEachType.push_back( new testRunner< short, 4>("itkDataImageShort4") );
+        testsForEachType.push_back( new testRunner< unsigned char, 3>("itkDataImageUChar3") );
+        testsForEachType.push_back( new testRunner< unsigned char, 4>("itkDataImageUChar4") );
+        testsForEachType.push_back( new testRunner< unsigned int, 3>("itkDataImageUInt3") );
+        testsForEachType.push_back( new testRunner< unsigned int, 4>("itkDataImageUInt4") );
+        testsForEachType.push_back( new testRunner< unsigned long, 3>("itkDataImageULong3") );
+        testsForEachType.push_back( new testRunner< unsigned long, 4>("itkDataImageULong4") );
+        testsForEachType.push_back( new testRunner< unsigned short, 3>("itkDataImageUShort3") );
+        testsForEachType.push_back( new testRunner< unsigned short, 4>("itkDataImageUShort4") );
+
+        foreach( testRunBase * test, testsForEachType ) {
+
+            dtkDebug() << " Testing " << test->m_dataTypeName;
+            int testRet = test->run();
+
+            if ( testRet != EXIT_SUCCESS ) {
+
+                std::string msg("Failed while running test for ");
+                msg += test->m_dataTypeName.toStdString();
+                throw std::runtime_error( msg );
+            }
+        }
+        ret = EXIT_SUCCESS;
+    } 
+    catch ( std::runtime_error & e) {
+        dtkError() << e.what();
+    }
+    catch ( ... ) {
+        dtkError() << "An unknown exception was caught";
+    }
+
+    // Cleanup.
+    qDeleteAll( testsForEachType );
+
+    if ( ret == EXIT_SUCCESS ) {
+        dtkDebug() << "itkDataImageTest succeeded";
+    }
+    return ret;
+}
