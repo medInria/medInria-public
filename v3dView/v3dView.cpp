@@ -755,6 +755,11 @@ void v3dView::setData(dtkAbstractData *data)
         layer++;
     }
     
+    if (data->description().contains("vtkDataMesh") && layer)
+    {
+        layer--;
+        qDebug()<<"data->description() ==  && layer !=0";
+    }
     this->setData( data, layer);
     
     // this->update(); // update is not the role of the plugin, but of the app
@@ -780,8 +785,11 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     }
     else if (data->description()=="itkDataImageShort3") {
         if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image, layer);
-            d->view3d->SetITKInput(image, layer);
+           // d->view2d->RemoveAllLayers();
+            d->view2d->SetITKInput(image,layer);
+            d->view3d->SetITKInput(image,layer);
+            // d->view2d->SetVisibility(0,1);
+            d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageUShort3") {
@@ -845,44 +853,44 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
     }
     else if (data->description()=="itkDataImageShort4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
-        dtkAbstractView::setData(data);	
+        dtkAbstractView::setData(data);
+	    this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageInt4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	    this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageLong4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageChar4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUShort4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageFloat4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUInt4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageULong4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUChar4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageDouble4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="vistalDataImageChar3") {
       if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->convert("itkDataImageChar3")->data() ) ) ) {
@@ -941,7 +949,6 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
         }
         else if ( data->description() == "vtkDataMesh" ) {
-            
             this->enableInteractor ( "v3dViewMeshInteractor" );
             // This will add the data to the interactor.
             dtkAbstractView::setData(data);
@@ -1018,8 +1025,9 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
     }
 
-	emit dataAdded(data);
-    emit dataAdded(layer);    
+   // emit dataAdded(layer);
+    emit dataAdded(data);
+    emit dataAdded(data, layer);
 }
 
 void *v3dView::data (void)
@@ -1236,7 +1244,6 @@ void v3dView::onShowScalarBarPropertySet(const QString &value)
 void v3dView::onLookupTablePropertySet(const QString &value)
 {
     typedef vtkTransferFunctionPresets Presets;
-    
     vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
     Presets::GetTransferFunction( value.toStdString(), rgb, alpha );
