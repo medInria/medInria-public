@@ -717,7 +717,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
 
   if (of)
   {
-    const double * currentRange = cf->GetRange();
+    const double * currentRange = of->GetRange();
     if ( currentRange[0] != minRange ||
          currentRange[1] != maxRange )
     {
