@@ -71,12 +71,12 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
         connect(stackedViewContainers()->container("Custom"),SIGNAL(viewAdded(dtkAbstractView*)),
 			d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
 
-        connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
+       /* connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
             d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));
         connect(stackedViewContainers()->container("Multi"),SIGNAL(viewAdded(dtkAbstractView*)),
 			d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));
         connect(stackedViewContainers()->container("Custom"),SIGNAL(viewAdded(dtkAbstractView*)),
-			d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));
+			d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));*/
 
         connect(stackedViewContainers()->container("Single"),SIGNAL(viewRemoved(dtkAbstractView*)),
             d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
