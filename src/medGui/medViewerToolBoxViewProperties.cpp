@@ -161,7 +161,7 @@ void
                
                 if (d->interactors[d->currentInteractor]->getLUTQuery(meshNumber)!=NULL)
                     attrBox->addItem(d->interactors[d->currentInteractor]->getLUTQuery(meshNumber));
-                QObject::connect(attrBox, SIGNAL(valueChanged(int)), this, SLOT(onAttrBoxChanged(int)));
+                QObject::connect(attrBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onAttrBoxChanged(int)));
                 d->propertiesTree->setItemWidget(attrMap, 2, attrBox);
                 attrBox->setCurrentIndex(0);
                 meshNumber++;
@@ -585,7 +585,7 @@ void
         qDebug()<<"d->currentInteractor : "<<d->currentInteractor;
         QString propertyString = "LUTMode" + QString::number(d->view->currentMeshLayer());
         d->interactors[d->currentInteractor]->onPropertySet(propertyString, d->lutList.at(index));
-        //d->interactors[0]->onPropertySet(propertyString, d->lutList.at(index));
+        qDebug()<<"d->interactors.size() : "<<d->interactors.size();
     }
     // medToolBox::update((dtkAbstractView*)d->view);    
    // d->view->update();
