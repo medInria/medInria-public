@@ -20,7 +20,7 @@ itkVectorDataImagePrivate< TPixel , VDimension >::~itkVectorDataImagePrivate()
 template < typename TPixel , unsigned int VDimension >
 void itkVectorDataImagePrivate< TPixel , VDimension >::setData(void *data)
 {
-    ImageType::Pointer image = dynamic_cast<ImageType*>( (itk::Object*) data );
+    typename ImageType::Pointer image = dynamic_cast<ImageType*>( (itk::Object*) data );
     if (image.IsNull()) {
         qDebug() << "Cannot cast data to correct data TPixel";
         return;
@@ -128,17 +128,17 @@ QList<QImage> &itkVectorDataImagePrivate< TPixel , VDimension >::thumbnails (voi
         return m_thumbnails;
     if (ImageType::GetImageDimension()<2 )
         return m_thumbnails;
-    ImageType::Pointer image = m_image;
+    typename ImageType::Pointer image = m_image;
     {
-        ImageType::SizeType size = m_image->GetLargestPossibleRegion().GetSize();
-        ImageType::SizeType newSize = size;
+        typename ImageType::SizeType size = m_image->GetLargestPossibleRegion().GetSize();
+        typename ImageType::SizeType newSize = size;
         newSize[0] = 128;
         newSize[1] = 128;
-        unsigned int *sfactor = new unsigned int [ImageType::GetImageDimension()];
-        for (unsigned int i=0; i<ImageType::GetImageDimension(); i++)
+        unsigned int sfactor[ VDimension ];
+        for (unsigned int i=0; i<VDimension; i++)
             sfactor[i] = size[i]/newSize[i];
-        typedef itk::ShrinkImageFilter<ImageType, ImageType> FilterType;
-        FilterType::Pointer filter = FilterType::New();
+        typedef typename itk::ShrinkImageFilter<ImageType, ImageType> FilterType;
+        typename FilterType::Pointer filter = FilterType::New();
         filter->SetInput ( image );
         filter->SetShrinkFactors ( sfactor );
         try
@@ -151,10 +151,9 @@ QList<QImage> &itkVectorDataImagePrivate< TPixel , VDimension >::thumbnails (voi
             return m_thumbnails;
         }
         image = filter->GetOutput();
-        delete [] sfactor;
     }
-    ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
-    itk::ImageRegionIterator<ImageType> it (image, image->GetLargestPossibleRegion());
+    typename ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
+    typename itk::ImageRegionIterator<ImageType> it (image, image->GetLargestPossibleRegion());
     unsigned long nvoxels_per_slice = size[0]*size[1];
     unsigned long voxelCount = 0;
     QImage *qimage = new QImage (size[0], size[1], QImage::Format_ARGB32);

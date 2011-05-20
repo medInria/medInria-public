@@ -5,10 +5,10 @@ template < typename TPixel, unsigned int VDimension>
 itkDataImagePrivate< TPixel , VDimension >::itkDataImagePrivate( itkDataImageBase * _self ) :
 self( _self ),
     m_image (0),
-    m_histogram (0),
     m_range_computed( false ),
     m_range_min( 0 ),
     m_range_max( 0 ),
+    m_histogram (0),
     m_histogram_min( 0 ),
     m_histogram_max( 0 ),
     m_defaultThumbnail( QImage(128, 128, QImage::Format_ARGB32) ) 
@@ -24,7 +24,7 @@ itkDataImagePrivate< TPixel , VDimension >::~itkDataImagePrivate()
 template < typename TPixel, unsigned int VDimension>
 void itkDataImagePrivate< TPixel , VDimension >::setData(void *data)
 {
-    ImageType::Pointer image = dynamic_cast<ImageType*>( (itk::Object*) data );
+    typename ImageType::Pointer image = dynamic_cast<ImageType*>( (itk::Object*) data );
     if (image.IsNull()) {
         qDebug() << "Cannot cast data to correct data TPixel";
         return;
@@ -86,7 +86,7 @@ void itkDataImagePrivate< TPixel , VDimension >::computeRange()
     typedef itkDataImagePrivate::ImageType ImageType;
     typedef itk::MinimumMaximumImageCalculator<ImageType>
         MinMaxCalculatorType;
-    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
+    typename MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
     calculator->SetImage ( m_image );
     calculator->SetRegion( m_image->GetLargestPossibleRegion() );
     try
@@ -152,7 +152,7 @@ void itkDataImagePrivate< TPixel , VDimension >::computeValueCounts()
 
         typedef itkDataImagePrivate::HistogramGeneratorType
             HistogramGeneratorType;
-        HistogramGeneratorType::Pointer histogramGenerator =
+        typename HistogramGeneratorType::Pointer histogramGenerator =
             HistogramGeneratorType::New();
         histogramGenerator->SetInput( m_image );
         histogramGenerator->SetNumberOfBins(m_range_max - m_range_min + 1);
@@ -171,14 +171,14 @@ void itkDataImagePrivate< TPixel , VDimension >::computeValueCounts()
             return;
         }
 
-        typedef HistogramGeneratorType::HistogramType  HistogramType;
-        typedef HistogramType::AbsoluteFrequencyType   FrequencyType;
+        typedef typename HistogramGeneratorType::HistogramType  HistogramType;
+        typedef typename HistogramType::AbsoluteFrequencyType   FrequencyType;
         m_histogram =
             const_cast<HistogramType*>( histogramGenerator->GetOutput() );
         FrequencyType min = itk::NumericTraits< FrequencyType >::max();
         FrequencyType max = itk::NumericTraits< FrequencyType >::min();
 
-        typedef HistogramType::Iterator Iterator;
+        typedef typename HistogramType::Iterator Iterator;
         for ( Iterator it = m_histogram->Begin(), end = m_histogram->End();
             it != end; ++it )
         {
@@ -219,7 +219,7 @@ QImage & itkDataImagePrivate< TPixel , VDimension >::thumbnail (void)
 
     int index = 0;
     if (VDimension > 2) {
-        itkDataImagePrivate::ImageType::SizeType size = m_image->GetLargestPossibleRegion().GetSize();
+        typename itkDataImagePrivate::ImageType::SizeType size = m_image->GetLargestPossibleRegion().GetSize();
         index = size[2] / 2;
     }
 
@@ -251,7 +251,7 @@ void itkDataImagePrivate< TPixel , VDimension >::generateThumbnails (typename it
     if (image.IsNull())
         return;
 
-    typedef itk::Image<TPixel, VDimension> ImageType;
+    typedef typename itk::Image<TPixel, VDimension> ImageType;
     typename ImageType::Pointer  img  = image;
 
     img->SetRequestedRegion(img->GetLargestPossibleRegion());
@@ -277,7 +277,7 @@ void itkDataImagePrivate< TPixel , VDimension >::generateThumbnails (typename it
         region.SetIndex( index );
         region.SetSize( newSize );
 
-        typedef itk::RegionOfInterestImageFilter<ImageType, ImageType> FilterType;
+        typedef typename itk::RegionOfInterestImageFilter<ImageType, ImageType> FilterType;
         typename FilterType::Pointer extractor = FilterType::New();
         extractor->SetInput( img );
         extractor->SetRegionOfInterest( region );
@@ -322,10 +322,10 @@ void itkDataImagePrivate< TPixel , VDimension >::generateThumbnails (typename it
         origin[!index] -= 0.5 * (newSize[!index] * newSpacing[!index] -
             size[!index] * spacing[!index]);
 
-        typedef itk::Image<float, VDimension> FloatImageType;
-        typedef itk::RecursiveGaussianImageFilter<ImageType, FloatImageType>
+        typedef typename itk::Image<float, VDimension> FloatImageType;
+        typedef typename itk::RecursiveGaussianImageFilter<ImageType, FloatImageType>
             SmootherType0;
-        typedef itk::RecursiveGaussianImageFilter<FloatImageType, FloatImageType>
+        typedef typename itk::RecursiveGaussianImageFilter<FloatImageType, FloatImageType>
             SmootherType1;
         typename SmootherType0::Pointer smoother0 = SmootherType0::New();
         typename SmootherType1::Pointer smoother1 = SmootherType1::New();
@@ -360,9 +360,9 @@ void itkDataImagePrivate< TPixel , VDimension >::generateThumbnails (typename it
         img = resampler->GetOutput();
     }
 
-    typedef itk::RGBPixel<unsigned char> RGBPixelType;
-    typedef itk::Image<RGBPixelType, VDimension> RGBImageType;
-    typedef itk::ScalarToRGBColormapImageFilter<ImageType, RGBImageType> RGBFilterType;
+    typedef typename itk::RGBPixel<unsigned char> RGBPixelType;
+    typedef typename itk::Image<RGBPixelType, VDimension> RGBImageType;
+    typedef typename itk::ScalarToRGBColormapImageFilter<ImageType, RGBImageType> RGBFilterType;
     typename RGBFilterType::Pointer rgbfilter = RGBFilterType::New();
     rgbfilter->SetColormap (RGBFilterType::Grey);
     rgbfilter->GetColormap()->SetMinimumRGBComponentValue (0);
