@@ -5,8 +5,7 @@
 
 
 itkDataImageBase::itkDataImageBase( const QString & description, itkDataImageBaseImpl * impl )
-    : m_description(description),
-    d (impl)
+    : d (impl),m_description(description)
 {
 
 }
