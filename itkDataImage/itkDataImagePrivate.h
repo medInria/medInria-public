@@ -19,6 +19,9 @@
 
 #include <dtkCore/dtkAbstractData.h>
 
+/**
+ * Template implementation of itkDataImageBaseImpl for non-vector pixel types.
+ * */
 template < typename TPixel, unsigned int VDimension>
 class itkDataImagePrivate : public itkDataImageBaseImpl
 {

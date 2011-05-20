@@ -6,6 +6,7 @@
 
 /**
  * Pure abstract base class for the template implementation of the itkDataImage classes.
+ * \sa itkDataImageBase
  **/
 class itkDataImageBaseImpl {
 public:

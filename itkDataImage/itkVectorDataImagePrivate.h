@@ -20,7 +20,8 @@
 #include <dtkCore/dtkAbstractData.h>
 
 /**
- * Template implementation of the functions */
+ * Template implementation of itkDataImageBaseImpl for vector pixel types.
+ * */
 template < typename TPixel , unsigned int VDimension >
 class itkVectorDataImagePrivate : public itkDataImageBaseImpl
 {

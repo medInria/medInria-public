@@ -7,7 +7,15 @@
 #include "itkDataImagePluginExport.h"
 
 class itkDataImageBaseImpl;
-
+/**
+ * This class serves as a common base for all itkDataImage classes.
+ *
+ * It hides the template implementations from Qt.
+ *
+ * The itkDataImageBaseImpl member (d) provides an abstract interface to templated functions.
+ * This class is not designed to be instantiated directly, it should only be created
+ * by derived classes (hence the protected constructor).
+ * */
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageBase : public dtkAbstractDataImage
 {
     Q_OBJECT;
@@ -46,11 +54,15 @@ public:
     int scalarValueMaxCount(void);
 
 protected:
+    /** Protected constructor : see note above */
     itkDataImageBase(const QString & description, itkDataImageBaseImpl * impl );
 
 private:
 
+    /** The d pointer is provided by derived classes. */
     itkDataImageBaseImpl * d;
+    /** The data description, returned by this->description.
+     *  Provided by derived classes in the constructor. */
     QString m_description;
 
 };

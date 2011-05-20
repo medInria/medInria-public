@@ -16,6 +16,10 @@ typedef itk::RGBAPixel<unsigned char>  RGBAPixelType;
 typedef itk::RGBPixel<unsigned char>  RGBPixelType;
 typedef itk::Vector<unsigned char, 3> UCharVectorType;
 
+/**
+ * Base class for templated test functions
+ * Provides a uniform interface for templated functions, see below.
+ */
 struct testRunBase {
     explicit testRunBase( const QString & dataTypeName) : m_dataTypeName(dataTypeName) {}
     virtual ~testRunBase() {}
@@ -24,18 +28,21 @@ struct testRunBase {
 };
 
 
-template< class T, unsigned int N > struct testRunner : public testRunBase {
-    typedef T PixelType;
-    enum { VDimension = N };
+/**
+ * Implement test for a concrete pixel type and image dimension.
+ * */
+template< typename TPixel , unsigned int VDimension > struct testRunner : public testRunBase {
+    typedef TPixel PixelType;
+    enum { ImageDimension = VDimension };
 
     testRunner( const QString & dataTypeName ) : testRunBase(dataTypeName) {}
     int run();
 };
 
-template< class T, unsigned int N >
-int testRunner<T,N>::run() {
+template< typename TPixel , unsigned int VDimension >
+int testRunner<TPixel,VDimension>::run() {
 
-    typedef itk::Image<PixelType, VDimension> ImageType;
+    typedef itk::Image<TPixel, VDimension> ImageType;
 
     // create an ITK image and feed a data plugin with it
     ImageType::Pointer image(ImageType::New());
@@ -100,10 +107,14 @@ int testRunner<T,N>::run() {
     return EXIT_SUCCESS;
 }
 
+/**
+ * Basic harness to run the tests.
+ * */
 int itkDataImageTest (int argc, char* argv[])
 {
     QApplication testApp( argc, argv );
 
+    // Test container
     QVector<testRunBase *> testsForEachType;
     int ret = EXIT_FAILURE;
 
@@ -115,6 +126,7 @@ int itkDataImageTest (int argc, char* argv[])
         dtkPluginManager::instance()->setPath (argv[1]);
         dtkPluginManager::instance()->initialize();
 
+        // Construct and fill test container with instances of the test runner.
         testsForEachType.push_back( new testRunner< RGBAPixelType, 3>("itkDataImageRGBA3") );
         testsForEachType.push_back( new testRunner< RGBPixelType, 3>("itkDataImageRGB3") );
         testsForEachType.push_back( new testRunner< UCharVectorType, 3>("itkDataImageVector3") );
