@@ -1,23 +1,22 @@
 /* medViewerConfigurationFiltering.cpp --- 
  * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Thu May 13 14:12:19 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Tue Jun 15 11:04:35 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 7
  */
 
-/* Commentary: 
- * 
+//TODO memory management :
+/*
+ * Current memory usage: 1112 Required memory need: 1207
+****** TRY_FREE_MEM_BEGIN:  1112  to reach:  475
+Not possible to free any items, current cache count is:  0 items
+****** TRY_FREE_MEM_END:  1112
+ *
  */
 
-/* Change log:
- * 
- */
+//TODO save result in a file or database
+
+//TODO launch process in a thread to prevent freezing the user interface
 
 #include "medViewerConfigurationFiltering.h"
+#include <medGui/medViewContainerFiltering.h>
 
 #include <medGui/medViewerToolBoxView.h>
 
@@ -44,8 +43,6 @@ public:
 medViewerConfigurationFiltering::medViewerConfigurationFiltering(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationFilteringPrivate)
 {
   setLayoutToolBoxVisibility(false);
-  
-	//d->filteringContainer = NULL;
 	
   d->viewToolBox = new medViewerToolBoxView(parent);
   
@@ -58,9 +55,9 @@ medViewerConfigurationFiltering::medViewerConfigurationFiltering(QWidget *parent
   
   connect(d->filteringToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
   connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+  connect(d->filteringToolBox,SIGNAL(dataSelected(dtkAbstractData *)),this,SIGNAL(inputDataChanged(dtkAbstractData *)));
   connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
-	connect(d->filteringToolBox,SIGNAL(dataSelected(dtkAbstractData *)),this,SLOT(onInputDataSelected(dtkAbstractData *)));
-	
+
   //this->setViewLayoutType (-1);
 }
 
@@ -72,41 +69,18 @@ medViewerConfigurationFiltering::~medViewerConfigurationFiltering(void)
 
 void medViewerConfigurationFiltering::setupViewContainerStack()
 {
+        if (!this->stackedViewContainers()->count())
+        {
+            medViewContainerFiltering *filteringContainer = new medViewContainerFiltering(this->stackedViewContainers());
 
-    d->views.clear();
+            connect(this,SIGNAL(inputDataChanged(dtkAbstractData *)),filteringContainer,SLOT(updateInput(dtkAbstractData *)));
 
-		medViewContainer *filteringContainer;
+            connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),filteringContainer,SLOT(updateOutput(dtkAbstractData *)));
 
-    if (!this->stackedViewContainers()->count()) {
-      medViewContainerMulti *custom = new medViewContainerMulti ();
-      //custom->setPreset (medViewContainerCustom::A);
-			custom->setAcceptDrops(false);
-      filteringContainer = custom;
+            this->stackedViewContainers()->addContainer("Filtering",filteringContainer);
 
-
-      this->stackedViewContainers()->addContainer (description(), filteringContainer);
-
-    }
-    else
-      filteringContainer = this->stackedViewContainers()->container(description());
-  
-	d->views = filteringContainer->views();
-
-	
-	if (d->views.size() < 2)
-	{
-		unsigned int oldSize = d->views.size();
-		for (unsigned int i = oldSize;i < 2;++i)
-		{
-			d->views.append(dtkAbstractViewFactory::instance()->create("v3dView"));
-			//d->views[oldSize + i]->clear();
-			//d->views[oldSize + i]->reset();
-			filteringContainer->setView(d->views[oldSize + i]);
-		}
-	}
-
-
-  this->stackedViewContainers()->setContainer (description());
+            setCurrentViewContainer("Filtering");
+        }
 }
 
 void medViewerConfigurationFiltering::patientChanged(int patientId)
@@ -114,26 +88,13 @@ void medViewerConfigurationFiltering::patientChanged(int patientId)
    d->filteringToolBox->clear();
 }
 
-void medViewerConfigurationFiltering::onInputDataSelected(dtkAbstractData *data)
-{
-	d->views[0]->setData(data,0);
-	d->views[0]->reset();
-	d->views[0]->update();
-	
-	d->views[1]->reset();
-}
-
 void medViewerConfigurationFiltering::onProcessSuccess()
 {
-	//show result in main view
-	
 	d->filterOutput = d->filteringToolBox->customToolbox()->processOutput();
 	if(!d->filterOutput)
 		return;
 
-	d->views[1]->setData(d->filterOutput,0);
-	d->views[1]->reset();
-	d->views[1]->update();
+	emit outputDataChanged(d->filterOutput);
 }
 
 QString medViewerConfigurationFiltering::description(void) const

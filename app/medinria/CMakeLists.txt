@@ -32,7 +32,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfigurationDiffusion.h
   medViewerConfigurationVisualization.h
   medViewerConfigurationRegistration.h   
-  medViewerConfigurationFiltering.h   
+  medViewerConfigurationFiltering.h 
   medViewerToolBoxConfiguration.h  
   medViewerToolBoxPatient.h    
   medPacsDataSource.h 

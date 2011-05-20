@@ -1,20 +1,5 @@
 /* medViewerConfigurationFiltering.cpp --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Thu May 13 14:12:19 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Tue Jun 15 11:04:35 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 7
- */
-
-/* Commentary: 
- * 
- */
-
-/* Change log:
- * 
+ *
  */
 
 #ifndef medViewerConfigurationFiltering_H
@@ -40,10 +25,13 @@ public:
     
     void setupViewContainerStack ();
 
+signals:
+    void inputDataChanged(dtkAbstractData *);
+    void outputDataChanged(dtkAbstractData *);
+
 public slots:    
     void patientChanged(int patientId);
     void onProcessSuccess(void);
-	void onInputDataSelected(dtkAbstractData *data);
 
 private:
     medViewerConfigurationFilteringPrivate *d;

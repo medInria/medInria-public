@@ -1,21 +1,9 @@
 /* medToolBoxFiltering.cpp --- 
  * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Feb 19 09:02:09 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 16:36:24 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 47
  */
 
-/* Commentary: 
- * 
- */
-
-/* Change log:
- * 
- */
+//TODO save result in a file or database
+//TODO launch process in a thread to prevent freezing the user interface
 
 #include "medToolBoxFiltering.h"
 #include "medToolBoxFilteringCustom.h"
