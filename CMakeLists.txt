@@ -65,19 +65,41 @@ option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individ
 
 
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
-set(PLUGIN_LIST v3dData v3dViewPublic v3dView itkDataImage itkDataImageReader itkDataImageWriter itkDCMTKDataImageReader vtkDataMesh vtkDataMeshReader vtkDataMeshWriter itkDataDiffusionGradientList itkDataTensorImage itkDataTensorImageWriter itkDataTensorImageReader )
+set(PLUGIN_LIST
+  v3dData                        ON 
+  v3dViewPublic                  ON
+  v3dView                        ON
+  itkDataImage                   ON 
+  itkDataImageReader             ON 
+  itkDataImageWriter             ON
+  itkDCMTKDataImageReader        ON
+  vtkDataMesh                    ON
+  vtkDataMeshReader              ON
+  vtkDataMeshWriter              ON
+  itkDataDiffusionGradientList   ON
+  itkDataTensorImage             ON
+  itkDataTensorImageWriter       ON
+  itkDataTensorImageReader       ON
+  )
 
-## This has no effect, if someone knows how to flip the plugin options when MEDINRIA_BUILD_ALL_PLUGINS is turned on...
-if (MEDINRIA_BUILD_ALL_PLUGINS)
-    set(PLUGIN_DEFAULT_BUILD_VALUE ON)
-else()
-    set(PLUGIN_DEFAULT_BUILD_VALUE OFF)
-endif()
+#MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
 
-## Add plugins options to the cmake list. The option's value is overriden by MEDINRIA_BUILD_ALL_PLUGINS.
-foreach (PLUGIN_ITEM  ${PLUGIN_LIST})
-    MACRO_ADD_PLUGIN (${PLUGIN_ITEM} PLUGIN_DEFAULT_BUILD_VALUE)
-endforeach()
+list(LENGTH PLUGIN_LIST N)
+set (INDEX 0)
+#message(${PLUGIN_LIST})
+while(INDEX LESS N)
+  MATH( EXPR INDEX_BOOL "${INDEX} + 1" )
+  #MESSAGE ("index:" ${INDEX})
+  #MESSAGE ("index_bool:" ${INDEX_BOOL})
+
+  list(GET PLUGIN_LIST ${INDEX} PLUGIN_ITEM)
+  list(GET PLUGIN_LIST ${INDEX_BOOL} BUILD_VALUE)
+
+  #message("Item: " ${PLUGIN_ITEM} "; value: " ${BUILD_VALUE})
+
+  MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ${BUILD_VALUE})
+  MATH( EXPR INDEX "${INDEX} + 2" )
+endwhile()
 
 
 ## Registration plugins, registration plugins are only built if this option is
@@ -86,12 +108,24 @@ option(MEDINRIA_ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "OFF")
 if (MEDINRIA_ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
 
     #Put here your registration plugin directory/project name.
-    set(REG_PLUGIN_LIST itkProcessRegistrationDiffeomorphicDemons )
-    foreach (PLUGIN_ITEM  ${REG_PLUGIN_LIST})
-        MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ON)
-    endforeach()
-endif()
+    set(REG_PLUGIN_LIST
+      itkProcessRegistrationDiffeomorphicDemons OFF)
 
+list(LENGTH REG_PLUGIN_LIST N)
+set(INDEX 0)
+while(INDEX LESS N)
+  MATH( EXPR INDEX_BOOL "${INDEX} + 1" )
+
+  list(GET REG_PLUGIN_LIST ${INDEX} PLUGIN_ITEM)
+  list(GET REG_PLUGIN_LIST ${INDEX_BOOL} BUILD_VALUE)
+
+  MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ${BUILD_VALUE})
+  #message(${PLUGIN_ITEM} " " ${BUILD_VALUE})
+
+  MATH( EXPR INDEX "${INDEX} + 2" )
+endwhile()
+
+endif()
 
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_V3DDATA_PLUGIN OR
