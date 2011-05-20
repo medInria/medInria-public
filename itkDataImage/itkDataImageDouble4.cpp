@@ -1,5 +1,25 @@
 #include "itkDataImageDouble4.h"
 
-#include "medITKDataImageMacros.h"
+#include "itkDataImagePrivate.h"
 
-medImplementITKDataImage (double, 4, Double4);
+#include <dtkCore/dtkAbstractDataFactory.h>
+
+itkDataImageDouble4::itkDataImageDouble4() 
+    : itkDataImageBase( "itkDataImageDouble4", new itkDataImagePrivate< double, 4 >(this) )
+{
+}
+
+itkDataImageDouble4::~itkDataImageDouble4()
+{
+}
+
+dtkAbstractData *createitkDataImageDouble4(void)
+{
+    return new itkDataImageDouble4;
+}
+
+bool itkDataImageDouble4::registered()
+{
+    return dtkAbstractDataFactory::instance()->registerDataType("itkDataImageDouble4", createitkDataImageDouble4);
+}
+

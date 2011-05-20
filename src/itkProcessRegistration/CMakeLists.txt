@@ -48,6 +48,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkProcessRegistration.h)
 
 set(${PROJECT_NAME}_HEADERS
+    itkProcessRegistrationExport.h
     ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
@@ -63,7 +64,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${medinria-plugins_LIBRARY_OUTPUT_DI
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
@@ -72,16 +73,22 @@ target_link_libraries(${PROJECT_NAME}
   ITKCommon
   ITKIO
   ITKStatistics
-  ITKNumerics		 
+  ITKNumerics
   ITKAlgorithms
 )
 
+## #################################################################
+## Source file layout in development environments like Visual Studio
+## #################################################################
+
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules
 ## #################################################################
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin 
+  RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
 

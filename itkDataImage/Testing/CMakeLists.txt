@@ -1,6 +1,7 @@
 SET(PLUGIN_NAME itkDataImagePlugin)
 
 SET(itkDataImagePluginTests
+  itkDataImageTest.cxx
   itkDataImageDouble3Test.cxx
   )
 
