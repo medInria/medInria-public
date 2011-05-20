@@ -10,11 +10,13 @@
 #include <dtkVtkLogForwarder/vtkLogForwarder.h>
 
 #include "v3dViewPublic.h"
-#include "v3dViewPublicFiberInteractor.h"
 #include "v3dViewPublicMeshInteractor.h"
 #include "v3dViewPublicFuseInteractor.h"
-#include "v3dViewPublicTensorInteractor.h"
 
+#ifndef DISABLE_TTK_DEPENDENT_CODE
+  #include "v3dViewPublicFiberInteractor.h"
+  #include "v3dViewPublicTensorInteractor.h"
+#endif
 // /////////////////////////////////////////////////////////////////
 // v3dViewPublicPluginPrivate
 // /////////////////////////////////////////////////////////////////
@@ -55,17 +57,18 @@ bool v3dViewPublicPlugin::initialize(void)
     if(!v3dViewPublic::registered())
 	dtkWarning() << "Unable to register v3dViewPublic type";
 
-    if(!v3dViewPublicFiberInteractor::registered())
-	dtkWarning() << "Unable to register v3dViewPublicFiberInteractor type";
-
     if(!v3dViewPublicMeshInteractor::registered())
 	dtkWarning() << "Unable to register v3dViewPublicMeshInteractor type";
 
     if(!v3dViewPublicFuseInteractor::registered())
 	dtkWarning() << "Unable to register v3dViewPublicFuseInteractor type";
 
+#ifndef DISABLE_TTK_DEPENDENT_CODE
+    if(!v3dViewPublicFiberInteractor::registered())
+        dtkWarning() << "Unable to register v3dViewPublicFiberInteractor type";
     if(!v3dViewPublicTensorInteractor::registered())
-	dtkWarning() << "Unable to register v3dViewPublicTensorInteractor type";
+        dtkWarning() << "Unable to register v3dViewPublicTensorInteractor type";
+#endif
 
     return true;
 }
