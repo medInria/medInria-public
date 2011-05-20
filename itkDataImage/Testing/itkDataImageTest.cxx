@@ -35,17 +35,17 @@ template< class T, unsigned int N > struct testRunner : public testRunBase {
 template< class T, unsigned int N >
 int testRunner<T,N>::run() {
 
-    typedef itk::Image<PixelType, VDimension> ImageType;
+    typedef typename itk::Image<PixelType, VDimension> ImageType;
 
     // create an ITK image and feed a data plugin with it
-    ImageType::Pointer image(ImageType::New());
-    ImageType::RegionType region;
-    ImageType::SizeType   imageSize;
+    typename ImageType::Pointer image(ImageType::New());
+    typename ImageType::RegionType region;
+    typename ImageType::SizeType   imageSize;
     for (int i(0); i<VDimension; ++i) {
         imageSize[i] = 10 + i;
     }
 
-    ImageType::IndexType  index;
+    typename ImageType::IndexType  index;
     index.Fill(0);
 
     region.SetSize (imageSize);
@@ -61,7 +61,7 @@ int testRunner<T,N>::run() {
 
     dataInDtk->setData ( image.GetPointer() );
 
-    ImageType::Pointer image2 = dynamic_cast<ImageType*>( (itk::Object*)(dataInDtk->data()) );
+    typename ImageType::Pointer image2 = dynamic_cast<ImageType*>( (itk::Object*)(dataInDtk->data()) );
     if (image2.IsNull()) {
         dtkDebug() << "Cannot cast data() to ITK image";
         return EXIT_FAILURE;
