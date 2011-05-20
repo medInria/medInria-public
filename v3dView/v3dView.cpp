@@ -47,6 +47,51 @@
 #include "v3dViewGraphicsView.h"
 #include "v3dViewGraphicsScene.h"
 
+//=============================================================================
+// QSignalBlocker : Blocks signals to a given object as long it remains instantiated.
+// The purpose is to increase exception-safety and to ensure that objects are 
+// not still unintentionally blocked what ever the return path from a function.
+class QSignalBlocker 
+{
+public:
+    explicit QSignalBlocker( QObject * o ) : m_object(o) {
+        m_object->blockSignals(true);
+    }
+
+    ~QSignalBlocker() {
+        m_object->blockSignals(false);
+    }
+
+    // Allow early unblocking : before object goes out of scope.
+    void blockSignals(bool v) { m_object->blockSignals(v); }
+
+private:
+    QObject * m_object;
+private:
+    QSignalBlocker( const QSignalBlocker & ); // Copy constructor not implemented.
+    QSignalBlocker & operator=( const QSignalBlocker & ); // Assignment operator not implemented.
+};
+//=============================================================================
+// Construct a QVector3d from pointer-to-double
+inline QVector3D doubleToQtVector3D( const double * v ){
+    return QVector3D( v[0], v[1], v[2] );
+}
+// Convert a QVector3D to array of double.
+inline void qtVector3dToDouble(const QVector3D & inV , double * outV  )
+{
+    outV[0] = inV.x();
+    outV[1] = inV.y();
+    outV[2] = inV.z();
+}
+// Convert QColor to vtk's double[3]. (no alpha)
+inline void qtColorToDouble(const QColor & color, double * cv )
+{
+    cv[0] = color.redF();
+    cv[1] = color.greenF();
+    cv[2] = color.blueF();
+}
+//=============================================================================
+
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // v3dViewObserver: links a QSlider with the CurrentPointChangedEvent of a vtkImageView instance.
 // /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,14 +147,15 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
     {
         case vtkImageView::CurrentPointChangedEvent:
            {
-              unsigned int zslice = this->view->view2d()->GetSlice();
-              this->slider->blockSignals (true);
-              this->slider->setValue (zslice);
-              // this->slider->update();
-              this->slider->blockSignals (false);
+               {
+                   QSignalBlocker blocker (this->slider );
+                   unsigned int zslice = this->view->view2d()->GetSlice();
+                   this->slider->setValue (zslice);
+                   this->slider->update();
+               }
               
-              double *pos = this->view->currentView()->GetCurrentPoint();
-              QVector3D qpos (pos[0], pos[1], pos[2]);
+              const double *pos = this->view->currentView()->GetCurrentPoint();
+              QVector3D qpos (doubleToQtVector3D(pos));
               this->view->emitViewPositionChangedEvent(qpos);
            }
            break;
@@ -123,7 +169,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
            
         case vtkImageView2DCommand::CameraPanEvent:
             {
-               double *pan = this->view->view2d()->GetPan();
+               const double *pan = this->view->view2d()->GetPan();
                QVector2D qpan (pan[0],pan[1]);
                this->view->emitViewPanChangedEvent(qpan);
             }
@@ -145,9 +191,9 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
                double *foc = this->view->renderer3d()->GetActiveCamera()->GetFocalPoint();
                double   ps = this->view->renderer3d()->GetActiveCamera()->GetParallelScale();
                
-               QVector3D position (pos[0], pos[1], pos[2]);
-               QVector3D viewup (vup[0], vup[1], vup[2]);
-               QVector3D focal (foc[0], foc[1], foc[2]);
+               QVector3D position (doubleToQtVector3D(pos));
+               QVector3D viewup (doubleToQtVector3D(vup));
+               QVector3D focal (doubleToQtVector3D(foc));
                
                this->view->emitViewCameraChangedEvent(position, viewup, focal, ps);
             }
@@ -165,6 +211,15 @@ class v3dViewPrivate
 public:
     vtkQtOpenGLRenderWindow * renwin2d;
     vtkQtOpenGLRenderWindow * renwin3d;
+
+    // Utility to determine if a given orientation is 2D
+    inline bool is2dOrientation( const QString & name ) const {
+        return ( name == "Axial" ) || ( name == "Sagittal" ) || ( name == "Coronal" ) || ( name == "Oblique" );
+    }
+
+    inline bool is2dOrientation( ) const {
+        return is2dOrientation( this->orientation );
+    }
 
     vtkRenderer *renderer2d;
     vtkRenderer *renderer3d;
@@ -197,14 +252,57 @@ public:
     dtkAbstractDataImage *imageData;
     
     QTimeLine *timeline;
+
+    typedef void (v3dView::* PropertyFuncType)(const QString &);
+    typedef QHash<  QString, PropertyFuncType > PropertyFuncMapType;
+    PropertyFuncMapType setPropertyFunctions;
+
+    static QList<QColor> presetColors;
+    static int nextColorIndex;
 };
 
+QList<QColor> v3dViewPrivate::presetColors;
+int v3dViewPrivate::nextColorIndex = -1;
 // /////////////////////////////////////////////////////////////////
 // v3dView
 // /////////////////////////////////////////////////////////////////
 
 v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 {
+    if ( d->nextColorIndex < 0 ) {
+        d->nextColorIndex = 0;
+        d->presetColors.push_back( QColor( "red" ) );
+        d->presetColors.push_back( QColor( "green" ) );
+        d->presetColors.push_back( QColor( "blue" ) );
+        d->presetColors.push_back( QColor( "darkRed" ) );
+        d->presetColors.push_back( QColor( "darkGreen" ) );
+        d->presetColors.push_back( QColor( "darkBlue" ) );
+        d->presetColors.push_back( QColor( "cyan" ) );
+        d->presetColors.push_back( QColor( "magenta" ) );
+        d->presetColors.push_back( QColor( "yellow" ) );
+        d->presetColors.push_back( QColor( "darkCyan" ) );
+        d->presetColors.push_back( QColor( "darkMagenta" ) );
+// Actually this does not exist. Even though the QColor doc mentions it.
+//        d->presetColors.push_back( QColor( "darkYellow" ) ); 
+// For full list see   ${QT_DIR}/src/gui/painting/qcolor_p.cpp
+    }
+
+    d->setPropertyFunctions["Daddy"] = &v3dView::onDaddyPropertySet;
+    d->setPropertyFunctions["Orientation"] =  &v3dView::onOrientationPropertySet;
+    d->setPropertyFunctions["ShowScalarBar"] = &v3dView::onShowScalarBarPropertySet;
+    d->setPropertyFunctions["LookupTable"] = &v3dView::onLookupTablePropertySet;
+    d->setPropertyFunctions["ShowAxis"] = &v3dView::onShowAxisPropertySet;
+    d->setPropertyFunctions["ShowRuler"] = &v3dView::onShowRulerPropertySet;
+    d->setPropertyFunctions["ShowAnnotations"] = &v3dView::onShowAnnotationsPropertySet;
+    d->setPropertyFunctions["MouseInteraction"] = &v3dView::onMouseInteractionPropertySet;
+    d->setPropertyFunctions["3DMode"] = &v3dView::on3DModePropertySet;
+    d->setPropertyFunctions["Renderer"] = &v3dView::onRendererPropertySet;
+    d->setPropertyFunctions["UseLOD"] = &v3dView::onUseLODPropertySet;
+    d->setPropertyFunctions["Preset"] = &v3dView::onPresetPropertySet;
+    d->setPropertyFunctions["Cropping"] = &v3dView::onCroppingPropertySet;
+    d->setPropertyFunctions["PositionLinked"] = &v3dView::onPositionLinkedPropertySet;
+    d->setPropertyFunctions["WindowingLinked"] = &v3dView::onWindowingLinkedPropertySet;
+
     d->data       = 0;
     d->imageData  = 0;
     d->orientation = "Axial";
@@ -222,7 +320,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
     d->view2d->SetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
     d->view2d->SetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeNull);
-    d->view2d->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
+    d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
     d->view2d->CursorFollowMouseOff();
     d->view2d->ShowImageAxisOff();
     d->view2d->ShowScalarBarOff();
@@ -539,8 +637,16 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("PositionLinked",   "false");
     this->setProperty ("WindowingLinked",  "false");
     this->setProperty ("Daddy",            "false");
-    
-    connect(d->vtkWidget,    SIGNAL(mousePressed(QMouseEvent*)),     this, SLOT(onMousePressEvent(QMouseEvent*)));
+
+    int colorIndex = d->nextColorIndex;
+    if (colorIndex >= d->presetColors.size() ) {
+        colorIndex = d->nextColorIndex = 0;
+    } else {
+        ++d->nextColorIndex;
+    }
+    this->setColor( d->presetColors.at(colorIndex) );
+
+    connect(d->vtkWidget,    SIGNAL(mouseEvent(QMouseEvent*)),     this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,       SIGNAL(valueChanged(int)),            this, SLOT(onZSliderValueChanged(int)));
     connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(QString)));
 }
@@ -683,6 +789,11 @@ void v3dView::setData(dtkAbstractData *data)
         layer++;
     }
     
+    if (data->description().contains("vtkDataMesh") && layer)
+    {
+        layer--;
+        qDebug()<<"data->description() ==  && layer !=0";
+    }
     this->setData( data, layer);
     
     // this->update(); // update is not the role of the plugin, but of the app
@@ -708,8 +819,11 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     }
     else if (data->description()=="itkDataImageShort3") {
         if( itk::Image<short, 3>* image = dynamic_cast<itk::Image<short, 3>*>( (itk::Object*)( data->data() ) ) ) {
-            d->view2d->SetITKInput(image, layer);
-            d->view3d->SetITKInput(image, layer);
+           // d->view2d->RemoveAllLayers();
+            d->view2d->SetITKInput(image,layer);
+            d->view3d->SetITKInput(image,layer);
+            // d->view2d->SetVisibility(0,1);
+            d->view2d->GetImageActor()->SetOpacity(1.00);
         }
     }
     else if (data->description()=="itkDataImageUShort3") {
@@ -773,12 +887,12 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
     }
     else if (data->description()=="itkDataImageShort4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
-        dtkAbstractView::setData(data);	
+        dtkAbstractView::setData(data);
+	    this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageInt4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	    this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageLong4") {
 		this->enableInteractor ( "v3dView4DInteractor" );
@@ -869,7 +983,6 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
         }
         else if ( data->description() == "vtkDataMesh" ) {
-            
             this->enableInteractor ( "v3dViewMeshInteractor" );
             // This will add the data to the interactor.
             dtkAbstractView::setData(data);
@@ -928,7 +1041,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         
         
         if(d->imageData) {
-            d->slider->blockSignals (true);
+            QSignalBlocker blocker (d->slider );
             if (d->dimensionBox->currentText()==tr("Space")) {
                 if( d->orientation=="Axial") {
                     d->slider->setRange(0, d->imageData->zDimension()-1);
@@ -943,12 +1056,12 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             else if (d->dimensionBox->currentText()==tr("Time")) {
                 d->slider->setRange(0, d->imageData->tDimension()-1);
             }
-            d->slider->blockSignals (false);
         }
     }
 
-	emit dataAdded(data);
-    emit dataAdded(layer);    
+   // emit dataAdded(layer);
+    emit dataAdded(data);
+    emit dataAdded(data, layer);
 }
 
 void *v3dView::data (void)
@@ -978,51 +1091,14 @@ void v3dView::play(bool start)
 
 void v3dView::onPropertySet(const QString &key, const QString &value)
 {
-    if(key == "Daddy")
-        this->onDaddyPropertySet(value);
-    
-    if(key == "Orientation")
-        this->onOrientationPropertySet(value);
-    
-    if(key == "ShowScalarBar")
-        this->onShowScalarBarPropertySet(value);
-    
-    if(key == "LookupTable")
-        this->onLookupTablePropertySet(value);
-    
-    if(key == "ShowAxis")
-        this->onShowAxisPropertySet(value);
-    
-    if(key == "ShowRuler")
-        this->onShowRulerPropertySet(value);
-    
-    if(key == "ShowAnnotations")
-        this->onShowAnnotationsPropertySet(value);
-    
-    if(key == "MouseInteraction")
-        this->onMouseInteractionPropertySet(value);
-    
-    if(key == "3DMode")
-        this->on3DModePropertySet(value);
-    
-    if(key == "Renderer")
-        this->onRendererPropertySet(value);
-    
-    if(key == "UseLOD")
-        this->onUseLODPropertySet(value);
-    
-    if(key == "Preset")
-        this->onPresetPropertySet(value);
-    
-    if(key == "Cropping")
-        this->onCroppingPropertySet(value);
-    
-    if(key == "PositionLinked")
-        this->onPositionLinkedPropertySet(value);
-    
-    if(key == "WindowingLinked")
-        this->onWindowingLinkedPropertySet(value);
-    
+// Look up which property set function to call from table 
+    v3dViewPrivate::PropertyFuncMapType::const_iterator it = d->setPropertyFunctions.find( key );
+    if ( it != d->setPropertyFunctions.end() ) {
+        // Get member function pointer and call it.
+        const v3dViewPrivate::PropertyFuncType funcPtr = it.value();
+        (this->*funcPtr)( value );
+    }
+
     //this->update(); // never update after setting a property, it is not our role
     
 }
@@ -1031,9 +1107,9 @@ void v3dView::onOrientationPropertySet(const QString &value)
 {
     if (value==d->orientation)
         return;
-    
-    this->blockSignals(true);
-    
+
+    QSignalBlocker thisBlocker (this);
+
     double pos[3], window = 0.0, level = 0.0;
     int timeIndex = 0;
     if( d->currentView ) {
@@ -1056,11 +1132,11 @@ void v3dView::onOrientationPropertySet(const QString &value)
     
     // in case the max range becomes smaller than the actual value, a signal is emitted and
     // we don't want it
-    d->slider->blockSignals (true);
+    QSignalBlocker sliderBlocker( d->slider );
     
     if (value == "Axial") {
         d->orientation = "Axial";
-        d->view2d->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
+        d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
         d->currentView = d->view2d;
         
         if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
@@ -1070,7 +1146,7 @@ void v3dView::onOrientationPropertySet(const QString &value)
 	
     if (value == "Sagittal") {
         d->orientation = "Sagittal";
-        d->view2d->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
+        d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
         d->currentView = d->view2d;
         
         if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
@@ -1080,7 +1156,7 @@ void v3dView::onOrientationPropertySet(const QString &value)
     
     if (value == "Coronal") {
         d->orientation = "Coronal";
-        d->view2d->SetSliceOrientation(vtkImageView2D::VIEW_ORIENTATION_CORONAL);
+        d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_CORONAL);
         d->currentView = d->view2d;
         
         if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
@@ -1094,7 +1170,6 @@ void v3dView::onOrientationPropertySet(const QString &value)
 	
     if (!d->currentView) {
         d->slider->blockSignals (false);
-        this->blockSignals(false);
         return;
     }
     
@@ -1133,8 +1208,6 @@ void v3dView::onOrientationPropertySet(const QString &value)
         d->slider->setValue(d->currentView->GetTimeIndex());
     }
     
-    d->slider->blockSignals (false);
-    this->blockSignals(false);
 }
 
 void v3dView::on3DModePropertySet (const QString &value)
@@ -1206,7 +1279,6 @@ void v3dView::onShowScalarBarPropertySet(const QString &value)
 void v3dView::onLookupTablePropertySet(const QString &value)
 {
     typedef vtkTransferFunctionPresets Presets;
-    
     vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
     vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
     Presets::GetTransferFunction( value.toStdString(), rgb, alpha );
@@ -1479,14 +1551,13 @@ void v3dView::onZSliderValueChanged (int value)
 
 void v3dView::onDaddyPropertySet (const QString &value)
 {
-    d->anchorButton->blockSignals(true);
-	d->registerButton->blockSignals(true);
-    
+    QSignalBlocker anchorBlocker(d->anchorButton);
+    QSignalBlocker registerBlocker(d->registerButton);
+
     if (value=="true") {
         d->anchorButton->setChecked (true);        
         d->registerButton->setChecked (false);
         d->registerButton->setEnabled(false);
-        d->anchorButton->blockSignals(false);
     }
     
     if (value=="false") {
@@ -1494,8 +1565,6 @@ void v3dView::onDaddyPropertySet (const QString &value)
         d->registerButton->setEnabled(true);
     }
     
-    d->anchorButton->blockSignals(false);
-    d->registerButton->blockSignals(false);
 }
 
 void v3dView::onPositionLinkedPropertySet (const QString &value)
@@ -1524,7 +1593,7 @@ void v3dView::onDimensionBoxChanged (const QString &value)
 {
     if (d->imageData) {
         
-        d->slider->blockSignals (true);
+        QSignalBlocker sliderBlocker(d->slider);
         if (value=="Space") {
             d->observer->unlock();
             if( d->orientation=="Axial") {
@@ -1549,7 +1618,6 @@ void v3dView::onDimensionBoxChanged (const QString &value)
                 d->slider->setValue (timeIndex);
             }
         }
-        d->slider->blockSignals (false);
         d->timeline->setFrameRange(d->slider->minimum(), d->slider->maximum() );
     }
 }
@@ -2097,9 +2165,8 @@ void v3dView::onPositionChanged(const QVector3D &position)
     // update slider, if currentView is 2D view
     if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast(d->currentView)) {
         unsigned int zslice = view2d->GetSlice();
-        d->slider->blockSignals (true);
+        QSignalBlocker sliderBlocker( d->slider );
         d->slider->setValue (zslice);
-        d->slider->blockSignals (false);
     }
 
     // d->scene->onPositionChanged( position, false );
