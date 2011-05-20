@@ -156,7 +156,7 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
         connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), view, SLOT(update(void)));
         connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), view, SLOT(update(void)));
 
-        connect(view, SIGNAL(positionChanged(const QVector3D&)), interactor, SLOT(onPositionChanged(const QVector3D&)));
+        connect(view, SIGNAL(positionChanged(const QVector3D&,bool)), interactor, SLOT(onPositionChanged(const QVector3D&,bool)));
 
         updateTensorInteractorWithToolboxValues(interactor, d->tensorViewToolBox);
     }

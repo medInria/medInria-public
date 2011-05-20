@@ -84,11 +84,12 @@ public slots:
     void onViewDaddy         (bool);
     void onViewReg           (bool);
 
-    void onViewPositionChanged    (const QVector3D &position);
-    void onViewCameraChanged      (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
-    void onViewZoomChanged        (double zoom);
-    void onViewPanChanged         (const QVector2D &pan);
-    void onViewWindowingChanged   (double level, double window);
+    void onViewPositionChanged    (const QVector3D &position, bool propagate);
+    void onViewCameraChanged      (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale, bool propagate);
+    void onViewZoomChanged        (double zoom, bool propagate);
+    void onViewPanChanged         (const QVector2D &pan, bool propagate);
+    void onViewWindowingChanged   (double level, double window, bool propagate);
+    void onObliqueSettingsChanged ();
 
 private:
     medViewPoolPrivate *d;

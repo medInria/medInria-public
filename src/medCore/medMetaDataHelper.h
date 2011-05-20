@@ -37,6 +37,7 @@ public:
 
 
     /** Define the actual keys to use */
+    MED_DEFINE_METADATA_ENTRY( TransferSyntaxUID);
 
     // PATIENT
     MED_DEFINE_METADATA_ENTRY( PatientID );
@@ -51,6 +52,8 @@ public:
     MED_DEFINE_METADATA_ENTRY( StudyDescription );
     MED_DEFINE_METADATA_ENTRY( Institution );
     MED_DEFINE_METADATA_ENTRY( Referee );
+    MED_DEFINE_METADATA_ENTRY( StudyDate );
+    MED_DEFINE_METADATA_ENTRY( StudyTime );
 
     // SERIES
     MED_DEFINE_METADATA_ENTRY( SeriesID );
@@ -60,6 +63,8 @@ public:
     MED_DEFINE_METADATA_ENTRY( Report );
     MED_DEFINE_METADATA_ENTRY( Protocol );
     MED_DEFINE_METADATA_ENTRY( SeriesDescription );
+    MED_DEFINE_METADATA_ENTRY( SeriesDate );
+    MED_DEFINE_METADATA_ENTRY( SeriesTime );
 
     // IMAGE
     MED_DEFINE_METADATA_ENTRY( SOPInstanceUID );
@@ -70,9 +75,9 @@ public:
     MED_DEFINE_METADATA_ENTRY( Orientation );
     MED_DEFINE_METADATA_ENTRY( Origin );
     MED_DEFINE_METADATA_ENTRY( SliceThickness );
-
     MED_DEFINE_METADATA_ENTRY( ImportationDate );
     MED_DEFINE_METADATA_ENTRY( AcquisitionDate );
+    MED_DEFINE_METADATA_ENTRY( AcquisitionTime );
     MED_DEFINE_METADATA_ENTRY( Comments );
     MED_DEFINE_METADATA_ENTRY( FilePaths );
     MED_DEFINE_METADATA_ENTRY( Status );

@@ -57,9 +57,6 @@ public:
     QHash<medDataIndex, QSharedPointer<dtkAbstractData> > dataCache;
     QHash<medDataIndex, QSharedPointer<dtkAbstractData> > volatileDataCache;
 
-    // this is our temporary weakPtr cache
-    QHash<medDataIndex, QWeakPointer<dtkAbstractData> > tempCache;
-
     medAbstractDbController* getDbController()
     {
         if (dbController == NULL)
@@ -82,11 +79,15 @@ public:
         return nonPersDbController ;
     }
 
+    static QMutex mutex;
+
 private:
     medAbstractDbController* dbController; 
     medAbstractDbController* nonPersDbController; 
 
 };
+
+QMutex medDataManagerPrivate::mutex;
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -209,32 +210,27 @@ void medDataManager::tryFreeMemory(size_t memoryLimit)
 
     qDebug() << "****** TRY_FREE_MEM_BEGIN: " << procMem / divider << " to reach: " << memoryLimit / divider;
 
-    // clear the temp cache
-    d->tempCache.clear();
     int itemsBefore = d->dataCache.count();
+
+    QMutexLocker locker(&d->mutex);
 
     // iterate over the cache until we reach our threshold or all items are iterated
     foreach(medDataIndex index, d->dataCache.keys())
     {
-        // copy strongRefs to weakRefs
-        d->tempCache.insert(index,d->dataCache.value(index).toWeakRef());
-
         // remove reference to free it
-        d->dataCache.remove(index);
+        d->dataCache.find(index).value().clear();
 
         // check memory usage and stop the loop at the optimal threshold
         if (getProcessMemoryUsage() < memoryLimit)
             break;
     }
 
-    // restore the cache with items that survived
-    foreach(medDataIndex index, d->tempCache.keys())
+    // clear cache
+    foreach(medDataIndex index, d->dataCache.keys())
     {
-        QWeakPointer<dtkAbstractData> weakPtr = d->tempCache.value(index);
-        if (!weakPtr.isNull())
-            d->dataCache.insert(index, d->tempCache.value(index).toStrongRef());
-        //else
-            //qDebug() << "Reference lost, memory freed successfully...";
+        // remove reference to free it
+        if (d->dataCache.find(index).value().isNull())
+            d->dataCache.remove(index);
     }
 
     int itemsNow = d->dataCache.count();
@@ -242,6 +238,7 @@ void medDataManager::tryFreeMemory(size_t memoryLimit)
         qDebug() << "Data-cache reduced from:" << itemsBefore << "to" << itemsNow << " items";
     else
         qDebug() << "Not possible to free any items, current cache count is: " << itemsNow << "items";
+
 
     qDebug() << "****** TRY_FREE_MEM_END: " << getProcessMemoryUsage() / divider;
 

@@ -69,8 +69,13 @@ public:
 
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
 
+    /**
+     * return a list of strings that represents the currently shown columns
+     */
+    QStringList attributes();
+
 protected slots:
-    void clear(void);
+    void repopulate(void);
 
 protected:
     void populate(medDatabaseItem *parent);

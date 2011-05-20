@@ -164,7 +164,6 @@ void medViewerToolBoxTime::onViewAdded (dtkAbstractView *view)
             d->views.append (view);
         if (!d->interactors.contains (interactor))
             d->interactors.append (interactor);
-
         connect (view, SIGNAL ( dataAdded(dtkAbstractData*)),   this, SLOT (onDataAdded (dtkAbstractData*)));
     }
 
@@ -292,19 +291,18 @@ void medViewerToolBoxTime::updateRange (void)
 {
     if (!d->interactors.size())
         return;
-
     double mintime = 3000;
     double maxtime = -3000;
     double mintimestep = 3000;
 
-	for (unsigned int i=0; i<d->interactors.size(); i++)
-	{
-		double range[2]={0,0};
-		d->interactors[i]->sequencesRange (range);
-		mintimestep = std::min (mintimestep, d->interactors[i]->sequencesMinTimeStep ());
-		mintime = std::min (mintime, range[0]);
-		maxtime = std::max (maxtime, range[1]);
-	}
+    for (int i=0; i<d->interactors.size(); i++)
+    {
+        double range[2]={0,0};
+        d->interactors[i]->sequencesRange (range);
+        mintimestep = std::min (mintimestep, d->interactors[i]->sequencesMinTimeStep ());
+        mintime = std::min (mintime, range[0]);
+        maxtime = std::max (maxtime, range[1]);
+    }
 
     unsigned int numberofsteps = std::ceil ((maxtime - mintime) / (mintimestep) + 1.0);
 

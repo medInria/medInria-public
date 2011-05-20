@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:14:33 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Thu Jun 10 10:35:51 2010 (+0200)
+## Last-Updated: Tue May  3 16:59:29 2011 (+0200)
 ##           By: Julien Wintz
-##     Update #: 38
+##     Update #: 39
 ######################################################################
 ## 
 ### Commentary: 
@@ -22,9 +22,9 @@ cmake_minimum_required(VERSION 2.8)
 
 project(medinria)
 
-set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "medular major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 2 CACHE STRING "medular minor version number.")
-set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "medular build version number.")
+set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "medinria major version number.")
+set(${PROJECT_NAME}_VERSION_MINOR 2 CACHE STRING "medinria minor version number.")
+set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "medinria build version number.")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
 
@@ -43,6 +43,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
+include(medinriaBuild)
 include(medinriaPack)
 include(medinriaDart)
 

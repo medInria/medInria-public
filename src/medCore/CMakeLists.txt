@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Jun 29 15:03:53 2010 (+0200)
+## Last-Updated: Wed May  4 10:55:34 2011 (+0200)
 ##           By: Julien Wintz
-##     Update #: 39
+##     Update #: 43
 ######################################################################
 ## 
 ### Commentary: 
@@ -23,28 +23,6 @@ project(medCore)
 ## Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS
-  medDataIndex.h
-  medDataManager.h
-  medMessageController.h
-  medMetaDataHelper.h
-  medViewManager.h
-  medPluginManager.h
-  medProgressFilter.h
-  medAbstractView.h
-  medStorage.h
-  medJobItem.h
-  medJobManager.h
-  medSettingsManager.h
-  medDbControllerFactory.h
-  medAbstractDbController.h
-  medRunnableProcess.h
-  medAbstractDataSource.h
-  medAbstractDataSourceFactory.h
-  med4DAbstractViewInteractor.h
-  medAbstractViewFiberInteractor.h
-)
-
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataIndex.h
   medDataManager.h
@@ -55,17 +33,27 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medProgressFilter.h
   medAbstractView.h
   med4DAbstractViewInteractor.h
+  medMeshAbstractViewInteractor.h
   medJobItem.h
   medJobManager.h
   medSettingsManager.h
   medDbControllerFactory.h
   medAbstractDbController.h
+  medAbstractData.h  
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
+  medAttachedData.h
   medStorage.h
   medRunnableProcess.h
   medAbstractViewFiberInteractor.h
 )
+
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  medAbstractDataCollection.h
+  medCoreExport.h
+)
+
 
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
@@ -82,7 +70,10 @@ set(${PROJECT_NAME}_SOURCES
   medSettingsManager.cpp
   medDbControllerFactory.cpp
   medAbstractDbController.cpp
+  medAttachedData.cpp
   medRunnableProcess.cpp
+  medAbstractData.cpp
+  medAbstractDataCollection.cpp
   medAbstractDataSource.cpp
   medAbstractDataSourceFactory.cpp
   medAbstractViewFiberInteractor.cpp
