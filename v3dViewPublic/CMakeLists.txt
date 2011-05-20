@@ -28,6 +28,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
+option(MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE "Include TTK dependent code in ${PROJECT_NAME}" "ON")
+
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
@@ -38,30 +40,50 @@ include(${medinria_USE_FILE})
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+if ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
+    find_package(TTK REQUIRED)
+    include(${TTK_USE_FILE})
+endif ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
 
 include_directories(../dtkVtkLogForwarder)
 
 ## #################################################################
 ## Input
 ## #################################################################
+if ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
+    set(${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC
+      v3dViewPublicFiberInteractor.h
+      v3dViewPublicTensorInteractor.h
+    )
+    set(${PROJECT_NAME}_TTK_DEPENDENT_SOURCES
+       v3dViewPublicFiberInteractor.cpp
+       v3dViewPublicTensorInteractor.cpp
+    )
+    set(${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES
+       ttkAlgorithms
+    )
+else( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
+    set(${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC)
+    set(${PROJECT_NAME}_TTK_DEPENDENT_SOURCES)
+    set(${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES)
+    add_definitions(-DDISABLE_TTK_DEPENDENT_CODE)
+endif ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPublicPlugin.h
   v3dViewPublic.h
-  v3dViewPublicFiberInteractor.h
   v3dViewPublicMeshInteractor.h
   v3dViewPublicFuseInteractor.h
-  v3dViewPublicTensorInteractor.h)
+  ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
+  )
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPublicPlugin.cpp
   v3dViewPublic.cpp
-  v3dViewPublicFiberInteractor.cpp
   v3dViewPublicMeshInteractor.cpp
   v3dViewPublicFuseInteractor.cpp
-  v3dViewPublicTensorInteractor.cpp)
+  ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
+  )
 
 ## #################################################################
 ## Build rules
@@ -75,6 +97,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
   dtkItkLogForwarder
   dtkVtkLogForwarder
   medCore
