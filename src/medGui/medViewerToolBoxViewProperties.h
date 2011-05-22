@@ -24,26 +24,39 @@ public:
     ~medViewerToolBoxViewProperties(void);
 
     void update(dtkAbstractView *view);
-
+    
 public slots:
     void onDataAdded(int layer);
+    void onDataAdded(dtkAbstractData*);
+    void onDataAdded(dtkAbstractData *data, int layer);
     void onViewClosed(void);
     void onVisibilitySet(int state);
-    void onOpacitySet(double opacity);
     void onOpacitySliderSet(int opacity);
+    void on2LayersOpacitySliderSet(int opacity);
     void onLUTChanged(int index);
     void onItemClicked(QTreeWidgetItem * item, int column);
     void onContextTreeMenu( const QPoint point );
     void onDeleteLayer();
-
-
+    void onSwitchLayersButtonClicked();
+    void clear();
+    
+    
+    void onColorSelected(const QColor& color);
+   
+    
+    void onMeshLUTChanged (int value);
+    void onAttrBoxChanged(int index);
+    void onEdgeVisibilitySet(int state);
+    void onRenderingChanged (int state);
+    void on_comboBox_currentIndexChanged(int selection);
 signals:
     void setVisibility(bool visible, int layer);
     void setOpacity(double opacity, int layer);
 
 private:
     medViewerToolBoxViewPropertiesPrivate *d;
-
+    void raiseSlider(bool isVisible, double opacity = -1.0);
+    QIcon createIcon(QString colorName);
 };
 
 #endif /* MEDVIEWERTOOLBOXVIEWPROPERTIES_H_ */

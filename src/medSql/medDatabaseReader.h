@@ -38,6 +38,10 @@ public:
 
     dtkAbstractData *run(void);
 
+    QString getFilePath();
+
+    qint64 getDataSize();
+
 signals:
     void success(QObject *);
     void failure(QObject *);

@@ -27,6 +27,7 @@
 
 class medDatabaseNavigatorItem;
 class medDatabaseNavigatorPrivate;
+class medDataIndex;
 
 class MEDSQL_EXPORT medDatabaseNavigator : public QFrame
 {
@@ -47,7 +48,7 @@ signals:
     void   imageClicked(int id);
 
 public slots:
-    void onPatientClicked(int id);
+    void onPatientClicked(const medDataIndex& id);
     void   onStudyClicked(int id);
     void  onSeriesClicked(int id);
     void   onImageClicked(int id);

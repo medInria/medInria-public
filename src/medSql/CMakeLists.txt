@@ -41,6 +41,7 @@ set(${PROJECT_NAME}_HEADERS
   medDatabaseNonPersistentControllerImpl.h
   medDatabaseNonPersistentItem.h
   medDatabaseNonPersistentReader.h
+  medDatabaseNonPersistentImporter.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
   medDatabasePreviewController.h
@@ -51,7 +52,9 @@ set(${PROJECT_NAME}_HEADERS
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
   medDatabasePreviewView.h
+  medDatabaseProxyModel.h
   medDatabaseReader.h
+  medDatabaseWriter.h
   )
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -70,6 +73,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseNonPersistentControllerImpl.h
   medDatabaseNonPersistentItem.h
   medDatabaseNonPersistentReader.h
+  medDatabaseNonPersistentImporter.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
   medDatabasePreviewItem.h
@@ -78,7 +82,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
   medDatabasePreviewView.h
+  medDatabaseProxyModel.h
   medDatabaseReader.h
+  medDatabaseWriter.h
   )
 
 set(${PROJECT_NAME}_SOURCES
@@ -100,6 +106,7 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseNonPersistentControllerImpl.cpp
   medDatabaseNonPersistentItem.cpp
   medDatabaseNonPersistentReader.cpp
+  medDatabaseNonPersistentImporter.cpp
   medDatabasePreview.cpp
   medDatabasePreviewArrow.cpp
   medDatabasePreviewController.cpp
@@ -110,7 +117,9 @@ set(${PROJECT_NAME}_SOURCES
   medDatabasePreviewSelector.cpp
   medDatabasePreviewTooltip.cpp
   medDatabasePreviewView.cpp
+  medDatabaseProxyModel.cpp
   medDatabaseReader.cpp
+  medDatabaseWriter.cpp
   )
 
 ## #################################################################

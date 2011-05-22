@@ -22,6 +22,43 @@ public:
 	medToolBoxDiffusionTensorView(QWidget *parent);
 	~medToolBoxDiffusionTensorView();
 
+	/** Returns the currently selected glyph shape */
+	QString glyphShape(void);
+
+	/** Returns the currently selected sample rate */
+	int sampleRate(void);
+
+	/** Returns true is 'Flip X' checkbox is selected, false otherwise */
+	bool isFlipX(void);
+
+    /** Returns true is 'Flip Y' checkbox is selected, false otherwise */
+    bool isFlipY(void);
+
+    /** Returns true is 'Flip Z' checkbox is selected, false otherwise */
+    bool isFlipZ(void);
+
+    /** Returns the currently selected eigen vector for color coding.
+     * Note that is not the eigen vector index which is being returned,
+     * hence the possible values are 1, 2 or 3.
+     * @return the currently selected eigen vector (either 1, 2 or 3)
+     */
+    int eigenVector(void);
+
+    /** Returns the currently selected glyph resolution */
+    int glyphResolution(void);
+
+    /** Returns the current scale */
+    double scale(void);
+
+    /** Returns true is 'Hide/Show Axial' checkbox is selected, false otherwise */
+    bool isShowAxial(void);
+
+    /** Returns true is 'Hide/Show Coronal' checkbox is selected, false otherwise */
+    bool isShowCoronal(void);
+
+    /** Returns true is 'Hide/Show Sagittal' checkbox is selected, false otherwise */
+    bool isShowSagittal(void);
+
 signals:
     /** Emitted when a glyph shape is selected from the combobox */
     void glyphShapeChanged(const QString& shape);

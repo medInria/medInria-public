@@ -20,11 +20,22 @@ class MEDGUI_EXPORT medSettingsEditor : public QWidget
     Q_OBJECT
 public:
     /**
-     * @brief Instatnciate the widget.
+     * @brief Instantiate the widget.
      *
      * @param parent
     */
-    medSettingsEditor(QWidget *parent = 0);
+    medSettingsEditor(QWidget *parent = 0, bool useAdvancedWidget = false);
+
+    /**
+     * @brief initialize layout
+     */
+    virtual void initialize();
+
+    /**
+     * @brief add settings widgets from factory
+     */
+    virtual void queryWidgets();
+
 
 signals:
     /**
@@ -48,12 +59,17 @@ signals:
     */
     void showInfo(QObject *sender, const QString& text,unsigned int timeout=0);
 
+    /**
+    * Emitted if the dialog should disappear
+    */
+    void finished(void);
+
 public slots:
     /**
      * @brief Switches from the advanced to the default mode, and vice versa.
      *
     */
-    void onAdvancedClicked();
+    virtual void onAdvancedClicked();
 
     /**
      * @brief Performs validation tests on each section and tires to save.
@@ -63,19 +79,26 @@ public slots:
      * The widget closes if the save action is successful.
      *
     */
-    void onSaveClicked();
+    virtual void onSaveClicked();
 
     /**
      * @brief Cancel any non saved change and closes the widget.
      *
     */
-    void onCancelClicked();
+    virtual void onCancelClicked();
 
     /**
      * @brief reset the display to the last saved values.
      *
     */
-    void onResetClicked();
+    virtual void onResetClicked();
+
+protected:
+
+    /**
+     * Call save on all child widgets and return the status
+     */
+    virtual bool save();
 
 private:
   medSettingsEditorPrivate *d; /**< TODO */

@@ -19,7 +19,8 @@
 
 #include <QtGui>
 #include <QtOpenGL>
-
+#include <QtDebug>
+#include <qdebug.h>
 #include "medMainWindow.h"
 
 #include <dtkCore/dtkGlobal.h>
@@ -36,7 +37,6 @@
 int main(int argc, char *argv[])
 {
     qRegisterMetaType<medDataIndex>("medDataIndex");
-
     QApplication application(argc, argv);
     application.setApplicationName("medinria");
     application.setApplicationVersion("0.0.1");

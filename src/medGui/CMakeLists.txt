@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Mon Dec 20 13:33:18 2010 (+0100)
+## Last-Updated: Wed May  4 14:43:36 2011 (+0200)
 ##           By: Julien Wintz
-##     Update #: 167
+##     Update #: 168
 ######################################################################
 ##
 ### Commentary:
@@ -41,9 +41,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medFlicker.h
   medLayoutChooser.h
   medProgressionStack.h
-  medStatusQuitButton.h
-  medSettingsButton.h
   medPacsSelector.h
+  medButton.h  
   
   # general toolbox classes
   medToolBox.h
@@ -68,7 +67,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewContainerCustom.h
   medViewContainerMulti.h
   medViewContainerSingle.h
-  medViewContainerStack.h
+  medViewContainerCompare.h
+  medStackedViewContainers.h
   
   medWorkspaceShifter.h 
   medSaveLUTDialog.h
@@ -78,16 +78,27 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfiguration.h  
   medViewerConfigurationFactory.h
   medViewerToolBoxLayout.h
+  medViewerToolBoxView.h
+  medViewerToolBoxTime.h
   medViewerToolBoxViewProperties.h
   medViewerToolBoxView.h
-  )
+  
+  # pacs toolboxes
+  medBrowserToolBoxPacsHost.h
+  medBrowserToolBoxPacsNodes.h
+  medBrowserToolBoxPacsSearch.h    
+  
+  medDatabaseSearchPanel.h
+
+)
+
 set(${PROJECT_NAME}_HEADERS
   medLUTtoXMLWriter.h
   medXMLtoLUTReader.h
   medViewContainer_p.h
+  medGuiExport.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
-
 
 set(${PROJECT_NAME}_SOURCES
   medSettingsWidget.cpp
@@ -104,9 +115,8 @@ set(${PROJECT_NAME}_SOURCES
   medFlicker.cpp
   medLayoutChooser.cpp
   medProgressionStack.cpp
-  medStatusQuitButton.cpp
-  medSettingsButton.cpp
   medPacsSelector.cpp
+  medButton.cpp
   
   medToolBox.cpp
   medToolBoxBody.cpp
@@ -128,19 +138,27 @@ set(${PROJECT_NAME}_SOURCES
   medViewContainerCustom.cpp
   medViewContainerMulti.cpp
   medViewContainerSingle.cpp
-  medViewContainerStack.cpp
+  medViewContainerCompare.cpp
+  medStackedViewContainers.cpp
   medWorkspaceShifter.cpp
   medLUTToXMLWriter.cpp
   medXMLToLUTReader.cpp
   medSaveLUTDialog.cpp
   medLoadLUTDialog.cpp
   
-  medViewerConfigurationFactory.cpp
   medViewerConfiguration.cpp
+  medViewerConfigurationFactory.cpp
   medViewerToolBoxLayout.cpp
+  medViewerToolBoxTime.cpp
   medViewerToolBoxViewProperties.cpp
   medViewerToolBoxView.cpp
-  )
+  
+  medBrowserToolBoxPacsHost.cpp
+  medBrowserToolBoxPacsNodes.cpp
+  medBrowserToolBoxPacsSearch.cpp
+
+  medDatabaseSearchPanel.cpp 
+)
 
 # Include header files for Visual Studio.
 FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )

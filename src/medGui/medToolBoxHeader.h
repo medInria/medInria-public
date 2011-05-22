@@ -26,21 +26,67 @@
 
 class medToolBoxHeaderPrivate;
 
+/**
+ * @brief Contains the header of a medToolBox.
+ *
+ * This is a QFrame that draws a rectangle, a title, and reacts to mousePressEvent()s.
+ *
+*/
 class MEDGUI_EXPORT medToolBoxHeader : public QFrame
 {
     Q_OBJECT
-
 public:
+     /**
+      * @brief Instantiates a header.
+      *
+      * @param parent
+     */
      medToolBoxHeader(QWidget *parent = 0);
+     
+    /**
+     * @brief 
+     *
+     * @param void
+    */
     ~medToolBoxHeader(void);
 
+    /**
+     * @brief Returns a preferred size hint (32x100px).
+     *
+     * @param void
+     * @return QSize
+    */
     QSize sizeHint(void) const;
 
+    /**
+     * @brief Sets the header's title.
+     *
+     * @param title
+    */
     void setTitle(const QString& title);
-
+    
 protected:
+    /**
+     * @brief Paints the header.
+     *
+     * @param event
+    */
     void paintEvent(QPaintEvent *event);
-
+    
+    /**
+     * @brief Emits the triggered() signal.
+     *
+     * @param event
+    */
+    void mousePressEvent(QMouseEvent *event);
+    
+signals:
+    /**
+     * @brief Emitted when a mouse press event is caught.
+     *
+    */
+    void triggered();
+    
 private:
     medToolBoxHeaderPrivate *d;
 };

@@ -32,9 +32,19 @@ public:
     medDataIndex indexForSeries (int id);
     medDataIndex indexForImage  (int id);
 
+    /**
+    * Returns the index of a data given patient, study, series and image name
+    */
+    medDataIndex indexForPatient (const QString &patientName);
+    medDataIndex indexForStudy   (const QString &patientName, const QString &studyName);
+    medDataIndex indexForSeries  (const QString &patientName, const QString &studyName,
+                                  const QString &seriesName);
+    medDataIndex indexForImage   (const QString &patientName, const QString &studyName,
+                                  const QString &seriesName,  const QString &imageName);
+
     /* some overloads of read(medDataIndex) */
-    dtkAbstractData *read(int patientId, int studyId, int seriesId);
-    dtkAbstractData *read(int patientId, int studyId, int seriesId, int imageId);
+    QSharedPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId);
+    QSharedPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId, int imageId);
 
     /**
     * Change the storage location of the database by copy, verify, delete
@@ -48,6 +58,13 @@ public:
     * @return bool true on success
     */
     bool isConnected();
+
+    /**
+    * return the size that the data behind the medDataIndex in byte
+    * @param const medDataIndex& index the index for the data
+    * @return estimated size of data
+    */
+    qint64 getEstimatedSize(const medDataIndex& index) const;
 
 signals:
     /**
@@ -64,7 +81,7 @@ public slots:
     * @params const medDataIndex & index Index pointing to data
     * @return dtkAbstractData * the data stored
     */
-    dtkAbstractData *read(const medDataIndex& index) const;
+    QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
     * Import data into the db read from file
@@ -76,11 +93,10 @@ public slots:
 
     /**
     * Import data into the db read from memory
-    * @Note _NOT_IMPLEMENTED_YET
-    * @params const dtkAbstractData & data dataObject
+    * @params dtkAbstractData * data dataObject
     * @return medDataIndex the assigned index
     */
-    medDataIndex import(const dtkAbstractData& data);
+    medDataIndex import(dtkAbstractData *data);
 
 protected slots:
     void forwardMessage(QString);
