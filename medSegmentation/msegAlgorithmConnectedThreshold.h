@@ -10,6 +10,8 @@ class dtkAbstractData;
 
 namespace mseg {
 
+    template < typename TPixel, unsigned int N > class AlgorithmConnectedThresholdPrivate;
+
 /** Connected Region Growing segmentation algorithm */
 class AlgorithmConnectedThreshold : public AlgorithmGeneric {
 public:
@@ -26,11 +28,10 @@ public:
 
     void run();
 
-protected:
-    template < typename TPixel, unsigned int VDimension > 
-        void doFilter( dtkAbstractData * inData );
-
 private:
+    template < typename TPixel, unsigned int N >
+        friend class AlgorithmConnectedThresholdPrivate;
+
     QVector3D m_seedPoint;
 
     double m_lowThreshold;

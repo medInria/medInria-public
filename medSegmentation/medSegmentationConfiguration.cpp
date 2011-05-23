@@ -6,8 +6,9 @@
 
 #include "medToolBoxSegmentationView.h"
 
-// TODO : sort out include dir.
-#include "../medAbstractViewExtension/medAbstractViewScene.h"
+#include "msegAlgorithmConnectedThreshold.h"
+
+#include "medAbstractViewScene.h"
 
 #include <medCore/medAbstractView.h>
 
@@ -63,6 +64,8 @@ public:
     medToolBoxSegmentationView          *segmentationToolBox;
 
     static medAbstractViewScene * viewScene( dtkAbstractView * view );
+    static dtkAbstractData * viewData( dtkAbstractView * view );
+
     QScopedPointer< EventInterceptor > viewEventHandler;
 };
 
@@ -78,6 +81,18 @@ medAbstractViewScene * medSegmentationConfigurationPrivate::viewScene( dtkAbstra
     QGraphicsView * qview = qobject_cast < QGraphicsView * >( mview->receiverWidget() );
     medAbstractViewScene * ret  = qobject_cast < medAbstractViewScene * >( qview->scene() );
     return ret;
+}
+
+dtkAbstractData * medSegmentationConfigurationPrivate::viewData( dtkAbstractView * view )
+{
+    medAbstractView * mview = qobject_cast< medAbstractView * >( view );
+    if ( ! mview ) {
+        dtkLog::debug() << "Failed to get a view";
+        return NULL;
+    }
+
+    // Why isn't the data of an abstract view a dtkAbstractData????
+    return reinterpret_cast< dtkAbstractData * >( mview->data() );
 }
 
 
@@ -149,8 +164,8 @@ void medSegmentationConfiguration::onViewAdded( dtkAbstractView* view )
 
 void medSegmentationConfiguration::beginAddSeedPoint()
 {
-
-    medAbstractViewScene * scene = medSegmentationConfigurationPrivate::viewScene( stackedViewContainers()->container("Single")->view() );
+    dtkAbstractView * view = stackedViewContainers()->container("Single")->view() ;
+    medAbstractViewScene * scene = medSegmentationConfigurationPrivate::viewScene( view );
 
     if ( !scene ) 
         return;
@@ -160,24 +175,36 @@ void medSegmentationConfiguration::beginAddSeedPoint()
 
 void medSegmentationConfiguration::mousePressEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
-    medAbstractViewScene * scene = medSegmentationConfigurationPrivate::viewScene( stackedViewContainers()->container("Single")->view() );
+    dtkAbstractView * view = stackedViewContainers()->container("Single")->view() ;
+    medAbstractViewScene * scene = medSegmentationConfigurationPrivate::viewScene( view );
+    dtkAbstractData * viewData = medSegmentationConfigurationPrivate::viewData( view );
+
     mouseEvent->accept();
 
     if (scene->isScene2D()) {
         // Convert mouse click to a 3D point in the image.
 
-        QVector3D posWorld = scene->sceneToWorld( mouseEvent->pos() );
-        QVector3D viewPos = scene->view()->position();
-
+        QVector3D posImage = scene->sceneToImagePos( mouseEvent->pos() );
         //Project vector onto plane
 
+        QScopedPointer <mseg::AlgorithmConnectedThreshold> alg( new mseg::AlgorithmConnectedThreshold() );
+
+        alg->setInput(viewData);
+        alg->setSeedPoint( posImage );
+        alg->update();
+
+#pragma message DTK_COMPILER_WARNING("JDS : Need to complete this")
+        /*
     Create a segmentation algorithm, pass it the data and 
         run it. 
         gather the output.
         register the output in the non-persistent db
         Add the output as a layer to the view
-
-
+        */
+        
+        dtkSmartPointer<dtkAbstractData> outputData = alg->output();
+        medDatabaseCon
+    }
 }
 
 void medSegmentationConfiguration::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent )
