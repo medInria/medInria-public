@@ -28,6 +28,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
+option(MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE "Include TTK dependent code in ${PROJECT_NAME}" "ON")
+
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
@@ -46,9 +48,11 @@ include(${vtkINRIA3D_USE_FILE})
 #   include(${ITK_USE_FILE})
 # endif(vtkINRIA3D_USE_ITK)
 
-# the Tensor ToolKit is required by the tensor interactor: v3dViewTensorInteractor
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
+if ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+    # the Tensor ToolKit is required by the tensor interactor: v3dViewTensorInteractor
+    find_package(TTK REQUIRED)
+    include(${TTK_USE_FILE})
+endif ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
 
 if (NOT VTK_USE_QT)
   message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
@@ -60,18 +64,33 @@ find_package(OpenGL REQUIRED)
 ## Input
 ## #################################################################
 
+if ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+    set(${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC
+      v3dViewFiberInteractor.h
+      v3dViewTensorInteractor.h
+    )
+    set(${PROJECT_NAME}_TTK_DEPENDENT_SOURCES
+       v3dViewFiberInteractor.cpp
+       v3dViewTensorInteractor.cpp
+    )
+    set(${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES
+       ttkAlgorithms
+    )
+else( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+    add_definitions(-DDISABLE_TTK_DEPENDENT_CODE)
+endif ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
   v3dView.h
-  v3dViewFiberInteractor.h
   v3dViewFuseInteractor.h
   v3dViewMeshInteractor.h
   v3dView4DInteractor.h
-  v3dViewTensorInteractor.h
   QVtkGraphicsView.h
   v3dViewGraphicsScene.h
   v3dViewGraphicsView.h
   v3dViewCircleAnnotation.h
+  ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -80,17 +99,16 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
   v3dView.cpp
-  v3dViewFiberInteractor.cpp
   v3dViewFuseInteractor.cpp
   v3dViewMeshInteractor.cpp
   v3dView4DInteractor.cpp
   v3dFiberBundle.cpp
-  v3dViewTensorInteractor.cpp
   QVtkGraphicsView.cpp
   v3dViewGraphicsScene.cpp
   v3dViewGraphicsView.cpp
   v3dViewCircleAnnotation.cpp
   vtkQtOpenGLRenderWindow.cxx  
+  ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
   )
 
 ## #################################################################
@@ -109,7 +127,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/medAbstractViewExtension)
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${OPENGL_LIBRARIES}
-  ttkAlgorithms
+  ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
   dtkCore
   medCore
   medAbstractViewExtension

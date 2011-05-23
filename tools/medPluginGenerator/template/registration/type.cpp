@@ -9,7 +9,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 // /////////////////////////////////////////////////////////////////
-// 
+//
 // /////////////////////////////////////////////////////////////////
 
 #include "itkImageRegistrationMethod.h"
@@ -38,8 +38,7 @@ public:
 bool writeTransform(const QString& file);
 
     itk::ProcessObject * registrationMethod;
-    
-    unsigned int iterations;
+
    };
 
 // /////////////////////////////////////////////////////////////////
@@ -93,7 +92,6 @@ template <typename PixelType>
     registration->SetFixedImage((const FixedImageType*) proc->fixedImage().GetPointer());
     registration->SetMovingImage((const MovingImageType*) proc->movingImage().GetPointer());
 
-    registration->SetNumberOfIterations(iterations);
 
     // Run the registration
     time_t t1 = clock();
@@ -119,7 +117,7 @@ template <typename PixelType>
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
-    
+
 
     try {
         resampler->Update();
@@ -128,7 +126,7 @@ template <typename PixelType>
         qDebug() << e.GetDescription();
         return 1;
     }
-    
+
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
     result->DisconnectPipeline();
 
@@ -196,7 +194,7 @@ bool %1Private::writeTransform(const QString& file)
     }
 
     return true;
-    
+
 }
 
 bool %1::writeTransform(const QString& file)

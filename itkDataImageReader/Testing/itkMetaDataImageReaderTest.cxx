@@ -31,15 +31,13 @@ int itkMetaDataImageReaderTest (int argc, char* argv[])
   // second method
   dtkAbstractData* data2 = 0;
 
-  typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-  QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
+  QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
   for (int i=0; i<readers.size(); i++) {            
-      dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+      QScopedPointer<dtkAbstractDataReader> dataReader( dtkAbstractDataFactory::instance()->reader(readers[i]) );
       if (dataReader->canRead( filepath )) {
-	  dataReader->read( filepath );
-	  data2 = dataReader->data();
-	  delete dataReader;
-	  break;
+          dataReader->read( filepath );
+          data2 = dataReader->data();
+          break;
       }
   }
 
