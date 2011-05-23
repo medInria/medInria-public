@@ -66,14 +66,14 @@ public:
 
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
 {
-    d->fuseView = 0; 
+    d->fuseView = 0;
     
     d->fixedData  = NULL;
     d->movingData = NULL;
     d->fixedView  = NULL;
     d->movingView = NULL;
     d->process = NULL;
-    
+
     // Process section
     d->saveImageButton = new QPushButton(tr("Save Image"),this);
     connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
@@ -91,7 +91,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
     connect(d->toolboxes, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
 
-    
+
     // Layout section
 
     QPushButton *layoutButtonCompare = new QPushButton("Compare", this);
@@ -101,16 +101,16 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QPushButton *layoutButtonFuse = new QPushButton("Fuse", this);
     layoutButtonFuse->setCheckable(true);
     layoutButtonFuse->setChecked(false);
-    
+
     QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
     layoutButtonGroup->addButton(layoutButtonCompare);
     layoutButtonGroup->addButton(layoutButtonFuse);
     layoutButtonGroup->setExclusive(true);
-    
+
 //    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
 //    d->layoutFuseSlider->setRange(1, 100);
 //    d->layoutFuseSlider->setValue(50);
-    
+
 //    d->blendRadio = new QRadioButton("Blend", this);
 //    d->checkerboardRadio = new QRadioButton("Checkerboard", this);
 //    d->blendRadio->setChecked(true);
@@ -118,30 +118,30 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 //    QButtonGroup *radioGroup = new QButtonGroup(this);
 //    radioGroup->addButton(d->blendRadio);
 //    radioGroup->addButton(d->checkerboardRadio);
-//    radioGroup->setExclusive(true);	
+//    radioGroup->setExclusive(true);
 
 //    QHBoxLayout *radioGroupLayout = new QHBoxLayout;
 //    radioGroupLayout->addWidget(d->blendRadio);
 //    radioGroupLayout->addWidget(d->checkerboardRadio);
-    
+
     QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
     layoutButtonLayout->addWidget(layoutButtonCompare);
     layoutButtonLayout->addWidget(layoutButtonFuse);
-    
+
     QVBoxLayout *layoutLayout = new QVBoxLayout;
     layoutLayout->addLayout(layoutButtonLayout);
 //    layoutLayout->addLayout(radioGroupLayout);
 //    layoutLayout->addWidget(d->layoutFuseSlider);
     QWidget * layoutSection = new QWidget(this);
     layoutSection->setLayout(layoutLayout);
-    
+
     connect(layoutButtonCompare, SIGNAL(clicked()), this, SIGNAL(setupLayoutCompare()));
     connect(layoutButtonFuse, SIGNAL(clicked()), this, SIGNAL(setupLayoutFuse()));
-    
+
 //    connect(d->blendRadio, SIGNAL(toggled(bool)), this, SLOT(onBlendModeSet(bool)));
 //    connect(d->checkerboardRadio, SIGNAL(toggled(bool)), this, SLOT(onCheckerboardModeSet(bool)));
 
-    
+
     // /////////////////////////////////////////////////////////////////
     // Setup
     // /////////////////////////////////////////////////////////////////

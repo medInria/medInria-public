@@ -11,13 +11,15 @@
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewContainerSingle.h>
 #include <medGui/medStackedViewContainers.h>
+#include "medGui/medToolBoxFunctional.h"
 
 class medViewerConfigurationFunctionalPrivate
 {
 public:
-    medViewerToolBoxView                *viewToolBox;
+    medViewerToolBoxView*          viewToolBox;
+    medToolBoxFunctional*   functionalToolBox;
 
-    QList<dtkAbstractView *> views;
+    QList<dtkAbstractView*> views;
 };
 
 medViewerConfigurationFunctional::medViewerConfigurationFunctional(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationFunctionalPrivate)
@@ -28,7 +30,14 @@ medViewerConfigurationFunctional::medViewerConfigurationFunctional(QWidget *pare
     // -- View toolbox --
     d->viewToolBox = new medViewerToolBoxView(parent);
 
+    // -- Functional toolbox --
+    d->functionalToolBox = new medToolBoxFunctional(parent);
+
+    connect(d->functionalToolBox, SIGNAL(addToolBox(medToolBox*)), this, SLOT(addToolBox(medToolBox*)));
+    connect(d->functionalToolBox, SIGNAL(removeToolBox(medToolBox*)), this, SLOT(removeToolBox(medToolBox*)));
+
     this->addToolBox( d->viewToolBox );
+    this->addToolBox( d->functionalToolBox );
 }
 
 medViewerConfigurationFunctional::~medViewerConfigurationFunctional(void)
@@ -75,6 +84,8 @@ void medViewerConfigurationFunctional::onViewAdded (dtkAbstractView *view)
         return;
 
     d->views.append (view);
+
+    d->functionalToolBox->onViewAdded(view);
 }
 
 void medViewerConfigurationFunctional::onViewRemoved (dtkAbstractView *view)
