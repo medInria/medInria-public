@@ -56,6 +56,7 @@
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
+#include "medViewerConfigurationFunctional.h"
 
 
 #include <QtGui>
@@ -184,6 +185,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
+    medViewerConfigurationFactory::instance()->registerConfiguration("Functional",    createMedViewerConfigurationFunctional);
+
 
     //Register settingsWidgets
     medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
@@ -216,13 +219,14 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     medButton *quitButton = new medButton(this,":/icons/quit.png", tr("Quit Application"));
     connect(quitButton, SIGNAL(triggered()), this, SLOT(onQuit()));
-    
+
     medButton *settingsButton = new medButton(this, ":/icons/settings.png", tr("Edit Application Settings"));
     connect(settingsButton, SIGNAL(triggered()), this, SLOT(onEditSettings()));
 
     QComboBox *configurationSwitcher = new QComboBox(this);
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
     configurationSwitcher->setFocusPolicy (Qt::NoFocus);
+    configurationSwitcher->setCurrentIndex(configurationSwitcher->findText("Visualization"));
 
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
