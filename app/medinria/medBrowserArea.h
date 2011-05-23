@@ -53,6 +53,7 @@ public slots:
     void onFileImported(void);
     void onSourceIndexChanged(int index);
     void onFileImport(QString);
+    void onDataImport(dtkAbstractData *data);
     void onDataReceivingFailed(QString fileName);
     
     /**
