@@ -113,7 +113,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     medDatabaseNavigatorController::instance()->setOrientation( Qt::Vertical );
     d->navigator = new medDatabaseNavigator(d->navigator_container);
 
-    d->navigator_animation = new QPropertyAnimation (d->navigator, "geometry");
+    // First argument is the target, last is the parent.
+    d->navigator_animation = new QPropertyAnimation (d->navigator, "geometry", d->view_container);
     d->navigator_animation->setDuration (500);
     d->navigator_animation->setEasingCurve (QEasingCurve::OutQuad);
 
