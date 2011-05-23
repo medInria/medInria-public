@@ -101,10 +101,10 @@ template <typename PixelType>
     typedef float TransformScalarType;
     typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType,
                     TransformScalarType > RegistrationType;
-    RegistrationType * registration = new RegistrationType ();
+    RegistrationType * registration = new RegistrationType;
 
     registrationMethod = dynamic_cast<itk::ProcessObject *>(registration);
-
+    qDebug() << "nbThreads: " << registrationMethod->GetNumberOfThreads();
     //convert image type so that we can still register...
 
     typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
@@ -267,7 +267,7 @@ bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& fi
     typedef itk::Image< PixelType, 3 > RegImageType;
     //normaly should use long switch cases, but here we know we work with float3 data.
     rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =
-            (rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *)d->registrationMethod;
+            dynamic_cast<rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *>(d->registrationMethod);
     try{
 
         rpi::writeDisplacementFieldTransformation<TransformScalarType, RegImageType::ImageDimension>(

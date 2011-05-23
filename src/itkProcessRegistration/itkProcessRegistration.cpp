@@ -10,7 +10,7 @@
 #include <dtkCore/dtkAbstractDataWriter.h>
 
 // /////////////////////////////////////////////////////////////////
-// 
+//
 // /////////////////////////////////////////////////////////////////
 
 #include "itkImageRegistrationMethod.h"
@@ -85,7 +85,7 @@ itkProcessRegistration::~itkProcessRegistration(void)
 //}
 
 // /////////////////////////////////////////////////////////////////
-// 
+//
 // /////////////////////////////////////////////////////////////////
 template <typename PixelType>
         void itkProcessRegistrationPrivate::setInput(dtkAbstractData * data,int channel)
@@ -236,7 +236,7 @@ int itkProcessRegistration::update(void)
     {
         return -1;
     }
-    
+
     if(d->fixedImage.IsNull() || d->movingImage.IsNull())
         return 1;
 
@@ -309,11 +309,10 @@ bool itkProcessRegistration::write(const QString& file)
 
     bool writeSuccess = false;
     dtkAbstractData * out = output();
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-    QList<dtkAbstractDataTypeHandler> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
     for (int i=0; i<writers.size(); i++)
     {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
+        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
         qDebug() << "trying " << dataWriter->description();
 
         if (! dataWriter->handled().contains(out->description()))
