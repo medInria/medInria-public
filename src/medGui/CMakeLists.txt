@@ -60,6 +60,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxRegistration.h
   medToolBoxRegistrationCustom.h
   medToolBoxDiffusionTensorView.h
+  medToolBoxFunctional.h
+  medToolBoxFunctionalCustom.h
   
   # viewer stuff
   medViewPool.h
@@ -89,7 +91,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserToolBoxPacsSearch.h    
   
   medDatabaseSearchPanel.h
-
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -132,7 +133,9 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxRegistration.cpp
   medToolBoxRegistrationCustom.cpp
   medToolBoxDiffusionTensorView.cpp
-  
+  medToolBoxFunctional.cpp
+  medToolBoxFunctionalCustom.cpp
+
   medViewPool.cpp
   medViewContainer.cpp
   medViewContainerCustom.cpp
