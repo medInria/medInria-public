@@ -7,6 +7,7 @@
 
 class medToolBox;
 class medDataIndex;
+class dtkAbstractData;
 
 /** 
  * @class medAbstractDataSource

@@ -38,6 +38,8 @@
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseExporter.h>
 #include <medSql/medDatabaseImporter.h>
+#include <medSql/medDatabaseNonPersistentImporter.h>
+#include <medSql/medDatabaseNonPersistentController.h>
 
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
@@ -161,12 +163,17 @@ void medBrowserArea::onFileImport(QString path)
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
 {
-  medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data);
-  connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
-  connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
-  d->toolbox_jobs->stack()->addJobItem(importer, data->metaDataValues(tr("PatientName"))[0]);
-  medJobManager::instance()->registerJobItem(importer);
-  QThreadPool::globalInstance()->start(importer);
+  medDatabaseNonPersistentController::instance()->import(data);
+  d->dbSource->update();
+  
+  //medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data);
+  //medDataIndex indexData = importer->run();
+  
+  //connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+  //connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+  //d->toolbox_jobs->stack()->addJobItem(importer, data->metaDataValues(tr("PatientName"))[0]);
+  //medJobManager::instance()->registerJobItem(importer);
+  //QThreadPool::globalInstance()->start(importer);
 }
 
 void medBrowserArea::onFileImported(void)

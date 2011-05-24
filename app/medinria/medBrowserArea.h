@@ -31,7 +31,7 @@ class medDatabaseView;
 class medDatabaseModel;
 class medBrowserAreaPrivate;
 class medAbstractDataSource;
-
+class dtkAbstractData;
 
 class medBrowserArea : public QWidget
 {
