@@ -388,6 +388,16 @@ int vtkFiberDataSetManager::GetBundleVisibility(const std::string &name)
     return 0;
 }
 
+vtkActor *vtkFiberDataSetManager::GetBundleActor(const std::string &name)
+{
+    vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.find (name);
+    if (it!=d->FiberBundlePipelineList.end())
+    {
+        return (it->second)->Actor;
+    }
+    return NULL;
+}
+
 void vtkFiberDataSetManager::ShowAllBundles()
 {
     vtkFiberDataSetManagerPrivate::vtkFiberBundlePipelineListType::iterator it = d->FiberBundlePipelineList.begin();
