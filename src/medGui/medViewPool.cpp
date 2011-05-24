@@ -73,6 +73,16 @@ void medViewPool::appendView (medAbstractView *view)
     connect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)),
              this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)));
     
+    connect( view, SIGNAL(  obliqueSettingsChanged()), 
+             this,   SLOT(onObliqueSettingsChanged()));
+
+    // Tell any interested views that one is appended.
+    foreach(medAbstractView * it , d->views ){
+        if ( it != view ){
+            it->onAppendViewToPool( view );
+        }
+    }
+
     // set properties
     QHashIterator<QString, QString> it(d->propertySet);
     while (it.hasNext()) {
@@ -103,7 +113,14 @@ void medViewPool::removeView (medAbstractView *view)
             oldDaddy->setProperty ("Daddy", "false"); // not necessary
         }
     }
-    
+
+    // Tell any interested views that one is leaving.
+    foreach(medAbstractView * it , d->views ){
+        if ( it != view ) {
+            it->onRemoveViewFromPool( view );
+        }
+    }
+
     disconnect (view, SIGNAL (propertySet(const QString&, const QString&)), this, SLOT (onViewPropertySet(const QString&, const QString &)));
     disconnect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
     disconnect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));
@@ -115,7 +132,10 @@ void medViewPool::removeView (medAbstractView *view)
     
     disconnect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)),
                 this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)));
-    
+
+    disconnect (view, SIGNAL(   obliqueSettingsChanged() ),
+                this,   SLOT( onObliqueSettingsChanged() ) );
+
     d->views.removeOne (view);
 }
 
@@ -376,4 +396,32 @@ void medViewPool::onViewWindowingChanged (double level, double window, bool prop
 int medViewPool::count (void)
 {
     return d->views.count();
+}
+
+void medViewPool::onObliqueSettingsChanged()
+{
+    medAbstractView *vsender = dynamic_cast<medAbstractView*>(this->sender());
+
+    if (!vsender) {
+        qDebug() << "Sender seems not to be a medAbstractView";
+        return;
+    }
+
+    // first, block all signals
+    foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (true);
+
+    // second, propagate properties
+    foreach (medAbstractView *lview, d->views) {
+        if ( lview != vsender ) {
+            lview->onObliqueSettingsChanged( vsender );
+            if (lview->widget()->isVisible())
+                lview->update();
+        }
+    }
+
+    // third, restore signals
+    foreach (medAbstractView *lview, d->views)
+        lview->blockSignals (false);
+
 }

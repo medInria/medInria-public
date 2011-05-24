@@ -39,7 +39,6 @@ def main (argv):
 
     create_qt_conf(install_dir_bin)
     plugin_dlls = "imageformats/qgif4.dll \
-    imageformats/qgifd4.dll \
     imageformats/qico4.dll \
     imageformats/qjpeg4.dll \
     imageformats/qmng4.dll \

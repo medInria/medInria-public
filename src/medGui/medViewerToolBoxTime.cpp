@@ -164,7 +164,6 @@ void medViewerToolBoxTime::onViewAdded (dtkAbstractView *view)
             d->views.append (view);
         if (!d->interactors.contains (interactor))
             d->interactors.append (interactor);
-
         connect (view, SIGNAL ( dataAdded(dtkAbstractData*)),   this, SLOT (onDataAdded (dtkAbstractData*)));
     }
 
@@ -292,7 +291,6 @@ void medViewerToolBoxTime::updateRange (void)
 {
     if (!d->interactors.size())
         return;
-
     double mintime = 3000;
     double maxtime = -3000;
     double mintimestep = 3000;
