@@ -37,7 +37,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
 
   virtual void SetInput (vtkFiberDataSet *input);
   vtkGetObjectMacro (FiberDataSet, vtkFiberDataSet);
-  
+ 
   // derived from vtkFibersManager
   virtual void Enable (void);
   virtual void Disable (void);
@@ -52,6 +52,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
 
   virtual void SetBundleVisibility(const std::string &name, int visibility);
   virtual int  GetBundleVisibility(const std::string &name);
+
+  virtual vtkActor *GetBundleActor(const std::string &name);
   
   virtual void ShowAllBundles(void);
   virtual void HideAllBundles(void);
