@@ -33,6 +33,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medProgressFilter.h
   medAbstractView.h
   med4DAbstractViewInteractor.h
+  medMeshAbstractViewInteractor.h
   medJobItem.h
   medJobManager.h
   medSettingsManager.h

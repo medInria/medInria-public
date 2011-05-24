@@ -254,15 +254,13 @@ medDataIndex medDatabaseWriter::run(void)
 
     d->data->addMetaData ("FileName", imageFileName);
 
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-    
-    QList<dtkAbstractDataTypeHandler> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
     int writeSuccess = 0;
     
     for (int i=0; i<writers.size(); i++)
     {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
+        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
         qDebug() << "trying " << dataWriter->description();
         
         if (!dataWriter->handled().contains(d->data->description()))
