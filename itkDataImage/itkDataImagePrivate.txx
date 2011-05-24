@@ -83,7 +83,7 @@ void itkDataImagePrivate< TPixel , VDimension >::computeRange()
     if ( m_image->GetLargestPossibleRegion().GetNumberOfPixels() == 0 )
         return;
 
-    typedef itkDataImagePrivate::ImageType ImageType;
+    typedef typename itkDataImagePrivate::ImageType ImageType;
     typedef itk::MinimumMaximumImageCalculator<ImageType>
         MinMaxCalculatorType;
     typename MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
@@ -133,7 +133,7 @@ int itkDataImagePrivate< TPixel , VDimension >::maxRangeValue(void)
 template < typename TPixel , unsigned int VDimension >
 int itkDataImagePrivate< TPixel , VDimension >::scalarValueCount(int value)
 {
-    typedef itkDataImagePrivate::ScalarType ScalarType;
+    typedef typename itkDataImagePrivate::ScalarType ScalarType;
 
     computeValueCounts();
     if( (ScalarType)value>=m_range_min && (ScalarType)value<=m_range_max )
@@ -150,7 +150,7 @@ void itkDataImagePrivate< TPixel , VDimension >::computeValueCounts()
     {
         computeRange();
 
-        typedef itkDataImagePrivate::HistogramGeneratorType
+        typedef typename itkDataImagePrivate::HistogramGeneratorType
             HistogramGeneratorType;
         typename HistogramGeneratorType::Pointer histogramGenerator =
             HistogramGeneratorType::New();
