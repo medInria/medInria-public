@@ -41,8 +41,10 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
     // by default create a vertical layout
     d->layoutOrientation = Qt::Vertical;
     d->layout = new QGridLayout(d->container);
-    d->layout->setContentsMargins(2, 4, 0, 0);
-    d->layout->setSizeConstraint (QLayout::SetNoConstraint);
+    d->layout->setContentsMargins(0, 0, 0, 0);
+    d->layout->setSpacing(0);
+    d->layout->setSizeConstraint(QLayout::SetMinimumSize);
+    // d->layout->setSizeConstraint(QLayout::SetNoConstraint);
 
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
