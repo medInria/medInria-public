@@ -95,14 +95,12 @@ dtkAbstractData *medDatabaseReader::run(void)
     }
 
 
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-
     dtkAbstractData *data = NULL;
 
-    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
+    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
     for (int i = 0; i < readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
     
         connect(dataReader, SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
     
