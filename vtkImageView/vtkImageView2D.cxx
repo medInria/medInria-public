@@ -553,25 +553,37 @@ void vtkImageView2D::UpdateDisplayExtent()
   // Figure out the correct clipping range
   if (this->Renderer)
   {
-    if (this->InteractorStyle &&
-        this->InteractorStyle->GetAutoAdjustCameraClippingRange())
-    {
-      this->Renderer->ResetCameraClippingRange();
-    }
-    else
-    {
+      // the clipping range is adjusted so that it englobles the slice +/- 0.5 * spacing in the
+      // direction given by ViewOrientation. It allows to automatically clip polygonal datasets
+      // without having to use a time consuming vtkCutter. In case of oblique slices (i.e., when
+      // a non-identity OrientationTransform is used, a large margin is used
+      // resulting in a too large clipping range. To be futher investigated.
       vtkCamera *cam = this->Renderer->GetActiveCamera();
       if (cam)
       {
         double bounds[6];
-        this->ImageDisplayMap.at(0)->GetImageActor()->GetBounds(bounds);
-        double spos = bounds[this->SliceOrientation * 2];
-        double cpos = cam->GetPosition()[this->SliceOrientation];
-        double range = fabs(spos - cpos);
-        double *spacing = input->GetSpacing();
-        double avg_spacing = (spacing[0] + spacing[1] + spacing[2]) / 3.0;
-        cam->SetClippingRange(range - avg_spacing * 3.0, range + avg_spacing * 3.0);
-      }
+        this->ImageDisplayMap.find(0)->second->GetImageActor()->GetBounds(bounds);
+
+        double vn[3], position[3], a, b, c, d;
+        cam->GetViewPlaneNormal(vn);
+        cam->GetPosition(position);
+        a = -vn[0];
+        b = -vn[1];
+        c = -vn[2];
+        d = -(a*position[0] + b*position[1] + c*position[2]);
+        
+        double minrange, maxrange;
+        minrange = -vn[this->ViewOrientation]*bounds[this->ViewOrientation * 2] + d;
+        maxrange = 1e-18;
+        for (int i=0; i<2; i++)
+        {
+            double dist = -vn[this->ViewOrientation]*bounds[this->ViewOrientation * 2 + i] + d;
+            minrange = (dist<minrange)?(dist):minrange;
+            maxrange = (dist>maxrange)?(dist):maxrange;
+        }
+
+        double avg_spacing = this->GetInput()->GetSpacing()[this->ViewOrientation] * 0.5;
+        cam->SetClippingRange(minrange-avg_spacing, maxrange + avg_spacing);
     }
   }    
 }
@@ -833,7 +845,6 @@ int vtkImageView2D::SetCameraFromOrientation(void)
   cam->SetPosition(position[0], position[1], position[2]);
   cam->SetFocalPoint(focalpoint[0], focalpoint[1], focalpoint[2]);
   cam->SetViewUp(viewup[0], viewup[1], viewup[2]);
-  
   this->InvokeEvent (vtkImageView::CameraChangedEvent);
   
   return id;
@@ -1161,7 +1172,7 @@ void vtkImageView2D::GetPan (double pan[2])
 void vtkImageView2D::ResetCamera (void)
 {
   this->Superclass::ResetCamera();
-  this->SetZoom (1.0);
+  // this->SetZoom (1.0); // already called in Superclass method
   this->Pan[0] = this->Pan[1] = 0.0;
   this->SetPan (this->Pan); // not sure this is needed
 }
