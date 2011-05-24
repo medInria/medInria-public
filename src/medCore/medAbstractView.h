@@ -27,6 +27,8 @@
 
 class medAbstractViewPrivate;
 
+class QColor;
+
 /**
  * @class medAbstractView
  * @brief Base class for view types in medinria
@@ -153,6 +155,18 @@ public:
      */
     virtual void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
 
+    void setCurrentMeshLayer(int meshLayer);
+    virtual int currentMeshLayer(void) const;
+    void setMeshLayerCount(int meshLayerCount);
+    virtual int meshLayerCount(void) const;
+
+    void addDataInList(dtkAbstractData * data);
+    dtkAbstractData* dataInList(int layer);
+    void setDataInList(int layer, dtkAbstractData * data);
+    /** The color used to represent the extent or space of this view in another view */
+    virtual QColor color() const;
+    virtual void setColor( const QColor & color);
+
 signals:
     /**
        This signal is emitted when a view is about to close.
@@ -247,6 +261,13 @@ signals:
 
     void dataAdded (dtkAbstractData* data);
 
+    void dataAdded (dtkAbstractData* data, int layer);
+
+    /** Emitted when the oblique view settings change */
+    void obliqueSettingsChanged();
+
+    void colorChanged();
+
 public slots:
     /**
        Tells the view (not to) synchronize its position with other views.
@@ -279,9 +300,19 @@ public slots:
     virtual void onVisibilityChanged(bool visible, int layer);
     
     virtual void onOpacityChanged(double opacity, int layer);
+    
+    /** When another linked view changes it's oblique settings the pool calls this:*/
+    virtual void onObliqueSettingsChanged(const medAbstractView * vsender);
+
+    /** Called when another view leaves the pool */
+    virtual void onAppendViewToPool( medAbstractView * viewAppended );
+
+    /** Called when another view leaves the pool */
+    virtual void onRemoveViewFromPool( medAbstractView * viewRemoved );
+
 
     void setFullScreen( bool state );
-    
+
 protected:
     void emitViewSliceChangedEvent    (int slice);
     void emitViewPositionChangedEvent (const QVector3D &position);
@@ -292,6 +323,10 @@ protected:
                                        const QVector3D &viewup,
                                        const QVector3D &focal,
                                        double parallelScale);
+    void emitObliqueSettingsChangedEvent();
+
+    // Emitted whenever the plane color changes.
+    void emitColorChangedEvent();
 
 private:
     medAbstractViewPrivate *d;

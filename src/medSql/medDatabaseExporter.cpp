@@ -55,13 +55,11 @@ void medDatabaseExporter::run(void)
         return;
     }
 
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-
-    QList<dtkAbstractDataTypeHandler> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
     for (int i=0; i<writers.size(); i++)
     {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
+        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
 
         if (! dataWriter->handled().contains(d->data->description()))
             continue;

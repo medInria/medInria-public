@@ -20,14 +20,16 @@ public:
   double camParallelScale;
   
   int currentLayer;
+  int currentMeshLayer;
+  int meshLayerCount;
   QList<dtkAbstractData *> dataList;
 
   QSharedPointer<dtkAbstractData> sharedData;
+  QColor color; // The color used to represent this view in other views.
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
 {
-
     d->linkPosition  = false;
     d->linkCamera    = false;
     d->linkWindowing = false;
@@ -43,6 +45,19 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->camFocal = QVector3D(0.0, 0.0, 0.0);
     d->camParallelScale = 1.0;
 
+    d->currentMeshLayer = 0;
+    d->meshLayerCount = 0;
+    
+	d->position = QVector3D(0.0, 0.0, 0.0);
+	d->pan = QVector2D(0.0, 0.0);
+	d->zoom = 1.0;
+	d->level = 0.0;
+	d->window = 0.0;
+	d->camPosition = QVector3D(0.0, 0.0, 0.0);
+	d->camViewup = QVector3D(0.0, 0.0, 0.0);
+	d->camFocal = QVector3D(0.0, 0.0, 0.0);
+	d->camParallelScale = 1.0;
+    
     QStringList lut;
     lut << "Default";		// list of available lookup tables set
                 // by subclass
@@ -65,14 +80,13 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     this->addProperty ("UseLOD",                QStringList() << "On" << "Off" );
     this->addProperty ("Cropping",              QStringList() << "true" << "false");
     this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
-              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
-              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
-              << "Red on White" << "Glossy");
+		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
+		                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
+		                                              << "Red on White" << "Glossy");
     // image interaction
     this->addProperty ("MouseInteraction",      QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
 
     // do not set properties, leave it to subclass
-
 }
 
 
@@ -243,6 +257,19 @@ double medAbstractView::opacity(int layer) const
     return 1.0;
 }
 
+void medAbstractView::setColor(const QColor & color)
+{
+    if ( d->color != color) {
+        d->color = color;
+        emitColorChangedEvent();
+    }
+}
+
+QColor medAbstractView::color() const
+{
+    return d->color;
+}
+
 void medAbstractView::setCurrentLayer(int layer)
 {
     d->currentLayer = layer;
@@ -258,6 +285,27 @@ int medAbstractView::layerCount(void) const
     DTK_DEFAULT_IMPLEMENTATION;
     return 0;
 }
+
+void medAbstractView::setCurrentMeshLayer(int meshLayer)
+{
+    d->currentMeshLayer = meshLayer;
+}
+
+int medAbstractView::currentMeshLayer(void) const
+{
+    return d->currentMeshLayer;
+}
+
+void medAbstractView::setMeshLayerCount(int meshLayerCount) 
+{
+   d->meshLayerCount = meshLayerCount;
+}
+
+int medAbstractView::meshLayerCount(void) const
+{
+    return d->meshLayerCount;
+}
+
 
 void medAbstractView::removeOverlay(int layer)
 {
@@ -286,6 +334,23 @@ void medAbstractView::onSliceChanged (int slice)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
+void medAbstractView::addDataInList(dtkAbstractData * data)
+{
+    d->dataList.append(data);
+}
+
+dtkAbstractData * medAbstractView::dataInList(int layer)
+{
+    if (layer < d->dataList.size())
+        return d->dataList.at(layer);
+
+    return NULL;
+}
+
+void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
+{
+    d->dataList[layer] = data;
+}
 
 void medAbstractView::onPositionChanged (const QVector3D &position)
 {
@@ -308,9 +373,9 @@ void medAbstractView::onWindowingChanged (double level, double window)
 }
 
 void medAbstractView::onCameraChanged (const QVector3D &position,
-                       const QVector3D &viewup,
-                       const QVector3D &focal,
-                       double parallelScale)
+				       const QVector3D &viewup,
+				       const QVector3D &focal,
+				       double parallelScale)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
@@ -328,6 +393,11 @@ void medAbstractView::onOpacityChanged(double opacity, int layer)
 void medAbstractView::emitViewSliceChangedEvent(int slice)
 {
     emit sliceChanged(slice, d->linkPosition);
+}
+
+void medAbstractView::onObliqueSettingsChanged(const medAbstractView * vsender)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
@@ -382,4 +452,24 @@ medAbstractView::~medAbstractView( void )
 {
     delete d;
     d = NULL;
+}
+
+void medAbstractView::emitObliqueSettingsChangedEvent()
+{
+    emit obliqueSettingsChanged();
+}
+
+void medAbstractView::emitColorChangedEvent()
+{
+    emit colorChanged();
+}
+
+void medAbstractView::onRemoveViewFromPool( medAbstractView * viewLeaving )
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::onAppendViewToPool( medAbstractView * viewAppended )
+{
+    DTK_DEFAULT_IMPLEMENTATION;
 }

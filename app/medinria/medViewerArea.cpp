@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Dec 20 17:24:07 2010 (+0100)
+ * Last-Updated: Thu May  5 09:53:54 2011 (+0200)
  *           By: Julien Wintz
- *     Update #: 1062
+ *     Update #: 1063
  */
 
 /* Commentary: 
@@ -29,7 +29,6 @@
 
 #include <dtkVr/dtkVrHeadRecognizer.h>
 #include <dtkVr/dtkVrGestureRecognizer.h>
-#include <dtkVr/dtkVrController.h>
 
 #include <medCore/medSettingsManager.h>
 #include <medCore/medDataIndex.h>

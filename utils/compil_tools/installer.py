@@ -19,12 +19,13 @@ def config_logging(log, config):
 
     if (log and fileName):
         #logging.basicConfig(filename=fileName,level=logging.DEBUG)
-
+        print "create logger from conf file:",fileName 
         logging.config.fileConfig(fileName)
 
         # create logger
         logger = logging.getLogger('root')
     else:
+        print "create default logger" 
         # create logger
         logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                 level=logging.DEBUG)
@@ -346,6 +347,7 @@ def git_clone(project,config):
     url = _git_path(project,config)
     logging.debug(url)
     cmd = git_command + " clone "+ url + " " + dest_dir
+    logging.debug(cmd)
     run_and_log(cmd.split())
     os.chdir(dest_dir)
     _git_checkout(project, config)
@@ -364,6 +366,7 @@ def git_pull(project,config):
     run_and_log(cmd)
     cmd = git_command.split()
     cmd.append("pull")
+    logging.debug(cmd)
     run_and_log(cmd)
     _git_checkout(project, config)
     os.chdir("..")
@@ -584,8 +587,9 @@ def doc(project,config,architecture):
     print "doc package: " + project
     os.chdir(config.get(project,"build_dir"))
 
-    make=config.get("commands","make")
-    doc_output = run_and_log([make,"doc"])
+    make = config.get("commands","make")
+    doc = config.get(project,"doc_command")
+    doc_output = run_and_log([make,doc])
     #print doc_output
 
     extra_doc_cmd=config.get(project,"extra_doc_cmd")
