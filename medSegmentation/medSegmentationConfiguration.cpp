@@ -11,12 +11,16 @@
 #include "medAbstractViewScene.h"
 
 #include <medCore/medAbstractView.h>
+#include <medCore/medRunnableProcess.h>
+#include <medCore/medJobManager.h>
 
 #include <medGui/medStackedViewContainers.h>
+#include <medGui/medProgressionStack.h>
 #include <medGui/medViewerConfigurationFactory.h>
 #include <medGui/medViewContainer.h>
 #include <medGui/medViewerToolBoxView.h>
 
+#include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkLog.h>
 
 class EventInterceptor : public QGraphicsObject {
@@ -187,11 +191,26 @@ void medSegmentationConfiguration::mousePressEvent( QGraphicsSceneMouseEvent * m
         QVector3D posImage = scene->sceneToImagePos( mouseEvent->pos() );
         //Project vector onto plane
 
-        QScopedPointer <mseg::AlgorithmConnectedThreshold> alg( new mseg::AlgorithmConnectedThreshold() );
+
+        dtkSmartPointer <mseg::AlgorithmConnectedThreshold> alg( new mseg::AlgorithmConnectedThreshold() );
 
         alg->setInput(viewData);
         alg->setSeedPoint( posImage );
-        alg->update();
+
+        QScopedPointer<medRunnableProcess> runProcess (new medRunnableProcess) ;
+
+        runProcess->setProcess (alg);
+
+        d->segmentationToolBox->progressionStack()->addJobItem(runProcess.data(), "Progress:");
+
+        connect (runProcess.data(), SIGNAL (success  (QObject*)),  this, SIGNAL (success (QObject*)));
+        connect (runProcess.data(), SIGNAL (failure  (QObject*)),  this, SIGNAL (failure (QObject*)));
+        connect (runProcess.data(), SIGNAL (cancelled (QObject*)), this, SIGNAL (cancelled (QObject*)));
+
+        medJobManager::instance()->registerJobItem(runProcess.data(), tr("Segmenting"));
+        QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess.take()));
+
+//        alg->update();
 
 #pragma message DTK_COMPILER_WARNING("JDS : Need to complete this")
         /*
@@ -203,7 +222,7 @@ void medSegmentationConfiguration::mousePressEvent( QGraphicsSceneMouseEvent * m
         */
         
         dtkSmartPointer<dtkAbstractData> outputData = alg->output();
-        medDatabaseCon
+//        medDatabaseCon
     }
 }
 
@@ -213,6 +232,24 @@ void medSegmentationConfiguration::mouseReleaseEvent( QGraphicsSceneMouseEvent *
     scene->removeItem( d->viewEventHandler.data() );
     mouseEvent->accept();
 }
+
+void medSegmentationConfiguration::success( QObject * sender )
+{
+
+}
+
+void medSegmentationConfiguration::failure( QObject * sender )
+{
+
+}
+
+void medSegmentationConfiguration::cancelled( QObject * sender )
+{
+
+}
+
+
+
 
 
 
