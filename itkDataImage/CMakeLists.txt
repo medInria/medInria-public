@@ -49,6 +49,7 @@ include_directories(../dtkItkLogForwarder)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImagePlugin.h
+  itkDataImageBase.h
   itkDataImageChar3.h
   itkDataImageChar4.h
   itkDataImageUChar4.h
@@ -71,13 +72,18 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageVector3.h
   itkDataImageRGB3.h
   itkDataImageRGBA3.h
-  itkDataImageShort4.h)
+  itkDataImageShort4.h
+  )
 
 set(${PROJECT_NAME}_HEADERS
+  itkDataImagePrivate.h
+  itkVectorDataImagePrivate.h
   ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImagePlugin.cpp
+  itkDataImageBase.cpp
+  itkDataImageBaseImpl.cpp
   itkDataImageChar3.cpp
   itkDataImageChar4.cpp
   itkDataImageUChar4.cpp
@@ -100,10 +106,8 @@ set(${PROJECT_NAME}_SOURCES
   itkDataImageVector3.cpp
   itkDataImageRGB3.cpp
   itkDataImageRGBA3.cpp
-  itkDataImageShort4.cpp)
-
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+  itkDataImageShort4.cpp
+  )
 
 ## #################################################################
 ## Build rules
@@ -126,6 +130,10 @@ if (BUILD_TESTING)
   add_subdirectory(Testing)
 endif (BUILD_TESTING)
 
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+
 ## #################################################################
 ## Install rules
 ## #################################################################
@@ -133,4 +141,4 @@ endif (BUILD_TESTING)
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION plugins
   LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION plugins)
+  ARCHIVE DESTINATION lib)

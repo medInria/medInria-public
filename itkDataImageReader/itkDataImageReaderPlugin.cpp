@@ -18,7 +18,7 @@
 #include "itkVTKDataImageReader.h"
 
 #include "itkDataImageReaderPlugin.h"
-#include "itkLogForwarder.h"
+#include <dtkItkLogForwarder/itkLogForwarder.h>
 
 #include <dtkCore/dtkLog.h>
 
@@ -27,7 +27,7 @@
 // itkDataImageReaderPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class itkDataImageReaderPluginPrivate 
+class itkDataImageReaderPluginPrivate
 {
 public:
     itkDataImageReaderPluginPrivate()
@@ -99,9 +99,9 @@ QStringList itkDataImageReaderPlugin::tags(void) const
 QStringList itkDataImageReaderPlugin::types(void) const
 {
     return QStringList() << "itkMetaDataImageReader"
-#ifdef ITK_USE_SYSTEM_GDCM    
+#ifdef ITK_USE_SYSTEM_GDCM
             << "itkGDCMDataImageReader"
-#endif    
+#endif
             << "itkNiftiDataImageReader"
             << "itkAnalyzeDataImageReader"
             << "itkNrrdDataImageReader"

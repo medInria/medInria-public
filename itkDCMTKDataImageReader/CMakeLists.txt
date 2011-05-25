@@ -42,11 +42,7 @@ include(${vtkINRIA3D_USE_FILE})
 find_package(VTK)
 include(${VTK_USE_FILE})
 
-add_subdirectory(ITKDCMTKIO)
 # add_definitions(-D MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
-
-include_directories(ITKDCMTKIO)
-include_directories(../dtkItkLogForwarder)
 
 ## #################################################################
 ## Input
@@ -103,17 +99,7 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## Install rules
 ## #################################################################
 
-if( ITK_BUILD_SHARED )
-    install(TARGETS ${PROJECT_NAME}  
+install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION plugins
     LIBRARY DESTINATION plugins
-    ARCHIVE DESTINATION plugins)
-    install(DIRECTORY ${ITK_LIBRARY_DIRS}/ 
-    DESTINATION lib
-    FILES_MATCHING PATTERN "lib*")
-else( ITK_BUILD_SHARED )
-  install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION plugins
-    LIBRARY DESTINATION plugins
-    ARCHIVE DESTINATION plugins)
-endif( ITK_BUILD_SHARED )
+    ARCHIVE DESTINATION lib)

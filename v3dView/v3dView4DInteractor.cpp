@@ -9,7 +9,7 @@
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkCollection.h>
-
+#include <vtkProperty.h>
 #include <vtkImageView.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -47,7 +47,7 @@ v3dView4DInteractor::~v3dView4DInteractor()
 {
   this->disable();
   d->sequenceList->Delete();
-  
+
   delete d;
   d = 0;
 }
@@ -79,18 +79,22 @@ void v3dView4DInteractor::appendData(dtkAbstractData *data)
   if (data->description() == "vtkDataMesh4D" )
   {
     vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
-    
+    //vtkProperty *prop = vtkProperty::New();
     if (!sequence || d->sequenceList->IsItemPresent (sequence))
       return;
-    
+
     switch (sequence->GetType())
     {
 	case vtkMetaDataSet::VTK_META_SURFACE_MESH:
 	case vtkMetaDataSet::VTK_META_VOLUME_MESH:
-	  d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
-	  d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));
+
+      //prop->SetColor(1,0,1);
+
+      //d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));//->SetProperty(prop);
+	  //d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));//->SetProperty(prop);
 	  d->sequenceList->AddItem (sequence);
 	  d->dataList.push_back (data);
+
 	  break;
 	default:
 	  break;
@@ -140,6 +144,7 @@ void v3dView4DInteractor::setView(dtkAbstractView *view)
 {
   if (v3dView *v3dview = dynamic_cast<v3dView*>(view) )
   {
+
       d->view = v3dview;
       connect (view, SIGNAL (dataAdded (dtkAbstractData*)), this, SLOT (onDataAdded (dtkAbstractData*)));
   }
@@ -152,7 +157,7 @@ void v3dView4DInteractor::onDataAdded(dtkAbstractData *data)
 
 bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
-  
+
   if ( ( data->description() == "vtkDataMesh4D" ) ||
        ( data->description().contains ("Image") &&
 	 data->description().contains ("4") ) )
@@ -161,7 +166,7 @@ bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
     this->enable ();
     return true;
   }
-  
+
   return false;
 }
 
@@ -169,7 +174,7 @@ void v3dView4DInteractor::enable(void)
 {
   if (this->enabled())
     return;
-  
+
   med4DAbstractViewInteractor::enable();
 }
 
@@ -185,12 +190,12 @@ void v3dView4DInteractor::disable(void)
 	vtkMetaDataSetSequence *sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject(i));
 	if (!sequence)
 	  continue;
-	
+
 	// d->view->view2d ()->RemoveDataset (sequence->GetDataSet());
 	// d->view->view3d ()->RemoveDataset (sequence->GetDataSet());
       }
     }
-    
+
     med4DAbstractViewInteractor::disable();
 }
 
@@ -207,7 +212,7 @@ void v3dView4DInteractor::setCurrentTime (double time)
 {
   if (!d->view)
     return;
-  
+
   double range[2] = {0,0};
   this->sequencesRange(range);
 
@@ -236,10 +241,10 @@ void v3dView4DInteractor::sequencesRange (double* range)
     range[1] = 1.0;
     return;
   }
-  
+
   double mintime = 3000;
   double maxtime = -3000;
-  
+
   for (int i=0; i<d->sequenceList->GetNumberOfItems(); i++)
   {
     vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject (i));
@@ -259,9 +264,9 @@ double v3dView4DInteractor::sequencesMinTimeStep (void)
   {
     return 0.01;
   }
-  
+
   double step = 3000;
-  
+
   for (int i=0; i<d->sequenceList->GetNumberOfItems(); i++)
   {
     vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast(d->sequenceList->GetItemAsObject (i));
@@ -271,8 +276,8 @@ double v3dView4DInteractor::sequencesMinTimeStep (void)
     double maxtime = sequence->GetMaxTime();
     double number = sequence->GetNumberOfMetaDataSets();
 
-    step = std::min ( step, (maxtime - mintime)/(number - 1.0) );  
-  }  
+    step = std::min ( step, (maxtime - mintime)/(number - 1.0) );
+  }
 
   return step;
 }
