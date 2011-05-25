@@ -12,7 +12,8 @@ INCLUDE(${ITK_USE_FILE})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set(DTKLOGFORWARDER_HEADERS
-  itkLogForwarder.h)
+  itkLogForwarder.h
+  dtkItkLogForwarderExport.h)
 
 set(DTKLOGFORWARDER_SOURCES
   itkLogForwarder.cpp)
@@ -22,12 +23,13 @@ set(ARCHIVE_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/lib)
 set(RUNTIME_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
-add_library(${PROJECT_NAME} 
+add_library(${PROJECT_NAME} SHARED
   ${DTKLOGFORWARDER_HEADERS}
   ${DTKLOGFORWARDER_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
   dtkCore
-  ${ITK_LIBRARIES})
+  ${ITK_LIBRARIES}
+  ${QT_LIBRARIES})
 
 

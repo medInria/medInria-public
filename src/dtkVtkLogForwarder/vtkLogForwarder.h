@@ -1,11 +1,13 @@
 #include "vtkOutputWindow.h"
 
+#include "dtkVtkLogForwarderExport.h"
+
 /**
 * @class vtkLogForwarder
 * @brief This class forwards all vtk messages (Warning, Error, Debug) to the dtkLogger class
 * You only need to instantiate this class once at the very beginning of you code (that uses itk)
 */
-class vtkLogForwarder : public vtkOutputWindow 
+class DTKVTKLOGFORWARDER_EXPORT vtkLogForwarder : public vtkOutputWindow 
 {
 public:
     static vtkLogForwarder *New();
