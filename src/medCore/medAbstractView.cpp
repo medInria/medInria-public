@@ -286,10 +286,12 @@ void medAbstractView::addDataInList(dtkAbstractData * data)
     d->dataList.append(data);
 }
 
+
 dtkAbstractData * medAbstractView::dataInList(int layer)
 {
     if (layer < d->dataList.size())
         return d->dataList.at(layer);
+
 
     return NULL;
 }
