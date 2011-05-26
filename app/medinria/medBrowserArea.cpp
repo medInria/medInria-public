@@ -34,12 +34,11 @@
 #include <medCore/medDataManager.h>
 #include <medCore/medAbstractDataSource.h>
 #include <medCore/medAbstractDataSourceFactory.h>
+#include <medCore/medStorage.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseExporter.h>
 #include <medSql/medDatabaseImporter.h>
-#include <medSql/medDatabaseNonPersistentImporter.h>
-#include <medSql/medDatabaseNonPersistentController.h>
 
 #include <medGui/medProgressionStack.h>
 #include <medGui/medToolBox.h>
@@ -163,17 +162,30 @@ void medBrowserArea::onFileImport(QString path)
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
 {
-  medDatabaseNonPersistentController::instance()->import(data);
-  d->dbSource->update();
+  QString patientName = data->metaDataValues(tr("PatientName"))[0];
+  QString studyName   = data->metaDataValues(tr("StudyDescription"))[0];
+  QString seriesName  = data->metaDataValues(tr("SeriesDescription"))[0];
   
-  //medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data);
-  //medDataIndex indexData = importer->run();
+  QString s_patientName = patientName.simplified();
+  QString s_studyName   = studyName.simplified();
+  QString s_seriesName  = seriesName.simplified();  
   
-  //connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
-  //connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
-  //d->toolbox_jobs->stack()->addJobItem(importer, data->metaDataValues(tr("PatientName"))[0]);
-  //medJobManager::instance()->registerJobItem(importer);
-  //QThreadPool::globalInstance()->start(importer);
+  if ((s_patientName == "")||(s_studyName == "")||(s_seriesName == ""))
+    return;
+  
+  QFileInfo fileInfo (medStorage::dataLocation() + "/" + s_patientName + "/" + s_studyName   + "/");
+  
+  if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path()))
+  {
+    qDebug() << "Cannot create directory: " << fileInfo.dir().path();
+    return;
+  }  
+  
+  medDataIndex importIndex = medDataManager::instance()->importNonPersistent(data);
+  medDataManager::instance()->storeNonPersistentDataToDatabase();
+  //medDataManager::instance()->storeNonPersistentDataToDatabase(importIndex);
+  
+  this->onFileImported();
 }
 
 void medBrowserArea::onFileImported(void)

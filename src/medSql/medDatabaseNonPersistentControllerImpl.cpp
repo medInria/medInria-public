@@ -89,7 +89,7 @@ QList<medDatabaseNonPersistentItem *> medDatabaseNonPersistentControllerImpl::it
 
 void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatabaseNonPersistentItem *item)
 {
-    d->items.insert(index, item);
+  d->items.insert(index, item);
 }
 
 medDataIndex medDatabaseNonPersistentControllerImpl::import(const QString& file)

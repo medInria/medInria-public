@@ -58,7 +58,7 @@ public:
     * @params const dtkAbstractData & data
     * @return medDataIndex
     */
-    medDataIndex import(dtkAbstractData *data);
+    medDataIndex import(QSharedPointer<dtkAbstractData> &data);
 
     /**
     * Use this function to insert data into the non-persistent database,
