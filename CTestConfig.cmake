@@ -18,8 +18,9 @@
 ######################################################################
 
 set(CTEST_PROJECT_NAME "Mediseen-medinria")
-set(NIGHTLY_START_TIME "21:00:00 EST")
-set(DROP_METHOD "http")
-set(DROP_SITE "cdash.inria.fr")
-set(DROP_LOCATION "/CDash/submit.php?project=Mediseen-medinria")
-set(DROP_SITE_CDASH TRUE)
+set(CTEST_DROP_LOCATION "/CDash/submit.php?project=Mediseen-medinria")
+
+set(CTEST_NIGHTLY_START_TIME "21:00:00 EST")
+set(CTEST_DROP_METHOD "http")
+set(CTEST_DROP_SITE "cdash.inria.fr")
+set(CTEST_DROP_SITE_CDASH TRUE)
