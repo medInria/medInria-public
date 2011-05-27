@@ -73,7 +73,7 @@ public slots:
   virtual medDataIndex import(const medDataIndex& index, const medAbstractDbController& controller);
   
   /**
-   * This method allows importing data from other databases
+   * This method allows removing one data from the database
    * @params const medDataIndex & index The data index to be removed in the db
    */
   virtual void remove(const medDataIndex& index);

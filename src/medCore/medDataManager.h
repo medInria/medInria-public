@@ -55,7 +55,7 @@ public:
     * Use this function to insert data into the database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params const dtkAbstractData & data
+    * @params QSharedPointer<dtkAbstractData> & data
     * @return medDataIndex
     */
     medDataIndex import(QSharedPointer<dtkAbstractData> &data);
