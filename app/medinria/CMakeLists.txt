@@ -24,6 +24,7 @@ project(medinria)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
+  medApplication.h  
   medBrowserArea.h  
   medBrowserToolBoxSource.h
   medBrowserToolBoxSettings.h  
@@ -46,6 +47,7 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_SOURCES
   main.cpp
+  medApplication.cpp  
   medBrowserArea.cpp  
   medBrowserToolBoxSource.cpp
   medBrowserToolBoxSettings.cpp    
@@ -105,6 +107,10 @@ target_link_libraries(${PROJECT_NAME}
   medGui
   medSql
   medPacs)
+
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Bundle setup
