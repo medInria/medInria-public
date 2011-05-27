@@ -51,6 +51,14 @@ public:
     ~medToolBoxHeader(void);
 
     /**
+     * @brief Returns a preferred size hint (32x100px).
+     *
+     * @param void
+     * @return QSize
+    */
+    QSize sizeHint(void) const;
+
+    /**
      * @brief Sets the header's title.
      *
      * @param title

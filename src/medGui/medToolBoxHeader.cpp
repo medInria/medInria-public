@@ -32,13 +32,6 @@ medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medT
     d->title = "Untitled";
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-    // // QFontDatabase fdb;
-    // // qDebug() << fdb.families();
-    // QFont font = this->font();
-    // font.setFamily( "CM Sans" );
-    // // font.setLetterSpacing( QFont::AbsoluteSpacing, -5.0 );
-    // this->setFont( font );
 }
 
 medToolBoxHeader::~medToolBoxHeader(void)
@@ -46,6 +39,11 @@ medToolBoxHeader::~medToolBoxHeader(void)
     delete d;
 
     d = NULL;
+}
+
+QSize medToolBoxHeader::sizeHint(void) const
+{
+    return QSize(100, 32);
 }
 
 void medToolBoxHeader::setTitle(const QString& title)
@@ -61,11 +59,7 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
 
-    // QColor c = painter.pen().color();
-    // c.setAlpha( 200 );
-    // painter.setPen( QPen( c ) );
-
-    painter.translate(7, 3);
+    painter.translate(16, 10);
     
     painter.drawText(rect, Qt::AlignLeft, d->title);
     painter.end();
