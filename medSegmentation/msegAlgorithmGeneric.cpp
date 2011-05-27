@@ -1,5 +1,8 @@
 #include "msegAlgorithmGeneric.h"
 
+// Temporary fudge:
+#include "msegAlgorithmConnectedThresholdParametersWidget.h"
+
 #include <dtkCore/dtkAbstractData.h>
 
 #include <dtkCore/dtkLog.h>

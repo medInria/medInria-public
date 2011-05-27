@@ -48,6 +48,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/medAbstractViewExtension)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   msegAlgorithmConnectedThreshold.h
+  msegAlgorithmConnectedThresholdParametersWidget.h
   msegAlgorithmGeneric.h
   msegConfiguration.h
   msegController.h
@@ -64,6 +65,7 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   itkSegmentationCommand.cxx
   msegAlgorithmConnectedThreshold.cpp
+  msegAlgorithmConnectedThresholdParametersWidget.cpp
   msegAlgorithmGeneric.cpp
   msegConfiguration.cpp
   msegController.cpp

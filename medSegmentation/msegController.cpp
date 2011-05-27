@@ -4,6 +4,8 @@
 #include "msegConfiguration.h"
 #include "msegToolbox.h"
 #include "msegAlgorithmConnectedThreshold.h"
+// Until I have AlgorithmParametersWidget
+#include "msegAlgorithmConnectedThresholdParametersWidget.h"
 
 #include "medAbstractViewScene.h"
 
@@ -29,7 +31,10 @@ struct AlgorithmInfo {
 class ControllerPrivate {
 public:
     Configuration * configuration;
-    QHash<dtkAbstractView *, dtkSmartPointer<View> > views;
+
+    typedef QHash<dtkAbstractView *, dtkSmartPointer<View> > ViewContainerType;
+    ViewContainerType views;
+
     typedef QHash<QString, AlgorithmInfo > AlgInfoContainerType;
     AlgInfoContainerType algInfo;
 
@@ -37,11 +42,16 @@ public:
 
     typedef QHash< QObject *,  dtkSmartPointer< AlgorithmGeneric > > RunningProcessType;
     RunningProcessType runningProcesses;
+
+    enum EventFilterStatus { FilterOff, FilterOn, FilterOnUntilClick };
+    EventFilterStatus filterStatus;
 };
 
 Controller::Controller(Configuration * configuration) :
     d (new ControllerPrivate)
 {
+    d->filterStatus = ControllerPrivate::FilterOff;
+
     d->configuration = configuration;
     connect(d->configuration,SIGNAL(viewAdded(dtkAbstractView*)),
         this,SLOT(onViewAdded(dtkAbstractView*)));
@@ -97,21 +107,7 @@ dtkAbstractData * Controller::viewData( dtkAbstractView * view )
     return reinterpret_cast< dtkAbstractData * >( mview->data() );
 }
 
-void Controller::beginAddSeedPoint()
-{
-    QList<dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
-    foreach( dtkAbstractView * view, views ) {
-//        dtkAbstractView * view = stackedViewContainers()->container("Single")->view() ;
-
-
-    }
-
-}
-
-
-
-
-void Controller::success( QObject * sender )
+void Controller::onSuccess( QObject * sender )
 {
 //        alg->update();
     medRunnableProcess * runProcess = qobject_cast< medRunnableProcess *>(sender);
@@ -135,12 +131,12 @@ void Controller::success( QObject * sender )
     d->runningProcesses.remove( sender );
 }
 
-void Controller::failure( QObject * sender )
+void Controller::onFailure( QObject * sender )
 {
     d->runningProcesses.remove( sender );
 }
 
-void Controller::cancelled( QObject * sender )
+void Controller::onCancelled( QObject * sender )
 {
     d->runningProcesses.remove( sender );
 }
@@ -153,9 +149,9 @@ void Controller::run( mseg::AlgorithmGeneric* alg )
 
     d->configuration->progressionStack()->addJobItem(runProcess.data(), "Progress:");
 
-    connect (runProcess.data(), SIGNAL (success  (QObject*)),  this, SIGNAL (success (QObject*)));
-    connect (runProcess.data(), SIGNAL (failure  (QObject*)),  this, SIGNAL (failure (QObject*)));
-    connect (runProcess.data(), SIGNAL (cancelled (QObject*)), this, SIGNAL (cancelled (QObject*)));
+    connect (runProcess.data(), SIGNAL (onSuccess  (QObject*)),  this, SLOT (onSuccess (QObject*)));
+    connect (runProcess.data(), SIGNAL (onFailure  (QObject*)),  this, SLOT (onFailure (QObject*)));
+    connect (runProcess.data(), SIGNAL (onCancelled (QObject*)), this, SLOT (onCancelled (QObject*)));
 
     medJobManager::instance()->registerJobItem(runProcess.data(), tr("Segmenting"));
     d->runningProcesses.insert(runProcess.data(), dtkSmartPointer< AlgorithmGeneric >(alg) );
@@ -164,21 +160,13 @@ void Controller::run( mseg::AlgorithmGeneric* alg )
 
 void Controller::onViewAdded( dtkAbstractView* view )
 {
-    if ( medAbstractView * mView = qobject_cast< medAbstractView * >( view ) ) {
-        dtkSmartPointer< View > viewSeg;
-        viewSeg.takePointer( new View( this ) );
-        d->views[ view ] = viewSeg;
-        viewSeg->installOnView( mView );
-    }
+
 }
 
 void Controller::onViewRemoved( dtkAbstractView* view )
 {
-    if ( d->views.contains( view ) ) {
-        View * viewSeg = d->views[ view ];
-        viewSeg->removeFromView();
-        d->views.remove( view );
-    }
+    medAbstractViewScene *vscene = Controller::viewScene(view);
+    // Filters?
 }
 
 void Controller::initializeAlgorithms()
@@ -226,6 +214,21 @@ void Controller::onAlgorithmSelected( const QString & algName )
 
     }
 }
+
+
+void Controller::addViewEventFilter( View * filter )
+{
+    QList< dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
+    foreach( dtkAbstractView * view, views ) {
+        medAbstractViewScene *vscene = Controller::viewScene(view);
+        vscene->installEventFilter( filter );
+    }
+}
+
+
+
+
+
 
 
 

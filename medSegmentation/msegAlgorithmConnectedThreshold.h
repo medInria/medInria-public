@@ -23,8 +23,11 @@ public:
     QString localizedName() MED_OVERRIDE;
     AlgorithmParametersWidget *createParametersWidget(Controller * controller, QWidget *parent) MED_OVERRIDE;
 
-    QVector3D seedPoint() const { return m_seedPoint; }
-    void setSeedPoint(const QVector3D & val) { m_seedPoint = val; }
+    QList<QVector3D> seedPoints() const { return m_seedPoints; }
+    void addSeedPoint(const QVector3D & val) { 
+        if (!m_seedPoints.contains(val))
+            m_seedPoints.push_back( val ); 
+    }
 
     double lowThreshold() const { return m_lowThreshold; }
     void setLowThreshold(double val) { m_lowThreshold = val; }
@@ -41,7 +44,7 @@ private:
     template < typename TPixel, unsigned int N >
         friend class AlgorithmConnectedThresholdPrivate;
 
-    QVector3D m_seedPoint;
+    QList<QVector3D> m_seedPoints;
 
     double m_lowThreshold;
     double m_highThreshold;

@@ -1,4 +1,6 @@
 #include "msegAlgorithmConnectedThreshold.h"
+
+#include "msegAlgorithmConnectedThresholdParametersWidget.h"
 #include "msegController.h"
 
 #include <itkConnectedThresholdImageFilter.h>
@@ -21,29 +23,6 @@ private:
     AlgorithmConnectedThreshold * self;
 };
 
-
-class AlgorithmConnectedThresholdParametersWidget : public AlgorithmParametersWidget
-{
-public:
-    AlgorithmConnectedThresholdParametersWidget( Controller *controller, QWidget *parent ) : 
-      AlgorithmParametersWidget( controller, parent) 
-      {
-        QVBoxLayout * layout = new QVBoxLayout(this);
-
-        QHBoxLayout * highLowLayout = new QHBoxLayout();
-
-        m_lowThresh = new QDoubleSpinBox(this);
-        m_highThresh = new QDoubleSpinBox(this);
-        highLowLayout->addWidget( m_lowThresh );
-        highLowLayout->addWidget( m_highThresh );
-
-        layout->addLayout( highLowLayout );
-    }
-
-private:
-    QDoubleSpinBox * m_lowThresh;
-    QDoubleSpinBox * m_highThresh;
-};
 
 AlgorithmConnectedThreshold::AlgorithmConnectedThreshold()
 {
@@ -102,19 +81,23 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractDa
 
     InputImageType::PointType point;
 
-    do {
-        point[0] = self->m_seedPoint.x();
-        if ( NDim < 2 ) break;
-        point[1] = self->m_seedPoint.y();
-        if ( NDim < 3 ) break;
-        point[2] = self->m_seedPoint.z();
-    } while (false);
-
-    ImageFunctionType::IndexType index;
-    bool isInside = image->TransformPhysicalPointToIndex (point, index);
-
     ConnectedThresholdImageFilterType::Pointer ctiFilter( ConnectedThresholdImageFilterType::New() );
-    ctiFilter->AddSeed( index );
+
+    foreach (const QVector3D & seedPoint, self->m_seedPoints ){
+        do {
+            point[0] = seedPoint.x();
+            if ( NDim < 2 ) break;
+            point[1] = seedPoint.y();
+            if ( NDim < 3 ) break;
+            point[2] = seedPoint.z();
+        } while (false);
+
+        ImageFunctionType::IndexType index;
+        bool isInside = image->TransformPhysicalPointToIndex (point, index);
+
+        ctiFilter->AddSeed( index );
+    }
+
     ctiFilter->SetInput( image );
     ctiFilter->Update();
 

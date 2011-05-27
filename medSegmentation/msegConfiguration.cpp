@@ -102,13 +102,6 @@ void Configuration::onViewRemoved( dtkAbstractView* view )
     emit viewRemoved(view);
 }
 
-void Configuration::beginAddSeedPoint()
-{
-    d->controller->beginAddSeedPoint();
-
-}
-
-
 
 medProgressionStack * Configuration::progressionStack()
 {

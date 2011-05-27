@@ -25,7 +25,6 @@ public:
     void setController( mseg::Controller * controller);
 
 signals:
-    void addSeedPointPressed();
     void algorithmSelected(const QString & algName);
 
 public slots:

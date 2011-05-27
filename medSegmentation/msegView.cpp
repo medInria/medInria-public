@@ -42,14 +42,13 @@ QString View::s_description()
 
 View::View(Controller * controller) 
     : dtkAbstractView(), 
-    m_segmentationController(controller),
-    m_baseView(NULL)
+    m_segmentationController(controller)
 {
 }
 
 View::~View(void)
 {
-    removeFromView();
+    removeFromAllViews();
 }
 
 QString View::description(void) const
@@ -57,79 +56,45 @@ QString View::description(void) const
     return s_description();
 }
 
-bool View::mousePressEvent( QGraphicsSceneMouseEvent *mouseEvent )
+bool View::mousePressEvent( medAbstractViewScene * vscene, QGraphicsSceneMouseEvent *mouseEvent )
 {
-    if ( ! m_baseView ) 
-        return false;
-
-    medAbstractViewScene * vscene = this->scene();
-
-    Q_ASSERT( vscene );
-
-    dtkAbstractView * view = vscene->view();
-        // stackedViewContainers()->container("Single")->view() ;
-
-    dtkAbstractData * viewData = Controller::viewData( view );
-
-    mouseEvent->accept();
-
-    if (vscene->isScene2D()) {
-        // Convert mouse click to a 3D point in the image.
-
-        QVector3D posImage = vscene->sceneToImagePos( mouseEvent->pos() );
-        //Project vector onto plane
-
-
-        dtkSmartPointer <mseg::AlgorithmConnectedThreshold> alg( new mseg::AlgorithmConnectedThreshold() );
-
-        alg->setInput(viewData);
-        alg->setSeedPoint( posImage );
-
-        this->m_segmentationController->run( alg );
-
-    }
-    return mouseEvent->isAccepted();
+    return false;
+}
+bool View::mouseReleaseEvent( medAbstractViewScene * vscene, QGraphicsSceneMouseEvent *mouseEvent )
+{
+    return false;
+}
+bool View::mouseMoveEvent( medAbstractViewScene * vscene, QGraphicsSceneMouseEvent *mouseEvent )
+{
+    return false;
 }
 
-bool View::mouseMoveEvent( QGraphicsSceneMouseEvent *mouseEvent )
-{
-    return mouseEvent->isAccepted();
-}
-
-bool View::mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent )
-{
-    medAbstractViewScene * vscene = this->scene();
-    //ConfigurationPrivate::viewScene( view );
-
-    Q_ASSERT( vscene );
-
-//    scene->removeItem( d->viewEventHandler.data() );
-    return mouseEvent->isAccepted();
-}
 
 bool View::eventFilter( QObject *obj, ::QEvent *event )
 {
-    if ( !qobject_cast<medAbstractViewScene*>(obj) ) {
+    medAbstractViewScene * vscene = qobject_cast<medAbstractViewScene*>(obj);
+    if ( !vscene ) {
         dtkWarning() << "mseg::View::eventFilter : Filtering events on unknown QObject";
         return false;
     }
 
     // Note : QEvent is not derived from QObject.
+    // Using static_cast instead of dynamic_cast for speed of interaction.
     switch (event->type()) {
     case ( QEvent::GraphicsSceneMousePress) :
         {
-            QGraphicsSceneMouseEvent* mouseEvent = dynamic_cast<QGraphicsSceneMouseEvent *>(event);
-            return this->mousePressEvent( mouseEvent );
+            QGraphicsSceneMouseEvent* mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+            return this->mousePressEvent( vscene, mouseEvent );
         }
     case ( QEvent::GraphicsSceneMouseMove) :
         {
-            QGraphicsSceneMouseEvent* mouseEvent = dynamic_cast<QGraphicsSceneMouseEvent *>(event);
-            return this->mouseMoveEvent( mouseEvent );
+            QGraphicsSceneMouseEvent* mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+            return this->mouseMoveEvent( vscene, mouseEvent );
         }
     case ( QEvent::GraphicsSceneMouseRelease ) :
         {
-            QGraphicsSceneMouseEvent* mouseEvent = dynamic_cast<QGraphicsSceneMouseEvent *>(event);
-            return this->mouseReleaseEvent( mouseEvent );
+            QGraphicsSceneMouseEvent* mouseEvent = static_cast<QGraphicsSceneMouseEvent *>(event);
+            return this->mouseReleaseEvent( vscene, mouseEvent );
         }
     default:
         {
@@ -141,34 +106,38 @@ bool View::eventFilter( QObject *obj, ::QEvent *event )
 
 void View::installOnView( medAbstractView * view )
 {
-    if (m_baseView) 
+    if (m_views.contains(view)) {
         dtkWarning() << "Installing View when it has already been installed";
+        return;
+    }
 
-    m_baseView = view;
-    medAbstractViewScene * scene = Controller::viewScene( m_baseView );
+    m_views.insert(view);
+    medAbstractViewScene * scene = Controller::viewScene( view );
     scene->installEventFilter( this );
 }
 
-void View::removeFromView()
+void View::removeFromView(medAbstractView * view)
 {
-    if ( m_baseView ) {
-        medAbstractViewScene * scene = Controller::viewScene( m_baseView );
+    if ( m_views.contains(view)) {
+        medAbstractViewScene * scene = Controller::viewScene( view );
         scene->removeEventFilter( this );
-        m_baseView = NULL;
+        m_views.remove(view);
     }
 }
 
-
-medAbstractViewScene * View::scene()
+void View::removeFromAllViews()
 {
-    medAbstractViewScene * ret = NULL;
-    if ( m_baseView ) {
-        QGraphicsView * gv = qobject_cast< QGraphicsView *>( m_baseView->receiverWidget() );
-        if ( gv ) {
-             ret = qobject_cast< medAbstractViewScene *>(gv->scene());
-        }
+    foreach(medAbstractView * view, m_views) {
+        medAbstractViewScene * scene = Controller::viewScene( view );
+        scene->removeEventFilter( this );
     }
-    return ret;
+    m_views.clear();
+}
+
+
+medAbstractViewScene * View::scene(medAbstractView * view)
+{
+    return Controller::viewScene( view );;
 }
 
 

@@ -11,7 +11,6 @@ namespace mseg {
 class ToolboxPrivate
 {
 public:
-    QPushButton *addSeedPointButton;
     medProgressionStack *progression_stack;
     QBoxLayout *algorithmParameterLayout;
     QComboBox * algorithmCombo;
@@ -30,8 +29,6 @@ Toolbox::Toolbox(QWidget *parent) :
 
     QVBoxLayout *displayLayout = new QVBoxLayout(displayWidget);
 
-    d->addSeedPointButton = new QPushButton(tr("Add Seed Point") , displayWidget );
-
     d->algorithmCombo = new QComboBox( this );
 
     this->setTitle("Segmentation");
@@ -40,10 +37,7 @@ Toolbox::Toolbox(QWidget *parent) :
     d->progression_stack = new medProgressionStack(displayWidget);
     displayLayout->addWidget( d->algorithmCombo );
     displayLayout->addLayout( d->algorithmParameterLayout );
-    displayLayout->addWidget( d->addSeedPointButton );
     displayLayout->addWidget( d->progression_stack );
-
-    connect (d->addSeedPointButton,     SIGNAL(pressed()),            this, SIGNAL (addSeedPointPressed ()));
 
     this->addWidget(displayWidget);
 

@@ -11,11 +11,13 @@ class dtkAbstractData;
 class dtkAbstractView;
 
 class QGraphicsSceneMouseEvent;
+class medAbstractViewScene;
 
 namespace mseg {
     class ControllerPrivate;
     class Configuration;
     class AlgorithmGeneric;
+    class View;
 }
 
 namespace mseg {
@@ -31,10 +33,7 @@ public:
     static medAbstractViewScene * viewScene( dtkAbstractView * view );
     static dtkAbstractData * viewData( dtkAbstractView * view );
 
-    void beginAddSeedPoint();
-    bool mousePressEvent( QObject *obj, QGraphicsSceneMouseEvent *mouseEvent);
-    bool mouseMoveEvent( QObject *obj, QGraphicsSceneMouseEvent *mouseEvent);
-    bool mouseReleaseEvent( QObject *obj, QGraphicsSceneMouseEvent *mouseEvent);
+    void addViewEventFilter(View * filter);
 
     void run( mseg::AlgorithmGeneric* alg );
     bool canUndo() const;
@@ -56,6 +55,8 @@ public slots:
 
 protected:
     void initializeAlgorithms();
+    void activateViews( bool isActivate = true );
+
 private:
 
     ControllerPrivate * d;

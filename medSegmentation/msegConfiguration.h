@@ -56,7 +56,6 @@ signals:
 public slots:
     void onViewAdded(dtkAbstractView* view);
     void onViewRemoved(dtkAbstractView* view);
-    void beginAddSeedPoint();
 
 protected:
     // Creator function

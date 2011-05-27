@@ -32,19 +32,7 @@ class AlgorithmGenericPrivate;
 class AlgorithmParametersWidget;
 class Controller;
 
-class AlgorithmParametersWidget : public QWidget {
-public:
-    AlgorithmParametersWidget( Controller * controller, QWidget * parent ) : 
-      QWidget(parent), 
-          m_controller(controller) {}
-    virtual ~AlgorithmParametersWidget() {}
 
-protected:
-    Controller * controller() { return m_controller; }
-
-private:
-    Controller * m_controller;
-};
 
 /** Generic segmentation algorithm */
 class AlgorithmGeneric : public dtkAbstractProcess {

@@ -29,22 +29,25 @@ public:
 
     virtual QString description(void) const;
 
-    void installOnView( medAbstractView * view);
-    void removeFromView();
+    void installOnView(medAbstractView * view);
+    void removeFromView(medAbstractView * view);
+    void removeFromAllViews();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
-    bool mousePressEvent(   QGraphicsSceneMouseEvent * mouseEvent );
-    bool mouseMoveEvent(    QGraphicsSceneMouseEvent * mouseEvent );
-    bool mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent );
 
-    medAbstractViewScene * scene();
+    medAbstractViewScene * scene(medAbstractView * view);
+
+    virtual bool mousePressEvent( medAbstractViewScene *vscene, QGraphicsSceneMouseEvent *mouseEvent );
+    virtual bool mouseReleaseEvent( medAbstractViewScene *vscene, QGraphicsSceneMouseEvent *mouseEvent );
+    virtual bool mouseMoveEvent( medAbstractViewScene *vscene, QGraphicsSceneMouseEvent *mouseEvent );
 
 private:
     static QString s_description();
 
     Controller * m_segmentationController;
-    medAbstractView * m_baseView;
+    QSet<medAbstractView *> m_views;
+
 };
 
 } // namespace mseg
