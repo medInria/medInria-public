@@ -22,7 +22,7 @@
 
 #include "medGuiExport.h"
 
-#include <QtGui/QWidget>
+#include <QtGui/QFrame>
 
 class dtkAbstractView;
 class medDataIndex;
@@ -36,9 +36,47 @@ class medViewContainerPrivate;
  * 
  *
 */
-class MEDGUI_EXPORT medViewContainer : public QWidget
+class MEDGUI_EXPORT medViewContainer : public QFrame
 {
     Q_OBJECT
+
+    /**
+     * @brief true if this is the current container
+     *
+     * @param void
+    */
+    Q_PROPERTY( bool isCurrent READ isCurrent );
+
+    /**
+     * @brief true if this is the root container
+     *
+     * The root container is not contained in another view container,
+     * it may contain other view containers, if it is multi or custom
+     * view.
+     *
+     * @param void
+    */
+    Q_PROPERTY( bool isRoot READ isRoot );
+
+    /**
+     * @brief true if this is a leaf container
+     *
+     * The leaf container doesn't contain any other view container, it
+     * may be contained in another view container.
+     *
+     * @param void
+    */
+    Q_PROPERTY( bool isLeaf READ isLeaf );
+
+    /**
+     * @brief true if this container contains no other containers or views
+     *
+     * The leaf container doesn't contain any other view, it may be
+     * contained in another view container.
+     *
+     * @param void
+    */
+    Q_PROPERTY( bool isEmpty READ isEmpty );
 
 public:
    
@@ -64,14 +102,109 @@ public:
     /**
      * @brief Gets the current container.
      *
-     * This method is useful in the case of a custom or multi container.
-     * Returns itself in the case of a Type::Default container or any non recursive
-     * or complex container.
+     * This method is useful in the case of a custom or multi
+     * container.  Returns itself in the case of a Type::Default
+     * container or any non recursive or complex container.
      *
      * @param void
      * @return medViewContainer *
     */
+    const medViewContainer *current(void) const;
     medViewContainer *current(void);
+
+    /**
+     * @brief Is this the current container?
+     *
+     * Returns true if this->current() returns this.
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool isCurrent(void) const;
+
+    /**
+     * @brief Is this the root container?
+     *
+     * Returns true if this object is not contained in another view
+     * container.  This method is useful particularly in the case of a
+     * custom or multi container.
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool isRoot(void) const;
+
+    /**
+     * @brief Is this a leaf container?
+     *
+     * Returns true if this object is supposed to contain only views
+     * and no other containers.
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool isLeaf(void) const;
+
+    /**
+     * @brief Is this container empty?
+     *
+     * Returns true if this object contains no other view containers
+     * or views.
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool isEmpty(void) const;
+
+    /**
+     * @brief Get the parent container
+     *
+     * Returns the parent in the container hierarchy, or NULL if this
+     * is the root.  This method is useful particularly in the case of
+     * a custom or multi container.
+     *
+     * @param void
+     * @return medViewContainer *
+    */
+    medViewContainer * parentContainer() const;
+
+    /**
+     * @brief Get the root container
+     *
+     * Returns the root of the container hierarchy.  This method is
+     * useful particularly in the case of a custom or multi container.
+     *
+     * @param void
+     * @return medViewContainer *
+    */
+    const medViewContainer * root() const;
+    medViewContainer * root();
+
+    /**
+     * @brief Get the direct child containers
+     *
+     * Returns a list of the containers contained in this one,
+     * regardless if they are leaves or not.  This method is useful
+     * particularly in the case of a custom or multi container.
+     *
+     * @param void
+     * @return QList< medViewContainer * >
+    */
+    QList< medViewContainer * > childContainers() const;
+
+    /**
+     * @brief Get the leaf containers
+     *
+     * Returns a list the leaf containers which are direct or indirect
+     * children of this one.  If this is a leaf container, the
+     * returned list contains just this.  If excludeEmpty is true,
+     * only leaves containing a view are returned.
+     *
+     * @param excludeEmpty
+     * @return QList< medViewContainer * >
+    */
+    // QList< medViewContainer * > leaves( bool excludeEmpty = false ) const;
+    QList< medViewContainer * > leaves( bool excludeEmpty = false );
 
     /**
      * @brief Gets the medViewPool associated with this container.
@@ -201,7 +334,21 @@ protected:
      * @param container
     */
     void setCurrent(medViewContainer *container);
-    
+
+    /**
+     * @brief Recompute the style sheet after a property change
+     *
+     * The appearance of the border is controlled by the style sheet
+     * (medinria.qss) and depends on the values of properties like
+     * isCurrent, isLeaf, or isEmpty.  However, if the value of a
+     * property changes after the style sheet has been set, it is
+     * necessary to force a style sheet recomputation.  One way to
+     * achieve this is to unset the style sheet and set it again.
+     *
+     * @param void
+    */
+    void recomputeStyleSheet();
+
 protected:
     /**
      * @brief 

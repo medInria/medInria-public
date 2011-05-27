@@ -40,6 +40,11 @@ void medViewContainerSingle2::setView (dtkAbstractView *view)
     connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
 }
 
+bool medViewContainerSingle2::isLeaf(void) const
+{
+    return true;
+}
+
 void medViewContainerSingle2::onViewClosing (void)
 {
     if (d->view) {
@@ -49,6 +54,12 @@ void medViewContainerSingle2::onViewClosing (void)
         // d->pool->removeView (d->view); // do not remove it from the pool
         d->view = NULL;
     }
+
+    // qDebug() << this << __func__;
+    // qDebug() << "isRoot:    " << this->isRoot();
+    // qDebug() << "isLeaf:    " << this->isLeaf();
+    // qDebug() << "isEmpty:   " << this->isEmpty();
+    // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
 
@@ -194,8 +205,12 @@ void medViewContainerMulti::onViewClosing (void)
                 QLayoutItem * item = d->layout->itemAtPosition(i, j);
                 if ( item != NULL ) {
                     QWidget * container = item->widget();
-                    if ( container != closedContainer ) {
-                        content << container;
+                    if ( container == closedContainer ) {
+                        container->hide();
+                        closedItemFound = true;
+                    }
+                    else {
+                        content << container; // keep the container in layout
                         container->show(); // in case view was hidden
 
                         // remember the predecessor resp. successor of
@@ -206,10 +221,6 @@ void medViewContainerMulti::onViewClosing (void)
                         }
                         else
                             predContainer = container;
-                    }
-                    else {
-                        container->hide();
-                        closedItemFound = true;
                     }
 
                     d->layout->removeItem(item);
@@ -233,19 +244,25 @@ void medViewContainerMulti::onViewClosing (void)
 
         view->close();
 
+        delete closedContainer;
+
         this->layout (content);
 
         medViewContainer * current =
             dynamic_cast< medViewContainer * >( succContainer );
         if ( current == NULL )
             current = dynamic_cast< medViewContainer * >( predContainer );
-
-        if ( current != NULL )
-            this->setCurrent( current );
-        else
-            this->setCurrent( this );
+        if ( current == NULL )
+            current = this;
+        this->setCurrent( current );
 
         this->update();
+
+        // qDebug() << this << __func__;
+        // qDebug() << "isRoot:    " << this->isRoot();
+        // qDebug() << "isLeaf:    " << this->isLeaf();
+        // qDebug() << "isEmpty:   " << this->isEmpty();
+        // qDebug() << "isCurrent: " << this->isCurrent();
     }
 }
 

@@ -67,6 +67,11 @@ dtkAbstractView *medViewContainerSingle::view (void) const
     return d->view;
 }
 
+bool medViewContainerSingle::isLeaf(void) const
+{
+    return true;
+}
+
 void medViewContainerSingle::onViewClosing (void)
 {
     if (d->view) {
@@ -80,7 +85,15 @@ void medViewContainerSingle::onViewClosing (void)
         d->view->close();
 
         d->view = NULL;
+
+        this->recomputeStyleSheet();
     }
+
+    // qDebug() << this << __func__;
+    // qDebug() << "isRoot:    " << this->isRoot();
+    // qDebug() << "isLeaf:    " << this->isLeaf();
+    // qDebug() << "isEmpty:   " << this->isEmpty();
+    // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
 void medViewContainerSingle::dragEnterEvent(QDragEnterEvent *event)

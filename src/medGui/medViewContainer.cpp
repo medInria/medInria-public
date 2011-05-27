@@ -26,7 +26,7 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <medCore/medDataIndex.h>
 
-medViewContainer::medViewContainer(QWidget *parent) : QWidget(parent), d(new medViewContainerPrivate)
+medViewContainer::medViewContainer(QWidget *parent) : QFrame(parent), d(new medViewContainerPrivate)
 {
     d->layout = new QGridLayout(this);
     d->layout->setContentsMargins(0, 0, 0, 0);
@@ -61,14 +61,86 @@ medViewContainer::~medViewContainer(void)
 }
 
 
-medViewContainer *medViewContainer::current(void)
+const medViewContainer *medViewContainer::current(void) const
 {
-    medViewContainer * parent =
-        dynamic_cast<medViewContainer *>( this->parentWidget() );
-    if ( parent != NULL )
-        return parent->current();
+    const medViewContainer * root = this->root();
+    if ( root != this )
+        return root->current();
 
     return d->current;
+}
+
+medViewContainer *medViewContainer::current(void)
+{
+    medViewContainer * root = this->root();
+    if ( root != this )
+        return root->current();
+
+    return d->current;
+}
+
+bool medViewContainer::isCurrent(void) const
+{
+    return const_cast< medViewContainer * >( this )->current() == this;
+}
+
+bool medViewContainer::isRoot(void) const
+{
+    return this->parentContainer() == NULL;
+}
+
+bool medViewContainer::isLeaf(void) const
+{
+    return false;
+}
+
+bool medViewContainer::isEmpty(void) const
+{
+    return ( this->view() == NULL &&
+             this->childContainers().count() == 0 );
+}
+
+medViewContainer * medViewContainer::parentContainer() const
+{
+    return dynamic_cast< medViewContainer * >( this->parentWidget() );
+}
+
+const medViewContainer * medViewContainer::root() const
+{
+    medViewContainer * parent = this->parentContainer();
+    return ( parent != NULL ? parent->root() : this );
+}
+
+medViewContainer * medViewContainer::root()
+{
+    medViewContainer * parent = this->parentContainer();
+    return ( parent != NULL ? parent->root() : this );
+}
+
+QList< medViewContainer * > medViewContainer::childContainers() const
+{
+    QList< medViewContainer * > containers;
+    foreach ( QObject * child, this->children() ) {
+        medViewContainer * c = dynamic_cast<medViewContainer *>( child );
+        if ( c != NULL )
+            containers << c;
+    }
+
+    return containers;
+}
+
+QList< medViewContainer * > medViewContainer::leaves( bool excludeEmpty )
+{
+    QList< medViewContainer * > leaves;
+    if ( this->isLeaf() ) {
+        if ( !( excludeEmpty && this->isEmpty() ) )
+            leaves << this;
+    }
+    else                   // a leaf doesn't contain another container
+        foreach ( medViewContainer * child, this->childContainers() )
+            leaves << child->leaves( excludeEmpty );
+
+    return leaves;
 }
 
 void medViewContainer::split(int rows, int cols)
@@ -111,6 +183,8 @@ void medViewContainer::setView(dtkAbstractView *view)
             ++it;
         }
     }
+
+    this->recomputeStyleSheet();
 }
 
 void medViewContainer::setCurrent(medViewContainer *container)
@@ -121,6 +195,15 @@ void medViewContainer::setCurrent(medViewContainer *container)
         parent->setCurrent(container);
     else
         d->current = container;
+
+    this->recomputeStyleSheet();
+}
+
+void medViewContainer::recomputeStyleSheet()
+{
+    QString styleSheet = this->styleSheet();
+    this->setStyleSheet( QString() );
+    this->setStyleSheet( styleSheet );
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
@@ -161,7 +244,8 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
     medViewContainer * former = this->current();
 
-    this->setCurrent(this);
+    if ( !this->isEmpty() )
+        this->setCurrent( this );
 
     if (dtkAbstractView *view = this->view())
         emit focused(view);
@@ -182,27 +266,30 @@ void medViewContainer::paintEvent(QPaintEvent *event)
     if(this->layout()->count() > 1)
         return;
 
-    QWidget::paintEvent(event);
+    // QFrame::paintEvent(event);
+
+    // QColor borderColor = Qt::darkGray;
+    // if ( this->current() == this )
+    //     borderColor.setRgb( 0x9a, 0xb3, 0xd5 );
+
+    // qreal borderWidth = 1;
 
     QPainter painter;
     painter.begin(this);
 
-    if ( this->current() == this )
-        painter.setPen(QColor(0x9a, 0xb3, 0xd5));
-    else
-        painter.setPen(Qt::darkGray);
-    
-    painter.setBrush(QColor(0x38, 0x38, 0x38));
-    painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
+    // painter.setPen( QPen( borderColor, borderWidth ) );
+    // // painter.setBrush(QColor(0x38, 0x38, 0x38));
+    // painter.setBrush( Qt::transparent );
+    // painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
 
-    if ( this->view() != NULL &&
-         this->view()->property( "Daddy" ) == "true" ) {
-        // painter.setPen( Qt::red );
-        painter.setPen( QPen( QColor( 255, 0, 0, 127 ), 1, Qt::DotLine ) );
-        // painter.setPen( QColor( 255, 0, 0, 32 ) );
-        painter.setBrush( Qt::transparent );
-        painter.drawRect( this->rect().adjusted( 0, 0, -1, -1 ) );
-    }
+    // if ( this->view() != NULL &&
+    //      this->view()->property( "Daddy" ) == "true" ) {
+    //     // painter.setPen( Qt::red );
+    //     painter.setPen(
+    //         QPen( QColor( 255, 0, 0, 127 ), borderWidth, Qt::DotLine ) );
+    //     painter.setBrush( Qt::transparent );
+    //     painter.drawRect( this->rect().adjusted( 0, 0, -1, -1 ) );
+    // }
 
     if (!this->view() && (d->viewProperties.count() ||
                           !d->viewInfo.isEmpty()) ) 
@@ -212,18 +299,18 @@ void medViewContainer::paintEvent(QPaintEvent *event)
         font.setPointSize (18);
         painter.setFont (font);
         QString text;
-        
+
         //Add View Info:
         if (!d->viewInfo.isEmpty())
             //    Debug()<< "viewInfo" << d->viewInfo;
             text += d->viewInfo + "\n";
-        
+
         QList<QString> keys = d->viewProperties.keys();
         foreach (QString key, keys)
             text += d->viewProperties[key] + "\n";
         painter.drawText (event->rect(), Qt::AlignCenter, text);
     }
-    
+
     painter.end();
 }
 
