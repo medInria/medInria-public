@@ -182,7 +182,7 @@ void medBrowserArea::onDataImport(dtkAbstractData *data)
   }  
   
   medDataIndex importIndex = medDataManager::instance()->importNonPersistent(data);
-  medDataManager::instance()->storeNonPersistentDataToDatabase();
+  medDataManager::instance()->storeNonPersistentSingleDataToDatabase(importIndex);
   //medDataManager::instance()->storeNonPersistentDataToDatabase(importIndex);
   
   this->onFileImported();

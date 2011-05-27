@@ -445,23 +445,22 @@ void medDataManager::storeNonPersistentDataToDatabase( void )
 }
 
 //-------------------------------------------------------------------------------------------------------
-/*
-void medDataManager::storeNonPersistentDataToDatabase( medDataIndex &index )
+
+void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex &index )
 {
   if (d->volatileDataCache.count(index) > 0)
   {
     QSharedPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
-    this->import (dtkdata.data());
+    this->import (dtkdata);
   
     medAbstractDbController* npDb = d->getNonPersDbController();
+    if (npDb)
+      npDb->remove(index);
     
     d->volatileDataCache.remove(index);
   }
-
-  //if (medAbstractDbController* npDb = d->getNonPersDbController())
-  //  npDb->clear();
 }
-*/
+
 //-------------------------------------------------------------------------------------------------------
 
 int medDataManager::nonPersistentDataCount( void ) const

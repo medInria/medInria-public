@@ -94,14 +94,20 @@ public slots:
     medDataIndex import(dtkAbstractData *data);
 
 
-    /**
-    * Store data temporarily referenced by temp index
-    * @params const QString & file data stored at file path
-    * @return medDataIndex - assigned index
-    */
-    medDataIndex import(const QString& file);
-
-    /**
+  /**
+   * Store data temporarily referenced by temp index
+   * @params const QString & file data stored at file path
+   * @return medDataIndex - assigned index
+   */
+  medDataIndex import(const QString& file);
+  
+  /**
+   * Remove data referenced by index from temporary database
+   * @params const medDataIndex & index : data index
+   */
+  void remove(const medDataIndex& index);
+  
+  /**
     * Removes any reference to non-persistent data. Do not actually free memory.
     */
     void clear (void);
