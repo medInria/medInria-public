@@ -1,12 +1,21 @@
-
-#ifndef _msegAlgorithmGeneric_h_
-#define _msegAlgorithmGeneric_h_
+#ifndef MSEGALGORITHMGENERIC_H
+#define MSEGALGORITHMGENERIC_H
 
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkSmartPointer.h>
 
+#include <itkObject.h>
+
 #include <QHash>
 #include <QString>
+
+// override is a C++0x feature implemented in MSVC
+#if defined(_MSC_VER)
+  #define MED_OVERRIDE override
+#else 
+  // Not in gcc (yet?)
+  #define MED_OVERRIDE
+#endif
 
 //Forward definitions
 class dtkAbstractData;
@@ -19,18 +28,52 @@ struct HandlerFunc {
     virtual int run(dtkAbstractData * data) = 0;
 };
 
+class AlgorithmGenericPrivate;
+class AlgorithmParametersWidget;
+class Controller;
+
+class AlgorithmParametersWidget : public QWidget {
+public:
+    AlgorithmParametersWidget( Controller * controller, QWidget * parent ) : 
+      QWidget(parent), 
+          m_controller(controller) {}
+    virtual ~AlgorithmParametersWidget() {}
+
+protected:
+    Controller * controller() { return m_controller; }
+
+private:
+    Controller * m_controller;
+};
+
 /** Generic segmentation algorithm */
 class AlgorithmGeneric : public dtkAbstractProcess {
+    Q_OBJECT;
+public:
+    //! Interface name should be used by all dtkAbstractProcesses inheriting from this.
+    static QString ms_interfaceName;
 
 public:
-    AlgorithmGeneric::AlgorithmGeneric();
+    AlgorithmGeneric();
     virtual ~AlgorithmGeneric();
 
-    // Override dtkAbstractProcess
-    void setInput( dtkAbstractData * data);
-    virtual int update();
+    virtual QString localizedName() = 0;
 
-    dtkAbstractData * input() { return m_inputData; }
+    //! Override dtkAbstractProcess
+    void setInput( dtkAbstractData * data) MED_OVERRIDE;
+    virtual int update() MED_OVERRIDE;
+
+    //! Getter for the input data.
+    dtkAbstractData * input();
+
+    //! Progress
+    virtual void reportItkProgress( const itk::Object * caller , float progress );
+
+    //! Undo support (not implemented yet)
+    virtual bool isUndoAble();
+    virtual void undo();
+
+    virtual AlgorithmParametersWidget *createParametersWidget(Controller * controller, QWidget *parent);
 
 protected:
 
@@ -42,12 +85,8 @@ protected:
     void setOutput( dtkAbstractData * data);
 
 private:
+    AlgorithmGenericPrivate *d;
 
-    typedef QHash< QString, HandlerFunc * > HandlerContainerType;
-    HandlerContainerType m_handlers;
-
-    dtkSmartPointer< dtkAbstractData > m_inputData;
-    dtkSmartPointer< dtkAbstractData > m_outputData;
 };
 
 } // namespace mseg
@@ -69,4 +108,4 @@ private:
     this->addHandler( "itkDataImageRGB3", new handlerName<RGBPixelType,3>(constructorParameters) ); \
     this->addHandler( "itkDataImageRGBA3", new handlerName<RGBAPixelType,3>(constructorParameters) )
 
-#endif // _msegAlgorithmGeneric_h_
+#endif // MSEGALGORITHMGENERIC_H

@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(medViewSegmentationPlugin)
+project(medSegmentationPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -47,24 +47,29 @@ include_directories(${CMAKE_SOURCE_DIR}/src/medAbstractViewExtension)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  medSegmentationConfiguration.h
-  medToolBoxSegmentationView.h
-  medViewSegmentationPlugin.h
-  medViewSegmentation.h
   msegAlgorithmConnectedThreshold.h
   msegAlgorithmGeneric.h
+  msegConfiguration.h
+  msegController.h
+  msegPlugin.h
+  msegToolbox.h
+  msegView.h
   )
 
 set(${PROJECT_NAME}_HEADERS
+  msegPluginExport.h
+  itkSegmentationCommand.h
   ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
-  medSegmentationConfiguration.cpp
-  medToolBoxSegmentationView.cpp
-  medViewSegmentationPlugin.cpp
-  medViewSegmentation.cpp
+  itkSegmentationCommand.cxx
   msegAlgorithmConnectedThreshold.cpp
   msegAlgorithmGeneric.cpp
+  msegConfiguration.cpp
+  msegController.cpp
+  msegPlugin.cpp
+  msegToolBox.cpp
+  msegView.cpp
   )
 
 ## #################################################################
@@ -87,7 +92,7 @@ target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   )
 
-dtk_build_doc(medViewSegmentationPlugin)
+dtk_build_doc(msegPlugin)
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio

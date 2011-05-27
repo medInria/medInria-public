@@ -6,14 +6,28 @@
 
 namespace mseg {
 
-AlgorithmGeneric::AlgorithmGeneric()
+QString AlgorithmGeneric::ms_interfaceName = "mseg::AlgorithmGeneric";
+
+class AlgorithmGenericPrivate 
+{
+    friend class AlgorithmGeneric;
+    typedef QHash< QString, HandlerFunc * > HandlerContainerType;
+    HandlerContainerType handlers;
+
+    dtkSmartPointer< dtkAbstractData > inputData;
+    dtkSmartPointer< dtkAbstractData > outputData;
+};
+
+AlgorithmGeneric::AlgorithmGeneric() :
+ d (new AlgorithmGenericPrivate)
 {
 
 }
 
 AlgorithmGeneric::~AlgorithmGeneric()
 {
-    qDeleteAll(m_handlers);
+    qDeleteAll(d->handlers);
+    delete d;
 }
 
 void AlgorithmGeneric::addHandler( const QString & typeName, HandlerFunc * func )
@@ -21,7 +35,7 @@ void AlgorithmGeneric::addHandler( const QString & typeName, HandlerFunc * func 
     typedef HandlerFunc * HandlerFuncPtr;
     // Should return NULL if not already present.
     // Get a reference so we can assign to it later.
-    HandlerFuncPtr & oldFunc( m_handlers[ typeName ]);
+    HandlerFuncPtr & oldFunc( d->handlers[ typeName ]);
      if ( oldFunc )
          delete oldFunc;
      oldFunc = func;
@@ -36,8 +50,8 @@ int AlgorithmGeneric::callHandler( dtkAbstractData * data )
 
     const QString dataDescription( data->description() );
 
-    HandlerContainerType::const_iterator it( m_handlers.find( dataDescription ) );
-    if ( it == m_handlers.end() ) {
+    AlgorithmGenericPrivate::HandlerContainerType::const_iterator it( d->handlers.find( dataDescription ) );
+    if ( it == d->handlers.end() ) {
         dtkWarning() << "Unknown data type encountered " << dataDescription;
         return DTK_FAILURE;
     }
@@ -47,13 +61,13 @@ int AlgorithmGeneric::callHandler( dtkAbstractData * data )
 
 bool AlgorithmGeneric::isHandled( const QString & dataDescription ) const
 {
-    HandlerContainerType::const_iterator it( m_handlers.find( dataDescription ) );
-    return ( it != m_handlers.end() );
+    AlgorithmGenericPrivate::HandlerContainerType::const_iterator it( d->handlers.find( dataDescription ) );
+    return ( it != d->handlers.end() );
 }
 
 void AlgorithmGeneric::setInput( dtkAbstractData * data )
 {
-    this->m_inputData = data;
+    this->d->inputData = data;
 }
 
 int AlgorithmGeneric::update()
@@ -63,7 +77,32 @@ int AlgorithmGeneric::update()
 
 void AlgorithmGeneric::setOutput( dtkAbstractData * data )
 {
-    this->m_outputData = data;
+    this->d->outputData = data;
+}
+
+void AlgorithmGeneric::reportItkProgress( const itk::Object * caller , float progress )
+{
+    emit progressed( static_cast<int>( progress * 100.) );
+}
+
+bool AlgorithmGeneric::isUndoAble()
+{
+    return false;
+}
+
+void AlgorithmGeneric::undo()
+{
+
+}
+
+dtkAbstractData * AlgorithmGeneric::input()
+{
+    return d->inputData;
+}
+
+AlgorithmParametersWidget *AlgorithmGeneric::createParametersWidget(Controller * controller, QWidget *parent)
+{
+    return new AlgorithmParametersWidget(controller, parent);
 }
 
 

@@ -1,10 +1,13 @@
 #include "msegAlgorithmConnectedThreshold.h"
+#include "msegController.h"
 
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkImageFunction.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
+
 
 namespace mseg {
 
@@ -13,9 +16,33 @@ public:
     AlgorithmConnectedThresholdPrivate( AlgorithmConnectedThreshold * self_ ) : self(self_) { }
 
     // Override base.
-    int run( dtkAbstractData * inData );
+    int run( dtkAbstractData * inData ) MED_OVERRIDE;
 private:
     AlgorithmConnectedThreshold * self;
+};
+
+
+class AlgorithmConnectedThresholdParametersWidget : public AlgorithmParametersWidget
+{
+public:
+    AlgorithmConnectedThresholdParametersWidget( Controller *controller, QWidget *parent ) : 
+      AlgorithmParametersWidget( controller, parent) 
+      {
+        QVBoxLayout * layout = new QVBoxLayout(this);
+
+        QHBoxLayout * highLowLayout = new QHBoxLayout();
+
+        m_lowThresh = new QDoubleSpinBox(this);
+        m_highThresh = new QDoubleSpinBox(this);
+        highLowLayout->addWidget( m_lowThresh );
+        highLowLayout->addWidget( m_highThresh );
+
+        layout->addLayout( highLowLayout );
+    }
+
+private:
+    QDoubleSpinBox * m_lowThresh;
+    QDoubleSpinBox * m_highThresh;
 };
 
 AlgorithmConnectedThreshold::AlgorithmConnectedThreshold()
@@ -31,6 +58,32 @@ AlgorithmConnectedThreshold::~AlgorithmConnectedThreshold()
 void AlgorithmConnectedThreshold::run()
 {
     this->callHandler(this->input() );
+}
+
+bool AlgorithmConnectedThreshold::registerAlgorithm( dtkAbstractProcessFactory * factory )
+{
+    return factory->registerProcessType(
+        typeName(), create, AlgorithmGeneric::ms_interfaceName );
+}
+
+QString AlgorithmConnectedThreshold::typeName()
+{
+    return AlgorithmConnectedThreshold::staticMetaObject.className();
+}
+
+dtkAbstractProcess * AlgorithmConnectedThreshold::create()
+{
+    return new AlgorithmConnectedThreshold;
+}
+
+QString AlgorithmConnectedThreshold::localizedName()
+{
+    return tr("Connected Threshold");
+}
+
+AlgorithmParametersWidget * AlgorithmConnectedThreshold::createParametersWidget(Controller *controller, QWidget *parent )
+{
+    return new AlgorithmConnectedThresholdParametersWidget( controller, parent );
 }
 
 template < typename TPixel, unsigned int VDimension > 

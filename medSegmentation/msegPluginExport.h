@@ -6,7 +6,7 @@
 #define MEDVIEWSEGMENTATIONPLUGINEXPORT_H
 
 #ifdef WIN32
-    #ifdef medViewSegmentationPlugin_EXPORTS
+    #ifdef medSegmentationPlugin_EXPORTS
         #define MEDVIEWSEGMENTATIONPLUGIN_EXPORT __declspec(dllexport) 
     #else
         #define MEDVIEWSEGMENTATIONPLUGIN_EXPORT __declspec(dllimport) 

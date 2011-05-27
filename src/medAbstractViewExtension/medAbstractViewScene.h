@@ -40,9 +40,10 @@ public:
     virtual void addAnnotation( medAbstractViewAnnotation * annotation);
     virtual void removeAnnotation( medAbstractViewAnnotation * annotation);
 
-protected :
-    // Allow derived classes to access the view.
+    //! Access the view.
     medAbstractView * view() { return m_view; }
+
+protected :
 
 private:
     medAbstractViewScene( const medAbstractViewScene &);

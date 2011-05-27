@@ -646,7 +646,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     }
     this->setColor( d->presetColors.at(colorIndex) );
 
-    connect(d->vtkWidget,    SIGNAL(mouseEvent(QMouseEvent*)),     this, SLOT(onMousePressEvent(QMouseEvent*)));
+    connect(d->vtkWidget,    SIGNAL(mousePressed(QMouseEvent*)),     this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,       SIGNAL(valueChanged(int)),            this, SLOT(onZSliderValueChanged(int)));
     connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(QString)));
 }

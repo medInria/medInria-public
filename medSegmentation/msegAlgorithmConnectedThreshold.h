@@ -7,6 +7,7 @@
 #include <QVector3D>
 
 class dtkAbstractData;
+class dtkAbstractProcessFactory;
 
 namespace mseg {
 
@@ -14,9 +15,13 @@ namespace mseg {
 
 /** Connected Region Growing segmentation algorithm */
 class AlgorithmConnectedThreshold : public AlgorithmGeneric {
+    Q_OBJECT;
 public:
     AlgorithmConnectedThreshold();
     ~AlgorithmConnectedThreshold();
+// Override AlgorithmGeneric
+    QString localizedName() MED_OVERRIDE;
+    AlgorithmParametersWidget *createParametersWidget(Controller * controller, QWidget *parent) MED_OVERRIDE;
 
     QVector3D seedPoint() const { return m_seedPoint; }
     void setSeedPoint(const QVector3D & val) { m_seedPoint = val; }
@@ -27,6 +32,10 @@ public:
     void setHighThreshold(double val) { m_highThreshold = val; }
 
     void run();
+
+    static bool registerAlgorithm(dtkAbstractProcessFactory * factory);
+    static dtkAbstractProcess * create();
+    static QString typeName();
 
 private:
     template < typename TPixel, unsigned int N >
