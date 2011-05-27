@@ -59,9 +59,6 @@ set(${PROJECT_NAME}_SOURCES
   v3dDataFibersReader.cpp
   v3dDataFibersWriter.cpp)
 
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-
 ## #################################################################
 ## Build rules
 ## #################################################################
@@ -86,6 +83,10 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOReview  
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES})
+
+# Group common files together in Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

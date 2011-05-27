@@ -77,6 +77,10 @@ target_link_libraries(${PROJECT_NAME}
 #  add_subdirectory(Testing)
 #endif (BUILD_TESTING)
 
+# Group common files together in Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+
 ## #################################################################
 ## Install rules
 ## #################################################################

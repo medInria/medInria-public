@@ -72,9 +72,6 @@ set(${PROJECT_NAME}_SOURCES
   itkGiplDataImageWriter.cpp
   itkVTKDataImageWriter.cpp)
 
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-
 ## #################################################################
 ## Build rules
 ## #################################################################
@@ -91,6 +88,10 @@ target_link_libraries(${PROJECT_NAME}
   dtkItkLogForwarder
   dtkCore
   ${ITK_LIBRARIES})
+
+# Group common files together in Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules
