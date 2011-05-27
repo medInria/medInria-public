@@ -139,8 +139,9 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
         d->pool->appendView (medView);
     
     connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
-    connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     connect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
+    connect (view, SIGNAL (changeDaddy(bool)),
+             this, SLOT (onDaddyChanged(bool)));
 
     this->setCurrent( container );
     emit viewAdded (view);
@@ -230,10 +231,10 @@ void medViewContainerMulti::onViewClosing (void)
 
         disconnect (view, SIGNAL (closing()),
                     this, SLOT (onViewClosing()));
-        disconnect (view, SIGNAL (becomeDaddy(bool)),
-                    this, SLOT (repaint()));
         disconnect (view, SIGNAL (fullScreen(bool)),
                     this, SLOT (onViewFullScreen(bool)));
+        disconnect (d->view, SIGNAL (changeDaddy(bool)),
+                    this,    SLOT (onDaddyChanged(bool)));
 
         if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
             d->pool->removeView (medView);

@@ -78,6 +78,13 @@ class MEDGUI_EXPORT medViewContainer : public QFrame
     */
     Q_PROPERTY( bool isEmpty READ isEmpty );
 
+    /**
+     * @brief true if this container contains a daddy view
+     *
+     * @param void
+    */
+    Q_PROPERTY( bool isDaddy READ isDaddy );
+
 public:
    
      /**
@@ -155,6 +162,16 @@ public:
      * @return bool
     */
     virtual bool isEmpty(void) const;
+
+    /**
+     * @brief Does this container contain a daddy view?
+     *
+     * Returns true if this object contains a daddy view.
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool isDaddy(void) const;
 
     /**
      * @brief Get the parent container
@@ -323,6 +340,13 @@ public slots:
      * @param value
     */
     virtual void onViewFullScreen (bool value);
+
+    /**
+     * @brief 
+     *
+     * @param value
+    */
+    virtual void onDaddyChanged( bool state );
 
 protected:
     /**

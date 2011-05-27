@@ -58,7 +58,10 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
         d->pool->appendView (medView);
     connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+    connect (view, SIGNAL (changeDaddy(bool)),
+             this, SLOT (onDaddyChanged(bool)));
 
+    this->recomputeStyleSheet();
     emit viewAdded (view);
 }
 
@@ -77,6 +80,8 @@ void medViewContainerSingle::onViewClosing (void)
     if (d->view) {
         d->layout->removeWidget (d->view->widget());
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+        disconnect (d->view, SIGNAL (changeDaddy(bool)),
+                    this,    SLOT (onDaddyChanged(bool)));
         if (medAbstractView *medView = dynamic_cast<medAbstractView*> (d->view))
             d->pool->removeView (medView);
 

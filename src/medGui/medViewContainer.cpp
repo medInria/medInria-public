@@ -100,6 +100,12 @@ bool medViewContainer::isEmpty(void) const
              this->childContainers().count() == 0 );
 }
 
+bool medViewContainer::isDaddy(void) const
+{
+    return ( this->view() != NULL &&
+             this->view()->property( "Daddy" ) == "true" );
+}
+
 medViewContainer * medViewContainer::parentContainer() const
 {
     return dynamic_cast< medViewContainer * >( this->parentWidget() );
@@ -330,6 +336,11 @@ QString medViewContainer::viewProperty (const QString &key) const
 void medViewContainer::onViewFullScreen (bool value)
 {
     Q_UNUSED (value);
+}
+
+void medViewContainer::onDaddyChanged( bool state )
+{
+    this->recomputeStyleSheet();
 }
 
 void medViewContainer::setInfo(const QString& info)

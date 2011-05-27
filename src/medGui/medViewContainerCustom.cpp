@@ -190,7 +190,10 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 	
 	connect (view, SIGNAL (closing()),        this, SLOT (onViewClosing()));
 	connect (view, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
+        connect (view, SIGNAL (changeDaddy(bool)),
+                 this, SLOT (onDaddyChanged(bool)));
 
+        this->recomputeStyleSheet();
 	emit viewAdded (view);
       }
     }
@@ -260,6 +263,8 @@ void medViewContainerCustom::onViewClosing (void)
         this->desynchronize_2 (d->view);
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
 	disconnect (d->view, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
+        disconnect (d->view, SIGNAL (changeDaddy(bool)),
+                    this,    SLOT (onDaddyChanged(bool)));
 
 	emit viewRemoved (d->view);
 	
