@@ -769,7 +769,7 @@ dtkAbstractDataReader* medDatabaseImporter::getSuitableReader( QStringList filen
     if (readers.size()==0) {
         emit showError(this, tr("No reader plugin"), 5000);
         emit failure(this);
-        return;
+        return NULL;
     }
 
     // cycle through readers to see if the last used reader can handle the file
