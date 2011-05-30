@@ -44,35 +44,14 @@ void medPluginManager::uninitialize()
 
 void medPluginManager::readSettings(void)
 {
-//    QSettings settings;
-//    // qSettings should use what is defined in the application (organization and appName)
-
-//    settings.beginGroup("plugins");
-//    QDir plugins_dir = qApp->applicationDirPath() + "/../plugins";
-
-//    if (!settings.contains("path"))
-//    {
-//        qDebug()<<"Fill in empty path in settings with default path:"
-//                  << plugins_dir.absolutePath();
-//        settings.setValue("path", plugins_dir.absolutePath());
-//    }
-//    setPath (settings.value("path", plugins_dir.absolutePath()).toString());
-//    settings.endGroup();
-
     QDir plugins_dir;
     QString defaultPath;
 #ifdef Q_WS_MAC
     plugins_dir = qApp->applicationDirPath() + "/../PlugIns";
-
-    if(plugins_dir.exists())
-        defaultPath = plugins_dir.absolutePath();;
 #else
     plugins_dir = qApp->applicationDirPath() + "/../plugins";
-
-    //if(plugins_dir.exists())
-        defaultPath = plugins_dir.absolutePath();
 #endif
-
+    defaultPath = plugins_dir.absolutePath();
     const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
     QByteArray pluginVarArray = qgetenv ( PLUGIN_PATH_VAR_NAME );
     if ( !pluginVarArray.isEmpty() ) {

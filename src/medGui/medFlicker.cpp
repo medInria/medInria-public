@@ -48,6 +48,8 @@ medFlicker::medFlicker(QObject *parent): QObject(parent)
 
 medFlicker::~medFlicker(void)
 {
+    qDeleteAll( d->flickData );  // Calls delete on all values.
+    d->flickData.clear();
     delete d;
 }
 
@@ -63,10 +65,13 @@ void medFlicker::activateOn(QWidget *widget)
         viewport->installEventFilter(this);
         scrollArea->installEventFilter(this);
 
-        d->flickData.remove(viewport);
-        d->flickData[viewport] = new FlickData;
-        d->flickData[viewport]->widget = widget;
-        d->flickData[viewport]->state = FlickData::Steady;
+        // Get a reference to the pointer in the hash map.
+        FlickData *(& flickDataPtr)( d->flickData[viewport] );
+        // Delete if non-NULL. We should get NULL if it was not already present.
+        delete flickDataPtr; 
+        flickDataPtr = new FlickData;
+        flickDataPtr->widget = widget;
+        flickDataPtr->state = FlickData::Steady;
 
         return;
     }

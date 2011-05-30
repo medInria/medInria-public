@@ -37,7 +37,10 @@ public:
 medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationVisualizationPrivate)
 {
     // -- Layout toolbox --
-    showLayoutToolBox();
+    setLayoutToolBoxVisibility(true);
+    // Calling showLayoutToolBox causes a widget to be shown before the main window 
+    // when the app is starting, which is bad.
+    // showLayoutToolBox();
 
     // d->layoutToolBox = new medViewerToolBoxLayout(parent);
     /*
