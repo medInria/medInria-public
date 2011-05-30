@@ -25,11 +25,13 @@ class medToolBoxHeaderPrivate
 {
 public:
     QString title;
+    QPoint titleOffset;
 };
 
 medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medToolBoxHeaderPrivate)
 {
     d->title = "Untitled";
+    d->titleOffset = QPoint( 16, 10 );
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
@@ -51,6 +53,11 @@ void medToolBoxHeader::setTitle(const QString& title)
     d->title = title;
 }
 
+void medToolBoxHeader::setTitleOffset(const QPoint & titleOffset)
+{
+    d->titleOffset = titleOffset;
+}
+
 void medToolBoxHeader::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
@@ -59,7 +66,7 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
 
     QPainter painter(this);
 
-    painter.translate(16, 10);
+    painter.translate( d->titleOffset );
     
     painter.drawText(rect, Qt::AlignLeft, d->title);
     painter.end();
