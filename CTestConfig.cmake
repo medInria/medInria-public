@@ -17,9 +17,11 @@
 ## 
 ######################################################################
 
-set(CTEST_PROJECT_NAME "Mediseen-medinria-plugins")
+set(CTEST_PROJECT_NAME "Medular")
 set(NIGHTLY_START_TIME "21:00:00 EST")
 set(DROP_METHOD "http")
 set(DROP_SITE "cdash.inria.fr")
-set(DROP_LOCATION "/CDash/submit.php?project=Mediseen-medinria-plugins")
+set(DROP_LOCATION "/CDash/submit.php?project=Medular")
 set(DROP_SITE_CDASH TRUE)
+set(CTEST_UPDATE_TYPE "git")
+set(UPDATE_COMMAND "git")
