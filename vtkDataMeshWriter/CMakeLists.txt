@@ -33,7 +33,10 @@ include(${vtkINRIA3D_USE_FILE})
 find_package(VTK)
 include(${VTK_USE_FILE})
 
-include_directories(../dtkVtkLogForwarder)
+#include_directories(../dtkVtkLogForwarder)
+find_package(medinria-plugins REQUIRED)
+include(${medinria-plugins_USE_FILE})
+
 
 
 set(${PROJECT_NAME}_HEADERS_MOC

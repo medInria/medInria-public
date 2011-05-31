@@ -47,7 +47,12 @@ endif()
 find_package(VTK)
 include(${VTK_USE_FILE})
 
-include_directories(../dtkItkLogForwarder)
+#include_directories(../dtkItkLogForwarder)
+find_package(medinria-plugins REQUIRED)
+include(${medinria-plugins_USE_FILE})
+
+
+
 
 ## #################################################################
 ## Input
