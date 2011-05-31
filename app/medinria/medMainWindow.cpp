@@ -56,7 +56,7 @@
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
-
+#include "medViewerConfigurationSequenceRegistration.h"
 
 #include <QtGui>
 
@@ -184,7 +184,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
-
+    medViewerConfigurationFactory::instance()->registerConfiguration("Sequence Registration",   createMedViewerConfigurationSequenceRegistration);
     //Register settingsWidgets
     medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
