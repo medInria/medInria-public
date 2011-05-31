@@ -31,7 +31,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerArea.h    
   medViewerConfigurationDiffusion.h
   medViewerConfigurationVisualization.h
-  medViewerConfigurationRegistration.h   
+  medViewerConfigurationRegistration.h
+  medViewerConfigurationSequenceRegistration.h   
   medViewerToolBoxConfiguration.h  
   medViewerToolBoxPatient.h    
   medPacsDataSource.h 
@@ -55,7 +56,8 @@ set(${PROJECT_NAME}_SOURCES
   medViewerToolBoxPatient.cpp  
   medViewerConfigurationDiffusion.cpp
   medViewerConfigurationVisualization.cpp
-  medViewerConfigurationRegistration.cpp   
+  medViewerConfigurationRegistration.cpp 
+  medViewerConfigurationSequenceRegistration.cpp  
   medPacsDataSource.cpp  
   medFileSystemDataSource.cpp
   medDatabaseDataSource.cpp
