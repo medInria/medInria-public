@@ -233,8 +233,8 @@ void medViewContainerMulti::onViewClosing (void)
                     this, SLOT (onViewClosing()));
         disconnect (view, SIGNAL (fullScreen(bool)),
                     this, SLOT (onViewFullScreen(bool)));
-        disconnect (d->view, SIGNAL (changeDaddy(bool)),
-                    this,    SLOT (onDaddyChanged(bool)));
+        disconnect (view, SIGNAL (changeDaddy(bool)),
+                    this, SLOT (onDaddyChanged(bool)));
 
         if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
             d->pool->removeView (medView);
