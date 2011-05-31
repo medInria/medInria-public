@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Tue Jun 29 15:03:53 2010 (+0200)
+## Last-Updated: Wed May  4 10:55:34 2011 (+0200)
 ##           By: Julien Wintz
-##     Update #: 39
+##     Update #: 43
 ######################################################################
 ## 
 ### Commentary: 
@@ -33,6 +33,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medProgressFilter.h
   medAbstractView.h
   med4DAbstractViewInteractor.h
+  medMeshAbstractViewInteractor.h
   medJobItem.h
   medJobManager.h
   medSettingsManager.h
@@ -50,6 +51,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
   medAbstractDataCollection.h
+  medCoreExport.h
 )
 
 
@@ -145,6 +147,9 @@ if (SWIG_FOUND)
     endif(PYTHONLIBS_FOUND)
 endif(SWIG_FOUND)
 
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Installation

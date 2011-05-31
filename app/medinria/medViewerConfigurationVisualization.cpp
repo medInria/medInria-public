@@ -37,7 +37,10 @@ public:
 medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationVisualizationPrivate)
 {
     // -- Layout toolbox --
-    showLayoutToolBox();
+    setLayoutToolBoxVisibility(true);
+    // Calling showLayoutToolBox causes a widget to be shown before the main window 
+    // when the app is starting, which is bad.
+    // showLayoutToolBox();
 
     // d->layoutToolBox = new medViewerToolBoxLayout(parent);
     /*
@@ -70,6 +73,14 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
 			d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
         connect(stackedViewContainers()->container("Custom"),SIGNAL(viewAdded(dtkAbstractView*)),
 			d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
+
+       /* connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
+            d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));
+        connect(stackedViewContainers()->container("Multi"),SIGNAL(viewAdded(dtkAbstractView*)),
+			d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));
+        connect(stackedViewContainers()->container("Custom"),SIGNAL(viewAdded(dtkAbstractView*)),
+			d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));*/
+
         connect(stackedViewContainers()->container("Single"),SIGNAL(viewRemoved(dtkAbstractView*)),
             d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
         connect(stackedViewContainers()->container("Multi"),SIGNAL(viewRemoved(dtkAbstractView*)),

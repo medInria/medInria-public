@@ -52,6 +52,7 @@ set(${PROJECT_NAME}_HEADERS
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
   medDatabasePreviewView.h
+  medDatabaseProxyModel.h
   medDatabaseReader.h
   medDatabaseWriter.h
   )
@@ -81,6 +82,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
   medDatabasePreviewView.h
+  medDatabaseProxyModel.h
   medDatabaseReader.h
   medDatabaseWriter.h
   )
@@ -115,6 +117,7 @@ set(${PROJECT_NAME}_SOURCES
   medDatabasePreviewSelector.cpp
   medDatabasePreviewTooltip.cpp
   medDatabasePreviewView.cpp
+  medDatabaseProxyModel.cpp
   medDatabaseReader.cpp
   medDatabaseWriter.cpp
   )
@@ -138,6 +141,10 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   medCore)
+
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Installation

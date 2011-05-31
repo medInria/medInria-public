@@ -401,8 +401,22 @@ QString medDatabaseImporter::populateMissingMetadata( dtkAbstractData * dtkdata,
     QString rows = dtkdata->metaDataValues(tr("Rows"))[0];
     QString columns = dtkdata->metaDataValues(tr("Columns"))[0];
 
+    QStringList orientations = orientation.split(" ");
+
+    orientation = "";
+
+    // truncate orientation to 5 digits for a more robust import since
+    // sometimes orientation only differs with the last 2 digits, creating
+    // multiple series
+    foreach(QString orient, orientations)
+    {
+        double d_orient = orient.toDouble();        
+        orientation += QString::number(d_orient, 'g', 5);
+    }
+
     // define a unique key string to identify which volume an image belongs to.
-    // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
+    // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. 
+    // All images of the same volume should share similar values of these parameters
     QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
 
     return key;
@@ -749,12 +763,11 @@ void medDatabaseImporter::popupateDatabase( dtkAbstractData* dtkdata, const QFil
 
 dtkAbstractDataReader* medDatabaseImporter::getSuitableReader( QStringList filename )
 {
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
+    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
     // cycle through readers to see if the last used reader can handle the file
     for (int i=0; i<readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
         if (d->lastSuccessfulReaderDescription == dataReader->description() && dataReader->canRead( filename ))
             return dataReader;
         else
@@ -762,7 +775,7 @@ dtkAbstractDataReader* medDatabaseImporter::getSuitableReader( QStringList filen
     }
 
     for (int i=0; i<readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
         if (dataReader->canRead( filename )){
             d->lastSuccessfulReaderDescription = dataReader->description();
             return dataReader;
@@ -781,18 +794,16 @@ dtkAbstractDataWriter* medDatabaseImporter::getSuitableWriter( QString filename,
     if (!dtkdata)
         return NULL;
 
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-    QList<dtkAbstractDataTypeHandler> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
     // first try with the last
     for (int i=0; i<writers.size(); i++) {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
+        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
         if (d->lastSuccessfulReaderDescription == dataWriter->description()) {
 
-            if (! dataWriter->handled().contains(dtkdata->description()))
-                continue;
+            if ( dataWriter->handled().contains(dtkdata->description()) &&
+                 dataWriter->canWrite( filename ) ) {
 
-            if (dataWriter->canWrite( filename )) {
                 d->lastSuccessfulWriterDescription = dataWriter->description();
                 return dataWriter;
             }
@@ -803,12 +814,11 @@ dtkAbstractDataWriter* medDatabaseImporter::getSuitableWriter( QString filename,
 
     // cycle all
     for (int i=0; i<writers.size(); i++) {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i].first, writers[i].second);
+        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
 
-        if (! dataWriter->handled().contains(dtkdata->description()))
-            continue;
+        if ( dataWriter->handled().contains(dtkdata->description()) &&
+             dataWriter->canWrite( filename ) ) {
 
-        if (dataWriter->canWrite( filename )) {
             d->lastSuccessfulWriterDescription = dataWriter->description();
             return dataWriter;
         }

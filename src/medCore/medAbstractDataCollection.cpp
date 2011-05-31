@@ -205,12 +205,12 @@ void medAbstractDataCollection::update( void )
     (*d->dataIterator)->update();
 }
 
-void medAbstractDataCollection::addReader( dtkAbstractDataReader *reader )
+void medAbstractDataCollection::addReader( const QString& reader )
 {
     (*d->dataIterator)->addReader(reader);
 }
 
-void medAbstractDataCollection::addWriter( dtkAbstractDataWriter *writer )
+void medAbstractDataCollection::addWriter( const QString& writer )
 {
     (*d->dataIterator)->addWriter(writer);
 }
@@ -272,7 +272,19 @@ QStringList medAbstractDataCollection::paths( void )
 
 QImage & medAbstractDataCollection::thumbnail( void ) const
 {
-    return (*d->dataIterator)->thumbnail();
+    if (d->dataIterator != d->dataVector.end())
+    {
+        try
+        {
+            return (*d->dataIterator)->thumbnail();
+        }
+        catch(...)
+        {
+            return *(new QImage());
+        }
+    }
+    else
+        return *(new QImage());
 }
 
 QList<QImage>& medAbstractDataCollection::thumbnails( void ) const
