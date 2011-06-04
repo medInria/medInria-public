@@ -1,19 +1,12 @@
-#ifndef _itk_DataImage_h_
-#define _itk_DataImage_h_
+#ifndef _itk_DataImageRGB3_h_
+#define _itk_DataImageRGB3_h_
 
-#include "itkDataImageBase.h"
-
+#include <itkRGBPixel.h>
+#include "itkDataImage.h"
 #include "itkDataImagePluginExport.h"
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageRGB3 : public itkDataImageBase
-{
-    Q_OBJECT
-    
-public:
-    itkDataImageRGB3(void);
-    ~itkDataImageRGB3(void);
-
-    static bool registered(void);
-};
+extern const char itkDataImageRGB3Name[] = "itkDataImageRGB3";
+typedef itk::RGBPixel<unsigned char>     RGBPixelType;
+typedef ITKDATAIMAGEPLUGIN_EXPORT itkDataImage<3,RGBPixelType,itkDataImageRGB3Name> itkDataImageRGB3;
 
 #endif

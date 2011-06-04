@@ -47,7 +47,12 @@ endif()
 find_package(VTK)
 include(${VTK_USE_FILE})
 
-include_directories(../dtkItkLogForwarder)
+#include_directories(../dtkItkLogForwarder)
+find_package(medinria-plugins REQUIRED)
+include(${medinria-plugins_USE_FILE})
+
+
+
 
 ## #################################################################
 ## Input
@@ -99,8 +104,6 @@ if(ITK_USE_SYSTEM_GDCM)
     )
 endif(ITK_USE_SYSTEM_GDCM)
 
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 
 ## #################################################################
 ## Build rules
@@ -126,6 +129,10 @@ endif (BUILD_TESTING)
 if (BUILD_EXAMPLES)
   subdirs(Examples)
  endif (BUILD_EXAMPLES)
+
+# Group common files together in Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

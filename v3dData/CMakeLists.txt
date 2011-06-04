@@ -35,7 +35,11 @@ include(dtkPlugin)
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
-include_directories(../dtkItkLogForwarder)
+#include_directories(../dtkItkLogForwarder)
+find_package(medinria-plugins REQUIRED)
+include(${medinria-plugins_USE_FILE})
+
+
 include_directories(../dtkVtkLogForwarder)
 
 ## #################################################################
@@ -58,9 +62,6 @@ set(${PROJECT_NAME}_SOURCES
   v3dDataFibers.cpp
   v3dDataFibersReader.cpp
   v3dDataFibersWriter.cpp)
-
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 
 ## #################################################################
 ## Build rules
@@ -86,6 +87,10 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOReview  
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES})
+
+# Group common files together in Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

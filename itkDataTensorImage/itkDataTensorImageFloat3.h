@@ -5,13 +5,13 @@
 #ifndef ITKDATATENSORIMAGEFLOAT3_H
 #define ITKDATATENSORIMAGEFLOAT3_H
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <dtkCore/dtkAbstractDataTypedImage.h>
 
 #include "itkDataTensorImagePluginExport.h"
 
 class itkDataTensorImageFloat3Private;
 
-class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public dtkAbstractDataImage
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public dtkAbstractDataTypedImage<3,float>
 {
     Q_OBJECT
 

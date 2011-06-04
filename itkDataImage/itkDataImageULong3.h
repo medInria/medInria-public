@@ -1,19 +1,10 @@
 #ifndef _itk_DataImageULong3_h_
 #define _itk_DataImageULong3_h_
 
-#include "itkDataImageBase.h"
-
+#include "itkDataImage.h"
 #include "itkDataImagePluginExport.h"
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageULong3 : public itkDataImageBase
-{
-    Q_OBJECT
-    
-public:
-    itkDataImageULong3(void);
-    ~itkDataImageULong3(void);
-
-    static bool registered(void);
-};
+extern const char itkDataImageULong3Name[] = "itkDataImageULong3";
+typedef ITKDATAIMAGEPLUGIN_EXPORT itkDataImage<3,unsigned long,itkDataImageULong3Name> itkDataImageULong3;
 
 #endif

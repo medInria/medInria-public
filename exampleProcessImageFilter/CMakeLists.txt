@@ -4,14 +4,14 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkDataTensorImageReaderPlugin)
+project(exampleProcessImageFilterPlugin)
 
 ## #################################################################
 ## Setup version numbering
 ## #################################################################
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 3 CACHE STRING "${PROJECT_NAME} minor version number.")
+set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "${PROJECT_NAME} minor version number.")
 set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build version number.")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
@@ -28,19 +28,27 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
+
 find_package(dtk REQUIRED)
+find_package(medinria REQUIRED)
+find_package(vtkINRIA3D REQUIRED)
+
+include(${vtkINRIA3D_USE_FILE})
 include(${dtk_USE_FILE})
+include(${medinria_USE_FILE})
 include(dtkPlugin)
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
-
 find_package(ITK REQUIRED)
+  if(NOT ITK_USE_REVIEW)
+    message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW to ON")
+  endif(NOT ITK_USE_REVIEW)
+  if(NOT ITK_USE_REVIEW_STATISTICS)
+    message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW_STATISTICS to ON")
+  endif(NOT ITK_USE_REVIEW_STATISTICS)
 include(${ITK_USE_FILE})
 
-#include_directories(../dtkItkLogForwarder)
-find_package(medinria-plugins REQUIRED)
-include(${medinria-plugins_USE_FILE})
+include_directories(../dtkItkLogForwarder)
+include_directories(../v3dView)
 
 
 ## #################################################################
@@ -48,18 +56,17 @@ include(${medinria-plugins_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataTensorImageReaderPlugin.h
-  itkDataTensorImageReaderBase.h
-  itkNrrdDataTensorImageReader.h
-  itkNiftiDataTensorImageReader.h
-  itkMetaDataTensorImageReader.h)
+  exampleProcessImageFilterPlugin.h
+  exampleProcessImageFilter.h
+  exampleProcessImageFilterToolBox.h)
+
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
-  itkDataTensorImageReaderPlugin.cpp
-  itkDataTensorImageReaderBase.cpp
-  itkNrrdDataTensorImageReader.cpp
-  itkNiftiDataTensorImageReader.cpp
-  itkMetaDataTensorImageReader.cpp)
+  exampleProcessImageFilterPlugin.cpp
+  exampleProcessImageFilter.cpp
+  exampleProcessImageFilterToolBox.cpp)
 
 ## #################################################################
 ## Build rules
@@ -69,15 +76,22 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES})
+  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_HEADERS})
 
 target_link_libraries(${PROJECT_NAME}
-  ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
-  dtkItkLogForwarder
-  dtkCore)
+  dtkCore
+  medCore
+  medGui
+  ${ITK_LIBRARIES})
 
-# Group common files together in Visual Studio.
+dtk_build_doc(exampleProcessImageFilterPlugin)
+
+## #################################################################
+## Source file layout in development environments like Visual Studio
+## #################################################################
+
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
@@ -88,4 +102,5 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION plugins
   LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+  ARCHIVE DESTINATION plugins)
+
