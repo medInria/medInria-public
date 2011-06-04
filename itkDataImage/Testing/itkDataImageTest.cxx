@@ -48,7 +48,7 @@ int testRunner<TPixel,VDimension>::run() {
     typename ImageType::Pointer image(ImageType::New());
     typename ImageType::RegionType region;
     typename ImageType::SizeType   imageSize;
-    for (int i(0); i<VDimension; ++i) {
+    for (unsigned int i(0); i<VDimension; ++i) {
         imageSize[i] = 10 + i;
     }
 
