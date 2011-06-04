@@ -51,6 +51,8 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
 
     connect(d->chooseFilter, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
     connect(d->dropSite,SIGNAL(objectDropped()),this,SLOT(onObjectDropped()));
+    //connect(this, SIGNAL(dataSelected(dtkAbstractData *)),d->customToolBox,SLOT(setInputData(dtkAbstractData *));
+
     
     this->setTitle("Filtering View");
     this->addWidget(displayWidget);
@@ -100,7 +102,7 @@ void medToolBoxFiltering::onToolBoxChosen(const QString& id)
     d->customToolBox = toolbox;
     emit addToolBox(toolbox);
 
-    connect(toolbox,SIGNAL(success()),this,SIGNAL(processFinished()));
+    connect(d->customToolBox,SIGNAL(success()),this,SIGNAL(processFinished()));
 }
 
 
