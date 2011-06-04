@@ -35,7 +35,7 @@ public:
 // itkDataTensorImage
 // /////////////////////////////////////////////////////////////////
 
-itkDataTensorImageDouble3::itkDataTensorImageDouble3(void) : dtkAbstractDataImage(), d(new itkDataTensorImageDouble3Private)
+itkDataTensorImageDouble3::itkDataTensorImageDouble3(void) : dtkAbstractDataTypedImage<3,double>(), d(new itkDataTensorImageDouble3Private)
 {
     d->tensors = 0;
     d->thumbnail = QImage(128, 128, QImage::Format_RGB32);

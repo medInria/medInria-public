@@ -5,13 +5,13 @@
 #ifndef ITKDATATENSORIMAGEDOUBLE3_H
 #define ITKDATATENSORIMAGEDOUBLE3_H
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <dtkCore/dtkAbstractDataTypedImage.h>
 
 #include "itkDataTensorImagePluginExport.h"
 
 class itkDataTensorImageDouble3Private;
 
-class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageDouble3 : public dtkAbstractDataImage
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageDouble3 : public dtkAbstractDataTypedImage<3,double>
 {
     Q_OBJECT
 

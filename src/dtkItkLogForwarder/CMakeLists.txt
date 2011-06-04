@@ -3,7 +3,6 @@ project(dtkItkLogForwarder)
 # find dtk
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
-include(dtkPlugin)
 
 # find itk
 FIND_PACKAGE(ITK REQUIRED)
@@ -17,11 +16,6 @@ set(DTKLOGFORWARDER_HEADERS
 
 set(DTKLOGFORWARDER_SOURCES
   itkLogForwarder.cpp)
-
-set(LIBRARY_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/lib)
-set(ARCHIVE_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/lib)
-set(RUNTIME_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/lib)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 
 add_library(${PROJECT_NAME} SHARED
   ${DTKLOGFORWARDER_HEADERS}

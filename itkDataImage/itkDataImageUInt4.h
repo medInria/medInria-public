@@ -1,19 +1,10 @@
 #ifndef _itk_DataImageUInt4_h_
 #define _itk_DataImageUInt4_h_
 
-#include "itkDataImageBase.h"
-
+#include "itkDataImage.h"
 #include "itkDataImagePluginExport.h"
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUInt4 : public itkDataImageBase
-{
-    Q_OBJECT
-
-public:
-    itkDataImageUInt4(void);
-    ~itkDataImageUInt4(void);
-
-    static bool registered(void);
-};
+extern const char itkDataImageUInt4Name[] = "itkDataImageUInt4";
+typedef ITKDATAIMAGEPLUGIN_EXPORT itkDataImage<4,unsigned int,itkDataImageUInt4Name> itkDataImageUInt4;
 
 #endif

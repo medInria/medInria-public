@@ -38,11 +38,13 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(medinria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
+# Export medinriq-plugins_DIR variable so that internal project can automatically find i
+set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 
 ## #################################################################
 ## Dashboard settings
@@ -62,7 +64,6 @@ include(Dart)
 set(DEPENDS_ON_DTK 1)
 
 option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" OFF)
-
 
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
@@ -127,13 +128,18 @@ endwhile()
 
 endif()
 
+if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
+    subdirs(exampleProcessImageFilter)
+endif()
+
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_V3DDATA_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEW_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESH_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN OR
-    MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN)
+    MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN OR
+    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
     set(MEDINRIA_REQUIRES_VTK TRUE)
 endif()
 
@@ -145,8 +151,9 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN OR
-    MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN
-    )
+    MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
+    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
+    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
     set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()
 
@@ -164,9 +171,8 @@ if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(${PROJECT_NAME}Pack)
-
-
 
 ## #################################################################
 ## Build settings

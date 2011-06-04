@@ -1,5 +1,5 @@
 
-INCLUDE_DIRECTORIES("../../src/ITKDCMTKIO")
+INCLUDE_DIRECTORIES(".." ${PROJECT_SOURCE_DIR}/../src/ITKDCMTKIO/)
 
 #if (MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
 
@@ -13,10 +13,12 @@ target_link_libraries(itkDCMTKReadWriteBenchmark
 add_executable(itkDCMTKConvert
   itkDCMTKConvert.cxx)
   
+find_package(Qt4 4.6.0 REQUIRED)
+include(${QT_USE_FILE})
+
 target_link_libraries(itkDCMTKConvert
   ITKDCMTKIO
   ${ITK_LIBRARIES}
-  ${QT_LIBRARIES}
-)
+  ${QT_LIBRARIES})
 
 #endif(MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)

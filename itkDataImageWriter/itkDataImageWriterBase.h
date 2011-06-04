@@ -23,6 +23,10 @@ public slots:
 protected:
     itk::ImageIOBase::Pointer io;
     
+private:
+
+    template <unsigned DIM,typename T>
+    bool write_image(const QString& path,const char* type);
 };
 
 #endif
