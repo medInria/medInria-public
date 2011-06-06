@@ -191,6 +191,9 @@ public:
      * Returns the root of the container hierarchy.  This method is
      * useful particularly in the case of a custom or multi container.
      *
+     * Since the return value might be a pointer to 'this', the const
+     * version of the function must return a const pointer.
+     *
      * @param void
      * @return medViewContainer *
     */

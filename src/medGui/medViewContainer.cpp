@@ -113,7 +113,7 @@ medViewContainer * medViewContainer::parentContainer() const
 
 const medViewContainer * medViewContainer::root() const
 {
-    medViewContainer * parent = this->parentContainer();
+    const medViewContainer * parent = this->parentContainer();
     return ( parent != NULL ? parent->root() : this );
 }
 
