@@ -42,8 +42,6 @@ class MEDGUI_EXPORT medViewContainer : public QFrame
 
     /**
      * @brief true if this is the current container
-     *
-     * @param void
     */
     Q_PROPERTY( bool isCurrent READ isCurrent );
 
@@ -53,8 +51,6 @@ class MEDGUI_EXPORT medViewContainer : public QFrame
      * The root container is not contained in another view container,
      * it may contain other view containers, if it is multi or custom
      * view.
-     *
-     * @param void
     */
     Q_PROPERTY( bool isRoot READ isRoot );
 
@@ -63,8 +59,6 @@ class MEDGUI_EXPORT medViewContainer : public QFrame
      *
      * The leaf container doesn't contain any other view container, it
      * may be contained in another view container.
-     *
-     * @param void
     */
     Q_PROPERTY( bool isLeaf READ isLeaf );
 
@@ -73,15 +67,11 @@ class MEDGUI_EXPORT medViewContainer : public QFrame
      *
      * The leaf container doesn't contain any other view, it may be
      * contained in another view container.
-     *
-     * @param void
     */
     Q_PROPERTY( bool isEmpty READ isEmpty );
 
     /**
      * @brief true if this container contains a daddy view
-     *
-     * @param void
     */
     Q_PROPERTY( bool isDaddy READ isDaddy );
 

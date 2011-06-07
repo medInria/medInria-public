@@ -128,13 +128,3 @@ void medViewContainerSingle::dropEvent(QDropEvent *event)
 
     medViewContainer::dropEvent(event);
 }
-
-void medViewContainerSingle::focusInEvent(QFocusEvent *event)
-{
-    medViewContainer::focusInEvent(event);
-}
-
-void medViewContainerSingle::focusOutEvent(QFocusEvent *event)
-{
-    medViewContainer::focusOutEvent(event);
-}
