@@ -31,13 +31,8 @@ def main (argv):
         print e
         print '...no problem, continuing'
 
-    try:
-        os.makedirs(os.path.join(install_dir_bin,"plugins"))
-    except OSError,e:
-        print e
-        print '...no problem, continuing'
-
-    create_qt_conf(install_dir_bin)
+    #not needed if plugins are in bin directory and not bin/plugins.
+    #create_qt_conf(install_dir_bin)
     plugin_dlls = "imageformats/qgif4.dll \
     imageformats/qico4.dll \
     imageformats/qjpeg4.dll \
@@ -60,13 +55,13 @@ def main (argv):
 	phonon4.dll"
 
     try:
-        os.makedirs(os.path.join(install_dir_bin,"plugins","sqldrivers"))
+        os.makedirs(os.path.join(install_dir_bin,"sqldrivers"))
     except OSError,e:
         print e
         print '...no problem, continuing'
 
     try:
-        os.makedirs(os.path.join(install_dir_bin,"plugins","imageformats"))
+        os.makedirs(os.path.join(install_dir_bin,"imageformats"))
     except OSError,e:
         print e
         print '...no problem, continuing'
@@ -75,7 +70,7 @@ def main (argv):
     copy_dlls(dlls.split(),qt_install_dir_bin, install_dir_bin)
 
     copy_dlls(plugin_dlls.split(),os.path.join(qt_install_dir,"plugins"),
-            os.path.join(install_dir_bin,"plugins"))
+            install_dir_bin)
 
 if __name__ == "__main__":
     main(sys.argv)
