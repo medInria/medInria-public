@@ -88,7 +88,15 @@ void v3dDataFibers::generateThumbnails (void) const
 {
     d->thumbnails.clear();
     
-    // QVTKWidget *widget = new QVTKWidget;
+    // we must use a parent to prevent infinte recursion of the QVTKWidget
+    // see: http://vtk.1045678.n5.nabble.com/qtimageviewer-example-crashes-with-vtk-5-6-0-td1249263.html
+    //
+    QWidget *parent = new QWidget;
+    
+    QVTKWidget *widget = new QVTKWidget (parent);
+    QVBoxLayout *l = new QVBoxLayout(parent); 
+    l->setContentsMargins(0,0,0,0);
+    l->addWidget(widget);
     
     vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
     vtkActor* actor = vtkActor::New();
@@ -102,12 +110,12 @@ void v3dDataFibers::generateThumbnails (void) const
     window->OffScreenRenderingOn();
     renderer->ResetCamera();
     
-    // widget->SetRenderWindow(window);
-    // widget->setFixedSize(128,128);
-    // widget->show();
+    widget->SetRenderWindow(window);
+    parent->setFixedSize(128,128);
+    parent->show();
     
-    window->Render();
-    // widget->update();
+    //window->Render();
+    parent->update();
     // 
 
     unsigned int w=128, h=128;
@@ -118,6 +126,8 @@ void v3dDataFibers::generateThumbnails (void) const
     pixels->SetArray(d->thumbnail.bits(), w*h*4, 1);
     window->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
 
+    parent->hide();
+    
     d->thumbnails.append (d->thumbnail);
     
     pixels->Delete();
@@ -125,7 +135,7 @@ void v3dDataFibers::generateThumbnails (void) const
     actor->Delete();
     renderer->Delete();
     window->Delete(); // crash if window is deleted
-    // widget->deleteLater();
+    parent->deleteLater();
 }
 
 // /////////////////////////////////////////////////////////////////
