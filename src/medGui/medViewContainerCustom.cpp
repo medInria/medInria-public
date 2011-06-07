@@ -180,7 +180,6 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 	
 	medViewContainer::setView (view);
 
-	// d->layout->setContentsMargins(1, 1, 1, 1);    
 	d->layout->setContentsMargins(0, 0, 0, 0);    
 	d->layout->addWidget(view->widget(), 0, 0);
 	

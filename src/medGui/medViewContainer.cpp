@@ -32,7 +32,7 @@ medViewContainer::medViewContainer(QWidget *parent)
 {
     d->layout = new QGridLayout(this);
     d->layout->setContentsMargins(0, 0, 0, 0);
-    d->layout->setSpacing(2);
+    d->layout->setSpacing(3);
 
     d->view = NULL;
     d->current = this;
@@ -212,9 +212,7 @@ void medViewContainer::setCurrent(medViewContainer *container)
 
 void medViewContainer::recomputeStyleSheet()
 {
-    QString styleSheet = this->styleSheet();
-    this->setStyleSheet( QString() );
-    this->setStyleSheet( styleSheet );
+    this->setStyleSheet( this->styleSheet() );
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)

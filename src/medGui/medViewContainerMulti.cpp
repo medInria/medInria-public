@@ -32,7 +32,6 @@ medViewContainerSingle2::~medViewContainerSingle2()
 
 void medViewContainerSingle2::setView (dtkAbstractView *view)
 {
-    // d->layout->setContentsMargins(1, 1, 1, 1);    
     d->layout->setContentsMargins(0, 0, 0, 0);    
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
@@ -185,8 +184,6 @@ void medViewContainerMulti::layout(QList<QWidget *> content)
             layout_col++;
         }
     }
-    
-    d->layout->setContentsMargins(1, 1, 1, 1);
 }
 
 void medViewContainerMulti::onViewClosing (void)
