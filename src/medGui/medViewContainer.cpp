@@ -26,7 +26,9 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <medCore/medDataIndex.h>
 
-medViewContainer::medViewContainer(QWidget *parent) : QFrame(parent), d(new medViewContainerPrivate)
+medViewContainer::medViewContainer(QWidget *parent)
+    : QFrame(parent)
+    , d(new medViewContainerPrivate)
 {
     d->layout = new QGridLayout(this);
     d->layout->setContentsMargins(0, 0, 0, 0);
@@ -37,9 +39,12 @@ medViewContainer::medViewContainer(QWidget *parent) : QFrame(parent), d(new medV
     
     d->pool = new medViewPool;
     
-    if(medViewContainer *container = dynamic_cast<medViewContainer *>(parent)) {
-        connect(this, SIGNAL(dropped(const medDataIndex&)), container, SIGNAL(dropped(const medDataIndex&)));
-        connect(this, SIGNAL(focused(dtkAbstractView*)), container, SIGNAL(focused(dtkAbstractView*)));
+    medViewContainer *container = dynamic_cast<medViewContainer *>(parent);
+    if ( container != NULL ) {
+        connect(this,      SIGNAL(dropped(const medDataIndex&)),
+                container, SIGNAL(dropped(const medDataIndex&)));
+        connect(this,      SIGNAL(focused(dtkAbstractView*)),
+                container, SIGNAL(focused(dtkAbstractView*)));
     }
 
     this->setAcceptDrops(true);
