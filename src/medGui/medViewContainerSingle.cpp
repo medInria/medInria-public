@@ -47,7 +47,8 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     // if (d->layout->count())
     //     d->layout->takeAt(0)->widget()->hide();
     
-    d->layout->setContentsMargins(1, 1, 1, 1);    
+    // d->layout->setContentsMargins(1, 1, 1, 1);    
+    d->layout->setContentsMargins(0, 0, 0, 0);    
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
 	
