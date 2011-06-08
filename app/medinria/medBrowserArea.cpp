@@ -150,41 +150,41 @@ void medBrowserArea::setdw(QStatusBar *status)
 
 void medBrowserArea::onFileImport(QString path)
 {
-  QFileInfo info(path);
-  medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
-  connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
-  connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
-  d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
-  medJobManager::instance()->registerJobItem(importer);
-  QThreadPool::globalInstance()->start(importer);
-  
+    QFileInfo info(path);
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
+    connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+    connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+    d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
+    medJobManager::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
+    
 }
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
 {
-  QString patientName = data->metaDataValues(tr("PatientName"))[0];
-  QString studyName   = data->metaDataValues(tr("StudyDescription"))[0];
-  QString seriesName  = data->metaDataValues(tr("SeriesDescription"))[0];
-  
-  QString s_patientName = patientName.simplified();
-  QString s_studyName   = studyName.simplified();
-  QString s_seriesName  = seriesName.simplified();  
-  
-  if ((s_patientName == "")||(s_studyName == "")||(s_seriesName == ""))
-    return;
-  
-  QFileInfo fileInfo (medStorage::dataLocation() + "/" + s_patientName + "/" + s_studyName   + "/");
-  
-  if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path()))
-  {
-    qDebug() << "Cannot create directory: " << fileInfo.dir().path();
-    return;
-  }  
-  
-  medDataIndex importIndex = medDataManager::instance()->importNonPersistent(data);
-  medDataManager::instance()->storeNonPersistentSingleDataToDatabase(importIndex);
-  
-  this->onFileImported();
+    QString patientName = data->metaDataValues(tr("PatientName"))[0];
+    QString studyName   = data->metaDataValues(tr("StudyDescription"))[0];
+    QString seriesName  = data->metaDataValues(tr("SeriesDescription"))[0];
+    
+    QString s_patientName = patientName.simplified();
+    QString s_studyName   = studyName.simplified();
+    QString s_seriesName  = seriesName.simplified();  
+    
+    if ((s_patientName == "")||(s_studyName == "")||(s_seriesName == ""))
+        return;
+    
+    QFileInfo fileInfo (medStorage::dataLocation() + "/" + s_patientName + "/" + s_studyName   + "/");
+    
+    if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path()))
+    {
+        qDebug() << "Cannot create directory: " << fileInfo.dir().path();
+        return;
+    }  
+    
+    medDataIndex importIndex = medDataManager::instance()->importNonPersistent(data);
+    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(importIndex);
+    
+    this->onFileImported();
 }
 
 void medBrowserArea::onFileImported(void)
@@ -223,8 +223,8 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
         d->toolbox_container->addToolBox(toolBox);
     }
 
-  connect(dataSource,SIGNAL(dataReceived(QString)),this,SLOT(onFileImport(QString)));
-  connect(dataSource,SIGNAL(dataReceived(dtkAbstractData *)),this,SLOT(onDataImport(dtkAbstractData *)));
+    connect(dataSource,SIGNAL(dataReceived(QString)),this,SLOT(onFileImport(QString)));
+    connect(dataSource,SIGNAL(dataReceived(dtkAbstractData *)),this,SLOT(onDataImport(dtkAbstractData *)));
     connect(dataSource,SIGNAL(dataReceivingFailed(QString)), this, SLOT(onDataReceivingFailed(QString)));
     connect(dataSource, SIGNAL(exportData(const medDataIndex&)), this, SLOT(onExportData(const medDataIndex&)));
 }

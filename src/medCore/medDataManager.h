@@ -76,12 +76,12 @@ public:
     */
     void storeNonPersistentDataToDatabase (void);
 
-  /**
-   * Use this function to save one non-persistent data to the sql database.
-   * The data is specified by ots medDataIndex , it is then removed from the non persistent database
-   */
-  void storeNonPersistentSingleDataToDatabase( const medDataIndex &index );
-  
+    /**
+     * Use this function to save one non-persistent data to the sql database.
+     * The data is specified by ots medDataIndex , it is then removed from the non persistent database
+     */
+    void storeNonPersistentSingleDataToDatabase( const medDataIndex &index );
+    
     /**
     * Returns the number of non-persistent data contained in the data manager
     */

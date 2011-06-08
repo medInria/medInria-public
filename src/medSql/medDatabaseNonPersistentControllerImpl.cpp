@@ -89,7 +89,7 @@ QList<medDatabaseNonPersistentItem *> medDatabaseNonPersistentControllerImpl::it
 
 void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatabaseNonPersistentItem *item)
 {
-  d->items.insert(index, item);
+    d->items.insert(index, item);
 }
 
 medDataIndex medDatabaseNonPersistentControllerImpl::import(const QString& file)
@@ -188,13 +188,13 @@ void medDatabaseNonPersistentControllerImpl::clear(void)
 
 void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
 {
-  if (d->items.count(index) > 0)
-  {
-    d->items.remove(index);
-  }
-  
-  // since we are not managing memory, no deletion should be made here
-  // as we don't know if the data is still in use
+    if (d->items.count(index) > 0)
+    {
+        d->items.remove(index);
+    }
+    
+    // since we are not managing memory, no deletion should be made here
+    // as we don't know if the data is still in use
 }
 
 qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIndex& index ) const
