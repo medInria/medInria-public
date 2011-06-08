@@ -105,6 +105,17 @@ endif (BUILD_TESTING)
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
+# Due to the large number of template functions, windows needs an extra compile flag.
+if (MSVC)
+    set(bigobjFile itkDataImagePlugin.cpp)
+    get_source_file_property(bigobjFile_COMPILE_FLAGS ${bigobjFile} COMPILE_FLAGS)
+    if (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+        set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "/bigobj")
+    else (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+        set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "${bigobjFile_COMPILE_FLAGS} /bigobj")
+    endif (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+endif (MSVC)
+
 ## #################################################################
 ## Install rules
 ## #################################################################
