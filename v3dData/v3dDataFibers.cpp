@@ -90,7 +90,7 @@ void v3dDataFibers::generateThumbnails (void) const
     
     // we must use a parent to prevent infinte recursion of the QVTKWidget
     // see: http://vtk.1045678.n5.nabble.com/qtimageviewer-example-crashes-with-vtk-5-6-0-td1249263.html
-    //
+    //    
     QWidget *parent = new QWidget;
     
     QVTKWidget *widget = new QVTKWidget (parent);
@@ -98,28 +98,32 @@ void v3dDataFibers::generateThumbnails (void) const
     l->setContentsMargins(0,0,0,0);
     l->addWidget(widget);
     
-    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
-    vtkActor* actor = vtkActor::New();
-    vtkRenderer* renderer = vtkRenderer::New();
-    vtkRenderWindow* window = vtkRenderWindow::New();
+    
+    vtkPolyDataMapper *mapper = vtkPolyDataMapper::New();
+    vtkActor *actor = vtkActor::New();
+    vtkRenderer *renderer = vtkRenderer::New();    
+    vtkRenderWindow *window = vtkRenderWindow::New();
+    widget->SetRenderWindow(window);
+    
+    parent->setFixedSize(128,128);
+    parent->show();
+
     mapper->SetInput (d->data->GetFibers());
     actor->SetMapper (mapper);
     renderer->AddViewProp(actor);
     window->SetSize (128,128);
     window->AddRenderer (renderer);
-    window->OffScreenRenderingOn();
+    //window->OffScreenRenderingOn();
     renderer->ResetCamera();
-    
-    widget->SetRenderWindow(window);
-    parent->setFixedSize(128,128);
-    parent->show();
-    
+        
     //window->Render();
     parent->update();
-    // 
 
-    unsigned int w=128, h=128;
+    // make sure widget is shown and that openGL context is initialized
+    // otherwise, an infinite loop happens when calling GetRGBACharPixelData
+    qApp->processEvents();
     
+    unsigned int w=128, h=128;    
     d->thumbnail = QImage(w, h, QImage::Format_ARGB32);
     
     vtkUnsignedCharArray* pixels = vtkUnsignedCharArray::New();
@@ -134,7 +138,7 @@ void v3dDataFibers::generateThumbnails (void) const
     mapper->Delete();
     actor->Delete();
     renderer->Delete();
-    window->Delete(); // crash if window is deleted
+    window->Delete(); // crash if window is deleted    
     parent->deleteLater();
 }
 
