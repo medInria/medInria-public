@@ -46,6 +46,7 @@ public slots:
 	void onToolBoxChosen(const QString&);
 	void clear(void);
 	void onObjectDropped(void);
+//	void onSavedImage(void);
 
     
 protected:

@@ -22,6 +22,7 @@ class medToolBoxFilteringPrivate
 {
 public:
 	QComboBox    *chooseFilter;
+	QPushButton * saveResultButton;
 	medToolBoxFilteringCustom *customToolBox;
 	medDropSite *dropSite;
 	dtkAbstractData *data;
@@ -35,14 +36,15 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
 
     QWidget *displayWidget = new QWidget(this);
     
+    d->saveResultButton = new QPushButton(tr("Save Result"),this);
+//    connect (d->saveResultButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
+
     d->chooseFilter = new QComboBox(this);
-    d->chooseFilter->addItem("Choose...");  
-    
-    QLabel *filterLabel = new QLabel("Filters :", displayWidget);    
+    d->chooseFilter->addItem("Choose filter");
     
     QVBoxLayout *filterLayout = new QVBoxLayout(displayWidget);
     filterLayout->addWidget(d->dropSite);
-    filterLayout->addWidget(filterLabel);
+    filterLayout->addWidget(d->saveResultButton);
     filterLayout->addWidget(d->chooseFilter);
     filterLayout->setAlignment(d->dropSite,Qt::AlignHCenter);
     
@@ -51,11 +53,15 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
 
     connect(d->chooseFilter, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
     connect(d->dropSite,SIGNAL(objectDropped()),this,SLOT(onObjectDropped()));
-    //connect(this, SIGNAL(dataSelected(dtkAbstractData *)),d->customToolBox,SLOT(setInputData(dtkAbstractData *));
-
+//    connect(this, SIGNAL(dataSelected(dtkAbstractData *)),d->customToolBox,SLOT(setInputData(dtkAbstractData *)));
     
+    // Layout section :
+
+    QWidget * layoutSection = new QWidget(this);
+    layoutSection->setLayout(filterLayout);
+
     this->setTitle("Filtering View");
-    this->addWidget(displayWidget);
+    this->addWidget(layoutSection);
     
     d->customToolBox = NULL;
     d->data = NULL;
@@ -115,8 +121,10 @@ void medToolBoxFiltering::onObjectDropped(void)
   
   d->data = medDataManager::instance()->data (index).data();
   
-  if (d->data)
-    medToolBoxFilteringCustom* customToolbox(void);
+  qDebug() << "onObjectDropped(), d->data->data() = " << d->data->data();
+
+//  if (d->data)
+//    medToolBoxFilteringCustom* customToolbox(void);
   
   if (!d->data)
     return;
