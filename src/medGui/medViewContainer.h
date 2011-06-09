@@ -341,6 +341,14 @@ public slots:
     */
     virtual void onDaddyChanged( bool state );
 
+    /**
+     * @brief 
+     *
+     * @param value
+    */
+    virtual void onViewFocused( bool value );
+
+
 protected:
     /**
      * @brief Sets the currently selected Container.

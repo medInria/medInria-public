@@ -253,7 +253,7 @@ void medViewContainerMulti::onViewClosing (void)
             current = dynamic_cast< medViewContainer * >( predContainer );
         if ( current == NULL )
             current = this;
-        this->setCurrent( current );
+        current->onViewFocused( true );
 
         this->update();
 

@@ -198,6 +198,20 @@ void medViewContainer::setView(dtkAbstractView *view)
     this->recomputeStyleSheet();
 }
 
+void medViewContainer::onViewFocused( bool value )
+{
+    if ( !value )
+        return;
+
+    if ( !this->isEmpty() )
+        this->setCurrent( this );
+
+    if (dtkAbstractView *view = this->view())
+        emit focused(view);
+    
+    this->update();
+}
+
 void medViewContainer::setCurrent(medViewContainer *container)
 {
     medViewContainer * parent =
@@ -253,16 +267,10 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
     medViewContainer * former = this->current();
 
-    if ( !this->isEmpty() )
-        this->setCurrent( this );
-
-    if (dtkAbstractView *view = this->view())
-        emit focused(view);
+    this->onViewFocused( true );
 
     if (former)
         former->update();
-    
-    this->update();
 }
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)

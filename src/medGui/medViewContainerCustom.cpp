@@ -278,7 +278,7 @@ void medViewContainerCustom::onViewClosing (void)
     while ( parent != NULL ) {
         QList< medViewContainer * > leaves = parent->leaves( true );
         if ( leaves.count() > 0 ) {
-            this->setCurrent( leaves.first() );
+            leaves.first()->onViewFocused( true );
             break;
         }
         parent = parent->parentContainer();
