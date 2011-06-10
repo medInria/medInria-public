@@ -255,13 +255,14 @@ void medViewPool::onViewReg(bool value)
 void medViewPool::onViewPropertySet (const QString &key, const QString &value)
 {
     // property that we do not want to synchronize
-    if (key=="Daddy" ||
-        key=="PositionLinked" ||
-        key=="CameraLinked" ||
-        key=="WindowingLinked" ||
-        key=="Orientation" ||
-        key=="LookupTable" ||
-        key=="Preset")
+    if (key == "Daddy"           ||
+        key == "PositionLinked"  ||
+        key == "CameraLinked"    ||
+        key == "WindowingLinked" ||
+        key == "Orientation"     ||
+        key == "LookupTable"     ||
+        key == "Preset"          ||
+        key == "3DMode")
         return;
     
     d->propertySet[key] = value;
