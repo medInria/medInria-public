@@ -22,6 +22,7 @@
 #include <QtDebug>
 #include <qdebug.h>
 #include "medMainWindow.h"
+#include "medApplication.h"
 
 #include <dtkCore/dtkGlobal.h>
 
@@ -37,12 +38,8 @@
 int main(int argc, char *argv[])
 {
     qRegisterMetaType<medDataIndex>("medDataIndex");
-    QApplication application(argc, argv);
-    application.setApplicationName("medinria");
-    application.setApplicationVersion("0.0.1");
-    application.setOrganizationName("inria");
-    application.setOrganizationDomain("fr");
-    application.setWindowIcon(QIcon(":/medinria.ico"));
+    medApplication application(argc, argv);
+
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
         qDebug() << "Usage: medinria [--no-fullscreen] [--stereo]";
@@ -85,7 +82,6 @@ int main(int argc, char *argv[])
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
     
- 
     medMainWindow mainwindow;
     mainwindow.show();
    
