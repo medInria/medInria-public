@@ -67,7 +67,6 @@ public:
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
 {
     d->fuseView = 0;
-
     d->fixedData  = NULL;
     d->movingData = NULL;
     d->fixedView  = NULL;
