@@ -17,7 +17,7 @@
 #define MEDAPPLICATION_H
 
 #include <QApplication>
-#include <Qt/qcolor.h>
+#include <QColor>
 
 class medApplicationPrivate;
 
