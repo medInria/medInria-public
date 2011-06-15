@@ -167,8 +167,11 @@ void medAbstractView::setSlice (int slice)
 
 void medAbstractView::setPosition (const QVector3D &position)
 {
+    if ( d->position == position ) 
+        return;
+
+    d->position = position;
     this->onPositionChanged (position);
-	d->position = position;
     emit positionChanged (position, d->linkPosition);
 }
 
@@ -179,8 +182,11 @@ QVector3D medAbstractView::position(void) const
 
 void medAbstractView::setZoom (double zoom)
 {
-    this->onZoomChanged (zoom);
+    if  (d->zoom == zoom) 
+        return;
+
     d->zoom = zoom;
+    this->onZoomChanged (zoom);
     emit zoomChanged (zoom, d->linkCamera);
 }
 
@@ -191,8 +197,11 @@ double medAbstractView::zoom(void) const
 
 void medAbstractView::setPan (const QVector2D &pan)
 {
+    if ( d->pan == pan ) 
+        return;
+
+    d->pan = pan;
     this->onPanChanged (pan);
-	d->pan = pan;
     emit panChanged (pan, d->linkCamera);
 }
 
@@ -203,9 +212,14 @@ QVector2D medAbstractView::pan(void) const
 
 void medAbstractView::setWindowLevel (double level, double window)
 {
+    if ( ( d->level == level ) && 
+        ( d->window == window) ) {
+        return;
+    }
+
+    d->level = level;
+    d->window = window;
     this->onWindowingChanged (level, window);
-	d->level = level;
-	d->window = window;
     emit windowingChanged (level, window, d->linkWindowing);
 }
 
@@ -217,11 +231,19 @@ void medAbstractView::windowLevel(double &level, double &window) const
 
 void medAbstractView::setCamera (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
 {
+    if (    (d->camPosition == position) && 
+            (d->camViewup   == viewup)   &&
+            (d->camFocal    == focal) &&
+            (d->camParallelScale == parallelScale) ) {
+
+        return;
+    }
+
+    d->camPosition = position;
+    d->camViewup = viewup;
+    d->camFocal = focal;
+    d->camParallelScale = parallelScale;
     this->onCameraChanged (position, viewup, focal, parallelScale);
-	d->camPosition = position;
-	d->camViewup = viewup;
-	d->camFocal = focal;
-	d->camParallelScale = parallelScale;
     emit cameraChanged (position, viewup, focal, parallelScale, d->linkCamera);
 }
 
