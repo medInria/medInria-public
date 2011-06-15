@@ -39,6 +39,8 @@ public:
 v3dDataFibers::v3dDataFibers(void) : dtkAbstractData(), d(new v3dDataFibersPrivate)
 {
     d->data = 0;
+    d->thumbnail = QImage(":v3dData/icons/fibers.png");
+    d->thumbnails.push_back (d->thumbnail);
 }
 
 v3dDataFibers::~v3dDataFibers(void)
@@ -70,17 +72,19 @@ void *v3dDataFibers::data(void)
 
 QImage & v3dDataFibers::thumbnail (void) const
 {
+    /*
     if (d->thumbnails.count()==0)
         this->generateThumbnails();
-    
+    */
     return d->thumbnail;
 }
 
 QList<QImage> &v3dDataFibers::thumbnails(void) const
 {
+    /*
     if (d->thumbnails.count()==0)
         generateThumbnails();
-    
+    */
     return d->thumbnails;
 }
 
