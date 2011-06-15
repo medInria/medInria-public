@@ -561,29 +561,19 @@ void vtkImageView2D::UpdateDisplayExtent()
       vtkCamera *cam = this->Renderer->GetActiveCamera();
       if (cam)
       {
-        double bounds[6];
-        this->ImageDisplayMap.find(0)->second->GetImageActor()->GetBounds(bounds);
+        double pos[3];
+        this->GetWorldCoordinatesForSlice (this->GetSlice(), pos);
 
-        double vn[3], position[3], a, b, c, d;
+        double vn[3], position[3];
         cam->GetViewPlaneNormal(vn);
         cam->GetPosition(position);
-        a = -vn[0];
-        b = -vn[1];
-        c = -vn[2];
-        d = -(a*position[0] + b*position[1] + c*position[2]);
-        
-        double minrange, maxrange;
-        minrange = -vn[this->ViewOrientation]*bounds[this->ViewOrientation * 2] + d;
-        maxrange = 1e-18;
-        for (int i=0; i<2; i++)
-        {
-            double dist = -vn[this->ViewOrientation]*bounds[this->ViewOrientation * 2 + i] + d;
-            minrange = (dist<minrange)?(dist):minrange;
-            maxrange = (dist>maxrange)?(dist):maxrange;
-        }
+
+        double distance = 0.0;
+        for (int i=0; i<3; i++)
+            distance += (pos[i]-position[i]) * -vn[i];
 
         double avg_spacing = this->GetInput()->GetSpacing()[this->ViewOrientation] * 0.5;
-        cam->SetClippingRange(minrange-avg_spacing, maxrange + avg_spacing);
+        cam->SetClippingRange(distance - avg_spacing, distance + avg_spacing);
     }
   }    
 }
