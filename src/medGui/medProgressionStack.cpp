@@ -1,5 +1,5 @@
-/* medProgressionStack.cpp --- 
- * 
+/* medProgressionStack.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:39:47 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 71
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medProgressionStack.h"
@@ -37,7 +37,7 @@ QString medChop(const QString& string)
         result.resize(12);
         result.append("...");
     }
-    
+
     return result;
 }
 
@@ -157,7 +157,7 @@ void medProgressionStack::removeItem(){
         if(!d->itemstoBeRemoved.isEmpty()){
             QObject* object = d->itemstoBeRemoved.dequeue();
             QWidget *widget = d->widgets.value(object);
-            delete d->bars.value(object);            
+            delete d->bars.value(object);
             d->bars.remove (object);
             delete d->buttons.value(object);
             d->buttons.remove(object);
@@ -210,10 +210,17 @@ void medProgressionStack::addJobItem(medJobItem* job, QString label)
     connect(job, SIGNAL(progressed(QObject*, int)), this, SLOT(setProgress(QObject*, int)), Qt::QueuedConnection);
     connect(job, SIGNAL(success(QObject*)), this, SLOT(onSuccess(QObject*)), Qt::QueuedConnection);
     connect(job, SIGNAL(failure(QObject*)), this, SLOT(onFailure(QObject*)), Qt::QueuedConnection);
-    connect(job, SIGNAL(showError(QObject*,const QString&,unsigned int)), 
+    connect(job, SIGNAL(showError(QObject*,const QString&,unsigned int)),
         medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)), Qt::QueuedConnection);
     connect(job, SIGNAL(cancelled(QObject*)), this,SLOT(onCancel(QObject*)), Qt::QueuedConnection);
     connect(this, SIGNAL(cancelRequest(QObject*)),job, SLOT(onCancel(QObject*)), Qt::QueuedConnection);
-    
-    this->setLabel(job, label);  
+
+    this->setLabel(job, label);
+}
+
+void medProgressionStack::setActive(QObject *sender, bool active)
+{
+    if (d->bars.contains(sender) ) {
+        active?d->bars.value(sender)->setMaximum(0):d->bars.value(sender)->setMaximum(100);
+    }
 }
