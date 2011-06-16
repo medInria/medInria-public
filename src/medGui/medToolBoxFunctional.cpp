@@ -130,7 +130,9 @@ void medToolBoxFunctional::clear(void)
 void medToolBoxFunctional::onViewAdded(dtkAbstractView *view)
 {
     dtkAbstractData *data = static_cast<dtkAbstractData*>(view->data());
-    d->currentToolBox->setData(data);
+
+    if(d->currentToolBox != NULL)
+        d->currentToolBox->setData(data);
 }
 
 void medToolBoxFunctional::update (dtkAbstractView *view)

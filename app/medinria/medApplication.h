@@ -1,22 +1,23 @@
 /* medApplication.h ---
- * 
+ *
  * Author: John Stark
  * Copyright (C) 2011 - John Stark, Inria.
  * Created: May 2011
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDAPPLICATION_H
 #define MEDAPPLICATION_H
 
 #include <QApplication>
+#include <Qt/qcolor.h>
 
 class medApplicationPrivate;
 
@@ -24,16 +25,94 @@ class medApplicationPrivate;
 // medApplication
 // /////////////////////////////////////////////////////////////////
 
+/**
+ * @brief Sets the style for the application and redirects some messages to logs or splash-screen.
+ *
+ */
 class medApplication : public QApplication
 {
     Q_OBJECT
+    /**  Font color for messages redirected to the Splash screen.*/
+    Q_PROPERTY(QColor msgColor READ msgColor WRITE setMsgColor)
+    /** Text Alignment on the Splash screen.*/
+    Q_PROPERTY(int msgAlignment READ msgAlignment WRITE setMsgAlignment)
 
 public:
+    /**
+     * @brief
+     *
+     * @param argc
+     * @param argv
+    */
     medApplication(int & argc, char **argv);
+
+    /**
+     * @brief
+     *
+     */
     ~medApplication();
 
+    /**
+     * @brief Gets the font color for messages redirected to the Splash Screen.
+     *
+     */
+    const QColor& msgColor();
 
-protected:
+    /**
+     * @brief Sets the font color for messages redirected to the Splash Screen.
+     *
+     * @param color
+     */
+    void setMsgColor(const QColor& color);
+
+    /**
+     * @brief Gets the text alignment on the Splash screen.
+     *
+     */
+    int msgAlignment();
+
+    /**
+     * @brief Sets the text alignment on the Splash screen.
+     *
+     * @param alignment
+     */
+    void setMsgAlignment(int alignment);
+
+signals:
+    /**
+     * @brief sends messages to the splash screen.
+     *
+     * @see QSplashScreen::showMessage
+     *
+     * @param message Text to display.
+     * @param alignment Text alignment.
+     * @param color Font color.
+     */
+    void showMessage(const QString& message,int alignment,const QColor& color);
+
+public slots:
+    /**
+     * @brief Sends a signal intended for the splash screen to show a message.
+     *
+     * @see showMessage();
+     *
+     * @param message
+     */
+    void redirectMessageToSplash(const QString& message);
+
+    /**
+     * @brief Logs a message as a dtkOutput entry.
+     *
+     * @param message
+     */
+    void redirectMessageToLog(const QString & message);
+
+    /**
+     * @brief Logs an error message as a dtkError entry.
+     *
+     * @param message
+     */
+    void redirectErrorMessageToLog(const QString & message);
 
 private:
     medApplicationPrivate *d;
