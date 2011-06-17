@@ -1,7 +1,7 @@
 #ifndef MEDVIEWERTOOLBOXTIME_H
 #define MEDVIEWERTOOLBOXTIME_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 
 class dtkAbstractView;
 class dtkAbstractData;

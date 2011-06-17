@@ -22,7 +22,7 @@
 
 #include <QtGui>
 
-#include <medGui/medViewerConfiguration.h>
+#include <medViewerConfiguration.h>
 
 class dtkAbstractView;
 

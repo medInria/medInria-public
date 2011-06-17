@@ -1,4 +1,4 @@
-#include "medLUTtoXMLWriter.h"
+#include "medLUTToXMLWriter.h"
 
 #include <QXmlStreamWriter>
 #include <QStringList>

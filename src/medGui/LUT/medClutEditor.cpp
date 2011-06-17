@@ -27,8 +27,8 @@
 #include <math.h>
 #include <limits>
 
-#include "medLUTtoXMLWriter.h"
-#include "medXMLtoLUTReader.h"
+#include "medLUTToXMLWriter.h"
+#include "medXMLToLUTReader.h"
 #include "medSaveLUTDialog.h"
 #include "medLoadLUTDialog.h"
 

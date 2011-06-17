@@ -19,11 +19,11 @@
 
 #include "medViewerConfigurationVisualization.h"
 
-#include <medGui/medViewerToolBoxViewProperties.h>
-#include <medGui/medViewContainer.h>
-#include <medGui/medStackedViewContainers.h>
-#include <medGui/medViewerToolBoxView.h>
-#include <medGui/medViewerToolBoxTime.h>
+#include <medViewerToolBoxViewProperties.h>
+#include <medViewContainer.h>
+#include <medStackedViewContainers.h>
+#include <medViewerToolBoxView.h>
+#include <medViewerToolBoxTime.h>
 
 class medViewerConfigurationVisualizationPrivate
 {

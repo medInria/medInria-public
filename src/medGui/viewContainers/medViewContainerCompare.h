@@ -2,7 +2,7 @@
 #define MEDVIEWCONTAINERCOMPARE_H
 
 
-#include <medGui/medViewContainerCustom.h>
+#include <medViewContainerCustom.h>
 
 
 #include "medGuiExport.h"

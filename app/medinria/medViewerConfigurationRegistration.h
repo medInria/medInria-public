@@ -4,7 +4,7 @@
 
 #include <QtCore>
 
-#include <medGui/medViewerConfiguration.h>
+#include <medViewerConfiguration.h>
 
 class medStackedViewContainers;
 class medViewerConfigurationRegistrationPrivate;

@@ -41,10 +41,11 @@ enable_testing()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
+
+include(medinriaBuild)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-include(medinriaBuild)
 include(medinriaPack)
 include(medinriaDart)
 

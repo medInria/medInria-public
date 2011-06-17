@@ -40,11 +40,11 @@
 #include <medSql/medDatabaseExporter.h>
 #include <medSql/medDatabaseImporter.h>
 
-#include <medGui/medProgressionStack.h>
-#include <medGui/medToolBox.h>
-#include <medGui/medToolBoxFactory.h>
-#include <medGui/medToolBoxContainer.h>
-#include <medGui/medBrowserToolBoxJobs.h>
+#include <medProgressionStack.h>
+#include <medToolBox.h>
+#include <medToolBoxFactory.h>
+#include <medToolBoxContainer.h>
+#include <medBrowserToolBoxJobs.h>
 
 #include <medPacs/medPacsMover.h>
 

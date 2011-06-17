@@ -42,22 +42,22 @@
 #include <medSql/medDatabaseNavigator.h>
 #include <medSql/medDatabaseNavigatorController.h>
 
-#include <medGui/medClutEditor.h>
-#include <medGui/medToolBox.h>
-#include <medGui/medToolBoxContainer.h>
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerCustom.h>
-#include <medGui/medViewContainerMulti.h>
-#include <medGui/medViewContainerSingle.h>
-#include <medGui/medViewPool.h>
-#include <medGui/medViewerConfigurationFactory.h>
-#include <medGui/medToolBoxDiffusion.h>
-#include <medGui/medToolBoxRegistration.h>
-#include <medGui/medStackedViewContainers.h>
-#include <medGui/medViewerToolBoxLayout.h>
+#include <medClutEditor.h>
+#include <medToolBox.h>
+#include <medToolBoxContainer.h>
+#include <medViewContainer.h>
+#include <medViewContainerCustom.h>
+#include <medViewContainerMulti.h>
+#include <medViewContainerSingle.h>
+#include <medViewPool.h>
+#include <medViewerConfigurationFactory.h>
+#include <medToolBoxDiffusion.h>
+#include <medToolBoxRegistration.h>
+#include <medStackedViewContainers.h>
+#include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxPatient.h>
-#include <medGui/medViewerToolBoxView.h>
-#include <medGui/medViewerToolBoxViewProperties.h>
+#include <medViewerToolBoxView.h>
+#include <medViewerToolBoxViewProperties.h>
 
 
 #include <QtGui>

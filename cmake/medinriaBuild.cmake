@@ -17,6 +17,24 @@
 ## 
 ######################################################################
 
+
+## ###################################################################
+## INCLUDE RULES
+## ###################################################################
+set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/medGui
+    ${PROJECT_SOURCE_DIR}/src/medGui/commonWidgets
+    ${PROJECT_SOURCE_DIR}/src/medGui/factories
+    ${PROJECT_SOURCE_DIR}/src/medGui/LUT
+    ${PROJECT_SOURCE_DIR}/src/medGui/settingsWidgets
+    ${PROJECT_SOURCE_DIR}/src/medGui/toolboxes
+    ${PROJECT_SOURCE_DIR}/src/medGui/viewContainer) 
+
+include_directories(${PROJECT_NAME}_INCLUDE_DIRS)
+
+
+## ###################################################################
+## INSTALL RULES
+## ###################################################################
 if( EXISTS ${${PROJECT_NAME}_BINARY_DIR}/install/${PROJECT_NAME}Config.cmake
 AND EXISTS ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Use.cmake
 AND EXISTS ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Uninstall.cmake)

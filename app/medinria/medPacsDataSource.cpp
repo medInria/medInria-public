@@ -2,11 +2,11 @@
 
 #include <medCore/medJobManager.h>
 
-#include <medGui/medBrowserToolBoxPacsHost.h>
-#include <medGui/medBrowserToolBoxPacsNodes.h>
-#include <medGui/medBrowserToolBoxPacsSearch.h>
-#include <medGui/medPacsSelector.h>
-#include <medGui/medToolBox.h>
+#include <medBrowserToolBoxPacsHost.h>
+#include <medBrowserToolBoxPacsNodes.h>
+#include <medBrowserToolBoxPacsSearch.h>
+#include <medPacsSelector.h>
+#include <medToolBox.h>
 
 #include <medPacs/medPacsWidget.h>
 #include <medPacs/medPacsMover.h>

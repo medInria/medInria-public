@@ -19,7 +19,7 @@
 
 #include "medBrowserToolBoxJobs.h"
 
-#include <medGui/medProgressionStack.h>
+#include <medProgressionStack.h>
 
 #include <QtGui>
 

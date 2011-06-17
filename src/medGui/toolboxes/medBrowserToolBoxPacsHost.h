@@ -20,7 +20,7 @@
 #ifndef MEDBROWSERTOOLBOXPACSHOST_H
 #define MEDBROWSERTOOLBOXPACSHOST_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 #include "medGuiExport.h"
 
 class medBrowserToolBoxPacsHostPrivate;

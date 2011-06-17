@@ -32,8 +32,8 @@
 
 #include <medCore/medAbstractDataImage.h>
 
-#include <medGui/medToolBoxTab.h>
-#include <medGui/medToolBoxFactory.h>
+#include <medToolBoxTab.h>
+#include <medToolBoxFactory.h>
 
 #include "medToolBoxRegistrationCustom.h"
 

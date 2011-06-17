@@ -20,7 +20,7 @@
 #ifndef MEDVIEWERTOOLBOXPATIENT_H
 #define MEDVIEWERTOOLBOXPATIENT_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 
 class medDataIndex;
 class medViewerToolBoxPatientPrivate;

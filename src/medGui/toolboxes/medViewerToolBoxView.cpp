@@ -22,7 +22,7 @@
 
 #include <dtkCore/dtkAbstractView.h>
 
-#include <medGui/medToolBoxTab.h>
+#include <medToolBoxTab.h>
 
 class medViewerToolBoxViewPrivate
 {

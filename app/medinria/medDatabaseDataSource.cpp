@@ -2,7 +2,7 @@
 
 #include <medCore/medDataManager.h>
 
-#include <medGui/medDatabaseSearchPanel.h>
+#include <medDatabaseSearchPanel.h>
 
 #include <medSql/medDatabasePreview.h>
 #include <medSql/medDatabaseModel.h>

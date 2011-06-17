@@ -36,8 +36,8 @@
 #include <medCore/medJobManager.h>
 #include <medCore/medDataManager.h>
 
-#include <medGui/medButton.h>
-#include <medGui/medWorkspaceShifter.h>
+#include <medButton.h>
+#include <medWorkspaceShifter.h>
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseNonPersistentController.h>
@@ -45,13 +45,13 @@
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseItem.h>
 
-#include <medGui/medViewerConfiguration.h>
-#include <medGui/medViewerConfigurationFactory.h>
-#include <medGui/medSettingsWidgetFactory.h>
-#include <medGui/medSystemSettingsWidget.h>
-#include <medGui/medStartupSettingsWidget.h>
-#include <medGui/medDatabaseSettingsWidget.h>
-#include <medGui/medSettingsEditor.h>
+#include <medViewerConfiguration.h>
+#include <medViewerConfigurationFactory.h>
+#include <medSettingsWidgetFactory.h>
+#include <medSystemSettingsWidget.h>
+#include <medStartupSettingsWidget.h>
+#include <medDatabaseSettingsWidget.h>
+#include <medSettingsEditor.h>
 
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"

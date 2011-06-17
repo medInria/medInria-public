@@ -24,153 +24,151 @@ project(medGui)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  
-  # general setting classes  
-  medSettingsWidget.h
-  medSettingsWidgetFactory.h
-  
-  # specific setting classes
-  medDatabaseSettingsWidget.h
-  medSettingsEditor.h
-  medSystemSettingsWidget.h
-  medStartupSettingsWidget.h
- 
-  medBrowserToolBoxJobs.h
-  medClutEditor.h
-  medDropSite.h
-  medFlicker.h
   medLayoutChooser.h
-  medProgressionStack.h
   medPacsSelector.h
-  medButton.h  
+  medToolBoxContainer.h
+  medDatabaseSearchPanel.h
+  medStackedViewContainers.h
+  medViewerConfiguration.h
+  medPacsSelector.h
+  medViewPool.h
+
+  # commonWidgets:
+  commonWidgets/medDropSite.h
+  commonWidgets/medWorkspaceShifter.h
+  commonWidgets/medButton.h
+  commonWidgets/medProgressionStack.h
+  commonWidgets/medFlicker.h
+
+  # factories
+  factories/medSettingsWidgetFactory.h
+  factories/medToolBoxFactory.h
+  factories/medViewerConfigurationFactory.h
+
+  # LUT
+  LUT/medClutEditor.h
+  LUT/medLoadLUTDialog.h
+  LUT/medSaveLUTDialog.h
+
+  # settings classes  
+  settingsWidgets/medSettingsWidget.h
+  settingsWidgets/medDatabaseSettingsWidget.h
+  settingsWidgets/medSettingsEditor.h
+  settingsWidgets/medSystemSettingsWidget.h
+  settingsWidgets/medStartupSettingsWidget.h
+
   
   # general toolbox classes
-  medToolBox.h
-  medToolBoxBody.h
-  medToolBoxHeader.h
-  medToolBoxTab.h
-  medToolBoxFactory.h
-  medToolBoxContainer.h
-  
+  toolboxes/medToolBox.h
+  toolboxes/medToolBoxBody.h
+  toolboxes/medToolBoxHeader.h
+  toolboxes/medToolBoxTab.h
+    
   # specific toolbox classes
-  medToolBoxDiffusion.h
-  medToolBoxDiffusionCustom.h
-  medToolBoxDiffusionFiberView.h   
-  medToolBoxDiffusionFiberBundling.h
-  medToolBoxRegistration.h
-  medToolBoxRegistrationCustom.h
-  medToolBoxDiffusionTensorView.h
-  
-  # viewer stuff
-  medViewPool.h
-  medViewContainer.h
-  medViewContainerCustom.h
-  medViewContainerMulti.h
-  medViewContainerSingle.h
-  medViewContainerCompare.h
-  medStackedViewContainers.h
-  
-  medWorkspaceShifter.h 
-  medSaveLUTDialog.h
-  medLoadLUTDialog.h
-  
-  # general configuration classes
-  medViewerConfiguration.h  
-  medViewerConfigurationFactory.h
-  medViewerToolBoxLayout.h
-  medViewerToolBoxView.h
-  medViewerToolBoxTime.h
-  medViewerToolBoxViewProperties.h
-  medViewerToolBoxView.h
-  
-  # pacs toolboxes
-  medBrowserToolBoxPacsHost.h
-  medBrowserToolBoxPacsNodes.h
-  medBrowserToolBoxPacsSearch.h    
-  
-  medDatabaseSearchPanel.h
+  toolboxes/medToolBoxDiffusion.h
+  toolboxes/medToolBoxDiffusionCustom.h
+  toolboxes/medToolBoxDiffusionFiberView.h   
+  toolboxes/medToolBoxDiffusionFiberBundling.h
+  toolboxes/medToolBoxRegistration.h
+  toolboxes/medToolBoxRegistrationCustom.h
+  toolboxes/medToolBoxDiffusionTensorView.h
+  toolboxes/medBrowserToolBoxJobs.h
+  toolboxes/medViewerToolBoxLayout.h
+  toolboxes/medViewerToolBoxView.h
+  toolboxes/medViewerToolBoxTime.h
+  toolboxes/medViewerToolBoxViewProperties.h
+  toolboxes/medBrowserToolBoxPacsHost.h
+  toolboxes/medBrowserToolBoxPacsNodes.h
+  toolboxes/medBrowserToolBoxPacsSearch.h
 
+  # viewContainers:
+  viewContainers/medViewContainerCompare.h
+  viewContainers/medViewContainerMulti.h
+  viewContainers/medViewContainerCustom.h
+  viewContainers/medViewContainerSingle.h
+  viewContainers/medViewContainer.h  
 )
 
 set(${PROJECT_NAME}_HEADERS
-  medLUTtoXMLWriter.h
-  medXMLtoLUTReader.h
-  medViewContainer_p.h
+  #LUT
+  LUT/medLUTToXMLWriter.h
+  LUT/medXMLToLUTReader.h
+
   medGuiExport.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
 
 set(${PROJECT_NAME}_SOURCES
-  medSettingsWidget.cpp
-  medSettingsWidgetFactory.cpp 
-  
-  medSettingsEditor.cpp
-  medDatabaseSettingsWidget.cpp
-  medStartupSettingsWidget.cpp
-  medSystemSettingsWidget.cpp
-
-  medBrowserToolBoxJobs.cpp
-  medClutEditor.cpp
-  medDropSite.cpp
-  medFlicker.cpp
   medLayoutChooser.cpp
-  medProgressionStack.cpp
   medPacsSelector.cpp
-  medButton.cpp
-  
-  medToolBox.cpp
-  medToolBoxBody.cpp
-  medToolBoxHeader.cpp
-  medToolBoxTab.cpp
-  medToolBoxFactory.cpp
-  medToolBoxContainer.cpp 
-  
-  medToolBoxDiffusion.cpp
-  medToolBoxDiffusionCustom.cpp
-  medToolBoxDiffusionFiberView.cpp   
-  medToolBoxDiffusionFiberBundling.cpp
-  medToolBoxRegistration.cpp
-  medToolBoxRegistrationCustom.cpp
-  medToolBoxDiffusionTensorView.cpp
-  
-  medViewPool.cpp
-  medViewContainer.cpp
-  medViewContainerCustom.cpp
-  medViewContainerMulti.cpp
-  medViewContainerSingle.cpp
-  medViewContainerCompare.cpp
+  medToolBoxContainer.cpp
+  medDatabaseSearchPanel.cpp
   medStackedViewContainers.cpp
-  medWorkspaceShifter.cpp
-  medLUTToXMLWriter.cpp
-  medXMLToLUTReader.cpp
-  medSaveLUTDialog.cpp
-  medLoadLUTDialog.cpp
-  
   medViewerConfiguration.cpp
-  medViewerConfigurationFactory.cpp
-  medViewerToolBoxLayout.cpp
-  medViewerToolBoxTime.cpp
-  medViewerToolBoxViewProperties.cpp
-  medViewerToolBoxView.cpp
+  medPacsSelector.cpp
+  medViewPool.cpp
+
+  # commonWidgets:
+  commonWidgets/medDropSite.cpp
+  commonWidgets/medWorkspaceShifter.cpp
+  commonWidgets/medButton.cpp
+  commonWidgets/medProgressionStack.cpp
+  commonWidgets/medFlicker.cpp
+
+  # factories
+  factories/medSettingsWidgetFactory.cpp
+  factories/medToolBoxFactory.cpp
+  factories/medViewerConfigurationFactory.cpp
+
+  # LUT
+  LUT/medClutEditor.cpp
+  LUT/medLoadLUTDialog.cpp
+  LUT/medSaveLUTDialog.cpp
+  LUT/medLUTToXMLWriter.cpp
+  LUT/medXMLToLUTReader.cpp
+
+  # settings classes  
+  settingsWidgets/medSettingsWidget.cpp
+  settingsWidgets/medDatabaseSettingsWidget.cpp
+  settingsWidgets/medSettingsEditor.cpp
+  settingsWidgets/medSystemSettingsWidget.cpp
+  settingsWidgets/medStartupSettingsWidget.cpp
+
   
-  medBrowserToolBoxPacsHost.cpp
-  medBrowserToolBoxPacsNodes.cpp
-  medBrowserToolBoxPacsSearch.cpp
+  # general toolbox classes
+  toolboxes/medToolBox.cpp
+  toolboxes/medToolBoxBody.cpp
+  toolboxes/medToolBoxHeader.cpp
+  toolboxes/medToolBoxTab.cpp
+    
+  # specific toolbox classes
+  toolboxes/medToolBoxDiffusion.cpp
+  toolboxes/medToolBoxDiffusionCustom.cpp
+  toolboxes/medToolBoxDiffusionFiberView.cpp   
+  toolboxes/medToolBoxDiffusionFiberBundling.cpp
+  toolboxes/medToolBoxRegistration.cpp
+  toolboxes/medToolBoxRegistrationCustom.cpp
+  toolboxes/medToolBoxDiffusionTensorView.cpp
+  toolboxes/medBrowserToolBoxJobs.cpp
+  toolboxes/medViewerToolBoxLayout.cpp
+  toolboxes/medViewerToolBoxView.cpp
+  toolboxes/medViewerToolBoxTime.cpp
+  toolboxes/medViewerToolBoxViewProperties.cpp
+  toolboxes/medBrowserToolBoxPacsHost.cpp
+  toolboxes/medBrowserToolBoxPacsNodes.cpp
+  toolboxes/medBrowserToolBoxPacsSearch.cpp
 
-  medDatabaseSearchPanel.cpp 
+  # viewContainers:
+  viewContainers/medViewContainerCompare.cpp
+  viewContainers/medViewContainerMulti.cpp
+  viewContainers/medViewContainerCustom.cpp
+  viewContainers/medViewContainerSingle.cpp
+  viewContainers/medViewContainer.cpp   
 )
-
-# Include header files for Visual Studio.
-FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )
-set(${PROJECT_NAME}_SOURCES
-	${${PROJECT_NAME}_SOURCES}
-	${${PROJECT_NAME}_HEADERS_MOC}
-	)
 
 ## #################################################################
 ## Build rules
 ## #################################################################
-
 add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
@@ -180,6 +178,7 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES_WRAP})
 
 target_link_libraries(${PROJECT_NAME}
