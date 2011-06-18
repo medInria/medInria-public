@@ -55,10 +55,10 @@ public:
     * Use this function to insert data into the database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params const dtkAbstractData & data
+    * @params QSharedPointer<dtkAbstractData> & data
     * @return medDataIndex
     */
-    medDataIndex import(dtkAbstractData *data);
+    medDataIndex import(QSharedPointer<dtkAbstractData> &data);
 
     /**
     * Use this function to insert data into the non-persistent database,
@@ -70,12 +70,18 @@ public:
     medDataIndex importNonPersistent(dtkAbstractData *data);
 
     /**
-    * Use this functions to save all non-persistent data to the sql database.
+    * Use this function to save all non-persistent data to the sql database.
     * The list of non-persistent data will then be cleared, and any subsequent
     * access to those data will trigger a reading from the database.
     */
     void storeNonPersistentDataToDatabase (void);
 
+    /**
+     * Use this function to save one non-persistent data to the sql database.
+     * The data is specified by ots medDataIndex , it is then removed from the non persistent database
+     */
+    void storeNonPersistentSingleDataToDatabase( const medDataIndex &index );
+    
     /**
     * Returns the number of non-persistent data contained in the data manager
     */
