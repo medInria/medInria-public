@@ -553,25 +553,27 @@ void vtkImageView2D::UpdateDisplayExtent()
   // Figure out the correct clipping range
   if (this->Renderer)
   {
-    if (this->InteractorStyle &&
-        this->InteractorStyle->GetAutoAdjustCameraClippingRange())
-    {
-      this->Renderer->ResetCameraClippingRange();
-    }
-    else
-    {
+      // the clipping range is adjusted so that it englobles the slice +/- 0.5 * spacing in the
+      // direction given by ViewOrientation. It allows to automatically clip polygonal datasets
+      // without having to use a time consuming vtkCutter. In case of oblique slices (i.e., when
+      // a non-identity OrientationTransform is used, a large margin is used
+      // resulting in a too large clipping range. To be futher investigated.
       vtkCamera *cam = this->Renderer->GetActiveCamera();
       if (cam)
       {
-        double bounds[6];
-        this->ImageDisplayMap.at(0)->GetImageActor()->GetBounds(bounds);
-        double spos = bounds[this->SliceOrientation * 2];
-        double cpos = cam->GetPosition()[this->SliceOrientation];
-        double range = fabs(spos - cpos);
-        double *spacing = input->GetSpacing();
-        double avg_spacing = (spacing[0] + spacing[1] + spacing[2]) / 3.0;
-        cam->SetClippingRange(range - avg_spacing * 3.0, range + avg_spacing * 3.0);
-      }
+        double pos[3];
+        this->GetWorldCoordinatesForSlice (this->GetSlice(), pos);
+
+        double vn[3], position[3];
+        cam->GetViewPlaneNormal(vn);
+        cam->GetPosition(position);
+
+        double distance = 0.0;
+        for (int i=0; i<3; i++)
+            distance += (pos[i]-position[i]) * -vn[i];
+
+        double avg_spacing = this->GetInput()->GetSpacing()[this->ViewOrientation] * 0.5;
+        cam->SetClippingRange(distance - avg_spacing, distance + avg_spacing);
     }
   }    
 }
@@ -833,7 +835,6 @@ int vtkImageView2D::SetCameraFromOrientation(void)
   cam->SetPosition(position[0], position[1], position[2]);
   cam->SetFocalPoint(focalpoint[0], focalpoint[1], focalpoint[2]);
   cam->SetViewUp(viewup[0], viewup[1], viewup[2]);
-  
   this->InvokeEvent (vtkImageView::CameraChangedEvent);
   
   return id;
@@ -1161,7 +1162,7 @@ void vtkImageView2D::GetPan (double pan[2])
 void vtkImageView2D::ResetCamera (void)
 {
   this->Superclass::ResetCamera();
-  this->SetZoom (1.0);
+  // this->SetZoom (1.0); // already called in Superclass method
   this->Pan[0] = this->Pan[1] = 0.0;
   this->SetPan (this->Pan); // not sure this is needed
 }
