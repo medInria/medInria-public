@@ -193,6 +193,18 @@ void medDatabaseNonPersistentControllerImpl::clear(void)
     d->im_index = nonPersistentDataStartingIndex();
 }
 
+
+void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
+{
+    if (d->items.count(index) > 0)
+    {
+        d->items.remove(index);
+    }
+    
+    // since we are not managing memory, no deletion should be made here
+    // as we don't know if the data is still in use
+}
+
 qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIndex& index ) const
 {
     Q_UNUSED(index);

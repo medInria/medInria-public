@@ -435,13 +435,30 @@ medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
 void medDataManager::storeNonPersistentDataToDatabase( void )
 {
     foreach (QSharedPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
-        this->import (dtkdata.data());
+        this->import (dtkdata);
     }
-
+    
     if (medAbstractDbController* npDb = d->getNonPersDbController())
         npDb->clear();
-
+    
     d->volatileDataCache.clear();
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex &index )
+{
+    if (d->volatileDataCache.count(index) > 0)
+    {
+        QSharedPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
+        this->import (dtkdata);
+        
+        medAbstractDbController* npDb = d->getNonPersDbController();
+        if (npDb)
+            npDb->remove(index);
+        
+        d->volatileDataCache.remove(index);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -503,9 +520,9 @@ size_t medDataManager::getOptimalMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataIndex medDataManager::import( dtkAbstractData *data )
+medDataIndex medDataManager::import( QSharedPointer<dtkAbstractData> &data )
 {
-    if (!data)
+    if (!data.data())
         return medDataIndex();
 
     medDataIndex index;
@@ -513,7 +530,7 @@ medDataIndex medDataManager::import( dtkAbstractData *data )
     medAbstractDbController* db = d->getDbController();
     if(db)
     {
-        index = db->import(data);
+        index = db->import(data.data());
     }
 
     if (!index.isValid()) {
@@ -521,7 +538,7 @@ medDataIndex medDataManager::import( dtkAbstractData *data )
         return index;
     }
 
-    d->dataCache[index] = QSharedPointer<dtkAbstractData> (data);
+    d->dataCache[index] = data;
 
     emit dataAdded (index);
 

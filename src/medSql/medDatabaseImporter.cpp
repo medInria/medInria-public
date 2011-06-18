@@ -119,13 +119,17 @@ void medDatabaseImporter::run(void)
             continue;
         }
 
+        if (!dtkdata) {
+            qWarning() << "Reader was unable to read: " << fileInfo.filePath();
+            continue;
+        }
+
         QString key  = populateMissingMetadata(dtkdata, &fileInfo);
 
         if (!keyToInt.contains(key)) {
             keyToInt[key] = currentIndex;
             currentIndex++;
-        }
-
+        }        
 
         // we append the uniqueID at the end of the filename to have unique filenames for each volume
         QString uniqueSeriesId;
@@ -160,6 +164,9 @@ void medDatabaseImporter::run(void)
             qDebug()<<"vtkDataMesh";}
         else if (description == "vtkDataMesh4D"){
             imageFileName = imageFileName + ".v4d";
+            qDebug()<<"vtkDataMesh4D";}
+        else if (description == "v3dDataFibers"){
+            imageFileName = imageFileName + ".xml";
             qDebug()<<"vtkDataMesh4D";}
         else if (description.contains ("vistal")){
             imageFileName = imageFileName + ".dim";
@@ -558,14 +565,14 @@ void medDatabaseImporter::popupateDatabase( dtkAbstractData* dtkdata, const QFil
         qDebug() << "Cannot create directory: " << thumb_dir;
 
     for (int j=0; j<thumbnails.count(); j++) {
-        QString thumb_name = thumb_dir + QString().setNum (j) + ".jpg";
-        thumbnails[j].save(medStorage::dataLocation() + thumb_name, "JPG");
+        QString thumb_name = thumb_dir + QString().setNum (j) + ".png";
+        thumbnails[j].save(medStorage::dataLocation() + thumb_name, "PNG");
         thumbPaths << thumb_name;
     }
 
     QImage thumbnail = dtkdata->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
-    QString thumbPath = thumb_dir + "ref.jpg";
-    thumbnail.save (medStorage::dataLocation() + thumbPath, "JPG");
+    QString thumbPath = thumb_dir + "ref.png";
+    thumbnail.save (medStorage::dataLocation() + thumbPath, "PNG");
 
 
     ////////////////////////////////////////////////////////////////// PATIENT
