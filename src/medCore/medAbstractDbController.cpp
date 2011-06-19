@@ -11,3 +11,7 @@ medDataIndex medAbstractDbController::import( const medDataIndex& index, const m
 void medAbstractDbController::clear (void)
 {
 }
+
+void medAbstractDbController::remove (const medDataIndex &index)
+{
+}
