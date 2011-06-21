@@ -86,9 +86,6 @@ public:
 class medMainWindowPrivate
 {
 public:
-    QGraphicsView * gview;
-    QGraphicsScene * gscene;
-    
     QStackedWidget *stack;
 
     medBrowserArea *browserArea;
@@ -144,13 +141,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
-
-
-    //Hack modifications from alex
-    d->gview = new QGraphicsView(this);
-    d->gscene = new QGraphicsScene(this);
-    d->gview->setScene(d->gscene);
-    d->gview->setStyleSheet("background: #4b4b4b;");
 
 
 //     QPushButton * button = new QPushButton(this);
@@ -240,7 +230,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
     configurationSwitcher->setFocusPolicy (Qt::NoFocus);
 
-    this->generateConfigurationButtons();
+//     this->generateConfigurationButtons();
     
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
@@ -251,8 +241,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->statusBar()->addPermanentWidget(quitButton);
 
     this->readSettings();
-    //this->setCentralWidget(d->stack);
-    this->setCentralWidget(d->gview);
+    this->setCentralWidget(d->stack);
+//     this->setCentralWidget(d->gview);
 
     // Now use the Qt preferred method by setting the Application style instead.
     //   The ownership of the style object is not transferred.
@@ -273,28 +263,6 @@ medMainWindow::~medMainWindow(void)
     delete d;
 
     d = NULL;
-}
-
-void medMainWindow::generateConfigurationButtons ( void )
-{
-    QWidget * buttonWidget = new QWidget;
-    buttonWidget->setStyleSheet("background: #4b4b4b;");
-    QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
-    QGridLayout * buttonLayout = new QGridLayout(this);
-    
-    QPushButton * buttonBrowser = new QPushButton(this);
-    buttonBrowser->setText("Browser");
-    buttonLayout->addWidget(buttonBrowser,0,0);
-    
-    for (int i = 0; i< configList.size(); i++)
-    {
-        QPushButton * button = new QPushButton(this);
-        button->setText(configList.at(i));
-        buttonLayout->addWidget(button,i + 1,0);
-    }
-    buttonWidget->setLayout(buttonLayout);
-    d->gscene->addWidget(buttonWidget);
-    
 }
 
 void medMainWindow::readSettings(void)
