@@ -237,8 +237,7 @@ bool medPluginGenerator::generateTypeSourceFile(void)
     stream << QString(templateFile.readAll())
         .arg(QString(d->plugin))
 	.arg(QString(d->type))
-	.arg(QString(d->plugin).remove(d->prefix).prepend(QString(d->prefix).replace(0, 1, QString(d->prefix).left(1).toUpper())))
-    .arg(d->suffix);
+	.arg(QString(d->plugin).remove(d->prefix).prepend(QString(d->prefix).replace(0, 1, QString(d->prefix).left(1).toUpper())));
 
     targetFile.close();
 

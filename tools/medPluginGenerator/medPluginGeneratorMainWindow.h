@@ -46,6 +46,7 @@ public slots:
     void onPluginLicenseChanged();
     void update(void);
     void onFamilyChanged(int);
+    void onSetDefaultPath();
 private:
     medPluginGeneratorMainWindowPrivate *d;
 };

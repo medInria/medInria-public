@@ -38,6 +38,12 @@ medPluginGeneratorMainWindow::medPluginGeneratorMainWindow(QWidget *parent) : QM
 {
     this->d = new medPluginGeneratorMainWindowPrivate;
     this->d->ui.setupUi(this);
+    QSettings settings;
+
+    QDir plugins_dir = qApp->applicationDirPath() + ".";
+
+    d->output = settings.value("path", plugins_dir.absolutePath()).toString();
+    d->ui.pathLineEdit->setText(d->output);
 
     d->ui.descriptionTextEdit->setAcceptRichText(false);
 
@@ -49,10 +55,11 @@ medPluginGeneratorMainWindow::medPluginGeneratorMainWindow(QWidget *parent) : QM
     connect(d->ui.descriptionTextEdit, SIGNAL(textChanged()), this, SLOT(onDescriptionChanged()));
     connect(d->ui.pluginLicenseCombo, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPluginLicenseChanged()));
     connect(d->ui.FamilyCombo, SIGNAL(currentIndexChanged(const int&)), this, SLOT(onFamilyChanged(int)));
-    connect(d->ui.generateAction, SIGNAL(triggered()), this, SLOT(generate()));
-    connect(d->ui.quitAction,     SIGNAL(triggered()), qApp, SLOT(quit()));
-    connect(d->ui.aboutAction,    SIGNAL(triggered()), this, SLOT(about()));
-
+    connect(d->ui.generateAction,    SIGNAL(triggered()), this, SLOT(generate()));
+    connect(d->ui.quitAction,        SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(d->ui.aboutAction,       SIGNAL(triggered()), this, SLOT(about()));
+    connect(d->ui.actionDefault_Path,SIGNAL(triggered()), this,
+            SLOT(onSetDefaultPath()));
     Q_UNUSED(statusBar());
 }
 
@@ -73,7 +80,7 @@ void medPluginGeneratorMainWindow::about(void)
 void medPluginGeneratorMainWindow::onOutputPathClicked(void)
 {
     d->output = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
-                                                      ".",
+    d->ui.pathLineEdit->text(),
                                                       QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
     d->ui.pathLineEdit->setText(d->output);
@@ -183,4 +190,14 @@ void medPluginGeneratorMainWindow::onFamilyChanged(int index)
         d->ui.pluginTypeCombo->setCurrentIndex(0);
         d->ui.pluginTypeCombo->setEnabled(true);
     }
+}
+
+void medPluginGeneratorMainWindow::onSetDefaultPath()
+{
+    d->output = QFileDialog::getExistingDirectory(this, tr("Choose default Directory"),
+    d->output,
+                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QSettings settings;
+    settings.setValue("path",d->output);
+    d->ui.pathLineEdit->setText(d->output);
 }
