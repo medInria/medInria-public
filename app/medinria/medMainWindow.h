@@ -32,8 +32,6 @@ class medMainWindow : public QMainWindow
 public:
      medMainWindow(QWidget *parent = 0);
     ~medMainWindow(void);
-
-    void generateConfigurationButtons(void);
     
     void readSettings(void);
     void writeSettings();
@@ -44,6 +42,7 @@ public slots:
 
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
+    void switchToHomepageArea(void);
 
     void onConfigurationTriggered(QAction *action);
     void onQuit(void);

@@ -20,6 +20,7 @@
 #include "medBrowserArea.h"
 #include "medMainWindow.h"
 #include "medViewerArea.h"
+#include "medHomepageArea.h"
 #include "medViewerConfigurator.h"
 
 #include <dtkCore/dtkGlobal.h>
@@ -90,10 +91,12 @@ public:
 
     medBrowserArea *browserArea;
     medViewerArea  *viewerArea;
+    medHomepageArea * homepageArea;
     
     medWorkspaceShifter *shifter;
     medWorkspaceShifterAction *shiftToBrowserAreaAction;
     medWorkspaceShifterAction *shiftToViewerAreaAction;
+    medWorkspaceShifterAction *shiftToHomepageAreaAction;
 
     medSettingsEditor * settingsEditor;
     
@@ -131,21 +134,19 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->settingsEditor = NULL;
     d->browserArea = new medBrowserArea(this);
     d->viewerArea = new medViewerArea(this);
-
+    d->homepageArea = new medHomepageArea(this);
+    
     d->browserArea->setObjectName("Browser");
     d->viewerArea->setObjectName("Viewer");
+    d->homepageArea->setObjectName("Homepage");
 
     d->stack = new QStackedWidget(this);
+    d->stack->addWidget(d->homepageArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->viewerArea);
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
-
-
-//     QPushButton * button = new QPushButton(this);
-//     button->setText("First button");
-//     d->gscene->addWidget(button);
     
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -203,11 +204,13 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     // Setting up status bar
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
     d->shiftToViewerAreaAction = new medWorkspaceShifterAction("Viewer");
+    d->shiftToHomepageAreaAction = new medWorkspaceShifterAction("Homepage");
 
     d->shiftToBrowserAreaAction->setChecked(true);
 
     connect(d->shiftToBrowserAreaAction, SIGNAL(triggered()), this, SLOT(switchToBrowserArea()));
     connect(d->shiftToViewerAreaAction,  SIGNAL(triggered()), this, SLOT(switchToViewerArea()));
+    connect(d->shiftToHomepageAreaAction,  SIGNAL(triggered()), this, SLOT(switchToHomepageArea()));
 
     // medWorkspaceShifterMenu *menu = new medWorkspaceShifterMenu(this);
     // menu->addAction("Visualization");
@@ -217,8 +220,10 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     // connect(menu, SIGNAL(triggered(QAction *)), this, SLOT(onConfigurationTriggered(QAction *)));
 
     d->shifter = new medWorkspaceShifter(this);
+    d->shifter->addAction(d->shiftToHomepageAreaAction);
     d->shifter->addAction(d->shiftToBrowserAreaAction);
     d->shifter->addAction(d->shiftToViewerAreaAction); //->setMenu(menu);
+    
 
     medButton *quitButton = new medButton(this,":/icons/quit.png", tr("Quit Application"));
     connect(quitButton, SIGNAL(triggered()), this, SLOT(onQuit()));
@@ -229,8 +234,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     QComboBox *configurationSwitcher = new QComboBox(this);
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
     configurationSwitcher->setFocusPolicy (Qt::NoFocus);
-
-//     this->generateConfigurationButtons();
     
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
@@ -242,7 +245,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     this->readSettings();
     this->setCentralWidget(d->stack);
-//     this->setCentralWidget(d->gview);
 
     // Now use the Qt preferred method by setting the Application style instead.
     //   The ownership of the style object is not transferred.
@@ -329,6 +331,18 @@ void medMainWindow::setFullScreen(bool full)
         this->showNormal();
 }
 
+void medMainWindow::switchToHomepageArea ( void )
+{
+    d->stack->setCurrentWidget(d->homepageArea);
+    
+    d->shiftToBrowserAreaAction->setChecked(false);
+    d->shiftToViewerAreaAction->setChecked(false);
+    d->shiftToHomepageAreaAction->setChecked(true);
+
+    d->shifter->update();
+}
+
+
 void medMainWindow::switchToBrowserArea(void)
 {
     d->browserArea->setup(this->statusBar());
@@ -338,6 +352,7 @@ void medMainWindow::switchToBrowserArea(void)
 
     d->shiftToBrowserAreaAction->setChecked(true);
     d->shiftToViewerAreaAction->setChecked(false);
+    d->shiftToHomepageAreaAction->setChecked(false);
 
     d->shifter->update();
 }
@@ -351,6 +366,7 @@ void medMainWindow::switchToViewerArea(void)
 
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(true);
+    d->shiftToHomepageAreaAction->setChecked(false);
 
     d->shifter->update();
 }
