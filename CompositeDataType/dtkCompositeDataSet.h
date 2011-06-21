@@ -48,6 +48,6 @@ class COMPOSITEDATATYPEPLUGIN_EXPORT dtkCompositeDataSet : public dtkAbstractDat
   
 };
 
-dtkAbstractData* createVtkDataMesh (void);
+dtkAbstractData* createDtkCompositeDataSet (void);
 
 #endif

@@ -1,75 +1,71 @@
-#include "vtkDataMeshPlugin.h"
-#include "vtkDataMesh.h"
-#include "vtkDataMesh4D.h"
+#include "CompositeDataTypePlugin.h"
+#include "dtkCompositeDataSet.h"
 
 #include <dtkCore/dtkLog.h>
 
-#include <dtkVtkLogForwarder/vtkLogForwarder.h>
-
 // /////////////////////////////////////////////////////////////////
-// vtkDataMeshPluginPrivate
+// CompositeDataTypePluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class vtkDataMeshPluginPrivate
+class CompositeDataTypePluginPrivate
 {
 public:
-  vtkDataMeshPluginPrivate()
+  CompositeDataTypePluginPrivate()
   {
-      forwarder = vtkLogForwarder::New();
+      // forwarder = vtkLogForwarder::New();
   }
-  ~vtkDataMeshPluginPrivate()
+  ~CompositeDataTypePluginPrivate()
   {
-      forwarder->Delete();
+      // forwarder->Delete();
   }
   // Class variables go here.
-  vtkLogForwarder* forwarder;
+  // vtkLogForwarder* forwarder;
 };
 
 // /////////////////////////////////////////////////////////////////
-// vtkDataMeshPlugin
+// CompositeDataTypePlugin
 // /////////////////////////////////////////////////////////////////
 
-vtkDataMeshPlugin::vtkDataMeshPlugin(QObject *parent) : dtkPlugin(parent), d(new vtkDataMeshPluginPrivate)
+CompositeDataTypePlugin::CompositeDataTypePlugin(QObject *parent) : dtkPlugin(parent), d(new CompositeDataTypePluginPrivate)
 {
 
 }
 
-vtkDataMeshPlugin::~vtkDataMeshPlugin(void)
+CompositeDataTypePlugin::~CompositeDataTypePlugin(void)
 {
     delete d;
     d = NULL;
 }
 
-bool vtkDataMeshPlugin::initialize(void)
+bool CompositeDataTypePlugin::initialize(void)
 {
-  if(!vtkDataMesh::registered()) qDebug() << "Unable to register vtkDataMesh type";
-  if(!vtkDataMesh4D::registered()) qDebug() << "Unable to register vtkDataMesh4D type";
+  if(!dtkCompositeDataSet::registered()) qDebug() << "Unable to register dtkCompositeDataSet type";
   return true;
 }
 
-bool vtkDataMeshPlugin::uninitialize(void)
+bool CompositeDataTypePlugin::uninitialize(void)
 {
     return true;
 }
 
-QString vtkDataMeshPlugin::name(void) const
+QString CompositeDataTypePlugin::name(void) const
 {
-    return "vtkDataMeshPlugin";
+    return "CompositeDataTypePlugin";
 }
 
-QString vtkDataMeshPlugin::description(void) const
+QString CompositeDataTypePlugin::description(void) const
 {
-    return "Plugin containing all types of VTK meshes";
+    return "Plugin containing types of composite datasets";
 }
 
-QStringList vtkDataMeshPlugin::tags(void) const
+QStringList CompositeDataTypePlugin::tags(void) const
 {
-  return QStringList() << "vtk" << "data" << "mesh" << "4D";
+  return QStringList() << "composite";
 }
 
-QStringList vtkDataMeshPlugin::types(void) const
+QStringList CompositeDataTypePlugin::types(void) const
 {
-  return QStringList() << "vtkDataMesh";
+  return QStringList() << "dtkCompositeDataSet";
 }
 
-Q_EXPORT_PLUGIN2(vtkDataMeshPlugin, vtkDataMeshPlugin)
+Q_EXPORT_PLUGIN2(CompositeDataTypePlugin, CompositeDataTypePlugin)

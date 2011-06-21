@@ -1,20 +1,20 @@
-#ifndef VTKDATAMESHPLUGIN_H
-#define VTKDATAMESHPLUGIN_H
+#ifndef COMPOSITEDATATYPEPLUGIN_H
+#define COMPOSITEDATATYPE_H
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "vtkDataMeshPluginExport.h"
+#include "CompositeDataTypePluginExport.h"
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshPluginPrivate;
+class COMPOSITEDATATYPEPLUGIN_EXPORT CompositeDataTypePluginPrivate;
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMeshPlugin : public dtkPlugin
+class COMPOSITEDATATYPEPLUGIN_EXPORT CompositeDataTypePlugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-     vtkDataMeshPlugin(QObject *parent = 0);
-    ~vtkDataMeshPlugin(void);
+     CompositeDataTypePlugin(QObject *parent = 0);
+    ~CompositeDataTypePlugin(void);
 
     virtual bool initialize(void);
     virtual bool uninitialize(void);
@@ -26,7 +26,7 @@ public:
     virtual QStringList types(void) const;
 
 private:
-     vtkDataMeshPluginPrivate *d;
+     CompositeDataTypePluginPrivate *d;
 };
 
 #endif
