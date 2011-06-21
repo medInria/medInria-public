@@ -98,6 +98,9 @@ public slots:
     */
     medDataIndex import(dtkAbstractData *data);
 
+    /** override base class */
+    virtual void remove(const medDataIndex& index);
+
 protected slots:
     void forwardMessage(QString);
 
