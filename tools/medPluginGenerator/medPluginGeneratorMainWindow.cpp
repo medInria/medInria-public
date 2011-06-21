@@ -39,6 +39,11 @@ medPluginGeneratorMainWindow::medPluginGeneratorMainWindow(QWidget *parent) : QM
     this->d = new medPluginGeneratorMainWindowPrivate;
     this->d->ui.setupUi(this);
 
+    QDir plugins_dir = qApp->applicationDirPath() + ".";
+
+    d->output = plugins_dir.absolutePath();
+    d->ui.pathLineEdit->setText(d->output);
+
     d->ui.descriptionTextEdit->setAcceptRichText(false);
 
     connect(d->ui.pathToolButton, SIGNAL(clicked()), this, SLOT(onOutputPathClicked()));
@@ -73,7 +78,7 @@ void medPluginGeneratorMainWindow::about(void)
 void medPluginGeneratorMainWindow::onOutputPathClicked(void)
 {
     d->output = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
-                                                      ".",
+    d->ui.pathLineEdit->text(),
                                                       QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
     d->ui.pathLineEdit->setText(d->output);
