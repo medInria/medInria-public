@@ -81,6 +81,7 @@ set(PLUGIN_LIST
   itkDataTensorImage             ON
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
+  CompositeDataType              ON
   )
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
