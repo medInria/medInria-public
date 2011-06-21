@@ -26,8 +26,8 @@ public:
     medPluginGenerator::PluginFamily pluginFamily;
     QString pluginFamilyString;
     QString output;
-    QString prefix;
-    QString suffix;
+    QString namesp;
+    QString name;
     QString type;
     QString description;
     QString license;
@@ -70,14 +70,14 @@ void medPluginGenerator::setOutputDirectory(const QString& directory)
     d->output = directory;
 }
 
-void medPluginGenerator::setPrefix(const QString& prefix)
+void medPluginGenerator::setNamespace(const QString& namesp)
 {
-    d->prefix = prefix;
+    d->namesp = namesp;
 }
 
-void medPluginGenerator::setSuffix(const QString& suffix)
+void medPluginGenerator::setName(const QString& name)
 {
-    d->suffix = suffix;
+    d->name = name;
 }
 
 void medPluginGenerator::setType(const QString& type)
@@ -104,10 +104,9 @@ bool medPluginGenerator::run(void)
         return false;
     }
 
-    d->plugin = QString("%1%2%3")
-        .arg(QString(d->prefix).toLower())
-        .arg(d->type)
-        .arg(d->suffix);
+    d->plugin = QString("%1%3")
+        .arg(QString(d->namesp).toLower())
+        .arg(d->name.replace(0, 1, QString(d->name).left(1).toUpper()));
 
     if(!d->parent.mkdir(QString(d->plugin))) {
         qWarning() << "medPluginGenerator: unable to create target directory.";
@@ -203,7 +202,7 @@ bool medPluginGenerator::generateTypeHeaderFile(void)
         .arg(QString(d->plugin))
 	.arg(QString(d->plugin).toUpper())
 	.arg(QString(d->type))
-	.arg(QString(d->plugin).remove(d->prefix).prepend(QString(d->prefix).replace(0, 1, QString(d->prefix).left(1).toUpper())));
+	.arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())));
 
     targetFile.close();
 
@@ -237,7 +236,7 @@ bool medPluginGenerator::generateTypeSourceFile(void)
     stream << QString(templateFile.readAll())
         .arg(QString(d->plugin))
 	.arg(QString(d->type))
-	.arg(QString(d->plugin).remove(d->prefix).prepend(QString(d->prefix).replace(0, 1, QString(d->prefix).left(1).toUpper())));
+	.arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())));
 
     targetFile.close();
 
@@ -271,7 +270,7 @@ bool medPluginGenerator::generateTypeToolBoxHeaderFile(void)
     stream << QString(templateFile.readAll())
         .arg(QString(d->plugin))
 	.arg(QString(d->plugin).toUpper())
-    .arg(QString(d->plugin).remove(d->prefix).prepend(QString(d->prefix).replace(0, 1, QString(d->prefix).left(1).toUpper())));
+    .arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())));
     targetFile.close();
 
     templateFile.close();
@@ -303,8 +302,8 @@ bool medPluginGenerator::generateTypeToolBoxSourceFile(void)
 
     stream << QString(templateFile.readAll())
         .arg(QString(d->plugin))
-        .arg(d->suffix)
-        .arg(QString(d->plugin).remove(d->prefix).prepend(QString(d->prefix).replace(0, 1, QString(d->prefix).left(1).toUpper())));
+        .arg(d->name)
+        .arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())));
 
 
     targetFile.close();

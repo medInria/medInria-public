@@ -117,17 +117,17 @@
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QLabel" name="prefixLabel">
+     <widget class="QLabel" name="namespaceLabel">
       <property name="text">
-       <string>Prefix:</string>
+       <string>Namespace</string>
       </property>
       <property name="buddy">
-       <cstring>prefixLineEdit</cstring>
+       <cstring>namespaceLineEdit</cstring>
       </property>
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QLineEdit" name="prefixLineEdit">
+     <widget class="QLineEdit" name="namespaceLineEdit">
       <property name="minimumSize">
        <size>
         <width>300</width>
@@ -137,17 +137,17 @@
      </widget>
     </item>
     <item row="4" column="0">
-     <widget class="QLabel" name="suffixLabel">
+     <widget class="QLabel" name="nameLabel">
       <property name="text">
-       <string>Suffix:</string>
+       <string>Name</string>
       </property>
       <property name="buddy">
-       <cstring>suffixLineEdit</cstring>
+       <cstring>nameLineEdit</cstring>
       </property>
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QLineEdit" name="suffixLineEdit">
+     <widget class="QLineEdit" name="nameLineEdit">
       <property name="minimumSize">
        <size>
         <width>300</width>
