@@ -102,7 +102,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->fsSource = new medFileSystemDataSource(this);
     addDataSource(d->fsSource);
-    connect(d->fsSource, SIGNAL(open(QString)), this,SIGNAL(open(QString)));
+    connect(d->fsSource, SIGNAL(open(QString)), this, SIGNAL(open(QString)));
+    connect(d->fsSource, SIGNAL(load(QString)), this, SIGNAL(load(QString)));
 
     d->pacsSource = new medPacsDataSource(this);
     addDataSource(d->pacsSource);

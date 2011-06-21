@@ -140,6 +140,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->viewerArea);
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
+    connect(d->browserArea, SIGNAL(load(const QString&)), this, SLOT(load(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -408,6 +409,11 @@ void medMainWindow::open(const QString& file)
     d->viewerArea->open(file);
 
     this->switchToViewerArea();
+}
+
+void medMainWindow::load(const QString& file)
+{
+    medDatabaseNonPersistentController::instance()->import(file);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)
