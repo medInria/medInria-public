@@ -103,6 +103,8 @@
 // Wrapper input
 // /////////////////////////////////////////////////////////////////
 
+%ignore medDataManager::dataAdded(const medDataIndex&);
+
 %include "medDataIndex.h"
 %include "medDataManager.h"
 
