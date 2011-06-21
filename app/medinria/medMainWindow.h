@@ -33,6 +33,8 @@ public:
      medMainWindow(QWidget *parent = 0);
     ~medMainWindow(void);
 
+    void generateConfigurationButtons(void);
+    
     void readSettings(void);
     void writeSettings();
 
