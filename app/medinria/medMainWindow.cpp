@@ -278,15 +278,19 @@ void medMainWindow::readSettings(void)
     switch (areaIndex)
     {
     case 0:
+        this->switchToHomepageArea();
+        break;
+        
+    case 1:
         this->switchToBrowserArea();
         break;
 
-    case 1: 
+    case 2: 
         this->switchToViewerArea();
         break;
 
     default:
-        this->switchToBrowserArea();
+        this->switchToHomepageArea();
         break;
     }
 
