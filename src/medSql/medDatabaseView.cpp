@@ -105,6 +105,11 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
             menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
             menu.exec(mapToGlobal(point));
         }
+        else if (item->dataIndex().isValidForPatient())
+        {
+            menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
+            menu.exec(mapToGlobal(point));
+        }
     }
 
 }
