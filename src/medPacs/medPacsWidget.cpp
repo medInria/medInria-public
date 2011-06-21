@@ -163,6 +163,13 @@ void medPacsWidget::readSettings(void)
 
 }
 
+bool medPacsWidget::isServerFunctional()
+{
+    if (d->server)
+        return true;
+    else
+        return false;
+}
 
 void medPacsWidget::search(QString query)
 {

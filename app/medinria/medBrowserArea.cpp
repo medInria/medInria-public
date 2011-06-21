@@ -47,6 +47,7 @@
 #include <medGui/medBrowserToolBoxJobs.h>
 
 #include <medPacs/medPacsMover.h>
+#include <medPacs/medPacsWidget.h>
 
 class medBrowserAreaPrivate
 {
@@ -104,8 +105,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     addDataSource(d->fsSource);
     connect(d->fsSource, SIGNAL(open(QString)), this,SIGNAL(open(QString)));
 
-    d->pacsSource = new medPacsDataSource(this);
-    addDataSource(d->pacsSource);
+    d->pacsSource = new medPacsDataSource();
+    
+    medPacsWidget * mainPacsWidget = dynamic_cast<medPacsWidget *> (d->pacsSource->mainViewWidget());
+    if (mainPacsWidget->isServerFunctional())
+        addDataSource(d->pacsSource);
 
     // dynamic data sources (from plugins) ////////////////
     foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins()) {

@@ -34,6 +34,7 @@ class MEDPACS_EXPORT medPacsWidget : public QTreeWidget
 public:
      medPacsWidget(QWidget* parent);
     ~medPacsWidget(void);
+    bool isServerFunctional();
 
 signals:
     void moveList(const QVector<medMoveCommandItem>&);
