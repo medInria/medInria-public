@@ -40,10 +40,12 @@ public:
     medHomepageArea(QWidget * parent = 0);
     virtual ~medHomepageArea();
 
+    void initPage(void);
+
+    QPropertyAnimation * getAnimation(void);
+
 private:
     medHomepageAreaPrivate * d;
-
-    void generateConfigurationButtons(void);
 };
 
 #endif // MEDHOMEPAGEAREA_H

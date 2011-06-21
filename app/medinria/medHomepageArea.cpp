@@ -36,41 +36,67 @@ class medHomepageAreaPrivate
 public:
     QGraphicsView * view;
     QGraphicsScene * scene;
+    QPropertyAnimation * animation;
+    QWidget * buttonWidget;
 };
 
-medHomepageArea::medHomepageArea(QWidget * parent) : QWidget(parent), d(new medHomepageAreaPrivate)
+medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
 {
     //Hack modifications from alex
-    d->view = new QGraphicsView(this);
-    d->scene = new QGraphicsScene(this);
-    d->view->setScene(d->scene);
-    d->view->setStyleSheet("background: #4b4b4b;");
+    d->buttonWidget = new QWidget(this);
+    d->view = new QGraphicsView ( this );
+    d->scene = new QGraphicsScene ( this );
+    d->view->setScene ( d->scene );
+    d->view->setStyleSheet ( "background: #4b4b4b;border: 0px;padding: 0px 0px 0px 0px;" );
+    d->view->setFocusPolicy ( Qt::NoFocus );
+
+//     QHBoxLayout *layout = new QHBoxLayout;
+//     layout->addWidget ( d->buttonWidget );
+//     setLayout ( layout );
 }
 
 medHomepageArea::~medHomepageArea()
 {
+    delete d;
 
+    d = NULL;
 }
 
-void medHomepageArea::generateConfigurationButtons ( void )
+void medHomepageArea::initPage ( void )
 {
-    QWidget * buttonWidget = new QWidget;
-    buttonWidget->setStyleSheet("background: #4b4b4b;");
+//     QWidget * buttonWidget = new QWidget;
+//     buttonWidget->setStyleSheet ( "background: #4b4b4b;" );
     QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
-    QGridLayout * buttonLayout = new QGridLayout(this);
+    QGridLayout * buttonLayout = new QGridLayout ( this );
 
-    QPushButton * buttonBrowser = new QPushButton(this);
-    buttonBrowser->setText("Browser");
-    buttonLayout->addWidget(buttonBrowser,0,0);
+    QPushButton * buttonBrowser = new QPushButton ( this );
+    buttonBrowser->setText ( "Browser" );
+    buttonLayout->addWidget ( buttonBrowser,0,0 );
 
-    for (int i = 0; i< configList.size(); i++)
+    for ( int i = 0; i< configList.size(); i++ )
     {
-        QPushButton * button = new QPushButton(this);
-        button->setText(configList.at(i));
-        buttonLayout->addWidget(button,i + 1,0);
+        QPushButton * button = new QPushButton ( this );
+        button->setText ( configList.at ( i ) );
+        buttonLayout->addWidget ( button,i + 1,0 );
     }
-    buttonWidget->setLayout(buttonLayout);
-    d->scene->addWidget(buttonWidget);
+    d->buttonWidget->setLayout ( buttonLayout );
+    d->scene->addWidget ( d->buttonWidget );
 
+    d->animation = new QPropertyAnimation ( d->buttonWidget, "geometry" );
+    d->animation->setDuration ( 1000 );
+    d->animation->setEasingCurve(QEasingCurve::InBounce);
+    d->animation->setStartValue ( QRect ( 0, 250, 100, 30 ) );
+    d->animation->setKeyValueAt(0.2, QRect ( 50, 250, 100, 30 ));
+    d->animation->setKeyValueAt(0.4, QRect (  150, 250, 100, 30 ));
+    d->animation->setKeyValueAt(0.5, QRect (  250, 250, 100, 30 ));
+    d->animation->setKeyValueAt(0.6, QRect (  150, 250, 100, 30 ));
+    d->animation->setKeyValueAt(0.8, QRect (  50, 250, 100, 30 ));
+    d->animation->setEndValue ( QRect (  d->scene->width(), 250, 100, 30 ) );
 }
+
+QPropertyAnimation* medHomepageArea::getAnimation ( void )
+{
+    return d->animation;
+}
+
 
