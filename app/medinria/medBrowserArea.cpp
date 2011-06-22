@@ -46,6 +46,8 @@
 #include <medGui/medToolBoxContainer.h>
 #include <medGui/medBrowserToolBoxJobs.h>
 
+#include <medGui/medToolBoxCompositeDataSetImporter.h>
+
 #include <medPacs/medPacsMover.h>
 
 class medBrowserAreaPrivate
@@ -58,6 +60,7 @@ public:
     medToolBoxContainer *toolbox_container;
     medBrowserToolBoxJobs *toolbox_jobs;
     medBrowserToolBoxSource *toolbox_source;
+    medToolBoxCompositeDataSetImporter *toolbox_compositeimporter;
 
     QList <medAbstractDataSource *> data_sources;
 
@@ -112,21 +115,25 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
         medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName);
         addDataSource(dataSource);
     }
-  
+
+    
     // Jobs should be added as the last item so that they appear at the bottom
     d->toolbox_container->addToolBox(d->toolbox_jobs);
   
     connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
 
+    d->toolbox_compositeimporter = new medToolBoxCompositeDataSetImporter(this);
+    d->toolbox_compositeimporter->setVisible(true);
+    d->toolbox_container->addToolBox(d->toolbox_compositeimporter);
+    
     // Layout /////////////////////////////////////////////
-
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(d->stack);
     layout->addWidget(d->toolbox_container);
-
+    
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
 
@@ -246,4 +253,14 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 
     QThreadPool::globalInstance()->start(exporter);
+}
+
+void medBrowserArea::addToolBox(medToolBox *toolbox)
+{
+    d->toolbox_container->addToolBox(toolbox);
+}
+
+void medBrowserArea::removeToolBox(medToolBox *toolbox)
+{
+    d->toolbox_container->removeToolBox(toolbox);
 }

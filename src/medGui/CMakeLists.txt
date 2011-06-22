@@ -90,6 +90,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   
   medDatabaseSearchPanel.h
 
+  medToolBoxCompositeDataSetImporter.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -158,6 +159,8 @@ set(${PROJECT_NAME}_SOURCES
   medBrowserToolBoxPacsSearch.cpp
 
   medDatabaseSearchPanel.cpp 
+
+  medToolBoxCompositeDataSetImporter.cpp
 )
 
 # Include header files for Visual Studio.

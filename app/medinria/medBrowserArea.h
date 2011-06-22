@@ -32,6 +32,7 @@ class medDatabaseModel;
 class medBrowserAreaPrivate;
 class medAbstractDataSource;
 class dtkAbstractData;
+class medToolBox;
 
 class medBrowserArea : public QWidget
 {
@@ -64,6 +65,20 @@ public slots:
      * @param index
     */
     void onExportData(const medDataIndex &index);
+
+    /**
+     * @brief Adds a medToolBox to the medToolBoxContainer.
+     *
+     * @param toolbox
+    */
+    void addToolBox(medToolBox *toolbox);
+    /**
+     * @brief Removes a medToolBox from the medToolBoxContainer.
+     *
+     * @param toolbox
+    */
+    void removeToolBox(medToolBox *toolbox);
+    
 
 protected:
     void setToolBoxesVisible(int index, bool visible);
