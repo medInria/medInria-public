@@ -157,10 +157,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->userAnimation->setEndValue ( QPoint ( ( d->userButtonsScene->width() / 2 ) ,  0 ) );
 
     d->infoAnimation = new QPropertyAnimation ( d->infoWidget, "pos" );
-    d->infoAnimation->setDuration ( 750 );
+    d->infoAnimation->setDuration ( 900 );
     d->infoAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->infoAnimation->setStartValue ( QPoint ( ( d->infoScene->width() / 2 ) + 500 , 250 ) );
-    d->infoAnimation->setEndValue ( QPoint ( ( d->infoScene->width() / 2 ) + 100 ,  250 ) );
+    d->infoAnimation->setStartValue ( QPoint ( ( d->infoScene->width() / 2 ) + 1000 , 250 ) );
+    d->infoAnimation->setEndValue ( QPoint ( ( d->infoScene->width() / 2 ) + 300 ,  250 ) );
 
     d->animation->addAnimation(d->configurationAnimation);
     d->animation->addAnimation(d->userAnimation);
@@ -177,7 +177,10 @@ medHomepageArea::~medHomepageArea()
 void medHomepageArea::initPage ( void )
 {
     QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
-    QGridLayout * configurationButtonsLayout = new QGridLayout ( this );
+    QVBoxLayout * configurationButtonsLayout = new QVBoxLayout ( this );
+    QLabel * configurationLabel = new QLabel("Available workspaces:");
+    configurationButtonsLayout->addWidget(configurationLabel);
+    
 // //     QPushButton * buttonBrowser = new QPushButton ( this );
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
@@ -187,7 +190,7 @@ void medHomepageArea::initPage ( void )
     browserButton->setMaximumWidth ( 200 );
     browserButton->setMinimumWidth ( 200 );
     browserButton->setFocusPolicy ( Qt::NoFocus );
-    configurationButtonsLayout->addWidget ( browserButton,0,0 );
+    configurationButtonsLayout->addWidget ( browserButton);
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
 
     for ( int i = 0; i< configList.size(); i++ )
@@ -200,7 +203,8 @@ void medHomepageArea::initPage ( void )
         button->setMinimumHeight ( 30 );
         button->setMaximumWidth ( 200 );
         button->setMinimumWidth ( 200 );;
-        configurationButtonsLayout->addWidget ( button,i + 1,0 );
+//         configurationButtonsLayout->addWidget ( button,i + 1,0 );
+        configurationButtonsLayout->addWidget ( button);
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowConfiguration ( QString ) ) );
     }
     d->configurationsButtonsWidget->setLayout ( configurationButtonsLayout );
