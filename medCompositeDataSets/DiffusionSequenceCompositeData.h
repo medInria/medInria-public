@@ -6,8 +6,8 @@
 #define DIFFUSIONSEQUENCECOMPOSITEDATA_H
 
 #include <dtkCore/dtkAbstractData.h>
-
-#include "medCompositeDataSetsPluginExport.h"
+#include <medCompositeDataSetsPluginExport.h>
+#include <medCompositeDataSetsBase.h>
 
 class DiffusionSequenceCompositeDataPrivate;
 
