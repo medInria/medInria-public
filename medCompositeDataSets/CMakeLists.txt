@@ -42,14 +42,14 @@ include(${medinria_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medCompositeDataSetsPlugin.h
-  medCompositeDataSets.h)
+  DiffusionSequenceCompositeData.h)
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
   medCompositeDataSetsPlugin.cpp
-  medCompositeDataSets.cpp)
+  DiffusionSequenceCompositeData.cpp)
 
 ## #################################################################
 ## Build rules
@@ -65,6 +65,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
+  dtkZip
   medCore)
 #not useful if plugin in the medinria-plugins directory
 dtk_build_doc(medCompositeDataSetsPlugin)
