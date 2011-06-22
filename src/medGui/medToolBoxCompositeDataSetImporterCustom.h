@@ -34,6 +34,11 @@ public:
     virtual QString description (void) const = 0;
 
     virtual dtkAbstractData *output (void) const;
+
+public slots:    
+    virtual bool import (void) = 0;
+    virtual void reset (void)  {};
+    virtual void cancel (void) {};
     
 protected:
     medToolBoxCompositeDataSetImporter *parent(void);

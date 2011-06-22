@@ -6,25 +6,30 @@
  * 
  */
 
-#include "medToolBoxCompositeDataSetImporter.h"
-
 #include <medCore/medMessageController.h>
-
-#include <QComboBox>
+#include <medGui/medToolBoxFactory.h>
+#include <medGui/medToolBoxHeader.h>
+#include "medToolBoxCompositeDataSetImporter.h"
+#include "medToolBoxCompositeDataSetImporterCustom.h"
 
 
 
 class medToolBoxCompositeDataSetImporterPrivate
 {
 public:
+
+  QHash<QString, medToolBoxCompositeDataSetImporterCustom*> toolBoxes;
+
+  medToolBoxCompositeDataSetImporterCustom* currentToolBox;
+  
   // methods
   void read(QString filename);
   
   // member
   QWidget* parent;
+  QVBoxLayout* customContainerLayout;
+  
   QComboBox* type;
-  QPushButton* add;
-  QListView* filelist;
   QPushButton* import;
   QPushButton* reset;
   QPushButton* cancel;
@@ -34,6 +39,7 @@ public:
 medToolBoxCompositeDataSetImporter::medToolBoxCompositeDataSetImporter(QWidget *parent) : medToolBox(parent), d(new medToolBoxCompositeDataSetImporterPrivate)
 {
     d->isInitialized = false;
+    d->currentToolBox = 0;
     this->setTitle("Composite DataSet Import");
     this->initialize();
 }
@@ -50,15 +56,33 @@ void medToolBoxCompositeDataSetImporterPrivate::read(QString filename)
 
 void medToolBoxCompositeDataSetImporter::onImportClicked()
 {
+  if (!d->currentToolBox)
+  {
+    this->showError (this, tr("Select a type first"), 3000);
+    return;
+  }
+
+  d->currentToolBox->import();
 }
 
 void medToolBoxCompositeDataSetImporter::onCancelClicked()
 {
+  if (!d->currentToolBox)
+  {
+    return;
+  }
+
+  d->currentToolBox->cancel();
 }
 
 void medToolBoxCompositeDataSetImporter::onResetClicked()
 {
-    d->read(QString ("myimage.mha"));
+  if (!d->currentToolBox)
+  {
+    return;
+  }
+
+  d->currentToolBox->reset();
 }
 
 void medToolBoxCompositeDataSetImporter::initialize()
@@ -78,24 +102,22 @@ void medToolBoxCompositeDataSetImporter::initialize()
 
     d->type = new QComboBox(mainwidget);
     d->type->addItem (tr ("select data type"));
-    d->type->addItem (tr ("DWI"));
-    d->type->insertSeparator (2);
-    connect(d->type,SIGNAL(currentIndexChanged(int index)),
-	    this,SLOT(onCurrentTypeChanged(int index)));
-    
-    d->add = new QPushButton (tr ("Add Files..."), mainwidget);
-    d->add->setMaximumWidth(buttonWidth);
-    connect(d->add,SIGNAL(clicked()),
-        this,SLOT(onAddClicked()));
+
+    foreach(QString toolbox, medToolBoxFactory::instance()->compositeDataSetImporterToolBoxes())
+      d->type->addItem(toolbox, toolbox);
+
+    // d->type->addItem (tr ("DWI"));
+
+    connect(d->type,SIGNAL(activated(QString)),
+	    this,SLOT(onCurrentTypeChanged(QString)));
     
     topLayout->addWidget(d->type);
     topLayout->addStretch(1);
-    topLayout->addWidget(d->add);
     vLayout->addLayout(topLayout);
 
-    d->filelist = new QListView(mainwidget);
-    d->filelist->setFlow (QListView::TopToBottom);
-    vLayout->addWidget(d->filelist);
+    d->customContainerLayout = new QVBoxLayout(mainwidget);
+    
+    vLayout->addLayout (d->customContainerLayout);
     
     //import button
     d->import = new QPushButton (tr("Import"),mainwidget);
@@ -122,6 +144,10 @@ void medToolBoxCompositeDataSetImporter::initialize()
     buttonLayout->addWidget(d->cancel,1);
     buttonLayout->addWidget(d->import,1);
     vLayout->addLayout(buttonLayout);
+
+    d->reset->hide ();
+    d->cancel->hide ();
+    d->import->hide ();
     
     this->addWidget (mainwidget);
 
@@ -131,53 +157,65 @@ void medToolBoxCompositeDataSetImporter::initialize()
     connect(this,SIGNAL(showInfo(QObject*,const        QString&,unsigned int)),
         medMessageController::instance(),SLOT(showInfo (QObject*,const QString&,unsigned int)));
 
+    
     d->isInitialized = true;
 }
 
 
 bool medToolBoxCompositeDataSetImporter::import()
 {
-    bool success = true;
-
-    if (success)
-    {
-      emit (showInfo(this,
-		     tr("Composite DataSet successfully imported"),
-		     3000));
-    }
-
-    return success;
-}
-
-
-void medToolBoxCompositeDataSetImporter::onAddClicked()
-{
-  if (!d->type->currentIndex())
-  {
-      emit (showError(this,
-		     tr("Please select a type first"),
-		     3000));
-      return;
-  }
   
-    
-    QStringList filenames = QFileDialog::getOpenFileNames( 
-        this, 
-        tr("Open File(s)"), 
-        QDir::currentPath(), 
-        tr("All files (*.*)") );
-    if( !filenames.isEmpty() )
-    {
-      qDebug( filenames.join(",").toAscii() );
-    }
 }
 
 
-void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(int index)
+void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(QString id)
 {
-  if (!index)
-    return;
+    medToolBoxCompositeDataSetImporterCustom *toolbox = NULL;
+    
+    if (d->toolBoxes.contains (id))
+        toolbox = d->toolBoxes[id];
+    else {
+        toolbox = medToolBoxFactory::instance()->createCustomCompositeDataSetImporterToolBox(id, this);
+        if (toolbox) {
+	    toolbox->setStyleSheet("medToolBoxBody {border:none}");
+            toolbox->header()->hide();
+            
+            connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
+            connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
+            
+            d->toolBoxes[id] = toolbox;
+        }
+    }
 
+    if(!toolbox) {
+        if (d->currentToolBox) {
+            d->currentToolBox->hide();
+            d->customContainerLayout->removeWidget ( d->currentToolBox );
+            d->currentToolBox = 0;
+        }
+	d->reset->hide ();
+	d->cancel->hide ();
+	d->import->hide ();
+	return;
+    }    
+
+    toolbox->setCompositeDataSetImporterToolBox(this);
+    
+    //get rid of old toolBox
+    if (d->currentToolBox) {
+        d->currentToolBox->hide();
+        d->customContainerLayout->removeWidget ( d->currentToolBox );
+        d->currentToolBox = 0;
+    }
+
+    toolbox->show();
+    d->customContainerLayout->addWidget ( toolbox );
+    
+    d->currentToolBox = toolbox;
+
+    d->reset->show ();
+    d->cancel->show ();
+    d->import->show ();
   
 }
 

@@ -65,11 +65,7 @@ public slots:
     /**
      *
     */
-    virtual void onAddClicked();
-    /**
-     *
-    */
-    void onCurrentTypeChanged(int index);
+    void onCurrentTypeChanged(QString type);
     
  protected:
     /**

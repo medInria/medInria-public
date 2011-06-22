@@ -25,6 +25,7 @@ class medToolBoxFactoryPrivate
 public:
     medToolBoxFactory::medToolBoxRegistrationCustomCreatorHash custom_registration_creators;
     medToolBoxFactory::medToolBoxDiffusionCustomCreatorHash custom_diffusion_creators;
+    medToolBoxFactory::medToolBoxCompositeDataSetImporterCustomCreatorHash custom_compositedatasetimporter_creators;
 };
 
 medToolBoxFactory *medToolBoxFactory::instance(void)
@@ -84,6 +85,33 @@ medToolBoxDiffusionCustom *medToolBoxFactory::createCustomDiffusionToolBox(QStri
 
     return toolbox;
 }
+
+
+bool medToolBoxFactory::registerCustomCompositeDataSetImporterToolBox(QString type, medToolBoxCompositeDataSetImporterCustomCreator func)
+{
+    if(!d->custom_compositedatasetimporter_creators.contains(type)) {
+        d->custom_compositedatasetimporter_creators.insert(type, func);
+        return true;
+    }
+
+    return false;
+}
+
+QList<QString> medToolBoxFactory::compositeDataSetImporterToolBoxes(void)
+{
+    return d->custom_compositedatasetimporter_creators.keys();
+}
+
+medToolBoxCompositeDataSetImporterCustom *medToolBoxFactory::createCustomCompositeDataSetImporterToolBox(QString type, QWidget *parent)
+{
+    if(!d->custom_compositedatasetimporter_creators.contains(type))
+        return NULL;
+
+    medToolBoxCompositeDataSetImporterCustom *toolbox = d->custom_compositedatasetimporter_creators[type](parent);
+
+    return toolbox;
+}
+
 
 medToolBoxFactory::medToolBoxFactory(void) : dtkAbstractFactory(), d(new medToolBoxFactoryPrivate)
 {
