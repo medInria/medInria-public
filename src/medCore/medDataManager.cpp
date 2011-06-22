@@ -539,6 +539,8 @@ medDataIndex medDataManager::import( QSharedPointer<dtkAbstractData> &data )
     }
 
     d->dataCache[index] = data;
+    
+    db->import("");
 
     emit dataAdded (index);
 

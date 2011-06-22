@@ -96,7 +96,10 @@ void medViewerConfigurationFiltering::onProcessSuccess()
 	if(!d->filterOutput)
 		return;
 
-	d->filterOutput->setMetaData(tr("SeriesDescription"),tr("Filtered"));
+    QString newSeriesDescription = d->filterOutput->metadata(tr("SeriesDescription"));
+    newSeriesDescription += " filtered";
+    
+	d->filterOutput->setMetaData(tr("SeriesDescription"),newSeriesDescription);
 
 	d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
 

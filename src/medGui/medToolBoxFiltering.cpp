@@ -12,7 +12,6 @@
 #include <medGui/medDropSite.h>
 
 #include <medCore/medDataManager.h>
-#include <medSql/medDatabaseController.h>
 
 #include <dtkCore/dtkAbstractData.h>
 
@@ -39,7 +38,6 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
     QWidget *displayWidget = new QWidget(this);
     
     d->saveInDatabaseButton = new QPushButton(tr("Save in Database"),this);
-//    connect (d->saveResultButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
 
     d->saveToDiskButton = new QPushButton(tr("Save to Disk"),this);
 
@@ -60,7 +58,6 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
     connect(d->dropSite,SIGNAL(objectDropped()),this,SLOT(onObjectDropped()));
     connect(d->saveInDatabaseButton,SIGNAL(clicked()), this, SLOT(onSavedImage()));
 //    connect(d->saveToDiskButton,SIGNAL(clicked()), this, SLOT(onSavedToDisk()));
-//    connect(this, SIGNAL(dataSelected(dtkAbstractData *)),d->customToolBox,SLOT(setInputData(dtkAbstractData *)));
     
     // Layout section :
 
@@ -89,12 +86,6 @@ dtkAbstractData*  medToolBoxFiltering::data()
 {
         return d->data;
 }
-
-
-// void medToolBoxFiltering::update (dtkAbstractView *view)
-// {
-// }
-
 
 void medToolBoxFiltering::onToolBoxChosen(const QString& id)
 {
@@ -128,23 +119,20 @@ void medToolBoxFiltering::onObjectDropped(void)
   
   d->data = medDataManager::instance()->data (index).data();
   
-  qDebug() << "onObjectDropped(), d->data->data() = " << d->data->data();
-
-//  if (d->data)
-//    medToolBoxFilteringCustom* customToolbox(void);
-  
   if (!d->data)
     return;
   
 	emit dataSelected(d->data);	
 }
 
-// TO DO : to complete
 void medToolBoxFiltering::clear(void)
 {
     //maybe clear the customtoolbox?
     if (d->customToolBox)
         d->customToolBox->clear();
+
+    d->data = NULL;
+    d->index = medDataIndex();
 }
 
 void medToolBoxFiltering::setDataIndex(medDataIndex index)
@@ -154,7 +142,5 @@ void medToolBoxFiltering::setDataIndex(medDataIndex index)
 
 void medToolBoxFiltering::onSavedImage(void)
 {
-        medDataManager::instance()->storeNonPersistentSingleDataToDatabase(d->index);
-        medDatabaseController::instance()->import("");
-//        d->dbSource->update();
+    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(d->index);    
 }
