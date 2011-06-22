@@ -85,6 +85,9 @@ public slots:
     */
     void onExportData(const medDataIndex &index);
 
+    /** Called when data has been removed from a data source.*/
+    void onDataRemoved(const medDataIndex &index);
+
 protected:
     void setToolBoxesVisible(int index, bool visible);
     void addDataSource(medAbstractDataSource* dataSource);

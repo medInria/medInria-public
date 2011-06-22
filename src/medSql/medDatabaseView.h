@@ -48,6 +48,7 @@ signals:
 
     void open(const medDataIndex&);
     void exportData(const medDataIndex &index);
+    void dataRemoved(const medDataIndex &index);
 
 public slots:
     void onMenuViewClicked(void);

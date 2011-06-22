@@ -228,6 +228,7 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
     connect(dataSource,SIGNAL(dataReceived(dtkAbstractData *)),this,SLOT(onDataImport(dtkAbstractData *)));
     connect(dataSource,SIGNAL(dataReceivingFailed(QString)), this, SLOT(onDataReceivingFailed(QString)));
     connect(dataSource, SIGNAL(exportData(const medDataIndex&)), this, SLOT(onExportData(const medDataIndex&)));
+    connect(dataSource, SIGNAL(dataRemoved(const medDataIndex&)), this, SLOT(onDataRemoved(const medDataIndex&)));
 }
 
 void medBrowserArea::onExportData(const medDataIndex &index)
@@ -247,4 +248,9 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 
     QThreadPool::globalInstance()->start(exporter);
+}
+
+void medBrowserArea::onDataRemoved( const medDataIndex &index )
+{
+    d->dbSource->update();
 }
