@@ -22,6 +22,7 @@
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
+#include <medCore/medDataIndex.h>
 
 class medToolBoxFilteringPrivate;
 class dtkAbstractData;
@@ -36,6 +37,7 @@ public:
 	
 	dtkAbstractData* data(void);
 	medToolBoxFilteringCustom* customToolbox(void);
+	void setDataIndex(medDataIndex index);
 
 signals:
 	void processFinished();
@@ -46,7 +48,7 @@ public slots:
 	void onToolBoxChosen(const QString&);
 	void clear(void);
 	void onObjectDropped(void);
-//	void onSavedImage(void);
+	void onSavedImage(void);
 
     
 protected:

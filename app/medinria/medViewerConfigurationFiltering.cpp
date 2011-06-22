@@ -31,6 +31,8 @@ Not possible to free any items, current cache count is:  0 items
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
+#include <medCore/medDataManager.h>
+
 class medViewerConfigurationFilteringPrivate
 {
 public:
@@ -93,6 +95,10 @@ void medViewerConfigurationFiltering::onProcessSuccess()
 	d->filterOutput = d->filteringToolBox->customToolbox()->processOutput();
 	if(!d->filterOutput)
 		return;
+
+	d->filterOutput->setMetaData(tr("SeriesDescription"),tr("Filtered"));
+
+	d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
 
 	emit outputDataChanged(d->filterOutput);
 }

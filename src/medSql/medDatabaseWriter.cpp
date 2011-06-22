@@ -249,8 +249,26 @@ medDataIndex medDatabaseWriter::run(void)
     QString imageFileName = "/" +
                             s_patientName + "/" +
                             s_studyName   + "/" +
-                            s_seriesName  + ".mha";
+                            s_seriesName;
 
+    QString infos = d->data->description();
+
+    if (infos == "vtkDataMesh") {
+        imageFileName = imageFileName + ".vtk";
+        qDebug()<<"vtkDataMesh";}
+    else if (infos == "vtkDataMesh4D"){
+        imageFileName = imageFileName + ".v4d";
+        qDebug()<<"vtkDataMesh4D";}
+    else if (infos == "v3dDataFibers"){
+        imageFileName = imageFileName + ".xml";
+        qDebug()<<"vtkDataMesh4D";}
+    else if (infos.contains ("vistal")){
+        imageFileName = imageFileName + ".dim";
+        qDebug()<<"Vistal Image";}
+    else if (infos.contains ("Image")){
+        imageFileName = imageFileName + ".mha";
+        //qDebug()<<"Image";
+    }
 
     d->data->addMetaData ("FileName", imageFileName);
 

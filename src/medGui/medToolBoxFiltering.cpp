@@ -22,10 +22,12 @@ class medToolBoxFilteringPrivate
 {
 public:
 	QComboBox    *chooseFilter;
-	QPushButton * saveResultButton;
+	QPushButton * saveInDatabaseButton;
+	QPushButton * saveToDiskButton;
 	medToolBoxFilteringCustom *customToolBox;
 	medDropSite *dropSite;
 	dtkAbstractData *data;
+	medDataIndex index;
 };
 
 
@@ -36,15 +38,18 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
 
     QWidget *displayWidget = new QWidget(this);
     
-    d->saveResultButton = new QPushButton(tr("Save Result"),this);
+    d->saveInDatabaseButton = new QPushButton(tr("Save in Database"),this);
 //    connect (d->saveResultButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
+
+    d->saveToDiskButton = new QPushButton(tr("Save to Disk"),this);
 
     d->chooseFilter = new QComboBox(this);
     d->chooseFilter->addItem("Choose filter");
     
     QVBoxLayout *filterLayout = new QVBoxLayout(displayWidget);
     filterLayout->addWidget(d->dropSite);
-    filterLayout->addWidget(d->saveResultButton);
+    filterLayout->addWidget(d->saveInDatabaseButton);
+    filterLayout->addWidget(d->saveToDiskButton);
     filterLayout->addWidget(d->chooseFilter);
     filterLayout->setAlignment(d->dropSite,Qt::AlignHCenter);
     
@@ -53,6 +58,8 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
 
     connect(d->chooseFilter, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
     connect(d->dropSite,SIGNAL(objectDropped()),this,SLOT(onObjectDropped()));
+    connect(d->saveInDatabaseButton,SIGNAL(clicked()), this, SLOT(onSavedImage()));
+//    connect(d->saveToDiskButton,SIGNAL(clicked()), this, SLOT(onSavedToDisk()));
 //    connect(this, SIGNAL(dataSelected(dtkAbstractData *)),d->customToolBox,SLOT(setInputData(dtkAbstractData *)));
     
     // Layout section :
@@ -140,34 +147,14 @@ void medToolBoxFiltering::clear(void)
         d->customToolBox->clear();
 }
 
+void medToolBoxFiltering::setDataIndex(medDataIndex index)
+{
+        d->index = index;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-medToolBoxFilteringCustom* customToolbox(void);
-
-
-
-
-
-
-
-
-
-
-
+void medToolBoxFiltering::onSavedImage(void)
+{
+        medDataManager::instance()->storeNonPersistentSingleDataToDatabase(d->index);
+        medDatabaseController::instance()->import("");
+//        d->dbSource->update();
+}
