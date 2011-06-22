@@ -241,7 +241,7 @@ public:
     QString orientation;
     
     dtkAbstractData *data;
-	QMap<int, QSharedPointer<dtkAbstractData> > sharedData;
+	QMap<int, dtkSmartPointer<dtkAbstractData> > sharedData;
     dtkAbstractDataImage *imageData;
     
     QTimeLine *timeline;
@@ -733,7 +733,7 @@ vtkRenderer *v3dView::renderer3d(void)
     return d->renderer3d;
 }
 
-void v3dView::setSharedDataPointer(QSharedPointer<dtkAbstractData> data)
+void v3dView::setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data)
 {
 	int layer = 0;
     while(d->view2d->GetImageInput(layer)) {
