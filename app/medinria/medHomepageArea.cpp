@@ -203,7 +203,6 @@ void medHomepageArea::initPage ( void )
         button->setMinimumHeight ( 30 );
         button->setMaximumWidth ( 200 );
         button->setMinimumWidth ( 200 );;
-//         configurationButtonsLayout->addWidget ( button,i + 1,0 );
         configurationButtonsLayout->addWidget ( button);
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowConfiguration ( QString ) ) );
     }
@@ -238,12 +237,13 @@ void medHomepageArea::onShowConfiguration ( QString configuration )
 
 void medHomepageArea::onShowAbout ( void )
 {
-//     emit showAbout();
-    QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
-    msgBox->setIcon ( QMessageBox::Information );
-    msgBox->setText ( "This is an ultimate medical imaging platform" );
-    msgBox->exec();
-    delete msgBox;
+    QString aboutMessage("This is an ultimate medical imaging platform");
+    QMessageBox::about(this,"About Medinria", aboutMessage);
+//     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
+//     msgBox->setIcon ( QMessageBox::Information );
+//     msgBox->setText ( "This is an ultimate medical imaging platform" );
+//     msgBox->exec();
+//     delete msgBox;
 }
 
 void medHomepageArea::onShowHelp ( void )
