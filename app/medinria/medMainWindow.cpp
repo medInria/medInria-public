@@ -246,6 +246,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     QObject::connect(d->homepageArea, SIGNAL(showBrowser()), this, SLOT(switchToBrowserArea()));
     QObject::connect(d->homepageArea, SIGNAL(showViewer()), this, SLOT(switchToViewerArea()));
     QObject::connect(d->homepageArea, SIGNAL(showConfiguration(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
+    QObject::connect(d->homepageArea,SIGNAL(showSettings()), this, SLOT(onEditSettings()));
     
     
     this->statusBar()->setSizeGripEnabled(false);

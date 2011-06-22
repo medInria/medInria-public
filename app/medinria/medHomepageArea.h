@@ -51,12 +51,17 @@ public:
 public slots:
     void onShowBrowser(void);
     void onShowConfiguration(QString configuration);
+    void onShowSettings(void);
+    void onShowAbout(void);
+    void onShowHelp(void);
     
 signals:
+    void showSettings(void);
+    void showAbout(void);
+    void showHelp(void);
     void showBrowser(void);
     void showViewer(void);
     void showConfiguration(QString configuration);
-    
     
 private:
     medHomepageAreaPrivate * d;
