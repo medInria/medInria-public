@@ -94,6 +94,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     helpButton->setMaximumWidth ( 150 );
     helpButton->setMinimumWidth ( 150 );
     helpButton->setFocusPolicy ( Qt::NoFocus );
+    helpButton->setIcon(QIcon(":icons/help.svg"));
+    helpButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( helpButton,SIGNAL ( clicked() ),this, SLOT ( onShowHelp() ) );
 
 //     QPushButton * aboutButton = new QPushButton(userGraphicsView);
@@ -103,6 +105,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setMaximumWidth ( 150 );
     aboutButton->setMinimumWidth ( 150 );
     aboutButton->setFocusPolicy ( Qt::NoFocus );
+    aboutButton->setIcon(QIcon(":icons/about.png"));
+    aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( aboutButton,SIGNAL ( clicked() ),this, SLOT ( onShowAbout() ) );
 
 //     QPushButton * settingsButton = new QPushButton(userGraphicsView);
@@ -112,6 +116,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsButton->setMaximumWidth ( 150 );
     settingsButton->setMinimumWidth ( 150 );
     settingsButton->setFocusPolicy ( Qt::NoFocus );
+    settingsButton->setIcon(QIcon(":icons/settings.svg"));
+    settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( settingsButton,SIGNAL ( clicked() ),this, SLOT ( onShowSettings() ) );
 
     userButtonsLayout->insertWidget ( 0, settingsButton );

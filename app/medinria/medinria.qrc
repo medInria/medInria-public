@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>medinria.ico</file>
+        <file>icons/about.png</file>
         <file>icons/quit.png</file>
         <file>icons/anchor.png</file>
         <file>icons/cog.png</file>
@@ -14,6 +15,7 @@
         <file>icons/exclamation.png</file>
         <file>icons/eye.png</file>
         <file>icons/help.png</file>
+        <file>icons/help.svg</file>
         <file>icons/information.png</file>
         <file>icons/layer.png</file>
         <file>icons/length.tiff</file>
@@ -67,6 +69,7 @@
         <file>icons/page_white_magnify.png</file>
         <file>icons/page_white_put.png</file>
         <file>icons/page_white_stack.png</file>
+        <file>icons/settings.svg</file>
         <file>icons/stack.tiff</file>
         <file>icons/widget.tiff</file>
         <file>icons/wlww.tiff</file>
