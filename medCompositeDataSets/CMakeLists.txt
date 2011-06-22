@@ -42,6 +42,7 @@ include(${medinria_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS_MOC
   medCompositeDataSetsPlugin.h
+  medDiffusionSequenceCompositeDataToolBox.h
   DiffusionSequenceCompositeData.h)
 
 set(${PROJECT_NAME}_HEADERS
@@ -49,6 +50,7 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_SOURCES
   medCompositeDataSetsPlugin.cpp
+  medDiffusionSequenceCompositeDataToolBox.cpp
   DiffusionSequenceCompositeData.cpp)
 
 ## #################################################################
