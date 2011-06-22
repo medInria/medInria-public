@@ -19,6 +19,9 @@
 #include <QtCore/QObject>
 
 #include <medCore/medDataIndex.h>
+#include <medCore/medJobItem.h>
+
+#include "medSqlExport.h"
 
 class medDatabaseRemoverPrivate;
 
@@ -26,7 +29,7 @@ class medDatabaseRemoverPrivate;
  * @class medDatabaseRemover
  * @brief Removes given data from the database.
  */
-class medDatabaseRemover : public QObject
+class MEDSQL_EXPORT medDatabaseRemover : public medJobItem
 {
     Q_OBJECT;
 
@@ -37,10 +40,24 @@ public:
     void run();
 
 signals:
-    void success(QObject *);
-    void failure(QObject *);
-    void progressed(int);
-    void removed(const medDataIndex &);
+
+    /**
+    * Signal emitted when the removing process progresses.
+    * Note that this signal is also present in the parent @medJobItem
+    * with another name (progressed) but it has been renamed as apparently Qt
+    * does not support signal overloading.
+    * @param progress – the progress between 0 and 100
+    **/
+    void progress(int progress);
+
+    /**
+    * Signal emitted when the removing process finishes.
+    * @param index – the @medDataIndex of the removed item
+    **/
+    void removed(const medDataIndex &index);
+
+public slots:
+    void onCancel(QObject*);
 
 protected:
     void removeImage( int imageId);

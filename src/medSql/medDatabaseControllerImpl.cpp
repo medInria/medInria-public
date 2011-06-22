@@ -12,6 +12,7 @@
 
 #include <medCore/medMessageController.h>
 #include <medCore/medStorage.h>
+#include <medCore/medJobManager.h>
 
 #include "medDatabaseImporter.h"
 #include "medDatabaseExporter.h"
@@ -469,14 +470,15 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
 {
     medDatabaseRemover *remover = new medDatabaseRemover(index);
 
-    connect(remover, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(remover, SIGNAL(progress(int)),    medMessageController::instance(), SLOT(setProgress(int)));
     connect(remover, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(remover, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(remover, SIGNAL(success(QObject *)), remover, SLOT(deleteLater()));
     connect(remover, SIGNAL(failure(QObject *)), remover, SLOT(deleteLater()));
     connect(remover, SIGNAL(removed(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
 
-    medMessageController::instance()->showProgress(remover, "Removing database item");
+    medMessageController::instance()->showProgress(remover, "Removing item");
 
-    return remover->run();
+    medJobManager::instance()->registerJobItem(remover);
+    QThreadPool::globalInstance()->start(remover);
 }

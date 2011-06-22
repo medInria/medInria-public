@@ -205,7 +205,6 @@ void medDatabaseView::onMenuExportClicked(void)
             ;
 }
 
-
 void medDatabaseView::selectionChanged( const QModelIndex& current, const QModelIndex& previous)
 {
     emit onItemClicked(current);

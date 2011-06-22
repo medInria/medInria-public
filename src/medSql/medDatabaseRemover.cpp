@@ -53,7 +53,7 @@ const QString medDatabaseRemoverPrivate::T_STUDY = "study";
 const QString medDatabaseRemoverPrivate::T_SERIES = "series";
 const QString medDatabaseRemoverPrivate::T_IMAGE = "image";
 
-medDatabaseRemover::medDatabaseRemover(const medDataIndex &index_) : QObject(), d(new medDatabaseRemoverPrivate)
+medDatabaseRemover::medDatabaseRemover(const medDataIndex &index_) : medJobItem(), d(new medDatabaseRemoverPrivate)
 {
     d->index = index_;
     d->db = medDatabaseController::instance()->database();
@@ -137,7 +137,8 @@ void medDatabaseRemover::run(void)
     } // ptQuery.next
 
     emit removed(index);
-    emit progressed(100);
+    emit progressed(this, 100);
+    emit progress(100);
     emit success(this);
 
     return;
@@ -252,3 +253,8 @@ void medDatabaseRemover::removeFile( const QString & filename )
     file.remove();
 }
 
+void medDatabaseRemover::onCancel(QObject*)
+{
+    // TODO
+    // Currently this process does no support cancellation.
+}
