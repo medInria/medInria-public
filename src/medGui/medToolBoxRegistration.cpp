@@ -51,6 +51,9 @@ public:
 
     QPushButton * saveImageButton;
     QPushButton * saveTransButton;
+
+    QPushButton * importResultButton;
+
     QComboBox *toolboxes;
     medAbstractView *fixedView;
     medAbstractView *movingView;
@@ -60,6 +63,8 @@ public:
     dtkAbstractDataImage *movingData;
 
     dtkAbstractProcess * process;
+
+    medDataIndex outputImageNPIndex;
 
     medToolBoxRegistrationCustom * customToolBox;
 };
@@ -73,10 +78,15 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->fixedView  = NULL;
     d->movingView = NULL;
     d->process = NULL;
+    d->outputImageNPIndex = medDataIndex();
 
     // Process section
     d->saveImageButton = new QPushButton(tr("Save Image"),this);
     connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
+
+    d->importResultButton = new QPushButton(tr("Import in Database"),this);
+    connect (d->importResultButton, SIGNAL(clicked()), this, SLOT(onImportImage()));
+
     d->saveTransButton = new QPushButton(tr("Save Transformation"),this);
     connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
 
@@ -151,6 +161,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     addWidget(layoutSection);
     addWidget(d->toolboxes);
     addWidget(d->saveImageButton);
+    addWidget(d->importResultButton);
     addWidget(d->saveTransButton);
 
 
@@ -398,6 +409,11 @@ void medToolBoxRegistration::onSaveImage()
 
 }
 
+void medToolBoxRegistration::onImportImage()
+{
+    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(d->outputImageNPIndex);
+}
+
 void medToolBoxRegistration::onSaveTrans()
 {
     if (!d->movingData)
@@ -443,6 +459,18 @@ void medToolBoxRegistration::onSaveTrans()
 void medToolBoxRegistration::onSuccess()
 {
     dtkAbstractData *output = d->process->output();
+
+    foreach(QString metaData, d->fixedData->metaDataList())
+        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
+
+    foreach(QString property, d->fixedData->propertyList())
+        output->addProperty(property,d->fixedData->propertyValues(property));
+
+    QString newDescription = d->movingData->metadata(tr("SeriesDescription"));
+    newDescription += " registered";
+    output->setMetaData(tr("SeriesDescription"), newDescription);
+
+    d->outputImageNPIndex = medDataManager::instance()->importNonPersistent(output);
 
 	if(output)
     {

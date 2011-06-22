@@ -65,6 +65,7 @@ public slots:
     void onToolBoxChosen(const QString&);
     void clear(void);
     void onSaveImage(void);
+    void onImportImage(void);
     void onSaveTrans(void);
     void onSuccess(void);
 private:
