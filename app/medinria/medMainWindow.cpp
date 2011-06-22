@@ -99,6 +99,8 @@ public:
     medWorkspaceShifterAction *shiftToHomepageAreaAction;
 
     medSettingsEditor * settingsEditor;
+
+    QHBoxLayout * statusBarLayout;
     
     QPointer<medMessageControllerMessageQuestion> quitMessage;
 };
@@ -146,6 +148,10 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->viewerArea);
 
+    d->statusBarLayout = new QHBoxLayout;
+    d->statusBarLayout->setMargin(0);
+    d->statusBarLayout->setSpacing(0);
+    
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
     
@@ -245,10 +251,36 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
     this->statusBar()->setFixedHeight(31);
-    this->statusBar()->addPermanentWidget(configurationSwitcher);
-    this->statusBar()->addPermanentWidget(d->shifter);
-    this->statusBar()->addPermanentWidget(settingsButton);
-    this->statusBar()->addPermanentWidget(quitButton);
+
+    QPushButton * homeButton = new QPushButton(this);
+    homeButton->setIcon(QIcon(":icons/home.png"));
+    homeButton->setFlat(true);
+    homeButton->setFocusPolicy(Qt::NoFocus);
+    homeButton->setMaximumWidth(31);
+    QObject::connect(homeButton, SIGNAL(clicked()), this, SLOT(switchToHomepageArea()));
+
+    d->statusBarLayout->insertWidget(0, homeButton);
+    d->statusBarLayout->insertStretch(1,1);
+
+    quitButton->setMaximumWidth(31);
+    settingsButton->setMaximumWidth(31);
+    
+    d->statusBarLayout->insertWidget(3,configurationSwitcher);
+    d->statusBarLayout->insertWidget(4,d->shifter);
+    d->statusBarLayout->insertWidget(5,settingsButton);
+    d->statusBarLayout->insertWidget(6,quitButton);
+
+    QWidget * statusBarWidget = new QWidget(this);
+    statusBarWidget->setLayout(d->statusBarLayout);
+
+    this->statusBar()->addPermanentWidget(statusBarWidget, 1);
+    
+//     this->statusBar()->addPermanentWidget(button,1);
+//     
+//     this->statusBar()->addPermanentWidget(configurationSwitcher);
+//     this->statusBar()->addPermanentWidget(d->shifter);
+//     this->statusBar()->addPermanentWidget(settingsButton);
+//     this->statusBar()->addPermanentWidget(quitButton);
 
     this->readSettings();
     this->setCentralWidget(d->stack);
@@ -400,7 +432,8 @@ void medMainWindow::onQuit(void)
 
         if (this->statusBar()->find(id))
         {
-            this->statusBar()->removeWidget(d->quitMessage);
+//             this->statusBar()->removeWidget(d->quitMessage);
+            d->statusBarLayout->removeWidget(d->quitMessage);
             disconnect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
             disconnect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
             delete d->quitMessage;
@@ -413,7 +446,9 @@ void medMainWindow::onQuit(void)
     connect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
     connect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
 
-    this->statusBar()->addWidget(d->quitMessage);
+//     this->statusBar()->addWidget(d->quitMessage);
+    d->quitMessage->setMaximumWidth(50);
+    d->statusBarLayout->insertWidget(7,d->quitMessage);
 }
 
 void medMainWindow::onEditSettings()
@@ -487,4 +522,5 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     medDatabaseNonPersistentController::destroy();
     medDataManager::destroy();
 }
+
 

@@ -71,6 +71,8 @@ void medHomepageArea::initPage ( void )
 
 //     QPushButton * buttonBrowser = new QPushButton ( this );
     medHomepageButton * buttonBrowser = new medHomepageButton ( this );
+    buttonBrowser->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    buttonBrowser->setIcon(QIcon(":/icons/folder.png"));
     buttonBrowser->setText ( "Browser" );
     buttonBrowser->setMinimumHeight ( 30 );
     buttonBrowser->setMaximumWidth ( 200 );
@@ -85,6 +87,7 @@ void medHomepageArea::initPage ( void )
         medHomepageButton * button = new medHomepageButton ( this );
         button->setText ( configList.at ( i ) );
         button->setFocusPolicy ( Qt::NoFocus );
+        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
         button->setMinimumHeight ( 30 );
         button->setMaximumWidth ( 200 );
         button->setMinimumWidth ( 200 );;
@@ -95,7 +98,7 @@ void medHomepageArea::initPage ( void )
     d->scene->addWidget ( d->buttonWidget );
 
     d->animation = new QPropertyAnimation ( d->buttonWidget, "pos" );
-    d->animation->setDuration ( 1000 );
+    d->animation->setDuration ( 750 );
     d->animation->setEasingCurve ( QEasingCurve::OutCubic );
     d->animation->setStartValue ( QPoint ( ( d->scene->width() / 2 ) - 250, 250 ) );
     d->animation->setEndValue ( QPoint ( ( d->scene->width() / 2 ) + 100 ,  250 ) );
