@@ -6,6 +6,8 @@
 
 class medAbstractDataPrivate;
 
+class medAttachedData;
+
 /**
  * Extending dtkAbstractData class to hold more specific information
  */
@@ -30,6 +32,34 @@ public:
     * @return bool
     */
     bool trueVolumetric();
+
+    /**
+     * @brief Get attached data (like histogram, annotations etc.)
+     *
+     * @return QList< medAttachedData * >
+     */
+    QList< medAttachedData * > attachedData() const;
+
+    /**
+     * @brief Clear the list of attached data
+     *
+     * @return void
+     */
+    void clearAttachedData();
+
+    /**
+     * @brief add attached data
+     *
+     * @return void
+     */
+    void addAttachedData( medAttachedData * data);
+
+    /**
+     * @brief remove attached data
+     *
+     * @return void
+     */
+    void removeAttachedData( medAttachedData * data);
 
 private:
     medAbstractDataPrivate* d;
