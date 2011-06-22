@@ -297,7 +297,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(configurationSwitcher, SIGNAL(activated(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
 
-    d->homepageArea->getAnimation()->start();
+    if (d->homepageArea->getAnimation())
+        d->homepageArea->getAnimation()->start();
 }
 
 medMainWindow::~medMainWindow(void)
@@ -385,7 +386,8 @@ void medMainWindow::switchToHomepageArea ( void )
     d->shiftToHomepageAreaAction->setChecked(true);
 
     d->shifter->update();
-    d->homepageArea->getAnimation()->start();
+    if (d->homepageArea->getAnimation())
+        d->homepageArea->getAnimation()->start();
 }
 
 
