@@ -30,6 +30,7 @@ public:
     virtual QStringList types(void) const;
 
 private:
+
      medCompositeDataSetsPluginPrivate *d;
 };
 
