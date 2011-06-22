@@ -34,11 +34,13 @@ class medDatabaseWriterPrivate
 {
 public:
     dtkAbstractData *data;
+    bool isCancelled;
 };
 
-medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data) : QObject(), d(new medDatabaseWriterPrivate)
+medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data) : medJobItem(), d(new medDatabaseWriterPrivate)
 {
     d->data = data;
+    d->isCancelled = false;
 }
 
 medDatabaseWriter::~medDatabaseWriter(void)
@@ -48,17 +50,17 @@ medDatabaseWriter::~medDatabaseWriter(void)
     d = NULL;
 }
 
-medDataIndex medDatabaseWriter::run(void)
+void medDatabaseWriter::run(void)
 {
     if (!d->data) {
         emit failure (this);
-	return medDataIndex();
+    return;
     }
 
     if(!d->data->hasMetaData("SeriesDescription")) {
         qDebug() << "Critical: data has no SeriesDescription, cannot save it";
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
     
     // copied from medDatabaseImporter::run()
@@ -227,7 +229,7 @@ medDataIndex medDatabaseWriter::run(void)
     if (dataExists) {
         qDebug() << "data is already in the database, skipping";
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
 
 
@@ -285,7 +287,7 @@ medDataIndex medDatabaseWriter::run(void)
 
     if (!writeSuccess) {
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
 
 
@@ -486,6 +488,10 @@ medDataIndex medDatabaseWriter::run(void)
 
     emit progressed(100);
     emit success(this);
-
-    return index;
 }
+
+void medDatabaseWriter::onCancel( QObject* )
+{
+    d->isCancelled = true;
+}
+

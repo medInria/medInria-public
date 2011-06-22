@@ -296,8 +296,13 @@ void medToolBoxDiffusionFiberBundling::onOpenRoiButtonClicked(void)
         return;
     }
     
-    medDataIndex index = nonPersDbController->import(roiFileName);
+    connect(nonPersDbController,SIGNAL(updated(const medDataIndex &)),this,SLOT(onRoiImported(const medDataIndex &)));
 
+    nonPersDbController->import(roiFileName);
+}
+
+void medToolBoxDiffusionFiberBundling::onRoiImported(const medDataIndex &index)
+{
     dtkAbstractData *data = medDataManager::instance()->data(index).data();
 
     if (!data)
@@ -307,7 +312,6 @@ void medToolBoxDiffusionFiberBundling::onOpenRoiButtonClicked(void)
         interactor->setROI(data);
         d->view->update();
     }
-
 }
 
 void medToolBoxDiffusionFiberBundling::onClearRoiButtonClicked(void)

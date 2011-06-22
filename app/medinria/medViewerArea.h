@@ -185,6 +185,8 @@ public slots:
     */
     void switchToLayout (medViewerConfiguration::LayoutType layout);
 
+    void onFileOpened(const medDataIndex &index);
+
 protected slots:
     /**
      * @brief View focused callback. 
