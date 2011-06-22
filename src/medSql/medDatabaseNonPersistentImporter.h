@@ -23,6 +23,7 @@
 #include <QtCore/QObject>
 
 #include <medCore/medDataIndex.h>
+#include <medCore/medJobItem.h>
 
 class dtkAbstractData;
 
@@ -36,7 +37,7 @@ class medDatabaseNonPersistentImporterPrivate;
  * database. The metaData PatientName, StudyDescription and SeriesDescription
  * must be set, otherwise import will fail.
  */
-class medDatabaseNonPersistentImporter : public QObject
+class medDatabaseNonPersistentImporter : public medJobItem
 {
     Q_OBJECT
 
@@ -44,12 +45,17 @@ public:
      medDatabaseNonPersistentImporter(dtkAbstractData *data);
     ~medDatabaseNonPersistentImporter(void);
 
-    medDataIndex run(void);
+    void run(void);
+
+public slots:
+    void onCancel(QObject*);
 
 signals:
     void success(QObject *);
     void failure(QObject *);
     void progressed(int);
+    void nonPersistentImported(const medDataIndex &);
+
 
 private:
     medDatabaseNonPersistentImporterPrivate *d;

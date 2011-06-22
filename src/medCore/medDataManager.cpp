@@ -386,48 +386,53 @@ size_t medDataManager::getUpperMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
+void medDataManager::importNonPersistent( dtkAbstractData *data )
 {
     if (!data)
-        return medDataIndex();
+        return;
 
     foreach (QSharedPointer<dtkAbstractData> dtkdata, d->dataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
-            return medDataIndex();
+            return;
         }
     }
 
     foreach (QSharedPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
-            return medDataIndex();
+            return;
         }
     }
 
-    medDataIndex index;
-
     medAbstractDbController* npDb = d->getNonPersDbController();
+    connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
+
     if(npDb)
     {
-        index = npDb->import(data);
+        npDb->import(data);
     }
+}
 
+void medDataManager::onNonPersistentDataImported(const medDataIndex &index)
+{
     if (!index.isValid()) {
         qWarning() << "index is not valid";
-        return index;
+        return;
     }
 
     if (d->volatileDataCache.contains (index)) {
         qWarning() << "index already in manager, skipping";
-        return index;
+        return;
     }
 
-    d->volatileDataCache[index] = QSharedPointer<dtkAbstractData>(data);
+    QSharedPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
 
-    emit dataAdded (index);
-
-    return index;
+    if (!data.isNull())
+    {
+        d->volatileDataCache[index] = data;
+        emit dataAdded (index);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -520,29 +525,31 @@ size_t medDataManager::getOptimalMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataIndex medDataManager::import( QSharedPointer<dtkAbstractData> &data )
+void medDataManager::import( QSharedPointer<dtkAbstractData> &data )
 {
     if (!data.data())
-        return medDataIndex();
-
-    medDataIndex index;
+        return;
 
     medAbstractDbController* db = d->getDbController();
+    connect(db,SIGNAL(updated(const medDataIndex &)),this,SLOT(onPersistentDataImported(const medDataIndex &)));
     if(db)
-    {
-        index = db->import(data.data());
-    }
+        db->import(data.data());
+}
 
+void medDataManager::onPersistentDataImported(const medDataIndex &index)
+{
     if (!index.isValid()) {
         qWarning() << "index is not valid";
-        return index;
+        return;
     }
 
-    d->dataCache[index] = data;
+    QSharedPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
 
-    emit dataAdded (index);
-
-    return index;
+    if (!data.isNull())
+    {
+        d->dataCache[index] = data;
+        emit dataAdded (index);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------

@@ -99,6 +99,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->dbSource = new medDatabaseDataSource(this);
     addDataSource(d->dbSource);    
     connect(d->dbSource, SIGNAL(open(const medDataIndex&)), this,SIGNAL(open(const medDataIndex&)));
+    connect(medDatabaseController::instance(), SIGNAL(updated(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
+    connect(medDatabaseController::instance(), SIGNAL(displayJobItem(medJobItem *, QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
 
     d->fsSource = new medFileSystemDataSource(this);
     addDataSource(d->fsSource);
@@ -150,14 +152,12 @@ void medBrowserArea::setdw(QStatusBar *status)
 
 void medBrowserArea::onFileImport(QString path)
 {
-    QFileInfo info(path);
-    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
-    connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
-    connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
-    d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
-    medJobManager::instance()->registerJobItem(importer);
-    QThreadPool::globalInstance()->start(importer);
-    
+    medDatabaseController::instance()->import(path);
+}
+
+void medBrowserArea::displayJobItem(medJobItem *importer, QString infoBaseName)
+{
+    d->toolbox_jobs->stack()->addJobItem(importer, infoBaseName);
 }
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
@@ -180,17 +180,8 @@ void medBrowserArea::onDataImport(dtkAbstractData *data)
         qDebug() << "Cannot create directory: " << fileInfo.dir().path();
         return;
     }  
-    
-    medDataIndex importIndex = medDataManager::instance()->importNonPersistent(data);
-    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(importIndex);
-    
-    this->onFileImported();
-}
 
-void medBrowserArea::onFileImported(void)
-{
-    medDatabaseController::instance()->import("");
-    d->dbSource->update();
+    medDatabaseController::instance()->import(data);
 }
 
 void medBrowserArea::onDataReceivingFailed(QString fileName)

@@ -85,8 +85,10 @@ QList<medToolBox*> medDatabaseDataSource::getToolboxes()
     return d->toolboxes; 
 }
 
-void medDatabaseDataSource::update()
+void medDatabaseDataSource::update(const medDataIndex &index)
 {
+    Q_UNUSED(index);
+
     d->preview->reset();
     d->preview->init();
     d->preview->update();

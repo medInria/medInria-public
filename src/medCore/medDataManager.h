@@ -56,18 +56,16 @@ public:
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
     * @params QSharedPointer<dtkAbstractData> & data
-    * @return medDataIndex
     */
-    medDataIndex import(QSharedPointer<dtkAbstractData> &data);
+    void import(QSharedPointer<dtkAbstractData> &data);
 
     /**
     * Use this function to insert data into the non-persistent database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
     * @params const dtkAbstractData & data
-    * @return medDataIndex
     */
-    medDataIndex importNonPersistent(dtkAbstractData *data);
+    void importNonPersistent(dtkAbstractData *data);
 
     /**
     * Use this function to save all non-persistent data to the sql database.
@@ -140,7 +138,11 @@ signals:
     * or non persistent database by calling import() or importNonPersistentData().
     */
     void dataAdded (const medDataIndex&);
-      
+
+public slots:
+    void onNonPersistentDataImported(const medDataIndex &index);
+    void onPersistentDataImported(const medDataIndex &index);
+
 protected:
      medDataManager(void);
     ~medDataManager(void);

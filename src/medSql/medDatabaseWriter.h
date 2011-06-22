@@ -39,7 +39,7 @@ class medDatabaseWriterPrivate;
  * be used. The SeriesDescription is mandatory and import will fail it not
  * found.
  */
-class medDatabaseWriter : public QObject
+class medDatabaseWriter : public medJobItem
 {
     Q_OBJECT
 
@@ -47,7 +47,10 @@ public:
      medDatabaseWriter(dtkAbstractData *data);
     ~medDatabaseWriter(void);
 
-    medDataIndex run(void);
+    void run(void);
+
+public slots:
+    void onCancel(QObject*);
 
 signals:
     void success(QObject *);

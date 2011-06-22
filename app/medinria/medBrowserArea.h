@@ -32,6 +32,7 @@ class medDatabaseModel;
 class medBrowserAreaPrivate;
 class medAbstractDataSource;
 class dtkAbstractData;
+class medJobItem;
 
 class medBrowserArea : public QWidget
 {
@@ -50,11 +51,11 @@ signals:
     void showError (QObject*,const QString&,unsigned int timeout);
 
 public slots:
-    void onFileImported(void);
     void onSourceIndexChanged(int index);
     void onFileImport(QString);
     void onDataImport(dtkAbstractData *data);
     void onDataReceivingFailed(QString fileName);
+    void displayJobItem(medJobItem *importer, QString infoBaseName);
     
     /**
      * @brief Export data from a selected medDataIndex in a data source.

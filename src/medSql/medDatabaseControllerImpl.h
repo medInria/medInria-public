@@ -7,6 +7,7 @@
 
 class dtkAbstractData;
 class SigEmitter;
+class medJobItem;
 
 /**
  * Concrete dbController implementation adhering to abstract base class
@@ -72,6 +73,8 @@ signals:
      */
     void copyMessage(QString, int, QColor);
 
+    void displayJobItem(medJobItem *, QString);
+
 
 public slots:
     
@@ -87,16 +90,16 @@ public slots:
     * Import data into the db read from file
     * @Note _NOT_IMPLEMENTED_YET
     * @params const QString & file The file containing the data
-    * @return medDataIndex the assigned index
     */
-    medDataIndex import(const QString& file);
+    void import(const QString& file);
 
     /**
     * Import data into the db read from memory
     * @params dtkAbstractData * data dataObject
-    * @return medDataIndex the assigned index
     */
-    medDataIndex import(dtkAbstractData *data);
+    void import(dtkAbstractData *data);
+
+    void onFileImportSuccess();
 
 protected slots:
     void forwardMessage(QString);

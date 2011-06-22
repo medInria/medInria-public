@@ -89,16 +89,15 @@ public slots:
     /**
     * Store data temporarily referenced by temp index
     * @params dtkAbstractData * data data to be stored
-    * @return medDataIndex assigned index
     */
-    medDataIndex import(dtkAbstractData *data);
+    void import(dtkAbstractData *data);
     
     /**
      * Store data temporarily referenced by temp index
      * @params const QString & file data stored at file path
      * @return medDataIndex - assigned index
      */
-    medDataIndex import(const QString& file);
+    void import(const QString& file);
     
     /**
      * Remove data referenced by index from temporary database

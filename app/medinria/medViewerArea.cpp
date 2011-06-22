@@ -303,7 +303,13 @@ void medViewerArea::open(const medDataIndex& index)
 
 void medViewerArea::open(const QString& file)
 {
-    this->open(medDatabaseNonPersistentController::instance()->import(file));
+    connect(medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &)),this,SLOT(onFileOpened(const medDataIndex &)));
+    medDatabaseNonPersistentController::instance()->import(file);
+}
+
+void medViewerArea::onFileOpened(const medDataIndex &index)
+{
+    this->open(index);
 }
 
 void medViewerArea::onViewClosed(void)
