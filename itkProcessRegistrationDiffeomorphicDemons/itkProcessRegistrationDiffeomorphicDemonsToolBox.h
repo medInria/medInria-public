@@ -42,6 +42,6 @@ private:
     itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate *d;
 };
 
-medToolBoxCompositeDataSetImporterCustom *createItkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent);
+medToolBoxRegistrationCustom *createItkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent);
 
 #endif
