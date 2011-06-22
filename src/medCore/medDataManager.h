@@ -22,6 +22,8 @@
 
 #include <QtCore/QObject>
 
+#include <dtkCore/dtkSmartPointer.h>
+
 #include "medCoreExport.h"
 #include "medDataIndex.h"
 
@@ -49,16 +51,16 @@ public:
     * @params const medDataIndex & index medDataIndex for data
     * @return dtkAbstractData * the data
     */
-    QSharedPointer<dtkAbstractData> data(const medDataIndex& index);
+    dtkSmartPointer<dtkAbstractData> data(const medDataIndex& index);
 
     /**
     * Use this function to insert data into the database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params QSharedPointer<dtkAbstractData> & data
+    * @params dtkSmartPointer<dtkAbstractData> & data
     * @return medDataIndex
     */
-    medDataIndex import(QSharedPointer<dtkAbstractData> &data);
+    medDataIndex import(dtkSmartPointer<dtkAbstractData> &data);
 
     /**
     * Use this function to insert data into the non-persistent database,

@@ -54,7 +54,7 @@ public:
     }
     
     // this is the data cache for persistent and non-persistent data
-    typedef QHash<medDataIndex, QSharedPointer<dtkAbstractData> > DataCacheContainerType;
+    typedef QHash<medDataIndex, dtkSmartPointer<dtkAbstractData> > DataCacheContainerType;
     DataCacheContainerType dataCache;
     DataCacheContainerType volatileDataCache;
 
@@ -102,9 +102,9 @@ medDataManager *medDataManager::instance(void)
 
 //-------------------------------------------------------------------------------------------------------
 
-QSharedPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
+dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 {
-    QSharedPointer<dtkAbstractData>  dtkdata;
+    dtkSmartPointer<dtkAbstractData>  dtkdata;
 
     // try to get it from cache first
     if ( d->dataCache.contains(index) || d->volatileDataCache.contains(index) )
@@ -219,7 +219,7 @@ void medDataManager::tryFreeMemory(size_t memoryLimit)
     foreach(medDataIndex index, d->dataCache.keys())
     {
         // remove reference to free it
-        d->dataCache.find(index).value().clear();
+        d->dataCache.find(index).value() = NULL;
 
         // check memory usage and stop the loop at the optimal threshold
         if (getProcessMemoryUsage() < memoryLimit)
@@ -392,14 +392,14 @@ medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
     if (!data)
         return medDataIndex();
 
-    foreach (QSharedPointer<dtkAbstractData> dtkdata, d->dataCache) {
+    foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->dataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
             return medDataIndex();
         }
     }
 
-    foreach (QSharedPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
+    foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
             return medDataIndex();
@@ -424,7 +424,7 @@ medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
         return index;
     }
 
-    d->volatileDataCache[index] = QSharedPointer<dtkAbstractData>(data);
+    d->volatileDataCache[index] = dtkSmartPointer<dtkAbstractData>(data);
 
     emit dataAdded (index);
 
@@ -435,7 +435,7 @@ medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
 
 void medDataManager::storeNonPersistentDataToDatabase( void )
 {
-    foreach (QSharedPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
+    foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
         this->import (dtkdata);
     }
     
@@ -451,7 +451,7 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
 {
     if (d->volatileDataCache.count(index) > 0)
     {
-        QSharedPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
+        dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
         this->import (dtkdata);
         
         medAbstractDbController* npDb = d->getNonPersDbController();
@@ -521,7 +521,7 @@ size_t medDataManager::getOptimalMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataIndex medDataManager::import( QSharedPointer<dtkAbstractData> &data )
+medDataIndex medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
 {
     if (!data.data())
         return medDataIndex();

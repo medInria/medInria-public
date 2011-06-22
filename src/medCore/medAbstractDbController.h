@@ -8,6 +8,7 @@
 #include <QtSql>
 
 #include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 /**
  * Abstract dbController class. Implementation needs to adhere to the common interface
@@ -48,7 +49,7 @@ public slots:
     * @params const medDataIndex & index Index for data
     * @return dtkAbstractData * the data
     */
-    virtual QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const = 0;
+    virtual dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const = 0;
 
     /**
     * Import a file into the db

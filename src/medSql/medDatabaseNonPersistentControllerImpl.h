@@ -77,6 +77,9 @@ public:
     */
     qint64 getEstimatedSize(const medDataIndex& index) const;
 
+    /** List all the items in the DB */
+    QList<medDataIndex> availableItems();
+
 public slots:
 
     /**
@@ -84,7 +87,7 @@ public slots:
     * @params const medDataIndex & index Index to look for
     * @return dtkAbstractData* data
     */
-    QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const;
+    dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
     * Store data temporarily referenced by temp index
@@ -111,6 +114,8 @@ public slots:
     */
     void clear (void);
 
+    /** true if the given data index matches one in our db*/
+    bool contains( const medDataIndex& index) const;
 
 private:
     medDatabaseNonPersistentControllerImplPrivate *d;

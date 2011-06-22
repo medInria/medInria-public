@@ -27,6 +27,7 @@
 
 class medDatabaseItem;
 class medDatabaseModelPrivate;
+class medDataIndex;
 
 class MEDSQL_EXPORT medDatabaseModel : public QAbstractItemModel
 {
@@ -78,6 +79,7 @@ protected slots:
 
 protected:
     void populate(medDatabaseItem *parent);
+    bool isNonPersistent( const medDataIndex & index ) const;
 
 private:
     medDatabaseModelPrivate *d;

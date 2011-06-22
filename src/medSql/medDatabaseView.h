@@ -55,6 +55,7 @@ public slots:
     void onMenuExportClicked(void);
     void onMenuRemoveClicked(void);
     void selectionChanged(const QModelIndex&, const QModelIndex&);
+protected:
 
 protected slots:
     void updateContextMenu(const QPoint&);

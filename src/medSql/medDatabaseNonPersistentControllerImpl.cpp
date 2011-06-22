@@ -112,16 +112,16 @@ medDataIndex medDatabaseNonPersistentControllerImpl::import(const QString& file)
     return index;
 }
 
-QSharedPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
+dtkSmartPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
 {
     // Lookup item in hash table.
     medDatabaseNonPersistentControllerImplPrivate::DataHashMapType::const_iterator it( d->items.find(index) );
 
     // Is item in our table ? if not, return null.
     if ( it == d->items.end() )
-        return QSharedPointer<dtkAbstractData> ();
+        return dtkSmartPointer<dtkAbstractData> ();
 
-    QSharedPointer<dtkAbstractData> ret(it.value()->data());
+    dtkSmartPointer<dtkAbstractData> ret(it.value()->data());
 
     return ret;
 }
@@ -218,4 +218,14 @@ qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIn
 {
     Q_UNUSED(index);
     return 0;
+}
+
+QList<medDataIndex> medDatabaseNonPersistentControllerImpl::availableItems()
+{
+    return d->items.keys();
+}
+
+bool medDatabaseNonPersistentControllerImpl::contains( const medDataIndex& index ) const
+{
+    return d->items.contains(index);
 }

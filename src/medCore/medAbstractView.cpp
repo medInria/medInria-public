@@ -24,7 +24,7 @@ public:
   int meshLayerCount;
   QList<dtkAbstractData *> dataList;
 
-  QSharedPointer<dtkAbstractData> sharedData;
+  dtkSmartPointer<dtkAbstractData> sharedData;
   QColor color; // The color used to represent this view in other views.
 };
 
@@ -456,7 +456,7 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
     emit cameraChanged(position, viewup, focal, parallelScale, d->linkCamera);
 }
 
-void medAbstractView::setSharedDataPointer( QSharedPointer<dtkAbstractData> data )
+void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data )
 {
     // set a reference to our view that gets destroyed when the view terminates
     d->sharedData = data;

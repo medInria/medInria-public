@@ -216,7 +216,7 @@ void medViewerArea::open(const medDataIndex& index)
     
     if(((medDataIndex)index).isValidForSeries()) {
         
-        QSharedPointer<dtkAbstractData> data;
+        dtkSmartPointer<dtkAbstractData> data;
         medAbstractView *view = NULL;
         
         // the data-manager should be used to read data

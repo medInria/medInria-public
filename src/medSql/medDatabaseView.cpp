@@ -24,10 +24,15 @@
 #include "medDatabaseProxyModel.h"
 #include "medCore/medDataManager.h"
 
+#include "medDatabaseNonPersistentController.h"
+
 class NoFocusDelegate : public QStyledItemDelegate
 {
+public:
+    NoFocusDelegate( medDatabaseView *view) : QStyledItemDelegate(), m_view(view) {}
 protected:
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    medDatabaseView *m_view;
 };
 
 void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const
@@ -35,6 +40,25 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
     QStyleOptionViewItem itemOption(option);
     if (itemOption.state & QStyle::State_HasFocus)
         itemOption.state = itemOption.state ^ QStyle::State_HasFocus;
+
+    if(index.isValid()) {
+
+        medDatabaseItem *item = NULL;
+
+        if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(m_view->model()))
+            item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+        else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(m_view->model()))
+            item = static_cast<medDatabaseItem *>(index.internalPointer());
+
+        if (item) {
+            if ( medDatabaseNonPersistentController::instance()->contains( item->dataIndex() ) ) {
+                itemOption.font.setItalic(true);
+            } else {
+
+            }
+        }
+    }
+
     QStyledItemDelegate::paint(painter, itemOption, index);
 }
 
@@ -55,7 +79,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
-    NoFocusDelegate* delegate = new NoFocusDelegate();
+    NoFocusDelegate* delegate = new NoFocusDelegate(this);
     this->setItemDelegate(delegate);
 }
 
@@ -231,3 +255,4 @@ void medDatabaseView::onMenuRemoveClicked( void )
     }
 
 }
+

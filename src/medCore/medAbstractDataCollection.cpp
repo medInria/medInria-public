@@ -3,6 +3,7 @@
 #include "medAttachedData.h"
 
 #include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <QtCore/QVector>
 
@@ -11,7 +12,7 @@ class medAbstractDataCollectionPrivate
 public:
     QVector<dtkAbstractData*>     dataVector;
     QVector<dtkAbstractData*>::iterator dataIterator;
-    QSharedPointer<medAttachedData>* attachedData;
+    dtkSmartPointer<medAttachedData> attachedData;
 };
 
 medAbstractDataCollection::medAbstractDataCollection(medAbstractDataCollection *parent ): medAbstractData(parent), d(new medAbstractDataCollectionPrivate)
@@ -67,14 +68,12 @@ void medAbstractDataCollection::addData( dtkAbstractData* data )
 
 void medAbstractDataCollection::setAttachData( medAttachedData* attachedData )
 {
-    if (d->attachedData != NULL)
-        delete d->attachedData;
-    d->attachedData = new QSharedPointer<medAttachedData> (attachedData);
+    d->attachedData = attachedData;
 }
 
 medAttachedData* medAbstractDataCollection::attachedData()
 {
-    return d->attachedData->data();
+    return d->attachedData;
 }
 
 //-----------------------------------------------------------------------------------

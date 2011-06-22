@@ -25,6 +25,9 @@
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseItem.h>
 #include <medSql/medDatabaseModel.h>
+#include <medSql/medDatabaseNonPersistentController.h>
+
+#include <medCore/medMetaDataHelper.h>
 
 // /////////////////////////////////////////////////////////////////
 // medDatabaseModelPrivate
@@ -39,6 +42,7 @@ public:
     medDatabaseItem *root;
 
     QList<QVariant> attributes;
+    QList<QVariant> nonPersistentAttributes;
     QList<QVariant> data;
 };
 
@@ -81,6 +85,28 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
         << "Institution"
         << "Report"
         << "id";
+    d->nonPersistentAttributes = QList<QVariant>()
+        << medMetaDataHelper::KEY_PatientName()
+        << medMetaDataHelper::KEY_StudyDescription()
+        << medMetaDataHelper::KEY_SeriesDescription()
+        //        << medMetaDataHelper::KEY_ImageName()
+        << QString() // medMetaDataHelper::KEY_SliceCount();
+        << medMetaDataHelper::KEY_Age()
+        << medMetaDataHelper::KEY_BirthDate()
+        << medMetaDataHelper::KEY_Gender()
+        << medMetaDataHelper::KEY_SeriesDescription()
+        << medMetaDataHelper::KEY_Modality()
+        << medMetaDataHelper::KEY_Protocol()
+        << medMetaDataHelper::KEY_Comments()
+        << medMetaDataHelper::KEY_Status()
+        << medMetaDataHelper::KEY_AcquisitionDate()
+        << medMetaDataHelper::KEY_ImportationDate()
+        << QString() // medMetaDataHelper::KEY_LastOpenedDate()
+        << medMetaDataHelper::KEY_Referee()
+        << medMetaDataHelper::KEY_Performer()
+        << medMetaDataHelper::KEY_Institution()
+        << medMetaDataHelper::KEY_Report()
+        << medMetaDataHelper::KEY_SOPInstanceUID();
     d->data = QList<QVariant>()
         << ""
         << ""
@@ -323,6 +349,7 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
     bool result = item->setData(index.column(), value);
 
     if(result) {
+        if ( !isNonPersistent( item->dataIndex() ) ) {
         QVariant table     = item->table();
         QVariant attribute = item->attribute(index.column());
         QVariant value     = item->value(index.column());
@@ -336,6 +363,14 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
         query.bindValue(":id", id);
         if(!query.exec())
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        } 
+        else 
+        {
+            // Non - persistent
+            dtkSmartPointer<dtkAbstractData> data = medDatabaseNonPersistentController::instance()->read(item->dataIndex());
+            QString attribute = (item->attribute(index.column())).toString();
+            data.data()->setMetaData( attribute, value.toString() );
+        }
     }
 
     return result;
@@ -603,6 +638,98 @@ void medDatabaseModel::populate(medDatabaseItem *root)
 
     root->append(ptItem);
     }
+
+    typedef QList<medDataIndex> medDataIndexList;
+    medDatabaseNonPersistentControllerImpl *npInstance = medDatabaseNonPersistentController::instance();
+    medDataIndexList npItems = npInstance->availableItems();
+    qSort(npItems);
+    medDataIndex prevIndex;
+    medDatabaseItem *ptItem = NULL;
+    for (medDataIndexList::const_iterator it(npItems.begin()); it != npItems.end(); ++it){
+
+        const medDataIndex & index(*it);
+
+        const dtkAbstractData *data (npInstance->read(*it));
+        QVariant   ptId      = index.patientId();
+        QVariant ptName      = medMetaDataHelper::getFirstPatientIDValue(data);
+        QVariant ptBirthdate = medMetaDataHelper::getFirstBirthDateValue(data);
+        QVariant ptGender    = medMetaDataHelper::getFirstGenderValue(data);
+
+        QList<QVariant> ptData;
+        ptData << d->data;
+        ptData[0] = ptName;
+        ptData[5] = ptBirthdate;
+        ptData[6] = ptGender;
+        ptData[20] = ptId;
+        if ( index.patientId() != prevIndex.patientId() ) {
+            ptItem = new medDatabaseItem(medDataIndex(ptId.toInt()), "patient", d->nonPersistentAttributes, ptData, root);
+        }
+
+        QVariant   stId = index.studyId();
+        QVariant stName = medMetaDataHelper::getFirstStudyDescriptionValue(data);
+
+        QVariant   seId            = index.seriesId();
+        QVariant seSize            = medMetaDataHelper::getFirstSizeValue(data);
+        QVariant seName            = medMetaDataHelper::getFirstSeriesDescriptionValue(data);
+        QVariant sePath            = medMetaDataHelper::getFirstFilePathsValue(data);
+        QVariant seUID             = medMetaDataHelper::getFirstSeriesIDValue(data);
+        QVariant seOrientation     = medMetaDataHelper::getFirstOrientationValue(data);
+        QVariant seSeriesNumber    = medMetaDataHelper::getFirstSeriesNumberValue(data);
+        QVariant seSequenceName    = medMetaDataHelper::getFirstSequenceNameValue(data);
+        QVariant seSliceThickness  = medMetaDataHelper::getFirstSliceThicknessValue(data);
+        QVariant seRows            = medMetaDataHelper::getFirstRowsValue(data);
+        QVariant seColumns         = medMetaDataHelper::getFirstColumnsValue(data);
+        QVariant seThumbnail       = QString(); //medMetaDataHelper::getFirstThumbnailValue(data);
+        QVariant seAge             = medMetaDataHelper::getFirstAgeValue(data);
+        QVariant seDesc            = medMetaDataHelper::getFirstSeriesDescriptionValue(data);
+        QVariant seModality        = medMetaDataHelper::getFirstModalityValue(data);
+        QVariant seProtocol        = medMetaDataHelper::getFirstProtocolValue(data);
+        QVariant seComments        = medMetaDataHelper::getFirstCommentsValue(data);
+        QVariant seStatus          = medMetaDataHelper::getFirstStatusValue(data);
+        QVariant seAcqDate         = medMetaDataHelper::getFirstAcquisitionDateValue(data);
+        QVariant seImportDate      = medMetaDataHelper::getFirstImportationDateValue(data);
+        QVariant seReferee         = medMetaDataHelper::getFirstRefereeValue(data);
+        QVariant sePerformer       = medMetaDataHelper::getFirstPerformerValue(data);
+        QVariant seInstitution     = medMetaDataHelper::getFirstInstitutionValue(data);
+        QVariant seReport          = medMetaDataHelper::getFirstReportValue(data);
+
+        QList<QVariant> seData;
+        seData << d->data;
+        seData[20] = seId;
+        seData[1] = stName;
+        seData[2] = seName;
+        // seData[3] = seName; // image name
+        seData[3] = seSize; // count
+        seData[4] = seAge;
+        //seData[5] = seBirthdate;
+        //ptData[5] = seBirthdate;
+        //seData[6] = seGender;
+        //ptData[6] = seGender;
+        seData[7] = seDesc;
+        seData[8] = seModality;
+        // seData[9] = seBirthdate; // protocol
+        // seData[10] = seBirthdate; // comments
+        // seData[11] = seBirthdate; // status
+        seData[12] = seAcqDate;
+        seData[13] = seImportDate;
+        // seData[14] = seBirthdate; // last opened
+        seData[15] = seReferee;
+        seData[16] = sePerformer;
+        seData[17] = seInstitution;
+        seData[18] = seReport;
+
+        medDatabaseItem *seItem = new medDatabaseItem(medDataIndex(ptId.toInt(), stId.toInt(), seId.toInt()), "series", d->nonPersistentAttributes, seData, ptItem);
+
+        ptItem->append(seItem);
+
+        medDataIndexList::const_iterator nextIt(it);
+        ++nextIt;
+        if ( nextIt == npItems.end() || nextIt->patientId() != it->patientId() ){
+            root->append(ptItem);
+        }
+        prevIndex = index;
+    }
+
 }
 
 QStringList medDatabaseModel::attributes()
@@ -612,4 +739,10 @@ QStringList medDatabaseModel::attributes()
     foreach(QVariant attribute, d->attributes)
         list.append(attribute.toString());
     return list;
+}
+
+
+bool medDatabaseModel::isNonPersistent( const medDataIndex & index ) const
+{
+    return medDatabaseNonPersistentController::instance()->contains(index);
 }

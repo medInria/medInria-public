@@ -265,7 +265,7 @@ medDataIndex medDatabaseControllerImpl::import( dtkAbstractData *data )
     return writer->run();
 }
 
-QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
+dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
 {
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
 
@@ -278,16 +278,17 @@ QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataInd
     medMessageController::instance()->showProgress(reader.data(), "Opening database item");
 
     dtkAbstractData* data = reader->run();
-    QSharedPointer<dtkAbstractData> ret(data);
+    dtkSmartPointer<dtkAbstractData> ret;
+    ret.takePointer(data);
     return ret;
 }
 
-QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId)
+dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId)
 {
     return read(medDataIndex(patientId, studyId, seriesId));
 }
 
-QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId, int imageId)
+dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId, int imageId)
 {
     return read(medDataIndex(patientId, studyId, seriesId, imageId));
 }
