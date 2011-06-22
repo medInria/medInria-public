@@ -48,7 +48,11 @@ public:
     QGraphicsProxyWidget * infoProxyWidget;
     QWidget * infoWidget;
 
-    QPropertyAnimation * animation;
+    QPropertyAnimation * configurationAnimation;
+    QPropertyAnimation * userAnimation;
+    QPropertyAnimation * infoAnimation;
+
+    QParallelAnimationGroup * animation;
 
     medViewerArea * viewerArea;
 };
@@ -81,8 +85,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     infoGraphicsView->setScene ( d->infoScene );
     infoGraphicsView->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
     infoGraphicsView->setFocusPolicy ( Qt::NoFocus );
-
-
 
     QHBoxLayout * userButtonsLayout = new QHBoxLayout ( userGraphicsView );
 //     QPushButton * helpButton = new QPushButton(userGraphicsView);
@@ -135,6 +137,28 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->infoWidget->setLayout ( infoLayout );
 
     d->infoProxyWidget = d->infoScene->addWidget ( d->infoWidget );
+
+
+    d->animation = new QParallelAnimationGroup ( this );
+    d->configurationAnimation = new QPropertyAnimation ( d->configurationsButtonsWidget, "pos" );
+    d->configurationAnimation->setDuration ( 750 );
+    d->configurationAnimation->setEasingCurve ( QEasingCurve::OutCubic );
+
+    d->userAnimation = new QPropertyAnimation ( d->userButtonsWidget, "pos" );
+    d->userAnimation->setDuration ( 750 );
+    d->userAnimation->setEasingCurve ( QEasingCurve::OutCubic );
+    d->userAnimation->setStartValue ( QPoint ( ( d->userButtonsScene->width() / 2 ) + 250, 0 ) );
+    d->userAnimation->setEndValue ( QPoint ( ( d->userButtonsScene->width() / 2 ) ,  0 ) );
+
+    d->infoAnimation = new QPropertyAnimation ( d->infoWidget, "pos" );
+    d->infoAnimation->setDuration ( 750 );
+    d->infoAnimation->setEasingCurve ( QEasingCurve::OutCubic );
+    d->infoAnimation->setStartValue ( QPoint ( ( d->infoScene->width() / 2 ) + 500 , 250 ) );
+    d->infoAnimation->setEndValue ( QPoint ( ( d->infoScene->width() / 2 ) + 100 ,  250 ) );
+
+    d->animation->addAnimation(d->configurationAnimation);
+    d->animation->addAnimation(d->userAnimation);
+    d->animation->addAnimation(d->infoAnimation);
 }
 
 medHomepageArea::~medHomepageArea()
@@ -176,14 +200,11 @@ void medHomepageArea::initPage ( void )
     d->configurationsButtonsWidget->setLayout ( configurationButtonsLayout );
     d->configurationsButtonsProxyWidget = d->configurationsButtonsScene->addWidget ( d->configurationsButtonsWidget );
 
-    d->animation = new QPropertyAnimation ( d->configurationsButtonsWidget, "pos" );
-    d->animation->setDuration ( 750 );
-    d->animation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->animation->setStartValue ( QPoint ( ( d->configurationsButtonsScene->width() / 2 ) - 250, 250 ) );
-    d->animation->setEndValue ( QPoint ( ( d->configurationsButtonsScene->width() / 2 ) + 100 ,  250 ) );
+    d->configurationAnimation->setStartValue ( QPoint ( ( d->configurationsButtonsScene->width() / 2 ) - 250, 250 ) );
+    d->configurationAnimation->setEndValue ( QPoint ( ( d->configurationsButtonsScene->width() / 2 ) + 100 ,  250 ) );
 }
 
-QPropertyAnimation* medHomepageArea::getAnimation ( void )
+QParallelAnimationGroup* medHomepageArea::getAnimation ( void )
 {
     return d->animation;
 }
