@@ -588,7 +588,7 @@ void
         qDebug()<<"d->interactors.size() : "<<d->interactors.size();
     }
     // medToolBox::update((dtkAbstractView*)d->view);
-   // d->view->update();
+   d->view->update();
 }
 void
     medViewerToolBoxViewProperties::onMeshLUTChanged(int index)
