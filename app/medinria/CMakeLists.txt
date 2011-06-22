@@ -26,6 +26,7 @@ project(medinria)
 set(${PROJECT_NAME}_HEADERS_MOC
   medApplication.h
   medHomepageArea.h
+  medHomepageButton.h
   medBrowserArea.h  
   medBrowserToolBoxSource.h
   medBrowserToolBoxSettings.h  
@@ -50,6 +51,7 @@ set(${PROJECT_NAME}_SOURCES
   main.cpp
   medApplication.cpp
   medHomepageArea.cpp
+  medHomepageButton.cpp
   medBrowserArea.cpp  
   medBrowserToolBoxSource.cpp
   medBrowserToolBoxSettings.cpp    

@@ -135,6 +135,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->browserArea = new medBrowserArea(this);
     d->viewerArea = new medViewerArea(this);
     d->homepageArea = new medHomepageArea(this);
+    d->homepageArea->setViewerArea(d->viewerArea);
     
     d->browserArea->setObjectName("Browser");
     d->viewerArea->setObjectName("Viewer");
@@ -236,6 +237,10 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     configurationSwitcher->setFocusPolicy (Qt::NoFocus);
 
     d->homepageArea->initPage();
+    QObject::connect(d->homepageArea, SIGNAL(showBrowser()), this, SLOT(switchToBrowserArea()));
+    QObject::connect(d->homepageArea, SIGNAL(showViewer()), this, SLOT(switchToViewerArea()));
+    QObject::connect(d->homepageArea, SIGNAL(showConfiguration(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
+    
     
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
@@ -348,6 +353,7 @@ void medMainWindow::switchToHomepageArea ( void )
     d->shiftToHomepageAreaAction->setChecked(true);
 
     d->shifter->update();
+    d->homepageArea->getAnimation()->start();
 }
 
 
@@ -481,3 +487,4 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     medDatabaseNonPersistentController::destroy();
     medDataManager::destroy();
 }
+

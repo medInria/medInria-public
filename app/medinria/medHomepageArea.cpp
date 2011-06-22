@@ -28,6 +28,8 @@
 
 #include "medHomepageArea.h"
 
+#include <medViewerArea.h>
+#include <medHomepageButton.h>
 #include <medGui/medViewerConfiguration.h>
 #include <medGui/medViewerConfigurationFactory.h>
 
@@ -38,21 +40,21 @@ public:
     QGraphicsScene * scene;
     QPropertyAnimation * animation;
     QWidget * buttonWidget;
+
+    medViewerArea * viewerArea;
 };
 
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
 {
     //Hack modifications from alex
-    d->buttonWidget = new QWidget(this);
+    d->viewerArea = NULL;
+    d->buttonWidget = new QWidget ( this );
+    d->buttonWidget->setMinimumWidth ( 200 );
     d->view = new QGraphicsView ( this );
     d->scene = new QGraphicsScene ( this );
     d->view->setScene ( d->scene );
     d->view->setStyleSheet ( "background: #4b4b4b;border: 0px;padding: 0px 0px 0px 0px;" );
     d->view->setFocusPolicy ( Qt::NoFocus );
-
-//     QHBoxLayout *layout = new QHBoxLayout;
-//     layout->addWidget ( d->buttonWidget );
-//     setLayout ( layout );
 }
 
 medHomepageArea::~medHomepageArea()
@@ -64,39 +66,62 @@ medHomepageArea::~medHomepageArea()
 
 void medHomepageArea::initPage ( void )
 {
-//     QWidget * buttonWidget = new QWidget;
-//     buttonWidget->setStyleSheet ( "background: #4b4b4b;" );
     QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
     QGridLayout * buttonLayout = new QGridLayout ( this );
 
-    QPushButton * buttonBrowser = new QPushButton ( this );
+//     QPushButton * buttonBrowser = new QPushButton ( this );
+    medHomepageButton * buttonBrowser = new medHomepageButton ( this );
     buttonBrowser->setText ( "Browser" );
+    buttonBrowser->setMinimumHeight ( 30 );
+    buttonBrowser->setMaximumWidth ( 200 );
+    buttonBrowser->setMinimumWidth ( 200 );
+    buttonBrowser->setFocusPolicy ( Qt::NoFocus );
     buttonLayout->addWidget ( buttonBrowser,0,0 );
+    QObject::connect ( buttonBrowser, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
 
     for ( int i = 0; i< configList.size(); i++ )
     {
-        QPushButton * button = new QPushButton ( this );
+//         QPushButton * button = new QPushButton ( this );
+        medHomepageButton * button = new medHomepageButton ( this );
         button->setText ( configList.at ( i ) );
+        button->setFocusPolicy ( Qt::NoFocus );
+        button->setMinimumHeight ( 30 );
+        button->setMaximumWidth ( 200 );
+        button->setMinimumWidth ( 200 );;
         buttonLayout->addWidget ( button,i + 1,0 );
+        QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowConfiguration ( QString ) ) );
     }
     d->buttonWidget->setLayout ( buttonLayout );
     d->scene->addWidget ( d->buttonWidget );
 
-    d->animation = new QPropertyAnimation ( d->buttonWidget, "geometry" );
+    d->animation = new QPropertyAnimation ( d->buttonWidget, "pos" );
     d->animation->setDuration ( 1000 );
-    d->animation->setEasingCurve(QEasingCurve::InBounce);
-    d->animation->setStartValue ( QRect ( 0, 250, 100, 30 ) );
-    d->animation->setKeyValueAt(0.2, QRect ( 50, 250, 100, 30 ));
-    d->animation->setKeyValueAt(0.4, QRect (  150, 250, 100, 30 ));
-    d->animation->setKeyValueAt(0.5, QRect (  250, 250, 100, 30 ));
-    d->animation->setKeyValueAt(0.6, QRect (  150, 250, 100, 30 ));
-    d->animation->setKeyValueAt(0.8, QRect (  50, 250, 100, 30 ));
-    d->animation->setEndValue ( QRect (  d->scene->width(), 250, 100, 30 ) );
+    d->animation->setEasingCurve ( QEasingCurve::OutCubic );
+    d->animation->setStartValue ( QPoint ( ( d->scene->width() / 2 ) - 250, 250 ) );
+    d->animation->setEndValue ( QPoint ( ( d->scene->width() / 2 ) + 100 ,  250 ) );
 }
 
 QPropertyAnimation* medHomepageArea::getAnimation ( void )
 {
     return d->animation;
 }
+
+void medHomepageArea::setViewerArea ( medViewerArea* viewer )
+{
+    d->viewerArea = viewer;
+}
+
+
+void medHomepageArea::onShowBrowser ( void )
+{
+    emit showBrowser();
+}
+
+void medHomepageArea::onShowConfiguration ( QString configuration )
+{
+    emit showViewer();
+    emit showConfiguration(configuration);
+}
+
 
 

@@ -26,39 +26,15 @@
 */
 
 
-#ifndef MEDHOMEPAGEAREA_H
-#define MEDHOMEPAGEAREA_H
+#include "medHomepageButton.h"
 
-#include <QtGui>
-
-class medHomepageAreaPrivate;
-class medViewerArea;
-
-class medHomepageArea : public QWidget
+medHomepageButton::medHomepageButton(QWidget * parent) : QToolButton(parent)
 {
-Q_OBJECT
-public:
-    medHomepageArea(QWidget * parent = 0);
-    virtual ~medHomepageArea();
+    QObject::connect(this, SIGNAL(clicked()), this, SLOT(onClick()));
+}
 
-    void initPage(void);
+void medHomepageButton::onClick ( void )
+{
+    emit clicked(this->text());
+}
 
-    QPropertyAnimation * getAnimation(void);
-
-    void setViewerArea(medViewerArea * viewer);
-
-public slots:
-    void onShowBrowser(void);
-    void onShowConfiguration(QString configuration);
-    
-signals:
-    void showBrowser(void);
-    void showViewer(void);
-    void showConfiguration(QString configuration);
-    
-    
-private:
-    medHomepageAreaPrivate * d;
-};
-
-#endif // MEDHOMEPAGEAREA_H
