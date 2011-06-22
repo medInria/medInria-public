@@ -1,30 +1,30 @@
-#ifndef _dtk_CompositeDataSet_h_
-#define _dtk_CompositeDataSet_h_
+#ifndef _med_CompositeDataSet_h_
+#define _med_CompositeDataSet_h_
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 
-#include "CompositeDataTypePluginExport.h"
+#include "medCompositeDataTypesPluginExport.h"
 
-class dtkCompositeDataSetPrivate;
+class medCompositeDataSetPrivate;
 
 
 
 /**
     
-    \class dtkCompositeDataSet
+    \class medCompositeDataSet
     
-    \see dtkCompositeDataSet
+    \see medCompositeDataSet
     \author Nicolas Toussaint
 */
 
-class COMPOSITEDATATYPEPLUGIN_EXPORT dtkCompositeDataSet : public dtkAbstractData
+class MEDCOMPOSITEDATATYPESPLUGIN_EXPORT medCompositeDataSet : public dtkAbstractData
 {
   Q_OBJECT
     
  public:
-    dtkCompositeDataSet(void);
-    ~dtkCompositeDataSet(void);
+    medCompositeDataSet(void);
+    ~medCompositeDataSet(void);
     virtual QString description(void) const;
     static bool registered(void);
 
@@ -40,14 +40,13 @@ class COMPOSITEDATATYPEPLUGIN_EXPORT dtkCompositeDataSet : public dtkAbstractDat
     void update(void);
     
  public:
-    // derived from dtkAbstractDataImage
     
  private:
 
-    dtkCompositeDataSetPrivate* d;
+    medCompositeDataSetPrivate* d;
   
 };
 
-dtkAbstractData* createDtkCompositeDataSet (void);
+dtkAbstractData* createMedCompositeDataSet (void);
 
 #endif

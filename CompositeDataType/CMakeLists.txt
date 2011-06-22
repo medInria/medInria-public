@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.1)
 
-project(CompositeDataTypePlugin)
+project(medCompositeDataTypesPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -38,13 +38,13 @@ include(${medinria-plugins_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  CompositeDataTypePlugin.h
-  dtkCompositeDataSet.h
+  medCompositeDataTypesPlugin.h
+  medCompositeDataSet.h
   )
 
 set(${PROJECT_NAME}_SOURCES
-  CompositeDataTypePlugin.cpp
-  dtkCompositeDataSet.cpp
+  medCompositeDataTypesPlugin.cpp
+  medCompositeDataSet.cpp
   )
 
 ## #################################################################

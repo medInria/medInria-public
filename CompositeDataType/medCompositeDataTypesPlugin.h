@@ -1,20 +1,20 @@
-#ifndef COMPOSITEDATATYPEPLUGIN_H
-#define COMPOSITEDATATYPE_H
+#ifndef MEDCOMPOSITEDATATYPESPLUGIN_H
+#define MEDCOMPOSITEDATATYPES_H
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "CompositeDataTypePluginExport.h"
+#include "medCompositeDataTypesPluginExport.h"
 
-class COMPOSITEDATATYPEPLUGIN_EXPORT CompositeDataTypePluginPrivate;
+class MEDCOMPOSITEDATATYPESPLUGIN_EXPORT medCompositeDataTypesPluginPrivate;
 
-class COMPOSITEDATATYPEPLUGIN_EXPORT CompositeDataTypePlugin : public dtkPlugin
+class MEDCOMPOSITEDATATYPESPLUGIN_EXPORT medCompositeDataTypesPlugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-     CompositeDataTypePlugin(QObject *parent = 0);
-    ~CompositeDataTypePlugin(void);
+     medCompositeDataTypesPlugin(QObject *parent = 0);
+    ~medCompositeDataTypesPlugin(void);
 
     virtual bool initialize(void);
     virtual bool uninitialize(void);
