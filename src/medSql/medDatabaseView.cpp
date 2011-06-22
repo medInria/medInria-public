@@ -212,22 +212,28 @@ void medDatabaseView::selectionChanged( const QModelIndex& current, const QModel
 
 void medDatabaseView::onMenuRemoveClicked( void )
 {
-    QModelIndexList indexes = this->selectedIndexes();
-    if(!indexes.count())
-        return;
+    int reply = QMessageBox::question(this, tr("Remove item"),
+            tr("Are you sure you want to continue?\n""This cannot be undone."),
+            QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
 
-    QModelIndex index = indexes.at(0);
-
-    medDatabaseItem *item = NULL;
-
-    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-
-    if (item)
+    if( reply == QMessageBox::Yes )
     {
-        // Copy the data index, because the data item may cease to be valid.
-        medDataIndex index = item->dataIndex();
-        medDataManager::instance()->removeData(index);
-    }
+        QModelIndexList indexes = this->selectedIndexes();
+        if(!indexes.count())
+            return;
 
+        QModelIndex index = indexes.at(0);
+
+        medDatabaseItem *item = NULL;
+
+        if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
+            item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+
+        if (item)
+        {
+            // Copy the data index, because the data item may cease to be valid.
+            medDataIndex index = item->dataIndex();
+            medDataManager::instance()->removeData(index);
+        }
+    }
 }
