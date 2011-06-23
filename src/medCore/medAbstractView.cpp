@@ -18,7 +18,7 @@ public:
   QVector3D  camViewup;
   QVector3D  camFocal;
   double camParallelScale;
-  
+
   int currentLayer;
   int currentMeshLayer;
   int meshLayerCount;
@@ -37,7 +37,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->linkCamera    = false;
     d->linkWindowing = false;
     d->currentLayer = 0;
-  
+
     d->position = QVector3D(0.0, 0.0, 0.0);
     d->pan = QVector2D(0.0, 0.0);
     d->zoom = 1.0;
@@ -50,7 +50,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 
     d->currentMeshLayer = 0;
     d->meshLayerCount = 0;
-    
+
 	d->position = QVector3D(0.0, 0.0, 0.0);
 	d->pan = QVector2D(0.0, 0.0);
 	d->zoom = 1.0;
@@ -60,17 +60,17 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 	d->camViewup = QVector3D(0.0, 0.0, 0.0);
 	d->camFocal = QVector3D(0.0, 0.0, 0.0);
 	d->camParallelScale = 1.0;
-    
+
     QStringList lut;
     lut << "Default";		// list of available lookup tables set
                 // by subclass
-    
+
     // properties to keep up to date synchronization
     this->addProperty ("Daddy",                 QStringList() << "true" << "false");
     this->addProperty ("PositionLinked",        QStringList() << "true" << "false");
     this->addProperty ("CameraLinked",          QStringList() << "true" << "false");
     this->addProperty ("WindowingLinked",       QStringList() << "true" << "false");
-    
+
     // properties acting on image display
     this->addProperty ("Orientation",           QStringList() << "Axial" << "Sagittal" << "Coronal" << "3D");
     this->addProperty ("LookupTable",           lut);
@@ -78,7 +78,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     this->addProperty ("ShowAxis",              QStringList() << "true" << "false");
     this->addProperty ("ShowRuler",             QStringList() << "true" << "false");
     this->addProperty ("ShowAnnotations",       QStringList() << "true" << "false");
-    this->addProperty ("3DMode",                QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum" << "Off");    
+    this->addProperty ("3DMode",                QStringList() << "VR" << "MPR" << "MIP - Maximum" << "MIP - Minimum" << "Off");
     this->addProperty ("Renderer",              QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default");
     this->addProperty ("UseLOD",                QStringList() << "On" << "Off" );
     this->addProperty ("Cropping",              QStringList() << "true" << "false");
@@ -170,7 +170,7 @@ void medAbstractView::setSlice (int slice)
 
 void medAbstractView::setPosition (const QVector3D &position)
 {
-    if ( d->position == position ) 
+    if ( d->position == position )
         return;
 
     d->position = position;
@@ -185,7 +185,7 @@ QVector3D medAbstractView::position(void) const
 
 void medAbstractView::setZoom (double zoom)
 {
-    if  (d->zoom == zoom) 
+    if  (d->zoom == zoom)
         return;
 
     d->zoom = zoom;
@@ -200,7 +200,7 @@ double medAbstractView::zoom(void) const
 
 void medAbstractView::setPan (const QVector2D &pan)
 {
-    if ( d->pan == pan ) 
+    if ( d->pan == pan )
         return;
 
     d->pan = pan;
@@ -215,7 +215,7 @@ QVector2D medAbstractView::pan(void) const
 
 void medAbstractView::setWindowLevel (double level, double window)
 {
-    if ( ( d->level == level ) && 
+    if ( ( d->level == level ) &&
         ( d->window == window) ) {
         return;
     }
@@ -234,7 +234,7 @@ void medAbstractView::windowLevel(double &level, double &window) const
 
 void medAbstractView::setCamera (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
 {
-    if (    (d->camPosition == position) && 
+    if (    (d->camPosition == position) &&
             (d->camViewup   == viewup)   &&
             (d->camFocal    == focal) &&
             (d->camParallelScale == parallelScale) ) {
@@ -321,7 +321,7 @@ int medAbstractView::currentMeshLayer(void) const
     return d->currentMeshLayer;
 }
 
-void medAbstractView::setMeshLayerCount(int meshLayerCount) 
+void medAbstractView::setMeshLayerCount(int meshLayerCount)
 {
    d->meshLayerCount = meshLayerCount;
 }
@@ -377,8 +377,9 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
 
 void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
-    medAbstractView::removeDataType(d->dataList[layer]->description());
-    d->dataList[layer] = data;
+    if (d->dataList[layer])
+        removeDataType(d->dataList[layer]->description());
+    d->dataList.insert(layer, data);
     medAbstractView::addDataType(data->description());
 }
 
@@ -388,10 +389,10 @@ void medAbstractView::addDataType(const QString & dataDescription)
     {
          unsigned int numDataTypes = d->DataTypes.value(dataDescription);
          numDataTypes++;
-         d->DataTypes[dataDescription]=numDataTypes;
+         d->DataTypes.insert(dataDescription,numDataTypes);
      }
      else
-         d->DataTypes[dataDescription] = 1;
+         d->DataTypes.insert(dataDescription, 1);
 }
 
 void medAbstractView::removeDataType(const QString & dataDescription)

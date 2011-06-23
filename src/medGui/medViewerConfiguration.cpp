@@ -1,5 +1,5 @@
-/* medViewerConfiguration.cpp --- 
- * 
+/* medViewerConfiguration.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 14:12:19 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 7
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include <medCore/medDataIndex.h>
@@ -41,7 +41,7 @@ public:
     bool layoutToolBoxVisibility;
     bool toolBoxesVisibility;
     medStackedViewContainers * viewContainerStack;
-    
+
 };
 
 medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
@@ -53,11 +53,11 @@ medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(n
     d->databaseVisibility = true;
     d->layoutToolBoxVisibility = true;
     d->toolBoxesVisibility = true;
-    
+
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
     connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),   this, SIGNAL(layoutModeChanged(const QString&)));
     connect (d->layoutToolBox, SIGNAL(presetClicked(int)), this, SIGNAL(layoutPresetClicked(int)));
-    connect (d->layoutToolBox, SIGNAL(split(int,int)),     this, SIGNAL(layoutSplit(int,int)));    
+    connect (d->layoutToolBox, SIGNAL(split(int,int)),     this, SIGNAL(layoutSplit(int,int)));
     this->addToolBox(d->layoutToolBox);
 }
 

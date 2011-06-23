@@ -1,9 +1,9 @@
 /* medViewerToolBoxTime.h ---
- * 
+ *
  * Author: Fatih Arslan and Nicolas Toussaint
 
  * Change log:
- * 
+ *
  */
 
 #include "medViewerToolBoxTime.h"
@@ -47,7 +47,7 @@ public:
     double minTime;
     double minTimeStep;
     double maxTime;
-    
+
     QPixmap playIcon;
 };
 
@@ -80,7 +80,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     setValidDataTypes(validDataTypes);
 
     d->playIcon = QPixmap(":/icons/play.png");
-    
+
     d->playSequencesButton = new medButton(this,d->playIcon,
                                            tr("Play Sequence"));
 
@@ -223,7 +223,8 @@ void medViewerToolBoxTime::RemoveInteractor (med4DAbstractViewInteractor* intera
 
 void medViewerToolBoxTime::update(dtkAbstractView *view)
 {
-
+    qDebug()<<"upadating time tb";
+    medToolBox::update(view);
 }
 
 
@@ -266,7 +267,7 @@ void medViewerToolBoxTime::onNextFrame ()
 	d->timeSlider->setValue(d->timeSlider->value()+1);
 }
 void medViewerToolBoxTime::onPreviousFrame ()
-{   
+{
     if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()-1);
 }
@@ -333,7 +334,7 @@ void medViewerToolBoxTime::updateRange (void)
     d->labelmax->setText( DoubleToQString(( maxtime ) / (d->spinBox->value()/100.0)) + QString(" sec"));
 }
 
-QString medViewerToolBoxTime::DoubleToQString (double val) 
+QString medViewerToolBoxTime::DoubleToQString (double val)
 {
     std::ostringstream strs;
     strs <<  std::fixed << std::setprecision(2)<< val;

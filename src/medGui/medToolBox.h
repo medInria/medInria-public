@@ -115,6 +115,7 @@ public:
     */
     medToolBoxBody   *body(void)   const;
 
+
 signals:
     /**
      * @brief Tells the world to add a new toolbox to the medToolboxContainer.

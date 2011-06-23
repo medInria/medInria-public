@@ -36,10 +36,6 @@ public:
 
     QStringList validDataTypes;
     bool isContextVisible;
-
-    //medAbstractView *view;
-
-
 public:
     QBoxLayout *layout;
 };
@@ -50,7 +46,7 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
 
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
-    d->isContextVisible = true;
+    d->isContextVisible = false;
 
     d->layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     d->layout->setContentsMargins(0, 0, 0, 0);
@@ -97,8 +93,14 @@ medToolBoxBody *medToolBox::body(void) const
 
 void medToolBox::update(dtkAbstractView *view)
 {
+    qDebug()<<"update TB" ;
+    medAbstractView* medView = dynamic_cast<medAbstractView*>(view);
+    if (medView)
+        setContextVisibility(medView->dataTypes());
+    else
+        setContextVisibility(QHash<QString, unsigned int> ());
     //DTK_DEFAULT_IMPLEMENTATION;
-    DTK_UNUSED(view);
+    //DTK_UNUSED(view);
 }
 
 void medToolBox::clear(void)
@@ -160,6 +162,7 @@ bool medToolBox::ContextVisible()
 
 void medToolBox::show()
 {
+    qDebug()<<"show in TB";
     if(d->isContextVisible)
         QWidget::show();
 }
@@ -182,4 +185,34 @@ void medToolBox::addValidDataType(const QString & dataType)
     {
         d->validDataTypes.append(dataType);
     }
+}
+
+void medToolBox::setContextVisibility(
+        const QHash<QString, unsigned int> & viewDataTypes )
+{
+    qDebug()<< "setContextVisibility";
+    if (d->validDataTypes.isEmpty())
+    {
+        qDebug()<< "no datatypes";
+        if (d->validDataTypes.isEmpty())
+        d->isContextVisible = true;
+        show();
+    }
+    else
+    {
+        qDebug()<<"View datatypes"<<viewDataTypes.keys();
+        foreach(QString validDataType, d->validDataTypes)
+        {
+            qDebug()<<"datatype"<< validDataType ;
+            if(viewDataTypes.contains(validDataType))
+                qDebug()<<"viewDataTypes: "<< viewDataTypes.value(validDataType);
+            if(viewDataTypes.value(validDataType)!=0)
+            {
+                d->isContextVisible = true;
+                break;
+            }
+        }
+    }
+    qDebug()<<"visibility" << d->isContextVisible ;
+    this->setVisible(d->isContextVisible);
 }

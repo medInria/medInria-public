@@ -282,7 +282,6 @@ void
     //        dtkAbstractData * data = d->view->dataInList(layer);
     //        const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
     //    const QString seriesName = data->name();
-
     if (d->view->layerCount() == 1 && !data->description().contains("vtkDataMesh"))
         return;
 
