@@ -25,11 +25,14 @@
 #include <QtGui>
 
 class dtkAbstractView;
+class dtkAbstractData;
 
 class medToolBoxTab;
 class medToolBoxPrivate;
 class medToolBoxBody;
 class medToolBoxHeader;
+
+
 
 /**
  * @brief Toolbox that includes a title bar and a widget container.
@@ -167,6 +170,20 @@ public slots:
      *
     */
     void switchMinimize();
+
+    /**
+     * @brief Remove not context meaningful toolboxes.
+     *
+    */
+    void setValidDataTypes(const QStringList & dataTypes);
+    void addValidDataType(const QString & dataType);
+
+    void onDataAdded(dtkAbstractData *data, int layer);
+
+    void setContextVisibility(const QHash<QString, unsigned int> & viewDataTypes);
+    void setContextVisible(bool contextVisibleFlag);
+    bool ContextVisible();
+    void show();
 
 private:
     medToolBoxPrivate *d;

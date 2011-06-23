@@ -65,6 +65,20 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     d->timeSlider->setTracking( false );
     d->timeSlider->setToolTip(tr("Follow The Sequence"));
 
+    QStringList validDataTypes;
+    validDataTypes << "itkDataImageChar4"
+            << "itkDataImageUChar4"
+            << "itkDataImageShort4"
+            << "itkDataImageUShort4"
+            << "itkDataImageInt4"
+            << "itkDataImageUInt4"
+            << "itkDataImageLong4"
+            << "itkDataImageULong4"
+            << "itkDataImageFloat4"
+            << "itkDataImageDouble4";
+
+    setValidDataTypes(validDataTypes);
+
     d->playIcon = QPixmap(":/icons/play.png");
     
     d->playSequencesButton = new medButton(this,d->playIcon,

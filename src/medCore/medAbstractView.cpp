@@ -26,6 +26,9 @@ public:
 
   QSharedPointer<dtkAbstractData> sharedData;
   QColor color; // The color used to represent this view in other views.
+
+  QHash<QString, unsigned int> DataTypes;
+
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
@@ -331,6 +334,7 @@ int medAbstractView::meshLayerCount(void) const
 
 void medAbstractView::removeOverlay(int layer)
 {
+    medAbstractView::removeDataType(d->dataList[layer]->description());
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
@@ -356,9 +360,11 @@ void medAbstractView::onSliceChanged (int slice)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
+
 void medAbstractView::addDataInList(dtkAbstractData * data)
 {
     d->dataList.append(data);
+    medAbstractView::addDataType(data->description());
 }
 
 dtkAbstractData * medAbstractView::dataInList(int layer)
@@ -371,7 +377,38 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
 
 void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
 {
+    medAbstractView::removeDataType(d->dataList[layer]->description());
     d->dataList[layer] = data;
+    medAbstractView::addDataType(data->description());
+}
+
+void medAbstractView::addDataType(const QString & dataDescription)
+{
+    if (d->DataTypes.contains(dataDescription))
+    {
+         unsigned int numDataTypes = d->DataTypes.value(dataDescription);
+         numDataTypes++;
+         d->DataTypes[dataDescription]=numDataTypes;
+     }
+     else
+         d->DataTypes[dataDescription] = 1;
+}
+
+void medAbstractView::removeDataType(const QString & dataDescription)
+{
+    if (d->DataTypes.contains(dataDescription))
+    {
+         unsigned int numDataTypes = d->DataTypes.value(dataDescription);
+         numDataTypes--;
+         d->DataTypes[dataDescription]=numDataTypes;
+     }
+     else
+        qDebug() << "Not DataType in the view! ";
+}
+
+QHash<QString, unsigned int> medAbstractView::dataTypes()
+{
+    return d->DataTypes;
 }
 
 void medAbstractView::onPositionChanged (const QVector3D &position)

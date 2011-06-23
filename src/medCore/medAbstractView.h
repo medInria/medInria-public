@@ -163,6 +163,11 @@ public:
     void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
     void setDataInList(int layer, dtkAbstractData * data);
+
+    void addDataType(const QString & dataDescription);
+    void removeDataType(const QString & dataDescription);
+    QHash<QString, unsigned int> dataTypes();
+
     /** The color used to represent the extent or space of this view in another view */
     virtual QColor color() const;
     virtual void setColor( const QColor & color);

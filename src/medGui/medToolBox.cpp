@@ -16,6 +16,9 @@
 /* Change log:
  * 
  */
+#include <dtkCore/dtkAbstractData.h>
+
+#include <medCore/medAbstractView.h>
 
 #include "medToolBox.h"
 #include "medToolBoxHeader.h"
@@ -31,14 +34,23 @@ public:
     medToolBoxBody *body;
     bool isMinimized;
 
+    QStringList validDataTypes;
+    bool isContextVisible;
+
+    //medAbstractView *view;
+
+
 public:
     QBoxLayout *layout;
 };
 
 medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPrivate)
 {
+    //d->view = 0;
+
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
+    d->isContextVisible = false;
 
     d->layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     d->layout->setContentsMargins(0, 0, 0, 0);
@@ -85,6 +97,8 @@ medToolBoxBody *medToolBox::body(void) const
 
 void medToolBox::update(dtkAbstractView *view)
 {
+    medAbstractView * medView = dynamic_cast < medAbstractView * > (view);
+    setContextVisibility(medView->dataTypes());
     //DTK_DEFAULT_IMPLEMENTATION;
     DTK_UNUSED(view);
 }
@@ -135,3 +149,77 @@ void medToolBox::switchMinimize()
         d->isMinimized = true;
     }
 }
+
+void medToolBox::setContextVisible(bool contextVisibleFlag)
+{
+    d->isContextVisible = contextVisibleFlag;
+}
+
+bool medToolBox::ContextVisible()
+{
+ return d->isContextVisible;
+}
+
+void medToolBox::show()
+{
+    if(d->isContextVisible)
+        QWidget::show();
+}
+
+void medToolBox::setValidDataTypes(const QStringList & dataTypes)
+{
+    d->validDataTypes.append(dataTypes);
+//    foreach(QString dataType, dataTypes)
+//        d->validDataTypes[dataType] = 0;
+
+}
+
+void medToolBox::addValidDataType(const QString & dataType)
+{
+    d->validDataTypes.append(dataType);
+}
+
+void medToolBox::onDataAdded(dtkAbstractData* data, int layer)
+{
+    medAbstractView * senderView = dynamic_cast <medAbstractView *>(QObject::sender());
+    medToolBox::setContextVisibility(senderView->dataTypes());
+}
+
+void medToolBox::setContextVisibility(const QHash<QString, unsigned int> & viewDataTypes )
+{
+    qDebug()<< "setContextVisibility";
+    foreach(QString validDataType, d->validDataTypes)
+    {
+        qDebug()<<"datatype"<< validDataType ;
+        if(viewDataTypes.contains(validDataType))
+            qDebug()<<"viewDataTypes: "<< viewDataTypes.value(validDataType);
+            if(viewDataTypes.value(validDataType)!=0)
+            {
+            d->isContextVisible = true;
+            break;
+            }
+    }
+
+
+//    QHash<QString, unsigned int>::const_iterator i = viewDataTypes.constBegin();
+//    while (i != viewDataTypes.constEnd()) {
+//        if (i.value()!=0)
+//        {
+//            flagHide=0;
+//            break;
+//    }
+//        ++i;
+//    }
+
+    if( d->isContextVisible)
+    {
+        qDebug()<<"show";
+        this->show();
+    }
+    else
+    {
+        qDebug()<<"hide";
+        this->hide();
+    }
+}
+
