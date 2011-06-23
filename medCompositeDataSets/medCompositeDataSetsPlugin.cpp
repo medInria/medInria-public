@@ -4,6 +4,7 @@
 
 #include "DiffusionSequenceCompositeData.h"
 #include "medCompositeDataSetsPlugin.h"
+#include "medDiffusionSequenceCompositeDataToolBox.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -49,6 +50,9 @@ bool medCompositeDataSetsPlugin::initialize(void)
 {
     if(!DiffusionSequenceCompositeData::registered())
         dtkWarning() << "Unable to register medCompositeDataSets type";
+    if(!medDiffusionSequenceCompositeDataToolBox::registered())
+        dtkWarning() << "Unable to register medDiffusionSequenceCompositeData toolbox";
+
 
     return true;
 }
