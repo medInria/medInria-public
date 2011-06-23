@@ -18,7 +18,7 @@ public:
   QVector3D  camViewup;
   QVector3D  camFocal;
   double camParallelScale;
-
+  
   int currentLayer;
   int currentMeshLayer;
   int meshLayerCount;
@@ -377,10 +377,13 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
 
 void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
-    if (d->dataList[layer])
-        removeDataType(d->dataList[layer]->description());
-    d->dataList.insert(layer, data);
-    medAbstractView::addDataType(data->description());
+
+    if(d->dataList.at(layer))
+        d->dataList[layer] = data;
+    if(layer == d->dataList.size())
+        d->dataList.append(data);
+    removeDataType(d->dataList[layer]->description());
+    addDataType(data->description());
 }
 
 void medAbstractView::addDataType(const QString & dataDescription)

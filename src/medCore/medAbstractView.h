@@ -268,6 +268,9 @@ signals:
 
     void dataAdded (dtkAbstractData* data, int layer);
 
+    void TwoDTriggered(dtkAbstractView* d);
+    void ThreeDTriggered(dtkAbstractView* d);
+
     /** Emitted when the oblique view settings change */
     void obliqueSettingsChanged();
 
