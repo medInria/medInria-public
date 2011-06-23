@@ -34,7 +34,7 @@ class medStackedViewContainersPrivate;
  * There is one such stack per medViewConfiguration. 
  *
 */
-class MEDGUI_EXPORT medStackedViewContainers : public QStackedWidget
+class MEDGUI_EXPORT medStackedViewContainers : public QTabWidget
 {
     Q_OBJECT
 
@@ -69,15 +69,24 @@ public:
      * @return QString
     */
     QString currentName(void) const;
-    
+
     /**
      * @brief Adds a container to the stack.
      *
      * @param name The name that will identify this container in the stack.
-     * @param container 
+     * @param container
     */
     void addContainer(const QString &name, medViewContainer *container);
-    
+
+    /**
+     * @brief Inserts a container in the stack.
+     *
+     * @param index The index in the tab widget where to insert the container.
+     * @param name The name that will identify this container in the stack.
+     * @param container
+    */
+    void insertContainer(int index, const QString &name, medViewContainer *container);
+
     /**
      * @brief Gets the container identified in the stack by this string.
      *
@@ -107,7 +116,10 @@ public:
      * @param name
     */
     void removeContainer(const QString& name);
-    
+
+    void lockTabs();
+    void unlockTabs();
+
 signals:
     /**
      * @brief Emits this signal when one of the containers has emitted 
@@ -124,6 +136,11 @@ signals:
      * @param 
     */
     void focused(dtkAbstractView *);
+
+public slots:
+    void changeCurrentContainerType(const QString &name);
+    void addNewTabContainer();
+    void deleteContainerClicked(int index);
 
 private:
     medStackedViewContainersPrivate *d;

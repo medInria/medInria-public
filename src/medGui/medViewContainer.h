@@ -134,6 +134,8 @@ public:
      * @return QString
     */
     QString info(void);
+
+    virtual QString description() {return "";}
     
 signals:
     /**

@@ -37,6 +37,8 @@ public:
     virtual void setView(dtkAbstractView *view);
     virtual dtkAbstractView *view (void) const;
 
+    virtual QString description() {return "Single";}
+
 public slots:
     virtual void onViewClosing (void);
 

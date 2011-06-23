@@ -167,6 +167,8 @@ set(${PROJECT_NAME}_SOURCES
 	${${PROJECT_NAME}_HEADERS_MOC}
 	)
 
+set(${PROJECT_NAME}_RESOURCES medGui.qrc)
+
 ## #################################################################
 ## Build rules
 ## #################################################################
@@ -176,10 +178,12 @@ add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_SOURCES_QRC}
   ${${PROJECT_NAME}_SOURCES_WRAP})
 
 target_link_libraries(${PROJECT_NAME}

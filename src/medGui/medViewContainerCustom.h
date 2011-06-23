@@ -51,6 +51,8 @@ public:
     dtkAbstractView *view (void) const;
     QList<dtkAbstractView*> views (void) const;
 
+    virtual QString description() {return "Custom";}
+
 public slots:
     void onViewClosing  (void);
     void onViewFullScreen (bool value);

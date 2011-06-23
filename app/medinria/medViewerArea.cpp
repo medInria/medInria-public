@@ -278,7 +278,7 @@ void medViewerArea::open(const medDataIndex& index)
     {
         // For the moment switch to visualization, later we will be cleverer    
         this->setupConfiguration("Visualization");
-        this->switchToContainer("Multi");
+        //this->switchToContainer("Multi");
         
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
         stQuery.prepare("SELECT * FROM study WHERE patient = :id");
@@ -670,8 +670,8 @@ void medViewerArea::setupConfiguration(QString name)
       animation->start();
       }*/
     
-    connect(conf, SIGNAL(layoutModeChanged(const QString&)),
-            this, SLOT(switchToContainer(const QString&)));
+    //connect(conf, SIGNAL(layoutModeChanged(const QString&)),
+    //        conf->stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
     connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));
     connect(conf, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)));
