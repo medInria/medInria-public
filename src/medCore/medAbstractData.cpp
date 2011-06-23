@@ -9,7 +9,9 @@ public:
     QList< medAttachedData * > attachedData;
 };
 
-medAbstractData::medAbstractData( medAbstractData *parent /*= 0*/ ) : dtkAbstractData(parent), d(new medAbstractDataPrivate)
+medAbstractData::medAbstractData( medAbstractData *parent )
+    : dtkAbstractData(parent)
+    , d(new medAbstractDataPrivate)
 {
     d->isTrueVolumetric = false;
 }
