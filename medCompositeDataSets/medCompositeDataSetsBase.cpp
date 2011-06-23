@@ -1,5 +1,5 @@
 #include <medCompositeDataSetsBase.h>
 
-namespace MedINRIA {
+namespace MedInria {
     medCompositeDataSetsBase::Registery medCompositeDataSetsBase::reg;
 }

@@ -14,7 +14,7 @@ class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsReader: public dtkAb
 
 public:
 
-             medCompositeDataSetsReader(): desc(0) { };
+    medCompositeDataSetsReader(): desc(0) { };
 
     virtual ~medCompositeDataSetsReader() {
         if (!desc)

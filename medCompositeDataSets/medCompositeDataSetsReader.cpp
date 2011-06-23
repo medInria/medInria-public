@@ -5,6 +5,12 @@
 
 #include <medCompositeDataSetsReader.h>
 
+QString dirname(const QString& name) {
+    const unsigned ind1 = name.lastIndexOf('/')+1;
+    const unsigned ind2 = name.lastIndexOf('.');
+    return name.mid(ind1,ind2-ind1);
+}
+
 QString medCompositeDataSetsReader::description(void) const {
 }
 
@@ -22,7 +28,8 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
     //  Check if the file is a zip file.
 
     zipfile.setZipName(path);
-    if (zipfile.open(dtkZip::mdUnzip) && zipfile.setCurrentFile(QString("Description.txt"))) {
+    qDebug() <<  dirname(path).append("/Description.txt");
+    if (zipfile.open(dtkZip::mdUnzip) && zipfile.setCurrentFile(dirname(path).append("/Description.txt"))) {
 
         //  OK this is a zip archive and the file Description.txt is in the zip archive.
 
@@ -84,6 +91,8 @@ bool medCompositeDataSetsReader::is_valid_desc() {
     std::istringstream iss(header);
     iss >> io_utils::match("# MEDINRIA COMPOSITE DATA:") >> type >> version;
 
+     std::cerr << type << version << std::endl;
+ 
     //  Verify that there is a manager form this type and version.
 
     MedInria::medCompositeDataSetsBase* reader = MedInria::medCompositeDataSetsBase::known(type,version);
