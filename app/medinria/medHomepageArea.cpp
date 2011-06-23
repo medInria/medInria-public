@@ -63,61 +63,56 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->viewerArea = NULL;
     setupUi ( this );
 
-//     d->configurationsButtonsView = new QGraphicsView ( this );
     d->configurationsButtonsScene = new QGraphicsScene ( configurationsGraphicsView );
     configurationsGraphicsView->setScene ( d->configurationsButtonsScene );
     configurationsGraphicsView->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
     configurationsGraphicsView->setFocusPolicy ( Qt::NoFocus );
-
     //Configurations buttons (browser, visualization, registration, diffusion, etc)
     d->configurationsButtonsWidget = new QWidget ( configurationsGraphicsView );
-    d->configurationsButtonsWidget->setMinimumWidth ( 200 );
+    d->configurationsButtonsWidget->setMinimumWidth ( 250 );
 
-    d->userButtonsScene = new QGraphicsScene ( infoGraphicsView );
+    d->userButtonsScene = new QGraphicsScene ( userGraphicsView );
     userGraphicsView->setScene ( d->userButtonsScene );
     userGraphicsView->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
     userGraphicsView->setFocusPolicy ( Qt::NoFocus );
-
     //Configurations buttons (Help, about, settings)
     d->userButtonsWidget = new QWidget ( userGraphicsView );
     d->userButtonsWidget->setMinimumWidth ( 200 );
 
-    d->infoScene = new QGraphicsScene ( userGraphicsView );
+    d->infoScene = new QGraphicsScene ( infoGraphicsView );
     infoGraphicsView->setScene ( d->infoScene );
     infoGraphicsView->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
     infoGraphicsView->setFocusPolicy ( Qt::NoFocus );
+    d->infoWidget = new QWidget ( infoGraphicsView );
 
     QHBoxLayout * userButtonsLayout = new QHBoxLayout ( userGraphicsView );
-//     QPushButton * helpButton = new QPushButton(userGraphicsView);
     medHomepageButton * helpButton = new medHomepageButton ( userGraphicsView );
     helpButton->setText ( "Help" );
     helpButton->setMinimumHeight ( 30 );
     helpButton->setMaximumWidth ( 150 );
     helpButton->setMinimumWidth ( 150 );
     helpButton->setFocusPolicy ( Qt::NoFocus );
-    helpButton->setIcon(QIcon(":icons/help.svg"));
+    helpButton->setIcon ( QIcon ( ":icons/help.svg" ) );
     helpButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( helpButton,SIGNAL ( clicked() ),this, SLOT ( onShowHelp() ) );
 
-//     QPushButton * aboutButton = new QPushButton(userGraphicsView);
-    medHomepageButton * aboutButton = new medHomepageButton ( userGraphicsView );
+   medHomepageButton * aboutButton = new medHomepageButton ( userGraphicsView );
     aboutButton->setText ( "About" );
     aboutButton->setMinimumHeight ( 30 );
     aboutButton->setMaximumWidth ( 150 );
     aboutButton->setMinimumWidth ( 150 );
     aboutButton->setFocusPolicy ( Qt::NoFocus );
-    aboutButton->setIcon(QIcon(":icons/about.png"));
+    aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( aboutButton,SIGNAL ( clicked() ),this, SLOT ( onShowAbout() ) );
 
-//     QPushButton * settingsButton = new QPushButton(userGraphicsView);
     medHomepageButton * settingsButton = new medHomepageButton ( userGraphicsView );
     settingsButton->setText ( "Settings" );
     settingsButton->setMinimumHeight ( 30 );
     settingsButton->setMaximumWidth ( 150 );
     settingsButton->setMinimumWidth ( 150 );
     settingsButton->setFocusPolicy ( Qt::NoFocus );
-    settingsButton->setIcon(QIcon(":icons/settings.svg"));
+    settingsButton->setIcon ( QIcon ( ":icons/settings.svg" ) );
     settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( settingsButton,SIGNAL ( clicked() ),this, SLOT ( onShowSettings() ) );
 
@@ -126,25 +121,30 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 2, helpButton );
 
     d->userButtonsWidget->setLayout ( userButtonsLayout );
-
     d->userButtonsProxyWidget = d->userButtonsScene->addWidget ( d->userButtonsWidget );
-
     d->userButtonsProxyWidget->setPos ( d->userButtonsScene->width() - 100, 0 );
 
-    //     //Special widget : image, text, etc. QtWebkit ?
-    d->infoWidget = new QWidget ( infoGraphicsView );
+    //Special widget : image, text, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout ( this );
     QLabel * medinriaLabel = new QLabel ( this );
-    medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ));
+    medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
     QLabel * textLabel = new QLabel;
-    textLabel->setText ( "The ultimate medical imaging platform" );
+
+    QTextEdit * textEdit = new QTextEdit;
+    textEdit->setHtml("<b>medINRIA</b> is a multi-platform medical image processing and visualization software,\
+                      and it's <b>free</b>. Through an intuitive user interface, <b>medINRIA</b> offers from standard \
+                      to cutting-edge processing functionalities for your medical images such as 2D/3D/4D image visualization, \
+                      image registration, or diffusion MR processing and tractography.");
+    textEdit->setReadOnly(true);
+    textEdit->setStyleSheet("background: #313131;border: 0px;padding: 0px 0px 0px 0px;");
+    textEdit->setFocusPolicy(Qt::NoFocus);
+//     textLabel->setText ( "The ultimate medical imaging platform" );
     infoLayout->insertWidget ( 0,medinriaLabel );
-    infoLayout->insertWidget ( 1, textLabel );
+//     infoLayout->insertWidget ( 1, textLabel );
+    infoLayout->insertWidget ( 1, textEdit );
 
     d->infoWidget->setLayout ( infoLayout );
-
     d->infoProxyWidget = d->infoScene->addWidget ( d->infoWidget );
-
 
     d->animation = new QParallelAnimationGroup ( this );
     d->configurationAnimation = new QPropertyAnimation ( d->configurationsButtonsWidget, "pos" );
@@ -163,9 +163,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->infoAnimation->setStartValue ( QPoint ( ( d->infoScene->width() / 2 ) + 1000 , 250 ) );
     d->infoAnimation->setEndValue ( QPoint ( ( d->infoScene->width() / 2 ) + 300 ,  250 ) );
 
-    d->animation->addAnimation(d->configurationAnimation);
-    d->animation->addAnimation(d->userAnimation);
-    d->animation->addAnimation(d->infoAnimation);
+    d->animation->addAnimation ( d->configurationAnimation );
+    d->animation->addAnimation ( d->userAnimation );
+    d->animation->addAnimation ( d->infoAnimation );
 }
 
 medHomepageArea::~medHomepageArea()
@@ -179,19 +179,20 @@ void medHomepageArea::initPage ( void )
 {
     QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
     QVBoxLayout * configurationButtonsLayout = new QVBoxLayout ( this );
-    QLabel * configurationLabel = new QLabel("Available workspaces:");
-    configurationButtonsLayout->addWidget(configurationLabel);
-    
+    configurationButtonsLayout->setSpacing(10);
+    QLabel * configurationLabel = new QLabel ( "Available workspaces:" );
+    configurationButtonsLayout->addWidget ( configurationLabel );
+
 // //     QPushButton * buttonBrowser = new QPushButton ( this );
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
     browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
     browserButton->setText ( "Browser" );
-    browserButton->setMinimumHeight ( 30 );
-    browserButton->setMaximumWidth ( 200 );
-    browserButton->setMinimumWidth ( 200 );
+    browserButton->setMinimumHeight ( 40 );
+    browserButton->setMaximumWidth ( 250 );
+    browserButton->setMinimumWidth ( 250 );
     browserButton->setFocusPolicy ( Qt::NoFocus );
-    configurationButtonsLayout->addWidget ( browserButton);
+    configurationButtonsLayout->addWidget ( browserButton );
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
 
     for ( int i = 0; i< configList.size(); i++ )
@@ -201,10 +202,10 @@ void medHomepageArea::initPage ( void )
         button->setText ( configList.at ( i ) );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
-        button->setMinimumHeight ( 30 );
-        button->setMaximumWidth ( 200 );
-        button->setMinimumWidth ( 200 );;
-        configurationButtonsLayout->addWidget ( button);
+        button->setMinimumHeight ( 40 );
+        button->setMaximumWidth ( 250 );
+        button->setMinimumWidth ( 250 );;
+        configurationButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowConfiguration ( QString ) ) );
     }
     d->configurationsButtonsWidget->setLayout ( configurationButtonsLayout );
@@ -214,9 +215,9 @@ void medHomepageArea::initPage ( void )
     d->configurationAnimation->setEndValue ( QPoint ( ( d->configurationsButtonsScene->width() / 2 ) + 100 ,  250 ) );
 
     //Setup the startup checkbox
-    if (medSettingsManager::instance()->value("startup","default_starting_area").toInt())
-        showOnStartupCheckBox->setCheckState(Qt::Unchecked);
-    QObject::connect(showOnStartupCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onStartWithHomepage(int)));
+    if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )
+        showOnStartupCheckBox->setCheckState ( Qt::Unchecked );
+    QObject::connect ( showOnStartupCheckBox, SIGNAL ( stateChanged ( int ) ), this, SLOT ( onStartWithHomepage ( int ) ) );
 }
 
 QParallelAnimationGroup* medHomepageArea::getAnimation ( void )
@@ -245,16 +246,15 @@ void medHomepageArea::onShowAbout ( void )
 {
     QString aboutMessage("This is an ultimate medical imaging platform");
     QMessageBox::about(this,"About Medinria", aboutMessage);
-//     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
-//     msgBox->setIcon ( QMessageBox::Information );
-//     msgBox->setText ( "This is an ultimate medical imaging platform" );
-//     msgBox->exec();
-//     delete msgBox;
+}
+
+void medHomepageArea::onHideAbout()
+{
+
 }
 
 void medHomepageArea::onShowHelp ( void )
 {
-//     emit showHelp();
     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
     msgBox->setIcon ( QMessageBox::Information );
     msgBox->setText ( "Help ! Help !" );
@@ -269,13 +269,13 @@ void medHomepageArea::onShowSettings ( void )
 
 void medHomepageArea::onStartWithHomepage ( int state )
 {
-    if (state == Qt::Checked)
+    if ( state == Qt::Checked )
     {
-        medSettingsManager::instance()->setValue("startup","default_starting_area", 0);
+        medSettingsManager::instance()->setValue ( "startup","default_starting_area", 0 );
     }
     else
     {
-        medSettingsManager::instance()->setValue("startup","default_starting_area", 1);
+        medSettingsManager::instance()->setValue ( "startup","default_starting_area", 1 );
     }
 }
 

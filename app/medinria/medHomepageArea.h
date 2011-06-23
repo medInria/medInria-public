@@ -55,6 +55,7 @@ public slots:
     void onShowAbout(void);
     void onShowHelp(void);
     void onStartWithHomepage(int state);
+    void onHideAbout();
     
 signals:
     void showSettings(void);
