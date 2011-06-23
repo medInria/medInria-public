@@ -686,6 +686,12 @@ dtkAbstractDataReader* medDatabaseImporter::getSuitableReader( QStringList filen
 {
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
+    // it's extremely annoying when you are trying to debug having this big vtk error
+    // so I'll put the reader at the end... it's harmless...
+    int indexOfVtkDataSetReader = readers.indexOf("vtkDataMeshReader");
+    if (indexOfVtkDataSetReader >= 0 && readers.size() > 1)
+        readers.move(indexOfVtkDataSetReader, readers.size()-1);
+
     // cycle through readers to see if the last used reader can handle the file
     for (int i=0; i<readers.size(); i++) {
         dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
