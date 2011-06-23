@@ -375,7 +375,7 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
     return NULL;
 }
 
-void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
+void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
     medAbstractView::removeDataType(d->dataList[layer]->description());
     d->dataList[layer] = data;

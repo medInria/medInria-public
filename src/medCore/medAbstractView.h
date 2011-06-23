@@ -162,7 +162,7 @@ public:
 
     void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
-    void setDataInList(int layer, dtkAbstractData * data);
+    void setDataInList(dtkAbstractData * data, int layer);
 
     void addDataType(const QString & dataDescription);
     void removeDataType(const QString & dataDescription);
