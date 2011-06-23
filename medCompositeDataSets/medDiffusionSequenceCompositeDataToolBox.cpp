@@ -188,14 +188,14 @@ void medDiffusionSequenceCompositeDataToolBox::readGradients (QString filepath)
 
 bool medDiffusionSequenceCompositeDataToolBox::writeInDataBase(void)
 {
-  // // instantiate the data
-  // medDiffusionSequenceCompositeData* diffusionsequence = new medDiffusionSequenceCompositeData();
-  // diffusionsequence->setGradientList (d->gradients);
-  // diffusionsequence->setVolumeList (d->volumeList);
+  // instantiate the data
+  medDiffusionSequenceCompositeData* diffusionsequence = new medDiffusionSequenceCompositeData();
+  diffusionsequence->setGradientList (d->gradients);
+  diffusionsequence->setVolumeList (d->volumeList);
 
-  // // instantiate the writer
-  // medDiffusionSequenceCompositeDataWriter* writer = new medDiffusionSequenceCompositeDataWriter();
-  // writer->setData (diffusionsequence);
-  // writer->write();
+  // instantiate the writer
+  medDiffusionSequenceCompositeDataWriter* writer = new medDiffusionSequenceCompositeDataWriter();
+  writer->setData (diffusionsequence);
+  writer->write();
   return 1;
 }
