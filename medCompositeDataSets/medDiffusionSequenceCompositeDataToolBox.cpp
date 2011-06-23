@@ -44,7 +44,7 @@ medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolB
     QObject::connect(d->tree, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
     QObject::connect(d->tree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextTreeMenu(QPoint)));
 
-    this->addFileToTree(QString("dtiimage[0]"));
+    // this->addFileToTree(QString("dtiimage[0]"));
 
 }
 
@@ -86,6 +86,7 @@ bool medDiffusionSequenceCompositeDataToolBox::import (void)
 void medDiffusionSequenceCompositeDataToolBox::reset (void)
 {
   // empty the file list of data
+  d->tree->clear();
 }
 
 
@@ -94,17 +95,17 @@ void medDiffusionSequenceCompositeDataToolBox::cancel (void)
   this->reset();
 }
 
-void medDiffusionSequenceCompositeDataToolBox::addFilesToTree (QStringList paths)
-{  
-}
+// void medDiffusionSequenceCompositeDataToolBox::addFilesToTree (QStringList paths)
+// {  
+// }
 
-void medDiffusionSequenceCompositeDataToolBox::addFileToTree (QString path)
-{
-    QString layerItemString = path;
-    QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->tree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
-    layerItem->setText(0, layerItemString);
-    layerItem->setIcon(0,QIcon(":icons/layer.png"));
-}
+// void medDiffusionSequenceCompositeDataToolBox::addVolumeToTree (QString volumename)
+// {
+//     QString layerItemString = volumename;
+//     QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->tree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
+//     layerItem->setText(0, layerItemString);
+//     layerItem->setIcon(0,QIcon(":icons/layer.png"));
+// }
 
 void medDiffusionSequenceCompositeDataToolBox::onItemClicked (QTreeWidgetItem *, int)
 {

@@ -30,12 +30,12 @@ public slots:
 private:
     medDiffusionSequenceCompositeDataToolBoxPrivate *d;
 
-    void addVolumeToTree (QString volumename);
-    void addGradientToTree ();    
+    /* void addVolumeToTree (QString volumename); */
+    /* void addGradientToTree (); */
 
-    void readVolumes (QStringList paths);
-    void readGradients (QString filepath);
-    void writeInDataBase (void);
+    /* void readVolumes (QStringList paths); */
+    /* void readGradients (QString filepath); */
+    /* void writeInDataBase (void); */
 };
 
 medToolBoxCompositeDataSetImporterCustom *createMedDiffusionCompositeDataToolBox(QWidget *parent);
