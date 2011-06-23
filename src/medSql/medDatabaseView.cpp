@@ -22,6 +22,7 @@
 #include "medDatabaseView.h"
 #include "medDatabaseItem.h"
 #include "medDatabaseProxyModel.h"
+#include "medCore/medDataManager.h"
 
 class NoFocusDelegate : public QStyledItemDelegate
 {
@@ -101,6 +102,12 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
         {
             menu.addAction(tr("View"), this, SLOT(onMenuViewClicked()));
             menu.addAction(tr("Export"), this, SLOT(onMenuExportClicked()));
+            menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
+            menu.exec(mapToGlobal(point));
+        }
+        else if (item->dataIndex().isValidForPatient())
+        {
+            menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
             menu.exec(mapToGlobal(point));
         }
     }
@@ -198,8 +205,35 @@ void medDatabaseView::onMenuExportClicked(void)
             ;
 }
 
-
 void medDatabaseView::selectionChanged( const QModelIndex& current, const QModelIndex& previous)
 {
     emit onItemClicked(current);
+}
+
+void medDatabaseView::onMenuRemoveClicked( void )
+{
+    int reply = QMessageBox::question(this, tr("Remove item"),
+            tr("Are you sure you want to continue?\n""This cannot be undone."),
+            QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
+
+    if( reply == QMessageBox::Yes )
+    {
+        QModelIndexList indexes = this->selectedIndexes();
+        if(!indexes.count())
+            return;
+
+        QModelIndex index = indexes.at(0);
+
+        medDatabaseItem *item = NULL;
+
+        if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
+            item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+
+        if (item)
+        {
+            // Copy the data index, because the data item may cease to be valid.
+            medDataIndex index = item->dataIndex();
+            medDataManager::instance()->removeData(index);
+        }
+    }
 }
