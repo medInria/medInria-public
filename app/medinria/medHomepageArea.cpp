@@ -32,6 +32,7 @@
 #include <medHomepageButton.h>
 #include <medGui/medViewerConfiguration.h>
 #include <medGui/medViewerConfigurationFactory.h>
+#include <medCore/medSettingsManager.h>
 
 class medHomepageAreaPrivate
 {
@@ -211,6 +212,11 @@ void medHomepageArea::initPage ( void )
 
     d->configurationAnimation->setStartValue ( QPoint ( ( d->configurationsButtonsScene->width() / 2 ) - 250, 250 ) );
     d->configurationAnimation->setEndValue ( QPoint ( ( d->configurationsButtonsScene->width() / 2 ) + 100 ,  250 ) );
+
+    //Setup the startup checkbox
+    if (medSettingsManager::instance()->value("startup","default_starting_area").toInt())
+        showOnStartupCheckBox->setCheckState(Qt::Unchecked);
+    QObject::connect(showOnStartupCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onStartWithHomepage(int)));
 }
 
 QParallelAnimationGroup* medHomepageArea::getAnimation ( void )
@@ -260,4 +266,17 @@ void medHomepageArea::onShowSettings ( void )
 {
     emit showSettings();
 }
+
+void medHomepageArea::onStartWithHomepage ( int state )
+{
+    if (state == Qt::Checked)
+    {
+        medSettingsManager::instance()->setValue("startup","default_starting_area", 0);
+    }
+    else
+    {
+        medSettingsManager::instance()->setValue("startup","default_starting_area", 1);
+    }
+}
+
 

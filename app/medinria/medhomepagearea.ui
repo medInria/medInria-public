@@ -35,11 +35,7 @@
    <item row="0" column="1">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QGraphicsView" name="infoGraphicsView"/>
-       </item>
-      </layout>
+      <widget class="QGraphicsView" name="infoGraphicsView"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -68,6 +64,36 @@
           <string notr="true">medHomepageButton:pressed, medHomepageButton:checked { 
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a); 
      } </string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="showOnStartupCheckBox">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>Starts medinria with homepage</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
