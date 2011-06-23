@@ -149,7 +149,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     
     connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)), 
         this, SLOT(switchToPatient(const medDataIndex&)));
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator, 
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
         SLOT (onPatientClicked (const medDataIndex&)));
 
     int memusage = 0;
@@ -223,8 +223,11 @@ void medViewerArea::open(const medDataIndex& index)
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
         if ( data.isNull() )
+        {
+            medDataManager::instance()->blockSignals (false);
             return;
-        
+        }
+
         if(!view) 
         {
             if (d->current_configuration->currentViewContainer() &&
@@ -240,6 +243,7 @@ void medViewerArea::open(const medDataIndex& index)
         if(!view)
         {
             qDebug() << "Unable to create a v3dView";
+            medDataManager::instance()->blockSignals (false);
             return;
         }
         
@@ -271,6 +275,7 @@ void medViewerArea::open(const medDataIndex& index)
             d->current_configuration->currentViewContainer()->setUpdatesEnabled (true);
         }
         
+        medDataManager::instance()->blockSignals (false);
         return;
     }
     
@@ -299,6 +304,7 @@ void medViewerArea::open(const medDataIndex& index)
         }
         
     }
+    medDataManager::instance()->blockSignals (false);
 }
 
 void medViewerArea::open(const QString& file)

@@ -99,8 +99,6 @@ public slots:
     */
     void import(dtkAbstractData *data);
 
-    void onFileImportSuccess();
-
 protected slots:
     void forwardMessage(QString);
 

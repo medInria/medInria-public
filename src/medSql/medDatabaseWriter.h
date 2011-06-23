@@ -56,6 +56,7 @@ signals:
     void success(QObject *);
     void failure(QObject *);
     void progressed(int);
+    void addedIndex(const medDataIndex &);
 
 private:
     medDatabaseWriterPrivate *d;

@@ -470,7 +470,9 @@ void medToolBoxRegistration::onSuccess()
     newDescription += " registered";
     output->setMetaData(tr("SeriesDescription"), newDescription);
 
-    d->outputImageNPIndex = medDataManager::instance()->importNonPersistent(output);
+    connect(medDataManager::instance(),SIGNAL(dataAdded(const medDataIndex &)), this, SLOT(onImportedInNPDatabase(const medDataIndex &)));
+    d->outputImageNPIndex = medDataIndex();
+    medDataManager::instance()->importNonPersistent(output);
 
 	if(output)
     {
@@ -482,4 +484,12 @@ void medToolBoxRegistration::onSuccess()
         d->fuseView->update();
 
     }
+}
+
+void medToolBoxRegistration::onImportedInNPDatabase(const medDataIndex &index)
+{
+    if (&index == NULL)
+        return;
+
+    d->outputImageNPIndex = index;
 }

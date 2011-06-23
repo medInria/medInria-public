@@ -23,6 +23,7 @@
 #include "medSqlExport.h"
 
 #include <medCore/medJobItem.h>
+#include <medCore/medDataIndex.h>
 #include <QtCore>
 
 class medDatabaseImporterPrivate;
@@ -43,6 +44,9 @@ public:
 
 public slots:
     void onCancel(QObject*);
+
+signals:
+    void addedIndex(const medDataIndex &);
 
 private:
     

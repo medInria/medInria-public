@@ -439,14 +439,9 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index)
 
 void medDataManager::storeNonPersistentDataToDatabase( void )
 {
-    foreach (QSharedPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
-        this->import (dtkdata);
+    foreach (medDataIndex index, d->volatileDataCache.keys()) {
+        this->storeNonPersistentSingleDataToDatabase (index);
     }
-    
-    if (medAbstractDbController* npDb = d->getNonPersDbController())
-        npDb->clear();
-    
-    d->volatileDataCache.clear();
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -456,14 +451,33 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
     if (d->volatileDataCache.count(index) > 0)
     {
         QSharedPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
-        this->import (dtkdata);
-        
-        medAbstractDbController* npDb = d->getNonPersDbController();
-        if (npDb)
-            npDb->remove(index);
-        
-        d->volatileDataCache.remove(index);
+
+        medAbstractDbController* db = d->getDbController();
+        connect(db,SIGNAL(updated(const medDataIndex &)),this,SLOT(onSingleNonPersistentDataStored(const medDataIndex &)));
+        if(db)
+            db->import(dtkdata.data());
     }
+}
+
+void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index )
+{
+    medAbstractDbController* db = d->getDbController();
+    medAbstractDbController* npDb = d->getNonPersDbController();
+
+    if ((!db)||(!npDb))
+        return;
+
+    foreach(medDataIndex npIndex, d->volatileDataCache.keys())
+    {
+        qDebug() << npIndex << " " << index;
+        if (npIndex.imageId() == index.imageId())
+        {
+            npDb->remove(npIndex);
+            d->volatileDataCache.remove(npIndex);
+        }
+    }
+
+    emit dataAdded(index);
 }
 
 //-------------------------------------------------------------------------------------------------------

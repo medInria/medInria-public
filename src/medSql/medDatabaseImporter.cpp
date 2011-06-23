@@ -298,7 +298,8 @@ void medDatabaseImporter::run(void)
 
     emit progressed(this,100);
     emit success(this);
-
+    medDataIndex index;
+    emit addedIndex(index);
 }
 
 //-----------------------------------------------------------------------------------------------------------

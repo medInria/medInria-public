@@ -142,6 +142,7 @@ signals:
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index);
     void onPersistentDataImported(const medDataIndex &index);
+    void onSingleNonPersistentDataStored(const medDataIndex &index);
 
 protected:
      medDataManager(void);

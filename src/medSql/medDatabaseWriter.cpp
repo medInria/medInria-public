@@ -488,6 +488,7 @@ void medDatabaseWriter::run(void)
 
     emit progressed(100);
     emit success(this);
+    emit addedIndex(index);
 }
 
 void medDatabaseWriter::onCancel( QObject* )

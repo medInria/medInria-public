@@ -244,7 +244,7 @@ void medDatabaseControllerImpl::import(const QString& file)
 {
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
-    connect(importer, SIGNAL(success(QObject *)), this, SLOT(onFileImportSuccess()));
+    connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
     connect(importer, SIGNAL(failure(QObject *)), importer, SLOT(deleteLater()));
     //connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
@@ -255,17 +255,12 @@ void medDatabaseControllerImpl::import(const QString& file)
     QThreadPool::globalInstance()->start(importer);
 }
 
-void medDatabaseControllerImpl::onFileImportSuccess()
-{
-    emit(updated(NULL));
-}
-
 void medDatabaseControllerImpl::import( dtkAbstractData *data )
 {
     medDatabaseWriter *writer = new medDatabaseWriter(data);
 
     connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
-    connect(writer, SIGNAL(success(QObject *)), this, SLOT(onFileImportSuccess()));
+    connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(writer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(writer, SIGNAL(success(QObject *)), writer, SLOT(deleteLater()));
