@@ -25,7 +25,8 @@ public:
     QTreeWidget * tree;
     medDiffusionSequenceCompositeDataToolBox::GradientListType gradients;
     QVector<dtkAbstractData*> volumeList;
-    
+    QList<QTreeWidgetItem*> itemList;
+  
 };
 
 medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolBox(QWidget *parent) : medToolBoxCompositeDataSetImporterCustom(parent), d(new medDiffusionSequenceCompositeDataToolBoxPrivate)
@@ -49,7 +50,13 @@ medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolB
     QObject::connect(d->tree, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
     QObject::connect(d->tree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextTreeMenu(QPoint)));
 
-    this->addVolumeToTree(QString("dtiimage[0]"));
+    this->addVolumeToTree(0, QString("dtiimage[0]"));
+    GradientType tmpgradient;
+    tmpgradient[0] = 1;
+    tmpgradient[1] = -0.5;
+    tmpgradient[2] = -0.3;
+    
+    this->addGradientToTree(0, tmpgradient);
 
 }
 
@@ -91,6 +98,7 @@ void medDiffusionSequenceCompositeDataToolBox::reset (void)
 {
   // empty the file list of data
   d->tree->clear();
+  d->itemList.clear();
 }
 
 void medDiffusionSequenceCompositeDataToolBox::cancel (void)
@@ -106,12 +114,13 @@ bool medDiffusionSequenceCompositeDataToolBox::import (void)
   return this->writeInDataBase();
 }
 
-void medDiffusionSequenceCompositeDataToolBox::addVolumeToTree (QString volumename)
+void medDiffusionSequenceCompositeDataToolBox::addVolumeToTree (unsigned int index, QString volumename)
 {
-    QString layerItemString = volumename;
-    QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->tree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
-    layerItem->setText(0, layerItemString);
-    layerItem->setIcon(0,QIcon(":icons/layer.png"));
+    QString itemstring = volumename;
+    QTreeWidgetItem * item = new QTreeWidgetItem(d->tree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
+    item->setText(0, itemstring);
+    item->setIcon(0,QIcon(":icons/layer.png"));
+    d->itemList.push_back (item);
 }
 
 void medDiffusionSequenceCompositeDataToolBox::readVolumes (QStringList paths)
@@ -151,13 +160,19 @@ void medDiffusionSequenceCompositeDataToolBox::readVolumes (QStringList paths)
     }
     
     d->volumeList.push_back (volume);
-    this->addVolumeToTree (filepath);
+    this->addVolumeToTree (0, filepath);
   }  
 }
 
-void medDiffusionSequenceCompositeDataToolBox::addGradientToTree (GradientType gradient)
+void medDiffusionSequenceCompositeDataToolBox::addGradientToTree (unsigned int imageindex, GradientType gradient)
 {
-  // qDebug() << "adding the gradient" <<gradient<<" to the tree";
+  QTreeWidgetItem * item = new QTreeWidgetItem(d->tree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
+  std::ostringstream os;
+  os << "["<<gradient[0]<<", "<<gradient[1]<<","<<gradient[2]<<"]";
+  qDebug() << os.str().c_str();
+  
+  item->setText(1, os.str().c_str());
+  //d->tree->setItemWidget(item, 2, NULL);
 }
 
 void medDiffusionSequenceCompositeDataToolBox::readGradients (QString filepath)
@@ -168,7 +183,7 @@ void medDiffusionSequenceCompositeDataToolBox::readGradients (QString filepath)
   reader->Update();
   d->gradients = reader->GetGradientList();
   for (unsigned int i=0; i<d->gradients.size(); i++)
-    this->addGradientToTree (d->gradients[i]);
+    this->addGradientToTree (i, d->gradients[i]);
 }
 
 bool medDiffusionSequenceCompositeDataToolBox::writeInDataBase(void)

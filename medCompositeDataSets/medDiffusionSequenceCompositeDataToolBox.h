@@ -37,8 +37,8 @@ public slots:
 private:
     medDiffusionSequenceCompositeDataToolBoxPrivate *d;
 
-    void addVolumeToTree (QString volumename);
-    void addGradientToTree (GradientType gradient);
+    void addVolumeToTree (unsigned int index, QString volumename);
+    void addGradientToTree (unsigned int index, GradientType gradient);
 
     void readVolumes (QStringList paths);
     void readGradients (QString filepath);
