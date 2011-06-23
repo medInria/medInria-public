@@ -111,13 +111,13 @@ private:
     QStringList getAllFilesToBeProcessed(QString fileOrDirectory);
 
     /**
-    * Tries to read a file indicated by filePath. Only the header is read
-    * is specified by readOnlyImageInformation parameter.
-    * @param filePath – path of the file we want to read
+    * Tries to read the file/s indicated by filesPath.
+    * Only the header is read is specified by readOnlyImageInformation parameter.
+    * @param filesPath – path/s of the file/s we want to read
     * @param readOnlyImageInformation – if true only image header is read, otherwise the full image
     * @return a @dtkAbstractData containing the read data
     **/
-    dtkAbstractData* tryReadImage(QString filePath, bool readOnlyImageInformation);
+    dtkAbstractData* tryReadImages(QStringList filesPath, bool readOnlyImageInformation);
 
     /**
     * Determines the filename where the dtkData object will be written.
