@@ -112,8 +112,8 @@ void medViewerConfigurationDiffusion::setupViewContainerStack()
     }
     
     d->views << diffusionContainer->views();
-    this->stackedViewContainers()->setContainer (description());
-    this->stackedViewContainers()->lockTabs();
+    //this->stackedViewContainers()->setContainer (description());
+    this->stackedViewContainers()->unlockTabs();
 }
 
 
