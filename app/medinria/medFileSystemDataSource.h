@@ -43,6 +43,7 @@ signals:
 
 private slots:
     void onFileSystemImportClicked();
+    void onFileSystemIndexClicked();
     void onFileSystemLoadClicked();
     void onFileSystemViewClicked();
 
