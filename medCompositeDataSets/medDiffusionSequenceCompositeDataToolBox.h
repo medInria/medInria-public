@@ -42,7 +42,7 @@ private:
 
     void readVolumes (QStringList paths);
     void readGradients (QString filepath);
-    void writeInDataBase (void);
+    bool writeInDataBase (void);
 };
 
 medToolBoxCompositeDataSetImporterCustom *createMedDiffusionCompositeDataToolBox(QWidget *parent);

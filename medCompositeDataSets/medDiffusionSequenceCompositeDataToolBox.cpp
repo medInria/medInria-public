@@ -103,9 +103,7 @@ bool medDiffusionSequenceCompositeDataToolBox::import (void)
   // actually import the data through the writer and the header thing, zip ;-)
   qDebug() << "importing data...";
 
-  this->writeInDataBase();
-  return 1;
-  
+  return this->writeInDataBase();
 }
 
 void medDiffusionSequenceCompositeDataToolBox::addVolumeToTree (QString volumename)
@@ -138,27 +136,23 @@ void medDiffusionSequenceCompositeDataToolBox::readVolumes (QStringList paths)
     QString description = volume->description();
     if (!description.contains ("Image"))
     {
-      // this->showError (this, tr ("file does not describe any known image type"), 3000);
+      // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("file does not describe any known image type"), 3000);
       continue;
     }
     if (description.contains ("Image4D"))
     {
-      // this->showError (this, tr ("4D image is not supported yet"), 3000);
+      // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("4D image is not supported yet"), 3000);
       continue;
     }
     if (!description.contains ("Image3D"))
     {
-      // this->showError (this, tr ("image should be 3D"), 3000);
+      // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("image should be 3D"), 3000);
       continue;
     }
     
     d->volumeList.push_back (volume);
     this->addVolumeToTree (filepath);
-  }
-
-  
-  
-  
+  }  
 }
 
 void medDiffusionSequenceCompositeDataToolBox::addGradientToTree (GradientType gradient)
@@ -177,3 +171,16 @@ void medDiffusionSequenceCompositeDataToolBox::readGradients (QString filepath)
     this->addGradientToTree (d->gradients[i]);
 }
 
+bool medDiffusionSequenceCompositeDataToolBox::writeInDataBase(void)
+{
+  // // instantiate the data
+  // medDiffusionSequenceCompositeData* diffusionsequence = new medDiffusionSequenceCompositeData();
+  // diffusionsequence->setGradientList (d->gradients);
+  // diffusionsequence->setVolumeList (d->volumeList);
+
+  // // instantiate the writer
+  // medDiffusionSequenceCompositeDataWriter* writer = new medDiffusionSequenceCompositeDataWriter();
+  // writer->setData (diffusionsequence);
+  // writer->write();
+  return 1;
+}
