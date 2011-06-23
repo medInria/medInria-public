@@ -98,7 +98,10 @@ void medToolBox::update(dtkAbstractView *view)
     if (medView)
         setContextVisibility(medView->dataTypes());
     else
+    {
+        qDebug()<<"update on NULL";
         setContextVisibility(QHash<QString, unsigned int> ());
+    }
     //DTK_DEFAULT_IMPLEMENTATION;
     //DTK_UNUSED(view);
 }
@@ -201,6 +204,7 @@ void medToolBox::setContextVisibility(
     else
     {
         qDebug()<<"View datatypes"<<viewDataTypes.keys();
+        d->isContextVisible = false;
         foreach(QString validDataType, d->validDataTypes)
         {
             qDebug()<<"datatype"<< validDataType ;

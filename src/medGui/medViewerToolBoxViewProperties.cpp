@@ -104,6 +104,7 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
 void
     medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
+    medToolBox::update(view);
     if ((d->view) && (d->view != dynamic_cast<medAbstractView *> (view)) )
     {
         QObject::disconnect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)));
