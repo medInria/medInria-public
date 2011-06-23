@@ -1,5 +1,5 @@
-/* medToolBox.h --- 
- * 
+/* medToolBox.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:41:48 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 83
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDTOOLBOX_H
@@ -47,21 +47,21 @@ class MEDGUI_EXPORT medToolBox : public QWidget
 
 public:
     /**
-    * @brief 
+    * @brief
     *
     * @param parent
     */
     medToolBox(QWidget *parent = 0);
-    
+
     /**
-     * @brief 
+     * @brief
      *
      * @param void
     */
     virtual ~medToolBox(void);
 
     /**
-     * @brief Adds a widget to the toolbox. 
+     * @brief Adds a widget to the toolbox.
      * This widget will be horizontally or vertically added to the layout given the toolbox's orientation.
      *
      * @param widget
@@ -74,14 +74,14 @@ public:
      * @param tab
     */
     void setTabWidget (medToolBoxTab* tab);
-    
+
     /**
      * @brief Sets the toolbox's title.
      *
      * @param title
     */
     void setTitle(const QString& title);
-    
+
     /**
      * @brief Sets the orientation of the toolbox.
      * Given the orientation, lays the widgets vertically or horizontally.
@@ -89,7 +89,7 @@ public:
      *
      * @param orientation
     */
-    void setOrientation(Qt::Orientation orientation);    
+    void setOrientation(Qt::Orientation orientation);
 
     /**
      * @brief Gets the toolbox's current orientation.
@@ -98,7 +98,7 @@ public:
      * @return Qt::Orientation
     */
     Qt::Orientation orientation(void) const;
-    
+
     /**
      * @brief Gets the Toolbox's header.
      *
@@ -106,7 +106,7 @@ public:
      * @return medToolBoxHeader *
     */
     medToolBoxHeader *header(void) const;
-    
+
     /**
      * @brief Gets the toolbox's body.
      *
@@ -123,14 +123,14 @@ signals:
      * @param toolbox
     */
     void    addToolBox(medToolBox *toolbox);
-    
+
     /**
      * @brief Tells the world to remove a toolbox from the medToolBoxContainer
      *
      * @param toolbox
     */
     void removeToolBox(medToolBox *toolbox);
-    
+
     /**
      * @brief Emitted when an action from the toolbox succeeded.
      * Typically used when a dtkProcess returned.
@@ -138,7 +138,7 @@ signals:
      * @param void
     */
     void success(void);
-    
+
     /**
      * @brief Emitted when an action from the toolbox failed.
      *
@@ -151,20 +151,20 @@ public slots:
     /**
      * @brief Clears the toolbox.
      *
-     * Resets the parameters within the tolbox, 
+     * Resets the parameters within the tolbox,
      * for instance when the current patient changed or the view.
      *
      * @param void
     */
     virtual void clear(void);
-    
+
     /**
      * @brief Updates teh content of the toolbox when a new view is selected.
      *
      * @param view The view to extract inforamtion from.
     */
     virtual void update(dtkAbstractView *view);
-    
+
     /**
      * @brief Switches from a minimized state to an extended one and vice versa.
      *
@@ -177,8 +177,6 @@ public slots:
     */
     void setValidDataTypes(const QStringList & dataTypes);
     void addValidDataType(const QString & dataType);
-
-    void onDataAdded(dtkAbstractData *data, int layer);
 
     void setContextVisibility(const QHash<QString, unsigned int> & viewDataTypes);
     void setContextVisible(bool contextVisibleFlag);

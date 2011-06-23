@@ -1,5 +1,5 @@
-/* medToolBox.cpp --- 
- * 
+/* medToolBox.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:46:22 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 254
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 #include <dtkCore/dtkAbstractData.h>
 
@@ -50,7 +50,7 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
 
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
-    d->isContextVisible = false;
+    d->isContextVisible = true;
 
     d->layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     d->layout->setContentsMargins(0, 0, 0, 0);
@@ -97,8 +97,6 @@ medToolBoxBody *medToolBox::body(void) const
 
 void medToolBox::update(dtkAbstractView *view)
 {
-    medAbstractView * medView = dynamic_cast < medAbstractView * > (view);
-    setContextVisibility(medView->dataTypes());
     //DTK_DEFAULT_IMPLEMENTATION;
     DTK_UNUSED(view);
 }
@@ -168,58 +166,14 @@ void medToolBox::show()
 
 void medToolBox::setValidDataTypes(const QStringList & dataTypes)
 {
-    d->validDataTypes.append(dataTypes);
-//    foreach(QString dataType, dataTypes)
-//        d->validDataTypes[dataType] = 0;
+    d->validDataTypes = QStringList(dataTypes);
 
 }
 
 void medToolBox::addValidDataType(const QString & dataType)
 {
-    d->validDataTypes.append(dataType);
-}
-
-void medToolBox::onDataAdded(dtkAbstractData* data, int layer)
-{
-    medAbstractView * senderView = dynamic_cast <medAbstractView *>(QObject::sender());
-    medToolBox::setContextVisibility(senderView->dataTypes());
-}
-
-void medToolBox::setContextVisibility(const QHash<QString, unsigned int> & viewDataTypes )
-{
-    qDebug()<< "setContextVisibility";
-    foreach(QString validDataType, d->validDataTypes)
+    if (!d->validDataTypes.contains(dataType))
     {
-        qDebug()<<"datatype"<< validDataType ;
-        if(viewDataTypes.contains(validDataType))
-            qDebug()<<"viewDataTypes: "<< viewDataTypes.value(validDataType);
-            if(viewDataTypes.value(validDataType)!=0)
-            {
-            d->isContextVisible = true;
-            break;
-            }
-    }
-
-
-//    QHash<QString, unsigned int>::const_iterator i = viewDataTypes.constBegin();
-//    while (i != viewDataTypes.constEnd()) {
-//        if (i.value()!=0)
-//        {
-//            flagHide=0;
-//            break;
-//    }
-//        ++i;
-//    }
-
-    if( d->isContextVisible)
-    {
-        qDebug()<<"show";
-        this->show();
-    }
-    else
-    {
-        qDebug()<<"hide";
-        this->hide();
+        d->validDataTypes.append(dataType);
     }
 }
-
