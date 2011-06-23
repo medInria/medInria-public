@@ -135,7 +135,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->infoWidget = new QWidget ( infoGraphicsView );
     QVBoxLayout * infoLayout = new QVBoxLayout ( this );
     QLabel * medinriaLabel = new QLabel ( this );
-    medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo.png" ).scaled ( 300,100 ) );
+    medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ));
     QLabel * textLabel = new QLabel;
     textLabel->setText ( "The ultimate medical imaging platform" );
     infoLayout->insertWidget ( 0,medinriaLabel );
