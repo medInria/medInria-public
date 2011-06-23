@@ -519,6 +519,9 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     connect(sagittalAct, SIGNAL(triggered()), this, SLOT(onMenuSagittalTriggered()));
     
     // 3D mode
+    QAction *ThreeDAct = new QAction(tr("3D"), d->vtkWidget);
+    connect(ThreeDAct, SIGNAL(triggered()), this, SLOT(onMenu3DTriggered()));
+
     QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
     connect(vrAct, SIGNAL(triggered()), this, SLOT(onMenu3DVRTriggered()));
     
@@ -571,6 +574,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->menu->addAction(axialAct);
     d->menu->addAction(coronalAct);
     d->menu->addAction(sagittalAct);
+    d->menu->addAction(ThreeDAct);
     
     QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
     tridMenu->addAction (vrAct);
@@ -1023,7 +1027,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
         }
     }
-
+    
    // emit dataAdded(layer);
     emit dataAdded(data);
     emit dataAdded(data, layer);
@@ -1632,6 +1636,10 @@ void v3dView::onMenuSagittalTriggered (void)
     qDebug()<<"v3dView::onMenuSagittalTriggered";
 }
 
+void v3dView::onMenu3DTriggered (void)
+{
+    qDebug()<<"BOK";
+}
 void v3dView::onMenu3DVRTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))

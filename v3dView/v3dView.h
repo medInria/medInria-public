@@ -188,7 +188,7 @@ public slots: // Menu interface
     void onMenu3DLODTriggered               (void);
     void onMenuZoomTriggered                (void);
     void onMenuWindowLevelTriggered         (void);
-
+    void onMenu3DTriggered                (void);
 public:
     void  enableInteraction(void);
     void disableInteraction(void);
