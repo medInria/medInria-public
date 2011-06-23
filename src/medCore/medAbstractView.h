@@ -162,7 +162,7 @@ public:
 
     void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
-    void setDataInList(int layer, dtkAbstractData * data);
+    void setDataInList(dtkAbstractData * data, int layer);
     /** The color used to represent the extent or space of this view in another view */
     virtual QColor color() const;
     virtual void setColor( const QColor & color);

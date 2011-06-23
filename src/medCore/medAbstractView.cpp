@@ -369,7 +369,7 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
     return NULL;
 }
 
-void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
+void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
     d->dataList[layer] = data;
 }
