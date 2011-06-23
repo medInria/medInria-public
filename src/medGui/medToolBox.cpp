@@ -170,6 +170,12 @@ void medToolBox::setValidDataTypes(const QStringList & dataTypes)
 
 }
 
+const QStringList medToolBox::ValidDataTypes()
+{
+   return  d->validDataTypes;
+
+}
+
 void medToolBox::addValidDataType(const QString & dataType)
 {
     if (!d->validDataTypes.contains(dataType))

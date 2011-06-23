@@ -104,7 +104,6 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
 void
     medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
-    medToolBox::update(view);
     if ((d->view) && (d->view != dynamic_cast<medAbstractView *> (view)) )
     {
         QObject::disconnect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)));
@@ -283,7 +282,7 @@ void
     //        dtkAbstractData * data = d->view->dataInList(layer);
     //        const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
     //    const QString seriesName = data->name();
-    medToolBox::onDataAdded( data,layer);
+
 
     d->view->addDataInList(data);
     if (d->view->layerCount() == 1 && !data->description().contains("vtkDataMesh"))

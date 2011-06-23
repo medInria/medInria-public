@@ -176,6 +176,7 @@ public slots:
      *
     */
     void setValidDataTypes(const QStringList & dataTypes);
+    const QStringList ValidDataTypes();
     void addValidDataType(const QString & dataType);
 
     void setContextVisibility(const QHash<QString, unsigned int> & viewDataTypes);
