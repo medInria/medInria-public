@@ -43,8 +43,7 @@ include(${medinria_USE_FILE})
 set(${PROJECT_NAME}_HEADERS_MOC
   medCompositeDataSetsPlugin.h
   medDiffusionSequenceCompositeDataToolBox.h
-  medCompositeDataSetsReader.h
-  DiffusionSequenceCompositeData.h)
+  medCompositeDataSetsReader.h)
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
@@ -76,7 +75,7 @@ target_link_libraries(${PROJECT_NAME}
 dtk_build_doc(medCompositeDataSetsPlugin)
 
 add_executable(test test.C)
-target_link_libraries(test medCompositeDataSetsPlugin ${QT_LIBRARIES} dtkCore dtkZip medCore)
+target_link_libraries(test medCompositeDataSetsPlugin ${QT_LIBRARIES} dtkCore dtkZip medGui medCore)
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio

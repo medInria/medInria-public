@@ -8,25 +8,39 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <medCompositeDataSetsPluginExport.h>
 #include <medCompositeDataSetsBase.h>
+#include <itkVector.h>
 
 class DiffusionSequenceCompositeDataPrivate;
 
-class MEDCOMPOSITEDATASETSPLUGIN_EXPORT DiffusionSequenceCompositeData : public dtkAbstractData
-{
-    Q_OBJECT
-
+class MEDCOMPOSITEDATASETSPLUGIN_EXPORT DiffusionSequenceCompositeData: public MedInria::medCompositeDataSetsBase {
 public:
-             DiffusionSequenceCompositeData(void);
-    virtual ~DiffusionSequenceCompositeData(void);
+
+    DiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase("DWI",this),version(0) { }
+    virtual ~DiffusionSequenceCompositeData() { }
 
     virtual QString description(void) const;
 
+    virtual bool has_version(const unsigned num) const { return num==1; }
+
+    virtual MedInria::medCompositeDataSetsBase* clone(const unsigned v) const {
+        return new DiffusionSequenceCompositeData(v);
+    }
+
     static bool registered(void);
 
+    virtual void read_description(const QByteArray& buf);
+
 private:
-    DiffusionSequenceCompositeDataPrivate *d;
+
+    DiffusionSequenceCompositeData(const unsigned v): MedInria::medCompositeDataSetsBase("DWI",this), version(v) { }
+
+    typedef itk::Vector<double,3> Vector3D;
+
+    const unsigned            version;
+    QVector<dtkAbstractData*> images;
+    QVector<Vector3D>         gradients;
 };
 
-dtkAbstractData *createMedCompositeDataSets(void);
+dtkAbstractData* createDiffusionSequenceCompositeData();
 
 #endif

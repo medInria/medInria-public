@@ -417,7 +417,7 @@ namespace io_utils {
     }
 
     inline imanip3<std::string&,const char,const bool>
-    file(std::string& filename,const char delimiter='"',const bool force_delimiter=true) {
+    filename(std::string& filename,const char delimiter='"',const bool force_delimiter=true) {
         return imanip3<std::string&,const char,const bool>(file_internal,filename,delimiter,force_delimiter);
     }
 

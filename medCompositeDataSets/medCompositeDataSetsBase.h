@@ -4,12 +4,16 @@
 #include <map>
 #include <string>
 
+#include <dtkCore/dtkAbstractData.h>
+
 namespace MedInria {
 
     //  A base class for all composite data sets.
 
-    class medCompositeDataSetsBase {
+    class medCompositeDataSetsBase: public dtkAbstractData {
     public:
+
+        virtual QString description(void) const = 0;
 
         //  Verification that there is a handler for this specific type and version of the format.
         //  Returns a new instance of a reader/writer for that format.
@@ -30,6 +34,10 @@ namespace MedInria {
         //  Create a new instance tuned for the revision version ofthe file format.
 
         virtual medCompositeDataSetsBase* clone(const unsigned version) const = 0;
+
+        //  Read the description from an array.
+
+        virtual void read_description(const QByteArray& buf) = 0;
 
     protected:
 

@@ -33,27 +33,22 @@ public:
     
     virtual void setData(dtkAbstractData *data);
 
+    void cleanup() {
+    }
+
 public slots:
 
     virtual bool canRead(const QString& file);
-//    virtual bool canRead(const QStringList& files);
-    
     virtual bool read(const QString& file);
-//    virtual bool read(const QStringList& files);
-    
     virtual void readInformation(const QString& path);
-//    virtual void readInformation(const QStringList& paths);
-    
     virtual void setProgress(int value);
 
 private:
 
-    bool is_valid_desc();
+    QString    dname;
+    QIODevice* desc;
 
-    bool        is_zip_archive;
-    dtkZip      zipfile;
-    QIODevice*  desc;
-    dtkZipFile* zipdesc;
+    MedInria::medCompositeDataSetsBase* reader;
 };
 
 dtkAbstractData *createMedCompositeDataSetsReader(void);
