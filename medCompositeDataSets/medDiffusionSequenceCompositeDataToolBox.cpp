@@ -77,6 +77,8 @@ medToolBoxCompositeDataSetImporterCustom *createMedDiffusionCompositeDataToolBox
 bool medDiffusionSequenceCompositeDataToolBox::import (void)
 {
   // actually import the data through the writer and the header thing, zip ;-)
+  qDebug() << "importing data...";
+  
   
 }
 

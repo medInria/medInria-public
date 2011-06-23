@@ -19,7 +19,6 @@ public:
     QString description (void) const;
     
 public slots:
-    void run(void);
 
     bool import (void);
     void reset (void);
@@ -31,9 +30,12 @@ public slots:
 private:
     medDiffusionSequenceCompositeDataToolBoxPrivate *d;
 
-    void addFileToTree (QString path);
-    void addFilesToTree (QStringList paths);
-    
+    void addVolumeToTree (QString volumename);
+    void addGradientToTree ();    
+
+    void readVolumes (QStringList paths);
+    void readGradients (QString filepath);
+    void writeInDataBase (void);
 };
 
 medToolBoxCompositeDataSetImporterCustom *createMedDiffusionCompositeDataToolBox(QWidget *parent);
