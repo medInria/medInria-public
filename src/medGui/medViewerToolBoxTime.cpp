@@ -1,9 +1,9 @@
 /* medViewerToolBoxTime.h ---
- * 
+ *
  * Author: Fatih Arslan and Nicolas Toussaint
 
  * Change log:
- * 
+ *
  */
 
 #include "medViewerToolBoxTime.h"
@@ -47,7 +47,7 @@ public:
     double minTime;
     double minTimeStep;
     double maxTime;
-    
+
     QPixmap playIcon;
 };
 
@@ -66,7 +66,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     d->timeSlider->setToolTip(tr("Follow The Sequence"));
 
     d->playIcon = QPixmap(":/icons/play.png");
-    
+
     d->playSequencesButton = new medButton(this,d->playIcon,
                                            tr("Play Sequence"));
 
@@ -79,11 +79,11 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     d->stopButton = new medButton(this,":/icons/stop.png",
                                   tr("Stop Sequence"));
 
-    d->timeLine = new QTimeLine();
+    d->timeLine = new QTimeLine(1000, this);
     d->timeLine->setLoopCount(0);
     d->timeLine->setCurveShape (QTimeLine::LinearCurve);
 
-    d->spinBox = new QSpinBox();
+    d->spinBox = new QSpinBox(this);
     d->spinBox->setRange(1,5000);
     d->spinBox->setSingleStep(10);
     d->spinBox->setValue(100);
@@ -242,6 +242,11 @@ void medViewerToolBoxTime::onPlaySequences ()
 
 void medViewerToolBoxTime::onStopButton ()
 {
+    if (d->timeLine->state() == QTimeLine::Running)
+    {
+        d->playSequencesButton->setIcon (QPixmap(":/icons/play.png"));
+        d->playSequencesButton->setToolTip( tr("Play Sequence"));
+    }
     d->timeLine->stop();
     d->timeSlider->setValue(0);
 }
@@ -252,7 +257,7 @@ void medViewerToolBoxTime::onNextFrame ()
 	d->timeSlider->setValue(d->timeSlider->value()+1);
 }
 void medViewerToolBoxTime::onPreviousFrame ()
-{   
+{
     if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()-1);
 }
@@ -319,7 +324,7 @@ void medViewerToolBoxTime::updateRange (void)
     d->labelmax->setText( DoubleToQString(( maxtime ) / (d->spinBox->value()/100.0)) + QString(" sec"));
 }
 
-QString medViewerToolBoxTime::DoubleToQString (double val) 
+QString medViewerToolBoxTime::DoubleToQString (double val)
 {
     std::ostringstream strs;
     strs <<  std::fixed << std::setprecision(2)<< val;
