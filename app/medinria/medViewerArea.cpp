@@ -314,6 +314,11 @@ void medViewerArea::open(const medDataIndex& index)
     }
 }
 
+void medViewerArea::openInTab(const QString& file)
+{
+    this->openInTab(medDatabaseNonPersistentController::instance()->import(file));
+}
+
 void medViewerArea::open(const QString& file)
 {
     this->open(medDatabaseNonPersistentController::instance()->import(file));

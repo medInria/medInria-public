@@ -116,13 +116,22 @@ public slots:
 
     /**
      * @brief Opens file on the local filesystem.
-     * 
-     * Calls open(const medDataIndex& index) with a 
-     * new index created from the medDatabaseNonPersistentController 
+     *
+     * Calls open(const medDataIndex& index) with a
+     * new index created from the medDatabaseNonPersistentController
      * @param file
     */
     void open(const QString& file);
-    
+
+    /**
+     * @brief Opens file on the local filesystem.
+     *
+     * Calls openInTab(const medDataIndex& index) with a
+     * new index created from the medDatabaseNonPersistentController
+     * @param file
+    */
+    void openInTab(const QString& file);
+
     /**
      * @brief  Update the medToolBoxes and frees the memory.
      *
