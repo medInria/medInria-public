@@ -170,12 +170,28 @@ void medViewerConfiguration::addSingleContainer(const QString& name)
         qDebug() << "Container" << name << "already exists in this configurations";
 }
 
-void medViewerConfiguration::addMultiContainer(const QString& name)
+QString medViewerConfiguration::addMultiContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
+    {
         this->stackedViewContainers()->addContainer (name, new medViewContainerMulti());
+        return name;
+    }
     else
-        qDebug() << "Container" << name << "already exists in this configurations";
+    {
+        unsigned int i = 1;
+        QString newName = name + " ";
+        newName += QString::number(i);
+        while (this->stackedViewContainers()->container(newName))
+        {
+            ++i;
+            newName = name + " ";
+            newName += QString::number(i);
+        }
+
+        this->stackedViewContainers()->addContainer (newName, new medViewContainerMulti());
+        return newName;
+    }
 }
 
 void medViewerConfiguration::addCustomContainer(const QString& name)

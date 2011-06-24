@@ -105,7 +105,15 @@ public slots:
      * Study or even Patient.
     */
     void open(const medDataIndex& index);
-    
+
+    /**
+     * @brief Open data corresponding to index \param index in a new tab.
+     *
+     * @param index Could describe just an image, or a complete Series,
+     * Study or even Patient.
+    */
+    void openInTab(const medDataIndex& index);
+
     /**
      * @brief Opens file on the local filesystem.
      * 

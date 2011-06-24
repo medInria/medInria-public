@@ -219,8 +219,9 @@ public:
      *
      * @param name Identifyer/description. By Default "Multi", 
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addMultiContainer(const QString& name="Multi");
+    QString addMultiContainer(const QString& name="Multi");
     
     /**
      * @brief Convenience method to add a medViewContainerCustom.
