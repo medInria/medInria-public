@@ -1,15 +1,15 @@
 #ifndef medAbstractData_h__
 #define medAbstractData_h__
 
-#include <dtkCore/dtkAbstractData.h>
-#include "medCoreExport.h"
+#include <dtkCore/medAbstractData.h>
+#include "medDataExport.h"
 
 class medAbstractDataPrivate;
 
 /**
- * Extending dtkAbstractData class to hold more specific information
+ * Extending medAbstractData class to hold more specific information
  */
-class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
+class MEDCORE_EXPORT medAbstractData : public medAbstractData
 {
     Q_OBJECT
 

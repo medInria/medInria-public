@@ -1,4 +1,4 @@
-/* dtkAbstractDataImage3D.h --- 
+/* medAbstractDataImage3D.h --- 
  * 
  * Author: Theo Papadopoulo
  * Copyright (C) 2011 - Theo Papadopoulo, Inria.
@@ -12,19 +12,21 @@
  * 
  */
 
-#ifndef DTKABSTRACTDATATYPEDIMAGE3D_H
-#define DTKABSTRACTDATATYPEDIMAGE3D_H
+#ifndef MEDABSTRACTDATATYPEDIMAGE3D_H
+#define MEDABSTRACTDATATYPEDIMAGE3D_H
 
-#include <dtkCore/dtkAbstractDataImage3D.h>
+#include "medDataExport.h"
+#include <medData/medAbstractDataImage3D.h>
 
 template <typename T>
-class DTKCORE_EXPORT dtkAbstractDataTypedImage3D : public dtkAbstractDataImage3D {
+class MEDDATA_EXPORT medAbstractDataTypedImage3D : public medAbstractDataImage3D {
 public:
 
-    dtkAbstractDataTypedImage3D(void);
-   ~dtkAbstractDataTypedImage3D(void);
+    medAbstractDataTypedImage3D(void);
+   ~medAbstractDataTypedImage3D(void);
 
-    const dtkAbstractDataImage::PixId& PixelType() const { return typeid(T); }
+    const medAbstractDataImage::PixId& PixelType() const { return typeid(T); }
 };
 
 #endif
+

@@ -1,4 +1,4 @@
-/* dtkAbstractDataImage2D.h --- 
+/* medAbstractDataImage2D.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,26 +17,27 @@
  * 
  */
 
-#ifndef DTKABSTRACTDATAIMAGE2D_H
-#define DTKABSTRACTDATAIMAGE2D_H
+#ifndef MEDABSTRACTDATAIMAGE2D_H
+#define MEDABSTRACTDATAIMAGE2D_H
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include "medDataExport.h"
+#include <medData/medAbstractDataImage.h>
 
-class dtkAbstractDataImage2DPrivate;
+class medAbstractDataImage2DPrivate;
 
-class dtkAbstractDataImage2D : public dtkAbstractDataImage
+class medAbstractDataImage2D : public medAbstractDataImage
 {
     Q_OBJECT
 
 public:
 
-    dtkAbstractDataImage2D(void);
-   ~dtkAbstractDataImage2D(void);
+    medAbstractDataImage2D(void);
+   ~medAbstractDataImage2D(void);
 
    virtual int Dimension() const;
 
 private:
-   dtkAbstractDataImage2DPrivate *d;
+   medAbstractDataImage2DPrivate *d;
 };
 
 #endif

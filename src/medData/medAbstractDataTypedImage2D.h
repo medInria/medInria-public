@@ -1,4 +1,4 @@
-/* dtkAbstractDataTypedImage2D.h --- 
+/* medAbstractDataTypedImage2D.h --- 
  * 
  * Author: Theo Papadopoulo
  * Copyright (C) 2011 - Theo Papadopoulo, Inria.
@@ -12,19 +12,21 @@
  * 
  */
 
-#ifndef DTKABSTRACTDATATYPEDIMAGE2D_H
-#define DTKABSTRACTDATATYPEDIMAGE2D_H
+#ifndef MEDABSTRACTDATATYPEDIMAGE2D_H
+#define MEDABSTRACTDATATYPEDIMAGE2D_H
 
-#include <dtkCore/dtkAbstractDataImage2D.h>
+#include "medDataExport.h"
+#include <medData/medAbstractDataImage2D.h>
 
 template <typename T>
-class DTKCORE_EXPORT dtkAbstractDataTypedImage2D : public dtkAbstractDataImage2D {
+class MEDDATA_EXPORT medAbstractDataTypedImage2D : public medAbstractDataImage2D {
 public:
 
-    dtkAbstractDataTypedImage2D(void);
-   ~dtkAbstractDataTypedImage2D(void);
+    medAbstractDataTypedImage2D(void);
+   ~medAbstractDataTypedImage2D(void);
 
-    const dtkAbstractDataImage::PixId& PixelType() const { return typeid(T); }
+    const medAbstractDataImage::PixId& PixelType() const { return typeid(T); }
 };
 
 #endif
+

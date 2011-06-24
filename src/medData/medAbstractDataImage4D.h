@@ -1,4 +1,4 @@
-/* dtkAbstractDataImage4D.h --- 
+/* medAbstractDataImage4D.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,25 +17,26 @@
  * 
  */
 
-#ifndef DTKABSTRACTDATAIMAGE4D_H
-#define DTKABSTRACTDATAIMAGE4D_H
+#ifndef MEDABSTRACTDATAIMAGE4D_H
+#define MEDABSTRACTDATAIMAGE4D_H
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include "medDataExport.h"
+#include <medData/medAbstractDataImage.h>
 
-class dtkAbstractDataImage4DPrivate;
+class medAbstractDataImage4DPrivate;
 
-class dtkAbstractDataImage4D : public dtkAbstractDataImage
+class medAbstractDataImage4D : public medAbstractDataImage
 {
     Q_OBJECT
 
 public:
-    dtkAbstractDataImage4D(void);
-   ~dtkAbstractDataImage4D(void);
+    medAbstractDataImage4D(void);
+   ~medAbstractDataImage4D(void);
 
     virtual int Dimension() const;
 
 private:
-   dtkAbstractDataImage4DPrivate *d;
+   medAbstractDataImage4DPrivate *d;
 };
 
 #endif

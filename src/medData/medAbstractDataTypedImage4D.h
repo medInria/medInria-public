@@ -1,4 +1,4 @@
-/* dtkAbstractDataTypedImage4D.h --- 
+/* medAbstractDataTypedImage4D.h --- 
  * 
  * Author: Theo Papadopoulo
  * Copyright (C) 2008 - Theo Papadopoulo, Inria.
@@ -12,19 +12,21 @@
  * 
  */
 
-#ifndef DTKABSTRACTDATATYPEDIMAGE4D_H
-#define DTKABSTRACTDATATYPEDIMAGE4D_H
+#ifndef MEDABSTRACTDATATYPEDIMAGE4D_H
+#define MEDABSTRACTDATATYPEDIMAGE4D_H
 
-#include <dtkCore/dtkAbstractDataImage4D.h>
+#include "medDataExport.h"
+#include <medData/medAbstractDataImage4D.h>
 
 template <typename T>
-class DTKCORE_EXPORT dtkAbstractDataTypedImage4D : public dtkAbstractDataImage4D {
+class MEDDATA_EXPORT medAbstractDataTypedImage4D : public medAbstractDataImage4D {
 public:
 
-    dtkAbstractDataTypedImage4D(void);
-   ~dtkAbstractDataTypedImage4D(void);
+    medAbstractDataTypedImage4D(void);
+   ~medAbstractDataTypedImage4D(void);
 
-    const dtkAbstractDataImage::PixId& PixelType() const { return typeid(T); }
+    const medAbstractDataImage::PixId& PixelType() const { return typeid(T); }
 };
 
 #endif
+

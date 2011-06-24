@@ -1,4 +1,4 @@
-/* dtkAbstractDataImage.h --- 
+/* medAbstractDataImage.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,20 +17,21 @@
  * 
  */
 
-#ifndef DTKABSTRACTIMAGEDATA_H
-#define DTKABSTRACTIMAGEDATA_H
+#ifndef MEDABSTRACTIMAGEDATA_H
+#define MEDABSTRACTIMAGEDATA_H
 
 #include <typeinfo>
-#include <dtkCore/dtkAbstractData.h>
+#include "medDataExport.h"
+#include <medData/medAbstractData.h>
 
-class DTKCORE_EXPORT dtkAbstractDataImage: public dtkAbstractData
+class MEDDATA_EXPORT medAbstractDataImage: public medAbstractData
 {
 public:
     typedef std::type_info PixId;
 
-             dtkAbstractDataImage(void);
-             dtkAbstractDataImage(const dtkAbstractDataImage& other);
-    virtual ~dtkAbstractDataImage(void);
+             medAbstractDataImage(void);
+             medAbstractDataImage(const medAbstractDataImage& other);
+    virtual ~medAbstractDataImage(void);
 
     void *image(void);
 

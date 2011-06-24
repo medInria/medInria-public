@@ -1,4 +1,4 @@
-/* dtkAbstractDataImage.cpp --- 
+/* medAbstractDataImage.cpp --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,98 +17,98 @@
  * 
  */
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <dtkCore/medAbstractDataImage.h>
 
 #include <QtGui>
 
 // /////////////////////////////////////////////////////////////////
-// dtkAbstractDataImagePrivate
+// medAbstractDataImagePrivate
 // /////////////////////////////////////////////////////////////////
 
 //  Unneeded in this case.
 
 // /////////////////////////////////////////////////////////////////
-// dtkAbstractDataImage
+// medAbstractDataImage
 // /////////////////////////////////////////////////////////////////
 
-const char* dtkAbstractDataImage::PixelMeaningMetaData = "PixelMeaning";
+const char* medAbstractDataImage::PixelMeaningMetaData = "PixelMeaning";
 
-dtkAbstractDataImage::dtkAbstractDataImage(void) : dtkAbstractData()
+medAbstractDataImage::medAbstractDataImage(void) : medAbstractData()
 {
 
 }
 
-dtkAbstractDataImage::dtkAbstractDataImage(const dtkAbstractDataImage& other): dtkAbstractData(other)
+medAbstractDataImage::medAbstractDataImage(const medAbstractDataImage& other): medAbstractData(other)
 {
 
 }
 
-dtkAbstractDataImage::~dtkAbstractDataImage(void)
+medAbstractDataImage::~medAbstractDataImage(void)
 {
 }
 
-void *dtkAbstractDataImage::image(void)
+void *medAbstractDataImage::image(void)
 {
     return this->data();
 }
 
-int dtkAbstractDataImage::Dimension() const
+int medAbstractDataImage::Dimension() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-const dtkAbstractDataImage::PixId& dtkAbstractDataImage::PixelType() const
+const medAbstractDataImage::PixId& medAbstractDataImage::PixelType() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return typeid(void);
 }
 
-int dtkAbstractDataImage::xDimension(void)
+int medAbstractDataImage::xDimension(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int dtkAbstractDataImage::yDimension(void)
+int medAbstractDataImage::yDimension(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int dtkAbstractDataImage::zDimension(void)
+int medAbstractDataImage::zDimension(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int dtkAbstractDataImage::tDimension(void)
+int medAbstractDataImage::tDimension(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 	
     return 0;
 }
 
-int dtkAbstractDataImage::minRangeValue(void)
+int medAbstractDataImage::minRangeValue(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int dtkAbstractDataImage::maxRangeValue(void)
+int medAbstractDataImage::maxRangeValue(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int dtkAbstractDataImage::scalarValueCount(int value)
+int medAbstractDataImage::scalarValueCount(int value)
 {
     DTK_DEFAULT_IMPLEMENTATION;
     DTK_UNUSED(value);
@@ -116,14 +116,14 @@ int dtkAbstractDataImage::scalarValueCount(int value)
     return 0;
 }
 
-int dtkAbstractDataImage::scalarValueMinCount(void)
+int medAbstractDataImage::scalarValueMinCount(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int dtkAbstractDataImage::scalarValueMaxCount(void)
+int medAbstractDataImage::scalarValueMaxCount(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 

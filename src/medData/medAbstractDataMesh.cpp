@@ -1,4 +1,4 @@
-/* dtkAbstractDataMesh.cpp --- 
+/* medAbstractDataMesh.cpp --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,40 +17,40 @@
  * 
  */
 
-#include <dtkCore/dtkAbstractDataMesh.h>
+#include <dtkCore/medAbstractDataMesh.h>
 #include <dtkCore/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
-// dtkAbstractDataMeshPrivate
+// medAbstractDataMeshPrivate
 // /////////////////////////////////////////////////////////////////
 
-class dtkAbstractDataMeshPrivate
+class medAbstractDataMeshPrivate
 {
 public:
 };
 
 // /////////////////////////////////////////////////////////////////
-// dtkAbstractDataMesh
+// medAbstractDataMesh
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataMesh::dtkAbstractDataMesh(void) : dtkAbstractData(), d(new dtkAbstractDataMeshPrivate)
+medAbstractDataMesh::medAbstractDataMesh(void) : medAbstractData(), d(new medAbstractDataMeshPrivate)
 {
 
 }
 
-dtkAbstractDataMesh::dtkAbstractDataMesh(const  dtkAbstractDataMesh& other): dtkAbstractData(other), d(new dtkAbstractDataMeshPrivate)
+medAbstractDataMesh::medAbstractDataMesh(const  medAbstractDataMesh& other): medAbstractData(other), d(new medAbstractDataMeshPrivate)
 {
 
 }
 
-dtkAbstractDataMesh::~dtkAbstractDataMesh(void)
+medAbstractDataMesh::~medAbstractDataMesh(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void *dtkAbstractDataMesh::mesh(void)
+void *medAbstractDataMesh::mesh(void)
 {
     return this->data();
 }

@@ -1,4 +1,4 @@
-/* dtkAbstractDataImage2D.cpp --- 
+/* medAbstractDataImage2D.cpp --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,26 +17,26 @@
  * 
  */
 
-#include <dtkCore/dtkAbstractDataImage2D.h>
+#include <dtkCore/medAbstractDataImage2D.h>
 
-class dtkAbstractDataImage2DPrivate
+class medAbstractDataImage2DPrivate
 {
 public:
 };
 
-dtkAbstractDataImage2D::dtkAbstractDataImage2D(void) : dtkAbstractDataImage(), d(new dtkAbstractDataImage2DPrivate)
+medAbstractDataImage2D::medAbstractDataImage2D(void) : medAbstractDataImage(), d(new medAbstractDataImage2DPrivate)
 {
 
 }
 
-dtkAbstractDataImage2D::~dtkAbstractDataImage2D(void)
+medAbstractDataImage2D::~medAbstractDataImage2D(void)
 {
     delete d;
 
     d = NULL;
 }
 
-int dtkAbstractDataImage2D::Dimension() const {
+int medAbstractDataImage2D::Dimension() const {
     return 2;
 }
 

@@ -1,4 +1,4 @@
-/* dtkAbstractDataTypedImage2D.h --- 
+/* medAbstractDataTypedImage2D.h --- 
  * 
  * Author: Theo Papadopoulo
  * Copyright (C) 2011 - Theo Papadopoulo, Inria.
@@ -12,24 +12,25 @@
  * 
  */
 
-#ifndef DTKABSTRACTDATATYPEDIMAGE2D_H
-#define DTKABSTRACTDATATYPEDIMAGE2D_H
+#ifndef MEDABSTRACTDATATYPEDIMAGE2D_H
+#define MEDABSTRACTDATATYPEDIMAGE2D_H
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include "medDataExport.h"
+#include <medData/medAbstractDataImage.h>
 
 template <unsigned DIM,typename T>
-class dtkAbstractDataTypedImage: public dtkAbstractDataImage {
+class medAbstractDataTypedImage: public medAbstractDataImage {
 public:
 
-    dtkAbstractDataTypedImage() { }
-   ~dtkAbstractDataTypedImage() { }
+    medAbstractDataTypedImage() { }
+   ~medAbstractDataTypedImage() { }
 
     int                                Dimension() const { return DIM;       }
-    const dtkAbstractDataImage::PixId& PixelType() const { return typeid(T); }
+    const medAbstractDataImage::PixId& PixelType() const { return typeid(T); }
 
     const QString PixelMeaning() const {
-        if (hasMetaData(dtkAbstractDataImage::PixelMeaningMetaData))
-            return metadata(dtkAbstractDataImage::PixelMeaningMetaData);
+        if (hasMetaData(medAbstractDataImage::PixelMeaningMetaData))
+            return metadata(medAbstractDataImage::PixelMeaningMetaData);
         return "";
     }
 };

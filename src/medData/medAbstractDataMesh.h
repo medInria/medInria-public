@@ -1,4 +1,4 @@
-/* dtkAbstractDataMesh.h --- 
+/* medAbstractDataMesh.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,23 +17,24 @@
  * 
  */
 
-#ifndef DTKABSTRACTMESHDATA_H
-#define DTKABSTRACTMESHDATA_H
+#ifndef MEDABSTRACTMESHDATA_H
+#define MEDABSTRACTMESHDATA_H
 
-#include <dtkCore/dtkAbstractData.h>
+#include "medDataExport.h"
+#include <medData/medAbstractData.h>
 
-class dtkAbstractDataVertex;
-class dtkAbstractDataEdge;
-class dtkAbstractDataMeshPrivate;
+class medAbstractDataVertex;
+class medAbstractDataEdge;
+class medAbstractDataMeshPrivate;
 
-class DTKCORE_EXPORT dtkAbstractDataMesh : public dtkAbstractData
+class MEDDATA_EXPORT medAbstractDataMesh : public medAbstractData
 {
     Q_OBJECT
 
 public:
-             dtkAbstractDataMesh(void);
-             dtkAbstractDataMesh(const  dtkAbstractDataMesh& other);
-    virtual ~dtkAbstractDataMesh(void);
+             medAbstractDataMesh(void);
+             medAbstractDataMesh(const  medAbstractDataMesh& other);
+    virtual ~medAbstractDataMesh(void);
 
     void *mesh(void);
 
@@ -43,12 +44,12 @@ public:
     virtual int countEdges(void)
     { return 0; }
 
-    //    virtual QList<dtkAbstractDataVertex *> vertices(void);
-    //    virtual QList<dtkAbstractDataEdge *> edges(void);
+    //    virtual QList<medAbstractDataVertex *> vertices(void);
+    //    virtual QList<medAbstractDataEdge *> edges(void);
     
 
 private:
-    dtkAbstractDataMeshPrivate *d;
+    medAbstractDataMeshPrivate *d;
 };
 
 #endif

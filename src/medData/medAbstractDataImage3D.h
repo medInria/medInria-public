@@ -1,4 +1,4 @@
-/* dtkAbstractDataImage3D.h --- 
+/* medAbstractDataImage3D.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,25 +17,26 @@
  * 
  */
 
-#ifndef DTKABSTRACTDATAIMAGE3D_H
-#define DTKABSTRACTDATAIMAGE3D_H
+#ifndef MEDABSTRACTDATAIMAGE3D_H
+#define MEDABSTRACTDATAIMAGE3D_H
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include "medDataExport.h"
+#include <medData/medAbstractDataImage.h>
 
-class dtkAbstractDataImage3DPrivate;
+class medAbstractDataImage3DPrivate;
 
-class dtkAbstractDataImage3D : public dtkAbstractDataImage
+class medAbstractDataImage3D : public medAbstractDataImage
 {
     Q_OBJECT
 
 public:
-    dtkAbstractDataImage3D(void);
-   ~dtkAbstractDataImage3D(void);
+    medAbstractDataImage3D(void);
+   ~medAbstractDataImage3D(void);
 
     virtual int Dimension() const;
 
 private:
-   dtkAbstractDataImage3DPrivate *d;
+   medAbstractDataImage3DPrivate *d;
 };
 
 #endif

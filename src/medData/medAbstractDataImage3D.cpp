@@ -1,4 +1,4 @@
-/* dtkAbstractDataImage3D.cpp --- 
+/* medAbstractDataImage3D.cpp --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,25 +17,25 @@
  * 
  */
 
-#include <dtkCore/dtkAbstractDataImage3D.h>
+#include <dtkCore/medAbstractDataImage3D.h>
 
-class dtkAbstractDataImage3DPrivate
+class medAbstractDataImage3DPrivate
 {
 public:
 };
 
-dtkAbstractDataImage3D::dtkAbstractDataImage3D(void) : dtkAbstractDataImage(), d(new dtkAbstractDataImage3DPrivate)
+medAbstractDataImage3D::medAbstractDataImage3D(void) : medAbstractDataImage(), d(new medAbstractDataImage3DPrivate)
 {
 
 }
 
-dtkAbstractDataImage3D::~dtkAbstractDataImage3D(void)
+medAbstractDataImage3D::~medAbstractDataImage3D(void)
 {
     delete d;
 
     d = NULL;
 }
 
-int dtkAbstractDataImage3D::Dimension() const {
+int medAbstractDataImage3D::Dimension() const {
     return 3;
 }

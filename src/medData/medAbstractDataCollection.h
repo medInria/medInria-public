@@ -1,15 +1,15 @@
 #ifndef medAbstractDataCollection_h__
 #define medAbstractDataCollection_h__
 
-#include "medCoreExport.h"
+#include "medDataExport.h"
 #include "medAbstractData.h"
 
-class dtkAbstractData;
+class medAbstractData;
 class medAttachedData;
 class medAbstractDataCollectionPrivate;
 
 /**
- * Collection type of dtkAbstractData
+ * Collection type of medAbstractData
  * using qVector internally
  */
 class MEDCORE_EXPORT medAbstractDataCollection : public medAbstractData
@@ -19,7 +19,7 @@ public:
     medAbstractDataCollection(medAbstractDataCollection *parent = 0);
     ~medAbstractDataCollection();
 
-    // satisfying dtkAbstractData
+    // satisfying medAbstractData
 
     virtual QString description(void) const;
 
@@ -32,7 +32,7 @@ public:
         virtual bool write(const QString& file);
         virtual bool write(const QStringList& files);
 
-        virtual dtkAbstractData *convert(const QString& toType);
+        virtual medAbstractData *convert(const QString& toType);
 
         virtual void *output(void);
         virtual void *output(int channel);
@@ -54,8 +54,8 @@ public:
         virtual void setParameter(const QString& parameter);
         virtual void setParameter(const QString& parameter, int channel);
 
-        virtual void setParameter(dtkAbstractData *parameter);
-        virtual void setParameter(dtkAbstractData *parameter, int channel);
+        virtual void setParameter(medAbstractData *parameter);
+        virtual void setParameter(medAbstractData *parameter, int channel);
 
         virtual void setData(void* data);
         virtual void setData(void* data, int channel);
@@ -75,9 +75,9 @@ public:
         void  enableConverter(const QString& converter);
         void disableConverter(const QString& converter);
 
-        dtkAbstractDataReader    *reader   (const QString& type);
-        dtkAbstractDataWriter    *writer   (const QString& type);
-        dtkAbstractDataConverter *converter(const QString& type);
+        medAbstractDataReader    *reader   (const QString& type);
+        medAbstractDataWriter    *writer   (const QString& type);
+        medAbstractDataConverter *converter(const QString& type);
 
         QString     path(void);
         QStringList paths(void);
@@ -90,7 +90,7 @@ public:
 
 
     /**
-     * Returns the number of dtkAbstractData items currently collected
+     * Returns the number of medAbstractData items currently collected
      */
     int count();
 
@@ -98,27 +98,27 @@ public:
      * Get the first item in the container or null
      * rewinds the iterator
      */
-    dtkAbstractData* first();
+    medAbstractData* first();
 
     /**
      * Get the next item or null 
      * increments the iterator
      */
-    dtkAbstractData* next();
+    medAbstractData* next();
 
     /**
      * Return item at index or null
      */
-    dtkAbstractData* at(int index);
+    medAbstractData* at(int index);
 
 
     /**
     * Add new data to the collection, it will be appended
     * The caller can safely delete the pointer afterwards
-    * @params dtkAbstractData * data
+    * @params medAbstractData * data
     * @return void
     */
-    void addData(dtkAbstractData* data);
+    void addData(medAbstractData* data);
 
 
     /**

@@ -18,6 +18,7 @@
 ######################################################################
 
 add_subdirectory(medCore)
+add_subdirectory(medData)
 add_subdirectory(medGui)
 add_subdirectory(medSql)
 add_subdirectory(medPacs)
