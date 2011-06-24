@@ -6,6 +6,7 @@
 
 #include <DiffusionSequenceCompositeData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractDataReader.h>
 
 #include <IOUtils.H>
 
@@ -31,12 +32,50 @@ void DiffusionSequenceCompositeData::read_description(const QByteArray& buf) {
     iss >> io_utils::skip_comments('#') >> io_utils::match("Images") >> num;
     for (unsigned i=0;i<num;++i) {
         std::string name;
-        Vector3D V;
+        GradientType V;
         iss >> io_utils::skip_comments('#') >> io_utils::filename(name) >> io_utils::match('[') >> V[0] >> V[1] >> V[2] >> io_utils::match(']');
-
+        gradients.push_back(V);
+        image_list << QString(name.c_str());
         std::cerr << name << '(' << V << ')' << std::endl;
     }
 }
+
+void DiffusionSequenceCompositeData::readVolumes(QStringList paths) {
+
+    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
+      
+    for (int i=0;i<paths.size();++i) {
+        QString filepath = paths[i];
+        dtkAbstractDataReader* reader = NULL;
+        
+        for (int i=0;i<readers.size();++i) {
+            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
+            if (dataReader->canRead(filepath ))
+                reader = dataReader;
+            else
+                delete reader;
+        }
+
+        reader->readInformation(filepath);
+        dtkAbstractData* volume = reader->data();
+        QString description     = volume->description();
+        if (!description.contains("Image")) {
+            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("file does not describe any known image type"), 3000);
+            continue;
+        }
+        if (description.contains ("Image4D")) {
+            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("4D image is not supported yet"), 3000);
+            continue;
+        }
+        if (!description.contains ("Image3D")) {
+            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("image should be 3D"), 3000);
+            continue;
+        }
+        
+        images.push_back(volume);
+      }  
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

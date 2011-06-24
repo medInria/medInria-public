@@ -33,8 +33,7 @@ public:
     
     virtual void setData(dtkAbstractData *data);
 
-    void cleanup() {
-    }
+    void cleanup();
 
 public slots:
 
@@ -45,7 +44,8 @@ public slots:
 
 private:
 
-    QString    dname;
+    bool       is_zip_file;
+    QString    outdir;
     QIODevice* desc;
 
     MedInria::medCompositeDataSetsBase* reader;

@@ -8,7 +8,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <medCompositeDataSetsPluginExport.h>
 #include <medCompositeDataSetsBase.h>
-#include <itkVector.h>
+#include <itkGradientFileReader.h>
 
 class DiffusionSequenceCompositeDataPrivate;
 
@@ -30,15 +30,20 @@ public:
 
     virtual void read_description(const QByteArray& buf);
 
+    void readVolumes(QStringList);
+
 private:
 
     DiffusionSequenceCompositeData(const unsigned v): MedInria::medCompositeDataSetsBase("DWI",this), version(v) { }
 
-    typedef itk::Vector<double,3> Vector3D;
+    typedef itk::GradientFileReader GradientReaderType;
+    typedef GradientReaderType::VectorType GradientType;
+    typedef GradientReaderType::VectorListType GradientListType;
 
     const unsigned            version;
     QVector<dtkAbstractData*> images;
-    QVector<Vector3D>         gradients;
+    QStringList               image_list;
+    GradientListType          gradients;
 };
 
 dtkAbstractData* createDiffusionSequenceCompositeData();

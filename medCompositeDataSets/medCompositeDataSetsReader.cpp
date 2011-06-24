@@ -5,6 +5,28 @@
 
 #include <medCompositeDataSetsReader.h>
 
+bool RemoveDirectory(const QDir& dir) {
+    bool has_err = false;
+    if (dir.exists()) {
+        QFileInfoList entries = dir.entryInfoList(QDir::NoDotAndDotDot|QDir::Dirs|QDir::Files);
+        int count = entries.size();
+        //for (int idx = 0;((idx<count)&&(RBCFS_OK==has_err));++idx) {
+        for (int idx = 0;idx<count;++idx) {
+            QFileInfo entryInfo = entries[idx];
+            QString path = entryInfo.absoluteFilePath();
+            if (entryInfo.isDir())
+                has_err = RemoveDirectory(QDir(path));
+            else {
+                QFile file(path);
+                if (!file.remove())
+                    has_err = true;
+            }
+        }
+        if (!dir.rmdir(dir.absolutePath()))
+            has_err = true;
+    }
+}
+
 QString dirname(const QString& name) {
     const unsigned ind1 = name.lastIndexOf('/')+1;
     const unsigned ind2 = name.lastIndexOf('.');
@@ -12,12 +34,15 @@ QString dirname(const QString& name) {
 }
 
 QString medCompositeDataSetsReader::description(void) const {
+    return "";
 }
 
 QStringList medCompositeDataSetsReader::handled(void) const {
+    return QStringList();
 }
 
 dtkAbstractData* medCompositeDataSetsReader::data(void) {
+    return 0;
 }
 
 void medCompositeDataSetsReader::setData(dtkAbstractData *data) {
@@ -30,16 +55,17 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
     dtkZip zipfile;
 
     zipfile.setZipName(path);
-    dname = dirname(path);
+    const QString dname = dirname(path)+"/Description.txt";
     QString descname(path);
 
-    if (zipfile.open(dtkZip::mdUnzip) && zipfile.setCurrentFile(dname.append("/Description.txt"))) {
+    if (zipfile.open(dtkZip::mdUnzip) && zipfile.setCurrentFile(dname)) {
 
         //  OK this is a zip archive and the file Description.txt is in the zip archive.
         //  Uncompress the archive in a temporary directory.
 
+        is_zip_file = false;
         dtkZipFile file(&zipfile);
-        const QString outdir = QString(mkdtemp((QDir::tempPath()+"/"+"medcdsXXXXXXX").toAscii().data()))+"/";
+        outdir = QString(mkdtemp((QDir::tempPath()+"/"+"medcdsXXXXXXX").toAscii().data()))+"/";
         for (bool more=zipfile.goToFirstFile();more;more=zipfile.goToNextFile()) {
 
             if (!file.open(QIODevice::ReadOnly)) {
@@ -102,6 +128,7 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
         }
 
         zipfile.close();
+        is_zip_file = true;
         descname = outdir+dname;
     }
         
@@ -134,6 +161,8 @@ void medCompositeDataSetsReader::readInformation(const QString&) {
     QByteArray buffer = desc->readAll();
     reader->read_description(buffer);
 }
+
+void medCompositeDataSetsReader::cleanup() { RemoveDirectory(QDir(outdir)); }
 
 bool medCompositeDataSetsReader::read(const QString& path) {
 
