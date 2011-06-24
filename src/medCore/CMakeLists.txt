@@ -24,28 +24,28 @@ project(medCore)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  medDataIndex.h
-  medDataManager.h
-  medMessageController.h
-  medMetaDataHelper.h
-  medViewManager.h
-  medPluginManager.h
-  medProgressFilter.h
-  medAbstractView.h
   med4DAbstractViewInteractor.h
-  medMeshAbstractViewInteractor.h
-  medJobItem.h
-  medJobManager.h
-  medSettingsManager.h
-  medDbControllerFactory.h
-  medAbstractDbController.h
   medAbstractData.h  
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
-  medAttachedData.h
-  medStorage.h
-  medRunnableProcess.h
+  medAbstractDbController.h
+  medAbstractView.h
   medAbstractViewFiberInteractor.h
+  medAttachedData.h
+  medDataIndex.h
+  medDataManager.h
+  medDbControllerFactory.h
+  medJobItem.h
+  medJobManager.h
+  medMeshAbstractViewInteractor.h
+  medMessageController.h
+  medMetaDataHelper.h
+  medPluginManager.h
+  medProgressFilter.h
+  medRunnableProcess.h
+  medSettingsManager.h
+  medStorage.h
+  medViewManager.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -56,27 +56,27 @@ set(${PROJECT_NAME}_HEADERS
 
 
 set(${PROJECT_NAME}_SOURCES
-  medDataIndex.cpp
-  medDataManager.cpp
-  medMessageController.cpp
-  medMetaDataHelper.cpp
-  medViewManager.cpp
-  medPluginManager.cpp
-  medProgressFilter.cpp
-  medAbstractView.cpp
-  medStorage.cpp
-  medJobItem.cpp
-  medJobManager.cpp  
-  medSettingsManager.cpp
-  medDbControllerFactory.cpp
-  medAbstractDbController.cpp
-  medAttachedData.cpp
-  medRunnableProcess.cpp
   medAbstractData.cpp
   medAbstractDataCollection.cpp
   medAbstractDataSource.cpp
   medAbstractDataSourceFactory.cpp
+  medAbstractDbController.cpp
+  medAbstractView.cpp
   medAbstractViewFiberInteractor.cpp
+  medAttachedData.cpp
+  medDataIndex.cpp
+  medDataManager.cpp
+  medDbControllerFactory.cpp
+  medJobItem.cpp
+  medJobManager.cpp  
+  medMessageController.cpp
+  medMetaDataHelper.cpp
+  medPluginManager.cpp
+  medProgressFilter.cpp
+  medRunnableProcess.cpp
+  medSettingsManager.cpp
+  medStorage.cpp
+  medViewManager.cpp
 )
 
 ## #################################################################
