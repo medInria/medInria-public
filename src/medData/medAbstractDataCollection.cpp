@@ -2,7 +2,7 @@
 
 #include "medAttachedData.h"
 
-#include <dtkCore/medAbstractData.h>
+#include <medData/medAbstractData.h>
 
 #include <QtCore/QVector>
 

@@ -17,7 +17,7 @@
  * 
  */
 
-#include <dtkCore/medAbstractDataImage.h>
+#include <medData/medAbstractDataImage.h>
 
 #include <QtGui>
 

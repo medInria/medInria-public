@@ -17,7 +17,7 @@
  * 
  */
 
-#include <dtkCore/medAbstractDataImage3D.h>
+#include <medData/medAbstractDataImage3D.h>
 
 class medAbstractDataImage3DPrivate
 {

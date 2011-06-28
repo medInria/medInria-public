@@ -17,7 +17,7 @@
  * 
  */
 
-#include <dtkCore/medAbstractDataImage4D.h>
+#include <medData/medAbstractDataImage4D.h>
 
 class medAbstractDataImage4DPrivate
 {

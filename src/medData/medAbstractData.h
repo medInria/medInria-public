@@ -1,7 +1,8 @@
 #ifndef medAbstractData_h__
 #define medAbstractData_h__
 
-#include <dtkCore/medAbstractData.h>
+#include <dtkCore/dtkAbstractData.h>
+
 #include "medDataExport.h"
 
 class medAbstractDataPrivate;
@@ -9,12 +10,12 @@ class medAbstractDataPrivate;
 /**
  * Extending medAbstractData class to hold more specific information
  */
-class MEDCORE_EXPORT medAbstractData : public medAbstractData
+class MEDDATA_EXPORT medAbstractData : public dtkAbstractData
 {
     Q_OBJECT
 
 public:
-    medAbstractData( medAbstractData *parent = 0);
+    medAbstractData( dtkAbstractData *parent = 0);
     virtual ~medAbstractData(void);
 
     /**

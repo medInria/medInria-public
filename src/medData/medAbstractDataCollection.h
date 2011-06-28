@@ -12,7 +12,7 @@ class medAbstractDataCollectionPrivate;
  * Collection type of medAbstractData
  * using qVector internally
  */
-class MEDCORE_EXPORT medAbstractDataCollection : public medAbstractData
+class MEDDATA_EXPORT medAbstractDataCollection : public medAbstractData
 {
 
 public:
