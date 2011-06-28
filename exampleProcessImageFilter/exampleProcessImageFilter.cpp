@@ -5,7 +5,7 @@
 #include "exampleProcessImageFilter.h"
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medData/medAbstractDataImage.h>
 
 #include <itkImage.h>
 #include <itkMaskImageFilter.h>
@@ -23,9 +23,9 @@
 class exampleProcessImageFilterPrivate
 {
 public:
-    dtkAbstractDataImage *inputA;
-    dtkAbstractDataImage *inputB;
-    dtkAbstractDataImage *output;
+    medAbstractDataImage *inputA;
+    medAbstractDataImage *inputB;
+    medAbstractDataImage *output;
 
 public:
     int x;
@@ -102,13 +102,13 @@ void exampleProcessImageFilter::setInput(dtkAbstractData *data, int channel)
 {
     if(channel == 0)
     {
-       d->inputA = dynamic_cast<dtkAbstractDataImage *>(data);
+       d->inputA = dynamic_cast<medAbstractDataImage *>(data);
        qDebug("Channel 0 loaded! ");
     }
 
     if(channel == 1)
     {
-       d->inputB=dynamic_cast<dtkAbstractDataImage *>(data);
+       d->inputB=dynamic_cast<medAbstractDataImage *>(data);
        qDebug("Channel 1 loaded! ");
     }
 
@@ -146,7 +146,7 @@ int exampleProcessImageFilter::update(void)
             maskFilter->SetInput2(dynamic_cast<ImageType*>((itk::Object*)(d->inputB->output())));
 
             //Create an image where the output of the filter is going to be displayed
-            d->output =dynamic_cast<dtkAbstractDataImage *>(dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3"));
+            d->output =dynamic_cast<medAbstractDataImage *>(dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3"));
 
             maskFilter->Update();
 
@@ -170,7 +170,7 @@ int exampleProcessImageFilter::update(void)
             maskFilter4->Update();
 
             //Create an image where the output of the filter is going to be displayed
-            d->output =dynamic_cast<dtkAbstractDataImage *> (dtkAbstractDataFactory::instance()->create ("itkDataImageDouble4"));
+            d->output =dynamic_cast<medAbstractDataImage *> (dtkAbstractDataFactory::instance()->create ("itkDataImageDouble4"));
 
             //Set the data for the output
             d->output->setData(maskFilter4->GetOutput());
@@ -196,7 +196,7 @@ int exampleProcessImageFilter::update(void)
             AddFilter->SetInput1(dynamic_cast<ImageType*>((itk::Object*)(d->inputA->output())));
             AddFilter->SetInput2(dynamic_cast<ImageType*>((itk::Object*)(d->inputB->output())));
 
-            d->output =dynamic_cast<dtkAbstractDataImage *> (dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3"));
+            d->output =dynamic_cast<medAbstractDataImage *> (dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3"));
             AddFilter->Update();
             d->output->setData(AddFilter->GetOutput());
 
@@ -226,7 +226,7 @@ int exampleProcessImageFilter::update(void)
 
             connectedThreshold->Update();
 
-            d->output =dynamic_cast<dtkAbstractDataImage *> (dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3"));
+            d->output =dynamic_cast<medAbstractDataImage *> (dtkAbstractDataFactory::instance()->create ("itkDataImageUShort3"));
 
             d->output->setData(connectedThreshold->GetOutput());
         }

@@ -16,7 +16,7 @@
 #include <itkRecursiveGaussianImageFilter.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractDataTypedImage.h>
+#include <medData/medAbstractDataTypedImage.h>
 #include <itkDataImagePluginExport.h>
 
 template<typename T,int DIM>
@@ -491,13 +491,13 @@ QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const 
 template <unsigned DIM,typename T,const char* ID> dtkAbstractData* createItkDataImage();
 
 template <unsigned DIM,typename T,const char* ID>
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public dtkAbstractDataTypedImage<DIM,T> {
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public medAbstractDataTypedImage<DIM,T> {
 
     typedef itkDataImagePrivate<DIM,T,ImageTypeIndex<T>::Index> PrivateMember;
 
 public:
 
-    itkDataImage(): dtkAbstractDataTypedImage<DIM,T>(),d(new PrivateMember) { }
+    itkDataImage(): medAbstractDataTypedImage<DIM,T>(),d(new PrivateMember) { }
 
     ~itkDataImage() {
         delete d;
@@ -542,7 +542,7 @@ public:
         Q_UNUSED(value);
     }
 
-    // derived from dtkAbstractDataImage
+    // derived from medAbstractDataImage
 
     int xDimension() {
         if (d->image.IsNull())
@@ -591,7 +591,7 @@ dtkAbstractData* createItkDataImage() {
 template <unsigned DIM,typename T,const char* ID>
 QImage& itkDataImage<DIM,T,ID>::thumbnail() const {
     if (d->image.IsNull())
-        return dtkAbstractDataImage::thumbnail();
+        return medAbstractDataImage::thumbnail();
 
     const int xydim = 128;
     if (d->thumbnails.isEmpty()          ||
@@ -611,7 +611,7 @@ QImage& itkDataImage<DIM,T,ID>::thumbnail() const {
     else if (d->thumbnails.size()>0)
         return d->thumbnails[0];
     else
-        return dtkAbstractDataImage::thumbnail();
+        return medAbstractDataImage::thumbnail();
 }
 
 #endif

@@ -35,6 +35,9 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 #include_directories(../dtkItkLogForwarder)
 find_package(medinria-plugins REQUIRED)
 include(${medinria-plugins_USE_FILE})
@@ -90,6 +93,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
   dtkCore
+  medData
   ${ITK_LIBRARIES})
 
 # Group common files together in Visual Studio.

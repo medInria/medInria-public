@@ -10,7 +10,6 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -19,6 +18,8 @@
 #include <medCore/medAbstractView.h>
 #include <medCore/medRunnableProcess.h>
 #include <medCore/medJobManager.h>
+
+#include <medData/medAbstractDataImage.h>
 
 #include <medGui/medToolBoxFactory.h>
 #include <medGui/medToolBoxRegistration.h>

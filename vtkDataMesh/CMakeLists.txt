@@ -69,6 +69,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkVtkLogForwarder
   dtkCore
+  medData
   vtkCommon
   vtkFiltering
   vtkRendering

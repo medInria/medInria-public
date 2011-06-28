@@ -5,13 +5,13 @@
 #ifndef ITKDATATENSORIMAGEFLOAT3_H
 #define ITKDATATENSORIMAGEFLOAT3_H
 
-#include <dtkCore/dtkAbstractDataTypedImage.h>
+#include <medData/medAbstractDataTypedImage.h>
 
 #include "itkDataTensorImagePluginExport.h"
 
 class itkDataTensorImageFloat3Private;
 
-class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public dtkAbstractDataTypedImage<3,float>
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public medAbstractDataTypedImage<3,float>
 {
     Q_OBJECT
 
@@ -30,7 +30,7 @@ public slots:
     void setData(void* data);
     
 public:
-    // derived from dtkAbstractDataImage
+    // derived from medAbstractDataImage
     int xDimension(void);
     int yDimension(void);
     int zDimension(void);
