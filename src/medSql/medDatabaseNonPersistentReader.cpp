@@ -23,11 +23,12 @@
 #include "medDatabaseNonPersistentItem_p.h"
 #include "medDatabaseNonPersistentReader.h"
 
+#include <medData/medAbstractDataImage.h>
+
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 

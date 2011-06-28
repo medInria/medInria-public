@@ -21,12 +21,12 @@
 #include "medDatabaseWriter.h"
 #include <medCore/medStorage.h>
 #include <medCore/medDataIndex.h>
+#include <medData/medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 
@@ -142,7 +142,7 @@ medDataIndex medDatabaseWriter::run(void)
         d->data->addMetaData("FilePaths", QStringList() << "generated with medinria");
 
     QString size ="";
-    if (dtkAbstractDataImage *imagedata = dynamic_cast<dtkAbstractDataImage*> (d->data) )
+    if (medAbstractDataImage *imagedata = dynamic_cast<medAbstractDataImage*> (d->data) )
         size = QString::number (imagedata->zDimension() );
     d->data->addMetaData ("Size", size);
 

@@ -2,8 +2,8 @@
 #ifndef medAttachedData_h__
 #define medAttachedData_h__
 
-#include <medData/medAbstractData.h>
-#include "medCoreExport.h"
+#include "medAbstractData.h"
+#include "medDataExport.h"
 
 class medAttachedDataPrivate;
 

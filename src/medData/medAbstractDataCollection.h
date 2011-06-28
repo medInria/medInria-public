@@ -32,7 +32,7 @@ public:
         virtual bool write(const QString& file);
         virtual bool write(const QStringList& files);
 
-        virtual medAbstractData *convert(const QString& toType);
+        virtual dtkAbstractData *convert(const QString& toType);
 
         virtual void *output(void);
         virtual void *output(int channel);
@@ -75,9 +75,9 @@ public:
         void  enableConverter(const QString& converter);
         void disableConverter(const QString& converter);
 
-        medAbstractDataReader    *reader   (const QString& type);
-        medAbstractDataWriter    *writer   (const QString& type);
-        medAbstractDataConverter *converter(const QString& type);
+        dtkAbstractDataReader    *reader   (const QString& type);
+        dtkAbstractDataWriter    *writer   (const QString& type);
+        dtkAbstractDataConverter *converter(const QString& type);
 
         QString     path(void);
         QStringList paths(void);

@@ -110,7 +110,7 @@ bool medAbstractDataCollection::write( const QStringList& files )
     return (*d->dataIterator)->write(files);
 }
 
-medAbstractData * medAbstractDataCollection::convert( const QString& toType )
+dtkAbstractData * medAbstractDataCollection::convert( const QString& toType )
 {
     return (*d->dataIterator)->convert(toType);
 }
@@ -245,17 +245,17 @@ void medAbstractDataCollection::disableConverter( const QString& converter )
     (*d->dataIterator)->disableConverter(converter);
 }
 
-medAbstractDataReader * medAbstractDataCollection::reader( const QString& type )
+dtkAbstractDataReader * medAbstractDataCollection::reader( const QString& type )
 {
     return (*d->dataIterator)->reader(type);
 }
 
-medAbstractDataWriter    * medAbstractDataCollection::writer( const QString& type )
+dtkAbstractDataWriter    * medAbstractDataCollection::writer( const QString& type )
 {
     return (*d->dataIterator)->writer(type);
 }
 
-medAbstractDataConverter * medAbstractDataCollection::converter( const QString& type )
+dtkAbstractDataConverter * medAbstractDataCollection::converter( const QString& type )
 {
     return (*d->dataIterator)->converter(type);
 }
