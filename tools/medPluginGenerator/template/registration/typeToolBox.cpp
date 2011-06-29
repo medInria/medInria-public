@@ -19,7 +19,7 @@
 #include <medCore/medRunnableProcess.h>
 #include <medCore/medJobManager.h>
 
-#include <medData/medAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 
 #include <medGui/medToolBoxFactory.h>
 #include <medGui/medToolBoxRegistration.h>

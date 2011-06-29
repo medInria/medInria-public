@@ -1,6 +1,6 @@
 #include "itkDataImageReaderBase.h"
 
-#include <medData/medAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>

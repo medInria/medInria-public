@@ -5,7 +5,7 @@
 #include "exampleProcessImageFilter.h"
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <medData/medAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 
 #include <itkImage.h>
 #include <itkMaskImageFilter.h>

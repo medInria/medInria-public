@@ -16,7 +16,7 @@
 #include <itkRecursiveGaussianImageFilter.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <medData/medAbstractDataTypedImage.h>
+#include <medCore/medAbstractDataTypedImage.h>
 #include <itkDataImagePluginExport.h>
 
 template<typename T,int DIM>

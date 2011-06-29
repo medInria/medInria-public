@@ -11,7 +11,7 @@
 #include "v3dView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <medData/medAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
