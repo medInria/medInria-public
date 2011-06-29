@@ -297,9 +297,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     connect(configurationSwitcher, SIGNAL(activated(QString)), d->viewerArea, SLOT(setupConfiguration(QString)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(close()));
-
-//     if (d->homepageArea->getAnimation())
-//         d->homepageArea->getAnimation()->start();
 }
 
 medMainWindow::~medMainWindow(void)
