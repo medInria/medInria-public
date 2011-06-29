@@ -115,13 +115,15 @@ extern "C" int Core_Init(Tcl_Interp *interp);    // -- Initialization core layer
 
 medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMainWindowPrivate)
 {
+    // To avoid strange behaviours with the homepage
+    this->setMinimumHeight(600);
+    this->setMinimumWidth(800);
+    
     // Setting up database connection
-
     if(!medDatabaseController::instance()->createConnection())
         qDebug() << "Unable to create a connection to the database";
 
     // Setting up menu
-
     QAction *windowFullScreenAction = new QAction("Toggle fullscreen mode", this);
     windowFullScreenAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_F);
     windowFullScreenAction->setToolTip("Toggle fullscreen mode");
@@ -378,6 +380,7 @@ void medMainWindow::setFullScreen(bool full)
 void medMainWindow::switchToHomepageArea ( void )
 {
     d->stack->setCurrentWidget(d->homepageArea);
+    d->homepageArea->onHideAbout();
     
     d->shiftToBrowserAreaAction->setChecked(false);
     d->shiftToViewerAreaAction->setChecked(false);

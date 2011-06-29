@@ -47,6 +47,7 @@ public:
     QPropertyAnimation * infoAnimation;
 
     QWidget * aboutWidget;
+//     QTextEdit * aboutAuthorTextEdit;
 
     QParallelAnimationGroup * animation;
 
@@ -60,16 +61,22 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     d->navigationWidget = new QWidget ( this );
     d->navigationWidget->setMinimumWidth ( 250 );
-    d->navigationWidget->setMinimumHeight ( 400 );
-
-    d->userWidget = new QWidget ( this );
-    d->userWidget->setMinimumWidth ( 250 );
-    d->userWidget->setMinimumHeight ( 40 );
 
     d->infoWidget = new QWidget ( this );
     d->infoWidget->setMinimumWidth ( 400 );
     d->infoWidget->setMinimumHeight ( 500 );
 
+    d->userWidget = new QWidget ( this );
+    d->userWidget->setMinimumWidth ( 250 );
+    d->userWidget->setMinimumHeight ( 40 );
+
+    d->aboutWidget = new QWidget ( this );
+    d->aboutWidget->setMinimumWidth ( 400 );
+    d->aboutWidget->setMaximumHeight ( 500 );
+    d->aboutWidget->setMinimumHeight ( 500 );
+    d->aboutWidget->hide();
+
+    //User widget content with settings, about and help buttons
     QHBoxLayout * userButtonsLayout = new QHBoxLayout;
     medHomepageButton * helpButton = new medHomepageButton ( this );
     helpButton->setText ( "Help" );
@@ -107,7 +114,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     d->userWidget->setLayout ( userButtonsLayout );
 
-    //Special widget : image, text, etc. QtWebkit ?
+    //Special widget : medinria logo, medinria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout;
     QLabel * medinriaLabel = new QLabel ( this );
     medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
@@ -129,10 +136,117 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->infoWidget->setLayout ( infoLayout );
     d->infoWidget->setMaximumHeight ( medinriaLabel->height() + textEdit->height() );
 
+    //About widget
+    QVBoxLayout * aboutLayout = new QVBoxLayout;
+    QTabWidget * aboutTabWidget = new QTabWidget();
+    aboutTabWidget->setStyleSheet ( "QTabWidget {\
+                                        border-image: url(:/pixmaps/toolbox-body.png) 0 16 16 16 repeat-y;\
+                                        border-left-width: 16px;\
+                                        border-right-width: 16px;\
+                                        border-top-width: 0px;\
+                                        border-bottom-width: 16px;\
+                                        padding-left: -6px;\
+                                        padding-right: -6px;\
+                                        padding-bottom: 6px;\
+                                    }\
+                                    \
+                                    QTabWidget::pane {\
+                                        background: none;\
+                                        border: none;\
+                                        border-image: none;\
+                                    }\
+                                    \
+                                    QTabWidget::tab-bar {\
+                                        top: 1px;\
+                                        left: 0px;\
+                                    }\
+                                    \
+                                    QTabBar::tab {\
+                                        color: white;\
+                                        border: 1px solid #2c2c2e;\
+                                        border-top: none;\
+                                        border-left: none;\
+                                        border-radius: 0;\
+                                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);\
+                                        height: 32px;\
+                                        min-width: 50px;\
+                                    }\
+                                    \
+                                    QTabBar::tab:selected, QTabBar::tab:hover {\
+                                        color: white;\
+                                        border: 1px solid #2c2c2e;\
+                                        border-top: none;\
+                                        border-left: none;\
+                                        border-radius: 0;\
+                                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);\
+                                        height: 32px;\
+                                        min-width: 50px;\
+                                    }" );
+
+    QLabel * medinriaLabel2 = new QLabel ( this );
+    medinriaLabel2->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
+
+    QTextEdit * aboutTextEdit = new QTextEdit;
+    aboutTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
+    aboutTextEdit->setHtml ( "<br/><br/>\
+                              medINRIA is the medical imaging platform developped at INRIA<br/><br/>\
+                              <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
+    aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
+
+    QTextEdit * aboutAuthorTextEdit = new QTextEdit;
+    aboutAuthorTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
+    aboutAuthorTextEdit->setHtml ( "<b>Authors :</b> <br/> \
+                       Pierre.Fillard@inria.fr <br> \
+                       Olivier.Commowick@inria.fr \
+                       Olivier.Clatz@inria.fr <br> \
+                       Alexandre.Abadie@inria.fr <br> \
+                       Benoit.Bleuze@inria.fr <br> \
+                       John.Stark@inria.fr <br> \
+                       Michael.Knopke@inria.fr <br> \
+                       Stephen.Schmitt@inria.fr <br> \
+                       Maxime.Sermesan@inria.fr <br> \
+                       Theodore.Papadopoulos@inria.fr <br> \
+                       Clement.Philipot@inria.fr <br> \
+                       Sergio.Medina@inria.fr <br> \
+                       Nicolas.Toussaint@inria.fr <br> \
+                       Julien.Wintz@inria.fr <br> " );
+    aboutAuthorTextEdit->setFocusPolicy ( Qt::NoFocus );
+
+    QTextEdit * aboutLicenseTextEdit = new QTextEdit;
+    aboutLicenseTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
+    QFile license(":LICENSE.txt");
+    license.open(QIODevice::ReadOnly | QIODevice::Text);
+    QString licenseContent = license.readAll();
+    license.close();
+    aboutLicenseTextEdit->setText ( licenseContent );
+    aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
+
+    QHBoxLayout * aboutButtonLayout = new QHBoxLayout;
+    QPushButton * hideAboutButton = new QPushButton ( this );
+    hideAboutButton->setText ( "Hide" );
+    hideAboutButton->setFocusPolicy ( Qt::NoFocus );
+    QObject::connect ( hideAboutButton, SIGNAL ( clicked() ), this, SLOT ( onHideAbout() ) );
+
+    aboutButtonLayout->addStretch();
+    aboutButtonLayout->addWidget ( hideAboutButton );
+    aboutButtonLayout->addStretch();
+
+    aboutTabWidget->addTab ( aboutTextEdit, "About" );
+    aboutTabWidget->addTab ( aboutAuthorTextEdit, "Authors" );
+    aboutTabWidget->addTab ( aboutLicenseTextEdit, "License" );
+
+    aboutLayout->addWidget ( medinriaLabel2 );
+//     aboutLayout->addWidget(d->aboutAuthorTextEdit);
+    aboutLayout->addWidget ( aboutTabWidget );
+    aboutLayout->addLayout ( aboutButtonLayout );
+    aboutLayout->addStretch();
+    d->aboutWidget->setLayout ( aboutLayout );
+
     //Set the position of the widgets
-    d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 3 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 100 ) );
-    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 3 ) );
+    d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
+    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 4 ) );
+    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 4 ) );
 
     d->animation = new QParallelAnimationGroup ( this );
     d->navigationAnimation = new QPropertyAnimation ( d->navigationWidget, "pos" );
@@ -144,8 +258,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->userAnimation = new QPropertyAnimation ( d->userWidget, "pos" );
     d->userAnimation->setDuration ( 750 );
     d->userAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->userAnimation->setStartValue ( QPoint ( this->width() + 250,  this->height() - 100 ) );
-    d->userAnimation->setEndValue ( QPoint ( this->width() * 0.8 ,  this->height() - 100 ) );
+    d->userAnimation->setStartValue ( QPoint ( this->width() + 250,  this->height() - 90 ) );
+    d->userAnimation->setEndValue ( QPoint ( this->width() * 0.8 ,  this->height() - 90 ) );
 
     d->infoAnimation = new QPropertyAnimation ( d->infoWidget, "pos" );
     d->infoAnimation->setDuration ( 900 );
@@ -168,14 +282,17 @@ medHomepageArea::~medHomepageArea()
 void medHomepageArea::resizeEvent ( QResizeEvent * event )
 {
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
-    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 100 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
     d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 4 ) );
+    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 4 ) );
+
+    d->aboutWidget->setMaximumHeight ( this->height() / 3 );
 
     d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );
     d->navigationAnimation->setEndValue ( QPoint ( 100 ,  this->height() / 4 ) );
 
-    d->userAnimation->setStartValue ( QPoint ( this->width() + 50,  this->height() - 100 ) );
-    d->userAnimation->setEndValue ( QPoint ( this->width() - 350 ,  this->height() - 100 ) );
+    d->userAnimation->setStartValue ( QPoint ( this->width() + 50,  this->height() - 90 ) );
+    d->userAnimation->setEndValue ( QPoint ( this->width() - 350 ,  this->height() - 90 ) );
 
     d->infoAnimation->setStartValue ( QPoint ( this->width() , this->height() / 4 ) );
     d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 4 ) );
@@ -215,6 +332,7 @@ void medHomepageArea::initPage ( void )
     configurationButtonsLayout->addStretch();
     d->navigationWidget->setLayout ( configurationButtonsLayout );
     d->navigationWidget->setProperty ( "pos", QPoint ( 100,  100 ) );
+    d->navigationWidget->setMinimumHeight ( 55 * ( 1 + configList.size() ) );
 
     //Setup the startup checkbox
     if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )
@@ -246,13 +364,14 @@ void medHomepageArea::onShowConfiguration ( QString configuration )
 
 void medHomepageArea::onShowAbout ( void )
 {
-    QString aboutMessage ( "This is an ultimate medical imaging platform" );
-    QMessageBox::about ( this,"About Medinria", aboutMessage );
+    d->infoWidget->hide();
+    d->aboutWidget->show();
 }
 
 void medHomepageArea::onHideAbout()
 {
-
+    d->aboutWidget->hide();
+    d->infoWidget->show();
 }
 
 void medHomepageArea::onShowHelp ( void )

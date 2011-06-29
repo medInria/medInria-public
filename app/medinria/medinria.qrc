@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>LICENSE.txt</file>
         <file>medinria.ico</file>
         <file>icons/about.png</file>
         <file>icons/quit.png</file>
