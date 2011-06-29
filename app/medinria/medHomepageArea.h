@@ -48,6 +48,8 @@ public:
 
     void setViewerArea(medViewerArea * viewer);
 
+    void resizeEvent( QResizeEvent * event );
+    
 public slots:
     void onShowBrowser(void);
     void onShowConfiguration(QString configuration);

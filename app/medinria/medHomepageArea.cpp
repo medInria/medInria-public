@@ -37,21 +37,16 @@
 class medHomepageAreaPrivate
 {
 public:
-    QGraphicsScene * configurationsButtonsScene;
-    QGraphicsProxyWidget * configurationsButtonsProxyWidget;
-    QWidget * configurationsButtonsWidget;
+    QWidget * navigationWidget;
+    QPropertyAnimation * navigationAnimation;
 
-    QGraphicsScene * userButtonsScene;
-    QGraphicsProxyWidget * userButtonsProxyWidget;
-    QWidget * userButtonsWidget;
-
-    QGraphicsScene * infoScene;
-    QGraphicsProxyWidget * infoProxyWidget;
-    QWidget * infoWidget;
-
-    QPropertyAnimation * configurationAnimation;
+    QWidget * userWidget;
     QPropertyAnimation * userAnimation;
+
+    QWidget * infoWidget;
     QPropertyAnimation * infoAnimation;
+
+    QWidget * aboutWidget;
 
     QParallelAnimationGroup * animation;
 
@@ -59,34 +54,24 @@ public:
 };
 
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
-{
+{    
     d->viewerArea = NULL;
     setupUi ( this );
 
-    d->configurationsButtonsScene = new QGraphicsScene ( configurationsGraphicsView );
-    configurationsGraphicsView->setScene ( d->configurationsButtonsScene );
-    configurationsGraphicsView->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
-    configurationsGraphicsView->setFocusPolicy ( Qt::NoFocus );
-    //Configurations buttons (browser, visualization, registration, diffusion, etc)
-    d->configurationsButtonsWidget = new QWidget ( configurationsGraphicsView );
-    d->configurationsButtonsWidget->setMinimumWidth ( 250 );
+    d->navigationWidget = new QWidget(this);
+    d->navigationWidget->setMinimumWidth(250);
+    d->navigationWidget->setMinimumHeight(400);
 
-    d->userButtonsScene = new QGraphicsScene ( userGraphicsView );
-    userGraphicsView->setScene ( d->userButtonsScene );
-    userGraphicsView->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
-    userGraphicsView->setFocusPolicy ( Qt::NoFocus );
-    //Configurations buttons (Help, about, settings)
-    d->userButtonsWidget = new QWidget ( userGraphicsView );
-    d->userButtonsWidget->setMinimumWidth ( 200 );
+    d->userWidget = new QWidget(this);
+    d->userWidget->setMinimumWidth(250);
+    d->userWidget->setMinimumHeight(40);
 
-    d->infoScene = new QGraphicsScene ( infoGraphicsView );
-    infoGraphicsView->setScene ( d->infoScene );
-    infoGraphicsView->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
-    infoGraphicsView->setFocusPolicy ( Qt::NoFocus );
-    d->infoWidget = new QWidget ( infoGraphicsView );
+    d->infoWidget = new QWidget(this);
+    d->infoWidget->setMinimumWidth(400);
+    d->infoWidget->setMinimumHeight(500);
 
-    QHBoxLayout * userButtonsLayout = new QHBoxLayout ( userGraphicsView );
-    medHomepageButton * helpButton = new medHomepageButton ( userGraphicsView );
+    QHBoxLayout * userButtonsLayout = new QHBoxLayout;
+    medHomepageButton * helpButton = new medHomepageButton ( this );
     helpButton->setText ( "Help" );
     helpButton->setMinimumHeight ( 30 );
     helpButton->setMaximumWidth ( 150 );
@@ -96,7 +81,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     helpButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( helpButton,SIGNAL ( clicked() ),this, SLOT ( onShowHelp() ) );
 
-   medHomepageButton * aboutButton = new medHomepageButton ( userGraphicsView );
+   medHomepageButton * aboutButton = new medHomepageButton ( this );
     aboutButton->setText ( "About" );
     aboutButton->setMinimumHeight ( 30 );
     aboutButton->setMaximumWidth ( 150 );
@@ -106,7 +91,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( aboutButton,SIGNAL ( clicked() ),this, SLOT ( onShowAbout() ) );
 
-    medHomepageButton * settingsButton = new medHomepageButton ( userGraphicsView );
+    medHomepageButton * settingsButton = new medHomepageButton ( this );
     settingsButton->setText ( "Settings" );
     settingsButton->setMinimumHeight ( 30 );
     settingsButton->setMaximumWidth ( 150 );
@@ -120,12 +105,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 1, aboutButton );
     userButtonsLayout->insertWidget ( 2, helpButton );
 
-    d->userButtonsWidget->setLayout ( userButtonsLayout );
-    d->userButtonsProxyWidget = d->userButtonsScene->addWidget ( d->userButtonsWidget );
-    d->userButtonsProxyWidget->setPos ( d->userButtonsScene->width() - 100, 0 );
+    d->userWidget->setLayout ( userButtonsLayout ); 
 
     //Special widget : image, text, etc. QtWebkit ?
-    QVBoxLayout * infoLayout = new QVBoxLayout ( this );
+    QVBoxLayout * infoLayout = new QVBoxLayout;
     QLabel * medinriaLabel = new QLabel ( this );
     medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
     QLabel * textLabel = new QLabel;
@@ -144,26 +127,32 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     infoLayout->insertWidget ( 1, textEdit );
 
     d->infoWidget->setLayout ( infoLayout );
-    d->infoProxyWidget = d->infoScene->addWidget ( d->infoWidget );
+
+    //Set the position of the widgets
+    d->navigationWidget->setProperty( "pos", QPoint ( 100 ,  this->height() / 3  ) );
+    d->userWidget->setProperty( "pos", QPoint ( this->width() - 350 ,  this->height() - 100 ) );
+    d->infoWidget->setProperty( "pos", QPoint ( this->width() / 2 ,  this->height() / 3 ) );
 
     d->animation = new QParallelAnimationGroup ( this );
-    d->configurationAnimation = new QPropertyAnimation ( d->configurationsButtonsWidget, "pos" );
-    d->configurationAnimation->setDuration ( 750 );
-    d->configurationAnimation->setEasingCurve ( QEasingCurve::OutCubic );
+    d->navigationAnimation = new QPropertyAnimation ( d->navigationWidget, "pos" );
+    d->navigationAnimation->setDuration ( 750 );
+    d->navigationAnimation->setEasingCurve ( QEasingCurve::OutCubic );
+    d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 3  ));
+    d->navigationAnimation->setEndValue ( QPoint ( 100 ,  this->height() / 3  ) );
 
-    d->userAnimation = new QPropertyAnimation ( d->userButtonsWidget, "pos" );
+    d->userAnimation = new QPropertyAnimation ( d->userWidget, "pos" );
     d->userAnimation->setDuration ( 750 );
     d->userAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->userAnimation->setStartValue ( QPoint ( ( d->userButtonsScene->width() / 2 ) + 250, 0 ) );
-    d->userAnimation->setEndValue ( QPoint ( ( d->userButtonsScene->width() / 2 ) ,  0 ) );
+    d->userAnimation->setStartValue ( QPoint ( this->width() + 250,  this->height() - 100 ));
+    d->userAnimation->setEndValue ( QPoint ( this->width() * 0.8 ,  this->height() - 100 ) );
 
     d->infoAnimation = new QPropertyAnimation ( d->infoWidget, "pos" );
     d->infoAnimation->setDuration ( 900 );
     d->infoAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->infoAnimation->setStartValue ( QPoint ( ( d->infoScene->width() / 2 ) + 1000 , 250 ) );
-    d->infoAnimation->setEndValue ( QPoint ( ( d->infoScene->width() / 2 ) + 300 ,  250 ) );
+    d->infoAnimation->setStartValue ( QPoint (  this->width() + 100 , this->height() / 3 ) );
+    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 3 ) );
 
-    d->animation->addAnimation ( d->configurationAnimation );
+    d->animation->addAnimation ( d->navigationAnimation );
     d->animation->addAnimation ( d->userAnimation );
     d->animation->addAnimation ( d->infoAnimation );
 }
@@ -175,15 +164,30 @@ medHomepageArea::~medHomepageArea()
     d = NULL;
 }
 
+void medHomepageArea::resizeEvent( QResizeEvent * event)
+{
+    d->navigationWidget->setProperty( "pos", QPoint ( 100 ,  this->height() / 3  ) );
+    d->userWidget->setProperty( "pos", QPoint ( this->width() - 350 ,  this->height() - 100 ) );
+    d->infoWidget->setProperty( "pos", QPoint ( this->width() / 2 ,  this->height() / 3 ) );
+    
+    d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 3  ));
+    d->navigationAnimation->setEndValue ( QPoint ( 100 ,  this->height() / 3  ) );
+    
+    d->userAnimation->setStartValue ( QPoint ( this->width() + 50,  this->height() - 100 ));
+    d->userAnimation->setEndValue ( QPoint ( this->width() - 350 ,  this->height() - 100 ));
+
+    d->infoAnimation->setStartValue ( QPoint (  this->width() , this->height() / 3 ));
+    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 3 ));
+}
+
 void medHomepageArea::initPage ( void )
 {
     QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
-    QVBoxLayout * configurationButtonsLayout = new QVBoxLayout ( this );
+    QVBoxLayout * configurationButtonsLayout = new QVBoxLayout;
     configurationButtonsLayout->setSpacing(10);
     QLabel * configurationLabel = new QLabel ( "Available workspaces:" );
     configurationButtonsLayout->addWidget ( configurationLabel );
 
-// //     QPushButton * buttonBrowser = new QPushButton ( this );
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
     browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
@@ -197,7 +201,6 @@ void medHomepageArea::initPage ( void )
 
     for ( int i = 0; i< configList.size(); i++ )
     {
-//         QPushButton * button = new QPushButton ( this );
         medHomepageButton * button = new medHomepageButton ( this );
         button->setText ( configList.at ( i ) );
         button->setFocusPolicy ( Qt::NoFocus );
@@ -208,12 +211,10 @@ void medHomepageArea::initPage ( void )
         configurationButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowConfiguration ( QString ) ) );
     }
-    d->configurationsButtonsWidget->setLayout ( configurationButtonsLayout );
-    d->configurationsButtonsProxyWidget = d->configurationsButtonsScene->addWidget ( d->configurationsButtonsWidget );
-
-    d->configurationAnimation->setStartValue ( QPoint ( ( d->configurationsButtonsScene->width() / 2 ) - 250, 250 ) );
-    d->configurationAnimation->setEndValue ( QPoint ( ( d->configurationsButtonsScene->width() / 2 ) + 100 ,  250 ) );
-
+    configurationButtonsLayout->addStretch();
+    d->navigationWidget->setLayout ( configurationButtonsLayout );
+    d->navigationWidget->setProperty( "pos", QPoint( 100,  100));
+    
     //Setup the startup checkbox
     if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )
         showOnStartupCheckBox->setCheckState ( Qt::Unchecked );
