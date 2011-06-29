@@ -81,7 +81,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   dtkItkLogForwarder
   dtkVtkLogForwarder
-  medData
+  medCore
   vtkDataManagement
   QVTK
   vtkCommon

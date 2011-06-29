@@ -93,7 +93,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
   dtkCore
-  medData
+  medCore
   ${ITK_LIBRARIES})
 
 # Group common files together in Visual Studio.
