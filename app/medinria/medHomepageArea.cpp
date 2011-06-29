@@ -47,7 +47,7 @@ public:
     QPropertyAnimation * infoAnimation;
 
     QWidget * aboutWidget;
-//     QTextEdit * aboutAuthorTextEdit;
+    QTabWidget * aboutTabWidget;
 
     QParallelAnimationGroup * animation;
 
@@ -114,7 +114,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     d->userWidget->setLayout ( userButtonsLayout );
 
-    //Special widget : medinria logo, medinria description, etc. QtWebkit ?
+    // Special widget : medinria logo, medinria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout;
     QLabel * medinriaLabel = new QLabel ( this );
     medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
@@ -138,8 +138,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     //About widget
     QVBoxLayout * aboutLayout = new QVBoxLayout;
-    QTabWidget * aboutTabWidget = new QTabWidget();
-    aboutTabWidget->setStyleSheet ( "QTabWidget {\
+    d->aboutTabWidget = new QTabWidget();
+    d->aboutTabWidget->setStyleSheet ( "QTabWidget {\
                                         border-image: url(:/pixmaps/toolbox-body.png) 0 16 16 16 repeat-y;\
                                         border-left-width: 16px;\
                                         border-right-width: 16px;\
@@ -192,6 +192,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                               medINRIA is the medical imaging platform developped at INRIA<br/><br/>\
                               <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
+//     aboutTextEdit->setMaximumHeight ( 300 );
 
     QTextEdit * aboutAuthorTextEdit = new QTextEdit;
     aboutAuthorTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
@@ -211,6 +212,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                        Nicolas.Toussaint@inria.fr <br> \
                        Julien.Wintz@inria.fr <br> " );
     aboutAuthorTextEdit->setFocusPolicy ( Qt::NoFocus );
+//     aboutAuthorTextEdit->setMaximumHeight ( 300 );
 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit;
     aboutLicenseTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
@@ -220,6 +222,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     license.close();
     aboutLicenseTextEdit->setText ( licenseContent );
     aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
+//     aboutLicenseTextEdit->setMaximumHeight ( 300 );
 
     QHBoxLayout * aboutButtonLayout = new QHBoxLayout;
     QPushButton * hideAboutButton = new QPushButton ( this );
@@ -231,13 +234,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButtonLayout->addWidget ( hideAboutButton );
     aboutButtonLayout->addStretch();
 
-    aboutTabWidget->addTab ( aboutTextEdit, "About" );
-    aboutTabWidget->addTab ( aboutAuthorTextEdit, "Authors" );
-    aboutTabWidget->addTab ( aboutLicenseTextEdit, "License" );
+    d->aboutTabWidget->addTab ( aboutTextEdit, "About" );
+    d->aboutTabWidget->addTab ( aboutAuthorTextEdit, "Authors" );
+    d->aboutTabWidget->addTab ( aboutLicenseTextEdit, "License" );
 
     aboutLayout->addWidget ( medinriaLabel2 );
-//     aboutLayout->addWidget(d->aboutAuthorTextEdit);
-    aboutLayout->addWidget ( aboutTabWidget );
+    aboutLayout->addWidget ( d->aboutTabWidget );
     aboutLayout->addLayout ( aboutButtonLayout );
     aboutLayout->addStretch();
     d->aboutWidget->setLayout ( aboutLayout );
@@ -245,8 +247,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
-    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 4 ) );
-    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 4 ) );
+    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
     d->animation = new QParallelAnimationGroup ( this );
     d->navigationAnimation = new QPropertyAnimation ( d->navigationWidget, "pos" );
@@ -264,8 +266,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->infoAnimation = new QPropertyAnimation ( d->infoWidget, "pos" );
     d->infoAnimation->setDuration ( 900 );
     d->infoAnimation->setEasingCurve ( QEasingCurve::OutCubic );
-    d->infoAnimation->setStartValue ( QPoint ( this->width() + 100 , this->height() / 4 ) );
-    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 4 ) );
+    d->infoAnimation->setStartValue ( QPoint ( this->width() + 100 , this->height() / 5 ) );
+    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
     d->animation->addAnimation ( d->navigationAnimation );
     d->animation->addAnimation ( d->userAnimation );
@@ -283,10 +285,10 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 {
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
-    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 4 ) );
-    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 4 ) );
+    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
-    d->aboutWidget->setMaximumHeight ( this->height() / 3 );
+    d->aboutTabWidget->setMaximumHeight ( this->height() / 3 );
 
     d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );
     d->navigationAnimation->setEndValue ( QPoint ( 100 ,  this->height() / 4 ) );
@@ -294,8 +296,8 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     d->userAnimation->setStartValue ( QPoint ( this->width() + 50,  this->height() - 90 ) );
     d->userAnimation->setEndValue ( QPoint ( this->width() - 350 ,  this->height() - 90 ) );
 
-    d->infoAnimation->setStartValue ( QPoint ( this->width() , this->height() / 4 ) );
-    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 4 ) );
+    d->infoAnimation->setStartValue ( QPoint ( this->width() , this->height() / 5 ) );
+    d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 }
 
 void medHomepageArea::initPage ( void )
