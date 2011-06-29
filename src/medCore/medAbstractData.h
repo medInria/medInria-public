@@ -3,14 +3,14 @@
 
 #include <dtkCore/dtkAbstractData.h>
 
-#include "medDataExport.h"
+#include "medCoreExport.h"
 
 class medAbstractDataPrivate;
 
 /**
  * Extending medAbstractData class to hold more specific information
  */
-class MEDDATA_EXPORT medAbstractData : public dtkAbstractData
+class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 {
     Q_OBJECT
 

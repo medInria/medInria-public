@@ -15,11 +15,11 @@
 #ifndef MEDABSTRACTDATATYPEDIMAGE4D_H
 #define MEDABSTRACTDATATYPEDIMAGE4D_H
 
-#include "medDataExport.h"
-#include <medData/medAbstractDataImage4D.h>
+#include "medCoreExport.h"
+#include <medCore/medAbstractDataImage4D.h>
 
 template <typename T>
-class MEDDATA_EXPORT medAbstractDataTypedImage4D : public medAbstractDataImage4D {
+class MEDCORE_EXPORT medAbstractDataTypedImage4D : public medAbstractDataImage4D {
 public:
 
     medAbstractDataTypedImage4D(void);

@@ -1,7 +1,7 @@
 #ifndef medAbstractDataCollection_h__
 #define medAbstractDataCollection_h__
 
-#include "medDataExport.h"
+#include "medCoreExport.h"
 #include "medAbstractData.h"
 
 class medAbstractData;
@@ -12,7 +12,7 @@ class medAbstractDataCollectionPrivate;
  * Collection type of medAbstractData
  * using qVector internally
  */
-class MEDDATA_EXPORT medAbstractDataCollection : public medAbstractData
+class MEDCORE_EXPORT medAbstractDataCollection : public medAbstractData
 {
 
 public:

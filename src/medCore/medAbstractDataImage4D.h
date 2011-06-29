@@ -20,8 +20,8 @@
 #ifndef MEDABSTRACTDATAIMAGE4D_H
 #define MEDABSTRACTDATAIMAGE4D_H
 
-#include "medDataExport.h"
-#include <medData/medAbstractDataImage.h>
+#include "medCoreExport.h"
+#include <medCore/medAbstractDataImage.h>
 
 class medAbstractDataImage4DPrivate;
 

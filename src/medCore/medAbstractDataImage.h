@@ -21,10 +21,10 @@
 #define MEDABSTRACTIMAGEDATA_H
 
 #include <typeinfo>
-#include "medDataExport.h"
-#include <medData/medAbstractData.h>
+#include "medCoreExport.h"
+#include <medCore/medAbstractData.h>
 
-class MEDDATA_EXPORT medAbstractDataImage: public medAbstractData
+class MEDCORE_EXPORT medAbstractDataImage: public medAbstractData
 {
 public:
     typedef std::type_info PixId;

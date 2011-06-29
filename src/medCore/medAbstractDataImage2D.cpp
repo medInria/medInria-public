@@ -17,7 +17,7 @@
  * 
  */
 
-#include <medData/medAbstractDataImage2D.h>
+#include <medCore/medAbstractDataImage2D.h>
 
 class medAbstractDataImage2DPrivate
 {

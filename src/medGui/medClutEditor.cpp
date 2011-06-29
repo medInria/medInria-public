@@ -18,7 +18,7 @@
  */
 
 #include <dtkCore/dtkAbstractData.h>
-#include <medData/medAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <medCore/medAbstractView.h>
 #include <medCore/medStorage.h>

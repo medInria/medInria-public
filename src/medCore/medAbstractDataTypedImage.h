@@ -15,8 +15,8 @@
 #ifndef MEDABSTRACTDATATYPEDIMAGE2D_H
 #define MEDABSTRACTDATATYPEDIMAGE2D_H
 
-#include "medDataExport.h"
-#include <medData/medAbstractDataImage.h>
+#include "medCoreExport.h"
+#include <medCore/medAbstractDataImage.h>
 
 template <unsigned DIM,typename T>
 class medAbstractDataTypedImage: public medAbstractDataImage {

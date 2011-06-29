@@ -30,7 +30,7 @@
 #include <medCore/medMessageController.h>
 #include <medCore/medAbstractView.h>
 
-#include <medData/medAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 
 #include <medGui/medToolBoxTab.h>
 #include <medGui/medToolBoxFactory.h>

@@ -20,14 +20,14 @@
 #ifndef MEDABSTRACTMESHDATA_H
 #define MEDABSTRACTMESHDATA_H
 
-#include "medDataExport.h"
-#include <medData/medAbstractData.h>
+#include "medCoreExport.h"
+#include <medCore/medAbstractData.h>
 
 class medAbstractDataVertex;
 class medAbstractDataEdge;
 class medAbstractDataMeshPrivate;
 
-class MEDDATA_EXPORT medAbstractDataMesh : public medAbstractData
+class MEDCORE_EXPORT medAbstractDataMesh : public medAbstractData
 {
     Q_OBJECT
 

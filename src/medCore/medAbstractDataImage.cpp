@@ -17,7 +17,7 @@
  * 
  */
 
-#include <medData/medAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 
 #include <QtGui>
 

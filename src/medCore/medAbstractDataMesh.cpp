@@ -17,7 +17,7 @@
  * 
  */
 
-#include <medData/medAbstractDataMesh.h>
+#include <medCore/medAbstractDataMesh.h>
 #include <dtkCore/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////

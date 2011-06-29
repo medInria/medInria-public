@@ -21,7 +21,7 @@
 #include "medDatabaseWriter.h"
 #include <medCore/medStorage.h>
 #include <medCore/medDataIndex.h>
-#include <medData/medAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>

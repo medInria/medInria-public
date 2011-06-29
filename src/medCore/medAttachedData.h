@@ -3,14 +3,14 @@
 #define medAttachedData_h__
 
 #include "medAbstractData.h"
-#include "medDataExport.h"
+#include "medCoreExport.h"
 
 class medAttachedDataPrivate;
 
 /**
  * Class to store attachments to datasets
  */
-class MEDDATA_EXPORT medAttachedData : public dtkAbstractData
+class MEDCORE_EXPORT medAttachedData : public dtkAbstractData
 {
     Q_OBJECT
 
