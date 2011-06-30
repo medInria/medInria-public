@@ -44,6 +44,8 @@ public slots:
     void switchToViewerArea(void);
     void switchToHomepageArea(void);
 
+    void onShowQuickAccess(void);
+    void onHideQuickAccess(void);
     void onConfigurationTriggered(QAction *action);
     void onQuit(void);
     void onNoQuit(void);

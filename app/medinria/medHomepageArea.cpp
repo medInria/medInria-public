@@ -28,7 +28,6 @@
 
 #include "medHomepageArea.h"
 
-#include <medViewerArea.h>
 #include <medHomepageButton.h>
 #include <medGui/medViewerConfiguration.h>
 #include <medGui/medViewerConfigurationFactory.h>
@@ -38,7 +37,7 @@ class medHomepageAreaPrivate
 {
 public:
     QCheckBox * showOnStartupCheckBox;
-    
+
     QWidget * navigationWidget;
     QPropertyAnimation * navigationAnimation;
 
@@ -52,14 +51,10 @@ public:
     QTabWidget * aboutTabWidget;
 
     QParallelAnimationGroup * animation;
-
-    medViewerArea * viewerArea;
 };
 
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
 {
-    d->viewerArea = NULL;
-
     d->navigationWidget = new QWidget ( this );
     d->navigationWidget->setMinimumWidth ( 250 );
 
@@ -215,8 +210,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit;
     aboutLicenseTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
-    QFile license(":LICENSE.txt");
-    license.open(QIODevice::ReadOnly | QIODevice::Text);
+    QFile license ( ":LICENSE.txt" );
+    license.open ( QIODevice::ReadOnly | QIODevice::Text );
     QString licenseContent = license.readAll();
     license.close();
     aboutLicenseTextEdit->setText ( licenseContent );
@@ -272,15 +267,14 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->animation->addAnimation ( d->infoAnimation );
 
     //Setup the startup checkbox
-    d->showOnStartupCheckBox = new QCheckBox(this);
-    d->showOnStartupCheckBox->setText("Start medINRIA on homepage ?");
-    d->showOnStartupCheckBox->setFocusPolicy(Qt::NoFocus);
+    d->showOnStartupCheckBox = new QCheckBox ( this );
+    d->showOnStartupCheckBox->setCheckState(Qt::Checked);
+    d->showOnStartupCheckBox->setText ( "Start medINRIA on homepage ?" );
+    d->showOnStartupCheckBox->setFocusPolicy ( Qt::NoFocus );
     d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
     if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )
         d->showOnStartupCheckBox->setCheckState ( Qt::Unchecked );
     QObject::connect ( d->showOnStartupCheckBox, SIGNAL ( stateChanged ( int ) ), this, SLOT ( onStartWithHomepage ( int ) ) );
-
-    
 }
 
 medHomepageArea::~medHomepageArea()
@@ -351,12 +345,6 @@ QParallelAnimationGroup* medHomepageArea::getAnimation ( void )
 {
     return d->animation;
 }
-
-void medHomepageArea::setViewerArea ( medViewerArea* viewer )
-{
-    d->viewerArea = viewer;
-}
-
 
 void medHomepageArea::onShowBrowser ( void )
 {

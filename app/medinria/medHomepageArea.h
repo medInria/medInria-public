@@ -32,7 +32,6 @@
 #include <QtGui>
 
 class medHomepageAreaPrivate;
-class medViewerArea;
 
 class medHomepageArea : public QWidget
 {
@@ -44,8 +43,6 @@ public:
     void initPage(void);
 
     QParallelAnimationGroup * getAnimation(void);
-
-    void setViewerArea(medViewerArea * viewer);
 
     void resizeEvent( QResizeEvent * event );
     
