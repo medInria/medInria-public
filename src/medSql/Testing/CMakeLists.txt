@@ -5,6 +5,7 @@
 # Add tests' source files to this variable
 SET(${PROJECT_NAME}Tests
   testWithCTest.cxx
+  medDatabaseControllerImplTest.cxx
   )
 
 # This command creates a driver that will run all the tests
@@ -18,6 +19,7 @@ ADD_EXECUTABLE(${PROJECT_NAME}CxxTests
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}CxxTests
   ${QT_LIBRARIES}
+  medSql
   )
 
 SET_TARGET_PROPERTIES(${PROJECT_NAME}CxxTests PROPERTIES 
@@ -30,6 +32,7 @@ SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 # the name of the test is the first parameter and the third parameter is the string
 # that the driver will use to call the test, hence has to be the exact name of the test function
 ADD_TEST(testWithCTest ${CXX_TEST_PATH}/${PROJECT_NAME}CxxTests testWithCTest)
+ADD_TEST(medDatabaseControllerImplTest ${CXX_TEST_PATH}/${PROJECT_NAME}CxxTests medDatabaseControllerImplTest)
 
 
 ## #################################################################
