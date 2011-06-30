@@ -272,7 +272,8 @@ void medDatabaseImporter::import(void)
 
 void medDatabaseImporter::index(void)
 {
-
+    // TODO...
+    qDebug() << "TODO.....";
 }
 
 //-----------------------------------------------------------------------------------------------------------

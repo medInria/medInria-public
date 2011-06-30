@@ -1,0 +1,25 @@
+SET(${PROJECT_NAME}Tests
+  medDatabaseControllerImplTest.cxx
+  )
+
+CREATE_TEST_SOURCELIST(Tests ${PROJECT_NAME}TestDriver.cxx
+  ${${PROJECT_NAME}Tests}
+  )
+
+ADD_EXECUTABLE(${PROJECT_NAME}CxxTests 
+  ${Tests}
+  )
+
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}CxxTests
+  dtkCore
+  ${QT_LIBRARIES}
+  )
+
+SET_TARGET_PROPERTIES(${PROJECT_NAME}CxxTests PROPERTIES 
+  RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
+  )
+
+SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
+
+ADD_TEST(medDatabaseControllerImplTest ${CXX_TEST_PATH}/${PROJECT_NAME}CxxTests medDatabaseControllerImplTest)
+

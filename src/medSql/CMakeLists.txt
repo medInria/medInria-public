@@ -116,6 +116,10 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore)
 
+if (BUILD_TESTING)
+  add_subdirectory(Testing)
+endif (BUILD_TESTING)
+
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
