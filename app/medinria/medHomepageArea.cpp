@@ -37,6 +37,8 @@
 class medHomepageAreaPrivate
 {
 public:
+    QCheckBox * showOnStartupCheckBox;
+    
     QWidget * navigationWidget;
     QPropertyAnimation * navigationAnimation;
 
@@ -57,7 +59,6 @@ public:
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
 {
     d->viewerArea = NULL;
-    setupUi ( this );
 
     d->navigationWidget = new QWidget ( this );
     d->navigationWidget->setMinimumWidth ( 250 );
@@ -192,13 +193,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                               medINRIA is the medical imaging platform developped at INRIA<br/><br/>\
                               <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
-//     aboutTextEdit->setMaximumHeight ( 300 );
 
     QTextEdit * aboutAuthorTextEdit = new QTextEdit;
     aboutAuthorTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
     aboutAuthorTextEdit->setHtml ( "<b>Authors :</b> <br/> \
                        Pierre.Fillard@inria.fr <br> \
-                       Olivier.Commowick@inria.fr \
+                       Olivier.Commowick@inria.fr <br>\
                        Olivier.Clatz@inria.fr <br> \
                        Alexandre.Abadie@inria.fr <br> \
                        Benoit.Bleuze@inria.fr <br> \
@@ -212,7 +212,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                        Nicolas.Toussaint@inria.fr <br> \
                        Julien.Wintz@inria.fr <br> " );
     aboutAuthorTextEdit->setFocusPolicy ( Qt::NoFocus );
-//     aboutAuthorTextEdit->setMaximumHeight ( 300 );
 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit;
     aboutLicenseTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
@@ -222,7 +221,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     license.close();
     aboutLicenseTextEdit->setText ( licenseContent );
     aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
-//     aboutLicenseTextEdit->setMaximumHeight ( 300 );
 
     QHBoxLayout * aboutButtonLayout = new QHBoxLayout;
     QPushButton * hideAboutButton = new QPushButton ( this );
@@ -272,6 +270,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->animation->addAnimation ( d->navigationAnimation );
     d->animation->addAnimation ( d->userAnimation );
     d->animation->addAnimation ( d->infoAnimation );
+
+    //Setup the startup checkbox
+    d->showOnStartupCheckBox = new QCheckBox(this);
+    d->showOnStartupCheckBox->setText("Start medINRIA on homepage ?");
+    d->showOnStartupCheckBox->setFocusPolicy(Qt::NoFocus);
+    d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
+    if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )
+        d->showOnStartupCheckBox->setCheckState ( Qt::Unchecked );
+    QObject::connect ( d->showOnStartupCheckBox, SIGNAL ( stateChanged ( int ) ), this, SLOT ( onStartWithHomepage ( int ) ) );
+
+    
 }
 
 medHomepageArea::~medHomepageArea()
@@ -287,6 +296,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
     d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
     d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+    d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
 
     d->aboutTabWidget->setMaximumHeight ( this->height() / 3 );
 
@@ -335,11 +345,6 @@ void medHomepageArea::initPage ( void )
     d->navigationWidget->setLayout ( configurationButtonsLayout );
     d->navigationWidget->setProperty ( "pos", QPoint ( 100,  100 ) );
     d->navigationWidget->setMinimumHeight ( 55 * ( 1 + configList.size() ) );
-
-    //Setup the startup checkbox
-    if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )
-        showOnStartupCheckBox->setCheckState ( Qt::Unchecked );
-    QObject::connect ( showOnStartupCheckBox, SIGNAL ( stateChanged ( int ) ), this, SLOT ( onStartWithHomepage ( int ) ) );
 }
 
 QParallelAnimationGroup* medHomepageArea::getAnimation ( void )

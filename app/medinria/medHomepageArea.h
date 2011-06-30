@@ -30,12 +30,11 @@
 #define MEDHOMEPAGEAREA_H
 
 #include <QtGui>
-#include "ui_medhomepagearea.h"
 
 class medHomepageAreaPrivate;
 class medViewerArea;
 
-class medHomepageArea : public QWidget, public Ui::medHomepageArea
+class medHomepageArea : public QWidget
 {
 Q_OBJECT
 public:
