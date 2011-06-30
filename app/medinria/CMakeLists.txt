@@ -67,8 +67,6 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseDataSource.cpp
   )
 
-set(${PROJECT_NAME}_UIS medhomepagearea.ui)
-
 set(${PROJECT_NAME}_RESOURCES medinria.qrc)
 
 # Include header files for Visual Studio.
@@ -82,7 +80,6 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-qt4_wrap_ui( ${PROJECT_NAME}_UI_HDRS ${${PROJECT_NAME}_UIS})
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
@@ -101,7 +98,6 @@ endif()
 include_directories(${PROJECT_NAME}_BINARY_DIR)
 
 add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM}
-  ${${PROJECT_NAME}_UI_HDRS}
   ${${PROJECT_NAME}_SOURCES_WRAP}
   ${${PROJECT_NAME}_SOURCES_QRC}
   ${${PROJECT_NAME}_SOURCES_MOC}
