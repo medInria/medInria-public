@@ -102,7 +102,8 @@ public:
 
     QHBoxLayout * statusBarLayout;
     
-    QPointer<medMessageControllerMessageQuestion> quitMessage;
+    QWidget * quitMessage;
+    medButton *quitButton;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -234,8 +235,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->shifter->addAction(d->shiftToViewerAreaAction); //->setMenu(menu);
     
 
-    medButton *quitButton = new medButton(this,":/icons/quit.png", tr("Quit Application"));
-    connect(quitButton, SIGNAL(triggered()), this, SLOT(onQuit()));
+    d->quitButton = new medButton(this,":/icons/quit.png", tr("Quit Application"));
+    connect(d->quitButton, SIGNAL(triggered()), this, SLOT(onQuit()));
     
     medButton *settingsButton = new medButton(this, ":/icons/settings.png", tr("Edit Application Settings"));
     connect(settingsButton, SIGNAL(triggered()), this, SLOT(onEditSettings()));
@@ -257,33 +258,63 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     QPushButton * homeButton = new QPushButton(this);
     homeButton->setIcon(QIcon(":icons/home.png"));
+    homeButton->setStyleSheet("border: 1px solid #a7b6d3;");
     homeButton->setFlat(true);
     homeButton->setFocusPolicy(Qt::NoFocus);
-    homeButton->setMaximumWidth(31);
     QObject::connect(homeButton, SIGNAL(clicked()), this, SLOT(switchToHomepageArea()));
-
-    d->statusBarLayout->insertWidget(0, homeButton);
-    d->statusBarLayout->insertStretch(1,1);
-
-    quitButton->setMaximumWidth(31);
-    settingsButton->setMaximumWidth(31);
     
-    d->statusBarLayout->insertWidget(3,configurationSwitcher);
-    d->statusBarLayout->insertWidget(4,d->shifter);
-    d->statusBarLayout->insertWidget(5,settingsButton);
-    d->statusBarLayout->insertWidget(6,quitButton);
+    d->statusBarLayout->addWidget(homeButton);
+    d->statusBarLayout->addStretch();
+
+    d->quitButton->setMaximumWidth(31);
+    settingsButton->setMaximumWidth(31);
+
+    configurationSwitcher->hide();
+    d->shifter->hide();
+    settingsButton->hide();
+    
+//     d->statusBarLayout->insertWidget(3,configurationSwitcher);
+//     d->statusBarLayout->insertWidget(4,d->shifter);
+//     d->statusBarLayout->insertWidget(5,settingsButton);
+
+    d->quitMessage = new QWidget(this);
+    QHBoxLayout * quitLayout = new QHBoxLayout(this);
+    QLabel *icon = new QLabel(this);
+    icon->setMinimumHeight(30);
+    icon->setPixmap(QPixmap(":/icons/information.png"));
+
+    QLabel *info = new QLabel(this);
+    info->setMinimumHeight(30);
+    info->setText("Are you sure you want to quit ?");
+
+    QPushButton *ok_button = new QPushButton("Yes", this);
+    ok_button->setStyleSheet("border: 1px solid #a7b6d3;");
+    ok_button->setFocusPolicy(Qt::NoFocus);
+    QObject::connect(ok_button, SIGNAL(clicked()), this, SLOT(close()));
+    QPushButton *no_button = new QPushButton("No", this);
+    no_button->setStyleSheet("border: 1px solid #a7b6d3;");
+    no_button->setFocusPolicy(Qt::NoFocus);
+    QObject::connect(no_button, SIGNAL(clicked()), this, SLOT(onNoQuit()));
+    
+    quitLayout->setContentsMargins(5, 0, 5, 0);
+    quitLayout->setSpacing(5);
+    quitLayout->addWidget(icon);
+    quitLayout->addWidget(info);
+    quitLayout->addWidget(ok_button);
+    quitLayout->addWidget(no_button);
+
+    d->quitMessage->setLayout(quitLayout);
+    
+    d->statusBarLayout->addWidget(d->quitMessage);
+    d->statusBarLayout->addWidget(d->quitButton);
+
+    d->quitMessage->hide();
 
     QWidget * statusBarWidget = new QWidget(this);
+    statusBarWidget->setContentsMargins(5, 0, 5, 0);
     statusBarWidget->setLayout(d->statusBarLayout);
 
     this->statusBar()->addPermanentWidget(statusBarWidget, 1);
-    
-//     this->statusBar()->addPermanentWidget(button,1);
-//     
-//     this->statusBar()->addPermanentWidget(configurationSwitcher);
-//     this->statusBar()->addPermanentWidget(d->shifter);
-//     this->statusBar()->addPermanentWidget(settingsButton);
-//     this->statusBar()->addPermanentWidget(quitButton);
 
     this->readSettings();
     this->setCentralWidget(d->stack);
@@ -425,33 +456,17 @@ void medMainWindow::onConfigurationTriggered(QAction *action)
    d->viewerArea->setupConfiguration(action->text());
 }
 
+void medMainWindow::onNoQuit ( void )
+{
+    d->quitMessage->hide();
+    d->quitButton->show();
+}
+
+
 void medMainWindow::onQuit(void)
 {
-
-    // remove old quit message
-    if(d->quitMessage != 0 )
-    {
-        WId id = d->quitMessage->effectiveWinId();
-
-        if (this->statusBar()->find(id))
-        {
-//             this->statusBar()->removeWidget(d->quitMessage);
-            d->statusBarLayout->removeWidget(d->quitMessage);
-            disconnect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
-            disconnect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
-            delete d->quitMessage;
-        }
-
-    }
-
-    d->quitMessage = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
-
-    connect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
-    connect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));
-
-//     this->statusBar()->addWidget(d->quitMessage);
-    d->quitMessage->setMaximumWidth(50);
-    d->statusBarLayout->insertWidget(7,d->quitMessage);
+    d->quitMessage->show();
+    d->quitButton->hide();
 }
 
 void medMainWindow::onEditSettings()

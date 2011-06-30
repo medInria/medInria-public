@@ -46,6 +46,7 @@ public slots:
 
     void onConfigurationTriggered(QAction *action);
     void onQuit(void);
+    void onNoQuit(void);
     void onEditSettings(void);
     
     void open(const medDataIndex& index);
