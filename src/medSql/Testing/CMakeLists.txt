@@ -1,4 +1,26 @@
 ## #################################################################
+## Dependencies
+## #################################################################
+
+# we need path to medinria plugins
+FIND_PATH(MEDINRIA_PLUGINS_PATH libitkDataImageReaderPlugin.so
+  DOC "The directory where medinria plugins are. It is required by the Testing tree."
+  )
+
+if(NOT MEDINRIA_PLUGINS_PATH)
+    message(SEND_ERROR "Please set MEDINRIA_PLUGINS_PATH to the directory where MedINRIA plugins are located. It is required by the Testing tree.")
+endif(NOT MEDINRIA_PLUGINS_PATH)
+
+# and the directory with the test data
+FIND_PATH(MEDINRIA_TEST_DATA_ROOT MedINRIA_test_data.txt
+  DOC "The directory where medinria test data is located. It is required by the Testing tree."
+  )
+
+if(NOT MEDINRIA_TEST_DATA_ROOT)
+    message(SEND_ERROR "Please set MEDINRIA_TEST_DATA_ROOT to the directory where MedINRIA test data is located. It is required by the Testing tree.")
+endif(NOT MEDINRIA_TEST_DATA_ROOT)
+
+## #################################################################
 ## Setup CTest test source file
 ## #################################################################
 
@@ -32,7 +54,7 @@ SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 # the name of the test is the first parameter and the third parameter is the string
 # that the driver will use to call the test, hence has to be the exact name of the test function
 ADD_TEST(testWithCTest ${CXX_TEST_PATH}/${PROJECT_NAME}CxxTests testWithCTest)
-ADD_TEST(medDatabaseControllerImplTest ${CXX_TEST_PATH}/${PROJECT_NAME}CxxTests medDatabaseControllerImplTest)
+ADD_TEST(medDatabaseControllerImplTest ${CXX_TEST_PATH}/${PROJECT_NAME}CxxTests medDatabaseControllerImplTest ${MEDINRIA_PLUGINS_PATH} ${MEDINRIA_TEST_DATA_ROOT})
 
 
 ## #################################################################
