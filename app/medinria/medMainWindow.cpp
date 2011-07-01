@@ -250,10 +250,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     homeButton->setFocusPolicy ( Qt::NoFocus );
     QObject::connect ( homeButton, SIGNAL ( clicked() ), this, SLOT ( switchToHomepageArea() ) );
 
-    d->statusBarLayout->addWidget ( homeButton );
-    d->statusBarLayout->addWidget ( quickAccessButton );
-    d->statusBarLayout->addStretch();
-
+    
     d->quitButton->setMaximumWidth ( 31 );
     settingsButton->setMaximumWidth ( 31 );
 
@@ -293,6 +290,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->quitMessage->setLayout ( quitLayout );
 
+    d->statusBarLayout->addWidget ( quickAccessButton );
+    d->statusBarLayout->addStretch();
+    d->statusBarLayout->addWidget ( homeButton );
+    d->statusBarLayout->addStretch();
     d->statusBarLayout->addWidget ( d->quitMessage );
     d->statusBarLayout->addWidget ( d->quitButton );
     d->quitMessage->hide();
