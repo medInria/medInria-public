@@ -17,6 +17,7 @@
  *
  */
 
+#include "medHomepageButton.h"
 #include "medBrowserArea.h"
 #include "medMainWindow.h"
 #include "medViewerArea.h"
@@ -213,15 +214,19 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     // Setting up status bar
     QToolButton * quickAccessButton = new QToolButton ( this );
     quickAccessButton->setFocusPolicy ( Qt::NoFocus );
-    quickAccessButton->setText ( "Quick Access" );
+    quickAccessButton->setText ( "Quick workspace access" );
     connect ( quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
 
     d->quickAccessWidget = new QWidget ( this );
-    d->quickAccessWidget->setMinimumSize ( 300,500 );
+    d->quickAccessWidget->setMinimumWidth(260);
     d->quickAccessWidget->setStyleSheet ( "background:white;" );
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
+    d->quickAccessWidget->setStyleSheet("border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;\
+                                         border-left-width: 0px;\
+                                         border-right-width: 16px;\
+                                         border-top-width: 16px;\
+                                         border-bottom-width: 0px;");
     d->quickAccessVisible = false;
-
     d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos" );
 
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
@@ -306,6 +311,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect ( d->homepageArea, SIGNAL ( showConfiguration ( QString ) ), d->viewerArea, SLOT ( setupConfiguration ( QString ) ) );
     QObject::connect ( d->homepageArea,SIGNAL ( showSettings() ), this, SLOT ( onEditSettings() ) );
 
+    this->updateQuickAccessMenu();
+    
     this->setCentralWidget ( d->stack );
 
     // Now use the Qt preferred method by setting the Application style instead.
@@ -379,6 +386,53 @@ void medMainWindow::writeSettings()
     }
 }
 
+void medMainWindow::updateQuickAccessMenu ( void )
+{
+    QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
+    QVBoxLayout * configurationButtonsLayout = new QVBoxLayout;
+    configurationButtonsLayout->setMargin(0);
+    configurationButtonsLayout->setSpacing ( 5 );
+    QLabel * configurationLabel = new QLabel ( "Switch to workspaces" );
+    configurationLabel->setMaximumWidth(300);
+    configurationButtonsLayout->addWidget ( configurationLabel );
+
+    medHomepageButton * browserButton = new medHomepageButton ( this );
+    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
+    browserButton->setText ( "Browser" );
+    browserButton->setMinimumHeight ( 40 );
+    browserButton->setMaximumWidth ( 250 );
+    browserButton->setMinimumWidth ( 250 );
+    browserButton->setFocusPolicy ( Qt::NoFocus );
+    configurationButtonsLayout->addWidget ( browserButton );
+    QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( switchToBrowserArea()) );
+
+    for ( int i = 0; i< configList.size(); i++ )
+    {
+        medHomepageButton * button = new medHomepageButton ( this );
+        button->setText ( configList.at ( i ) );
+        button->setFocusPolicy ( Qt::NoFocus );
+        button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+        button->setMinimumHeight ( 40 );
+        button->setMaximumWidth ( 250 );
+        button->setMinimumWidth ( 250 );;
+        configurationButtonsLayout->addWidget ( button );
+        QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowConfiguration ( QString ) ) );
+    }
+    configurationButtonsLayout->addStretch();
+    d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ) );
+    d->quickAccessWidget->setMinimumHeight ( 55 * ( 1 + configList.size() ) );
+    d->quickAccessWidget->setLayout(configurationButtonsLayout);
+}
+
+void medMainWindow::resizeEvent ( QResizeEvent* event )
+{
+    QWidget::resizeEvent ( event );
+    d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, this->height() - 30 ));
+    this->onHideQuickAccess();
+}
+
+
 void medMainWindow::setWallScreen ( bool full )
 {
     if ( full )
@@ -432,6 +486,13 @@ void medMainWindow::switchToViewerArea ( void )
     d->stack->setCurrentWidget ( d->viewerArea );
 }
 
+void medMainWindow::onShowConfiguration ( QString config )
+{
+    d->viewerArea->setupConfiguration(config);
+    this->switchToViewerArea();
+}
+
+
 void medMainWindow::onShowQuickAccess ( void )
 {
     if ( d->quickAccessVisible )
@@ -442,16 +503,18 @@ void medMainWindow::onShowQuickAccess ( void )
     d->quickAccessVisible = true;
     d->quickAccessAnimation->setDuration ( 100 );
     d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - 30 ) );
-    d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - 530 ) );
+    d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ) );
 
     d->quickAccessAnimation->start();
 }
 
 void medMainWindow::onHideQuickAccess ( void )
 {
+    if (!d->quickAccessVisible)
+        return;
     d->quickAccessVisible = false;
     d->quickAccessAnimation->setDuration ( 100 );
-    d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - 530 ) );
+    d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() -30 ));
     d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - 30 ) );
 
     d->quickAccessAnimation->start();

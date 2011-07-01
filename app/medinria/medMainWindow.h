@@ -36,6 +36,9 @@ public:
     void readSettings(void);
     void writeSettings();
 
+    void updateQuickAccessMenu(void);
+    void resizeEvent( QResizeEvent * event );
+
 public slots:
     void setWallScreen(bool full);
     void setFullScreen(bool full);
@@ -44,6 +47,7 @@ public slots:
     void switchToViewerArea(void);
     void switchToHomepageArea(void);
 
+    void onShowConfiguration(QString config);
     void onShowQuickAccess(void);
     void onHideQuickAccess(void);
     void onConfigurationTriggered(QAction *action);
