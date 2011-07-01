@@ -31,6 +31,32 @@
 
 #include <QtGui>
 
+class medHomepagePushButton : public QPushButton
+{
+    Q_OBJECT
+public:
+    medHomepagePushButton ( QWidget * parent = 0 );
+
+    public slots:
+    void onClick ( void );
+
+signals:
+    void clicked ( QString text );
+};
+
+class medQuickAccessPushButton : public QPushButton
+{
+    Q_OBJECT
+public:
+    medQuickAccessPushButton ( QWidget * parent = 0 );
+    
+public slots:
+    void onClick ( void );
+
+signals:
+    void clicked ( QString text );
+};
+
 class medHomepageButton : public QToolButton
 {
     Q_OBJECT
@@ -38,10 +64,10 @@ public:
     medHomepageButton ( QWidget * parent = 0 );
 
 public slots:
-    void onClick(void);
-    
+    void onClick ( void );
+
 signals:
-    void clicked(QString text);
+    void clicked ( QString text );
 
 };
 
