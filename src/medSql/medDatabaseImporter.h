@@ -86,7 +86,7 @@ private:
     * @param dtkData – a @dtkAbstractData object created from the original image
     * @param seriesInfo – a @QFileInfo object created with the aggregated image filename
     **/
-    void popupateDatabase(dtkAbstractData* dtkData, const QFileInfo* seriesInfo);
+    void popupateDatabaseAndGenerateThumbnails(dtkAbstractData* dtkData, const QFileInfo* seriesInfo);
 
     /**
     * Tries to find a @dtkAbstractDataReader able to read input file/s.

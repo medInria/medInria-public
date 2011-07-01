@@ -259,7 +259,7 @@ void medDatabaseImporter::import(void)
 
         // and finally we populate the database
         QFileInfo seriesInfo( aggregatedFileName );
-        this->popupateDatabase(imageDtkData, &seriesInfo);
+        this->popupateDatabaseAndGenerateThumbnails(imageDtkData, &seriesInfo);
 
         delete imageDtkData;
         imageDtkData = NULL;
@@ -442,7 +442,7 @@ bool medDatabaseImporter::checkIfExists( dtkAbstractData* dtkdata, const QFileIn
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medDatabaseImporter::popupateDatabase( dtkAbstractData* dtkdata, const QFileInfo* seriesInfo )
+void medDatabaseImporter::popupateDatabaseAndGenerateThumbnails( dtkAbstractData* dtkdata, const QFileInfo* seriesInfo )
 {
 
     QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0].simplified();
