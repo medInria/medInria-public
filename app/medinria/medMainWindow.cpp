@@ -217,7 +217,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     quickAccessButton->setMinimumHeight(25);
     quickAccessButton->setStyleSheet("border: 0px;");
     quickAccessButton->setIcon(QIcon(":medinria.ico"));
-    quickAccessButton->setText ( "Quick workspace access" );
+    quickAccessButton->setCursor(Qt::PointingHandCursor);
+    quickAccessButton->setText ( "Quick access menu" );
+    quickAccessButton->setStyleSheet("font-weight: bold;border:0px;");
     connect ( quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
 
     d->quickAccessWidget = new QWidget ( this );
@@ -237,6 +239,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QPushButton * homeButton = new QPushButton ( this );
     homeButton->setIcon ( QIcon ( ":icons/home.png" ) );
     homeButton->setFocusPolicy ( Qt::NoFocus );
+    homeButton->setCursor(Qt::PointingHandCursor);
     QObject::connect ( homeButton, SIGNAL ( clicked() ), this, SLOT ( switchToHomepageArea() ) );
 
     d->quitButton->setMaximumWidth ( 31 );
@@ -268,7 +271,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quitMessage->setLayout ( quitLayout );
 
     d->statusBarLayout->addWidget ( quickAccessButton );
-    d->statusBarLayout->addStretch();
+//     d->statusBarLayout->addStretch();
     d->statusBarLayout->addWidget ( homeButton );
     d->statusBarLayout->addStretch();
     d->statusBarLayout->addWidget ( d->quitMessage );
@@ -369,13 +372,15 @@ void medMainWindow::updateQuickAccessMenu ( void )
     QVBoxLayout * configurationButtonsLayout = new QVBoxLayout;
     configurationButtonsLayout->setMargin(0);
     configurationButtonsLayout->setSpacing ( 0 );
-    QLabel * configurationLabel = new QLabel ( "Switch to workspaces" );
+    QLabel * configurationLabel = new QLabel ( "<b>Switch to workspaces</b>" );
     configurationLabel->setMaximumWidth(300);
     configurationLabel->setFixedHeight(20);
+    configurationLabel->setTextFormat(Qt::RichText);
     configurationButtonsLayout->addWidget ( configurationLabel );
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    browserButton->setCursor(Qt::PointingHandCursor);
     browserButton->setStyleSheet("");
     browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
     browserButton->setText ( "Browser" );
@@ -392,6 +397,7 @@ void medMainWindow::updateQuickAccessMenu ( void )
         button->setText ( configList.at ( i ) );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+        button->setCursor(Qt::PointingHandCursor);
         button->setStyleSheet("");
         button->setFixedHeight ( 40 );
         button->setMaximumWidth ( 250 );
