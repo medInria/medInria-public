@@ -30,19 +30,19 @@
 
 medHomepageButton::medHomepageButton(QWidget * parent) : QToolButton(parent)
 {
-    this->setStyleSheet("QToolButton{border: 0px; \
-                border-left: 1px solid #4b4b4b; \
-                border-radius: 0px; \
-                background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b); \
-                color: #b2b8b2; \
-                font-size: 10px; \
-                height: 16px; \
-                padding-left: 1px; \
-                padding-right: 1px; \
-                min-width: 2px;}\
-                QToolButton:pressed, QToolButton:checked {\
-                background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);\
-}");
+//     this->setStyleSheet("QToolButton{border: 0px; \
+//                 border-left: 1px solid #4b4b4b; \
+//                 border-radius: 0px; \
+//                 background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b); \
+//                 color: #b2b8b2; \
+//                 font-size: 10px; \
+//                 height: 16px; \
+//                 padding-left: 1px; \
+//                 padding-right: 1px; \
+//                 min-width: 2px;}\
+//                 QToolButton:pressed, QToolButton:checked {\
+//                 background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);\
+// }");
     QObject::connect(this, SIGNAL(clicked()), this, SLOT(onClick()));
 }
 

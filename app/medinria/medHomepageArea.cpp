@@ -122,7 +122,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                       to cutting-edge processing functionalities for your medical images such as 2D/3D/4D image visualization, \
                       image registration, or diffusion MR processing and tractography." );
     textEdit->setReadOnly ( true );
-    textEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight ( 200 );
     infoLayout->insertWidget ( 0,medinriaLabel );
@@ -135,55 +134,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //About widget
     QVBoxLayout * aboutLayout = new QVBoxLayout;
     d->aboutTabWidget = new QTabWidget();
-    d->aboutTabWidget->setStyleSheet ( "QTabWidget {\
-                                        border-image: url(:/pixmaps/toolbox-body.png) 0 16 16 16 repeat-y;\
-                                        border-left-width: 16px;\
-                                        border-right-width: 16px;\
-                                        border-top-width: 0px;\
-                                        border-bottom-width: 16px;\
-                                        padding-left: -6px;\
-                                        padding-right: -6px;\
-                                        padding-bottom: 6px;\
-                                    }\
-                                    \
-                                    QTabWidget::pane {\
-                                        background: none;\
-                                        border: none;\
-                                        border-image: none;\
-                                    }\
-                                    \
-                                    QTabWidget::tab-bar {\
-                                        top: 1px;\
-                                        left: 0px;\
-                                    }\
-                                    \
-                                    QTabBar::tab {\
-                                        color: white;\
-                                        border: 1px solid #2c2c2e;\
-                                        border-top: none;\
-                                        border-left: none;\
-                                        border-radius: 0;\
-                                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);\
-                                        height: 32px;\
-                                        min-width: 50px;\
-                                    }\
-                                    \
-                                    QTabBar::tab:selected, QTabBar::tab:hover {\
-                                        color: white;\
-                                        border: 1px solid #2c2c2e;\
-                                        border-top: none;\
-                                        border-left: none;\
-                                        border-radius: 0;\
-                                        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);\
-                                        height: 32px;\
-                                        min-width: 50px;\
-                                    }" );
 
     QLabel * medinriaLabel2 = new QLabel ( this );
     medinriaLabel2->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
 
     QTextEdit * aboutTextEdit = new QTextEdit;
-    aboutTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
     aboutTextEdit->setHtml ( "<br/><br/>\
                               medINRIA is the medical imaging platform developped at INRIA<br/><br/>\
                               <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
@@ -200,16 +155,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                        John.Stark@inria.fr <br> \
                        Michael.Knopke@inria.fr <br> \
                        Stephen.Schmitt@inria.fr <br> \
+                       Nicolas.Toussaint@inria.fr <br> \
+                       Julien.Wintz@inria.fr <br> \
                        Maxime.Sermesan@inria.fr <br> \
                        Theodore.Papadopoulos@inria.fr <br> \
+                       fatih.arslan@inria.fr <br> \
+                       jaime.garcia_guevara@inria.fr <br> \
                        Clement.Philipot@inria.fr <br> \
-                       Sergio.Medina@inria.fr <br> \
-                       Nicolas.Toussaint@inria.fr <br> \
-                       Julien.Wintz@inria.fr <br> " );
+                       Sergio.Medina@inria.fr <br> " );
     aboutAuthorTextEdit->setFocusPolicy ( Qt::NoFocus );
 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit;
-    aboutLicenseTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
     QFile license ( ":LICENSE.txt" );
     license.open ( QIODevice::ReadOnly | QIODevice::Text );
     QString licenseContent = license.readAll();

@@ -212,55 +212,34 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     medDbControllerFactory::instance()->registerDbController ( "NonPersistentDbController", createNonPersistentDbController );
 
     // Setting up status bar
-    QToolButton * quickAccessButton = new QToolButton ( this );
+    QPushButton * quickAccessButton = new QPushButton ( this );
     quickAccessButton->setFocusPolicy ( Qt::NoFocus );
+    quickAccessButton->setMinimumHeight(25);
+    quickAccessButton->setStyleSheet("border: 0px;");
+    quickAccessButton->setIcon(QIcon(":medinria.ico"));
     quickAccessButton->setText ( "Quick workspace access" );
     connect ( quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
 
     d->quickAccessWidget = new QWidget ( this );
-    d->quickAccessWidget->setMinimumWidth(260);
-    d->quickAccessWidget->setStyleSheet ( "background:white;" );
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
-    d->quickAccessWidget->setStyleSheet("border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;\
-                                         border-left-width: 0px;\
-                                         border-right-width: 16px;\
-                                         border-top-width: 16px;\
-                                         border-bottom-width: 0px;");
+    d->quickAccessWidget->setMinimumWidth(260);
+    
     d->quickAccessVisible = false;
     d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos" );
 
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
     connect ( d->quitButton, SIGNAL ( triggered() ), this, SLOT ( onQuit() ) );
-
-    medButton *settingsButton = new medButton ( this, ":/icons/settings.png", tr ( "Edit Application Settings" ) );
-    connect ( settingsButton, SIGNAL ( triggered() ), this, SLOT ( onEditSettings() ) );
-
-    QComboBox *configurationSwitcher = new QComboBox ( this );
-    configurationSwitcher->addItems ( medViewerConfigurationFactory::instance()->configurations() );
-    configurationSwitcher->setFocusPolicy ( Qt::NoFocus );
-
+    
     this->statusBar()->setSizeGripEnabled ( false );
     this->statusBar()->setContentsMargins ( 5, 0, 5, 0 );
     this->statusBar()->setFixedHeight ( 31 );
 
     QPushButton * homeButton = new QPushButton ( this );
     homeButton->setIcon ( QIcon ( ":icons/home.png" ) );
-    homeButton->setStyleSheet ( "border: 1px solid #a7b6d3;" );
-    homeButton->setFlat ( true );
     homeButton->setFocusPolicy ( Qt::NoFocus );
     QObject::connect ( homeButton, SIGNAL ( clicked() ), this, SLOT ( switchToHomepageArea() ) );
 
-    
     d->quitButton->setMaximumWidth ( 31 );
-    settingsButton->setMaximumWidth ( 31 );
-
-    configurationSwitcher->hide();
-//     d->shifter->hide();
-    settingsButton->hide();
-
-//     d->statusBarLayout->insertWidget(3,configurationSwitcher);
-//     d->statusBarLayout->insertWidget(4,d->shifter);
-//     d->statusBarLayout->insertWidget(5,settingsButton);
 
     d->quitMessage = new QWidget ( this );
     QHBoxLayout * quitLayout = new QHBoxLayout ( this );
@@ -273,11 +252,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     info->setText ( "Are you sure you want to quit ?" );
 
     QPushButton *ok_button = new QPushButton ( "Yes", this );
-    ok_button->setStyleSheet ( "border: 1px solid #a7b6d3;" );
     ok_button->setFocusPolicy ( Qt::NoFocus );
     QObject::connect ( ok_button, SIGNAL ( clicked() ), this, SLOT ( close() ) );
     QPushButton *no_button = new QPushButton ( "No", this );
-    no_button->setStyleSheet ( "border: 1px solid #a7b6d3;" );
     no_button->setFocusPolicy ( Qt::NoFocus );
     QObject::connect ( no_button, SIGNAL ( clicked() ), this, SLOT ( onNoQuit() ) );
 
@@ -325,7 +302,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->viewerArea->setupConfiguration ( "Visualization" );
 
-    connect ( configurationSwitcher, SIGNAL ( activated ( QString ) ), d->viewerArea, SLOT ( setupConfiguration ( QString ) ) );
     connect ( qApp, SIGNAL ( aboutToQuit() ), this, SLOT ( close() ) );
 }
 
@@ -392,16 +368,18 @@ void medMainWindow::updateQuickAccessMenu ( void )
     QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
     QVBoxLayout * configurationButtonsLayout = new QVBoxLayout;
     configurationButtonsLayout->setMargin(0);
-    configurationButtonsLayout->setSpacing ( 5 );
+    configurationButtonsLayout->setSpacing ( 0 );
     QLabel * configurationLabel = new QLabel ( "Switch to workspaces" );
     configurationLabel->setMaximumWidth(300);
+    configurationLabel->setFixedHeight(20);
     configurationButtonsLayout->addWidget ( configurationLabel );
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    browserButton->setStyleSheet("");
     browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
     browserButton->setText ( "Browser" );
-    browserButton->setMinimumHeight ( 40 );
+    browserButton->setFixedHeight ( 40 );
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
     browserButton->setFocusPolicy ( Qt::NoFocus );
@@ -414,7 +392,8 @@ void medMainWindow::updateQuickAccessMenu ( void )
         button->setText ( configList.at ( i ) );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
-        button->setMinimumHeight ( 40 );
+        button->setStyleSheet("");
+        button->setFixedHeight ( 40 );
         button->setMaximumWidth ( 250 );
         button->setMinimumWidth ( 250 );;
         configurationButtonsLayout->addWidget ( button );
@@ -422,8 +401,15 @@ void medMainWindow::updateQuickAccessMenu ( void )
     }
     configurationButtonsLayout->addStretch();
     d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ) );
-    d->quickAccessWidget->setMinimumHeight ( 55 * ( 1 + configList.size() ) );
+    d->quickAccessWidget->setMinimumHeight ( 20 + 40 * ( 1 + configList.size() ) );
     d->quickAccessWidget->setLayout(configurationButtonsLayout);
+//     d->quickAccessWidget->setStyleSheet("background:#313131;border:1px;");
+
+//         "border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;\
+//                                         border-left-width: 0px;\
+//                                         border-right-width: 16px;\
+//                                         border-top-width: 16px;\
+//                                         border-bottom-width: 0px;");
 }
 
 void medMainWindow::resizeEvent ( QResizeEvent* event )
@@ -514,11 +500,12 @@ void medMainWindow::onHideQuickAccess ( void )
     if (!d->quickAccessVisible)
         return;
     d->quickAccessVisible = false;
-    d->quickAccessAnimation->setDuration ( 100 );
-    d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() -30 ));
-    d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - 30 ) );
+//     d->quickAccessAnimation->setDuration ( 50 );
+//     d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() -30 ));
+//     d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - 30 ) );
+//     d->quickAccessAnimation->start();
 
-    d->quickAccessAnimation->start();
+        d->quickAccessWidget->setProperty("pos", QPoint ( 0,this->height() - 30 ));
 }
 
 
