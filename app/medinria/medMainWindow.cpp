@@ -104,6 +104,7 @@ public:
     QPropertyAnimation * quickAccessAnimation;
 
     QWidget * quitMessage;
+    
     medButton *quitButton;
 };
 
@@ -212,20 +213,20 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     medDbControllerFactory::instance()->registerDbController ( "NonPersistentDbController", createNonPersistentDbController );
 
     // Setting up status bar
-    QPushButton * quickAccessButton = new QPushButton ( this );
+    medQuickAccessPushButton * quickAccessButton = new medQuickAccessPushButton ( this );
     quickAccessButton->setFocusPolicy ( Qt::NoFocus );
-    quickAccessButton->setMinimumHeight(25);
+    quickAccessButton->setMinimumHeight(31);
+    quickAccessButton->setFixedWidth(300);
     quickAccessButton->setStyleSheet("border: 0px;");
     quickAccessButton->setIcon(QIcon(":medinria.ico"));
     quickAccessButton->setCursor(Qt::PointingHandCursor);
-    quickAccessButton->setText ( "Quick access menu" );
-    quickAccessButton->setStyleSheet("font-weight: bold;border:0px;");
+    quickAccessButton->setText ( "Workspaces access menu" );
     connect ( quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
 
     d->quickAccessWidget = new QWidget ( this );
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
     d->quickAccessWidget->setMinimumWidth(180);
-    
+   
     d->quickAccessVisible = false;
     d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos" );
 
@@ -235,12 +236,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     this->statusBar()->setSizeGripEnabled ( false );
     this->statusBar()->setContentsMargins ( 5, 0, 5, 0 );
     this->statusBar()->setFixedHeight ( 31 );
-
-    QPushButton * homeButton = new QPushButton ( this );
-    homeButton->setIcon ( QIcon ( ":icons/home.png" ) );
-    homeButton->setFocusPolicy ( Qt::NoFocus );
-    homeButton->setCursor(Qt::PointingHandCursor);
-    QObject::connect ( homeButton, SIGNAL ( clicked() ), this, SLOT ( switchToHomepageArea() ) );
 
     d->quitButton->setMaximumWidth ( 31 );
 
@@ -271,8 +266,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quitMessage->setLayout ( quitLayout );
 
     d->statusBarLayout->addWidget ( quickAccessButton );
-//     d->statusBarLayout->addStretch();
-    d->statusBarLayout->addWidget ( homeButton );
     d->statusBarLayout->addStretch();
     d->statusBarLayout->addWidget ( d->quitMessage );
     d->statusBarLayout->addWidget ( d->quitButton );
@@ -384,10 +377,21 @@ void medMainWindow::updateQuickAccessMenu ( void )
                                        border-bottom-width: 0px;");
     configurationButtonsLayout->addWidget ( configurationLabel );
 
-    medHomepageButton * browserButton = new medHomepageButton ( this );
-    browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
+    medHomepagePushButton * homeButton = new medHomepagePushButton ( this );
+    homeButton->setText("Home");
+    homeButton->setIcon ( QIcon ( ":icons/home.png" ) );
+    homeButton->setFixedHeight ( 40 );
+    homeButton->setMaximumWidth ( 250 );
+    homeButton->setMinimumWidth ( 250 );
+    homeButton->setStyleSheet("border: 0px;");
+    homeButton->setFocusPolicy ( Qt::NoFocus );
+    homeButton->setCursor(Qt::PointingHandCursor);
+    configurationButtonsLayout->addWidget ( homeButton );
+    QObject::connect ( homeButton, SIGNAL ( clicked() ), this, SLOT ( switchToHomepageArea() ) );
+
+    medHomepagePushButton * browserButton = new medHomepagePushButton ( this );
     browserButton->setCursor(Qt::PointingHandCursor);
-    browserButton->setStyleSheet("");
+    browserButton->setStyleSheet("border: 0px;");
     browserButton->setIcon ( QIcon ( ":/icons/folder.png" ) );
     browserButton->setText ( "Browser" );
     browserButton->setFixedHeight ( 40 );
@@ -399,12 +403,11 @@ void medMainWindow::updateQuickAccessMenu ( void )
 
     for ( int i = 0; i< configList.size(); i++ )
     {
-        medHomepageButton * button = new medHomepageButton ( this );
+        medHomepagePushButton * button = new medHomepagePushButton ( this );
         button->setText ( configList.at ( i ) );
         button->setFocusPolicy ( Qt::NoFocus );
-        button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
         button->setCursor(Qt::PointingHandCursor);
-        button->setStyleSheet("");
+        button->setStyleSheet("border: 0px;");
         button->setFixedHeight ( 40 );
         button->setMaximumWidth ( 250 );
         button->setMinimumWidth ( 250 );;
@@ -413,7 +416,7 @@ void medMainWindow::updateQuickAccessMenu ( void )
     }
     configurationButtonsLayout->addStretch();
     d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ) );
-    d->quickAccessWidget->setMinimumHeight ( 20 + 40 * ( 1 + configList.size() ) );
+    d->quickAccessWidget->setMinimumHeight ( 20 + 40 * ( 2 + configList.size() ) );
     d->quickAccessWidget->setLayout(configurationButtonsLayout);
 }
 
@@ -484,7 +487,6 @@ void medMainWindow::onShowConfiguration ( QString config )
     this->switchToViewerArea();
 }
 
-
 void medMainWindow::onShowQuickAccess ( void )
 {
     if ( d->quickAccessVisible )
@@ -505,15 +507,11 @@ void medMainWindow::onHideQuickAccess ( void )
     if (!d->quickAccessVisible)
         return;
     d->quickAccessVisible = false;
-//     d->quickAccessAnimation->setDuration ( 50 );
-//     d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() -30 ));
-//     d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - 30 ) );
-//     d->quickAccessAnimation->start();
-
-        d->quickAccessWidget->setProperty("pos", QPoint ( 0,this->height() - 30 ));
+    d->quickAccessAnimation->setDuration ( 100 );
+    d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() -30 ));
+    d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - 30 ) );
+    d->quickAccessAnimation->start();
 }
-
-
 
 void medMainWindow::onConfigurationTriggered ( QAction *action )
 {
@@ -525,7 +523,6 @@ void medMainWindow::onNoQuit ( void )
     d->quitMessage->hide();
     d->quitButton->show();
 }
-
 
 void medMainWindow::onQuit ( void )
 {
