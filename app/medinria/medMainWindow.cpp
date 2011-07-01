@@ -224,7 +224,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->quickAccessWidget = new QWidget ( this );
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
-    d->quickAccessWidget->setMinimumWidth(260);
+    d->quickAccessWidget->setMinimumWidth(180);
     
     d->quickAccessVisible = false;
     d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos" );
@@ -374,8 +374,14 @@ void medMainWindow::updateQuickAccessMenu ( void )
     configurationButtonsLayout->setSpacing ( 0 );
     QLabel * configurationLabel = new QLabel ( "<b>Switch to workspaces</b>" );
     configurationLabel->setMaximumWidth(300);
-    configurationLabel->setFixedHeight(20);
+    configurationLabel->setFixedHeight(25);
+    configurationLabel->setAlignment(Qt::AlignHCenter);
     configurationLabel->setTextFormat(Qt::RichText);
+    configurationLabel->setStyleSheet("border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;\
+                                       border-left-width: 0px;\
+                                       border-right-width: 0px;\
+                                       border-top-width: 8px;\
+                                       border-bottom-width: 0px;");
     configurationButtonsLayout->addWidget ( configurationLabel );
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
@@ -409,13 +415,6 @@ void medMainWindow::updateQuickAccessMenu ( void )
     d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ) );
     d->quickAccessWidget->setMinimumHeight ( 20 + 40 * ( 1 + configList.size() ) );
     d->quickAccessWidget->setLayout(configurationButtonsLayout);
-//     d->quickAccessWidget->setStyleSheet("background:#313131;border:1px;");
-
-//         "border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;\
-//                                         border-left-width: 0px;\
-//                                         border-right-width: 16px;\
-//                                         border-top-width: 16px;\
-//                                         border-bottom-width: 0px;");
 }
 
 void medMainWindow::resizeEvent ( QResizeEvent* event )
