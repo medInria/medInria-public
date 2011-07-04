@@ -67,7 +67,7 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
     {
         //Containers:
         //addSingleContainer();
-        addMultiContainer("Tab 0");
+        addMultiContainer("Visualization");
         //addCustomContainer();
         //connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
         //    d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));

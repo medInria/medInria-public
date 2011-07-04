@@ -683,7 +683,46 @@ medToolBoxTabBar::tab:selected, medToolBoxTabBar::tab:hover {
     font-size: 10pt;
 }
 
+/**
+ * medStackedViewContainers
+ *
+ */
 
+medStackedViewContainers::pane {
+    border: none;
+}
+
+medStackedViewContainers QTabBar::tab {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
+    border: 1px solid #2a2a2a;
+    height: 24px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 80px;
+    color: #b2b8b2;
+}
+
+medStackedViewContainers QTabBar::tab:selected, medStackedViewContainers QTabBar::tab:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
+    border-bottom-color: #4c4c4c;
+    color: #b2b8b2;
+}
+
+medStackedViewContainers QPushButton {
+    background: none;
+    border: none;
+    margin-bottom: 2px;
+    padding: 0px;
+    height: 18px;
+}
+
+medStackedViewContainers QPushButton:pressed, medStackedViewContainers QPushButton:hover {
+    background: none;
+    border: none;
+    margin-bottom: 2px;
+    padding: 0px;
+    height: 18px;
+}
 
 /**
  * medSettingsEditor

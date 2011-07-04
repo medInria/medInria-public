@@ -32,7 +32,7 @@ public:
    QHash<QString, medViewContainer*> containers;
    QString currentName;
     
-    QPushButton *addButton;
+   QPushButton *addButton;
 };
 
 medStackedViewContainers::medStackedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medStackedViewContainersPrivate)
@@ -43,8 +43,7 @@ medStackedViewContainers::medStackedViewContainers(QWidget *parent) : QTabWidget
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(deleteContainerClicked(int)));
 
     d->addButton = new QPushButton();
-    d->addButton->setStyleSheet("background-image: url(:medGui/pixmaps/plus_button.jpg);background-position: center;background-repeat: no-repeat;");
-    d->addButton->resize(16,16);
+    d->addButton->setStyleSheet("background-image: url(:medGui/pixmaps/plus_button.png);background-position: center;background-repeat: no-repeat;");
     this->setCornerWidget(d->addButton);
     
     connect(d->addButton,SIGNAL(clicked()),this,SLOT(addNewTabContainer()));
@@ -73,6 +72,7 @@ void medStackedViewContainers::unlockTabs()
 
 void medStackedViewContainers::addNewTabContainer()
 {
+    // This slot should disappear, instead the creation signal should be sent to the parent who should call for the creation of a new tab
     QString name = "Tab ";
     name += QString::number(this->count());
 
