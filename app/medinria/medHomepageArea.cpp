@@ -145,7 +145,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
     QTextEdit * aboutAuthorTextEdit = new QTextEdit;
-    aboutAuthorTextEdit->setStyleSheet ( "background: #313131;border: 0px;padding: 0px 0px 0px 0px;" );
     aboutAuthorTextEdit->setHtml ( "<b>Authors :</b> <br/> \
                        Pierre.Fillard@inria.fr <br> \
                        Olivier.Commowick@inria.fr <br>\
@@ -265,7 +264,9 @@ void medHomepageArea::initPage ( void )
     QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
     QVBoxLayout * configurationButtonsLayout = new QVBoxLayout;
     configurationButtonsLayout->setSpacing ( 10 );
-    QLabel * configurationLabel = new QLabel ( "Available workspaces:" );
+    QLabel * configurationLabel = new QLabel ( "<b>Available workspaces</b>" );
+    configurationLabel->setTextFormat(Qt::RichText);
+    configurationLabel->setAlignment(Qt::AlignHCenter);
     configurationButtonsLayout->addWidget ( configurationLabel );
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
