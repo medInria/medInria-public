@@ -982,7 +982,6 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 	    //   this->enableInteractor ( "v3dView4DInteractor" );
 	    
             // This will add the data to one interactor
-         
             dtkAbstractView::setData(data);
             return;
         }
