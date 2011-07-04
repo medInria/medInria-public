@@ -132,7 +132,10 @@ public:
      * Removes an overlay given the layer id.
      */
     virtual void removeOverlay(int layer);
-
+   // QString property(const QString& key, int layer) const;
+   // using dtkAbstractObject::property;
+    QString getLUT(int layer) const;
+    QString getPreset(int layer) const;
 public slots:
     // inherited from medAbstractView
     void onPositionChanged  (const  QVector3D &position);

@@ -36,6 +36,10 @@ public:
     //! Override dtkAbstractViewInteractor.
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
     char* getLUTQuery (int meshLayer);
+    void setOpacity (double value);
+    double opacity (int meshLayer);
+    void setLayer(int meshLayer);
+    int meshLayer(void);
     
 
 protected:
@@ -46,11 +50,11 @@ signals:
 
 public slots:
     virtual void onPropertySet (const QString& key, const QString& value);
-    virtual void onVisibilityPropertySet (const QString& value, int meshLayer);
-    virtual void onEdgeVisibilityPropertySet (const QString& value, int meshLayer);
-    virtual void onRenderingModePropertySet (const QString& value, int meshLayer);
-    virtual void onOpacityModePropertySet (double value, int meshLayer);
-    virtual void onLUTModePropertySet (const QString& value, int meshLayer);
+    virtual void onVisibilityPropertySet (const QString& value);
+    virtual void onEdgeVisibilityPropertySet (const QString& value);
+    virtual void onRenderingModePropertySet (const QString& value);
+    
+    virtual void onLUTModePropertySet (const QString& value);
     virtual void onColorPropertySet (const QColor& color, int meshLayer);
     
 
