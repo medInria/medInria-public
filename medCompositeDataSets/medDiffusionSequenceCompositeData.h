@@ -12,8 +12,18 @@
 
 //class medDiffusionSequenceCompositeDataPrivate;
 
+class medDiffusionSequenceCompositeDataToolBox;
+
 class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medDiffusionSequenceCompositeData: public MedInria::medCompositeDataSetsBase {
+
+    typedef itk::GradientFileReader            GradientReaderType;
+    typedef GradientReaderType::VectorType     GradientType;
+    typedef GradientReaderType::VectorListType GradientListType;
+    typedef QVector<dtkAbstractData*>          Volumes;
+
 public:
+
+    friend class medDiffusionSequenceCompositeDataToolBox;
 
     medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase("DWI",this),version(0) { }
     virtual ~medDiffusionSequenceCompositeData() { }
@@ -31,19 +41,17 @@ public:
     virtual void read_description(const QByteArray& buf);
 
     void readVolumes(QStringList);
+    void setGradientList(const GradientListType& grads) { gradients = grads; }
+    void setVolumeList(const Volumes& vols)             { images = vols;     }
 
 private:
 
     medDiffusionSequenceCompositeData(const unsigned v): MedInria::medCompositeDataSetsBase("DWI",this), version(v) { }
 
-    typedef itk::GradientFileReader GradientReaderType;
-    typedef GradientReaderType::VectorType GradientType;
-    typedef GradientReaderType::VectorListType GradientListType;
-
-    const unsigned            version;
-    QVector<dtkAbstractData*> images;
-    QStringList               image_list;
-    GradientListType          gradients;
+    const unsigned   version;
+    QStringList      image_list;
+    Volumes          images;
+    GradientListType gradients;
 };
 
 dtkAbstractData* createDiffusionSequenceCompositeData();

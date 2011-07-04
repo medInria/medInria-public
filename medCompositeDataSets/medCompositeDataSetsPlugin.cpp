@@ -6,7 +6,7 @@
 #include "medCompositeDataSetsPlugin.h"
 #include "medDiffusionSequenceCompositeDataToolBox.h"
 
-#include <dtkcore/dtklog.h>
+#include <dtkCore/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // medCompositeDataSetsPluginPrivate
@@ -91,8 +91,9 @@ QStringList medCompositeDataSetsPlugin::tags(void) const
 QStringList medCompositeDataSetsPlugin::types(void) const
 {
     QStringList ql;
-    if(DiffusionSequenceCompositeData::registered())
-        return ql << "Diffusion Sequence";
+    if(medDiffusionSequenceCompositeData::registered())
+        ql << "Diffusion Sequence";
+    return ql;
 }
 
 Q_EXPORT_PLUGIN2(medCompositeDataSetsPlugin, medCompositeDataSetsPlugin)
