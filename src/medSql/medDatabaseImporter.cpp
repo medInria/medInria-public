@@ -94,9 +94,11 @@ void medDatabaseImporter::import(void)
     // and puts all the files in one single list
     QStringList fileList = getAllFilesToBeProcessed(d->file);
 
-    // Files that pass the filters named above are put
-    // in this map so they are written in the db after
-    QMap<QString, QStringList> imagesToWriteMap;
+    // Files that pass the filters named above are grouped
+    // by volume in this map and will be written in the db after
+    // the key will be the name of the aggregated file with the volume
+    // in this case will be a .mha
+    QMap<QString, QStringList> imagesGroupedByVolume;
 
     int currentFileNumber = 0; // this variable will be used only for calculating progress
 
@@ -171,7 +173,7 @@ void medDatabaseImporter::import(void)
 
         // First check if patient/study/series/image path already exists in the database
         if (!checkIfExists(dtkData, &fileInfo))
-            imagesToWriteMap[imageFileName] << fileInfo.filePath();
+            imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
 
         // afterwards we will re-read all the files, so we destroy the dtkData object
         delete dtkData;
@@ -189,11 +191,11 @@ void medDatabaseImporter::import(void)
     // 3) Re-read selected files and re-populate them with missing metadata
     //    then write them to medinria db and populate db tables
 
-    QMap<QString, QStringList>::const_iterator it = imagesToWriteMap.begin();
+    QMap<QString, QStringList>::const_iterator it = imagesGroupedByVolume.begin();
 
     // 3.1) first check is after the filtering we have something to import
     // maybe we had problems with all the files, or they were already in the database
-    if (it == imagesToWriteMap.end())
+    if (it == imagesGroupedByVolume.end())
     {
         // TODO we know if it's either one or the other error, we can make this error better...
         emit showError(this, tr("No compatible image found or all of them had been already imported."), 5000);
@@ -201,13 +203,13 @@ void medDatabaseImporter::import(void)
         return;
     }
     else
-        qDebug() << "Image map contains " << imagesToWriteMap.size() << " files";
+        qDebug() << "Image map contains " << imagesGroupedByVolume.size() << " files";
 
-    int imagesCount = imagesToWriteMap.count(); // used only to calculate progress
+    int imagesCount = imagesGroupedByVolume.count(); // used only to calculate progress
     int currentImageIndex = 0; // used only to calculate progress
 
     // final loop: re-read, re-populate and write to db
-    for (it; it != imagesToWriteMap.end(); it++)
+    for (; it != imagesGroupedByVolume.end(); it++)
     {
         emit progressed(this,((qreal)currentImageIndex/(qreal)imagesCount)*50.0 + 50.0); // 50? I do not think that reading all the headers is half the job...
 
