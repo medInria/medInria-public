@@ -14,6 +14,7 @@
 bool checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, QString studyName, QString sessionName, unsigned int thumbnailsCount);
 int countRowsInTable(QSqlDatabase db, QString tableName);
 bool checkIfRowExists(QSqlDatabase db, QString tableName, QString columnName, QString value);
+bool checkIfRowExists(QSqlDatabase db, QString tableName, QHash<QString, QString> columnValues);
 
 int medDatabaseControllerImplTest(int argc, char* argv[])
 {
@@ -80,6 +81,45 @@ int medDatabaseControllerImplTest(int argc, char* argv[])
     if(!checkIfRowExists(db, "patient", "name", patientName))
         return EXIT_FAILURE;
 
+    // check that there is only one row in study table
+    if(1 != countRowsInTable(db, "study"))
+        return EXIT_FAILURE;
+
+    // check that there is a study named EmptyStudy
+    // we do not check for all the other columns
+    if(!checkIfRowExists(db, "study", "name", studyName))
+        return EXIT_FAILURE;
+
+    // check that there is only one row in series table
+    if(1 != countRowsInTable(db, "series"))
+        return EXIT_FAILURE;
+
+    // check that the proper path is in series table
+    QString seriesPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QString(".mha");
+    if(!checkIfRowExists(db, "series", "path", seriesPath))
+        return EXIT_FAILURE;
+
+    int imageCount = 64;
+
+    // check that there are #imageCount rows in image table
+    if (imageCount != countRowsInTable(db, "image"))
+        return EXIT_FAILURE;
+
+    // check every row
+    for (int i = 0; i < imageCount ; i++)
+    {
+        QHash<QString, QString> columnValues;
+        columnValues.insert("size", QString::number(imageCount));
+        columnValues.insert("name", "I1.nhdr" + QString::number(i));
+        columnValues.insert("path", file);
+        columnValues.insert("instance_path", seriesPath);
+        QString thumbnailPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QDir::separator() + QString::number(i) + ".png";
+        columnValues.insert("thumbnail", thumbnailPath);
+
+        if(!checkIfRowExists(db, "image", columnValues))
+            return EXIT_FAILURE;
+    }
+
     // clean
     medStorage::removeDir(dbPath, NULL);
     medDatabaseController::destroy();
@@ -137,7 +177,7 @@ int countRowsInTable(QSqlDatabase db, QString tableName)
 {
     QSqlQuery query(db);
 
-    query.prepare("SELECT * FROM " + tableName);
+    query.prepare("SELECT COUNT(*) FROM " + tableName);
 
     if(!query.exec())
     {
@@ -174,3 +214,55 @@ bool checkIfRowExists(QSqlDatabase db, QString tableName, QString columnName, QS
         return false;
 }
 
+bool checkIfRowExists(QSqlDatabase db, QString tableName, QHash<QString, QString> columnValues)
+{
+    // TODO this way of building the query string is just awful
+    // try to find another...
+
+	QString queryString = "SELECT id FROM " + tableName + " WHERE ";
+
+	QHashIterator<QString, QString> it(columnValues);
+    bool firstTime = true;
+
+    while (it.hasNext())
+    {
+        it.next();
+
+        if (!firstTime)
+        {
+            queryString.append(" AND ");
+        }
+        else
+            firstTime = false;
+
+        queryString.append(it.key()).append( " = :").append(it.key());
+    }
+
+    QSqlQuery query(db);
+    query.prepare(queryString);
+
+    it.toFront();
+
+    while (it.hasNext())
+    {
+        it.next();
+        query.bindValue(":"+it.key(), it.value());
+    }
+
+    if(!query.exec())
+    {
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        return false;
+    }
+
+	
+    // see executed query
+	//qDebug() << query.executedQuery().toStdString().c_str();
+
+    if(query.first()) {
+        QVariant patientId = query.value(0);
+        return true;
+    }
+    else
+        return false;
+}
