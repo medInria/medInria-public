@@ -46,7 +46,7 @@ medStackedViewContainers::medStackedViewContainers(QWidget *parent) : QTabWidget
     d->addButton->setStyleSheet("background-image: url(:medGui/pixmaps/plus_button.png);background-position: center;background-repeat: no-repeat;");
     this->setCornerWidget(d->addButton);
     
-    connect(d->addButton,SIGNAL(clicked()),this,SLOT(addNewTabContainer()));
+    connect(d->addButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
 }
 
 medStackedViewContainers::~medStackedViewContainers(void)
@@ -70,6 +70,7 @@ void medStackedViewContainers::unlockTabs()
     d->addButton->show();
 }
 
+/*
 void medStackedViewContainers::addNewTabContainer()
 {
     // This slot should disappear, instead the creation signal should be sent to the parent who should call for the creation of a new tab
@@ -85,6 +86,7 @@ void medStackedViewContainers::addNewTabContainer()
     else
         qDebug() << "Container" << name << "already exists in this configurations";
 }
+*/
 
 void medStackedViewContainers::deleteContainerClicked(int index)
 {

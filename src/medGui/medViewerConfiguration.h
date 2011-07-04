@@ -288,6 +288,14 @@ public slots:
      *
     */
     virtual void clear();
+
+    /**
+      * @brief Adds a new tab to a configuration
+      *
+      * Default implementation adds a multi-container tab
+      * If another behavior is wanted, override this in child class
+      */
+    virtual void onAddTabClicked();
     
 signals:
     /**

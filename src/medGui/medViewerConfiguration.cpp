@@ -47,7 +47,10 @@ public:
 medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
 {
     d->parent = parent;
+
     d->viewContainerStack = new medStackedViewContainers(parent);
+    connect(d->viewContainerStack,SIGNAL(addTabButtonClicked()),this,SLOT(onAddTabClicked()));
+
     d->layoutType = medViewerConfiguration::LeftDbRightTb;
     d->customLayoutType = 0;
     d->databaseVisibility = true;
@@ -199,7 +202,7 @@ void medViewerConfiguration::addCustomContainer(const QString& name)
     if (!this->stackedViewContainers()->container(name))
         this->stackedViewContainers()->addContainer (name, new medViewContainerCustom());
     else
-        qDebug() << "Container" << name << "already exists in this configurations";
+        qDebug() << "Container" << name << "already exists in this configuration";
 }
 
 
@@ -238,4 +241,21 @@ void medViewerConfiguration::clearToolBoxes()
     {
         tb->clear();
     }
+}
+
+void medViewerConfiguration::onAddTabClicked()
+{
+    QString name = this->description();
+    QString realName = name;
+
+    unsigned int suppTag = 0;
+    while (this->stackedViewContainers()->container(realName))
+    {
+        suppTag++;
+        realName = name + " ";
+        realName += QString::number(suppTag);
+    }
+
+    this->addMultiContainer(realName);
+    this->stackedViewContainers()->setContainer(realName);
 }

@@ -137,9 +137,10 @@ signals:
     */
     void focused(dtkAbstractView *);
 
+    void addTabButtonClicked();
+
 public slots:
     void changeCurrentContainerType(const QString &name);
-    void addNewTabContainer();
     void deleteContainerClicked(int index);
 
 private:
