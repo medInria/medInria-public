@@ -36,6 +36,12 @@ include(dtkPlugin)
 find_package(medinria REQUIRED)
 include(${medinria_USE_FILE})
 
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
+
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -43,7 +49,8 @@ include(${medinria_USE_FILE})
 set(${PROJECT_NAME}_HEADERS_MOC
   medCompositeDataSetsPlugin.h
   medDiffusionSequenceCompositeDataToolBox.h
-  medCompositeDataSetsReader.h)
+  medCompositeDataSetsReader.h
+  medDiffusionSequenceCompositeData.h)
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
@@ -53,7 +60,7 @@ set(${PROJECT_NAME}_SOURCES
   medDiffusionSequenceCompositeDataToolBox.cpp
   medCompositeDataSetsReader.cpp
   medCompositeDataSetsBase.cpp
-  DiffusionSequenceCompositeData.cpp)
+  medDiffusionSequenceCompositeData.cpp)
 
 ## #################################################################
 ## Build rules
@@ -70,12 +77,13 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkZip
-  medCore)
+  medCore
+  ITKTensor)
 #not useful if plugin in the medinria-plugins directory
 dtk_build_doc(medCompositeDataSetsPlugin)
 
-add_executable(test test.C)
-target_link_libraries(test medCompositeDataSetsPlugin ${QT_LIBRARIES} dtkCore dtkZip medGui medCore)
+#add_executable(test test.C)
+#target_link_libraries(test medCompositeDataSetsPlugin ${QT_LIBRARIES} dtkCore dtkZip medCore)
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio

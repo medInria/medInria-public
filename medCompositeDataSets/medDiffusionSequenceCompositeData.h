@@ -10,20 +10,20 @@
 #include <medCompositeDataSetsBase.h>
 #include <itkGradientFileReader.h>
 
-class DiffusionSequenceCompositeDataPrivate;
+//class medDiffusionSequenceCompositeDataPrivate;
 
-class MEDCOMPOSITEDATASETSPLUGIN_EXPORT DiffusionSequenceCompositeData: public MedInria::medCompositeDataSetsBase {
+class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medDiffusionSequenceCompositeData: public MedInria::medCompositeDataSetsBase {
 public:
 
-    DiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase("DWI",this),version(0) { }
-    virtual ~DiffusionSequenceCompositeData() { }
+    medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase("DWI",this),version(0) { }
+    virtual ~medDiffusionSequenceCompositeData() { }
 
     virtual QString description(void) const;
 
     virtual bool has_version(const unsigned num) const { return num==1; }
 
     virtual MedInria::medCompositeDataSetsBase* clone(const unsigned v) const {
-        return new DiffusionSequenceCompositeData(v);
+        return new medDiffusionSequenceCompositeData(v);
     }
 
     static bool registered(void);
@@ -34,7 +34,7 @@ public:
 
 private:
 
-    DiffusionSequenceCompositeData(const unsigned v): MedInria::medCompositeDataSetsBase("DWI",this), version(v) { }
+    medDiffusionSequenceCompositeData(const unsigned v): MedInria::medCompositeDataSetsBase("DWI",this), version(v) { }
 
     typedef itk::GradientFileReader GradientReaderType;
     typedef GradientReaderType::VectorType GradientType;

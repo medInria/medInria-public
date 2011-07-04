@@ -4,27 +4,27 @@
 
 #include <sstream>
 
-#include <DiffusionSequenceCompositeData.h>
+#include <medDiffusionSequenceCompositeData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 
 #include <IOUtils.H>
 
 // /////////////////////////////////////////////////////////////////
-// DiffusionSequenceCompositeData
+// medDiffusionSequenceCompositeData
 // /////////////////////////////////////////////////////////////////
 
-bool DiffusionSequenceCompositeData::registered(void)
+bool medDiffusionSequenceCompositeData::registered(void)
 {
-    return dtkAbstractDataFactory::instance()->registerDataType("DiffusionSequenceCompositeData", createDiffusionSequenceCompositeData);
+    return dtkAbstractDataFactory::instance()->registerDataType("medDiffusionSequenceCompositeData", createDiffusionSequenceCompositeData);
 }
 
-QString DiffusionSequenceCompositeData::description(void) const
+QString medDiffusionSequenceCompositeData::description(void) const
 {
-    return "DiffusionSequenceCompositeData";
+    return "medDiffusionSequenceCompositeData";
 }
 
-void DiffusionSequenceCompositeData::read_description(const QByteArray& buf) {
+void medDiffusionSequenceCompositeData::read_description(const QByteArray& buf) {
     const std::string description(buf.data());
     std::istringstream iss(description);
 
@@ -40,7 +40,7 @@ void DiffusionSequenceCompositeData::read_description(const QByteArray& buf) {
     }
 }
 
-void DiffusionSequenceCompositeData::readVolumes(QStringList paths) {
+void medDiffusionSequenceCompositeData::readVolumes(QStringList paths) {
 
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
       
@@ -83,5 +83,5 @@ void DiffusionSequenceCompositeData::readVolumes(QStringList paths) {
 
 dtkAbstractData* createDiffusionSequenceCompositeData()
 {
-    return new DiffusionSequenceCompositeData;
+    return new medDiffusionSequenceCompositeData;
 }
