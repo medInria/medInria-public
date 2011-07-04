@@ -19,17 +19,15 @@
 #include <medGui/medProgressionStack.h>
 
 
-class medDiffusionSequenceCompositeDataToolBoxPrivate
-{
+class medDiffusionSequenceCompositeDataToolBoxPrivate {
 public:
     QTreeWidget * tree;
     medDiffusionSequenceCompositeDataToolBox::GradientListType gradients;
     QVector<dtkAbstractData*> volumeList;
     QList<QTreeWidgetItem*> itemList;
-  
 };
 
-medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolBox(QWidget *parent) : medToolBoxCompositeDataSetImporterCustom(parent), d(new medDiffusionSequenceCompositeDataToolBoxPrivate)
+medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolBox(QWidget *parent): medToolBoxCompositeDataSetImporterCustom(parent),d(new medDiffusionSequenceCompositeDataToolBoxPrivate)
 {
     d->tree = new QTreeWidget(this);
 
@@ -57,7 +55,6 @@ medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolB
     tmpgradient[2] = -0.3;
     
     this->addGradientToTree(0, tmpgradient);
-
 }
 
 medDiffusionSequenceCompositeDataToolBox::~medDiffusionSequenceCompositeDataToolBox(void)
@@ -69,7 +66,7 @@ medDiffusionSequenceCompositeDataToolBox::~medDiffusionSequenceCompositeDataTool
 bool medDiffusionSequenceCompositeDataToolBox::registered(void)
 {
     qDebug() << "diffusion gradient toolbox registered ";
-      return medToolBoxFactory::instance()->
+    return medToolBoxFactory::instance()->
             registerCustomCompositeDataSetImporterToolBox("medDiffusionSequenceCompositeDataToolBox",
                                  createMedDiffusionCompositeDataToolBox);
 }
@@ -77,7 +74,6 @@ bool medDiffusionSequenceCompositeDataToolBox::registered(void)
 QString medDiffusionSequenceCompositeDataToolBox::description (void) const
 {
     return QString("Composite Data");
-  
 }
 
 
@@ -96,22 +92,22 @@ void medDiffusionSequenceCompositeDataToolBox::onContextTreeMenu (QPoint)
 
 void medDiffusionSequenceCompositeDataToolBox::reset (void)
 {
-  // empty the file list of data
-  d->tree->clear();
-  d->itemList.clear();
+    // empty the file list of data
+    d->tree->clear();
+    d->itemList.clear();
 }
 
 void medDiffusionSequenceCompositeDataToolBox::cancel (void)
 {
-  this->reset();
+    this->reset();
 }
 
 bool medDiffusionSequenceCompositeDataToolBox::import (void)
 {
-  // actually import the data through the writer and the header thing, zip ;-)
-  qDebug() << "importing data...";
+    // actually import the data through the writer and the header thing, zip ;-)
+    qDebug() << "importing data...";
 
-  return this->writeInDataBase();
+    return this->writeInDataBase();
 }
 
 void medDiffusionSequenceCompositeDataToolBox::addVolumeToTree (unsigned int index, QString volumename)
@@ -125,77 +121,72 @@ void medDiffusionSequenceCompositeDataToolBox::addVolumeToTree (unsigned int ind
 
 void medDiffusionSequenceCompositeDataToolBox::readVolumes (QStringList paths)
 {
-  QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
+    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
   
-  for (int i=0; i<paths.size(); i++)
-  {
-    QString filepath = paths[i];
-    dtkAbstractDataReader* reader = NULL;
-    
-    for (int i=0; i<readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
-        if (dataReader->canRead( filepath ))
-            reader = dataReader;
-        else
-            delete reader;
-    }
+    for (int i=0; i<paths.size(); i++) {
+        QString filepath = paths[i];
+        dtkAbstractDataReader* reader = NULL;
+        
+        for (int i=0; i<readers.size(); i++) {
+            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
+            if (dataReader->canRead( filepath ))
+                reader = dataReader;
+            else
+                delete reader;
+        }
 
-    reader->readInformation( filepath );
-    dtkAbstractData* volume = reader->data();
-    QString description = volume->description();
-    if (!description.contains ("Image"))
-    {
-      // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("file does not describe any known image type"), 3000);
-      continue;
-    }
-    if (description.contains ("Image4D"))
-    {
-      // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("4D image is not supported yet"), 3000);
-      continue;
-    }
-    if (!description.contains ("Image3D"))
-    {
-      // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("image should be 3D"), 3000);
-      continue;
-    }
-    
-    d->volumeList.push_back (volume);
-    this->addVolumeToTree (0, filepath);
-  }  
+        reader->readInformation( filepath );
+        dtkAbstractData* volume = reader->data();
+        QString description = volume->description();
+        if (!description.contains ("Image")) {
+            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("file does not describe any known image type"), 3000);
+            continue;
+        }
+        if (description.contains ("Image4D")) {
+            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("4D image is not supported yet"), 3000);
+            continue;
+        }
+        if (!description.contains ("Image3D")) {
+            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("image should be 3D"), 3000);
+            continue;
+        }
+        
+        d->volumeList.push_back (volume);
+        this->addVolumeToTree (0, filepath);
+    }  
 }
 
-void medDiffusionSequenceCompositeDataToolBox::addGradientToTree (unsigned int imageindex, GradientType gradient)
-{
-  QTreeWidgetItem * item = new QTreeWidgetItem(d->tree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
-  std::ostringstream os;
-  os << "["<<gradient[0]<<", "<<gradient[1]<<","<<gradient[2]<<"]";
-  qDebug() << os.str().c_str();
-  
-  item->setText(1, os.str().c_str());
-  //d->tree->setItemWidget(item, 2, NULL);
+void medDiffusionSequenceCompositeDataToolBox::addGradientToTree (unsigned int imageindex, GradientType gradient) {
+
+    QTreeWidgetItem * item = new QTreeWidgetItem(d->tree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
+    std::ostringstream os;
+    os << "["<<gradient[0]<<", "<<gradient[1]<<","<<gradient[2]<<"]";
+    qDebug() << os.str().c_str();
+
+    item->setText(1, os.str().c_str());
+    //d->tree->setItemWidget(item, 2, NULL);
 }
 
-void medDiffusionSequenceCompositeDataToolBox::readGradients (QString filepath)
-{
-  GradientReaderType::Pointer reader = GradientReaderType::New();
+void medDiffusionSequenceCompositeDataToolBox::readGradients (QString filepath) {
+    GradientReaderType::Pointer reader = GradientReaderType::New();
 
-  reader->SetFileName (filepath.toAscii().data());
-  reader->Update();
-  d->gradients = reader->GetGradientList();
-  for (unsigned int i=0; i<d->gradients.size(); i++)
-    this->addGradientToTree (i, d->gradients[i]);
+    reader->SetFileName (filepath.toAscii().data());
+    reader->Update();
+    d->gradients = reader->GetGradientList();
+    for (unsigned int i=0; i<d->gradients.size(); i++)
+        this->addGradientToTree (i, d->gradients[i]);
 }
 
-bool medDiffusionSequenceCompositeDataToolBox::writeInDataBase(void)
-{
-  // instantiate the data
-  medDiffusionSequenceCompositeData* diffusionsequence = new medDiffusionSequenceCompositeData();
-  diffusionsequence->setGradientList (d->gradients);
-  diffusionsequence->setVolumeList (d->volumeList);
+bool medDiffusionSequenceCompositeDataToolBox::writeInDataBase(void) {
+    // instantiate the data
+    medDiffusionSequenceCompositeData* diffusionsequence = new medDiffusionSequenceCompositeData();
+    diffusionsequence->setGradientList (d->gradients);
+    diffusionsequence->setVolumeList (d->volumeList);
 
-  // instantiate the writer
-  medDiffusionSequenceCompositeDataWriter* writer = new medDiffusionSequenceCompositeDataWriter();
-  writer->setData (diffusionsequence);
-  writer->write();
-  return 1;
+    // instantiate the writer
+    medDiffusionSequenceCompositeDataWriter* writer = new medDiffusionSequenceCompositeDataWriter();
+    writer->setData (diffusionsequence);
+    writer->write();
+
+    return 1;
 }
