@@ -519,6 +519,9 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     connect(sagittalAct, SIGNAL(triggered()), this, SLOT(onMenuSagittalTriggered()));
     
     // 3D mode
+    QAction *ThreeDAct = new QAction(tr("3D"), d->vtkWidget);
+    connect(ThreeDAct, SIGNAL(triggered()), this, SLOT(onMenu3DTriggered()));
+
     QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
     connect(vrAct, SIGNAL(triggered()), this, SLOT(onMenu3DVRTriggered()));
     
@@ -571,6 +574,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->menu->addAction(axialAct);
     d->menu->addAction(coronalAct);
     d->menu->addAction(sagittalAct);
+    d->menu->addAction(ThreeDAct);
     
     QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
     tridMenu->addAction (vrAct);
@@ -978,6 +982,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 	    //   this->enableInteractor ( "v3dView4DInteractor" );
 	    
             // This will add the data to one interactor
+         
             dtkAbstractView::setData(data);
             return;
         }
@@ -1023,6 +1028,11 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
         }
     }
+
+    qDebug()<<"Data in V3dView"<< data->description();
+    qDebug()<<"Layer in V3dView"<< layer;
+    
+    this->addDataInList(data);
 
    // emit dataAdded(layer);
     emit dataAdded(data);
@@ -1606,6 +1616,7 @@ void v3dView::onMenuAxialTriggered (void)
     
     this->setProperty("Orientation", "Axial");
     d->view2d->Render();
+    emit TwoDTriggered(this);
 }
 
 
@@ -1616,6 +1627,7 @@ void v3dView::onMenuCoronalTriggered (void)
     
     this->setProperty("Orientation", "Coronal");
     d->view2d->Render();
+    emit TwoDTriggered(this);
 }
 
 
@@ -1626,8 +1638,14 @@ void v3dView::onMenuSagittalTriggered (void)
     
     this->setProperty("Orientation", "Sagittal");
     d->view2d->Render();
+    emit TwoDTriggered(this);
+    qDebug()<<"v3dView::onMenuSagittalTriggered";
 }
 
+void v3dView::onMenu3DTriggered (void)
+{
+    qDebug()<<"BOK";
+}
 void v3dView::onMenu3DVRTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
@@ -1636,6 +1654,7 @@ void v3dView::onMenu3DVRTriggered (void)
     this->setProperty ("3DMode", "VR");
     this->setProperty ("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMPRTriggered (void)
@@ -1646,6 +1665,7 @@ void v3dView::onMenu3DMPRTriggered (void)
     this->setProperty("3DMode",      "MPR");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMaxIPTriggered (void)
@@ -1656,6 +1676,7 @@ void v3dView::onMenu3DMaxIPTriggered (void)
     this->setProperty("3DMode", "MIP - Maximum");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMinIPTriggered (void)
@@ -1666,6 +1687,7 @@ void v3dView::onMenu3DMinIPTriggered (void)
     this->setProperty("3DMode", "MIP - Minimum");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DOffTriggered (void)
