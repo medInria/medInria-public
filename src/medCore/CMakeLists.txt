@@ -45,7 +45,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medRunnableProcess.h
   medAbstractViewFiberInteractor.h
   medAbstractData.h
-  medAbstractDataImage.h
   medAbstractDataImage2D.h
   medAbstractDataImage3D.h
   medAbstractDataImage4D.h
@@ -56,6 +55,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
   medAbstractDataCollection.h
+  medAbstractDataImage.h
   medAbstractDataTypedImage.h
   medAbstractDataTypedImage2D.h
   medAbstractDataTypedImage3D.h
