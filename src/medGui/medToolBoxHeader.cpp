@@ -62,7 +62,7 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
 {
     QFrame::paintEvent(event);
 
-    QRectF rect = this->rect();
+    QRectF rect = this->contentsRect();
 
     QPainter painter(this);
 
