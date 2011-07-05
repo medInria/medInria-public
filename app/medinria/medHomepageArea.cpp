@@ -55,17 +55,21 @@ public:
 
 medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( new medHomepageAreaPrivate )
 {
+    //Setup navigation widget (with buttons for accessing available workspaces)
     d->navigationWidget = new QWidget ( this );
     d->navigationWidget->setMinimumWidth ( 250 );
 
+    //Setup the widget where the medinria general information are displayed
     d->infoWidget = new QWidget ( this );
     d->infoWidget->setMinimumWidth ( 400 );
     d->infoWidget->setMinimumHeight ( 500 );
 
+    //Setup the widget with about, settings and documentation buttons
     d->userWidget = new QWidget ( this );
     d->userWidget->setMinimumWidth ( 250 );
     d->userWidget->setMinimumHeight ( 40 );
 
+    //Setup the about container widget (with a QTabWidget inside)
     d->aboutWidget = new QWidget ( this );
     d->aboutWidget->setMinimumWidth ( 400 );
     d->aboutWidget->setMaximumHeight ( 500 );
@@ -110,7 +114,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     d->userWidget->setLayout ( userButtonsLayout );
 
-    // Special widget : medinria logo, medinria description, etc. QtWebkit ?
+    // Info widget : medinria logo, medinria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout;
     QLabel * medinriaLabel = new QLabel ( this );
     medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
@@ -144,6 +148,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                               <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
+    //TODO Put the contributor in a file and load it at startup
     QTextEdit * aboutAuthorTextEdit = new QTextEdit;
     aboutAuthorTextEdit->setHtml ( "<b>Authors :</b> <br/> \
                        Pierre.Fillard@inria.fr <br> \
@@ -198,6 +203,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
     d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
+    //Setup homepage animations
     d->animation = new QParallelAnimationGroup ( this );
     d->navigationAnimation = new QPropertyAnimation ( d->navigationWidget, "pos" );
     d->navigationAnimation->setDuration ( 750 );
@@ -241,6 +247,7 @@ medHomepageArea::~medHomepageArea()
 
 void medHomepageArea::resizeEvent ( QResizeEvent * event )
 {
+    //Recompute the widgets position when the window is resized
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
     d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
@@ -249,6 +256,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 
     d->aboutTabWidget->setMaximumHeight ( this->height() / 3 );
 
+    //Update the animations as well
     d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );
     d->navigationAnimation->setEndValue ( QPoint ( 100 ,  this->height() / 4 ) );
 
@@ -261,6 +269,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 
 void medHomepageArea::initPage ( void )
 {
+    //Initialization of the navigation widget with available workspaces
     QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
     QVBoxLayout * configurationButtonsLayout = new QVBoxLayout;
     configurationButtonsLayout->setSpacing ( 10 );
