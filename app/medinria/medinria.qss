@@ -58,16 +58,6 @@ QTreeView {
     alternate-background-color: #606060;
 }
 
-QTreeView::item[dbSource="nonPersistent"] {
-    color: #CCCCFC;
-    background: #6b6b6b;
-    border: 1px solid darkgray;
-    padding: 0px 0px 0px 0px;
-    gridline-color: gray;
-
-    alternate-background-color: #606090;
-}
-
 /**
  * QTextEdit
  *
