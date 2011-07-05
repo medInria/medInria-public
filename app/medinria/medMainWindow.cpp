@@ -566,7 +566,8 @@ void medMainWindow::onEditSettings()
 void medMainWindow::open ( const medDataIndex& index )
 {
     this->switchToViewerArea();
-
+    d->quickAccessButton->setText("Workspace: Visualization");
+    d->quickAccessButton->setMinimumWidth(170);
     d->viewerArea->open ( index );
 }
 
@@ -575,6 +576,9 @@ void medMainWindow::open ( const QString& file )
     d->viewerArea->open ( file );
 
     this->switchToViewerArea();
+
+    d->quickAccessButton->setText("Workspace: Visualization");
+    d->quickAccessButton->setMinimumWidth(170);
 }
 
 void medMainWindow::closeEvent ( QCloseEvent *event )
