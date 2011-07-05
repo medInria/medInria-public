@@ -357,12 +357,15 @@ void medDatabaseControllerImpl::createSeriesTable(void)
 
 void medDatabaseControllerImpl::createImageTable(void)
 {
+    // Note to the reader who came here looking for the 'size' column:
+    // it was removed because it was always filled with a
+    // placeholder (number 64), and it was never read.
+
     QSqlQuery query(*(this->database()));
     query.exec(
             "CREATE TABLE image ("
             " id         INTEGER      PRIMARY KEY,"
             " series     INTEGER," // FOREIGN KEY
-            " size       INTEGER,"
             " name          TEXT,"
             " path          TEXT,"
             " instance_path TEXT,"
