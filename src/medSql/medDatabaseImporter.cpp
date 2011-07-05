@@ -138,23 +138,18 @@ void medDatabaseImporter::run(void)
         QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
         QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
         QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
+        QString studyID   = dtkdata->metaDataValues(tr("StudyID"))[0];
+        QString seriesID   = dtkdata->metaDataValues(tr("SeriesID"))[0];
+        QString patientBirthDate   = dtkdata->metaDataValues(tr("BirthDate"))[0];
 
-        QString s_patientName = patientName.simplified();
-        QString s_studyName   = studyName.simplified();
-        QString s_seriesName  = seriesName.simplified();
+        //Create patient ID from patient name and patient birthdate (other solutions ?)
+        QString patientID = patientName.simplified() + patientBirthDate;
 
-        s_patientName.replace (0x00EA, 'e');
-        s_studyName.replace   (0x00EA, 'e');
-        s_seriesName.replace  (0x00EA, 'e');
-        s_patientName.replace (0x00E4, 'a');
-        s_studyName.replace   (0x00E4, 'a');
-        s_seriesName.replace  (0x00E4, 'a');
-
-        QString imageFileName = "/" + s_patientName + "/" +
-                s_studyName   + "/" +
-                s_seriesName  + uniqueSeriesId;
+        QString imageFileName = QDir::separator() + patientID
+                              + QDir::separator() + studyID
+                              + QDir::separator() + seriesID + uniqueSeriesId;
+                
         QString description = dtkdata->description();
-
 
         // Determine the appropriate extension to use according to the type
         // of data.
