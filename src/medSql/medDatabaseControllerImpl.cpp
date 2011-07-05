@@ -370,7 +370,8 @@ void medDatabaseControllerImpl::createImageTable(void)
             " path          TEXT,"
             " instance_path TEXT,"
             " thumbnail     TEXT,"
-            " slice      INTEGER"
+            " slice      INTEGER,"
+            " isIndexed  BOOLEAN"
             ");"
             );
 }

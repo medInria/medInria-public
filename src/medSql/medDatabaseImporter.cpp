@@ -67,18 +67,6 @@ medDatabaseImporter::~medDatabaseImporter(void)
 
 void medDatabaseImporter::run(void)
 {
-    if (d->indexWithoutImporting)
-    {
-        index();
-    }
-    else
-    {
-        import();
-    }
-}
-
-void medDatabaseImporter::import(void)
-{
     QMutexLocker locker(&d->mutex);
 
     /* The idea of this algorithm can be summarized in 3 steps:
@@ -95,9 +83,8 @@ void medDatabaseImporter::import(void)
     QStringList fileList = getAllFilesToBeProcessed(d->file);
 
     // Files that pass the filters named above are grouped
-    // by volume in this map and will be written in the db after
+    // by volume in this map and will be written in the db after.
     // the key will be the name of the aggregated file with the volume
-    // in this case will be a .mha
     QMap<QString, QStringList> imagesGroupedByVolume;
 
     int currentFileNumber = 0; // this variable will be used only for calculating progress
@@ -161,7 +148,8 @@ void medDatabaseImporter::import(void)
         // i.e.: in which format we will write the file in our database
         QString futureExtension  = determineFutureImageExtensionByDataType(dtkData);
 
-        if (futureExtension.isEmpty())
+        // we care whether we can write the image or not if we are importing
+        if (!d->indexWithoutImporting && futureExtension.isEmpty())
         {
             emit showError(this, tr("Could not save file due to unhandled data type: ") + dtkData->description(), 5000);
             continue;
@@ -244,20 +232,23 @@ void medDatabaseImporter::import(void)
             continue;
         }
 
-        // create location to store file
-        QFileInfo fileInfo( medStorage::dataLocation() + aggregatedFileName );
-        if ( !fileInfo.dir().exists() && !medStorage::mkpath(fileInfo.dir().path()) )
+        if(!d->indexWithoutImporting)
         {
-            qDebug() << "Cannot create directory: " << fileInfo.dir().path();
-            continue;
-        }
+            // create location to store file
+            QFileInfo fileInfo( medStorage::dataLocation() + aggregatedFileName );
+            if ( !fileInfo.dir().exists() && !medStorage::mkpath(fileInfo.dir().path()) )
+            {
+                qDebug() << "Cannot create directory: " << fileInfo.dir().path();
+                continue;
+            }
 
-        // now writing file
-        bool writeSuccess = tryWriteImage(fileInfo.filePath(), imageDtkData);
+            // now writing file
+            bool writeSuccess = tryWriteImage(fileInfo.filePath(), imageDtkData);
 
-        if (!writeSuccess){
-            emit showError(this, tr ("Could not save data file: ") + filesPaths[0], 5000);
-            continue;
+            if (!writeSuccess){
+                emit showError(this, tr ("Could not save data file: ") + filesPaths[0], 5000);
+                continue;
+            }
         }
 
         // and finally we populate the database
@@ -272,12 +263,6 @@ void medDatabaseImporter::import(void)
 
     emit progressed(this,100);
     emit success(this);
-}
-
-void medDatabaseImporter::index(void)
-{
-    // TODO...
-    qDebug() << "TODO.....";
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -469,6 +454,12 @@ void medDatabaseImporter::populateDatabaseAndGenerateThumbnails(dtkAbstractData*
     int seriesId = getOrCreateSeries(dtkData, db, studyId);
 
     createMissingImages(dtkData, db, seriesId, thumbPaths);
+
+    // we still need to check that, given a seriesId, if after creating
+    // the new records in image table, there is at least one of them which is
+    // indexed, then we need to empty the column 'path' of the table 'series'
+    // as it no longer represent an image containing the whole series
+    checkAndFixConsistencyOfSeriesPathColumn(db, seriesId);
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -611,8 +602,14 @@ int medDatabaseImporter::getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabas
     }
     else
     {
+        // if we are creating a new series while indexing then we need to empty
+        // the column 'path', as there won't be a file aggregating the images
+
+        QString seriesPath = "";
+        if(!d->indexWithoutImporting)
+            QString seriesPath = dtkData->metaDataValues (tr("FileName"))[0];
+
         int size = dtkData->metaDataValues(tr("Size"))[0].toInt();
-        QString seriesPath = dtkData->metaDataValues (tr("FileName"))[0];
         QString refThumbPath = dtkData->metadata("RefThumbnailPath");
         QString age = dtkData->metaDataValues(tr("Age"))[0];
         QString description    = dtkData->metaDataValues(tr("Description"))[0];
@@ -667,16 +664,15 @@ void medDatabaseImporter::createMissingImages(dtkAbstractData* dtkData, QSqlData
     QSqlQuery query(db);
 
     QStringList filePaths  = dtkData->metaDataValues (tr("FilePaths"));
-    QString seriesPath = dtkData->metaDataValues (tr("FileName"))[0];
 
     if (filePaths.count() == 1 && thumbPaths.count() > 1) // special case to 1 image and multiple thumbnails
     {
         QFileInfo fileInfo(filePaths[0]);
-        for (int j = 0; j < thumbPaths.count(); j++)
+        for (int i = 0; i < thumbPaths.count(); i++)
         {
             query.prepare("SELECT id FROM image WHERE series = :seriesId AND name = :name");
             query.bindValue(":seriesId", seriesId);
-            query.bindValue(":name", fileInfo.fileName() + QString().setNum(j));
+            query.bindValue(":name", fileInfo.fileName() + QString().setNum(i));
 
             if (!query.exec())
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
@@ -687,12 +683,17 @@ void medDatabaseImporter::createMissingImages(dtkAbstractData* dtkData, QSqlData
             }
             else
             {
-                query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
+                query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail, isIndexed) VALUES (:series, :name, :path, :instance_path, :thumbnail, :isIndexed)");
                 query.bindValue(":series", seriesId);
-                query.bindValue(":name", fileInfo.fileName() + QString().setNum(j));
+                query.bindValue(":name", fileInfo.fileName() + QString().setNum(i));
                 query.bindValue(":path", fileInfo.filePath());
-                query.bindValue(":instance_path", seriesPath);
-                query.bindValue(":thumbnail", thumbPaths[j]);
+                query.bindValue(":thumbnail", thumbPaths[i]);
+                query.bindValue(":isIndexed", d->indexWithoutImporting);
+
+                // if we are indexing we want to leave the 'instance_path' column blank
+                // as we will use the full path in 'path' column to load them
+                QString relativeFilePath = dtkData->metaDataValues(tr("FileName"))[0];
+                query.bindValue(":instance_path", d->indexWithoutImporting ? "" : relativeFilePath);
 
                 if (!query.exec())
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
@@ -701,9 +702,9 @@ void medDatabaseImporter::createMissingImages(dtkAbstractData* dtkData, QSqlData
     }
     else
     {
-        for (int j = 0; j < filePaths.count(); j++)
+        for (int i = 0; i < filePaths.count(); i++)
         {
-            QFileInfo fileInfo(filePaths[j]);
+            QFileInfo fileInfo(filePaths[i]);
 
             query.prepare("SELECT id FROM image WHERE series = :seriesId AND name = :name");
             query.bindValue(":seriesId", seriesId);
@@ -718,20 +719,52 @@ void medDatabaseImporter::createMissingImages(dtkAbstractData* dtkData, QSqlData
             }
             else
             {
-                query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
+                query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail, isIndexed) VALUES (:series, :name, :path, :instance_path, :thumbnail, :isIndexed)");
                 query.bindValue(":series", seriesId);
                 query.bindValue(":name", fileInfo.fileName());
                 query.bindValue(":path", fileInfo.filePath());
-                query.bindValue(":instance_path", seriesPath);
+                query.bindValue(":isIndexed", d->indexWithoutImporting);
 
-                if (j < thumbPaths.count())
-                    query.bindValue(":thumbnail", thumbPaths[j]);
+                // if we are indexing we want to leave the 'instance_path' column blank
+                // as we will use the full path in 'path' column to load them
+                QString relativeFilePath = dtkData->metaDataValues(tr("FileName"))[0];
+                query.bindValue(":instance_path", d->indexWithoutImporting ? "" : relativeFilePath);
+
+                if (i < thumbPaths.count())
+                    query.bindValue(":thumbnail", thumbPaths[i]);
                 else
                     query.bindValue(":thumbnail", "");
 
                 if (!query.exec())
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
             }
+        }
+    }
+}
+
+void medDatabaseImporter::checkAndFixConsistencyOfSeriesPathColumn(QSqlDatabase db, int seriesId)
+{
+    QSqlQuery query(db);
+
+    query.prepare("SELECT COUNT(*) FROM image WHERE series = :seriesId AND isIndexed = 'true'");
+    query.bindValue(":seriesId", seriesId);
+
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    if(query.first())
+    {
+        int indexedImagesCount = query.value(0).toInt();
+
+        if (indexedImagesCount >= 1)
+        {
+            QSqlQuery updateQuery(db);
+
+            updateQuery.prepare("UPDATE series SET path = '' WHERE id = :seriesId");
+            updateQuery.bindValue(":seriesId", seriesId);
+
+            if(!query.exec())
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         }
     }
 }

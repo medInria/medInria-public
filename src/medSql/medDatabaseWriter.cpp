@@ -439,7 +439,7 @@ medDataIndex medDatabaseWriter::run(void)
 	        ; //qDebug() << "Image" << file << "already in database";
 	    }
 	    else {
-	    query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
+	    query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
 		query.bindValue(":series", id);
 		query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
 		query.bindValue(":path", fileInfo.filePath());
@@ -466,7 +466,7 @@ medDataIndex medDatabaseWriter::run(void)
 	        ; //qDebug() << "Image" << file << "already in database";
 	    }
 	    else {
-	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
+	        query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
 		query.bindValue(":series", id);
 		query.bindValue(":name", fileInfo.fileName());
 		query.bindValue(":path", fileInfo.filePath());

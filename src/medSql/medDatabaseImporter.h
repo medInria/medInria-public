@@ -173,6 +173,7 @@ private:
     int getOrCreateStudy(dtkAbstractData* dtkData, QSqlDatabase db, int patientId);
     int getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabase db, int studyId);
     void createMissingImages(dtkAbstractData* dtkData, QSqlDatabase db, int seriesId, QStringList thumbPaths);
+    void checkAndFixConsistencyOfSeriesPathColumn(QSqlDatabase db, int seriesId);
 
     medDatabaseImporterPrivate *d;
 
