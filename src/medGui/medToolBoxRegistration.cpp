@@ -52,8 +52,6 @@ public:
     QPushButton * saveImageButton;
     QPushButton * saveTransButton;
 
-    QPushButton * importResultButton;
-
     QComboBox *toolboxes;
     medAbstractView *fixedView;
     medAbstractView *movingView;
@@ -63,8 +61,6 @@ public:
     dtkAbstractDataImage *movingData;
 
     dtkAbstractProcess * process;
-
-    medDataIndex outputImageNPIndex;
 
     medToolBoxRegistrationCustom * customToolBox;
 };
@@ -78,14 +74,10 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->fixedView  = NULL;
     d->movingView = NULL;
     d->process = NULL;
-    d->outputImageNPIndex = medDataIndex();
 
     // Process section
     d->saveImageButton = new QPushButton(tr("Save Image"),this);
     connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
-
-    d->importResultButton = new QPushButton(tr("Import in Database"),this);
-    connect (d->importResultButton, SIGNAL(clicked()), this, SLOT(onImportImage()));
 
     d->saveTransButton = new QPushButton(tr("Save Transformation"),this);
     connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
@@ -161,7 +153,6 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     addWidget(layoutSection);
     addWidget(d->toolboxes);
     addWidget(d->saveImageButton);
-    addWidget(d->importResultButton);
     addWidget(d->saveTransButton);
 
 
@@ -409,11 +400,6 @@ void medToolBoxRegistration::onSaveImage()
 
 }
 
-void medToolBoxRegistration::onImportImage()
-{
-    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(d->outputImageNPIndex);
-}
-
 void medToolBoxRegistration::onSaveTrans()
 {
     if (!d->movingData)
@@ -470,8 +456,6 @@ void medToolBoxRegistration::onSuccess()
     newDescription += " registered";
     output->setMetaData(tr("SeriesDescription"), newDescription);
 
-    connect(medDataManager::instance(),SIGNAL(dataAdded(const medDataIndex &)), this, SLOT(onImportedInNPDatabase(const medDataIndex &)));
-    d->outputImageNPIndex = medDataIndex();
     medDataManager::instance()->importNonPersistent(output);
 
 	if(output)
@@ -484,12 +468,4 @@ void medToolBoxRegistration::onSuccess()
         d->fuseView->update();
 
     }
-}
-
-void medToolBoxRegistration::onImportedInNPDatabase(const medDataIndex &index)
-{
-    if (&index == NULL)
-        return;
-
-    d->outputImageNPIndex = index;
 }

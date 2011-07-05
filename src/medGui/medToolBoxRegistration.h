@@ -61,12 +61,10 @@ public slots:
     
 //    void onBlendModeSet(bool value);
 //    void onCheckerboardModeSet(bool value);
-    void onImportedInNPDatabase(const medDataIndex &index);
-	
+
     void onToolBoxChosen(const QString&);
     void clear(void);
     void onSaveImage(void);
-    void onImportImage(void);
     void onSaveTrans(void);
     void onSuccess(void);
 private:
