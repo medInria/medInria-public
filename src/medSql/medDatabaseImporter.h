@@ -68,26 +68,25 @@ private:
     * Populates the missing metadata in the @dtkAbstractData object.
     * If metadata is not present it's filled with default or empty values.
     * @param dtkData - the object whose missing metadata will be filled
-    * @param fileBaseName - the base name of the file used to generate the dtkData object
-    *                       it's used to fill SeriesDescription field if not present
+    * @param seriesDescription - string used to fill SeriesDescription field if not present
     **/
-    void populateMissingMetadata(dtkAbstractData* dtkData, const QString fileBaseName);
+    void populateMissingMetadata(dtkAbstractData* dtkData, const QString seriesDescription);
 
     /**
     * Checks if the image which was used to create the dtkData object
     * passed as parameter already exists in the database
     * @param dtkData - a @dtkAbstractData object created from the original image
-    * @param fileInfo - a @QFileInfo object created with the original image filename
+    * @param imageName - the name of the image we are looking for
     * @return true if already exists, false otherwise
     **/
-    bool checkIfExists(dtkAbstractData* dtkData, const QFileInfo* fileInfo);
+    bool checkIfExists(dtkAbstractData* dtkdata, QString imageName);
 
     /**
     * Populates database tables and generates thumbnails.
     * @param dtkData - a @dtkAbstractData object created from the original image
-    * @param seriesInfo - a @QFileInfo object created with the aggregated image filename
+    * @param pathToStoreThumbnails - path where the thumbnails will be stored
     **/
-    void populateDatabaseAndGenerateThumbnails(dtkAbstractData* dtkData, const QFileInfo* seriesInfo);
+    void populateDatabaseAndGenerateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails);
 
     /**
     * Tries to find a @dtkAbstractDataReader able to read input file/s.
@@ -151,7 +150,7 @@ private:
     * @param fileName - file name where the object will be written to
     * @param filePaths - if the file is aggregating more than one file, all of them will be listed here
     **/
-    void addAdditionalMetaData(dtkAbstractData* dtkData, QString fileName, QStringList filePaths);
+    void addAdditionalMetaData(dtkAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths);
 
     /**
     * Generates an Id intended to be unique for each volume
@@ -161,14 +160,14 @@ private:
     QString generateUniqueVolumeId(dtkAbstractData* dtkData);
 
     /**
-        * Generates and saves the thumbnails for images in @dtkAbstractData.
-        * Also stores as metada with key RefThumbnailPath the path of the image that
-        * will be used as reference for patient, study and series.
-        * @param dtkData - @dtkAbstractData object whose thumbnails will be generated and saved
-        * @param aggregatedFileNameFileInfo - @QFileInfo of the file aggregating the images
-        * @return a list of the thumbnails paths
-        **/
-    QStringList generateThumbnails(dtkAbstractData* dtkData, const QFileInfo* aggregatedFileNameFileInfo);
+    * Generates and saves the thumbnails for images in @dtkAbstractData.
+    * Also stores as metada with key RefThumbnailPath the path of the image that
+    * will be used as reference for patient, study and series.
+    * @param dtkData - @dtkAbstractData object whose thumbnails will be generated and saved
+    * @param pathToStoreThumbnails - path where the thumbnails will be stored
+    * @return a list of the thumbnails paths
+    **/
+    QStringList generateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails);
 
     int getOrCreatePatient(dtkAbstractData* dtkData, QSqlDatabase db);
     int getOrCreateStudy(dtkAbstractData* dtkData, QSqlDatabase db, int patientId);

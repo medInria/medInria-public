@@ -172,7 +172,7 @@ void medDatabaseImporter::import(void)
         // 2.4) c) Add the image to a map for writing them all in medinria's database in a posterior step
 
         // First check if patient/study/series/image path already exists in the database
-        if (!checkIfExists(dtkData, &fileInfo))
+        if (!checkIfExists(dtkData, fileInfo.fileName()))
             imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
 
         // afterwards we will re-read all the files, so we destroy the dtkData object
@@ -231,6 +231,7 @@ void medDatabaseImporter::import(void)
         if (imageDtkData)
         {
             // 3.3) a) re-populate missing metadata
+            // as files are now aggregated we use the aggregated file name as SeriesDescription (if not provided, of course)
             populateMissingMetadata(imageDtkData, imagefileInfo.baseName());
 
             // 3.3) b) now we are able to add some more metadata
@@ -261,7 +262,8 @@ void medDatabaseImporter::import(void)
 
         // and finally we populate the database
         QFileInfo aggregatedFileNameFileInfo( aggregatedFileName );
-        this->populateDatabaseAndGenerateThumbnails(imageDtkData, &aggregatedFileNameFileInfo);
+        QString pathToStoreThumbnails = aggregatedFileNameFileInfo.dir().path() + "/" + aggregatedFileNameFileInfo.completeBaseName() + "/";
+        this->populateDatabaseAndGenerateThumbnails(imageDtkData, pathToStoreThumbnails);
 
         delete imageDtkData;
         imageDtkData = NULL;
@@ -287,7 +289,7 @@ void medDatabaseImporter::onCancel( QObject* )
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medDatabaseImporter::populateMissingMetadata( dtkAbstractData* dtkData, const QString fileBaseName )
+void medDatabaseImporter::populateMissingMetadata( dtkAbstractData* dtkData, const QString seriesDescription )
 {
     if (!dtkData)
         return;
@@ -299,7 +301,7 @@ void medDatabaseImporter::populateMissingMetadata( dtkAbstractData* dtkData, con
         dtkData->addMetaData("StudyDescription", QStringList() << "EmptyStudy");
 
     if(!dtkData->hasMetaData("SeriesDescription"))
-        dtkData->addMetaData("SeriesDescription", QStringList() << fileBaseName);
+        dtkData->addMetaData("SeriesDescription", QStringList() << seriesDescription);
 
     if(!dtkData->hasMetaData("StudyID"))
         dtkData->addMetaData("StudyID", QStringList() << "");
@@ -370,7 +372,7 @@ void medDatabaseImporter::populateMissingMetadata( dtkAbstractData* dtkData, con
 
 //-----------------------------------------------------------------------------------------------------------
 
-bool medDatabaseImporter::checkIfExists( dtkAbstractData* dtkdata, const QFileInfo * fileInfo  )
+bool medDatabaseImporter::checkIfExists(dtkAbstractData* dtkdata, QString imageName)
 {
     bool imageExists = false;
 
@@ -437,7 +439,7 @@ bool medDatabaseImporter::checkIfExists( dtkAbstractData* dtkdata, const QFileIn
 
                 query.prepare("SELECT id FROM image WHERE series = :seriesId AND name = :name");
                 query.bindValue(":seriesId", seriesId);
-                query.bindValue(":name", fileInfo->fileName());
+                query.bindValue(":name", imageName);
 
                 if(!query.exec())
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
@@ -454,11 +456,11 @@ bool medDatabaseImporter::checkIfExists( dtkAbstractData* dtkdata, const QFileIn
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medDatabaseImporter::populateDatabaseAndGenerateThumbnails( dtkAbstractData* dtkData, const QFileInfo* aggregatedFileNameFileInfo )
+void medDatabaseImporter::populateDatabaseAndGenerateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails)
 {
     QSqlDatabase db = *(medDatabaseController::instance()->database());
 
-    QStringList thumbPaths = generateThumbnails(dtkData, aggregatedFileNameFileInfo);
+    QStringList thumbPaths = generateThumbnails(dtkData, pathToStoreThumbnails);
 
     int patientId = getOrCreatePatient(dtkData, db);
 
@@ -471,26 +473,24 @@ void medDatabaseImporter::populateDatabaseAndGenerateThumbnails( dtkAbstractData
 
 //-----------------------------------------------------------------------------------------------------------
 
-QStringList medDatabaseImporter::generateThumbnails(dtkAbstractData* dtkData, const QFileInfo* aggregatedFileNameFileInfo)
+QStringList medDatabaseImporter::generateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails)
 {
     QList<QImage> &thumbnails = dtkData->thumbnails();
 
-    QString thumb_dir = aggregatedFileNameFileInfo->dir().path() + "/" + aggregatedFileNameFileInfo->completeBaseName() + "/";
-
     QStringList thumbPaths;
 
-    if (!medStorage::mkpath(medStorage::dataLocation() + thumb_dir))
-        qDebug() << "Cannot create directory: " << thumb_dir;
+    if (!medStorage::mkpath(medStorage::dataLocation() + pathToStoreThumbnails))
+        qDebug() << "Cannot create directory: " << pathToStoreThumbnails;
 
     for (int i=0; i < thumbnails.count(); i++)
     {
-        QString thumb_name = thumb_dir + QString().setNum(i) + ".png";
+        QString thumb_name = pathToStoreThumbnails + QString().setNum(i) + ".png";
         thumbnails[i].save(medStorage::dataLocation() + thumb_name, "PNG");
         thumbPaths << thumb_name;
     }
 
     QImage refThumbnail = dtkData->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
-    QString refThumbPath = thumb_dir + "ref.png";
+    QString refThumbPath = pathToStoreThumbnails + "ref.png";
     refThumbnail.save (medStorage::dataLocation() + refThumbPath, "PNG");
 
     dtkData->addMetaData("RefThumbnailPath", refThumbPath);
@@ -951,12 +951,12 @@ bool medDatabaseImporter::tryWriteImage(QString filePath, dtkAbstractData* imDat
     return writeSuccess;
 }
 
-void medDatabaseImporter::addAdditionalMetaData(dtkAbstractData* imData, QString fileName, QStringList filePaths)
+void medDatabaseImporter::addAdditionalMetaData(dtkAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths)
 {
     QStringList size;
-    if (dtkAbstractDataImage *imagedata = dynamic_cast<dtkAbstractDataImage*>(imData))
+    if (dtkAbstractDataImage *imageData = dynamic_cast<dtkAbstractDataImage*>(imData))
     {
-        size << QString::number( imagedata->zDimension() );
+        size << QString::number( imageData->zDimension() );
     }
     else {
         size << "";
@@ -965,9 +965,9 @@ void medDatabaseImporter::addAdditionalMetaData(dtkAbstractData* imData, QString
     imData->setMetaData ("Size", size);
 
     if (!imData->hasMetaData ("FilePaths"))
-        imData->addMetaData  ("FilePaths", filePaths);
+        imData->addMetaData  ("FilePaths", aggregatedFilesPaths);
 
-    imData->addMetaData ("FileName", fileName);
+    imData->addMetaData ("FileName", aggregatedFileName);
 }
 
 QString medDatabaseImporter::generateUniqueVolumeId(dtkAbstractData* dtkData)
