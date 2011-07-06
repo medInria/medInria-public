@@ -699,18 +699,21 @@ medStackedViewContainers QTabBar::tab {
     padding-left: 5px;
     padding-right: 5px;
     min-width: 80px;
+    text-outline: none;
     color: #b2b8b2;
 }
 
 medStackedViewContainers QTabBar::tab:selected, medStackedViewContainers QTabBar::tab:hover {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
     border-bottom-color: #4c4c4c;
+    text-outline: none;
     color: #b2b8b2;
 }
 
 medStackedViewContainers QPushButton {
     background: none;
     border: none;
+    outline: none;
     margin-bottom: 2px;
     padding: 0px;
     height: 18px;
@@ -719,6 +722,7 @@ medStackedViewContainers QPushButton {
 medStackedViewContainers QPushButton:pressed, medStackedViewContainers QPushButton:hover {
     background: none;
     border: none;
+    outline: none;
     margin-bottom: 2px;
     padding: 0px;
     height: 18px;
