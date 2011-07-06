@@ -11,7 +11,7 @@
 #include "v3dView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
@@ -242,7 +242,7 @@ public:
     
     dtkAbstractData *data;
 	QMap<int, dtkSmartPointer<dtkAbstractData> > sharedData;
-    dtkAbstractDataImage *imageData;
+	medAbstractDataImage *imageData;
     
     QTimeLine *timeline;
 
@@ -519,9 +519,6 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     connect(sagittalAct, SIGNAL(triggered()), this, SLOT(onMenuSagittalTriggered()));
     
     // 3D mode
-    QAction *ThreeDAct = new QAction(tr("3D"), d->vtkWidget);
-    connect(ThreeDAct, SIGNAL(triggered()), this, SLOT(onMenu3DTriggered()));
-
     QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
     connect(vrAct, SIGNAL(triggered()), this, SLOT(onMenu3DVRTriggered()));
     
@@ -574,8 +571,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->menu->addAction(axialAct);
     d->menu->addAction(coronalAct);
     d->menu->addAction(sagittalAct);
-    d->menu->addAction(ThreeDAct);
-    
+
     QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
     tridMenu->addAction (vrAct);
     tridMenu->addAction (maxipAct);
@@ -988,7 +984,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     
     if (layer==0)
     {
-        if (dtkAbstractDataImage *imageData = dynamic_cast<dtkAbstractDataImage*> (data)) {
+        if (medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> (data)) {
             d->data = data;
             d->imageData = imageData;
         
@@ -1641,10 +1637,6 @@ void v3dView::onMenuSagittalTriggered (void)
     qDebug()<<"v3dView::onMenuSagittalTriggered";
 }
 
-void v3dView::onMenu3DTriggered (void)
-{
-    qDebug()<<"BOK";
-}
 void v3dView::onMenu3DVRTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))

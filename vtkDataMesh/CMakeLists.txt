@@ -34,6 +34,9 @@ include(${VTK_USE_FILE})
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 #include_directories(../dtkVtkLogForwarder)
 find_package(medinria-plugins REQUIRED)
 include(${medinria-plugins_USE_FILE})
@@ -69,6 +72,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkVtkLogForwarder
   dtkCore
+  medCore
   vtkCommon
   vtkFiltering
   vtkRendering

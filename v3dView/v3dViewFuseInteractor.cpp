@@ -2,7 +2,7 @@
 
 #include <dtkCore/dtkLog.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -24,8 +24,8 @@ public:
   typedef itk::WeightedAddImageFilter<ImageType, ImageType, ImageType>  BlendFilterType;
   typedef itk::CheckerBoardImageFilter<ImageType>                       CheckerboardFilterType;
   
-  dtkSmartPointer<dtkAbstractDataImage> data1;
-  dtkSmartPointer<dtkAbstractDataImage> data2;
+  dtkSmartPointer<medAbstractDataImage> data1;
+  dtkSmartPointer<medAbstractDataImage> data2;
 
   dtkSmartPointer<dtkAbstractData> output;
 

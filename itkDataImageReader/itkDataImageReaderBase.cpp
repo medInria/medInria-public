@@ -1,7 +1,8 @@
 #include "itkDataImageReaderBase.h"
 
+#include <medCore/medAbstractDataImage.h>
+
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -255,7 +256,7 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
     const itk::MetaDataDictionary dict = im->GetMetaDataDictionary();
     std::string PixMeaning;
     if (itk::ExposeMetaData(dict,"intent_name",PixMeaning))
-        dtkdata->addMetaData(dtkAbstractDataImage::PixelMeaningMetaData,QString(PixMeaning.c_str()));
+        dtkdata->addMetaData(medAbstractDataImage::PixelMeaningMetaData,QString(PixMeaning.c_str()));
 
     TReader->Update();
 

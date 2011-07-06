@@ -2,7 +2,7 @@
 
 #include <dtkCore/dtkLog.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -24,8 +24,8 @@ public:
   typedef itk::WeightedAddImageFilter<ImageType, ImageType, ImageType>  BlendFilterType;
   typedef itk::CheckerBoardImageFilter<ImageType>                       CheckerboardFilterType;
   
-  dtkSmartPointer<dtkAbstractDataImage> data1;
-  dtkSmartPointer<dtkAbstractDataImage> data2;
+  dtkSmartPointer<medAbstractDataImage> data1;
+  dtkSmartPointer<medAbstractDataImage> data2;
 
   dtkSmartPointer<dtkAbstractData> output;
 
@@ -41,8 +41,8 @@ public:
 
 v3dViewPublicFuseInteractor::v3dViewPublicFuseInteractor(): dtkAbstractViewInteractor(), d(new v3dViewPublicFuseInteractorPrivate)
 {
-    d->data1 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3") );
-    d->data2 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3") );
+    d->data1 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3");
+    d->data2 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3");
     d->view = 0;
 
     d->alpha = 0.5;
