@@ -620,7 +620,7 @@ QString medDatabaseControllerImpl::metaData( const medDataIndex& index, const QS
 
         int id = -1;
         if ( tableName == d->T_image && index.isValidForImage() ) {
-            id = index.patientId();
+            id = index.imageId();
         } else if ( tableName == d->T_series && index.isValidForSeries() ) {
             id = index.seriesId();
         } else if ( tableName == d->T_study && index.isValidForStudy() ) {
@@ -674,7 +674,7 @@ bool medDatabaseControllerImpl::setMetaData( const medDataIndex& index, const QS
 
         int id = -1;
         if ( tableName == d->T_image && index.isValidForImage() ) {
-            id = index.patientId();
+            id = index.imageId();
         } else if ( tableName == d->T_series && index.isValidForSeries() ) {
             id = index.seriesId();
         } else if ( tableName == d->T_study && index.isValidForStudy() ) {
