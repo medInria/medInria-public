@@ -259,7 +259,6 @@ void medViewerArea::open(const medDataIndex& index)
         // another hash?!
         medViewManager::instance()->insert(index, view);
         
-        
         this->onViewFocused(view);
         
         // set the data to the view
@@ -267,6 +266,7 @@ void medViewerArea::open(const medDataIndex& index)
        
         // call update
         QMutexLocker ( &d->mutex );
+
         if (d->current_configuration->currentViewContainer()) 
         {
             d->current_configuration->currentViewContainer()->setUpdatesEnabled (false);
@@ -447,9 +447,6 @@ void medViewerArea::switchToContainer(const QString& name)
             //same conf, do nothing
             return;
         }
-        qDebug() << "switching from" << 
-                d->current_configuration->currentViewContainerName() << 
-                "to configuration" << name;
         
         d->current_configuration->setCurrentViewContainer(name);
         d->current_configuration->currentViewContainer()->setFocus(Qt::MouseFocusReason);

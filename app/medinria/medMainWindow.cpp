@@ -405,9 +405,9 @@ void medMainWindow::open(const medDataIndex& index)
 
 void medMainWindow::open(const QString& file)
 {
-    d->viewerArea->openInTab(file);
-
     this->switchToViewerArea();
+
+    d->viewerArea->openInTab(file);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)
