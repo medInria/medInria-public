@@ -40,6 +40,8 @@ public:
 
     virtual void read_description(const QByteArray& buf);
 
+    //  Methods specific to this type.
+
     void readVolumes(QStringList);
     void setGradientList(const GradientListType& grads) { gradients = grads; }
     void setVolumeList(const Volumes& vols)             { images = vols;     }

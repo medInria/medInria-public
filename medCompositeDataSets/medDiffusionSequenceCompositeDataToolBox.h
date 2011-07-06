@@ -9,7 +9,7 @@
 
 class medDiffusionSequenceCompositeDataToolBoxPrivate;
 
-class medDiffusionSequenceCompositeDataToolBox : public medToolBoxCompositeDataSetImporterCustom {
+class medDiffusionSequenceCompositeDataToolBox: public medToolBoxCompositeDataSetImporterCustom {
     Q_OBJECT
 
 public:

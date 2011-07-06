@@ -14,13 +14,11 @@
 // medDiffusionSequenceCompositeData
 // /////////////////////////////////////////////////////////////////
 
-bool medDiffusionSequenceCompositeData::registered(void)
-{
+bool medDiffusionSequenceCompositeData::registered(void) {
     return dtkAbstractDataFactory::instance()->registerDataType("medDiffusionSequenceCompositeData", createDiffusionSequenceCompositeData);
 }
 
-QString medDiffusionSequenceCompositeData::description(void) const
-{
+QString medDiffusionSequenceCompositeData::description(void) const {
     return "medDiffusionSequenceCompositeData";
 }
 
