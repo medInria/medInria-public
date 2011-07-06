@@ -25,30 +25,6 @@ class dtkAbstractView;
     \author Nicolas Toussaint and Fatih Arslan
 */
 
-
-//BTX
-#define AppendImageSequenceMacro(type)					\
-  unsigned int layer = d->view->layerCount();				\
-  if (layer==1 && !d->view->view2d()->GetInput()) \
-    layer = 0; \
-  vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::New();	\
-  sequence->SetITKDataSet<type> (image);				\
-  d->sequenceList->AddItem (sequence);					\
-  vtkMetaImageData* metaimage =						\
-    vtkMetaImageData::SafeDownCast (sequence->GetMetaDataSet ((unsigned int)0)); \
-  vtkImageData* vtkimage =							\
-    vtkImageData::SafeDownCast (sequence->GetDataSet());		\
-  d->view->view2d()->SetInput (vtkimage,					\
-			       metaimage->GetOrientationMatrix(),	\
-			       layer);					\
-  d->view->view3d()->SetInput (vtkimage,					\
-			       metaimage->GetOrientationMatrix(),	\
-			       layer);					\
-  sequence->Delete();							\
-  d->dataList.push_back (data);
-//ETX
-
-
 class V3DVIEWPLUGIN_EXPORT v3dView4DInteractor: public med4DAbstractViewInteractor
 {
 
