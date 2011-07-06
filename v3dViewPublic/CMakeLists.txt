@@ -11,7 +11,7 @@ project(v3dViewPublicPlugin)
 ## #################################################################
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "${PROJECT_NAME} minor version number.")
+set(${PROJECT_NAME}_VERSION_MINOR 3 CACHE STRING "${PROJECT_NAME} minor version number.")
 set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build version number.")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
@@ -45,7 +45,9 @@ if ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
     include(${TTK_USE_FILE})
 endif ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
 
-include_directories(../dtkVtkLogForwarder)
+#include_directories(../dtkVtkLogForwarder)
+find_package(medinria-plugins REQUIRED)
+include(${medinria-plugins_USE_FILE})
 
 ## #################################################################
 ## Input

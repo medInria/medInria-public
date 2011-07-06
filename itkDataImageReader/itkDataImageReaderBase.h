@@ -11,12 +11,14 @@ class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageReaderBase : public dtkAbstrac
     Q_OBJECT
 
 public:
+
     itkDataImageReaderBase(void);
     virtual ~itkDataImageReaderBase(void);
 
     virtual QStringList handled(void) const = 0;
 
 public slots:
+
     virtual bool canRead (const QString& path);
     virtual bool canRead (const QStringList& paths);
     
@@ -29,9 +31,13 @@ public slots:
     virtual void setProgress (int value);
     
 protected:
+
     itk::ImageIOBase::Pointer io;
 
+private:
 
+    template <unsigned DIM,typename T>
+    bool read_image(const QString& path,const char* type);
 };
 
 #endif

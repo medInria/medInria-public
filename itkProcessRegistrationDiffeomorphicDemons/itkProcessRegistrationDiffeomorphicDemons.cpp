@@ -35,7 +35,7 @@ public:
             int update(void);
     template < typename TFixedImage, typename TMovingImage >
            bool write(const QString&);
-    itk::ProcessObject* registrationMethod ;
+    void * registrationMethod ;
 
     std::vector<unsigned int> iterations;
     unsigned char updateRule;
@@ -65,7 +65,17 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
 itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons(void)
 {
     d->proc = NULL;
-    d->registrationMethod->Delete();
+    switch(fixedImageType()){
+    //only float will be used here, diffeoMorphic demons only work on float and double.
+
+    default:
+    {
+        typedef itk::Image< float, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    }
     d->registrationMethod = NULL;
     delete d;
     d = NULL;
@@ -101,11 +111,9 @@ template <typename PixelType>
     typedef float TransformScalarType;
     typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType,
                     TransformScalarType > RegistrationType;
-    RegistrationType * registration = new RegistrationType ();
+    RegistrationType * registration = new RegistrationType;
 
-    registrationMethod = dynamic_cast<itk::ProcessObject *>(registration);
-
-    //convert image type so that we can still register...
+    registrationMethod = registration;
 
     typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
     typename CastFilterType::Pointer  caster =  CastFilterType::New();
@@ -266,20 +274,25 @@ bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& fi
     typedef float TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
     //normaly should use long switch cases, but here we know we work with float3 data.
-    rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =
-            (rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *)d->registrationMethod;
-    try{
+    if (rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =
+            static_cast<rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *>(d->registrationMethod))
+    {
+        try{
 
-        rpi::writeDisplacementFieldTransformation<TransformScalarType, RegImageType::ImageDimension>(
-                    registration->GetTransformation(),
-                    file.toStdString());
+            rpi::writeDisplacementFieldTransformation<TransformScalarType, RegImageType::ImageDimension>(
+                        registration->GetTransformation(),
+                        file.toStdString());
+        }
+        catch (std::exception)
+        {
+            return false;
+        }
+        return true;
     }
-    catch (std::exception)
+    else
     {
         return false;
     }
-
-    return true;
 }
 
 // /////////////////////////////////////////////////////////////////

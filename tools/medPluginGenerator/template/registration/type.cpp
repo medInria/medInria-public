@@ -37,7 +37,7 @@ public:
     template <typename PixelType>
 bool writeTransform(const QString& file);
 
-    itk::ProcessObject * registrationMethod;
+    void * registrationMethod;
 
    };
 
@@ -48,7 +48,78 @@ bool writeTransform(const QString& file);
 %1::%1(void) : itkProcessRegistration(), d(new %1Private)
 {
     d->proc = this;
-    d->registrationMethod = NULL ;
+    switch(fixedImageType()){
+    case itkProcessRegistration::UCHAR:
+    {
+        typedef itk::Image< float, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    case itkProcessRegistration::CHAR:
+    {
+        typedef itk::Image< char, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    case itkProcessRegistration::USHORT:
+    {
+        typedef itk::Image< unsigned short, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    case itkProcessRegistration::SHORT:
+    {
+        typedef itk::Image< short, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    case itkProcessRegistration::UINT:
+    {
+        typedef itk::Image< unsigned int, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    case itkProcessRegistration::INT:
+    {
+        typedef itk::Image< int, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    case itkProcessRegistration::ULONG:
+    {
+        typedef itk::Image< unsigned long, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    case itkProcessRegistration::LONG:
+     {
+        typedef itk::Image< long, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    case itkProcessRegistration::DOUBLE:
+     {
+        typedef itk::Image< double, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    default:
+    {
+        typedef itk::Image< float, 3 >  RegImageType;
+        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+    }
+        break;
+    }
 }
 
 %1::~%1(void)
@@ -87,7 +158,7 @@ template <typename PixelType>
     typename rpi::%4<FixedImageType,MovingImageType> * registration =
             new rpi::%4<FixedImageType,MovingImageType> ();
 
-    registrationMethod = dynamic_cast<itk::ProcessObject*>(registration);
+    registrationMethod = registration;
 
     registration->SetFixedImage((const FixedImageType*) proc->fixedImage().GetPointer());
     registration->SetMovingImage((const MovingImageType*) proc->movingImage().GetPointer());
@@ -180,20 +251,24 @@ bool %1Private::writeTransform(const QString& file)
     typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
 
-    typename rpi::%4<RegImageType,RegImageType,TransformScalarType> * registration =
-            dynamic_cast<rpi::%4<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod);
-    try{
-
-        rpi::writeDisplacementFieldTransformation<TransformScalarType, 3>(
+   if (rpi::%4<RegImageType,RegImageType,TransformScalarType> * registration =
+            static_cast<rpi::%4<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod))
+   {
+       try{
+           rpi::writeDisplacementFieldTransformation<TransformScalarType, 3>(
                     registration->GetTransformation(),
                     file.toStdString());
-    }
-    catch (std::exception)
-    {
-        return false;
-    }
-
-    return true;
+       }
+       catch (std::exception)
+       {
+           return false;
+       }
+       return true;
+   }
+   else
+   {
+       return false;
+   }
 
 }
 

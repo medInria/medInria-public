@@ -11,7 +11,7 @@ project(itkDataTensorImageReaderPlugin)
 ## #################################################################
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "${PROJECT_NAME} minor version number.")
+set(${PROJECT_NAME}_VERSION_MINOR 3 CACHE STRING "${PROJECT_NAME} minor version number.")
 set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build version number.")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
@@ -38,7 +38,10 @@ include(${TTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-include_directories(../dtkItkLogForwarder)
+#include_directories(../dtkItkLogForwarder)
+find_package(medinria-plugins REQUIRED)
+include(${medinria-plugins_USE_FILE})
+
 
 ## #################################################################
 ## Input
@@ -73,6 +76,10 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
   dtkCore)
+
+# Group common files together in Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

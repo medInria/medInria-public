@@ -11,7 +11,7 @@ project(v3dDataPlugin)
 ## #################################################################
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "${PROJECT_NAME} minor version number.")
+set(${PROJECT_NAME}_VERSION_MINOR 3 CACHE STRING "${PROJECT_NAME} minor version number.")
 set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build version number.")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
@@ -35,7 +35,11 @@ include(dtkPlugin)
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
-include_directories(../dtkItkLogForwarder)
+#include_directories(../dtkItkLogForwarder)
+find_package(medinria-plugins REQUIRED)
+include(${medinria-plugins_USE_FILE})
+
+
 include_directories(../dtkVtkLogForwarder)
 
 ## #################################################################
@@ -58,9 +62,6 @@ set(${PROJECT_NAME}_SOURCES
   v3dDataFibers.cpp
   v3dDataFibersReader.cpp
   v3dDataFibersWriter.cpp)
-
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 
 ## #################################################################
 ## Build rules
@@ -86,6 +87,10 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOReview  
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES})
+
+# Group common files together in Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

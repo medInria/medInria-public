@@ -1138,30 +1138,34 @@ void v3dView::onOrientationPropertySet(const QString &value)
         d->orientation = "Axial";
         d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
         d->currentView = d->view2d;
-        
-        if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
-            d->slider->setRange (0, d->imageData->zDimension()-1);
-        }
     }
 	
     if (value == "Sagittal") {
         d->orientation = "Sagittal";
         d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
         d->currentView = d->view2d;
-        
-        if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
-            d->slider->setRange (0, d->imageData->xDimension()-1);
-        }
     }
     
     if (value == "Coronal") {
         d->orientation = "Coronal";
         d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_CORONAL);
         d->currentView = d->view2d;
-        
+    }
+    
+    if (value == "Axial"   ||
+        value == "Coronal" ||
+        value == "Sagittal") {
         if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
-            d->slider->setRange (0, d->imageData->yDimension()-1);
+            // slice orientation may differ from view orientation. Adapt slider range accordingly.
+            int orientationId = d->view2d->GetSliceOrientation();
+            if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+                d->slider->setRange (0, d->imageData->zDimension()-1);
+            else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+                d->slider->setRange (0, d->imageData->yDimension()-1);
+            else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+                d->slider->setRange (0, d->imageData->xDimension()-1);
         }
+        
     }
     
     if (d->dimensionBox->currentText()==tr("Time") && d->imageData) {

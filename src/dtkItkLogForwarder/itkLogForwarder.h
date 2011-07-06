@@ -1,6 +1,8 @@
 #include "itkOutputWindow.h"
 #include "itkObjectFactory.h"
 
+#include "dtkItkLogForwarderExport.h"
+
 namespace itk {
 
 /**
@@ -8,7 +10,7 @@ namespace itk {
 * @brief This class forwards all itk messages (Warning, Exceptions, TextOutputs) to the dtkLogger class
 * You only need to instantiate this class once at the very beginning of you code (that uses itk)
 */
-class LogForwarder : public OutputWindow
+class DTKITKLOGFORWARDER_EXPORT LogForwarder : public OutputWindow
 {
 public:
 
