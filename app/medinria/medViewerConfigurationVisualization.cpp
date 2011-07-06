@@ -69,10 +69,11 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
         //addSingleContainer();
         addMultiContainer("Visualization");
         //addCustomContainer();
+
         //connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
         //    d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
-        //connect(stackedViewContainers()->container("Multi"),SIGNAL(viewAdded(dtkAbstractView*)),
-        //	d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
+        connect(stackedViewContainers()->container("Visualization"),SIGNAL(viewAdded(dtkAbstractView*)),
+                d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
         //connect(stackedViewContainers()->container("Custom"),SIGNAL(viewAdded(dtkAbstractView*)),
         //	d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
 
@@ -85,8 +86,8 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
 
         //connect(stackedViewContainers()->container("Single"),SIGNAL(viewRemoved(dtkAbstractView*)),
         //    d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
-        //connect(stackedViewContainers()->container("Multi"),SIGNAL(viewRemoved(dtkAbstractView*)),
-        //        d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
+        connect(stackedViewContainers()->container("Visualization"),SIGNAL(viewRemoved(dtkAbstractView*)),
+                d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
         //connect(stackedViewContainers()->container("Custom"),SIGNAL(viewRemoved(dtkAbstractView*)),
         //        d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
     }
