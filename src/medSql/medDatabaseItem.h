@@ -32,7 +32,7 @@ class medDatabaseItemPrivate;
 class MEDSQL_EXPORT medDatabaseItem
 {
 public:
-     medDatabaseItem(medDataIndex index, const QString &table, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent = 0);
+     medDatabaseItem(medDataIndex index, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent = 0);
     ~medDatabaseItem(void);
 
     medDatabaseItem *child(int row);
@@ -61,7 +61,6 @@ public:
     const medDataIndex & dataIndex () const;
 
 public:
-    QVariant     table(void);
     QVariant attribute(int column);
     QVariant     value(int column);
 

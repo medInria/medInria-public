@@ -43,7 +43,7 @@ public:
     int st_index;
     int se_index;
     int im_index;
-    typedef QHash<medDataIndex, medDatabaseNonPersistentItem *> DataHashMapType;
+    typedef QMap<medDataIndex, medDatabaseNonPersistentItem *> DataHashMapType;
     DataHashMapType items;
 };
 
@@ -126,7 +126,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( c
     return ret;
 }
 
-int medDatabaseNonPersistentControllerImpl::nonPersistentDataStartingIndex(void)
+int medDatabaseNonPersistentControllerImpl::nonPersistentDataStartingIndex(void) const
 {
     return 100000000;
 }
@@ -176,16 +176,10 @@ medDataIndex medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *dat
 
 void medDatabaseNonPersistentControllerImpl::clear(void)
 {
-    // since we are not managing memory, no deletion should be made here
-    // as we don't know if the data is still in use
-    /*
-    foreach (medDatabaseNonPersistentItem *item, d->items) {
-      dtkAbstractData *data = item->data();
-      if (data)
-	  data->deleteLater();
-    }
-    */
-    
+    // objects are reference counted. 
+    // We could check if the item is still in use... but we just remove our reference here.
+    qDeleteAll(d->items);
+
     d->items.clear();
     d->pt_index = nonPersistentDataStartingIndex();
     d->st_index = nonPersistentDataStartingIndex();
@@ -220,12 +214,156 @@ qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIn
     return 0;
 }
 
-QList<medDataIndex> medDatabaseNonPersistentControllerImpl::availableItems()
+QList<medDataIndex> medDatabaseNonPersistentControllerImpl::availableItems() const
 {
     return d->items.keys();
 }
 
 bool medDatabaseNonPersistentControllerImpl::contains( const medDataIndex& index ) const
 {
-    return d->items.contains(index);
+    return index.patientId() >= this->nonPersistentDataStartingIndex();
 }
+
+QImage medDatabaseNonPersistentControllerImpl::thumbnail( const medDataIndex &index ) const
+{
+    medDatabaseNonPersistentItem * item = NULL;
+    if ( d->items.contains(index) ) {
+        item = d->items.find(index).value();
+    } else {
+        typedef QList<medDataIndex> medDataIndexList;
+        QList<medDataIndex> itemlist(availableItems());
+        //QSort(itemlist);
+        for (medDataIndexList::const_iterator it(itemlist.begin()); it != itemlist.end(); ++it)
+        {
+            if ( it->patientId() == index.patientId() ) {
+                item = d->items.find(*it).value();
+                break;
+            }
+        }
+    }
+    if ( item ) {
+        return item->data()->thumbnail();
+    }
+    else 
+    {
+        return QImage();
+    }
+}
+
+int medDatabaseNonPersistentControllerImpl::dataSourceId() const
+{
+    return 2;
+}
+
+QList<int> medDatabaseNonPersistentControllerImpl::patients() const
+{
+    QList<int> ret;
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
+    int prevId = -1;
+    for (MapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it)
+    {
+        int currId = it.key().patientId();
+        if ( currId != prevId ) {
+            ret.push_back(currId);
+            prevId = currId;
+        }
+    }
+    return ret;
+}
+
+QList<int> medDatabaseNonPersistentControllerImpl::studies( int patientId ) const
+{
+    QList<int> ret;
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
+    // First which does not compare less then given index -> first study for this patient.
+    MapType::const_iterator it(d->items.lowerBound(medDataIndex(this->dataSourceId(), patientId)));
+    int prevId = -1;
+    for ( ; it != d->items.end() ; ++it)
+    {
+        if ( it.key().patientId() != patientId )
+            break;
+        int currId = it.key().studyId();
+        if ( currId != prevId ) {
+            ret.push_back(currId);
+            prevId = currId;
+        }
+    }
+    return ret;
+}
+
+QList<int> medDatabaseNonPersistentControllerImpl::series( int patientId, int studyId ) const
+{
+    QList<int> ret;
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
+    // First which does not compare less then given index -> first series for this patient.
+    MapType::const_iterator it(d->items.lowerBound(medDataIndex(this->dataSourceId(), patientId, studyId)));
+    int prevId = -1;
+    for ( ; it != d->items.end() ; ++it)
+    {
+        if ( it.key().patientId() != patientId || it.key().studyId() != studyId)
+            break;
+
+        int currId = it.key().seriesId();
+        if ( currId != prevId ) {
+            ret.push_back(currId);
+            prevId = currId;
+        }
+    }
+    return ret;
+}
+
+QList<int> medDatabaseNonPersistentControllerImpl::images( int patientId, int studyId, int seriesId ) const
+{
+    QList<int> ret;
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
+    // First which does not compare less then given index -> first series for this patient.
+    MapType::const_iterator it(d->items.lowerBound(medDataIndex(this->dataSourceId(), patientId, studyId)));
+    int prevId = -1;
+    for ( ; it != d->items.end(); ++it)
+    {
+        if ( it.key().patientId() != patientId || it.key().studyId() != studyId || it.key().seriesId() != seriesId)
+            break;
+
+        int currId = it.key().seriesId();
+        if ( currId != prevId ) {
+            ret.push_back(currId);
+            prevId = currId;
+        }
+    }
+    return ret;
+}
+
+QString medDatabaseNonPersistentControllerImpl::metaData( const medDataIndex& index, const QString& key ) const
+{
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
+
+    MapType::const_iterator it(d->items.find(index));
+    if (it != d->items.end() ) {
+        dtkAbstractData *data = it.value()->data();
+        if (data &&  data->hasMetaData(key) )
+            return data->metadata(key);
+    }
+    return QString();
+}
+
+bool medDatabaseNonPersistentControllerImpl::setMetaData( const medDataIndex& index, const QString& key, const QString& value )
+{
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
+
+    MapType::const_iterator it(d->items.find(index));
+    if (it != d->items.end() ) {
+        dtkAbstractData *data = it.value()->data();
+        if (data) {
+            data->setMetaData(key, value);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool medDatabaseNonPersistentControllerImpl::isPersistent( const medDataIndex& index ) const
+{
+    return false;
+}
+
+

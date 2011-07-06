@@ -56,7 +56,7 @@ public:
     * @params void
     * @return int
     */
-    int nonPersistentDataStartingIndex(void);
+    int nonPersistentDataStartingIndex(void) const;
 
     /* proprietary method, should be avoided */
     QList<medDatabaseNonPersistentItem *> items(void);
@@ -78,7 +78,30 @@ public:
     qint64 getEstimatedSize(const medDataIndex& index) const;
 
     /** List all the items in the DB */
-    QList<medDataIndex> availableItems();
+    QList<medDataIndex> availableItems() const;
+    virtual QString metaData(const medDataIndex& index, const QString& key) const;
+    virtual QImage thumbnail( const medDataIndex& index) const;
+
+    /**Implement base class */
+    virtual int dataSourceId() const;
+
+    /** Enumerate all patients stored in this DB*/
+    virtual QList<int> patients() const;
+
+    /** Enumerate all studies for given patient*/
+    virtual QList<int> studies(int patientId ) const;
+
+    /** Enumerate all series for given patient*/
+    virtual QList<int> series(int patientId, int studyId ) const;
+
+    /** Enumerate all images for given patient*/
+    virtual QList<int> images(int patientId, int studyId, int seriesId ) const;
+
+    /** Return true if data source is persistent. This implementation returns false.*/
+    virtual bool isPersistent(const medDataIndex& index) const;
+
+    /** Set metadata for specific item. Return true on success, false otherwise. */
+    virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
 
 public slots:
 

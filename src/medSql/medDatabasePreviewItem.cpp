@@ -19,6 +19,9 @@
 
 #include "medDatabasePreviewItem.h"
 #include "medDatabasePreviewItemLoader.h"
+#include <medCore/medAbstractDbController.h>
+#include <medCore/medDataManager.h>
+#include <medCore/medMetaDataHelper.h>
 
 #include <QtCore>
 #include <QtGui>
@@ -26,28 +29,24 @@
 class medDatabasePreviewItemPrivate
 {
 public:
-    int patientId;
-    int studyId;
-    int seriesId;
-    int imageId;
-
-    QString path;
+    medDataIndex index;
 };
 
-medDatabasePreviewItem::medDatabasePreviewItem(int patientId, int studyId, int seriesId, int imageId, const QString& path, QGraphicsItem *parent) : QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabasePreviewItemPrivate)
+medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraphicsItem *parent) : QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabasePreviewItemPrivate)
 {
-    d->patientId = patientId;
-    d->studyId = studyId;
-    d->seriesId = seriesId;
-    d->imageId = imageId;
+    d->index = index;
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    QString thumbpath = dbc->metaData( index, medMetaDataHelper::KEY_ThumbnailPath() );
 
-    d->path = path;
+    if ( thumbpath.isEmpty() ) {
+        this->setImage( dbc->thumbnail(index) ) ;
+    } else {
+        medDatabasePreviewItemLoader *loader = new medDatabasePreviewItemLoader(thumbpath);
 
-    medDatabasePreviewItemLoader *loader = new medDatabasePreviewItemLoader(path);
+        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
 
-    connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
-
-    QThreadPool::globalInstance()->start(loader);
+        QThreadPool::globalInstance()->start(loader);
+    }
 }
 
 medDatabasePreviewItem::~medDatabasePreviewItem(void)
@@ -59,32 +58,12 @@ medDatabasePreviewItem::~medDatabasePreviewItem(void)
 
 medDatabasePreviewItem *medDatabasePreviewItem::clone(void)
 {
-    return new medDatabasePreviewItem(d->patientId, d->studyId, d->seriesId, d->imageId, d->path);
+    return new medDatabasePreviewItem(d->index);
 }
 
-int medDatabasePreviewItem::patientId(void) const
+medDataIndex medDatabasePreviewItem::dataIndex(void) const
 {
-    return d->patientId;
-}
-
-int medDatabasePreviewItem::studyId(void) const
-{
-    return d->studyId;
-}
-
-int medDatabasePreviewItem::seriesId(void) const
-{
-    return d->seriesId;
-}
-
-int medDatabasePreviewItem::imageId(void) const
-{
-    return d->imageId;
-}
-
-QString medDatabasePreviewItem::path(void) const
-{
-    return d->path;
+    return d->index;
 }
 
 void medDatabasePreviewItem::setImage(const QImage& image)

@@ -60,13 +60,13 @@ public slots:
     void onCancel(QObject*);
 
 protected:
-    void removeImage( int imageId);
+    void removeImage( int patientId, int studyId, int seriesId, int imageId);
 
 
     bool isSeriesEmpty( int seriesId );
-    void removeSeries( int seriesId );
+    void removeSeries( int patientId, int studyId, int seriesId );
     bool isStudyEmpty( int studyId );
-    void removeStudy( int studyId );
+    void removeStudy( int patientId, int studyId );
     bool isPatientEmpty( int patientId );
     void removePatient( int patientId );
 

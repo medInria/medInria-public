@@ -10,13 +10,12 @@
 medTestApplication::medTestApplication ( int & argc, char ** argv )
    : QCoreApplication(argc, argv)
 {
-    // TODO Auto-generated constructor stub
 
 }
 
 medTestApplication::~medTestApplication()
 {
-    // TODO Auto-generated destructor stub
+
 }
 
 //static

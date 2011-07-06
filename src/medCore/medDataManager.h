@@ -141,6 +141,12 @@ public:
     */
     static size_t getOptimalMemoryThreshold();
 
+    /** return the DB controller for given data source. */
+    medAbstractDbController *controllerForDataSource( int dataSource );
+    const medAbstractDbController *controllerForDataSource( int dataSource ) const;
+
+    /** Return a list of available dataSource Ids.*/
+    QList<int> dataSourceIds() const;
 
 signals:
     /**

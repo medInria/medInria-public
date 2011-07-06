@@ -157,13 +157,13 @@ void medDatabaseView::onItemClicked(const QModelIndex& index)
         this->setExpanded(index.parent().parent(), true);
         this->setExpanded(index.parent(), true);
         this->setExpanded(index, true);
-        emit seriesClicked(item->dataIndex ().seriesId ());
+        emit seriesClicked(item->dataIndex ());
     }
     else if (item->dataIndex().isValidForPatient())
     {
         this->collapseAll();
         this->setExpanded(index, true);
-        emit patientClicked(item->dataIndex ().patientId ());
+        emit patientClicked(item->dataIndex ());
     }
 
 
@@ -199,7 +199,7 @@ void medDatabaseView::onMenuViewClicked(void)
 
     if (item && (item->dataIndex().isValidForSeries()))
     {        
-        emit open(medDatabaseController::instance()->indexForSeries(item->dataIndex ().seriesId ()));
+        emit open(item->dataIndex ());
     }
 }
 
@@ -219,12 +219,8 @@ void medDatabaseView::onMenuExportClicked(void)
         item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     if(item)
-        if(item->table() == "patient")
-            ;
-        else if(item->table() == "study")
-            ;
-        else if(item->table() == "series")
-            emit exportData(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
+        if(item->dataIndex().isValidForSeries())
+            emit exportData(item->dataIndex());
         else
             ;
 }

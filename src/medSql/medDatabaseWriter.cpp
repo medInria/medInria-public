@@ -175,8 +175,8 @@ medDataIndex medDatabaseWriter::run(void)
     QString report         = d->data->metaDataValues("Report")[0];
 
 
-
-    QSqlQuery query(*(medDatabaseController::instance()->database()));
+    medDatabaseControllerImpl * dbi = medDatabaseController::instance();
+    QSqlQuery query(*(dbi->database()));
     QVariant id;
     
     // Check if PATIENT/STUDY/SERIES already exists in the database
@@ -235,24 +235,24 @@ medDataIndex medDatabaseWriter::run(void)
     // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
     QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
 
-    QString s_patientName = patientName.simplified();
-    QString s_studyName   = studyName.simplified();
-    QString s_seriesName  = seriesName.simplified();
+    QString s_patientName = dbi->stringForPath( patientName );
+    QString s_studyName   = dbi->stringForPath( studyName );
+    QString s_seriesName  = dbi->stringForPath( seriesName );
 
-    s_patientName.replace (0x00EA, 'e');
-    s_studyName.replace   (0x00EA, 'e');
-    s_seriesName.replace  (0x00EA, 'e');
-    s_patientName.replace (0x00E4, 'a');
-    s_studyName.replace   (0x00E4, 'a');
-    s_seriesName.replace  (0x00E4, 'a');	
+    QString subDirName = "/" +
+        s_patientName + "/" +
+        s_studyName;
+    QString imageFileNameBase =  subDirName + "/" +
+                            s_seriesName; //  + ".mha";
 
-    QString imageFileName = "/" +
-                            s_patientName + "/" +
-                            s_studyName   + "/" +
-                            s_seriesName  + ".mha";
-
-
-    d->data->addMetaData ("FileName", imageFileName);
+    QDir dir( medStorage::dataLocation() + subDirName );
+    if (!dir.exists()) {
+        if ( !medStorage::mkpath(medStorage::dataLocation() + subDirName) ) {
+            dtkDebug() << "Unable to create directory for images";
+            emit failure (this);
+            return medDataIndex();
+        }
+    }
 
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
@@ -260,7 +260,8 @@ medDataIndex medDatabaseWriter::run(void)
     
     for (int i=0; i<writers.size(); i++)
     {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
+        dtkSmartPointer<dtkAbstractDataWriter> dataWriter;
+        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
         qDebug() << "trying " << dataWriter->description();
         
         if (!dataWriter->handled().contains(d->data->description()))
@@ -272,15 +273,23 @@ medDataIndex medDatabaseWriter::run(void)
         qDebug() << "success with " << dataWriter->description();
 	dataWriter->setData (d->data);
 
+        QStringList extensions = dataWriter->supportedFileExtensions();
+        QString extension;
+        if ( extensions.isEmpty() ) {
+            extension = ".mha";
+        } else {
+            extension = extensions[0];
+        }
+        QString imageFileName = imageFileNameBase + extension;
         qDebug() << "trying to write in file : "<< medStorage::dataLocation() + imageFileName;
-        
-	if (dataWriter->canWrite (medStorage::dataLocation() + imageFileName)) {
-	    if (dataWriter->write( medStorage::dataLocation() + imageFileName )) {
-		writeSuccess = 1;
-		delete dataWriter;
-		break;
-	    }
-	}
+
+        if (dataWriter->canWrite (medStorage::dataLocation() + imageFileName)) {
+            if (dataWriter->write( medStorage::dataLocation() + imageFileName )) {
+                writeSuccess = 1;
+                d->data->addMetaData ("FileName", imageFileName);
+                break;
+            }
+        }
     }
 
     if (!writeSuccess) {
@@ -298,7 +307,7 @@ medDataIndex medDatabaseWriter::run(void)
     // generate and save the thumbnails
     QList<QImage> &thumbnails = d->data->thumbnails();
     
-    QFileInfo   seriesInfo (imageFileName);
+    QFileInfo   seriesInfo (seriesPath);
     QString     thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
     QStringList thumbPaths;
 
@@ -319,7 +328,7 @@ medDataIndex medDatabaseWriter::run(void)
 
     // Now, populate the database
 
-    medDataIndex index;
+    medDataIndex index(medDatabaseController::instance()->dataSourceId());
 
     ////////////////////////////////////////////////////////////////// PATIENT
 

@@ -7,6 +7,7 @@
 
 class dtkAbstractData;
 class SigEmitter;
+class medDatabaseControllerImplPrivate;
 
 /**
  * Concrete dbController implementation adhering to abstract base class
@@ -46,6 +47,9 @@ public:
     dtkSmartPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId);
     dtkSmartPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId, int imageId);
 
+    /** Remove / replace characters to transform into a pathname component. */
+    QString stringForPath(const QString & name) const;
+
     /**
     * Change the storage location of the database by copy, verify, delete
     * @params QString newLocation path of new storage location, must be empty
@@ -66,6 +70,26 @@ public:
     */
     qint64 getEstimatedSize(const medDataIndex& index) const;
 
+    /** Enumerate all patients stored in this DB*/
+    virtual QList<int> patients() const;
+
+    /** Enumerate all studies for given patient*/
+    virtual QList<int> studies(int patientId ) const;
+
+    /** Enumerate all series for given patient*/
+    virtual QList<int> series(int patientId, int studyId ) const;
+
+    /** Enumerate all images for given patient*/
+    virtual QList<int> images(int patientId, int studyId, int seriesId ) const;
+
+    /** Get metadata for specific item. Return uninitialized string if not present. */
+    virtual QString metaData(const medDataIndex& index, const QString& key) const;
+
+    /** Set metadata for specific item. Return true on success, false otherwise. */
+    virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
+
+    /** Implement base class */
+    virtual bool isPersistent(const medDataIndex& index) const;
 signals:
     /**
      * Status message from controller to some user interface
@@ -100,6 +124,10 @@ public slots:
 
     /** override base class */
     virtual void remove(const medDataIndex& index);
+    virtual QImage thumbnail( const medDataIndex& index) const;
+
+    /**Implement base class */
+    virtual int dataSourceId() const;
 
 protected slots:
     void forwardMessage(QString);
@@ -112,8 +140,8 @@ private:
     void   createImageTable(void);
 
     QSqlDatabase m_database;
-    bool m_isConnected;
-    SigEmitter* emitter;
+
+    medDatabaseControllerImplPrivate * d;
 };
 
 #endif

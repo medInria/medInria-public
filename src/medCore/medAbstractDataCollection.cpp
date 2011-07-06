@@ -10,8 +10,9 @@
 class medAbstractDataCollectionPrivate
 {
 public:
-    QVector<dtkAbstractData*>     dataVector;
-    QVector<dtkAbstractData*>::iterator dataIterator;
+    typedef QVector<dtkSmartPointer<dtkAbstractData>> DataVectorType;
+    DataVectorType dataVector;
+    DataVectorType::iterator dataIterator;
     dtkSmartPointer<medAttachedData> attachedData;
 };
 
@@ -23,8 +24,6 @@ medAbstractDataCollection::medAbstractDataCollection(medAbstractDataCollection *
 
 medAbstractDataCollection::~medAbstractDataCollection()
 {
-    foreach (dtkAbstractData* data, d->dataVector)
-        delete data;
     d->dataVector.clear();
 
     delete d;

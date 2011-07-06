@@ -25,16 +25,14 @@ public:
           medDatabaseItem * parentItem;
     QList<medDatabaseItem *> childItems;
 
-    QString            table;
     QList<QVariant> attrData;
     QList<QVariant> itemData;
     medDataIndex index;
 };
 
-medDatabaseItem::medDatabaseItem(medDataIndex index, const QString& table, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent) : d(new medDatabaseItemPrivate)
+medDatabaseItem::medDatabaseItem(medDataIndex index, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent) : d(new medDatabaseItemPrivate)
 {
     d->index = index;
-    d->table = table;
     d->attrData = attributes;
     d->itemData = data;
     d->parentItem = parent;
@@ -101,10 +99,9 @@ bool medDatabaseItem::insertChildren(int position, int count, int columns)
         return false;
 
     for (int row = 0 ; row < count ; ++row) {
-        QString table;
         QList<QVariant> attr;
         QList<QVariant> data;
-        medDatabaseItem * item = new medDatabaseItem(medDataIndex(), table, attr, data, this);
+        medDatabaseItem * item = new medDatabaseItem(medDataIndex(), attr, data, this);
         d->childItems.insert(position, item);
     }
 
@@ -158,11 +155,6 @@ bool medDatabaseItem::setData(int column, const QVariant& value)
     d->itemData[column] = value;
 
     return true;
-}
-
-QVariant medDatabaseItem::table(void)
-{
-    return d->table;
 }
 
 QVariant medDatabaseItem::attribute(int column)

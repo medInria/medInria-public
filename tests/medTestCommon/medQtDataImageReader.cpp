@@ -28,13 +28,11 @@ dtkAbstractDataReader *createMedQtDataImageReader(void)
 
 medQtDataImageReader::medQtDataImageReader()
 {
-    // TODO Auto-generated constructor stub
     m_lastSuccess = false;
 }
 
 medQtDataImageReader::~medQtDataImageReader()
 {
-    // TODO Auto-generated destructor stub
 }
 
 bool medQtDataImageReader::registered(void)

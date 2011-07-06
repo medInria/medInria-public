@@ -33,6 +33,33 @@ public:
     */
     virtual qint64 getEstimatedSize(const medDataIndex& index) const = 0;
 
+    /** Unique Id used in medDataIndex to recognize this DB.*/
+    virtual int dataSourceId() const = 0;
+
+    /** Enumerate all patients stored in this DB*/
+    virtual QList<int> patients() const = 0;
+
+    /** Enumerate all studies for given patient*/
+    virtual QList<int> studies(int patientId ) const = 0;
+
+    /** Enumerate all series for given study*/
+    virtual QList<int> series(int patientId, int studyId ) const = 0;
+
+    /** Enumerate all images for given series*/
+    virtual QList<int> images(int patientId, int studyId, int seriesId ) const = 0;
+
+    /** Get metadata for specific item. Return uninitialized string if not present. */
+    virtual QString metaData(const medDataIndex& index, const QString& key) const = 0;
+
+    /** Set metadata for specific item. Return true on success, false otherwise. */
+    virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value) = 0;
+
+    /** Get thumbnail. */
+    virtual QImage thumbnail( const medDataIndex& index) const = 0;
+
+    /** return true if data is stored in persistent storage*/
+    virtual bool isPersistent(const medDataIndex& index) const = 0;
+
 signals:
     
     /**

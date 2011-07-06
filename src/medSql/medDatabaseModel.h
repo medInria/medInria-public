@@ -72,14 +72,13 @@ public:
     /**
      * return a list of strings that represents the currently shown columns
      */
-    QStringList attributes();
+    QStringList columnNames() const;
 
 protected slots:
     void repopulate(void);
 
 protected:
     void populate(medDatabaseItem *parent);
-    bool isNonPersistent( const medDataIndex & index ) const;
 
 private:
     medDatabaseModelPrivate *d;

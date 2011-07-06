@@ -30,14 +30,13 @@
 #include <dtkVr/dtkVrHeadRecognizer.h>
 #include <dtkVr/dtkVrGestureRecognizer.h>
 
+#include <medCore/medAbstractDbController.h>
 #include <medCore/medSettingsManager.h>
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
 #include <medCore/medViewManager.h>
 #include <medCore/medAbstractView.h>
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseNonPersistentItem.h>
 #include <medSql/medDatabaseNonPersistentController.h>
 #include <medSql/medDatabaseNavigator.h>
 #include <medSql/medDatabaseNavigatorController.h>
@@ -59,9 +58,7 @@
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medViewerToolBoxViewProperties.h>
 
-
 #include <QtGui>
-#include <QtSql>
 #include <QPropertyAnimation>
 #include <QEasingCurve>
 
@@ -150,7 +147,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)), 
         this, SLOT(switchToPatient(const medDataIndex&)));
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator, 
-        SLOT (onPatientClicked (const medDataIndex&)));
+        SLOT (onItemClicked (const medDataIndex&)));
 
     int memusage = 0;
     int leak = 0;
@@ -274,30 +271,26 @@ void medViewerArea::open(const medDataIndex& index)
         return;
     }
     
-    if(((medDataIndex)index).isValidForPatient()) 
+    if(index.isValidForPatient()) 
     {
         // For the moment switch to visualization, later we will be cleverer    
         this->setupConfiguration("Visualization");
         this->switchToContainer("Multi");
         
-        QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
-        stQuery.prepare("SELECT * FROM study WHERE patient = :id");
-        stQuery.bindValue(":id", index.patientId());
-        if(!stQuery.exec())
-            qDebug() << DTK_COLOR_FG_RED << stQuery.lastError() << DTK_NO_COLOR;
-        
-        while(stQuery.next()) {
-            
-            QSqlQuery seQuery(*(medDatabaseController::instance()->database()));
-            seQuery.prepare("SELECT * FROM series WHERE study = :id");
-            seQuery.bindValue(":id", stQuery.value(0));
-            if(!seQuery.exec())
-                qDebug() << DTK_COLOR_FG_RED << seQuery.lastError() << DTK_NO_COLOR;
-            
-            while(seQuery.next())
-                this->open(medDataIndex(index.patientId(), stQuery.value(0).toInt(), seQuery.value(0).toInt()));
+        medDataManager *dataManager = medDataManager::instance();
+        medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
+
+        QList<int> studies = dbc->studies(index.patientId());
+
+        for ( QList<int>::const_iterator studyIt(studies.begin()); studyIt != studies.end(); ++studyIt) {
+
+            QList<int> series = dbc->series(index.patientId(), index.studyId());
+
+            for ( QList<int>::const_iterator seriesIt(series.begin()); seriesIt != series.end(); ++seriesIt) {
+                this->open(medDataIndex(index.dataSourceId(), index.patientId(), *studyIt, *seriesIt));
+            }
         }
-        
+
     }
 }
 
@@ -377,7 +370,7 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
     // Setup navigator
 
     if (d->navigator) {
-        d->navigator->onPatientClicked(d->current_patient);
+        d->navigator->onItemClicked(d->current_patient);
         
         QRect endGeometry = d->navigator->geometry();
         QRect startGeometry = endGeometry;

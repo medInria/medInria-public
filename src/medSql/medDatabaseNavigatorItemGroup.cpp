@@ -22,6 +22,8 @@
 #include "medDatabaseNavigatorItemGroup.h"
 #include "medDatabaseNonPersistentController.h"
 
+#include <medCore/medDataManager.h>
+
 #include <QtCore>
 
 class medDatabaseNavigatorItemGroupPrivate
@@ -73,10 +75,9 @@ void medDatabaseNavigatorItemGroup::addItem(medDatabaseNavigatorItem *item)
 
     d->item_count++;
 
-    if(item->patientId() >= medDatabaseNonPersistentController::instance()->nonPersistentDataStartingIndex() ||
-       item->studyId()   >= medDatabaseNonPersistentController::instance()->nonPersistentDataStartingIndex() ||
-       item->seriesId()  >= medDatabaseNonPersistentController::instance()->nonPersistentDataStartingIndex() )
-        d->non_persitent = true;
+    d->non_persitent = !(medDataManager::instance()->
+        controllerForDataSource( item->dataIndex().dataSourceId() )
+        ->isPersistent(item->dataIndex()) );
 }
 
 void medDatabaseNavigatorItemGroup::clear(void)

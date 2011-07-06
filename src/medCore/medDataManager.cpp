@@ -600,6 +600,28 @@ void medDataManager::removeDataFromCache( const medDataIndex &index )
 
 }
 
+medAbstractDbController * medDataManager::controllerForDataSource( int dataSource )
+{
+    if ( dataSource == 1) {
+        return d->getDbController();
+    } else if ( dataSource == 2) {
+        return d->getNonPersDbController();
+    } else {
+        return NULL;
+    }
+}
+
+const medAbstractDbController * medDataManager::controllerForDataSource( int dataSource ) const
+{
+    // Cast away constness to re-use same implementation.
+    return const_cast<medDataManager*>(this)->controllerForDataSource(dataSource);
+}
+
+QList<int> medDataManager::dataSourceIds() const
+{
+    // TODO : Make this more dynamic.
+    return QList<int>() << 1 << 2;
+}
 
 
 //-------------------------------------------------------------------------------------------------------

@@ -84,13 +84,9 @@ void medDropSite::dropEvent(QDropEvent *event)
         setPixmap(qvariant_cast<QPixmap>(mimeData->imageData()));
     }
 
-    if (mimeData->hasFormat("med/index")) {
-        QStringList ids = QString(mimeData->data("med/index")).split(":");
-        int patientId = ids.at(0).toInt();
-        int   studyId = ids.at(1).toInt();
-        int  seriesId = ids.at(2).toInt();
-        int   imageId = ids.at(3).toInt();
-        d->index = medDataIndex(patientId, studyId, seriesId, imageId);
+    medDataIndex index( medDataIndex::readMimeData(mimeData) );
+    if (index.isValid()) {
+        d->index = index;
     }
 
     setBackgroundRole(QPalette::Base);

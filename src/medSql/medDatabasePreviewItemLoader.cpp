@@ -19,6 +19,8 @@
 
 #include "medDatabasePreviewItemLoader.h"
 
+#include <dtkCore/dtkLog.h>
+
 class medDatabasePreviewItemLoaderPrivate
 {
 public:
@@ -43,6 +45,9 @@ void medDatabasePreviewItemLoader::run(void)
     if(!d->path.isEmpty()) {
         QImageReader reader(d->path);
         d->image = reader.read();
+        if ( d->image.isNull() ) {
+            dtkDebug() << "Failed to load image from " << d->path << " Reader error is " << reader.errorString();
+        }
     }
 
     emit completed(d->image);

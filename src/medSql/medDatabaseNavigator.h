@@ -42,20 +42,18 @@ public:
     Qt::Orientation orientation (void) const;
     
 signals:
-    void patientClicked(int id);
-    void   studyClicked(int id);
-    void  seriesClicked(int id);
-    void   imageClicked(int id);
+    void itemClicked(const medDataIndex& id);
 
 public slots:
-    void onPatientClicked(const medDataIndex& id);
-    void   onStudyClicked(int id);
-    void  onSeriesClicked(int id);
-    void   onImageClicked(int id);
+    void onItemClicked(const medDataIndex& id);
+
     void   setOrientation(Qt::Orientation orientation);
 
-public slots:
-    void addThumbnail(const QImage& thumbnail);
+protected:
+    void onPatientClicked(const medDataIndex& id);
+    void   onStudyClicked(const medDataIndex& id);
+    void  onSeriesClicked(const medDataIndex& id);
+    void   onImageClicked(const medDataIndex& id);
 
 private:
     medDatabaseNavigatorPrivate *d;

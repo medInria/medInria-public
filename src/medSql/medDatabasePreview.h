@@ -27,6 +27,7 @@
 
 class medDatabasePreviewItem;
 class medDatabasePreviewPrivate;
+class medDataIndex;
 
 class MEDSQL_EXPORT medDatabasePreview : public QFrame
 {
@@ -40,12 +41,12 @@ public:
     void reset(void);
 
 signals:
-    void seriesClicked(int id);
-    void  imageClicked(int id);
+    void seriesClicked(const medDataIndex& id);
+    void  imageClicked(const medDataIndex& id);
 
 public slots:
-    void onPatientClicked(int id);
-    void  onSeriesClicked(int id);
+    void onPatientClicked(const medDataIndex& id);
+    void  onSeriesClicked(const medDataIndex& id);
 
 protected slots:
     void onSlideUp(void);

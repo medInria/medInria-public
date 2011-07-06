@@ -20,6 +20,10 @@
 #include "medDatabaseNavigatorItem.h"
 #include "medDatabaseNavigatorItemLoader.h"
 
+#include <medCore/medAbstractDbController.h>
+#include <medCore/medDataManager.h>
+#include <medCore/medMetaDataHelper.h>
+
 #include <QtCore>
 #include <QtGui>
 
@@ -30,62 +34,42 @@
 // -- TODO
 //
 // Passing database indexes as arguments to the constructor is more than
-// sufficiant.
+// sufficient.
 //
-// Attributes such as path to thumbnail, count and text should be retreived
+// Attributes such as path to thumbnail, count and text should be retrieved
 // from the database.
 
 class medDatabaseNavigatorItemPrivate
 {
 public:
-    int patientId;
-    int studyId;
-    int seriesId;
-    int imageId;
-    QString text;
+    medDataIndex index;
 
-    QString path;
+    QString text;
 };
 
-medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QString &path, const QString &text, QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
+medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
 {
-    d->patientId = patientId;
-    d->studyId = studyId;
-    d->seriesId = seriesId;
-    d->imageId = imageId;
+    d->index = index;
 
-    d->text = text;
-    
-    d->path = path;
+    // d->text = text; 
+    //, thumbPath, seriesName.toString());
 
-    medDatabaseNavigatorItemLoader *loader = new medDatabaseNavigatorItemLoader(path);
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    QString thumbpath = dbc->metaData( index, medMetaDataHelper::KEY_ThumbnailPath() );
 
-    connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
+    d->text = dbc->metaData( index, medMetaDataHelper::KEY_SeriesDescription() );
 
-    QThreadPool::globalInstance()->start(loader);
+    if ( thumbpath.isEmpty() ) {
+        this->setImage( dbc->thumbnail(index) ) ;
+    } else {
+        medDatabaseNavigatorItemLoader *loader = new medDatabaseNavigatorItemLoader(thumbpath);
+
+        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
+
+        QThreadPool::globalInstance()->start(loader);
+    }
 
     this->setAcceptHoverEvents(true);
-}
-
-medDatabaseNavigatorItem::medDatabaseNavigatorItem(int patientId, int studyId, int seriesId, int imageId, const QImage &image, const QString &text, QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
-{
-    d->patientId = patientId;
-    d->studyId = studyId;
-    d->seriesId = seriesId;
-    d->imageId = imageId;
-
-    d->text = text;
-    
-    d->path = QString();
-
-    this->setImage(image);
-    this->setAcceptHoverEvents(true);
-}
-
-medDatabaseNavigatorItem::medDatabaseNavigatorItem()
-{
-    //call the overloaded constructor
-    medDatabaseNavigatorItem(-1,-1,-1,-1, QString(), QString(), 0);
 }
 
 
@@ -98,7 +82,7 @@ medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
 
 medDatabaseNavigatorItem *medDatabaseNavigatorItem::clone(void)
 {
-    return new medDatabaseNavigatorItem(d->patientId, d->studyId, d->seriesId, d->imageId, d->path, 0);
+    return new medDatabaseNavigatorItem(d->index, 0);
 }
 
 void medDatabaseNavigatorItem::setup(void)
@@ -106,24 +90,9 @@ void medDatabaseNavigatorItem::setup(void)
     // Retrieve attributes from the database
 }
 
-int medDatabaseNavigatorItem::patientId(void) const
+medDataIndex medDatabaseNavigatorItem::dataIndex(void) const
 {
-    return d->patientId;
-}
-
-int medDatabaseNavigatorItem::studyId(void) const
-{
-    return d->studyId;
-}
-
-int medDatabaseNavigatorItem::seriesId(void) const
-{
-    return d->seriesId;
-}
-
-int medDatabaseNavigatorItem::imageId(void) const
-{
-    return d->imageId;
+    return d->index;
 }
 
 QString medDatabaseNavigatorItem::text(void) const
@@ -131,10 +100,6 @@ QString medDatabaseNavigatorItem::text(void) const
     return d->text;
 }
 
-QString medDatabaseNavigatorItem::path(void) const
-{
-    return d->path;
-}
 
 void medDatabaseNavigatorItem::setImage(const QImage& image)
 {
@@ -148,12 +113,9 @@ void medDatabaseNavigatorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void medDatabaseNavigatorItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    QString index = QString("%1:%2:%3:%4").arg(d->patientId).arg(d->studyId).arg(d->seriesId).arg(d->imageId);
-
-    QMimeData *data = new QMimeData;
-    data->setData("med/index", index.toLatin1());
+    QMimeData *data = d->index.createMimeData();
     data->setImageData(this->pixmap());
-    
+
 	QDrag *drag = new QDrag(this->scene()->views().first());
     drag->setMimeData(data);
 #if WIN32

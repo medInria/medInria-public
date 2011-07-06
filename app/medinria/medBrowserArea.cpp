@@ -238,7 +238,7 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     if (fileName.isEmpty())
         return;
 
-    dtkAbstractData *data = medDataManager::instance()->data(index).data();
+    dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
 
     if (!data)
         return;

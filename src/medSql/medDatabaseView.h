@@ -40,11 +40,11 @@ public:
     void setModel(QAbstractItemModel *model);
 
 signals:
-    void patientClicked(int id);
-    void seriesClicked(int id);
+    void patientClicked(const medDataIndex &index);
+    void seriesClicked(const medDataIndex &index);
 
-    void patientDoubleClicked(int id);
-    void seriesDoubleClicked(int id);
+    void patientDoubleClicked(const medDataIndex &index);
+    void seriesDoubleClicked(const medDataIndex &index);
 
     void open(const medDataIndex&);
     void exportData(const medDataIndex &index);

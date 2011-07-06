@@ -135,14 +135,9 @@ void medViewContainer::dropEvent(QDropEvent *event)
 {
     const QMimeData *mimeData = event->mimeData();
 
-    if (mimeData->hasFormat("med/index")) {
-        QStringList ids = QString(mimeData->data("med/index")).split(":");
-        int patientId = ids.at(0).toInt();
-        int   studyId = ids.at(1).toInt();
-        int  seriesId = ids.at(2).toInt();
-        int   imageId = ids.at(3).toInt();
-        
-        emit dropped(medDataIndex(patientId, studyId, seriesId, imageId));
+    medDataIndex index = medDataIndex::readMimeData( mimeData );
+    if (index.isValid()) {
+        emit dropped(index);
     }
 
     event->acceptProposedAction();

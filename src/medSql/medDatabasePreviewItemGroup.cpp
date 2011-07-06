@@ -54,14 +54,14 @@ void medDatabasePreviewItemGroup::addItem(medDatabasePreviewItem *item)
         ? item->setPos(d->item_count * (item_width + item_spacing), 0)
         : item->setPos(0, d->item_count * (item_width + item_spacing));
 
-    if (item->imageId() >= 0)
-        d->items.insert(item->imageId(), item);
-    else if (item->seriesId() >= 0)
-        d->items.insert(item->seriesId(), item);
-    else if (item->studyId() >= 0)
-        d->items.insert(item->studyId(), item);
+    if (item->dataIndex().imageId() >= 0)
+        d->items.insert(item->dataIndex().imageId(), item);
+    else if (item->dataIndex().seriesId() >= 0)
+        d->items.insert(item->dataIndex().seriesId(), item);
+    else if (item->dataIndex().studyId() >= 0)
+        d->items.insert(item->dataIndex().studyId(), item);
     else
-        d->items.insert(item->patientId(), item);
+        d->items.insert(item->dataIndex().patientId(), item);
 
     d->item_count++;
 }

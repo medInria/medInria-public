@@ -27,12 +27,32 @@
 #include "medSql/medDatabaseNonPersistentItem.h"
 #include "medSql/medDatabaseNonPersistentController.h"
 
+#include <medCore/medDataManager.h>
+#include <medCore/medMetaDataHelper.h>
 #include <medCore/medStorage.h>
 
 #include <QtCore>
 #include <QtGui>
 
 #include <dtkCore/dtkGlobal.h>
+
+namespace  {
+
+    // These small classes are used to determine if patients from different DBs are the same.
+    // At present it is just based on the name.
+    struct PatientDataKey{
+        QString name;
+        bool operator==(const PatientDataKey & other) const { return this->name == other.name; }
+        bool operator!=(const PatientDataKey & other) const { return !this->operator==(other); }
+    };
+
+    struct StudyDataKey{
+        QString name;
+        bool operator==(const StudyDataKey & other) const { return this->name == other.name; }
+        bool operator!=(const StudyDataKey & other) const { return !this->operator==(other); }
+        bool operator<(const StudyDataKey & other) const { return this->name < other.name; }
+    };
+} // namespace
 
 class medDatabaseNavigatorPrivate
 {
@@ -80,114 +100,92 @@ void medDatabaseNavigator::reset(void)
     d->scene->reset();
 }
 
+void medDatabaseNavigator::onItemClicked(const medDataIndex& index)
+{
+    if ( index.isValidForPatient() )
+        this->onPatientClicked(index);
+}
+
 void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 {
     this->reset();
 
-    // Query persistent data
-
-    QSqlQuery patientQuery(*(medDatabaseController::instance()->database())); QVariant id;
-
-    // Query persistent data -- Retrieve patient information
-
-    QString patientName;
-    QString patientThumbnail;
-
-    patientQuery.prepare("SELECT name, thumbnail FROM patient WHERE id = :id");
-    patientQuery.bindValue(":id", index.patientId());
-    if(!patientQuery.exec())
-        qDebug() << DTK_COLOR_FG_RED << patientQuery.lastError() << DTK_NO_COLOR;
-
-    if(patientQuery.first())
-        patientName = patientQuery.value(0).toString();
-
-    // Query persistent data -- Retrieve studies information
-
-    QSqlQuery studyQuery(*(medDatabaseController::instance()->database()));
-
-    QVariant studyId;
-    QVariant studyName;
-    QVariant studyThumbnail;
-
-    studyQuery.prepare("SELECT id, name, thumbnail FROM study WHERE patient = :patient");
-    studyQuery.bindValue(":patient", index.patientId());
-    if(!studyQuery.exec())
-        qDebug() << DTK_COLOR_FG_RED << studyQuery.lastError() << DTK_NO_COLOR;
-
-    while(studyQuery.next()) {
-        studyId = studyQuery.value(0);
-        studyName = studyQuery.value(1);
-        studyThumbnail = studyQuery.value(2);
-
-        medDatabaseNavigatorItemGroup *group = new medDatabaseNavigatorItemGroup;
-	group->setOrientation (d->orientation);
-	
-        group->setName(studyName.toString());
-
-        // Retrieve series information
-
-        QSqlQuery seriesQuery(*(medDatabaseController::instance()->database()));
-
-        QVariant seriesId;
-        QVariant seriesName;
-        QVariant seriesThumbnail;
-
-        seriesQuery.prepare("SELECT id, name, thumbnail FROM series WHERE study = :study");
-        seriesQuery.bindValue(":study", studyId);
-        if(!seriesQuery.exec())
-            qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
-
-        while(seriesQuery.next()) {
-            seriesId = seriesQuery.value(0);
-            seriesName = seriesQuery.value(1);
-            seriesThumbnail = seriesQuery.value(2);
-
-            QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
-            qDebug() << thumbPath;
-            medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(index.patientId(), studyId.toInt(), seriesId.toInt(), -1, thumbPath, seriesName.toString());
-
-            connect(item, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
-            connect(item, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
-            connect(item, SIGNAL(seriesClicked(int)), this, SIGNAL(seriesClicked(int)));
-            connect(item, SIGNAL(imageClicked(int)), this, SIGNAL(imageClicked(int)));
-
-            group->addItem(item);
-        }
-
-        d->scene->addGroup(group);
+    if  (!index.isValidForPatient()) {
+        return;
     }
 
-    // Query non persistent data
+    typedef QSet<medDataIndex> IndexSet;
+    typedef QList<int> IntList;
 
-    QMap<QString, medDatabaseNavigatorItemGroup*> groupMap;
+    medDataManager *dataManager = medDataManager::instance();
 
-    foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items()) {
+    IntList dataSources = dataManager->dataSourceIds();
 
-        if(item->index().patientId() == index.patientId()) {
+    QMap<StudyDataKey, medDatabaseNavigatorItemGroup*> groupMap;
 
-            medDatabaseNavigatorItem *nitem = new medDatabaseNavigatorItem(
-                item->index().patientId(), 
-                item->index().studyId(), 
-                item->index().seriesId(), 
-                item->index().imageId(), 
-                item->thumb(),
-		item->seriesName());
+    medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
+    if ( !dbc ) 
+        return;
+    PatientDataKey referencePatientKey;
+    referencePatientKey.name = dbc->metaData(index, medMetaDataHelper::KEY_PatientName());
 
-            connect(nitem, SIGNAL(patientClicked(int)), this, SIGNAL(patientClicked(int)));
-            connect(nitem, SIGNAL(studyClicked(int)), this, SIGNAL(studyClicked(int)));
-            connect(nitem, SIGNAL(seriesClicked(int)), this, SIGNAL(seriesClicked(int)));
-            connect(nitem, SIGNAL(imageClicked(int)), this, SIGNAL(imageClicked(int)));
+    IndexSet addedStudies;
 
-	    medDatabaseNavigatorItemGroup *group = NULL;
-	    if (groupMap.contains(item->studyName()))
-	        group = groupMap.value(item->studyName());
-	    else {
-		group = new medDatabaseNavigatorItemGroup;
-		group->setName (item->studyName());
-		groupMap.insert(item->studyName(), group);		
-	    }
-	                
-            group->addItem (nitem);
+    foreach (const int dataSourceId, dataSources ) {
+
+        medAbstractDbController *dbc = dataManager->controllerForDataSource(dataSourceId);
+        if ( !dbc ) 
+            continue;
+
+        IntList patientsForSource;
+        if ( dataSourceId == index.dataSourceId() ) {
+            patientsForSource.push_back(index.patientId());
+        } else {
+            patientsForSource = dbc->patients();
+        }
+
+        foreach (const int patientId, patientsForSource ) {
+
+            IntList studyIds = dbc->studies(patientId);
+            medDataIndex patientDataIndex(dataSourceId, patientId);
+            QString patientName = dbc->metaData(patientDataIndex, medMetaDataHelper::KEY_PatientName() );
+            PatientDataKey patientKey;
+            patientKey.name = patientName;
+            if ( patientKey != referencePatientKey ) {
+                continue;
+            }
+
+            foreach (const int studyId, studyIds ) {
+
+                medDataIndex studyDataIndex(dataSourceId, patientId, studyId );
+
+                QString studyName = dbc->metaData(studyDataIndex, medMetaDataHelper::KEY_StudyDescription() );
+                StudyDataKey studyKey;
+                studyKey.name = studyName;
+
+                medDatabaseNavigatorItemGroup *group = NULL;
+                if ( groupMap.contains(studyKey) ) {
+                    group = groupMap.find(studyKey).value();
+                } else {
+                    group = new medDatabaseNavigatorItemGroup;
+                    group->setOrientation (d->orientation);
+                    group->setName(studyName);
+                    groupMap[studyKey] = group;
+                }
+
+                QList<int> seriesIds = dbc->series(patientId, studyId);
+
+                foreach (const int seriesId, seriesIds ) {
+
+                    medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(
+                        medDataIndex( dataSourceId, patientId, studyId, seriesId ) );
+
+                    connect(item, SIGNAL(itemClicked(const medDataIndex&)), this, SIGNAL(itemClicked(const medDataIndex&)));
+
+                    group->addItem(item);
+
+                }
+            }
         }
     }
 
@@ -195,28 +193,19 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
         d->scene->addGroup(group);
 }
 
-void medDatabaseNavigator::onStudyClicked(int id)
+void medDatabaseNavigator::onStudyClicked(const medDataIndex& id)
 {
     qDebug() << DTK_PRETTY_FUNCTION << id;
 }
 
-void medDatabaseNavigator::onSeriesClicked(int id)
+void medDatabaseNavigator::onSeriesClicked(const medDataIndex& id)
 {
     qDebug() << DTK_PRETTY_FUNCTION << id;
 }
 
-void medDatabaseNavigator::onImageClicked(int id)
+void medDatabaseNavigator::onImageClicked(const medDataIndex& id)
 {
     qDebug() << DTK_PRETTY_FUNCTION << id;
-}
-
-void medDatabaseNavigator::addThumbnail(const QImage& thumbnail)
-{
-    medDatabaseNavigatorItemGroup *group = new medDatabaseNavigatorItemGroup;
-    medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(-1, -1, -1, -1, thumbnail);
-
-    group->addItem(item);
-    d->scene->addGroup(group);    
 }
 
 void medDatabaseNavigator::setOrientation (Qt::Orientation orientation)

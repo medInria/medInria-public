@@ -28,7 +28,7 @@
 #include <dtkCore/dtkLog.h>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
-
+namespace {
 inline bool execQuery( QSqlQuery & query, const char *file, int line ) {
     if ( ! query.exec() ) {
          qDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
@@ -36,6 +36,7 @@ inline bool execQuery( QSqlQuery & query, const char *file, int line ) {
     }
     return true;
 } 
+}
 
 class medDatabaseRemoverPrivate
 {
@@ -124,13 +125,13 @@ void medDatabaseRemover::run(void)
                 EXEC_QUERY(imQuery);
                 while( imQuery.next() ) {
                     int imageId = imQuery.value(0).toInt();
-                    this->removeImage(imageId);
+                    this->removeImage(patientId, studyId, seriesId, imageId);
                 }
                 if (this->isSeriesEmpty( seriesId ) )
-                    this->removeSeries( seriesId );
+                    this->removeSeries( patientId, studyId, seriesId );
             } // seQuery.next
             if (this->isStudyEmpty( studyId ) )
-                this->removeStudy( studyId );
+                this->removeStudy( patientId, studyId );
         } // stQuery.next
         if (this->isPatientEmpty( patientId ) )
             this->removePatient( patientId );
@@ -144,7 +145,7 @@ void medDatabaseRemover::run(void)
     return;
 }
 
-void medDatabaseRemover::removeImage( int imageId )
+void medDatabaseRemover::removeImage(int patientId, int studyId, int seriesId, int imageId )
 {
     QSqlDatabase & db( *d->db );
     QSqlQuery query(db);
@@ -170,22 +171,45 @@ bool medDatabaseRemover::isSeriesEmpty( int seriesId )
     return !query.next();
 }
 
-void medDatabaseRemover::removeSeries( int seriesId )
+void medDatabaseRemover::removeSeries( int patientId, int studyId, int seriesId )
 {
     QSqlDatabase & db( *d->db );
     QSqlQuery query(db);
 
-    query.prepare("SELECT thumbnail, path  FROM " + d->T_SERIES + " WHERE id = :seriesId ");
+    query.prepare("SELECT thumbnail, path, name  FROM " + d->T_SERIES + " WHERE id = :seriesId ");
     query.bindValue(":seriesId", seriesId);
     EXEC_QUERY(query);
+    QString seriesName;
     if ( query.next()) {
         QString thumbnail = query.value(0).toString();
         this->removeFile( thumbnail );
         QString path = query.value(1).toString();
         this->removeFile( path );
+        seriesName = query.value(2).toString();
     }
     removeTableRow( d->T_SERIES, seriesId );
+
+    query.prepare("SELECT name  FROM " + d->T_STUDY + " WHERE id = :studyId ");
+    query.bindValue(":studyId", studyId);
+    EXEC_QUERY(query);
+    QString studyName;
+    if ( query.next() ) 
+        studyName = query.value(0).toString();
+
+    query.prepare("SELECT name  FROM " + d->T_PATIENT + " WHERE id = :patientId ");
+    query.bindValue(":patientId", patientId);
+    EXEC_QUERY(query);
+    QString patientName;
+    if ( query.next() ) 
+        patientName = query.value(0).toString();
+
+    medDatabaseControllerImpl * dbi = medDatabaseController::instance();
+    QString seriesPath = dbi->stringForPath( patientName ) + "/" + 
+        dbi->stringForPath( studyName ) + "/" + 
+        dbi->stringForPath( seriesName );
+    medStorage::rmpath( medStorage::dataLocation() + "/" + seriesPath );
 }
+
 bool medDatabaseRemover::isStudyEmpty( int studyId )
 {
     QSqlDatabase & db( *d->db );
@@ -197,19 +221,34 @@ bool medDatabaseRemover::isStudyEmpty( int studyId )
     return !query.next();
 }
 
-void medDatabaseRemover::removeStudy( int studyId )
+void medDatabaseRemover::removeStudy( int patientId, int studyId )
 {
     QSqlDatabase & db( *d->db );
     QSqlQuery query(db);
 
-    query.prepare("SELECT thumbnail FROM " + d->T_STUDY + " WHERE id = :studyId ");
+    QString studyName;
+
+    query.prepare("SELECT thumbnail, name FROM " + d->T_STUDY + " WHERE id = :studyId ");
     query.bindValue(":studyId", studyId);
     EXEC_QUERY(query);
     if ( query.next()) {
         QString thumbnail = query.value(0).toString();
         this->removeFile( thumbnail );
+        studyName = query.value(1).toString();
     }
     removeTableRow( d->T_STUDY, studyId );
+
+    query.prepare("SELECT name  FROM " + d->T_PATIENT + " WHERE id = :patientId ");
+    query.bindValue(":patientId", patientId);
+    EXEC_QUERY(query);
+    QString patientName;
+    if ( query.next() ) 
+        patientName = query.value(0).toString();
+
+    medDatabaseControllerImpl * dbi = medDatabaseController::instance();
+    QString studyPath = dbi->stringForPath( patientName ) + "/" + 
+        dbi->stringForPath( studyName );
+    medStorage::rmpath( medStorage::dataLocation() + "/" + studyPath );
 }
 
 bool medDatabaseRemover::isPatientEmpty( int patientId )
@@ -228,14 +267,20 @@ void medDatabaseRemover::removePatient( int patientId )
     QSqlDatabase & db( *d->db );
     QSqlQuery query(db);
 
-    query.prepare("SELECT thumbnail  FROM " + d->T_PATIENT + " WHERE id = :patientId ");
+    QString patientName;
+    query.prepare("SELECT thumbnail,name  FROM " + d->T_PATIENT + " WHERE id = :patientId ");
     query.bindValue(":patientId", patientId);
     EXEC_QUERY(query);
     if ( query.next()) {
         QString thumbnail = query.value(0).toString();
         this->removeFile( thumbnail );
+        patientName = query.value(1).toString();
     }
     removeTableRow( d->T_PATIENT, patientId );
+
+    medDatabaseControllerImpl * dbi = medDatabaseController::instance();
+    QString patientPath = dbi->stringForPath( patientName );
+    medStorage::rmpath( medStorage::dataLocation() + "/" + patientPath );
 }
 
 void medDatabaseRemover::removeTableRow( const QString &table, int id )
