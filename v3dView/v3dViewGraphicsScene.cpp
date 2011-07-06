@@ -14,7 +14,6 @@
 
 #include "QVtkGraphicsView.h"
 #include "v3dView.h"
-#include "v3dViewCircleAnnotation.h"
 
 
 class v3dViewGraphicsScenePrivate
@@ -23,7 +22,6 @@ class v3dViewGraphicsScenePrivate
 
     v3dView * view;
     bool itemsVisible;
-    v3dViewCircleAnnotation * circAnn;
 };
 
 v3dViewGraphicsScene::v3dViewGraphicsScene( v3dView * view, QWidget * parent )
@@ -60,13 +58,6 @@ v3dViewGraphicsScene::v3dViewGraphicsScene( v3dView * view, QWidget * parent )
              this, SLOT( onSceneRectChanged( const QRectF & ) ) );
     
 
-    // user annotations
-    d->circAnn = new v3dViewCircleAnnotation( d->view );
-    d->circAnn->setCenter( QVector3D( -7.0, 118.0, 1356.0 ) );
-    d->circAnn->setRadius( 6.23 );
-    d->circAnn->setSlice( "Axial", 123 );
-    this->addItem( d->circAnn );
-
     // this->setItemsVisible( d->itemsVisible );
 }
 
@@ -80,20 +71,17 @@ void v3dViewGraphicsScene::onImageDataChanged(
     dtkAbstractDataImage * imageData )
 {
     Q_UNUSED( imageData );
-    d->circAnn->updateSceneCoords();
 }
 
 void v3dViewGraphicsScene::onSceneRectChanged( const QRectF & rect )
 {
     Q_UNUSED( rect );
-    d->circAnn->updateSceneCoords();
 }
 
 void v3dViewGraphicsScene::onSliceChanged( int slice, bool propagate )
 {
     Q_UNUSED( slice );
     Q_UNUSED( propagate );
-    d->circAnn->updateSceneCoords();
 }
 
 void v3dViewGraphicsScene::onPositionChanged( const QVector3D & position,
@@ -101,21 +89,18 @@ void v3dViewGraphicsScene::onPositionChanged( const QVector3D & position,
 {
     Q_UNUSED( position );
     Q_UNUSED( propagate );
-    d->circAnn->updateSceneCoords();
 }
 
 void v3dViewGraphicsScene::onZoomChanged( double zoom, bool propagate )
 {
     Q_UNUSED( zoom );
     Q_UNUSED( propagate );
-    d->circAnn->updateSceneCoords();
 }
 
 void v3dViewGraphicsScene::onPanChanged( const QVector2D & pan, bool propagate )
 {
     Q_UNUSED( pan );
     Q_UNUSED( propagate );
-    d->circAnn->updateSceneCoords();
 }
 
 void v3dViewGraphicsScene::onCameraChanged( const QVector3D & position,
@@ -129,22 +114,17 @@ void v3dViewGraphicsScene::onCameraChanged( const QVector3D & position,
     Q_UNUSED( focal );
     Q_UNUSED( parallelScale );
     Q_UNUSED( propagate );
-
-    d->circAnn->updateSceneCoords();
 }
 
 void v3dViewGraphicsScene::onSizeChanged( int width, int height)
 {
     Q_UNUSED( width );
     Q_UNUSED( height );
-    d->circAnn->updateSceneCoords();
 }
 
 void v3dViewGraphicsScene::onOrientationChanged( const QString & name )
 {
     this->setItemsVisible( name != "3D" );
-
-    d->circAnn->updateSceneCoords();
 }
 
 
@@ -161,8 +141,6 @@ void v3dViewGraphicsScene::hideItems()
 void v3dViewGraphicsScene::setItemsVisible( bool state )
 {
     d->itemsVisible = state;
-
-    d->circAnn->setVisible( d->itemsVisible );
 }
 
 QPointF v3dViewGraphicsScene::worldToScene( const QVector3D & worldVec ) const

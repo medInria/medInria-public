@@ -60,11 +60,6 @@ QString AlgorithmConnectedThreshold::localizedName()
     return tr("Connected Threshold");
 }
 
-AlgorithmParametersWidget * AlgorithmConnectedThreshold::createParametersWidget(Controller *controller, QWidget *parent )
-{
-    return new AlgorithmConnectedThresholdParametersWidget( controller, parent );
-}
-
 template < typename TPixel, unsigned int VDimension > 
 int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractData * inData )
 {

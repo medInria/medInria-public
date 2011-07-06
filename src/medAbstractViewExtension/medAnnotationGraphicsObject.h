@@ -1,7 +1,8 @@
-#ifndef _medAbstractViewAnnotation_h_
-#define _medAbstractViewAnnotation_h_
+#ifndef MEDANNOTATIONGRAPHICSOBJECT_H
+#define MEDANNOTATIONGRAPHICSOBJECT_H
 
-#include "medViewWidgetsExport.h"
+
+#include "medAbstractViewExtensionExport.h"
 
 #include <QGraphicsObject>
 
@@ -9,6 +10,7 @@ class QVector2D;
 class QVector3D;
 class medAbstractView;
 
+class medAnnotationData;
 
 /**
  * Base class for view annotations.
@@ -16,20 +18,24 @@ class medAbstractView;
  * This is abstract : It does not implement the QGraphicsItem::paint method.
  * 
  ***/
-class MEDABSTRACTVIEWEXTENSION_EXPORT medAbstractViewAnnotation : public QGraphicsObject
+class MEDABSTRACTVIEWEXTENSION_EXPORT medAnnotationGraphicsObject : public QGraphicsObject
 {
     typedef QGraphicsObject BaseClass;
 
     Q_OBJECT;
 
 public:
-    medAbstractViewAnnotation( medAbstractView * view, QGraphicsItem * parent = 0 );
-    virtual ~medAbstractViewAnnotation();
+    medAnnotationGraphicsObject( QGraphicsItem * parent = 0 );
+    virtual ~medAnnotationGraphicsObject();
+
+    virtual void setAnnotationData( medAnnotationData * annotationData);
+    medAnnotationData * annotationData() const;
 
     virtual bool showIn2dView() const;
     virtual bool showIn3dView() const;
 
     virtual bool isInSlice( const QVector3D & slicePoint, const QVector3D & sliceNormal, qreal thickness) const;
+    medAbstractView * view() const;
 
 public slots:
 //    virtual void onCameraChanged();
@@ -41,13 +47,13 @@ protected:
 
     bool isPointInSlice( const QVector3D & testPoint, const QVector3D & slicePoint, const QVector3D & sliceNormal,  qreal thickness) const;
 
-    medAbstractView * view() { return m_view; }
+    QList<medAbstractView *> views () const;
+
 private:
 
-    medAbstractView * m_view;
     class medAbstractViewAnnotationPrivate;
     medAbstractViewAnnotationPrivate * d;
 };
 
+#endif // MEDANNOTATIONGRAPHICSOBJECT_H
 
-#endif // _v3dViewCircleAnnotation_h_

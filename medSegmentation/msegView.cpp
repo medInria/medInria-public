@@ -70,7 +70,7 @@ bool View::mouseMoveEvent( medAbstractViewScene * vscene, QGraphicsSceneMouseEve
 }
 
 
-bool View::eventFilter( QObject *obj, ::QEvent *event )
+bool View::eventFilter( QObject *obj, QEvent *event )
 {
     medAbstractViewScene * vscene = qobject_cast<medAbstractViewScene*>(obj);
     if ( !vscene ) {

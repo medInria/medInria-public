@@ -3,10 +3,14 @@
 
 
 #include "msegPluginExport.h"
+
+#include "msegAlgorithmParametersWidget.h"
 #include "msegAlgorithmGeneric.h"
 #include "msegView.h"
 
 #include <dtkCore/dtkAbstractData.h>
+
+#include <medCore/medDataIndex.h>
 
 #include <QVector3D>
 #include <QTextEdit>
@@ -17,20 +21,8 @@ class dtkAbstractData;
 class dtkAbstractProcessFactory;
 
 namespace mseg {
+    class SeedPointAnnotationData;
 
-class AlgorithmParametersWidget : public QWidget {
-public:
-    AlgorithmParametersWidget( Controller * controller, QWidget * parent ) : 
-      QWidget(parent), 
-          m_controller(controller) {}
-    virtual ~AlgorithmParametersWidget() {}
-
-protected:
-    Controller * controller() { return m_controller; }
-
-private:
-    Controller * m_controller;
-};
 
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmConnectedThresholdParametersWidget : public AlgorithmParametersWidget
 {
@@ -39,6 +31,8 @@ public:
     AlgorithmConnectedThresholdParametersWidget( Controller *controller, QWidget *parent );
     ~AlgorithmConnectedThresholdParametersWidget();
 
+    static AlgorithmParametersWidget * createAlgorithmParametersWidget( Controller *controller, QWidget *parent );
+
 public slots:
     void onAddSeedPointPressed();
     void onRemoveSeedPointPressed();
@@ -46,8 +40,14 @@ public slots:
 
     void onViewMousePress(medAbstractView *view, const QVector3D &vec);
 
+protected:
+    void addSeedPoint( medAbstractView *view, const QVector3D &vec );
+    void setData( dtkAbstractData *data );
+
 private:
-    struct SeedPoint { QVector3D vec; };
+    struct SeedPoint { 
+        dtkSmartPointer<SeedPointAnnotationData> annotationData;
+    };
 
     QDoubleSpinBox *m_lowThresh;
     QDoubleSpinBox *m_highThresh;
@@ -60,6 +60,13 @@ private:
     QVector< SeedPoint > m_seedPoints;
     dtkSmartPointer< View > m_viewFilter;
     dtkSmartPointer< dtkAbstractData > m_inputData;
+
+    enum ViewState { ViewState_None, ViewState_PickingSeedPoint };
+    ViewState m_viewState;
+
+    dtkSmartPointer<dtkAbstractData> m_data;
+    QString m_noDataText;
+
 };
 
 } // namespace mseg

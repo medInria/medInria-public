@@ -103,12 +103,5 @@ dtkAbstractData * AlgorithmGeneric::input()
     return d->inputData;
 }
 
-AlgorithmParametersWidget *AlgorithmGeneric::createParametersWidget(Controller * controller, QWidget *parent)
-{
-    return new AlgorithmParametersWidget(controller, parent);
-}
-
-
-
 } // namespace mseg
 

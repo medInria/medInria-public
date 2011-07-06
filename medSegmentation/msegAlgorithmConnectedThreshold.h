@@ -21,7 +21,6 @@ public:
     ~AlgorithmConnectedThreshold();
 // Override AlgorithmGeneric
     QString localizedName() MED_OVERRIDE;
-    AlgorithmParametersWidget *createParametersWidget(Controller * controller, QWidget *parent) MED_OVERRIDE;
 
     QList<QVector3D> seedPoints() const { return m_seedPoints; }
     void addSeedPoint(const QVector3D & val) { 

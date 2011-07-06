@@ -81,7 +81,6 @@ void Configuration::setupViewContainerStack()
             this,SLOT(onViewAdded(dtkAbstractView*)));
         connect(stackedViewContainers()->container("Single"),SIGNAL(viewRemoved(dtkAbstractView*)),
             this,SLOT(onViewRemoved(dtkAbstractView*)));
-        connect( d->segmentationToolBox, SIGNAL( addSeedPointPressed()), this, SLOT( beginAddSeedPoint() ) );
     }
 }
 

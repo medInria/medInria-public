@@ -2,11 +2,15 @@
 #include "msegController.h"
 #include "msegView.h"
 #include "msegAlgorithmConnectedThreshold.h"
+#include "msegSeedPointAnnotationData.h"
 
 #include <medAbstractViewScene.h>
 
 #include <medCore/medAbstractView.h>
+#include <medCore/medAbstractData.h>
+#include <medCore/medDataIndex.h>
 
+#include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <QPushButton>
@@ -16,6 +20,12 @@
 #include <set>
 
 namespace mseg {
+
+    static const QString MED_METADATA_PATIENT_NAME = "PatientName";
+    static const QString MED_METADATA_STUDY_DESCRIPTION = "StudyDescription";
+    static const QString MED_METADATA_SERIES_DESCRIPTION = "SeriesDescription";
+
+    static const QString SEED_POINT_ANNOTATION_DATA_NAME = "mseg::SeedPointAnnotationData";
 
 class SingleClickEventFilter : public View 
 {
@@ -37,7 +47,7 @@ public:
         if (vscene->isScene2D()) {
             // Convert mouse click to a 3D point in the image.
 
-            QVector3D posImage = vscene->sceneToImagePos( mouseEvent->pos() );
+            QVector3D posImage = vscene->sceneToImagePos( mouseEvent->scenePos() );
             //Project vector onto plane
             dtkAbstractData * viewData = Controller::viewData( view );
             m_cb->onViewMousePress( view, posImage );
@@ -52,14 +62,18 @@ private :
 };
 
 AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParametersWidget( Controller *controller, QWidget *parent ) :
-  AlgorithmParametersWidget( controller, parent)
-  {
+    AlgorithmParametersWidget( controller, parent),
+    m_viewState(ViewState_None),
+    m_noDataText( tr("[No input data]") )
+{
     QVBoxLayout * layout = new QVBoxLayout(this);
 
     QHBoxLayout * highLowLayout = new QHBoxLayout();
 
     m_lowThresh = new QDoubleSpinBox(this);
+    m_lowThresh->setToolTip( tr("Set the lower threshold") );
     m_highThresh = new QDoubleSpinBox(this);
+    m_highThresh->setToolTip( tr("Set the upper threshold") );
     highLowLayout->addWidget( m_lowThresh );
     highLowLayout->addWidget( m_highThresh );
 
@@ -77,7 +91,14 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
     addRemoveButtonLayout->addWidget( m_removeSeedPointButton );
     layout->addLayout( addRemoveButtonLayout );
 
-    m_dataText = new QTextEdit( tr("No Data") );
+    m_dataText = new QTextEdit( m_noDataText );
+    {
+        QFont font = m_dataText->currentFont();
+        QFontMetrics fm( font );
+        int textHeightInPixels = fm.height();
+        m_dataText->setFixedHeight( textHeightInPixels );
+        m_dataText->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    }
     layout->addWidget( m_dataText );
 
     m_applyButton = new QPushButton( tr("Apply") , this);
@@ -92,13 +113,16 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
 
 AlgorithmConnectedThresholdParametersWidget::~AlgorithmConnectedThresholdParametersWidget()
 {
-
+    foreach( const SeedPoint & seed, m_seedPoints ) {
+        controller()->removeAnnotation( seed.annotationData );
+    }
 }
 
 void AlgorithmConnectedThresholdParametersWidget::onAddSeedPointPressed()
 {
     m_viewFilter.takePointer( new SingleClickEventFilter(controller(), this ) );
 
+    m_viewState = ViewState_PickingSeedPoint;
     controller()->addViewEventFilter( m_viewFilter );
 }
 
@@ -130,17 +154,82 @@ void AlgorithmConnectedThresholdParametersWidget::onApplyButtonPressed()
 
     alg->setInput(m_inputData);
     foreach( const SeedPoint & seed, m_seedPoints ) {
-        alg->addSeedPoint( seed.vec );
+        alg->addSeedPoint( seed.annotationData->centerWorld() );
     }
 
     controller()->run( alg );
 
 }
+void AlgorithmConnectedThresholdParametersWidget::setData( dtkAbstractData *dtkdata )
+{   
+    m_data = dtkSmartPointer<dtkAbstractData>(dtkdata);
+
+    QString dataText;
+    if ( m_data ) {
+        QString patientName;
+        QString studyName;
+        QString seriesName;
+
+        if ( m_data->hasMetaData( MED_METADATA_PATIENT_NAME ) ){
+            patientName = dtkdata->metaDataValues(MED_METADATA_PATIENT_NAME)[0];
+        }
+        if ( m_data->hasMetaData( MED_METADATA_STUDY_DESCRIPTION ) ){
+            studyName = dtkdata->metaDataValues(MED_METADATA_STUDY_DESCRIPTION)[0];
+        }
+        if ( m_data->hasMetaData( MED_METADATA_SERIES_DESCRIPTION ) ){
+            seriesName = dtkdata->metaDataValues(MED_METADATA_SERIES_DESCRIPTION)[0];
+        }
+
+        dataText = patientName + '/' + studyName + '/' +seriesName;
+    } else {
+        // data is NULL
+        dataText = m_noDataText;
+    }
+    m_dataText->setText( dataText );
+}
+
+void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView *view, const QVector3D &vec )
+{
+    if (m_seedPoints.size() == 0 ) {
+        setData( Controller::viewData(view) );
+    }
+    SeedPoint newSeed;
+    newSeed.annotationData.takePointer( qobject_cast<mseg::SeedPointAnnotationData *>
+        (dtkAbstractDataFactory::instance()->create( SEED_POINT_ANNOTATION_DATA_NAME )) );
+    newSeed.annotationData->setCenterWorld(vec);
+    m_seedPoints.append( newSeed );
+
+    int newRow = m_seedPointTable->rowCount();
+    m_seedPointTable->insertRow( newRow );
+    m_seedPointTable->setItem( newRow, 0, new QTableWidgetItem( QString("%1").arg(newRow) ));
+
+    QString vecString = QString("%1,%2,%3").arg( vec.x() , 5 ).arg( vec.y() , 5 ).arg( vec.z() , 5 );
+    m_seedPointTable->setItem( newRow, 1, new QTableWidgetItem( vecString )) ;
+
+    dtkSmartPointer<SeedPointAnnotationData> spd = new SeedPointAnnotationData();
+    spd->setCenterWorld( vec );
+    spd->setColor( Qt::red );
+    controller()->addAnnotation(spd);
+
+}
 
 void AlgorithmConnectedThresholdParametersWidget::onViewMousePress( medAbstractView *view, const QVector3D &vec )
 {
+    if ( ViewState_PickingSeedPoint == m_viewState ) {
 
+        this->addSeedPoint( view, vec );
+        controller()->removeEventFilter( m_viewFilter );
+    }
 }
+
+//static 
+AlgorithmParametersWidget * 
+    AlgorithmConnectedThresholdParametersWidget::createAlgorithmParametersWidget( 
+        Controller *controller, QWidget *parent )
+{
+    return new AlgorithmConnectedThresholdParametersWidget( controller, parent );
+}
+
 
 
 

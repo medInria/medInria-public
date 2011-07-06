@@ -38,6 +38,9 @@ protected:
 
     medAbstractViewScene * scene(medAbstractView * view);
 
+    /** Event handlers, derived classes should override those they need.
+     *  \return     true if the event was processed and should not be passed to the next handler.
+     *  Provide default implementations which do nothing, returning false. */
     virtual bool mousePressEvent( medAbstractViewScene *vscene, QGraphicsSceneMouseEvent *mouseEvent );
     virtual bool mouseReleaseEvent( medAbstractViewScene *vscene, QGraphicsSceneMouseEvent *mouseEvent );
     virtual bool mouseMoveEvent( medAbstractViewScene *vscene, QGraphicsSceneMouseEvent *mouseEvent );

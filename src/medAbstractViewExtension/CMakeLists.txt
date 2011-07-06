@@ -39,19 +39,18 @@ include(${medinria_USE_FILE})
 ## Input
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  medAbstractViewAnnotation.h
-  medAbstractViewScene.h
-  )
+file(GLOB ${PROJECT_NAME}_HEADERS *.h)
+file(GLOB ${PROJECT_NAME}_SOURCES *.cpp)
 
-set(${PROJECT_NAME}_HEADERS
-  medViewWidgetsExport.h
-  ${${PROJECT_NAME}_HEADERS_MOC})
+#Determine files to MOC as those containing Q_OBJECT.
+foreach(fileIt ${${PROJECT_NAME}_HEADERS})
+    file(STRINGS ${fileIt} foundString REGEX "^[ \\t]*Q_OBJECT([^0-9A-Za-z_]|$)")
+    string(LENGTH "${foundString}" foundLength)
+    if( ${foundLength} GREATER 0 )
+        set(${PROJECT_NAME}_HEADERS_MOC ${${PROJECT_NAME}_HEADERS_MOC} ${fileIt})
+    endif( ${foundLength} GREATER 0 )
+endforeach(fileIt)
 
-set(${PROJECT_NAME}_SOURCES
-  medAbstractViewAnnotation.cpp
-  medAbstractViewScene.cpp
-  )
 
 ## #################################################################
 ## Build rules

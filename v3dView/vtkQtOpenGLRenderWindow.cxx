@@ -173,7 +173,7 @@ void vtkQtOpenGLRenderWindow::Render()
   {
     if ( m_qtWidget->isProcessingPaintEvent() )
     {
-      dtkDebug() <<  "vtkQtOpenGLRenderWindow::Render VTK Rendering";
+      dtkDebug() <<  QString("%1(%2): ").arg(__FILE__).arg(__LINE__) << "vtkQtOpenGLRenderWindow::Render VTK Rendering";
       this->MakeCurrent();
       Superclass::Render ();
     }

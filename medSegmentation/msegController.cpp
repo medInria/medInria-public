@@ -3,12 +3,18 @@
 #include "msegView.h"
 #include "msegConfiguration.h"
 #include "msegToolbox.h"
-#include "msegAlgorithmConnectedThreshold.h"
-// Until I have AlgorithmParametersWidget
-#include "msegAlgorithmConnectedThresholdParametersWidget.h"
+#include "msegAlgorithmInitializer.h"
+#include "msegAlgorithmGeneric.h"
+#include "msegAlgorithmParametersWidget.h"
+#include "msegAnnotationInitializer.h"
+#include "msegParametersWidgetFactory.h"
 
 #include "medAbstractViewScene.h"
+#include "medAnnotationGraphicsObject.h"
+#include "medAnnotationFactory.h"
+#include "medAnnotationData.h"
 
+#include <medCore/medAbstractData.h>
 #include <medCore/medAbstractView.h>
 #include <medCore/medJobManager.h>
 #include <medCore/medRunnableProcess.h>
@@ -38,19 +44,25 @@ public:
     typedef QHash<QString, AlgorithmInfo > AlgInfoContainerType;
     AlgInfoContainerType algInfo;
 
-    dtkSmartPointer< AlgorithmGeneric > currentAlgorithm;
+    QString currentAlgorithm;
 
     typedef QHash< QObject *,  dtkSmartPointer< AlgorithmGeneric > > RunningProcessType;
     RunningProcessType runningProcesses;
 
     enum EventFilterStatus { FilterOff, FilterOn, FilterOnUntilClick };
     EventFilterStatus filterStatus;
+
+    typedef QHash< dtkSmartPointer<medAnnotationData> , QList<medAnnotationGraphicsObject *> > AnnotationHash;
+    AnnotationHash installedAnnotations;
+
+    medAnnotationFactory * annotationFactory;
 };
 
 Controller::Controller(Configuration * configuration) :
     d (new ControllerPrivate)
 {
     d->filterStatus = ControllerPrivate::FilterOff;
+    d->annotationFactory = new medAnnotationFactory;
 
     d->configuration = configuration;
     connect(d->configuration,SIGNAL(viewAdded(dtkAbstractView*)),
@@ -60,6 +72,8 @@ Controller::Controller(Configuration * configuration) :
 
 
     initializeAlgorithms();
+
+    initializeAnnotations();
 
     d->configuration->buildConfiguration();
 
@@ -160,28 +174,48 @@ void Controller::run( mseg::AlgorithmGeneric* alg )
 
 void Controller::onViewAdded( dtkAbstractView* view )
 {
-
+    typedef ControllerPrivate::AnnotationHash::iterator AnnotationItType;
+    for( AnnotationItType it(d->installedAnnotations.begin()); it != d->installedAnnotations.end(); ++it ){
+        medAnnotationData * annotation = it.key();
+        medAbstractViewScene *vscene = Controller::viewScene(view);
+        if ( Controller::viewData(view)->objectName() == annotation->parentData()->objectName() ) {
+            std::auto_ptr<medAnnotationGraphicsObject> newObj (annotationFactory()->create( annotation->description() ));
+            vscene->addItem(newObj.release());
+        }
+    }
 }
 
 void Controller::onViewRemoved( dtkAbstractView* view )
 {
-    medAbstractViewScene *vscene = Controller::viewScene(view);
-    // Filters?
+    // Remove annotations
+    typedef ControllerPrivate::AnnotationHash::iterator AnnotationItType;
+    for( AnnotationItType it(d->installedAnnotations.begin()); it != d->installedAnnotations.end(); ++it ){
+        medAnnotationData * annotation = it.key();
+        QList< medAnnotationGraphicsObject * > & grphObjs( it.value() );
+        QList< medAnnotationGraphicsObject * > toRemove;
+        foreach( medAnnotationGraphicsObject * grphObj, grphObjs ) {
+            if ( grphObj->view() == view ){
+                toRemove.append( grphObj );
+            }
+        }
+        foreach( medAnnotationGraphicsObject * removeObj, toRemove ) {
+            grphObjs.removeAll( removeObj );
+        }
+    }
 }
 
 void Controller::initializeAlgorithms()
 {
-    dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
-    AlgorithmConnectedThreshold::registerAlgorithm(factory);
+    AlgorithmInitializer::initialize();
 
-
-    QStringList algorithmImplementations = factory->implementations( AlgorithmGeneric::ms_interfaceName );
+    ParametersWidgetFactory * factory = ParametersWidgetFactory::instance();
+    QList<QString> algorithmImplementations = factory->widgets();
     foreach ( QString algName, algorithmImplementations ) {
-        QScopedPointer< dtkAbstractProcess > procInstance( factory->create(algName) );
-        AlgorithmGeneric *algInstance = qobject_cast< AlgorithmGeneric *>( procInstance.data() );
+
+        ParametersWidgetFactory::WidgetInfo wi = factory->info(algName);
         AlgorithmInfo itAlgInfo;
-        itAlgInfo.algName = algName;
-        itAlgInfo.localizedName = algInstance->localizedName();
+        itAlgInfo.algName = wi.type;
+        itAlgInfo.localizedName = wi.localName;
 
         d->algInfo.insert(algName, itAlgInfo);
     }
@@ -198,20 +232,13 @@ QString Controller::localizedNameForAlgorithm( const QString & algName ) const
 
 void Controller::onAlgorithmSelected( const QString & algName )
 {
-    if ( (!d->currentAlgorithm) ||
-        (d->currentAlgorithm->description() != algName ) ) 
+    if ( d->currentAlgorithm != algName )
     {
-
-        dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
-        dtkSmartPointer< dtkAbstractProcess > procInstance;
-        procInstance.takePointer( factory->create(algName) );
-        dtkSmartPointer< AlgorithmGeneric > algInstance = dynamic_cast< AlgorithmGeneric *>(procInstance.data());
-        d->currentAlgorithm = algInstance;
-
         mseg::Toolbox *toolbox( d->configuration->segmentationToobox() );
-        QWidget * paramWidget = algInstance->createParametersWidget(this, toolbox);
+        ParametersWidgetFactory * factory = ParametersWidgetFactory::instance();
+        AlgorithmParametersWidget * paramWidget = factory->create( algName, this, toolbox);
         toolbox->setAlgorithmParameterWidget( paramWidget );
-
+        d->currentAlgorithm = algName;
     }
 }
 
@@ -224,6 +251,58 @@ void Controller::addViewEventFilter( View * filter )
         vscene->installEventFilter( filter );
     }
 }
+
+void Controller::addAnnotation( medAnnotationData * annotation )
+{
+    Q_ASSERT( annotation );
+    if ( d->installedAnnotations.contains(annotation) ) {
+        return;
+    }
+
+    ControllerPrivate::AnnotationHash::iterator it( 
+        d->installedAnnotations.insert( annotation, QList< medAnnotationGraphicsObject *>() ) );
+     QList< medAnnotationGraphicsObject *> & grpObjs( it.value() );
+
+     QList< dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
+     foreach( dtkAbstractView * view, views ) {
+         medAbstractViewScene *vscene = Controller::viewScene(view);
+         if ( Controller::viewData(view)->objectName() == annotation->parentData()->objectName() ) {
+             std::auto_ptr<medAnnotationGraphicsObject> newObj (annotationFactory()->create( annotation->description() ));
+             vscene->addItem(newObj.release());
+         }
+     }
+
+}
+
+void Controller::removeAnnotation( medAnnotationData * annotation )
+{
+    ControllerPrivate::AnnotationHash::iterator it( d->installedAnnotations.find(annotation) );
+    if ( it != d->installedAnnotations.end() ) {
+
+        const QList< medAnnotationGraphicsObject *> & grpObjs (it.value());
+        foreach( medAnnotationGraphicsObject * grphObj, grpObjs ) {
+            grphObj->scene()->removeItem(grphObj);
+        }
+        d->installedAnnotations.erase(it);
+
+    } else {
+
+    }
+
+}
+
+medAnnotationFactory * Controller::annotationFactory()
+{
+    return d->annotationFactory;
+}
+
+void Controller::initializeAnnotations()
+{
+    mseg::AnnotationInitializer::initialize();
+}
+
+
+
 
 
 

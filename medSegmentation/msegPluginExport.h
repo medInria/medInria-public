@@ -15,4 +15,12 @@
     #define MEDVIEWSEGMENTATIONPLUGIN_EXPORT
 #endif
 
+// override is a C++0x feature implemented in MSVC
+#if defined(_MSC_VER)
+#define MED_OVERRIDE override
+#else 
+// Not in gcc (yet?)
+#define MED_OVERRIDE
+#endif
+
 #endif

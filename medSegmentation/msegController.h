@@ -12,6 +12,8 @@ class dtkAbstractView;
 
 class QGraphicsSceneMouseEvent;
 class medAbstractViewScene;
+class medAnnotationData;
+class medAnnotationFactory;
 
 namespace mseg {
     class ControllerPrivate;
@@ -24,7 +26,7 @@ namespace mseg {
 
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT Controller : public QObject
 {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
     Controller(Configuration * configuration);
@@ -41,6 +43,9 @@ public:
 
     QString localizedNameForAlgorithm( const QString & algName ) const;
 
+    void addAnnotation( medAnnotationData * annotation );
+    void removeAnnotation( medAnnotationData * annotation );
+
 signals:
     void algorithmAdded( QString name );
 
@@ -55,7 +60,9 @@ public slots:
 
 protected:
     void initializeAlgorithms();
+    void initializeAnnotations();
     void activateViews( bool isActivate = true );
+    medAnnotationFactory * annotationFactory();
 
 private:
 

@@ -11,101 +11,77 @@
 
 #include <vtkImageView2D.h>
 
+#include <dtkCore/dtkSmartPointer.h>
+
 #include "v3dView.h"
 #include "v3dViewGraphicsScene.h"
+
+v3dViewCircleAnnotationData::v3dViewCircleAnnotationData()
+{
+    radiusWorld = 1.0;
+    centerWorld = QVector3D( 0.0, 0.0, 0.0 );
+    orientation = "Axial";
+    slice       = 0;
+    color       = QColor( "#b2b8b2" );
+    color.setAlphaF( 0.67 );
+}
+
+v3dViewCircleAnnotationData::~v3dViewCircleAnnotationData()
+{
+
+}
+
+void v3dViewCircleAnnotationData::setCenter( const QVector3D & center )
+{
+    centerWorld = center;
+    emit dataModified();
+}
+
+void v3dViewCircleAnnotationData::setRadius( qreal r )
+{
+    radiusWorld = r;
+    emit dataModified();
+}
+
+void v3dViewCircleAnnotationData::setSlice( QString orientation, int slice )
+{
+    orientation = orientation;
+    slice       = slice;
+    emit dataModified();
+}
+
+
+
 
 class v3dViewCircleAnnotationPrivate
 {
 public:
-    qreal     radiusWorld;
-    QVector3D centerWorld;
-
-    QString   orientation;
-    int       slice;
-
+    dtkSmartPointer<v3dViewCircleAnnotationData> dataObject;
     qreal     radiusScene;
     QPointF   centerScene;
     bool      isOnSlice;
-
-    QColor    color;
 };
 
-v3dViewCircleAnnotation::v3dViewCircleAnnotation( v3dView       * view,
+v3dViewCircleAnnotation::v3dViewCircleAnnotation( v3dViewCircleAnnotationData * data,
                                                   QGraphicsItem * parent )
-    : BaseClass( view, parent )
+    : BaseClass( parent )
     , d( new v3dViewCircleAnnotationPrivate )
 {
-    this->setFlag( QGraphicsItem::ItemIsSelectable, false );
-    this->setFlag( QGraphicsItem::ItemIsFocusable,  false );
-    this->setFlag( QGraphicsItem::ItemIsMovable,    false );
+    d->dataObject = data;
 
     this->setVisible( false );
 
-    d->radiusWorld = 1.0;
-    d->centerWorld = QVector3D( 0.0, 0.0, 0.0 );
     d->radiusScene = 1.0;
     d->centerScene = QPointF( 0.0, 0.0 );
-    d->orientation = "Axial";
-    d->slice       = 0;
     d->isOnSlice   = false;
 
-    d->color       = QColor( "#b2b8b2" );
-    d->color.setAlphaF( 0.67 );
+    connect( data, SIGNAL( dataModified() ), this, SLOT( updateSceneCoords() ) );
 }
 
 v3dViewCircleAnnotation::~v3dViewCircleAnnotation()
 {
     if ( d != NULL )
         delete d;
-}
-
-void v3dViewCircleAnnotation::setCenter( const QVector3D & center )
-{
-    d->centerWorld = center;
-    this->updateSceneCoords();
-}
-
-void v3dViewCircleAnnotation::setRadius( qreal r )
-{
-    d->radiusWorld = r;
-    this->updateSceneCoords();
-}
-
-void v3dViewCircleAnnotation::setSlice( QString orientation,
-                                        int slice )
-{
-    v3dView * view = qobject_cast< v3dView * >( this->view() );
-    vtkImageView2D * view2d = view->view2d();
-    if ( view2d == NULL ||
-         view2d != dynamic_cast< vtkImageView2D * >( view->currentView() ) )
-        return;
-
-    bool wasOnSlice = d->isOnSlice;
-
-    QString viewOrientation;
-    switch ( view2d->GetViewOrientation() )
-    {
-    case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
-        viewOrientation = "Axial";
-        break;
-    case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
-        viewOrientation = "Coronal";
-        break;
-    case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-        viewOrientation = "Sagittal";
-        break;
-    default: break;
-    }
-
-    d->orientation = orientation;
-    d->slice       = slice;
-    d->isOnSlice = ( d->orientation == viewOrientation    &&
-                     d->slice       == view2d->GetSlice() );
-    this->setVisible( d->isOnSlice );
-
-    if ( !wasOnSlice && d->isOnSlice )
-        this->updateSceneCoords();
-
 }
 
 QRectF v3dViewCircleAnnotation::boundingRect() const
@@ -130,7 +106,7 @@ void v3dViewCircleAnnotation::paint( QPainter * painter,
 
     painter->save();
 
-    painter->setPen( d->color );
+    painter->setPen( d->dataObject->color );
     painter->setRenderHints( QPainter::Antialiasing          |
                              QPainter::SmoothPixmapTransform |
                              QPainter::TextAntialiasing      );
@@ -164,17 +140,17 @@ void v3dViewCircleAnnotation::updateSceneCoords()
     default: break;
     }
 
-    d->isOnSlice = ( d->orientation == viewOrientation    &&
-                     d->slice       == view2d->GetSlice() );
+    d->isOnSlice = ( d->dataObject->orientation == viewOrientation    &&
+                     d->dataObject->slice       == view2d->GetSlice() );
     this->setVisible( d->isOnSlice );
 
     if ( !d->isOnSlice )
         return;
 
-    d->centerScene = this->worldToScene( d->centerWorld );
+    d->centerScene = this->worldToScene( d->dataObject->centerWorld );
 
     QVector3D vup(this->viewUp()) ;
-    QVector3D v =  d->centerWorld + d->radiusWorld *
+    QVector3D v =  d->dataObject->centerWorld + d->dataObject->radiusWorld *
         vup.normalized();
 
     QPointF edgePoint( this->worldToScene( v ) );

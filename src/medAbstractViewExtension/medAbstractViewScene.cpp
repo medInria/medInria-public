@@ -1,7 +1,7 @@
 
 #include "medAbstractViewScene.h"
 
-#include "medAbstractViewAnnotation.h"
+#include "medAnnotationGraphicsObject.h"
 
 #include <QSet>
 #include <QWidget>
@@ -9,12 +9,6 @@
 class medAbstractViewScene::medAbstractViewScenePrivate 
 {
     friend class medAbstractViewScene;
-
-    typedef QSet< medAbstractViewAnnotation * > AnnotationsContainerType;
-    AnnotationsContainerType annotations;
-
-    typedef QList< medViewEventHandler * > EventHandlerContainerType;
-    EventHandlerContainerType handlers;
 };
 
 medAbstractViewScene::medAbstractViewScene( medAbstractView * view, QWidget * parent /*= NULL */ )
@@ -30,18 +24,3 @@ medAbstractViewScene::~medAbstractViewScene()
     d = NULL;
 }
 
-void medAbstractViewScene::addAnnotation( medAbstractViewAnnotation * annotation )
-{
-    medAbstractViewScenePrivate::AnnotationsContainerType::const_iterator it( d->annotations.insert( annotation ) );
-    if ( *it == annotation ){
-        this->addItem( annotation );
-    }
-}
-
-void medAbstractViewScene::removeAnnotation( medAbstractViewAnnotation * annotation )
-{
-    bool removed =  d->annotations.remove( annotation );
-    if ( removed ){
-        this->removeItem( annotation );
-    }
-}

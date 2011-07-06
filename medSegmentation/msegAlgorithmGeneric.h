@@ -1,6 +1,8 @@
 #ifndef MSEGALGORITHMGENERIC_H
 #define MSEGALGORITHMGENERIC_H
 
+#include "msegPluginExport.h"
+
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -8,14 +10,6 @@
 
 #include <QHash>
 #include <QString>
-
-// override is a C++0x feature implemented in MSVC
-#if defined(_MSC_VER)
-  #define MED_OVERRIDE override
-#else 
-  // Not in gcc (yet?)
-  #define MED_OVERRIDE
-#endif
 
 //Forward definitions
 class dtkAbstractData;
@@ -60,8 +54,6 @@ public:
     //! Undo support (not implemented yet)
     virtual bool isUndoAble();
     virtual void undo();
-
-    virtual AlgorithmParametersWidget *createParametersWidget(Controller * controller, QWidget *parent);
 
 protected:
 
