@@ -93,14 +93,15 @@ int medDatabaseControllerImplTest(int argc, char* argv[])
     // check that there is only one row in series table
     if(1 != countRowsInTable(db, "series"))
         return EXIT_FAILURE;
-
+    
     // check that the proper path is in series table
     QString seriesPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QString(".mha");
+    
     if(!checkIfRowExists(db, "series", "path", seriesPath))
         return EXIT_FAILURE;
-
+    
     int imageCount = 64;
-
+    
     // check that there are #imageCount rows in image table
     if (imageCount != countRowsInTable(db, "image"))
         return EXIT_FAILURE;
@@ -109,7 +110,6 @@ int medDatabaseControllerImplTest(int argc, char* argv[])
     for (int i = 0; i < imageCount ; i++)
     {
         QHash<QString, QString> columnValues;
-        columnValues.insert("size", QString::number(imageCount));
         columnValues.insert("name", "I1.nhdr" + QString::number(i));
         columnValues.insert("path", file);
         columnValues.insert("instance_path", seriesPath);
@@ -207,7 +207,7 @@ bool checkIfRowExists(QSqlDatabase db, QString tableName, QString columnName, QS
     }
 
     if(query.first()) {
-        QVariant patientId = query.value(0);
+        QVariant id = query.value(0);
         return true;
     }
     else
@@ -260,7 +260,7 @@ bool checkIfRowExists(QSqlDatabase db, QString tableName, QHash<QString, QString
 	//qDebug() << query.executedQuery().toStdString().c_str();
 
     if(query.first()) {
-        QVariant patientId = query.value(0);
+        QVariant id = query.value(0);
         return true;
     }
     else

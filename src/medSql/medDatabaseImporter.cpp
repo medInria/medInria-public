@@ -607,8 +607,8 @@ int medDatabaseImporter::getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabas
 
         QString seriesPath = "";
         if(!d->indexWithoutImporting)
-            QString seriesPath = dtkData->metaDataValues (tr("FileName"))[0];
-
+            seriesPath = dtkData->metaDataValues (tr("FileName"))[0];
+        
         int size = dtkData->metaDataValues(tr("Size"))[0].toInt();
         QString refThumbPath = dtkData->metadata("RefThumbnailPath");
         QString age = dtkData->metaDataValues(tr("Age"))[0];
@@ -755,7 +755,7 @@ void medDatabaseImporter::checkAndFixConsistencyOfSeriesPathColumn(QSqlDatabase 
     if(query.first())
     {
         int indexedImagesCount = query.value(0).toInt();
-
+        
         if (indexedImagesCount >= 1)
         {
             QSqlQuery updateQuery(db);
