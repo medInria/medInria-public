@@ -363,15 +363,20 @@ void medAbstractView::addDataInList(dtkAbstractData * data)
 
 dtkAbstractData * medAbstractView::dataInList(int layer)
 {
+    
     if (layer < d->dataList.size())
         return d->dataList.at(layer);
-
+    
     return NULL;
 }
 
-void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
+void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
-    d->dataList[layer] = data;
+
+    if(d->dataList.at(layer))
+        d->dataList[layer] = data;
+    if(layer == d->dataList.size())
+        d->dataList.append(data);
 }
 
 void medAbstractView::onPositionChanged (const QVector3D &position)
