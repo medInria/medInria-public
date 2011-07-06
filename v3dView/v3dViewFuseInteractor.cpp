@@ -24,10 +24,10 @@ public:
   typedef itk::WeightedAddImageFilter<ImageType, ImageType, ImageType>  BlendFilterType;
   typedef itk::CheckerBoardImageFilter<ImageType>                       CheckerboardFilterType;
   
-  dtkAbstractDataImage *data1;
-  dtkAbstractDataImage *data2;
+  dtkSmartPointer<dtkAbstractDataImage> data1;
+  dtkSmartPointer<dtkAbstractDataImage> data2;
 
-  dtkAbstractData *output;
+  dtkSmartPointer<dtkAbstractData> output;
 
   v3dView *view;
 
@@ -41,8 +41,8 @@ public:
 
 v3dViewFuseInteractor::v3dViewFuseInteractor(): dtkAbstractViewInteractor(), d(new v3dViewFuseInteractorPrivate)
 {
-    d->data1 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageShort3") );
-    d->data2 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageShort3") );
+    d->data1 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3");
+    d->data2 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3");
     d->view = 0;
     d->alpha = 0.5;
     d->pattern = 50;
@@ -50,7 +50,7 @@ v3dViewFuseInteractor::v3dViewFuseInteractor(): dtkAbstractViewInteractor(), d(n
     d->blender        = 0; 
     d->checkerboarder = 0;
     
-    d->output = dtkAbstractDataFactory::instance()->create("itkDataImageShort3");
+    d->output = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3");
 
     this->addProperty ("FusionStyle", QStringList() << "blend" << "checkerboard");
     this->setProperty ("FusionStyle", "blend");

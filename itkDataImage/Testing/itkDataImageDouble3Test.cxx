@@ -3,6 +3,7 @@
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
 #include "dtkCore/dtkAbstractDataImage.h"
+#include "dtkCore/dtkSmartPointer.h"
 
 #include <itkImage.h>
 
@@ -20,7 +21,9 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   dtkPluginManager::instance()->setPath (argv[1]);
   dtkPluginManager::instance()->initialize();
   
-  dtkAbstractDataImage *data = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3") );
+  dtkSmartPointer<dtkAbstractData> dtkdata;
+  dtkdata =  dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
+  dtkAbstractDataImage *data = dynamic_cast<dtkAbstractDataImage*>( dtkdata.data() );
   
   if (!data) {
       qDebug() << "Cannot create data object from plugin";
@@ -74,7 +77,9 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   image->SetRegions (region);
   image->Allocate();
 
-  dtkAbstractDataImage *data2 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3") );
+  dtkSmartPointer<dtkAbstractData> dtkdata2;
+  dtkdata2 =  dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
+  dtkAbstractDataImage *data2 = dynamic_cast<dtkAbstractDataImage*>( dtkdata2.data() );
   if (!data2) {
       qDebug() << "Cannot create data object from plugin";
       return EXIT_FAILURE;
