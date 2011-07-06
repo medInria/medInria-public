@@ -144,7 +144,7 @@ bool checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, Q
             if (QDir(sessionPath).exists() && QFile(sessionFile).exists())
             {
                 // check if thumbnails exist
-                for (int i = 0; i <= thumbnailsCount; i++) {
+                for (unsigned int i = 0; i <= thumbnailsCount; i++) {
                     QFile thumbnail(sessionPath + QDir::separator() + QString::number(i) + QString(".png"));
                     if (!thumbnail.exists())
                         return false;
