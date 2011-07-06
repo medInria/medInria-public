@@ -21,7 +21,6 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
@@ -30,6 +29,8 @@
 #include <medCore/medViewManager.h>
 #include <medCore/medMessageController.h>
 #include <medCore/medAbstractView.h>
+
+#include <medCore/medAbstractDataImage.h>
 
 #include <medGui/medToolBoxTab.h>
 #include <medGui/medToolBoxFactory.h>
@@ -56,8 +57,8 @@ public:
     medAbstractView *movingView;
     medAbstractView *fuseView;
 
-    dtkSmartPointer<dtkAbstractDataImage> fixedData;
-    dtkSmartPointer<dtkAbstractDataImage> movingData;
+    dtkSmartPointer<medAbstractDataImage> fixedData;
+    dtkSmartPointer<medAbstractDataImage> movingData;
 
     dtkAbstractProcess * process;
 
@@ -186,12 +187,12 @@ dtkAbstractView *medToolBoxRegistration::fuseView(void)
     return d->fuseView;
 }
 
-dtkAbstractDataImage *medToolBoxRegistration::fixedData(void)
+medAbstractDataImage *medToolBoxRegistration::fixedData(void)
 {
     return d->fixedData;
 }
 
-dtkAbstractDataImage *medToolBoxRegistration::movingData(void)
+medAbstractDataImage *medToolBoxRegistration::movingData(void)
 {
     return d->movingData;
 }

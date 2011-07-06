@@ -2,19 +2,20 @@
 #define medAbstractData_h__
 
 #include <dtkCore/dtkAbstractData.h>
+
 #include "medCoreExport.h"
 
 class medAbstractDataPrivate;
 
 /**
- * Extending dtkAbstractData class to hold more specific information
+ * Extending medAbstractData class to hold more specific information
  */
 class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 {
     Q_OBJECT
 
 public:
-    medAbstractData( medAbstractData *parent = 0);
+    medAbstractData( dtkAbstractData *parent = 0);
     virtual ~medAbstractData(void);
 
     /**

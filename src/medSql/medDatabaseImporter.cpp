@@ -19,11 +19,12 @@
 
 #include "medDatabaseImporter.h"
 
+#include <medCore/medAbstractDataImage.h>
+
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 #include <medSql/medDatabaseController.h>
@@ -233,7 +234,7 @@ void medDatabaseImporter::run(void)
 
                 // some addition information
                 QStringList size;
-                if (dtkAbstractDataImage *imagedata = dynamic_cast<dtkAbstractDataImage*> (imData.data()) ) {
+                if (medAbstractDataImage *imagedata = dynamic_cast<medAbstractDataImage*> (imData.data()) ) {
                     size << QString::number (imagedata->zDimension() );
                 }
                 else {
@@ -816,7 +817,7 @@ dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter( Q
 
     // cycle all
     for (int i=0; i<writers.size(); i++) {
-        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]) );
+        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
 
         if ( dataWriter->handled().contains(dtkdata->description()) &&
              dataWriter->canWrite( filename ) ) {

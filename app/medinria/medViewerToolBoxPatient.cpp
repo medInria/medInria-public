@@ -22,7 +22,7 @@
 #include <QtGui>
 
 #include <dtkCore/dtkGlobal.h>
-#include <dtkGui/dtkQSignalBlocker.h>
+#include <dtkCore/dtkSignalBlocker.h>
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
@@ -204,7 +204,7 @@ void medViewerToolBoxPatient::onCurrentIndexChanged(int index)
 
 void medViewerToolBoxPatient::setupDatabase(void)
 {
-    dtkQSignalBlocker( d->combo );
+    dtkSignalBlocker( d->combo );
     
     this->clear();
     this->addChooseItem();

@@ -38,18 +38,27 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medSettingsManager.h
   medDbControllerFactory.h
   medAbstractDbController.h
-  medAbstractData.h  
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
-  medAttachedData.h
   medStorage.h
   medRunnableProcess.h
   medAbstractViewFiberInteractor.h
+  medAbstractData.h
+  medAbstractDataImage2D.h
+  medAbstractDataImage3D.h
+  medAbstractDataImage4D.h
+  medAbstractDataMesh.h
+  medAttachedData.h
 )
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
   medAbstractDataCollection.h
+  medAbstractDataImage.h
+  medAbstractDataTypedImage.h
+  medAbstractDataTypedImage2D.h
+  medAbstractDataTypedImage3D.h
+  medAbstractDataTypedImage4D.h
   medCoreExport.h
   medDataIndex.h
 )
@@ -70,13 +79,18 @@ set(${PROJECT_NAME}_SOURCES
   medSettingsManager.cpp
   medDbControllerFactory.cpp
   medAbstractDbController.cpp
-  medAttachedData.cpp
   medRunnableProcess.cpp
-  medAbstractData.cpp
-  medAbstractDataCollection.cpp
   medAbstractDataSource.cpp
   medAbstractDataSourceFactory.cpp
   medAbstractViewFiberInteractor.cpp
+  medAbstractData.cpp
+  medAbstractDataCollection.cpp
+  medAbstractDataImage.cpp
+  medAbstractDataImage2D.cpp
+  medAbstractDataImage3D.cpp
+  medAbstractDataImage4D.cpp
+  medAbstractDataMesh.cpp
+  medAttachedData.cpp
 )
 
 ## #################################################################

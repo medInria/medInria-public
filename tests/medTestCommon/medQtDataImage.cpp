@@ -107,7 +107,7 @@ QImage & medQtDataImage::thumbnail( void ) const
     if ( !d->thumbnailValid ) 
         this->generateThumbnails();
 
-    return this->dtkAbstractDataImage::thumbnails()[0];
+    return this->medAbstractDataImage::thumbnails()[0];
 }
 
 QList<QImage>& medQtDataImage::thumbnails( void ) const
@@ -115,22 +115,22 @@ QList<QImage>& medQtDataImage::thumbnails( void ) const
     if ( !d->thumbnailValid ) 
         this->generateThumbnails();
 
-    return this->dtkAbstractDataImage::thumbnails();
+    return this->medAbstractDataImage::thumbnails();
 }
 
 void medQtDataImage::generateThumbnails() const
 {
     QImage refImage;
-    if ( this->dtkAbstractDataImage::thumbnails().isEmpty() ) {
-        refImage = this->dtkAbstractDataImage::thumbnail();
+    if ( this->medAbstractDataImage::thumbnails().isEmpty() ) {
+        refImage = this->medAbstractDataImage::thumbnail();
     } else {
-        refImage = this->dtkAbstractDataImage::thumbnails()[0];
+        refImage = this->medAbstractDataImage::thumbnails()[0];
     }
     const int sx = refImage.width();
     const int sy = refImage.height();
 
     int mid = d->images.size() / 2;
-    this->dtkAbstractDataImage::thumbnails().clear();
+    this->medAbstractDataImage::thumbnails().clear();
 
     const QImage & unscaledImage = d->images[mid];
     QImage scaledImage;
@@ -139,7 +139,7 @@ void medQtDataImage::generateThumbnails() const
     } else {
         scaledImage = unscaledImage.scaledToWidth(sx);
     }
-    this->dtkAbstractDataImage::thumbnails().push_back(scaledImage);
+    this->medAbstractDataImage::thumbnails().push_back(scaledImage);
     d->thumbnailValid = true;
 }
 

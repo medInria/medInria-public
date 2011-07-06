@@ -10,7 +10,7 @@
 class medAbstractDataCollectionPrivate
 {
 public:
-    typedef QVector<dtkSmartPointer<dtkAbstractData>> DataVectorType;
+    typedef QVector<dtkSmartPointer<medAbstractData>> DataVectorType;
     DataVectorType dataVector;
     DataVectorType::iterator dataIterator;
     dtkSmartPointer<medAttachedData> attachedData;
@@ -35,13 +35,13 @@ int medAbstractDataCollection::count()
     return d->dataVector.count();
 }
 
-dtkAbstractData* medAbstractDataCollection::first()
+medAbstractData* medAbstractDataCollection::first()
 {
     d->dataIterator = d->dataVector.begin();
     return (*d->dataIterator);
 }
 
-dtkAbstractData* medAbstractDataCollection::next()
+medAbstractData* medAbstractDataCollection::next()
 {
     d->dataIterator++;
     if (d->dataIterator != d->dataVector.end())
@@ -50,7 +50,7 @@ dtkAbstractData* medAbstractDataCollection::next()
         return NULL;
 }
 
-dtkAbstractData* medAbstractDataCollection::at( int index )
+medAbstractData* medAbstractDataCollection::at( int index )
 {
     if ((index > 0) && (index < d->dataVector.count()) )
         return d->dataVector.at(index);
@@ -58,7 +58,7 @@ dtkAbstractData* medAbstractDataCollection::at( int index )
         return NULL;
 }
 
-void medAbstractDataCollection::addData( dtkAbstractData* data )
+void medAbstractDataCollection::addData( medAbstractData* data )
 {
     d->dataVector.push_back(data);
     first();
@@ -178,12 +178,12 @@ void medAbstractDataCollection::setParameter( const QString& parameter, int chan
     return (*d->dataIterator)->setParameter(parameter, channel);
 }
 
-void medAbstractDataCollection::setParameter( dtkAbstractData *parameter )
+void medAbstractDataCollection::setParameter( medAbstractData *parameter )
 {
     return (*d->dataIterator)->setParameter(parameter);
 }
 
-void medAbstractDataCollection::setParameter( dtkAbstractData *parameter, int channel )
+void medAbstractDataCollection::setParameter( medAbstractData *parameter, int channel )
 {
     return (*d->dataIterator)->setParameter(parameter,channel);
 }

@@ -16,14 +16,15 @@
 
 #include "medDatabaseController.h"
 #include "medDatabaseRemover.h"
-#include <medCore/medStorage.h>
+
+#include <medCore/medAbstractDataImage.h>
 #include <medCore/medDataIndex.h>
+#include <medCore/medStorage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 

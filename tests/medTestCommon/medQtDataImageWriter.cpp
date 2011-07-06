@@ -133,7 +133,7 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
         writer->setFormat( fmtString );
     }
 
-    dtkAbstractDataImage * dtkdataIm = dynamic_cast< dtkAbstractDataImage *>( dtkdata );
+    medAbstractDataImage * dtkdataIm = dynamic_cast< medAbstractDataImage *>( dtkdata );
 
     // Set metadata
     const QStringList keys = dtkdata->metaDataList();
