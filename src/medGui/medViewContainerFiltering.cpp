@@ -1,6 +1,10 @@
-#include "medViewContainerFiltering.h"
+/* medViewContainerFiltering.cpp ---
+ *
+ * @author Clément Philipot <clement.philipot@inria.fr>
+ *
+ */
 
-//TODO: synchronize views
+#include "medViewContainerFiltering.h"
 
 class medViewContainerFilteringPrivate
 {

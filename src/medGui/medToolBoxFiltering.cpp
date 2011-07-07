@@ -1,9 +1,8 @@
 /* medToolBoxFiltering.cpp --- 
- * 
+ *
+ * @author Clément Philipot <clement.philipot@inria.fr>
+ *
  */
-
-//TODO save result in a file or database
-//TODO launch process in a thread to prevent freezing the user interface
 
 #include "medToolBoxFiltering.h"
 #include "medToolBoxFilteringCustom.h"
