@@ -64,11 +64,11 @@ ADD_TEST(medDatabaseControllerImplTest ${CXX_TEST_PATH}/${PROJECT_NAME}CxxTests 
 ## #################################################################
 
 SET(${PROJECT_NAME}_QTESTS_SRCS
-  testWithQtTestLib.cxx
+  medDatabaseImporterTest.cxx
   )
 
 SET(${PROJECT_NAME}_MOC_CPPS
-  testWithQtTestLib.cxx
+  medDatabaseImporterTest.cxx
   )
 
 QT4_WRAP_CPP(${PROJECT_NAME}_MOC_SRCS ${${PROJECT_NAME}_MOC_CPPS})
@@ -87,3 +87,4 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}_qt_tests
         )
 
 ADD_TEST(${PROJECT_NAME}_qt_tests ${CXX_TEST_PATH}/${PROJECT_NAME}_qt_tests)
+
