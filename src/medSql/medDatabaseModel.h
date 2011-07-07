@@ -25,7 +25,7 @@
 #include <QtCore/QAbstractItemModel>
 #include <QtGui>
 
-class medDatabaseItem;
+class medAbstractDatabaseItem;
 class medDatabaseModelPrivate;
 class medDataIndex;
 
@@ -78,7 +78,7 @@ protected slots:
     void repopulate(void);
 
 protected:
-    void populate(medDatabaseItem *parent);
+    void populate(medAbstractDatabaseItem *parent);
 
 private:
     medDatabaseModelPrivate *d;

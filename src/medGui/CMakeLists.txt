@@ -89,7 +89,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserToolBoxPacsSearch.h    
   
   medDatabaseSearchPanel.h
-
+  medDatabaseView.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -157,7 +157,8 @@ set(${PROJECT_NAME}_SOURCES
   medBrowserToolBoxPacsNodes.cpp
   medBrowserToolBoxPacsSearch.cpp
 
-  medDatabaseSearchPanel.cpp 
+  medDatabaseSearchPanel.cpp
+  medDatabaseView.cpp  
 )
 
 # Include header files for Visual Studio.

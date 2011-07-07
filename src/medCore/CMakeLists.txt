@@ -49,6 +49,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractDataImage4D.h
   medAbstractDataMesh.h
   medAttachedData.h
+  medAbstractDatabaseItem.h  
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -91,6 +92,7 @@ set(${PROJECT_NAME}_SOURCES
   medAbstractDataImage4D.cpp
   medAbstractDataMesh.cpp
   medAttachedData.cpp
+  medAbstractDatabaseItem.cpp
 )
 
 ## #################################################################

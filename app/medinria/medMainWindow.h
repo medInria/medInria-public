@@ -71,6 +71,11 @@ public slots:
 protected:
     void closeEvent(QCloseEvent *event);
 
+    /**
+     * all initial registering should be done here
+     */
+    void registerToFactories();
+
 private:
     medMainWindowPrivate *d;
 };

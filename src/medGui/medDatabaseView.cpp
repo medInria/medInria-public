@@ -17,14 +17,14 @@
  * 
  */
 
-#include "medDatabaseController.h"
-#include "medDatabaseModel.h"
 #include "medDatabaseView.h"
-#include "medDatabaseItem.h"
-#include "medDatabaseProxyModel.h"
-#include "medCore/medDataManager.h"
 
-#include "medDatabaseNonPersistentController.h"
+#include <medCore/medDataManager.h>
+#include <medCore/medAbstractDatabaseItem.h>
+#include <medCore/medAbstractDbController.h>
+
+#include <QSortFilterProxyModel>
+#include <QAbstractItemModel>
 
 class NoFocusDelegate : public QStyledItemDelegate
 {
@@ -43,20 +43,21 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
 
     if(index.isValid()) {
 
-        medDatabaseItem *item = NULL;
+        medAbstractDatabaseItem *item = NULL;
 
-        if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(m_view->model()))
-            item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-        else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(m_view->model()))
-            item = static_cast<medDatabaseItem *>(index.internalPointer());
-
+        if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(m_view->model()))
+            item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+        else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(m_view->model()))
+            item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+/*
         if (item) {
-            if ( medDatabaseNonPersistentController::instance()->contains( item->dataIndex() ) ) {
+            if ( medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->contains( item->dataIndex() ) ) {
                 itemOption.font.setItalic(true);
             } else {
 
             }
         }
+        */
     }
 
     QStyledItemDelegate::paint(painter, itemOption, index);
@@ -75,7 +76,6 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
-    //connect(this, SIGNAL(      clicked(const QModelIndex&)), this, SLOT(onItemClicked(const QModelIndex&))); // obsolete with selectionModel changed signal
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
@@ -112,12 +112,12 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
     if(!index.isValid())
         return;
 
-    medDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = NULL;
 
-    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(index.internalPointer());
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
 
     if (item) {
@@ -141,12 +141,12 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
 void medDatabaseView::onItemClicked(const QModelIndex& index)
 {
 
-    medDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = NULL;
 
-    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(index.internalPointer());
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (!item)
         return;
@@ -171,12 +171,12 @@ void medDatabaseView::onItemClicked(const QModelIndex& index)
 
 void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 {
-    medDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = NULL;
 
-    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(index.internalPointer());
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item)
         emit (open(item->dataIndex()));
@@ -192,10 +192,10 @@ void medDatabaseView::onMenuViewClicked(void)
     if(!index.isValid())
         return;
 
-    medDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = NULL;
 
-    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     if (item && (item->dataIndex().isValidForSeries()))
     {        
@@ -213,10 +213,10 @@ void medDatabaseView::onMenuExportClicked(void)
     if(!index.isValid())
         return;
 
-    medDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = NULL;
 
-    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
-        item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     if(item)
         if(item->dataIndex().isValidForSeries())
@@ -244,10 +244,10 @@ void medDatabaseView::onMenuRemoveClicked( void )
 
         QModelIndex index = indexes.at(0);
 
-        medDatabaseItem *item = NULL;
+        medAbstractDatabaseItem *item = NULL;
 
-        if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
-            item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+        if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+            item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
         if (item)
         {

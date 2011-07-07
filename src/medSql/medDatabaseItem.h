@@ -26,19 +26,20 @@
 #include <QtGui>
 
 #include <medCore/medDataIndex.h>
+#include <medCore/medAbstractDatabaseItem.h>
 
 class medDatabaseItemPrivate;
 
-class MEDSQL_EXPORT medDatabaseItem
+class MEDSQL_EXPORT medDatabaseItem : public medAbstractDatabaseItem
 {
 public:
-     medDatabaseItem(medDataIndex index, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent = 0);
+     medDatabaseItem(medDataIndex index, const QList<QVariant>& attributes, const QList<QVariant>& data, medAbstractDatabaseItem *parent = 0);
     ~medDatabaseItem(void);
 
-    medDatabaseItem *child(int row);
-    medDatabaseItem *parent(void);
+    medAbstractDatabaseItem *child(int row);
+    medAbstractDatabaseItem *parent(void);
 
-    void append(medDatabaseItem *child);
+    void append(medAbstractDatabaseItem *child);
 
     int row(void) const;
     int childCount(void) const;

@@ -32,6 +32,7 @@
 #include <medCore/medDbControllerFactory.h>
 #include <medCore/medDataManager.h>
 #include <medCore/medMetaDataHelper.h>
+#include <medCore/medAbstractDatabaseItem.h>
 
 // /////////////////////////////////////////////////////////////////
 // medDatabaseModelPrivate
@@ -40,10 +41,10 @@
 class medDatabaseModelPrivate
 {
 public:
-    medDatabaseItem *item(const QModelIndex& index) const;
+    medAbstractDatabaseItem *item(const QModelIndex& index) const;
 
 public:
-    medDatabaseItem *root;
+    medAbstractDatabaseItem *root;
 
     QList<QVariant> ptAttributes;  // Attributes displayed on Patient rows
     QList<QVariant> seAttributes;  // Attributes displayed on series rows.
@@ -56,10 +57,10 @@ public:
     enum { DataCount = 19 };
 };
 
-medDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
+medAbstractDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
 {
     if (index.isValid()) {
-        medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer());
+        medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
         if (item) 
         return item;
     }
@@ -133,7 +134,7 @@ medDatabaseModel::~medDatabaseModel(void)
 
 int medDatabaseModel::rowCount(const QModelIndex& parent) const
 {
-    medDatabaseItem *parentItem;
+    medAbstractDatabaseItem *parentItem;
 
     if (parent.column() > 0)
         return 0;
@@ -141,7 +142,7 @@ int medDatabaseModel::rowCount(const QModelIndex& parent) const
     if (!parent.isValid())
         parentItem = d->root;
     else
-        parentItem = static_cast<medDatabaseItem *>(parent.internalPointer());
+        parentItem = static_cast<medAbstractDatabaseItem *>(parent.internalPointer());
     
     return parentItem->childCount();
 }
@@ -149,7 +150,7 @@ int medDatabaseModel::rowCount(const QModelIndex& parent) const
 int medDatabaseModel::columnCount(const QModelIndex& parent) const
 {
     if (parent.isValid())
-        return static_cast<medDatabaseItem *>(parent.internalPointer())->columnCount();
+        return static_cast<medAbstractDatabaseItem *>(parent.internalPointer())->columnCount();
     else
         return d->root->columnCount();
 }
@@ -171,7 +172,7 @@ QVariant medDatabaseModel::data(const QModelIndex& index, int role) const
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
     
-    medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer());
+    medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     return item->data(index.column());
 }
@@ -190,7 +191,7 @@ QModelIndex medDatabaseModel::indexForPatient(int id) const
 {
     for(int i = 0; i < this->rowCount(); i++) {
         QModelIndex index = this->index(i, 0);
-        if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
+        if(medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer()))
             if(item->data(0).toInt() == id)
                 return index;
     }
@@ -204,10 +205,10 @@ QModelIndex medDatabaseModel::indexForStudy(int id) const
 {
     for(int i = 0; i < this->rowCount(); i++) {
         QModelIndex patientIndex = this->index(i, 0);
-        if(medDatabaseItem *patientItem = static_cast<medDatabaseItem *>(patientIndex.internalPointer()))
+        if(medAbstractDatabaseItem *patientItem = static_cast<medAbstractDatabaseItem *>(patientIndex.internalPointer()))
             for(int j = 0; j < patientItem->childCount(); j++) {
                 QModelIndex index = this->index(j, 0, patientIndex);
-                if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
+                if(medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer()))
                     if(item->data(0).toInt() == id)
                         return index;
             }
@@ -222,13 +223,13 @@ QModelIndex medDatabaseModel::indexForSeries(int id) const
 {
     for(int i = 0; i < this->rowCount(); i++) {
         QModelIndex patientIndex = this->index(i, 0);
-        if(medDatabaseItem *patientItem = static_cast<medDatabaseItem *>(patientIndex.internalPointer()))
+        if(medAbstractDatabaseItem *patientItem = static_cast<medAbstractDatabaseItem *>(patientIndex.internalPointer()))
             for(int j = 0; j < patientItem->childCount(); j++) {
                 QModelIndex studyIndex = this->index(j, 0, patientIndex);
-                if(medDatabaseItem *studyItem = static_cast<medDatabaseItem *>(studyIndex.internalPointer()))
+                if(medAbstractDatabaseItem *studyItem = static_cast<medAbstractDatabaseItem *>(studyIndex.internalPointer()))
                     for(int k = 0; k < studyItem->childCount(); k++) {
                         QModelIndex index = this->index(k, 0, studyIndex);
-                        if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
+                        if(medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer()))
                             if(item->data(0).toInt() == id)
                                 return index;
                     }
@@ -244,16 +245,16 @@ QModelIndex medDatabaseModel::indexForImage(int id) const
 {
     for(int i = 0; i < this->rowCount(); i++) {
         QModelIndex patientIndex = this->index(i, 0);
-        if(medDatabaseItem *patientItem = static_cast<medDatabaseItem *>(patientIndex.internalPointer()))
+        if(medAbstractDatabaseItem *patientItem = static_cast<medAbstractDatabaseItem *>(patientIndex.internalPointer()))
             for(int j = 0; j < patientItem->childCount(); j++) {
                 QModelIndex studyIndex = this->index(j, 0, patientIndex);
-                if(medDatabaseItem *studyItem = static_cast<medDatabaseItem *>(studyIndex.internalPointer()))
+                if(medAbstractDatabaseItem *studyItem = static_cast<medAbstractDatabaseItem *>(studyIndex.internalPointer()))
                     for(int k = 0; k < studyItem->childCount(); k++) {
                         QModelIndex seriesIndex = this->index(k, 0, studyIndex);
-                        if(medDatabaseItem *seriesItem = static_cast<medDatabaseItem *>(seriesIndex.internalPointer()))
+                        if(medAbstractDatabaseItem *seriesItem = static_cast<medAbstractDatabaseItem *>(seriesIndex.internalPointer()))
                             for(int l = 0; l < seriesItem->childCount(); l++) {
                                 QModelIndex index = this->index(l, 0, seriesIndex);
-                                if(medDatabaseItem *item = static_cast<medDatabaseItem *>(index.internalPointer()))
+                                if(medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer()))
                                     if(item->data(0).toInt() == id)
                                         return index;
                             }
@@ -269,13 +270,13 @@ QModelIndex medDatabaseModel::index(int row, int column, const QModelIndex& pare
     if (!hasIndex(row, column, parent))
         return QModelIndex();
 
-    medDatabaseItem *parentItem;
+    medAbstractDatabaseItem *parentItem;
     if (!parent.isValid())
         parentItem = d->root;
     else
-        parentItem = static_cast<medDatabaseItem *>(parent.internalPointer());
+        parentItem = static_cast<medAbstractDatabaseItem *>(parent.internalPointer());
 
-    medDatabaseItem *childItem = parentItem->child(row);
+    medAbstractDatabaseItem *childItem = parentItem->child(row);
     if (childItem)
         return createIndex(row, column, childItem);
     else
@@ -287,8 +288,8 @@ QModelIndex medDatabaseModel::parent(const QModelIndex& index) const
     if (!index.isValid())
         return QModelIndex();
 
-    medDatabaseItem *child = static_cast<medDatabaseItem *>(index.internalPointer());
-    medDatabaseItem *parent = child->parent();
+    medAbstractDatabaseItem *child = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+    medAbstractDatabaseItem *parent = child->parent();
 
     if (parent == d->root)
         return QModelIndex();
@@ -330,7 +331,7 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
     if(index.column() == 0)
         return false;
     
-    medDatabaseItem *item = d->item(index);
+    medAbstractDatabaseItem *item = d->item(index);
 
     bool result = item->setData(index.column(), value);
 
@@ -388,7 +389,7 @@ bool medDatabaseModel::removeColumns(int position, int columns, const QModelInde
 
 bool medDatabaseModel::insertRows(int position, int rows, const QModelIndex& parent)
 {
-    medDatabaseItem *parentItem = d->item(parent);
+    medAbstractDatabaseItem *parentItem = d->item(parent);
 
     bool success;
 
@@ -401,7 +402,7 @@ bool medDatabaseModel::insertRows(int position, int rows, const QModelIndex& par
 
 bool medDatabaseModel::removeRows(int position, int rows, const QModelIndex& parent)
 {
-    medDatabaseItem *parentItem = d->item(parent);
+    medAbstractDatabaseItem *parentItem = d->item(parent);
 
     bool success = true;
 
@@ -484,7 +485,7 @@ void medDatabaseModel::repopulate(void)
  * \param root The root item of the model.
  */
 
-void medDatabaseModel::populate(medDatabaseItem *root)
+void medDatabaseModel::populate(medAbstractDatabaseItem *root)
 {
     typedef QList<int> IntList;
     medDataManager * dataManager = medDataManager::instance();
@@ -525,7 +526,7 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                         ptData[i] = value;
                 }
             }
-            medDatabaseItem *ptItem = new medDatabaseItem(index, d->ptAttributes, ptData, root);
+            medAbstractDatabaseItem *ptItem = new medDatabaseItem(index, d->ptAttributes, ptData, root);
 
             IntList studies = dbc->studies(ptId);
 
@@ -547,7 +548,7 @@ void medDatabaseModel::populate(medDatabaseItem *root)
                                 seData[i] = value;
                         }
                     }
-                    medDatabaseItem *seItem = new medDatabaseItem(index, d->seAttributes, seData, ptItem);
+                    medAbstractDatabaseItem *seItem = new medDatabaseItem(index, d->seAttributes, seData, ptItem);
 
                     ptItem->append(seItem);
                 } // foreach series 

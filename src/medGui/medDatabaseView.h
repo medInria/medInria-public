@@ -20,14 +20,13 @@
 #ifndef MEDDATABASEVIEW_H
 #define MEDDATABASEVIEW_H
 
-#include "medSqlExport.h"
+#include "medGuiExport.h"
 
 #include <QtGui>
 
 class medDataIndex;
-class medDatabaseModel;
 
-class MEDSQL_EXPORT medDatabaseView : public QTreeView
+class MEDGUI_EXPORT medDatabaseView : public QTreeView
 {
     Q_OBJECT
 

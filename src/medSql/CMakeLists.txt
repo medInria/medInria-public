@@ -29,7 +29,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseExporter.h
   medDatabaseImporter.h
   medDatabaseModel.h
-  medDatabaseView.h
   medDatabaseNavigator.h
   medDatabaseNavigatorItem.h
   medDatabaseNavigatorItemGroup.h
@@ -66,7 +65,6 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseImporter.cpp
   medDatabaseItem.cpp
   medDatabaseModel.cpp
-  medDatabaseView.cpp
   medDatabaseNavigator.cpp
   medDatabaseNavigatorController.cpp
   medDatabaseNavigatorItem.cpp
