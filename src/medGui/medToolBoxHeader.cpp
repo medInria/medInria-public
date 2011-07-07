@@ -31,7 +31,7 @@ public:
 medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medToolBoxHeaderPrivate)
 {
     d->title = "Untitled";
-    d->titleOffset = QPoint( 16, 10 );
+    d->titleOffset = QPoint( 0, 0 );
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
