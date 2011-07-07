@@ -74,6 +74,7 @@ void v3dView4DInteractor::setData(dtkAbstractData *data)
 
 void v3dView4DInteractor::appendData(dtkAbstractData *data)
 {
+    qDebug()<<"v3dView4DInteractor::appendData";
   if (d->dataList.contains (data))
     return;
   if (data->description() == "vtkDataMesh4D" )

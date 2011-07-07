@@ -38,10 +38,16 @@ public:
     char* getLUTQuery (int meshLayer);
     void setOpacity (double value);
     double opacity (int meshLayer);
+    bool visibility (int meshLayer);
     void setLayer(int meshLayer);
     int meshLayer(void);
-    
-
+    bool edgeVisibility (int meshLayer);
+    QString* color (int meshLayer);
+    QString* renderingType (int meshLayer); 
+    QString* attribute (int meshLayer);
+    QString* lut (int meshLayer); 
+    void setAttribute (const QString& attribute, int meshLayer);
+    void setScalarVisibility(bool val);
 protected:
     virtual void updatePipeline (unsigned int meshLayer=0);
 
@@ -55,7 +61,7 @@ public slots:
     virtual void onRenderingModePropertySet (const QString& value);
     
     virtual void onLUTModePropertySet (const QString& value);
-    virtual void onColorPropertySet (const QColor& color, int meshLayer);
+    virtual void onColorPropertySet ( const QColor& color);
     
 
 private:

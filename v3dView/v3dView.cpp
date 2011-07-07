@@ -962,7 +962,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             dtkAbstractView::setData(data);
         }
 	else if ( data->description() == "vtkDataMesh4D" ) {
-	    this->enableInteractor ( "v3dView4DInteractor" );
+	    this->enableInteractor ( "v3dViewMeshInteractor" );
 	    // This will add the data to the interactor.
 	    dtkAbstractView::setData(data);
 	}
@@ -1060,6 +1060,7 @@ QWidget *v3dView::widget(void)
 
 void v3dView::play(bool start)
 {
+    
     d->timeline->setFrameRange(d->slider->minimum(), d->slider->maximum() );
     
     if(start)
@@ -1582,6 +1583,7 @@ void v3dView::onZSliderValueChanged (int value)
     
     //qApp->processEvents();
     d->currentView->Render();
+    
 }
 
 void v3dView::onDaddyPropertySet (const QString &value)
