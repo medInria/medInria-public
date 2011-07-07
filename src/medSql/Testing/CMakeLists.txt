@@ -2,7 +2,7 @@
 ## Dependencies and Set Up
 ## #################################################################
 
-# we need path to medinria plugins
+# we need a path to medinria plugins
 FIND_PATH(MEDINRIA_PLUGINS_PATH libitkDataImageReaderPlugin.so
   DOC "The directory where medinria plugins are. It is required by the Testing tree."
   )
@@ -20,13 +20,18 @@ if(NOT MEDINRIA_TEST_DATA_ROOT)
     message(SEND_ERROR "Please set MEDINRIA_TEST_DATA_ROOT to the directory where MedINRIA test data is located. It is required by the Testing tree.")
 endif(NOT MEDINRIA_TEST_DATA_ROOT)
 
+# path where the tests will be
 SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
+# configure file with defines for MEDINRIA_PLUGINS_PATH and MEDINRIA_TEST_DATA_ROOT 
 CONFIGURE_FILE( medSqlTest.config.h.cmake.in medSqlTest.config.h )
 
 ## #################################################################
 ## Setup CTest test wrapping a QTest (test with Qt testing framework)
 ## #################################################################
+
+# qtest uses one main function per test fixture
+# so for each one of them we need to create a new target
 
 SET(${PROJECT_NAME}_QTESTS_SRCS
   medDatabaseImporterTest.cxx
@@ -56,4 +61,3 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}_medDatabaseImporterTest
     )
 
 ADD_TEST(${PROJECT_NAME}_medDatabaseImporterTest ${CXX_TEST_PATH}/${PROJECT_NAME}_medDatabaseImporterTest)
-

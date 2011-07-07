@@ -1,5 +1,7 @@
 #include <QtTest/QtTest>
 
+// file configured by cmake
+// with required paths
 #include "medSqlTest.config.h"
 
 #include <dtkCore/dtkPluginManager.h>
@@ -52,8 +54,12 @@ private slots:
 
 private slots:
 
-    // every function here is a test
-    void importNhdr();
+    // every function here is a test, unless they end with "_data"
+    // in this case "importSingleVolume_data()" will prepare some data
+    // to run "importSingleVolume()" different times
+    // with different input values
+    void importSingleVolume_data();
+    void importSingleVolume();
 };
 
 void medDatabaseImporterTest::initTestCase()
@@ -80,6 +86,8 @@ void medDatabaseImporterTest::initTestCase()
 
 void medDatabaseImporterTest::init()
 {
+    // create one new clean database for each test
+
     QPointer<medDatabaseControllerImpl> dbc = medDatabaseController::instance();
 
     // create connection and create database schema
@@ -89,23 +97,56 @@ void medDatabaseImporterTest::init()
 
 void medDatabaseImporterTest::cleanup()
 {
-    //clean
-    medStorage::removeDir(dbPath, NULL);
+    // clean objects and destroy database after each test
+    // a new database is going to be used
+    medDatabaseController::instance()->closeConnection();
     medDatabaseController::destroy();
+    medStorage::removeDir(dbPath, NULL);
 }
-
 
 void medDatabaseImporterTest::cleanupTestCase()
 {
-    qDebug() << "cleanupTestCase()";
+    //qDebug() << "cleanupTestCase()";
 }
 
-void medDatabaseImporterTest::importNhdr()
+void medDatabaseImporterTest::importSingleVolume_data()
 {
-    QString file = dataPath + QString("/Clatz/I1.nhdr");
-    QFileInfo info(file);
-    bool indexWithoutCopying = false;
+    // here we will prepare data for running "importSingleVolume" test
+    // many times with different input
 
+    QTest::addColumn<QString>("pathToFileOrDirectory"); // what we want to import
+    QTest::addColumn<QString>("patientName");
+    QTest::addColumn<QString>("studyName");
+    QTest::addColumn<QString>("sessionName");
+    QTest::addColumn<int>("imageCount"); // number of images inside the single volume
+
+    // if we are importing a directory this helps
+    // building the filenames inside (e.g. prefix+023+suffix = cta_022.dcm)
+    QTest::addColumn<QString>("filesPrefix");
+    QTest::addColumn<QString>("filesSuffix");
+
+    QString fileOrDirToImport;
+
+    // test with NRRD
+    fileOrDirToImport = QDir::separator() + QString("Clatz") + QDir::separator() + QString("I1.nhdr");
+    QTest::newRow("I1.nhdr") << fileOrDirToImport << "John Doe" << "EmptyStudy" << "I11" << 64 << "" << "";
+
+    // test with NIfTI
+    fileOrDirToImport = QDir::separator() + QString("mask") + QDir::separator()+ QString("1-session01.nii");
+    QTest::newRow("1-session01.nii") << fileOrDirToImport << "John Doe" << "EmptyStudy" << "1-session011" << 26 << "" << "";
+
+    // test with a directory full of DICOMs
+    fileOrDirToImport = QDir::separator() + QString("Dicoms") + QDir::separator()+ QString("CTA");
+    QTest::newRow("Dicoms-CTA") << fileOrDirToImport << "Anonymized-JA." << "Anonymized with DicomWorks" << "Anonymized with DicomWorks1" << 202 << "CT_" << ".dcm";
+}
+
+void medDatabaseImporterTest::importSingleVolume()
+{
+    QFETCH(QString, pathToFileOrDirectory);
+    QString fullPathToFileOrDirectory = dataPath + pathToFileOrDirectory;
+    QFileInfo info(fullPathToFileOrDirectory);
+
+    bool indexWithoutCopying = false;
     // import
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), indexWithoutCopying);
     importer->run();
@@ -114,18 +155,15 @@ void medDatabaseImporterTest::importNhdr()
     * We won't do a full and exhaustive check in here, we will
     * see if the appropriate folders were created, we will
     * check thumbnails image files (only by name) and then we
-    * will take a deep look at the database tables.
+    * will take a look at the database tables.
     */
 
-    QString patientName = "John Doe";
-    QString studyName = "EmptyStudy";
-    QString sessionName = "I11";
+    QFETCH(QString, patientName);
+    QFETCH(QString, studyName);
+    QFETCH(QString, sessionName);
+    QFETCH(int, imageCount);
 
-    checkDirectoryHierarchyAndThumbnails(this->dbPath, patientName, studyName, sessionName, 63);
-
-    // super, so we reached a point that all the files we expect are there
-    // however we didn't check the content, but still...
-    // now onto db check
+    checkDirectoryHierarchyAndThumbnails(this->dbPath, patientName, studyName, sessionName, imageCount);
 
     QPointer<medDatabaseControllerImpl> dbc = medDatabaseController::instance();
     QSqlDatabase db = *(dbc->database());
@@ -133,14 +171,14 @@ void medDatabaseImporterTest::importNhdr()
     // check that there is only one row in patient table
     QVERIFY(1 == countRowsInTable(db, "patient"));
 
-    // check that patient named John Doe exists
+    // check that patient named patientName exists
     // we do not check for all the other columns
     QVERIFY(checkIfRowExists(db, "patient", "name", patientName));
 
     // check that there is only one row in study table
     QVERIFY(1 == countRowsInTable(db, "study"));
 
-    // check that there is a study named EmptyStudy
+    // check that there is a study named studyName
     // we do not check for all the other columns
     QVERIFY(checkIfRowExists(db, "study", "name", studyName));
 
@@ -152,20 +190,36 @@ void medDatabaseImporterTest::importNhdr()
 
     QVERIFY(checkIfRowExists(db, "series", "path", seriesPath));
 
-    int imageCount = 64;
-
     // check that there are #imageCount rows in image table
     QVERIFY(imageCount == countRowsInTable(db, "image"));
 
-    // check every row
+    QFETCH(QString, filesPrefix);
+    QFETCH(QString, filesSuffix);
+    // check every row inside image table
     for (int i = 0; i < imageCount ; i++)
     {
        QHash<QString, QString> columnValues;
-       columnValues.insert("name", "I1.nhdr" + QString::number(i));
-       columnValues.insert("path", file);
        columnValues.insert("instance_path", seriesPath);
        QString thumbnailPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QDir::separator() + QString::number(i) + ".png";
        columnValues.insert("thumbnail", thumbnailPath);
+
+       QString fileName = info.fileName();
+       if(info.isDir())
+       {
+           // if we are importing a directory with many files
+           // we will use prefix and suffix to build the proper file name
+           // note that we know this becaue we know the files we are importing
+           QString originalFileName = filesPrefix + QString::number(i) + filesSuffix;
+           columnValues.insert("name", originalFileName);
+           columnValues.insert("path", fullPathToFileOrDirectory + QDir::separator() + originalFileName);
+       }
+       else
+       {
+           // if we are importing just a file then the name if each image
+           // is the filename plus and index
+           columnValues.insert("name", fileName + QString::number(i));
+           columnValues.insert("path", fullPathToFileOrDirectory);
+       }
 
        QVERIFY(checkIfRowExists(db, "image", columnValues));
     }
@@ -188,13 +242,13 @@ void checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, Q
             if (QDir(sessionPath).exists() && QFile(sessionFile).exists())
             {
                 // check if thumbnails exist
-                for (unsigned int i = 0; i <= thumbnailsCount; i++) {
+                for (unsigned int i = 0; i <= thumbnailsCount-1; i++) {
                     QFile thumbnail(sessionPath + QDir::separator() + QString::number(i) + QString(".png"));
                     if (!thumbnail.exists())
                         QFAIL("At least one thumbnail is missing.");
                 }
 
-                // finally check ref.png
+                // finally check reference thumbnail
                 QFile ref(sessionPath + QDir::separator() + QString("ref.png"));
                 if (!ref.exists())
                     QFAIL("Reference thumbnail is missing.");

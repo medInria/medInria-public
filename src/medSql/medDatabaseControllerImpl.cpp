@@ -55,6 +55,7 @@ bool medDatabaseControllerImpl::createConnection(void)
 bool medDatabaseControllerImpl::closeConnection(void)
 {
     m_database.close();
+    QSqlDatabase::removeDatabase("QSQLITE");
     m_isConnected = false;
     return true;
 }
