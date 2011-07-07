@@ -146,6 +146,9 @@ void medDatabaseImporterTest::importSingleVolume()
     QString fullPathToFileOrDirectory = dataPath + pathToFileOrDirectory;
     QFileInfo info(fullPathToFileOrDirectory);
 
+    if(!info.exists())
+        QFAIL("Test data does not exists.");
+
     bool indexWithoutCopying = false;
     // import
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), indexWithoutCopying);
