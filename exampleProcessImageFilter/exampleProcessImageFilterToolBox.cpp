@@ -33,10 +33,10 @@
 #include <medCore/medViewManager.h>
 #include <medCore/medAbstractView.h>
 
-#include <medGui/medDropSite.h>
-#include <medGui/medToolBoxDiffusion.h>
+#include <medDropSite.h>
+#include <medToolBoxDiffusion.h>
 
-#include <medGui/medProgressionStack.h>
+#include <medProgressionStack.h>
 #include <medCore/medRunnableProcess.h>
 #include <medCore/medJobManager.h>
 

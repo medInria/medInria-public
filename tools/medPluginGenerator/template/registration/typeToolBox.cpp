@@ -21,9 +21,9 @@
 
 #include <medCore/medAbstractDataImage.h>
 
-#include <medGui/medToolBoxFactory.h>
-#include <medGui/medToolBoxRegistration.h>
-#include <medGui/medProgressionStack.h>
+#include <medToolBoxFactory.h>
+#include <medToolBoxRegistration.h>
+#include <medProgressionStack.h>
 
 #include <rpiCommonTools.hxx>
 
