@@ -1,5 +1,5 @@
-/* medViewerConfigurationVisualization.cpp --- 
- * 
+/* medViewerConfigurationVisualization.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 14:12:19 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 7
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewerConfigurationVisualization.h"

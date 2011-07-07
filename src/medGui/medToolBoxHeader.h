@@ -1,5 +1,5 @@
-/* medToolBoxHeader.h --- 
- * 
+/* medToolBoxHeader.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 10:10:59 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 8
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDTOOLBOXHEADER_H
@@ -42,9 +42,9 @@ public:
       * @param parent
      */
      medToolBoxHeader(QWidget *parent = 0);
-     
+
     /**
-     * @brief 
+     * @brief
      *
      * @param void
     */
@@ -64,7 +64,14 @@ public:
      * @param title
     */
     void setTitle(const QString& title);
-    
+
+    /**
+     * @brief Returns the title of the header.
+     *
+     * @return const QString
+     */
+    QString title() const;
+
 protected:
     /**
      * @brief Paints the header.
@@ -72,21 +79,21 @@ protected:
      * @param event
     */
     void paintEvent(QPaintEvent *event);
-    
+
     /**
      * @brief Emits the triggered() signal.
      *
      * @param event
     */
     void mousePressEvent(QMouseEvent *event);
-    
+
 signals:
     /**
      * @brief Emitted when a mouse press event is caught.
      *
     */
     void triggered();
-    
+
 private:
     medToolBoxHeaderPrivate *d;
 };

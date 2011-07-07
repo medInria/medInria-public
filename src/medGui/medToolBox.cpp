@@ -141,16 +141,9 @@ Qt::Orientation medToolBox::orientation (void) const
 
 void medToolBox::switchMinimize()
 {
-    if (d->isMinimized)
-    {
-        d->body->show();
-        d->isMinimized = false;
-    }
-    else
-    {
-        d->body->hide();
-        d->isMinimized = true;
-    }
+    //isMinimized before switch == wanted body visibility
+    d->body->setVisible(d->isMinimized);
+    d->isMinimized = !d->isMinimized;
 }
 
 void medToolBox::setContextVisible(bool contextVisibleFlag)
@@ -165,9 +158,12 @@ bool medToolBox::ContextVisible()
 
 void medToolBox::show()
 {
-    qDebug()<<"show in TB";
+    qDebug()<<"show TB:" << header()->title();
     if(d->isContextVisible)
+    {
+        qDebug()<<"actually showing in TB";
         QWidget::show();
+    }
 }
 
 void medToolBox::setValidDataTypes(const QStringList & dataTypes)

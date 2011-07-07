@@ -223,7 +223,7 @@ void medViewerToolBoxTime::RemoveInteractor (med4DAbstractViewInteractor* intera
 
 void medViewerToolBoxTime::update(dtkAbstractView *view)
 {
-    qDebug()<<"upadating time tb";
+    qDebug()<<"updating time tb";
     medToolBox::update(view);
 }
 
