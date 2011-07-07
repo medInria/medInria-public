@@ -50,24 +50,24 @@ set(${PROJECT_NAME}_HEADERS_MOC
   LUT/medLoadLUTDialog.h
   LUT/medSaveLUTDialog.h
 
-  # settings classes  
+  # settings classes
   settingsWidgets/medSettingsWidget.h
   settingsWidgets/medDatabaseSettingsWidget.h
   settingsWidgets/medSettingsEditor.h
   settingsWidgets/medSystemSettingsWidget.h
   settingsWidgets/medStartupSettingsWidget.h
 
-  
+
   # general toolbox classes
   toolboxes/medToolBox.h
   toolboxes/medToolBoxBody.h
   toolboxes/medToolBoxHeader.h
   toolboxes/medToolBoxTab.h
-    
+
   # specific toolbox classes
   toolboxes/medToolBoxDiffusion.h
   toolboxes/medToolBoxDiffusionCustom.h
-  toolboxes/medToolBoxDiffusionFiberView.h   
+  toolboxes/medToolBoxDiffusionFiberView.h
   toolboxes/medToolBoxDiffusionFiberBundling.h
   toolboxes/medToolBoxRegistration.h
   toolboxes/medToolBoxRegistrationCustom.h
@@ -86,7 +86,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   viewContainers/medViewContainerMulti.h
   viewContainers/medViewContainerCustom.h
   viewContainers/medViewContainerSingle.h
-  viewContainers/medViewContainer.h  
+  viewContainers/medViewContainer.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -127,24 +127,24 @@ set(${PROJECT_NAME}_SOURCES
   LUT/medLUTToXMLWriter.cpp
   LUT/medXMLToLUTReader.cpp
 
-  # settings classes  
+  # settings classes
   settingsWidgets/medSettingsWidget.cpp
   settingsWidgets/medDatabaseSettingsWidget.cpp
   settingsWidgets/medSettingsEditor.cpp
   settingsWidgets/medSystemSettingsWidget.cpp
   settingsWidgets/medStartupSettingsWidget.cpp
 
-  
+
   # general toolbox classes
   toolboxes/medToolBox.cpp
   toolboxes/medToolBoxBody.cpp
   toolboxes/medToolBoxHeader.cpp
   toolboxes/medToolBoxTab.cpp
-    
+
   # specific toolbox classes
   toolboxes/medToolBoxDiffusion.cpp
   toolboxes/medToolBoxDiffusionCustom.cpp
-  toolboxes/medToolBoxDiffusionFiberView.cpp   
+  toolboxes/medToolBoxDiffusionFiberView.cpp
   toolboxes/medToolBoxDiffusionFiberBundling.cpp
   toolboxes/medToolBoxRegistration.cpp
   toolboxes/medToolBoxRegistrationCustom.cpp
@@ -163,7 +163,7 @@ set(${PROJECT_NAME}_SOURCES
   viewContainers/medViewContainerMulti.cpp
   viewContainers/medViewContainerCustom.cpp
   viewContainers/medViewContainerSingle.cpp
-  viewContainers/medViewContainer.cpp   
+  viewContainers/medViewContainer.cpp
 )
 
 ## #################################################################
