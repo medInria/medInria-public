@@ -1210,7 +1210,7 @@ medViewContainer[isDaddy="false"][isEmpty="true"] {
 
 medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="false"] {
     border: none;
-    background: red;
+    background: #313131;
 }
 
 medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][isCurrent="false"] {

@@ -44,7 +44,7 @@ medApplication::medApplication(int & argc, char**argv) :
 
     //The ownership of the style object is transferred.
     this->setStyle( new QPlastiqueStyle() );
-    this->setStyleSheet(dtkReadFile(":/medinria.qss"));
+    // this->setStyleSheet(dtkReadFile(":/medinria.qss")); -> must be done in medMainWindow
 
     //Set some splash screen properties:
     setMsgColor(Qt::black);
