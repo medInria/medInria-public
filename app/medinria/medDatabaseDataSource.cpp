@@ -3,10 +3,10 @@
 #include <medCore/medDataManager.h>
 
 #include <medGui/medDatabaseSearchPanel.h>
+#include <medGui/medDatabaseView.h>
 
 #include <medSql/medDatabasePreview.h>
 #include <medSql/medDatabaseModel.h>
-#include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseExporter.h>
 #include <medSql/medDatabaseProxyModel.h>
 

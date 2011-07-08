@@ -48,8 +48,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractDataImage3D.h
   medAbstractDataImage4D.h
   medAbstractDataMesh.h
-  medAttachedData.h
-  medAbstractDatabaseItem.h  
+  medAttachedData.h   
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -62,6 +61,7 @@ set(${PROJECT_NAME}_HEADERS
   medAbstractDataTypedImage4D.h
   medCoreExport.h
   medDataIndex.h
+  medAbstractDatabaseItem.h 
 )
 
 

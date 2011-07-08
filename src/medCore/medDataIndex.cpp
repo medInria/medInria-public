@@ -39,6 +39,12 @@ medDataIndex::medDataIndex(const medDataIndex& index)
 {
 }
 
+medDataIndex::medDataIndex()
+{
+    medDataIndex(NOT_VALID, NOT_VALID, NOT_VALID, NOT_VALID, NOT_VALID);
+}
+
+
 medDataIndex::~medDataIndex(void)
 {
 }
@@ -158,8 +164,20 @@ medDataIndex medDataIndex::readMimeData( const QMimeData * mimeData )
     return medDataIndex();
 }
 
+medDataIndex medDataIndex::makePatientIndex(int sourceId, int patientId )
+{
+    return medDataIndex(sourceId, patientId, NOT_VALID, NOT_VALID, NOT_VALID); 
+}
 
+medDataIndex medDataIndex::makeStudyIndex( int sourceId, int patientId, int studyId )
+{
+    return medDataIndex(sourceId, patientId, studyId, NOT_VALID, NOT_VALID); 
+}
 
+medDataIndex medDataIndex::makeSeriesIndex( int sourceId, int patientId, int studyId, int seriesId )
+{
+    return medDataIndex(sourceId, patientId, studyId, seriesId, NOT_VALID); 
+}
 
 
 

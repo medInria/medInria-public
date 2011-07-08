@@ -116,6 +116,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 
     typedef QSet<medDataIndex> IndexSet;
     typedef QList<int> IntList;
+    typedef QList<medDataIndex> IndexList;
 
     medDataManager *dataManager = medDataManager::instance();
 
@@ -137,29 +138,26 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
         if ( !dbc ) 
             continue;
 
-        IntList patientsForSource;
+        IndexList patientsForSource;
         if ( dataSourceId == index.dataSourceId() ) {
-            patientsForSource.push_back(index.patientId());
+            patientsForSource.push_back(index);
         } else {
             patientsForSource = dbc->patients();
         }
 
-        foreach (const int patientId, patientsForSource ) {
+        foreach (const medDataIndex& patient, patientsForSource ) {
 
-            IntList studyIds = dbc->studies(patientId);
-            medDataIndex patientDataIndex(dataSourceId, patientId);
-            QString patientName = dbc->metaData(patientDataIndex, medMetaDataHelper::KEY_PatientName() );
+            IndexList studiesForSource = dbc->studies(patient);
+            QString patientName = dbc->metaData(patient, medMetaDataHelper::KEY_PatientName() );
             PatientDataKey patientKey;
             patientKey.name = patientName;
             if ( patientKey != referencePatientKey ) {
                 continue;
             }
 
-            foreach (const int studyId, studyIds ) {
+            foreach (const medDataIndex& study, studiesForSource ) {
 
-                medDataIndex studyDataIndex(dataSourceId, patientId, studyId );
-
-                QString studyName = dbc->metaData(studyDataIndex, medMetaDataHelper::KEY_StudyDescription() );
+                QString studyName = dbc->metaData(study, medMetaDataHelper::KEY_StudyDescription() );
                 StudyDataKey studyKey;
                 studyKey.name = studyName;
 
@@ -173,12 +171,11 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
                     groupMap[studyKey] = group;
                 }
 
-                QList<int> seriesIds = dbc->series(patientId, studyId);
+                IndexList seriesForSource = dbc->series(study);
 
-                foreach (const int seriesId, seriesIds ) {
+                foreach (const medDataIndex& serie, seriesForSource ) {
 
-                    medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem(
-                        medDataIndex( dataSourceId, patientId, studyId, seriesId ) );
+                    medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem( medDataIndex(serie) );
 
                     connect(item, SIGNAL(itemClicked(const medDataIndex&)), this, SIGNAL(itemClicked(const medDataIndex&)));
 

@@ -328,7 +328,8 @@ medDataIndex medDatabaseWriter::run(void)
 
     // Now, populate the database
 
-    medDataIndex index(medDatabaseController::instance()->dataSourceId());
+    medDataIndex index(medDatabaseController::instance()->dataSourceId(), medDataIndex::NOT_VALID, 
+        medDataIndex::NOT_VALID, medDataIndex::NOT_VALID, medDataIndex::NOT_VALID);
 
     ////////////////////////////////////////////////////////////////// PATIENT
 

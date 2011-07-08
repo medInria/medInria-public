@@ -280,14 +280,14 @@ void medViewerArea::open(const medDataIndex& index)
         medDataManager *dataManager = medDataManager::instance();
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
 
-        QList<int> studies = dbc->studies(index.patientId());
+        QList<medDataIndex> studiesForSource = dbc->studies(index);
 
-        for ( QList<int>::const_iterator studyIt(studies.begin()); studyIt != studies.end(); ++studyIt) {
+        for ( QList<medDataIndex>::const_iterator studyIt(studiesForSource.begin()); studyIt != studiesForSource.end(); ++studyIt) {
 
-            QList<int> series = dbc->series(index.patientId(), index.studyId());
+            QList<medDataIndex> seriesForSource = dbc->series((*studyIt));
 
-            for ( QList<int>::const_iterator seriesIt(series.begin()); seriesIt != series.end(); ++seriesIt) {
-                this->open(medDataIndex(index.dataSourceId(), index.patientId(), *studyIt, *seriesIt));
+            for ( QList<medDataIndex>::const_iterator seriesIt(seriesForSource.begin()); seriesIt != seriesForSource.end(); ++seriesIt) {
+                this->open(*seriesIt);
             }
         }
 

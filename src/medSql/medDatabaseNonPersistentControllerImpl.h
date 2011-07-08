@@ -86,19 +86,19 @@ public:
     virtual int dataSourceId() const;
 
     /** Enumerate all patients stored in this DB*/
-    virtual QList<int> patients() const;
+    virtual QList<medDataIndex> patients() const;
 
     /** Enumerate all studies for given patient*/
-    virtual QList<int> studies(int patientId ) const;
+    virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
 
     /** Enumerate all series for given patient*/
-    virtual QList<int> series(int patientId, int studyId ) const;
+    virtual QList<medDataIndex> series(const medDataIndex& index ) const;
 
     /** Enumerate all images for given patient*/
-    virtual QList<int> images(int patientId, int studyId, int seriesId ) const;
+    virtual QList<medDataIndex> images(const medDataIndex& index ) const;
 
     /** Return true if data source is persistent. This implementation returns false.*/
-    virtual bool isPersistent(const medDataIndex& index) const;
+    virtual bool isPersistent() const;
 
     /** Set metadata for specific item. Return true on success, false otherwise. */
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);

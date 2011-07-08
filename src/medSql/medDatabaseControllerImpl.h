@@ -71,16 +71,16 @@ public:
     qint64 getEstimatedSize(const medDataIndex& index) const;
 
     /** Enumerate all patients stored in this DB*/
-    virtual QList<int> patients() const;
+    virtual QList<medDataIndex> patients() const;
 
     /** Enumerate all studies for given patient*/
-    virtual QList<int> studies(int patientId ) const;
+    virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
 
     /** Enumerate all series for given patient*/
-    virtual QList<int> series(int patientId, int studyId ) const;
+    virtual QList<medDataIndex> series(const medDataIndex& index) const;
 
     /** Enumerate all images for given patient*/
-    virtual QList<int> images(int patientId, int studyId, int seriesId ) const;
+    virtual QList<medDataIndex> images(const medDataIndex& index ) const;
 
     /** Get metadata for specific item. Return uninitialized string if not present. */
     virtual QString metaData(const medDataIndex& index, const QString& key) const;
@@ -89,7 +89,7 @@ public:
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
 
     /** Implement base class */
-    virtual bool isPersistent(const medDataIndex& index) const;
+    virtual bool isPersistent() const;
 signals:
     /**
      * Status message from controller to some user interface

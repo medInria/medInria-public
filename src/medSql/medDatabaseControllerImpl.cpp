@@ -172,7 +172,7 @@ bool medDatabaseControllerImpl::closeConnection(void)
 
 medDataIndex medDatabaseControllerImpl::indexForPatient(int id)
 {
-    return medDataIndex(this->dataSourceId(), id);
+    return medDataIndex::makePatientIndex(this->dataSourceId(), id);
 }
 
 medDataIndex medDatabaseControllerImpl::indexForPatient (const QString &patientName)
@@ -187,7 +187,7 @@ medDataIndex medDatabaseControllerImpl::indexForPatient (const QString &patientN
 
     if(query.first()) {
         patientId = query.value(0);
-	return medDataIndex (this->dataSourceId(), patientId.toInt());
+        return medDataIndex::makePatientIndex(this->dataSourceId(), patientId.toInt());
     }
 
     return medDataIndex();
@@ -207,7 +207,7 @@ medDataIndex medDatabaseControllerImpl::indexForStudy(int id)
     if(query.first())
         patientId = query.value(0);
 
-    return medDataIndex(this->dataSourceId(), patientId.toInt(), id);
+    return medDataIndex::makeStudyIndex(this->dataSourceId(), patientId.toInt(), id);
 }
 
 medDataIndex medDatabaseControllerImpl::indexForStudy(const QString &patientName, const QString &studyName)
@@ -260,7 +260,7 @@ medDataIndex medDatabaseControllerImpl::indexForSeries(int id)
     if(query.first())
         patientId = query.value(0);
 
-    return medDataIndex(this->dataSourceId(), patientId.toInt(), studyId.toInt(), id);
+    return medDataIndex::makeSeriesIndex(this->dataSourceId(), patientId.toInt(), studyId.toInt(), id);
 }
 
 medDataIndex medDatabaseControllerImpl::indexForSeries(const QString &patientName, const QString &studyName,
@@ -394,7 +394,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIn
 
 dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId)
 {
-    return read(medDataIndex(this->dataSourceId(),patientId, studyId, seriesId));
+    return read(medDataIndex::makeSeriesIndex(this->dataSourceId(),patientId, studyId, seriesId));
 }
 
 dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId, int imageId)
@@ -701,57 +701,78 @@ int medDatabaseControllerImpl::dataSourceId() const
     return 1;
 }
 
-QList<int> medDatabaseControllerImpl::patients() const
+QList<medDataIndex> medDatabaseControllerImpl::patients() const
 {
-    QList<int> ret;
+    QList<medDataIndex> ret;
     QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
     query.prepare("SELECT id FROM patient");
     EXEC_QUERY(query);
     ret.reserve( query.size() );
     while( query.next() ){
-        ret.push_back( query.value(0).toInt());
+        ret.push_back( medDataIndex::makePatientIndex(this->dataSourceId(), query.value(0).toInt()));
     }
     return ret;
 }
 
-QList<int> medDatabaseControllerImpl::studies( int patientId ) const
+QList<medDataIndex> medDatabaseControllerImpl::studies( const medDataIndex& index ) const
 {
-    QList<int> ret;
+    QList<medDataIndex> ret;
+
+    if ( !index.isValidForPatient() )
+    {
+        qWarning() << "invalid index passed";
+        return ret;
+    }
+
     QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
     query.prepare("SELECT id FROM study WHERE patient = :patientId");
-    query.bindValue(":patientId", patientId);
+    query.bindValue(":patientId", index.patientId());
     EXEC_QUERY(query);
     ret.reserve( query.size() );
     while( query.next() ){
-        ret.push_back( query.value(0).toInt());
+        ret.push_back( medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), query.value(0).toInt()));
     }
     return ret;
 }
 
-QList<int> medDatabaseControllerImpl::series( int patientId, int studyId ) const
+QList<medDataIndex> medDatabaseControllerImpl::series( const medDataIndex& index) const
 {
-    QList<int> ret;
+    QList<medDataIndex> ret;
+
+    if ( !index.isValidForStudy() )
+    {
+        qWarning() << "invalid index passed";
+        return ret;
+    }
+
     QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
     query.prepare("SELECT id FROM series WHERE study = :studyId");
-    query.bindValue(":studyId", studyId);
+    query.bindValue(":studyId", index.studyId());
     EXEC_QUERY(query);
     ret.reserve( query.size() );
     while( query.next() ){
-        ret.push_back( query.value(0).toInt());
+        ret.push_back( medDataIndex::makeSeriesIndex(this->dataSourceId(), index.patientId(), index.studyId(), query.value(0).toInt()));
     }
     return ret;
 }
 
-QList<int> medDatabaseControllerImpl::images( int patientId, int studyId, int seriesId ) const
+QList<medDataIndex> medDatabaseControllerImpl::images( const medDataIndex& index) const
 {
-    QList<int> ret;
+    QList<medDataIndex> ret;
+
+    if ( !index.isValidForSeries() )
+    {
+        qWarning() << "invalid index passed";
+        return ret;
+    }
+
     QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
     query.prepare("SELECT id FROM image WHERE series = :seriesId");
-    query.bindValue(":seriesId", seriesId);
+    query.bindValue(":seriesId", index.seriesId());
     EXEC_QUERY(query);
     ret.reserve( query.size() );
     while( query.next() ){
-        ret.push_back( query.value(0).toInt());
+        ret.push_back( medDataIndex(this->dataSourceId(), index.patientId(), index.studyId(), index.seriesId(), query.value(0).toInt()));
     }
     return ret;
 }
@@ -762,7 +783,7 @@ QImage medDatabaseControllerImpl::thumbnail( const medDataIndex& index ) const
     return QImage();
 }
 
-bool medDatabaseControllerImpl::isPersistent( const medDataIndex& index ) const
+bool medDatabaseControllerImpl::isPersistent(  ) const
 {
     return true;
 }

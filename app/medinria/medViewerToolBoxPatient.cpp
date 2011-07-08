@@ -223,11 +223,10 @@ void medViewerToolBoxPatient::setupDatabase(void)
         if ( !dbc ) 
             continue;
 
-        QList<int> patientIds = dbc->patients();
-        for (QList<int>::const_iterator patientIt( patientIds.begin()); patientIt != patientIds.end(); ++patientIt ) {
+        QList<medDataIndex> patientsForSource = dbc->patients();
+        for (QList<medDataIndex>::const_iterator patientIt( patientsForSource.begin()); patientIt != patientsForSource.end(); ++patientIt ) {
 
-            medDataIndex patientIndex( *dataSourceIt, *patientIt );
-            QString patientName = dbc->metaData(patientIndex, medMetaDataHelper::KEY_PatientName() );
+            QString patientName = dbc->metaData((*patientIt), medMetaDataHelper::KEY_PatientName() );
 
             bool isFirstSource = dataSourceIt == dataSourceIds.begin();
             bool matchesExisting(false);
@@ -236,10 +235,10 @@ void medViewerToolBoxPatient::setupDatabase(void)
             }
             if ( matchesExisting ) {
                 int itemId = patientList[patientName];
-                d->itemMap.find(itemId).value().insert(patientIndex);
-                d->indexMap[patientIndex] = itemId;
+                d->itemMap.find(itemId).value().insert((*patientIt));
+                d->indexMap[(*patientIt)] = itemId;
             } else {
-                int itemId = this->addItem(patientName, patientIndex );
+                int itemId = this->addItem(patientName, (*patientIt) );
                 patientList[patientName] = itemId;
             }
         }

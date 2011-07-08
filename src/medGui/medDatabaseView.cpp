@@ -54,7 +54,7 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
         {
             medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId());
             if ( dbc ) {
-                if(!dbc->isPersistent(item->dataIndex().dataSourceId()))
+                if(!dbc->isPersistent())
                 {
                     itemOption.font.setItalic(true);
                 }

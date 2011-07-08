@@ -157,17 +157,17 @@ void medDatabasePreview::onPatientClicked(const medDataIndex& id)
     medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
     if ( db ) {
 
-        QList<int> studies = db->studies(id.patientId());
-        for (QList<int>::const_iterator studyIt( studies.begin() ); studyIt != studies.end(); ++studyIt ) {
+        QList<medDataIndex> studies = db->studies(id);
+        for (QList<medDataIndex>::const_iterator studyIt( studies.begin() ); studyIt != studies.end(); ++studyIt ) {
 
-            QList<int> series = db->series(id.patientId(), *studyIt);
-            for (QList<int>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
+            QList<medDataIndex> series = db->series(*studyIt);
+            for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
 
                 if ( firstSeId < 0) 
-                    firstSeId = *seriesIt;
+                    firstSeId = (*seriesIt).seriesId();
 
                 d->series_group->addItem(new medDatabasePreviewItem(
-                    medDataIndex(id.dataSourceId(), id.patientId(), *studyIt, *seriesIt) ) );
+                    medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
             }
 
         }
@@ -188,11 +188,11 @@ void medDatabasePreview::onSeriesClicked(const medDataIndex& id)
     d->series_group->clear();
 
     if ( db ) {
-        QList<int> series = db->series(id.patientId(), id.studyId());
-        for (QList<int>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
+        QList<medDataIndex> series = db->series(id);
+        for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
 
             d->series_group->addItem(new medDatabasePreviewItem(
-                medDataIndex( id.dataSourceId(), id.patientId(), id.studyId(), *seriesIt)));
+                medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
         }
     }
     
@@ -202,14 +202,13 @@ void medDatabasePreview::onSeriesClicked(const medDataIndex& id)
     d->image_group->clear();
 
     if ( db ) {
-        QList<int> images = db->images(id.patientId(), id.studyId(), id.seriesId());
-        for (QList<int>::const_iterator imageIt( images.begin() ); imageIt != images.end(); ++imageIt ) {
+        QList<medDataIndex> images = db->images(id);
+        for (QList<medDataIndex>::const_iterator imageIt( images.begin() ); imageIt != images.end(); ++imageIt ) {
 
             if (firstImageId < 0)
-                firstImageId = *imageIt;
+                firstImageId = (*imageIt).imageId();
 
-            d->image_group->addItem(new medDatabasePreviewItem(
-                medDataIndex(id.dataSourceId(), id.patientId(), id.studyId(), id.seriesId(), *imageIt ) ) );
+            d->image_group->addItem(new medDatabasePreviewItem( medDataIndex(*imageIt ) ) );
         }
 
     }

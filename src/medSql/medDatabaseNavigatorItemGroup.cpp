@@ -77,7 +77,7 @@ void medDatabaseNavigatorItemGroup::addItem(medDatabaseNavigatorItem *item)
 
     d->non_persitent = !(medDataManager::instance()->
         controllerForDataSource( item->dataIndex().dataSourceId() )
-        ->isPersistent(item->dataIndex()) );
+        ->isPersistent() );
 }
 
 void medDatabaseNavigatorItemGroup::clear(void)

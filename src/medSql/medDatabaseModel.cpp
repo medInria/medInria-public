@@ -488,6 +488,7 @@ void medDatabaseModel::repopulate(void)
 void medDatabaseModel::populate(medAbstractDatabaseItem *root)
 {
     typedef QList<int> IntList;
+    typedef QList<medDataIndex> IndexList;
     medDataManager * dataManager = medDataManager::instance();
     IntList dataSources = dataManager->dataSourceIds();
     {
@@ -497,7 +498,7 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
             medAbstractDbController * dbc = dataManager->controllerForDataSource(*dataSourceIt);
             if ( !dbc ) {
                 dataSourceIt = dataSources.erase(dataSourceIt);
-            } else if ( dbc->isPersistent(medDataIndex(*dataSourceIt)) ) {
+            } else if ( dbc->isPersistent() ) {
                 ++dataSourceIt;
             } else {
                 npDataSources.push_back(*dataSourceIt);
@@ -507,48 +508,45 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
         dataSources << npDataSources;
     }
 
-    medDataIndex index;
     foreach( const int dataSourceId, dataSources ) {
 
         medAbstractDbController * dbc = dataManager->controllerForDataSource(dataSourceId);
-        IntList patients = dbc->patients();
+        IndexList patientsForSource = dbc->patients();
 
         // Iterate over patientIds for this data source
-        foreach( const int ptId, patients ) {
+        foreach( const medDataIndex& patient, patientsForSource ) {
 
-            index = medDataIndex( dataSourceId, ptId );
             QList<QVariant> ptData = d->ptDefaultData;
             for (int i(0); i<d->DataCount; ++i) {
                 QVariant attribute = d->ptAttributes[i];
                 if ( !attribute.isNull() ) {
-                    QString value =  dbc->metaData(index, attribute.toString() );
+                    QString value =  dbc->metaData(patient, attribute.toString() );
                     if ( !value.isEmpty() ) 
                         ptData[i] = value;
                 }
             }
-            medAbstractDatabaseItem *ptItem = new medDatabaseItem(index, d->ptAttributes, ptData, root);
+            medAbstractDatabaseItem *ptItem = new medDatabaseItem(patient, d->ptAttributes, ptData, root);
 
-            IntList studies = dbc->studies(ptId);
+            IndexList studiesForSource = dbc->studies(patient);
 
             // Iterate over studyIds for this patient
-            foreach( const int stId, studies ) {
+            foreach( const medDataIndex& study, studiesForSource ) {
 
-                IntList series = dbc->series(ptId, stId);
+                IndexList seriesForSource = dbc->series(study);
 
                 // Iterate over series for this study
-                foreach( const int seId, series ) {
+                foreach( const medDataIndex& serie, seriesForSource ) {
 
-                    index = medDataIndex( dataSourceId, ptId, stId, seId );
                     QList<QVariant> seData = d->seDefaultData;
                     for (int i(0); i<d->DataCount; ++i) {
                         QVariant attribute = d->seAttributes[i];
                         if ( !attribute.isNull() ) {
-                            QString value =  dbc->metaData(index, attribute.toString() );
+                            QString value =  dbc->metaData(serie, attribute.toString() );
                             if ( !value.isEmpty() ) 
                                 seData[i] = value;
                         }
                     }
-                    medAbstractDatabaseItem *seItem = new medDatabaseItem(index, d->seAttributes, seData, ptItem);
+                    medAbstractDatabaseItem *seItem = new medDatabaseItem(serie, d->seAttributes, seData, ptItem);
 
                     ptItem->append(seItem);
                 } // foreach series 

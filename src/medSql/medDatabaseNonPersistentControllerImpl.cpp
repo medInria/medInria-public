@@ -255,78 +255,100 @@ int medDatabaseNonPersistentControllerImpl::dataSourceId() const
     return 2;
 }
 
-QList<int> medDatabaseNonPersistentControllerImpl::patients() const
+QList<medDataIndex> medDatabaseNonPersistentControllerImpl::patients() const
 {
-    QList<int> ret;
+    QList<medDataIndex> ret;
+
     typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
     int prevId = -1;
     for (MapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it)
     {
         int currId = it.key().patientId();
         if ( currId != prevId ) {
-            ret.push_back(currId);
+            ret.push_back(medDataIndex::makePatientIndex(dataSourceId(),currId));
             prevId = currId;
         }
     }
     return ret;
 }
 
-QList<int> medDatabaseNonPersistentControllerImpl::studies( int patientId ) const
+QList<medDataIndex> medDatabaseNonPersistentControllerImpl::studies( const medDataIndex& index ) const
 {
-    QList<int> ret;
+    QList<medDataIndex> ret;
+    
+    if ( !index.isValidForPatient() )
+    {
+        qWarning() << "invalid index passed";
+        return ret;
+    }
+
     typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
     // First which does not compare less then given index -> first study for this patient.
-    MapType::const_iterator it(d->items.lowerBound(medDataIndex(this->dataSourceId(), patientId)));
+    MapType::const_iterator it(d->items.lowerBound(medDataIndex::makePatientIndex(this->dataSourceId(), index.patientId())));
     int prevId = -1;
     for ( ; it != d->items.end() ; ++it)
     {
-        if ( it.key().patientId() != patientId )
+        if ( it.key().patientId() != index.patientId() )
             break;
         int currId = it.key().studyId();
         if ( currId != prevId ) {
-            ret.push_back(currId);
+            ret.push_back(medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), currId));
             prevId = currId;
         }
     }
     return ret;
 }
 
-QList<int> medDatabaseNonPersistentControllerImpl::series( int patientId, int studyId ) const
+QList<medDataIndex> medDatabaseNonPersistentControllerImpl::series( const medDataIndex& index ) const
 {
-    QList<int> ret;
+    QList<medDataIndex> ret;
+
+    if ( !index.isValidForStudy() )
+    {
+        qWarning() << "invalid index passed";
+        return ret;
+    }
+
     typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
     // First which does not compare less then given index -> first series for this patient.
-    MapType::const_iterator it(d->items.lowerBound(medDataIndex(this->dataSourceId(), patientId, studyId)));
+    MapType::const_iterator it(d->items.lowerBound(medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), index.studyId())));
     int prevId = -1;
     for ( ; it != d->items.end() ; ++it)
     {
-        if ( it.key().patientId() != patientId || it.key().studyId() != studyId)
+        if ( it.key().patientId() != index.patientId() || it.key().studyId() != index.studyId())
             break;
 
         int currId = it.key().seriesId();
         if ( currId != prevId ) {
-            ret.push_back(currId);
+            ret.push_back(medDataIndex::makeSeriesIndex(this->dataSourceId(), index.patientId(), index.studyId(), currId));
             prevId = currId;
         }
     }
     return ret;
 }
 
-QList<int> medDatabaseNonPersistentControllerImpl::images( int patientId, int studyId, int seriesId ) const
+QList<medDataIndex> medDatabaseNonPersistentControllerImpl::images( const medDataIndex& index ) const
 {
-    QList<int> ret;
+    QList<medDataIndex> ret;
+
+    if ( !index.isValidForSeries() )
+    {
+        qWarning() << "invalid index passed";
+        return ret;
+    }
+
     typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
     // First which does not compare less then given index -> first series for this patient.
-    MapType::const_iterator it(d->items.lowerBound(medDataIndex(this->dataSourceId(), patientId, studyId)));
+    MapType::const_iterator it(d->items.lowerBound(medDataIndex::makeSeriesIndex(this->dataSourceId(), index.patientId(), index.studyId(), index.seriesId())));
     int prevId = -1;
     for ( ; it != d->items.end(); ++it)
     {
-        if ( it.key().patientId() != patientId || it.key().studyId() != studyId || it.key().seriesId() != seriesId)
+        if ( it.key().patientId() != index.patientId() || it.key().studyId() != index.studyId() || it.key().seriesId() != index.seriesId())
             break;
 
         int currId = it.key().seriesId();
         if ( currId != prevId ) {
-            ret.push_back(currId);
+            ret.push_back(medDataIndex(this->dataSourceId(), index.patientId(), index.studyId(), index.seriesId(), currId));
             prevId = currId;
         }
     }
@@ -361,7 +383,7 @@ bool medDatabaseNonPersistentControllerImpl::setMetaData( const medDataIndex& in
     return false;
 }
 
-bool medDatabaseNonPersistentControllerImpl::isPersistent( const medDataIndex& index ) const
+bool medDatabaseNonPersistentControllerImpl::isPersistent( ) const
 {
     return false;
 }

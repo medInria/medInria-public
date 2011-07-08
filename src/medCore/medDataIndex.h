@@ -40,9 +40,8 @@ class MEDCORE_EXPORT medDataIndex
 public:
     enum {NOT_VALID = -1 };
 
-     medDataIndex(int dataSourceId = NOT_VALID, int patientId = NOT_VALID, 
-                  int studyId = NOT_VALID, int seriesId = NOT_VALID, 
-                  int imageId = NOT_VALID);
+     medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId, int imageId);
+     medDataIndex();
      medDataIndex(const medDataIndex& index);
     ~medDataIndex(void);
 
@@ -88,6 +87,10 @@ public:
     QMimeData * createMimeData();
     /** Read medDataIndex from mime data. Returns an invalid index in case of error.*/
     static medDataIndex readMimeData(const QMimeData * mimeData);
+
+    static medDataIndex makePatientIndex(int sourceId, int patientId);
+    static medDataIndex makeStudyIndex(int sourceId, int patientId, int studyId);
+    static medDataIndex makeSeriesIndex(int sourceId, int patientId, int studyId, int seriesId);
 
 private:
     int m_dataSourceId;
