@@ -156,7 +156,6 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     d->maxTime = 0.0;
 
     this->isViewAdded = false;
-
 }
 
 medViewerToolBoxTime::~medViewerToolBoxTime(void)

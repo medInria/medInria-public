@@ -90,9 +90,6 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     this->addWidget(d->twoLayersWidget);
     d->twoLayersWidget->hide();
-
-    this->hide();
-
 }
 
 medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)

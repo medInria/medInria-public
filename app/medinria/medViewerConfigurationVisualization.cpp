@@ -40,18 +40,18 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
 {
     // -- Layout toolbox --
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
-    
+
     connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),
              this,             SIGNAL(layoutModeChanged(const QString&)));
     connect (d->layoutToolBox, SIGNAL(presetClicked(int)),
              this,             SIGNAL(layoutPresetClicked(int)));
     connect (d->layoutToolBox, SIGNAL(split(int,int)),
-             this,             SIGNAL(layoutSplit(int,int)));    
+             this,             SIGNAL(layoutSplit(int,int)));
 
     this->addToolBox( d->layoutToolBox );
-    
+
     // -- View toolbox --
-    
+
     d->viewToolBox           = new medViewerToolBoxView(parent);
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     d->timeToolBox           = new medViewerToolBoxTime(parent);
