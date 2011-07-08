@@ -40,8 +40,12 @@ medDataIndex::medDataIndex(const medDataIndex& index)
 }
 
 medDataIndex::medDataIndex()
+    : m_dataSourceId(NOT_VALID),
+    m_patientId(NOT_VALID),
+    m_studyId(NOT_VALID),
+    m_seriesId(NOT_VALID),
+    m_imageId(NOT_VALID)
 {
-    medDataIndex(NOT_VALID, NOT_VALID, NOT_VALID, NOT_VALID, NOT_VALID);
 }
 
 
