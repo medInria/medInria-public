@@ -136,3 +136,9 @@ Qt::Orientation medToolBoxContainer::orientation (void) const
 {
     return d->layoutOrientation;
 }
+
+void medToolBoxContainer::setLayoutSpacing( int spacing )
+{
+    d->layout->setContentsMargins( spacing, spacing, spacing, spacing );
+    d->layout->setSpacing( spacing );
+}

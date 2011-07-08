@@ -9,7 +9,7 @@ public:
     QList< medAttachedData * > attachedData;
 };
 
-medAbstractData::medAbstractData( medAbstractData *parent )
+medAbstractData::medAbstractData( dtkAbstractData *parent )
     : dtkAbstractData(parent)
     , d(new medAbstractDataPrivate)
 {
