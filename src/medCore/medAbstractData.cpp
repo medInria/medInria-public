@@ -40,17 +40,24 @@ QList< medAttachedData * > medAbstractData::attachedData() const
 
 void medAbstractData::clearAttachedData()
 {
+    foreach ( medAttachedData * d, d->attachedData )
+        emit attachedDataRemoved( d );
     d->attachedData.clear();
 }
 
 void medAbstractData::addAttachedData( medAttachedData * data )
 {
-    if ( !d->attachedData.contains( data ) )
+    if ( !d->attachedData.contains( data ) ) {
         d->attachedData.append( data );
+        emit attachedDataAdded( data );
+    }
 }
 
 void medAbstractData::removeAttachedData( medAttachedData * data )
 {
+    int n = d->attachedData.count();
     d->attachedData.removeAll( data );
+    if ( n > d->attachedData.count() )
+        emit attachedDataRemoved( data );
 }
 

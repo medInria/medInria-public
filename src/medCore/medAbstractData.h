@@ -12,7 +12,8 @@ class medAttachedData;
 /**
  * Extending dtkAbstractData class to hold more specific information
  */
-class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
+// class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
+class medAbstractData : public dtkAbstractData
 {
     Q_OBJECT
 
@@ -44,6 +45,7 @@ public:
      */
     QList< medAttachedData * > attachedData() const;
 
+public slots:    
     /**
      * @brief Clear the list of attached data
      *
@@ -64,6 +66,16 @@ public:
      * @return void
      */
     void removeAttachedData( medAttachedData * data );
+
+signals:
+    /**
+     * @brief emitted when an attached data is added
+     */
+    void attachedDataAdded( medAttachedData * );
+    /**
+     * @brief emitted when an attached data is removed
+     */
+    void attachedDataRemoved( medAttachedData * );
 
 private:
     medAbstractDataPrivate* d;
