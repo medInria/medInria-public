@@ -1,9 +1,10 @@
 #include <string>
 #include <sstream>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
-
 #include <IOUtils.H>
+
+#include <dtkZip/dtkZip.h>
+#include <dtkZip/dtkZipFile.h>
 
 #include <medCompositeDataSetsReader.h>
 
@@ -36,19 +37,13 @@ QString dirname(const QString& name) {
     return name.mid(ind1,ind2-ind1);
 }
 
-QString medCompositeDataSetsReader::description(void) const {
-    return "";
-}
-
-QStringList medCompositeDataSetsReader::handled(void) const {
-    return reader->handled();
-}
-
-dtkAbstractData* medCompositeDataSetsReader::data(void) {
+dtkAbstractData* medCompositeDataSetsReader::data() {
+    qDebug() << "DATA";
     return 0;
 }
 
 void medCompositeDataSetsReader::setData(dtkAbstractData *data) {
+    qDebug() << "setData";
 }
 
 bool medCompositeDataSetsReader::canRead(const QString& path) {
@@ -165,13 +160,9 @@ void medCompositeDataSetsReader::readInformation(const QString&) {
     reader->read_description(buffer);
 }
 
-void medCompositeDataSetsReader::cleanup() { RemoveDirectory(QDir(outdir)); }
-
-bool medCompositeDataSetsReader::initialize() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("medCompositeDataSetsReader",MedInria::medCompositeDataSetsBase::handled(),createMedCompositeDataSetsReader);
-}
-
 bool medCompositeDataSetsReader::read(const QString& path) {
+
+    qDebug() << "This is called !!!!";
 
     //  Read the type information.
 
@@ -189,8 +180,5 @@ bool medCompositeDataSetsReader::read(const QString& path) {
 }
 
 void medCompositeDataSetsReader::setProgress(int value) {
-}
-
-dtkAbstractDataReader* createMedCompositeDataSetsReader() {
-    return new medCompositeDataSetsReader();
+    qDebug() << "setProgress";
 }

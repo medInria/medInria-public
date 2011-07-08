@@ -38,7 +38,6 @@ void medDiffusionSequenceCompositeData::read_description(const QByteArray& buf) 
         iss >> io_utils::skip_comments('#') >> io_utils::filename(name) >> io_utils::match('[') >> V[0] >> V[1] >> V[2] >> io_utils::match(']');
         gradients.push_back(V);
         image_list << QString(name.c_str());
-        std::cerr << name << '(' << V << ')' << std::endl;
     }
 }
 
