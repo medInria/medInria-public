@@ -19,9 +19,11 @@
 #include "gdcmDirectionCosines.h"
 #include "gdcmStringFilter.h"
 
+#include <map>
+
 template<typename TYPE>
-void Read3DImageMacro(dtkAbstractData* dtkdata,itk::GDCMImageIO::Pointer io,const FileList& filelist) {
-    itk::ImageSeriesReader<itk::Image<TYPE,3> >::Pointer reader = itk::ImageSeriesReader<itk::Image<TYPE,3> >::New();
+void Read3DImage(dtkAbstractData* dtkdata,itk::GDCMImageIO::Pointer io,const itkGDCMDataImageReader::FileList& filelist) {
+    typename itk::ImageSeriesReader<itk::Image<TYPE,3> >::Pointer reader = itk::ImageSeriesReader<itk::Image<TYPE,3> >::New();
     reader->SetImageIO(io);
     reader->SetFileNames(filelist);
     dtkdata->setData(reader->GetOutput());
@@ -29,29 +31,29 @@ void Read3DImageMacro(dtkAbstractData* dtkdata,itk::GDCMImageIO::Pointer io,cons
 }
 
 template <typename TYPE>
-void Read4DImage(dtkAbstractData* dtkdata,itk::GDCMImageIO::Pointer io,map,const FileList& filelist) {
+void Read4DImage(dtkAbstractData* dtkdata, itk::GDCMImageIO::Pointer io, itkGDCMDataImageReader::FileListMapType map) {
     typedef itk::Image<TYPE,4>                   ImageType;
     typedef itk::Image<TYPE,3>                   SubImageType;
     typedef itk::ImageSeriesReader<SubImageType> SeriesReaderType;
-    typedef ImageType::RegionType                RegionType;
-    typedef ImageType::SpacingType               SpacingType;
-    typedef ImageType::PointType                 PointType;
-    typedef ImageType::DirectionType             DirectionType;
+    typedef typename ImageType::RegionType                RegionType;
+    typedef typename ImageType::SpacingType               SpacingType;
+    typedef typename ImageType::PointType                 PointType;
+    typedef typename ImageType::DirectionType             DirectionType;
     typedef itk::ImageRegionIterator<ImageType>  IteratorType;
-    typedef IteratorType::IndexType              IndexType;
+    typedef typename IteratorType::IndexType              IndexType;
 
-    ImageType::Pointer image = ImageType::New();
+    typename ImageType::Pointer image = ImageType::New();
 
     bool metadatacopied = false;
     IteratorType itOut;
 
     std::cout << "Building volume containing\t " << map.size() << "\t subvolumes..." << std::flush;
 
-    for (FileListMapType::iterator it=map.begin();it!=map.end();++it) {
-        SeriesReaderType::Pointer seriesreader = SeriesReaderType::New();
+    for (itkGDCMDataImageReader::FileListMapType::iterator it=map.begin();it!=map.end();++it) {
+        typename SeriesReaderType::Pointer seriesreader = SeriesReaderType::New();
         seriesreader->UseStreamingOn();
 
-        SubImageType::Pointer t_image = 0;
+        typename SubImageType::Pointer t_image = 0;
 
         seriesreader->SetFileNames(it->second);
         seriesreader->SetImageIO(io);
@@ -435,14 +437,14 @@ bool itkGDCMDataImageReader::read(QStringList paths) {
             else if (dtkdata->description()=="itkDataImageLong3")   { Read3DImage<long>(dtkdata,d->io,filelist);           }
             else if (dtkdata->description()=="itkDataImageFloat3")  { Read3DImage<float>(dtkdata,d->io,filelist);          }
             else if (dtkdata->description()=="itkDataImageDouble3") { Read3DImage<double>(dtkdata,d->io,filelist);         }
-            else if (dtkdata->description()=="itkDataImageUChar4")  { Read4DImage<unsigned char>(dtkdata,io,map);          }
-            else if (dtkdata->description()=="itkDataImageUShort4") { Read4DImage<unsigned short>(dtkdata,io,map);         }
-            else if (dtkdata->description()=="itkDataImageShort4")  { Read4DImage<short>(dtkdata,io,map);                  }
-            else if (dtkdata->description()=="itkDataImageUInt4")   { Read4DImage<unsigned int>(dtkdata,io,map);           }
-            else if (dtkdata->description()=="itkDataImageULong4")  { Read4DImage<unsigned long>(dtkdata,io,map);          }
-            else if (dtkdata->description()=="itkDataImageInt4")    { Read4DImage<int>(dtkdata,io,map);                    }
-            else if (dtkdata->description()=="itkDataImageLong4")   { Read4DImage<long>(dtkdata,io,map);                   }
-            else if (dtkdata->description()=="itkDataImageChar4")   { Read4DImage<char>(dtkdata,io,map);                   }
+            else if (dtkdata->description()=="itkDataImageUChar4")  { Read4DImage<unsigned char>(dtkdata,d->io,map);          }
+            else if (dtkdata->description()=="itkDataImageUShort4") { Read4DImage<unsigned short>(dtkdata,d->io,map);         }
+            else if (dtkdata->description()=="itkDataImageShort4")  { Read4DImage<short>(dtkdata,d->io,map);                  }
+            else if (dtkdata->description()=="itkDataImageUInt4")   { Read4DImage<unsigned int>(dtkdata,d->io,map);           }
+            else if (dtkdata->description()=="itkDataImageULong4")  { Read4DImage<unsigned long>(dtkdata,d->io,map);          }
+            else if (dtkdata->description()=="itkDataImageInt4")    { Read4DImage<int>(dtkdata,d->io,map);                    }
+            else if (dtkdata->description()=="itkDataImageLong4")   { Read4DImage<long>(dtkdata,d->io,map);                   }
+            else if (dtkdata->description()=="itkDataImageChar4")   { Read4DImage<char>(dtkdata,d->io,map);                   }
             else if (dtkdata->description()=="itkDataImageDouble4") {
                 /**
                 @todo Handle properly double pixel values.
@@ -451,7 +453,7 @@ bool itkGDCMDataImageReader::read(QStringList paths) {
                 This hack just downcast images in short when the dimension is 4.
                 which is WRONG.
                  */
-                Read4DImage<short>(dtkdata,io,map);
+                Read4DImage<short>(dtkdata,d->io,map);
             } else {
                 qDebug() << "Unhandled dtkdata description : " << dtkdata->description();
                 return false;
