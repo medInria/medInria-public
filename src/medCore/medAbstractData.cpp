@@ -43,13 +43,13 @@ void medAbstractData::clearAttachedData()
     d->attachedData.clear();
 }
 
-void medAbstractData::addAttachedData( medAttachedData * data)
+void medAbstractData::addAttachedData( medAttachedData * data )
 {
     if ( !d->attachedData.contains( data ) )
         d->attachedData.append( data );
 }
 
-void medAbstractData::removeAttachedData( medAttachedData * data)
+void medAbstractData::removeAttachedData( medAttachedData * data )
 {
     d->attachedData.removeAll( data );
 }
