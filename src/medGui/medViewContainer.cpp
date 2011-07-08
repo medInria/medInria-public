@@ -226,7 +226,7 @@ void medViewContainer::setCurrent(medViewContainer *container)
 
 void medViewContainer::recomputeStyleSheet()
 {
-    this->setStyleSheet( this->styleSheet() );
+    this->setStyleSheet( qApp->styleSheet() );
 }
 
 void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
