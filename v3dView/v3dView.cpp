@@ -568,7 +568,8 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     connect(zoomAct, SIGNAL(triggered()), this, SLOT(onMenuZoomTriggered()));
     
     QAction *wlAct = new QAction(tr("Window / Level"), d->vtkWidget);
-    connect(wlAct, SIGNAL(triggered()), this, SLOT(onMenuWindowLevelTriggered()));*/
+    connect(wlAct, SIGNAL(triggered()), this, SLOT(onMenuWindowLevelTriggered()));
+    
     
     /*QActionGroup *group = new QActionGroup(d->vtkWidget);
     group->addAction(zoomAct);
