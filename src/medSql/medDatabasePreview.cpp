@@ -28,6 +28,7 @@
 #include "medDatabasePreviewView.h"
 
 #include <medCore/medDataManager.h>
+#include <medCore/medMetaDataHelper.h>
 #include <medCore/medStorage.h>
 
 #include <QtCore>
@@ -403,7 +404,17 @@ void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to b
     
     target->ensureVisible(QRectF(0,0,item_width,item_height), medDatabasePreviewController::instance()->selectorWidth() + medDatabasePreviewController::instance()->itemSpacing(), 0);
 
-    d->selector->setText(d->current_index.asString());
+    if ( d->current_index.isValidForImage() ) {
+        d->selector->setText(QString(tr("Image id %1")).arg(d->current_index.imageId()));
+    } else if (d->current_index.isValidForSeries() ) {
+        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->current_index.dataSourceId());
+        QString seriesName = dbc->metaData( d->current_index, medMetaDataHelper::KEY_SeriesDescription());
+        if ( seriesName.isEmpty() )
+            seriesName = QString(tr("Series id %1")).arg(d->current_index.seriesId());
+        d->selector->setText(seriesName);
+    } else {
+        d->selector->setText(d->current_index.asString());
+    }
 
     if(!d->selector_position_animation)
         d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
@@ -447,7 +458,17 @@ void medDatabasePreview::onHovered(medDatabasePreviewItem *item)
     if(qAbs(d->selector->pos().x() - item->scenePos().x()) < 20 && qAbs(d->selector->pos().y() - item->scenePos().y()) < 20)
         return;
 
-    d->selector->setText(d->current_index.asString());
+    if ( d->current_index.isValidForImage() ) {
+        d->selector->setText(QString(tr("Image id %1")).arg(d->current_index.imageId()));
+    } else if (d->current_index.isValidForSeries() ) {
+        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->current_index.dataSourceId());
+        QString seriesName = dbc->metaData( d->current_index, medMetaDataHelper::KEY_SeriesDescription());
+        d->selector->setText(seriesName);
+        if ( seriesName.isEmpty() )
+            seriesName = QString(tr("Series id %1")).arg(d->current_index.seriesId());
+    } else {
+        d->selector->setText(d->current_index.asString());
+    }
 
     if(!d->selector_position_animation)
         d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
