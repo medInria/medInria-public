@@ -199,9 +199,9 @@ void medViewerArea::setdw(QStatusBar *status)
 
 void medViewerArea::split(int rows, int cols)
 {
-    if (d->current_configuration && 
-        d->current_configuration->currentViewContainer())
-        d->current_configuration->currentViewContainer()->split(rows, cols);
+    medViewContainer * root = this->currentRootContainer();
+    if ( root != NULL )
+        root->split(rows, cols);
 }
 
 void medViewerArea::open(const medDataIndex& index)
@@ -222,27 +222,22 @@ void medViewerArea::open(const medDataIndex& index)
         if ( data.isNull() )
             return;
         
-        if(!view) 
-        {
-            if (d->current_configuration->currentViewContainer() &&
-                d->current_configuration->currentViewContainer()->current())
-                view = dynamic_cast<medAbstractView*>(d->current_configuration->currentViewContainer()->current()->view());
-        }
+        medViewContainer * current = this->currentContainerFocused();
+        if ( current != NULL )
+            view = dynamic_cast<medAbstractView*>(current->view());
 
-        if(!view) {
+        if( view == NULL ) {
             view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
         }
         
-        if(!view)
-        {
+        if( view == NULL ) {
             qDebug() << "Unable to create a v3dView";
             return;
         }
         
         // another hash?!
         medViewManager::instance()->insert(index, view);
-        
         
         this->onViewFocused(view);
         
@@ -251,21 +246,20 @@ void medViewerArea::open(const medDataIndex& index)
        
         // call update
         QMutexLocker ( &d->mutex );
-        if (d->current_configuration->currentViewContainer()) 
+        if ( current != NULL )  // implies root != NULL
         {
-            d->current_configuration->currentViewContainer()->setUpdatesEnabled (false);
-            d->current_configuration->currentViewContainer()->setDisabled (true);
+            medViewContainer * root = this->currentRootContainer();
+            root->setUpdatesEnabled (false);
+            root->setDisabled (true);
             
-            if (d->current_configuration->currentViewContainer()->current()) {
-                d->current_configuration->currentViewContainer()->current()->setView(view);
-                d->current_configuration->currentViewContainer()->current()->setFocus(Qt::MouseFocusReason);
-            }
+            current->setView(view);
+            current->setFocus(Qt::MouseFocusReason);
             
             view->reset();
             view->update();
             
-            d->current_configuration->currentViewContainer()->setDisabled (false);
-            d->current_configuration->currentViewContainer()->setUpdatesEnabled (true);
+            root->setDisabled (false);
+            root->setUpdatesEnabled (true);
         }
         
         return;
@@ -415,19 +409,20 @@ void medViewerArea::switchToContainer(const QString& name)
 
     if (d->current_configuration)
     {
-        if (d->current_configuration->currentViewContainer() &&
-            d->current_configuration->currentViewContainer()== 
-            d->current_configuration->stackedViewContainers()->container(name))
+        medViewContainer * root = this->currentRootContainer();
+        if ( root != NULL &&
+             root == 
+             d->current_configuration->stackedViewContainers()->container(name))
         {
             //same conf, do nothing
             return;
         }
-        qDebug() << "switching from" << 
-                d->current_configuration->currentViewContainerName() << 
-                "to configuration" << name;
+        qDebug() << "switching from"
+                 << d->current_configuration->currentViewContainerName()
+                 << "to configuration" << name;
         
         d->current_configuration->setCurrentViewContainer(name);
-        d->current_configuration->currentViewContainer()->setFocus(Qt::MouseFocusReason);
+        root->setFocus(Qt::MouseFocusReason);
     }
     else
     {
@@ -442,14 +437,14 @@ void medViewerArea::switchToContainerPreset(int index)
     if(index < 0)
         return;
 
-    if (d->current_configuration && 
-        d->current_configuration->currentViewContainer())
-    {
-        if(medViewContainerCustom *custom = dynamic_cast<medViewContainerCustom *>(
-                d->current_configuration->currentViewContainer())) {
-                custom->setPreset(index);
-                d->current_configuration->setCustomPreset(index);
-            }
+    medViewContainer * root = this->currentRootContainer();
+    if ( root != NULL ) {
+        medViewContainerCustom *custom =
+            dynamic_cast<medViewContainerCustom *>( root );
+        if ( custom ) {
+            custom->setPreset(index);
+            d->current_configuration->setCustomPreset(index);
+        }
     }    
 }
 
@@ -507,14 +502,21 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     this->updateTransferFunction();
 }
 
-medViewContainer *medViewerArea::currentContainer(void)
+medViewContainer *medViewerArea::currentRootContainer(void)
 {
+    if ( d->current_configuration == NULL )
+        return NULL;
+
     return d->current_configuration->currentViewContainer();
 }
 
 medViewContainer *medViewerArea::currentContainerFocused(void)
 {
-    return d->current_configuration->currentViewContainer()->current();
+    medViewContainer * root = this->currentRootContainer();
+    if ( root == NULL )
+        return NULL;
+
+    return root->current();
 }
 
 // view settings
@@ -544,20 +546,19 @@ void medViewerArea::setupLUTPreset(QString table)
 
 void medViewerArea::bringUpTransferFunction(bool checked)
 {
-    if (!checked)
-    {
-        if (d->transFun !=NULL )
-        {
+    if (!checked) {
+        if (d->transFun !=NULL ) {
             delete d->transFun ;
             d->transFun=NULL;
         }
-    return;
+        return;
     }
-    if(!d->current_configuration->currentViewContainer())
+
+    medViewContainer * current = this->currentContainerFocused();
+    if ( current == NULL )
         return;
   
-    if ( dtkAbstractView *view = this->currentContainerFocused()->view() ) {
-
+    if ( dtkAbstractView *view = current->view() ) {
       d->transFun = new medClutEditor(NULL);
       d->transFun->setWindowModality( Qt::WindowModal );
       d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
@@ -571,11 +572,15 @@ void medViewerArea::bringUpTransferFunction(bool checked)
 
 void medViewerArea::updateTransferFunction()
 {
-    dtkAbstractView * view = this->currentContainerFocused()->view();
-    if ( d->transFun && view ) {
+    medViewContainer * current = this->currentContainerFocused();
+    if ( current == NULL )
+        return;
+    
+    dtkAbstractView * view = current->view();
+    if ( d->transFun != NULL && view != NULL ) {
     // d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );
-    d->transFun->setView( dynamic_cast<medAbstractView *>( view ), true );
-    d->transFun->update();
+        d->transFun->setView( dynamic_cast<medAbstractView *>( view ), true );
+        d->transFun->update();
     }
 }
 
@@ -641,10 +646,7 @@ void medViewerArea::setupConfiguration(QString name)
         this->addToolBox(toolbox);
         toolbox->show();
     }
-    
-    //setup layout Toolbox Visibility
-    conf->isLayoutToolBoxVisible()?conf->showLayoutToolBox():conf->hideLayoutToolBox();
-    
+
     d->toolbox_container->setVisible( conf->areToolBoxesVisible() );
 
     /*

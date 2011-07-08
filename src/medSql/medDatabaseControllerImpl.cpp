@@ -392,16 +392,6 @@ dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIn
     return data;
 }
 
-dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId)
-{
-    return read(medDataIndex::makeSeriesIndex(this->dataSourceId(),patientId, studyId, seriesId));
-}
-
-dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId, int imageId)
-{
-    return read(medDataIndex(this->dataSourceId(),patientId, studyId, seriesId, imageId));
-}
-
 void medDatabaseControllerImpl::createPatientTable(void)
 {
     QSqlQuery query(*(this->database()));

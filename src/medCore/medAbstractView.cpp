@@ -495,3 +495,8 @@ void medAbstractView::onAppendViewToPool( medAbstractView * viewAppended )
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
+
+void medAbstractView::setFullScreen( bool state )
+{
+    emit fullScreen( state );
+}

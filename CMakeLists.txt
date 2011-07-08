@@ -48,7 +48,9 @@ include(${dtk_USE_FILE})
 
 include(medinriaBuild)
 include(medinriaPack)
-include(medinriaDart)
+#include(medinriaDart)
+include(Dart)
+include(CTest)
 
 option(BUILD_DOCUMENTATION "Build documentation"    true)
 
