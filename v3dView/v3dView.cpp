@@ -766,7 +766,6 @@ void v3dView::setData(dtkAbstractData *data)
     if (data->description().contains("vtkDataMesh") && layer)
     {
         layer--;
-        qDebug()<<"data->description() ==  && layer !=0";
     }
     this->setData( data, layer);
     
@@ -1033,13 +1032,10 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
     }
 
-    qDebug()<<"Data in V3dView"<< data->description();
-    qDebug()<<"Layer in V3dView"<< layer;
-    
+   
     this->addDataInList(data);
-
-   // emit dataAdded(layer);
-    emit dataAdded(data);
+    //emit dataAdded(layer);
+    //emit dataAdded(data);
     emit dataAdded(data, layer);
 }
 
@@ -1071,7 +1067,6 @@ void v3dView::play(bool start)
 
 void v3dView::onPropertySet(const QString &key, const QString &value)
 {
-      qDebug() << "v3dView::onPropertySet";
 // Look up which property set function to call from table 
     v3dViewPrivate::PropertyFuncMapType::const_iterator it = d->setPropertyFunctions.find( key );
     
@@ -1255,7 +1250,6 @@ void v3dView::onUseLODPropertySet (const QString &value)
 
 void v3dView::onShowScalarBarPropertySet(const QString &value)
 {
-    qDebug() << "v3dView::onShowScalarBarPropertySet";
     if (value == "true") {
         //d->collection->SyncSetShowScalarBar(true);
         d->view2d->SetShowScalarBar(true);
@@ -1267,18 +1261,8 @@ void v3dView::onShowScalarBarPropertySet(const QString &value)
     }
 }
 
-/*QString v3dView::property(const QString& key, int layer) const
-{
-    qDebug() << "medAbstractView::property is called with "<<key<<" and " << layer;
-    return "hjd";
-}*/
 QString v3dView::getLUT(int layer) const
 {
-    qDebug()<<"The List is : \n";
-    for(int i = 0 ; i <d->LUTList.size() ; i++)
-        qDebug() << i << " : "<<d->LUTList.at(i);
-
-
     if (layer < d->LUTList.size())
         return d->LUTList.at(layer);
     else 
@@ -1321,7 +1305,6 @@ void v3dView::onLookupTablePropertySet(const QString &value)
     else 
         d->LUTList.insert(this->currentLayer(), value);
 
-    qDebug()<< value<<" is inserted to the "<< this->currentLayer() << "v3dView::onLookupTablePropertySet";
     if (this->currentLayer()==0)
         emit lutChanged();
 }
@@ -1375,11 +1358,6 @@ void v3dView::onMouseInteractionPropertySet(const QString &value)
 }
 QString v3dView::getPreset(int layer) const
 {
-    qDebug()<<"The List is : \n";
-    for(int i = 0 ; i <d->PresetList.size() ; i++)
-        qDebug() << i << " : "<<d->PresetList.at(i);
-
-
     if (layer < d->PresetList.size())
         return d->PresetList.at(layer);
     else 
@@ -1529,8 +1507,6 @@ void v3dView::onPresetPropertySet (const QString &value)
     else 
         d->PresetList.insert(this->currentLayer(), value);
 
-    //qDebug()<< value<<" is inserted to the "<< this->currentLayer() << "v3dView::onLookupTablePropertySet";
-    
     emit lutChanged();
 }
 
@@ -1698,13 +1674,10 @@ void v3dView::onMenuSagittalTriggered (void)
     this->setProperty("Orientation", "Sagittal");
     d->view2d->Render();
     emit TwoDTriggered(this);
-    qDebug()<<"v3dView::onMenuSagittalTriggered";
 }
 
 void v3dView::onMenu3DTriggered (void)
 {
-    qDebug()<<"BOK";
-    qDebug()<< "this->property(\"3DMode\")"<<this->property("3DMode");
     this->setProperty ("3DMode", this->property("3DMode"));
     this->setProperty ("Orientation", "3D");
     d->view3d->Render();
