@@ -49,15 +49,18 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
             item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
         else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(m_view->model()))
             item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
-/*
-        if (item) {
-            if ( medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->contains( item->dataIndex() ) ) {
-                itemOption.font.setItalic(true);
-            } else {
 
-            }
+        if(item)
+        {
+            medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId());
+            if ( dbc ) {
+                if(!dbc->isPersistent(item->dataIndex().dataSourceId()))
+                {
+                    itemOption.font.setItalic(true);
+                }
+            } 
         }
-        */
+        
     }
 
     QStyledItemDelegate::paint(painter, itemOption, index);
