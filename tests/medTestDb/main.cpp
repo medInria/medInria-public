@@ -104,18 +104,18 @@ int medTestDbApp::run()
     medAbstractDbController * npDb = dataManager->controllerForDataSource(nonPersistentSourceId);
     CHECK_TEST_RESULT( npDb );
     CHECK_TEST_RESULT(npDb->dataSourceId() == nonPersistentSourceId);
-    CHECK_TEST_RESULT( !npDb->isPersistent(importedIndex) );
+    CHECK_TEST_RESULT( !npDb->isPersistent() );
 
-    typedef QList<int> IntList;
-    IntList patients = npDb->patients();
+    typedef QList<medDataIndex> IndexList;
+    IndexList patients = npDb->patients();
     CHECK_TEST_RESULT(patients.size() == 1);
-    CHECK_TEST_RESULT(patients[0] == importedIndex.patientId());
-    IntList studies = npDb->studies(patients[0]);
+    CHECK_TEST_RESULT(patients[0].patientId() == importedIndex.patientId());
+    IndexList studies = npDb->studies(patients[0]);
     CHECK_TEST_RESULT(studies.size() == 1);
-    CHECK_TEST_RESULT(studies[0] == importedIndex.studyId());
-    IntList series = npDb->series(patients[0], studies[0]);
+    CHECK_TEST_RESULT(studies[0].studyId() == importedIndex.studyId());
+    IndexList series = npDb->series(studies[0]);
     CHECK_TEST_RESULT(series.size() == 1);
-    CHECK_TEST_RESULT(series[0] == importedIndex.seriesId());
+    CHECK_TEST_RESULT(series[0].seriesId() == importedIndex.seriesId());
 
     // Ensure persistent DB is empty at first
     medAbstractDbController * db = dataManager->controllerForDataSource(persistentSourceId);
@@ -133,10 +133,10 @@ int medTestDbApp::run()
     CHECK_TEST_RESULT(patients.size() == 1);
     studies = db->studies(patients[0]);
     CHECK_TEST_RESULT(studies.size() == 1);
-    series = db->series(patients[0], studies[0]);
+    series = db->series(studies[0]);
     CHECK_TEST_RESULT(series.size() == 1);
 
-    medDataIndex persImportedIndex = medDataIndex( persistentSourceId, patients[0], studies[0], series[0] );
+    const medDataIndex persImportedIndex = series[0];
 
     this->processEvents();
 
