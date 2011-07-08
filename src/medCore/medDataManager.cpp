@@ -80,12 +80,20 @@ public:
         return nonPersDbController ;
     }
 
+    QList<medAbstractDbController*> controllerStack()
+    {
+        QList<medAbstractDbController*> stack;
+        stack << getDbController();
+        stack << getNonPersDbController();
+        return stack;
+    }
+
     static QMutex mutex;
 
 private:
     medAbstractDbController* dbController; 
     medAbstractDbController* nonPersDbController; 
-
+    QList<medAbstractDbController*> _controllerStack;
 };
 
 QMutex medDataManagerPrivate::mutex;
@@ -602,13 +610,14 @@ void medDataManager::removeDataFromCache( const medDataIndex &index )
 
 medAbstractDbController * medDataManager::controllerForDataSource( int dataSource )
 {
-    if ( dataSource == 1) {
-        return d->getDbController();
-    } else if ( dataSource == 2) {
-        return d->getNonPersDbController();
-    } else {
-        return NULL;
+    foreach(medAbstractDbController* controller, d->controllerStack())
+    {
+        if(controller)
+            if (controller->dataSourceId() == dataSource)
+                return controller;
     }
+
+    return NULL;
 }
 
 const medAbstractDbController * medDataManager::controllerForDataSource( int dataSource ) const
@@ -619,8 +628,14 @@ const medAbstractDbController * medDataManager::controllerForDataSource( int dat
 
 QList<int> medDataManager::dataSourceIds() const
 {
-    // TODO : Make this more dynamic.
-    return QList<int>() << 1 << 2;
+    QList<int> sources;
+    foreach(medAbstractDbController* controller, d->controllerStack())
+    {
+        if(controller)
+            sources << controller->dataSourceId();
+    }
+
+    return sources;
 }
 
 

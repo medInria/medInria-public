@@ -20,7 +20,7 @@ bool medDbControllerFactory::registerDbController( const QString& type, medDbCon
 {
     if(!d->dbController_creators.contains(type)) {
         d->dbController_creators.insert(type, func);
-
+        qDebug() << "registering " << type;
         emit dbControllerRegistered(type);
         return true;
     }
