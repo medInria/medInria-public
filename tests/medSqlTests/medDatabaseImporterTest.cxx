@@ -128,11 +128,11 @@ void medDatabaseImporterTest::importSingleVolume_data()
     QString fileOrDirToImport;
 
     // test with NRRD
-    fileOrDirToImport = QDir::separator() + QString("Clatz") + QDir::separator() + QString("I1.nhdr");
+    fileOrDirToImport = QDir::separator() + QString("Nrrd") + QDir::separator() + QString("I1.nhdr");
     QTest::newRow("I1.nhdr") << fileOrDirToImport << "John Doe" << "EmptyStudy" << "I11" << 64 << "" << "";
 
     // test with NIfTI
-    fileOrDirToImport = QDir::separator() + QString("mask") + QDir::separator()+ QString("1-session01.nii");
+    fileOrDirToImport = QDir::separator() + QString("Nifti") + QDir::separator()+ QString("1-session01.nii");
     QTest::newRow("1-session01.nii") << fileOrDirToImport << "John Doe" << "EmptyStudy" << "1-session011" << 26 << "" << "";
 
     // test with a directory full of DICOMs

@@ -2,6 +2,8 @@
 ## Dependencies and Set Up
 ## #################################################################
 
+project(medSqlTests)
+
 # we need a path to medinria plugins
 FIND_PATH(MEDINRIA_PLUGINS_PATH libitkDataImageReaderPlugin.so
   DOC "The directory where medinria plugins are. It is required by the Testing tree."
