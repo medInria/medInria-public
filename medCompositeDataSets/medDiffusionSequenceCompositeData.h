@@ -28,7 +28,7 @@ public:
     medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase("DWI",this),version(0) { }
     virtual ~medDiffusionSequenceCompositeData() { }
 
-    virtual QString description(void) const;
+    virtual QString description() const;
 
     virtual bool has_version(const unsigned num) const { return num==1; }
 
@@ -36,7 +36,7 @@ public:
         return new medDiffusionSequenceCompositeData(v);
     }
 
-    static bool registered(void);
+    bool registered() const;
 
     virtual void read_description(const QByteArray& buf);
 
@@ -54,6 +54,8 @@ private:
     QStringList      image_list;
     Volumes          images;
     GradientListType gradients;
+
+    static const medDiffusionSequenceCompositeData proto;
 };
 
 dtkAbstractData* createDiffusionSequenceCompositeData();

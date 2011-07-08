@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <medDiffusionSequenceCompositeData.h>
+#include <medDiffusionSequenceCompositeDataToolBox.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 
@@ -14,11 +15,14 @@
 // medDiffusionSequenceCompositeData
 // /////////////////////////////////////////////////////////////////
 
-bool medDiffusionSequenceCompositeData::registered(void) {
-    return dtkAbstractDataFactory::instance()->registerDataType("medDiffusionSequenceCompositeData", createDiffusionSequenceCompositeData);
+const medDiffusionSequenceCompositeData medDiffusionSequenceCompositeData::proto;
+
+bool medDiffusionSequenceCompositeData::registered() const {
+    return dtkAbstractDataFactory::instance()->registerDataType("medDiffusionSequenceCompositeData", createDiffusionSequenceCompositeData) &&
+           medDiffusionSequenceCompositeDataToolBox::registered();
 }
 
-QString medDiffusionSequenceCompositeData::description(void) const {
+QString medDiffusionSequenceCompositeData::description() const {
     return "medDiffusionSequenceCompositeData";
 }
 

@@ -35,6 +35,8 @@ public:
 
     void cleanup();
 
+    static bool initialize();
+
 public slots:
 
     virtual bool canRead(const QString& file);
@@ -51,6 +53,6 @@ private:
     MedInria::medCompositeDataSetsBase* reader;
 };
 
-dtkAbstractData *createMedCompositeDataSetsReader(void);
+dtkAbstractDataReader* createMedCompositeDataSetsReader();
 
 #endif

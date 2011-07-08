@@ -8,15 +8,15 @@
 #include <dtkCore/dtkPlugin.h>
 
 #include "medCompositeDataSetsPluginExport.h"
+#include "medCompositeDataSetsBase.h"
 
-class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsPluginPrivate;
+class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsPlugin : public dtkPlugin {
 
-class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsPlugin : public dtkPlugin
-{
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
+
      medCompositeDataSetsPlugin(QObject *parent = 0);
     ~medCompositeDataSetsPlugin(void);
 
@@ -30,8 +30,8 @@ public:
     virtual QStringList types(void) const;
 
 private:
-
-     medCompositeDataSetsPluginPrivate *d;
+    
+    QStringList registered_types;
 };
 
 #endif

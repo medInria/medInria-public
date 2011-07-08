@@ -1,6 +1,8 @@
 #include <string>
 #include <sstream>
 
+#include <dtkCore/dtkAbstractDataFactory.h>
+
 #include <IOUtils.H>
 
 #include <medCompositeDataSetsReader.h>
@@ -10,7 +12,7 @@ bool RemoveDirectory(const QDir& dir) {
     if (dir.exists()) {
         QFileInfoList entries = dir.entryInfoList(QDir::NoDotAndDotDot|QDir::Dirs|QDir::Files);
         int count = entries.size();
-        //for (int idx = 0;((idx<count)&&(RBCFS_OK==has_err));++idx) {
+        //for (int idx = 0;((idx<count)&&(RBCFS_OK==has_err));++idx) 
         for (int idx = 0;idx<count;++idx) {
             QFileInfo entryInfo = entries[idx];
             QString path = entryInfo.absoluteFilePath();
@@ -25,6 +27,7 @@ bool RemoveDirectory(const QDir& dir) {
         if (!dir.rmdir(dir.absolutePath()))
             has_err = true;
     }
+    return has_err;
 }
 
 QString dirname(const QString& name) {
@@ -38,7 +41,7 @@ QString medCompositeDataSetsReader::description(void) const {
 }
 
 QStringList medCompositeDataSetsReader::handled(void) const {
-    return QStringList();
+    return reader->handled();
 }
 
 dtkAbstractData* medCompositeDataSetsReader::data(void) {
@@ -164,6 +167,10 @@ void medCompositeDataSetsReader::readInformation(const QString&) {
 
 void medCompositeDataSetsReader::cleanup() { RemoveDirectory(QDir(outdir)); }
 
+bool medCompositeDataSetsReader::initialize() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType("medCompositeDataSetsReader",MedInria::medCompositeDataSetsBase::handled(),createMedCompositeDataSetsReader);
+}
+
 bool medCompositeDataSetsReader::read(const QString& path) {
 
     //  Read the type information.
@@ -182,4 +189,8 @@ bool medCompositeDataSetsReader::read(const QString& path) {
 }
 
 void medCompositeDataSetsReader::setProgress(int value) {
+}
+
+dtkAbstractDataReader* createMedCompositeDataSetsReader() {
+    return new medCompositeDataSetsReader();
 }
