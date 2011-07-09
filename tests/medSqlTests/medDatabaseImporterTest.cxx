@@ -257,7 +257,7 @@ void medDatabaseImporterTest::import()
             }
             else
             {
-                columnValues.insert("name", info.baseName() + QString::number(i));
+                columnValues.insert("name", info.fileName() + QString::number(i));
                 columnValues.insert("path", fullPathToFileOrDirectory);
             }
 
