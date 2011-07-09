@@ -13,8 +13,11 @@
 
 // we need this line to be able to use the type
 // for injecting data in the tests
-typedef QHash<QString, int> VolumeToImageCountMap;
+typedef QMap<QString, int> VolumeToImageCountMap;
 Q_DECLARE_METATYPE(VolumeToImageCountMap)
+
+typedef QString (*GetOriginalFileName)(QString sessionName, int index);
+Q_DECLARE_METATYPE(GetOriginalFileName)
 
 void checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, QString studyName, VolumeToImageCountMap volumeMap);
 int countRowsInTable(QSqlDatabase db, QString tableName);
@@ -115,6 +118,18 @@ void medDatabaseImporterTest::cleanupTestCase()
     //qDebug() << "cleanupTestCase()";
 }
 
+// This function is specifically for the test data
+// does not work with every Dicom, of course.
+QString getOriginalFileName(QString sessionName, int index)
+{
+    QString end = "0000";
+    QString ind = QString::number(index+1);
+
+    QString ending = end.replace(4 - ind.size(), ind.size(), ind);
+
+    return QString(MEDINRIA_TEST_DATA_ROOT) + "/OSIRIX/WRIX/WRIST RIGHT/" + sessionName + "/IM-0001-" + ending + ".dcm";
+}
+
 void medDatabaseImporterTest::import_data()
 {
     // here we will prepare data for running "import" test
@@ -124,21 +139,31 @@ void medDatabaseImporterTest::import_data()
     QTest::addColumn<QString>("patientName");
     QTest::addColumn<QString>("studyName");
     QTest::addColumn<VolumeToImageCountMap>("volumes");
+    QTest::addColumn<GetOriginalFileName>("getOriginalFileName");
 
     QString fileOrDirToImport;
     VolumeToImageCountMap volumes;
 
     // test with NRRD
     volumes.clear();
-    volumes["I11"] = 64;
+    volumes["I1"] = 64;
     fileOrDirToImport = QDir::separator() + QString("Nrrd") + QDir::separator() + QString("I1.nhdr");
     QTest::newRow("I1.nhdr") << fileOrDirToImport << "John Doe" << "EmptyStudy" << volumes;
 
     // test with NIfTI
     volumes.clear();
-    volumes["1-session011"] = 26;
+    volumes["1-session01"] = 26;
     fileOrDirToImport = QDir::separator() + QString("Nifti") + QDir::separator()+ QString("1-session01.nii");
     QTest::newRow("1-session01.nii") << fileOrDirToImport << "John Doe" << "EmptyStudy" << volumes;
+
+    // test with Dicoms
+    // Dicoms are a horrible thing to test, really, I hate Dicoms. I needed to say that. Thanks.
+    volumes.clear();
+    volumes["SCOUT AXIAL LG FOV RT."] = 7;
+    volumes["STIR COR. RT."] = 12;
+    volumes["T1 TSE COR RT."] = 12;
+    fileOrDirToImport = QDir::separator() + QString("OSIRIX") + QDir::separator()+ QString("WRIX");
+    QTest::newRow("WRIX") << fileOrDirToImport << "WRIX" << "WRIST^RIGHT" << volumes << &getOriginalFileName;
 }
 
 void medDatabaseImporterTest::import()
@@ -191,39 +216,56 @@ void medDatabaseImporterTest::import()
 
     QString sessionName;
     int imageCount;
-    QHashIterator<QString, int> i(volumes);
+    QMapIterator<QString, int> i(volumes);
 
+    int totalAmountOfImages = 0;
+    int index = -1;
     // now for each volume we need to check the images and the session
     while (i.hasNext())
     {
         i.next();
+        index++;
 
         sessionName = i.key(); // name of this session
         imageCount = i.value(); // amount of images in this session
 
+        totalAmountOfImages += imageCount;
+
         // check that the proper path is in series table
-        QString seriesPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QString(".mha");
+        QString seriesPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QString::number(index+1) + QString(".mha");
 
         QVERIFY(checkIfRowExists(db, "series", "path", seriesPath));
-
-        QVERIFY(imageCount == countRowsInTable(db, "image"));
 
         // check every row inside image table
         for (int i = 0; i < imageCount ; i++)
         {
             QHash<QString, QString> columnValues;
             columnValues.insert("instance_path", seriesPath);
-            QString thumbnailPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QDir::separator() + QString::number(i) + ".png";
+            QString thumbnailPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QString::number(index+1) + QDir::separator() + QString::number(i) + ".png";
             columnValues.insert("thumbnail", thumbnailPath);
 
-            // if we are importing just a file then the name if each image
-            // is the filename plus and index
-            columnValues.insert("name", info.fileName() + QString::number(i));
-            columnValues.insert("path", fullPathToFileOrDirectory);
+            // if we are importing a directory then is WRIX
+            if(info.isDir())
+            {
+                QFETCH(GetOriginalFileName, getOriginalFileName);
+                QString origFileName = getOriginalFileName(sessionName, i);
+
+                // if we are importing just a file then the name if each image
+                // is the filename plus and index
+                columnValues.insert("name", origFileName.right(16));
+                columnValues.insert("path", origFileName);
+            }
+            else
+            {
+                columnValues.insert("name", info.baseName() + QString::number(i));
+                columnValues.insert("path", fullPathToFileOrDirectory);
+            }
 
             QVERIFY(checkIfRowExists(db, "image", columnValues));
         }
     }
+    // instead of writing a new function we count the total amount of images, it's easier
+    QVERIFY(totalAmountOfImages == countRowsInTable(db, "image"));
 }
 
 void checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, QString studyName, VolumeToImageCountMap volumeMap)
@@ -240,18 +282,21 @@ void checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, Q
         {
             QString sessionName;
             int thumbnailsCount;
-            QHashIterator<QString, int> i(volumeMap);
+            QMapIterator<QString, int> i(volumeMap);
 
+            int index = -1;
             // now for each volume we need to check the thumbnails and the aggregated file
             while (i.hasNext())
             {
                 i.next();
+                index++;
 
                 sessionName = i.key(); // name of this session
                 thumbnailsCount = i.value(); // amount of images in this session
 
-                QString sessionPath = studyPath + QDir::separator() + sessionName;
+                QString sessionPath = studyPath + QDir::separator() + sessionName + QString::number(index+1);
                 QString sessionFile = sessionPath + QString(".mha");
+
                 if (QDir(sessionPath).exists() && QFile(sessionFile).exists())
                 {
                     // check if thumbnails exist

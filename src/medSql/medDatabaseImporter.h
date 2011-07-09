@@ -59,11 +59,6 @@ public slots:
     void onCancel(QObject*);
 
 private:
-
-    void import(void);
-
-    void index(void);
-
     /**
     * Populates the missing metadata in the @dtkAbstractData object.
     * If metadata is not present it's filled with default or empty values.
