@@ -17,24 +17,24 @@
  * 
  */
 
-#include "medDatabaseController.h"
 #include "medDatabaseNavigator.h"
+
+#include <dtkCore/dtkGlobal.h>
+
+#include <QtCore>
+#include <QtGui>
+
+#include <medCore/medAbstractDbController.h>
+#include <medCore/medDataManager.h>
+#include <medCore/medMetaDataHelper.h>
+#include <medCore/medStorage.h>
+
 #include "medDatabaseNavigatorController.h"
 #include "medDatabaseNavigatorItem.h"
 #include "medDatabaseNavigatorItemGroup.h"
 #include "medDatabaseNavigatorScene.h"
 #include "medDatabaseNavigatorView.h"
-#include "medSql/medDatabaseNonPersistentItem.h"
-#include "medSql/medDatabaseNonPersistentController.h"
 
-#include <medCore/medDataManager.h>
-#include <medCore/medMetaDataHelper.h>
-#include <medCore/medStorage.h>
-
-#include <QtCore>
-#include <QtGui>
-
-#include <dtkCore/dtkGlobal.h>
 
 namespace  {
 

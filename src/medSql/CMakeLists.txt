@@ -28,25 +28,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseControllerImpl.h
   medDatabaseExporter.h
   medDatabaseImporter.h
-  medDatabaseModel.h
-  medDatabaseNavigator.h
-  medDatabaseNavigatorItem.h
-  medDatabaseNavigatorItemGroup.h
-  medDatabaseNavigatorItemLoader.h
-  medDatabaseNavigatorView.h
+  medDatabaseModel.h  
   medDatabaseNonPersistentController.h
   medDatabaseNonPersistentControllerImpl.h
   medDatabaseNonPersistentItem.h
   medDatabaseNonPersistentReader.h
-  medDatabaseNonPersistentImporter.h
-  medDatabasePreview.h
-  medDatabasePreviewArrow.h
-  medDatabasePreviewItem.h
-  medDatabasePreviewItemGroup.h
-  medDatabasePreviewItemLoader.h
-  medDatabasePreviewSelector.h
-  medDatabasePreviewTooltip.h
-  medDatabasePreviewView.h
+  medDatabaseNonPersistentImporter.h  
   medDatabaseProxyModel.h
   medDatabaseReader.h
   medDatabaseRemover.h
@@ -64,29 +51,12 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseExporter.cpp
   medDatabaseImporter.cpp
   medDatabaseItem.cpp
-  medDatabaseModel.cpp
-  medDatabaseNavigator.cpp
-  medDatabaseNavigatorController.cpp
-  medDatabaseNavigatorItem.cpp
-  medDatabaseNavigatorItemGroup.cpp
-  medDatabaseNavigatorItemLoader.cpp
-  medDatabaseNavigatorScene.cpp
-  medDatabaseNavigatorView.cpp
+  medDatabaseModel.cpp  
   medDatabaseNonPersistentController.cpp
   medDatabaseNonPersistentControllerImpl.cpp
   medDatabaseNonPersistentItem.cpp
   medDatabaseNonPersistentReader.cpp
-  medDatabaseNonPersistentImporter.cpp
-  medDatabasePreview.cpp
-  medDatabasePreviewArrow.cpp
-  medDatabasePreviewController.cpp
-  medDatabasePreviewItem.cpp
-  medDatabasePreviewItemGroup.cpp
-  medDatabasePreviewItemLoader.cpp
-  medDatabasePreviewScene.cpp
-  medDatabasePreviewSelector.cpp
-  medDatabasePreviewTooltip.cpp
-  medDatabasePreviewView.cpp
+  medDatabaseNonPersistentImporter.cpp  
   medDatabaseProxyModel.cpp
   medDatabaseReader.cpp
   medDatabaseRemover.cpp

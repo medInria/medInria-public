@@ -441,6 +441,30 @@ medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
 
 //-------------------------------------------------------------------------------------------------------
 
+medDataIndex medDataManager::importNonPersistent( QString file )
+{
+    medDataIndex index;
+
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    if(npDb)
+    {
+        index = npDb->import(file);
+    }
+
+    if (!index.isValid()) {
+        qWarning() << "index is not valid";
+        return index;
+    }
+
+    emit dataAdded (index);
+
+    return index;
+
+}
+
+
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::storeNonPersistentDataToDatabase( void )
 {
     foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {

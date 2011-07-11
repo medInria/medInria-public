@@ -21,6 +21,8 @@
 #include "medDatabasePreviewItem.h"
 #include "medDatabasePreviewItemGroup.h"
 
+#include <medCore/medDataIndex.h>
+
 #include <QtCore>
 
 class medDatabasePreviewItemGroupPrivate

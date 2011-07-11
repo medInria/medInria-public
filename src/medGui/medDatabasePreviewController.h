@@ -23,7 +23,9 @@
 #include <Qt>
 #include <QtCore>
 
-class medDatabasePreviewController : public QObject
+#include "medGuiExport.h"
+
+class MEDGUI_EXPORT medDatabasePreviewController : public QObject
 {
 public:
     static medDatabasePreviewController *instance(void);

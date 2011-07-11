@@ -23,13 +23,13 @@
 #include <QtCore>
 #include <QtGui>
 
-#include "medSqlExport.h"
+#include "medGuiExport.h"
 
 class medDatabaseNavigatorItem;
 class medDatabaseNavigatorPrivate;
 class medDataIndex;
 
-class MEDSQL_EXPORT medDatabaseNavigator : public QFrame
+class MEDGUI_EXPORT medDatabaseNavigator : public QFrame
 {
     Q_OBJECT
 

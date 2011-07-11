@@ -71,6 +71,15 @@ public:
     */
     medDataIndex importNonPersistent(dtkAbstractData *data);
 
+
+    /**
+    * Overload to insert data directly from a file into the no-persistent database
+    * @params QString file
+    * @return medDataIndex
+    */
+    medDataIndex importNonPersistent(QString file);
+
+
     /**
     * Use this function to save all non-persistent data to the sql database.
     * The list of non-persistent data will then be cleared, and any subsequent

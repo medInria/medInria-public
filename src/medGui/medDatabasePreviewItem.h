@@ -21,8 +21,8 @@
 #define MEDDATABASEPREVIEWITEM_H
 
 #include <QtGui/QGraphicsPixmapItem>
-#include "medCore/medDataIndex.h"
 
+class medDataIndex;
 class medDatabasePreviewItemPrivate;
 
 class medDatabasePreviewItem : public QObject, public QGraphicsPixmapItem

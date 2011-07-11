@@ -17,7 +17,6 @@
  * 
  */
 
-#include "medDatabaseController.h"
 #include "medDatabasePreview.h"
 #include "medDatabasePreviewController.h"
 #include "medDatabasePreviewItem.h"
@@ -27,6 +26,7 @@
 #include "medDatabasePreviewTooltip.h"
 #include "medDatabasePreviewView.h"
 
+#include <medCore/medAbstractDbController.h>
 #include <medCore/medDataManager.h>
 #include <medCore/medMetaDataHelper.h>
 #include <medCore/medStorage.h>
