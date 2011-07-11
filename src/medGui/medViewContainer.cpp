@@ -1,5 +1,5 @@
-/* medViewContainer.cpp --- 
- * 
+/* medViewContainer.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:54:57 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 425
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewContainer.h"
@@ -36,9 +36,9 @@ medViewContainer::medViewContainer(QWidget *parent)
 
     d->view = NULL;
     d->current = this;
-    
+
     d->pool = new medViewPool;
-    
+
     medViewContainer *container = dynamic_cast<medViewContainer *>(parent);
     if ( container != NULL ) {
         connect(this,      SIGNAL(dropped(const medDataIndex&)),
@@ -54,12 +54,12 @@ medViewContainer::medViewContainer(QWidget *parent)
 }
 
 medViewContainer::~medViewContainer(void)
-{    
+{
     d->pool->deleteLater();
-    
+
     if (d->view)
         d->view->close();
-    
+
     delete d;
 
     d = NULL;
@@ -170,7 +170,7 @@ QList<dtkAbstractView *> medViewContainer::views(void) const
     QList<dtkAbstractView *> views;
     if (d->view)
         views << d->view;
-  
+
     return views;
 }
 
@@ -194,7 +194,7 @@ void medViewContainer::setView(dtkAbstractView *view)
             ++it;
         }
     }
-
+    connect (view,SIGNAL(changeDaddy(bool)),this,SLOT(onDaddyChanged(bool)));
     this->recomputeStyleSheet();
 }
 
@@ -208,7 +208,7 @@ void medViewContainer::onViewFocused( bool value )
 
     if (dtkAbstractView *view = this->view())
         emit focused(view);
-    
+
     this->update();
 }
 
@@ -254,7 +254,7 @@ void medViewContainer::dropEvent(QDropEvent *event)
         int   studyId = ids.at(1).toInt();
         int  seriesId = ids.at(2).toInt();
         int   imageId = ids.at(3).toInt();
-        
+
         emit dropped(medDataIndex(patientId, studyId, seriesId, imageId));
     }
 
@@ -309,7 +309,7 @@ void medViewContainer::paintEvent(QPaintEvent *event)
     // }
 
     if (!this->view() && (d->viewProperties.count() ||
-                          !d->viewInfo.isEmpty()) ) 
+                          !d->viewInfo.isEmpty()) )
     {
         painter.setPen(Qt::white);
         QFont font = painter.font();
@@ -351,6 +351,7 @@ void medViewContainer::onViewFullScreen (bool value)
 
 void medViewContainer::onDaddyChanged( bool state )
 {
+    Q_UNUSED(state);
     this->recomputeStyleSheet();
 }
 
