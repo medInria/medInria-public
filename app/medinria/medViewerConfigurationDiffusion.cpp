@@ -5,7 +5,7 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include <medCore/medDataManager.h>
+#include <medDataManager.h>
 
 #include "medToolBoxDiffusionTensorView.h"
 #include "medToolBoxDiffusion.h"

@@ -2,7 +2,7 @@
 #define MEDPACSMOVER_H
 
 
-#include <medCore/medJobItem.h>
+#include <medJobItem.h>
 #include "medPacsExport.h"
 #include "medMoveCommandItem.h"
 

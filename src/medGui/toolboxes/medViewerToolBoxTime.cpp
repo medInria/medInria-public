@@ -19,7 +19,7 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkLog.h>
 
-#include <medCore/med4DAbstractViewInteractor.h>
+#include <med4DAbstractViewInteractor.h>
 #include <medToolBoxTab.h>
 #include <medButton.h>
 

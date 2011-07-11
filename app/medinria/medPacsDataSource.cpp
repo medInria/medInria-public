@@ -1,6 +1,6 @@
 #include "medPacsDataSource.h"
 
-#include <medCore/medJobManager.h>
+#include <medJobManager.h>
 
 #include <medBrowserToolBoxPacsHost.h>
 #include <medBrowserToolBoxPacsNodes.h>
@@ -8,8 +8,8 @@
 #include <medPacsSelector.h>
 #include <medToolBox.h>
 
-#include <medPacs/medPacsWidget.h>
-#include <medPacs/medPacsMover.h>
+#include <medPacsWidget.h>
+#include <medPacsMover.h>
 
 class medPacsDataSourcePrivate
 {

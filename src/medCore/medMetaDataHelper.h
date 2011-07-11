@@ -5,7 +5,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 
-#include "medCore/medCoreExport.h"
+#include "medCoreExport.h"
 
 /**
 * @class medMetaDataHelper

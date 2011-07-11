@@ -30,20 +30,20 @@
 
 #include <dtkGui/dtkSpacer.h>
 
-#include <medCore/medMessageController.h>
-#include <medCore/medSettingsManager.h>
-#include <medCore/medDbControllerFactory.h>
-#include <medCore/medJobManager.h>
-#include <medCore/medDataManager.h>
+#include <medMessageController.h>
+#include <medSettingsManager.h>
+#include <medDbControllerFactory.h>
+#include <medJobManager.h>
+#include <medDataManager.h>
 
 #include <medButton.h>
 #include <medWorkspaceShifter.h>
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseNonPersistentController.h>
-#include <medSql/medDatabaseView.h>
-#include <medSql/medDatabaseModel.h>
-#include <medSql/medDatabaseItem.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
+#include <medDatabaseView.h>
+#include <medDatabaseModel.h>
+#include <medDatabaseItem.h>
 
 #include <medViewerConfiguration.h>
 #include <medViewerConfigurationFactory.h>

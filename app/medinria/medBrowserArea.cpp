@@ -29,16 +29,16 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkGui/dtkFinder.h>
 
-#include <medCore/medMessageController.h>
-#include <medCore/medJobManager.h>
-#include <medCore/medDataManager.h>
-#include <medCore/medAbstractDataSource.h>
-#include <medCore/medAbstractDataSourceFactory.h>
-#include <medCore/medStorage.h>
+#include <medMessageController.h>
+#include <medJobManager.h>
+#include <medDataManager.h>
+#include <medAbstractDataSource.h>
+#include <medAbstractDataSourceFactory.h>
+#include <medStorage.h>
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseExporter.h>
-#include <medSql/medDatabaseImporter.h>
+#include <medDatabaseController.h>
+#include <medDatabaseExporter.h>
+#include <medDatabaseImporter.h>
 
 #include <medProgressionStack.h>
 #include <medToolBox.h>
@@ -46,7 +46,7 @@
 #include <medToolBoxContainer.h>
 #include <medBrowserToolBoxJobs.h>
 
-#include <medPacs/medPacsMover.h>
+#include <medPacsMover.h>
 
 class medBrowserAreaPrivate
 {

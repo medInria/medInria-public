@@ -3,7 +3,7 @@
 #include <QtGui>
 #include <QtCore>
 
-#include <medCore/medSettingsManager.h>
+#include <medSettingsManager.h>
 
 class medStartupSettingsWidgetPrivate {
 

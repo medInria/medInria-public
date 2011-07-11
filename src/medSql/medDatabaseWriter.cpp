@@ -19,9 +19,9 @@
 
 #include "medDatabaseController.h"
 #include "medDatabaseWriter.h"
-#include <medCore/medStorage.h>
-#include <medCore/medDataIndex.h>
-#include <medCore/medAbstractDataImage.h>
+#include <medStorage.h>
+#include <medDataIndex.h>
+#include <medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>

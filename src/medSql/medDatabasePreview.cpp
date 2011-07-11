@@ -27,7 +27,7 @@
 #include "medDatabasePreviewTooltip.h"
 #include "medDatabasePreviewView.h"
 
-#include <medCore/medStorage.h>
+#include <medStorage.h>
 
 #include <QtCore>
 #include <QtGui>

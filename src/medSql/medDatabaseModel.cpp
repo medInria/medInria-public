@@ -22,9 +22,9 @@
 
 #include <dtkCore/dtkGlobal.h>
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseItem.h>
-#include <medSql/medDatabaseModel.h>
+#include <medDatabaseController.h>
+#include <medDatabaseItem.h>
+#include <medDatabaseModel.h>
 
 // /////////////////////////////////////////////////////////////////
 // medDatabaseModelPrivate

@@ -20,7 +20,7 @@
 #ifndef MEDDATABASENONPERSISTENTITEM_P_H
 #define MEDDATABASENONPERSISTENTITEM_P_H
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 #include <QtCore/QString>
 #include <QtGui/QImage>

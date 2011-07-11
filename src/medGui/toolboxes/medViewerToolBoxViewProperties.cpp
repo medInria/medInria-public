@@ -8,9 +8,9 @@
 #include <medViewerToolBoxViewProperties.h>
 
 #include <dtkCore/dtkAbstractData.h>
-#include <medCore/medAbstractView.h>
+#include <medAbstractView.h>
 #include <medToolBoxTab.h>
-#include <medCore/medMeshAbstractViewInteractor.h>
+#include <medMeshAbstractViewInteractor.h>
 
 class medViewerToolBoxViewPropertiesPrivate
 {

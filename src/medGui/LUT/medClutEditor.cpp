@@ -18,10 +18,10 @@
  */
 
 #include <dtkCore/dtkAbstractData.h>
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractView.h>
-#include <medCore/medAbstractView.h>
-#include <medCore/medStorage.h>
+#include <medAbstractView.h>
+#include <medStorage.h>
 #include "medClutEditor.h"
 
 #include <math.h>

@@ -18,14 +18,14 @@
  */
 
 #include "medViewPool.h"
-#include <medCore/medMessageController.h>
-#include <medCore/medAbstractView.h>
+#include <medMessageController.h>
+#include <medAbstractView.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include "medCore/medMessageController.h"
+#include "medMessageController.h"
 
 class medViewPoolPrivate
 {

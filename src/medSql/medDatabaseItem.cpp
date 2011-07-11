@@ -16,8 +16,8 @@
 /* Change log:
  * 
  */
-#include <medCore/medDataIndex.h>
-#include <medSql/medDatabaseItem.h>
+#include <medDataIndex.h>
+#include <medDatabaseItem.h>
 
 class medDatabaseItemPrivate
 {

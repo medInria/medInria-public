@@ -25,12 +25,12 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include <medCore/medDataManager.h>
-#include <medCore/medViewManager.h>
-#include <medCore/medMessageController.h>
-#include <medCore/medAbstractView.h>
+#include <medDataManager.h>
+#include <medViewManager.h>
+#include <medMessageController.h>
+#include <medAbstractView.h>
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>

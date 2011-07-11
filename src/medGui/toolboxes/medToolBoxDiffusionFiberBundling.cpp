@@ -5,12 +5,12 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include <medCore/medDataManager.h>
-#include <medCore/medAbstractDbController.h>
-#include <medCore/medDbControllerFactory.h>
-#include <medCore/medAbstractViewFiberInteractor.h>
+#include <medDataManager.h>
+#include <medAbstractDbController.h>
+#include <medDbControllerFactory.h>
+#include <medAbstractViewFiberInteractor.h>
 
-#include <medSql/medDatabaseNonPersistentController.h>
+#include <medDatabaseNonPersistentController.h>
 
 class medToolBoxDiffusionFiberBundlingPrivate
 {

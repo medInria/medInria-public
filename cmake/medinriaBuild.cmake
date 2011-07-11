@@ -21,7 +21,10 @@
 ## ###################################################################
 ## INCLUDE RULES
 ## ###################################################################
-set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/medGui
+set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/medCore
+    ${PROJECT_SOURCE_DIR}/src/medGui
+    ${PROJECT_SOURCE_DIR}/src/medPacs
+    ${PROJECT_SOURCE_DIR}/src/medSql
     ${PROJECT_SOURCE_DIR}/src/medGui/commonWidgets
     ${PROJECT_SOURCE_DIR}/src/medGui/factories
     ${PROJECT_SOURCE_DIR}/src/medGui/LUT
@@ -30,6 +33,17 @@ set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/medGui
     ${PROJECT_SOURCE_DIR}/src/medGui/viewContainers)
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
+
+set(${PROJECT_NAME}_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/medCore
+    ${CMAKE_INSTALL_PREFIX}/include/medGui
+    ${CMAKE_INSTALL_PREFIX}/include/medPacs
+    ${CMAKE_INSTALL_PREFIX}/include/medSql
+    ${CMAKE_INSTALL_PREFIX}/include/medGui/commonWidgets
+    ${CMAKE_INSTALL_PREFIX}/include/medGui/factories
+    ${CMAKE_INSTALL_PREFIX}/include/medGui/LUT
+    ${CMAKE_INSTALL_PREFIX}/include/medGui/settingsWidgets
+    ${CMAKE_INSTALL_PREFIX}/include/medGui/toolboxes
+    ${CMAKE_INSTALL_PREFIX}/include/medGui/viewContainers)
 
 
 ## ###################################################################

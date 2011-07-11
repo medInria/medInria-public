@@ -22,10 +22,10 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <medCore/medPluginManager.h>
-#include <medCore/medViewManager.h>
+#include <medPluginManager.h>
+#include <medViewManager.h>
 
-//#include <medSql/medDatabaseController.h>
+//#include <medDatabaseController.h>
 
 #include <medDropSite.h>
 #include <medToolBoxTab.h>

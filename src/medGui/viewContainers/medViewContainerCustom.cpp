@@ -25,8 +25,8 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
-#include <medCore/medAbstractView.h>
-#include <medCore/medViewManager.h>
+#include <medAbstractView.h>
+#include <medViewManager.h>
 
 class medViewContainerCustomPrivate
 {

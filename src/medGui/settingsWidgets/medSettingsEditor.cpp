@@ -6,7 +6,7 @@
 
 #include <dtkGui/dtkSettingsEditor.h>
 
-#include <medCore/medMessageController.h>
+#include <medMessageController.h>
 #include <medSystemSettingsWidget.h>
 #include <medSettingsWidgetFactory.h>
 
