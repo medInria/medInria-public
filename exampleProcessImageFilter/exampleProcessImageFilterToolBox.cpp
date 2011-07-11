@@ -28,17 +28,17 @@
 
 #include <dtkCore/dtkGlobal.h>
 
-#include <medCore/medDataIndex.h>
-#include <medCore/medDataManager.h>
-#include <medCore/medViewManager.h>
-#include <medCore/medAbstractView.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
+#include <medViewManager.h>
+#include <medAbstractView.h>
 
 #include <medDropSite.h>
 #include <medToolBoxDiffusion.h>
 
 #include <medProgressionStack.h>
-#include <medCore/medRunnableProcess.h>
-#include <medCore/medJobManager.h>
+#include <medRunnableProcess.h>
+#include <medJobManager.h>
 
 
 

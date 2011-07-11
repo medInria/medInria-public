@@ -24,15 +24,15 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
 
-#include <medCore/medAbstractView.h>
-#include <medCore/medRunnableProcess.h>
-#include <medCore/medJobManager.h>
+#include <medAbstractView.h>
+#include <medRunnableProcess.h>
+#include <medJobManager.h>
 
 #include <medToolBoxFactory.h>
 #include <medToolBoxRegistration.h>

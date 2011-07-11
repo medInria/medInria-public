@@ -2,7 +2,7 @@
 #define V3DVIEWMESHINTERACTOR_H
 
 #include <dtkCore/dtkAbstractViewInteractor.h>
-#include <medCore/medMeshAbstractViewInteractor.h>
+#include <medMeshAbstractViewInteractor.h>
 
 #include "v3dViewPluginExport.h"
 

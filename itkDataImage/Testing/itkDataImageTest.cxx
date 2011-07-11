@@ -1,4 +1,4 @@
-#include "medCore/medAbstractDataImage.h"
+#include "medAbstractDataImage.h"
 
 #include "dtkCore/dtkPluginManager.h"
 #include "dtkCore/dtkAbstractDataFactory.h"

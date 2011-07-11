@@ -1,7 +1,7 @@
 #ifndef _vtk_DataMesh4D_h_
 #define _vtk_DataMesh4D_h_
 
-#include <medCore/medAbstractDataMesh.h>
+#include <medAbstractDataMesh.h>
 #include <dtkCore/dtkGlobal.h>
 
 #include "vtkDataMeshPluginExport.h"

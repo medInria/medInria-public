@@ -2,7 +2,7 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 #include <dtkCore/dtkLog.h>
 
 #include <itkImage.h>
