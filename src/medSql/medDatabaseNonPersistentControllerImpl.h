@@ -68,7 +68,7 @@ public:
     * Status of connection, should always be true
     * @return bool
     */
-    bool isConnected();
+    bool isConnected() const;
 
     /**
     * return the size that the data behind the medDataIndex in byte

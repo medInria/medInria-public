@@ -60,7 +60,6 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
                 }
             } 
         }
-        
     }
 
     QStyledItemDelegate::paint(painter, itemOption, index);
