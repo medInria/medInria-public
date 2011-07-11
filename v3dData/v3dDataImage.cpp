@@ -27,7 +27,7 @@ public:
 // v3dDataImage
 // /////////////////////////////////////////////////////////////////
 
-v3dDataImage::v3dDataImage(void) : dtkAbstractDataImage(), d(new v3dDataImagePrivate)
+v3dDataImage::v3dDataImage(void) : medAbstractDataImage(), d(new v3dDataImagePrivate)
 {
     d->image = NULL;
 }

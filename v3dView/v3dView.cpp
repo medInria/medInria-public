@@ -11,7 +11,7 @@
 #include "v3dView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
@@ -249,7 +249,7 @@ public:
     
     dtkAbstractData *data;
 	QMap<int, QSharedPointer<dtkAbstractData> > sharedData;
-    dtkAbstractDataImage *imageData;
+    medAbstractDataImage *imageData;
     
     QTimeLine *timeline;
 
@@ -1018,29 +1018,28 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     
     if (layer==0)
     {
-        d->data = data;
-        d->imageData = dynamic_cast<dtkAbstractDataImage*> (data);
+        if (medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> (data)) {
+            d->data = data;
+            d->imageData = imageData;
         
-        if (data->hasMetaData("PatientName")){
-            const QString patientName = data->metaDataValues(tr("PatientName"))[0];	
-            d->view2d->SetPatientName (patientName.toAscii().constData());
-            d->view3d->SetPatientName (patientName.toAscii().constData());
-        }
+            if (data->hasMetaData("PatientName")){
+                const QString patientName = data->metaDataValues(tr("PatientName"))[0];	
+                d->view2d->SetPatientName (patientName.toAscii().constData());
+                d->view3d->SetPatientName (patientName.toAscii().constData());
+            }
         
-        if( data->hasMetaData("StudyDescription")){
-            const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
-            d->view2d->SetStudyName (studyName.toAscii().constData());
-            d->view3d->SetStudyName (studyName.toAscii().constData());
-        }
+            if( data->hasMetaData("StudyDescription")){
+                const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
+                d->view2d->SetStudyName (studyName.toAscii().constData());
+                d->view3d->SetStudyName (studyName.toAscii().constData());
+            }
         
-        if (data->hasMetaData("SeriesDescription")){
-            const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
-            d->view2d->SetSeriesName (seriesName.toAscii().constData());
-            d->view3d->SetSeriesName (seriesName.toAscii().constData());
-        }
+            if (data->hasMetaData("SeriesDescription")){
+                const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
+                d->view2d->SetSeriesName (seriesName.toAscii().constData());
+                d->view3d->SetSeriesName (seriesName.toAscii().constData());
+            }
         
-        
-        if(d->imageData) {
             QSignalBlocker blocker (d->slider );
             if (d->dimensionBox->currentText()==tr("Space")) {
                 if( d->orientation=="Axial") {

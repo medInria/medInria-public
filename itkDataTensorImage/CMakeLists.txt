@@ -38,11 +38,11 @@ include(${TTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-#include_directories(../dtkItkLogForwarder)
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 find_package(medinria-plugins REQUIRED)
 include(${medinria-plugins_USE_FILE})
-
-
 
 ## #################################################################
 ## Input
@@ -58,21 +58,26 @@ set(${PROJECT_NAME}_SOURCES
   itkDataTensorImageDouble3.cpp
   itkDataTensorImageFloat3.cpp)
 
+set(${PROJECT_NAME}_RESOURCES itkDataTensorImage.qrc)
+
 ## #################################################################
 ## Build rules
 ## #################################################################
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES})
+  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_SOURCES_QRC})
 
 target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
-  dtkCore)
+  dtkCore
+  medCore)
 
 # Group common files together in Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

@@ -23,7 +23,7 @@ public:
   QList<QImage>                           thumbnails;
 };
 
-vtkDataMesh4D::vtkDataMesh4D(): dtkAbstractDataMesh(), d (new vtkDataMesh4DPrivate)
+vtkDataMesh4D::vtkDataMesh4D(): medAbstractDataMesh(), d (new vtkDataMesh4DPrivate)
 {
   d->meshsequence = 0;
 }
@@ -85,7 +85,7 @@ dtkAbstractData *createVtkDataMesh4D(void)
 QImage & vtkDataMesh4D::thumbnail (void) const
 {
   if (!d->thumbnails.size())
-    return dtkAbstractDataMesh::thumbnail();
+    return medAbstractDataMesh::thumbnail();
   
   return (d->thumbnails[0]);
 }
