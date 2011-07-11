@@ -94,13 +94,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseNavigator.h  
   medDatabaseNavigatorItem.h
   medDatabaseNavigatorItemGroup.h
-  medDatabaseNavigatorItemLoader.h
+  medImageFileLoader.h
   medDatabaseNavigatorView.h
   medDatabasePreview.h
   medDatabasePreviewArrow.h
   medDatabasePreviewItem.h
   medDatabasePreviewItemGroup.h
-  medDatabasePreviewItemLoader.h
   medDatabasePreviewSelector.h
   medDatabasePreviewTooltip.h
   medDatabasePreviewView.h
@@ -180,7 +179,7 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseNavigatorController.cpp
   medDatabaseNavigatorItem.cpp
   medDatabaseNavigatorItemGroup.cpp
-  medDatabaseNavigatorItemLoader.cpp
+  medImageFileLoader.cpp
   medDatabaseNavigatorScene.cpp
   medDatabaseNavigatorView.cpp
   medDatabasePreview.cpp
@@ -188,7 +187,6 @@ set(${PROJECT_NAME}_SOURCES
   medDatabasePreviewController.cpp
   medDatabasePreviewItem.cpp
   medDatabasePreviewItemGroup.cpp
-  medDatabasePreviewItemLoader.cpp
   medDatabasePreviewScene.cpp
   medDatabasePreviewSelector.cpp
   medDatabasePreviewTooltip.cpp

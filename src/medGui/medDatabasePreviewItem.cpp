@@ -18,7 +18,7 @@
  */
 
 #include "medDatabasePreviewItem.h"
-#include "medDatabasePreviewItemLoader.h"
+#include "medImageFileLoader.h"
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medAbstractDbController.h>
@@ -43,7 +43,7 @@ medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraph
     if ( thumbpath.isEmpty() ) {
         this->setImage( dbc->thumbnail(index) ) ;
     } else {
-        medDatabasePreviewItemLoader *loader = new medDatabasePreviewItemLoader(thumbpath);
+        medImageFileLoader *loader = new medImageFileLoader(thumbpath);
 
         connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
 
