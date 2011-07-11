@@ -173,13 +173,13 @@ void vtkQtOpenGLRenderWindow::Render()
   {
     if ( m_qtWidget->isProcessingPaintEvent() )
     {
-      dtkDebug() <<  QString("%1(%2): ").arg(__FILE__).arg(__LINE__) << "vtkQtOpenGLRenderWindow::Render VTK Rendering";
+      // dtkDebug() <<  QString("%1(%2): ").arg(__FILE__).arg(__LINE__) << "vtkQtOpenGLRenderWindow::Render VTK Rendering";
       this->MakeCurrent();
       Superclass::Render ();
     }
     else
     {
-      dtkDebug() <<  "vtkQtOpenGLRenderWindow::Render Initiate repaint";
+      // dtkDebug() <<  "vtkQtOpenGLRenderWindow::Render Initiate repaint";
       m_initiatedRepaint = true;
       m_qtWidget->resetCachedContent();
       m_qtWidget->viewport()->repaint();
@@ -191,7 +191,7 @@ void vtkQtOpenGLRenderWindow::Render()
 // The widget tells us to paint.
 void vtkQtOpenGLRenderWindow::NativePaint ()
 {
-    dtkDebug() <<  "vtkQtOpenGLRenderWindow::NativePaint VTK Rendering";
+  //dtkDebug() <<  "vtkQtOpenGLRenderWindow::NativePaint VTK Rendering";
   Superclass::Render ();
 }
 
