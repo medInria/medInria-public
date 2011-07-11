@@ -4,11 +4,11 @@
 
 #include <medGui/medDatabaseSearchPanel.h>
 #include <medGui/medDatabaseView.h>
+#include <medGui/medDatabasePreview.h>
 
-#include <medSql/medDatabasePreview.h>
+#include <medSql/medDatabaseProxyModel.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseExporter.h>
-#include <medSql/medDatabaseProxyModel.h>
 
 class medDatabaseDataSourcePrivate
 {

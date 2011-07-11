@@ -19,6 +19,8 @@
 
 #include "medDatabasePreviewItem.h"
 #include "medDatabasePreviewItemLoader.h"
+
+#include <medCore/medDataIndex.h>
 #include <medCore/medAbstractDbController.h>
 #include <medCore/medDataManager.h>
 #include <medCore/medMetaDataHelper.h>

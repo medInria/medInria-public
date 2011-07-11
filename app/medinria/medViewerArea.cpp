@@ -37,9 +37,8 @@
 #include <medCore/medViewManager.h>
 #include <medCore/medAbstractView.h>
 
-#include <medSql/medDatabaseNonPersistentController.h>
-#include <medSql/medDatabaseNavigator.h>
-#include <medSql/medDatabaseNavigatorController.h>
+#include <medGui/medDatabaseNavigator.h>
+#include <medGui/medDatabaseNavigatorController.h>
 
 #include <medGui/medClutEditor.h>
 #include <medGui/medToolBox.h>
@@ -290,7 +289,7 @@ void medViewerArea::open(const medDataIndex& index)
 
 void medViewerArea::open(const QString& file)
 {
-    this->open(medDatabaseNonPersistentController::instance()->import(file));
+    this->open(medDataManager::instance()->importNonPersistent(file));
 }
 
 void medViewerArea::onViewClosed(void)

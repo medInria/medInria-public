@@ -17,9 +17,10 @@
  * 
  */
 
-#include "medDatabaseNavigatorController.h"
 #include "medDatabaseNavigatorItem.h"
+
 #include "medDatabaseNavigatorView.h"
+#include "medDatabaseNavigatorController.h"
 
 class medDatabaseNavigatorViewPrivate
 {

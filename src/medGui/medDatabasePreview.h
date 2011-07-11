@@ -20,7 +20,7 @@
 #ifndef MEDDATABASEPREVIEW_H
 #define MEDDATABASEPREVIEW_H
 
-#include "medSqlExport.h"
+#include "medGuiExport.h"
 
 #include <QtCore>
 #include <QtGui>
@@ -29,7 +29,7 @@ class medDatabasePreviewItem;
 class medDatabasePreviewPrivate;
 class medDataIndex;
 
-class MEDSQL_EXPORT medDatabasePreview : public QFrame
+class MEDGUI_EXPORT medDatabasePreview : public QFrame
 {
     Q_OBJECT
 
