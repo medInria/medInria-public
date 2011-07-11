@@ -1,10 +1,10 @@
-/* medDatabaseNavigatorItemLoader.cpp --- 
+/* medImageFileLoader.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 09:40:22 2009 (+0100)
+ * Created: Tue Dec 15 09:43:36 2009 (+0100)
  * Version: $Id$
- * Last-Updated: Tue Dec 15 09:40:23 2009 (+0100)
+ * Last-Updated: Tue Dec 15 09:43:36 2009 (+0100)
  *           By: Julien Wintz
  *     Update #: 1
  */
@@ -17,30 +17,30 @@
  * 
  */
 
-#include "medDatabaseNavigatorItemLoader.h"
+#include "medImageFileLoader.h"
 
 #include <dtkCore/dtkLog.h>
 
-class medDatabaseNavigatorItemLoaderPrivate
+class medImageFileLoaderPrivate
 {
 public:
     QImage image;
     QString path;
 };
 
-medDatabaseNavigatorItemLoader::medDatabaseNavigatorItemLoader(const QString& path) : d(new medDatabaseNavigatorItemLoaderPrivate)
+medImageFileLoader::medImageFileLoader(const QString& path) : d(new medImageFileLoaderPrivate)
 {
     d->path = path;
 }
 
-medDatabaseNavigatorItemLoader::~medDatabaseNavigatorItemLoader(void)
+medImageFileLoader::~medImageFileLoader(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medDatabaseNavigatorItemLoader::run(void)
+void medImageFileLoader::run(void)
 {
     if(!d->path.isEmpty()) {
         QImageReader reader(d->path);
