@@ -18,7 +18,7 @@
  */
 
 #include "medDatabaseNavigatorItem.h"
-#include "medDatabaseNavigatorItemLoader.h"
+#include "medImageFileLoader.h"
 
 #include <medCore/medAbstractDbController.h>
 #include <medCore/medDataManager.h>
@@ -62,7 +62,7 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     if ( thumbpath.isEmpty() ) {
         this->setImage( dbc->thumbnail(index) ) ;
     } else {
-        medDatabaseNavigatorItemLoader *loader = new medDatabaseNavigatorItemLoader(thumbpath);
+        medImageFileLoader *loader = new medImageFileLoader(thumbpath);
 
         connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
 
