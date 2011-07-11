@@ -48,7 +48,7 @@ public:
 
     QVariant data(int column) const;
 
-    bool insertChildren(int position, int count, int columns);
+    bool insertChildren(const medDataIndex& index, int position, int count, int columns);
     bool insertColumns(int position, int columns);
 
     bool removeChildren(int position, int count);

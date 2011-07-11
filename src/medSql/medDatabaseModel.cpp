@@ -394,7 +394,7 @@ bool medDatabaseModel::insertRows(int position, int rows, const QModelIndex& par
     bool success;
 
     beginInsertRows(parent, position, position + rows - 1);
-    success = parentItem->insertChildren(position, rows, d->root->columnCount());
+    success = parentItem->insertChildren(medDataIndex(), position, rows, d->root->columnCount());
     endInsertRows();
 
     return success;

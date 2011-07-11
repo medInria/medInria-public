@@ -24,7 +24,7 @@ public:
     * Get the status of the Db connection
     * @return bool true if connected
     */
-    virtual bool isConnected() = 0;
+    virtual bool isConnected() const = 0;
     
     /**
     * return the size that the data behind the medDataIndex in byte

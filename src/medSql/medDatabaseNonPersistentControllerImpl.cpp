@@ -149,7 +149,7 @@ medDatabaseNonPersistentControllerImpl::~medDatabaseNonPersistentControllerImpl(
     d = NULL;
 }
 
-bool medDatabaseNonPersistentControllerImpl::isConnected()
+bool medDatabaseNonPersistentControllerImpl::isConnected() const
 {
     // always connected as there is no database to control
     return true;

@@ -547,7 +547,7 @@ bool medDatabaseControllerImpl::moveDatabase( QString newLocation)
     return res;
 }
 
-bool medDatabaseControllerImpl::isConnected()
+bool medDatabaseControllerImpl::isConnected() const
 {
     return d->isConnected;
 }

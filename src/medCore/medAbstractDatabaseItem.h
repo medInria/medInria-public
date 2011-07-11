@@ -4,6 +4,8 @@
 #include <QVariant>
 #include "medDataIndex.h"
 
+class medDataIndex;
+
 class medAbstractDatabaseItem
 {
 
@@ -21,7 +23,7 @@ public:
 
     virtual QVariant data(int column) const = 0;
 
-    virtual bool insertChildren(int position, int count, int columns)= 0;
+    virtual bool insertChildren(const medDataIndex& index, int position, int count, int columns)= 0;
     virtual bool insertColumns(int position, int columns)= 0;
 
     virtual bool removeChildren(int position, int count) = 0;

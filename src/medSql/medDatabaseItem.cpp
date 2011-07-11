@@ -91,8 +91,9 @@ QVariant medDatabaseItem::data(int column) const
     return d->itemData.value(column);
 }
 
-bool medDatabaseItem::insertChildren(int position, int count, int columns)
+bool medDatabaseItem::insertChildren(const medDataIndex& index, int position, int count, int columns)
 {
+    Q_UNUSED(index);
     Q_UNUSED(columns);
 
     if (position < 0 || position > d->childItems.size())
