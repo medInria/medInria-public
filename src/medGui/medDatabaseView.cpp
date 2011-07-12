@@ -221,10 +221,7 @@ void medDatabaseView::onMenuExportClicked(void)
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     if(item)
-        if(item->dataIndex().isValidForSeries())
-            emit exportData(item->dataIndex());
-        else
-            ;
+        emit exportData(item->dataIndex());
 }
 
 void medDatabaseView::selectionChanged( const QModelIndex& current, const QModelIndex& previous)

@@ -104,7 +104,7 @@ public slots:
      * This method allows removing one data from the database
      * @params const medDataIndex & index The data index to be removed in the db
      */
-    virtual void remove(const medDataIndex& index);
+    virtual void remove(const medDataIndex& index) = 0;
     
     /**
     * This method clears data already loaded in the database.
