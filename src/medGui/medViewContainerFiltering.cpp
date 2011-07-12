@@ -21,8 +21,8 @@ medViewContainerFiltering::medViewContainerFiltering(QWidget * parent):
 {
     split(1, 2);
 
-    d3->inputViewContainer = children()[0];
-    d3->outputViewContainer = children()[1];
+    d3->inputViewContainer = dynamic_cast<medViewContainerCustom*> (this->childContainers()[0]);
+    d3->outputViewContainer = dynamic_cast<medViewContainerCustom*> (this->childContainers()[1]);
 
     //Set cues for the user:
     d3->inputViewContainer->setInfo(tr("Input to be filtered"));
@@ -60,7 +60,7 @@ void medViewContainerFiltering::updateInput(dtkAbstractData *data)
 //  d3->views[0]->link(d3->views[1]);
 
     d3->inputViewContainer->clear();
-    d3->inputViewContainer = children()[0];
+    d3->inputViewContainer = dynamic_cast<medViewContainerCustom*> (this->childContainers()[0]);
     d3->inputViewContainer->setInfo(tr("Input to be filtered"));
     d3->inputViewContainer->update();
     d3->inputViewContainer->setView(d3->inputView);
@@ -71,7 +71,7 @@ void medViewContainerFiltering::updateInput(dtkAbstractData *data)
 //    d3->outputView->clear();
 //    d3->outputView = dtkAbstractViewFactory::instance()->create("v3dView");
     d3->outputViewContainer->clear();
-    d3->outputViewContainer = children()[1];
+    d3->outputViewContainer = dynamic_cast<medViewContainerCustom*> (this->childContainers()[1]);
     d3->outputViewContainer->setInfo(tr("Result of filtering"));
     d3->outputViewContainer->update();
     }
