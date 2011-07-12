@@ -25,7 +25,7 @@ public:
 medViewerConfigurationFunctional::medViewerConfigurationFunctional(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationFunctionalPrivate)
 {
     // -- Layout toolbox --
-    setLayoutToolBoxVisibility(false);
+    //setLayoutToolBoxVisibility(false);
 
     // -- View toolbox --
     d->viewToolBox = new medViewerToolBoxView(parent);
