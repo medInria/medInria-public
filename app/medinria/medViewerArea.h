@@ -197,20 +197,21 @@ protected slots:
 
 protected:
     /**
-     * @brief Returns the current view container.
+     * @brief Returns the current root view container.
      *
-     * Note that container are hierarchical structures. 
-     * This methods returns the root container in the current medStackedViewContainers.
+     * Note that containers are hierarchical structures.  This methods
+     * returns the root container in the current
+     * medStackedViewContainers.
      *
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer      *currentContainer(void);
+    medViewContainer      *currentRootContainer(void);
     
     /**
      * @brief Returns the currently focused child container.
      * 
-     * Note that container are hierarchical structures. 
+     * Note that containers are hierarchical structures. 
      * This methods returns a container that can contain a view. 
      * It's a leaf in the container tree.
      *

@@ -2,7 +2,7 @@
 #ifndef medAttachedData_h__
 #define medAttachedData_h__
 
-#include <dtkCore/dtkAbstractData.h>
+#include "medAbstractData.h"
 #include "medCoreExport.h"
 
 class medAttachedDataPrivate;

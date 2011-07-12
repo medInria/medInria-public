@@ -155,3 +155,4 @@ void medFileSystemDataSource::onFileSystemViewClicked()
     QFileInfo info(d->finder->selectedPath());
     emit open(info.absoluteFilePath());
 }
+

@@ -51,7 +51,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
-    //connect(this, SIGNAL(      clicked(const QModelIndex&)), this, SLOT(onItemClicked(const QModelIndex&))); // obsolete with selectionModel changed signal
+
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
@@ -172,6 +172,8 @@ void medDatabaseView::onMenuViewClicked(void)
 
     if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
         item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(index.internalPointer());
 
     if (item && (item->dataIndex().isValidForSeries()))
     {        
@@ -191,18 +193,20 @@ void medDatabaseView::onMenuExportClicked(void)
 
     medDatabaseItem *item = NULL;
 
-    if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
+    if(medDatabaseProxyModel  *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
         item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (medDatabaseModel *model = dynamic_cast<medDatabaseModel *>(this->model()))
+        item = static_cast<medDatabaseItem *>(index.internalPointer());
 
-    if(item)
-        if(item->table() == "patient")
-            ;
-        else if(item->table() == "study")
-            ;
-        else if(item->table() == "series")
-            emit exportData(medDatabaseController::instance()->indexForSeries(item->value(20).toInt()));
-        else
-            ;
+
+    if (!item)
+        return;
+
+    if (item->dataIndex().isValidForSeries())
+    {
+        emit exportData(item->dataIndex());
+    }
+
 }
 
 void medDatabaseView::selectionChanged( const QModelIndex& current, const QModelIndex& previous)

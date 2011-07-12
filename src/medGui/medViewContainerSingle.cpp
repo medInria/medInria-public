@@ -47,7 +47,7 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     // if (d->layout->count())
     //     d->layout->takeAt(0)->widget()->hide();
     
-    d->layout->setContentsMargins(1, 1, 1, 1);    
+    d->layout->setContentsMargins(0, 0, 0, 0);    
     d->layout->addWidget(view->widget(), 0, 0);
     d->view = view;
 	
@@ -58,7 +58,10 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
         d->pool->appendView (medView);
     connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+    connect (view, SIGNAL (changeDaddy(bool)),
+             this, SLOT (onDaddyChanged(bool)));
 
+    this->recomputeStyleSheet();
     emit viewAdded (view);
 }
 
@@ -67,11 +70,18 @@ dtkAbstractView *medViewContainerSingle::view (void) const
     return d->view;
 }
 
+bool medViewContainerSingle::isLeaf(void) const
+{
+    return true;
+}
+
 void medViewContainerSingle::onViewClosing (void)
 {
     if (d->view) {
         d->layout->removeWidget (d->view->widget());
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+        disconnect (d->view, SIGNAL (changeDaddy(bool)),
+                    this,    SLOT (onDaddyChanged(bool)));
         if (medAbstractView *medView = dynamic_cast<medAbstractView*> (d->view))
             d->pool->removeView (medView);
 
@@ -80,7 +90,15 @@ void medViewContainerSingle::onViewClosing (void)
         d->view->close();
 
         d->view = NULL;
+
+        this->recomputeStyleSheet();
     }
+
+    // qDebug() << this << __func__;
+    // qDebug() << "isRoot:    " << this->isRoot();
+    // qDebug() << "isLeaf:    " << this->isLeaf();
+    // qDebug() << "isEmpty:   " << this->isEmpty();
+    // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
 void medViewContainerSingle::dragEnterEvent(QDragEnterEvent *event)
@@ -108,14 +126,4 @@ void medViewContainerSingle::dropEvent(QDropEvent *event)
     this->setAttribute(Qt::WA_UpdatesDisabled, false);
 
     medViewContainer::dropEvent(event);
-}
-
-void medViewContainerSingle::focusInEvent(QFocusEvent *event)
-{
-    medViewContainer::focusInEvent(event);
-}
-
-void medViewContainerSingle::focusOutEvent(QFocusEvent *event)
-{
-    medViewContainer::focusOutEvent(event);
 }

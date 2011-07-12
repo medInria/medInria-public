@@ -241,8 +241,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->setCentralWidget(d->stack);
 
     // Now use the Qt preferred method by setting the Application style instead.
-    //   The ownership of the style object is not transferred.
-//    this->setStyle(new QPlastiqueStyle());
+    // The ownership of the style object is not transferred.
+    // this->setStyle(new QPlastiqueStyle());
+    // this->setStyleSheet(dtkReadFile(":/medinria.qss"));
     this->setWindowTitle("medinria");
 
     medMessageController::instance()->attach(this->statusBar());
