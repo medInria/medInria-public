@@ -34,7 +34,7 @@ public:
      medDatabaseView(QWidget *parent = 0);
     ~medDatabaseView(void);
 
-    int sizeHintForColumn(int column) const;
+    virtual int sizeHintForColumn(int column) const;
 
     void setModel(QAbstractItemModel *model);
 
@@ -50,18 +50,17 @@ signals:
     void dataRemoved(const medDataIndex &index);
 
 public slots:
-    void onMenuViewClicked(void);
-    void onMenuExportClicked(void);
-    void onMenuRemoveClicked(void);
-    void selectionChanged(const QModelIndex&, const QModelIndex&);
+    virtual void onMenuViewClicked(void);
+    virtual void onMenuExportClicked(void);
+    virtual void onMenuRemoveClicked(void);
+    virtual void selectionChanged(const QModelIndex&, const QModelIndex&);
+
 protected:
 
 protected slots:
-    void updateContextMenu(const QPoint&);
-
-private slots:
-    void onItemClicked(const QModelIndex& index);
-    void onItemDoubleClicked(const QModelIndex& index);
+    virtual void updateContextMenu(const QPoint&);
+    virtual void onItemClicked(const QModelIndex& index);
+    virtual void onItemDoubleClicked(const QModelIndex& index);
 };
 
 #endif

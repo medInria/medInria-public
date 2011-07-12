@@ -40,13 +40,20 @@ medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraph
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
     QString thumbpath = dbc->metaData( index, medMetaDataHelper::KEY_ThumbnailPath() );
 
+    bool shouldSkipLoading = false;
     if ( thumbpath.isEmpty() ) {
-        this->setImage( dbc->thumbnail(index) ) ;
-    } else {
+        // first try to get it from controller
+        QImage thumbImage = dbc->thumbnail(index);
+        if (!thumbImage.isNull())
+        {
+            this->setImage( thumbImage );
+            shouldSkipLoading = true;
+        }
+    } 
+
+    if (!shouldSkipLoading) {
         medImageFileLoader *loader = new medImageFileLoader(thumbpath);
-
         connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
-
         QThreadPool::globalInstance()->start(loader);
     }
 }

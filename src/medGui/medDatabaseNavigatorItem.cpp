@@ -51,21 +51,25 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
 {
     d->index = index;
 
-    // d->text = text; 
-    //, thumbPath, seriesName.toString());
-
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
     QString thumbpath = dbc->metaData( index, medMetaDataHelper::KEY_ThumbnailPath() );
 
     d->text = dbc->metaData( index, medMetaDataHelper::KEY_SeriesDescription() );
 
+    bool shouldSkipLoading = false;
     if ( thumbpath.isEmpty() ) {
-        this->setImage( dbc->thumbnail(index) ) ;
-    } else {
+        // first try to get it from controller
+        QImage thumbImage = dbc->thumbnail(index);
+        if (!thumbImage.isNull())
+        {
+            this->setImage( thumbImage );
+            shouldSkipLoading = true;
+        }
+    } 
+
+    if (!shouldSkipLoading) {
         medImageFileLoader *loader = new medImageFileLoader(thumbpath);
-
         connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
-
         QThreadPool::globalInstance()->start(loader);
     }
 
