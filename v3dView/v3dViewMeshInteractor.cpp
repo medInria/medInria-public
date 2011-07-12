@@ -50,6 +50,7 @@ public:
     QList<QString> attributeList;
     QList<QString> lutList;
     int currentLayer;
+    bool isMeshOnly;
 };
 
 v3dViewMeshInteractor::v3dViewMeshInteractor(): medMeshAbstractViewInteractor(), d(new v3dViewMeshInteractorPrivate)
@@ -57,7 +58,7 @@ v3dViewMeshInteractor::v3dViewMeshInteractor(): medMeshAbstractViewInteractor(),
     //d->data = NULL;
     d->view = NULL;
     d->currentLayer = 0;
-
+    d->isMeshOnly = false;
     // addProperty here
     this->addProperty("Visibility", QStringList() << "true" << "false");
     this->addProperty("ShowEdges", QStringList() << "true" << "false");
@@ -96,7 +97,10 @@ bool v3dViewMeshInteractor::registered(void)
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 {
     if (d->dataList.contains (data))
+    {
         return;
+    }
+    
     if(data->description() == "vtkDataMesh4D")
     {
         //vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
@@ -110,17 +114,23 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         d->attributeList.append("Solid");
         d->lutList.append("Default");
         updatePipeline(d->dataList.size()-1);
+        d->isMeshOnly = false;
     }
     else if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
-        if(!d->view->data())
+        if(!d->view->dataInList(0)) 
         {
-            /*vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
+           /* d->isMeshOnly = true;
+            vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
             imagegenerator->SetInput (pointSet);
             vtkImageData * image = imagegenerator->GetOutput();
-            d->view->view2d()->SetInput(image);
+            d->view->view2d()->SetInput(image, 0);
+            d->view->view3d()->SetInput(image, 0);
             vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
             actor->SetOpacity(0.0);	*/
+            	
         }
+        else
+            d->isMeshOnly = false;
         Q_UNUSED( pointSet );
         d->dataList.append(data);
         d->opacityList.append(1.0);
@@ -135,6 +145,10 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
     }
 }
 
+bool v3dViewMeshInteractor::isMeshOnly()
+{
+    return d->isMeshOnly;
+}
 
 void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 {

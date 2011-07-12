@@ -15,6 +15,7 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
+#include <medCore/medMessageController.h>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
 #include <vtkRenderer.h>
@@ -757,7 +758,9 @@ void v3dView::setData(dtkAbstractData *data)
 {
     if(!data)
         return;
-    
+    if(medAbstractView::isInList(data))
+        return;
+  
     int layer = 0;
     while(d->view2d->GetImageInput(layer)) {
         layer++;
@@ -776,7 +779,13 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 {
     if(!data)
         return;
-    
+    if(medAbstractView::isInList(data))
+        return;
+    if(layer == 0 && data->description().contains("vtkDataMesh"))
+    {
+        //medMessageControllerMessageError msg(this, "Select image first");
+        return;
+    }
 #ifdef vtkINRIA3D_USE_ITK
     if (data->description()=="itkDataImageChar3") {
         if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
@@ -796,7 +805,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->view2d->SetITKInput(image,layer);
             d->view3d->SetITKInput(image,layer);
             // d->view2d->SetVisibility(0,1);
-            d->view2d->GetImageActor()->SetOpacity(1.00);
+            
         }
     }
     else if (data->description()=="itkDataImageUShort3") {
@@ -962,7 +971,8 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
 	else if ( data->description() == "vtkDataMesh4D" ) {
 	    this->enableInteractor ( "v3dViewMeshInteractor" );
-	    // This will add the data to the interactor.
+	    this->enableInteractor ( "v3dView4DInteractor" );
+        // This will add the data to the interactor.
 	    dtkAbstractView::setData(data);
 	}
 	else if ( data->description() == "v3dDataFibers" ) {            
@@ -1031,11 +1041,12 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
         }
     }
-
-   
+     qDebug() << "V3DView::SetData " << layer;
+    
+     
     this->addDataInList(data);
     //emit dataAdded(layer);
-    //emit dataAdded(data);
+    emit dataAdded(data);
     emit dataAdded(data, layer);
 }
 

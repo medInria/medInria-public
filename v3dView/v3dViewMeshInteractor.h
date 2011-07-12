@@ -48,6 +48,7 @@ public:
     QString* lut (int meshLayer); 
     void setAttribute (const QString& attribute, int meshLayer);
     void setScalarVisibility(bool val);
+    bool isMeshOnly();
 protected:
     virtual void updatePipeline (unsigned int meshLayer=0);
 

@@ -8,7 +8,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <medCore/medAbstractView.h>
-
+ 
 #include "v3dViewPluginExport.h"
 
 class QMouseEvent;
