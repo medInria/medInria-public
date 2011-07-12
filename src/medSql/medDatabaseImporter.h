@@ -34,12 +34,14 @@ class dtkAbstractDataWriter;
 
 /**
 * @class medDatabaseImporter
-* @brief Threaded importing of files or directories into medinria database
-* @medDatabaseImporter is in charge of importing items into medinria database
-* it is designed to run as a thread, to know how to check the documentation
+* @brief Threaded importing/indexing of files or directories into medinria database.
+* @medDatabaseImporter is in charge of importing (or indexing, any word will be used
+* hereafter) items into medinria database.
+* It is designed to run as a thread, to know how use it check the documentation
 * of @medJobItem.
-* Images are imported, that means that are not only indexed but also copied in
-* medinria database, as a result they can end up being aggregated by volume.
+* Images can be imported, that means that are not only indexed but also copied in
+* medinria database (and as a result they can end up being aggregated by volume)
+* or they can be just indexed (by indicating so using the parameters in the constructor)
 **/
 class MEDSQL_EXPORT medDatabaseImporter : public medJobItem
 {
@@ -54,6 +56,15 @@ public:
     * or directory given in the constructor
     **/
     void run(void);
+
+signals:
+    /*
+     * This signal is emitted when the import/index process
+     * detects an attempt of partial importing. That is when the user
+     * tried to import, in 2 separate steps, images belonging
+     * to the same volume.
+     */
+    void partialImportAttempted(const QString& message);
 
 public slots:
     void onCancel(QObject*);
@@ -115,7 +126,7 @@ private:
     dtkAbstractData* tryReadImages(QStringList filesPath, bool readOnlyImageInformation);
 
     /**
-    * Determines the filename where the dtkData object will be written.
+    * Determines the filename where the dtkData object will be written (if importing).
     * @param dtkData - the @dtkAbstractData that will be written
     * @param volumeNumber - the volume number
     * @return a string with the new filename
@@ -124,7 +135,7 @@ private:
 
     /**
     * Determines the extension (i.e. file format) which
-    * will be used for writing the dtkData object.
+    * will be used for writing the dtkData object (if importing).
     * @param dtkData - the @dtkAbstractData that will be written
     * @return a string with the desired extension if found, and empty string otherwise
     **/
@@ -164,11 +175,35 @@ private:
     **/
     QStringList generateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails);
 
+    /*
+     * Retrieves the patient id of the existent (or newly created)
+     * patient record in the patient table.
+     */
     int getOrCreatePatient(dtkAbstractData* dtkData, QSqlDatabase db);
+
+    /*
+     * Retrieves the study id of the existent (or newly created)
+     * study record in the study table.
+     */
     int getOrCreateStudy(dtkAbstractData* dtkData, QSqlDatabase db, int patientId);
+
+    /*
+     * Retrieves the series id of the existent (or newly created)
+     * series record in the series table.
+     */
     int getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabase db, int studyId);
+
+    /*
+     * Creates records in the image table for the files we are importing/indexing.
+     */
     void createMissingImages(dtkAbstractData* dtkData, QSqlDatabase db, int seriesId, QStringList thumbPaths);
-    void checkAndFixConsistencyOfSeriesPathColumn(QSqlDatabase db, int seriesId);
+
+    /*
+     * Checks if the user is trying to perform a partial import
+     * (that is, trying to import files belonging to the same volume
+     * in 2 different steps).
+     */
+    bool isPartialImportAttempt(dtkAbstractData* dtkData);
 
     medDatabaseImporterPrivate *d;
 

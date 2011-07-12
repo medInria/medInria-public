@@ -77,6 +77,8 @@ public slots:
     void onDataImport(dtkAbstractData *data);
     void onDataReceivingFailed(QString fileName);
     
+    void onPartialImportAttempted(const QString& message);
+
     /**
      * @brief Export data from a selected medDataIndex in a data source.
      *

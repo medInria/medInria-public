@@ -39,6 +39,9 @@ public:
     QString lastSuccessfulWriterDescription;
     bool isCancelled;
     bool indexWithoutImporting;
+
+    // example of item in the list: ["patient", "study", "series"]
+    QList<QStringList> partialAttemptsInfo;
 };
 
 QMutex medDatabaseImporterPrivate::mutex;
@@ -70,7 +73,7 @@ void medDatabaseImporter::run(void)
     QMutexLocker locker(&d->mutex);
 
     /* The idea of this algorithm can be summarized in 3 steps:
-     * 1. Get a list of all the files that will (try to) be imported
+     * 1. Get a list of all the files that will (try to) be imported or indexed
      * 2. Filter files that cannot be read, or won't be possible to write afterwards, or are already in the db
      * 3. Fill files metadata, write them to the db, and populate db tables
      *
@@ -89,9 +92,9 @@ void medDatabaseImporter::run(void)
 
     int currentFileNumber = 0; // this variable will be used only for calculating progress
 
-    // depending on the input files, they might be aggregated
+    // if importing, and depending on the input files, they might be aggregated
     // that is: files corresponding to the same volume will be written
-    // in a single output meta file (.mha)
+    // in a single output meta file (e.g. .mha)
     // this map is used to store a unique id per volume and its volume number
     QMap<QString, int> volumeUniqueIdToVolumeNumber;
     int volumeNumber = 1;
@@ -219,7 +222,7 @@ void medDatabaseImporter::run(void)
         if (imageDtkData)
         {
             // 3.3) a) re-populate missing metadata
-            // as files are now aggregated we use the aggregated file name as SeriesDescription (if not provided, of course)
+            // as files might be aggregated we use the aggregated file name as SeriesDescription (if not provided, of course)
             populateMissingMetadata(imageDtkData, imagefileInfo.baseName());
 
             // 3.3) b) now we are able to add some more metadata
@@ -231,6 +234,10 @@ void medDatabaseImporter::run(void)
             emit showError(this, tr ("Could not read data: ") + filesPaths[0], 5000);
             continue;
         }
+
+        // check for partial import attempts
+        if (isPartialImportAttempt(imageDtkData))
+            continue;
 
         if(!d->indexWithoutImporting)
         {
@@ -261,6 +268,22 @@ void medDatabaseImporter::run(void)
     } // end of the final loop
 
 
+    // if a partial import was attempted we tell the user what to do
+    // to perform a correct import next time
+    if(d->partialAttemptsInfo.size() > 0)
+    {
+        QString process = d->indexWithoutImporting ? "index" : "import";
+        QString msg = "It seems you are trying to " + process + " some images that belong to a volume which is already in the database." + "\n";
+        msg += "For a more accurate " + process + " please first delete the following series: " + "\n" + "\n";
+
+        foreach(QStringList info, d->partialAttemptsInfo)
+        {
+            msg += "Series: " + info[2] + " (from patient: " + info[0] + " and study: " + info[1] + "\n";
+        }
+
+        emit partialImportAttempted(msg);
+    }
+
     emit progressed(this,100);
     emit success(this);
 }
@@ -270,6 +293,79 @@ void medDatabaseImporter::run(void)
 void medDatabaseImporter::onCancel( QObject* )
 {
     d->isCancelled = true;
+}
+
+bool medDatabaseImporter::isPartialImportAttempt(dtkAbstractData* dtkData)
+{
+    // here we check is the series we try to import is already in the database
+
+    QSqlDatabase db = *(medDatabaseController::instance()->database());
+    QSqlQuery query(db);
+
+    QString patientName = dtkData->metaDataValues(tr("PatientName"))[0].simplified();
+
+    query.prepare("SELECT id FROM patient WHERE name = :name");
+    query.bindValue(":name", patientName);
+
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    if(query.first())
+    {
+        int patientId = query.value(0).toInt();
+
+        query.clear();
+
+        QString studyName = dtkData->metaDataValues(tr("StudyDescription"))[0].simplified();
+        QString studyUid = dtkData->metaDataValues(tr("StudyID"))[0];
+
+        query.prepare("SELECT id FROM study WHERE patient = :patientId AND name = :studyName AND uid = :studyUid");
+        query.bindValue(":patientId", patientId);
+        query.bindValue(":studyName", studyName);
+        query.bindValue(":studyUid", studyUid);
+
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+        if(query.first())
+        {
+            int studyId = query.value(0).toInt();
+
+            query.clear();
+
+            QString seriesName = dtkData->metaDataValues(tr("SeriesDescription"))[0].simplified();
+            QString seriesUid = dtkData->metaDataValues(tr("SeriesID"))[0];
+            QString orientation = dtkData->metaDataValues(tr("Orientation"))[0];
+            QString seriesNumber = dtkData->metaDataValues(tr("SeriesNumber"))[0];
+            QString sequenceName = dtkData->metaDataValues(tr("SequenceName"))[0];
+            QString sliceThickness = dtkData->metaDataValues(tr("SliceThickness"))[0];
+            QString rows = dtkData->metaDataValues(tr("Rows"))[0];
+            QString columns = dtkData->metaDataValues(tr("Columns"))[0];
+
+            query.prepare("SELECT * FROM series WHERE study = :studyId AND name = :seriesName AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
+            query.bindValue(":studyId", studyId);
+            query.bindValue(":seriesName", seriesName);
+            query.bindValue(":seriesUid", seriesUid);
+            query.bindValue(":orientation", orientation);
+            query.bindValue(":seriesNumber", seriesNumber);
+            query.bindValue(":sequenceName", sequenceName);
+            query.bindValue(":sliceThickness", sliceThickness);
+            query.bindValue(":rows", rows);
+            query.bindValue(":columns", columns);
+
+            if(!query.exec())
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+            if(query.first())
+            {
+                QStringList filePaths = dtkData->metaDataValues (tr("FilePaths"));
+                d->partialAttemptsInfo << (QStringList() << patientName << studyName << seriesName << filePaths[0]);
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -420,7 +516,7 @@ bool medDatabaseImporter::checkIfExists(dtkAbstractData* dtkdata, QString imageN
             {
                 QVariant seriesId = query.value(0);
 
-                // finaly we check the image table
+                // finally we check the image table
 
                 query.prepare("SELECT id FROM image WHERE series = :seriesId AND name = :name");
                 query.bindValue(":seriesId", seriesId);
@@ -454,12 +550,6 @@ void medDatabaseImporter::populateDatabaseAndGenerateThumbnails(dtkAbstractData*
     int seriesId = getOrCreateSeries(dtkData, db, studyId);
 
     createMissingImages(dtkData, db, seriesId, thumbPaths);
-
-    // we still need to check that, given a seriesId, if after creating
-    // the new records in image table, there is at least one of them which is
-    // indexed, then we need to empty the column 'path' of the table 'series'
-    // as it no longer represent an image containing the whole series
-    checkAndFixConsistencyOfSeriesPathColumn(db, seriesId);
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -738,33 +828,6 @@ void medDatabaseImporter::createMissingImages(dtkAbstractData* dtkData, QSqlData
                 if (!query.exec())
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
             }
-        }
-    }
-}
-
-void medDatabaseImporter::checkAndFixConsistencyOfSeriesPathColumn(QSqlDatabase db, int seriesId)
-{
-    QSqlQuery query(db);
-
-    query.prepare("SELECT COUNT(*) FROM image WHERE series = :seriesId AND isIndexed = 'true'");
-    query.bindValue(":seriesId", seriesId);
-
-    if(!query.exec())
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
-    if(query.first())
-    {
-        int indexedImagesCount = query.value(0).toInt();
-        
-        if (indexedImagesCount >= 1)
-        {
-            QSqlQuery updateQuery(db);
-
-            updateQuery.prepare("UPDATE series SET path = '' WHERE id = :seriesId");
-            updateQuery.bindValue(":seriesId", seriesId);
-
-            if(!query.exec())
-                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         }
     }
 }

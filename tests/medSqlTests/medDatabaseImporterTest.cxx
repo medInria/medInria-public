@@ -4,6 +4,8 @@
 // with required paths
 #include "medSqlTest.config.h"
 
+#include "medSqlHelpers.cxx"
+
 #include <dtkCore/dtkPluginManager.h>
 
 #include <medSql/medDatabaseController.h>
@@ -11,8 +13,9 @@
 #include <medCore/medStorage.h>
 #include <medCore/medDataIndex.h>
 
-// we need this line to be able to use the type
+// we need these lines to be able to use the types
 // for injecting data in the tests
+
 typedef QMap<QString, int> VolumeToImageCountMap;
 Q_DECLARE_METATYPE(VolumeToImageCountMap)
 
@@ -20,10 +23,6 @@ typedef QString (*GetOriginalFileName)(QString sessionName, int index);
 Q_DECLARE_METATYPE(GetOriginalFileName)
 
 void checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, QString studyName, VolumeToImageCountMap volumeMap);
-int countRowsInTable(QSqlDatabase db, QString tableName);
-bool checkIfRowExists(QSqlDatabase db, QString tableName, QString columnName, QString value);
-bool checkIfRowExists(QSqlDatabase db, QString tableName, QHash<QString, QString> columnValues);
-
 
 class medDatabaseImporterTest: public QObject
 {
@@ -69,6 +68,12 @@ private slots:
     // with different input values
     void import_data();
     void import();
+
+    // combinations of partial Import and Index
+    // a partial import is when you try to import images
+    // belonging to the same volume in 2 separate steps
+    void partialImportOrIndex_data();
+    void partialImportOrIndex();
 };
 
 void medDatabaseImporterTest::initTestCase()
@@ -96,7 +101,6 @@ void medDatabaseImporterTest::initTestCase()
 void medDatabaseImporterTest::init()
 {
     // create one new clean database for each test
-
     QPointer<medDatabaseControllerImpl> dbc = medDatabaseController::instance();
 
     // create connection and create database schema
@@ -197,22 +201,23 @@ void medDatabaseImporterTest::import()
     QSqlDatabase db = *(dbc->database());
 
     // check that there is only one row in patient table
-    QVERIFY(1 == countRowsInTable(db, "patient"));
+    QVERIFY(1 == medSqlHelpers::countRowsInTable(db, "patient"));
+
 
     // check that patient named patientName exists
     // we do not check for all the other columns
-    QVERIFY(checkIfRowExists(db, "patient", "name", patientName));
+    QVERIFY(medSqlHelpers::checkIfRowExists(db, "patient", "name", patientName));
 
     // check that there is only one row in study table
-    QVERIFY(1 == countRowsInTable(db, "study"));
+    QVERIFY(1 == medSqlHelpers::countRowsInTable(db, "study"));
 
     // check that there is a study named studyName
     // we do not check for all the other columns
-    QVERIFY(checkIfRowExists(db, "study", "name", studyName));
+    QVERIFY(medSqlHelpers::checkIfRowExists(db, "study", "name", studyName));
 
     int volumeCount = volumes.size();
     // check that there is only #volumeCount rows in series table
-    QVERIFY(volumeCount == countRowsInTable(db, "series"));
+    QVERIFY(volumeCount == medSqlHelpers::countRowsInTable(db, "series"));
 
     QString sessionName;
     int imageCount;
@@ -234,7 +239,7 @@ void medDatabaseImporterTest::import()
         // check that the proper path is in series table
         QString seriesPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QString::number(index+1) + QString(".mha");
 
-        QVERIFY(checkIfRowExists(db, "series", "path", seriesPath));
+        QVERIFY(medSqlHelpers::checkIfRowExists(db, "series", "path", seriesPath));
 
         // check every row inside image table
         for (int i = 0; i < imageCount ; i++)
@@ -261,11 +266,11 @@ void medDatabaseImporterTest::import()
                 columnValues.insert("path", fullPathToFileOrDirectory);
             }
 
-            QVERIFY(checkIfRowExists(db, "image", columnValues));
+            QVERIFY(medSqlHelpers::checkIfRowExists(db, "image", columnValues));
         }
     }
     // instead of writing a new function we count the total amount of images, it's easier
-    QVERIFY(totalAmountOfImages == countRowsInTable(db, "image"));
+    QVERIFY(totalAmountOfImages == medSqlHelpers::countRowsInTable(db, "image"));
 }
 
 void checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, QString studyName, VolumeToImageCountMap volumeMap)
@@ -328,100 +333,47 @@ void checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, Q
     }
 }
 
-int countRowsInTable(QSqlDatabase db, QString tableName)
+void medDatabaseImporterTest::partialImportOrIndex_data()
 {
-    QSqlQuery query(db);
+    QString firstBatch = this->dataPath + "/OSIRIX/WRIX_PartialImport/WRIST RIGHT/SCOUT AXIAL LG FOV RT.1-4";
+    QString secondBatch = this->dataPath + "/OSIRIX/WRIX_PartialImport/WRIST RIGHT/SCOUT AXIAL LG FOV RT.5-7";
 
-    query.prepare("SELECT COUNT(*) FROM " + tableName);
+    QFileInfo info1(firstBatch);
+    QFileInfo info2(secondBatch);
 
-    if(!query.exec())
-    {
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-        return -1;
-    }
+    if(!info1.exists() || !info2.exists())
+        QFAIL("Test data does not exists.");
 
-    if(query.first()) {
-        QVariant rowsCount = query.value(0);
-        return rowsCount.toInt();
-    }
-    else
-        return -1;
+
+    QTest::addColumn<QString>("firstPath");
+    QTest::addColumn<QString>("secondPath");
+    QTest::addColumn<bool>("isIndexFirst");
+    QTest::addColumn<bool>("isIndexSecond");
+
+    QTest::newRow("IndexIndex") << firstBatch << secondBatch << true << true;
+    QTest::newRow("IndexImport") << firstBatch << secondBatch << true << false;
+    QTest::newRow("ImportIndex") << firstBatch << secondBatch << false << true;
+    QTest::newRow("ImportImport") << firstBatch << secondBatch << false << false;
 }
 
-bool checkIfRowExists(QSqlDatabase db, QString tableName, QString columnName, QString value)
+void medDatabaseImporterTest::partialImportOrIndex()
 {
-    QSqlQuery query(db);
+    QFETCH(QString, firstPath);
+    QFETCH(QString, secondPath);
+    QFETCH(bool, isIndexFirst);
+    QFETCH(bool, isIndexSecond);
 
-    query.prepare("SELECT id FROM " + tableName + " WHERE " + columnName + " = :value");
-    query.bindValue(":value", value);
+    medDatabaseImporter *importer1 = new medDatabaseImporter(firstPath, isIndexFirst);
+    importer1->run();
 
-    if(!query.exec())
-    {
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-        return false;
-    }
+    medDatabaseImporter *importer2 = new medDatabaseImporter(secondPath, isIndexSecond);
 
-    if(query.first()) {
-        QVariant id = query.value(0);
-        return true;
-    }
-    else
-        return false;
+    QSignalSpy spy(importer2, SIGNAL(partialImportAttempted(const QString&)));
+
+    importer2->run();
+
+    QVERIFY2(1 == spy.count(), "No error signal emitted.");
 }
-
-bool checkIfRowExists(QSqlDatabase db, QString tableName, QHash<QString, QString> columnValues)
-{
-    // TODO this way of building the query string is just awful
-    // try to find another...
-
-    QString queryString = "SELECT id FROM " + tableName + " WHERE ";
-
-    QHashIterator<QString, QString> it(columnValues);
-    bool firstTime = true;
-
-    while (it.hasNext())
-    {
-        it.next();
-
-        if (!firstTime)
-        {
-            queryString.append(" AND ");
-        }
-        else
-            firstTime = false;
-
-        queryString.append(it.key()).append( " = :").append(it.key());
-    }
-
-    QSqlQuery query(db);
-    query.prepare(queryString);
-
-    it.toFront();
-
-    while (it.hasNext())
-    {
-        it.next();
-        query.bindValue(":"+it.key(), it.value());
-    }
-
-    if(!query.exec())
-    {
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-        return false;
-    }
-
-
-    // see executed query
-    //qDebug() << query.executedQuery().toStdString().c_str();
-
-    if(query.first()) {
-        QVariant id = query.value(0);
-        return true;
-    }
-    else
-        return false;
-}
-
 
 QTEST_MAIN(medDatabaseImporterTest)
 #include "moc_medDatabaseImporterTest.cxx"

@@ -156,10 +156,14 @@ void medBrowserArea::onFileImport(QString path)
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), indexWithoutCopying);
     connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
     connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+
+
+    connect(importer, SIGNAL(partialImportAttempted(const QString&)),
+            this, SLOT(onPartialImportAttempted(const QString&)));
+
     d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
-    
 }
 
 void medBrowserArea::onFileIndex(QString path)
@@ -169,10 +173,19 @@ void medBrowserArea::onFileIndex(QString path)
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), indexWithoutCopying);
     connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
     connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+
     d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
 
+}
+
+void medBrowserArea::onPartialImportAttempted(const QString& message)
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Import warning");
+    msgBox.setText(message);
+    msgBox.exec();
 }
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
