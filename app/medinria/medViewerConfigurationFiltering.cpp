@@ -1,19 +1,8 @@
 /* medViewerConfigurationFiltering.cpp --- 
  * 
- */
-
-//TODO memory management :
-/*
- * Current memory usage: 1112 Required memory need: 1207
-****** TRY_FREE_MEM_BEGIN:  1112  to reach:  475
-Not possible to free any items, current cache count is:  0 items
-****** TRY_FREE_MEM_END:  1112
+ * @author Clément Philipot <clement.philipot@inria.fr>
  *
  */
-
-//TODO save result in a file or database
-
-//TODO launch process in a thread to prevent freezing the user interface
 
 #include "medViewerConfigurationFiltering.h"
 #include <medGui/medViewContainerFiltering.h>
