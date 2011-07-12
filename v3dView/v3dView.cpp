@@ -1043,7 +1043,6 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
         }
     }
-     qDebug() << "V3DView::SetData " << layer;
     
      
     this->addDataInList(data);
