@@ -527,7 +527,8 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     QAction *ThreeDAct = new QAction(tr("3D"), d->vtkWidget);
     connect(ThreeDAct, SIGNAL(triggered()), this, SLOT(onMenu3DTriggered()));
 
-    /*QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
+    QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
+
     connect(vrAct, SIGNAL(triggered()), this, SLOT(onMenu3DVRTriggered()));
     
     QAction *maxipAct = new QAction(tr("MIP - Max"), d->vtkWidget);
@@ -568,7 +569,8 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     connect(zoomAct, SIGNAL(triggered()), this, SLOT(onMenuZoomTriggered()));
     
     QAction *wlAct = new QAction(tr("Window / Level"), d->vtkWidget);
-    connect(wlAct, SIGNAL(triggered()), this, SLOT(onMenuWindowLevelTriggered()));*/
+    connect(wlAct, SIGNAL(triggered()), this, SLOT(onMenuWindowLevelTriggered()));
+    
     
     /*QActionGroup *group = new QActionGroup(d->vtkWidget);
     group->addAction(zoomAct);
