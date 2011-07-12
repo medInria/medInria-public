@@ -40,8 +40,10 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkGlyph3D.h>
 
 #include <vtkExtractGeometry.h>
+#include <iostream>
 
 
+//BTX
 class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManagerCallback: public vtkCommand
 {
 
@@ -87,7 +89,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManagerCallback: public vtkCommand
   
   
 };
-
+//ETX
 
 class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManager : public vtkObject
 {
@@ -96,12 +98,14 @@ class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManager : public vtkObject
   static vtkMeshCropManager* New();
   vtkTypeRevisionMacro(vtkMeshCropManager, vtkObject);
 
+  //BTX
   enum RenderingModeIds
   {
     RENDER_IS_POLYLINES,
     RENDER_IS_TUBES,
     RENDER_IS_RIBBONS
   };
+  //ETX
 
   /** Reset the pipeline, deactivate the CP box and release memory.*/
   void Initialize (void);

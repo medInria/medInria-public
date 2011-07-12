@@ -16,7 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
-#include <itkGDCMImporter.h>
+#include <itkGDCMImporter3.h>
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
 #include <kwcommon.h>
@@ -37,7 +37,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageData.h>
 #include <vtkKWApplication.h>
 #include <vtkKWApplication.h>
-#include <vtkKWDICOMExporter.h>
+// #include <vtkKWDICOMExporter.h>
 #include <vtkKWDICOMImporter2.h>
 #include <vtkKWDataManagerWidget.h>
 #include <vtkKWDragAndDropTargetSet.h>
@@ -102,7 +102,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkDelaunay3D.h>
 #include <vtkSelectPolyData.h>
 
-#include <vtkKWDicomInfoWidget.h>
+// #include <vtkKWDicomInfoWidget.h>
 
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/stl/string>
@@ -197,7 +197,7 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, vtkIm
   viewframe->SetImage (image, matrix);
   this->GetViewNotebook()->RaisePage (id);
   
-  viewframe->GetView4()->GetRenderWindowInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
+  viewframe->GetView4()->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
   viewframe->Delete();
 
   return this->GetPage (name);
@@ -223,7 +223,7 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, itk::
   viewframe->SetImage (image);
   this->GetViewNotebook()->RaisePage (id);
   
-  viewframe->GetView4()->GetRenderWindowInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
+  viewframe->GetView4()->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
   viewframe->Delete();
 
   return this->GetPage (name);
@@ -379,7 +379,7 @@ void vtkKWMainWindowInteractor::CreateWidget()
 
   this->PanelSplitFrame->SetParent(this->GetMainPanelFrame());
   this->PanelSplitFrame->Create();
-  this->PanelSplitFrame->SetViewOrientationToVertical();
+  this->PanelSplitFrame->SetOrientationToVertical();
   this->PanelSplitFrame->SetReliefToFlat();
   this->PanelSplitFrame->SetBorderWidth(2);
   this->PanelSplitFrame->SetExpandableFrameToBothFrames();
@@ -1504,26 +1504,26 @@ void vtkKWMainWindowInteractor::OnMenuFileSaveDICOM ()
 {
   
   
-  vtkKWDICOMExporter *dlg = vtkKWDICOMExporter::New();
-  dlg->SetMasterWindow (this);
+  // vtkKWDICOMExporter *dlg = vtkKWDICOMExporter::New();
+  // dlg->SetMasterWindow (this);
   
-  dlg->Create();
-  dlg->SetDisplayPositionToDefault();
-  dlg->SetPosition (100,100);
+  // dlg->Create();
+  // dlg->SetDisplayPositionToDefault();
+  // dlg->SetPosition (100,100);
 
 
-  dlg->SetDataManager(this->GetDataManager());
+  // dlg->SetDataManager(this->GetDataManager());
   
-  dlg->Invoke(); 
+  // dlg->Invoke(); 
 
-  if (dlg->GetStatus() != vtkKWDialog::StatusOK)
-  {
-    dlg->Delete();
-    return;
-  }
+  // if (dlg->GetStatus() != vtkKWDialog::StatusOK)
+  // {
+  //   dlg->Delete();
+  //   return;
+  // }
 
 
-  dlg->Delete();
+  // dlg->Delete();
 
 
 }
@@ -1538,13 +1538,13 @@ void vtkKWMainWindowInteractor::OnSelectInteraction()
   
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetInteractionMode(vtkImageView2D::SELECT_INTERACTION);
+    this->PreviewPage->SetInteractionMode(vtkInteractorStyleImageView2D::InteractionTypeSlice);
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkImageView2D::SELECT_INTERACTION);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkImageView2D::SELECT_INTERACTION);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkImageView2D::SELECT_INTERACTION);
+  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeSlice);
+  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeSlice);
+  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeSlice);
 
 
 }
@@ -1553,26 +1553,26 @@ void vtkKWMainWindowInteractor::OnWindowLevelInteraction()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetInteractionMode (vtkImageView2D::WINDOW_LEVEL_INTERACTION);
+    this->PreviewPage->SetInteractionMode (vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkImageView2D::WINDOW_LEVEL_INTERACTION);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkImageView2D::WINDOW_LEVEL_INTERACTION);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkImageView2D::WINDOW_LEVEL_INTERACTION);
+  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnZoomInteraction()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetInteractionMode (vtkImageView2D::ZOOM_INTERACTION);
+    this->PreviewPage->SetInteractionMode (vtkInteractorStyleImageView2D::InteractionTypeZoom);
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkImageView2D::ZOOM_INTERACTION);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkImageView2D::ZOOM_INTERACTION);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkImageView2D::ZOOM_INTERACTION);
+  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeZoom);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnRenderingModeToVR()
@@ -1604,7 +1604,7 @@ void vtkKWMainWindowInteractor::OnFullScreenAxial()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_AXIAL);
+    // this->PreviewPage->SetViewOrientationMode (vtkImageView2D::VIEW_ORIENTATION_AXIAL);
     return;
   }
   
@@ -1616,7 +1616,7 @@ void vtkKWMainWindowInteractor::OnFullScreenCoronal()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_CORONAL);
+    // this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_CORONAL);
     return;
   }
   
@@ -1628,7 +1628,7 @@ void vtkKWMainWindowInteractor::OnFullScreenSagittal()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_SAGITTAL);
+    // this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_SAGITTAL);
     return;
   }
   this->GetCurrentPage()->ToggleFullScreenSagittal();
@@ -1638,81 +1638,81 @@ void vtkKWMainWindowInteractor::OnFullScreenSagittal()
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnIllustrationMode()
 {
-  if ( !IllustrationMode && !ModifiedPage )
-  {
-    // Turn on illustration mode
-    ModifiedPage = this->GetCurrentPage();
-    IllustrationMode = true;
+  // if ( !IllustrationMode && !ModifiedPage )
+  // {
+  //   // Turn on illustration mode
+  //   ModifiedPage = this->GetCurrentPage();
+  //   IllustrationMode = true;
 
-    ShowAnnotations = ModifiedPage->GetView1()->GetShowAnnotations();
-    ShowRulerWidget = ModifiedPage->GetView1()->GetRulerWidgetVisibility();
-    Show2DAxis      = ModifiedPage->GetView1()->GetShow2DAxis();
-    ShowScalarBar   = ModifiedPage->GetView1()->GetScalarBarVisibility();
-    ShowDirections  = ModifiedPage->GetView1()->GetShowDirections();
+  //   ShowAnnotations = ModifiedPage->GetView1()->GetShowAnnotations();
+  //   ShowRulerWidget = ModifiedPage->GetView1()->GetRulerWidgetVisibility();
+  //   Show2DAxis      = ModifiedPage->GetView1()->GetShow2DAxis();
+  //   ShowScalarBar   = ModifiedPage->GetView1()->GetScalarBarVisibility();
+  //   ShowDirections  = ModifiedPage->GetView1()->GetShowDirections();
 
-    ModifiedPage->GetView1()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView1()->ShowAnnotationsOff();
-    ModifiedPage->GetView1()->SetRulerWidgetVisibility(0);
-    ModifiedPage->GetView1()->Show2DAxisOff();
-    ModifiedPage->GetView1()->SetScalarBarVisibility(0);
-    ModifiedPage->GetView1()->SetShowDirections(0);
-    ModifiedPage->GetView1()->Render();
+  //   ModifiedPage->GetView1()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView1()->ShowAnnotationsOff();
+  //   ModifiedPage->GetView1()->SetRulerWidgetVisibility(0);
+  //   ModifiedPage->GetView1()->Show2DAxisOff();
+  //   ModifiedPage->GetView1()->SetScalarBarVisibility(0);
+  //   ModifiedPage->GetView1()->SetShowDirections(0);
+  //   ModifiedPage->GetView1()->Render();
 
-    ModifiedPage->GetView2()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView2()->ShowAnnotationsOff();
-    ModifiedPage->GetView2()->SetRulerWidgetVisibility(0);
-    ModifiedPage->GetView2()->Show2DAxisOff();
-    ModifiedPage->GetView2()->SetScalarBarVisibility(0);
-    ModifiedPage->GetView2()->SetShowDirections(0);
-    ModifiedPage->GetView2()->Render();
+  //   ModifiedPage->GetView2()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView2()->ShowAnnotationsOff();
+  //   ModifiedPage->GetView2()->SetRulerWidgetVisibility(0);
+  //   ModifiedPage->GetView2()->Show2DAxisOff();
+  //   ModifiedPage->GetView2()->SetScalarBarVisibility(0);
+  //   ModifiedPage->GetView2()->SetShowDirections(0);
+  //   ModifiedPage->GetView2()->Render();
 
-    ModifiedPage->GetView3()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView3()->ShowAnnotationsOff();
-    ModifiedPage->GetView3()->SetRulerWidgetVisibility(0);
-    ModifiedPage->GetView3()->Show2DAxisOff();
-    ModifiedPage->GetView3()->SetScalarBarVisibility(0);
-    ModifiedPage->GetView3()->SetShowDirections(0);
-    ModifiedPage->GetView3()->Render();
+  //   ModifiedPage->GetView3()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView3()->ShowAnnotationsOff();
+  //   ModifiedPage->GetView3()->SetRulerWidgetVisibility(0);
+  //   ModifiedPage->GetView3()->Show2DAxisOff();
+  //   ModifiedPage->GetView3()->SetScalarBarVisibility(0);
+  //   ModifiedPage->GetView3()->SetShowDirections(0);
+  //   ModifiedPage->GetView3()->Render();
 
-    ModifiedPage->GetView4()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView4()->ShowAnnotationsOff();
-    ModifiedPage->GetView4()->SetScalarBarVisibility(0);
-    ModifiedPage->GetView4()->Render();
-  }
-  else
-  {
-    ModifiedPage->GetView1()->SetBackgroundColor(0, 0, 0);
-    ModifiedPage->GetView1()->SetShowAnnotations(ShowAnnotations);
-    ModifiedPage->GetView1()->SetRulerWidgetVisibility(ShowRulerWidget);
-    ModifiedPage->GetView1()->SetShow2DAxis(Show2DAxis);
-    ModifiedPage->GetView1()->SetScalarBarVisibility(ShowScalarBar);
-    ModifiedPage->GetView1()->SetShowDirections(ShowDirections);
-    ModifiedPage->GetView1()->Render();
+  //   ModifiedPage->GetView4()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView4()->ShowAnnotationsOff();
+  //   ModifiedPage->GetView4()->SetScalarBarVisibility(0);
+  //   ModifiedPage->GetView4()->Render();
+  // }
+  // else
+  // {
+  //   ModifiedPage->GetView1()->SetBackgroundColor(0, 0, 0);
+  //   ModifiedPage->GetView1()->SetShowAnnotations(ShowAnnotations);
+  //   ModifiedPage->GetView1()->SetRulerWidgetVisibility(ShowRulerWidget);
+  //   ModifiedPage->GetView1()->SetShow2DAxis(Show2DAxis);
+  //   ModifiedPage->GetView1()->SetScalarBarVisibility(ShowScalarBar);
+  //   ModifiedPage->GetView1()->SetShowDirections(ShowDirections);
+  //   ModifiedPage->GetView1()->Render();
 
-    ModifiedPage->GetView2()->SetBackgroundColor(0, 0, 0);
-    ModifiedPage->GetView2()->SetShowAnnotations(ShowAnnotations);
-    ModifiedPage->GetView2()->SetRulerWidgetVisibility(ShowRulerWidget);
-    ModifiedPage->GetView2()->SetShow2DAxis(Show2DAxis);
-    ModifiedPage->GetView2()->SetScalarBarVisibility(ShowScalarBar);
-    ModifiedPage->GetView2()->SetShowDirections(ShowDirections);
-    ModifiedPage->GetView2()->Render();
+  //   ModifiedPage->GetView2()->SetBackgroundColor(0, 0, 0);
+  //   ModifiedPage->GetView2()->SetShowAnnotations(ShowAnnotations);
+  //   ModifiedPage->GetView2()->SetRulerWidgetVisibility(ShowRulerWidget);
+  //   ModifiedPage->GetView2()->SetShow2DAxis(Show2DAxis);
+  //   ModifiedPage->GetView2()->SetScalarBarVisibility(ShowScalarBar);
+  //   ModifiedPage->GetView2()->SetShowDirections(ShowDirections);
+  //   ModifiedPage->GetView2()->Render();
 
-    ModifiedPage->GetView3()->SetBackgroundColor(0, 0, 0);
-    ModifiedPage->GetView3()->SetShowAnnotations(ShowAnnotations);
-    ModifiedPage->GetView3()->SetRulerWidgetVisibility(ShowRulerWidget);
-    ModifiedPage->GetView3()->SetShow2DAxis(Show2DAxis);
-    ModifiedPage->GetView3()->SetScalarBarVisibility(ShowScalarBar);
-    ModifiedPage->GetView3()->SetShowDirections(ShowDirections);
-    ModifiedPage->GetView3()->Render();
+  //   ModifiedPage->GetView3()->SetBackgroundColor(0, 0, 0);
+  //   ModifiedPage->GetView3()->SetShowAnnotations(ShowAnnotations);
+  //   ModifiedPage->GetView3()->SetRulerWidgetVisibility(ShowRulerWidget);
+  //   ModifiedPage->GetView3()->SetShow2DAxis(Show2DAxis);
+  //   ModifiedPage->GetView3()->SetScalarBarVisibility(ShowScalarBar);
+  //   ModifiedPage->GetView3()->SetShowDirections(ShowDirections);
+  //   ModifiedPage->GetView3()->Render();
 
-    ModifiedPage->GetView4()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView4()->SetShowAnnotations(ShowAnnotations);
-    ModifiedPage->GetView4()->SetScalarBarVisibility(ShowScalarBar);
-    ModifiedPage->GetView4()->Render();
+  //   ModifiedPage->GetView4()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView4()->SetShowAnnotations(ShowAnnotations);
+  //   ModifiedPage->GetView4()->SetScalarBarVisibility(ShowScalarBar);
+  //   ModifiedPage->GetView4()->Render();
 
-    IllustrationMode = false;
-    ModifiedPage = NULL;
-  }
+  //   IllustrationMode = false;
+  //   ModifiedPage = NULL;
+  // }
   this->GetCurrentPage()->Render();
 }
 
@@ -1799,7 +1799,7 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
     char buffer[1024];
     bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowAxesWhenExport", buffer);
     if (!valid)
-      view->Show2DAxisOff();
+      view->ShowImageAxisOff();
     else
     {
       if (*buffer)
@@ -1808,7 +1808,7 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
 	is.str (buffer);
 	int val = 0;
 	is >> val;
-	view->SetShow2DAxis(val);
+	view->SetShowImageAxis(val);
       }
     }
   }
@@ -1819,7 +1819,7 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
     vtkKWSnapshotHandler::Snap (this->GetCurrentPage()->GetActiveRenderWidget());
     
     if (view)
-      view->Show2DAxisOn();
+      view->ShowImageAxisOn();
     
     return;
   }
@@ -1863,7 +1863,7 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
   this->SnapshotHandler->Invoke();
 
   if (view)
-    view->Show2DAxisOn();
+    view->ShowImageAxisOn();
 
 }
 

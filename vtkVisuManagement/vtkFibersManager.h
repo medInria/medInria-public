@@ -72,13 +72,15 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   static vtkFibersManager* New();
   vtkTypeRevisionMacro(vtkFibersManager, vtkObject);
 
+  //BTX
   enum vtkFiberRenderingMode
   {
     RENDER_IS_POLYLINES,
     RENDER_IS_TUBES,
     RENDER_IS_RIBBONS
   };
-
+  //ETX
+  
   vtkGetObjectMacro (BoxWidget, vtkBoxWidget);
 
   virtual void Enable (void);

@@ -582,6 +582,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void RemoveDataSet (vtkPointSet *arg);
 
   vtkProp3D* FindDataSetActor (vtkDataSet* arg);
+  vtkDataSet* FindActorDataSet (vtkProp3D* arg);
   
   vtkGetObjectMacro (DataSetCollection, vtkDataSetCollection);
   vtkGetObjectMacro (DataSetActorCollection, vtkProp3DCollection);

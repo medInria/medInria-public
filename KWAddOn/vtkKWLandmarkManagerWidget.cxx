@@ -329,7 +329,7 @@ void vtkKWLandmarkManagerWidget::CreateButtons()
 
   this->ScalingScale->SetParent (this->PropertyFrame->GetFrame());
   this->ScalingScale->Create();
-  this->ScalingScale->SetViewOrientationToHorizontal();
+  this->ScalingScale->SetOrientationToHorizontal();
   this->ScalingScale->SetLabelText("Scaling:");
   this->ScalingScale->SetRange (0,20);
   this->ScalingScale->SetResolution (1);
@@ -350,7 +350,7 @@ void vtkKWLandmarkManagerWidget::CreateButtons()
 
   this->GlobalScalingScale->SetParent (this->GlobalPropertyFrame->GetFrame());
   this->GlobalScalingScale->Create();
-  this->GlobalScalingScale->SetViewOrientationToHorizontal();
+  this->GlobalScalingScale->SetOrientationToHorizontal();
   this->GlobalScalingScale->SetLabelText("Scaling:");
   this->GlobalScalingScale->SetRange (0,20);
   this->GlobalScalingScale->SetResolution (1);
@@ -796,7 +796,7 @@ void vtkKWLandmarkManagerWidget::ButtonCommentCallback()
 
   vtkFollower* follower = landmark->GetTextActor();
   follower->SetCamera (view3D->GetRenderer()->GetActiveCamera());
-  view3D->AddActor (follower);
+  view3D->GetRenderer()->AddViewProp (follower);
 
   landmark->Initialize();
   view3D->Render();

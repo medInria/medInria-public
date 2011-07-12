@@ -50,10 +50,11 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   virtual void ChangeMapperToUseHardwareShaders(void);
   virtual void ChangeMapperToDefault(void);
 
+  //BTX
   virtual void SetBundleVisibility(const std::string &name, int visibility);
   virtual int  GetBundleVisibility(const std::string &name);
-
   virtual vtkActor *GetBundleActor(const std::string &name);
+  //ETX
   
   virtual void ShowAllBundles(void);
   virtual void HideAllBundles(void);
@@ -65,15 +66,19 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   */
 
   // specific
+  //BTX
   void Validate (const std::string &name, double color[3]);
-
+  //ETX
+  
  protected:
   vtkFiberDataSetManager();
   ~vtkFiberDataSetManager();
 
   void CreateBundleRenderingPipeline (void);
+  //BTX
   inline void CreateRenderingPipelineForBundle (const std::string &name);
-
+  //ETX
+  
   void AddBundleActors (void);
   void RemoveBundleActors (void);
   

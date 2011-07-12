@@ -105,8 +105,8 @@ void vtkKWVisualizationCallback::Execute(vtkObject *   caller,
       {
 	if (this->Toolbox)
 	{
-	  double min = view->GetLevel() - 0.5*view->GetWindow();
-	  double max = view->GetLevel() + 0.5*view->GetWindow();
+	  // double min = view->GetColorLevel() - 0.5*view->GetColorWindow();
+	  // double max = view->GetColorLevel() + 0.5*view->GetColorWindow();
 	  this->Toolbox->GetImageWindowLevelRange()->DisableCommandsOn();
 	  // this->Toolbox->GetImageWindowLevelRange()->SetRange (min, max);
 	  this->Toolbox->GetImageWindowLevelRange()->DisableCommandsOff();
@@ -321,7 +321,7 @@ void vtkKWVisualizationToolBox::CreateMeshVisuFrame()
 	       this->ScaleSet->GetWidgetName());
 
   this->OpacityScale = this->ScaleSet->AddWidget(0);
-  this->OpacityScale->SetViewOrientationToHorizontal();
+  this->OpacityScale->SetOrientationToHorizontal();
   this->OpacityScale->SetLabelText("Opacity");
   this->OpacityScale->SetRange (0,100);
   this->OpacityScale->SetResolution (1);
@@ -332,7 +332,7 @@ void vtkKWVisualizationToolBox::CreateMeshVisuFrame()
   this->OpacityScale->SetBalloonHelpString ("Set the opacity of the dataset");
   
   this->LineWidthScale = this->ScaleSet->AddWidget(1);
-  this->LineWidthScale->SetViewOrientationToHorizontal();
+  this->LineWidthScale->SetOrientationToHorizontal();
   this->LineWidthScale->SetLabelText("Line Width");
   this->LineWidthScale->SetRange (1,10);
   this->LineWidthScale->SetResolution (1);
@@ -384,7 +384,7 @@ void vtkKWVisualizationToolBox::CreateMeshVisuFrame()
   separator1->SetParent(this->MeshVisuFrame->GetFrame());
   separator1->Create();
   separator1->SetWidth (300);
-  separator1->SetViewOrientationToHorizontal();
+  separator1->SetOrientationToHorizontal();
   separator1->SetThickness(2);
   this->Script( "pack %s -side top -anchor nw -expand yes -fill x -padx 0 -pady 2",
 		separator1->GetWidgetName());
@@ -676,15 +676,15 @@ void vtkKWVisualizationToolBox::Update()
 	}
 	if (watchviews)
 	{
-	  double min = page->GetView1()->GetLevel() - 0.5*page->GetView1()->GetWindow();
-	  double max = page->GetView1()->GetLevel() + 0.5*page->GetView1()->GetWindow();
+	  // double min = page->GetView1()->GetColorLevel() - 0.5*page->GetView1()->GetColorWindow();
+	  // double max = page->GetView1()->GetColorLevel() + 0.5*page->GetView1()->GetColorWindow();
 	  // this->ImageWindowLevelRange->SetRange (min, max);
 	  page->GetView1()->AddObserver (vtkCommand::WindowLevelEvent, this->Callback);
 	  page->GetView2()->AddObserver (vtkCommand::WindowLevelEvent, this->Callback);
 	  page->GetView3()->AddObserver (vtkCommand::WindowLevelEvent, this->Callback);
 	}
 
-	this->CroppingBoxCheckbox->GetWidget()->SetSelectedState (page->GetView4()->GetBoxWidgetVisibility());
+	this->CroppingBoxCheckbox->GetWidget()->SetSelectedState (page->GetView4()->GetShowBoxWidget());
 	this->ImageScalarBarCheckbox->GetWidget()->SetSelectedState (page->GetScalarBarVisibility());
 	this->ShadingCheckbox->GetWidget()->SetSelectedState (page->GetView4()->GetShade());
 	
@@ -890,10 +890,10 @@ void vtkKWVisualizationToolBox::ColorMapChangedCallback(const char* value)
     vtkKWPageView* page = this->ParentObject->GetPage(metadataset->GetTag());
     if (page)
     {
-      page->GetView1()->AddActor (this->ScalarBar1);
-      page->GetView2()->AddActor (this->ScalarBar2);
-      page->GetView3()->AddActor (this->ScalarBar3);
-      page->GetView4()->AddActor (this->ScalarBar4);
+      page->GetView1()->GetRenderer()->AddViewProp (this->ScalarBar1);
+      page->GetView2()->GetRenderer()->AddViewProp (this->ScalarBar2);
+      page->GetView3()->GetRenderer()->AddViewProp (this->ScalarBar3);
+      page->GetView4()->GetRenderer()->AddViewProp (this->ScalarBar4);
     }
   }
 
@@ -1018,7 +1018,7 @@ void vtkKWVisualizationToolBox::ImageRenderingModeCallback (const char* value)
     {
 //       page->GetView4()->SetVolumeMapperToTexture();
       page->GetView4()->SetRenderingModeToVR();
-      page->GetView4()->SetBoxWidgetVisibility (this->CroppingBoxCheckbox->GetWidget()->GetSelectedState());
+      page->GetView4()->SetShowBoxWidget (this->CroppingBoxCheckbox->GetWidget()->GetSelectedState());
       this->CroppingBoxCheckbox->GetWidget()->SetStateToNormal();
       this->ShadingCheckbox->GetWidget()->SetStateToNormal();
 	      
@@ -1058,7 +1058,7 @@ void vtkKWVisualizationToolBox::CroppingBoxCallback (int val)
     if (!page)
       continue;
     
-    page->GetView4()->SetBoxWidgetVisibility (val);
+    page->GetView4()->SetShowBoxWidget (val);
   }
   
 }
@@ -1415,7 +1415,7 @@ void vtkKWVisualizationToolBox::StanleyFunction (void)
 
   for (unsigned int i = 0; i < this->MetaDataSet->GetNumberOfActors(); i++)
   {
-    view->RemoveActor (this->MetaDataSet->GetActor (i));
+    view->GetRenderer()->RemoveViewProp (this->MetaDataSet->GetActor (i));
   }
   this->MetaDataSet->RemoveAllActors();
   
@@ -1449,7 +1449,7 @@ void vtkKWVisualizationToolBox::StanleyFunction (void)
     vtkActor* actor = vtkActor::New();
     actor->SetMapper (mapper);
     actor->SetPosition (position);
-    view->AddActor (actor);
+    view->GetRenderer()->AddViewProp (actor);
 
     this->MetaDataSet->AddActor (actor);
 

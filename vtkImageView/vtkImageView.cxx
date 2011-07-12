@@ -1397,8 +1397,16 @@ vtkProp3D* vtkImageView::FindDataSetActor (vtkDataSet* arg)
   int id = this->DataSetCollection->IsItemPresent (arg);
   if (id == 0)
     return NULL;
-
   return vtkProp3D::SafeDownCast (this->DataSetActorCollection->GetItemAsObject (id-1));
+}
+
+//----------------------------------------------------------------------------
+vtkDataSet* vtkImageView::FindActorDataSet (vtkProp3D* arg) 
+{
+  int id = this->DataSetActorCollection->IsItemPresent (arg);
+  if (id == 0)
+    return NULL;
+  return vtkDataSet::SafeDownCast (this->DataSetCollection->GetItemAsObject (id-1));
 }
 
 

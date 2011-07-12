@@ -48,8 +48,10 @@
 #include <vtkVectorText.h>
 #include <vtkPolyDataMapper.h>
 
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
+#include <vtkImageViewCollection.h>
+
 
 #include <sstream>
 #include <fstream>
@@ -590,7 +592,7 @@ void vtkLandmark::UnSelect (void)
 vtkLandmarkManager::vtkLandmarkManager()
 {
   this->Callback = vtkLandmarkManagerCallback::New();
-  this->ViewList = vtkCollection::New();  
+  this->ViewList = vtkImageViewCollection::New();  
   this->LandmarkList = vtkCollection::New();
   this->Callback->SetViewList (this->ViewList);
   this->Callback->SetLandmarkManager (this);
@@ -657,7 +659,7 @@ void vtkLandmarkManager::Reset()
 
   for (int j=0; j<this->ViewList->GetNumberOfItems(); j++)
   {
-    vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(j));  
+    vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(j));
     
     if (view)
       view->RemoveDataSet (this->Linker);
@@ -885,8 +887,8 @@ void vtkLandmarkManager::AddLandmark (vtkLandmark* landmark)
 
   for (int i=0; i<this->ViewList->GetNumberOfItems(); i++)
   {
-    vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(i));  
-    vtkViewImage2D* view2D = vtkViewImage2D::SafeDownCast (view);
+    vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(i));  
+    vtkImageView2D* view2D = vtkImageView2D::SafeDownCast (view);
     if (view2D)
     {
       vtkActor* actor = view->AddDataSet(landmark, landmark->GetProperty2D());
@@ -927,7 +929,7 @@ vtkLandmark* vtkLandmarkManager::CreateAndAddLandmark (void)
   vtkLandmark* landmark = vtkLandmark::New();
   landmark->SetLandmarkType (this->GetLandmarkType());
 
-  vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject(this->GetViewIdToTrust()));
+  vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject(this->GetViewIdToTrust()));
   const double* pos = view->GetCurrentPoint();
 
   
@@ -938,7 +940,7 @@ vtkLandmark* vtkLandmarkManager::CreateAndAddLandmark (void)
   currentpoint[2] = pos[2];
 
   int voxelcoord[3];
-  view->GetVoxelCoordinates(currentpoint, voxelcoord);
+  view->GetImageCoordinatesFromWorldCoordinates(currentpoint, voxelcoord);
 
   landmark->SetVoxelCoord(voxelcoord);
   
@@ -1042,20 +1044,20 @@ vtkLandmark* vtkLandmarkManager::CreateAndAddLandmark (void)
 void vtkLandmarkManager::AddSphereWidgetToLandmark (vtkLandmark* landmark)
 {
 
-  vtkViewImage3D* view3D = vtkViewImage3D::SafeDownCast (this->ViewList->GetItemAsObject (3));
+  vtkImageView3D* view3D = vtkImageView3D::SafeDownCast (this->ViewList->GetItemAsObject (3));
   if (!view3D)
     return;
   
   vtkSphereWidget* ptwidget = landmark->GetSphereWidget();
   
-  ptwidget->SetInteractor(view3D->GetRenderWindowInteractor());
+  ptwidget->SetInteractor(view3D->GetInteractor());
   ptwidget->SetEnabled (1);
 
-  vtkActor* actor = view3D->GetDataSetActor (landmark);
+  vtkProp3D* actor = view3D->FindDataSetActor (landmark);
   if (actor)
   {
     view3D->RemoveDataSet (landmark);
-    landmark->RemoveActor (actor);
+    landmark->RemoveActor (vtkActor::SafeDownCast (actor));
   }
   
   ptwidget->AddObserver (vtkCommand::InteractionEvent, this->Callback);
@@ -1083,7 +1085,7 @@ void vtkLandmarkManager::RemoveAllLandmarks(void)
     
     for (int j=0; j<this->ViewList->GetNumberOfItems(); j++)
     {
-      vtkViewImage* view = vtkViewImage::SafeDownCast ( this->ViewList->GetItemAsObject(j) );
+      vtkImageView* view = vtkImageView::SafeDownCast ( this->ViewList->GetItemAsObject(j) );
       
       if (view)
       {
@@ -1091,7 +1093,7 @@ void vtkLandmarkManager::RemoveAllLandmarks(void)
 	if (landmark->GetSphereWidget() && landmark->GetSphereWidget()->GetInteractor())
 	  landmark->GetSphereWidget()->SetEnabled (0);
 	if (landmark->GetUseComment())
-	  landmark->UseCommentOff();      
+	  landmark->UseCommentOff();
       } 
     }
     
@@ -1123,7 +1125,7 @@ void vtkLandmarkManager::RemoveLandmark(vtkLandmark* landmark)
   
   for (int j=0; j<this->ViewList->GetNumberOfItems(); j++)
   {
-    vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(j));  
+    vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(j));  
 
     if (view)
     {
@@ -1155,7 +1157,7 @@ void vtkLandmarkManager::RemoveLandmark(vtkLandmark* landmark)
 
 
 
-void vtkLandmarkManager::AddView (vtkViewImage* view)
+void vtkLandmarkManager::AddView (vtkImageView* view)
 {
   if (!this->HasView(view))
   {
@@ -1165,7 +1167,7 @@ void vtkLandmarkManager::AddView (vtkViewImage* view)
 
 
 
-void vtkLandmarkManager::RemoveView (vtkViewImage* view)
+void vtkLandmarkManager::RemoveView (vtkImageView* view)
 {
   this->ViewList->RemoveItem (view);
 }
@@ -1178,15 +1180,15 @@ void vtkLandmarkManager::RemoveAllViews (void)
 
 
 
-vtkViewImage* vtkLandmarkManager::GetFirstView (void)
+vtkImageView* vtkLandmarkManager::GetFirstView (void)
 {
-  vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject (0));
+  vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject (0));
   return view;  
 }
 
 
 
-bool vtkLandmarkManager::HasView(vtkViewImage* view)
+bool vtkLandmarkManager::HasView(vtkImageView* view)
 {
   return this->ViewList->IsItemPresent (view);
 }
@@ -1198,18 +1200,12 @@ vtkLandmark* vtkLandmarkManager::GetLandmark (unsigned int i)
   return vtkLandmark::SafeDownCast (this->LandmarkList->GetItemAsObject (i));
 }
 
-
-
-
 vtkLandmark* vtkLandmarkManager::GetLastLandmark (void)
 {
   if (!this->GetNumberOfLandmarks())
     return NULL;
   return this->GetLandmark(this->GetNumberOfLandmarks() - 1);
 }
-
-
-
 
 vtkLandmark* vtkLandmarkManager::FindLandmark(const char* name)
 {
@@ -1223,8 +1219,6 @@ vtkLandmark* vtkLandmarkManager::FindLandmark(const char* name)
   
   return NULL;
 }
-
-
   
 void vtkLandmarkManager::ShowAll(void)
 {
@@ -1232,11 +1226,11 @@ void vtkLandmarkManager::ShowAll(void)
   {
     for (int i=0; i<this->LandmarkList->GetNumberOfItems(); i++)
     {
-      vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(j));
+      vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(j));
       vtkLandmark* landmark = vtkLandmark::SafeDownCast (this->LandmarkList->GetItemAsObject(i));
-      vtkActor* actor = view->GetDataSetActor (landmark);
+      vtkProp3D* actor = view->FindDataSetActor (landmark);
       if (actor)
-	actor->SetVisibility (true);
+  	actor->SetVisibility (true);
     }
   }
 }
@@ -1247,15 +1241,14 @@ void vtkLandmarkManager::HideAll(void)
   {
     for (int i=0; i<this->LandmarkList->GetNumberOfItems(); i++)
     {
-      vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(j));
+      vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(j));
       vtkLandmark* landmark = vtkLandmark::SafeDownCast (this->LandmarkList->GetItemAsObject(i));
-      vtkActor* actor = view->GetDataSetActor (landmark);
+      vtkProp3D* actor = view->FindDataSetActor (landmark);
       if (actor)
-	actor->SetVisibility (false);
+  	actor->SetVisibility (false);
     }
   }
 }
-
 
 void vtkLandmarkManager::ScaleAll (double scale)
 {
@@ -1266,36 +1259,30 @@ void vtkLandmarkManager::ScaleAll (double scale)
   }
   
   this->Scale = scale;
-
-  
 }
-
-  
-    
 
 void vtkLandmarkManager::InteractionOn(void)
 {
   for (int i=0; i<this->ViewList->GetNumberOfItems(); i++)
   {
-    vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(i));
-    if (view && view->GetRenderWindowInteractor())
+    vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(i));
+    if (view && view->GetInteractor())
     {
-      if ( !view->GetRenderWindowInteractor()->HasObserver(vtkCommand::MiddleButtonPressEvent, this->Callback) )
+      if ( !view->GetInteractor()->HasObserver(vtkCommand::MiddleButtonPressEvent, this->Callback) )
       {
-	view->GetRenderWindowInteractor()->AddObserver(vtkCommand::MiddleButtonPressEvent, this->Callback);
-	view->GetRenderWindowInteractor()->AddObserver(vtkCommand::MiddleButtonReleaseEvent, this->Callback);
-	view->GetRenderWindowInteractor()->AddObserver(vtkCommand::RightButtonPressEvent, this->Callback);
-	view->GetRenderWindowInteractor()->AddObserver(vtkCommand::RightButtonReleaseEvent, this->Callback);
+	view->GetInteractor()->AddObserver(vtkCommand::MiddleButtonPressEvent, this->Callback);
+	view->GetInteractor()->AddObserver(vtkCommand::MiddleButtonReleaseEvent, this->Callback);
+	view->GetInteractor()->AddObserver(vtkCommand::RightButtonPressEvent, this->Callback);
+	view->GetInteractor()->AddObserver(vtkCommand::RightButtonReleaseEvent, this->Callback);
       }
     }
-    vtkViewImage2D* view2d = vtkViewImage2D::SafeDownCast (view);
+    vtkImageView2D* view2d = vtkImageView2D::SafeDownCast (view);
     
     if (view2d)
     {
-      view2d->SetMiddleButtonInteractionStyle (vtkViewImage2D::NO_INTERACTION);
-      view2d->SetRightButtonInteractionStyle (vtkViewImage2D::NO_INTERACTION);
-    }    
-    
+      view2d->SetMiddleButtonInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeNull);
+      view2d->SetRightButtonInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeNull);
+    }
   }
 }
 
@@ -1303,21 +1290,19 @@ void vtkLandmarkManager::InteractionOff(void)
 {
   for (int i=0; i<this->ViewList->GetNumberOfItems(); i++)
   {
-    vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(i));  
-    if (view && view->GetRenderWindowInteractor())
-      view->GetRenderWindowInteractor()->RemoveObserver(this->Callback);
-    vtkViewImage2D* view2d = vtkViewImage2D::SafeDownCast (view);
+    vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(i));  
+    if (view && view->GetInteractor())
+      view->GetInteractor()->RemoveObserver(this->Callback);
+    vtkImageView2D* view2d = vtkImageView2D::SafeDownCast (view);
     
     if (view2d)
     {
-      view2d->SetMiddleButtonInteractionStyle (view2d->GetInteractionStyle());
-      view2d->SetRightButtonInteractionStyle (view2d->GetInteractionStyle());
+      view2d->SetMiddleButtonInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypePan);
+      view2d->SetRightButtonInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypePan);
     }
     
   }
 }
-
-
 
 
 void vtkLandmarkManager::SelectLandmark(vtkLandmark* landmark)
@@ -1340,7 +1325,7 @@ void vtkLandmarkManager::SelectLandmark(vtkLandmark* landmark)
 
 //   if (this->ViewList->GetNumberOfItems())
 //   {
-//     vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(0));
+//     vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(0));
 //     view->SyncRender();
 //   }  
 }
@@ -1385,14 +1370,14 @@ void vtkLandmarkManager::Update()
     return;
 
   int voxelcoord[3];
-  vtkViewImage* view = vtkViewImage::SafeDownCast(this->ViewList->GetItemAsObject(0));
+  vtkImageView* view = vtkImageView::SafeDownCast(this->ViewList->GetItemAsObject(0));
   if ( !view )
     return;
   
   for (unsigned int i=0; i < this->GetNumberOfLandmarks(); i++)
   {
     double* coord = this->GetLandmark(i)->GetPosition();
-    view->GetVoxelCoordinates(coord, voxelcoord);
+    view->GetImageCoordinatesFromWorldCoordinates(coord, voxelcoord);
     this->GetLandmark(i)->SetVoxelCoord(voxelcoord);
   }
   
@@ -1433,12 +1418,12 @@ void vtkLandmarkManager::LinkerOn(void)
   
   for (int i=0; i < this->ViewList->GetNumberOfItems(); i++)
   {
-    vtkViewImage* view = vtkViewImage::SafeDownCast(this->ViewList->GetItemAsObject(i));
+    vtkImageView* view = vtkImageView::SafeDownCast(this->ViewList->GetItemAsObject(i));
     if ( view )
     {
-      vtkActor* actor = view->GetDataSetActor (this->Linker);
+      vtkProp3D* actor = view->FindDataSetActor (this->Linker);
       if (actor)
-	actor->SetVisibility (this->LinkerVisibility);
+  	actor->SetVisibility (this->LinkerVisibility);
     }
   }
 
@@ -1450,12 +1435,12 @@ void vtkLandmarkManager::LinkerOff(void)
   
   for (int i=0; i < this->ViewList->GetNumberOfItems(); i++)
   {
-    vtkViewImage* view = vtkViewImage::SafeDownCast(this->ViewList->GetItemAsObject(i));
+    vtkImageView* view = vtkImageView::SafeDownCast(this->ViewList->GetItemAsObject(i));
     if ( view )
     {
-      vtkActor* actor = view->GetDataSetActor (this->Linker);
+      vtkProp3D* actor = view->FindDataSetActor (this->Linker);
       if (actor)
-	actor->SetVisibility (this->LinkerVisibility);
+  	actor->SetVisibility (this->LinkerVisibility);
     }
   }
 }
@@ -1477,17 +1462,14 @@ void vtkLandmarkManager::UpdateLinker(void)
   {
     if (this->ViewList->GetNumberOfItems())
     {
-      vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(0));
-      view->SyncRemoveDataSet(this->Linker);
+      this->ViewList->SyncRemoveDataSet (this->Linker);
     }  
   }
   if (this->Linker->GetNumberOfPoints() == 2)
   {
     if (this->ViewList->GetNumberOfItems())
     {
-      
-      vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(0));
-      view->SyncAddDataSet(this->Linker, this->GetSelectedProperty());
+      this->ViewList->SyncAddDataSet (this->Linker, this->GetSelectedProperty());
     }  
   }
 

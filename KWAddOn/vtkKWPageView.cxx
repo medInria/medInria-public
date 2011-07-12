@@ -33,8 +33,10 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageView/vtkImageViewCollection.h>
 
 #include <vtkPlaneWidget.h>
+#include <vtkImageActor.h>
 
 #include <vtkDataSet.h>
+#include <vtkDataSetCollection.h>
 #include <vtkRenderWindowInteractor.h>
 
 #include <vtkLookupTable.h>
@@ -43,6 +45,8 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkLandmarkManager.h>
 #include <vtkRendererCollection.h>
+#include <vtkImageViewCornerAnnotation.h>
+#include <vtkTextProperty.h>
 
 
 //----------------------------------------------------------------------------
@@ -180,34 +184,22 @@ void vtkKWPageView::SetProperties()
   this->View1->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_AXIAL);
   this->View2->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
   this->View3->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
-
-  this->View1->SetAboutData ("INRIA 2008 - CardioViz3D");
-  this->View2->SetAboutData ("INRIA 2008 - CardioViz3D");
-  this->View3->SetAboutData ("INRIA 2008 - CardioViz3D");
-  this->View4->SetAboutData ("INRIA 2008 - CardioViz3D");
-
-  this->View1->ScalarBarVisibilityOn();
-  this->View2->ScalarBarVisibilityOn();
-  this->View3->ScalarBarVisibilityOn();
-  this->View4->ScalarBarVisibilityOn();
-
-  this->View1->SetBackgroundColor (0,0,0);
-  this->View2->SetBackgroundColor (0,0,0);
-  this->View3->SetBackgroundColor (0,0,0);
-  this->View4->SetBackgroundColor (0.9,0.9,0.9);
-
-  double textcolor[3]={0.0,0.0,0.0};
-  this->View4->SetTextColor (textcolor);
-  this->View4->SetRenderingModeToPlanar();
-
+  
+  this->View1->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
+  this->View2->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
+  this->View3->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
+  this->View4->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
+  
+  m_Pool->SyncSetShowScalarBar (1);
+  m_Pool->SyncSetBackground (0,0,0);
+  
+  this->View4->SetBackground (0.9,0.9,0.9);
+  this->View4->GetTextProperty()->SetColor (0,0,0);
 
   this->LandmarkManager->AddView(this->GetView1()); 
   this->LandmarkManager->AddView(this->GetView2());
   this->LandmarkManager->AddView(this->GetView3());
   this->LandmarkManager->AddView(this->GetView4());
-
-
-  
 }
 
 void vtkKWPageView::PackSelf()
@@ -353,13 +345,10 @@ void vtkKWPageView::SetImage (vtkImageData* image, vtkMatrix4x4* orientationmatr
   this->View1->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_AXIAL);
   this->View2->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_CORONAL);
   this->View3->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
-  if (orientationmatrix)
-    this->View4->SetOrientationMatrix (orientationmatrix);
   
   m_Pool->SyncReset();
 
   this->SetOrientationMatrix (orientationmatrix);
-
   
   this->LandmarkManager->InteractionOn();
 }
@@ -382,7 +371,7 @@ void vtkKWPageView::SetImage (itk::Image<float, 3>::Pointer image)
 
 vtkImageData* vtkKWPageView::GetImage ()
 {
-  return this->View1->GetImage();  
+  return this->View1->GetInput();  
 }
 
 //---------------------------------------------------------------------------
@@ -580,7 +569,7 @@ void vtkKWPageView::SetFullScreenView (int id)
   this->Script ("pack %s -side top -expand yes -fill both -padx 2 -pady 2",
 		widget->GetWidgetName());
 	
-  view->Update();
+  view->Modified();
   view->Render();
   this->IsFullScreen = id;
 }
@@ -648,16 +637,16 @@ int vtkKWPageView::GetVisibility (vtkDataSet* dataset)
 
   if (this->GetImage() && vtkImageData::SafeDownCast(dataset))
   {
-    return this->View1->GetVisibility ();
+    return this->View1->GetImageActor()->GetVisibility();
   }
-  if (this->View1->HasDataSet (dataset))
-    return this->View1->GetDataSetActor (dataset)->GetVisibility ();
-  if (this->View2->HasDataSet (dataset))
-    return this->View2->GetDataSetActor (dataset)->GetVisibility ();
-  if (this->View3->HasDataSet (dataset))
-    return this->View3->GetDataSetActor (dataset)->GetVisibility ();
-  if (this->View4->HasDataSet (dataset))
-    return this->View4->GetDataSetActor (dataset)->GetVisibility ();
+  if (this->View1->GetDataSetCollection()->IsItemPresent (dataset))
+    return this->View1->FindDataSetActor (dataset)->GetVisibility ();
+  if (this->View2->GetDataSetCollection()->IsItemPresent (dataset))
+    return this->View2->FindDataSetActor (dataset)->GetVisibility ();
+  if (this->View3->GetDataSetCollection()->IsItemPresent (dataset))
+    return this->View3->FindDataSetActor (dataset)->GetVisibility ();
+  if (this->View4->GetDataSetCollection()->IsItemPresent (dataset))
+    return this->View4->FindDataSetActor (dataset)->GetVisibility ();
   return 0;
 }
 
@@ -669,20 +658,20 @@ void vtkKWPageView::SetVisibility (vtkDataSet* dataset, bool state)
 
   if (this->GetImage() && vtkImageData::SafeDownCast(dataset))
   {
-    this->View1->SetVisibility (state);
-    this->View2->SetVisibility (state);
-    this->View3->SetVisibility (state);
-    this->View4->SetVisibility (state);
+    this->View1->GetImageActor()->SetVisibility (state);
+    this->View2->GetImageActor()->SetVisibility (state);
+    this->View3->GetImageActor()->SetVisibility (state);
+    // this->View4->SetVisibility (state);
   }
 
-  if (this->View1->HasDataSet (dataset))
-    this->View1->GetDataSetActor (dataset)->SetVisibility (state);
-  if (this->View2->HasDataSet (dataset))
-    this->View2->GetDataSetActor (dataset)->SetVisibility (state);
-  if (this->View3->HasDataSet (dataset))
-    this->View3->GetDataSetActor (dataset)->SetVisibility (state);
-  if (this->View4->HasDataSet (dataset))
-    this->View4->GetDataSetActor (dataset)->SetVisibility (state);
+  if (this->View1->GetDataSetCollection()->IsItemPresent (dataset))
+    this->View1->FindDataSetActor (dataset)->SetVisibility (state);
+  if (this->View2->GetDataSetCollection()->IsItemPresent (dataset))
+    this->View2->FindDataSetActor (dataset)->SetVisibility (state);
+  if (this->View3->GetDataSetCollection()->IsItemPresent (dataset))
+    this->View3->FindDataSetActor (dataset)->SetVisibility (state);
+  if (this->View4->GetDataSetCollection()->IsItemPresent (dataset))
+    this->View4->FindDataSetActor (dataset)->SetVisibility (state);
 }
 
 
@@ -699,67 +688,54 @@ void vtkKWPageView::SetTag (const char* tag)
 void vtkKWPageView::SetScalarBarVisibility (bool state)
 {
 
-  this->View1->SetScalarBarVisibility(state);
-  this->View2->SetScalarBarVisibility(state);
-  this->View3->SetScalarBarVisibility(state);
-  this->View4->SetScalarBarVisibility(state);
-
+  this->m_Pool->SyncSetShowScalarBar(state);
   
 }
 
 int vtkKWPageView::GetScalarBarVisibility (void) const
 {
-  return this->View1->GetScalarBarVisibility();
-  
+  return this->View1->GetShowScalarBar();
 }
 
 void  vtkKWPageView::SetLookupTable (vtkLookupTable* lut)
 {
-  
   if( !lut )
-  {
     return;
-  }
-
- this->View1->SetLookupTable (lut);
- this->View2->SetLookupTable (lut);
- this->View3->SetLookupTable (lut);
- this->View4->SetLookupTable (lut);
+  this->m_Pool->SyncSetLookupTable (lut);
 }
 
 void vtkKWPageView::RemoveDataSet(vtkDataSet* dataset)
 {
-  this->View1->RemoveDataSet(dataset);
-  this->View2->RemoveDataSet(dataset);
-  this->View3->RemoveDataSet(dataset);
-  this->View4->RemoveDataSet(dataset);
+  this->m_Pool->SyncRemoveDataSet(vtkPointSet::SafeDownCast (dataset));
 }
 
 std::vector<vtkActor*> vtkKWPageView::AddDataSet(vtkDataSet* dataset, vtkProperty* property)
 {
   std::vector<vtkActor*> list;
 
-  vtkActor* actor1 = NULL;
-  vtkActor* actor2 = NULL;
-  vtkActor* actor3 = NULL;
-  vtkActor* actor4 = NULL;
-  actor1 = this->View1->AddDataSet(dataset, property);
-  actor2 = this->View2->AddDataSet(dataset, property);
-  actor3 = this->View3->AddDataSet(dataset, property);
-  actor4 = this->View4->AddDataSet(dataset, property);
-  if (actor1) list.push_back(actor1);
-  if (actor2) list.push_back(actor2);
-  if (actor3) list.push_back(actor3);
-  if (actor4) list.push_back(actor4);
+  // vtkActor* actor1 = NULL;
+  // vtkActor* actor2 = NULL;
+  // vtkActor* actor3 = NULL;
+  // vtkActor* actor4 = NULL;
+  // actor1 = this->View1->AddDataSet(dataset, property);
+  // actor2 = this->View2->AddDataSet(dataset, property);
+  // actor3 = this->View3->AddDataSet(dataset, property);
+  // actor4 = this->View4->AddDataSet(dataset, property);
+  // if (actor1) list.push_back(actor1);
+  // if (actor2) list.push_back(actor2);
+  // if (actor3) list.push_back(actor3);
+  // if (actor4) list.push_back(actor4);
+  if (vtkPointSet::SafeDownCast (dataset))
+    this->m_Pool->SyncAddDataSet(vtkPointSet::SafeDownCast (dataset), property);
+  else
+    this->m_Pool->SyncSetInput (vtkImageData::SafeDownCast (dataset));
   
   return list;
-  
 }
 
 
 std::vector<vtkActor*> vtkKWPageView::AddPolyData(vtkPolyData* dataset, vtkProperty* property, double thickness)
 {
-  
   std::vector<vtkActor*> list;
   return list;
 }
@@ -812,11 +788,11 @@ bool vtkKWPageView::HasDataSet (vtkDataSet* dataset)
   if (!dataset)
     return false;
 
-  if (this->View1->HasDataSet (dataset) ||
-      this->View2->HasDataSet (dataset) ||
-      this->View3->HasDataSet (dataset) ||
-      this->View4->HasDataSet (dataset) ||
-      this->View1->GetImage() == dataset
+  if (this->View1->GetDataSetCollection()->IsItemPresent (dataset) ||
+      this->View2->GetDataSetCollection()->IsItemPresent (dataset) ||
+      this->View3->GetDataSetCollection()->IsItemPresent (dataset) ||
+      this->View4->GetDataSetCollection()->IsItemPresent (dataset) ||
+      this->View1->GetInput() == dataset
       )
     return true;
 
@@ -834,23 +810,28 @@ std::vector<vtkActor*> vtkKWPageView::AddMetaDataSet(vtkMetaDataSet* metadataset
   vtkDataSet* dataset = metadataset->GetDataSet();
   vtkProperty* property = vtkProperty::SafeDownCast (metadataset->GetProperty());
 
-  vtkActor* actor1 = NULL;
-  vtkActor* actor2 = NULL;
-  vtkActor* actor3 = NULL;
-  vtkActor* actor4 = NULL;
-  actor1 = this->View1->AddDataSet(dataset, property);
-  actor2 = this->View2->AddDataSet(dataset, property);
-  actor3 = this->View3->AddDataSet(dataset, property);
-  actor4 = this->View4->AddDataSet(dataset, property);
+  // vtkActor* actor1 = NULL;
+  // vtkActor* actor2 = NULL;
+  // vtkActor* actor3 = NULL;
+  // vtkActor* actor4 = NULL;
+  // actor1 = this->View1->AddDataSet(dataset, property);
+  // actor2 = this->View2->AddDataSet(dataset, property);
+  // actor3 = this->View3->AddDataSet(dataset, property);
+  // actor4 = this->View4->AddDataSet(dataset, property);
   
-  if (actor1) list.push_back(actor1);
-  if (actor2) list.push_back(actor2);
-  if (actor3) list.push_back(actor3);
-  if (actor4) list.push_back(actor4);
+  // if (actor1) list.push_back(actor1);
+  // if (actor2) list.push_back(actor2);
+  // if (actor3) list.push_back(actor3);
+  // if (actor4) list.push_back(actor4);
 
+  if (vtkImageData::SafeDownCast (dataset))
+    this->m_Pool->SyncSetInput (vtkImageData::SafeDownCast (dataset));
+  else
+    this->m_Pool->SyncAddDataSet (vtkPointSet::SafeDownCast (dataset));    
+  
   if (metadataset->GetWirePolyData())
   {
-    vtkDataSet* wire = metadataset->GetWirePolyData();
+    vtkPointSet* wire = metadataset->GetWirePolyData();
     
     vtkActor* actor5 = NULL;
     vtkActor* actor6 = NULL;
@@ -871,7 +852,7 @@ std::vector<vtkActor*> vtkKWPageView::AddMetaDataSet(vtkMetaDataSet* metadataset
 
   if (this->FirstRender)
   {
-    this->GetView4()->ResetZoom();
+    this->GetView4()->ResetCamera();
     this->FirstRender = false;
   }
 
@@ -882,7 +863,12 @@ std::vector<vtkActor*> vtkKWPageView::AddMetaDataSet(vtkMetaDataSet* metadataset
 
 void vtkKWPageView::RemoveMetaDataSet(vtkMetaDataSet* metadataset)
 {
-  vtkDataSet* dataset = metadataset->GetDataSet();
+  vtkPointSet* dataset = vtkPointSet::SafeDownCast (metadataset->GetDataSet());
+  if (!dataset)
+  {
+    this->m_Pool->SyncSetInput (NULL);
+    return;
+  }
   
   this->View1->RemoveDataSet(dataset);
   this->View2->RemoveDataSet(dataset);
@@ -891,15 +877,15 @@ void vtkKWPageView::RemoveMetaDataSet(vtkMetaDataSet* metadataset)
 
   for (unsigned int i=0; i<metadataset->GetNumberOfActors(); i++)
   {
-    this->View1->RemoveActor (metadataset->GetActor (i));
-    this->View2->RemoveActor (metadataset->GetActor (i));
-    this->View3->RemoveActor (metadataset->GetActor (i));
-    this->View4->RemoveActor (metadataset->GetActor (i));
+    this->View1->GetRenderer()->RemoveViewProp (metadataset->GetActor (i));
+    this->View2->GetRenderer()->RemoveViewProp (metadataset->GetActor (i));
+    this->View3->GetRenderer()->RemoveViewProp (metadataset->GetActor (i));
+    this->View4->GetRenderer()->RemoveViewProp (metadataset->GetActor (i));
   }
   
   if (metadataset->GetWirePolyData())
   {
-    vtkDataSet* wire = metadataset->GetWirePolyData();
+    vtkPointSet* wire = metadataset->GetWirePolyData();
 
     this->View1->RemoveDataSet(wire);
     this->View2->RemoveDataSet(wire);

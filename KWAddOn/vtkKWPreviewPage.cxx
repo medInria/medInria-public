@@ -30,6 +30,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkLookupTableManager.h>
+#include <vtkImageViewCornerAnnotation.h>
 
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
@@ -54,7 +55,7 @@ vtkKWPreviewPage::vtkKWPreviewPage()
 
   this->Pool = vtkImageViewCollection::New();
   this->Pool->LinkCameraOn();
-  this->Pool->LinkPositionOff();
+  this->Pool->LinkCurrentPointOff();
   
   this->ViewList = vtkCollection::New();
   this->RenderWidgetList = vtkCollection::New();
@@ -66,7 +67,7 @@ vtkKWPreviewPage::vtkKWPreviewPage()
   this->LinkViews = true;
   this->OrientationMode = 2;
   this->MaxNumberOfColumns = 5;
-  this->InteractionMode = vtkImageView2D::SELECT_INTERACTION;
+  this->InteractionMode = vtkInteractorStyleImageView2D::InteractionTypeSlice;
 }
 
 //----------------------------------------------------------------------------
@@ -120,14 +121,14 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
 
   view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
   
-  view->SetImage (image);
-  view->SetAboutData (name);
-  view->SetBackgroundColor (0,0,0);
+  view->SetInput (image);
+  view->GetCornerAnnotation()->SetText (1, name);
+  view->SetBackground (0,0,0);
   view->SetShowAnnotations (false);
 
   
   if (matrix)
-    view->SetDirectionMatrix (matrix);
+    view->SetOrientationMatrix (matrix);
   view->ResetCurrentPoint();
   view->ResetWindowLevel();
   
@@ -181,12 +182,12 @@ void vtkKWPreviewPage::Render (void)
 }
 
 
-//----------------------------------------------------------------------------
-void vtkKWPreviewPage::SetViewOrientationMode (int mode)
-{
-  this->Render();
+// //----------------------------------------------------------------------------
+// void vtkKWPreviewPage::SetViewOrientationMode (int mode)
+// {
+//   this->Render();
   
-}
+// }
 
 
 //----------------------------------------------------------------------------
@@ -233,7 +234,7 @@ vtkImageView2D* vtkKWPreviewPage::FindView(vtkImageData* imagedata, int &cookie)
     vtkImageView2D* view = vtkImageView2D::SafeDownCast(this->ViewList->GetItemAsObject(i));
     if (view)
     {
-      if (view->GetImage() == imagedata)
+      if (view->GetInput() == imagedata)
       {
 	cookie = i;
 	return view;

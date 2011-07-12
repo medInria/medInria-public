@@ -22,7 +22,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 
 #include <vtkKWMessageDialog.h>
-#include <itkGDCMImporter2.h>
+#include <itkGDCMImporter3.h>
 
 
 class vtkKWMessageWithLabel;
@@ -57,8 +57,8 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   //BTX
   typedef signed short ImageComponentType ;
   typedef itk::Image<ImageComponentType, 3> ImageType;
-  typedef itk::GDCMImporter2<ImageType> ImporterType;
-  typedef ImporterType::DICOMImageType DICOMImageType;
+  typedef itk::GDCMImporter3<ImageType> ImporterType;
+  typedef itk::GDCMVolume<ImageComponentType> GDCMVolume;
   
   //ETX
 
@@ -128,7 +128,7 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   virtual void Update(void);
   virtual void UpdatePreview (void);
   //BTX
-  virtual void UpdatePreview (DICOMImageType::Pointer volume);
+  virtual void UpdatePreview (GDCMVolume::Pointer volume);
   //ETX
   virtual void UpdateMultiColumnList (void);
 

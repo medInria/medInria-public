@@ -34,7 +34,6 @@ SET(vtkVisuManagement_LIBS
  vtkFiltering 
  vtkRendering
  vtkWidgets
- vtkRenderingAddOn
  vtkDataManagement
 )
 
@@ -58,31 +57,31 @@ TARGET_LINK_LIBRARIES(vtkVisuManagement
  ${vtkVisuManagement_LIBS}
 )
 
-#  IF (VTK_WRAP_TCL)
-#    
-#    VTK_WRAP_TCL3( vtkVisuManagementLib
-#      vtkVisuManagementTCL_SRCS
-#      "vtkVectorVisuManager.cxx"
-#      ""
-#      "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
-#    )
-#
-#    ADD_LIBRARY(vtkVisuManagementTCL ${vtkINRIA3D_LIBS_STYLE}
-#    ${vtkVisuManagementTCL_SRCS}
-#    )
-#    TARGET_LINK_LIBRARIES(vtkVisuManagementTCL
-#    vtkVisuManagement
-#    vtkCommonTCL
-#    vtkRenderingTCL
-#    vtkWidgetsTCL
-#    vtkVolumeRenderingTCL
-#    vtkHybridTCL
-#    vtkImagingTCL
-#    )
-# 
-#    INSTALL_TARGETS(/lib vtkVisuManagementTCL)
-#
-#  ENDIF(VTK_WRAP_TCL)
+  IF (VTK_WRAP_TCL)
+   
+    VTK_WRAP_TCL3( vtkVisuManagementLib
+      vtkVisuManagementTCL_SRCS
+      "${vtkVisuManagement_SRCS}"
+      ""
+      "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
+    )
+
+    ADD_LIBRARY(vtkVisuManagementTCL ${vtkINRIA3D_LIBS_STYLE}
+    ${vtkVisuManagementTCL_SRCS}
+    )
+    TARGET_LINK_LIBRARIES(vtkVisuManagementTCL
+    vtkVisuManagement
+    vtkCommonTCL
+    vtkRenderingTCL
+    vtkWidgetsTCL
+    vtkVolumeRenderingTCL
+    vtkHybridTCL
+    vtkImagingTCL
+    )
+ 
+    INSTALL_TARGETS(/lib vtkVisuManagementTCL)
+
+  ENDIF(VTK_WRAP_TCL)
 
 if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
   install(TARGETS vtkVisuManagement
