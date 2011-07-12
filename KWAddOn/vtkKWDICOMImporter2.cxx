@@ -23,7 +23,7 @@
 #include <vtkKWLoadSaveDialog.h>
 #include "vtkKWSeparator.h"
 
-#include <vtkKWDicomInfoWidget.h>
+//#include <vtkKWDicomInfoWidget.h>
 #include <pixmap/KWAddOnResources.h>
 #include <vtkKWIcon.h>
 #include <kwcommon.h>
@@ -47,7 +47,7 @@
 #include <vtkKWMenu.h>
 #include <vtkTimerLog.h>
 #include <vtkStringArray.h>
-#include <vtkKWDicomInfoWidget.h>
+//#include <vtkKWDicomInfoWidget.h>
 #include <vtkKWTkUtilities.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderWindow.h>
@@ -78,7 +78,7 @@
 #include <itkImageSeriesReshapeFilter.h>
 #include <vtkKWPushButtonWithMenu.h>
 #include <vtkKWMenu.h>
-
+#include <vtkImageViewCornerAnnotation.h>
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWDICOMImporter2 );
@@ -89,7 +89,6 @@ vtkKWDICOMImporter2::vtkKWDICOMImporter2()
 {
 
   this->GDCMImporter = ImporterType::New();
-  this->GDCMImporter->RecursiveScanOn();
 
   this->Preview      = vtkImageView2D::New();
   this->RenderWidget = vtkKWRenderWidget::New();
@@ -120,8 +119,6 @@ vtkKWDICOMImporter2::vtkKWDICOMImporter2()
 
   this->InteractiveStatus = STATUS_DISABLED;
   this->InteractiveVolume = 0;
-  
-  
 
   this->ModalOff();
   
@@ -130,7 +127,6 @@ vtkKWDICOMImporter2::vtkKWDICOMImporter2()
 //----------------------------------------------------------------------------
 vtkKWDICOMImporter2::~vtkKWDICOMImporter2()
 {
-
 
   this->Preview->Delete();
   this->RenderWidget->SetParent (NULL);
@@ -168,16 +164,16 @@ void vtkKWDICOMImporter2::CreatePreview()
   
   this->RenderWidget->SetWidth(150);
   this->RenderWidget->SetHeight(150);
-
   
+  // this->Preview->SetupInteractor (this->RenderWidget->GetRenderWindow()->GetInteractor());
+  // vtkRenderer* renderer = vtkRenderer::New();
+  // this->Preview->SetRenderer(renderer);
+  // this->RenderWidget->GetRenderWindow()->AddRenderer (renderer);
   
-  this->Preview->SetupInteractor (this->RenderWidget->GetRenderWindow()->GetInteractor());
-
-  this->Preview->SetAboutData ("");
-  this->Preview->SetBackgroundColor (0,0,0);
-  this->Preview->SetShowAnnotations (false);
-  this->Preview->SetShowDirections(false);
-  
+  // this->Preview->GetCornerAnnotation()->SetText (1, "");
+  // double zeros[3] = {0,0,0};
+  // this->Preview->SetBackground (zeros);
+  // this->Preview->SetShowAnnotations (false);
   
 }
 
@@ -511,27 +507,27 @@ void vtkKWDICOMImporter2::UpdateMultiColumnList()
       win->GetProgressGauge()->SetValue((int)(100.0 * i / this->GDCMImporter->GetNumberOfOutputs()));
     }
     
-    DICOMImageType::Pointer image =
-      static_cast< DICOMImageType*>(this->GDCMImporter->GetOutput (i));
+    GDCMVolume::Pointer image =
+      static_cast<GDCMVolume*>(this->GDCMImporter->GetOutput (i));
     if (image.IsNull())
       continue;
     
     std::string name = image->GetName();
-    unsigned int nfiles = image->GetFileList()->size();
-    unsigned int dim[3] = {0,0,0};
-    if (nfiles)
-    {
-      dim[0] = (*image->GetFileList())[0]->GetXSize();
-      dim[1] = (*image->GetFileList())[0]->GetYSize();
-      dim[2] = nfiles;
-    }
-    std::ostringstream dimensions;
-    dimensions<<dim[0]<<"x"<<dim[1]<<"x"<<dim[2];
+    // unsigned int nfiles = image->GetFileList()->size();
+    // unsigned int dim[3] = {0,0,0};
+    // if (nfiles)
+    // {
+    //   dim[0] = (*image->GetFileList())[0]->GetXSize();
+    //   dim[1] = (*image->GetFileList())[0]->GetYSize();
+    //   dim[2] = nfiles;
+    // }
+    // std::ostringstream dimensions;
+    // dimensions<<dim[0]<<"x"<<dim[1]<<"x"<<dim[2];
 
     this->MultiColumnList->InsertCellText(id_to_insert, 0, name.c_str());
-    this->MultiColumnList->InsertCellText(id_to_insert, 1, dimensions.str().c_str());
-//     this->MultiColumnList->InsertCellTextAsInt(i, 2, (int)(dcmvolumelist[i]->IsSequence()));    
-    this->MultiColumnList->SetCellWindowCommandToCheckButton(id_to_insert, 2);
+    // this->MultiColumnList->InsertCellText(id_to_insert, 1, dimensions.str().c_str());
+//     this->MultiColumnList->InsertCellTextAsInt(i, 2, (int)(dcmvolumelist[i]->IsSequence()));
+//    this->MultiColumnList->SetCellWindowCommandToCheckButton(id_to_insert, 2);
     
   }
 
@@ -551,45 +547,43 @@ void vtkKWDICOMImporter2::UpdatePreview()
 {
 }
 
-
-
 //----------------------------------------------------------------------------
 void vtkKWDICOMImporter2::OpenFileCallback()
 {
-  vtkKWLoadSaveDialog *dialog = vtkKWLoadSaveDialog::New() ;
+  // vtkKWLoadSaveDialog *dialog = vtkKWLoadSaveDialog::New() ;
   
-  dialog->SetParent(this);
-  dialog->Create();
-  dialog->MultipleSelectionOn();
+  // dialog->SetParent(this);
+  // dialog->Create();
+  // dialog->MultipleSelectionOn();
 
-  dialog->RetrieveLastPathFromRegistry("DataPath");
-  dialog->SetTitle ("Open DICOM file(s)");
+  // dialog->RetrieveLastPathFromRegistry("DataPath");
+  // dialog->SetTitle ("Open DICOM file(s)");
 
-  if ( dialog->Invoke () == 0 )
-  {
-    dialog->Delete();
-    return ;
-  }
+  // if ( dialog->Invoke () == 0 )
+  // {
+  //   dialog->Delete();
+  //   return ;
+  // }
   
-  for (int i=0; i<dialog->GetNumberOfFileNames(); i++)
-  {
-    const char* filename = dialog->GetFileNames()->GetValue (i);
-    try
-    {
-      this->GDCMImporter->ReadFile (filename);
-    }
-    catch (itk::ExceptionObject & e)
-    {
-      std::cerr << e<<std::endl;
-      vtkErrorMacro(<<"Error when reading file, skipping ("<<filename<<")"<<endl);
+  // for (int i=0; i<dialog->GetNumberOfFileNames(); i++)
+  // {
+  //   const char* filename = dialog->GetFileNames()->GetValue (i);
+  //   try
+  //   {
+  //     this->GDCMImporter->ReadFile (filename);
+  //   }
+  //   catch (itk::ExceptionObject & e)
+  //   {
+  //     std::cerr << e<<std::endl;
+  //     vtkErrorMacro(<<"Error when reading file, skipping ("<<filename<<")"<<endl);
       
-    }      
-  }
+  //   }      
+  // }
   
-  dialog->SaveLastPathToRegistry("DataPath");
-  dialog->Delete();
+  // dialog->SaveLastPathToRegistry("DataPath");
+  // dialog->Delete();
 
-  this->Update();
+  // this->Update();
 
 }
 
@@ -614,9 +608,7 @@ void vtkKWDICOMImporter2::OpenDirectoryCallback()
     return ;
   }
   
-  const char* directory = dialog->GetFileName();
-  
-  this->GDCMImporter->RecursiveScanOn();
+  const char* directory = dialog->GetFileName();  
   this->GDCMImporter->SetInputDirectory(directory);
 
   vtkKWWindowBase *win = this->GetApplication()->GetNthWindow(0);
@@ -671,7 +663,7 @@ void vtkKWDICOMImporter2::ResetCallback()
     this->InteractiveStatus = STATUS_STOP;
   try
   {
-    this->GDCMImporter->InitializeOutputs();
+    // this->GDCMImporter->InitializeOutputs();
   }
   catch (itk::ExceptionObject & e)
   {
@@ -695,18 +687,18 @@ void vtkKWDICOMImporter2::RemoveVolumeCallback()
   int *indices = new int[Number_Of_Selected];
   this->MultiColumnList->GetSelectedRows(indices);
   this->MultiColumnList->ClearSelection();
-  std::vector<DICOMImageType::Pointer> dcmlist;
+  std::vector<GDCMVolume::Pointer> dcmlist;
     
   for (unsigned int i=0; i<Number_Of_Selected; i++)
   {
-    DICOMImageType::Pointer image =
-      static_cast< DICOMImageType*>(this->GDCMImporter->GetOutput (indices[i]));
+    GDCMVolume::Pointer image =
+      static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (indices[i]));
     dcmlist.push_back(image);      
   }
 
   for (unsigned int i=0; i<dcmlist.size(); i++)
   {
-    this->GDCMImporter->RemoveDICOMImage (dcmlist[i]);
+    this->GDCMImporter->RemoveVolume (dcmlist[i]);
   }
   delete [] indices;
 
@@ -718,14 +710,14 @@ void vtkKWDICOMImporter2::RemoveVolumeCallback()
 //----------------------------------------------------------------------------
 void vtkKWDICOMImporter2::AutoOrganizeCallback()
 {
-  try
-  {
-    this->GDCMImporter->AutoOrganization();
-  }
-  catch (itk::ExceptionObject & e)
-  {
-    std::cerr << e;
-  }
+  // try
+  // {
+  //   this->GDCMImporter->AutoOrganization();
+  // }
+  // catch (itk::ExceptionObject & e)
+  // {
+  //   std::cerr << e;
+  // }
 
   
   this->Update();
@@ -735,16 +727,16 @@ void vtkKWDICOMImporter2::AutoOrganizeCallback()
 //----------------------------------------------------------------------------
 void vtkKWDICOMImporter2::AutoOrganizePositionBasedCallback()
 {
-  try
-  {
-    this->GDCMImporter->AutoOrganizationPositionBased();
-  }
-  catch (itk::ExceptionObject & e)
-  {
-    std::cerr << e;
-  }
+  // try
+  // {
+  //   this->GDCMImporter->AutoOrganizationPositionBased();
+  // }
+  // catch (itk::ExceptionObject & e)
+  // {
+  //   std::cerr << e;
+  // }
   
-  this->Update();
+  // this->Update();
 }
 
 //----------------------------------------------------------------------------
@@ -759,7 +751,7 @@ void vtkKWDICOMImporter2::OnceVolumeCallback()
   int* indices = new int[Number_Of_Selected];
   this->MultiColumnList->GetSelectedRows(indices);
   this->MultiColumnList->ClearSelection();
-  std::vector<DICOMImageType::Pointer> dcmlist;
+  std::vector<GDCMVolume::Pointer> dcmlist;
   
   for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
   {
@@ -775,14 +767,14 @@ void vtkKWDICOMImporter2::OnceVolumeCallback()
     }
     if (!isselected)
     {
-      DICOMImageType::Pointer image =
-	static_cast< DICOMImageType*>(this->GDCMImporter->GetOutput (i));
+      GDCMVolume::Pointer image =
+	static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (i));
       dcmlist.push_back(image);
     }
   }
 
   for (unsigned int i=0; i<dcmlist.size(); i++)
-    this->GDCMImporter->RemoveDICOMImage (dcmlist[i]);  
+    this->GDCMImporter->RemoveVolume (dcmlist[i]);  
 
   this->Update();
 
@@ -812,8 +804,8 @@ void vtkKWDICOMImporter2::SelectionChangedCallback()
     return;
   }
   
-  DICOMImageType::Pointer image =
-    static_cast< DICOMImageType*>(this->GDCMImporter->GetOutput (indices[0]));
+  GDCMVolume::Pointer image =
+    static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (indices[0]));
   if (!image.IsNull())
     this->UpdatePreview(image);
 
@@ -843,86 +835,86 @@ void vtkKWDICOMImporter2::InteractiveModeCallback(int val)
 void vtkKWDICOMImporter2::StartInteractive()
 {
 
-  const unsigned int Number_Of_Selected = this->MultiColumnList->GetNumberOfSelectedRows();
-  if (Number_Of_Selected != 1)
-  {
-    if ( this->InteractiveStatus != STATUS_DISABLED)
-      this->InteractiveStatus = STATUS_STOP;
+//   const unsigned int Number_Of_Selected = this->MultiColumnList->GetNumberOfSelectedRows();
+//   if (Number_Of_Selected != 1)
+//   {
+//     if ( this->InteractiveStatus != STATUS_DISABLED)
+//       this->InteractiveStatus = STATUS_STOP;
     
-    return;
-  }
+//     return;
+//   }
 
-  int indices[1];
-  this->MultiColumnList->GetSelectedRows(indices);
+//   int indices[1];
+//   this->MultiColumnList->GetSelectedRows(indices);
   
-  DICOMImageType::Pointer image =   
-    static_cast< DICOMImageType*>(this->GDCMImporter->GetOutput (indices[0]));
+//   GDCMVolume::Pointer image =   
+//     static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (indices[0]));
   
-  if (image.IsNull())
-    return;
+//   if (image.IsNull())
+//     return;
 
-  try
-  {
-//     image->DisconnectPipeline();
-    image->Build();
-  }
-  catch (itk::ExceptionObject &e)
-  {
-    std::cerr<< e <<std::endl;
-    vtkErrorMacro (<<"cannot build DICOM volume !"<<endl);
-    return;
-  }
+//   try
+//   {
+// //     image->DisconnectPipeline();
+//     image->Build();
+//   }
+//   catch (itk::ExceptionObject &e)
+//   {
+//     std::cerr<< e <<std::endl;
+//     vtkErrorMacro (<<"cannot build DICOM volume !"<<endl);
+//     return;
+//   }
   
-  this->Preview->SetITKImage (static_cast<ImageType*>(image));
+//   this->Preview->SetITKImage (static_cast<ImageType*>(image));
 
-  this->Preview->Reset();
-  this->Preview->Render();    
+//   this->Preview->Reset();
+//   this->Preview->Render();    
   
-  unsigned int currentvolumeid = this->InteractiveVolume;
-  vtkTimerLog* TimerLog = vtkTimerLog::New();
-  double time = 0.0;
-  double absolutetime = 0.0;
-  int slice = this->Preview->GetSlice();
+//   unsigned int currentvolumeid = this->InteractiveVolume;
+//   vtkTimerLog* TimerLog = vtkTimerLog::New();
+//   double time = 0.0;
+//   double absolutetime = 0.0;
+//   int slice = this->Preview->GetSlice();
 
-  int e = 1;
-  double timebetweenslices = 0.1;
+//   int e = 1;
+//   double timebetweenslices = 0.1;
   
-  TimerLog->StartTimer();
+//   TimerLog->StartTimer();
 
-  this->InteractiveStatus = STATUS_PLAY;  
+//   this->InteractiveStatus = STATUS_PLAY;  
   
-  this->GetApplication()->ProcessPendingEvents();
-  while( (absolutetime < 60)  &&
-	 (this->InteractiveStatus == STATUS_PLAY) &&
-	 (this->InteractiveVolume == currentvolumeid) &&
-	 (this->IsMapped()) &&
-	 (this->RenderWidget->IsMapped()))
-  {
+//   this->GetApplication()->ProcessPendingEvents();
+//   while( (absolutetime < 60)  &&
+// 	 (this->InteractiveStatus == STATUS_PLAY) &&
+// 	 (this->InteractiveVolume == currentvolumeid) &&
+// 	 (this->IsMapped()) &&
+// 	 (this->RenderWidget->IsMapped()))
+//   {
 
-    this->GetApplication()->ProcessPendingEvents();
+//     this->GetApplication()->ProcessPendingEvents();
     
-    TimerLog->StopTimer();
-    double delay = TimerLog->GetElapsedTime();
-    TimerLog->StartTimer();
+//     TimerLog->StopTimer();
+//     double delay = TimerLog->GetElapsedTime();
+//     TimerLog->StartTimer();
 
     
-    time         += delay;
-    absolutetime += delay;
-    if (time < timebetweenslices)
-      continue;
-    time = 0;
+//     time         += delay;
+//     absolutetime += delay;
+//     if (time < timebetweenslices)
+//       continue;
+//     time = 0;
 
-    this->Preview->SetSlice(slice);
-    this->Preview->Render();
-    slice+=e;
-    if (slice == this->Preview->GetSliceMin())
-      e = 1;
-    if (slice == this->Preview->GetSliceMax())
-      e = -1;
+//     this->Preview->SetSlice(slice);
+//     this->Preview->Render();
+//     slice+=e;
+//     if (slice == this->Preview->GetSliceMin())
+//       e = 1;
+//     if (slice == this->Preview->GetSliceMax())
+//       e = -1;
     
-  }
-  TimerLog->StopTimer();
-  TimerLog->Delete();
+//   }
+//   TimerLog->StopTimer();
+//   TimerLog->Delete();
       
 }
 
@@ -936,70 +928,70 @@ void vtkKWDICOMImporter2::StopInteractive()
 
 void vtkKWDICOMImporter2::DoubleClickCallback()
 {
-  if ( this->InteractiveStatus == STATUS_PLAY)
-    this->InteractiveStatus = STATUS_STOP;
+  // if ( this->InteractiveStatus == STATUS_PLAY)
+  //   this->InteractiveStatus = STATUS_STOP;
 
-  int row = this->MultiColumnList->GetIndexOfFirstSelectedRow();
+  // int row = this->MultiColumnList->GetIndexOfFirstSelectedRow();
 
-  DICOMImageType::Pointer image =
-    static_cast< DICOMImageType*>(this->GDCMImporter->GetOutput (row));
+  // GDCMVolume::Pointer image =
+  //   static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (row));
 
-  vtkKWTopLevel* toplevel = vtkKWTopLevel::New();
+  // vtkKWTopLevel* toplevel = vtkKWTopLevel::New();
   
-  toplevel->SetMasterWindow(this->GetParentTopLevel());
-  toplevel->SetApplication(this->GetApplication());
-  toplevel->Create();
-  toplevel->SetTitle(image->GetName());
-  toplevel->SetDeleteWindowProtocolCommand(toplevel, "Withdraw");
+  // toplevel->SetMasterWindow(this->GetParentTopLevel());
+  // toplevel->SetApplication(this->GetApplication());
+  // toplevel->Create();
+  // toplevel->SetTitle(image->GetName());
+  // toplevel->SetDeleteWindowProtocolCommand(toplevel, "Withdraw");
   
-  vtkKWDicomInfoWidget* widget = vtkKWDicomInfoWidget::New();
-  widget->SetParent(toplevel);
-  widget->Create();
-  this->Script("pack %s -fill both -side top -expand t", 
-	       widget->GetWidgetName());
-  widget->Update();
-  itk::DicomTagManager::Pointer tagmanager = itk::DicomTagManager::New();
-  tagmanager->ImportTagList ((*image->GetFileList())[0]);
-  widget->SetDicomTagList(tagmanager->GetTagList());
-  widget->Delete();
+  // vtkKWDicomInfoWidget* widget = vtkKWDicomInfoWidget::New();
+  // widget->SetParent(toplevel);
+  // widget->Create();
+  // this->Script("pack %s -fill both -side top -expand t", 
+  // 	       widget->GetWidgetName());
+  // widget->Update();
+  // itk::DicomTagManager::Pointer tagmanager = itk::DicomTagManager::New();
+  // tagmanager->ImportTagList ((*image->GetFileList())[0]);
+  // widget->SetDicomTagList(tagmanager->GetTagList());
+  // widget->Delete();
   
-  // Get the position of the mouse, the size of the top level window.
+  // // Get the position of the mouse, the size of the top level window.
 
-  int px, py, tw, th, sw, sh;
+  // int px, py, tw, th, sw, sh;
 
-  vtkKWTkUtilities::GetMousePointerCoordinates(this, &px, &py);
-  vtkKWTkUtilities::GetWidgetRequestedSize(toplevel, &tw, &th);
-  vtkKWTkUtilities::GetScreenSize(toplevel, &sw, &sh);
+  // vtkKWTkUtilities::GetMousePointerCoordinates(this, &px, &py);
+  // vtkKWTkUtilities::GetWidgetRequestedSize(toplevel, &tw, &th);
+  // vtkKWTkUtilities::GetScreenSize(toplevel, &sw, &sh);
 
-  px -= tw / 2;
-  if (px + tw > sw)
-  {
-    px -= (px + tw - sw);
-  }
-  if (px < 0)
-  {
-    px = 0;
-  }
+  // px -= tw / 2;
+  // if (px + tw > sw)
+  // {
+  //   px -= (px + tw - sw);
+  // }
+  // if (px < 0)
+  // {
+  //   px = 0;
+  // }
 
-  py -= th / 2;
-  if (py + th > sh)
-  {
-    py -= (py + th - sh);
-  }
-  if (py < 0)
-  {
-    py = 0;
-  }
+  // py -= th / 2;
+  // if (py + th > sh)
+  // {
+  //   py -= (py + th - sh);
+  // }
+  // if (py < 0)
+  // {
+  //   py = 0;
+  // }
 
-  toplevel->SetPosition(px, py);
-  toplevel->DeIconify();
-  toplevel->Raise();
+  // toplevel->SetPosition(px, py);
+  // toplevel->DeIconify();
+  // toplevel->Raise();
 
 }
 
 
 
-void vtkKWDICOMImporter2::UpdatePreview (DICOMImageType::Pointer volume)
+void vtkKWDICOMImporter2::UpdatePreview (GDCMVolume::Pointer volume)
 {
 
 //   if ( !(volume.IsNull()) )
@@ -1011,19 +1003,19 @@ void vtkKWDICOMImporter2::UpdatePreview (DICOMImageType::Pointer volume)
 //     return;
 //   }
 
-  DICOMImageType::DICOMFileList* filelist = volume->GetFileList();
-  if (!filelist->size())
-    return;
+  // GDCMVolume::DICOMFileList* filelist = volume->GetFileList();
+  // if (!filelist->size())
+  //   return;
   
-  unsigned int middleid = (unsigned int)( (double)(filelist->size()) / 2.0 );
-  std::string filename = (*filelist)[middleid]->GetFileName();
-  ImporterType::ReaderType::Pointer reader = ImporterType::ReaderType::New();
-  reader->SetFileName(filename.c_str());
-  reader->Update();
-  this->Preview->SetITKImage(reader->GetOutput());
-  this->Preview->Reset();
-  this->Preview->Show2DAxisOff();
-  this->Preview->Render();
+  // unsigned int middleid = (unsigned int)( (double)(filelist->size()) / 2.0 );
+  // std::string filename = (*filelist)[middleid]->GetFileName();
+  // ImporterType::ReaderType::Pointer reader = ImporterType::ReaderType::New();
+  // reader->SetFileName(filename.c_str());
+  // reader->Update();
+  // this->Preview->SetITKImage(reader->GetOutput());
+  // this->Preview->Reset();
+  // this->Preview->Show2DAxisOff();
+  // this->Preview->Render();
 }
 
 
@@ -1040,37 +1032,37 @@ void vtkKWDICOMImporter2::SequenceCheckButtonCallback (int val)
 //     delete [] indices;
 //   }
   
-  if (val)
-  {
-    this->SequenceDurationEntry->GetWidget()->SetStateToNormal();
+  // if (val)
+  // {
+  //   this->SequenceDurationEntry->GetWidget()->SetStateToNormal();
 
-    DICOMImageType::Pointer dcmvolume = static_cast<DICOMImageType*>(this->GDCMImporter->GetOutput (0));
-    if (dcmvolume.IsNull())
-      return;
+  //   GDCMVolume::Pointer dcmvolume = static_cast<GDCMVolume*>(this->GDCMImporter->GetOutput (0));
+  //   if (dcmvolume.IsNull())
+  //     return;
     
-    unsigned int tagid = 1000;
+  //   unsigned int tagid = 1000;
 
-    itk::DicomTagManager::Pointer tagmanager = itk::DicomTagManager::New();
-    tagmanager->ImportTagList ((*dcmvolume->GetFileList())[0]);
+  //   itk::DicomTagManager::Pointer tagmanager = itk::DicomTagManager::New();
+  //   tagmanager->ImportTagList ((*dcmvolume->GetFileList())[0]);
     
-    if (tagmanager->HasTag(0x0018, 0x0072, tagid))
-    {
-      double T = atof (tagmanager->GetTagValue(tagid));
-      std::cout<<"found the extended duration : "<<(double)(T)<<" sec"<<std::endl;
-      this->SequenceDurationEntry->GetWidget()->SetValueAsDouble(T);
-    }
-    else if (tagmanager->HasTag(0x0018, 0x1088, tagid))
-    {
-      double T = 60.0/atof (tagmanager->GetTagValue(tagid));
-      std::cout<<"found the heart rate : "<<(double)60/(double)(T)<<" pulse/min"<<std::endl;
-      this->SequenceDurationEntry->GetWidget()->SetValueAsDouble(T);
-    }
-  }
-  else
-  {
-    this->SequenceDurationEntry->GetWidget()->SetStateToDisabled();
+  //   if (tagmanager->HasTag(0x0018, 0x0072, tagid))
+  //   {
+  //     double T = atof (tagmanager->GetTagValue(tagid));
+  //     std::cout<<"found the extended duration : "<<(double)(T)<<" sec"<<std::endl;
+  //     this->SequenceDurationEntry->GetWidget()->SetValueAsDouble(T);
+  //   }
+  //   else if (tagmanager->HasTag(0x0018, 0x1088, tagid))
+  //   {
+  //     double T = 60.0/atof (tagmanager->GetTagValue(tagid));
+  //     std::cout<<"found the heart rate : "<<(double)60/(double)(T)<<" pulse/min"<<std::endl;
+  //     this->SequenceDurationEntry->GetWidget()->SetValueAsDouble(T);
+  //   }
+  // }
+  // else
+  // {
+  //   this->SequenceDurationEntry->GetWidget()->SetStateToDisabled();
     
-  }
+  // }
   
 }
 
@@ -1102,7 +1094,7 @@ void vtkKWDICOMImporter2::SetOutputsAsVolumes(void)
   {
     win->GetProgressGauge()->SetValue((int)(100.0 * i / this->GDCMImporter->GetNumberOfOutputs()));
 
-    DICOMImageType::Pointer dcmvolume = static_cast<DICOMImageType*>(this->GDCMImporter->GetOutput (i));
+    GDCMVolume::Pointer dcmvolume = static_cast<GDCMVolume*>(this->GDCMImporter->GetOutput (i));
     if (dcmvolume.IsNull())
       continue;
     
@@ -1198,12 +1190,12 @@ void vtkKWDICOMImporter2::SetOutputsAsVolumes(void)
 //     else
 //     {
       
-      vtkMetaImageData* metadataset = vtkMetaImageData::New();
+      vtkMetaDataSetSequence* metadataset = vtkMetaDataSetSequence::New();
       try
       {
 	
 	// 	  metadataset->SetDataSetAsItkImage(outputVolumes[i]->GetImage());
-	metadataset->SetItkImage<ImageComponentType>(static_cast<ImageType*>(dcmvolume));
+	metadataset->SetITKDataSet<ImageComponentType>(static_cast<ImageType*>(dcmvolume));
 
       }
       catch (vtkErrorCode::ErrorIds)
@@ -1213,7 +1205,7 @@ void vtkKWDICOMImporter2::SetOutputsAsVolumes(void)
 	continue;
       }
       
-      metadataset->SetDicomDictionary (dcmvolume->GetMetaDataDictionary());
+      // metadataset->SetDicomDictionary (dcmvolume->GetMetaDataDictionary());
       metadataset->SetName (dcmvolume->GetName());
       this->OutputList.push_back (metadataset);
 
@@ -1366,87 +1358,87 @@ void vtkKWDICOMImporter2::SetOutputsAs2DtSequence(void)
 //----------------------------------------------------------------------------
 void vtkKWDICOMImporter2::SetOutputsAs3DSequence(void)
 {
-  vtkKWWindowBase *win = this->GetApplication()->GetNthWindow(0);
+  // vtkKWWindowBase *win = this->GetApplication()->GetNthWindow(0);
 
-  if (!win)
-    return;
+  // if (!win)
+  //   return;
   
-  win->SetStatusText(ks_("Progress|Building DICOM volumes..."));
-  win->GetProgressGauge()->SetValue(0);
+  // win->SetStatusText(ks_("Progress|Building DICOM volumes..."));
+  // win->GetProgressGauge()->SetValue(0);
 
-  vtkMetaDataSetSequence* seq = vtkMetaDataSetSequence::New();
-  double duration = this->SequenceDurationEntry->GetWidget()->GetValueAsDouble();
-  if ((duration > 100) || (duration <=0))
-    duration = 2;
+  // vtkMetaDataSetSequence* seq = vtkMetaDataSetSequence::New();
+  // double duration = this->SequenceDurationEntry->GetWidget()->GetValueAsDouble();
+  // if ((duration > 100) || (duration <=0))
+  //   duration = 2;
   
-  seq->SetSequenceDuration (duration);
+  // seq->SetSequenceDuration (duration);
 
-  DICOMImageType::Pointer image0 =
-    static_cast< DICOMImageType*>(this->GDCMImporter->GetOutput (0));
+  // GDCMVolume::Pointer image0 =
+  //   static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (0));
 
-  for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
-  {
-    win->GetProgressGauge()->SetValue((int)(100.0 * i / this->GDCMImporter->GetNumberOfOutputs()));
-    DICOMImageType::Pointer image =
-      static_cast< DICOMImageType*>(this->GDCMImporter->GetOutput (i));
+  // for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
+  // {
+  //   win->GetProgressGauge()->SetValue((int)(100.0 * i / this->GDCMImporter->GetNumberOfOutputs()));
+  //   GDCMVolume::Pointer image =
+  //     static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (i));
 
-    if (image.IsNull())
-      continue;
+  //   if (image.IsNull())
+  //     continue;
 
-    try
-    {
-      image->Build();
-    }
-    catch (itk::ExceptionObject & e)
-    {
-      std::cerr << e;
-      vtkWarningMacro(<<"error when building volume "<<image->GetName()<<endl);
-      continue;
-    }
+  //   try
+  //   {
+  //     image->Build();
+  //   }
+  //   catch (itk::ExceptionObject & e)
+  //   {
+  //     std::cerr << e;
+  //     vtkWarningMacro(<<"error when building volume "<<image->GetName()<<endl);
+  //     continue;
+  //   }
     
-    vtkMetaImageData* metadataset = vtkMetaImageData::New();
+  //   vtkMetaImageData* metadataset = vtkMetaImageData::New();
     
-    try
-    {
-      metadataset->SetItkImage<ImageComponentType>(static_cast<ImageType*>(image));
-    }
-    catch (vtkErrorCode::ErrorIds)
-    {
-      metadataset->Delete();
-      continue;
-    }
+  //   try
+  //   {
+  //     metadataset->SetItkImage<ImageComponentType>(static_cast<ImageType*>(image));
+  //   }
+  //   catch (vtkErrorCode::ErrorIds)
+  //   {
+  //     metadataset->Delete();
+  //     continue;
+  //   }
     
-    double time = (double)i*(duration/(double)(this->GDCMImporter->GetNumberOfOutputs()));
-    metadataset->SetName(image->GetName());
-    metadataset->SetTime(time);
-    metadataset->SetDicomDictionary (image->GetMetaDataDictionary());    
+  //   double time = (double)i*(duration/(double)(this->GDCMImporter->GetNumberOfOutputs()));
+  //   metadataset->SetName(image->GetName());
+  //   metadataset->SetTime(time);
+  //   metadataset->SetDicomDictionary (image->GetMetaDataDictionary());    
 
-    try
-    {
-      seq->AddMetaDataSet(metadataset);
-    }
-    catch (vtkErrorCode::ErrorIds)
-    {
-      metadataset->Delete();
-      continue;
-    }
+  //   try
+  //   {
+  //     seq->AddMetaDataSet(metadataset);
+  //   }
+  //   catch (vtkErrorCode::ErrorIds)
+  //   {
+  //     metadataset->Delete();
+  //     continue;
+  //   }
     
-    metadataset->Delete();
+  //   metadataset->Delete();
     
-    image->Initialize();
+  //   image->Initialize();
     
-  }  
+  // }  
   
   
-  if (!image0.IsNull())
-    seq->SetName(image0->GetName());
-  this->OutputList.push_back (seq);
+  // if (!image0.IsNull())
+  //   seq->SetName(image0->GetName());
+  // this->OutputList.push_back (seq);
   
-  vtksys_stl::string end_msg(win->GetStatusText());
-  end_msg += " -- ";
-  end_msg += ks_("Progress|Done");  
-  win->SetStatusText(end_msg.c_str());
-  win->GetProgressGauge()->SetValue(0);  
+  // vtksys_stl::string end_msg(win->GetStatusText());
+  // end_msg += " -- ";
+  // end_msg += ks_("Progress|Done");  
+  // win->SetStatusText(end_msg.c_str());
+  // win->GetProgressGauge()->SetValue(0);  
 
 }
 

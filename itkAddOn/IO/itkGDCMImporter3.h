@@ -196,7 +196,7 @@ namespace itk
     /** generic typedefs */
     typedef GDCMVolume <TPixelType> ImageType;
     /** generic typedefs */
-    typedef ImageSource < ImageType > Superclass;
+    typedef ImageSource < GDCMVolume <TPixelType> > Superclass;
     /** generic typedefs */
     typedef SmartPointer<Self>       Pointer;
     /** generic typedefs */
@@ -220,6 +220,9 @@ namespace itk
     typedef typename ImageType::FileListMapType FileListMapType;
     typedef std::map<std::string, FileListMapType> FileListMapofMapType;
     typedef std::map<double, FileList> SortedMapType;
+
+    typedef GDCMVolume <TPixelType> GDCMVolumeType;
+    typedef GDCMVolumeType OutputImageType;
     
     /**
        Get/Set the InputDirectory,
@@ -248,6 +251,12 @@ namespace itk
        a second call of Scan() will be faster.
     */
     void Scan (void);
+
+    void RemoveVolume (OutputImageType* volume)
+    {
+      this->RemoveOutput (volume);
+    }
+    
 
   protected:
 

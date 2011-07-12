@@ -59,6 +59,12 @@ TARGET_LINK_LIBRARIES(vtkVisuManagement
 
   IF (VTK_WRAP_TCL)
    
+    
+    SET_SOURCE_FILES_PROPERTIES(
+     vtkLandmarkManagerCallback.cxx
+     WRAP_EXCLUDE
+    )
+    
     VTK_WRAP_TCL3( vtkVisuManagementLib
       vtkVisuManagementTCL_SRCS
       "${vtkVisuManagement_SRCS}"

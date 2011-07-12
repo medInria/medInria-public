@@ -35,15 +35,15 @@ SET(KWAddOn_SRCS
 )
 
 
-IF (NOT ITK_USE_SYSTEM_GDCM)
+#IF (NOT ITK_USE_SYSTEM_GDCM)
 SET(KWAddOn_SRCS
   ${KWAddOn_SRCS}
   vtkKWDICOMImporter2.cxx
-  vtkKWDICOMExporter.cxx
-  vtkKWDicomInfoWidget.cxx
+#  vtkKWDICOMExporter.cxx
+#  vtkKWDicomInfoWidget.cxx
   vtkKWInfoToolBox.cxx
   )
-ENDIF (NOT ITK_USE_SYSTEM_GDCM)
+#ENDIF (NOT ITK_USE_SYSTEM_GDCM)
 
 SET_SOURCE_FILES_PROPERTIES(
  vtkKWMainCallback.cxx
@@ -70,6 +70,8 @@ SET(KWAddOn_LIBRARIES
   vtkImageView
   vtkImageViewTCL
   vtkVisuManagement
+  vtkVisuManagementTCL
+  itkIOAddOn
 )
 
 TARGET_LINK_LIBRARIES(KWAddOn

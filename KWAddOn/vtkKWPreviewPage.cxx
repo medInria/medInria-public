@@ -182,12 +182,11 @@ void vtkKWPreviewPage::Render (void)
 }
 
 
-// //----------------------------------------------------------------------------
-// void vtkKWPreviewPage::SetViewOrientationMode (int mode)
-// {
-//   this->Render();
-  
-// }
+//----------------------------------------------------------------------------
+void vtkKWPreviewPage::SetOrientationMode (int mode)
+{
+//   this->Render();  
+}
 
 
 //----------------------------------------------------------------------------

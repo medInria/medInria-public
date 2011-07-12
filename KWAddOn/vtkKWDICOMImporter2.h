@@ -56,13 +56,11 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
 
   //BTX
   typedef signed short ImageComponentType ;
-  typedef itk::Image<ImageComponentType, 3> ImageType;
-  typedef itk::GDCMImporter3<ImageType> ImporterType;
-  typedef itk::GDCMVolume<ImageComponentType> GDCMVolume;
-  
+  typedef itk::Image<ImageComponentType, 4> ImageType;
+  typedef itk::GDCMImporter3<ImageComponentType> ImporterType;
+  typedef ImporterType::GDCMVolumeType GDCMVolume;
   //ETX
-
-
+  
   virtual void OpenFileCallback();
   
   virtual void OpenDirectoryCallback();
@@ -88,13 +86,10 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   {
     return this->GDCMImporter;
   }
-
   std::vector<vtkMetaDataSet*> GetOutputList (void)
   {
     return this->OutputList;
   }
-  
-
   //ETX
 
   vtkSetMacro(InteractiveMode,int);
@@ -105,11 +100,8 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   vtkGetMacro(InteractiveStatus,unsigned int);
   vtkBooleanMacro(InteractiveStatus, unsigned int);
 
-  
-
   virtual int  PreInvoke();
   virtual void PostInvoke();
-  
   
  protected:
   vtkKWDICOMImporter2();
@@ -141,8 +133,6 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   virtual void SetOutputsAs3DSequence(void);
   virtual void SetOutputsAsVolumes(void);
   
-  
-  
 /*   vtkKWPushButton* OpenDirectoryButton; */
   vtkKWPushButton* ResetButton;
   vtkKWPushButton* RemoveVolumeButton;
@@ -168,9 +158,6 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   vtkKWEntryWithLabel*       SequenceDurationEntry;
 
   unsigned int InteractiveStatus;
-  
-
-  
 
  private:
   

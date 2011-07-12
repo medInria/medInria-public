@@ -141,7 +141,8 @@ void vtkKWPageView::ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget)
 {
   
   view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
-  vtkRenderer* renderer = view->GetRenderer();
+  vtkRenderer* renderer = vtkRenderer::New();
+  view->SetRenderer(renderer);
 
   vtkRendererCollection* collection = widget->GetRenderWindow()->GetRenderers();
   collection->RemoveAllItems();
@@ -191,11 +192,14 @@ void vtkKWPageView::SetProperties()
   this->View4->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
   
   m_Pool->SyncSetShowScalarBar (1);
-  m_Pool->SyncSetBackground (0,0,0);
+  double zeros[3] = {0,0,0};
+  m_Pool->SyncSetBackground (zeros);
   
   this->View4->SetBackground (0.9,0.9,0.9);
   this->View4->GetTextProperty()->SetColor (0,0,0);
 
+  this->View4->SetVolumeMapperTo3DTexture();
+  
   this->LandmarkManager->AddView(this->GetView1()); 
   this->LandmarkManager->AddView(this->GetView2());
   this->LandmarkManager->AddView(this->GetView3());
