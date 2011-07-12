@@ -212,10 +212,9 @@ void Controller::initializeAlgorithms()
     QList<QString> algorithmImplementations = factory->widgets();
     foreach ( QString algName, algorithmImplementations ) {
 
-        ParametersWidgetFactory::WidgetInfo wi = factory->info(algName);
         AlgorithmInfo itAlgInfo;
-        itAlgInfo.algName = wi.type;
-        itAlgInfo.localizedName = wi.localName;
+        itAlgInfo.algName = algName;
+        itAlgInfo.localizedName =factory->localizedName(algName);
 
         d->algInfo.insert(algName, itAlgInfo);
     }
@@ -266,7 +265,10 @@ void Controller::addAnnotation( medAnnotationData * annotation )
      QList< dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
      foreach( dtkAbstractView * view, views ) {
          medAbstractViewScene *vscene = Controller::viewScene(view);
-         if ( Controller::viewData(view)->objectName() == annotation->parentData()->objectName() ) {
+         dtkAbstractData * viewData = Controller::viewData(view);
+         dtkAbstractData * annotationData = annotation->parentData();
+         if ( viewData && annotationData && 
+              ( viewData->objectName() == annotationData->objectName() ) ) {
              std::auto_ptr<medAnnotationGraphicsObject> newObj (annotationFactory()->create( annotation->description() ));
              vscene->addItem(newObj.release());
          }

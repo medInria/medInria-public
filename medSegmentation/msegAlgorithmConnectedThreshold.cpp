@@ -39,13 +39,7 @@ void AlgorithmConnectedThreshold::run()
     this->callHandler(this->input() );
 }
 
-bool AlgorithmConnectedThreshold::registerAlgorithm( dtkAbstractProcessFactory * factory )
-{
-    return factory->registerProcessType(
-        typeName(), create, AlgorithmGeneric::ms_interfaceName );
-}
-
-QString AlgorithmConnectedThreshold::typeName()
+QString AlgorithmConnectedThreshold::s_typeName()
 {
     return AlgorithmConnectedThreshold::staticMetaObject.className();
 }
@@ -57,7 +51,15 @@ dtkAbstractProcess * AlgorithmConnectedThreshold::create()
 
 QString AlgorithmConnectedThreshold::localizedName()
 {
-    return tr("Connected Threshold");
+    return AlgorithmConnectedThreshold::s_localizedName(this);
+}
+
+QString AlgorithmConnectedThreshold::s_localizedName(const QObject * trObj)
+{
+    if (!trObj) 
+        trObj = qApp;
+
+    return trObj->tr( "Connected Threshold" );
 }
 
 template < typename TPixel, unsigned int VDimension > 
@@ -108,4 +110,4 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractDa
 }
 
 
-}
+} //namespace mseg

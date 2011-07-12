@@ -11,7 +11,9 @@
 #include <medCore/medDataIndex.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
+#include <dtkCore/dtkGlobal.h>
 
 #include <QPushButton>
 #include <QTableWidget>
@@ -25,7 +27,7 @@ namespace mseg {
     static const QString MED_METADATA_STUDY_DESCRIPTION = "StudyDescription";
     static const QString MED_METADATA_SERIES_DESCRIPTION = "SeriesDescription";
 
-    static const QString SEED_POINT_ANNOTATION_DATA_NAME = "mseg::SeedPointAnnotationData";
+    static const QString SEED_POINT_ANNOTATION_DATA_NAME = SeedPointAnnotationData::s_description();
 
 class SingleClickEventFilter : public View 
 {
@@ -196,6 +198,14 @@ void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView 
     SeedPoint newSeed;
     newSeed.annotationData.takePointer( qobject_cast<mseg::SeedPointAnnotationData *>
         (dtkAbstractDataFactory::instance()->create( SEED_POINT_ANNOTATION_DATA_NAME )) );
+
+    if ( !newSeed.annotationData ) {
+        dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create annotation data";
+        return;
+    }
+    
+    newSeed.annotationData->setParentData( this->m_data );
+
     newSeed.annotationData->setCenterWorld(vec);
     m_seedPoints.append( newSeed );
 
@@ -229,6 +239,22 @@ AlgorithmParametersWidget *
 {
     return new AlgorithmConnectedThresholdParametersWidget( controller, parent );
 }
+
+QString AlgorithmConnectedThresholdParametersWidget::s_description()
+{
+    static const QString desc = "mseg::AlgorithmConnectedThresholdParametersWidget";
+    return desc;
+}
+
+QString AlgorithmConnectedThresholdParametersWidget::s_localizedName(const QObject * trObj)
+{
+    if (!trObj) 
+        trObj = qApp;
+
+    return trObj->tr( "Connected Threshold" );
+}
+
+
 
 
 

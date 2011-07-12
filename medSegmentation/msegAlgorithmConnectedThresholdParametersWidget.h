@@ -33,6 +33,12 @@ public:
 
     static AlgorithmParametersWidget * createAlgorithmParametersWidget( Controller *controller, QWidget *parent );
 
+    /** Get name to use for this when registering with a factory.*/
+    static QString s_description();
+
+    //! Get a human readable name for this widget.
+    /** \param trObj : Provide an object for the tr() function. If NULL qApp will be used. */
+    static QString s_localizedName(const QObject * trObj =  NULL);
 public slots:
     void onAddSeedPointPressed();
     void onRemoveSeedPointPressed();

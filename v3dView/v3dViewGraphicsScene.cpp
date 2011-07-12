@@ -3,7 +3,7 @@
 #include <QVector2D>
 #include <QVector3D>
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 
 #include <vtkCamera.h>
 #include <vtkRenderer.h>
@@ -68,7 +68,7 @@ v3dViewGraphicsScene::~v3dViewGraphicsScene()
 }
 
 void v3dViewGraphicsScene::onImageDataChanged(
-    dtkAbstractDataImage * imageData )
+    medAbstractDataImage * imageData )
 {
     Q_UNUSED( imageData );
 }

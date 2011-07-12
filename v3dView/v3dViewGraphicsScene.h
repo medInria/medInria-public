@@ -6,7 +6,7 @@
 #include <medAbstractViewScene.h>
 #include "v3dViewPluginExport.h"
 
-class dtkAbstractDataImage;
+class medAbstractDataImage;
 class vtkImageView2D;
 class v3dView;
 class v3dViewGraphicsScenePrivate;
@@ -24,7 +24,7 @@ public:
 
 public slots:
 
-    void onImageDataChanged( dtkAbstractDataImage * imageData );
+    void onImageDataChanged( medAbstractDataImage * imageData );
     /**
      * Brief description
      * Full description

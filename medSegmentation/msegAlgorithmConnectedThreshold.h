@@ -35,9 +35,14 @@ public:
 
     void run();
 
-    static bool registerAlgorithm(dtkAbstractProcessFactory * factory);
     static dtkAbstractProcess * create();
-    static QString typeName();
+
+    /** Get name to use for this when registering with a factory.*/
+    static QString s_typeName();
+
+    //! Get a human readable name for this widget.
+    /** \param trObj : Provide an object for the tr() function. If NULL qApp will be used. */
+    static QString s_localizedName(const QObject * trObj);
 
 private:
     template < typename TPixel, unsigned int N >
