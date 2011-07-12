@@ -6,8 +6,8 @@
 class medViewContainerComparePrivate
 {
 public:
-    medViewContainerCustom * fixedContainer;
-    medViewContainerCustom * movingContainer;
+    medViewContainer * fixedContainer;
+    medViewContainer * movingContainer;
 };
 
 
@@ -15,8 +15,8 @@ medViewContainerCompare::medViewContainerCompare(QWidget * parent):
         medViewContainerCustom(parent), d3(new medViewContainerComparePrivate)
 {
     split(1, 2);
-    d3->fixedContainer = children()[0];
-    d3->movingContainer = children()[1];
+    d3->fixedContainer = this->childContainers()[0];
+    d3->movingContainer = this->childContainers()[1];
     connect(d3->fixedContainer,SIGNAL(dropped(medDataIndex)),
             this,SIGNAL(droppedFixed(medDataIndex)));
     connect(d3->movingContainer,SIGNAL(dropped(medDataIndex)),

@@ -78,6 +78,13 @@ public:
      * @param title
     */
     void setTitle(const QString& title);
+
+    /**
+     * @brief Sets the offset of the header's title from upper left corner.
+     *
+     * @param titleOffset
+     */
+    void setTitleOffset(const QPoint & titleOffset);
     
     /**
      * @brief Sets the orientation of the toolbox.

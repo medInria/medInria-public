@@ -166,36 +166,6 @@ public:
      * @return bool
     */
     bool areToolBoxesVisible(void) const;
-
-    /**
-     * @brief Sets the visibility of the medViewerToolBoxLayout.
-     *
-     * The value is really applied when the configuration 
-     * is set in the medViewArea::setupConfiguration method.
-     * @param visibility
-    */
-    void setLayoutToolBoxVisibility(bool visibility);
-    
-    /**
-     * @brief Hides the medViewerToolBoxLayout.
-     *
-     * @param void
-    */
-    void hideLayoutToolBox(void);
-    
-    /**
-     * @brief Show the medViewerToolBoxLayout.
-     *
-     * @param void
-    */
-    void showLayoutToolBox(void);
-    
-    /**
-     * @brief Gets the visibility of the medViewerToolBoxLayout.
-     *
-     * @return bool
-    */
-    bool isLayoutToolBoxVisible() const;
     
     /**
      * @brief Sets up the medStackedViewContainers.

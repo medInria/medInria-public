@@ -1,5 +1,5 @@
-/* medViewManager.cpp --- 
- * 
+/* medViewManager.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 12:47:51 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 38
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewManager.h"
@@ -48,14 +48,14 @@ void medViewManager::remove(const medDataIndex& index, medAbstractView *view)
     foreach(medAbstractView *lview, d->views.value(index))
         if (lview==view)
             d->views[index].removeOne(view);
-    
-    dtkAbstractViewFactory::instance()->destroy (dynamic_cast<dtkAbstractView*>(view));
+
+    delete view;
 }
 
 void medViewManager::remove(const medDataIndex& index)
 {
      foreach(medAbstractView *view, d->views.value(index))
-         dtkAbstractViewFactory::instance()->destroy (dynamic_cast<dtkAbstractView*>(view));
+         delete view;
 
     d->views.remove(index);
 }
@@ -110,7 +110,7 @@ QList<medAbstractView *> medViewManager::viewsForImage(int id)
 }
 
 //! Get the index associated to a view.
-/*! 
+/*!
  *  Warning, this method is quite consuming, use this as little as
  *  possible.
  */

@@ -41,6 +41,13 @@ public:
     QList<medToolBox*> toolBoxes(void) const;
 
     Qt::Orientation orientation (void) const;
+
+    /**
+     * @brief Set margin and spacing of the layout
+     *
+     * @param spacing
+    */
+    void setLayoutSpacing(int spacing);
     
 public slots:
     void setOrientation(Qt::Orientation orientation);

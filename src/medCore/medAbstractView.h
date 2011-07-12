@@ -181,6 +181,13 @@ signals:
     void becomeDaddy   (bool);
 
     /**
+       In medinria, the daddy is the reference view (contoured in
+       red). Only one per pool is authorized. Emit this signal when
+       the daddy state of the view changes.
+     **/
+    void changeDaddy   (bool);
+
+    /**
        This signal is emitted when a view wants to register its data to the daddy.
        A registration plugin must be available. Registration is handled in the
        @medViewPool.
@@ -300,7 +307,7 @@ public slots:
     virtual void onVisibilityChanged(bool visible, int layer);
     
     virtual void onOpacityChanged(double opacity, int layer);
-
+    
     /** When another linked view changes it's oblique settings the pool calls this:*/
     virtual void onObliqueSettingsChanged(const medAbstractView * vsender);
 
@@ -309,6 +316,9 @@ public slots:
 
     /** Called when another view leaves the pool */
     virtual void onRemoveViewFromPool( medAbstractView * viewRemoved );
+
+
+    void setFullScreen( bool state );
 
 protected:
     void emitViewSliceChangedEvent    (int slice);
