@@ -34,6 +34,11 @@ class MEDPACS_EXPORT medPacsWidget : public QTreeWidget
 public:
      medPacsWidget(QWidget* parent);
     ~medPacsWidget(void);
+    
+    /*
+     * Check if the server was correctly instantiated at construction. If not, this means that the pacs plugin doesn't exist or had problems being loaded
+     * @return Boolean telling if the server is instantiated
+     */
     bool isServerFunctional();
 
 signals:
