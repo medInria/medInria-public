@@ -1,0 +1,196 @@
+/*
+ * medQtDataImageWriter.cpp
+ *
+ *  Created on: 4 juil. 2011 10:47:30
+ *      Author: John Stark
+ */
+
+#include "medQtDataImageWriter.h"
+#include "medQtDataImage.h"
+
+#include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkLog.h>
+
+namespace {
+    // Used to sort formats in order of priority, highest first.
+    class CompareReversePriority {
+    public:
+        bool operator() ( const medQtDataImageWriter::FormatInfoList::const_iterator & r, 
+            const medQtDataImageWriter::FormatInfoList::const_iterator & l ) const
+        { if ( r->priority != l->priority )
+            return r->priority > l->priority;
+        else 
+            return r->fileExtension > l->fileExtension;
+        }
+    };
+}
+
+dtkAbstractDataWriter * createMedQtDataImageWriter()
+{
+    return new medQtDataImageWriter;
+}
+
+medQtDataImageWriter::medQtDataImageWriter()
+{
+    // Extensions with higher priority will appear first in supportedExtension list.
+    // Generally we prefer lossless, and portable formats.
+    m_supportedExtensionList.push_back(FormatInfo("png",   QByteArray::fromRawData("PNG",3), 100) );
+    m_supportedExtensionList.push_back(FormatInfo("jpg",   QByteArray::fromRawData("JPG",3), 50) );
+    m_supportedExtensionList.push_back(FormatInfo("jpeg",  QByteArray::fromRawData("JPEG",4), 49) );
+    m_supportedExtensionList.push_back(FormatInfo("bmp",   QByteArray::fromRawData("BMP",3), 60) );
+    m_supportedExtensionList.push_back(FormatInfo("ppm",   QByteArray::fromRawData("PPM",3), 75) );
+    m_supportedExtensionList.push_back(FormatInfo("xbm",   QByteArray::fromRawData("XBM",3), 72) );
+    m_supportedExtensionList.push_back(FormatInfo("tiff",  QByteArray::fromRawData("TIFF",4), 70) );
+    m_supportedExtensionList.push_back(FormatInfo("tif",   QByteArray::fromRawData("TIFF",4), 75) );
+}
+
+medQtDataImageWriter::~medQtDataImageWriter()
+{
+
+}
+
+QString medQtDataImageWriter::description( void ) const
+{
+    return s_description();
+}
+
+QStringList medQtDataImageWriter::handled( void ) const
+{
+    return s_handled();
+}
+
+QStringList medQtDataImageWriter::supportedFileExtensions( void ) const
+{
+    dtkAbstractData * dtkdata = const_cast<medQtDataImageWriter*>(this)->data();
+
+    if ( !const_cast<medQtDataImageWriter*>(this)->data() ) {
+        return QStringList();
+    }
+    if ( dtkdata->description() != medQtDataImage::s_description() ) {
+        return QStringList();
+    }
+    QStringList extensions;
+    extensions.reserve( m_supportedExtensionList.size());
+
+    QList< FormatInfoList::const_iterator > sortedFormats;
+    for(  FormatInfoList::const_iterator it( m_supportedExtensionList.begin() ); it != m_supportedExtensionList.end(); ++it ) {
+        sortedFormats.push_back(it);
+    }
+    CompareReversePriority compareReversePriority;
+    qSort( sortedFormats.begin(), sortedFormats.end(), compareReversePriority );
+
+    foreach( FormatInfoList::const_iterator it, sortedFormats ) {
+        extensions << ( "." + it->fileExtension );
+    }
+    return extensions;
+}
+
+bool medQtDataImageWriter::registered( void )
+{
+    return dtkAbstractDataFactory::instance()->registerDataWriterType( s_description(), s_handled(), createMedQtDataImageWriter );
+}
+
+bool medQtDataImageWriter::write( const QString& path )
+{
+    return this->writeOrTest(path, false);
+}
+
+bool medQtDataImageWriter::canWrite( const QString& path )
+{
+    return this->writeOrTest(path, true);
+}
+
+bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= true*/ )
+{
+    dtkAbstractData * dtkdata = this->data();
+    if ( !dtkdata ) 
+        return false;
+
+    if (dtkdata->description() != medQtDataImage::s_description() ) {
+        return false;
+    }
+
+    QFileInfo fi ( path );
+    QString suffix = fi.suffix();
+
+    QByteArray fmtString;
+    const QString lowerSuffix = suffix.toLower();
+    FormatInfoList::const_iterator formatToUse = m_supportedExtensionList.begin();
+    for ( ; formatToUse != m_supportedExtensionList.end() ; ++formatToUse ){
+        if (formatToUse->fileExtension == suffix )
+            break;
+    }
+    if ( formatToUse != m_supportedExtensionList.end() ) {
+        fmtString = formatToUse->formatName;
+    } else {
+        dtkDebug() << "Filename does not have a supported extension";
+        return false;
+    }
+
+    QScopedPointer<QImageWriter> writer(new QImageWriter( path ) );
+    if ( fmtString.size() ) {
+        writer->setFormat( fmtString );
+    }
+
+    medAbstractDataImage * dtkdataIm = dynamic_cast< medAbstractDataImage *>( dtkdata );
+
+    // Set metadata
+    const QStringList keys = dtkdata->metaDataList();
+    foreach( const QString key, keys) {
+        writer->setText( key, dtkdata->metadata(key) );
+    }
+
+    const int numImage = dtkdataIm->zDimension();
+    int numWritten = 0;
+    if ( numImage > 1) {
+        QString filetemplate = path;
+        filetemplate.resize( path.size() - suffix.size() );
+
+        for ( int i(0); i<numImage; ++i ) {
+            QString filename = filetemplate + QString::number(i) + suffix;
+            writer->setFileName(filename);
+            QImage * image = reinterpret_cast<QImage *>(dtkdataIm->data( i ));
+            bool success = 
+                dryRun ? writer->canWrite() : writer->write( *image );
+            if ( success ) 
+                ++numWritten;
+        }
+    } else if ( numImage == 1 ) {
+        QImage * image = reinterpret_cast<QImage *>(dtkdataIm->data());
+        bool success = dryRun ? writer->canWrite() : writer->write( *image );
+        if ( success ) 
+            ++numWritten;
+    } else {
+
+    }
+    return numWritten && (numWritten == numImage);
+}
+
+QStringList medQtDataImageWriter::s_handled()
+{
+    static const QStringList handled = QStringList() << medQtDataImage::s_description();
+    return handled;
+}
+
+QString medQtDataImageWriter::s_description()
+{
+    static const QString description = "medQtDataImageWriter";
+    return description;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

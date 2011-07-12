@@ -2,16 +2,18 @@
 
 #include "medAttachedData.h"
 
-#include <medCore/medAbstractData.h>
+#include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <QtCore/QVector>
 
 class medAbstractDataCollectionPrivate
 {
 public:
-    QVector<medAbstractData*>     dataVector;
-    QVector<medAbstractData*>::iterator dataIterator;
-    QSharedPointer<medAttachedData>* attachedData;
+    typedef QVector<dtkSmartPointer<medAbstractData> > DataVectorType;
+    DataVectorType dataVector;
+    DataVectorType::iterator dataIterator;
+    dtkSmartPointer<medAttachedData> attachedData;
 };
 
 medAbstractDataCollection::medAbstractDataCollection(medAbstractDataCollection *parent ): medAbstractData(parent), d(new medAbstractDataCollectionPrivate)
@@ -22,8 +24,6 @@ medAbstractDataCollection::medAbstractDataCollection(medAbstractDataCollection *
 
 medAbstractDataCollection::~medAbstractDataCollection()
 {
-    foreach (medAbstractData* data, d->dataVector)
-        delete data;
     d->dataVector.clear();
 
     delete d;
@@ -67,14 +67,12 @@ void medAbstractDataCollection::addData( medAbstractData* data )
 
 void medAbstractDataCollection::setAttachData( medAttachedData* attachedData )
 {
-    if (d->attachedData != NULL)
-        delete d->attachedData;
-    d->attachedData = new QSharedPointer<medAttachedData> (attachedData);
+    d->attachedData = attachedData;
 }
 
 medAttachedData* medAbstractDataCollection::attachedData()
 {
-    return d->attachedData->data();
+    return d->attachedData;
 }
 
 //-----------------------------------------------------------------------------------

@@ -46,6 +46,11 @@ public:
   */
   bool registerDbController (const QString& type, medDbControllerCreator func);
 
+signals:
+  /** @brief Emitted when a controller is registered.
+   *  @param type name of the controller.
+  */  
+  void dbControllerRegistered(const QString& type);
 
 public slots:
   /**

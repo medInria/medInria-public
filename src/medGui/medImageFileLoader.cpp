@@ -1,4 +1,4 @@
-/* medDatabasePreviewItemLoader.cpp --- 
+/* medImageFileLoader.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,32 +17,37 @@
  * 
  */
 
-#include "medDatabasePreviewItemLoader.h"
+#include "medImageFileLoader.h"
 
-class medDatabasePreviewItemLoaderPrivate
+#include <dtkCore/dtkLog.h>
+
+class medImageFileLoaderPrivate
 {
 public:
     QImage image;
     QString path;
 };
 
-medDatabasePreviewItemLoader::medDatabasePreviewItemLoader(const QString& path) : d(new medDatabasePreviewItemLoaderPrivate)
+medImageFileLoader::medImageFileLoader(const QString& path) : d(new medImageFileLoaderPrivate)
 {
     d->path = path;
 }
 
-medDatabasePreviewItemLoader::~medDatabasePreviewItemLoader(void)
+medImageFileLoader::~medImageFileLoader(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medDatabasePreviewItemLoader::run(void)
+void medImageFileLoader::run(void)
 {
     if(!d->path.isEmpty()) {
         QImageReader reader(d->path);
         d->image = reader.read();
+        if ( d->image.isNull() ) {
+            dtkDebug() << "Failed to load image from " << d->path << " Reader error is " << reader.errorString();
+        }
     }
 
     emit completed(d->image);

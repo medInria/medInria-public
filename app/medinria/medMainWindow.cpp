@@ -41,7 +41,6 @@
 
 #include <medSql/medDatabaseController.h>
 #include <medSql/medDatabaseNonPersistentController.h>
-#include <medSql/medDatabaseView.h>
 #include <medSql/medDatabaseModel.h>
 #include <medSql/medDatabaseItem.h>
 
@@ -115,6 +114,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     if(!medDatabaseController::instance()->createConnection())
         qDebug() << "Unable to create a connection to the database";
 
+    // register controller, configurations etc
+    this->registerToFactories();
+
     // Setting up menu
 
     QAction *windowFullScreenAction = new QAction("Toggle fullscreen mode", this);
@@ -140,59 +142,8 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->viewerArea);
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
+    connect(d->browserArea, SIGNAL(load(const QString&)), this, SLOT(load(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
-
-#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
-    // Setting up core python module
-
-    dtkScriptInterpreterPythonModuleManager::instance()->registerInitializer(&init_core);
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "import core"
-    );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "dataFactory    = core.dtkAbstractDataFactory.instance()"
-    );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "processFactory = core.dtkAbstractProcessFactory.instance()"
-    );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "viewFactory    = core.dtkAbstractViewFactory.instance()"
-    );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "pluginManager  = core.dtkPluginManager.instance()"
-    );
-#endif
-#if defined(HAVE_SWIG) && defined(HAVE_TCL)
-    // Setting up core tcl module
-
-    dtkScriptInterpreterTclModuleManager::instance()->registerInitializer(&Core_Init);
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set dataFactory    [dtkAbstractDataFactory_instance]"
-    );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set processFactory [dtkAbstractProcessFactory_instance]"
-    );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set viewFactory    [dtkAbstractViewFactory_instance]"
-    );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set pluginManager  [dtkPluginManager_instance]"
-    );
-#endif
-
-    // Registering different configurations
-    medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
-
-    //Register settingsWidgets
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
-
-    //Register dbController 
-    medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
-    medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
 
     // Setting up status bar
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
@@ -411,6 +362,11 @@ void medMainWindow::open(const QString& file)
     this->switchToViewerArea();
 }
 
+void medMainWindow::load(const QString& file)
+{
+    medDatabaseNonPersistentController::instance()->import(file);
+}
+
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
 
@@ -448,4 +404,60 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     medDatabaseController::destroy();
     medDatabaseNonPersistentController::destroy();
     medDataManager::destroy();
+}
+
+void medMainWindow::registerToFactories()
+{
+    //Register dbController 
+    medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
+    medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
+
+
+#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
+    // Setting up core python module
+
+    dtkScriptInterpreterPythonModuleManager::instance()->registerInitializer(&init_core);
+    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
+        "import core"
+        );
+    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
+        "dataFactory    = core.dtkAbstractDataFactory.instance()"
+        );
+    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
+        "processFactory = core.dtkAbstractProcessFactory.instance()"
+        );
+    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
+        "viewFactory    = core.dtkAbstractViewFactory.instance()"
+        );
+    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
+        "pluginManager  = core.dtkPluginManager.instance()"
+        );
+#endif
+#if defined(HAVE_SWIG) && defined(HAVE_TCL)
+    // Setting up core tcl module
+
+    dtkScriptInterpreterTclModuleManager::instance()->registerInitializer(&Core_Init);
+    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
+        "set dataFactory    [dtkAbstractDataFactory_instance]"
+        );
+    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
+        "set processFactory [dtkAbstractProcessFactory_instance]"
+        );
+    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
+        "set viewFactory    [dtkAbstractViewFactory_instance]"
+        );
+    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
+        "set pluginManager  [dtkPluginManager_instance]"
+        );
+#endif
+
+    // Registering different configurations
+    medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
+    medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
+    medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
+
+    //Register settingsWidgets
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
 }

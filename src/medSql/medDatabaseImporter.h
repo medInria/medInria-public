@@ -23,6 +23,7 @@
 #include "medSqlExport.h"
 
 #include <medCore/medJobItem.h>
+#include <dtkCore/dtkSmartPointer.h>
 #include <QtCore>
 
 class medDatabaseImporterPrivate;
@@ -52,9 +53,9 @@ private:
 
     void popupateDatabase( dtkAbstractData* dtkdata, const QFileInfo * seriesInfo);
 
-    dtkAbstractDataReader* getSuitableReader(QStringList filename);
+    dtkSmartPointer<dtkAbstractDataReader> getSuitableReader(QStringList filename);
 
-    dtkAbstractDataWriter* getSuitableWriter(QString filename, dtkAbstractData* dtkdata);
+    dtkSmartPointer<dtkAbstractDataWriter> getSuitableWriter(QString filename, dtkAbstractData* dtkdata);
 
     medDatabaseImporterPrivate *d;
 

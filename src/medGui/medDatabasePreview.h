@@ -20,15 +20,16 @@
 #ifndef MEDDATABASEPREVIEW_H
 #define MEDDATABASEPREVIEW_H
 
-#include "medSqlExport.h"
+#include "medGuiExport.h"
 
 #include <QtCore>
 #include <QtGui>
 
 class medDatabasePreviewItem;
 class medDatabasePreviewPrivate;
+class medDataIndex;
 
-class MEDSQL_EXPORT medDatabasePreview : public QFrame
+class MEDGUI_EXPORT medDatabasePreview : public QFrame
 {
     Q_OBJECT
 
@@ -40,12 +41,12 @@ public:
     void reset(void);
 
 signals:
-    void seriesClicked(int id);
-    void  imageClicked(int id);
+    void seriesClicked(const medDataIndex& id);
+    void  imageClicked(const medDataIndex& id);
 
 public slots:
-    void onPatientClicked(int id);
-    void  onSeriesClicked(int id);
+    void onPatientClicked(const medDataIndex& id);
+    void  onSeriesClicked(const medDataIndex& id);
 
 protected slots:
     void onSlideUp(void);

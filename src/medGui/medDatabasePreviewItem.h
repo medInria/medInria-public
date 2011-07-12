@@ -22,6 +22,7 @@
 
 #include <QtGui/QGraphicsPixmapItem>
 
+class medDataIndex;
 class medDatabasePreviewItemPrivate;
 
 class medDatabasePreviewItem : public QObject, public QGraphicsPixmapItem
@@ -29,17 +30,12 @@ class medDatabasePreviewItem : public QObject, public QGraphicsPixmapItem
     Q_OBJECT
 
 public:
-     medDatabasePreviewItem(int patientId = -1, int studyId = -1, int seriesId = -1, int imageId = -1, const QString& path = QString(), QGraphicsItem *parent = 0);
+     medDatabasePreviewItem(const medDataIndex &index, QGraphicsItem *parent = 0);
     ~medDatabasePreviewItem(void);
 
     medDatabasePreviewItem *clone(void);
 
-    int patientId(void) const;
-    int   studyId(void) const;
-    int  seriesId(void) const;
-    int   imageId(void) const;
-
-    QString path(void) const;
+    medDataIndex dataIndex(void) const;
 
 signals:
     void patientClicked(int id);

@@ -88,8 +88,21 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserToolBoxPacsNodes.h
   medBrowserToolBoxPacsSearch.h    
   
+  # db related items
   medDatabaseSearchPanel.h
-
+  medDatabaseView.h
+  medDatabaseNavigator.h  
+  medDatabaseNavigatorItem.h
+  medDatabaseNavigatorItemGroup.h
+  medImageFileLoader.h
+  medDatabaseNavigatorView.h
+  medDatabasePreview.h
+  medDatabasePreviewArrow.h
+  medDatabasePreviewItem.h
+  medDatabasePreviewItemGroup.h
+  medDatabasePreviewSelector.h
+  medDatabasePreviewTooltip.h
+  medDatabasePreviewView.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -97,6 +110,8 @@ set(${PROJECT_NAME}_HEADERS
   medXMLtoLUTReader.h
   medViewContainer_p.h
   medGuiExport.h
+  medDatabaseNavigatorController.h
+  medDatabasePreviewController.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
 
@@ -157,7 +172,25 @@ set(${PROJECT_NAME}_SOURCES
   medBrowserToolBoxPacsNodes.cpp
   medBrowserToolBoxPacsSearch.cpp
 
-  medDatabaseSearchPanel.cpp 
+  # db related items
+  medDatabaseSearchPanel.cpp
+  medDatabaseView.cpp  
+  medDatabaseNavigator.cpp
+  medDatabaseNavigatorController.cpp
+  medDatabaseNavigatorItem.cpp
+  medDatabaseNavigatorItemGroup.cpp
+  medImageFileLoader.cpp
+  medDatabaseNavigatorScene.cpp
+  medDatabaseNavigatorView.cpp
+  medDatabasePreview.cpp
+  medDatabasePreviewArrow.cpp
+  medDatabasePreviewController.cpp
+  medDatabasePreviewItem.cpp
+  medDatabasePreviewItemGroup.cpp
+  medDatabasePreviewScene.cpp
+  medDatabasePreviewSelector.cpp
+  medDatabasePreviewTooltip.cpp
+  medDatabasePreviewView.cpp
 )
 
 # Include header files for Visual Studio.
