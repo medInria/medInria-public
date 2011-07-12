@@ -204,7 +204,7 @@ void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView 
         return;
     }
     
-    newSeed.annotationData->setParentData( this->m_data );
+    newSeed.annotationData->setParentData( this->m_data.data() );
 
     newSeed.annotationData->setCenterWorld(vec);
     m_seedPoints.append( newSeed );

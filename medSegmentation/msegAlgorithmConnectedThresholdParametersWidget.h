@@ -15,9 +15,9 @@
 #include <QVector3D>
 #include <QTextEdit>
 
+class medAbstractData;
 class medAbstractView;
 
-class dtkAbstractData;
 class dtkAbstractProcessFactory;
 
 namespace mseg {
@@ -70,7 +70,7 @@ private:
     enum ViewState { ViewState_None, ViewState_PickingSeedPoint };
     ViewState m_viewState;
 
-    dtkSmartPointer<dtkAbstractData> m_data;
+    dtkSmartPointer<medAbstractData> m_data;
     QString m_noDataText;
 
 };
