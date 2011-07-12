@@ -49,6 +49,12 @@ void medImageFileLoader::run(void)
             dtkDebug() << "Failed to load image from " << d->path << " Reader error is " << reader.errorString();
         }
     }
-
+    else {
+        // we create the default image
+        int height = 128;
+        int width = 128;
+        QImage *defaultImage = new QImage(height,width,QImage::Format_RGB32);        QPainter painter(defaultImage);        painter.fillRect( 0, 0, width, height, qRgb(0,0,0) );        painter.setPen(Qt::gray);        painter.drawText(10, 64, "No preview available");
+        d->image = *defaultImage;
+    }
     emit completed(d->image);
 }
