@@ -601,6 +601,9 @@ vtkFibersManager::~vtkFibersManager()
     // this->RemoveAllActors();
     this->RenderWindowInteractor->Delete();
   }
+    
+  if (this->Renderer)
+    this->Renderer->Delete();
   
   this->BoxWidget->RemoveObserver (this->Callback);
   // this->BoxWidget->SetInteractor (NULL);

@@ -71,7 +71,9 @@
 #include <vtkImageAppend.h>
 #include <vtkImageCast.h>
 #include <vtkSmartPointer.h>
+#include <vtkDataSetCollection.h>
 #include <vtkProp3DCollection.h>
+
 
 class vtkImage3DDisplay : public vtkObject
 {
@@ -842,12 +844,9 @@ void vtkImageView3D::SetRenderingMode(int arg)
 {
   this->RenderingMode = arg;
   this->VolumeActor->SetVisibility (arg == vtkImageView3D::VOLUME_RENDERING);
-  if (arg == vtkImageView3D::PLANAR_RENDERING)
-  {
-    this->ActorX->SetVisibility (this->ShowActorX);
-    this->ActorY->SetVisibility (this->ShowActorY);
-    this->ActorZ->SetVisibility (this->ShowActorZ);
-  }
+  this->ActorX->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorX);
+  this->ActorY->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorY);
+  this->ActorZ->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorZ);
 }
 
 // //---------------------------------------------------------------------------
@@ -1022,6 +1021,9 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
     this->Renderer->ResetCamera(bounds);
 
   }
+  
+  this->DataSetCollection->AddItem (arg);
+  this->DataSetActorCollection->AddItem ( actor);
   
   // the actor is actually not deleted as it has
   // been referenced in the renderer, so we can

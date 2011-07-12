@@ -23,7 +23,8 @@ PURPOSE.  See the above copyright notices for more information.
 namespace itk
 {
 
-  MultiThreadedImageIOBase::MultiThreadedImageIOBase()
+  MultiThreadedImageIOBase::MultiThreadedImageIOBase() :
+    m_NumberOfThreads(0)
   {
     m_MultiThreader = MultiThreader::New();
     this->SetNumberOfThreads ( m_MultiThreader->GetNumberOfThreads() );

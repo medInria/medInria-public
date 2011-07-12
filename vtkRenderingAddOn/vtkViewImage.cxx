@@ -224,9 +224,8 @@ vtkViewImage::~vtkViewImage()
 #ifdef vtkINRIA3D_USE_ITK
   this->ITKImage = 0;
   this->ITKImage4 = 0;    
-#endif
-    
   delete this->Impl;
+#endif
 
   this->DirectionMatrix->Delete();
 
