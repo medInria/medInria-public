@@ -30,7 +30,8 @@ set(${PROJECT_NAME}_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/src/medCore
     ${PROJECT_SOURCE_DIR}/src/medGui/LUT
     ${PROJECT_SOURCE_DIR}/src/medGui/settingsWidgets
     ${PROJECT_SOURCE_DIR}/src/medGui/toolboxes
-    ${PROJECT_SOURCE_DIR}/src/medGui/viewContainers)
+    ${PROJECT_SOURCE_DIR}/src/medGui/viewContainers
+	${PROJECT_SOURCE_DIR}/src/medGui/database)
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 
@@ -43,7 +44,8 @@ set(${PROJECT_NAME}_INSTALL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include/medCore
     ${CMAKE_INSTALL_PREFIX}/include/medGui/LUT
     ${CMAKE_INSTALL_PREFIX}/include/medGui/settingsWidgets
     ${CMAKE_INSTALL_PREFIX}/include/medGui/toolboxes
-    ${CMAKE_INSTALL_PREFIX}/include/medGui/viewContainers)
+    ${CMAKE_INSTALL_PREFIX}/include/medGui/viewContainers
+	${CMAKE_INSTALL_PREFIX}/include/medGui/database)
 
 
 ## ###################################################################

@@ -27,26 +27,27 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medLayoutChooser.h
   medPacsSelector.h
   medToolBoxContainer.h
-  # db related items
-  medDatabaseSearchPanel.h
-  medStackedViewContainers.h
-  medViewerConfiguration.h
   medPacsSelector.h
   medViewPool.h
-
-  medDatabaseView.h
-  medDatabaseNavigator.h  
-  medDatabaseNavigatorItem.h
-  medDatabaseNavigatorItemGroup.h
+  medStackedViewContainers.h
+  medViewerConfiguration.h
   medImageFileLoader.h
-  medDatabaseNavigatorView.h
-  medDatabasePreview.h
-  medDatabasePreviewArrow.h
-  medDatabasePreviewItem.h
-  medDatabasePreviewItemGroup.h
-  medDatabasePreviewSelector.h
-  medDatabasePreviewTooltip.h
-  medDatabasePreviewView.h
+
+  # db related items
+  database/medDatabaseSearchPanel.h  
+  database/medDatabaseView.h
+  database/medDatabaseNavigator.h  
+  database/medDatabaseNavigatorItem.h
+  database/medDatabaseNavigatorItemGroup.h
+  database/medDatabaseNavigatorView.h
+  database/medDatabasePreview.h
+  database/medDatabasePreviewArrow.h
+  database/medDatabasePreviewItem.h
+  database/medDatabasePreviewItemGroup.h
+  database/medDatabasePreviewSelector.h
+  database/medDatabasePreviewTooltip.h
+  database/medDatabasePreviewView.h
+
   # commonWidgets:
   commonWidgets/medDropSite.h
   commonWidgets/medWorkspaceShifter.h
@@ -109,8 +110,8 @@ set(${PROJECT_NAME}_HEADERS
   LUT/medXMLToLUTReader.h
 
   medGuiExport.h
-  medDatabaseNavigatorController.h
-  medDatabasePreviewController.h
+  database/medDatabaseNavigatorController.h
+  database/medDatabasePreviewController.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
 
@@ -118,11 +119,11 @@ set(${PROJECT_NAME}_SOURCES
   medLayoutChooser.cpp
   medPacsSelector.cpp
   medToolBoxContainer.cpp
-  medDatabaseSearchPanel.cpp
   medStackedViewContainers.cpp
   medViewerConfiguration.cpp
   medPacsSelector.cpp
   medViewPool.cpp
+  medImageFileLoader.cpp
 
   # commonWidgets:
   commonWidgets/medDropSite.cpp
@@ -130,26 +131,25 @@ set(${PROJECT_NAME}_SOURCES
   commonWidgets/medButton.cpp
   commonWidgets/medProgressionStack.cpp
   commonWidgets/medFlicker.cpp
+
   # db related items
-  medDatabaseSearchPanel.cpp
-  medDatabaseView.cpp  
-  medDatabaseNavigator.cpp
-  medDatabaseNavigatorController.cpp
-  medDatabaseNavigatorItem.cpp
-  medDatabaseNavigatorItemGroup.cpp
-  medImageFileLoader.cpp
-  medDatabaseNavigatorScene.cpp
-  medDatabaseNavigatorView.cpp
-  medDatabasePreview.cpp
-  medDatabasePreviewArrow.cpp
-  medDatabasePreviewController.cpp
-  medDatabasePreviewItem.cpp
-  medDatabasePreviewItemGroup.cpp
-  medDatabasePreviewScene.cpp
-  medDatabasePreviewSelector.cpp
-  medDatabasePreviewTooltip.cpp
-  medDatabasePreviewView.cpp
-)
+  database/medDatabaseSearchPanel.cpp
+  database/medDatabaseView.cpp  
+  database/medDatabaseNavigator.cpp
+  database/medDatabaseNavigatorController.cpp
+  database/medDatabaseNavigatorItem.cpp
+  database/medDatabaseNavigatorItemGroup.cpp
+  database/medDatabaseNavigatorScene.cpp
+  database/medDatabaseNavigatorView.cpp
+  database/medDatabasePreview.cpp
+  database/medDatabasePreviewArrow.cpp
+  database/medDatabasePreviewController.cpp
+  database/medDatabasePreviewItem.cpp
+  database/medDatabasePreviewItemGroup.cpp
+  database/medDatabasePreviewScene.cpp
+  database/medDatabasePreviewSelector.cpp
+  database/medDatabasePreviewTooltip.cpp
+  database/medDatabasePreviewView.cpp
 
   # factories
   factories/medSettingsWidgetFactory.cpp
@@ -169,7 +169,6 @@ set(${PROJECT_NAME}_SOURCES
   settingsWidgets/medSettingsEditor.cpp
   settingsWidgets/medSystemSettingsWidget.cpp
   settingsWidgets/medStartupSettingsWidget.cpp
-
 
   # general toolbox classes
   toolboxes/medToolBox.cpp
