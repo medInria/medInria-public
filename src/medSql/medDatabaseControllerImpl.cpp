@@ -160,6 +160,16 @@ bool medDatabaseControllerImpl::createConnection(void)
     createSeriesTable();
     createImageTable();
 
+    // optimize speed of sqlite db
+    QSqlQuery query(m_database);
+    if ( !query.exec( QLatin1String( "PRAGMA synchronous = 0" ) ) ) {
+        qDebug() << "Could not set sqlite synchronous mode to asynchronous mode.";
+    }
+    if ( !query.exec( QLatin1String( "PRAGMA journal_mode=wal" ) ) ) {
+        qDebug() << "Could not set sqlite write-ahead-log journal mode";
+    }
+
+
     return true;
 }
 
