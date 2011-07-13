@@ -230,14 +230,19 @@ QImage medDatabaseNonPersistentControllerImpl::thumbnail( const medDataIndex &in
     if ( d->items.contains(index) ) {
         item = d->items.find(index).value();
     } else {
-        typedef QList<medDataIndex> medDataIndexList;
-        QList<medDataIndex> itemlist(availableItems());
-        //QSort(itemlist);
-        for (medDataIndexList::const_iterator it(itemlist.begin()); it != itemlist.end(); ++it)
-        {
-            if ( it->patientId() == index.patientId() ) {
-                item = d->items.find(*it).value();
-                break;
+        typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
+        // Cannot find an exact match for the given index. Find first data that may match
+        // using ordered map, and scan while index matches.
+        MapType::const_iterator it = d->items.lowerBound( index );
+        if (it != d->items.end() && medDataIndex::isMatch(it.key() , index ) ) {
+            item = it.value();
+        }
+        // Since this does not contain real images, but series, search on the series index too.
+        if ( !item && index.isValidForImage() ) {
+            medDataIndex seriesIndex = medDataIndex::makeSeriesIndex(index.dataSourceId(), index.patientId(), index.studyId(), index.seriesId() );
+            MapType::const_iterator it = d->items.lowerBound( seriesIndex );
+            if ( it != d->items.end() &&  medDataIndex::isMatch(it.key() , seriesIndex ) ) {
+                item = it.value();
             }
         }
     }
@@ -364,6 +369,15 @@ QString medDatabaseNonPersistentControllerImpl::metaData( const medDataIndex& in
         dtkAbstractData *data = it.value()->data();
         if (data &&  data->hasMetaData(key) )
             return data->metadata(key);
+    } else {
+        // Cannot find an exact match for the given index. Find first data that may match
+        // using ordered map.
+        it = d->items.lowerBound( index );
+        if (it != d->items.end() && medDataIndex::isMatch( it.key(), index) ) {
+            dtkAbstractData *data = it.value()->data();
+            if (data &&  data->hasMetaData(key) )
+                return data->metadata(key);
+        }
     }
     return QString();
 }
@@ -379,6 +393,20 @@ bool medDatabaseNonPersistentControllerImpl::setMetaData( const medDataIndex& in
             data->setMetaData(key, value);
             return true;
         }
+    } else {
+        // Cannot find an exact match for the given index. Find first data that may match
+        // using ordered map, and scan while index matches.
+        it = d->items.lowerBound( index );
+        int numSet(0);
+        for ( ; it != d->items.end() && medDataIndex::isMatch(it.key() , index ); ++it ) {
+            dtkAbstractData *data = it.value()->data();
+            if (data) {
+                data->setMetaData(key, value);
+                ++numSet;
+            }
+        }
+        if (numSet)
+            return true;
     }
     return false;
 }
