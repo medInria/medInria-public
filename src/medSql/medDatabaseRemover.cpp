@@ -48,6 +48,8 @@ public:
     static const QString T_STUDY;
     static const QString T_SERIES;
     static const QString T_IMAGE;
+
+    bool isCancelled;
 };
 
 const QString medDatabaseRemoverPrivate::T_PATIENT = "patient";
@@ -59,6 +61,7 @@ medDatabaseRemover::medDatabaseRemover(const medDataIndex &index_) : medJobItem(
 {
     d->index = index_;
     d->db = medDatabaseController::instance()->database();
+    d->isCancelled = false;
 }
 
 medDatabaseRemover::~medDatabaseRemover(void)
@@ -83,8 +86,10 @@ void medDatabaseRemover::run(void)
     }
 
     EXEC_QUERY(ptQuery);
-
     while( ptQuery.next() ) {
+        if (d->isCancelled)
+            break;
+
         int patientId = ptQuery.value(0).toInt();
         QSqlQuery stQuery(db);
 
@@ -98,6 +103,9 @@ void medDatabaseRemover::run(void)
 
         EXEC_QUERY(stQuery);
         while( stQuery.next() ) {
+            if (d->isCancelled)
+                break;
+
             int studyId = stQuery.value(0).toInt();
             QSqlQuery seQuery(db);
 
@@ -110,8 +118,10 @@ void medDatabaseRemover::run(void)
             seQuery.bindValue(":studyId", studyId);
 
             EXEC_QUERY(seQuery);
-
             while( seQuery.next() ) {
+                if (d->isCancelled)
+                    break;
+
                 int seriesId = seQuery.value(0).toInt();
                 QSqlQuery imQuery(db);
 
@@ -130,18 +140,24 @@ void medDatabaseRemover::run(void)
                 }
                 if (this->isSeriesEmpty( seriesId ) )
                     this->removeSeries( patientId, studyId, seriesId );
+
             } // seQuery.next
             if (this->isStudyEmpty( studyId ) )
                 this->removeStudy( patientId, studyId );
+
         } // stQuery.next
         if (this->isPatientEmpty( patientId ) )
             this->removePatient( patientId );
+
     } // ptQuery.next
 
     emit removed(index);
     emit progressed(this, 100);
     emit progress(100);
-    emit success(this);
+    if ( d->isCancelled )
+        emit failure(this);
+    else
+        emit success(this);
 
     return;
 }
@@ -181,12 +197,14 @@ void medDatabaseRemover::removeSeries( int patientId, int studyId, int seriesId 
     query.bindValue(":seriesId", seriesId);
     EXEC_QUERY(query);
     QString seriesName;
+    QString seriesPath;
     if ( query.next()) {
         QString thumbnail = query.value(0).toString();
         this->removeFile( thumbnail );
         QString path = query.value(1).toString();
-        this->removeFile( path );
+        this->removeDataFile( medDataIndex::makeSeriesIndex(d->index.dataSourceId(), patientId, studyId, seriesId) , path );
         seriesName = query.value(2).toString();
+        seriesPath = path;
     }
     removeTableRow( d->T_SERIES, seriesId );
 
@@ -204,11 +222,13 @@ void medDatabaseRemover::removeSeries( int patientId, int studyId, int seriesId 
     if ( query.next() ) 
         patientName = query.value(0).toString();
 
-    medDatabaseControllerImpl * dbi = medDatabaseController::instance();
-    QString seriesPath = dbi->stringForPath( patientName ) + "/" + 
-        dbi->stringForPath( studyName ) + "/" + 
-        dbi->stringForPath( seriesName );
-    medStorage::rmpath( medStorage::dataLocation() + "/" + seriesPath );
+    QFileInfo fi(medStorage::dataLocation() + "/" + seriesPath);
+
+    QDir seriesDir(fi.dir().path() + "/" + fi.completeBaseName());
+
+    if (seriesDir.exists()) {
+        seriesDir.rmdir(seriesDir.path());
+    }
 }
 
 bool medDatabaseRemover::isStudyEmpty( int studyId )
@@ -249,7 +269,8 @@ void medDatabaseRemover::removeStudy( int patientId, int studyId )
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
     QString studyPath = dbi->stringForPath( patientName ) + "/" + 
         dbi->stringForPath( studyName );
-    medStorage::rmpath( medStorage::dataLocation() + "/" + studyPath );
+    QDir dir;
+    dir.rmdir(medStorage::dataLocation() + "/" + studyPath);
 }
 
 bool medDatabaseRemover::isPatientEmpty( int patientId )
@@ -281,7 +302,8 @@ void medDatabaseRemover::removePatient( int patientId )
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
     QString patientPath = dbi->stringForPath( patientName );
-    medStorage::rmpath( medStorage::dataLocation() + "/" + patientPath );
+    QDir dir;
+    dir.rmdir(medStorage::dataLocation() + "/" + patientPath);
 }
 
 void medDatabaseRemover::removeTableRow( const QString &table, int id )
@@ -301,6 +323,27 @@ void medDatabaseRemover::removeFile( const QString & filename )
 
 void medDatabaseRemover::onCancel(QObject*)
 {
-    // TODO
-    // Currently this process does no support cancellation.
+    d->isCancelled = true;
+}
+
+void medDatabaseRemover::removeDataFile( const medDataIndex &index, const QString & filename )
+{
+    QFileInfo fi(filename);
+    const QString suffix = fi.suffix();
+    const QString mhd("mhd");
+    const QString mha("mha");
+
+    if ( suffix == mhd ) {
+        QString mhaFile (filename);
+        mhaFile.chop(mhd.length());
+        mhaFile += mha;
+        this->removeFile(mhaFile);
+    } else if ( suffix == mha ) {
+        QString mhdFile (filename);
+        mhdFile.chop(mha.length());
+        mhdFile += mhd;
+        this->removeFile(mhdFile);
+    }
+
+    this->removeFile(filename);
 }
