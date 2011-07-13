@@ -20,7 +20,7 @@
 #ifndef ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSTOOLBOX_H
 #define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSTOOLBOX_H
 
-#include <medGui/medToolBoxRegistrationCustom.h>
+#include <medToolBoxRegistrationCustom.h>
 
 class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate;
 

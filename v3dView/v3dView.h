@@ -7,7 +7,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
-#include <medCore/medAbstractView.h>
+#include <medAbstractView.h>
 
 #include "v3dViewPluginExport.h"
 
