@@ -51,4 +51,3 @@ endwhile()
 
 
 ENDMACRO(MACRO_ADD_PLUGIN_LIST)
-

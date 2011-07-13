@@ -328,9 +328,9 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 
     // Setting up 3D view
     d->renderer3d = vtkRenderer::New();
-    d->renderer3d->GetActiveCamera()->SetPosition   ( 0.0, -1.0, 0.0 );
-    d->renderer3d->GetActiveCamera()->SetViewUp     ( 0.0,  0.0, 1.0 );
-    d->renderer3d->GetActiveCamera()->SetFocalPoint ( 0.0,  0.0, 0.0 );
+    d->renderer3d->GetActiveCamera()->SetPosition(0, -1, 0);
+    d->renderer3d->GetActiveCamera()->SetViewUp(0, 0, 1);
+    d->renderer3d->GetActiveCamera()->SetFocalPoint(0, 0, 0);
 
     d->view3d = vtkImageView3D::New();
     d->view3d->SetRenderer(d->renderer3d);
@@ -895,36 +895,36 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 	    this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageLong4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageChar4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUShort4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageFloat4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUInt4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageULong4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageUChar4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="itkDataImageDouble4") {
-		this->enableInteractor ( "v3dView4DInteractor" );
         dtkAbstractView::setData(data);
+	this->enableInteractor ( "v3dView4DInteractor" );
     }
     else if (data->description()=="vistalDataImageChar3") {
       if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->convert("itkDataImageChar3")->data() ) ) ) {
