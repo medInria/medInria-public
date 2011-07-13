@@ -33,24 +33,29 @@ public:
      medViewerToolBoxPatient(QWidget *parent = 0);
     ~medViewerToolBoxPatient(void);
 
-    void addItem(const QString& item);
-    void addItem(const QString& item, const QVariant& data);
 
-    void clear(void);
-
-    int patientIndex(void);
-    int patientIndex(QString patient);
+    QSet<medDataIndex> patientIndex(void) const;
+    QSet<medDataIndex> patientIndex(QString patient) const;
+    QSet<medDataIndex> patientIndex(int itemId) const;
 
 signals:
+    /** Emitted when the selected patient changes. 
+     *  \param Patients currently selected */
     void patientIndexChanged(const medDataIndex&);
 
 public slots:
-    void setPatientIndex(int patientId);
     void setPatientIndex(const medDataIndex& index);
     void setupDatabase(void);
 
 protected slots:
     void onCurrentIndexChanged(int);
+protected:
+    int addChooseItem();
+    void removeChooseItem();
+
+    int addItem(const QString& item, const medDataIndex& data);
+
+    void clear(void);
 
 private:
     medViewerToolBoxPatientPrivate *d;

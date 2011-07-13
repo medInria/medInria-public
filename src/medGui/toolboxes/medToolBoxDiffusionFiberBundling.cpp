@@ -298,7 +298,7 @@ void medToolBoxDiffusionFiberBundling::onOpenRoiButtonClicked(void)
     
     medDataIndex index = nonPersDbController->import(roiFileName);
 
-    dtkAbstractData *data = medDataManager::instance()->data(index).data();
+    dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
 
     if (!data)
         return;

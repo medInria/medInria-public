@@ -284,7 +284,7 @@ void
     //        const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
     //    const QString seriesName = data->name();
 
-    d->view->addDataInList(data);
+    
     if (d->view->layerCount() == 1 && !data->description().contains("vtkDataMesh"))
         return;
 

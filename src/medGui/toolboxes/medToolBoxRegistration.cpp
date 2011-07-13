@@ -57,8 +57,8 @@ public:
     medAbstractView *movingView;
     medAbstractView *fuseView;
 
-    medAbstractDataImage *fixedData;
-    medAbstractDataImage *movingData;
+    dtkSmartPointer<medAbstractDataImage> fixedData;
+    dtkSmartPointer<medAbstractDataImage> movingData;
 
     dtkAbstractProcess * process;
 
@@ -223,7 +223,7 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
     if (!index.isValid())
         return;
 
-    d->fixedData = dynamic_cast<medAbstractDataImage*>( medDataManager::instance()->data(index).data() );
+    d->fixedData = medDataManager::instance()->data(index);
 
     if (!d->fixedData)
         return;
@@ -261,7 +261,7 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
     if (!index.isValid())
         return;
 
-    d->movingData = dynamic_cast<medAbstractDataImage*>(medDataManager::instance()->data(index).data());
+    d->movingData = medDataManager::instance()->data(index);
 
     if (!d->movingData)
         return;
