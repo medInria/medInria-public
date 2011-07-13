@@ -1210,14 +1210,12 @@ void vtkKWVisualizationToolBox::ColorChangingCallback (double r, double g, doubl
   {
     vtkMetaDataSet* metadataset = this->MetaDataSets[i];
     if (vtkProperty::SafeDownCast(metadataset->GetProperty()))
-      vtkProperty::SafeDownCast(metadataset->GetProperty())->SetColor (r,g,b);
+      vtkProperty::SafeDownCast(metadataset->GetProperty())->SetColor (r,g,b);    
   }
   
   vtkKWPageView* page = this->ParentObject->GetCurrentPage();
   if (page)
     page->Render();
-  
-
 }
 
 void vtkKWVisualizationToolBox::ColorChangedCallback (double r, double g, double b)

@@ -1885,8 +1885,7 @@ void vtkKWMainWindowInteractor::UpdateToTime(double time)
   }
   else
   {
-    
-    this->GetDataManager()->UpdateSequencesMatchingTagToTime (page->GetTag(), time);  
+    this->GetDataManager()->UpdateSequencesMatchingTagToTime (page->GetTag(), time);
     
     vtkLandmarkManager* landmarkmanager = page->GetLandmarkManager();
     if (landmarkmanager->GetNumberOfLandmarks())

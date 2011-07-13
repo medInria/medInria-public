@@ -663,7 +663,7 @@ void vtkKWDICOMImporter2::ResetCallback()
     this->InteractiveStatus = STATUS_STOP;
   try
   {
-    // this->GDCMImporter->InitializeOutputs();
+    this->GDCMImporter->Scan();
   }
   catch (itk::ExceptionObject & e)
   {

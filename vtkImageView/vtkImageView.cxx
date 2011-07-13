@@ -320,11 +320,11 @@ void vtkImageView::Render()
     
     if (!this->RenderWindow->GetNeverRendered())
     {
-      if( this->GetMTime()>this->InternalMTime )
-      {
-        this->RenderWindow->Render();
-        this->InternalMTime = this->GetMTime();
-      }
+      // if( this->GetMTime()>this->InternalMTime )
+      // {
+	this->RenderWindow->Render();
+      //   this->InternalMTime = this->GetMTime();
+      // }
     }
     else
     {

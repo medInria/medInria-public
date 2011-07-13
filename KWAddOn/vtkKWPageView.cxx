@@ -503,7 +503,6 @@ int vtkKWPageView::BuildScreenshotFromRenderWindow(vtkRenderWindow *win, vtkKWIc
   return 0;
 }
 
-
 int vtkKWPageView::GetAxialScreenshot(vtkKWIcon* screenshot, int size)
 {
   return this->BuildScreenshotFromRenderWindow (this->RenderWidget1->GetRenderWindow(), screenshot, size);
@@ -831,7 +830,7 @@ std::vector<vtkActor*> vtkKWPageView::AddMetaDataSet(vtkMetaDataSet* metadataset
   if (vtkImageData::SafeDownCast (dataset))
     this->m_Pool->SyncSetInput (vtkImageData::SafeDownCast (dataset));
   else
-    this->m_Pool->SyncAddDataSet (vtkPointSet::SafeDownCast (dataset));    
+    this->m_Pool->SyncAddDataSet (vtkPointSet::SafeDownCast (dataset), property);
   
   if (metadataset->GetWirePolyData())
   {
