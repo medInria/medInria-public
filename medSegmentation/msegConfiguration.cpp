@@ -11,11 +11,11 @@
 
 #include <medCore/medAbstractView.h>
 
-#include <medGui/medStackedViewContainers.h>
-#include <medGui/medProgressionStack.h>
-#include <medGui/medViewerConfigurationFactory.h>
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewerToolBoxView.h>
+#include <medStackedViewContainers.h>
+#include <medProgressionStack.h>
+#include <medViewerConfigurationFactory.h>
+#include <medViewContainer.h>
+#include <medViewerToolBoxView.h>
 
 #include <dtkCore/dtkLog.h>
 

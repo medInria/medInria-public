@@ -1,7 +1,7 @@
 #ifndef MSEGTOOLBOX_H
 #define MSEGTOOLBOX_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 
 #include "msegPluginExport.h"
 

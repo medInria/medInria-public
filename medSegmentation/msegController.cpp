@@ -20,7 +20,7 @@
 #include <medCore/medRunnableProcess.h>
 #include <medCore/medDataManager.h>
 
-#include <medGui/medProgressionStack.h>
+#include <medProgressionStack.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>

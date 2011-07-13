@@ -77,12 +77,13 @@ QVtkGraphicsView::QVtkGraphicsView(QWidget* p)
     mCacheVtkBackground(true),
     mLastRenderMTime(0)
 {
-    setViewport(new QGLWidget(this) );
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    setMouseTracking(false);
-    setCacheMode(CacheNone);
+    this->setViewport(new QGLWidget(this) );
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    this->setMouseTracking(false);
+    this->setCacheMode(CacheNone);
+    this->setFrameStyle( QFrame::NoFrame );
 
     // create a default vtk window
     vtkQtOpenGLRenderWindowPointer win (vtkQtOpenGLRenderWindowPointer::New());
@@ -197,7 +198,6 @@ vtkRenderWindowInteractor * QVtkGraphicsView::GetRenderWindowInteractor ()
         return NULL;
     return renWin->GetInteractor();
 }
-
 
 /*! handle resize event
  */

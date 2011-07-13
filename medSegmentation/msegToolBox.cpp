@@ -2,7 +2,7 @@
 
 #include "msegController.h"
 
-#include <medGui/medProgressionStack.h>
+#include <medProgressionStack.h>
 
 #include <QPushButton>
 
