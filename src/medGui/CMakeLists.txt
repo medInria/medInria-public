@@ -82,6 +82,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerToolBoxTime.h
   medViewerToolBoxViewProperties.h
   medViewerToolBoxView.h
+  medViewerToolBoxPatient.h
   
   # pacs toolboxes
   medBrowserToolBoxPacsHost.h
@@ -167,7 +168,8 @@ set(${PROJECT_NAME}_SOURCES
   medViewerToolBoxTime.cpp
   medViewerToolBoxViewProperties.cpp
   medViewerToolBoxView.cpp
-  
+  medViewerToolBoxPatient.cpp
+    
   medBrowserToolBoxPacsHost.cpp
   medBrowserToolBoxPacsNodes.cpp
   medBrowserToolBoxPacsSearch.cpp

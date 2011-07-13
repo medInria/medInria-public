@@ -53,7 +53,7 @@
 #include <medGui/medToolBoxRegistration.h>
 #include <medGui/medStackedViewContainers.h>
 #include <medGui/medViewerToolBoxLayout.h>
-#include <medViewerToolBoxPatient.h>
+#include <medGui/medViewerToolBoxPatient.h>
 #include <medGui/medViewerToolBoxView.h>
 #include <medGui/medViewerToolBoxViewProperties.h>
 
