@@ -37,14 +37,17 @@ if(WIN32)
 endif()
   
 
+option(BUILD_TESTING       "Build testing"          true)
+
 enable_testing()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
+
+include(medinriaBuild)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-include(medinriaBuild)
 include(medinriaPack)
 #include(medinriaDart)
 include(Dart)
@@ -55,11 +58,13 @@ option(BUILD_DOCUMENTATION "Build documentation"    true)
 add_subdirectory(src)
 add_subdirectory(app)
 
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif(BUILD_TESTING)
+
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
-
-
 
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in

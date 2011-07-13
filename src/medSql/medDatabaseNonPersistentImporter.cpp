@@ -23,7 +23,7 @@
 #include "medDatabaseNonPersistentItem_p.h"
 #include "medDatabaseNonPersistentImporter.h"
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -112,7 +112,7 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
     if (studyId==-1)
         studyId = medDatabaseNonPersistentController::instance()->studyId(true);
 
-    index = medDataIndex (patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
+    index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
     QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
 

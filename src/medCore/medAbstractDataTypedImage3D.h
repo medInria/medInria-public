@@ -16,7 +16,7 @@
 #define MEDABSTRACTDATATYPEDIMAGE3D_H
 
 #include "medCoreExport.h"
-#include <medCore/medAbstractDataImage3D.h>
+#include <medAbstractDataImage3D.h>
 
 template <typename T>
 class MEDCORE_EXPORT medAbstractDataTypedImage3D : public medAbstractDataImage3D {

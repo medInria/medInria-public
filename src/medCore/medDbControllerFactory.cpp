@@ -20,6 +20,8 @@ bool medDbControllerFactory::registerDbController( const QString& type, medDbCon
 {
     if(!d->dbController_creators.contains(type)) {
         d->dbController_creators.insert(type, func);
+        //qDebug() << "registering " << type;
+        emit dbControllerRegistered(type);
         return true;
     }
     qWarning() << "failed registering" << type;
@@ -33,11 +35,13 @@ medAbstractDbController * medDbControllerFactory::createDbController( QString ty
     // if we can't find the concrete controller we use the first we can get
     if(!d->dbController_creators.contains(type))
     {
+        return NULL;
+
         // check if we have one at least
-        if (d->dbController_creators.isEmpty())
-            return NULL;
+//        if (d->dbController_creators.isEmpty())
+//            return NULL;
         // return the first element of the hash
-       return d->dbController_creators.begin().value()();
+//       return d->dbController_creators.begin().value()();
     }
         
     medAbstractDbController *controller = d->dbController_creators[type]();

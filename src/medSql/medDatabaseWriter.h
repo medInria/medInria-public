@@ -22,9 +22,9 @@
 
 #include <QtCore/QObject>
 
-#include <medCore/medJobItem.h>
+#include <medJobItem.h>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 class dtkAbstractData;
 class medDatabaseWriterPrivate;

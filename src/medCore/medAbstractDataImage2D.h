@@ -21,7 +21,7 @@
 #define MEDABSTRACTDATAIMAGE2D_H
 
 #include "medCoreExport.h"
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
 class medAbstractDataImage2DPrivate;
 

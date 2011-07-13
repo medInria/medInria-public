@@ -17,7 +17,7 @@
  * 
  */
 
-#include <medCore/medAbstractDataImage3D.h>
+#include <medAbstractDataImage3D.h>
 
 class medAbstractDataImage3DPrivate
 {

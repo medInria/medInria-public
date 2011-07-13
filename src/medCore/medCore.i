@@ -25,8 +25,8 @@
 #include <QtDebug>
 #include <QtCore>
 
-#include <medCore/medDataIndex.h>
-#include <medCore/medDataManager.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
 %}
 
 // /////////////////////////////////////////////////////////////////
@@ -102,6 +102,8 @@
 // /////////////////////////////////////////////////////////////////
 // Wrapper input
 // /////////////////////////////////////////////////////////////////
+
+%ignore medDataManager::dataAdded(const medDataIndex&);
 
 %include "medDataIndex.h"
 %include "medDataManager.h"

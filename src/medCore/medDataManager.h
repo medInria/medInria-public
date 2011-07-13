@@ -22,6 +22,8 @@
 
 #include <QtCore/QObject>
 
+#include <dtkCore/dtkSmartPointer.h>
+
 #include "medCoreExport.h"
 #include "medDataIndex.h"
 
@@ -49,16 +51,16 @@ public:
     * @params const medDataIndex & index medDataIndex for data
     * @return dtkAbstractData * the data
     */
-    QSharedPointer<dtkAbstractData> data(const medDataIndex& index);
+    dtkSmartPointer<dtkAbstractData> data(const medDataIndex& index);
 
     /**
     * Use this function to insert data into the database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
-    * @params QSharedPointer<dtkAbstractData> & data
+    * @params dtkSmartPointer<dtkAbstractData> & data
     * @return medDataIndex
     */
-    medDataIndex import(QSharedPointer<dtkAbstractData> &data);
+    medDataIndex import(dtkSmartPointer<dtkAbstractData> &data);
 
     /**
     * Use this function to insert data into the non-persistent database,
@@ -68,6 +70,15 @@ public:
     * @return medDataIndex
     */
     medDataIndex importNonPersistent(dtkAbstractData *data);
+
+
+    /**
+    * Overload to insert data directly from a file into the no-persistent database
+    * @params QString file
+    * @return medDataIndex
+    */
+    medDataIndex importNonPersistent(QString file);
+
 
     /**
     * Use this function to save all non-persistent data to the sql database.
@@ -91,6 +102,12 @@ public:
     * Clear the list of non-persistent data
     */
     void clearNonPersistentData (void);
+
+
+    /** Remove an item or items from the database
+     *  Will remove a whole patient / study / series depending on the index.
+     */
+    void removeData(const medDataIndex& index);
 
     /**
     * Releases all own references to let all stored smartpointers get out of scope
@@ -133,6 +150,12 @@ public:
     */
     static size_t getOptimalMemoryThreshold();
 
+    /** return the DB controller for given data source. */
+    medAbstractDbController *controllerForDataSource( int dataSource );
+    const medAbstractDbController *controllerForDataSource( int dataSource ) const;
+
+    /** Return a list of available dataSource Ids.*/
+    QList<int> dataSourceIds() const;
 
 signals:
     /**
@@ -140,7 +163,13 @@ signals:
     * or non persistent database by calling import() or importNonPersistentData().
     */
     void dataAdded (const medDataIndex&);
-      
+
+    /**
+    * This signal is emitted whenever a data is removed in either the persistent
+    * or non persistent database by calling remove().
+    */
+    void dataRemoved (const medDataIndex&);
+
 protected:
      medDataManager(void);
     ~medDataManager(void);
@@ -157,7 +186,8 @@ protected:
     */
     static int ReadStatmFromProcFS( int* size, int* res, int* shared, int* text, int* sharedLibs, int* stack, int* dirtyPages );
 
-
+    /** Remove all matching items from the cache. */
+    void removeDataFromCache( const medDataIndex &index);
 
 protected:
     static medDataManager *s_instance;
