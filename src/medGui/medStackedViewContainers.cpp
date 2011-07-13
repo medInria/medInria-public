@@ -152,6 +152,8 @@ void medStackedViewContainers::changeCurrentContainerType(const QString &name)
             this->insertContainer(index,tabName,newTab);
             this->setCurrentIndex(index);
             this->blockSignals(false);
+
+            this->onCurrentContainerChanged(index);
         }
     }
 }
