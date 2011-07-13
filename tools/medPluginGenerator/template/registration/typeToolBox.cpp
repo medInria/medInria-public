@@ -15,15 +15,15 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 
 
-#include <medCore/medAbstractView.h>
-#include <medCore/medRunnableProcess.h>
-#include <medCore/medJobManager.h>
+#include <medAbstractView.h>
+#include <medRunnableProcess.h>
+#include <medJobManager.h>
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
-#include <medGui/medToolBoxFactory.h>
-#include <medGui/medToolBoxRegistration.h>
-#include <medGui/medProgressionStack.h>
+#include <medToolBoxFactory.h>
+#include <medToolBoxRegistration.h>
+#include <medProgressionStack.h>
 
 #include <rpiCommonTools.hxx>
 

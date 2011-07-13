@@ -5,7 +5,7 @@
 #ifndef ITKDATATENSORIMAGEDOUBLE3_H
 #define ITKDATATENSORIMAGEDOUBLE3_H
 
-#include <medCore/medAbstractDataTypedImage.h>
+#include <medAbstractDataTypedImage.h>
 
 #include "itkDataTensorImagePluginExport.h"
 

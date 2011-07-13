@@ -8,7 +8,7 @@
 
 #include <dtkCore/dtkLog.h>
 
-#include <medGui/medToolBoxFactory.h>  //To register the toolbox into the diffusion toolbox
+#include <medToolBoxFactory.h>  //To register the toolbox into the diffusion toolbox
 
 // /////////////////////////////////////////////////////////////////
 // exampleProcessImageFilterPluginPrivate

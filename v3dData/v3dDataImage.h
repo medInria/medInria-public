@@ -5,7 +5,7 @@
 #ifndef V3DDATAIMAGE_H
 #define V3DDATAIMAGE_H
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
 #include "v3dDataPluginExport.h"
 

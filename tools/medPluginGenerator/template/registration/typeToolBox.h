@@ -5,7 +5,7 @@
 #ifndef %2TOOLBOX_H
 #define %2TOOLBOX_H
 
-#include <medGui/medToolBoxRegistrationCustom.h>
+#include <medToolBoxRegistrationCustom.h>
 #include "%1PluginExport.h"
 
 class %1ToolBoxPrivate;

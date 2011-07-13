@@ -4,7 +4,7 @@
 
 #include "v3dViewPublic.h"
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
 #include "vtkRenderer.h"
