@@ -182,7 +182,10 @@ void medDatabaseRemover::removeSeries( int seriesId )
         QString thumbnail = query.value(0).toString();
         this->removeFile( thumbnail );
         QString path = query.value(1).toString();
-        this->removeFile( path );
+
+        // if path is empty the it was an indexed series
+        if(!path.isNull() && !path.isEmpty())
+            this->removeFile( path );
     }
     removeTableRow( d->T_SERIES, seriesId );
 }
