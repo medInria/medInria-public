@@ -33,6 +33,8 @@ public:
      medViewerToolBoxLayout(QWidget *parent = 0);
     ~medViewerToolBoxLayout(void);
 
+    void setTab(const QString &name);
+
 signals:
     void modeChanged(const QString&);
     void split(int, int);

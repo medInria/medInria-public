@@ -139,7 +139,10 @@ signals:
 
     void addTabButtonClicked();
 
+    void currentChanged(const QString &);
+
 public slots:
+    void onCurrentContainerChanged(int index);
     void changeCurrentContainerType(const QString &name);
     void deleteContainerClicked(int index);
 

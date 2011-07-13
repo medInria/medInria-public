@@ -36,7 +36,10 @@ public:
     ~medViewerConfigurationVisualization(void);
     virtual void setupViewContainerStack();
     virtual QString description(void) const;
-        
+
+public slots:
+    virtual void connectToolboxesToCurrentContainer(const QString &name);
+
 private:
     medViewerConfigurationVisualizationPrivate *d;
 };

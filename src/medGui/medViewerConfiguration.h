@@ -296,6 +296,13 @@ public slots:
       * If another behavior is wanted, override this in child class
       */
     virtual void onAddTabClicked();
+
+    /**
+      * @brief Adapt interface to container change in stacks
+      *
+      * E.g. changes the layout toolbox to set it to the current container type
+      */
+    virtual void onContainerChanged(const QString &name);
     
 signals:
     /**

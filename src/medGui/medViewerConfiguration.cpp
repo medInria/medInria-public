@@ -50,6 +50,7 @@ medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(n
 
     d->viewContainerStack = new medStackedViewContainers(parent);
     connect(d->viewContainerStack,SIGNAL(addTabButtonClicked()),this,SLOT(onAddTabClicked()));
+    connect(d->viewContainerStack,SIGNAL(currentChanged(const QString &)),this,SLOT(onContainerChanged(const QString &)));
 
     d->layoutType = medViewerConfiguration::LeftDbRightTb;
     d->customLayoutType = 0;
@@ -108,6 +109,13 @@ medViewerConfiguration::LayoutType medViewerConfiguration::layoutType(void) cons
 void medViewerConfiguration::setCurrentViewContainer(const QString& name)
 {
     d->viewContainerStack->setContainer(name);
+}
+
+void medViewerConfiguration::onContainerChanged(const QString &name)
+{
+    QString containerType = d->viewContainerStack->container(name)->description();
+
+    d->layoutToolBox->setTab(containerType);
 }
 
 void medViewerConfiguration::setCustomPreset(int type)

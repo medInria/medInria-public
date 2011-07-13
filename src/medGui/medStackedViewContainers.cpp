@@ -41,6 +41,7 @@ medStackedViewContainers::medStackedViewContainers(QWidget *parent) : QTabWidget
     this->setMovable(true);
     
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(deleteContainerClicked(int)));
+    connect(this,SIGNAL(currentChanged(int)),this,SLOT(onCurrentContainerChanged(int)));
 
     d->addButton = new QPushButton();
     d->addButton->setStyleSheet("background-image: url(:medGui/pixmaps/plus_button.png);background-position: center;background-repeat: no-repeat;");
@@ -129,8 +130,8 @@ void medStackedViewContainers::insertContainer(int index, const QString &name, m
 
 void medStackedViewContainers::changeCurrentContainerType(const QString &name)
 {
-    qDebug() << "Changing container type to " << name << " from " << this->current()->description();
-    qDebug() << "Current index is " << this->currentIndex() << " and tab name " << this->tabText(this->currentIndex());
+    //qDebug() << "Changing container type to " << name << " from " << this->current()->description();
+    //qDebug() << "Current index is " << this->currentIndex() << " and tab name " << this->tabText(this->currentIndex());
 
     if (name != this->current()->description())
     {
@@ -144,11 +145,13 @@ void medStackedViewContainers::changeCurrentContainerType(const QString &name)
 
         if (newTab != NULL)
         {
+            this->blockSignals(true);
             int index = this->currentIndex();
             QString tabName = this->tabText(index);
             this->removeTab(index);
             this->insertContainer(index,tabName,newTab);
             this->setCurrentIndex(index);
+            this->blockSignals(false);
         }
     }
 }
@@ -197,4 +200,10 @@ void medStackedViewContainers::removeContainer(const QString& name)
         delete container;
         d->containers.remove(name);
     }
+}
+
+void medStackedViewContainers::onCurrentContainerChanged(int index)
+{
+    QString name = this->tabText(index);
+    emit currentChanged(name);
 }
