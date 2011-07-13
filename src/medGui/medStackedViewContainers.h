@@ -117,7 +117,16 @@ public:
     */
     void removeContainer(const QString& name);
 
+    /**
+     * @brief Locks tabs (none can be deleted or created).
+     *
+    */
     void lockTabs();
+
+    /**
+     * @brief Unlocks tabs (deletion and creation authorized).
+     *
+    */
     void unlockTabs();
 
 signals:
@@ -137,13 +146,38 @@ signals:
     */
     void focused(dtkAbstractView *);
 
+    /**
+     * @brief Emits a signal when the add tab button has been clicked. Handled by the configurations
+     *
+    */
     void addTabButtonClicked();
 
+    /**
+     * @brief Emits a signal when the current container changes (for toolboxes to update)
+     *
+    */
     void currentChanged(const QString &);
 
 public slots:
+    /**
+     * @brief Changes the current container to the one at index
+     *
+     * @param index the tab index
+    */
     void onCurrentContainerChanged(int index);
+
+    /**
+     * @brief Changes the type of the current container to name
+     *
+     * @param name the container description
+    */
     void changeCurrentContainerType(const QString &name);
+
+    /**
+     * @brief Deletes the container at index (if not the last one in the stack)
+     *
+     * @param index the tab index
+    */
     void deleteContainerClicked(int index);
 
 private:
