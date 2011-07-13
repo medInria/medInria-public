@@ -1,7 +1,7 @@
 #ifndef medFileSystemDataSource_h__
 #define medFileSystemDataSource_h__
 
-#include <medCore/medAbstractDataSource.h>
+#include <medAbstractDataSource.h>
 
 class medFileSystemDataSourcePrivate;
 

@@ -1,4 +1,4 @@
-#include "medXMLtoLUTReader.h"
+#include "medXMLToLUTReader.h"
 
 #include <QXmlStreamReader>
 #include <QStringList>

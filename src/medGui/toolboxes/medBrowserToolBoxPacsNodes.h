@@ -20,7 +20,7 @@
 #ifndef medBrowserToolBoxPacsNODES_H
 #define medBrowserToolBoxPacsNODES_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 #include "medGuiExport.h"
 
 class medBrowserToolBoxPacsNodesPrivate;

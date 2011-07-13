@@ -24,10 +24,10 @@
 
 #include <dtkCore/dtkGlobal.h>
 
-#include <medCore/medDataIndex.h>
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseNonPersistentController.h>
-#include <medSql/medDatabaseNonPersistentItem.h>
+#include <medDataIndex.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
+#include <medDatabaseNonPersistentItem.h>
 
 class medViewerToolBoxPatientPrivate
 {

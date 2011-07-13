@@ -20,7 +20,7 @@
 #ifndef MEDVIEWERTOOLBOXVIEW_H
 #define MEDVIEWERTOOLBOXVIEW_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 
 class dtkAbstractView;
 class medViewerToolBoxViewPrivate;

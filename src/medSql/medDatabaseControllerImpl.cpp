@@ -10,8 +10,8 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 
-#include <medCore/medMessageController.h>
-#include <medCore/medStorage.h>
+#include <medMessageController.h>
+#include <medStorage.h>
 
 #include "medDatabaseImporter.h"
 #include "medDatabaseExporter.h"

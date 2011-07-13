@@ -25,7 +25,7 @@
 #include <QtDebug>
 #include <QtGui>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 class medDatabaseItemPrivate;
 

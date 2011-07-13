@@ -19,7 +19,7 @@
 
 #include "medDatabaseImporter.h"
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -27,8 +27,8 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
-#include <medSql/medDatabaseController.h>
-#include <medCore/medStorage.h>
+#include <medDatabaseController.h>
+#include <medStorage.h>
 
 
 class medDatabaseImporterPrivate

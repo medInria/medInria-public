@@ -22,8 +22,8 @@
 #include "medDatabaseNonPersistentReader.h"
 #include "medDatabaseNonPersistentImporter.h"
 
-#include <medCore/medDataIndex.h>
-#include <medCore/medMessageController.h>
+#include <medDataIndex.h>
+#include <medMessageController.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>

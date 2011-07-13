@@ -24,7 +24,7 @@
 
 #include <QtGui/QLabel>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 class medDropSitePrivate;
 

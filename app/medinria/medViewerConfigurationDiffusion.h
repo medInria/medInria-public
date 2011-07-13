@@ -4,8 +4,8 @@
 
 #include <QtCore>
 
-#include <medGui/medViewerConfiguration.h>
-#include <medGui/medToolBoxDiffusionTensorView.h>
+#include <medViewerConfiguration.h>
+#include <medToolBoxDiffusionTensorView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 

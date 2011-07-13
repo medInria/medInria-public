@@ -1,7 +1,7 @@
 #ifndef medDatabaseSearchPanel_h__
 #define medDatabaseSearchPanel_h__
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 #include "medGuiExport.h"
 
 

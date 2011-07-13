@@ -20,9 +20,9 @@
 #ifndef MEDDATABASENONPERSISTENTCONTROLLERIMPL_H
 #define MEDDATABASENONPERSISTENTCONTROLLERIMPL_H
 
-#include <medCore/medAbstractDbController.h>
+#include <medAbstractDbController.h>
 #include "medSqlExport.h"
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QList>

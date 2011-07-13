@@ -7,8 +7,8 @@
 
 #include <dtkScript/dtkScriptManager.h>
 
-#include <medCore/medPluginManager.h>
-#include <medCore/medSettingsManager.h>
+#include <medPluginManager.h>
+#include <medSettingsManager.h>
 
 class medSystemSettingsWidgetPrivate {
 

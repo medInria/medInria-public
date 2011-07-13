@@ -3,7 +3,7 @@
 
 
 #include "medSqlExport.h"
-#include <medCore/medAbstractDbController.h>
+#include <medAbstractDbController.h>
 
 class dtkAbstractData;
 class SigEmitter;

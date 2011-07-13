@@ -20,7 +20,7 @@
 #ifndef medBrowserToolBoxPacsSEARCH_H
 #define medBrowserToolBoxPacsSEARCH_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 #include "medGuiExport.h"
 
 class medBrowserToolBoxPacsSearchPrivate;

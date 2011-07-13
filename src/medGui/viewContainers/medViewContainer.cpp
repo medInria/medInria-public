@@ -24,7 +24,7 @@
 #include <QtGui>
 
 #include <dtkCore/dtkAbstractView.h>
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 medViewContainer::medViewContainer(QWidget *parent)
     : QFrame(parent)

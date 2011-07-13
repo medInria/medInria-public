@@ -30,34 +30,34 @@
 #include <dtkVr/dtkVrHeadRecognizer.h>
 #include <dtkVr/dtkVrGestureRecognizer.h>
 
-#include <medCore/medSettingsManager.h>
-#include <medCore/medDataIndex.h>
-#include <medCore/medDataManager.h>
-#include <medCore/medViewManager.h>
-#include <medCore/medAbstractView.h>
+#include <medSettingsManager.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
+#include <medViewManager.h>
+#include <medAbstractView.h>
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseNonPersistentItem.h>
-#include <medSql/medDatabaseNonPersistentController.h>
-#include <medSql/medDatabaseNavigator.h>
-#include <medSql/medDatabaseNavigatorController.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentItem.h>
+#include <medDatabaseNonPersistentController.h>
+#include <medDatabaseNavigator.h>
+#include <medDatabaseNavigatorController.h>
 
-#include <medGui/medClutEditor.h>
-#include <medGui/medToolBox.h>
-#include <medGui/medToolBoxContainer.h>
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerCustom.h>
-#include <medGui/medViewContainerMulti.h>
-#include <medGui/medViewContainerSingle.h>
-#include <medGui/medViewPool.h>
-#include <medGui/medViewerConfigurationFactory.h>
-#include <medGui/medToolBoxDiffusion.h>
-#include <medGui/medToolBoxRegistration.h>
-#include <medGui/medStackedViewContainers.h>
-#include <medGui/medViewerToolBoxLayout.h>
+#include <medClutEditor.h>
+#include <medToolBox.h>
+#include <medToolBoxContainer.h>
+#include <medViewContainer.h>
+#include <medViewContainerCustom.h>
+#include <medViewContainerMulti.h>
+#include <medViewContainerSingle.h>
+#include <medViewPool.h>
+#include <medViewerConfigurationFactory.h>
+#include <medToolBoxDiffusion.h>
+#include <medToolBoxRegistration.h>
+#include <medStackedViewContainers.h>
+#include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxPatient.h>
-#include <medGui/medViewerToolBoxView.h>
-#include <medGui/medViewerToolBoxViewProperties.h>
+#include <medViewerToolBoxView.h>
+#include <medViewerToolBoxViewProperties.h>
 
 
 #include <QtGui>

@@ -9,7 +9,7 @@
 #define MEDVIEWERTOOLBOXVIEWPROPERTIES_H_
 
 #include "medGuiExport.h"
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 
 class dtkAbstractView;
 class dtkAbstractData;

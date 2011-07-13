@@ -23,8 +23,8 @@
 
 #include <dtkCore/dtkAbstractView.h>
 
-#include <medCore/medAbstractView.h>
-#include <medCore/medViewManager.h>
+#include <medAbstractView.h>
+#include <medViewManager.h>
 
 
 void medViewContainerSingle::split(int rows, int cols)

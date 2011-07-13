@@ -22,16 +22,16 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <medCore/medPluginManager.h>
-#include <medCore/medViewManager.h>
+#include <medPluginManager.h>
+#include <medViewManager.h>
 
-//#include <medSql/medDatabaseController.h>
+//#include <medDatabaseController.h>
 
-#include <medGui/medDropSite.h>
-#include <medGui/medToolBoxTab.h>
-#include <medGui/medProgressionStack.h>
-#include <medGui/medToolBoxFactory.h>
-#include <medGui/medToolBoxHeader.h>
+#include <medDropSite.h>
+#include <medToolBoxTab.h>
+#include <medProgressionStack.h>
+#include <medToolBoxFactory.h>
+#include <medToolBoxHeader.h>
 
 #include "medToolBoxDiffusion.h"
 #include "medToolBoxDiffusionCustom.h"

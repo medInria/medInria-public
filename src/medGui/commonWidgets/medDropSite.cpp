@@ -19,7 +19,7 @@
 
 #include <dtkCore/dtkGlobal.h>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 #include "medDropSite.h"
 

@@ -30,28 +30,28 @@
 
 #include <dtkGui/dtkSpacer.h>
 
-#include <medCore/medMessageController.h>
-#include <medCore/medSettingsManager.h>
-#include <medCore/medDbControllerFactory.h>
-#include <medCore/medJobManager.h>
-#include <medCore/medDataManager.h>
+#include <medMessageController.h>
+#include <medSettingsManager.h>
+#include <medDbControllerFactory.h>
+#include <medJobManager.h>
+#include <medDataManager.h>
 
-#include <medGui/medButton.h>
-#include <medGui/medWorkspaceShifter.h>
+#include <medButton.h>
+#include <medWorkspaceShifter.h>
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseNonPersistentController.h>
-#include <medSql/medDatabaseView.h>
-#include <medSql/medDatabaseModel.h>
-#include <medSql/medDatabaseItem.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
+#include <medDatabaseView.h>
+#include <medDatabaseModel.h>
+#include <medDatabaseItem.h>
 
-#include <medGui/medViewerConfiguration.h>
-#include <medGui/medViewerConfigurationFactory.h>
-#include <medGui/medSettingsWidgetFactory.h>
-#include <medGui/medSystemSettingsWidget.h>
-#include <medGui/medStartupSettingsWidget.h>
-#include <medGui/medDatabaseSettingsWidget.h>
-#include <medGui/medSettingsEditor.h>
+#include <medViewerConfiguration.h>
+#include <medViewerConfigurationFactory.h>
+#include <medSettingsWidgetFactory.h>
+#include <medSystemSettingsWidget.h>
+#include <medStartupSettingsWidget.h>
+#include <medDatabaseSettingsWidget.h>
+#include <medSettingsEditor.h>
 
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"

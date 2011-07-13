@@ -22,8 +22,8 @@
 #include <QtCore>
 #include <QtGui>
 
-#include <medCore/medJobItem.h>
-#include <medCore/medMessageController.h>
+#include <medJobItem.h>
+#include <medMessageController.h>
 
 // /////////////////////////////////////////////////////////////////
 // Helper functions

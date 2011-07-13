@@ -3,8 +3,8 @@
 #include <QtGui>
 #include <QtCore>
 
-#include <medCore/medStorage.h>
-#include <medCore/medSettingsManager.h>
+#include <medStorage.h>
+#include <medSettingsManager.h>
 
 class medDatabaseSettingsWidgetPrivate {
 

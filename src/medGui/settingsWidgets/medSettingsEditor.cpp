@@ -6,9 +6,9 @@
 
 #include <dtkGui/dtkSettingsEditor.h>
 
-#include <medCore/medMessageController.h>
-#include <medGui/medSystemSettingsWidget.h>
-#include <medGui/medSettingsWidgetFactory.h>
+#include <medMessageController.h>
+#include <medSystemSettingsWidget.h>
+#include <medSettingsWidgetFactory.h>
 
 class medSettingsEditorPrivate {
 
