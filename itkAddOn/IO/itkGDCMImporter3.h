@@ -60,7 +60,7 @@ namespace itk
     typedef std::map<std::string, FileList> FileListMapType;
     typedef Vector<double, 3> GradientType;
     typedef std::vector< GradientType > GradientsContainer;
-    itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);    
+    itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);
 
     itkNewMacro  (Self);
     itkTypeMacro (GDCMVolume, Superclass);
@@ -128,6 +128,8 @@ namespace itk
        Write the gradient orientations in a file
     */
     void WriteGradients (std::string filename);
+
+    unsigned int* GetSize (void);
     
   protected:
 
@@ -251,12 +253,6 @@ namespace itk
        a second call of Scan() will be faster.
     */
     void Scan (void);
-
-    void RemoveVolume (OutputImageType* volume)
-    {
-      this->RemoveOutput (volume);
-    }
-    
 
   protected:
 

@@ -174,6 +174,7 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
 
   //BTX
   std::vector<vtkMetaDataSet*> OutputList;
+  std::vector<GDCMVolume::Pointer> VolumeList;
   //ETX
     
 };

@@ -713,14 +713,22 @@ void vtkImageView3D::SetVisibility (int visibility, int layer)
 {
   if (layer==0) 
   {
+    this->VolumeActor->SetVisibility (visibility);
+    this->SetShowActorX (visibility);
+    this->SetShowActorY (visibility);
+    this->SetShowActorZ (visibility);
+
     if (visibility)
-    {
-      this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
-    }
-    else 
-    {
-      this->VolumeProperty->SetComponentWeight(layer, 0);
-    }
+      this->SetRenderingMode (this->GetRenderingMode());
+    
+    // if (visibility)
+    // {
+    //   this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
+    // }
+    // else 
+    // {
+    //   this->VolumeProperty->SetComponentWeight(layer, 0);
+    // }
     this->Visibility = visibility;
     
   }

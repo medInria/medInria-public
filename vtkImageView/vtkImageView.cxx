@@ -259,7 +259,7 @@ unsigned long vtkImageView::GetMTime()
         // Renderer, RenderWindow,Interactor,
         InteractorStyle,WindowLevel, OrientationTransform, ScalarBar, OrientationMatrix,
         InvertOrientationMatrix, CornerAnnotation, TextProperty, ColorTransferFunction, OpacityTransferFunction, LookupTable,
-        ScalarBar };
+        ScalarBar, Input };
 
         const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
 
@@ -320,11 +320,11 @@ void vtkImageView::Render()
     
     if (!this->RenderWindow->GetNeverRendered())
     {
-      // if( this->GetMTime()>this->InternalMTime )
-      // {
+      if( this->GetMTime()>this->InternalMTime )
+      {
 	this->RenderWindow->Render();
-      //   this->InternalMTime = this->GetMTime();
-      // }
+        this->InternalMTime = this->GetMTime();
+      }
     }
     else
     {

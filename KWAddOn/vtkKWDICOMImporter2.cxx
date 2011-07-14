@@ -498,37 +498,28 @@ void vtkKWDICOMImporter2::UpdateMultiColumnList()
     win->GetProgressGauge()->SetValue(0);
   }
   
-  for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
+  for (unsigned int i=0; i<this->VolumeList.size(); i++)
   {
     unsigned int id_to_insert = this->MultiColumnList->GetNumberOfRows();
     
     if (win)
     {
-      win->GetProgressGauge()->SetValue((int)(100.0 * i / this->GDCMImporter->GetNumberOfOutputs()));
+      win->GetProgressGauge()->SetValue((int)(100.0 * i / this->VolumeList.size()));
     }
     
-    GDCMVolume::Pointer image =
-      static_cast<GDCMVolume*>(this->GDCMImporter->GetOutput (i));
+    GDCMVolume::Pointer image = this->VolumeList[i];
+    
     if (image.IsNull())
       continue;
     
     std::string name = image->GetName();
-    // unsigned int nfiles = image->GetFileList()->size();
-    // unsigned int dim[3] = {0,0,0};
-    // if (nfiles)
-    // {
-    //   dim[0] = (*image->GetFileList())[0]->GetXSize();
-    //   dim[1] = (*image->GetFileList())[0]->GetYSize();
-    //   dim[2] = nfiles;
-    // }
-    // std::ostringstream dimensions;
-    // dimensions<<dim[0]<<"x"<<dim[1]<<"x"<<dim[2];
-
-    this->MultiColumnList->InsertCellText(id_to_insert, 0, name.c_str());
-    // this->MultiColumnList->InsertCellText(id_to_insert, 1, dimensions.str().c_str());
-//     this->MultiColumnList->InsertCellTextAsInt(i, 2, (int)(dcmvolumelist[i]->IsSequence()));
-//    this->MultiColumnList->SetCellWindowCommandToCheckButton(id_to_insert, 2);
+    std::ostringstream dimensions;
+    //unsigned int* size = image->GetSize();
     
+    //dimensions<<size[0]<<"x"<<size[1]<<"x"<<size[2]<<"x"<<size[3];
+    
+    this->MultiColumnList->InsertCellText(id_to_insert, 0, name.c_str());
+    this->MultiColumnList->InsertCellText(id_to_insert, 1, dimensions.str().c_str());
   }
 
   if (win)
@@ -632,8 +623,12 @@ void vtkKWDICOMImporter2::OpenDirectoryCallback()
   {
     std::cerr << e;
     return;
-    
   }
+
+  this->VolumeList.clear();
+  for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
+    this->VolumeList.push_back (static_cast<GDCMVolume*>(this->GDCMImporter->GetOutput(i)));
+  
   std::cout<<"done."<<std::endl;
   
   if (win)
@@ -649,10 +644,6 @@ void vtkKWDICOMImporter2::OpenDirectoryCallback()
   
   dialog->SaveLastPathToRegistry("DataPath");
   dialog->Delete();
-  
-  
-  
-
 }
 
 //----------------------------------------------------------------------------
@@ -672,6 +663,12 @@ void vtkKWDICOMImporter2::ResetCallback()
     
   }
 
+  
+  this->VolumeList.clear();
+  for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
+    this->VolumeList.push_back (static_cast<GDCMVolume*>(this->GDCMImporter->GetOutput(i)));
+  
+
   this->Update();
 
 }
@@ -687,19 +684,16 @@ void vtkKWDICOMImporter2::RemoveVolumeCallback()
   int *indices = new int[Number_Of_Selected];
   this->MultiColumnList->GetSelectedRows(indices);
   this->MultiColumnList->ClearSelection();
-  std::vector<GDCMVolume::Pointer> dcmlist;
-    
+  std::vector<GDCMVolume::Pointer> dcmlist = this->VolumeList;
+  
   for (unsigned int i=0; i<Number_Of_Selected; i++)
   {
-    GDCMVolume::Pointer image =
-      static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (indices[i]));
-    dcmlist.push_back(image);      
+    GDCMVolume::Pointer image = static_cast< GDCMVolume*>(dcmlist[indices[i]]);
+    std::vector<GDCMVolume::Pointer>::iterator pos = std::find(this->VolumeList.begin(), this->VolumeList.end(), image);
+    if (pos != this->VolumeList.end())
+      this->VolumeList.erase(pos);
   }
 
-  for (unsigned int i=0; i<dcmlist.size(); i++)
-  {
-    this->GDCMImporter->RemoveVolume (dcmlist[i]);
-  }
   delete [] indices;
 
   this->Update();
@@ -751,30 +745,15 @@ void vtkKWDICOMImporter2::OnceVolumeCallback()
   int* indices = new int[Number_Of_Selected];
   this->MultiColumnList->GetSelectedRows(indices);
   this->MultiColumnList->ClearSelection();
-  std::vector<GDCMVolume::Pointer> dcmlist;
-  
-  for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
-  {
-    bool isselected = false;
-      
-    for (unsigned int j=0; j<Number_Of_Selected; j++)
-    {
-      if (indices[j] == (int)i)
-      {
-	isselected = true;
-	break;
-      }
-    }
-    if (!isselected)
-    {
-      GDCMVolume::Pointer image =
-	static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (i));
-      dcmlist.push_back(image);
-    }
-  }
 
-  for (unsigned int i=0; i<dcmlist.size(); i++)
-    this->GDCMImporter->RemoveVolume (dcmlist[i]);  
+  std::vector<GDCMVolume::Pointer> dcmlist = this->VolumeList;
+  this->VolumeList.clear();
+  
+  for (unsigned int i=0; i<Number_Of_Selected; i++)
+  {
+    GDCMVolume::Pointer image = static_cast< GDCMVolume*>(dcmlist[indices[i]]);
+    this->VolumeList.push_back (image);
+  }
 
   this->Update();
 
@@ -804,11 +783,6 @@ void vtkKWDICOMImporter2::SelectionChangedCallback()
     return;
   }
   
-  GDCMVolume::Pointer image =
-    static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (indices[0]));
-  if (!image.IsNull())
-    this->UpdatePreview(image);
-
   this->InteractiveVolume = indices[0];
 
 }
@@ -827,9 +801,7 @@ void vtkKWDICOMImporter2::InteractiveModeCallback(int val)
     this->InteractiveStatus = STATUS_DISABLED;
     this->StopInteractive();
   }
-  
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWDICOMImporter2::StartInteractive()
@@ -1090,13 +1062,14 @@ void vtkKWDICOMImporter2::SetOutputsAsVolumes(void)
     return;
   
 
-  for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
+  for (unsigned int i=0; i<this->VolumeList.size(); i++)
   {
-    win->GetProgressGauge()->SetValue((int)(100.0 * i / this->GDCMImporter->GetNumberOfOutputs()));
+    win->GetProgressGauge()->SetValue((int)(100.0 * i / this->VolumeList.size()));
 
-    GDCMVolume::Pointer dcmvolume = static_cast<GDCMVolume*>(this->GDCMImporter->GetOutput (i));
+    GDCMVolume::Pointer dcmvolume = this->VolumeList[i];
     if (dcmvolume.IsNull())
       continue;
+    dcmvolume->DisconnectPipeline();
     
     try
     {
@@ -1190,28 +1163,24 @@ void vtkKWDICOMImporter2::SetOutputsAsVolumes(void)
 //     else
 //     {
       
-      vtkMetaDataSetSequence* metadataset = vtkMetaDataSetSequence::New();
-      try
-      {
-	
-	// 	  metadataset->SetDataSetAsItkImage(outputVolumes[i]->GetImage());
-	metadataset->SetITKDataSet<ImageComponentType>(static_cast<ImageType*>(dcmvolume));
-
-      }
-      catch (vtkErrorCode::ErrorIds)
-      {
-	vtkWarningMacro(<<"error when parsing volume "<<dcmvolume->GetName()<<endl);
-	metadataset->Delete();
-	continue;
-      }
+    vtkMetaDataSetSequence* metadataset = vtkMetaDataSetSequence::New();
+    try
+    {
       
-      // metadataset->SetDicomDictionary (dcmvolume->GetMetaDataDictionary());
-      metadataset->SetName (dcmvolume->GetName());
-      this->OutputList.push_back (metadataset);
-
-      // to do : better
-      // metadataset->Delete();
- //    }
+      // 	  metadataset->SetDataSetAsItkImage(outputVolumes[i]->GetImage());
+      metadataset->SetITKDataSet<ImageComponentType>(static_cast<ImageType*>(dcmvolume));
+      
+    }
+    catch (vtkErrorCode::ErrorIds)
+    {
+      vtkWarningMacro(<<"error when parsing volume "<<dcmvolume->GetName()<<endl);
+      metadataset->Delete();
+      continue;
+    }
+    
+    // metadataset->SetDicomDictionary (dcmvolume->GetMetaDataDictionary());
+    metadataset->SetName (dcmvolume->GetName());
+    this->OutputList.push_back (metadataset);
 
     dcmvolume->Initialize();
       

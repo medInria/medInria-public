@@ -122,7 +122,6 @@ vtkCxxRevisionMacro( vtkKWMainWindowInteractor, "$Revision: 1366 $");
 //----------------------------------------------------------------------------
 vtkKWMainWindowInteractor::vtkKWMainWindowInteractor()
 {
-  
   this->DataManager         = vtkDataManager::New();
   this->DataManagerCallback = vtkDataManagerCallback::New();
   this->MainCallback        = vtkKWMainCallback::New();
@@ -1528,10 +1527,6 @@ void vtkKWMainWindowInteractor::OnMenuFileSaveDICOM ()
 
 }
 
-
-
-
-
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnSelectInteraction()
 {
@@ -1541,12 +1536,11 @@ void vtkKWMainWindowInteractor::OnSelectInteraction()
     this->PreviewPage->SetInteractionMode(vtkInteractorStyleImageView2D::InteractionTypeSlice);
     return;
   }
-  
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeSlice);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeSlice);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeSlice);
 
-
+  this->GetCurrentPage()->GetPool()->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+  this->GetCurrentPage()->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
+  this->GetCurrentPage()->GetPool()->SyncSetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  this->GetCurrentPage()->GetPool()->SyncSetKeyboardInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnWindowLevelInteraction()
@@ -1557,9 +1551,7 @@ void vtkKWMainWindowInteractor::OnWindowLevelInteraction()
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+  this->GetCurrentPage()->GetPool()->SyncSetInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnZoomInteraction()
@@ -1570,9 +1562,8 @@ void vtkKWMainWindowInteractor::OnZoomInteraction()
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeZoom);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeZoom);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  this->GetCurrentPage()->GetPool()->SyncSetInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  this->GetCurrentPage()->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnRenderingModeToVR()

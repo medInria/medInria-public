@@ -294,6 +294,49 @@ namespace itk
       ++itr;
     }
   }
+
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  unsigned int* GDCMVolume<TPixelType>::GetSize (void)
+  {
+    unsigned int* size = new unsigned int[4];
+    size[0] = size[1] = size[2] = size[3] = 0;
+    
+    FileListMapType map = m_FileListMap;
+    unsigned int fourthdimension = map.size();
+    if (fourthdimension == 0)
+      return size;
+    unsigned int thirddimension = (*map.begin()).second.size();
+    std::cout<<"3 and 4 are : "<<thirddimension<<" "<<fourthdimension<<std::endl;
+    FileList filelist;
+    filelist.push_back ((*map.begin()).second[0]);
+    std::cout<<"trying to scan : "<<filelist[0].c_str()<<std::endl;
+    gdcm::Scanner scanner;
+    scanner.Scan (filelist);
+    std::cout<<"1"<<std::endl;
+    const char *value = scanner.GetValue  (filelist[0].c_str(), gdcm::Tag(0x0028, 0x0030));
+    std::cout<<"1: "<<value<<std::endl;
+    gdcm::Element<gdcm::VR::DS,gdcm::VM::VM2> voxels;
+    std::cout<<"1"<<std::endl;
+    std::stringstream ss;
+    ss.str( value );
+    std::cout<<"1"<<std::endl;
+    voxels.Read(ss );
+    std::cout<<"1"<<std::endl;
+    
+    for (unsigned int i=0; i<3; i++)
+      size[i] = voxels[i];
+
+    std::cout<<"returning size : "
+	     <<size[0]<<" "
+	     <<size[1]<<" "
+	     <<size[2]<<" "
+	     <<std::endl;
+
+    return size;
+  }
+  
   
 
 

@@ -24,6 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWToolbar.h>
 #include "vtkKWWidgetsPaths.h"
 #include "vtkKWSplashScreen.h"
+#include <vtkMapper.h>
 #include <kwcommon.h>
 #include <string>
 
@@ -55,6 +56,8 @@ int my_main(int argc, char *argv[])
 {
   // Initialize Tcl
 
+
+  vtkMapper::SetGlobalImmediateModeRendering (1);
   
   Tcl_Interp *interp = vtkKWApplication::InitializeTcl(argc, argv, &cerr);
   if (!interp)
@@ -62,7 +65,7 @@ int my_main(int argc, char *argv[])
     cerr << "Error: InitializeTcl failed" << endl ;
     return 1;
   }
-
+  
 
   // Initialize our Tcl library (i.e. our classes wrapped in Tcl).
   // This *is* required for the C++ methods to be used as callbacks.

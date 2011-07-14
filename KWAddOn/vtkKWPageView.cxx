@@ -185,7 +185,15 @@ void vtkKWPageView::SetProperties()
   this->View1->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_AXIAL);
   this->View2->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
   this->View3->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
+
+  this->m_Pool->SyncSetAnnotationStyle( vtkImageView2D::AnnotationStyle2);
+  this->m_Pool->SyncSetShowRulerWidget (0);
   
+  this->GetPool()->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+  this->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
+  this->GetPool()->SyncSetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  this->GetPool()->SyncSetKeyboardInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+
   this->View1->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
   this->View2->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
   this->View3->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
@@ -340,19 +348,18 @@ void vtkKWPageView::SetImage (vtkImageData* image, vtkMatrix4x4* orientationmatr
 {
 
   if (!image)
-    return;  
-
+    return;
   
   m_Pool->SyncSetInput(image);
   if (orientationmatrix)
     m_Pool->SyncSetOrientationMatrix (orientationmatrix);
+  this->SetOrientationMatrix (orientationmatrix);
   this->View1->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_AXIAL);
-  this->View2->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_CORONAL);
-  this->View3->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
+  this->View2->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
+  this->View3->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_CORONAL);
   
   m_Pool->SyncReset();
-
-  this->SetOrientationMatrix (orientationmatrix);
+  m_Pool->SyncRender();
   
   this->LandmarkManager->InteractionOn();
 }
@@ -664,7 +671,7 @@ void vtkKWPageView::SetVisibility (vtkDataSet* dataset, bool state)
     this->View1->GetImageActor()->SetVisibility (state);
     this->View2->GetImageActor()->SetVisibility (state);
     this->View3->GetImageActor()->SetVisibility (state);
-    // this->View4->SetVisibility (state);
+    this->View4->SetVisibility (state, 0);
   }
 
   if (this->View1->GetDataSetCollection()->IsItemPresent (dataset))
@@ -704,7 +711,12 @@ void  vtkKWPageView::SetLookupTable (vtkLookupTable* lut)
 {
   if( !lut )
     return;
-  this->m_Pool->SyncSetLookupTable (lut);
+  this->View1->SetLookupTable (lut,0);
+  this->View2->SetLookupTable (lut,0);
+  this->View3->SetLookupTable (lut,0);
+  this->View4->SetLookupTable (lut);
+  this->m_Pool->SyncRender();
+  
 }
 
 void vtkKWPageView::RemoveDataSet(vtkDataSet* dataset)
