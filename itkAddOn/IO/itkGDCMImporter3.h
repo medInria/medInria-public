@@ -133,6 +133,8 @@ namespace itk
     
   protected:
 
+    FileList MapToFileList (FileListMapType map) const;
+    
     /**
        default GDCMVolume constructor,
        empty filelist and image name.

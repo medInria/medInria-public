@@ -527,8 +527,6 @@ void vtkKWPageView::Render (void)
    this->View4->Render();
 }
 
-
-
 void vtkKWPageView::SetFullScreenView (int id)
 {
   if (!id)
@@ -538,7 +536,7 @@ void vtkKWPageView::SetFullScreenView (int id)
     return;
   }
 
-  this->UnpackChildren();  
+  this->UnpackChildren();
   
   this->Script ("grid remove %s",
 		this->RenderWidget1->GetWidgetName());
@@ -579,12 +577,9 @@ void vtkKWPageView::SetFullScreenView (int id)
   this->Script ("pack %s -side top -expand yes -fill both -padx 2 -pady 2",
 		widget->GetWidgetName());
 	
-  view->Modified();
   view->Render();
   this->IsFullScreen = id;
 }
-
-
 
 void vtkKWPageView::ToggleFullScreenView4 (void)
 {
@@ -599,7 +594,6 @@ void vtkKWPageView::ToggleFullScreenView4 (void)
   }
 }
 
-
 void vtkKWPageView::ToggleFullScreenAxial (void)
 {
   if (this->IsFullScreen != 1)
@@ -612,7 +606,6 @@ void vtkKWPageView::ToggleFullScreenAxial (void)
   }
 }
 
-
 void vtkKWPageView::ToggleFullScreenSagittal (void)
 {
   if (this->IsFullScreen != 2)
@@ -624,7 +617,6 @@ void vtkKWPageView::ToggleFullScreenSagittal (void)
     this->SetFullScreenView (0);    
   }
 }
-
 
 void vtkKWPageView::ToggleFullScreenCoronal (void)
 {

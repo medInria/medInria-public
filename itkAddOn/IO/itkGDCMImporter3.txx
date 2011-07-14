@@ -19,6 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <itkGDCMImageIO.h>
 
 #include "gdcmReader.h"
+#include "gdcmImageReader.h"
 #include "gdcmDirectionCosines.h"
 #include "gdcmStringFilter.h"
 
@@ -154,7 +155,7 @@ namespace itk
     typedef typename ImageType::DirectionType DirectionType;
     typedef ImageRegionIterator<ImageType> IteratorType;
     typedef typename IteratorType::IndexType IndexType;    
-    typename ImageType::Pointer image = ImageType::New();    
+    typename ImageType::Pointer image = ImageType::New();
     typename GDCMImageIO::Pointer io = GDCMImageIO::New();
     typename FileListMapType::iterator it;
     
@@ -172,7 +173,7 @@ namespace itk
     }
       
     std::cout<<"building volume "<<this->GetName()<<" containing "<<map.size()<<" subvolumes..."<<std::flush;
-    
+
     for (it = map.begin(); it != map.end(); ++it)
     {
       typename SeriesReaderType::Pointer seriesreader = SeriesReaderType::New();
@@ -229,7 +230,50 @@ namespace itk
 	spacing[0] = t_image->GetSpacing()[0];
 	spacing[1] = t_image->GetSpacing()[1];
 	spacing[2] = t_image->GetSpacing()[2];
-	spacing[3] = 1;
+
+	if (map.size() > 1)
+	{
+	  std::string firstfile = (*map.begin()).second[0];
+	  gdcm::Scanner scanner; scanner.AddTag (gdcm::Tag(0x18,0x1088)); scanner.AddTag (gdcm::Tag(0x18,0x1060));
+	  scanner.Scan (this->MapToFileList (map));
+	  const char* value = scanner.GetValue (firstfile.c_str(), gdcm::Tag(0x0018,0x1088));
+	  unsigned int heartrate = 60;
+	  if (value && std::atoi (value) >= 1)
+	  {
+	    heartrate = std::atoi (value);
+	  }
+	  else
+	  {
+	    const gdcm::Scanner::ValuesType& values = scanner.GetValues(gdcm::Tag(0x18,0x1060));
+	    if (values.size())
+	    {
+	      std::cout<<"size is : "<<values.size()<<"... "<<std::endl;
+	      
+	      gdcm::Scanner::ValuesType::iterator it;
+	      std::vector<float> triggers;
+	      for (it = values.begin(); it != values.end(); ++it)
+	      {
+	      	std::cout<<"found trigger : "<<(*it).c_str()<<std::endl;
+	      	triggers.push_back (std::atof ((*it).c_str()));
+	      }
+	      std::sort (triggers.begin(), triggers.end());
+	      for (unsigned int i=0; i<triggers.size(); i++)
+		std::cout<<"tr: "<<triggers[i]<<std::endl;
+	      
+	      float meanspacing = (triggers[triggers.size() - 1] - triggers[0]) / (float)(values.size() - 1);
+	      heartrate = std::floor (60.0 * 1000.0 / (triggers[triggers.size() - 1] + meanspacing));
+	      std::cout<<"calculated heart-rate = "<<heartrate<<std::endl;
+	    }
+	    else
+	      heartrate = 60;
+	  }
+
+	  if (heartrate <= 1)
+	    heartrate = 60;
+	  spacing[3] = 60.0 / ( (double)(heartrate) * (double)(map.size()) );
+	}
+	else
+	  spacing[3] = 1;
 	image->SetSpacing (spacing);
 	PointType origin;
 	origin[0] = t_image->GetOrigin()[0];
@@ -246,6 +290,7 @@ namespace itk
 	    else
 	      direction[i][j] = (i == j) ? 1 : 0;
 	  }
+
 	image->SetDirection(direction);
 	itOut = IteratorType (image, region);
 
@@ -268,6 +313,25 @@ namespace itk
     this->SetMetaDataDictionary (io->GetMetaDataDictionary());
   }
 
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  typename GDCMVolume<TPixelType>::FileList GDCMVolume<TPixelType>::MapToFileList (FileListMapType map) const
+  {
+    FileList list;
+    
+    typename FileListMapType::iterator it;
+    for (it = map.begin(); it != map.end(); ++it)
+    {
+      typename FileList::iterator it2;
+      for (it2 = (*it).second.begin(); it2 != (*it).second.end(); ++it2)
+      {
+	list.push_back (*it2);
+      }
+    }
+    return list;
+  }
+  
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void GDCMVolume<TPixelType>::PrintSelf(std::ostream& os, Indent indent) const
@@ -295,7 +359,6 @@ namespace itk
     }
   }
 
-
 //----------------------------------------------------------------------------
   template <class TPixelType>
   unsigned int* GDCMVolume<TPixelType>::GetSize (void)
@@ -308,32 +371,20 @@ namespace itk
     if (fourthdimension == 0)
       return size;
     unsigned int thirddimension = (*map.begin()).second.size();
-    std::cout<<"3 and 4 are : "<<thirddimension<<" "<<fourthdimension<<std::endl;
-    FileList filelist;
-    filelist.push_back ((*map.begin()).second[0]);
-    std::cout<<"trying to scan : "<<filelist[0].c_str()<<std::endl;
-    gdcm::Scanner scanner;
-    scanner.Scan (filelist);
-    std::cout<<"1"<<std::endl;
-    const char *value = scanner.GetValue  (filelist[0].c_str(), gdcm::Tag(0x0028, 0x0030));
-    std::cout<<"1: "<<value<<std::endl;
-    gdcm::Element<gdcm::VR::DS,gdcm::VM::VM2> voxels;
-    std::cout<<"1"<<std::endl;
-    std::stringstream ss;
-    ss.str( value );
-    std::cout<<"1"<<std::endl;
-    voxels.Read(ss );
-    std::cout<<"1"<<std::endl;
+    gdcm::ImageReader reader;
+    reader.SetFileName( (*map.begin()).second[0].c_str() );
+    if( !reader.Read() )
+    {
+      std::cerr<< "Cannot read requested file: "<<(*map.begin()).second[0].c_str()<<std::endl;
+      return size;
+    }
+    const gdcm::Image &image = reader.GetImage();
+    const unsigned int *dims = image.GetDimensions();
+    size[0] = dims[0];
+    size[1] = dims[1];
+    size[2] = thirddimension;
+    size[3] = fourthdimension;
     
-    for (unsigned int i=0; i<3; i++)
-      size[i] = voxels[i];
-
-    std::cout<<"returning size : "
-	     <<size[0]<<" "
-	     <<size[1]<<" "
-	     <<size[2]<<" "
-	     <<std::endl;
-
     return size;
   }
   

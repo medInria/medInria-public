@@ -514,9 +514,11 @@ void vtkKWDICOMImporter2::UpdateMultiColumnList()
     
     std::string name = image->GetName();
     std::ostringstream dimensions;
-    //unsigned int* size = image->GetSize();
+    unsigned int* size = image->GetSize();
     
-    //dimensions<<size[0]<<"x"<<size[1]<<"x"<<size[2]<<"x"<<size[3];
+    dimensions<<size[0]<<"x"<<size[1]<<"x"<<size[2];
+    if (size[3] > 1)
+      dimensions<<"x"<<size[3];
     
     this->MultiColumnList->InsertCellText(id_to_insert, 0, name.c_str());
     this->MultiColumnList->InsertCellText(id_to_insert, 1, dimensions.str().c_str());

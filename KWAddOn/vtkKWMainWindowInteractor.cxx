@@ -1704,7 +1704,8 @@ void vtkKWMainWindowInteractor::OnIllustrationMode()
   //   IllustrationMode = false;
   //   ModifiedPage = NULL;
   // }
-  this->GetCurrentPage()->Render();
+  if (this->GetCurrentPage())
+    this->GetCurrentPage()->Render();
 }
 
 //----------------------------------------------------------------------------

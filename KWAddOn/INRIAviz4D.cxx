@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWToolbar.h>
 #include "vtkKWWidgetsPaths.h"
 #include "vtkKWSplashScreen.h"
-#include <vtkMapper.h>
+#include <itkObject.h>
 #include <kwcommon.h>
 #include <string>
 
@@ -57,8 +57,8 @@ int my_main(int argc, char *argv[])
   // Initialize Tcl
 
 
-  vtkMapper::SetGlobalImmediateModeRendering (1);
-  
+  itk::MultiThreader::SetGlobalDefaultNumberOfThreads(2);
+
   Tcl_Interp *interp = vtkKWApplication::InitializeTcl(argc, argv, &cerr);
   if (!interp)
   {
