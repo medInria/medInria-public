@@ -42,6 +42,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWDataManagerWidget.h>
 #include <vtkKWDragAndDropTargetSet.h>
 #include <vtkKWEntry.h>
+#include <vtkKWEvent.h>
 #include <vtkKWEntryWithLabel.h>
 #include <vtkKWFrameWithLabel.h>
 #include <vtkKWInfoToolBox.h>
@@ -135,10 +136,11 @@ vtkKWMainWindowInteractor::vtkKWMainWindowInteractor()
 //   this->DataManagerCallback->SetDataManager(this->DataManager);
 //   this->DataManager->AddObserver(vtkDataManager::MetaDataSetPickEvent, this->MainCallback);
 
+  this->GetViewNotebook()->AddObserver(vtkKWEvent::NotebookRaisePageEvent, this->MainCallback);
+
   this->PanelSplitFrame = vtkKWSplitFrame::New();
   this->ToolboxManager = vtkKWToolboxManager::New();
   this->ToolboxManager->SetParentObject(this);
-
   
   this->PreviewPage = vtkKWPreviewPage::New();
   this->SnapshotHandler = vtkKWSnapshotHandler::New();
@@ -195,6 +197,7 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, vtkIm
 	       viewframe->GetWidgetName());
   viewframe->SetImage (image, matrix);
   this->GetViewNotebook()->RaisePage (id);
+  this->GetViewNotebook()->RaiseCallback (id);
   
   viewframe->GetView4()->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
   viewframe->Delete();
@@ -221,6 +224,7 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, itk::
 	       viewframe->GetWidgetName());
   viewframe->SetImage (image);
   this->GetViewNotebook()->RaisePage (id);
+  this->GetViewNotebook()->RaiseCallback(id);
   
   viewframe->GetView4()->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
   viewframe->Delete();
@@ -246,6 +250,8 @@ void vtkKWMainWindowInteractor::RemovePage (const char* title)
   else if (this->GetViewNotebook()->HasPage (id-1))
     newid = id-1;
   this->GetViewNotebook()->RaisePage (newid);
+  this->GetViewNotebook()->RaiseCallback(newid);
+  
   
 }
 
@@ -360,11 +366,11 @@ void vtkKWMainWindowInteractor::CreateWidget()
 	is.str (buffer);
 	int val = 0;
 	is >> val;
-	showpreview = val;	
+	showpreview = val;
       }
     }
     
-    this->CreatePreviewPage();    
+    this->CreatePreviewPage();
   }
   
 
@@ -1009,15 +1015,15 @@ void vtkKWMainWindowInteractor::Update()
       bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowPreview", buffer);
       if (valid)
       {
-	if (*buffer)
-	{
-	  std::istringstream is;
-	  is.str (buffer);
-	  int val = 0;
-	  is >> val;
-	  if (!val)
-	    do_preview = false;	  
-	}
+      	if (*buffer)
+      	{
+      	  std::istringstream is;
+      	  is.str (buffer);
+      	  int val = 0;
+      	  is >> val;
+      	  if (!val)
+      	    do_preview = false;	  
+      	}
       }    
 
       if (do_preview)
@@ -1081,6 +1087,7 @@ void vtkKWMainWindowInteractor::Update()
 // //   // ??
   this->ManagerWidget->Update();
 
+  bool dopreview = 1;
   char buffer[1024];
   bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowPreview", buffer);
   
@@ -1093,14 +1100,18 @@ void vtkKWMainWindowInteractor::Update()
       int val = 0;
       is >> val;
       if (val)
-	this->PreviewPage->Update();      
+  	dopreview = 1;
+      else
+  	dopreview = 0;
     }
-  }    
+  }
+  else
+    dopreview = 0;
 
-  
+  if (dopreview)
+    this->PreviewPage->Update();      
+
 }
-
-
 
 void vtkKWMainWindowInteractor::LoadToolBox (vtkKWToolBox* toolbox, const char* name)
 {
@@ -1342,7 +1353,6 @@ void vtkKWMainWindowInteractor::RemoveAllMetaDataSets (void)
     {
       this->RemovePage(metadataset->GetTag());
       this->PreviewPage->RemovePreviewImage (vtkImageData::SafeDownCast(metadataset->GetDataSet() ));
-
     }
     
     this->DataManager->RemoveMetaDataSet (metadataset);
@@ -1927,7 +1937,11 @@ void vtkKWMainWindowInteractor::SelectMetaDataSet(vtkMetaDataSet* metadataset)
   
   vtkKWPageView* page = this->GetPage(metadataset->GetTag());      
   if (page)
+  {
     this->GetViewNotebook()->RaisePage(metadataset->GetTag());
+    this->GetViewNotebook()->RaiseCallback(this->GetViewNotebook()->GetRaisedPageId());
+  }
+  
   std::vector<vtkKWToolBox*> tblist = this->GetToolBoxList();
   
   for (unsigned int j=0; j<tblist.size(); j++)

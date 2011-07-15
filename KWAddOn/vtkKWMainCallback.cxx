@@ -22,9 +22,12 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkDataManager.h>
 #include <vtkMetaDataSet.h>
+#include <vtkKWPageView.h>
+#include <vtkKWNotebook.h>
+#include <vtkKWFrame.h>
 
 #include <vtkKWDialog.h>
-
+#include <vtkKWEvent.h>
 
 vtkKWMainCallback::vtkKWMainCallback()
 {
@@ -61,6 +64,21 @@ void vtkKWMainCallback::Execute(vtkObject* caller, unsigned long event, void* ca
   {
     // disabled
   }
+  if (event == vtkKWEvent::NotebookRaisePageEvent )
+  {
+    vtkKWNotebook* notebook = vtkKWNotebook::SafeDownCast (caller);
+    if (!notebook)
+      return;
+    vtkKWFrame* page = notebook->GetFrame (notebook->GetRaisedPageId ());
+    if (!page)
+      return;
+    vtkKWPageView* pageview =
+      vtkKWPageView::SafeDownCast(page->GetNthChild (0));
+    if (!pageview)
+      return;
+    pageview->EnableViewsOn();
+  }
+  
   
 }
 

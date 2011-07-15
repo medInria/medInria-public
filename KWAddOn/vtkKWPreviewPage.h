@@ -26,8 +26,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vector>
 #include <string>
 
-#include <vtkImageView/vtkImageView2D.h>
-#include <vtkImageView/vtkImageViewCollection.h>
+#include <vtkImageView3D.h>
+#include <vtkImageViewCollection.h>
 
 class vtkKWRenderWidget;
 class vtkKWIcon;
@@ -77,7 +77,7 @@ public:
 
   unsigned int GetNumberOfPreviews (void)
   {
-    return this->ViewList->GetNumberOfItems();
+    return this->ViewList->GetNumberOfItems() - 1;
   }
 
   virtual void Update (void);
@@ -101,7 +101,10 @@ private:
   vtkKWPreviewPage(const vtkKWPreviewPage&);   // Not implemented.
   void operator=(const vtkKWPreviewPage&);        // Not implemented.
 
-  vtkCollection* ViewList;
+  vtkImageViewCollection* ViewList;
+  vtkImageView3D* GlobalView;
+  vtkKWRenderWidget* GlobalRenderWidget;
+  
   vtkCollection* RenderWidgetList;
   vtkKWWidgetSet* WidgetGrid;
   
@@ -110,8 +113,6 @@ private:
   int OrientationMode;
   int MaxNumberOfColumns;
   int InteractionMode;
-  
-  vtkImageViewCollection* Pool;
   
   vtkKWFrameWithScrollbar* InternalFrame;
 

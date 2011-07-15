@@ -83,7 +83,6 @@ public:
   virtual void OnIllustrationMode();
   virtual void OnLandmarkDialog();
   
-  
   virtual void OnMenuNewTab();
   virtual void OnMenuDeleteCurrentTab();
   virtual void OnMenuFileOpen();

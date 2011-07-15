@@ -86,8 +86,10 @@ vtkKWPageView::vtkKWPageView()
   this->LandmarkManager->ChangeColorOnSelectedOff();
   this->LandmarkManager->ChangeColorOnSelectedOff();
   this->LandmarkManager->LinkerOff();
-
+  
   this->FirstRender = true;
+  
+  this->EnableViewsOff();
 }
 
 //----------------------------------------------------------------------------
@@ -118,7 +120,14 @@ vtkKWPageView::~vtkKWPageView()
   
 }
 
-
+//----------------------------------------------------------------------------
+void vtkKWPageView::SetEnableViews(unsigned int arg)
+{
+  this->RenderWidget1->SetRenderState(arg);
+  this->RenderWidget2->SetRenderState(arg);
+  this->RenderWidget3->SetRenderState(arg);
+  this->RenderWidget4->SetRenderState(arg);
+}
 
 //----------------------------------------------------------------------------
 void vtkKWPageView::CreateRenderWidgets()
@@ -130,11 +139,8 @@ void vtkKWPageView::CreateRenderWidgets()
   this->RenderWidget3->SetParent(this);
   this->RenderWidget3->Create();
   this->RenderWidget4->SetParent(this);
-  this->RenderWidget4->Create();  
-
+  this->RenderWidget4->Create();
 }
-
-
 
 //----------------------------------------------------------------------------
 void vtkKWPageView::ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget)
@@ -149,7 +155,6 @@ void vtkKWPageView::ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget)
   widget->GetRenderWindow()->AddRenderer (renderer);
   widget->RemoveAllRenderers();
   widget->AddRenderer (renderer);
-  widget->SetRenderModeToInteractive();
   view->SetRenderWindow (widget->GetRenderWindow());
 }
 
@@ -209,7 +214,7 @@ void vtkKWPageView::SetProperties()
   double zeros[3] = {0,0,0};
   m_Pool->SyncSetBackground (zeros);
   
-  this->View4->SetBackground (0.9,0.9,0.9);
+  this->View4->SetBackground (1,1,1);
   this->View4->GetTextProperty()->SetColor (0,0,0);
 
   this->View4->SetVolumeMapperTo3DTexture();
@@ -317,13 +322,8 @@ void vtkKWPageView::CreateWidget()
   // Call the superclass to create the whole widget
   this->Superclass::CreateWidget();
   // attach the RenderWidgets to the view frame, and pack
-
   this->CreateRenderWidgets();
-  // attach the Views to the RenderWidgets
-
-  this->Create4Views();
   // pack everything
-
   char buffer[1024];
   bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "PageGridType", buffer);
   if (!valid)
@@ -340,14 +340,11 @@ void vtkKWPageView::CreateWidget()
     }
   }
 
-  
-
   this->PackSelf();
-  
-  
+  // attach the Views to the RenderWidgets
+  this->Create4Views();
   // and Set the properties !
   this->SetProperties();
-  
 }
 
 void vtkKWPageView::SetImage (vtkImageData* image, vtkMatrix4x4* orientationmatrix)
@@ -564,7 +561,6 @@ void vtkKWPageView::SetFullScreenView (int id)
 
   vtkImageView* view = 0;
   vtkKWRenderWidget* widget = 0;
-
   
   if (this->View1->GetRenderWindow())
     this->View1->GetRenderWindow()->SetMapped (0);
@@ -574,7 +570,6 @@ void vtkKWPageView::SetFullScreenView (int id)
     this->View3->GetRenderWindow()->SetMapped (0);
   if (this->View4->GetRenderWindow())
     this->View4->GetRenderWindow()->SetMapped (0);
-      
   
   switch (id)
   {
@@ -599,7 +594,6 @@ void vtkKWPageView::SetFullScreenView (int id)
 	return;
 	break;
   }
-  std::cout<<"all views removed"<<std::endl;
 
   if (view->GetRenderWindow())
     view->GetRenderWindow()->SetMapped (1);

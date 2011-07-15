@@ -155,6 +155,9 @@ public:
   
   vtkGetMacro (GridType, unsigned int);
   vtkSetMacro (GridType, unsigned int);
+
+  void SetEnableViews (unsigned int arg);
+  vtkBooleanMacro (EnableViews, unsigned int);
   
 protected:
   vtkKWPageView();

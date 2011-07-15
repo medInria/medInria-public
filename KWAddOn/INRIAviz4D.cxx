@@ -62,7 +62,8 @@ int my_main(int argc, char *argv[])
     cerr << "Error: InitializeTcl failed" << endl ;
     return 1;
   }
-  
+
+  itk::MultiThreader::SetGlobalDefaultNumberOfThreads(2);
 
   // Initialize our Tcl library (i.e. our classes wrapped in Tcl).
   // This *is* required for the C++ methods to be used as callbacks.

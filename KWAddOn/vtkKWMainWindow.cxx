@@ -398,9 +398,6 @@ void vtkKWMainWindow::PackSelf()
     return;  
 }
 
-
-
-
 vtkKWPageView* vtkKWMainWindow::GetCurrentPage (void)
 {
   vtkKWFrame* page = this->GetViewNotebook()->GetFrame (this->GetViewNotebook()->GetRaisedPageId ());

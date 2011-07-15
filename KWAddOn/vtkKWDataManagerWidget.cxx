@@ -192,7 +192,11 @@ void vtkKWDataManagerWidget::SelectionChangedCallback()
   {
     page = this->ParentObject->GetPage(metadatasets[0]->GetTag());      
     if (page)
+    {
       this->ParentObject->GetViewNotebook()->RaisePage(metadatasets[0]->GetTag());
+      this->ParentObject->GetViewNotebook()->RaiseCallback (this->ParentObject->GetViewNotebook()->GetRaisedPageId());
+    }
+    
   }
   
   for (unsigned int j=0; j<tblist.size(); j++)

@@ -322,13 +322,13 @@ void vtkImageView::Render()
     {
       if( this->GetMTime()>this->InternalMTime )
       {
-	std::cout<<"rendering"<<std::endl;
 	this->RenderWindow->Render();
         this->InternalMTime = this->GetMTime();
       }
     }
     else
     {
+      std::cout<<"rendering for first time"<<std::endl;
       this->RenderWindow->Render();
     }
   }

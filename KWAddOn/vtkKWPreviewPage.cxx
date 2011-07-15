@@ -53,13 +53,20 @@ vtkKWPreviewPage::vtkKWPreviewPage()
 
   this->InternalFrame = vtkKWFrameWithScrollbar::New();
 
-  this->Pool = vtkImageViewCollection::New();
-  this->Pool->LinkCameraOn();
-  this->Pool->LinkCurrentPointOff();
-  
-  this->ViewList = vtkCollection::New();
-  this->RenderWidgetList = vtkCollection::New();
+  this->ViewList = vtkImageViewCollection::New();
+  // this->Pool->LinkCameraOn();
+  // this->Pool->LinkCurrentPointOff();
 
+  this->GlobalView = vtkImageView3D::New();
+  this->GlobalView->SetBackground (1,1,1);
+  this->GlobalView->SetShowAnnotations (false);
+
+  this->ViewList->AddItem (this->GlobalView);
+
+  this->GlobalRenderWidget = vtkKWRenderWidget::New();
+  
+  this->RenderWidgetList = vtkCollection::New();
+  
   vtkLookupTable* lut = vtkLookupTableManager::GetLookupTable (vtkLookupTableManager::LUT_BW);
   this->SetLookupTable (lut);
   lut->Delete();
@@ -77,39 +84,39 @@ vtkKWPreviewPage::~vtkKWPreviewPage()
 
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
-    vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
-    this->Pool->RemoveItem (view);
     widget->SetParent (NULL);
   }
 
+  this->ViewList->RemoveAllItems();
   this->ViewList->Delete();
   this->RenderWidgetList->Delete();
-
   this->InternalFrame->Delete();
-
-  this->Pool->Delete();
+  this->GlobalView->Delete();
+  this->GlobalRenderWidget->SetParent (NULL);
+  this->GlobalRenderWidget->Delete();
   
 }
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget)
 {
+  view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
   vtkRenderer* renderer = vtkRenderer::New();
+  view->SetRenderer(renderer);
+
   vtkRendererCollection* collection = widget->GetRenderWindow()->GetRenderers();
   collection->RemoveAllItems();
   widget->GetRenderWindow()->AddRenderer (renderer);
+  widget->RemoveAllRenderers();
+  widget->AddRenderer (renderer);
   view->SetRenderWindow (widget->GetRenderWindow());
-  view->SetRenderer (renderer);
-  renderer->Delete();
 }
 
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, vtkMatrix4x4* matrix )
 {
-
-
   vtkImageView2D* view = vtkImageView2D::New();
   vtkKWRenderWidget* widget = vtkKWRenderWidget::New();
   
@@ -125,7 +132,6 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
   view->GetCornerAnnotation()->SetText (1, name);
   view->SetBackground (0,0,0);
   view->SetShowAnnotations (false);
-
   
   if (matrix)
     view->SetOrientationMatrix (matrix);
@@ -135,6 +141,8 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
   this->ViewList->AddItem (view);
   this->RenderWidgetList->AddItem (widget);
 
+  this->GlobalView->AddExtraPlane (view->GetImageActor());
+  
   view->Delete();
   widget->Delete();
 
@@ -156,14 +164,10 @@ void vtkKWPreviewPage::RemovePreviewImage (vtkImageData* image)
   
   vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject (id));
   vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (id));
-
-  this->Pool->RemoveItem (view);
-
-  widget->SetParent (NULL);
-  
+  this->GlobalView->RemoveExtraPlane (view->GetImageActor());
   this->ViewList->RemoveItem (view);
+  widget->SetParent (NULL);
   this->RenderWidgetList->RemoveItem (widget);
-  
 }
 
 
@@ -178,9 +182,7 @@ void vtkKWPreviewPage::Render (void)
       continue;
     widget->Render();
   }
- 
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::SetOrientationMode (int mode)
@@ -201,14 +203,10 @@ void vtkKWPreviewPage::SetInteractionMode (int mode)
   this->InteractionMode = mode;
 }
 
-
-
-
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::SetLookupTable (vtkLookupTable* lut)
-{
-  
-  this->Pool->SyncSetLookupTable (lut);
+{  
+  this->ViewList->SyncSetLookupTable (lut);
   this->LookupTable = lut;  
 }
 
@@ -266,15 +264,22 @@ void vtkKWPreviewPage::CreateWidget()
   
   this->Script("pack %s -side top -expand t -fill both", 
 	       this->InternalFrame->GetWidgetName());
+
   
+  this->GlobalRenderWidget->SetParent (this->InternalFrame->GetFrame());
+  this->GlobalRenderWidget->Create();
+  this->GlobalRenderWidget->SetBorderWidth (1);
   
-  this->PackSelf();  
-  
+  this->PackSelf();
+
+  this->ConfigureView (this->GlobalView, this->GlobalRenderWidget);
 }
 
 
 void vtkKWPreviewPage::PackSelf()
 {
+  std::cout<<"a"<<std::endl;
+  
 
   if (!this->IsCreated())
   {
@@ -282,9 +287,12 @@ void vtkKWPreviewPage::PackSelf()
     return;
   }
   
+  std::cout<<"b"<<std::endl;
   this->InternalFrame->GetFrame()->UnpackChildren();
+  std::cout<<"c"<<std::endl;
 
   unsigned int N = this->GetNumberOfPreviews();
+  std::cout<<"c"<<std::endl;
 
   if (N > 16)
   {
@@ -296,6 +304,7 @@ void vtkKWPreviewPage::PackSelf()
     this->InternalFrame->VerticalScrollbarVisibilityOff();
     this->InternalFrame->HorizontalScrollbarVisibilityOff();
   }
+  std::cout<<"d"<<std::endl;
 
   unsigned int NumberOfCols = 0;
   if (N <= 1)
@@ -317,7 +326,8 @@ void vtkKWPreviewPage::PackSelf()
   {
     size = (unsigned int)( (double)(parent->GetWidth() * 4.0)/(double)(4.0 * 5.0) );
   }
-  
+  std::cout<<"e, N = "<<N<<std::endl;
+
   for (unsigned int i=0; i<N; i++)
   {
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
@@ -337,9 +347,32 @@ void vtkKWPreviewPage::PackSelf()
       iter_row++;
       iter_col = 0;
     }
-    
   }
 
+  std::cout<<"1"<<std::endl;
+
+  vtkKWRenderWidget* widget = this->GlobalRenderWidget;
+  std::cout<<"2"<<std::endl;
+  if (N > 16)
+  {
+    widget->SetWidth (size);
+    widget->SetHeight (size);
+  }
+  std::cout<<"3"<<std::endl;
+
+  this->Script ("grid %s -column %u -row %u -sticky news",
+		widget->GetWidgetName(), iter_col, iter_row);
+  std::cout<<"4"<<std::endl;
+
+  iter_col++;
+  
+  if (iter_col >= NumberOfCols)
+  {
+    iter_row++;
+    iter_col = 0;
+  }
+
+  std::cout<<"done"<<std::endl;
 
   unsigned NumberOfRows = iter_row+1;
   if ((N == 1) || (N == 2) || (N == 4) || (N == 9) || (N == 16))
