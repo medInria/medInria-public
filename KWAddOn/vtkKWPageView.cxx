@@ -537,15 +537,6 @@ void vtkKWPageView::SetFullScreenView (int id)
 {
   if (!id)
   {
-    if (this->View1->GetRenderer())
-      this->View1->GetRenderer()->InteractiveOn();
-    if (this->View2->GetRenderer())
-      this->View2->GetRenderer()->InteractiveOn();
-    if (this->View3->GetRenderer())
-      this->View3->GetRenderer()->InteractiveOn();
-    if (this->View4->GetRenderer())
-      this->View4->GetRenderer()->InteractiveOn();
-  
     this->PackSelf();
     this->IsFullScreen = 0;
     return;
@@ -562,14 +553,7 @@ void vtkKWPageView::SetFullScreenView (int id)
   this->Script ("grid remove %s",
 		this->RenderWidget4->GetWidgetName());
 
-  if (this->View1->GetRenderer())
-    this->View1->GetRenderer()->InteractiveOff();
-  if (this->View2->GetRenderer())
-    this->View2->GetRenderer()->InteractiveOff();
-  if (this->View3->GetRenderer())
-    this->View3->GetRenderer()->InteractiveOff();
-  if (this->View4->GetRenderer())
-    this->View4->GetRenderer()->InteractiveOff();
+  this->m_Pool->RemoveAllItems();
   
   vtkImageView* view = 0;
   vtkKWRenderWidget* widget = 0;
@@ -597,10 +581,9 @@ void vtkKWPageView::SetFullScreenView (int id)
 	return;
 	break;
   }
-
+  std::cout<<"all views removed"<<std::endl;
   
-  if (view->GetRenderer())
-    view->GetRenderer()->InteractiveOn();
+  //this->m_Pool->AddItem (view);
   
   this->Script ("pack %s -side top -expand yes -fill both -padx 2 -pady 2",
 		widget->GetWidgetName());

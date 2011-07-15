@@ -67,7 +67,7 @@ void vtkInteractorStyleImageView2D::OnMouseMove()
 	case VTKIS_TIME_CHANGE:
 	  this->TimeChange();
 	  this->InvokeEvent(vtkImageView2DCommand::TimeChangeEvent, this);
-	 break;		  
+	 break;
       case VTKIS_DOLLY:
       case VTKIS_ZOOM:
  	this->Superclass::OnMouseMove();
@@ -80,7 +80,7 @@ void vtkInteractorStyleImageView2D::OnMouseMove()
 	this->InvokeEvent(vtkImageView2DCommand::CameraMoveEvent, this);
 	break;
       case VTKIS_SPIN:
-      case VTKIS_ROTATE:	
+      case VTKIS_ROTATE:
       case VTKIS_FORWARDFLY:
       case VTKIS_REVERSEFLY:
 	this->Superclass::OnMouseMove();
@@ -90,6 +90,8 @@ void vtkInteractorStyleImageView2D::OnMouseMove()
 	this->DefaultMoveAction();
 	break;
       default:
+	std::cout<<"mouse moving"<<std::endl;
+	
 	this->Superclass::OnMouseMove();
 	break;
   }

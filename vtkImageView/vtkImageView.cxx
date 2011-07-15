@@ -311,7 +311,7 @@ void vtkImageView::SetRenderer(vtkRenderer *arg)
 //----------------------------------------------------------------------------
 void vtkImageView::Render()
 {
-  if (this->RenderWindow)
+  if (this->RenderWindow && this->RenderWindow->GetMapped())
   {
     if ( this->GetColorWindow () == VTK_DOUBLE_MAX ) {
       
@@ -322,6 +322,7 @@ void vtkImageView::Render()
     {
       if( this->GetMTime()>this->InternalMTime )
       {
+	std::cout<<"rendering"<<std::endl;
 	this->RenderWindow->Render();
         this->InternalMTime = this->GetMTime();
       }

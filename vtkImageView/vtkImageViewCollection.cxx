@@ -140,14 +140,14 @@ void vtkImageViewCollection::RemoveItem(vtkImageView *a)
   this->Superclass::RemoveItem (a);
 }
 
-
-
 void vtkImageViewCollection::RemoveAllItems()
 {
   this->InitTraversal();
   vtkImageView* item = this->GetNextItem();    
   while(item)
   {
+    std::cout<<"removing the observer"<<std::endl;
+    
     item->GetInteractorStyle()->RemoveObserver ( this->Command );;
     item = this->GetNextItem();
   }
