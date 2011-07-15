@@ -247,22 +247,15 @@ namespace itk
 	    const gdcm::Scanner::ValuesType& values = scanner.GetValues(gdcm::Tag(0x18,0x1060));
 	    if (values.size())
 	    {
-	      std::cout<<"size is : "<<values.size()<<"... "<<std::endl;
-	      
 	      gdcm::Scanner::ValuesType::iterator it;
 	      std::vector<float> triggers;
 	      for (it = values.begin(); it != values.end(); ++it)
 	      {
-	      	std::cout<<"found trigger : "<<(*it).c_str()<<std::endl;
 	      	triggers.push_back (std::atof ((*it).c_str()));
 	      }
 	      std::sort (triggers.begin(), triggers.end());
-	      for (unsigned int i=0; i<triggers.size(); i++)
-		std::cout<<"tr: "<<triggers[i]<<std::endl;
-	      
 	      float meanspacing = (triggers[triggers.size() - 1] - triggers[0]) / (float)(values.size() - 1);
 	      heartrate = std::floor (60.0 * 1000.0 / (triggers[triggers.size() - 1] + meanspacing));
-	      std::cout<<"calculated heart-rate = "<<heartrate<<std::endl;
 	    }
 	    else
 	      heartrate = 60;
@@ -469,6 +462,18 @@ namespace itk
     // If the 2D images in a sequence don't have the same gradient orientation,
     // then we separate the DWIs.
     this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x9089));
+    // 2005 10b0 Gradient Orientation
+    // If the 2D images in a sequence don't have the same gradient orientation,
+    // then we separate the DWIs.
+    this->m_SecondScanner.AddTag( gdcm::Tag(0x2005,0x10b0));
+    // 2005 10b1 Gradient Orientation
+    // If the 2D images in a sequence don't have the same gradient orientation,
+    // then we separate the DWIs.
+    this->m_SecondScanner.AddTag( gdcm::Tag(0x2005,0x10b1));
+    // 2005 10b2 Gradient Orientation
+    // If the 2D images in a sequence don't have the same gradient orientation,
+    // then we separate the DWIs.
+    this->m_SecondScanner.AddTag( gdcm::Tag(0x2005,0x10b2));
     // 0018 1060 Trigger Time
     this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x1060) );
     
@@ -622,7 +627,8 @@ namespace itk
       if( this->m_FirstScanner.IsKey((*file).c_str()) )
       {
 	const gdcm::Scanner::TagToValue& mapping = this->m_FirstScanner.GetMapping((*file).c_str());
-	
+	// check if the file has a "number of rows".
+	// if not, this is not an image, therefore skipping
 	if ( !this->m_FirstScanner.GetValue  ((*file).c_str(), gdcm::Tag(0x0028, 0x0010)) )
 	  continue;
 	
@@ -645,7 +651,6 @@ namespace itk
 	itkWarningMacro (<<"The file "<<(*file).c_str()
 			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
       }
-      
     }    
 
     return ret;
@@ -665,7 +670,7 @@ namespace itk
       itkExceptionMacro (<<"The second scanner did not succeed scanning the list, skipping"
 			 <<std::endl);
     }
-      
+    
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
     
@@ -689,6 +694,12 @@ namespace itk
 	}
 	else
 	  ret[os.str()].push_back ((*file).c_str());
+	const char* value = this->m_SecondScanner.GetValue ((*file).c_str(), gdcm::Tag(0x2005,0x10b0));
+	if (value)
+	{
+	  std::cout<<"found private-tag gradient "<<value<<" in "<<(*file).c_str()<<std::endl;
+	}
+	
       }
       else
       {

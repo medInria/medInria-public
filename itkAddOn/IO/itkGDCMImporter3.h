@@ -280,8 +280,29 @@ namespace itk
     gdcm::Scanner m_ThirdScanner;
 
     bool m_IsScanned;
-    
+    /**
+       Sorting system. divinded into 3 layers of sort.
+    */
+    /**
+       First layer of sorting.
+       From a list of files, the output map should have
+       a list of "volumes" which might be 2D, 3D or 4D.
+       list of discriminent tags :
+       0x10,0x10
+       0x20,0xd
+       0x20,0x37
+       0020, 0x0011
+       0x0018, 0x0050
+       0x0028, 0x0010
+       0x0028, 0x0011
+    */
     FileListMapType PrimarySort (FileList list);
+    /**
+       Second layer of sorting.
+       second and third are supposed to differenciate within a 4D volume,
+       
+    */
+    
     FileListMapType SecondarySort (FileList list);
     FileListMapType TertiarySort (FileList list);
     FileListMapType TimeSort (FileListMapType map);

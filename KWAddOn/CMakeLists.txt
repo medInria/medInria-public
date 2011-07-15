@@ -71,6 +71,8 @@ SET(KWAddOn_LIBRARIES
   vtkImageViewTCL
   vtkVisuManagement
   vtkVisuManagementTCL
+  vtkLandmarkManagement
+  vtkLandmarkManagementTCL
   itkIOAddOn
 )
 

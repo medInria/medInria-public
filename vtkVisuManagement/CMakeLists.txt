@@ -24,9 +24,14 @@ SET(vtkVisuManagement_SRCS
  vtkImageClippingPlane.cxx
  vtkDisplacementFieldToGridFilter.cxx
  vtkMeshCropManager.cxx
+# vtkLandmarkManager.cxx
+# vtkLandmarkManagerCallback.cxx
+ vtkFiberDataSetManager.cxx
+)
+
+SET(vtkLandmarkManagement_SRCS
  vtkLandmarkManager.cxx
  vtkLandmarkManagerCallback.cxx
- vtkFiberDataSetManager.cxx
 )
 
 SET(vtkVisuManagement_LIBS
@@ -38,23 +43,43 @@ SET(vtkVisuManagement_LIBS
 )
 
 
+SET(vtkLandmarkManagement_LIBS
+ vtkCommon
+ vtkFiltering
+ vtkRendering
+ vtkWidgets
+ vtkDataManagement
+ vtkImageView
+)
 
 IF( vtkINRIA3D_USE_HWSHADING )
 SET(vtkVisuManagement_LIBS
 ${vtkVisuManagement_LIBS}
 vtkHWShading
 )
+SET(vtkLandmarkManagement_LIBS
+${vtkLandmarkManagement_LIBS}
+vtkHWShading
+)
 ENDIF (vtkINRIA3D_USE_HWSHADING )
-
-
 
 # C++ library for the InterfaceManagers
 ADD_LIBRARY(vtkVisuManagement ${vtkINRIA3D_LIBS_STYLE}
  ${vtkVisuManagement_SRCS}
 )
   
+# C++ library for the InterfaceManagers
+ADD_LIBRARY(vtkLandmarkManagement ${vtkINRIA3D_LIBS_STYLE}
+ ${vtkLandmarkManagement_SRCS}
+)
+  
 TARGET_LINK_LIBRARIES(vtkVisuManagement  
  ${vtkVisuManagement_LIBS}
+)
+
+  
+TARGET_LINK_LIBRARIES(vtkLandmarkManagement  
+ ${vtkLandmarkManagement_LIBS}
 )
 
   IF (VTK_WRAP_TCL)
@@ -71,7 +96,6 @@ TARGET_LINK_LIBRARIES(vtkVisuManagement
       ""
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
-
     ADD_LIBRARY(vtkVisuManagementTCL ${vtkINRIA3D_LIBS_STYLE}
     ${vtkVisuManagementTCL_SRCS}
     )
@@ -86,6 +110,27 @@ TARGET_LINK_LIBRARIES(vtkVisuManagement
     )
  
     INSTALL_TARGETS(/lib vtkVisuManagementTCL)
+
+    VTK_WRAP_TCL3( vtkLandmarkManagementLib
+      vtkLandmarkManagementTCL_SRCS
+      "${vtkLandmarkManagement_SRCS}"
+      ""
+      "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
+    )
+    ADD_LIBRARY(vtkLandmarkManagementTCL ${vtkINRIA3D_LIBS_STYLE}
+    ${vtkLandmarkManagementTCL_SRCS}
+    )
+    TARGET_LINK_LIBRARIES(vtkLandmarkManagementTCL
+    vtkLandmarkManagement
+    vtkCommonTCL
+    vtkRenderingTCL
+    vtkWidgetsTCL
+    vtkVolumeRenderingTCL
+    vtkHybridTCL
+    vtkImagingTCL
+    )
+ 
+    INSTALL_TARGETS(/lib vtkLandmarkManagementTCL)
 
   ENDIF(VTK_WRAP_TCL)
 

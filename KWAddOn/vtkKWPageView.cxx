@@ -185,7 +185,13 @@ void vtkKWPageView::SetProperties()
   this->View1->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_AXIAL);
   this->View2->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
   this->View3->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
-
+  this->View4->SetShowActorX (0);
+  this->View4->SetShowActorY (0);
+  this->View4->SetShowActorZ (0);
+  this->View4->AddExtraPlane (this->View1->GetImageActor());
+  this->View4->AddExtraPlane (this->View2->GetImageActor());
+  this->View4->AddExtraPlane (this->View3->GetImageActor());
+  
   this->m_Pool->SyncSetAnnotationStyle( vtkImageView2D::AnnotationStyle2);
   this->m_Pool->SyncSetShowRulerWidget (0);
   
@@ -531,6 +537,16 @@ void vtkKWPageView::SetFullScreenView (int id)
 {
   if (!id)
   {
+    
+    if (this->View1->GetRenderer())
+      this->View1->GetRenderer()->DrawOn();
+    if (this->View2->GetRenderer())
+      this->View2->GetRenderer()->DrawOn();
+    if (this->View3->GetRenderer())
+      this->View3->GetRenderer()->DrawOn();
+    if (this->View4->GetRenderer())
+      this->View4->GetRenderer()->DrawOn();
+  
     this->PackSelf();
     this->IsFullScreen = 0;
     return;
@@ -546,6 +562,15 @@ void vtkKWPageView::SetFullScreenView (int id)
 		this->RenderWidget3->GetWidgetName());
   this->Script ("grid remove %s",
 		this->RenderWidget4->GetWidgetName());
+
+  if (this->View1->GetRenderer())
+    this->View1->GetRenderer()->DrawOff();
+  if (this->View2->GetRenderer())
+    this->View2->GetRenderer()->DrawOff();
+  if (this->View3->GetRenderer())
+    this->View3->GetRenderer()->DrawOff();
+  if (this->View4->GetRenderer())
+    this->View4->GetRenderer()->DrawOff();
   
   vtkImageView* view = 0;
   vtkKWRenderWidget* widget = 0;
@@ -574,6 +599,9 @@ void vtkKWPageView::SetFullScreenView (int id)
 	break;
   }
 
+  if (view->GetRenderer())
+    view->GetRenderer()->DrawOn();
+  
   this->Script ("pack %s -side top -expand yes -fill both -padx 2 -pady 2",
 		widget->GetWidgetName());
 	

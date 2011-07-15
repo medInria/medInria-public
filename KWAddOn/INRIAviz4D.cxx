@@ -56,9 +56,6 @@ int my_main(int argc, char *argv[])
 {
   // Initialize Tcl
 
-
-  itk::MultiThreader::SetGlobalDefaultNumberOfThreads(2);
-
   Tcl_Interp *interp = vtkKWApplication::InitializeTcl(argc, argv, &cerr);
   if (!interp)
   {
