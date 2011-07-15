@@ -87,6 +87,7 @@ void vtkInteractorStyleImageView2D::OnMouseMove()
 	this->InvokeEvent(vtkImageView2DCommand::CameraMoveEvent, this);
 	break;
       case VTKIS_NONE:
+	std::cout<<"default"<<std::endl;
 	this->DefaultMoveAction();
 	break;
       default:
