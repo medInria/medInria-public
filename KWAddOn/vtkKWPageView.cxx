@@ -537,20 +537,14 @@ void vtkKWPageView::SetFullScreenView (int id)
 {
   if (!id)
   {
-    this->m_Pool->RemoveAllItems();
-    this->m_Pool->AddItem (this->View1);
-    this->m_Pool->AddItem (this->View2);
-    this->m_Pool->AddItem (this->View3);
-    this->m_Pool->AddItem (this->View4);
-    
-    // if (this->View1->GetRenderer())
-    //   this->View1->GetRenderer()->DrawOn();
-    // if (this->View2->GetRenderer())
-    //   this->View2->GetRenderer()->DrawOn();
-    // if (this->View3->GetRenderer())
-    //   this->View3->GetRenderer()->DrawOn();
-    // if (this->View4->GetRenderer())
-    //   this->View4->GetRenderer()->DrawOn();
+    if (this->View1->GetRenderer())
+      this->View1->GetRenderer()->InteractiveOn();
+    if (this->View2->GetRenderer())
+      this->View2->GetRenderer()->InteractiveOn();
+    if (this->View3->GetRenderer())
+      this->View3->GetRenderer()->InteractiveOn();
+    if (this->View4->GetRenderer())
+      this->View4->GetRenderer()->InteractiveOn();
   
     this->PackSelf();
     this->IsFullScreen = 0;
@@ -568,14 +562,14 @@ void vtkKWPageView::SetFullScreenView (int id)
   this->Script ("grid remove %s",
 		this->RenderWidget4->GetWidgetName());
 
-  // if (this->View1->GetRenderer())
-  //   this->View1->GetRenderer()->DrawOff();
-  // if (this->View2->GetRenderer())
-  //   this->View2->GetRenderer()->DrawOff();
-  // if (this->View3->GetRenderer())
-  //   this->View3->GetRenderer()->DrawOff();
-  // if (this->View4->GetRenderer())
-  //   this->View4->GetRenderer()->DrawOff();
+  if (this->View1->GetRenderer())
+    this->View1->GetRenderer()->InteractiveOff();
+  if (this->View2->GetRenderer())
+    this->View2->GetRenderer()->InteractiveOff();
+  if (this->View3->GetRenderer())
+    this->View3->GetRenderer()->InteractiveOff();
+  if (this->View4->GetRenderer())
+    this->View4->GetRenderer()->InteractiveOff();
   
   vtkImageView* view = 0;
   vtkKWRenderWidget* widget = 0;
@@ -605,10 +599,8 @@ void vtkKWPageView::SetFullScreenView (int id)
   }
 
   
-  this->m_Pool->RemoveItem (view);
-  
-  // if (view->GetRenderer())
-  //   view->GetRenderer()->DrawOn();
+  if (view->GetRenderer())
+    view->GetRenderer()->InteractiveOn();
   
   this->Script ("pack %s -side top -expand yes -fill both -padx 2 -pady 2",
 		widget->GetWidgetName());
