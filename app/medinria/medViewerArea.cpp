@@ -211,16 +211,16 @@ void medViewerArea::open(const medDataIndex& index)
     this->switchToPatient(index);
 
     if(((medDataIndex)index).isValidForSeries()) {
-
+        
         dtkSmartPointer<dtkAbstractData> data;
         medAbstractView *view = NULL;
-
+        
         // the data-manager should be used to read data
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
         if ( data.isNull() )
             return;
-
+        
         medViewContainer * current = this->currentContainerFocused();
         if ( current != NULL )
             view = dynamic_cast<medAbstractView*>(current->view());

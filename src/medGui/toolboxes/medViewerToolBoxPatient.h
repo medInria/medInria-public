@@ -20,12 +20,13 @@
 #ifndef MEDVIEWERTOOLBOXPATIENT_H
 #define MEDVIEWERTOOLBOXPATIENT_H
 
-#include <medToolBox.h>
+#include "medGuiExport.h"
+#include "medToolBox.h"
 
 class medDataIndex;
 class medViewerToolBoxPatientPrivate;
 
-class medViewerToolBoxPatient : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxPatient : public medToolBox
 {
     Q_OBJECT
 
