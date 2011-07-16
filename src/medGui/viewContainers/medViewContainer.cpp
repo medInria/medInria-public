@@ -185,17 +185,18 @@ void medViewContainer::setView(dtkAbstractView *view)
         return;
 
     d->view = view;
-
-    // pass properties to the view
+    
     if (d->view) {
+        // pass properties to the view
         QHash<QString,QString>::iterator it = d->viewProperties.begin();
         while (it!=d->viewProperties.end()) {
             view->setProperty (it.key(), it.value());
             ++it;
         }
-    }
-    connect (view,SIGNAL(changeDaddy(bool)),this,SLOT(onDaddyChanged(bool)));
-    this->recomputeStyleSheet();
+        
+        connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
+        this->recomputeStyleSheet();        
+    }        
 }
 
 void medViewContainer::onViewFocused( bool value )
