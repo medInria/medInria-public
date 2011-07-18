@@ -39,7 +39,8 @@ namespace MedInria {
 
         //  Read the description from an array.
 
-        virtual void read_description(const QByteArray& buf) = 0;
+        virtual bool read_description(const QByteArray& buf) = 0;
+        virtual bool read_data() = 0;
 
         static QStringList initialize() {
             QStringList& ql = known_types();

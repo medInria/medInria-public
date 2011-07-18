@@ -157,7 +157,7 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
 
 void medCompositeDataSetsReader::readInformation(const QString&) {
     QByteArray buffer = desc->readAll();
-    reader->read_description(buffer);
+    in_error = reader->read_description(buffer);
 }
 
 bool medCompositeDataSetsReader::read(const QString& path) {
@@ -168,15 +168,16 @@ bool medCompositeDataSetsReader::read(const QString& path) {
 
     this->setProgress(0);
     this->readInformation(path);
-    this->setProgress(50);
+
+    if (in_error)
+        return false;
+
+    this->setProgress(20);
 
     //  Create the final data object.
+    //  How to set progress in read_data ??
 
-    //  TODO: add code here....
-
-    this->setProgress (100);
-
-    return true;
+    return reader->read_data();
 }
 
 void medCompositeDataSetsReader::setProgress(int value) {

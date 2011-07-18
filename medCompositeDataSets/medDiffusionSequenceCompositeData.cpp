@@ -26,7 +26,7 @@ QString medDiffusionSequenceCompositeData::description() const {
     return "medDiffusionSequenceCompositeData";
 }
 
-void medDiffusionSequenceCompositeData::read_description(const QByteArray& buf) {
+bool medDiffusionSequenceCompositeData::read_description(const QByteArray& buf) {
     const std::string description(buf.data());
     std::istringstream iss(description);
 
@@ -39,6 +39,8 @@ void medDiffusionSequenceCompositeData::read_description(const QByteArray& buf) 
         gradients.push_back(V);
         image_list << QString(name.c_str());
     }
+
+    return (iss.fail()) ? true : false;
 }
 
 void medDiffusionSequenceCompositeData::readVolumes(QStringList paths) {
@@ -61,22 +63,26 @@ void medDiffusionSequenceCompositeData::readVolumes(QStringList paths) {
         dtkAbstractData* volume = reader->data();
         QString description     = volume->description();
         if (!description.contains("Image")) {
-            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("file does not describe any known image type"), 3000);
+            // emit medToolBoxCompositeDataSetImporter::showError(this,tr("file does not describe any known image type"),3000);
             continue;
         }
         if (description.contains ("Image4D")) {
-            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("4D image is not supported yet"), 3000);
+            // emit medToolBoxCompositeDataSetImporter::showError(this,tr("4D image is not supported yet"),3000);
             continue;
         }
         if (!description.contains ("Image3D")) {
-            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("image should be 3D"), 3000);
+            // emit medToolBoxCompositeDataSetImporter::showError(this,tr("image should be 3D"),3000);
             continue;
         }
         
         images.push_back(volume);
-      }  
+    }  
 }
 
+bool medDiffusionSequenceCompositeData::read_data() {
+    readVolumes(image_list); // TODO: Error management....
+    return true;
+}
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

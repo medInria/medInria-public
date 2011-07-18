@@ -54,6 +54,7 @@ public slots:
 private:
 
     bool       is_zip_file;
+    bool       in_error;
     QString    outdir;
     QIODevice* desc;
 

@@ -38,7 +38,8 @@ public:
 
     bool registered() const;
 
-    virtual void read_description(const QByteArray& buf);
+    virtual bool read_description(const QByteArray& buf);
+    virtual bool read_data();
 
     //  Methods specific to this type.
 
