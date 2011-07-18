@@ -75,15 +75,16 @@ void vtkKWMainCallback::Execute(vtkObject* caller, unsigned long event, void* ca
     vtkKWPageView* pageview =
       vtkKWPageView::SafeDownCast(page->GetNthChild (0));
     if (pageview)
+    {
       pageview->EnableViewsOn();
+    }
     else
     {
       vtkKWPreviewPage* pageview =
 	vtkKWPreviewPage::SafeDownCast(page->GetNthChild (0));
       if (pageview)
       {
-	pageview->EnableViewsOn();
-	pageview->Update();
+	pageview->EnableViewsOn();	
       }
     }
     

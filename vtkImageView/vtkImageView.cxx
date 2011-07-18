@@ -328,7 +328,6 @@ void vtkImageView::Render()
     }
     else
     {
-      std::cout<<"rendering for first time"<<std::endl;
       this->RenderWindow->Render();
     }
   }

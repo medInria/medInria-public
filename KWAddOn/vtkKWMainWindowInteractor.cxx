@@ -171,12 +171,12 @@ vtkKWMainWindowInteractor::~vtkKWMainWindowInteractor()
   this->PreviewPage->Delete();
   this->SnapshotHandler->Delete();
   
-  
   if (this->GetViewNotebook()->IsCreated())
   {
     // to avoid some VTK warnings,
     // we have to manually destroy the pages from the view notebook
     this->GetViewNotebook()->RemovePagesMatchingTag(0);
+    this->GetViewNotebook()->RemovePage (0);
   }
 }
 
@@ -196,8 +196,11 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, vtkIm
   this->Script("pack %s -fill both -side top -expand t", 
 	       viewframe->GetWidgetName());
   viewframe->SetImage (image, matrix);
+  std::cout<<"raising page : "<<id<<std::endl;  
   this->GetViewNotebook()->RaisePage (id);
+  std::cout<<"raising page callback: "<<id<<std::endl;  
   this->GetViewNotebook()->RaiseCallback (id);
+  std::cout<<"raising page : "<<id<<"...  done." <<std::endl;  
   
   viewframe->GetView4()->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
   viewframe->Delete();
@@ -648,16 +651,10 @@ void vtkKWMainWindowInteractor::OnMenuFileOpen()
   if (!allopened)
     vtkKWPopupErrorMessage(this, "One or more file(s) have not been opened !\nSee Log for more info");
   
-  
   dialog->SaveLastPathToRegistry("DataPath");
   dialog->Delete();
-
-  this->Update();
-
-  if (this->GetCurrentPage())
-    this->GetCurrentPage()->Render();
   
-
+  this->Update();
 }
 
 

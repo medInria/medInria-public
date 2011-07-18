@@ -36,6 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkCollection.h>
+#include <vtkImageData.h>
 #include <vtkLookupTable.h>
 #include <vtkRendererCollection.h>
 #include <vtkActor.h>
@@ -57,9 +58,6 @@ vtkKWPreviewPage::vtkKWPreviewPage()
   this->ViewList->LinkZoomOff();
   this->ViewList->LinkPanOff();
   
-  // this->Pool->LinkCameraOn();
-  // this->Pool->LinkCurrentPointOff();
-
   this->GlobalView = vtkImageView3D::New();
   this->GlobalView->SetShowAnnotations (false);
   this->GlobalView->ShowScalarBarOff();
@@ -67,6 +65,7 @@ vtkKWPreviewPage::vtkKWPreviewPage()
   this->ViewList->AddItem (this->GlobalView);
 
   this->GlobalRenderWidget = vtkKWRenderWidget::New();
+  this->GlobalRenderWidget->RemoveBindings();
   this->GlobalRenderWidget->SetRenderState(0);
 
   this->RenderWidgetList = vtkCollection::New();
@@ -91,13 +90,13 @@ vtkKWPreviewPage::~vtkKWPreviewPage()
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
     widget->SetParent (NULL);
   }
+  this->GlobalRenderWidget->SetParent (NULL);
 
   this->ViewList->RemoveAllItems();
   this->ViewList->Delete();
   this->RenderWidgetList->Delete();
   this->InternalFrame->Delete();
   this->GlobalView->Delete();
-  this->GlobalRenderWidget->SetParent (NULL);
   this->GlobalRenderWidget->Delete();
   
 }
@@ -124,16 +123,15 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
   vtkImageView2D* view = vtkImageView2D::New();
   vtkKWRenderWidget* widget = vtkKWRenderWidget::New();
 
-  std::cout<<"adding image"<<std::endl;
-  
   widget->SetParent (this->InternalFrame->GetFrame());
   widget->Create();
   //widget->SetWidth (800);
   //widget->SetHeight (800);
   widget->SetBorderWidth (1);
   widget->SetRenderState(0);
-  
-  this->ConfigureView (view, widget);  
+  widget->RemoveBindings();
+
+  this->ConfigureView (view, widget);
   
   view->SetInput (image);
   view->GetCornerAnnotation()->SetText (1, name);
@@ -179,20 +177,20 @@ void vtkKWPreviewPage::RemovePreviewImage (vtkImageData* image)
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::SetEnableViews(unsigned int arg)
 {
-  std::cout<<"enabling previews: "<<arg<<std::endl;
-  
   this->GlobalRenderWidget->SetRenderState(arg);
+  if (arg)
+    this->GlobalRenderWidget->AddBindings();
+  else
+    this->GlobalRenderWidget->RemoveBindings();
+    
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
     widget->SetRenderState(arg);
-  }
-  if(arg)
-  {
-    
-    for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
-      this->ViewList->GetItemAsObject (i)->Modified();
-    this->GlobalView->Modified();
+    if (arg)
+      widget->AddBindings();
+    else
+      widget->RemoveBindings();
   }
 }
 
@@ -209,15 +207,25 @@ void vtkKWPreviewPage::Render (void)
   if (!this->GetEnableViews())
     return;
 
-  std::cout<<"rendering preview page"<<std::endl;
-  
-  
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
     if (!widget->IsMapped())
       continue;
-    std::cout<<"rendering preview no. "<<i<<std::endl;
+    vtkImageView* view = this->ViewList->GetItem (i+1);
+    // view->Reset();
+    // view->Modified();
+    // if (view->GetInput())
+    // {
+    //   view->GetInput()->Modified();
+    //   std::cout<<"and has input "<<view->GetInput()<<std::endl<<std::flush;
+    // }
+    // else
+    // {
+    //   std::cout<<"and has no input "<<std::endl<<std::flush;
+    // }
+    
+    view->Render();
     widget->Render();
   }
   if (this->GlobalRenderWidget->IsMapped())
@@ -233,13 +241,13 @@ void vtkKWPreviewPage::SetOrientationMode (int mode)
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::SetInteractionMode (int mode)
 {
-  for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
-  {
-    vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
-    view->SetInteractionStyle (mode);
-  }
+  // for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
+  // {
+  //   vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
+  //   view->SetInteractionStyle (mode);
+  // }
 
-  this->InteractionMode = mode;
+  // this->InteractionMode = mode;
 }
 
 //----------------------------------------------------------------------------
@@ -311,6 +319,7 @@ void vtkKWPreviewPage::CreateWidget()
   this->ConfigureView (this->GlobalView, this->GlobalRenderWidget);
   this->GlobalView->SetBackground (1,1,1);
 
+  this->GlobalRenderWidget->SetBinding("<Expose>", this, "Render");
 }
 
 

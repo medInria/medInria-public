@@ -731,8 +731,6 @@ void  vtkKWPageView::SetLookupTable (vtkLookupTable* lut)
   this->View2->SetLookupTable (lut,0);
   this->View3->SetLookupTable (lut,0);
   this->View4->SetLookupTable (lut);
-  this->m_Pool->SyncRender();
-  
 }
 
 void vtkKWPageView::RemoveDataSet(vtkDataSet* dataset)
