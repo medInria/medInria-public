@@ -169,15 +169,12 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
                 }
             }
         }
-  
-        //qDebug() << "Memory after reading:" << getProcessMemoryUsage() / divider;
 
     }
 
     if (!dtkdata)
-    {
         qWarning() << "unable to open images with index:" << index.asString();
-    }
+
     return dtkdata;
 
 }
@@ -211,13 +208,11 @@ void medDataManager::destroy( void )
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::tryFreeMemory(size_t memoryLimit)
+bool medDataManager::tryFreeMemory(size_t memoryLimit)
 {
     size_t procMem = getProcessMemoryUsage();
     if (procMem < memoryLimit)
-        return;
-
-    qDebug() << "****** TRY_FREE_MEM_BEGIN: " << procMem / divider << " to reach: " << memoryLimit / divider;
+        return false;
 
     int itemsBefore = d->dataCache.count();
 
@@ -244,12 +239,15 @@ void medDataManager::tryFreeMemory(size_t memoryLimit)
 
     int itemsNow = d->dataCache.count();
     if (itemsBefore != itemsNow)
+    {
         qDebug() << "Data-cache reduced from:" << itemsBefore << "to" << itemsNow << " items";
+        return true;
+    }
     else
+    {
         qDebug() << "Not possible to free any items, current cache count is: " << itemsNow << "items";
-
-
-    qDebug() << "****** TRY_FREE_MEM_END: " << getProcessMemoryUsage() / divider;
+        return false;
+    }
 
 }
 
@@ -264,19 +262,19 @@ bool medDataManager::manageMemoryUsage(const medDataIndex& index, medAbstractDbC
     qint64 optimalMem = getOptimalMemoryThreshold();
     qint64 maxMem = getUpperMemoryThreshold();
 
-    qDebug() << "Current memory usage:" << processMem / divider << "Required memory need:" << requiredMem / divider;
+    printMemoryStatus(estMem);
 
     // check against our optimal threshold
     if (optimalMem < requiredMem)
     {
+        bool freeingSuccessful;
         if (estMem > optimalMem)
-            tryFreeMemory(0); // purge all
+            freeingSuccessful = tryFreeMemory(0); // purge all
         else
-            tryFreeMemory(optimalMem); // purge to optimal
+            freeingSuccessful = tryFreeMemory(optimalMem); // purge to optimal
 
-        requiredMem= getProcessMemoryUsage() + estMem;
-
-        qDebug() << "Current memory usage:" << processMem / divider << "Required memory need:" << requiredMem / divider;
+        if (freeingSuccessful)
+            printMemoryStatus();
 
         // check again to see if we succeeded
         if (maxMem < requiredMem)
@@ -380,7 +378,7 @@ size_t medDataManager::getUpperMemoryThreshold()
 {
     if ( is32Bit() )
     {
-        return 950000000; //0.95 gb
+        return 1500000000; //2 gb
     }
     else
     {
@@ -529,8 +527,6 @@ size_t medDataManager::getOptimalMemoryThreshold()
     size_t physicalValue = getTotalSizeOfPhysicalRam();
     size_t upperValue = getUpperMemoryThreshold();
 
-    //qDebug() << "Physical memory is: " << physicalValue / divider;
-
     if ( is32Bit() )
     {
         // for 32bit we try to keep the cache half of the max memory
@@ -547,7 +543,6 @@ size_t medDataManager::getOptimalMemoryThreshold()
        optimalValue = physicalValue / 2;
     }
 
-    //qDebug() << "optimal memory limit is: " << optimalValue / divider;
     return optimalValue;
 }
 
@@ -578,6 +573,8 @@ medDataIndex medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
     return index;
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::removeData( const medDataIndex& index )
 {
 
@@ -601,6 +598,8 @@ void medDataManager::removeData( const medDataIndex& index )
         npDb->remove(index);
     }
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 void medDataManager::removeDataFromCache( const medDataIndex &index )
 {
@@ -632,6 +631,8 @@ void medDataManager::removeDataFromCache( const medDataIndex &index )
 
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 medAbstractDbController * medDataManager::controllerForDataSource( int dataSource )
 {
     foreach(medAbstractDbController* controller, d->controllerStack())
@@ -644,11 +645,15 @@ medAbstractDbController * medDataManager::controllerForDataSource( int dataSourc
     return NULL;
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 const medAbstractDbController * medDataManager::controllerForDataSource( int dataSource ) const
 {
     // Cast away constness to re-use same implementation.
     return const_cast<medDataManager*>(this)->controllerForDataSource(dataSource);
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 QList<int> medDataManager::dataSourceIds() const
 {
@@ -662,6 +667,23 @@ QList<int> medDataManager::dataSourceIds() const
     return sources;
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::printMemoryStatus(size_t requiredMemoryInKb)
+{
+    qint64 processMem = getProcessMemoryUsage();
+    qint64 maxMem = getUpperMemoryThreshold();
+    qint64 availableMem = (maxMem - processMem) / divider;
+    if (availableMem < 0)
+        availableMem = 0;
+
+    if( requiredMemoryInKb == 0 )
+        qDebug() << "Available memory:" << availableMem << "mb ";
+    else
+        qDebug() << "Available memory:" << availableMem << "mb " 
+        << "Required memory:" << (requiredMemoryInKb / divider) << "mb";
+
+}
 
 //-------------------------------------------------------------------------------------------------------
 

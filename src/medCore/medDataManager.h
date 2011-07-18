@@ -109,12 +109,12 @@ public:
      */
     void removeData(const medDataIndex& index);
 
-    /**
-    * Releases all own references to let all stored smartpointers get out of scope
-    * All remaining references will be restored (probably not thread safe)
-    * @return void
-    */
-    void tryFreeMemory(size_t memoryLimit);
+    /** return the DB controller for given data source. */
+    medAbstractDbController *controllerForDataSource( int dataSource );
+    const medAbstractDbController *controllerForDataSource( int dataSource ) const;
+
+    /** Return a list of available dataSource Ids.*/
+    QList<int> dataSourceIds() const;
 
     /**
      * Check if the program was compiled using 32bit compiler
@@ -150,13 +150,6 @@ public:
     */
     static size_t getOptimalMemoryThreshold();
 
-    /** return the DB controller for given data source. */
-    medAbstractDbController *controllerForDataSource( int dataSource );
-    const medAbstractDbController *controllerForDataSource( int dataSource ) const;
-
-    /** Return a list of available dataSource Ids.*/
-    QList<int> dataSourceIds() const;
-
 signals:
     /**
     * This signal is emitted whenever a data was added in either the persistent
@@ -188,6 +181,19 @@ protected:
 
     /** Remove all matching items from the cache. */
     void removeDataFromCache( const medDataIndex &index);
+
+    /**
+     * Print available memory
+     */
+    void printMemoryStatus(size_t requiredMemoryInKb = 0);
+
+        /**
+    * Releases all own references to let all stored smartpointers get out of scope
+    * All remaining references will be restored (probably not thread safe)
+    * @return void
+    */
+    bool tryFreeMemory(size_t memoryLimit);
+
 
 protected:
     static medDataManager *s_instance;
