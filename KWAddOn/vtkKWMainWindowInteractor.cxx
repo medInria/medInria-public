@@ -954,7 +954,6 @@ void vtkKWMainWindowInteractor::Update()
 {
   if (!this->IsCreated())
     return;
-  
 
   // Recover the list of datasets contained in the manager
   

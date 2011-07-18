@@ -83,7 +83,7 @@ void vtkKWMainCallback::Execute(vtkObject* caller, unsigned long event, void* ca
       if (pageview)
       {
 	pageview->EnableViewsOn();
-	pageview->Render();
+	pageview->Update();
       }
     }
     

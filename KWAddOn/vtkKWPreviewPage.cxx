@@ -67,7 +67,8 @@ vtkKWPreviewPage::vtkKWPreviewPage()
   this->ViewList->AddItem (this->GlobalView);
 
   this->GlobalRenderWidget = vtkKWRenderWidget::New();
-  
+  this->GlobalRenderWidget->SetRenderState(0);
+
   this->RenderWidgetList = vtkCollection::New();
   
   vtkLookupTable* lut = vtkLookupTableManager::GetLookupTable (vtkLookupTableManager::LUT_BW);
@@ -186,19 +187,31 @@ void vtkKWPreviewPage::SetEnableViews(unsigned int arg)
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
     widget->SetRenderState(arg);
   }
-  if (arg)
+  if(arg)
   {
+    
     for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
       this->ViewList->GetItemAsObject (i)->Modified();
     this->GlobalView->Modified();
   }
-  
+}
+
+//----------------------------------------------------------------------------
+unsigned int vtkKWPreviewPage::GetEnableViews(void)
+{
+  return this->GlobalRenderWidget->GetRenderState();
 }
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::Render (void)
 {
 
+  if (!this->GetEnableViews())
+    return;
+
+  std::cout<<"rendering preview page"<<std::endl;
+  
+  
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
@@ -297,7 +310,7 @@ void vtkKWPreviewPage::CreateWidget()
 
   this->ConfigureView (this->GlobalView, this->GlobalRenderWidget);
   this->GlobalView->SetBackground (1,1,1);
-  
+
 }
 
 
@@ -363,5 +376,6 @@ void vtkKWPreviewPage::PackSelf()
   this->Script ("grid columnconfigure %s 1 -weight 5",
   		  this->InternalFrame->GetFrame()->GetWidgetName());
 
+  this->Render();  
 }
 

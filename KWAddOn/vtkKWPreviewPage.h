@@ -83,6 +83,7 @@ public:
   virtual void Update (void);
   
   void SetEnableViews(unsigned int arg);
+  unsigned int GetEnableViews (void);
   vtkBooleanMacro (EnableViews, unsigned int);
   
   
