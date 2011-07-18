@@ -16,7 +16,7 @@
 #define MEDABSTRACTDATATYPEDIMAGE4D_H
 
 #include "medCoreExport.h"
-#include <medCore/medAbstractDataImage4D.h>
+#include <medAbstractDataImage4D.h>
 
 template <typename T>
 class MEDCORE_EXPORT medAbstractDataTypedImage4D : public medAbstractDataImage4D {

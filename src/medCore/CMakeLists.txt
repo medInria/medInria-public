@@ -24,7 +24,6 @@ project(medCore)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  medDataIndex.h
   medDataManager.h
   medMessageController.h
   medMetaDataHelper.h
@@ -49,7 +48,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractDataImage3D.h
   medAbstractDataImage4D.h
   medAbstractDataMesh.h
-  medAttachedData.h
+  medAttachedData.h   
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -61,6 +60,8 @@ set(${PROJECT_NAME}_HEADERS
   medAbstractDataTypedImage3D.h
   medAbstractDataTypedImage4D.h
   medCoreExport.h
+  medDataIndex.h
+  medAbstractDatabaseItem.h 
 )
 
 
@@ -91,6 +92,7 @@ set(${PROJECT_NAME}_SOURCES
   medAbstractDataImage4D.cpp
   medAbstractDataMesh.cpp
   medAttachedData.cpp
+  medAbstractDatabaseItem.cpp
 )
 
 ## #################################################################

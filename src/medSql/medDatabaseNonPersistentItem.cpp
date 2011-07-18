@@ -22,7 +22,7 @@
 
 medDatabaseNonPersistentItem::medDatabaseNonPersistentItem(void) : QObject(), d(new medDatabaseNonPersistentItemPrivate)
 {
-    d->data = NULL;
+    //d->data = NULL;
 }
 
 medDatabaseNonPersistentItem::~medDatabaseNonPersistentItem(void)

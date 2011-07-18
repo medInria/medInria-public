@@ -16,7 +16,7 @@
 #define MEDABSTRACTDATATYPEDIMAGE2D_H
 
 #include "medCoreExport.h"
-#include <medCore/medAbstractDataImage2D.h>
+#include <medAbstractDataImage2D.h>
 
 template <typename T>
 class MEDCORE_EXPORT medAbstractDataTypedImage2D : public medAbstractDataImage2D {

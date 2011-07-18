@@ -17,7 +17,7 @@
  * 
  */
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 #include "medViewerConfiguration.h"
 

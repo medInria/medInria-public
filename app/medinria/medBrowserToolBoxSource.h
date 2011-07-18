@@ -20,7 +20,7 @@
 #ifndef MEDBROWSERTOOLBOXSOURCE_H
 #define MEDBROWSERTOOLBOXSOURCE_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 
 class medBrowserToolBoxSourcePrivate;
 

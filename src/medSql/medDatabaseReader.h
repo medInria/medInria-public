@@ -22,7 +22,9 @@
 
 #include <QtCore/QObject>
 
-#include <medCore/medDataIndex.h>
+#include <dtkCore/dtkSmartPointer.h>
+
+#include <medDataIndex.h>
 
 class dtkAbstractData;
 
@@ -36,7 +38,7 @@ public:
      medDatabaseReader(const medDataIndex& index);
     ~medDatabaseReader(void);
 
-    dtkAbstractData *run(void);
+    dtkSmartPointer<dtkAbstractData> run(void);
 
     QString getFilePath();
 

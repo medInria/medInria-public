@@ -1,7 +1,7 @@
 #ifndef MEDBROWSERTOOLBOXSETTINGS_H
 #define MEDBROWSERTOOLBOXSETTINGS_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 
 class medBrowserToolBoxSettingsPrivate;
 

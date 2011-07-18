@@ -66,12 +66,15 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
         "}");
 
     QAction *importAction = new QAction(tr("Import"), this);
+    QAction *loadAction = new QAction(tr("Load"), this);
     QAction *viewAction = new QAction(tr("View"), this);
 
     d->finder->addContextMenuAction(importAction);
+    d->finder->addContextMenuAction(loadAction);
     d->finder->addContextMenuAction(viewAction);
 
     connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportClicked()));
+    connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadClicked()));
     connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));
 
     d->filesystem_widget = new QWidget(parent);
@@ -139,6 +142,12 @@ void medFileSystemDataSource::onFileSystemImportClicked(void)
 {
     QFileInfo info(d->finder->selectedPath());
     this->dataReceived(info.absoluteFilePath());
+}
+
+void medFileSystemDataSource::onFileSystemLoadClicked()
+{
+    QFileInfo info(d->finder->selectedPath());
+    emit load(info.absoluteFilePath());
 }
 
 void medFileSystemDataSource::onFileSystemViewClicked()

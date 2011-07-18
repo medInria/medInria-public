@@ -1,8 +1,8 @@
 #ifndef medPacsDataSource_h__
 #define medPacsDataSource_h__
 
-#include <medCore/medAbstractDataSource.h>
-#include <medPacs/medMoveCommandItem.h>
+#include <medAbstractDataSource.h>
+#include <medMoveCommandItem.h>
 
 class medPacsDataSourcePrivate;
 class medToolBox;

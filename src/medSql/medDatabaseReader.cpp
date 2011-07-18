@@ -19,8 +19,8 @@
 
 #include "medDatabaseController.h"
 #include "medDatabaseReader.h"
-#include <medCore/medStorage.h>
-#include <medCore/medAbstractDataImage.h>
+#include <medStorage.h>
+#include <medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -47,7 +47,7 @@ medDatabaseReader::~medDatabaseReader(void)
     d = NULL;
 }
 
-dtkAbstractData *medDatabaseReader::run(void)
+dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
 {
     QVariant patientId = d->index.patientId();
     QVariant   studyId = d->index.studyId();
@@ -95,12 +95,13 @@ dtkAbstractData *medDatabaseReader::run(void)
     }
 
 
-    dtkAbstractData *data = NULL;
+    dtkSmartPointer<dtkAbstractData> data;
 
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
     for (int i = 0; i < readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
+        dtkSmartPointer<dtkAbstractDataReader> dataReader;
+        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
     
         connect(dataReader, SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
     
@@ -110,11 +111,9 @@ dtkAbstractData *medDatabaseReader::run(void)
 
             dataReader->read(filename);
             data = dataReader->data();
-            delete dataReader;
             break;
         }
 
-        delete dataReader;
     }
     
     if (data) {

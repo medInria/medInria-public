@@ -21,7 +21,7 @@
 #define MEDABSTRACTMESHDATA_H
 
 #include "medCoreExport.h"
-#include <medCore/medAbstractData.h>
+#include <medAbstractData.h>
 
 class medAbstractDataVertex;
 class medAbstractDataEdge;
