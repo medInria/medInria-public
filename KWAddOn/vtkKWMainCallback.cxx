@@ -23,6 +23,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkDataManager.h>
 #include <vtkMetaDataSet.h>
 #include <vtkKWPageView.h>
+#include <vtkKWPreviewPage.h>
 #include <vtkKWNotebook.h>
 #include <vtkKWFrame.h>
 
@@ -39,7 +40,6 @@ vtkKWMainCallback::~vtkKWMainCallback()
   if (this->Application)
     this->Application->UnRegister (this);
 }
-
 
 void vtkKWMainCallback::SetApplication (vtkKWApplication* application)
 {
@@ -74,9 +74,19 @@ void vtkKWMainCallback::Execute(vtkObject* caller, unsigned long event, void* ca
       return;
     vtkKWPageView* pageview =
       vtkKWPageView::SafeDownCast(page->GetNthChild (0));
-    if (!pageview)
-      return;
-    pageview->EnableViewsOn();
+    if (pageview)
+      pageview->EnableViewsOn();
+    else
+    {
+      vtkKWPreviewPage* pageview =
+	vtkKWPreviewPage::SafeDownCast(page->GetNthChild (0));
+      if (pageview)
+      {
+	pageview->EnableViewsOn();
+	pageview->Render();
+      }
+    }
+    
   }
   
   

@@ -54,13 +54,16 @@ vtkKWPreviewPage::vtkKWPreviewPage()
   this->InternalFrame = vtkKWFrameWithScrollbar::New();
 
   this->ViewList = vtkImageViewCollection::New();
+  this->ViewList->LinkZoomOff();
+  this->ViewList->LinkPanOff();
+  
   // this->Pool->LinkCameraOn();
   // this->Pool->LinkCurrentPointOff();
 
   this->GlobalView = vtkImageView3D::New();
-  this->GlobalView->SetBackground (1,1,1);
   this->GlobalView->SetShowAnnotations (false);
-
+  this->GlobalView->ShowScalarBarOff();
+  
   this->ViewList->AddItem (this->GlobalView);
 
   this->GlobalRenderWidget = vtkKWRenderWidget::New();
@@ -119,24 +122,27 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
 {
   vtkImageView2D* view = vtkImageView2D::New();
   vtkKWRenderWidget* widget = vtkKWRenderWidget::New();
+
+  std::cout<<"adding image"<<std::endl;
   
   widget->SetParent (this->InternalFrame->GetFrame());
   widget->Create();
   //widget->SetWidth (800);
   //widget->SetHeight (800);
   widget->SetBorderWidth (1);
-
-  view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
+  widget->SetRenderState(0);
+  
+  this->ConfigureView (view, widget);  
   
   view->SetInput (image);
   view->GetCornerAnnotation()->SetText (1, name);
   view->SetBackground (0,0,0);
-  view->SetShowAnnotations (false);
+  view->ShowAnnotationsOff ();
+  view->ShowScalarBarOff();
+  view->ShowRulerWidgetOff();
   
   if (matrix)
     view->SetOrientationMatrix (matrix);
-  view->ResetCurrentPoint();
-  view->ResetWindowLevel();
   
   this->ViewList->AddItem (view);
   this->RenderWidgetList->AddItem (widget);
@@ -146,9 +152,8 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
   view->Delete();
   widget->Delete();
 
-  //this->Update();
-  
-  
+  this->Update();
+  this->ViewList->SyncReset();
 }
 
 //----------------------------------------------------------------------------
@@ -170,6 +175,18 @@ void vtkKWPreviewPage::RemovePreviewImage (vtkImageData* image)
   this->RenderWidgetList->RemoveItem (widget);
 }
 
+//----------------------------------------------------------------------------
+void vtkKWPreviewPage::SetEnableViews(unsigned int arg)
+{
+  std::cout<<"enabling previews: "<<arg<<std::endl;
+  
+  this->GlobalRenderWidget->SetRenderState(arg);
+  for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
+  {
+    vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
+    widget->SetRenderState(arg);
+  }
+}
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::Render (void)
@@ -182,6 +199,8 @@ void vtkKWPreviewPage::Render (void)
       continue;
     widget->Render();
   }
+  if (this->GlobalRenderWidget->IsMapped())
+    this->GlobalRenderWidget->Render();
 }
 
 //----------------------------------------------------------------------------
@@ -273,52 +292,35 @@ void vtkKWPreviewPage::CreateWidget()
   this->PackSelf();
 
   this->ConfigureView (this->GlobalView, this->GlobalRenderWidget);
+  this->GlobalView->SetBackground (1,1,1);
+  
 }
 
 
 void vtkKWPreviewPage::PackSelf()
 {
-  std::cout<<"a"<<std::endl;
-  
-
   if (!this->IsCreated())
   {
     //vtkErrorMacro("don't call this method before calling Create() : no effect !");
     return;
   }
-  
-  std::cout<<"b"<<std::endl;
+
   this->InternalFrame->GetFrame()->UnpackChildren();
-  std::cout<<"c"<<std::endl;
-
   unsigned int N = this->GetNumberOfPreviews();
-  std::cout<<"c"<<std::endl;
-
-  if (N > 16)
-  {
-    this->InternalFrame->VerticalScrollbarVisibilityOn();
-    this->InternalFrame->HorizontalScrollbarVisibilityOn();
-  }
-  else
-  {
-    this->InternalFrame->VerticalScrollbarVisibilityOff();
-    this->InternalFrame->HorizontalScrollbarVisibilityOff();
-  }
-  std::cout<<"d"<<std::endl;
+  this->InternalFrame->VerticalScrollbarVisibilityOff();
+  this->InternalFrame->HorizontalScrollbarVisibilityOff();
+  // if (N > 3)
+  // {
+  //   this->InternalFrame->VerticalScrollbarVisibilityOn();
+  // }
 
   unsigned int NumberOfCols = 0;
-  if (N <= 1)
-    NumberOfCols = N;
-  else if (N <= 4)
-    NumberOfCols = 2;
-  else if (N <= 9)
-    NumberOfCols = 3;
+  if (N == 0)
+    NumberOfCols = 1;
   else
-    NumberOfCols = 4;    
+    NumberOfCols = 2;
   
-  unsigned int iter_col = 0;
   unsigned int iter_row = 0;
-
   unsigned int size = 350;
   vtkKWTopLevel* parent = this->GetParentTopLevel();
   
@@ -326,69 +328,36 @@ void vtkKWPreviewPage::PackSelf()
   {
     size = (unsigned int)( (double)(parent->GetWidth() * 4.0)/(double)(4.0 * 5.0) );
   }
-  std::cout<<"e, N = "<<N<<std::endl;
 
   for (unsigned int i=0; i<N; i++)
   {
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
-    if (N > 16)
-    {
-      widget->SetWidth (size);
-      widget->SetHeight (size);
-    }
 
     this->Script ("grid %s -column %u -row %u -sticky news",
-		  widget->GetWidgetName(), iter_col, iter_row);
+		  widget->GetWidgetName(), 0, iter_row);
 
-    iter_col++;
-    
-    if (iter_col >= NumberOfCols)
-    {
-      iter_row++;
-      iter_col = 0;
-    }
+    iter_row++;    
   }
-
-  std::cout<<"1"<<std::endl;
+  unsigned NumberOfRows = iter_row;
 
   vtkKWRenderWidget* widget = this->GlobalRenderWidget;
-  std::cout<<"2"<<std::endl;
-  if (N > 16)
-  {
-    widget->SetWidth (size);
-    widget->SetHeight (size);
-  }
-  std::cout<<"3"<<std::endl;
 
-  this->Script ("grid %s -column %u -row %u -sticky news",
-		widget->GetWidgetName(), iter_col, iter_row);
-  std::cout<<"4"<<std::endl;
+  this->Script ("grid %s -column %u -row %u -rowspan %u -sticky news",
+		widget->GetWidgetName(), 1, 0, iter_row+1);
 
-  iter_col++;
+  std::cout<<"row : "<<NumberOfRows<<std::endl;
+  std::cout<<"col : "<<NumberOfCols<<std::endl;
   
-  if (iter_col >= NumberOfCols)
-  {
-    iter_row++;
-    iter_col = 0;
-  }
-
-  std::cout<<"done"<<std::endl;
-
-  unsigned NumberOfRows = iter_row+1;
-  if ((N == 1) || (N == 2) || (N == 4) || (N == 9) || (N == 16))
-    NumberOfRows--;  
-
-  for (unsigned int i=0; i<NumberOfCols; i++)
-  {
-    this->Script ("grid columnconfigure %s %d -weight 1",
-		  this->InternalFrame->GetFrame()->GetWidgetName(), i);
-  }
   for (unsigned int i=0; i<NumberOfRows; i++)
   {
     this->Script ("grid rowconfigure %s %d -weight 1",
-		  this->InternalFrame->GetFrame()->GetWidgetName(), i);
+  		  this->InternalFrame->GetFrame()->GetWidgetName(), i);
   }
-
+  
+  this->Script ("grid columnconfigure %s 0 -weight 2",
+  		  this->InternalFrame->GetFrame()->GetWidgetName());
+  this->Script ("grid columnconfigure %s 1 -weight 5",
+  		  this->InternalFrame->GetFrame()->GetWidgetName());
 
 }
 

@@ -354,7 +354,7 @@ void vtkKWMainWindowInteractor::CreateWidget()
   // first creation :
   if (this->GetViewNotebook()->GetNumberOfPages() == 0 )
   {
-    bool showpreview = true;
+    bool showpreview = false;
     
     char buffer[1024];
     bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowPreview", buffer);
@@ -362,15 +362,16 @@ void vtkKWMainWindowInteractor::CreateWidget()
     {
       if (*buffer)
       {
-	std::istringstream is;
-	is.str (buffer);
-	int val = 0;
-	is >> val;
-	showpreview = val;
+    	std::istringstream is;
+    	is.str (buffer);
+    	int val = 0;
+    	is >> val;
+    	showpreview = val;
       }
     }
     
-    this->CreatePreviewPage();
+    if (showpreview)
+      this->CreatePreviewPage();
   }
   
 
@@ -378,7 +379,6 @@ void vtkKWMainWindowInteractor::CreateWidget()
   {
     app->GetSplashScreen()->SetProgressMessage("Setting layout properties...");
   }
-
   
   this->MainCallback->SetApplication (this->GetApplication());
 
@@ -515,8 +515,6 @@ vtkKWToolBox* vtkKWMainWindowInteractor::GetToolbox(unsigned int id)
   return this->GetToolboxManager()->GetToolbox (id);
 }
 
-
-
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::CreateAliases ()
 {
@@ -540,8 +538,6 @@ void vtkKWMainWindowInteractor::CreateAliases ()
     app->Script("set m_v3 [$m_multiviews GetView3]");
     app->Script("set m_v4 [$m_multiviews GetView4]");
   }
-  
-
 }
 
 //----------------------------------------------------------------------------
@@ -1010,7 +1006,7 @@ void vtkKWMainWindowInteractor::Update()
       metadatasetlist[i]->SetProperty (pageview->GetView4()->GetVolumeProperty());
 
       char buffer[1024];
-      bool do_preview = true;
+      bool do_preview = false;
       
       bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowPreview", buffer);
       if (valid)
@@ -1028,15 +1024,12 @@ void vtkKWMainWindowInteractor::Update()
 
       if (do_preview)
       {
-	this->PreviewPage->AddPreviewImage (vtkImageData::SafeDownCast(metadatasetlist[i]->GetDataSet() ), metadatasetlist[i]->GetName());
+	this->PreviewPage->AddPreviewImage (vtkImageData::SafeDownCast(metadatasetlist[i]->GetDataSet() ), metadatasetlist[i]->GetName(), metaimage->GetOrientationMatrix());
       }
       
     }
     else
     {
-//       // some debugging tests 
-//       metadatasetlist[i]->GetDataSet()->RequestExactExtentOn();
-
       // recovering the page that is supposed to contain the dataset
       pageview = this->GetPage(metadatasetlist[i]->GetTag ());
 
@@ -1077,17 +1070,9 @@ void vtkKWMainWindowInteractor::Update()
 
   // Updating the manager widget so that the freshly added
   // dataset appear in it
-//   if (this->ManagerDialog->IsCreated())
-//   {
-//     vtkKWDataManagerWidget* wid = vtkKWDataManagerWidget::SafeDownCast (this->ManagerDialog->GetNthChild (0));
-//     if (wid)
-//       wid->Update();
-//   }
-
-// //   // ??
   this->ManagerWidget->Update();
 
-  bool dopreview = 1;
+  bool dopreview = false;
   char buffer[1024];
   bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowPreview", buffer);
   
@@ -1109,7 +1094,7 @@ void vtkKWMainWindowInteractor::Update()
     dopreview = 0;
 
   if (dopreview)
-    this->PreviewPage->Update();      
+    this->PreviewPage->Update();
 
 }
 
@@ -1826,9 +1811,6 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
     return;
   }
 
-
-  
-
   unsigned int maxnumber = this->GetDataManager()->GetSequencesMaxNumber();
 
   if (this->GetCurrentPage()->GetIsFullScreen() == 4)
@@ -1915,9 +1897,6 @@ void vtkKWMainWindowInteractor::UpdateToTime(double time)
     }
   }
 }
-
-
-
 
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::Render()
