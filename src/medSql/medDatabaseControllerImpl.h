@@ -103,6 +103,7 @@ public slots:
 
 protected slots:
     void forwardMessage(QString);
+    void showOpeningError(QObject *sender);
 
 private:
     // helper to create tables

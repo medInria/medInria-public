@@ -276,11 +276,18 @@ QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataInd
     connect(reader.data(), SIGNAL(success(QObject *)), reader.data(), SLOT(deleteLater()));
     connect(reader.data(), SIGNAL(failure(QObject *)), reader.data(), SLOT(deleteLater()));
 
+    connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
+
     medMessageController::instance()->showProgress(reader.data(), "Opening database item");
 
     dtkAbstractData* data = reader->run();
     QSharedPointer<dtkAbstractData> ret(data);
     return ret;
+}
+
+void medDatabaseControllerImpl::showOpeningError(QObject *sender)
+{
+    medMessageController::instance()->showError(sender, "Opening item failed.", 3000);
 }
 
 QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId)

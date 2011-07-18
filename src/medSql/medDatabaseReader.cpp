@@ -106,7 +106,10 @@ dtkAbstractData *medDatabaseReader::run(void)
             QFileInfo fileinfo(filename);
 
             if(!fileinfo.exists())
+            {
+                emit failure(this);
                 return NULL;
+            }
 
             filenames << filename;
         }
