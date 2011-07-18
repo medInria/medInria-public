@@ -96,9 +96,22 @@ dtkAbstractData *medDatabaseReader::run(void)
     {
         bool isIndexed = query.value(4).toBool();
 
-        if (isIndexed) {
-            filenames << query.value(2).toString();
-        } else {
+        if (isIndexed)
+        {
+            QString filename = query.value(2).toString();
+
+
+            // if the file is indexed the chanced that is not there anymore are higher
+            // so we check for existence and return null if they are not there anymore
+            QFileInfo fileinfo(filename);
+
+            if(!fileinfo.exists())
+                return NULL;
+
+            filenames << filename;
+        }
+        else
+        {
             filenames << medStorage::dataLocation() + query.value(3).toString();
         }
     }

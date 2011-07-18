@@ -403,9 +403,16 @@ void medMainWindow::onEditSettings()
 
 void medMainWindow::open(const medDataIndex& index)
 {
-    this->switchToViewerArea();
-
-    d->viewerArea->open(index);
+    if(d->viewerArea->open(index))
+    {
+        this->switchToViewerArea();
+    }
+    else
+    {
+        // something went wrong while opening
+        // we bubble down the info
+        d->browserArea->onOpeningFailed(index);
+    }
 }
 
 void medMainWindow::open(const QString& file)

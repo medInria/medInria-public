@@ -188,6 +188,11 @@ void medBrowserArea::onPartialImportAttempted(const QString& message)
     msgBox.exec();
 }
 
+void medBrowserArea::onOpeningFailed(const medDataIndex& index)
+{
+    d->dbSource->onOpeningFailed(index);
+}
+
 void medBrowserArea::onDataImport(dtkAbstractData *data)
 {
     QString patientName = data->metaDataValues(tr("PatientName"))[0];

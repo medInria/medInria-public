@@ -99,7 +99,7 @@ void medDatabaseDataSource::onFilter( const QString &text, int column )
     d->proxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
 }
 
-
-
-
-
+void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index)
+{
+    d->view->onOpeningFailed(index);
+}

@@ -26,6 +26,7 @@
 
 class medDataIndex;
 class medDatabaseModel;
+class medDatabaseViewPrivate;
 
 class MEDSQL_EXPORT medDatabaseView : public QTreeView
 {
@@ -56,12 +57,17 @@ public slots:
     void onMenuRemoveClicked(void);
     void selectionChanged(const QModelIndex&, const QModelIndex&);
 
+    void onOpeningFailed(const medDataIndex& index);
+
 protected slots:
     void updateContextMenu(const QPoint&);
 
 private slots:
     void onItemClicked(const QModelIndex& index);
     void onItemDoubleClicked(const QModelIndex& index);
+
+private:
+    medDatabaseViewPrivate *d;
 };
 
 #endif

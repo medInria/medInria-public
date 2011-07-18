@@ -207,10 +207,10 @@ void medViewerArea::split(int rows, int cols)
         d->current_configuration->currentViewContainer()->split(rows, cols);
 }
 
-void medViewerArea::open(const medDataIndex& index)
+bool medViewerArea::open(const medDataIndex& index)
 {
     if(!((medDataIndex)index).isValid())
-        return;
+        return false;
     
     this->switchToPatient(index);
     
@@ -223,7 +223,7 @@ void medViewerArea::open(const medDataIndex& index)
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
         if ( data.isNull() )
-            return;
+            return false;
         
         if(!view) 
         {
@@ -240,7 +240,7 @@ void medViewerArea::open(const medDataIndex& index)
         if(!view)
         {
             qDebug() << "Unable to create a v3dView";
-            return;
+            return false;
         }
         
         // another hash?!
@@ -271,7 +271,7 @@ void medViewerArea::open(const medDataIndex& index)
             d->current_configuration->currentViewContainer()->setUpdatesEnabled (true);
         }
         
-        return;
+        return true;
     }
     
     if(((medDataIndex)index).isValidForPatient()) 
@@ -299,6 +299,8 @@ void medViewerArea::open(const medDataIndex& index)
         }
         
     }
+
+    return true;
 }
 
 void medViewerArea::open(const QString& file)

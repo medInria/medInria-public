@@ -79,6 +79,13 @@ public slots:
     
     void onPartialImportAttempted(const QString& message);
 
+    /*
+     * Function to call when (after emitting opening signal)
+     * the db item fail to open. This will make changes in the GUI
+     * to let the user know.
+     */
+    void onOpeningFailed(const medDataIndex& index);
+
     /**
      * @brief Export data from a selected medDataIndex in a data source.
      *

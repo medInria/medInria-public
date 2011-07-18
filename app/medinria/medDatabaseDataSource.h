@@ -28,6 +28,8 @@ public:
 
     void update();
 
+    void onOpeningFailed(const medDataIndex& index);
+
 signals:
     void open(const medDataIndex&);
 

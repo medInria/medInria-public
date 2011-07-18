@@ -170,8 +170,8 @@ QSharedPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
     {
         qWarning() << "unable to open images with index:" << index.asString();
     }
-    return dtkdata;
 
+    return dtkdata;
 }
 
 //-------------------------------------------------------------------------------------------------------
