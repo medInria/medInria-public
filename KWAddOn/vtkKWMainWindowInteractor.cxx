@@ -1838,17 +1838,13 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
   this->SnapshotHandler->SetTimeSettings (timemin, timemax, maxnumber);
   
   this->SnapshotHandler->Update();
-
-  //vtkKWPopupWarningMessage (this, "Careful : Keep the view clear \nwhile writing the movie !\n  The writing process also might cause some trouble on UNIX systems");
-    
+   
   this->SnapshotHandler->Invoke();
 
   if (view)
     view->ShowImageAxisOn();
 
 }
-
-
 
 
 //----------------------------------------------------------------------------
@@ -1874,7 +1870,6 @@ void vtkKWMainWindowInteractor::UpdateToTime(double time)
       double newpos[3] = {0,0,0};
       vtkLandmark* landmark = 0;
       double id = -1;
-//       bool valid = 0;
       vtkMetaDataSet* metadataset = this->ManagerWidget->GetSelectedMetaDataSet();
       if (metadataset && metadataset->GetDataSet())
       {
