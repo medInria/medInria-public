@@ -196,11 +196,8 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, vtkIm
   this->Script("pack %s -fill both -side top -expand t", 
 	       viewframe->GetWidgetName());
   viewframe->SetImage (image, matrix);
-  std::cout<<"raising page : "<<id<<std::endl;  
   this->GetViewNotebook()->RaisePage (id);
-  std::cout<<"raising page callback: "<<id<<std::endl;  
   this->GetViewNotebook()->RaiseCallback (id);
-  std::cout<<"raising page : "<<id<<"...  done." <<std::endl;  
   
   viewframe->GetView4()->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
   viewframe->Delete();

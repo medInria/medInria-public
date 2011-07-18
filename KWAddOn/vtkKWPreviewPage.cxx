@@ -65,7 +65,6 @@ vtkKWPreviewPage::vtkKWPreviewPage()
   this->ViewList->AddItem (this->GlobalView);
 
   this->GlobalRenderWidget = vtkKWRenderWidget::New();
-  this->GlobalRenderWidget->RemoveBindings();
   this->GlobalRenderWidget->SetRenderState(0);
 
   this->RenderWidgetList = vtkCollection::New();
@@ -129,7 +128,6 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
   //widget->SetHeight (800);
   widget->SetBorderWidth (1);
   widget->SetRenderState(0);
-  widget->RemoveBindings();
 
   this->ConfigureView (view, widget);
   
@@ -178,19 +176,10 @@ void vtkKWPreviewPage::RemovePreviewImage (vtkImageData* image)
 void vtkKWPreviewPage::SetEnableViews(unsigned int arg)
 {
   this->GlobalRenderWidget->SetRenderState(arg);
-  if (arg)
-    this->GlobalRenderWidget->AddBindings();
-  else
-    this->GlobalRenderWidget->RemoveBindings();
-    
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
     widget->SetRenderState(arg);
-    if (arg)
-      widget->AddBindings();
-    else
-      widget->RemoveBindings();
   }
 }
 
@@ -371,9 +360,6 @@ void vtkKWPreviewPage::PackSelf()
   this->Script ("grid %s -column %u -row %u -rowspan %u -sticky news",
 		widget->GetWidgetName(), 1, 0, iter_row+1);
 
-  std::cout<<"row : "<<NumberOfRows<<std::endl;
-  std::cout<<"col : "<<NumberOfCols<<std::endl;
-  
   for (unsigned int i=0; i<NumberOfRows; i++)
   {
     this->Script ("grid rowconfigure %s %d -weight 1",
