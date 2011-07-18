@@ -115,6 +115,7 @@ void vtkKWPreviewPage::ConfigureView(vtkImageView* view, vtkKWRenderWidget* widg
   view->SetRenderWindow (widget->GetRenderWindow());
 }
 
+
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, vtkMatrix4x4* matrix )
 {
@@ -144,12 +145,12 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
   this->RenderWidgetList->AddItem (widget);
 
   this->GlobalView->AddExtraPlane (view->GetImageActor());
-  widget->SetBinding("<Expose>", this, "Render");
-
+  
   view->Delete();
   widget->Delete();
 
   this->Update();
+  this->ViewList->SyncReset();
 }
 
 //----------------------------------------------------------------------------
