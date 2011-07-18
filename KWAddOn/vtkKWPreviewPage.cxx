@@ -213,9 +213,8 @@ void vtkKWPreviewPage::Render (void)
     // {
     //   std::cout<<"and has no input "<<std::endl<<std::flush;
     // }
-    
-    view->Render();
-    widget->Render();
+    if (widget->IsMapped())
+      view->Render();
   }
   if (this->GlobalRenderWidget->IsMapped())
     this->GlobalRenderWidget->Render();
