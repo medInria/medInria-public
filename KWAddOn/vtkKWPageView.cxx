@@ -362,7 +362,7 @@ void vtkKWPageView::SetImage (vtkImageData* image, vtkMatrix4x4* orientationmatr
   this->View3->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_CORONAL);
   
   m_Pool->SyncReset();
-  // m_Pool->SyncRender();
+  m_Pool->SyncRender();
   
   this->LandmarkManager->InteractionOn();
 }

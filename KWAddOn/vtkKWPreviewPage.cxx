@@ -186,6 +186,13 @@ void vtkKWPreviewPage::SetEnableViews(unsigned int arg)
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
     widget->SetRenderState(arg);
   }
+  if (arg)
+  {
+    for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
+      this->ViewList->GetItemAsObject (i)->Modified();
+    this->GlobalView->Modified();
+  }
+  
 }
 
 //----------------------------------------------------------------------------
@@ -197,6 +204,7 @@ void vtkKWPreviewPage::Render (void)
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
     if (!widget->IsMapped())
       continue;
+    std::cout<<"rendering preview no. "<<i<<std::endl;
     widget->Render();
   }
   if (this->GlobalRenderWidget->IsMapped())
@@ -208,7 +216,6 @@ void vtkKWPreviewPage::SetOrientationMode (int mode)
 {
 //   this->Render();  
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::SetInteractionMode (int mode)
@@ -240,8 +247,6 @@ void vtkKWPreviewPage::Update (void)
   this->Render();
 }
 
-
-
 //----------------------------------------------------------------------------
 vtkImageView2D* vtkKWPreviewPage::FindView(vtkImageData* imagedata, int &cookie)
 {
@@ -260,7 +265,6 @@ vtkImageView2D* vtkKWPreviewPage::FindView(vtkImageData* imagedata, int &cookie)
 
   return NULL;
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::CreateWidget()

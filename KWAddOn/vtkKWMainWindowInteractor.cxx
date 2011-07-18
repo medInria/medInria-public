@@ -303,7 +303,6 @@ void vtkKWMainWindowInteractor::SetDataManagerWidget (vtkKWDataManagerWidget* wi
   {
     this->ManagerWidget->Register(this);
   }
-  
 }
 
 //----------------------------------------------------------------------------
@@ -1018,7 +1017,10 @@ void vtkKWMainWindowInteractor::Update()
       	  int val = 0;
       	  is >> val;
       	  if (!val)
-      	    do_preview = false;	  
+      	    do_preview = false;
+	  else
+     	    do_preview = true;
+	    
       	}
       }    
 
