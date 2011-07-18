@@ -150,7 +150,7 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
   widget->Delete();
 
   this->Update();
-  this->ViewList->SyncReset();
+  this->Render();
 }
 
 //----------------------------------------------------------------------------
@@ -202,19 +202,7 @@ void vtkKWPreviewPage::Render (void)
     if (!widget->IsMapped())
       continue;
     vtkImageView* view = this->ViewList->GetItem (i+1);
-    // view->Reset();
-    // view->Modified();
-    // if (view->GetInput())
-    // {
-    //   view->GetInput()->Modified();
-    //   std::cout<<"and has input "<<view->GetInput()<<std::endl<<std::flush;
-    // }
-    // else
-    // {
-    //   std::cout<<"and has no input "<<std::endl<<std::flush;
-    // }
-    if (widget->IsMapped())
-      view->Render();
+    view->Render();
   }
   if (this->GlobalRenderWidget->IsMapped())
     this->GlobalRenderWidget->Render();
