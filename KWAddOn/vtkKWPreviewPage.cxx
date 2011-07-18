@@ -128,7 +128,7 @@ void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, v
   //widget->SetHeight (800);
   widget->SetBorderWidth (1);
   widget->SetRenderState(0);
-
+  
   this->ConfigureView (view, widget);
   
   view->SetInput (image);

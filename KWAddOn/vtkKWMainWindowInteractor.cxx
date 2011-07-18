@@ -211,7 +211,6 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, itk::
   if (!name)
     return NULL;
 
-
   this->PageNumberIncrement++;
   int id = this->GetViewNotebook()->AddPage (name);
   this->GetViewNotebook()->SetPageTag (id, 0);
@@ -652,6 +651,9 @@ void vtkKWMainWindowInteractor::OnMenuFileOpen()
   dialog->Delete();
   
   this->Update();
+
+  this->GetViewNotebook()->RaisePage(0);
+  this->GetViewNotebook()->RaiseCallback(0);
 }
 
 
