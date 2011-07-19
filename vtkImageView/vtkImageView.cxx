@@ -311,7 +311,7 @@ void vtkImageView::SetRenderer(vtkRenderer *arg)
 //----------------------------------------------------------------------------
 void vtkImageView::Render()
 {
-  if (this->RenderWindow && this->RenderWindow->GetMapped())
+  if (this->RenderWindow)
   {
     if ( this->GetColorWindow () == VTK_DOUBLE_MAX ) {
       
