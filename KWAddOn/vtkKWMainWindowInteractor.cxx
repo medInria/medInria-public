@@ -652,8 +652,8 @@ void vtkKWMainWindowInteractor::OnMenuFileOpen()
   
   this->Update();
 
-  this->GetViewNotebook()->RaisePage(0);
-  this->GetViewNotebook()->RaiseCallback(0);
+  // this->GetViewNotebook()->RaisePage(0);
+  // this->GetViewNotebook()->RaiseCallback(0);
 }
 
 

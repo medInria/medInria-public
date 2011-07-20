@@ -223,13 +223,7 @@ void vtkKWDICOMImporter2::CreateMultiColumnList()
   this->MultiColumnList->SetHeight(15);
 
   mcl->Delete();
-  
-  
-  
-
 }
-
-
 
 //----------------------------------------------------------------------------
 void vtkKWDICOMImporter2::CreateButtons ()
@@ -256,29 +250,6 @@ void vtkKWDICOMImporter2::CreateButtons ()
   menu->SetBalloonHelpString("Open the DICOM root directory");
   menubutton->Delete();
 
-//   this->OpenDirectoryButton->SetParent(this->ButtonFrame);
-//   this->OpenDirectoryButton->Create();
-//   this->OpenDirectoryButton->SetText(ks_("DICOM Importer|Button|Open the DICOM root directory"));
-//   this->OpenDirectoryButton->SetBalloonHelpString(this->OpenDirectoryButton->GetText());
-//   this->OpenDirectoryButton->SetImageToPixels(image_cdload, image_cdload_width, image_cdload_height, image_cdload_pixel_size, image_cdload_length);
-//   this->OpenDirectoryButton->SetWidth(width);
-//   this->OpenDirectoryButton->SetCommand(this, "OpenDirectoryCallback");
-
-//   vtkKWPushButton* openfilebutton = vtkKWPushButton::New();
-  
-//   openfilebutton->SetParent(this->ButtonFrame);
-//   openfilebutton->Create();
-//   openfilebutton->SetText(ks_("DICOM Importer|Button|Open a single file..."));
-//   openfilebutton->SetBalloonHelpString(openfilebutton->GetText());
-//   openfilebutton->SetImageToPixels(image_fileopen, image_fileopen_width, image_fileopen_height, image_fileopen_pixel_size, image_fileopen_length);
-//   openfilebutton->SetWidth(width);
-//   openfilebutton->SetCommand(this, "OpenFileCallback");
-
-//   this->Script("pack %s -side left -expand false -anchor sw -fill none -padx 5 -pady 2",
-// 	       openfilebutton->GetWidgetName());
-//   openfilebutton->Delete();
-  
-  
   this->ResetButton->SetParent(this->ButtonFrame);
   this->ResetButton->Create();
   this->ResetButton->SetText(ks_("Reset"));
@@ -1084,108 +1055,35 @@ void vtkKWDICOMImporter2::SetOutputsAsVolumes(void)
       continue;
     }
 
-//     if (outputVolumes[i]->IsSequence())
-//     {
-//       // Instanciate the 2D+t -> 3D reshaper
-	
-//       itk::ImageSeriesReshapeFilter<itk::GDCMImporter::ImageType, itk::GDCMImporter::ImageType >::Pointer reshaper =
-// 	itk::ImageSeriesReshapeFilter<itk::GDCMImporter::ImageType, itk::GDCMImporter::ImageType>::New();
-      
-//       std::vector<itk::GDCMImporter::ImageType::Pointer> ReshaperInputList;
-//       std::vector<itk::GDCMImporter::ImageType::Pointer> ReshaperOutputList;
-      
-//       ReshaperInputList.push_back(outputVolumes[i]->GetImage());
-//       reshaper->SetInputImageList(ReshaperInputList);
-//       reshaper->SetInterlaceSpacing (1.0);
-//       reshaper->SetInput(ReshaperInputList[0]);
-//       reshaper->Update();
-      
-//       ReshaperOutputList = reshaper->GetOutputImageList();
-      
-//       vtkMetaDataSetSequence* seq = vtkMetaDataSetSequence::New();
+    vtkMetaDataSet* metadataset = 0;    
+    vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::New();
 
-//       double duration = 2;
-	
-//       unsigned int tagid = 1000;
-//       if (dcmvolume->GetTagManager()->HasTag(0x0018, 0x0072, tagid))
-//       {
-// 	double T = atof (dcmvolume->GetTagManager()->GetTagValue(tagid));
-// 	std::cout<<"found the extended duration : "<<(double)(T)<<" sec"<<std::endl;
-// 	duration = T;
-//       }
-//       else if (dcmvolume->GetTagManager()->HasTag(0x0018, 0x1088, tagid))
-//       {
-// 	double T = 60.0/atof (dcmvolume->GetTagManager()->GetTagValue(tagid));
-// 	std::cout<<"found the heart rate : "<<(double)60/(double)(T)<<" pulse/min"<<std::endl;
-// 	duration = T;
-//       }
-	
-//       seq->SetSequenceDuration (duration);
-
-//       // 	std::cout<<"got "<<ReshaperOutputList.size()<<std::endl;
-//       for (unsigned int j=0; j<ReshaperOutputList.size(); j++)
-//       {
-// 	vtkMetaImageData* metadataset = vtkMetaImageData::New();
-	
-// 	try
-// 	{
-// 	  //metadataset->SetDataSetAsItkImage(ReshaperOutputList[j]);
-// 	  metadataset->SetItkImage<itk::GDCMImporter::ImageComponentType>(ReshaperOutputList[j]);
-// 	}
-// 	catch (vtkErrorCode::ErrorIds)
-// 	{
-// 	  metadataset->Delete();
-// 	  continue;
-// 	}
-	
-// 	double time = (double)j*(duration/(double)(ReshaperOutputList.size()));
-// 	std::ostringstream name;
-// 	name<<outputVolumes[i]->GetDescription().c_str()<<"("<<j<<")";
-	
-// 	metadataset->SetName(name.str().c_str());
-// 	metadataset->SetTime(time);
-// 	metadataset->SetDicomDictionary (outputVolumes[i]->GetImage()->GetMetaDataDictionary());
-// 	try
-// 	{
-// 	  seq->AddMetaDataSet(metadataset);
-// 	}
-// 	catch (vtkErrorCode::ErrorIds)
-// 	{
-// 	  metadataset->Delete();
-// 	  continue;
-// 	}
-// 	metadataset->Delete();
-//       }
-      
-//       seq->SetName(outputVolumes[i]->GetDescription().c_str());
-//       this->OutputList.push_back (seq);
-//       // to do : better
-//       // seq->Delete();
-//     }
-//     else
-//     {
-      
-    vtkMetaDataSetSequence* metadataset = vtkMetaDataSetSequence::New();
     try
     {
-      
-      // 	  metadataset->SetDataSetAsItkImage(outputVolumes[i]->GetImage());
-      metadataset->SetITKDataSet<ImageComponentType>(static_cast<ImageType*>(dcmvolume));
-      
+      sequence->SetITKDataSet<ImageComponentType>(static_cast<ImageType*>(dcmvolume));
     }
     catch (vtkErrorCode::ErrorIds)
     {
       vtkWarningMacro(<<"error when parsing volume "<<dcmvolume->GetName()<<endl);
-      metadataset->Delete();
+      sequence->Delete();
       continue;
     }
     
-    // metadataset->SetDicomDictionary (dcmvolume->GetMetaDataDictionary());
+    unsigned int* size = dcmvolume->GetSize();
+    if (size[3] > 1)
+    {
+      metadataset = sequence;
+    }
+    else
+    {
+      vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast (sequence->GetMetaDataSet ((unsigned int)(0)));
+      metadataset = metaimage;
+    }    
+      
     metadataset->SetName (dcmvolume->GetName());
     this->OutputList.push_back (metadataset);
 
     dcmvolume->Initialize();
-      
   }
     
   vtksys_stl::string end_msg(win->GetStatusText());

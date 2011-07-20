@@ -380,14 +380,13 @@ namespace itk
     
     return size;
   }
-  
-  
-
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
   GDCMImporter3<TPixelType>::GDCMImporter3()
   {
+    itk::MultiThreader::SetGlobalDefaultNumberOfThreads(2);
+    
     m_InputDirectory  = "";
     m_IsScanned = 0;
     
