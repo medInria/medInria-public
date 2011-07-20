@@ -150,6 +150,11 @@ public:
     */
     static size_t getOptimalMemoryThreshold();
 
+    /**
+     * Clear all items stored in the data manager
+     */
+    void clearCache();
+
 signals:
     /**
     * This signal is emitted whenever a data was added in either the persistent

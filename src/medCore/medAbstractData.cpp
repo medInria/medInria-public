@@ -12,11 +12,13 @@ public:
 medAbstractData::medAbstractData( dtkAbstractData *parent /*= 0*/ ) : dtkAbstractData(parent), d(new medAbstractDataPrivate)
 {
     d->isTrueVolumetric = false;
+    qDebug() << "constructing medAbstractData: ";
 }
 
 
 medAbstractData::~medAbstractData( void )
 {
+    qDebug() << "deleting data with index " << d->index.asString();
     delete d;
     d = NULL;
 }

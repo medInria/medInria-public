@@ -463,10 +463,10 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
 void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data )
 {
     // set a reference to our view that gets destroyed when the view terminates
-    d->sharedData = data;
+    //d->sharedData = data;
 
-    dtkAbstractData *dtkdata = d->sharedData.data();
-    this->setData(dtkdata);
+    //dtkAbstractData *dtkdata = d->sharedData.data();
+    this->setData(data);
 }
 
 medAbstractView::~medAbstractView( void )

@@ -95,37 +95,37 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
     }
 
 
-    dtkSmartPointer<dtkAbstractData> data;
+    dtkSmartPointer<dtkAbstractData> dataSP;
 
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
     for (int i = 0; i < readers.size(); i++) {
+        
         dtkSmartPointer<dtkAbstractDataReader> dataReader;
         dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
     
         connect(dataReader, SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
-    
         if (dataReader->canRead(filename)) {
-
-            //qDebug() << "Reading using" << dataReader->description() << "reader";
-
             dataReader->read(filename);
-            data = dataReader->data();
+            dataReader->enableDeferredDeletion(false);
+            qDebug() << "RefCount should be 1 here: " << dataReader.refCount();
+            dataSP = dataReader->data();
+            qDebug() << "RefCount should be 2 here: " << dataSP.refCount();
             break;
         }
-
+        
     }
     
-    if (data) {
-        data->addMetaData("PatientName", patientName);
-        data->addMetaData("StudyDescription",   studyName);
-        data->addMetaData("SeriesDescription",  seriesName);
+    if ( dataSP.data() && (!dataSP.isNull()) ) {
+        dataSP->addMetaData("PatientName", patientName);
+        dataSP->addMetaData("StudyDescription",   studyName);
+        dataSP->addMetaData("SeriesDescription",  seriesName);
         emit success(this);
     } else {
         emit failure(this);
     }
-
-    return data;
+    qDebug() << "RefCount should be 1 here: " << dataSP.refCount();
+    return dataSP;
 }
 
 qint64 medDatabaseReader::getDataSize()

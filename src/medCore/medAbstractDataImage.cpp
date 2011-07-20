@@ -35,12 +35,12 @@ const char* medAbstractDataImage::PixelMeaningMetaData = "PixelMeaning";
 
 medAbstractDataImage::medAbstractDataImage(void) : medAbstractData()
 {
-
+    qDebug() << "constructing medAbstractDataImage";
 }
 
 medAbstractDataImage::medAbstractDataImage(const medAbstractDataImage& other): medAbstractData(other)
 {
-
+    qDebug() << "deleting medAbstractDataImage";
 }
 
 medAbstractDataImage::~medAbstractDataImage(void)

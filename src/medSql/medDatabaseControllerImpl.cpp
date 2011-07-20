@@ -398,7 +398,8 @@ dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIn
 
     medMessageController::instance()->showProgress(reader.data(), "Opening database item");
 
-    dtkSmartPointer<dtkAbstractData> data(reader->run());
+    dtkSmartPointer<dtkAbstractData> data;
+    data = reader->run();
     return data;
 }
 

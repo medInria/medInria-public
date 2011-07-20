@@ -215,6 +215,11 @@ void medViewerArea::open(const medDataIndex& index)
         dtkSmartPointer<dtkAbstractData> data;
         medAbstractView *view = NULL;
         
+        medDataManager::instance()->data(index);
+        medDataManager::instance()->clearCache();
+        return;
+
+
         // the data-manager should be used to read data
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);

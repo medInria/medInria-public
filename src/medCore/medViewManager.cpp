@@ -47,7 +47,7 @@ void medViewManager::remove(const medDataIndex& index, medAbstractView *view)
 {
     foreach(dtkSmartPointer<medAbstractView>lview, d->views.value(index))
         if (lview==view)
-            d->views[index].removeOne(view);
+            d->views[index].removeOne(lview);
 }
 
 void medViewManager::remove(const medDataIndex& index)

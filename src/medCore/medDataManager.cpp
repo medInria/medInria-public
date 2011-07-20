@@ -141,9 +141,10 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
             }
 
             dtkdata = db->read(index);
-
-            if (dtkdata)
+            qDebug() << "RefCount after reading: " << dtkdata.refCount();
+            if (!dtkdata.isNull())
             {
+                qDebug() << "adding data to data cachemap";
                 d->dataCache[index] = dtkdata;
             }
         }
@@ -165,6 +166,7 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 
                 if (dtkdata)
                 {
+                    qDebug() << "adding data to data non-pers.cachemap";
                     d->volatileDataCache[index] = dtkdata;
                 }
             }
@@ -218,6 +220,7 @@ bool medDataManager::tryFreeMemory(size_t memoryLimit)
 
     QMutexLocker locker(&d->mutex);
 
+/*
     // iterate over the cache until we reach our threshold or all items are iterated
     foreach(medDataIndex index, d->dataCache.keys())
     {
@@ -228,13 +231,27 @@ bool medDataManager::tryFreeMemory(size_t memoryLimit)
         if (getProcessMemoryUsage() < memoryLimit)
             break;
     }
+*/
 
     // clear cache
     foreach(medDataIndex index, d->dataCache.keys())
     {
         // remove reference to free it
-        if (d->dataCache.find(index).value().isNull())
+        if (d->dataCache.find(index).value().refCount() == 1)
+        {
+            qDebug() << "object found with refCount 1";
             d->dataCache.remove(index);
+        }
+    }
+
+    // clear cache
+    foreach(medDataIndex index, d->dataCache.keys())
+    {
+        // remove reference to free it
+        if (d->dataCache.find(index).value().refCount() == 0)
+            d->dataCache.remove(index);
+        else
+            qDebug() << "cannot free object, ref count is:" << d->dataCache.find(index).value().refCount();
     }
 
     int itemsNow = d->dataCache.count();
@@ -684,6 +701,14 @@ void medDataManager::printMemoryStatus(size_t requiredMemoryInKb)
         << "Required memory:" << (requiredMemoryInKb / divider) << "mb";
 
 }
+
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::clearCache()
+{
+    this->tryFreeMemory( 0 );
+}
+
 
 //-------------------------------------------------------------------------------------------------------
 

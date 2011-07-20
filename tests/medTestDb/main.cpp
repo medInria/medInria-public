@@ -141,7 +141,7 @@ int medTestDbApp::run()
     this->processEvents();
 
     // clear cache.
-    dataManager->tryFreeMemory( 0 );
+    dataManager->clearCache();
 
     // Check data in db matches original.
     dtkSmartPointer<dtkAbstractData> testDataFromDb = dataManager->data( persImportedIndex );
