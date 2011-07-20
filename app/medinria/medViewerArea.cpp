@@ -215,9 +215,10 @@ void medViewerArea::open(const medDataIndex& index)
         dtkSmartPointer<dtkAbstractData> data;
         medAbstractView *view = NULL;
         
-        medDataManager::instance()->data(index);
-        medDataManager::instance()->clearCache();
-        return;
+        /** test to check for reference counting problems, here the datamanager should be able to drop the data */
+        //medDataManager::instance()->data(index);
+        //medDataManager::instance()->clearCache();
+        //return;
 
 
         // the data-manager should be used to read data

@@ -108,9 +108,9 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
         if (dataReader->canRead(filename)) {
             dataReader->read(filename);
             dataReader->enableDeferredDeletion(false);
-            qDebug() << "RefCount should be 1 here: " << dataReader.refCount();
-            dataSP = dataReader->data();
-            qDebug() << "RefCount should be 2 here: " << dataSP.refCount();
+            dataSP.takePointer(dataReader->data());
+            if (dataSP.refCount() != 2)
+                qWarning() << "(ReaderLoop) RefCount should be 2 here: " << dataSP.refCount();
             break;
         }
         
@@ -124,7 +124,8 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
     } else {
         emit failure(this);
     }
-    qDebug() << "RefCount should be 1 here: " << dataSP.refCount();
+    if (dataSP.refCount() != 1)
+        qWarning() << "(Run:Exit) RefCount should be 1 here: " << dataSP.refCount();
     return dataSP;
 }
 

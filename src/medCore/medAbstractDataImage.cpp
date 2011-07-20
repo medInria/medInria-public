@@ -40,11 +40,11 @@ medAbstractDataImage::medAbstractDataImage(void) : medAbstractData()
 
 medAbstractDataImage::medAbstractDataImage(const medAbstractDataImage& other): medAbstractData(other)
 {
-    qDebug() << "deleting medAbstractDataImage";
 }
 
 medAbstractDataImage::~medAbstractDataImage(void)
 {
+    qDebug() << "deleting medAbstractDataImage";
 }
 
 void *medAbstractDataImage::image(void)

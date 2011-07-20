@@ -141,7 +141,8 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
             }
 
             dtkdata = db->read(index);
-            qDebug() << "RefCount after reading: " << dtkdata.refCount();
+            if (dtkdata.refCount() != 1)
+                qWarning() << "RefCount should be 1: " << dtkdata.refCount();
             if (!dtkdata.isNull())
             {
                 qDebug() << "adding data to data cachemap";
@@ -225,7 +226,10 @@ bool medDataManager::tryFreeMemory(size_t memoryLimit)
     foreach(medDataIndex index, d->dataCache.keys())
     {
         // remove reference to free it
-        d->dataCache.find(index).value() = NULL;
+        if (d->dataCache.find(index).value().refCount() == 1)
+        {
+        qDebug() << "object found with refCount 1, removing...";
+        d->dataCache.remove(index);
 
         // check memory usage and stop the loop at the optimal threshold
         if (getProcessMemoryUsage() < memoryLimit)
@@ -239,7 +243,7 @@ bool medDataManager::tryFreeMemory(size_t memoryLimit)
         // remove reference to free it
         if (d->dataCache.find(index).value().refCount() == 1)
         {
-            qDebug() << "object found with refCount 1";
+            qDebug() << "object found with refCount 1, removing...";
             d->dataCache.remove(index);
         }
     }
