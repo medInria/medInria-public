@@ -23,6 +23,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkObjectFactory.h"
 
 #include <vtkWindowToImageFilter.h>
+#include <vtkPointData.h>
+#include <vtkDataArray.h>
 #include <vtkImageClip.h>
 #include <vtkImagePermute.h>
 #include <vtkImageResample.h>
@@ -200,11 +202,6 @@ void vtkKWPageView::SetProperties()
   this->m_Pool->SyncSetAnnotationStyle( vtkImageView2D::AnnotationStyle2);
   this->m_Pool->SyncSetShowRulerWidget (0);
   
-  this->GetPool()->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-  this->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
-  this->GetPool()->SyncSetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-  this->GetPool()->SyncSetKeyboardInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
-
   this->View1->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
   this->View2->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
   this->View3->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
@@ -365,6 +362,12 @@ void vtkKWPageView::SetImage (vtkImageData* image, vtkMatrix4x4* orientationmatr
   this->View3->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_CORONAL);
   
   m_Pool->SyncReset();
+  
+  this->GetPool()->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+  this->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
+  this->GetPool()->SyncSetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  this->GetPool()->SyncSetKeyboardInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+
   
   this->LandmarkManager->InteractionOn();
 }
@@ -757,11 +760,42 @@ std::vector<vtkActor*> vtkKWPageView::AddDataSet(vtkDataSet* dataset, vtkPropert
   // if (actor3) list.push_back(actor3);
   // if (actor4) list.push_back(actor4);
   if (vtkPointSet::SafeDownCast (dataset))
+  {
+    vtkImageData* image = this->CreateEmptyImage (dataset);
+    this->m_Pool->SyncSetInput (image);
     this->m_Pool->SyncAddDataSet(vtkPointSet::SafeDownCast (dataset), property);
+    image->Delete();
+  }
+  
   else
     this->m_Pool->SyncSetInput (vtkImageData::SafeDownCast (dataset));
   
   return list;
+}
+
+vtkImageData* vtkKWPageView::CreateEmptyImage (vtkDataSet* dataset)
+{
+  unsigned int N = 40;
+  
+  vtkImageData* image = vtkImageData::New();
+  double* bounds = dataset->GetBounds();
+  int extent[6] = {0,N,0,N,0,N};
+  image->SetExtent(extent);
+  image->SetScalarTypeToUnsignedChar();
+  image->SetNumberOfScalarComponents(1);
+  image->AllocateScalars();
+  image->GetPointData()->GetScalars()->FillComponent (0,0);
+  double origin[3];
+  double spacing[3];
+  for (unsigned int i=0; i<3; i++)
+  {
+    origin[i] = bounds[2*i];
+    spacing[i] = (bounds[2*i + 1] - bounds[2*i]) / ((double)N);
+  }
+  
+  image->SetOrigin (origin);
+  image->SetSpacing (spacing);
+  return image;
 }
 
 
@@ -856,9 +890,26 @@ std::vector<vtkActor*> vtkKWPageView::AddMetaDataSet(vtkMetaDataSet* metadataset
   // if (actor4) list.push_back(actor4);
 
   if (vtkImageData::SafeDownCast (dataset))
+  {
     this->m_Pool->SyncSetInput (vtkImageData::SafeDownCast (dataset));
+
+    this->GetPool()->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+    this->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
+    this->GetPool()->SyncSetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+    this->GetPool()->SyncSetKeyboardInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+  }
   else
-    this->m_Pool->SyncAddDataSet (vtkPointSet::SafeDownCast (dataset), property);
+  {
+    if (!this->View1->GetInput())
+    {
+      vtkImageData* image = this->CreateEmptyImage (dataset);
+      this->m_Pool->SyncSetInput (image);
+      this->m_Pool->SyncReset();
+      this->m_Pool->SyncSetShowScalarBar(0);
+      image->Delete();
+    }
+    this->m_Pool->SyncAddDataSet(vtkPointSet::SafeDownCast (dataset), property);
+  }
   
   if (metadataset->GetWirePolyData())
   {

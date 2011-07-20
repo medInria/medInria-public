@@ -1047,15 +1047,15 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   return actor;
 }
 
-
 //----------------------------------------------------------------------------
 void vtkImageView3D::RemoveDataSet(vtkPointSet* arg)
 {
-  ///\todo implement this
-  vtkErrorMacro (<<"This method is not implemented yet."<<endl);
+  vtkProp3D* actor = this->FindDataSetActor (arg);
+  if (actor)
+    this->Renderer->RemoveViewProp (actor);
+
+  this->Superclass::RemoveDataSet (arg);
 }
-
-
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::AddLayer (int layer)

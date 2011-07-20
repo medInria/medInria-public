@@ -1035,7 +1035,10 @@ void vtkKWMainWindowInteractor::Update()
 	pageview = this->GetCurrentPage();
 
       if (!pageview)
-	pageview = this->CreateNewPage(metadatasetlist[i]->GetName(), (vtkImageData*)(NULL));
+      {
+	pageview = this->CreateNewPage(metadatasetlist[i]->GetName(), (vtkImageData*)(NULL));	
+      }
+      
       
       pageview->AddMetaDataSet (metadatasetlist[i]);
     }
@@ -1529,10 +1532,7 @@ void vtkKWMainWindowInteractor::OnSelectInteraction()
     return;
   }
 
-  this->GetCurrentPage()->GetPool()->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
-  this->GetCurrentPage()->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
-  this->GetCurrentPage()->GetPool()->SyncSetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
-  this->GetCurrentPage()->GetPool()->SyncSetKeyboardInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+  this->GetCurrentPage()->GetPool()->SyncSetInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnWindowLevelInteraction()

@@ -177,6 +177,8 @@ protected:
 
   void ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget);
 
+  vtkImageData* CreateEmptyImage (vtkDataSet* dataset);
+  
   vtkMatrix4x4* m_OrientationMatrix;
     
   vtkImageViewCollection* m_Pool;
