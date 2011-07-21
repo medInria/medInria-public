@@ -773,7 +773,6 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader( Q
         dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
         if (d->lastSuccessfulReaderDescription == dataReader->description() && dataReader->canRead( filename ))
         {
-            dataReader->enableTrace(true);
             dataReader->enableDeferredDeletion(false);
             return dataReader;
         }
@@ -784,7 +783,6 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader( Q
         if (dataReader->canRead( filename )){
             d->lastSuccessfulReaderDescription = dataReader->description();
             {
-                dataReader->enableTrace(true);
                 dataReader->enableDeferredDeletion(false);
                 return dataReader;
             }
