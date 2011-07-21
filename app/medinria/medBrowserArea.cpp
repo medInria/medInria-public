@@ -158,7 +158,6 @@ void medBrowserArea::onFileImport(QString path)
     d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
-    
 }
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)

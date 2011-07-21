@@ -44,6 +44,9 @@ public:
 
     qint64 getDataSize();
 
+protected:
+    dtkSmartPointer<dtkAbstractData> readFile(QString filename);
+
 signals:
     void success(QObject *);
     void failure(QObject *);

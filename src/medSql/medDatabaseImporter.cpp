@@ -31,7 +31,6 @@
 #include <medMetaDataHelper.h>
 #include <medStorage.h>
 
-
 class medDatabaseImporterPrivate
 {
 public:
