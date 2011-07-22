@@ -138,6 +138,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
 medBrowserArea::~medBrowserArea(void)
 {
+    d->pacsSource->deleteLater();
     delete d;
     d = NULL;
 }
