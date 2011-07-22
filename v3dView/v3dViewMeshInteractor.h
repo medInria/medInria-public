@@ -36,8 +36,19 @@ public:
     //! Override dtkAbstractViewInteractor.
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
     char* getLUTQuery (int meshLayer);
-    
-
+    void setOpacity (double value);
+    double opacity (int meshLayer);
+    bool visibility (int meshLayer);
+    void setLayer(int meshLayer);
+    int meshLayer(void);
+    bool edgeVisibility (int meshLayer);
+    QString* color (int meshLayer);
+    QString* renderingType (int meshLayer); 
+    QString* attribute (int meshLayer);
+    QString* lut (int meshLayer); 
+    void setAttribute (const QString& attribute, int meshLayer);
+    void setScalarVisibility(bool val);
+    bool isMeshOnly();
 protected:
     virtual void updatePipeline (unsigned int meshLayer=0);
 
@@ -46,12 +57,12 @@ signals:
 
 public slots:
     virtual void onPropertySet (const QString& key, const QString& value);
-    virtual void onVisibilityPropertySet (const QString& value, int meshLayer);
-    virtual void onEdgeVisibilityPropertySet (const QString& value, int meshLayer);
-    virtual void onRenderingModePropertySet (const QString& value, int meshLayer);
-    virtual void onOpacityModePropertySet (double value, int meshLayer);
-    virtual void onLUTModePropertySet (const QString& value, int meshLayer);
-    virtual void onColorPropertySet (const QColor& color, int meshLayer);
+    virtual void onVisibilityPropertySet (const QString& value);
+    virtual void onEdgeVisibilityPropertySet (const QString& value);
+    virtual void onRenderingModePropertySet (const QString& value);
+    
+    virtual void onLUTModePropertySet (const QString& value);
+    virtual void onColorPropertySet ( const QColor& color);
     
 
 private:

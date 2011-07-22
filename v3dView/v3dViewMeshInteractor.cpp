@@ -42,20 +42,33 @@ public:
     QList<ActorSmartPointer> actor2dList;
     QList<ActorSmartPointer> actor3dList;
     QList<PropertySmartPointer> actorPropertyList;
-
-
+    QList<double> opacityList; 
+    QList<bool> visibilityList;
+    QList<bool> edgeVisibilityList;
+    QList<QString> colorList;
+    QList<QString> renderingList;
+    QList<QString> attributeList;
+    QList<QString> lutList;
+    int currentLayer;
+    bool isMeshOnly;
 };
 
 v3dViewMeshInteractor::v3dViewMeshInteractor(): medMeshAbstractViewInteractor(), d(new v3dViewMeshInteractorPrivate)
 {
     //d->data = NULL;
     d->view = NULL;
-
+    d->currentLayer = 0;
+    d->isMeshOnly = false;
     // addProperty here
     this->addProperty("Visibility", QStringList() << "true" << "false");
     this->addProperty("ShowEdges", QStringList() << "true" << "false");
     this->addProperty("RenderingMode", QStringList() << "surface" << "wireframe" << "points" );
-
+    this->addProperty("OpacityMode", QStringList() << "");
+    this->addProperty("LUTMode", QStringList() << "Default" << "Black & White" << "Black & White Inversed" << "Spectrum" << "Hot Metal" << "Hot Green"
+        << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
+        << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
+        << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body");
+    this->addProperty("ColorMode", QStringList() << "#FFFFFF");
 }
 
 v3dViewMeshInteractor::~v3dViewMeshInteractor()
@@ -84,33 +97,58 @@ bool v3dViewMeshInteractor::registered(void)
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 {
     if (d->dataList.contains (data))
+    {
         return;
+    }
+    
     if(data->description() == "vtkDataMesh4D")
     {
         //vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
         //vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
         d->dataList.append(data);
-
+        d->opacityList.append(1.0);
+        d->visibilityList.append(true);
+        d->edgeVisibilityList.append(false);
+        d->colorList.append(QString("#FFFFFF"));
+        d->renderingList.append("Surface");
+        d->attributeList.append("Solid");
+        d->lutList.append("Default");
         updatePipeline(d->dataList.size()-1);
-
+        d->isMeshOnly = false;
     }
     else if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
-        if(!d->view->data())
+        if(!d->view->dataInList(0)) 
         {
-            /*vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
+           /* d->isMeshOnly = true;
+            vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
             imagegenerator->SetInput (pointSet);
             vtkImageData * image = imagegenerator->GetOutput();
-            d->view->view2d()->SetInput(image);
+            d->view->view2d()->SetInput(image, 0);
+            d->view->view3d()->SetInput(image, 0);
             vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
             actor->SetOpacity(0.0);	*/
+            	
         }
+        else
+            d->isMeshOnly = false;
         Q_UNUSED( pointSet );
         d->dataList.append(data);
+        d->opacityList.append(1.0);
+        d->visibilityList.append(true);
+        d->edgeVisibilityList.append(false);
+        d->colorList.append(QString("#FFFFFF"));
+        d->renderingList.append("Surface");
+        d->attributeList.append("Solid");
+        d->lutList.append("Default");
         updatePipeline(d->dataList.size()-1);
 
     }
 }
 
+bool v3dViewMeshInteractor::isMeshOnly()
+{
+    return d->isMeshOnly;
+}
 
 void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 {
@@ -160,87 +198,136 @@ void v3dViewMeshInteractor::disable(void)
 
 void v3dViewMeshInteractor::onPropertySet(const QString& key, const QString& value)
 {
-    QString meshLayer = key[key.size()-1];
-
     if (key.contains("Visibility"))
-        this->onVisibilityPropertySet (value, meshLayer.toInt());
-
+        this->onVisibilityPropertySet (value);
+     
     if (key.contains("ShowEdges"))
-        this->onEdgeVisibilityPropertySet (value, meshLayer.toInt());
+        this->onEdgeVisibilityPropertySet (value);
 
     if (key.contains("RenderingMode"))
-        this->onRenderingModePropertySet (value, meshLayer.toInt());
-
-    if (key.contains("OpacityMode"))
-        this->onOpacityModePropertySet (value.toDouble(), meshLayer.toInt());
+        this->onRenderingModePropertySet (value);
 
     if (key.contains("LUTMode"))
-        this->onLUTModePropertySet (value, meshLayer.toInt());
+        this->onLUTModePropertySet (value);
 
     if (d->view)
         d->view->update();
 }
 
+void v3dViewMeshInteractor::setLayer(int meshLayer)
+{
+    d->currentLayer = meshLayer;
+}
 
-void v3dViewMeshInteractor::onVisibilityPropertySet (const QString& value, int meshLayer)
+int v3dViewMeshInteractor::meshLayer(void) 
+{
+    return d->currentLayer;
+}
+
+void v3dViewMeshInteractor::onVisibilityPropertySet (const QString& value)
 {
     if (value=="true") {
-        d->actor2dList[meshLayer]->SetVisibility(1);
-        d->actor3dList[meshLayer]->SetVisibility(1);
+        d->actor2dList[d->currentLayer]->SetVisibility(1);
+        d->actor3dList[d->currentLayer]->SetVisibility(1);
+        d->visibilityList[d->currentLayer] = true;
     } else {
-        d->actor2dList[meshLayer]->SetVisibility(0);
-        d->actor3dList[meshLayer]->SetVisibility(0);
+        d->actor2dList[d->currentLayer]->SetVisibility(0);
+        d->actor3dList[d->currentLayer]->SetVisibility(0);
+        d->visibilityList[d->currentLayer] = false;
     }
 }
 
-void v3dViewMeshInteractor::onColorPropertySet (const QColor& color, int meshLayer)
+void v3dViewMeshInteractor::onColorPropertySet (const QColor& color)
 {
     int r,g,b=0;
-
     color.getRgb(&r,&g,&b);
-    d->actorPropertyList[meshLayer]->SetColor((double)r/(255.0),(double)g/(255.0),(double)b/(255.0));
+    d->actorPropertyList[d->currentLayer]->SetColor((double)r/(255.0),(double)g/(255.0),(double)b/(255.0));
+    d->colorList[d->currentLayer] = color.name().toUpper();
     d->view->update();
 }
-void v3dViewMeshInteractor::onEdgeVisibilityPropertySet (const QString& value, int meshLayer)
+void v3dViewMeshInteractor::onEdgeVisibilityPropertySet (const QString& value)
 {
     if (value=="true")
-        d->actorPropertyList[meshLayer]->SetEdgeVisibility (1);
+    {
+        d->actorPropertyList[d->currentLayer]->SetEdgeVisibility (1);
+        d->edgeVisibilityList[d->currentLayer] = true;
+    }
     else
-        d->actorPropertyList[meshLayer]->SetEdgeVisibility (0);
+    {
+        d->actorPropertyList[d->currentLayer]->SetEdgeVisibility (0);
+        d->edgeVisibilityList[d->currentLayer] = false;
+    }
 }
-
-void v3dViewMeshInteractor::onRenderingModePropertySet (const QString& value, int meshLayer)
+void v3dViewMeshInteractor::onRenderingModePropertySet (const QString& value)
 {
     if (value=="wireframe") {
-        d->actorPropertyList[meshLayer]->SetRepresentationToWireframe ();
+        d->actorPropertyList[d->currentLayer]->SetRepresentationToWireframe ();
+        d->renderingList[d->currentLayer] = "Wire frame";
     } else if (value=="surface") {
-        d->actorPropertyList[meshLayer]->SetRepresentationToSurface ();
+        d->actorPropertyList[d->currentLayer]->SetRepresentationToSurface ();
+        d->renderingList[d->currentLayer] = "Surface";
     } else if (value=="points") {
-        d->actorPropertyList[meshLayer]->SetRepresentationToPoints ();
+        d->actorPropertyList[d->currentLayer]->SetRepresentationToPoints ();
+        d->renderingList[d->currentLayer] = "Points";
     }
-
 }
 
-void v3dViewMeshInteractor::onOpacityModePropertySet (double value, int meshLayer)
+void v3dViewMeshInteractor::setOpacity (double value)
 {
-    d->actorPropertyList[meshLayer]->SetOpacity(value);
+    d->actorPropertyList[d->currentLayer]->SetOpacity(value);
+    d->opacityList[d->currentLayer] = value;
+}
+double v3dViewMeshInteractor::opacity (int meshLayer) 
+{  
+    return d->opacityList.at(meshLayer);  
+}
+bool v3dViewMeshInteractor::visibility (int meshLayer) 
+{
+    return d->visibilityList.at(meshLayer);
+}
+bool v3dViewMeshInteractor::edgeVisibility (int meshLayer) 
+{  
+    return d->edgeVisibilityList.at(meshLayer);  
+}
+QString* v3dViewMeshInteractor::color (int meshLayer) 
+{  
+    return &(d->colorList[meshLayer]);  
+}
+QString* v3dViewMeshInteractor::renderingType (int meshLayer) 
+{  
+    return &(d->renderingList[meshLayer]);  
+}
+QString* v3dViewMeshInteractor::attribute (int meshLayer) 
+{  
+    return &(d->attributeList[meshLayer]);  
+}
+void v3dViewMeshInteractor::setAttribute (const QString& attribute, int meshLayer) 
+{  
+    d->attributeList[meshLayer] = attribute;
+}
+QString* v3dViewMeshInteractor::lut (int meshLayer) 
+{ 
+    return &(d->lutList[meshLayer]);  
 }
 char* v3dViewMeshInteractor::getLUTQuery (int meshLayer)
-{
-
+{ 
     if(vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(d->dataList[meshLayer]->data())))
     {
         vtkDataArray * dataArray = pointSet->GetPointData()->GetArray(0);
         if (!dataArray)
             return NULL;
+         
         return dataArray->GetName();
     }
         return NULL;
 }
-void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value, int meshLayer)
+void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value)
 {
-    if(vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(d->dataList[meshLayer]->data())))
+    
+    if(vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(d->dataList[d->currentLayer]->data())))
     {
+
+        this->setScalarVisibility(true);
         /*vtkDataArrayCollection *collection = vtkDataArrayCollection::New();
         int i;
         for (i=0; i<pointSet->GetPointData()->GetNumberOfArrays(); i++)
@@ -248,7 +335,7 @@ void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value, int mesh
             collection->AddItem(pointSet->GetPointData()->GetArray (i));
         }*/
 
-        //qDebug()<<"I : "<<pointSet->GetPointData()->GetNumberOfArrays();
+
         vtkDataArray * dataArray = pointSet->GetPointData()->GetArray(0);
 
         if (!dataArray)
@@ -263,7 +350,6 @@ void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value, int mesh
 
         vtkDataArray* junk;
         vtkDataSetAttributes* attributes;
-
         if (array_is_in_points)
         {
             junk = pointSet->GetPointData()->GetArray (dataArray->GetName());
@@ -274,7 +360,7 @@ void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value, int mesh
             //junk = pointSet->GetCellData()->GetArray (dataArray->GetName());
             //attributes = pointSet->GetCellData();
         }
-         qDebug()<<"junk->GetSize() : "<<junk->GetSize();
+        
         if (!junk)
             return;
 
@@ -291,35 +377,43 @@ void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value, int mesh
         }
 
         attributes->SetActiveScalars(dataArray->GetName());
-        ////vtkActor *actor = d->actor2dList[meshLayer];
-
-        if (!d->actor2dList[meshLayer])
+        
+        if (!d->actor2dList[d->currentLayer])
             return;
 
-
+        
         if (!array_is_in_points)
-            d->actor2dList[meshLayer]->GetMapper ()->SetScalarModeToUseCellFieldData();
+        {
+            d->actor2dList[d->currentLayer]->GetMapper ()->SetScalarModeToUseCellFieldData();
+            d->actor3dList[d->currentLayer]->GetMapper ()->SetScalarModeToUseCellFieldData();
+        }
         else
-            d->actor2dList[meshLayer]->GetMapper ()->SetScalarModeToUsePointFieldData();
-
+        {
+            d->actor2dList[d->currentLayer]->GetMapper ()->SetScalarModeToUsePointFieldData();
+            d->actor3dList[d->currentLayer]->GetMapper ()->SetScalarModeToUsePointFieldData();
+        }
         if (lut)
         {
-            qDebug()<<"d->actor2dList.size() : "<<d->actor2dList.size();
-            qDebug()<<"meshLayer : "<<meshLayer;
-            d->actor2dList[meshLayer]->GetMapper ()->SetLookupTable (lut);
-            d->actor2dList[meshLayer]->GetMapper ()->UseLookupTableScalarRangeOn();
+            d->actor2dList[d->currentLayer]->GetMapper ()->SetLookupTable (lut);
+            d->actor2dList[d->currentLayer]->GetMapper ()->UseLookupTableScalarRangeOn();
+            d->actor3dList[d->currentLayer]->GetMapper ()->SetLookupTable (lut);
+            d->actor3dList[d->currentLayer]->GetMapper ()->UseLookupTableScalarRangeOn();
         }
-
-        d->actor2dList[meshLayer]->GetMapper ()->SetScalarRange (min, max);
-        d->actor2dList[meshLayer]->GetMapper ()->SelectColorArray (dataArray->GetName());
-
-
+        d->actor2dList[d->currentLayer]->GetMapper ()->SetScalarRange (min, max);
+        d->actor2dList[d->currentLayer]->GetMapper ()->SelectColorArray (dataArray->GetName());
+        d->actor3dList[d->currentLayer]->GetMapper ()->SetScalarRange (min, max);
+        d->actor3dList[d->currentLayer]->GetMapper ()->SelectColorArray (dataArray->GetName());
+        d->lutList[d->currentLayer] = value;
     }
-
-   // d->view->update();
-
-
-
+    d->view->update();
+}
+void v3dViewMeshInteractor::setScalarVisibility(bool val)
+{
+    vtkMapper* mapper;
+    mapper = d->actor2dList[d->currentLayer]->GetMapper();
+    mapper->SetScalarVisibility(val);
+    mapper = d->actor3dList[d->currentLayer]->GetMapper();
+    mapper->SetScalarVisibility(val);
 }
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
@@ -332,67 +426,23 @@ dtkAbstractViewInteractor *createV3dViewMeshInteractor(void)
 
 void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
 {
-
     if (d->view && !d->dataList.isEmpty() ) {
-
-
         if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(d->dataList[meshLayer]->data()))) {
-
-           qDebug()<<"pointset";
-
             d->actor2dList.append(d->view->view2d ()->AddDataSet(pointset));
             d->actor3dList.append(d->view->view3d ()->AddDataSet(pointset));
-            //pointset->Print(std::cout);
-
             d->actorPropertyList.append(v3dViewMeshInteractorPrivate::PropertySmartPointer::New ());
-
-            //d->actorPropertyList[meshLayer]->SetColor ( 1,0,1 );
             d->actor2dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
             d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
-
-            //d->actor2dList[meshLayer]->GetMapper ()->ScalarVisibilityOff ();
-           // d->actor3dList[meshLayer]->GetMapper ()->ScalarVisibilityOff ();
         }
-
-        /*else if(vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(d->dataList[meshLayer]->data())))
-        {
-            vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
-             qDebug()<<"vtkMetaDataSetSequence";
-            d->actor2dList.append(d->view->view2d ()->AddDataSet(pointset));
-            d->actor3dList.append(d->view->view3d ()->AddDataSet(pointset));
-            //pointset->Print(std::cout);
-
-            d->actorPropertyList.append(v3dViewMeshInteractorPrivate::PropertySmartPointer::New ());
-
-            d->actorPropertyList[meshLayer]->SetColor ( 1,0,1 );
-            d->actor2dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
-            d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
-            qDebug()<<"d->actor2dList.size() : "<<d->actor2dList.size();
-
-        }*/
         else if (vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(d->dataList[meshLayer]->data()))){
-            qDebug()<<"sequence->GetDataSet()->GetClassName() : "<<sequence->GetDataSet()->GetClassName();
+           
             if(vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet()))
         {
-            qDebug()<<"vtkMetaDataSetSequence downcasted to vtkPointSet";
-
             d->actor2dList.append(d->view->view2d ()->AddDataSet(pointSet));
             d->actor3dList.append(d->view->view3d ()->AddDataSet(pointSet));
-
-
-            //d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()))->SetProperty(prop);
-            //d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()))->SetProperty(prop);
-            //pointset->Print(std::cout);
-
             d->actorPropertyList.append(v3dViewMeshInteractorPrivate::PropertySmartPointer::New ());
-
-
             d->actor2dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
             d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
-
-            //d->actor2dList[meshLayer]->GetMapper ()->ScalarVisibilityOff ();
-           // d->actor3dList[meshLayer]->GetMapper ()->ScalarVisibilityOff ();
-
          }}
 
     }

@@ -15,6 +15,7 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
+#include <medCore/medMessageController.h>
 #include <vtkCamera.h>
 #include <vtkCommand.h>
 #include <vtkRenderer.h>
@@ -244,6 +245,10 @@ public:
 	QMap<int, QSharedPointer<dtkAbstractData> > sharedData;
     medAbstractDataImage *imageData;
     
+    QList<QString> LUTList;
+    QList<QString> PresetList;
+    
+
     QTimeLine *timeline;
 
     typedef void (v3dView::* PropertyFuncType)(const QString &);
@@ -519,7 +524,11 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     connect(sagittalAct, SIGNAL(triggered()), this, SLOT(onMenuSagittalTriggered()));
     
     // 3D mode
+    QAction *ThreeDAct = new QAction(tr("3D"), d->vtkWidget);
+    connect(ThreeDAct, SIGNAL(triggered()), this, SLOT(onMenu3DTriggered()));
+
     QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
+
     connect(vrAct, SIGNAL(triggered()), this, SLOT(onMenu3DVRTriggered()));
     
     QAction *maxipAct = new QAction(tr("MIP - Max"), d->vtkWidget);
@@ -562,17 +571,19 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     QAction *wlAct = new QAction(tr("Window / Level"), d->vtkWidget);
     connect(wlAct, SIGNAL(triggered()), this, SLOT(onMenuWindowLevelTriggered()));
     
-    QActionGroup *group = new QActionGroup(d->vtkWidget);
+    
+    /*QActionGroup *group = new QActionGroup(d->vtkWidget);
     group->addAction(zoomAct);
     group->addAction(wlAct);
-    wlAct->setChecked(true);
+    wlAct->setChecked(true);*/
     
     d->menu = new QMenu(d->vtkWidget );
     d->menu->addAction(axialAct);
     d->menu->addAction(coronalAct);
     d->menu->addAction(sagittalAct);
+    d->menu->addAction(ThreeDAct);
     
-    QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
+   /* QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
     tridMenu->addAction (vrAct);
     tridMenu->addAction (maxipAct);
     tridMenu->addAction (minipAct);
@@ -589,7 +600,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     
     d->menu->addSeparator();
     d->menu->addAction(zoomAct);
-    d->menu->addAction(wlAct);
+    d->menu->addAction(wlAct);*/
     
     // set property to actually available presets
     QStringList lut = this->getAvailableTransferFunctionPresets();
@@ -749,7 +760,9 @@ void v3dView::setData(dtkAbstractData *data)
 {
     if(!data)
         return;
-    
+    if(medAbstractView::isInList(data))
+        return;
+  
     int layer = 0;
     while(d->view2d->GetImageInput(layer)) {
         layer++;
@@ -758,7 +771,6 @@ void v3dView::setData(dtkAbstractData *data)
     if (data->description().contains("vtkDataMesh") && layer)
     {
         layer--;
-        qDebug()<<"data->description() ==  && layer !=0";
     }
     this->setData( data, layer);
     
@@ -769,7 +781,13 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 {
     if(!data)
         return;
-    
+    if(medAbstractView::isInList(data))
+        return;
+    if(layer == 0 && data->description().contains("vtkDataMesh"))
+    {
+        //medMessageControllerMessageError msg(this, "Select image first");
+        return;
+    }
 #ifdef vtkINRIA3D_USE_ITK
     if (data->description()=="itkDataImageChar3") {
         if( itk::Image<char, 3>* image = dynamic_cast<itk::Image<char, 3>*>( (itk::Object*)( data->data() ) ) ) {
@@ -789,7 +807,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->view2d->SetITKInput(image,layer);
             d->view3d->SetITKInput(image,layer);
             // d->view2d->SetVisibility(0,1);
-            d->view2d->GetImageActor()->SetOpacity(1.00);
+            
         }
     }
     else if (data->description()=="itkDataImageUShort3") {
@@ -954,8 +972,9 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             dtkAbstractView::setData(data);
         }
 	else if ( data->description() == "vtkDataMesh4D" ) {
+	    this->enableInteractor ( "v3dViewMeshInteractor" );
 	    this->enableInteractor ( "v3dView4DInteractor" );
-	    // This will add the data to the interactor.
+        // This will add the data to the interactor.
 	    dtkAbstractView::setData(data);
 	}
 	else if ( data->description() == "v3dDataFibers" ) {            
@@ -978,6 +997,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 	    //   this->enableInteractor ( "v3dView4DInteractor" );
 	    
             // This will add the data to one interactor
+         
             dtkAbstractView::setData(data);
             return;
         }
@@ -1023,8 +1043,10 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
         }
     }
-
-   // emit dataAdded(layer);
+    
+     
+    this->addDataInList(data);
+    //emit dataAdded(layer);
     emit dataAdded(data);
     emit dataAdded(data, layer);
 }
@@ -1046,6 +1068,7 @@ QWidget *v3dView::widget(void)
 
 void v3dView::play(bool start)
 {
+    
     d->timeline->setFrameRange(d->slider->minimum(), d->slider->maximum() );
     
     if(start)
@@ -1058,11 +1081,15 @@ void v3dView::onPropertySet(const QString &key, const QString &value)
 {
 // Look up which property set function to call from table 
     v3dViewPrivate::PropertyFuncMapType::const_iterator it = d->setPropertyFunctions.find( key );
+    
     if ( it != d->setPropertyFunctions.end() ) {
         // Get member function pointer and call it.
+        
         const v3dViewPrivate::PropertyFuncType funcPtr = it.value();
         (this->*funcPtr)( value );
-    }
+   }
+   
+    
 
     //this->update(); // never update after setting a property, it is not our role
     
@@ -1236,14 +1263,24 @@ void v3dView::onUseLODPropertySet (const QString &value)
 void v3dView::onShowScalarBarPropertySet(const QString &value)
 {
     if (value == "true") {
-        d->collection->SyncSetShowScalarBar(true);
+        //d->collection->SyncSetShowScalarBar(true);
+        d->view2d->SetShowScalarBar(true);
     }
     
     if (value == "false") {
-        d->collection->SyncSetShowScalarBar(false);
+        //d->collection->SyncSetShowScalarBar(false);
+        d->view2d->SetShowScalarBar(false);
     }
 }
 
+QString v3dView::getLUT(int layer) const
+{
+    if (layer < d->LUTList.size())
+        return d->LUTList.at(layer);
+    else 
+        return "Default";
+    
+}
 void v3dView::onLookupTablePropertySet(const QString &value)
 {
     typedef vtkTransferFunctionPresets Presets;
@@ -1275,6 +1312,11 @@ void v3dView::onLookupTablePropertySet(const QString &value)
     rgb->Delete();
     alpha->Delete();
     
+    if(this->currentLayer() < d->LUTList.size())
+        d->LUTList.replace(this->currentLayer(), value);
+    else 
+        d->LUTList.insert(this->currentLayer(), value);
+
     if (this->currentLayer()==0)
         emit lutChanged();
 }
@@ -1326,6 +1368,15 @@ void v3dView::onMouseInteractionPropertySet(const QString &value)
         d->view2d->ShowDistanceWidgetOff();
     }
 }
+QString v3dView::getPreset(int layer) const
+{
+    if (layer < d->PresetList.size())
+        return d->PresetList.at(layer);
+    else 
+        return "Default";
+    
+}
+
 
 void v3dView::onPresetPropertySet (const QString &value)
 {
@@ -1462,7 +1513,12 @@ void v3dView::onPresetPropertySet (const QString &value)
     else {
         return; // to prevent trigger of event lutChanged()
     }
-    
+
+    if(this->currentLayer() < d->PresetList.size())
+        d->PresetList.replace(this->currentLayer(), value);
+    else 
+        d->PresetList.insert(this->currentLayer(), value);
+
     emit lutChanged();
 }
 
@@ -1515,6 +1571,7 @@ void v3dView::onZSliderValueChanged (int value)
     
     //qApp->processEvents();
     d->currentView->Render();
+    
 }
 
 void v3dView::onDaddyPropertySet (const QString &value)
@@ -1606,6 +1663,7 @@ void v3dView::onMenuAxialTriggered (void)
     
     this->setProperty("Orientation", "Axial");
     d->view2d->Render();
+    emit TwoDTriggered(this);
 }
 
 
@@ -1616,6 +1674,7 @@ void v3dView::onMenuCoronalTriggered (void)
     
     this->setProperty("Orientation", "Coronal");
     d->view2d->Render();
+    emit TwoDTriggered(this);
 }
 
 
@@ -1626,8 +1685,16 @@ void v3dView::onMenuSagittalTriggered (void)
     
     this->setProperty("Orientation", "Sagittal");
     d->view2d->Render();
+    emit TwoDTriggered(this);
 }
 
+void v3dView::onMenu3DTriggered (void)
+{
+    this->setProperty ("3DMode", this->property("3DMode"));
+    this->setProperty ("Orientation", "3D");
+    d->view3d->Render();
+    emit ThreeDTriggered(this);
+}
 void v3dView::onMenu3DVRTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
@@ -1636,6 +1703,7 @@ void v3dView::onMenu3DVRTriggered (void)
     this->setProperty ("3DMode", "VR");
     this->setProperty ("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMPRTriggered (void)
@@ -1646,6 +1714,7 @@ void v3dView::onMenu3DMPRTriggered (void)
     this->setProperty("3DMode",      "MPR");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMaxIPTriggered (void)
@@ -1656,6 +1725,7 @@ void v3dView::onMenu3DMaxIPTriggered (void)
     this->setProperty("3DMode", "MIP - Maximum");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMinIPTriggered (void)
@@ -1666,6 +1736,7 @@ void v3dView::onMenu3DMinIPTriggered (void)
     this->setProperty("3DMode", "MIP - Minimum");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DOffTriggered (void)
@@ -2201,6 +2272,9 @@ void v3dView::onVisibilityChanged(bool visible, int layer)
         d->view2d->SetVisibility(0,layer);
         d->view3d->SetVisibility(0,layer);
     }
+
+   
+
 }
 
 void v3dView::onOpacityChanged(double opacity, int layer)
@@ -2208,4 +2282,3 @@ void v3dView::onOpacityChanged(double opacity, int layer)
     d->view2d->SetOpacity(opacity, layer);
     d->view3d->SetOpacity(opacity, layer);
 }
-
