@@ -1,5 +1,5 @@
-/* medViewerConfigurationVisualization.cpp --- 
- * 
+/* medViewerConfigurationVisualization.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 14:12:19 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 7
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewerConfigurationVisualization.h"
@@ -40,24 +40,25 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
 {
     // -- Layout toolbox --
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
-    
+
     connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),
              this,             SIGNAL(layoutModeChanged(const QString&)));
     connect (d->layoutToolBox, SIGNAL(presetClicked(int)),
              this,             SIGNAL(layoutPresetClicked(int)));
     connect (d->layoutToolBox, SIGNAL(split(int,int)),
-             this,             SIGNAL(layoutSplit(int,int)));    
+             this,             SIGNAL(layoutSplit(int,int)));
 
     this->addToolBox( d->layoutToolBox );
-    
+
     // -- View toolbox --
-    
-    d->viewToolBox           = new medViewerToolBoxView(parent);
+
+    //d->viewToolBox           = new medViewerToolBoxView(parent);
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     d->timeToolBox           = new medViewerToolBoxTime(parent);
-    this->addToolBox( d->viewToolBox );
+    //this->addToolBox( d->viewToolBox );
     this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->timeToolBox );
+    connect (this, SIGNAL(layoutModeChanged(const QString&)),   d->timeToolBox, SLOT(onStopButton()));
 }
 
 void medViewerConfigurationVisualization::setupViewContainerStack()

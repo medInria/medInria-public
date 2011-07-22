@@ -159,13 +159,17 @@ public:
     virtual int currentMeshLayer(void) const;
     void setMeshLayerCount(int meshLayerCount);
     virtual int meshLayerCount(void) const;
-
+    
+    bool isInList(dtkAbstractData * data);
     void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
     void setDataInList(dtkAbstractData * data, int layer);
     /** The color used to represent the extent or space of this view in another view */
     virtual QColor color() const;
     virtual void setColor( const QColor & color);
+    
+    virtual QString getLUT(int layer) const;
+    virtual QString getPreset(int layer) const;
 
 signals:
     /**

@@ -22,6 +22,7 @@
 #include <medCore/medStorage.h>
 #include <medCore/medAbstractDataImage.h>
 
+#include <medCore/medMetaDataHelper.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
@@ -118,9 +119,36 @@ dtkAbstractData *medDatabaseReader::run(void)
     }
     
     if (data) {
+
+       QSqlQuery seriesQuery(*(medDatabaseController::instance()->database()));
+       QVariant seriesThumbnail;
+
+        seriesQuery.prepare("SELECT thumbnail FROM series WHERE id = :seriesId");
+        seriesQuery.bindValue(":seriesId", seriesId);
+        if(!seriesQuery.exec())
+            qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
+
+        if(seriesQuery.first()) {
+            seriesThumbnail = seriesQuery.value(0);
+
+            QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
+            medMetaDataHelper::addSeriesThumbnail(data, thumbPath);
+
+        }
+        else {
+            qWarning() << "Thumbnailpath not found";
+        }
+        
+
+
         data->addMetaData("PatientName", patientName);
         data->addMetaData("StudyDescription",   studyName);
         data->addMetaData("SeriesDescription",  seriesName);
+
+        medMetaDataHelper::addPatientID(data, patientId.toString());
+        medMetaDataHelper::addStudyID(data, studyId.toString());
+        medMetaDataHelper::addSeriesID(data, seriesId.toString());
+        //medMetaDataHelper::addImageID(data, imageId.toString());
         emit success(this);
     } else {
         emit failure(this);

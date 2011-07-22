@@ -187,7 +187,6 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 	// d->view->reset();
 	
 	this->synchronize_2 (view);
-	
 	connect (view, SIGNAL (closing()),        this, SLOT (onViewClosing()));
 	connect (view, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
         connect (view, SIGNAL (changeDaddy(bool)),
@@ -238,7 +237,7 @@ void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
     }
     else { // top level medViewContainerCustom
         if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view) )
-            d->pool->appendView (medView);
+            d->pool->appendView (medView);        
 	connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     }
 }

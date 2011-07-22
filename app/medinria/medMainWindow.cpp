@@ -370,7 +370,7 @@ void medMainWindow::onQuit(void)
 
     }
 
-    d->quitMessage = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
+    d->quitMessage = new medMessageControllerMessageQuestion(this, QString("Are you sure you want to quit ?"), this);
 
     connect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
     connect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));

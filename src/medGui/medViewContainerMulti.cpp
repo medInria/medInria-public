@@ -124,7 +124,6 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     container->setAcceptDrops(false);
     container->setView(view);
     content << container;
-
     this->layout(content);
 
     medViewContainer::setView (view);
