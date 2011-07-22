@@ -2,7 +2,7 @@
 #include "dtkCore/dtkAbstractDataFactory.h"
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
-#include "dtkCore/dtkAbstractDataImage.h"
+#include "medCore/medAbstractDataImage.h"
 
 #include <itkImage.h>
 
@@ -20,7 +20,7 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   dtkPluginManager::instance()->setPath (argv[1]);
   dtkPluginManager::instance()->initialize();
   
-  dtkAbstractDataImage *data = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3") );
+  medAbstractDataImage *data = dynamic_cast<medAbstractDataImage*>( dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3") );
   
   if (!data) {
       qDebug() << "Cannot create data object from plugin";
@@ -74,7 +74,7 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   image->SetRegions (region);
   image->Allocate();
 
-  dtkAbstractDataImage *data2 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3") );
+  medAbstractDataImage *data2 = dynamic_cast<medAbstractDataImage*>( dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3") );
   if (!data2) {
       qDebug() << "Cannot create data object from plugin";
       return EXIT_FAILURE;

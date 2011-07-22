@@ -4,7 +4,7 @@
 
 #include "v3dViewPublic.h"
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
 #include "vtkRenderer.h"
@@ -96,7 +96,7 @@ public:
     QVTKWidget *vtkWidget3D;	
 	
     dtkAbstractData      *data;
-    dtkAbstractDataImage *imageData;
+    medAbstractDataImage *imageData;
 
     QString orientation;
 	
@@ -1291,7 +1291,7 @@ void v3dViewPublic::setData(dtkAbstractData *data)
     }
     
     d->data = data;
-    d->imageData = dynamic_cast<dtkAbstractDataImage*> (data);
+    d->imageData = dynamic_cast<medAbstractDataImage*> (data);
         
     if(d->imageData) {
         d->slider->blockSignals (true);

@@ -11,7 +11,7 @@
 #include "v3dView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
@@ -242,7 +242,7 @@ public:
     
     dtkAbstractData *data;
 	QMap<int, QSharedPointer<dtkAbstractData> > sharedData;
-    dtkAbstractDataImage *imageData;
+    medAbstractDataImage *imageData;
     
     QTimeLine *timeline;
 
@@ -984,7 +984,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     
     if (layer==0)
     {
-        if (dtkAbstractDataImage *imageData = dynamic_cast<dtkAbstractDataImage*> (data)) {
+        if (medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> (data)) {
             d->data = data;
             d->imageData = imageData;
         
