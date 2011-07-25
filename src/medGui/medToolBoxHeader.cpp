@@ -71,14 +71,8 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
     QRectF rect = this->contentsRect();
 
     QPainter painter(this);
-
-<<<<<<< HEAD
-    painter.translate(16, 10);
-
-=======
     painter.translate( d->titleOffset );
-    
->>>>>>> mergeFromHack
+
     painter.drawText(rect, Qt::AlignLeft, d->title);
     painter.end();
 }
