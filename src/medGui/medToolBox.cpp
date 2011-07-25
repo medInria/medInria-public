@@ -164,7 +164,7 @@ bool medToolBox::ContextVisible()
 void medToolBox::show()
 {
     qDebug()<<"show TB:" << header()->title();
-    if(d->isContextVisible)
+    if(d->validDataTypes.isEmpty() || d->isContextVisible)
     {
         qDebug()<<"actually showing in TB";
         QWidget::show();
