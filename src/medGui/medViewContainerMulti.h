@@ -35,6 +35,19 @@ public:
     
     void setView(dtkAbstractView *view);
 
+    /**
+     * @brief Is this a leaf container?
+     *
+     * This method is useful in the case of a custom or multi
+     * container.  Returns true if this object is supposed to contain
+     * only views and no other containers (like
+     * medViewContainerSingle2).
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool isLeaf(void) const;
+
 public slots:
     virtual void onViewClosing (void);
 };

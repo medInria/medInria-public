@@ -159,7 +159,8 @@ public:
     virtual int currentMeshLayer(void) const;
     void setMeshLayerCount(int meshLayerCount);
     virtual int meshLayerCount(void) const;
-
+    
+    bool isInList(dtkAbstractData * data);
     void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
     void setDataInList(dtkAbstractData * data, int layer);
@@ -171,6 +172,9 @@ public:
     /** The color used to represent the extent or space of this view in another view */
     virtual QColor color() const;
     virtual void setColor( const QColor & color);
+    
+    virtual QString getLUT(int layer) const;
+    virtual QString getPreset(int layer) const;
 
 signals:
     /**
@@ -184,6 +188,13 @@ signals:
        daddy.
      **/
     void becomeDaddy   (bool);
+
+    /**
+       In medinria, the daddy is the reference view (contoured in
+       red). Only one per pool is authorized. Emit this signal when
+       the daddy state of the view changes.
+     **/
+    void changeDaddy   (bool);
 
     /**
        This signal is emitted when a view wants to register its data to the daddy.
@@ -308,7 +319,7 @@ public slots:
     virtual void onVisibilityChanged(bool visible, int layer);
     
     virtual void onOpacityChanged(double opacity, int layer);
-
+    
     /** When another linked view changes it's oblique settings the pool calls this:*/
     virtual void onObliqueSettingsChanged(const medAbstractView * vsender);
 
@@ -317,6 +328,9 @@ public slots:
 
     /** Called when another view leaves the pool */
     virtual void onRemoveViewFromPool( medAbstractView * viewRemoved );
+
+
+    void setFullScreen( bool state );
 
 protected:
     void emitViewSliceChangedEvent    (int slice);

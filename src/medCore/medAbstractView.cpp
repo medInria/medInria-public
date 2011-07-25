@@ -281,7 +281,16 @@ double medAbstractView::opacity(int layer) const
     DTK_DEFAULT_IMPLEMENTATION;
     return 1.0;
 }
-
+QString medAbstractView::getLUT(int layer) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return "";
+}
+QString medAbstractView::getPreset(int layer) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return "";
+}
 void medAbstractView::setColor(const QColor & color)
 {
     if ( d->color != color) {
@@ -289,6 +298,7 @@ void medAbstractView::setColor(const QColor & color)
         emitColorChangedEvent();
     }
 }
+
 
 QColor medAbstractView::color() const
 {
@@ -373,6 +383,12 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
         return d->dataList.at(layer);
 
     return NULL;
+}
+bool medAbstractView::isInList(dtkAbstractData * data)
+{
+    if(d->dataList.contains(data))
+        return true;
+    return false;
 }
 
 void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
@@ -495,6 +511,11 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
     d->camFocal = focal;
     d->camParallelScale = parallelScale;
     emit cameraChanged(position, viewup, focal, parallelScale, d->linkCamera);
+}
+
+void medAbstractView::setFullScreen( bool state )
+{
+    emit fullScreen( state );
 }
 
 void medAbstractView::setSharedDataPointer( QSharedPointer<dtkAbstractData> data )

@@ -236,8 +236,9 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     this->setCentralWidget(d->stack);
 
     // Now use the Qt preferred method by setting the Application style instead.
-    //   The ownership of the style object is not transferred.
-//    this->setStyle(new QPlastiqueStyle());
+    // The ownership of the style object is not transferred.
+    // this->setStyle(new QPlastiqueStyle());
+    // this->setStyleSheet(dtkReadFile(":/medinria.qss"));
     this->setWindowTitle("medinria");
 
     medMessageController::instance()->attach(this->statusBar());
@@ -369,7 +370,7 @@ void medMainWindow::onQuit(void)
 
     }
 
-    d->quitMessage = new medMessageControllerMessageQuestion(this, QString("Are sure you want to quit ?"), this);
+    d->quitMessage = new medMessageControllerMessageQuestion(this, QString("Are you sure you want to quit ?"), this);
 
     connect(d->quitMessage, SIGNAL(accepted()), this, SLOT(close()));
     connect(d->quitMessage, SIGNAL(rejected()), d->quitMessage, SLOT(deleteLater()));

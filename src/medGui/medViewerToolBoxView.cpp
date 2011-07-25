@@ -1,5 +1,5 @@
 /* medViewerToolBoxView.cpp ---
- * 
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 19
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewerToolBoxView.h"
@@ -43,14 +43,14 @@ public:
     QPushButton *slicingPushButton;
     QPushButton *measuringPushButton;
     QPushButton *croppingPushButton;
-    
+
     dtkAbstractView *view;
 };
 
 medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxViewPrivate)
 {
     d->view = 0;
-    
+
     d->foregroundLookupTableComboBox = new QComboBox(this);
     d->foregroundLookupTableComboBox->setFocusPolicy(Qt::NoFocus);
     d->foregroundLookupTableComboBox->addItem( "Default"                );
@@ -135,17 +135,17 @@ medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent)
     d->view3dLODSlider->setTracking( false );
 
     d->windowingPushButton = new QPushButton("", this);
-    d->windowingPushButton->setIcon (QIcon (":/icons/wlww.tiff"));
+    d->windowingPushButton->setIcon (QIcon (":/icons/wlww.png"));
     d->windowingPushButton->setCheckable (true);
     d->windowingPushButton->setMinimumWidth ( 20 );
     d->zoomingPushButton   = new QPushButton("", this);
-    d->zoomingPushButton->setIcon (QIcon (":/icons/zoom.tiff"));
+    d->zoomingPushButton->setIcon (QIcon (":/icons/magnify.png"));
     d->zoomingPushButton->setCheckable (true);
     d->slicingPushButton   = new QPushButton("", this);
-    d->slicingPushButton->setIcon (QIcon (":/icons/stack.tiff"));
+    d->slicingPushButton->setIcon (QIcon (":/icons/stack.png"));
     d->slicingPushButton->setCheckable (true);
     d->measuringPushButton = new QPushButton("", this);
-    d->measuringPushButton->setIcon (QIcon (":/icons/length.tiff"));
+    d->measuringPushButton->setIcon (QIcon (":/icons/length.png"));
     d->measuringPushButton->setCheckable (true);
 
     d->croppingPushButton = new QPushButton ("", this);
@@ -160,12 +160,12 @@ medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent)
     mouseGroup->addButton ( d->measuringPushButton );
     mouseGroup->setExclusive (true);
 
-    QHBoxLayout *mouseLayout = new QHBoxLayout;    
+    QHBoxLayout *mouseLayout = new QHBoxLayout;
     mouseLayout->addWidget(d->windowingPushButton);
     mouseLayout->addWidget(d->slicingPushButton);
     mouseLayout->addWidget(d->zoomingPushButton);
     mouseLayout->addWidget(d->measuringPushButton);
-        
+
     connect(d->foregroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onForegroundLookupTableChanged(QString)));
     // connect(d->backgroundLookupTableComboBox, SIGNAL(currentIndexChanged(QString)), this, SIGNAL(backgroundLookupTableChanged(QString)));
     connect(d->presetComboBox,                SIGNAL(currentIndexChanged(QString)), this, SLOT(onLutPresetChanged(QString)));
@@ -179,7 +179,7 @@ medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent)
     connect(d->croppingPushButton,            SIGNAL(toggled(bool)),                this, SLOT(onCroppingChanged(bool)));
 
     d->scalarBarVisibilityCheckBox = new QCheckBox(this);
- 
+
     connect(d->scalarBarVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onScalarBarVisibilityChanged(bool)));
 
     d->axisVisibilityCheckBox = new QCheckBox(this);
@@ -187,11 +187,11 @@ medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent)
     connect(d->axisVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onAxisVisibilityChanged(bool)));
 
     d->rulerVisibilityCheckBox = new QCheckBox(this);
-    
+
     connect(d->rulerVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onRulerVisibilityChanged(bool)));
-    
+
     d->annotationsVisibilityCheckBox = new QCheckBox(this);
-    
+
     connect(d->annotationsVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onAnnotationsVisibilityChanged(bool)));
 
     QWidget *viewToolBoxWidget = new QWidget;
@@ -217,7 +217,7 @@ medViewerToolBoxView::medViewerToolBoxView(QWidget *parent) : medToolBox(parent)
     mouseToolBoxWidgetLayout->addRow("Show axis:", d->axisVisibilityCheckBox);
     mouseToolBoxWidgetLayout->addRow("Show ruler:", d->rulerVisibilityCheckBox);
     mouseToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
-    
+
     medToolBoxTab *viewToolBoxTab = new medToolBoxTab(this);
     viewToolBoxTab->addTab(viewToolBoxWidget, "All");
     viewToolBoxTab->addTab(mouseToolBoxWidget, "2D");
@@ -237,10 +237,10 @@ medViewerToolBoxView::~medViewerToolBoxView(void)
 void medViewerToolBoxView::update(dtkAbstractView *view)
 {
     d->view = view;
-    
+
     if (!view)
         return;
-    
+
     d->foregroundLookupTableComboBox->blockSignals(true);
     d->foregroundLookupTableComboBox->setCurrentIndex(d->foregroundLookupTableComboBox->findText(view->property("LookupTable")));
     d->foregroundLookupTableComboBox->blockSignals(false);
@@ -259,11 +259,11 @@ void medViewerToolBoxView::update(dtkAbstractView *view)
 
     d->rulerVisibilityCheckBox->blockSignals(true);
     d->rulerVisibilityCheckBox->setChecked(view->property("ShowRuler") == "true");
-    d->rulerVisibilityCheckBox->blockSignals(false);    
+    d->rulerVisibilityCheckBox->blockSignals(false);
 
     d->annotationsVisibilityCheckBox->blockSignals(true);
     d->annotationsVisibilityCheckBox->setChecked(view->property("ShowAnnotations") == "true");
-    d->annotationsVisibilityCheckBox->blockSignals(false);    
+    d->annotationsVisibilityCheckBox->blockSignals(false);
 
     d->windowingPushButton->blockSignals(true);
     d->zoomingPushButton->blockSignals(true);
@@ -290,7 +290,7 @@ void medViewerToolBoxView::update(dtkAbstractView *view)
     d->view3dVRModeComboBox->setCurrentIndex(d->view3dVRModeComboBox->findText(view->property("Renderer")));
     d->view3dVRModeComboBox->blockSignals(false);
 
-    // d->view3dLODSlider->blockSignals(true); 
+    // d->view3dLODSlider->blockSignals(true);
     // d->view3dLODSlider->setValue(view->property(""));
     // d->view3dLODSlider->blockSignals(false);
 

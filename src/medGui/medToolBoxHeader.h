@@ -71,6 +71,13 @@ public:
      * @return const QString
      */
     QString title() const;
+     
+    /** 
+     * @brief Sets the offset of the header's title from upper left corner.
+     *
+     * @param titleOffset
+    */
+    void setTitleOffset(const QPoint & titleOffset);
 
 protected:
     /**

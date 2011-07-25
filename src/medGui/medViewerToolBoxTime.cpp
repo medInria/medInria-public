@@ -256,6 +256,11 @@ void medViewerToolBoxTime::onPlaySequences ()
 
 void medViewerToolBoxTime::onStopButton ()
 {
+    if (d->timeLine->state() == QTimeLine::Running)
+    {
+        d->playSequencesButton->setIcon (QPixmap(":/icons/play.png"));
+        d->playSequencesButton->setToolTip( tr("Play Sequence"));
+    }
     d->timeLine->stop();
     d->timeSlider->setValue(0);
 }

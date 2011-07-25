@@ -24,7 +24,9 @@ public:
     ~medViewerToolBoxViewProperties(void);
 
     void update(dtkAbstractView *view);
-    
+    void constructImageLayer(dtkAbstractData* data, int imageLayer);
+    void constructMeshLayer(dtkAbstractData* data, int meshLayer);
+
 public slots:
     void onDataAdded(int layer);
     void onDataAdded(dtkAbstractData*);
@@ -34,28 +36,46 @@ public slots:
     void onOpacitySliderSet(int opacity);
     void on2LayersOpacitySliderSet(int opacity);
     void onLUTChanged(int index);
+    void onPresetChanged(int index);
     void onItemClicked(QTreeWidgetItem * item, int column);
     void onContextTreeMenu( const QPoint point );
     void onDeleteLayer();
     void onSwitchLayersButtonClicked();
     void clear();
-    
-    
+    void onWindowingChanged(bool);
+    void onZoomingChanged(bool);
+    void onSlicingChanged(bool);
+    void onMeasuringChanged(bool);
+    void on2DTriggered(dtkAbstractView* d);
+    void on3DTriggered(dtkAbstractView* d);
+
     void onColorSelected(const QColor& color);
-   
     
-    void onMeshLUTChanged (int value);
+    void onScalarBarVisibilityChanged(bool);
+    void onAxisVisibilityChanged(bool);
+    void onRulerVisibilityChanged(bool);
+    void onAnnotationsVisibilityChanged(bool);
+
+    
     void onAttrBoxChanged(int index);
     void onEdgeVisibilitySet(int state);
     void onRenderingChanged (int state);
-    void on_comboBox_currentIndexChanged(int selection);
+    void onColorChanged(int selection);
+
+    void onModeChanged(QString mode);
+    void onVRModeChanged(QString mode);
+    void onLodChanged(int value);
+    void onCroppingChanged(bool checked);
+
+
+
 signals:
     void setVisibility(bool visible, int layer);
     void setOpacity(double opacity, int layer);
 
 private:
     medViewerToolBoxViewPropertiesPrivate *d;
-    void raiseSlider(bool isVisible, double opacity = -1.0);
+    void raiseSlider(bool isVisible, double opacity = 0.5);
     QIcon createIcon(QString colorName);
 };
 
