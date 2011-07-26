@@ -253,15 +253,18 @@ void
     medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
     if(!view)
+    {
+        clear();
         return;
+    }
 
 
     if ((d->view) && (d->view != dynamic_cast<medAbstractView *> (view)) )
     {
-        QObject::disconnect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)));
-        QObject::disconnect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()));
-        this->onViewClosed();
+        d->view->disconnect(this,0);
+        clear();
     }
+
     //qDebug() << "update 1";
     if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view))
     {
@@ -300,7 +303,7 @@ void
             }
 
         QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)), Qt::UniqueConnection);
-        QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
+//        QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
 
         QObject::connect(d->view, SIGNAL(TwoDTriggered(dtkAbstractView*)), this, SLOT(on2DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
         QObject::connect(d->view, SIGNAL(ThreeDTriggered(dtkAbstractView*)), this, SLOT(on3DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
@@ -636,8 +639,9 @@ void
 }
 
 void
-    medViewerToolBoxViewProperties::onViewClosed(void)
+    medViewerToolBoxViewProperties::clear(void)
 {
+    d->currentLayer = 0;
     d->propertiesTree->clear();
     raiseSlider(false);
     d->view = 0;
@@ -914,11 +918,6 @@ void medViewerToolBoxViewProperties::onDeleteLayer()
     raiseSlider(d->view->layerCount() == 2);
 }
 
-void medViewerToolBoxViewProperties::clear()
-{
-    d->currentLayer = 0;
-    onViewClosed();
-}
 
 void medViewerToolBoxViewProperties::raiseSlider(bool isVisible,double opacity)
 {
