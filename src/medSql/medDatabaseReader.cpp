@@ -155,7 +155,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile( QString filename )
         if (dataReader->canRead(filename)) {
             dataReader->read(filename);
             dataReader->enableDeferredDeletion(false);
-            dtkdata.takePointer(dataReader->data());
+            dtkdata = dataReader->data();
             if (dtkdata.refCount() != 2)
                 qWarning() << "(ReaderLoop) RefCount should be 2 here: " << dtkdata.refCount();
             break;

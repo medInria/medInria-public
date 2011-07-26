@@ -112,7 +112,7 @@ void medDatabaseImporter::run(void)
         dtkSmartPointer<dtkAbstractDataReader> dataReader = this->getSuitableReader(QStringList(fileInfo.filePath()));
         if (dataReader){
             dataReader->readInformation( filename );
-            dtkdata.takePointer(dataReader->data());
+            dtkdata = dataReader->data();
             dtkdata->enableDeferredDeletion(false);
             //dataReader = NULL;
         }
@@ -227,7 +227,7 @@ void medDatabaseImporter::run(void)
         if (dataReader) {
             dataReader->readInformation( it.value() );
             dataReader->read( it.value() );
-            imData.takePointer(dataReader->data());
+            imData = dataReader->data();
             QFileInfo fileInfo(it.value()[0]);
             if (imData) {
                 // populating again...
