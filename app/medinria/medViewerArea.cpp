@@ -222,7 +222,7 @@ void medViewerArea::open(const medDataIndex& index)
         data = medDataManager::instance()->data(index);
         if ( data.isNull() )
             return;
-        
+
         medAbstractView *view = NULL;
         medViewContainer * current = this->currentContainerFocused();
         if ( current != NULL )
@@ -232,7 +232,7 @@ void medViewerArea::open(const medDataIndex& index)
             view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
         }
-        
+
         if( view == NULL ) {
             qDebug() << "Unable to create a v3dView";
             return;
@@ -240,7 +240,7 @@ void medViewerArea::open(const medDataIndex& index)
 
         // another hash?!
         medViewManager::instance()->insert(index, view);
-        
+
         this->onViewFocused(view);
 
         // set the data to the view
@@ -253,13 +253,13 @@ void medViewerArea::open(const medDataIndex& index)
             medViewContainer * root = this->currentRootContainer();
             root->setUpdatesEnabled (false);
             root->setDisabled (true);
-            
+
             current->setView(view);
             current->setFocus(Qt::MouseFocusReason);
-            
+
             view->reset();
             view->update();
-            
+
             root->setDisabled (false);
             root->setUpdatesEnabled (true);
         }
@@ -417,7 +417,7 @@ void medViewerArea::switchToContainer(const QString& name)
     {
         medViewContainer * root = this->currentRootContainer();
         if ( root != NULL &&
-             root == 
+             root ==
              d->current_configuration->stackedViewContainers()->container(name))
         {
             //same conf, do nothing
@@ -426,7 +426,7 @@ void medViewerArea::switchToContainer(const QString& name)
         qDebug() << "switching from"
                  << d->current_configuration->currentViewContainerName()
                  << "to configuration" << name;
-        
+
         d->current_configuration->setCurrentViewContainer(name);
         root->setFocus(Qt::MouseFocusReason);
     }
@@ -451,7 +451,7 @@ void medViewerArea::switchToContainerPreset(int index)
             custom->setPreset(index);
             d->current_configuration->setCustomPreset(index);
         }
-    }    
+    }
 }
 
 void medViewerArea::addToolBox(medToolBox *toolbox)
@@ -501,7 +501,9 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     // Update toolboxes
     QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
     foreach( medToolBox *tb, toolboxes)
+    {
         tb->update(view);
+    }
 
     connect (view, SIGNAL(lutChanged()), this, SLOT(updateTransferFunction()));
 
@@ -563,7 +565,7 @@ void medViewerArea::bringUpTransferFunction(bool checked)
     medViewContainer * current = this->currentContainerFocused();
     if ( current == NULL )
         return;
-  
+
     if ( dtkAbstractView *view = current->view() ) {
       d->transFun = new medClutEditor(NULL);
       d->transFun->setWindowModality( Qt::WindowModal );
@@ -581,7 +583,7 @@ void medViewerArea::updateTransferFunction()
     medViewContainer * current = this->currentContainerFocused();
     if ( current == NULL )
         return;
-    
+
     dtkAbstractView * view = current->view();
     if ( d->transFun != NULL && view != NULL ) {
     // d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );

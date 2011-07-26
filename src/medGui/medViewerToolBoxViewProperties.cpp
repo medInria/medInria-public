@@ -254,28 +254,38 @@ void
 {
     medToolBox::update(view);
     if(!view)
+    {
+        clear();
         return;
+    }
 
     if ((d->view) && (d->view != dynamic_cast<medAbstractView *> (view)) )
     {
-        QObject::disconnect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)));
-        QObject::disconnect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()));
-        this->onViewClosed();
+        d->view->disconnect(this,0);
+        clear();
     }
+
     //qDebug() << "update 1";
     if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view))
     {
+
         if ((d->view == dynamic_cast<medAbstractView *> (view)))
+        {
             return;
+        }
         d->view = medView;
+
+        //decide whether to show the 2 layers slider
+        raiseSlider(d->view->layerCount() == 2);
+
         //qDebug() << "update 2";
         if(d->view->meshLayerCount()!=0)
             if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
-            //qDebug() << "update 3";
-            for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
+        //qDebug() << "update 3";
+        for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
             {
                 if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
                 {
@@ -292,20 +302,18 @@ void
                 d->propertiesTree->collapseAll();
             }
 
-            QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)), Qt::UniqueConnection);
-            QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
+        QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)), Qt::UniqueConnection);
+//        QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
 
-            QObject::connect(d->view, SIGNAL(TwoDTriggered(dtkAbstractView*)), this, SLOT(on2DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
-            QObject::connect(d->view, SIGNAL(ThreeDTriggered(dtkAbstractView*)), this, SLOT(on3DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
-            //raiseSlider(d->view->layerCount() == 2);
-            this->on2DTriggered(d->view);
-            this->on3DTriggered(d->view);
+        QObject::connect(d->view, SIGNAL(TwoDTriggered(dtkAbstractView*)), this, SLOT(on2DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
+        QObject::connect(d->view, SIGNAL(ThreeDTriggered(dtkAbstractView*)), this, SLOT(on3DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
+        this->on2DTriggered(d->view);
+        this->on3DTriggered(d->view);
 
-            d->view3dModeComboBox->blockSignals(true);
-            d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
-            d->view3dModeComboBox->blockSignals(false);
-            //qDebug() << "update 5";
-
+        d->view3dModeComboBox->blockSignals(true);
+        d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
+        d->view3dModeComboBox->blockSignals(false);
+        //qDebug() << "update 5";
     }
 }
 
@@ -624,12 +632,16 @@ void
         this->constructImageLayer(data, layer);
     }
 
+    //decide whether to show the 2 layers slider:
+    raiseSlider(d->view->layerCount() == 2);
 }
 
 void
-    medViewerToolBoxViewProperties::onViewClosed(void)
+    medViewerToolBoxViewProperties::clear(void)
 {
+    d->currentLayer = 0;
     d->propertiesTree->clear();
+    raiseSlider(false);
     d->view = 0;
 }
 void medViewerToolBoxViewProperties::onColorChanged(int selection)
@@ -904,11 +916,6 @@ void medViewerToolBoxViewProperties::onDeleteLayer()
     raiseSlider(d->view->layerCount() == 2);
 }
 
-void medViewerToolBoxViewProperties::clear()
-{
-    d->currentLayer = 0;
-    onViewClosed();
-}
 
 void medViewerToolBoxViewProperties::raiseSlider(bool isVisible,double opacity)
 {
