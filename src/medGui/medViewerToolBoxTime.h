@@ -52,8 +52,8 @@ public slots:
     void onPlaySequences();
 
     /** Slot for next and previous frame */
-    void onNextFrame(bool);
-    void onPreviousFrame(bool);
+    void onNextFrame();
+    void onPreviousFrame();
 
     /** parameters updated when time is changed */
     void onTimeChanged(int);
@@ -84,7 +84,7 @@ public slots:
     void updateRange (void);
 
     /** recover time information from slider (integer) value and vice-versa */
-    double getTimeFromSliderValue (unsigned int);
+    double getTimeFromSliderValue (int);
     unsigned int getSliderValueFromTime (double);
 
     /** override the mouse release function for the slider */

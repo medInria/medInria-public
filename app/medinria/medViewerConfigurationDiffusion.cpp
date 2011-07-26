@@ -67,7 +67,6 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     connect(d->fiberViewToolBox, SIGNAL(ribbonModeSelected(bool)),   this, SLOT(onRibbonModeSelected(bool)));
     connect(d->fiberViewToolBox, SIGNAL(tubeModeSelected(bool)),     this, SLOT(onTubeModeSelected(bool)));
     
-    connect(d->fiberBundlingToolBox, SIGNAL(showBundles(bool)),                this, SLOT(onShowBundles(bool)));
     connect(d->fiberBundlingToolBox, SIGNAL(fiberSelectionValidated(const QString&, const QColor&)), this, SLOT(refreshInteractors()));
     
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
@@ -157,7 +156,7 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
         connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), view, SLOT(update(void)));
         connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), view, SLOT(update(void)));
 
-        connect(view, SIGNAL(positionChanged(const QVector3D&)), interactor, SLOT(onPositionChanged(const QVector3D&)));
+        connect(view, SIGNAL(positionChanged(const QVector3D&,bool)), interactor, SLOT(onPositionChanged(const QVector3D&,bool)));
 
         updateTensorInteractorWithToolboxValues(interactor, d->tensorViewToolBox);
     }
@@ -279,20 +278,6 @@ void medViewerConfigurationDiffusion::onTubeModeSelected (bool value)
         if (value)
             if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
             interactor->setProperty ("RenderingMode", "tubes");
-
-            view->update();
-        }
-    }
-}
-
-void medViewerConfigurationDiffusion::onShowBundles (bool value)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-            if (value)
-                interactor->enable();
-            else
-                interactor->disable();
 
             view->update();
         }

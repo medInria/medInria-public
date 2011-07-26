@@ -1,9 +1,36 @@
 #!/usr/bin/env python
 from optparse import OptionParser
-import sys,os,zipfile,ConfigParser,platform, shutil,urllib
+import sys,os,zipfile,ConfigParser,platform, shutil,urllib,string
 from exceptions import OSError,NotImplementedError
-import re,subprocess
-import types
+import re,subprocess,exceptions
+import types,shlex
+import logging, logging.config
+
+################################################################################
+#
+# Logger settings
+#
+################################################################################
+def config_logging(log, config):
+    """
+    Configure the logging for the project
+    """
+    fileName=config.get("logging","filename")
+
+    if (log and fileName):
+        #logging.basicConfig(filename=fileName,level=logging.DEBUG)
+        print "create logger from conf file:",fileName 
+        logging.config.fileConfig(fileName)
+
+        # create logger
+        logger = logging.getLogger('root')
+    else:
+        print "create default logger" 
+        # create logger
+        logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
+                level=logging.DEBUG)
+        logger = logging.getLogger('root')
+
 
 ################################################################################
 #
@@ -13,9 +40,9 @@ import types
 ################################################################################
 
 if not "check_output" in subprocess.__dict__:
-   
+
     def check_output(*popenargs, **kwargs):
-       
+
         if 'stdout' in kwargs:
             raise ValueError('stdout argument not allowed, it will be overridden.')
         process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
@@ -30,13 +57,28 @@ if not "check_output" in subprocess.__dict__:
 else:
     from subprocess import check_output
 
+def run_and_log(*popenargs, **kwargs):
+    if 'stderr' in kwargs:
+            raise ValueError('stderr argument not allowed, it will be overridden.')
+    if 'stdout' in kwargs:
+            raise ValueError('stdout argument not allowed, it will be overridden.')
+
+    process = subprocess.Popen(stderr=subprocess.STDOUT,
+                    stdout=subprocess.PIPE, *popenargs, **kwargs)
+    output, unused_err = process.communicate()
+    retcode = process.poll()
+    if retcode:
+        logging.error(output)
+        return
+    logging.info(output)
+
 
 def _extract_all(self, destdir):
     namelist = self.namelist()
     namelist.sort()
     for name in namelist:
         if name.endswith('/'):
-            print name
+            logging.info(name);
             os.makedirs(os.path.join(destdir, name))
         else:
             outfile = open(os.path.join(destdir, name), 'wb')
@@ -51,11 +93,11 @@ def unzip(src, dest):
     zipo = zipfile.ZipFile(src, 'r')
     zipo.extract_all(dest)
 
-def reporthook(a,b,c): 
+def reporthook(a,b,c):
     # ',' at the end of the line is important!
     print "% 3.1f%% of %d bytes\r" % (min(100, float(a * b) / c * 100), c),
     #you can also use sys.stdout.write
-    #sys.stdout.write("\r% 3.1f%% of %d bytes" 
+    #sys.stdout.write("\r% 3.1f%% of %d bytes"
     #                 % (min(100, float(a * b) / c * 100), c)
     sys.stdout.flush()
 
@@ -67,7 +109,7 @@ def url_get_file(url,file_path):
     """
     #i = url.rfind('/')
     #file = url[i+1:]
-    print url, "->", file_path
+    logging.info( "%s -> %s",url, file_path)
     urllib.urlretrieve(url, file_path, reporthook)
     sys.stdout.flush()
     return
@@ -92,7 +134,9 @@ def find_architecture():
             ARCHITECTURE=ARCHITECTURE+'64'
         else:
             ARCHITECTURE=ARCHITECTURE+'32'
-    print 'found the architecture : ' + ARCHITECTURE
+    logger = logging.getLogger('root')
+    logger.info( 'found the architecture : %s',ARCHITECTURE)
+    logger.info("test")
     return ARCHITECTURE
 
 def install_package_deps(config):
@@ -109,8 +153,9 @@ def install_package_deps(config):
         cmd=""
     else:
         raise "unknown package manager"
-    print cmd
-    os.system(cmd)
+    if not cmd: return
+    logging.info( cmd)
+    run_and_log(cmd.split())
 
 def load_config_files(filenames=[]):
     """
@@ -123,7 +168,7 @@ def load_config_files(filenames=[]):
     config=ConfigParser.ConfigParser()
     config.optionxform = str
     config.readfp(open("default_param.cfg"))
-    print config.read(filenames)
+    print(config.read(filenames))
     return config
 
 def configure_project(project,config,architecture='linux'):
@@ -144,27 +189,28 @@ def configure_project(project,config,architecture='linux'):
         if (architecture == "win"):
             src_dir=config.get(project,"cyg_drive")+src_dir
         shutil.rmtree(build_dir,True)
+        print("making dir %s",build_dir )
         os.makedirs(build_dir)
         os.chdir(build_dir)
 
-        command= cmake_command
+        command= shlex.split(cmake_command)
         for k,v in config.items("cmake-common"):
             #prevent defaults to pollute the command line
             if not config.has_option("DEFAULT",k):
-                command+=' -D'+k+':'+v
+                command.append('-D'+k+':'+v)
         for k,v in config.items(project+"-cmake"):
             if not config.has_option("DEFAULT",k):
-                command+=' -D'+k+':'+v
-        command = command + ' ' + src_dir
+                command.append('-D'+k+':'+v)
+        command.append(src_dir)
     elif config.get(project,"configure_type")== "autoconf":
-        command = "./configure "
+        command = [os.path.abspath("./configure")]
         for k,v in config.items(project+"-configure"):
             #prevent defaults to pollute the command line
             if not config.has_option("DEFAULT",k):
-                command+=k+"="+v+" "
+                command.append(k+"="+v)
 
-    print command
-    os.system(command)
+    logging.info( command)
+    run_and_log(command)
 
 def build(project,config,architecture="linux"):
     """
@@ -177,7 +223,7 @@ def build(project,config,architecture="linux"):
     make_command = config.get("commands","make")
     if architecture == 'win' or architecture == 'win32' or architecture == 'win64':
         win32_config= config.get(project,"win32_configuration")
-        
+
         if not win32_config and config.get(project,"build_type")=="Release":
             win32_config = "Release\|Win32"
 
@@ -189,14 +235,13 @@ def build(project,config,architecture="linux"):
                     "visual_build") +' ' + project_name + '.sln ' + win32_config
     else:
          cmd = make_command+' -j'+config.get(project,"cpus") + ' -k'
-    print cmd
-    os.system(cmd)
+    logging.info(cmd)
+    run_and_log(cmd.split())
 
     extra_build_cmd=config.get(project,"extra_build_cmd")
     if len(extra_build_cmd):
-        print "#####\n#######\n######\n######\n######\n######\n######\n####\n"
-        print extra_build_cmd
-        os.system(extra_build_cmd)
+        logging.info(extra_build_cmd)
+        run_and_log (extra_build_cmd.split())
 
     os.chdir('..')
 
@@ -220,37 +265,38 @@ def wget(project,config):
     Gets a source package from the web and Uncompress it if needed.
     Uses the "wget" and the uncompress_command specified in
     the config file under the project's section.
-    
-    If the wget command is "python", 
+
+    If the wget command is "python",
     then a python function is called to download the file,
     Only if it doesn't exist yet.
     """
     wget_c = config.get("commands","wget")
-            
+
     source_file = config.get(project,"source_file")
     source = config.get(project,"source_host")+"/"+source_file
     archive_dir = config.get(project,"archive_dir")
     target_file = os.path.join(archive_dir,source_file)
-    print "arc_dir:",archive_dir,"file:",target_file
+    logging.info("arc_dir: %s, file: %s",archive_dir,target_file)
 
     if wget_c == "python":
         if not os.path.isfile(target_file):
             url_get_file(source,target_file)
         else:
-            print "file",target_file,"already exists, skipping download"
+            logging.warn("file %s already exists, skipping download",target_file)
     else:
-        os.system(wget_c + " "+ source)
+        wget_c = wget_c + " " + source
+        run_and_log(wget_c.split())
     #uncompress in the right directory...
     uncomp_cmd = config.get(project,"uncompress_command")
-    print uncomp_cmd
+    logging.info(uncomp_cmd)
     #len(python_)=7
     if len(uncomp_cmd)>7 and uncomp_cmd[0:7]== "python_" :
         option = uncomp_cmd[7:]
-        print "uncompress file type:",option
+        logging.info( "uncompress file type:%s",option)
         if option == "tar":
             uncomp_tar(project,config,target_file)
     else:
-        os.system(uncomp_cmd)
+        run_and_log(uncomp_cmd.split())
     return
 
 def _git_path(project,config):
@@ -299,8 +345,10 @@ def git_clone(project,config):
     git_command = config.get("commands","git")
     dest_dir = config.get(project,"destination_dir")
     url = _git_path(project,config)
-    print url
-    os.system(git_command + " clone "+ url + " " + dest_dir)
+    logging.debug(url)
+    cmd = git_command + " clone "+ url + " " + dest_dir
+    logging.debug(cmd)
+    run_and_log(cmd.split())
     os.chdir(dest_dir)
     _git_checkout(project, config)
     os.chdir("..")
@@ -313,8 +361,13 @@ def git_pull(project,config):
     git_command = config.get("commands","git")
     dest_dir = config.get(project,"destination_dir")
     os.chdir(dest_dir)
-    os.system(git_command+ " checkout master")
-    os.system(git_command+ " pull")
+    cmd = git_command.split()
+    cmd.extend(["checkout","master"])
+    run_and_log(cmd)
+    cmd = git_command.split()
+    cmd.append("pull")
+    logging.debug(cmd)
+    run_and_log(cmd)
     _git_checkout(project, config)
     os.chdir("..")
     return
@@ -327,7 +380,7 @@ def _git_parse_branches(git_output):
     output.  The name may contain several shlashes,
     e.g. 'origin/master'.
     """
-    
+
     def _parse_branch_line(line):
         p = re.compile(r"(\*?)\s+((?:.+/)?([^/]+))")
         active, full, name = p.match(line).groups()
@@ -343,7 +396,7 @@ def _git_checkout(project, config):
     local branch.
     """
     git_command = config.get("commands", "git")
-    
+
     git_output      = check_output([git_command,"branch"])
     local_branches  = _git_parse_branches(git_output)
     git_output      = check_output([git_command,"branch","-r"])
@@ -373,7 +426,7 @@ def _git_checkout(project, config):
             git_co_com += " " + active[0]
 
     # print git_command
-    os.system(git_co_com)
+    run_and_log(git_co_com.split())
 
     return
 
@@ -384,7 +437,9 @@ def svn_update(project,config):
     svn_command = config.get("commands","svn")
     dest_dir = config.get(project,"destination_dir")
     os.chdir(dest_dir)
-    os.system(svn_command+' update')
+    cmd = svn_command.split()
+    cmd.append("update")
+    run_and_log(cmd)
     os.chdir('..')
     return
 
@@ -400,10 +455,9 @@ def svn_checkout(project,config):
     path = _svn_path(project,config)
     dest_dir =  config.get(project,"destination_dir")
 
-    svn_cmd=svn_command+' checkout '+ path + " " + dest_dir
-    print svn_cmd
-    os.system(svn_cmd)
-
+    svn_cmd=[svn_command,'checkout', path, dest_dir]
+    logging.info( svn_cmd)
+    run_and_log(svn_cmd)
     return
 
 def create_dirs(project,config):
@@ -426,8 +480,8 @@ def create_dirs(project,config):
         raise "don't know how to get the source code for : " + project
     extra_create_dirs_cmd=config.get(project,"extra_create_dirs_cmd")
     if len(extra_create_dirs_cmd):
-        print extra_create_dirs_cmd
-        os.system(extra_create_dirs_cmd)
+        logging.info( extra_create_dirs_cmd)
+        run_and_log(extra_create_dirs_cmd,shell=True)
 
     return
 
@@ -455,30 +509,35 @@ def install(project,config,architecture):
     based.
     """
     os.chdir(config.get(project,"build_dir"))
-    make_command = config.get("commands","make")
+    make_command = [config.get("commands","make")]
+    cmd = list()
     if architecture == 'win' or architecture == 'win32' \
             or architecture == 'win64':
 
-        win32_config= config.get(project,"win32_configuration")
-        
+        win32_config= config.get(project,"win32_configuration").split()
+
         if not win32_config and config.get(project,"build_type")=="Release":
-            win32_config = "Release\|Win32"
+            win32_config = ["Release\|Win32"]
 
         generator_type = config.get(project,"generator_type")
         if generator_type == 'NMake Makefiles':
-            cmd = make_command + ' -f Makefile install'
-        elif generator_type == "Visual Studio 10":
-            cmd =  config.get("commands",
-                    "visual_build") +' install.vcxproj ' + win32_config
+            cmd.extend(make_command)
+            cmd.extend(['-f', 'Makefile', 'install'])
+        elif not (-1 == string.find(generator_type,"Visual Studio 10")):
+            cmd.extend  ([config.get("commands",
+                    "visual_build"), 'install.vcxproj'])
+            cmd.extend(win32_config)
         else :
-            cmd =  config.get("commands",
-                    "visual_build") +' install.vcproj ' + win32_config
+            cmd.extend ([config.get("commands",
+                    "visual_build"),'install.vcproj'])
+            cmd.extend(win32_config)
 
     else:
-        cmd = make_command+' install'
+        cmd.extend(make_command)
+        cmd.append('install')
 
-    print cmd
-    os.system(cmd)
+    logging.info( cmd)
+    run_and_log(cmd)
 
     """extra_build_cmd=config.get(project,"extra_build_cmd")
     if len(extra_build_cmd):
@@ -493,42 +552,63 @@ def build_package(project,config,architecture):
     Runs the package creation command on the project. Only cpack for now.
     """
 
-    print "build package: " + project
+    logging.info("build package: " + project)
     os.chdir(config.get(project,"build_dir"))
-    print architecture,
+    logging.debug(architecture)
     if architecture =='win' or architecture == 'win32' \
             or architecture == 'win64':
 
-        cmd = config.get("commands","make") + " package"
-        print cmd
-
-        os.system(cmd)
+        cmd = [config.get("commands","make"),"package"]
+        logging.info(cmd)
+        # do not run the make package on this platform, only the extra_package_command
+        #run_and_log(cmd)
     else:
         cpack_cmd = config.get("commands","cpack")
         pkg_mngr = config.get("package_deps","package_manager")
-        print pkg_mngr
+        logging.info( pkg_mngr)
         gen = "RPM"
         if pkg_mngr == "apt":
             gen = "DEB"
-        cmd = cpack_cmd + " -G " + gen
-        os.system(cmd)
+        cmd = [cpack_cmd, "-G ", gen]
+        run_and_log(cmd)
 
     extra_package_cmd=config.get(project,"extra_package_cmd")
     if len(extra_package_cmd):
-        print "Execute extra package command:",extra_package_cmd
-        os.system(extra_package_cmd)
+        logging.info( "Execute extra package command:"+extra_package_cmd)
+        run_and_log(extra_package_cmd,shell=True)
     return
+
+def doc(project,config,architecture):
+    """
+    Runs the documentation command.
+    @warnign: Only linux for now.
+    """
+
+    print "doc package: " + project
+    os.chdir(config.get(project,"build_dir"))
+
+    make = config.get("commands","make")
+    doc = config.get(project,"doc_command")
+    doc_output = run_and_log([make,doc])
+    #print doc_output
+
+    extra_doc_cmd=config.get(project,"extra_doc_cmd")
+    if len(extra_doc_cmd):
+        logging.info( "Execute extra doc command: "+ extra_doc_cmd)
+        run_and_log(extra_doc_cmd,shell=True)
+    return
+
 
 def confirm_action( prompt = None ):
     """prompts for response from the user. Returns True for continue and
     False for skip, exits for abort.
     """
-    
+
     if prompt is None:
         prompt = 'Continue, Skip or Abort?'
 
     prompt = '%s ([c],s,a): ' % prompt
-        
+
     while True:
         ans = raw_input(prompt)
         if not ans:
@@ -543,6 +623,7 @@ def confirm_action( prompt = None ):
         if ans == 's' or ans == 'S':
             return False
         if ans == 'a' or ans == 'A':
+            logging.shutdown()
             sys.exit()
 
 
@@ -626,6 +707,12 @@ def main(argv):
             action="store_false",
             default=True,
             help="Do not create packages for the projects")
+    # build doc
+    parser.add_option("-o","--doc", dest="doc",
+            action="store_true",
+            default=False,
+            help="build the docs for the projects (disabled by default)")
+
 
     # interactive mode
     parser.add_option("--interactive",
@@ -650,6 +737,12 @@ def main(argv):
                               Debugging tool. Returns right after \
                               displaying the configuration."
                       )
+    parser.add_option("-l","--log",
+                      dest = "log",
+                      action = "store_true",
+                      default = False,
+                      help = "Log all output in a file instead of the console"
+                      )
 
 
     (options, args) = parser.parse_args()
@@ -660,7 +753,11 @@ def main(argv):
 
     #    filenames = options.filenames.split(":")
     config = load_config_files(filenames)
+    # configure logging
+    config_logging(options.log,config)
+
     architecture = find_architecture()
+
 
     # debug function: shows config values:
     if options.show_conf:
@@ -671,11 +768,11 @@ def main(argv):
 
     # install dependencies through the package management system.
     if options.pkg_dep and config.getint('package_deps', 'install') == 1:
-        print "installing package dependencies..."
+        logging.info( "installing package dependencies...")
         install_package_deps(config)
     else:
-        print "skip installation of package dependencies"
-        
+        logging.info("skip installation of package dependencies")
+
 
     # create main directory
     projects_dir = os.path.abspath(config.get("DEFAULT","projects_dir"))
@@ -683,13 +780,13 @@ def main(argv):
     try:
         os.makedirs(projects_dir)
     except OSError,e:
-        print e
-        print '...no problem, continuing'
+        logging.debug( e)
+        logging.debug( '...no problem, continuing')
     try:
         os.makedirs(archive_dir)
     except OSError,e:
-        print e
-        print '...no problem, continuing'
+        logging.debug( e)
+        logging.debug( '...no problem, continuing')
 
     # run the requested actions for each project
     projects_str = config.get("projects","projects")
@@ -706,44 +803,55 @@ def main(argv):
         os.chdir(projects_dir)
 
         if choose_fun('create_dirs'):
-            print "Creating directory for " + project + "..."
+            logging.info( "Creating directory for " + project + "...")
             if confirm_fun():
                 create_dirs(project,config)
         elif choose_fun('update_dirs'):
-            print "Updating directory for " + project + "..."
+            logging.info("Updating directory for " + project + "...")
             if confirm_fun():
                 update_dirs(project,config)
 
         cwd = os.path.join(projects_dir, config.get(project,"destination_dir"))
         os.chdir(cwd)
         if choose_fun('configure'):
-            print "configuring " + project + "..."
+            logging.info( "configuring " + project + "...")
             if confirm_fun():
                 configure_project(project,config,architecture)
 
         os.chdir(cwd)
         if choose_fun('build'):
-            print "building " + project + "..."
+            logging.info( "building " + project + "...")
             if confirm_fun():
                 build(project,config,architecture)
 
         os.chdir(cwd)
+        if choose_fun('doc'):
+            logging.info( "doc " + project + "...")
+            if confirm_fun():
+                doc(project,config,architecture)
+
+
+        os.chdir(cwd)
         if choose_fun('install'):
-            print "installing " + project + "..."
+            logging.info( "installing " + project + "...")
             if confirm_fun():
                 install(project,config,architecture)
 
         os.chdir(cwd)
         if choose_fun('package'):
-            print "packaging " + project + "..."
+            logging.info( "packaging " + project + "...")
             if confirm_fun():
                 build_package(project,config,architecture)
 
         os.chdir(cwd)
 
-        print project
+        logging.info(project)
     return
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        main(sys.argv)
+    except exceptions.Exception, e:
+        logging.error(e)
+    logging.shutdown()

@@ -11,6 +11,9 @@ IF( DOXYGEN_FOUND )
       SET(all_arg "ALL")
     ENDIF()
 
+    find_package(Qt4 4.6.0 REQUIRED)
+    include(${QT_USE_FILE})
+
     #
     # Documentation
     #
@@ -49,8 +52,8 @@ IF( DOXYGEN_FOUND )
               "${CMAKE_CURRENT_BINARY_DIR}/medinria.qhcp"
       )
 
-    ADD_CUSTOM_TARGET(doc ${all_arg} DEPENDS ${doc_output})
-    SET_TARGET_PROPERTIES(doc PROPERTIES LABELS Documentation)
+    ADD_CUSTOM_TARGET(${PROJECT_NAME}-doc ${all_arg} DEPENDS ${doc_output})
+    SET_TARGET_PROPERTIES(${PROJECT_NAME}-doc PROPERTIES LABELS Documentation)
  
   ELSE( DOXYGEN_DOT_FOUND )
     MESSAGE( WARNING

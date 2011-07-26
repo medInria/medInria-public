@@ -70,6 +70,13 @@ public:
     */
     bool isConnected();
 
+    /**
+    * return the size that the data behind the medDataIndex in byte
+    * @param const medDataIndex& index the index for the data
+    * @return estimated size of data
+    */
+    qint64 getEstimatedSize(const medDataIndex& index) const;
+
 public slots:
 
     /**
@@ -77,7 +84,7 @@ public slots:
     * @params const medDataIndex & index Index to look for
     * @return dtkAbstractData* data
     */
-    dtkAbstractData* read(const medDataIndex& index) const;
+    QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
     * Store data temporarily referenced by temp index
@@ -85,15 +92,20 @@ public slots:
     * @return medDataIndex assigned index
     */
     medDataIndex import(dtkAbstractData *data);
-
-
+    
     /**
-    * Store data temporarily referenced by temp index
-    * @params const QString & file data stored at file path
-    * @return medDataIndex - assigned index
-    */
+     * Store data temporarily referenced by temp index
+     * @params const QString & file data stored at file path
+     * @return medDataIndex - assigned index
+     */
     medDataIndex import(const QString& file);
-
+    
+    /**
+     * Remove data referenced by index from temporary database
+     * @params const medDataIndex & index : data index
+     */
+    void remove(const medDataIndex& index);
+    
     /**
     * Removes any reference to non-persistent data. Do not actually free memory.
     */

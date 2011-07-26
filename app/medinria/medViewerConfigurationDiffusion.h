@@ -34,7 +34,6 @@ public slots:
     void onLineModeSelected(bool);
     void onRibbonModeSelected(bool);
     void onTubeModeSelected(bool);
-    void onShowBundles (bool);
     void onTBDiffusionSuccess(void);
     void refreshInteractors (void);
 

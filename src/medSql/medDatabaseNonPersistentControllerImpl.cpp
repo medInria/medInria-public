@@ -43,7 +43,8 @@ public:
     int st_index;
     int se_index;
     int im_index;
-    QHash<medDataIndex, medDatabaseNonPersistentItem *> items;
+    typedef QHash<medDataIndex, medDatabaseNonPersistentItem *> DataHashMapType;
+    DataHashMapType items;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -111,12 +112,18 @@ medDataIndex medDatabaseNonPersistentControllerImpl::import(const QString& file)
     return index;
 }
 
-dtkAbstractData* medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
+QSharedPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
 {
-    if(d->items.keys().contains(index))
-        return d->items.value(index)->data();
+    // Lookup item in hash table.
+    medDatabaseNonPersistentControllerImplPrivate::DataHashMapType::const_iterator it( d->items.find(index) );
 
-    return NULL;
+    // Is item in our table ? if not, return null.
+    if ( it == d->items.end() )
+        return QSharedPointer<dtkAbstractData> ();
+
+    QSharedPointer<dtkAbstractData> ret(it.value()->data());
+
+    return ret;
 }
 
 int medDatabaseNonPersistentControllerImpl::nonPersistentDataStartingIndex(void)
@@ -184,4 +191,22 @@ void medDatabaseNonPersistentControllerImpl::clear(void)
     d->st_index = nonPersistentDataStartingIndex();
     d->se_index = nonPersistentDataStartingIndex();
     d->im_index = nonPersistentDataStartingIndex();
+}
+
+
+void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
+{
+    if (d->items.count(index) > 0)
+    {
+        d->items.remove(index);
+    }
+    
+    // since we are not managing memory, no deletion should be made here
+    // as we don't know if the data is still in use
+}
+
+qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIndex& index ) const
+{
+    Q_UNUSED(index);
+    return 0;
 }

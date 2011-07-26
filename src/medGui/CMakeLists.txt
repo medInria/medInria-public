@@ -4,9 +4,9 @@
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:20:13 2009 (+0200)
 ## Version: $Id$
-## Last-Updated: Mon Dec 20 13:33:18 2010 (+0100)
+## Last-Updated: Wed May  4 14:43:36 2011 (+0200)
 ##           By: Julien Wintz
-##     Update #: 167
+##     Update #: 168
 ######################################################################
 ##
 ### Commentary:
@@ -41,9 +41,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medFlicker.h
   medLayoutChooser.h
   medProgressionStack.h
-  medStatusQuitButton.h
-  medSettingsButton.h
   medPacsSelector.h
+  medButton.h  
   
   # general toolbox classes
   medToolBox.h
@@ -89,6 +88,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserToolBoxPacsHost.h
   medBrowserToolBoxPacsNodes.h
   medBrowserToolBoxPacsSearch.h    
+  
+  medDatabaseSearchPanel.h
 
 )
 
@@ -96,6 +97,7 @@ set(${PROJECT_NAME}_HEADERS
   medLUTtoXMLWriter.h
   medXMLtoLUTReader.h
   medViewContainer_p.h
+  medGuiExport.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
 
@@ -114,9 +116,8 @@ set(${PROJECT_NAME}_SOURCES
   medFlicker.cpp
   medLayoutChooser.cpp
   medProgressionStack.cpp
-  medStatusQuitButton.cpp
-  medSettingsButton.cpp
   medPacsSelector.cpp
+  medButton.cpp
   
   medToolBox.cpp
   medToolBoxBody.cpp
@@ -156,7 +157,9 @@ set(${PROJECT_NAME}_SOURCES
   
   medBrowserToolBoxPacsHost.cpp
   medBrowserToolBoxPacsNodes.cpp
-  medBrowserToolBoxPacsSearch.cpp    
+  medBrowserToolBoxPacsSearch.cpp
+
+  medDatabaseSearchPanel.cpp 
 )
 
 # Include header files for Visual Studio.
@@ -185,6 +188,10 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkGui
   medCore)
+
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Installation

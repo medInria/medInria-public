@@ -1,5 +1,5 @@
-/* medProgressionStack.cpp --- 
- * 
+/* medProgressionStack.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:39:47 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 71
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medProgressionStack.h"
@@ -37,7 +37,7 @@ QString medChop(const QString& string)
         result.resize(12);
         result.append("...");
     }
-    
+
     return result;
 }
 
@@ -51,6 +51,7 @@ public:
     QVBoxLayout *layout;
 
     QHash<QObject *, QProgressBar *> bars;
+    QHash<QObject *, QLabel *> completeLabels;
     QHash<QObject *, QPushButton*> buttons;
     QHash<QObject *, QObject *> buttonsSender;
     QHash<QObject *, QWidget *> widgets;
@@ -97,6 +98,10 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
     bar->setRange(0, 100);
     d->bars.insert(sender, bar);
 
+    QLabel *completeLabel = new QLabel(widget);
+    completeLabel->setVisible(false);
+    d->completeLabels.insert(sender, completeLabel);
+
     QPushButton *button= new QPushButton(widget);
     button->setText("C");
     connect(button,SIGNAL(clicked()), this,SLOT(sendCancelRequest()));
@@ -106,6 +111,7 @@ void medProgressionStack::setLabel(QObject *sender, QString label)
     QHBoxLayout *layout = new QHBoxLayout(widget);
     layout->addWidget(ilabel);
     layout->addWidget(bar);
+    layout->addWidget(completeLabel);
     layout->addWidget(button);
     d->widgets.insert(sender, widget);
 
@@ -116,14 +122,23 @@ void medProgressionStack::setProgress(QObject* sender, int progress)
 {
     if (d->bars.contains(sender)) {
 
-        if(!d->bars.value(sender)->isHidden())
+        if(!d->bars.value(sender)->isHidden()) {
             d->bars.value(sender)->setValue(progress);
+            if (progress==100) {
+                QWidget *widget = d->widgets.value(sender);
+                d->bars.value(sender)->hide();
+                widget->layout()->removeWidget(d->buttons.value(sender));
+                d->buttons.value(sender)->hide();
+                d->completeLabels.value(sender)->setText(tr("Finishing..."));
+                d->completeLabels.value(sender)->setVisible(true);
+            }
+        }
     }
 }
 
 void medProgressionStack::onSuccess (QObject* sender)
 {
-    completeNotification(sender, tr("Successful"));
+    completeNotification(sender, tr("Success"));
 }
 
 void medProgressionStack::onFailure (QObject* sender)
@@ -167,19 +182,17 @@ void medProgressionStack::completeNotification(QObject* sender, QString label )
 
         QWidget *widget = d->widgets.value(sender);
 
-        if(!d->bars.value(sender)->isHidden())
-        {
+        if (!d->widgets.value(sender)->isHidden()) {
             //Completed notification
-            QLabel *completeLabel = new QLabel(label,widget);
+            d->completeLabels.value(sender)->setText(label);
             widget->layout()->removeWidget(d->bars.value(sender));
             d->bars.value(sender)->hide();
             widget->layout()->removeWidget(d->buttons.value(sender));
             d->buttons.value(sender)->hide();
-            widget->layout()->addWidget(completeLabel);
+            d->completeLabels.value(sender)->setVisible(true);
             d->itemstoBeRemoved.enqueue(sender);
             QTimer::singleShot(3000, this, SLOT(removeItem()));
         }
-
     }
 }
 
@@ -197,10 +210,17 @@ void medProgressionStack::addJobItem(medJobItem* job, QString label)
     connect(job, SIGNAL(progressed(QObject*, int)), this, SLOT(setProgress(QObject*, int)), Qt::QueuedConnection);
     connect(job, SIGNAL(success(QObject*)), this, SLOT(onSuccess(QObject*)), Qt::QueuedConnection);
     connect(job, SIGNAL(failure(QObject*)), this, SLOT(onFailure(QObject*)), Qt::QueuedConnection);
-    connect(job, SIGNAL(showError(QObject*,const QString&,unsigned int)), 
+    connect(job, SIGNAL(showError(QObject*,const QString&,unsigned int)),
         medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)), Qt::QueuedConnection);
     connect(job, SIGNAL(cancelled(QObject*)), this,SLOT(onCancel(QObject*)), Qt::QueuedConnection);
     connect(this, SIGNAL(cancelRequest(QObject*)),job, SLOT(onCancel(QObject*)), Qt::QueuedConnection);
-    
-    this->setLabel(job, label);  
+
+    this->setLabel(job, label);
+}
+
+void medProgressionStack::setActive(QObject *sender, bool active)
+{
+    if (d->bars.contains(sender) ) {
+        active?d->bars.value(sender)->setMaximum(0):d->bars.value(sender)->setMaximum(100);
+    }
 }

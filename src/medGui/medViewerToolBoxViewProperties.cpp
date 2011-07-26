@@ -70,7 +70,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     //add 2 layers opacity slider and switcher.
     d->twoLayersWidget = new QWidget(this);
-    QGridLayout * twoLayersLayout = new QGridLayout(this);
+    QGridLayout * twoLayersLayout = new QGridLayout();
     d->twoLayersWidget->setLayout(twoLayersLayout);
 
     d->slider = new QSlider(Qt::Horizontal,this);
@@ -119,7 +119,7 @@ void
         d->view = medView;
                 if(d->view->meshLayerCount()!=0)
             if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
-            {   
+            {
                 d->currentInteractor = d->interactors.indexOf(interactor);
                 qDebug()<<"Update Interactor" << d->interactors.indexOf(interactor);
             }
@@ -127,9 +127,11 @@ void
         {
             QString layerItemString = QString::number(0);
             if(d->view->layerCount() > 1 || d->view->meshLayerCount() > 0 )
-                if(d->view->dataInList(i)->description().contains("vtkDataMesh"))//d->view->dataInList(i) && 
+
+                if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
+
                     layerItemString = "Mesh " + QString::number(meshNumber);
-                else 
+                else
                     layerItemString = QString::number(imageNumber++);
 
             QTreeWidgetItem * layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
@@ -158,7 +160,7 @@ void
                 QComboBox * attrBox = new QComboBox();
                 attrBox->setFocusPolicy(Qt::NoFocus);
                 attrBox->addItem("Solid");
-               
+
                 if (d->interactors[d->currentInteractor]->getLUTQuery(meshNumber)!=NULL)
                     attrBox->addItem(d->interactors[d->currentInteractor]->getLUTQuery(meshNumber));
                 QObject::connect(attrBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onAttrBoxChanged(int)));
@@ -233,7 +235,7 @@ void
                 comboBox->addItem(createIcon("#0000FF"),"#0000FF",QColor("#0000FF"));
                 comboBox->addItem(createIcon("#0080FF"),"#0080FF",QColor("#0080FF"));
                 comboBox->addItem(createIcon("#0080C0"),"#0080C0",QColor("#0080C0"));
-                d->propertiesTree->setItemWidget(coloringItem, 2, comboBox); 
+                d->propertiesTree->setItemWidget(coloringItem, 2, comboBox);
                 connect(comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(on_comboBox_currentIndexChanged(int)));
 
                 QTreeWidgetItem * renderingItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
@@ -261,7 +263,7 @@ void
 
         raiseSlider(d->view->layerCount() == 2);
 
-        
+
 
     }
 }
@@ -284,7 +286,7 @@ void
     //        const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
     //    const QString seriesName = data->name();
 
-    d->view->addDataInList(data);
+    
     if (d->view->layerCount() == 1 && !data->description().contains("vtkDataMesh"))
         return;
 
@@ -300,7 +302,7 @@ void
             layerItemString = "Mesh " + QString::number(d->view->meshLayerCount());
             //if(d->view->meshLayerCount()!=0)
         if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
-        {   
+        {
             d->currentInteractor = d->interactors.indexOf(interactor);
             qDebug()<<"Update Interactor" << d->interactors.indexOf(interactor);
         }
@@ -415,12 +417,12 @@ void
         comboBox->addItem(createIcon("#0000FF"),"#0000FF",QColor("#0000FF"));
         comboBox->addItem(createIcon("#0080FF"),"#0080FF",QColor("#0080FF"));
         comboBox->addItem(createIcon("#0080C0"),"#0080C0",QColor("#0080C0"));
-        d->propertiesTree->setItemWidget(coloringItem, 2, comboBox); 
+        d->propertiesTree->setItemWidget(coloringItem, 2, comboBox);
         connect(comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(on_comboBox_currentIndexChanged(int)));
         /*QTreeWidgetItem * coloringItem = new QTreeWidgetItem(layerItem, QTreeWidgetItem::UserType+2);
         coloringItem->setText(1, "Color");
         QColorDialog *colordialog = new QColorDialog();
-        d->propertiesTree->setItemWidget(coloringItem, 2, colordialog); 
+        d->propertiesTree->setItemWidget(coloringItem, 2, colordialog);
         colordialog->open();
         QObject::connect(colordialog, SIGNAL(currentColorChanged(const QColor&)), this, SLOT(onColorSelected(const QColor&)));*/
 
@@ -443,7 +445,7 @@ void
     d->propertiesTree->collapseAll();
     raiseSlider(d->view->layerCount() == 2, 0.5);
 
-    
+
 }
 
 void
@@ -587,7 +589,7 @@ void
         d->interactors[d->currentInteractor]->onPropertySet(propertyString, d->lutList.at(index));
         qDebug()<<"d->interactors.size() : "<<d->interactors.size();
     }
-    // medToolBox::update((dtkAbstractView*)d->view);    
+    // medToolBox::update((dtkAbstractView*)d->view);
    // d->view->update();
 }
 void

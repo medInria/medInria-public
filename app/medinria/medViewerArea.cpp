@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
  * Version: $Id$
- * Last-Updated: Mon Dec 20 17:24:07 2010 (+0100)
+ * Last-Updated: Thu May  5 09:53:54 2011 (+0200)
  *           By: Julien Wintz
- *     Update #: 1062
+ *     Update #: 1063
  */
 
 /* Commentary: 
@@ -80,8 +80,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->splitter = new QSplitter(this);
     d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     d->splitter->setHandleWidth(2);
-    // -- User interface setup
 
+    // -- User interface setup
     d->stack = new QStackedWidget(this);
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     
@@ -91,34 +91,30 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     
     // Setting up toolbox container
-
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setOrientation(Qt::Vertical);
     d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     d->toolbox_container->setMinimumWidth(320);
 
     // Setting up view container
-
     d->view_container = new QWidget(this);
-
     QVBoxLayout *view_container_layout = new QVBoxLayout(d->view_container);
     view_container_layout->setContentsMargins(0, 10, 0, 10);
     view_container_layout->addWidget(d->stack);
 
 
     // Setting up navigator container
-
     d->navigator_container = new QFrame(this);
     d->navigator_container->setObjectName("medNavigatorContainer");
     d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     d->navigator_container->setFixedWidth(186);
 
     // Setting up navigator
-    
     medDatabaseNavigatorController::instance()->setOrientation( Qt::Vertical );
     d->navigator = new medDatabaseNavigator(d->navigator_container);
 
-    d->navigator_animation = new QPropertyAnimation (d->navigator, "geometry");
+    // First argument is the target, last is the parent.
+    d->navigator_animation = new QPropertyAnimation (d->navigator, "geometry", d->view_container);
     d->navigator_animation->setDuration (500);
     d->navigator_animation->setEasingCurve (QEasingCurve::OutQuad);
 
@@ -142,10 +138,8 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     d->restoreSplitterSize(Qt::Horizontal);
 
     //action for transfer function
-             QAction * transFunAction =
-      new QAction("Toggle Tranfer Function Widget", this);
-    transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier +
-                Qt::Key_L);
+    QAction * transFunAction = new QAction("Toggle Tranfer Function Widget", this);
+    transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_L);
     transFunAction->setCheckable( true );
     transFunAction->setChecked( false );
     connect(transFunAction, SIGNAL(toggled(bool)),
@@ -153,8 +147,37 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     this->addAction(transFunAction);
     
-    connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)), this, SLOT(switchToPatient(const medDataIndex&)));
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator, SLOT (onPatientClicked (const medDataIndex&)));
+    connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)), 
+        this, SLOT(switchToPatient(const medDataIndex&)));
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator, 
+        SLOT (onPatientClicked (const medDataIndex&)));
+
+    int memusage = 0;
+    int leak = 0;
+
+/*
+//------------- MEM LEAK TEST BEGIN -----------------//
+
+    // creating one that loads the dll
+    medAbstractView* dummy = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
+    dtkAbstractViewFactory::instance()->destroy(dummy);
+
+    int beforeMem = medDataManager::getProcessMemoryUsage();
+    for (int i = 0; i < 20; i++)
+    {
+        memusage = medDataManager::getProcessMemoryUsage();
+        medAbstractView* view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
+        dtkAbstractViewFactory::instance()->destroy(view);
+        leak = medDataManager::getProcessMemoryUsage() - memusage;
+        qDebug() << "leaking: " << leak / 1000 << " Kbytes";
+    }
+    int afterMem = medDataManager::getProcessMemoryUsage();
+    qDebug() << "total leakage" << (afterMem-beforeMem)  / 1000 << " Kbytes"; 
+
+//--------------MEM LEAK TEST END ------------------//
+*/
+
+
 }
 
 medViewerArea::~medViewerArea(void)
@@ -193,27 +216,24 @@ void medViewerArea::open(const medDataIndex& index)
     
     if(((medDataIndex)index).isValidForSeries()) {
         
-        dtkAbstractData *data = NULL;
-        dtkAbstractView *view = NULL;
+        QSharedPointer<dtkAbstractData> data;
+        medAbstractView *view = NULL;
         
         // the data-manager should be used to read data
-	medDataManager::instance()->blockSignals (true);
+        medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
-	medDataManager::instance()->blockSignals (false);
-	
-        if ( !data )
+        if ( data.isNull() )
             return;
         
         if(!view) 
         {
             if (d->current_configuration->currentViewContainer() &&
                 d->current_configuration->currentViewContainer()->current())
-                view = d->current_configuration->currentViewContainer()->current()->view();
+                view = dynamic_cast<medAbstractView*>(d->current_configuration->currentViewContainer()->current()->view());
         }
-        
-        if(!view)
-        {
-            view = dtkAbstractViewFactory::instance()->create("v3dView");
+
+        if(!view) {
+            view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
         }
         
@@ -223,12 +243,16 @@ void medViewerArea::open(const medDataIndex& index)
             return;
         }
         
+        // another hash?!
         medViewManager::instance()->insert(index, view);
         
         
         this->onViewFocused(view);
-        view->setData(data);
         
+        // set the data to the view
+        view->setSharedDataPointer(data);
+       
+        // call update
         QMutexLocker ( &d->mutex );
         if (d->current_configuration->currentViewContainer()) 
         {
@@ -284,7 +308,7 @@ void medViewerArea::open(const QString& file)
 
 void medViewerArea::onViewClosed(void)
 {
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView*> (this->sender())) {        
+    if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
         QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
             tb->update(NULL);
@@ -446,9 +470,6 @@ void medViewerArea::removeToolBox(medToolBox *toolbox)
     d->toolbox_container->removeToolBox(toolbox);
 }
 
-
-#include <dtkVr/dtkVrController.h>
-
 void medViewerArea::onViewFocused(dtkAbstractView *view)
 {
     // set head recognizer
@@ -578,8 +599,7 @@ void medViewerArea::setupConfiguration(QString name)
         conf = d->configurations[name];
     else {
         if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name)) {
-            connect(this, SIGNAL(clearOnPatientChange()),
-                    conf, SLOT(clear()));
+            connect(this, SIGNAL(clearOnPatientChange()), conf, SLOT(clear()));
             d->configurations.insert(name, conf);
         }
         else

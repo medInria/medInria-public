@@ -1,5 +1,5 @@
-/* medToolBoxRegistration.cpp --- 
- * 
+/* medToolBoxRegistration.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 272
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medToolBoxRegistration.h"
@@ -44,7 +44,7 @@ class medToolBoxRegistrationPrivate
 public:
 //    medDropSite *processDropSiteFixed;
 //    medDropSite *processDropSiteMoving;
-	
+
 //    QRadioButton *blendRadio;
 //    QRadioButton *checkerboardRadio;
 //    QSlider *layoutFuseSlider;
@@ -66,14 +66,14 @@ public:
 
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
 {
-    d->fuseView = 0; 
-    
+    d->fuseView = 0;
+
     d->fixedData  = NULL;
     d->movingData = NULL;
     d->fixedView  = NULL;
     d->movingView = NULL;
     d->process = NULL;
-    
+
     // Process section
     d->saveImageButton = new QPushButton(tr("Save Image"),this);
     connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
@@ -91,7 +91,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
     connect(d->toolboxes, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
 
-    
+
     // Layout section
 
     QPushButton *layoutButtonCompare = new QPushButton("Compare", this);
@@ -101,16 +101,16 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QPushButton *layoutButtonFuse = new QPushButton("Fuse", this);
     layoutButtonFuse->setCheckable(true);
     layoutButtonFuse->setChecked(false);
-    
+
     QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
     layoutButtonGroup->addButton(layoutButtonCompare);
     layoutButtonGroup->addButton(layoutButtonFuse);
     layoutButtonGroup->setExclusive(true);
-    
+
 //    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
 //    d->layoutFuseSlider->setRange(1, 100);
 //    d->layoutFuseSlider->setValue(50);
-    
+
 //    d->blendRadio = new QRadioButton("Blend", this);
 //    d->checkerboardRadio = new QRadioButton("Checkerboard", this);
 //    d->blendRadio->setChecked(true);
@@ -118,41 +118,41 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 //    QButtonGroup *radioGroup = new QButtonGroup(this);
 //    radioGroup->addButton(d->blendRadio);
 //    radioGroup->addButton(d->checkerboardRadio);
-//    radioGroup->setExclusive(true);	
+//    radioGroup->setExclusive(true);
 
 //    QHBoxLayout *radioGroupLayout = new QHBoxLayout;
 //    radioGroupLayout->addWidget(d->blendRadio);
 //    radioGroupLayout->addWidget(d->checkerboardRadio);
-    
+
     QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
     layoutButtonLayout->addWidget(layoutButtonCompare);
     layoutButtonLayout->addWidget(layoutButtonFuse);
-    
+
     QVBoxLayout *layoutLayout = new QVBoxLayout;
     layoutLayout->addLayout(layoutButtonLayout);
 //    layoutLayout->addLayout(radioGroupLayout);
 //    layoutLayout->addWidget(d->layoutFuseSlider);
     QWidget * layoutSection = new QWidget(this);
     layoutSection->setLayout(layoutLayout);
-    
+
     connect(layoutButtonCompare, SIGNAL(clicked()), this, SIGNAL(setupLayoutCompare()));
     connect(layoutButtonFuse, SIGNAL(clicked()), this, SIGNAL(setupLayoutFuse()));
-    
+
 //    connect(d->blendRadio, SIGNAL(toggled(bool)), this, SLOT(onBlendModeSet(bool)));
 //    connect(d->checkerboardRadio, SIGNAL(toggled(bool)), this, SLOT(onCheckerboardModeSet(bool)));
 
-    
+
     // /////////////////////////////////////////////////////////////////
     // Setup
     // /////////////////////////////////////////////////////////////////
 
-    
+
     // ---
     addWidget(layoutSection);
     addWidget(d->toolboxes);
     addWidget(d->saveImageButton);
     addWidget(d->saveTransButton);
-    
+
 
     this->setTitle(tr("Registration"));
     d->customToolBox = NULL;
@@ -218,12 +218,12 @@ dtkAbstractDataImage *medToolBoxRegistration::movingData(void)
 
 void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 {
-  
+
     if (!index.isValid())
         return;
 
-    d->fixedData = dynamic_cast<dtkAbstractDataImage*>( medDataManager::instance()->data(index) );
-  
+    d->fixedData = dynamic_cast<dtkAbstractDataImage*>( medDataManager::instance()->data(index).data() );
+
     if (!d->fixedData)
         return;
 
@@ -256,12 +256,12 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 
 void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
 {
-  
+
     if (!index.isValid())
         return;
 
-    d->movingData = dynamic_cast<dtkAbstractDataImage*>(medDataManager::instance()->data(index));
-  
+    d->movingData = dynamic_cast<dtkAbstractDataImage*>(medDataManager::instance()->data(index).data());
+
     if (!d->movingData)
         return;
 
@@ -273,7 +273,7 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
         qDebug() << "Unable to retrieve moving view";
 	return;
     }
-    
+
     if (d->fixedView) {
         d->movingView->update();
     }
@@ -321,7 +321,7 @@ void medToolBoxRegistration::onToolBoxChosen(const QString& id)
     d->customToolBox = toolbox;
     toolbox->show();
     emit addToolBox(toolbox);
-    
+
     connect (toolbox, SIGNAL (success()), this, SLOT (onSuccess()));
     connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
 }
@@ -330,7 +330,7 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
 {
     if (!view)
         return;
-    
+
     d->fuseView = dynamic_cast <medAbstractView*> (view);
 //    d->fuseView->enableInteractor("v3dViewFuseInteractor");
 //    dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor");
@@ -343,7 +343,7 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
 
 void medToolBoxRegistration::clear(void)
 {
-    
+
     //maybe clear the customtoolbox?
     if (d->customToolBox)
         d->customToolBox->clear();
@@ -405,10 +405,38 @@ void medToolBoxRegistration::onSaveTrans()
         emit showError(this, tr  ("Please Select a moving image before saving"),3000);
         return;
     }
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Transformation"),
+    if (!d->process )
+    {
+        emit showError(this, tr  ("Please run the registration before saving"),3000);
+        return;
+    }
+    QFileDialog dialog(this, tr("Save Transformation"),
                                QDir::homePath(),
-                               tr("Transformation (*.txt)"));
+                               tr("Transformation (*.txt);;MetaFile (*.mha *.mhd);;Nifty (*.nii);;Analyse (*.hdr);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files (*.mha *.mhd *.nii *.hdr *.nrrd)"));
+
+    dialog.setDefaultSuffix("mha");
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    QStringList fileName;
+    if (dialog.exec())
+        fileName = dialog.selectedFiles();
+
     qDebug() << fileName;
+
+    if (!fileName.isEmpty())
+    {
+        //qDebug()<< (void *) d->movingData;
+        //qDebug()<<  d->movingView->data();
+        QStringList transformFileName;
+        transformFileName << "" << fileName[0];
+        if (d->process->write(transformFileName))
+        {
+            emit(showInfo(this, tr  ("Registered Image Saved"),3000));
+        }
+        else
+        {
+            emit(showError(this, tr  ("Image saving failed, no suitable writer found"),3000));
+        }
+    }
 }
 
 
@@ -416,7 +444,7 @@ void medToolBoxRegistration::onSuccess()
 {
     dtkAbstractData *output = d->process->output();
 
-	if(output) 
+	if(output)
     {
 	    d->movingView->setData(output,0);
 	    d->fixedView->unlink (d->movingView);

@@ -10,11 +10,7 @@
 
   ;Name and file
   Name "${PROJECT_NAME}"
-  !ifdef WIN64
-    OutFile "${medinriaDIR}\${PROJECT_NAME}-${VERSION}-win32-x64.exe"
-  !else
-    OutFile "${medinriaDIR}\${PROJECT_NAME}-${VERSION}-win32-x86.exe"
-  !endif
+  OutFile "${medinriaDIR}\${MED_INSTALLER_EXE}"
   
   XPStyle on
 

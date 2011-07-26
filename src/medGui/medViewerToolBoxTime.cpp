@@ -7,18 +7,22 @@
  */
 
 #include "medViewerToolBoxTime.h"
-#include <qdebug.h>
+
 #include <iomanip>
+#include <cmath>
+#include <sstream>
+
 #include <QListWidget>
+#include <QList>
+#include <QMouseEvent>
+
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkLog.h>
-#include <medGui/medToolBoxTab.h>
+
 #include <medCore/med4DAbstractViewInteractor.h>
-#include <QList>
-#include <string>
-#include <sstream>
-#include <QMouseEvent>
-#include <cmath>
+#include <medGui/medToolBoxTab.h>
+#include <medGui/medButton.h>
+
 
 
 
@@ -26,10 +30,10 @@ class medViewerToolBoxTimePrivate
 {
 public:
     QSlider     *timeSlider;
-    QPushButton *playSequencesPushButton;
-    QPushButton *nextFramePushButton;
-    QPushButton *previousFramePushButton;
-    QPushButton *stopPushButton;
+    medButton *playSequencesButton;
+    medButton *nextFrameButton;
+    medButton *previousFrameButton;
+    medButton *stopButton;
 
     QList <QAction*> actionlist;
     QList<dtkAbstractView*> views;
@@ -43,8 +47,8 @@ public:
     double minTime;
     double minTimeStep;
     double maxTime;
-
-
+    
+    QPixmap playIcon;
 };
 
 medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxTimePrivate)
@@ -61,35 +65,25 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     d->timeSlider->setTracking( false );
     d->timeSlider->setToolTip(tr("Follow The Sequence"));
 
-    d->playSequencesPushButton = new QPushButton("", this);
-    d->playSequencesPushButton->setIcon (QIcon(":/icons/play.png"));
-    d->playSequencesPushButton->setCheckable (true);
-    d->playSequencesPushButton->setMinimumWidth ( 20 );
-    d->playSequencesPushButton->setToolTip( tr("Play Sequence"));
+    d->playIcon = QPixmap(":/icons/play.png");
+    
+    d->playSequencesButton = new medButton(this,d->playIcon,
+                                           tr("Play Sequence"));
 
-    d->nextFramePushButton = new QPushButton("", this);
-    d->nextFramePushButton->setIcon (QIcon(":/icons/forward.png"));
-    //d->nextFramePushButton->setCheckable (true);
-    d->nextFramePushButton->setMinimumWidth ( 20 );
-    d->nextFramePushButton->setToolTip( tr("Next Frame"));
+    d->nextFrameButton = new medButton(this,":/icons/forward.png",
+                                       tr("Next Frame"));
 
-    d->previousFramePushButton = new QPushButton("", this);
-    d->previousFramePushButton->setIcon (QIcon(":/icons/backward.png"));
-    //d->previousFramePushButton->setCheckable (true);
-    d->previousFramePushButton->setMinimumWidth ( 20 );
-    d->previousFramePushButton->setToolTip( tr("Previous Frame"));
+    d->previousFrameButton = new medButton(this,":/icons/backward.png",
+                                               tr("Previous Frame"));
 
-    d->stopPushButton = new QPushButton("", this);
-    d->stopPushButton->setIcon (QIcon(":/icons/stop.png"));
-    //d->stopPushButton->setCheckable (true);
-    d->stopPushButton->setMinimumWidth ( 20 );
-    d->stopPushButton->setToolTip( tr("Stop Sequence"));
+    d->stopButton = new medButton(this,":/icons/stop.png",
+                                  tr("Stop Sequence"));
 
-    d->timeLine = new QTimeLine();
+    d->timeLine = new QTimeLine(1000, this);
     d->timeLine->setLoopCount(0);
     d->timeLine->setCurveShape (QTimeLine::LinearCurve);
 
-    d->spinBox = new QSpinBox();
+    d->spinBox = new QSpinBox(this);
     d->spinBox->setRange(1,5000);
     d->spinBox->setSingleStep(10);
     d->spinBox->setValue(100);
@@ -98,12 +92,12 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     connect(d->timeLine, SIGNAL(frameChanged(int)), d->timeSlider, SLOT(setValue(int)));
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
-    buttonLayout->addWidget( d->previousFramePushButton);
-    buttonLayout->addWidget (d->playSequencesPushButton);
-    buttonLayout->addWidget( d->nextFramePushButton);
+    buttonLayout->addWidget( d->previousFrameButton,1,Qt::AlignHCenter);
+    buttonLayout->addWidget (d->playSequencesButton,1,Qt::AlignHCenter);
+    buttonLayout->addWidget( d->nextFrameButton,1,Qt::AlignHCenter);
 
 
-    buttonLayout->addWidget( d->stopPushButton);
+    buttonLayout->addWidget( d->stopButton,1,Qt::AlignHCenter);
 
     QHBoxLayout *labelLayout = new QHBoxLayout();
     labelLayout->addWidget( d->labelmin);
@@ -132,12 +126,12 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
 
     connect(d->timeSlider, SIGNAL(sliderMoved(int)), this, SLOT(onTimeChanged(int)));
     connect(d->timeSlider, SIGNAL(valueChanged(int)), this, SLOT(onTimeChanged(int)));
-    connect(d->playSequencesPushButton, SIGNAL(toggled(bool)), this, SLOT(onPlaySequences()));
+    connect(d->playSequencesButton, SIGNAL(triggered()), this, SLOT(onPlaySequences()));
 
-    connect(d->nextFramePushButton, SIGNAL(clicked(bool)), this, SLOT(onNextFrame(bool)));
-    connect(d->previousFramePushButton, SIGNAL(clicked(bool)), this, SLOT(onPreviousFrame(bool)));
+    connect(d->nextFrameButton, SIGNAL(triggered()), this, SLOT(onNextFrame()));
+    connect(d->previousFrameButton, SIGNAL(triggered()), this, SLOT(onPreviousFrame()));
     connect(d->spinBox, SIGNAL(valueChanged(int)),this, SLOT(onSpinBoxChanged(int)));
-    connect(d->stopPushButton, SIGNAL(clicked(bool)),this, SLOT(onStopButton()));
+    connect(d->stopButton, SIGNAL(triggered()),this, SLOT(onStopButton()));
 
     this->setTitle("Time Management");
     box->setLayout (boxlayout);
@@ -228,20 +222,20 @@ void medViewerToolBoxTime::onPlaySequences ()
         if(d->timeLine->state() == QTimeLine::NotRunning)
         {
             d->timeLine->start();
-            d->playSequencesPushButton->setIcon (QIcon(":/icons/pause.png"));
-            d->playSequencesPushButton->setToolTip( tr("Pause Sequence"));
+            d->playSequencesButton->setIcon (QPixmap(":/icons/pause.png"));
+            d->playSequencesButton->setToolTip( tr("Pause Sequence"));
         }
         else if(d->timeLine->state() == QTimeLine::Paused )
         {
             d->timeLine->resume();
-            d->playSequencesPushButton->setIcon (QIcon(":/icons/pause.png"));
-            d->playSequencesPushButton->setToolTip( tr("Pause Sequence"));
+            d->playSequencesButton->setIcon (QPixmap(":/icons/pause.png"));
+            d->playSequencesButton->setToolTip( tr("Pause Sequence"));
         }
         else if(d->timeLine->state() == QTimeLine::Running)
         {
             d->timeLine->setPaused(true);
-            d->playSequencesPushButton->setIcon (QIcon(":/icons/play.png"));
-            d->playSequencesPushButton->setToolTip( tr("Play Sequence"));
+            d->playSequencesButton->setIcon (QPixmap(":/icons/play.png"));
+            d->playSequencesButton->setToolTip( tr("Play Sequence"));
         }
     }
 }
@@ -252,12 +246,12 @@ void medViewerToolBoxTime::onStopButton ()
     d->timeSlider->setValue(0);
 }
 
-void medViewerToolBoxTime::onNextFrame (bool val)
+void medViewerToolBoxTime::onNextFrame ()
 {
     if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()+1);
 }
-void medViewerToolBoxTime::onPreviousFrame (bool val)
+void medViewerToolBoxTime::onPreviousFrame ()
 {   
     if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()-1);
@@ -265,11 +259,11 @@ void medViewerToolBoxTime::onPreviousFrame (bool val)
 
 void medViewerToolBoxTime::onTimeChanged (int val)
 {
-    double time = this->getTimeFromSliderValue (val);
-    for (unsigned int i=0; i<d->interactors.size(); i++)
-    {
-        d->interactors[i]->setCurrentTime (time);
-    }
+	double time = this->getTimeFromSliderValue (val);
+	for (int i=0; i<d->interactors.size(); i++)
+	{
+		d->interactors[i]->setCurrentTime (time);
+	}
 
     d->labelcurr->setText( DoubleToQString(( time ) / (d->spinBox->value()/100.0)) + QString(" sec") );
 }
@@ -281,7 +275,7 @@ void medViewerToolBoxTime::onSpinBoxChanged(int time)
     d->timeLine->setDuration((d->maxTime + d->minTimeStep)*(1000/(time/100.0)));
 }
 
-double medViewerToolBoxTime::getTimeFromSliderValue (unsigned int s)
+double medViewerToolBoxTime::getTimeFromSliderValue (int s)
 {
     double value = d->minTime + (double)(s) * (d->minTimeStep);
     return value;
@@ -301,7 +295,7 @@ void medViewerToolBoxTime::updateRange (void)
     double maxtime = -3000;
     double mintimestep = 3000;
 
-    for (unsigned int i=0; i<d->interactors.size(); i++)
+    for (int i=0; i<d->interactors.size(); i++)
     {
         double range[2]={0,0};
         d->interactors[i]->sequencesRange (range);

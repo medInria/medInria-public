@@ -60,10 +60,17 @@ public:
     QParallelAnimationGroup *selector_animation;
 
     medDatabasePreviewItem *target;
+    int animationDuration;
+
+    QPointF series_groupStartPos;
+    QPointF image_groupStartPos;
+
 };
 
 medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new medDatabasePreviewPrivate)
 {
+    d->animationDuration = 500;
+
     d->level = 0;
 
     d->scene = new medDatabasePreviewScene(this);
@@ -85,6 +92,9 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
     d->series_animation = NULL;
     d->image_animation = NULL;
     d->animation = NULL;
+
+    d->image_groupStartPos = d->image_group->pos();
+    d->series_groupStartPos = d->series_group->pos();
 
     d->selector_position_animation = NULL;
     d->selector_rect_animation = NULL;
@@ -118,6 +128,8 @@ medDatabasePreview::~medDatabasePreview(void)
 void medDatabasePreview::reset(void)
 {
     d->scene->reset();
+    d->series_group->setPos(d->series_groupStartPos);
+    d->image_group->setPos(d->image_groupStartPos);
 
     d->level = 0;
 
@@ -287,17 +299,20 @@ void medDatabasePreview::onSlideUp(void)
     if(!d->series_animation)
         d->series_animation = new QPropertyAnimation(d->series_group, "pos");
 
-    d->series_animation->setDuration(250);
+    const QPointF slideOffset(0, group_height + group_spacing);
+
+    d->series_animation->setDuration(d->animationDuration);
     d->series_animation->setStartValue(d->series_group->pos());
-    d->series_animation->setEndValue(d->series_group->pos() - QPointF(0, group_height + group_spacing));
+    d->series_animation->setEndValue(d->series_groupStartPos - slideOffset);
     d->series_animation->setEasingCurve(QEasingCurve::OutBounce);
 
     if(!d->image_animation)
         d->image_animation = new QPropertyAnimation(d->image_group, "pos");
 
-    d->image_animation->setDuration(250);
+
+    d->image_animation->setDuration(d->animationDuration);
     d->image_animation->setStartValue(d->image_group->pos());
-    d->image_animation->setEndValue(d->image_group->pos() - QPointF(0, group_height + group_spacing));
+    d->image_animation->setEndValue(d->image_groupStartPos - slideOffset);
     d->image_animation->setEasingCurve(QEasingCurve::OutBounce);
 
     if(!d->animation) {
@@ -331,17 +346,19 @@ void medDatabasePreview::onSlideDw(void)
     if(!d->series_animation)
         d->series_animation = new QPropertyAnimation(d->series_group, "pos");
 
-    d->series_animation->setDuration(250);
+    const QPointF slideOffset(0, group_height + group_spacing);
+
+    d->series_animation->setDuration(d->animationDuration);
     d->series_animation->setStartValue(d->series_group->pos());
-    d->series_animation->setEndValue(d->series_group->pos() + QPointF(0, group_height + group_spacing));
+    d->series_animation->setEndValue(d->series_groupStartPos);
     d->series_animation->setEasingCurve(QEasingCurve::OutBounce);
 
     if(!d->image_animation)
         d->image_animation = new QPropertyAnimation(d->image_group, "pos");
 
-    d->image_animation->setDuration(250);
+    d->image_animation->setDuration(d->animationDuration);
     d->image_animation->setStartValue(d->image_group->pos());
-    d->image_animation->setEndValue(d->image_group->pos() + QPointF(0, group_height + group_spacing));
+    d->image_animation->setEndValue(d->image_groupStartPos);
     d->image_animation->setEasingCurve(QEasingCurve::OutBounce);
 
     if(!d->animation) {
@@ -423,6 +440,7 @@ void medDatabasePreview::onMoveBg(void) // move to beginning of the current line
 
 void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to beginning of the current line
 {
+
     if(!d->selector->isVisible())
         d->selector->show();
 
@@ -475,6 +493,7 @@ void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to b
 
 void medDatabasePreview::onHovered(medDatabasePreviewItem *item)
 {
+    
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
     qreal item_height = medDatabasePreviewController::instance()->itemHeight();

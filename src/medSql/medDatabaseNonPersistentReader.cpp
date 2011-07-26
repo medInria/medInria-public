@@ -73,9 +73,7 @@ medDataIndex medDatabaseNonPersistentReader::run(void)
 
     QMap<QString, QStringList> imagesToWriteMap;
 
-    typedef dtkAbstractDataFactory::dtkAbstractDataTypeHandler dtkAbstractDataTypeHandler;
-    
-    QList<dtkAbstractDataTypeHandler> readers = dtkAbstractDataFactory::instance()->readers();
+    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
     int fileCount = fileList.count();
     int fileIndex = 0;
@@ -94,13 +92,14 @@ medDataIndex medDatabaseNonPersistentReader::run(void)
         dtkAbstractData* dtkdata = 0;
 
         for (int i=0; i<readers.size(); i++) {
-            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
             if (dataReader->canRead( fileInfo.filePath() )) {
                 dataReader->readInformation( fileInfo.filePath() );
                 dtkdata = dataReader->data();
                 delete dataReader;
                 break;
             }
+            delete dataReader;
         }
 
         if (!dtkdata)
@@ -185,7 +184,7 @@ medDataIndex medDatabaseNonPersistentReader::run(void)
         dtkAbstractData *imData = NULL;
 
         for (int i=0; i<readers.size(); i++) {
-            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i].first, readers[i].second);
+            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
 
             if (dataReader->canRead( it.value() )) {
 

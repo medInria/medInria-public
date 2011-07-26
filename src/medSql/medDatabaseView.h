@@ -37,27 +37,22 @@ public:
 
     int sizeHintForColumn(int column) const;
 
-    void setModel(medDatabaseModel *model);
+    void setModel(QAbstractItemModel *model);
 
 signals:
     void patientClicked(int id);
-    void   studyClicked(int id);
-    void  seriesClicked(int id);
-    void   imageClicked(int id);
+    void seriesClicked(int id);
 
     void patientDoubleClicked(int id);
-    void  seriesDoubleClicked(int id);
+    void seriesDoubleClicked(int id);
 
     void open(const medDataIndex&);
     void exportData(const medDataIndex &index);
 
 public slots:
-    void onPatientClicked(int id);
-    void onStudyClicked(int id);
-    void onSeriesClicked(int id);
-    void onImageClicked(int id);
     void onMenuViewClicked(void);
     void onMenuExportClicked(void);
+    void selectionChanged(const QModelIndex&, const QModelIndex&);
 
 protected slots:
     void updateContextMenu(const QPoint&);
