@@ -240,11 +240,11 @@ void medViewerArea::open(const medDataIndex& index)
 
         // another hash?!
         medViewManager::instance()->insert(index, view);
-
-        this->onViewFocused(view);
-
+        
         // set the data to the view
         view->setSharedDataPointer(data);
+
+        this->onViewFocused(view);
 
         // call update
         QMutexLocker ( &d->mutex );
