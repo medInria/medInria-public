@@ -90,6 +90,8 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
     d->layoutToolBoxTab->addTab(new QWidget, "Multi");
     d->layoutToolBoxTab->addTab(customPage, "Custom");
 
+    d->layoutToolBoxTab->setCurrentIndex(1);
+
     this->setTitle("Layout");
     this->setTabWidget(d->layoutToolBoxTab);
 
@@ -149,4 +151,14 @@ void medViewerToolBoxLayout::clear()
     blockSignals(true);
     d->layoutToolBoxTab->setCurrentIndex(0);
     blockSignals(false);
+}
+
+void medViewerToolBoxLayout::setTab(const QString &name)
+{
+    if (name == "Single")
+        d->layoutToolBoxTab->setCurrentIndex(0);
+    else if (name == "Custom")
+        d->layoutToolBoxTab->setCurrentIndex(2);
+    else if (name == "Multi")
+        d->layoutToolBoxTab->setCurrentIndex(1);
 }

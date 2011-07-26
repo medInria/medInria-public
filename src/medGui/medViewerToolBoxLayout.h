@@ -33,6 +33,13 @@ public:
      medViewerToolBoxLayout(QWidget *parent = 0);
     ~medViewerToolBoxLayout(void);
 
+    /**
+     * @brief Sets the current tab according to container type
+     *
+     * @param name the container description
+    */
+    void setTab(const QString &name);
+
 signals:
     void modeChanged(const QString&);
     void split(int, int);

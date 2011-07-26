@@ -105,16 +105,33 @@ public slots:
      * Study or even Patient.
     */
     void open(const medDataIndex& index);
-    
+
+    /**
+     * @brief Open data corresponding to index \param index in a new tab.
+     *
+     * @param index Could describe just an image, or a complete Series,
+     * Study or even Patient.
+    */
+    void openInTab(const medDataIndex& index);
+
     /**
      * @brief Opens file on the local filesystem.
-     * 
-     * Calls open(const medDataIndex& index) with a 
-     * new index created from the medDatabaseNonPersistentController 
+     *
+     * Calls open(const medDataIndex& index) with a
+     * new index created from the medDatabaseNonPersistentController
      * @param file
     */
     void open(const QString& file);
-    
+
+    /**
+     * @brief Opens file on the local filesystem.
+     *
+     * Calls openInTab(const medDataIndex& index) with a
+     * new index created from the medDatabaseNonPersistentController
+     * @param file
+    */
+    void openInTab(const QString& file);
+
     /**
      * @brief  Update the medToolBoxes and frees the memory.
      *

@@ -401,14 +401,14 @@ void medMainWindow::open(const medDataIndex& index)
 {
     this->switchToViewerArea();
 
-    d->viewerArea->open(index);
+    d->viewerArea->openInTab(index);
 }
 
 void medMainWindow::open(const QString& file)
 {
-    d->viewerArea->open(file);
-
     this->switchToViewerArea();
+
+    d->viewerArea->openInTab(file);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)

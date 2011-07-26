@@ -93,6 +93,7 @@ void medViewerConfigurationRegistration::setupViewContainerStack()
         
         this->stackedViewContainers()->addContainer("Compare",compareContainer);
         this->stackedViewContainers()->addContainer("Fuse",fuseContainer);
+        this->stackedViewContainers()->lockTabs();
         setCurrentViewContainer("Compare");   
     }
 }

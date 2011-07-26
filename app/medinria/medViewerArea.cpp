@@ -99,7 +99,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // Setting up view container
     d->view_container = new QWidget(this);
     QVBoxLayout *view_container_layout = new QVBoxLayout(d->view_container);
-    view_container_layout->setContentsMargins(0, 10, 0, 10);
+    view_container_layout->setContentsMargins(0, 0, 0, 0);
     view_container_layout->addWidget(d->stack);
 
 
@@ -207,6 +207,19 @@ void medViewerArea::split(int rows, int cols)
         root->split(rows, cols);
 }
 
+void medViewerArea::openInTab(const medDataIndex &index)
+{
+    if (d->current_configuration->stackedViewContainers()->current()->views().size() > 0)
+    {
+        QSharedPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
+
+        QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(tr("PatientName")));
+        d->current_configuration->stackedViewContainers()->setContainer(createdName);
+    }
+
+    this->open(index);
+}
+
 void medViewerArea::open(const medDataIndex& index)
 {
     if(!((medDataIndex)index).isValid())
@@ -272,7 +285,7 @@ void medViewerArea::open(const medDataIndex& index)
     {
         // For the moment switch to visualization, later we will be cleverer    
         this->setupConfiguration("Visualization");
-        this->switchToContainer("Multi");
+        //this->switchToContainer("Multi");
         
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
         stQuery.prepare("SELECT * FROM study WHERE patient = :id");
@@ -293,6 +306,11 @@ void medViewerArea::open(const medDataIndex& index)
         }
         
     }
+}
+
+void medViewerArea::openInTab(const QString& file)
+{
+    this->openInTab(medDatabaseNonPersistentController::instance()->import(file));
 }
 
 void medViewerArea::open(const QString& file)
@@ -672,8 +690,8 @@ void medViewerArea::setupConfiguration(QString name)
       animation->start();
       }*/
     
-    connect(conf, SIGNAL(layoutModeChanged(const QString&)),
-            this, SLOT(switchToContainer(const QString&)));
+    //connect(conf, SIGNAL(layoutModeChanged(const QString&)),
+    //        conf->stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
     connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));
     connect(conf, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)));

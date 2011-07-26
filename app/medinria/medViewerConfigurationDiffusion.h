@@ -37,6 +37,14 @@ public slots:
     void onTBDiffusionSuccess(void);
     void refreshInteractors (void);
 
+    /**
+      * @brief Adds a new tab to a configuration
+      *
+      * Re-implemented, replaces default implementation in medViewerConfiguration
+      */
+    void onAddTabClicked();
+
+
     // slots for tensor interactions
 
     /** Event called when a new glyph shape is selected in the tensor toolbox */

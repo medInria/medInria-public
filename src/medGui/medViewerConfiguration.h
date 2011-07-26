@@ -189,8 +189,9 @@ public:
      *
      * @param name Identifyer/description. By Default "Multi", 
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addMultiContainer(const QString& name="Multi");
+    QString addMultiContainer(const QString& name="Multi");
     
     /**
      * @brief Convenience method to add a medViewContainerCustom.
@@ -257,6 +258,21 @@ public slots:
      *
     */
     virtual void clear();
+
+    /**
+      * @brief Adds a new tab to a configuration
+      *
+      * Default implementation adds a multi-container tab
+      * If another behavior is wanted, override this in child class
+      */
+    virtual void onAddTabClicked();
+
+    /**
+      * @brief Adapt interface to container change in stacks
+      *
+      * E.g. changes the layout toolbox to set it to the current container type
+      */
+    virtual void onContainerChanged(const QString &name);
     
 signals:
     /**

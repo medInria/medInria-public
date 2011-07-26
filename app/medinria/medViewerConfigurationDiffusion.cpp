@@ -109,7 +109,8 @@ void medViewerConfigurationDiffusion::setupViewContainerStack()
     }
     
     d->views << diffusionContainer->views();
-    this->stackedViewContainers()->setContainer (description());
+    //this->stackedViewContainers()->setContainer (description());
+    this->stackedViewContainers()->unlockTabs();
 }
 
 
@@ -363,6 +364,23 @@ void medViewerConfigurationDiffusion::refreshInteractors (void)
             view->update();
         }
     }
+}
+
+void medViewerConfigurationDiffusion::onAddTabClicked()
+{
+    QString name = this->description();
+    QString realName = name;
+
+    unsigned int suppTag = 0;
+    while (this->stackedViewContainers()->container(realName))
+    {
+        suppTag++;
+        realName = name + " ";
+        realName += QString::number(suppTag);
+    }
+
+    this->addSingleContainer(realName);
+    this->stackedViewContainers()->setContainer(realName);
 }
 
 medViewerConfiguration *createMedViewerConfigurationDiffusion(void)
