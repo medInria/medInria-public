@@ -71,6 +71,8 @@ namespace itk
     typedef typename itk::ImageFileReader<SubImageType> ReaderType;
     /** Writer typedef */
     typedef typename itk::ImageFileWriter<ImageType> WriterType;    
+    /** Writer typedef */
+    typedef typename itk::ImageFileWriter<SubImageType> SubWriterType;   
     
     /**
        Get/Set the FileList coming from the GDCM library.
@@ -306,6 +308,10 @@ namespace itk
     FileListMapType SecondarySort (FileList list);
     FileListMapType TertiarySort (FileList list);
     FileListMapType TimeSort (FileListMapType map);
+    FileListMapType InstanceNumberSort (FileList map);
+    
+    FileListMapType SimpleSort (FileList list);
+    FileList Transpose (FileList list, unsigned int repetition);
     
     std::string GenerateUniqueName (FileListMapType map);    
   };

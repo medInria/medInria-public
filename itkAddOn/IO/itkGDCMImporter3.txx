@@ -19,35 +19,126 @@ PURPOSE.  See the above copyright notices for more information.
 #include <itkGDCMImageIO.h>
 
 #include "gdcmReader.h"
+#include "gdcmSorter.h"
 #include "gdcmImageReader.h"
 #include "gdcmDirectionCosines.h"
 #include "gdcmStringFilter.h"
+#include "gdcmDataSet.h"
+#include "gdcmAttribute.h"
 
 #include <ctype.h>
 
+bool mysort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
+{
+  gdcm::Attribute<0x0018,0x1060> at1;  // Trigger Delay
+  gdcm::Attribute<0x0020,0x0032> at11; // Image Position (Patient)
+  at1.Set( ds1 );
+  at11.Set( ds1 );
+  gdcm::Attribute<0x0018,0x1060> at2;
+  gdcm::Attribute<0x0020,0x0032> at22;
+  at2.Set( ds2 );
+  at22.Set( ds2 );
+  
+  if( at11 == at22 )
+  {
+    return at1 < at2;
+  }
+  return at11 < at22;
+}
+
+bool mysort2(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
+{
+  gdcm::Attribute<0x0020,0x0013> at1;  // Instance Number
+  gdcm::Attribute<0x0020,0x0032> at11; // Image Position (Patient)
+  at1.Set( ds1 );
+  at11.Set( ds1 );
+  gdcm::Attribute<0x0020,0x0013> at2;
+  gdcm::Attribute<0x0020,0x0032> at22;
+  at2.Set( ds2 );
+  at22.Set( ds2 );
+  
+  if( at11 == at22 )
+  {
+    return at1 < at2;
+  }
+  return at11 < at22;
+}
+
 namespace itk
 {
-
-
   
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void GDCMVolume<TPixelType>::Write (std::string filename)
   {
-    typename WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName (filename);
-    writer->SetInput (this);
-    
-    try
+    if (m_FileListMap.size() > 1)
     {
-      writer->Write();
+      typename WriterType::Pointer writer = WriterType::New();
+      writer->SetFileName (filename);
+      writer->SetInput (this);
+      
+      try
+      {
+	writer->Write();
+      }
+      catch (itk::ExceptionObject & e)
+      {
+	std::cerr<<e<<std::endl;
+	itkExceptionMacro (<<"Cannot write "<<filename<<std::endl);
+      }
     }
-    catch (itk::ExceptionObject & e)
+    else
     {
-      std::cerr<<e<<std::endl;
-      itkExceptionMacro (<<"Cannot write "<<filename<<std::endl);
+      typename SubImageType::Pointer image = SubImageType::New();
+      typename SubImageType::RegionType region;
+      region.SetSize (0, this->GetLargestPossibleRegion().GetSize()[0]);
+      region.SetSize (1, this->GetLargestPossibleRegion().GetSize()[1]);
+      region.SetSize (2, this->GetLargestPossibleRegion().GetSize()[2]);
+      
+      image->SetRegions (region);
+      image->Allocate();
+      
+      typename SubImageType::SpacingType spacing;
+      spacing[0] = this->GetSpacing()[0];
+      spacing[1] = this->GetSpacing()[1];
+      spacing[2] = this->GetSpacing()[2];
+      image->SetSpacing (spacing);
+      typename SubImageType::PointType origin;
+      origin[0] = this->GetOrigin()[0];
+      origin[1] = this->GetOrigin()[1];
+      origin[2] = this->GetOrigin()[2];
+      image->SetOrigin (origin);
+      typename SubImageType::DirectionType direction;
+      for (unsigned int i=0; i<3; i++)
+	for (unsigned int j=0; j<3; j++)
+	{
+	  direction[i][j] = this->GetDirection()[i][j];
+	}
+      image->SetDirection(direction);
+      ImageRegionIterator<ImageType> itIn(this, this->GetLargestPossibleRegion());
+      ImageRegionIterator<SubImageType> itOut(image, image->GetLargestPossibleRegion());
+      while (!itIn.IsAtEnd())
+      {
+	itOut.Set(itIn.Get());
+	++itIn;
+	++itOut;
+      }
+
+      typename SubWriterType::Pointer writer = SubWriterType::New();
+      writer->SetFileName (filename);
+      writer->SetInput (image);
+      
+      try
+      {
+	writer->Write();
+      }
+      catch (itk::ExceptionObject & e)
+      {
+	std::cerr<<e<<std::endl;
+	itkExceptionMacro (<<"Cannot write "<<filename<<std::endl);
+      }
     }
-  }
+  }    
   
 
 //----------------------------------------------------------------------------
@@ -78,8 +169,6 @@ namespace itk
     }
     file.close();
   }
-  
-
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
@@ -672,11 +761,14 @@ namespace itk
     
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
-    
+
+    std::cout<<"list is of size : "<<list.size()<<std::endl;
     for (file = list.begin(); file != list.end(); ++file)
     {
+	std::cout<<"scanning : "<<(*file).c_str()<<std::endl;
       if( this->m_SecondScanner.IsKey((*file).c_str()) )
       {
+	
 	const gdcm::Scanner::TagToValue& mapping = this->m_SecondScanner.GetMapping((*file).c_str());
 	
 	std::ostringstream os;
@@ -698,7 +790,11 @@ namespace itk
 	{
 	  std::cout<<"found private-tag gradient "<<value<<" in "<<(*file).c_str()<<std::endl;
 	}
-	
+	value = this->m_SecondScanner.GetValue ((*file).c_str(), gdcm::Tag(0x0018,0x1060));
+	if (value)
+	{
+	  std::cout<<value<<std::endl;
+	}
       }
       else
       {
@@ -707,8 +803,85 @@ namespace itk
       }
     }    
 
+    if ((list.size() % ret.size()) != 0)
+    {
+      itkWarningMacro (<<"There appears to be inconsistent file list sizes "<<std::endl
+			 <<"Scanner outputs "<<ret.size()<<" different image time/gradients "
+			 <<"within a total list of "<<list.size()<<" files."<<std::endl
+			 <<"attempting simple sort..."<<std::endl);
+      ret.clear();
+      ret = this->SimpleSort (list);
+      
+      if ((list.size() % ret.size()) != 0)
+      {
+	itkExceptionMacro (<<"simple sort did not work, exiting..."<<std::endl);
+      }
+    }
+    
     return ret;
     
+  }
+
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  typename GDCMImporter3<TPixelType>::FileListMapType
+  GDCMImporter3<TPixelType>::SimpleSort (FileList list)
+  {
+
+    FileListMapType ret;
+    
+    gdcm::Scanner s;
+    s.AddTag( gdcm::Tag(0x20,0x32) ); // Image Position (Patient)
+    s.Scan( list );
+    const gdcm::Scanner::ValuesType &values = s.GetValues();
+    unsigned int nvalues = values.size();
+
+    if ( (list.size() % nvalues) != 0 )
+    {
+      std::cerr<<"impossible situation: filelist is of size "<<list.size()<<std::endl;
+      std::cerr<<"wheras scanner found "<<nvalues<<" position values"<<std::endl;
+      return ret;
+    }
+    
+    unsigned int number_of_instances = list.size() / nvalues;
+
+    gdcm::Sorter sorter;
+    sorter.SetSortFunction( mysort );
+    sorter.Sort( list );
+
+    gdcm::Directory::FilenamesType sorted_files = this->Transpose (sorter.GetFilenames(), number_of_instances);
+    
+    for (unsigned int i=0; i<number_of_instances; i++)
+    {
+      FileList newlist;
+      std::ostringstream os;
+      os <<"."<<i;
+      
+      gdcm::Directory::FilenamesType sub( sorted_files.begin() + i*nvalues, sorted_files.begin() + (i+1)*nvalues);      
+      typename FileListMapType::value_type newpair(os.str(),sub);
+      ret.insert (newpair);
+    }
+
+    return ret;
+  }
+
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  typename GDCMImporter3<TPixelType>::FileList
+  GDCMImporter3<TPixelType>::Transpose (FileList list, unsigned int repetition)
+  {
+    FileList ret;
+    
+    for (unsigned int i=0; i<repetition; i++)
+    {
+      for (unsigned int j=0; j<list.size() / repetition; j++)
+      {
+	ret.push_back (list[j*repetition + i]);
+      }
+    }
+    return ret;
   }
   
 
@@ -810,7 +983,7 @@ namespace itk
 
     unsigned int nb_of_volumes = list.size() / sorted.size();
 
-    std::cout<<"Tertiary sort : "<<nb_of_volumes<<std::endl;
+    //std::cout<<"Tertiary sort : "<<nb_of_volumes<<std::endl;
     
     
     for (unsigned int i=0; i<nb_of_volumes; i++)
@@ -848,15 +1021,19 @@ namespace itk
 
     FileListMapType ret;
     
-    if (map.size() <= 1)
+    if (map.size() == 0)
       return map;
     
     SortedMapType sorted;
     typename FileListMapType::const_iterator it;
+    FileList filelist;
     
     for(it = map.begin(); it != map.end(); ++it)
     {
       const char *filename = (*it).second[0].c_str();
+      for (unsigned int i=0; i<(*it).second.size(); i++)
+	filelist.push_back ((*it).second[i]);
+      
       bool iskey = this->m_SecondScanner.IsKey(filename);
       if( iskey )
       {
@@ -874,13 +1051,24 @@ namespace itk
       }
     }
 
-
-    if (sorted.size() <= 1)
+    if (sorted.size() == 1)
     {
+      std::cout<<"single trigger delay..."<<std::endl;
+      
       // It means all volumes have the same trigger time.
       // We do not want to then reduce the ordering.
       // We give back the input map
       return map;
+    }
+    
+    if (sorted.size() == 0)
+    {
+      itkWarningMacro (<<"There appears to be no information on trigger delay "<<std::endl
+			 <<"attempting sort with instance number..."<<std::endl);
+      
+      // It means none of the volumes actually have a trigger delay. attempt order
+      // with instance number :      
+      return this->InstanceNumberSort (filelist);
     }
     
     typename SortedMapType::const_iterator it2;
@@ -902,6 +1090,66 @@ namespace itk
 
     return ret;
   }
+
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  typename GDCMImporter3<TPixelType>::FileListMapType
+  GDCMImporter3<TPixelType>::InstanceNumberSort  (FileList list)
+  {
+    FileListMapType ret;
+
+    std::cout<<"1"<<std::endl;
+    
+    gdcm::Scanner s;
+    s.AddTag( gdcm::Tag(0x20,0x32) ); // Image Position (Patient)
+    s.Scan( list );
+    std::cout<<"2"<<std::endl;
+    const gdcm::Scanner::ValuesType &values = s.GetValues();
+    unsigned int nvalues = values.size();
+    if (!nvalues)
+      return ret;
+    
+    std::cout<<"3"<<std::endl;
+    std::cout<<"size "<<list.size()<<std::endl<<std::flush;
+    std::cout<<"nvalues "<<nvalues<<std::endl<<std::flush;
+    
+
+    if ( (list.size() % nvalues) != 0 )
+    {
+      std::cerr<<"impossible situation: filelist is of size "<<list.size()<<std::endl;
+      std::cerr<<"wheras scanner found "<<nvalues<<" position values"<<std::endl;
+      return ret;
+    }
+    
+    std::cout<<"4"<<std::endl;
+    unsigned int number_of_instances = list.size() / nvalues;
+
+    gdcm::Sorter sorter;
+    sorter.SetSortFunction( mysort2 );
+    std::cout<<"5"<<std::endl;
+    sorter.Sort( list );
+    std::cout<<"6"<<std::endl;
+    sorter.Print (std::cout);
+    std::cout<<"7"<<std::endl;
+    
+    gdcm::Directory::FilenamesType sorted_files = this->Transpose (sorter.GetFilenames(), number_of_instances);
+    
+    for (unsigned int i=0; i<number_of_instances; i++)
+    {
+      FileList newlist;
+      std::ostringstream os;
+      os <<"."<<i;
+      
+      gdcm::Directory::FilenamesType sub( sorted_files.begin() + i*nvalues, sorted_files.begin() + (i+1)*nvalues);      
+      typename FileListMapType::value_type newpair(os.str(),sub);
+      ret.insert (newpair);
+    }
+
+    return ret;
+    
+  }
+  
   
 
 //----------------------------------------------------------------------------
