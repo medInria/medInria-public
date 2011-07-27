@@ -179,18 +179,60 @@ public slots:
     */
     void switchMinimize();
 
-    /**
-     * @brief Remove not context meaningful toolboxes.
+    /*
+     * Remove not context meaningful toolboxes.
      *
     */
+
+    /**
+     * @brief Set toolbox's valid data types, if at least one datatype in the view is contained within the toolBoxValidTypes, the toolbox will be visible.
+     *
+     * @param dataTypes Valid data types of the toolbox.
+    */
     void setValidDataTypes(const QStringList & dataTypes);
-    const QStringList ValidDataTypes();
+
+    /**
+     * @brief Get toolbox's valid data types, if at least one datatype in the view is contained within the toolBoxValidTypes, the toolbox will be visible.
+     *
+     * @param void
+    */
+    const QStringList ValidDataTypes(void);
+
+    /**
+     * @brief Add a valid data type to the toolbox's valid data types.
+     *
+     * @param dataType
+    */
     void addValidDataType(const QString & dataType);
 
+
+     /**
+      * @brief Set toolbox visibility, if at least one datatype in the view  is viewDataTypes contained within the toolBoxValidTypes, the toolbox will be visible.
+      *
+      * @param viewDataTypes
+     */
     void setContextVisibility(const QHash<QString, unsigned int> & viewDataTypes);
+
+    /**
+     * @brief Access method to the toolBox context visibility flag.
+     *
+     * @param contextVisibleFlag
+    */
     void setContextVisible(bool contextVisibleFlag);
-    bool ContextVisible();
-    void show();
+
+    /**
+     * @brief Access method to the toolBox context visibility flag.
+     *
+     * @param void
+    */
+    bool ContextVisible(void);
+
+    /**
+     * @brief Show the toolbox, "overloads" the QWidget show
+     *
+     * @param void
+    */
+    void show(void);
 
 private:
     medToolBoxPrivate *d;
