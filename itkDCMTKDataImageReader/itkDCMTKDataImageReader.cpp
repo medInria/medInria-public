@@ -266,7 +266,7 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
       }
 
       imagetypestring << d->io->GetNumberOfDimensions();
-      dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer(imagetypestring.str().c_str()) ;
+      dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (imagetypestring.str().c_str());
       if (dtkdata)
 	this->setData ( dtkdata );
     }
@@ -275,7 +275,7 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
       switch (d->io->GetComponentType()) {
 
 	  case itk::ImageIOBase::UCHAR:
-	    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageRGB3") ;
+	    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGB3");
 
 	    if (dtkdata)
 	      this->setData ( dtkdata );

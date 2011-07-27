@@ -4,7 +4,6 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <itkImageFileReader.h>
@@ -80,9 +79,9 @@ void itkDataImageReaderBase::readInformation (const QString& path)
         qDebug() << e.GetDescription();
         return;
     }
-
+    
     dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
-
+    
     if (!dtkdata) {
 
         if (this->io->GetPixelType()==itk::ImageIOBase::SCALAR ) {
@@ -98,7 +97,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
-                    dtkdata =  dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUChar").append(cdim)) ;
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUChar").append(cdim));
                     break;
 
                 case itk::ImageIOBase::CHAR:
@@ -130,11 +129,11 @@ void itkDataImageReaderBase::readInformation (const QString& path)
                     break;
 
                 case itk::ImageIOBase::FLOAT:
-                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageFloat").append(cdim));
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));  // Bug ???
                     break;
 
                 case itk::ImageIOBase::DOUBLE:
-                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));  // Bug (added 4 which was not existing) ??
                     break;
 
                 default:
@@ -236,10 +235,6 @@ void itkDataImageReaderBase::readInformation (const QStringList& paths)
 template <unsigned DIM,typename T>
 bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
     dtkAbstractData* dtkdata = this->data();
-
-    if ( !dtkdata )
-        return false;
-
     if (dtkdata && dtkdata->description()!=type)
         return false;
 
