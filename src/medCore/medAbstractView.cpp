@@ -344,6 +344,7 @@ int medAbstractView::meshLayerCount(void) const
 
 void medAbstractView::removeOverlay(int layer)
 {
+    //JGG qDebug()<<"ViewDataListSize"<<d->dataList.size();
     if (d->dataList.size() > layer)
     {
         medAbstractView::removeDataType(d->dataList[layer]->description());

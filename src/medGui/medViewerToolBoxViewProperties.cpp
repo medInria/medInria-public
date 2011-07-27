@@ -611,7 +611,7 @@ void
         return;
     }
 
-    qDebug() << "1";
+    //JGG qDebug() << "1";
     if(data->description().contains("vtkDataMesh"))
     {
         if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))

@@ -98,13 +98,13 @@ medToolBoxBody *medToolBox::body(void) const
 
 void medToolBox::update(dtkAbstractView *view)
 {
-    qDebug()<<"update TB" ;
+    //JGG qDebug()<<"update TB" ;
     medAbstractView* medView = dynamic_cast<medAbstractView*>(view);
     if (medView)
         setContextVisibility(medView->dataTypes());
     else
     {
-        qDebug()<<"update on NULL";
+        //JGG qDebug()<<"update on NULL";
         setContextVisibility(QHash<QString, unsigned int> ());
     }
     //DTK_DEFAULT_IMPLEMENTATION;
@@ -163,10 +163,10 @@ bool medToolBox::ContextVisible()
 
 void medToolBox::show()
 {
-    qDebug()<<"show TB:" << header()->title();
+    //JGG qDebug()<<"show TB:" << header()->title();
     if(d->validDataTypes.isEmpty() || d->isContextVisible)
     {
-        qDebug()<<"actually showing in TB";
+        //JGG qDebug()<<"actually showing in TB";
         QWidget::show();
     }
 }
@@ -194,30 +194,32 @@ void medToolBox::addValidDataType(const QString & dataType)
 void medToolBox::setContextVisibility(
         const QHash<QString, unsigned int> & viewDataTypes )
 {
-    qDebug()<< "setContextVisibility";
+    //JGG qDebug()<< "setContextVisibility";
     if (d->validDataTypes.isEmpty())
     {
-        qDebug()<< "no datatypes";
+        //JGG qDebug()<< "no datatypes";
         if (d->validDataTypes.isEmpty())
-        d->isContextVisible = true;
+            d->isContextVisible = true;
         show();
     }
     else
     {
-        qDebug()<<"View datatypes"<<viewDataTypes.keys();
+        //JGG qDebug()<<"View datatypes"<<viewDataTypes.keys()<< "values" << viewDataTypes.values();
         d->isContextVisible = false;
         foreach(QString validDataType, d->validDataTypes)
         {
-            qDebug()<<"datatype"<< validDataType ;
+            //JGG qDebug()<<"datatype"<< validDataType ;
             if(viewDataTypes.contains(validDataType))
-                qDebug()<<"viewDataTypes: "<< viewDataTypes.value(validDataType);
-            if(viewDataTypes.value(validDataType)!=0)
             {
-                d->isContextVisible = true;
-                break;
+                //JGG qDebug()<<"viewDataTypes: "<< viewDataTypes.value(validDataType);
+                if(viewDataTypes.value(validDataType)!=0)
+                {
+                    d->isContextVisible = true;
+                    break;
+                }
             }
         }
     }
-    qDebug()<<"visibility" << d->isContextVisible ;
+    //JGG qDebug()<<"visibility" << d->isContextVisible ;
     this->setVisible(d->isContextVisible);
 }

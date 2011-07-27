@@ -314,7 +314,7 @@ void medViewerArea::onViewClosed(void)
 
 void medViewerArea::onDataRemoved(int layer)
 {
-    qDebug()<< "Removing layer ";
+    //JGG qDebug()<< "Removing layer ";
     Q_UNUSED(layer);
     if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
         QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
