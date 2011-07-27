@@ -1,5 +1,5 @@
-/* medDatabaseReader.cpp --- 
- * 
+/* medDatabaseReader.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:27:20 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 19
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseController.h"
@@ -102,9 +102,9 @@ dtkAbstractData *medDatabaseReader::run(void)
 
     for (int i = 0; i < readers.size(); i++) {
         dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
-    
+
         connect(dataReader, SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
-    
+
         if (dataReader->canRead(filename)) {
 
             //qDebug() << "Reading using" << dataReader->description() << "reader";
@@ -117,7 +117,7 @@ dtkAbstractData *medDatabaseReader::run(void)
 
         delete dataReader;
     }
-    
+
     if (data) {
 
        QSqlQuery seriesQuery(*(medDatabaseController::instance()->database()));
@@ -138,13 +138,12 @@ dtkAbstractData *medDatabaseReader::run(void)
         else {
             qWarning() << "Thumbnailpath not found";
         }
-        
 
 
-        data->addMetaData("PatientName", patientName);
-        data->addMetaData("StudyDescription",   studyName);
-        data->addMetaData("SeriesDescription",  seriesName);
 
+        medMetaDataHelper::addPatientName(data, patientName);
+        medMetaDataHelper::addStudyDescription(data, studyName);
+        medMetaDataHelper::addSeriesDescription(data, seriesName);
         medMetaDataHelper::addPatientID(data, patientId.toString());
         medMetaDataHelper::addStudyID(data, studyId.toString());
         medMetaDataHelper::addSeriesID(data, seriesId.toString());
