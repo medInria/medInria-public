@@ -477,7 +477,7 @@ medAbstractView::~medAbstractView( void )
 
 void medAbstractView::emitObliqueSettingsChangedEvent()
 {
-    emit obliqueSettingsChanged();
+    emit obliqueSettingsChanged (this);
 }
 
 void medAbstractView::emitColorChangedEvent()

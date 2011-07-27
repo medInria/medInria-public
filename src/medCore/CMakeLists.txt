@@ -31,6 +31,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPluginManager.h
   medProgressFilter.h
   medAbstractView.h
+  medAbstractViewCollection.h
   med4DAbstractViewInteractor.h
   medMeshAbstractViewInteractor.h
   medJobItem.h
@@ -74,6 +75,7 @@ set(${PROJECT_NAME}_SOURCES
   medPluginManager.cpp
   medProgressFilter.cpp
   medAbstractView.cpp
+  medAbstractViewCollection.cpp
   medStorage.cpp
   medJobItem.cpp
   medJobManager.cpp  
