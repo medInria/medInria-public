@@ -18,7 +18,7 @@ public:
   QVector3D  camViewup;
   QVector3D  camFocal;
   double camParallelScale;
-  
+
   int currentLayer;
   int currentMeshLayer;
   int meshLayerCount;
@@ -344,7 +344,12 @@ int medAbstractView::meshLayerCount(void) const
 
 void medAbstractView::removeOverlay(int layer)
 {
-    medAbstractView::removeDataType(d->dataList[layer]->description());
+    if (d->dataList.size() > layer)
+    {
+        medAbstractView::removeDataType(d->dataList[layer]->description());
+        emit (dataRemoved(d->dataList[layer],layer));
+        emit (dataRemoved(layer));
+    }
     DTK_DEFAULT_IMPLEMENTATION;
 }
 

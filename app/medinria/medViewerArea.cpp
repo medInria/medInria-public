@@ -231,6 +231,7 @@ void medViewerArea::open(const medDataIndex& index)
         if( view == NULL ) {
             view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
+            connect (view, SIGNAL(dataRemoved(int )), this, SLOT(onDataRemoved(int )));
         }
 
         if( view == NULL ) {
@@ -240,7 +241,7 @@ void medViewerArea::open(const medDataIndex& index)
 
         // another hash?!
         medViewManager::instance()->insert(index, view);
-        
+
         // set the data to the view
         view->setSharedDataPointer(data);
 
@@ -308,6 +309,17 @@ void medViewerArea::onViewClosed(void)
 
         medDataIndex index = medViewManager::instance()->index( view );
         medViewManager::instance()->remove(index, view); // deletes the view
+    }
+}
+
+void medViewerArea::onDataRemoved(int layer)
+{
+    qDebug()<< "Removing layer ";
+    Q_UNUSED(layer);
+    if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
+        QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
+        foreach( medToolBox *tb, toolboxes)
+            tb->update(view);
     }
 }
 

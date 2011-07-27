@@ -1,5 +1,5 @@
-/* medAbstractView.h --- 
- * 
+/* medAbstractView.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct 21 19:54:36 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 9
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDABSTRACTVIEW_H
@@ -107,7 +107,7 @@ public:
     **/
     void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
     void camera(QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale) const;
-    
+
     /**
      * Set the visibility of the data on the corresponding layer
      */
@@ -133,16 +133,16 @@ public:
      * property changed.
      */
     void setCurrentLayer(int layer);
-  
+
     /**
      * Get the current layer. The current layer is used to determine which layer will receive
      * property changed.
      */
     virtual int currentLayer(void) const;
-    
+
     /**
      * Get the number of layers of the view.
-     */    
+     */
     virtual int layerCount(void) const;
 
     /**
@@ -159,7 +159,7 @@ public:
     virtual int currentMeshLayer(void) const;
     void setMeshLayerCount(int meshLayerCount);
     virtual int meshLayerCount(void) const;
-    
+
     bool isInList(dtkAbstractData * data);
     void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
@@ -172,7 +172,7 @@ public:
     /** The color used to represent the extent or space of this view in another view */
     virtual QColor color() const;
     virtual void setColor( const QColor & color);
-    
+
     virtual QString getLUT(int layer) const;
     virtual QString getPreset(int layer) const;
 
@@ -259,12 +259,12 @@ signals:
                            const QVector3D &focal,
                            double parallelScale,
                            bool propagate);
-    
+
     /**
      * This signal is emitted when the visibility of a layer has changed.
      */
     void visibilityChanged(bool visibility, int layer);
-    
+
     /**
      * This signal is emitted when the opacity of a layer has changed.
      */
@@ -278,6 +278,8 @@ signals:
     void dataAdded (dtkAbstractData* data);
 
     void dataAdded (dtkAbstractData* data, int layer);
+    void dataRemoved (int layer);
+    void dataRemoved(dtkAbstractData* data,int layer);
 
     void TwoDTriggered(dtkAbstractView* d);
     void ThreeDTriggered(dtkAbstractView* d);
@@ -315,11 +317,11 @@ public slots:
                      const QVector3D &viewup,
                      const QVector3D &focal,
                      double parallelScale);
-    
+
     virtual void onVisibilityChanged(bool visible, int layer);
-    
+
     virtual void onOpacityChanged(double opacity, int layer);
-    
+
     /** When another linked view changes it's oblique settings the pool calls this:*/
     virtual void onObliqueSettingsChanged(const medAbstractView * vsender);
 
