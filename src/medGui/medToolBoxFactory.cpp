@@ -25,7 +25,6 @@ class medToolBoxFactoryPrivate
 public:
     medToolBoxFactory::medToolBoxRegistrationCustomCreatorHash custom_registration_creators;
     medToolBoxFactory::medToolBoxDiffusionCustomCreatorHash custom_diffusion_creators;
-    medToolBoxFactory::medToolBoxFunctionalCustomCreatorHash custom_functional_creators;
 };
 
 medToolBoxFactory *medToolBoxFactory::instance(void)
@@ -82,31 +81,6 @@ medToolBoxDiffusionCustom *medToolBoxFactory::createCustomDiffusionToolBox(QStri
         return NULL;
 
     medToolBoxDiffusionCustom *toolbox = d->custom_diffusion_creators[type](parent);
-
-    return toolbox;
-}
-
-bool medToolBoxFactory::registerCustomFunctionalToolBox(QString type, medToolBoxFunctionalCustomCreator func)
-{
-    if(!d->custom_functional_creators.contains(type)) {
-        d->custom_functional_creators.insert(type, func);
-        return true;
-    }
-
-    return false;
-}
-
-QList<QString> medToolBoxFactory::functionalToolBoxes(void)
-{
-    return d->custom_functional_creators.keys();
-}
-
-medToolBoxFunctionalCustom *medToolBoxFactory::createCustomFunctionalToolBox(QString type, QWidget *parent)
-{
-    if(!d->custom_functional_creators.contains(type))
-        return NULL;
-
-    medToolBoxFunctionalCustom *toolbox = d->custom_functional_creators[type](parent);
 
     return toolbox;
 }
