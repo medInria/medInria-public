@@ -4,6 +4,8 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
@@ -78,9 +80,9 @@ void itkDataImageReaderBase::readInformation (const QString& path)
         qDebug() << e.GetDescription();
         return;
     }
-    
-    dtkAbstractData* dtkdata = this->data();
-    
+
+    dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
+
     if (!dtkdata) {
 
         if (this->io->GetPixelType()==itk::ImageIOBase::SCALAR ) {
@@ -96,43 +98,43 @@ void itkDataImageReaderBase::readInformation (const QString& path)
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageUChar").append(cdim));
+                    dtkdata =  dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUChar").append(cdim)) ;
                     break;
 
                 case itk::ImageIOBase::CHAR:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageChar").append(cdim));
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageChar").append(cdim));
                     break;
 
                 case itk::ImageIOBase::USHORT:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageUShort").append(cdim));
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUShort").append(cdim));
                     break;
 
                 case itk::ImageIOBase::SHORT:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageShort").append(cdim));
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageShort").append(cdim));
                     break;
 
                 case itk::ImageIOBase::UINT:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageUInt").append(cdim));
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUInt").append(cdim));
                     break;
 
                 case itk::ImageIOBase::INT:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageInt").append(cdim));
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageInt").append(cdim));
                     break;
 
                 case itk::ImageIOBase::ULONG:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageULong").append(cdim));
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageULong").append(cdim));
                     break;
 
                 case itk::ImageIOBase::LONG:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageLong").append(cdim));
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageLong").append(cdim));
                     break;
 
                 case itk::ImageIOBase::FLOAT:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageDouble").append(cdim));  // Bug ???
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageFloat").append(cdim));
                     break;
 
                 case itk::ImageIOBase::DOUBLE:
-                    dtkdata = dtkAbstractDataFactory::instance()->create (QString("itkDataImageDouble").append(cdim));  // Bug (added 4 which was not existing) ??
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));
                     break;
 
                 default:
@@ -145,7 +147,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
-                    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageRGB3");
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGB3");
                     break;
             
                 default:
@@ -158,7 +160,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
-                    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageVector3");
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVector3");
                     break;
             
                 default:
@@ -171,7 +173,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
             switch (this->io->GetComponentType()) {
 
             case itk::ImageIOBase::UCHAR:
-                dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageRGBA3");
+                dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGBA3");
                 break;
 
             default:
@@ -234,6 +236,10 @@ void itkDataImageReaderBase::readInformation (const QStringList& paths)
 template <unsigned DIM,typename T>
 bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
     dtkAbstractData* dtkdata = this->data();
+
+    if ( !dtkdata )
+        return false;
+
     if (dtkdata && dtkdata->description()!=type)
         return false;
 

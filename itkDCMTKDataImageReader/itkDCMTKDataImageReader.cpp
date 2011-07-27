@@ -6,6 +6,9 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
+
+#include <medCore/medMetaDataHelper.h>
 
 #include <ITKDCMTKIO/itkDCMTKImageIO.h>
 
@@ -215,7 +218,7 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     return;
   }
 
-  dtkAbstractData* dtkdata = this->data();
+  dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
 
   if (!dtkdata) {
 
@@ -263,7 +266,7 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
       }
 
       imagetypestring << d->io->GetNumberOfDimensions();
-      dtkdata = dtkAbstractDataFactory::instance()->create (imagetypestring.str().c_str());
+      dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer(imagetypestring.str().c_str()) ;
       if (dtkdata)
 	this->setData ( dtkdata );
     }
@@ -272,7 +275,7 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
       switch (d->io->GetComponentType()) {
 
 	  case itk::ImageIOBase::UCHAR:
-	    dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataImageRGB3");
+	    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageRGB3") ;
 
 	    if (dtkdata)
 	      this->setData ( dtkdata );
@@ -350,44 +353,44 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++ )
       filePaths << d->io->GetOrderedFileNames()[i].c_str();
 
-    if (!dtkdata->hasMetaData ( tr ("PatientName") ))
-      dtkdata->addMetaData ( "PatientName", patientName );
+    if (!dtkdata->hasMetaData(medMetaDataHelper::KEY_PatientName() ))
+      dtkdata->addMetaData(medMetaDataHelper::KEY_PatientName(), patientName );
     else
-      dtkdata->setMetaData ( "PatientName", patientName );
+      dtkdata->setMetaData(medMetaDataHelper::KEY_PatientName(), patientName );
 
-    if (!dtkdata->hasMetaData ( tr ("StudyDescription") ))
-      dtkdata->addMetaData ( "StudyDescription", studyName );
+    if (!dtkdata->hasMetaData(medMetaDataHelper::KEY_StudyDescription() ))
+      dtkdata->addMetaData(medMetaDataHelper::KEY_StudyDescription(), studyName );
     else
-      dtkdata->setMetaData ( "StudyDescription", studyName );
+      dtkdata->setMetaData(medMetaDataHelper::KEY_StudyDescription(), studyName );
 
     if (!dtkdata->hasMetaData ( tr ("SeriesDescription") ))
-      dtkdata->addMetaData ( "SeriesDescription", seriesName );
+      dtkdata->addMetaData(medMetaDataHelper::KEY_SeriesDescription(), seriesName );
     else
-      dtkdata->setMetaData ( "SeriesDescription", seriesName );
+      dtkdata->setMetaData(medMetaDataHelper::KEY_SeriesDescription(), seriesName );
 
-    dtkdata->setMetaData("StudyID",         studyId);
-    dtkdata->setMetaData("SeriesID",        seriesId);
-    dtkdata->setMetaData("Orientation",     orientation);
-    dtkdata->setMetaData("SeriesNumber",    seriesNumber);
-    dtkdata->setMetaData("SequenceName",    sequenceName);
-    dtkdata->setMetaData("SliceThickness",  sliceThickness);
-    dtkdata->setMetaData("Rows",            rows);
-    dtkdata->setMetaData("Columns",         columns);
-    dtkdata->setMetaData("Age",             age);
-    dtkdata->setMetaData("BirthDate",       birthdate);
-    dtkdata->setMetaData("Gender",          gender);
-    dtkdata->setMetaData("Description",     desc);
-    dtkdata->setMetaData("Modality",        modality);
-    dtkdata->setMetaData("AcquisitionDate", acqdate);
-    dtkdata->setMetaData("Referee",         referee);
-    dtkdata->setMetaData("Performer",       performer);
-    dtkdata->setMetaData("Institution",     institution);
-    dtkdata->setMetaData("Report",          report);
-    dtkdata->setMetaData("Protocol",        protocol);
-    dtkdata->setMetaData("Comments",        comments);
-    dtkdata->setMetaData("Status",          status);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_StudyID(),         studyId);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_SeriesID(),        seriesId);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Orientation(),     orientation);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_SeriesNumber(),    seriesNumber);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_SequenceName(),    sequenceName);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_SliceThickness(),  sliceThickness);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Rows(),            rows);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Columns(),         columns);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Age(),             age);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_BirthDate(),       birthdate);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Gender(),          gender);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Description(),     desc);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Modality(),        modality);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_AcquisitionDate(), acqdate);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Referee(),         referee);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Performer(),       performer);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Institution(),     institution);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Report(),          report);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Protocol(),        protocol);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Comments(),        comments);
+    dtkdata->setMetaData(medMetaDataHelper::KEY_Status(),          status);
 
-    dtkdata->addMetaData ("FilePaths",      filePaths);
+    dtkdata->addMetaData(medMetaDataHelper::KEY_FilePaths(),      filePaths);
 
   }
 }

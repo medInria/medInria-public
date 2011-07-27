@@ -194,7 +194,8 @@ if(WIN32)
             -D_CRT_TIME_FUNCTIONS_NO_DEPRECATE
             -D_CRT_VCCLRIT_NO_DEPRECATE
             -D_SCL_SECURE_NO_DEPRECATE
-            )
+            -D_SCL_SECURE_NO_WARNINGS
+          )
         endif(NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
       endif(NOT MINGW)
     endif(NOT CYGWIN)
