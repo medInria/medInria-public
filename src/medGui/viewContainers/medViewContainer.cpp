@@ -36,6 +36,7 @@ medViewContainer::medViewContainer(QWidget *parent)
 
     d->view = NULL;
     d->current = this;
+    d->focus = false;
 
     d->pool = new medViewPool;
 
@@ -82,6 +83,11 @@ medViewContainer *medViewContainer::current(void)
         return root->current();
 
     return d->current;
+}
+
+bool medViewContainer::hasFocus (void) const
+{
+    return d->focus;
 }
 
 bool medViewContainer::isCurrent(void) const
@@ -195,7 +201,7 @@ void medViewContainer::setView(dtkAbstractView *view)
         }
         
         connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
-        this->recomputeStyleSheet();        
+        this->recomputeStyleSheet();
     }        
 }
 
@@ -222,7 +228,7 @@ void medViewContainer::setCurrent(medViewContainer *container)
     else
         d->current = container;
 
-    this->recomputeStyleSheet();
+    //this->recomputeStyleSheet();
 }
 
 void medViewContainer::recomputeStyleSheet()
@@ -263,7 +269,11 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
     medViewContainer * former = this->current();
 
+    d->focus = true;
+
     this->onViewFocused( true );
+
+    this->recomputeStyleSheet();
 
     if (former)
         former->update();
@@ -271,7 +281,9 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)
 {
-    Q_UNUSED(event);
+    d->focus = false;
+
+    this->recomputeStyleSheet();
 }
 
 void medViewContainer::paintEvent(QPaintEvent *event)

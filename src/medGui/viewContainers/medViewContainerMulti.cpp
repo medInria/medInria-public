@@ -62,6 +62,19 @@ void medViewContainerSingle2::onViewClosing (void)
     // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
+void medViewContainerSingle2::onViewFocused (bool value)
+{
+    if ( !value )
+        return;
+
+    //if ( !this->isEmpty() )
+    //    this->setCurrent( this );
+
+    if (dtkAbstractView *view = this->view())
+        emit focused(view);
+
+    this->update();
+}
 
 class medViewContainerMultiPrivate
 {
@@ -143,7 +156,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     connect (view, SIGNAL (changeDaddy(bool)),
              this, SLOT (onDaddyChanged(bool)));
 
-    this->setCurrent( container );
+    //this->setCurrent( container ); // no, single2 cannot be current, "this" is current in multiview
     emit viewAdded (view);
 }
 
@@ -243,7 +256,7 @@ void medViewContainerMulti::onViewClosing (void)
 
         view->close();
 
-        delete closedContainer;
+        closedContainer->deleteLater();
 
         this->layout (content);
 

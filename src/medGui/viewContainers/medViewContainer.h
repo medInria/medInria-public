@@ -41,6 +41,11 @@ class MEDGUI_EXPORT medViewContainer : public QFrame
     Q_OBJECT
 
     /**
+     * @brief true if this container has focus
+    */
+    Q_PROPERTY( bool hasFocus READ hasFocus );
+
+    /**
      * @brief true if this is the current container
     */
     Q_PROPERTY( bool isCurrent READ isCurrent );
@@ -108,6 +113,16 @@ public:
     */
     const medViewContainer *current(void) const;
     medViewContainer *current(void);
+
+     /**
+     * @brief Does this container has focus?
+     *
+     * Returns true if it does.
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool hasFocus(void) const;
 
     /**
      * @brief Is this the current container?

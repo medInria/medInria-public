@@ -45,6 +45,8 @@ public:
 
     QHash<QString, QString> viewProperties;
     QString viewInfo;
+
+    bool focus;
 };
 
 #endif

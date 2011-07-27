@@ -165,38 +165,40 @@ void medViewContainerCustom::setPreset(int preset)
 void medViewContainerCustom::setView(dtkAbstractView *view)
 { 
     if ( this->isLeaf() ) {
-      if (view!=d->view) {
-	if (d->layout->count())
-	  d->layout->removeItem(d->layout->itemAt(0));
+        
+        if (view!=d->view) {
 
-	if (d->view)
-	  this->onViewClosing();
+	        if (d->layout->count())
+	            d->layout->removeItem(d->layout->itemAt(0));
+
+	        if (d->view)
+	            this->onViewClosing();
 
 	/*
 	  dtkAbstractView *cloneView = dtkAbstractViewFactory::instance()->create (view->description());
 	  cloneView->setData ( static_cast<dtkAbstractData*>(view->data()) );
 	  cloneView->reset();
 	*/
-	
-	medViewContainer::setView (view);
 
-	d->layout->setContentsMargins(0, 0, 0, 0);    
-	d->layout->addWidget(view->widget(), 0, 0);
-	
-	d->view = view;
-	// d->view->reset();
-	
-	this->synchronize_2 (view);
-	
-	connect (view, SIGNAL (closing()),        this, SLOT (onViewClosing()));
-	connect (view, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
-        connect (view, SIGNAL (changeDaddy(bool)),
-                 this, SLOT (onDaddyChanged(bool)));
+	        medViewContainer::setView (view);
 
-        this->recomputeStyleSheet();
-	emit viewAdded (view);
-      }
+	        d->layout->setContentsMargins(0, 0, 0, 0);    
+	        d->layout->addWidget(view->widget(), 0, 0);
+	
+	        d->view = view;
+	        // d->view->reset();
+	
+	        this->synchronize_2 (view);
+	
+	        connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
+	        connect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
+            connect (view, SIGNAL (changeDaddy(bool)), this, SLOT (onDaddyChanged(bool)));
+
+            this->recomputeStyleSheet();
+	        emit viewAdded (view);
+        }
     }
+
     /*
     else {
       foreach (medViewContainerCustom *container, this->childContainers())
@@ -261,18 +263,16 @@ void medViewContainerCustom::onViewClosing (void)
         this->onViewFullScreen2 (false, d->view); // in case view is full screen
         d->layout->removeWidget (d->view->widget());
         this->desynchronize_2 (d->view);
-        disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
-	disconnect (d->view, SIGNAL (fullScreen(bool)), this, SLOT (onViewFullScreen(bool)));
-        disconnect (d->view, SIGNAL (changeDaddy(bool)),
-                    this,    SLOT (onDaddyChanged(bool)));
+        disconnect (d->view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
+	    disconnect (d->view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
+        disconnect (d->view, SIGNAL (changeDaddy(bool)), this, SLOT (onDaddyChanged(bool)));
 
-	emit viewRemoved (d->view);
+	    emit viewRemoved (d->view);
 	
         d->view->close();
         
         d->view = NULL;
     }
-
 
     medViewContainer * parent = this->parentContainer();
     while ( parent != NULL ) {

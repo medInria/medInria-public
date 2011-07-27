@@ -17,6 +17,10 @@
 ##
 ######################################################################
 
+if (WIN32)
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+endif()
 
 ## ###################################################################
 ## INCLUDE RULES
