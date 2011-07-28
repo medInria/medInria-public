@@ -1,7 +1,7 @@
 #ifndef MEDTOOLBOXILOGREGISTRATION_H
 #define MEDTOOLBOXILOGREGISTRATION_H
 
-#include <medGui/medToolBox.h>
+#include <medGui/toolboxes/medToolBox.h>
 
 class dtkAbstractView;
 class dtkAbstractData;

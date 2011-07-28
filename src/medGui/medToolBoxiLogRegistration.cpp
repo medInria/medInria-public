@@ -4,7 +4,7 @@
 #include <QListWidget>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkLog.h>
-#include <medGui/medToolBoxTab.h>
+#include <medGui/toolboxes/medToolBoxTab.h>
 #include <QList>
 #include <string>
 #include <sstream>

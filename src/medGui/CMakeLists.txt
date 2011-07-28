@@ -29,13 +29,13 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxContainer.h
   
   # specific toolbox classes
-  medToolBoxDiffusion.h
-  medToolBoxDiffusionCustom.h
-  medToolBoxDiffusionFiberView.h   
-  medToolBoxDiffusionFiberBundling.h
-  medToolBoxRegistration.h
-  medToolBoxRegistrationCustom.h
-  medToolBoxDiffusionTensorView.h
+  toolboxes/medToolBoxDiffusion.h
+  toolboxes/medToolBoxDiffusionCustom.h
+  toolboxes/medToolBoxDiffusionFiberView.h   
+  toolboxes/medToolBoxDiffusionFiberBundling.h
+  toolboxes/medToolBoxRegistration.h
+  toolboxes/medToolBoxRegistrationCustom.h
+  toolboxes/medToolBoxDiffusionTensorView.h
   medToolBoxiLogRegistration.h
 
   # viewer stuff
@@ -130,34 +130,34 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   medLayoutChooser.cpp
   medPacsSelector.cpp
-<<<<<<< HEAD
-  medButton.cpp
+
+  commonWidgets/medButton.cpp
   
-  medToolBox.cpp
-  medToolBoxBody.cpp
-  medToolBoxHeader.cpp
-  medToolBoxTab.cpp
-  medToolBoxFactory.cpp
+  toolboxes/medToolBox.cpp
+  toolboxes/medToolBoxBody.cpp
+  toolboxes/medToolBoxHeader.cpp
+  toolboxes/medToolBoxTab.cpp
+  factories/medToolBoxFactory.cpp
   medToolBoxContainer.cpp 
   
-  medToolBoxDiffusion.cpp
-  medToolBoxDiffusionCustom.cpp
-  medToolBoxDiffusionFiberView.cpp   
-  medToolBoxDiffusionFiberBundling.cpp
-  medToolBoxRegistration.cpp
-  medToolBoxRegistrationCustom.cpp
-  medToolBoxDiffusionTensorView.cpp
+  toolboxes/medToolBoxDiffusion.cpp
+  toolboxes/medToolBoxDiffusionCustom.cpp
+  toolboxes/medToolBoxDiffusionFiberView.cpp   
+  toolboxes/medToolBoxDiffusionFiberBundling.cpp
+  toolboxes/medToolBoxRegistration.cpp
+  toolboxes/medToolBoxRegistrationCustom.cpp
+  toolboxes/medToolBoxDiffusionTensorView.cpp
   medToolBoxiLogRegistration.cpp
 
   medViewPool.cpp
-  medViewContainer.cpp
-  medViewContainerCustom.cpp
-  medViewContainerMulti.cpp
-  medViewContainerSingle.cpp
-  medViewContainerCompare.cpp
-=======
-  medToolBoxContainer.cpp
->>>>>>> 7e550d9e0e6cec57e42bb11ddffef0f03a8330e4
+  viewContainers/medViewContainer.cpp
+  viewContainers/medViewContainerCustom.cpp
+  viewContainers/medViewContainerMulti.cpp
+  viewContainers/medViewContainerSingle.cpp
+  viewContainers/medViewContainerCompare.cpp
+
+  
+
   medStackedViewContainers.cpp
   medViewerConfiguration.cpp
   medPacsSelector.cpp

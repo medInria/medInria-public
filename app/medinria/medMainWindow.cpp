@@ -145,7 +145,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->browserArea, SIGNAL(load(const QString&)), this, SLOT(load(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
-<<<<<<< HEAD
+
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
     // Setting up core python module
 
@@ -198,8 +198,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
     medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
 
-=======
->>>>>>> 7e550d9e0e6cec57e42bb11ddffef0f03a8330e4
+
     // Setting up status bar
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
     d->shiftToViewerAreaAction = new medWorkspaceShifterAction("Viewer");

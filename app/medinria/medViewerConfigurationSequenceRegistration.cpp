@@ -3,7 +3,7 @@
 #include "medViewerConfigurationSequenceRegistration.h"
 #include <medGui/medToolBoxiLogRegistration.h>
 
-#include <medGui/medViewContainer.h>
+#include <medGui/viewContainers/medViewContainer.h>
 #include <medGui/medStackedViewContainers.h>
 
 
@@ -17,7 +17,7 @@ public:
 medViewerConfigurationSequenceRegistration::medViewerConfigurationSequenceRegistration(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationSequenceRegistrationPrivate)
 {
     
-    setLayoutToolBoxVisibility(false);
+    //setLayoutToolBoxVisibility(false);
 
     d->logToolBox = new medToolBoxiLogRegistration(parent);
     this->addToolBox( d->logToolBox );
