@@ -59,6 +59,9 @@ signals:
      * @param index
     */
     void exportData(const medDataIndex& index);
+
+    /** emitted when the source is about to remove a data.*/
+    void dataRemoved(const medDataIndex& index);
 };
 
 #endif

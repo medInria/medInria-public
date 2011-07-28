@@ -29,24 +29,24 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkGui/dtkFinder.h>
 
-#include <medCore/medMessageController.h>
-#include <medCore/medJobManager.h>
-#include <medCore/medDataManager.h>
-#include <medCore/medAbstractDataSource.h>
-#include <medCore/medAbstractDataSourceFactory.h>
-#include <medCore/medStorage.h>
+#include <medMessageController.h>
+#include <medJobManager.h>
+#include <medDataManager.h>
+#include <medAbstractDataSource.h>
+#include <medAbstractDataSourceFactory.h>
+#include <medStorage.h>
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseExporter.h>
-#include <medSql/medDatabaseImporter.h>
+#include <medDatabaseController.h>
+#include <medDatabaseExporter.h>
+#include <medDatabaseImporter.h>
 
-#include <medGui/medProgressionStack.h>
-#include <medGui/medToolBox.h>
-#include <medGui/medToolBoxFactory.h>
-#include <medGui/medToolBoxContainer.h>
-#include <medGui/medBrowserToolBoxJobs.h>
+#include <medProgressionStack.h>
+#include <medToolBox.h>
+#include <medToolBoxFactory.h>
+#include <medToolBoxContainer.h>
+#include <medBrowserToolBoxJobs.h>
 
-#include <medPacs/medPacsMover.h>
+#include <medPacsMover.h>
 
 class medBrowserAreaPrivate
 {
@@ -102,7 +102,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->fsSource = new medFileSystemDataSource(this);
     addDataSource(d->fsSource);
-    connect(d->fsSource, SIGNAL(open(QString)), this,SIGNAL(open(QString)));
+    connect(d->fsSource, SIGNAL(open(QString)), this, SIGNAL(open(QString)));
+    connect(d->fsSource, SIGNAL(load(QString)), this, SIGNAL(load(QString)));
 
     d->pacsSource = new medPacsDataSource(this);
     addDataSource(d->pacsSource);
@@ -227,6 +228,7 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
     connect(dataSource,SIGNAL(dataReceived(dtkAbstractData *)),this,SLOT(onDataImport(dtkAbstractData *)));
     connect(dataSource,SIGNAL(dataReceivingFailed(QString)), this, SLOT(onDataReceivingFailed(QString)));
     connect(dataSource, SIGNAL(exportData(const medDataIndex&)), this, SLOT(onExportData(const medDataIndex&)));
+    connect(dataSource, SIGNAL(dataRemoved(const medDataIndex&)), this, SLOT(onDataRemoved(const medDataIndex&)));
 }
 
 void medBrowserArea::onExportData(const medDataIndex &index)
@@ -236,7 +238,7 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     if (fileName.isEmpty())
         return;
 
-    dtkAbstractData *data = medDataManager::instance()->data(index).data();
+    dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
 
     if (!data)
         return;
@@ -246,4 +248,9 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 
     QThreadPool::globalInstance()->start(exporter);
+}
+
+void medBrowserArea::onDataRemoved( const medDataIndex &index )
+{
+    d->dbSource->update();
 }

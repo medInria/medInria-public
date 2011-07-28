@@ -5,7 +5,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 
-#include "medCore/medCoreExport.h"
+#include "medCoreExport.h"
 
 /**
 * @class medMetaDataHelper
@@ -93,6 +93,7 @@ public:
     MED_DEFINE_METADATA_ENTRY( PixelType );
     MED_DEFINE_METADATA_ENTRY( DtkDataType );
     MED_DEFINE_METADATA_ENTRY( PreferredDataReader );
+    MED_DEFINE_METADATA_ENTRY( ThumbnailPath );
 
 
 

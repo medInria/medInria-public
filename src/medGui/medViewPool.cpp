@@ -18,14 +18,14 @@
  */
 
 #include "medViewPool.h"
-#include <medCore/medMessageController.h>
-#include <medCore/medAbstractView.h>
+#include <medMessageController.h>
+#include <medAbstractView.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include "medCore/medMessageController.h"
+#include "medMessageController.h"
 
 class medViewPoolPrivate
 {
@@ -255,13 +255,14 @@ void medViewPool::onViewReg(bool value)
 void medViewPool::onViewPropertySet (const QString &key, const QString &value)
 {
     // property that we do not want to synchronize
-    if (key=="Daddy" ||
-        key=="PositionLinked" ||
-        key=="CameraLinked" ||
-        key=="WindowingLinked" ||
-        key=="Orientation" ||
-        key=="LookupTable" ||
-        key=="Preset")
+    if (key == "Daddy"           ||
+        key == "PositionLinked"  ||
+        key == "CameraLinked"    ||
+        key == "WindowingLinked" ||
+        key == "Orientation"     ||
+        key == "LookupTable"     ||
+        key == "Preset"          ||
+        key == "3DMode")
         return;
     
     d->propertySet[key] = value;

@@ -17,12 +17,11 @@
  * 
  */
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 #include "medViewerConfiguration.h"
 
 #include "medToolBox.h"
-#include "medViewerToolBoxLayout.h"
 #include "medViewContainer.h"
 #include "medViewContainerCustom.h"
 #include "medViewContainerSingle.h"
@@ -33,12 +32,10 @@ class medViewerConfigurationPrivate
 {
 public:
     QWidget *parent;
-    medViewerToolBoxLayout *layoutToolBox;
     QList<medToolBox*> toolboxes;
     medViewerConfiguration::LayoutType layoutType;
     int customLayoutType;
     bool databaseVisibility;
-    bool layoutToolBoxVisibility;
     bool toolBoxesVisibility;
     medStackedViewContainers * viewContainerStack;
     
@@ -51,14 +48,7 @@ medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(n
     d->layoutType = medViewerConfiguration::LeftDbRightTb;
     d->customLayoutType = 0;
     d->databaseVisibility = true;
-    d->layoutToolBoxVisibility = true;
     d->toolBoxesVisibility = true;
-    
-    d->layoutToolBox = new medViewerToolBoxLayout(parent);
-    connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),   this, SIGNAL(layoutModeChanged(const QString&)));
-    connect (d->layoutToolBox, SIGNAL(presetClicked(int)), this, SIGNAL(layoutPresetClicked(int)));
-    connect (d->layoutToolBox, SIGNAL(split(int,int)),     this, SIGNAL(layoutSplit(int,int)));    
-    this->addToolBox(d->layoutToolBox);
 }
 
 medViewerConfiguration::~medViewerConfiguration(void)
@@ -125,26 +115,6 @@ void medViewerConfiguration::setDatabaseVisibility(bool visibility)
 bool medViewerConfiguration::isDatabaseVisible(void) const
 {
     return d->databaseVisibility;
-}
-
-void medViewerConfiguration::setLayoutToolBoxVisibility(bool visibility)
-{
-    d->layoutToolBoxVisibility = visibility;
-}
-
-void medViewerConfiguration::hideLayoutToolBox(void)
-{
-    d->layoutToolBox->hide();
-}
-
-void medViewerConfiguration::showLayoutToolBox(void)
-{
-    d->layoutToolBox->show();
-}
-
-bool medViewerConfiguration::isLayoutToolBoxVisible(void) const
-{
-    return d->layoutToolBoxVisibility;
 }
 
 medViewContainer* medViewerConfiguration::currentViewContainer() const
