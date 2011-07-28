@@ -218,6 +218,10 @@ void medViewerArea::open(const medDataIndex& index)
         // the data-manager should be used to read data
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
+        //BB: I don't understand why we need to block signals here, but we should
+        //unblock them as well.
+        medDataManager::instance()->blockSignals (false);
+
         if ( data.isNull() )
             return;
 
