@@ -28,16 +28,25 @@
 
 medViewContainerSingle2::~medViewContainerSingle2()
 {
+    d->layout->setContentsMargins(0, 0, 0, 0);
 }
 
 void medViewContainerSingle2::setView (dtkAbstractView *view)
 {
-    d->layout->setContentsMargins(0, 0, 0, 0);    
-    d->layout->addWidget(view->widget(), 0, 0);
+    if (d->view==view)
+        return;
+
+    if (d->view) {
+        this->onViewClosing();
+    }
+
     d->view = view;
 
-    // d->pool->appendView (view); // only difference with medViewContainerSingle: do not add the view to the pool
-    connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+    if (view) {
+        d->layout->addWidget(view->widget(), 0, 0);    
+        // d->pool->appendView (view); // only difference with medViewContainerSingle: do not add the view to the pool
+        connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+    }
 }
 
 bool medViewContainerSingle2::isLeaf(void) const
@@ -49,9 +58,12 @@ void medViewContainerSingle2::onViewClosing (void)
 {
     if (d->view) {
         d->layout->removeWidget(d->view->widget());
-        d->view->widget()->hide();
+        //d->view->widget()->hide();
+
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
         // d->pool->removeView (d->view); // do not remove it from the pool
+
+        d->view->close();
         d->view = NULL;
     }
 
@@ -79,7 +91,7 @@ void medViewContainerSingle2::onViewFocused (bool value)
 class medViewContainerMultiPrivate
 {
 public:
-    QList<dtkAbstractView *> views;
+    QList< dtkAbstractView* >  views;    
 };
 
 medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent), d2 (new medViewContainerMultiPrivate)
@@ -132,22 +144,30 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
             }
         }
     }
-    
+
+    // retrieve the list of containers before creating a new one
+    // so it is not in the list
+    QList <medViewContainer *> containers = this->childContainers();
+
     medViewContainer *container = new medViewContainerSingle2(this);
     container->setAcceptDrops(false);
-    container->setView(view);
+    container->setView(view);    
+    
+    foreach (medViewContainer *cont, containers) {
+        if (cont->isLeaf()) {
+            connect (container, SIGNAL (clicked()), cont, SLOT (onContainerClicked()), Qt::UniqueConnection);
+            connect (cont, SIGNAL (clicked()), container, SLOT (onContainerClicked()), Qt::UniqueConnection);
+        }
+    }
+
     content << container;
 
     this->layout(content);
 
-    medViewContainer::setView (view);
+    // medViewContainer::setView (view); //no, since d->view does not make sense in multi
 
     d2->views << view;
     
-    // d->view = view; // set in medViewContainer::setView(view)
-
-    // d->view->reset();
-	
     if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
         d->pool->appendView (medView);
     
@@ -156,7 +176,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     connect (view, SIGNAL (changeDaddy(bool)),
              this, SLOT (onDaddyChanged(bool)));
 
-    //this->setCurrent( container ); // no, single2 cannot be current, "this" is current in multiview
+    //this->setCurrent( container ); // no, single2 cannot be current, "this" is always current in multiview
     emit viewAdded (view);
 }
 
@@ -254,7 +274,7 @@ void medViewContainerMulti::onViewClosing (void)
 
         emit viewRemoved (view);
 
-        view->close();
+        // view->close(); // the container will close the view once deleted
 
         closedContainer->deleteLater();
 
@@ -280,28 +300,28 @@ void medViewContainerMulti::onViewClosing (void)
 
 void medViewContainerMulti::onViewFullScreen (bool value)
 {
-  if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
-      if (value) {
-          QList<QWidget *> content;
-	  for(int i = 0; i < d->layout->rowCount() ; i++) {
-            for(int j = 0; j < d->layout->columnCount() ; j++) {
-	      if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
-		if(item->widget()!=view->widget()->parent())
-		  item->widget()->hide();
-	      }
-            }
-	  }        
-      }
-      else {
-	QList<QWidget *> content;
-	for(int i = 0; i < d->layout->rowCount() ; i++) {
-	  for(int j = 0; j < d->layout->columnCount() ; j++) {
-	    if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
-	      if(item->widget()!=view->widget()->parent())
-		item->widget()->show();
-	  }
-	  }       
-	}
+    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+        if (value) {
+            QList<QWidget *> content;
+	        for(int i = 0; i < d->layout->rowCount() ; i++) {
+                for(int j = 0; j < d->layout->columnCount() ; j++) {
+	            if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+		            if(item->widget()!=view->widget()->parent())
+		                item->widget()->hide();
+	                }
+                }
+	    }        
+    }
+    else {
+	    QList<QWidget *> content;
+        for(int i = 0; i < d->layout->rowCount() ; i++) {
+	        for(int j = 0; j < d->layout->columnCount() ; j++) {
+	            if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+	                if(item->widget()!=view->widget()->parent())
+		                item->widget()->show();
+                    }
+	            }       
+	        }
       }
   }
 }

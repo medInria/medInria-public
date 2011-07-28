@@ -36,7 +36,7 @@ medViewContainer::medViewContainer(QWidget *parent)
 
     d->view = NULL;
     d->current = this;
-    d->focus = false;
+    d->clicked = false;
 
     d->pool = new medViewPool;
 
@@ -58,8 +58,9 @@ medViewContainer::~medViewContainer(void)
 {
     d->pool->deleteLater();
 
-    if (d->view)
+    if (d->view) {
         d->view->close();
+    }
 
     delete d;
 
@@ -85,9 +86,9 @@ medViewContainer *medViewContainer::current(void)
     return d->current;
 }
 
-bool medViewContainer::hasFocus (void) const
+bool medViewContainer::isClicked (void) const
 {
-    return d->focus;
+    return d->clicked;
 }
 
 bool medViewContainer::isCurrent(void) const
@@ -139,8 +140,10 @@ QList< medViewContainer * > medViewContainer::childContainers() const
     QList< medViewContainer * > containers;
     foreach ( QObject * child, this->children() ) {
         medViewContainer * c = dynamic_cast<medViewContainer *>( child );
-        if ( c != NULL )
+        if ( c != NULL ) {
             containers << c;
+            containers << c->childContainers();
+        }
     }
 
     return containers;
@@ -190,6 +193,13 @@ void medViewContainer::setView(dtkAbstractView *view)
     if (view==d->view)
         return;
 
+    // clear connection of previous view
+    if (d->view) {
+        disconnect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
+        d->view->close();
+        d->view = 0;
+    }
+
     d->view = view;
     
     if (d->view) {
@@ -217,6 +227,12 @@ void medViewContainer::onViewFocused( bool value )
         emit focused(view);
 
     this->update();
+}
+
+void medViewContainer::onContainerClicked (void)
+{
+    d->clicked = false;
+    this->recomputeStyleSheet();
 }
 
 void medViewContainer::setCurrent(medViewContainer *container)
@@ -269,7 +285,7 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
     medViewContainer * former = this->current();
 
-    d->focus = true;
+    d->clicked = true;
 
     this->onViewFocused( true );
 
@@ -277,13 +293,15 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
     if (former)
         former->update();
+
+    emit clicked();
 }
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)
 {
-    d->focus = false;
+    //d->clicked = false;
 
-    this->recomputeStyleSheet();
+    //this->recomputeStyleSheet();
 }
 
 void medViewContainer::paintEvent(QPaintEvent *event)

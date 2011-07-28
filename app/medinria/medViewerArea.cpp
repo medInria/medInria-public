@@ -213,7 +213,7 @@ void medViewerArea::open(const medDataIndex& index)
     if(((medDataIndex)index).isValidForSeries()) {
         
         dtkSmartPointer<dtkAbstractData> data;
-        medAbstractView *view = NULL;
+        dtkSmartPointer<medAbstractView> view;
         
         /** test to check for reference counting problems, here the datamanager should be able to drop the data */
         //medDataManager::instance()->data(index);
@@ -229,14 +229,14 @@ void medViewerArea::open(const medDataIndex& index)
         
         medViewContainer * current = this->currentContainerFocused();
         if ( current != NULL )
-            view = dynamic_cast<medAbstractView*>(current->view());
+            view = qobject_cast<medAbstractView*>(current->view());
 
-        if( view == NULL ) {
-            view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
+        if( view.isNull() ) {
+            view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
         }
 
-        if( view == NULL ) {
+        if( view.isNull() ) {
             qDebug() << "Unable to create a v3dView";
             return;
         }
@@ -306,8 +306,9 @@ void medViewerArea::onViewClosed(void)
         foreach( medToolBox *tb, toolboxes)
             tb->update(NULL);
 
-        medDataIndex index = medViewManager::instance()->index( view );
-        medViewManager::instance()->remove(index, view); // deletes the view
+        QList<medDataIndex> indices = medViewManager::instance()->indices( view );
+        foreach (medDataIndex index, indices)
+            medViewManager::instance()->remove(index, view); // deletes the view
     }
 }
 

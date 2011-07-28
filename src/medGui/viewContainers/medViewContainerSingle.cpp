@@ -42,28 +42,25 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     if (view==d->view)
         return;
 
+    if (d->view) { // cleanup the previous view first
+        this->onViewClosing();
+    }
+
     medViewContainer::setView (view);
     
-    // if (d->layout->count())
-    //     d->layout->takeAt(0)->widget()->hide();
-    
-    d->view = view;
+    //d->view = view; // already called in medViewContainer::setView()
 
     if (d->view) {
-
         d->layout->setContentsMargins(0, 0, 0, 0);    
         d->layout->addWidget(view->widget(), 0, 0);
-        // d->view = view;
-	
-        // d->view->reset();
 
         // set the view properties
-
         if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
             d->pool->appendView (medView);
-            connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
-            connect (view, SIGNAL (changeDaddy(bool)),
-                     this, SLOT (onDaddyChanged(bool)));
+            
+        connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+        connect (view, SIGNAL (changeDaddy(bool)),
+                 this, SLOT (onDaddyChanged(bool)));
 
         this->recomputeStyleSheet();
         emit viewAdded (view);
@@ -87,13 +84,12 @@ void medViewContainerSingle::onViewClosing (void)
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
         disconnect (d->view, SIGNAL (changeDaddy(bool)),
                     this,    SLOT (onDaddyChanged(bool)));
-        if (medAbstractView *medView = dynamic_cast<medAbstractView*> (d->view))
+        if (medAbstractView *medView = qobject_cast<medAbstractView*> (d->view))
             d->pool->removeView (medView);
 
-	emit viewRemoved (d->view);
+	    emit viewRemoved (d->view);
 	
         d->view->close();
-
         d->view = NULL;
 
         this->recomputeStyleSheet();
