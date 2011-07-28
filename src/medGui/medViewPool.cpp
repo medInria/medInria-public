@@ -73,15 +73,16 @@ void medViewPool::appendView (medAbstractView *vview)
 
     foreach (medAbstractView *view, viewsToAdd) {
 
-        if (d->views.contains (view))
+        if (d->views.contains (view)) {
             continue;
+        }
 
         d->views.append (view);
     
-        connect (view, SIGNAL (propertySet(const QString&, const QString&)), this, SLOT (onViewPropertySet(const QString&, const QString &)));
+        connect (view, SIGNAL (propertySet(const QString&, const QString&)), this, SLOT (onViewPropertySet(const QString&, const QString &)));        
         connect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
         connect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));
-
+        
         connect (view, SIGNAL (positionChanged  (const QVector3D  &, bool)), this, SLOT (onViewPositionChanged  (const QVector3D  &, bool)));
         connect (view, SIGNAL (zoomChanged      (double, bool)),             this, SLOT (onViewZoomChanged      (double, bool)));
         connect (view, SIGNAL (panChanged       (const QVector2D &, bool)),  this, SLOT (onViewPanChanged       (const QVector2D  &, bool)));
@@ -89,9 +90,9 @@ void medViewPool::appendView (medAbstractView *vview)
     
         connect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)),
                  this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)));
-    
-        connect( view, SIGNAL(  obliqueSettingsChanged    (const medAbstractView *)), 
-                 this,   SLOT(onViewObliqueSettingsChanged(const medAbstractView *)));
+
+        connect(view, SIGNAL(  obliqueSettingsChanged    (const medAbstractView *)), 
+                this,   SLOT(onViewObliqueSettingsChanged(const medAbstractView *)));
 
         connect (this, SIGNAL (viewAppended (medAbstractView *)),
                  view, SLOT (onAppendViewToPool (medAbstractView *)));
@@ -140,7 +141,7 @@ void medViewPool::removeView (medAbstractView *vview)
         if (viewsToRemove.contains(refView)) { // we are daddy, we need to find a new daddy
                                                // change daddy
             foreach(medAbstractView *lview, d->views) {
-                if (lview!=refView && lview->property ("Daddy")=="false") {
+                if (!viewsToRemove.contains(lview) && lview->property ("Daddy")=="false") {
                     lview->setProperty ("Daddy", "true");
                     break;
                 }
@@ -152,8 +153,9 @@ void medViewPool::removeView (medAbstractView *vview)
 
     foreach(medAbstractView *view, viewsToRemove) {
 
-        if (!d->views.contains (vview))
+        if (!d->views.contains (view)) {
             continue;
+            }
 
         // Tell any interested views that one is leaving.
         /*
@@ -179,8 +181,8 @@ void medViewPool::removeView (medAbstractView *vview)
         disconnect (view, SIGNAL (cameraChanged     (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)),
                     this, SLOT (onViewCameraChanged (const QVector3D &, const QVector3D &, const QVector3D &, double, bool)));
 
-        disconnect (view, SIGNAL(   obliqueSettingsChanged(const medAbstractView *) ),
-                    this,   SLOT( onViewObliqueSettingsChanged(const medAbstractView *) ) );
+        disconnect( view, SIGNAL(  obliqueSettingsChanged    (const medAbstractView *)), 
+                    this,   SLOT(onViewObliqueSettingsChanged(const medAbstractView *)));
 
         disconnect (this, SIGNAL (viewAppended (medAbstractView *)),
                     view, SLOT (onAppendViewToPool (medAbstractView *)));
