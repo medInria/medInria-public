@@ -14,6 +14,7 @@ class medAbstractDataCollectionPrivate;
  */
 class MEDCORE_EXPORT medAbstractDataCollection : public medAbstractData
 {
+    Q_OBJECT
 
 public:
     medAbstractDataCollection(medAbstractDataCollection *parent = 0);

@@ -214,6 +214,11 @@ void medAbstractDataCollection::addWriter( const QString& writer )
     (*d->dataIterator)->addWriter(writer);
 }
 
+void medAbstractDataCollection::addConverter(const QString& converter)
+{
+    (*d->dataIterator)->addConverter(converter);
+}
+
 void medAbstractDataCollection::enableReader( const QString& reader )
 {
     (*d->dataIterator)->enableReader(reader);
