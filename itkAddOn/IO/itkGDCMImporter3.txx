@@ -28,7 +28,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <ctype.h>
 
-bool mysort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
+bool positionandtimesort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
 {
   gdcm::Attribute<0x0018,0x1060> at1;  // Trigger Delay
   gdcm::Attribute<0x0020,0x0032> at11; // Image Position (Patient)
@@ -46,7 +46,7 @@ bool mysort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
   return at11 < at22;
 }
 
-bool mysort2(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
+bool positionandinstancesort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
 {
   gdcm::Attribute<0x0020,0x0013> at1;  // Instance Number
   gdcm::Attribute<0x0020,0x0032> at11; // Image Position (Patient)
@@ -847,7 +847,7 @@ namespace itk
     unsigned int number_of_instances = list.size() / nvalues;
 
     gdcm::Sorter sorter;
-    sorter.SetSortFunction( mysort );
+    sorter.SetSortFunction( positionandtimesort );
     sorter.Sort( list );
 
     gdcm::Directory::FilenamesType sorted_files = this->Transpose (sorter.GetFilenames(), number_of_instances);
@@ -1109,11 +1109,6 @@ namespace itk
     unsigned int nvalues = values.size();
     if (!nvalues)
       return ret;
-    
-    std::cout<<"3"<<std::endl;
-    std::cout<<"size "<<list.size()<<std::endl<<std::flush;
-    std::cout<<"nvalues "<<nvalues<<std::endl<<std::flush;
-    
 
     if ( (list.size() % nvalues) != 0 )
     {
@@ -1122,16 +1117,12 @@ namespace itk
       return ret;
     }
     
-    std::cout<<"4"<<std::endl;
     unsigned int number_of_instances = list.size() / nvalues;
 
     gdcm::Sorter sorter;
-    sorter.SetSortFunction( mysort2 );
-    std::cout<<"5"<<std::endl;
+    sorter.SetSortFunction( positionandinstancesort );
     sorter.Sort( list );
-    std::cout<<"6"<<std::endl;
     sorter.Print (std::cout);
-    std::cout<<"7"<<std::endl;
     
     gdcm::Directory::FilenamesType sorted_files = this->Transpose (sorter.GetFilenames(), number_of_instances);
     
