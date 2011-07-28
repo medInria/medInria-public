@@ -45,17 +45,47 @@ public:
     void setdw(QStatusBar *status);
 
 signals:
+
+    /**
+    * Signal emitted when the user chooses to open an image
+    * from the database browser.
+    * @param index - the @medDataIndex of the image
+    **/
     void open(const medDataIndex& index);
-    void open(const QString& file);
+
+    /**
+    * Signal emitted when the user chooses to open a file or
+    * directory in the file browser.
+    * @param path - the path of the image or directory
+    **/
+    void open(const QString& path);
+
+    /**
+    * Signal emitted when the user chooses to load a file or
+    * directory in the file browser.
+    * @param path - the path of the image or directory
+    **/
+    void load(const QString& path);
+
     void showError (QObject*,const QString&,unsigned int timeout);
 
 public slots:
     void onFileImported(void);
     void onSourceIndexChanged(int index);
     void onFileImport(QString);
+    void onFileIndex(QString);
     void onDataImport(dtkAbstractData *data);
     void onDataReceivingFailed(QString fileName);
     
+    void onPartialImportAttempted(const QString& message);
+
+    /*
+     * Function to call when (after emitting opening signal)
+     * the db item fail to open. This will make changes in the GUI
+     * to let the user know.
+     */
+    void onOpeningFailed(const medDataIndex& index);
+
     /**
      * @brief Export data from a selected medDataIndex in a data source.
      *
@@ -64,6 +94,9 @@ public slots:
      * @param index
     */
     void onExportData(const medDataIndex &index);
+
+    /** Called when data has been removed from a data source.*/
+    void onDataRemoved(const medDataIndex &index);
 
 protected:
     void setToolBoxesVisible(int index, bool visible);

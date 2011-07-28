@@ -92,6 +92,12 @@ public:
     */
     void clearNonPersistentData (void);
 
+
+    /** Remove an item or items from the database
+     *  Will remove a whole patient / study / series depending on the index.
+     */
+    void removeData(const medDataIndex& index);
+
     /**
     * Releases all own references to let all stored smartpointers get out of scope
     * All remaining references will be restored (probably not thread safe)
@@ -140,7 +146,13 @@ signals:
     * or non persistent database by calling import() or importNonPersistentData().
     */
     void dataAdded (const medDataIndex&);
-      
+
+    /**
+    * This signal is emitted whenever a data is removed in either the persistent
+    * or non persistent database by calling remove().
+    */
+    void dataRemoved (const medDataIndex&);
+
 protected:
      medDataManager(void);
     ~medDataManager(void);
@@ -157,7 +169,8 @@ protected:
     */
     static int ReadStatmFromProcFS( int* size, int* res, int* shared, int* text, int* sharedLibs, int* stack, int* dirtyPages );
 
-
+    /** Remove all matching items from the cache. */
+    void removeDataFromCache( const medDataIndex &index);
 
 protected:
     static medDataManager *s_instance;

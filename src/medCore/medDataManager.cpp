@@ -54,8 +54,9 @@ public:
     }
     
     // this is the data cache for persistent and non-persistent data
-    QHash<medDataIndex, QSharedPointer<dtkAbstractData> > dataCache;
-    QHash<medDataIndex, QSharedPointer<dtkAbstractData> > volatileDataCache;
+    typedef QHash<medDataIndex, QSharedPointer<dtkAbstractData> > DataCacheContainerType;
+    DataCacheContainerType dataCache;
+    DataCacheContainerType volatileDataCache;
 
     medAbstractDbController* getDbController()
     {
@@ -169,8 +170,8 @@ QSharedPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
     {
         qWarning() << "unable to open images with index:" << index.asString();
     }
-    return dtkdata;
 
+    return dtkdata;
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -544,6 +545,62 @@ medDataIndex medDataManager::import( QSharedPointer<dtkAbstractData> &data )
 
     return index;
 }
+
+void medDataManager::removeData( const medDataIndex& index )
+{
+
+    emit dataRemoved( index );
+
+    // Remove from cache first
+    this->removeDataFromCache(index);
+
+    qDebug() << "Reading from db";
+
+    // try to load the data from db
+    medAbstractDbController* db = d->getDbController();
+    if (db)
+    {
+        db->remove(index);
+    }
+
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    if(npDb)
+    {
+        npDb->remove(index);
+    }
+}
+
+void medDataManager::removeDataFromCache( const medDataIndex &index )
+{
+    typedef medDataManagerPrivate::DataCacheContainerType DataCacheContainerType;
+    typedef QList<medDataIndex>    medDataIndexList;
+    medDataIndexList indexesToRemove;
+
+    // Clear the cache items
+    for ( DataCacheContainerType::iterator it(d->dataCache.begin()); it != d->dataCache.end(); ++it) {
+        if ( medDataIndex::isMatch( it.key(), index ) )
+            indexesToRemove.push_back(it.key());
+    }
+
+    for ( medDataIndexList::iterator it( indexesToRemove.begin() ); it != indexesToRemove.end(); ++it ) {
+        d->dataCache.remove( *it );
+    }
+
+    indexesToRemove.clear();
+
+    // Clear the volatile cache items
+    for ( DataCacheContainerType::iterator it(d->volatileDataCache.begin()); it != d->volatileDataCache.end(); ++it) {
+        if ( medDataIndex::isMatch( it.key(), index ) )
+            indexesToRemove.push_back(it.key());
+    }
+
+    for ( medDataIndexList::iterator it( indexesToRemove.begin() ); it != indexesToRemove.end(); ++it ) {
+        d->volatileDataCache.remove( *it );
+    }
+
+}
+
+
 
 //-------------------------------------------------------------------------------------------------------
 

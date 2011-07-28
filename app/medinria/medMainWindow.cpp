@@ -140,6 +140,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     d->stack->addWidget(d->viewerArea);
 
     connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
+    connect(d->browserArea, SIGNAL(load(const QString&)), this, SLOT(load(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -185,6 +186,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
 
+
     //Register settingsWidgets
     medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
@@ -216,13 +218,14 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     medButton *quitButton = new medButton(this,":/icons/quit.png", tr("Quit Application"));
     connect(quitButton, SIGNAL(triggered()), this, SLOT(onQuit()));
-    
+
     medButton *settingsButton = new medButton(this, ":/icons/settings.png", tr("Edit Application Settings"));
     connect(settingsButton, SIGNAL(triggered()), this, SLOT(onEditSettings()));
 
     QComboBox *configurationSwitcher = new QComboBox(this);
     configurationSwitcher->addItems (medViewerConfigurationFactory::instance()->configurations());
     configurationSwitcher->setFocusPolicy (Qt::NoFocus);
+    configurationSwitcher->setCurrentIndex(configurationSwitcher->findText("Visualization"));
 
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->setContentsMargins(5, 0, 5, 0);
@@ -399,9 +402,16 @@ void medMainWindow::onEditSettings()
 
 void medMainWindow::open(const medDataIndex& index)
 {
-    this->switchToViewerArea();
-
-    d->viewerArea->open(index);
+    if(d->viewerArea->open(index))
+    {
+        this->switchToViewerArea();
+    }
+    else
+    {
+        // something went wrong while opening
+        // we bubble down the info
+        d->browserArea->onOpeningFailed(index);
+    }
 }
 
 void medMainWindow::open(const QString& file)
@@ -409,6 +419,11 @@ void medMainWindow::open(const QString& file)
     d->viewerArea->open(file);
 
     this->switchToViewerArea();
+}
+
+void medMainWindow::load(const QString& file)
+{
+    medDatabaseNonPersistentController::instance()->import(file);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)

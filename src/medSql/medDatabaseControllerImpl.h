@@ -98,8 +98,12 @@ public slots:
     */
     medDataIndex import(dtkAbstractData *data);
 
+    /** override base class */
+    virtual void remove(const medDataIndex& index);
+
 protected slots:
     void forwardMessage(QString);
+    void showOpeningError(QObject *sender);
 
 private:
     // helper to create tables
