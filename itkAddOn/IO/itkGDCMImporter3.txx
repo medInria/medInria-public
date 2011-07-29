@@ -23,50 +23,51 @@ PURPOSE.  See the above copyright notices for more information.
 #include "gdcmImageReader.h"
 #include "gdcmDirectionCosines.h"
 #include "gdcmStringFilter.h"
-#include "gdcmDataSet.h"
 #include "gdcmAttribute.h"
+#include "gdcmDataSet.h"
 
 #include <ctype.h>
 
-bool positionandtimesort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
-{
-  gdcm::Attribute<0x0018,0x1060> at1;  // Trigger Delay
-  gdcm::Attribute<0x0020,0x0032> at11; // Image Position (Patient)
-  at1.Set( ds1 );
-  at11.Set( ds1 );
-  gdcm::Attribute<0x0018,0x1060> at2;
-  gdcm::Attribute<0x0020,0x0032> at22;
-  at2.Set( ds2 );
-  at22.Set( ds2 );
-  
-  if( at11 == at22 )
+  static bool positionandtimesort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
   {
-    return at1 < at2;
+    gdcm::Attribute<0x0018,0x1060> at1;  // Trigger Delay
+    gdcm::Attribute<0x0020,0x0032> at11; // Image Position (Patient)
+    at1.Set( ds1 );
+    at11.Set( ds1 );
+    gdcm::Attribute<0x0018,0x1060> at2;
+    gdcm::Attribute<0x0020,0x0032> at22;
+    at2.Set( ds2 );
+    at22.Set( ds2 );
+    
+    if( at11 == at22 )
+    {
+      return at1 < at2;
+    }
+    return at11 < at22;
   }
-  return at11 < at22;
-}
 
-bool positionandinstancesort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
-{
-  gdcm::Attribute<0x0020,0x0013> at1;  // Instance Number
-  gdcm::Attribute<0x0020,0x0032> at11; // Image Position (Patient)
-  at1.Set( ds1 );
-  at11.Set( ds1 );
-  gdcm::Attribute<0x0020,0x0013> at2;
-  gdcm::Attribute<0x0020,0x0032> at22;
-  at2.Set( ds2 );
-  at22.Set( ds2 );
-  
-  if( at11 == at22 )
+  static bool positionandinstancesort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
   {
-    return at1 < at2;
+    gdcm::Attribute<0x0020,0x0013> at1;  // Instance Number
+    gdcm::Attribute<0x0020,0x0032> at11; // Image Position (Patient)
+    at1.Set( ds1 );
+    at11.Set( ds1 );
+    gdcm::Attribute<0x0020,0x0013> at2;
+    gdcm::Attribute<0x0020,0x0032> at22;
+    at2.Set( ds2 );
+    at22.Set( ds2 );
+    
+    if( at11 == at22 )
+    {
+      return at1 < at2;
+    }
+    return at11 < at22;
   }
-  return at11 < at22;
-}
+
 
 namespace itk
 {
-  
+
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void GDCMVolume<TPixelType>::Write (std::string filename)
@@ -469,6 +470,7 @@ namespace itk
     
     return size;
   }
+
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
@@ -1118,7 +1120,7 @@ namespace itk
     }
     
     unsigned int number_of_instances = list.size() / nvalues;
-
+    
     gdcm::Sorter sorter;
     sorter.SetSortFunction( positionandinstancesort );
     sorter.Sort( list );
