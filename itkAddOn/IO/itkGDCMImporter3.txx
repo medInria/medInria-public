@@ -764,10 +764,8 @@ namespace itk
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
 
-    std::cout<<"list is of size : "<<list.size()<<std::endl;
     for (file = list.begin(); file != list.end(); ++file)
     {
-	std::cout<<"scanning : "<<(*file).c_str()<<std::endl;
       if( this->m_SecondScanner.IsKey((*file).c_str()) )
       {
 	
@@ -791,11 +789,6 @@ namespace itk
 	if (value)
 	{
 	  std::cout<<"found private-tag gradient "<<value<<" in "<<(*file).c_str()<<std::endl;
-	}
-	value = this->m_SecondScanner.GetValue ((*file).c_str(), gdcm::Tag(0x0018,0x1060));
-	if (value)
-	{
-	  std::cout<<value<<std::endl;
 	}
       }
       else
@@ -985,9 +978,6 @@ namespace itk
 
     unsigned int nb_of_volumes = list.size() / sorted.size();
 
-    //std::cout<<"Tertiary sort : "<<nb_of_volumes<<std::endl;
-    
-    
     for (unsigned int i=0; i<nb_of_volumes; i++)
     {
       std::ostringstream os;
@@ -1100,13 +1090,10 @@ namespace itk
   GDCMImporter3<TPixelType>::InstanceNumberSort  (FileList list)
   {
     FileListMapType ret;
-
-    std::cout<<"1"<<std::endl;
     
     gdcm::Scanner s;
     s.AddTag( gdcm::Tag(0x20,0x32) ); // Image Position (Patient)
     s.Scan( list );
-    std::cout<<"2"<<std::endl;
     const gdcm::Scanner::ValuesType &values = s.GetValues();
     unsigned int nvalues = values.size();
     if (!nvalues)
@@ -1124,7 +1111,6 @@ namespace itk
     gdcm::Sorter sorter;
     sorter.SetSortFunction( positionandinstancesort );
     sorter.Sort( list );
-    sorter.Print (std::cout);
     
     gdcm::Directory::FilenamesType sorted_files = this->Transpose (sorter.GetFilenames(), number_of_instances);
     
