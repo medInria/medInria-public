@@ -111,7 +111,9 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
      Reads a file and creates a image of a given scalar component type.
      Use with care. Please prefer using Read()
   */
-  template <typename type> inline void ConvertImage (vtkImageData* vtkimage, itk::ImageBase<3>::Pointer& itkimage, itk::ProcessObject::Pointer& itkconverter)
+  template <typename type> inline void ConvertImage (vtkImageData* vtkimage,
+						     itk::ImageBase<3>::Pointer& itkimage,
+						     itk::ProcessObject::Pointer& itkconverter)
   {
     typedef typename itk::Image<type, 3> ImageType;
     typedef typename itk::VTKImageToImageFilter<ImageType> ConverterType;
@@ -300,9 +302,26 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
 
     if (!goodtypedimage)
     {
-      return false;
+      try
+      {
+	this->ConvertImage<type>(this->GetImageData(), this->m_ItkImage, this->m_Converter);
+      }
+      catch (itk::ExceptionObject &e)
+      {
+      	std::cerr << e;
+      	vtkErrorMacro(<<"error catched in conversion."<<endl);
+      	return false;
+      }
+
+      goodtypedimage = dynamic_cast<ImageType*>(this->GetItkImage());
     }
 
+    if (!goodtypedimage)
+    {
+      std::cerr<<"something is blocking conversion, quit"<<std::endl;
+      return false;
+    }
+    
     ret = goodtypedimage;
     return true;
   }

@@ -136,6 +136,7 @@ namespace itk
   protected:
 
     FileList MapToFileList (FileListMapType map) const;
+    double Estimate4thSpacing (FileListMapType map) const;
     
     /**
        default GDCMVolume constructor,
