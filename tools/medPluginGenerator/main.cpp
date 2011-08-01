@@ -1,5 +1,5 @@
-/* main.cpp --- 
- * 
+/* main.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Jan 30 00:19:02 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 116
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include <QApplication>
@@ -29,13 +29,13 @@ int main(int argc, char** argv)
     QApplication app(argc, argv);
 
     AnyOption options;
-    options.addUsage(QString("Usage: %1 --help | --console | [--output path --prefix prefixName --suffix suffixName --type typeName").arg(argv[0]).toAscii());
+    options.addUsage(QString("Usage: %1 --help | --console | [--output path --namespace namespace --name name --type typeName").arg(argv[0]).toAscii());
     options.addUsage("");
     options.addUsage("--help                Displays this message.");
     options.addUsage("--console             Run the gui version.");
     options.addUsage("--output [path]       Output directory for the plugin skeleton.");
-    options.addUsage("--prefix [prefixName] Prefix to use for the plugin.");
-    options.addUsage("--suffix [suffixName] Suffix to use for the plugin.");
+    options.addUsage("--namespace [namespace] namespace to use for the plugin.");
+    options.addUsage("--name [name] name to use for the plugin.");
     options.addUsage("--type [typeName]     Type to use for the plugin.");
     options.addUsage("--quiet               Process quietly (non gui generation only).");
 
@@ -43,8 +43,8 @@ int main(int argc, char** argv)
     options.setFlag("console");
 
     options.setOption("output");
-    options.setOption("prefix");
-    options.setOption("suffix");
+    options.setOption("namespace");
+    options.setOption("name");
     options.setOption("type");
     options.setOption("quiet");
 
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 
     if(options.getFlag("console")) {
 
-        bool paramsOk = options.getValue("output") && options.getValue("prefix") && options.getValue("type") && options.getValue("suffix");
+        bool paramsOk = options.getValue("output") && options.getValue("namespace") && options.getValue("type") && options.getValue("name");
 
         if( !paramsOk ) {
             options.printUsage();
@@ -66,15 +66,15 @@ int main(int argc, char** argv)
 
         if(!options.getFlag("quiet")) {
             qDebug() << "output = " << options.getValue("output");
-            qDebug() << "prefix = " << options.getValue("prefix");
-            qDebug() << "suffix = " << options.getValue("suffix");
+            qDebug() << "namespace = " << options.getValue("namespace");
+            qDebug() << "name = " << options.getValue("name");
             qDebug() << "type = " << options.getValue("type");
         }
 
         medPluginGenerator generator;
 	generator.setOutputDirectory(options.getValue("output"));
-	generator.setPrefix(options.getValue("prefix"));
-	generator.setSuffix(options.getValue("suffix"));
+	generator.setNamespace(options.getValue("namespace"));
+	generator.setName(options.getValue("name"));
 	generator.setType(options.getValue("type"));
 
 	bool resultGenerator = generator.run();

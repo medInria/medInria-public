@@ -248,9 +248,9 @@ public:
     QString orientation;
 
     dtkAbstractData *data;
-	QMap<int, QSharedPointer<dtkAbstractData> > sharedData;
-    medAbstractDataImage *imageData;
-
+	QMap<int, dtkSmartPointer<dtkAbstractData> > sharedData;
+	medAbstractDataImage *imageData;
+    
     QTimeLine *timeline;
 
     typedef void (v3dView::* PropertyFuncType)(const QString &);
@@ -767,7 +767,7 @@ vtkRenderer *v3dView::renderer3d(void)
     return d->renderer3d;
 }
 
-void v3dView::setSharedDataPointer(QSharedPointer<dtkAbstractData> data)
+void v3dView::setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data)
 {
 	int layer = 0;
     while(d->view2d->GetImageInput(layer)) {
@@ -1057,6 +1057,11 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
         }
     }
+
+    qDebug()<<"Data in V3dView"<< data->description();
+    qDebug()<<"Layer in V3dView"<< layer;
+    
+    this->addDataInList(data);
 
    // emit dataAdded(layer);
     emit dataAdded(data);
@@ -1639,6 +1644,7 @@ void v3dView::onMenuAxialTriggered (void)
 
     this->setProperty("Orientation", "Axial");
     d->view2d->Render();
+    emit TwoDTriggered(this);
 }
 
 
@@ -1649,6 +1655,7 @@ void v3dView::onMenuCoronalTriggered (void)
 
     this->setProperty("Orientation", "Coronal");
     d->view2d->Render();
+    emit TwoDTriggered(this);
 }
 
 
@@ -1659,6 +1666,8 @@ void v3dView::onMenuSagittalTriggered (void)
 
     this->setProperty("Orientation", "Sagittal");
     d->view2d->Render();
+    emit TwoDTriggered(this);
+    qDebug()<<"v3dView::onMenuSagittalTriggered";
 }
 
 void v3dView::onMenu3DVRTriggered (void)
@@ -1669,6 +1678,7 @@ void v3dView::onMenu3DVRTriggered (void)
     this->setProperty ("3DMode", "VR");
     this->setProperty ("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMPRTriggered (void)
@@ -1679,6 +1689,7 @@ void v3dView::onMenu3DMPRTriggered (void)
     this->setProperty("3DMode",      "MPR");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMaxIPTriggered (void)
@@ -1689,6 +1700,7 @@ void v3dView::onMenu3DMaxIPTriggered (void)
     this->setProperty("3DMode", "MIP - Maximum");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMinIPTriggered (void)
@@ -1699,6 +1711,7 @@ void v3dView::onMenu3DMinIPTriggered (void)
     this->setProperty("3DMode", "MIP - Minimum");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
+    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DOffTriggered (void)

@@ -2,6 +2,7 @@
 
 #include "dtkCore/dtkAbstractData.h"
 #include "dtkCore/dtkAbstractDataFactory.h"
+#include "dtkCore/dtkSmartPointer.h"
 
 #include "vtkXMLFiberDataSetReader.h"
 #include "vtkFiberDataSet.h"
@@ -47,11 +48,11 @@ void v3dDataFibersReader::readInformation (const QString& path)
 {
   // d->reader->SetFileName (path.toAscii().constData());
 
-  dtkAbstractData *dtkdata = this->data();
+  dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
 
   if (!dtkdata)
   {
-    dtkdata = dtkAbstractDataFactory::instance()->create ("v3dDataFibers");
+    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("v3dDataFibers");
     if (dtkdata)
       this->setData (dtkdata);
   }

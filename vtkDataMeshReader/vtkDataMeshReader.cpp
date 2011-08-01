@@ -4,6 +4,7 @@
 #include "vtkSmartPointer.h"
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 vtkDataMeshReader::vtkDataMeshReader(void) : dtkAbstractDataReader()
 {
@@ -51,12 +52,12 @@ bool vtkDataMeshReader::canRead (const QStringList& paths)
 void vtkDataMeshReader::readInformation (const QString& path)
 {
   
-  dtkAbstractData* dtkdata = this->data();
+  dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
   this->reader->SetFileName (path.toAscii().constData());
   
   if (!dtkdata)
   {
-    dtkdata = dtkAbstractDataFactory::instance()->create ("vtkDataMesh");
+    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("vtkDataMesh");
     if (dtkdata)
       this->setData ( dtkdata );
   }
@@ -113,7 +114,10 @@ void vtkDataMeshReader::setProgress (int value)
 
 bool vtkDataMeshReader::registered(void)
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("vtkDataMeshReader", vtkDataMeshReader::s_handled(),								    createVtkDataMeshReader);
+  return dtkAbstractDataFactory::instance()->registerDataReaderType(
+          "vtkDataMeshReader",
+          vtkDataMeshReader::s_handled(),
+          createVtkDataMeshReader);
 }
 
 QString vtkDataMeshReader::description(void) const

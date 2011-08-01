@@ -27,9 +27,9 @@ public:
     Ui::medPluginGeneratorMainWindow ui;
 
     QString output;
-    QString prefix;
+    QString namesp;
     QString type;
-    QString suffix;
+    QString name;
     QString description;
     QString license;
 };
@@ -38,21 +38,28 @@ medPluginGeneratorMainWindow::medPluginGeneratorMainWindow(QWidget *parent) : QM
 {
     this->d = new medPluginGeneratorMainWindowPrivate;
     this->d->ui.setupUi(this);
+    QSettings settings;
+
+    QDir plugins_dir = qApp->applicationDirPath() + ".";
+
+    d->output = settings.value("path", plugins_dir.absolutePath()).toString();
+    d->ui.pathLineEdit->setText(d->output);
 
     d->ui.descriptionTextEdit->setAcceptRichText(false);
 
     connect(d->ui.pathToolButton, SIGNAL(clicked()), this, SLOT(onOutputPathClicked()));
     connect(d->ui.pathLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(onOutputPathChanged()));
     connect(d->ui.pluginTypeCombo, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPluginTypeChanged()));
-    connect(d->ui.prefixLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(onPrefixChanged()));
-    connect(d->ui.suffixLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(onSuffixChanged()));
+    connect(d->ui.namespaceLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(onNamespaceChanged()));
+    connect(d->ui.nameLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(onNameChanged()));
     connect(d->ui.descriptionTextEdit, SIGNAL(textChanged()), this, SLOT(onDescriptionChanged()));
     connect(d->ui.pluginLicenseCombo, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPluginLicenseChanged()));
     connect(d->ui.FamilyCombo, SIGNAL(currentIndexChanged(const int&)), this, SLOT(onFamilyChanged(int)));
-    connect(d->ui.generateAction, SIGNAL(triggered()), this, SLOT(generate()));
-    connect(d->ui.quitAction,     SIGNAL(triggered()), qApp, SLOT(quit()));
-    connect(d->ui.aboutAction,    SIGNAL(triggered()), this, SLOT(about()));
-
+    connect(d->ui.generateAction,    SIGNAL(triggered()), this, SLOT(generate()));
+    connect(d->ui.quitAction,        SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(d->ui.aboutAction,       SIGNAL(triggered()), this, SLOT(about()));
+    connect(d->ui.actionDefault_Path,SIGNAL(triggered()), this,
+            SLOT(onSetDefaultPath()));
     Q_UNUSED(statusBar());
 }
 
@@ -73,7 +80,7 @@ void medPluginGeneratorMainWindow::about(void)
 void medPluginGeneratorMainWindow::onOutputPathClicked(void)
 {
     d->output = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
-                                                      ".",
+    d->ui.pathLineEdit->text(),
                                                       QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
     d->ui.pathLineEdit->setText(d->output);
@@ -96,17 +103,16 @@ void medPluginGeneratorMainWindow::onPluginTypeChanged(void)
     }
 }
 
-void medPluginGeneratorMainWindow::onPrefixChanged(void)
+void medPluginGeneratorMainWindow::onNamespaceChanged(void)
 {
-    d->prefix = d->ui.prefixLineEdit->text();
-    d->prefix = d->prefix.toLower();
+    d->namesp = d->ui.namespaceLineEdit->text();
 
     update();
 }
 
-void medPluginGeneratorMainWindow::onSuffixChanged(void)
+void medPluginGeneratorMainWindow::onNameChanged(void)
 {
-    d->suffix = d->ui.suffixLineEdit->text();
+    d->name = d->ui.nameLineEdit->text();
 
     update();
 }
@@ -125,10 +131,9 @@ void medPluginGeneratorMainWindow::onPluginLicenseChanged()
 void medPluginGeneratorMainWindow::update(void)
 {
     d->ui.outputNameLabel->setText(
-        QString("%2%3%4")
-        .arg(d->prefix)
-        .arg(d->type)
-        .arg(d->suffix)
+        QString("%1%2")
+        .arg(d->namesp)
+        .arg(QString(d->name).replace(0, 1, QString(d->name).left(1).toUpper()))
     );
 }
 
@@ -141,8 +146,8 @@ void medPluginGeneratorMainWindow::generate(void)
         return;
     }
 
-    if(d->prefix.isNull()) {
-        QMessageBox::warning(this, "Plugin generation", "Specify a prefix.");
+    if(d->namesp.isNull()) {
+        QMessageBox::warning(this, "Plugin generation", "Specify a namespace.");
         return;
     }
 
@@ -151,16 +156,16 @@ void medPluginGeneratorMainWindow::generate(void)
         return;
     }
 
-    if(d->suffix.isNull()) {
-        QMessageBox::warning(this, "Plugin generation", "Specify a suffix.");
+    if(d->name.isNull()) {
+        QMessageBox::warning(this, "Plugin generation", "Specify a name.");
         return;
     }
 
     medPluginGenerator generator;
     generator.setPluginFamily(static_cast<medPluginGenerator::PluginFamily>(d->ui.FamilyCombo->currentIndex()));
     generator.setOutputDirectory(d->output);
-    generator.setPrefix(d->prefix);
-    generator.setSuffix(d->suffix);
+    generator.setNamespace(d->namesp);
+    generator.setName(d->name);
     generator.setType(d->type);
     generator.setDescription(d->description);
     generator.setLicense(d->license);
@@ -183,4 +188,14 @@ void medPluginGeneratorMainWindow::onFamilyChanged(int index)
         d->ui.pluginTypeCombo->setCurrentIndex(0);
         d->ui.pluginTypeCombo->setEnabled(true);
     }
+}
+
+void medPluginGeneratorMainWindow::onSetDefaultPath()
+{
+    d->output = QFileDialog::getExistingDirectory(this, tr("Choose default Directory"),
+    d->output,
+                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QSettings settings;
+    settings.setValue("path",d->output);
+    d->ui.pathLineEdit->setText(d->output);
 }
