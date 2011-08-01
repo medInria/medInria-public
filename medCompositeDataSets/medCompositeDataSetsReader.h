@@ -7,10 +7,9 @@
 #include <medCompositeDataSetsPluginExport.h>
 #include <medCompositeDataSetsBase.h>
 
-bool RemoveDirectory(const QDir& dir);
+#include <dirTools.h>
 
-class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsReader: public dtkAbstractDataReader
-{
+class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsReader: public dtkAbstractDataReader {
     Q_OBJECT
 
 public:

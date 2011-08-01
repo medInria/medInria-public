@@ -19,10 +19,11 @@ namespace MedInria {
 
         //  Verification that there is a handler for this specific type and version of the format.
         //  Returns a new instance of a reader/writer for that format.
+        //  Use -1 as version number, if version is not important (eg for writers).
 
-        static medCompositeDataSetsBase* known(const std::string& type,const unsigned version) {
+        static medCompositeDataSetsBase* known(const std::string& type,const int version) {
             for (Registery::const_iterator i=registery().begin();i!=registery().end();++i)
-                if (type==i->first && i->second->has_version(version)) {
+                if (type==i->first && (version==-1 || i->second->has_version(version))) {
                     return i->second->clone(version);
             }
 
@@ -33,9 +34,10 @@ namespace MedInria {
 
         virtual bool has_version(const unsigned) const = 0;
 
-        //  Create a new instance tuned for the revision version ofthe file format.
+        //  Create a new instance tuned for the revision version of the file format.
+        //  Use -1 to indicate the default version of the file format.
 
-        virtual medCompositeDataSetsBase* clone(const unsigned version) const = 0;
+        virtual medCompositeDataSetsBase* clone(const int version) const = 0;
 
         //  Read the description from an array.
 

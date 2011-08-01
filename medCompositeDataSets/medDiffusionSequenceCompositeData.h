@@ -25,15 +25,16 @@ public:
 
     friend class medDiffusionSequenceCompositeDataToolBox;
 
-    medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase("DWI",this),version(0) { }
+    medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase("DWI",this),version(defaultVersion) { }
     virtual ~medDiffusionSequenceCompositeData() { }
 
     virtual QString description() const;
 
-    virtual bool has_version(const unsigned num) const { return num==1; }
+    virtual bool has_version(const unsigned num) const { return num==0; }
 
-    virtual MedInria::medCompositeDataSetsBase* clone(const unsigned v) const {
-        return new medDiffusionSequenceCompositeData(v);
+    virtual MedInria::medCompositeDataSetsBase* clone(const int v) const {
+        const unsigned version = (v==-1) ? defaultVersion : v;
+        return new medDiffusionSequenceCompositeData(version);
     }
 
     bool registered() const;
@@ -57,6 +58,8 @@ private:
     GradientListType gradients;
 
     static const medDiffusionSequenceCompositeData proto;
+
+    static const unsigned defaultVersion = 0;
 };
 
 dtkAbstractData* createDiffusionSequenceCompositeData();

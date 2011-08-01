@@ -28,7 +28,7 @@ public:
 //  Plugin construction.
 //  Allocate private data here (see class %1PluginPrivate).
 
-medCompositeDataSetsPlugin::medCompositeDataSetsPlugin(QObject *parent) : dtkPlugin(parent) {
+medCompositeDataSetsPlugin::medCompositeDataSetsPlugin(QObject *parent): dtkPlugin(parent) {
 }
 
 //  Plugin destruction.
