@@ -51,7 +51,7 @@ set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 ## #################################################################
 
 enable_testing()
-OPTION(BUILD_EXAMPLES "Enable this if you want to build the exmples" OFF)
+OPTION(BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
 
 mark_as_advanced(DART_ROOT)
 
@@ -170,6 +170,10 @@ option(BUILD_DOCUMENTATION "Build documentation"    true)
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
+
+if (BUILD_TESTING)
+  add_subdirectory(tests)
+endif (BUILD_TESTING)
 
 include(${PROJECT_NAME}Pack)
 
