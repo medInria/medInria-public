@@ -151,11 +151,6 @@ void medToolBox::switchMinimize()
     d->isMinimized = !d->isMinimized;
 }
 
-void medToolBox::setContextVisible(bool contextVisibleFlag)
-{
-    d->isContextVisible = contextVisibleFlag;
-}
-
 bool medToolBox::ContextVisible()
 {
  return d->isContextVisible;
@@ -198,9 +193,7 @@ void medToolBox::setContextVisibility(
     if (d->validDataTypes.isEmpty())
     {
         //JGG qDebug()<< "no datatypes";
-        if (d->validDataTypes.isEmpty())
-            d->isContextVisible = true;
-        show();
+        d->isContextVisible = true;
     }
     else
     {

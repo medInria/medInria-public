@@ -88,7 +88,7 @@ public:
      * @param titleOffset
      */
     void setTitleOffset(const QPoint & titleOffset);
-    
+
     /**
      * @brief Sets the orientation of the toolbox.
      * Given the orientation, lays the widgets vertically or horizontally.
@@ -133,7 +133,7 @@ signals:
     void    addToolBox(medToolBox *toolbox);
 
     /**
-     * @brief Tells the world to remove a toolbox from the medToolBoxContainer
+     * @brief Tells the world to remove a toolbox from the medToolBoxContainer.
      *
      * @param toolbox
     */
@@ -167,9 +167,9 @@ public slots:
     virtual void clear(void);
 
     /**
-     * @brief Updates teh content of the toolbox when a new view is selected.
+     * @brief Updates the content of the toolbox when a new view is selected.
      *
-     * @param view The view to extract inforamtion from.
+     * @param view The view to extract information from.
     */
     virtual void update(dtkAbstractView *view);
 
@@ -185,15 +185,21 @@ public slots:
     */
 
     /**
-     * @brief Set toolbox's valid data types, if at least one datatype in the view is contained within the toolBoxValidTypes, the toolbox will be visible.
+     * @brief Set toolbox's valid data types.
+     *
+     * If at least one datatype in the view is contained within the
+     * toolBoxValidTypes the toolbox will be visible. If the list is empty,
+     * then the toolbox will be context free, and always visible whatever the
+     * focused view.
      *
      * @param dataTypes Valid data types of the toolbox.
     */
     void setValidDataTypes(const QStringList & dataTypes);
 
     /**
-     * @brief Get toolbox's valid data types, if at least one datatype in the view is contained within the toolBoxValidTypes, the toolbox will be visible.
+     * @brief Get toolbox's valid data types.
      *
+     * @see setValidDataTypes
      * @param void
     */
     const QStringList ValidDataTypes(void);
@@ -207,18 +213,15 @@ public slots:
 
 
      /**
-      * @brief Set toolbox visibility, if at least one datatype in the view  is viewDataTypes contained within the toolBoxValidTypes, the toolbox will be visible.
+      * @brief Set the toolbox visibility.
+      *
+      * If at least one datatype in the viewDataTypes is contained within the
+      * toolBox's ValidTypes, or if the validDataTypes are empty, the toolbox
+      * will be visible.
       *
       * @param viewDataTypes
      */
     void setContextVisibility(const QHash<QString, unsigned int> & viewDataTypes);
-
-    /**
-     * @brief Access method to the toolBox context visibility flag.
-     *
-     * @param contextVisibleFlag
-    */
-    void setContextVisible(bool contextVisibleFlag);
 
     /**
      * @brief Access method to the toolBox context visibility flag.
