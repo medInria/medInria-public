@@ -66,12 +66,18 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
         "}");
 
     QAction *importAction = new QAction(tr("Import"), this);
+    QAction *indexAction = new QAction(tr("Index"), this);
+    QAction *loadAction = new QAction(tr("Load"), this);
     QAction *viewAction = new QAction(tr("View"), this);
 
     d->finder->addContextMenuAction(importAction);
+    d->finder->addContextMenuAction(indexAction);
+    d->finder->addContextMenuAction(loadAction);
     d->finder->addContextMenuAction(viewAction);
 
     connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportClicked()));
+    connect(indexAction, SIGNAL(triggered()),  this, SLOT(onFileSystemIndexClicked()));
+    connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadClicked()));
     connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));
 
     d->filesystem_widget = new QWidget(parent);
@@ -138,7 +144,19 @@ QList<medToolBox*> medFileSystemDataSource::getToolboxes()
 void medFileSystemDataSource::onFileSystemImportClicked(void)
 {
     QFileInfo info(d->finder->selectedPath());
-    this->dataReceived(info.absoluteFilePath());
+    emit dataToImportReceived(info.absoluteFilePath());
+}
+
+void medFileSystemDataSource::onFileSystemIndexClicked(void)
+{
+    QFileInfo info(d->finder->selectedPath());
+    emit dataToIndexReceived(info.absoluteFilePath());
+}
+
+void medFileSystemDataSource::onFileSystemLoadClicked()
+{
+    QFileInfo info(d->finder->selectedPath());
+    emit load(info.absoluteFilePath());
 }
 
 void medFileSystemDataSource::onFileSystemViewClicked()

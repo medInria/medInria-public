@@ -65,6 +65,8 @@ public:
     MED_DEFINE_METADATA_ENTRY( SeriesDescription );
     MED_DEFINE_METADATA_ENTRY( SeriesDate );
     MED_DEFINE_METADATA_ENTRY( SeriesTime );
+    MED_DEFINE_METADATA_ENTRY( SeriesThumbnail );
+
 
     // IMAGE
     MED_DEFINE_METADATA_ENTRY( SOPInstanceUID );
@@ -93,6 +95,8 @@ public:
     MED_DEFINE_METADATA_ENTRY( PixelType );
     MED_DEFINE_METADATA_ENTRY( DtkDataType );
     MED_DEFINE_METADATA_ENTRY( PreferredDataReader );
+    MED_DEFINE_METADATA_ENTRY( ImageID );
+
 
 
 

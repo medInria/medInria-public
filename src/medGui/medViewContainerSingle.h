@@ -37,6 +37,19 @@ public:
     virtual void setView(dtkAbstractView *view);
     virtual dtkAbstractView *view (void) const;
 
+    /**
+     * @brief Is this a leaf container?
+     *
+     * This method is useful in the case of a custom or multi
+     * container.  Returns true if this object is supposed to contain
+     * only views and no other containers (like
+     * medViewContainerSingle)
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool isLeaf(void) const;
+
 public slots:
     virtual void onViewClosing (void);
 
@@ -45,9 +58,6 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
-
-    void focusInEvent(QFocusEvent *event);
-    void focusOutEvent(QFocusEvent *event);
 };
 
 #endif

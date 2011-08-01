@@ -103,8 +103,9 @@ public slots:
      *
      * @param index Could describe just an image, or a complete Series,
      * Study or even Patient.
+     * @return true if successful, false otherwise
     */
-    void open(const medDataIndex& index);
+    bool open(const medDataIndex& index);
     
     /**
      * @brief Opens file on the local filesystem.
@@ -197,20 +198,21 @@ protected slots:
 
 protected:
     /**
-     * @brief Returns the current view container.
+     * @brief Returns the current root view container.
      *
-     * Note that container are hierarchical structures. 
-     * This methods returns the root container in the current medStackedViewContainers.
+     * Note that containers are hierarchical structures.  This methods
+     * returns the root container in the current
+     * medStackedViewContainers.
      *
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer      *currentContainer(void);
+    medViewContainer      *currentRootContainer(void);
     
     /**
      * @brief Returns the currently focused child container.
      * 
-     * Note that container are hierarchical structures. 
+     * Note that containers are hierarchical structures. 
      * This methods returns a container that can contain a view. 
      * It's a leaf in the container tree.
      *

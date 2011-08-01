@@ -19,7 +19,7 @@
         <file>icons/help.svg</file>
         <file>icons/information.png</file>
         <file>icons/layer.png</file>
-        <file>icons/length.tiff</file>
+        <file>icons/length.png</file>
         <file>icons/lightbulb.png</file>
         <file>icons/lightbulb_add.png</file>
         <file>icons/lightbulb_delete.png</file>
@@ -43,6 +43,7 @@
         <file>icons/lock_edit.png</file>
         <file>icons/lock_go.png</file>
         <file>icons/lock_open.png</file>
+        <file>icons/magnify.png</file>
         <file>icons/magifier_zoom_out.png</file>
         <file>icons/magnifier.png</file>
         <file>icons/magnifier_zoom_in.png</file>
@@ -71,11 +72,10 @@
         <file>icons/page_white_put.png</file>
         <file>icons/page_white_stack.png</file>
         <file>icons/settings.svg</file>
-        <file>icons/stack.tiff</file>
-        <file>icons/widget.tiff</file>
-        <file>icons/wlww.tiff</file>
+        <file>icons/stack.png</file>
+        <file>icons/widget.png</file>
+        <file>icons/wlww.png</file>
         <file>icons/zoom.png</file>
-        <file>icons/zoom.tiff</file>
         <file>icons/zoom_in.png</file>
         <file>icons/zoom_out.png</file>
         <file>icons/backward.png</file>

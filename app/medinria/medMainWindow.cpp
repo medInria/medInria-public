@@ -158,9 +158,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->statusBarLayout->setMargin ( 0 );
     d->statusBarLayout->setSpacing ( 5 );
 
-    connect ( d->browserArea, SIGNAL ( open ( const QString& ) ), this, SLOT ( open ( const QString& ) ) );
-    connect ( d->browserArea, SIGNAL ( open ( const medDataIndex& ) ), this, SLOT ( open ( const medDataIndex& ) ) );
-
+    connect(d->browserArea, SIGNAL(open(const QString&)), this, SLOT(open(const QString&)));
+    connect(d->browserArea, SIGNAL(load(const QString&)), this, SLOT(load(const QString&)));
+    connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
     // Setting up core python module
@@ -204,6 +204,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     medViewerConfigurationFactory::instance()->registerConfiguration ( "Visualization", createMedViewerConfigurationVisualization );
     medViewerConfigurationFactory::instance()->registerConfiguration ( "Registration",  createMedViewerConfigurationRegistration );
     medViewerConfigurationFactory::instance()->registerConfiguration ( "Diffusion",     createMedViewerConfigurationDiffusion );
+
 
     //Register settingsWidgets
     medSettingsWidgetFactory::instance()->registerSettingsWidget ( "System", createSystemSettingsWidget );
@@ -293,8 +294,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     this->setCentralWidget ( d->stack );
 
     // Now use the Qt preferred method by setting the Application style instead.
-    //   The ownership of the style object is not transferred.
-//    this->setStyle(new QPlastiqueStyle());
+    // The ownership of the style object is not transferred.
+    // this->setStyle(new QPlastiqueStyle());
     this->setWindowTitle ( "medinria" );
 
     medMessageController::instance()->attach ( this->statusBar() );
@@ -568,7 +569,17 @@ void medMainWindow::open ( const medDataIndex& index )
     this->switchToViewerArea();
     d->quickAccessButton->setText("Workspace: Visualization");
     d->quickAccessButton->setMinimumWidth(170);
-    d->viewerArea->open ( index );
+    
+    if(d->viewerArea->open(index))
+    {
+        this->switchToViewerArea();
+    }
+    else
+    {
+        // something went wrong while opening
+        // we bubble down the info
+        d->browserArea->onOpeningFailed(index);
+    }
 }
 
 void medMainWindow::open ( const QString& file )
@@ -581,7 +592,12 @@ void medMainWindow::open ( const QString& file )
     d->quickAccessButton->setMinimumWidth(170);
 }
 
-void medMainWindow::closeEvent ( QCloseEvent *event )
+void medMainWindow::load(const QString& file)
+{
+    medDatabaseNonPersistentController::instance()->import(file);
+}
+
+void medMainWindow::closeEvent(QCloseEvent *event)
 {
 
     if ( QThreadPool::globalInstance()->activeThreadCount() > 0 )

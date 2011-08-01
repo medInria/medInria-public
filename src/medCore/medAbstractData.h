@@ -14,7 +14,7 @@ class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
     Q_OBJECT
 
 public:
-    medAbstractData( medAbstractData *parent = 0);
+    medAbstractData( dtkAbstractData *parent = 0);
     virtual ~medAbstractData(void);
 
     /**

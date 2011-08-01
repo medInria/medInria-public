@@ -46,7 +46,9 @@ include(${dtk_USE_FILE})
 
 include(medinriaBuild)
 include(medinriaPack)
-include(medinriaDart)
+#include(medinriaDart)
+include(Dart)
+include(CTest)
 
 option(BUILD_DOCUMENTATION "Build documentation"    true)
 
@@ -56,7 +58,6 @@ add_subdirectory(app)
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
-
 
 
 if (APPLE)

@@ -18,7 +18,7 @@
  */
 
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medCore/medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <medCore/medAbstractView.h>
 #include <medCore/medStorage.h>
@@ -1532,8 +1532,8 @@ void medClutEditor::setData(dtkAbstractData *data)
     if ( data == d->dtk_data )
         return;
 
-    if (dtkAbstractDataImage *image =
-        dynamic_cast<dtkAbstractDataImage *>(data)) {
+    if (medAbstractDataImage *image =
+        dynamic_cast<medAbstractDataImage *>(data)) {
 
         if ( d->histogram != NULL )
             delete d->histogram;
@@ -1559,8 +1559,8 @@ void medClutEditor::setData(dtkAbstractData *data)
 
 void medClutEditor::setView( medAbstractView *view, bool force )
 {
-    dtkAbstractDataImage * image =
-        static_cast<dtkAbstractDataImage *>( view->data() );
+    medAbstractDataImage * image =
+        static_cast<medAbstractDataImage *>( view->data() );
     this->setData( image );
 
     if ( !force && view == d->med_view )
@@ -1623,8 +1623,8 @@ void medClutEditor::deleteTable(void)
 
 void medClutEditor::applyTable(void)
 {
-    // if (dtkAbstractDataImage *image =
-    //     dynamic_cast<dtkAbstractDataImage *>(d->dtk_data)) {
+    // if (medAbstractDataImage *image =
+    //     dynamic_cast<medAbstractDataImage *>(d->dtk_data)) {
     if ( d->med_view != NULL ) {
 
         QList<double> scalars;

@@ -22,9 +22,6 @@ public:
 
 medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationRegistrationPrivate)
 {
-    // -- Layout toolbox --
-    setLayoutToolBoxVisibility(false);
-
     // -- View toolbox --
 
     d->viewToolBox = new medViewerToolBoxView(parent);
@@ -32,6 +29,7 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
     
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     this->addToolBox(d->viewPropertiesToolBox);
+
     // -- Registration toolbox --
 
     d->registrationToolBox = new medToolBoxRegistration(parent);

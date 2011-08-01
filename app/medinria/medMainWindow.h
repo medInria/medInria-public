@@ -55,8 +55,26 @@ public slots:
     void onNoQuit(void);
     void onEditSettings(void);
     
+    /**
+    * Opens an image (which is already in the database)
+    * in the viewer area.
+    * @param index - the @medDataIndex of the image
+    **/
     void open(const medDataIndex& index);
-    void open(const QString& file);
+
+    /**
+    * Imports the image/s in the non-persistent database
+    * and the opens it in the viewer area and switches to it.
+    * @param path - the path to the file or directory
+    **/
+    void open(const QString& path);
+
+    /**
+    * Imports the image/s in the non-persistent database
+    * but does not switch to the viewer area.
+    * @param path - the path to the file or directory
+    **/
+    void load(const QString& path);
 
 protected:
     void closeEvent(QCloseEvent *event);

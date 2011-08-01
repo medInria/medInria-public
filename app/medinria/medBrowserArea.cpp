@@ -47,6 +47,7 @@
 #include <medGui/medBrowserToolBoxJobs.h>
 
 #include <medPacs/medPacsMover.h>
+#include <medPacs/medPacsWidget.h>
 
 class medBrowserAreaPrivate
 {
@@ -102,10 +103,14 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->fsSource = new medFileSystemDataSource(this);
     addDataSource(d->fsSource);
-    connect(d->fsSource, SIGNAL(open(QString)), this,SIGNAL(open(QString)));
+    connect(d->fsSource, SIGNAL(open(QString)), this, SIGNAL(open(QString)));
+    connect(d->fsSource, SIGNAL(load(QString)), this, SIGNAL(load(QString)));
 
-    d->pacsSource = new medPacsDataSource(this);
-    addDataSource(d->pacsSource);
+    d->pacsSource = new medPacsDataSource();
+    
+    medPacsWidget * mainPacsWidget = dynamic_cast<medPacsWidget *> (d->pacsSource->mainViewWidget());
+    if (mainPacsWidget->isServerFunctional())
+        addDataSource(d->pacsSource);
 
     // dynamic data sources (from plugins) ////////////////
     foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins()) {
@@ -134,6 +139,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
 medBrowserArea::~medBrowserArea(void)
 {
+    d->pacsSource->deleteLater();
     delete d;
     d = NULL;
 }
@@ -151,13 +157,45 @@ void medBrowserArea::setdw(QStatusBar *status)
 void medBrowserArea::onFileImport(QString path)
 {
     QFileInfo info(path);
-    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath());
+    bool indexWithoutCopying = false;
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), indexWithoutCopying);
     connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
     connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+
+
+    connect(importer, SIGNAL(partialImportAttempted(const QString&)),
+            this, SLOT(onPartialImportAttempted(const QString&)));
+
     d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
-    
+}
+
+void medBrowserArea::onFileIndex(QString path)
+{
+    QFileInfo info(path);
+    bool indexWithoutCopying = true;
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), indexWithoutCopying);
+    connect(importer, SIGNAL(success(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+    connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+
+    d->toolbox_jobs->stack()->addJobItem(importer, info.baseName());
+    medJobManager::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
+
+}
+
+void medBrowserArea::onPartialImportAttempted(const QString& message)
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Import warning");
+    msgBox.setText(message);
+    msgBox.exec();
+}
+
+void medBrowserArea::onOpeningFailed(const medDataIndex& index)
+{
+    d->dbSource->onOpeningFailed(index);
 }
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
@@ -223,10 +261,12 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
         d->toolbox_container->addToolBox(toolBox);
     }
 
-    connect(dataSource,SIGNAL(dataReceived(QString)),this,SLOT(onFileImport(QString)));
+    connect(dataSource,SIGNAL(dataToImportReceived(QString)),this,SLOT(onFileImport(QString)));
+    connect(dataSource,SIGNAL(dataToIndexReceived(QString)),this,SLOT(onFileIndex(QString)));
     connect(dataSource,SIGNAL(dataReceived(dtkAbstractData *)),this,SLOT(onDataImport(dtkAbstractData *)));
     connect(dataSource,SIGNAL(dataReceivingFailed(QString)), this, SLOT(onDataReceivingFailed(QString)));
     connect(dataSource, SIGNAL(exportData(const medDataIndex&)), this, SLOT(onExportData(const medDataIndex&)));
+    connect(dataSource, SIGNAL(dataRemoved(const medDataIndex&)), this, SLOT(onDataRemoved(const medDataIndex&)));
 }
 
 void medBrowserArea::onExportData(const medDataIndex &index)
@@ -246,4 +286,9 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 
     QThreadPool::globalInstance()->start(exporter);
+}
+
+void medBrowserArea::onDataRemoved( const medDataIndex &index )
+{
+    d->dbSource->update();
 }
