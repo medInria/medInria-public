@@ -19,120 +19,168 @@
 
 #include "medDataIndex.h"
 
-class medDataIndexPrivate
-{
-public:
-    int patientId;
-    int studyId;
-    int seriesId;
-    int imageId;
-};
 
-medDataIndex::medDataIndex(int patientId, int studyId, int seriesId, int imageId) : d(new medDataIndexPrivate)
+medDataIndex::medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId, int imageId)
+    : m_dataSourceId(dataSourceId),
+    m_patientId(patientId),
+    m_studyId(studyId),
+    m_seriesId(seriesId),
+    m_imageId(imageId)
 {
-    d->patientId = patientId;
-    d->studyId = studyId;
-    d->seriesId = seriesId;
-    d->imageId = imageId;
+
 }
 
-medDataIndex::medDataIndex(const medDataIndex& index) : d(new medDataIndexPrivate)
+medDataIndex::medDataIndex(const medDataIndex& index)
+    : m_dataSourceId(index.m_dataSourceId),
+    m_patientId(index.m_patientId),
+    m_studyId(index.m_studyId),
+    m_seriesId(index.m_seriesId),
+    m_imageId(index.m_imageId)
 {
-    d->patientId = index.d->patientId;
-    d->studyId = index.d->studyId;
-    d->seriesId = index.d->seriesId;
-    d->imageId = index.d->imageId;
 }
+
+medDataIndex::medDataIndex()
+    : m_dataSourceId(NOT_VALID),
+    m_patientId(NOT_VALID),
+    m_studyId(NOT_VALID),
+    m_seriesId(NOT_VALID),
+    m_imageId(NOT_VALID)
+{
+}
+
 
 medDataIndex::~medDataIndex(void)
 {
-    delete d;
-
-    d = NULL;
 }
 
 bool medDataIndex::isValid(void) const
 {
-    return (d->patientId >= 0);
+    return (m_dataSourceId != NOT_VALID && m_patientId != NOT_VALID);
 }
 
 bool medDataIndex::isValidForPatient(void) const
 {
-    return (d->patientId >= 0);
+    return (m_dataSourceId != NOT_VALID && m_patientId != NOT_VALID);
 }
 
 bool medDataIndex::isValidForStudy(void) const
 {
-    return ((d->patientId >= 0) && (d->studyId >= 0));
+    return (isValidForPatient() && (m_studyId != NOT_VALID));
 }
 
 bool medDataIndex::isValidForSeries(void) const
 {
-    return ((d->patientId >= 0) && (d->studyId >= 0) && (d->seriesId >= 0));
+    return (isValidForStudy() && (m_seriesId != NOT_VALID));
 }
 
 bool medDataIndex::isValidForImage(void) const
 {
-    return ((d->patientId >= 0) && (d->studyId >= 0) && (d->seriesId >= 0) && (d->imageId >= 0));
+    return (isValidForSeries() && (m_imageId != NOT_VALID));
 }
 
-void medDataIndex::setPatientId (int id)
-{
-    d->patientId = id;
-}
-
-void medDataIndex::setStudyId (int id)
-{
-    d->studyId = id;
-}
-
-void medDataIndex::setSeriesId (int id)
-{
-    d->seriesId = id;
-}
-
-void medDataIndex::setImageId (int id)
-{
-    d->imageId = id;
-}
-
-int medDataIndex::patientId(void) const
-{
-    return d->patientId;
-}
-
-int medDataIndex::studyId(void) const
-{
-    return d->studyId;
-}
-
-int medDataIndex::seriesId(void) const
-{
-    return d->seriesId;
-}
-
-int medDataIndex::imageId(void) const
-{
-    return d->imageId;
-}
 
 medDataIndex& medDataIndex::operator=(const medDataIndex& index)
 {
-    d->patientId = index.d->patientId;
-    d->studyId = index.d->studyId;
-    d->seriesId = index.d->seriesId;
-    d->imageId = index.d->imageId;
+    m_dataSourceId = index.m_dataSourceId;
+    m_patientId = index.m_patientId;
+    m_studyId = index.m_studyId;
+    m_seriesId = index.m_seriesId;
+    m_imageId = index.m_imageId;
 
 	return *this;
 }
 
 QString medDataIndex::asString() const
 {
-    QString returnString = QString::number(d->patientId) + " | " 
-        + QString::number(d->studyId) + " | " 
-        + QString::number(d->seriesId) + " | " 
-        + QString::number(d->imageId);
+    QString returnString = QString::number(m_dataSourceId) + " | " 
+        + QString::number(m_patientId) + " | " 
+        + QString::number(m_studyId) + " | " 
+        + QString::number(m_seriesId) + " | " 
+        + QString::number(m_imageId);
     return returnString;
+}
+
+// static
+bool medDataIndex::isMatch( const medDataIndex& index1, const medDataIndex& index2)
+{
+    if ( index1.dataSourceId() != index2.dataSourceId() ) 
+        return false;
+
+    if ( index1.patientId() == NOT_VALID || index2.patientId() == NOT_VALID) 
+        return true;
+
+    if ( index1.patientId() != index2.patientId() ) 
+        return false;
+
+    if ( index1.studyId() == NOT_VALID || index2.studyId() == NOT_VALID) 
+        return true;
+
+    if ( index1.studyId() != index2.studyId() ) 
+        return false;
+
+    if ( index1.seriesId() == NOT_VALID || index2.seriesId() == NOT_VALID) 
+        return true;
+
+    if ( index1.seriesId() != index2.seriesId() ) 
+        return false;
+
+    if ( index1.imageId() == NOT_VALID || index2.imageId() == NOT_VALID) 
+        return true;
+
+    if ( index1.imageId() != index2.imageId() ) 
+        return false;
+
+    return true; // patient, study, series and image match and are not -1;
+}
+
+QMimeData * medDataIndex::createMimeData()
+{
+    QString indexString = QString("%1:%2:%3:%4:%5").arg(this->dataSourceId())
+        .arg(this->patientId())
+        .arg(this->studyId()).arg(this->seriesId()).arg(this->imageId());
+
+    QMimeData *data = new QMimeData;
+    data->setData("med/index", indexString.toLatin1());
+    return data;
+}
+
+//static
+medDataIndex medDataIndex::readMimeData( const QMimeData * mimeData )
+{
+    if (mimeData->hasFormat("med/index")) {
+        QStringList ids = QString(mimeData->data("med/index")).split(":");
+        if ( ids.size() >= 5 ) {
+            int intIds[5];
+            bool allOk = true;
+            for ( int i(0); i<5; ++i ) {
+                bool ok = false;
+                intIds[i] = ids.at(i).toInt(&ok);
+                if ( !ok ) {
+                    allOk = false;
+                    break;
+                }
+            }
+            if (allOk) {
+                return medDataIndex( intIds[0], intIds[1], intIds[2], intIds[3], intIds[4] );
+            }
+        }
+    }
+    return medDataIndex();
+}
+
+medDataIndex medDataIndex::makePatientIndex(int sourceId, int patientId )
+{
+    return medDataIndex(sourceId, patientId, NOT_VALID, NOT_VALID, NOT_VALID); 
+}
+
+medDataIndex medDataIndex::makeStudyIndex( int sourceId, int patientId, int studyId )
+{
+    return medDataIndex(sourceId, patientId, studyId, NOT_VALID, NOT_VALID); 
+}
+
+medDataIndex medDataIndex::makeSeriesIndex( int sourceId, int patientId, int studyId, int seriesId )
+{
+    return medDataIndex(sourceId, patientId, studyId, seriesId, NOT_VALID); 
 }
 
 
@@ -145,31 +193,43 @@ QString medDataIndex::asString() const
 
 bool operator==(const medDataIndex& index1, const medDataIndex& index2)
 {
-    return ((index1.patientId() == index2.patientId()) && (index1.studyId() == index2.studyId()) && (index1.seriesId() == index2.seriesId()) && (index1.imageId() == index2.imageId()));
+    return ( (index1.dataSourceId() == index2.dataSourceId()) && 
+        (index1.patientId() == index2.patientId()) && 
+        (index1.studyId() == index2.studyId()) && 
+        (index1.seriesId() == index2.seriesId()) && 
+        (index1.imageId() == index2.imageId()));
 }
 
 bool operator!=(const medDataIndex& index1, const medDataIndex& index2)
 {
-    return ((index1.patientId() != index2.patientId()) || (index1.studyId() != index2.studyId()) || (index1.seriesId() != index2.seriesId()) || (index1.imageId() == index2.imageId()));
+    return (!operator==(index1, index2));
 }
 
 QDebug operator<<(QDebug debug, const medDataIndex& index)
 {
-    debug.nospace() << "(" << index.d->patientId << ", " << index.d->studyId << ", " << index.d->seriesId << ", " << index.d->imageId << ")";
+    debug.nospace() << "(" << index.m_dataSourceId << ", " << index.m_patientId << ", " << index.m_studyId << ", " << index.m_seriesId << ", " << index.m_imageId << ")";
 
     return debug.space();
 }
 
 QDebug operator<<(QDebug debug, medDataIndex *index)
 {
-    debug.nospace() << "(" << index->d->patientId << ", " << index->d->studyId << ", " << index->d->seriesId << ", " << index->d->imageId << ")";
+    if ( index ){
+        debug.nospace() << "(" << index->m_dataSourceId << ", " << index->m_patientId << ", " << index->m_studyId << ", " << index->m_seriesId << ", " << index->m_imageId << ")";
+    } else {
+        debug.nospace() << "(" << "[medDataIndex* NULL]" << ")";
+    }
 
     return debug.space();
 }
 
 bool operator<(const medDataIndex& index1, const medDataIndex& index2)
 {
-    if (index1.patientId() < index2.patientId()) 
+    if (index1.dataSourceId() < index2.dataSourceId()) 
+        return true;
+    else if (index2.dataSourceId() < index1.dataSourceId()) 
+        return false;
+    else if (index1.patientId() < index2.patientId()) 
         return true;
     else if (index2.patientId() < index1.patientId()) 
         return false;
@@ -196,6 +256,7 @@ bool operator<(const medDataIndex& index1, const medDataIndex& index2)
 uint qHash(const medDataIndex &key)
 {
    uint hash = 0;
+   hash = hash ^ qHash(key.dataSourceId());
    hash = hash ^ qHash(key.patientId());
    hash = hash ^ qHash(key.studyId());
    hash = hash ^ qHash(key.seriesId());

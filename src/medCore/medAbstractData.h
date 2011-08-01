@@ -2,20 +2,34 @@
 #define medAbstractData_h__
 
 #include <dtkCore/dtkAbstractData.h>
+
 #include "medCoreExport.h"
 
+class medDataIndex;
 class medAbstractDataPrivate;
 
 /**
- * Extending dtkAbstractData class to hold more specific information
+ * Extending medAbstractData class to hold more specific information
  */
 class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 {
     Q_OBJECT
 
 public:
-    medAbstractData( medAbstractData *parent = 0);
+    medAbstractData( dtkAbstractData *parent = 0);
     virtual ~medAbstractData(void);
+
+    /**
+    * Attach a meddataindex to the data to carry it arround
+    * @params const medDataIndex & index
+    */
+    void setDataIndex(const medDataIndex& index);
+
+    /**
+    * Get the dataindex attached to the data or an invalid one
+    * @return medDataIndex
+    */
+    medDataIndex dataIndex() const;
 
     /**
     * Set this to true if the volume has been generated with correct values (e.g. for z-dimension)
@@ -29,7 +43,7 @@ public:
     * else operation like MPR, VRT should not be possible
     * @return bool
     */
-    bool trueVolumetric();
+    bool trueVolumetric() const;
 
 private:
     medAbstractDataPrivate* d;

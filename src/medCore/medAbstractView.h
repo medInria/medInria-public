@@ -21,8 +21,8 @@
 #define MEDABSTRACTVIEW_H
 
 #include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkSmartPointer.h>
 
-#include <QSharedPointer>
 #include "medCoreExport.h"
 
 class medAbstractViewPrivate;
@@ -151,9 +151,9 @@ public:
     virtual void removeOverlay(int layer);
 
     /**
-     * Setting data using a qSharedPointer
+     * Setting data using a dtkSmartPointer
      */
-    virtual void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
+    virtual void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
 
     void setCurrentMeshLayer(int meshLayer);
     virtual int currentMeshLayer(void) const;
@@ -162,7 +162,7 @@ public:
 
     void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
-    void setDataInList(int layer, dtkAbstractData * data);
+    void setDataInList(dtkAbstractData * data, int layer);
     /** The color used to represent the extent or space of this view in another view */
     virtual QColor color() const;
     virtual void setColor( const QColor & color);
@@ -179,6 +179,13 @@ signals:
        daddy.
      **/
     void becomeDaddy   (bool);
+
+    /**
+       In medinria, the daddy is the reference view (contoured in
+       red). Only one per pool is authorized. Emit this signal when
+       the daddy state of the view changes.
+     **/
+    void changeDaddy   (bool);
 
     /**
        This signal is emitted when a view wants to register its data to the daddy.
@@ -263,8 +270,11 @@ signals:
 
     void dataAdded (dtkAbstractData* data, int layer);
 
+    void TwoDTriggered(dtkAbstractView* d);
+    void ThreeDTriggered(dtkAbstractView* d);
+
     /** Emitted when the oblique view settings change */
-    void obliqueSettingsChanged();
+    void obliqueSettingsChanged (const medAbstractView *self);
 
     void colorChanged();
 
@@ -300,7 +310,7 @@ public slots:
     virtual void onVisibilityChanged(bool visible, int layer);
     
     virtual void onOpacityChanged(double opacity, int layer);
-
+    
     /** When another linked view changes it's oblique settings the pool calls this:*/
     virtual void onObliqueSettingsChanged(const medAbstractView * vsender);
 
@@ -309,6 +319,9 @@ public slots:
 
     /** Called when another view leaves the pool */
     virtual void onRemoveViewFromPool( medAbstractView * viewRemoved );
+
+
+    void setFullScreen( bool state );
 
 protected:
     void emitViewSliceChangedEvent    (int slice);

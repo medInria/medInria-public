@@ -21,6 +21,8 @@
 
 #include "medMessageController.h"
 
+#include <dtkCore/dtkLog.h>
+
 // /////////////////////////////////////////////////////////////////
 // medMessageControllerMessage
 // /////////////////////////////////////////////////////////////////
@@ -215,36 +217,51 @@ void medMessageController::attach(QStatusBar *status)
 
 void medMessageController::showInfo(QObject *sender, const QString& text,unsigned int timeout)
 {
-    medMessageControllerMessageInfo *message = new medMessageControllerMessageInfo(
-            sender,text,0,timeout);
+    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
+        // GUI
+        medMessageControllerMessageInfo *message = new medMessageControllerMessageInfo(
+                sender,text,0,timeout);
     
-    d->status->addWidget(message);
-    d->status->update();
-    qApp->processEvents();
+        d->status->addWidget(message);
+        d->status->update();
+        qApp->processEvents();
 
-    d->messages.insert(sender, message);
+        d->messages.insert(sender, message);
+    } else {
+        dtkOutput() << text;
+    }
 }
 
 void medMessageController::showError(QObject *sender, const QString& text,unsigned int timeout)
 {
-    medMessageControllerMessageError *message = new medMessageControllerMessageError(
-            sender,text,0,timeout);
+    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
+        // GUI
+        medMessageControllerMessageError *message = new medMessageControllerMessageError(
+                sender,text,0,timeout);
 
-    d->status->addWidget(message);
-    d->status->update();
-    qApp->processEvents();
-    d->messages.insert(sender, message);
+        d->status->addWidget(message);
+        d->status->update();
+        qApp->processEvents();
+        d->messages.insert(sender, message);
+    } else {
+        dtkError() << text;
+    }
 }
 
 void medMessageController::showProgress(QObject *sender, const QString& text)
 {
-    medMessageControllerMessageProgress *message = new medMessageControllerMessageProgress(sender,text);
-    
-    d->status->addWidget(message);
-    d->status->update();
-    qApp->processEvents();
+    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
+        // GUI
+        medMessageControllerMessageProgress *message = new medMessageControllerMessageProgress(sender,text);
 
-    d->messages.insert(sender, message);
+        d->status->addWidget(message);
+        d->status->update();
+        qApp->processEvents();
+        d->messages.insert(sender, message);
+    } else {
+        dtkDebug() << "Progress : " << text;
+    }
+
 }
 
 void medMessageController::setProgress(int value)

@@ -1,8 +1,8 @@
 #ifndef medDatabaseDataSource_h__
 #define medDatabaseDataSource_h__
 
-#include <medCore/medAbstractDataSource.h>
-#include <medCore/medDataIndex.h>
+#include <medAbstractDataSource.h>
+#include <medDataIndex.h>
 
 class medDatabaseDataSourcePrivate;
 

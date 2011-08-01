@@ -870,7 +870,12 @@ medToolBoxHeader {
     border-top-width: 16px;
     border-bottom-width: 0px;
 
-    padding-top: -5px;
+    padding-top: -6px;
+
+    color: #bbbbbb;
+
+    min-height: 20px;
+    max-height: 32px;
 }
 
 /**
@@ -1182,3 +1187,38 @@ QTreeWidget::branch:open:has-children:has-siblings  {
 } 
 
 
+
+/**
+ * medViewContainer
+ *
+ */
+
+medViewContainer {
+    border: none;
+    background: #313131;
+}
+
+medViewContainer[isDaddy="true"] {
+    border: 1px solid red;
+    background: #313131;
+}
+
+medViewContainer[isDaddy="false"][isEmpty="true"] {
+    border: 1px solid darkGray;
+    background: #313131;
+}
+
+medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="false"] {
+    border: none;
+    background: #313131;
+}
+
+medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][clicked="false"] {
+    border: 1px solid darkGray;
+    background: #313131;
+}
+
+medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][clicked="true"] {
+    border: 1px solid #9ab3d5;
+    background: #313131;
+}

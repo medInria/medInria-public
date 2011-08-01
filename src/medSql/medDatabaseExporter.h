@@ -23,7 +23,7 @@
 #include "medSqlExport.h"
 #include <QtCore>
 
-#include <medCore/medJobItem.h>
+#include <medJobItem.h>
 
 class dtkAbstractData;
 class medDatabaseExporterPrivate;

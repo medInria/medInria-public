@@ -24,7 +24,6 @@ project(medCore)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  medDataIndex.h
   medDataManager.h
   medMessageController.h
   medMetaDataHelper.h
@@ -32,6 +31,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPluginManager.h
   medProgressFilter.h
   medAbstractView.h
+  medAbstractViewCollection.h
   med4DAbstractViewInteractor.h
   medMeshAbstractViewInteractor.h
   medJobItem.h
@@ -39,19 +39,30 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medSettingsManager.h
   medDbControllerFactory.h
   medAbstractDbController.h
-  medAbstractData.h  
   medAbstractDataSource.h
   medAbstractDataSourceFactory.h
-  medAttachedData.h
   medStorage.h
   medRunnableProcess.h
   medAbstractViewFiberInteractor.h
+  medAbstractData.h
+  medAbstractDataCollection.h
+  medAbstractDataImage2D.h
+  medAbstractDataImage3D.h
+  medAbstractDataImage4D.h
+  medAbstractDataMesh.h
+  medAttachedData.h   
 )
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
-  medAbstractDataCollection.h
+  medAbstractDataImage.h
+  medAbstractDataTypedImage.h
+  medAbstractDataTypedImage2D.h
+  medAbstractDataTypedImage3D.h
+  medAbstractDataTypedImage4D.h
   medCoreExport.h
+  medDataIndex.h
+  medAbstractDatabaseItem.h 
 )
 
 
@@ -64,19 +75,26 @@ set(${PROJECT_NAME}_SOURCES
   medPluginManager.cpp
   medProgressFilter.cpp
   medAbstractView.cpp
+  medAbstractViewCollection.cpp
   medStorage.cpp
   medJobItem.cpp
   medJobManager.cpp  
   medSettingsManager.cpp
   medDbControllerFactory.cpp
   medAbstractDbController.cpp
-  medAttachedData.cpp
   medRunnableProcess.cpp
-  medAbstractData.cpp
-  medAbstractDataCollection.cpp
   medAbstractDataSource.cpp
   medAbstractDataSourceFactory.cpp
   medAbstractViewFiberInteractor.cpp
+  medAbstractData.cpp
+  medAbstractDataCollection.cpp
+  medAbstractDataImage.cpp
+  medAbstractDataImage2D.cpp
+  medAbstractDataImage3D.cpp
+  medAbstractDataImage4D.cpp
+  medAbstractDataMesh.cpp
+  medAttachedData.cpp
+  medAbstractDatabaseItem.cpp
 )
 
 ## #################################################################
