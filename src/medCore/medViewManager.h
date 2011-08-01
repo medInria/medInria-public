@@ -47,7 +47,7 @@ public:
     QList<medAbstractView *> viewsForSeries (int id);
     QList<medAbstractView *> viewsForImage  (int id);
 
-    medDataIndex index(medAbstractView *view);
+    QList<medDataIndex> indices(medAbstractView *view) const; 
 
 protected:
      medViewManager(void);

@@ -46,8 +46,9 @@ void medViewManager::insert(const medDataIndex& index, medAbstractView *view)
 void medViewManager::remove(const medDataIndex& index, medAbstractView *view)
 {
     foreach(dtkSmartPointer<medAbstractView>lview, d->views.value(index))
-        if (lview==view)
-            d->views[index].removeOne(view);
+        if (lview==view) {
+            d->views[index].removeAll(lview);
+        }
 }
 
 void medViewManager::remove(const medDataIndex& index)
@@ -115,14 +116,15 @@ QList<medAbstractView *> medViewManager::viewsForImage(int id)
  *  possible.
  */
 
-medDataIndex medViewManager::index(medAbstractView *view)
+QList<medDataIndex> medViewManager::indices(medAbstractView *view) const
 {
+    QList<medDataIndex> indices;
     foreach(medDataIndex index, d->views.keys())
         foreach(medAbstractView *v, d->views.value(index))
             if(v == view)
-                return index;
+                indices << index;
 
-    return medDataIndex();
+    return indices;
 }
 
 medViewManager::medViewManager(void) : d(new medViewManagerPrivate)

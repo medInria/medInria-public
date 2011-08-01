@@ -41,6 +41,11 @@ class MEDGUI_EXPORT medViewContainer : public QFrame
     Q_OBJECT
 
     /**
+     * @brief true if this container has focus
+    */
+    Q_PROPERTY( bool clicked READ isClicked );
+
+    /**
      * @brief true if this is the current container
     */
     Q_PROPERTY( bool isCurrent READ isCurrent );
@@ -108,6 +113,16 @@ public:
     */
     const medViewContainer *current(void) const;
     medViewContainer *current(void);
+
+     /**
+     * @brief Does this container has focus?
+     *
+     * Returns true if it does.
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool isClicked(void) const;
 
     /**
      * @brief Is this the current container?
@@ -292,6 +307,11 @@ signals:
      * @param view
     */
     void focused(dtkAbstractView *view);
+
+    /**
+     * @brief The container has been clicked.
+    */
+    void clicked (void);
     
     /**
      * @brief A view has been added to the container.
@@ -347,6 +367,12 @@ public slots:
      * @param value
     */
     virtual void onViewFocused( bool value );
+
+    /**
+     * @brief This slot is called when another container has been clicked.
+     * The current container changes its "clicked" property to false.
+    */
+    virtual void onContainerClicked (void);
 
 
 protected:

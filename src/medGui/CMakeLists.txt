@@ -95,6 +95,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medBrowserToolBoxPacsHost.h
   toolboxes/medBrowserToolBoxPacsNodes.h
   toolboxes/medBrowserToolBoxPacsSearch.h
+  toolboxes/medViewerToolBoxPatient.h
 
   # viewContainers:
   viewContainers/medViewContainerCompare.h
@@ -192,6 +193,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medBrowserToolBoxPacsHost.cpp
   toolboxes/medBrowserToolBoxPacsNodes.cpp
   toolboxes/medBrowserToolBoxPacsSearch.cpp
+  toolboxes/medViewerToolBoxPatient.cpp
 
   # viewContainers:
   viewContainers/medViewContainerCompare.cpp

@@ -22,6 +22,8 @@
 
 #include <QtGui>
 
+#include <dtkCore/dtkSmartPointer.h>
+
 class dtkAbstractView;
 class medViewContainer;
 class medViewPool;
@@ -31,7 +33,7 @@ class medViewContainerPrivate
 public:
     QGridLayout *layout;
 
-    dtkAbstractView *view;
+    dtkSmartPointer<dtkAbstractView> view;
 
     medViewContainer *current;
 
@@ -45,6 +47,8 @@ public:
 
     QHash<QString, QString> viewProperties;
     QString viewInfo;
+
+    bool clicked;
 };
 
 #endif

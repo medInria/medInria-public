@@ -36,8 +36,9 @@ medViewContainer::medViewContainer(QWidget *parent)
 
     d->view = NULL;
     d->current = this;
+    d->clicked = false;
 
-    d->pool = new medViewPool;
+    d->pool = new medViewPool (this);
 
     medViewContainer *container = dynamic_cast<medViewContainer *>(parent);
     if ( container != NULL ) {
@@ -55,10 +56,11 @@ medViewContainer::medViewContainer(QWidget *parent)
 
 medViewContainer::~medViewContainer(void)
 {
-    d->pool->deleteLater();
+    //d->pool->deleteLater();
 
-    if (d->view)
+    if (d->view) {
         d->view->close();
+    }
 
     delete d;
 
@@ -82,6 +84,11 @@ medViewContainer *medViewContainer::current(void)
         return root->current();
 
     return d->current;
+}
+
+bool medViewContainer::isClicked (void) const
+{
+    return d->clicked;
 }
 
 bool medViewContainer::isCurrent(void) const
@@ -133,8 +140,10 @@ QList< medViewContainer * > medViewContainer::childContainers() const
     QList< medViewContainer * > containers;
     foreach ( QObject * child, this->children() ) {
         medViewContainer * c = dynamic_cast<medViewContainer *>( child );
-        if ( c != NULL )
+        if ( c != NULL ) {
             containers << c;
+            containers << c->childContainers();
+        }
     }
 
     return containers;
@@ -184,18 +193,26 @@ void medViewContainer::setView(dtkAbstractView *view)
     if (view==d->view)
         return;
 
-    d->view = view;
-
-    // pass properties to the view
+    // clear connection of previous view
     if (d->view) {
+        disconnect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
+        d->view->close();
+        d->view = 0;
+    }
+
+    d->view = view;
+    
+    if (d->view) {
+        // pass properties to the view
         QHash<QString,QString>::iterator it = d->viewProperties.begin();
         while (it!=d->viewProperties.end()) {
             view->setProperty (it.key(), it.value());
             ++it;
         }
-    }
-    connect (view,SIGNAL(changeDaddy(bool)),this,SLOT(onDaddyChanged(bool)));
-    this->recomputeStyleSheet();
+        
+        connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
+        this->recomputeStyleSheet();
+    }        
 }
 
 void medViewContainer::onViewFocused( bool value )
@@ -212,6 +229,12 @@ void medViewContainer::onViewFocused( bool value )
     this->update();
 }
 
+void medViewContainer::onContainerClicked (void)
+{
+    d->clicked = false;
+    this->recomputeStyleSheet();
+}
+
 void medViewContainer::setCurrent(medViewContainer *container)
 {
     medViewContainer * parent =
@@ -221,7 +244,7 @@ void medViewContainer::setCurrent(medViewContainer *container)
     else
         d->current = container;
 
-    this->recomputeStyleSheet();
+    //this->recomputeStyleSheet();
 }
 
 void medViewContainer::recomputeStyleSheet()
@@ -262,15 +285,23 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
     medViewContainer * former = this->current();
 
+    d->clicked = true;
+
     this->onViewFocused( true );
+
+    this->recomputeStyleSheet();
 
     if (former)
         former->update();
+
+    emit clicked();
 }
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)
 {
-    Q_UNUSED(event);
+    //d->clicked = false;
+
+    //this->recomputeStyleSheet();
 }
 
 void medViewContainer::paintEvent(QPaintEvent *event)

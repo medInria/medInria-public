@@ -56,7 +56,7 @@ bool medStartupSettingsWidget::validate()
 void medStartupSettingsWidget::read()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
-    d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen", true).toBool());
+    d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
 
     //if nothing is configured then Browser is the default area
     int areaIndex = mnger->value("startup", "default_starting_area", 0).toInt();

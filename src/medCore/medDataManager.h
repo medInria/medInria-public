@@ -1,5 +1,5 @@
-/* medDataManager.h --- 
- * 
+/* medDataManager.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 08:34:45 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 5
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATAMANAGER_H
@@ -34,7 +34,7 @@ class medDataManagerPrivate;
 class medAbstractDbController;
 
 /**
- * This class is the global access point to data stored in the database. 
+ * This class is the global access point to data stored in the database.
  * It tries to use several database-controllers to provide/store data
  * Another role is to cache data to provide faster access (work in progress)
  */
@@ -47,7 +47,7 @@ public:
       static void destroy(void);
 
     /**
-    * Ask the data-manager to provide the data belonging to this index using it's registered controllers
+    * Ask the data-manager to provide the data belonging to this index using its registered controllers.
     * @params const medDataIndex & index medDataIndex for data
     * @return dtkAbstractData * the data
     */
@@ -92,7 +92,7 @@ public:
      * The data is specified by ots medDataIndex , it is then removed from the non persistent database
      */
     void storeNonPersistentSingleDataToDatabase( const medDataIndex &index );
-    
+
     /**
     * Returns the number of non-persistent data contained in the data manager
     */
@@ -109,23 +109,23 @@ public:
      */
     void removeData(const medDataIndex& index);
 
-    /**
-    * Releases all own references to let all stored smartpointers get out of scope
-    * All remaining references will be restored (probably not thread safe)
-    * @return void
-    */
-    void tryFreeMemory(size_t memoryLimit);
+    /** return the DB controller for given data source. */
+    medAbstractDbController *controllerForDataSource( int dataSource );
+    const medAbstractDbController *controllerForDataSource( int dataSource ) const;
+
+    /** Return a list of available dataSource Ids.*/
+    QList<int> dataSourceIds() const;
 
     /**
      * Check if the program was compiled using 32bit compiler
      */
     static bool is32Bit(void);
 
-    /** 
+    /**
     * Returns the memory usage of the current process in bytes.
-    * On linux, this refers to the virtual memory allocated by 
+    * On linux, this refers to the virtual memory allocated by
     * the process (the VIRT column in top).
-    * On windows, this refers to the size in bytes of the working 
+    * On windows, this refers to the size in bytes of the working
     * set pages (the "Memory" column in the task manager).
     * Code taken from mitk (bsd)
     */
@@ -139,7 +139,7 @@ public:
     /**
     * Return the hard limit the process can allocate
     * Result depends on the platform
-    * If this threshold is crossed the manager will not 
+    * If this threshold is crossed the manager will not
     * allocate memory to ensure system stability
     */
     static size_t getUpperMemoryThreshold();
@@ -150,12 +150,10 @@ public:
     */
     static size_t getOptimalMemoryThreshold();
 
-    /** return the DB controller for given data source. */
-    medAbstractDbController *controllerForDataSource( int dataSource );
-    const medAbstractDbController *controllerForDataSource( int dataSource ) const;
-
-    /** Return a list of available dataSource Ids.*/
-    QList<int> dataSourceIds() const;
+    /**
+     * Clear all items stored in the data manager
+     */
+    void clearCache();
 
 signals:
     /**
@@ -188,6 +186,19 @@ protected:
 
     /** Remove all matching items from the cache. */
     void removeDataFromCache( const medDataIndex &index);
+
+    /**
+     * Print available memory
+     */
+    void printMemoryStatus(size_t requiredMemoryInKb = 0);
+
+        /**
+    * Releases all own references to let all stored smartpointers get out of scope
+    * All remaining references will be restored (probably not thread safe)
+    * @return void
+    */
+    bool tryFreeMemory(size_t memoryLimit);
+
 
 protected:
     static medDataManager *s_instance;

@@ -20,12 +20,13 @@
 #ifndef MEDVIEWERTOOLBOXPATIENT_H
 #define MEDVIEWERTOOLBOXPATIENT_H
 
-#include <medToolBox.h>
+#include "medGuiExport.h"
+#include "medToolBox.h"
 
 class medDataIndex;
 class medViewerToolBoxPatientPrivate;
 
-class medViewerToolBoxPatient : public medToolBox
+class MEDGUI_EXPORT medViewerToolBoxPatient : public medToolBox
 {
     Q_OBJECT
 
@@ -49,6 +50,8 @@ public slots:
 
 protected slots:
     void onCurrentIndexChanged(int);
+    //! Attaches new connections to the registered controller, and updates if needed.
+    void onDbControllerRegistered(const QString&);
 protected:
     int addChooseItem();
     void removeChooseItem();

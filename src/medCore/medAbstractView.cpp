@@ -460,18 +460,13 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
     emit cameraChanged(position, viewup, focal, parallelScale, d->linkCamera);
 }
 
-void medAbstractView::setFullScreen( bool state )
-{
-    emit fullScreen( state );
-}
-
 void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data )
 {
     // set a reference to our view that gets destroyed when the view terminates
-    d->sharedData = data;
+    //d->sharedData = data;
 
-    dtkAbstractData *dtkdata = d->sharedData.data();
-    this->setData(dtkdata);
+    //dtkAbstractData *dtkdata = d->sharedData.data();
+    this->setData(data);
 }
 
 medAbstractView::~medAbstractView( void )
@@ -482,7 +477,7 @@ medAbstractView::~medAbstractView( void )
 
 void medAbstractView::emitObliqueSettingsChangedEvent()
 {
-    emit obliqueSettingsChanged();
+    emit obliqueSettingsChanged (this);
 }
 
 void medAbstractView::emitColorChangedEvent()
@@ -498,4 +493,9 @@ void medAbstractView::onRemoveViewFromPool( medAbstractView * viewLeaving )
 void medAbstractView::onAppendViewToPool( medAbstractView * viewAppended )
 {
     DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void medAbstractView::setFullScreen( bool state )
+{
+    emit fullScreen( state );
 }
