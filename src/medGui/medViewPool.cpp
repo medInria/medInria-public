@@ -47,9 +47,6 @@ medViewPool::medViewPool(QObject *parent) : QObject (parent), d (new medViewPool
 
 medViewPool::~medViewPool(void)
 {
-    qDebug() << "medViewPool::~medViewPool" << (void*)this;
-    qDebug() << "view count: " << d->views.count();
-
     delete d;
     d = NULL;
 }
