@@ -42,6 +42,8 @@ public:
     virtual bool read_description(const QByteArray& buf);
     virtual bool read_data();
 
+    virtual bool write_data(const QString&,const dtkAbstractData*);
+
     //  Methods specific to this type.
 
     void readVolumes(QStringList);

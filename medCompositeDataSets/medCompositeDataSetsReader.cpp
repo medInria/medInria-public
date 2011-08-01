@@ -39,14 +39,14 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
         for (bool more=zipfile.goToFirstFile();more;more=zipfile.goToNextFile()) {
 
             if (!file.open(QIODevice::ReadOnly)) {
-                qWarning("medCompositeDataSet: file.open(): %d",file.getZipError());
+                qWarning("medCompositeDataSets: file.open(): %d",file.getZipError());
                 return false;
             }
 
             QString name = file.getActualFileName();
 
             if (file.getZipError()!=UNZ_OK) {
-                qWarning("medCompositeDataSet: file.getFileName(): %d",file.getZipError());
+                qWarning("medCompositeDataSets: file.getFileName(): %d",file.getZipError());
                 return false;
             }
 
@@ -80,19 +80,19 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
             out.close();
 
             if (file.getZipError()!=UNZ_OK) {
-                qWarning("medCompositeDataSet: file.getFileName(): %d", file.getZipError());
+                qWarning("medCompositeDataSets: file.getFileName(): %d", file.getZipError());
                 return false;
             }
 
             if(!file.atEnd()) {
-                qWarning("medCompositeDataSet: read all but not EOF");
+                qWarning("medCompositeDataSets: read all but not EOF");
                 return false;
             }
 
             file.close();
 
             if(file.getZipError()!=UNZ_OK) {
-                qWarning("medCompositeDataSet: file.close(): %d", file.getZipError());
+                qWarning("medCompositeDataSets: file.close(): %d", file.getZipError());
                 return false;
             }
         }

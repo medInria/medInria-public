@@ -61,6 +61,7 @@ set(${PROJECT_NAME}_SOURCES
   medCompositeDataSetsPlugin.cpp
   medDiffusionSequenceCompositeDataToolBox.cpp
   medCompositeDataSetsReader.cpp
+  medCompositeDataSetsWriter.cpp
   medDiffusionSequenceCompositeData.cpp)
 
 ## #################################################################
