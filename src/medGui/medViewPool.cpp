@@ -25,17 +25,17 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include "medMessageController.h"
 
 class medViewPoolPrivate
 {
 public:
-    QList<medAbstractView *>                 views;
-    QMap<medAbstractView*, dtkAbstractData*> viewData;
+    QList< dtkSmartPointer<medAbstractView> > views;
+    QMap< dtkSmartPointer<medAbstractView>, dtkSmartPointer<dtkAbstractData> > viewData;
     QHash<QString, QString>                  propertySet;
 };
-
 
 medViewPool::medViewPool(QObject *parent) : QObject (parent), d (new medViewPoolPrivate)
 {
@@ -47,6 +47,9 @@ medViewPool::medViewPool(QObject *parent) : QObject (parent), d (new medViewPool
 
 medViewPool::~medViewPool(void)
 {
+    qDebug() << "medViewPool::~medViewPool" << (void*)this;
+    qDebug() << "view count: " << d->views.count();
+
     delete d;
     d = NULL;
 }
@@ -194,7 +197,7 @@ void medViewPool::removeView (medAbstractView *vview)
 
 medAbstractView *medViewPool::daddy (void)
 {
-    QList<medAbstractView *>::iterator it = d->views.begin();
+    QList< dtkSmartPointer<medAbstractView> >::iterator it = d->views.begin();
     for( ; it!=d->views.end(); it++) {
         if ((*it)->property ("Daddy")=="true")
             return (*it);
@@ -211,7 +214,7 @@ void medViewPool::onViewDaddy (bool daddy)
             medAbstractView *refView = this->daddy();
             
             // tell all views that they are not daddys
-            QList<medAbstractView *>::iterator it = d->views.begin();
+            QList< dtkSmartPointer<medAbstractView> >::iterator it = d->views.begin();
             for( ; it!=d->views.end(); it++)
                 (*it)->setProperty ("Daddy", "false");
             

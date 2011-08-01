@@ -38,7 +38,7 @@ medViewContainer::medViewContainer(QWidget *parent)
     d->current = this;
     d->clicked = false;
 
-    d->pool = new medViewPool;
+    d->pool = new medViewPool (this);
 
     medViewContainer *container = dynamic_cast<medViewContainer *>(parent);
     if ( container != NULL ) {
@@ -56,7 +56,7 @@ medViewContainer::medViewContainer(QWidget *parent)
 
 medViewContainer::~medViewContainer(void)
 {
-    d->pool->deleteLater();
+    //d->pool->deleteLater();
 
     if (d->view) {
         d->view->close();

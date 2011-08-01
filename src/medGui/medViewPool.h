@@ -51,8 +51,8 @@ class MEDGUI_EXPORT medViewPool : public QObject
     Q_OBJECT
 
 public:
-    medViewPool (QObject *parent = 0);
-    ~medViewPool (void);    
+             medViewPool (QObject *parent = 0);
+    virtual ~medViewPool (void);    
 
     /**
        The daddy is the reference view, i.e., the target when performing automatic
