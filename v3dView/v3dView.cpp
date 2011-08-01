@@ -1663,7 +1663,7 @@ void v3dView::onMenuAxialTriggered (void)
 
     this->setProperty("Orientation", "Axial");
     d->view2d->Render();
-    emit TwoDTriggered(this);
+
 }
 
 
@@ -1674,7 +1674,6 @@ void v3dView::onMenuCoronalTriggered (void)
 
     this->setProperty("Orientation", "Coronal");
     d->view2d->Render();
-    emit TwoDTriggered(this);
 }
 
 
@@ -1695,6 +1694,7 @@ void v3dView::onMenu3DTriggered (void)
     d->view3d->Render();
     emit ThreeDTriggered(this);
 }
+
 void v3dView::onMenu3DVRTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
@@ -1703,7 +1703,6 @@ void v3dView::onMenu3DVRTriggered (void)
     this->setProperty ("3DMode", "VR");
     this->setProperty ("Orientation", "3D");
     d->view3d->Render();
-    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMPRTriggered (void)
@@ -1714,7 +1713,6 @@ void v3dView::onMenu3DMPRTriggered (void)
     this->setProperty("3DMode",      "MPR");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
-    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMaxIPTriggered (void)
@@ -1725,7 +1723,6 @@ void v3dView::onMenu3DMaxIPTriggered (void)
     this->setProperty("3DMode", "MIP - Maximum");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
-    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DMinIPTriggered (void)
@@ -1736,7 +1733,6 @@ void v3dView::onMenu3DMinIPTriggered (void)
     this->setProperty("3DMode", "MIP - Minimum");
     this->setProperty("Orientation", "3D");
     d->view3d->Render();
-    emit ThreeDTriggered(this);
 }
 
 void v3dView::onMenu3DOffTriggered (void)
