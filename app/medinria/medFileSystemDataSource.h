@@ -26,10 +26,25 @@ public:
     QList<medToolBox*> getToolboxes();
 
 signals:
-    void open(QString);
+
+    /**
+    * Signal emitted when the user chooses to load
+    * a file or directory.
+    * @param path - the path of the image or directory
+    **/
+    void load(QString path);
+
+    /**
+    * Signal emitted when the user chooses to open
+    * a file or directory.
+    * @param path - the path of the image or directory
+    **/
+    void open(QString path);
 
 private slots:
     void onFileSystemImportClicked();
+    void onFileSystemIndexClicked();
+    void onFileSystemLoadClicked();
     void onFileSystemViewClicked();
 
 

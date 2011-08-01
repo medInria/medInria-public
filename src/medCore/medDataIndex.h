@@ -55,6 +55,11 @@ public:
 
     medDataIndex& operator=(const medDataIndex& index);
 
+    /** Returns true if two indexes match, where either input may be a patient, study, series or image.
+     *  Here, wild cards (-1) are treated as equality where operator== requires a values that are equal.
+     * */
+    static bool isMatch( const medDataIndex& index1, const medDataIndex& index2);
+
     friend MEDCORE_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
     friend MEDCORE_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
 	

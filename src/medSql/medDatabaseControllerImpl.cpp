@@ -12,10 +12,12 @@
 
 #include <medCore/medMessageController.h>
 #include <medCore/medStorage.h>
+#include <medCore/medJobManager.h>
 
 #include "medDatabaseImporter.h"
 #include "medDatabaseExporter.h"
 #include "medDatabaseReader.h"
+#include "medDatabaseRemover.h"
 #include "medDatabaseWriter.h"
 
 
@@ -53,6 +55,7 @@ bool medDatabaseControllerImpl::createConnection(void)
 bool medDatabaseControllerImpl::closeConnection(void)
 {
     m_database.close();
+    QSqlDatabase::removeDatabase("QSQLITE");
     m_isConnected = false;
     return true;
 }
@@ -273,11 +276,18 @@ QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataInd
     connect(reader.data(), SIGNAL(success(QObject *)), reader.data(), SLOT(deleteLater()));
     connect(reader.data(), SIGNAL(failure(QObject *)), reader.data(), SLOT(deleteLater()));
 
+    connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
+
     medMessageController::instance()->showProgress(reader.data(), "Opening database item");
 
     dtkAbstractData* data = reader->run();
     QSharedPointer<dtkAbstractData> ret(data);
     return ret;
+}
+
+void medDatabaseControllerImpl::showOpeningError(QObject *sender)
+{
+    medMessageController::instance()->showError(sender, "Opening item failed.", 3000);
 }
 
 QSharedPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId)
@@ -355,17 +365,21 @@ void medDatabaseControllerImpl::createSeriesTable(void)
 
 void medDatabaseControllerImpl::createImageTable(void)
 {
+    // Note to the reader who came here looking for the 'size' column:
+    // it was removed because it was always filled with a
+    // placeholder (number 64), and it was never read.
+
     QSqlQuery query(*(this->database()));
     query.exec(
             "CREATE TABLE image ("
             " id         INTEGER      PRIMARY KEY,"
             " series     INTEGER," // FOREIGN KEY
-            " size       INTEGER,"
             " name          TEXT,"
             " path          TEXT,"
             " instance_path TEXT,"
             " thumbnail     TEXT,"
-            " slice      INTEGER"
+            " slice      INTEGER,"
+            " isIndexed  BOOLEAN"
             ");"
             );
 }
@@ -462,4 +476,21 @@ qint64 medDatabaseControllerImpl::getEstimatedSize( const medDataIndex& index ) 
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
     uint size = reader->getDataSize();
     return size + (size/100 * 3); // add 3% margin
+}
+
+void medDatabaseControllerImpl::remove( const medDataIndex& index )
+{
+    medDatabaseRemover *remover = new medDatabaseRemover(index);
+
+    connect(remover, SIGNAL(progress(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(remover, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(remover, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(remover, SIGNAL(success(QObject *)), remover, SLOT(deleteLater()));
+    connect(remover, SIGNAL(failure(QObject *)), remover, SLOT(deleteLater()));
+    connect(remover, SIGNAL(removed(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
+
+    medMessageController::instance()->showProgress(remover, "Removing item");
+
+    medJobManager::instance()->registerJobItem(remover);
+    QThreadPool::globalInstance()->start(remover);
 }

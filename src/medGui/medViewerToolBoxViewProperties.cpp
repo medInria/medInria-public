@@ -820,6 +820,7 @@ void
     }
     d->view->update();
 }
+
 void
     medViewerToolBoxViewProperties::onPresetChanged(int index)
 {

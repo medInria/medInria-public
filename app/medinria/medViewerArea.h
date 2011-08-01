@@ -103,9 +103,10 @@ public slots:
      *
      * @param index Could describe just an image, or a complete Series,
      * Study or even Patient.
+     * @return true if successful, false otherwise
     */
-    void open(const medDataIndex& index);
-
+    bool open(const medDataIndex& index);
+    
     /**
      * @brief Opens file on the local filesystem.
      *
