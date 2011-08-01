@@ -1,19 +1,10 @@
 #ifndef _itk_DataImageFloat3_h_
 #define _itk_DataImageFloat3_h_
 
-#include "itkDataImageBase.h"
-
+#include "itkDataImage.h"
 #include "itkDataImagePluginExport.h"
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageFloat3 : public itkDataImageBase
-{
-    Q_OBJECT
-    
-public:
-    itkDataImageFloat3(void);
-    ~itkDataImageFloat3(void);
-
-    static bool registered(void);
-};
+extern const char itkDataImageFloat3Name[] = "itkDataImageFloat3";
+typedef ITKDATAIMAGEPLUGIN_EXPORT itkDataImage<3,float,itkDataImageFloat3Name> itkDataImageFloat3;
 
 #endif

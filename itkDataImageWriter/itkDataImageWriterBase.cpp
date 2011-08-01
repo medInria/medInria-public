@@ -2,11 +2,14 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
+#include <medAbstractDataImage.h>
 #include <dtkCore/dtkLog.h>
 
 #include <itkImage.h>
 #include <itkImageFileWriter.h>
 #include <itkRGBPixel.h>
+#include <itkVector.h>
+#include <itkMetaDataObject.h>
 #include <itkRGBAPixel.h>
 
 itkDataImageWriterBase::itkDataImageWriterBase()
@@ -26,6 +29,29 @@ bool itkDataImageWriterBase::canWrite(const QString& path)
     return this->io->CanWriteFile ( path.toAscii().constData() );
 }
 
+template <unsigned DIM,typename T>
+bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
+    dtkAbstractData* dtkdata = this->data();
+    if (dtkdata && dtkdata->description()!=type)
+        return false;
+
+    typedef itk::Image<T,DIM> Image;
+    typename Image::Pointer image = dynamic_cast<Image*>((itk::Object*)(this->data()->output()));
+    if (image.IsNull())
+        return false;
+    if (dtkdata->hasMetaData(medAbstractDataImage::PixelMeaningMetaData)) {
+        itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
+        itk::EncapsulateMetaData(dict,"intent_name",dtkdata->metadata(medAbstractDataImage::PixelMeaningMetaData));
+    }
+    typename itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter <Image>::New();
+    writer->SetImageIO (this->io);
+    writer->SetFileName(path.toAscii().constData());
+    writer->SetInput(image);
+    writer->Update();
+
+    return true;
+}
+
 bool itkDataImageWriterBase::write(const QString& path)
 {
     if (!this->data())
@@ -34,388 +60,39 @@ bool itkDataImageWriterBase::write(const QString& path)
     if (this->io.IsNull())
         return false;
 
-    if (dtkAbstractData *dtkdata = this->data() ) {
+    try {
 
-        if(dtkdata->description()=="itkDataImageUChar3") {
-            itk::Image<unsigned char, 3>::Pointer image = dynamic_cast< itk::Image<unsigned char, 3>* >( (itk::Object*)(this->data()->output()) );
-            if (image.IsNull())
-                return false;
-            itk::ImageFileWriter < itk::Image<unsigned char, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned char, 3> >::New();
-            writer->SetImageIO ( this->io );
-            writer->SetFileName ( path.toAscii().constData() );
-            writer->SetInput ( image );
-            try {
-                writer->Update();
-            }
-            catch(itk::ExceptionObject &e) {
-                qDebug() << e.GetDescription();
-                return false;
-            }
-	}
-
-	else if(dtkdata->description()=="itkDataImageChar3") {
-	    itk::Image<char, 3>::Pointer image = dynamic_cast< itk::Image<char, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<char, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<char, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageUShort3") {
-	    itk::Image<unsigned short, 3>::Pointer image = dynamic_cast< itk::Image<unsigned short, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<unsigned short, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned short, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-
-	else if(dtkdata->description()=="itkDataImageUShort4") {
-	    itk::Image<unsigned short, 4>::Pointer image = dynamic_cast< itk::Image<unsigned short, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<unsigned short, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned short, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageUInt4") {
-	    itk::Image<unsigned int, 4>::Pointer image = dynamic_cast< itk::Image<unsigned int, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<unsigned int, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned int, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageULong4") {
-	    itk::Image<unsigned long, 4>::Pointer image = dynamic_cast< itk::Image<unsigned long, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<unsigned long, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned long, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageUChar4") {
-	    itk::Image<unsigned char, 4>::Pointer image = dynamic_cast< itk::Image<unsigned char, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<unsigned char, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned char, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageInt4") {
-	    itk::Image<int, 4>::Pointer image = dynamic_cast< itk::Image<int, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<int, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<int, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageLong4") {
-	    itk::Image<long, 4>::Pointer image = dynamic_cast< itk::Image<long, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<long, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<long, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageShort3") {
-	    itk::Image<short, 3>::Pointer image = dynamic_cast< itk::Image<short, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<short, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<short, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageShort4") {
-	    itk::Image<short, 4>::Pointer image = dynamic_cast< itk::Image<short, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<short, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<short, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageChar4") {
-	    itk::Image<char, 4>::Pointer image = dynamic_cast< itk::Image<char, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<char, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<char, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageUInt3") {
-	    itk::Image<unsigned int, 3>::Pointer image = dynamic_cast< itk::Image<unsigned int, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<unsigned int, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned int, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageInt3") {
-	    itk::Image<int, 3>::Pointer image = dynamic_cast< itk::Image<int, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<int, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<int, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageULong3") {
-	    itk::Image<unsigned long, 3>::Pointer image = dynamic_cast< itk::Image<unsigned long, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<unsigned long, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<unsigned long, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageLong3") {
-	    itk::Image<long, 3>::Pointer image = dynamic_cast< itk::Image<long, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<long, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<long, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageFloat3") {
-	    itk::Image<float, 3>::Pointer image = dynamic_cast< itk::Image<float, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<float, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<float, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-	
-	else if(dtkdata->description()=="itkDataImageFloat4") {
-	    itk::Image<float, 4>::Pointer image = dynamic_cast< itk::Image<float, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<float, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<float, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageDouble4") {
-	    itk::Image<double, 4>::Pointer image = dynamic_cast< itk::Image<double, 4>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<double, 4> >::Pointer writer = itk::ImageFileWriter < itk::Image<double, 4> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageDouble3") {
-	    itk::Image<double, 3>::Pointer image = dynamic_cast< itk::Image<double, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image<double, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image<double, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-	else if(dtkdata->description()=="itkDataImageRGB3") {
-	    itk::Image< itk::RGBPixel<unsigned char>, 3>::Pointer image = dynamic_cast< itk::Image< itk::RGBPixel<unsigned char>, 3>* >( (itk::Object*)(this->data()->output()) );
-	    if (image.IsNull())
-	        return false;
-	    itk::ImageFileWriter < itk::Image< itk::RGBPixel<unsigned char>, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image< itk::RGBPixel<unsigned char>, 3> >::New();
-	    writer->SetImageIO ( this->io );
-	    writer->SetFileName ( path.toAscii().constData() );
-	    writer->SetInput ( image );
-	    try {
-	        writer->Update();
-	    }
-	    catch(itk::ExceptionObject &e) {
-	        qDebug() << e.GetDescription();
-	        return false;
-	    }
-	}
-
-        else if(dtkdata->description()=="itkDataImageRGB3") {
-            itk::Image< itk::RGBAPixel<unsigned char>, 3>::Pointer image = dynamic_cast< itk::Image< itk::RGBAPixel<unsigned char>, 3>* >( (itk::Object*)(this->data()->output()) );
-            if (image.IsNull())
-                return false;
-            itk::ImageFileWriter < itk::Image< itk::RGBAPixel<unsigned char>, 3> >::Pointer writer = itk::ImageFileWriter < itk::Image< itk::RGBAPixel<unsigned char>, 3> >::New();
-            writer->SetImageIO ( this->io );
-            writer->SetFileName ( path.toAscii().constData() );
-            writer->SetInput ( image );
-            try {
-                writer->Update();
-            }
-            catch(itk::ExceptionObject &e) {
-                qDebug() << e.GetDescription();
-                return false;
-            }
-        }
-
-        else {
+        if (!(write_image<3,unsigned char>(path,"itkDataImageUChar3")   ||
+              write_image<3,char>(path,"itkDataImageChar3")             ||
+              write_image<3,unsigned short>(path,"itkDataImageUShort3") ||
+              write_image<4,unsigned short>(path,"itkDataImageUShort4") ||
+              write_image<4,unsigned int>(path,"itkDataImageUInt4")     ||
+              write_image<4,unsigned long>(path,"itkDataImageULong4")   ||
+              write_image<4,unsigned char>(path,"itkDataImageUChar4")   ||
+              write_image<4,char>(path,"itkDataImageChar4")             ||
+              write_image<4,long>(path,"itkDataImageLong4")             ||
+              write_image<4,int>(path,"itkDataImageInt4")               ||
+              write_image<3,short>(path,"itkDataImageShort3")           ||
+              write_image<4,short>(path,"itkDataImageShort4")           ||
+              write_image<3,unsigned int>(path,"itkDataImageUInt3")     ||
+              write_image<3,int>(path,"itkDataImageInt3")               ||
+              write_image<3,unsigned long>(path,"itkDataImageULong3")   ||
+              write_image<3,long>(path,"itkDataImageLong3")             ||
+              write_image<3,float>(path,"itkDataImageFloat3")           ||
+              write_image<4,float>(path,"itkDataImageFloat4")           ||
+              write_image<3,double>(path,"itkDataImageDouble3")         ||
+              write_image<4,double>(path,"itkDataImageDouble4")         ||
+              write_image<3,itk::Vector<unsigned char,3> >(path,"itkDataImageVector3") || //    Added by Theo.
+              write_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
+              write_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
+        {
             qWarning() << "Unrecognized pixel type";
             return false;
         }
 
+    } catch(itk::ExceptionObject &e) {
+        qDebug() << e.GetDescription();
+        return false;
     }
     
     

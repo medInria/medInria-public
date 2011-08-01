@@ -1,5 +1,8 @@
 SET(PLUGIN_NAME itkDataImagePlugin)
 
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 SET(itkDataImagePluginTests
   itkDataImageTest.cxx
   itkDataImageDouble3Test.cxx
@@ -15,14 +18,19 @@ ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests
 
 TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
   dtkCore
+  medCore
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   )
 
+set_target_properties(${PLUGIN_NAME}CxxTests PROPERTIES 
+RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
+)
+
 set(CXX_TEST_PATH        ${EXECUTABLE_OUTPUT_PATH})
-set(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH})
+set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 if(MSVC)
-  set(CXX_TEST_PLUGIN_PATH ${LIBRARY_OUTPUT_PATH}/Release)
+  set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release)
 endif(MSVC)
 
 

@@ -101,6 +101,17 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
             if (!data->hasMetaData("BundleColorList"))
                 data->addMetaData("BundleColorList", QStringList());
 
+            // add bundles to 2d
+            vtkFiberDataSet::vtkFiberBundleListType bundles = d->dataset->GetBundleList();
+            vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundles.begin();
+            while (it!=bundles.end())
+            {
+                if (d->view)
+                    d->view->renderer2d()->AddActor(
+                        d->manager->GetBundleActor ((*it).first ));
+                    ++it;
+            }
+
             this->clearStatistics();
 
             d->data = data;
@@ -119,6 +130,7 @@ void v3dViewFiberInteractor::setView(dtkAbstractView *view)
         d->view = v3dview;
         d->manager->SetRenderer( d->view->renderer3d() );
         d->manager->SetRenderWindowInteractor( d->view->interactor() );
+        d->view->renderer2d()->AddActor( d->manager->GetOutput() );
         d->roiManager->SetRenderWindowInteractor( d->view->interactor() );
     }
 }
@@ -136,6 +148,17 @@ void v3dViewFiberInteractor::enable(void)
     if (d->view) {
         d->manager->Enable();
         d->roiManager->Enable();
+        if (d->dataset) {
+            vtkFiberDataSet::vtkFiberBundleListType bundles = d->dataset->GetBundleList();
+            vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundles.begin();
+            while (it!=bundles.end())
+            {
+                if (d->view)
+                    d->view->renderer2d()->AddActor(
+                        d->manager->GetBundleActor ((*it).first ));
+                    ++it;
+            }
+        }
     }
     
     dtkAbstractViewInteractor::enable();
@@ -149,6 +172,17 @@ void v3dViewFiberInteractor::disable(void)
     if (d->view) {
         d->manager->Disable();
         d->roiManager->Disable();
+        if (d->dataset) {
+            vtkFiberDataSet::vtkFiberBundleListType bundles = d->dataset->GetBundleList();
+            vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundles.begin();
+            while (it!=bundles.end())
+            {
+                if (d->view)
+                    d->view->renderer2d()->RemoveActor(
+                        d->manager->GetBundleActor ((*it).first ));
+                    ++it;
+            }
+        }
     }
     
     dtkAbstractViewInteractor::disable();
@@ -180,10 +214,12 @@ void v3dViewFiberInteractor::onPropertySet(const QString& key, const QString& va
 
 void v3dViewFiberInteractor::onVisibilityPropertySet (const QString& value)
 {
-    if (value=="true")
+    if (value=="true") {
         d->manager->SetVisibility(1);
-    else
+    }
+    else {
         d->manager->SetVisibility(0);
+    }
 }
 
 void v3dViewFiberInteractor::onBoxVisibilityPropertySet (const QString& value)
@@ -196,35 +232,40 @@ void v3dViewFiberInteractor::onBoxVisibilityPropertySet (const QString& value)
 
 void v3dViewFiberInteractor::onRenderingModePropertySet (const QString& value)
 {
-    if (value=="lines")
+    if (value=="lines") {
         d->manager->SetRenderingModeToPolyLines();
+    }
 
-    if (value=="ribbons")
-	d->manager->SetRenderingModeToRibbons();
+    if (value=="ribbons") {
+        d->manager->SetRenderingModeToRibbons();
+    }
 
-    if (value=="tubes")
+    if (value=="tubes") {
         d->manager->SetRenderingModeToTubes();
+    }
 }
 
 void v3dViewFiberInteractor::onGPUModePropertySet (const QString& value)
 {
     if (value=="true") {
         vtkFibersManager::UseHardwareShadersOn();
-	d->manager->ChangeMapperToUseHardwareShaders();
+        d->manager->ChangeMapperToUseHardwareShaders();
     }
     else {
         vtkFibersManager::UseHardwareShadersOff();
-	d->manager->ChangeMapperToDefault();
+        d->manager->ChangeMapperToDefault();
     }
 }
 
 void v3dViewFiberInteractor::onColorModePropertySet (const QString& value)
 {
-    if (value=="local")
+    if (value=="local") {
         d->manager->SetColorModeToLocalFiberOrientation();
+    }
 
-    if (value=="global")
+    if (value=="global") {
         d->manager->SetColorModelToGlobalFiberOrientation();
+    }
 
     if (value=="fa") {
         for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
@@ -266,6 +307,8 @@ void v3dViewFiberInteractor::onSelectionValidated(const QString &name, const QCo
     double color_d[3] = {(double)color.red()/255.0, (double)color.green()/255.0, (double)color.blue()/255.0};
 
     d->manager->Validate (name.toAscii().constData(), color_d);
+
+    d->view->renderer2d()->AddActor (d->manager->GetBundleActor(name.toAscii().constData()));
 
     d->data->addMetaData("BundleList", name);
     d->data->addMetaData("BundleColorList", color.name());

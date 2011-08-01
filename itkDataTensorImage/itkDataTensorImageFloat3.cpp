@@ -35,10 +35,10 @@ public:
 // itkDataTensorImage
 // /////////////////////////////////////////////////////////////////
 
-itkDataTensorImageFloat3::itkDataTensorImageFloat3(void) : dtkAbstractDataImage(), d(new itkDataTensorImageFloat3Private)
+itkDataTensorImageFloat3::itkDataTensorImageFloat3(void) : medAbstractDataTypedImage<3,float>(), d(new itkDataTensorImageFloat3Private)
 {
     d->tensors = 0;
-    d->thumbnail = QImage(128, 128, QImage::Format_RGB32);
+    d->thumbnail = QImage(":/itkDataTensorImage/icons/tensors.png");
     d->thumbnails << d->thumbnail;
 }
 

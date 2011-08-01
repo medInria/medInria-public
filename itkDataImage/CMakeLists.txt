@@ -41,15 +41,21 @@ find_package(ITK REQUIRED)
   endif(NOT ITK_USE_REVIEW_STATISTICS)
 include(${ITK_USE_FILE})
 
-include_directories(../dtkItkLogForwarder)
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
+#include_directories(../dtkItkLogForwarder)
+find_package(medinria-plugins REQUIRED)
+include(${medinria-plugins_USE_FILE})
+
 
 ## #################################################################
 ## Input
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataImagePlugin.h
-  itkDataImageBase.h
+set(${PROJECT_NAME}_HEADERS_MOC itkDataImagePlugin.h)
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC}
   itkDataImageChar3.h
   itkDataImageChar4.h
   itkDataImageUChar4.h
@@ -75,39 +81,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageShort4.h
   )
 
-set(${PROJECT_NAME}_HEADERS
-  itkDataImagePrivate.h
-  itkVectorDataImagePrivate.h
-  ${${PROJECT_NAME}_HEADERS_MOC})
-
-set(${PROJECT_NAME}_SOURCES
-  itkDataImagePlugin.cpp
-  itkDataImageBase.cpp
-  itkDataImageBaseImpl.cpp
-  itkDataImageChar3.cpp
-  itkDataImageChar4.cpp
-  itkDataImageUChar4.cpp
-  itkDataImageUChar3.cpp
-  itkDataImageShort3.cpp
-  itkDataImageUShort3.cpp
-  itkDataImageUShort4.cpp
-  itkDataImageInt3.cpp
-  itkDataImageInt4.cpp
-  itkDataImageLong4.cpp
-  itkDataImageUInt4.cpp
-  itkDataImageULong4.cpp
-  itkDataImageUInt3.cpp
-  itkDataImageLong3.cpp
-  itkDataImageULong3.cpp
-  itkDataImageFloat3.cpp
-  itkDataImageFloat4.cpp
-  itkDataImageDouble4.cpp
-  itkDataImageDouble3.cpp
-  itkDataImageVector3.cpp
-  itkDataImageRGB3.cpp
-  itkDataImageRGBA3.cpp
-  itkDataImageShort4.cpp
-  )
+set(${PROJECT_NAME}_SOURCES itkDataImagePlugin.cpp)
 
 ## #################################################################
 ## Build rules
@@ -123,6 +97,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
+  medCore
   dtkItkLogForwarder
   ${ITK_LIBRARIES})
 
@@ -133,6 +108,24 @@ endif (BUILD_TESTING)
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+
+# Due to the large number of template functions, windows needs an extra compile flag.
+if (MSVC)
+    set(bigobjFile itkDataImagePlugin.cpp)
+    get_source_file_property(bigobjFile_COMPILE_FLAGS ${bigobjFile} COMPILE_FLAGS)
+    if (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+        set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "/bigobj")
+    else (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+        set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "${bigobjFile_COMPILE_FLAGS} /bigobj")
+    endif (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+endif (MSVC)
+
+#Prevent compiler warnings about valid std::copy.
+if (MSVC)
+    add_definitions(
+        -D_SCL_SECURE_NO_WARNINGS
+    )
+endif (MSVC)
 
 ## #################################################################
 ## Install rules

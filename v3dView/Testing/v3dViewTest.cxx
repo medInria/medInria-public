@@ -6,7 +6,7 @@
 #include "dtkCore/dtkAbstractData.h"
 #include "dtkCore/dtkAbstractViewFactory.h"
 #include "dtkCore/dtkAbstractView.h"
-
+#include "dtkCore/dtkSmartPointer.h"
 
 #include <vtkImageEllipsoidSource.h>
 #include <vtkImageView2D.h>
@@ -34,8 +34,9 @@ int v3dViewTest(int argc, char *argv[])
   dtkPluginManager::instance()->setPath (argv[1]);
   dtkPluginManager::instance()->initialize();
 
-  dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("v3dDataImage");
-  
+  dtkSmartPointer<dtkAbstractData> data;
+  data = dtkAbstractDataFactory::instance()->createSmartPointer ("v3dDataImage");
+
   if (!data) {
       qDebug() << "Cannot create data object from plugin";
       return EXIT_FAILURE;

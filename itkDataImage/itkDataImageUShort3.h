@@ -1,19 +1,10 @@
 #ifndef _itk_DataImageUShort3_h_
 #define _itk_DataImageUShort3_h_
 
-#include "itkDataImageBase.h"
-
+#include "itkDataImage.h"
 #include "itkDataImagePluginExport.h"
 
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImageUShort3 : public itkDataImageBase
-{
-    Q_OBJECT
-    
-public:
-    itkDataImageUShort3(void);
-    ~itkDataImageUShort3(void);
-
-    static bool registered(void);
-};
+extern const char itkDataImageUShort3Name[] = "itkDataImageUShort3";
+typedef ITKDATAIMAGEPLUGIN_EXPORT itkDataImage<3,unsigned short,itkDataImageUShort3Name> itkDataImageUShort3;
 
 #endif

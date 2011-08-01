@@ -45,7 +45,9 @@ if ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
     include(${TTK_USE_FILE})
 endif ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
 
-include_directories(../dtkVtkLogForwarder)
+#include_directories(../dtkVtkLogForwarder)
+find_package(medinria-plugins REQUIRED)
+include(${medinria-plugins_USE_FILE})
 
 ## #################################################################
 ## Input

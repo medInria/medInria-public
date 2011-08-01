@@ -30,7 +30,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
-include(dtkPlugin)
 
 #find_package(medinria REQUIRED)
 #include(${medinria_USE_FILE})
@@ -58,9 +57,6 @@ set(${PROJECT_NAME}_SOURCES
 ## #################################################################
 ## Build rules
 ## #################################################################
-
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${medinria-plugins_LIBRARY_OUTPUT_DIRECTORY})
-
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED

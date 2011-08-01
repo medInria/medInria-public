@@ -163,6 +163,9 @@ void v3dViewTensorInteractor::setView(dtkAbstractView *view)
         // be careful not to forget setting the same renderer for the interactor and the view
         // otherwise a new renderer is created
         d->manager->SetRenderWindowInteractor( d->view->interactor(), d->view->renderer3d() );
+        d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
+        d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
+        d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
     }
 }
 

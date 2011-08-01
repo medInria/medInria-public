@@ -1,7 +1,7 @@
 #ifndef V3DVIEWFIBERINTERACTOR_H
 #define V3DVIEWFIBERINTERACTOR_H
 
-#include <medCore/medAbstractViewFiberInteractor.h>
+#include <medAbstractViewFiberInteractor.h>
 
 #include "v3dViewPluginExport.h"
 

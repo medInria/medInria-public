@@ -6,6 +6,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>
@@ -264,7 +265,7 @@ void itkGDCMDataImageReader::readInformation (QStringList paths)
     return;
   }
 
-  dtkAbstractData* dtkdata = this->data();    
+  dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
 
   if (!dtkdata)
   {    
@@ -336,7 +337,7 @@ void itkGDCMDataImageReader::readInformation (QStringList paths)
     if (imagedimension == 4)
       std::cout<<"image type given :\t "<<imagetypestring.str().c_str()<<std::endl;
     
-    dtkdata = dtkAbstractDataFactory::instance()->create (imagetypestring.str().c_str());
+    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (imagetypestring.str().c_str());
     if (dtkdata)
       this->setData ( dtkdata );
   }
