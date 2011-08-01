@@ -209,9 +209,15 @@ void medViewerArea::split(int rows, int cols)
 
 void medViewerArea::openInTab(const medDataIndex &index)
 {
+    if(!((medDataIndex)index).isValid())
+        return;
+
     if (d->current_configuration->stackedViewContainers()->current()->views().size() > 0)
     {
         QSharedPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
+
+        if (dtkdata.isNull())
+            return;
 
         QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(tr("PatientName")));
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
