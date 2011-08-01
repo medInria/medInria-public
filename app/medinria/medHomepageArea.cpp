@@ -148,26 +148,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                               <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
-    //TODO Put the contributor in a file and load it at startup
-    QTextEdit * aboutAuthorTextEdit = new QTextEdit;
-    aboutAuthorTextEdit->setHtml ( "<b>Authors :</b> <br/> \
-                       Pierre.Fillard@inria.fr <br> \
-                       Olivier.Commowick@inria.fr <br>\
-                       Olivier.Clatz@inria.fr <br> \
-                       Alexandre.Abadie@inria.fr <br> \
-                       Benoit.Bleuze@inria.fr <br> \
-                       John.Stark@inria.fr <br> \
-                       Michael.Knopke@inria.fr <br> \
-                       Stephen.Schmitt@inria.fr <br> \
-                       Nicolas.Toussaint@inria.fr <br> \
-                       Julien.Wintz@inria.fr <br> \
-                       Maxime.Sermesan@inria.fr <br> \
-                       Theodore.Papadopoulos@inria.fr <br> \
-                       fatih.arslan@inria.fr <br> \
-                       jaime.garcia_guevara@inria.fr <br> \
-                       Clement.Philipot@inria.fr <br> \
-                       Sergio.Medina@inria.fr <br> " );
-    aboutAuthorTextEdit->setFocusPolicy ( Qt::NoFocus );
+    QTextBrowser * aboutAuthorTextBrowser = new QTextBrowser;
+    aboutAuthorTextBrowser->setSource(QUrl("qrc:authors.html" ));
+    aboutAuthorTextBrowser->setFocusPolicy ( Qt::NoFocus );
 
     QTextEdit * aboutLicenseTextEdit = new QTextEdit;
     QFile license ( ":LICENSE.txt" );
@@ -188,7 +171,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButtonLayout->addStretch();
 
     d->aboutTabWidget->addTab ( aboutTextEdit, "About" );
-    d->aboutTabWidget->addTab ( aboutAuthorTextEdit, "Authors" );
+    d->aboutTabWidget->addTab ( aboutAuthorTextBrowser, "Authors" );
     d->aboutTabWidget->addTab ( aboutLicenseTextEdit, "License" );
 
     aboutLayout->addWidget ( medinriaLabel2 );

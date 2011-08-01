@@ -120,5 +120,6 @@
         <file>icons/stop.png</file>
         <file>icons/pause.png</file>
         <file>icons/play.png</file>
+        <file>authors.html</file>
     </qresource>
 </RCC>
