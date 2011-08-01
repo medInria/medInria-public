@@ -49,7 +49,9 @@ include(${ITK_USE_FILE})
 set(${PROJECT_NAME}_HEADERS_MOC
   medCompositeDataSetsPlugin.h
   medDiffusionSequenceCompositeDataToolBox.h
-  medCompositeDataSetsReader.h)
+  medCompositeDataSetsReader.h
+#  medDiffusionSequenceCompositeData.h
+)
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
