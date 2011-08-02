@@ -135,6 +135,37 @@ QString medDataIndex::asString() const
     return returnString;
 }
 
+// static
+bool medDataIndex::isMatch( const medDataIndex& index1, const medDataIndex& index2)
+{
+    if ( index1.patientId() == -1 || index2.patientId() == -1) 
+        return true;
+
+    if ( index1.patientId() != index2.patientId() ) 
+        return false;
+
+    if ( index1.studyId() == -1 || index2.studyId() == -1) 
+        return true;
+
+    if ( index1.studyId() != index2.studyId() ) 
+        return false;
+
+    if ( index1.seriesId() == -1 || index2.seriesId() == -1) 
+        return true;
+
+    if ( index1.seriesId() != index2.seriesId() ) 
+        return false;
+
+    if ( index1.imageId() == -1 || index2.imageId() == -1) 
+        return true;
+
+    if ( index1.imageId() != index2.imageId() ) 
+        return false;
+
+    return true; // patient, study, series and image match and are not -1;
+}
+
+
 
 
 

@@ -196,13 +196,22 @@ void medDatabaseNonPersistentControllerImpl::clear(void)
 
 void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
 {
-    if (d->items.count(index) > 0)
-    {
-        d->items.remove(index);
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType DataHashMapType;
+    typedef QList<medDataIndex> medDataIndexList;
+    medDataIndexList indexesToRemove;
+
+    for (DataHashMapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it ) {
+        if (medDataIndex::isMatch( it.key(), index)) {
+            indexesToRemove.push_back(it.key());
+        }
     }
-    
-    // since we are not managing memory, no deletion should be made here
-    // as we don't know if the data is still in use
+
+    for (medDataIndexList::const_iterator it(indexesToRemove.begin()); it != indexesToRemove.end(); ++it)
+    {
+        DataHashMapType::iterator itemIt(d->items.find(*it));
+        delete itemIt.value();
+        d->items.erase(itemIt);
+    }
 }
 
 qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIndex& index ) const

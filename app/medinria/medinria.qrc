@@ -1,10 +1,14 @@
 <RCC>
     <qresource prefix="/">
+        <file>LICENSE.txt</file>
         <file>medinria.ico</file>
+        <file>icons/about.png</file>
         <file>icons/quit.png</file>
         <file>icons/anchor.png</file>
         <file>icons/cog.png</file>
         <file>icons/cropping.png</file>
+        <file>icons/folder.png</file>
+        <file>icons/home.png</file>
         <file>icons/error.png</file>
         <file>icons/error_add.png</file>
         <file>icons/error_delete.png</file>
@@ -12,6 +16,7 @@
         <file>icons/exclamation.png</file>
         <file>icons/eye.png</file>
         <file>icons/help.png</file>
+        <file>icons/help.svg</file>
         <file>icons/information.png</file>
         <file>icons/layer.png</file>
         <file>icons/length.png</file>
@@ -66,6 +71,7 @@
         <file>icons/page_white_magnify.png</file>
         <file>icons/page_white_put.png</file>
         <file>icons/page_white_stack.png</file>
+        <file>icons/settings.svg</file>
         <file>icons/stack.png</file>
         <file>icons/widget.png</file>
         <file>icons/wlww.png</file>
@@ -108,10 +114,12 @@
         <file>pixmaps/database_navigator_item_label.png</file>
         <file>pixmaps/mediseen-logo.png</file>
         <file>pixmaps/medinria-logo.png</file>
+        <file>pixmaps/medinria-logo-homepage.png</file>
         <file>pixmaps/medinria-splash.png</file>
         <file>icons/settings.png</file>
         <file>icons/stop.png</file>
         <file>icons/pause.png</file>
         <file>icons/play.png</file>
+        <file>authors.html</file>
     </qresource>
 </RCC>

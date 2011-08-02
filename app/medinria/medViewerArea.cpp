@@ -1,5 +1,5 @@
-/* medViewerArea.cpp --- 
- * 
+/* medViewerArea.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:43:06 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 1063
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewerArea.h"
@@ -84,12 +84,12 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     // -- User interface setup
     d->stack = new QStackedWidget(this);
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    
+
     d->toolboxPatient = new medViewerToolBoxPatient(this);
     d->toolboxPatient->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
     d->toolboxPatient->setFixedWidth(176); // 186 - 10
 
-    
+
     // Setting up toolbox container
     d->toolbox_container = new medToolBoxContainer(this);
     d->toolbox_container->setOrientation(Qt::Vertical);
@@ -146,10 +146,10 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
         this, SLOT(bringUpTransferFunction(bool)));
 
     this->addAction(transFunAction);
-    
-    connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)), 
+
+    connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)),
         this, SLOT(switchToPatient(const medDataIndex&)));
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator, 
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
         SLOT (onPatientClicked (const medDataIndex&)));
 
     int memusage = 0;
@@ -172,7 +172,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
         qDebug() << "leaking: " << leak / 1000 << " Kbytes";
     }
     int afterMem = medDataManager::getProcessMemoryUsage();
-    qDebug() << "total leakage" << (afterMem-beforeMem)  / 1000 << " Kbytes"; 
+    qDebug() << "total leakage" << (afterMem-beforeMem)  / 1000 << " Kbytes";
 
 //--------------MEM LEAK TEST END ------------------//
 */
@@ -207,42 +207,41 @@ void medViewerArea::split(int rows, int cols)
         root->split(rows, cols);
 }
 
-void medViewerArea::openInTab(const medDataIndex &index)
+bool medViewerArea::openInTab(const medDataIndex &index)
 {
     if(!((medDataIndex)index).isValid())
-        return;
+        return false;
 
-    if (d->current_configuration->stackedViewContainers()->current()->views().size() > 0)
+    if (!this->currentContainerFocused()->views().isEmpty())
     {
         QSharedPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
 
         if (dtkdata.isNull())
-            return;
+            return false;
 
         QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(tr("PatientName")));
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
     }
 
-    this->open(index);
+    return this->open(index);
 }
 
-void medViewerArea::open(const medDataIndex& index)
+bool medViewerArea::open(const medDataIndex& index)
 {
     if(!((medDataIndex)index).isValid())
-        return;
-    
+        return false;
+
     this->switchToPatient(index);
-    
+
     if(((medDataIndex)index).isValidForSeries()) {
-        
+
         QSharedPointer<dtkAbstractData> data;
-        
         // the data-manager should be used to read data
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
         if ( data.isNull() )
-            return;
-        
+            return false;
+
         medAbstractView *view = NULL;
         medViewContainer * current = this->currentContainerFocused();
         if ( current != NULL )
@@ -251,21 +250,22 @@ void medViewerArea::open(const medDataIndex& index)
         if( view == NULL ) {
             view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
+            connect (view, SIGNAL(dataRemoved(int )), this, SLOT(onDataRemoved(int )));
         }
-        
+
         if( view == NULL ) {
             qDebug() << "Unable to create a v3dView";
-            return;
+            return false;
         }
-        
+
         // another hash?!
         medViewManager::instance()->insert(index, view);
-        
-        this->onViewFocused(view);
-        
+
         // set the data to the view
         view->setSharedDataPointer(data);
-       
+
+        this->onViewFocused(view);
+
         // call update
         QMutexLocker ( &d->mutex );
         if ( current != NULL )  // implies root != NULL
@@ -273,55 +273,57 @@ void medViewerArea::open(const medDataIndex& index)
             medViewContainer * root = this->currentRootContainer();
             root->setUpdatesEnabled (false);
             root->setDisabled (true);
-            
+
             current->setView(view);
             current->setFocus(Qt::MouseFocusReason);
-            
+
             view->reset();
             view->update();
-            
+
             root->setDisabled (false);
             root->setUpdatesEnabled (true);
         }
-        
-        return;
+
+        return true;
     }
-    
-    if(((medDataIndex)index).isValidForPatient()) 
+
+    if(((medDataIndex)index).isValidForPatient())
     {
-        // For the moment switch to visualization, later we will be cleverer    
+        // For the moment switch to visualization, later we will be cleverer
         this->setupConfiguration("Visualization");
-        //this->switchToContainer("Multi");
-        
+        this->switchToContainer("Multi");
+
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
         stQuery.prepare("SELECT * FROM study WHERE patient = :id");
         stQuery.bindValue(":id", index.patientId());
         if(!stQuery.exec())
             qDebug() << DTK_COLOR_FG_RED << stQuery.lastError() << DTK_NO_COLOR;
-        
+
         while(stQuery.next()) {
-            
+
             QSqlQuery seQuery(*(medDatabaseController::instance()->database()));
             seQuery.prepare("SELECT * FROM series WHERE study = :id");
             seQuery.bindValue(":id", stQuery.value(0));
             if(!seQuery.exec())
                 qDebug() << DTK_COLOR_FG_RED << seQuery.lastError() << DTK_NO_COLOR;
-            
+
             while(seQuery.next())
                 this->open(medDataIndex(index.patientId(), stQuery.value(0).toInt(), seQuery.value(0).toInt()));
         }
-        
+
     }
+
+    return true;
 }
 
-void medViewerArea::openInTab(const QString& file)
+bool medViewerArea::openInTab(const QString& file)
 {
-    this->openInTab(medDatabaseNonPersistentController::instance()->import(file));
+    return this->openInTab(medDatabaseNonPersistentController::instance()->import(file));
 }
 
-void medViewerArea::open(const QString& file)
+bool medViewerArea::open(const QString& file)
 {
-    this->open(medDatabaseNonPersistentController::instance()->import(file));
+    return this->open(medDatabaseNonPersistentController::instance()->import(file));
 }
 
 void medViewerArea::onViewClosed(void)
@@ -330,9 +332,20 @@ void medViewerArea::onViewClosed(void)
         QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
             tb->update(NULL);
-        
+
         medDataIndex index = medViewManager::instance()->index( view );
         medViewManager::instance()->remove(index, view); // deletes the view
+    }
+}
+
+void medViewerArea::onDataRemoved(int layer)
+{
+    //JGG qDebug()<< "Removing layer ";
+    Q_UNUSED(layer);
+    if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
+        QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
+        foreach( medToolBox *tb, toolboxes)
+            tb->update(view);
     }
 }
 
@@ -344,35 +357,35 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
         return;
 
 
-    if (d->current_patient.isValid()) 
+    if (d->current_patient.isValid())
     {
         //clear the confs if needed:
         medSettingsManager * mnger = medSettingsManager::instance();
         bool clear = mnger->value("system","clearOnPatientChange",QVariant(false)).toBool();
         if (clear)
         {
-            
-            if (medDataManager::instance()->nonPersistentDataCount()) 
+
+            if (medDataManager::instance()->nonPersistentDataCount())
             {
                 // warn the user that previous results might be discarded
-                switch(QMessageBox::information( this, "System message", 
+                switch(QMessageBox::information( this, "System message",
                         "Changing patient will discard unsaved data. Continue?",
-                        "Yes", "No", "Save data in database", 0, 1) ) 
+                        "Yes", "No", "Save data in database", 0, 1) )
                 {
                 case 0:
                     medDataManager::instance()->clearNonPersistentData();
                     emit (clearOnPatientChange());
                     break;
-                    
+
                 case 2:
                     medDataManager::instance()->storeNonPersistentDataToDatabase();
                     emit (clearOnPatientChange());
                     break;
-                    
+
                 case 1:
                 default:
                     //not switching
-                    //set the patient toolbox back to the current patient 
+                    //set the patient toolbox back to the current patient
                     d->toolboxPatient->blockSignals (true);
                     d->toolboxPatient->setPatientIndex(d->current_patient);
                     d->toolboxPatient->blockSignals (false);
@@ -382,10 +395,10 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
             }
             else
             {
-                //there is no hanging data: let's clear 
+                //there is no hanging data: let's clear
                 emit (clearOnPatientChange());
             }
-            
+
         }
     }
 
@@ -396,14 +409,14 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
 
     if (d->navigator) {
         d->navigator->onPatientClicked(d->current_patient);
-        
+
         QRect endGeometry = d->navigator->geometry();
         QRect startGeometry = endGeometry;
         if (d->navigator->orientation()==Qt::Vertical)
             startGeometry.setY (endGeometry.y()+1000);
         else
             startGeometry.setX (endGeometry.x()+1000);
-        
+
         d->navigator_animation->setStartValue(startGeometry);
         d->navigator_animation->setEndValue(endGeometry);
         d->navigator_animation->start();
@@ -413,7 +426,7 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
     d->toolboxPatient->blockSignals (true);
     d->toolboxPatient->setPatientIndex (id);
     d->toolboxPatient->blockSignals (false);
-    
+
 }
 
 void medViewerArea::switchToStackedViewContainers(medStackedViewContainers* stack)
@@ -423,9 +436,9 @@ void medViewerArea::switchToStackedViewContainers(medStackedViewContainers* stac
         qDebug() << "No stack to switch to";
         return;
     }
-       
+
     if (-1 == d->stack->indexOf(stack))
-    {   
+    {
         connect(stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
         connect(stack, SIGNAL(focused(dtkAbstractView*)),
                 this,  SLOT(onViewFocused(dtkAbstractView*)));
@@ -442,7 +455,7 @@ void medViewerArea::switchToContainer(const QString& name)
     {
         medViewContainer * root = this->currentRootContainer();
         if ( root != NULL &&
-             root == 
+             root ==
              d->current_configuration->stackedViewContainers()->container(name))
         {
             //same conf, do nothing
@@ -451,7 +464,7 @@ void medViewerArea::switchToContainer(const QString& name)
         qDebug() << "switching from"
                  << d->current_configuration->currentViewContainerName()
                  << "to configuration" << name;
-        
+
         d->current_configuration->setCurrentViewContainer(name);
         root->setFocus(Qt::MouseFocusReason);
     }
@@ -476,7 +489,7 @@ void medViewerArea::switchToContainerPreset(int index)
             custom->setPreset(index);
             d->current_configuration->setCustomPreset(index);
         }
-    }    
+    }
 }
 
 void medViewerArea::addToolBox(medToolBox *toolbox)
@@ -526,8 +539,10 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     // Update toolboxes
     QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
     foreach( medToolBox *tb, toolboxes)
+    {
         tb->update(view);
-    
+    }
+
     connect (view, SIGNAL(lutChanged()), this, SLOT(updateTransferFunction()));
 
     this->updateTransferFunction();
@@ -566,7 +581,7 @@ void medViewerArea::setupLUTPreset(QString table)
 {
     if(!d->view_stacks.count())
         return;
-  
+
     if ( medViewPool *pool = this->currentContainer()->pool() ) {
         pool->setViewProperty("Preset", table);
     }
@@ -588,7 +603,7 @@ void medViewerArea::bringUpTransferFunction(bool checked)
     medViewContainer * current = this->currentContainerFocused();
     if ( current == NULL )
         return;
-  
+
     if ( dtkAbstractView *view = current->view() ) {
       d->transFun = new medClutEditor(NULL);
       d->transFun->setWindowModality( Qt::WindowModal );
@@ -606,7 +621,7 @@ void medViewerArea::updateTransferFunction()
     medViewContainer * current = this->currentContainerFocused();
     if ( current == NULL )
         return;
-    
+
     dtkAbstractView * view = current->view();
     if ( d->transFun != NULL && view != NULL ) {
     // d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );
@@ -621,9 +636,9 @@ void medViewerArea::setupConfiguration(QString name)
     qDebug() << "setupConfiguration to :" << name;
     if (d->current_configuration_name == name)
         return;
-    
+
     medViewerConfiguration *conf = NULL;
-    
+
     if (d->configurations.contains(name))
         conf = d->configurations[name];
     else {
@@ -644,10 +659,10 @@ void medViewerArea::setupConfiguration(QString name)
     //clean toolboxes
     d->toolbox_container->hide();
     d->toolbox_container->clear();
-    
+
     //setup layout
     switchToLayout (conf->layoutType());
-    
+
     // setup layout type
     //clear the confs if needed:
     medSettingsManager * mnger = medSettingsManager::instance();
@@ -672,7 +687,7 @@ void medViewerArea::setupConfiguration(QString name)
     d->navigator_container->setVisible( conf->isDatabaseVisible() );
 
     // add toolboxes
-    
+
     foreach (medToolBox * toolbox, conf->toolBoxes() ) {
         this->addToolBox(toolbox);
         toolbox->show();
@@ -695,9 +710,9 @@ void medViewerArea::setupConfiguration(QString name)
       animation->setEasingCurve(QEasingCurve::OutQuad);
       animation->start();
       }*/
-    
-    //connect(conf, SIGNAL(layoutModeChanged(const QString&)),
-    //        conf->stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
+
+    connect(conf, SIGNAL(layoutModeChanged(const QString&)),
+            this, SLOT(switchToContainer(const QString&)));
     connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));
     connect(conf, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)));
@@ -725,7 +740,7 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
          d->navigator_container_layout->removeWidget ( d->navigator );
 
          d->navigator->setOrientation (Qt::Horizontal);
-         
+
          d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
          d->navigator_container_layout->addWidget (d->navigator, 0, 1);
              //width must be fixed or the navigator doesn't grow
@@ -733,15 +748,15 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
              d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
              d->navigator_container->setFixedHeight(186);
              d->navigator_container->setFixedWidth(QWIDGETSIZE_MAX);
-         
+
          d->toolbox_container->setOrientation(Qt::Horizontal);
              d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
              d->toolbox_container->setMinimumHeight(200);
              d->toolbox_container->setFixedWidth(QWIDGETSIZE_MAX);
              d->restoreSplitterSize(Qt::Vertical);
-           } 
+           }
             break;
-            
+
         case medViewerConfiguration::LeftDbRightTb:
         case medViewerConfiguration::LeftTbRightDb:
         default:
@@ -751,14 +766,14 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
          d->navigator_container_layout->removeWidget ( d->navigator );
 
          d->navigator->setOrientation (Qt::Vertical);
-         
+
          d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
          d->navigator_container_layout->addWidget (d->navigator, 1, 0);
 
              d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
              d->navigator_container->setFixedWidth(186);
              d->navigator_container->setFixedHeight(QWIDGETSIZE_MAX);
-          
+
          d->toolbox_container->setOrientation(Qt::Vertical);
              d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
              d->toolbox_container->setMinimumWidth(320);
@@ -775,13 +790,13 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
             d->splitter->insertWidget(0,d->navigator_container);
             d->splitter->insertWidget(2,d->toolbox_container);
         break;
-        
+
         case medViewerConfiguration::TopTbBottomDb:
         case medViewerConfiguration::LeftTbRightDb:
         default:
             d->splitter->insertWidget(0,d->toolbox_container);
             d->splitter->insertWidget(2,d->navigator_container);
-        break;	    
+        break;
     }
 
 }

@@ -1,5 +1,5 @@
-/* medToolBox.cpp --- 
- * 
+/* medToolBox.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:46:22 2009 (+0200)
@@ -9,13 +9,16 @@
  *     Update #: 254
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
+#include <dtkCore/dtkAbstractData.h>
+
+#include <medCore/medAbstractView.h>
 
 #include "medToolBox.h"
 #include "medToolBoxHeader.h"
@@ -31,14 +34,19 @@ public:
     medToolBoxBody *body;
     bool isMinimized;
 
+    QStringList validDataTypes;
+    bool isContextVisible;
 public:
     QBoxLayout *layout;
 };
 
 medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPrivate)
 {
+    //d->view = 0;
+
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
+    d->isContextVisible = false;
 
     d->layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     d->layout->setContentsMargins(0, 0, 0, 0);
@@ -90,8 +98,17 @@ medToolBoxBody *medToolBox::body(void) const
 
 void medToolBox::update(dtkAbstractView *view)
 {
+    //JGG qDebug()<<"update TB" ;
+    medAbstractView* medView = dynamic_cast<medAbstractView*>(view);
+    if (medView)
+        setContextVisibility(medView->dataTypes());
+    else
+    {
+        //JGG qDebug()<<"update on NULL";
+        setContextVisibility(QHash<QString, unsigned int> ());
+    }
     //DTK_DEFAULT_IMPLEMENTATION;
-    DTK_UNUSED(view);
+    //DTK_UNUSED(view);
 }
 
 void medToolBox::clear(void)
@@ -129,14 +146,73 @@ Qt::Orientation medToolBox::orientation (void) const
 
 void medToolBox::switchMinimize()
 {
-    if (d->isMinimized)
+    //isMinimized before switch == wanted body visibility
+    d->body->setVisible(d->isMinimized);
+    d->isMinimized = !d->isMinimized;
+}
+
+bool medToolBox::ContextVisible()
+{
+ return d->isContextVisible;
+}
+
+void medToolBox::show()
+{
+    //JGG qDebug()<<"show TB:" << header()->title();
+    if(d->validDataTypes.isEmpty() || d->isContextVisible)
     {
-        d->body->show();
-        d->isMinimized = false;
+        //JGG qDebug()<<"actually showing in TB";
+        QWidget::show();
+    }
+}
+
+void medToolBox::setValidDataTypes(const QStringList & dataTypes)
+{
+    d->validDataTypes = QStringList(dataTypes);
+
+}
+
+const QStringList medToolBox::ValidDataTypes()
+{
+   return  d->validDataTypes;
+
+}
+
+void medToolBox::addValidDataType(const QString & dataType)
+{
+    if (!d->validDataTypes.contains(dataType))
+    {
+        d->validDataTypes.append(dataType);
+    }
+}
+
+void medToolBox::setContextVisibility(
+        const QHash<QString, unsigned int> & viewDataTypes )
+{
+    //JGG qDebug()<< "setContextVisibility";
+    if (d->validDataTypes.isEmpty())
+    {
+        //JGG qDebug()<< "no datatypes";
+        d->isContextVisible = true;
     }
     else
     {
-        d->body->hide();
-        d->isMinimized = true;
+        //JGG qDebug()<<"View datatypes"<<viewDataTypes.keys()<< "values" << viewDataTypes.values();
+        d->isContextVisible = false;
+        foreach(QString validDataType, d->validDataTypes)
+        {
+            //JGG qDebug()<<"datatype"<< validDataType ;
+            if(viewDataTypes.contains(validDataType))
+            {
+                //JGG qDebug()<<"viewDataTypes: "<< viewDataTypes.value(validDataType);
+                if(viewDataTypes.value(validDataType)!=0)
+                {
+                    d->isContextVisible = true;
+                    break;
+                }
+            }
+        }
     }
+    //JGG qDebug()<<"visibility" << d->isContextVisible ;
+    this->setVisible(d->isContextVisible);
 }

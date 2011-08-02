@@ -2,13 +2,12 @@
 #define medAbstractData_h__
 
 #include <dtkCore/dtkAbstractData.h>
-
 #include "medCoreExport.h"
 
 class medAbstractDataPrivate;
 
 /**
- * Extending medAbstractData class to hold more specific information
+ * Extending dtkAbstractData class to hold more specific information
  */
 class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 {

@@ -23,10 +23,18 @@
 #include "medDatabaseItem.h"
 #include "medDatabaseProxyModel.h"
 
+#include <medCore/medDataManager.h>
+#include <medCore/medAbstractDbController.h>
+
 class NoFocusDelegate : public QStyledItemDelegate
 {
+public:
+    NoFocusDelegate(medDatabaseView *view, QList<int> seriesIds) : QStyledItemDelegate(), m_view(view), m_seriesIds(seriesIds) {}
+
 protected:
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    medDatabaseView *m_view;
+    QList<int> m_seriesIds;
 };
 
 void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const
@@ -34,11 +42,37 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
     QStyleOptionViewItem itemOption(option);
     if (itemOption.state & QStyle::State_HasFocus)
         itemOption.state = itemOption.state ^ QStyle::State_HasFocus;
+
+    if(index.isValid()) {
+
+        medDatabaseItem *item = NULL;
+
+        if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(m_view->model()))
+            item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+        else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(m_view->model()))
+            item = static_cast<medDatabaseItem *>(index.internalPointer());
+
+        // items that failed to open will have a pinkish background
+        if(item)
+        {
+           if (m_seriesIds.contains(item->dataIndex().seriesId()))
+               painter->fillRect(option.rect, QColor::fromRgb(qRgb(201, 121, 153)));
+        }
+    }
+
     QStyledItemDelegate::paint(painter, itemOption, index);
 }
 
-medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
+class medDatabaseViewPrivate
 {
+public:
+    QList<int> failedToOpenSeriesIds;
+};
+
+medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate), QTreeView(parent)
+{
+    d->failedToOpenSeriesIds = *(new QList<int>());
+
     this->setAcceptDrops(true);
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
@@ -54,7 +88,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
-    NoFocusDelegate* delegate = new NoFocusDelegate();
+    NoFocusDelegate* delegate = new NoFocusDelegate(this, *(new QList<int>()));
     this->setItemDelegate(delegate);
 }
 
@@ -101,6 +135,12 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
         {
             menu.addAction(tr("View"), this, SLOT(onMenuViewClicked()));
             menu.addAction(tr("Export"), this, SLOT(onMenuExportClicked()));
+            menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
+            menu.exec(mapToGlobal(point));
+        }
+        else if (item->dataIndex().isValidForPatient())
+        {
+            menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
             menu.exec(mapToGlobal(point));
         }
     }
@@ -202,8 +242,42 @@ void medDatabaseView::onMenuExportClicked(void)
 
 }
 
-
 void medDatabaseView::selectionChanged( const QModelIndex& current, const QModelIndex& previous)
 {
     emit onItemClicked(current);
+}
+
+void medDatabaseView::onMenuRemoveClicked( void )
+{
+    int reply = QMessageBox::question(this, tr("Remove item"),
+            tr("Are you sure you want to continue?\n""This cannot be undone."),
+            QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
+
+    if( reply == QMessageBox::Yes )
+    {
+        QModelIndexList indexes = this->selectedIndexes();
+        if(!indexes.count())
+            return;
+
+        QModelIndex index = indexes.at(0);
+
+        medDatabaseItem *item = NULL;
+
+        if(medDatabaseProxyModel *proxy = dynamic_cast<medDatabaseProxyModel *>(this->model()))
+            item = static_cast<medDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+
+        if (item)
+        {
+            // Copy the data index, because the data item may cease to be valid.
+            medDataIndex index = item->dataIndex();
+            medDataManager::instance()->removeData(index);
+        }
+    }
+}
+
+void medDatabaseView::onOpeningFailed(const medDataIndex& index)
+{
+    d->failedToOpenSeriesIds.append(index.seriesId());
+
+    this->setItemDelegate(new NoFocusDelegate(this, d->failedToOpenSeriesIds));
 }

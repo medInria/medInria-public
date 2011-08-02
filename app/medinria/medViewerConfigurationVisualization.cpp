@@ -52,13 +52,12 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
 
     // -- View toolbox --
 
-    //d->viewToolBox           = new medViewerToolBoxView(parent);
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     d->timeToolBox           = new medViewerToolBoxTime(parent);
     //this->addToolBox( d->viewToolBox );
     this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->timeToolBox );
-    
+
     connect ( this, SIGNAL(layoutModeChanged(const QString&)),
               d->timeToolBox, SLOT(onStopButton()));
     connect ( this,SIGNAL(layoutModeChanged(const QString &)),

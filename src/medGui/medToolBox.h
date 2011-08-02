@@ -1,5 +1,5 @@
-/* medToolBox.h --- 
- * 
+/* medToolBox.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct  9 19:41:48 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 83
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDTOOLBOX_H
@@ -25,11 +25,14 @@
 #include <QtGui>
 
 class dtkAbstractView;
+class dtkAbstractData;
 
 class medToolBoxTab;
 class medToolBoxPrivate;
 class medToolBoxBody;
 class medToolBoxHeader;
+
+
 
 /**
  * @brief Toolbox that includes a title bar and a widget container.
@@ -44,21 +47,21 @@ class MEDGUI_EXPORT medToolBox : public QWidget
 
 public:
     /**
-    * @brief 
+    * @brief
     *
     * @param parent
     */
     medToolBox(QWidget *parent = 0);
-    
+
     /**
-     * @brief 
+     * @brief
      *
      * @param void
     */
     virtual ~medToolBox(void);
 
     /**
-     * @brief Adds a widget to the toolbox. 
+     * @brief Adds a widget to the toolbox.
      * This widget will be horizontally or vertically added to the layout given the toolbox's orientation.
      *
      * @param widget
@@ -71,7 +74,7 @@ public:
      * @param tab
     */
     void setTabWidget (medToolBoxTab* tab);
-    
+
     /**
      * @brief Sets the toolbox's title.
      *
@@ -85,7 +88,7 @@ public:
      * @param titleOffset
      */
     void setTitleOffset(const QPoint & titleOffset);
-    
+
     /**
      * @brief Sets the orientation of the toolbox.
      * Given the orientation, lays the widgets vertically or horizontally.
@@ -93,7 +96,7 @@ public:
      *
      * @param orientation
     */
-    void setOrientation(Qt::Orientation orientation);    
+    void setOrientation(Qt::Orientation orientation);
 
     /**
      * @brief Gets the toolbox's current orientation.
@@ -102,7 +105,7 @@ public:
      * @return Qt::Orientation
     */
     Qt::Orientation orientation(void) const;
-    
+
     /**
      * @brief Gets the Toolbox's header.
      *
@@ -110,7 +113,7 @@ public:
      * @return medToolBoxHeader *
     */
     medToolBoxHeader *header(void) const;
-    
+
     /**
      * @brief Gets the toolbox's body.
      *
@@ -118,6 +121,7 @@ public:
      * @return medToolBoxBody *
     */
     medToolBoxBody   *body(void)   const;
+
 
 signals:
     /**
@@ -127,14 +131,14 @@ signals:
      * @param toolbox
     */
     void    addToolBox(medToolBox *toolbox);
-    
+
     /**
-     * @brief Tells the world to remove a toolbox from the medToolBoxContainer
+     * @brief Tells the world to remove a toolbox from the medToolBoxContainer.
      *
      * @param toolbox
     */
     void removeToolBox(medToolBox *toolbox);
-    
+
     /**
      * @brief Emitted when an action from the toolbox succeeded.
      * Typically used when a dtkProcess returned.
@@ -142,7 +146,7 @@ signals:
      * @param void
     */
     void success(void);
-    
+
     /**
      * @brief Emitted when an action from the toolbox failed.
      *
@@ -155,25 +159,83 @@ public slots:
     /**
      * @brief Clears the toolbox.
      *
-     * Resets the parameters within the tolbox, 
+     * Resets the parameters within the tolbox,
      * for instance when the current patient changed or the view.
      *
      * @param void
     */
     virtual void clear(void);
-    
+
     /**
-     * @brief Updates teh content of the toolbox when a new view is selected.
+     * @brief Updates the content of the toolbox when a new view is selected.
      *
-     * @param view The view to extract inforamtion from.
+     * @param view The view to extract information from.
     */
     virtual void update(dtkAbstractView *view);
-    
+
     /**
      * @brief Switches from a minimized state to an extended one and vice versa.
      *
     */
     void switchMinimize();
+
+    /*
+     * Remove not context meaningful toolboxes.
+     *
+    */
+
+    /**
+     * @brief Set toolbox's valid data types.
+     *
+     * If at least one datatype in the view is contained within the
+     * toolBoxValidTypes the toolbox will be visible. If the list is empty,
+     * then the toolbox will be context free, and always visible whatever the
+     * focused view.
+     *
+     * @param dataTypes Valid data types of the toolbox.
+    */
+    void setValidDataTypes(const QStringList & dataTypes);
+
+    /**
+     * @brief Get toolbox's valid data types.
+     *
+     * @see setValidDataTypes
+     * @param void
+    */
+    const QStringList ValidDataTypes(void);
+
+    /**
+     * @brief Add a valid data type to the toolbox's valid data types.
+     *
+     * @param dataType
+    */
+    void addValidDataType(const QString & dataType);
+
+
+     /**
+      * @brief Set the toolbox visibility.
+      *
+      * If at least one datatype in the viewDataTypes is contained within the
+      * toolBox's ValidTypes, or if the validDataTypes are empty, the toolbox
+      * will be visible.
+      *
+      * @param viewDataTypes
+     */
+    void setContextVisibility(const QHash<QString, unsigned int> & viewDataTypes);
+
+    /**
+     * @brief Access method to the toolBox context visibility flag.
+     *
+     * @param void
+    */
+    bool ContextVisible(void);
+
+    /**
+     * @brief Show the toolbox, "overloads" the QWidget show
+     *
+     * @param void
+    */
+    void show(void);
 
 private:
     medToolBoxPrivate *d;

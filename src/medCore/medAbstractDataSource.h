@@ -44,7 +44,10 @@ public:
 
 signals:
     /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for importing*/
-    void dataReceived(QString pathToData);
+    void dataToImportReceived(QString pathToData);
+
+    /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for indexing*/
+    void dataToIndexReceived(QString pathToData);
     
     /** A source data may emit a signal to a dtkabstractdata in memory when it successfully received the data and is ready for importing*/
     void dataReceived(dtkAbstractData *data);
@@ -59,6 +62,9 @@ signals:
      * @param index
     */
     void exportData(const medDataIndex& index);
+
+    /** emitted when the source is about to remove a data.*/
+    void dataRemoved(const medDataIndex& index);
 };
 
 #endif

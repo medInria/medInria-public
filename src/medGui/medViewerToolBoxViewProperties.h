@@ -31,7 +31,7 @@ public slots:
     void onDataAdded(int layer);
     void onDataAdded(dtkAbstractData*);
     void onDataAdded(dtkAbstractData *data, int layer);
-    void onViewClosed(void);
+    void clear(void);
     void onVisibilitySet(int state);
     void onOpacitySliderSet(int opacity);
     void on2LayersOpacitySliderSet(int opacity);
@@ -41,7 +41,6 @@ public slots:
     void onContextTreeMenu( const QPoint point );
     void onDeleteLayer();
     void onSwitchLayersButtonClicked();
-    void clear();
     void onWindowingChanged(bool);
     void onZoomingChanged(bool);
     void onSlicingChanged(bool);
@@ -50,13 +49,13 @@ public slots:
     void on3DTriggered(dtkAbstractView* d);
 
     void onColorSelected(const QColor& color);
-    
+
     void onScalarBarVisibilityChanged(bool);
     void onAxisVisibilityChanged(bool);
     void onRulerVisibilityChanged(bool);
     void onAnnotationsVisibilityChanged(bool);
 
-    
+
     void onAttrBoxChanged(int index);
     void onEdgeVisibilitySet(int state);
     void onRenderingChanged (int state);
