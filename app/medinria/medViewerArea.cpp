@@ -212,6 +212,7 @@ bool medViewerArea::openInTab(const medDataIndex &index)
     if(!((medDataIndex)index).isValid())
         return false;
 
+    // For the moment switch to visualization, later we will be cleverer
     this->setupConfiguration("Visualization");
 
     if (!this->currentRootContainer()->views().isEmpty())
@@ -293,10 +294,6 @@ bool medViewerArea::open(const medDataIndex& index)
 
     if(((medDataIndex)index).isValidForPatient())
     {
-        // For the moment switch to visualization, later we will be cleverer
-        this->setupConfiguration("Visualization");
-        this->switchToContainer("Multi");
-
         QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
         stQuery.prepare("SELECT * FROM study WHERE patient = :id");
         stQuery.bindValue(":id", index.patientId());
