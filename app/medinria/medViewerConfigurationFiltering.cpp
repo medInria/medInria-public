@@ -28,7 +28,7 @@ public:
     medViewerToolBoxView   *viewToolBox;
     medToolBoxFiltering *filteringToolBox;
     dtkAbstractData* filterOutput;
-    QList<dtkAbstractView *> views;
+//  QList<dtkAbstractView *> views;
 };
 
 medViewerConfigurationFiltering::medViewerConfigurationFiltering(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationFilteringPrivate)
@@ -64,8 +64,10 @@ void medViewerConfigurationFiltering::setupViewContainerStack()
         {
             medViewContainerFiltering *filteringContainer = new medViewContainerFiltering(this->stackedViewContainers());
 
-            connect(this,SIGNAL(inputDataChanged(dtkAbstractData *)),filteringContainer,SLOT(updateInput(dtkAbstractData *)));
-
+            //connect(this,SIGNAL(inputDataChanged(dtkAbstractData *)),filteringContainer,SLOT(updateInput(dtkAbstractData *)));
+            //
+            connect(filteringContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
+            //
             connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),filteringContainer,SLOT(updateOutput(dtkAbstractData *)));
 
             this->stackedViewContainers()->addContainer("Filtering",filteringContainer);

@@ -13,6 +13,8 @@
 #include <dtkCore/dtkAbstractView.h>
 
 #include "medGuiExport.h"
+#include <medCore/medDataIndex.h>
+#include <medCore/medDataManager.h>
 
 class medViewContainerFilteringPrivate;
 
@@ -32,13 +34,20 @@ public:
     medViewContainerFiltering(QWidget * parent = 0);
     ~medViewContainerFiltering();
 
+signals:
+
+    /**
+     * @brief signals emitted whenever an image has been dropped in the input view container
+     */
+    void droppedInput (const medDataIndex& index);
+
 public slots:
 
     /**
-     * @brief Update input view with the data in parameter
-     * @param data
+     * @brief refresh input view with the data index given in parameter
+     * @param index
      */
-    void updateInput(dtkAbstractData *data);
+    void updateInput(const medDataIndex& index);
     /**
      * @brief Update output view with the data in parameter
      * @param data

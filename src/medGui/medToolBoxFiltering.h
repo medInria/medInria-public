@@ -52,7 +52,7 @@ signals:
 	/**
 	 * @brief signals emitted when a new input image has been dropped in the medToolBoxFiltering
 	 */
-	void dataSelected(dtkAbstractData *data);
+//	void dataSelected(dtkAbstractData *data);
  
 public slots:
     
@@ -67,11 +67,13 @@ public slots:
 	/**
 	 * @brief Instanciates an input data according to the index of data dropped in medDropSite
 	 */
-	void onObjectDropped(void);
+//	void onObjectDropped(void);
 	/**
 	 * @brief Stores output image to the persistent database
 	 */
 	void onSavedImage(void);
+
+	void onInputSelected(const medDataIndex& index);
 
     
 protected:

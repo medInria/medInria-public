@@ -28,15 +28,18 @@ medViewContainerFiltering::medViewContainerFiltering(QWidget * parent):
     d3->inputViewContainer->setInfo(tr("Input to be filtered"));
     d3->outputViewContainer->setInfo(tr("Result of filtering"));
 
-    d3->inputView = dtkAbstractViewFactory::instance()->create("v3dView");
-    d3->inputViewContainer->setAcceptDrops(false);
-    d3->inputViewContainer->update();
+//    d3->inputView = dtkAbstractViewFactory::instance()->create("v3dView");
+//    d3->inputViewContainer->setAcceptDrops(false);
+//    d3->inputViewContainer->update();
 
     d3->outputView = dtkAbstractViewFactory::instance()->create("v3dView");
     d3->outputViewContainer->setAcceptDrops(false);
     d3->outputViewContainer->update();
 
-    d3->inputData = NULL;
+//    d3->inputData = NULL;
+
+    connect(d3->inputViewContainer,SIGNAL(dropped(medDataIndex)), this,SLOT(updateInput(medDataIndex)));
+    connect(d3->inputViewContainer,SIGNAL(dropped(medDataIndex)), this,SIGNAL(droppedInput(medDataIndex)));
 }
 
 medViewContainerFiltering::~medViewContainerFiltering()
@@ -45,19 +48,21 @@ medViewContainerFiltering::~medViewContainerFiltering()
     d3 = NULL;
 }
 
-void medViewContainerFiltering::updateInput(dtkAbstractData *data)
+// void medViewContainerFiltering::updateInput(dtkAbstractData *data)
+void medViewContainerFiltering::updateInput (const medDataIndex& index)
 {
-    if(!data)
+    if (!index.isValid())
         return;
 
-//  d3->views[0]->unlink(d3->views[1]);
+    d3->inputData = medDataManager::instance()->data (index).data();
+
+    if (!d3->inputData)
+        return;
 
     d3->inputView = dtkAbstractViewFactory::instance()->create("v3dView");
-    d3->inputView->setData(data,0);
+    d3->inputView->setData(d3->inputData,0);
     d3->inputView->reset();
     d3->inputView->update();
-
-//  d3->views[0]->link(d3->views[1]);
 
     d3->inputViewContainer->clear();
     d3->inputViewContainer = children()[0];
@@ -66,15 +71,10 @@ void medViewContainerFiltering::updateInput(dtkAbstractData *data)
     d3->inputViewContainer->setView(d3->inputView);
     d3->inputViewContainer->update();
 
-    if(data != d3->inputData )
-    {
-//    d3->outputView->clear();
-//    d3->outputView = dtkAbstractViewFactory::instance()->create("v3dView");
     d3->outputViewContainer->clear();
     d3->outputViewContainer = children()[1];
     d3->outputViewContainer->setInfo(tr("Result of filtering"));
     d3->outputViewContainer->update();
-    }
 }
 
 void medViewContainerFiltering::updateOutput(dtkAbstractData *data)

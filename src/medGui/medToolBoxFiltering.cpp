@@ -23,8 +23,8 @@ public:
 	QPushButton * saveInDatabaseButton;
 	QPushButton * saveToDiskButton;
 	medToolBoxFilteringCustom *customToolBox;
-	medDropSite *dropSite;
-	dtkAbstractData *data;
+//	medDropSite *dropSite;
+	dtkAbstractData *inputData;
 	medDataIndex index;
 };
 
@@ -32,7 +32,7 @@ public:
 medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), d(new medToolBoxFilteringPrivate)
 {
 
-    d->dropSite = new medDropSite(this);
+//    d->dropSite = new medDropSite(this);
 
     QWidget *displayWidget = new QWidget(this);
     
@@ -44,17 +44,17 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
     d->chooseFilter->addItem("Choose filter");
     
     QVBoxLayout *filterLayout = new QVBoxLayout(displayWidget);
-    filterLayout->addWidget(d->dropSite);
+//    filterLayout->addWidget(d->dropSite);
     filterLayout->addWidget(d->saveInDatabaseButton);
     filterLayout->addWidget(d->saveToDiskButton);
     filterLayout->addWidget(d->chooseFilter);
-    filterLayout->setAlignment(d->dropSite,Qt::AlignHCenter);
+//    filterLayout->setAlignment(d->dropSite,Qt::AlignHCenter);
     
     foreach(QString toolbox, medToolBoxFactory::instance()->filteringToolBoxes())
         d->chooseFilter->addItem(toolbox, toolbox);
 
     connect(d->chooseFilter, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
-    connect(d->dropSite,SIGNAL(objectDropped()),this,SLOT(onObjectDropped()));
+//    connect(d->dropSite,SIGNAL(objectDropped()),this,SLOT(onObjectDropped()));
     connect(d->saveInDatabaseButton,SIGNAL(clicked()), this, SLOT(onSavedImage()));
 //    connect(d->saveToDiskButton,SIGNAL(clicked()), this, SLOT(onSavedToDisk()));
     
@@ -67,7 +67,7 @@ medToolBoxFiltering::medToolBoxFiltering(QWidget *parent) : medToolBox(parent), 
     this->addWidget(layoutSection);
     
     d->customToolBox = NULL;
-    d->data = NULL;
+    d->inputData = NULL;
 }
 
 medToolBoxFiltering::~medToolBoxFiltering()
@@ -83,7 +83,7 @@ medToolBoxFilteringCustom* medToolBoxFiltering::customToolbox(void)
 
 dtkAbstractData*  medToolBoxFiltering::data()
 {
-        return d->data;
+        return d->inputData;
 }
 
 void medToolBoxFiltering::onToolBoxChosen(const QString& id)
@@ -109,19 +109,19 @@ void medToolBoxFiltering::onToolBoxChosen(const QString& id)
 }
 
 
-void medToolBoxFiltering::onObjectDropped(void)
+void medToolBoxFiltering::onInputSelected(const medDataIndex& index)
 {
-  medDataIndex index = d->dropSite->index();
-  
-  if (!index.isValid())
-    return;
-  
-  d->data = medDataManager::instance()->data (index).data();
-  
-  if (!d->data)
-    return;
-  
-	emit dataSelected(d->data);	
+//  medDataIndex index = d->dropSite->index();
+
+    if (!index.isValid())
+        return;
+
+    d->inputData = medDataManager::instance()->data(index).data();
+
+    if (!d->inputData)
+        return;
+
+// emit dataSelected(d->intputData);
 }
 
 void medToolBoxFiltering::clear(void)
@@ -130,7 +130,7 @@ void medToolBoxFiltering::clear(void)
     if (d->customToolBox)
         d->customToolBox->clear();
 
-    d->data = NULL;
+    d->inputData = NULL;
     d->index = medDataIndex();
 }
 
