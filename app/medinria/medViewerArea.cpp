@@ -225,7 +225,7 @@ bool medViewerArea::openInTab(const medDataIndex &index)
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
     }
     else
-        this->switchToContainer("Multi");
+        d->current_configuration->stackedViewContainers()->changeCurrentContainerType("Multi");
 
     return this->open(index);
 }
