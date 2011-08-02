@@ -14,6 +14,7 @@
 #include <medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCore/dtkSignalBlocker.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -47,30 +48,6 @@
 #include "v3dViewGraphicsView.h"
 #include "v3dViewGraphicsScene.h"
 
-//=============================================================================
-// QSignalBlocker : Blocks signals to a given object as long it remains instantiated.
-// The purpose is to increase exception-safety and to ensure that objects are
-// not still unintentionally blocked what ever the return path from a function.
-class QSignalBlocker
-{
-public:
-    explicit QSignalBlocker( QObject * o ) : m_object(o) {
-        m_object->blockSignals(true);
-    }
-
-    ~QSignalBlocker() {
-        m_object->blockSignals(false);
-    }
-
-    // Allow early unblocking : before object goes out of scope.
-    void blockSignals(bool v) { m_object->blockSignals(v); }
-
-private:
-    QObject * m_object;
-private:
-    QSignalBlocker( const QSignalBlocker & ); // Copy constructor not implemented.
-    QSignalBlocker & operator=( const QSignalBlocker & ); // Assignment operator not implemented.
-};
 //=============================================================================
 // Construct a QVector3d from pointer-to-double
 inline QVector3D doubleToQtVector3D( const double * v ){
@@ -148,7 +125,7 @@ void v3dViewObserver::Execute(vtkObject *caller, unsigned long event, void *call
         case vtkImageView::CurrentPointChangedEvent:
            {
                {
-                   QSignalBlocker blocker (this->slider );
+                   dtkSignalBlocker blocker (this->slider );
                    unsigned int zslice = this->view->view2d()->GetSlice();
                    this->slider->setValue (zslice);
                    this->slider->update();
@@ -1040,7 +1017,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
                 d->view3d->SetSeriesName (seriesName.toAscii().constData());
             }
 
-            QSignalBlocker blocker (d->slider );
+            dtkSignalBlocker blocker (d->slider );
             if (d->dimensionBox->currentText()==tr("Space")) {
                 if( d->orientation=="Axial") {
                     d->slider->setRange(0, d->imageData->zDimension()-1);
@@ -1112,7 +1089,7 @@ void v3dView::onOrientationPropertySet(const QString &value)
     if (value==d->orientation)
         return;
 
-    QSignalBlocker thisBlocker (this);
+    dtkSignalBlocker thisBlocker (this);
 
     double pos[3], window = 0.0, level = 0.0;
     int timeIndex = 0;
@@ -1136,7 +1113,7 @@ void v3dView::onOrientationPropertySet(const QString &value)
 
     // in case the max range becomes smaller than the actual value, a signal is emitted and
     // we don't want it
-    QSignalBlocker sliderBlocker( d->slider );
+    dtkSignalBlocker sliderBlocker( d->slider );
 
     if (value == "Axial") {
         d->orientation = "Axial";
@@ -1559,8 +1536,8 @@ void v3dView::onZSliderValueChanged (int value)
 
 void v3dView::onDaddyPropertySet (const QString &value)
 {
-    QSignalBlocker anchorBlocker(d->anchorButton);
-    QSignalBlocker registerBlocker(d->registerButton);
+    dtkSignalBlocker anchorBlocker(d->anchorButton);
+    dtkSignalBlocker registerBlocker(d->registerButton);
 
     bool boolValue = false;
     if (value == "true")
@@ -1599,7 +1576,7 @@ void v3dView::onDimensionBoxChanged (const QString &value)
 {
     if (d->imageData) {
 
-        QSignalBlocker sliderBlocker(d->slider);
+        dtkSignalBlocker sliderBlocker(d->slider);
         if (value=="Space") {
             d->observer->unlock();
             if( d->orientation=="Axial") {
@@ -2179,7 +2156,7 @@ void v3dView::onPositionChanged(const QVector3D &position)
     // update slider, if currentView is 2D view
     if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast(d->currentView)) {
         unsigned int zslice = view2d->GetSlice();
-        QSignalBlocker sliderBlocker( d->slider );
+        dtkSignalBlocker sliderBlocker( d->slider );
         d->slider->setValue (zslice);
     }
 
