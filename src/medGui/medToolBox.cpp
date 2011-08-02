@@ -73,6 +73,11 @@ void medToolBox::setTitle(const QString &title)
     d->header->setTitle(title);
 }
 
+void medToolBox::setTitleOffset(const QPoint & titleOffset)
+{
+    d->header->setTitleOffset(titleOffset);
+}
+
 medToolBoxHeader *medToolBox::header(void) const
 {
     return d->header;

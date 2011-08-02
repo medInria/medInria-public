@@ -23,9 +23,9 @@
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
-class dtkAbstractDataImage;
 class dtkAbstractView;
 class dtkAbstractProcess;
+class medAbstractDataImage;
 class medDataIndex;
 class medToolBoxRegistrationPrivate;
 
@@ -40,8 +40,8 @@ public:
     dtkAbstractView *fixedView(void);
     dtkAbstractView *movingView(void);
 
-    dtkAbstractDataImage *fixedData(void);
-    dtkAbstractDataImage *movingData(void);
+    medAbstractDataImage *fixedData(void);
+    medAbstractDataImage *movingData(void);
     
     void setFuseView(dtkAbstractView *view);
     dtkAbstractView *fuseView(void);

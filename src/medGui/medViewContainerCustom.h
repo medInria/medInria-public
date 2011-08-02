@@ -51,6 +51,18 @@ public:
     dtkAbstractView *view (void) const;
     QList<dtkAbstractView*> views (void) const;
 
+    /**
+     * @brief Is this a leaf container?
+     *
+     * This method is useful in the case of a custom or multi
+     * container.  Returns true if this object is supposed to contain
+     * only views and no other containers.
+     *
+     * @param void
+     * @return bool
+    */
+    virtual bool isLeaf(void) const;
+
 public slots:
     void onViewClosing  (void);
     void onViewFullScreen (bool value);
@@ -71,7 +83,7 @@ protected:
     void onViewFullScreen2 (bool value, dtkAbstractView *view);
     void fullScreen (bool value, dtkAbstractView *view);
 
-    QList<medViewContainerCustom*> children() const;
+    // QList<medViewContainerCustom*> children() const;
     medViewContainerCustomPrivate *d2;
 };
 

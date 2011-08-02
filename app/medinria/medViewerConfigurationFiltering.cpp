@@ -32,9 +32,7 @@ public:
 
 medViewerConfigurationFiltering::medViewerConfigurationFiltering(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationFilteringPrivate)
 {
-    setLayoutToolBoxVisibility(false);
-	
-    d->viewToolBox = new medViewerToolBoxView(parent);
+  d->viewToolBox = new medViewerToolBoxView(parent);
   
     this->addToolBox( d->viewToolBox );
   

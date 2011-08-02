@@ -33,6 +33,7 @@ medToolBoxBody::medToolBoxBody(QWidget *parent) : QFrame(parent), d(new medToolB
 {    
     d->layout = new QGridLayout(this);
     d->layout->setContentsMargins(0, 0, 0, 0);
+    d->layout->setSpacing(0);
     d->layoutOrientation = Qt::Vertical;
     d->tab = NULL;
 }

@@ -30,9 +30,6 @@ public:
 
 medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationDiffusionPrivate)
 {
-    // -- Layout toolbox --
-    setLayoutToolBoxVisibility(false);
-
     // -- View toolbox --
 
     d->viewToolBox = new medViewerToolBoxView(parent);
