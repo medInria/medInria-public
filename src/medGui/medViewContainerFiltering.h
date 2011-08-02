@@ -7,20 +7,19 @@
 #ifndef MEDVIEWCONTAINERFILTERING_H
 #define MEDVIEWCONTAINERFILTERING_H
 
+#include <medCore/medDataIndex.h>
+#include <medCore/medDataManager.h>
 #include <medGui/medViewContainerCustom.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
 
 #include "medGuiExport.h"
-#include <medCore/medDataIndex.h>
-#include <medCore/medDataManager.h>
 
 class medViewContainerFilteringPrivate;
 
-
 /**
- * @brief Comparative view container to visualize both input / output from image-to-image filtering processes
+ * @brief filtering view container to visualize both input / output from image-to-image filtering processes
  */
 class MEDGUI_EXPORT medViewContainerFiltering : public medViewContainerCustom
 {
@@ -44,12 +43,12 @@ signals:
 public slots:
 
     /**
-     * @brief refresh input view with the data index given in parameter
+     * @brief refresh input view according to the data index given in parameter
      * @param index
      */
     void updateInput(const medDataIndex& index);
     /**
-     * @brief Update output view with the data in parameter
+     * @brief update output view according to the data in parameter
      * @param data
      */
     void updateOutput(dtkAbstractData *data);

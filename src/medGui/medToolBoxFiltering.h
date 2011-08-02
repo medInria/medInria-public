@@ -16,10 +16,9 @@ class dtkAbstractData;
 class medToolBoxFilteringCustom;
 
 /**
- * @brief Common toolbox for all filtering processes
+ * @brief main toolbox for filtering processes
  *
- * This toolbox provides a comboBox to switch between filtering process plugins and "Save" buttons to store results in file / database.
- * To specify an input image, drag and drop from the navigator to the medDropSite.
+ * This toolbox provides a comboBox to switch between filtering process plugins and buttons to store results in a file or database.
  */
 class MEDGUI_EXPORT medToolBoxFiltering : public medToolBox
 {
@@ -29,12 +28,12 @@ public:
 	~medToolBoxFiltering();
 	
 	/**
-	 * @brief Returns input data
+	 * @brief returns input data
 	 */
 	dtkAbstractData* data(void);
 
 	/**
-	 * @brief Returns current selected toolbox
+	 * @brief returns current selected toolbox
 	 */
 	medToolBoxFilteringCustom* customToolbox(void);
 
@@ -46,33 +45,30 @@ public:
 
 signals:
         /**
-         * @brief signals emitted if filtering process is successful
+         * @brief signals emitted whenever a filtering process is successful
          */
 	void processFinished();
-	/**
-	 * @brief signals emitted when a new input image has been dropped in the medToolBoxFiltering
-	 */
-//	void dataSelected(dtkAbstractData *data);
  
 public slots:
     
         /**
-         * @brief Instanciates the process toolbox according to the process plugin description
+         * @brief instantiates the right process toolbox according to its description
          */
 	void onToolBoxChosen(const QString&);
 	/**
-	 * @brief Clear input data and the current process toolbox
+	 * @brief clear input data and the current process toolbox
 	 */
 	void clear(void);
+
 	/**
-	 * @brief Instanciates an input data according to the index of data dropped in medDropSite
-	 */
-//	void onObjectDropped(void);
-	/**
-	 * @brief Stores output image to the persistent database
+	 * @brief stores output image to the persistent database
 	 */
 	void onSavedImage(void);
 
+	/**
+	 * @brief retrieve data from the selected input image index
+	 * @param index
+	 */
 	void onInputSelected(const medDataIndex& index);
 
     
