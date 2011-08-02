@@ -212,7 +212,9 @@ bool medViewerArea::openInTab(const medDataIndex &index)
     if(!((medDataIndex)index).isValid())
         return false;
 
-    if (!this->currentContainerFocused()->views().isEmpty())
+    this->setupConfiguration("Visualization");
+
+    if (!this->currentRootContainer()->views().isEmpty())
     {
         QSharedPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
 
@@ -222,6 +224,8 @@ bool medViewerArea::openInTab(const medDataIndex &index)
         QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(tr("PatientName")));
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
     }
+    else
+        this->switchToContainer("Multi");
 
     return this->open(index);
 }
