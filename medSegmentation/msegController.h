@@ -36,6 +36,7 @@ public:
     static dtkAbstractData * viewData( dtkAbstractView * view );
 
     void addViewEventFilter(View * filter);
+    void removeViewEventFilter(View * filter);
 
     void run( mseg::AlgorithmGeneric* alg );
     bool canUndo() const;
@@ -64,6 +65,7 @@ protected:
     void activateViews( bool isActivate = true );
     medAnnotationFactory * annotationFactory();
 
+    bool addAnnotationToScene( medAbstractViewScene * vscene, medAnnotationData * annotation );
 private:
 
     ControllerPrivate * d;

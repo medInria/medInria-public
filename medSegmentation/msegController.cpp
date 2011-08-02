@@ -140,6 +140,7 @@ void Controller::onSuccess( QObject * sender )
     */
 
     dtkSmartPointer<dtkAbstractData> outputData = alg->output();
+
     medDataManager::instance()->importNonPersistent( outputData.data() );
 
     d->runningProcesses.remove( sender );
@@ -179,8 +180,7 @@ void Controller::onViewAdded( dtkAbstractView* view )
         medAnnotationData * annotation = it.key();
         medAbstractViewScene *vscene = Controller::viewScene(view);
         if ( Controller::viewData(view)->objectName() == annotation->parentData()->objectName() ) {
-            std::auto_ptr<medAnnotationGraphicsObject> newObj (annotationFactory()->create( annotation->description() ));
-            vscene->addItem(newObj.release());
+            this->addAnnotationToScene( vscene, annotation );
         }
     }
 }
@@ -188,13 +188,15 @@ void Controller::onViewAdded( dtkAbstractView* view )
 void Controller::onViewRemoved( dtkAbstractView* view )
 {
     // Remove annotations
+    medAbstractViewScene *vscene = Controller::viewScene(view);
+
     typedef ControllerPrivate::AnnotationHash::iterator AnnotationItType;
     for( AnnotationItType it(d->installedAnnotations.begin()); it != d->installedAnnotations.end(); ++it ){
         medAnnotationData * annotation = it.key();
         QList< medAnnotationGraphicsObject * > & grphObjs( it.value() );
         QList< medAnnotationGraphicsObject * > toRemove;
         foreach( medAnnotationGraphicsObject * grphObj, grphObjs ) {
-            if ( grphObj->view() == view ){
+            if ( grphObj->scene() == vscene ){
                 toRemove.append( grphObj );
             }
         }
@@ -251,6 +253,15 @@ void Controller::addViewEventFilter( View * filter )
     }
 }
 
+void Controller::removeViewEventFilter( View * filter )
+{
+    QList< dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
+    foreach( dtkAbstractView * view, views ) {
+        medAbstractViewScene *vscene = Controller::viewScene(view);
+        vscene->removeEventFilter( filter );
+    }
+}
+
 void Controller::addAnnotation( medAnnotationData * annotation )
 {
     Q_ASSERT( annotation );
@@ -258,9 +269,7 @@ void Controller::addAnnotation( medAnnotationData * annotation )
         return;
     }
 
-    ControllerPrivate::AnnotationHash::iterator it( 
-        d->installedAnnotations.insert( annotation, QList< medAnnotationGraphicsObject *>() ) );
-     QList< medAnnotationGraphicsObject *> & grpObjs( it.value() );
+    d->installedAnnotations.insert( annotation, QList< medAnnotationGraphicsObject* >() );
 
      QList< dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
      foreach( dtkAbstractView * view, views ) {
@@ -269,8 +278,7 @@ void Controller::addAnnotation( medAnnotationData * annotation )
          dtkAbstractData * annotationData = annotation->parentData();
          if ( viewData && annotationData && 
               ( viewData->objectName() == annotationData->objectName() ) ) {
-             std::auto_ptr<medAnnotationGraphicsObject> newObj (annotationFactory()->create( annotation->description() ));
-             vscene->addItem(newObj.release());
+             this->addAnnotationToScene( vscene, annotation );
          }
      }
 
@@ -302,6 +310,21 @@ void Controller::initializeAnnotations()
 {
     mseg::AnnotationInitializer::initialize();
 }
+
+bool Controller::addAnnotationToScene( medAbstractViewScene * vscene, medAnnotationData * annotation )
+{
+    std::auto_ptr<medAnnotationGraphicsObject> annItem = medAnnotationFactory::instance()->createAnnotationForData( annotation);
+    if ( !annItem.get() ) 
+        return false;
+    vscene->addItem( annItem.get() );
+    bool isAdded = vscene->items().contains(annItem.get());
+    if ( isAdded ) {
+        d->installedAnnotations[annotation] << annItem.get();
+        annItem.release();
+    }
+    return isAdded;
+}
+
 
 
 

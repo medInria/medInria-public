@@ -15,6 +15,7 @@
 
 #include <memory>
 
+class medAnnotationData;
 class medAnnotationFactoryPrivate;
 class medAnnotationGraphicsObject;
 
@@ -27,9 +28,13 @@ public:
     medAnnotationFactory();
     virtual ~medAnnotationFactory();
 
-    bool registerAnnotation(const QString &annotationName, CreatorFunc func );
+    bool registerAnnotation(const QString &annotationName, const QStringList & dataNames, CreatorFunc func );
+    bool registerAnnotation(const QString &annotationName, const QString & dataName, CreatorFunc func );
 
     std::auto_ptr<medAnnotationGraphicsObject> create( const QString &annotationName);
+    std::auto_ptr<medAnnotationGraphicsObject> createAnnotationForData( const medAnnotationData * annData);
+
+    QString annotationForData( const QString & dataName );
 
     static medAnnotationFactory* instance();
     static void destroy();

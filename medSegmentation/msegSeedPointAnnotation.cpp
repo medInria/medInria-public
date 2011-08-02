@@ -44,7 +44,7 @@ void SeedPointAnnotation::paint( QPainter * painter, const QStyleOptionGraphicsI
 
 void SeedPointAnnotation::initializeSceneCoordinates()
 {
-    prepareGeometryChange();
+    this->prepareGeometryChange();
     this->setPos( this->worldToScene( seedPointAnnotationData()->centerWorld() ) );
     m_isInitialized = true;
 }
@@ -53,6 +53,7 @@ QRectF SeedPointAnnotation::boundingRect( void ) const
 {
     const qreal penWidth = 1;
     const qreal radiusScene = seedPointAnnotationData()->radiusScene();
+
     return QRectF(-radiusScene - penWidth / 2, -radiusScene - penWidth / 2,
         radiusScene*2 + penWidth, radiusScene*2 + penWidth);
 }
@@ -71,6 +72,23 @@ QString SeedPointAnnotation::s_description()
 medAnnotationGraphicsObject * SeedPointAnnotation::s_create()
 {
     return new SeedPointAnnotation;
+}
+
+void SeedPointAnnotation::onSceneChanged( QGraphicsScene * scene )
+{
+    m_isInitialized = false;
+    if ( scene )
+        this->initializeSceneCoordinates();
+}
+
+void SeedPointAnnotation::onSceneCameraChanged()
+{
+    this->onSceneChanged( this->scene() );
+}
+
+void SeedPointAnnotation::onSceneOrientationChanged()
+{
+    this->onSceneChanged( this->scene() );
 }
 
 

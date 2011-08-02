@@ -14,6 +14,10 @@ namespace mseg {
 class AlgorithmParametersWidget;
 class Controller;
 
+/**
+ * This factory creates widgets that can be used to populate the segmentation
+ * toolbox.
+ */
 class ParametersWidgetFactory : dtkAbstractFactory {
 public:
     Q_OBJECT;

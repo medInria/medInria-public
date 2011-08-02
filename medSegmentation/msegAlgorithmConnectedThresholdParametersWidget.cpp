@@ -146,6 +146,7 @@ void AlgorithmConnectedThresholdParametersWidget::onRemoveSeedPointPressed()
     // Delete from the end so that indices are untouched.
     for( IntVector::const_reverse_iterator rit( rowsToDelete.rbegin() ); rit != rowsToDelete.rend(); ++rit ){
         m_seedPointTable->removeRow( (*rit) );
+        controller()->removeAnnotation( m_seedPoints.at(*rit).annotationData );
         m_seedPoints.remove( *rit );
     }
 }
@@ -207,6 +208,7 @@ void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView 
     newSeed.annotationData->setParentData( this->m_data.data() );
 
     newSeed.annotationData->setCenterWorld(vec);
+    newSeed.annotationData->setColor( Qt::red );
     m_seedPoints.append( newSeed );
 
     int newRow = m_seedPointTable->rowCount();
@@ -216,10 +218,7 @@ void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView 
     QString vecString = QString("%1,%2,%3").arg( vec.x() , 5 ).arg( vec.y() , 5 ).arg( vec.z() , 5 );
     m_seedPointTable->setItem( newRow, 1, new QTableWidgetItem( vecString )) ;
 
-    dtkSmartPointer<SeedPointAnnotationData> spd = new SeedPointAnnotationData();
-    spd->setCenterWorld( vec );
-    spd->setColor( Qt::red );
-    controller()->addAnnotation(spd);
+    controller()->addAnnotation(newSeed.annotationData);
 
 }
 
@@ -228,7 +227,8 @@ void AlgorithmConnectedThresholdParametersWidget::onViewMousePress( medAbstractV
     if ( ViewState_PickingSeedPoint == m_viewState ) {
 
         this->addSeedPoint( view, vec );
-        controller()->removeEventFilter( m_viewFilter );
+        controller()->removeViewEventFilter( m_viewFilter );
+        m_viewState = ViewState_None;
     }
 }
 

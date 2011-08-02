@@ -82,6 +82,7 @@ void v3dViewGraphicsScene::onSliceChanged( int slice, bool propagate )
 {
     Q_UNUSED( slice );
     Q_UNUSED( propagate );
+    this->sendItemChanged( medAnnotationGraphicsObject::SceneCameraChanged );
 }
 
 void v3dViewGraphicsScene::onPositionChanged( const QVector3D & position,
@@ -95,12 +96,14 @@ void v3dViewGraphicsScene::onZoomChanged( double zoom, bool propagate )
 {
     Q_UNUSED( zoom );
     Q_UNUSED( propagate );
+    this->sendItemChanged( medAnnotationGraphicsObject::SceneCameraChanged );
 }
 
 void v3dViewGraphicsScene::onPanChanged( const QVector2D & pan, bool propagate )
 {
     Q_UNUSED( pan );
     Q_UNUSED( propagate );
+    this->sendItemChanged( medAnnotationGraphicsObject::SceneCameraChanged );
 }
 
 void v3dViewGraphicsScene::onCameraChanged( const QVector3D & position,
@@ -114,6 +117,7 @@ void v3dViewGraphicsScene::onCameraChanged( const QVector3D & position,
     Q_UNUSED( focal );
     Q_UNUSED( parallelScale );
     Q_UNUSED( propagate );
+    this->sendItemChanged( medAnnotationGraphicsObject::SceneCameraChanged );
 }
 
 void v3dViewGraphicsScene::onSizeChanged( int width, int height)
@@ -244,3 +248,13 @@ QVector3D v3dViewGraphicsScene::sceneToImagePos( const QPointF & point) const
     return QVector3D( worldPosition[0], worldPosition[1], worldPosition[2] );
 
 }
+
+void v3dViewGraphicsScene::sendItemChanged( medAnnotationGraphicsObject::AnnotationGraphicsItemChange change, const QVariant & value )
+{
+    foreach( QGraphicsItem * item, this->items() ) {
+        if ( medAnnotationGraphicsObject * mItem = dynamic_cast<medAnnotationGraphicsObject * >(item) ) {
+            mItem->annotationItemChange(change, value);
+        }
+    }
+}
+

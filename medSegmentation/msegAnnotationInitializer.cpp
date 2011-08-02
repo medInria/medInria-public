@@ -44,7 +44,9 @@ bool AnnotationInitializer::initializeAnnotations()
 {
     medAnnotationFactory * factory = medAnnotationFactory::instance();
 
-    bool ret = factory->registerAnnotation( SeedPointAnnotation::s_description(), SeedPointAnnotation::s_create );
+    bool ret = factory->registerAnnotation( SeedPointAnnotation::s_description(), 
+        SeedPointAnnotationData::s_description(), 
+        SeedPointAnnotation::s_create );
 
     return ret;
 }

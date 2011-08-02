@@ -4,6 +4,8 @@
 #include <QtGui>
 
 #include <medAbstractViewScene.h>
+#include <medAnnotationGraphicsObject.h>
+
 #include "v3dViewPluginExport.h"
 
 class medAbstractDataImage;
@@ -92,6 +94,8 @@ protected:
     //! Is the scene 2D (true) or 3D (false)
     virtual bool isScene2D() const;
     virtual QVector3D sceneToImagePos(const QPointF &) const;
+
+    void sendItemChanged( medAnnotationGraphicsObject::AnnotationGraphicsItemChange change, const QVariant & value = QVariant() );
 
 private:
     v3dViewGraphicsScenePrivate * d;

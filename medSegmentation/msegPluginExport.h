@@ -15,8 +15,8 @@
     #define MEDVIEWSEGMENTATIONPLUGIN_EXPORT
 #endif
 
-// override is a C++0x feature implemented in MSVC
-#if defined(_MSC_VER)
+// override is a C++0x feature implemented in MSVC from VS 2005 onwards.
+#if defined(_MSC_VER) && (_MSC_VER >= 1400 ) 
 #define MED_OVERRIDE override
 #else 
 // Not in gcc (yet?)

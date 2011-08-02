@@ -45,6 +45,12 @@ QString SeedPointAnnotationData::s_description()
     return desc;
 }
 
+QString SeedPointAnnotationData::description( void ) const 
+{
+    return SeedPointAnnotationData::s_description();
+}
+
+
 
 
 

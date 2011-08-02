@@ -26,7 +26,11 @@ public:
     static medAnnotationGraphicsObject * s_create( );
     static QString s_description();
 
+
 protected:
+    void onSceneChanged(QGraphicsScene * scene) MED_OVERRIDE;
+    void onSceneCameraChanged() MED_OVERRIDE;
+    void onSceneOrientationChanged() MED_OVERRIDE;
     void initializeSceneCoordinates();
 private:
     const SeedPointAnnotationData *seedPointAnnotationData() const;

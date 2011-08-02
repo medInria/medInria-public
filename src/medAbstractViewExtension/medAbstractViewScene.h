@@ -17,6 +17,7 @@ class MEDABSTRACTVIEWEXTENSION_EXPORT medAbstractViewScene : public QGraphicsSce
 {
     typedef QGraphicsScene BaseClass;
     Q_OBJECT;
+public:
 
 public:
     medAbstractViewScene( medAbstractView * view, QWidget * parent = NULL );

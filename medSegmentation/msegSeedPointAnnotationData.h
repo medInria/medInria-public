@@ -8,6 +8,8 @@
 #ifndef MSEGSEEDPOINTANNOTATIONDATA_H_
 #define MSEGSEEDPOINTANNOTATIONDATA_H_
 
+#include "msegPluginExport.h"
+
 #include <medAnnotationData.h>
 
 #include <QVector3D>
@@ -19,6 +21,8 @@ class SeedPointAnnotationData : public medAnnotationData {
 public:
     SeedPointAnnotationData();
     virtual ~SeedPointAnnotationData();
+
+    QString description(void) const MED_OVERRIDE;
 
     qreal radiusScene() const { return m_radiusScene; }
     void setRadiusScene(qreal val);

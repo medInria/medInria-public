@@ -18,7 +18,7 @@
 class medAnnotationGraphicsObject::medAbstractViewAnnotationPrivate
 {
 public:
-    dtkSmartPointer<medAnnotationData> m_data;
+    dtkSmartPointer<const medAnnotationData> m_data;
 };
 
 medAnnotationGraphicsObject::medAnnotationGraphicsObject( QGraphicsItem * parent )
@@ -29,7 +29,7 @@ medAnnotationGraphicsObject::medAnnotationGraphicsObject( QGraphicsItem * parent
     this->setFlag( QGraphicsItem::ItemIsFocusable,  false );
     this->setFlag( QGraphicsItem::ItemIsMovable,    false );
 
-    this->setVisible( false );
+    this->setVisible( true );
 }
 
 medAnnotationGraphicsObject::~medAnnotationGraphicsObject()
@@ -89,7 +89,9 @@ QList<medAbstractView *> medAnnotationGraphicsObject::views() const
         return views;
 
     QList<QGraphicsView *> genericViews = scene->views();
+#if ( QT_VERSION >= QT_VERSION_CHECK( 4, 7, 0 ) )
     views.reserve( genericViews.size() );
+#endif
     foreach( QGraphicsView * view,  genericViews ) {
         if ( medAbstractView * mview = qobject_cast< medAbstractView * >(view) ) 
             views.push_back( mview );
@@ -108,17 +110,63 @@ medAbstractView * medAnnotationGraphicsObject::view() const
    }
 }
 
-void medAnnotationGraphicsObject::setAnnotationData( medAnnotationData * annotationData )
+void medAnnotationGraphicsObject::setAnnotationData( const medAnnotationData * annotationData )
 {
     d->m_data = annotationData;
 }
 
-medAnnotationData * medAnnotationGraphicsObject::annotationData() const
+const medAnnotationData * medAnnotationGraphicsObject::annotationData() const
 {
     return d->m_data;
 }
 
+QVariant medAnnotationGraphicsObject::itemChange( GraphicsItemChange change, const QVariant & value )
+{
+    switch(change) {
+    case QGraphicsItem::ItemSceneHasChanged : 
+        {
+            QGraphicsScene * scenePtr = value.value<QGraphicsScene *>();
+            this->onSceneChanged( scenePtr );
+        }
+        break;
+    default:
+        break;
+    }
+    // The base class does nothing, returning value.
+    return QGraphicsItem::itemChange(change,value);
+}
 
+QVariant medAnnotationGraphicsObject::annotationItemChange( AnnotationGraphicsItemChange change, const QVariant & value )
+{
+    switch(change) {
+    case medAnnotationGraphicsObject::SceneCameraChanged : 
+        {
+            this->onSceneCameraChanged();
+        }
+        break;
+    case medAnnotationGraphicsObject::SceneOrientationChanged : 
+        {
+            this->onSceneOrientationChanged();
+        }
+        break;
+    default:
+        break;
+    }
+    return value;
+}
 
+void medAnnotationGraphicsObject::onSceneChanged( QGraphicsScene * scene )
+{
 
+}
+
+void medAnnotationGraphicsObject::onSceneCameraChanged()
+{
+
+}
+
+void medAnnotationGraphicsObject::onSceneOrientationChanged()
+{
+
+}
 
