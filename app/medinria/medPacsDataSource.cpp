@@ -41,7 +41,7 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
     d->toolboxes.push_back(d->toolbox_pacs_search);
 
     connect(d->pacsWidget, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
-    connect(d->pacsWidget, SIGNAL(import(QString)), this, SIGNAL(dataReceived(QString)));
+    connect(d->pacsWidget, SIGNAL(import(QString)), this, SIGNAL(dataToImportReceived(QString)));
 
     connect(d->toolbox_pacs_nodes, SIGNAL(nodesUpdated()), d->pacs_selector, SLOT(updateList()));
     connect(d->pacs_selector, SIGNAL(selectionChanged(QVector<int>)), d->pacsWidget, SLOT(updateSelectedNodes(QVector<int>)));
