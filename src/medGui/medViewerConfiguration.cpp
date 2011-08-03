@@ -104,8 +104,7 @@ void medViewerConfiguration::setCurrentViewContainer(const QString& name)
 void medViewerConfiguration::onContainerChanged(const QString &name)
 {
     QString containerType = d->viewContainerStack->container(name)->description();
-    qDebug() << "switch layout to contaienr type:"<<containerType;
-    //d->layoutToolBox->setTab(containerType);
+    emit setLayoutTab(containerType);
 }
 
 void medViewerConfiguration::setCustomPreset(int type)

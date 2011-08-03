@@ -48,6 +48,8 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
     connect (d->layoutToolBox, SIGNAL(split(int,int)),
              this,             SIGNAL(layoutSplit(int,int)));
 
+    connect(this,SIGNAL(setLayoutTab(const QString &)), d->layoutToolBox, SLOT(setTab(const QString &)));
+
     this->addToolBox( d->layoutToolBox );
 
     // -- View toolbox --

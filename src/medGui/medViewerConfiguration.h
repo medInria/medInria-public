@@ -314,6 +314,15 @@ signals:
      * @param int
     */
     void layoutPresetClicked(int);
+
+    /**
+     * @brief Signal to change layout toolbox tab type
+     *
+     * Connect it in your config to the layout toolbox
+     *
+     * @param int
+    */
+    void setLayoutTab(const QString &);
     
 protected:
     /**
