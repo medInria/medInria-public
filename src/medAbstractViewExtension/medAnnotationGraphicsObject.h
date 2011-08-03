@@ -51,6 +51,7 @@ protected:
     virtual QVector3D viewUp() const;
 
     bool isPointInSlice( const QVector3D & testPoint, const QVector3D & slicePoint, const QVector3D & sliceNormal,  qreal thickness) const;
+    bool isPointInCurrentSlice( const QVector3D & testPoint) const;
 
     QList<medAbstractView *> views () const;
 

@@ -83,17 +83,13 @@ protected:
 
 
     // Implement medAbstractViewScene
-    //! Convert from world coordinates to scene coordinates.
     virtual QPointF worldToScene( const QVector3D & worldVec ) const;
-    //! Convert from scene coordinates to world coordinates.
     virtual QVector3D sceneToWorld( const QPointF & sceneVec ) const;
-    //! Get the view plane normal vector in world space.
     virtual QVector3D viewPlaneNormal() const;
-    //! Get the view plane up direction
     virtual QVector3D viewUp() const;
-    //! Is the scene 2D (true) or 3D (false)
     virtual bool isScene2D() const;
-    virtual QVector3D sceneToImagePos(const QPointF &) const;
+    virtual QVector3D viewCenter() const;
+    virtual qreal sliceThickness() const;
 
     void sendItemChanged( medAnnotationGraphicsObject::AnnotationGraphicsItemChange change, const QVariant & value = QVariant() );
 

@@ -1,5 +1,5 @@
-#ifndef ITKSEGMENTATIONCOMMAND_H
-#define ITKSEGMENTATIONCOMMAND_H
+#ifndef ITKMSEGPROGRESSOBSERVERCOMMAND_H
+#define ITKMSEGPROGRESSOBSERVERCOMMAND_H
 
 #include "msegAlgorithmGeneric.h"
 
@@ -9,17 +9,17 @@ class Controller;
 
 namespace itk
 {
-  class SegmentationCommand : public Command
+  class MsegProgressObserverCommand : public Command
   {
     
   public:
 
-    typedef SegmentationCommand         Self;
+    typedef MsegProgressObserverCommand         Self;
     typedef Command                        Superclass;
     typedef itk::SmartPointer<Self>        Pointer;
     typedef itk::SmartPointer<const Self>  ConstPointer;
     
-    itkTypeMacro( SegmentationCommand, Command );
+    itkTypeMacro( MsegProgressObserverCommand, Command );
     itkNewMacro (Self);
     
     void Execute(Object *caller, const EventObject &event);
@@ -29,12 +29,12 @@ namespace itk
     { m_Algorithm = alg; }
 
   protected:
-    SegmentationCommand(){ m_Algorithm = 0; };
-    virtual ~SegmentationCommand(){};
+    MsegProgressObserverCommand(){ m_Algorithm = 0; };
+    virtual ~MsegProgressObserverCommand(){};
     
   private:
     mseg::AlgorithmGeneric* m_Algorithm;
   };
 }
 
-#endif // ITKSEGMENTATIONCOMMAND_H
+#endif // ITKMSEGPROGRESSOBSERVERCOMMAND_H

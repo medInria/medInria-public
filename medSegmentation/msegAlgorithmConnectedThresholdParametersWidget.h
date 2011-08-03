@@ -65,7 +65,6 @@ private:
 
     QVector< SeedPoint > m_seedPoints;
     dtkSmartPointer< View > m_viewFilter;
-    dtkSmartPointer< dtkAbstractData > m_inputData;
 
     enum ViewState { ViewState_None, ViewState_PickingSeedPoint };
     ViewState m_viewState;

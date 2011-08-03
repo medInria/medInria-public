@@ -1,4 +1,4 @@
-#include "itkSegmentationCommand.h"
+#include "itkMsegProgressObserverCommand.h"
 
 #include <itkEventObject.h>
 #include <itkProcessObject.h>
@@ -7,12 +7,12 @@
 
 namespace itk
 {
-    void SegmentationCommand::Execute (Object *caller, const EventObject &event)
+    void MsegProgressObserverCommand::Execute (Object *caller, const EventObject &event)
     {
-        Execute(caller,event);
+        Execute(const_cast<const Object*>(caller),event);
     }
-        
-    void SegmentationCommand::Execute (const Object *caller, const EventObject &event)
+
+    void MsegProgressObserverCommand::Execute (const Object *caller, const EventObject &event)
     {
         if(typeid(event) == typeid(itk::ProgressEvent))
         {
@@ -22,7 +22,7 @@ namespace itk
                 return;
 
             if (m_Algorithm)
-                m_Algorithm->reportItkProgress( caller, (po->GetProgress()*100.));
+                m_Algorithm->reportItkProgress( caller, po->GetProgress());
         }
     }
 

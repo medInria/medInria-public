@@ -124,8 +124,8 @@ dtkAbstractData * Controller::viewData( dtkAbstractView * view )
 void Controller::onSuccess( QObject * sender )
 {
 //        alg->update();
-    medRunnableProcess * runProcess = qobject_cast< medRunnableProcess *>(sender);
-
+    // At this point the sender has already been deleted by the thread pool.
+    // Do not attempt to do anything with it (this includes qobject_cast).
     if (! d->runningProcesses.contains(sender) ) 
         return;
     AlgorithmGeneric * alg = d->runningProcesses.value( sender );
@@ -158,19 +158,20 @@ void Controller::onCancelled( QObject * sender )
 
 void Controller::run( mseg::AlgorithmGeneric* alg )
 {
-    QScopedPointer<medRunnableProcess> runProcess (new medRunnableProcess) ;
+    QScopedPointer<medRunnableProcess> runProcessSp (new medRunnableProcess) ;
+    medRunnableProcess * runProcess  = runProcessSp.data();
 
     runProcess->setProcess (alg);
 
-    d->configuration->progressionStack()->addJobItem(runProcess.data(), "Progress:");
+    d->configuration->progressionStack()->addJobItem(runProcess, "Progress:");
 
-    connect (runProcess.data(), SIGNAL (onSuccess  (QObject*)),  this, SLOT (onSuccess (QObject*)));
-    connect (runProcess.data(), SIGNAL (onFailure  (QObject*)),  this, SLOT (onFailure (QObject*)));
-    connect (runProcess.data(), SIGNAL (onCancelled (QObject*)), this, SLOT (onCancelled (QObject*)));
+    connect (runProcess, SIGNAL (success(QObject*)),  this, SLOT (onSuccess(QObject*)));
+    connect (runProcess, SIGNAL (failure(QObject*)),  this, SLOT (onFailure(QObject*)));
+    connect (runProcess, SIGNAL (cancelled(QObject*)), this, SLOT (onCancelled(QObject*)));
 
-    medJobManager::instance()->registerJobItem(runProcess.data(), tr("Segmenting"));
-    d->runningProcesses.insert(runProcess.data(), dtkSmartPointer< AlgorithmGeneric >(alg) );
-    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess.take()));
+    medJobManager::instance()->registerJobItem(runProcess, tr("Segmenting"));
+    d->runningProcesses.insert(runProcess, dtkSmartPointer< AlgorithmGeneric >(alg) );
+    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcessSp.take()));
 }
 
 void Controller::onViewAdded( dtkAbstractView* view )

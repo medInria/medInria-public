@@ -49,7 +49,7 @@ public:
         if (vscene->isScene2D()) {
             // Convert mouse click to a 3D point in the image.
 
-            QVector3D posImage = vscene->sceneToImagePos( mouseEvent->scenePos() );
+            QVector3D posImage = vscene->sceneToWorld( mouseEvent->scenePos() );
             //Project vector onto plane
             dtkAbstractData * viewData = Controller::viewData( view );
             m_cb->onViewMousePress( view, posImage );
@@ -110,6 +110,8 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
         this, SLOT(onAddSeedPointPressed ()));
     connect (m_removeSeedPointButton,     SIGNAL(pressed()),
         this, SLOT(onRemoveSeedPointPressed ()));
+    connect (m_applyButton,     SIGNAL(pressed()),
+        this, SLOT(onApplyButtonPressed()));
 
 }
 
@@ -153,9 +155,10 @@ void AlgorithmConnectedThresholdParametersWidget::onRemoveSeedPointPressed()
 
 void AlgorithmConnectedThresholdParametersWidget::onApplyButtonPressed()
 {
-    dtkSmartPointer <mseg::AlgorithmConnectedThreshold> alg( new mseg::AlgorithmConnectedThreshold() );
+    dtkSmartPointer <mseg::AlgorithmConnectedThreshold> alg;
+    alg.takePointer( new mseg::AlgorithmConnectedThreshold() );
 
-    alg->setInput(m_inputData);
+    alg->setInput(this->m_data);
     foreach( const SeedPoint & seed, m_seedPoints ) {
         alg->addSeedPoint( seed.annotationData->centerWorld() );
     }

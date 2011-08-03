@@ -3,6 +3,8 @@
 #include "msegAlgorithmConnectedThresholdParametersWidget.h"
 #include "msegController.h"
 
+#include "itkMsegProgressObserverCommand.h"
+
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkImageFunction.h>
 
@@ -68,7 +70,7 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractDa
     enum { NDim = VDimension } ;
 
     typedef itk::Image<TPixel, VDimension>      InputImageType;
-    typedef itk::Image<signed char, VDimension> OutputImageType;
+    typedef itk::Image<char, VDimension> OutputImageType;
     typedef double                              OutputType;
 
     typename InputImageType::Pointer image( static_cast< InputImageType *>( inData->data() ));
@@ -96,13 +98,25 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractDa
     }
 
     ctiFilter->SetInput( image );
+
+    // Add progress observer
+    itk::MsegProgressObserverCommand::Pointer progressObserver( itk::MsegProgressObserverCommand::New() );
+    progressObserver->SetAlgorithm( self );
+    ctiFilter->AddObserver(itk::ProgressEvent(), progressObserver );
+
     ctiFilter->Update();
 
     OutputImageType::Pointer outputImage( ctiFilter->GetOutput() );
     QString outputTypeName = QString("itkDataImageChar%1").arg(VDimension,1);
 
-    dtkSmartPointer< dtkAbstractData> newData( dtkAbstractDataFactory::instance()->create( outputTypeName ) );
-    newData->setData( image.GetPointer() );
+    dtkSmartPointer< dtkAbstractData> newData( dtkAbstractDataFactory::instance()->createSmartPointer( outputTypeName ) );
+    if ( !newData )
+        return DTK_FAILURE;
+
+    newData->setData( outputImage.GetPointer() );
+
+    if ( !newData->data() )
+        return DTK_FAILURE;
 
     self->setOutput( newData );
 

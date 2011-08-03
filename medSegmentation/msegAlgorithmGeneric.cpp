@@ -3,6 +3,8 @@
 // Temporary fudge:
 #include "msegAlgorithmConnectedThresholdParametersWidget.h"
 
+#include <medCore/medMetaDataHelper.h>
+
 #include <dtkCore/dtkAbstractData.h>
 
 #include <dtkCore/dtkLog.h>
@@ -75,7 +77,10 @@ void AlgorithmGeneric::setInput( dtkAbstractData * data )
 
 int AlgorithmGeneric::update()
 {
-    return this->callHandler( this->input() );
+    int ret = this->callHandler( this->input() );
+    this->setOutputMetadata();
+
+    return ret;
 }
 
 void AlgorithmGeneric::setOutput( dtkAbstractData * data )
@@ -102,6 +107,31 @@ dtkAbstractData * AlgorithmGeneric::input()
 {
     return d->inputData;
 }
+
+dtkAbstractData * AlgorithmGeneric::output()
+{
+    return d->outputData;
+}
+
+void AlgorithmGeneric::setOutputMetadata()
+{
+    if ( !d->inputData ) 
+        return;
+
+    QStringList metaDataToCopy;
+    metaDataToCopy << medMetaDataHelper::KEY_PatientName()
+        << medMetaDataHelper::KEY_StudyDescription();
+
+    foreach( const QString & key, metaDataToCopy ) {
+        d->outputData->setMetaData(key, d->inputData->metadatas(key));
+    }
+
+    QString seriesDesc;
+    seriesDesc = tr("Segmented from ") + medMetaDataHelper::getFirstSeriesDescriptionValue( d->inputData );
+
+    d->outputData->setMetaData(medMetaDataHelper::KEY_SeriesDescription(),seriesDesc);
+}
+
 
 } // namespace mseg
 

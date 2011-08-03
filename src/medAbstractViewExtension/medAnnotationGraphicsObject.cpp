@@ -170,3 +170,10 @@ void medAnnotationGraphicsObject::onSceneOrientationChanged()
 
 }
 
+bool medAnnotationGraphicsObject::isPointInCurrentSlice( const QVector3D & testPoint ) const
+{
+    medAbstractViewScene * scene = qobject_cast< medAbstractViewScene *>( this->scene() );
+    return this->isPointInSlice( testPoint, scene->viewCenter(), scene->viewPlaneNormal(), scene->sliceThickness() );
+}
+
+

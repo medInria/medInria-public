@@ -44,6 +44,7 @@ public:
     //! Override dtkAbstractProcess
     void setInput( dtkAbstractData * data) MED_OVERRIDE;
     virtual int update() MED_OVERRIDE;
+    dtkAbstractData * output() MED_OVERRIDE;
 
     //! Getter for the input data.
     dtkAbstractData * input();
@@ -63,6 +64,9 @@ protected:
     virtual bool isHandled( const QString & dataDescription ) const;
 
     void setOutput( dtkAbstractData * data);
+
+    //! Uses the input to set suitable values on the output.
+    void setOutputMetadata();
 
 private:
     AlgorithmGenericPrivate *d;

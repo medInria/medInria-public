@@ -90,6 +90,7 @@ void v3dViewGraphicsScene::onPositionChanged( const QVector3D & position,
 {
     Q_UNUSED( position );
     Q_UNUSED( propagate );
+    this->sendItemChanged( medAnnotationGraphicsObject::SceneCameraChanged );
 }
 
 void v3dViewGraphicsScene::onZoomChanged( double zoom, bool propagate )
@@ -233,22 +234,6 @@ bool v3dViewGraphicsScene::isScene2D() const
     return (d->view->currentView() == d->view->view2d() );
 }
 
-QVector3D v3dViewGraphicsScene::sceneToImagePos( const QPointF & point) const
-{
-    if (! this->isScene2D()) {
-        return QVector3D();
-    }
-
-    int xy[2];
-    xy[0] = point.x();
-    xy[1] = point.y();
-
-    double worldPosition[3];
-    d->view->view2d()->GetWorldCoordinatesFromDisplayPosition ( xy, worldPosition);
-    return QVector3D( worldPosition[0], worldPosition[1], worldPosition[2] );
-
-}
-
 void v3dViewGraphicsScene::sendItemChanged( medAnnotationGraphicsObject::AnnotationGraphicsItemChange change, const QVariant & value )
 {
     foreach( QGraphicsItem * item, this->items() ) {
@@ -257,4 +242,24 @@ void v3dViewGraphicsScene::sendItemChanged( medAnnotationGraphicsObject::Annotat
         }
     }
 }
+
+QVector3D v3dViewGraphicsScene::viewCenter() const
+{
+    vtkRenderer * ren = d->view->currentView()->GetRenderer();
+    double vcenter[3];
+    ren->GetActiveCamera()->GetFocalPoint( vcenter );
+    return QVector3D( vcenter[0], vcenter[1], vcenter[2] );
+}
+
+qreal v3dViewGraphicsScene::sliceThickness() const
+{
+    vtkRenderer * ren = d->view->currentView()->GetRenderer();
+    double range[2];
+    ren->GetActiveCamera()->GetClippingRange(range);
+    qreal val = static_cast<qreal>( range[1] - range[0] );
+    val = val <0 ? -val : val;  // ensure positive. 
+    return val;
+}
+
+
 

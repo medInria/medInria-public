@@ -45,7 +45,13 @@ void SeedPointAnnotation::paint( QPainter * painter, const QStyleOptionGraphicsI
 void SeedPointAnnotation::initializeSceneCoordinates()
 {
     this->prepareGeometryChange();
-    this->setPos( this->worldToScene( seedPointAnnotationData()->centerWorld() ) );
+    const QVector3D centerPt = seedPointAnnotationData()->centerWorld();
+    this->setPos( this->worldToScene( centerPt ) );
+    if ( this->isPointInCurrentSlice(centerPt)) {
+        this->setVisible(true);
+    } else {
+        this->setVisible(false);
+    }
     m_isInitialized = true;
 }
 
