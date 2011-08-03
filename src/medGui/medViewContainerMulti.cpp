@@ -253,7 +253,7 @@ void medViewContainerMulti::onViewClosing (void)
         if ( current == NULL )
             current = this;
 
-        this->setCurrent(current);
+        this->setCurrent(this);
 
         current->onViewFocused( true );
 
