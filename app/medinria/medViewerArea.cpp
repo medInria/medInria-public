@@ -451,6 +451,9 @@ void medViewerArea::switchToStackedViewContainers(medStackedViewContainers* stac
 
 void medViewerArea::switchToContainer(const QString& name)
 {
+    qDebug() << "switching from"
+             << d->current_configuration->currentViewContainerName()
+             << "to configuration" << name;
 
     if (d->current_configuration)
     {
@@ -462,9 +465,6 @@ void medViewerArea::switchToContainer(const QString& name)
             //same conf, do nothing
             return;
         }
-        qDebug() << "switching from"
-                 << d->current_configuration->currentViewContainerName()
-                 << "to configuration" << name;
 
         d->current_configuration->setCurrentViewContainer(name);
         root->setFocus(Qt::MouseFocusReason);
@@ -712,7 +712,7 @@ void medViewerArea::setupConfiguration(QString name)
       animation->start();
       }*/
 
-    //connect(conf, SIGNAL(layoutModeChanged(const QString&)), this, SLOT(switchToContainer(const QString&)));
+    connect(conf->stackedViewContainers(), SIGNAL(currentChanged(const QString&)), this, SLOT(switchToContainer(const QString&)));
     connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));
     connect(conf, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)));
