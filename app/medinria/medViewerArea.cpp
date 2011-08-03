@@ -712,8 +712,7 @@ void medViewerArea::setupConfiguration(QString name)
       animation->start();
       }*/
 
-    connect(conf, SIGNAL(layoutModeChanged(const QString&)),
-            this, SLOT(switchToContainer(const QString&)));
+    //connect(conf, SIGNAL(layoutModeChanged(const QString&)), this, SLOT(switchToContainer(const QString&)));
     connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));
     connect(conf, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)));
