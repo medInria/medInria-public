@@ -19,8 +19,8 @@
 
 #include "medDatabaseController.h"
 #include "medDatabaseReader.h"
-#include <medCore/medStorage.h>
-#include <medCore/medAbstractDataImage.h>
+#include <medStorage.h>
+#include <medAbstractDataImage.h>
 
 #include <medCore/medMetaDataHelper.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -48,7 +48,7 @@ medDatabaseReader::~medDatabaseReader(void)
     d = NULL;
 }
 
-dtkAbstractData *medDatabaseReader::run(void)
+dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
 {
     QVariant patientId = d->index.patientId();
     QVariant   studyId = d->index.studyId();
@@ -101,7 +101,6 @@ dtkAbstractData *medDatabaseReader::run(void)
         {
             QString filename = query.value(2).toString();
 
-
             // if the file is indexed the chanced that is not there anymore are higher
             // so we check for existence and return null if they are not there anymore
             QFileInfo fileinfo(filename);
@@ -124,28 +123,10 @@ dtkAbstractData *medDatabaseReader::run(void)
     filenames.removeDuplicates();
 
     dtkAbstractData *data = NULL;
+    dtkSmartPointer <dtkAbstractData> dtkdata =  this->readFile(filenames);
 
-    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
-    for (int i = 0; i < readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
-
-        connect(dataReader, SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
-
-        if (dataReader->canRead(filenames)) {
-
-            //qDebug() << "Reading using" << dataReader->description() << "reader";
-
-            dataReader->read(filenames);
-            data = dataReader->data();
-            delete dataReader;
-            break;
-        }
-
-        delete dataReader;
-    }
-
-    if (data) {
+    if ( (!dtkdata.isNull()) && dtkdata.data() ) {
 
        QSqlQuery seriesQuery(*(medDatabaseController::instance()->database()));
        QVariant seriesThumbnail;
@@ -168,19 +149,22 @@ dtkAbstractData *medDatabaseReader::run(void)
 
 
 
-        medMetaDataHelper::addPatientName(data, patientName);
-        medMetaDataHelper::addStudyDescription(data, studyName);
-        medMetaDataHelper::addSeriesDescription(data, seriesName);
-        medMetaDataHelper::addPatientID(data, patientId.toString());
-        medMetaDataHelper::addStudyID(data, studyId.toString());
-        medMetaDataHelper::addSeriesID(data, seriesId.toString());
+        medMetaDataHelper::addPatientName(dtkdata, patientName);
+        medMetaDataHelper::addStudyDescription(dtkdata, studyName);
+        medMetaDataHelper::addSeriesDescription(dtkdata, seriesName);
+        medMetaDataHelper::addPatientID(dtkdata, patientId.toString());
+        medMetaDataHelper::addStudyID(dtkdata, studyId.toString());
+        medMetaDataHelper::addSeriesID(dtkdata, seriesId.toString());
         //medMetaDataHelper::addImageID(data, imageId.toString());
+
         emit success(this);
     } else {
         emit failure(this);
     }
+    if (dtkdata.refCount() != 1)
+        qWarning() << "(Run:Exit) RefCount should be 1 here: " << dtkdata.refCount();
+    return dtkdata;
 
-    return data;
 }
 
 qint64 medDatabaseReader::getDataSize()
@@ -221,4 +205,37 @@ QString medDatabaseReader::getFilePath()
     }
 
     return filename;
+}
+
+dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile( QString filename )
+{
+    QStringList filenames;
+    filenames << filename;
+    return this->readFile(filenames);
+}
+
+
+dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile(const QStringList filenames )
+{
+    dtkSmartPointer<dtkAbstractData> dtkdata;
+
+    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
+
+    for (int i = 0; i < readers.size(); i++) {
+
+        dtkSmartPointer<dtkAbstractDataReader> dataReader;
+        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
+
+        connect(dataReader, SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
+        if (dataReader->canRead(filenames)) {
+            dataReader->read(filenames);
+            dataReader->enableDeferredDeletion(false);
+            dtkdata = dataReader->data();
+            if (dtkdata.refCount() != 2)
+                qWarning() << "(ReaderLoop) RefCount should be 2 here: " << dtkdata.refCount();
+            break;
+        }
+
+    }
+    return dtkdata;
 }

@@ -29,9 +29,9 @@
 #include "medHomepageArea.h"
 
 #include <medHomepageButton.h>
-#include <medGui/medViewerConfiguration.h>
-#include <medGui/medViewerConfigurationFactory.h>
-#include <medCore/medSettingsManager.h>
+#include <medViewerConfiguration.h>
+#include <medViewerConfigurationFactory.h>
+#include <medSettingsManager.h>
 
 class medHomepageAreaPrivate
 {

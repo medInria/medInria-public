@@ -22,7 +22,7 @@
 
 #include <QtCore>
 
-#include <medGui/medViewerConfiguration.h>
+#include <medViewerConfiguration.h>
 
 
 class medViewerConfigurationVisualizationPrivate;

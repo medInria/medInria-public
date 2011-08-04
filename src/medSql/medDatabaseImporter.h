@@ -1,5 +1,5 @@
-/* medDatabaseImporter.h --- 
- * 
+/* medDatabaseImporter.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jan 19 13:41:28 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 10
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASEIMPORTER_H
@@ -22,7 +22,10 @@
 
 #include "medSqlExport.h"
 
-#include <medCore/medJobItem.h>
+#include <medJobItem.h>
+
+#include <dtkCore/dtkSmartPointer.h>
+
 #include <QtCore>
 #include <QtSql>
 
@@ -78,6 +81,7 @@ private:
     **/
     void populateMissingMetadata(dtkAbstractData* dtkData, const QString seriesDescription);
 
+
     /**
     * Checks if the image which was used to create the dtkData object
     * passed as parameter already exists in the database
@@ -99,7 +103,7 @@ private:
     * @param filename - Input file/s we would like to find a reader for
     * @return a proper reader if found, NULL otherwise
     **/
-    dtkAbstractDataReader* getSuitableReader(QStringList filename);
+    dtkSmartPointer<dtkAbstractDataReader> getSuitableReader(QStringList filename);
 
     /**
     * Tries to find a @dtkAbstractDataWriter able to write input file/s.
@@ -107,7 +111,7 @@ private:
     * @param dtkData - the @dtkAbstractData object we want to write
     * @return a proper writer if found, NULL otherwise
     **/
-    dtkAbstractDataWriter* getSuitableWriter(QString filename, dtkAbstractData* dtkData);
+    dtkSmartPointer<dtkAbstractDataWriter> getSuitableWriter(QString filename, dtkAbstractData* dtkData);
 
     /**
     * Walks through the whole directory tree and returns a list of every file found.
@@ -123,7 +127,7 @@ private:
     * @param readOnlyImageInformation - if true only image header is read, otherwise the full image
     * @return a @dtkAbstractData containing the read data
     **/
-    dtkAbstractData* tryReadImages(QStringList filesPath, bool readOnlyImageInformation);
+    dtkSmartPointer<dtkAbstractData> tryReadImages(QStringList filesPath, bool readOnlyImageInformation);
 
     /**
     * Determines the filename where the dtkData object will be written (if importing).
@@ -131,7 +135,7 @@ private:
     * @param volumeNumber - the volume number
     * @return a string with the new filename
     **/
-    QString determineFutureImageFileName(dtkAbstractData* dtkData, int volumeNumber);
+    QString determineFutureImageFileName(const dtkAbstractData* dtkData, int volumeNumber);
 
     /**
     * Determines the extension (i.e. file format) which
@@ -139,7 +143,7 @@ private:
     * @param dtkData - the @dtkAbstractData that will be written
     * @return a string with the desired extension if found, and empty string otherwise
     **/
-    QString determineFutureImageExtensionByDataType(dtkAbstractData* dtkData);
+    QString determineFutureImageExtensionByDataType(const dtkAbstractData* dtkData);
 
     /**
     * Tries writing the dtkData object in filePath.
@@ -163,7 +167,7 @@ private:
     * @param dtkData - @dtkAbstractData object whose id will be generate
     * @return the volume id of the dtkData object
     **/
-    QString generateUniqueVolumeId(dtkAbstractData* dtkData);
+    QString generateUniqueVolumeId(const dtkAbstractData* dtkData);
 
     /**
     * Generates and saves the thumbnails for images in @dtkAbstractData.
@@ -175,30 +179,30 @@ private:
     **/
     QStringList generateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails);
 
-    /*
+    /**
      * Retrieves the patient id of the existent (or newly created)
      * patient record in the patient table.
      */
     int getOrCreatePatient(dtkAbstractData* dtkData, QSqlDatabase db);
 
-    /*
+    /**
      * Retrieves the study id of the existent (or newly created)
      * study record in the study table.
      */
     int getOrCreateStudy(dtkAbstractData* dtkData, QSqlDatabase db, int patientId);
 
-    /*
+    /**
      * Retrieves the series id of the existent (or newly created)
      * series record in the series table.
      */
     int getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabase db, int studyId);
 
-    /*
+    /**
      * Creates records in the image table for the files we are importing/indexing.
      */
     void createMissingImages(dtkAbstractData* dtkData, QSqlDatabase db, int seriesId, QStringList thumbPaths);
 
-    /*
+    /**
      * Checks if the user is trying to perform a partial import
      * (that is, trying to import files belonging to the same volume
      * in 2 different steps).

@@ -1375,12 +1375,12 @@ medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="false"] {
     background: #313131;
 }
 
-medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][isCurrent="false"] {
+medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][clicked="false"] {
     border: 1px solid darkGray;
     background: #313131;
 }
 
-medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][isCurrent="true"] {
+medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][clicked="true"] {
     border: 1px solid #9ab3d5;
     background: #313131;
 }

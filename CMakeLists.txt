@@ -34,17 +34,22 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
 if(WIN32)
   option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
   
+
+option(BUILD_TESTING       "Build testing"          true)
 
 enable_testing()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
+
+include(medinriaBuild)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-include(medinriaBuild)
 include(medinriaPack)
 #include(medinriaDart)
 include(Dart)
@@ -55,10 +60,13 @@ option(BUILD_DOCUMENTATION "Build documentation"    true)
 add_subdirectory(src)
 add_subdirectory(app)
 
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif(BUILD_TESTING)
+
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
-
 
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in

@@ -22,7 +22,7 @@
 
 #include <typeinfo>
 #include "medCoreExport.h"
-#include <medCore/medAbstractData.h>
+#include <medAbstractData.h>
 
 class MEDCORE_EXPORT medAbstractDataImage: public medAbstractData
 {

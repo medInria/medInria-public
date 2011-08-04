@@ -1,14 +1,14 @@
 #include "medDatabaseDataSource.h"
 
-#include <medCore/medDataManager.h>
+#include <medDataManager.h>
 
-#include <medGui/medDatabaseSearchPanel.h>
+#include <medDatabaseSearchPanel.h>
+#include <medDatabaseView.h>
+#include <medDatabasePreview.h>
 
-#include <medSql/medDatabasePreview.h>
-#include <medSql/medDatabaseModel.h>
-#include <medSql/medDatabaseView.h>
-#include <medSql/medDatabaseExporter.h>
-#include <medSql/medDatabaseProxyModel.h>
+#include <medDatabaseProxyModel.h>
+#include <medDatabaseModel.h>
+#include <medDatabaseExporter.h>
 
 class medDatabaseDataSourcePrivate
 {
@@ -45,11 +45,11 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     database_layout->addWidget(d->preview);
 
     d->searchPanel = new medDatabaseSearchPanel(parent);
-    d->searchPanel->setColumnNames(d->model->attributes());
+    d->searchPanel->setColumnNames(d->model->columnNames());
     d->toolboxes.push_back(d->searchPanel);
 
-    connect(d->view, SIGNAL(patientClicked(int)), d->preview, SLOT(onPatientClicked(int)));
-    connect(d->view, SIGNAL(seriesClicked(int)), d->preview, SLOT(onSeriesClicked(int)));
+    connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(onPatientClicked(const medDataIndex&)));
+    connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(onSeriesClicked(const medDataIndex&)));
     connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
     connect(d->view, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
     connect(d->view, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));

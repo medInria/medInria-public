@@ -60,17 +60,20 @@ public slots:
     void onCancel(QObject*);
 
 protected:
-    void removeImage( int imageId);
+    void removeImage( int patientId, int studyId, int seriesId, int imageId);
 
 
     bool isSeriesEmpty( int seriesId );
-    void removeSeries( int seriesId );
+    void removeSeries( int patientId, int studyId, int seriesId );
     bool isStudyEmpty( int studyId );
-    void removeStudy( int studyId );
+    void removeStudy( int patientId, int studyId );
     bool isPatientEmpty( int patientId );
     void removePatient( int patientId );
 
+    //! Remove a single file
     void removeFile( const QString & filename );
+    //! Remove a data image file. Includes special cases for some file types.
+    void removeDataFile( const medDataIndex &index, const QString & filename );
     void removeTableRow( const QString &table, int id );
 
 private:

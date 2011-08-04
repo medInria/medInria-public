@@ -3,14 +3,14 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 
-#include <medGui/medViewerToolBoxViewProperties.h>
-#include <medGui/medToolBoxRegistration.h>
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerSingle.h>
-#include <medGui/medViewContainerCompare.h>
-#include <medGui/medStackedViewContainers.h>
-#include <medGui/medViewerToolBoxView.h>
-#include <medGui/medToolBoxRegistration.h>
+#include <medViewerToolBoxViewProperties.h>
+#include <medToolBoxRegistration.h>
+#include <medViewContainer.h>
+#include <medViewContainerSingle.h>
+#include <medViewContainerCompare.h>
+#include <medStackedViewContainers.h>
+#include <medViewerToolBoxView.h>
+#include <medToolBoxRegistration.h>
 
 class medViewerConfigurationRegistrationPrivate
 {

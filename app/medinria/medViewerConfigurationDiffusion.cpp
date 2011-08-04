@@ -5,16 +5,16 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include <medCore/medDataManager.h>
+#include <medDataManager.h>
 
-#include "medGui/medToolBoxDiffusionTensorView.h"
-#include "medGui/medToolBoxDiffusion.h"
-#include "medGui/medViewerToolBoxView.h"
-#include "medGui/medToolBoxDiffusionFiberView.h"
-#include "medGui/medToolBoxDiffusionFiberBundling.h"
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerSingle.h>
-#include <medGui/medStackedViewContainers.h>
+#include "medToolBoxDiffusionTensorView.h"
+#include "medToolBoxDiffusion.h"
+#include "medViewerToolBoxView.h"
+#include "medToolBoxDiffusionFiberView.h"
+#include "medToolBoxDiffusionFiberBundling.h"
+#include <medViewContainer.h>
+#include <medViewContainerSingle.h>
+#include <medStackedViewContainers.h>
 
 class medViewerConfigurationDiffusionPrivate
 {

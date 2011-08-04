@@ -86,7 +86,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     toolbar_layout->setContentsMargins(0, 0, 0, 0);
     toolbar_layout->setSpacing(0);
     toolbar_layout->addWidget  (d->toolbar);
-    toolbar_layout->addWidget  (d->path);    
+    toolbar_layout->addWidget  (d->path);
 
     QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystem_widget);
     filesystem_layout->setContentsMargins(10, 10, 10, 10);
@@ -112,7 +112,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect (d->toolbar, SIGNAL(changed(QString)), d->path,   SLOT(setPath(QString)));
 
     connect (d->toolbar, SIGNAL(treeView()),       d->finder, SLOT(switchToTreeView()));
-    connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));    
+    connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));
 }
 
 medFileSystemDataSource::~medFileSystemDataSource()

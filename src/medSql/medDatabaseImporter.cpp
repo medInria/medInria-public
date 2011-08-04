@@ -19,7 +19,7 @@
 
 #include "medDatabaseImporter.h"
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -27,9 +27,9 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
-#include <medSql/medDatabaseController.h>
-#include <medCore/medStorage.h>
-
+#include <medDatabaseController.h>
+#include <medMetaDataHelper.h>
+#include <medStorage.h>
 
 class medDatabaseImporterPrivate
 {
@@ -117,7 +117,7 @@ void medDatabaseImporter::run(void)
 
         QFileInfo fileInfo(file);
 
-        dtkAbstractData* dtkData = NULL;
+        dtkSmartPointer<dtkAbstractData> dtkData;
 
         // 2.1) Try reading file information, just the header not the whole file
 
@@ -156,19 +156,18 @@ void medDatabaseImporter::run(void)
         if (!d->indexWithoutImporting && futureExtension.isEmpty())
         {
             emit showError(this, tr("Could not save file due to unhandled data type: ") + dtkData->description(), 5000);
+
             continue;
         }
 
         imageFileName = imageFileName + futureExtension;
 
-        // 2.4) c) Add the image to a map for writing them all in medinria's database in a posterior step
+        // 2.3) c) Add the image to a map for writing them all in medinria's database in a posterior step
 
         // First check if patient/study/series/image path already exists in the database
         if (!checkIfExists(dtkData, fileInfo.fileName()))
             imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
 
-        // afterwards we will re-read all the files, so we destroy the dtkData object
-        delete dtkData;
     }
 
     // some checks to see if the user cancelled or something failed
@@ -212,7 +211,7 @@ void medDatabaseImporter::run(void)
 
         //qDebug() << currentImageIndex << ": " << aggregatedFileName << "with " << filesPaths.size() << " files";
 
-        dtkAbstractData* imageDtkData = NULL;
+         dtkSmartPointer<dtkAbstractData> imageDtkData;
 
         QFileInfo imagefileInfo(filesPaths[0]);
 
@@ -263,9 +262,6 @@ void medDatabaseImporter::run(void)
         QFileInfo aggregatedFileNameFileInfo( aggregatedFileName );
         QString pathToStoreThumbnails = aggregatedFileNameFileInfo.dir().path() + "/" + aggregatedFileNameFileInfo.completeBaseName() + "/";
         this->populateDatabaseAndGenerateThumbnails(imageDtkData, pathToStoreThumbnails);
-
-        delete imageDtkData;
-        imageDtkData = NULL;
     } // end of the final loop
 
 
@@ -303,7 +299,7 @@ bool medDatabaseImporter::isPartialImportAttempt(dtkAbstractData* dtkData)
     QSqlDatabase db = *(medDatabaseController::instance()->database());
     QSqlQuery query(db);
 
-    QString patientName = dtkData->metaDataValues(tr("PatientName"))[0].simplified();
+    QString patientName = dtkData->metaDataValues(medMetaDataHelper::KEY_PatientName())[0].simplified();
 
     query.prepare("SELECT id FROM patient WHERE name = :name");
     query.bindValue(":name", patientName);
@@ -317,8 +313,8 @@ bool medDatabaseImporter::isPartialImportAttempt(dtkAbstractData* dtkData)
 
         query.clear();
 
-        QString studyName = dtkData->metaDataValues(tr("StudyDescription"))[0].simplified();
-        QString studyUid = dtkData->metaDataValues(tr("StudyID"))[0];
+        QString studyName = dtkData->metaDataValues(medMetaDataHelper::KEY_StudyDescription())[0].simplified();
+        QString studyUid = dtkData->metaDataValues(medMetaDataHelper::KEY_StudyID())[0];
 
         query.prepare("SELECT id FROM study WHERE patient = :patientId AND name = :studyName AND uid = :studyUid");
         query.bindValue(":patientId", patientId);
@@ -334,14 +330,14 @@ bool medDatabaseImporter::isPartialImportAttempt(dtkAbstractData* dtkData)
 
             query.clear();
 
-            QString seriesName = dtkData->metaDataValues(tr("SeriesDescription"))[0].simplified();
-            QString seriesUid = dtkData->metaDataValues(tr("SeriesID"))[0];
-            QString orientation = dtkData->metaDataValues(tr("Orientation"))[0];
-            QString seriesNumber = dtkData->metaDataValues(tr("SeriesNumber"))[0];
-            QString sequenceName = dtkData->metaDataValues(tr("SequenceName"))[0];
-            QString sliceThickness = dtkData->metaDataValues(tr("SliceThickness"))[0];
-            QString rows = dtkData->metaDataValues(tr("Rows"))[0];
-            QString columns = dtkData->metaDataValues(tr("Columns"))[0];
+            QString seriesName = dtkData->metaDataValues(medMetaDataHelper::KEY_SeriesDescription())[0].simplified();
+            QString seriesUid = dtkData->metaDataValues(medMetaDataHelper::KEY_SeriesID())[0];
+            QString orientation = dtkData->metaDataValues(medMetaDataHelper::KEY_Orientation())[0];
+            QString seriesNumber = dtkData->metaDataValues(medMetaDataHelper::KEY_SeriesNumber())[0];
+            QString sequenceName = dtkData->metaDataValues(medMetaDataHelper::KEY_SequenceName())[0];
+            QString sliceThickness = dtkData->metaDataValues(medMetaDataHelper::KEY_SliceThickness())[0];
+            QString rows = dtkData->metaDataValues(medMetaDataHelper::KEY_Rows())[0];
+            QString columns = dtkData->metaDataValues(medMetaDataHelper::KEY_Columns())[0];
 
             query.prepare("SELECT * FROM series WHERE study = :studyId AND name = :seriesName AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
             query.bindValue(":studyId", studyId);
@@ -359,7 +355,7 @@ bool medDatabaseImporter::isPartialImportAttempt(dtkAbstractData* dtkData)
 
             if(query.first())
             {
-                QStringList filePaths = dtkData->metaDataValues (tr("FilePaths"));
+                QStringList filePaths = dtkData->metaDataValues (medMetaDataHelper::KEY_FilePaths());
                 d->partialAttemptsInfo << (QStringList() << patientName << studyName << seriesName << filePaths[0]);
                 return true;
             }
@@ -374,82 +370,85 @@ bool medDatabaseImporter::isPartialImportAttempt(dtkAbstractData* dtkData)
 void medDatabaseImporter::populateMissingMetadata( dtkAbstractData* dtkData, const QString seriesDescription )
 {
     if (!dtkData)
+    {
+        qWarning() << "data invalid";
         return;
+    }
 
-    if(!dtkData->hasMetaData("PatientName"))
-        dtkData->addMetaData("PatientName", QStringList() << "John Doe");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_PatientName()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_PatientName(), QStringList() << "John Doe");
 
-    if(!dtkData->hasMetaData("StudyDescription"))
-        dtkData->addMetaData("StudyDescription", QStringList() << "EmptyStudy");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_StudyDescription()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_StudyDescription(), QStringList() << "EmptyStudy");
 
-    if(!dtkData->hasMetaData("SeriesDescription"))
-        dtkData->addMetaData("SeriesDescription", QStringList() << seriesDescription);
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_SeriesDescription()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_SeriesDescription(), QStringList() << seriesDescription);
 
-    if(!dtkData->hasMetaData("StudyID"))
-        dtkData->addMetaData("StudyID", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_StudyID()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_StudyID(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("SeriesID"))
-        dtkData->addMetaData("SeriesID", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_SeriesID()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_SeriesID(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Orientation"))
-        dtkData->addMetaData("Orientation", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Orientation()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Orientation(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("SeriesNumber"))
-        dtkData->addMetaData("SeriesNumber", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_SeriesNumber()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_SeriesNumber(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("SequenceName"))
-        dtkData->addMetaData("SequenceName", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_SequenceName()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_SequenceName(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("SliceThickness"))
-        dtkData->addMetaData("SliceThickness", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_SliceThickness()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_SliceThickness(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Rows"))
-        dtkData->addMetaData("Rows", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Rows()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Rows(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Columns"))
-        dtkData->addMetaData("Columns", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Columns()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Columns(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Age"))
-        dtkData->addMetaData("Age", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Age()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Age(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("BirthDate"))
-        dtkData->addMetaData("BirthDate", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_BirthDate()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_BirthDate(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Gender"))
-        dtkData->addMetaData("Gender", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Gender()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Gender(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Description"))
-        dtkData->addMetaData("Description", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Description()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Description(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Modality"))
-        dtkData->addMetaData("Modality", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Modality()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Modality(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Protocol"))
-        dtkData->addMetaData("Protocol", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Protocol()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Protocol(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Comments"))
-        dtkData->addMetaData("Comments", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Comments()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Comments(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Status"))
-        dtkData->addMetaData("Status", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Status()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Status(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("AcquisitionDate"))
-        dtkData->addMetaData("AcquisitionDate", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_AcquisitionDate()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_AcquisitionDate(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("ImportationDate"))
-        dtkData->addMetaData("ImportationDate", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_ImportationDate()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_ImportationDate(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Referee"))
-        dtkData->addMetaData("Referee", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Referee()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Referee(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Performer"))
-        dtkData->addMetaData("Performer", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Performer()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Performer(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Institution"))
-        dtkData->addMetaData("Institution", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Institution()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Institution(), QStringList() << "");
 
-    if(!dtkData->hasMetaData("Report"))
-        dtkData->addMetaData("Report", QStringList() << "");
+    if(!dtkData->hasMetaData(medMetaDataHelper::KEY_Report()))
+        dtkData->addMetaData(medMetaDataHelper::KEY_Report(), QStringList() << "");
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -461,7 +460,7 @@ bool medDatabaseImporter::checkIfExists(dtkAbstractData* dtkdata, QString imageN
     QSqlQuery query(*(medDatabaseController::instance()->database()));
 
     // first we query patient table
-    QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
+    QString patientName = dtkdata->metaDataValues(medMetaDataHelper::KEY_PatientName())[0];
 
     query.prepare("SELECT id FROM patient WHERE name = :name");
     query.bindValue(":name", patientName);
@@ -474,8 +473,8 @@ bool medDatabaseImporter::checkIfExists(dtkAbstractData* dtkdata, QString imageN
         QVariant patientId = query.value(0);
         // if patient already exists we now verify the study
 
-        QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
-        QString studyUid = dtkdata->metaDataValues(tr("StudyID"))[0];
+        QString studyName = dtkdata->metaDataValues(medMetaDataHelper::KEY_StudyDescription())[0];
+        QString studyUid  = dtkdata->metaDataValues(medMetaDataHelper::KEY_StudyID())[0];
 
         query.prepare("SELECT id FROM study WHERE patient = :patientId AND name = :name AND uid = :studyID");
         query.bindValue(":patientId", patientId);
@@ -489,15 +488,14 @@ bool medDatabaseImporter::checkIfExists(dtkAbstractData* dtkdata, QString imageN
         {
             QVariant studyId = query.value(0);
             // both patient and study exists, let's check series
-
-            QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
-            QString seriesUid = dtkdata->metaDataValues(tr("SeriesID"))[0];
-            QString orientation = dtkdata->metaDataValues(tr("Orientation"))[0]; // orientation sometimes differ by a few digits, thus this is not reliable
-            QString seriesNumber = dtkdata->metaDataValues(tr("SeriesNumber"))[0];
-            QString sequenceName = dtkdata->metaDataValues(tr("SequenceName"))[0];
-            QString sliceThickness = dtkdata->metaDataValues(tr("SliceThickness"))[0];
-            QString rows = dtkdata->metaDataValues(tr("Rows"))[0];
-            QString columns = dtkdata->metaDataValues(tr("Columns"))[0];
+            QString seriesName  = dtkdata->metaDataValues(medMetaDataHelper::KEY_SeriesDescription())[0];
+            QString seriesUid = dtkdata->metaDataValues(medMetaDataHelper::KEY_SeriesID())[0];
+            QString orientation = dtkdata->metaDataValues(medMetaDataHelper::KEY_Orientation())[0]; // orientation sometimes differ by a few digits, thus this is not reliable
+            QString seriesNumber = dtkdata->metaDataValues(medMetaDataHelper::KEY_SeriesNumber())[0];
+            QString sequenceName = dtkdata->metaDataValues(medMetaDataHelper::KEY_SequenceName())[0];
+            QString sliceThickness = dtkdata->metaDataValues(medMetaDataHelper::KEY_SliceThickness())[0];
+            QString rows = dtkdata->metaDataValues(medMetaDataHelper::KEY_Rows())[0];
+            QString columns = dtkdata->metaDataValues(medMetaDataHelper::KEY_Columns())[0];
 
             query.prepare("SELECT id FROM series WHERE study = :studyId AND name = :name AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
             query.bindValue(":studyId", studyId);
@@ -575,7 +573,7 @@ QStringList medDatabaseImporter::generateThumbnails(dtkAbstractData* dtkData, QS
     QString refThumbPath = pathToStoreThumbnails + "ref.png";
     refThumbnail.save (medStorage::dataLocation() + refThumbPath, "PNG");
 
-    dtkData->addMetaData("RefThumbnailPath", refThumbPath);
+    dtkData->addMetaData(medMetaDataHelper::KEY_ThumbnailPath(), refThumbPath);
 
     return thumbPaths;
 }
@@ -588,8 +586,7 @@ int medDatabaseImporter::getOrCreatePatient(dtkAbstractData* dtkData, QSqlDataba
 
     QSqlQuery query(db);
 
-    QString patientName = dtkData->metaDataValues(tr("PatientName"))[0].simplified();
-
+    QString patientName = dtkData->metaDataValues(medMetaDataHelper::KEY_PatientName())[0].simplified();
     query.prepare("SELECT id FROM patient WHERE name = :name");
     query.bindValue(":name", patientName);
 
@@ -602,9 +599,9 @@ int medDatabaseImporter::getOrCreatePatient(dtkAbstractData* dtkData, QSqlDataba
     }
     else
     {
-        QString refThumbPath = dtkData->metadata("RefThumbnailPath");
-        QString birthdate      = dtkData->metaDataValues(tr("BirthDate"))[0];
-        QString gender         = dtkData->metaDataValues(tr("Gender"))[0];
+        QString refThumbPath = dtkData->metaDataValues(medMetaDataHelper::KEY_ThumbnailPath())[0];
+        QString birthdate      = dtkData->metaDataValues(medMetaDataHelper::KEY_BirthDate())[0];
+        QString gender         = dtkData->metaDataValues(medMetaDataHelper::KEY_Gender())[0];
 
         query.prepare("INSERT INTO patient (name, thumbnail, birthdate, gender) VALUES (:name, :thumbnail, :birthdate, :gender)");
         query.bindValue(":name", patientName);
@@ -625,8 +622,8 @@ int medDatabaseImporter::getOrCreateStudy(dtkAbstractData* dtkData, QSqlDatabase
 
     QSqlQuery query(db);
 
-    QString studyName = dtkData->metaDataValues(tr("StudyDescription"))[0].simplified();
-    QString studyUid = dtkData->metaDataValues(tr("StudyID"))[0];
+    QString studyName   = dtkData->metaDataValues(medMetaDataHelper::KEY_StudyDescription())[0].simplified();
+    QString studyUid    = dtkData->metaDataValues(medMetaDataHelper::KEY_StudyID())[0];
 
     query.prepare("SELECT id FROM study WHERE patient = :patientId AND name = :studyName AND uid = :studyUid");
     query.bindValue(":patientId", patientId);
@@ -642,7 +639,7 @@ int medDatabaseImporter::getOrCreateStudy(dtkAbstractData* dtkData, QSqlDatabase
     }
     else
     {
-        QString refThumbPath = dtkData->metadata("RefThumbnailPath");
+        QString refThumbPath = dtkData->metaDataValues(medMetaDataHelper::KEY_ThumbnailPath())[0];
 
         query.prepare("INSERT INTO study (patient, name, uid, thumbnail) VALUES (:patientId, :studyName, :studyUid, :thumbnail)");
         query.bindValue(":patientId", patientId);
@@ -664,14 +661,14 @@ int medDatabaseImporter::getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabas
 
     QSqlQuery query(db);
 
-    QString seriesName = dtkData->metaDataValues(tr("SeriesDescription"))[0].simplified();
-    QString seriesUid = dtkData->metaDataValues(tr("SeriesID"))[0];
-    QString orientation = dtkData->metaDataValues(tr("Orientation"))[0];
-    QString seriesNumber = dtkData->metaDataValues(tr("SeriesNumber"))[0];
-    QString sequenceName = dtkData->metaDataValues(tr("SequenceName"))[0];
-    QString sliceThickness = dtkData->metaDataValues(tr("SliceThickness"))[0];
-    QString rows = dtkData->metaDataValues(tr("Rows"))[0];
-    QString columns = dtkData->metaDataValues(tr("Columns"))[0];
+    QString seriesName     = dtkData->metaDataValues(medMetaDataHelper::KEY_SeriesDescription())[0].simplified();
+    QString seriesUid     = dtkData->metaDataValues(medMetaDataHelper::KEY_SeriesID())[0];
+    QString orientation    = dtkData->metaDataValues(medMetaDataHelper::KEY_Orientation())[0];
+    QString seriesNumber   = dtkData->metaDataValues(medMetaDataHelper::KEY_SeriesNumber())[0];
+    QString sequenceName   = dtkData->metaDataValues(medMetaDataHelper::KEY_SequenceName())[0];
+    QString sliceThickness = dtkData->metaDataValues(medMetaDataHelper::KEY_SliceThickness())[0];
+    QString rows           = dtkData->metaDataValues(medMetaDataHelper::KEY_Rows())[0];
+    QString columns        = dtkData->metaDataValues(medMetaDataHelper::KEY_Columns())[0];
 
     query.prepare("SELECT * FROM series WHERE study = :studyId AND name = :seriesName AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
     query.bindValue(":studyId", studyId);
@@ -698,22 +695,22 @@ int medDatabaseImporter::getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabas
 
         QString seriesPath = "";
         if(!d->indexWithoutImporting)
+            //seriesPath = dtkData->metaDataValues (medMetaDataHelper::KEY_FilePaths())[0];
             seriesPath = dtkData->metaDataValues (tr("FileName"))[0];
-
-        int size = dtkData->metaDataValues(tr("Size"))[0].toInt();
-        QString refThumbPath = dtkData->metadata("RefThumbnailPath");
-        QString age = dtkData->metaDataValues(tr("Age"))[0];
-        QString description    = dtkData->metaDataValues(tr("Description"))[0];
-        QString modality       = dtkData->metaDataValues(tr("Modality"))[0];
-        QString protocol       = dtkData->metaDataValues(tr("Protocol"))[0];
-        QString comments       = dtkData->metaDataValues(tr("Comments"))[0];
-        QString status         = dtkData->metaDataValues(tr("Status"))[0];
-        QString acqdate        = dtkData->metaDataValues(tr("AcquisitionDate"))[0];
-        QString importdate     = dtkData->metaDataValues(tr("ImportationDate"))[0];
-        QString referee        = dtkData->metaDataValues(tr("Referee"))[0];
-        QString performer      = dtkData->metaDataValues(tr("Performer"))[0];
-        QString institution    = dtkData->metaDataValues(tr("Institution"))[0];
-        QString report         = dtkData->metaDataValues(tr("Report"))[0];
+        int size               = dtkData->metaDataValues(medMetaDataHelper::KEY_Size())[0].toInt();
+        QString refThumbPath   = dtkData->metaDataValues(medMetaDataHelper::KEY_ThumbnailPath())[0];
+        QString age            = dtkData->metaDataValues(medMetaDataHelper::KEY_Age())[0];
+        QString description    = dtkData->metaDataValues(medMetaDataHelper::KEY_Description())[0];
+        QString modality       = dtkData->metaDataValues(medMetaDataHelper::KEY_Modality())[0];
+        QString protocol       = dtkData->metaDataValues(medMetaDataHelper::KEY_Protocol())[0];
+        QString comments       = dtkData->metaDataValues(medMetaDataHelper::KEY_Comments())[0];
+        QString status         = dtkData->metaDataValues(medMetaDataHelper::KEY_Status())[0];
+        QString acqdate        = dtkData->metaDataValues(medMetaDataHelper::KEY_AcquisitionDate())[0];
+        QString importdate     = dtkData->metaDataValues(medMetaDataHelper::KEY_ImportationDate())[0];
+        QString referee        = dtkData->metaDataValues(medMetaDataHelper::KEY_Referee())[0];
+        QString performer      = dtkData->metaDataValues(medMetaDataHelper::KEY_Performer())[0];
+        QString institution    = dtkData->metaDataValues(medMetaDataHelper::KEY_Institution())[0];
+        QString report         = dtkData->metaDataValues(medMetaDataHelper::KEY_Report())[0];
 
         query.prepare("INSERT INTO series (study, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) VALUES (:study, :size, :seriesName, :seriesPath, :seriesUid, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :refThumbPath, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)");
         query.bindValue(":study",          studyId);
@@ -727,7 +724,7 @@ int medDatabaseImporter::getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabas
         query.bindValue(":sliceThickness", sliceThickness);
         query.bindValue(":rows",           rows);
         query.bindValue(":columns",        columns);
-        query.bindValue(":refThumbPath",      refThumbPath );
+        query.bindValue(":thumbnail",      refThumbPath );
         query.bindValue(":age",         age);
         query.bindValue(":description", description);
         query.bindValue(":modality",    modality);
@@ -754,7 +751,7 @@ void medDatabaseImporter::createMissingImages(dtkAbstractData* dtkData, QSqlData
 {
     QSqlQuery query(db);
 
-    QStringList filePaths  = dtkData->metaDataValues (tr("FilePaths"));
+    QStringList filePaths  = dtkData->metaDataValues(medMetaDataHelper::KEY_FilePaths());
 
     if (filePaths.count() == 1 && thumbPaths.count() > 1) // special case to 1 image and multiple thumbnails
     {
@@ -835,73 +832,72 @@ void medDatabaseImporter::createMissingImages(dtkAbstractData* dtkData, QSqlData
 
 //-----------------------------------------------------------------------------------------------------------
 
-dtkAbstractDataReader* medDatabaseImporter::getSuitableReader( QStringList filename )
+dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader( QStringList filename )
 {
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
     // cycle through readers to see if the last used reader can handle the file
+    dtkSmartPointer<dtkAbstractDataReader> dataReader;
     for (int i=0; i<readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
+        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
         if (d->lastSuccessfulReaderDescription == dataReader->description() && dataReader->canRead( filename ))
+        {
+            dataReader->enableDeferredDeletion(false);
             return dataReader;
-        else
-            delete dataReader;
+        }
     }
 
     for (int i=0; i<readers.size(); i++) {
-        dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
+        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
         if (dataReader->canRead( filename )){
             d->lastSuccessfulReaderDescription = dataReader->description();
-            return dataReader;
+            {
+                dataReader->enableDeferredDeletion(false);
+                return dataReader;
+            }
         }
-        else
-            delete dataReader;
     }
 
     qWarning() << "No suitable reader found!";
-
     return NULL;
 }
 
 //-----------------------------------------------------------------------------------------------------------
 
-dtkAbstractDataWriter* medDatabaseImporter::getSuitableWriter( QString filename, dtkAbstractData* dtkdata )
+dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter( QString filename, dtkAbstractData* dtkData )
 {
-    if (!dtkdata)
+    if (!dtkData)
         return NULL;
 
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
-
+    dtkSmartPointer<dtkAbstractDataWriter> dataWriter;
     // first try with the last
     for (int i=0; i<writers.size(); i++) {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
+        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
         if (d->lastSuccessfulReaderDescription == dataWriter->description()) {
 
-            if ( dataWriter->handled().contains(dtkdata->description()) &&
+            if ( dataWriter->handled().contains(dtkData->description()) &&
                  dataWriter->canWrite( filename ) ) {
 
                 d->lastSuccessfulWriterDescription = dataWriter->description();
+                dataWriter->enableDeferredDeletion(false);
                 return dataWriter;
             }
-            else
-                delete dataWriter;
         }
     }
 
     // cycle all
     for (int i=0; i<writers.size(); i++) {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
+        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
 
-        if ( dataWriter->handled().contains(dtkdata->description()) &&
+        if ( dataWriter->handled().contains(dtkData->description()) &&
              dataWriter->canWrite( filename ) ) {
 
             d->lastSuccessfulWriterDescription = dataWriter->description();
+            dataWriter->enableDeferredDeletion(false);
             return dataWriter;
         }
-        else
-            delete dataWriter;
     }
-
     return NULL;
 }
 
@@ -931,9 +927,9 @@ QStringList medDatabaseImporter::getAllFilesToBeProcessed(QString fileOrDirector
     return fileList;
 }
 
-dtkAbstractData* medDatabaseImporter::tryReadImages(QStringList filesPaths, bool readOnlyImageInformation)
+dtkSmartPointer<dtkAbstractData> medDatabaseImporter::tryReadImages(QStringList filesPaths, bool readOnlyImageInformation)
 {
-    dtkAbstractData* dtkData = 0;
+    dtkSmartPointer<dtkAbstractData> dtkData = 0;
 
     dtkAbstractDataReader* dataReader = getSuitableReader(filesPaths);
 
@@ -960,15 +956,15 @@ dtkAbstractData* medDatabaseImporter::tryReadImages(QStringList filesPaths, bool
     return dtkData;
 }
 
-QString medDatabaseImporter::determineFutureImageFileName(dtkAbstractData* dtkdata, int volumeNumber)
+QString medDatabaseImporter::determineFutureImageFileName(const dtkAbstractData* dtkdata, int volumeNumber)
 {
     // we append the uniqueID at the end of the filename to have unique filenames for each volume
     QString s_volumeNumber;
     s_volumeNumber.setNum(volumeNumber);
 
-    QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
-    QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
-    QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
+    QString patientName = dtkdata->metaDataValues(medMetaDataHelper::KEY_PatientName())[0];
+    QString studyName   = dtkdata->metaDataValues(medMetaDataHelper::KEY_StudyDescription())[0];
+    QString seriesName  = dtkdata->metaDataValues(medMetaDataHelper::KEY_SeriesDescription())[0];
 
     QString s_patientName = patientName.simplified();
     QString s_studyName   = studyName.simplified();
@@ -988,7 +984,7 @@ QString medDatabaseImporter::determineFutureImageFileName(dtkAbstractData* dtkda
     return imageFileName;
 }
 
-QString medDatabaseImporter::determineFutureImageExtensionByDataType(dtkAbstractData* dtkdata)
+QString medDatabaseImporter::determineFutureImageExtensionByDataType(const dtkAbstractData* dtkdata)
 {
     QString description = dtkdata->description();
     QString extension = "";
@@ -1028,7 +1024,7 @@ bool medDatabaseImporter::tryWriteImage(QString filePath, dtkAbstractData* imDat
 {
     bool writeSuccess = false;
 
-    dtkAbstractDataWriter *dataWriter = getSuitableWriter(filePath, imData);
+    dtkSmartPointer<dtkAbstractDataWriter> dataWriter = getSuitableWriter(filePath, imData);
     if( dataWriter)
     {
         dataWriter->setData (imData);
@@ -1036,9 +1032,7 @@ bool medDatabaseImporter::tryWriteImage(QString filePath, dtkAbstractData* imDat
         {
             writeSuccess = true;
         }
-        delete dataWriter;
     }
-
     return writeSuccess;
 }
 
@@ -1061,7 +1055,7 @@ void medDatabaseImporter::addAdditionalMetaData(dtkAbstractData* imData, QString
     imData->addMetaData ("FileName", aggregatedFileName);
 }
 
-QString medDatabaseImporter::generateUniqueVolumeId(dtkAbstractData* dtkData)
+QString medDatabaseImporter::generateUniqueVolumeId(const dtkAbstractData* dtkData)
 {
     if (!dtkData)
     {
@@ -1071,18 +1065,18 @@ QString medDatabaseImporter::generateUniqueVolumeId(dtkAbstractData* dtkData)
 
     // Get all the information from the dtkAbstractData metadata.
     // This information will then be passed to the database.
-    QString patientName = dtkData->metaDataValues(tr("PatientName"))[0];
-    QString studyName   = dtkData->metaDataValues(tr("StudyDescription"))[0];
-    QString seriesName  = dtkData->metaDataValues(tr("SeriesDescription"))[0];
+    QString patientName = dtkData->metaDataValues(medMetaDataHelper::KEY_PatientName())[0];
+//    QString studyName   = dtkData->metaDataValues(medMetaDataHelper::KEY_StudyDescription())[0];
+//    QString seriesName  = dtkData->metaDataValues(medMetaDataHelper::KEY_SeriesDescription())[0];
 
-    QString studyId = dtkData->metaDataValues(tr("StudyID"))[0];
-    QString seriesId = dtkData->metaDataValues(tr("SeriesID"))[0];
-    QString orientation = dtkData->metaDataValues(tr("Orientation"))[0]; // orientation sometimes differ by a few digits, thus this is not reliable
-    QString seriesNumber = dtkData->metaDataValues(tr("SeriesNumber"))[0];
-    QString sequenceName = dtkData->metaDataValues(tr("SequenceName"))[0];
-    QString sliceThickness = dtkData->metaDataValues(tr("SliceThickness"))[0];
-    QString rows = dtkData->metaDataValues(tr("Rows"))[0];
-    QString columns = dtkData->metaDataValues(tr("Columns"))[0];
+    QString studyId = dtkData->metaDataValues(medMetaDataHelper::KEY_StudyID())[0];
+    QString seriesId = dtkData->metaDataValues(medMetaDataHelper::KEY_SeriesID())[0];
+    QString orientation = dtkData->metaDataValues(medMetaDataHelper::KEY_Orientation())[0]; // orientation sometimes differ by a few digits, thus this is not reliable
+    QString seriesNumber = dtkData->metaDataValues(medMetaDataHelper::KEY_SeriesNumber())[0];
+    QString sequenceName = dtkData->metaDataValues(medMetaDataHelper::KEY_SequenceName())[0];
+    QString sliceThickness = dtkData->metaDataValues(medMetaDataHelper::KEY_SliceThickness())[0];
+    QString rows = dtkData->metaDataValues(medMetaDataHelper::KEY_Rows())[0];
+    QString columns = dtkData->metaDataValues(medMetaDataHelper::KEY_Columns())[0];
 
     QStringList orientations = orientation.split(" ");
 

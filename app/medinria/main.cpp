@@ -28,11 +28,11 @@
 
 #include <dtkScript/dtkScriptManager.h>
 
-#include <medCore/medPluginManager.h>
-#include <medCore/medDataIndex.h>
-#include <medSql/medDatabaseController.h>
-#include <medCore/medSettingsManager.h>
-#include <medCore/medStorage.h>
+#include <medPluginManager.h>
+#include <medDataIndex.h>
+#include <medDatabaseController.h>
+#include <medSettingsManager.h>
+#include <medStorage.h>
 
 
 int main(int argc, char *argv[])

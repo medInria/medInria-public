@@ -21,8 +21,8 @@
 #define MEDABSTRACTVIEW_H
 
 #include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkSmartPointer.h>
 
-#include <QSharedPointer>
 #include "medCoreExport.h"
 
 class medAbstractViewPrivate;
@@ -151,9 +151,9 @@ public:
     virtual void removeOverlay(int layer);
 
     /**
-     * Setting data using a qSharedPointer
+     * Setting data using a dtkSmartPointer
      */
-    virtual void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
+    virtual void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
 
     void setCurrentMeshLayer(int meshLayer);
     virtual int currentMeshLayer(void) const;
@@ -285,7 +285,7 @@ signals:
     void ThreeDTriggered(dtkAbstractView* d);
 
     /** Emitted when the oblique view settings change */
-    void obliqueSettingsChanged();
+    void obliqueSettingsChanged (const medAbstractView *self);
 
     void colorChanged();
 

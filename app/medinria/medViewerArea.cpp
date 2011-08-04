@@ -30,38 +30,35 @@
 #include <dtkVr/dtkVrHeadRecognizer.h>
 #include <dtkVr/dtkVrGestureRecognizer.h>
 
-#include <medCore/medSettingsManager.h>
-#include <medCore/medDataIndex.h>
-#include <medCore/medDataManager.h>
-#include <medCore/medViewManager.h>
-#include <medCore/medAbstractView.h>
+#include <medAbstractDbController.h>
+#include <medSettingsManager.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
+#include <medViewManager.h>
+#include <medAbstractView.h>
 
-#include <medSql/medDatabaseController.h>
-#include <medSql/medDatabaseNonPersistentItem.h>
-#include <medSql/medDatabaseNonPersistentController.h>
-#include <medSql/medDatabaseNavigator.h>
-#include <medSql/medDatabaseNavigatorController.h>
+#include <medDatabaseNavigator.h>
+#include <medDatabaseNavigatorController.h>
+#include <medDatabaseNonPersistentController.h>
 
-#include <medGui/medClutEditor.h>
-#include <medGui/medToolBox.h>
-#include <medGui/medToolBoxContainer.h>
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerCustom.h>
-#include <medGui/medViewContainerMulti.h>
-#include <medGui/medViewContainerSingle.h>
-#include <medGui/medViewPool.h>
-#include <medGui/medViewerConfigurationFactory.h>
-#include <medGui/medToolBoxDiffusion.h>
-#include <medGui/medToolBoxRegistration.h>
-#include <medGui/medStackedViewContainers.h>
-#include <medGui/medViewerToolBoxLayout.h>
+#include <medClutEditor.h>
+#include <medToolBox.h>
+#include <medToolBoxContainer.h>
+#include <medViewContainer.h>
+#include <medViewContainerCustom.h>
+#include <medViewContainerMulti.h>
+#include <medViewContainerSingle.h>
+#include <medViewPool.h>
+#include <medViewerConfigurationFactory.h>
+#include <medToolBoxDiffusion.h>
+#include <medToolBoxRegistration.h>
+#include <medStackedViewContainers.h>
+#include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxPatient.h>
-#include <medGui/medViewerToolBoxView.h>
-#include <medGui/medViewerToolBoxViewProperties.h>
-
+#include <medViewerToolBoxView.h>
+#include <medViewerToolBoxViewProperties.h>
 
 #include <QtGui>
-#include <QtSql>
 #include <QPropertyAnimation>
 #include <QEasingCurve>
 
@@ -150,7 +147,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)),
         this, SLOT(switchToPatient(const medDataIndex&)));
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
-        SLOT (onPatientClicked (const medDataIndex&)));
+        SLOT (onItemClicked (const medDataIndex&)));
 
     int memusage = 0;
     int leak = 0;
@@ -214,7 +211,7 @@ bool medViewerArea::openInTab(const medDataIndex &index)
 
     if (!this->currentContainerFocused()->views().isEmpty())
     {
-        QSharedPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
+        dtkSmartPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
 
         if (dtkdata.isNull())
             return false;
@@ -234,26 +231,36 @@ bool medViewerArea::open(const medDataIndex& index)
     this->switchToPatient(index);
 
     if(((medDataIndex)index).isValidForSeries()) {
+        dtkSmartPointer<dtkAbstractData> data;
+        dtkSmartPointer<medAbstractView> view;
 
-        QSharedPointer<dtkAbstractData> data;
+        /** test to check for reference counting problems, here the datamanager should be able to drop the data */
+        //medDataManager::instance()->data(index);
+        //medDataManager::instance()->clearCache();
+        //return;
+
+
         // the data-manager should be used to read data
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
+        //BB: I don't understand why we need to block signals here, but we should
+        //unblock them as well.
+        medDataManager::instance()->blockSignals (false);
+
         if ( data.isNull() )
             return false;
 
-        medAbstractView *view = NULL;
         medViewContainer * current = this->currentContainerFocused();
         if ( current != NULL )
-            view = dynamic_cast<medAbstractView*>(current->view());
+            view = qobject_cast<medAbstractView*>(current->view());
 
-        if( view == NULL ) {
-            view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
+        if( view.isNull() ) {
+            view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
             connect (view, SIGNAL(dataRemoved(int )), this, SLOT(onDataRemoved(int )));
         }
 
-        if( view == NULL ) {
+        if( view.isNull() ) {
             qDebug() << "Unable to create a v3dView";
             return false;
         }
@@ -287,28 +294,24 @@ bool medViewerArea::open(const medDataIndex& index)
         return true;
     }
 
-    if(((medDataIndex)index).isValidForPatient())
+    if(index.isValidForPatient())
     {
         // For the moment switch to visualization, later we will be cleverer
         this->setupConfiguration("Visualization");
         this->switchToContainer("Multi");
 
-        QSqlQuery stQuery(*(medDatabaseController::instance()->database()));
-        stQuery.prepare("SELECT * FROM study WHERE patient = :id");
-        stQuery.bindValue(":id", index.patientId());
-        if(!stQuery.exec())
-            qDebug() << DTK_COLOR_FG_RED << stQuery.lastError() << DTK_NO_COLOR;
+       medDataManager *dataManager = medDataManager::instance();
+        medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
 
-        while(stQuery.next()) {
+        QList<medDataIndex> studiesForSource = dbc->studies(index);
 
-            QSqlQuery seQuery(*(medDatabaseController::instance()->database()));
-            seQuery.prepare("SELECT * FROM series WHERE study = :id");
-            seQuery.bindValue(":id", stQuery.value(0));
-            if(!seQuery.exec())
-                qDebug() << DTK_COLOR_FG_RED << seQuery.lastError() << DTK_NO_COLOR;
+        for ( QList<medDataIndex>::const_iterator studyIt(studiesForSource.begin()); studyIt != studiesForSource.end(); ++studyIt) {
 
-            while(seQuery.next())
-                this->open(medDataIndex(index.patientId(), stQuery.value(0).toInt(), seQuery.value(0).toInt()));
+            QList<medDataIndex> seriesForSource = dbc->series((*studyIt));
+
+            for ( QList<medDataIndex>::const_iterator seriesIt(seriesForSource.begin()); seriesIt != seriesForSource.end(); ++seriesIt) {
+                this->open(*seriesIt);
+            }
         }
 
     }
@@ -323,7 +326,7 @@ bool medViewerArea::openInTab(const QString& file)
 
 bool medViewerArea::open(const QString& file)
 {
-    return this->open(medDatabaseNonPersistentController::instance()->import(file));
+    return this->open(medDataManager::instance()->importNonPersistent(file));
 }
 
 void medViewerArea::onViewClosed(void)
@@ -333,8 +336,9 @@ void medViewerArea::onViewClosed(void)
         foreach( medToolBox *tb, toolboxes)
             tb->update(NULL);
 
-        medDataIndex index = medViewManager::instance()->index( view );
-        medViewManager::instance()->remove(index, view); // deletes the view
+        QList<medDataIndex> indices = medViewManager::instance()->indices( view );
+        foreach (medDataIndex index, indices)
+            medViewManager::instance()->remove(index, view); // deletes the view
     }
 }
 
@@ -408,8 +412,7 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
     // Setup navigator
 
     if (d->navigator) {
-        d->navigator->onPatientClicked(d->current_patient);
-
+        d->navigator->onItemClicked(d->current_patient);
         QRect endGeometry = d->navigator->geometry();
         QRect startGeometry = endGeometry;
         if (d->navigator->orientation()==Qt::Vertical)
@@ -592,8 +595,10 @@ void medViewerArea::setupLUTPreset(QString table)
 
 void medViewerArea::bringUpTransferFunction(bool checked)
 {
-    if (!checked) {
-        if (d->transFun !=NULL ) {
+    if (!checked)
+    {
+        if (d->transFun !=NULL )
+        {
             delete d->transFun ;
             d->transFun=NULL;
         }

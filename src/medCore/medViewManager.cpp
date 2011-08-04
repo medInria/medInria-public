@@ -27,7 +27,7 @@
 class medViewManagerPrivate
 {
 public:
-    QHash<medDataIndex, QList<medAbstractView *> > views;
+    QHash<medDataIndex, QList<dtkSmartPointer<medAbstractView> > > views;
 };
 
 medViewManager *medViewManager::instance(void)
@@ -40,29 +40,30 @@ medViewManager *medViewManager::instance(void)
 
 void medViewManager::insert(const medDataIndex& index, medAbstractView *view)
 {
-    d->views[index].prepend (view);
+    d->views[index].prepend (dtkSmartPointer<medAbstractView>(view));
 }
 
 void medViewManager::remove(const medDataIndex& index, medAbstractView *view)
 {
-    foreach(medAbstractView *lview, d->views.value(index))
-        if (lview==view)
-            d->views[index].removeOne(view);
-
-    delete view;
+    foreach(dtkSmartPointer<medAbstractView>lview, d->views.value(index))
+        if (lview==view) {
+            d->views[index].removeAll(lview);
+        }
 }
 
 void medViewManager::remove(const medDataIndex& index)
 {
-     foreach(medAbstractView *view, d->views.value(index))
-         delete view;
-
     d->views.remove(index);
 }
 
 QList<medAbstractView *> medViewManager::views(const medDataIndex& index)
 {
-    return d->views.value(index);
+    QList<medAbstractView *> views;
+    foreach( dtkSmartPointer<medAbstractView> lview, d->views.value(index) ) {
+        views.push_back( lview.data() );
+    }
+
+    return views;
 }
 
 QList<medAbstractView *> medViewManager::viewsForPatient(int id)
@@ -71,7 +72,7 @@ QList<medAbstractView *> medViewManager::viewsForPatient(int id)
 
     foreach(medDataIndex index, d->views.keys())
         if(index.patientId() == id)
-            views << d->views.value(index);
+            views << this->views(index);
 
     return views;
 }
@@ -82,7 +83,7 @@ QList<medAbstractView *> medViewManager::viewsForStudy(int id)
 
     foreach(medDataIndex index, d->views.keys())
         if(index.studyId() == id)
-            views << d->views.value(index);
+            views <<  this->views(index);
 
     return views;
 }
@@ -93,7 +94,7 @@ QList<medAbstractView *> medViewManager::viewsForSeries(int id)
 
     foreach(medDataIndex index, d->views.keys())
         if(index.seriesId() == id)
-            views << d->views.value(index);
+            views <<  this->views(index);
 
     return views;
 }
@@ -104,7 +105,7 @@ QList<medAbstractView *> medViewManager::viewsForImage(int id)
 
     foreach(medDataIndex index, d->views.keys())
         if(index.imageId() == id)
-            views << d->views.value(index);
+            views <<  this->views(index);
 
     return views;
 }
@@ -115,14 +116,15 @@ QList<medAbstractView *> medViewManager::viewsForImage(int id)
  *  possible.
  */
 
-medDataIndex medViewManager::index(medAbstractView *view)
+QList<medDataIndex> medViewManager::indices(medAbstractView *view) const
 {
+    QList<medDataIndex> indices;
     foreach(medDataIndex index, d->views.keys())
         foreach(medAbstractView *v, d->views.value(index))
             if(v == view)
-                return index;
+                indices << index;
 
-    return medDataIndex();
+    return indices;
 }
 
 medViewManager::medViewManager(void) : d(new medViewManagerPrivate)

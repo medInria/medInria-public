@@ -17,7 +17,7 @@
  * 
  */
 
-#include <medCore/medAbstractDataImage4D.h>
+#include <medAbstractDataImage4D.h>
 
 class medAbstractDataImage4DPrivate
 {

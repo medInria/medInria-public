@@ -1,6 +1,6 @@
 #include "medDatabaseNonPersistentController.h"
 
-#include <medCore/medAbstractDbController.h>
+#include <medAbstractDbController.h>
 
 QPointer<medDatabaseNonPersistentControllerImpl> medDatabaseNonPersistentController::instance(void)
 {

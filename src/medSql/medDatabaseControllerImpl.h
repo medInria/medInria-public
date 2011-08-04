@@ -3,10 +3,11 @@
 
 
 #include "medSqlExport.h"
-#include <medCore/medAbstractDbController.h>
+#include <medAbstractDbController.h>
 
 class dtkAbstractData;
 class SigEmitter;
+class medDatabaseControllerImplPrivate;
 
 /**
  * Concrete dbController implementation adhering to abstract base class
@@ -42,9 +43,8 @@ public:
     medDataIndex indexForImage   (const QString &patientName, const QString &studyName,
                                   const QString &seriesName,  const QString &imageName);
 
-    /* some overloads of read(medDataIndex) */
-    QSharedPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId);
-    QSharedPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId, int imageId);
+    /** Remove / replace characters to transform into a pathname component. */
+    QString stringForPath(const QString & name) const;
 
     /**
     * Change the storage location of the database by copy, verify, delete
@@ -57,7 +57,7 @@ public:
     * Status of connection
     * @return bool true on success
     */
-    bool isConnected();
+    bool isConnected() const;
 
     /**
     * return the size that the data behind the medDataIndex in byte
@@ -66,6 +66,26 @@ public:
     */
     qint64 getEstimatedSize(const medDataIndex& index) const;
 
+    /** Enumerate all patients stored in this DB*/
+    virtual QList<medDataIndex> patients() const;
+
+    /** Enumerate all studies for given patient*/
+    virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
+
+    /** Enumerate all series for given patient*/
+    virtual QList<medDataIndex> series(const medDataIndex& index) const;
+
+    /** Enumerate all images for given patient*/
+    virtual QList<medDataIndex> images(const medDataIndex& index ) const;
+
+    /** Get metadata for specific item. Return uninitialized string if not present. */
+    virtual QString metaData(const medDataIndex& index, const QString& key) const;
+
+    /** Set metadata for specific item. Return true on success, false otherwise. */
+    virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
+
+    /** Implement base class */
+    virtual bool isPersistent() const;
 signals:
     /**
      * Status message from controller to some user interface
@@ -81,7 +101,7 @@ public slots:
     * @params const medDataIndex & index Index pointing to data
     * @return dtkAbstractData * the data stored
     */
-    QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const;
+    dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
     * Import data into the db read from file
@@ -100,6 +120,10 @@ public slots:
 
     /** override base class */
     virtual void remove(const medDataIndex& index);
+    virtual QImage thumbnail( const medDataIndex& index) const;
+
+    /**Implement base class */
+    virtual int dataSourceId() const;
 
 protected slots:
     void forwardMessage(QString);
@@ -113,8 +137,8 @@ private:
     void   createImageTable(void);
 
     QSqlDatabase m_database;
-    bool m_isConnected;
-    SigEmitter* emitter;
+
+    medDatabaseControllerImplPrivate * d;
 };
 
 #endif
