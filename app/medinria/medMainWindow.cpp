@@ -105,7 +105,7 @@ public:
     QPropertyAnimation * quickAccessAnimation;
 
     QWidget * quitMessage;
-    
+
     medButton *quitButton;
 };
 
@@ -164,14 +164,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->browserArea, SIGNAL(load(const QString&)), this, SLOT(load(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
-    //Register settingsWidgets
-    medSettingsWidgetFactory::instance()->registerSettingsWidget ( "System", createSystemSettingsWidget );
-    medSettingsWidgetFactory::instance()->registerSettingsWidget ( "Startup", createStartupSettingsWidget );
-    medSettingsWidgetFactory::instance()->registerSettingsWidget ( "Database", createDatabaseSettingsWidget );
-
-    //Register dbController
-    medDbControllerFactory::instance()->registerDbController ( "DbController", createDbController );
-    medDbControllerFactory::instance()->registerDbController ( "NonPersistentDbController", createNonPersistentDbController );
 
     //Setup quick access menu
     d->quickAccessButton = new medQuickAccessPushButton ( this );
@@ -186,7 +178,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessWidget = new QWidget ( this );
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
     d->quickAccessWidget->setMinimumWidth(180);
-   
+
     d->quickAccessVisible = false;
     d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos" );
 
@@ -524,7 +516,7 @@ void medMainWindow::onEditSettings()
 
 void medMainWindow::open ( const medDataIndex& index )
 {
-        
+
     if(d->viewerArea->openInTab(index))
     {
         d->quickAccessButton->setText("Workspace: Visualization");
@@ -594,7 +586,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
 
 void medMainWindow::registerToFactories()
 {
-    //Register dbController 
+    //Register dbController
     medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
     medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
 

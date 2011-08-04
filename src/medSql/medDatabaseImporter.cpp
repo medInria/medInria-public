@@ -931,7 +931,8 @@ dtkSmartPointer<dtkAbstractData> medDatabaseImporter::tryReadImages(QStringList 
 {
     dtkSmartPointer<dtkAbstractData> dtkData = 0;
 
-    dtkAbstractDataReader* dataReader = getSuitableReader(filesPaths);
+    dtkSmartPointer<dtkAbstractDataReader> dataReader;
+    dataReader = getSuitableReader(filesPaths);
 
     if (dataReader)
     {
