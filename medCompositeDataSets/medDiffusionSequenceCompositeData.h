@@ -10,8 +10,6 @@
 #include <medCompositeDataSetsBase.h>
 #include <itkGradientFileReader.h>
 
-//class medDiffusionSequenceCompositeDataPrivate;
-
 class medDiffusionSequenceCompositeDataToolBox;
 
 class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medDiffusionSequenceCompositeData: public MedInria::medCompositeDataSetsBase {
@@ -25,7 +23,7 @@ public:
 
     friend class medDiffusionSequenceCompositeDataToolBox;
 
-    medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase("DWI",this),version(defaultVersion) { }
+    medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase(Tag,this),vers(defaultVersion) { }
     virtual ~medDiffusionSequenceCompositeData() { }
 
     virtual QString description() const;
@@ -37,11 +35,15 @@ public:
         return new medDiffusionSequenceCompositeData(version);
     }
 
+    virtual QString  tag()     const { return Tag;  }
+    virtual unsigned version() const { return vers; }
+
     bool registered() const;
 
     virtual bool read_description(const QByteArray& buf);
     virtual bool read_data();
 
+    virtual bool write_description(QTextStream& file);
     virtual bool write_data(const QString&,const dtkAbstractData*);
 
     //  Methods specific to this type.
@@ -52,15 +54,16 @@ public:
 
 private:
 
-    medDiffusionSequenceCompositeData(const unsigned v): MedInria::medCompositeDataSetsBase("DWI",this), version(v) { }
+    medDiffusionSequenceCompositeData(const unsigned v): MedInria::medCompositeDataSetsBase(Tag,this), vers(v) { }
 
-    const unsigned   version;
+    const unsigned   vers;
     QStringList      image_list;
     Volumes          images;
     GradientListType gradients;
 
     static const medDiffusionSequenceCompositeData proto;
 
+    static const char     Tag[];
     static const unsigned defaultVersion = 0;
 };
 

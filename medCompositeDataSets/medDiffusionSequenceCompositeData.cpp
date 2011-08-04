@@ -16,9 +16,10 @@
 // /////////////////////////////////////////////////////////////////
 
 const medDiffusionSequenceCompositeData medDiffusionSequenceCompositeData::proto;
+const char medDiffusionSequenceCompositeData::Tag[] = "DWI";
 
 bool medDiffusionSequenceCompositeData::registered() const {
-    return dtkAbstractDataFactory::instance()->registerDataType("medDiffusionSequenceCompositeData", createDiffusionSequenceCompositeData) &&
+    return dtkAbstractDataFactory::instance()->registerDataType("medDiffusionSequenceCompositeData",createDiffusionSequenceCompositeData) &&
            medDiffusionSequenceCompositeDataToolBox::registered();
 }
 
@@ -41,6 +42,27 @@ bool medDiffusionSequenceCompositeData::read_description(const QByteArray& buf) 
     }
 
     return (iss.fail()) ? true : false;
+}
+
+bool medDiffusionSequenceCompositeData::write_description(QTextStream& out) {
+
+    const bool named_images = image_list.size()==images.size();
+
+    const unsigned num = images.size();
+    out << "Images: " << num;
+    for (unsigned i=0;i<num;++i) {
+        const GradientType V = gradients[i];
+        const QString im_name = (named_images) ? image_list[i] : QString("image")+QString::number(i);
+        if (!named_images)
+            image_list.push_back(im_name);
+        out << im_name << " [" << V[0] << ' ' << V[1] << ' ' << V[2] << "]\n";
+    }
+
+    return true;
+}
+
+bool medDiffusionSequenceCompositeData::write_data(const QString& dirname,const dtkAbstractData* data) {
+    return true;
 }
 
 void medDiffusionSequenceCompositeData::readVolumes(QStringList paths) {

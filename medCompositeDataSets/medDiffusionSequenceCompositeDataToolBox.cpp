@@ -167,7 +167,7 @@ void medDiffusionSequenceCompositeDataToolBox::addGradientToTree (unsigned int i
     //d->tree->setItemWidget(item, 2, NULL);
 }
 
-void medDiffusionSequenceCompositeDataToolBox::readGradients (QString filepath) {
+void medDiffusionSequenceCompositeDataToolBox::readGradients(QString filepath) {
     GradientReaderType::Pointer reader = GradientReaderType::New();
 
     reader->SetFileName (filepath.toAscii().data());

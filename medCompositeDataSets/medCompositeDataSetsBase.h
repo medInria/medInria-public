@@ -30,6 +30,11 @@ namespace MedInria {
             return 0;
         }
 
+        //  Give the tag and version associated to the data set.
+
+        virtual QString  tag()     const = 0;
+        virtual unsigned version() const = 0;
+
         //  Check that the plugin can handle a given version ofthe file format.
 
         virtual bool has_version(const unsigned) const = 0;
@@ -43,6 +48,8 @@ namespace MedInria {
 
         virtual bool read_description(const QByteArray& buf) = 0;
         virtual bool read_data() = 0;
+
+        virtual bool write_description(QTextStream&) = 0;
         virtual bool write_data(const QString&,const dtkAbstractData*) = 0;
 
         static QStringList initialize() {
@@ -61,7 +68,7 @@ namespace MedInria {
 
     protected:
 
-        medCompositeDataSetsBase(const std::string& name,const medCompositeDataSetsBase* proto) {
+        medCompositeDataSetsBase(const char* name,const medCompositeDataSetsBase* proto) {
             registery().insert(Registery::value_type(name,proto));
         }
 

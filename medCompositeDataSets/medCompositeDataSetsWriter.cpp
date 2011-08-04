@@ -30,6 +30,16 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
     //  Write the data in a temporary directory.
 
     QString tmpdir = QString(mkdtemp((QDir::tempPath()+"/"+"medcdsXXXXXXX").toAscii().data()));
+
+    const QString descname(tmpdir+"/Description.txt");
+    QFile desc(descname);
+    if (!desc.open(QIODevice::WriteOnly))
+         qWarning("medCompositeDataSets: cannot open file %s",descname.toLocal8Bit().constData());
+    QTextStream out(&desc);
+
+    out << "# MEDINRIA COMPOSITE DATA:" << writer->tag() << ' ' << writer->version() << '\n';
+
+    writer->write_description(out);
     writer->write_data(tmpdir,this->data());
 
     //  Zip the temporary directory.
