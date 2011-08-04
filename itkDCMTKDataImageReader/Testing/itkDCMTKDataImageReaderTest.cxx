@@ -3,6 +3,7 @@
 #include "dtkCore/dtkAbstractDataFactory.h"
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <QtCore>
 #include <QDir>
@@ -35,13 +36,15 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
     
 
     foreach (QString file, dir.entryList()) {
-      dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
+      dtkSmartPointer<dtkAbstractData> data;
+      data = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3");
       if (!data) {
         qDebug() << "Cannot create data object from plugin";
 	return EXIT_FAILURE;
       }
       data->enableReader ("itkDCMTKDataImageReader");
-      dtkAbstractDataReader *reader = data->reader("itkDCMTKDataImageReader");
+      dtkSmartPointer<dtkAbstractDataReader> reader;
+      reader.takePointer( data->reader("itkDCMTKDataImageReader") );
 
       QFileInfo fileInfo( file );
       
@@ -100,7 +103,6 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
       seriesFilenames[key] << fileInfo.filePath();
       }
       
-      delete data;
     }
     
     
@@ -109,7 +111,8 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
 
     for(; it!=seriesFilenames.end(); it++) {
 
-        dtkAbstractData *data = dtkAbstractDataFactory::instance()->create ("itkDataImageShort4"); // to be compatible with all dicoms
+        dtkSmartPointer<dtkAbstractData> data;
+        data =  dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageShort4") ; // to be compatible with all dicoms
 	
 	if (!data) {
 	    std::cerr << "Cannot create data object from plugin" << std::endl;
@@ -123,7 +126,6 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
 	    return EXIT_FAILURE;
 	}
 
-	delete data;
     }
     
     return EXIT_SUCCESS;

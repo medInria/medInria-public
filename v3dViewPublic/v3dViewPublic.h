@@ -5,7 +5,7 @@
 #ifndef V3DVIEWPUBLIC_H
 #define V3DVIEWPUBLIC_H
 
-#include <medCore/medAbstractView.h>
+#include <medAbstractView.h>
 
 #include "v3dViewPublicPluginExport.h"
 

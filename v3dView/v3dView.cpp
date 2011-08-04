@@ -11,7 +11,7 @@
 #include "v3dView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
@@ -242,12 +242,11 @@ public:
     QString orientation;
 
     dtkAbstractData *data;
-	QMap<int, QSharedPointer<dtkAbstractData> > sharedData;
+    QMap<int, dtkSmartPointer<dtkAbstractData> > sharedData;
     medAbstractDataImage *imageData;
 
     QList<QString> LUTList;
     QList<QString> PresetList;
-
 
     QTimeLine *timeline;
 
@@ -527,6 +526,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     QAction *ThreeDAct = new QAction(tr("3D"), d->vtkWidget);
     connect(ThreeDAct, SIGNAL(triggered()), this, SLOT(onMenu3DTriggered()));
 
+    // 3D mode
     QAction *vrAct = new QAction(tr("VR"), d->vtkWidget);
 
     connect(vrAct, SIGNAL(triggered()), this, SLOT(onMenu3DVRTriggered()));
@@ -584,6 +584,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->menu->addAction(ThreeDAct);
 
    /* QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
+
     tridMenu->addAction (vrAct);
     tridMenu->addAction (maxipAct);
     tridMenu->addAction (minipAct);
@@ -744,7 +745,7 @@ vtkRenderer *v3dView::renderer3d(void)
     return d->renderer3d;
 }
 
-void v3dView::setSharedDataPointer(QSharedPointer<dtkAbstractData> data)
+void v3dView::setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data)
 {
 	int layer = 0;
     while(d->view2d->GetImageInput(layer)) {
@@ -1579,17 +1580,17 @@ void v3dView::onDaddyPropertySet (const QString &value)
     QSignalBlocker anchorBlocker(d->anchorButton);
     QSignalBlocker registerBlocker(d->registerButton);
 
-    if (value=="true") {
-        d->anchorButton->setChecked (true);
-        d->registerButton->setChecked (false);
-        d->registerButton->setEnabled(false);
+
+    bool boolValue = false;
+    if (value == "true")
+    {
+        boolValue = true;
     }
 
-    if (value=="false") {
-        d->anchorButton->setChecked (false);
-        d->registerButton->setEnabled(true);
-    }
-
+    d->anchorButton->setChecked (boolValue);
+    if (boolValue) d->registerButton->setChecked (false);// going to disappear anyway
+    d->registerButton->setEnabled(!boolValue);
+    emit (changeDaddy(boolValue));
 }
 
 void v3dView::onPositionLinkedPropertySet (const QString &value)

@@ -120,6 +120,13 @@ if (MSVC)
     endif (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
 endif (MSVC)
 
+#Prevent compiler warnings about valid std::copy.
+if (MSVC)
+    add_definitions(
+        -D_SCL_SECURE_NO_WARNINGS
+    )
+endif (MSVC)
+
 ## #################################################################
 ## Install rules
 ## #################################################################

@@ -8,7 +8,7 @@
 #ifndef V3DVIEW4DINTERACTOR_H
 #define V3DVIEW4DINTERACTOR_H
 
-#include <medCore/med4DAbstractViewInteractor.h>
+#include <med4DAbstractViewInteractor.h>
 #include "v3dViewPluginExport.h"
 
 class v3dView4DInteractorPrivate;

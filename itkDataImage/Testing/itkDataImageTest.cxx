@@ -1,10 +1,11 @@
-#include "medCore/medAbstractDataImage.h"
+#include "medAbstractDataImage.h"
 
 #include "dtkCore/dtkPluginManager.h"
 #include "dtkCore/dtkAbstractDataFactory.h"
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
 #include <dtkCore/dtkLog.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <itkImage.h>
 #include <itkRGBAPixel.h>
@@ -61,7 +62,7 @@ int testRunner<TPixel,VDimension>::run() {
     image->SetRegions (region);
     image->Allocate();
 
-    medAbstractDataImage *dataInDtk = dynamic_cast<medAbstractDataImage*>( dtkAbstractDataFactory::instance()->create (this->m_dataTypeName) );
+    dtkSmartPointer<medAbstractDataImage> dataInDtk = dtkAbstractDataFactory::instance()->createSmartPointer(this->m_dataTypeName);
     if (!dataInDtk) {
         dtkDebug() << "Cannot create data object from plugin";
         return EXIT_FAILURE;

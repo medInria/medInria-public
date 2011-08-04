@@ -7,8 +7,9 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
-#include <medCore/medAbstractView.h>
- 
+
+#include <medAbstractView.h>
+
 #include "v3dViewPluginExport.h"
 
 class QMouseEvent;
@@ -60,7 +61,7 @@ public:
      */
     void setData(dtkAbstractData *data, int layer);
 
-	void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
+	void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
 
     /**
      * Inputs the data to the vtkImageView2D/3D instances.

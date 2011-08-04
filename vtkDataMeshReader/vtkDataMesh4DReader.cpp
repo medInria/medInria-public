@@ -6,6 +6,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 vtkDataMesh4DReader::vtkDataMesh4DReader(void) : dtkAbstractDataReader()
 {
@@ -48,12 +49,12 @@ bool vtkDataMesh4DReader::canRead (const QStringList& paths)
 void vtkDataMesh4DReader::readInformation (const QString& path)
 {
   
-  dtkAbstractData* dtkdata = this->data();
+  dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
   this->reader->SetFileName (path.toAscii().constData());
   
   if (!dtkdata)
   {
-    dtkdata = dtkAbstractDataFactory::instance()->create ("vtkDataMesh4D");
+    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("vtkDataMesh4D");
     if (dtkdata)
       this->setData ( dtkdata );
   }
@@ -112,7 +113,10 @@ void vtkDataMesh4DReader::setProgress (int value)
 
 bool vtkDataMesh4DReader::registered(void)
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("vtkDataMesh4DReader", vtkDataMesh4DReader::s_handled(),								    createVtkDataMesh4DReader);
+  return dtkAbstractDataFactory::instance()->registerDataReaderType(
+          "vtkDataMesh4DReader",
+          vtkDataMesh4DReader::s_handled(),
+          createVtkDataMesh4DReader);
 }
 
 QString vtkDataMesh4DReader::description(void) const
@@ -121,7 +125,7 @@ QString vtkDataMesh4DReader::description(void) const
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type instanciation
+// Type instantiation
 // /////////////////////////////////////////////////////////////////
 
 dtkAbstractDataReader *createVtkDataMesh4DReader(void)

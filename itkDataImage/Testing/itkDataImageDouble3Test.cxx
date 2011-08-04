@@ -2,6 +2,8 @@
 #include "dtkCore/dtkAbstractDataFactory.h"
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
+#include "dtkCore/dtkSmartPointer.h"
+
 #include "medCore/medAbstractDataImage.h"
 
 #include <itkImage.h>
@@ -12,23 +14,25 @@ int itkDataImageDouble3Test (int argc, char* argv[])
       qDebug() << "Not enough arguments";
       return EXIT_FAILURE;
   }
-  
+
   // the test file
   QString filepath = argv[2];
   filepath += "/BrainProtonDensitySliceBorder20.mhd";
-  
+
   dtkPluginManager::instance()->setPath (argv[1]);
   dtkPluginManager::instance()->initialize();
-  
-  medAbstractDataImage *data = dynamic_cast<medAbstractDataImage*>( dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3") );
-  
+
+  dtkSmartPointer<dtkAbstractData> dtkdata;
+  dtkdata =  dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
+  medAbstractDataImage *data = dynamic_cast<medAbstractDataImage*>( dtkdata.data() );
+
   if (!data) {
       qDebug() << "Cannot create data object from plugin";
       return EXIT_FAILURE;
   }
-  
+
   data->enableReader ("itkMetaDataImageReader");
-  
+
   if (!data->read(filepath)) {
       qDebug() << "Cannot read image file";
       return EXIT_FAILURE;
@@ -41,11 +45,11 @@ int itkDataImageDouble3Test (int argc, char* argv[])
      qDebug() << "Cannot cast data() to ITK image";
      return EXIT_FAILURE;
   }
-  
+
   image = dynamic_cast<ImageType*>( (itk::Object*)( data->output() ) );
-  
+
   if (image.IsNull()) {
-      qDebug() << "Cannot cast output() to ITK image"; 
+      qDebug() << "Cannot cast output() to ITK image";
       return EXIT_FAILURE;
   }
 
@@ -74,12 +78,14 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   image->SetRegions (region);
   image->Allocate();
 
-  medAbstractDataImage *data2 = dynamic_cast<medAbstractDataImage*>( dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3") );
+  dtkSmartPointer<dtkAbstractData> dtkdata2;
+  dtkdata2 =  dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
+  medAbstractDataImage *data2 = dynamic_cast<medAbstractDataImage*>( dtkdata2.data() );
   if (!data2) {
       qDebug() << "Cannot create data object from plugin";
       return EXIT_FAILURE;
   }
-  
+
   data2->setData ( image.GetPointer() );
 
   ImageType::Pointer image2 = dynamic_cast<ImageType*>( (itk::Object*)(data2->data()) );
