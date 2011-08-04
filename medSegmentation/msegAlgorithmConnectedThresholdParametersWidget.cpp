@@ -76,6 +76,8 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
     m_lowThresh->setToolTip( tr("Set the lower threshold") );
     m_highThresh = new QDoubleSpinBox(this);
     m_highThresh->setToolTip( tr("Set the upper threshold") );
+    m_highThresh->setMaximum( 20000. );
+
     highLowLayout->addWidget( m_lowThresh );
     highLowLayout->addWidget( m_highThresh );
 
@@ -157,6 +159,9 @@ void AlgorithmConnectedThresholdParametersWidget::onApplyButtonPressed()
 {
     dtkSmartPointer <mseg::AlgorithmConnectedThreshold> alg;
     alg.takePointer( new mseg::AlgorithmConnectedThreshold() );
+
+    alg->setHighThreshold( this->m_highThresh->value() );
+    alg->setLowThreshold( this->m_lowThresh->value() );
 
     alg->setInput(this->m_data);
     foreach( const SeedPoint & seed, m_seedPoints ) {

@@ -82,6 +82,9 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractDa
 
     ConnectedThresholdImageFilterType::Pointer ctiFilter( ConnectedThresholdImageFilterType::New() );
 
+    ctiFilter->SetUpper( self->highThreshold() );
+    ctiFilter->SetLower( self->lowThreshold() );
+
     foreach (const QVector3D & seedPoint, self->m_seedPoints ){
         do {
             point[0] = seedPoint.x();
