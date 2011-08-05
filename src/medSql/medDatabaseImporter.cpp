@@ -946,7 +946,6 @@ dtkSmartPointer<dtkAbstractData> medDatabaseImporter::tryReadImages(QStringList 
         }
 
         dtkData = dataReader->data();
-        delete dataReader;
     }
     else
     {

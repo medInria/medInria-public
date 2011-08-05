@@ -122,7 +122,6 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
     // might have introduced duplicates
     filenames.removeDuplicates();
 
-    dtkAbstractData *data = NULL;
     dtkSmartPointer <dtkAbstractData> dtkdata =  this->readFile(filenames);
 
 
@@ -140,7 +139,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
             seriesThumbnail = seriesQuery.value(0);
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
-            medMetaDataHelper::addSeriesThumbnail(data, thumbPath);
+            medMetaDataHelper::addSeriesThumbnail(dtkdata, thumbPath);
 
         }
         else {
