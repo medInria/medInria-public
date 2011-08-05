@@ -44,7 +44,7 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
       }
       data->enableReader ("itkDCMTKDataImageReader");
       dtkSmartPointer<dtkAbstractDataReader> reader;
-      reader.takePointer( data->reader("itkDCMTKDataImageReader") );
+      reader = data->reader("itkDCMTKDataImageReader");
 
       QFileInfo fileInfo( file );
       

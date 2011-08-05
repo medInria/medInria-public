@@ -11,6 +11,7 @@
 #include <medCore/medDataIndex.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkGlobal.h>
@@ -157,8 +158,10 @@ void AlgorithmConnectedThresholdParametersWidget::onRemoveSeedPointPressed()
 
 void AlgorithmConnectedThresholdParametersWidget::onApplyButtonPressed()
 {
-    dtkSmartPointer <mseg::AlgorithmConnectedThreshold> alg;
-    alg.takePointer( new mseg::AlgorithmConnectedThreshold() );
+    dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
+
+    dtkSmartPointer <mseg::AlgorithmConnectedThreshold> alg =
+            factory->createSmartPointer( AlgorithmConnectedThreshold::s_typeName() );
 
     alg->setHighThreshold( this->m_highThresh->value() );
     alg->setLowThreshold( this->m_lowThresh->value() );
@@ -205,8 +208,8 @@ void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView 
         setData( Controller::viewData(view) );
     }
     SeedPoint newSeed;
-    newSeed.annotationData.takePointer( qobject_cast<mseg::SeedPointAnnotationData *>
-        (dtkAbstractDataFactory::instance()->create( SEED_POINT_ANNOTATION_DATA_NAME )) );
+    newSeed.annotationData =
+        dtkAbstractDataFactory::instance()->createSmartPointer( SEED_POINT_ANNOTATION_DATA_NAME );
 
     if ( !newSeed.annotationData ) {
         dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create annotation data";

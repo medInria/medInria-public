@@ -36,7 +36,7 @@
 # include "vtkTDxMacDevice.h"
 #endif
 
-# include "QVTKPaintEngine.h"
+// #include "QVTKPaintEngine.h"
 
 #include "QEvent"
 #include "QKeyEvent"
@@ -44,6 +44,7 @@
 #include <QGLFramebufferObject>
 
 #include <QDebug>
+#include <QTime>
 
 //included for the interactor class.
 #include "QVTKWidget.h"
@@ -62,8 +63,16 @@
 #include "vtkUnsignedCharArray.h"
 #include "vtkImageData.h"
 #include "vtkPointData.h"
+#include "vtkRendererCollection.h"
 #include "vtkSmartPointer.h"
 #include "vtkQtOpenGLRenderWindow.h"
+
+#include <dtkCore/dtkLog.h>
+#ifndef _LINK_TEXT
+    #define _STRINGIZE_HELPER( x ) #x
+    #define _STRINGIZE( x ) _STRINGIZE_HELPER(x)
+    #define _LINK_TEXT __FILE__ "(" _STRINGIZE(__LINE__) ") : "
+#endif
 
 typedef vtkSmartPointer< vtkQtOpenGLRenderWindow > vtkQtOpenGLRenderWindowPointer;
 
@@ -75,7 +84,7 @@ QVtkGraphicsView::QVtkGraphicsView(QWidget* p)
     mFBO(NULL),
     mRenWin(NULL),
     mCacheVtkBackground(true),
-    mLastRenderMTime(0)
+    mLastRenderStateHash(0)
 {
     this->setViewport(new QGLWidget(this) );
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -226,7 +235,6 @@ void QVtkGraphicsView::resizeEvent(QResizeEvent* e)
     }
 
     emit sizeChanged( this->width(), this->height());
-
 }
 
 
@@ -244,25 +252,27 @@ void QVtkGraphicsView::paintEvent(QPaintEvent* e )
 
     mProcessingPaintEvent = true;
     vtkRenderWindow * renWin = this->getRenderWindow();
-    if (renWin) {
+    if (renWin && renWin->GetSwapBuffers() && this->cacheVtkBackground() ) {
         renWin->SwapBuffersOff();
     }
 
     BaseClass::paintEvent(e);
 
-    if (renWin) {
-        renWin->SwapBuffersOn();
-        renWin->Frame();
-    }
+    //if (renWin) {
+    //    renWin->SwapBuffersOn();
+    //    renWin->Frame();
+    //}
 
     mProcessingPaintEvent = false;
 }
 
 void QVtkGraphicsView::drawBackground(QPainter *painter, const QRectF& rect )
 {
+    dtkDebug() << _LINK_TEXT << "QVtkGraphicsView::drawBackground";
+
     bool reRender = !mCacheVtkBackground;
 
-    if ( this->mRenWin && (mLastRenderMTime < this->mRenWin->GetMTime()) ) {
+    if ( this->mRenWin && (mLastRenderStateHash != this->getCurrentRenderStateHash()) ) {
         reRender = true;
     }
     //reRender = false;
@@ -282,7 +292,8 @@ void QVtkGraphicsView::drawBackground(QPainter *painter, const QRectF& rect )
     const bool isLightingEnabled    = glIsEnabled( GL_LIGHTING );
 
     if ( reRender ) {
-    
+        dtkDebug() << _LINK_TEXT << "QVtkGraphicsView::drawBackground - reRender (mCacheVtkBackground = " << mCacheVtkBackground << ")" ;
+
         if (mCacheVtkBackground) {
 
             if ( !mFBO || sz != mFBO->size() )
@@ -324,10 +335,11 @@ void QVtkGraphicsView::drawBackground(QPainter *painter, const QRectF& rect )
         vtkRenderWindow * renWin = this->getRenderWindow();
         // Render VTK
         if ( renWin ) {
+            dtkDebug() << _LINK_TEXT << "QVtkGraphicsView::drawBackground - reRender - renWin->GetInteractor()->Render()";
             renWin->GetInteractor()->Render() ;
                 // qDebug() << "Rendering vtk";
 
-            mLastRenderMTime = renWin->GetMTime();
+            mLastRenderStateHash = this->getCurrentRenderStateHash();;
         } 
 
         // Restore OpenGL state
@@ -798,12 +810,14 @@ void QVtkGraphicsView::contextMenuEvent(QContextMenuEvent* e)
 
 void QVtkGraphicsView::dragEnterEvent(QDragEnterEvent* e)
 {
+    const bool initialValueOfAccepted = e->isAccepted();
     e->ignore();
     BaseClass::dragEnterEvent(e);
     if ( e->isAccepted() )
     {
         return;
     }
+    e->setAccepted( initialValueOfAccepted );
 
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
   
@@ -818,12 +832,14 @@ void QVtkGraphicsView::dragEnterEvent(QDragEnterEvent* e)
 
 void QVtkGraphicsView::dragMoveEvent(QDragMoveEvent* e)
 {
-    e->ignore();
-    BaseClass::dragMoveEvent(e);
-    if ( e->isAccepted() )
-    {
-        return;
-    }
+  const bool initialValueOfAccepted = e->isAccepted();
+  e->ignore();
+  BaseClass::dragMoveEvent(e);
+  if ( e->isAccepted() )
+  {
+      return;
+  }
+  e->setAccepted(initialValueOfAccepted);
 
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
   
@@ -863,12 +879,15 @@ void QVtkGraphicsView::dragLeaveEvent(QDragLeaveEvent* e)
 
 void QVtkGraphicsView::dropEvent(QDropEvent* e)
 {
+    const bool initialValueOfAccepted = e->isAccepted();
     e->ignore();
     BaseClass::dropEvent(e);
-    if ( !e->isAccepted() )
+    if ( e->isAccepted() )
     {
+        e->setAccepted(initialValueOfAccepted);
         QWidget::dropEvent(e);
     }
+    e->setAccepted(initialValueOfAccepted);
 
   vtkRenderWindowInteractor* iren = this->GetRenderWindowInteractor();
   
@@ -1071,4 +1090,30 @@ void QVtkGraphicsView::setCacheVtkBackground( bool value )
             }
         }
     }
+}
+
+unsigned int QVtkGraphicsView::getCurrentRenderStateHash()
+{
+    vtkRenderWindow * renWin =  this->getRenderWindow();
+    unsigned int mTimeHash(0);
+    if ( !renWin ) {
+        return mTimeHash;
+    }
+
+    unsigned int currRenderMTime = renWin->GetMTime();
+    mTimeHash ^= qHash(currRenderMTime);
+
+    vtkRendererCollection * renColl = renWin->GetRenderers();
+    if ( !renColl ) {
+        return mTimeHash;
+    }
+
+    vtkCollectionSimpleIterator cookie;
+    renColl->InitTraversal(cookie);
+    while ( vtkRenderer * ren = renColl->GetNextRenderer (cookie) ) {
+        unsigned int currRendererMTime = ren->GetMTime();
+        mTimeHash ^= qHash(currRendererMTime);
+    }
+
+    return mTimeHash;
 }

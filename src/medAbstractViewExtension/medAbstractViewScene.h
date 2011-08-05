@@ -43,6 +43,9 @@ public:
 
 protected :
 
+    //! Override base class : do not accept drag events by default.
+    void dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
+
 private:
     medAbstractViewScene( const medAbstractViewScene &);
 

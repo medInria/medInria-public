@@ -3,6 +3,7 @@
 
 #include "medAnnotationGraphicsObject.h"
 
+#include <QGraphicsSceneDragDropEvent>
 #include <QSet>
 #include <QWidget>
 
@@ -23,4 +24,10 @@ medAbstractViewScene::~medAbstractViewScene()
     delete d;
     d = NULL;
 }
+
+void medAbstractViewScene::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
+{
+    event->setAccepted(false);
+}
+
 

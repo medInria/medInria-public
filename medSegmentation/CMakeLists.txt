@@ -46,8 +46,8 @@ include_directories(${CMAKE_SOURCE_DIR}/src/medAbstractViewExtension)
 ## Input
 ## #################################################################
 
-file(GLOB ${PROJECT_NAME}_HEADERS *.h)
-file(GLOB ${PROJECT_NAME}_SOURCES *.cpp)
+file(GLOB ${PROJECT_NAME}_HEADERS *.h   annotations/*.h  )
+file(GLOB ${PROJECT_NAME}_SOURCES *.cpp annotations/*.cpp)
 
 #Determine files to MOC as those containing Q_OBJECT.
 foreach(fileIt ${${PROJECT_NAME}_HEADERS})

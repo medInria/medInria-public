@@ -202,6 +202,10 @@ protected:
   virtual void dropEvent(QDropEvent*);
 
   vtkRenderWindowInteractor * GetRenderWindowInteractor();
+
+  // A hash representing the current state of the VtkWindow.
+  unsigned int getCurrentRenderStateHash();
+
 protected: // attributes
 
   // the vtk render window
@@ -220,7 +224,9 @@ protected: // attributes
   // If true then a cached copy of the vtk image is used.
   bool mCacheVtkBackground;
 
-  unsigned int mLastRenderMTime;
+  // If it has changed, the window needs to be refreshed.
+  unsigned int mLastRenderStateHash;
+
 private:
   //! unimplemented operator=
   QVtkGraphicsView const& operator=(QVtkGraphicsView const&);

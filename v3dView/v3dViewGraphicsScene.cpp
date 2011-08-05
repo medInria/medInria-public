@@ -150,9 +150,15 @@ void v3dViewGraphicsScene::setItemsVisible( bool state )
 
 QPointF v3dViewGraphicsScene::worldToScene( const QVector3D & worldVec ) const
 {
+    // The following code is implemented without calling ren->SetWorldPoint, 
+    // because that generates an unnecessary modified event.
+    //ren->SetWorldPoint( d->view->currentView()->GetCurrentPoint() );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( posDisplay );
+
     vtkRenderer * ren = d->view->currentView()->GetRenderer();
 
-    /* get physical window dimensions */
+    // Get window for dimensions
     vtkWindow * win = ren->GetVTKWindow();
 
     if ( !win )
@@ -164,7 +170,7 @@ QPointF v3dViewGraphicsScene::worldToScene( const QVector3D & worldVec ) const
 
     ren->WorldToView( wx, wy, wz );
 
-    /* get physical window dimensions */
+    // get physical window dimensions
     const int * size = win->GetSize();
     int sizex = size[0];
     int sizey = size[1];
@@ -184,6 +190,14 @@ QPointF v3dViewGraphicsScene::worldToScene( const QVector3D & worldVec ) const
 
 QVector3D v3dViewGraphicsScene::sceneToWorld( const QPointF & sceneVec) const
 {
+    // The following code is implemented without calling ren->SetWorldPoint, 
+    // because that generates an unnecessary modified event.
+    //ren->SetWorldPoint( minWorld );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( minDisplay );
+    //ren->SetWorldPoint( maxWorld );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( maxDisplay );
     vtkRenderer * ren = d->view->currentView()->GetRenderer();
 
     /* get physical window dimensions */
