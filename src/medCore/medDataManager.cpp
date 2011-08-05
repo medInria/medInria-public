@@ -1,5 +1,5 @@
-/* medDataManager.cpp --- 
- * 
+/* medDataManager.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 08:34:55 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 17
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDataManager.h"
@@ -37,7 +37,7 @@
 #else
 #include <sys/sysinfo.h>
 #include <unistd.h>
-#endif 
+#endif
 
 const int divider = 1000000;
 
@@ -52,7 +52,7 @@ public:
         dbController = NULL;
         nonPersDbController = NULL;
     }
-    
+
     // this is the data cache for persistent and non-persistent data
     typedef QHash<medDataIndex, dtkSmartPointer<dtkAbstractData> > DataCacheContainerType;
     DataCacheContainerType dataCache;
@@ -91,8 +91,8 @@ public:
     static QMutex mutex;
 
 private:
-    medAbstractDbController* dbController; 
-    medAbstractDbController* nonPersDbController; 
+    medAbstractDbController* dbController;
+    medAbstractDbController* nonPersDbController;
     QList<medAbstractDbController*> _controllerStack;
 };
 
@@ -136,7 +136,7 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
             // check available free memory and clean up if necessary
             if (!manageMemoryUsage(index, db))
             {
-                qDebug() << "could not free enough memory, aborting data reading"; 
+                qDebug() << "could not free enough memory, aborting data reading";
                 return dtkdata;
             }
 
@@ -159,7 +159,7 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
                 // check available free memory and clean up if necessary
                 if (!manageMemoryUsage(index, npDb))
                 {
-                    qDebug() << "could not free enough memory, aborting data reading"; 
+                    qDebug() << "could not free enough memory, aborting data reading";
                     return dtkdata;
                 }
 
@@ -299,12 +299,12 @@ bool medDataManager::manageMemoryUsage(const medDataIndex& index, medAbstractDbC
         // check again to see if we succeeded
         if (maxMem < requiredMem)
         {
-            res = false; 
-            qWarning() << "Required memory usage (" << requiredMem / divider 
+            res = false;
+            qWarning() << "Required memory usage (" << requiredMem / divider
                 << "mb) does not fit boundaries (" << maxMem / divider << " mb)";
         }
     }
-    
+
     return res;
 
 }
@@ -338,7 +338,7 @@ size_t medDataManager::getProcessMemoryUsage()
         return (size_t) size * getpagesize();
     else
         return 0;
-#endif 
+#endif
     return 0;
 }
 
@@ -366,7 +366,7 @@ size_t medDataManager::getTotalSizeOfPhysicalRam()
         return info.totalram * info.mem_unit;
     else
         return 0;
-#endif 
+#endif
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -413,71 +413,65 @@ size_t medDataManager::getUpperMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataIndex medDataManager::importNonPersistent( dtkAbstractData *data )
+void medDataManager::importNonPersistent( dtkAbstractData *data )
 {
     if (!data)
-        return medDataIndex();
+        return;
 
     foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->dataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
-            return medDataIndex();
+            return;
         }
     }
 
     foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
-            return medDataIndex();
+            return;
         }
     }
 
-    medDataIndex index;
-
     medAbstractDbController* npDb = d->getNonPersDbController();
+    connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
+
     if(npDb)
     {
-        index = npDb->import(data);
+        npDb->import(data);
     }
+}
 
+void medDataManager::onNonPersistentDataImported(const medDataIndex &index)
+{
     if (!index.isValid()) {
         qWarning() << "index is not valid";
-        return index;
+        return;
     }
 
     if (d->volatileDataCache.contains (index)) {
         qWarning() << "index already in manager, skipping";
-        return index;
+        return;
     }
 
-    d->volatileDataCache[index] = dtkSmartPointer<dtkAbstractData>(data);
+    dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
 
-    emit dataAdded (index);
-
-    return index;
+    if (!data.isNull())
+    {
+        d->volatileDataCache[index] = data;
+        emit dataAdded (index);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataIndex medDataManager::importNonPersistent( QString file )
+void medDataManager::importNonPersistent( QString file )
 {
-    medDataIndex index;
-
     medAbstractDbController* npDb = d->getNonPersDbController();
     if(npDb)
     {
-        index = npDb->import(file);
+        connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
+        npDb->import(file);
     }
-
-    if (!index.isValid()) {
-        qWarning() << "index is not valid";
-        return index;
-    }
-
-    emit dataAdded (index);
-
-    return index;
-
 }
 
 
@@ -485,14 +479,9 @@ medDataIndex medDataManager::importNonPersistent( QString file )
 
 void medDataManager::storeNonPersistentDataToDatabase( void )
 {
-    foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
-        this->import (dtkdata);
+    foreach (medDataIndex index, d->volatileDataCache.keys()) {
+        this->storeNonPersistentSingleDataToDatabase (index);
     }
-    
-    if (medAbstractDbController* npDb = d->getNonPersDbController())
-        npDb->clear();
-    
-    d->volatileDataCache.clear();
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -502,14 +491,33 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
     if (d->volatileDataCache.count(index) > 0)
     {
         dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
-        this->import (dtkdata);
-        
-        medAbstractDbController* npDb = d->getNonPersDbController();
-        if (npDb)
-            npDb->remove(index);
-        
-        d->volatileDataCache.remove(index);
+
+        medAbstractDbController* db = d->getDbController();
+        connect(db,SIGNAL(updated(const medDataIndex &)),this,SLOT(onSingleNonPersistentDataStored(const medDataIndex &)));
+        if(db)
+            db->import(dtkdata.data());
     }
+}
+
+void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index )
+{
+    medAbstractDbController* db = d->getDbController();
+    medAbstractDbController* npDb = d->getNonPersDbController();
+
+    if ((!db)||(!npDb))
+        return;
+
+    foreach(medDataIndex npIndex, d->volatileDataCache.keys())
+    {
+        qDebug() << npIndex << " " << index;
+        if (npIndex.imageId() == index.imageId())
+        {
+            npDb->remove(npIndex);
+            d->volatileDataCache.remove(npIndex);
+        }
+    }
+
+    emit dataAdded(index);
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -551,7 +559,7 @@ size_t medDataManager::getOptimalMemoryThreshold()
     {
         // for 32bit we try to keep the cache half of the max memory
         // unless we have less physical memory available
-        if ( physicalValue < (upperValue / 2) ) 
+        if ( physicalValue < (upperValue / 2) )
             optimalValue = physicalValue / 2;
         else
             optimalValue = upperValue / 2;
@@ -568,29 +576,31 @@ size_t medDataManager::getOptimalMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataIndex medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
+void medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
 {
     if (!data.data())
-        return medDataIndex();
-
-    medDataIndex index;
+        return;
 
     medAbstractDbController* db = d->getDbController();
+    connect(db,SIGNAL(updated(const medDataIndex &)),this,SLOT(onPersistentDataImported(const medDataIndex &)));
     if(db)
-    {
-        index = db->import(data.data());
-    }
+        db->import(data.data());
+}
 
+void medDataManager::onPersistentDataImported(const medDataIndex &index)
+{
     if (!index.isValid()) {
         qWarning() << "index is not valid";
-        return index;
+        return;
     }
 
-    d->dataCache[index] = data;
+    dtkSmartPointer<dtkAbstractData> data = this->data(index);
 
-    emit dataAdded (index);
-
-    return index;
+    if (!data.isNull())
+    {
+        d->dataCache[index] = data;
+        emit dataAdded (index);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -700,7 +710,7 @@ void medDataManager::printMemoryStatus(size_t requiredMemoryInKb)
     if( requiredMemoryInKb == 0 )
         qDebug() << "Available memory:" << availableMem << "mb ";
     else
-        qDebug() << "Available memory:" << availableMem << "mb " 
+        qDebug() << "Available memory:" << availableMem << "mb "
         << "Required memory:" << (requiredMemoryInKb / divider) << "mb";
 
 }

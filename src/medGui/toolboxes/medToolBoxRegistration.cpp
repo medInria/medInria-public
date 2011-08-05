@@ -52,6 +52,7 @@ public:
 
     QPushButton * saveImageButton;
     QPushButton * saveTransButton;
+
     QComboBox *toolboxes;
     medAbstractView *fixedView;
     medAbstractView *movingView;
@@ -77,6 +78,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     // Process section
     d->saveImageButton = new QPushButton(tr("Save Image"),this);
     connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
+
     d->saveTransButton = new QPushButton(tr("Save Transformation"),this);
     connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
 
@@ -443,6 +445,18 @@ void medToolBoxRegistration::onSaveTrans()
 void medToolBoxRegistration::onSuccess()
 {
     dtkAbstractData *output = d->process->output();
+
+    foreach(QString metaData, d->fixedData->metaDataList())
+        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
+
+    foreach(QString property, d->fixedData->propertyList())
+        output->addProperty(property,d->fixedData->propertyValues(property));
+
+    QString newDescription = d->movingData->metadata(tr("SeriesDescription"));
+    newDescription += " registered";
+    output->setMetaData(tr("SeriesDescription"), newDescription);
+
+    medDataManager::instance()->importNonPersistent(output);
 
 	if(output)
     {

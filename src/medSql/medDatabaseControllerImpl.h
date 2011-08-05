@@ -8,11 +8,12 @@
 class dtkAbstractData;
 class SigEmitter;
 class medDatabaseControllerImplPrivate;
+class medJobItem;
 
 /**
  * Concrete dbController implementation adhering to abstract base class
  */
-class MEDSQL_EXPORT medDatabaseControllerImpl: public medAbstractDbController 
+class MEDSQL_EXPORT medDatabaseControllerImpl: public medAbstractDbController
 {
     Q_OBJECT
 
@@ -92,9 +93,11 @@ signals:
      */
     void copyMessage(QString, int, QColor);
 
+    void displayJobItem(medJobItem *, QString);
+
 
 public slots:
-    
+
 
     /**
     * Read the data from db
@@ -107,16 +110,22 @@ public slots:
     * Import data into the db read from file
     * @Note _NOT_IMPLEMENTED_YET
     * @params const QString & file The file containing the data
-    * @return medDataIndex the assigned index
+    * @params bool indexWithoutCopying true if the file must only be indexed by its current path,
+    * false if the file will be imported (copied or converted to the internal storage format)
     */
-    medDataIndex import(const QString& file);
+    void import(const QString& file,bool indexWithoutCopying);
+
+    /**
+     * Calls import(const QString& file,bool indexWithoutCopying) with indexWithoutCopying = false.
+     *
+    */
+    void import(const QString& file);
 
     /**
     * Import data into the db read from memory
     * @params dtkAbstractData * data dataObject
-    * @return medDataIndex the assigned index
     */
-    medDataIndex import(dtkAbstractData *data);
+    void import(dtkAbstractData *data);
 
     /** override base class */
     virtual void remove(const medDataIndex& index);

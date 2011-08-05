@@ -103,18 +103,16 @@ public slots:
      *
      * @param index Could describe just an image, or a complete Series,
      * Study or even Patient.
-     * @return true if successful, false otherwise
     */
-    bool open(const medDataIndex& index);
+    void open(const medDataIndex& index);
 
     /**
      * @brief Open data corresponding to index \param index in a new tab.
      *
      * @param index Could describe just an image, or a complete Series,
      * Study or even Patient.
-     * @return true if successful, false otherwise.
-    */
-    bool openInTab(const medDataIndex& index);
+     */
+    void openInTab(const medDataIndex& index);
 
     /**
      * @brief Opens file on the local filesystem.
@@ -122,9 +120,8 @@ public slots:
      * Calls open(const medDataIndex& index) with a
      * new index created from the medDatabaseNonPersistentController
      * @param file
-     * @return true if successful, false otherwise.
     */
-    bool open(const QString& file);
+    void open(const QString& file);
 
     /**
      * @brief Opens file on the local filesystem.
@@ -132,9 +129,8 @@ public slots:
      * Calls openInTab(const medDataIndex& index) with a
      * new index created from the medDatabaseNonPersistentController
      * @param file
-     * @return true if successful, false otherwise.
     */
-    bool openInTab(const QString& file);
+    void openInTab(const QString& file);
 
     /**
      * @brief  Update the medToolBoxes and frees the memory.
@@ -212,6 +208,9 @@ public slots:
      * @param layout
     */
     void switchToLayout (medViewerConfiguration::LayoutType layout);
+
+    void onFileOpened(const medDataIndex &index);
+    void onFileOpenedInTab(const medDataIndex &index);
 
 protected slots:
     /**

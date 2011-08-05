@@ -22,12 +22,13 @@
 
 #include "medSqlExport.h"
 
-#include <medJobItem.h>
+#include <QtCore>
+#include <QtSql>
 
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <QtCore>
-#include <QtSql>
+#include <medJobItem.h>
+#include <medDataIndex.h>
 
 class medDatabaseImporterPrivate;
 class dtkAbstractData;
@@ -71,6 +72,9 @@ signals:
 
 public slots:
     void onCancel(QObject*);
+
+signals:
+    void addedIndex(const medDataIndex &);
 
 private:
     /**

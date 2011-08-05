@@ -204,10 +204,10 @@ void medViewerArea::split(int rows, int cols)
         root->split(rows, cols);
 }
 
-bool medViewerArea::openInTab(const medDataIndex &index)
+void medViewerArea::openInTab(const medDataIndex &index)
 {
     if(!((medDataIndex)index).isValid())
-        return false;
+        return;
 
     // For the moment switch to visualization, later we will be cleverer
     this->setupConfiguration("Visualization");
@@ -217,7 +217,7 @@ bool medViewerArea::openInTab(const medDataIndex &index)
         dtkSmartPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
 
         if (dtkdata.isNull())
-            return false;
+            return;
 
         QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(tr("PatientName")));
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
@@ -225,13 +225,13 @@ bool medViewerArea::openInTab(const medDataIndex &index)
     else
         d->current_configuration->stackedViewContainers()->changeCurrentContainerType("Multi");
 
-    return this->open(index);
+    this->open(index);
 }
 
-bool medViewerArea::open(const medDataIndex& index)
+void medViewerArea::open(const medDataIndex& index)
 {
     if(!((medDataIndex)index).isValid())
-        return false;
+        return;
 
     this->switchToPatient(index);
 
@@ -248,12 +248,12 @@ bool medViewerArea::open(const medDataIndex& index)
         // the data-manager should be used to read data
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
-        //BB: I don't understand why we need to block signals here, but we should
-        //unblock them as well.
-        medDataManager::instance()->blockSignals (false);
 
         if ( data.isNull() )
-            return false;
+        {
+            medDataManager::instance()->blockSignals (false);
+            return;
+        }
 
         medViewContainer * current = this->currentContainerFocused();
         if ( current != NULL )
@@ -267,7 +267,8 @@ bool medViewerArea::open(const medDataIndex& index)
 
         if( view.isNull() ) {
             qDebug() << "Unable to create a v3dView";
-            return false;
+            medDataManager::instance()->blockSignals (false);
+            return;
         }
 
         // another hash?!
@@ -295,8 +296,8 @@ bool medViewerArea::open(const medDataIndex& index)
             root->setDisabled (false);
             root->setUpdatesEnabled (true);
         }
-
-        return true;
+        medDataManager::instance()->blockSignals (false);
+        return;
     }
 
     if(index.isValidForPatient())
@@ -320,18 +321,30 @@ bool medViewerArea::open(const medDataIndex& index)
         }
 
     }
-
-    return true;
+    medDataManager::instance()->blockSignals (false);
+    return;
 }
 
-bool medViewerArea::openInTab(const QString& file)
+void medViewerArea::openInTab(const QString& file)
 {
-    return this->openInTab(medDatabaseNonPersistentController::instance()->import(file));
+    connect(medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &)),this,SLOT(onFileOpenedInTab(const medDataIndex &)));
+    medDatabaseNonPersistentController::instance()->import(file);
 }
 
-bool medViewerArea::open(const QString& file)
+void medViewerArea::open(const QString& file)
 {
-    return this->open(medDataManager::instance()->importNonPersistent(file));
+    connect(medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &)),this,SLOT(onFileOpened(const medDataIndex &)));
+    medDatabaseNonPersistentController::instance()->import(file);
+}
+
+void medViewerArea::onFileOpened(const medDataIndex &index)
+{
+    this->open(index);
+}
+
+void medViewerArea::onFileOpenedInTab(const medDataIndex &index)
+{
+    this->openInTab(index);
 }
 
 void medViewerArea::onViewClosed(void)

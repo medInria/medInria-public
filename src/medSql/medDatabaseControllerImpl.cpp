@@ -363,20 +363,32 @@ medDataIndex medDatabaseControllerImpl::indexForImage(const QString &patientName
     return medDataIndex();
 }
 
-medDataIndex medDatabaseControllerImpl::import(const QString& file)
+void medDatabaseControllerImpl::import(const QString& file)
 {
-    Q_UNUSED(file);
-
-    emit(updated(medDataIndex()));
-
-    return medDataIndex();
+    import(file,false);
 }
 
-medDataIndex medDatabaseControllerImpl::import( dtkAbstractData *data )
+void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)
+{
+    QFileInfo info(file);
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
+    connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
+    connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
+    connect(importer, SIGNAL(failure(QObject *)), importer, SLOT(deleteLater()));
+    //connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+
+    emit(displayJobItem(importer, info.baseName()));
+
+    medJobManager::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
+}
+
+void medDatabaseControllerImpl::import( dtkAbstractData *data )
 {
     medDatabaseWriter *writer = new medDatabaseWriter(data);
 
     connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(writer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(writer, SIGNAL(success(QObject *)), writer, SLOT(deleteLater()));
@@ -384,7 +396,8 @@ medDataIndex medDatabaseControllerImpl::import( dtkAbstractData *data )
 
     medMessageController::instance()->showProgress(writer, "Saving database item");
 
-    return writer->run();
+    medJobManager::instance()->registerJobItem(writer);
+    QThreadPool::globalInstance()->start(writer);
 }
 
 dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const

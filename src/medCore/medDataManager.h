@@ -58,26 +58,23 @@ public:
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
     * @params dtkSmartPointer<dtkAbstractData> & data
-    * @return medDataIndex
     */
-    medDataIndex import(dtkSmartPointer<dtkAbstractData> &data);
+    void import(dtkSmartPointer<dtkAbstractData> &data);
 
     /**
     * Use this function to insert data into the non-persistent database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
     * @params const dtkAbstractData & data
-    * @return medDataIndex
     */
-    medDataIndex importNonPersistent(dtkAbstractData *data);
+    void importNonPersistent(dtkAbstractData *data);
 
 
     /**
     * Overload to insert data directly from a file into the no-persistent database
     * @params QString file
-    * @return medDataIndex
     */
-    medDataIndex importNonPersistent(QString file);
+    void importNonPersistent(QString file);
 
 
     /**
@@ -167,6 +164,11 @@ signals:
     * or non persistent database by calling remove().
     */
     void dataRemoved (const medDataIndex&);
+
+public slots:
+    void onNonPersistentDataImported(const medDataIndex &index);
+    void onPersistentDataImported(const medDataIndex &index);
+    void onSingleNonPersistentDataStored(const medDataIndex &index);
 
 protected:
      medDataManager(void);

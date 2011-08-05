@@ -21,7 +21,7 @@ public:
 
     QList<medToolBox*> toolboxes;
     medDatabaseSearchPanel *searchPanel;
-   
+
 };
 
 medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
@@ -83,7 +83,7 @@ QString medDatabaseDataSource::tabName()
 
 QList<medToolBox*> medDatabaseDataSource::getToolboxes()
 {
-    return d->toolboxes; 
+    return d->toolboxes;
 }
 
 void medDatabaseDataSource::update()

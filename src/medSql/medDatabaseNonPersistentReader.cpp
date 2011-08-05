@@ -37,11 +37,13 @@ class medDatabaseNonPersistentReaderPrivate
 {
 public:
     QString file;
+    bool isCancelled;
 };
 
-medDatabaseNonPersistentReader::medDatabaseNonPersistentReader(const QString& file) : QObject(), d(new medDatabaseNonPersistentReaderPrivate)
+medDatabaseNonPersistentReader::medDatabaseNonPersistentReader(const QString& file) : medJobItem(), d(new medDatabaseNonPersistentReaderPrivate)
 {
     d->file = file;
+    d->isCancelled = false;
 }
 
 medDatabaseNonPersistentReader::~medDatabaseNonPersistentReader(void)
@@ -51,12 +53,12 @@ medDatabaseNonPersistentReader::~medDatabaseNonPersistentReader(void)
     d = NULL;
 }
 
-medDataIndex medDatabaseNonPersistentReader::run(void)
+void medDatabaseNonPersistentReader::run(void)
 {
     qDebug() << DTK_PRETTY_FUNCTION;
 
     if (d->file.isEmpty())
-        return medDataIndex();
+        return;
 
     QDir dir(d->file);
     dir.setFilter(QDir::Files);
@@ -321,7 +323,14 @@ medDataIndex medDatabaseNonPersistentReader::run(void)
         medDatabaseNonPersistentController::instance()->insert(index, item);
     }
 
+    emit progressed(100);
     emit success(this);
-
-    return index;
+    emit nonPersistentRead(index);
 }
+
+void medDatabaseNonPersistentReader::onCancel( QObject* )
+{
+    d->isCancelled = true;
+}
+
+

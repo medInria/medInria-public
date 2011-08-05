@@ -8,6 +8,7 @@
 class dtkAbstractView;
 class dtkAbstractData;
 class medToolBoxDiffusionFiberBundlingPrivate;
+class medDataIndex;
 
 /**
   * @class medToolBoxDiffusionFiberBundling
@@ -87,7 +88,8 @@ public slots:
 
     virtual void onBundlingItemChanged (QStandardItem *item);
     
-    
+    virtual void onRoiImported(const medDataIndex &index);
+
 private:
     medToolBoxDiffusionFiberBundlingPrivate *d;
     

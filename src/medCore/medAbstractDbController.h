@@ -25,7 +25,7 @@ public:
     * @return bool true if connected
     */
     virtual bool isConnected() const = 0;
-    
+
     /**
     * return the size that the data behind the medDataIndex in byte
     * @param const medDataIndex& index the index for the data
@@ -61,17 +61,17 @@ public:
     virtual bool isPersistent() const = 0;
 
 signals:
-    
+
     /**
      * signal each time the db gets modified, giving the dataindex that was involved
      */
-    void updated(medDataIndex);
+    void updated(const medDataIndex &);
 
 public slots:
 
     /**
     * Returns pointer to dtkAbstractData read from db (physical or virtual) or NULL
-    * @Note There is no read(QString file) method, as you can achieve this using import(QString) and read(index) 
+    * @Note There is no read(QString file) method, as you can achieve this using import(QString) and read(index)
     * using the index returned from the import
     * @params const medDataIndex & index Index for data
     * @return dtkAbstractData * the data
@@ -83,29 +83,28 @@ public slots:
     * @params const QString & file Filename
     * @return medDataIndex that was assigned
     */
-    virtual medDataIndex import(const QString& file) = 0;
+    virtual void import(const QString& file) = 0;
 
     /**
     * Import a data into the db
     * @params const dtkAbstractData& data reference to data
     * @return medDataIndex that was assigned
     */
-    virtual medDataIndex import(dtkAbstractData *data) = 0;
-  
+    virtual void import(dtkAbstractData *data) = 0;
+
     /**
      * This method allows importing data from other databases
      * @params const medDataIndex & index The data index used in the referenced db (source)
      * @params const medAbstractDbController & controller  The referenced db (source)
-     * @return medDataIndex New assigned dataIndex in target (this) db
      */
-    virtual medDataIndex import(const medDataIndex& index, const medAbstractDbController& controller);
-    
+    virtual void import(const medDataIndex& index, const medAbstractDbController& controller);
+
     /**
      * This method allows removing one data from the database
      * @params const medDataIndex & index The data index to be removed in the db
      */
     virtual void remove(const medDataIndex& index) = 0;
-    
+
     /**
     * This method clears data already loaded in the database.
     */

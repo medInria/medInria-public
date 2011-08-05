@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentController.h --- 
- * 
+/* medDatabaseNonPersitentController.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sun Jun 27 17:45:07 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 58
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASENONPERSISTENTCONTROLLERIMPL_H
@@ -36,13 +36,13 @@ class MEDSQL_EXPORT medDatabaseNonPersistentControllerImpl: public medAbstractDb
     Q_OBJECT
 
 public:
-    
+
     medDatabaseNonPersistentControllerImpl(void);
     ~medDatabaseNonPersistentControllerImpl(void);
 
-    
+
     /**
-    * Get the table indices 
+    * Get the table indices
     * @params bool increment if true auto-increment the counter
     * @return int return the id (before incrementation)
     */
@@ -115,23 +115,22 @@ public slots:
     /**
     * Store data temporarily referenced by temp index
     * @params dtkAbstractData * data data to be stored
-    * @return medDataIndex assigned index
     */
-    medDataIndex import(dtkAbstractData *data);
-    
+    void import(dtkAbstractData *data);
+
     /**
      * Store data temporarily referenced by temp index
      * @params const QString & file data stored at file path
      * @return medDataIndex - assigned index
      */
-    medDataIndex import(const QString& file);
-    
+    void import(const QString& file);
+
     /**
      * Remove data referenced by index from temporary database
      * @params const medDataIndex & index : data index
      */
     void remove(const medDataIndex& index);
-    
+
     /**
     * Removes any reference to non-persistent data. Do not actually free memory.
     */
