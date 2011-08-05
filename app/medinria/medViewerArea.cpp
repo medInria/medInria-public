@@ -209,7 +209,10 @@ bool medViewerArea::openInTab(const medDataIndex &index)
     if(!((medDataIndex)index).isValid())
         return false;
 
-    if (!this->currentContainerFocused()->views().isEmpty())
+    // For the moment switch to visualization, later we will be cleverer
+    this->setupConfiguration("Visualization");
+
+    if (!this->currentRootContainer()->views().isEmpty())
     {
         dtkSmartPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
 
@@ -219,6 +222,8 @@ bool medViewerArea::openInTab(const medDataIndex &index)
         QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(tr("PatientName")));
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
     }
+    else
+        d->current_configuration->stackedViewContainers()->changeCurrentContainerType("Multi");
 
     return this->open(index);
 }
@@ -300,7 +305,7 @@ bool medViewerArea::open(const medDataIndex& index)
         this->setupConfiguration("Visualization");
         this->switchToContainer("Multi");
 
-       medDataManager *dataManager = medDataManager::instance();
+        medDataManager *dataManager = medDataManager::instance();
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
 
         QList<medDataIndex> studiesForSource = dbc->studies(index);
@@ -453,6 +458,9 @@ void medViewerArea::switchToStackedViewContainers(medStackedViewContainers* stac
 
 void medViewerArea::switchToContainer(const QString& name)
 {
+    qDebug() << "switching from"
+             << d->current_configuration->currentViewContainerName()
+             << "to configuration" << name;
 
     if (d->current_configuration)
     {
@@ -464,9 +472,6 @@ void medViewerArea::switchToContainer(const QString& name)
             //same conf, do nothing
             return;
         }
-        qDebug() << "switching from"
-                 << d->current_configuration->currentViewContainerName()
-                 << "to configuration" << name;
 
         d->current_configuration->setCurrentViewContainer(name);
         root->setFocus(Qt::MouseFocusReason);
@@ -716,8 +721,7 @@ void medViewerArea::setupConfiguration(QString name)
       animation->start();
       }*/
 
-    connect(conf, SIGNAL(layoutModeChanged(const QString&)),
-            this, SLOT(switchToContainer(const QString&)));
+    connect(conf->stackedViewContainers(), SIGNAL(currentChanged(const QString&)), this, SLOT(switchToContainer(const QString&)));
     connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)));
     connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)));
     connect(conf, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)));
