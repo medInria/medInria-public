@@ -1,15 +1,19 @@
 #include "medAbstractData.h"
 
 #include "medDataIndex.h"
+#include "medAttachedData.h"
 
 class medAbstractDataPrivate
 {
 public:
     bool isTrueVolumetric;
     medDataIndex index;
+    QList< medAttachedData * > attachedData;
 };
 
-medAbstractData::medAbstractData( dtkAbstractData *parent /*= 0*/ ) : dtkAbstractData(parent), d(new medAbstractDataPrivate)
+medAbstractData::medAbstractData( dtkAbstractData *parent )
+    : dtkAbstractData(parent)
+    , d(new medAbstractDataPrivate)
 {
     d->isTrueVolumetric = false;
     qDebug() << "constructing medAbstractData: ";
@@ -46,4 +50,32 @@ void medAbstractData::setDataIndex( const medDataIndex& index )
 medDataIndex medAbstractData::dataIndex() const
 {
     return d->index;
+}
+
+QList< medAttachedData * > medAbstractData::attachedData() const
+{
+    return d->attachedData;
+}
+
+void medAbstractData::clearAttachedData()
+{
+    foreach ( medAttachedData * d, d->attachedData )
+        emit attachedDataRemoved( d );
+    d->attachedData.clear();
+}
+
+void medAbstractData::addAttachedData( medAttachedData * data )
+{
+    if ( !d->attachedData.contains( data ) ) {
+        d->attachedData.append( data );
+        emit attachedDataAdded( data );
+    }
+}
+
+void medAbstractData::removeAttachedData( medAttachedData * data )
+{
+    int n = d->attachedData.count();
+    d->attachedData.removeAll( data );
+    if ( n > d->attachedData.count() )
+        emit attachedDataRemoved( data );
 }

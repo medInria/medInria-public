@@ -189,7 +189,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     //Setup quit message
     d->quitMessage = new QWidget ( this );
-    QHBoxLayout * quitLayout = new QHBoxLayout ( this );
+    QHBoxLayout * quitLayout = new QHBoxLayout;
     QLabel *icon = new QLabel ( this );
     icon->setMinimumHeight ( 30 );
     icon->setPixmap ( QPixmap ( ":/icons/information.png" ) );
@@ -237,6 +237,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect ( d->homepageArea, SIGNAL ( showViewer() ), this, SLOT ( switchToViewerArea() ) );
     QObject::connect ( d->homepageArea, SIGNAL ( showConfiguration ( QString ) ), d->viewerArea, SLOT ( setupConfiguration ( QString ) ) );
     QObject::connect ( d->homepageArea,SIGNAL ( showSettings() ), this, SLOT ( onEditSettings() ) );
+
 
     //Add configuration button to the quick access menu
     this->updateQuickAccessMenu();
@@ -516,29 +517,30 @@ void medMainWindow::onEditSettings()
 
 void medMainWindow::open ( const medDataIndex& index )
 {
-    d->viewerArea->openInTab(index);
-//    if(d->viewerArea->openInTab(index))
-//    {
-//        d->quickAccessButton->setText("Workspace: Visualization");
-//        d->quickAccessButton->setMinimumWidth(170);
-//        this->switchToViewerArea();
-//    }
-//    else
-//    {
-//        // something went wrong while opening
-//        // we bubble down the info
-//        d->browserArea->onOpeningFailed(index);
-//    }
+//    d->viewerArea->openInTab(index);
+   if(d->viewerArea->openInTab(index))
+    {
+        d->quickAccessButton->setText("Workspace: Visualization");
+        d->quickAccessButton->setMinimumWidth(170);
+        this->switchToViewerArea();
+    }
+    else
+    {
+        // something went wrong while opening
+        // we bubble down the info
+        d->browserArea->onOpeningFailed(index);
+    }
 }
 
 void medMainWindow::open ( const QString& file )
 {
     d->viewerArea->openInTab ( file );
-
     d->quickAccessButton->setText("Workspace: Visualization");
     d->quickAccessButton->setMinimumWidth(170);
     this->switchToViewerArea();
 }
+
+
 
 void medMainWindow::load(const QString& file)
 {

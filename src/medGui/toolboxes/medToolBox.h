@@ -122,6 +122,16 @@ public:
     */
     medToolBoxBody   *body(void)   const;
 
+    /**
+     * @brief Uncheck all buttons in this toolbox belonging to buttonGroup
+     *
+     * This function is called by the configuration when it receives
+     * the buttonChecked signal from another toolbox.  Override it
+     * when your toolbox shares a buttonGroup with other toolboxes.
+     *
+     * @param buttonGroup
+    */
+    virtual void uncheckButtons( const QString & buttonGroup ) {}
 
 signals:
     /**
@@ -154,6 +164,16 @@ signals:
      * @param void
     */
     void failure(void);
+
+    /**
+     * @brief Use this if buttons in different toolboxes are mutually exclusive
+     *
+     * Emit this signal to uncheck buttons of the same buttonGroup in
+     * other toolboxes.
+     *
+     * @param buttonGroup
+    */
+    void buttonChecked( const QString & buttonGroup );
 
 public slots:
     /**

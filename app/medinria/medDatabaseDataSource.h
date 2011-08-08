@@ -26,7 +26,7 @@ public:
 
     QList<medToolBox*> getToolboxes();
 public slots:
-    void update();
+    void update(const medDataIndex &);
     void onOpeningFailed(const medDataIndex& index);
 
 signals:
