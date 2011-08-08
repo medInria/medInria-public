@@ -11,6 +11,8 @@
 ## 
 ######################################################################
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_subdirectory(medTestCommon)
 add_subdirectory(medTestDb)
 enable_testing()
