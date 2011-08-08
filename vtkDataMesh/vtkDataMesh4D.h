@@ -1,7 +1,7 @@
 #ifndef _vtk_DataMesh4D_h_
 #define _vtk_DataMesh4D_h_
 
-#include <dtkCore/dtkAbstractDataMesh.h>
+#include <medAbstractDataMesh.h>
 #include <dtkCore/dtkGlobal.h>
 
 #include "vtkDataMeshPluginExport.h"
@@ -30,7 +30,7 @@ class vtkDataMesh4DPrivate;
     \author Nicolas Toussaint
 */
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public dtkAbstractDataMesh
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractDataMesh
 {
   Q_OBJECT
     
@@ -58,7 +58,7 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public dtkAbstractDataMesh
     int countEdges(void);
     
  public:
-    // derived from dtkAbstractDataImage
+    // derived from medAbstractDataImage
     
  private:
 

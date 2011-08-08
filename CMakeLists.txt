@@ -51,7 +51,7 @@ set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 ## #################################################################
 
 enable_testing()
-OPTION(BUILD_EXAMPLES "Enable this if you want to build the exmples" OFF)
+OPTION(BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
 
 mark_as_advanced(DART_ROOT)
 
@@ -172,6 +172,10 @@ if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
 
+if (BUILD_TESTING)
+  add_subdirectory(tests)
+endif (BUILD_TESTING)
+
 include(${PROJECT_NAME}Pack)
 
 ## #################################################################
@@ -195,7 +199,8 @@ if(WIN32)
             -D_CRT_TIME_FUNCTIONS_NO_DEPRECATE
             -D_CRT_VCCLRIT_NO_DEPRECATE
             -D_SCL_SECURE_NO_DEPRECATE
-            )
+            -D_SCL_SECURE_NO_WARNINGS
+          )
         endif(NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
       endif(NOT MINGW)
     endif(NOT CYGWIN)

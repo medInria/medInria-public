@@ -6,6 +6,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <itkTensor.h>
 #include <itkImageFileReader.h>
@@ -88,20 +89,20 @@ void itkDataTensorImageReaderBase::readInformation (const QString &path)
 	return;
     }
     
-    dtkAbstractData* dtkdata = this->data();
+    dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
 
     if (!dtkdata) {
       
         switch (this->io->GetComponentType()) {
 
 	    case itk::ImageIOBase::FLOAT:
-	        dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataTensorImageFloat3");
+	        dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageFloat3");
 		if (dtkdata)
 		    this->setData ( dtkdata );
 		break;
 		  
 	    case itk::ImageIOBase::DOUBLE:
-	        dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataTensorImageDouble3");
+	        dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageDouble3");
 		if (dtkdata)
 		    this->setData ( dtkdata );
 		break;

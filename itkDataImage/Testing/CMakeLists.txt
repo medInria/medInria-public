@@ -1,5 +1,8 @@
 SET(PLUGIN_NAME itkDataImagePlugin)
 
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 SET(itkDataImagePluginTests
   itkDataImageTest.cxx
   itkDataImageDouble3Test.cxx
@@ -15,6 +18,7 @@ ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests
 
 TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
   dtkCore
+  medCore
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   )

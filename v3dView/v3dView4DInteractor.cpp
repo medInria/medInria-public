@@ -21,7 +21,7 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkLog.h>
 
-#include <medCore/medMessageController.h>
+#include <medMessageController.h>
 
 #include "v3dView.h"
 

@@ -20,7 +20,7 @@
 #ifndef EXAMPLEPROCESSIMAGEFILTERTOOLBOX_H
 #define EXAMPLEPROCESSIMAGEFILTERTOOLBOX_H
 
-#include <medGui/medToolBoxDiffusionCustom.h>
+#include <medToolBoxDiffusionCustom.h>
 
 class exampleProcessImageFilterToolBoxPrivate;
 

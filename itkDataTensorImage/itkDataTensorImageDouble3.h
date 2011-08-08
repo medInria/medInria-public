@@ -5,13 +5,13 @@
 #ifndef ITKDATATENSORIMAGEDOUBLE3_H
 #define ITKDATATENSORIMAGEDOUBLE3_H
 
-#include <dtkCore/dtkAbstractDataTypedImage.h>
+#include <medAbstractDataTypedImage.h>
 
 #include "itkDataTensorImagePluginExport.h"
 
 class itkDataTensorImageDouble3Private;
 
-class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageDouble3 : public dtkAbstractDataTypedImage<3,double>
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageDouble3 : public medAbstractDataTypedImage<3,double>
 {
     Q_OBJECT
 
@@ -30,7 +30,7 @@ public slots:
     void setData(void* data);
     
 public:
-    // derived from dtkAbstractDataImage
+    // derived from medAbstractDataImage
     int xDimension(void);
     int yDimension(void);
     int zDimension(void);

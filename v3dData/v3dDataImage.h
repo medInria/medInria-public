@@ -5,13 +5,13 @@
 #ifndef V3DDATAIMAGE_H
 #define V3DDATAIMAGE_H
 
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
 #include "v3dDataPluginExport.h"
 
 class v3dDataImagePrivate;
 
-class V3DDATAPLUGIN_EXPORT v3dDataImage : public dtkAbstractDataImage
+class V3DDATAPLUGIN_EXPORT v3dDataImage : public medAbstractDataImage
 {
     Q_OBJECT
 
@@ -33,7 +33,7 @@ public:
     void setData(void *data);
 
 public:
-    // derived from dtkAbstractDataImage
+    // derived from medAbstractDataImage
     int xDimension(void);
     int yDimension(void);
     int zDimension(void);
