@@ -175,6 +175,14 @@ void medViewerConfiguration::clear()
     return;
 }
 
+void medViewerConfiguration::onButtonChecked( const QString & buttonGroup )
+{
+    medToolBox * sender = dynamic_cast< medToolBox * >( this->sender() );
+    foreach ( medToolBox * toolbox, d->toolboxes )
+        if ( toolbox != sender )
+            toolbox->uncheckButtons( buttonGroup );
+}
+
 void medViewerConfiguration::setToolBoxesVisibility (bool value)
 {
     d->toolBoxesVisibility = value;
