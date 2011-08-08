@@ -65,6 +65,8 @@ void medViewerConfigurationFiltering::setupViewContainerStack()
         this->stackedViewContainers()->addContainer("Filtering",filteringContainer);
 
         setCurrentViewContainer("Filtering");
+        
+        this->stackedViewContainers()->lockTabs();
     }
 }
 
