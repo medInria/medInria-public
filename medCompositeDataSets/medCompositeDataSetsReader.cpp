@@ -124,6 +124,8 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
     //  Verify that there is a manager form this type and version.
 
     reader = MedInria::medCompositeDataSetsBase::known(type,version);
+    const int toto = (reader) ? 1 : 0;
+    qDebug() << "Reader : " << toto;
     return reader!=0;
 }
 

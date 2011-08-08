@@ -22,6 +22,7 @@ namespace MedInria {
         //  Use -1 as version number, if version is not important (eg for writers).
 
         static medCompositeDataSetsBase* known(const std::string& type,const int version) {
+            qDebug() << "Values: " << type.c_str() << " : " << version;
             for (Registery::const_iterator i=registery().begin();i!=registery().end();++i)
                 if (type==i->first && (version==-1 || i->second->has_version(version))) {
                     return i->second->clone(version);

@@ -4,7 +4,6 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -14,9 +13,9 @@
 #include <medCore/medRunnableProcess.h>
 #include <medCore/medJobManager.h>
 
-#include <medGui/medToolBoxFactory.h>
-#include <medGui/medToolBoxCompositeDataSetImporter.h>
-#include <medGui/medProgressionStack.h>
+#include <medToolBoxFactory.h>
+#include <medToolBoxCompositeDataSetImporter.h>
+#include <medProgressionStack.h>
 
 
 class medDiffusionSequenceCompositeDataToolBoxPrivate {

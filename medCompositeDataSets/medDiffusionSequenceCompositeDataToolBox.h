@@ -1,7 +1,7 @@
 #ifndef MEDDIFFUSIONSEQUENCECOMPOSITEDATATOOLBOX_H
 #define MEDDIFFUSIONSEQUENCECOMPOSITEDATATOOLBOX_H
 
-#include <medGui/medToolBoxCompositeDataSetImporterCustom.h>
+#include <medToolBoxCompositeDataSetImporterCustom.h>
 
 #include <medDiffusionSequenceCompositeData.h>
 #include <itkGradientFileReader.h>
