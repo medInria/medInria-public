@@ -9,6 +9,7 @@
 
 #include <medCompositeDataSetsReader.h>
 
+#if 0
 dtkAbstractData* medCompositeDataSetsReader::data() {
     qDebug() << "DATA";
     return 0;
@@ -17,6 +18,7 @@ dtkAbstractData* medCompositeDataSetsReader::data() {
 void medCompositeDataSetsReader::setData(dtkAbstractData *data) {
     qDebug() << "setData";
 }
+#endif
 
 bool medCompositeDataSetsReader::canRead(const QString& path) {
 
@@ -116,20 +118,22 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
     //  Verify the header and extract the file type and version.
 
     std::string type;
-    unsigned    version;
+    unsigned    major,minor;
 
     std::istringstream iss(header);
-    iss >> io_utils::match("# MEDINRIA COMPOSITE DATA:") >> type >> version;
+    iss >> io_utils::match("# MEDINRIA COMPOSITE DATA:") >> type >> major >> io_utils::match('.') >> minor;
 
     //  Verify that there is a manager form this type and version.
 
-    reader = MedInria::medCompositeDataSetsBase::known(type,version);
-    const int toto = (reader) ? 1 : 0;
-    qDebug() << "Reader : " << toto;
+    reader = MedInria::medCompositeDataSetsBase::known(type,major,minor);
+
+    setData(reader);
+
     return reader!=0;
 }
 
 void medCompositeDataSetsReader::readInformation(const QString&) {
+    qDebug("ReadInformation");
     QByteArray buffer = desc->readAll();
     in_error = reader->read_description(buffer);
 }

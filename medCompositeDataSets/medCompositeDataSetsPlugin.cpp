@@ -4,6 +4,7 @@
 
 #include <medCompositeDataSetsPlugin.h>
 #include <medCompositeDataSetsReader.h>
+#include <medCompositeDataSetsWriter.h>
 
 #include <dtkCore/dtkLog.h>
 
@@ -41,7 +42,8 @@ medCompositeDataSetsPlugin::~medCompositeDataSetsPlugin() { }
 bool medCompositeDataSetsPlugin::initialize() {
     const bool have_types  = MedInria::medCompositeDataSetsBase::initialize().size()!=0;
     const bool have_reader = medCompositeDataSetsReader::initialize();
-    return have_types && have_reader;
+    const bool have_writer = medCompositeDataSetsWriter::initialize();
+    return have_types && have_reader && have_writer;
 }
 
 //  Unitialize the plugin.

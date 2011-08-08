@@ -17,33 +17,37 @@ namespace MedInria {
         virtual bool    registered()  const = 0;
         virtual QString description() const = 0;
 
-        //  Verification that there is a handler for this specific type and version of the format.
+        //  Verification that there is a handler for this specific type and version (major,minor) of the format.
         //  Returns a new instance of a reader/writer for that format.
-        //  Use -1 as version number, if version is not important (eg for writers).
 
-        static medCompositeDataSetsBase* known(const std::string& type,const int version) {
-            qDebug() << "Values: " << type.c_str() << " : " << version;
+        static medCompositeDataSetsBase* known(const std::string& type,const unsigned major,const unsigned minor) {
             for (Registery::const_iterator i=registery().begin();i!=registery().end();++i)
-                if (type==i->first && (version==-1 || i->second->has_version(version))) {
-                    return i->second->clone(version);
-            }
+                if (type==i->first && i->second->has_version(major,minor))
+                    return i->second->clone(major,minor);
 
+            return 0;
+        }
+
+        static medCompositeDataSetsBase* find(const QString& desc) {
+            for (Registery::const_iterator i=registery().begin();i!=registery().end();++i)
+                if (i->second->description()==desc)
+                    return i->second->clone(-1,-1);
             return 0;
         }
 
         //  Give the tag and version associated to the data set.
 
-        virtual QString  tag()     const = 0;
-        virtual unsigned version() const = 0;
+        virtual QString tag()     const = 0;
+        virtual QString version() const = 0;
 
-        //  Check that the plugin can handle a given version ofthe file format.
+        //  Check that the plugin can handle a given version (major,mnior) of the file format.
 
-        virtual bool has_version(const unsigned) const = 0;
+        virtual bool has_version(const unsigned,const unsigned) const = 0;
 
-        //  Create a new instance tuned for the revision version of the file format.
-        //  Use -1 to indicate the default version of the file format.
+        //  Create a new instance tuned for the revision version (major,mnior) of the file format.
+        //  Use -1 as major to indicate the default version of the file format.
 
-        virtual medCompositeDataSetsBase* clone(const int version) const = 0;
+        virtual medCompositeDataSetsBase* clone(const int major,const int minor) const = 0;
 
         //  Read the description from an array.
 

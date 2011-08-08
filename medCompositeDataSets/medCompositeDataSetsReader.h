@@ -14,7 +14,7 @@ class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsReader: public dtkAb
 
 public:
 
-    medCompositeDataSetsReader(): desc(0) { };
+    medCompositeDataSetsReader(): desc(0) { }
 
     virtual ~medCompositeDataSetsReader() {
         if (!desc)
@@ -29,14 +29,13 @@ public:
 //    void  enable();
 //    void disable();
     
-    dtkAbstractData *data();
+//    dtkAbstractData *data();
     
-    virtual void setData(dtkAbstractData *data);
+//    virtual void setData(dtkAbstractData *data);
 
     void cleanup() { RemoveDirectory(QDir(outdir)); }
 
     static bool initialize() {
-        qDebug() << "HERE: " << MedInria::medCompositeDataSetsBase::handled();
         return dtkAbstractDataFactory::instance()->registerDataReaderType("medCompositeDataSetsReader",MedInria::medCompositeDataSetsBase::handled(),create);
     }
 

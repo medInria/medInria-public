@@ -50,6 +50,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medCompositeDataSetsPlugin.h
   medDiffusionSequenceCompositeDataToolBox.h
   medCompositeDataSetsReader.h
+  medCompositeDataSetsWriter.h
 #  medDiffusionSequenceCompositeData.h
 )
 

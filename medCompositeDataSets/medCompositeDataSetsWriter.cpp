@@ -8,17 +8,6 @@
 
 #include <medCompositeDataSetsBase.h>
 
-bool medCompositeDataSetsWriter::canWrite(const QString& path) {
-    
-    if (!this->data())
-        return false;
-
-    dtkAbstractData *dtkdata = this->data();
-
-    writer = MedInria::medCompositeDataSetsBase::known(dtkdata->description().toAscii().data(),-1);
-    return writer!=0;
-}
-
 bool medCompositeDataSetsWriter::write(const QString& path) {
     QFile zipFile(path);
     dtkZip zip(&zipFile);
@@ -37,7 +26,12 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
          qWarning("medCompositeDataSets: cannot open file %s",descname.toLocal8Bit().constData());
     QTextStream out(&desc);
 
-    out << "# MEDINRIA COMPOSITE DATA:" << writer->tag() << ' ' << writer->version() << '\n';
+    writer = MedInria::medCompositeDataSetsBase::find(data()->description().toAscii().data());
+    if (!writer)
+        //emit showError(this, tr ("Could not write this data type: ")+data()->description(), 5000);
+        qDebug() << tr ("Could not write this data type: ")+data()->description();
+
+    out << "# MEDINRIA COMPOSITE DATA: " << writer->tag() << ' ' << writer->version() << '\n';
 
     writer->write_description(out);
     writer->write_data(tmpdir,this->data());
@@ -49,17 +43,22 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
     dtkZipFile outFile(&zip);
 
     foreach(QFileInfo file,files) {
-        QFile inFile(file.fileName());
 
+        if (file.fileName()=="." || file.fileName()=="..")
+            continue;
+
+        QFile inFile(tmpdir+"/"+file.fileName());
         if(!inFile.open(QIODevice::ReadOnly)) {
             qWarning("medCompositeDataSets: inFile.open(): %s", inFile.errorString().toLocal8Bit().constData());
             return false;
         }
 
-        if(!outFile.open(QIODevice::WriteOnly, dtkZipNewInfo(inFile.fileName(), inFile.fileName()))) {
+        if(!outFile.open(QIODevice::WriteOnly, dtkZipNewInfo(file.fileName(), file.fileName()))) {
             qWarning("medCompositeDataSets: outFile.open(): %d", outFile.getZipError());
             return false;
         }
+
+        qDebug() << "H" << file.fileName();
 
         qint64 len = file.size();
         qint64 pos = 0;

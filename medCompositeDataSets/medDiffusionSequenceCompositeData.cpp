@@ -73,17 +73,20 @@ void medDiffusionSequenceCompositeData::readVolumes(QStringList paths) {
         QString filepath = paths[i];
         dtkAbstractDataReader* reader = NULL;
         
+        qDebug() << "Attempting to read: " << filepath;
+
         for (int i=0;i<readers.size();++i) {
             dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
-            if (dataReader->canRead(filepath ))
+            if (dataReader->canRead(filepath))
                 reader = dataReader;
             else
                 delete reader;
         }
 
-        reader->readInformation(filepath);
+        reader->read(filepath);
         dtkAbstractData* volume = reader->data();
         QString description     = volume->description();
+        qDebug() << description;
         if (!description.contains("Image")) {
             // emit medToolBoxCompositeDataSetImporter::showError(this,tr("file does not describe any known image type"),3000);
             continue;

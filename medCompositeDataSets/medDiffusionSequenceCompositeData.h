@@ -23,20 +23,21 @@ public:
 
     friend class medDiffusionSequenceCompositeDataToolBox;
 
-    medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase(Tag,this),vers(defaultVersion) { }
+    medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase(Tag,this),major_vers(defaultMajorVersion),minor_vers(defaultMinorVersion) { }
     virtual ~medDiffusionSequenceCompositeData() { }
 
     virtual QString description() const;
 
-    virtual bool has_version(const unsigned num) const { return num==0; }
+    virtual bool has_version(const unsigned major,const unsigned minor) const { return major==defaultMajorVersion; }
 
-    virtual MedInria::medCompositeDataSetsBase* clone(const int v) const {
-        const unsigned version = (v==-1) ? defaultVersion : v;
-        return new medDiffusionSequenceCompositeData(version);
+    virtual MedInria::medCompositeDataSetsBase* clone(const int major,const int minor) const {
+        const unsigned maj_version = (major==-1) ? defaultMajorVersion : major;
+        const unsigned min_version = (minor==-1) ? defaultMinorVersion : minor;
+        return new medDiffusionSequenceCompositeData(maj_version,min_version);
     }
 
-    virtual QString  tag()     const { return Tag;  }
-    virtual unsigned version() const { return vers; }
+    virtual QString tag()     const { return Tag;                                                         }
+    virtual QString version() const { return QString::number(major_vers)+"."+QString::number(minor_vers); }
 
     bool registered() const;
 
@@ -54,9 +55,10 @@ public:
 
 private:
 
-    medDiffusionSequenceCompositeData(const unsigned v): MedInria::medCompositeDataSetsBase(Tag,this), vers(v) { }
+    medDiffusionSequenceCompositeData(const unsigned major,const unsigned minor): MedInria::medCompositeDataSetsBase(Tag,this),major_vers(major),minor_vers(minor) { }
 
-    const unsigned   vers;
+    const unsigned   major_vers;
+    const unsigned   minor_vers;
     QStringList      image_list;
     Volumes          images;
     GradientListType gradients;
@@ -64,7 +66,8 @@ private:
     static const medDiffusionSequenceCompositeData proto;
 
     static const char     Tag[];
-    static const unsigned defaultVersion = 0;
+    static const unsigned defaultMajorVersion = 1;
+    static const unsigned defaultMinorVersion = 0;
 };
 
 dtkAbstractData* createDiffusionSequenceCompositeData();
