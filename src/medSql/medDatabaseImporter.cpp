@@ -873,7 +873,6 @@ dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter( Q
     for (int i=0; i<writers.size(); i++) {
         dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
         if (d->lastSuccessfulWriterDescription==dataWriter->description()) {
-
             if ( dataWriter->handled().contains(dtkData->description()) &&
                  dataWriter->canWrite( filename ) ) {
 
@@ -997,6 +996,9 @@ QString medDatabaseImporter::determineFutureImageExtensionByDataType(const dtkAb
      } else if (description.contains("vistal")) {
          extension = ".dim";
          qDebug() << "Vistal Image";
+     } else if (description.contains ("CompositeData")) {
+        extension = ".cds";
+        qDebug() << "composite Dataset";
      } else if (description.contains ("Image")) {
          extension = ".mha";
          //qDebug() << description;
@@ -1010,7 +1012,7 @@ bool medDatabaseImporter::tryWriteImage(QString filePath, dtkAbstractData* imDat
     dtkSmartPointer<dtkAbstractDataWriter> dataWriter = getSuitableWriter(filePath, imData);
     if (dataWriter) {
         dataWriter->setData(imData);
-        if ( dataWriter->write(filePath))
+        if (dataWriter->write(filePath))
             return true;
     }
     return false;
