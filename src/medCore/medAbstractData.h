@@ -13,8 +13,7 @@ class medDataIndex;
 /**
  * Extending dtkAbstractData class to hold more specific information
  */
-// class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
-class medAbstractData : public dtkAbstractData
+class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 {
     Q_OBJECT
 
