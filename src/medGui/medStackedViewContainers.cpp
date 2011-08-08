@@ -130,10 +130,6 @@ void medStackedViewContainers::insertContainer(int index, const QString &name, m
              this,      SIGNAL( focused( dtkAbstractView * ) ) );
     connect( container, SIGNAL( dropped( const medDataIndex & ) ),
              this,      SIGNAL( dropped( const medDataIndex & ) ) );
-    connect( container, SIGNAL( focused( dtkAbstractView * ) ),
-             this,      SIGNAL( focused( dtkAbstractView * ) ) );
-    connect( container, SIGNAL( dropped( const medDataIndex & ) ),
-             this,      SIGNAL( dropped( const medDataIndex & ) ) );
 
     connect( container, SIGNAL( viewAdded( dtkAbstractView * ) ),
              this,      SIGNAL( viewAdded( dtkAbstractView * ) ) );
