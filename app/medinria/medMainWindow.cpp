@@ -189,7 +189,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     //Setup quit message
     d->quitMessage = new QWidget ( this );
-    QHBoxLayout * quitLayout = new QHBoxLayout ( this );
+    QHBoxLayout * quitLayout = new QHBoxLayout;
     QLabel *icon = new QLabel ( this );
     icon->setMinimumHeight ( 30 );
     icon->setPixmap ( QPixmap ( ":/icons/information.png" ) );

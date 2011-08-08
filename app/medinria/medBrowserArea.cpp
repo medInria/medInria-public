@@ -202,8 +202,8 @@ void medBrowserArea::onDataImport(dtkAbstractData *data)
     {
         qDebug() << "Cannot create directory: " << fileInfo.dir().path();
         return;
-    }  
-    
+    }
+
     medDatabaseController::instance()->import(data);
 }
 
@@ -266,5 +266,5 @@ void medBrowserArea::onExportData(const medDataIndex &index)
 
 void medBrowserArea::onDataRemoved( const medDataIndex &index )
 {
-    d->dbSource->update();
+    d->dbSource->update(index);
 }
