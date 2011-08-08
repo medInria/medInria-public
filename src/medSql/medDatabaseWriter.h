@@ -22,9 +22,9 @@
 
 #include <QtCore/QObject>
 
-#include <medCore/medJobItem.h>
+#include <medJobItem.h>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 class dtkAbstractData;
 class medDatabaseWriterPrivate;
@@ -39,7 +39,7 @@ class medDatabaseWriterPrivate;
  * be used. The SeriesDescription is mandatory and import will fail it not
  * found.
  */
-class medDatabaseWriter : public QObject
+class medDatabaseWriter : public medJobItem
 {
     Q_OBJECT
 
@@ -47,12 +47,16 @@ public:
      medDatabaseWriter(dtkAbstractData *data);
     ~medDatabaseWriter(void);
 
-    medDataIndex run(void);
+    void run(void);
+
+public slots:
+    void onCancel(QObject*);
 
 signals:
     void success(QObject *);
     void failure(QObject *);
     void progressed(int);
+    void addedIndex(const medDataIndex &);
 
 private:
     medDatabaseWriterPrivate *d;

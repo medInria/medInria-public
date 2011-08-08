@@ -20,7 +20,7 @@
 #ifndef MEDVIEWERTOOLBOXCONFIGURATION_H
 #define MEDVIEWERTOOLBOXCONFIGURATION_H
 
-#include <medGui/medToolBox.h>
+#include <medToolBox.h>
 
 class medViewerToolBoxConfigurationPrivate;
 

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="medGui">
+      <file>pixmaps/plus_button.png</file>
+    </qresource>
+</RCC>

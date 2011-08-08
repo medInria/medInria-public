@@ -22,13 +22,14 @@
 
 #include <QtCore/QObject>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
+#include <medJobItem.h>
 
 class dtkAbstractData;
 
 class medDatabaseNonPersistentReaderPrivate;
 
-class medDatabaseNonPersistentReader : public QObject
+class medDatabaseNonPersistentReader : public medJobItem
 {
     Q_OBJECT
 
@@ -36,12 +37,16 @@ public:
      medDatabaseNonPersistentReader(const QString& file);
     ~medDatabaseNonPersistentReader(void);
 
-    medDataIndex run(void);
+    void run(void);
 
 signals:
     void success(QObject *);
     void failure(QObject *);
     void progressed(int);
+    void nonPersistentRead(const medDataIndex &);
+
+public slots:
+    void onCancel(QObject*);
 
 private:
     medDatabaseNonPersistentReaderPrivate *d;

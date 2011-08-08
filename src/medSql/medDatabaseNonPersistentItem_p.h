@@ -20,7 +20,10 @@
 #ifndef MEDDATABASENONPERSISTENTITEM_P_H
 #define MEDDATABASENONPERSISTENTITEM_P_H
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
+
+#include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <QtCore/QString>
 #include <QtGui/QImage>
@@ -38,7 +41,7 @@ public:
 
     medDataIndex index;
 
-    dtkAbstractData *data;
+    dtkSmartPointer<dtkAbstractData> data;
 };
 
 #endif

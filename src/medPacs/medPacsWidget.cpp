@@ -19,12 +19,12 @@
 
 #include "medPacsWidget.h"
 
-#include <medPacs/medAbstractPacsFactory.h>
-#include <medPacs/medAbstractPacsFindScu.h>
-#include <medPacs/medAbstractPacsEchoScu.h>
-#include <medPacs/medAbstractPacsNode.h>
-#include <medPacs/medAbstractPacsStoreScp.h>
-#include <medPacs/medAbstractPacsResultDataset.h>
+#include <medAbstractPacsFactory.h>
+#include <medAbstractPacsFindScu.h>
+#include <medAbstractPacsEchoScu.h>
+#include <medAbstractPacsNode.h>
+#include <medAbstractPacsStoreScp.h>
+#include <medAbstractPacsResultDataset.h>
 
 #include <QUuid>
 
@@ -163,6 +163,13 @@ void medPacsWidget::readSettings(void)
 
 }
 
+bool medPacsWidget::isServerFunctional()
+{
+    if (d->server)
+        return true;
+    else
+        return false;
+}
 
 void medPacsWidget::search(QString query)
 {
