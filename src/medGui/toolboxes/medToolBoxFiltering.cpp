@@ -7,8 +7,8 @@
 #include "medToolBoxFiltering.h"
 #include "medToolBoxFilteringCustom.h"
 
-#include <medGui/medToolBoxFactory.h>
-#include <medGui/medDropSite.h>
+#include <medToolBoxFactory.h>
+#include <medDropSite.h>
 
 #include <medCore/medDataManager.h>
 

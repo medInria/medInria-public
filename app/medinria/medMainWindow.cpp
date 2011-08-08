@@ -220,11 +220,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
 
     // Setting up status bar
-    d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
-    d->shiftToViewerAreaAction = new medWorkspaceShifterAction("Viewer");
-
-    d->shiftToBrowserAreaAction->setChecked(true);
-
     //Setup quick access menu
     d->quickAccessButton = new medQuickAccessPushButton ( this );
     d->quickAccessButton->setFocusPolicy ( Qt::NoFocus );

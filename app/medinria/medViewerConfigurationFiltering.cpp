@@ -5,16 +5,17 @@
  */
 
 #include "medViewerConfigurationFiltering.h"
-#include <medGui/medViewContainerFiltering.h>
+#include <medViewContainerFiltering.h>
 
-#include <medGui/medViewerToolBoxView.h>
+#include <medDatabaseNonPersistentController.h>
 
-#include <medGui/medToolBoxFiltering.h>
+#include <medViewerToolBoxView.h>
+#include <medToolBoxFiltering.h>
 
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerMulti.h>
-#include <medGui/medStackedViewContainers.h>
-#include <medGui/medToolBoxFilteringCustom.h>
+#include <medViewContainer.h>
+#include <medViewContainerMulti.h>
+#include <medStackedViewContainers.h>
+#include <medToolBoxFilteringCustom.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -83,9 +84,17 @@ void medViewerConfigurationFiltering::onProcessSuccess()
     
     d->filterOutput->setMetaData(tr("SeriesDescription"),newSeriesDescription);
 
-    d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
+//     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
+
+    QObject::connect( medDatabaseNonPersistentController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(onOutputImported(medDataIndex)));
+    medDatabaseNonPersistentController::instance()->import(d->filterOutput);
 
     emit outputDataChanged(d->filterOutput);
+}
+
+void medViewerConfigurationFiltering::onOutputImported ( const medDataIndex& dataIndex)
+{
+  d->filteringToolBox->setDataIndex(dataIndex);
 }
 
 QString medViewerConfigurationFiltering::description(void) const

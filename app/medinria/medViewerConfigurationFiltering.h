@@ -61,6 +61,13 @@ public slots:
      */
     void onProcessSuccess(void);
 
+    /**
+     * @brief import output data in non persistent database
+     *
+     * @param medDataIndex
+     */
+    void onOutputImported(const medDataIndex &);
+
 private:
     medViewerConfigurationFilteringPrivate *d;
 };

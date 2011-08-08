@@ -9,7 +9,7 @@
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
-#include <medGui/medViewContainerCustom.h>
+#include <medViewContainerCustom.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>

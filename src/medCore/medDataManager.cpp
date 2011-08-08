@@ -631,9 +631,6 @@ void medDataManager::removeData( const medDataIndex& index )
     }
 }
 
-    d->dataCache[index] = data;
-    
-    db->import("");
 //-------------------------------------------------------------------------------------------------------
 
 void medDataManager::removeDataFromCache( const medDataIndex &index )
