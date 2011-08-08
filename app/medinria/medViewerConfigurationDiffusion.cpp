@@ -5,16 +5,16 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include <medCore/medDataManager.h>
+#include <medDataManager.h>
 
-#include "medGui/medToolBoxDiffusionTensorView.h"
-#include "medGui/medToolBoxDiffusion.h"
-#include "medGui/medViewerToolBoxView.h"
-#include "medGui/medToolBoxDiffusionFiberView.h"
-#include "medGui/medToolBoxDiffusionFiberBundling.h"
-#include <medGui/medViewContainer.h>
-#include <medGui/medViewContainerSingle.h>
-#include <medGui/medStackedViewContainers.h>
+#include "medToolBoxDiffusionTensorView.h"
+#include "medToolBoxDiffusion.h"
+#include "medViewerToolBoxView.h"
+#include "medToolBoxDiffusionFiberView.h"
+#include "medToolBoxDiffusionFiberBundling.h"
+#include <medViewContainer.h>
+#include <medViewContainerSingle.h>
+#include <medStackedViewContainers.h>
 
 class medViewerConfigurationDiffusionPrivate
 {
@@ -109,7 +109,8 @@ void medViewerConfigurationDiffusion::setupViewContainerStack()
     }
     
     d->views << diffusionContainer->views();
-    this->stackedViewContainers()->setContainer (description());
+    //this->stackedViewContainers()->setContainer (description());
+    this->stackedViewContainers()->unlockTabs();
 }
 
 
@@ -363,6 +364,23 @@ void medViewerConfigurationDiffusion::refreshInteractors (void)
             view->update();
         }
     }
+}
+
+void medViewerConfigurationDiffusion::onAddTabClicked()
+{
+    QString name = this->description();
+    QString realName = name;
+
+    unsigned int suppTag = 0;
+    while (this->stackedViewContainers()->container(realName))
+    {
+        suppTag++;
+        realName = name + " ";
+        realName += QString::number(suppTag);
+    }
+
+    this->addSingleContainer(realName);
+    this->stackedViewContainers()->setContainer(realName);
 }
 
 medViewerConfiguration *createMedViewerConfigurationDiffusion(void)

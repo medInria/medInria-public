@@ -24,6 +24,15 @@ IF( DOXYGEN_FOUND )
       ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.txt
       )
 
+    include(GetGitRevisionDescription)
+    get_git_head_revision(GIT_REFSPEC GIT_SHA1)
+    #message ("cmake revision?: " ${GIT_SHA1})
+
+    CONFIGURE_FILE( 
+      ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenFooter.html.in
+      ${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html
+      )
+
     CONFIGURE_FILE(
       ${CMAKE_CURRENT_SOURCE_DIR}/generate_doc.cmake.in
       ${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake
@@ -40,7 +49,7 @@ IF( DOXYGEN_FOUND )
     ADD_CUSTOM_COMMAND(
       OUTPUT ${doc_output}
       #COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenHeader.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenHeader.html
-      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenFooter.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html
+      #COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenFooter.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html
       COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/img      ${CMAKE_CURRENT_BINARY_DIR}/html/img
 
       COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake"
@@ -49,11 +58,12 @@ IF( DOXYGEN_FOUND )
 
       DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.txt"
+              "${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html"
               "${CMAKE_CURRENT_BINARY_DIR}/medinria.qhcp"
       )
 
-    ADD_CUSTOM_TARGET(doc ${all_arg} DEPENDS ${doc_output})
-    SET_TARGET_PROPERTIES(doc PROPERTIES LABELS Documentation)
+    ADD_CUSTOM_TARGET(${PROJECT_NAME}-doc ${all_arg} DEPENDS ${doc_output})
+    SET_TARGET_PROPERTIES(${PROJECT_NAME}-doc PROPERTIES LABELS Documentation)
  
   ELSE( DOXYGEN_DOT_FOUND )
     MESSAGE( WARNING

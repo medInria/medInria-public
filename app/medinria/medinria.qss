@@ -430,10 +430,7 @@ QTreeWidget::branch:open:has-children:!has-siblings,
 QTreeWidget::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
-} 
-
-
-
+}
 
 /**
  * QPushButton
@@ -683,8 +680,6 @@ medToolBoxTabBar::tab:selected, medToolBoxTabBar::tab:hover {
     font-size: 10pt;
 }
 
-
-
 /**
  * medSettingsEditor
  *
@@ -857,6 +852,131 @@ QFrame #medNavigatorContainer {
 medMainWindow {
     background: #313131;
 }
+
+medMainWindow QPushButton{
+    border: 1px solid #a7b6d3;
+}
+
+/**
+ * medHomepageArea
+ * 
+ */
+medHomepageArea QTabWidget {
+    border-image: url(:/pixmaps/toolbox-body.png) 0 16 16 16 repeat-y;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 0px;
+    border-bottom-width: 16px;
+    padding-left: -6px;
+    padding-right: -6px;
+    padding-bottom: 6px;
+}
+
+medHomepageArea QTabWidget::pane {
+    background: none;
+    border: none;
+    border-image: none;
+}
+
+medHomepageArea QTabWidget::tab-bar {
+    top: 1px;
+    left: 0px;
+}
+
+medHomepageArea QTabBar::tab {
+    color: white;
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
+    height: 32px;
+    min-width: 50px;
+}
+
+medHomepageArea QTabBar::tab:selected, QTabBar::tab:hover {
+    color: white;
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
+    height: 32px;
+    min-width: 50px;
+}
+
+medHomepageArea QTextEdit {
+    background: #313131;border: 0px;padding: 0px 0px 0px 0px;
+}
+
+/**
+ * medHomepageButton
+ *
+ */
+medHomepageButton QToolButton{border: 0px; 
+    border-left: 1px solid #4b4b4b;
+    border-radius: 0px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 16px;
+    padding-left: 1px;
+    padding-right: 1px;
+    min-width: 2px;
+    
+}
+
+medHomepageButton QToolButton:pressed, QToolButton:checked {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
+}
+
+/**
+ * medQuickAccessPushButton
+ *
+ */
+medQuickAccessPushButton {
+    border-radius: 2px;
+    border: none;
+    color: #b2b8b2;
+    font-size: 11px;
+    font-weight:bold;
+    height: 31px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 20px;
+}
+
+medQuickAccessPushButton:hover {
+    background-color: #3a3a3a;
+}
+
+medQuickAccessPushButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);    
+}
+
+/**
+ * medHomepagePushButton
+ *
+ */
+medHomepagePushButton {
+    background-color:#3a3a3a;
+    border-radius: 0px;
+    border: none;
+    color: #b2b8b2;
+    font-size: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 20px;
+}
+
+medHomepagePushButton:hover {
+    background-color:#4e4e4e;
+}
+
+medHomepagePushButton:pressed {
+    background-color:#2b2b2b;
+}
+
 
 /**
  * medToolBoxHeader
@@ -1083,7 +1203,6 @@ QToolButton:pressed, QToolButton:checked {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
 }
 
-
 /**
  * dtkFinderPathBar
  *
@@ -1186,7 +1305,53 @@ QTreeWidget::branch:open:has-children:has-siblings  {
     image: url(:pixmaps/treeview-branch-open.png);
 } 
 
+/**
+ * medStackedViewContainers
+ *
+ */
 
+medStackedViewContainers::pane {
+    border: none;
+}
+
+medStackedViewContainers QTabBar::tab {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
+    border: 1px solid #2a2a2a;
+    height: 24px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 80px;
+    color: #b2b8b2;
+}
+
+medStackedViewContainers QTabBar::tab:selected, medStackedViewContainers QTabBar::tab:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
+    border: 1px solid #2a2a2a;
+    height: 24px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 80px;
+    color: #b2b8b2;
+    border-bottom-color: #4c4c4c;
+}
+
+medStackedViewContainers QPushButton {
+    background: none;
+    border: none;
+    outline: none;
+    margin-bottom: 2px;
+    padding: 0px;
+    height: 18px;
+}
+
+medStackedViewContainers QPushButton:pressed, medStackedViewContainers QPushButton:hover {
+    background: none;
+    border: none;
+    outline: none;
+    margin-bottom: 2px;
+    padding: 0px;
+    height: 18px;
+}
 
 /**
  * medViewContainer
@@ -1213,12 +1378,12 @@ medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="false"] {
     background: #313131;
 }
 
-medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][isCurrent="false"] {
+medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][clicked="false"] {
     border: 1px solid darkGray;
     background: #313131;
 }
 
-medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][isCurrent="true"] {
+medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][clicked="true"] {
     border: 1px solid #9ab3d5;
     background: #313131;
 }

@@ -42,8 +42,9 @@ signals:
     void progressed(QObject* sender, int progress);
     void success (QObject* sender);
     void failure (QObject* sender);
-    void showError(QObject* sender,const QString&,unsigned int timeout);
     void cancelled(QObject* sender);
+    void showError(QObject* sender, const QString& message, unsigned int timeout);
+
 
 public slots:
 

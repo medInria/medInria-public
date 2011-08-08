@@ -17,8 +17,8 @@
  * 
  */
 
-#include <medGui/medViewerConfiguration.h>
-#include <medGui/medViewerConfigurationFactory.h>
+#include <medViewerConfiguration.h>
+#include <medViewerConfigurationFactory.h>
 
 #include "medViewerConfigurator.h"
 

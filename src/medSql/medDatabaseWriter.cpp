@@ -1,5 +1,5 @@
-/* medDatabaseWriter.cpp --- 
- * 
+/* medDatabaseWriter.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:27:20 2010 (+0200)
@@ -9,19 +9,19 @@
  *     Update #: 19
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseController.h"
 #include "medDatabaseWriter.h"
-#include <medCore/medStorage.h>
-#include <medCore/medDataIndex.h>
-#include <medCore/medAbstractDataImage.h>
+#include <medStorage.h>
+#include <medDataIndex.h>
+#include <medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -34,11 +34,13 @@ class medDatabaseWriterPrivate
 {
 public:
     dtkAbstractData *data;
+    bool isCancelled;
 };
 
-medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data) : QObject(), d(new medDatabaseWriterPrivate)
+medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data) : medJobItem(), d(new medDatabaseWriterPrivate)
 {
     d->data = data;
+    d->isCancelled = false;
 }
 
 medDatabaseWriter::~medDatabaseWriter(void)
@@ -48,21 +50,21 @@ medDatabaseWriter::~medDatabaseWriter(void)
     d = NULL;
 }
 
-medDataIndex medDatabaseWriter::run(void)
+void medDatabaseWriter::run(void)
 {
     if (!d->data) {
         emit failure (this);
-	return medDataIndex();
+    return;
     }
 
     if(!d->data->hasMetaData("SeriesDescription")) {
         qDebug() << "Critical: data has no SeriesDescription, cannot save it";
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
-    
+
     // copied from medDatabaseImporter::run()
-    
+
     if(!d->data->hasMetaData("PatientName"))
         d->data->addMetaData("PatientName", QStringList() << "John Doe");
 
@@ -74,7 +76,7 @@ medDataIndex medDatabaseWriter::run(void)
 
     if(!d->data->hasMetaData("StudyID"))
         d->data->addMetaData("StudyID", QStringList() << "");
-    
+
     if(!d->data->hasMetaData("SeriesID"))
         d->data->addMetaData("SeriesID", QStringList() << "");
 
@@ -175,20 +177,20 @@ medDataIndex medDatabaseWriter::run(void)
     QString report         = d->data->metaDataValues("Report")[0];
 
 
-
-    QSqlQuery query(*(medDatabaseController::instance()->database()));
+    medDatabaseControllerImpl * dbi = medDatabaseController::instance();
+    QSqlQuery query(*(dbi->database()));
     QVariant id;
-    
+
     // Check if PATIENT/STUDY/SERIES already exists in the database
 
     bool dataExists = false;
-    
+
     query.prepare("SELECT id FROM patient WHERE name = :name");
     query.bindValue(":name", patientName);
-    
+
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    
+
     if(query.first()) {
         id = query.value(0);
 
@@ -223,11 +225,11 @@ medDataIndex medDatabaseWriter::run(void)
 	    }
 	}
     }
-    
+
     if (dataExists) {
         qDebug() << "data is already in the database, skipping";
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
 
 
@@ -235,75 +237,66 @@ medDataIndex medDatabaseWriter::run(void)
     // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
     QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
 
-    QString s_patientName = patientName.simplified();
-    QString s_studyName   = studyName.simplified();
-    QString s_seriesName  = seriesName.simplified();
+    QString s_patientName = dbi->stringForPath( patientName );
+    QString s_studyName   = dbi->stringForPath( studyName );
+    QString s_seriesName  = dbi->stringForPath( seriesName );
 
-    s_patientName.replace (0x00EA, 'e');
-    s_studyName.replace   (0x00EA, 'e');
-    s_seriesName.replace  (0x00EA, 'e');
-    s_patientName.replace (0x00E4, 'a');
-    s_studyName.replace   (0x00E4, 'a');
-    s_seriesName.replace  (0x00E4, 'a');	
+    QString subDirName = "/" +
+        s_patientName + "/" +
+        s_studyName;
+    QString imageFileNameBase =  subDirName + "/" +
+                            s_seriesName; //  + ".mha";
 
-    QString imageFileName = "/" +
-                            s_patientName + "/" +
-                            s_studyName   + "/" +
-                            s_seriesName;
-
-    QString infos = d->data->description();
-
-    if (infos == "vtkDataMesh") {
-        imageFileName = imageFileName + ".vtk";
-        qDebug()<<"vtkDataMesh";}
-    else if (infos == "vtkDataMesh4D"){
-        imageFileName = imageFileName + ".v4d";
-        qDebug()<<"vtkDataMesh4D";}
-    else if (infos == "v3dDataFibers"){
-        imageFileName = imageFileName + ".xml";
-        qDebug()<<"vtkDataMesh4D";}
-    else if (infos.contains ("vistal")){
-        imageFileName = imageFileName + ".dim";
-        qDebug()<<"Vistal Image";}
-    else if (infos.contains ("Image")){
-        imageFileName = imageFileName + ".mha";
-        //qDebug()<<"Image";
+    QDir dir( medStorage::dataLocation() + subDirName );
+    if (!dir.exists()) {
+        if ( !medStorage::mkpath(medStorage::dataLocation() + subDirName) ) {
+            dtkDebug() << "Unable to create directory for images";
+            emit failure (this);
+            return ;
+        }
     }
-
-    d->data->addMetaData ("FileName", imageFileName);
 
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
     int writeSuccess = 0;
-    
+
     for (int i=0; i<writers.size(); i++)
     {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
+        dtkSmartPointer<dtkAbstractDataWriter> dataWriter;
+        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
         qDebug() << "trying " << dataWriter->description();
-        
+
         if (!dataWriter->handled().contains(d->data->description()))
         {
             qDebug() << "failed with " << dataWriter->description();
 	    continue;
         }
-        
+
         qDebug() << "success with " << dataWriter->description();
 	dataWriter->setData (d->data);
 
+        QStringList extensions = dataWriter->supportedFileExtensions();
+        QString extension;
+        if ( extensions.isEmpty() ) {
+            extension = ".mha";
+        } else {
+            extension = extensions[0];
+        }
+        QString imageFileName = imageFileNameBase + extension;
         qDebug() << "trying to write in file : "<< medStorage::dataLocation() + imageFileName;
-        
-	if (dataWriter->canWrite (medStorage::dataLocation() + imageFileName)) {
-	    if (dataWriter->write( medStorage::dataLocation() + imageFileName )) {
-		writeSuccess = 1;
-		delete dataWriter;
-		break;
-	    }
-	}
+
+        if (dataWriter->canWrite (medStorage::dataLocation() + imageFileName)) {
+            if (dataWriter->write( medStorage::dataLocation() + imageFileName )) {
+                writeSuccess = 1;
+                d->data->addMetaData ("FileName", imageFileName);
+                break;
+            }
+        }
     }
 
     if (!writeSuccess) {
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
 
 
@@ -315,15 +308,15 @@ medDataIndex medDatabaseWriter::run(void)
 
     // generate and save the thumbnails
     QList<QImage> &thumbnails = d->data->thumbnails();
-    
-    QFileInfo   seriesInfo (imageFileName);
+
+    QFileInfo   seriesInfo (seriesPath);
     QString     thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
     QStringList thumbPaths;
 
     if (thumbnails.count())
         if (!medStorage::mkpath (medStorage::dataLocation() + thumb_dir))
 	    qDebug() << "Cannot create directory: " << thumb_dir;
-    
+
     for (int j=0; j<thumbnails.count(); j++) {
         QString thumb_name = thumb_dir + QString().setNum (j) + ".jpg";
         thumbnails[j].save(medStorage::dataLocation() + thumb_name, "JPG");
@@ -333,11 +326,12 @@ medDataIndex medDatabaseWriter::run(void)
     QImage  thumbnail = d->data->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
     QString thumbPath = thumb_dir + "ref.jpg";
     thumbnail.save (medStorage::dataLocation() + thumbPath, "JPG");
-    
+
 
     // Now, populate the database
 
-    medDataIndex index;
+    medDataIndex index(medDatabaseController::instance()->dataSourceId(), medDataIndex::NOT_VALID,
+        medDataIndex::NOT_VALID, medDataIndex::NOT_VALID, medDataIndex::NOT_VALID);
 
     ////////////////////////////////////////////////////////////////// PATIENT
 
@@ -369,7 +363,7 @@ medDataIndex medDatabaseWriter::run(void)
     query.bindValue(":studyID", studyId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    
+
     if(query.first()) {
         id = query.value(0);
         index.setStudyId (id.toInt());
@@ -386,7 +380,7 @@ medDataIndex medDatabaseWriter::run(void)
     }
 
     ///////////////////////////////////////////////////////////////// SERIES
-    
+
     query.prepare("SELECT * FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
     query.bindValue(":id",             id);
     query.bindValue(":name",           seriesName);
@@ -400,7 +394,7 @@ medDataIndex medDatabaseWriter::run(void)
 
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    
+
     if(query.first()) {
         id = query.value(0);
         index.setSeriesId (id.toInt());
@@ -457,9 +451,8 @@ medDataIndex medDatabaseWriter::run(void)
 	        ; //qDebug() << "Image" << file << "already in database";
 	    }
 	    else {
-	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
+	    query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
 		query.bindValue(":series", id);
-		query.bindValue(":size", 64);
 		query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
 		query.bindValue(":path", fileInfo.filePath());
 		query.bindValue(":instance_path", seriesPath);
@@ -485,9 +478,8 @@ medDataIndex medDatabaseWriter::run(void)
 	        ; //qDebug() << "Image" << file << "already in database";
 	    }
 	    else {
-	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
+	        query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
 		query.bindValue(":series", id);
-		query.bindValue(":size", 64);
 		query.bindValue(":name", fileInfo.fileName());
 		query.bindValue(":path", fileInfo.filePath());
 		query.bindValue(":instance_path", seriesPath);
@@ -504,6 +496,11 @@ medDataIndex medDatabaseWriter::run(void)
 
     emit progressed(100);
     emit success(this);
-
-    return index;
+    emit addedIndex(index);
 }
+
+void medDatabaseWriter::onCancel( QObject* )
+{
+    d->isCancelled = true;
+}
+

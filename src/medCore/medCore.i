@@ -24,9 +24,10 @@
 %{
 #include <QtDebug>
 #include <QtCore>
+#include <dtkCore/dtkAbstractData.h>
 
-#include <medCore/medDataIndex.h>
-#include <medCore/medDataManager.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
 %}
 
 // /////////////////////////////////////////////////////////////////
@@ -102,6 +103,9 @@
 // /////////////////////////////////////////////////////////////////
 // Wrapper input
 // /////////////////////////////////////////////////////////////////
+
+%ignore medDataManager::dataAdded(const medDataIndex&);
+%ignore medDataManager::dataRemoved(const medDataIndex&);
 
 %include "medDataIndex.h"
 %include "medDataManager.h"

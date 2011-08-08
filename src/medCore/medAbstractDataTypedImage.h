@@ -16,14 +16,14 @@
 #define MEDABSTRACTDATATYPEDIMAGE2D_H
 
 #include "medCoreExport.h"
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
 template <unsigned DIM,typename T>
 class medAbstractDataTypedImage: public medAbstractDataImage {
 public:
 
-    medAbstractDataTypedImage() { }
-   ~medAbstractDataTypedImage() { }
+    medAbstractDataTypedImage() { qDebug() << "constructing medAbstractDataTypeImage";}
+    virtual ~medAbstractDataTypedImage() { qDebug() << "deleting medAbstractDataTypeImage";}
 
     int                                Dimension() const { return DIM;       }
     const medAbstractDataImage::PixId& PixelType() const { return typeid(T); }

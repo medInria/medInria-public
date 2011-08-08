@@ -51,18 +51,8 @@ class MEDGUI_EXPORT medViewPool : public QObject
     Q_OBJECT
 
 public:
-    medViewPool (void);
-    ~medViewPool (void);
-
-    /**
-       Append a view to the pool
-     **/
-    void appendView (medAbstractView *view);
-
-    /**
-       Remove a view from the pool
-     **/
-    void removeView (medAbstractView *view);
+             medViewPool (QObject *parent = 0);
+    virtual ~medViewPool (void);    
 
     /**
        The daddy is the reference view, i.e., the target when performing automatic
@@ -78,7 +68,21 @@ public:
 signals:
     void showInfo(QObject*,const QString&,unsigned int timeout);
     void showError(QObject*,const QString&,unsigned int timeout);
+
+    void viewAppended (medAbstractView *view);
+    void viewRemoved  (medAbstractView *view);
     
+public slots:
+    /**
+       Append a view to the pool
+     **/
+    void appendView (medAbstractView *view);
+
+    /**
+       Remove a view from the pool
+     **/
+    void removeView (medAbstractView *view);
+
 public slots:
     void onViewPropertySet (const QString &key, const QString &value);
     void onViewDaddy         (bool);
@@ -89,7 +93,7 @@ public slots:
     void onViewZoomChanged        (double zoom, bool propagate);
     void onViewPanChanged         (const QVector2D &pan, bool propagate);
     void onViewWindowingChanged   (double level, double window, bool propagate);
-    void onObliqueSettingsChanged ();
+    void onViewObliqueSettingsChanged (const medAbstractView *sender);
 
 private:
     medViewPoolPrivate *d;

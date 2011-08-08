@@ -93,6 +93,77 @@ set(${PROJECT_NAME}_HEADERS_MOC
   
   medDatabaseSearchPanel.h
 
+  # db related items
+  database/medDatabaseSearchPanel.h  
+  database/medDatabaseView.h
+  database/medDatabaseNavigator.h  
+  database/medDatabaseNavigatorItem.h
+  database/medDatabaseNavigatorItemGroup.h
+  database/medDatabaseNavigatorView.h
+  database/medDatabasePreview.h
+  database/medDatabasePreviewArrow.h
+  database/medDatabasePreviewItem.h
+  database/medDatabasePreviewItemGroup.h
+  database/medDatabasePreviewSelector.h
+  database/medDatabasePreviewTooltip.h
+  database/medDatabasePreviewView.h
+
+  # commonWidgets:
+  commonWidgets/medDropSite.h
+  commonWidgets/medWorkspaceShifter.h
+  commonWidgets/medButton.h
+  commonWidgets/medProgressionStack.h
+  commonWidgets/medFlicker.h
+
+  # factories
+  factories/medSettingsWidgetFactory.h
+  factories/medToolBoxFactory.h
+  factories/medViewerConfigurationFactory.h
+
+  # LUT
+  LUT/medClutEditor.h
+  LUT/medLoadLUTDialog.h
+  LUT/medSaveLUTDialog.h
+
+  # settings classes
+  settingsWidgets/medSettingsWidget.h
+  settingsWidgets/medDatabaseSettingsWidget.h
+  settingsWidgets/medSettingsEditor.h
+  settingsWidgets/medSystemSettingsWidget.h
+  settingsWidgets/medStartupSettingsWidget.h
+>>>>>>> master-visages
+
+
+  # general toolbox classes
+  toolboxes/medToolBox.h
+  toolboxes/medToolBoxBody.h
+  toolboxes/medToolBoxHeader.h
+  toolboxes/medToolBoxTab.h
+
+  # specific toolbox classes
+  toolboxes/medToolBoxDiffusion.h
+  toolboxes/medToolBoxDiffusionCustom.h
+  toolboxes/medToolBoxDiffusionFiberView.h
+  toolboxes/medToolBoxDiffusionFiberBundling.h
+  toolboxes/medToolBoxRegistration.h
+  toolboxes/medToolBoxRegistrationCustom.h
+  toolboxes/medToolBoxDiffusionTensorView.h
+  toolboxes/medBrowserToolBoxJobs.h
+  toolboxes/medViewerToolBoxLayout.h
+  toolboxes/medViewerToolBoxView.h
+  toolboxes/medViewerToolBoxTime.h
+  toolboxes/medViewerToolBoxViewProperties.h
+  toolboxes/medBrowserToolBoxPacsHost.h
+  toolboxes/medBrowserToolBoxPacsNodes.h
+  toolboxes/medBrowserToolBoxPacsSearch.h
+  toolboxes/medViewerToolBoxPatient.h
+
+  # viewContainers:
+  viewContainers/medViewContainerCompare.h
+  viewContainers/medViewContainerMulti.h
+  viewContainers/medViewContainerCustom.h
+  viewContainers/medViewContainerSingle.h
+  viewContainers/medViewContainer.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -100,6 +171,8 @@ set(${PROJECT_NAME}_HEADERS
   medXMLtoLUTReader.h
   medViewContainer_p.h
   medGuiExport.h
+  database/medDatabaseNavigatorController.h
+  database/medDatabasePreviewController.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
 
@@ -176,16 +249,18 @@ set(${PROJECT_NAME}_SOURCES
 ## #################################################################
 ## Build rules
 ## #################################################################
-
 add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_SOURCES_QRC}
+  ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES_WRAP})
 
 target_link_libraries(${PROJECT_NAME}

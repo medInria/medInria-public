@@ -24,7 +24,9 @@ project(medinria)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  medApplication.h  
+  medApplication.h
+  medHomepageArea.h
+  medHomepageButton.h
   medBrowserArea.h  
   medBrowserToolBoxSource.h
   medBrowserToolBoxSettings.h  
@@ -35,7 +37,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfigurationRegistration.h   
   medViewerConfigurationFiltering.h 
   medViewerToolBoxConfiguration.h  
-  medViewerToolBoxPatient.h    
   medPacsDataSource.h 
   medFileSystemDataSource.h  
   medDatabaseDataSource.h
@@ -48,14 +49,15 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_SOURCES
   main.cpp
-  medApplication.cpp  
+  medApplication.cpp
+  medHomepageArea.cpp
+  medHomepageButton.cpp
   medBrowserArea.cpp  
   medBrowserToolBoxSource.cpp
   medBrowserToolBoxSettings.cpp    
   medMainWindow.cpp
   medViewerArea.cpp    
   medViewerToolBoxConfiguration.cpp
-  medViewerToolBoxPatient.cpp  
   medViewerConfigurationDiffusion.cpp
   medViewerConfigurationVisualization.cpp
   medViewerConfigurationRegistration.cpp   
@@ -92,6 +94,8 @@ if(WIN32)
   set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES} ${PROJECT_NAME}.rc)
 endif()
 
+
+include_directories(${PROJECT_NAME}_BINARY_DIR)
 
 add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM}
   ${${PROJECT_NAME}_SOURCES_WRAP}
