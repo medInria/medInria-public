@@ -1,4 +1,4 @@
-/* medStackedViewContainers.cpp --- 
+/* medTabbedViewContainers.cpp ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -19,14 +19,14 @@
 
 #include <QtCore>
 
-#include "medStackedViewContainers.h"
+#include "medTabbedViewContainers.h"
 
 #include "medViewContainer.h"
 #include "medViewContainerCustom.h"
 #include "medViewContainerMulti.h"
 #include "medViewContainerSingle.h"
 
-class medStackedViewContainersPrivate
+class medTabbedViewContainersPrivate
 {
 public:
    QHash<QString, medViewContainer*> containers;
@@ -35,7 +35,7 @@ public:
    QPushButton *addButton;
 };
 
-medStackedViewContainers::medStackedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medStackedViewContainersPrivate)
+medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medTabbedViewContainersPrivate)
 {
     this->setTabsClosable(true);
     this->setMovable(true);
@@ -50,21 +50,21 @@ medStackedViewContainers::medStackedViewContainers(QWidget *parent) : QTabWidget
     connect(d->addButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
 }
 
-medStackedViewContainers::~medStackedViewContainers(void)
+medTabbedViewContainers::~medTabbedViewContainers(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medStackedViewContainers::lockTabs()
+void medTabbedViewContainers::lockTabs()
 {
     this->setTabsClosable(false);
     this->setMovable(false);
     d->addButton->hide();
 }
 
-void medStackedViewContainers::unlockTabs()
+void medTabbedViewContainers::unlockTabs()
 {
     this->setTabsClosable(true);
     this->setMovable(true);
@@ -72,7 +72,7 @@ void medStackedViewContainers::unlockTabs()
 }
 
 /*
-void medStackedViewContainers::addNewTabContainer()
+void medTabbedViewContainers::addNewTabContainer()
 {
     // This slot should disappear, instead the creation signal should be sent to the parent who should call for the creation of a new tab
     QString name = "Tab ";
@@ -89,7 +89,7 @@ void medStackedViewContainers::addNewTabContainer()
 }
 */
 
-void medStackedViewContainers::deleteContainerClicked(int index)
+void medTabbedViewContainers::deleteContainerClicked(int index)
 {
     if (this->count() > 1)
     {
@@ -98,7 +98,7 @@ void medStackedViewContainers::deleteContainerClicked(int index)
     }
 }
 
-void medStackedViewContainers::addContainer(const QString &name, medViewContainer *container)
+void medTabbedViewContainers::addContainer(const QString &name, medViewContainer *container)
 {
     if (!container)
         return;
@@ -119,7 +119,7 @@ void medStackedViewContainers::addContainer(const QString &name, medViewContaine
     this->addTab(container, name);
 }
 
-void medStackedViewContainers::insertContainer(int index, const QString &name, medViewContainer *container)
+void medTabbedViewContainers::insertContainer(int index, const QString &name, medViewContainer *container)
 {
     if (!container)
         return;
@@ -141,7 +141,7 @@ void medStackedViewContainers::insertContainer(int index, const QString &name, m
     this->insertTab(index,container, name);
 }
 
-void medStackedViewContainers::changeCurrentContainerType(const QString &name)
+void medTabbedViewContainers::changeCurrentContainerType(const QString &name)
 {
     //qDebug() << "Changing container type to " << name << " from " << this->current()->description();
     //qDebug() << "Current index is " << this->currentIndex() << " and tab name " << this->tabText(this->currentIndex());
@@ -185,7 +185,7 @@ void medStackedViewContainers::changeCurrentContainerType(const QString &name)
     }
 }
 
-medViewContainer* medStackedViewContainers::container(const QString &name) const
+medViewContainer* medTabbedViewContainers::container(const QString &name) const
 {
     if (!d->containers.contains(name))
         return NULL;
@@ -193,7 +193,7 @@ medViewContainer* medStackedViewContainers::container(const QString &name) const
     return d->containers[name];
 }
 
-void medStackedViewContainers::setContainer(const QString &name)
+void medTabbedViewContainers::setContainer(const QString &name)
 {
     if (!d->containers.contains(name))
     {
@@ -205,22 +205,22 @@ void medStackedViewContainers::setContainer(const QString &name)
     this->setCurrentWidget(d->containers[name]);
 }
 
-medViewContainer *medStackedViewContainers::current(void) const
+medViewContainer *medTabbedViewContainers::current(void) const
 {
     return dynamic_cast<medViewContainer*> (currentWidget());
 }
 
-QString medStackedViewContainers::currentName(void) const
+QString medTabbedViewContainers::currentName(void) const
 {
     return d->currentName;
 }
 
-QList<QString> medStackedViewContainers::keys()
+QList<QString> medTabbedViewContainers::keys()
 {
     return d->containers.keys();
 }
 
-void medStackedViewContainers::removeContainer(const QString& name)
+void medTabbedViewContainers::removeContainer(const QString& name)
 {
     if (d->containers.contains(name))
     {
@@ -231,7 +231,7 @@ void medStackedViewContainers::removeContainer(const QString& name)
     }
 }
 
-void medStackedViewContainers::onCurrentContainerChanged(int index)
+void medTabbedViewContainers::onCurrentContainerChanged(int index)
 {
     QString name = this->tabText(index);
     emit currentChanged(name);

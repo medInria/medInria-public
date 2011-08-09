@@ -53,7 +53,7 @@
 #include <medViewerConfigurationFactory.h>
 #include <medToolBoxDiffusion.h>
 #include <medToolBoxRegistration.h>
-#include <medStackedViewContainers.h>
+#include <medTabbedViewContainers.h>
 #include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxPatient.h>
 #include <medViewerToolBoxView.h>
@@ -452,7 +452,7 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
 
 }
 
-void medViewerArea::switchToStackedViewContainers(medStackedViewContainers* stack)
+void medViewerArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
 {
     if(!stack )
     {
