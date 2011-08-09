@@ -14,7 +14,7 @@
 #include "medToolBoxDiffusionFiberBundling.h"
 #include <medViewContainer.h>
 #include <medViewContainerSingle.h>
-#include <medStackedViewContainers.h>
+#include <medTabbedViewContainers.h>
 
 class medViewerConfigurationDiffusionPrivate
 {

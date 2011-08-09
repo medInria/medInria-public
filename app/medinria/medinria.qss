@@ -1306,15 +1306,15 @@ QTreeWidget::branch:open:has-children:has-siblings  {
 } 
 
 /**
- * medStackedViewContainers
+ * medTabbedViewContainers
  *
  */
 
-medStackedViewContainers::pane {
+medTabbedViewContainers::pane {
     border: none;
 }
 
-medStackedViewContainers QTabBar::tab {
+medTabbedViewContainers QTabBar::tab {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
     border: 1px solid #2a2a2a;
     height: 24px;
@@ -1324,7 +1324,7 @@ medStackedViewContainers QTabBar::tab {
     color: #b2b8b2;
 }
 
-medStackedViewContainers QTabBar::tab:selected, medStackedViewContainers QTabBar::tab:hover {
+medTabbedViewContainers QTabBar::tab:selected, medTabbedViewContainers QTabBar::tab:hover {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
     border: 1px solid #2a2a2a;
     height: 24px;
@@ -1335,7 +1335,7 @@ medStackedViewContainers QTabBar::tab:selected, medStackedViewContainers QTabBar
     border-bottom-color: #4c4c4c;
 }
 
-medStackedViewContainers QPushButton {
+medTabbedViewContainers QPushButton {
     background: none;
     border: none;
     outline: none;
@@ -1344,7 +1344,7 @@ medStackedViewContainers QPushButton {
     height: 18px;
 }
 
-medStackedViewContainers QPushButton:pressed, medStackedViewContainers QPushButton:hover {
+medTabbedViewContainers QPushButton:pressed, medTabbedViewContainers QPushButton:hover {
     background: none;
     border: none;
     outline: none;
