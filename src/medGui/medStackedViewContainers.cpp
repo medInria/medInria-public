@@ -146,6 +146,20 @@ void medStackedViewContainers::changeCurrentContainerType(const QString &name)
     //qDebug() << "Changing container type to " << name << " from " << this->current()->description();
     //qDebug() << "Current index is " << this->currentIndex() << " and tab name " << this->tabText(this->currentIndex());
 
+    if ((!this->current()->views().isEmpty()) && (name != this->current()->description()))
+    {
+        QMessageBox msgBox ( this );
+        msgBox.setIcon ( QMessageBox::Warning );
+        msgBox.setText(tr("Current tab is not empty. Changing tab type will delete current views."));
+        msgBox.setInformativeText(tr("Are you sure you wish to change tab type?"));
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        int reply = msgBox.exec();
+
+        if( reply == QMessageBox::No )
+            return;
+    }
+
     if (name != this->current()->description())
     {
         medViewContainer *newTab = NULL;
