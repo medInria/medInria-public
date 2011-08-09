@@ -9,7 +9,7 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medViewerConfigurationDiffusionPrivate;
 
 class medViewerConfigurationDiffusion : public medViewerConfiguration

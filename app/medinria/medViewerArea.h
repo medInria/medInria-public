@@ -29,7 +29,7 @@ class dtkAbstractView;
 class medDataIndex;
 class medToolBox;
 class medViewContainer;
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medViewerAreaPrivate;
 
 /**
@@ -104,7 +104,7 @@ public slots:
      * @param index Could describe just an image, or a complete Series,
      * Study or even Patient.
     */
-    void open(const medDataIndex& index);
+    bool open(const medDataIndex& index);
 
     /**
      * @brief Open data corresponding to index \param index in a new tab.
@@ -112,7 +112,7 @@ public slots:
      * @param index Could describe just an image, or a complete Series,
      * Study or even Patient.
      */
-    void openInTab(const medDataIndex& index);
+    bool openInTab(const medDataIndex& index);
 
     /**
      * @brief Opens file on the local filesystem.
@@ -164,7 +164,7 @@ public slots:
      * Called from the setupConfiguration method.
      * @param stack
     */
-    void switchToStackedViewContainers(medStackedViewContainers* stack);
+    void switchToStackedViewContainers(medTabbedViewContainers* stack);
 
     /**
      * @brief Switches between medViewContainers.
@@ -209,7 +209,7 @@ public slots:
     */
     void switchToLayout (medViewerConfiguration::LayoutType layout);
 
-    void onFileOpened(const medDataIndex &index);
+//    void onFileOpened(const medDataIndex &index);
     void onFileOpenedInTab(const medDataIndex &index);
 
 protected slots:
@@ -228,7 +228,7 @@ protected:
      *
      * Note that containers are hierarchical structures.  This methods
      * returns the root container in the current
-     * medStackedViewContainers.
+     * medTabbedViewContainers.
      *
      * @param void
      * @return medViewContainer *

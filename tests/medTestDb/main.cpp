@@ -35,8 +35,17 @@ public:
 
     dtkSmartPointer<dtkAbstractData> CreateTestData( );
 
+private slots:
+
+    void onNonPersistentDataImported(const medDataIndex& index) {
+        importedIndex = index;
+        mutex.unlock();
+    }
+
 private:
 
+    QMutex         mutex;
+    medDataIndex   importedIndex;
 };
 
 // Constructor : initialise the test environment.
@@ -93,9 +102,16 @@ int medTestDbApp::run()
     CHECK_TEST_RESULT( dataManager->nonPersistentDataCount() == 0 );
 
     // Test import of new data
-    medDataIndex importedIndex = dataManager->importNonPersistent( testData );
-    CHECK_TEST_RESULT( importedIndex.isValid() );
-    CHECK_TEST_RESULT( importedIndex.isValidForSeries() );
+    dataManager->importNonPersistent( testData );
+
+    //  Wait untill the data is actually imported.
+
+    mutex.lock();
+    QWaitCondition NPDI;
+    NPDI.wait(&mutex);
+
+    CHECK_TEST_RESULT(importedIndex.isValid());
+    CHECK_TEST_RESULT(importedIndex.isValidForSeries());
 
     const int persistentSourceId = 1;
     const int nonPersistentSourceId = 2;

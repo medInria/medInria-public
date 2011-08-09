@@ -29,7 +29,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medToolBoxContainer.h
   medPacsSelector.h
   medViewPool.h
-  medStackedViewContainers.h
+  medTabbedViewContainers.h
   medViewerConfiguration.h
   medImageFileLoader.h
 
@@ -123,7 +123,7 @@ set(${PROJECT_NAME}_SOURCES
   medLayoutChooser.cpp
   medPacsSelector.cpp
   medToolBoxContainer.cpp
-  medStackedViewContainers.cpp
+  medTabbedViewContainers.cpp
   medViewerConfiguration.cpp
   medPacsSelector.cpp
   medViewPool.cpp

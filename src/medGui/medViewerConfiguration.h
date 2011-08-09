@@ -28,7 +28,7 @@
 
 class medToolBox;
 class medViewerConfigurationPrivate;
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medDataIndex;
 
 /**
@@ -37,7 +37,7 @@ class medDataIndex;
  *The main role of a configuration is to provide a coherent set of toolboxes and containers that interact with each other.
  *
  * A configuration is usually instantiated by a factory. 
- * It owns several medViewContainers in a medStackedViewContainers. 
+ * It owns several medViewContainers in a medTabbedViewContainers.
  * It also owns toolboxes, but does not place them, the medViewerArea does it when
  * medViewerArea::setupConfiguration is called. 
  *
@@ -168,7 +168,7 @@ public:
     bool areToolBoxesVisible(void) const;
     
     /**
-     * @brief Sets up the medStackedViewContainers.
+     * @brief Sets up the medTabbedViewContainers.
      *
      * Abstract method that every configuration should implement. It sets or 
      * resets the stack so that containers are connected properly with the toolboxes,
@@ -218,9 +218,9 @@ public:
     /**
      * @brief Gets the stack of Containers.
      *
-     * @return medStackedViewContainers *
+     * @return medTabbedViewContainers *
     */
-    medStackedViewContainers * stackedViewContainers() const;
+    medTabbedViewContainers * stackedViewContainers() const;
     
 public slots:
     /**
@@ -254,7 +254,7 @@ public slots:
      *
      * Gives the configuration a pristine look and state.
      * This method removes the containers 
-     * (by calling medStackedViewContainers::removeContainer)
+     * (by calling medTabbedViewContainers::removeContainer)
      *
     */
     virtual void clear();
