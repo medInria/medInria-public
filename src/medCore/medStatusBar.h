@@ -18,9 +18,9 @@ public:
 
     QBoxLayout * statusBarLayout();
 
-    void addMessage(QWidget * widget);
+    void addMessage ( QWidget * widget );
 
-    void removeMessage(QWidget * widget);
+    void removeMessage ( QWidget * widget );
 
 private:
     medStatusBarPrivate * d;
