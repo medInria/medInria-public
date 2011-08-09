@@ -244,8 +244,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     //Init homepage with configuration buttons
     d->homepageArea->initPage();
     QObject::connect ( d->homepageArea, SIGNAL ( showBrowser() ), this, SLOT ( switchToBrowserArea() ) );
-    QObject::connect ( d->homepageArea, SIGNAL ( showViewer() ), this, SLOT ( switchToViewerArea() ) );
-    QObject::connect ( d->homepageArea, SIGNAL ( showConfiguration ( QString ) ), d->viewerArea, SLOT ( setupConfiguration ( QString ) ) );
+    QObject::connect ( d->homepageArea, SIGNAL ( showConfiguration ( QString ) ), this, SLOT ( onShowConfiguration ( QString ) ) );
     QObject::connect ( d->homepageArea,SIGNAL ( showSettings() ), this, SLOT ( onEditSettings() ) );
 
 
@@ -436,7 +435,7 @@ void medMainWindow::switchToHomepageArea ( void )
 
 void medMainWindow::switchToBrowserArea ( void )
 {
-    d->quickAccessButton->setText("Browser");
+    d->quickAccessButton->setText("Workspace: Browser");
     d->quickAccessButton->setMinimumWidth(170);
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
@@ -458,10 +457,10 @@ void medMainWindow::switchToViewerArea ( void )
 
 void medMainWindow::onShowConfiguration ( QString config )
 {
-    d->quickAccessButton->setText("Workspace: " + config);
     d->quickAccessButton->setMinimumWidth(170);
     d->viewerArea->setupConfiguration(config);
     this->switchToViewerArea();
+    d->quickAccessButton->setText("Workspace: " + config);
 }
 
 void medMainWindow::onShowQuickAccess ( void )
