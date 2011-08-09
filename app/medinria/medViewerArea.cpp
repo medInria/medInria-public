@@ -40,6 +40,7 @@
 #include <medDatabaseNavigator.h>
 #include <medDatabaseNavigatorController.h>
 #include <medDatabaseNonPersistentController.h>
+#include <medMetaDataHelper.h>
 
 #include <medClutEditor.h>
 #include <medToolBox.h>
@@ -52,7 +53,7 @@
 #include <medViewerConfigurationFactory.h>
 #include <medToolBoxDiffusion.h>
 #include <medToolBoxRegistration.h>
-#include <medStackedViewContainers.h>
+#include <medTabbedViewContainers.h>
 #include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxPatient.h>
 #include <medViewerToolBoxView.h>
@@ -149,12 +150,15 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
         SLOT (onItemClicked (const medDataIndex&)));
 
-    int memusage = 0;
-    int leak = 0;
+    //connect the db controller with opening slots.
+    connect(medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &)),this,SLOT(onFileOpenedInTab(const medDataIndex &)));
+
+
 
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
-
+    int memusage = 0;
+    int leak = 0;
     // creating one that loads the dll
     medAbstractView* dummy = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
     dtkAbstractViewFactory::instance()->destroy(dummy);
@@ -204,34 +208,32 @@ void medViewerArea::split(int rows, int cols)
         root->split(rows, cols);
 }
 
-void medViewerArea::openInTab(const medDataIndex &index)
+bool medViewerArea::openInTab(const medDataIndex &index)
 {
     if(!((medDataIndex)index).isValid())
-        return;
+        return false;
 
     // For the moment switch to visualization, later we will be cleverer
     this->setupConfiguration("Visualization");
 
     if (!this->currentRootContainer()->views().isEmpty())
     {
-        dtkSmartPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
-
-        if (dtkdata.isNull())
-            return;
-
-        QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(tr("PatientName")));
+        medDataManager *dataManager = medDataManager::instance();
+        medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
+        QString createdName = dbc->metaData(index,medMetaDataHelper::KEY_PatientName());
+        createdName = d->current_configuration->addMultiContainer(createdName);
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
     }
     else
         d->current_configuration->stackedViewContainers()->changeCurrentContainerType("Multi");
 
-    this->open(index);
+    return this->open(index);
 }
 
-void medViewerArea::open(const medDataIndex& index)
+bool medViewerArea::open(const medDataIndex& index)
 {
     if(!((medDataIndex)index).isValid())
-        return;
+        return false;
 
     this->switchToPatient(index);
 
@@ -252,7 +254,7 @@ void medViewerArea::open(const medDataIndex& index)
         if ( data.isNull() )
         {
             medDataManager::instance()->blockSignals (false);
-            return;
+            return false;
         }
 
         medViewContainer * current = this->currentContainerFocused();
@@ -268,7 +270,7 @@ void medViewerArea::open(const medDataIndex& index)
         if( view.isNull() ) {
             qDebug() << "Unable to create a v3dView";
             medDataManager::instance()->blockSignals (false);
-            return;
+            return false;
         }
 
         // another hash?!
@@ -297,7 +299,7 @@ void medViewerArea::open(const medDataIndex& index)
             root->setUpdatesEnabled (true);
         }
         medDataManager::instance()->blockSignals (false);
-        return;
+        return true;
     }
 
     if(index.isValidForPatient())
@@ -322,28 +324,28 @@ void medViewerArea::open(const medDataIndex& index)
 
     }
     medDataManager::instance()->blockSignals (false);
-    return;
+    return true;
 }
 
 void medViewerArea::openInTab(const QString& file)
 {
-    connect(medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &)),this,SLOT(onFileOpenedInTab(const medDataIndex &)));
     medDatabaseNonPersistentController::instance()->import(file);
 }
 
 void medViewerArea::open(const QString& file)
 {
-    connect(medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &)),this,SLOT(onFileOpened(const medDataIndex &)));
     medDatabaseNonPersistentController::instance()->import(file);
 }
 
-void medViewerArea::onFileOpened(const medDataIndex &index)
-{
-    this->open(index);
-}
+//void medViewerArea::onFileOpened(const medDataIndex &index)
+//{
+//    qDebug()<< "onFileOpened";
+//    this->open(index);
+//}
 
 void medViewerArea::onFileOpenedInTab(const medDataIndex &index)
 {
+    qDebug()<<"onFileOpenInTab";
     this->openInTab(index);
 }
 
@@ -450,7 +452,7 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
 
 }
 
-void medViewerArea::switchToStackedViewContainers(medStackedViewContainers* stack)
+void medViewerArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
 {
     if(!stack )
     {
@@ -656,7 +658,7 @@ void medViewerArea::updateTransferFunction()
 
 void medViewerArea::setupConfiguration(QString name)
 {
-    qDebug() << "setupConfiguration to :" << name;
+//    qDebug() << "setupConfiguration to :" << name;
     if (d->current_configuration_name == name)
         return;
 

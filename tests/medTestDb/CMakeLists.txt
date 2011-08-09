@@ -17,18 +17,11 @@
 ## 
 ######################################################################
 
-project(medTestDb)
-
 ## #################################################################
 ## Build rules
 ## #################################################################
-include_directories(${CMAKE_SOURCE_DIR}/tests)
 
-add_executable(${PROJECT_NAME}
-  main.cpp)
+add_executable(medTestDb main.cpp)
 
-target_link_libraries(${PROJECT_NAME}
-  medCore
-  medSql
-  medTestCommon
-  dtkCore)
+target_link_libraries(medTestDb
+  medCore medSql medTestCommon dtkCore)

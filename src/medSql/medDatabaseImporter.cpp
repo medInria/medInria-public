@@ -106,8 +106,8 @@ void medDatabaseImporter::run(void)
     // and check if we don't have any problem in reading the file, the header
     // or in selecting a proper format to store the new file afterwards
     // new files ARE NOT written in medinria database yet, but are stored in a map for writing in a posterior step
-    foreach (QString file, fileList)
-    {
+    foreach (QString file, fileList) {
+
         if (d->isCancelled) // check if user cancelled the process
             break;
 
@@ -153,10 +153,8 @@ void medDatabaseImporter::run(void)
         QString futureExtension  = determineFutureImageExtensionByDataType(dtkData);
 
         // we care whether we can write the image or not if we are importing
-        if (!d->indexWithoutImporting && futureExtension.isEmpty())
-        {
+        if (!d->indexWithoutImporting && futureExtension.isEmpty()) {
             emit showError(this, tr("Could not save file due to unhandled data type: ") + dtkData->description(), 5000);
-
             continue;
         }
 
@@ -165,14 +163,13 @@ void medDatabaseImporter::run(void)
         // 2.3) c) Add the image to a map for writing them all in medinria's database in a posterior step
 
         // First check if patient/study/series/image path already exists in the database
+        // Should we emit a message otherwise ??? TO
         if (!checkIfExists(dtkData, fileInfo.fileName()))
             imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
-
     }
 
     // some checks to see if the user cancelled or something failed
-    if (d->isCancelled)
-    {
+    if (d->isCancelled) {
         emit showError(this, tr("User cancelled import process"), 5000);
         emit cancelled(this);
         return;
@@ -211,7 +208,7 @@ void medDatabaseImporter::run(void)
 
         //qDebug() << currentImageIndex << ": " << aggregatedFileName << "with " << filesPaths.size() << " files";
 
-         dtkSmartPointer<dtkAbstractData> imageDtkData;
+        dtkSmartPointer<dtkAbstractData> imageDtkData;
 
         QFileInfo imagefileInfo(filesPaths[0]);
 
@@ -239,8 +236,7 @@ void medDatabaseImporter::run(void)
         if (isPartialImportAttempt(imageDtkData))
             continue;
 
-        if(!d->indexWithoutImporting)
-        {
+        if(!d->indexWithoutImporting) {
             // create location to store file
             QFileInfo fileInfo( medStorage::dataLocation() + aggregatedFileName );
             if ( !fileInfo.dir().exists() && !medStorage::mkpath(fileInfo.dir().path()) )
@@ -876,7 +872,7 @@ dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter( Q
     // first try with the last
     for (int i=0; i<writers.size(); i++) {
         dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
-        if (d->lastSuccessfulReaderDescription == dataWriter->description()) {
+        if (d->lastSuccessfulWriterDescription==dataWriter->description()) {
 
             if ( dataWriter->handled().contains(dtkData->description()) &&
                  dataWriter->canWrite( filename ) ) {
@@ -929,7 +925,7 @@ QStringList medDatabaseImporter::getAllFilesToBeProcessed(QString fileOrDirector
     return fileList;
 }
 
-dtkSmartPointer<dtkAbstractData> medDatabaseImporter::tryReadImages(QStringList filesPaths, bool readOnlyImageInformation)
+dtkSmartPointer<dtkAbstractData> medDatabaseImporter::tryReadImages(const QStringList& filesPaths,const bool readOnlyImageInformation)
 {
     dtkSmartPointer<dtkAbstractData> dtkData = 0;
 
@@ -939,13 +935,9 @@ dtkSmartPointer<dtkAbstractData> medDatabaseImporter::tryReadImages(QStringList 
     if (dataReader)
     {
         if (readOnlyImageInformation)
-        {
             dataReader->readInformation( filesPaths );
-        }
         else
-        {
             dataReader->read( filesPaths );
-        }
 
         dtkData = dataReader->data();
     }
@@ -1025,29 +1017,20 @@ QString medDatabaseImporter::determineFutureImageExtensionByDataType(const dtkAb
     QString extension = "";
 
      // Determine the appropriate extension to use according to the type of data.
-     // TODO: The image type is weakly recognized (contains("Image")). to be improved
-     if (description == "vtkDataMesh")
-     {
+     // TODO: The image and CompositeDatasets types are weakly recognized (contains("Image/CompositeData")). to be improved
+     if (description == "vtkDataMesh") {
          extension = ".vtk";
          qDebug() << "vtkDataMesh";
-     }
-     else if (description == "vtkDataMesh4D")
-     {
+     } else if (description == "vtkDataMesh4D") {
          extension = ".v4d";
          qDebug() << "vtkDataMesh4D";
-     }
-     else if (description == "v3dDataFibers")
-     {
+     } else if (description == "v3dDataFibers") {
          extension = ".xml";
          qDebug() << "vtkDataMesh4D";
-     }
-     else if (description.contains("vistal"))
-     {
+     } else if (description.contains("vistal")) {
          extension = ".dim";
          qDebug() << "Vistal Image";
-     }
-     else if (description.contains ("Image"))
-     {
+     } else if (description.contains ("Image")) {
          extension = ".mha";
          //qDebug() << description;
      }
@@ -1057,18 +1040,13 @@ QString medDatabaseImporter::determineFutureImageExtensionByDataType(const dtkAb
 
 bool medDatabaseImporter::tryWriteImage(QString filePath, dtkAbstractData* imData)
 {
-    bool writeSuccess = false;
-
     dtkSmartPointer<dtkAbstractDataWriter> dataWriter = getSuitableWriter(filePath, imData);
-    if( dataWriter)
-    {
-        dataWriter->setData (imData);
+    if (dataWriter) {
+        dataWriter->setData(imData);
         if ( dataWriter->write(filePath))
-        {
-            writeSuccess = true;
-        }
+            return true;
     }
-    return writeSuccess;
+    return false;
 }
 
 void medDatabaseImporter::addAdditionalMetaData(dtkAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths)

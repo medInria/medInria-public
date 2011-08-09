@@ -131,7 +131,7 @@ private:
     * @param readOnlyImageInformation - if true only image header is read, otherwise the full image
     * @return a @dtkAbstractData containing the read data
     **/
-    dtkSmartPointer<dtkAbstractData> tryReadImages(QStringList filesPath, bool readOnlyImageInformation);
+    dtkSmartPointer<dtkAbstractData> tryReadImages(const QStringList& filesPath,const bool readOnlyImageInformation);
 
     /**
     * Determines the filename where the dtkData object will be written (if importing).
