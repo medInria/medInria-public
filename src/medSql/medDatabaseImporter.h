@@ -140,6 +140,7 @@ private:
     * @return a string with the new filename
     **/
     QString determineFutureImageFileName(const dtkAbstractData* dtkData, int volumeNumber);
+//     QString determineFutureImageFileName(const dtkAbstractData* dtkData, int volumeNumber);
 
     /**
     * Determines the extension (i.e. file format) which
@@ -187,19 +188,19 @@ private:
      * Retrieves the patient id of the existent (or newly created)
      * patient record in the patient table.
      */
-    int getOrCreatePatient(dtkAbstractData* dtkData, QSqlDatabase db);
+    int getOrCreatePatient(const dtkAbstractData* dtkData, QSqlDatabase db);
 
     /**
      * Retrieves the study id of the existent (or newly created)
      * study record in the study table.
      */
-    int getOrCreateStudy(dtkAbstractData* dtkData, QSqlDatabase db, int patientId);
+    int getOrCreateStudy(const dtkAbstractData* dtkData, QSqlDatabase db, int patientId);
 
     /**
      * Retrieves the series id of the existent (or newly created)
      * series record in the series table.
      */
-    int getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabase db, int studyId);
+    int getOrCreateSeries(const dtkAbstractData* dtkData, QSqlDatabase db, int studyId);
 
     /**
      * Creates records in the image table for the files we are importing/indexing.

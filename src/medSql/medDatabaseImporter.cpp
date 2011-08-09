@@ -582,12 +582,12 @@ QStringList medDatabaseImporter::generateThumbnails(dtkAbstractData* dtkData, QS
 
 //-----------------------------------------------------------------------------------------------------------
 
-int medDatabaseImporter::getOrCreatePatient(dtkAbstractData* dtkData, QSqlDatabase db)
+int medDatabaseImporter::getOrCreatePatient(const dtkAbstractData* dtkData, QSqlDatabase db)
 {
     int patientId = -1;
 
     QSqlQuery query(db);
-
+    
     QString patientName = dtkData->metaDataValues(medMetaDataHelper::KEY_PatientName())[0].simplified();
     query.prepare("SELECT id FROM patient WHERE name = :name");
     query.bindValue(":name", patientName);
@@ -618,7 +618,7 @@ int medDatabaseImporter::getOrCreatePatient(dtkAbstractData* dtkData, QSqlDataba
     return patientId;
 }
 
-int medDatabaseImporter::getOrCreateStudy(dtkAbstractData* dtkData, QSqlDatabase db, int patientId)
+int medDatabaseImporter::getOrCreateStudy(const dtkAbstractData* dtkData, QSqlDatabase db, int patientId)
 {
     int studyId = -1;
 
@@ -657,7 +657,7 @@ int medDatabaseImporter::getOrCreateStudy(dtkAbstractData* dtkData, QSqlDatabase
     return studyId;
 }
 
-int medDatabaseImporter::getOrCreateSeries(dtkAbstractData* dtkData, QSqlDatabase db, int studyId)
+int medDatabaseImporter::getOrCreateSeries(const dtkAbstractData* dtkData, QSqlDatabase db, int studyId)
 {
     int seriesId = -1;
 
@@ -958,6 +958,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseImporter::tryReadImages(QStringList 
     return dtkData;
 }
 
+// QString medDatabaseImporter::determineFutureImageFileName(const dtkAbstractData* dtkdata, int volumeNumber)
 QString medDatabaseImporter::determineFutureImageFileName(const dtkAbstractData* dtkdata, int volumeNumber)
 {
     // we append the uniqueID at the end of the filename to have unique filenames for each volume
@@ -982,7 +983,39 @@ QString medDatabaseImporter::determineFutureImageFileName(const dtkAbstractData*
     QString imageFileName = "/" + s_patientName + "/" +
             s_studyName   + "/" +
             s_seriesName  + s_volumeNumber;
-
+    
+//     QString patientName = dtkdata->metaDataValues(tr("PatientName"))[0];
+//     QString studyName   = dtkdata->metaDataValues(tr("StudyDescription"))[0];
+//     QString seriesName  = dtkdata->metaDataValues(tr("SeriesDescription"))[0];
+//     QString studyID   = dtkdata->metaDataValues(tr("StudyID"))[0];
+//     QString seriesID   = dtkdata->metaDataValues(tr("SeriesID"))[0];
+//     QString patientBirthDate   = dtkdata->metaDataValues(tr("BirthDate"))[0];
+// 
+//     //Create patient ID from patient name and patient birthdate (other solutions ?)
+//     QString patientID = patientName.simplified() + patientBirthDate;
+// 
+// 
+//     QString imageFileName = QDir::separator() + patientID
+//                           + QDir::separator() + studyID
+//                           + QDir::separator() + seriesID + s_volumeNumber;
+    
+    
+//     QSqlDatabase db = *(medDatabaseController::instance()->database());
+//     
+//     int patientId = getOrCreatePatient(dtkdata, db);
+// 
+//     int studyId = getOrCreateStudy(dtkdata, db, patientId);
+// 
+//     int seriesId = getOrCreateSeries(dtkdata, db, studyId);
+// 
+//     QString imageFileName = QDir::separator() + QString(QByteArray(QString(patientId).toAscii()).toHex())
+//                           + QDir::separator() + QString(QByteArray(QString(studyId).toAscii()).toHex())
+//                           + QDir::separator() + QString(QByteArray(QString(seriesId).toAscii()).toHex()) + s_volumeNumber;
+// 
+//     qDebug() << imageFileName;
+                          
+//     QString description = dtkdata->description();
+            
     return imageFileName;
 }
 
