@@ -28,10 +28,11 @@ namespace MedInria {
             return 0;
         }
 
-        static medCompositeDataSetsBase* find(const QString& desc) {
+        static medCompositeDataSetsBase* find(dtkAbstractData* data) {
+            const QString& desc = data->description();
             for (Registery::const_iterator i=registery().begin();i!=registery().end();++i)
                 if (i->second->description()==desc)
-                    return i->second->clone(-1,-1);
+                    return dynamic_cast<medCompositeDataSetsBase*>(data);
             return 0;
         }
 
@@ -52,7 +53,7 @@ namespace MedInria {
         //  Read the description from an array.
 
         virtual bool read_description(const QByteArray& buf) = 0;
-        virtual bool read_data() = 0;
+        virtual bool read_data(const QString&) = 0;
 
         virtual bool write_description(QTextStream&) = 0;
         virtual bool write_data(const QString&,const dtkAbstractData*) = 0;

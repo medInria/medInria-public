@@ -42,14 +42,14 @@ public:
     bool registered() const;
 
     virtual bool read_description(const QByteArray& buf);
-    virtual bool read_data();
+    virtual bool read_data(const QString&);
 
     virtual bool write_description(QTextStream& file);
     virtual bool write_data(const QString&,const dtkAbstractData*);
 
     //  Methods specific to this type.
 
-    void readVolumes(QStringList);
+    void readVolumes(const QString& dirname,const QStringList& paths);
     void setGradientList(const GradientListType& grads) { gradients = grads; }
     void setVolumeList(const Volumes& vols)             { images = vols;     }
 

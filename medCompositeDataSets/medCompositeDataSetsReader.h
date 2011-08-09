@@ -14,27 +14,25 @@ class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsReader: public dtkAb
 
 public:
 
-    medCompositeDataSetsReader(): desc(0) { }
+    medCompositeDataSetsReader(): is_zip_file(false),desc(0) { }
 
-    virtual ~medCompositeDataSetsReader() {
+    virtual ~medCompositeDataSetsReader() { cleanup(); }
+
+    void cleanup() {
         if (!desc)
             delete desc;
         desc = 0;
+        if (!reader)
+            delete reader;
+        reader = 0;
+        qDebug() << "Cleaning: " << tmpdir;
+        if (is_zip_file)
+            RemoveDirectory(QDir(tmpdir));
     }
 
     virtual QString description() const { return "Reader for composite data sets";              }
     virtual QStringList handled() const { return MedInria::medCompositeDataSetsBase::handled(); }
     
-//    bool enabled() const;
-//    void  enable();
-//    void disable();
-    
-//    dtkAbstractData *data();
-    
-//    virtual void setData(dtkAbstractData *data);
-
-    void cleanup() { RemoveDirectory(QDir(outdir)); }
-
     static bool initialize() {
         return dtkAbstractDataFactory::instance()->registerDataReaderType("medCompositeDataSetsReader",MedInria::medCompositeDataSetsBase::handled(),create);
     }
@@ -47,13 +45,14 @@ public slots:
 
     virtual bool read(const QString& file);
     virtual void readInformation(const QString& path);
-    virtual void setProgress(int value);
+    virtual void setProgress(const int value);
 
 private:
 
     bool       is_zip_file;
     bool       in_error;
-    QString    outdir;
+    QString    basedir;
+    QString    tmpdir;
     QIODevice* desc;
 
     MedInria::medCompositeDataSetsBase* reader;

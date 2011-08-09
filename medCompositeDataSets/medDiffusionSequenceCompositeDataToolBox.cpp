@@ -118,7 +118,8 @@ void medDiffusionSequenceCompositeDataToolBox::addVolumeToTree (unsigned int ind
     d->itemList.push_back (item);
 }
 
-void medDiffusionSequenceCompositeDataToolBox::readVolumes (QStringList paths)
+//  Duplicate of 
+void medDiffusionSequenceCompositeDataToolBox::readVolumes(QStringList paths)
 {
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
   

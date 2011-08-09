@@ -9,18 +9,13 @@
 
 #include <medCompositeDataSetsReader.h>
 
-#if 0
-dtkAbstractData* medCompositeDataSetsReader::data() {
-    qDebug() << "DATA";
-    return 0;
-}
-
-void medCompositeDataSetsReader::setData(dtkAbstractData *data) {
-    qDebug() << "setData";
-}
-#endif
-
 bool medCompositeDataSetsReader::canRead(const QString& path) {
+
+    if (desc!=0) {
+        if (reader!=0)
+            return true;
+        cleanup();
+    }
 
     //  Check if the file is a zip file.
 
@@ -28,20 +23,21 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
 
     zipfile.setZipName(path);
     const QString dname = dirname(path)+"/Description.txt";
-    QString descname(path);
 
+    QString descname(path);
     if (zipfile.open(dtkZip::mdUnzip) && zipfile.setCurrentFile(dname)) {
 
         //  OK this is a zip archive and the file Description.txt is in the zip archive.
         //  Uncompress the archive in a temporary directory.
 
-        is_zip_file = false;
         dtkZipFile file(&zipfile);
-        outdir = QString(mkdtemp((QDir::tempPath()+"/"+"medcdsXXXXXXX").toAscii().data()))+"/";
+        tmpdir = QString(mkdtemp((QDir::tempPath()+"/"+"medcdsXXXXXXX").toAscii().data()))+"/";
+        is_zip_file = true;
         for (bool more=zipfile.goToFirstFile();more;more=zipfile.goToNextFile()) {
 
             if (!file.open(QIODevice::ReadOnly)) {
                 qWarning("medCompositeDataSets: file.open(): %d",file.getZipError());
+                cleanup();
                 return false;
             }
 
@@ -49,18 +45,17 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
 
             if (file.getZipError()!=UNZ_OK) {
                 qWarning("medCompositeDataSets: file.getFileName(): %d",file.getZipError());
+                cleanup();
                 return false;
             }
 
-            QString dirn = outdir+name;
+            const QString& dirn = tmpdir+name;
 
-            if (name.contains('/')) {
-                dirn.chop(dirn.length()-dirn.lastIndexOf("/"));
-                QDir().mkpath(dirn);
-            }
+            if (name.contains('/'))
+                QDir().mkpath(QFileInfo(dirn).dir().path());
 
             QFile out;
-            out.setFileName(outdir+name);
+            out.setFileName(dirn);
             out.open(QIODevice::WriteOnly);
 
             char buf[4096];
@@ -83,11 +78,13 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
 
             if (file.getZipError()!=UNZ_OK) {
                 qWarning("medCompositeDataSets: file.getFileName(): %d", file.getZipError());
+                cleanup();
                 return false;
             }
 
             if(!file.atEnd()) {
                 qWarning("medCompositeDataSets: read all but not EOF");
+                cleanup();
                 return false;
             }
 
@@ -95,20 +92,24 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
 
             if(file.getZipError()!=UNZ_OK) {
                 qWarning("medCompositeDataSets: file.close(): %d", file.getZipError());
+                cleanup();
                 return false;
             }
         }
 
         zipfile.close();
-        is_zip_file = true;
-        descname = outdir+dname;
+        descname = tmpdir+dname;
     }
         
+    basedir = QFileInfo(descname).dir().path();
+
     //  Assume a simple text file.
 
     desc = new QFile(descname);
-    if (!desc->open(QIODevice::ReadOnly))
+    if (!desc->open(QIODevice::ReadOnly)) {
+        cleanup();
         return false;
+    }
 
     //  Read the first line of the description.
 
@@ -133,14 +134,11 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
 }
 
 void medCompositeDataSetsReader::readInformation(const QString&) {
-    qDebug("ReadInformation");
     QByteArray buffer = desc->readAll();
     in_error = reader->read_description(buffer);
 }
 
 bool medCompositeDataSetsReader::read(const QString& path) {
-
-    qDebug() << "This is called !!!!";
 
     //  Read the type information.
 
@@ -155,9 +153,9 @@ bool medCompositeDataSetsReader::read(const QString& path) {
     //  Create the final data object.
     //  How to set progress in read_data ??
 
-    return reader->read_data();
+    return reader->read_data(basedir);
 }
 
-void medCompositeDataSetsReader::setProgress(int value) {
-    qDebug() << "setProgress";
+void medCompositeDataSetsReader::setProgress(const int value) {
+    qDebug() << "setProgress" << value;
 }

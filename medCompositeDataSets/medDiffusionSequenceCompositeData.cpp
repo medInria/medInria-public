@@ -49,7 +49,7 @@ bool medDiffusionSequenceCompositeData::write_description(QTextStream& out) {
     const bool named_images = image_list.size()==images.size();
 
     const unsigned num = images.size();
-    out << "Images: " << num;
+    out << "Images: " << num << '\n';
     for (unsigned i=0;i<num;++i) {
         const GradientType V = gradients[i];
         const QString im_name = (named_images) ? image_list[i] : QString("image")+QString::number(i);
@@ -65,28 +65,29 @@ bool medDiffusionSequenceCompositeData::write_data(const QString& dirname,const 
     return true;
 }
 
-void medDiffusionSequenceCompositeData::readVolumes(QStringList paths) {
+void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const QStringList& paths) {
 
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
       
     for (int i=0;i<paths.size();++i) {
-        QString filepath = paths[i];
+        QString filepath = dirname+"/"+paths[i];
         dtkAbstractDataReader* reader = NULL;
-        
-        qDebug() << "Attempting to read: " << filepath;
-
         for (int i=0;i<readers.size();++i) {
-            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
-            if (dataReader->canRead(filepath))
-                reader = dataReader;
+            reader = dtkAbstractDataFactory::instance()->reader(readers[i]);
+            if (reader->canRead(filepath))
+                break;
             else
                 delete reader;
         }
 
         reader->read(filepath);
         dtkAbstractData* volume = reader->data();
-        QString description     = volume->description();
-        qDebug() << description;
+        images.push_back(volume);
+        delete reader;
+
+        //  To be changed (and the push_back above might be moved after the checks).
+
+        QString description = volume->description();
         if (!description.contains("Image")) {
             // emit medToolBoxCompositeDataSetImporter::showError(this,tr("file does not describe any known image type"),3000);
             continue;
@@ -99,13 +100,11 @@ void medDiffusionSequenceCompositeData::readVolumes(QStringList paths) {
             // emit medToolBoxCompositeDataSetImporter::showError(this,tr("image should be 3D"),3000);
             continue;
         }
-        
-        images.push_back(volume);
     }  
 }
 
-bool medDiffusionSequenceCompositeData::read_data() {
-    readVolumes(image_list); // TODO: Error management....
+bool medDiffusionSequenceCompositeData::read_data(const QString& dirname) {
+    readVolumes(dirname,image_list); // TODO: Error management....
     return true;
 }
 
