@@ -40,6 +40,7 @@
 #include <medDatabaseNavigator.h>
 #include <medDatabaseNavigatorController.h>
 #include <medDatabaseNonPersistentController.h>
+#include <medMetaDataHelper.h>
 
 #include <medClutEditor.h>
 #include <medToolBox.h>
@@ -217,12 +218,10 @@ bool medViewerArea::openInTab(const medDataIndex &index)
 
     if (!this->currentRootContainer()->views().isEmpty())
     {
-        dtkSmartPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
-
-        if (dtkdata.isNull())
-            return false;
-
-        QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(tr("PatientName")));
+        medDataManager *dataManager = medDataManager::instance();
+        medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
+        QString createdName = dbc->metaData(index,medMetaDataHelper::KEY_PatientName());
+        createdName = d->current_configuration->addMultiContainer(createdName);
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
     }
     else
