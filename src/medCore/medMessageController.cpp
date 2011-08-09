@@ -20,6 +20,7 @@
 #include <dtkCore/dtkGlobal.h>
 
 #include "medMessageController.h"
+#include "medStatusBar.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -197,7 +198,8 @@ medMessageControllerMessageQuestion::~medMessageControllerMessageQuestion(void)
 class medMessageControllerPrivate
 {
 public:
-    QStatusBar *status;
+//     QStatusBar *status;
+    medStatusBar * status;
 
     QHash<QObject *, medMessageControllerMessage *> messages;
 };
@@ -210,7 +212,8 @@ medMessageController *medMessageController::instance(void)
     return s_instance;
 }
 
-void medMessageController::attach(QStatusBar *status)
+// void medMessageController::attach(QStatusBar *status)
+void medMessageController::attach(medStatusBar *status)
 {
     d->status = status;
 }
@@ -222,7 +225,8 @@ void medMessageController::showInfo(QObject *sender, const QString& text,unsigne
         medMessageControllerMessageInfo *message = new medMessageControllerMessageInfo(
                 sender,text,0,timeout);
     
-        d->status->addWidget(message);
+//         d->status->addWidget(message);
+        d->status->addMessage(message);
         d->status->update();
         qApp->processEvents();
 
@@ -239,7 +243,8 @@ void medMessageController::showError(QObject *sender, const QString& text,unsign
         medMessageControllerMessageError *message = new medMessageControllerMessageError(
                 sender,text,0,timeout);
 
-        d->status->addWidget(message);
+//         d->status->addWidget(message);
+        d->status->addMessage(message);
         d->status->update();
         qApp->processEvents();
         d->messages.insert(sender, message);
@@ -254,7 +259,8 @@ void medMessageController::showProgress(QObject *sender, const QString& text)
         // GUI
         medMessageControllerMessageProgress *message = new medMessageControllerMessageProgress(sender,text);
 
-        d->status->addWidget(message);
+//         d->status->addWidget(message);
+        d->status->addMessage(message);
         d->status->update();
         qApp->processEvents();
         d->messages.insert(sender, message);

@@ -33,6 +33,7 @@
 #include <dtkGui/dtkSpacer.h>
 
 #include <medMessageController.h>
+#include <medStatusBar.h>
 #include <medSettingsManager.h>
 #include <medDbControllerFactory.h>
 #include <medJobManager.h>
@@ -57,7 +58,6 @@
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
-
 
 #include <QtGui>
 
@@ -98,6 +98,7 @@ public:
 
     QHBoxLayout * statusBarLayout;
 
+    medStatusBar * statusBar;
     QWidget * quickAccessWidget;
     bool quickAccessVisible;
 
@@ -224,10 +225,19 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     statusBarWidget->setLayout ( d->statusBarLayout );
 
     //Setup status bar
-    this->statusBar()->setSizeGripEnabled ( false );
-    this->statusBar()->setContentsMargins ( 5, 0, 5, 0 );
-    this->statusBar()->setFixedHeight ( 31 );
-    this->statusBar()->addPermanentWidget ( statusBarWidget, 1 );
+    d->statusBar = new medStatusBar(this);
+    d->statusBar->setStatusBarLayout(d->statusBarLayout);
+    d->statusBar->setSizeGripEnabled ( false );
+    d->statusBar->setContentsMargins ( 5, 0, 5, 0 );
+    d->statusBar->setFixedHeight ( 31 );
+    d->statusBar->addPermanentWidget ( statusBarWidget, 1 );
+
+    this->setStatusBar(d->statusBar);
+    
+//     this->statusBar()->setSizeGripEnabled ( false );
+//     this->statusBar()->setContentsMargins ( 5, 0, 5, 0 );
+//     this->statusBar()->setFixedHeight ( 31 );
+//     this->statusBar()->addPermanentWidget ( statusBarWidget, 1 );
 
     this->readSettings();
 
@@ -248,7 +258,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     // this->setStyle(new QPlastiqueStyle());
     this->setWindowTitle ( "medinria" );
 
-    medMessageController::instance()->attach ( this->statusBar() );
+//     medMessageController::instance()->attach ( this->statusBar() );
+    medMessageController::instance()->attach ( d->statusBar );
 
     d->viewerArea->setupConfiguration ( "Visualization" );
 

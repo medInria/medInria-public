@@ -26,6 +26,7 @@ project(medCore)
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataManager.h
   medMessageController.h
+  medStatusBar.h
   medMetaDataHelper.h
   medViewManager.h
   medPluginManager.h
@@ -70,6 +71,7 @@ set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
   medMessageController.cpp
+  medStatusBar.cpp
   medMetaDataHelper.cpp
   medViewManager.cpp
   medPluginManager.cpp

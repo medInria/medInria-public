@@ -25,6 +25,7 @@
 
 #include "medCoreExport.h"
 
+class medStatusBar;
 class medMessageControllerPrivate;
 
 // /////////////////////////////////////////////////////////////////
@@ -145,7 +146,8 @@ class MEDCORE_EXPORT medMessageController : public QObject
 public:
     static medMessageController *instance(void);
 
-    void attach(QStatusBar *status);
+//     void attach(QStatusBar *status);
+    void attach(medStatusBar *status);
 
 public slots:
     void     showInfo(QObject *sender, const QString& text,unsigned int timeout=0);
