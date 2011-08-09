@@ -1,5 +1,5 @@
-/* medAbstractView.h --- 
- * 
+/* medAbstractView.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Oct 21 19:54:36 2010 (+0200)
@@ -9,20 +9,20 @@
  *     Update #: 9
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDABSTRACTVIEW_H
 #define MEDABSTRACTVIEW_H
 
 #include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkSmartPointer.h>
 
-#include <QSharedPointer>
 #include "medCoreExport.h"
 
 class medAbstractViewPrivate;
@@ -107,7 +107,7 @@ public:
     **/
     void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
     void camera(QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale) const;
-    
+
     /**
      * Set the visibility of the data on the corresponding layer
      */
@@ -133,16 +133,16 @@ public:
      * property changed.
      */
     void setCurrentLayer(int layer);
-  
+
     /**
      * Get the current layer. The current layer is used to determine which layer will receive
      * property changed.
      */
     virtual int currentLayer(void) const;
-    
+
     /**
      * Get the number of layers of the view.
-     */    
+     */
     virtual int layerCount(void) const;
 
     /**
@@ -151,21 +151,30 @@ public:
     virtual void removeOverlay(int layer);
 
     /**
-     * Setting data using a qSharedPointer
+     * Setting data using a dtkSmartPointer
      */
-    virtual void setSharedDataPointer(QSharedPointer<dtkAbstractData> data);
+    virtual void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
 
     void setCurrentMeshLayer(int meshLayer);
     virtual int currentMeshLayer(void) const;
     void setMeshLayerCount(int meshLayerCount);
     virtual int meshLayerCount(void) const;
 
+    bool isInList(dtkAbstractData * data);
     void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
     void setDataInList(dtkAbstractData * data, int layer);
+
+    void addDataType(const QString & dataDescription);
+    void removeDataType(const QString & dataDescription);
+    QHash<QString, unsigned int> dataTypes();
+
     /** The color used to represent the extent or space of this view in another view */
     virtual QColor color() const;
     virtual void setColor( const QColor & color);
+
+    virtual QString getLUT(int layer) const;
+    virtual QString getPreset(int layer) const;
 
 signals:
     /**
@@ -179,6 +188,13 @@ signals:
        daddy.
      **/
     void becomeDaddy   (bool);
+
+    /**
+       In medinria, the daddy is the reference view (contoured in
+       red). Only one per pool is authorized. Emit this signal when
+       the daddy state of the view changes.
+     **/
+    void changeDaddy   (bool);
 
     /**
        This signal is emitted when a view wants to register its data to the daddy.
@@ -243,12 +259,12 @@ signals:
                            const QVector3D &focal,
                            double parallelScale,
                            bool propagate);
-    
+
     /**
      * This signal is emitted when the visibility of a layer has changed.
      */
     void visibilityChanged(bool visibility, int layer);
-    
+
     /**
      * This signal is emitted when the opacity of a layer has changed.
      */
@@ -262,12 +278,14 @@ signals:
     void dataAdded (dtkAbstractData* data);
 
     void dataAdded (dtkAbstractData* data, int layer);
+    void dataRemoved (int layer);
+    void dataRemoved(dtkAbstractData* data,int layer);
 
     void TwoDTriggered(dtkAbstractView* d);
     void ThreeDTriggered(dtkAbstractView* d);
 
     /** Emitted when the oblique view settings change */
-    void obliqueSettingsChanged();
+    void obliqueSettingsChanged (const medAbstractView *self);
 
     void colorChanged();
 
@@ -299,9 +317,9 @@ public slots:
                      const QVector3D &viewup,
                      const QVector3D &focal,
                      double parallelScale);
-    
+
     virtual void onVisibilityChanged(bool visible, int layer);
-    
+
     virtual void onOpacityChanged(double opacity, int layer);
 
     /** When another linked view changes it's oblique settings the pool calls this:*/
@@ -312,6 +330,9 @@ public slots:
 
     /** Called when another view leaves the pool */
     virtual void onRemoveViewFromPool( medAbstractView * viewRemoved );
+
+
+    void setFullScreen( bool state );
 
 protected:
     void emitViewSliceChangedEvent    (int slice);

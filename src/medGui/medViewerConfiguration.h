@@ -166,36 +166,6 @@ public:
      * @return bool
     */
     bool areToolBoxesVisible(void) const;
-
-    /**
-     * @brief Sets the visibility of the medViewerToolBoxLayout.
-     *
-     * The value is really applied when the configuration 
-     * is set in the medViewArea::setupConfiguration method.
-     * @param visibility
-    */
-    void setLayoutToolBoxVisibility(bool visibility);
-    
-    /**
-     * @brief Hides the medViewerToolBoxLayout.
-     *
-     * @param void
-    */
-    void hideLayoutToolBox(void);
-    
-    /**
-     * @brief Show the medViewerToolBoxLayout.
-     *
-     * @param void
-    */
-    void showLayoutToolBox(void);
-    
-    /**
-     * @brief Gets the visibility of the medViewerToolBoxLayout.
-     *
-     * @return bool
-    */
-    bool isLayoutToolBoxVisible() const;
     
     /**
      * @brief Sets up the medStackedViewContainers.
@@ -219,8 +189,9 @@ public:
      *
      * @param name Identifyer/description. By Default "Multi", 
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addMultiContainer(const QString& name="Multi");
+    QString addMultiContainer(const QString& name="Multi");
     
     /**
      * @brief Convenience method to add a medViewContainerCustom.
@@ -287,6 +258,33 @@ public slots:
      *
     */
     virtual void clear();
+
+    /**
+      * @brief Adds a new tab to a configuration
+      *
+      * Default implementation adds a multi-container tab
+      * If another behavior is wanted, override this in child class
+      */
+    virtual void onAddTabClicked();
+
+    /**
+      * @brief Adapt interface to container change in stacks
+      *
+      * E.g. changes the layout toolbox to set it to the current container type
+      */
+    virtual void onContainerChanged(const QString &name);
+
+    /**
+     * @brief Tells all toolboxes that a button of buttonGroup has been checked
+     *
+     * All toolboxes except the sender of the buttonChecked signal are
+     * told to uncheck their buttons belonging to the same
+     * buttonGroup.  This mechanism can be used when buttons in
+     * different toolboxes are mutually exclusive.
+     *
+     * @param buttonGroup
+     */
+    void onButtonChecked( const QString & buttonGroup );
     
 signals:
     /**
@@ -328,6 +326,15 @@ signals:
      * @param int
     */
     void layoutPresetClicked(int);
+
+    /**
+     * @brief Signal to change layout toolbox tab type
+     *
+     * Connect it in your config to the layout toolbox
+     *
+     * @param int
+    */
+    void setLayoutTab(const QString &);
     
 protected:
     /**

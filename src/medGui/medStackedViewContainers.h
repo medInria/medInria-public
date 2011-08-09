@@ -34,7 +34,7 @@ class medStackedViewContainersPrivate;
  * There is one such stack per medViewConfiguration. 
  *
 */
-class MEDGUI_EXPORT medStackedViewContainers : public QStackedWidget
+class MEDGUI_EXPORT medStackedViewContainers : public QTabWidget
 {
     Q_OBJECT
 
@@ -69,15 +69,24 @@ public:
      * @return QString
     */
     QString currentName(void) const;
-    
+
     /**
      * @brief Adds a container to the stack.
      *
      * @param name The name that will identify this container in the stack.
-     * @param container 
+     * @param container
     */
     void addContainer(const QString &name, medViewContainer *container);
-    
+
+    /**
+     * @brief Inserts a container in the stack.
+     *
+     * @param index The index in the tab widget where to insert the container.
+     * @param name The name that will identify this container in the stack.
+     * @param container
+    */
+    void insertContainer(int index, const QString &name, medViewContainer *container);
+
     /**
      * @brief Gets the container identified in the stack by this string.
      *
@@ -107,7 +116,19 @@ public:
      * @param name
     */
     void removeContainer(const QString& name);
-    
+
+    /**
+     * @brief Locks tabs (none can be deleted or created).
+     *
+    */
+    void lockTabs();
+
+    /**
+     * @brief Unlocks tabs (deletion and creation authorized).
+     *
+    */
+    void unlockTabs();
+
 signals:
     /**
      * @brief Emits this signal when one of the containers has emitted 
@@ -124,6 +145,56 @@ signals:
      * @param 
     */
     void focused(dtkAbstractView *);
+
+    /**
+     * @brief Emits this signal when one of the containers has emitted 
+     * the same signal.
+     * 
+     * @param view
+    */
+    void viewAdded( dtkAbstractView * );
+    
+    /**
+     * @brief Emits this signal when one of the containers has emitted 
+     * the same signal.
+     *
+     * @param view
+    */
+    void viewRemoved( dtkAbstractView * );
+
+    /**
+     * @brief Emits a signal when the add tab button has been clicked. Handled by the configurations
+     *
+    */
+    void addTabButtonClicked();
+
+    /**
+     * @brief Emits a signal when the current container changes (for toolboxes to update).
+     *
+    */
+    void currentChanged(const QString &);
+
+public slots:
+    /**
+     * @brief Changes the current container to the one at index.
+     *
+     * @param index the tab index.
+    */
+    void onCurrentContainerChanged(int index);
+
+    /**
+     * @brief Changes the type of the current container to name.
+     *
+     * @param name the container description.
+    */
+    void changeCurrentContainerType(const QString &name);
+
+    /**
+     * @brief Deletes the container at index (if not the last one in the stack).
+     *
+     * @param index the tab index.
+    */
+    void deleteContainerClicked(int index);
 
 private:
     medStackedViewContainersPrivate *d;

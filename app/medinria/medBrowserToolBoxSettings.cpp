@@ -2,9 +2,9 @@
 
 #include <QtGui>
 #include <QMessageBox>
-#include <medGui/medSettingsEditor.h>
-#include <medGui/medToolBox.h>
-#include <medGui/medSystemSettingsWidget.h>
+#include <medSettingsEditor.h>
+#include <medToolBox.h>
+#include <medSystemSettingsWidget.h>
 
 class medBrowserToolBoxSettingsPrivate
 {

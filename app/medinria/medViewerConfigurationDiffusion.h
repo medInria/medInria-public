@@ -4,8 +4,8 @@
 
 #include <QtCore>
 
-#include <medGui/medViewerConfiguration.h>
-#include <medGui/medToolBoxDiffusionTensorView.h>
+#include <medViewerConfiguration.h>
+#include <medToolBoxDiffusionTensorView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 
@@ -36,6 +36,14 @@ public slots:
     void onTubeModeSelected(bool);
     void onTBDiffusionSuccess(void);
     void refreshInteractors (void);
+
+    /**
+      * @brief Adds a new tab to a configuration
+      *
+      * Re-implemented, replaces default implementation in medViewerConfiguration
+      */
+    void onAddTabClicked();
+
 
     // slots for tensor interactions
 

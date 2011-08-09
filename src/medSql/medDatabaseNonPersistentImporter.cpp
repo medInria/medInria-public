@@ -23,11 +23,12 @@
 #include "medDatabaseNonPersistentItem_p.h"
 #include "medDatabaseNonPersistentImporter.h"
 
+#include <medAbstractDataImage.h>
+
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 
@@ -35,13 +36,14 @@ class medDatabaseNonPersistentImporterPrivate
 {
 public:
     dtkAbstractData *data;
+    bool isCancelled;
 };
 
-medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter(dtkAbstractData *data) : QObject(), d(new medDatabaseNonPersistentImporterPrivate)
+medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter(dtkAbstractData *data) : medJobItem(), d(new medDatabaseNonPersistentImporterPrivate)
 {
     d->data = data;
+    d->isCancelled = false;
     qDebug() << d->data;
-    
 }
 
 medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter(void)
@@ -51,14 +53,14 @@ medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter(void)
     d = NULL;
 }
 
-medDataIndex medDatabaseNonPersistentImporter::run(void)
+void medDatabaseNonPersistentImporter::run(void)
 {
     medDataIndex index;
     
     dtkAbstractData *data = d->data;
     if (!data) {
         emit failure (this);
-	return medDataIndex();
+    return;
     }
 
     if (!data->hasMetaData ("PatientName") ||
@@ -66,7 +68,7 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
 	!data->hasMetaData ("SeriesDescription") ) {
         qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
     
     QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
@@ -111,7 +113,7 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
     if (studyId==-1)
         studyId = medDatabaseNonPersistentController::instance()->studyId(true);
 
-    index = medDataIndex (patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
+    index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
     QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
 
@@ -133,6 +135,10 @@ medDataIndex medDatabaseNonPersistentImporter::run(void)
 
     emit progressed(100);
     emit success(this);
+    emit nonPersistentImported(index);
+}
 
-    return index;
+void medDatabaseNonPersistentImporter::onCancel( QObject* )
+{
+    d->isCancelled = true;
 }

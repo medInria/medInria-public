@@ -3,7 +3,7 @@
 
 #include <QtCore/QObject>
 
-#include "medCore/medCoreExport.h"
+#include "medCoreExport.h"
 
 /**
 * @class  medProgressFilter
