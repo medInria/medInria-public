@@ -146,7 +146,6 @@ class MEDCORE_EXPORT medMessageController : public QObject
 public:
     static medMessageController *instance(void);
 
-//     void attach(QStatusBar *status);
     void attach(medStatusBar *status);
 
 public slots:
