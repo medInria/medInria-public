@@ -17,10 +17,32 @@
 class ITKProcessExamplePrivate
 {
 public:
-    itk::Image <float, 3>::Pointer input;
+    dtkAbstractData *input;
     dtkAbstractData *output;	
     double variance;
+    template <class PixelType> int update(void);
 };
+
+template <class PixelType> int ITKProcessExamplePrivate::update(void)
+{
+    qDebug() << "entering method d->update<" << typeid(PixelType).name() << ">";
+
+    typedef itk::Image< PixelType, 3 > ImageType;
+
+    typedef itk::DiscreteGaussianImageFilter< ImageType, ImageType >  FilterType;
+
+    typename FilterType::Pointer gaussianFilter = FilterType::New();
+
+    gaussianFilter->SetInput(dynamic_cast<ImageType *>((itk::Object*)(input->data())));
+
+    gaussianFilter->SetVariance(variance);
+
+    gaussianFilter->Update();
+
+    output->setData(gaussianFilter->GetOutput());
+
+    return EXIT_SUCCESS;
+}
 
 // /////////////////////////////////////////////////////////////////
 // ITKProcessExample
@@ -50,12 +72,15 @@ QString ITKProcessExample::description(void) const
 
 void ITKProcessExample::setInput(dtkAbstractData *data)
 {
-    qDebug() << "entering setInput method";
-    
     if (!data)  
         return;
     
-    d->input = dynamic_cast< itk::Image<float, 3> *> ((itk::Object*)(data->data()));
+    QString description = data->description();
+
+    d->output = dtkAbstractDataFactory::instance()->create (description);
+
+    d->input = data;
+    qDebug() << "in method setInput, d->input =" << d->input;
 }
 
 void ITKProcessExample::setParameter(double  data, int channel)
@@ -72,32 +97,58 @@ void ITKProcessExample::setParameter(double  data, int channel)
 
 int ITKProcessExample::update (void)
 {
+    qDebug() << "entering method update";
+
     if (!d->input)
 	{
 	    qDebug() << "in update method : d->input == NULL";	  
             return -1;
-	}	
+	}
 
-    typedef itk::Image< float, 3 > ImageType;
-    typedef itk::DiscreteGaussianImageFilter< ImageType, ImageType >  FilterType;
-    
-    FilterType::Pointer gaussianFilter = FilterType::New();
+    QString descr = d->input->description();
 
-    gaussianFilter->SetInput( d->input );
-    gaussianFilter->SetVariance(d->variance);
-
-    gaussianFilter->Update();
-
-    d->output = dynamic_cast <dtkAbstractData *>(dtkAbstractDataFactory::instance()->create("itkDataImageFloat3"));
-
-    d->output->setData(gaussianFilter->GetOutput());
+    if (descr ==tr("itkDataImageChar3")) {
+        d->update<char>();
+     }
+    else if (descr ==tr("itkDataImageUChar3")) {
+        d->update<unsigned char>();
+     }
+    else if (descr ==tr("itkDataImageShort3")) {
+        d->update<short>();
+     }
+    else if (descr ==tr("itkDataImageUShort 3")) {
+        d->update<unsigned short>();
+     }
+    else if (descr ==tr("itkDataImageInt3")) {
+        d->update<int>();
+     }
+    else if (descr ==tr("itkDataImageUInt3")) {
+        d->update<unsigned int>();
+     }
+    else if (descr ==tr("itkDataImageLong3")) {
+        d->update<long>();
+     }
+    else if (descr==tr("itkDataImageULong3")) {
+        d->update<unsigned long>();
+     }
+    else if (descr ==tr("itkDataImageFloat3")) {
+        d->update<float>();
+     }
+    else if (descr ==tr("itkDataImageDouble3")) {
+        d->update<double>();
+     }
+    else
+    {
+        qDebug() << "Error : pixel type not yet implemented";
+        return -1;
+    }
 
     return EXIT_SUCCESS;
 }
 
 dtkAbstractData * ITKProcessExample::output(void)
 {	
-	return (d->output);
+    return (d->output);
 }
 
 // /////////////////////////////////////////////////////////////////

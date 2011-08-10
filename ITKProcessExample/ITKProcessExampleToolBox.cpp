@@ -26,8 +26,7 @@
 class ITKProcessExampleToolBoxPrivate
 {
 public:
-        QLineEdit *sigma;
-        QLineEdit *maxKernelWidth;
+        QLineEdit *variance;
         dtkAbstractProcess *process;
         medProgressionStack * progression_stack;
 };
@@ -36,23 +35,12 @@ ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medToolBox
 {
       // Parameters:
       
-      QLabel *sigmaLabel = new QLabel("sigma : ");
-      d->sigma = new QLineEdit("0");
+      QLabel *varianceLabel = new QLabel("variance : ");
+      d->variance = new QLineEdit("1.0");
 
-      QHBoxLayout *sigmaBox = new QHBoxLayout();
-      sigmaBox->addWidget(sigmaLabel);
-      sigmaBox->addWidget(d->sigma);
-
-      QLabel *maxKernelWidthLabel = new QLabel("max kernel width : ");
-      d->maxKernelWidth = new QLineEdit("0");
-
-      QHBoxLayout *betaBox = new QHBoxLayout();
-      betaBox->addWidget(maxKernelWidthLabel);
-      betaBox->addWidget(d->maxKernelWidth);
-
-      QVBoxLayout *parametersLayout = new QVBoxLayout();
-      parametersLayout->addLayout(sigmaBox);
-      parametersLayout->addLayout(betaBox);      
+      QHBoxLayout *varianceLayout = new QHBoxLayout();
+      varianceLayout->addWidget(varianceLabel);
+      varianceLayout->addWidget(d->variance);
 
       // Run button:
 
@@ -65,14 +53,14 @@ ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medToolBox
       d->progression_stack = new medProgressionStack(widget);
 
       QVBoxLayout *layprinc = new QVBoxLayout();
-      layprinc->addLayout(parametersLayout);
+      layprinc->addLayout(varianceLayout);
       layprinc->addWidget(runButton);
       layprinc->addWidget(d->progression_stack);
 
       widget->setLayout(layprinc);
 
       // Main toolbox:
-      this->setTitle("ITK GaussianBlur - Example of filter");
+      this->setTitle("ITK Gaussian Smoothing");
       this->addWidget(widget);
 
       connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
@@ -114,8 +102,7 @@ void ITKProcessExampleToolBox::run(void)
 
     d->process->setInput(this->parent()->data());
 
-    d->process->setParameter(d->sigma->text().toDouble(),0);
-    d->process->setParameter(d->maxKernelWidth->text().toDouble(),1);
+    d->process->setParameter(d->variance->text().toDouble(),0);
 
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess (d->process);

@@ -28,11 +28,14 @@ int main(int argc, char **argv)
 	worker->setInput(inputImage);
 	worker->setParameter(2.0,0);
 	
+	qDebug() << "in main, calling worker->update...";
 	worker->update();
 
 	worker->output()->enableWriter("itkNrrdDataImageWriter");
 	worker->output()->write(argv[2]);
 	
+	qDebug() << "in main, after writing result image";
+
 	dtkPluginManager::instance()->uninitialize();
 	
 	return DTK_SUCCEED;
