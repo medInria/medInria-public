@@ -157,7 +157,10 @@ void medTabbedViewContainers::changeCurrentContainerType(const QString &name)
         int reply = msgBox.exec();
 
         if( reply == QMessageBox::No )
+        {
+            this->onCurrentContainerChanged(this->currentIndex());
             return;
+        }
     }
 
     if (name != this->current()->description())
