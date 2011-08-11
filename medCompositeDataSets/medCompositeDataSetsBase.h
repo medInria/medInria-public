@@ -56,7 +56,7 @@ namespace MedInria {
         virtual bool read_data(const QString&) = 0;
 
         virtual bool write_description(QTextStream&) = 0;
-        virtual bool write_data(const QString&,const dtkAbstractData*) = 0;
+        virtual bool write_data(const QString&) = 0;
 
         static QStringList initialize() {
             QStringList& ql = known_types();

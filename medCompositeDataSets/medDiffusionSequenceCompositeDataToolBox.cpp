@@ -127,8 +127,8 @@ void medDiffusionSequenceCompositeDataToolBox::readVolumes(QStringList paths)
         QString filepath = paths[i];
         dtkAbstractDataReader* reader = NULL;
         
-        for (int i=0; i<readers.size(); i++) {
-            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[i]);
+        for (int j=0; j<readers.size(); j++) {
+            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[j]);
             if (dataReader->canRead( filepath ))
                 reader = dataReader;
             else

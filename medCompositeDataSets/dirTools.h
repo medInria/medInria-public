@@ -5,6 +5,6 @@
 #include <QString>
 
 bool RemoveDirectory(const QDir& dir);
-QString dirname(const QString& name);
+QString zip_dirname(const QString& name);
 
 #endif  //  ! DIRTOOLS_H

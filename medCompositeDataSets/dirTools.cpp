@@ -23,7 +23,10 @@ bool RemoveDirectory(const QDir& dir) {
     return has_err;
 }
 
-QString dirname(const QString& name) {
+//  Create the in-zip dirname from the name of the zip file.
+//  This means that for ./EmptyStudy/dwi1.cds, this function will provide the name dwi1.
+
+QString zip_dirname(const QString& name) {
     const unsigned ind1 = name.lastIndexOf('/')+1;
     const unsigned ind2 = name.lastIndexOf('.');
     return name.mid(ind1,ind2-ind1);

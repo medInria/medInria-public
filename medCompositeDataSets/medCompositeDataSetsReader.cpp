@@ -22,7 +22,7 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
     dtkZip zipfile;
 
     zipfile.setZipName(path);
-    const QString dname = dirname(path)+"/Description.txt";
+    const QString dname = zip_dirname(path)+"/Description.txt";
 
     QString descname(path);
     if (zipfile.open(dtkZip::mdUnzip) && zipfile.setCurrentFile(dname)) {

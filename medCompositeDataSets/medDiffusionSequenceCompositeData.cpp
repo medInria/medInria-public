@@ -8,6 +8,7 @@
 #include <medDiffusionSequenceCompositeDataToolBox.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
+#include <dtkCore/dtkAbstractDataWriter.h>
 
 #include <IOUtils.H>
 
@@ -46,22 +47,24 @@ bool medDiffusionSequenceCompositeData::read_description(const QByteArray& buf) 
 
 bool medDiffusionSequenceCompositeData::write_description(QTextStream& out) {
 
-    const bool named_images = image_list.size()==images.size();
+    if (image_list.size()!=images.size()) {
+        qWarning("medDiffusionSequence: incoherent dataset %d!=%d",image_list.size(),images.size());
+        return false;
+    }
 
     const unsigned num = images.size();
     out << "Images: " << num << '\n';
     for (unsigned i=0;i<num;++i) {
         const GradientType V = gradients[i];
-        const QString im_name = (named_images) ? image_list[i] : QString("image")+QString::number(i);
-        if (!named_images)
-            image_list.push_back(im_name);
-        out << im_name << " [" << V[0] << ' ' << V[1] << ' ' << V[2] << "]\n";
+        const QString im_name = image_list[i];
+        out << '"' << im_name << '"' << " [" << V[0] << ' ' << V[1] << ' ' << V[2] << "]\n";
     }
 
     return true;
 }
 
-bool medDiffusionSequenceCompositeData::write_data(const QString& dirname,const dtkAbstractData* data) {
+bool medDiffusionSequenceCompositeData::write_data(const QString& dirname) {
+    writeVolumes(dirname,image_list);
     return true;
 }
 
@@ -72,8 +75,8 @@ void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const
     for (int i=0;i<paths.size();++i) {
         QString filepath = dirname+"/"+paths[i];
         dtkAbstractDataReader* reader = NULL;
-        for (int i=0;i<readers.size();++i) {
-            reader = dtkAbstractDataFactory::instance()->reader(readers[i]);
+        for (int j=0;j<readers.size();++j) {
+            reader = dtkAbstractDataFactory::instance()->reader(readers[j]);
             if (reader->canRead(filepath))
                 break;
             else
@@ -100,6 +103,26 @@ void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const
             // emit medToolBoxCompositeDataSetImporter::showError(this,tr("image should be 3D"),3000);
             continue;
         }
+    }  
+}
+
+void medDiffusionSequenceCompositeData::writeVolumes(const QString& dirname,const QStringList& paths) const {
+
+    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+      
+    for (int i=0;i<paths.size();++i) {
+        QString filepath = dirname+"/"+paths[i];
+        dtkAbstractDataWriter* writer = NULL;
+        for (int j=0;j<writers.size();++j) {
+            writer = dtkAbstractDataFactory::instance()->writer(writers[j]);
+            if (writer->canWrite(filepath))
+                break;
+            else
+                delete writer;
+        }
+        writer->setData(images[i]);
+        writer->write(filepath);
+        delete writer;
     }  
 }
 
