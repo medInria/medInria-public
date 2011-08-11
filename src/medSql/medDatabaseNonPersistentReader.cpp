@@ -24,7 +24,7 @@
 #include "medDatabaseNonPersistentReader.h"
 
 #include <medAbstractDataImage.h>
-#include <medMetaDataHelper.h>
+#include <medMetaDataKeys.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -108,52 +108,52 @@ void medDatabaseNonPersistentReader::run(void)
         if (!dtkdata)
             continue;
 
-        if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_PatientName()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_PatientName(), QStringList() << fileInfo.baseName());
+        if(!dtkdata->hasMetaData(medMetaDataKeys::PatientName.key()))
+            dtkdata->addMetaData(medMetaDataKeys::PatientName.key(), QStringList() << fileInfo.baseName());
 
-        if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_StudyDescription()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_StudyDescription(), QStringList() << "EmptyStudy");
+        if(!dtkdata->hasMetaData(medMetaDataKeys::StudyDescription.key()))
+            dtkdata->addMetaData(medMetaDataKeys::StudyDescription.key(), QStringList() << "EmptyStudy");
 
-        if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_SeriesDescription()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_SeriesDescription(), QStringList() << fileInfo.baseName());
+        if(!dtkdata->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+            dtkdata->addMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << fileInfo.baseName());
 
-    if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_StudyID()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_StudyID(), QStringList() << "");
+    if(!dtkdata->hasMetaData(medMetaDataKeys::StudyID.key()))
+            dtkdata->addMetaData(medMetaDataKeys::StudyID.key(), QStringList() << "");
     
-    if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_SeriesID()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_SeriesID(), QStringList() << "");
+    if(!dtkdata->hasMetaData(medMetaDataKeys::SeriesID.key()))
+            dtkdata->addMetaData(medMetaDataKeys::SeriesID.key(), QStringList() << "");
 
-    if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_Orientation()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_Orientation(), QStringList() << "");
+    if(!dtkdata->hasMetaData(medMetaDataKeys::Orientation.key()))
+            dtkdata->addMetaData(medMetaDataKeys::Orientation.key(), QStringList() << "");
 
-    if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_SeriesNumber()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_SeriesNumber(), QStringList() << "");
+    if(!dtkdata->hasMetaData(medMetaDataKeys::SeriesNumber.key()))
+            dtkdata->addMetaData(medMetaDataKeys::SeriesNumber.key(), QStringList() << "");
 
-    if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_SequenceName()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_SequenceName(), QStringList() << "");
+    if(!dtkdata->hasMetaData(medMetaDataKeys::SequenceName.key()))
+            dtkdata->addMetaData(medMetaDataKeys::SequenceName.key(), QStringList() << "");
 
-    if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_SliceThickness()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_SliceThickness(), QStringList() << "");
+    if(!dtkdata->hasMetaData(medMetaDataKeys::SliceThickness.key()))
+            dtkdata->addMetaData(medMetaDataKeys::SliceThickness.key(), QStringList() << "");
 
-    if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_Rows()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_Rows(), QStringList() << "");
+    if(!dtkdata->hasMetaData(medMetaDataKeys::Rows.key()))
+            dtkdata->addMetaData(medMetaDataKeys::Rows.key(), QStringList() << "");
     
-    if(!dtkdata->hasMetaData(medMetaDataHelper::KEY_Columns()))
-            dtkdata->addMetaData(medMetaDataHelper::KEY_Columns(), QStringList() << "");
+    if(!dtkdata->hasMetaData(medMetaDataKeys::Columns.key()))
+            dtkdata->addMetaData(medMetaDataKeys::Columns.key(), QStringList() << "");
 
 
-    QString patientName = dtkdata->metaDataValues(medMetaDataHelper::KEY_PatientName())[0];
-    QString studyName   = dtkdata->metaDataValues(medMetaDataHelper::KEY_StudyDescription())[0];
-    QString seriesName  = dtkdata->metaDataValues(medMetaDataHelper::KEY_SeriesDescription())[0];
+    QString patientName = dtkdata->metaDataValues(medMetaDataKeys::PatientName.key())[0];
+    QString studyName   = dtkdata->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
+    QString seriesName  = dtkdata->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 
-    QString studyId = dtkdata->metaDataValues(medMetaDataHelper::KEY_StudyID())[0];
-    QString seriesId = dtkdata->metaDataValues(medMetaDataHelper::KEY_SeriesID())[0];
-    QString orientation = dtkdata->metaDataValues(medMetaDataHelper::KEY_Orientation())[0];
-    QString seriesNumber = dtkdata->metaDataValues(medMetaDataHelper::KEY_SeriesNumber())[0];
-    QString sequenceName = dtkdata->metaDataValues(medMetaDataHelper::KEY_SequenceName())[0];
-    QString sliceThickness = dtkdata->metaDataValues(medMetaDataHelper::KEY_SliceThickness())[0];
-    QString rows = dtkdata->metaDataValues(medMetaDataHelper::KEY_Rows())[0];
-    QString columns = dtkdata->metaDataValues(medMetaDataHelper::KEY_Columns())[0];
+    QString studyId = dtkdata->metaDataValues(medMetaDataKeys::StudyID.key())[0];
+    QString seriesId = dtkdata->metaDataValues(medMetaDataKeys::SeriesID.key())[0];
+    QString orientation = dtkdata->metaDataValues(medMetaDataKeys::Orientation.key())[0];
+    QString seriesNumber = dtkdata->metaDataValues(medMetaDataKeys::SeriesNumber.key())[0];
+    QString sequenceName = dtkdata->metaDataValues(medMetaDataKeys::SequenceName.key())[0];
+    QString sliceThickness = dtkdata->metaDataValues(medMetaDataKeys::SliceThickness.key())[0];
+    QString rows = dtkdata->metaDataValues(medMetaDataKeys::Rows.key())[0];
+    QString columns = dtkdata->metaDataValues(medMetaDataKeys::Columns.key())[0];
 
     // define a unique key string to identify which volume an image belongs to.
     // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
@@ -198,41 +198,41 @@ void medDatabaseNonPersistentReader::run(void)
                     imData = dataReader->data();
 
                     if (imData) {
-                        if (!imData->hasMetaData(medMetaDataHelper::KEY_FilePaths()))
-                            imData->addMetaData(medMetaDataHelper::KEY_FilePaths(), it.value());
+                        if (!imData->hasMetaData(medMetaDataKeys::FilePaths.key()))
+                            imData->addMetaData(medMetaDataKeys::FilePaths.key(), it.value());
 
-                        if (!imData->hasMetaData(medMetaDataHelper::KEY_PatientName()))
-                            imData->addMetaData(medMetaDataHelper::KEY_PatientName(), QStringList() << QFileInfo (it.value()[0]).baseName());
+                        if (!imData->hasMetaData(medMetaDataKeys::PatientName.key()))
+                            imData->addMetaData(medMetaDataKeys::PatientName.key(), QStringList() << QFileInfo (it.value()[0]).baseName());
 
-                        if (!imData->hasMetaData(medMetaDataHelper::KEY_StudyDescription()))
-                            imData->addMetaData(medMetaDataHelper::KEY_StudyDescription(), QStringList() << "EmptyStudy");
+                        if (!imData->hasMetaData(medMetaDataKeys::StudyDescription.key()))
+                            imData->addMetaData(medMetaDataKeys::StudyDescription.key(), QStringList() << "EmptyStudy");
 
-                        if (!imData->hasMetaData(medMetaDataHelper::KEY_SeriesDescription()))
-                            imData->addMetaData(medMetaDataHelper::KEY_SeriesDescription(), QStringList() << QFileInfo (it.value()[0]).baseName());
+                        if (!imData->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+                            imData->addMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << QFileInfo (it.value()[0]).baseName());
 
-                        if(!imData->hasMetaData(medMetaDataHelper::KEY_StudyID()))
-                            imData->addMetaData(medMetaDataHelper::KEY_StudyID(), QStringList() << "");
+                        if(!imData->hasMetaData(medMetaDataKeys::StudyID.key()))
+                            imData->addMetaData(medMetaDataKeys::StudyID.key(), QStringList() << "");
 
-                        if(!imData->hasMetaData(medMetaDataHelper::KEY_SeriesID()))
-                            imData->addMetaData(medMetaDataHelper::KEY_SeriesID(), QStringList() << "");
+                        if(!imData->hasMetaData(medMetaDataKeys::SeriesID.key()))
+                            imData->addMetaData(medMetaDataKeys::SeriesID.key(), QStringList() << "");
 
-                        if(!imData->hasMetaData(medMetaDataHelper::KEY_Orientation()))
-                            imData->addMetaData(medMetaDataHelper::KEY_Orientation(), QStringList() << "");
+                        if(!imData->hasMetaData(medMetaDataKeys::Orientation.key()))
+                            imData->addMetaData(medMetaDataKeys::Orientation.key(), QStringList() << "");
 
-                        if(!imData->hasMetaData(medMetaDataHelper::KEY_SeriesNumber()))
-                            imData->addMetaData(medMetaDataHelper::KEY_SeriesNumber(), QStringList() << "");
+                        if(!imData->hasMetaData(medMetaDataKeys::SeriesNumber.key()))
+                            imData->addMetaData(medMetaDataKeys::SeriesNumber.key(), QStringList() << "");
 
-                        if(!imData->hasMetaData(medMetaDataHelper::KEY_SequenceName()))
-                            imData->addMetaData(medMetaDataHelper::KEY_SequenceName(), QStringList() << "");
+                        if(!imData->hasMetaData(medMetaDataKeys::SequenceName.key()))
+                            imData->addMetaData(medMetaDataKeys::SequenceName.key(), QStringList() << "");
 
-                        if(!imData->hasMetaData(medMetaDataHelper::KEY_SliceThickness()))
-                            imData->addMetaData(medMetaDataHelper::KEY_SliceThickness(), QStringList() << "");
+                        if(!imData->hasMetaData(medMetaDataKeys::SliceThickness.key()))
+                            imData->addMetaData(medMetaDataKeys::SliceThickness.key(), QStringList() << "");
 
-                        if(!imData->hasMetaData(medMetaDataHelper::KEY_Rows()))
-                            imData->addMetaData(medMetaDataHelper::KEY_Rows(), QStringList() << "");
+                        if(!imData->hasMetaData(medMetaDataKeys::Rows.key()))
+                            imData->addMetaData(medMetaDataKeys::Rows.key(), QStringList() << "");
 
-                        if(!imData->hasMetaData(medMetaDataHelper::KEY_Columns()))
-                            imData->addMetaData(medMetaDataHelper::KEY_Columns(), QStringList() << "");
+                        if(!imData->hasMetaData(medMetaDataKeys::Columns.key()))
+                            imData->addMetaData(medMetaDataKeys::Columns.key(), QStringList() << "");
 
                         imData->addMetaData ("FileName", it.key() );
 
@@ -262,7 +262,7 @@ void medDatabaseNonPersistentReader::run(void)
 	QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
 	
 	int     patientId   = -1;
-	QString patientName = data->metaDataValues(medMetaDataHelper::KEY_PatientName())[0];
+	QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
 	
 	// check if patient is already in the persistent database
 	medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
@@ -282,7 +282,7 @@ void medDatabaseNonPersistentReader::run(void)
 	    patientId = medDatabaseNonPersistentController::instance()->patientId(true);
 	
 	int     studyId   = -1;
-	QString studyName = data->metaDataValues(medMetaDataHelper::KEY_StudyDescription())[0];
+	QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
 
 	databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
 	if (databaseIndex.isValid()) {
@@ -302,7 +302,7 @@ void medDatabaseNonPersistentReader::run(void)
     
 	index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
-	QString seriesName = data->metaDataValues(medMetaDataHelper::KEY_SeriesDescription())[0];
+	QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 	
         QFileInfo info(d->file);
 

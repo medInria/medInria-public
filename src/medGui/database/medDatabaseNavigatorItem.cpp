@@ -22,7 +22,7 @@
 
 #include <medCore/medAbstractDbController.h>
 #include <medCore/medDataManager.h>
-#include <medCore/medMetaDataHelper.h>
+#include <medCore/medMetaDataKeys.h>
 
 #include <QtCore>
 #include <QtGui>
@@ -52,9 +52,9 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     d->index = index;
 
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData( index, medMetaDataHelper::KEY_ThumbnailPath() );
+    QString thumbpath = dbc->metaData(index,medMetaDataKeys::ThumbnailPath);
 
-    d->text = dbc->metaData( index, medMetaDataHelper::KEY_SeriesDescription() );
+    d->text = dbc->metaData(index,medMetaDataKeys::SeriesDescription);
 
     bool shouldSkipLoading = false;
     if ( thumbpath.isEmpty() ) {

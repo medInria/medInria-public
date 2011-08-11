@@ -10,7 +10,7 @@
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medStorage.h>
-#include <medMetaDataHelper.h>
+#include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 #include <medToolBoxTab.h>
 #include <medMeshAbstractViewInteractor.h>
@@ -324,20 +324,20 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     if (data)
     {
-        if (medMetaDataHelper::hasSeriesThumbnail(data))
+        if (medMetaDataKeys::SeriesThumbnail.is_set_in(data))
         {
-            d->thumbLocation = medMetaDataHelper::getFirstSeriesThumbnailValue(data, ":icons/layer.png");
+            d->thumbLocation = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
         }
     }
 
     d->layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
     d->layerItem->setText(0, QString::number(imageLayer));
     d->layerItem->setIcon(0,QIcon(d->thumbLocation));
-    if (data!= NULL && medMetaDataHelper::hasSeriesDescription(data))
+    if (data!= NULL && medMetaDataKeys::SeriesDescription.is_set_in(data))
     {
-        d->layerItem->setToolTip(0,data->metaDataValues(tr("PatientName"))[0]
-        + "\n" + data->metaDataValues(tr("StudyDescription"))[0]
-        + "\n" + data->metaDataValues(tr("SeriesDescription"))[0]);
+        d->layerItem->setToolTip(0,data->metaDataValues(medMetaDataKeys::PatientName.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0]);
     }
 
     QTreeWidgetItem * visibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
@@ -432,21 +432,16 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
 
 
     if (data)
-    {
-        if (medMetaDataHelper::hasSeriesThumbnail(data))
-        {
-            d->thumbLocation = medMetaDataHelper::getFirstSeriesThumbnailValue(data, ":icons/layer.png");
-        }
-    }
+        if (medMetaDataKeys::SeriesThumbnail.is_set_in(data))
+            d->thumbLocation = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
 
     d->layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
     d->layerItem->setText(0, layerItemString);
     d->layerItem->setIcon(0,QIcon(d->thumbLocation));
-    if (medMetaDataHelper::hasSeriesDescription(data))
-    {
-        d->layerItem->setToolTip(0,data->metaDataValues(tr("PatientName"))[0]
-        + "\n" + data->metaDataValues(tr("StudyDescription"))[0]
-        + "\n" + data->metaDataValues(tr("SeriesDescription"))[0]);
+    if (medMetaDataKeys::SeriesDescription.is_set_in(data)) {
+        d->layerItem->setToolTip(0,data->metaDataValues(medMetaDataKeys::PatientName.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0]);
     }
 
 
@@ -603,10 +598,10 @@ void
    // qDebug() << "medViewerToolBoxViewProperties::onDataAdded" << d->view->layerCount() << " Mesh " << d->view->meshLayerCount();
     if (d->view->layerCount() == 1 && !data->description().contains("vtkDataMesh"))
     {
-        d->layerItem->setIcon(0,QIcon(medMetaDataHelper::getFirstSeriesThumbnailValue(data, ":icons/layer.png")));
-        d->layerItem->setToolTip(0,data->metaDataValues(tr("PatientName"))[0]
-        + "\n" + data->metaDataValues(tr("StudyDescription"))[0]
-        + "\n" + data->metaDataValues(tr("SeriesDescription"))[0]);
+        d->layerItem->setIcon(0,QIcon(medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png")));
+        d->layerItem->setToolTip(0,data->metaDataValues(medMetaDataKeys::PatientName.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0]);
         return;
     }
 

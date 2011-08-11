@@ -80,7 +80,7 @@ public:
     virtual QList<medDataIndex> images(const medDataIndex& index ) const;
 
     /** Get metadata for specific item. Return uninitialized string if not present. */
-    virtual QString metaData(const medDataIndex& index, const QString& key) const;
+    virtual QString metaData(const medDataIndex& index,const QString& key) const;
 
     /** Set metadata for specific item. Return true on success, false otherwise. */
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);

@@ -22,7 +22,7 @@
 #include <medStorage.h>
 #include <medAbstractDataImage.h>
 
-#include <medCore/medMetaDataHelper.h>
+#include <medCore/medMetaDataKeys.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
@@ -139,7 +139,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
             seriesThumbnail = seriesQuery.value(0);
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
-            medMetaDataHelper::addSeriesThumbnail(dtkdata, thumbPath);
+            medMetaDataKeys::SeriesThumbnail.add(dtkdata, thumbPath);
 
         }
         else {
@@ -148,13 +148,13 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
 
 
 
-        medMetaDataHelper::addPatientName(dtkdata, patientName);
-        medMetaDataHelper::addStudyDescription(dtkdata, studyName);
-        medMetaDataHelper::addSeriesDescription(dtkdata, seriesName);
-        medMetaDataHelper::addPatientID(dtkdata, patientId.toString());
-        medMetaDataHelper::addStudyID(dtkdata, studyId.toString());
-        medMetaDataHelper::addSeriesID(dtkdata, seriesId.toString());
-        //medMetaDataHelper::addImageID(data, imageId.toString());
+        medMetaDataKeys::PatientName.add(dtkdata, patientName);
+        medMetaDataKeys::StudyDescription.add(dtkdata, studyName);
+        medMetaDataKeys::SeriesDescription.add(dtkdata, seriesName);
+        medMetaDataKeys::PatientID.add(dtkdata, patientId.toString());
+        medMetaDataKeys::StudyID.add(dtkdata, studyId.toString());
+        medMetaDataKeys::SeriesID.add(dtkdata, seriesId.toString());
+        //medMetaDataKeys::ImageID.add(data, imageId.toString());
 
         emit success(this);
     } else {

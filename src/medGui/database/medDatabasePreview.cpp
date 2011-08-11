@@ -28,7 +28,7 @@
 
 #include <medAbstractDbController.h>
 #include <medDataManager.h>
-#include <medMetaDataHelper.h>
+#include <medMetaDataKeys.h>
 #include <medStorage.h>
 
 #include <QtCore>
@@ -408,7 +408,7 @@ void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to b
         d->selector->setText(QString(tr("Image id %1")).arg(d->current_index.imageId()));
     } else if (d->current_index.isValidForSeries() ) {
         medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->current_index.dataSourceId());
-        QString seriesName = dbc->metaData( d->current_index, medMetaDataHelper::KEY_SeriesDescription());
+        QString seriesName = dbc->metaData(d->current_index,medMetaDataKeys::SeriesDescription);
         if ( seriesName.isEmpty() )
             seriesName = QString(tr("Series id %1")).arg(d->current_index.seriesId());
         d->selector->setText(seriesName);
@@ -462,7 +462,7 @@ void medDatabasePreview::onHovered(medDatabasePreviewItem *item)
         d->selector->setText(QString(tr("Image id %1")).arg(d->current_index.imageId()));
     } else if (d->current_index.isValidForSeries() ) {
         medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->current_index.dataSourceId());
-        QString seriesName = dbc->metaData( d->current_index, medMetaDataHelper::KEY_SeriesDescription());
+        QString seriesName = dbc->metaData(d->current_index,medMetaDataKeys::SeriesDescription);
         d->selector->setText(seriesName);
         if ( seriesName.isEmpty() )
             seriesName = QString(tr("Series id %1")).arg(d->current_index.seriesId());

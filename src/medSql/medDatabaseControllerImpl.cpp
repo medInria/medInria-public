@@ -1,4 +1,4 @@
-#include "medDatabaseControllerImpl.h"
+#include <medDatabaseControllerImpl.h>
 
 #include <QtCore>
 #include <QtGui>
@@ -13,13 +13,13 @@
 #include <medMessageController.h>
 #include <medStorage.h>
 #include <medJobManager.h>
-#include <medMetaDataHelper.h>
+#include <medMetaDataKeys.h>
 
-#include "medDatabaseImporter.h"
-#include "medDatabaseExporter.h"
-#include "medDatabaseReader.h"
-#include "medDatabaseRemover.h"
-#include "medDatabaseWriter.h"
+#include <medDatabaseImporter.h>
+#include <medDatabaseExporter.h>
+#include <medDatabaseReader.h>
+#include <medDatabaseRemover.h>
+#include <medDatabaseWriter.h>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace {
@@ -62,68 +62,68 @@ const QString medDatabaseControllerImplPrivate::T_patient = "patient";
 void medDatabaseControllerImplPrivate::buildMetaDataLookup()
 {
 // The table defines the mapping between metadata in the dtkAbstractData and the database tables.
-    metaDataLookup.insert( medMetaDataHelper::KEY_ThumbnailPath(),
+    metaDataLookup.insert(medMetaDataKeys::ThumbnailPath.key(),
         TableEntryList() << TableEntry(T_image, "thumbnail", true)
         << TableEntry(T_series, "thumbnail", true)
         << TableEntry(T_study, "thumbnail", true)
         << TableEntry(T_patient, "thumbnail", true) );
 
 //Patient data
-    metaDataLookup.insert( medMetaDataHelper::KEY_PatientName(),
+    metaDataLookup.insert(medMetaDataKeys::PatientName.key(),
         TableEntryList() << TableEntry(T_patient, "name") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Gender(),
+    metaDataLookup.insert(medMetaDataKeys::Gender.key(),
         TableEntryList() << TableEntry(T_patient, "gender") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_BirthDate(),
+    metaDataLookup.insert(medMetaDataKeys::BirthDate.key(),
         TableEntryList() << TableEntry(T_patient, "birthdate") );
 //Study Data
-    metaDataLookup.insert( medMetaDataHelper::KEY_StudyDescription(),
+    metaDataLookup.insert(medMetaDataKeys::StudyDescription.key(),
         TableEntryList() << TableEntry(T_study, "name") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_StudyID(),
+    metaDataLookup.insert(medMetaDataKeys::StudyID.key(),
         TableEntryList() << TableEntry(T_study, "uid") );
 //Series Data
-    metaDataLookup.insert( medMetaDataHelper::KEY_Size(),
+    metaDataLookup.insert(medMetaDataKeys::Size.key(),
         TableEntryList() << TableEntry(T_series, "size") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SeriesDescription(),
+    metaDataLookup.insert(medMetaDataKeys::SeriesDescription.key(),
         TableEntryList() << TableEntry(T_series, "name") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Size(),
+    metaDataLookup.insert(medMetaDataKeys::Size.key(),
         TableEntryList() << TableEntry(T_series, "size") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SeriesID(),
+    metaDataLookup.insert(medMetaDataKeys::SeriesID.key(),
         TableEntryList() << TableEntry(T_series, "uid") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Orientation(),
+    metaDataLookup.insert(medMetaDataKeys::Orientation.key(),
         TableEntryList() << TableEntry(T_series, "orientation") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SeriesNumber(),
+    metaDataLookup.insert(medMetaDataKeys::SeriesNumber.key(),
         TableEntryList() << TableEntry(T_series, "seriesNumber") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SequenceName(),
+    metaDataLookup.insert(medMetaDataKeys::SequenceName.key(),
         TableEntryList() << TableEntry(T_series, "sequenceName") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SliceThickness(),
+    metaDataLookup.insert(medMetaDataKeys::SliceThickness.key(),
         TableEntryList() << TableEntry(T_series, "sliceThickness") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Rows(),
+    metaDataLookup.insert(medMetaDataKeys::Rows.key(),
         TableEntryList() << TableEntry(T_series, "rows") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Columns(),
+    metaDataLookup.insert(medMetaDataKeys::Columns.key(),
         TableEntryList() << TableEntry(T_series, "columns") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Age(),
+    metaDataLookup.insert(medMetaDataKeys::Age.key(),
         TableEntryList() << TableEntry(T_series, "age") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Description(),
+    metaDataLookup.insert(medMetaDataKeys::Description.key(),
         TableEntryList() << TableEntry(T_series, "description") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Modality(),
+    metaDataLookup.insert(medMetaDataKeys::Modality.key(),
         TableEntryList() << TableEntry(T_series, "modality") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Protocol(),
+    metaDataLookup.insert(medMetaDataKeys::Protocol.key(),
         TableEntryList() << TableEntry(T_series, "protocol") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Comments(),
+    metaDataLookup.insert(medMetaDataKeys::Comments.key(),
         TableEntryList() << TableEntry(T_series, "comments") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Status(),
+    metaDataLookup.insert(medMetaDataKeys::Status.key(),
         TableEntryList() << TableEntry(T_series, "status") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_AcquisitionDate(),
+    metaDataLookup.insert(medMetaDataKeys::AcquisitionDate.key(),
         TableEntryList() << TableEntry(T_series, "acquisitiondate") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_ImportationDate(),
+    metaDataLookup.insert(medMetaDataKeys::ImportationDate.key(),
         TableEntryList() << TableEntry(T_series, "importationdate") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Referee(),
+    metaDataLookup.insert(medMetaDataKeys::Referee.key(),
         TableEntryList() << TableEntry(T_series, "referee") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Performer(),
+    metaDataLookup.insert(medMetaDataKeys::Performer.key(),
         TableEntryList() << TableEntry(T_series, "performer") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Institution(),
+    metaDataLookup.insert(medMetaDataKeys::Institution.key(),
         TableEntryList() << TableEntry(T_series, "institution") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Report(),
+    metaDataLookup.insert(medMetaDataKeys::Report.key(),
         TableEntryList() << TableEntry(T_series, "report") );
 
 //Image data
@@ -621,7 +621,7 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
     QThreadPool::globalInstance()->start(remover);
 }
 
-QString medDatabaseControllerImpl::metaData( const medDataIndex& index, const QString &key ) const
+QString medDatabaseControllerImpl::metaData(const medDataIndex& index,const QString& key) const
 {
     typedef medDatabaseControllerImplPrivate::MetaDataMap MetaDataMap;
     typedef medDatabaseControllerImplPrivate::TableEntryList TableEntryList;

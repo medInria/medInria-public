@@ -222,7 +222,7 @@ bool medViewerArea::openInTab(const medDataIndex &index)
         if (dtkdata.isNull())
             return false;
 
-        QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(tr("PatientName")));
+        QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(medMetaDataKeys::PatientName.key()));
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
     }
     else

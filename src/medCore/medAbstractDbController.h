@@ -2,11 +2,12 @@
 #define medAbstractDbController_h__
 
 
-#include "medCoreExport.h"
-#include "medDataIndex.h"
+#include <medCoreExport.h>
+#include <medDataIndex.h>
 #include <QtCore>
 #include <QtSql>
 
+#include <medMetaDataKeys.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -18,7 +19,6 @@ class MEDCORE_EXPORT medAbstractDbController : public QObject
     Q_OBJECT
 
 public:
-
 
     /**
     * Get the status of the Db connection
@@ -49,7 +49,8 @@ public:
     virtual QList<medDataIndex> images(const medDataIndex& index) const = 0;
 
     /** Get metadata for specific item. Return uninitialized string if not present. */
-    virtual QString metaData(const medDataIndex& index, const QString& key) const = 0;
+    virtual QString metaData(const medDataIndex& index,const QString& key) const = 0;
+    QString metaData(const medDataIndex& index,const medMetaDataKeys::Key& md) const { return metaData(index,md.key()); }
 
     /** Set metadata for specific item. Return true on success, false otherwise. */
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value) = 0;

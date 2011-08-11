@@ -63,9 +63,9 @@ void medDatabaseNonPersistentImporter::run(void)
     return;
     }
 
-    if (!data->hasMetaData ("PatientName") ||
-	!data->hasMetaData ("StudyDescription") ||
-	!data->hasMetaData ("SeriesDescription") ) {
+    if (!data->hasMetaData(medMetaDataKeys::PatientName.key()) ||
+	!data->hasMetaData(medMetaDataKeys::StudyDescription.key()) ||
+	!data->hasMetaData(medMetaDataKeys::SeriesDescription.key()) ) {
         qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
 	emit failure (this);
     return;
@@ -74,7 +74,7 @@ void medDatabaseNonPersistentImporter::run(void)
     QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
 
     int patientId = -1;
-    QString patientName = data->metaDataValues(tr("PatientName"))[0];
+    QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
 
 
     // check if patient is already in the persistent database
@@ -95,7 +95,7 @@ void medDatabaseNonPersistentImporter::run(void)
         patientId = medDatabaseNonPersistentController::instance()->patientId(true);
 
     int     studyId   = -1;
-    QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
+    QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
 
     databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
     if (databaseIndex.isValid()) {
@@ -115,7 +115,7 @@ void medDatabaseNonPersistentImporter::run(void)
 
     index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
-    QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
+    QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 
     medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 

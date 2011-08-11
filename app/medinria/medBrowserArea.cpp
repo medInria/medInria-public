@@ -190,9 +190,9 @@ void medBrowserArea::displayJobItem(medJobItem *importer, QString infoBaseName)
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
 {
-    QString patientName = data->metaDataValues(tr("PatientName"))[0];
-    QString studyName   = data->metaDataValues(tr("StudyDescription"))[0];
-    QString seriesName  = data->metaDataValues(tr("SeriesDescription"))[0];
+    QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
+    QString studyName   = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
+    QString seriesName  = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 
     QString s_patientName = patientName.simplified();
     QString s_studyName   = studyName.simplified();

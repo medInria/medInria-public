@@ -26,7 +26,7 @@
 
 #include <medCore/medAbstractDbController.h>
 #include <medCore/medDataManager.h>
-#include <medCore/medMetaDataHelper.h>
+#include <medCore/medMetaDataKeys.h>
 #include <medCore/medStorage.h>
 
 #include "medDatabaseNavigatorController.h"
@@ -128,7 +128,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
     if ( !dbc ) 
         return;
     PatientDataKey referencePatientKey;
-    referencePatientKey.name = dbc->metaData(index, medMetaDataHelper::KEY_PatientName());
+    referencePatientKey.name = dbc->metaData(index,medMetaDataKeys::PatientName);
 
     IndexSet addedStudies;
 
@@ -148,7 +148,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
         foreach (const medDataIndex& patient, patientsForSource ) {
 
             IndexList studiesForSource = dbc->studies(patient);
-            QString patientName = dbc->metaData(patient, medMetaDataHelper::KEY_PatientName() );
+            QString patientName = dbc->metaData(patient,medMetaDataKeys::PatientName);
             PatientDataKey patientKey;
             patientKey.name = patientName;
             if ( patientKey != referencePatientKey ) {
@@ -157,7 +157,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 
             foreach (const medDataIndex& study, studiesForSource ) {
 
-                QString studyName = dbc->metaData(study, medMetaDataHelper::KEY_StudyDescription() );
+                QString studyName = dbc->metaData(study,medMetaDataKeys::StudyDescription);
                 StudyDataKey studyKey;
                 studyKey.name = studyName;
 
