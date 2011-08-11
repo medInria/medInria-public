@@ -5,13 +5,14 @@
 #include <vtkINRIA3DConfigure.h>
 
 #ifdef vtkINRIA3D_USE_ITK
-#include "itkExtractImageFilter.h"
+#include <itkExtractImageFilter.h>
 #endif
 
-#include "v3dView.h"
+#include <v3dView.h>
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <medAbstractDataImage.h>
+#include <medMetaDataKeys.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
@@ -1009,20 +1010,20 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->data = data;
             d->imageData = imageData;
 
-            if (data->hasMetaData("PatientName")){
-                const QString patientName = data->metaDataValues(tr("PatientName"))[0];
+            if (data->hasMetaData(medMetaDataKeys::PatientName.key())){
+                const QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
                 d->view2d->SetPatientName (patientName.toAscii().constData());
                 d->view3d->SetPatientName (patientName.toAscii().constData());
             }
 
-            if( data->hasMetaData("StudyDescription")){
-                const QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
+            if( data->hasMetaData(medMetaDataKeys::StudyDescription.key())){
+                const QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
                 d->view2d->SetStudyName (studyName.toAscii().constData());
                 d->view3d->SetStudyName (studyName.toAscii().constData());
             }
 
-            if (data->hasMetaData("SeriesDescription")){
-                const QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
+            if (data->hasMetaData(medMetaDataKeys::SeriesDescription.key())){
+                const QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
                 d->view2d->SetSeriesName (seriesName.toAscii().constData());
                 d->view3d->SetSeriesName (seriesName.toAscii().constData());
             }

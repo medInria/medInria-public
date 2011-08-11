@@ -16,9 +16,9 @@
 #include <itkMetaDataObject.h>
 #include <itkDataImageReaderCommand.h>
 
-#include "gdcmReader.h"
-#include "gdcmDirectionCosines.h"
-#include "gdcmStringFilter.h"
+#include <gdcmReader.h>
+#include <gdcmDirectionCosines.h>
+#include <gdcmStringFilter.h>
 
 #include <map>
 
@@ -356,35 +356,35 @@ void itkGDCMDataImageReader::readInformation (QStringList paths)
     rows           << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028,0x0010));
     columns        << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028,0x0011));
       
-    if (!dtkdata->hasMetaData ( tr ("PatientName") ))
-      dtkdata->addMetaData ( "PatientName", patientName );
+    if (!dtkdata->hasMetaData (medMetaDataKeys::PatientName.key()))
+      dtkdata->addMetaData ( medMetaDataKeys::PatientName.key(), patientName );
     else
-      dtkdata->setMetaData ( "PatientName", patientName );
+      dtkdata->setMetaData ( medMetaDataKeys::PatientName.key(), patientName );
 
-    if (!dtkdata->hasMetaData ( tr ("StudyDescription") ))
-      dtkdata->addMetaData ( "StudyDescription", studyName );
+    if (!dtkdata->hasMetaData (medMetaDataKeys::StudyDescription.key()))
+      dtkdata->addMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
     else
-      dtkdata->setMetaData ( "StudyDescription", studyName );
+      dtkdata->setMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
 
-    if (!dtkdata->hasMetaData ( tr ("SeriesDescription") ))
-      dtkdata->addMetaData ( "SeriesDescription", seriesName );
+    if (!dtkdata->hasMetaData (medMetaDataKeys::SeriesDescription.key()))
+      dtkdata->addMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
     else
-      dtkdata->setMetaData ( "SeriesDescription", seriesName );
+      dtkdata->setMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
 
-    dtkdata->setMetaData("StudyID", studyId);
-    dtkdata->setMetaData("SeriesID", seriesId);
-    dtkdata->setMetaData("Orientation", orientation);
-    dtkdata->setMetaData("SeriesNumber", seriesNumber);
-    dtkdata->setMetaData("SequenceName", sequenceName);
-    dtkdata->setMetaData("SliceThickness", sliceThickness);
-    dtkdata->setMetaData("Rows", rows);
-    dtkdata->setMetaData("Columns", columns);
+    dtkdata->setMetaData(medMetaDataKeys::StudyID.key(), studyId);
+    dtkdata->setMetaData(medMetaDataKeys::SeriesID.key(), seriesId);
+    dtkdata->setMetaData(medMetaDataKeys::Orientation.key(), orientation);
+    dtkdata->setMetaData(medMetaDataKeys::SeriesNumber.key(), seriesNumber);
+    dtkdata->setMetaData(medMetaDataKeys::SequenceName.key(), sequenceName);
+    dtkdata->setMetaData(medMetaDataKeys::SliceThickness.key(), sliceThickness);
+    dtkdata->setMetaData(medMetaDataKeys::Rows.key(), rows);
+    dtkdata->setMetaData(medMetaDataKeys::Columns.key(), columns);
 
     FileList orderedfilelist = this->unfoldMap (map);
     for (unsigned int i=0; i<orderedfilelist.size(); i++ )
       filePaths << orderedfilelist[i].c_str();
 
-    dtkdata->addMetaData ("FilePaths", filePaths);
+    dtkdata->addMetaData (medMetaDataKeys::FilePaths.key(), filePaths);
 	
   }
 }
