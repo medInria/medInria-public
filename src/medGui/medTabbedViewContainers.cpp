@@ -196,6 +196,12 @@ medViewContainer* medTabbedViewContainers::container(const QString &name) const
     return d->containers[name];
 }
 
+void medTabbedViewContainers::hideTabBar()
+{
+    QTabBar *tabBar = this->tabBar();
+    tabBar->hide();
+}
+
 void medTabbedViewContainers::setContainer(const QString &name)
 {
     if (!d->containers.contains(name))
