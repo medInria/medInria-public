@@ -1,5 +1,5 @@
-/* medDatabaseView.cpp --- 
- * 
+/* medDatabaseView.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:18:20 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 126
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseView.h"
@@ -30,11 +30,18 @@ class NoFocusDelegate : public QStyledItemDelegate
 public:
     NoFocusDelegate(medDatabaseView *view, QList<int> seriesIds) : QStyledItemDelegate(), m_view(view), m_seriesIds(seriesIds) {}
 
+    void append(int seriesIndex);
+
 protected:
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     medDatabaseView *m_view;
     QList<int> m_seriesIds;
 };
+
+void NoFocusDelegate::append(int seriesIndex)
+{
+    m_seriesIds.append(seriesIndex);
+}
 
 void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const
 {
@@ -62,7 +69,7 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
                 {
                     itemOption.font.setItalic(true);
                 }
-            } 
+            }
         }
     }
 
@@ -77,8 +84,6 @@ public:
 
 medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate), QTreeView(parent)
 {
-    d->failedToOpenSeriesIds = *(new QList<int>());
-
     this->setAcceptDrops(true);
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
@@ -93,19 +98,22 @@ medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
-    NoFocusDelegate* delegate = new NoFocusDelegate(this, *(new QList<int>()));
+    NoFocusDelegate* delegate = new NoFocusDelegate(this,QList<int>());
     this->setItemDelegate(delegate);
 }
 
 medDatabaseView::~medDatabaseView(void)
 {
+    //TreeViews don't take ownership of delegates
+    delete this->itemDelegate();
+    delete d;
 }
 
 int medDatabaseView::sizeHintForColumn(int column) const
 {
     if (column<3)
         return 150;
-    
+
     return 50;
 }
 
@@ -212,7 +220,7 @@ void medDatabaseView::onMenuViewClicked(void)
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     if (item && (item->dataIndex().isValidForSeries()))
-    {        
+    {
         emit open(item->dataIndex ());
     }
 }
@@ -271,7 +279,9 @@ void medDatabaseView::onMenuRemoveClicked( void )
 
 void medDatabaseView::onOpeningFailed(const medDataIndex& index)
 {
-    d->failedToOpenSeriesIds.append(index.seriesId());
-
-    this->setItemDelegate(new NoFocusDelegate(this, d->failedToOpenSeriesIds));
+    if (NoFocusDelegate* delegate =
+            dynamic_cast<NoFocusDelegate*>(this->itemDelegate()))
+    {
+        delegate->append(index.seriesId());
+    }
 }

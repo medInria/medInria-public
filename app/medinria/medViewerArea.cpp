@@ -312,16 +312,16 @@ bool medViewerArea::open(const medDataIndex& index)
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
 
         QList<medDataIndex> studiesForSource = dbc->studies(index);
-
+        bool succeeded = true;
         for ( QList<medDataIndex>::const_iterator studyIt(studiesForSource.begin()); studyIt != studiesForSource.end(); ++studyIt) {
-
             QList<medDataIndex> seriesForSource = dbc->series((*studyIt));
 
             for ( QList<medDataIndex>::const_iterator seriesIt(seriesForSource.begin()); seriesIt != seriesForSource.end(); ++seriesIt) {
-                this->open(*seriesIt);
+                succeeded = this->open(*seriesIt) && succeeded;
             }
         }
-
+        medDataManager::instance()->blockSignals (false);
+        return succeeded;
     }
     medDataManager::instance()->blockSignals (false);
     return true;

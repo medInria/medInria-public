@@ -180,7 +180,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessWidget->setMinimumWidth(180);
 
     d->quickAccessVisible = false;
-    d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos" );
+    d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos",this );
 
     //Add quit button
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
@@ -258,7 +258,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
 medMainWindow::~medMainWindow ( void )
 {
-
     delete d;
 
     d = NULL;
@@ -520,6 +519,7 @@ void medMainWindow::open ( const medDataIndex& index )
 //    d->viewerArea->openInTab(index);
    if(d->viewerArea->openInTab(index))
     {
+
         d->quickAccessButton->setText("Workspace: Visualization");
         d->quickAccessButton->setMinimumWidth(170);
         this->switchToViewerArea();
