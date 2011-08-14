@@ -24,7 +24,6 @@ namespace MedInria {
             for (Registery::const_iterator i=registery().begin();i!=registery().end();++i)
                 if (type==i->first && i->second->has_version(major,minor))
                     return i->second->clone(major,minor);
-
             return 0;
         }
 
@@ -57,6 +56,8 @@ namespace MedInria {
 
         virtual bool write_description(QTextStream&) = 0;
         virtual bool write_data(const QString&) = 0;
+
+        virtual QImage& thumbnail() const = 0;
 
         static QStringList initialize() {
             QStringList& ql = known_types();

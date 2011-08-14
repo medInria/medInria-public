@@ -4,6 +4,8 @@
 
 #include <sstream>
 
+#include <medMetaDataKeys.h>
+
 #include <medDiffusionSequenceCompositeData.h>
 #include <medDiffusionSequenceCompositeDataToolBox.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -17,7 +19,10 @@
 // /////////////////////////////////////////////////////////////////
 
 const medDiffusionSequenceCompositeData medDiffusionSequenceCompositeData::proto;
+
 const char medDiffusionSequenceCompositeData::Tag[] = "DWI";
+const char medDiffusionSequenceCompositeData::ImagesString[] = "Images:";
+const char medDiffusionSequenceCompositeData::MetaDataString[] = "MetaData:";
 
 bool medDiffusionSequenceCompositeData::registered() const {
     return dtkAbstractDataFactory::instance()->registerDataType("medDiffusionSequenceCompositeData",createDiffusionSequenceCompositeData) &&
@@ -33,7 +38,19 @@ bool medDiffusionSequenceCompositeData::read_description(const QByteArray& buf) 
     std::istringstream iss(description);
 
     unsigned num;
-    iss >> io_utils::skip_comments('#') >> io_utils::match("Images") >> num;
+    iss >> io_utils::skip_comments('#') >> io_utils::match(ImagesString) >> num;
+
+    //  Decode the index specifying which meta data to associate with the dataset.
+
+    bool has_metadata;
+    iss >> io_utils::match_optional(MetaDataString,has_metadata);
+    if (has_metadata)
+        iss >> meta_data_index;
+    if (meta_data_index>=num)
+        qWarning("medDiffusionSequence: invalid metadata index %d",meta_data_index);
+
+    //  Read the gradient image names and the associated gradient.
+
     for (unsigned i=0;i<num;++i) {
         std::string name;
         GradientType V;
@@ -53,7 +70,7 @@ bool medDiffusionSequenceCompositeData::write_description(QTextStream& out) {
     }
 
     const unsigned num = images.size();
-    out << "Images: " << num << '\n';
+    out << ImagesString << num << ' ' << MetaDataString << ' ' << meta_data_index << '\n';
     for (unsigned i=0;i<num;++i) {
         const GradientType V = gradients[i];
         const QString im_name = image_list[i];
@@ -103,7 +120,13 @@ void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const
             // emit medToolBoxCompositeDataSetImporter::showError(this,tr("image should be 3D"),3000);
             continue;
         }
-    }  
+    }
+
+    for (medMetaDataKeys::Key::Registery::const_iterator i=medMetaDataKeys::Key::all().begin();i!=medMetaDataKeys::Key::all().end();++i)
+        if ((*i)->is_set_in(images[meta_data_index])) {
+            (*i)->set(this,(*i)->getValues(images[meta_data_index]));
+            qDebug() << "MetaData: " << (*i)->key() << (*i)->getValues(images[meta_data_index]);
+        }
 }
 
 void medDiffusionSequenceCompositeData::writeVolumes(const QString& dirname,const QStringList& paths) const {

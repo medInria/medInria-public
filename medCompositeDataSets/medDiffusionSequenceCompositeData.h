@@ -37,7 +37,8 @@ public:
 
     friend class medDiffusionSequenceCompositeDataToolBox;
 
-    medDiffusionSequenceCompositeData(): MedInria::medCompositeDataSetsBase(Tag,this),major_vers(defaultMajorVersion),minor_vers(defaultMinorVersion) { }
+    medDiffusionSequenceCompositeData():
+        MedInria::medCompositeDataSetsBase(Tag,this),major_vers(defaultMajorVersion),minor_vers(defaultMinorVersion),meta_data_index(0) { }
     virtual ~medDiffusionSequenceCompositeData() { }
 
     virtual QString description() const;
@@ -61,6 +62,8 @@ public:
     virtual bool write_description(QTextStream& file);
     virtual bool write_data(const QString&);
 
+    virtual QImage& thumbnail() const { return images[meta_data_index]->thumbnail(); }
+
     //  Methods specific to this type.
 
     void readVolumes(const QString& dirname,const QStringList& paths);
@@ -78,10 +81,14 @@ private:
     DebugWrapper<QStringList,0>      image_list;
     DebugWrapper<Volumes,1000>          images;
     DebugWrapper<GradientListType,10000> gradients;
+    unsigned         meta_data_index;
 
     static const medDiffusionSequenceCompositeData proto;
 
     static const char     Tag[];
+    static const char     ImagesString[];
+    static const char     MetaDataString[];
+
     static const unsigned defaultMajorVersion = 1;
     static const unsigned defaultMinorVersion = 0;
 };
