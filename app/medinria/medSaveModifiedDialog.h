@@ -5,8 +5,11 @@
 #include <QTreeWidget>
 #include <QTreeView>
 
+#include <medCore/medDataIndex.h>
+
 class QTreeWidget;
 class QTreeWidgetItem;
+class medSaveModifiedDialogPrivate;
 
 class medSaveModifiedDialog: public QFileDialog
 {
@@ -14,7 +17,7 @@ class medSaveModifiedDialog: public QFileDialog
     
 public:
   
-    medSaveModifiedDialog(QWidget *parent, QList<medDataIndex *indexNonPersistent>);
+    medSaveModifiedDialog(QWidget *parent);
     virtual ~medSaveModifiedDialog();
     
 //    static bool queryClose(QWidget *parent, QList<medDataIndex *indexNonPersistent);

@@ -5,22 +5,21 @@
 
 #include <QtGui>
 
+#include "medSaveModifiedDialog.h"
+
 class medSaveModifiedDialogPrivate
 {   
 public:  
 
-    QTreeWidget *list;
+    QTreeWidget *treeWidget;
     QTreeWidgetItem *image;    
     QPushButton *saveButton;
     QPushButton *deleteButton;
     QPushButton *selectAllButton;     
 };
 
-medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QFileDialog(parent), d (medSaveModifiedDialogPrivate)
-{
-    // getting non-persistent database items
-    // foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())  
-  
+medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QFileDialog(parent), d (new medSaveModifiedDialogPrivate)
+{  
     d->saveButton = new QPushButton(tr("Save"),this);
     connect (d->saveButton, SIGNAL(clicked()), this, SLOT(onSaveSelected()));
     
@@ -28,67 +27,38 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QFileDialog(pare
     connect (d->deleteButton, SIGNAL(clicked()), this, SLOT(onDeleteSelected()));
     
     d->selectAllButton = new QPushButton(tr("Select All"),this);
-    connect (d->selectAllButton, SIGNAL(clicked()), this, SLOT(onSelectAll()));    
-    
-    
-    
+    connect (d->selectAllButton, SIGNAL(clicked()), this, SLOT(onSelectAll()));        
     
   
   
   
 }
 
-~medSaveModifiedDialog::medSaveModifiedDialog(void)
+medSaveModifiedDialog::~medSaveModifiedDialog()
 {
-  delete d;
-  d = NULL;  
+    delete d;
+    d = NULL;  
 }
 
 
 void medSaveModifiedDialog::RetrieveItems()
 {
-  QList<metaDataIndex *index> list;
-  
-  foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
-      list.append(item->index());
-  
-  for (int i = 0; i < list.size(); ++i) 
-  {
-      list.at(i)->
+    QList<medDataIndex *> indexes;
+    dtkSmartPointer<dtkAbstractData> data;
+    QStringList seriesDescriptions;    
+    QTreeWidgetItem *series = new QTreeWidgetItem(d->treeWidget);
+    series->setText(0, tr("Series"));
+    
+    QTreeWidgetItem *seriesItem = new QTreeWidgetItem(series);    
       
-      
-
-  }
+    foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
+        indexes.append(item->index());
   
-  
-  
-  
-  
-  
-  int dataSourceId(void) const { return m_dataSourceId; }
-    int patientId(void) const { return m_patientId; }
-    int   studyId(void) const { return m_studyId; }
-    int  seriesId(void) const { return m_seriesId; }
-    int   imageId(void) const { return m_imageId; }
-  
-  
-  
-  
-  QTreeWidgetItem *cities = new QTreeWidgetItem(treeWidget);
-     cities->setText(0, tr("Cities"));
-     QTreeWidgetItem *osloItem = new QTreeWidgetItem(cities);
-     osloItem->setText(0, tr("Oslo"));
-     osloItem->setText(1, tr("Yes"));  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+    for (int i = 0; i < indexes.size(); ++i) 
+    {
+	seriesDescriptions.append(data->data(indexes.at(i))->metadata(tr("SeriesDescription")));
+	seriesItem->setText(i, seriesDescriptions.at(i));
+    }      
 }
 
 void medSaveModifiedDialog::ItemActivated(QTreeWidgetItem*, int)
