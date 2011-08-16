@@ -5,18 +5,20 @@
 
 #include "medCoreExport.h"
 
-class medDataIndex;
 class medAbstractDataPrivate;
 
+class medAttachedData;
+class medDataIndex;
+
 /**
- * Extending medAbstractData class to hold more specific information
+ * Extending dtkAbstractData class to hold more specific information
  */
 class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 {
     Q_OBJECT
 
 public:
-    medAbstractData( dtkAbstractData *parent = 0);
+    medAbstractData( dtkAbstractData * parent = NULL );
     virtual ~medAbstractData(void);
 
     /**
@@ -32,18 +34,60 @@ public:
     medDataIndex dataIndex() const;
 
     /**
-    * Set this to true if the volume has been generated with correct values (e.g. for z-dimension)
-    * @params bool flag
-    * @return void
-    */
+     * Set this to true if the volume has been generated with correct
+     * values (e.g. for z-dimension)
+     *
+     * @params bool flag
+     * @return void
+     */
     void setTrueVolumetric(bool flag);
 
     /**
-    * if set to true, the dataset is a valid 3d volume
-    * else operation like MPR, VRT should not be possible
-    * @return bool
-    */
+     * if set to true, the dataset is a valid 3d volume else operation
+     * like MPR, VRT should not be possible
+     *
+     * @return bool
+     */
     bool trueVolumetric() const;
+
+    /**
+     * @brief Get attached data (like histogram, annotations etc.)
+     *
+     * @return QList< medAttachedData * >
+     */
+    QList< medAttachedData * > attachedData() const;
+
+public slots:
+    /**
+     * @brief Clear the list of attached data
+     *
+     * @return void
+     */
+    void clearAttachedData();
+
+    /**
+     * @brief add attached data
+     *
+     * @return void
+     */
+    void addAttachedData( medAttachedData * data );
+
+    /**
+     * @brief remove attached data
+     *
+     * @return void
+     */
+    void removeAttachedData( medAttachedData * data );
+
+signals:
+    /**
+     * @brief emitted when an attached data is added
+     */
+    void attachedDataAdded( medAttachedData * );
+    /**
+     * @brief emitted when an attached data is removed
+     */
+    void attachedDataRemoved( medAttachedData * );
 
 private:
     medAbstractDataPrivate* d;

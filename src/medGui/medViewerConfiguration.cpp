@@ -1,5 +1,5 @@
-/* medViewerConfiguration.cpp --- 
- * 
+/* medViewerConfiguration.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 14:12:19 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 7
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include <medDataIndex.h>
@@ -38,7 +38,7 @@ public:
     bool databaseVisibility;
     bool toolBoxesVisibility;
     medStackedViewContainers * viewContainerStack;
-    
+
 };
 
 medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
@@ -173,6 +173,14 @@ void medViewerConfiguration::clear()
     setupViewContainerStack();
     clearToolBoxes();
     return;
+}
+
+void medViewerConfiguration::onButtonChecked( const QString & buttonGroup )
+{
+    medToolBox * sender = qobject_cast< medToolBox * >( this->sender() );
+    foreach ( medToolBox * toolbox, d->toolboxes )
+        if ( toolbox != sender )
+            toolbox->uncheckButtons( buttonGroup );
 }
 
 void medViewerConfiguration::setToolBoxesVisibility (bool value)

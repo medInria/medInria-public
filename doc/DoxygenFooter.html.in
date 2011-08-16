@@ -1,5 +1,5 @@
   <hr/>
-  Documentation build time: $datetime
+  Documentation build time: $datetime, git commit: @GIT_SHA1@
   <img src="img/inria.png" align="right"/>
 
   </body>
