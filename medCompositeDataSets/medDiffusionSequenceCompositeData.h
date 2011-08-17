@@ -10,20 +10,6 @@
 #include <medCompositeDataSetsBase.h>
 #include <itkGradientFileReader.h>
 
-template <typename T,unsigned N>
-struct DebugWrapper: public T {
-    static unsigned num;
-    DebugWrapper(): T(),id(num++) { qDebug() << "Constructor" << id; }
-    ~DebugWrapper() { qDebug() << "Destructor" << id; }
-
-    using T::operator=;
-
-    unsigned id;
-};
-
-template <typename T,unsigned N>
-unsigned DebugWrapper<T,N>::num = N;
-
 class medDiffusionSequenceCompositeDataToolBox;
 
 class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medDiffusionSequenceCompositeData: public MedInria::medCompositeDataSetsBase {
@@ -78,9 +64,9 @@ private:
 
     const unsigned   major_vers;
     const unsigned   minor_vers;
-    DebugWrapper<QStringList,0>      image_list;
-    DebugWrapper<Volumes,1000>          images;
-    DebugWrapper<GradientListType,10000> gradients;
+    QStringList      image_list;
+    Volumes          images;
+    GradientListType gradients;
     unsigned         meta_data_index;
 
     static const medDiffusionSequenceCompositeData proto;
