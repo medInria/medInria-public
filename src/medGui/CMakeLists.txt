@@ -36,7 +36,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxRegistration.h
   toolboxes/medToolBoxRegistrationCustom.h
   toolboxes/medToolBoxDiffusionTensorView.h
-  medToolBoxiLogRegistration.h
 
   # viewer stuff
   medPacsSelector.h
@@ -148,7 +147,6 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxRegistration.cpp
   toolboxes/medToolBoxRegistrationCustom.cpp
   toolboxes/medToolBoxDiffusionTensorView.cpp
-  medToolBoxiLogRegistration.cpp
 
   medViewPool.cpp
   viewContainers/medViewContainer.cpp
