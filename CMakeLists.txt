@@ -110,8 +110,7 @@ if (MEDINRIA_ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
 
     #Put here your registration plugin directory/project name.
     set(REG_PLUGIN_LIST
-      itkProcessRegistrationDiffeomorphicDemons OFF
-	  itkProcessiLogDemonRegistration OFF)
+      itkProcessRegistrationDiffeomorphicDemons OFF)
 
 list(LENGTH REG_PLUGIN_LIST N)
 set(INDEX 0)
