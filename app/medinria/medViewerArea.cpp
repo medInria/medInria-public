@@ -40,6 +40,7 @@
 #include <medDatabaseNavigator.h>
 #include <medDatabaseNavigatorController.h>
 #include <medDatabaseNonPersistentController.h>
+#include <medMetaDataHelper.h>
 
 #include <medClutEditor.h>
 #include <medToolBox.h>
@@ -52,7 +53,7 @@
 #include <medViewerConfigurationFactory.h>
 #include <medToolBoxDiffusion.h>
 #include <medToolBoxRegistration.h>
-#include <medStackedViewContainers.h>
+#include <medTabbedViewContainers.h>
 #include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxPatient.h>
 #include <medViewerToolBoxView.h>
@@ -217,12 +218,10 @@ bool medViewerArea::openInTab(const medDataIndex &index)
 
     if (!this->currentRootContainer()->views().isEmpty())
     {
-        dtkSmartPointer <dtkAbstractData> dtkdata = medDataManager::instance()->data(index);
-
-        if (dtkdata.isNull())
-            return false;
-
-        QString createdName = d->current_configuration->addMultiContainer(dtkdata.data()->metadata(medMetaDataKeys::PatientName.key()));
+        medDataManager *dataManager = medDataManager::instance();
+        medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
+        QString createdName = dbc->metaData(index,medMetaDataKeys::PatientName.key());
+        createdName = d->current_configuration->addMultiContainer(createdName);
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
     }
     else
@@ -313,16 +312,16 @@ bool medViewerArea::open(const medDataIndex& index)
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
 
         QList<medDataIndex> studiesForSource = dbc->studies(index);
-
+        bool succeeded = true;
         for ( QList<medDataIndex>::const_iterator studyIt(studiesForSource.begin()); studyIt != studiesForSource.end(); ++studyIt) {
-
             QList<medDataIndex> seriesForSource = dbc->series((*studyIt));
 
             for ( QList<medDataIndex>::const_iterator seriesIt(seriesForSource.begin()); seriesIt != seriesForSource.end(); ++seriesIt) {
-                this->open(*seriesIt);
+                succeeded = this->open(*seriesIt) && succeeded;
             }
         }
-
+        medDataManager::instance()->blockSignals (false);
+        return succeeded;
     }
     medDataManager::instance()->blockSignals (false);
     return true;
@@ -453,7 +452,7 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
 
 }
 
-void medViewerArea::switchToStackedViewContainers(medStackedViewContainers* stack)
+void medViewerArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
 {
     if(!stack )
     {

@@ -14,7 +14,7 @@
 #include "medToolBoxDiffusionFiberBundling.h"
 #include <medViewContainer.h>
 #include <medViewContainerSingle.h>
-#include <medStackedViewContainers.h>
+#include <medTabbedViewContainers.h>
 
 class medViewerConfigurationDiffusionPrivate
 {
@@ -101,6 +101,7 @@ void medViewerConfigurationDiffusion::setupViewContainerStack()
         //ownership of single is transferred to the stackedWidget.
         this->stackedViewContainers()->addContainer (description(), single);
         diffusionContainer = single;
+        this->stackedViewContainers()->unlockTabs();
     }
     else
     {
@@ -110,7 +111,6 @@ void medViewerConfigurationDiffusion::setupViewContainerStack()
     
     d->views << diffusionContainer->views();
     //this->stackedViewContainers()->setContainer (description());
-    this->stackedViewContainers()->unlockTabs();
 }
 
 

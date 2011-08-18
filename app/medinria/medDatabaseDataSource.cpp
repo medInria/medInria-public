@@ -28,7 +28,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
 {
     d->preview = new medDatabasePreview(parent);
 
-    d->model = new medDatabaseModel;
+    d->model = new medDatabaseModel(parent);
 
     d->proxy = new medDatabaseProxyModel(parent);
     d->proxy->setSourceModel(d->model);
@@ -60,8 +60,6 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
 
 medDatabaseDataSource::~medDatabaseDataSource()
 {
-    delete d->model;
-    d->model = NULL;
     delete d;
     d = NULL;
 }

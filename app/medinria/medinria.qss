@@ -1,5 +1,5 @@
-/* medinria.qss --- 
-;; 
+/* medinria.qss ---
+;;
 ;; Author: Julien Wintz
 ;; Copyright (C) 2008 - Julien Wintz, Inria.
 ;; Created: Fri May 21 09:46:29 2010 (+0200)
@@ -9,12 +9,12 @@
 ;;     Update #: 47
 */
 
-/* Commentary: 
-;; 
+/* Commentary:
+;;
 */
 
 /* Change log:
-;; 
+;;
 */
 
 /**
@@ -200,7 +200,7 @@ QProgressBar {
     height: 14px;
     text-align: right;
     padding-left: 1px;
-    padding-right: 25px;    
+    padding-right: 25px;
 }
 
 QProgressBar::chunk {
@@ -506,7 +506,7 @@ QComboBox QAbstractItemView {
  */
 
 QSplitter::handle {
-    image: url(:/pixmaps/splitter-handle.png);    
+    image: url(:/pixmaps/splitter-handle.png);
 }
 
 QSplitter::handle:horizontal {
@@ -578,7 +578,7 @@ QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top center;
     padding: 0 3px;
-	 
+
     color: #b2b8b2;
     font-size: 10pt;
 }
@@ -703,7 +703,7 @@ medSettingsEditor {
 }
 
 medSettingsEditor QTabBar::tab:selected, QTabBar::tab:hover {
-   background:	qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #505050, stop: 1.0 #5c5c5c);
+   background:  qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #505050, stop: 1.0 #5c5c5c);
 }
 
 medSettingsEditor QTabBar::tab {
@@ -859,7 +859,7 @@ medMainWindow QPushButton{
 
 /**
  * medHomepageArea
- * 
+ *
  */
 medHomepageArea QTabWidget {
     border-image: url(:/pixmaps/toolbox-body.png) 0 16 16 16 repeat-y;
@@ -894,7 +894,7 @@ medHomepageArea QTabBar::tab {
     min-width: 50px;
 }
 
-medHomepageArea QTabBar::tab:selected, QTabBar::tab:hover {
+medHomepageArea QTabBar::tab:selected,medHomepageArea QTabBar::tab:hover {
     color: white;
     border: 1px solid #2c2c2e;
     border-top: none;
@@ -913,7 +913,7 @@ medHomepageArea QTextEdit {
  * medHomepageButton
  *
  */
-medHomepageButton QToolButton{border: 0px; 
+medHomepageButton QToolButton{border: 0px;
     border-left: 1px solid #4b4b4b;
     border-radius: 0px;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
@@ -923,7 +923,7 @@ medHomepageButton QToolButton{border: 0px;
     padding-left: 1px;
     padding-right: 1px;
     min-width: 2px;
-    
+
 }
 
 medHomepageButton QToolButton:pressed, QToolButton:checked {
@@ -951,7 +951,7 @@ medQuickAccessPushButton:hover {
 }
 
 medQuickAccessPushButton:pressed {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);    
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
 }
 
 /**
@@ -1273,7 +1273,7 @@ medViewerToolBoxViewProperties QTreeWidget {
     padding-left: 0px;
     padding-right: 0px;
     padding-bottom: 0px;
-    
+
     font-size: 10px;
 
     color: #b2b8b2;
@@ -1303,18 +1303,18 @@ medViewerToolBoxViewProperties QTreeWidget::branch:open:has-children:!has-siblin
 QTreeWidget::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
-} 
+}
 
 /**
- * medStackedViewContainers
+ * medTabbedViewContainers
  *
  */
 
-medStackedViewContainers::pane {
+medTabbedViewContainers::pane {
     border: none;
 }
 
-medStackedViewContainers QTabBar::tab {
+medTabbedViewContainers QTabBar::tab {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
     border: 1px solid #2a2a2a;
     height: 24px;
@@ -1324,7 +1324,7 @@ medStackedViewContainers QTabBar::tab {
     color: #b2b8b2;
 }
 
-medStackedViewContainers QTabBar::tab:selected, medStackedViewContainers QTabBar::tab:hover {
+medTabbedViewContainers QTabBar::tab:selected, medTabbedViewContainers QTabBar::tab:hover {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
     border: 1px solid #2a2a2a;
     height: 24px;
@@ -1335,7 +1335,7 @@ medStackedViewContainers QTabBar::tab:selected, medStackedViewContainers QTabBar
     border-bottom-color: #4c4c4c;
 }
 
-medStackedViewContainers QPushButton {
+medTabbedViewContainers QPushButton {
     background: none;
     border: none;
     outline: none;
@@ -1344,7 +1344,7 @@ medStackedViewContainers QPushButton {
     height: 18px;
 }
 
-medStackedViewContainers QPushButton:pressed, medStackedViewContainers QPushButton:hover {
+medTabbedViewContainers QPushButton:pressed, medTabbedViewContainers QPushButton:hover {
     background: none;
     border: none;
     outline: none;

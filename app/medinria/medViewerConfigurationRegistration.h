@@ -6,7 +6,7 @@
 
 #include <medViewerConfiguration.h>
 
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medViewerConfigurationRegistrationPrivate;
 
 class medViewerConfigurationRegistration : public medViewerConfiguration
