@@ -57,7 +57,7 @@ medViewerToolBoxPatient::medViewerToolBoxPatient(QWidget *parent) : medToolBox(p
 
     connect(d->combo, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentIndexChanged(int)));
 
-    connect(medDbControllerFactory::instance(), SIGNAL(dbControllerRegistered(const QString&)), this, SLOT(setupDatabase()));
+    connect(medDbControllerFactory::instance(), SIGNAL(dbControllerRegistered(const QString&)), this, SLOT(onDbControllerRegistered(const QString&)));
 
     // Setting up database
     this->setupDatabase();
@@ -244,13 +244,26 @@ void medViewerToolBoxPatient::setupDatabase(void)
         }
     }
 
+    // d->combo->blockSignals (false);  // automatic.
+}
+
+void medViewerToolBoxPatient::onDbControllerRegistered( const QString& )
+{
+    medDataManager * dataManager = medDataManager::instance();
+    QList<int> dataSourceIds = dataManager->dataSourceIds();
+
+    bool newConnection = false;  // Will become true if a new connection is established
+
     for (QList<int>::const_iterator dataSourceIt( dataSourceIds.begin()); dataSourceIt != dataSourceIds.end(); ++dataSourceIt ) {
         medAbstractDbController *dbc = dataManager->controllerForDataSource(*dataSourceIt);
 
         if ( !dbc ) 
             continue;
 
-        connect(dbc, SIGNAL(updated(medDataIndex)), this, SLOT(setupDatabase()));
+        newConnection |= connect(dbc, SIGNAL(updated(medDataIndex)), this, SLOT(setupDatabase()), Qt::UniqueConnection);
     }
-    // d->combo->blockSignals (false);  // automatic.
+
+    if ( newConnection ) {
+        this->setupDatabase();
+    }
 }

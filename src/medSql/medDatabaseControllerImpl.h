@@ -43,10 +43,6 @@ public:
     medDataIndex indexForImage   (const QString &patientName, const QString &studyName,
                                   const QString &seriesName,  const QString &imageName);
 
-    /* some overloads of read(medDataIndex) */
-    dtkSmartPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId);
-    dtkSmartPointer<dtkAbstractData> read(int patientId, int studyId, int seriesId, int imageId);
-
     /** Remove / replace characters to transform into a pathname component. */
     QString stringForPath(const QString & name) const;
 

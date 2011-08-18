@@ -274,7 +274,7 @@ signals:
     void ThreeDTriggered(dtkAbstractView* d);
 
     /** Emitted when the oblique view settings change */
-    void obliqueSettingsChanged();
+    void obliqueSettingsChanged (const medAbstractView *self);
 
     void colorChanged();
 

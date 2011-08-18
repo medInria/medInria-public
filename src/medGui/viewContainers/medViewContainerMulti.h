@@ -50,6 +50,8 @@ public:
 
 public slots:
     virtual void onViewClosing (void);
+
+    virtual void onViewFocused (bool value);
 };
 
 

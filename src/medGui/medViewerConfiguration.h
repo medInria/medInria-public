@@ -257,6 +257,18 @@ public slots:
      *
     */
     virtual void clear();
+
+    /**
+     * @brief Tells all toolboxes that a button of buttonGroup has been checked
+     *
+     * All toolboxes except the sender of the buttonChecked signal are
+     * told to uncheck their buttons belonging to the same
+     * buttonGroup.  This mechanism can be used when buttons in
+     * different toolboxes are mutually exclusive.
+     *
+     * @param buttonGroup
+     */
+    void onButtonChecked( const QString & buttonGroup );
     
 signals:
     /**

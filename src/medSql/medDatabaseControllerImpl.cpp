@@ -398,18 +398,9 @@ dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIn
 
     medMessageController::instance()->showProgress(reader.data(), "Opening database item");
 
-    dtkSmartPointer<dtkAbstractData> data(reader->run());
+    dtkSmartPointer<dtkAbstractData> data;
+    data = reader->run();
     return data;
-}
-
-dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId)
-{
-    return read(medDataIndex::makeSeriesIndex(this->dataSourceId(),patientId, studyId, seriesId));
-}
-
-dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(int patientId, int studyId, int seriesId, int imageId)
-{
-    return read(medDataIndex(this->dataSourceId(),patientId, studyId, seriesId, imageId));
 }
 
 void medDatabaseControllerImpl::createPatientTable(void)

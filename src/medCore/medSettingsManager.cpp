@@ -36,9 +36,26 @@ void medSettingsManager::destroy( void )
 
 QVariant medSettingsManager::value( const QString & section, const QString & key, const QVariant & defaultValue /*= QVariant() */ )
 {
+    bool valuePresent;
+
     QString sectionKey;
     sectionKey = section + "/" + key;
-    return d->settings.value(sectionKey, defaultValue);
+    valuePresent = d->settings.contains(sectionKey);
+
+    // don't write in case of no defaultValue
+    if (!defaultValue.isValid())
+        valuePresent = true;
+
+    QVariant result = d->settings.value(sectionKey, defaultValue);
+
+    // write default value so we can share it
+    if (!valuePresent)
+    {
+        qDebug() << "writing default value for section: " << section << " key: " << key << "value: " << defaultValue;
+        setValue(section, key, result);
+    }
+
+    return result;
 }
 
 void medSettingsManager::setValue( const QString & section, const QString & key, const QVariant & value )

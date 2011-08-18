@@ -31,6 +31,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPluginManager.h
   medProgressFilter.h
   medAbstractView.h
+  medAbstractViewCollection.h
   med4DAbstractViewInteractor.h
   medMeshAbstractViewInteractor.h
   medJobItem.h
@@ -44,6 +45,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medRunnableProcess.h
   medAbstractViewFiberInteractor.h
   medAbstractData.h
+  medAbstractDataCollection.h
   medAbstractDataImage2D.h
   medAbstractDataImage3D.h
   medAbstractDataImage4D.h
@@ -53,7 +55,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
-  medAbstractDataCollection.h
   medAbstractDataImage.h
   medAbstractDataTypedImage.h
   medAbstractDataTypedImage2D.h
@@ -74,6 +75,7 @@ set(${PROJECT_NAME}_SOURCES
   medPluginManager.cpp
   medProgressFilter.cpp
   medAbstractView.cpp
+  medAbstractViewCollection.cpp
   medStorage.cpp
   medJobItem.cpp
   medJobManager.cpp  

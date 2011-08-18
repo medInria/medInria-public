@@ -34,6 +34,8 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
 if(WIN32)
   option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
+  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
   
 

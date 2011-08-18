@@ -31,7 +31,6 @@
 #include <medMetaDataHelper.h>
 #include <medStorage.h>
 
-
 class medDatabaseImporterPrivate
 {
 public:
@@ -107,19 +106,21 @@ void medDatabaseImporter::run(void)
         fileIndex++;
 
         QFileInfo fileInfo( file );
-
+        QString filename = fileInfo.filePath();
         dtkSmartPointer<dtkAbstractData> dtkdata;
 
         dtkSmartPointer<dtkAbstractDataReader> dataReader = this->getSuitableReader(QStringList(fileInfo.filePath()));
         if (dataReader){
-            dataReader->readInformation( fileInfo.filePath() );
+            dataReader->readInformation( filename );
             dtkdata = dataReader->data();
-            dataReader = NULL;
+            dtkdata->enableDeferredDeletion(false);
+            //dataReader = NULL;
         }
         else {
-            qWarning() << "No suitable reader found for file: " << fileInfo.filePath() << " unable to import!";
-            continue;
+        qWarning() << "No suitable reader found for file: " << fileInfo.filePath() << " unable to import!";
+        continue;
         }
+
 
         if (!dtkdata) {
             qWarning() << "Reader was unable to read: " << fileInfo.filePath();
@@ -224,6 +225,7 @@ void medDatabaseImporter::run(void)
         // reading again ...
         dtkSmartPointer<dtkAbstractDataReader> dataReader = this->getSuitableReader(it.value());
         if (dataReader) {
+            dataReader->readInformation( it.value() );
             dataReader->read( it.value() );
             imData = dataReader->data();
             QFileInfo fileInfo(it.value()[0]);
@@ -770,19 +772,21 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader( Q
     for (int i=0; i<readers.size(); i++) {
         dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
         if (d->lastSuccessfulReaderDescription == dataReader->description() && dataReader->canRead( filename ))
+        {
+            dataReader->enableDeferredDeletion(false);
             return dataReader;
-//        else
-//            delete dataReader;  // SmartPointer will delete (eventually)
+        }
     }
 
     for (int i=0; i<readers.size(); i++) {
         dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
         if (dataReader->canRead( filename )){
             d->lastSuccessfulReaderDescription = dataReader->description();
-            return dataReader;
+            {
+                dataReader->enableDeferredDeletion(false);
+                return dataReader;
+            }
         }
-        //        else
-        //            delete dataReader;  // SmartPointer will delete (eventually)
     }
     qWarning() << "No suitable reader found!";
     dataReader = NULL;
@@ -807,10 +811,9 @@ dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter( Q
                  dataWriter->canWrite( filename ) ) {
 
                 d->lastSuccessfulWriterDescription = dataWriter->description();
+                dataWriter->enableDeferredDeletion(false);
                 return dataWriter;
             }
-//            else
-//                delete dataWriter;
         }
     }
 
@@ -822,10 +825,9 @@ dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter( Q
              dataWriter->canWrite( filename ) ) {
 
             d->lastSuccessfulWriterDescription = dataWriter->description();
+            dataWriter->enableDeferredDeletion(false);
             return dataWriter;
         }
-//        else
-//            delete dataWriter;
     }
     dataWriter = NULL;
     return NULL;
