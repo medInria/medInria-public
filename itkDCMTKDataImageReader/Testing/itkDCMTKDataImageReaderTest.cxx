@@ -1,9 +1,10 @@
-
-#include "dtkCore/dtkPluginManager.h"
-#include "dtkCore/dtkAbstractDataFactory.h"
+#include <dtkCore/dtkPluginManager.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
 #include <dtkCore/dtkSmartPointer.h>
+
+#include <medMetaDataKeys.h>
 
 #include <QtCore>
 #include <QDir>
@@ -53,49 +54,49 @@ int itkDCMTKDataImageReaderTest (int argc, char* argv[])
 	  reader->readInformation( fileInfo.filePath() );
 
       
-      if(!data->hasMetaData("PatientName"))
-	  data->addMetaData("PatientName", QStringList() << "John Doe");
+      if(!data->hasMetaData(medMetaDataKeys::PatientName.key()))
+	  data->addMetaData(medMetaDataKeys::PatientName.key(), QStringList() << "John Doe");
 
-      if(!data->hasMetaData("StudyDescription"))
-	  data->addMetaData("StudyDescription", QStringList() << "EmptyStudy");
+      if(!data->hasMetaData(medMetaDataKeys::StudyDescription.key()))
+	  data->addMetaData(medMetaDataKeys::StudyDescription.key(), QStringList() << "EmptyStudy");
 
-      if(!data->hasMetaData("SeriesDescription"))
-	  data->addMetaData("SeriesDescription", QStringList() << fileInfo.baseName());
+      if(!data->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+	  data->addMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << fileInfo.baseName());
 
-      if(!data->hasMetaData("StudyID"))
-	  data->addMetaData("StudyID", QStringList() << "");
+      if(!data->hasMetaData(medMetaDataKeys::StudyID.key()))
+	  data->addMetaData(medMetaDataKeys::StudyID.key(), QStringList() << "");
 	
-      if(!data->hasMetaData("SeriesID"))
-	  data->addMetaData("SeriesID", QStringList() << "");
+      if(!data->hasMetaData(medMetaDataKeys::SeriesID.key()))
+	  data->addMetaData(medMetaDataKeys::SeriesID.key(), QStringList() << "");
 
-      if(!data->hasMetaData("Orientation"))
-	  data->addMetaData("Orientation", QStringList() << "");
+      if(!data->hasMetaData(medMetaDataKeys::Orientation.key()))
+	  data->addMetaData(medMetaDataKeys::Orientation.key(), QStringList() << "");
 
-      if(!data->hasMetaData("SeriesNumber"))
-	  data->addMetaData("SeriesNumber", QStringList() << "");
+      if(!data->hasMetaData(medMetaDataKeys::SeriesNumber.key()))
+	  data->addMetaData(medMetaDataKeys::SeriesNumber.key(), QStringList() << "");
 
-      if(!data->hasMetaData("SequenceName"))
-	  data->addMetaData("SequenceName", QStringList() << "");
+      if(!data->hasMetaData(medMetaDataKeys::SequenceName.key()))
+	  data->addMetaData(medMetaDataKeys::SequenceName.key(), QStringList() << "");
 
-      if(!data->hasMetaData("SliceThickness"))
-	  data->addMetaData("SliceThickness", QStringList() << "");
+      if(!data->hasMetaData(medMetaDataKeys::SliceThickness.key()))
+	  data->addMetaData(medMetaDataKeys::SliceThickness.key(), QStringList() << "");
 
-      if(!data->hasMetaData("Rows"))
-	  data->addMetaData("Rows", QStringList() << "");
+      if(!data->hasMetaData(medMetaDataKeys::Rows.key()))
+	  data->addMetaData(medMetaDataKeys::Rows.key(), QStringList() << "");
 	
-      if(!data->hasMetaData("Columns"))
-	  data->addMetaData("Columns", QStringList() << "");
+      if(!data->hasMetaData(medMetaDataKeys::Columns.key()))
+	  data->addMetaData(medMetaDataKeys::Columns.key(), QStringList() << "");
 
 
-      QString patientName = data->metaDataValues( "PatientName" )[0];
-      QString studyId = data->metaDataValues("StudyID")[0];
-      QString seriesId = data->metaDataValues("SeriesID")[0];
-      QString orientation = data->metaDataValues("Orientation")[0];
-      QString seriesNumber = data->metaDataValues("SeriesNumber")[0];
-      QString sequenceName = data->metaDataValues("SequenceName")[0];
-      QString sliceThickness = data->metaDataValues("SliceThickness")[0];
-      QString rows = data->metaDataValues("Rows")[0];
-      QString columns = data->metaDataValues("Columns")[0];
+      QString patientName = data->metaDataValues( medMetaDataKeys::PatientName.key() )[0];
+      QString studyId = data->metaDataValues(medMetaDataKeys::StudyID.key())[0];
+      QString seriesId = data->metaDataValues(medMetaDataKeys::SeriesID.key())[0];
+      QString orientation = data->metaDataValues(medMetaDataKeys::Orientation.key())[0];
+      QString seriesNumber = data->metaDataValues(medMetaDataKeys::SeriesNumber.key())[0];
+      QString sequenceName = data->metaDataValues(medMetaDataKeys::SequenceName.key())[0];
+      QString sliceThickness = data->metaDataValues(medMetaDataKeys::SliceThickness.key())[0];
+      QString rows = data->metaDataValues(medMetaDataKeys::Rows.key())[0];
+      QString columns = data->metaDataValues(medMetaDataKeys::Columns.key())[0];
       
 
       QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
