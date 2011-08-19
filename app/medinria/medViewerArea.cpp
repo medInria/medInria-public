@@ -40,7 +40,6 @@
 #include <medDatabaseNavigator.h>
 #include <medDatabaseNavigatorController.h>
 #include <medDatabaseNonPersistentController.h>
-#include <medMetaDataHelper.h>
 
 #include <medClutEditor.h>
 #include <medToolBox.h>
