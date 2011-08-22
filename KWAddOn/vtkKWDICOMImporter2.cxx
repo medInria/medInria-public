@@ -23,7 +23,7 @@
 #include <vtkKWLoadSaveDialog.h>
 #include "vtkKWSeparator.h"
 
-//#include <vtkKWDicomInfoWidget.h>
+#include <vtkKWDicomInfoWidget.h>
 #include <pixmap/KWAddOnResources.h>
 #include <vtkKWIcon.h>
 #include <kwcommon.h>
@@ -600,7 +600,7 @@ void vtkKWDICOMImporter2::OpenDirectoryCallback()
 
   this->VolumeList.clear();
   for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
-    this->VolumeList.push_back (static_cast<GDCMVolume*>(this->GDCMImporter->GetOutput(i)));
+    this->VolumeList.push_back (dynamic_cast<GDCMVolume*>(this->GDCMImporter->GetOutput(i)));
   
   std::cout<<"done."<<std::endl;
   
@@ -639,7 +639,7 @@ void vtkKWDICOMImporter2::ResetCallback()
   
   this->VolumeList.clear();
   for (unsigned int i=0; i<this->GDCMImporter->GetNumberOfOutputs(); i++)
-    this->VolumeList.push_back (static_cast<GDCMVolume*>(this->GDCMImporter->GetOutput(i)));
+    this->VolumeList.push_back (dynamic_cast<GDCMVolume*>(this->GDCMImporter->GetOutput(i)));
   
 
   this->Update();
@@ -876,61 +876,59 @@ void vtkKWDICOMImporter2::DoubleClickCallback()
   // if ( this->InteractiveStatus == STATUS_PLAY)
   //   this->InteractiveStatus = STATUS_STOP;
 
-  // int row = this->MultiColumnList->GetIndexOfFirstSelectedRow();
+  int row = this->MultiColumnList->GetIndexOfFirstSelectedRow();
 
-  // GDCMVolume::Pointer image =
-  //   static_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (row));
+  GDCMVolume::Pointer image =
+    dynamic_cast< GDCMVolume*>(this->GDCMImporter->GetOutput (row));
 
-  // vtkKWTopLevel* toplevel = vtkKWTopLevel::New();
+  vtkKWTopLevel* toplevel = vtkKWTopLevel::New();
   
-  // toplevel->SetMasterWindow(this->GetParentTopLevel());
-  // toplevel->SetApplication(this->GetApplication());
-  // toplevel->Create();
-  // toplevel->SetTitle(image->GetName());
-  // toplevel->SetDeleteWindowProtocolCommand(toplevel, "Withdraw");
+  toplevel->SetMasterWindow(this->GetParentTopLevel());
+  toplevel->SetApplication(this->GetApplication());
+  toplevel->Create();
+  toplevel->SetTitle(image->GetName());
+  toplevel->SetDeleteWindowProtocolCommand(toplevel, "Withdraw");
   
-  // vtkKWDicomInfoWidget* widget = vtkKWDicomInfoWidget::New();
-  // widget->SetParent(toplevel);
-  // widget->Create();
-  // this->Script("pack %s -fill both -side top -expand t", 
-  // 	       widget->GetWidgetName());
-  // widget->Update();
-  // itk::DicomTagManager::Pointer tagmanager = itk::DicomTagManager::New();
-  // tagmanager->ImportTagList ((*image->GetFileList())[0]);
-  // widget->SetDicomTagList(tagmanager->GetTagList());
-  // widget->Delete();
+  vtkKWDicomInfoWidget* widget = vtkKWDicomInfoWidget::New();
+  widget->SetParent(toplevel);
+  widget->Create();
+  this->Script("pack %s -fill both -side top -expand t", 
+  	       widget->GetWidgetName());
+  widget->Update();
+  widget->SetDicomEntryList (image->GetDicomEntryList());
+  widget->Delete();
   
-  // // Get the position of the mouse, the size of the top level window.
+  // Get the position of the mouse, the size of the top level window.
 
-  // int px, py, tw, th, sw, sh;
+  int px, py, tw, th, sw, sh;
 
-  // vtkKWTkUtilities::GetMousePointerCoordinates(this, &px, &py);
-  // vtkKWTkUtilities::GetWidgetRequestedSize(toplevel, &tw, &th);
-  // vtkKWTkUtilities::GetScreenSize(toplevel, &sw, &sh);
+  vtkKWTkUtilities::GetMousePointerCoordinates(this, &px, &py);
+  vtkKWTkUtilities::GetWidgetRequestedSize(toplevel, &tw, &th);
+  vtkKWTkUtilities::GetScreenSize(toplevel, &sw, &sh);
 
-  // px -= tw / 2;
-  // if (px + tw > sw)
-  // {
-  //   px -= (px + tw - sw);
-  // }
-  // if (px < 0)
-  // {
-  //   px = 0;
-  // }
+  px -= tw / 2;
+  if (px + tw > sw)
+  {
+    px -= (px + tw - sw);
+  }
+  if (px < 0)
+  {
+    px = 0;
+  }
 
-  // py -= th / 2;
-  // if (py + th > sh)
-  // {
-  //   py -= (py + th - sh);
-  // }
-  // if (py < 0)
-  // {
-  //   py = 0;
-  // }
+  py -= th / 2;
+  if (py + th > sh)
+  {
+    py -= (py + th - sh);
+  }
+  if (py < 0)
+  {
+    py = 0;
+  }
 
-  // toplevel->SetPosition(px, py);
-  // toplevel->DeIconify();
-  // toplevel->Raise();
+  toplevel->SetPosition(px, py);
+  toplevel->DeIconify();
+  toplevel->Raise();
 
 }
 
@@ -941,7 +939,7 @@ void vtkKWDICOMImporter2::UpdatePreview (GDCMVolume::Pointer volume)
 
 //   if ( !(volume.IsNull()) )
 //   {
-//     this->Preview->SetITKImage(static_cast<ImageType*>(volume));
+//     this->Preview->SetITKImage(dynamic_cast<ImageType*>(volume));
 //     this->Preview->Reset();
 //     this->Preview->Show2DAxisOff();
 //     this->Preview->Render();
@@ -1060,7 +1058,9 @@ void vtkKWDICOMImporter2::SetOutputsAsVolumes(void)
 
     try
     {
-      sequence->SetITKDataSet<ImageComponentType>(static_cast<ImageType*>(dcmvolume));
+      sequence->SetITKDataSet<ImageComponentType>(static_cast<ImagePointerType>(dcmvolume));
+      vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast (sequence->GetMetaDataSet ((unsigned int)(0)));
+      metaimage->SetDicomEntryList (dcmvolume->GetDicomEntryList());
     }
     catch (vtkErrorCode::ErrorIds)
     {
@@ -1077,6 +1077,7 @@ void vtkKWDICOMImporter2::SetOutputsAsVolumes(void)
     else
     {
       vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast (sequence->GetMetaDataSet ((unsigned int)(0)));
+      metaimage->SetDicomEntryList (dcmvolume->GetDicomEntryList());
       metadataset = metaimage;
     }    
       

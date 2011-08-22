@@ -103,8 +103,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkDelaunay3D.h>
 #include <vtkSelectPolyData.h>
 
-// #include <vtkKWDicomInfoWidget.h>
-
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/stl/string>
 #include <vtksys/stl/vector>

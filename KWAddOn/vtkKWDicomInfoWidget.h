@@ -23,15 +23,12 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWFrame.h>
 #include <string>
 #include <vector>
-#include <itkDicomTagManager.h>
 
 class vtkKWMultiColumnList;
 class vtkKWMainWindowInteractor;
 class vtkMetaDataSet;
 class vtkKWSimpleEntryDialog;
 class vtkKWEntry;
-
-
 
 class KW_ADDON_EXPORT vtkKWDicomInfoWidget: public vtkKWFrame
 {
@@ -41,15 +38,17 @@ class KW_ADDON_EXPORT vtkKWDicomInfoWidget: public vtkKWFrame
   vtkTypeRevisionMacro(vtkKWDicomInfoWidget,vtkKWFrame);
 
   //BTX
-  typedef itk::DicomTag DicomTagType;
-  typedef std::vector<DicomTagType> DicomTagListType;
+  typedef std::pair <std::string, std::string> DicomEntry;
+  typedef std::vector<DicomEntry> DicomEntryList;
+  void SetDicomEntryList (DicomEntryList list);
+  DicomEntryList GetDicomEntryList (void)
+  { return this->DicomTagList; }
   //ETX
   
   vtkSetMacro(Editable, int);
   vtkGetMacro(Editable, int);
   //
   vtkBooleanMacro (Editable, int);
-  
   
   virtual void Update();
   void SelectionChangedCallback();
@@ -58,17 +57,6 @@ class KW_ADDON_EXPORT vtkKWDicomInfoWidget: public vtkKWFrame
   void ValidateSearchCallback(const char*);
   void SearchEntryCallback(const char*);
   void CellUpdateCallback(int row, int col, const char* text);
-  
-
-
-  //BTX
-  void SetDicomTagListAsDictionary (itk::MetaDataDictionary dictionary);
-  void SetDicomTagList(DicomTagListType list);
-  DicomTagListType GetDicomTagList(void)
-  { return this->DicomTagList; }
-  itk::MetaDataDictionary GetDicomTagListAsDictionary (void);
-  //ETX
-
   
  protected:
   vtkKWDicomInfoWidget();
@@ -79,7 +67,6 @@ class KW_ADDON_EXPORT vtkKWDicomInfoWidget: public vtkKWFrame
   virtual void CreateWidget();
   virtual void Pack();
 
-
  private:
   
   vtkKWDicomInfoWidget(const vtkKWDicomInfoWidget&);      // Not implemented.
@@ -89,11 +76,10 @@ class KW_ADDON_EXPORT vtkKWDicomInfoWidget: public vtkKWFrame
   vtkKWSimpleEntryDialog* SearchDialog;
   vtkKWEntry*             SearchEntry;
   
-  
   int                   Editable;
 
   //BTX
-  DicomTagListType      DicomTagList;
+  DicomEntryList DicomTagList;
   //ETX
   
 };

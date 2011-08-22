@@ -40,7 +40,7 @@ SET(KWAddOn_SRCS
   ${KWAddOn_SRCS}
   vtkKWDICOMImporter2.cxx
 #  vtkKWDICOMExporter.cxx
-#  vtkKWDicomInfoWidget.cxx
+  vtkKWDicomInfoWidget.cxx
   vtkKWInfoToolBox.cxx
   )
 #ENDIF (NOT ITK_USE_SYSTEM_GDCM)

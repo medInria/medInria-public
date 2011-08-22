@@ -83,6 +83,8 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   typedef itk::Image<ImageComponentType, 3> FloatImageType;
   typedef itk::Image<ImageComponentType, 4> FloatImage4DType;
   typedef itk::MetaDataDictionary DictionaryType;
+  typedef std::pair <std::string, std::string> DicomEntry;
+  typedef std::vector<DicomEntry> DicomEntryList;
 
   typedef FloatImageType::DirectionType DirectionType;
   
@@ -107,6 +109,21 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   */
   void SetDicomDictionary (DictionaryType dictionary)
   { this->DicomDictionary = dictionary; }
+  /**
+     Access to the DICOM tag list of this image
+     Note that this dictionary is not filled automatically when ITK image is set.
+     You have to explicitally call SetDicomDictionary() for that
+  */
+  DicomEntryList GetDicomEntryList (void)
+  { return this->DicomTagList; }
+  /**
+     Set the DICOM tag list of this image.
+     Use this method after a DICOM import process.
+     If you use itkGDCMImporter, the output volumes contain the right dictionary
+     that could be used to feed this metaimagedata
+  */
+  void SetDicomEntryList (DicomEntryList list)
+  { this->DicomTagList = list; }
   /**
      Reads a file and creates a image of a given scalar component type.
      Use with care. Please prefer using Read()
@@ -395,6 +412,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   itk::ProcessObject::Pointer m_Converter;
   
   DictionaryType DicomDictionary;
+  DicomEntryList DicomTagList;
   //ETX
 
   

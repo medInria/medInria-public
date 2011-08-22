@@ -427,6 +427,8 @@ namespace itk
 
     // Now simply graft the image too the GDCMVolume
     this->Graft (image);
+
+    m_IsBuilt = 1;
   }
 
 
@@ -531,7 +533,7 @@ namespace itk
   {
     const gdcm::Global &g = gdcm::Global::GetInstance();
     const gdcm::Dicts &dicts = g.GetDicts();
-   
+    
     DicomEntryList list;
     
     const FileListMapType map = m_FileListMap;
@@ -545,11 +547,23 @@ namespace itk
     gdcm::DataSet dataset = reader.GetFile().GetDataSet();
     
     std::string value;
-    MetaDataDictionary dict = this->GetMetaDataDictionary();
+    MetaDataDictionary dict;
+
+    if (m_IsBuilt)
+      dict = this->GetMetaDataDictionary();
+    else
+    {
+      typename GDCMImageIO::Pointer io  = GDCMImageIO::New();
+      typename ReaderType::Pointer reader = ReaderType::New();
+      io->SetFileName ((*map.begin()).second[0].c_str());
+      io->ReadImageInformation();
+      dict = io->GetMetaDataDictionary();
+    }
+    
     //Smarter approach using real iterators
     MetaDataDictionary::ConstIterator itr = dict.Begin();
     MetaDataDictionary::ConstIterator end = dict.End();
-
+    
     while(itr != end)
     {
       const std::string &key = itr->first;

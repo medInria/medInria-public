@@ -57,6 +57,8 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   //BTX
   typedef signed short ImageComponentType ;
   typedef itk::Image<ImageComponentType, 4> ImageType;
+  typedef ImageType::Pointer ImagePointerType;
+  
   typedef itk::GDCMImporter3<ImageComponentType> ImporterType;
   typedef ImporterType::GDCMVolumeType GDCMVolume;
   //ETX

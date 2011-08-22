@@ -85,7 +85,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWPushButton.h>
 
 #include <kwcommon.h>
-// #include <vtkKWDicomInfoWidget.h>
+#include <vtkKWDicomInfoWidget.h>
 #include <vtkKWTkUtilities.h>
 #include <vtkErrorCode.h>
 #include <vtkKWLabel.h>
@@ -109,7 +109,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkKWLabel.h"
 #include "vtkKWInternationalization.h"
 #include <vtkKWProgressGauge.h>
-// #include <itkDicomTagManager.h>
+
+#include <vtkKWDICOMImporter2.h>
 
 #include <vtkKWSequenceEditorWidget.h>
 #include <vtkLookupTableManager.h>
@@ -524,75 +525,72 @@ void vtkKWInfoToolBox::Update()
 void vtkKWInfoToolBox::ButtonRequestTagsCallback()
 {
 
-//   if (!this->GetMetaData() || (this->GetMetaDataSet()->GetType() != vtkMetaDataSet::VTK_META_IMAGE_DATA))
-//     return;
+  if (!this->GetMetaDataSet() || (this->GetMetaDataSet()->GetType() != vtkMetaDataSet::VTK_META_IMAGE_DATA))
+    return;
 
-  // vtkMetaImageData* imagedata = vtkMetaImageData::SafeDownCast (this->GetMetaDataSet());
-  // if (!imagedata)
-  // {
-  //   vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast (this->GetMetaDataSet());
-  //   if (sequence)
-  //     imagedata = vtkMetaImageData::SafeDownCast (sequence->GetMetaDataSet (0));
-  // }
-  // if (!imagedata)
-  //   return;
-
+  vtkMetaImageData* imagedata = vtkMetaImageData::SafeDownCast (this->GetMetaDataSet());
+  if (!imagedata)
+  {
+    vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast (this->GetMetaDataSet());
+    if (sequence)
+      imagedata = vtkMetaImageData::SafeDownCast (sequence->GetMetaDataSet (0));
+  }
+  if (!imagedata)
+    return;
   
-  // vtkKWTopLevel* toplevel = vtkKWTopLevel::New();
+  vtkKWTopLevel* toplevel = vtkKWTopLevel::New();
   
-  // toplevel->SetMasterWindow(this);
-  // toplevel->SetApplication(this->GetApplication());
-  // toplevel->Create();
-  // toplevel->SetTitle(this->MetaDataSet->GetName());
-  // toplevel->SetDeleteWindowProtocolCommand(toplevel, "Withdraw");
+  toplevel->SetMasterWindow(this);
+  toplevel->SetApplication(this->GetApplication());
+  toplevel->Create();
+  toplevel->SetTitle(this->MetaDataSet->GetName());
+  toplevel->SetDeleteWindowProtocolCommand(toplevel, "Withdraw");
 
-  // vtkKWDicomInfoWidget* widget = vtkKWDicomInfoWidget::New();
+  vtkKWDicomInfoWidget* widget = vtkKWDicomInfoWidget::New();
   
-  // widget->SetParent(toplevel);
-  // widget->Create();
+  widget->SetParent(toplevel);
+  widget->Create();
   
-  // this->Script("pack %s -fill both -side top -expand t", 
-  // 	       widget->GetWidgetName());
+  this->Script("pack %s -fill both -side top -expand t", 
+  	       widget->GetWidgetName());
+
+  widget->SetDicomEntryList(imagedata->GetDicomEntryList());
   
-  // widget->SetDicomTagListAsDictionary(imagedata->GetDicomDictionary());
-  
-  
-  // // Get the position of the mouse, the size of the top level window.
+  // Get the position of the mouse, the size of the top level window.
 
-  // int px, py, tw, th, sw, sh;
+  int px, py, tw, th, sw, sh;
 
-  // vtkKWTkUtilities::GetMousePointerCoordinates(this, &px, &py);
-  // vtkKWTkUtilities::GetWidgetRequestedSize(toplevel, &tw, &th);
-  // vtkKWTkUtilities::GetScreenSize(toplevel, &sw, &sh);
+  vtkKWTkUtilities::GetMousePointerCoordinates(this, &px, &py);
+  vtkKWTkUtilities::GetWidgetRequestedSize(toplevel, &tw, &th);
+  vtkKWTkUtilities::GetScreenSize(toplevel, &sw, &sh);
 
-  // px -= tw / 2;
-  // if (px + tw > sw)
-  //   {
-  //   px -= (px + tw - sw);
-  //   }
-  // if (px < 0)
-  //   {
-  //   px = 0;
-  //   }
+  px -= tw / 2;
+  if (px + tw > sw)
+    {
+    px -= (px + tw - sw);
+    }
+  if (px < 0)
+    {
+    px = 0;
+    }
 
-  // py -= th / 2;
-  // if (py + th > sh)
-  //   {
-  //   py -= (py + th - sh);
-  //   }
-  // if (py < 0)
-  //   {
-  //   py = 0;
-  //   }
+  py -= th / 2;
+  if (py + th > sh)
+    {
+    py -= (py + th - sh);
+    }
+  if (py < 0)
+    {
+    py = 0;
+    }
 
-  // toplevel->SetPosition(px, py);
-  // toplevel->DeIconify();
-  // toplevel->Raise();
+  toplevel->SetPosition(px, py);
+  toplevel->DeIconify();
+  toplevel->Raise();
 
-  // widget->Delete();
+  widget->Delete();
  
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWInfoToolBox::ButtonSaveCallback()

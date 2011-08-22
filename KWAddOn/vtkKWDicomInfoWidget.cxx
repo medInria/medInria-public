@@ -42,8 +42,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWNotebook.h>
 #include <vtkKWToolBox.h>
 
-
-
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWDicomInfoWidget );
 vtkCxxRevisionMacro( vtkKWDicomInfoWidget, "$Revision: 1302 $");
@@ -53,26 +51,18 @@ vtkKWDicomInfoWidget::vtkKWDicomInfoWidget()
 {
   
   this->EditableOn();
-  //this->Update();
-  this->DicomInfoList = NULL;
 
   this->SearchDialog = vtkKWSimpleEntryDialog::New();
   this->SearchEntry = vtkKWEntry::New();
-  
-  
-  
 }
 
 //----------------------------------------------------------------------------
 vtkKWDicomInfoWidget::~vtkKWDicomInfoWidget()
 {
   this->DicomTagList.clear();
-  //this->DicomInfoList->Delete();
 
   this->SearchDialog->Delete();
   this->SearchEntry->Delete();
-  
-  
 }
 
 
@@ -92,9 +82,6 @@ void vtkKWDicomInfoWidget::CreateWidget()
   this->SetBorderWidth(2);
   this->SetReliefToFlat();
 
-
-
-
   vtkKWFrame* temp = vtkKWFrame::New();
   temp->SetParent (this);
   temp->Create();
@@ -108,7 +95,6 @@ void vtkKWDicomInfoWidget::CreateWidget()
   button->SetImageToPixels(image_find, image_find_width, image_find_height, image_find_pixel_size, image_find_length); 
   button->SetCommand (this, "SearchCallback");
   button->SetBalloonHelpString("Search data");
-
 
   this->SearchEntry->SetParent (temp);
   this->SearchEntry->Create();
@@ -137,32 +123,21 @@ void vtkKWDicomInfoWidget::CreateWidget()
   listframe->SetParent (this);
   listframe->Create();
   listframe->VerticalScrollbarVisibilityOn();
-  listframe->HorizontalScrollbarVisibilityOff();
+  listframe->HorizontalScrollbarVisibilityOn();
   
   this->DicomInfoList = listframe->GetWidget();
   
   if (listframe)
   {
-   this->Script("pack %s -fill y -side top -expand t", 
+   this->Script("pack %s -fill both -side top -expand t", 
 	       listframe->GetWidgetName());
   }
-
-  //listframe->Delete();
-
-
-
-
-
-  
-//   this->DicomInfoList->SetParent(this);
-//   this->DicomInfoList->Create();
 
   this->DicomInfoList->MovableColumnsOn();
   this->DicomInfoList->SetWidth(67);
   this->DicomInfoList->SetSelectionBackgroundColor(1,0.9647,0.6314);  
   this->DicomInfoList->SetSelectionForegroundColor (0,0,0);
   this->DicomInfoList->SetSelectionModeToBrowse ();
-  
 
   int col_index;
   
@@ -171,28 +146,20 @@ void vtkKWDicomInfoWidget::CreateWidget()
   col_index = this->DicomInfoList->AddColumn("Name");
   this->DicomInfoList->SetColumnEditable(col_index, 0);  
   
-  col_index = this->DicomInfoList->AddColumn("Type");
-  this->DicomInfoList->SetColumnEditable(col_index, 0);
-  this->DicomInfoList->SetColumnAlignmentToCenter(col_index);
-
   col_index = this->DicomInfoList->AddColumn("Value");
   this->DicomInfoList->SetColumnEditable(col_index, 1);
-  this->DicomInfoList->SetColumnWidth(col_index, 30);
   
+  col_index = this->DicomInfoList->AddColumn("Type");
+  this->DicomInfoList->SetColumnEditable(col_index, 0);
+
   this->DicomInfoList->SetSelectionChangedCommand (this, "SelectionChangedCallback");
   this->DicomInfoList->SetUneditableCellDoubleClickCommand(this, "DoubleClickCallback");
   this->DicomInfoList->SetCellUpdatedCommand (this, "CellUpdateCallback");
-//   if (this->DicomInfoList)
-//   {
-//    this->Script("pack %s -fill both -side top -expand t", 
-// 	       this->DicomInfoList->GetWidgetName());
-//   }
 
   this->Pack();
   
   this->SearchDialog->SetMasterWindow (this);
   
-//   this->SearchDialog->SetApplication (this->GetApplication());
   this->SearchDialog->Create();
   this->SearchDialog->SetTitle ("Search data");
   this->SearchDialog->GetEntry()->SetLabelPositionToTop();
@@ -201,25 +168,16 @@ void vtkKWDicomInfoWidget::CreateWidget()
   this->SearchDialog->GetEntry()->GetWidget()->SetBackgroundColor (1,1,1);
   this->SearchDialog->GetEntry()->GetWidget()->SetCommand(this, "ValidateSearchCallback");
   this->SearchDialog->GetEntry()->GetWidget()->SetCommandTrigger(vtkKWEntry::TriggerOnReturnKey);
-  
   this->SearchDialog->GetOKButton()->SetCommand(this->SearchDialog, "OK");
-  
-  
 }
-
 
 //----------------------------------------------------------------------------
-void vtkKWDicomInfoWidget::SetDicomTagList(DicomTagListType list)
+void vtkKWDicomInfoWidget::SetDicomEntryList(DicomEntryList list)
 {
-  
-  this->DicomTagList.clear();
   for (unsigned int i=0; i<list.size(); i++)
-  {
-    this->DicomTagList.push_back(list[i]);
-  }
+    this->DicomTagList.push_back (list[i]);
   this->Update();
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWDicomInfoWidget::Update()
@@ -235,39 +193,29 @@ void vtkKWDicomInfoWidget::Update()
   
   for (unsigned int i=0; i<this->DicomTagList.size(); i++)
   {
-    DicomTagType tag = this->DicomTagList[i];
+    DicomEntry tag = this->DicomTagList[i];
     
-    this->DicomInfoList->InsertCellText(i, 0, tag.name.c_str());
-    this->DicomInfoList->InsertCellText(i, 1, tag.NotUsed.c_str());
-    this->DicomInfoList->InsertCellText(i, 2, tag.value.c_str());    
+    this->DicomInfoList->InsertCellText(i, 0, tag.first.c_str());
+    this->DicomInfoList->InsertCellText(i, 1, tag.second.c_str());    
+    this->DicomInfoList->InsertCellText(i, 2, "");
   }
-
-  
-
 }
   
 //----------------------------------------------------------------------------
 void vtkKWDicomInfoWidget::Pack (void)
 {
-
-  
 }
- 
 
 //----------------------------------------------------------------------------
 void vtkKWDicomInfoWidget::SelectionChangedCallback()
 {
-
 }
 
 //----------------------------------------------------------------------------
 void vtkKWDicomInfoWidget::DoubleClickCallback()
 {
-//   int row = this->DicomInfoList->GetIndexOfFirstSelectedRow();
 
 }
-
-
 
 //----------------------------------------------------------------------------
 void vtkKWDicomInfoWidget::SearchCallback()
@@ -278,87 +226,7 @@ void vtkKWDicomInfoWidget::SearchCallback()
     vtkErrorMacro("class already created");
     return;
   }
-
-//     // Get the position of the mouse, the size of the top level window.
-
-//   int px, py, tw, th, sw, sh;
-
-//   vtkKWTkUtilities::GetMousePointerCoordinates(this, &px, &py);
-//   vtkKWTkUtilities::GetWidgetRequestedSize(this->SearchDialog, &tw, &th);
-//   vtkKWTkUtilities::GetScreenSize(this->SearchDialog, &sw, &sh);
-
-//   px -= tw / 2;
-//   if (px + tw > sw)
-//     {
-//     px -= (px + tw - sw);
-//     }
-//   if (px < 0)
-//     {
-//     px = 0;
-//     }
-
-//   py -= th / 2;
-//   if (py + th > sh)
-//     {
-//     py -= (py + th - sh);
-//     }
-//   if (py < 0)
-//     {
-//     py = 0;
-//     }
-
-//   this->SearchDialog->SetPosition(px, py);
-//   this->SearchDialog->Raise();
-//   this->SearchDialog->Focus();
-
-//   this->SearchDialog->Invoke ();
-
-//   if (this->SearchDialog->GetStatus() != vtkKWDialog::StatusOK)
-//     return;
-  
-  
-//   std::string tosearch = vtksys::SystemTools::LowerCase (this->SearchDialog->GetEntry()->GetWidget()->GetValue());
-
-//   if (!tosearch.size())
-//     return;
-  
-//   this->DicomInfoList->ClearSelection();
-
-//   bool seen = false;
-  
-
-//   for (unsigned int i=0; i<this->DicomInfoList->GetNumberOfRows(); i++)
-//   {
-//     std::string name = vtksys::SystemTools::LowerCase (this->DicomInfoList->GetCellText(i, 0));
-//     std::string type = vtksys::SystemTools::LowerCase (this->DicomInfoList->GetCellText(i, 1));
-//     std::string value = vtksys::SystemTools::LowerCase (this->DicomInfoList->GetCellText(i, 2));
-
-//     std::string::size_type pos1, pos2, pos3;
-//     pos1 = name.find (tosearch);
-//     pos2 = type.find (tosearch);
-//     pos3 = value.find (tosearch);
-//     if (pos1 != std::string::npos ||
-// 	pos2 != std::string::npos ||
-// 	pos3 != std::string::npos)
-//     {
-//       this->DicomInfoList->SelectRow(i);
-//       if (!seen)
-//       {
-// 	this->DicomInfoList->SeeRow (i);
-// 	seen = true;
-//       }
-      
-//     }
-    
-
-//   }
-  
-
   this->SearchEntryCallback(this->SearchEntry->GetValue());
-  
-
-  
-  
 }
 
 
@@ -380,7 +248,6 @@ void vtkKWDicomInfoWidget::SearchEntryCallback(const char* value)
   this->DicomInfoList->ClearSelection();
 
   bool seen = false;
-  
 
   for (int i=0; i<this->DicomInfoList->GetNumberOfRows(); i++)
   {
@@ -404,58 +271,14 @@ void vtkKWDicomInfoWidget::SearchEntryCallback(const char* value)
       }
       
     }
-    
-
   }
 }
 
-
-//----------------------------------------------------------------------------
-void vtkKWDicomInfoWidget::SetDicomTagListAsDictionary (itk::MetaDataDictionary dictionary)
-{
-  itk::DicomTagManager::Pointer tagmanager = itk::DicomTagManager::New();
-  std::vector< std::string> keys = dictionary.GetKeys();
-
-  for (unsigned int i=0; i<keys.size(); i++)
-  {
-    itk::DicomTag tag;  
-    std::string value;
-    itk::ExposeMetaData<std::string> ( dictionary, keys[i], value );
-    tag = itk::DicomTagManager::FindTagByIdentifier (keys[i].c_str());
-    tag.value = value.c_str();
-    tagmanager->AddTag (tag);
-  }
-
-  this->SetDicomTagList(tagmanager->GetTagList());
-
-}
-
-  
-
-//----------------------------------------------------------------------------
-itk::MetaDataDictionary vtkKWDicomInfoWidget::GetDicomTagListAsDictionary (void)
-{
-
-
-  itk::MetaDataDictionary dictionary;
-  
-  std::vector<itk::DicomTag> taglist = this->GetDicomTagList();
-  for (unsigned int i=0; i<taglist.size(); i++)
-  {
-    itk::EncapsulateMetaData<std::string>(dictionary,taglist[i].identifier,std::string(taglist[i].value));
-  }      
-
-  return dictionary;
-  
-}
-
-  
 //----------------------------------------------------------------------------
 void vtkKWDicomInfoWidget::CellUpdateCallback(int row, int col, const char* text)
 {
-  if (col != 2)
+  if (col != 1)
     return;
 
-  this->DicomTagList[row].value = text;
-  
+  this->DicomTagList[row].second = text;
 }
