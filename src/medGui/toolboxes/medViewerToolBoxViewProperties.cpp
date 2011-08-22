@@ -283,29 +283,36 @@ void
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
+
         //qDebug() << "update 3";
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
+        {
+            if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
             {
-                if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
-                {
-                    this->constructMeshLayer(d->view->dataInList(i), meshNumber);
-                    meshNumber++;
-                }
-                else
-                {
-                    //qDebug() << "update 4" << imageNumber;
-                    this->constructImageLayer(d->view->dataInList(i), imageNumber);
-                    imageNumber++;
-                }
-
-                d->propertiesTree->collapseAll();
+                this->constructMeshLayer(d->view->dataInList(i), meshNumber);
+                meshNumber++;
+            }
+            else
+            {
+                //qDebug() << "update 4" << imageNumber;
+                this->constructImageLayer(d->view->dataInList(i), imageNumber);
+                imageNumber++;
             }
 
-        QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)), Qt::UniqueConnection);
+            d->propertiesTree->collapseAll();
+        }
+
+        QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
+                         this, SLOT(onDataAdded(dtkAbstractData*, int)),
+                         Qt::UniqueConnection);
 //        QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
 
-        QObject::connect(d->view, SIGNAL(TwoDTriggered(dtkAbstractView*)), this, SLOT(on2DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
-        QObject::connect(d->view, SIGNAL(ThreeDTriggered(dtkAbstractView*)), this, SLOT(on3DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
+        QObject::connect(d->view, SIGNAL(TwoDTriggered(dtkAbstractView*)),
+                         this, SLOT(on2DTriggered(dtkAbstractView*)),
+                         Qt::UniqueConnection);
+        QObject::connect(d->view, SIGNAL(ThreeDTriggered(dtkAbstractView*)),
+                         this, SLOT(on3DTriggered(dtkAbstractView*)),
+                         Qt::UniqueConnection);
         this->on2DTriggered(d->view);
         this->on3DTriggered(d->view);
 
