@@ -21,7 +21,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkINRIA3DConfigure.h"
 
 #include "wxImageViewer.h"
-#include "itkGDCMImporter.h"
+
 #include <itkImage.h>
 #include <wxVtkPageView.h>
 

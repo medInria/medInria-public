@@ -26,7 +26,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "wxMainApp.h"
 
 // list test here
-extern void wxVtkLandmarkWindowTestMainBody(void);
+//extern void wxVtkLandmarkWindowTestMainBody(void);
 extern void wxVtkPageViewTestMainBody(void);
 extern void wxVTKRenderWindowInteractorTestMainBody(void);
 extern void wxVtkViewImage2DWithSlidersTestMainBody(void);
@@ -40,10 +40,10 @@ bool wxMainApp::OnInit( )
     {
       wxVTKRenderWindowInteractorTestMainBody();
     }
-    else if( wxStrcmp(this->argv[i], wxT("wxVtkLandmarkWindowTest"))==0 )
-    {
-      wxVtkLandmarkWindowTestMainBody();
-    }
+    // else if( wxStrcmp(this->argv[i], wxT("wxVtkLandmarkWindowTest"))==0 )
+    // {
+    //   wxVtkLandmarkWindowTestMainBody();
+    // }
     else if( wxStrcmp(this->argv[i], wxT("wxVtkPageViewTest"))==0 )
     {
       wxVtkPageViewTestMainBody();
