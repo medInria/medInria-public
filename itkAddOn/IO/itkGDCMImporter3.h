@@ -52,6 +52,7 @@ namespace itk
     typedef GDCMVolume Self;
     typedef GDCMVolume ImageType;
     typedef Image<TPixelType, 3> SubImageType;
+    typedef typename SubImageType::Pointer SubImagePointerType;
     typedef Image<TPixelType, 4> Superclass;
     typedef SmartPointer<Self> Pointer;
     typedef SmartPointer<const Self> ConstPointer;
@@ -60,6 +61,9 @@ namespace itk
     typedef std::map<std::string, FileList> FileListMapType;
     typedef Vector<double, 3> GradientType;
     typedef std::vector< GradientType > GradientsContainer;
+    typedef std::pair <std::string, std::string> DicomEntry;
+    typedef std::vector<DicomEntry> DicomEntryList;
+    
     itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);
 
     itkNewMacro  (Self);
@@ -131,12 +135,17 @@ namespace itk
     */
     void WriteGradients (std::string filename);
 
-    unsigned int* GetSize (void);
+    unsigned int* GetSize (void) const;
+
+    DicomEntryList GetDicomEntryList (void) const;
     
   protected:
 
     FileList MapToFileList (FileListMapType map) const;
     double Estimate4thSpacing (FileListMapType map) const;
+    void CopyMetaDataFromSubImage(ImageType::Pointer image,
+				  SubImagePointerType t_image,
+				  FileListMapType map) const;
     
     /**
        default GDCMVolume constructor,
@@ -151,7 +160,6 @@ namespace itk
 
       // 0018 9089 Gradient Direction Information
       m_GradientScanner.AddTag( gdcm::Tag(0x18,0x9089) );
-      
     }
     ~GDCMVolume()
     {

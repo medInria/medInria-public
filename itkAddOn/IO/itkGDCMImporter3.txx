@@ -25,9 +25,14 @@ PURPOSE.  See the above copyright notices for more information.
 #include "gdcmStringFilter.h"
 #include "gdcmAttribute.h"
 #include "gdcmDataSet.h"
+#include "gdcmGlobal.h"
+#include "gdcmDicts.h"
+#include "gdcmDictEntry.h"
 
 #include <ctype.h>
 
+  // static method to order images according to tag values
+  // on trigger delay (0018|1060) prioritary and Image Position (0020|0032).
   static bool positionandtimesort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
   {
     gdcm::Attribute<0x0018,0x1060> at1;  // Trigger Delay
@@ -46,6 +51,8 @@ PURPOSE.  See the above copyright notices for more information.
     return at11 < at22;
   }
 
+  // static method to order images according to tag values
+  // on instance number (0020|0013) prioritary and Image Position (0020|0032).
   static bool positionandinstancesort(gdcm::DataSet const & ds1, gdcm::DataSet const & ds2 )
   {
     gdcm::Attribute<0x0020,0x0013> at1;  // Instance Number
@@ -68,10 +75,17 @@ PURPOSE.  See the above copyright notices for more information.
 namespace itk
 {
 
+
+//---------------------------------------------------------------------------
+//------------------------- Class GDCMVolume --------------------------------
+//---------------------------------------------------------------------------
+  
+  
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void GDCMVolume<TPixelType>::Write (std::string filename)
   {
+    // if several volumes, write it as 4D
     if (m_FileListMap.size() > 1)
     {
       typename WriterType::Pointer writer = WriterType::New();
@@ -88,6 +102,7 @@ namespace itk
 	itkExceptionMacro (<<"Cannot write "<<filename<<std::endl);
       }
     }
+    // else, single volume, write it as 3D
     else
     {
       typename SubImageType::Pointer image = SubImageType::New();
@@ -175,38 +190,40 @@ namespace itk
   template <class TPixelType>
   bool GDCMVolume<TPixelType>::IsVolumeDWIs (void)
   {
-    FileListMapType map = this->GetFileListMap();
-    bool ret = 0;
-    double cumulatednorm = 0.0;
+    // here we want to figure out weither or not the current loaded volume
+    // contains any relevant diffusion information.
+    // if it does then we store the diffusion gradient orientations in m_Gradients
     
+    bool ret = false;
+    FileListMapType map = this->GetFileListMap();    
+    if (!map.size())
+      return ret;
+
+    // we make sure there is at least one non-null orientation
+    // by adding norms
+    double cumulatednorm = 0.0;
+    bool engaged = 0;
     m_MeanDiffusivitySkipped = 0;
     m_Gradients.clear();
 
-    bool engaged = 0;
-
-    if (map.size())
+    typename FileListMapType::iterator it;
+    for (it = map.begin(); it != map.end(); ++it)
     {
-      typename FileListMapType::iterator it;
-      typename FileListMapType::iterator last = map.end();
-      last--;
-      
-      for (it = map.begin(); it != map.end(); ++it)
-      {
-	if (!(*it).second.size())
-	{
-	  ret = 0;
-	  break;
-	}
-	m_GradientScanner.Scan ((*it).second);
-	
-	std::string file = (*it).second[0];
-	const char *value = this->m_GradientScanner.GetValue(file.c_str(), gdcm::Tag(0x18,0x9089));
-	if( !value )
-        {
-	  ret = 0;
-	  break;
-	}
+      if (!(*it).second.size()){ ret=false; break; }
 
+      // scan the filelist (*it).second for dti information
+      // stored in public tag (0018|9089)
+      // NOTA: The filelists of the current map should have already been
+      // ordered according to gradient orientation. Therefore, all files
+      // in (*it).second should contain the same value of tag (0018|9089) if any.
+      m_GradientScanner.Scan ((*it).second);
+      
+      std::string file = (*it).second[0];
+      const char *value = this->m_GradientScanner.GetValue(file.c_str(), gdcm::Tag(0x18,0x9089));
+      if( value )
+      {
+	// found the gradient in the normal public tag
+	// read it
 	gdcm::Element<gdcm::VR::DS,gdcm::VM::VM3> gradient;
 	std::stringstream ss;
 	ss.str( value );
@@ -225,10 +242,88 @@ namespace itk
 	  m_Gradients.push_back (gr);
 	else
 	  m_MeanDiffusivitySkipped = 1;
+	
+	// and go to next file
+	continue;
       }
-    }
-    
+      
+      // if not found in public tag (0018|9089), the diffusion information
+      // might be stored in the private PHILIPS tags (2005|10b0-1-2)
+      gdcm::Reader reader;
+      reader.SetFileName (file.c_str());
+      reader.Read ();
+      gdcm::StringFilter sf;
+      sf.SetFile (reader.GetFile());      
+      value = sf.ToString (gdcm::Tag(0x2005,0x10b0)).c_str();
+      if( !value ) { ret = 0; break; }
+      
+      // found the gradient in the private tag of philips
+      GradientType gr;
+      gr[0] = std::atof (sf.ToString (gdcm::Tag(0x2005,0x10b0)).c_str());
+      gr[1] = std::atof (sf.ToString (gdcm::Tag(0x2005,0x10b1)).c_str());
+      gr[2] = std::atof (sf.ToString (gdcm::Tag(0x2005,0x10b2)).c_str());
+      
+      ret = 1;
+      
+      if (!engaged && NumericTraits<double>::IsPositive (gr.GetNorm()))
+	engaged = 1;
+      
+      cumulatednorm += gr.GetNorm();
+      
+      if (!m_SkipMeanDiffusivity || !engaged || NumericTraits<double>::IsPositive (gr.GetNorm()) )
+	m_Gradients.push_back (gr);
+      else
+	m_MeanDiffusivitySkipped = 1;  
+    }  
+
     return ret && NumericTraits<double>::IsPositive (cumulatednorm);
+  }
+
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  void GDCMVolume<TPixelType>::CopyMetaDataFromSubImage(ImageType::Pointer image,
+							SubImagePointerType t_image,
+							FileListMapType map) const
+  {
+    typedef typename ImageType::RegionType RegionType;
+    typedef typename ImageType::SpacingType SpacingType;
+    typedef typename ImageType::PointType PointType;
+    typedef typename ImageType::DirectionType DirectionType;
+    
+    RegionType region;
+    region.SetSize (0, t_image->GetLargestPossibleRegion().GetSize()[0]);
+    region.SetSize (1, t_image->GetLargestPossibleRegion().GetSize()[1]);
+    region.SetSize (2, t_image->GetLargestPossibleRegion().GetSize()[2]);
+    region.SetSize (3, map.size());
+    image->SetRegions (region);
+    image->Allocate();
+    SpacingType spacing;
+    spacing[0] = t_image->GetSpacing()[0];
+    spacing[1] = t_image->GetSpacing()[1];
+    spacing[2] = t_image->GetSpacing()[2];
+    spacing[3] = 1;
+    
+    if (map.size() > 1)
+      spacing[3] = this->Estimate4thSpacing(map);
+    
+    image->SetSpacing (spacing);
+    PointType origin;
+    origin[0] = t_image->GetOrigin()[0];
+    origin[1] = t_image->GetOrigin()[1];
+    origin[2] = t_image->GetOrigin()[2];
+    origin[3] = 0;
+    image->SetOrigin (origin);
+    DirectionType direction;
+    for (unsigned int i=0; i<4; i++)
+      for (unsigned int j=0; j<4; j++)
+      {
+	if ((i < 3) && (j < 3))
+	  direction[i][j] = t_image->GetDirection()[i][j];
+	else
+	  direction[i][j] = (i == j) ? 1 : 0;
+      }
+    image->SetDirection(direction);
   }
   
 
@@ -236,7 +331,8 @@ namespace itk
   template <class TPixelType>
   void GDCMVolume<TPixelType>::Build(void)
   {
-
+    // building the (4D) volume using the filelist map
+    
     FileListMapType map = this->GetFileListMap();
 
     typedef typename ImageType::RegionType RegionType;
@@ -246,12 +342,14 @@ namespace itk
     typedef ImageRegionIterator<ImageType> IteratorType;
     typedef typename IteratorType::IndexType IndexType;    
     typename ImageType::Pointer image = ImageType::New();
-    typename GDCMImageIO::Pointer io = GDCMImageIO::New();
+    typename GDCMImageIO::Pointer io  = GDCMImageIO::New();
     typename FileListMapType::iterator it;
     
     bool metadatacopied = 0;
     IteratorType itOut;
 
+    // if the user wants to erase the calculated mean diffusivity image
+    // that is sometimes stored in the DWIs DICOM exams, then we oblige.
     if (this->IsVolumeDWIs() && this->m_SkipMeanDiffusivity && this->m_MeanDiffusivitySkipped)
     {
       while (map.size() > m_Gradients.size())
@@ -267,10 +365,9 @@ namespace itk
     for (it = map.begin(); it != map.end(); ++it)
     {
       typename SeriesReaderType::Pointer seriesreader = SeriesReaderType::New();
-      seriesreader->UseStreamingOn();
-      
       typename ReaderType::Pointer singlereader = ReaderType::New();
       typename SubImageType::Pointer t_image = 0;
+      seriesreader->UseStreamingOn();
       
       if ((*it).second.size() > 1)
       {
@@ -287,7 +384,7 @@ namespace itk
 			      <<", volume will not be built"<<std::endl);
 	}
       
-	t_image= seriesreader->GetOutput();
+	t_image = seriesreader->GetOutput();
       }
       else
       {
@@ -304,52 +401,20 @@ namespace itk
 			      <<", volume will not be built"<<std::endl);
 	}
       
-	t_image= singlereader->GetOutput();
+	t_image = singlereader->GetOutput();
       }
 
       if (!metadatacopied)
       {
-	RegionType region;
-	region.SetSize (0, t_image->GetLargestPossibleRegion().GetSize()[0]);
-	region.SetSize (1, t_image->GetLargestPossibleRegion().GetSize()[1]);
-	region.SetSize (2, t_image->GetLargestPossibleRegion().GetSize()[2]);
-	region.SetSize (3, map.size());
-	image->SetRegions (region);
-	image->Allocate();
-	SpacingType spacing;
-	spacing[0] = t_image->GetSpacing()[0];
-	spacing[1] = t_image->GetSpacing()[1];
-	spacing[2] = t_image->GetSpacing()[2];
-	spacing[3] = 1;
-	
-	if (map.size() > 1)
-	  spacing[3] = this->Estimate4thSpacing(map);
-	
-	image->SetSpacing (spacing);
-	PointType origin;
-	origin[0] = t_image->GetOrigin()[0];
-	origin[1] = t_image->GetOrigin()[1];
-	origin[2] = t_image->GetOrigin()[2];
-	origin[3] = 0;
-	image->SetOrigin (origin);
-	DirectionType direction;
-	for (unsigned int i=0; i<4; i++)
-	  for (unsigned int j=0; j<4; j++)
-	  {
-	    if ((i < 3) && (j < 3))
-	      direction[i][j] = t_image->GetDirection()[i][j];
-	    else
-	      direction[i][j] = (i == j) ? 1 : 0;
-	  }
-
-	image->SetDirection(direction);
-	itOut = IteratorType (image, region);
-
+	this->CopyMetaDataFromSubImage (image, t_image, map);
 	this->SetMetaDataDictionary (io->GetMetaDataDictionary());
-	
+	// Define the out-iterator with the output image region size
+	itOut = IteratorType (image, image->GetLargestPossibleRegion());
 	metadatacopied = 1;
       }
-      
+      // copy the subimage to the output,
+      // no need to reset the itOut iterator, it is growing all the time
+      // to fill the 4D volume
       ImageRegionIterator<SubImageType> itIn(t_image, t_image->GetLargestPossibleRegion());
       while (!itIn.IsAtEnd())
       {
@@ -360,8 +425,8 @@ namespace itk
     }
     std::cout<<"done"<<std::endl;
 
+    // Now simply graft the image too the GDCMVolume
     this->Graft (image);
-    this->SetMetaDataDictionary (io->GetMetaDataDictionary());
   }
 
 
@@ -370,10 +435,16 @@ namespace itk
   template <class TPixelType>
   double GDCMVolume<TPixelType>::Estimate4thSpacing (FileListMapType map) const
   {
+    if (!map.size() || !(*map.begin()).second.size())
+      return 0;
+    
     std::string firstfile = (*map.begin()).second[0];
-    gdcm::Scanner scanner; scanner.AddTag (gdcm::Tag(0x18,0x1088)); scanner.AddTag (gdcm::Tag(0x18,0x1060));
-    scanner.Scan (this->MapToFileList (map));
-    const char* value = scanner.GetValue (firstfile.c_str(), gdcm::Tag(0x0018,0x1088));
+    gdcm::Reader reader;
+    reader.SetFileName (firstfile.c_str());
+    reader.ReadUpToTag (gdcm::Tag(0x18,0x1088));
+    gdcm::StringFilter sf;
+    sf.SetFile (reader.GetFile()); 
+    const char* value = sf.ToString (gdcm::Tag(0x0018,0x1088)).c_str();
     unsigned int heartrate = 60;
     if (value && std::atoi (value) >= 1)
     {
@@ -382,6 +453,8 @@ namespace itk
     }
     else
     {
+      gdcm::Scanner scanner; scanner.AddTag (gdcm::Tag(0x18,0x1060));
+      scanner.Scan (this->MapToFileList (map));
       const gdcm::Scanner::ValuesType& values = scanner.GetValues(gdcm::Tag(0x18,0x1060));
       if (values.size())
       {
@@ -401,7 +474,6 @@ namespace itk
 	heartrate = 60;
 	std::cout<<"no information on timing found, 4th spacing will be 1/(number-of-frames)..."<<std::flush;
       }
-      
     }
     
     if (heartrate <= 1)
@@ -438,9 +510,40 @@ namespace itk
     NumberOfFiles = this->GetFileListMap().size();
     os << indent << "Number of SubVolumes: " << NumberOfFiles << std::endl;
     os << indent << "Name: " << this->GetName() << std::endl;
+    const unsigned int* size = this->GetSize();
+    os << indent << "Size: "
+       << size[0] <<":"
+       << size[1] <<":"
+       << size[2] <<":"
+       << size[3] << std::endl;
     os << indent << "Is image built: " << m_IsBuilt << std::endl;
     os << indent << "Dictionary : " << std::endl;
+    
+    DicomEntryList list = this->GetDicomEntryList();
+    for (unsigned int i=0; i<list.size(); i++)
+      os << indent << indent << list[i].first.c_str() <<"\t" << " : " << list[i].second.c_str()<< std::endl;
+  }
 
+
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  typename GDCMVolume<TPixelType>::DicomEntryList GDCMVolume<TPixelType>::GetDicomEntryList (void) const
+  {
+    const gdcm::Global &g = gdcm::Global::GetInstance();
+    const gdcm::Dicts &dicts = g.GetDicts();
+   
+    DicomEntryList list;
+    
+    const FileListMapType map = m_FileListMap;
+    if (!map.size())
+      return list;
+    
+    gdcm::ImageReader reader;
+    reader.SetFileName( (*map.begin()).second[0].c_str() );
+    if( !reader.Read() )
+      return list;
+    gdcm::DataSet dataset = reader.GetFile().GetDataSet();
+    
     std::string value;
     MetaDataDictionary dict = this->GetMetaDataDictionary();
     //Smarter approach using real iterators
@@ -451,21 +554,39 @@ namespace itk
     {
       const std::string &key = itr->first;
       ExposeMetaData<std::string>(dict, key, value);
-      os << indent<< indent << key.c_str() << " : " << value.c_str()<< std::endl;
+      gdcm::Tag tag;
+      bool b = tag.ReadFromPipeSeparatedString( key.c_str() );
+      if (!b) { ++itr; continue; }
+      const char *owner = 0;
+      if( tag.IsPrivate() && !tag.IsPrivateCreator() )
+      	owner = dataset.GetPrivateCreator(tag).c_str();
+      
+      const gdcm::DictEntry &dictEntry = dicts.GetDictEntry(tag, owner);
+      if (!std::strcmp (dictEntry.GetName(), "?") || !std::strcmp (dictEntry.GetName(), "")) { ++itr; continue; }
+
+      DicomEntry entry;
+      entry.first = dictEntry.GetName();
+      entry.second = value.c_str();
+      list.push_back (entry);
       ++itr;
     }
-  }
 
+    return list;
+  }
+  
+  
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  unsigned int* GDCMVolume<TPixelType>::GetSize (void)
+  unsigned int* GDCMVolume<TPixelType>::GetSize (void) const
   {
     unsigned int* size = new unsigned int[4];
     size[0] = size[1] = size[2] = size[3] = 0;
     
-    FileListMapType map = m_FileListMap;
+    const FileListMapType map = m_FileListMap;
     unsigned int fourthdimension = map.size();
     if (fourthdimension == 0)
+      return size;
+    if (!(*map.begin()).second.size())
       return size;
     unsigned int thirddimension = (*map.begin()).second.size();
     gdcm::ImageReader reader;
@@ -553,7 +674,15 @@ namespace itk
     // If the 2D images in a sequence don't have the same number of columns,
     // then it is difficult to reconstruct them into a 3D volume.
     this->m_FirstScanner.AddTag( gdcm::Tag(0x0028, 0x0011));
-
+    // 0018 1312 In-plane Phase Encoding Direction 
+    // The phase encoding direction changes between tag instances,
+    // they have to belong to separate volumes
+    this->m_FirstScanner.AddTag(gdcm::Tag(0x0018,0x1312));
+    // 0008 0008 Image Type 
+    // Differenciate between phase images and signal images
+    // for flow and for tag datasets
+    this->m_FirstScanner.AddTag(gdcm::Tag(0x0008,0x0008));
+    
     // 0018 0024 Sequence Name
     // For T1-map and phase-contrast MRA, the different flip angles and
     //   directions are only distinguished by the Sequence Name
@@ -566,18 +695,6 @@ namespace itk
     // If the 2D images in a sequence don't have the same gradient orientation,
     // then we separate the DWIs.
     this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x9089));
-    // 2005 10b0 Gradient Orientation
-    // If the 2D images in a sequence don't have the same gradient orientation,
-    // then we separate the DWIs.
-    this->m_SecondScanner.AddTag( gdcm::Tag(0x2005,0x10b0));
-    // 2005 10b1 Gradient Orientation
-    // If the 2D images in a sequence don't have the same gradient orientation,
-    // then we separate the DWIs.
-    this->m_SecondScanner.AddTag( gdcm::Tag(0x2005,0x10b1));
-    // 2005 10b2 Gradient Orientation
-    // If the 2D images in a sequence don't have the same gradient orientation,
-    // then we separate the DWIs.
-    this->m_SecondScanner.AddTag( gdcm::Tag(0x2005,0x10b2));
     // 0018 1060 Trigger Time
     this->m_SecondScanner.AddTag( gdcm::Tag(0x18,0x1060) );
     
@@ -629,7 +746,10 @@ namespace itk
       itkExceptionMacro (<<"Scanning failed"<<std::endl);
     }
     
-    std::cout<<"primary sort gives "<<map.size()<<" different volumes (outputs)"<<std::endl;
+    std::cout<<"The DICOM exam contains "<<map.size()<<" different volumes (outputs)"<<std::endl;
+    std::cout<<"ordering: |"<<std::flush;
+    unsigned int volumeportion = std::floor ( 100.0 / (double)map.size() );
+    unsigned int rest = 100 % volumeportion;
     
     typename FileListMapType::const_iterator it;
     for (it = map.begin(); it != map.end(); ++it)
@@ -649,8 +769,7 @@ namespace itk
 	continue;
       }
     
-      std::cout<<"  secondary division gives "<<mapi.size()<<" subvolumes"<<std::endl;    
-
+      // ordering in terms of time (or instance number if time unavailable)
       mapi = this->TimeSort (mapi);
 
       typename FileListMapType::iterator it2;
@@ -671,26 +790,18 @@ namespace itk
 	  std::cerr << e << std::endl;
 	  continue;
 	}
-
 	if (mapij.size() >= 1)
 	{
-
-	  // Time sort.
-	  // A hack to sort the images trigger-time-wise
-	  // In case of DWIs, no sort is done since
-	  // trigger times are similar
-// 	  FileListMapType mapijtimed = this->TimeSort (mapij);
-	  FileListMapType mapijtimed = mapij;
-
+	  // then replace the current iterator (*it2) by all the different
+	  // volumes that have just been sorted in mapij.
 	  typename FileListMapType::iterator it3;
 	  std::string rootid = (*it2).first;
 	  mapi.erase (it2);
 	  it2--;
-	  for(it3 = mapijtimed.begin(); it3 != mapijtimed.end(); it3++)
+	  for(it3 = mapij.begin(); it3 != mapij.end(); it3++)
 	  {
 	    std::ostringstream os;
 	    os << rootid << (*it3).first;
-	    
 	    typename FileListMapType::value_type newpair(os.str(),(*it3).second );
 	    it2 = mapi.insert (it2, newpair);
 	  }
@@ -699,11 +810,19 @@ namespace itk
       // We add the map of volumes in the global "database".
       // If more than 1 volume is in the map, it will be saved as a 4D image.
       this->m_FileListMapofMap[(*it).first] = mapi;
+
+      for (unsigned int p=0; p<volumeportion; p++)
+	std::cout<<"="<<std::flush;
+      
     }
 
-    std::cout<<"sorting finished "<<std::endl;
+    for (unsigned int p=0; p<rest; p++)
+      std::cout<<"="<<std::flush;
+    std::cout<<"|"<<std::endl;
+
     m_IsScanned = 1;
 
+    // this will allocate the propper amount of outputs (GDCMVolumes)
     this->GenerateOutputs();
   }
 
@@ -715,14 +834,12 @@ namespace itk
 
     FileListMapType ret;
     
-    std::cout<<"first scan"<<std::endl;    
     if (!this->m_FirstScanner.Scan (list))
     {
       itkExceptionMacro (<<"The first scanner did not succeed scanning directory "
 			 <<this->m_InputDirectory<<std::endl);
     }
-    std::cout<<"done"<<std::endl;
-    
+
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
     
@@ -731,10 +848,6 @@ namespace itk
       if( this->m_FirstScanner.IsKey((*file).c_str()) )
       {
 	const gdcm::Scanner::TagToValue& mapping = this->m_FirstScanner.GetMapping((*file).c_str());
-	// check if the file has a "number of rows".
-	// if not, this is not an image, therefore skipping
-	if ( !this->m_FirstScanner.GetValue  ((*file).c_str(), gdcm::Tag(0x0028, 0x0010)) )
-	  continue;
 	
 	std::ostringstream os;
 	os<<"firstscan.";
@@ -752,7 +865,7 @@ namespace itk
       }
       else
       {
-	itkWarningMacro (<<"The file "<<(*file).c_str()
+	itkDebugMacro (<<"The file "<<(*file).c_str()
 			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
       }
     }    
@@ -799,23 +912,18 @@ namespace itk
 	}
 	else
 	  ret[os.str()].push_back ((*file).c_str());
-	const char* value = this->m_SecondScanner.GetValue ((*file).c_str(), gdcm::Tag(0x2005,0x10b0));
-	if (value)
-	{
-	  std::cout<<"found private-tag gradient "<<value<<" in "<<(*file).c_str()<<std::endl;
-	}
       }
       else
       {
-	itkWarningMacro (<<"The file "<<(*file).c_str()
+	itkDebugMacro (<<"The file "<<(*file).c_str()
 			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
       }
     }    
 
     if ((list.size() % ret.size()) != 0)
     {
-      itkWarningMacro (<<"There appears to be inconsistent file list sizes "<<std::endl
-			 <<"Scanner outputs "<<ret.size()<<" different image time/gradients "
+      itkDebugMacro (<<"There appears to be inconsistent file list sizes "<<std::endl
+			 <<"Scanner outputs "<<ret.size()<<" different time/gradients/b-factor/phase-encoding combinations "
 			 <<"within a total list of "<<list.size()<<" files."<<std::endl
 			 <<"attempting simple sort..."<<std::endl);
       ret.clear();
@@ -975,7 +1083,7 @@ namespace itk
       }
       else
       {
-	itkWarningMacro (<<"The file "<<filename
+	itkDebugMacro (<<"The file "<<filename
 			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
       }
     }
@@ -1052,15 +1160,13 @@ namespace itk
       }
       else
       {
-	itkWarningMacro (<<"The file "<<filename
+	itkDebugMacro (<<"The file "<<filename
 			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
       }
     }
 
     if (sorted.size() == 1)
     {
-      std::cout<<"single trigger delay..."<<std::endl;
-      
       // It means all volumes have the same trigger time.
       // We do not want to then reduce the ordering.
       // We give back the input map
@@ -1069,7 +1175,7 @@ namespace itk
     
     if (sorted.size() == 0)
     {
-      itkWarningMacro (<<"There appears to be no information on trigger delay "<<std::endl
+      itkDebugMacro (<<"There appears to be no information on trigger delay "<<std::endl
 			 <<"attempting sort with instance number..."<<std::endl);
       
       // It means none of the volumes actually have a trigger delay. attempt order
@@ -1197,7 +1303,6 @@ namespace itk
 	( itksys::SystemTools::ConvertToOutputPath (directory.c_str()).c_str(),
 	  this->GetOutput(i)->GetName(),
 	  ".mha");
-      
       try
       {
 	std::cout<<"Writing "<<filename<<" ... "<<std::flush;
@@ -1215,6 +1320,15 @@ namespace itk
 	  this->GetOutput(i)->WriteGradients (gradientsname);
 	  std::cout<<"done. "<<std::endl;
 	}
+	std::string dictsname = itksys::SystemTools::AppendStrings ( itksys::SystemTools::ConvertToOutputPath (directory.c_str()).c_str(), this->GetOutput(i)->GetName(), ".dict");
+	std::cout<<"Writing "<<dictsname<<" ... "<<std::flush;
+	std::ofstream file (dictsname.c_str());
+	if(file.fail()) itkExceptionMacro (<<"Unable to open file for writing dict" << std::endl);
+	typename GDCMVolumeType::DicomEntryList list = this->GetOutput(i)->GetDicomEntryList();
+	for (unsigned int i=0; i<list.size(); i++)
+	  file << list[i].first.c_str() << "\t : [" << list[i].second.c_str() <<"]"<< std::endl;
+	file.close();
+	std::cout<<"done. "<<std::endl;
       }
       catch (itk::ExceptionObject & e)
       {
