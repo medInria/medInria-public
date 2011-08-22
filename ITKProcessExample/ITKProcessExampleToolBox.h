@@ -2,7 +2,7 @@
 #ifndef ITKPROCESSEXAMPLETOOLBOX_H
 #define ITKPROCESSEXAMPLEDENOISINGTOOLBOX_H
 
-#include <medGui/medToolBoxFilteringCustom.h>
+#include <medToolBoxFilteringCustom.h>
 
 class ITKProcessExampleToolBoxPrivate;
 
@@ -17,11 +17,11 @@ public:
 public:
     static bool registered(void);
     dtkAbstractData* processOutput();
-   
+
 signals:
     void success(void);
     void failure(void);
-    
+
 public slots:
 
     void run(void);

@@ -13,13 +13,13 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include <medCore/medRunnableProcess.h>
-#include <medCore/medJobManager.h>
+#include <medRunnableProcess.h>
+#include <medJobManager.h>
 
-#include <medGui/medToolBoxFactory.h>
-#include <medGui/medToolBoxFiltering.h>
-#include <medGui/medToolBoxFilteringCustom.h>
-#include <medGui/medProgressionStack.h>
+#include <medToolBoxFactory.h>
+#include <medToolBoxFiltering.h>
+#include <medToolBoxFilteringCustom.h>
+#include <medProgressionStack.h>
 
 #include <QtGui>
 
@@ -34,7 +34,7 @@ public:
 ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medToolBoxFilteringCustom(parent), d(new ITKProcessExampleToolBoxPrivate)
 {
       // Parameters:
-      
+
       QLabel *varianceLabel = new QLabel("variance : ");
       d->variance = new QLineEdit("1.0");
 
@@ -70,7 +70,7 @@ ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medToolBox
 ITKProcessExampleToolBox::~ITKProcessExampleToolBox(void)
 {
     delete d;
-    
+
     d = NULL;
 }
 
@@ -107,18 +107,13 @@ void ITKProcessExampleToolBox::run(void)
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess (d->process);
 
-    d->progression_stack->addJobItem(runProcess, "Progress:");
+    d->progression_stack->addJobItem(runProcess, tr("Progress:"));
 
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
 
     medJobManager::instance()->registerJobItem(runProcess);
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
-
-//    if(d->process->update()==0)
-//        emit success();
-//    else
-//        emit failure();
 
 }
 
