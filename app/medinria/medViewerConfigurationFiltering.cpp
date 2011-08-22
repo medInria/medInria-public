@@ -10,7 +10,7 @@
 #include <medDatabaseNonPersistentController.h>
 #include <medMetaDataKeys.h>
 
-#include <medViewerToolBoxView.h>
+#include <medViewerToolBoxViewProperties.h>
 #include <medToolBoxFiltering.h>
 
 #include <medViewContainer.h>
@@ -27,16 +27,16 @@
 class medViewerConfigurationFilteringPrivate
 {
 public:
-    medViewerToolBoxView   *viewToolBox;
+    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
     medToolBoxFiltering *filteringToolBox;
     dtkAbstractData *filterOutput;
 };
 
 medViewerConfigurationFiltering::medViewerConfigurationFiltering(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationFilteringPrivate)
 {
-  d->viewToolBox = new medViewerToolBoxView(parent);
+    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
 
-    this->addToolBox( d->viewToolBox );
+    this->addToolBox( d->viewPropertiesToolBox );
 
     d->filteringToolBox = new medToolBoxFiltering(parent);
 
