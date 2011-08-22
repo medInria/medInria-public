@@ -32,18 +32,20 @@ SET(KWAddOn_SRCS
   vtkKWTimeTableWidget.cxx
   vtkKWSnapshotHandler.cxx
   vtkKWMainWindowInteractor.cxx
+  vtkKWInfoToolBox.cxx
 )
 
 
-#IF (NOT ITK_USE_SYSTEM_GDCM)
+IF (ITK_USE_SYSTEM_GDCM)
 SET(KWAddOn_SRCS
   ${KWAddOn_SRCS}
   vtkKWDICOMImporter2.cxx
 #  vtkKWDICOMExporter.cxx
   vtkKWDicomInfoWidget.cxx
-  vtkKWInfoToolBox.cxx
   )
-#ENDIF (NOT ITK_USE_SYSTEM_GDCM)
+ELSE (ITK_USE_SYSTEM_GDCM)
+  MESSAGE("You are using ITK with USE_SYSTEM_GDCM to OFF, please switch USE_SYSTEM_GDCM to ON to fully benefit from KWAddOn capacities")
+ENDIF (ITK_USE_SYSTEM_GDCM)
 
 SET_SOURCE_FILES_PROPERTIES(
  vtkKWMainCallback.cxx
@@ -81,9 +83,6 @@ TARGET_LINK_LIBRARIES(KWAddOn
   ${KWWidgets_LIBRARIES}
 )
 
-
-
-
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 CONFIGURE_FILE(
   ${KWWidgets_TEMPLATES_DIR}/vtkKWWidgetsPaths.h.in 
@@ -112,9 +111,6 @@ INSTALL_FILES(/include "(\\.h|\\.txx)$")
 INSTALL_FILES(/include/pixmap "pixmap/(\\.h|\\.txx)$")
 
 INSTALL_TARGETS(/lib KWAddOn)
-
-
-
 
 # ------------------------------------------------------------
 # Creation of the binary executable and its launcher

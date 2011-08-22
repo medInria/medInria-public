@@ -85,7 +85,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWPushButton.h>
 
 #include <kwcommon.h>
-#include <vtkKWDicomInfoWidget.h>
 #include <vtkKWTkUtilities.h>
 #include <vtkErrorCode.h>
 #include <vtkKWLabel.h>
@@ -110,13 +109,16 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkKWInternationalization.h"
 #include <vtkKWProgressGauge.h>
 
-#include <vtkKWDICOMImporter2.h>
-
 #include <vtkKWSequenceEditorWidget.h>
 #include <vtkLookupTableManager.h>
 
 #include "assert.h"
 #include <algorithm>
+
+#ifdef ITK_USE_SYSTEM_GDCM
+#include <vtkKWDICOMImporter2.h>
+#include <vtkKWDicomInfoWidget.h>
+#endif
 
 int vtkkwrint(double a)
 {  
@@ -524,6 +526,7 @@ void vtkKWInfoToolBox::Update()
 //----------------------------------------------------------------------------
 void vtkKWInfoToolBox::ButtonRequestTagsCallback()
 {
+#ifdef ITK_USE_SYSTEM_GDCM
 
   if (!this->GetMetaDataSet() || (this->GetMetaDataSet()->GetType() != vtkMetaDataSet::VTK_META_IMAGE_DATA))
     return;
@@ -589,7 +592,7 @@ void vtkKWInfoToolBox::ButtonRequestTagsCallback()
   toplevel->Raise();
 
   widget->Delete();
- 
+#endif 
 }
 
 //----------------------------------------------------------------------------

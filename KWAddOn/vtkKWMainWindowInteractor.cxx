@@ -37,8 +37,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageData.h>
 #include <vtkKWApplication.h>
 #include <vtkKWApplication.h>
-// #include <vtkKWDICOMExporter.h>
-#include <vtkKWDICOMImporter2.h>
 #include <vtkKWDataManagerWidget.h>
 #include <vtkKWDragAndDropTargetSet.h>
 #include <vtkKWEntry.h>
@@ -113,6 +111,12 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkDataManagerWriter.h>
 #include <vtkDataManagerReader.h>
 #endif
+
+#ifdef ITK_USE_SYSTEM_GDCM
+// #include <vtkKWDICOMExporter.h>
+#include <vtkKWDICOMImporter2.h>
+#endif
+
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWMainWindowInteractor );
@@ -1119,7 +1123,7 @@ void vtkKWMainWindowInteractor::LoadToolBox (vtkKWToolBox* toolbox, const char* 
 void vtkKWMainWindowInteractor::OnMenuFileOpenDICOM ()
 {
 
-
+#ifdef ITK_USE_SYSTEM_GDCM
   
   vtkKWDICOMImporter2 *dlg = vtkKWDICOMImporter2::New();
   dlg->SetMasterWindow (this);
@@ -1145,7 +1149,9 @@ void vtkKWMainWindowInteractor::OnMenuFileOpenDICOM ()
   dlg->Delete();
 
   this->Update();
-  
+
+#endif
+
 }
 
 
@@ -1494,7 +1500,7 @@ void vtkKWMainWindowInteractor::RemoveMetaDataSet (vtkMetaDataSet* metadataset, 
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnMenuFileSaveDICOM ()
 {
-  
+#ifdef ITK_USE_SYSTEM_GDCM  
   
   // vtkKWDICOMExporter *dlg = vtkKWDICOMExporter::New();
   // dlg->SetMasterWindow (this);
@@ -1517,6 +1523,7 @@ void vtkKWMainWindowInteractor::OnMenuFileSaveDICOM ()
 
   // dlg->Delete();
 
+#endif
 
 }
 
