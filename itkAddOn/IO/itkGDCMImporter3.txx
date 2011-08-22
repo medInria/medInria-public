@@ -747,11 +747,11 @@ namespace itk
     }
     
     std::cout<<"The DICOM exam contains "<<map.size()<<" different volumes (outputs)"<<std::endl;
-    std::cout<<"ordering: |"<<std::flush;
-    unsigned int volumeportion = std::floor ( 100.0 / (double)map.size() );
-    unsigned int rest = 100 % volumeportion;
-    
+
+    double percent = 0.0; unsigned int done = 0, count = 0;
     typename FileListMapType::const_iterator it;
+
+    std::cout<<"2nd ordering : |"<<std::flush;
     for (it = map.begin(); it != map.end(); ++it)
     {
       
@@ -811,14 +811,20 @@ namespace itk
       // If more than 1 volume is in the map, it will be saved as a 4D image.
       this->m_FileListMapofMap[(*it).first] = mapi;
 
-      for (unsigned int p=0; p<volumeportion; p++)
-	std::cout<<"="<<std::flush;
+      count++;
+      percent = 100.0 * (double)count/(double)map.size();
+      if (std::floor (percent) >= done)
+      {
+	while (std::floor (percent) != done)
+	{
+	  std::cout<<"="<<std::flush;
+	  done++;
+	}
+	
+      }
       
     }
-
-    for (unsigned int p=0; p<rest; p++)
-      std::cout<<"="<<std::flush;
-    std::cout<<"|"<<std::endl;
+    std::cout<<"=|"<<std::endl;
 
     m_IsScanned = 1;
 
@@ -833,15 +839,20 @@ namespace itk
   {
 
     FileListMapType ret;
+    std::cout<<"scanning files..."<<std::flush;
     
     if (!this->m_FirstScanner.Scan (list))
     {
       itkExceptionMacro (<<"The first scanner did not succeed scanning directory "
 			 <<this->m_InputDirectory<<std::endl);
     }
+    std::cout<<" done"<<std::endl;
 
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
+    
+    double percent = 0.0; unsigned int done = 0, count = 0;
+    std::cout<<"1st ordering : |"<<std::flush;
     
     for (file = list.begin(); file != list.end(); ++file)
     {
@@ -868,7 +879,16 @@ namespace itk
 	itkDebugMacro (<<"The file "<<(*file).c_str()
 			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
       }
-    }    
+      
+      count++;
+      percent = 100.0 * (double)count/(double)list.size();
+      if (std::floor (percent) >= done)
+      {
+	std::cout<<"="<<std::flush;
+	done++;
+      }
+    }
+    std::cout<<"|"<<std::endl;
 
     return ret;
     
