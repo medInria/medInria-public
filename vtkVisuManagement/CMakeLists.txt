@@ -48,9 +48,16 @@ vtkHWShading
 ENDIF (vtkINRIA3D_USE_HWSHADING )
 
 
+if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(vtkVisuManagement_SOURCES_PCH 
+    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+      ${vtkVisuManagement_SRCS}
+    )
+endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
 
 # C++ library for the InterfaceManagers
 ADD_LIBRARY(vtkVisuManagement ${vtkINRIA3D_LIBS_STYLE}
+ ${vtkVisuManagement_SOURCES_PCH}
  ${vtkVisuManagement_SRCS}
 )
   
