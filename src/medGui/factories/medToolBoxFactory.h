@@ -31,6 +31,7 @@ class medToolBoxFactoryPrivate;
 class medToolBoxRegistrationCustom;
 class medToolBoxDiffusionCustom;
 class medToolBoxCompositeDataSetImporterCustom;
+class medToolBoxFilteringCustom;
 
 class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
 {
@@ -39,10 +40,12 @@ class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
 public:
     typedef medToolBoxRegistrationCustom *(*medToolBoxRegistrationCustomCreator)(QWidget *parent);
     typedef medToolBoxDiffusionCustom    *(*medToolBoxDiffusionCustomCreator)(QWidget *parent);
+    typedef medToolBoxFilteringCustom *(*medToolBoxFilteringCustomCreator)(QWidget *parent);
     typedef medToolBoxCompositeDataSetImporterCustom    *(*medToolBoxCompositeDataSetImporterCustomCreator)(QWidget *parent);
 
     typedef QHash<QString, medToolBoxRegistrationCustomCreator> medToolBoxRegistrationCustomCreatorHash;
     typedef QHash<QString, medToolBoxDiffusionCustomCreator> medToolBoxDiffusionCustomCreatorHash;
+    typedef QHash<QString, medToolBoxFilteringCustomCreator> medToolBoxFilteringCustomCreatorHash;
     typedef QHash<QString, medToolBoxCompositeDataSetImporterCustomCreator> medToolBoxCompositeDataSetImporterCustomCreatorHash;
 
 public:
@@ -50,17 +53,20 @@ public:
 
     bool registerCustomRegistrationToolBox(QString type, medToolBoxRegistrationCustomCreator func);
     bool registerCustomDiffusionToolBox(QString type, medToolBoxDiffusionCustomCreator func);
+    bool registerCustomFilteringToolBox(QString type, medToolBoxFilteringCustomCreator func);
     bool registerCustomCompositeDataSetImporterToolBox(QString type, medToolBoxCompositeDataSetImporterCustomCreator func);
 	
     QList<QString> registrationToolBoxes(void);
     QList<QString> diffusionToolBoxes(void);
+    QList<QString> filteringToolBoxes(void);
     QList<QString> compositeDataSetImporterToolBoxes(void);
 	
 public slots:
     medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString type, QWidget *parent=0);
     medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString type, QWidget *parent=0);
+    medToolBoxFilteringCustom *createCustomFilteringToolBox(QString type, QWidget *parent=0);
     medToolBoxCompositeDataSetImporterCustom *createCustomCompositeDataSetImporterToolBox(QString type, QWidget *parent=0);
-
+    
 protected:
      medToolBoxFactory(void);
     ~medToolBoxFactory(void);

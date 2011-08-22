@@ -15,7 +15,7 @@ namespace medMetaDataKeys {
 
     class MEDCORE_EXPORT Key {
     public:
-      
+
         typedef std::vector<const Key*> Registery;
 
         Key(const char* name): KEY(name) { registery.push_back(this); }
@@ -45,7 +45,7 @@ namespace medMetaDataKeys {
         const QString KEY;
     };
 
-    
+
     /** Define the actual keys to use */
 
     extern MEDCORE_EXPORT const Key TransferSyntaxUID;

@@ -216,6 +216,8 @@ bool medDataManager::tryFreeMemory(size_t memoryLimit)
     if (procMem < memoryLimit)
         return false;
 
+    qDebug() << "****** TRY_FREE_MEM_BEGIN: " << procMem / divider << " to reach: " << memoryLimit / divider;
+
     int itemsBefore = d->dataCache.count();
 
     QMutexLocker locker(&d->mutex);

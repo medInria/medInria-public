@@ -1,9 +1,9 @@
 /* medToolBoxCompositeDataSetImporter ---
- * 
+ *
  * Author: Nicolas Toussaint
 
  * Change log:
- * 
+ *
  */
 
 #include <medCore/medMessageController.h>
@@ -19,14 +19,14 @@ public:
   QHash<QString, medToolBoxCompositeDataSetImporterCustom*> toolBoxes;
 
   medToolBoxCompositeDataSetImporterCustom* currentToolBox;
-  
+
   // methods
   void read(QString filename);
-  
+
   // member
   QWidget* parent;
   QVBoxLayout* customContainerLayout;
-  
+
   QComboBox* type;
   QPushButton* import;
   QPushButton* reset;
@@ -88,7 +88,7 @@ void medToolBoxCompositeDataSetImporter::initialize()
     if (d->isInitialized)
         return;
     QWidget* mainwidget = new QWidget(this);
-    
+
     int buttonWidth = 100;
 
     QVBoxLayout * vLayout = new QVBoxLayout();
@@ -108,15 +108,15 @@ void medToolBoxCompositeDataSetImporter::initialize()
 
     connect(d->type,SIGNAL(activated(QString)),
 	    this,SLOT(onCurrentTypeChanged(QString)));
-    
+
     topLayout->addWidget(d->type);
     topLayout->addStretch(1);
     vLayout->addLayout(topLayout);
 
-    d->customContainerLayout = new QVBoxLayout(mainwidget);
-    
+    d->customContainerLayout = new QVBoxLayout();
+
     vLayout->addLayout (d->customContainerLayout);
-    
+
     //import button
     d->import = new QPushButton (tr("Import"),mainwidget);
     d->import->setMaximumWidth(buttonWidth);
@@ -146,7 +146,7 @@ void medToolBoxCompositeDataSetImporter::initialize()
     d->reset->hide ();
     d->cancel->hide ();
     d->import->hide ();
-    
+
     this->addWidget (mainwidget);
 
     // connections
@@ -155,21 +155,21 @@ void medToolBoxCompositeDataSetImporter::initialize()
     connect(this,SIGNAL(showInfo(QObject*,const        QString&,unsigned int)),
         medMessageController::instance(),SLOT(showInfo (QObject*,const QString&,unsigned int)));
 
-    
+
     d->isInitialized = true;
 }
 
 
 bool medToolBoxCompositeDataSetImporter::import()
 {
-  
+
 }
 
 
 void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(QString id)
 {
     medToolBoxCompositeDataSetImporterCustom *toolbox = NULL;
-    
+
     if (d->toolBoxes.contains (id))
         toolbox = d->toolBoxes[id];
     else {
@@ -177,10 +177,10 @@ void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(QString id)
         if (toolbox) {
 	    toolbox->setStyleSheet("medToolBoxBody {border:none}");
             toolbox->header()->hide();
-            
+
             connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
             connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
-            
+
             d->toolBoxes[id] = toolbox;
         }
     }
@@ -195,10 +195,10 @@ void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(QString id)
 	d->cancel->hide ();
 	d->import->hide ();
 	return;
-    }    
+    }
 
     toolbox->setCompositeDataSetImporterToolBox(this);
-    
+
     //get rid of old toolBox
     if (d->currentToolBox) {
         d->currentToolBox->hide();
@@ -208,12 +208,12 @@ void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(QString id)
 
     toolbox->show();
     d->customContainerLayout->addWidget ( toolbox );
-    
+
     d->currentToolBox = toolbox;
 
     d->reset->show ();
     d->cancel->show ();
     d->import->show ();
-  
+
 }
 

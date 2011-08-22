@@ -34,9 +34,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medImageFileLoader.h
 
   # db related items
-  database/medDatabaseSearchPanel.h  
+  database/medDatabaseSearchPanel.h
   database/medDatabaseView.h
-  database/medDatabaseNavigator.h  
+  database/medDatabaseNavigator.h
   database/medDatabaseNavigatorItem.h
   database/medDatabaseNavigatorItemGroup.h
   database/medDatabaseNavigatorView.h
@@ -86,6 +86,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxRegistration.h
   toolboxes/medToolBoxRegistrationCustom.h
   toolboxes/medToolBoxDiffusionTensorView.h
+  toolboxes/medToolBoxFiltering.h
+  toolboxes/medToolBoxFilteringCustom.h
   toolboxes/medBrowserToolBoxJobs.h
   toolboxes/medViewerToolBoxLayout.h
   toolboxes/medViewerToolBoxView.h
@@ -104,6 +106,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   viewContainers/medViewContainerMulti.h
   viewContainers/medViewContainerCustom.h
   viewContainers/medViewContainerSingle.h
+  viewContainers/medViewContainerFiltering.h
   viewContainers/medViewContainer.h
 )
 
@@ -138,7 +141,7 @@ set(${PROJECT_NAME}_SOURCES
 
   # db related items
   database/medDatabaseSearchPanel.cpp
-  database/medDatabaseView.cpp  
+  database/medDatabaseView.cpp
   database/medDatabaseNavigator.cpp
   database/medDatabaseNavigatorController.cpp
   database/medDatabaseNavigatorItem.cpp
@@ -188,6 +191,8 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxRegistration.cpp
   toolboxes/medToolBoxRegistrationCustom.cpp
   toolboxes/medToolBoxDiffusionTensorView.cpp
+  toolboxes/medToolBoxFiltering.cpp
+  toolboxes/medToolBoxFilteringCustom.cpp
   toolboxes/medBrowserToolBoxJobs.cpp
   toolboxes/medViewerToolBoxLayout.cpp
   toolboxes/medViewerToolBoxView.cpp
@@ -206,6 +211,7 @@ set(${PROJECT_NAME}_SOURCES
   viewContainers/medViewContainerMulti.cpp
   viewContainers/medViewContainerCustom.cpp
   viewContainers/medViewContainerSingle.cpp
+  viewContainers/medViewContainerFiltering.cpp
   viewContainers/medViewContainer.cpp
 )
 
