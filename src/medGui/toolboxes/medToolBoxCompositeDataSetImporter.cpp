@@ -162,7 +162,7 @@ void medToolBoxCompositeDataSetImporter::initialize()
 
 bool medToolBoxCompositeDataSetImporter::import()
 {
-
+    return true;
 }
 
 
