@@ -149,7 +149,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
 
     itkconverter = converter;
     itkimage = converter->GetOutput();
-    
+
   }
   
   /**
@@ -314,14 +314,23 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
       return false;
     
     typedef typename itk::Image<type, 3> ImageType;
-
+    typedef typename ImageType::DirectionType DirectionType;
+    
     typename ImageType::Pointer goodtypedimage = dynamic_cast<ImageType*>(this->GetItkImage());
 
     if (!goodtypedimage)
     {
       try
       {
+	// If the dynamic cast failed, we need to provide a conversion of the vtk-imagedata
+	// to the output :
 	this->ConvertImage<type>(this->GetImageData(), this->m_ItkImage, this->m_Converter);
+	// However by doing so, we don't feed the Direction of the itk::Image (not in vtk-image)
+	// therefore we copy it from the OrientationMatrix field :
+	vtkMatrix4x4* matrix = this->GetOrientationMatrix();
+	DirectionType direction;
+	for (unsigned int x=0; x<3; x++) for (unsigned int y=0; y<3; y++) direction[x][y] = matrix->GetElement (x,y);
+	this->m_ItkImage->SetDirection (direction);
       }
       catch (itk::ExceptionObject &e)
       {
