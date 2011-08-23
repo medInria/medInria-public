@@ -207,6 +207,13 @@ itk::ImageBase<3>* vtkMetaImageData::GetItkImage(void)
       this->ConvertImage<float>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
     else if (componenttype == VTK_DOUBLE)
       this->ConvertImage<double>(this->GetImageData(), this->m_ItkImage, this->m_Converter); 
+
+    // However by doing so, we don't feed the Direction of the itk::Image (not in vtk-image)
+    // therefore we copy it from the OrientationMatrix field :
+    vtkMatrix4x4* matrix = this->GetOrientationMatrix();
+    DirectionType direction;
+    for (unsigned int x=0; x<3; x++) for (unsigned int y=0; y<3; y++) direction[x][y] = matrix->GetElement (x,y);
+    this->m_ItkImage->SetDirection (direction);
   }
 
   return this->m_ItkImage;
