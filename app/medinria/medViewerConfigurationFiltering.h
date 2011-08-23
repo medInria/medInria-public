@@ -8,7 +8,7 @@
 #define medViewerConfigurationFiltering_H
 
 #include <QtCore>
-#include <medGui/medViewerConfiguration.h>
+#include <medViewerConfiguration.h>
 
 class medViewerConfigurationFilteringPrivate;
 class medViewContainerStack;
@@ -17,7 +17,7 @@ class dtkAbstractData;
 /**
  * @brief Configuration providing a comparative display of the input and output of image-to-image filtering process plugins
  */
-class MEDGUI_EXPORT medViewerConfigurationFiltering : public medViewerConfiguration
+class medViewerConfigurationFiltering : public medViewerConfiguration
 {
     Q_OBJECT
 
@@ -29,9 +29,9 @@ public:
      */
     medViewerConfigurationFiltering(QWidget *parent = 0);
     ~medViewerConfigurationFiltering(void);
-    
+
     virtual QString description(void) const;
-    
+
     /**
      * @brief sets up all the signal/slot connections when Viewer is switched to this configuration
      */
@@ -47,7 +47,7 @@ signals:
      */
     void outputDataChanged(dtkAbstractData *);
 
-public slots:    
+public slots:
 
     /**
      * @brief removes filtering toolboxes when patient changes
@@ -72,6 +72,6 @@ private:
     medViewerConfigurationFilteringPrivate *d;
 };
 
-MEDGUI_EXPORT medViewerConfiguration *createMedViewerConfigurationFiltering(void);
+medViewerConfiguration *createMedViewerConfigurationFiltering(void);
 
 #endif
