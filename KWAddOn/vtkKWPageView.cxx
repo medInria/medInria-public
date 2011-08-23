@@ -945,6 +945,11 @@ std::vector<vtkActor*> vtkKWPageView::AddMetaDataSet(vtkMetaDataSet* metadataset
 
 void vtkKWPageView::RemoveMetaDataSet(vtkMetaDataSet* metadataset)
 {
+  if (!metadataset->GetDataSet())
+  {
+    return;
+  }
+  
   vtkPointSet* dataset = vtkPointSet::SafeDownCast (metadataset->GetDataSet());
   if (!dataset)
   {
