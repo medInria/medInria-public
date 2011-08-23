@@ -167,7 +167,7 @@ unsigned int vtkMetaImageData::CanReadFile (const char* filename)
 
 unsigned long vtkMetaImageData::GetComponentType (void)
 {
-  if (this->GetImageData())
+  if (!this->GetImageData())
     return 0;
   
   return this->GetImageData()->GetScalarType();
