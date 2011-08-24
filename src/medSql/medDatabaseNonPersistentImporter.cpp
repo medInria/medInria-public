@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentImporter.cpp --- 
- * 
+/* medDatabaseNonPersitentImporter.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:53:52 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 35
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseNonPersistentController.h"
@@ -56,7 +56,7 @@ medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter(void)
 void medDatabaseNonPersistentImporter::run(void)
 {
     medDataIndex index;
-    
+
     dtkAbstractData *data = d->data;
     if (!data) {
         emit failure (this);
@@ -70,7 +70,7 @@ void medDatabaseNonPersistentImporter::run(void)
 	emit failure (this);
     return;
     }
-    
+
     QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
 
     int patientId = -1;
@@ -109,7 +109,7 @@ void medDatabaseNonPersistentImporter::run(void)
             break;
         }
     }
-    
+
     if (studyId==-1)
         studyId = medDatabaseNonPersistentController::instance()->studyId(true);
 

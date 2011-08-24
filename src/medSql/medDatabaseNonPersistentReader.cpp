@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentReader.cpp --- 
- * 
+/* medDatabaseNonPersitentReader.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:53:52 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 35
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseNonPersistentController.h"
@@ -36,14 +36,20 @@
 class medDatabaseNonPersistentReaderPrivate
 {
 public:
+    medDatabaseNonPersistentReaderPrivate(const QString& uuid):callerUuid(uuid){}
     QString file;
     bool isCancelled;
+    const QString callerUuid;
 };
 
-medDatabaseNonPersistentReader::medDatabaseNonPersistentReader(const QString& file) : medJobItem(), d(new medDatabaseNonPersistentReaderPrivate)
+
+
+medDatabaseNonPersistentReader::medDatabaseNonPersistentReader(const QString& file
+                                                               ,const QString& callerUuid) : medJobItem(), d(new medDatabaseNonPersistentReaderPrivate(callerUuid))
 {
     d->file = file;
     d->isCancelled = false;
+    qDebug()<< "npr created with uuid:"<< d->callerUuid;
 }
 
 medDatabaseNonPersistentReader::~medDatabaseNonPersistentReader(void)
@@ -119,7 +125,7 @@ void medDatabaseNonPersistentReader::run(void)
 
     if(!dtkdata->hasMetaData(medMetaDataKeys::StudyID.key()))
             dtkdata->addMetaData(medMetaDataKeys::StudyID.key(), QStringList() << "");
-    
+
     if(!dtkdata->hasMetaData(medMetaDataKeys::SeriesID.key()))
             dtkdata->addMetaData(medMetaDataKeys::SeriesID.key(), QStringList() << "");
 
@@ -137,7 +143,7 @@ void medDatabaseNonPersistentReader::run(void)
 
     if(!dtkdata->hasMetaData(medMetaDataKeys::Rows.key()))
             dtkdata->addMetaData(medMetaDataKeys::Rows.key(), QStringList() << "");
-    
+
     if(!dtkdata->hasMetaData(medMetaDataKeys::Columns.key()))
             dtkdata->addMetaData(medMetaDataKeys::Columns.key(), QStringList() << "");
 
@@ -167,14 +173,14 @@ void medDatabaseNonPersistentReader::run(void)
     }
 
     QMap<QString, int>::const_iterator itk = keyToInt.begin();
-    
+
 
     // read and write images in mhd format
 
     QList<dtkAbstractData*> dtkDataList;
 
     QMap<QString, QStringList>::const_iterator it = imagesToWriteMap.begin();
-    
+
     int imagesCount = imagesToWriteMap.count();
     int imageIndex = 0;
 
@@ -254,16 +260,16 @@ void medDatabaseNonPersistentReader::run(void)
     }
 
     medDataIndex index;
-    
+
     for (int i=0; i<dtkDataList.count(); i++) {
 
         dtkAbstractData *data = dtkDataList[i];
 
 	QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
-	
+
 	int     patientId   = -1;
 	QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
-	
+
 	// check if patient is already in the persistent database
 	medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
 	if (databaseIndex.isValid()) {
@@ -277,10 +283,10 @@ void medDatabaseNonPersistentReader::run(void)
 		    break;
 		}
 	}
-	
+
 	if (patientId==-1)
 	    patientId = medDatabaseNonPersistentController::instance()->patientId(true);
-	
+
 	int     studyId   = -1;
 	QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
 
@@ -296,14 +302,14 @@ void medDatabaseNonPersistentReader::run(void)
 		    break;
 		}
 	}
-	
+
 	if (studyId==-1)
 	    studyId = medDatabaseNonPersistentController::instance()->studyId(true);
-    
+
 	index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
 	QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
-	
+
         QFileInfo info(d->file);
 
 	medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
@@ -325,7 +331,8 @@ void medDatabaseNonPersistentReader::run(void)
 
     emit progressed(100);
     emit success(this);
-    emit nonPersistentRead(index);
+    qDebug() << "uuid value before signal"<< d->callerUuid;
+    emit nonPersistentRead(index,d->callerUuid);
 }
 
 void medDatabaseNonPersistentReader::onCancel( QObject* )

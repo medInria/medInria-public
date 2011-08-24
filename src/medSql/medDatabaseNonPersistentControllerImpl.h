@@ -30,6 +30,8 @@
 class dtkAbstractData;
 class medDatabaseNonPersistentItem;
 class medDatabaseNonPersistentControllerImplPrivate;
+class medImportJobWatcher;
+
 
 class MEDSQL_EXPORT medDatabaseNonPersistentControllerImpl: public medAbstractDbController
 {
@@ -121,9 +123,8 @@ public slots:
     /**
      * Store data temporarily referenced by temp index
      * @params const QString & file data stored at file path
-     * @return medDataIndex - assigned index
      */
-    void import(const QString& file);
+    void import(const QString& file,const QString& callerUuid=QString());
 
     /**
      * Remove data referenced by index from temporary database
@@ -138,6 +139,9 @@ public slots:
 
     /** true if the given data index matches one in our db*/
     bool contains( const medDataIndex& index) const;
+
+signals:
+    void updated(const medDataIndex&, const QString&);
 
 private:
     medDatabaseNonPersistentControllerImplPrivate *d;

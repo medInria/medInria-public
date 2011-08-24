@@ -90,6 +90,7 @@ class medMainWindowPrivate
 {
 public:
     QStackedWidget *stack;
+    QList<QString> importUuids;
 
     medBrowserArea *browserArea;
     medViewerArea  *viewerArea;
@@ -130,6 +131,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     // register controller, configurations etc
     this->registerToFactories();
+
+    connect (medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &, const QString&)),
+             this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
 
     // Setting up menu
     QAction *windowFullScreenAction = new QAction ( "Toggle fullscreen mode", this );
@@ -535,12 +539,33 @@ void medMainWindow::open ( const medDataIndex& index )
 
 void medMainWindow::open ( const QString& file )
 {
-    d->viewerArea->openInTab ( file );
-    d->quickAccessButton->setText("Workspace: Visualization");
-    d->quickAccessButton->setMinimumWidth(170);
-    this->switchToViewerArea();
+    QString importUuid = QUuid::createUuid().toString();
+    d->importUuids.append(importUuid);
+    qDebug() << "about to open file" << file;
+    qDebug()<< "with uuid:" << importUuid;
+    medDatabaseNonPersistentController::instance()->import(file,importUuid);
 }
 
+void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importUuid)
+{
+    qDebug() << "Opened file from uuid" << importUuid;
+    qDebug() << "uuids in list" << d->importUuids;
+    if (!importUuid.isEmpty() && d->importUuids.contains(importUuid))
+    {
+        if (index.isValid())
+        {
+            d->viewerArea->openInTab(index);
+            d->quickAccessButton->setText("Workspace: Visualization");
+            d->quickAccessButton->setMinimumWidth(170);
+            this->switchToViewerArea();
+        }
+        else
+        {
+            qDebug() << "Could not Load file";
+        }
+        d->importUuids.removeOne(importUuid);
+    }
+}
 
 
 void medMainWindow::load(const QString& file)

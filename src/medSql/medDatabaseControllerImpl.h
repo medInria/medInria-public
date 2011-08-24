@@ -87,6 +87,7 @@ public:
 
     /** Implement base class */
     virtual bool isPersistent() const;
+
 signals:
     /**
      * Status message from controller to some user interface
@@ -119,7 +120,7 @@ public slots:
      * Calls import(const QString& file,bool indexWithoutCopying) with indexWithoutCopying = false.
      *
     */
-    void import(const QString& file);
+    void import(const QString& file,const QString& importUuid=QString());
 
     /**
     * Import data into the db read from memory
@@ -133,6 +134,8 @@ public slots:
 
     /**Implement base class */
     virtual int dataSourceId() const;
+
+     bool contains(const medDataIndex &index) const;
 
 protected slots:
     void forwardMessage(QString);
