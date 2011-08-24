@@ -2,7 +2,6 @@
 #define medAbstractDatabaseItem_h__
 
 #include <QVariant>
-#include "medDataIndex.h"
 
 class medDataIndex;
 
