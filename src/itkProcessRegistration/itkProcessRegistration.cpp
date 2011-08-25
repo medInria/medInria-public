@@ -123,8 +123,8 @@ template <typename PixelType>
     if ( dimensions == 3 ){
 
         typedef itk::Image <PixelType, 3> InputImageType;
-        
-        
+
+
         if (channel==0)
         {
             fixedImageType = inputType;
@@ -133,8 +133,8 @@ template <typename PixelType>
         if (channel==1)
         {
             movingImageType = inputType;
-            movingImages = QVector<itk::ImageBase<3>::Pointer>(0);
-            movingImages[0] = dynamic_cast<InputImageType *>((itk::Object*)(data->data()));
+            movingImages = QVector<itk::ImageBase<3>::Pointer>(1);
+            movingImages[0] =  dynamic_cast<InputImageType *>((itk::Object*)(data->data()));
 
 
         }
@@ -149,11 +149,11 @@ template <typename PixelType>
         const unsigned int frameNumber =  region.GetSize()[3];
         if (image4d.IsNull())
           return;
-        
+
         if(channel == 0)
         {
             typename itk::ExtractImageFilter<Image4DType, InputImageType>::Pointer extractFilter = itk::ExtractImageFilter<Image4DType, InputImageType>::New();
-            
+
             typename Image4DType::IndexType index = {{0,0,0,0}};
             size[3] = 0;
             index[3] = 0;
@@ -177,11 +177,11 @@ template <typename PixelType>
         {
         //may work on dim > 3
         movingImages = QVector<itk::ImageBase<3>::Pointer>(frameNumber);
-         
-        for(int i = 0 ; i < frameNumber ; i++)
+
+        for(unsigned int i = 0 ; i < frameNumber ; i++)
         {
             typename itk::ExtractImageFilter<Image4DType, InputImageType>::Pointer extractFilter = itk::ExtractImageFilter<Image4DType, InputImageType>::New();
-            
+
             typename Image4DType::IndexType index = {{0,0,0,0}};
             size[3] = 0;
             index[3] = i;
