@@ -15,7 +15,10 @@ public:
     virtual ~itkDataImageWriterBase(void);
 
     virtual QStringList handled(void) const = 0;
-    
+
+    /** Override base class */
+    virtual QStringList supportedFileExtensions(void) const;
+
 public slots:
     bool write    (const QString& path);
     bool canWrite (const QString& path);
