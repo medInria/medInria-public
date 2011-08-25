@@ -43,6 +43,9 @@ include(medinria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
+#Macros that enable precompiled headers to be added, defined by dtk.
+include(AddPch)
+
 # Export medinriq-plugins_DIR variable so that internal project can automatically find i
 set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 
@@ -131,6 +134,10 @@ endif()
 if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
     subdirs(exampleProcessImageFilter)
 endif()
+
+if(MSVC)
+  option(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+endif(MSVC)
 
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_V3DDATA_PLUGIN OR

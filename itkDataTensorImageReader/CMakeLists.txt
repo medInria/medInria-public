@@ -67,8 +67,16 @@ set(${PROJECT_NAME}_SOURCES
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
+if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+    "medPluginsPch.h" "../src/medPluginsPch/medPluginsItkPch.cpp"
+    ${${PROJECT_NAME}_SOURCES_MOC} 
+    ${${PROJECT_NAME}_SOURCES})
+endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_SOURCES_PCH} 
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
