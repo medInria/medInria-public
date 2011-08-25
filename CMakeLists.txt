@@ -54,8 +54,13 @@ include(medinriaPack)
 #include(medinriaDart)
 include(Dart)
 include(CTest)
+include(AddPch)
 
 option(BUILD_DOCUMENTATION "Build documentation"    true)
+
+if(MSVC)
+  option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+endif(MSVC)
 
 add_subdirectory(src)
 add_subdirectory(app)
