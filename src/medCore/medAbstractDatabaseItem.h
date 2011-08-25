@@ -3,14 +3,16 @@
 
 #include <QVariant>
 #include "medDataIndex.h"
+#include "medCoreExport.h"
 
 class medDataIndex;
 
-class medAbstractDatabaseItem
+class MEDCORE_EXPORT medAbstractDatabaseItem
 {
 
 public:
-    virtual ~medAbstractDatabaseItem();//we need a virtual destructor here if we want the children to be deleted in the implementation of this class.
+    virtual ~medAbstractDatabaseItem(){}//we need a virtual destructor here if we want the children to be deleted in the implementation of this class.
+
     virtual medAbstractDatabaseItem *child(int row) = 0;
     virtual medAbstractDatabaseItem *parent(void) = 0;
 
