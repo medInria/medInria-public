@@ -10,7 +10,7 @@ class medAbstractDatabaseItem
 {
 
 public:
-
+    virtual ~medAbstractDatabaseItem();//we need a virtual destructor here if we want the children to be deleted in the implementation of this class.
     virtual medAbstractDatabaseItem *child(int row) = 0;
     virtual medAbstractDatabaseItem *parent(void) = 0;
 

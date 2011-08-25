@@ -48,18 +48,18 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->currentMeshLayer = 0;
     d->meshLayerCount = 0;
 
-	d->position = QVector3D(0.0, 0.0, 0.0);
-	d->pan = QVector2D(0.0, 0.0);
-	d->zoom = 1.0;
-	d->level = 0.0;
-	d->window = 0.0;
-	d->camPosition = QVector3D(0.0, 0.0, 0.0);
-	d->camViewup = QVector3D(0.0, 0.0, 0.0);
-	d->camFocal = QVector3D(0.0, 0.0, 0.0);
-	d->camParallelScale = 1.0;
+        d->position = QVector3D(0.0, 0.0, 0.0);
+        d->pan = QVector2D(0.0, 0.0);
+        d->zoom = 1.0;
+        d->level = 0.0;
+        d->window = 0.0;
+        d->camPosition = QVector3D(0.0, 0.0, 0.0);
+        d->camViewup = QVector3D(0.0, 0.0, 0.0);
+        d->camFocal = QVector3D(0.0, 0.0, 0.0);
+        d->camParallelScale = 1.0;
 
     QStringList lut;
-    lut << "Default";		// list of available lookup tables set
+    lut << "Default";           // list of available lookup tables set
                 // by subclass
 
     // properties to keep up to date synchronization
@@ -80,9 +80,9 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     this->addProperty ("UseLOD",                QStringList() << "On" << "Off" );
     this->addProperty ("Cropping",              QStringList() << "true" << "false");
     this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
-		                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
-		                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
-		                                              << "Red on White" << "Glossy");
+                                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
+                                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
+                                                              << "Red on White" << "Glossy");
     // image interaction
     this->addProperty ("MouseInteraction",      QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
 
@@ -192,7 +192,7 @@ void medAbstractView::setZoom (double zoom)
 
 double medAbstractView::zoom(void) const
 {
-	return d->zoom;
+        return d->zoom;
 }
 
 void medAbstractView::setPan (const QVector2D &pan)
@@ -361,6 +361,7 @@ void medAbstractView::addDataInList(dtkAbstractData * data)
     d->dataList.append(data);
 }
 
+
 dtkAbstractData * medAbstractView::dataInList(int layer)
 {
     if (layer < d->dataList.size())
@@ -399,9 +400,9 @@ void medAbstractView::onWindowingChanged (double level, double window)
 }
 
 void medAbstractView::onCameraChanged (const QVector3D &position,
-				       const QVector3D &viewup,
-				       const QVector3D &focal,
-				       double parallelScale)
+                                       const QVector3D &viewup,
+                                       const QVector3D &focal,
+                                       double parallelScale)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
