@@ -58,6 +58,7 @@
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
 
+#include "medSaveModifiedDialog.h"
 
 #include <QtGui>
 
@@ -107,6 +108,8 @@ public:
     QWidget * quitMessage;
 
     medButton *quitButton;
+
+    QPushButton *saveModifiedButton;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -212,6 +215,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->quitMessage->setLayout ( quitLayout );
 
+    d->saveModifiedButton = new QPushButton("Save",this);
+    connect(d->saveModifiedButton, SIGNAL(clicked()),this,SLOT(onSaveModified()));
+
+    d->statusBarLayout->addWidget(d->saveModifiedButton);
     d->statusBarLayout->addWidget ( d->quickAccessButton );
     d->statusBarLayout->addStretch();
     d->statusBarLayout->addWidget ( d->quitMessage );
@@ -494,6 +501,13 @@ void medMainWindow::onQuit ( void )
     d->quitMessage->show();
     d->quitButton->hide();
 }
+
+void medMainWindow::onSaveModified( void )
+{
+    medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
+    saveDialog->show();
+}
+
 
 void medMainWindow::onEditSettings()
 {

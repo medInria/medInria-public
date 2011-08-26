@@ -11,7 +11,7 @@ class QTreeWidget;
 class QTreeWidgetItem;
 class medSaveModifiedDialogPrivate;
 
-class medSaveModifiedDialog: public QFileDialog
+class medSaveModifiedDialog: public QDialog
 {
     Q_OBJECT
     
@@ -19,17 +19,12 @@ public:
   
     medSaveModifiedDialog(QWidget *parent);
     virtual ~medSaveModifiedDialog();
-    
-//    static bool queryClose(QWidget *parent, QList<medDataIndex *indexNonPersistent);
-    
-    void RetrieveItems();    
+
     bool Save();    
-    bool Delete();    
+    bool Delete();
     
-public slots:    
-    
-    void ItemActivated(QTreeWidgetItem*, int);
-    
+public slots:
+
     void onSelectAll();    
     void onSaveSelected();    
     void onDeleteSelected();
