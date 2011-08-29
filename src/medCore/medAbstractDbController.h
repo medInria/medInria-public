@@ -85,16 +85,21 @@ public slots:
     virtual dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const = 0;
 
     /**
-    * Import a file into the db
-    * @params const QString & file Filename
-    * @return medDataIndex that was assigned
+    * @brief Imports a file into the db.
+    * This method doesn't return any value since it should be run asynchronously. updated(const medDataIndex &) is called when the importation is complete.
+    *
+    * @param file the path to the file, or directory to import.
+    * @param importUuid a string representation of a unique token (QUuid recommended),
+    * If omited, an empty string will be used. It allows for actions specific to the caller of the importation. Only the caller should react to particular requests.
     */
     virtual void import(const QString& file,const QString& importUuid=QString()) = 0;
 
     /**
-    * Import a data into the db
-    * @params const dtkAbstractData& data reference to data
-    * @return medDataIndex that was assigned
+    * @brief Imports a data into the db.
+    *
+    * This method doesn't return any value since it should be run asynchronously. updated(const medDataIndex &) is called when the importation is complete.
+    *
+    * @param data a pointer to some data to import.
     */
     virtual void import(dtkAbstractData *data) = 0;
 

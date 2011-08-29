@@ -29,11 +29,23 @@ class dtkAbstractData;
 
 class medDatabaseNonPersistentReaderPrivate;
 
+/**
+* @brief Reads files and adds them to the medNonPersistentDatabase.
+*
+* This class inherits from medJobItem and is meant to be run by the medJobManager.
+*
+*/
 class medDatabaseNonPersistentReader : public medJobItem
 {
     Q_OBJECT
 
 public:
+    /**
+    * @brief Constructor.
+    *
+    * @param file the file or directory to be read.
+    * @param callerUuid The string representation of a unique identifier. The caller will react to link the final signal with this id to know whether it should react to it or not.
+    */
     medDatabaseNonPersistentReader(const QString& file,const QString& callerUuid = QString());
     ~medDatabaseNonPersistentReader(void);
 
@@ -43,7 +55,13 @@ signals:
     void success(QObject *);
     void failure(QObject *);
     void progressed(int);
-    void nonPersistentRead(const medDataIndex &,const QString&);
+    /**
+    * @brief Signal emitted when the reading is complete (or has failed).
+    *
+    * @param index the new medDatataIndex, or an invalid one
+    * @param callerUuid the identifier from the caller.
+    */
+    void nonPersistentRead(const medDataIndex & index,const QString& callerUuid);
 
 public slots:
     void onCancel(QObject*);

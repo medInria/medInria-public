@@ -56,6 +56,13 @@ public slots:
     void onNoQuit(void);
     void onEditSettings(void);
 
+    /**
+     * @brief: Decides what to do when the importer returned a medDataIndex after importation.
+     *
+     * @param index the medDataIndex returned by the importer. May be invalid if iportation was not successful.
+     * @param importUuid This string is the representation of a QUuid.
+     * If the QUuid identifies a request made by this object, then the action is triggered. Here we call openInTab in the viewerArea.
+     */
     void onOpenFile(const medDataIndex & index,const QString& importUuid);
 
     /**
