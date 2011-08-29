@@ -547,8 +547,8 @@ void medMainWindow::open ( const QString& file )
 
 void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importUuid)
 {
-    qDebug() << "Opened file from uuid" << importUuid;
-    qDebug() << "uuids in list" << d->importUuids;
+//    qDebug() << "Opened file from uuid" << importUuid;
+//    qDebug() << "uuids in list" << d->importUuids;
     if (!importUuid.isEmpty() && d->importUuids.contains(importUuid))
     {
         if (index.isValid())
@@ -560,7 +560,7 @@ void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importU
         }
         else
         {
-            qDebug() << "Could not Load file";
+            qDebug() << "Could not Load file with uuid" << importUuid;
         }
         d->importUuids.removeOne(importUuid);
     }
