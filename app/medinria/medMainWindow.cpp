@@ -239,7 +239,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect ( d->homepageArea, SIGNAL ( showConfiguration ( QString ) ), d->viewerArea, SLOT ( setupConfiguration ( QString ) ) );
     QObject::connect ( d->homepageArea,SIGNAL ( showSettings() ), this, SLOT ( onEditSettings() ) );
 
-
     //Add configuration button to the quick access menu
     this->updateQuickAccessMenu();
 
