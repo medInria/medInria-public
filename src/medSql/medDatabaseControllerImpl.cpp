@@ -365,6 +365,8 @@ medDataIndex medDatabaseControllerImpl::indexForImage(const QString &patientName
 
 void medDatabaseControllerImpl::import(const QString& file,const QString& importUuid)
 {
+    //No one does anything with this importUuid for the permanent db yet.
+    //Just override the import(file,indexWithoutcopying method to enable this).
     Q_UNUSED(importUuid)
     import(file,false);
 }
@@ -373,11 +375,9 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
 {
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
-//    if(watcher != NULL)
-//    {
-//        connect(importer, SIGNAL(addedIndex(const medDataIndex &)), watcher, SIGNAL(imported(const medDataIndex &)));
-//        connect(importer, SIGNAL(success(QObject *)), watcher, SLOT(deleteLater()));
-//    }
+    //if we want to add importUuid support to permanent db,
+    //we need to change the importer and its addedIndex signal to suppot importUuid
+    //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
     connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
     connect(importer, SIGNAL(failure(QObject *)), importer, SLOT(deleteLater()));
