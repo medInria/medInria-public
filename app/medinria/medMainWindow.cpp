@@ -89,13 +89,13 @@ public:
 
     medBrowserArea *browserArea;
     medViewerArea  *viewerArea;
-    
+
     medWorkspaceShifter *shifter;
     medWorkspaceShifterAction *shiftToBrowserAreaAction;
     medWorkspaceShifterAction *shiftToViewerAreaAction;
 
     medSettingsEditor * settingsEditor;
-    
+
     QPointer<medMessageControllerMessageQuestion> quitMessage;
 };
 
@@ -146,58 +146,6 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
 
-#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
-    // Setting up core python module
-
-    dtkScriptInterpreterPythonModuleManager::instance()->registerInitializer(&init_core);
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "import core"
-    );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "dataFactory    = core.dtkAbstractDataFactory.instance()"
-    );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "processFactory = core.dtkAbstractProcessFactory.instance()"
-    );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "viewFactory    = core.dtkAbstractViewFactory.instance()"
-    );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "pluginManager  = core.dtkPluginManager.instance()"
-    );
-#endif
-#if defined(HAVE_SWIG) && defined(HAVE_TCL)
-    // Setting up core tcl module
-
-    dtkScriptInterpreterTclModuleManager::instance()->registerInitializer(&Core_Init);
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set dataFactory    [dtkAbstractDataFactory_instance]"
-    );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set processFactory [dtkAbstractProcessFactory_instance]"
-    );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set viewFactory    [dtkAbstractViewFactory_instance]"
-    );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set pluginManager  [dtkPluginManager_instance]"
-    );
-#endif
-
-    // Registering different configurations
-    medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
-    //Register settingsWidgets
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
-
-    //Register dbController 
-    medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
-    medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
-
-
     // Setting up status bar
     d->shiftToBrowserAreaAction = new medWorkspaceShifterAction("Browser");
     d->shiftToViewerAreaAction = new medWorkspaceShifterAction("Viewer");
@@ -220,7 +168,7 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent), d(new medMa
 
     medButton *quitButton = new medButton(this,":/icons/quit.png", tr("Quit Application"));
     connect(quitButton, SIGNAL(triggered()), this, SLOT(onQuit()));
-    
+
     medButton *settingsButton = new medButton(this, ":/icons/settings.png", tr("Edit Application Settings"));
     connect(settingsButton, SIGNAL(triggered()), this, SLOT(onEditSettings()));
 
@@ -275,7 +223,7 @@ void medMainWindow::readSettings(void)
         this->switchToBrowserArea();
         break;
 
-    case 1: 
+    case 1:
         this->switchToViewerArea();
         break;
 
@@ -395,9 +343,9 @@ void medMainWindow::onEditSettings()
     d->settingsEditor->setWindowFlags(Qt::Tool);
     d->settingsEditor->initialize();
     d->settingsEditor->queryWidgets();
-    
+
     connect(d->settingsEditor, SIGNAL(finished()), d->settingsEditor, SLOT(close()) );
-    
+
     d->settingsEditor->show();
 }
 
@@ -426,7 +374,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     if (QThreadPool::globalInstance()->activeThreadCount() > 0)
     {
         switch(QMessageBox::information( this, "System message", "Running background jobs detected! Quit anyway?",
-            "Quit", "WaitForDone", "Cancel",0, 1 ) ) 
+            "Quit", "WaitForDone", "Cancel",0, 1 ) )
         {
         case 0:
             // send cancel request to all running jobs, then wait for them
@@ -461,7 +409,7 @@ void medMainWindow::closeEvent(QCloseEvent *event)
 
 void medMainWindow::registerToFactories()
 {
-    //Register dbController 
+    //Register dbController
     medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
     medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
 
