@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentReader.h --- 
- * 
+/* medDatabaseNonPersitentReader.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:25:31 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 15
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASENONPERSISTENTREADER_H
@@ -34,7 +34,7 @@ class medDatabaseNonPersistentReader : public medJobItem
     Q_OBJECT
 
 public:
-     medDatabaseNonPersistentReader(const QString& file);
+    medDatabaseNonPersistentReader(const QString& file,const QString& callerUuid = QString());
     ~medDatabaseNonPersistentReader(void);
 
     void run(void);
@@ -43,7 +43,7 @@ signals:
     void success(QObject *);
     void failure(QObject *);
     void progressed(int);
-    void nonPersistentRead(const medDataIndex &);
+    void nonPersistentRead(const medDataIndex &,const QString&);
 
 public slots:
     void onCancel(QObject*);

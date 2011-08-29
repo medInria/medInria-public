@@ -94,14 +94,19 @@ void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatab
     d->items.insert(index, item);
 }
 
-void medDatabaseNonPersistentControllerImpl::import(const QString& file)
+void medDatabaseNonPersistentControllerImpl::import(const QString& file,const QString& importUuid)
 {
-    medDatabaseNonPersistentReader *reader = new medDatabaseNonPersistentReader(file);
+    medDatabaseNonPersistentReader *reader =
+            new medDatabaseNonPersistentReader(file,importUuid);
 
-    connect(reader, SIGNAL(progressed(int)), medMessageController::instance(), SLOT(setProgress(int)));
-    connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
-    connect(reader, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(reader, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(reader, SIGNAL(progressed(int)),
+            medMessageController::instance(), SLOT(setProgress(int)));
+    connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &,const QString &)),
+            this, SIGNAL(updated(const medDataIndex &, const QString&)));
+    connect(reader, SIGNAL(success(QObject *)),
+            medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(reader, SIGNAL(failure(QObject *)),
+            medMessageController::instance(), SLOT(remove(QObject *)));
     connect(reader, SIGNAL(success(QObject *)), reader, SLOT(deleteLater()));
     connect(reader, SIGNAL(failure(QObject *)), reader, SLOT(deleteLater()));
 

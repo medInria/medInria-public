@@ -1,5 +1,5 @@
-/* medMainWindow.h --- 
- * 
+/* medMainWindow.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
@@ -9,18 +9,19 @@
  *     Update #: 32
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDMAINWINDOW_H
 #define MEDMAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include <QUuid>
 #include <QUrl>
 class medDataIndex;
 class medMainWindowPrivate;
@@ -32,7 +33,7 @@ class medMainWindow : public QMainWindow
 public:
      medMainWindow(QWidget *parent = 0);
     ~medMainWindow(void);
-    
+
     void readSettings(void);
     void writeSettings();
 
@@ -54,7 +55,9 @@ public slots:
     void onQuit(void);
     void onNoQuit(void);
     void onEditSettings(void);
-    
+
+    void onOpenFile(const medDataIndex & index,const QString& importUuid);
+
     /**
     * Opens an image (which is already in the database)
     * in the viewer area.

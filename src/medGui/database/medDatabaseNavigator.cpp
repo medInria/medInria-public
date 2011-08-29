@@ -1,5 +1,5 @@
-/* medDatabaseNavigator.cpp --- 
- * 
+/* medDatabaseNavigator.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:38:39 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 59
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseNavigator.h"
@@ -66,7 +66,7 @@ public:
 medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(new medDatabaseNavigatorPrivate)
 {
     d->orientation = medDatabaseNavigatorController::instance()->orientation();
-  
+
     d->scene = new medDatabaseNavigatorScene(this);
     d->scene->setOrientation (d->orientation);
 
@@ -80,7 +80,7 @@ medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(d->view);
-    
+
     // medDatabaseNavigatorController::instance()->setOrientation(Qt::Vertical);
     medDatabaseNavigatorController::instance()->setItemSize(128, 128);
     d->orientation == Qt::Horizontal
@@ -125,7 +125,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
     QMap<StudyDataKey, medDatabaseNavigatorItemGroup*> groupMap;
 
     medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
-    if ( !dbc ) 
+    if ( !dbc )
         return;
     PatientDataKey referencePatientKey;
     referencePatientKey.name = dbc->metaData(index,medMetaDataKeys::PatientName);
@@ -135,7 +135,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
     foreach (const int dataSourceId, dataSources ) {
 
         medAbstractDbController *dbc = dataManager->controllerForDataSource(dataSourceId);
-        if ( !dbc ) 
+        if ( !dbc )
             continue;
 
         IndexList patientsForSource;
@@ -212,7 +212,7 @@ void medDatabaseNavigator::setOrientation (Qt::Orientation orientation)
         this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 	this->setFixedWidth(QWIDGETSIZE_MAX);
     }
-    else {  
+    else {
         this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 	this->setFixedHeight(QWIDGETSIZE_MAX);
     }

@@ -2,7 +2,8 @@
 
 #include <QtCore>
 
-medDatabaseProxyModel::medDatabaseProxyModel( QObject *parent /*= 0*/ )
+medDatabaseProxyModel::medDatabaseProxyModel( QObject *parent /*= 0*/ ):
+    QSortFilterProxyModel(parent)
 {
     isCheckingChild = false;
     isCheckingParent = false;
@@ -17,7 +18,7 @@ bool medDatabaseProxyModel::filterAcceptsRow( int source_row, const QModelIndex 
 {
     // checking all stored keys
     QHash<int, QRegExp>::const_iterator i = filterVector.constBegin();
-    while (i != filterVector.constEnd()) 
+    while (i != filterVector.constEnd())
     {
         currentKey = i.key();
         currentValue = i.value();
@@ -62,7 +63,7 @@ bool medDatabaseProxyModel::customFilterAcceptsRow( int source_row, const QModel
             return true;
     }
 
-    // show the parent if one child is valid 
+    // show the parent if one child is valid
     if(sourceModel()->hasChildren(current) && !isCheckingChild && !isCheckingParent )
     {
         bool atLeastOneValidChild = false;

@@ -11,6 +11,9 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
+class medImportJobWatcher;
+class medDataIndex;
+
 /**
  * Abstract dbController class. Implementation needs to adhere to the common interface
  */
@@ -61,6 +64,8 @@ public:
     /** return true if this is a persistent controller*/
     virtual bool isPersistent() const = 0;
 
+
+
 signals:
 
     /**
@@ -84,7 +89,7 @@ public slots:
     * @params const QString & file Filename
     * @return medDataIndex that was assigned
     */
-    virtual void import(const QString& file) = 0;
+    virtual void import(const QString& file,const QString& importUuid=QString()) = 0;
 
     /**
     * Import a data into the db
@@ -110,6 +115,14 @@ public slots:
     * This method clears data already loaded in the database.
     */
     virtual void clear (void);
+
+    /**
+     * @brief Checks if a medDataIndex is in the db.
+     *
+     * The function traverses the hierarchy of indices to find the availibity of the medDataIndex. It stops at the first non defined value (-1) and returns true if all indices were found down to that level: i.e a patient with an empty study list is valid (1,-1,-1)
+     * @param index a medDataIndex.
+     */
+    virtual bool contains(const medDataIndex& index) const = 0;
 
 };
 

@@ -149,11 +149,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
         SLOT (onItemClicked (const medDataIndex&)));
 
-    //connect the db controller with opening slots.
-    connect(medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &)),this,SLOT(onFileOpenedInTab(const medDataIndex &)));
-
-
-
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
     int memusage = 0;
@@ -249,10 +244,10 @@ bool medViewerArea::open(const medDataIndex& index)
         // the data-manager should be used to read data
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
-
+        medDataManager::instance()->blockSignals (false);
         if ( data.isNull() )
         {
-            medDataManager::instance()->blockSignals (false);
+
             return false;
         }
 
@@ -268,7 +263,6 @@ bool medViewerArea::open(const medDataIndex& index)
 
         if( view.isNull() ) {
             qDebug() << "Unable to create a v3dView";
-            medDataManager::instance()->blockSignals (false);
             return false;
         }
 
@@ -297,7 +291,6 @@ bool medViewerArea::open(const medDataIndex& index)
             root->setDisabled (false);
             root->setUpdatesEnabled (true);
         }
-        medDataManager::instance()->blockSignals (false);
         return true;
     }
 
@@ -319,10 +312,8 @@ bool medViewerArea::open(const medDataIndex& index)
                 succeeded = this->open(*seriesIt) && succeeded;
             }
         }
-        medDataManager::instance()->blockSignals (false);
         return succeeded;
     }
-    medDataManager::instance()->blockSignals (false);
     return true;
 }
 

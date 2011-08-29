@@ -363,8 +363,9 @@ medDataIndex medDatabaseControllerImpl::indexForImage(const QString &patientName
     return medDataIndex();
 }
 
-void medDatabaseControllerImpl::import(const QString& file)
+void medDatabaseControllerImpl::import(const QString& file,const QString& importUuid)
 {
+    Q_UNUSED(importUuid)
     import(file,false);
 }
 
@@ -372,6 +373,11 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
 {
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
+//    if(watcher != NULL)
+//    {
+//        connect(importer, SIGNAL(addedIndex(const medDataIndex &)), watcher, SIGNAL(imported(const medDataIndex &)));
+//        connect(importer, SIGNAL(success(QObject *)), watcher, SLOT(deleteLater()));
+//    }
     connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
     connect(importer, SIGNAL(failure(QObject *)), importer, SLOT(deleteLater()));
@@ -820,6 +826,57 @@ QString medDatabaseControllerImpl::stringForPath( const QString & name ) const
     ret.replace(0x00EA, 'e');
     ret.replace (0x00E4, 'a');
     return ret;
+}
+
+bool medDatabaseControllerImpl::contains(const medDataIndex &index) const
+{
+    if (index.isValid() && index.dataSourceId() == dataSourceId())
+    {
+        //index is valid and comes from this dataSource
+        QVariant patientId = index.patientId();
+        QVariant studyId = index.studyId();
+        QVariant seriesId = index.seriesId();
+        QVariant imageId = index.imageId();
+
+        QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
+        query.prepare("SELECT id FROM patient WHERE id = :id");
+        query.bindValue(":id", patientId);
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        if (query.first())
+        {
+            //patient exists.
+            if (studyId == -1) //we don't care about studies.
+                return true;
+            query.prepare("SELECT id FROM study WHERE id = :id");
+            query.bindValue(":id", studyId);
+            if(!query.exec())
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+            if (query.first())
+            {
+                //study exists.
+                if (seriesId == -1)  //we don't care about series
+                    return true;
+                query.prepare("SELECT id FROM series WHERE id = :id");
+                query.bindValue(":id", seriesId);
+                if(!query.exec())
+                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                if (query.first())
+                {
+                    //series exists
+                    if (imageId == -1) //we don't care about image
+                        return true;
+                    query.prepare("SELECT id FROM image WHERE series = :series");
+                    query.bindValue(":series", seriesId);
+                    if(!query.exec())
+                        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                    if(query.first())
+                        return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 
