@@ -32,7 +32,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerArea.h    
   medViewerConfigurationDiffusion.h
   medViewerConfigurationVisualization.h
-  medViewerConfigurationRegistration.h   
+  medViewerConfigurationRegistration.h
   medViewerToolBoxConfiguration.h  
   medPacsDataSource.h 
   medFileSystemDataSource.h  
@@ -55,7 +55,7 @@ set(${PROJECT_NAME}_SOURCES
   medViewerToolBoxConfiguration.cpp
   medViewerConfigurationDiffusion.cpp
   medViewerConfigurationVisualization.cpp
-  medViewerConfigurationRegistration.cpp   
+  medViewerConfigurationRegistration.cpp 
   medPacsDataSource.cpp  
   medFileSystemDataSource.cpp
   medDatabaseDataSource.cpp
@@ -88,8 +88,17 @@ if(WIN32)
   set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES} ${PROJECT_NAME}.rc)
 endif()
 
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+    "medPch.h" "../../src/medPch/medPch.cpp" 
+    ${${PROJECT_NAME}_SOURCES_WRAP}
+    ${${PROJECT_NAME}_SOURCES_QRC}
+    ${${PROJECT_NAME}_SOURCES_MOC}
+    ${${PROJECT_NAME}_SOURCES})
+endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
 
 add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM}
+  ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SOURCES_WRAP}
   ${${PROJECT_NAME}_SOURCES_QRC}
   ${${PROJECT_NAME}_SOURCES_MOC}

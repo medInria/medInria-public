@@ -127,7 +127,9 @@ void
         {
             QString layerItemString = QString::number(0);
             if(d->view->layerCount() > 1 || d->view->meshLayerCount() > 0 )
+
                 if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
+
                     layerItemString = "Mesh " + QString::number(meshNumber);
                 else
                     layerItemString = QString::number(imageNumber++);

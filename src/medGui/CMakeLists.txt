@@ -27,6 +27,17 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medLayoutChooser.h
   medPacsSelector.h
   medToolBoxContainer.h
+  
+  # specific toolbox classes
+  toolboxes/medToolBoxDiffusion.h
+  toolboxes/medToolBoxDiffusionCustom.h
+  toolboxes/medToolBoxDiffusionFiberView.h   
+  toolboxes/medToolBoxDiffusionFiberBundling.h
+  toolboxes/medToolBoxRegistration.h
+  toolboxes/medToolBoxRegistrationCustom.h
+  toolboxes/medToolBoxDiffusionTensorView.h
+
+  # viewer stuff
   medPacsSelector.h
   medViewPool.h
   medStackedViewContainers.h
@@ -119,7 +130,33 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   medLayoutChooser.cpp
   medPacsSelector.cpp
-  medToolBoxContainer.cpp
+
+  commonWidgets/medButton.cpp
+  
+  toolboxes/medToolBox.cpp
+  toolboxes/medToolBoxBody.cpp
+  toolboxes/medToolBoxHeader.cpp
+  toolboxes/medToolBoxTab.cpp
+  factories/medToolBoxFactory.cpp
+  medToolBoxContainer.cpp 
+  
+  toolboxes/medToolBoxDiffusion.cpp
+  toolboxes/medToolBoxDiffusionCustom.cpp
+  toolboxes/medToolBoxDiffusionFiberView.cpp   
+  toolboxes/medToolBoxDiffusionFiberBundling.cpp
+  toolboxes/medToolBoxRegistration.cpp
+  toolboxes/medToolBoxRegistrationCustom.cpp
+  toolboxes/medToolBoxDiffusionTensorView.cpp
+
+  medViewPool.cpp
+  viewContainers/medViewContainer.cpp
+  viewContainers/medViewContainerCustom.cpp
+  viewContainers/medViewContainerMulti.cpp
+  viewContainers/medViewContainerSingle.cpp
+  viewContainers/medViewContainerCompare.cpp
+
+  
+
   medStackedViewContainers.cpp
   medViewerConfiguration.cpp
   medPacsSelector.cpp
@@ -212,8 +249,17 @@ add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+    "medPch.h" "../medPch/medPch.cpp" 
+    ${${PROJECT_NAME}_SOURCES}
+    ${${PROJECT_NAME}_SOURCES_MOC}
+    ${${PROJECT_NAME}_SOURCES_WRAP})
+endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES_WRAP})
