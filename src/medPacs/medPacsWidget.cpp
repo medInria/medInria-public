@@ -142,11 +142,11 @@ void medPacsWidget::readSettings(void)
     settings.endGroup();
 
     if (title.isEmpty())
-        d->host_title = (tr("MEDINRIA"));
+        d->host_title = ("MEDINRIA");
     else
         d->host_title = title;
     if (port.isEmpty())
-        d->host_port = tr("9999");
+        d->host_port = "9999";
     else
         d->host_port = port;
 

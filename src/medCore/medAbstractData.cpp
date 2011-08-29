@@ -59,8 +59,8 @@ QList< medAttachedData * > medAbstractData::attachedData() const
 
 void medAbstractData::clearAttachedData()
 {
-    foreach ( medAttachedData * d, d->attachedData )
-        emit attachedDataRemoved( d );
+    foreach ( medAttachedData * data, d->attachedData )
+        emit attachedDataRemoved( data );
     d->attachedData.clear();
 }
 

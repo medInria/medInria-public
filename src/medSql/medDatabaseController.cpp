@@ -1,7 +1,5 @@
 #include "medDatabaseController.h"
 
-#include <medAbstractDbController.h>
-
 QPointer<medDatabaseControllerImpl> medDatabaseController::instance(void)
 {
     if(!s_instance)

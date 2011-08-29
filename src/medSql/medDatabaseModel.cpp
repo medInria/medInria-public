@@ -31,7 +31,7 @@
 #include <medAbstractDbController.h>
 #include <medDbControllerFactory.h>
 #include <medDataManager.h>
-#include <medMetaDataHelper.h>
+#include <medMetaDataKeys.h>
 #include <medAbstractDatabaseItem.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -82,26 +82,26 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
     for (int i(0); i<dataCount; ++i)
         d->ptAttributes.append(NulString);
 
-    d->ptAttributes[0] = medMetaDataHelper::KEY_PatientName();
-    d->ptAttributes[5] = medMetaDataHelper::KEY_BirthDate();
-    d->ptAttributes[6] = medMetaDataHelper::KEY_Gender();
+    d->ptAttributes[0] = medMetaDataKeys::PatientName.key();
+    d->ptAttributes[5] = medMetaDataKeys::BirthDate.key();
+    d->ptAttributes[6] = medMetaDataKeys::Gender.key();
 
     d->seAttributes = QList<QVariant>();
     d->seAttributes.reserve(dataCount);
     for (int i(0); i<dataCount; ++i)
         d->seAttributes.append(NulString);
-    d->seAttributes[1] = medMetaDataHelper::KEY_StudyDescription();
-    d->seAttributes[2] = medMetaDataHelper::KEY_SeriesDescription();
-    d->seAttributes[3] = medMetaDataHelper::KEY_Size();
-    d->seAttributes[4] = medMetaDataHelper::KEY_Age();
-    d->seAttributes[7] = medMetaDataHelper::KEY_SeriesDescription();
-    d->seAttributes[8] = medMetaDataHelper::KEY_Modality();
-    d->seAttributes[12] = medMetaDataHelper::KEY_AcquisitionDate();
-    d->seAttributes[13] = medMetaDataHelper::KEY_ImportationDate();
-    d->seAttributes[15] = medMetaDataHelper::KEY_Referee();
-    d->seAttributes[16] = medMetaDataHelper::KEY_Performer();
-    d->seAttributes[17] = medMetaDataHelper::KEY_Institution();
-    d->seAttributes[18] = medMetaDataHelper::KEY_Report();
+    d->seAttributes[1] = medMetaDataKeys::StudyDescription.key();
+    d->seAttributes[2] = medMetaDataKeys::SeriesDescription.key();
+    d->seAttributes[3] = medMetaDataKeys::Size.key();
+    d->seAttributes[4] = medMetaDataKeys::Age.key();
+    d->seAttributes[7] = medMetaDataKeys::SeriesDescription.key();
+    d->seAttributes[8] = medMetaDataKeys::Modality.key();
+    d->seAttributes[12] = medMetaDataKeys::AcquisitionDate.key();
+    d->seAttributes[13] = medMetaDataKeys::ImportationDate.key();
+    d->seAttributes[15] = medMetaDataKeys::Referee.key();
+    d->seAttributes[16] = medMetaDataKeys::Performer.key();
+    d->seAttributes[17] = medMetaDataKeys::Institution.key();
+    d->seAttributes[18] = medMetaDataKeys::Report.key();
 
     d->data = QList<QVariant>();
     d->data.reserve(dataCount);

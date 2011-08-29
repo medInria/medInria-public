@@ -10,7 +10,7 @@
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medStorage.h>
-#include <medMetaDataHelper.h>
+#include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 #include <medToolBoxTab.h>
 #include <medMeshAbstractViewInteractor.h>
@@ -283,29 +283,36 @@ void
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
+
         //qDebug() << "update 3";
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
+        {
+            if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
             {
-                if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
-                {
-                    this->constructMeshLayer(d->view->dataInList(i), meshNumber);
-                    meshNumber++;
-                }
-                else
-                {
-                    //qDebug() << "update 4" << imageNumber;
-                    this->constructImageLayer(d->view->dataInList(i), imageNumber);
-                    imageNumber++;
-                }
-
-                d->propertiesTree->collapseAll();
+                this->constructMeshLayer(d->view->dataInList(i), meshNumber);
+                meshNumber++;
+            }
+            else
+            {
+                //qDebug() << "update 4" << imageNumber;
+                this->constructImageLayer(d->view->dataInList(i), imageNumber);
+                imageNumber++;
             }
 
-        QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(onDataAdded(dtkAbstractData*, int)), Qt::UniqueConnection);
+            d->propertiesTree->collapseAll();
+        }
+
+        QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
+                         this, SLOT(onDataAdded(dtkAbstractData*, int)),
+                         Qt::UniqueConnection);
 //        QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
 
-        QObject::connect(d->view, SIGNAL(TwoDTriggered(dtkAbstractView*)), this, SLOT(on2DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
-        QObject::connect(d->view, SIGNAL(ThreeDTriggered(dtkAbstractView*)), this, SLOT(on3DTriggered(dtkAbstractView*)), Qt::UniqueConnection);
+        QObject::connect(d->view, SIGNAL(TwoDTriggered(dtkAbstractView*)),
+                         this, SLOT(on2DTriggered(dtkAbstractView*)),
+                         Qt::UniqueConnection);
+        QObject::connect(d->view, SIGNAL(ThreeDTriggered(dtkAbstractView*)),
+                         this, SLOT(on3DTriggered(dtkAbstractView*)),
+                         Qt::UniqueConnection);
         this->on2DTriggered(d->view);
         this->on3DTriggered(d->view);
 
@@ -324,20 +331,20 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     if (data)
     {
-        if (medMetaDataHelper::hasSeriesThumbnail(data))
+        if (medMetaDataKeys::SeriesThumbnail.is_set_in(data))
         {
-            d->thumbLocation = medMetaDataHelper::getFirstSeriesThumbnailValue(data, ":icons/layer.png");
+            d->thumbLocation = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
         }
     }
 
     d->layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
     d->layerItem->setText(0, QString::number(imageLayer));
     d->layerItem->setIcon(0,QIcon(d->thumbLocation));
-    if (data!= NULL && medMetaDataHelper::hasSeriesDescription(data))
+    if (data!= NULL && medMetaDataKeys::SeriesDescription.is_set_in(data))
     {
-        d->layerItem->setToolTip(0,data->metaDataValues(tr("PatientName"))[0]
-        + "\n" + data->metaDataValues(tr("StudyDescription"))[0]
-        + "\n" + data->metaDataValues(tr("SeriesDescription"))[0]);
+        d->layerItem->setToolTip(0,data->metaDataValues(medMetaDataKeys::PatientName.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0]);
     }
 
     QTreeWidgetItem * visibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
@@ -432,21 +439,16 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
 
 
     if (data)
-    {
-        if (medMetaDataHelper::hasSeriesThumbnail(data))
-        {
-            d->thumbLocation = medMetaDataHelper::getFirstSeriesThumbnailValue(data, ":icons/layer.png");
-        }
-    }
+        if (medMetaDataKeys::SeriesThumbnail.is_set_in(data))
+            d->thumbLocation = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
 
     d->layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
     d->layerItem->setText(0, layerItemString);
     d->layerItem->setIcon(0,QIcon(d->thumbLocation));
-    if (medMetaDataHelper::hasSeriesDescription(data))
-    {
-        d->layerItem->setToolTip(0,data->metaDataValues(tr("PatientName"))[0]
-        + "\n" + data->metaDataValues(tr("StudyDescription"))[0]
-        + "\n" + data->metaDataValues(tr("SeriesDescription"))[0]);
+    if (medMetaDataKeys::SeriesDescription.is_set_in(data)) {
+        d->layerItem->setToolTip(0,data->metaDataValues(medMetaDataKeys::PatientName.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0]
+        + "\n" + data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0]);
     }
 
 
@@ -597,18 +599,6 @@ void
         return;
     if (!d->view)
         return;
-    //if(d->view->isInList(data))
-    //    return;
-    //d->view->addDataInList(data);
-   // qDebug() << "medViewerToolBoxViewProperties::onDataAdded" << d->view->layerCount() << " Mesh " << d->view->meshLayerCount();
-    if (d->view->layerCount() == 1 && !data->description().contains("vtkDataMesh"))
-    {
-        d->layerItem->setIcon(0,QIcon(medMetaDataHelper::getFirstSeriesThumbnailValue(data, ":icons/layer.png")));
-        d->layerItem->setToolTip(0,data->metaDataValues(tr("PatientName"))[0]
-        + "\n" + data->metaDataValues(tr("StudyDescription"))[0]
-        + "\n" + data->metaDataValues(tr("SeriesDescription"))[0]);
-        return;
-    }
 
     //JGG qDebug() << "1";
     if(data->description().contains("vtkDataMesh"))

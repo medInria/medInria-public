@@ -47,6 +47,7 @@
 #include <medBrowserToolBoxJobs.h>
 #include <medPacsMover.h>
 #include <medPacsWidget.h>
+#include <medToolBoxCompositeDataSetImporter.h>
 
 class medBrowserAreaPrivate
 {
@@ -58,6 +59,7 @@ public:
     medToolBoxContainer *toolbox_container;
     medBrowserToolBoxJobs *toolbox_jobs;
     medBrowserToolBoxSource *toolbox_source;
+    medToolBoxCompositeDataSetImporter *toolbox_compositeimporter;
 
     QList <medAbstractDataSource *> data_sources;
 
@@ -125,14 +127,17 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
 
+    d->toolbox_compositeimporter = new medToolBoxCompositeDataSetImporter(this);
+    d->toolbox_compositeimporter->setVisible(true);
+    d->toolbox_container->addToolBox(d->toolbox_compositeimporter);
+    
     // Layout /////////////////////////////////////////////
-
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(d->stack);
     layout->addWidget(d->toolbox_container);
-
+    
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
 
@@ -185,9 +190,9 @@ void medBrowserArea::displayJobItem(medJobItem *importer, QString infoBaseName)
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
 {
-    QString patientName = data->metaDataValues(tr("PatientName"))[0];
-    QString studyName   = data->metaDataValues(tr("StudyDescription"))[0];
-    QString seriesName  = data->metaDataValues(tr("SeriesDescription"))[0];
+    QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
+    QString studyName   = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
+    QString seriesName  = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 
     QString s_patientName = patientName.simplified();
     QString s_studyName   = studyName.simplified();
@@ -262,6 +267,16 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 
     QThreadPool::globalInstance()->start(exporter);
+}
+
+void medBrowserArea::addToolBox(medToolBox *toolbox)
+{
+    d->toolbox_container->addToolBox(toolbox);
+}
+
+void medBrowserArea::removeToolBox(medToolBox *toolbox)
+{
+    d->toolbox_container->removeToolBox(toolbox);
 }
 
 void medBrowserArea::onDataRemoved( const medDataIndex &index )
