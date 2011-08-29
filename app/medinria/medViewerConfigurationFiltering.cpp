@@ -82,13 +82,21 @@ void medViewerConfigurationFiltering::onProcessSuccess()
     d->filterOutput = d->filteringToolBox->customToolbox()->processOutput();
     if(!d->filterOutput)
             return;
+    
+    dtkAbstractData *inputData = d->filteringToolBox->data();
+
+    foreach(QString metaData, inputData->metaDataList())
+        d->filterOutput->addMetaData(metaData,inputData->metaDataValues(metaData));
+    
+    foreach(QString property, inputData->propertyList())
+        d->filterOutput->addProperty(property,inputData->propertyValues(property));
 
     QString newSeriesDescription = d->filterOutput->metadata(medMetaDataKeys::SeriesDescription.key());
     newSeriesDescription += " filtered";
 
-    medMetaDataKeys::SeriesDescription.set(d->filterOutput,newSeriesDescription);
-
-//     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
+    d->filterOutput->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesDescription);
+    
+    //     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
 
     QObject::connect( medDatabaseNonPersistentController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(onOutputImported(medDataIndex)));
     medDatabaseNonPersistentController::instance()->import(d->filterOutput);
