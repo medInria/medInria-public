@@ -27,7 +27,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDataManager.h
   medMessageController.h
   medStatusBar.h
-  medMetaDataHelper.h
+  medMetaDataKeys.h
   medViewManager.h
   medPluginManager.h
   medProgressFilter.h
@@ -72,7 +72,7 @@ set(${PROJECT_NAME}_SOURCES
   medDataManager.cpp
   medMessageController.cpp
   medStatusBar.cpp
-  medMetaDataHelper.cpp
+  medMetaDataKeys.cpp
   medViewManager.cpp
   medPluginManager.cpp
   medProgressFilter.cpp
