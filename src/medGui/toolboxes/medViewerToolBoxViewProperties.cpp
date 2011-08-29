@@ -599,18 +599,6 @@ void
         return;
     if (!d->view)
         return;
-    //if(d->view->isInList(data))
-    //    return;
-    //d->view->addDataInList(data);
-   // qDebug() << "medViewerToolBoxViewProperties::onDataAdded" << d->view->layerCount() << " Mesh " << d->view->meshLayerCount();
-    if (d->view->layerCount() == 1 && !data->description().contains("vtkDataMesh"))
-    {
-        d->layerItem->setIcon(0,QIcon(medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png")));
-        d->layerItem->setToolTip(0,data->metaDataValues(medMetaDataKeys::PatientName.key())[0]
-        + "\n" + data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0]
-        + "\n" + data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0]);
-        return;
-    }
 
     //JGG qDebug() << "1";
     if(data->description().contains("vtkDataMesh"))
