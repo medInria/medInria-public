@@ -26,7 +26,7 @@
 
 #include <medDataIndex.h>
 #include <medDataManager.h>
-#include <medMetaDataHelper.h>
+#include <medMetaDataKeys.h>
 #include <medAbstractDbController.h>
 #include <medDbControllerFactory.h>
 
@@ -226,7 +226,7 @@ void medViewerToolBoxPatient::setupDatabase(void)
         QList<medDataIndex> patientsForSource = dbc->patients();
         for (QList<medDataIndex>::const_iterator patientIt( patientsForSource.begin()); patientIt != patientsForSource.end(); ++patientIt ) {
 
-            QString patientName = dbc->metaData((*patientIt), medMetaDataHelper::KEY_PatientName() );
+            QString patientName = dbc->metaData((*patientIt),medMetaDataKeys::PatientName);
 
             bool isFirstSource = dataSourceIt == dataSourceIds.begin();
             bool matchesExisting(false);

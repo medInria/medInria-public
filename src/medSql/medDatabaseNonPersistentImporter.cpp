@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentImporter.cpp --- 
- * 
+/* medDatabaseNonPersitentImporter.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:53:52 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 35
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseNonPersistentController.h"
@@ -56,25 +56,25 @@ medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter(void)
 void medDatabaseNonPersistentImporter::run(void)
 {
     medDataIndex index;
-    
+
     dtkAbstractData *data = d->data;
     if (!data) {
         emit failure (this);
     return;
     }
 
-    if (!data->hasMetaData ("PatientName") ||
-	!data->hasMetaData ("StudyDescription") ||
-	!data->hasMetaData ("SeriesDescription") ) {
+    if (!data->hasMetaData(medMetaDataKeys::PatientName.key()) ||
+	!data->hasMetaData(medMetaDataKeys::StudyDescription.key()) ||
+	!data->hasMetaData(medMetaDataKeys::SeriesDescription.key()) ) {
         qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
 	emit failure (this);
     return;
     }
-    
+
     QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
 
     int patientId = -1;
-    QString patientName = data->metaDataValues(tr("PatientName"))[0];
+    QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
 
 
     // check if patient is already in the persistent database
@@ -95,7 +95,7 @@ void medDatabaseNonPersistentImporter::run(void)
         patientId = medDatabaseNonPersistentController::instance()->patientId(true);
 
     int     studyId   = -1;
-    QString studyName = data->metaDataValues(tr("StudyDescription"))[0];
+    QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
 
     databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
     if (databaseIndex.isValid()) {
@@ -109,13 +109,13 @@ void medDatabaseNonPersistentImporter::run(void)
             break;
         }
     }
-    
+
     if (studyId==-1)
         studyId = medDatabaseNonPersistentController::instance()->studyId(true);
 
     index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
-    QString seriesName = data->metaDataValues(tr("SeriesDescription"))[0];
+    QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 
     medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 

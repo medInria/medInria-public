@@ -131,7 +131,10 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 
         // try to load the data from db
         medAbstractDbController* db = d->getDbController();
-        if (db)
+
+        //checks the index is in the db before trying to read anything.
+        //otherwise we get error messages when trying to open non persistent items.
+        if (db  && db->contains(index))
         {
             // check available free memory and clean up if necessary
             if (!manageMemoryUsage(index, db))
@@ -154,7 +157,7 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
         if (!dtkdata)
         {
             medAbstractDbController* npDb = d->getNonPersDbController();
-            if(npDb)
+            if(npDb && npDb->contains(index))
             {
                 // check available free memory and clean up if necessary
                 if (!manageMemoryUsage(index, npDb))
@@ -215,6 +218,8 @@ bool medDataManager::tryFreeMemory(size_t memoryLimit)
     size_t procMem = getProcessMemoryUsage();
     if (procMem < memoryLimit)
         return false;
+
+    qDebug() << "****** TRY_FREE_MEM_BEGIN: " << procMem / divider << " to reach: " << memoryLimit / divider;
 
     int itemsBefore = d->dataCache.count();
 

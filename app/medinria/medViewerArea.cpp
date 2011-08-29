@@ -40,7 +40,6 @@
 #include <medDatabaseNavigator.h>
 #include <medDatabaseNavigatorController.h>
 #include <medDatabaseNonPersistentController.h>
-#include <medMetaDataHelper.h>
 
 #include <medClutEditor.h>
 #include <medToolBox.h>
@@ -150,11 +149,6 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
         SLOT (onItemClicked (const medDataIndex&)));
 
-    //connect the db controller with opening slots.
-    connect(medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &)),this,SLOT(onFileOpenedInTab(const medDataIndex &)));
-
-
-
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
     int memusage = 0;
@@ -220,7 +214,7 @@ bool medViewerArea::openInTab(const medDataIndex &index)
     {
         medDataManager *dataManager = medDataManager::instance();
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
-        QString createdName = dbc->metaData(index,medMetaDataHelper::KEY_PatientName());
+        QString createdName = dbc->metaData(index,medMetaDataKeys::PatientName.key());
         createdName = d->current_configuration->addMultiContainer(createdName);
         d->current_configuration->stackedViewContainers()->setContainer(createdName);
     }
@@ -250,10 +244,10 @@ bool medViewerArea::open(const medDataIndex& index)
         // the data-manager should be used to read data
         medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
-
+        medDataManager::instance()->blockSignals (false);
         if ( data.isNull() )
         {
-            medDataManager::instance()->blockSignals (false);
+
             return false;
         }
 
@@ -269,7 +263,6 @@ bool medViewerArea::open(const medDataIndex& index)
 
         if( view.isNull() ) {
             qDebug() << "Unable to create a v3dView";
-            medDataManager::instance()->blockSignals (false);
             return false;
         }
 
@@ -298,7 +291,6 @@ bool medViewerArea::open(const medDataIndex& index)
             root->setDisabled (false);
             root->setUpdatesEnabled (true);
         }
-        medDataManager::instance()->blockSignals (false);
         return true;
     }
 
@@ -312,18 +304,16 @@ bool medViewerArea::open(const medDataIndex& index)
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
 
         QList<medDataIndex> studiesForSource = dbc->studies(index);
-
+        bool succeeded = true;
         for ( QList<medDataIndex>::const_iterator studyIt(studiesForSource.begin()); studyIt != studiesForSource.end(); ++studyIt) {
-
             QList<medDataIndex> seriesForSource = dbc->series((*studyIt));
 
             for ( QList<medDataIndex>::const_iterator seriesIt(seriesForSource.begin()); seriesIt != seriesForSource.end(); ++seriesIt) {
-                this->open(*seriesIt);
+                succeeded = this->open(*seriesIt) && succeeded;
             }
         }
-
+        return succeeded;
     }
-    medDataManager::instance()->blockSignals (false);
     return true;
 }
 

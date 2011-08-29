@@ -72,11 +72,11 @@ void medBrowserToolBoxPacsHost::readSettings(void)
     settings.endGroup();
 
     if (title.isEmpty())
-        d->title->setText(tr("MEDINRIA"));
+        d->title->setText("MEDINRIA");
     else
         d->title->setText(title);
     if (port.isEmpty())
-        d->port->setText(tr("9999"));
+        d->port->setText("9999");
     else
         d->port->setText(port);
 

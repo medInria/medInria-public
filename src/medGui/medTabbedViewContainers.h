@@ -129,6 +129,12 @@ public:
     */
     void unlockTabs();
 
+    /**
+     * @brief Hides tab bar (may be used to gain space when tabs are locked).
+     *
+    */
+    void hideTabBar();
+
 signals:
     /**
      * @brief Emits this signal when one of the containers has emitted 

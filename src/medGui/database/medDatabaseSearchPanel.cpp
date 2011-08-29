@@ -70,7 +70,8 @@ medDatabaseSearchPanel::medDatabaseSearchPanel( QWidget *parent /*= 0*/ ) : medT
 
 medDatabaseSearchPanel::~medDatabaseSearchPanel()
 {
-
+    delete d;
+    d = NULL;
 }
 
 void medDatabaseSearchPanel::setColumnNames( const QStringList &columns )
