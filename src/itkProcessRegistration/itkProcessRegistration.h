@@ -6,6 +6,7 @@
 #define ITKPROCESSREGISTRATION_H
 
 #include <dtkCore/dtkAbstractProcess.h>
+#include <dtkCore/dtkAbstractData.h>
 #include <itkImage.h>
 
 #include "itkProcessRegistrationExport.h"
@@ -97,7 +98,7 @@ public:
      * @return itk::ImageBase<int> NULL if none is set yet.
     */
     itk::ImageBase<3>::Pointer fixedImage();
-
+   
     /**
      * @brief Gets an itk smart pointer to the moving image.
      *
@@ -106,7 +107,7 @@ public:
      *
      * @return itk::ImageBase<int> NULL if none is set yet.
     */
-    itk::ImageBase<3>::Pointer movingImage();
+    QVector<itk::ImageBase<3>::Pointer> movingImages();
 
     /**
      * @brief Gets the fixed image ImageType.
@@ -121,6 +122,9 @@ public:
      * @return itkProcessRegistration::ImageType
     */
     itkProcessRegistration::ImageType movingImageType();
+
+
+    
 
 public slots:
     /**

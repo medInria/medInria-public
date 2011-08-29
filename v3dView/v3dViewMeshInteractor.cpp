@@ -83,6 +83,7 @@ bool v3dViewMeshInteractor::registered(void)
 
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 {
+    
     if (d->dataList.contains (data))
         return;
     if(data->description() == "vtkDataMesh4D")
@@ -90,7 +91,6 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         //vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
         //vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
         d->dataList.append(data);
-
         updatePipeline(d->dataList.size()-1);
 
     }

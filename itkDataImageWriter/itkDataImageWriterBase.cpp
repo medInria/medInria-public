@@ -98,3 +98,19 @@ bool itkDataImageWriterBase::write(const QString& path)
     
     return true;
 }
+
+QStringList itkDataImageWriterBase::supportedFileExtensions( void ) const
+{
+    QStringList ret;
+
+    if (this->io) {
+        typedef itk::ImageIOBase::ArrayOfExtensionsType ArrayOfExtensionsType;
+        const ArrayOfExtensionsType & extensions = this->io->GetSupportedWriteExtensions();
+        for( ArrayOfExtensionsType::const_iterator it(extensions.begin()); 
+            it != extensions.end(); ++it ) 
+        {
+            ret << it->c_str();
+        }
+    }
+    return ret;
+}
