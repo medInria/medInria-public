@@ -9,6 +9,7 @@
 
 #include "itkImage.h"
 #include "itkDiscreteGaussianImageFilter.h"
+#include "itkSmoothingRecursiveGaussianImageFilter.h"
 
 // /////////////////////////////////////////////////////////////////
 // ITKProcessExamplePrivate
@@ -29,13 +30,17 @@ template <class PixelType> int ITKProcessExamplePrivate::update(void)
 
     typedef itk::Image< PixelType, 3 > ImageType;
 
-    typedef itk::DiscreteGaussianImageFilter< ImageType, ImageType >  FilterType;
+//     typedef itk::DiscreteGaussianImageFilter< ImageType, ImageType >  FilterType;
+    
+    typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  FilterType;
 
     typename FilterType::Pointer gaussianFilter = FilterType::New();
 
     gaussianFilter->SetInput(dynamic_cast<ImageType *>((itk::Object*)(input->data())));
 
-    gaussianFilter->SetVariance(variance);
+//     gaussianFilter->SetVariance(variance);
+
+    gaussianFilter->SetSigma(variance);
 
     gaussianFilter->Update();
 
