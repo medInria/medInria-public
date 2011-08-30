@@ -20,7 +20,7 @@ class ITKProcessExamplePrivate
 public:
     dtkAbstractData *input;
     dtkAbstractData *output;
-    double variance;
+    double sigma;
     template <class PixelType> int update(void);
 };
 
@@ -56,7 +56,7 @@ template <class PixelType> int ITKProcessExamplePrivate::update(void)
 ITKProcessExample::ITKProcessExample(void) : dtkAbstractProcess(), d(new ITKProcessExamplePrivate)
 {
     d->output = NULL;
-    d->variance = 4.0;
+    d->sigma = 4.0;
 }
 
 ITKProcessExample::~ITKProcessExample(void)
@@ -93,7 +93,7 @@ void ITKProcessExample::setParameter(double  data, int channel)
     switch (channel){
 
         case (0):
-                d->variance = data;
+                d->sigma = data;
                 break;
         default :
                 return;
