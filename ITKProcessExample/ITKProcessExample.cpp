@@ -40,7 +40,7 @@ template <class PixelType> int ITKProcessExamplePrivate::update(void)
 
 //     gaussianFilter->SetVariance(variance);
 
-    gaussianFilter->SetSigma(variance);
+    gaussianFilter->SetSigma(sigma);
 
     gaussianFilter->Update();
 
