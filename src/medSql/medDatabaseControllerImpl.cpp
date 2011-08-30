@@ -389,10 +389,13 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
     QThreadPool::globalInstance()->start(importer);
 }
 
-void medDatabaseControllerImpl::import( dtkAbstractData *data )
+void medDatabaseControllerImpl::import( dtkAbstractData *data,const QString& importUuid)
 {
     medDatabaseWriter *writer = new medDatabaseWriter(data);
-
+    //if we want to add importUuid support to permanent db,
+    //we need to change the importer and its addedIndex signal to suppot importUuid
+    //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
+    Q_UNUSED(importUuid)
     connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
     connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));

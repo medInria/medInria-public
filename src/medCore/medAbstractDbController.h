@@ -104,8 +104,9 @@ public slots:
     * This method doesn't return any value since it should be run asynchronously. updated(const medDataIndex &) is called when the importation is complete.
     *
     * @param data a pointer to some data to import.
+    * @param importUuid the caller's identifier.
     */
-    virtual void import(dtkAbstractData *data) = 0;
+    virtual void import(dtkAbstractData *data,const QString& importUuid=QString()) = 0;
 
     /**
      * This method allows importing data from other databases
