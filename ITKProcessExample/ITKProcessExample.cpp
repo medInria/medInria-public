@@ -9,6 +9,7 @@
 
 #include "itkImage.h"
 #include "itkDiscreteGaussianImageFilter.h"
+#include "itkSmoothingRecursiveGaussianImageFilter.h"
 
 // /////////////////////////////////////////////////////////////////
 // ITKProcessExamplePrivate
@@ -19,7 +20,7 @@ class ITKProcessExamplePrivate
 public:
     dtkAbstractData *input;
     dtkAbstractData *output;
-    double variance;
+    double sigma;
     template <class PixelType> int update(void);
 };
 
@@ -29,13 +30,17 @@ template <class PixelType> int ITKProcessExamplePrivate::update(void)
 
     typedef itk::Image< PixelType, 3 > ImageType;
 
-    typedef itk::DiscreteGaussianImageFilter< ImageType, ImageType >  FilterType;
+//     typedef itk::DiscreteGaussianImageFilter< ImageType, ImageType >  FilterType;
+    
+    typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  FilterType;
 
     typename FilterType::Pointer gaussianFilter = FilterType::New();
 
     gaussianFilter->SetInput(dynamic_cast<ImageType *>((itk::Object*)(input->data())));
 
-    gaussianFilter->SetVariance(variance);
+//     gaussianFilter->SetVariance(variance);
+
+    gaussianFilter->SetSigma(sigma);
 
     gaussianFilter->Update();
 
@@ -51,7 +56,7 @@ template <class PixelType> int ITKProcessExamplePrivate::update(void)
 ITKProcessExample::ITKProcessExample(void) : dtkAbstractProcess(), d(new ITKProcessExamplePrivate)
 {
     d->output = NULL;
-    d->variance = 4.0;
+    d->sigma = 4.0;
 }
 
 ITKProcessExample::~ITKProcessExample(void)
@@ -88,7 +93,7 @@ void ITKProcessExample::setParameter(double  data, int channel)
     switch (channel){
 
         case (0):
-                d->variance = data;
+                d->sigma = data;
                 break;
         default :
                 return;

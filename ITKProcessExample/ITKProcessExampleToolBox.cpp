@@ -35,7 +35,7 @@ ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medToolBox
 {
       // Parameters:
 
-      QLabel *varianceLabel = new QLabel("variance : ");
+      QLabel *varianceLabel = new QLabel("Sigma : ");
       d->variance = new QLineEdit("1.0");
 
       QHBoxLayout *varianceLayout = new QHBoxLayout();
