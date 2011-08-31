@@ -1,5 +1,5 @@
 /* medViewerToolBoxPatient.cpp ---
- * 
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 64
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewerToolBoxPatient.h"
@@ -57,10 +57,11 @@ medViewerToolBoxPatient::medViewerToolBoxPatient(QWidget *parent) : medToolBox(p
 
     connect(d->combo, SIGNAL(currentIndexChanged(int)), this, SLOT(onCurrentIndexChanged(int)));
 
-    connect(medDbControllerFactory::instance(), SIGNAL(dbControllerRegistered(const QString&)), this, SLOT(onDbControllerRegistered(const QString&)));
+    medDbControllerFactory* dbFactory = medDbControllerFactory::instance();
+    connect(dbFactory, SIGNAL(dbControllerRegistered(const QString&)), this, SLOT(onDbControllerRegistered(const QString&)));
 
-    // Setting up database
-    this->setupDatabase();
+    //connect all existing db controllers, also calls setupDatabase if any dbController
+    onDbControllerRegistered(QString());
 
 }
 
@@ -87,7 +88,7 @@ void medViewerToolBoxPatient::removeChooseItem()
 }
 
 //! Add a patient item.
-/*! 
+/*!
  *  The patient is appended to the toolbox' combobox with text \param
  *  item. \param data corresponds to the patient's database id.
  */
@@ -110,8 +111,8 @@ int medViewerToolBoxPatient::addItem(const QString& item, const medDataIndex& da
 }
 
 //! Clears the list of patient.
-/*! 
- * 
+/*!
+ *
  */
 
 void medViewerToolBoxPatient::clear(void)
@@ -122,8 +123,8 @@ void medViewerToolBoxPatient::clear(void)
     d->combo->clear();
 }
 
-//! Returns the database patient index of the currently displayed patient. 
-/*! 
+//! Returns the database patient index of the currently displayed patient.
+/*!
  *  Beware not to confuse the returned index with the one of the item
  *  in the combo box, that is not necessarily the same.
  */
@@ -135,8 +136,8 @@ QSet<medDataIndex> medViewerToolBoxPatient::patientIndex(void) const
     return patientIndex(itemId);
 }
 
-//! Returns the database patient index of the currently displayed patient. 
-/*! 
+//! Returns the database patient index of the currently displayed patient.
+/*!
  *  Beware not to confuse the returned index with the one of the item
  *  in the combo box, that is not necessarily the same.
  */
@@ -157,8 +158,8 @@ QSet<medDataIndex> medViewerToolBoxPatient::patientIndex(int itemId) const
     return d->itemMap.find(itemId).value();
 }
 
-//! Sets the currently displayed patient. 
-/*! 
+//! Sets the currently displayed patient.
+/*!
  *  \param index is the index of a patient in the database.
  */
 
@@ -173,7 +174,7 @@ void medViewerToolBoxPatient::setPatientIndex(const medDataIndex &index)
 }
 
 //! Combo box index changed slot.
-/*! 
+/*!
  *  Emits the patientIndexChanged signal with argument the index of
  *  the newly displayed patient in the database.
  */
@@ -205,12 +206,12 @@ void medViewerToolBoxPatient::onCurrentIndexChanged(int index)
 void medViewerToolBoxPatient::setupDatabase(void)
 {
     dtkSignalBlocker( d->combo );
-    
+
     this->clear();
     this->addChooseItem();
 
     QHash<QString, int> patientList;
-    
+
     // Setting up persistent data
     medDataManager * dataManager = medDataManager::instance();
     QList<int> dataSourceIds = dataManager->dataSourceIds();
@@ -220,7 +221,7 @@ void medViewerToolBoxPatient::setupDatabase(void)
 
         medAbstractDbController *dbc = dataManager->controllerForDataSource(*dataSourceIt);
 
-        if ( !dbc ) 
+        if ( !dbc )
             continue;
 
         QList<medDataIndex> patientsForSource = dbc->patients();
@@ -257,7 +258,7 @@ void medViewerToolBoxPatient::onDbControllerRegistered( const QString& )
     for (QList<int>::const_iterator dataSourceIt( dataSourceIds.begin()); dataSourceIt != dataSourceIds.end(); ++dataSourceIt ) {
         medAbstractDbController *dbc = dataManager->controllerForDataSource(*dataSourceIt);
 
-        if ( !dbc ) 
+        if ( !dbc )
             continue;
 
         newConnection |= connect(dbc, SIGNAL(updated(medDataIndex)), this, SLOT(setupDatabase()), Qt::UniqueConnection);
