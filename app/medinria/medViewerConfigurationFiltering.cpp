@@ -125,7 +125,7 @@ QString medViewerConfigurationFiltering::description(void) const
     return "Filtering";
 }
 
-medViewerConfiguration *createMedViewerConfigurationFiltering(void)
+medViewerConfiguration *createMedViewerConfigurationFiltering(QWidget* parent)
 {
-    return new medViewerConfigurationFiltering;
+    return new medViewerConfigurationFiltering(parent);
 }

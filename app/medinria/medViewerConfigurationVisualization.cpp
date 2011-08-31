@@ -100,7 +100,7 @@ QString medViewerConfigurationVisualization::description(void) const
     return "Visualization";
 }
 
-medViewerConfiguration *createMedViewerConfigurationVisualization(void)
+medViewerConfiguration *createMedViewerConfigurationVisualization(QWidget* parent)
 {
-    return new medViewerConfigurationVisualization;
+    return new medViewerConfigurationVisualization(parent);
 }

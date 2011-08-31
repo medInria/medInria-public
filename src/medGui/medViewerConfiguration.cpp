@@ -41,7 +41,7 @@ public:
 
 };
 
-medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
+medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(parent), d(new medViewerConfigurationPrivate)
 {
     d->parent = parent;
 
