@@ -13,7 +13,8 @@ namespace medMetaDataKeys {
     * It allows compile-time verification that the keyword is correct.
     */
 
-    class MEDCORE_EXPORT Key {
+    class MEDCORE_EXPORT Key : public QObject{
+      Q_OBJECT
     public:
 
         typedef std::vector<const Key*> Registery;
@@ -111,3 +112,4 @@ namespace medMetaDataKeys {
 };
 
 #endif // MEDMETADATAHELPER_H
+
