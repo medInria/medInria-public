@@ -28,19 +28,19 @@
 class NoFocusDelegate : public QStyledItemDelegate
 {
 public:
-    NoFocusDelegate(medDatabaseView *view, QList<int> seriesIds) : QStyledItemDelegate(), m_view(view), m_seriesIds(seriesIds) {}
+    NoFocusDelegate(medDatabaseView *view, QList<medDataIndex> indexes) : QStyledItemDelegate(), m_view(view), m_indexes(indexes) {}
 
-    void append(int seriesIndex);
+    void append(medDataIndex);
 
 protected:
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     medDatabaseView *m_view;
-    QList<int> m_seriesIds;
+    QList<medDataIndex> m_indexes;
 };
 
-void NoFocusDelegate::append(int seriesIndex)
+void NoFocusDelegate::append(medDataIndex index)
 {
-    m_seriesIds.append(seriesIndex);
+    m_indexes.append(index);
 }
 
 void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const
@@ -60,7 +60,7 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
         // items that failed to open will have a pinkish background
         if(item)
         {
-            if (m_seriesIds.contains(item->dataIndex().seriesId()))
+            if (m_indexes.contains(item->dataIndex()))
                painter->fillRect(option.rect, QColor::fromRgb(qRgb(201, 121, 153)));
 
             medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId());
@@ -98,7 +98,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
-    NoFocusDelegate* delegate = new NoFocusDelegate(this,QList<int>());
+    NoFocusDelegate* delegate = new NoFocusDelegate(this, QList<medDataIndex>());
     this->setItemDelegate(delegate);
 }
 
@@ -282,6 +282,7 @@ void medDatabaseView::onOpeningFailed(const medDataIndex& index)
     if (NoFocusDelegate* delegate =
             dynamic_cast<NoFocusDelegate*>(this->itemDelegate()))
     {
-        delegate->append(index.seriesId());
+
+        delegate->append(index);
     }
 }

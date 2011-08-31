@@ -236,7 +236,8 @@ bool medViewerArea::open(const medDataIndex& index)
 
     this->switchToPatient(index);
 
-    if(((medDataIndex)index).isValidForSeries()) {
+    if(((medDataIndex)index).isValidForSeries())
+    {
         dtkSmartPointer<dtkAbstractData> data;
         dtkSmartPointer<medAbstractView> view;
 
@@ -253,6 +254,7 @@ bool medViewerArea::open(const medDataIndex& index)
         if ( data.isNull() )
         {
             medDataManager::instance()->blockSignals (false);
+            emit failedToOpen(index);
             return false;
         }
 
@@ -316,7 +318,8 @@ bool medViewerArea::open(const medDataIndex& index)
             QList<medDataIndex> seriesForSource = dbc->series((*studyIt));
 
             for ( QList<medDataIndex>::const_iterator seriesIt(seriesForSource.begin()); seriesIt != seriesForSource.end(); ++seriesIt) {
-                succeeded = this->open(*seriesIt) && succeeded;
+                bool couldOpen = this->open(*seriesIt);
+                succeeded = couldOpen && succeeded;
             }
         }
         medDataManager::instance()->blockSignals (false);
