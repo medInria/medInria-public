@@ -33,12 +33,12 @@ QList<QString> medViewerConfigurationFactory::configurations(void)
     return d->configuration_creators.keys();
 }
 
-medViewerConfiguration *medViewerConfigurationFactory::createConfiguration(QString type)
+medViewerConfiguration *medViewerConfigurationFactory::createConfiguration(QString type,QWidget* parent)
 {
     if(!d->configuration_creators.contains(type))
         return NULL;
 
-    medViewerConfiguration *conf = d->configuration_creators[type]();
+    medViewerConfiguration *conf = d->configuration_creators[type](parent);
 
     return conf;
 }

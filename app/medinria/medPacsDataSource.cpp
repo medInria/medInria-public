@@ -29,9 +29,9 @@ public:
     QList<medToolBox*> toolboxes;
 };
 
-medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(parent), d(new medPacsDataSourcePrivate)
+medPacsDataSource::medPacsDataSource(QObject* parent) : medAbstractDataSource(parent), d(new medPacsDataSourcePrivate)
 {
-    d->pacsWidget = new medPacsWidget(parent);
+    d->pacsWidget = new medPacsWidget;
     d->pacs_selector = new medPacsSelector();
     d->toolbox_pacs_host = new medBrowserToolBoxPacsHost();
     d->toolboxes.push_back(d->toolbox_pacs_host);

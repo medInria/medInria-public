@@ -657,7 +657,7 @@ void medViewerArea::setupConfiguration(QString name)
     if (d->configurations.contains(name))
         conf = d->configurations[name];
     else {
-        if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name)) {
+        if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name,this)) {
             connect(this, SIGNAL(clearOnPatientChange()), conf, SLOT(clear()));
             d->configurations.insert(name, conf);
         }

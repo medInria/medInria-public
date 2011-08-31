@@ -16,12 +16,12 @@ class dtkAbstractData;
  * a source selection widget and several toolboxes.
  * All dynamic data source implementation should derive from this class.
  **/
-class MEDCORE_EXPORT medAbstractDataSource : public QWidget
+class MEDCORE_EXPORT medAbstractDataSource : public QObject
 {
     Q_OBJECT
     
 public:
-    medAbstractDataSource(QWidget *parent = 0);
+    medAbstractDataSource(QObject *parent = 0);
     ~medAbstractDataSource(void);
 
     /** 
