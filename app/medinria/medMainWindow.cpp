@@ -263,8 +263,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     // this->setStyle(new QPlastiqueStyle());
     this->setWindowTitle ( "medinria" );
 
-//     medMessageController::instance()->attach ( this->statusBar() );
-    medMessageController::instance()->attach ( d->statusBar );
+    //Connect the messageController with the status for notification messages management
+    QObject::connect(medMessageController::instance(), SIGNAL(addMessage(QWidget*)), d->statusBar, SLOT(addMessage(QWidget*)));
+    QObject::connect(medMessageController::instance(), SIGNAL(removeMessage(QWidget*)), d->statusBar, SLOT(removeMessage(QWidget*)));
 
     d->viewerArea->setupConfiguration ( "Visualization" );
 

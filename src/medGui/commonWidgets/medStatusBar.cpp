@@ -1,5 +1,7 @@
 #include "medStatusBar.h"
 
+#include <QtCore>
+
 class medStatusBarPrivate
 {
 public:
@@ -23,12 +25,19 @@ QBoxLayout* medStatusBar::statusBarLayout()
 
 void medStatusBar::addMessage ( QWidget* widget )
 {
-    if ( d->statusBarLayout )
-        d->statusBarLayout->insertWidget ( 1, widget );
+    if ( widget )
+        if ( d->statusBarLayout )
+            d->statusBarLayout->insertWidget ( 1, widget );
+    this->update();
+    qApp->processEvents();
 }
 
 void medStatusBar::removeMessage ( QWidget* widget )
 {
-    if ( d->statusBarLayout )
-        d->statusBarLayout->removeWidget ( widget );
+    if ( widget )
+        if ( d->statusBarLayout )
+            d->statusBarLayout->removeWidget ( widget );
+    delete widget;
+    this->update();
+    qApp->processEvents();
 }

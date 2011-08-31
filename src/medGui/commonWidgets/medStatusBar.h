@@ -38,6 +38,7 @@ public:
      */
     QBoxLayout * statusBarLayout();
 
+public slots:
     /**
      * Add a widget containing a message (information, progress, error)
      * just after the quick access menu

@@ -25,7 +25,6 @@
 
 #include "medCoreExport.h"
 
-class medStatusBar;
 class medMessageControllerPrivate;
 
 // /////////////////////////////////////////////////////////////////
@@ -40,8 +39,13 @@ public:
      medMessageControllerMessage(QObject* sender, QWidget *parent = 0);
     ~medMessageControllerMessage(void);
 
+    QWidget * getWidget();
+    
 protected:
     QObject* sender;
+
+    //The widget containing the message
+    QWidget* widget;
 };
 
 
@@ -146,16 +150,18 @@ class MEDCORE_EXPORT medMessageController : public QObject
 public:
     static medMessageController *instance(void);
 
-    void attach(medStatusBar *status);
-
 public slots:
     void     showInfo(QObject *sender, const QString& text,unsigned int timeout=0);
     void     showError(QObject *sender, const QString& text,unsigned int timeout=0);
-    void showProgress(QObject *sender, const QString& text);
+    void     showProgress(QObject *sender, const QString& text);
 
     void setProgress(int value);
 
     void remove(QObject *sender);
+
+signals:
+  void addMessage(QWidget * message);
+  void removeMessage(QWidget * message);
 
 protected:
      medMessageController(void);
