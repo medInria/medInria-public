@@ -22,6 +22,10 @@ public:
      *  Constructor
      */
     medStatusBar ( QWidget * parent = 0 );
+    /**
+     * Destructor
+     */
+    ~medStatusBar(void);
 
     /**
      *  Set the status bar layout containing the widgets

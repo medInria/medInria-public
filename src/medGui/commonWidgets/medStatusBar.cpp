@@ -13,6 +13,12 @@ medStatusBar::medStatusBar ( QWidget* parent ) : QStatusBar ( parent ), d ( new 
     d->statusBarLayout = NULL;
 }
 
+medStatusBar::~medStatusBar()
+{
+    delete d;
+    d= NULL;
+}
+
 void medStatusBar::setStatusBarLayout ( QBoxLayout* layout )
 {
     d->statusBarLayout = layout;
@@ -37,7 +43,7 @@ void medStatusBar::removeMessage ( QWidget* widget )
     if ( widget )
         if ( d->statusBarLayout )
             d->statusBarLayout->removeWidget ( widget );
-    delete widget;
+    widget->deleteLater();
     this->update();
     qApp->processEvents();
 }
