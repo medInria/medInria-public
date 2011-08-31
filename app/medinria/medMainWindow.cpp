@@ -126,12 +126,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     this->setMinimumHeight ( 600 );
     this->setMinimumWidth ( 800 );
 
+    // register controller, configurations etc
+    this->registerToFactories();
+
     // Setting up database connection
     if ( !medDatabaseController::instance()->createConnection() )
         qDebug() << "Unable to create a connection to the database";
-
-    // register controller, configurations etc
-    this->registerToFactories();
 
     connect (medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &, const QString&)),
              this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
@@ -156,6 +156,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->browserArea->setObjectName ( "Browser" );
     d->viewerArea->setObjectName ( "Viewer" );
     d->homepageArea->setObjectName ( "Homepage" );
+
 
     d->stack = new QStackedWidget ( this );
     d->stack->addWidget ( d->homepageArea );
@@ -268,6 +269,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->viewerArea->setupConfiguration ( "Visualization" );
 
     connect ( qApp, SIGNAL ( aboutToQuit() ), this, SLOT ( close() ) );
+
+
 }
 
 medMainWindow::~medMainWindow ( void )

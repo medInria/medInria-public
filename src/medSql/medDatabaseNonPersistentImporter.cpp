@@ -35,11 +35,15 @@
 class medDatabaseNonPersistentImporterPrivate
 {
 public:
+    medDatabaseNonPersistentImporterPrivate(const QString& uuid):
+        callerUuid(uuid){}
     dtkAbstractData *data;
+    const QString & callerUuid;
     bool isCancelled;
 };
 
-medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter(dtkAbstractData *data) : medJobItem(), d(new medDatabaseNonPersistentImporterPrivate)
+medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter(dtkAbstractData *data,
+                                                                   const QString& callerUuid) : medJobItem(), d(new medDatabaseNonPersistentImporterPrivate(callerUuid))
 {
     d->data = data;
     d->isCancelled = false;
@@ -64,11 +68,11 @@ void medDatabaseNonPersistentImporter::run(void)
     }
 
     if (!data->hasMetaData(medMetaDataKeys::PatientName.key()) ||
-	!data->hasMetaData(medMetaDataKeys::StudyDescription.key()) ||
-	!data->hasMetaData(medMetaDataKeys::SeriesDescription.key()) ) {
+            !data->hasMetaData(medMetaDataKeys::StudyDescription.key()) ||
+            !data->hasMetaData(medMetaDataKeys::SeriesDescription.key()) ) {
         qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
-	emit failure (this);
-    return;
+        emit failure (this);
+        return;
     }
 
     QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
@@ -85,7 +89,7 @@ void medDatabaseNonPersistentImporter::run(void)
     }
     else {
         for (int i=0; i<items.count(); i++)
-	    if (items[i]->name()==patientName) {
+            if (items[i]->name()==patientName) {
             patientId = items[i]->index().patientId();
             break;
         }
@@ -135,7 +139,7 @@ void medDatabaseNonPersistentImporter::run(void)
 
     emit progressed(100);
     emit success(this);
-    emit nonPersistentImported(index);
+    emit nonPersistentImported(index,d->callerUuid);
 }
 
 void medDatabaseNonPersistentImporter::onCancel( QObject* )

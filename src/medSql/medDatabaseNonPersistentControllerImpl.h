@@ -108,21 +108,23 @@ public:
 public slots:
 
     /**
-    * Read data from nonPersistent storage using the index
+    * Reads data from nonPersistent storage using the index
     * @params const medDataIndex & index Index to look for
     * @return dtkAbstractData* data
     */
     dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
-    * Store data temporarily referenced by temp index
-    * @params dtkAbstractData * data data to be stored
+    * Stores data temporarily referenced by temp index
+    * @param data data to be stored
+    * @param callerUuid
     */
-    void import(dtkAbstractData *data);
+    void import(dtkAbstractData *data,const QString& callerUuid=QString());
 
     /**
-     * Store data temporarily referenced by temp index
-     * @params const QString & file data stored at file path
+     * Stores data temporarily referenced by temp index
+     * @param file data stored at file path.
+     * @param callerUuid caller's identifier.
      */
     void import(const QString& file,const QString& callerUuid=QString());
 

@@ -126,7 +126,7 @@ public slots:
     * Import data into the db read from memory
     * @params dtkAbstractData * data dataObject
     */
-    void import(dtkAbstractData *data);
+    void import(dtkAbstractData *data,const QString& importUuid=QString());
 
     /** override base class */
     virtual void remove(const medDataIndex& index);
