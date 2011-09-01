@@ -80,7 +80,7 @@ template <class PixelType> int itkFiltersPrivate::update ( void )
         qDebug() << "Calling Multiply filter";
         qDebug() << "Multiply value : " << multiplyValue;
         multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        multiplyFilter->SetConstant ( addValue );
+        multiplyFilter->SetConstant ( multiplyValue );
         multiplyFilter->Update();
         output->setData ( multiplyFilter->GetOutput() );
         break;
@@ -88,7 +88,7 @@ template <class PixelType> int itkFiltersPrivate::update ( void )
         qDebug() << "Calling Divide filter";
         qDebug() << "Divide value : " << divideValue;
         divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        divideFilter->SetConstant ( addValue );
+        divideFilter->SetConstant ( divideValue );
         divideFilter->Update();
         output->setData ( divideFilter->GetOutput() );
         break;
