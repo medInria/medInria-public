@@ -139,7 +139,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     widget->setLayout ( layout );
 
     // Main toolbox:
-    this->setTitle ( "ITK Filters" );
+    this->setTitle ( "ITK Basic Filters" );
     this->addWidget ( widget );
 
     connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
@@ -155,7 +155,7 @@ itkFiltersToolBox::~itkFiltersToolBox ( void )
 
 bool itkFiltersToolBox::registered ( void )
 {
-    return medToolBoxFactory::instance()->registerCustomFilteringToolBox ( "ITK Filters", createitkFiltersToolBox );
+    return medToolBoxFactory::instance()->registerCustomFilteringToolBox ( "ITK Basic Filters", createitkFiltersToolBox );
 }
 
 
@@ -181,9 +181,8 @@ void itkFiltersToolBox::run ( void )
     d->process->setInput ( this->parent()->data() );
 
     //Set parameters :
-    //   0 : filter type
-    //   1,2,..,N : filter parameters
-    
+    //   channel 0 : filter type
+    //   channel 1,2,..,N : filter parameters
     switch ( d->filters->currentIndex() )
     {
     case 0: // add filter
@@ -206,8 +205,8 @@ void itkFiltersToolBox::run ( void )
         d->process->setParameter(4.0,0);
         break;
     case 5: // median filter
-        break;
         d->process->setParameter(5.0,0);
+        break;
     }
 
 

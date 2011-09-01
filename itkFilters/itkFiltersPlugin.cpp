@@ -58,7 +58,7 @@ bool itkFiltersPlugin::uninitialize ( void )
 
 QString itkFiltersPlugin::description ( void ) const
 {
-    return "ITK Filters";
+    return "ITK Basic Filters";
 }
 
 QString itkFiltersPlugin::name ( void ) const

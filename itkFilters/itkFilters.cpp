@@ -42,81 +42,114 @@ public:
     double sigmaValue;
     itkFilters::FILTER filterType;
     template <class PixelType> int update ( void );
+    template <class PixelType> void addFilter ( void );
+    template <class PixelType> void multiplyFilter( void );
+    template <class PixelType> void divideFilter ( void );
+    template <class PixelType> void gaussianFilter ( void );
+    template <class PixelType> void nullFilter ( void );
+    template <class PixelType> void medianFilter ( void );
 };
 
 template <class PixelType> int itkFiltersPrivate::update ( void )
 {
-    typedef itk::Image< PixelType, 3 > ImageType;
-
-    typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
-    typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
-
-    typedef itk::AddConstantToImageFilter< ImageType, double, ImageType >  AddFilterType;
-    typename AddFilterType::Pointer addFilter = AddFilterType::New();
-
-    typedef itk::MultiplyByConstantImageFilter < ImageType, double, ImageType >  MultiplyFilterType;
-    typename MultiplyFilterType::Pointer multiplyFilter = MultiplyFilterType::New();
-
-    typedef itk::DivideByConstantImageFilter < ImageType, double, ImageType >  DivideFilterType;
-    typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
-
-//     typedef itk::LaplacianImageFilter < ImageType, ImageType >  LaplacianFilterType;
-//     typename LaplacianFilterType::Pointer laplacianFilter = LaplacianFilterType::New();
-
-    typedef itk::MedianImageFilter < ImageType, ImageType >  MedianFilterType;
-    typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
-
     switch ( filterType )
     {
     case itkFilters::ADD:
         qDebug() << "Calling Add filter";
         qDebug() << "Add value : " << addValue;
-        addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        addFilter->SetConstant ( addValue );
-        addFilter->Update();
-        output->setData ( addFilter->GetOutput() );
+        this->addFilter<PixelType>();
         break;
     case itkFilters::MULTIPLY:
         qDebug() << "Calling Multiply filter";
         qDebug() << "Multiply value : " << multiplyValue;
-        multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        multiplyFilter->SetConstant ( multiplyValue );
-        multiplyFilter->Update();
-        output->setData ( multiplyFilter->GetOutput() );
+        this->multiplyFilter<PixelType>();
         break;
     case itkFilters::DIVIDE:
         qDebug() << "Calling Divide filter";
         qDebug() << "Divide value : " << divideValue;
-        divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        divideFilter->SetConstant ( divideValue );
-        divideFilter->Update();
-        output->setData ( divideFilter->GetOutput() );
+        this->divideFilter<PixelType>();
         break;
     case itkFilters::GAUSSIAN:
         qDebug() << "Calling Gaussian filter";
         qDebug() << "Sigma : " << sigmaValue;
-        gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        gaussianFilter->SetSigma ( sigmaValue );
-        gaussianFilter->Update();
-        output->setData ( gaussianFilter->GetOutput() );
+        this->gaussianFilter<PixelType>();
         break;
     case itkFilters::LAPLACIAN:
         qDebug() << "Calling Laplacian filter";
-//         laplacianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-//         laplacianFilter->Update();
-//         output->setData ( laplacianFilter->GetOutput() );
+        this->nullFilter<PixelType>();
         break;
     case itkFilters::MEDIAN:
         qDebug() << "Calling Median filter";
-        medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-        medianFilter->Update();
-        output->setData ( medianFilter->GetOutput() );
+        this->medianFilter<PixelType>();
         break;
     }
 
     return EXIT_SUCCESS;
 }
 
+template <class PixelType> void itkFiltersPrivate::addFilter ( void )
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::AddConstantToImageFilter< ImageType, double, ImageType >  AddFilterType;
+    typename AddFilterType::Pointer addFilter = AddFilterType::New();
+
+    addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+    addFilter->SetConstant ( addValue );
+    addFilter->Update();
+    output->setData ( addFilter->GetOutput() );
+}
+
+template <class PixelType> void itkFiltersPrivate::multiplyFilter ( void )
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::MultiplyByConstantImageFilter < ImageType, double, ImageType >  MultiplyFilterType;
+    typename MultiplyFilterType::Pointer multiplyFilter = MultiplyFilterType::New();
+
+    multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+    multiplyFilter->SetConstant ( multiplyValue );
+    multiplyFilter->Update();
+    output->setData ( multiplyFilter->GetOutput() );
+}
+
+template <class PixelType> void itkFiltersPrivate::divideFilter ( void )
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::DivideByConstantImageFilter < ImageType, double, ImageType >  DivideFilterType;
+    typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
+
+    divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+    divideFilter->SetConstant ( divideValue );
+    divideFilter->Update();
+    output->setData ( divideFilter->GetOutput() );
+}
+
+template <class PixelType> void itkFiltersPrivate::gaussianFilter ( void )
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
+    typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
+
+    gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+    gaussianFilter->SetSigma ( sigmaValue );
+    gaussianFilter->Update();
+    output->setData ( gaussianFilter->GetOutput() );
+
+}
+
+template <class PixelType> void itkFiltersPrivate::nullFilter ( void )
+{
+}
+
+template <class PixelType> void itkFiltersPrivate::medianFilter ( void )
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::MedianImageFilter < ImageType, ImageType >  MedianFilterType;
+    typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
+
+    medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+    medianFilter->Update();
+    output->setData ( medianFilter->GetOutput() );
+}
 
 itkFilters::itkFilters ( void ) : dtkAbstractProcess(), d ( new itkFiltersPrivate )
 {
