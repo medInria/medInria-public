@@ -183,10 +183,12 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
         qWarning() << "unable to open images with index:" << index.asString();
 
         // sometimes signals are blocked before calling this functions, like in medViewerArea...
-        bool prevState = this->signalsBlocked();
-        this->blockSignals(false);
+        //medViewerArea doesn't block these signals any more... until we find why
+        //it was needed, we won't be doing any black magic signal blocking where not needed.
+//        bool prevState = this->signalsBlocked();
+//        this->blockSignals(false);
         emit failedToOpen(index);
-        this->blockSignals(prevState);
+//        this->blockSignals(prevState);
     }
 
     return dtkdata;

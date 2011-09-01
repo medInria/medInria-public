@@ -243,9 +243,11 @@ bool medViewerArea::open(const medDataIndex& index)
 
 
         // the data-manager should be used to read data
-        medDataManager::instance()->blockSignals (true);
+        //We can'see wy the dataManager had signals blocked here: put it back on
+        //only if it solves an obvious bug.
+//        medDataManager::instance()->blockSignals (true);
         data = medDataManager::instance()->data(index);
-        medDataManager::instance()->blockSignals (false);
+//        medDataManager::instance()->blockSignals (false);
         if ( data.isNull() )
         {
 
