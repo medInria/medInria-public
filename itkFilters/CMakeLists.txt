@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkAddConstantToImageFilterPlugin)
+project(itkFiltersPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -46,14 +46,14 @@ include(${medinria_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkAddConstantToImageFilterPlugin.h
-  itkAddConstantToImageFilterToolBox.h
-  itkAddConstantToImage.h)
+  itkFiltersPlugin.h
+  itkFiltersToolBox.h
+  itkFilters.h)
 
 set(${PROJECT_NAME}_SOURCES
-  itkAddConstantToImageFilterPlugin.cpp
-  itkAddConstantToImageFilterToolBox.cpp
-  itkAddConstantToImage.cpp)
+  itkFiltersPlugin.cpp
+  itkFiltersToolBox.cpp
+  itkFilters.cpp)
 
 ## #################################################################
 ## Build rules
@@ -62,7 +62,7 @@ set(${PROJECT_NAME}_SOURCES
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
@@ -71,7 +71,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
   medGui
-#  ITKReview  
+#  ITKReview
   )
 
 #dtk_build_doc(itkAddConstantToImageFilterPlugin)
@@ -79,7 +79,7 @@ target_link_libraries(${PROJECT_NAME}
 # add_executable(${PROJECT_NAME}Testing
 #   itkAddConstantToImageFilterTestingApp.cpp
 # )
-# 
+#
 # target_link_libraries(${PROJECT_NAME}Testing
 #   ${PROJECT_NAME}
 # )
@@ -92,3 +92,4 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION plugins
   LIBRARY DESTINATION plugins
   ARCHIVE DESTINATION plugins)
+

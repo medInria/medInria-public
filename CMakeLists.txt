@@ -85,7 +85,7 @@ set(PLUGIN_LIST
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
   ITKProcessExample              ON
-  itkAddConstantToImageFilter    ON
+  itkFilters                     ON
   )
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
@@ -134,11 +134,7 @@ endwhile()
 endif()
 
 if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
-    subdirs(exampleProcessImageFilter)
-endif()
-
-if (MEDINRIA_BUILD_ADDCONSTANTTOIMAGEFILTER_PLUGIN)
-  add_subdirectory(itkAddConstantToImageFilter)
+    add_subdirectory(exampleProcessImageFilter)
 endif()
 
 if(MSVC)
@@ -168,7 +164,7 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
     MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
     MEDINRIA_BUILD_ITKPROCESSEXAMPLE_PLUGIN OR
-    MEDINRIA_BUILD_ADDCONSTANTTOIMAGEFILTER_PLUGIN)
+    MEDINRIA_BUILD_ITKFILTERS_PLUGIN)
     set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()
 
