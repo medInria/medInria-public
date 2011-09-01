@@ -74,14 +74,6 @@ public:
     */
     void setdw(QStatusBar *status);
 
-signals:
-
-	/**
-     * @brief Emitted when an image fails to open
-     * @param the @medDataIndex of the image
-    */
-	void failedToOpen(const medDataIndex&);
-
 public slots:
     /**
      * @brief Sets up the newly chosen configuration.

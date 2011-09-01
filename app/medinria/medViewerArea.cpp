@@ -254,7 +254,6 @@ bool medViewerArea::open(const medDataIndex& index)
         if ( data.isNull() )
         {
             medDataManager::instance()->blockSignals (false);
-            emit failedToOpen(index);
             return false;
         }
 

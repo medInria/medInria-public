@@ -165,6 +165,12 @@ signals:
     */
     void dataRemoved (const medDataIndex&);
 
+    /**
+     * @brief Emitted when an image fails to open
+     * @param the @medDataIndex of the image
+    */
+    void failedToOpen(const medDataIndex&);
+
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index);
     void onPersistentDataImported(const medDataIndex &index);

@@ -165,8 +165,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->browserArea, SIGNAL(load(const QString&)), this, SLOT(load(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
-    connect(d->viewerArea, SIGNAL(failedToOpen(const medDataIndex&)), d->browserArea, SLOT(onOpeningFailed(const medDataIndex&)));
-
     // Setting up status bar
     //Setup quick access menu
     d->quickAccessButton = new medQuickAccessPushButton ( this );
