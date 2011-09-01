@@ -141,6 +141,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
 
+    connect(medDataManager::instance(), SIGNAL(failedToOpen(const medDataIndex&)), this, SLOT(onOpeningFailed(const medDataIndex&)));
  }
 
 medBrowserArea::~medBrowserArea(void)

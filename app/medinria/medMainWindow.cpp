@@ -534,19 +534,11 @@ void medMainWindow::onEditSettings()
 
 void medMainWindow::open ( const medDataIndex& index )
 {
-//    d->viewerArea->openInTab(index);
    if(d->viewerArea->openInTab(index))
     {
-
         d->quickAccessButton->setText("Workspace: Visualization");
         d->quickAccessButton->setMinimumWidth(170);
         this->switchToViewerArea();
-    }
-    else
-    {
-        // something went wrong while opening
-        // we bubble down the info
-        d->browserArea->onOpeningFailed(index);
     }
 }
 
