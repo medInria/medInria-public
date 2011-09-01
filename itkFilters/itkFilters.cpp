@@ -25,7 +25,9 @@
 
 #include "itkImage.h"
 #include "itkMedianImageFilter.h"
-#include "itkLaplacianImageFilter.h"
+#include "itkNormalizeImageFilter.h"
+#include "itkShrinkImageFilter.h"
+#include "itkInvertIntensityImageFilter.h"
 #include "itkAddConstantToImageFilter.h"
 #include "itkMultiplyByConstantImageFilter.h"
 #include "itkDivideByConstantImageFilter.h"
@@ -40,14 +42,18 @@ public:
     double multiplyValue;
     double divideValue;
     double sigmaValue;
+    unsigned int shrinkFactors[3];
+
     itkFilters::FILTER filterType;
     template <class PixelType> int update ( void );
     template <class PixelType> void addFilter ( void );
-    template <class PixelType> void multiplyFilter( void );
+    template <class PixelType> void multiplyFilter ( void );
     template <class PixelType> void divideFilter ( void );
     template <class PixelType> void gaussianFilter ( void );
-    template <class PixelType> void nullFilter ( void );
+    template <class PixelType> void normalizeFilter ( void );
     template <class PixelType> void medianFilter ( void );
+    template <class PixelType> void invertFilter ( void );
+    template <class PixelType> void shrinkFilter ( void );
 };
 
 template <class PixelType> int itkFiltersPrivate::update ( void )
@@ -74,13 +80,21 @@ template <class PixelType> int itkFiltersPrivate::update ( void )
         qDebug() << "Sigma : " << sigmaValue;
         this->gaussianFilter<PixelType>();
         break;
-    case itkFilters::LAPLACIAN:
-        qDebug() << "Calling Laplacian filter";
-        this->nullFilter<PixelType>();
+    case itkFilters::NORMALIZE:
+        qDebug() << "Calling Normalize filter";
+        this->normalizeFilter<PixelType>();
         break;
     case itkFilters::MEDIAN:
         qDebug() << "Calling Median filter";
         this->medianFilter<PixelType>();
+        break;
+    case itkFilters::INVERT:
+        qDebug() << "Calling Invert intensity filter";
+        this->invertFilter<PixelType>();
+        break;
+    case itkFilters::SHRINK:
+        qDebug() << "Calling shrink filter";
+        this->shrinkFilter<PixelType>();
         break;
     }
 
@@ -133,11 +147,17 @@ template <class PixelType> void itkFiltersPrivate::gaussianFilter ( void )
     gaussianFilter->SetSigma ( sigmaValue );
     gaussianFilter->Update();
     output->setData ( gaussianFilter->GetOutput() );
-
 }
 
-template <class PixelType> void itkFiltersPrivate::nullFilter ( void )
+template <class PixelType> void itkFiltersPrivate::normalizeFilter ( void )
 {
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::NormalizeImageFilter < ImageType, ImageType >  NormalizeFilterType;
+    typename NormalizeFilterType::Pointer normalizeFilter = NormalizeFilterType::New();
+
+    normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+    normalizeFilter->Update();
+    output->setData ( normalizeFilter->GetOutput() );
 }
 
 template <class PixelType> void itkFiltersPrivate::medianFilter ( void )
@@ -149,6 +169,29 @@ template <class PixelType> void itkFiltersPrivate::medianFilter ( void )
     medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     medianFilter->Update();
     output->setData ( medianFilter->GetOutput() );
+}
+
+template <class PixelType> void itkFiltersPrivate::invertFilter ( void )
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::InvertIntensityImageFilter < ImageType, ImageType >  InvertFilterType;
+    typename InvertFilterType::Pointer invertFilter = InvertFilterType::New();
+
+    invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+    invertFilter->Update();
+    output->setData ( invertFilter->GetOutput() );
+}
+
+template <class PixelType> void itkFiltersPrivate::shrinkFilter ( void )
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::ShrinkImageFilter< ImageType, ImageType >  ShrinkFilterType;
+    typename ShrinkFilterType::Pointer shrinkFilter = ShrinkFilterType::New();
+
+    shrinkFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+    shrinkFilter->SetShrinkFactors ( shrinkFactors );
+    shrinkFilter->Update();
+    output->setData ( shrinkFilter->GetOutput() );
 }
 
 itkFilters::itkFilters ( void ) : dtkAbstractProcess(), d ( new itkFiltersPrivate )
@@ -211,10 +254,16 @@ void itkFilters::setParameter ( double  data, int channel )
             d->filterType = itkFilters::GAUSSIAN;
             break;
         case 4:
-            d->filterType = itkFilters::LAPLACIAN;
+            d->filterType = itkFilters::NORMALIZE;
             break;
         case 5:
             d->filterType = itkFilters::MEDIAN;
+            break;
+        case 6:
+            d->filterType = itkFilters::INVERT;
+            break;
+        case 7:
+            d->filterType = itkFilters::SHRINK;
             break;
         }
         break;
@@ -233,12 +282,24 @@ void itkFilters::setParameter ( double  data, int channel )
         case itkFilters::GAUSSIAN:
             d->sigmaValue = data;
             break;
-        case itkFilters::LAPLACIAN:
-            ;
+        case itkFilters::NORMALIZE:
             break;
         case itkFilters::MEDIAN:
             break;
+        case itkFilters::INVERT:
+            break;
+        case itkFilters::SHRINK:
+            d->shrinkFactors[0] = ( unsigned int ) data;
+            break;
         }
+        break;
+    case 2:
+        if ( d->filterType == itkFilters::SHRINK )
+            d->shrinkFactors[1] = ( unsigned int ) data;
+        break;
+    case 3:
+        if ( d->filterType == itkFilters::SHRINK )
+            d->shrinkFactors[2] = ( unsigned int ) data;
         break;
     default :
         return;
