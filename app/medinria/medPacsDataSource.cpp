@@ -29,15 +29,15 @@ public:
     QList<medToolBox*> toolboxes;
 };
 
-medPacsDataSource::medPacsDataSource(QObject* parent) : medAbstractDataSource(parent), d(new medPacsDataSourcePrivate)
+medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(parent), d(new medPacsDataSourcePrivate)
 {
     d->pacsWidget = new medPacsWidget;
-    d->pacs_selector = new medPacsSelector();
-    d->toolbox_pacs_host = new medBrowserToolBoxPacsHost();
+    d->pacs_selector = new medPacsSelector(d->pacsWidget);
+    d->toolbox_pacs_host = new medBrowserToolBoxPacsHost(d->pacsWidget);
     d->toolboxes.push_back(d->toolbox_pacs_host);
-    d->toolbox_pacs_nodes = new medBrowserToolBoxPacsNodes();
+    d->toolbox_pacs_nodes = new medBrowserToolBoxPacsNodes(d->pacsWidget);
     d->toolboxes.push_back(d->toolbox_pacs_nodes);
-    d->toolbox_pacs_search = new medBrowserToolBoxPacsSearch();
+    d->toolbox_pacs_search = new medBrowserToolBoxPacsSearch(d->pacsWidget);
     d->toolboxes.push_back(d->toolbox_pacs_search);
 
     connect(d->pacsWidget, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));

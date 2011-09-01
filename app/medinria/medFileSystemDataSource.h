@@ -14,7 +14,7 @@ class medFileSystemDataSource : public medAbstractDataSource
     Q_OBJECT
 
 public:
-    medFileSystemDataSource(QObject* parent = 0);
+    medFileSystemDataSource(QWidget* parent = 0);
     ~medFileSystemDataSource();
 
     QWidget* mainViewWidget();

@@ -13,9 +13,9 @@ public:
     dtkFinderToolBar *toolbar;
 };
 
-medFileSystemDataSource::medFileSystemDataSource( QObject* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
+medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
 {
-    d->filesystem_widget = new QWidget;
+    d->filesystem_widget = new QWidget(parent);
 
     d->finder = new dtkFinder (d->filesystem_widget);
     d->finder->setPath(QDir::homePath());
@@ -80,7 +80,7 @@ medFileSystemDataSource::medFileSystemDataSource( QObject* parent /*= 0*/ ): med
     connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportClicked()));
     connect(indexAction, SIGNAL(triggered()),  this, SLOT(onFileSystemIndexClicked()));
     connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadClicked()));
-    connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));    
+    connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));
 
     QHBoxLayout *toolbar_layout = new QHBoxLayout;
     toolbar_layout->setContentsMargins(0, 0, 0, 0);
