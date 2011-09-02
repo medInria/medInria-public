@@ -24,6 +24,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include "itkImage.h"
+#include "itkIntensityWindowingImageFilter.h"
 #include "itkMedianImageFilter.h"
 #include "itkNormalizeImageFilter.h"
 #include "itkShrinkImageFilter.h"
@@ -54,6 +55,7 @@ public:
     template <class PixelType> void medianFilter ( void );
     template <class PixelType> void invertFilter ( void );
     template <class PixelType> void shrinkFilter ( void );
+    template <class PixelType> void intensityFilter ( void );
 };
 
 template <class PixelType> int itkFiltersPrivate::update ( void )
@@ -95,6 +97,10 @@ template <class PixelType> int itkFiltersPrivate::update ( void )
     case itkFilters::SHRINK:
         qDebug() << "Calling shrink filter";
         this->shrinkFilter<PixelType>();
+        break;
+    case itkFilters::INTENSITY:
+        qDebug() << "Calling intensity window image filter";
+        this->intensityFilter<PixelType>();
         break;
     }
 
@@ -194,6 +200,18 @@ template <class PixelType> void itkFiltersPrivate::shrinkFilter ( void )
     output->setData ( shrinkFilter->GetOutput() );
 }
 
+template <class PixelType> void itkFiltersPrivate::intensityFilter ( void )
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::IntensityWindowingImageFilter< ImageType, ImageType >  IntensityFilterType;
+    typename IntensityFilterType::Pointer intensityFilter = IntensityFilterType::New();
+
+    intensityFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+//     intensityFilter->SetShrinkFactors ( shrinkFactors );
+    intensityFilter->Update();
+    output->setData ( intensityFilter->GetOutput() );
+}
+
 itkFilters::itkFilters ( void ) : dtkAbstractProcess(), d ( new itkFiltersPrivate )
 {
     d->output = NULL;
@@ -265,6 +283,8 @@ void itkFilters::setParameter ( double  data, int channel )
         case 7:
             d->filterType = itkFilters::SHRINK;
             break;
+        case 8:
+            d->filterType = itkFilters::INTENSITY;
         }
         break;
     case 1 :
@@ -290,6 +310,8 @@ void itkFilters::setParameter ( double  data, int channel )
             break;
         case itkFilters::SHRINK:
             d->shrinkFactors[0] = ( unsigned int ) data;
+            break;
+        case itkFilters::INTENSITY:
             break;
         }
         break;

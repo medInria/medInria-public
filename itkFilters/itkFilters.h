@@ -36,7 +36,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFilters : public dtkAbstractProcess
 public:
   enum FILTER
   {
-    ADD, MULTIPLY, DIVIDE, GAUSSIAN, NORMALIZE, MEDIAN, INVERT, SHRINK
+    ADD, MULTIPLY, DIVIDE, GAUSSIAN, NORMALIZE, MEDIAN, INVERT, SHRINK, INTENSITY
   };
   
     itkFilters ( void );

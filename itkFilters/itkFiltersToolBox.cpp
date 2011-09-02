@@ -55,6 +55,12 @@ public:
     QSpinBox * shrink0Value;
     QSpinBox * shrink1Value;
     QSpinBox * shrink2Value;
+
+    QDoubleSpinBox * intensityMinimumValue;
+    QDoubleSpinBox * intensityMaximumValue;
+    QDoubleSpinBox * intensityOutputMinimumValue;
+    QDoubleSpinBox * intensityOutputMaximumValue;
+
     QComboBox * filters;
     dtkAbstractProcess *process;
     medProgressionStack * progression_stack;
@@ -65,8 +71,8 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->filters = new QComboBox;
     QStringList filtersList;
     filtersList << "Add Constant to Image" << "Multiply image by constant" << "Divide image by constant"
-                << "Gaussian blur" << "Normalize image filter" << "Median filter" << "Invert intensity filter"
-                << "Shrink image filter";
+    << "Gaussian blur" << "Normalize image filter" << "Median filter" << "Invert intensity filter"
+    << "Shrink image filter" << "Intensity windowing filter";
     d->filters->addItems ( filtersList );
 
     d->filtersStack = new QStackedWidget;
@@ -134,7 +140,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->shrink2Value = new QSpinBox;
     d->shrink2Value->setValue ( 1 );
     d->shrink2Value->setMaximum ( 10 );
-    
+
     QLabel * shrinkFilterLabel = new QLabel ( "Shrink factors (X,Y,Z):" );
     QHBoxLayout * shrinkFilterLayout = new QHBoxLayout;
     shrinkFilterLayout->addWidget ( shrinkFilterLabel );
@@ -143,6 +149,48 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     shrinkFilterLayout->addWidget ( d->shrink2Value );
     shrinkFilterWidget->setLayout ( shrinkFilterLayout );
 
+    //Intensity windowing filter widget
+    QWidget * intensityFilterWidget = new QWidget;
+    d->intensityMinimumValue = new QDoubleSpinBox;
+    d->intensityMinimumValue->setMaximum ( 255 );
+    d->intensityMinimumValue->setValue ( 0 );
+    d->intensityMaximumValue = new QDoubleSpinBox;
+    d->intensityMaximumValue->setMaximum ( 255 );
+    d->intensityMaximumValue->setValue ( 255 );
+    d->intensityOutputMinimumValue = new QDoubleSpinBox;
+    d->intensityOutputMinimumValue->setMaximum ( 255 );
+    d->intensityOutputMinimumValue->setValue ( 0 );
+    d->intensityOutputMaximumValue = new QDoubleSpinBox;
+    d->intensityOutputMaximumValue->setMaximum ( 255 );
+    d->intensityOutputMaximumValue->setValue ( 255 );
+
+    QLabel * intensityMinimumLabel = new QLabel ( "Minimum:" );
+    QHBoxLayout * intensityMinimumLayout = new QHBoxLayout;
+    intensityMinimumLayout->addWidget ( intensityMinimumLabel );
+    intensityMinimumLayout->addWidget ( d->intensityMinimumValue );
+
+    QLabel * intensityMaximumLabel = new QLabel ( "Maximum:" );
+    QHBoxLayout * intensityMaximumLayout = new QHBoxLayout;
+    intensityMaximumLayout->addWidget ( intensityMaximumLabel );
+    intensityMaximumLayout->addWidget ( d->intensityMaximumValue );
+
+    QLabel * intensityOutputMinimumLabel = new QLabel ( "Output minimum:" );
+    QHBoxLayout * intensityOutputMinimumLayout = new QHBoxLayout;
+    intensityOutputMinimumLayout->addWidget ( intensityOutputMinimumLabel );
+    intensityOutputMinimumLayout->addWidget ( d->intensityOutputMinimumValue );
+
+    QLabel * intensityOutputMaximumLabel = new QLabel ( "Output maximum:" );
+    QHBoxLayout * intensityOutputMaximumLayout = new QHBoxLayout;
+    intensityOutputMaximumLayout->addWidget ( intensityOutputMaximumLabel );
+    intensityOutputMaximumLayout->addWidget ( d->intensityOutputMaximumValue );
+
+    QVBoxLayout * intensityFilterLayout = new QVBoxLayout;
+    intensityFilterLayout->addLayout ( intensityMinimumLayout);
+    intensityFilterLayout->addLayout ( intensityMaximumLayout);
+    intensityFilterLayout->addLayout ( intensityOutputMinimumLayout);
+    intensityFilterLayout->addLayout ( intensityOutputMaximumLayout );
+
+    intensityFilterWidget->setLayout ( intensityFilterLayout );
 
     //Add filters widget to the QStacked widget
     d->filtersStack->addWidget ( addFilterWidget );
@@ -153,8 +201,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->filtersStack->addWidget ( medianFilterWidget );
     d->filtersStack->addWidget ( invertFilterWidget );
     d->filtersStack->addWidget ( shrinkFilterWidget );
-
-    // Parameters:
+    d->filtersStack->addWidget ( intensityFilterWidget );
 
     // Run button:
     QPushButton *runButton = new QPushButton ( tr ( "Run" ) );
@@ -204,60 +251,60 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 
 void itkFiltersToolBox::updateWidgets()
 {
-  if (!this->parent()->data())
-    return;
+    if ( !this->parent()->data() )
+        return;
 
-  QString descr = this->parent()->data()->description();
+    QString descr = this->parent()->data()->description();
 
     if ( descr == "itkDataImageChar3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<char>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<char>::max());
+        qDebug() << "add max value : " << std::numeric_limits<char>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<char>::max() );
     }
     else if ( descr == "itkDataImageUChar3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<unsigned char>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<unsigned char>::max());
+        qDebug() << "add max value : " << std::numeric_limits<unsigned char>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
     }
     else if ( descr == "itkDataImageShort3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<short>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<short>::max());
+        qDebug() << "add max value : " << std::numeric_limits<short>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<short>::max() );
     }
     else if ( descr == "itkDataImageUShort3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<unsigned short>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<unsigned short>::max());
+        qDebug() << "add max value : " << std::numeric_limits<unsigned short>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
     }
     else if ( descr == "itkDataImageInt3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<int>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<int>::max());
+        qDebug() << "add max value : " << std::numeric_limits<int>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<int>::max() );
     }
     else if ( descr == "itkDataImageUInt3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<unsigned int>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<unsigned int>::max());
+        qDebug() << "add max value : " << std::numeric_limits<unsigned int>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
     }
     else if ( descr == "itkDataImageLong3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<long>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<long>::max());
+        qDebug() << "add max value : " << std::numeric_limits<long>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<long>::max() );
     }
     else if ( descr== "itkDataImageULong3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<unsigned long>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<unsigned long>::max());
+        qDebug() << "add max value : " << std::numeric_limits<unsigned long>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
     }
     else if ( descr == "itkDataImageFloat3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<float>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<float>::max());
+        qDebug() << "add max value : " << std::numeric_limits<float>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<float>::max() );
     }
     else if ( descr == "itkDataImageDouble3" )
     {
-      qDebug() << "add max value : " << std::numeric_limits<double>::max();
-      d->addFiltersValue->setMaximum(std::numeric_limits<double>::max());
+        qDebug() << "add max value : " << std::numeric_limits<double>::max();
+        d->addFiltersValue->setMaximum ( std::numeric_limits<double>::max() );
     }
     else
     {
@@ -310,11 +357,14 @@ void itkFiltersToolBox::run ( void )
     case 6: // invert intensity filter
         d->process->setParameter ( 6.0,0 );
         break;
-    case 7: // invert intensity filter
+    case 7: // shrink filter
         d->process->setParameter ( 7.0,0 );
-        d->process->setParameter ( (double) d->shrink0Value->value(),1 );
-        d->process->setParameter ( (double) d->shrink1Value->value(),2 );
-        d->process->setParameter ( (double) d->shrink2Value->value(),3 );
+        d->process->setParameter ( ( double ) d->shrink0Value->value(),1 );
+        d->process->setParameter ( ( double ) d->shrink1Value->value(),2 );
+        d->process->setParameter ( ( double ) d->shrink2Value->value(),3 );
+        break;
+    case 8: // intensity windowing filter
+        d->process->setParameter ( 8.0,0 );
         break;
     }
 
