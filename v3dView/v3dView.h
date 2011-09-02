@@ -207,6 +207,9 @@ public:
     double cameraViewAngle(void);
     double cameraZoom(void);
 
+protected slots:
+    void widgetDestroyed(void);
+
 private:
     v3dViewPrivate *d;
     

@@ -228,6 +228,8 @@ public:
 
     v3dViewObserver *observer;
 
+    vtkRenderWindow *renWin;
+
     QWidget    *widget;
     QSlider    *slider;
     QComboBox  *dimensionBox;
@@ -451,14 +453,13 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     d->vtkWidget->setFocusPolicy(Qt::NoFocus);
 
-    vtkRenderWindow* renwin = vtkRenderWindow::New();
-    renwin->StereoCapableWindowOn();
-    renwin->SetStereoTypeToCrystalEyes();
+    d->renWin = vtkRenderWindow::New();
+    d->renWin->StereoCapableWindowOn();
+    d->renWin->SetStereoTypeToCrystalEyes();
     // if(qApp->arguments().contains("--stereo"))
     //     renwin->SetStereoRender(1);
 
-    d->vtkWidget->SetRenderWindow(renwin);
-    renwin->Delete();
+    d->vtkWidget->SetRenderWindow(d->renWin);
 
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setContentsMargins(0, 0, 0, 0);
@@ -641,19 +642,24 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     connect(d->vtkWidget,    SIGNAL(mouseEvent(QMouseEvent*)),     this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,       SIGNAL(valueChanged(int)),            this, SLOT(onZSliderValueChanged(int)));
     connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(QString)));
+
+    connect(d->widget, SIGNAL(destroyed()), this, SLOT(widgetDestroyed()));
 }
 
 v3dView::~v3dView(void)
 {
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer2d);
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3d);
+    d->renderer2d->SetRenderWindow(NULL);
+    d->renderer3d->SetRenderWindow(NULL);
 
-    /*
-     d->view2D->SetRenderWindow(0);
-     d->view2D->SetRenderWindowInteractor(0);
-     d->view3D->SetRenderWindow(0);
-     d->view3D->SetRenderWindowInteractor(0);
-     */
+    d->renWin->RemoveRenderer(d->renderer2d);
+    d->renWin->RemoveRenderer(d->renderer3d);
+
+    d->view2d->SetRenderWindow(NULL);
+    d->view2d->SetRenderWindowInteractor(NULL);
+    d->view3d->SetRenderWindow(NULL);
+    d->view3d->SetRenderWindowInteractor(NULL);
+
+    d->renWin->Delete();
 
     d->view2d->Delete();
     d->renderer2d->Delete();
@@ -665,7 +671,16 @@ v3dView::~v3dView(void)
 
     d->observer->Delete();
 
-    d->widget->deleteLater();
+    if (d->widget) {
+        if (!d->widget->parent()) {
+            // If the widget has no parent then delete now.
+            delete d->widget;
+        }
+        else {
+            // this can only be used if an event loop is (still) running.
+            d->widget->deleteLater();
+        }
+    }
 
     delete d;
 
@@ -748,33 +763,36 @@ vtkRenderer *v3dView::renderer3d(void)
 
 void v3dView::setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data)
 {
-	int layer = 0;
+    int layer = 0;
     while(d->view2d->GetImageInput(layer)) {
         layer++;
     }
 
-	d->sharedData[layer] = data;
+    d->sharedData[layer] = data;
 
-	this->setData (data.data(), layer);
+    this->setData (data.data(), layer);
 }
 
 void v3dView::setData(dtkAbstractData *data)
 {
     if(!data)
         return;
-    if(medAbstractView::isInList(data))
+
+    /*
+    if(medAbstractView::isInList(data)) // called in setData(data, layer) !
         return;
+*/
 
     int layer = 0;
     while(d->view2d->GetImageInput(layer)) {
         layer++;
     }
 
-    if (data->description().contains("vtkDataMesh") && layer)
-    {
+    if (data->description().contains("vtkDataMesh") && layer) {
         layer--;
     }
-    this->setData( data, layer);
+
+    this->setData(data, layer);
 
     // this->update(); // update is not the role of the plugin, but of the app
 }
@@ -783,8 +801,10 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 {
     if(!data)
         return;
-    if(medAbstractView::isInList(data))
+
+    if(medAbstractView::isInList(data, layer))
         return;
+
     if(layer == 0 && data->description().contains("vtkDataMesh"))
     {
         //medMessageControllerMessageError msg(this, "Select image first");
@@ -1047,7 +1067,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
     }
 
 
-    this->addDataInList(data);
+    this->addDataInList(data, layer);
     //emit dataAdded(layer);
     emit dataAdded(data);
     emit dataAdded(data, layer);
@@ -2271,13 +2291,15 @@ void v3dView::onVisibilityChanged(bool visible, int layer)
         d->view2d->SetVisibility(0,layer);
         d->view3d->SetVisibility(0,layer);
     }
-
-
-
 }
 
 void v3dView::onOpacityChanged(double opacity, int layer)
 {
     d->view2d->SetOpacity(opacity, layer);
     d->view3d->SetOpacity(opacity, layer);
+}
+
+void v3dView::widgetDestroyed(void)
+{
+    d->widget = NULL;
 }
