@@ -30,6 +30,7 @@
 #include "itkShrinkImageFilter.h"
 #include "itkInvertIntensityImageFilter.h"
 #include "itkAddConstantToImageFilter.h"
+#include "itkSubtractConstantFromImageFilter.h"
 #include "itkMultiplyByConstantImageFilter.h"
 #include "itkDivideByConstantImageFilter.h"
 #include "itkSmoothingRecursiveGaussianImageFilter.h"
@@ -40,6 +41,7 @@ public:
     dtkAbstractData *input;
     dtkAbstractData *output;
     double addValue;
+    double subtractValue;
     double multiplyValue;
     double divideValue;
     double sigmaValue;
@@ -48,6 +50,7 @@ public:
     itkFilters::FILTER filterType;
     template <class PixelType> int update ( void );
     template <class PixelType> void addFilter ( void );
+    template <class PixelType> void subtractFilter ( void );
     template <class PixelType> void multiplyFilter ( void );
     template <class PixelType> void divideFilter ( void );
     template <class PixelType> void gaussianFilter ( void );
@@ -66,6 +69,11 @@ template <class PixelType> int itkFiltersPrivate::update ( void )
         qDebug() << "Calling Add filter";
         qDebug() << "Add value : " << addValue;
         this->addFilter<PixelType>();
+        break;
+    case itkFilters::SUBTRACT:
+        qDebug() << "Calling Subtract filter";
+        qDebug() << "Subtract value : " << subtractValue;
+        this->subtractFilter<PixelType>();
         break;
     case itkFilters::MULTIPLY:
         qDebug() << "Calling Multiply filter";
@@ -117,6 +125,20 @@ template <class PixelType> void itkFiltersPrivate::addFilter ( void )
     addFilter->SetConstant ( addValue );
     addFilter->Update();
     output->setData ( addFilter->GetOutput() );
+}
+
+template <class PixelType> void itkFiltersPrivate::subtractFilter ( void )
+{
+    typedef itk::Image< PixelType, 3 > ImageType;
+    typedef itk::SubtractConstantFromImageFilter< ImageType, double, ImageType >  SubtractFilterType;
+    typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
+
+    qDebug() << "Subtract parameter (itkfilter) : " << subtractValue;
+    
+    subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+    subtractFilter->SetConstant ( subtractValue );
+    subtractFilter->Update();
+    output->setData ( subtractFilter->GetOutput() );
 }
 
 template <class PixelType> void itkFiltersPrivate::multiplyFilter ( void )
@@ -263,27 +285,30 @@ void itkFilters::setParameter ( double  data, int channel )
             d->filterType = itkFilters::ADD;
             break;
         case 1:
-            d->filterType = itkFilters::MULTIPLY;
+            d->filterType = itkFilters::SUBTRACT;
             break;
         case 2:
-            d->filterType = itkFilters::DIVIDE;
+            d->filterType = itkFilters::MULTIPLY;
             break;
         case 3:
-            d->filterType = itkFilters::GAUSSIAN;
+            d->filterType = itkFilters::DIVIDE;
             break;
         case 4:
-            d->filterType = itkFilters::NORMALIZE;
+            d->filterType = itkFilters::GAUSSIAN;
             break;
         case 5:
-            d->filterType = itkFilters::MEDIAN;
+            d->filterType = itkFilters::NORMALIZE;
             break;
         case 6:
-            d->filterType = itkFilters::INVERT;
+            d->filterType = itkFilters::MEDIAN;
             break;
         case 7:
-            d->filterType = itkFilters::SHRINK;
+            d->filterType = itkFilters::INVERT;
             break;
         case 8:
+            d->filterType = itkFilters::SHRINK;
+            break;
+        case 9:
             d->filterType = itkFilters::INTENSITY;
         }
         break;
@@ -292,6 +317,9 @@ void itkFilters::setParameter ( double  data, int channel )
         {
         case itkFilters::ADD:
             d->addValue = data;
+            break;
+        case itkFilters::SUBTRACT:
+            d->subtractValue = data;
             break;
         case itkFilters::MULTIPLY:
             d->multiplyValue = data;
