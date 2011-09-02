@@ -1,5 +1,6 @@
 #include "medViewerConfigurationDiffusion.h"
 
+#include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -25,7 +26,9 @@ public:
     medToolBoxDiffusion                 *diffusionToolBox;
     medToolBoxDiffusionTensorView       *tensorViewToolBox;
 
-    QList<dtkAbstractView *> views;
+    QList<dtkSmartPointer<dtkAbstractView> > views;
+
+    QString uuid;
 };
 
 medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationDiffusionPrivate)
@@ -88,20 +91,23 @@ QString medViewerConfigurationDiffusion::description(void) const
 
 void medViewerConfigurationDiffusion::setupViewContainerStack()
 {
-    qDebug() << "ConfigurationDiffusionSetupViewContainerStack";
-
     d->views.clear();
-    medViewContainer * diffusionContainer;
+    medViewContainer * diffusionContainer = NULL;
+
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
     {
         medViewContainerSingle *single = new medViewContainerSingle ();
         connect (single, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
         connect (single, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
+
         //ownership of single is transferred to the stackedWidget.
         this->stackedViewContainers()->addContainer (description(), single);
+
         diffusionContainer = single;
-        this->stackedViewContainers()->unlockTabs();
+
+        this->stackedViewContainers()->lockTabs();
+        this->stackedViewContainers()->hideTabBar();
     }
     else
     {
@@ -109,7 +115,12 @@ void medViewerConfigurationDiffusion::setupViewContainerStack()
         //TODO: maybe clear views here too?
     }
 
-    d->views << diffusionContainer->views();
+    if (!diffusionContainer)
+        return;
+
+    foreach(dtkAbstractView *view, diffusionContainer->views())
+        d->views << view;
+
     //this->stackedViewContainers()->setContainer (description());
 }
 
