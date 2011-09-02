@@ -21,6 +21,8 @@
 #include "itkFilters.h"
 #include "itkFiltersToolBox.h"
 
+#include <limits>
+
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 
@@ -62,8 +64,9 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
 {
     d->filters = new QComboBox;
     QStringList filtersList;
-    filtersList << "Add Constant to Image" << "Multiply image by constant" << "Divide image by constant";
-    filtersList << "Gaussian blur" << "Normalize image filter" << "Median filter" << "Invert intensity filter" << "Shrink image filter";
+    filtersList << "Add Constant to Image" << "Multiply image by constant" << "Divide image by constant"
+                << "Gaussian blur" << "Normalize image filter" << "Median filter" << "Invert intensity filter"
+                << "Shrink image filter";
     d->filters->addItems ( filtersList );
 
     d->filtersStack = new QStackedWidget;
@@ -73,8 +76,8 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     //Add filter widgets
     QWidget * addFilterWidget = new QWidget;
     d->addFiltersValue = new QDoubleSpinBox;
-    d->addFiltersValue->setValue ( 100.0 );
     d->addFiltersValue->setMaximum ( 1000000000 );
+    d->addFiltersValue->setValue ( 100.0 );
     QLabel * addFilterLabel = new QLabel ( "Constant value:" );
     QHBoxLayout * addFilterLayout = new QHBoxLayout;
     addFilterLayout->addWidget ( addFilterLabel );
@@ -197,6 +200,71 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
         return NULL;
 
     return d->process->output();
+}
+
+void itkFiltersToolBox::updateWidgets()
+{
+  if (!this->parent()->data())
+    return;
+
+  QString descr = this->parent()->data()->description();
+
+    if ( descr == "itkDataImageChar3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<char>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<char>::max());
+    }
+    else if ( descr == "itkDataImageUChar3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<unsigned char>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<unsigned char>::max());
+    }
+    else if ( descr == "itkDataImageShort3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<short>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<short>::max());
+    }
+    else if ( descr == "itkDataImageUShort3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<unsigned short>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<unsigned short>::max());
+    }
+    else if ( descr == "itkDataImageInt3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<int>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<int>::max());
+    }
+    else if ( descr == "itkDataImageUInt3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<unsigned int>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<unsigned int>::max());
+    }
+    else if ( descr == "itkDataImageLong3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<long>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<long>::max());
+    }
+    else if ( descr== "itkDataImageULong3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<unsigned long>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<unsigned long>::max());
+    }
+    else if ( descr == "itkDataImageFloat3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<float>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<float>::max());
+    }
+    else if ( descr == "itkDataImageDouble3" )
+    {
+      qDebug() << "add max value : " << std::numeric_limits<double>::max();
+      d->addFiltersValue->setMaximum(std::numeric_limits<double>::max());
+    }
+    else
+    {
+        qDebug() << "Error : pixel type not yet implemented ("
+        << descr
+        << ")";
+    }
 }
 
 

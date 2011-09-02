@@ -36,6 +36,7 @@ public:
 public:
     static bool registered(void);
     dtkAbstractData* processOutput();
+    void updateWidgets();
 
 signals:
     void success(void);
