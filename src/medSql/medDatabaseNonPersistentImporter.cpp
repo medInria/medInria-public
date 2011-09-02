@@ -38,12 +38,13 @@ public:
     medDatabaseNonPersistentImporterPrivate(const QString& uuid):
         callerUuid(uuid){}
     dtkAbstractData *data;
-    const QString & callerUuid;
+    QString callerUuid;
     bool isCancelled;
 };
 
 medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter(dtkAbstractData *data,
-                                                                   const QString& callerUuid) : medJobItem(), d(new medDatabaseNonPersistentImporterPrivate(callerUuid))
+                                                                   const QString& callerUuid)
+    : medJobItem(), d(new medDatabaseNonPersistentImporterPrivate(callerUuid))
 {
     d->data = data;
     d->isCancelled = false;
@@ -64,7 +65,7 @@ void medDatabaseNonPersistentImporter::run(void)
     dtkAbstractData *data = d->data;
     if (!data) {
         emit failure (this);
-    return;
+        return;
     }
 
     if (!data->hasMetaData(medMetaDataKeys::PatientName.key()) ||
@@ -80,7 +81,6 @@ void medDatabaseNonPersistentImporter::run(void)
     int patientId = -1;
     QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
 
-
     // check if patient is already in the persistent database
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
     if (databaseIndex.isValid()) {
@@ -90,9 +90,9 @@ void medDatabaseNonPersistentImporter::run(void)
     else {
         for (int i=0; i<items.count(); i++)
             if (items[i]->name()==patientName) {
-            patientId = items[i]->index().patientId();
-            break;
-        }
+                patientId = items[i]->index().patientId();
+                break;
+            }
     }
 
     if (patientId==-1)
@@ -109,9 +109,9 @@ void medDatabaseNonPersistentImporter::run(void)
     else {
         for (int i=0; i<items.count(); i++)
 	    if (items[i]->name()==patientName && items[i]->studyName()==studyName) {
-            studyId = items[i]->index().studyId();
-            break;
-        }
+                studyId = items[i]->index().studyId();
+                break;
+            }
     }
 
     if (studyId==-1)
@@ -139,7 +139,7 @@ void medDatabaseNonPersistentImporter::run(void)
 
     emit progressed(100);
     emit success(this);
-    emit nonPersistentImported(index,d->callerUuid);
+    emit nonPersistentImported(index, d->callerUuid);
 }
 
 void medDatabaseNonPersistentImporter::onCancel( QObject* )

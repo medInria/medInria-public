@@ -430,6 +430,12 @@ size_t medDataManager::getUpperMemoryThreshold()
 
 void medDataManager::importNonPersistent( dtkAbstractData *data )
 {
+    QString uuid = QUuid::createUuid().toString();
+    this->importNonPersistent (data, uuid);
+}
+
+void medDataManager::importNonPersistent( dtkAbstractData *data, const QString &uuid)
+{
     if (!data)
         return;
 
@@ -452,7 +458,7 @@ void medDataManager::importNonPersistent( dtkAbstractData *data )
 
     if(npDb)
     {
-        npDb->import(data);
+        npDb->import(data, uuid);
     }
 }
 
@@ -479,13 +485,19 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index)
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::importNonPersistent( QString file )
+void medDataManager::importNonPersistent(QString file)
+{
+    QString uuid = QUuid::createUuid().toString();
+    this->importNonPersistent (file, uuid);
+}
+
+void medDataManager::importNonPersistent( QString file, const QString &uuid )
 {
     medAbstractDbController* npDb = d->getNonPersDbController();
     if(npDb)
     {
         connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
-        npDb->import(file);
+        npDb->import(file, uuid);
     }
 }
 

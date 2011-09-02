@@ -68,6 +68,7 @@ public:
     * @params const dtkAbstractData & data
     */
     void importNonPersistent(dtkAbstractData *data);
+    void importNonPersistent(dtkAbstractData *data, const QString &uuid);
 
 
     /**
@@ -75,6 +76,7 @@ public:
     * @params QString file
     */
     void importNonPersistent(QString file);
+    void importNonPersistent(QString file, const QString &uuid);
 
 
     /**

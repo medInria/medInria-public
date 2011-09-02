@@ -26,6 +26,8 @@ public:
     medToolBoxDiffusionTensorView       *tensorViewToolBox;
 
     QList<dtkAbstractView *> views;
+
+    QString uuid;
 };
 
 medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationDiffusionPrivate)
@@ -293,7 +295,7 @@ void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
     if (d->diffusionToolBox->output()->description()=="v3dDataFibers")
         d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
 
-    medDataManager::instance()->importNonPersistent ( d->diffusionToolBox->output() );
+    medDataManager::instance()->importNonPersistent ( d->diffusionToolBox->output(), d->uuid);
 }
 
 // tensor interaction related methods
