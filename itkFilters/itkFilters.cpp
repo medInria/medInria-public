@@ -45,6 +45,12 @@ public:
     double multiplyValue;
     double divideValue;
     double sigmaValue;
+
+    double minimumIntensityValue;
+    double maximumIntensityValue;
+    double minimumOutputIntensityValue;
+    double maximumOutputIntensityValue;
+
     unsigned int shrinkFactors[3];
 
     itkFilters::FILTER filterType;
@@ -134,7 +140,7 @@ template <class PixelType> void itkFiltersPrivate::subtractFilter ( void )
     typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
 
     qDebug() << "Subtract parameter (itkfilter) : " << subtractValue;
-    
+
     subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     subtractFilter->SetConstant ( subtractValue );
     subtractFilter->Update();
@@ -229,7 +235,12 @@ template <class PixelType> void itkFiltersPrivate::intensityFilter ( void )
     typename IntensityFilterType::Pointer intensityFilter = IntensityFilterType::New();
 
     intensityFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-//     intensityFilter->SetShrinkFactors ( shrinkFactors );
+
+    intensityFilter->SetWindowMinimum ( ( PixelType ) minimumIntensityValue );
+    intensityFilter->SetWindowMaximum ( ( PixelType ) maximumIntensityValue );
+    intensityFilter->SetOutputMinimum ( ( PixelType ) minimumOutputIntensityValue );
+    intensityFilter->SetOutputMaximum ( ( PixelType ) maximumOutputIntensityValue );
+
     intensityFilter->Update();
     output->setData ( intensityFilter->GetOutput() );
 }
@@ -340,16 +351,25 @@ void itkFilters::setParameter ( double  data, int channel )
             d->shrinkFactors[0] = ( unsigned int ) data;
             break;
         case itkFilters::INTENSITY:
+            d->minimumIntensityValue = data;
             break;
         }
         break;
     case 2:
         if ( d->filterType == itkFilters::SHRINK )
             d->shrinkFactors[1] = ( unsigned int ) data;
+        if ( d->filterType == itkFilters::INTENSITY )
+            d->maximumIntensityValue = data;
         break;
     case 3:
         if ( d->filterType == itkFilters::SHRINK )
             d->shrinkFactors[2] = ( unsigned int ) data;
+        if ( d->filterType == itkFilters::INTENSITY )
+            d->minimumOutputIntensityValue = data;
+        break;
+    case 4:
+        if ( d->filterType == itkFilters::INTENSITY )
+            d->maximumOutputIntensityValue = data;
         break;
     default :
         return;
