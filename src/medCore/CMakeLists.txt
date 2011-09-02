@@ -46,22 +46,22 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractViewFiberInteractor.h
   medAbstractData.h
   medAbstractDataCollection.h
+  medAbstractDataImage.h
   medAbstractDataImage2D.h
   medAbstractDataImage3D.h
   medAbstractDataImage4D.h
   medAbstractDataMesh.h
-  medAttachedData.h
+  medAttachedData.h  
 )
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
-  medAbstractDataImage.h
+  medCoreExport.h
+  medDataIndex.h
   medAbstractDataTypedImage.h
   medAbstractDataTypedImage2D.h
   medAbstractDataTypedImage3D.h
   medAbstractDataTypedImage4D.h
-  medCoreExport.h
-  medDataIndex.h
   medAbstractDatabaseItem.h
 )
 

@@ -160,8 +160,9 @@ public:
     void setMeshLayerCount(int meshLayerCount);
     virtual int meshLayerCount(void) const;
 
-    bool isInList(dtkAbstractData * data);
-    void addDataInList(dtkAbstractData * data);
+    bool isInList(dtkAbstractData * data, int layer);
+    void addDataInList(dtkAbstractData * data, int layer);
+
     dtkAbstractData* dataInList(int layer);
     void setDataInList(dtkAbstractData * data, int layer);
 

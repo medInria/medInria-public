@@ -304,7 +304,7 @@ void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
     if (d->diffusionToolBox->output()->description()=="v3dDataFibers")
         d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
 
-    medDataManager::instance()->importNonPersistent ( d->diffusionToolBox->output() );
+    medDataManager::instance()->importNonPersistent ( d->diffusionToolBox->output(), d->uuid);
 }
 
 // tensor interaction related methods

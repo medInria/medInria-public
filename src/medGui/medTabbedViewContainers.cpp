@@ -116,6 +116,7 @@ void medTabbedViewContainers::addContainer(const QString &name, medViewContainer
 
     if (!this->count())
         d->currentName = name;
+
     this->addTab(container, name);
 }
 
@@ -138,6 +139,7 @@ void medTabbedViewContainers::insertContainer(int index, const QString &name, me
 
     if (!this->count())
         d->currentName = name;
+
     this->insertTab(index,container, name);
 }
 
@@ -216,7 +218,7 @@ void medTabbedViewContainers::setContainer(const QString &name)
 
 medViewContainer *medTabbedViewContainers::current(void) const
 {
-    return dynamic_cast<medViewContainer*> (currentWidget());
+    return qobject_cast<medViewContainer*> (currentWidget());
 }
 
 QString medTabbedViewContainers::currentName(void) const
@@ -237,6 +239,10 @@ void medTabbedViewContainers::removeContainer(const QString& name)
         //removeWidget(container);
         container->deleteLater();
         d->containers.remove(name);
+
+        this->blockSignals(true); // to prevent emission of currentChanged (int)
+        this->removeTab( this->indexOf(container) );
+        this->blockSignals(false);
     }
 }
 

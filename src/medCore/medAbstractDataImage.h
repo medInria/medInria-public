@@ -26,6 +26,8 @@
 
 class MEDCORE_EXPORT medAbstractDataImage: public medAbstractData
 {
+    Q_OBJECT
+
 public:
     typedef std::type_info PixId;
 

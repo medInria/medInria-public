@@ -323,12 +323,12 @@ bool medViewerArea::open(const medDataIndex& index)
 
 void medViewerArea::openInTab(const QString& file)
 {
-    medDatabaseNonPersistentController::instance()->import(file);
+    medDataManager::instance()->importNonPersistent (file);
 }
 
 void medViewerArea::open(const QString& file)
 {
-    medDatabaseNonPersistentController::instance()->import(file);
+    medDataManager::instance()->importNonPersistent (file);
 }
 
 //void medViewerArea::onFileOpened(const medDataIndex &index)

@@ -548,7 +548,7 @@ void medMainWindow::open ( const QString& file )
     d->importUuids.append(importUuid);
     qDebug() << "about to open file" << file;
     qDebug()<< "with uuid:" << importUuid;
-    medDatabaseNonPersistentController::instance()->import(file,importUuid);
+    medDataManager::instance()->importNonPersistent (file,importUuid);
 }
 
 void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importUuid)
@@ -575,7 +575,7 @@ void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importU
 
 void medMainWindow::load(const QString& file)
 {
-    medDatabaseNonPersistentController::instance()->import(file);
+    medDataManager::instance()->importNonPersistent (file);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)

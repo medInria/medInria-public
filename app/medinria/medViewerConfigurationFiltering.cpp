@@ -105,7 +105,7 @@ void medViewerConfigurationFiltering::onProcessSuccess()
 
     //Create a uniqueId for the request.
     d->importUuid = QUuid::createUuid().toString();
-    medDatabaseNonPersistentController::instance()->import(d->filterOutput,d->importUuid);
+    medDataManager::instance()->importNonPersistent (d->filterOutput, d->importUuid);
 
     emit outputDataChanged(d->filterOutput);
 }
