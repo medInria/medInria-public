@@ -56,16 +56,17 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
 
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     d->timeToolBox           = new medViewerToolBoxTime(parent);
+
     //this->addToolBox( d->viewToolBox );
     this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->timeToolBox );
 
     connect ( this, SIGNAL(layoutModeChanged(const QString&)),
               d->timeToolBox, SLOT(onStopButton()));
-    connect ( this,SIGNAL(layoutModeChanged(const QString &)),
-              stackedViewContainers(),SLOT(changeCurrentContainerType(const QString &)));
-    connect ( stackedViewContainers(),SIGNAL(currentChanged(const QString &)),
-              this,SLOT(connectToolboxesToCurrentContainer(const QString &)));
+    connect ( this, SIGNAL(layoutModeChanged(const QString &)),
+              stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
+    connect ( stackedViewContainers(), SIGNAL(currentChanged(const QString &)),
+              this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 }
 
 void medViewerConfigurationVisualization::setupViewContainerStack()
@@ -82,10 +83,10 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
 
 void medViewerConfigurationVisualization::connectToolboxesToCurrentContainer(const QString &name)
 {
-    connect(stackedViewContainers()->container(name),SIGNAL(viewAdded(dtkAbstractView*)),
-            d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
-    connect(stackedViewContainers()->container(name),SIGNAL(viewRemoved(dtkAbstractView*)),
-            d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
+    connect(stackedViewContainers()->container(name), SIGNAL(viewAdded(dtkAbstractView*)),
+            d->timeToolBox, SLOT(onViewAdded(dtkAbstractView*)));
+    connect(stackedViewContainers()->container(name), SIGNAL(viewRemoved(dtkAbstractView*)),
+            d->timeToolBox, SLOT(onViewRemoved(dtkAbstractView*)));
 }
 
 medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)
@@ -93,7 +94,6 @@ medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)
     delete d;
     d = NULL;
 }
-
 
 QString medViewerConfigurationVisualization::description(void) const
 {
