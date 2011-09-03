@@ -11,12 +11,14 @@
 #include <v3dView.h>
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <medAbstractDataImage.h>
-#include <medMetaDataKeys.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include <medCore/medMessageController.h>
+#include <medMessageController.h>
+#include <medAbstractDataImage.h>
+#include <medMetaDataKeys.h>
+
 #include <vtkCamera.h>
 #include <vtkCommand.h>
 #include <vtkRenderer.h>
@@ -481,12 +483,12 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     layout->addWidget(d->vtkWidget);
 
     //d->view3d->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view3d->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
-    d->view3d->SetRenderWindow(d->vtkWidget->GetRenderWindow());
+    d->view3d->SetRenderWindowInteractor(d->renWin->GetInteractor());
+    d->view3d->SetRenderWindow(d->renWin);
     d->view3d->UnInstallInteractor();
-    d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->renderer3d);
+    d->renWin->RemoveRenderer(d->renderer3d);
 
-    d->view2d->SetRenderWindow(d->vtkWidget->GetRenderWindow()); // set the interactor as well
+    d->view2d->SetRenderWindow(d->renWin); // set the interactor as well
     //d->view2d->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 
     d->collection = vtkImageViewCollection::New();
@@ -648,6 +650,11 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 
 v3dView::~v3dView(void)
 {
+    foreach (dtkAbstractViewInteractor *interactor, this->interactors()) {
+        interactor->disable();
+        interactor->deleteLater();
+    }
+
     d->renderer2d->SetRenderWindow(NULL);
     d->renderer3d->SetRenderWindow(NULL);
 
@@ -748,7 +755,7 @@ vtkImageView *v3dView::currentView(void)
 
 vtkRenderWindowInteractor *v3dView::interactor(void)
 {
-    return d->vtkWidget->GetRenderWindow()->GetInteractor();
+    return d->renWin->GetInteractor();
 }
 
 vtkRenderer *v3dView::renderer2d(void)
@@ -1136,7 +1143,7 @@ void v3dView::onOrientationPropertySet(const QString &value)
         d->currentView->SetRenderWindow( 0 );
 
         // d->currentView->GetInteractorStyle()->RemoveObserver(d->observer);
-        d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->currentView->GetRenderer());
+        d->renWin->RemoveRenderer(d->currentView->GetRenderer());
     }
 
     if (value=="3D") {
@@ -1191,7 +1198,7 @@ void v3dView::onOrientationPropertySet(const QString &value)
         return;
     }
 
-    d->currentView->SetRenderWindow ( d->vtkWidget->GetRenderWindow() );
+    d->currentView->SetRenderWindow ( d->renWin );
 
     //d->currentView->InstallInteractor();
     //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
@@ -1681,7 +1688,7 @@ void v3dView::onMetaDataSet(const QString &key, const QString &value)
 void v3dView::onMenuAxialTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
-        d->vtkWidget->GetRenderWindow()->SetStereoRender(0);
+        d->renWin->SetStereoRender(0);
 
     this->setProperty("Orientation", "Axial");
     d->view2d->Render();
@@ -1692,7 +1699,7 @@ void v3dView::onMenuAxialTriggered (void)
 void v3dView::onMenuCoronalTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
-        d->vtkWidget->GetRenderWindow()->SetStereoRender(0);
+        d->renWin->SetStereoRender(0);
 
     this->setProperty("Orientation", "Coronal");
     d->view2d->Render();
@@ -1702,7 +1709,7 @@ void v3dView::onMenuCoronalTriggered (void)
 void v3dView::onMenuSagittalTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
-        d->vtkWidget->GetRenderWindow()->SetStereoRender(0);
+        d->renWin->SetStereoRender(0);
 
     this->setProperty("Orientation", "Sagittal");
     d->view2d->Render();
@@ -1720,7 +1727,7 @@ void v3dView::onMenu3DTriggered (void)
 void v3dView::onMenu3DVRTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
-        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender(1);
 
     this->setProperty ("3DMode", "VR");
     this->setProperty ("Orientation", "3D");
@@ -1730,7 +1737,7 @@ void v3dView::onMenu3DVRTriggered (void)
 void v3dView::onMenu3DMPRTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
-        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender(1);
 
     this->setProperty("3DMode",      "MPR");
     this->setProperty("Orientation", "3D");
@@ -1740,7 +1747,7 @@ void v3dView::onMenu3DMPRTriggered (void)
 void v3dView::onMenu3DMaxIPTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
-        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender(1);
 
     this->setProperty("3DMode", "MIP - Maximum");
     this->setProperty("Orientation", "3D");
@@ -1750,7 +1757,7 @@ void v3dView::onMenu3DMaxIPTriggered (void)
 void v3dView::onMenu3DMinIPTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
-        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender(1);
 
     this->setProperty("3DMode", "MIP - Minimum");
     this->setProperty("Orientation", "3D");
@@ -1760,7 +1767,7 @@ void v3dView::onMenu3DMinIPTriggered (void)
 void v3dView::onMenu3DOffTriggered (void)
 {
     if(qApp->arguments().contains("--stereo"))
-        d->vtkWidget->GetRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender(1);
 
     this->setProperty("3DMode", "Off");
     d->view3d->Render();
