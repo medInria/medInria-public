@@ -44,21 +44,16 @@ vtkTensorManager::vtkTensorManager()
   {
     this->CurrentPosition[i] = 0;
   }
-  
 }
-
-
 
 vtkTensorManager::~vtkTensorManager()
 {
-
   this->Initialize();
   
   if( this->RenderWindowInteractor )
   {
     this->RenderWindowInteractor->Delete();
   }
-
 
   if( this->Input )
   {
@@ -74,7 +69,6 @@ vtkTensorManager::~vtkTensorManager()
 
   this->PhysicalToVoxelCoordinatesTransformMatrix->Delete();
 }
-
 
 void vtkTensorManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin, vtkRenderer* ren)
 {
@@ -115,15 +109,13 @@ void vtkTensorManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwi
     
     this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
     
-    this->Renderer->Delete();
+    // this->Renderer->Delete(); // no need since renderer is smart pointed
   }
   
 }
 
-
 void vtkTensorManager::Initialize()
 {
-
   if( this->RenderWindowInteractor )
   {
     /*
@@ -147,13 +139,8 @@ void vtkTensorManager::Initialize()
       //this->Renderer->Delete();
       //this->Renderer = 0;
     }
-  }
-  
+  } 
 }
-
-
-
-
 
 void vtkTensorManager::Update()
 {

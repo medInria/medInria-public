@@ -28,6 +28,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkStructuredPoints.h>
 #include <vtkLookupTable.h>
 #include <vtkMatrix4x4.h>
+#include <vtkSmartPointer.h>
 
 #include "vtkTensorVisuManager.h"
 
@@ -187,7 +188,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
 
   vtkStructuredPoints* Input;
 
-  vtkRenderer* Renderer;
+  vtkSmartPointer<vtkRenderer> Renderer;
 
   vtkTensorVisuManager* TensorVisuManagerAxial;
   vtkTensorVisuManager* TensorVisuManagerSagittal;

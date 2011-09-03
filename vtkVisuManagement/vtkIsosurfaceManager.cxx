@@ -41,7 +41,6 @@ vtkIsosurfaceManager::vtkIsosurfaceManager()
   this->Decimation      = 0;
 
   this->DirectionMatrix = 0;
-
 }
 
 vtkIsosurfaceManager::~vtkIsosurfaceManager()
@@ -74,11 +73,14 @@ vtkIsosurfaceManager::~vtkIsosurfaceManager()
 
 void vtkIsosurfaceManager::Enable()
 {
-    if( this->RenderWindowInteractor )
+    if( this->RenderWindowInteractor && this->RenderWindowInteractor->GetRenderWindow())
     {
       this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-      vtkRenderer* first_renderer = this->RenderWindowInteractor->FindPokedRenderer(this->RenderWindowInteractor->GetLastEventPosition()[0],
+      vtkRenderer* first_renderer =
+              this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
+      /*this->RenderWindowInteractor->FindPokedRenderer(this->RenderWindowInteractor->GetLastEventPosition()[0],
                                                                                     this->RenderWindowInteractor->GetLastEventPosition()[1]);
+                                                                                    */
       if (first_renderer)
       {
         for( unsigned int i=0; i<this->Isosurfaces.size(); i++)
@@ -95,11 +97,9 @@ void vtkIsosurfaceManager::Disable()
 }
 
 void vtkIsosurfaceManager::SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin)
-{
-  
+{ 
   if( rwin != this->RenderWindowInteractor )
-  {
-    
+  {   
     if( this->RenderWindowInteractor != NULL )
     {
       this->RemoveAllActors();
@@ -114,26 +114,24 @@ void vtkIsosurfaceManager::SetRenderWindowInteractor (vtkRenderWindowInteractor*
   }
 }
 
-
-
 void vtkIsosurfaceManager::RemoveAllActors()
 {
-  if( this->RenderWindowInteractor )
+  if (this->RenderWindowInteractor && this->RenderWindowInteractor->GetRenderWindow())
   {
     this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-    vtkRenderer* first_renderer = this->RenderWindowInteractor->FindPokedRenderer(this->RenderWindowInteractor->GetLastEventPosition()[0],
-										  this->RenderWindowInteractor->GetLastEventPosition()[1]);
+
+    vtkRenderer* first_renderer =
+            this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
+
     if (first_renderer)
     {
       for( unsigned int i=0; i<this->Isosurfaces.size(); i++)
       {
-	first_renderer->RemoveActor ( this->Isosurfaces[i]->GetActor() );
+          first_renderer->RemoveActor ( this->Isosurfaces[i]->GetActor() );
       }
     }
   }
 }
-
-
 
 void vtkIsosurfaceManager::GenerateData()
 {
