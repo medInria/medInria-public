@@ -27,7 +27,7 @@ project(medinria-plugins)
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major
 version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 333 CACHE STRING "${PROJECT_NAME} minor
+set(${PROJECT_NAME}_VERSION_MINOR 4 CACHE STRING "${PROJECT_NAME} minor
 version number.")
 set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build
 version number.")
@@ -54,7 +54,7 @@ set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 ## #################################################################
 
 enable_testing()
-OPTION(BUILD_EXAMPLES "Enable this if you want to build the exmples" OFF)
+OPTION(BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
 
 mark_as_advanced(DART_ROOT)
 
@@ -84,6 +84,7 @@ set(PLUGIN_LIST
   itkDataTensorImage             ON
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
+  ITKProcessExample		 ON	
   )
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
@@ -160,7 +161,8 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN OR
     MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
     MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
-    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
+    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
+    MEDINRIA_BUILD_ITKPROCESSEXAMPLE_PLUGIN)
     set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()
 
@@ -177,6 +179,10 @@ option(BUILD_DOCUMENTATION "Build documentation"    true)
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
+
+if (BUILD_TESTING)
+  add_subdirectory(tests)
+endif (BUILD_TESTING)
 
 include(${PROJECT_NAME}Pack)
 

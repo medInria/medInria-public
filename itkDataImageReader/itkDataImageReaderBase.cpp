@@ -1,6 +1,7 @@
-#include "itkDataImageReaderBase.h"
+#include <itkDataImageReaderBase.h>
 
 #include <medAbstractDataImage.h>
+#include <medMetaDataKeys.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -206,20 +207,20 @@ void itkDataImageReaderBase::readInformation (const QString& path)
       for (unsigned int i=0; i<this->io->GetOrderedFileNames().size(); i++ )
       filePaths << this->io->GetOrderedFileNames()[i].c_str();
 
-      if (!dtkdata->hasMetaData ( tr ("PatientName") ))
-      dtkdata->addMetaData ( "PatientName", patientName );
+      if (!dtkdata->hasMetaData ( medMetaDataKeys::PatientName.key()) ))
+      dtkdata->addMetaData ( medMetaDataKeys::PatientName.key(), patientName );
       else
-      dtkdata->setMetaData ( "PatientName", patientName );
+      dtkdata->setMetaData ( medMetaDataKeys::PatientName.key(), patientName );
 
-      if (!dtkdata->hasMetaData ( tr ("StudyDescription") ))
-      dtkdata->addMetaData ( "StudyDescription", studyName );
+      if (!dtkdata->hasMetaData (medMetaDataKeys::StudyDescription.key()))
+      dtkdata->addMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
       else
-      dtkdata->setMetaData ( "StudyDescription", studyName );
+      dtkdata->setMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
 
-      if (!dtkdata->hasMetaData ( tr ("SeriesDescription") ))
-      dtkdata->addMetaData ( "SeriesDescription", seriesName );
+      if (!dtkdata->hasMetaData (medMetaDataKeys::SeriesDescription.key() ))
+      dtkdata->addMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
       else
-      dtkdata->setMetaData ( "SeriesDescription", seriesName );
+      dtkdata->setMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
     */
         dtkdata->addMetaData ("FilePath", QStringList() << path);
 

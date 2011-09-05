@@ -198,7 +198,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
     runProcess->setProcess (process);
 
     d->progression_stack->addJobItem(runProcess, "Progress:");
-
+    d->progression_stack->setActive(runProcess,true);
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
     connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));

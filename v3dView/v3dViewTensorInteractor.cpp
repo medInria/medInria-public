@@ -117,9 +117,16 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
             d->manager->Update();
 
+            if (d->view) {
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
+            }
+
             d->data = data;
         }
-    } else if (description.compare("itkDataTensorImageDouble3") == 0) {
+    }
+    else if (description.compare("itkDataTensorImageDouble3") == 0) {
         if (TensorImageTypeDouble *dataset = static_cast<TensorImageTypeDouble *>(data->data())) {
 
             d->datasetDouble = dataset;
@@ -144,6 +151,12 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
             d->manager->Update();
 
+            if (d->view) {
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
+            }
+
             d->data = data;
         }
     } else {
@@ -158,14 +171,11 @@ dtkAbstractData *v3dViewTensorInteractor::data (void)
 
 void v3dViewTensorInteractor::setView(dtkAbstractView *view)
 {
-    if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
+    if (v3dView *v3dview = qobject_cast<v3dView*>(view) ) {
         d->view = v3dview;
         // be careful not to forget setting the same renderer for the interactor and the view
         // otherwise a new renderer is created
         d->manager->SetRenderWindowInteractor( d->view->interactor(), d->view->renderer3d() );
-        d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
-        d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
-        d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
     }
 }
 
