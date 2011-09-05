@@ -126,7 +126,7 @@ dtkAbstractData *v3dViewFiberInteractor::data (void)
 
 void v3dViewFiberInteractor::setView(dtkAbstractView *view)
 {
-    if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
+    if (v3dView *v3dview = qobject_cast<v3dView*>(view) ) {
         d->view = v3dview;
         d->manager->SetRenderer( d->view->renderer3d() );
         d->manager->SetRenderWindowInteractor( d->view->interactor() );
