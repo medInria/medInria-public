@@ -19,6 +19,94 @@
 #include <medAbstractDataTypedImage.h>
 #include <itkDataImagePluginExport.h>
 
+#include "itkSpatialOrientationAdapter.h"
+
+template<typename T,int DIM>
+std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::DirectionType &directionMatrix)
+{
+    std::vector <bool> mirrorThumbs(2,false);
+    typename itk::Image<T,3>::DirectionType subDirectionMatrix;
+    
+    for (unsigned int i = 0;i < 3;++i)
+        for (unsigned int j = 0;j < 3;++j)
+            subDirectionMatrix(i,j) = directionMatrix(i,j);
+    
+    itk::SpatialOrientation::ValidCoordinateOrientationFlags fixed_orient = itk::SpatialOrientationAdapter().FromDirectionCosines(subDirectionMatrix);
+    itk::SpatialOrientation::ValidCoordinateOrientationFlags moving_orient = itk::SpatialOrientation::ITK_COORDINATE_ORIENTATION_RAI;
+
+    // Taken from itk orientimagefilter
+    const unsigned int                 NumDims = 3;  //InputImageDimension is regarded as 3.
+    const unsigned int               CodeField = 15; //4 bits wide
+    const unsigned int           CodeAxisField = 14; //3 bits wide, above the 0-place bit.
+    const unsigned int CodeAxisIncreasingField = 1;
+    unsigned int fixed_codes[NumDims];
+    unsigned int moving_codes[NumDims];
+    fixed_codes[0]  = (fixed_orient  >> itk::SpatialOrientation::ITK_COORDINATE_PrimaryMinor) & CodeField;
+    fixed_codes[1]  = (fixed_orient  >> itk::SpatialOrientation::ITK_COORDINATE_SecondaryMinor) & CodeField;
+    fixed_codes[2]  = (fixed_orient  >> itk::SpatialOrientation::ITK_COORDINATE_TertiaryMinor) & CodeField;
+    moving_codes[0] = (moving_orient >> itk::SpatialOrientation::ITK_COORDINATE_PrimaryMinor) & CodeField;
+    moving_codes[1] = (moving_orient >> itk::SpatialOrientation::ITK_COORDINATE_SecondaryMinor) & CodeField;
+    moving_codes[2] = (moving_orient >> itk::SpatialOrientation::ITK_COORDINATE_TertiaryMinor) & CodeField;
+    
+    std::vector <float> permuteOrder(NumDims,0);
+    for (unsigned int i = 0; i<NumDims; i++)
+        permuteOrder[i] = i;
+    
+    std::vector <bool> flipAxes(NumDims,false);
+        
+    for (unsigned int i = 0; i<NumDims-1; i++)
+    {
+        if ((fixed_codes[i] & CodeAxisField) != (moving_codes[i] & CodeAxisField))
+        {
+            for (unsigned int j = 0; j<NumDims; j++)
+            {
+                if ((moving_codes[i] & CodeAxisField) == (fixed_codes[j] & CodeAxisField))
+                {
+                    if (i==j)
+                    { //Axis i is already in place.
+                        continue;
+                    }
+                    else if ((moving_codes[j] & CodeAxisField) == (fixed_codes[i] & CodeAxisField))
+                    { //The cyclic permutation (i j) applies.  Therefore the remainder is (k), i.e., stationary.
+                        permuteOrder[i] = j;
+                        permuteOrder[j] = i;
+                    }
+                    else
+                    { //Need to work out an (i j k) cyclic permutation:
+                        for (unsigned int k = 0; k<NumDims; k++)
+                        {
+                            if ((moving_codes[j] & CodeAxisField) == (fixed_codes[k] & CodeAxisField))
+                            {
+                                //At this point, we can pick off (i j k).
+                                permuteOrder[i] = k;
+                                permuteOrder[j] = i;
+                                permuteOrder[k] = j;
+                                break;
+                            }
+                        }
+                        // Effectively, if (k==3) continue;
+                    }
+                    break;
+                }
+            }
+            // Effectively, if (j==3) continue;
+        }
+    }
+    
+    for (unsigned int i = 0; i<NumDims; i++)
+    {
+        const unsigned int j = permuteOrder[i];
+        if ((moving_codes[j] & CodeAxisIncreasingField) != (fixed_codes[i] & CodeAxisIncreasingField))
+            flipAxes[i] = true;
+    }
+    
+    for (unsigned int i = 0; i<NumDims-1; i++)
+        mirrorThumbs[i] = flipAxes[permuteOrder[i]];
+    
+    return mirrorThumbs;
+}
+
+
 template<typename T,int DIM>
 void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez,QList<QImage>& thumbnails) {
     if (DIM<3 || !image)
@@ -147,6 +235,10 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
     rgbfilter->GetColormap()->SetMaximumRGBComponentValue (255);
     rgbfilter->UseInputImageExtremaForScalingOn ();
 
+    typename ImageType::DirectionType directionMatrix = image->GetDirection();
+    
+    std::vector <bool> mirrorThumbs = DeterminePermutationsAndFlips<T,DIM>(directionMatrix);
+        
     if (DIM==3) {
 
         for (unsigned int slice=0;slice<size[2];slice++) {
@@ -199,7 +291,8 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
                 ++it;
             }
 
-            thumbnails.push_back (qimage->mirrored(img2d->GetDirection()(0,0)==-1.0,img2d->GetDirection()(1,1)==-1.0));
+            // the y direction for QImages is inversed with respect to the image convention, explaining the !mirrorThumbs[1]
+            thumbnails.push_back(qimage->mirrored(mirrorThumbs[0],mirrorThumbs[1]));
             delete qimage;
         }
     } else if (DIM==4) {
@@ -257,7 +350,8 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
                     ++it;
                 }
 
-                thumbnails.push_back(qimage->mirrored(img2d->GetDirection()(0,0)==-1.0,img2d->GetDirection()(1,1)==-1.0));
+                // the y direction for QImages is inversed with respect to the image convention, explaining the !mirrorThumbs[1]
+                thumbnails.push_back(qimage->mirrored(mirrorThumbs[0],mirrorThumbs[1]));
                 delete qimage;
             }
         }
