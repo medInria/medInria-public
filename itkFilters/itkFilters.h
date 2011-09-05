@@ -25,6 +25,7 @@
 #include <dtkCore/dtkAbstractData.h>
 
 #include "itkFiltersPluginExport.h"
+#include "itkCommand.h"
 
 class itkFiltersPrivate;
 class dtkAbstractData;
@@ -34,6 +35,8 @@ class ITKFILTERSPLUGIN_EXPORT itkFilters : public dtkAbstractProcess
     Q_OBJECT
 
 public:
+//   itk::CStyleCommand * callback;
+  
   enum FILTER
   {
     ADD, SUBTRACT, MULTIPLY, DIVIDE, GAUSSIAN, NORMALIZE, MEDIAN, INVERT, SHRINK, INTENSITY
@@ -46,12 +49,17 @@ public:
 
     static bool registered ( void );
 
+//     static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData);
+    
 public slots:
 
     void setInput ( dtkAbstractData *data );
     void setParameter ( double  data, int channel );
     int update ( void );
     dtkAbstractData *output ( void );
+
+signals:
+  void progress(int progress);
 
 private:
     itkFiltersPrivate *d;
