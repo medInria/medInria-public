@@ -846,8 +846,14 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->view3d->SetITKInput(image, layer);
         }
     }
-    else if (data->description()=="itkDataImageVector3") {
+    else if (data->description()=="itkDataImageVectorUChar3") {
         if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
+        }
+    }
+    else if (data->description()=="itkDataImageVectorFloat3") {
+        if( itk::Image<itk::Vector<float, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<float, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
         }
@@ -955,6 +961,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
 	else if ( data->description() == "vtkDataMesh4D" ) {
 	    this->enableInteractor ( "v3dView4DInteractor" );
+        this->enableInteractor ( "v3dViewMeshInteractor" );
 	    // This will add the data to the interactor.
 	    dtkAbstractView::setData(data);
 	}

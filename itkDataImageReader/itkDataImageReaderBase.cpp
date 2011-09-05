@@ -155,13 +155,15 @@ void itkDataImageReaderBase::readInformation (const QString& path)
             }
         }
         else if (this->io->GetPixelType()==itk::ImageIOBase::VECTOR) { //   Added by Theo.
-
+            qDebug() << "this->io->GetPixelType()" << this->io->GetComponentType(); 
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
-                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVector3");
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorUChar3");
                     break;
-            
+                case itk::ImageIOBase::FLOAT:
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorFloat3");
+                    break;
                 default:
                     qDebug() << "Unrecognized component type";
                     return;
@@ -296,7 +298,8 @@ bool itkDataImageReaderBase::read(const QString& path)
               read_image<4,float>(path,"itkDataImageFloat4")           ||
               read_image<3,double>(path,"itkDataImageDouble3")         ||
               read_image<4,double>(path,"itkDataImageDouble4")         ||
-              read_image<3,itk::Vector<unsigned char,3> >(path,"itkDataImageVector3") ||  //  Added by Theo.
+              read_image<3,itk::Vector<unsigned char,3> >(path,"itkDataImageVectorUChar3") ||  //  Added by Theo.
+              read_image<3,itk::Vector<float,3> >(path,"itkDataImageVectorFloat3") ||
               read_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
               read_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
         {
