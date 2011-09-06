@@ -80,13 +80,14 @@ public:
     virtual QList<medDataIndex> images(const medDataIndex& index ) const;
 
     /** Get metadata for specific item. Return uninitialized string if not present. */
-    virtual QString metaData(const medDataIndex& index, const QString& key) const;
+    virtual QString metaData(const medDataIndex& index,const QString& key) const;
 
     /** Set metadata for specific item. Return true on success, false otherwise. */
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
 
     /** Implement base class */
     virtual bool isPersistent() const;
+
 signals:
     /**
      * Status message from controller to some user interface
@@ -119,13 +120,13 @@ public slots:
      * Calls import(const QString& file,bool indexWithoutCopying) with indexWithoutCopying = false.
      *
     */
-    void import(const QString& file);
+    void import(const QString& file,const QString& importUuid=QString());
 
     /**
     * Import data into the db read from memory
     * @params dtkAbstractData * data dataObject
     */
-    void import(dtkAbstractData *data);
+    void import(dtkAbstractData *data,const QString& importUuid=QString());
 
     /** override base class */
     virtual void remove(const medDataIndex& index);
@@ -133,6 +134,8 @@ public slots:
 
     /**Implement base class */
     virtual int dataSourceId() const;
+
+     bool contains(const medDataIndex &index) const;
 
 protected slots:
     void forwardMessage(QString);

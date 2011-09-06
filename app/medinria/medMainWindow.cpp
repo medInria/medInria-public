@@ -33,6 +33,7 @@
 #include <dtkGui/dtkSpacer.h>
 
 #include <medMessageController.h>
+#include <medStatusBar.h>
 #include <medSettingsManager.h>
 #include <medDbControllerFactory.h>
 #include <medJobManager.h>
@@ -57,6 +58,7 @@
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
+#include "medViewerConfigurationFiltering.h"
 
 #include "medSaveModifiedDialog.h"
 
@@ -90,6 +92,7 @@ class medMainWindowPrivate
 {
 public:
     QStackedWidget *stack;
+    QList<QString> importUuids;
 
     medBrowserArea *browserArea;
     medViewerArea  *viewerArea;
@@ -99,6 +102,7 @@ public:
 
     QHBoxLayout * statusBarLayout;
 
+    medStatusBar * statusBar;
     QWidget * quickAccessWidget;
     bool quickAccessVisible;
 
@@ -126,12 +130,15 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     this->setMinimumHeight ( 600 );
     this->setMinimumWidth ( 800 );
 
+    // register controller, configurations etc
+    this->registerToFactories();
+
     // Setting up database connection
     if ( !medDatabaseController::instance()->createConnection() )
         qDebug() << "Unable to create a connection to the database";
 
-    // register controller, configurations etc
-    this->registerToFactories();
+    connect (medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &, const QString&)),
+             this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
 
     // Setting up menu
     QAction *windowFullScreenAction = new QAction ( "Toggle fullscreen mode", this );
@@ -154,6 +161,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->viewerArea->setObjectName ( "Viewer" );
     d->homepageArea->setObjectName ( "Homepage" );
 
+
     d->stack = new QStackedWidget ( this );
     d->stack->addWidget ( d->homepageArea );
     d->stack->addWidget ( d->browserArea );
@@ -167,7 +175,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->browserArea, SIGNAL(load(const QString&)), this, SLOT(load(const QString&)));
     connect(d->browserArea, SIGNAL(open(const medDataIndex&)), this, SLOT(open(const medDataIndex&)));
 
-
+    // Setting up status bar
     //Setup quick access menu
     d->quickAccessButton = new medQuickAccessPushButton ( this );
     d->quickAccessButton->setFocusPolicy ( Qt::NoFocus );
@@ -183,7 +191,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessWidget->setMinimumWidth(180);
 
     d->quickAccessVisible = false;
-    d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos" );
+    d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos",this );
 
     //Add quit button
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
@@ -231,18 +239,26 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     statusBarWidget->setLayout ( d->statusBarLayout );
 
     //Setup status bar
-    this->statusBar()->setSizeGripEnabled ( false );
-    this->statusBar()->setContentsMargins ( 5, 0, 5, 0 );
-    this->statusBar()->setFixedHeight ( 31 );
-    this->statusBar()->addPermanentWidget ( statusBarWidget, 1 );
+    d->statusBar = new medStatusBar(this);
+    d->statusBar->setStatusBarLayout(d->statusBarLayout);
+    d->statusBar->setSizeGripEnabled ( false );
+    d->statusBar->setContentsMargins ( 5, 0, 5, 0 );
+    d->statusBar->setFixedHeight ( 31 );
+    d->statusBar->addPermanentWidget ( statusBarWidget, 1 );
+
+    this->setStatusBar(d->statusBar);
+    
+//     this->statusBar()->setSizeGripEnabled ( false );
+//     this->statusBar()->setContentsMargins ( 5, 0, 5, 0 );
+//     this->statusBar()->setFixedHeight ( 31 );
+//     this->statusBar()->addPermanentWidget ( statusBarWidget, 1 );
 
     this->readSettings();
 
     //Init homepage with configuration buttons
     d->homepageArea->initPage();
     QObject::connect ( d->homepageArea, SIGNAL ( showBrowser() ), this, SLOT ( switchToBrowserArea() ) );
-    QObject::connect ( d->homepageArea, SIGNAL ( showViewer() ), this, SLOT ( switchToViewerArea() ) );
-    QObject::connect ( d->homepageArea, SIGNAL ( showConfiguration ( QString ) ), d->viewerArea, SLOT ( setupConfiguration ( QString ) ) );
+    QObject::connect ( d->homepageArea, SIGNAL ( showConfiguration ( QString ) ), this, SLOT ( onShowConfiguration ( QString ) ) );
     QObject::connect ( d->homepageArea,SIGNAL ( showSettings() ), this, SLOT ( onEditSettings() ) );
 
     //Add configuration button to the quick access menu
@@ -255,16 +271,19 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     // this->setStyle(new QPlastiqueStyle());
     this->setWindowTitle ( "medinria" );
 
-    medMessageController::instance()->attach ( this->statusBar() );
+    //Connect the messageController with the status for notification messages management
+    QObject::connect(medMessageController::instance(), SIGNAL(addMessage(QWidget*)), d->statusBar, SLOT(addMessage(QWidget*)));
+    QObject::connect(medMessageController::instance(), SIGNAL(removeMessage(QWidget*)), d->statusBar, SLOT(removeMessage(QWidget*)));
 
     d->viewerArea->setupConfiguration ( "Visualization" );
 
     connect ( qApp, SIGNAL ( aboutToQuit() ), this, SLOT ( close() ) );
+
+
 }
 
 medMainWindow::~medMainWindow ( void )
 {
-
     delete d;
 
     d = NULL;
@@ -431,7 +450,7 @@ void medMainWindow::switchToHomepageArea ( void )
 
 void medMainWindow::switchToBrowserArea ( void )
 {
-    d->quickAccessButton->setText("Browser");
+    d->quickAccessButton->setText("Workspace: Browser");
     d->quickAccessButton->setMinimumWidth(170);
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
@@ -453,10 +472,10 @@ void medMainWindow::switchToViewerArea ( void )
 
 void medMainWindow::onShowConfiguration ( QString config )
 {
-    d->quickAccessButton->setText("Workspace: " + config);
     d->quickAccessButton->setMinimumWidth(170);
     d->viewerArea->setupConfiguration(config);
     this->switchToViewerArea();
+    d->quickAccessButton->setText("Workspace: " + config);
 }
 
 void medMainWindow::onShowQuickAccess ( void )
@@ -530,33 +549,48 @@ void medMainWindow::onEditSettings()
 
 void medMainWindow::open ( const medDataIndex& index )
 {
-    d->viewerArea->openInTab(index);
-//    if(d->viewerArea->openInTab(index))
-//    {
-//        d->quickAccessButton->setText("Workspace: Visualization");
-//        d->quickAccessButton->setMinimumWidth(170);
-//        this->switchToViewerArea();
-//    }
-//    else
-//    {
-//        // something went wrong while opening
-//        // we bubble down the info
-//        d->browserArea->onOpeningFailed(index);
-//    }
+   if(d->viewerArea->openInTab(index))
+    {
+        d->quickAccessButton->setText("Workspace: Visualization");
+        d->quickAccessButton->setMinimumWidth(170);
+        this->switchToViewerArea();
+    }
 }
 
 void medMainWindow::open ( const QString& file )
 {
-    d->viewerArea->openInTab ( file );
-
-    d->quickAccessButton->setText("Workspace: Visualization");
-    d->quickAccessButton->setMinimumWidth(170);
-    this->switchToViewerArea();
+    QString importUuid = QUuid::createUuid().toString();
+    d->importUuids.append(importUuid);
+    qDebug() << "about to open file" << file;
+    qDebug()<< "with uuid:" << importUuid;
+    medDataManager::instance()->importNonPersistent (file,importUuid);
 }
+
+void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importUuid)
+{
+//    qDebug() << "Opened file from uuid" << importUuid;
+//    qDebug() << "uuids in list" << d->importUuids;
+    if (!importUuid.isEmpty() && d->importUuids.contains(importUuid))
+    {
+        if (index.isValid())
+        {
+            d->viewerArea->openInTab(index);
+            d->quickAccessButton->setText("Workspace: Visualization");
+            d->quickAccessButton->setMinimumWidth(170);
+            this->switchToViewerArea();
+        }
+        else
+        {
+            qDebug() << "Could not Load file with uuid" << importUuid;
+        }
+        d->importUuids.removeOne(importUuid);
+    }
+}
+
 
 void medMainWindow::load(const QString& file)
 {
-    medDatabaseNonPersistentController::instance()->import(file);
+    medDataManager::instance()->importNonPersistent (file);
 }
 
 void medMainWindow::closeEvent(QCloseEvent *event)
@@ -647,6 +681,7 @@ void medMainWindow::registerToFactories()
     medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
+    medViewerConfigurationFactory::instance()->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
 
     //Register settingsWidgets
     medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);

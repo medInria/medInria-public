@@ -131,7 +131,10 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 
         // try to load the data from db
         medAbstractDbController* db = d->getDbController();
-        if (db)
+
+        //checks the index is in the db before trying to read anything.
+        //otherwise we get error messages when trying to open non persistent items.
+        if (db  && db->contains(index))
         {
             // check available free memory and clean up if necessary
             if (!manageMemoryUsage(index, db))
@@ -154,7 +157,7 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
         if (!dtkdata)
         {
             medAbstractDbController* npDb = d->getNonPersDbController();
-            if(npDb)
+            if(npDb && npDb->contains(index))
             {
                 // check available free memory and clean up if necessary
                 if (!manageMemoryUsage(index, npDb))
@@ -176,7 +179,17 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
     }
 
     if (!dtkdata)
+    {
         qWarning() << "unable to open images with index:" << index.asString();
+
+        // sometimes signals are blocked before calling this functions, like in medViewerArea...
+        //medViewerArea doesn't block these signals any more... until we find why
+        //it was needed, we won't be doing any black magic signal blocking where not needed.
+//        bool prevState = this->signalsBlocked();
+//        this->blockSignals(false);
+        emit failedToOpen(index);
+//        this->blockSignals(prevState);
+    }
 
     return dtkdata;
 }
@@ -215,6 +228,8 @@ bool medDataManager::tryFreeMemory(size_t memoryLimit)
     size_t procMem = getProcessMemoryUsage();
     if (procMem < memoryLimit)
         return false;
+
+    qDebug() << "****** TRY_FREE_MEM_BEGIN: " << procMem / divider << " to reach: " << memoryLimit / divider;
 
     int itemsBefore = d->dataCache.count();
 
@@ -415,6 +430,12 @@ size_t medDataManager::getUpperMemoryThreshold()
 
 void medDataManager::importNonPersistent( dtkAbstractData *data )
 {
+    QString uuid = QUuid::createUuid().toString();
+    this->importNonPersistent (data, uuid);
+}
+
+void medDataManager::importNonPersistent( dtkAbstractData *data, const QString &uuid)
+{
     if (!data)
         return;
 
@@ -437,7 +458,7 @@ void medDataManager::importNonPersistent( dtkAbstractData *data )
 
     if(npDb)
     {
-        npDb->import(data);
+        npDb->import(data, uuid);
     }
 }
 
@@ -464,13 +485,19 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index)
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::importNonPersistent( QString file )
+void medDataManager::importNonPersistent(QString file)
+{
+    QString uuid = QUuid::createUuid().toString();
+    this->importNonPersistent (file, uuid);
+}
+
+void medDataManager::importNonPersistent( QString file, const QString &uuid )
 {
     medAbstractDbController* npDb = d->getNonPersDbController();
     if(npDb)
     {
         connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
-        npDb->import(file);
+        npDb->import(file, uuid);
     }
 }
 

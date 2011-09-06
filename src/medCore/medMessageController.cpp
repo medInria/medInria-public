@@ -30,13 +30,19 @@
 medMessageControllerMessage::medMessageControllerMessage(QObject* sender,
                                                          QWidget *parent) : QWidget(parent)
 {
-    this->setFixedWidth(400);
     this->sender = sender;
+    widget = new QWidget(this);
+    widget->setFixedWidth(400);
 }
 
 medMessageControllerMessage::~medMessageControllerMessage(void)
 {
 
+}
+
+QWidget * medMessageControllerMessage::getWidget()
+{
+  return widget;
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -46,7 +52,7 @@ medMessageControllerMessage::~medMessageControllerMessage(void)
 medMessageControllerMessageSimple::medMessageControllerMessageSimple(
         QObject* sender, const QString& text,
         QWidget *parent,unsigned int timeout) : medMessageControllerMessage(sender,parent)
-{
+{    
     icon = new QLabel(this);
     //icon->setPixmap(QPixmap(":/icons/information.png"));
 
@@ -65,6 +71,8 @@ medMessageControllerMessageSimple::medMessageControllerMessageSimple(
         connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
         timer->start(timeout);
     }
+
+    widget->setLayout(layout);
 }
 void medMessageControllerMessageSimple::remove(){
     medMessageController::instance()->remove(sender);
@@ -121,7 +129,7 @@ public:
 medMessageControllerMessageProgress::medMessageControllerMessageProgress(
         QObject* sender, const QString& text, QWidget *parent) :
         medMessageControllerMessage(sender,parent), d(new medMessageControllerMessageProgressPrivate)
-{
+{ 
     QLabel *icon = new QLabel(this);
     icon->setPixmap(QPixmap(":/icons/information.png"));
 
@@ -139,6 +147,8 @@ medMessageControllerMessageProgress::medMessageControllerMessageProgress(
     layout->addWidget(icon);
     layout->addWidget(info);
     layout->addWidget(d->progress);
+
+    widget->setLayout(layout);
 }
 
 medMessageControllerMessageProgress::~medMessageControllerMessageProgress(void)
@@ -162,7 +172,7 @@ public:
 };
 
 medMessageControllerMessageQuestion::medMessageControllerMessageQuestion(QObject* sender, const QString& text, QWidget *parent) : medMessageControllerMessage(sender,parent), d(new medMessageControllerMessageQuestionPrivate)
-{
+{  
     QLabel *icon = new QLabel(this);
     icon->setPixmap(QPixmap(":/icons/information.png"));
 
@@ -183,6 +193,8 @@ medMessageControllerMessageQuestion::medMessageControllerMessageQuestion(QObject
 
     connect(ok_button, SIGNAL(clicked()), this, SIGNAL(accepted()));
     connect(no_button, SIGNAL(clicked()), this, SIGNAL(rejected()));
+
+    widget->setLayout(layout);
 }
 
 medMessageControllerMessageQuestion::~medMessageControllerMessageQuestion(void)
@@ -197,8 +209,6 @@ medMessageControllerMessageQuestion::~medMessageControllerMessageQuestion(void)
 class medMessageControllerPrivate
 {
 public:
-    QStatusBar *status;
-
     QHash<QObject *, medMessageControllerMessage *> messages;
 };
 
@@ -210,22 +220,15 @@ medMessageController *medMessageController::instance(void)
     return s_instance;
 }
 
-void medMessageController::attach(QStatusBar *status)
-{
-    d->status = status;
-}
-
 void medMessageController::showInfo(QObject *sender, const QString& text,unsigned int timeout)
 {
     if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
         // GUI
         medMessageControllerMessageInfo *message = new medMessageControllerMessageInfo(
                 sender,text,0,timeout);
-    
-        d->status->addWidget(message);
-        d->status->update();
-        qApp->processEvents();
 
+        emit addMessage(message->getWidget());
+        
         d->messages.insert(sender, message);
     } else {
         dtkOutput() << text;
@@ -239,9 +242,8 @@ void medMessageController::showError(QObject *sender, const QString& text,unsign
         medMessageControllerMessageError *message = new medMessageControllerMessageError(
                 sender,text,0,timeout);
 
-        d->status->addWidget(message);
-        d->status->update();
-        qApp->processEvents();
+        emit addMessage(message->getWidget());
+        
         d->messages.insert(sender, message);
     } else {
         dtkError() << text;
@@ -254,9 +256,8 @@ void medMessageController::showProgress(QObject *sender, const QString& text)
         // GUI
         medMessageControllerMessageProgress *message = new medMessageControllerMessageProgress(sender,text);
 
-        d->status->addWidget(message);
-        d->status->update();
-        qApp->processEvents();
+        emit addMessage(message->getWidget());
+        
         d->messages.insert(sender, message);
     } else {
         dtkDebug() << "Progress : " << text;
@@ -279,7 +280,7 @@ void medMessageController::remove(QObject *sender)
 {
     medMessageControllerMessage *message = d->messages.value(sender);
 
-    d->status->removeWidget(message);
+    emit removeMessage(message->getWidget());
 
     d->messages.remove(sender);
 
@@ -288,7 +289,6 @@ void medMessageController::remove(QObject *sender)
 
 medMessageController::medMessageController(void) : QObject(), d(new medMessageControllerPrivate)
 {
-    d->status = NULL;
 }
 
 medMessageController::~medMessageController(void)

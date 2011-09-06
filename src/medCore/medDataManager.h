@@ -68,6 +68,7 @@ public:
     * @params const dtkAbstractData & data
     */
     void importNonPersistent(dtkAbstractData *data);
+    void importNonPersistent(dtkAbstractData *data, const QString &uuid);
 
 
     /**
@@ -75,6 +76,7 @@ public:
     * @params QString file
     */
     void importNonPersistent(QString file);
+    void importNonPersistent(QString file, const QString &uuid);
 
 
     /**
@@ -164,6 +166,12 @@ signals:
     * or non persistent database by calling remove().
     */
     void dataRemoved (const medDataIndex&);
+
+    /**
+     * @brief Emitted when an image fails to open
+     * @param the @medDataIndex of the image
+    */
+    void failedToOpen(const medDataIndex&);
 
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index);

@@ -23,7 +23,7 @@
 #include <medCore/medDataIndex.h>
 #include <medCore/medAbstractDbController.h>
 #include <medCore/medDataManager.h>
-#include <medCore/medMetaDataHelper.h>
+#include <medCore/medMetaDataKeys.h>
 
 #include <QtCore>
 #include <QtGui>
@@ -38,7 +38,7 @@ medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraph
 {
     d->index = index;
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData( index, medMetaDataHelper::KEY_ThumbnailPath() );
+    QString thumbpath = dbc->metaData(index,medMetaDataKeys::ThumbnailPath);
 
     bool shouldSkipLoading = false;
     if ( thumbpath.isEmpty() ) {

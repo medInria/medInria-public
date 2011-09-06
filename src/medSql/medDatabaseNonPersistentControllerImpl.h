@@ -30,6 +30,8 @@
 class dtkAbstractData;
 class medDatabaseNonPersistentItem;
 class medDatabaseNonPersistentControllerImplPrivate;
+class medImportJobWatcher;
+
 
 class MEDSQL_EXPORT medDatabaseNonPersistentControllerImpl: public medAbstractDbController
 {
@@ -106,24 +108,25 @@ public:
 public slots:
 
     /**
-    * Read data from nonPersistent storage using the index
+    * Reads data from nonPersistent storage using the index
     * @params const medDataIndex & index Index to look for
     * @return dtkAbstractData* data
     */
     dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
-    * Store data temporarily referenced by temp index
-    * @params dtkAbstractData * data data to be stored
+    * Stores data temporarily referenced by temp index
+    * @param data data to be stored
+    * @param callerUuid
     */
-    void import(dtkAbstractData *data);
+    void import(dtkAbstractData *data,const QString& callerUuid);
 
     /**
-     * Store data temporarily referenced by temp index
-     * @params const QString & file data stored at file path
-     * @return medDataIndex - assigned index
+     * Stores data temporarily referenced by temp index
+     * @param file data stored at file path.
+     * @param callerUuid caller's identifier.
      */
-    void import(const QString& file);
+    void import(const QString& file,const QString& callerUuid);
 
     /**
      * Remove data referenced by index from temporary database
@@ -138,6 +141,9 @@ public slots:
 
     /** true if the given data index matches one in our db*/
     bool contains( const medDataIndex& index) const;
+
+signals:
+    void updated(const medDataIndex&, const QString&);
 
 private:
     medDatabaseNonPersistentControllerImplPrivate *d;

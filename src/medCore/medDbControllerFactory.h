@@ -36,7 +36,7 @@ public:
    * @return medDbControllerFactory * Factory instance
   */
   static medDbControllerFactory * instance(void);
-  
+
   /**
    * @brief Registers a new widget type, and its creator function.
    *
@@ -46,16 +46,23 @@ public:
   */
   bool registerDbController (const QString& type, medDbControllerCreator func);
 
+  /**
+   * @brief Gets a list of registered controllers.
+   *
+   * @returns a QStringList of Controllers' names.
+   */
+  QList<QString> controllers(void);
+
 signals:
   /** @brief Emitted when a controller is registered.
    *  @param type name of the controller.
-  */  
+  */
   void dbControllerRegistered(const QString& type);
 
 public slots:
   /**
    * @brief Creates a new controller.
-   * When setting the typename, the factory tries to find this in the hash, 
+   * When setting the typename, the factory tries to find this in the hash,
    * otherwise or if not found it will try to return the first one that was registered
    * @param type the type to instantiate
    * @return medSettingsWidget * the newly allocated widget.
@@ -83,9 +90,9 @@ protected:
 
 private:
 
-  static medDbControllerFactory* s_instance; 
+  static medDbControllerFactory* s_instance;
 
   medDbControllerFactoryPrivate* d;
 };
 
-#endif 
+#endif

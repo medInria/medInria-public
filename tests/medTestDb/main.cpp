@@ -7,7 +7,7 @@
 
 #include <medCore/medDbControllerFactory.h>
 #include <medCore/medDataManager.h>
-#include <medCore/medMetaDataHelper.h>
+#include <medCore/medMetaDataKeys.h>
 #include <medCore/medPluginManager.h>
 #include <medCore/medStorage.h>
 
@@ -35,8 +35,17 @@ public:
 
     dtkSmartPointer<dtkAbstractData> CreateTestData( );
 
+private slots:
+
+    void onNonPersistentDataImported(const medDataIndex& index) {
+        importedIndex = index;
+        mutex.unlock();
+    }
+
 private:
 
+    QMutex         mutex;
+    medDataIndex   importedIndex;
 };
 
 // Constructor : initialise the test environment.
@@ -93,9 +102,16 @@ int medTestDbApp::run()
     CHECK_TEST_RESULT( dataManager->nonPersistentDataCount() == 0 );
 
     // Test import of new data
-    medDataIndex importedIndex = dataManager->importNonPersistent( testData );
-    CHECK_TEST_RESULT( importedIndex.isValid() );
-    CHECK_TEST_RESULT( importedIndex.isValidForSeries() );
+    dataManager->importNonPersistent( testData );
+
+    //  Wait untill the data is actually imported.
+
+    mutex.lock();
+    QWaitCondition NPDI;
+    NPDI.wait(&mutex);
+
+    CHECK_TEST_RESULT(importedIndex.isValid());
+    CHECK_TEST_RESULT(importedIndex.isValidForSeries());
 
     const int persistentSourceId = 1;
     const int nonPersistentSourceId = 2;
@@ -146,8 +162,8 @@ int medTestDbApp::run()
     // Check data in db matches original.
     dtkSmartPointer<dtkAbstractData> testDataFromDb = dataManager->data( persImportedIndex );
     CHECK_TEST_RESULT(testDataFromDb->description() == testData->description());
-    CHECK_TEST_RESULT(medMetaDataHelper::getFirstPatientNameValue( testDataFromDb ) == 
-                      medMetaDataHelper::getFirstPatientNameValue( testData ) );
+    CHECK_TEST_RESULT(medMetaDataKeys::PatientName.getFirstValue(testDataFromDb) == 
+                      medMetaDataKeys::PatientName.getFirstValue(testData));
 
     // Check removing works ok - need to use synchronous version.
     //dataManager->removeData( persImportedIndex );
@@ -172,9 +188,9 @@ dtkSmartPointer<dtkAbstractData> medTestDbApp::CreateTestData( )
     dtkSmartPointer<dtkAbstractData> testData = dataFactory->createSmartPointer(medQtDataImage::s_description());
     CHECK_TEST_RESULT( testData );
 
-    medMetaDataHelper::setPatientName(testData, "TestPatient");
-    medMetaDataHelper::setStudyDescription(testData, "TestStudy");
-    medMetaDataHelper::setSeriesDescription(testData, "TestSeries");
+    medMetaDataKeys::PatientName.set(testData,"TestPatient");
+    medMetaDataKeys::StudyDescription.set(testData,"TestStudy");
+    medMetaDataKeys::SeriesDescription.set(testData,"TestSeries");
 
     QImage testImage(QSize( 800, 500 ), QImage::Format_Mono );
 

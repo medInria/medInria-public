@@ -28,6 +28,7 @@
 #include <medDataManager.h>
 #include <medViewManager.h>
 #include <medMessageController.h>
+#include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 
 #include <medAbstractDataImage.h>
@@ -35,7 +36,7 @@
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>
 
-#include "medToolBoxRegistrationCustom.h"
+#include <medToolBoxRegistrationCustom.h>
 
 
 #include <QtGui>
@@ -452,9 +453,9 @@ void medToolBoxRegistration::onSuccess()
     foreach(QString property, d->fixedData->propertyList())
         output->addProperty(property,d->fixedData->propertyValues(property));
 
-    QString newDescription = d->movingData->metadata(tr("SeriesDescription"));
+    QString newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
     newDescription += " registered";
-    output->setMetaData(tr("SeriesDescription"), newDescription);
+    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
 
     medDataManager::instance()->importNonPersistent(output);
 

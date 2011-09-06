@@ -1,5 +1,5 @@
-/* medToolBoxFactory.cpp --- 
- * 
+/* medToolBoxFactory.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 14:33:05 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 32
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medToolBox.h"
@@ -25,6 +25,8 @@ class medToolBoxFactoryPrivate
 public:
     medToolBoxFactory::medToolBoxRegistrationCustomCreatorHash custom_registration_creators;
     medToolBoxFactory::medToolBoxDiffusionCustomCreatorHash custom_diffusion_creators;
+    medToolBoxFactory::medToolBoxCompositeDataSetImporterCustomCreatorHash custom_compositedatasetimporter_creators;
+    medToolBoxFactory::medToolBoxFilteringCustomCreatorHash custom_filtering_creators;
 };
 
 medToolBoxFactory *medToolBoxFactory::instance(void)
@@ -81,6 +83,54 @@ medToolBoxDiffusionCustom *medToolBoxFactory::createCustomDiffusionToolBox(QStri
         return NULL;
 
     medToolBoxDiffusionCustom *toolbox = d->custom_diffusion_creators[type](parent);
+
+    return toolbox;
+}
+
+bool medToolBoxFactory::registerCustomCompositeDataSetImporterToolBox(QString type, medToolBoxCompositeDataSetImporterCustomCreator func)
+{
+    if(!d->custom_compositedatasetimporter_creators.contains(type)) {
+        d->custom_compositedatasetimporter_creators.insert(type, func);
+        return true;
+    }
+    return false;
+}
+
+bool medToolBoxFactory::registerCustomFilteringToolBox(QString type, medToolBoxFilteringCustomCreator func)
+{
+    if(!d->custom_filtering_creators.contains(type)) {
+        d->custom_filtering_creators.insert(type, func);
+        return true;
+    }
+
+    return false;
+}
+
+QList<QString> medToolBoxFactory::compositeDataSetImporterToolBoxes(void)
+{
+    return d->custom_compositedatasetimporter_creators.keys();
+}
+
+medToolBoxCompositeDataSetImporterCustom *medToolBoxFactory::createCustomCompositeDataSetImporterToolBox(QString type, QWidget *parent)
+{
+    if(!d->custom_compositedatasetimporter_creators.contains(type))
+        return NULL;
+
+    medToolBoxCompositeDataSetImporterCustom *toolbox = d->custom_compositedatasetimporter_creators[type](parent);
+    return toolbox;
+}
+
+QList<QString> medToolBoxFactory::filteringToolBoxes(void)
+{
+    return d->custom_filtering_creators.keys();
+}
+
+medToolBoxFilteringCustom *medToolBoxFactory::createCustomFilteringToolBox(QString type, QWidget *parent)
+{
+    if(!d->custom_filtering_creators.contains(type))
+        return NULL;
+
+    medToolBoxFilteringCustom *toolbox = d->custom_filtering_creators[type](parent);
 
     return toolbox;
 }

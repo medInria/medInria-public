@@ -1,5 +1,5 @@
-/* medMainWindow.h --- 
- * 
+/* medMainWindow.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:47:51 2009 (+0200)
@@ -9,18 +9,19 @@
  *     Update #: 32
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDMAINWINDOW_H
 #define MEDMAINWINDOW_H
 
 #include <QtGui/QMainWindow>
+#include <QUuid>
 #include <QUrl>
 class medDataIndex;
 class medMainWindowPrivate;
@@ -32,7 +33,7 @@ class medMainWindow : public QMainWindow
 public:
      medMainWindow(QWidget *parent = 0);
     ~medMainWindow(void);
-    
+
     void readSettings(void);
     void writeSettings();
 
@@ -55,7 +56,16 @@ public slots:
     void onSaveModified(void);
     void onNoQuit(void);
     void onEditSettings(void);
-    
+
+    /**
+     * @brief: Decides what to do when the importer returned a medDataIndex after importation.
+     *
+     * @param index the medDataIndex returned by the importer. May be invalid if iportation was not successful.
+     * @param importUuid This string is the representation of a QUuid.
+     * If the QUuid identifies a request made by this object, then the action is triggered. Here we call openInTab in the viewerArea.
+     */
+    void onOpenFile(const medDataIndex & index,const QString& importUuid);
+
     /**
     * Opens an image (which is already in the database)
     * in the viewer area.

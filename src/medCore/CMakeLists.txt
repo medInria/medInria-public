@@ -1,5 +1,5 @@
-### CMakeLists.txt --- 
-## 
+### CMakeLists.txt ---
+##
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Sat Oct  3 18:22:21 2009 (+0200)
@@ -8,13 +8,13 @@
 ##           By: Julien Wintz
 ##     Update #: 43
 ######################################################################
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ######################################################################
-## 
+##
 ### Change log:
-## 
+##
 ######################################################################
 
 project(medCore)
@@ -26,7 +26,7 @@ project(medCore)
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataManager.h
   medMessageController.h
-  medMetaDataHelper.h
+  medMetaDataKeys.h
   medViewManager.h
   medPluginManager.h
   medProgressFilter.h
@@ -46,23 +46,23 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractViewFiberInteractor.h
   medAbstractData.h
   medAbstractDataCollection.h
+  medAbstractDataImage.h
   medAbstractDataImage2D.h
   medAbstractDataImage3D.h
   medAbstractDataImage4D.h
   medAbstractDataMesh.h
-  medAttachedData.h   
+  medAttachedData.h  
 )
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
-  medAbstractDataImage.h
+  medCoreExport.h
+  medDataIndex.h
   medAbstractDataTypedImage.h
   medAbstractDataTypedImage2D.h
   medAbstractDataTypedImage3D.h
   medAbstractDataTypedImage4D.h
-  medCoreExport.h
-  medDataIndex.h
-  medAbstractDatabaseItem.h 
+  medAbstractDatabaseItem.h
 )
 
 
@@ -70,7 +70,7 @@ set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
   medMessageController.cpp
-  medMetaDataHelper.cpp
+  medMetaDataKeys.cpp
   medViewManager.cpp
   medPluginManager.cpp
   medProgressFilter.cpp
@@ -78,7 +78,7 @@ set(${PROJECT_NAME}_SOURCES
   medAbstractViewCollection.cpp
   medStorage.cpp
   medJobItem.cpp
-  medJobManager.cpp  
+  medJobManager.cpp
   medSettingsManager.cpp
   medDbControllerFactory.cpp
   medAbstractDbController.cpp
@@ -125,13 +125,22 @@ add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+    "medPch.h" "../medPch/medPch.cpp" 
+    ${${PROJECT_NAME}_SOURCES}
+    ${${PROJECT_NAME}_SOURCES_MOC}
+    ${${PROJECT_NAME}_SOURCES_WRAP})
+endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES_WRAP})
 
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     dtkCore)
 if(TCL_FOUND)
@@ -142,7 +151,7 @@ if(PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
 endif(PYTHONLIBS_FOUND)
 
-IF(WIN32)		
+IF(WIN32)
   target_link_libraries(${PROJECT_NAME} psapi.lib)
 ENDIF(WIN32)
 

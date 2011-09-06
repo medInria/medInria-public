@@ -144,7 +144,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     QTextEdit * aboutTextEdit = new QTextEdit;
     aboutTextEdit->setHtml ( "<br/><br/>\
-                              medINRIA is the medical imaging platform developped at INRIA<br/><br/>\
+                              medINRIA is the medical imaging platform developed at INRIA<br/><br/>\
                               <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
@@ -302,7 +302,7 @@ void medHomepageArea::onShowBrowser ( void )
 
 void medHomepageArea::onShowConfiguration ( QString configuration )
 {
-    emit showViewer();
+//     emit showViewer();
     emit showConfiguration ( configuration );
 }
 

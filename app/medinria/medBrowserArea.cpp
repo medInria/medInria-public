@@ -47,6 +47,7 @@
 #include <medBrowserToolBoxJobs.h>
 #include <medPacsMover.h>
 #include <medPacsWidget.h>
+#include <medToolBoxCompositeDataSetImporter.h>
 
 class medBrowserAreaPrivate
 {
@@ -58,6 +59,7 @@ public:
     medToolBoxContainer *toolbox_container;
     medBrowserToolBoxJobs *toolbox_jobs;
     medBrowserToolBoxSource *toolbox_source;
+    medToolBoxCompositeDataSetImporter *toolbox_compositeimporter;
 
     QList <medAbstractDataSource *> data_sources;
 
@@ -96,7 +98,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // static data sources ////////////////
 
-    d->dbSource = new medDatabaseDataSource(this);
+    d->dbSource = new medDatabaseDataSource();
     addDataSource(d->dbSource);
     connect(d->dbSource, SIGNAL(open(const medDataIndex&)), this,SIGNAL(open(const medDataIndex&)));
     connect(medDatabaseController::instance(), SIGNAL(updated(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
@@ -107,7 +109,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(d->fsSource, SIGNAL(open(QString)), this, SIGNAL(open(QString)));
     connect(d->fsSource, SIGNAL(load(QString)), this, SIGNAL(load(QString)));
 
-    d->pacsSource = new medPacsDataSource();
+    d->pacsSource = new medPacsDataSource(this);
 
     medPacsWidget * mainPacsWidget = dynamic_cast<medPacsWidget *> (d->pacsSource->mainViewWidget());
     if (mainPacsWidget->isServerFunctional())
@@ -115,7 +117,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // dynamic data sources (from plugins) ////////////////
     foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins()) {
-        medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName);
+        qDebug()<< "factory creates dataSource:" << dataSourceName;
+        medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName,this);
         addDataSource(dataSource);
     }
 
@@ -125,8 +128,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
 
-    // Layout /////////////////////////////////////////////
+    d->toolbox_compositeimporter = new medToolBoxCompositeDataSetImporter(this);
+    d->toolbox_compositeimporter->setVisible(true);
+    d->toolbox_container->addToolBox(d->toolbox_compositeimporter);
 
+    // Layout /////////////////////////////////////////////
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
@@ -136,11 +142,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
 
+    connect(medDataManager::instance(), SIGNAL(failedToOpen(const medDataIndex&)), this, SLOT(onOpeningFailed(const medDataIndex&)));
  }
 
 medBrowserArea::~medBrowserArea(void)
 {
-    d->pacsSource->deleteLater();
     delete d;
     d = NULL;
 }
@@ -185,9 +191,9 @@ void medBrowserArea::displayJobItem(medJobItem *importer, QString infoBaseName)
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
 {
-    QString patientName = data->metaDataValues(tr("PatientName"))[0];
-    QString studyName   = data->metaDataValues(tr("StudyDescription"))[0];
-    QString seriesName  = data->metaDataValues(tr("SeriesDescription"))[0];
+    QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
+    QString studyName   = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
+    QString seriesName  = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 
     QString s_patientName = patientName.simplified();
     QString s_studyName   = studyName.simplified();
@@ -262,6 +268,16 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 
     QThreadPool::globalInstance()->start(exporter);
+}
+
+void medBrowserArea::addToolBox(medToolBox *toolbox)
+{
+    d->toolbox_container->addToolBox(toolbox);
+}
+
+void medBrowserArea::removeToolBox(medToolBox *toolbox)
+{
+    d->toolbox_container->removeToolBox(toolbox);
 }
 
 void medBrowserArea::onDataRemoved( const medDataIndex &index )

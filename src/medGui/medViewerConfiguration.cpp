@@ -26,7 +26,7 @@
 #include "medViewContainerCustom.h"
 #include "medViewContainerSingle.h"
 #include "medViewContainerMulti.h"
-#include "medStackedViewContainers.h"
+#include "medTabbedViewContainers.h"
 
 class medViewerConfigurationPrivate
 {
@@ -37,15 +37,15 @@ public:
     int customLayoutType;
     bool databaseVisibility;
     bool toolBoxesVisibility;
-    medStackedViewContainers * viewContainerStack;
+    medTabbedViewContainers * viewContainerStack;
 
 };
 
-medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
+medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(parent), d(new medViewerConfigurationPrivate)
 {
     d->parent = parent;
 
-    d->viewContainerStack = new medStackedViewContainers(parent);
+    d->viewContainerStack = new medTabbedViewContainers(parent);
     connect(d->viewContainerStack,SIGNAL(addTabButtonClicked()),this,SLOT(onAddTabClicked()));
     connect(d->viewContainerStack,SIGNAL(currentChanged(const QString &)),this,SLOT(onContainerChanged(const QString &)));
 
@@ -103,6 +103,9 @@ void medViewerConfiguration::setCurrentViewContainer(const QString& name)
 
 void medViewerConfiguration::onContainerChanged(const QString &name)
 {
+    if (!d->viewContainerStack->container(name))
+        return;
+
     QString containerType = d->viewContainerStack->container(name)->description();
     emit setLayoutTab(containerType);
 }
@@ -137,7 +140,7 @@ QString medViewerConfiguration::currentViewContainerName() const
     return d->viewContainerStack->currentName();
 }
 
-medStackedViewContainers* medViewerConfiguration::stackedViewContainers() const
+medTabbedViewContainers* medViewerConfiguration::stackedViewContainers() const
 {
     return d->viewContainerStack;
 }
@@ -192,7 +195,7 @@ void medViewerConfiguration::clear()
 {
     //medViewContainer* container;
     QList<QString> names = d->viewContainerStack->keys();
-    foreach(QString name ,names)
+    foreach(QString name, names)
     {
         d->viewContainerStack->removeContainer(name);
     }

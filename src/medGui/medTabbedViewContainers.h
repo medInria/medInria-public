@@ -1,4 +1,4 @@
-/* medStackedViewContainers.h --- 
+/* medTabbedViewContainers.h ---
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,8 +17,8 @@
  * 
  */
 
-#ifndef MEDVIEWCONTAINERSTACK_H
-#define MEDVIEWCONTAINERSTACK_H
+#ifndef MEDTABBEDVIEWCONTAINERS_H
+#define MEDTABBEDVIEWCONTAINERS_H
 
 #include <QtGui>
 
@@ -27,14 +27,14 @@
 class dtkAbstractView;
 class medDataIndex;
 class medViewContainer;
-class medStackedViewContainersPrivate;
+class medTabbedViewContainersPrivate;
 
 /**
  * @brief A QStackedWidget that contains medViewContainers.
  * There is one such stack per medViewConfiguration. 
  *
 */
-class MEDGUI_EXPORT medStackedViewContainers : public QTabWidget
+class MEDGUI_EXPORT medTabbedViewContainers : public QTabWidget
 {
     Q_OBJECT
 
@@ -44,14 +44,14 @@ public:
       *
       * @param parent
      */
-     medStackedViewContainers(QWidget *parent = 0);
+     medTabbedViewContainers(QWidget *parent = 0);
      
     /**
      * @brief 
      *
      * @param void
     */
-    ~medStackedViewContainers(void);
+    ~medTabbedViewContainers(void);
 
     /**
      * @brief Gets the currently displayed container.
@@ -129,6 +129,12 @@ public:
     */
     void unlockTabs();
 
+    /**
+     * @brief Hides tab bar (may be used to gain space when tabs are locked).
+     *
+    */
+    void hideTabBar();
+
 signals:
     /**
      * @brief Emits this signal when one of the containers has emitted 
@@ -197,7 +203,7 @@ public slots:
     void deleteContainerClicked(int index);
 
 private:
-    medStackedViewContainersPrivate *d;
+    medTabbedViewContainersPrivate *d;
 };
 
 #endif

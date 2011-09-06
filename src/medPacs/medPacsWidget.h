@@ -32,7 +32,7 @@ class MEDPACS_EXPORT medPacsWidget : public QTreeWidget
     Q_OBJECT
 
 public:
-     medPacsWidget(QWidget* parent);
+     medPacsWidget(QWidget* parent = NULL);
     ~medPacsWidget(void);
     
     /*

@@ -9,7 +9,7 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medViewerConfigurationDiffusionPrivate;
 
 class medViewerConfigurationDiffusion : public medViewerConfiguration
@@ -21,11 +21,11 @@ public:
     ~medViewerConfigurationDiffusion(void);
 
     virtual QString description(void) const;
-    
+
     void setupViewContainerStack ();
 
 public slots:
-    
+
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
 
@@ -66,7 +66,7 @@ private:
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox);
 };
 
-medViewerConfiguration *createMedViewerConfigurationDiffusion(void);
+medViewerConfiguration *createMedViewerConfigurationDiffusion(QWidget*);
 
 
 #endif // MEDVIEWERCONFIGURATIONDIFFUSION_H
