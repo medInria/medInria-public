@@ -47,7 +47,17 @@ vtkHWShading
 )
 ENDIF (vtkINRIA3D_USE_HWSHADING )
 
-
+IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
+    SET(vtkVisuManagement_LIBS
+        ${vtkVisuManagement_LIBS}
+        ${SphericalHarmonicsVisu_LIB}
+       )
+    SET(vtkVisuManagement_SRCS
+        ${vtkVisuManagement_SRCS}
+        vtkSphericalHarmonicVisuManager.cxx
+        vtkSphericalHarmonicManager.cxx
+        )
+ENDIF (vtkINRIA3D_USE_SPHERICALHARMONICS )
 
 # C++ library for the InterfaceManagers
 ADD_LIBRARY(vtkVisuManagement ${vtkINRIA3D_LIBS_STYLE}

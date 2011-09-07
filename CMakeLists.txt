@@ -218,6 +218,16 @@ IF( vtkINRIA3D_USE_HWSHADING )
   ENDIF( NOT VTK_USE_GLSL_SHADERS )
 ENDIF( vtkINRIA3D_USE_HWSHADING )
 
+# -----------------------------------------------------------------------------
+# The SPHERICAL HARMONICS extension by Athena - INRIA Sophia Antipolis to use SphericalHarmonicVisualization of Maxime Descoteaux
+# -----------------------------------------------------------------------------
+OPTION (vtkINRIA3D_USE_SPHERICALHARMONICS "If ON, compile the SPHERICAL HARMONICS extension of vtkINRIA3D." OFF)
+
+IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
+    FIND_PACKAGE(SphericalHarmonicsVisu)
+    INCLUDE(${SphericalHarmonicsVisu_USE_FILE})
+ENDIF( vtkINRIA3D_USE_SPHERICALHARMONICS )
+
 
 # -------------------------------------------------------------------------------------
 # Setup installation settings

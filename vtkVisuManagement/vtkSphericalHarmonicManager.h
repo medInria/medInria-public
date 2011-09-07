@@ -1,0 +1,132 @@
+#ifndef _vtk_SPHERICALHARMONICManager_h_
+#define _vtk_SPHERICALHARMONICManager_h_
+
+
+#include <vtkObject.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRenderer.h>
+#include <vtkRendererCollection.h>
+#include <vtkRenderWindow.h>
+#include <vtkStructuredPoints.h>
+#include <vtkLookupTable.h>
+
+#include "vtkSphericalHarmonicVisuManager.h"
+
+class vtkSphericalHarmonicManager: public vtkObject
+{
+  
+ public:
+  
+  static vtkSphericalHarmonicManager *New();
+  vtkTypeRevisionMacro (vtkSphericalHarmonicManager, vtkObject);
+  
+  void SetRenderWindowInteractor (vtkRenderWindowInteractor*, vtkRenderer* ren=0);
+//  vtkSetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
+  vtkGetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
+
+  vtkSetObjectMacro (Input, vtkStructuredPoints);
+  vtkGetObjectMacro (Input, vtkStructuredPoints);
+
+
+  vtkGetObjectMacro (SHVisuManagerAxial,    vtkSphericalHarmonicVisuManager);
+  vtkGetObjectMacro (SHVisuManagerSagittal, vtkSphericalHarmonicVisuManager);
+  vtkGetObjectMacro (SHVisuManagerCoronal,  vtkSphericalHarmonicVisuManager);
+
+
+  /** Set a scaling factor for the glyhs. */
+  void SetGlyphScale(const float& f);
+  
+  
+  /** Set the sample rate. 1 over n tensors will be
+      displaid.*/
+  void SetSampleRate(const int&,const int&,const int&);
+  
+  /** Set the glyph resolution */
+  void SetGlyphResolution (int res);
+  
+  /** Set the scalar range for the LUT */
+  //void SetScalarRange(const float&, const float&);
+
+  /** Flip tensors along the X axis */
+  void FlipX (bool a);
+  
+  /** Flip tensors along the Y axis */
+  void FlipY (bool a);
+  
+  /** Flip tensors along the Z axis */
+  void FlipZ (bool a);
+
+  /** Select in between different Spherical Harmonics basis default or Maxime Descoteaux thesis*/
+  void MaxThesisFunc (bool a);
+
+  /** get the image size it is used to set med gui slider appropiate size*/
+  void GetSphericalHarmonicDimensions (int * dims);
+
+  /** Set a user-defined LUT. */
+  //void SetLookupTable (vtkLookupTable* lut);
+
+
+  /** Generate the glyph and add them to the RenderWindowInteractor */
+  void Update (void);
+  
+  
+  /** Remove the actors from the renderer. */
+  void Initialize (void);
+
+  
+  /** Set the current position in voxel coordinates. */
+  void SetCurrentPosition (const int&, const int&, const int&);
+
+  
+  /** Set the current position in voxel coordinates. */
+  void SetCurrentPosition (int pos[3]);
+
+  
+  /** Get the current position. */
+  const int* GetCurrentPosition (void) const
+  { return this->CurrentPosition; }
+
+  
+  /** Get the current position. */
+  void GetCurrentPosition (int pos[3]) const
+  { for( int i=0; i<3; i++)
+      pos[i] = this->CurrentPosition[i];
+  }
+
+  
+  /** Reset the position to the center of the dataset. */
+  void ResetPosition (void);
+
+  /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
+  void SetAxialSliceVisibility (int);
+
+  /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
+  void SetSagittalSliceVisibility (int);
+
+  /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
+  void SetCoronalSliceVisibility (int);
+  
+  
+ protected:
+  vtkSphericalHarmonicManager();
+  ~vtkSphericalHarmonicManager();
+  
+
+ private:
+  
+  vtkRenderWindowInteractor* RenderWindowInteractor;
+  
+  vtkStructuredPoints* Input;
+
+  vtkRenderer* Renderer;
+
+  vtkSphericalHarmonicVisuManager* SHVisuManagerAxial;
+  vtkSphericalHarmonicVisuManager* SHVisuManagerSagittal;
+  vtkSphericalHarmonicVisuManager* SHVisuManagerCoronal;
+
+  int CurrentPosition[3];
+  
+};
+
+
+#endif
