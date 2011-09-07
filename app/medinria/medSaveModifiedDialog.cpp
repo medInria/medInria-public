@@ -25,19 +25,17 @@ public:
 class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
 {
     public :
-        medSaveModifiedDialogCheckListItem(const medDatabaseNonPersistentItem *item) : QTreeWidgetItem()
+        medSaveModifiedDialogCheckListItem(medDatabaseNonPersistentItem *item) : QTreeWidgetItem(), medItem(item)
         {
-            medItem = item;
-
             setFlags(flags() | Qt::ItemIsUserCheckable);
             setText(0, item->name());
             setText(1, item->studyName());
-            setText(2,item->seriesName());
-            setText(3,item->file());
+            setText(2, item->seriesName());
+            setText(3, item->file());
             setCheckState(0, Qt::Checked);
         }
 
-        const medDatabaseNonPersistentItem* medItem()
+        medDatabaseNonPersistentItem* getMedItem() const
         {
             return medItem;
         }
@@ -93,13 +91,13 @@ medSaveModifiedDialog::~medSaveModifiedDialog()
 
 bool medSaveModifiedDialog::Save( )
 {
-    for (int i = 0; i < m_list->topLevelItemCount(); ++i)
+    for (int i = 0; i < d->treeWidget->topLevelItemCount(); ++i)
     {
         medSaveModifiedDialogCheckListItem * checkListItem = (medSaveModifiedDialogCheckListItem*)d->treeWidget->topLevelItem(i);
 
         if (checkListItem->checkState(0) == Qt::Checked)
         {
-            storeNonPersistentSingleDataToDatabase(checkListItem->medItem->index());
+            medDataManager::instance()->storeNonPersistentSingleDataToDatabase(checkListItem->getMedItem()->index());
         }
     }
 
@@ -109,13 +107,13 @@ bool medSaveModifiedDialog::Save( )
 
 bool medSaveModifiedDialog::Delete( )
 {
-    for (int i = 0; i < m_list->topLevelItemCount(); ++i)
+    for (int i = 0; i < d->treeWidget->topLevelItemCount(); ++i)
     {
         medSaveModifiedDialogCheckListItem * checkListItem = (medSaveModifiedDialogCheckListItem*)d->treeWidget->topLevelItem(i);
 
         if (checkListItem->checkState(0) == Qt::Checked)
         {
-            removeData(checkListItem->medItem->index());
+            medDataManager::instance()->removeData(checkListItem->getMedItem()->index());
         }
     }
     //TODO : refresh treeWidget (remove handled items)
@@ -142,8 +140,6 @@ bool medSaveModifiedDialog::Delete( )
 //            newItem = new QTreeWidgetItem(parent, treeWidget->currentItem());
 //        else
 //            newItem = new QTreeWidgetItem(treeWidget, treeWidget->currentItem());
-}
-
 
 void medSaveModifiedDialog::onSelectAll()
 {

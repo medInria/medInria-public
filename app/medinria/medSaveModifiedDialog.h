@@ -6,6 +6,7 @@
 #include <QTreeView>
 
 #include <medCore/medDataIndex.h>
+#include <medCore/medDataManager.h>
 
 class QTreeWidget;
 class QTreeWidgetItem;
