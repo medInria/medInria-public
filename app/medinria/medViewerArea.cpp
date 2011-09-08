@@ -40,6 +40,7 @@
 #include <medDatabaseNavigator.h>
 #include <medDatabaseNavigatorController.h>
 #include <medDatabaseNonPersistentController.h>
+#include <medDatabaseController.h>
 
 #include <medClutEditor.h>
 #include <medToolBox.h>
@@ -146,7 +147,9 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)),
         this, SLOT(switchToPatient(const medDataIndex&)));
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
-        SLOT (onItemClicked (const medDataIndex&)));
+        SLOT (updateNavigator (const medDataIndex&)));
+    connect (medDatabaseController::instance(), SIGNAL (updated (const medDataIndex&)), d->navigator,
+        SLOT (updateNavigator (const medDataIndex&)));
 
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
@@ -712,7 +715,7 @@ void medViewerArea::setupConfiguration(QString name)
 
     if (qobject_cast<medViewContainerCustom *>(conf->currentViewContainer())) {
         switchToContainerPreset(conf->customLayoutPreset());
-    }    
+    }
 
     //setup database visibility
     d->navigator_container->setVisible( conf->isDatabaseVisible() );

@@ -196,6 +196,8 @@ void medDatabaseImporter::run(void)
     int imagesCount = imagesGroupedByVolume.count(); // used only to calculate progress
     int currentImageIndex = 0; // used only to calculate progress
 
+    medDataIndex index; //stores the last volume's index to be emitted on success
+
     // final loop: re-read, re-populate and write to db
     for (; it != imagesGroupedByVolume.end(); it++)
     {
@@ -257,7 +259,7 @@ void medDatabaseImporter::run(void)
         // and finally we populate the database
         QFileInfo aggregatedFileNameFileInfo( aggregatedFileName );
         QString pathToStoreThumbnails = aggregatedFileNameFileInfo.dir().path() + "/" + aggregatedFileNameFileInfo.completeBaseName() + "/";
-        this->populateDatabaseAndGenerateThumbnails(imageDtkData, pathToStoreThumbnails);
+        index = this->populateDatabaseAndGenerateThumbnails(imageDtkData, pathToStoreThumbnails);
     } // end of the final loop
 
 
@@ -279,7 +281,6 @@ void medDatabaseImporter::run(void)
 
     emit progressed(this,100);
     emit success(this);
-    medDataIndex index;
     emit addedIndex(index);
 }
 
@@ -534,7 +535,7 @@ bool medDatabaseImporter::checkIfExists(dtkAbstractData* dtkdata, QString imageN
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medDatabaseImporter::populateDatabaseAndGenerateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails)
+medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails)
 {
     QSqlDatabase db = *(medDatabaseController::instance()->database());
 
@@ -547,6 +548,9 @@ void medDatabaseImporter::populateDatabaseAndGenerateThumbnails(dtkAbstractData*
     int seriesId = getOrCreateSeries(dtkData, db, studyId);
 
     createMissingImages(dtkData, db, seriesId, thumbPaths);
+
+    medDataIndex index = medDataIndex (medDatabaseController::instance()->dataSourceId(), patientId, studyId,seriesId, -1);
+    return index;
 }
 
 //-----------------------------------------------------------------------------------------------------------
