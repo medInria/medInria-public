@@ -22,7 +22,6 @@
 #include <medViewerToolBoxViewProperties.h>
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <medViewerToolBoxView.h>
 #include <medViewerToolBoxTime.h>
 #include <medViewerToolBoxLayout.h>
 
@@ -31,7 +30,6 @@ class medViewerConfigurationVisualizationPrivate
 public:
     medViewerToolBoxLayout              *layoutToolBox;
     medViewerToolBoxTime                *timeToolBox;
-    medViewerToolBoxView                *viewToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 
 };
@@ -57,7 +55,7 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     d->timeToolBox           = new medViewerToolBoxTime(parent);
 
-    //this->addToolBox( d->viewToolBox );
+    
     this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->timeToolBox );
 

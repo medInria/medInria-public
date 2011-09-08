@@ -55,7 +55,6 @@
 #include <medTabbedViewContainers.h>
 #include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxPatient.h>
-#include <medViewerToolBoxView.h>
 #include <medViewerToolBoxViewProperties.h>
 
 #include <QtGui>
