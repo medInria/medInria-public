@@ -176,7 +176,7 @@ void medDatabaseImporter::run(void)
     }
 
     // from now on the process cannot be cancelled
-    emit becomesNoncancelable(this);
+    emit disableCancel(this);
 
 
     // 3) Re-read selected files and re-populate them with missing metadata

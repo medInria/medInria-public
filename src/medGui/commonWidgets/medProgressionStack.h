@@ -82,7 +82,7 @@ public slots:
     * the job anymore, as now it is not cancellable.
     * @params QObject* sender
     */
-    void becomesNoncancelable(QObject* sender);
+    void disableCancel(QObject* sender);
 
 private slots:
     /** send a cancel request to the job that the cancelbutton is connected to **/

@@ -50,7 +50,7 @@ signals:
     * @params QObject *sender
     * @return void
     */
-    void becomesNoncancelable(QObject* sender);
+    void disableCancel(QObject* sender);
 
 public slots:
 
