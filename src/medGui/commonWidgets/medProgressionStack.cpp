@@ -217,6 +217,8 @@ void medProgressionStack::addJobItem(medJobItem* job, QString label)
     connect(job, SIGNAL(cancelled(QObject*)), this,SLOT(onCancel(QObject*)), Qt::QueuedConnection);
     connect(this, SIGNAL(cancelRequest(QObject*)),job, SLOT(onCancel(QObject*)), Qt::QueuedConnection);
 
+    connect(job, SIGNAL(becomesNoncancelable(QObject*)), this, SLOT(becomesNoncancelable(QObject *)));
+
     this->setLabel(job, label);
 }
 
@@ -224,5 +226,13 @@ void medProgressionStack::setActive(QObject *sender, bool active)
 {
     if (d->bars.contains(sender) ) {
         active?d->bars.value(sender)->setMaximum(0):d->bars.value(sender)->setMaximum(100);
+    }
+}
+
+void medProgressionStack::becomesNoncancelable(QObject* sender)
+{
+    if (d->bars.contains(sender) )
+    {
+        d->buttons.value(sender)->hide();
     }
 }

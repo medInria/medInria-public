@@ -175,6 +175,9 @@ void medDatabaseImporter::run(void)
         return;
     }
 
+    // from now on the process cannot be cancelled
+    emit becomesNoncancelable(this);
+
 
     // 3) Re-read selected files and re-populate them with missing metadata
     //    then write them to medinria db and populate db tables
