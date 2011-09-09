@@ -1,5 +1,5 @@
 ### CMakeLists.txt ---
-## 
+##
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.
 ## Created: Wed Sep 16 17:14:33 2009 (+0200)
@@ -8,13 +8,13 @@
 ##           By: Julien Wintz
 ##     Update #: 39
 ######################################################################
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ######################################################################
-## 
+##
 ### Change log:
-## 
+##
 ######################################################################
 
 # Require 2.8 for correct behaviour of if( FALSE ).
@@ -37,7 +37,7 @@ if(WIN32)
   SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
-  
+
 
 option(BUILD_TESTING       "Build testing"          true)
 
@@ -54,11 +54,11 @@ include(medinriaPack)
 #include(medinriaDart)
 include(Dart)
 include(CTest)
-include(AddPch)
 
 option(BUILD_DOCUMENTATION "Build documentation"    true)
 
 if(MSVC)
+  include(dtkPch)
   option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
 endif(MSVC)
 
