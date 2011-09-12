@@ -140,10 +140,9 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
     PatientDataKey referencePatientKey;
     referencePatientKey.name = dbc->metaData(index,medMetaDataKeys::PatientName);
 
-    IndexSet addedStudies;
 
     foreach (const int dataSourceId, dataSources ) {
-
+//        qDebug() << "dataSource:" << dataSourceId;
         medAbstractDbController *dbc = dataManager->controllerForDataSource(dataSourceId);
         if ( !dbc )
             continue;
@@ -156,7 +155,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
         }
 
         foreach (const medDataIndex& patient, patientsForSource ) {
-
+//            qDebug() << "patient:" << patient;
             IndexList studiesForSource = dbc->studies(patient);
             QString patientName = dbc->metaData(patient,medMetaDataKeys::PatientName);
             PatientDataKey patientKey;
@@ -166,15 +165,18 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
             }
 
             foreach (const medDataIndex& study, studiesForSource ) {
-
+//                qDebug() << "study:" << study;
                 QString studyName = dbc->metaData(study,medMetaDataKeys::StudyDescription);
                 StudyDataKey studyKey;
                 studyKey.name = studyName;
 
                 medDatabaseNavigatorItemGroup *group = NULL;
+                qDebug() << "groups";
                 if ( groupMap.contains(studyKey) ) {
+//                    qDebug() << "group contains" << studyKey.name;
                     group = groupMap.find(studyKey).value();
                 } else {
+//                    qDebug() << "new group";
                     group = new medDatabaseNavigatorItemGroup;
                     group->setOrientation (d->orientation);
                     group->setName(studyName);
