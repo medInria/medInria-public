@@ -258,15 +258,24 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     if (fileName.isEmpty())
         return;
 
-    QFileInfo fileInfo(fileName);
-
-    if(fileInfo.suffix().isEmpty())
-        fileName.append(".nii.gz");
-
     dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
 
     if (!data)
         return;
+
+    //Check extension:
+    QFileInfo fileInfo(fileName);
+    if(fileInfo.suffix().isEmpty())
+    {
+        qDebug() << "determining suffix for type" << data->description();
+        if (data->description().contains("vtk") ||
+                data->description().contains("v3d"))
+            fileName.append(".vtk");
+        else
+            fileName.append(".nii.gz");
+        qDebug() << "filename:" << fileName;
+        //There may be other cases, but this will get us through most
+    }
 
     medDatabaseExporter *exporter = new medDatabaseExporter (data, fileName);
 
