@@ -171,7 +171,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
                 studyKey.name = studyName;
 
                 medDatabaseNavigatorItemGroup *group = NULL;
-                qDebug() << "groups";
+//                qDebug() << "groups";
                 if ( groupMap.contains(studyKey) ) {
 //                    qDebug() << "group contains" << studyKey.name;
                     group = groupMap.find(studyKey).value();
