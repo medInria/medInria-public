@@ -9,23 +9,18 @@
 #include <medViewContainerSingle.h>
 #include <medViewContainerCompare.h>
 #include <medTabbedViewContainers.h>
-#include <medViewerToolBoxView.h>
 #include <medToolBoxRegistration.h>
 
 class medViewerConfigurationRegistrationPrivate
 {
 public:
-    medViewerToolBoxView   *viewToolBox;
     medToolBoxRegistration * registrationToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 };
 
 medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationRegistrationPrivate)
 {
-    // -- View toolbox --
-
-    d->viewToolBox = new medViewerToolBoxView(parent);
-    this->addToolBox( d->viewToolBox );
+   
 
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     this->addToolBox(d->viewPropertiesToolBox);

@@ -4,7 +4,7 @@
 #include <QStatusBar>
 #include <QWidget>
 #include <QBoxLayout>
-
+#include "medGuiExport.h"
 
 class medStatusBarPrivate;
 
@@ -14,7 +14,7 @@ class medStatusBarPrivate;
 * @brief  This is extended QStatusBar that can display custom messages.
 */
 
-class medStatusBar : public QStatusBar
+class MEDGUI_EXPORT medStatusBar : public QStatusBar
 {
     Q_OBJECT
 public:

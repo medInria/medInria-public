@@ -258,6 +258,11 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     if (fileName.isEmpty())
         return;
 
+    QFileInfo fileInfo(fileName);
+
+    if(fileInfo.suffix().isEmpty())
+        fileName.append(".nii.gz");
+
     dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
 
     if (!data)

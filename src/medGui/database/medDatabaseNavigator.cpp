@@ -59,12 +59,13 @@ class medDatabaseNavigatorPrivate
 public:
     medDatabaseNavigatorScene *scene;
     medDatabaseNavigatorView *view;
-
+    int currentPatient ;
     Qt::Orientation orientation;
 };
 
 medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(new medDatabaseNavigatorPrivate)
 {
+    d->currentPatient = -1;
     d->orientation = medDatabaseNavigatorController::instance()->orientation();
 
     d->scene = new medDatabaseNavigatorScene(this);
@@ -106,6 +107,14 @@ void medDatabaseNavigator::onItemClicked(const medDataIndex& index)
         this->onPatientClicked(index);
 }
 
+void medDatabaseNavigator::updateNavigator(const medDataIndex& index)
+{
+    if (index.isValidForPatient() && index.patientId() == d->currentPatient)
+    {
+        onPatientClicked(index);
+    }
+}
+
 void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 {
     this->reset();
@@ -113,6 +122,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
     if  (!index.isValidForPatient()) {
         return;
     }
+    d->currentPatient = index.patientId();
 
     typedef QSet<medDataIndex> IndexSet;
     typedef QList<int> IntList;

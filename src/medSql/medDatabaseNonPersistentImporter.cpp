@@ -84,7 +84,7 @@ void medDatabaseNonPersistentImporter::run(void)
     // check if patient is already in the persistent database
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
     if (databaseIndex.isValid()) {
-        qDebug() << "Patient exists in the database, I reuse his Id";
+        qDebug() << "Patient exists in the database, I reuse her Id";
 	patientId = databaseIndex.patientId();
     }
     else {
@@ -103,7 +103,7 @@ void medDatabaseNonPersistentImporter::run(void)
 
     databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
     if (databaseIndex.isValid()) {
-        qDebug() << "Study exists in the database, I reuse his Id";
+        qDebug() << "Study exists in the database, I reuse its Id";
 	studyId = databaseIndex.studyId();
     }
     else {
