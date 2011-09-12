@@ -19,6 +19,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
 
     d->finder = new dtkFinder (d->filesystem_widget);
     d->finder->setPath(QDir::homePath());
+    d->finder->allowFileBookmarking(false);
 
     d->path = new dtkFinderPathBar (d->filesystem_widget);
     d->path->setPath(QDir::homePath());
