@@ -21,14 +21,13 @@ public:
     medSaveModifiedDialog(QWidget *parent);
     virtual ~medSaveModifiedDialog();
 
-    bool Save();    
-    bool Delete();
-    
 public slots:
 
-    void onSelectAll();    
-    void onSaveSelected();    
-    void onDeleteSelected();
+    void onSelectAll();
+    void Save();
+    void Delete();
+//    void onSaveSelected();
+//    void onDeleteSelected();
 
 private:
   

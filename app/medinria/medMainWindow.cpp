@@ -112,8 +112,6 @@ public:
     QWidget * quitMessage;
 
     medButton *quitButton;
-
-    QPushButton *saveModifiedButton;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -196,6 +194,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     //Add quit button
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
     connect ( d->quitButton, SIGNAL ( triggered() ), this, SLOT ( onQuit() ) );
+    connect(d->quitButton, SIGNAL( triggered()), this, SLOT (onSaveModified()));
     d->quitButton->setMaximumWidth ( 31 );
 
     //Setup quit message
@@ -223,10 +222,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->quitMessage->setLayout ( quitLayout );
 
-    d->saveModifiedButton = new QPushButton("Save",this);
-    connect(d->saveModifiedButton, SIGNAL(clicked()),this,SLOT(onSaveModified()));
-
-    d->statusBarLayout->addWidget(d->saveModifiedButton);
     d->statusBarLayout->addWidget ( d->quickAccessButton );
     d->statusBarLayout->addStretch();
     d->statusBarLayout->addWidget ( d->quitMessage );
@@ -523,10 +518,14 @@ void medMainWindow::onQuit ( void )
 
 void medMainWindow::onSaveModified( void )
 {
-    medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
-    saveDialog->show();
-}
+    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
 
+    if(!indexes.isEmpty())
+    {
+        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
+        saveDialog->show();
+    }
+}
 
 void medMainWindow::onEditSettings()
 {
