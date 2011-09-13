@@ -1639,7 +1639,7 @@ void v3dView::onMenuSagittalTriggered (void)
     this->setProperty("Orientation", "Sagittal");
     d->view2d->Render();
     emit TwoDTriggered(this);
-    qDebug()<<"v3dView::onMenuSagittalTriggered";
+
 }
 
 void v3dView::onMenu3DTriggered (void)
