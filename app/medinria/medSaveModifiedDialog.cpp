@@ -21,7 +21,6 @@ public:
 
 /*********************************/
 
-//TODO : add thumbnails
 class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
 {
     public :
@@ -113,8 +112,7 @@ void medSaveModifiedDialog::Save( )
             medDataManager::instance()->storeNonPersistentSingleDataToDatabase(checkListItem->getMedItem()->index());
         }
     }
-
-    //TODO : refresh treeWidget (remove handled items)
+    this->close();
 }
 
 void medSaveModifiedDialog::Delete( )
@@ -128,7 +126,7 @@ void medSaveModifiedDialog::Delete( )
             medDataManager::instance()->removeData(checkListItem->getMedItem()->index());
         }
     }
-    //TODO : refresh treeWidget (remove handled items)
+    this->close();
 }
 
 void medSaveModifiedDialog::onSelectAll()
