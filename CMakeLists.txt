@@ -133,7 +133,7 @@ endwhile()
 endif()
 
 if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
-    subdirs(exampleProcessImageFilter)
+    add_subdirectory(exampleProcessImageFilter)
 endif()
 
 if(MSVC)

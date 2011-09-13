@@ -1699,7 +1699,7 @@ void v3dView::onMenuAxialTriggered (void)
 
     this->setProperty("Orientation", "Axial");
     d->view2d->Render();
-
+     emit TwoDTriggered(this);
 }
 
 
@@ -1710,6 +1710,7 @@ void v3dView::onMenuCoronalTriggered (void)
 
     this->setProperty("Orientation", "Coronal");
     d->view2d->Render();
+    emit TwoDTriggered(this);
 }
 
 
