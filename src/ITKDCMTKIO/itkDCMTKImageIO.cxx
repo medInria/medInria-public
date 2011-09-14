@@ -869,46 +869,46 @@ namespace itk
 
 
     size_t length = pixelCount;
-//    int bitsPerSample = 8;
+    int bitsPerSample = 8;
     switch( this->GetComponentType() )
     {
-	case CHAR:
-	  length *= sizeof(char);
-	  bitsPerSample = 8;
-	  break;
+    case CHAR:
+        length *= sizeof(char);
+        bitsPerSample = 8;
+        break;
 
-	case UCHAR:
-	  length *= sizeof(Uint8);
-	  bitsPerSample = 8;
-	  break;
+    case UCHAR:
+        length *= sizeof(Uint8);
+        bitsPerSample = 8;
+        break;
 
-	case SHORT:
-	  length *= sizeof(Sint16);
-	  bitsPerSample = 16;
-	  break;
+    case SHORT:
+        length *= sizeof(Sint16);
+        bitsPerSample = 16;
+        break;
 
-	case USHORT:
-	  length *= sizeof(Uint16);
-	  bitsPerSample = 16;
-	  break;
+    case USHORT:
+        length *= sizeof(Uint16);
+        bitsPerSample = 16;
+        break;
 
-	case INT:
-	  length *= sizeof(Sint32);
-	  bitsPerSample = 32;
-	  break;
+    case INT:
+        length *= sizeof(Sint32);
+        bitsPerSample = 32;
+        break;
 
-	case UINT:
-	  length *= sizeof(Uint32);
-	  bitsPerSample = 32;
-	  break;
+    case UINT:
+        length *= sizeof(Uint32);
+        bitsPerSample = 32;
+        break;
 
-	case DOUBLE:
-	  length *= sizeof(Float64);
-	  bitsPerSample = 64;
-	  break;
+    case DOUBLE:
+        length *= sizeof(Float64);
+        bitsPerSample = 64;
+        break;
 
-	default:
-	  throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
+    default:
+        throw ExceptionObject (__FILE__,__LINE__,"Unsupported pixel data type in DICOM");
     }
 
     length *= this->GetNumberOfComponents();

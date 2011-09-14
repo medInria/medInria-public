@@ -46,7 +46,7 @@ std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::Dir
         else
         {
             maxAbsValue = 0;
-//            unsigned int maxIndex = 0;
+            unsigned int maxIndex = 0;
             for (unsigned int j = 0;j < DIM;++j)
             {
                 if (fabs(maxAbsValue) < fabs(directionMatrix(j,axesPermutation[i])))
