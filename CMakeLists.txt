@@ -43,8 +43,7 @@ include(medinria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-#Macros that enable precompiled headers to be added, defined by dtk.
-include(AddPch)
+
 
 # Export medinriq-plugins_DIR variable so that internal project can automatically find i
 set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
@@ -70,11 +69,11 @@ option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individ
 
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
-  v3dData                        ON 
+  v3dData                        ON
   v3dViewPublic                  ON
   v3dView                        ON
-  itkDataImage                   ON 
-  itkDataImageReader             ON 
+  itkDataImage                   ON
+  itkDataImageReader             ON
   itkDataImageWriter             ON
   itkDCMTKDataImageReader        ON
   vtkDataMesh                    ON
@@ -84,7 +83,7 @@ set(PLUGIN_LIST
   itkDataTensorImage             ON
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
-  ITKProcessExample		 ON	
+  ITKProcessExample		 ON
   )
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
@@ -137,6 +136,8 @@ if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
 endif()
 
 if(MSVC)
+  #Macros that enable precompiled headers to be added, defined by dtk.
+  include(dtkPch)
   option(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
 endif(MSVC)
 
@@ -166,7 +167,7 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()
 
-## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK 
+## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK
 ## to be set before  being included.
 add_subdirectory(src)
 
