@@ -25,13 +25,13 @@ template<typename T,int DIM>
 std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::DirectionType &directionMatrix)
 {
     std::vector <bool> mirrorThumbs(2,false);
-    
+
     std::vector <unsigned int> axesPermutation(2);
     for (unsigned int i = 0;i < 2;++i)
     {
         axesPermutation[i] = i;
         double maxAbsValue = directionMatrix(i,i);
-        
+
         for (unsigned int j = 0;j < DIM;++j)
         {
             if (fabs(maxAbsValue) < fabs(directionMatrix(j,i)))
@@ -40,13 +40,13 @@ std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::Dir
                 maxAbsValue = directionMatrix(j,i);
             }
         }
-        
+
         if (i == axesPermutation[i])
             mirrorThumbs[i] = maxAbsValue < 0;
-        else 
+        else
         {
             maxAbsValue = 0;
-            unsigned int maxIndex = 0;
+//            unsigned int maxIndex = 0;
             for (unsigned int j = 0;j < DIM;++j)
             {
                 if (fabs(maxAbsValue) < fabs(directionMatrix(j,axesPermutation[i])))
@@ -55,11 +55,11 @@ std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::Dir
                     maxAbsValue = directionMatrix(j,axesPermutation[i]);
                 }
             }
-            
+
             mirrorThumbs[i] = maxAbsValue < 0;
         }
     }
-    
+
     return mirrorThumbs;
 }
 
@@ -93,7 +93,7 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
 
         index.Fill(0);
         index[2] = size[2]/2;
-        typename ImageType::RegionType region = img->GetLargestPossibleRegion(); 
+        typename ImageType::RegionType region = img->GetLargestPossibleRegion();
         region.SetIndex(index);
         region.SetSize(newSize);
 
@@ -193,9 +193,9 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
     rgbfilter->UseInputImageExtremaForScalingOn ();
 
     typename ImageType::DirectionType directionMatrix = image->GetDirection();
-    
+
     std::vector <bool> mirrorThumbs = DeterminePermutationsAndFlips<T,DIM>(directionMatrix);
-    
+
     if (DIM==3) {
 
         for (unsigned int slice=0;slice<size[2];slice++) {
