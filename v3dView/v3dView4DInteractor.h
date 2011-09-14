@@ -1,9 +1,9 @@
 /* v3dView4DInteractor.h ---
- * 
+ *
  * Author: Nicolas Toussaint
 
  * Change log:
- * 
+ *
  */
 #ifndef V3DVIEW4DINTERACTOR_H
 #define V3DVIEW4DINTERACTOR_H
@@ -21,7 +21,7 @@ class dtkAbstractView;
     \brief This important interactor handles the 4th dimension
     of data interacting with the viewing process.
 
-    \see med4DAbstractViewInteractor medViewerToolBoxTime 
+    \see med4DAbstractViewInteractor medViewerToolBoxTime
     \author Nicolas Toussaint and Fatih Arslan
 */
 
@@ -53,16 +53,17 @@ class V3DVIEWPLUGIN_EXPORT v3dView4DInteractor: public med4DAbstractViewInteract
 {
 
     Q_OBJECT
-    
+
 public:
     v3dView4DInteractor();
     virtual ~v3dView4DInteractor();
-    
+
     virtual QString description(void) const;
+    virtual QString identifier(void) const;
     virtual QStringList handled(void) const;
-    
+
     static bool registered(void);
-    
+
     virtual void setData(dtkAbstractData *data);
     virtual void setView(dtkAbstractView *view);
 
@@ -82,8 +83,8 @@ public:
 
 public slots:
     void onDataAdded (dtkAbstractData* data);
-    
-    
+
+
 protected:
 
 signals:
@@ -91,7 +92,7 @@ signals:
 public slots:
 	//Add image to the sequence
     virtual void appendData(dtkAbstractData *data);
-    
+
 private:
     v3dView4DInteractorPrivate *d;
 

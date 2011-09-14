@@ -54,7 +54,13 @@ v3dView4DInteractor::~v3dView4DInteractor()
 
 QString v3dView4DInteractor::description(void) const
 {
-  return "v3dView4DInteractor";
+    return tr("Interactor displaying 4d images (temporal sequence)");
+}
+
+
+QString v3dView4DInteractor::identifier() const
+{
+    return "v3dView4DInteractor";
 }
 
 QStringList v3dView4DInteractor::handled(void) const

@@ -70,6 +70,11 @@ v3dViewTensorInteractor::~v3dViewTensorInteractor()
 
 QString v3dViewTensorInteractor::description(void) const
 {
+    return tr("Interactor helping display Tensors");
+}
+
+QString v3dViewTensorInteractor::identifier() const
+{
     return "v3dViewTensorInteractor";
 }
 
@@ -345,3 +350,4 @@ dtkAbstractViewInteractor *createV3dViewTensorInteractor(void)
 {
     return new v3dViewTensorInteractor;
 }
+

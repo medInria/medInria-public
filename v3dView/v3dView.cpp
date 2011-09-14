@@ -701,6 +701,12 @@ bool v3dView::registered(void)
 
 QString v3dView::description(void) const
 {
+    return tr("A view based on vtkInria3d");
+}
+
+
+QString v3dView::identifier() const
+{
     return "v3dView";
 }
 
@@ -2310,3 +2316,4 @@ void v3dView::widgetDestroyed(void)
 {
     d->widget = NULL;
 }
+
