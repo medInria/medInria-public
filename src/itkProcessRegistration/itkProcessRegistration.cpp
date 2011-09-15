@@ -211,8 +211,9 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
 {
     if (!data)
         return;
-
+    
     QString descr = QString (data->description());
+    
     QString::iterator last_charac = descr.end() - 1;
     if (*last_charac == '3'){
         d->dimensions = 3;
