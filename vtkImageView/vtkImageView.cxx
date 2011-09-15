@@ -23,6 +23,7 @@
 #include "vtkMatrixToLinearTransform.h"
 
 #include "vtkImageData.h"
+#include "vtkPointSet.h"
 
 #include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
@@ -31,6 +32,8 @@
 #include "vtkImageViewCornerAnnotation.h"
 #include "vtkTextProperty.h"
 #include "vtkCamera.h"
+#include "vtkDataSetCollection.h"
+#include "vtkProp3DCollection.h"
 
 #include "vtkLookupTable.h"
 #include "vtkColorTransferFunction.h"
@@ -118,6 +121,9 @@ vtkImageView::vtkImageView()
   
   this->CornerAnnotation        = vtkImageViewCornerAnnotation::New();
   this->TextProperty            = vtkTextProperty::New();
+
+  this->DataSetCollection       = vtkDataSetCollection::New();
+  this->DataSetActorCollection  = vtkProp3DCollection::New();
   
   // either use transfer functions or lookup table, the members not
   // in use are set to NULL.
@@ -164,6 +170,7 @@ vtkImageView::vtkImageView()
   this->ScalarBar->PickableOff();
   this->ScalarBar->VisibilityOn();
   
+  
   for(int i=0; i<3; i++)
     this->CurrentPoint[i] = 0.0; //VTK_DOUBLE_MIN;
   
@@ -176,7 +183,7 @@ vtkImageView::vtkImageView()
   
   this->OrientationTransform->SetInput (this->OrientationMatrix);
   
-  this->ColorWindow = VTK_DOUBLE_MAX;
+  this->ColorWindow = 1e-3 * VTK_DOUBLE_MAX;
   this->ColorLevel  = 0;  
   
   // use default maps, sets color map of WindowLevel and ScalarBar
@@ -199,6 +206,9 @@ vtkImageView::~vtkImageView()
   
   this->CornerAnnotation->Delete();
   this->TextProperty->Delete();
+
+  this->DataSetCollection->Delete();
+  this->DataSetActorCollection->Delete();
   
   if ( this->LookupTable != NULL )
     this->LookupTable->Delete();
@@ -555,8 +565,8 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
                                          vtkPiecewiseFunction     *opacity)
 {
   if ( color   == NULL && this->ColorTransferFunction   == NULL &&
-      opacity == NULL && this->OpacityTransferFunction == NULL &&
-      this->LookupTable != NULL )
+       opacity == NULL && this->OpacityTransferFunction == NULL &&
+       this->LookupTable != NULL )
   {
     this->SetLookupTable( this->LookupTable );
     return;
@@ -577,7 +587,7 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
   if ( rgb != NULL )
   {
     vtkSetObjectBodyMacro( ColorTransferFunction, vtkColorTransferFunction,
-                          rgb );
+                           rgb );
     rgb->Delete();
   }
   
@@ -594,7 +604,7 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
   if ( alpha != NULL )
   {
     vtkSetObjectBodyMacro( OpacityTransferFunction, vtkPiecewiseFunction,
-                          alpha );
+                           alpha );
     alpha->Delete();
   }
   
@@ -649,84 +659,106 @@ void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFunction *cf, 
-                                                              vtkPiecewiseFunction *of,
-                                                              double minRange, double maxRange)
+void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
+  vtkColorTransferFunction * cf,
+  vtkPiecewiseFunction     * of,
+  double minRange, double maxRange)
 {
   double targetWidth  = maxRange  - minRange;
   // in case targetWidth is null, return otherwise all values will collapse and further
   // windowing will become impossible
-  if (targetWidth==0.0)
+  if ( targetWidth == 0.0 )
     return;
 
   if (cf)
   {
     const double * currentRange = cf->GetRange();
     if ( currentRange[0] != minRange ||
-        currentRange[1] != maxRange )
+         currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
-      
+
       unsigned int n = cf->GetSize();
       if ( n > 0 && currentWidth == 0.0 )
         currentWidth = 1.0;
-      
+
+      double * vals = new double[n * 6];
       for ( unsigned int i = 0; i < n; ++i )
       {
-        double val[6];
+        double * val = vals + i * 6;
         cf->GetNodeValue( i, val );
         // from current range to [0,1] interval
         val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-        // from [0,1] interval to target range
-        val[0] = val[0] * targetWidth + minRange;
-        cf->SetNodeValue( i, val );
+        // from [0,1] interval to target range (avoid overflow by
+        // doing the division before the multiplication)
+        val[0] = ( val[0] + minRange / targetWidth ) * targetWidth;
       }
-      
+
+      cf->RemoveAllPoints();
+      for ( unsigned int i = 0; i < n; ++i )
+      {
+        double * val = vals + i * 6;
+        cf->AddRGBPoint( val[0], val[1], val[2], val[3], val[4], val[5] );
+      }
+
+      delete[] vals;
+
+#if (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION < 7) || VTK_MAJOR_VERSION < 5
       // work around to update the range (which is not public in
       // vtkColorTransferFunction)
       if ( n > 0 )
       {
         double val[6];
         cf->GetNodeValue( n - 1, val );
-        cf->AddRGBPoint( val[0], val[1], val[2],
-                        val[3], val[4], val[5] );
+        cf->AddRGBPoint( val[0], val[1], val[2], val[3], val[4], val[5] );
       }
-      
+#endif
     }
   }
-  
+
   if (of)
-  {    
+  {
     const double * currentRange = of->GetRange();
     if ( currentRange[0] != minRange ||
-        currentRange[1] != maxRange )
+         currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
-            
+
       if ( currentWidth == 0.0 )
         currentWidth = 1.0;
-      
+
       unsigned int n = of->GetSize();
+      double * vals = new double[n * 4];
       for ( unsigned int i = 0; i < n; ++i )
       {
-        double val[4];
+        double * val = vals + i * 4;
         of->GetNodeValue( i, val );
         // from current range to [0,1] interval
         val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-        // from [0,1] interval to target range
-        val[0] = val[0] * targetWidth + minRange;
-        of->SetNodeValue( i, val );
+        // from [0,1] interval to target range (avoid overflow by
+        // doing the division before the multiplication)
+        val[0] = ( val[0] + minRange / targetWidth ) * targetWidth;
       }
-      
+
+      of->RemoveAllPoints();
+      for ( unsigned int i = 0; i < n; ++i )
+      {
+        double * val = vals + i * 4;
+        of->AddPoint( val[0], val[1], val[2], val[3] );
+      }
+
+      delete[] vals;
+
+#if (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION < 7) || VTK_MAJOR_VERSION < 5
       // work around to update the range (which is not public in
       // vtkPiecewiseFunction)
       if ( n > 0 )
       {
         double val[4];
         of->GetNodeValue( n - 1, val );
-        of->AddPoint( val[0], val[1],
-                     val[2], val[3] );
+        of->AddPoint( val[0], val[1], val[2], val[3] );
       }
+#endif
     }
   }
 }
@@ -736,6 +768,11 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings()
 {
   double targetRange[2];
   this->GetColorRange( targetRange );
+  if (targetRange[1] - targetRange[0] <= 0.0)
+  {
+    targetRange[0] = 0.0;
+    targetRange[1] = 1.0;
+  }
   
   bool touched = false;
   
@@ -775,27 +812,27 @@ void vtkImageView::SetWindowSettingsFromTransferFunction()
   double currentRange[2];
   this->GetColorRange( currentRange );
   double * targetRange = NULL;
-  
+
   bool touched = false;
-  
+
   // lookup table
   if ( this->UseLookupTable && this->LookupTable != NULL )
   {
     targetRange = this->LookupTable->GetRange();
     if ( currentRange[0] != targetRange[0] ||
-        currentRange[1] != targetRange[1] )
+         currentRange[1] != targetRange[1] )
       touched = true;
   }
-  
+
   // color transfer function
   if ( !this->UseLookupTable && this->ColorTransferFunction != NULL )
   {
     targetRange = this->ColorTransferFunction->GetRange();
     if ( currentRange[0] != targetRange[0] ||
-        currentRange[1] != targetRange[1] )
+         currentRange[1] != targetRange[1] )
       touched = true;
   }
-  
+
   // opacity transfer function
   if ( !this->UseLookupTable && this->OpacityTransferFunction != NULL )
   {
@@ -803,7 +840,7 @@ void vtkImageView::SetWindowSettingsFromTransferFunction()
     if ( touched )
     {
       if ( targetRange[0] != targetRange2[0] ||
-          targetRange[1] != targetRange2[1] )
+           targetRange[1] != targetRange2[1] )
       {
         vtkErrorMacro( "ranges of color and opacity function don't match!" );
         return;
@@ -813,13 +850,13 @@ void vtkImageView::SetWindowSettingsFromTransferFunction()
     {
       targetRange[0] = targetRange2[0];
       targetRange[1] = targetRange2[1];
-      
+
       if ( currentRange[0] != targetRange[0] ||
-          currentRange[1] != targetRange[1] )
+           currentRange[1] != targetRange[1] )
         touched = true;
     }
   }
-  
+
   if ( touched )
   {
     this->SetColorRange( targetRange );
@@ -1227,7 +1264,7 @@ double vtkImageView::GetCameraParallelScale (void) const
 {
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!cam)
-    return NULL;
+    return 1.0;
   return cam->GetParallelScale ();
 }
 
@@ -1351,7 +1388,21 @@ int vtkImageView::GetNumberOfLayers(void) const
 //----------------------------------------------------------------------------
 void vtkImageView::RemoveDataSet (vtkPointSet *arg)
 {
+  this->DataSetActorCollection->RemoveItem (this->FindDataSetActor (arg));
+  this->DataSetCollection->RemoveItem (arg);
 }
+
+//----------------------------------------------------------------------------
+vtkProp3D* vtkImageView::FindDataSetActor (vtkDataSet* arg) 
+{
+  int id = this->DataSetCollection->IsItemPresent (arg);
+  if (id == 0)
+    return NULL;
+
+  return vtkProp3D::SafeDownCast (this->DataSetActorCollection->GetItemAsObject (id-1));
+}
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 /////////////////// NOTE ON TIME HANDLING AND ITK-BRIDGE ////////////////////
