@@ -814,7 +814,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 
     if(layer == 0 && data->description().contains("vtkDataMesh"))
     {
-        //medMessageControllerMessageError msg(this, "Select image first");
+        medMessageController::instance()->showError(this, tr("Select image first"), 5000);
         return;
     }
 #ifdef vtkINRIA3D_USE_ITK
