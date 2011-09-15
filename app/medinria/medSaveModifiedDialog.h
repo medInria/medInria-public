@@ -26,8 +26,6 @@ public slots:
     void onSelectAll();
     void Save();
     void Delete();
-//    void onSaveSelected();
-//    void onDeleteSelected();
 
 private:
   
