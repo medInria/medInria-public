@@ -61,7 +61,7 @@ void vtkDataMesh4DReader::readInformation (const QString& path)
 
 
   dtkdata->addMetaData ("FilePath", QStringList() << path);
-  dtkdata->description() = "vtkDataMesh4D";
+  dtkdata->identifier() = "vtkDataMesh4D";
 }
 
 void vtkDataMesh4DReader::readInformation (const QStringList& paths)
@@ -84,7 +84,7 @@ bool vtkDataMesh4DReader::read (const QString& path)
   if (dtkAbstractData *dtkdata = this->data() )
   {
     
-    if (!(dtkdata->description()=="vtkDataMesh4D"))
+    if (!(dtkdata->identifier()=="vtkDataMesh4D"))
       return false;
 
     this->reader->SetFileName (path.toAscii().constData());

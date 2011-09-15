@@ -211,9 +211,8 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
 {
     if (!data)
         return;
-    
-    QString descr = QString (data->description());
-    
+
+    QString descr = QString (data->identifier());
     QString::iterator last_charac = descr.end() - 1;
     if (*last_charac == '3'){
         d->dimensions = 3;
@@ -223,7 +222,7 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
     }
     else{
         qDebug() << "Unable to handle the number of dimensions " \
-                << "for an image of description: "<< data->description();
+                << "for an image of identifier: "<< data->identifier();
     }
 
     *last_charac = '3';
@@ -355,7 +354,7 @@ bool itkProcessRegistration::write(const QString& file)
         dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
         qDebug() << "trying " << dataWriter->description();
 
-        if (! dataWriter->handled().contains(out->description()))
+        if (! dataWriter->handled().contains(out->identifier()))
         {
           qDebug() << "failed with " << dataWriter->description();
           continue;

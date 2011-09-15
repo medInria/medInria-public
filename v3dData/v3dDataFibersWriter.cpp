@@ -42,7 +42,7 @@ bool v3dDataFibersWriter::write(const QString& path)
   if (!this->data())
       return false;
 
-  if (this->data()->description()!="v3dDataFibers")
+  if (this->data()->identifier()!="v3dDataFibers")
       return false;
 
   vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet*>(this->data()->data());

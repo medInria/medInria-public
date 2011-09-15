@@ -82,7 +82,7 @@ void v3dView4DInteractor::appendData(dtkAbstractData *data)
 {
   if (d->dataList.contains (data))
     return;
-  if (data->description() == "vtkDataMesh4D" )
+  if (data->identifier() == "vtkDataMesh4D" )
   {
     vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
     //vtkProperty *prop = vtkProperty::New();
@@ -106,8 +106,8 @@ void v3dView4DInteractor::appendData(dtkAbstractData *data)
 	  break;
     }
   }
-  else if ( data->description().contains ("Image") &&
-	    data->description().contains ("4"))
+  else if ( data->identifier().contains ("Image") &&
+	    data->identifier().contains ("4"))
   {
     if (itk::Image<char, 4>* image = dynamic_cast< itk::Image<char, 4>* > ( (itk::Object*)( data->data() ) ) )
     {
@@ -135,12 +135,12 @@ void v3dView4DInteractor::appendData(dtkAbstractData *data)
     }
     else
     {
-      // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->description(), 5000);
+      // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->identifier(), 5000);
     }
   }
   else
   {
-    // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->description(), 5000);
+    // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->identifier(), 5000);
   }
 
 }
@@ -164,9 +164,9 @@ void v3dView4DInteractor::onDataAdded(dtkAbstractData *data)
 bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
 
-  if ( ( data->description() == "vtkDataMesh4D" ) ||
-       ( data->description().contains ("Image") &&
-	 data->description().contains ("4") ) )
+  if ( ( data->identifier() == "vtkDataMesh4D" ) ||
+       ( data->identifier().contains ("Image") &&
+	 data->identifier().contains ("4") ) )
   {
     this->appendData(data);
     this->enable ();

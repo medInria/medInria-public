@@ -80,9 +80,9 @@ void ITKProcessExample::setInput(dtkAbstractData *data)
     if (!data)
         return;
 
-    QString description = data->description();
+    QString identifier = data->identifier();
 
-    d->output = dtkAbstractDataFactory::instance()->create (description);
+    d->output = dtkAbstractDataFactory::instance()->create (identifier);
 
     d->input = data;
     qDebug() << "in method setInput, d->input =" << d->input;
@@ -110,7 +110,7 @@ int ITKProcessExample::update (void)
             return -1;
 	}
 
-    QString descr = d->input->description();
+    QString descr = d->input->identifier();
 
     if (descr == "itkDataImageChar3") {
         d->update<char>();

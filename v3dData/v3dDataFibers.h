@@ -20,20 +20,20 @@ public:
     virtual ~v3dDataFibers(void);
 
     virtual QString description(void) const;
-
+    virtual QString identifier(void) const;
     static bool registered(void);
-    
+
     virtual QImage        &thumbnail  (void) const;
     virtual QList<QImage> &thumbnails (void) const;
 
 public:
     void *data(void);
-	
+
     void setData(void *data);
-	
+
 protected:
     void generateThumbnails(void) const;
-    
+
 private:
     v3dDataFibersPrivate *d;
 };

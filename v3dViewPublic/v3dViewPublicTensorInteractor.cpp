@@ -83,7 +83,7 @@ void v3dViewPublicTensorInteractor::setData(dtkAbstractData *data)
     if (!data)
         return;
 
-    QString description = data->description();
+    QString description = data->identifier();
 
     if (description.compare("itkDataTensorImageFloat3") == 0) {
 		if (TensorImageTypeFloat *dataset = static_cast<TensorImageTypeFloat *>(data->data())) {

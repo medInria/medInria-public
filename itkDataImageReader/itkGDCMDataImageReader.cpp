@@ -424,29 +424,29 @@ bool itkGDCMDataImageReader::read (QStringList paths)
         for (int i=0;i<qfilelist.size();i++)
           filelist.push_back(qfilelist[i].toAscii().constData());
         
-        std::cout << "reading : "    << dtkdata->description().toAscii().constData() << std::endl;
+        std::cout << "reading : "    << dtkdata->identifier().toAscii().constData() << std::endl;
         std::cout << "containing : " << map.size() << " volumes" << std::endl;
 
         try {
-            if      (dtkdata->description()=="itkDataImageUChar3")  { Read3DImage<unsigned char>(dtkdata,d->io,filelist);  }
-            else if (dtkdata->description()=="itkDataImageChar3")   { Read3DImage<char>(dtkdata,d->io,filelist);           }
-            else if (dtkdata->description()=="itkDataImageUShort3") { Read3DImage<unsigned short>(dtkdata,d->io,filelist); }
-            else if (dtkdata->description()=="itkDataImageShort3")  { Read3DImage<short>(dtkdata,d->io,filelist);          }
-            else if (dtkdata->description()=="itkDataImageUInt3")   { Read3DImage<unsigned int>(dtkdata,d->io,filelist);   }
-            else if (dtkdata->description()=="itkDataImageInt3")    { Read3DImage<int>(dtkdata,d->io,filelist);            }
-            else if (dtkdata->description()=="itkDataImageULong3")  { Read3DImage<unsigned long>(dtkdata,d->io,filelist);  }
-            else if (dtkdata->description()=="itkDataImageLong3")   { Read3DImage<long>(dtkdata,d->io,filelist);           }
-            else if (dtkdata->description()=="itkDataImageFloat3")  { Read3DImage<float>(dtkdata,d->io,filelist);          }
-            else if (dtkdata->description()=="itkDataImageDouble3") { Read3DImage<double>(dtkdata,d->io,filelist);         }
-            else if (dtkdata->description()=="itkDataImageUChar4")  { Read4DImage<unsigned char>(dtkdata,d->io,map);          }
-            else if (dtkdata->description()=="itkDataImageUShort4") { Read4DImage<unsigned short>(dtkdata,d->io,map);         }
-            else if (dtkdata->description()=="itkDataImageShort4")  { Read4DImage<short>(dtkdata,d->io,map);                  }
-            else if (dtkdata->description()=="itkDataImageUInt4")   { Read4DImage<unsigned int>(dtkdata,d->io,map);           }
-            else if (dtkdata->description()=="itkDataImageULong4")  { Read4DImage<unsigned long>(dtkdata,d->io,map);          }
-            else if (dtkdata->description()=="itkDataImageInt4")    { Read4DImage<int>(dtkdata,d->io,map);                    }
-            else if (dtkdata->description()=="itkDataImageLong4")   { Read4DImage<long>(dtkdata,d->io,map);                   }
-            else if (dtkdata->description()=="itkDataImageChar4")   { Read4DImage<char>(dtkdata,d->io,map);                   }
-            else if (dtkdata->description()=="itkDataImageDouble4") {
+            if      (dtkdata->identifier()=="itkDataImageUChar3")  { Read3DImage<unsigned char>(dtkdata,d->io,filelist);  }
+            else if (dtkdata->identifier()=="itkDataImageChar3")   { Read3DImage<char>(dtkdata,d->io,filelist);           }
+            else if (dtkdata->identifier()=="itkDataImageUShort3") { Read3DImage<unsigned short>(dtkdata,d->io,filelist); }
+            else if (dtkdata->identifier()=="itkDataImageShort3")  { Read3DImage<short>(dtkdata,d->io,filelist);          }
+            else if (dtkdata->identifier()=="itkDataImageUInt3")   { Read3DImage<unsigned int>(dtkdata,d->io,filelist);   }
+            else if (dtkdata->identifier()=="itkDataImageInt3")    { Read3DImage<int>(dtkdata,d->io,filelist);            }
+            else if (dtkdata->identifier()=="itkDataImageULong3")  { Read3DImage<unsigned long>(dtkdata,d->io,filelist);  }
+            else if (dtkdata->identifier()=="itkDataImageLong3")   { Read3DImage<long>(dtkdata,d->io,filelist);           }
+            else if (dtkdata->identifier()=="itkDataImageFloat3")  { Read3DImage<float>(dtkdata,d->io,filelist);          }
+            else if (dtkdata->identifier()=="itkDataImageDouble3") { Read3DImage<double>(dtkdata,d->io,filelist);         }
+            else if (dtkdata->identifier()=="itkDataImageUChar4")  { Read4DImage<unsigned char>(dtkdata,d->io,map);          }
+            else if (dtkdata->identifier()=="itkDataImageUShort4") { Read4DImage<unsigned short>(dtkdata,d->io,map);         }
+            else if (dtkdata->identifier()=="itkDataImageShort4")  { Read4DImage<short>(dtkdata,d->io,map);                  }
+            else if (dtkdata->identifier()=="itkDataImageUInt4")   { Read4DImage<unsigned int>(dtkdata,d->io,map);           }
+            else if (dtkdata->identifier()=="itkDataImageULong4")  { Read4DImage<unsigned long>(dtkdata,d->io,map);          }
+            else if (dtkdata->identifier()=="itkDataImageInt4")    { Read4DImage<int>(dtkdata,d->io,map);                    }
+            else if (dtkdata->identifier()=="itkDataImageLong4")   { Read4DImage<long>(dtkdata,d->io,map);                   }
+            else if (dtkdata->identifier()=="itkDataImageChar4")   { Read4DImage<char>(dtkdata,d->io,map);                   }
+            else if (dtkdata->identifier()=="itkDataImageDouble4") {
                 /**
                 @todo Handle properly double pixel values.
                 For the moment it is only handled in 3D, not in 4D, and it is very
@@ -456,7 +456,7 @@ bool itkGDCMDataImageReader::read (QStringList paths)
                  */
                 Read4DImage<short>(dtkdata,d->io,map);
             } else {
-                qDebug() << "Unhandled dtkdata description : " << dtkdata->description();
+                qDebug() << "Unhandled dtkdata description : " << dtkdata->identifier();
                 return false;
             }
         } catch (itk::ExceptionObject &e) {

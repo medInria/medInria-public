@@ -425,43 +425,43 @@ bool itkDCMTKDataImageReader::read (const QStringList& paths)
 
   if (dtkAbstractData *dtkdata = this->data() ) {
 
-    if (dtkdata->description()=="itkDataImageUChar3")
+    if (dtkdata->identifier()=="itkDataImageUChar3")
     { ReadImageMacro (unsigned char, 3); }
-    else if (dtkdata->description()=="itkDataImageChar3")
+    else if (dtkdata->identifier()=="itkDataImageChar3")
     { ReadImageMacro (char, 3); }
-    else if (dtkdata->description()=="itkDataImageUShort3")
+    else if (dtkdata->identifier()=="itkDataImageUShort3")
     { ReadImageMacro (unsigned short, 3); }
-    else if (dtkdata->description()=="itkDataImageShort3")
+    else if (dtkdata->identifier()=="itkDataImageShort3")
     { ReadImageMacro (short, 3); }
-    else if (dtkdata->description()=="itkDataImageUInt3")
+    else if (dtkdata->identifier()=="itkDataImageUInt3")
     { ReadImageMacro (unsigned int, 3); }
-    else if (dtkdata->description()=="itkDataImageInt3")
+    else if (dtkdata->identifier()=="itkDataImageInt3")
     { ReadImageMacro (int, 3); }
-    else if (dtkdata->description()=="itkDataImageInt4")
+    else if (dtkdata->identifier()=="itkDataImageInt4")
     { ReadImageMacro (int, 4); }
-    else if (dtkdata->description()=="itkDataImageLong4")
+    else if (dtkdata->identifier()=="itkDataImageLong4")
     { ReadImageMacro (long, 4); }
-    else if (dtkdata->description()=="itkDataImageUInt4")
+    else if (dtkdata->identifier()=="itkDataImageUInt4")
     { ReadImageMacro (unsigned int, 4); }
-    else if (dtkdata->description()=="itkDataImageULong4")
+    else if (dtkdata->identifier()=="itkDataImageULong4")
     { ReadImageMacro (unsigned long, 4); }
-    else if (dtkdata->description()=="itkDataImageULong3")
+    else if (dtkdata->identifier()=="itkDataImageULong3")
     { ReadImageMacro (unsigned long, 3); }
-    else if (dtkdata->description()=="itkDataImageLong3")
+    else if (dtkdata->identifier()=="itkDataImageLong3")
     { ReadImageMacro (long, 3); }
-    else if (dtkdata->description()=="itkDataImageFloat3")
+    else if (dtkdata->identifier()=="itkDataImageFloat3")
     { ReadImageMacro (float, 3); }
-    else if (dtkdata->description()=="itkDataImageDouble3")
+    else if (dtkdata->identifier()=="itkDataImageDouble3")
     { ReadImageMacro (double, 3); }
-    else if (dtkdata->description()=="itkDataImageRGB3")
+    else if (dtkdata->identifier()=="itkDataImageRGB3")
     { ReadImageMacro (itk::RGBPixel<unsigned char>, 3); }
-    else if (dtkdata->description()=="itkDataImageUShort4")
+    else if (dtkdata->identifier()=="itkDataImageUShort4")
     { ReadImageMacro (unsigned short, 4); }
-    else if (dtkdata->description()=="itkDataImageUChar4")
+    else if (dtkdata->identifier()=="itkDataImageUChar4")
     { ReadImageMacro (unsigned char, 4); }
-    else if (dtkdata->description()=="itkDataImageShort4")
+    else if (dtkdata->identifier()=="itkDataImageShort4")
     { ReadImageMacro (short, 4); }
-    else if (dtkdata->description()=="itkDataImageChar4")
+    else if (dtkdata->identifier()=="itkDataImageChar4")
         { ReadImageMacro (char, 4); }
     else
     {

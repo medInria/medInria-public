@@ -93,7 +93,7 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
     if (!data)
         return;
 
-    QString description = data->description();
+    QString description = data->identifier();
 
     // up to the moment 2 itk tensor image formats are supported
     // we need to convert them to vtkStructuredPoints so it's understood by the tensor manager
