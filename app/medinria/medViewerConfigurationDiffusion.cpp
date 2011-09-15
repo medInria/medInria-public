@@ -297,7 +297,7 @@ void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
         view->update();
     }
 
-    if (d->diffusionToolBox->output()->description()=="v3dDataFibers")
+    if (d->diffusionToolBox->output()->identifier()=="v3dDataFibers")
         d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
 
     medDataManager::instance()->importNonPersistent ( d->diffusionToolBox->output(), d->uuid);

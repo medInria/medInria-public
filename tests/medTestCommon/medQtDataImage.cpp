@@ -145,7 +145,7 @@ void medQtDataImage::generateThumbnails() const
 
 bool medQtDataImage::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType(s_description(), createMedQtDataImage);
+    return dtkAbstractDataFactory::instance()->registerDataType(s_identifier(), createMedQtDataImage);
 }
 
 void * medQtDataImage::output( void )
@@ -264,6 +264,18 @@ QString medQtDataImage::s_description()
 QString medQtDataImage::description( void ) const
 {
     return s_description();
+}
+
+
+QString medQtDataImage::s_identifier()
+{
+    static const QString identifier = "medQtDataImage";
+    return identifier;
+}
+
+QString medQtDataImage::identifier( void ) const
+{
+    return s_identifier();
 }
 
 

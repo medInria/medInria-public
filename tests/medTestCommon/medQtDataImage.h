@@ -22,8 +22,10 @@ public:
     medQtDataImage();
     virtual ~medQtDataImage();
     virtual QString description(void) const;
+    virtual QString identifier(void) const;
 
     static QString s_description();
+    static QString s_identifier();
     static bool registered();
 
     // Implement dtkAbstractData

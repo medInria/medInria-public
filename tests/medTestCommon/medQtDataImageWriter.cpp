@@ -67,7 +67,7 @@ QStringList medQtDataImageWriter::supportedFileExtensions( void ) const
     if ( !const_cast<medQtDataImageWriter*>(this)->data() ) {
         return QStringList();
     }
-    if ( dtkdata->description() != medQtDataImage::s_description() ) {
+    if ( dtkdata->identifier() != medQtDataImage::s_identifier() ) {
         return QStringList();
     }
     QStringList extensions;
@@ -108,7 +108,7 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
     if ( !dtkdata )
         return false;
 
-    if (dtkdata->description() != medQtDataImage::s_description() ) {
+    if (dtkdata->identifier() != medQtDataImage::s_identifier() ) {
         return false;
     }
 
@@ -170,7 +170,7 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
 
 QStringList medQtDataImageWriter::s_handled()
 {
-    static const QStringList handled = QStringList() << medQtDataImage::s_description();
+    static const QStringList handled = QStringList() << medQtDataImage::s_identifier();
     return handled;
 }
 

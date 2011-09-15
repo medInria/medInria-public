@@ -84,6 +84,12 @@ QString medAbstractDataCollection::description( void ) const
     return (*d->dataIterator)->description();
 }
 
+QString medAbstractDataCollection::identifier( void ) const
+{
+    return (*d->dataIterator)->identifier();
+}
+
+
 void medAbstractDataCollection::draw( void )
 {
     return (*d->dataIterator)->draw();

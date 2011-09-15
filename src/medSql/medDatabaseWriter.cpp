@@ -267,7 +267,7 @@ void medDatabaseWriter::run(void)
         dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
         qDebug() << "trying " << dataWriter->description();
 
-        if (!dataWriter->handled().contains(d->data->description()))
+        if (!dataWriter->handled().contains(d->data->identifier()))
         {
             qDebug() << "failed with " << dataWriter->description();
         continue;
