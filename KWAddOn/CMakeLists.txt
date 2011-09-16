@@ -59,8 +59,16 @@ INCLUDE(
 KWWidgets_WRAP_TCL(KWAddOn KWAddOnTCL_SRCS "${KWAddOn_SRCS}" "")
 
 
+if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(KWAddOn_SOURCES_PCH 
+    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+      ${KWAddOnTCL_SRCS}
+      ${KWAddOn_SRCS}
+    )
+endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
 
 ADD_LIBRARY(KWAddOn ${vtkINRIA3D_LIBS_STYLE}
+  ${KWAddOn_SOURCES_PCH}
   ${KWAddOnTCL_SRCS}
   ${KWAddOn_SRCS}
 )

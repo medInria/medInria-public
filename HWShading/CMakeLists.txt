@@ -90,8 +90,16 @@ project(HWShading)
 		  )
 
   FIND_PACKAGE(OpenGL REQUIRED)
+
+  if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+    add_precompiled_header(HWShading_SOURCES_PCH 
+      "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+        ${HWShading_SRCS}
+      )
+  endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
   
   ADD_LIBRARY(vtkHWShading ${vtkINRIA3D_LIBS_STYLE}
+  ${HWShading_SOURCES_PCH}
   ${HWShading_SRCS} 
   )
 
