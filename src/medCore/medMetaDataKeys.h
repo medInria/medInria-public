@@ -28,7 +28,7 @@ namespace medMetaDataKeys {
 
         const QStringList getValues(const dtkAbstractData *d) const { return d->metaDataValues(KEY); }
 
-        const QString& getFirstValue(const dtkAbstractData *d,const QString defaultValue=QString()) const {
+        const QString getFirstValue(const dtkAbstractData *d,const QString defaultValue=QString()) const {
             return  d->hasMetaData(KEY) ? d->metaDataValues(KEY)[0] : defaultValue;
         }
 
