@@ -20,6 +20,8 @@
 #include <gdcmDirectionCosines.h>
 #include <gdcmStringFilter.h>
 
+#include <medCore/medMetaDataKeys.h>
+
 #include <map>
 
 template<typename TYPE>
