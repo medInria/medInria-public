@@ -96,6 +96,7 @@ bool v3dViewMeshInteractor::registered(void)
 
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 {
+    
     if (d->dataList.contains (data))
     {
         return;

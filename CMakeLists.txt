@@ -27,7 +27,7 @@ project(medinria-plugins)
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major
 version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 333 CACHE STRING "${PROJECT_NAME} minor
+set(${PROJECT_NAME}_VERSION_MINOR 4 CACHE STRING "${PROJECT_NAME} minor
 version number.")
 set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build
 version number.")
@@ -42,6 +42,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(medinria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
+
+
 
 # Export medinriq-plugins_DIR variable so that internal project can automatically find i
 set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
@@ -67,11 +69,11 @@ option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individ
 
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
-  v3dData                        ON 
+  v3dData                        ON
   v3dViewPublic                  ON
   v3dView                        ON
-  itkDataImage                   ON 
-  itkDataImageReader             ON 
+  itkDataImage                   ON
+  itkDataImageReader             ON
   itkDataImageWriter             ON
   itkDCMTKDataImageReader        ON
   vtkDataMesh                    ON
@@ -82,6 +84,7 @@ set(PLUGIN_LIST
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
   medCompositeDataSets           ON
+  ITKProcessExample		 ON
   )
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
@@ -133,6 +136,12 @@ if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
     subdirs(exampleProcessImageFilter)
 endif()
 
+if(MSVC)
+  #Macros that enable precompiled headers to be added, defined by dtk.
+  include(dtkPch)
+  option(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+endif(MSVC)
+
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_V3DDATA_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN OR
@@ -154,11 +163,12 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN OR
     MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
     MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
-    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
+    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
+    MEDINRIA_BUILD_ITKPROCESSEXAMPLE_PLUGIN)
     set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()
 
-## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK 
+## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK
 ## to be set before  being included.
 add_subdirectory(src)
 

@@ -125,7 +125,7 @@ template <typename PixelType>
 
     typedef itk::CastImageFilter< MovingImageType, RegImageType > CastFilterMovingType;
     typename CastFilterType::Pointer  casterMov =  CastFilterType::New();
-    casterMov->SetInput((const MovingImageType*)proc->movingImage().GetPointer());
+    casterMov->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
     casterMov->Update();
     registration->SetMovingImage(casterMov->GetOutput());
 
@@ -201,13 +201,13 @@ template <typename PixelType>
     typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(registration->GetTransformation());
-    resampler->SetInput((const MovingImageType*)proc->movingImage().GetPointer());
+    resampler->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
     resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
     resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
-
+    
     try {
         resampler->Update();
     }
@@ -222,13 +222,14 @@ template <typename PixelType>
 
 
     if (proc->output())
-      proc->output()->setData (result);
+    proc->output()->setData (result);
+ 
     return 0;
 }
 
 int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::ImageType imgType)
 {
-    if(fixedImage().IsNull() || movingImage().IsNull())
+    if(fixedImage().IsNull() || movingImages().isEmpty())
         return 1;
     switch (imgType){
     //unfortunately diffeomorphic demons only work on float or double pixels...

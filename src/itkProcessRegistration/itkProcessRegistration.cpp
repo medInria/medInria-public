@@ -19,6 +19,8 @@
 #include "itkEuler3DTransform.h"
 #include "itkCenteredTransformInitializer.h"
 
+#include "itkImageLinearConstIteratorWithIndex.h"
+
 #include <itkImage.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -41,7 +43,8 @@ public:
 
     unsigned int dimensions;
     itk::ImageBase<3>::Pointer fixedImage;
-    itk::ImageBase<3>::Pointer movingImage;
+    QVector<itk::ImageBase<3>::Pointer> movingImages;
+    //itk::ImageBase<3>::Pointer movingImage;
     itkProcessRegistration::ImageType fixedImageType;
     itkProcessRegistration::ImageType movingImageType;
     dtkAbstractData *output;
@@ -58,7 +61,6 @@ public:
 itkProcessRegistration::itkProcessRegistration(void) : dtkAbstractProcess(), d(new itkProcessRegistrationPrivate)
 {
     d->fixedImage = NULL;
-    d->movingImage = NULL;
     d->output = NULL;
     d->dimensions=3;
     d->fixedImageType = itkProcessRegistration::FLOAT;
@@ -92,7 +94,7 @@ template <typename PixelType>
 {
     //typedef itk::Image<PixelType, 3> OutputImageType;
     itkProcessRegistration::ImageType inputType;
-
+    qDebug()<<"itkProcessRegistrationPrivate::setInput2222";
     if ( typeid(PixelType) == typeid(unsigned char) )
         inputType = itkProcessRegistration::UCHAR;
        else if ( typeid(PixelType) == typeid(char) )
@@ -121,6 +123,8 @@ template <typename PixelType>
     if ( dimensions == 3 ){
 
         typedef itk::Image <PixelType, 3> InputImageType;
+
+
         if (channel==0)
         {
             fixedImageType = inputType;
@@ -129,41 +133,76 @@ template <typename PixelType>
         if (channel==1)
         {
             movingImageType = inputType;
-            movingImage = dynamic_cast<InputImageType *>((itk::Object*)(data->data()));
+            movingImages = QVector<itk::ImageBase<3>::Pointer>(1);
+            movingImages[0] =  dynamic_cast<InputImageType *>((itk::Object*)(data->data()));
+
+
         }
     }
-    else if ( dimensions == 4 ){ //may work on dim > 3
+    else if ( dimensions == 4 ){
+
         typedef itk::Image <PixelType, 4> Image4DType;
         typedef itk::Image <PixelType, 3> InputImageType;
-
-        typename Image4DType::Pointer image = dynamic_cast<Image4DType *>((itk::Object*)(data->data()));
-        if (image.IsNull())
+        typename Image4DType::Pointer image4d = dynamic_cast<Image4DType *>((itk::Object*)(data->data()));
+        typename Image4DType::RegionType region = image4d->GetLargestPossibleRegion();
+        typename Image4DType::SizeType size = image4d->GetLargestPossibleRegion().GetSize();
+        const unsigned int frameNumber =  region.GetSize()[3];
+        if (image4d.IsNull())
           return;
 
-        typename itk::ExtractImageFilter< Image4DType,
-            InputImageType >::Pointer extractor = itk::ExtractImageFilter<Image4DType,InputImageType>::New();
-        typename Image4DType::SizeType size = image->GetLargestPossibleRegion().GetSize();
-        typename Image4DType::IndexType index = {{0,0,0,0}};
-        size[3] = 0;
-        typename Image4DType::RegionType region;
-        region.SetSize (size);
-        region.SetIndex (index);
+        if(channel == 0)
+        {
+            typename itk::ExtractImageFilter<Image4DType, InputImageType>::Pointer extractFilter = itk::ExtractImageFilter<Image4DType, InputImageType>::New();
 
-        extractor->SetExtractionRegion (region);
-        extractor->SetInput ( image );
-        try {
-          extractor->Update();
+            typename Image4DType::IndexType index = {{0,0,0,0}};
+            size[3] = 0;
+            index[3] = 0;
+            region.SetSize(size);
+            region.SetIndex(index);
+            extractFilter->SetExtractionRegion(region);
+            extractFilter->SetInput( image4d );
+
+            try
+            {
+                extractFilter->Update();
+            }
+            catch(itk::ExceptionObject &ex)
+            {
+                qDebug() << "Extraction failed";
+                return ;
+            }
+            fixedImage = extractFilter->GetOutput();
         }
-        catch (itk::ExceptionObject &e) {
-            qDebug() << "extraction failed:" << e.GetDescription();
-          return;
+        if(channel == 1)
+        {
+        //may work on dim > 3
+        movingImages = QVector<itk::ImageBase<3>::Pointer>(frameNumber);
+
+        for(unsigned int i = 0 ; i < frameNumber ; i++)
+        {
+            typename itk::ExtractImageFilter<Image4DType, InputImageType>::Pointer extractFilter = itk::ExtractImageFilter<Image4DType, InputImageType>::New();
+
+            typename Image4DType::IndexType index = {{0,0,0,0}};
+            size[3] = 0;
+            index[3] = i;
+            region.SetSize(size);
+            region.SetIndex(index);
+            extractFilter->SetExtractionRegion(region);
+            extractFilter->SetInput( image4d );
+
+            try
+            {
+                extractFilter->Update();
+            }
+            catch(itk::ExceptionObject &ex)
+            {
+                qDebug() << "Extraction failed";
+                return ;
+            }
+            movingImages[i] = extractFilter->GetOutput();
+
         }
-
-        if (channel==0)
-            fixedImage = extractor->GetOutput();
-        if (channel==1)
-            movingImage = extractor->GetOutput();
-
+        }
     }
 }
 
@@ -187,7 +226,7 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
     }
 
     *last_charac = '3';
-    if (channel==1)
+    if (channel==0)
         d->output = dtkAbstractDataFactory::instance()->create (descr);
     if (descr =="itkDataImageChar3") {
         d->setInput<char>(data,channel);
@@ -221,6 +260,7 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
     else if (descr =="itkDataImageDouble3") {
         d->setInput<double>(data,channel);
     }
+
 }
 
 int itkProcessRegistration::update(itkProcessRegistration::ImageType)
@@ -237,7 +277,7 @@ int itkProcessRegistration::update(void)
         return -1;
     }
 
-    if(d->fixedImage.IsNull() || d->movingImage.IsNull())
+    if(d->fixedImage.IsNull() || d->movingImages.empty())
         return 1;
 
     int retval =  update(d->fixedImageType);
@@ -255,11 +295,10 @@ itk::ImageBase<3>::Pointer itkProcessRegistration::fixedImage()
     return d->fixedImage;
 }
 
-itk::ImageBase<3>::Pointer itkProcessRegistration::movingImage()
+QVector<itk::ImageBase<3>::Pointer> itkProcessRegistration::movingImages()
 {
-    return d->movingImage;
+    return d->movingImages;
 }
-
 itkProcessRegistration::ImageType itkProcessRegistration::fixedImageType()
 {
     return d->fixedImageType;
