@@ -192,7 +192,8 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   typedef itk::RGBPixel<unsigned char>  RGBPixelType;
   typedef itk::RGBAPixel<unsigned char> RGBAPixelType;
   typedef itk::Vector<unsigned char, 3> UCharVector3Type;
-  
+  typedef itk::Vector<float, 3> FloatVector3Type;
+
   //BTX
   void SetITKImage (itk::Image<double, 3>*);
   void SetITKImage (itk::Image<float, 3>*);
@@ -207,6 +208,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   void SetITKImage (itk::Image<RGBPixelType, 3>*);
   void SetITKImage (itk::Image<RGBAPixelType, 3>*);
   void SetITKImage (itk::Image<UCharVector3Type, 3>*);
+  void SetITKImage (itk::Image<FloatVector3Type, 3>*);
   itk::ImageBase<3>* GetITKImage (void) const;
 
   virtual void SetITKImage4 (itk::Image<double, 4> *input);
@@ -222,6 +224,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   virtual void SetITKImage4 (itk::Image<RGBPixelType, 4> *input);
   virtual void SetITKImage4 (itk::Image<RGBAPixelType, 4> *input);
   virtual void SetITKImage4 (itk::Image<UCharVector3Type, 4> *input);
+  virtual void SetITKImage4 (itk::Image<FloatVector3Type, 4> *input);
   itk::ImageBase<4>* GetTemporalITKImage (void) const;
   //ETX
 #endif

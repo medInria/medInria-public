@@ -1634,7 +1634,10 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
   widget->GetActor()->SetProperty (prop);
   widget->SetSource (arg);
   widget->SetImageView (this);
-  
+
+  this->DataSetCollection->AddItem (arg);
+  this->DataSetActorCollection->AddItem ( widget->GetActor());
+
   if ( this->GetIsInteractorInstalled () )
   {  
     widget->On();
@@ -1664,13 +1667,15 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
     this->Renderer->ResetCamera(bounds);
 
   }
-
+  
   return widget->GetActor();
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::RemoveDataSet (vtkPointSet *arg)
 {
+  this->Superclass::RemoveDataSet (arg);
+  
   std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
   while (it!=this->DataSetWidgets.end())
   {
@@ -1686,7 +1691,6 @@ void vtkImageView2D::RemoveDataSet (vtkPointSet *arg)
     ++it;
   }
 }
-
 
 //----------------------------------------------------------------------------
 std::list<vtkDataSet2DWidget*>::iterator vtkImageView2D::FindDataSetWidget(vtkPointSet* arg)

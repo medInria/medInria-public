@@ -71,7 +71,9 @@
 #include <vtkImageAppend.h>
 #include <vtkImageCast.h>
 #include <vtkSmartPointer.h>
+#include <vtkDataSetCollection.h>
 #include <vtkProp3DCollection.h>
+
 
 class vtkImage3DDisplay : public vtkObject
 {
@@ -1019,6 +1021,9 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
     this->Renderer->ResetCamera(bounds);
 
   }
+  
+  this->DataSetCollection->AddItem (arg);
+  this->DataSetActorCollection->AddItem ( actor);
   
   // the actor is actually not deleted as it has
   // been referenced in the renderer, so we can

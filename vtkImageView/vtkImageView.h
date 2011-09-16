@@ -45,11 +45,16 @@ class vtkImageData;
 class vtkImageMapToColors;
 class vtkAlgorithmOutput;
 class vtkLookupTable;
+class vtkDataSet;
 class vtkPointSet;
 class vtkProperty;
 class vtkActor;
 class vtkColorTransferFunction;
 class vtkPiecewiseFunction;
+class vtkDataSetCollection;
+class vtkProp3DCollection;
+class vtkProp3D;
+
 
 /**
    
@@ -510,7 +515,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   typedef itk::RGBPixel<unsigned char>  RGBPixelType;
   typedef itk::RGBAPixel<unsigned char> RGBAPixelType;
   typedef itk::Vector<unsigned char, 3> UCharVector3Type;
-  
+  typedef itk::Vector<float, 3> FloatVector3Type;
+
   virtual void SetITKInput (itk::Image<double, 3>::Pointer input, int layer=0);
   virtual void SetITKInput (itk::Image<float, 3>::Pointer input, int layer=0);
   virtual void SetITKInput (itk::Image<int, 3>::Pointer input, int layer=0);
@@ -524,6 +530,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetITKInput (itk::Image<RGBPixelType, 3>::Pointer input, int layer=0);
   virtual void SetITKInput (itk::Image<RGBAPixelType, 3>::Pointer input, int layer=0);
   virtual void SetITKInput (itk::Image<UCharVector3Type, 3>::Pointer input, int layer=0);
+  virtual void SetITKInput (itk::Image<FloatVector3Type, 3>::Pointer input, int layer=0);
   itk::ImageBase<3>* GetITKInput (void) const;
 
   /**
@@ -545,6 +552,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetITKInput4 (itk::Image<RGBPixelType, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<RGBAPixelType, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<UCharVector3Type, 4>::Pointer input, int layer=0);
+  virtual void SetITKInput4 (itk::Image<FloatVector3Type, 4>::Pointer input, int layer=0);
   itk::ImageBase<4>* GetTemporalITKInput (void) const;
 
 #endif
@@ -562,10 +570,24 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   /**
      Abstract method to add a dataset to the view (has to be subclass of vtkPointSet).
      A vtkProperty of the dataset can be specified.
+
+     ********* CAUTION ************
+
+     subclasses SHOULD populate dataset and actor collections :
+     this->DataSetCollection->AddItem(arg);
+     this->DataSetActorCollection->AddItem(actor);
+
+     ******************************
   */
+
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL) = 0;
 
   virtual void RemoveDataSet (vtkPointSet *arg);
+
+  vtkProp3D* FindDataSetActor (vtkDataSet* arg);
+  
+  vtkGetObjectMacro (DataSetCollection, vtkDataSetCollection);
+  vtkGetObjectMacro (DataSetActorCollection, vtkProp3DCollection);
   
   vtkGetMacro(IsInteractorInstalled, int);
 
@@ -676,6 +698,13 @@ protected:
      and is used to quickly transform the slice plane in vtkViewImage2D.
   */
   vtkMatrixToLinearTransform* OrientationTransform;
+
+  /**
+   */
+  vtkDataSetCollection* DataSetCollection;
+  /**
+   */
+  vtkProp3DCollection* DataSetActorCollection;
   
   /**
      local instances.
