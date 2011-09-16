@@ -36,24 +36,26 @@ class vtkSphericalHarmonicManager: public vtkObject
   /** Set a scaling factor for the glyhs. */
   void SetGlyphScale(const float& f);
   
-  
-  /** Set the sample rate. 1 over n tensors will be
+  /** Set the sample rate. 1 over n Spherical Harmonic's will be
       displaid.*/
   void SetSampleRate(const int&,const int&,const int&);
   
   /** Set the glyph resolution */
   void SetGlyphResolution (int res);
+
+  /** Set the Polyhedron type to be tesselated */
+  void SetTesselationType (const int& type);
   
   /** Set the scalar range for the LUT */
   //void SetScalarRange(const float&, const float&);
 
-  /** Flip tensors along the X axis */
+  /** Flip Spherical Harmonic's along the X axis */
   void FlipX (bool a);
   
-  /** Flip tensors along the Y axis */
+  /** Flip Spherical Harmonic's along the Y axis */
   void FlipY (bool a);
   
-  /** Flip tensors along the Z axis */
+  /** Flip Spherical Harmonic's along the Z axis */
   void FlipZ (bool a);
 
   /** Select in between different Spherical Harmonics basis default or Maxime Descoteaux thesis*/

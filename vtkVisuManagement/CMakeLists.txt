@@ -39,7 +39,6 @@ SET(vtkVisuManagement_LIBS
 )
 
 
-
 IF( vtkINRIA3D_USE_HWSHADING )
 SET(vtkVisuManagement_LIBS
 ${vtkVisuManagement_LIBS}

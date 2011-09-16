@@ -261,6 +261,14 @@ void vtkSphericalHarmonicManager::SetGlyphResolution (int res)
   this->SHVisuManagerCoronal ->SetGlyphResolution (res);
 }
 
+void vtkSphericalHarmonicManager::SetTesselationType (const int& type)
+{
+  this->SHVisuManagerAxial   ->SetTesselationType(type);
+  this->SHVisuManagerSagittal->SetTesselationType(type);
+  this->SHVisuManagerCoronal ->SetTesselationType(type);
+}
+
+
 
     /*
 void vtkSHManager::SetScalarRange (const float& min, const float& max)

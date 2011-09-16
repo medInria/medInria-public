@@ -110,6 +110,12 @@ void vtkSphericalHarmonicVisuManager::SetGlyphScale (const float& scale)
   this->SHGlyph->SetScaleFactor(scale);
 }
 
+void vtkSphericalHarmonicVisuManager::SetTesselationType (const int& type)
+{
+    this->SHSource->SetTesselationType (type);
+    this->SHSource->UpdateSphericalHarmonicSource();
+}
+
 
 void vtkSphericalHarmonicVisuManager::SetGlyphResolution (const int& res)
 {

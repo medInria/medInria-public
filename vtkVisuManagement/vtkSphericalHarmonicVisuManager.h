@@ -21,17 +21,18 @@ class vtkSphericalHarmonicVisuManager : public vtkObject
 
   void SetGlyphScale (const float& scale);
 
-  void SetTesselationType (const int& type)
-  { this->SHSource->SetTesselationType (type); }
+  /** Get the Polyhedron type to be tesselated */
+  void SetTesselationType (const int& type);
 
+  /** Set the Polyhedron type to be tesselated */
   int GetTesselationType (void) const
   { return this->SHSource->GetTesselationType(); }
 
-  void SetTesselation (const int& type)
-  { this->SHSource->SetTesselation (type); }
+//  void SetTesselation (const int& type)
+//  { this->SHSource->SetTesselation (type); }
   
-  int GetTesselation (void) const
-  { return this->SHSource->GetTesselation(); }
+//  int GetTesselation (void) const
+//  { return this->SHSource->GetTesselation(); }
 
   void SetGlyphResolution (const int&);
 
