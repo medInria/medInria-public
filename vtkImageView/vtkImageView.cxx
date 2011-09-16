@@ -75,7 +75,8 @@ namespace {
     IMAGE_VIEW_UNSIGNED_CHAR,
     IMAGE_VIEW_RGBPIXELTYPE,
     IMAGE_VIEW_RGBAPIXELTYPE,
-    IMAGE_VIEW_UCHARVECTOR3TYPE  };
+    IMAGE_VIEW_UCHARVECTOR3TYPE,
+    IMAGE_VIEW_FLOATVECTOR3TYPE  };
 }
 
 // pIMPL class for vtkImageView
@@ -109,7 +110,7 @@ template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageView
 template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::RGBPixelType > () { return     IMAGE_VIEW_RGBPIXELTYPE; }
 template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::RGBAPixelType > () { return     IMAGE_VIEW_RGBAPIXELTYPE; }
 template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::UCharVector3Type > () { return     IMAGE_VIEW_UCHARVECTOR3TYPE ; }
-
+template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::FloatVector3Type > () { return     IMAGE_VIEW_FLOATVECTOR3TYPE ; }
 #endif
 
 vtkImageView::vtkImageView()
@@ -1493,6 +1494,7 @@ break ;					\
             ImageViewCaseEntry( RGBPixelType, IMAGE_VIEW_RGBPIXELTYPE );
             ImageViewCaseEntry( RGBAPixelType, IMAGE_VIEW_RGBAPIXELTYPE );
             ImageViewCaseEntry( UCharVector3Type, IMAGE_VIEW_UCHARVECTOR3TYPE  );
+            ImageViewCaseEntry( FloatVector3Type, IMAGE_VIEW_FLOATVECTOR3TYPE  );
             
         };
       }
@@ -1640,7 +1642,7 @@ vtkImplementSetITKInputMacro (unsigned char);
 vtkImplementSetITKInputMacro (RGBPixelType);
 vtkImplementSetITKInputMacro (RGBAPixelType);
 vtkImplementSetITKInputMacro (UCharVector3Type);
-
+vtkImplementSetITKInputMacro (FloatVector3Type);
 itk::ImageBase<3>* vtkImageView::GetITKInput (void) const
 {
   return this->ITKInput;
@@ -1665,6 +1667,7 @@ vtkImplementSetITKInput4Macro (unsigned char);
 vtkImplementSetITKInput4Macro (RGBPixelType);
 vtkImplementSetITKInput4Macro (RGBAPixelType);
 vtkImplementSetITKInput4Macro (UCharVector3Type);
+vtkImplementSetITKInput4Macro (FloatVector3Type);
 
 itk::ImageBase<4>* vtkImageView::GetTemporalITKInput (void) const
 {
