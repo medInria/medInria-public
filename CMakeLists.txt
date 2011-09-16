@@ -51,9 +51,12 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
 include(medinriaPack)
-#include(medinriaDart)
-include(Dart)
-include(CTest)
+
+#configure ctest variables
+option(BUILD_REPORTING "Build Reporting")
+if(BUILD_REPORTING)
+  include(dtkReporting)
+endif(BUILD_REPORTING)
 
 option(BUILD_DOCUMENTATION "Build documentation"    true)
 

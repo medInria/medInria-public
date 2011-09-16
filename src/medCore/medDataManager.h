@@ -173,8 +173,15 @@ signals:
     */
     void failedToOpen(const medDataIndex&);
 
+    /**
+     * @brief Emitted when an image fails to import
+     * @param index the @medDataIndex of the image
+     * @param uuid the identifier linked to this import request
+    */
+    void importFailed(const medDataIndex& index,QString uuid);
+
 public slots:
-    void onNonPersistentDataImported(const medDataIndex &index);
+    void onNonPersistentDataImported(const medDataIndex &index,const QString& uuid);
     void onPersistentDataImported(const medDataIndex &index);
     void onSingleNonPersistentDataStored(const medDataIndex &index);
 
