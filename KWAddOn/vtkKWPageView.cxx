@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWPageView.cxx 1350 2009-11-19 15:16:30Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-11-19 16:16:30 +0100 (Thu, 19 Nov 2009) $
+Date:      $Date: 2009-11-19 15:16:30 +0000 (Thu, 19 Nov 2009) $
 Version:   $Revision: 1350 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -23,17 +23,22 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkObjectFactory.h"
 
 #include <vtkWindowToImageFilter.h>
+#include <vtkPointData.h>
+#include <vtkDataArray.h>
 #include <vtkImageClip.h>
 #include <vtkImagePermute.h>
 #include <vtkImageResample.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
-#include "vtkViewImage2D.h"
-#include "vtkViewImage2DWithTracer.h"
-#include "vtkViewImage3D.h"
+#include <vtkImageView/vtkImageView2D.h>
+#include <vtkImageView/vtkImageView3D.h>
+#include <vtkImageView/vtkImageViewCollection.h>
+
 #include <vtkPlaneWidget.h>
+#include <vtkImageActor.h>
 
 #include <vtkDataSet.h>
+#include <vtkDataSetCollection.h>
 #include <vtkRenderWindowInteractor.h>
 
 #include <vtkLookupTable.h>
@@ -42,6 +47,8 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkLandmarkManager.h>
 #include <vtkRendererCollection.h>
+#include <vtkImageViewCornerAnnotation.h>
+#include <vtkTextProperty.h>
 
 
 //----------------------------------------------------------------------------
@@ -52,10 +59,10 @@ vtkCxxRevisionMacro( vtkKWPageView, "$Revision: 1350 $");
 //----------------------------------------------------------------------------
 vtkKWPageView::vtkKWPageView()
 {
-  this->View1         = vtkViewImage2D::New();
-  this->View2         = vtkViewImage2D::New();
-  this->View3         = vtkViewImage2D::New();
-  this->View4         = vtkViewImage3D::New();
+  this->View1         = vtkImageView2D::New();
+  this->View2         = vtkImageView2D::New();
+  this->View3         = vtkImageView2D::New();
+  this->View4         = vtkImageView3D::New();
 
   this->RenderWidget1 = vtkKWRenderWidget::New();
   this->RenderWidget2 = vtkKWRenderWidget::New();
@@ -64,6 +71,8 @@ vtkKWPageView::vtkKWPageView()
 
   m_OrientationMatrix = vtkMatrix4x4::New();
   
+  m_Pool = 0;
+
   this->IsFullScreen = 0;
 
   this->ID = -1;
@@ -79,8 +88,10 @@ vtkKWPageView::vtkKWPageView()
   this->LandmarkManager->ChangeColorOnSelectedOff();
   this->LandmarkManager->ChangeColorOnSelectedOff();
   this->LandmarkManager->LinkerOff();
-
+  
   this->FirstRender = true;
+  
+  this->EnableViewsOff();
 }
 
 //----------------------------------------------------------------------------
@@ -92,10 +103,8 @@ vtkKWPageView::~vtkKWPageView()
 
   m_OrientationMatrix->Delete();
   
-  this->View1->Detach();
-  this->View2->Detach();
-  this->View3->Detach();
-  this->View4->Detach();
+  if( m_Pool )
+    m_Pool->Delete();
   
   this->View1->Delete();
   this->View2->Delete();
@@ -113,7 +122,14 @@ vtkKWPageView::~vtkKWPageView()
   
 }
 
-
+//----------------------------------------------------------------------------
+void vtkKWPageView::SetEnableViews(unsigned int arg)
+{
+  this->RenderWidget1->SetRenderState(arg);
+  this->RenderWidget2->SetRenderState(arg);
+  this->RenderWidget3->SetRenderState(arg);
+  this->RenderWidget4->SetRenderState(arg);
+}
 
 //----------------------------------------------------------------------------
 void vtkKWPageView::CreateRenderWidgets()
@@ -125,33 +141,23 @@ void vtkKWPageView::CreateRenderWidgets()
   this->RenderWidget3->SetParent(this);
   this->RenderWidget3->Create();
   this->RenderWidget4->SetParent(this);
-  this->RenderWidget4->Create();  
-
+  this->RenderWidget4->Create();
 }
 
-
-
 //----------------------------------------------------------------------------
-void vtkKWPageView::ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget)
+void vtkKWPageView::ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget)
 {
-
-//   view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
-  view->SetRenderWindowInteractor (widget->GetRenderWindow()->GetInteractor());
   
-  // vtkRenderer* renderer = view->GetRenderer();
+  view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
   vtkRenderer* renderer = vtkRenderer::New();
-  view->SetRenderer (renderer);
-  
+  view->SetRenderer(renderer);
+
   vtkRendererCollection* collection = widget->GetRenderWindow()->GetRenderers();
   collection->RemoveAllItems();
   widget->GetRenderWindow()->AddRenderer (renderer);
   widget->RemoveAllRenderers();
   widget->AddRenderer (renderer);
-  widget->SetRenderModeToInteractive();
   view->SetRenderWindow (widget->GetRenderWindow());
-
-  // view->SetRenderer (renderer);
-  renderer->Delete();
 }
 
 //----------------------------------------------------------------------------
@@ -171,47 +177,49 @@ void vtkKWPageView::Create4Views()
   this->ConfigureView (this->View3, this->RenderWidget3);
   this->ConfigureView (this->View4, this->RenderWidget4);  
 
-  this->View2->AddChild (this->View1);
-  this->View3->AddChild (this->View2);
-  this->View4->AddChild (this->View3);  
-  this->View1->AddChild (this->View4);
+  m_Pool = vtkImageViewCollection::New();
+  
+  m_Pool->AddItem (this->View1);
+  m_Pool->AddItem (this->View2);
+  m_Pool->AddItem (this->View3);
+  m_Pool->AddItem (this->View4);
 }
 
 //----------------------------------------------------------------------------
 void vtkKWPageView::SetProperties()
 {
   
-  this->View1->SetOrientation (vtkViewImage::AXIAL_ID);
-  this->View2->SetOrientation (vtkViewImage::CORONAL_ID);
-  this->View3->SetOrientation (vtkViewImage::SAGITTAL_ID);
+  this->View1->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_AXIAL);
+  this->View2->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
+  this->View3->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
+  this->View4->SetShowActorX (0);
+  this->View4->SetShowActorY (0);
+  this->View4->SetShowActorZ (0);
+  this->View4->AddExtraPlane (this->View1->GetImageActor());
+  this->View4->AddExtraPlane (this->View2->GetImageActor());
+  this->View4->AddExtraPlane (this->View3->GetImageActor());
+  
+  this->m_Pool->SyncSetAnnotationStyle( vtkImageView2D::AnnotationStyle2);
+  this->m_Pool->SyncSetShowRulerWidget (0);
+  
+  this->View1->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
+  this->View2->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
+  this->View3->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
+  this->View4->GetCornerAnnotation()->SetText (1, "INRIA 2011 - CardioViz3D");
+  
+  m_Pool->SyncSetShowScalarBar (1);
+  double zeros[3] = {0,0,0};
+  m_Pool->SyncSetBackground (zeros);
+  
+  this->View4->SetBackground (1,1,1);
+  this->View4->GetTextProperty()->SetColor (0,0,0);
 
-  this->View1->SetAboutData ("INRIA 2008 - CardioViz3D");
-  this->View2->SetAboutData ("INRIA 2008 - CardioViz3D");
-  this->View3->SetAboutData ("INRIA 2008 - CardioViz3D");
-  this->View4->SetAboutData ("INRIA 2008 - CardioViz3D");
-
-  this->View1->ScalarBarVisibilityOn();
-  this->View2->ScalarBarVisibilityOn();
-  this->View3->ScalarBarVisibilityOn();
-  this->View4->ScalarBarVisibilityOn();
-
-  this->View1->SetBackgroundColor (0,0,0);
-  this->View2->SetBackgroundColor (0,0,0);
-  this->View3->SetBackgroundColor (0,0,0);
-  this->View4->SetBackgroundColor (0.9,0.9,0.9);
-
-  double textcolor[3]={0.0,0.0,0.0};
-  this->View4->SetTextColor (textcolor);
-  this->View4->SetRenderingModeToPlanar();
-
-
+  this->View4->SetVolumeMapperTo3DTexture();
+  
   this->LandmarkManager->AddView(this->GetView1()); 
   this->LandmarkManager->AddView(this->GetView2());
   this->LandmarkManager->AddView(this->GetView3());
   this->LandmarkManager->AddView(this->GetView4());
-
-
-  
 }
 
 void vtkKWPageView::PackSelf()
@@ -311,13 +319,8 @@ void vtkKWPageView::CreateWidget()
   // Call the superclass to create the whole widget
   this->Superclass::CreateWidget();
   // attach the RenderWidgets to the view frame, and pack
-
   this->CreateRenderWidgets();
-  // attach the Views to the RenderWidgets
-
-  this->Create4Views();
   // pack everything
-
   char buffer[1024];
   bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "PageGridType", buffer);
   if (!valid)
@@ -334,35 +337,36 @@ void vtkKWPageView::CreateWidget()
     }
   }
 
-  
-
   this->PackSelf();
-  
-  
+  // attach the Views to the RenderWidgets
+  this->Create4Views();
   // and Set the properties !
   this->SetProperties();
-  
+
+  this->RenderWidget4->SetBinding("<Expose>", this, "Render");
+
 }
 
 void vtkKWPageView::SetImage (vtkImageData* image, vtkMatrix4x4* orientationmatrix)
 {
 
   if (!image)
-    return;  
+    return;
   
-
-  this->View1->SetDirectionMatrix ( orientationmatrix );
-  this->View2->SetDirectionMatrix ( orientationmatrix );
-  this->View3->SetDirectionMatrix ( orientationmatrix );
-  this->View4->SetDirectionMatrix ( orientationmatrix );
-
-  
-  this->View1->SetImage(image);
-  this->View2->SetImage(image);
-  this->View3->SetImage(image);
-  this->View4->SetImage ( image );
-
+  m_Pool->SyncSetInput(image);
+  if (orientationmatrix)
+    m_Pool->SyncSetOrientationMatrix (orientationmatrix);
   this->SetOrientationMatrix (orientationmatrix);
+  this->View1->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_AXIAL);
+  this->View2->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
+  this->View3->SetViewOrientation( vtkImageView2D::VIEW_ORIENTATION_CORONAL);
+  
+  m_Pool->SyncReset();
+  
+  this->GetPool()->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+  this->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
+  this->GetPool()->SyncSetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  this->GetPool()->SyncSetKeyboardInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
 
   
   this->LandmarkManager->InteractionOn();
@@ -386,7 +390,7 @@ void vtkKWPageView::SetImage (itk::Image<float, 3>::Pointer image)
 
 vtkImageData* vtkKWPageView::GetImage ()
 {
-  return this->View1->GetImage();  
+  return this->View1->GetInput();  
 }
 
 //---------------------------------------------------------------------------
@@ -514,7 +518,6 @@ int vtkKWPageView::BuildScreenshotFromRenderWindow(vtkRenderWindow *win, vtkKWIc
   return 0;
 }
 
-
 int vtkKWPageView::GetAxialScreenshot(vtkKWIcon* screenshot, int size)
 {
   return this->BuildScreenshotFromRenderWindow (this->RenderWidget1->GetRenderWindow(), screenshot, size);
@@ -532,18 +535,25 @@ void vtkKWPageView::Render (void)
    this->View4->Render();
 }
 
-
-
 void vtkKWPageView::SetFullScreenView (int id)
 {
   if (!id)
   {
+    if (this->View1->GetRenderWindow())
+      this->View1->GetRenderWindow()->SetMapped (1);
+    if (this->View2->GetRenderWindow())
+      this->View2->GetRenderWindow()->SetMapped (1);
+    if (this->View3->GetRenderWindow())
+      this->View3->GetRenderWindow()->SetMapped (1);
+    if (this->View4->GetRenderWindow())
+      this->View4->GetRenderWindow()->SetMapped (1);
+      
     this->PackSelf();
     this->IsFullScreen = 0;
     return;
   }
 
-  this->UnpackChildren();  
+  this->UnpackChildren();
   
   this->Script ("grid remove %s",
 		this->RenderWidget1->GetWidgetName());
@@ -553,9 +563,18 @@ void vtkKWPageView::SetFullScreenView (int id)
 		this->RenderWidget3->GetWidgetName());
   this->Script ("grid remove %s",
 		this->RenderWidget4->GetWidgetName());
-  
-  vtkViewImage* view = 0;
+
+  vtkImageView* view = 0;
   vtkKWRenderWidget* widget = 0;
+  
+  if (this->View1->GetRenderWindow())
+    this->View1->GetRenderWindow()->SetMapped (0);
+  if (this->View2->GetRenderWindow())
+    this->View2->GetRenderWindow()->SetMapped (0);
+  if (this->View3->GetRenderWindow())
+    this->View3->GetRenderWindow()->SetMapped (0);
+  if (this->View4->GetRenderWindow())
+    this->View4->GetRenderWindow()->SetMapped (0);
   
   switch (id)
   {
@@ -581,15 +600,15 @@ void vtkKWPageView::SetFullScreenView (int id)
 	break;
   }
 
+  if (view->GetRenderWindow())
+    view->GetRenderWindow()->SetMapped (1);
+  
   this->Script ("pack %s -side top -expand yes -fill both -padx 2 -pady 2",
 		widget->GetWidgetName());
 	
-  view->Update();
   view->Render();
   this->IsFullScreen = id;
 }
-
-
 
 void vtkKWPageView::ToggleFullScreenView4 (void)
 {
@@ -604,7 +623,6 @@ void vtkKWPageView::ToggleFullScreenView4 (void)
   }
 }
 
-
 void vtkKWPageView::ToggleFullScreenAxial (void)
 {
   if (this->IsFullScreen != 1)
@@ -617,7 +635,6 @@ void vtkKWPageView::ToggleFullScreenAxial (void)
   }
 }
 
-
 void vtkKWPageView::ToggleFullScreenSagittal (void)
 {
   if (this->IsFullScreen != 2)
@@ -629,7 +646,6 @@ void vtkKWPageView::ToggleFullScreenSagittal (void)
     this->SetFullScreenView (0);    
   }
 }
-
 
 void vtkKWPageView::ToggleFullScreenCoronal (void)
 {
@@ -652,16 +668,16 @@ int vtkKWPageView::GetVisibility (vtkDataSet* dataset)
 
   if (this->GetImage() && vtkImageData::SafeDownCast(dataset))
   {
-    return this->View1->GetVisibility ();
+    return this->View1->GetImageActor()->GetVisibility();
   }
-  if (this->View1->HasDataSet (dataset))
-    return this->View1->GetDataSetActor (dataset)->GetVisibility ();
-  if (this->View2->HasDataSet (dataset))
-    return this->View2->GetDataSetActor (dataset)->GetVisibility ();
-  if (this->View3->HasDataSet (dataset))
-    return this->View3->GetDataSetActor (dataset)->GetVisibility ();
-  if (this->View4->HasDataSet (dataset))
-    return this->View4->GetDataSetActor (dataset)->GetVisibility ();
+  if (this->View1->GetDataSetCollection()->IsItemPresent (dataset))
+    return this->View1->FindDataSetActor (dataset)->GetVisibility ();
+  if (this->View2->GetDataSetCollection()->IsItemPresent (dataset))
+    return this->View2->FindDataSetActor (dataset)->GetVisibility ();
+  if (this->View3->GetDataSetCollection()->IsItemPresent (dataset))
+    return this->View3->FindDataSetActor (dataset)->GetVisibility ();
+  if (this->View4->GetDataSetCollection()->IsItemPresent (dataset))
+    return this->View4->FindDataSetActor (dataset)->GetVisibility ();
   return 0;
 }
 
@@ -673,20 +689,20 @@ void vtkKWPageView::SetVisibility (vtkDataSet* dataset, bool state)
 
   if (this->GetImage() && vtkImageData::SafeDownCast(dataset))
   {
-    this->View1->SetVisibility (state);
-    this->View2->SetVisibility (state);
-    this->View3->SetVisibility (state);
-    this->View4->SetVisibility (state);
+    this->View1->GetImageActor()->SetVisibility (state);
+    this->View2->GetImageActor()->SetVisibility (state);
+    this->View3->GetImageActor()->SetVisibility (state);
+    this->View4->SetVisibility (state, 0);
   }
 
-  if (this->View1->HasDataSet (dataset))
-    this->View1->GetDataSetActor (dataset)->SetVisibility (state);
-  if (this->View2->HasDataSet (dataset))
-    this->View2->GetDataSetActor (dataset)->SetVisibility (state);
-  if (this->View3->HasDataSet (dataset))
-    this->View3->GetDataSetActor (dataset)->SetVisibility (state);
-  if (this->View4->HasDataSet (dataset))
-    this->View4->GetDataSetActor (dataset)->SetVisibility (state);
+  if (this->View1->GetDataSetCollection()->IsItemPresent (dataset))
+    this->View1->FindDataSetActor (dataset)->SetVisibility (state);
+  if (this->View2->GetDataSetCollection()->IsItemPresent (dataset))
+    this->View2->FindDataSetActor (dataset)->SetVisibility (state);
+  if (this->View3->GetDataSetCollection()->IsItemPresent (dataset))
+    this->View3->FindDataSetActor (dataset)->SetVisibility (state);
+  if (this->View4->GetDataSetCollection()->IsItemPresent (dataset))
+    this->View4->FindDataSetActor (dataset)->SetVisibility (state);
 }
 
 
@@ -703,79 +719,89 @@ void vtkKWPageView::SetTag (const char* tag)
 void vtkKWPageView::SetScalarBarVisibility (bool state)
 {
 
-  this->View1->SetScalarBarVisibility(state);
-  this->View2->SetScalarBarVisibility(state);
-  this->View3->SetScalarBarVisibility(state);
-  this->View4->SetScalarBarVisibility(state);
-
+  this->m_Pool->SyncSetShowScalarBar(state);
   
 }
 
 int vtkKWPageView::GetScalarBarVisibility (void) const
 {
-  return this->View1->GetScalarBarVisibility();
-  
+  return this->View1->GetShowScalarBar();
 }
 
 void  vtkKWPageView::SetLookupTable (vtkLookupTable* lut)
 {
-  
   if( !lut )
-  {
     return;
-  }
-
- this->View1->SetLookupTable (lut);
- this->View2->SetLookupTable (lut);
- this->View3->SetLookupTable (lut);
- this->View4->SetLookupTable (lut);
+  this->View1->SetLookupTable (lut,0);
+  this->View2->SetLookupTable (lut,0);
+  this->View3->SetLookupTable (lut,0);
+  this->View4->SetLookupTable (lut);
 }
 
 void vtkKWPageView::RemoveDataSet(vtkDataSet* dataset)
 {
-  this->View1->RemoveDataSet(dataset);
-  this->View2->RemoveDataSet(dataset);
-  this->View3->RemoveDataSet(dataset);
-  this->View4->RemoveDataSet(dataset);
+  this->m_Pool->SyncRemoveDataSet(vtkPointSet::SafeDownCast (dataset));
 }
 
 std::vector<vtkActor*> vtkKWPageView::AddDataSet(vtkDataSet* dataset, vtkProperty* property)
 {
   std::vector<vtkActor*> list;
 
-  vtkActor* actor1 = NULL;
-  vtkActor* actor2 = NULL;
-  vtkActor* actor3 = NULL;
-  vtkActor* actor4 = NULL;
-  actor1 = this->View1->AddDataSet(dataset, property);
-  actor2 = this->View2->AddDataSet(dataset, property);
-  actor3 = this->View3->AddDataSet(dataset, property);
-  actor4 = this->View4->AddDataSet(dataset, property);
-  if (actor1) list.push_back(actor1);
-  if (actor2) list.push_back(actor2);
-  if (actor3) list.push_back(actor3);
-  if (actor4) list.push_back(actor4);
+  // vtkActor* actor1 = NULL;
+  // vtkActor* actor2 = NULL;
+  // vtkActor* actor3 = NULL;
+  // vtkActor* actor4 = NULL;
+  // actor1 = this->View1->AddDataSet(dataset, property);
+  // actor2 = this->View2->AddDataSet(dataset, property);
+  // actor3 = this->View3->AddDataSet(dataset, property);
+  // actor4 = this->View4->AddDataSet(dataset, property);
+  // if (actor1) list.push_back(actor1);
+  // if (actor2) list.push_back(actor2);
+  // if (actor3) list.push_back(actor3);
+  // if (actor4) list.push_back(actor4);
+  if (vtkPointSet::SafeDownCast (dataset))
+  {
+    vtkImageData* image = this->CreateEmptyImage (dataset);
+    this->m_Pool->SyncSetInput (image);
+    this->m_Pool->SyncAddDataSet(vtkPointSet::SafeDownCast (dataset), property);
+    image->Delete();
+  }
+  
+  else
+    this->m_Pool->SyncSetInput (vtkImageData::SafeDownCast (dataset));
   
   return list;
+}
+
+vtkImageData* vtkKWPageView::CreateEmptyImage (vtkDataSet* dataset)
+{
+  unsigned int N = 40;
   
+  vtkImageData* image = vtkImageData::New();
+  double* bounds = dataset->GetBounds();
+  int extent[6] = {0,N,0,N,0,N};
+  image->SetExtent(extent);
+  image->SetScalarTypeToUnsignedChar();
+  image->SetNumberOfScalarComponents(1);
+  image->AllocateScalars();
+  image->GetPointData()->GetScalars()->FillComponent (0,0);
+  double origin[3];
+  double spacing[3];
+  for (unsigned int i=0; i<3; i++)
+  {
+    origin[i] = bounds[2*i];
+    spacing[i] = (bounds[2*i + 1] - bounds[2*i]) / ((double)N);
+  }
+  
+  image->SetOrigin (origin);
+  image->SetSpacing (spacing);
+  return image;
 }
 
 
 std::vector<vtkActor*> vtkKWPageView::AddPolyData(vtkPolyData* dataset, vtkProperty* property, double thickness)
 {
-  
   std::vector<vtkActor*> list;
-
-  vtkActor* actor1 = NULL;
-  vtkActor* actor2 = NULL;
-  vtkActor* actor3 = NULL;
-  actor1 = this->View1->AddPolyData(dataset, property, thickness);
-  actor2 = this->View2->AddPolyData(dataset, property, thickness);
-  actor3 = this->View3->AddPolyData(dataset, property, thickness);
-  if (actor1) list.push_back(actor1);
-  if (actor2) list.push_back(actor2);
-  if (actor3) list.push_back(actor3);
-
   return list;
 }
 
@@ -801,7 +827,7 @@ vtkKWRenderWidget* vtkKWPageView::GetActiveRenderWidget ()
 }
 
 
-vtkViewImage* vtkKWPageView::GetActiveView ()
+vtkImageView* vtkKWPageView::GetActiveView ()
 {
 
   switch(this->IsFullScreen)
@@ -827,11 +853,11 @@ bool vtkKWPageView::HasDataSet (vtkDataSet* dataset)
   if (!dataset)
     return false;
 
-  if (this->View1->HasDataSet (dataset) ||
-      this->View2->HasDataSet (dataset) ||
-      this->View3->HasDataSet (dataset) ||
-      this->View4->HasDataSet (dataset) ||
-      this->View1->GetImage() == dataset
+  if (this->View1->GetDataSetCollection()->IsItemPresent (dataset) ||
+      this->View2->GetDataSetCollection()->IsItemPresent (dataset) ||
+      this->View3->GetDataSetCollection()->IsItemPresent (dataset) ||
+      this->View4->GetDataSetCollection()->IsItemPresent (dataset) ||
+      this->View1->GetInput() == dataset
       )
     return true;
 
@@ -849,23 +875,45 @@ std::vector<vtkActor*> vtkKWPageView::AddMetaDataSet(vtkMetaDataSet* metadataset
   vtkDataSet* dataset = metadataset->GetDataSet();
   vtkProperty* property = vtkProperty::SafeDownCast (metadataset->GetProperty());
 
-  vtkActor* actor1 = NULL;
-  vtkActor* actor2 = NULL;
-  vtkActor* actor3 = NULL;
-  vtkActor* actor4 = NULL;
-  actor1 = this->View1->AddDataSet(dataset, property);
-  actor2 = this->View2->AddDataSet(dataset, property);
-  actor3 = this->View3->AddDataSet(dataset, property);
-  actor4 = this->View4->AddDataSet(dataset, property);
+  // vtkActor* actor1 = NULL;
+  // vtkActor* actor2 = NULL;
+  // vtkActor* actor3 = NULL;
+  // vtkActor* actor4 = NULL;
+  // actor1 = this->View1->AddDataSet(dataset, property);
+  // actor2 = this->View2->AddDataSet(dataset, property);
+  // actor3 = this->View3->AddDataSet(dataset, property);
+  // actor4 = this->View4->AddDataSet(dataset, property);
   
-  if (actor1) list.push_back(actor1);
-  if (actor2) list.push_back(actor2);
-  if (actor3) list.push_back(actor3);
-  if (actor4) list.push_back(actor4);
+  // if (actor1) list.push_back(actor1);
+  // if (actor2) list.push_back(actor2);
+  // if (actor3) list.push_back(actor3);
+  // if (actor4) list.push_back(actor4);
 
+  if (vtkImageData::SafeDownCast (dataset))
+  {
+    this->m_Pool->SyncSetInput (vtkImageData::SafeDownCast (dataset));
+
+    this->GetPool()->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+    this->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
+    this->GetPool()->SyncSetRightButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+    this->GetPool()->SyncSetKeyboardInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+  }
+  else
+  {
+    if (!this->View1->GetInput())
+    {
+      vtkImageData* image = this->CreateEmptyImage (dataset);
+      this->m_Pool->SyncSetInput (image);
+      this->m_Pool->SyncReset();
+      this->m_Pool->SyncSetShowScalarBar(0);
+      image->Delete();
+    }
+    this->m_Pool->SyncAddDataSet(vtkPointSet::SafeDownCast (dataset), property);
+  }
+  
   if (metadataset->GetWirePolyData())
   {
-    vtkDataSet* wire = metadataset->GetWirePolyData();
+    vtkPointSet* wire = metadataset->GetWirePolyData();
     
     vtkActor* actor5 = NULL;
     vtkActor* actor6 = NULL;
@@ -886,7 +934,7 @@ std::vector<vtkActor*> vtkKWPageView::AddMetaDataSet(vtkMetaDataSet* metadataset
 
   if (this->FirstRender)
   {
-    this->GetView4()->ResetZoom();
+    this->GetView4()->ResetCamera();
     this->FirstRender = false;
   }
 
@@ -897,7 +945,17 @@ std::vector<vtkActor*> vtkKWPageView::AddMetaDataSet(vtkMetaDataSet* metadataset
 
 void vtkKWPageView::RemoveMetaDataSet(vtkMetaDataSet* metadataset)
 {
-  vtkDataSet* dataset = metadataset->GetDataSet();
+  if (!metadataset->GetDataSet())
+  {
+    return;
+  }
+  
+  vtkPointSet* dataset = vtkPointSet::SafeDownCast (metadataset->GetDataSet());
+  if (!dataset)
+  {
+    this->m_Pool->SyncSetInput (NULL);
+    return;
+  }
   
   this->View1->RemoveDataSet(dataset);
   this->View2->RemoveDataSet(dataset);
@@ -906,15 +964,15 @@ void vtkKWPageView::RemoveMetaDataSet(vtkMetaDataSet* metadataset)
 
   for (unsigned int i=0; i<metadataset->GetNumberOfActors(); i++)
   {
-    this->View1->RemoveActor (metadataset->GetActor (i));
-    this->View2->RemoveActor (metadataset->GetActor (i));
-    this->View3->RemoveActor (metadataset->GetActor (i));
-    this->View4->RemoveActor (metadataset->GetActor (i));
+    this->View1->GetRenderer()->RemoveViewProp (metadataset->GetActor (i));
+    this->View2->GetRenderer()->RemoveViewProp (metadataset->GetActor (i));
+    this->View3->GetRenderer()->RemoveViewProp (metadataset->GetActor (i));
+    this->View4->GetRenderer()->RemoveViewProp (metadataset->GetActor (i));
   }
   
   if (metadataset->GetWirePolyData())
   {
-    vtkDataSet* wire = metadataset->GetWirePolyData();
+    vtkPointSet* wire = metadataset->GetWirePolyData();
 
     this->View1->RemoveDataSet(wire);
     this->View2->RemoveDataSet(wire);

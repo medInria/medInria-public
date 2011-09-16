@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWDataManagerWidget.cxx 1302 2009-10-27 21:57:16Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-10-27 22:57:16 +0100 (Tue, 27 Oct 2009) $
+Date:      $Date: 2009-10-27 21:57:16 +0000 (Tue, 27 Oct 2009) $
 Version:   $Revision: 1302 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -39,7 +39,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWIcon.h>
 #include <vtkKWNotebook.h>
 #include <vtkKWToolBox.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView3D.h>
 #include <vtkInteractorStyle.h>
 
 //----------------------------------------------------------------------------
@@ -192,7 +192,11 @@ void vtkKWDataManagerWidget::SelectionChangedCallback()
   {
     page = this->ParentObject->GetPage(metadatasets[0]->GetTag());      
     if (page)
+    {
       this->ParentObject->GetViewNotebook()->RaisePage(metadatasets[0]->GetTag());
+      this->ParentObject->GetViewNotebook()->RaiseCallback (this->ParentObject->GetViewNotebook()->GetRaisedPageId());
+    }
+    
   }
   
   for (unsigned int j=0; j<tblist.size(); j++)

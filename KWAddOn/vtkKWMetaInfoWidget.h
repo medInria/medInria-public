@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWMetaInfoWidget.h 612 2008-01-14 10:59:37Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-01-14 11:59:37 +0100 (Mon, 14 Jan 2008) $
+Date:      $Date: 2008-01-14 10:59:37 +0000 (Mon, 14 Jan 2008) $
 Version:   $Revision: 612 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -29,7 +29,7 @@ class vtkKWPiecewiseFunctionEditorSet;
 class vtkKWPiecewiseFunctionEditor;
 class vtkKWHistogram;
 class vtkKWRenderWidget;
-class vtkViewImage;
+class vtkImageView;
 
 class vtkMetaDataSetSequence;
 class vtkMetaDataSet;
@@ -84,7 +84,7 @@ protected:
   vtkMetaDataSet* MetaDataSet;
 
   vtkKWRenderWidget*      RenderWidget;
-  vtkViewImage*           Preview;
+  vtkImageView*           Preview;
 
 
   //BTX

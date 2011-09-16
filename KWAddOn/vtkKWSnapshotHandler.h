@@ -30,9 +30,9 @@ class vtkKWRenderWidget;
 class vtkKWRadioButton;
 class vtkKWCameraAnimationWidget;
 
-class vtkViewImage2D;
-class vtkViewImage3D;
-class vtkViewImage;
+class vtkImageView2D;
+class vtkImageView3D;
+class vtkImageView;
 class vtkKWTimeAnimationWidget;
 class vtkKWFrame;
 
@@ -60,8 +60,8 @@ public:
   
   vtkGetObjectMacro (RenderWidget, vtkKWRenderWidget);
   virtual void SetRenderWidget (vtkKWRenderWidget* widget);
-  vtkGetObjectMacro (View, vtkViewImage);
-  virtual void SetView (vtkViewImage* view);
+  vtkGetObjectMacro (View, vtkImageView);
+  virtual void SetView (vtkImageView* view);
   
   virtual void Update (void);
 
@@ -110,7 +110,7 @@ private:
   vtkKWTimeAnimationWidget* TimeAnimationWidget;
 
   vtkKWRenderWidget* RenderWidget;
-  vtkViewImage* View;
+  vtkImageView* View;
 
   int AllowSliceType;
   int AllowCameraType;

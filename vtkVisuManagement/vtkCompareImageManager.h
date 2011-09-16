@@ -39,13 +39,13 @@ class VTK_VISUMANAGEMENT_EXPORT vtkCompareImageManager: public vtkObject
   
  public:
 
-
+  //BTX
   enum ComparisonModeIds
   {
     COMPARE_GRID,
     COMPARE_FUSE
   };
-  
+  //ETX
   
   static vtkCompareImageManager* New();
   vtkTypeRevisionMacro(vtkCompareImageManager, vtkObject);

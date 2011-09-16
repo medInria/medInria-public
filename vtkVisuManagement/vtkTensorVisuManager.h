@@ -45,7 +45,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
   static vtkTensorVisuManager *New();
   vtkTypeRevisionMacro(vtkTensorVisuManager, vtkObject);
   
- 
+  //BTX
   /** enum of the possible shapes for the glyphs */
   enum GlyphShapeMode
   {
@@ -57,7 +57,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
     GLYPH_SPHERE,      //5
     GLYPH_SUPERQUADRIC //6
   };
-  
+  //ETX
   
   /** Set the input as a vtkStructuredPoints dataset. It is then
       mapped through a vtkExtractVOI to limit the visualization
@@ -130,7 +130,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
   
   /** Set the scalar range for the LUT */
   void SetScalarRange(const float&, const float&);
-  
+
+  //BTX
   /** Enumeration of the different color code available. */
   enum
   {
@@ -141,7 +142,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
     COLOR_BY_DISTANCE_TO_IDENTITY,
     COLOR_BY_SCALAR
   };
-  
+  //ETX
   
   /** Set the colormode to map the ith eigenvector. */
   void SetColorModeToEigenvector( const int& );

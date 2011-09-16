@@ -713,14 +713,22 @@ void vtkImageView3D::SetVisibility (int visibility, int layer)
 {
   if (layer==0) 
   {
+    this->VolumeActor->SetVisibility (visibility);
+    this->SetShowActorX (visibility);
+    this->SetShowActorY (visibility);
+    this->SetShowActorZ (visibility);
+
     if (visibility)
-    {
-      this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
-    }
-    else 
-    {
-      this->VolumeProperty->SetComponentWeight(layer, 0);
-    }
+      this->SetRenderingMode (this->GetRenderingMode());
+    
+    // if (visibility)
+    // {
+    //   this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
+    // }
+    // else 
+    // {
+    //   this->VolumeProperty->SetComponentWeight(layer, 0);
+    // }
     this->Visibility = visibility;
     
   }
@@ -847,6 +855,14 @@ void vtkImageView3D::SetRenderingMode(int arg)
   this->ActorX->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorX);
   this->ActorY->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorY);
   this->ActorZ->SetVisibility ((arg == vtkImageView3D::PLANAR_RENDERING) && this->ShowActorZ);
+
+  this->ExtraPlaneCollection->InitTraversal();
+  vtkProp3D* item = this->ExtraPlaneCollection->GetNextProp3D();
+  while(item)
+  {
+    item->SetVisibility(arg == vtkImageView3D::PLANAR_RENDERING);
+    item = this->ExtraPlaneCollection->GetNextProp3D();
+  }
 }
 
 // //---------------------------------------------------------------------------
@@ -1031,15 +1047,15 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   return actor;
 }
 
-
 //----------------------------------------------------------------------------
 void vtkImageView3D::RemoveDataSet(vtkPointSet* arg)
 {
-  ///\todo implement this
-  vtkErrorMacro (<<"This method is not implemented yet."<<endl);
+  vtkProp3D* actor = this->FindDataSetActor (arg);
+  if (actor)
+    this->Renderer->RemoveViewProp (actor);
+
+  this->Superclass::RemoveDataSet (arg);
 }
-
-
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::AddLayer (int layer)
@@ -1199,7 +1215,8 @@ void vtkImageView3D::RemoveExtraPlane (vtkImageActor* input)
 {
   if (!this->GetRenderer())
     return;
-  
+  this->ExtraPlaneCollection->InitTraversal();
+  this->ExtraPlaneInputCollection->InitTraversal();
   vtkProp3D* item = this->ExtraPlaneCollection->GetNextProp3D();
   vtkProp3D* iteminput = this->ExtraPlaneInputCollection->GetNextProp3D();
   while(item && iteminput)

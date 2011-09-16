@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWMetaDataSetControlWidget.cxx 489 2007-11-22 12:05:54Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2007-11-22 13:05:54 +0100 (Thu, 22 Nov 2007) $
+Date:      $Date: 2007-11-22 12:05:54 +0000 (Thu, 22 Nov 2007) $
 Version:   $Revision: 489 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -68,8 +68,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkStringArray.h>
 
 // #include "vtkKWMainWindowInteractor.h"
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 #include <vtkLookupTableManager.h>
 #include <pixmap/KWAddOnResources.h>
 
@@ -231,7 +231,7 @@ void vtkKWMetaDataSetControlWidget::CreateWidget()
   
   this->OpacityScale->SetParent(this->MainFrame->GetFrame());
   this->OpacityScale->Create();
-  this->OpacityScale->SetOrientationToVertical();
+  this->OpacityScale->SetViewOrientationToVertical();
   this->OpacityScale->SetRange (0,100);
   this->OpacityScale->SetResolution (1);
   this->OpacityScale->SetLength (80);
@@ -276,7 +276,7 @@ void vtkKWMetaDataSetControlWidget::CreateWidget()
 
   this->LineWidthScale->SetParent(this->MainFrame->GetFrame());
   this->LineWidthScale->Create();
-  this->LineWidthScale->SetOrientationToVertical();
+  this->LineWidthScale->SetViewOrientationToVertical();
   this->LineWidthScale->SetRange (1,10);
   this->LineWidthScale->SetResolution (1);
   this->LineWidthScale->SetLength (60);
@@ -828,11 +828,11 @@ void vtkKWMetaDataSetControlWidget::ComponentSelectionChangedCallBack()
 //     return;
 
 
-//   vtkViewImage* view = NULL;
+//   vtkImageView* view = NULL;
 
 //   if (this->AssociatedObject)
 //   {
-//     view = vtkViewImage::SafeDownCast (this->AssociatedObject);
+//     view = vtkImageView::SafeDownCast (this->AssociatedObject);
 //   }
   
 //   vtkDataArray* array;
@@ -933,10 +933,10 @@ void vtkKWMetaDataSetControlWidget::ReadDataButtonCallback()
 //     this->MetaDataSet->AddActor(visu->GetActor());
     
     
-//     vtkViewImage* view = NULL;
+//     vtkImageView* view = NULL;
 //     if (this->AssociatedObject)
 //     {
-//       view = vtkViewImage::SafeDownCast (this->AssociatedObject);
+//       view = vtkImageView::SafeDownCast (this->AssociatedObject);
 //     }
 //     if (view)
 //     {
@@ -949,10 +949,10 @@ void vtkKWMetaDataSetControlWidget::ReadDataButtonCallback()
   vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
   imagegenerator->SetInput (this->MetaDataSet->GetDataSet());
   imagegenerator->Update();
-  vtkViewImage* view = NULL;
+  vtkImageView* view = NULL;
   if (this->AssociatedObject)
   {
-    view = vtkViewImage::SafeDownCast (this->AssociatedObject);
+    view = vtkImageView::SafeDownCast (this->AssociatedObject);
   }
   if (view)
   {

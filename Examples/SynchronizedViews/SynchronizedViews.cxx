@@ -96,8 +96,8 @@ public:
 	  id = id+1;
 	for (unsigned int i=0; i<this->Sequences.size(); i++)
 	  this->Sequences[i]->UpdateToIndex (id);
-	for (int i=0; i<this->Collection->GetNumberOfItems(); i++)
-	  this->Collection->GetItem (i)->Modified();	  
+	// for (int i=0; i<this->Collection->GetNumberOfItems(); i++)
+	//   this->Collection->GetItem (i)->Modified();	  
 	this->Collection->SyncRender();
 	
       }    

@@ -51,7 +51,7 @@ class VTK_IMAGEVIEW_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorS
   {
     InteractionTypeNull = 0,
     InteractionTypeSlice,
-	InteractionTypeTime,
+    InteractionTypeTime,
     InteractionTypeWindowLevel,
     InteractionTypeZoom,
     InteractionTypePan,

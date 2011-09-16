@@ -3,7 +3,7 @@ SET(KIT wxVtk)
 SET(${KIT}Tests
   wxVTKRenderWindowInteractorTest.cxx
   wxVtkPageViewTest.cxx
-  wxVtkLandmarkWindowTest.cxx
+#  wxVtkLandmarkWindowTest.cxx
   wxVtkViewImage2DWithSlidersTest.cxx
   )
 

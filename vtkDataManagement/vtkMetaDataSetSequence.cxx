@@ -1021,6 +1021,7 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
       }
       
       this->GetDataSet()->GetPointData()->Modified();
+      this->GetDataSet()->Modified();
     }
     
     if (cdscalars)

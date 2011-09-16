@@ -53,6 +53,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
    /** Remove all actors added by this manager. */
   void RemoveAllActors (void);
 
+  //BTX
   /** Get Isosurfaces as vtkActors */
   std::vector<vtkImageToIsosurface*> GetIsosurfaces (void) const
   { return this->Isosurfaces; }
@@ -60,7 +61,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
   /** Get the recovered isovalues from input image */ 
   std::vector<int> GetIsoValues (void) const
   { return this->IsoValues; }
-
+  //ETX
+  
   unsigned int GetNumberOfIsoValues (void) const
   { return (unsigned int)(this->IsoValues.size()); }
 
@@ -118,10 +120,14 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
  private:
 
   vtkRenderWindowInteractor*           RenderWindowInteractor;    
+  //BTX
   std::vector<vtkImageToIsosurface*>   Isosurfaces;
+  //ETX
   vtkImageData*                        Input;
   vtkLookupTable*                      LUT;
+  //BTX
   std::vector<int>                     IsoValues;
+  //ETX
   double*                              DefaultColor;
   int                                  Visibility;
   double                               Opacity;

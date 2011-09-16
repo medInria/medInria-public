@@ -52,6 +52,7 @@ namespace itk
     typedef GDCMVolume Self;
     typedef GDCMVolume ImageType;
     typedef Image<TPixelType, 3> SubImageType;
+    typedef typename SubImageType::Pointer SubImagePointerType;
     typedef Image<TPixelType, 4> Superclass;
     typedef SmartPointer<Self> Pointer;
     typedef SmartPointer<const Self> ConstPointer;
@@ -60,7 +61,10 @@ namespace itk
     typedef std::map<std::string, FileList> FileListMapType;
     typedef Vector<double, 3> GradientType;
     typedef std::vector< GradientType > GradientsContainer;
-    itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);    
+    typedef std::pair <std::string, std::string> DicomEntry;
+    typedef std::vector<DicomEntry> DicomEntryList;
+    
+    itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);
 
     itkNewMacro  (Self);
     itkTypeMacro (GDCMVolume, Superclass);
@@ -71,6 +75,8 @@ namespace itk
     typedef typename itk::ImageFileReader<SubImageType> ReaderType;
     /** Writer typedef */
     typedef typename itk::ImageFileWriter<ImageType> WriterType;    
+    /** Writer typedef */
+    typedef typename itk::ImageFileWriter<SubImageType> SubWriterType;   
     
     /**
        Get/Set the FileList coming from the GDCM library.
@@ -128,9 +134,19 @@ namespace itk
        Write the gradient orientations in a file
     */
     void WriteGradients (std::string filename);
+
+    unsigned int* GetSize (void) const;
+
+    DicomEntryList GetDicomEntryList (void) const;
     
   protected:
 
+    FileList MapToFileList (FileListMapType map) const;
+    double Estimate4thSpacing (FileListMapType map) const;
+    void CopyMetaDataFromSubImage(ImageType::Pointer image,
+				  SubImagePointerType t_image,
+				  FileListMapType map) const;
+    
     /**
        default GDCMVolume constructor,
        empty filelist and image name.
@@ -144,7 +160,6 @@ namespace itk
 
       // 0018 9089 Gradient Direction Information
       m_GradientScanner.AddTag( gdcm::Tag(0x18,0x9089) );
-      
     }
     ~GDCMVolume()
     {
@@ -196,7 +211,7 @@ namespace itk
     /** generic typedefs */
     typedef GDCMVolume <TPixelType> ImageType;
     /** generic typedefs */
-    typedef ImageSource < ImageType > Superclass;
+    typedef ImageSource < GDCMVolume <TPixelType> > Superclass;
     /** generic typedefs */
     typedef SmartPointer<Self>       Pointer;
     /** generic typedefs */
@@ -220,6 +235,9 @@ namespace itk
     typedef typename ImageType::FileListMapType FileListMapType;
     typedef std::map<std::string, FileListMapType> FileListMapofMapType;
     typedef std::map<double, FileList> SortedMapType;
+
+    typedef GDCMVolume <TPixelType> GDCMVolumeType;
+    typedef GDCMVolumeType OutputImageType;
     
     /**
        Get/Set the InputDirectory,
@@ -273,11 +291,36 @@ namespace itk
     gdcm::Scanner m_ThirdScanner;
 
     bool m_IsScanned;
-    
+    /**
+       Sorting system. divinded into 3 layers of sort.
+    */
+    /**
+       First layer of sorting.
+       From a list of files, the output map should have
+       a list of "volumes" which might be 2D, 3D or 4D.
+       list of discriminent tags :
+       0x10,0x10
+       0x20,0xd
+       0x20,0x37
+       0020, 0x0011
+       0x0018, 0x0050
+       0x0028, 0x0010
+       0x0028, 0x0011
+    */
     FileListMapType PrimarySort (FileList list);
+    /**
+       Second layer of sorting.
+       second and third are supposed to differenciate within a 4D volume,
+       
+    */
+    
     FileListMapType SecondarySort (FileList list);
     FileListMapType TertiarySort (FileList list);
     FileListMapType TimeSort (FileListMapType map);
+    FileListMapType InstanceNumberSort (FileList map);
+    
+    FileListMapType SimpleSort (FileList list);
+    FileList Transpose (FileList list, unsigned int repetition);
     
     std::string GenerateUniqueName (FileListMapType map);    
   };

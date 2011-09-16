@@ -32,18 +32,20 @@ SET(KWAddOn_SRCS
   vtkKWTimeTableWidget.cxx
   vtkKWSnapshotHandler.cxx
   vtkKWMainWindowInteractor.cxx
+  vtkKWInfoToolBox.cxx
 )
 
 
-IF (NOT ITK_USE_SYSTEM_GDCM)
+IF (ITK_USE_SYSTEM_GDCM)
 SET(KWAddOn_SRCS
   ${KWAddOn_SRCS}
   vtkKWDICOMImporter2.cxx
-  vtkKWDICOMExporter.cxx
+#  vtkKWDICOMExporter.cxx
   vtkKWDicomInfoWidget.cxx
-  vtkKWInfoToolBox.cxx
   )
-ENDIF (NOT ITK_USE_SYSTEM_GDCM)
+ELSE (ITK_USE_SYSTEM_GDCM)
+  MESSAGE("You are using ITK with USE_SYSTEM_GDCM to OFF, please switch USE_SYSTEM_GDCM to ON to fully benefit from KWAddOn capacities")
+ENDIF (ITK_USE_SYSTEM_GDCM)
 
 SET_SOURCE_FILES_PROPERTIES(
  vtkKWMainCallback.cxx
@@ -58,17 +60,7 @@ INCLUDE(
 )
 KWWidgets_WRAP_TCL(KWAddOn KWAddOnTCL_SRCS "${KWAddOn_SRCS}" "")
 
-
-if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(KWAddOn_SOURCES_PCH 
-    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
-      ${KWAddOnTCL_SRCS}
-      ${KWAddOn_SRCS}
-    )
-endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
-
 ADD_LIBRARY(KWAddOn ${vtkINRIA3D_LIBS_STYLE}
-  ${KWAddOn_SOURCES_PCH}
   ${KWAddOnTCL_SRCS}
   ${KWAddOn_SRCS}
 )
@@ -77,18 +69,19 @@ SET(KWAddOn_LIBRARIES
   vtkCommon
   vtkDataManagement
   vtkDataManagementTCL
-  vtkRenderingAddOn
-  vtkRenderingAddOnTCL
+  vtkImageView
+  vtkImageViewTCL
   vtkVisuManagement
+  vtkVisuManagementTCL
+  vtkLandmarkManagement
+  vtkLandmarkManagementTCL
+  itkIOAddOn
 )
 
 TARGET_LINK_LIBRARIES(KWAddOn
   ${KWAddOn_LIBRARIES}
   ${KWWidgets_LIBRARIES}
 )
-
-
-
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 CONFIGURE_FILE(
@@ -118,9 +111,6 @@ INSTALL_FILES(/include "(\\.h|\\.txx)$")
 INSTALL_FILES(/include/pixmap "pixmap/(\\.h|\\.txx)$")
 
 INSTALL_TARGETS(/lib KWAddOn)
-
-
-
 
 # ------------------------------------------------------------
 # Creation of the binary executable and its launcher
@@ -183,7 +173,7 @@ ENDIF(NOT KWWidgets_SOURCE_DIR)
 
 
   IF( BUILD_TESTING )
-    ADD_SUBDIRECTORY(Testing)
+#    ADD_SUBDIRECTORY(Testing)
   ENDIF( BUILD_TESTING )
 
 

@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWInfoToolBox.cxx 928 2008-09-04 16:43:57Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-09-04 18:43:57 +0200 (Thu, 04 Sep 2008) $
+Date:      $Date: 2008-09-04 17:43:57 +0100 (Thu, 04 Sep 2008) $
 Version:   $Revision: 928 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -45,8 +45,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtksys/SystemTools.hxx>
 #include <vtkErrorCode.h>
 
-#include <vtkViewImage3D.h>
-#include <vtkViewImage2D.h>
+#include <vtkImageView3D.h>
+#include <vtkImageView2D.h>
 #include <vtkKWPageView.h>
 
 #include <vtkMetaSurfaceMesh.h>
@@ -85,7 +85,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWPushButton.h>
 
 #include <kwcommon.h>
-#include <vtkKWDicomInfoWidget.h>
 #include <vtkKWTkUtilities.h>
 #include <vtkErrorCode.h>
 #include <vtkKWLabel.h>
@@ -109,13 +108,17 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkKWLabel.h"
 #include "vtkKWInternationalization.h"
 #include <vtkKWProgressGauge.h>
-#include <itkDicomTagManager.h>
 
 #include <vtkKWSequenceEditorWidget.h>
 #include <vtkLookupTableManager.h>
 
 #include "assert.h"
 #include <algorithm>
+
+#ifdef ITK_USE_SYSTEM_GDCM
+#include <vtkKWDICOMImporter2.h>
+#include <vtkKWDicomInfoWidget.h>
+#endif
 
 int vtkkwrint(double a)
 {  
@@ -523,9 +526,10 @@ void vtkKWInfoToolBox::Update()
 //----------------------------------------------------------------------------
 void vtkKWInfoToolBox::ButtonRequestTagsCallback()
 {
+#ifdef ITK_USE_SYSTEM_GDCM
 
-//   if (!this->GetMetaData() || (this->GetMetaDataSet()->GetType() != vtkMetaDataSet::VTK_META_IMAGE_DATA))
-//     return;
+  if (!this->GetMetaDataSet() || (this->GetMetaDataSet()->GetType() != vtkMetaDataSet::VTK_META_IMAGE_DATA))
+    return;
 
   vtkMetaImageData* imagedata = vtkMetaImageData::SafeDownCast (this->GetMetaDataSet());
   if (!imagedata)
@@ -536,7 +540,6 @@ void vtkKWInfoToolBox::ButtonRequestTagsCallback()
   }
   if (!imagedata)
     return;
-
   
   vtkKWTopLevel* toplevel = vtkKWTopLevel::New();
   
@@ -548,15 +551,13 @@ void vtkKWInfoToolBox::ButtonRequestTagsCallback()
 
   vtkKWDicomInfoWidget* widget = vtkKWDicomInfoWidget::New();
   
-  
   widget->SetParent(toplevel);
   widget->Create();
   
   this->Script("pack %s -fill both -side top -expand t", 
-	       widget->GetWidgetName());
-  
-  widget->SetDicomTagListAsDictionary(imagedata->GetDicomDictionary());
-  
+  	       widget->GetWidgetName());
+
+  widget->SetDicomEntryList(imagedata->GetDicomEntryList());
   
   // Get the position of the mouse, the size of the top level window.
 
@@ -591,9 +592,8 @@ void vtkKWInfoToolBox::ButtonRequestTagsCallback()
   toplevel->Raise();
 
   widget->Delete();
- 
+#endif 
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWInfoToolBox::ButtonSaveCallback()

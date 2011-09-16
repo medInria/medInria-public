@@ -18,7 +18,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkKWPreviewPage.h"
 #include "vtkObjectFactory.h"
 
-#include <vtkViewImage2D.h>
+#include <vtkImageView/vtkImageViewCollection.h>
+#include <vtkImageView/vtkImageView2D.h>
 
 #include "vtkKWApplication.h"
 #include "vtkKWRenderWidget.h"
@@ -26,14 +27,16 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkKWIcon.h"
 #include "vtkKWFrameWithScrollbar.h"
 
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 #include <vtkLookupTableManager.h>
+#include <vtkImageViewCornerAnnotation.h>
 
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkCollection.h>
+#include <vtkImageData.h>
 #include <vtkLookupTable.h>
 #include <vtkRendererCollection.h>
 #include <vtkActor.h>
@@ -51,10 +54,21 @@ vtkKWPreviewPage::vtkKWPreviewPage()
 
   this->InternalFrame = vtkKWFrameWithScrollbar::New();
 
+  this->ViewList = vtkImageViewCollection::New();
+  this->ViewList->LinkZoomOff();
+  this->ViewList->LinkPanOff();
   
-  this->ViewList = vtkCollection::New();
-  this->RenderWidgetList = vtkCollection::New();
+  this->GlobalView = vtkImageView3D::New();
+  this->GlobalView->SetShowAnnotations (false);
+  this->GlobalView->ShowScalarBarOff();
+  
+  this->ViewList->AddItem (this->GlobalView);
 
+  this->GlobalRenderWidget = vtkKWRenderWidget::New();
+  this->GlobalRenderWidget->SetRenderState(0);
+
+  this->RenderWidgetList = vtkCollection::New();
+  
   vtkLookupTable* lut = vtkLookupTableManager::GetLookupTable (vtkLookupTableManager::LUT_BW);
   this->SetLookupTable (lut);
   lut->Delete();
@@ -62,7 +76,7 @@ vtkKWPreviewPage::vtkKWPreviewPage()
   this->LinkViews = true;
   this->OrientationMode = 2;
   this->MaxNumberOfColumns = 5;
-  this->InteractionMode = vtkViewImage2D::SELECT_INTERACTION;
+  this->InteractionMode = vtkInteractorStyleImageView2D::InteractionTypeSlice;
 }
 
 //----------------------------------------------------------------------------
@@ -72,88 +86,71 @@ vtkKWPreviewPage::~vtkKWPreviewPage()
 
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
-    view->Detach();
     widget->SetParent (NULL);
   }
+  this->GlobalRenderWidget->SetParent (NULL);
 
+  this->ViewList->RemoveAllItems();
   this->ViewList->Delete();
   this->RenderWidgetList->Delete();
-
   this->InternalFrame->Delete();
+  this->GlobalView->Delete();
+  this->GlobalRenderWidget->Delete();
   
 }
 
 //----------------------------------------------------------------------------
-void vtkKWPreviewPage::ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget)
+void vtkKWPreviewPage::ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget)
 {
+  view->SetupInteractor (widget->GetRenderWindow()->GetInteractor());
   vtkRenderer* renderer = vtkRenderer::New();
+  view->SetRenderer(renderer);
+
   vtkRendererCollection* collection = widget->GetRenderWindow()->GetRenderers();
   collection->RemoveAllItems();
   widget->GetRenderWindow()->AddRenderer (renderer);
+  widget->RemoveAllRenderers();
+  widget->AddRenderer (renderer);
   view->SetRenderWindow (widget->GetRenderWindow());
-  view->SetRenderer (renderer);
-  renderer->Delete();
 }
 
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::AddPreviewImage (vtkImageData* image, const char* name, vtkMatrix4x4* matrix )
 {
-
-
-  vtkViewImage2D* view = vtkViewImage2D::New();
+  vtkImageView2D* view = vtkImageView2D::New();
   vtkKWRenderWidget* widget = vtkKWRenderWidget::New();
-  
+
   widget->SetParent (this->InternalFrame->GetFrame());
   widget->Create();
   //widget->SetWidth (800);
   //widget->SetHeight (800);
   widget->SetBorderWidth (1);
-
-  this->ConfigureView (view, widget);
-  view->SetLinkZoom (true);
-  view->ScalarBarVisibilityOff();
-  view->SetLinkCameraFocalAndPosition(true);  
+  widget->SetRenderState(0);
   
-  view->SetImage (image);
-  view->SetAboutData (name);
-  view->SetBackgroundColor (0,0,0);
-  view->SetShowAnnotations (false);
-
+  this->ConfigureView (view, widget);
+  
+  view->SetInput (image);
+  view->GetCornerAnnotation()->SetText (1, name);
+  view->SetBackground (0,0,0);
+  view->ShowAnnotationsOff ();
+  view->ShowScalarBarOff();
+  view->ShowRulerWidgetOff();
   
   if (matrix)
-    view->SetDirectionMatrix (matrix);
-  view->ResetCurrentPoint();
-  view->ResetWindowLevel();
-
-  
-  view->SetOrientation (this->GetOrientationMode());
-  
+    view->SetOrientationMatrix (matrix);
   
   this->ViewList->AddItem (view);
   this->RenderWidgetList->AddItem (widget);
 
-  if (this->GetNumberOfPreviews() > 1)
-  {
-    vtkViewImage2D* previous_view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (this->GetNumberOfPreviews()-2));
-    vtkViewImage2D* first_view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (0));
-    if (previous_view && first_view)
-    {
-      previous_view->RemoveChild (first_view);
-      previous_view->AddChild (view);
-      view->AddChild (first_view);
-    }
-  }
-  
+  this->GlobalView->AddExtraPlane (view->GetImageActor());
   
   view->Delete();
   widget->Delete();
 
-  //this->Update();
-  
-  
+  this->Update();
+  this->ViewList->SyncReset();
 }
 
 //----------------------------------------------------------------------------
@@ -167,75 +164,73 @@ void vtkKWPreviewPage::RemovePreviewImage (vtkImageData* image)
   if (id == -1)
     return;
   
-  vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (id));
+  vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject (id));
   vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (id));
-
-  view->Detach();
-
-  widget->SetParent (NULL);
-  
+  this->GlobalView->RemoveExtraPlane (view->GetImageActor());
   this->ViewList->RemoveItem (view);
+  widget->SetParent (NULL);
   this->RenderWidgetList->RemoveItem (widget);
-  
 }
 
+//----------------------------------------------------------------------------
+void vtkKWPreviewPage::SetEnableViews(unsigned int arg)
+{
+  this->GlobalRenderWidget->SetRenderState(arg);
+  for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
+  {
+    vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
+    widget->SetRenderState(arg);
+  }
+}
+
+//----------------------------------------------------------------------------
+unsigned int vtkKWPreviewPage::GetEnableViews(void)
+{
+  return this->GlobalRenderWidget->GetRenderState();
+}
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::Render (void)
 {
+
+  if (!this->GetEnableViews())
+    return;
 
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
     if (!widget->IsMapped())
       continue;
-    widget->Render();
+    vtkImageView* view = this->ViewList->GetItem (i+1);
+    view->Render();
   }
- 
+  if (this->GlobalRenderWidget->IsMapped())
+    this->GlobalRenderWidget->Render();
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::SetOrientationMode (int mode)
 {
-  for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
-  {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
-    view->SetOrientation (mode);
-  }
-
-  this->OrientationMode = mode;
-  this->Render();
-  
+//   this->Render();  
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::SetInteractionMode (int mode)
 {
-  for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
-  {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
-    view->SetInteractionStyle (mode);
-  }
+  // for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
+  // {
+  //   vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
+  //   view->SetInteractionStyle (mode);
+  // }
 
-  this->InteractionMode = mode;
+  // this->InteractionMode = mode;
 }
-
-
-
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::SetLookupTable (vtkLookupTable* lut)
-{
-  
-  for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
-  {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->ViewList->GetItemAsObject (i));
-    view->SetLookupTable (lut);
-  }
+{  
+  this->ViewList->SyncSetLookupTable (lut);
   this->LookupTable = lut;  
-  
 }
 
 
@@ -249,17 +244,15 @@ void vtkKWPreviewPage::Update (void)
   this->Render();
 }
 
-
-
 //----------------------------------------------------------------------------
-vtkViewImage2D* vtkKWPreviewPage::FindView(vtkImageData* imagedata, int &cookie)
+vtkImageView2D* vtkKWPreviewPage::FindView(vtkImageData* imagedata, int &cookie)
 {
   for (unsigned int i=0; i<this->GetNumberOfPreviews(); i++)
   {
-    vtkViewImage2D* view = vtkViewImage2D::SafeDownCast(this->ViewList->GetItemAsObject(i));
+    vtkImageView2D* view = vtkImageView2D::SafeDownCast(this->ViewList->GetItemAsObject(i));
     if (view)
     {
-      if (view->GetImage() == imagedata)
+      if (view->GetInput() == imagedata)
       {
 	cookie = i;
 	return view;
@@ -269,7 +262,6 @@ vtkViewImage2D* vtkKWPreviewPage::FindView(vtkImageData* imagedata, int &cookie)
 
   return NULL;
 }
-
 
 //----------------------------------------------------------------------------
 void vtkKWPreviewPage::CreateWidget()
@@ -292,50 +284,45 @@ void vtkKWPreviewPage::CreateWidget()
   
   this->Script("pack %s -side top -expand t -fill both", 
 	       this->InternalFrame->GetWidgetName());
+
   
+  this->GlobalRenderWidget->SetParent (this->InternalFrame->GetFrame());
+  this->GlobalRenderWidget->Create();
+  this->GlobalRenderWidget->SetBorderWidth (1);
   
-  this->PackSelf();  
-  
+  this->PackSelf();
+
+  this->ConfigureView (this->GlobalView, this->GlobalRenderWidget);
+  this->GlobalView->SetBackground (1,1,1);
+
+  this->GlobalRenderWidget->SetBinding("<Expose>", this, "Render");
 }
 
 
 void vtkKWPreviewPage::PackSelf()
 {
-
   if (!this->IsCreated())
   {
     //vtkErrorMacro("don't call this method before calling Create() : no effect !");
     return;
   }
-  
+
   this->InternalFrame->GetFrame()->UnpackChildren();
-
   unsigned int N = this->GetNumberOfPreviews();
-
-  if (N > 16)
-  {
-    this->InternalFrame->VerticalScrollbarVisibilityOn();
-    this->InternalFrame->HorizontalScrollbarVisibilityOn();
-  }
-  else
-  {
-    this->InternalFrame->VerticalScrollbarVisibilityOff();
-    this->InternalFrame->HorizontalScrollbarVisibilityOff();
-  }
+  this->InternalFrame->VerticalScrollbarVisibilityOff();
+  this->InternalFrame->HorizontalScrollbarVisibilityOff();
+  // if (N > 3)
+  // {
+  //   this->InternalFrame->VerticalScrollbarVisibilityOn();
+  // }
 
   unsigned int NumberOfCols = 0;
-  if (N <= 1)
-    NumberOfCols = N;
-  else if (N <= 4)
-    NumberOfCols = 2;
-  else if (N <= 9)
-    NumberOfCols = 3;
+  if (N == 0)
+    NumberOfCols = 1;
   else
-    NumberOfCols = 4;    
+    NumberOfCols = 2;
   
-  unsigned int iter_col = 0;
   unsigned int iter_row = 0;
-
   unsigned int size = 350;
   vtkKWTopLevel* parent = this->GetParentTopLevel();
   
@@ -343,45 +330,34 @@ void vtkKWPreviewPage::PackSelf()
   {
     size = (unsigned int)( (double)(parent->GetWidth() * 4.0)/(double)(4.0 * 5.0) );
   }
-  
+
   for (unsigned int i=0; i<N; i++)
   {
     vtkKWRenderWidget* widget = vtkKWRenderWidget::SafeDownCast (this->RenderWidgetList->GetItemAsObject (i));
-    if (N > 16)
-    {
-      widget->SetWidth (size);
-      widget->SetHeight (size);
-    }
 
     this->Script ("grid %s -column %u -row %u -sticky news",
-		  widget->GetWidgetName(), iter_col, iter_row);
+		  widget->GetWidgetName(), 0, iter_row);
 
-    iter_col++;
-    
-    if (iter_col >= NumberOfCols)
-    {
-      iter_row++;
-      iter_col = 0;
-    }
-    
+    iter_row++;    
   }
+  unsigned NumberOfRows = iter_row;
 
+  vtkKWRenderWidget* widget = this->GlobalRenderWidget;
 
-  unsigned NumberOfRows = iter_row+1;
-  if ((N == 1) || (N == 2) || (N == 4) || (N == 9) || (N == 16))
-    NumberOfRows--;  
+  this->Script ("grid %s -column %u -row %u -rowspan %u -sticky news",
+		widget->GetWidgetName(), 1, 0, iter_row+1);
 
-  for (unsigned int i=0; i<NumberOfCols; i++)
-  {
-    this->Script ("grid columnconfigure %s %d -weight 1",
-		  this->InternalFrame->GetFrame()->GetWidgetName(), i);
-  }
   for (unsigned int i=0; i<NumberOfRows; i++)
   {
     this->Script ("grid rowconfigure %s %d -weight 1",
-		  this->InternalFrame->GetFrame()->GetWidgetName(), i);
+  		  this->InternalFrame->GetFrame()->GetWidgetName(), i);
   }
+  
+  this->Script ("grid columnconfigure %s 0 -weight 2",
+  		  this->InternalFrame->GetFrame()->GetWidgetName());
+  this->Script ("grid columnconfigure %s 1 -weight 5",
+  		  this->InternalFrame->GetFrame()->GetWidgetName());
 
-
+  this->Render();  
 }
 

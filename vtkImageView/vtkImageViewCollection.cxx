@@ -79,7 +79,7 @@ vtkImageViewCollection::vtkImageViewCollection()
   this->LinkCamera = 0;
   this->LinkZoom = 1;
   this->LinkPan = 1;
-  this->LinkCurrentPoint = 1;
+  this->LinkCurrentPoint = 0;
 
   this->ShowSlicePlanes = 0;
 }
@@ -140,14 +140,14 @@ void vtkImageViewCollection::RemoveItem(vtkImageView *a)
   this->Superclass::RemoveItem (a);
 }
 
-
-
 void vtkImageViewCollection::RemoveAllItems()
 {
   this->InitTraversal();
   vtkImageView* item = this->GetNextItem();    
   while(item)
   {
+    std::cout<<"removing the observer"<<std::endl;
+    
     item->GetInteractorStyle()->RemoveObserver ( this->Command );;
     item = this->GetNextItem();
   }
@@ -702,8 +702,6 @@ void vtkImageViewCollection::SetLinkPan(unsigned int v)
     item = this->GetNextItem();
   }    
 }
-
-
 
 //----------------------------------------------------------------------------
 void vtkImageViewCollection::SetLinkCurrentPoint(unsigned int v)

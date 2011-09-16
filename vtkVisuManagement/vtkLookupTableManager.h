@@ -105,12 +105,15 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLookupTableManager: public vtkObject
   
   static vtkLookupTable* GetBlackBodyLookupTable (void);
   
-
+  //BTX
   static std::vector<std::string> GetAvailableLookupTables(void);
-    
+  //ETX
+  
   static vtkLookupTable* GetLookupTable(const int &);
+  //BTX
   static vtkLookupTable* GetLookupTable(const std::string &);
-
+  //ETX
+  
  protected:
   vtkLookupTableManager();
   ~vtkLookupTableManager();

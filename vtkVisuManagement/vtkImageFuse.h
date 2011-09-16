@@ -42,11 +42,13 @@ class VTK_VISUMANAGEMENT_EXPORT vtkImageFuse: public vtkImageAlgorithm
  public:
 
 
+  //BTX
   enum FuseModeIds
   {
     FUSEMODE_GRID = 0,
     FUSEMODE_BLEND
-  };  
+  };
+  //ETX
   
   static vtkImageFuse* New();
   vtkTypeRevisionMacro(vtkImageFuse, vtkImageAlgorithm);

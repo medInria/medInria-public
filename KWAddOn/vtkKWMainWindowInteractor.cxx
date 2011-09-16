@@ -16,6 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
+//#include <itkGDCMImporter3.h>
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
 #include <kwcommon.h>
@@ -36,12 +37,13 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageData.h>
 #include <vtkKWApplication.h>
 #include <vtkKWApplication.h>
-
 #include <vtkKWDataManagerWidget.h>
 #include <vtkKWDragAndDropTargetSet.h>
 #include <vtkKWEntry.h>
+#include <vtkKWEvent.h>
 #include <vtkKWEntryWithLabel.h>
 #include <vtkKWFrameWithLabel.h>
+#include <vtkKWInfoToolBox.h>
 #include <vtkKWInternationalization.h>
 #include <vtkKWLabel.h>
 #include <vtkKWLandmarkManagerWidget.h>
@@ -89,8 +91,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridReader.h>
 #include <vtkUnstructuredGridWriter.h>
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 #include <vtkVolumeProperty.h>
 #include <vtkDataSetSurfaceFilter.h>
 #include <vtkIdList.h>
@@ -99,25 +101,22 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkDelaunay3D.h>
 #include <vtkSelectPolyData.h>
 
-#include <vtkDiffXMLWriter.h>
-#include <vtkDataArrayCollection.h>
-#include <vtkCellArray.h>
-
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/stl/string>
 #include <vtksys/stl/vector>
-
-#ifndef ITK_USE_SYSTEM_GDCM
-#include <vtkKWDICOMExporter.h>
-#include <vtkKWDICOMImporter2.h>
-#include <vtkKWInfoToolBox.h>
-#endif
-
+// #include <vtkKWMetaDataSetControlWidget.h>
+// #include <vtkMetaDataSetVisuManager.h>
 
 #if VTK_MAJOR_VERSION>=5 && VTK_MINOR_VERSION>=1
 #include <vtkDataManagerWriter.h>
 #include <vtkDataManagerReader.h>
 #endif
+
+#ifdef ITK_USE_SYSTEM_GDCM
+// #include <vtkKWDICOMExporter.h>
+#include <vtkKWDICOMImporter2.h>
+#endif
+
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro( vtkKWMainWindowInteractor );
@@ -126,7 +125,6 @@ vtkCxxRevisionMacro( vtkKWMainWindowInteractor, "$Revision: 1366 $");
 //----------------------------------------------------------------------------
 vtkKWMainWindowInteractor::vtkKWMainWindowInteractor()
 {
-  
   this->DataManager         = vtkDataManager::New();
   this->DataManagerCallback = vtkDataManagerCallback::New();
   this->MainCallback        = vtkKWMainCallback::New();
@@ -140,10 +138,11 @@ vtkKWMainWindowInteractor::vtkKWMainWindowInteractor()
 //   this->DataManagerCallback->SetDataManager(this->DataManager);
 //   this->DataManager->AddObserver(vtkDataManager::MetaDataSetPickEvent, this->MainCallback);
 
+  this->GetViewNotebook()->AddObserver(vtkKWEvent::NotebookRaisePageEvent, this->MainCallback);
+
   this->PanelSplitFrame = vtkKWSplitFrame::New();
   this->ToolboxManager = vtkKWToolboxManager::New();
   this->ToolboxManager->SetParentObject(this);
-
   
   this->PreviewPage = vtkKWPreviewPage::New();
   this->SnapshotHandler = vtkKWSnapshotHandler::New();
@@ -174,12 +173,12 @@ vtkKWMainWindowInteractor::~vtkKWMainWindowInteractor()
   this->PreviewPage->Delete();
   this->SnapshotHandler->Delete();
   
-  
   if (this->GetViewNotebook()->IsCreated())
   {
     // to avoid some VTK warnings,
     // we have to manually destroy the pages from the view notebook
     this->GetViewNotebook()->RemovePagesMatchingTag(0);
+    this->GetViewNotebook()->RemovePage (0);
   }
 }
 
@@ -200,8 +199,9 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, vtkIm
 	       viewframe->GetWidgetName());
   viewframe->SetImage (image, matrix);
   this->GetViewNotebook()->RaisePage (id);
+  this->GetViewNotebook()->RaiseCallback (id);
   
-  viewframe->GetView4()->GetRenderWindowInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
+  viewframe->GetView4()->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
   viewframe->Delete();
 
   return this->GetPage (name);
@@ -212,7 +212,6 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, itk::
 {
   if (!name)
     return NULL;
-
 
   this->PageNumberIncrement++;
   int id = this->GetViewNotebook()->AddPage (name);
@@ -226,8 +225,9 @@ vtkKWPageView* vtkKWMainWindowInteractor::CreateNewPage (const char* name, itk::
 	       viewframe->GetWidgetName());
   viewframe->SetImage (image);
   this->GetViewNotebook()->RaisePage (id);
+  this->GetViewNotebook()->RaiseCallback(id);
   
-  viewframe->GetView4()->GetRenderWindowInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
+  viewframe->GetView4()->GetInteractor()->AddObserver(vtkCommand::LeftButtonPressEvent, this->DataManagerCallback);
   viewframe->Delete();
 
   return this->GetPage (name);
@@ -251,6 +251,8 @@ void vtkKWMainWindowInteractor::RemovePage (const char* title)
   else if (this->GetViewNotebook()->HasPage (id-1))
     newid = id-1;
   this->GetViewNotebook()->RaisePage (newid);
+  this->GetViewNotebook()->RaiseCallback(newid);
+  
   
 }
 
@@ -302,7 +304,6 @@ void vtkKWMainWindowInteractor::SetDataManagerWidget (vtkKWDataManagerWidget* wi
   {
     this->ManagerWidget->Register(this);
   }
-  
 }
 
 //----------------------------------------------------------------------------
@@ -353,7 +354,7 @@ void vtkKWMainWindowInteractor::CreateWidget()
   // first creation :
   if (this->GetViewNotebook()->GetNumberOfPages() == 0 )
   {
-    bool showpreview = true;
+    bool showpreview = false;
     
     char buffer[1024];
     bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowPreview", buffer);
@@ -361,15 +362,16 @@ void vtkKWMainWindowInteractor::CreateWidget()
     {
       if (*buffer)
       {
-	std::istringstream is;
-	is.str (buffer);
-	int val = 0;
-	is >> val;
-	showpreview = val;	
+    	std::istringstream is;
+    	is.str (buffer);
+    	int val = 0;
+    	is >> val;
+    	showpreview = val;
       }
     }
     
-    this->CreatePreviewPage();    
+    if (showpreview)
+      this->CreatePreviewPage();
   }
   
 
@@ -377,7 +379,6 @@ void vtkKWMainWindowInteractor::CreateWidget()
   {
     app->GetSplashScreen()->SetProgressMessage("Setting layout properties...");
   }
-
   
   this->MainCallback->SetApplication (this->GetApplication());
 
@@ -453,13 +454,11 @@ void vtkKWMainWindowInteractor::CreateWidget()
   this->MainPanelVisibilityOn();
   this->SecondaryPanelVisibilityOff();
   
-
-#ifndef ITK_USE_SYSTEM_GDCM  
+  
   vtkKWInfoToolBox* information = vtkKWInfoToolBox::New();
   this->LoadToolBox(information, "Information");
   this->ToolboxManager->SelectToolboxCallback(0);
   information->Delete();
-#endif
   
   vtkKWSequencer* Sequencer = vtkKWSequencer::New();
   this->LoadToolBox(Sequencer, "Sequencer");
@@ -502,6 +501,8 @@ std::vector<vtkKWToolBox*> vtkKWMainWindowInteractor::GetToolBoxList()
   return this->ToolboxManager->GetToolBoxList();
 }
 
+
+
 //-----------------------------------------------------------------------------
 vtkKWToolBox* vtkKWMainWindowInteractor::GetToolboxByID(unsigned int id)
 {
@@ -513,8 +514,6 @@ vtkKWToolBox* vtkKWMainWindowInteractor::GetToolbox(unsigned int id)
 {
   return this->GetToolboxManager()->GetToolbox (id);
 }
-
-
 
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::CreateAliases ()
@@ -539,8 +538,6 @@ void vtkKWMainWindowInteractor::CreateAliases ()
     app->Script("set m_v3 [$m_multiviews GetView3]");
     app->Script("set m_v4 [$m_multiviews GetView4]");
   }
-  
-
 }
 
 //----------------------------------------------------------------------------
@@ -652,16 +649,13 @@ void vtkKWMainWindowInteractor::OnMenuFileOpen()
   if (!allopened)
     vtkKWPopupErrorMessage(this, "One or more file(s) have not been opened !\nSee Log for more info");
   
-  
   dialog->SaveLastPathToRegistry("DataPath");
   dialog->Delete();
-
+  
   this->Update();
 
-  if (this->GetCurrentPage())
-    this->GetCurrentPage()->Render();
-  
-
+  // this->GetViewNotebook()->RaisePage(0);
+  // this->GetViewNotebook()->RaiseCallback(0);
 }
 
 
@@ -859,8 +853,6 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
       
       if (!filepath.size())
       {
-		  
-		  std::cout<<"I am in"<<std::endl;
 	vtkKWPopupWarningMessage (this, "dataset not written, please save to file");
 	vtkKWLoadSaveDialog *dialog2 = vtkKWLoadSaveDialog::New() ;
 	
@@ -877,8 +869,6 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 	
 	std::string ext;
 	
-		  bool doThis = false;
-		  
 	switch (val)
 	{
 	    case vtkMetaDataSet::VTK_META_IMAGE_DATA :
@@ -887,8 +877,6 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 	      
 	    case vtkMetaDataSet::VTK_META_SURFACE_MESH :
 	    case vtkMetaDataSet::VTK_META_VOLUME_MESH :
-			doThis = true;
-			
 	      ext = kwsupportedmeshformats_global + kwsupportedmeshformats;
 	      break;
 	    default :
@@ -930,7 +918,8 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 	vtkKWPopupWarningMessage (this, "skipping dataset");
 	continue;
       }
-	
+
+      
       os <<"$m_manager ReadFile "<<filepath.c_str()<<" "<<metadata->GetName()<<"\n";
     
     }
@@ -956,50 +945,6 @@ void vtkKWMainWindowInteractor::SaveManagerCallback()
 
 
 
-//----------------------------------------------------------------------------
-void vtkKWMainWindowInteractor::SaveDiffXMLCallback()
-{
-
-  
-  vtkKWLoadSaveDialog *dialog = vtkKWLoadSaveDialog::New() ;
-  
-  dialog->SetParent(this);
-  dialog->Create();
-  dialog->MultipleSelectionOff();
-  dialog->SaveDialogOn ();
-  dialog->RetrieveLastPathFromRegistry("DataPath");
-  dialog->SetTitle ("Save the manager to file");
-
-  std::string managerformat = "{{Diff XML file} {.xml .diff}}";
-  
-  dialog->SetFileTypes (managerformat.c_str());
-  
-  if ( dialog->Invoke () == 0 )
-  {
-    dialog->Delete();
-    return;
-  }
-
-  std::string managerfile = dialog->GetFileName();
-  std::string ext = vtksys::SystemTools::GetFilenameLastExtension (managerfile.c_str());
-
-  dialog->Delete();
-  
-  if ( strcmp(ext.c_str(), ".xml") &&
-       strcmp(ext.c_str(), ".diff") )
-  {
-    managerfile+=".diff";
-  }
-	
-  vtkDiffXMLWriter* writer = vtkDiffXMLWriter::New();
-  writer->SetInput (this->GetDataManager());
-  writer->SetFileName (managerfile.c_str());
-  writer->Update();
-  writer->Delete();  
-}
-
-
-
 
 
 
@@ -1007,7 +952,6 @@ void vtkKWMainWindowInteractor::Update()
 {
   if (!this->IsCreated())
     return;
-  
 
   // Recover the list of datasets contained in the manager
   
@@ -1058,33 +1002,33 @@ void vtkKWMainWindowInteractor::Update()
       metadatasetlist[i]->SetProperty (pageview->GetView4()->GetVolumeProperty());
 
       char buffer[1024];
-      bool do_preview = true;
+      bool do_preview = false;
       
       bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowPreview", buffer);
       if (valid)
       {
-	if (*buffer)
-	{
-	  std::istringstream is;
-	  is.str (buffer);
-	  int val = 0;
-	  is >> val;
-	  if (!val)
-	    do_preview = false;	  
-	}
+      	if (*buffer)
+      	{
+      	  std::istringstream is;
+      	  is.str (buffer);
+      	  int val = 0;
+      	  is >> val;
+      	  if (!val)
+      	    do_preview = false;
+	  else
+     	    do_preview = true;
+	    
+      	}
       }    
 
       if (do_preview)
       {
-	this->PreviewPage->AddPreviewImage (vtkImageData::SafeDownCast(metadatasetlist[i]->GetDataSet() ), metadatasetlist[i]->GetName());
+	this->PreviewPage->AddPreviewImage (vtkImageData::SafeDownCast(metadatasetlist[i]->GetDataSet() ), metadatasetlist[i]->GetName(), metaimage->GetOrientationMatrix());
       }
       
     }
     else
     {
-//       // some debugging tests 
-//       metadatasetlist[i]->GetDataSet()->RequestExactExtentOn();
-
       // recovering the page that is supposed to contain the dataset
       pageview = this->GetPage(metadatasetlist[i]->GetTag ());
 
@@ -1093,7 +1037,10 @@ void vtkKWMainWindowInteractor::Update()
 	pageview = this->GetCurrentPage();
 
       if (!pageview)
-	pageview = this->CreateNewPage(metadatasetlist[i]->GetName(), (vtkImageData*)(NULL));
+      {
+	pageview = this->CreateNewPage(metadatasetlist[i]->GetName(), (vtkImageData*)(NULL));	
+      }
+      
       
       pageview->AddMetaDataSet (metadatasetlist[i]);
     }
@@ -1125,16 +1072,9 @@ void vtkKWMainWindowInteractor::Update()
 
   // Updating the manager widget so that the freshly added
   // dataset appear in it
-//   if (this->ManagerDialog->IsCreated())
-//   {
-//     vtkKWDataManagerWidget* wid = vtkKWDataManagerWidget::SafeDownCast (this->ManagerDialog->GetNthChild (0));
-//     if (wid)
-//       wid->Update();
-//   }
-
-// //   // ??
   this->ManagerWidget->Update();
 
+  bool dopreview = false;
   char buffer[1024];
   bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowPreview", buffer);
   
@@ -1147,14 +1087,18 @@ void vtkKWMainWindowInteractor::Update()
       int val = 0;
       is >> val;
       if (val)
-	this->PreviewPage->Update();      
+  	dopreview = 1;
+      else
+  	dopreview = 0;
     }
-  }    
+  }
+  else
+    dopreview = 0;
 
-  
+  if (dopreview)
+    this->PreviewPage->Update();
+
 }
-
-
 
 void vtkKWMainWindowInteractor::LoadToolBox (vtkKWToolBox* toolbox, const char* name)
 {
@@ -1179,9 +1123,8 @@ void vtkKWMainWindowInteractor::LoadToolBox (vtkKWToolBox* toolbox, const char* 
 void vtkKWMainWindowInteractor::OnMenuFileOpenDICOM ()
 {
 
-
+#ifdef ITK_USE_SYSTEM_GDCM
   
-#ifndef ITK_USE_SYSTEM_GDCM
   vtkKWDICOMImporter2 *dlg = vtkKWDICOMImporter2::New();
   dlg->SetMasterWindow (this);
   dlg->Create();
@@ -1206,8 +1149,9 @@ void vtkKWMainWindowInteractor::OnMenuFileOpenDICOM ()
   dlg->Delete();
 
   this->Update();
+
 #endif
-  
+
 }
 
 
@@ -1398,7 +1342,6 @@ void vtkKWMainWindowInteractor::RemoveAllMetaDataSets (void)
     {
       this->RemovePage(metadataset->GetTag());
       this->PreviewPage->RemovePreviewImage (vtkImageData::SafeDownCast(metadataset->GetDataSet() ));
-
     }
     
     this->DataManager->RemoveMetaDataSet (metadataset);
@@ -1557,37 +1500,32 @@ void vtkKWMainWindowInteractor::RemoveMetaDataSet (vtkMetaDataSet* metadataset, 
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnMenuFileSaveDICOM ()
 {
+#ifdef ITK_USE_SYSTEM_GDCM  
   
+  // vtkKWDICOMExporter *dlg = vtkKWDICOMExporter::New();
+  // dlg->SetMasterWindow (this);
   
-#ifndef ITK_USE_SYSTEM_GDCM
-  vtkKWDICOMExporter *dlg = vtkKWDICOMExporter::New();
-  dlg->SetMasterWindow (this);
+  // dlg->Create();
+  // dlg->SetDisplayPositionToDefault();
+  // dlg->SetPosition (100,100);
+
+
+  // dlg->SetDataManager(this->GetDataManager());
   
-  dlg->Create();
-  dlg->SetDisplayPositionToDefault();
-  dlg->SetPosition (100,100);
+  // dlg->Invoke(); 
+
+  // if (dlg->GetStatus() != vtkKWDialog::StatusOK)
+  // {
+  //   dlg->Delete();
+  //   return;
+  // }
 
 
-  dlg->SetDataManager(this->GetDataManager());
-  
-  dlg->Invoke(); 
+  // dlg->Delete();
 
-  if (dlg->GetStatus() != vtkKWDialog::StatusOK)
-  {
-    dlg->Delete();
-    return;
-  }
-
-
-  dlg->Delete();
 #endif
 
-
 }
-
-
-
-
 
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnSelectInteraction()
@@ -1595,48 +1533,41 @@ void vtkKWMainWindowInteractor::OnSelectInteraction()
   
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetInteractionMode(vtkViewImage2D::SELECT_INTERACTION);
+    this->PreviewPage->SetInteractionMode(vtkInteractorStyleImageView2D::InteractionTypeSlice);
     return;
   }
-  
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkViewImage2D::SELECT_INTERACTION);
 
-
+  this->GetCurrentPage()->GetPool()->SyncSetInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnWindowLevelInteraction()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetInteractionMode (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
+    this->PreviewPage->SetInteractionMode (vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkViewImage2D::WINDOW_LEVEL_INTERACTION);
+  this->GetCurrentPage()->GetPool()->SyncSetInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnZoomInteraction()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetInteractionMode (vtkViewImage2D::ZOOM_INTERACTION);
+    this->PreviewPage->SetInteractionMode (vtkInteractorStyleImageView2D::InteractionTypeZoom);
     return;
   }
   
-  this->GetCurrentPage()->GetView1()->SetInteractionStyle (vtkViewImage2D::ZOOM_INTERACTION);
-  this->GetCurrentPage()->GetView2()->SetInteractionStyle (vtkViewImage2D::ZOOM_INTERACTION);
-  this->GetCurrentPage()->GetView3()->SetInteractionStyle (vtkViewImage2D::ZOOM_INTERACTION);
+  this->GetCurrentPage()->GetPool()->SyncSetInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+  this->GetCurrentPage()->GetPool()->SyncSetMiddleButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypePan);
 }
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnRenderingModeToVR()
 {
   if (!this->GetCurrentPage())
     return;
-  if ( this->GetCurrentPage()->GetView4()->GetRenderingMode() == vtkViewImage3D::VOLUME_RENDERING)
+  if ( this->GetCurrentPage()->GetView4()->GetRenderingMode() == vtkImageView3D::VOLUME_RENDERING)
     this->GetCurrentPage()->GetView4()->SetRenderingModeToPlanar();
   else
     this->GetCurrentPage()->GetView4()->SetRenderingModeToVR();
@@ -1661,7 +1592,7 @@ void vtkKWMainWindowInteractor::OnFullScreenAxial()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetOrientationMode (vtkViewImage::AXIAL_ID);
+    // this->PreviewPage->SetViewOrientationMode (vtkImageView2D::VIEW_ORIENTATION_AXIAL);
     return;
   }
   
@@ -1673,7 +1604,7 @@ void vtkKWMainWindowInteractor::OnFullScreenCoronal()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetOrientationMode (vtkViewImage::CORONAL_ID);
+    // this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_CORONAL);
     return;
   }
   
@@ -1685,7 +1616,7 @@ void vtkKWMainWindowInteractor::OnFullScreenSagittal()
 {
   if (!this->GetCurrentPage())
   {
-    this->PreviewPage->SetOrientationMode (vtkViewImage::SAGITTAL_ID);
+    // this->PreviewPage->SetViewOrientationMode (vtkImageView::VIEW_ORIENTATION_SAGITTAL);
     return;
   }
   this->GetCurrentPage()->ToggleFullScreenSagittal();
@@ -1695,82 +1626,83 @@ void vtkKWMainWindowInteractor::OnFullScreenSagittal()
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::OnIllustrationMode()
 {
-  if ( !IllustrationMode && !ModifiedPage )
-  {
-    // Turn on illustration mode
-    ModifiedPage = this->GetCurrentPage();
-    IllustrationMode = true;
+  // if ( !IllustrationMode && !ModifiedPage )
+  // {
+  //   // Turn on illustration mode
+  //   ModifiedPage = this->GetCurrentPage();
+  //   IllustrationMode = true;
 
-    ShowAnnotations = ModifiedPage->GetView1()->GetShowAnnotations();
-    ShowRulerWidget = ModifiedPage->GetView1()->GetRulerWidgetVisibility();
-    Show2DAxis      = ModifiedPage->GetView1()->GetShow2DAxis();
-    ShowScalarBar   = ModifiedPage->GetView1()->GetScalarBarVisibility();
-    ShowDirections  = ModifiedPage->GetView1()->GetShowDirections();
+  //   ShowAnnotations = ModifiedPage->GetView1()->GetShowAnnotations();
+  //   ShowRulerWidget = ModifiedPage->GetView1()->GetRulerWidgetVisibility();
+  //   Show2DAxis      = ModifiedPage->GetView1()->GetShow2DAxis();
+  //   ShowScalarBar   = ModifiedPage->GetView1()->GetScalarBarVisibility();
+  //   ShowDirections  = ModifiedPage->GetView1()->GetShowDirections();
 
-    ModifiedPage->GetView1()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView1()->ShowAnnotationsOff();
-    ModifiedPage->GetView1()->SetRulerWidgetVisibility(0);
-    ModifiedPage->GetView1()->Show2DAxisOff();
-    ModifiedPage->GetView1()->SetScalarBarVisibility(0);
-    ModifiedPage->GetView1()->SetShowDirections(0);
-    ModifiedPage->GetView1()->Render();
+  //   ModifiedPage->GetView1()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView1()->ShowAnnotationsOff();
+  //   ModifiedPage->GetView1()->SetRulerWidgetVisibility(0);
+  //   ModifiedPage->GetView1()->Show2DAxisOff();
+  //   ModifiedPage->GetView1()->SetScalarBarVisibility(0);
+  //   ModifiedPage->GetView1()->SetShowDirections(0);
+  //   ModifiedPage->GetView1()->Render();
 
-    ModifiedPage->GetView2()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView2()->ShowAnnotationsOff();
-    ModifiedPage->GetView2()->SetRulerWidgetVisibility(0);
-    ModifiedPage->GetView2()->Show2DAxisOff();
-    ModifiedPage->GetView2()->SetScalarBarVisibility(0);
-    ModifiedPage->GetView2()->SetShowDirections(0);
-    ModifiedPage->GetView2()->Render();
+  //   ModifiedPage->GetView2()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView2()->ShowAnnotationsOff();
+  //   ModifiedPage->GetView2()->SetRulerWidgetVisibility(0);
+  //   ModifiedPage->GetView2()->Show2DAxisOff();
+  //   ModifiedPage->GetView2()->SetScalarBarVisibility(0);
+  //   ModifiedPage->GetView2()->SetShowDirections(0);
+  //   ModifiedPage->GetView2()->Render();
 
-    ModifiedPage->GetView3()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView3()->ShowAnnotationsOff();
-    ModifiedPage->GetView3()->SetRulerWidgetVisibility(0);
-    ModifiedPage->GetView3()->Show2DAxisOff();
-    ModifiedPage->GetView3()->SetScalarBarVisibility(0);
-    ModifiedPage->GetView3()->SetShowDirections(0);
-    ModifiedPage->GetView3()->Render();
+  //   ModifiedPage->GetView3()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView3()->ShowAnnotationsOff();
+  //   ModifiedPage->GetView3()->SetRulerWidgetVisibility(0);
+  //   ModifiedPage->GetView3()->Show2DAxisOff();
+  //   ModifiedPage->GetView3()->SetScalarBarVisibility(0);
+  //   ModifiedPage->GetView3()->SetShowDirections(0);
+  //   ModifiedPage->GetView3()->Render();
 
-    ModifiedPage->GetView4()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView4()->ShowAnnotationsOff();
-    ModifiedPage->GetView4()->SetScalarBarVisibility(0);
-    ModifiedPage->GetView4()->Render();
-  }
-  else
-  {
-    ModifiedPage->GetView1()->SetBackgroundColor(0, 0, 0);
-    ModifiedPage->GetView1()->SetShowAnnotations(ShowAnnotations);
-    ModifiedPage->GetView1()->SetRulerWidgetVisibility(ShowRulerWidget);
-    ModifiedPage->GetView1()->SetShow2DAxis(Show2DAxis);
-    ModifiedPage->GetView1()->SetScalarBarVisibility(ShowScalarBar);
-    ModifiedPage->GetView1()->SetShowDirections(ShowDirections);
-    ModifiedPage->GetView1()->Render();
+  //   ModifiedPage->GetView4()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView4()->ShowAnnotationsOff();
+  //   ModifiedPage->GetView4()->SetScalarBarVisibility(0);
+  //   ModifiedPage->GetView4()->Render();
+  // }
+  // else
+  // {
+  //   ModifiedPage->GetView1()->SetBackgroundColor(0, 0, 0);
+  //   ModifiedPage->GetView1()->SetShowAnnotations(ShowAnnotations);
+  //   ModifiedPage->GetView1()->SetRulerWidgetVisibility(ShowRulerWidget);
+  //   ModifiedPage->GetView1()->SetShow2DAxis(Show2DAxis);
+  //   ModifiedPage->GetView1()->SetScalarBarVisibility(ShowScalarBar);
+  //   ModifiedPage->GetView1()->SetShowDirections(ShowDirections);
+  //   ModifiedPage->GetView1()->Render();
 
-    ModifiedPage->GetView2()->SetBackgroundColor(0, 0, 0);
-    ModifiedPage->GetView2()->SetShowAnnotations(ShowAnnotations);
-    ModifiedPage->GetView2()->SetRulerWidgetVisibility(ShowRulerWidget);
-    ModifiedPage->GetView2()->SetShow2DAxis(Show2DAxis);
-    ModifiedPage->GetView2()->SetScalarBarVisibility(ShowScalarBar);
-    ModifiedPage->GetView2()->SetShowDirections(ShowDirections);
-    ModifiedPage->GetView2()->Render();
+  //   ModifiedPage->GetView2()->SetBackgroundColor(0, 0, 0);
+  //   ModifiedPage->GetView2()->SetShowAnnotations(ShowAnnotations);
+  //   ModifiedPage->GetView2()->SetRulerWidgetVisibility(ShowRulerWidget);
+  //   ModifiedPage->GetView2()->SetShow2DAxis(Show2DAxis);
+  //   ModifiedPage->GetView2()->SetScalarBarVisibility(ShowScalarBar);
+  //   ModifiedPage->GetView2()->SetShowDirections(ShowDirections);
+  //   ModifiedPage->GetView2()->Render();
 
-    ModifiedPage->GetView3()->SetBackgroundColor(0, 0, 0);
-    ModifiedPage->GetView3()->SetShowAnnotations(ShowAnnotations);
-    ModifiedPage->GetView3()->SetRulerWidgetVisibility(ShowRulerWidget);
-    ModifiedPage->GetView3()->SetShow2DAxis(Show2DAxis);
-    ModifiedPage->GetView3()->SetScalarBarVisibility(ShowScalarBar);
-    ModifiedPage->GetView3()->SetShowDirections(ShowDirections);
-    ModifiedPage->GetView3()->Render();
+  //   ModifiedPage->GetView3()->SetBackgroundColor(0, 0, 0);
+  //   ModifiedPage->GetView3()->SetShowAnnotations(ShowAnnotations);
+  //   ModifiedPage->GetView3()->SetRulerWidgetVisibility(ShowRulerWidget);
+  //   ModifiedPage->GetView3()->SetShow2DAxis(Show2DAxis);
+  //   ModifiedPage->GetView3()->SetScalarBarVisibility(ShowScalarBar);
+  //   ModifiedPage->GetView3()->SetShowDirections(ShowDirections);
+  //   ModifiedPage->GetView3()->Render();
 
-    ModifiedPage->GetView4()->SetBackgroundColor(255, 255, 255);
-    ModifiedPage->GetView4()->SetShowAnnotations(ShowAnnotations);
-    ModifiedPage->GetView4()->SetScalarBarVisibility(ShowScalarBar);
-    ModifiedPage->GetView4()->Render();
+  //   ModifiedPage->GetView4()->SetBackgroundColor(255, 255, 255);
+  //   ModifiedPage->GetView4()->SetShowAnnotations(ShowAnnotations);
+  //   ModifiedPage->GetView4()->SetScalarBarVisibility(ShowScalarBar);
+  //   ModifiedPage->GetView4()->Render();
 
-    IllustrationMode = false;
-    ModifiedPage = NULL;
-  }
-  this->GetCurrentPage()->Render();
+  //   IllustrationMode = false;
+  //   ModifiedPage = NULL;
+  // }
+  if (this->GetCurrentPage())
+    this->GetCurrentPage()->Render();
 }
 
 //----------------------------------------------------------------------------
@@ -1850,13 +1782,13 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
     return;
   }
 
-  vtkViewImage2D* view = vtkViewImage2D::SafeDownCast (this->GetCurrentPage()->GetActiveView());
+  vtkImageView2D* view = vtkImageView2D::SafeDownCast (this->GetCurrentPage()->GetActiveView());
   if (view)
   {
     char buffer[1024];
     bool valid = this->GetApplication()->GetRegistryValue(1, "RunTime", "ShowAxesWhenExport", buffer);
     if (!valid)
-      view->Show2DAxisOff();
+      view->ShowImageAxisOff();
     else
     {
       if (*buffer)
@@ -1865,7 +1797,7 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
 	is.str (buffer);
 	int val = 0;
 	is >> val;
-	view->SetShow2DAxis(val);
+	view->SetShowImageAxis(val);
       }
     }
   }
@@ -1876,13 +1808,10 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
     vtkKWSnapshotHandler::Snap (this->GetCurrentPage()->GetActiveRenderWidget());
     
     if (view)
-      view->Show2DAxisOn();
+      view->ShowImageAxisOn();
     
     return;
   }
-
-
-  
 
   unsigned int maxnumber = this->GetDataManager()->GetSequencesMaxNumber();
 
@@ -1914,17 +1843,13 @@ void vtkKWMainWindowInteractor::OnSnapshotHandler(bool exportmovie)
   this->SnapshotHandler->SetTimeSettings (timemin, timemax, maxnumber);
   
   this->SnapshotHandler->Update();
-
-  //vtkKWPopupWarningMessage (this, "Careful : Keep the view clear \nwhile writing the movie !\n  The writing process also might cause some trouble on UNIX systems");
-    
+   
   this->SnapshotHandler->Invoke();
 
   if (view)
-    view->Show2DAxisOn();
+    view->ShowImageAxisOn();
 
 }
-
-
 
 
 //----------------------------------------------------------------------------
@@ -1942,8 +1867,7 @@ void vtkKWMainWindowInteractor::UpdateToTime(double time)
   }
   else
   {
-    
-    this->GetDataManager()->UpdateSequencesMatchingTagToTime (page->GetTag(), time);  
+    this->GetDataManager()->UpdateSequencesMatchingTagToTime (page->GetTag(), time);
     
     vtkLandmarkManager* landmarkmanager = page->GetLandmarkManager();
     if (landmarkmanager->GetNumberOfLandmarks())
@@ -1951,7 +1875,6 @@ void vtkKWMainWindowInteractor::UpdateToTime(double time)
       double newpos[3] = {0,0,0};
       vtkLandmark* landmark = 0;
       double id = -1;
-//       bool valid = 0;
       vtkMetaDataSet* metadataset = this->ManagerWidget->GetSelectedMetaDataSet();
       if (metadataset && metadataset->GetDataSet())
       {
@@ -1972,9 +1895,6 @@ void vtkKWMainWindowInteractor::UpdateToTime(double time)
   }
 }
 
-
-
-
 //----------------------------------------------------------------------------
 void vtkKWMainWindowInteractor::Render()
 {
@@ -1993,7 +1913,11 @@ void vtkKWMainWindowInteractor::SelectMetaDataSet(vtkMetaDataSet* metadataset)
   
   vtkKWPageView* page = this->GetPage(metadataset->GetTag());      
   if (page)
+  {
     this->GetViewNotebook()->RaisePage(metadataset->GetTag());
+    this->GetViewNotebook()->RaiseCallback(this->GetViewNotebook()->GetRaisedPageId());
+  }
+  
   std::vector<vtkKWToolBox*> tblist = this->GetToolBoxList();
   
   for (unsigned int j=0; j<tblist.size(); j++)

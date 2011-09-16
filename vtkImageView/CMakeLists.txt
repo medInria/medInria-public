@@ -62,6 +62,33 @@ IF( vtkINRIA3D_USE_ITK )
    )
 ENDIF( vtkINRIA3D_USE_ITK )
 
+  IF (VTK_WRAP_TCL)
+   
+    VTK_WRAP_TCL3( vtkImageViewLib
+      vtkImageViewTCL_SRCS
+      "${vtkImageView_SRCS}"
+      ""
+      "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
+    )
+
+    ADD_LIBRARY(vtkImageViewTCL ${vtkINRIA3D_LIBS_STYLE}
+    ${vtkImageViewTCL_SRCS}
+    )
+    TARGET_LINK_LIBRARIES(vtkImageViewTCL
+    vtkImageView
+    vtkCommonTCL
+    vtkRenderingTCL
+    vtkWidgetsTCL
+    vtkWidgetsAddOnTCL
+    vtkVolumeRenderingTCL
+    vtkVisuManagementTCL
+    )
+  
+    INSTALL_TARGETS(/lib vtkImageViewTCL)
+
+  ENDIF(VTK_WRAP_TCL)
+
+
 
 IF(BUILD_TESTING)
   ADD_SUBDIRECTORY(Testing)

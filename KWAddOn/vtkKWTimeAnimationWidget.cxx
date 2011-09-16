@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWTimeAnimationWidget.cxx 1059 2009-01-12 14:16:10Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-01-12 15:16:10 +0100 (Mon, 12 Jan 2009) $
+Date:      $Date: 2009-01-12 14:16:10 +0000 (Mon, 12 Jan 2009) $
 Version:   $Revision: 1059 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -47,7 +47,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkTIFFWriter.h"
 #include "vtkGenericMovieWriter.h"
 #include <vtkKWScaleWithEntry.h>
-#include <vtkViewImage.h>
+#include <vtkImageView.h>
 #include <vtkKWCheckButtonWithLabel.h>
 #include <vtkKWCheckButton.h>
 

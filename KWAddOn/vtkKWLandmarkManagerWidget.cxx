@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWLandmarkManagerWidget.cxx 1302 2009-10-27 21:57:16Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-10-27 22:57:16 +0100 (Tue, 27 Oct 2009) $
+Date:      $Date: 2009-10-27 21:57:16 +0000 (Tue, 27 Oct 2009) $
 Version:   $Revision: 1302 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -38,8 +38,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtksys/SystemTools.hxx>
 #include <vtkErrorCode.h>
 
-#include <vtkViewImage3D.h>
-#include <vtkViewImage2D.h>
+#include <vtkImageView3D.h>
+#include <vtkImageView2D.h>
 #include <vtkKWPageView.h>
 
 #include <vtkMetaSurfaceMesh.h>
@@ -80,6 +80,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkRenderWindowInteractor.h>
 #include <vtkPointPicker.h>
 #include <vtkRenderer.h>
+#include <vtkImageViewCollection.h>
+
 #include <vtkFollower.h>
 #include <vtkRenderer.h>
 #include <vtkTextSource.h>
@@ -554,10 +556,10 @@ void vtkKWLandmarkManagerWidget::ScalingChangingCallback(double op)
   if (landmark)
     landmark->SetScale (op);
   
-  vtkViewImage* view = this->LandmarkManager->GetFirstView();
+  vtkImageView* view = this->LandmarkManager->GetFirstView();
   if (view)
   {
-    view->SyncRender();
+    view->Render();
   }
 }
 
@@ -571,10 +573,10 @@ void vtkKWLandmarkManagerWidget::GlobalScalingChangingCallback(double op)
 
   this->LandmarkManager->ScaleAll (op);
   
-  vtkViewImage* view = this->LandmarkManager->GetFirstView();
+  vtkImageView* view = this->LandmarkManager->GetFirstView();
   if (view)
   {
-    view->SyncRender();
+    view->Render();
   }
 }
 
@@ -593,10 +595,10 @@ void vtkKWLandmarkManagerWidget::ColorChangingCallback(double r, double g, doubl
     landmark->SetColor (r,g,b);
   }
   
-  vtkViewImage* view = this->LandmarkManager->GetFirstView();
+  vtkImageView* view = this->LandmarkManager->GetFirstView();
   if (view)
   {
-    view->SyncRender();
+    view->Render();
   }
   
 }
@@ -608,10 +610,10 @@ void vtkKWLandmarkManagerWidget::GlobalColorChangedCallback(double r, double g, 
 
   this->LandmarkManager->SetSelectedColor (r,g,b);
   
-  vtkViewImage* view = this->LandmarkManager->GetFirstView();
+  vtkImageView* view = this->LandmarkManager->GetFirstView();
   if (view)
   {
-    view->SyncRender();
+    view->Render();
   }
   
 }
@@ -634,10 +636,10 @@ void vtkKWLandmarkManagerWidget::SelectionChangedCallback (const char* value)
   
   this->Update();
 
-  vtkViewImage* view = this->LandmarkManager->GetFirstView();
+  vtkImageView* view = this->LandmarkManager->GetFirstView();
   if (view)
   {
-    view->SyncRender();
+    view->Render();
   }
 }
 
@@ -649,10 +651,10 @@ void vtkKWLandmarkManagerWidget::ButtonAddCallback()
   this->LandmarkManager->CreateAndAddLandmark();
   this->Update();
 
-  vtkViewImage* view = this->LandmarkManager->GetFirstView();
+  vtkImageView* view = this->LandmarkManager->GetFirstView();
   if (view)
   {
-    view->SyncRender();
+    view->Render();
   }
   
 
@@ -668,10 +670,10 @@ void vtkKWLandmarkManagerWidget::ButtonDeleteCallback()
     this->LandmarkManager->RemoveLandmark (landmark);
   this->Update();
 
-  vtkViewImage* view = this->LandmarkManager->GetFirstView();
+  vtkImageView* view = this->LandmarkManager->GetFirstView();
   if (view)
   {
-    view->SyncRender();
+    view->Render();
   }
 
 }
@@ -683,10 +685,10 @@ void vtkKWLandmarkManagerWidget::ButtonDeleteAllCallback()
   this->LandmarkManager->RemoveAllLandmarks ();
   this->Update();
 
-  vtkViewImage* view = this->LandmarkManager->GetFirstView();
+  vtkImageView* view = this->LandmarkManager->GetFirstView();
   if (view)
   {
-    view->SyncRender();
+    view->Render();
   }
 
 }
@@ -766,7 +768,7 @@ void vtkKWLandmarkManagerWidget::ButtonCommentCallback()
   std::string name = this->LandmarkListBox->GetValue();
   vtkLandmark* landmark = this->LandmarkManager->FindLandmark (name.c_str());
 
-  vtkViewImage3D* view3D = vtkViewImage3D::SafeDownCast (this->LandmarkManager->GetViewList()->GetItemAsObject (3));
+  vtkImageView3D* view3D = vtkImageView3D::SafeDownCast (this->LandmarkManager->GetViewList()->GetItemAsObject (3));
   if (!view3D)
     return;
 
@@ -794,7 +796,7 @@ void vtkKWLandmarkManagerWidget::ButtonCommentCallback()
 
   vtkFollower* follower = landmark->GetTextActor();
   follower->SetCamera (view3D->GetRenderer()->GetActiveCamera());
-  view3D->AddActor (follower);
+  view3D->GetRenderer()->AddViewProp (follower);
 
   landmark->Initialize();
   view3D->Render();
@@ -804,10 +806,10 @@ void vtkKWLandmarkManagerWidget::ButtonCommentCallback()
 void vtkKWLandmarkManagerWidget::GlobalLinkerVisibilityChanged (int val)
 {
   this->LandmarkManager->SetLinkerVisibility (val);
-  vtkViewImage* view = this->LandmarkManager->GetFirstView();
+  vtkImageView* view = this->LandmarkManager->GetFirstView();
   if (view)
   {
-    view->SyncRender();
+    view->Render();
   }
 }
 

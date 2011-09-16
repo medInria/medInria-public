@@ -28,7 +28,7 @@ class vtkImageData;
 class vtkImageClippingPlane;
 
 
-
+//BTX
 class VTK_EXPORT vtkImageClippingPlaneCallback : public vtkCommand
 {
 
@@ -77,7 +77,7 @@ class VTK_EXPORT vtkImageClippingPlaneCallback : public vtkCommand
   
   bool FirstRender;
 };
-
+//ETX
 
 
 

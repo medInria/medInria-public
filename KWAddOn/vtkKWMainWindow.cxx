@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWMainWindow.cxx 1311 2009-11-02 14:07:46Z tmansi $
 Language:  C++
 Author:    $Author: tmansi $
-Date:      $Date: 2009-11-02 15:07:46 +0100 (Mon, 02 Nov 2009) $
+Date:      $Date: 2009-11-02 14:07:46 +0000 (Mon, 02 Nov 2009) $
 Version:   $Revision: 1311 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -18,8 +18,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkKWMainWindow.h"
 
 #include "vtkImageData.h"
-#include "vtkViewImage3D.h"
-#include "vtkViewImage2D.h"
+#include "vtkImageView3D.h"
+#include "vtkImageView2D.h"
 #include <vtkRenderWindowInteractor.h>
 #include <vtkKWSplitFrame.h>
 #include <vtkKWEvent.h>
@@ -108,7 +108,6 @@ void vtkKWMainWindow::CreateOpenToolbar()
   vtkKWMenu *menu = button1->GetMenu();
   menu->AddCommand("Save selected dataset into file... (Ctrl+S)", this, "OnDataSetSave");
   menu->AddCommand("Save environement into file...", this, "SaveManagerCallback");
-  menu->AddCommand("Save DIFF XML into file...", this, "SaveDiffXMLCallback");
 
   
   this->OpenToolbar->AddWidget(button1);
@@ -399,9 +398,6 @@ void vtkKWMainWindow::PackSelf()
     return;  
 }
 
-
-
-
 vtkKWPageView* vtkKWMainWindow::GetCurrentPage (void)
 {
   vtkKWFrame* page = this->GetViewNotebook()->GetFrame (this->GetViewNotebook()->GetRaisedPageId ());
@@ -511,12 +507,6 @@ void vtkKWMainWindow::OnDataSetDelete(void)
 
 //----------------------------------------------------------------------------
 void vtkKWMainWindow::SaveManagerCallback(void)
-{
-  std::cout<<"not implemented yet"<<std::endl;
-}
-
-//----------------------------------------------------------------------------
-void vtkKWMainWindow::SaveDiffXMLCallback(void)
 {
   std::cout<<"not implemented yet"<<std::endl;
 }

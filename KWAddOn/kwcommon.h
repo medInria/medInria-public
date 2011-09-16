@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: kwcommon.h 1296 2009-10-21 17:25:16Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-10-21 19:25:16 +0200 (Wed, 21 Oct 2009) $
+Date:      $Date: 2009-10-21 18:25:16 +0100 (Wed, 21 Oct 2009) $
 Version:   $Revision: 1296 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.

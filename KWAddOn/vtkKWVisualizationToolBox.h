@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWVisualizationToolBox.h 848 2008-05-21 10:10:47Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-05-21 12:10:47 +0200 (Wed, 21 May 2008) $
+Date:      $Date: 2008-05-21 11:10:47 +0100 (Wed, 21 May 2008) $
 Version:   $Revision: 848 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -34,7 +34,7 @@ class vtkKWComboBoxSet;
 class vtkKWComboBox;
 class vtkKWMenuButton;
 class vtkTensorVisuManager;
-class vtkViewImage;
+class vtkImageView;
 class vtkKWSurfaceMaterialPropertyWidget;
 class vtkScalarBarActor;
 class vtkKWCheckButtonWithLabel;

@@ -260,7 +260,7 @@ unsigned long vtkImageView::GetMTime()
         // Renderer, RenderWindow,Interactor,
         InteractorStyle,WindowLevel, OrientationTransform, ScalarBar, OrientationMatrix,
         InvertOrientationMatrix, CornerAnnotation, TextProperty, ColorTransferFunction, OpacityTransferFunction, LookupTable,
-        ScalarBar };
+        ScalarBar, Input };
 
         const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
 
@@ -323,7 +323,7 @@ void vtkImageView::Render()
     {
       if( this->GetMTime()>this->InternalMTime )
       {
-        this->RenderWindow->Render();
+	this->RenderWindow->Render();
         this->InternalMTime = this->GetMTime();
       }
     }
@@ -1398,8 +1398,16 @@ vtkProp3D* vtkImageView::FindDataSetActor (vtkDataSet* arg)
   int id = this->DataSetCollection->IsItemPresent (arg);
   if (id == 0)
     return NULL;
-
   return vtkProp3D::SafeDownCast (this->DataSetActorCollection->GetItemAsObject (id-1));
+}
+
+//----------------------------------------------------------------------------
+vtkDataSet* vtkImageView::FindActorDataSet (vtkProp3D* arg) 
+{
+  int id = this->DataSetActorCollection->IsItemPresent (arg);
+  if (id == 0)
+    return NULL;
+  return vtkDataSet::SafeDownCast (this->DataSetCollection->GetItemAsObject (id-1));
 }
 
 
