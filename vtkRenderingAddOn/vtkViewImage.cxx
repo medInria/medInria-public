@@ -225,6 +225,7 @@ vtkViewImage::~vtkViewImage()
 #ifdef vtkINRIA3D_USE_ITK
   this->ITKImage = 0;
   this->ITKImage4 = 0;    
+    
   delete this->Impl;
 #endif
 
