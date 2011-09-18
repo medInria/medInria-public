@@ -665,100 +665,83 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
   double minRange, double maxRange)
 {
   double targetWidth  = maxRange  - minRange;
-  // in case targetWidth is null, return otherwise all values will collapse and further
+  // in case targetWidth is too small causing numerical precision issues, 
+  // or too large causing overflow problems, return otherwise all values will collapse and further
   // windowing will become impossible
-  if ( targetWidth == 0.0 )
+  
+  double widthTol = std::fabs(targetWidth);
+  widthTol = std::max( widthTol, std::fabs(maxRange) );
+  widthTol = std::max( widthTol, std::fabs(minRange) );
+  widthTol = widthTol * 1.e-7;   // Fractional tolerance
+  widthTol = std::max( widthTol, 1.e-30 ); // Absolute tolerance
+
+  if (!(targetWidth > widthTol && targetWidth < VTK_DOUBLE_MAX))
     return;
 
+  // For both cf & of we take a copy and put the values back, as altering them
+  // can cause the order to and invalidate our iteration, in VTK > 5.9.0
   if (cf)
   {
-    const double * currentRange = cf->GetRange();
+    // Take a copy of the range since we use & modify the object later.
+    double currentRange[2];
+    cf->GetRange(currentRange);
     if ( currentRange[0] != minRange ||
          currentRange[1] != maxRange )
     {
-      double currentWidth = currentRange[1] - currentRange[0];
 
-      unsigned int n = cf->GetSize();
+      double currentWidth = currentRange[1] - currentRange[0];
+      
+      const unsigned int n = cf->GetSize();
       if ( n > 0 && currentWidth == 0.0 )
         currentWidth = 1.0;
 
-      double * vals = new double[n * 6];
-      for ( unsigned int i = 0; i < n; ++i )
-      {
-        double * val = vals + i * 6;
-        cf->GetNodeValue( i, val );
-        // from current range to [0,1] interval
-        val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-        // from [0,1] interval to target range (avoid overflow by
-        // doing the division before the multiplication)
-        val[0] = ( val[0] + minRange / targetWidth ) * targetWidth;
-      }
-
+      vtkSmartPointer<vtkColorTransferFunction> cfCopy( vtkSmartPointer<vtkColorTransferFunction>::New() );
+      cfCopy->DeepCopy( cf );
       cf->RemoveAllPoints();
+
       for ( unsigned int i = 0; i < n; ++i )
-      {
-        double * val = vals + i * 6;
-        cf->AddRGBPoint( val[0], val[1], val[2], val[3], val[4], val[5] );
-      }
-
-      delete[] vals;
-
-#if (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION < 7) || VTK_MAJOR_VERSION < 5
-      // work around to update the range (which is not public in
-      // vtkColorTransferFunction)
-      if ( n > 0 )
       {
         double val[6];
-        cf->GetNodeValue( n - 1, val );
+        cfCopy->GetNodeValue( i, val );
+        // from current range to [0,1] interval
+        val[0] = ( val[0] - currentRange[0] ) / currentWidth;
+        // from [0,1] interval to target range
+        val[0] = val[0] * targetWidth + minRange;
         cf->AddRGBPoint( val[0], val[1], val[2], val[3], val[4], val[5] );
       }
-#endif
+      
     }
   }
 
   if (of)
-  {
-    const double * currentRange = of->GetRange();
+  {    
+    // Take a copy of the range since we use & modify the object later.
+    double currentRange[2];
+    of->GetRange(currentRange);
     if ( currentRange[0] != minRange ||
          currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
+            
+      const unsigned int n = of->GetSize();
+      if ( n > 0 && currentWidth == 0.0 )
+          currentWidth = 1.0;
 
-      if ( currentWidth == 0.0 )
-        currentWidth = 1.0;
-
-      unsigned int n = of->GetSize();
-      double * vals = new double[n * 4];
-      for ( unsigned int i = 0; i < n; ++i )
-      {
-        double * val = vals + i * 4;
-        of->GetNodeValue( i, val );
-        // from current range to [0,1] interval
-        val[0] = ( val[0] - currentRange[0] ) / currentWidth;
-        // from [0,1] interval to target range (avoid overflow by
-        // doing the division before the multiplication)
-        val[0] = ( val[0] + minRange / targetWidth ) * targetWidth;
-      }
-
+      vtkSmartPointer<vtkPiecewiseFunction> ofCopy( vtkSmartPointer<vtkPiecewiseFunction>::New() );
+      ofCopy->DeepCopy( of );
       of->RemoveAllPoints();
+
       for ( unsigned int i = 0; i < n; ++i )
-      {
-        double * val = vals + i * 4;
-        of->AddPoint( val[0], val[1], val[2], val[3] );
-      }
-
-      delete[] vals;
-
-#if (VTK_MAJOR_VERSION == 5 && VTK_MINOR_VERSION < 7) || VTK_MAJOR_VERSION < 5
-      // work around to update the range (which is not public in
-      // vtkPiecewiseFunction)
-      if ( n > 0 )
       {
         double val[4];
-        of->GetNodeValue( n - 1, val );
+        ofCopy->GetNodeValue( i, val );
+        // from current range to [0,1] interval
+        val[0] = ( val[0] - currentRange[0] ) / currentWidth;
+        // from [0,1] interval to target range
+        val[0] = val[0] * targetWidth + minRange;
         of->AddPoint( val[0], val[1], val[2], val[3] );
       }
-#endif
+      
     }
   }
 }
