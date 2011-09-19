@@ -17,7 +17,7 @@ IF(wxWidgets_FOUND)
     wxDialogVtkViewImage2D.cxx
     wxVtkImage3DImagePlaneCallback.cxx
     wxSnapshotTaker.cxx
-    wxVtkLandmarkWindow.cxx
+#    wxVtkLandmarkWindow.cxx
     wxVtkPageView.cxx
     wxVtkViewImage2DWithSliders.cxx
     )

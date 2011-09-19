@@ -229,7 +229,7 @@ GeneralTransform<TScalarType, NDimensions>::
 GetTransform (unsigned int i)
 {
    if (i >= m_TransformList.size() )
-      return false;
+      return 0;
    return m_TransformList[i];
 }
 

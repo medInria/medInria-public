@@ -29,12 +29,12 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTransferFunctionPresets: public vtkObject
  public:
 
   static vtkTransferFunctionPresets* New();
-
+  //BTX
   static std::vector<std::string> GetAvailablePresets(void);
-
   static void GetTransferFunction( const std::string & name,
 				   vtkColorTransferFunction * rgb,
 				   vtkPiecewiseFunction * alpha );
+  //ETX
 
 protected:
   static void GetTransferFunctionFromTable( unsigned int size,

@@ -41,7 +41,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkExtractGeometry.h>
 
-
+//BTX
 class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManagerCallback: public vtkCommand
 {
 
@@ -87,6 +87,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManagerCallback: public vtkCommand
   
   
 };
+//ETX
 
 
 class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
@@ -96,12 +97,14 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
   static vtkVectorVisuManager* New();
   vtkTypeRevisionMacro(vtkVectorVisuManager, vtkObject);
 
+  //BTX
   enum RenderingModeIds
   {
     RENDER_IS_POLYLINES,
     RENDER_IS_TUBES,
     RENDER_IS_RIBBONS
   };
+  //ETX
 
   /** Reset the pipeline, deactivate the CP box and release memory.*/
   void Initialize (void);
@@ -215,8 +218,6 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
   /** Set Radius & ribbon width */
   void SetRadius (int r)
   {
-    std::cout<<"to do"<<std::endl;
-    
   }
 
 /*   /\** Return the fiber ids selected by the box widget *\/ */

@@ -22,7 +22,10 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageActor.h>
 #include <vtkCommand.h>
 #include <vtkInteractorStyleImage.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
+#include <vtkImageViewCornerAnnotation.h>
+#include <vtkImageViewCollection.h>
 #include <vtkCamera.h>
 #include <vtksys/SystemTools.hxx>
 #include <vtkMatrix4x4.h>
@@ -33,8 +36,10 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkProperty.h>
 #include <vtkErrorCode.h>
 #include "vtkDataSetReader.h"
+#include "vtkPointSet.h"
 #include "vtkUnstructuredGridReader.h"
 #include "vtkTensorVisuManager.h"
+#include "vtkDataSetCollection.h"
 
 #include <vtkImageData.h>
 #include <vtkCommand.h>
@@ -45,7 +50,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkTimerLog.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkMultiThreader.h>
-
+#include <vtkProp3DCollection.h>
 
 #include <vtkWindowToImageFilter.h>
 
@@ -56,6 +61,15 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkPNGWriter.h>
 
 #include "vtkCamera.h"
+
+#ifdef vtkINRIA3D_USE_ITK
+#include "itkTransformFileReader.h"
+#include "itkTransformFileWriter.h"
+#include "itkTranslationTransform.h"
+#include <itkMatrixOffsetTransformBase.h>
+#include <itkRigid3DTransform.h>
+#include "itkTransformFactory.h"
+#endif
 
 
 // -----------------------------------------------------------------------------
@@ -118,7 +132,6 @@ public:
 	    writer->Delete();
 	  }
 	  
-	  
 	  TimerLog->StopTimer();
 	  double delay = TimerLog->GetElapsedTime();
 	  TimerLog->StartTimer();
@@ -170,16 +183,107 @@ public:
 	TensorGlyph->SetGlyphScale (newscale);
 	View->Render();
       }
+ 
+      if (rwi->GetKeyCode() == '/')
+      {
+	int newresolution = TensorGlyph->GetGlyphResolution() + 1;
+	TensorGlyph->SetGlyphResolution (newresolution);
+	View->Render();
+      }
+      if (rwi->GetKeyCode() == '*')
+      {
+	int newresolution = TensorGlyph->GetGlyphResolution() - 1;
+	TensorGlyph->SetGlyphResolution (newresolution);
+	View->Render();
+      }
+
+
       
+#ifdef vtkINRIA3D_USE_ITK
+      if (rwi->GetKeyCode() == 's')
+      {
+	typedef itk::TransformFileWriter TransformWriterType;
+	typedef itk::MatrixOffsetTransformBase<double, 3, 3> TransformType;
+	
+	typedef TransformType::ParametersType ParametersType;
+	
+	TransformType::Pointer transform = TransformType::New();
+	ParametersType params;
+	params.SetSize (12);
+	TransformWriterType::Pointer writer = TransformWriterType::New();
+	writer->SetInput (transform);
+	
+	std::cout<<"gathering orientation... "<<std::endl;
+	vtkMatrix4x4* inv_orientation = vtkMatrix4x4::New();
+	inv_orientation->Identity();
+	
+	vtkMetaImageData* metaimage = this->MetaImage;
+	
+	if (metaimage)
+	{
+	  vtkMatrix4x4* orientation = metaimage->GetOrientationMatrix();
+	  orientation->Invert (orientation, inv_orientation);
+	}
+	
+	vtkMatrix4x4* M = vtkMatrix4x4::New();
+	if (metaimage)
+	{
+	  vtkProp3D* prop = NULL;
+	  prop = vtkProp3D::SafeDownCast (this->View->GetExtraPlaneCollection()->GetItemAsObject (0));
+	  M->DeepCopy (prop->GetUserMatrix());
+	}
+	else
+	{ 
+	  vtkProp3D* prop = NULL;
+	  prop = this->View->FindDataSetActor (this->View->GetDataSetCollection()->GetDataSet ((int)(0)));
+	  M = prop->GetMatrix();
+	}
+	
+	std::cout<<"estimating modification... "<<std::endl;
+	
+	vtkMatrix4x4* A = vtkMatrix4x4::New();
+	vtkMatrix4x4::Multiply4x4 (M,inv_orientation, A);
+	A->Print (std::cout);
+	
+	// saving only the translation
+	unsigned int counter = 0;
+	// for (unsigned int j=0; j<3; j++)
+	//   params (counter++) = M->GetElement (j,3) - orientation1->GetElement (j,3);
+	for (unsigned int j=0; j<3; j++)
+	  for (unsigned int k=0; k<3; k++)
+	    params (counter++) = A->GetElement (j,k);
+	params (counter++) = A->GetElement (0, 3);
+	params (counter++) = A->GetElement (1, 3);
+	params (counter++) = A->GetElement (2, 3);
+	
+	std::cout<<"writing matrix... "<<std::endl;
+	transform->SetParameters (params);
+	std::ostringstream ostr;
+	if (metaimage)
+	  ostr << metaimage->GetName()<<"-transform.mat";
+	else
+	  ostr << "transform.mat";
+	  
+	std::cout<<"writing translation to : "<<ostr.str().c_str()<<std::endl;
+	
+	writer->SetFileName (ostr.str().c_str());
+	writer->Update ();
+	
+	A->Delete();
+	M->Delete();	
+      }
+#endif
+           
 	
     }
     
   }
 
-  vtkViewImage* View;
+  vtkImageView3D* View;
   vtkTensorVisuManager* TensorGlyph;
   vtkMetaDataSetSequence* Sequence;
   vtkDataManager* Manager;
+  vtkMetaImageData* MetaImage;
   
  protected:
   vtkMyCommand()
@@ -197,7 +301,7 @@ public:
 int main (int argc, char* argv[])
 {
 
-  int do_tensor_sequence = 1;
+  int do_tensor_sequence = 0;
   
   if (argc < 2)
   {
@@ -208,9 +312,11 @@ int main (int argc, char* argv[])
     exit (-1);
   }
 
+  int position[2] = {0, 0};  
+  vtkImageViewCollection* pool = vtkImageViewCollection::New();
   vtkDataManager* manager = vtkDataManager::New();
 
-  vtkViewImage3D* view3d = vtkViewImage3D::New();
+  vtkImageView3D* view3d = vtkImageView3D::New();
   vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
   vtkRenderWindow* rwin = vtkRenderWindow::New();
   vtkRenderer* renderer = vtkRenderer::New();
@@ -218,12 +324,29 @@ int main (int argc, char* argv[])
   rwin->AddRenderer (renderer);
   view3d->SetRenderWindow ( rwin );
   view3d->SetRenderer ( renderer );
+  double color[3]={0.9,0.9,0.9};
+  view3d->SetBackground (color);
+  position[0] = 400; position[1] = 420;
+  view3d->SetPosition (position);
+  view3d->SetShowActorX (0);
+  view3d->SetShowActorY (0);
+  view3d->SetShowActorZ (0);
+
+  
+  pool->AddItem (view3d);
+
+  vtkTensorVisuManager* tensormanager = vtkTensorVisuManager::New();
+  vtkMyCommand* command = vtkMyCommand::New();
+  command->View = view3d;
+  command->TensorGlyph = tensormanager;
+  view3d->GetInteractor()->AddObserver(vtkCommand::CharEvent, command);
   
   for (int i=0; i<argc - 2; i++)
   {
     std::string filename = argv[i+1];
 
     vtkMetaDataSet* metadataset = manager->ReadFile(filename.c_str());
+    // manager->AddMetaDataSet (metadataset);
 
     if ( metadataset->GetType() == vtkMetaDataSet::VTK_META_IMAGE_DATA )
     {
@@ -239,27 +362,57 @@ int main (int argc, char* argv[])
       else
         image = metaimage->GetImageData();
 
+      command->MetaImage = metaimage;
+      
       matrix = metaimage->GetOrientationMatrix();
 
-      view3d->SetImage (image);
+      
+      vtkImageView2D* view = vtkImageView2D::New();
+      vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
+      vtkRenderWindow* rwin = vtkRenderWindow::New();
+      vtkRenderer* ren = vtkRenderer::New();
+      position[0] = 0; position[1] = 0;
+      iren->SetRenderWindow(rwin);
+      rwin->AddRenderer (ren);
+      
+      view->SetRenderWindow(rwin);
+      view->SetRenderer(ren);
+      view->SetPosition (position);
+      view->SetInput (image);
+      view->SetOrientationMatrix(matrix);
+      view->GetCornerAnnotation()->SetText (0, filename.c_str());
+
+      view3d->AddExtraPlane (view->GetImageActor());
+
+      pool->AddItem (view);
     }
     else
     {
       vtkProperty* prop = vtkProperty::SafeDownCast( metadataset->GetProperty() );
       prop->SetColor (0.3,0.3,0.3);
-      prop->SetOpacity (0.15);
-      view3d->AddDataSet( metadataset->GetDataSet(), prop );
+      if (vtkPointSet::SafeDownCast (metadataset->GetDataSet())->GetNumberOfPoints() > 5000)
+	prop->SetOpacity (0.15);
+      else
+	prop->SetOpacity (0.50);
+	
+      pool->SyncAddDataSet( vtkPointSet::SafeDownCast (metadataset->GetDataSet()), prop );
+      metadataset->SetScalarVisibility(1);
     }
 
+  }
+
+  
+  vtkImageView* firstview = pool->GetItem (0);
+
+  if (firstview)
+  {
+    view3d->SetInput (firstview->GetInput());
+    view3d->SetOrientationMatrix(firstview->GetOrientationMatrix());
   }
 
   std::string filename = argv[argc - 1];
 
   vtkUnstructuredGrid* mytensors = 0;
-  vtkTensorVisuManager* tensormanager = vtkTensorVisuManager::New();
-  vtkMyCommand* command = vtkMyCommand::New();
-  command->View = view3d;
-  command->TensorGlyph = tensormanager;
   
   if (do_tensor_sequence)
   {
@@ -268,10 +421,8 @@ int main (int argc, char* argv[])
     mytensors = vtkUnstructuredGrid::SafeDownCast (sequence->GetDataSet());
     tensormanager->SetGlyphScale (5.0);
     sequence->SetSequenceDuration (1.0);
-    //std::cout<<"sequence : "<<(*sequence)<<std::endl;
     command->Sequence = sequence;
     command->Manager = manager;
-
     manager->AddMetaDataSet (sequence);
   }
   else
@@ -280,23 +431,33 @@ int main (int argc, char* argv[])
     reader->SetFileName (filename.c_str());
     reader->Update();
     mytensors = reader->GetOutput();
-    tensormanager->SetGlyphScale (3.5);
+    tensormanager->SetGlyphScale (1);
+    tensormanager->SetGlyphResolution (14);
     tensormanager->SetGlyphShapeToArrow();
   }
-
-  
   
   tensormanager->SetInput (mytensors);
   
   view3d->GetRenderer()->AddViewProp (tensormanager->GetActor());
   view3d->GetRenderer()->Modified();
-  // int size[2] = {600, 600};
-  // view3d->SetSize (size);
-  // int vposition[2] = {400, 400 };
-  // view3d->SetPosition (vposition);  
-  view3d->GetRenderWindowInteractor()->AddObserver(vtkCommand::CharEvent, command);
 
-  view3d->GetRenderWindowInteractor()->Start();
+  pool->SyncReset();
+  pool->SyncSetShowAnnotations (1);
+  pool->SyncSetShowScalarBar (0);
+  pool->SyncSetShowRulerWidget (0);
+  pool->SyncSetShowImageAxis (1);
+  pool->SetLinkColorWindowLevel (0);
+  
+  pool->SyncSetAnnotationStyle (vtkImageView2D::AnnotationStyle2);
+  pool->SyncSetWheelInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+  //pool->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeTime);
+  int size[2]={370, 370};
+  pool->SyncSetSize (size);
+  pool->SyncRender();
+  
+  // pool->SyncSetUseLookupTable (1);
+  
+  pool->SyncStart();
   
   view3d->Delete();
   manager->Delete();

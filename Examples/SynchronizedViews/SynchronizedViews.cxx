@@ -96,8 +96,8 @@ public:
 	  id = id+1;
 	for (unsigned int i=0; i<this->Sequences.size(); i++)
 	  this->Sequences[i]->UpdateToIndex (id);
-	for (int i=0; i<this->Collection->GetNumberOfItems(); i++)
-	  this->Collection->GetItem (i)->Modified();	  
+	// for (int i=0; i<this->Collection->GetNumberOfItems(); i++)
+	//   this->Collection->GetItem (i)->Modified();	  
 	this->Collection->SyncRender();
 	
       }    
@@ -190,6 +190,7 @@ int main (int argc, char* argv[])
   command->SetCollection (pool);
   view3d->GetInteractor()->AddObserver(vtkCommand::CharEvent, command);
 
+  pool->AddItem (view3d);
   
   for (int i=1; i<argc; i++)
   {
@@ -311,7 +312,7 @@ int main (int argc, char* argv[])
     else
     {
       vtkProperty* prop = vtkProperty::SafeDownCast( metadataset->GetProperty() );
-      prop->SetColor (0,1,0);
+      prop->SetColor (0.5,0.5,0.5);
       prop->SetOpacity (1.0);
       pool->SyncAddDataSet( vtkPointSet::SafeDownCast (metadataset->GetDataSet()), prop);
     }
@@ -324,18 +325,17 @@ int main (int argc, char* argv[])
     }
   }
 
-  vtkImageView* firstview = pool->GetItem (0);
+  vtkImageView2D* firstview = vtkImageView2D::SafeDownCast (pool->GetItem (0));
 
   if (firstview)
   {
     view3d->SetInput (firstview->GetInput());
     view3d->SetOrientationMatrix(firstview->GetOrientationMatrix());
   }
-
-  pool->AddItem (view3d);
   
   pool->SyncReset();
   pool->SyncSetShowAnnotations (1);
+  pool->SyncSetShowScalarBar (0);
   pool->SyncSetShowRulerWidget (0);
   pool->SyncSetShowImageAxis (1);
   pool->SetLinkColorWindowLevel (0);

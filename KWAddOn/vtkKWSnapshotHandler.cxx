@@ -24,8 +24,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWRadioButtonSet.h>
 #include <vtkKWRadioButton.h>
 
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 #include <vtkKWCameraAnimationWidget.h>
 #include <vtkKWTimeAnimationWidget.h>
 
@@ -249,7 +249,7 @@ void vtkKWSnapshotHandler::SetRenderWidget (vtkKWRenderWidget* widget)
 
 
 //----------------------------------------------------------------------------
-void vtkKWSnapshotHandler::SetView (vtkViewImage* view)
+void vtkKWSnapshotHandler::SetView (vtkImageView* view)
 {
   if (!this->IsCreated())
   {
@@ -257,16 +257,17 @@ void vtkKWSnapshotHandler::SetView (vtkViewImage* view)
     return;
   }
 
-  vtkViewImage2D* view2D = vtkViewImage2D::SafeDownCast (view);
+  vtkImageView2D* view2D = vtkImageView2D::SafeDownCast (view);
   
   if (view2D)
   {
     this->CameraAnimationWidget->SetSliceSetCommand (view2D, "SetZSlice");
     this->CameraAnimationWidget->SetSliceGetCommand (view2D, "GetZSlice");
     
-    this->CameraAnimationWidget->SetSliceRange (view2D->GetWholeZMin(), view2D->GetWholeZMax());
-    this->CameraAnimationWidget->SetSliceStart (view2D->GetWholeZMin());
-    this->CameraAnimationWidget->SetSliceEnd (view2D->GetWholeZMax());
+    this->CameraAnimationWidget->SetSliceRange (view2D->GetSliceMin(), view2D->GetSliceMax());
+    this->CameraAnimationWidget->SetSliceStart (view2D->GetSliceMin());
+    this->CameraAnimationWidget->SetSliceEnd (view2D->GetSliceMax());
+
     this->CameraAnimationWidget->Update(); 
   }
   this->View = view;    

@@ -188,8 +188,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
 
   vtkStructuredPoints* Input;
 
+  //BTX
   vtkSmartPointer<vtkRenderer> Renderer;
-
+  //ETX
   vtkTensorVisuManager* TensorVisuManagerAxial;
   vtkTensorVisuManager* TensorVisuManagerSagittal;
   vtkTensorVisuManager* TensorVisuManagerCoronal;

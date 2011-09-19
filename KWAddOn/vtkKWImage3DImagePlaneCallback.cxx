@@ -17,7 +17,7 @@ PURPOSE.  See the above copyright notices for more information.
 =========================================================================*/
 #include "vtkKWImage3DImagePlaneCallback.h"
 
-#include <vtkViewImage2D.h>
+#include <vtkImageView2D.h>
 #include <vtkRenderWindow.h>
 #include <vtkDataSet.h>
 #include <vtkDataSet3DCroppingPlaneCallback.h>

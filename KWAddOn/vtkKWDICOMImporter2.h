@@ -22,7 +22,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 
 #include <vtkKWMessageDialog.h>
-#include <itkGDCMImporter2.h>
+#include <itkGDCMImporter3.h>
 
 
 class vtkKWMessageWithLabel;
@@ -30,7 +30,7 @@ class vtkKWPushButton;
 class vtkKWFrame;
 class vtkKWCheckButtonWithLabel;
 class vtkKWEntryWithLabel;
-class vtkViewImage2D;
+class vtkImageView2D;
 class vtkKWRenderWidget;
 class vtkKWMultiColumnList;
 class vtkKWFrameWithLabel;
@@ -56,13 +56,13 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
 
   //BTX
   typedef signed short ImageComponentType ;
-  typedef itk::Image<ImageComponentType, 3> ImageType;
-  typedef itk::GDCMImporter2<ImageType> ImporterType;
-  typedef ImporterType::DICOMImageType DICOMImageType;
+  typedef itk::Image<ImageComponentType, 4> ImageType;
+  typedef ImageType::Pointer ImagePointerType;
   
+  typedef itk::GDCMImporter3<ImageComponentType> ImporterType;
+  typedef ImporterType::GDCMVolumeType GDCMVolume;
   //ETX
-
-
+  
   virtual void OpenFileCallback();
   
   virtual void OpenDirectoryCallback();
@@ -88,13 +88,10 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   {
     return this->GDCMImporter;
   }
-
   std::vector<vtkMetaDataSet*> GetOutputList (void)
   {
     return this->OutputList;
   }
-  
-
   //ETX
 
   vtkSetMacro(InteractiveMode,int);
@@ -105,11 +102,8 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   vtkGetMacro(InteractiveStatus,unsigned int);
   vtkBooleanMacro(InteractiveStatus, unsigned int);
 
-  
-
   virtual int  PreInvoke();
   virtual void PostInvoke();
-  
   
  protected:
   vtkKWDICOMImporter2();
@@ -128,7 +122,7 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   virtual void Update(void);
   virtual void UpdatePreview (void);
   //BTX
-  virtual void UpdatePreview (DICOMImageType::Pointer volume);
+  virtual void UpdatePreview (GDCMVolume::Pointer volume);
   //ETX
   virtual void UpdateMultiColumnList (void);
 
@@ -140,8 +134,6 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   virtual void SetOutputsAs2DtSequence(void);
   virtual void SetOutputsAs3DSequence(void);
   virtual void SetOutputsAsVolumes(void);
-  
-  
   
 /*   vtkKWPushButton* OpenDirectoryButton; */
   vtkKWPushButton* ResetButton;
@@ -159,7 +151,7 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   vtkKWCheckButtonWithLabel* InteractiveModeButton;
   
   vtkKWRenderWidget*      RenderWidget;
-  vtkViewImage2D*           Preview;
+  vtkImageView2D*           Preview;
 
   vtkKWMultiColumnList* MultiColumnList;
 
@@ -168,9 +160,6 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
   vtkKWEntryWithLabel*       SequenceDurationEntry;
 
   unsigned int InteractiveStatus;
-  
-
-  
 
  private:
   
@@ -187,6 +176,7 @@ class KW_ADDON_EXPORT vtkKWDICOMImporter2: public vtkKWMessageDialog
 
   //BTX
   std::vector<vtkMetaDataSet*> OutputList;
+  std::vector<GDCMVolume::Pointer> VolumeList;
   //ETX
     
 };

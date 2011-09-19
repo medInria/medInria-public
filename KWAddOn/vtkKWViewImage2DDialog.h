@@ -23,9 +23,9 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkKWTopLevel.h"
 
 class vtkKWRenderWidget;
-class vtkViewImage2D;
-class vtkViewImage2DWithTracer;
-class vtkViewImage2DWithRegister;
+class vtkImageView2D;
+class vtkImageView2DWithTracer;
+class vtkImageView2DWithRegister;
 class vtkRenderWindow;
 class vtkImageData;
 
@@ -38,7 +38,7 @@ public:
   static vtkKWViewImage2DDialog* New();
   vtkTypeRevisionMacro(vtkKWViewImage2DDialog,vtkKWTopLevel);
 
-  vtkGetObjectMacro (View, vtkViewImage2D);
+  vtkGetObjectMacro (View, vtkImageView2D);
   vtkGetObjectMacro (RenderWidget, vtkKWRenderWidget);
   
 protected:
@@ -55,7 +55,7 @@ private:
   void operator=(const vtkKWViewImage2DDialog&);        // Not implemented.
 
 
-  vtkViewImage2D*    View;
+  vtkImageView2D*    View;
   vtkKWRenderWidget* RenderWidget;
   
   

@@ -83,6 +83,8 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   typedef itk::Image<ImageComponentType, 3> FloatImageType;
   typedef itk::Image<ImageComponentType, 4> FloatImage4DType;
   typedef itk::MetaDataDictionary DictionaryType;
+  typedef std::pair <std::string, std::string> DicomEntry;
+  typedef std::vector<DicomEntry> DicomEntryList;
 
   typedef FloatImageType::DirectionType DirectionType;
   
@@ -108,10 +110,27 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   void SetDicomDictionary (DictionaryType dictionary)
   { this->DicomDictionary = dictionary; }
   /**
+     Access to the DICOM tag list of this image
+     Note that this dictionary is not filled automatically when ITK image is set.
+     You have to explicitally call SetDicomDictionary() for that
+  */
+  DicomEntryList GetDicomEntryList (void)
+  { return this->DicomTagList; }
+  /**
+     Set the DICOM tag list of this image.
+     Use this method after a DICOM import process.
+     If you use itkGDCMImporter, the output volumes contain the right dictionary
+     that could be used to feed this metaimagedata
+  */
+  void SetDicomEntryList (DicomEntryList list)
+  { this->DicomTagList = list; }
+  /**
      Reads a file and creates a image of a given scalar component type.
      Use with care. Please prefer using Read()
   */
-  template <typename type> inline void ConvertImage (vtkImageData* vtkimage, itk::ImageBase<3>::Pointer& itkimage, itk::ProcessObject::Pointer& itkconverter)
+  template <typename type> inline void ConvertImage (vtkImageData* vtkimage,
+						     itk::ImageBase<3>::Pointer& itkimage,
+						     itk::ProcessObject::Pointer& itkconverter)
   {
     typedef typename itk::Image<type, 3> ImageType;
     typedef typename itk::VTKImageToImageFilter<ImageType> ConverterType;
@@ -130,7 +149,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
 
     itkconverter = converter;
     itkimage = converter->GetOutput();
-    
+
   }
   
   /**
@@ -295,14 +314,40 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
       return false;
     
     typedef typename itk::Image<type, 3> ImageType;
-
+    typedef typename ImageType::DirectionType DirectionType;
+    
     typename ImageType::Pointer goodtypedimage = dynamic_cast<ImageType*>(this->GetItkImage());
 
     if (!goodtypedimage)
     {
-      return false;
+      try
+      {
+	// If the dynamic cast failed, we need to provide a conversion of the vtk-imagedata
+	// to the output :
+	this->ConvertImage<type>(this->GetImageData(), this->m_ItkImage, this->m_Converter);
+	// However by doing so, we don't feed the Direction of the itk::Image (not in vtk-image)
+	// therefore we copy it from the OrientationMatrix field :
+	vtkMatrix4x4* matrix = this->GetOrientationMatrix();
+	DirectionType direction;
+	for (unsigned int x=0; x<3; x++) for (unsigned int y=0; y<3; y++) direction[x][y] = matrix->GetElement (x,y);
+	this->m_ItkImage->SetDirection (direction);
+      }
+      catch (itk::ExceptionObject &e)
+      {
+      	std::cerr << e;
+      	vtkErrorMacro(<<"error catched in conversion."<<endl);
+      	return false;
+      }
+
+      goodtypedimage = dynamic_cast<ImageType*>(this->GetItkImage());
     }
 
+    if (!goodtypedimage)
+    {
+      std::cerr<<"something is blocking conversion, quit"<<std::endl;
+      return false;
+    }
+    
     ret = goodtypedimage;
     return true;
   }
@@ -376,6 +421,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   itk::ProcessObject::Pointer m_Converter;
   
   DictionaryType DicomDictionary;
+  DicomEntryList DicomTagList;
   //ETX
 
   

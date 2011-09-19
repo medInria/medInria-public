@@ -82,6 +82,15 @@ include(CTest)
 # -----------------------------------------------------------------------------
 OPTION(vtkINRIA3D_BUILD_EXAMPLES "Build vtkINRIA3D examples." ON)
 
+# -----------------------------------------------------------------------------
+# Add in the option for precompiled headers, default to ON
+# -----------------------------------------------------------------------------
+if(MSVC)
+  option(vtkINRIA3D_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+endif(MSVC)
+
+# include the cmake macro to add precompiled headers.
+include(AddPch)
 
 # -----------------------------------------------------------------------------
 # We need vtk, no matter what
@@ -406,7 +415,7 @@ IF (DOXYGEN)
     )
   ENDIF (MY_LINK_EXTERNAL_DOC)
 
-  ADD_CUSTOM_TARGET(doc
+  ADD_CUSTOM_TARGET(${PROJECT_NAME}-doc
     ${DOXYGEN}
     ${MY_DOXYGEN_BUILD_DIR}/doxygen.config
   )

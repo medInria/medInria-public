@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWTimeAnimationWidget.h 796 2008-04-16 17:25:01Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-04-16 19:25:01 +0200 (Wed, 16 Apr 2008) $
+Date:      $Date: 2008-04-16 18:25:01 +0100 (Wed, 16 Apr 2008) $
 Version:   $Revision: 796 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.

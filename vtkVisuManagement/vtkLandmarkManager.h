@@ -28,7 +28,9 @@ PURPOSE.  See the above copyright notices for more information.
 #include <map>
 
 
-class vtkViewImage;
+class vtkImageView;
+class vtkImageViewCollection;
+
 class vtkPolyData;
 class vtkLandmarkManagerCallback;
 class vtkActor;
@@ -71,6 +73,7 @@ class vtkVectorText;
    
 */
 
+//BTX
 class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
 {
  public:
@@ -79,7 +82,6 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   vtkTypeRevisionMacro(vtkLandmark, vtkPolyData);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  //BTX
   /**
      Type Ids of the landmark representation.
   */
@@ -88,7 +90,6 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
     LANDMARK_CROSS,
     LANDMARK_SPHERE
   };
-  //ETX
   /** Get/Set the name of the landmark */
   virtual void SetName (const char* name) 
   { this->Name = name; }
@@ -98,8 +99,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   /**
      Set/Access to the voxel-coordinates of the landmark. This information
      has to be provided by the user. However, if the landmark manager contains
-     some vtkViewImage, then everytime the landmark is manually moved, the voxel
-     coordinates are filled with those found in the vtkViewImage.
+     some vtkImageView, then everytime the landmark is manually moved, the voxel
+     coordinates are filled with those found in the vtkImageView.
   */
   virtual int* GetVoxelCoord()
   {
@@ -108,8 +109,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   /**
      Set/Access to the voxel-coordinates of the landmark. This information
      has to be provided by the user. However, if the landmark manager contains
-     some vtkViewImage, then everytime the landmark is manually moved, the voxel
-     coordinates are filled with those found in the vtkViewImage.
+     some vtkImageView, then everytime the landmark is manually moved, the voxel
+     coordinates are filled with those found in the vtkImageView.
   */
   virtual void SetVoxelCoord (const int val[3])
   {
@@ -189,10 +190,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   virtual double GetFlag (const char* key);
   /** Test if a given key exists. */
   virtual bool HasFlag (const char* key);
-  //BTX
   /** access to the list of keys that are present in flags */
   virtual std::vector<std::string> GetFlagKeys (void);
-  //ETX
   /**
      Set the color of the landmark representation. This methods
      affects the vtkProperty given by GetProperty(), and all actors that share
@@ -281,7 +280,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
 
      NOTE : this feature is only possible when the landmark type is LANDMARK_SPHERE
      and after the SphereWidget has been set with SetSphereWidget(). This is automatically
-     the case when one of the vtkViewImage is a vtkViewImage3D. 
+     the case when one of the vtkImageView is a vtkImageView3D. 
   */
   virtual const char* GetComment(void)
   { return this->Comment.c_str(); }
@@ -292,7 +291,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
 
      NOTE : this feature is only possible when the landmark type is LANDMARK_SPHERE
      and after the SphereWidget has been set with SetSphereWidget(). This is automatically
-     the case when one of the vtkViewImage is a vtkViewImage3D. 
+     the case when one of the vtkImageView is a vtkImageView3D. 
   */
   virtual void SetComment (const char* comment)
   {
@@ -306,7 +305,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
 
      NOTE : this feature is only possible when the landmark type is LANDMARK_SPHERE
      and after the SphereWidget has been set with SetSphereWidget(). This is automatically
-     the case when one of the vtkViewImage is a vtkViewImage3D. 
+     the case when one of the vtkImageView is a vtkImageView3D. 
   */
   vtkGetMacro (UseComment, int);
   void SetUseComment (int);
@@ -340,11 +339,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   vtkFollower* TextActor;
   vtkVectorText* TextMaker;
   
-  //BTX
   std::string Name;
   std::string Comment;
   std::map<std::string, double> FlagMap;
-  //ETX
 
   vtkActorCollection* ActorList;
   vtkActorCollection* Actor2DList;
@@ -358,7 +355,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   
   
 };
-
+//ETX
 
 
 /**
@@ -368,7 +365,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
    
   The aim of this class is to provide a concrete object to manage a set of specific points represented
   in view scenes. These points, vtkLandmark, are located in space, and are displayed in one or several
-  vtkViewImage objects.
+  vtkImageView objects.
 
   In order to display the landmarks, please provide the vtkLandmarkManager with a set of views to be used, with
   the method AddView().
@@ -377,7 +374,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
 
   1. CreateAndAddLandmark() will create a landmark from scratch and add it to the manager. its position will
    \see
-   vtkLandmark vtkPolyData vtkProperty vtkActor vtkViewImage vtkCollection
+   vtkLandmark vtkPolyData vtkProperty vtkActor vtkImageView vtkCollection
    
 */
 
@@ -411,14 +408,14 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmarkManager : public vtkObject
   vtkLandmark* CreateAndAddLandmark (void);
 
   /** Set the render window interactor */
-  void AddView (vtkViewImage* view);
-  void RemoveView (vtkViewImage* view);
+  void AddView (vtkImageView* view);
+  void RemoveView (vtkImageView* view);
   void InteractionOn(void);
   void InteractionOff(void);
-  bool HasView(vtkViewImage* view);
+  bool HasView(vtkImageView* view);
   void RemoveAllViews(void);
 
-  vtkViewImage* GetFirstView (void);
+  vtkImageView* GetFirstView (void);
   vtkSetMacro (ViewIdToTrust, unsigned int);
   vtkGetMacro (ViewIdToTrust, unsigned int);
   
@@ -438,7 +435,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmarkManager : public vtkObject
   vtkGetObjectMacro(Property, vtkProperty);
   vtkGetObjectMacro(SelectedProperty, vtkProperty);
 
-  vtkGetObjectMacro(ViewList, vtkCollection);
+  vtkGetObjectMacro(ViewList, vtkImageViewCollection);
   
   vtkGetMacro (ChangeColorOnSelected, int);
   vtkSetClampMacro(ChangeColorOnSelected, int, 0 ,1);
@@ -497,7 +494,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmarkManager : public vtkObject
  private:
 
 
-  vtkCollection* ViewList;
+  vtkImageViewCollection* ViewList;
   vtkCollection* LandmarkList;  
 
   vtkLandmarkManagerCallback* Callback;

@@ -35,8 +35,14 @@ vtkImageViewCollection.cxx
 vtkImageView3DCroppingBoxCallback.cxx
 vtkSmartVolumeMapper.cxx
 )
+if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+    ${${PROJECT_NAME}_SOURCES})
+endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
 
 add_library(${PROJECT_NAME} ${vtkINRIA3D_LIBS_STYLE}
+${${PROJECT_NAME}_SOURCES_PCH}
 ${${PROJECT_NAME}_SOURCES}
 ${${PROJECT_NAME}_HEADERS}
 )
@@ -55,6 +61,33 @@ IF( vtkINRIA3D_USE_ITK )
    ITKBasicFilters
    )
 ENDIF( vtkINRIA3D_USE_ITK )
+
+  IF (VTK_WRAP_TCL)
+   
+    VTK_WRAP_TCL3( vtkImageViewLib
+      vtkImageViewTCL_SRCS
+      "${vtkImageView_SRCS}"
+      ""
+      "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
+    )
+
+    ADD_LIBRARY(vtkImageViewTCL ${vtkINRIA3D_LIBS_STYLE}
+    ${vtkImageViewTCL_SRCS}
+    )
+    TARGET_LINK_LIBRARIES(vtkImageViewTCL
+    vtkImageView
+    vtkCommonTCL
+    vtkRenderingTCL
+    vtkWidgetsTCL
+    vtkWidgetsAddOnTCL
+    vtkVolumeRenderingTCL
+    vtkVisuManagementTCL
+    )
+  
+    INSTALL_TARGETS(/lib vtkImageViewTCL)
+
+  ENDIF(VTK_WRAP_TCL)
+
 
 
 IF(BUILD_TESTING)

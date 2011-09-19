@@ -24,9 +24,15 @@ project(vtkDataManagement)
   ENDIF (VTK_MINOR_VERSION GREATER 0)
   ENDIF (VTK_MAJOR_VERSION GREATER 4)
 
+if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(vtkDataManagement_SOURCES_PCH 
+    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+    ${vtkDataManagement_SRCS})
+endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
 
   # C++ library for the InterfaceManagers
   ADD_LIBRARY(vtkDataManagement ${vtkINRIA3D_LIBS_STYLE}
+  ${vtkDataManagement_SOURCES_PCH}
   ${vtkDataManagement_SRCS}
   )
   

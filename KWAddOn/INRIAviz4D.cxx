@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: INRIAviz4D.cxx 1302 2009-10-27 21:57:16Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-10-27 22:57:16 +0100 (Tue, 27 Oct 2009) $
+Date:      $Date: 2009-10-27 21:57:16 +0000 (Tue, 27 Oct 2009) $
 Version:   $Revision: 1302 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -24,6 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkKWToolbar.h>
 #include "vtkKWWidgetsPaths.h"
 #include "vtkKWSplashScreen.h"
+#include <itkObject.h>
 #include <kwcommon.h>
 #include <string>
 
@@ -46,7 +47,7 @@ PURPOSE.  See the above copyright notices for more information.
 // demonstrated in KWWidgets's C++ 'Callbacks' example.
 
 extern "C" int Kwaddon_Init(Tcl_Interp *interp);
-extern "C" int Vtkrenderingaddonlib_Init(Tcl_Interp *interp);
+extern "C" int Vtkimageviewlib_Init(Tcl_Interp *interp);
 extern "C" int Vtkdatamanagementlib_Init(Tcl_Interp *interp);
 //extern "C" int Vtkvisumanagementlib_Init(Tcl_Interp *interp);
 
@@ -55,7 +56,6 @@ int my_main(int argc, char *argv[])
 {
   // Initialize Tcl
 
-  
   Tcl_Interp *interp = vtkKWApplication::InitializeTcl(argc, argv, &cerr);
   if (!interp)
   {
@@ -63,12 +63,13 @@ int my_main(int argc, char *argv[])
     return 1;
   }
 
+  itk::MultiThreader::SetGlobalDefaultNumberOfThreads(2);
 
   // Initialize our Tcl library (i.e. our classes wrapped in Tcl).
   // This *is* required for the C++ methods to be used as callbacks.
   // See comment at the top of this file.
   Vtkdatamanagementlib_Init (interp);
-  Vtkrenderingaddonlib_Init (interp);
+  Vtkimageviewlib_Init (interp);
 //   Vtkvisumanagementlib_Init (interp);
   Kwaddon_Init (interp);
 

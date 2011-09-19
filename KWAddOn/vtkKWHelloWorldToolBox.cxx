@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWHelloWorldToolBox.cxx 591 2008-01-08 15:58:17Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2008-01-08 16:58:17 +0100 (Tue, 08 Jan 2008) $
+Date:      $Date: 2008-01-08 15:58:17 +0000 (Tue, 08 Jan 2008) $
 Version:   $Revision: 591 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.

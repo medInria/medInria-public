@@ -4,7 +4,7 @@ Program:   vtkINRIA3D
 Module:    $Id: vtkKWMainCallback.cxx 1302 2009-10-27 21:57:16Z ntoussaint $
 Language:  C++
 Author:    $Author: ntoussaint $
-Date:      $Date: 2009-10-27 22:57:16 +0100 (Tue, 27 Oct 2009) $
+Date:      $Date: 2009-10-27 21:57:16 +0000 (Tue, 27 Oct 2009) $
 Version:   $Revision: 1302 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -22,9 +22,13 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkDataManager.h>
 #include <vtkMetaDataSet.h>
+#include <vtkKWPageView.h>
+#include <vtkKWPreviewPage.h>
+#include <vtkKWNotebook.h>
+#include <vtkKWFrame.h>
 
 #include <vtkKWDialog.h>
-
+#include <vtkKWEvent.h>
 
 vtkKWMainCallback::vtkKWMainCallback()
 {
@@ -36,7 +40,6 @@ vtkKWMainCallback::~vtkKWMainCallback()
   if (this->Application)
     this->Application->UnRegister (this);
 }
-
 
 void vtkKWMainCallback::SetApplication (vtkKWApplication* application)
 {
@@ -61,6 +64,32 @@ void vtkKWMainCallback::Execute(vtkObject* caller, unsigned long event, void* ca
   {
     // disabled
   }
+  if (event == vtkKWEvent::NotebookRaisePageEvent )
+  {
+    vtkKWNotebook* notebook = vtkKWNotebook::SafeDownCast (caller);
+    if (!notebook)
+      return;
+    vtkKWFrame* page = notebook->GetFrame (notebook->GetRaisedPageId ());
+    if (!page)
+      return;
+    vtkKWPageView* pageview =
+      vtkKWPageView::SafeDownCast(page->GetNthChild (0));
+    if (pageview)
+    {
+      pageview->EnableViewsOn();
+    }
+    else
+    {
+      vtkKWPreviewPage* pageview =
+	vtkKWPreviewPage::SafeDownCast(page->GetNthChild (0));
+      if (pageview)
+      {
+	pageview->EnableViewsOn();	
+      }
+    }
+    
+  }
+  
   
 }
 

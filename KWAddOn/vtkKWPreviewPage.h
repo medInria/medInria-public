@@ -26,7 +26,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vector>
 #include <string>
 
-#include <vtkViewImage2D.h>
+#include <vtkImageView3D.h>
+#include <vtkImageViewCollection.h>
 
 class vtkKWRenderWidget;
 class vtkKWIcon;
@@ -76,11 +77,14 @@ public:
 
   unsigned int GetNumberOfPreviews (void)
   {
-    return this->ViewList->GetNumberOfItems();
+    return this->ViewList->GetNumberOfItems() - 1;
   }
 
   virtual void Update (void);
   
+  void SetEnableViews(unsigned int arg);
+  unsigned int GetEnableViews (void);
+  vtkBooleanMacro (EnableViews, unsigned int);
   
   
   
@@ -93,14 +97,17 @@ protected:
   virtual void CreateWidget();
   virtual void PackSelf();
 
-  virtual vtkViewImage2D* FindView(vtkImageData* imagedata, int &cookie);
-  virtual void ConfigureView(vtkViewImage* view, vtkKWRenderWidget* widget);
+  virtual vtkImageView2D* FindView(vtkImageData* imagedata, int &cookie);
+  virtual void ConfigureView(vtkImageView* view, vtkKWRenderWidget* widget);
 
 private:
   vtkKWPreviewPage(const vtkKWPreviewPage&);   // Not implemented.
   void operator=(const vtkKWPreviewPage&);        // Not implemented.
 
-  vtkCollection* ViewList;
+  vtkImageViewCollection* ViewList;
+  vtkImageView3D* GlobalView;
+  vtkKWRenderWidget* GlobalRenderWidget;
+  
   vtkCollection* RenderWidgetList;
   vtkKWWidgetSet* WidgetGrid;
   
@@ -109,7 +116,6 @@ private:
   int OrientationMode;
   int MaxNumberOfColumns;
   int InteractionMode;
-  
   
   vtkKWFrameWithScrollbar* InternalFrame;
 

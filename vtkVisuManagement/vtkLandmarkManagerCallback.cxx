@@ -45,9 +45,9 @@
 
 
 
-#include <vtkCollection.h>
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageViewCollection.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 
 #include <vtkSphereWidget.h>
 
@@ -63,12 +63,12 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
   //   {
   //     for(unsigned int i = 0; i < this->ViewList->GetNumberOfItems(); i++)
   //     {
-  //       vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(0));
+  //       vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(0));
   //       view->SyncRender();
   //     }  
 
   //     return;
-    
+  
   //   }
   
   vtkSphereWidget* sphere = vtkSphereWidget::SafeDownCast(caller);
@@ -105,7 +105,7 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
     if (!movinglandmark)
       return;
 
-    vtkViewImage* view = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(0));
+    vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(0));
 
     if (event == vtkCommand::StartInteractionEvent)
     {
@@ -119,8 +119,7 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
 	pos[0] = movinglandmark->GetPosition()[0];
 	pos[1] = movinglandmark->GetPosition()[1];
 	pos[2] = movinglandmark->GetPosition()[2];
- 	if (view)
- 	  view->SyncSetCurrentPoint (pos);
+ 	this->ViewList->SyncSetCurrentPoint (pos);
       }
     }
     else if (event == vtkCommand::InteractionEvent)
@@ -131,26 +130,23 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
       if (view)
       {
 	int voxelpos[3] = {0,0,0};
-	view->GetVoxelCoordinates(movinglandmark->GetPosition(), voxelpos);
+	view->GetImageCoordinatesFromWorldCoordinates(movinglandmark->GetPosition(), voxelpos);
 	movinglandmark->SetVoxelCoord(voxelpos);
       }
     }
 
-    if (view)
-      view->SyncRender();
+    this->ViewList->SyncRender();
     
     return;
     
   }
   
-
-  
-  vtkViewImage* view = NULL;
+  vtkImageView* view = NULL;
   
   for (int i=0; i<this->ViewList->GetNumberOfItems(); i++)
   {
-    vtkViewImage* testview = vtkViewImage::SafeDownCast (this->ViewList->GetItemAsObject(i));  
-    if (testview->GetRenderWindowInteractor() == interactor)
+    vtkImageView* testview = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject(i));  
+    if (testview->GetInteractor() == interactor)
       view = testview;
   }
   
@@ -163,82 +159,32 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
   if ((event == vtkCommand::RightButtonPressEvent) && (interactor->GetShiftKey()))
   {
 
-    vtkViewImage2D* view2d = vtkViewImage2D::SafeDownCast (view);
-    vtkViewImage3D* view3d = vtkViewImage3D::SafeDownCast (view);
+    vtkImageView2D* view2d = vtkImageView2D::SafeDownCast (view);
+    vtkImageView3D* view3d = vtkImageView3D::SafeDownCast (view);
     std::cout<<"found view "<<(*view)<<std::endl;
     if (view2d)
     {
       std::cout<<"found view2d "<<std::endl;
+    
+      vtkInteractorStyleImageView2D* p_isi = vtkInteractorStyleImageView2D::SafeDownCast (view2d->GetInteractorStyle());
+      
       // Tricky part to recover the new position of the landmark
+      double pos[3] = {0,0,0};
+      view2d->GetWorldCoordinatesFromDisplayPosition (p_isi->GetRequestedPosition (), pos);
+      int voxelpos[3] = {0,0,0};
+      view2d->GetImageCoordinatesFromWorldCoordinates(pos, voxelpos);
       
-      vtkInteractorStyle* p_isi = vtkInteractorStyle::SafeDownCast(view2d->GetRenderWindowInteractor()->GetInteractorStyle());
-      if (p_isi)
+      vtkLandmark* landmark = this->LandmarkManager->CreateAndAddLandmark();
+      if (landmark)
       {
-	vtkRenderWindowInteractor *rwi = p_isi->GetInteractor();
-        //vtkAssemblyPath *path=NULL;
-        p_isi->FindPokedRenderer(rwi->GetEventPosition()[0],
-				 rwi->GetEventPosition()[1]);
-        rwi->GetPicker()->Pick(rwi->GetEventPosition()[0],
-			       rwi->GetEventPosition()[1], 0.0, 
-			       p_isi->GetCurrentRenderer());
-        vtkAbstractPropPicker *picker = vtkAbstractPropPicker::SafeDownCast(rwi->GetPicker());
-	if (!picker)
-	{
-	  return;
 	
-	}
-      
-	double* world = picker->GetPickPosition();
-	double  pos[3];
-	view2d->GetCurrentPoint(pos);    
-      
-	switch(view2d->GetOrientation())
-	{
-	    case vtkViewImage2D::SAGITTAL_ID:
-	    
-	      pos [1] = world[0];//*1.0;
-	      pos [2] = world[1];//*1.0;
-	      break;
-	    
-	    
-	    case vtkViewImage2D::CORONAL_ID:
-	    
-	      pos [0] = world[0];//*-1.0;
-	      pos [2] = world[1];
-	      break;
-	    
-	    
-	    case vtkViewImage2D::AXIAL_ID:
-	    
-	      pos [0] = world[0];
-	      pos [1] = world[1]*-1.0;
-	      break;
-	    
-	}
-      
-	// Treat extrem positions
-	for (unsigned int i=0; i<3; i++)
-	{
-	  if (pos[i] < view2d->GetWholeMinPosition(i)) pos[i] = view2d->GetWholeMinPosition(i)+0.0005;
-	  if (pos[i] > view2d->GetWholeMaxPosition(i)) pos[i] = view2d->GetWholeMaxPosition(i)-0.0005;
-	}
-      
-	int voxelpos[3] = {0,0,0};
-	view2d->GetVoxelCoordinates(pos, voxelpos);
-      
-	vtkLandmark* landmark = this->LandmarkManager->CreateAndAddLandmark();
-	if (landmark)
-	{
-	
-	  landmark->SetPosition (pos);
-	  landmark->SetVoxelCoord (voxelpos);
-	  //this->LandmarkManager->InvokeEvent (vtkLandmarkManagerCallback::LandmarkHasMovedEvent, landmark);
-	  this->LandmarkManager->UpdateLinker();
-	}
-      
-	view2d->SyncRender();
+	landmark->SetPosition (pos);
+	landmark->SetVoxelCoord (voxelpos);
+	//this->LandmarkManager->InvokeEvent (vtkLandmarkManagerCallback::LandmarkHasMovedEvent, landmark);
+	this->LandmarkManager->UpdateLinker();
       }
       
+      this->ViewList->SyncRender();
     }
     else if (view3d)
     {
@@ -284,9 +230,8 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
 	//this->LandmarkManager->InvokeEvent (vtkLandmarkManagerCallback::LandmarkHasMovedEvent, landmark);
 	this->LandmarkManager->UpdateLinker();
 	
-	view3d->SyncRender();
+	this->ViewList->SyncRender();
 	pointpicker->Delete();
-	
       }
       
     }
@@ -309,7 +254,7 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
     // events in a 3D renderwindowinteractor...
     // but it is catched in 2D...
     // that is why we don't select anything if we are in 3D
-    //     if (!vtkViewImage2D::SafeDownCast (view))
+    //     if (!vtkImageView2D::SafeDownCast (view))
     //       return;
     
     int X, Y;
@@ -337,7 +282,7 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
       return;
     }
 
-    vtkLandmark* landmark = vtkLandmark::SafeDownCast (view->GetDataSetFromActor (actor));
+    vtkLandmark* landmark = vtkLandmark::SafeDownCast (view->FindActorDataSet (actor));
     if (!landmark)
     {
       cellpicker->Delete();
@@ -346,7 +291,7 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
 
     cellpicker->Delete();
 
-    if (vtkViewImage2D::SafeDownCast (view))
+    if (vtkImageView2D::SafeDownCast (view))
       this->SelectedLandmark = landmark;
     
     this->LandmarkManager->SelectLandmark (landmark);
@@ -362,9 +307,9 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
       pos[1] = landmark->GetPosition()[1];
       pos[2] = landmark->GetPosition()[2];
       
-      view->SyncSetCurrentPoint (pos);
+      this->ViewList->SyncSetCurrentPoint (pos);
     }
-    view->SyncRender();
+    this->ViewList->SyncRender();
 
     return;
 
@@ -389,7 +334,7 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
       this->SelectedLandmark->UnSelect();
     }
 
-    vtkViewImage2D* view2d = vtkViewImage2D::SafeDownCast (view);
+    vtkImageView2D* view2d = vtkImageView2D::SafeDownCast (view);
     if (!view2d)
     {
       this->SelectedLandmark->UnSelect();
@@ -401,71 +346,17 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
     
     // Tricky part to recover the new position of the landmark
     
-    vtkInteractorStyle* p_isi = vtkInteractorStyle::SafeDownCast( view2d->GetRenderWindowInteractor()->GetInteractorStyle() );
+    vtkInteractorStyleImageView2D* p_isi = vtkInteractorStyleImageView2D::SafeDownCast ( view2d->GetInteractorStyle());
     if (p_isi )
     {
-      vtkRenderWindowInteractor *rwi = p_isi->GetInteractor();
-      vtkAssemblyPath *path=NULL;
-      p_isi->FindPokedRenderer(rwi->GetEventPosition()[0],
-			       rwi->GetEventPosition()[1]);
-      rwi->GetPicker()->Pick(rwi->GetEventPosition()[0],
-			     rwi->GetEventPosition()[1], 0.0, 
-			     p_isi->GetCurrentRenderer());
-      vtkAbstractPropPicker *picker = vtkAbstractPropPicker::SafeDownCast(rwi->GetPicker());
-      if (!picker)
-      {
-	return;
-      
-      }
-      path = picker->GetPath();
-    
-      if (!path)
-      {
-	return;
-      }
-    
-    
-    
-      double* world = picker->GetPickPosition();
-      double  pos[3];
-      view2d->GetCurrentPoint(pos);    
-    
-      switch(view2d->GetOrientation())
-      {
-	  case vtkViewImage2D::SAGITTAL_ID:
-	  
-	    pos [1] = world[0];//*1.0;
-	    pos [2] = world[1];//*1.0;
-	    break;
-	  
-        
-	  case vtkViewImage2D::CORONAL_ID:
-	  
-	    pos [0] = world[0];//*-1.0;
-	    pos [2] = world[1];
-	    break;
-	  
-	  
-	  case vtkViewImage2D::AXIAL_ID:
-	  
-	    pos [0] = world[0];
-	    pos [1] = world[1]*-1.0;
-	    break;
-	  
-      }
-    
-      // Treat extrem positions
-      for (unsigned int i=0; i<3; i++)
-      {
-	if (pos[i] < view2d->GetWholeMinPosition(i)) pos[i] = view2d->GetWholeMinPosition(i)+0.0005;
-	if (pos[i] > view2d->GetWholeMaxPosition(i)) pos[i] = view2d->GetWholeMaxPosition(i)-0.0005;
-      }
-
+      // Tricky part to recover the new position of the landmark
+      double pos[3] = {0,0,0};
+      view2d->GetWorldCoordinatesFromDisplayPosition (p_isi->GetRequestedPosition (), pos);
       int voxelpos[3] = {0,0,0};
-      view2d->GetVoxelCoordinates(pos, voxelpos);
-      this->SelectedLandmark->SetPosition (pos);
-      this->SelectedLandmark->SetVoxelCoord (voxelpos);    
+      view2d->GetImageCoordinatesFromWorldCoordinates(pos, voxelpos);
 
+      this->SelectedLandmark->SetPosition (pos);
+      this->SelectedLandmark->SetVoxelCoord (voxelpos);
     
       if (this->LandmarkManager)
       {
@@ -475,12 +366,9 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
       }
       this->SelectedLandmark->Modified();
     
-      view->SyncRender();
+      this->ViewList->SyncRender();
     
       this->SelectedLandmark = NULL;
-
-    
-
 
       return;
     }
@@ -513,7 +401,7 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
       return;
     }
 
-    vtkLandmark* landmark = vtkLandmark::SafeDownCast (view->GetDataSetFromActor (actor));
+    vtkLandmark* landmark = vtkLandmark::SafeDownCast (view->FindActorDataSet (actor));
     if (!landmark)
     {
       cellpicker->Delete();
@@ -535,10 +423,10 @@ void vtkLandmarkManagerCallback::Execute ( vtkObject *caller, unsigned long even
       pos[1] = landmark->GetPosition()[1];
       pos[2] = landmark->GetPosition()[2];
       
-      view->SyncSetCurrentPoint (pos);
+      this->ViewList->SyncSetCurrentPoint (pos);
     }
-    view->SyncRender();
-    
+
+    this->ViewList->SyncRender();
   }
   
 }

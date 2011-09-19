@@ -22,14 +22,11 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkCommand.h>
 
-class vtkViewImage;
+class vtkImageView;
 class vtkPolyData;
-class vtkCollection;
-class vtkViewImageCollection;
+class vtkImageViewCollection;
 class vtkLandmark;
 class vtkLandmarkManager;
-
-
 
 class VTK_VISUMANAGEMENT_EXPORT vtkLandmarkManagerCallback : public vtkCommand
 {    
@@ -55,11 +52,11 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmarkManagerCallback : public vtkCommand
   //ETX
   
   
-  void SetViewList (vtkCollection* collection)
+  void SetViewList (vtkImageViewCollection* collection)
   {
     this->ViewList = collection;
   }
-  vtkCollection* GetViewList (void)
+  vtkImageViewCollection* GetViewList (void)
   {
     return this->ViewList;
   }
@@ -84,13 +81,11 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLandmarkManagerCallback : public vtkCommand
     this->LandmarkManager = NULL;
     
   };
-  ~vtkLandmarkManagerCallback(){};
-
-  
+  ~vtkLandmarkManagerCallback(){};  
   
  private:
 
-  vtkCollection* ViewList;
+  vtkImageViewCollection* ViewList;
   vtkLandmark* SelectedLandmark;
   vtkLandmarkManager* LandmarkManager;
   

@@ -4,7 +4,7 @@
   Module:    $Id: vtkKWSequencer.cxx 966 2008-09-29 16:40:25Z ntoussaint $
   Language:  C++
   Author:    $Author: ntoussaint $
-  Date:      $Date: 2008-09-29 18:40:25 +0200 (Mon, 29 Sep 2008) $
+  Date:      $Date: 2008-09-29 17:40:25 +0100 (Mon, 29 Sep 2008) $
   Version:   $Revision: 966 $
 
   Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
@@ -55,8 +55,9 @@
 #include <vtkKWLandmarkManagerWidget.h>
 #include <vtkKWTimeTableWidget.h>
 #include <vtkKWPreviewPage.h>
-#include <vtkViewImage2D.h>
-#include <vtkViewImage3D.h>
+#include <vtkImageViewCollection.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
 #include <vtkDataArrayCollection.h>
 #include <vtkDoubleArray.h>
 #include <vtkKWSnapshotHandler.h>
@@ -510,11 +511,22 @@ void vtkKWSequencer::CreateWidget()
 void vtkKWSequencer::TimeScaleCallback (double time)
 {
 
-  this->ParentObject->UpdateToTime(time);  
+  this->ParentObject->UpdateToTime(time);
   
   if (this->TimeTableWidget && this->TimeTableWidget->IsMapped())
     this->TimeTableWidget->UpdateTime (time);
-
+  // vtkKWPageView* page = this->ParentObject->GetCurrentPage();
+  // if (page)
+  // {
+  //   vtkImageViewCollection* collection = page->GetPool();
+  //   collection->InitTraversal();						
+  //   vtkImageView* item = collection->GetNextItem();				
+  //   while(item)								
+  //   {
+  //     item->Modified();
+  //     item = collection->GetNextItem();
+  //   }
+  // }
   this->ParentObject->Render();
 }
 

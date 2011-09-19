@@ -180,6 +180,8 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
       if (t_image.IsNull())
       {
 	std::cerr<<"there is a problem here !"<<std::endl;
+	std::cerr<<"cannot cast frame image into itk::image !"<<std::endl;
+	throw vtkErrorCode::CannotOpenFileError;
       }
       
       typename itk::ImageRegionIterator<Image3DType> itIn(t_image, t_image->GetLargestPossibleRegion());
