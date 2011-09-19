@@ -21,11 +21,11 @@
 #define MEDVIEWERAREA_P_H
 
 #include <QtCore/QHash>
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 class medToolBoxContainer;
 class medDatabaseNavigator;
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medViewerConfiguration;
 class medClutEditor;
 class QStackedWidget;

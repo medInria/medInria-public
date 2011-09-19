@@ -19,7 +19,7 @@
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
-#include <medCore/medPluginManager.h>
+#include <medPluginManager.h>
 
 class medApplicationPrivate
 {

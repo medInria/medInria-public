@@ -1,5 +1,5 @@
-/* medDatabaseItem.cpp --- 
- * 
+/* medDatabaseItem.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct 17 12:08:53 2008 (+0200)
@@ -9,15 +9,15 @@
  *     Update #: 62
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
-#include <medCore/medDataIndex.h>
-#include <medSql/medDatabaseItem.h>
+#include <medDataIndex.h>
+#include <medDatabaseItem.h>
 
 class medDatabaseItemPrivate
 {
@@ -25,48 +25,47 @@ public:
           medDatabaseItem * parentItem;
     QList<medDatabaseItem *> childItems;
 
-    QString            table;
     QList<QVariant> attrData;
     QList<QVariant> itemData;
     medDataIndex index;
 };
 
-medDatabaseItem::medDatabaseItem(medDataIndex index, const QString& table, const QList<QVariant>& attributes, const QList<QVariant>& data, medDatabaseItem *parent) : d(new medDatabaseItemPrivate)
+medDatabaseItem::medDatabaseItem(medDataIndex index, const QList<QVariant>& attributes, const QList<QVariant>& data, medAbstractDatabaseItem *parent) : d(new medDatabaseItemPrivate)
 {
     d->index = index;
-    d->table = table;
     d->attrData = attributes;
     d->itemData = data;
-    d->parentItem = parent;
+    d->parentItem = dynamic_cast<medDatabaseItem*>(parent);
 }
 
 medDatabaseItem::~medDatabaseItem(void)
 {
     qDeleteAll(d->childItems);
-
+    d->childItems.clear();
     delete d;
+    d = NULL;
 }
 
-medDatabaseItem *medDatabaseItem::child(int row)
+medAbstractDatabaseItem *medDatabaseItem::child(int row)
 {
     return d->childItems.value(row);
 }
 
-medDatabaseItem *medDatabaseItem::parent(void)
+medAbstractDatabaseItem *medDatabaseItem::parent(void)
 {
     return d->parentItem;
 }
 
-void medDatabaseItem::append(medDatabaseItem *item)
+void medDatabaseItem::append(medAbstractDatabaseItem *item)
 {
-    d->childItems.append(item);
+    d->childItems.append(static_cast<medDatabaseItem*>(item));
 }
 
 int medDatabaseItem::row(void) const
 {
     if (d->parentItem)
         return d->parentItem->d->childItems.indexOf(const_cast<medDatabaseItem*>(this));
-    
+
     return 0;
 }
 
@@ -93,18 +92,18 @@ QVariant medDatabaseItem::data(int column) const
     return d->itemData.value(column);
 }
 
-bool medDatabaseItem::insertChildren(int position, int count, int columns)
+bool medDatabaseItem::insertChildren(const medDataIndex& index, int position, int count, int columns)
 {
+    Q_UNUSED(index);
     Q_UNUSED(columns);
 
     if (position < 0 || position > d->childItems.size())
         return false;
 
     for (int row = 0 ; row < count ; ++row) {
-        QString table;
         QList<QVariant> attr;
         QList<QVariant> data;
-        medDatabaseItem * item = new medDatabaseItem(medDataIndex(), table, attr, data, this);
+        medDatabaseItem * item = new medDatabaseItem(medDataIndex(), attr, data, this);
         d->childItems.insert(position, item);
     }
 
@@ -158,11 +157,6 @@ bool medDatabaseItem::setData(int column, const QVariant& value)
     d->itemData[column] = value;
 
     return true;
-}
-
-QVariant medDatabaseItem::table(void)
-{
-    return d->table;
 }
 
 QVariant medDatabaseItem::attribute(int column)

@@ -25,8 +25,9 @@
 #include <QtCore/QAbstractItemModel>
 #include <QtGui>
 
-class medDatabaseItem;
+class medAbstractDatabaseItem;
 class medDatabaseModelPrivate;
+class medDataIndex;
 
 class MEDSQL_EXPORT medDatabaseModel : public QAbstractItemModel
 {
@@ -72,13 +73,13 @@ public:
     /**
      * return a list of strings that represents the currently shown columns
      */
-    QStringList attributes();
+    QStringList columnNames() const;
 
 protected slots:
     void repopulate(void);
 
 protected:
-    void populate(medDatabaseItem *parent);
+    void populate(medAbstractDatabaseItem *parent);
 
 private:
     medDatabaseModelPrivate *d;

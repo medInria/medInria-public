@@ -4,12 +4,12 @@
 
 #include <QtCore>
 
-#include <medGui/medViewerConfiguration.h>
-#include <medGui/medToolBoxDiffusionTensorView.h>
+#include <medViewerConfiguration.h>
+#include <medToolBoxDiffusionTensorView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medViewerConfigurationDiffusionPrivate;
 
 class medViewerConfigurationDiffusion : public medViewerConfiguration
@@ -21,11 +21,11 @@ public:
     ~medViewerConfigurationDiffusion(void);
 
     virtual QString description(void) const;
-    
+
     void setupViewContainerStack ();
 
 public slots:
-    
+
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
 
@@ -36,6 +36,14 @@ public slots:
     void onTubeModeSelected(bool);
     void onTBDiffusionSuccess(void);
     void refreshInteractors (void);
+
+    /**
+      * @brief Adds a new tab to a configuration
+      *
+      * Re-implemented, replaces default implementation in medViewerConfiguration
+      */
+    void onAddTabClicked();
+
 
     // slots for tensor interactions
 
@@ -58,7 +66,7 @@ private:
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox);
 };
 
-medViewerConfiguration *createMedViewerConfigurationDiffusion(void);
+medViewerConfiguration *createMedViewerConfigurationDiffusion(QWidget*);
 
 
 #endif // MEDVIEWERCONFIGURATIONDIFFUSION_H

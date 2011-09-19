@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentImporter.h --- 
- * 
+/* medDatabaseNonPersitentImporter.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:25:31 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 15
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASENONPERSISTENTIMPORTER_H
@@ -22,7 +22,9 @@
 
 #include <QtCore/QObject>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
+#include <medJobItem.h>
+
 
 class dtkAbstractData;
 
@@ -36,20 +38,26 @@ class medDatabaseNonPersistentImporterPrivate;
  * database. The metaData PatientName, StudyDescription and SeriesDescription
  * must be set, otherwise import will fail.
  */
-class medDatabaseNonPersistentImporter : public QObject
+class medDatabaseNonPersistentImporter : public medJobItem
 {
     Q_OBJECT
 
 public:
-     medDatabaseNonPersistentImporter(dtkAbstractData *data);
+     medDatabaseNonPersistentImporter(dtkAbstractData *data,
+                                      const QString& callerUuid);
     ~medDatabaseNonPersistentImporter(void);
 
-    medDataIndex run(void);
+    void run(void);
+
+public slots:
+    void onCancel(QObject*);
 
 signals:
     void success(QObject *);
     void failure(QObject *);
     void progressed(int);
+    void nonPersistentImported(const medDataIndex &, const QString &);
+
 
 private:
     medDatabaseNonPersistentImporterPrivate *d;

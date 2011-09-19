@@ -4,9 +4,9 @@
 
 #include <QtCore>
 
-#include <medGui/medViewerConfiguration.h>
+#include <medViewerConfiguration.h>
 
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medViewerConfigurationRegistrationPrivate;
 
 class medViewerConfigurationRegistration : public medViewerConfiguration
@@ -18,7 +18,7 @@ public:
     ~medViewerConfigurationRegistration(void);
 
     virtual QString description(void) const;
-    
+
     void setupViewContainerStack ();
 
 public slots:
@@ -30,7 +30,7 @@ private:
     medViewerConfigurationRegistrationPrivate *d;
 };
 
-medViewerConfiguration *createMedViewerConfigurationRegistration(void);
+medViewerConfiguration *createMedViewerConfigurationRegistration(QWidget* parent);
 
 
 #endif // MEDVIEWERCONFIGURATIONREGISTRATION_H

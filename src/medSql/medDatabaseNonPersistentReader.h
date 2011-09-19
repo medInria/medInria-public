@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentReader.h --- 
- * 
+/* medDatabaseNonPersitentReader.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:25:31 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 15
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASENONPERSISTENTREADER_H
@@ -22,26 +22,49 @@
 
 #include <QtCore/QObject>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
+#include <medJobItem.h>
 
 class dtkAbstractData;
 
 class medDatabaseNonPersistentReaderPrivate;
 
-class medDatabaseNonPersistentReader : public QObject
+/**
+* @brief Reads files and adds them to the medNonPersistentDatabase.
+*
+* This class inherits from medJobItem and is meant to be run by the medJobManager.
+*
+*/
+class medDatabaseNonPersistentReader : public medJobItem
 {
     Q_OBJECT
 
 public:
-     medDatabaseNonPersistentReader(const QString& file);
+    /**
+    * @brief Constructor.
+    *
+    * @param file the file or directory to be read.
+    * @param callerUuid The string representation of a unique identifier. The caller will react to link the final signal with this id to know whether it should react to it or not.
+    */
+    medDatabaseNonPersistentReader(const QString& file,const QString& callerUuid = QString());
     ~medDatabaseNonPersistentReader(void);
 
-    medDataIndex run(void);
+    void run(void);
 
 signals:
     void success(QObject *);
     void failure(QObject *);
     void progressed(int);
+    /**
+    * @brief Signal emitted when the reading is complete (or has failed).
+    *
+    * @param index the new medDatataIndex, or an invalid one
+    * @param callerUuid the identifier from the caller.
+    */
+    void nonPersistentRead(const medDataIndex & index,const QString& callerUuid);
+
+public slots:
+    void onCancel(QObject*);
 
 private:
     medDatabaseNonPersistentReaderPrivate *d;
