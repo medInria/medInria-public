@@ -9,11 +9,11 @@
 #include "medSaveModifiedDialog.h"
 
 class medSaveModifiedDialogPrivate
-{   
-public:  
+{
+public:
 
     QTreeWidget *treeWidget;
-    QTreeWidgetItem *image;    
+    QTreeWidgetItem *image;
     QPushButton *saveButton;
     QPushButton *deleteButton;
     QPushButton *selectAllButton;
@@ -55,15 +55,13 @@ class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
 
 medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent), d (new medSaveModifiedDialogPrivate)
 {
-    QWidget *widget = new QWidget(this);
-
     QLabel *label = new QLabel(this);
-    label->setText("The following data has been created. Do you want save them before closing?");
+    label->setText(tr("The following data has been created. Do you want save them before closing?"));
 
     d->saveButton = new QPushButton(tr("Save"),this);
     d->deleteButton = new QPushButton(tr("Delete"),this);
     d->selectAllButton = new QPushButton(tr("Select All"),this);
-    
+
     d->treeWidget = new QTreeWidget(this);
     d->treeWidget->setColumnCount(4);
 
@@ -90,15 +88,16 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     connect (d->saveButton, SIGNAL(clicked()), this, SLOT(Save()));
     connect (d->deleteButton, SIGNAL(clicked()), this, SLOT(Delete()));
     connect (d->selectAllButton, SIGNAL(clicked()), this, SLOT(onSelectAll()));
-    connect (d->treeWidget,SIGNAL(itemClicked(QTreeWidgetItem *, int)),this,SLOT(onItemActivated(QTreeWidgetItem *,int)));
+//    connect (d->treeWidget,SIGNAL(itemClicked(QTreeWidgetItem *, int)),this,SLOT(onItemActivated(QTreeWidgetItem *,int)));
 
     this->setLayout(layout);
+    setModal(true);
 }
 
 medSaveModifiedDialog::~medSaveModifiedDialog()
 {
     delete d;
-    d = NULL;  
+    d = NULL;
 }
 
 void medSaveModifiedDialog::Save( )
