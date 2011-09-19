@@ -212,6 +212,8 @@ void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
         delete itemIt.value();
         d->items.erase(itemIt);
     }
+
+    emit medAbstractDbController::updated(index);
 }
 
 qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIndex& index ) const
