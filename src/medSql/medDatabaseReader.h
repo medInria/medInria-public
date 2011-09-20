@@ -21,14 +21,11 @@
 #define MEDDATABASEREADER_H
 
 #include <QtCore/QObject>
-
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medDataIndex.h>
-
 class dtkAbstractData;
-
 class medDatabaseReaderPrivate;
+class medDataIndex;
 
 class medDatabaseReader : public QObject
 {

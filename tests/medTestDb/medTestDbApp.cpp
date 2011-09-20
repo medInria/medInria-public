@@ -183,7 +183,7 @@ void medTestDbApp::handlePersistentDataImported()
     CHECK_TEST_RESULT(patients.size() == 0);
 
     //close db?
-
+    medDatabaseController::instance()->closeConnection();
     testResult = DTK_SUCCEED;
     exit();
 }

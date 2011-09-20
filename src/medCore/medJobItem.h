@@ -40,10 +40,11 @@ public:
 
 signals:
     void progressed(QObject* sender, int progress);
-    void success (QObject* sender);
-    void failure (QObject* sender);
-    void cancelled(QObject* sender);
-    void showError(QObject* sender, const QString& message, unsigned int timeout);
+    void success   (QObject* sender);
+    void failure   (QObject* sender);
+    void cancelled (QObject* sender);
+    void showError (QObject* sender, const QString& message, unsigned int timeout);
+    void progress  (int progress); // backward compatible version (automatically called when progressed is emitted)
 
     /**
     * This signal is emitted when the process cannot be cancelled anymore.
@@ -61,6 +62,9 @@ public slots:
     * @return   void
     */
     virtual void onCancel(QObject*);
+
+protected slots:
+    void onProgressed(QObject* sender, int prog);
 
 };
 

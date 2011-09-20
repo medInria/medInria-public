@@ -48,7 +48,7 @@ signals:
     * does not support signal overloading.
     * @param progress – the progress between 0 and 100
     **/
-    void progress(int progress);
+    //void progress(int progress);
 
     /**
     * Signal emitted when the removing process finishes.
