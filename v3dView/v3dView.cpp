@@ -586,6 +586,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->menu->addAction(coronalAct);
     d->menu->addAction(sagittalAct);
     d->menu->addAction(ThreeDAct);
+    d->menu->addAction(mprAct);
 
    /* QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
 
