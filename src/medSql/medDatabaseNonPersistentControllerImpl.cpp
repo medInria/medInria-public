@@ -94,7 +94,7 @@ void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatab
     d->items.insert(index, item);
 }
 
-void medDatabaseNonPersistentControllerImpl::import(const QString& file,const QString& importUuid)
+void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString importUuid)
 {
     medDatabaseNonPersistentReader *reader =
             new medDatabaseNonPersistentReader(file,importUuid);
@@ -109,8 +109,8 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,const QS
             medMessageController::instance(), SLOT(remove(QObject *)));
     connect(reader, SIGNAL(failure(QObject *)),
             medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(reader, SIGNAL(success(QObject *)), reader, SLOT(deleteLater()));
-    connect(reader, SIGNAL(failure(QObject *)), reader, SLOT(deleteLater()));
+    //connect(reader, SIGNAL(success(QObject *)), reader, SLOT(deleteLater()));
+    //connect(reader, SIGNAL(failure(QObject *)), reader, SLOT(deleteLater()));
 
     medMessageController::instance()->showProgress(reader, "Opening file item");
 
@@ -162,17 +162,18 @@ bool medDatabaseNonPersistentControllerImpl::isConnected() const
 }
 
 void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
-                                                    const QString& callerUuid)
+                                                    QString callerUuid)
 {
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
 
-    connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+//    connect(importer, SIGNAL(progressed(QObject *, int)),    medMessageController::instance(), SLOT(setProgress(int)));
     connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &)));
-    connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString &)));
+    connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
     connect(importer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(importer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
-    connect(importer, SIGNAL(failure(QObject *)), importer, SLOT(deleteLater()));
+    
+//    connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
+//    connect(importer, SIGNAL(failure(QObject *)), importer, SLOT(deleteLater()));
 
     medMessageController::instance()->showProgress(importer, "Importing data item");
 

@@ -34,6 +34,7 @@ public:
             dtkDebug() << "Exception caught : " << "[Unknown exception type]";
             testResult = DTK_FAILURE;
         }
+        return false;
     }
 
 public slots:
