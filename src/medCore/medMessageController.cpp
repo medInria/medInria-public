@@ -1,5 +1,5 @@
-/* medMessageController.cpp --- 
- * 
+/* medMessageController.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Jun 28 09:59:08 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 143
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include <dtkCore/dtkGlobal.h>
@@ -52,7 +52,7 @@ QWidget * medMessageControllerMessage::getWidget()
 medMessageControllerMessageSimple::medMessageControllerMessageSimple(
         QObject* sender, const QString& text,
         QWidget *parent,unsigned int timeout) : medMessageControllerMessage(sender,parent)
-{    
+{
     icon = new QLabel(this);
     //icon->setPixmap(QPixmap(":/icons/information.png"));
 
@@ -129,13 +129,13 @@ public:
 medMessageControllerMessageProgress::medMessageControllerMessageProgress(
         QObject* sender, const QString& text, QWidget *parent) :
         medMessageControllerMessage(sender,parent), d(new medMessageControllerMessageProgressPrivate)
-{ 
+{
     QLabel *icon = new QLabel(this);
     icon->setPixmap(QPixmap(":/icons/information.png"));
 
     QLabel *info = new QLabel(this);
     info->setText(text);
-    
+
     d->progress = new QProgressBar(this);
     d->progress->setMinimum(0);
     d->progress->setMaximum(100);
@@ -172,13 +172,13 @@ public:
 };
 
 medMessageControllerMessageQuestion::medMessageControllerMessageQuestion(QObject* sender, const QString& text, QWidget *parent) : medMessageControllerMessage(sender,parent), d(new medMessageControllerMessageQuestionPrivate)
-{  
+{
     QLabel *icon = new QLabel(this);
     icon->setPixmap(QPixmap(":/icons/information.png"));
 
     QLabel *info = new QLabel(this);
     info->setText(text);
-    
+
     QPushButton *ok_button = new QPushButton("Yes", this);
     QPushButton *no_button = new QPushButton("No", this);
 
@@ -228,7 +228,7 @@ void medMessageController::showInfo(QObject *sender, const QString& text,unsigne
                 sender,text,0,timeout);
 
         emit addMessage(message->getWidget());
-        
+
         d->messages.insert(sender, message);
     } else {
         dtkOutput() << text;
@@ -243,7 +243,7 @@ void medMessageController::showError(QObject *sender, const QString& text,unsign
                 sender,text,0,timeout);
 
         emit addMessage(message->getWidget());
-        
+
         d->messages.insert(sender, message);
     } else {
         dtkError() << text;
@@ -257,7 +257,7 @@ void medMessageController::showProgress(QObject *sender, const QString& text)
         medMessageControllerMessageProgress *message = new medMessageControllerMessageProgress(sender,text);
 
         emit addMessage(message->getWidget());
-        
+
         d->messages.insert(sender, message);
     } else {
         dtkDebug() << "Progress : " << text;
@@ -279,12 +279,12 @@ void medMessageController::setProgress(int value)
 void medMessageController::remove(QObject *sender)
 {
     medMessageControllerMessage *message = d->messages.value(sender);
-
-    emit removeMessage(message->getWidget());
-
-    d->messages.remove(sender);
-
-    delete message;
+    if(message != NULL)
+    {
+        emit removeMessage(message->getWidget());
+        d->messages.remove(sender);
+        delete message;
+    }
 }
 
 medMessageController::medMessageController(void) : QObject(), d(new medMessageControllerPrivate)

@@ -45,6 +45,12 @@ signals:
     void cancelled(QObject* sender);
     void showError(QObject* sender, const QString& message, unsigned int timeout);
 
+    /**
+    * This signal is emitted when the process cannot be cancelled anymore.
+    * @params QObject *sender
+    * @return void
+    */
+    void disableCancel(QObject* sender);
 
 public slots:
 

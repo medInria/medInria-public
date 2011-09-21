@@ -263,6 +263,20 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     if (!data)
         return;
 
+    //Check extension:
+    QFileInfo fileInfo(fileName);
+    if(fileInfo.suffix().isEmpty())
+    {
+        qDebug() << "determining suffix for type" << data->description();
+        if (data->description().contains("vtk") ||
+                data->description().contains("v3d"))
+            fileName.append(".vtk");
+        else
+            fileName.append(".nii.gz");
+        qDebug() << "filename:" << fileName;
+        //There may be other cases, but this will get us through most
+    }
+
     medDatabaseExporter *exporter = new medDatabaseExporter (data, fileName);
 
     connect(exporter, SIGNAL(progressed(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));

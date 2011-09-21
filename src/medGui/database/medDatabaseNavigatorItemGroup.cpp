@@ -1,5 +1,5 @@
-/* medDatabaseNavigatorItemGroup.cpp --- 
- * 
+/* medDatabaseNavigatorItemGroup.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:39:49 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 14
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseNavigatorItemGroup.h"
@@ -30,8 +30,6 @@
 class medDatabaseNavigatorItemGroupPrivate
 {
 public:
-    bool non_persitent;
-
     int item_count;
 
     QString name;
@@ -43,8 +41,6 @@ public:
 
 medDatabaseNavigatorItemGroup::medDatabaseNavigatorItemGroup(QGraphicsItem *parent) : QGraphicsItem(parent), d(new medDatabaseNavigatorItemGroupPrivate)
 {
-    d->non_persitent = false;
-
     d->item_count = 0;
 
     d->orientation = medDatabaseNavigatorController::instance()->orientation();
@@ -60,7 +56,7 @@ medDatabaseNavigatorItemGroup::~medDatabaseNavigatorItemGroup(void)
 void medDatabaseNavigatorItemGroup::addItem(medDatabaseNavigatorItem *item)
 {
     qreal item_width   = medDatabaseNavigatorController::instance()->itemWidth();
-    qreal item_height  = medDatabaseNavigatorController::instance()->itemHeight();    
+    qreal item_height  = medDatabaseNavigatorController::instance()->itemHeight();
     qreal item_spacing = medDatabaseNavigatorController::instance()->itemSpacing();
 
     item->setParentItem(this);
@@ -75,10 +71,6 @@ void medDatabaseNavigatorItemGroup::addItem(medDatabaseNavigatorItem *item)
         : item->setPos(10, d->item_count * (item_width + item_spacing) + 30);
 
     d->item_count++;
-
-    d->non_persitent = !(medDataManager::instance()->
-        controllerForDataSource( item->dataIndex().dataSourceId() )
-        ->isPersistent() );
 }
 
 void medDatabaseNavigatorItemGroup::clear(void)
@@ -113,11 +105,7 @@ void medDatabaseNavigatorItemGroup::paint(QPainter *painter, const QStyleOptionG
 {
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
-    if(!d->non_persitent)
-        painter->setBrush(Qt::darkGray);
-    else
-        painter->setBrush(QColor(129, 143, 164));
-    painter->setPen(Qt::NoPen);
+    painter->setBrush(Qt::darkGray);
     painter->drawRoundedRect(option->rect, 5, 5);
     painter->setPen(Qt::white);
     if (d->orientation==Qt::Horizontal)
@@ -131,7 +119,7 @@ void medDatabaseNavigatorItemGroup::setOrientation (Qt::Orientation orientation)
 {
     if (d->orientation == orientation)
         return;
-  
+
     d->orientation = orientation;
 
     QList<medDatabaseNavigatorItem*> items = d->items;

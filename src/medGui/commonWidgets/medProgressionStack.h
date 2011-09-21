@@ -76,6 +76,14 @@ public slots:
     void onFailure(QObject* sender);
     void onCancel(QObject* sender);
     void removeItem();
+
+    /**
+    * Modifies the GUI so as there is no way of (attempting) to cancel
+    * the job anymore, as now it is not cancellable.
+    * @params QObject* sender
+    */
+    void disableCancel(QObject* sender);
+
 private slots:
     /** send a cancel request to the job that the cancelbutton is connected to **/
     void sendCancelRequest();

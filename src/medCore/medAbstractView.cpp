@@ -352,27 +352,10 @@ void medAbstractView::removeOverlay(int layer)
         medAbstractView::removeDataType(d->dataList[layer]->description());
         emit (dataRemoved(d->dataList[layer], layer));
         emit (dataRemoved(layer));
+        d->dataList.remove(layer);
     }
     DTK_DEFAULT_IMPLEMENTATION;
 }
-
-//void medAbstractView::addDataInList(dtkAbstractData * data)
-//{
-//    d->dataList.append(data);
-//}
-//
-//dtkAbstractData * medAbstractView::dataInList(int layer)
-//{
-//    if (layer < d->dataList.size())
-//        return d->dataList.at(layer);
-//
-//    return NULL;
-//}
-//
-//void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
-//{
-//    d->dataList[layer] = data;
-//}
 
 void medAbstractView::onSliceChanged (int slice)
 {
@@ -395,8 +378,12 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
 
 bool medAbstractView::isInList(dtkAbstractData * data, int layer)
 {
+
     if (d->dataList.contains(layer) && d->dataList[layer]==data)
+    {
+//        qDebug() << "data is in list,layer:" << layer;
         return true;
+    }
 
     return false;
 }
