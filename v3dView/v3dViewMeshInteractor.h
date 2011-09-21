@@ -17,16 +17,17 @@ class V3DVIEWPLUGIN_EXPORT v3dViewMeshInteractor: public medMeshAbstractViewInte
 {
 
     Q_OBJECT
-    
+
 public:
     v3dViewMeshInteractor();
     virtual ~v3dViewMeshInteractor();
-    
+
     virtual QString description(void) const;
+    virtual QString identifier(void) const;
     virtual QStringList handled(void) const;
-    
+
     static bool registered(void);
-    
+
     virtual void setData(dtkAbstractData *data);
     virtual void setView(dtkAbstractView *view);
 
@@ -43,9 +44,9 @@ public:
     int meshLayer(void);
     bool edgeVisibility (int meshLayer);
     QString* color (int meshLayer);
-    QString* renderingType (int meshLayer); 
+    QString* renderingType (int meshLayer);
     QString* attribute (int meshLayer);
-    QString* lut (int meshLayer); 
+    QString* lut (int meshLayer);
     void setAttribute (const QString& attribute, int meshLayer);
     void setScalarVisibility(bool val);
     bool isMeshOnly();
@@ -60,10 +61,10 @@ public slots:
     virtual void onVisibilityPropertySet (const QString& value);
     virtual void onEdgeVisibilityPropertySet (const QString& value);
     virtual void onRenderingModePropertySet (const QString& value);
-    
+
     virtual void onLUTModePropertySet (const QString& value);
     virtual void onColorPropertySet ( const QColor& color);
-    
+
 
 private:
     v3dViewMeshInteractorPrivate *d;

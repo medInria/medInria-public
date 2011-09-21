@@ -19,6 +19,51 @@
 #include <medAbstractDataTypedImage.h>
 #include <itkDataImagePluginExport.h>
 
+#include "itkSpatialOrientationAdapter.h"
+
+template<typename T,int DIM>
+std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::DirectionType &directionMatrix)
+{
+    std::vector <bool> mirrorThumbs(2,false);
+
+    std::vector <unsigned int> axesPermutation(2);
+    for (unsigned int i = 0;i < 2;++i)
+    {
+        axesPermutation[i] = i;
+        double maxAbsValue = directionMatrix(i,i);
+
+        for (unsigned int j = 0;j < DIM;++j)
+        {
+            if (fabs(maxAbsValue) < fabs(directionMatrix(j,i)))
+            {
+                axesPermutation[i] = j;
+                maxAbsValue = directionMatrix(j,i);
+            }
+        }
+
+        if (i == axesPermutation[i])
+            mirrorThumbs[i] = maxAbsValue < 0;
+        else
+        {
+            maxAbsValue = 0;
+            unsigned int maxIndex = 0;
+            for (unsigned int j = 0;j < DIM;++j)
+            {
+                if (fabs(maxAbsValue) < fabs(directionMatrix(j,axesPermutation[i])))
+                {
+                    maxIndex = j;
+                    maxAbsValue = directionMatrix(j,axesPermutation[i]);
+                }
+            }
+
+            mirrorThumbs[i] = maxAbsValue < 0;
+        }
+    }
+
+    return mirrorThumbs;
+}
+
+
 template<typename T,int DIM>
 void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez,QList<QImage>& thumbnails) {
     if (DIM<3 || !image)
@@ -48,7 +93,7 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
 
         index.Fill(0);
         index[2] = size[2]/2;
-        typename ImageType::RegionType region = img->GetLargestPossibleRegion(); 
+        typename ImageType::RegionType region = img->GetLargestPossibleRegion();
         region.SetIndex(index);
         region.SetSize(newSize);
 
@@ -147,6 +192,10 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
     rgbfilter->GetColormap()->SetMaximumRGBComponentValue (255);
     rgbfilter->UseInputImageExtremaForScalingOn ();
 
+    typename ImageType::DirectionType directionMatrix = image->GetDirection();
+
+    std::vector <bool> mirrorThumbs = DeterminePermutationsAndFlips<T,DIM>(directionMatrix);
+
     if (DIM==3) {
 
         for (unsigned int slice=0;slice<size[2];slice++) {
@@ -199,7 +248,8 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
                 ++it;
             }
 
-            thumbnails.push_back (qimage->mirrored(img2d->GetDirection()(0,0)==-1.0,img2d->GetDirection()(1,1)==-1.0));
+            // the y direction for QImages is inversed with respect to the image convention, explaining the !mirrorThumbs[1]
+            thumbnails.push_back(qimage->mirrored(mirrorThumbs[0],mirrorThumbs[1]));
             delete qimage;
         }
     } else if (DIM==4) {
@@ -257,7 +307,8 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
                     ++it;
                 }
 
-                thumbnails.push_back(qimage->mirrored(img2d->GetDirection()(0,0)==-1.0,img2d->GetDirection()(1,1)==-1.0));
+                // the y direction for QImages is inversed with respect to the image convention, explaining the !mirrorThumbs[1]
+                thumbnails.push_back(qimage->mirrored(mirrorThumbs[0],mirrorThumbs[1]));
                 delete qimage;
             }
         }
