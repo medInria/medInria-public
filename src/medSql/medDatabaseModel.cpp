@@ -61,7 +61,11 @@ medAbstractDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index)
 {
     if (index.isValid()) {
         medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+<<<<<<< HEAD
         if (item)
+=======
+        if (item) 
+>>>>>>> e2fc0fd3244cec45971f051603a32d2985485ca5
         return item;
     }
 
@@ -149,7 +153,11 @@ int medDatabaseModel::rowCount(const QModelIndex& parent) const
         parentItem = d->root;
     else
         parentItem = static_cast<medAbstractDatabaseItem *>(parent.internalPointer());
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> e2fc0fd3244cec45971f051603a32d2985485ca5
     return parentItem->childCount();
 }
 
@@ -177,7 +185,11 @@ QVariant medDatabaseModel::data(const QModelIndex& index, int role) const
 
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> e2fc0fd3244cec45971f051603a32d2985485ca5
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     return item->data(index.column());
@@ -326,7 +338,11 @@ Qt::ItemFlags medDatabaseModel::flags(const QModelIndex& index) const
  * \param index The index of the data item to be modified.
  * \param value The value to be set for the data item.
  * \param role  The role for which the value is to be changed.
+<<<<<<< HEAD
  *
+=======
+ * 
+>>>>>>> e2fc0fd3244cec45971f051603a32d2985485ca5
  * \return true if the update is successful, false otherwise.
  */
 bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, int role)
@@ -336,7 +352,11 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
 
     if(index.column() == 0)
         return false;
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> e2fc0fd3244cec45971f051603a32d2985485ca5
     medAbstractDatabaseItem *item = d->item(index);
 
     bool result = item->setData(index.column(), value);
@@ -596,6 +616,3 @@ QStringList medDatabaseModel::columnNames() const
     }
     return d->columnNames;
 }
-
-
-
