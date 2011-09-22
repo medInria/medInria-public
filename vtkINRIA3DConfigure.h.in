@@ -28,6 +28,12 @@
   #define VTK_VISUMANAGEMENT_EXPORT __declspec( dllimport )
  #endif
 
+ #if defined (vtkLandmarkManagement_EXPORTS)
+  #define VTK_LANDMARKMANAGEMENT_EXPORT __declspec( dllexport )
+ #else
+  #define VTK_LANDMARKMANAGEMENT_EXPORT __declspec( dllimport )
+ #endif
+
  #if defined (vtkWidgetsAddOn_EXPORTS)
   #define VTK_WIDGETSADDON_EXPORT __declspec( dllexport )
  #else
