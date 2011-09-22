@@ -32,6 +32,8 @@ class medDatabaseModel;
 class medBrowserAreaPrivate;
 class medAbstractDataSource;
 class dtkAbstractData;
+class medToolBox;
+class medJobItem;
 
 class medBrowserArea : public QWidget
 {
@@ -70,12 +72,22 @@ signals:
     void showError (QObject*,const QString&,unsigned int timeout);
 
 public slots:
-    void onFileImported(void);
     void onSourceIndexChanged(int index);
     void onFileImport(QString);
+    void onFileIndex(QString);
     void onDataImport(dtkAbstractData *data);
     void onDataReceivingFailed(QString fileName);
+    void displayJobItem(medJobItem *importer, QString infoBaseName);
     
+    void onPartialImportAttempted(const QString& message);
+
+    /*
+     * Function to call when (after emitting opening signal)
+     * the db item fail to open. This will make changes in the GUI
+     * to let the user know.
+     */
+    void onOpeningFailed(const medDataIndex& index);
+
     /**
      * @brief Export data from a selected medDataIndex in a data source.
      *
@@ -85,6 +97,19 @@ public slots:
     */
     void onExportData(const medDataIndex &index);
 
+    /**
+     * @brief Adds a medToolBox to the medToolBoxContainer.
+     *
+     * @param toolbox
+    */
+    void addToolBox(medToolBox *toolbox);
+    /**
+     * @brief Removes a medToolBox from the medToolBoxContainer.
+     *
+     * @param toolbox
+    */
+    void removeToolBox(medToolBox *toolbox);
+    
     /** Called when data has been removed from a data source.*/
     void onDataRemoved(const medDataIndex &index);
 

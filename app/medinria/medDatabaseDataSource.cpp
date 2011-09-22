@@ -21,22 +21,21 @@ public:
 
     QList<medToolBox*> toolboxes;
     medDatabaseSearchPanel *searchPanel;
-   
+
 };
 
 medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
 {
-    d->preview = new medDatabasePreview(parent);
+    d->database_widget = new QWidget(parent);
 
-    d->model = new medDatabaseModel;
+    d->model = new medDatabaseModel (this);
+    d->proxy = new medDatabaseProxyModel(this);
 
-    d->proxy = new medDatabaseProxyModel(parent);
     d->proxy->setSourceModel(d->model);
 
-    d->view = new medDatabaseView(parent);
+    d->preview = new medDatabasePreview(d->database_widget);
+    d->view    = new medDatabaseView(d->database_widget);
     d->view->setModel(d->proxy);
-
-    d->database_widget = new QWidget(parent);
 
     QVBoxLayout *database_layout = new QVBoxLayout(d->database_widget);
     database_layout->setContentsMargins(0, 0, 0, 0);
@@ -60,8 +59,6 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
 
 medDatabaseDataSource::~medDatabaseDataSource()
 {
-    delete d->model;
-    d->model = NULL;
     delete d;
     d = NULL;
 }
@@ -83,11 +80,12 @@ QString medDatabaseDataSource::tabName()
 
 QList<medToolBox*> medDatabaseDataSource::getToolboxes()
 {
-    return d->toolboxes; 
+    return d->toolboxes;
 }
 
-void medDatabaseDataSource::update()
+void medDatabaseDataSource::update(const medDataIndex &index)
 {
+    Q_UNUSED(index);
     d->preview->reset();
     d->preview->init();
     d->preview->update();
@@ -99,7 +97,7 @@ void medDatabaseDataSource::onFilter( const QString &text, int column )
     d->proxy->setFilterRegExpWithColumn(QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard), column);
 }
 
-
-
-
-
+void medDatabaseDataSource::onOpeningFailed(const medDataIndex& index)
+{
+    d->view->onOpeningFailed(index);
+}

@@ -1,5 +1,5 @@
-/* medDatabaseRemover.cpp --- 
- * 
+/* medDatabaseRemover.cpp ---
+ *
  * Author: John Stark
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:27:20 2010 (+0200)
@@ -9,17 +9,11 @@
  *     Update #: 19
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
-
-#include "medDatabaseController.h"
 #include "medDatabaseRemover.h"
-
-#include <medCore/medAbstractDataImage.h>
-#include <medCore/medDataIndex.h>
-#include <medCore/medStorage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -28,15 +22,22 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 
+#include <medDatabaseController.h>
+#include <medStorage.h>
+#include <medDataIndex.h>
+#include <medAbstractDataImage.h>
+
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace {
-inline bool execQuery( QSqlQuery & query, const char *file, int line ) {
-    if ( ! query.exec() ) {
-         qDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-         return false;
+    inline bool execQuery( QSqlQuery & query, const char *file, int line )
+    {
+        if ( ! query.exec() )
+        {
+             qDebug() << file << "(" << line << ") :" << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+             return false;
+        }
+        return true;
     }
-    return true;
-} 
 }
 
 class medDatabaseRemoverPrivate
@@ -197,38 +198,24 @@ void medDatabaseRemover::removeSeries( int patientId, int studyId, int seriesId 
     query.bindValue(":seriesId", seriesId);
     EXEC_QUERY(query);
     QString seriesName;
-    QString seriesPath;
+    QString thumbnail;
     if ( query.next()) {
-        QString thumbnail = query.value(0).toString();
+        thumbnail = query.value(0).toString();
         this->removeFile( thumbnail );
         QString path = query.value(1).toString();
-        this->removeDataFile( medDataIndex::makeSeriesIndex(d->index.dataSourceId(), patientId, studyId, seriesId) , path );
+
+        // if path is empty then it was an indexed series
+        if(!path.isNull() && !path.isEmpty())
+            this->removeDataFile( medDataIndex::makeSeriesIndex(d->index.dataSourceId(), patientId, studyId, seriesId) , path );
+
         seriesName = query.value(2).toString();
-        seriesPath = path;
     }
     removeTableRow( d->T_SERIES, seriesId );
 
-    query.prepare("SELECT name  FROM " + d->T_STUDY + " WHERE id = :studyId ");
-    query.bindValue(":studyId", studyId);
-    EXEC_QUERY(query);
-    QString studyName;
-    if ( query.next() ) 
-        studyName = query.value(0).toString();
-
-    query.prepare("SELECT name  FROM " + d->T_PATIENT + " WHERE id = :patientId ");
-    query.bindValue(":patientId", patientId);
-    EXEC_QUERY(query);
-    QString patientName;
-    if ( query.next() ) 
-        patientName = query.value(0).toString();
-
-    QFileInfo fi(medStorage::dataLocation() + "/" + seriesPath);
-
-    QDir seriesDir(fi.dir().path() + "/" + fi.completeBaseName());
-
-    if (seriesDir.exists()) {
-        seriesDir.rmdir(seriesDir.path());
-    }
+    // we want to remove the directory if empty
+    QFileInfo seriesFi(medStorage::dataLocation() + thumbnail);
+    if (seriesFi.dir().exists())
+        seriesFi.dir().rmdir(seriesFi.absolutePath()); // only removes if empty
 }
 
 bool medDatabaseRemover::isStudyEmpty( int studyId )
@@ -266,11 +253,10 @@ void medDatabaseRemover::removeStudy( int patientId, int studyId )
     if ( query.next() ) 
         patientName = query.value(0).toString();
 
-    medDatabaseControllerImpl * dbi = medDatabaseController::instance();
-    QString studyPath = dbi->stringForPath( patientName ) + "/" + 
-        dbi->stringForPath( studyName );
-    QDir dir;
-    dir.rmdir(medStorage::dataLocation() + "/" + studyPath);
+    medDatabaseControllerImpl* dbi = medDatabaseController::instance();
+    QDir studyDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName) + "/" + dbi->stringForPath(studyName));
+    if (studyDir.exists())
+        studyDir.rmdir(studyDir.path()); // only removes if empty
 }
 
 bool medDatabaseRemover::isPatientEmpty( int patientId )
@@ -301,9 +287,9 @@ void medDatabaseRemover::removePatient( int patientId )
     removeTableRow( d->T_PATIENT, patientId );
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
-    QString patientPath = dbi->stringForPath( patientName );
-    QDir dir;
-    dir.rmdir(medStorage::dataLocation() + "/" + patientPath);
+    QDir patientDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName));
+    if (patientDir.exists())
+        patientDir.rmdir(patientDir.path()); // only removes if empty
 }
 
 void medDatabaseRemover::removeTableRow( const QString &table, int id )

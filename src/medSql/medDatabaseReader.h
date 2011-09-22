@@ -1,5 +1,5 @@
-/* medDatabaseReader.h --- 
- * 
+/* medDatabaseReader.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:25:31 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 12
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASEREADER_H
@@ -46,6 +46,7 @@ public:
 
 protected:
     dtkSmartPointer<dtkAbstractData> readFile(QString filename);
+    dtkSmartPointer<dtkAbstractData> readFile(const QStringList filenames );
 
 signals:
     void success(QObject *);

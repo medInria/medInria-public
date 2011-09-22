@@ -25,8 +25,9 @@ public:
     QString tabName();
 
     QList<medToolBox*> getToolboxes();
-
-    void update();
+public slots:
+    void update(const medDataIndex &);
+    void onOpeningFailed(const medDataIndex& index);
 
 signals:
     void open(const medDataIndex&);
@@ -41,4 +42,3 @@ private:
 };
 
 #endif // medDatabaseDataSource_h__
-

@@ -29,7 +29,7 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 {
     QWidget* displayWidget = new QWidget(this);
 
-    d->glyphShapesList = *(new QStringList());
+    d->glyphShapesList = QStringList();
     d->glyphShapesList << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics";
 
     // combobox to control the glyph shape

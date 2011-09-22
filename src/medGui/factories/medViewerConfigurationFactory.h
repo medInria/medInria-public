@@ -15,7 +15,7 @@ class MEDGUI_EXPORT medViewerConfigurationFactory : public dtkAbstractFactory
     Q_OBJECT
 
 public:
-    typedef medViewerConfiguration *(*medViewerConfigurationCreator)(void);
+    typedef medViewerConfiguration *(*medViewerConfigurationCreator)(QWidget* parent);
 
     typedef QHash<QString, medViewerConfigurationCreator> medViewerConfigurationCreatorHash;
 
@@ -27,7 +27,12 @@ public:
     QList<QString> configurations(void);
 
 public slots:
-    medViewerConfiguration *createConfiguration(QString type);
+    /**
+     * @brief allocates the memory for a medViewerConfiguration.
+     * @param type identifier for the Configuration type.
+     * @param parent the parentWidget for all the Widget created in the configuration, even if the configuration is not a widget, its children can be destroyed by the qobject hierarchy.
+     */
+    medViewerConfiguration *createConfiguration(QString type,QWidget* parent=0);
 
 protected:
      medViewerConfigurationFactory(void);

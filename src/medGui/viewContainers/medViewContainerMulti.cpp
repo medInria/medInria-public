@@ -161,7 +161,6 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     }
 
     content << container;
-
     this->layout(content);
 
     // medViewContainer::setView (view); //no, since d->view does not make sense in multi
@@ -286,6 +285,9 @@ void medViewContainerMulti::onViewClosing (void)
             current = dynamic_cast< medViewContainer * >( predContainer );
         if ( current == NULL )
             current = this;
+
+        this->setCurrent(this);
+
         current->onViewFocused( true );
 
         this->update();

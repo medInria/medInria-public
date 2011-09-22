@@ -40,7 +40,13 @@ signals:
 
 public slots:
     void clear(void);
-    
+    /**
+     * @brief Sets the current tab according to container type
+     *
+     * @param name the container description
+    */
+    void setTab(const QString &name);
+
 protected slots:
     void onButtonAClicked(void);
     void onButtonBClicked(void);

@@ -210,10 +210,14 @@ void medProgressionStack::addJobItem(medJobItem* job, QString label)
     connect(job, SIGNAL(progressed(QObject*, int)), this, SLOT(setProgress(QObject*, int)), Qt::QueuedConnection);
     connect(job, SIGNAL(success(QObject*)), this, SLOT(onSuccess(QObject*)), Qt::QueuedConnection);
     connect(job, SIGNAL(failure(QObject*)), this, SLOT(onFailure(QObject*)), Qt::QueuedConnection);
-    connect(job, SIGNAL(showError(QObject*,const QString&,unsigned int)),
-        medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)), Qt::QueuedConnection);
+
+    connect(job, SIGNAL(showError(QObject*, const QString&, unsigned int)),
+        medMessageController::instance(), SLOT(showError(QObject*, const QString&, unsigned int)), Qt::QueuedConnection);
+
     connect(job, SIGNAL(cancelled(QObject*)), this,SLOT(onCancel(QObject*)), Qt::QueuedConnection);
     connect(this, SIGNAL(cancelRequest(QObject*)),job, SLOT(onCancel(QObject*)), Qt::QueuedConnection);
+
+    connect(job, SIGNAL(disableCancel(QObject*)), this, SLOT(disableCancel(QObject *)));
 
     this->setLabel(job, label);
 }
@@ -222,5 +226,13 @@ void medProgressionStack::setActive(QObject *sender, bool active)
 {
     if (d->bars.contains(sender) ) {
         active?d->bars.value(sender)->setMaximum(0):d->bars.value(sender)->setMaximum(100);
+    }
+}
+
+void medProgressionStack::disableCancel(QObject* sender)
+{
+    if (d->bars.contains(sender) )
+    {
+        d->buttons.value(sender)->hide();
     }
 }

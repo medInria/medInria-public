@@ -28,7 +28,7 @@
 
 class medToolBox;
 class medViewerConfigurationPrivate;
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medDataIndex;
 
 /**
@@ -37,7 +37,7 @@ class medDataIndex;
  *The main role of a configuration is to provide a coherent set of toolboxes and containers that interact with each other.
  *
  * A configuration is usually instantiated by a factory. 
- * It owns several medViewContainers in a medStackedViewContainers. 
+ * It owns several medViewContainers in a medTabbedViewContainers.
  * It also owns toolboxes, but does not place them, the medViewerArea does it when
  * medViewerArea::setupConfiguration is called. 
  *
@@ -168,7 +168,7 @@ public:
     bool areToolBoxesVisible(void) const;
     
     /**
-     * @brief Sets up the medStackedViewContainers.
+     * @brief Sets up the medTabbedViewContainers.
      *
      * Abstract method that every configuration should implement. It sets or 
      * resets the stack so that containers are connected properly with the toolboxes,
@@ -189,8 +189,9 @@ public:
      *
      * @param name Identifyer/description. By Default "Multi", 
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addMultiContainer(const QString& name="Multi");
+    QString addMultiContainer(const QString& name="Multi");
     
     /**
      * @brief Convenience method to add a medViewContainerCustom.
@@ -217,9 +218,9 @@ public:
     /**
      * @brief Gets the stack of Containers.
      *
-     * @return medStackedViewContainers *
+     * @return medTabbedViewContainers *
     */
-    medStackedViewContainers * stackedViewContainers() const;
+    medTabbedViewContainers * stackedViewContainers() const;
     
 public slots:
     /**
@@ -253,10 +254,25 @@ public slots:
      *
      * Gives the configuration a pristine look and state.
      * This method removes the containers 
-     * (by calling medStackedViewContainers::removeContainer)
+     * (by calling medTabbedViewContainers::removeContainer)
      *
     */
     virtual void clear();
+
+    /**
+      * @brief Adds a new tab to a configuration
+      *
+      * Default implementation adds a multi-container tab
+      * If another behavior is wanted, override this in child class
+      */
+    virtual void onAddTabClicked();
+
+    /**
+      * @brief Adapt interface to container change in stacks
+      *
+      * E.g. changes the layout toolbox to set it to the current container type
+      */
+    virtual void onContainerChanged(const QString &name);
 
     /**
      * @brief Tells all toolboxes that a button of buttonGroup has been checked
@@ -310,6 +326,15 @@ signals:
      * @param int
     */
     void layoutPresetClicked(int);
+
+    /**
+     * @brief Signal to change layout toolbox tab type
+     *
+     * Connect it in your config to the layout toolbox
+     *
+     * @param int
+    */
+    void setLayoutTab(const QString &);
     
 protected:
     /**

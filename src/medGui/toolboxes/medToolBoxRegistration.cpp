@@ -28,6 +28,7 @@
 #include <medDataManager.h>
 #include <medViewManager.h>
 #include <medMessageController.h>
+#include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 
 #include <medAbstractDataImage.h>
@@ -35,7 +36,7 @@
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>
 
-#include "medToolBoxRegistrationCustom.h"
+#include <medToolBoxRegistrationCustom.h>
 
 
 #include <QtGui>
@@ -52,6 +53,7 @@ public:
 
     QPushButton * saveImageButton;
     QPushButton * saveTransButton;
+
     QComboBox *toolboxes;
     medAbstractView *fixedView;
     medAbstractView *movingView;
@@ -68,7 +70,6 @@ public:
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
 {
     d->fuseView = 0;
-
     d->fixedData  = NULL;
     d->movingData = NULL;
     d->fixedView  = NULL;
@@ -78,6 +79,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     // Process section
     d->saveImageButton = new QPushButton(tr("Save Image"),this);
     connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
+
     d->saveTransButton = new QPushButton(tr("Save Transformation"),this);
     connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
 
@@ -444,6 +446,18 @@ void medToolBoxRegistration::onSaveTrans()
 void medToolBoxRegistration::onSuccess()
 {
     dtkAbstractData *output = d->process->output();
+
+    foreach(QString metaData, d->fixedData->metaDataList())
+        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
+
+    foreach(QString property, d->fixedData->propertyList())
+        output->addProperty(property,d->fixedData->propertyValues(property));
+
+    QString newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
+    newDescription += " registered";
+    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
+
+    medDataManager::instance()->importNonPersistent(output);
 
 	if(output)
     {

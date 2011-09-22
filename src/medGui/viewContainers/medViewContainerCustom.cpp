@@ -245,13 +245,15 @@ bool medViewContainerCustom::isLeaf(void) const
 
 void medViewContainerCustom::synchronize_2 (dtkAbstractView *view)
 {
-    if (medViewContainerCustom *parent = qobject_cast<medViewContainerCustom*>(this->parent())) {
+    if (medViewContainerCustom *parent = qobject_cast<medViewContainerCustom*>(this->parent()))
+    {
         parent->synchronize_2(view);
     }
-    else { // top level medViewContainerCustom
+    else
+    { // top level medViewContainerCustom
         if (medAbstractView *medView = qobject_cast<medAbstractView*> (view) )
             d->pool->appendView (medView);
-	        connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
+        connect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
     }
 }
 

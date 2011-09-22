@@ -1,11 +1,11 @@
 #include "medAbstractDbController.h"
+#include "medDataIndex.h"
 
 
-
-medDataIndex medAbstractDbController::import( const medDataIndex& index, const medAbstractDbController& controller ) 
+void medAbstractDbController::import( const medDataIndex& index, const medAbstractDbController& controller )
 {
     dtkSmartPointer<dtkAbstractData> data( controller.read(index) );
-    return import(data);
+    import(data);
 }
 
 void medAbstractDbController::clear (void)

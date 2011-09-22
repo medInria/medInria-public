@@ -26,7 +26,7 @@
 #include "medViewContainerCustom.h"
 #include "medViewContainerSingle.h"
 #include "medViewContainerMulti.h"
-#include "medStackedViewContainers.h"
+#include "medTabbedViewContainers.h"
 
 class medViewerConfigurationPrivate
 {
@@ -37,14 +37,18 @@ public:
     int customLayoutType;
     bool databaseVisibility;
     bool toolBoxesVisibility;
-    medStackedViewContainers * viewContainerStack;
+    medTabbedViewContainers * viewContainerStack;
 
 };
 
-medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
+medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(parent), d(new medViewerConfigurationPrivate)
 {
     d->parent = parent;
-    d->viewContainerStack = new medStackedViewContainers(parent);
+
+    d->viewContainerStack = new medTabbedViewContainers(parent);
+    connect(d->viewContainerStack,SIGNAL(addTabButtonClicked()),this,SLOT(onAddTabClicked()));
+    connect(d->viewContainerStack,SIGNAL(currentChanged(const QString &)),this,SLOT(onContainerChanged(const QString &)));
+
     d->layoutType = medViewerConfiguration::LeftDbRightTb;
     d->customLayoutType = 0;
     d->databaseVisibility = true;
@@ -97,6 +101,15 @@ void medViewerConfiguration::setCurrentViewContainer(const QString& name)
     d->viewContainerStack->setContainer(name);
 }
 
+void medViewerConfiguration::onContainerChanged(const QString &name)
+{
+    if (!d->viewContainerStack->container(name))
+        return;
+
+    QString containerType = d->viewContainerStack->container(name)->description();
+    emit setLayoutTab(containerType);
+}
+
 void medViewerConfiguration::setCustomPreset(int type)
 {
     d->customLayoutType = type;
@@ -127,7 +140,7 @@ QString medViewerConfiguration::currentViewContainerName() const
     return d->viewContainerStack->currentName();
 }
 
-medStackedViewContainers* medViewerConfiguration::stackedViewContainers() const
+medTabbedViewContainers* medViewerConfiguration::stackedViewContainers() const
 {
     return d->viewContainerStack;
 }
@@ -140,12 +153,28 @@ void medViewerConfiguration::addSingleContainer(const QString& name)
         qDebug() << "Container" << name << "already exists in this configurations";
 }
 
-void medViewerConfiguration::addMultiContainer(const QString& name)
+QString medViewerConfiguration::addMultiContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
+    {
         this->stackedViewContainers()->addContainer (name, new medViewContainerMulti());
+        return name;
+    }
     else
-        qDebug() << "Container" << name << "already exists in this configurations";
+    {
+        unsigned int i = 1;
+        QString newName = name + " ";
+        newName += QString::number(i);
+        while (this->stackedViewContainers()->container(newName))
+        {
+            ++i;
+            newName = name + " ";
+            newName += QString::number(i);
+        }
+
+        this->stackedViewContainers()->addContainer (newName, new medViewContainerMulti());
+        return newName;
+    }
 }
 
 void medViewerConfiguration::addCustomContainer(const QString& name)
@@ -153,7 +182,7 @@ void medViewerConfiguration::addCustomContainer(const QString& name)
     if (!this->stackedViewContainers()->container(name))
         this->stackedViewContainers()->addContainer (name, new medViewContainerCustom());
     else
-        qDebug() << "Container" << name << "already exists in this configurations";
+        qDebug() << "Container" << name << "already exists in this configuration";
 }
 
 
@@ -166,7 +195,7 @@ void medViewerConfiguration::clear()
 {
     //medViewContainer* container;
     QList<QString> names = d->viewContainerStack->keys();
-    foreach(QString name ,names)
+    foreach(QString name, names)
     {
         d->viewContainerStack->removeContainer(name);
     }
@@ -200,4 +229,21 @@ void medViewerConfiguration::clearToolBoxes()
     {
         tb->clear();
     }
+}
+
+void medViewerConfiguration::onAddTabClicked()
+{
+    QString name = this->description();
+    QString realName = name;
+
+    unsigned int suppTag = 0;
+    while (this->stackedViewContainers()->container(realName))
+    {
+        suppTag++;
+        realName = name + " ";
+        realName += QString::number(suppTag);
+    }
+
+    this->addMultiContainer(realName);
+    this->stackedViewContainers()->setContainer(realName);
 }

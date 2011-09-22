@@ -1,5 +1,5 @@
-/* medDatabaseReader.cpp --- 
- * 
+/* medDatabaseReader.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:27:20 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 19
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseController.h"
@@ -22,6 +22,7 @@
 #include <medStorage.h>
 #include <medAbstractDataImage.h>
 
+#include <medCore/medMetaDataKeys.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
@@ -81,25 +82,80 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
     if (query.first())
         seriesName = query.value(0).toString();
 
-    QStringList filenames;
-    QString     filename;
-
-    query.prepare("SELECT name, id, path, instance_path FROM image WHERE series = :series");
+    query.prepare("SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series");
     query.bindValue(":series", seriesId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
-    while(query.next()) {
-        filenames << query.value(2).toString();
-        filename = medStorage::dataLocation() + query.value(3).toString();
+    // now we might have both indexed and imported images in the same series
+    // so we will get the full path for indexed images and, for the imported
+    // (and possibly aggregated) images we will get the path of the
+    // aggregated file (which is in instance_path)
+
+    QStringList filenames;
+    while(query.next())
+    {
+        bool isIndexed = query.value(4).toBool();
+
+        if (isIndexed)
+        {
+            QString filename = query.value(2).toString();
+
+            // if the file is indexed the chanced that is not there anymore are higher
+            // so we check for existence and return null if they are not there anymore
+            QFileInfo fileinfo(filename);
+
+            if(!fileinfo.exists())
+            {
+                emit failure(this);
+                return NULL;
+            }
+
+            filenames << filename;
+        }
+        else
+        {
+            filenames << medStorage::dataLocation() + query.value(3).toString();
+        }
     }
+    // we remove all the duplicate entries, as imported files
+    // might have introduced duplicates
+    filenames.removeDuplicates();
 
-    dtkSmartPointer <dtkAbstractData> dtkdata =  this->readFile(filename);
+    dtkSmartPointer <dtkAbstractData> dtkdata =  this->readFile(filenames);
 
-    if ( dtkdata.data() && (!dtkdata.isNull()) ) {
-        dtkdata->addMetaData("PatientName", patientName);
-        dtkdata->addMetaData("StudyDescription",   studyName);
-        dtkdata->addMetaData("SeriesDescription",  seriesName);
+
+    if ( (!dtkdata.isNull()) && dtkdata.data() ) {
+
+       QSqlQuery seriesQuery(*(medDatabaseController::instance()->database()));
+       QVariant seriesThumbnail;
+
+        seriesQuery.prepare("SELECT thumbnail FROM series WHERE id = :seriesId");
+        seriesQuery.bindValue(":seriesId", seriesId);
+        if(!seriesQuery.exec())
+            qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
+
+        if(seriesQuery.first()) {
+            seriesThumbnail = seriesQuery.value(0);
+
+            QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
+            medMetaDataKeys::SeriesThumbnail.add(dtkdata, thumbPath);
+
+        }
+        else {
+            qWarning() << "Thumbnailpath not found";
+        }
+
+
+
+        medMetaDataKeys::PatientName.add(dtkdata, patientName);
+        medMetaDataKeys::StudyDescription.add(dtkdata, studyName);
+        medMetaDataKeys::SeriesDescription.add(dtkdata, seriesName);
+        medMetaDataKeys::PatientID.add(dtkdata, patientId.toString());
+        medMetaDataKeys::StudyID.add(dtkdata, studyId.toString());
+        medMetaDataKeys::SeriesID.add(dtkdata, seriesId.toString());
+        //medMetaDataKeys::ImageID.add(data, imageId.toString());
+
         emit success(this);
     } else {
         emit failure(this);
@@ -126,21 +182,39 @@ QString medDatabaseReader::getFilePath()
 
     QSqlQuery query((*(medDatabaseController::instance()->database())));
 
-    QString     filename;
+    QString filename;
 
-    query.prepare("SELECT instance_path FROM image WHERE series = :series");
+    query.prepare("SELECT path, instance_path, isIndexed FROM image WHERE series = :series");
     query.bindValue(":series", seriesId);
+
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
+    // indexed files have an empty string in 'instance_path' column
+    // and imported files have the relative path of the (aggregated) file
+
     while(query.next()) {
-        filename = medStorage::dataLocation() + query.value(0).toString();
+        bool isIndexed = query.value(2).toBool();
+
+        if (isIndexed) {
+            filename = query.value(0).toString();
+        } else {
+            filename = medStorage::dataLocation() + query.value(2).toString();
+        }
     }
 
     return filename;
 }
 
 dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile( QString filename )
+{
+    QStringList filenames;
+    filenames << filename;
+    return this->readFile(filenames);
+}
+
+
+dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile(const QStringList filenames )
 {
     dtkSmartPointer<dtkAbstractData> dtkdata;
 
@@ -152,8 +226,8 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile( QString filename )
         dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
 
         connect(dataReader, SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
-        if (dataReader->canRead(filename)) {
-            dataReader->read(filename);
+        if (dataReader->canRead(filenames)) {
+            dataReader->read(filenames);
             dataReader->enableDeferredDeletion(false);
             dtkdata = dataReader->data();
             if (dtkdata.refCount() != 2)
@@ -162,6 +236,5 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile( QString filename )
         }
 
     }
-
     return dtkdata;
 }

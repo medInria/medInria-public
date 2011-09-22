@@ -49,6 +49,8 @@ public:
      * @return bool
     */
     virtual bool isLeaf(void) const;
+    
+    virtual QString description() {return "Single";}
 
 public slots:
     virtual void onViewClosing (void);

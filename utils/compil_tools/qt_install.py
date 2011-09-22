@@ -52,7 +52,9 @@ def main (argv):
 	QtWebkit4.dll \
 	QtXml4.dll \
 	QtXmlPatterns4.dll \
-	phonon4.dll"
+    QtScript4.dll \
+    QtDeclarative4.dll \
+    phonon4.dll"
 
     try:
         os.makedirs(os.path.join(install_dir_bin,"sqldrivers"))

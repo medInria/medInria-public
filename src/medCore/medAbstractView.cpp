@@ -5,27 +5,32 @@
 class medAbstractViewPrivate
 {
 public:
-  bool linkPosition;
-  bool linkCamera;
-  bool linkWindowing;
+    bool linkPosition;
+    bool linkCamera;
+    bool linkWindowing;
 
-  QVector3D  position;
-  QVector2D  pan;
-  double     zoom;
-  double     level;
-  double     window;
-  QVector3D  camPosition;
-  QVector3D  camViewup;
-  QVector3D  camFocal;
-  double camParallelScale;
+    QVector3D  position;
+    QVector2D  pan;
+    double     zoom;
+    double     level;
+    double     window;
+    QVector3D  camPosition;
+    QVector3D  camViewup;
+    QVector3D  camFocal;
+    double camParallelScale;
 
-  int currentLayer;
-  int currentMeshLayer;
-  int meshLayerCount;
-  QList<dtkAbstractData *> dataList;
+    int currentLayer;
+    int currentMeshLayer;
+    int meshLayerCount;
+    //QList<dtkAbstractData *> dataList;
+    QMap <int, dtkSmartPointer<dtkAbstractData> > dataList;
 
-  dtkSmartPointer<dtkAbstractData> sharedData;
-  QColor color; // The color used to represent this view in other views.
+    // dtkSmartPointer<dtkAbstractData> sharedData;
+
+    QColor color; // The color used to represent this view in other views.
+
+    QHash<QString, unsigned int> DataTypes;
+
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
@@ -48,19 +53,19 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->currentMeshLayer = 0;
     d->meshLayerCount = 0;
 
-        d->position = QVector3D(0.0, 0.0, 0.0);
-        d->pan = QVector2D(0.0, 0.0);
-        d->zoom = 1.0;
-        d->level = 0.0;
-        d->window = 0.0;
-        d->camPosition = QVector3D(0.0, 0.0, 0.0);
-        d->camViewup = QVector3D(0.0, 0.0, 0.0);
-        d->camFocal = QVector3D(0.0, 0.0, 0.0);
-        d->camParallelScale = 1.0;
+    d->position = QVector3D(0.0, 0.0, 0.0);
+    d->pan = QVector2D(0.0, 0.0);
+    d->zoom = 1.0;
+    d->level = 0.0;
+    d->window = 0.0;
+    d->camPosition = QVector3D(0.0, 0.0, 0.0);
+    d->camViewup = QVector3D(0.0, 0.0, 0.0);
+    d->camFocal = QVector3D(0.0, 0.0, 0.0);
+    d->camParallelScale = 1.0;
 
     QStringList lut;
     lut << "Default";           // list of available lookup tables set
-                // by subclass
+    // by subclass
 
     // properties to keep up to date synchronization
     this->addProperty ("Daddy",                 QStringList() << "true" << "false");
@@ -80,9 +85,9 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     this->addProperty ("UseLOD",                QStringList() << "On" << "Off" );
     this->addProperty ("Cropping",              QStringList() << "true" << "false");
     this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
-                                                              << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
-                                                              << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
-                                                              << "Red on White" << "Glossy");
+                       << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
+                       << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
+                       << "Red on White" << "Glossy");
     // image interaction
     this->addProperty ("MouseInteraction",      QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
 
@@ -97,27 +102,27 @@ medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(
 }
 
 void medAbstractView::setColorLookupTable(int min_range,
-                                     int max_range,
-                                     int size,
-                                     const int & table)
+                                          int max_range,
+                                          int size,
+                                          const int & table)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractView::setColorLookupTable( QList<double> scalars,
-                       QList<QColor> colors )
+                                           QList<QColor> colors )
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractView::setTransferFunctions( QList<double> scalars,
-                        QList<QColor> colors )
+                                            QList<QColor> colors )
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractView::getTransferFunctions( QList<double> & scalars,
-                        QList<QColor> & colors )
+                                            QList<QColor> & colors )
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
@@ -192,7 +197,7 @@ void medAbstractView::setZoom (double zoom)
 
 double medAbstractView::zoom(void) const
 {
-        return d->zoom;
+    return d->zoom;
 }
 
 void medAbstractView::setPan (const QVector2D &pan)
@@ -213,7 +218,7 @@ QVector2D medAbstractView::pan(void) const
 void medAbstractView::setWindowLevel (double level, double window)
 {
     if ( ( d->level == level ) &&
-        ( d->window == window) ) {
+         ( d->window == window) ) {
         return;
     }
 
@@ -278,7 +283,16 @@ double medAbstractView::opacity(int layer) const
     DTK_DEFAULT_IMPLEMENTATION;
     return 1.0;
 }
-
+QString medAbstractView::getLUT(int layer) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return "";
+}
+QString medAbstractView::getPreset(int layer) const
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    return "";
+}
 void medAbstractView::setColor(const QColor & color)
 {
     if ( d->color != color) {
@@ -286,6 +300,7 @@ void medAbstractView::setColor(const QColor & color)
         emitColorChangedEvent();
     }
 }
+
 
 QColor medAbstractView::color() const
 {
@@ -320,7 +335,7 @@ int medAbstractView::currentMeshLayer(void) const
 
 void medAbstractView::setMeshLayerCount(int meshLayerCount)
 {
-   d->meshLayerCount = meshLayerCount;
+    d->meshLayerCount = meshLayerCount;
 }
 
 int medAbstractView::meshLayerCount(void) const
@@ -331,52 +346,87 @@ int medAbstractView::meshLayerCount(void) const
 
 void medAbstractView::removeOverlay(int layer)
 {
+    //JGG qDebug()<<"ViewDataListSize"<<d->dataList.size();
+    if (d->dataList.contains (layer))
+    {
+        medAbstractView::removeDataType(d->dataList[layer]->description());
+        emit (dataRemoved(d->dataList[layer], layer));
+        emit (dataRemoved(layer));
+        d->dataList.remove(layer);
+    }
     DTK_DEFAULT_IMPLEMENTATION;
 }
-
-//void medAbstractView::addDataInList(dtkAbstractData * data)
-//{
-//    d->dataList.append(data);
-//}
-//
-//dtkAbstractData * medAbstractView::dataInList(int layer)
-//{
-//    if (layer < d->dataList.size())
-//        return d->dataList.at(layer);
-//
-//    return NULL;
-//}
-//
-//void medAbstractView::setDataInList(int layer, dtkAbstractData * data)
-//{
-//    d->dataList[layer] = data;
-//}
 
 void medAbstractView::onSliceChanged (int slice)
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
-void medAbstractView::addDataInList(dtkAbstractData * data)
-{
-    d->dataList.append(data);
-}
 
+void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
+{
+    d->dataList[layer] = data;
+    medAbstractView::addDataType(data->description());
+}
 
 dtkAbstractData * medAbstractView::dataInList(int layer)
 {
-    if (layer < d->dataList.size())
-        return d->dataList.at(layer);
+    if (d->dataList.contains(layer))
+        return d->dataList[layer];
 
     return NULL;
 }
 
-void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
+bool medAbstractView::isInList(dtkAbstractData * data, int layer)
 {
 
-    if(d->dataList.at(layer))
-        d->dataList[layer] = data;
-    if(layer == d->dataList.size())
-        d->dataList.append(data);
+    if (d->dataList.contains(layer) && d->dataList[layer]==data)
+    {
+//        qDebug() << "data is in list,layer:" << layer;
+        return true;
+    }
+
+    return false;
+}
+
+void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
+{
+    // start by removing the data type if layer already exists
+    if (d->dataList.contains(layer)) {
+        removeDataType(d->dataList[layer]->description());
+    }
+
+    d->dataList[layer] = data;
+
+    addDataType(data->description());
+}
+
+void medAbstractView::addDataType(const QString & dataDescription)
+{
+    if (d->DataTypes.contains(dataDescription))
+    {
+        unsigned int numDataTypes = d->DataTypes.value(dataDescription);
+        numDataTypes++;
+        d->DataTypes.insert(dataDescription,numDataTypes);
+    }
+    else
+        d->DataTypes.insert(dataDescription, 1);
+}
+
+void medAbstractView::removeDataType(const QString & dataDescription)
+{
+    if (d->DataTypes.contains(dataDescription))
+    {
+        unsigned int numDataTypes = d->DataTypes.value(dataDescription);
+        numDataTypes--;
+        d->DataTypes[dataDescription]=numDataTypes;
+    }
+    else
+        qDebug() << "Not DataType in the view! ";
+}
+
+QHash<QString, unsigned int> medAbstractView::dataTypes()
+{
+    return d->DataTypes;
 }
 
 void medAbstractView::onPositionChanged (const QVector3D &position)

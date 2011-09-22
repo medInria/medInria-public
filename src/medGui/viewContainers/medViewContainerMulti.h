@@ -76,6 +76,8 @@ public:
 
     void layout (QList<QWidget *> content);
 
+    virtual QString description() {return "Multi";}
+
 public slots:
     void onViewClosing    (void);
     void onViewFullScreen (bool value);

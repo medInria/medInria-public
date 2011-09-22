@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentController.h --- 
- * 
+/* medDatabaseNonPersitentController.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sun Jun 27 17:45:07 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 58
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASENONPERSISTENTCONTROLLERIMPL_H
@@ -30,19 +30,21 @@
 class dtkAbstractData;
 class medDatabaseNonPersistentItem;
 class medDatabaseNonPersistentControllerImplPrivate;
+class medImportJobWatcher;
+
 
 class MEDSQL_EXPORT medDatabaseNonPersistentControllerImpl: public medAbstractDbController
 {
     Q_OBJECT
 
 public:
-    
+
     medDatabaseNonPersistentControllerImpl(void);
     ~medDatabaseNonPersistentControllerImpl(void);
 
-    
+
     /**
-    * Get the table indices 
+    * Get the table indices
     * @params bool increment if true auto-increment the counter
     * @return int return the id (before incrementation)
     */
@@ -106,32 +108,32 @@ public:
 public slots:
 
     /**
-    * Read data from nonPersistent storage using the index
+    * Reads data from nonPersistent storage using the index
     * @params const medDataIndex & index Index to look for
     * @return dtkAbstractData* data
     */
     dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
-    * Store data temporarily referenced by temp index
-    * @params dtkAbstractData * data data to be stored
-    * @return medDataIndex assigned index
+    * Stores data temporarily referenced by temp index
+    * @param data data to be stored
+    * @param callerUuid
     */
-    medDataIndex import(dtkAbstractData *data);
-    
+    void import(dtkAbstractData *data,const QString& callerUuid);
+
     /**
-     * Store data temporarily referenced by temp index
-     * @params const QString & file data stored at file path
-     * @return medDataIndex - assigned index
+     * Stores data temporarily referenced by temp index
+     * @param file data stored at file path.
+     * @param callerUuid caller's identifier.
      */
-    medDataIndex import(const QString& file);
-    
+    void import(const QString& file,const QString& callerUuid);
+
     /**
      * Remove data referenced by index from temporary database
      * @params const medDataIndex & index : data index
      */
     void remove(const medDataIndex& index);
-    
+
     /**
     * Removes any reference to non-persistent data. Do not actually free memory.
     */
@@ -139,6 +141,9 @@ public slots:
 
     /** true if the given data index matches one in our db*/
     bool contains( const medDataIndex& index) const;
+
+signals:
+    void updated(const medDataIndex&, const QString&);
 
 private:
     medDatabaseNonPersistentControllerImplPrivate *d;

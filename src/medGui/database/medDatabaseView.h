@@ -1,5 +1,5 @@
-/* medDatabaseView.h --- 
- * 
+/* medDatabaseView.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:16:32 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 42
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASEVIEW_H
@@ -25,6 +25,8 @@
 #include <QtGui>
 
 class medDataIndex;
+class medDatabaseModel;
+class medDatabaseViewPrivate;
 
 class MEDGUI_EXPORT medDatabaseView : public QTreeView
 {
@@ -54,13 +56,15 @@ public slots:
     virtual void onMenuExportClicked(void);
     virtual void onMenuRemoveClicked(void);
     virtual void selectionChanged(const QModelIndex&, const QModelIndex&);
-
-protected:
+    void onOpeningFailed(const medDataIndex& index);
 
 protected slots:
     virtual void updateContextMenu(const QPoint&);
     virtual void onItemClicked(const QModelIndex& index);
     virtual void onItemDoubleClicked(const QModelIndex& index);
+
+private:
+    medDatabaseViewPrivate *d;
 };
 
 #endif

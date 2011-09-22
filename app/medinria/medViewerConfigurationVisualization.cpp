@@ -1,5 +1,5 @@
-/* medViewerConfigurationVisualization.cpp --- 
- * 
+/* medViewerConfigurationVisualization.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 14:12:19 2010 (+0200)
@@ -9,20 +9,19 @@
  *     Update #: 7
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewerConfigurationVisualization.h"
 
 #include <medViewerToolBoxViewProperties.h>
 #include <medViewContainer.h>
-#include <medStackedViewContainers.h>
-#include <medViewerToolBoxView.h>
+#include <medTabbedViewContainers.h>
 #include <medViewerToolBoxTime.h>
 #include <medViewerToolBoxLayout.h>
 
@@ -31,7 +30,6 @@ class medViewerConfigurationVisualizationPrivate
 public:
     medViewerToolBoxLayout              *layoutToolBox;
     medViewerToolBoxTime                *timeToolBox;
-    medViewerToolBoxView                *viewToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 
 };
@@ -40,56 +38,53 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
 {
     // -- Layout toolbox --
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
-    
+
     connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),
              this,             SIGNAL(layoutModeChanged(const QString&)));
     connect (d->layoutToolBox, SIGNAL(presetClicked(int)),
              this,             SIGNAL(layoutPresetClicked(int)));
     connect (d->layoutToolBox, SIGNAL(split(int,int)),
-             this,             SIGNAL(layoutSplit(int,int)));    
+             this,             SIGNAL(layoutSplit(int,int)));
+
+    connect(this,SIGNAL(setLayoutTab(const QString &)), d->layoutToolBox, SLOT(setTab(const QString &)));
 
     this->addToolBox( d->layoutToolBox );
-    
+
     // -- View toolbox --
-    
-    d->viewToolBox           = new medViewerToolBoxView(parent);
+
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     d->timeToolBox           = new medViewerToolBoxTime(parent);
-    this->addToolBox( d->viewToolBox );
+
+    
     this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->timeToolBox );
+
+    connect ( this, SIGNAL(layoutModeChanged(const QString&)),
+              d->timeToolBox, SLOT(onStopButton()));
+    connect ( this, SIGNAL(layoutModeChanged(const QString &)),
+              stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
+    connect ( stackedViewContainers(), SIGNAL(currentChanged(const QString &)),
+              this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 }
 
 void medViewerConfigurationVisualization::setupViewContainerStack()
 {
     if (!stackedViewContainers()->count())
     {
-        //Containers:
-        addSingleContainer();
-        addMultiContainer();
-        addCustomContainer();
-        connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
-            d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
-        connect(stackedViewContainers()->container("Multi"),SIGNAL(viewAdded(dtkAbstractView*)),
-			d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
-        connect(stackedViewContainers()->container("Custom"),SIGNAL(viewAdded(dtkAbstractView*)),
-			d->timeToolBox,SLOT(onViewAdded(dtkAbstractView*)));
-
-       /* connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
-            d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));
-        connect(stackedViewContainers()->container("Multi"),SIGNAL(viewAdded(dtkAbstractView*)),
-			d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));
-        connect(stackedViewContainers()->container("Custom"),SIGNAL(viewAdded(dtkAbstractView*)),
-			d->viewPropertiesToolBox,SLOT(onMeshViewAdded(dtkAbstractView*)));*/
-
-        connect(stackedViewContainers()->container("Single"),SIGNAL(viewRemoved(dtkAbstractView*)),
-            d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
-        connect(stackedViewContainers()->container("Multi"),SIGNAL(viewRemoved(dtkAbstractView*)),
-                d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
-        connect(stackedViewContainers()->container("Custom"),SIGNAL(viewRemoved(dtkAbstractView*)),
-                d->timeToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
+        //Default container:
+        addMultiContainer("Visualization");
+        this->connectToolboxesToCurrentContainer("Visualization");
     }
 
+    this->stackedViewContainers()->unlockTabs();
+}
+
+void medViewerConfigurationVisualization::connectToolboxesToCurrentContainer(const QString &name)
+{
+    connect(stackedViewContainers()->container(name), SIGNAL(viewAdded(dtkAbstractView*)),
+            d->timeToolBox, SLOT(onViewAdded(dtkAbstractView*)));
+    connect(stackedViewContainers()->container(name), SIGNAL(viewRemoved(dtkAbstractView*)),
+            d->timeToolBox, SLOT(onViewRemoved(dtkAbstractView*)));
 }
 
 medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)
@@ -98,13 +93,12 @@ medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)
     d = NULL;
 }
 
-
 QString medViewerConfigurationVisualization::description(void) const
 {
     return "Visualization";
 }
 
-medViewerConfiguration *createMedViewerConfigurationVisualization(void)
+medViewerConfiguration *createMedViewerConfigurationVisualization(QWidget* parent)
 {
-    return new medViewerConfigurationVisualization;
+    return new medViewerConfigurationVisualization(parent);
 }

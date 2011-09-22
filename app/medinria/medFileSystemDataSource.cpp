@@ -15,16 +15,19 @@ public:
 
 medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
 {
-    d->finder = new dtkFinder(parent);
-    d->finder->setPath(QDir::homePath());
+    d->filesystem_widget = new QWidget(parent);
 
-    d->path = new dtkFinderPathBar(parent);
+    d->finder = new dtkFinder (d->filesystem_widget);
+    d->finder->setPath(QDir::homePath());
+    d->finder->allowFileBookmarking(false);
+
+    d->path = new dtkFinderPathBar (d->filesystem_widget);
     d->path->setPath(QDir::homePath());
 
-    d->toolbar = new dtkFinderToolBar (parent);
+    d->toolbar = new dtkFinderToolBar (d->filesystem_widget);
     d->toolbar->setPath(QDir::currentPath());
 
-    d->side = new dtkFinderSideView(parent);
+    d->side = new dtkFinderSideView;
     d->side->setStyleSheet(
         "dtkFinderSideView {"
         "    color: #b2b2b2;"
@@ -66,24 +69,25 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
         "}");
 
     QAction *importAction = new QAction(tr("Import"), this);
+    QAction *indexAction = new QAction(tr("Index"), this);
     QAction *loadAction = new QAction(tr("Load"), this);
     QAction *viewAction = new QAction(tr("View"), this);
 
     d->finder->addContextMenuAction(importAction);
+    d->finder->addContextMenuAction(indexAction);
     d->finder->addContextMenuAction(loadAction);
     d->finder->addContextMenuAction(viewAction);
 
     connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportClicked()));
+    connect(indexAction, SIGNAL(triggered()),  this, SLOT(onFileSystemIndexClicked()));
     connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadClicked()));
     connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));
-
-    d->filesystem_widget = new QWidget(parent);
 
     QHBoxLayout *toolbar_layout = new QHBoxLayout;
     toolbar_layout->setContentsMargins(0, 0, 0, 0);
     toolbar_layout->setSpacing(0);
     toolbar_layout->addWidget  (d->toolbar);
-    toolbar_layout->addWidget  (d->path);    
+    toolbar_layout->addWidget  (d->path);
 
     QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystem_widget);
     filesystem_layout->setContentsMargins(10, 10, 10, 10);
@@ -109,7 +113,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect (d->toolbar, SIGNAL(changed(QString)), d->path,   SLOT(setPath(QString)));
 
     connect (d->toolbar, SIGNAL(treeView()),       d->finder, SLOT(switchToTreeView()));
-    connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));    
+    connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));
 }
 
 medFileSystemDataSource::~medFileSystemDataSource()
@@ -141,7 +145,13 @@ QList<medToolBox*> medFileSystemDataSource::getToolboxes()
 void medFileSystemDataSource::onFileSystemImportClicked(void)
 {
     QFileInfo info(d->finder->selectedPath());
-    this->dataReceived(info.absoluteFilePath());
+    emit dataToImportReceived(info.absoluteFilePath());
+}
+
+void medFileSystemDataSource::onFileSystemIndexClicked(void)
+{
+    QFileInfo info(d->finder->selectedPath());
+    emit dataToIndexReceived(info.absoluteFilePath());
 }
 
 void medFileSystemDataSource::onFileSystemLoadClicked()

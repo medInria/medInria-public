@@ -247,6 +247,31 @@ def build(project,config,architecture="linux"):
 
     return
 
+def test(project,config,architecture="linux"):
+    """
+    Run the build command on the project.
+    Let's assume we are in the project's directory.
+    """
+    #build_dir = os.path.join(config.get("DEFAULT","projects_dir"),project,"build")
+    project_name=config.get(project,"project_name")
+    os.chdir(config.get(project,"build_dir"))
+    # make_command = config.get("commands","make")
+    ctest_build_type=config.get("DEFAULT","ctest_build_type")
+    ctest_command = config.get("commands","ctest")
+    cmd = ctest_command + " -D " + ctest_build_type
+    logging.info(cmd)
+    run_and_log(cmd.split())
+
+    extra_build_cmd=config.get(project,"extra_build_cmd")
+    if len(extra_build_cmd):
+        logging.info(extra_build_cmd)
+        run_and_log (extra_build_cmd.split())
+
+    os.chdir('..')
+
+    return
+    
+    
 def uncomp_tar(project,config,file):
     """
     Uncompresses a file to the corresponding project's destination_dir
@@ -690,6 +715,13 @@ def main(argv):
             default=True,
             help="Do not build the projects")
 
+    parser.add_option("-t","--test", dest="test",action="store_true",
+            default=False,
+            help="Run CTest on the projects (enabled by default)")
+    parser.add_option("--no-test", dest="test",action="store_false",
+            default=True,
+            help="Do not run ctest on the projects")
+            
     # install projects
     parser.add_option("-i","--install", dest="install",action="store_true",
             default=True,
@@ -811,6 +843,11 @@ def main(argv):
             if confirm_fun():
                 update_dirs(project,config)
 
+        extra_update_cmd=config.get(project,"extra_update_cmd")
+        if len(extra_update_cmd):
+            logging.info( extra_update_cmd)
+            run_and_log(extra_update_cmd,shell=True)
+                
         cwd = os.path.join(projects_dir, config.get(project,"destination_dir"))
         os.chdir(cwd)
         if choose_fun('configure'):
@@ -819,11 +856,17 @@ def main(argv):
                 configure_project(project,config,architecture)
 
         os.chdir(cwd)
-        if choose_fun('build'):
+        if choose_fun('build') and not choose_fun('test'):
             logging.info( "building " + project + "...")
             if confirm_fun():
                 build(project,config,architecture)
-
+        elif not choose_fun('build') and choose_fun('test'):
+            logging.info( "ctest " + project + "...")
+            if confirm_fun():
+                test(project,config,architecture)
+        elif choose_fun('build') and choose_fun('test'):
+            logging.error("Can't build and run CTest at the same time")
+            
         os.chdir(cwd)
         if choose_fun('doc'):
             logging.info( "doc " + project + "...")

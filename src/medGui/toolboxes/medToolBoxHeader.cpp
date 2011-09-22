@@ -1,5 +1,5 @@
-/* medToolBoxHeader.cpp --- 
- * 
+/* medToolBoxHeader.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 10:15:58 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 156
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medToolBoxHeader.h"
@@ -53,6 +53,12 @@ void medToolBoxHeader::setTitle(const QString& title)
     d->title = title;
 }
 
+QString medToolBoxHeader::title() const
+{
+    return d->title;
+}
+
+
 void medToolBoxHeader::setTitleOffset(const QPoint & titleOffset)
 {
     d->titleOffset = titleOffset;
@@ -65,9 +71,8 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
     QRectF rect = this->contentsRect();
 
     QPainter painter(this);
-
     painter.translate( d->titleOffset );
-    
+
     painter.drawText(rect, Qt::AlignLeft, d->title);
     painter.end();
 }

@@ -2,13 +2,17 @@
 #define medAbstractDbController_h__
 
 
-#include "medCoreExport.h"
-#include "medDataIndex.h"
+#include <medCoreExport.h>
+#include <medDataIndex.h>
 #include <QtCore>
 #include <QtSql>
 
+#include <medMetaDataKeys.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
+
+class medImportJobWatcher;
+class medDataIndex;
 
 /**
  * Abstract dbController class. Implementation needs to adhere to the common interface
@@ -19,13 +23,12 @@ class MEDCORE_EXPORT medAbstractDbController : public QObject
 
 public:
 
-
     /**
     * Get the status of the Db connection
     * @return bool true if connected
     */
     virtual bool isConnected() const = 0;
-    
+
     /**
     * return the size that the data behind the medDataIndex in byte
     * @param const medDataIndex& index the index for the data
@@ -49,7 +52,8 @@ public:
     virtual QList<medDataIndex> images(const medDataIndex& index) const = 0;
 
     /** Get metadata for specific item. Return uninitialized string if not present. */
-    virtual QString metaData(const medDataIndex& index, const QString& key) const = 0;
+    virtual QString metaData(const medDataIndex& index,const QString& key) const = 0;
+    QString metaData(const medDataIndex& index,const medMetaDataKeys::Key& md) const { return metaData(index,md.key()); }
 
     /** Set metadata for specific item. Return true on success, false otherwise. */
     virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value) = 0;
@@ -60,18 +64,24 @@ public:
     /** return true if this is a persistent controller*/
     virtual bool isPersistent() const = 0;
 
+
+
 signals:
-    
+
     /**
      * signal each time the db gets modified, giving the dataindex that was involved
      */
-    void updated(medDataIndex);
+    void updated(const medDataIndex &);
+    /**
+     * signal each time the db gets modified, giving the dataindex that was involved, and the unique identifier linked with the caller.
+     */
+    void updated(const medDataIndex &,const QString&);
 
 public slots:
 
     /**
     * Returns pointer to dtkAbstractData read from db (physical or virtual) or NULL
-    * @Note There is no read(QString file) method, as you can achieve this using import(QString) and read(index) 
+    * @Note There is no read(QString file) method, as you can achieve this using import(QString) and read(index)
     * using the index returned from the import
     * @params const medDataIndex & index Index for data
     * @return dtkAbstractData * the data
@@ -79,37 +89,50 @@ public slots:
     virtual dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const = 0;
 
     /**
-    * Import a file into the db
-    * @params const QString & file Filename
-    * @return medDataIndex that was assigned
+    * @brief Imports a file into the db.
+    * This method doesn't return any value since it should be run asynchronously. updated(const medDataIndex &) is called when the importation is complete.
+    *
+    * @param file the path to the file, or directory to import.
+    * @param importUuid a string representation of a unique token (QUuid recommended),
+    * If omited, an empty string will be used. It allows for actions specific to the caller of the importation. Only the caller should react to particular requests.
     */
-    virtual medDataIndex import(const QString& file) = 0;
+    virtual void import(const QString& file, const QString& importUuid=QString()) = 0;
 
     /**
-    * Import a data into the db
-    * @params const dtkAbstractData& data reference to data
-    * @return medDataIndex that was assigned
+    * @brief Imports a data into the db.
+    *
+    * This method doesn't return any value since it should be run asynchronously. updated(const medDataIndex &) is called when the importation is complete.
+    *
+    * @param data a pointer to some data to import.
+    * @param importUuid the caller's identifier.
     */
-    virtual medDataIndex import(dtkAbstractData *data) = 0;
-  
+    virtual void import(dtkAbstractData *data, const QString& importUuid=QString()) = 0;
+
     /**
      * This method allows importing data from other databases
      * @params const medDataIndex & index The data index used in the referenced db (source)
      * @params const medAbstractDbController & controller  The referenced db (source)
-     * @return medDataIndex New assigned dataIndex in target (this) db
      */
-    virtual medDataIndex import(const medDataIndex& index, const medAbstractDbController& controller);
-    
+    virtual void import(const medDataIndex& index, const medAbstractDbController& controller);
+
     /**
      * This method allows removing one data from the database
      * @params const medDataIndex & index The data index to be removed in the db
      */
     virtual void remove(const medDataIndex& index) = 0;
-    
+
     /**
     * This method clears data already loaded in the database.
     */
     virtual void clear (void);
+
+    /**
+     * @brief Checks if a medDataIndex is in the db.
+     *
+     * The function traverses the hierarchy of indices to find the availibity of the medDataIndex. It stops at the first non defined value (-1) and returns true if all indices were found down to that level: i.e a patient with an empty study list is valid (1,-1,-1)
+     * @param index a medDataIndex.
+     */
+    virtual bool contains(const medDataIndex& index) const = 0;
 
 };
 

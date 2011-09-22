@@ -34,6 +34,7 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     d->startInFullScreen->setToolTip(tr("Start application in full screen mode?"));
 
     d->defaultStartingArea = new QComboBox();
+    d->defaultStartingArea->addItem(tr("Homepage"));
     d->defaultStartingArea->addItem(tr("Browser"));
     d->defaultStartingArea->addItem(tr("Viewer"));
 

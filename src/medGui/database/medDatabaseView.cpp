@@ -1,5 +1,5 @@
-/* medDatabaseView.cpp --- 
- * 
+/* medDatabaseView.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Mar 31 13:18:20 2009 (+0200)
@@ -9,19 +9,18 @@
  *     Update #: 126
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseView.h"
-
-#include <medCore/medDataManager.h>
-#include <medCore/medAbstractDatabaseItem.h>
-#include <medCore/medAbstractDbController.h>
+#include <medDataManager.h>
+#include <medAbstractDatabaseItem.h>
+#include <medAbstractDbController.h>
 
 #include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
@@ -29,11 +28,20 @@
 class NoFocusDelegate : public QStyledItemDelegate
 {
 public:
-    NoFocusDelegate( medDatabaseView *view) : QStyledItemDelegate(), m_view(view) {}
+    NoFocusDelegate(medDatabaseView *view, QList<medDataIndex> indexes) : QStyledItemDelegate(), m_view(view), m_indexes(indexes) {}
+
+    void append(medDataIndex);
+
 protected:
     void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
     medDatabaseView *m_view;
+    QList<medDataIndex> m_indexes;
 };
+
+void NoFocusDelegate::append(medDataIndex index)
+{
+    m_indexes.append(index);
+}
 
 void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & option, const QModelIndex &index) const
 {
@@ -42,7 +50,6 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
         itemOption.state = itemOption.state ^ QStyle::State_HasFocus;
 
     if(index.isValid()) {
-
         medAbstractDatabaseItem *item = NULL;
 
         if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(m_view->model()))
@@ -50,22 +57,32 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
         else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(m_view->model()))
             item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
+        // items that failed to open will have a pinkish background
         if(item)
         {
+            if (m_indexes.contains(item->dataIndex()))
+               painter->fillRect(option.rect, QColor::fromRgb(qRgb(201, 121, 153)));
+
             medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId());
             if ( dbc ) {
                 if(!dbc->isPersistent())
                 {
                     itemOption.font.setItalic(true);
                 }
-            } 
+            }
         }
     }
 
     QStyledItemDelegate::paint(painter, itemOption, index);
 }
 
-medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
+class medDatabaseViewPrivate
+{
+public:
+    QList<int> failedToOpenSeriesIds;
+};
+
+medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate), QTreeView(parent)
 {
     this->setAcceptDrops(true);
     this->setFrameStyle(QFrame::NoFrame);
@@ -81,19 +98,22 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent)
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
-    NoFocusDelegate* delegate = new NoFocusDelegate(this);
+    NoFocusDelegate* delegate = new NoFocusDelegate(this, QList<medDataIndex>());
     this->setItemDelegate(delegate);
 }
 
 medDatabaseView::~medDatabaseView(void)
 {
+    //TreeViews don't take ownership of delegates
+    delete this->itemDelegate();
+    delete d;
 }
 
 int medDatabaseView::sizeHintForColumn(int column) const
 {
     if (column<3)
         return 150;
-    
+
     return 50;
 }
 
@@ -200,7 +220,7 @@ void medDatabaseView::onMenuViewClicked(void)
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     if (item && (item->dataIndex().isValidForSeries()))
-    {        
+    {
         emit open(item->dataIndex ());
     }
 }
@@ -257,3 +277,12 @@ void medDatabaseView::onMenuRemoveClicked( void )
     }
 }
 
+void medDatabaseView::onOpeningFailed(const medDataIndex& index)
+{
+    if (NoFocusDelegate* delegate =
+            dynamic_cast<NoFocusDelegate*>(this->itemDelegate()))
+    {
+
+        delegate->append(index);
+    }
+}

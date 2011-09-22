@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentController.cpp --- 
- * 
+/* medDatabaseNonPersitentController.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sun Jun 27 17:58:04 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 99
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseNonPersistentItem.h"
@@ -24,6 +24,7 @@
 
 #include <medDataIndex.h>
 #include <medMessageController.h>
+#include <medJobManager.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -93,23 +94,28 @@ void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatab
     d->items.insert(index, item);
 }
 
-medDataIndex medDatabaseNonPersistentControllerImpl::import(const QString& file)
+void medDatabaseNonPersistentControllerImpl::import(const QString& file,const QString& importUuid)
 {
-    medDatabaseNonPersistentReader *reader = new medDatabaseNonPersistentReader(file);
+    medDatabaseNonPersistentReader *reader =
+            new medDatabaseNonPersistentReader(file,importUuid);
 
-    connect(reader, SIGNAL(progressed(int)), medMessageController::instance(), SLOT(setProgress(int)));
-    connect(reader, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(reader, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(reader, SIGNAL(progressed(int)),
+            medMessageController::instance(), SLOT(setProgress(int)));
+    connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &,const QString &)),
+            this, SIGNAL(updated(const medDataIndex &, const QString&)));
+    connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &,const QString &)),
+            this, SIGNAL(updated(const medDataIndex &)));
+    connect(reader, SIGNAL(success(QObject *)),
+            medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(reader, SIGNAL(failure(QObject *)),
+            medMessageController::instance(), SLOT(remove(QObject *)));
     connect(reader, SIGNAL(success(QObject *)), reader, SLOT(deleteLater()));
     connect(reader, SIGNAL(failure(QObject *)), reader, SLOT(deleteLater()));
 
     medMessageController::instance()->showProgress(reader, "Opening file item");
 
-    medDataIndex index = reader->run();
-
-    emit updated(index);
-
-    return index;
+    medJobManager::instance()->registerJobItem(reader);
+    QThreadPool::globalInstance()->start(reader);
 }
 
 dtkSmartPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
@@ -155,11 +161,14 @@ bool medDatabaseNonPersistentControllerImpl::isConnected() const
     return true;
 }
 
-medDataIndex medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data)
+void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
+                                                    const QString& callerUuid)
 {
-    medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data);
+    medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
 
     connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &)));
+    connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString &)));
     connect(importer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(importer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
@@ -167,16 +176,13 @@ medDataIndex medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *dat
 
     medMessageController::instance()->showProgress(importer, "Importing data item");
 
-    medDataIndex index = importer->run();
-
-    emit updated(index);
-
-    return index;
+    medJobManager::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
 }
 
 void medDatabaseNonPersistentControllerImpl::clear(void)
 {
-    // objects are reference counted. 
+    // objects are reference counted.
     // We could check if the item is still in use... but we just remove our reference here.
     qDeleteAll(d->items);
 
@@ -249,7 +255,7 @@ QImage medDatabaseNonPersistentControllerImpl::thumbnail( const medDataIndex &in
     if ( item ) {
         return item->data()->thumbnail();
     }
-    else 
+    else
     {
         return QImage();
     }
@@ -280,7 +286,7 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::patients() const
 QList<medDataIndex> medDatabaseNonPersistentControllerImpl::studies( const medDataIndex& index ) const
 {
     QList<medDataIndex> ret;
-    
+
     if ( !index.isValidForPatient() )
     {
         qWarning() << "invalid index passed";

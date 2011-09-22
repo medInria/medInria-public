@@ -40,14 +40,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # viewer stuff
   medPacsSelector.h
   medViewPool.h
-  medStackedViewContainers.h
+  medTabbedViewContainers.h
   medViewerConfiguration.h
   medImageFileLoader.h
 
   # db related items
-  database/medDatabaseSearchPanel.h  
+  database/medDatabaseSearchPanel.h
   database/medDatabaseView.h
-  database/medDatabaseNavigator.h  
+  database/medDatabaseNavigator.h
   database/medDatabaseNavigatorItem.h
   database/medDatabaseNavigatorItemGroup.h
   database/medDatabaseNavigatorView.h
@@ -65,6 +65,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   commonWidgets/medButton.h
   commonWidgets/medProgressionStack.h
   commonWidgets/medFlicker.h
+  commonWidgets/medStatusBar.h
 
   # factories
   factories/medSettingsWidgetFactory.h
@@ -83,7 +84,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   settingsWidgets/medSystemSettingsWidget.h
   settingsWidgets/medStartupSettingsWidget.h
 
-
   # general toolbox classes
   toolboxes/medToolBox.h
   toolboxes/medToolBoxBody.h
@@ -98,21 +98,26 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxRegistration.h
   toolboxes/medToolBoxRegistrationCustom.h
   toolboxes/medToolBoxDiffusionTensorView.h
+  toolboxes/medToolBoxFiltering.h
+  toolboxes/medToolBoxFilteringCustom.h
   toolboxes/medBrowserToolBoxJobs.h
   toolboxes/medViewerToolBoxLayout.h
-  toolboxes/medViewerToolBoxView.h
   toolboxes/medViewerToolBoxTime.h
   toolboxes/medViewerToolBoxViewProperties.h
   toolboxes/medBrowserToolBoxPacsHost.h
   toolboxes/medBrowserToolBoxPacsNodes.h
   toolboxes/medBrowserToolBoxPacsSearch.h
   toolboxes/medViewerToolBoxPatient.h
+  toolboxes/medToolBoxCompositeDataSetImporter.h
+  toolboxes/medToolBoxCompositeDataSetImporterCustom.h
+
 
   # viewContainers:
   viewContainers/medViewContainerCompare.h
   viewContainers/medViewContainerMulti.h
   viewContainers/medViewContainerCustom.h
   viewContainers/medViewContainerSingle.h
+  viewContainers/medViewContainerFiltering.h
   viewContainers/medViewContainer.h
 )
 
@@ -130,35 +135,10 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   medLayoutChooser.cpp
   medPacsSelector.cpp
-
-  commonWidgets/medButton.cpp
-  
-  toolboxes/medToolBox.cpp
-  toolboxes/medToolBoxBody.cpp
-  toolboxes/medToolBoxHeader.cpp
-  toolboxes/medToolBoxTab.cpp
-  factories/medToolBoxFactory.cpp
-  medToolBoxContainer.cpp 
-  
-  toolboxes/medToolBoxDiffusion.cpp
-  toolboxes/medToolBoxDiffusionCustom.cpp
-  toolboxes/medToolBoxDiffusionFiberView.cpp   
-  toolboxes/medToolBoxDiffusionFiberBundling.cpp
-  toolboxes/medToolBoxRegistration.cpp
-  toolboxes/medToolBoxRegistrationCustom.cpp
-  toolboxes/medToolBoxDiffusionTensorView.cpp
-
-  medViewPool.cpp
-  viewContainers/medViewContainer.cpp
-  viewContainers/medViewContainerCustom.cpp
-  viewContainers/medViewContainerMulti.cpp
-  viewContainers/medViewContainerSingle.cpp
-  viewContainers/medViewContainerCompare.cpp
-
-  
-
-  medStackedViewContainers.cpp
+  medToolBoxContainer.cpp
+  medTabbedViewContainers.cpp
   medViewerConfiguration.cpp
+  
   medPacsSelector.cpp
   medViewPool.cpp
   medImageFileLoader.cpp
@@ -169,10 +149,11 @@ set(${PROJECT_NAME}_SOURCES
   commonWidgets/medButton.cpp
   commonWidgets/medProgressionStack.cpp
   commonWidgets/medFlicker.cpp
+  commonWidgets/medStatusBar.cpp
 
   # db related items
   database/medDatabaseSearchPanel.cpp
-  database/medDatabaseView.cpp  
+  database/medDatabaseView.cpp
   database/medDatabaseNavigator.cpp
   database/medDatabaseNavigatorController.cpp
   database/medDatabaseNavigatorItem.cpp
@@ -222,23 +203,30 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxRegistration.cpp
   toolboxes/medToolBoxRegistrationCustom.cpp
   toolboxes/medToolBoxDiffusionTensorView.cpp
+  toolboxes/medToolBoxFiltering.cpp
+  toolboxes/medToolBoxFilteringCustom.cpp
   toolboxes/medBrowserToolBoxJobs.cpp
   toolboxes/medViewerToolBoxLayout.cpp
-  toolboxes/medViewerToolBoxView.cpp
   toolboxes/medViewerToolBoxTime.cpp
   toolboxes/medViewerToolBoxViewProperties.cpp
   toolboxes/medBrowserToolBoxPacsHost.cpp
   toolboxes/medBrowserToolBoxPacsNodes.cpp
   toolboxes/medBrowserToolBoxPacsSearch.cpp
   toolboxes/medViewerToolBoxPatient.cpp
+  toolboxes/medToolBoxCompositeDataSetImporter.cpp
+  toolboxes/medToolBoxCompositeDataSetImporterCustom.cpp
+
 
   # viewContainers:
   viewContainers/medViewContainerCompare.cpp
   viewContainers/medViewContainerMulti.cpp
   viewContainers/medViewContainerCustom.cpp
   viewContainers/medViewContainerSingle.cpp
+  viewContainers/medViewContainerFiltering.cpp
   viewContainers/medViewContainer.cpp
 )
+
+set(${PROJECT_NAME}_RESOURCES medGui.qrc)
 
 ## #################################################################
 ## Build rules
@@ -248,6 +236,7 @@ add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
@@ -261,6 +250,7 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_SOURCES_QRC}
   ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES_WRAP})
 

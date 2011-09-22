@@ -1,5 +1,5 @@
-/* medViewerConfigurationVisualization.h --- 
- * 
+/* medViewerConfigurationVisualization.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 14:11:43 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 5
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef medViewerConfigurationVisualization_H
@@ -36,11 +36,20 @@ public:
     ~medViewerConfigurationVisualization(void);
     virtual void setupViewContainerStack();
     virtual QString description(void) const;
-        
+
+public slots:
+    /**
+     * @brief Connects toolboxes to the current container
+     *
+     * @param name the container name
+    */
+
+    virtual void connectToolboxesToCurrentContainer(const QString &name);
+
 private:
     medViewerConfigurationVisualizationPrivate *d;
 };
 
-medViewerConfiguration *createMedViewerConfigurationVisualization(void);
+medViewerConfiguration *createMedViewerConfigurationVisualization(QWidget* parent);
 
 #endif

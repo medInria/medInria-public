@@ -61,7 +61,7 @@ public slots:
     
 //    void onBlendModeSet(bool value);
 //    void onCheckerboardModeSet(bool value);
-	
+
     void onToolBoxChosen(const QString&);
     void clear(void);
     void onSaveImage(void);

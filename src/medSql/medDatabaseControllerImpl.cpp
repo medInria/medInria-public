@@ -1,4 +1,4 @@
-#include "medDatabaseControllerImpl.h"
+#include <medDatabaseControllerImpl.h>
 
 #include <QtCore>
 #include <QtGui>
@@ -13,13 +13,13 @@
 #include <medMessageController.h>
 #include <medStorage.h>
 #include <medJobManager.h>
-#include <medMetaDataHelper.h>
+#include <medMetaDataKeys.h>
 
-#include "medDatabaseImporter.h"
-#include "medDatabaseExporter.h"
-#include "medDatabaseReader.h"
-#include "medDatabaseRemover.h"
-#include "medDatabaseWriter.h"
+#include <medDatabaseImporter.h>
+#include <medDatabaseExporter.h>
+#include <medDatabaseReader.h>
+#include <medDatabaseRemover.h>
+#include <medDatabaseWriter.h>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace {
@@ -29,9 +29,9 @@ namespace {
             return false;
         }
         return true;
-    } 
+    }
 }
-class medDatabaseControllerImplPrivate 
+class medDatabaseControllerImplPrivate
 {
 public:
     void buildMetaDataLookup();
@@ -62,68 +62,68 @@ const QString medDatabaseControllerImplPrivate::T_patient = "patient";
 void medDatabaseControllerImplPrivate::buildMetaDataLookup()
 {
 // The table defines the mapping between metadata in the dtkAbstractData and the database tables.
-    metaDataLookup.insert( medMetaDataHelper::KEY_ThumbnailPath(), 
+    metaDataLookup.insert(medMetaDataKeys::ThumbnailPath.key(),
         TableEntryList() << TableEntry(T_image, "thumbnail", true)
         << TableEntry(T_series, "thumbnail", true)
         << TableEntry(T_study, "thumbnail", true)
         << TableEntry(T_patient, "thumbnail", true) );
 
 //Patient data
-    metaDataLookup.insert( medMetaDataHelper::KEY_PatientName(), 
+    metaDataLookup.insert(medMetaDataKeys::PatientName.key(),
         TableEntryList() << TableEntry(T_patient, "name") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Gender(), 
+    metaDataLookup.insert(medMetaDataKeys::Gender.key(),
         TableEntryList() << TableEntry(T_patient, "gender") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_BirthDate(), 
+    metaDataLookup.insert(medMetaDataKeys::BirthDate.key(),
         TableEntryList() << TableEntry(T_patient, "birthdate") );
 //Study Data
-    metaDataLookup.insert( medMetaDataHelper::KEY_StudyDescription(), 
+    metaDataLookup.insert(medMetaDataKeys::StudyDescription.key(),
         TableEntryList() << TableEntry(T_study, "name") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_StudyID(), 
+    metaDataLookup.insert(medMetaDataKeys::StudyID.key(),
         TableEntryList() << TableEntry(T_study, "uid") );
 //Series Data
-    metaDataLookup.insert( medMetaDataHelper::KEY_Size(), 
+    metaDataLookup.insert(medMetaDataKeys::Size.key(),
         TableEntryList() << TableEntry(T_series, "size") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SeriesDescription(), 
+    metaDataLookup.insert(medMetaDataKeys::SeriesDescription.key(),
         TableEntryList() << TableEntry(T_series, "name") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Size(), 
+    metaDataLookup.insert(medMetaDataKeys::Size.key(),
         TableEntryList() << TableEntry(T_series, "size") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SeriesID(), 
+    metaDataLookup.insert(medMetaDataKeys::SeriesID.key(),
         TableEntryList() << TableEntry(T_series, "uid") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Orientation(), 
+    metaDataLookup.insert(medMetaDataKeys::Orientation.key(),
         TableEntryList() << TableEntry(T_series, "orientation") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SeriesNumber(), 
+    metaDataLookup.insert(medMetaDataKeys::SeriesNumber.key(),
         TableEntryList() << TableEntry(T_series, "seriesNumber") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SequenceName(), 
+    metaDataLookup.insert(medMetaDataKeys::SequenceName.key(),
         TableEntryList() << TableEntry(T_series, "sequenceName") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_SliceThickness(), 
+    metaDataLookup.insert(medMetaDataKeys::SliceThickness.key(),
         TableEntryList() << TableEntry(T_series, "sliceThickness") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Rows(), 
+    metaDataLookup.insert(medMetaDataKeys::Rows.key(),
         TableEntryList() << TableEntry(T_series, "rows") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Columns(), 
+    metaDataLookup.insert(medMetaDataKeys::Columns.key(),
         TableEntryList() << TableEntry(T_series, "columns") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Age(), 
+    metaDataLookup.insert(medMetaDataKeys::Age.key(),
         TableEntryList() << TableEntry(T_series, "age") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Description(), 
+    metaDataLookup.insert(medMetaDataKeys::Description.key(),
         TableEntryList() << TableEntry(T_series, "description") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Modality(), 
+    metaDataLookup.insert(medMetaDataKeys::Modality.key(),
         TableEntryList() << TableEntry(T_series, "modality") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Protocol(), 
+    metaDataLookup.insert(medMetaDataKeys::Protocol.key(),
         TableEntryList() << TableEntry(T_series, "protocol") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Comments(), 
+    metaDataLookup.insert(medMetaDataKeys::Comments.key(),
         TableEntryList() << TableEntry(T_series, "comments") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Status(), 
+    metaDataLookup.insert(medMetaDataKeys::Status.key(),
         TableEntryList() << TableEntry(T_series, "status") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_AcquisitionDate(), 
+    metaDataLookup.insert(medMetaDataKeys::AcquisitionDate.key(),
         TableEntryList() << TableEntry(T_series, "acquisitiondate") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_ImportationDate(), 
+    metaDataLookup.insert(medMetaDataKeys::ImportationDate.key(),
         TableEntryList() << TableEntry(T_series, "importationdate") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Referee(), 
+    metaDataLookup.insert(medMetaDataKeys::Referee.key(),
         TableEntryList() << TableEntry(T_series, "referee") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Performer(), 
+    metaDataLookup.insert(medMetaDataKeys::Performer.key(),
         TableEntryList() << TableEntry(T_series, "performer") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Institution(), 
+    metaDataLookup.insert(medMetaDataKeys::Institution.key(),
         TableEntryList() << TableEntry(T_series, "institution") );
-    metaDataLookup.insert( medMetaDataHelper::KEY_Report(), 
+    metaDataLookup.insert(medMetaDataKeys::Report.key(),
         TableEntryList() << TableEntry(T_series, "report") );
 
 //Image data
@@ -176,6 +176,7 @@ bool medDatabaseControllerImpl::createConnection(void)
 bool medDatabaseControllerImpl::closeConnection(void)
 {
     m_database.close();
+    QSqlDatabase::removeDatabase("QSQLITE");
     d->isConnected = false;
     return true;
 }
@@ -237,7 +238,7 @@ medDataIndex medDatabaseControllerImpl::indexForStudy(const QString &patientName
 
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    
+
     if(query.first()) {
         studyId = query.value(0);
         index.setStudyId(studyId.toInt());
@@ -362,20 +363,41 @@ medDataIndex medDatabaseControllerImpl::indexForImage(const QString &patientName
     return medDataIndex();
 }
 
-medDataIndex medDatabaseControllerImpl::import(const QString& file)
+void medDatabaseControllerImpl::import(const QString& file,const QString& importUuid)
 {
-    Q_UNUSED(file);
-
-    emit(updated(medDataIndex()));
-
-    return medDataIndex();
+    //No one does anything with this importUuid for the permanent db yet.
+    //Just override the import(file,indexWithoutcopying method to enable this).
+    Q_UNUSED(importUuid)
+    import(file,false);
 }
 
-medDataIndex medDatabaseControllerImpl::import( dtkAbstractData *data )
+void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)
+{
+    QFileInfo info(file);
+    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
+    //if we want to add importUuid support to permanent db,
+    //we need to change the importer and its addedIndex signal to suppot importUuid
+    //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
+    connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
+    connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
+    connect(importer, SIGNAL(failure(QObject *)), importer, SLOT(deleteLater()));
+    //connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+
+    emit(displayJobItem(importer, info.baseName()));
+
+    medJobManager::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
+}
+
+void medDatabaseControllerImpl::import( dtkAbstractData *data,const QString& importUuid)
 {
     medDatabaseWriter *writer = new medDatabaseWriter(data);
-
+    //if we want to add importUuid support to permanent db,
+    //we need to change the importer and its addedIndex signal to suppot importUuid
+    //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
+    Q_UNUSED(importUuid)
     connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(writer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(writer, SIGNAL(success(QObject *)), writer, SLOT(deleteLater()));
@@ -383,7 +405,8 @@ medDataIndex medDatabaseControllerImpl::import( dtkAbstractData *data )
 
     medMessageController::instance()->showProgress(writer, "Saving database item");
 
-    return writer->run();
+    medJobManager::instance()->registerJobItem(writer);
+    QThreadPool::globalInstance()->start(writer);
 }
 
 dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
@@ -396,11 +419,18 @@ dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIn
     connect(reader.data(), SIGNAL(success(QObject *)), reader.data(), SLOT(deleteLater()));
     connect(reader.data(), SIGNAL(failure(QObject *)), reader.data(), SLOT(deleteLater()));
 
+    connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
+
     medMessageController::instance()->showProgress(reader.data(), "Opening database item");
 
     dtkSmartPointer<dtkAbstractData> data;
     data = reader->run();
     return data;
+}
+
+void medDatabaseControllerImpl::showOpeningError(QObject *sender)
+{
+    medMessageController::instance()->showError(sender, "Opening item failed.", 3000);
 }
 
 void medDatabaseControllerImpl::createPatientTable(void)
@@ -468,17 +498,21 @@ void medDatabaseControllerImpl::createSeriesTable(void)
 
 void medDatabaseControllerImpl::createImageTable(void)
 {
+    // Note to the reader who came here looking for the 'size' column:
+    // it was removed because it was always filled with a
+    // placeholder (number 64), and it was never read.
+
     QSqlQuery query(*(this->database()));
     query.exec(
             "CREATE TABLE image ("
             " id         INTEGER      PRIMARY KEY,"
             " series     INTEGER," // FOREIGN KEY
-            " size       INTEGER,"
             " name          TEXT,"
             " path          TEXT,"
             " instance_path TEXT,"
             " thumbnail     TEXT,"
-            " slice      INTEGER"
+            " slice      INTEGER,"
+            " isIndexed  BOOLEAN"
             ");"
             );
 }
@@ -596,7 +630,7 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
     QThreadPool::globalInstance()->start(remover);
 }
 
-QString medDatabaseControllerImpl::metaData( const medDataIndex& index, const QString &key ) const
+QString medDatabaseControllerImpl::metaData(const medDataIndex& index,const QString& key) const
 {
     typedef medDatabaseControllerImplPrivate::MetaDataMap MetaDataMap;
     typedef medDatabaseControllerImplPrivate::TableEntryList TableEntryList;
@@ -608,11 +642,11 @@ QString medDatabaseControllerImpl::metaData( const medDataIndex& index, const QS
     MetaDataMap::const_iterator it(d->metaDataLookup.find(key));
     if (it == d->metaDataLookup.end() ) {
         return QString();
-    } 
+    }
 
     QString ret;
     bool isPath = false;
-    for ( TableEntryList::const_iterator entryIt(it.value().begin() ); 
+    for ( TableEntryList::const_iterator entryIt(it.value().begin() );
         entryIt != it.value().end(); ++entryIt ) {
 
         const QString tableName = entryIt->table;
@@ -662,7 +696,7 @@ bool medDatabaseControllerImpl::setMetaData( const medDataIndex& index, const QS
     MetaDataMap::const_iterator it(d->metaDataLookup.find(key));
     if (it == d->metaDataLookup.end() ) {
         return false;
-    } 
+    }
 
     bool success (false);
 
@@ -689,7 +723,7 @@ bool medDatabaseControllerImpl::setMetaData( const medDataIndex& index, const QS
             query.bindValue(":value", value);
             query.bindValue(":id", id);
             success = EXEC_QUERY(query);
-            if ( success ) 
+            if ( success )
                 break;
         }
     }
@@ -795,6 +829,57 @@ QString medDatabaseControllerImpl::stringForPath( const QString & name ) const
     ret.replace(0x00EA, 'e');
     ret.replace (0x00E4, 'a');
     return ret;
+}
+
+bool medDatabaseControllerImpl::contains(const medDataIndex &index) const
+{
+    if (index.isValid() && index.dataSourceId() == dataSourceId())
+    {
+        //index is valid and comes from this dataSource
+        QVariant patientId = index.patientId();
+        QVariant studyId = index.studyId();
+        QVariant seriesId = index.seriesId();
+        QVariant imageId = index.imageId();
+
+        QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
+        query.prepare("SELECT id FROM patient WHERE id = :id");
+        query.bindValue(":id", patientId);
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        if (query.first())
+        {
+            //patient exists.
+            if (studyId == -1) //we don't care about studies.
+                return true;
+            query.prepare("SELECT id FROM study WHERE id = :id");
+            query.bindValue(":id", studyId);
+            if(!query.exec())
+                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+            if (query.first())
+            {
+                //study exists.
+                if (seriesId == -1)  //we don't care about series
+                    return true;
+                query.prepare("SELECT id FROM series WHERE id = :id");
+                query.bindValue(":id", seriesId);
+                if(!query.exec())
+                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                if (query.first())
+                {
+                    //series exists
+                    if (imageId == -1) //we don't care about image
+                        return true;
+                    query.prepare("SELECT id FROM image WHERE series = :series");
+                    query.bindValue(":series", seriesId);
+                    if(!query.exec())
+                        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                    if(query.first())
+                        return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 

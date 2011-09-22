@@ -1,5 +1,5 @@
-/* medDatabaseItem.cpp --- 
- * 
+/* medDatabaseItem.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Oct 17 12:08:53 2008 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 62
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 #include <medDataIndex.h>
 #include <medDatabaseItem.h>
@@ -41,8 +41,9 @@ medDatabaseItem::medDatabaseItem(medDataIndex index, const QList<QVariant>& attr
 medDatabaseItem::~medDatabaseItem(void)
 {
     qDeleteAll(d->childItems);
-
+    d->childItems.clear();
     delete d;
+    d = NULL;
 }
 
 medAbstractDatabaseItem *medDatabaseItem::child(int row)
@@ -64,7 +65,7 @@ int medDatabaseItem::row(void) const
 {
     if (d->parentItem)
         return d->parentItem->d->childItems.indexOf(const_cast<medDatabaseItem*>(this));
-    
+
     return 0;
 }
 
