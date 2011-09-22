@@ -43,7 +43,7 @@ public:
 public slots:
     void clear(void);
 signals:
-    void objectDropped (void);
+    void objectDropped (const medDataIndex& index);
     
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
