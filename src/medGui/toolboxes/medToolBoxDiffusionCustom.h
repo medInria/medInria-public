@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 14:16:25 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 15:46:03 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 1
+ * Last-Updated: Wed Mar  2 15:03:07 2011 (+0100)
+ *           By: Jaime Garcia_Guevara
+ *     Update #: 3
  */
 
 /* Commentary:
@@ -32,9 +32,11 @@ class dtkAbstractData;
 class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
 {
     Q_OBJECT
+
 public:
              medToolBoxDiffusionCustom(QWidget *parent = 0);
     virtual ~medToolBoxDiffusionCustom(void);
+
     virtual void setDiffusionToolBox(medToolBoxDiffusion *toolbox);
 
     virtual QString description (void) const = 0;

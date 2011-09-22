@@ -26,6 +26,14 @@
 #include <QtCore>
 #include <dtkCore/dtkAbstractData.h>
 
+#undef Q_OBJECT
+#undef signals
+#undef slots
+
+#define Q_OBJECT
+#define signals public
+#define slots
+
 #include <medDataIndex.h>
 #include <medDataManager.h>
 %}

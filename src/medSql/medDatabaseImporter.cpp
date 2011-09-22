@@ -841,6 +841,12 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader( Q
 {
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
+    if (readers.size()==0) {
+        emit showError(this, tr("No reader plugin"), 5000);
+        emit failure(this);
+        return NULL;
+    }
+
     // cycle through readers to see if the last used reader can handle the file
     dtkSmartPointer<dtkAbstractDataReader> dataReader;
     for (int i=0; i<readers.size(); i++) {

@@ -1,5 +1,5 @@
-/* medDatabaseModel.cpp --- 
- * 
+/* medDatabaseModel.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct 14 22:57:50 2008 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 447
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 #include <QtGui>
 #include <QtCore>
@@ -62,7 +62,7 @@ medAbstractDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index)
     if (index.isValid()) {
         medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
         if (item) 
-        return item;
+            return item;
     }
 
     return root;
@@ -78,7 +78,9 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
     const int dataCount = d->DataCount;
 
     d->ptAttributes = QList<QVariant>();
+#if QT_VERSION > 0x0406FF
     d->ptAttributes.reserve(dataCount);
+#endif
     for (int i(0); i<dataCount; ++i)
         d->ptAttributes.append(NulString);
 
@@ -87,7 +89,9 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
     d->ptAttributes[6] = medMetaDataKeys::Gender.key();
 
     d->seAttributes = QList<QVariant>();
+#if QT_VERSION > 0x0406FF
     d->seAttributes.reserve(dataCount);
+#endif
     for (int i(0); i<dataCount; ++i)
         d->seAttributes.append(NulString);
     d->seAttributes[1] = medMetaDataKeys::StudyDescription.key();
@@ -104,7 +108,9 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
     d->seAttributes[18] = medMetaDataKeys::Report.key();
 
     d->data = QList<QVariant>();
+#if QT_VERSION > 0x0406FF
     d->data.reserve(dataCount);
+#endif
     for (int i(0); i<dataCount; ++i)
         d->data.append(NulString);
 
@@ -138,7 +144,7 @@ int medDatabaseModel::rowCount(const QModelIndex& parent) const
 
     if (parent.column() > 0)
         return 0;
-    
+
     if (!parent.isValid())
         parentItem = d->root;
     else
@@ -168,7 +174,7 @@ QVariant medDatabaseModel::data(const QModelIndex& index, int role) const
 {
     if (!index.isValid())
         return QVariant();
-    
+
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
     
@@ -298,10 +304,10 @@ QModelIndex medDatabaseModel::parent(const QModelIndex& index) const
 }
 
 //! Get item flags for a model index.
-/*! 
+/*!
  * Used by other components to obtain information about each item
  * provided by the model.
- * 
+ *
  * \param index The index of the item for which flags are required.
  * \return A combination of flags.
  */
@@ -313,7 +319,7 @@ Qt::ItemFlags medDatabaseModel::flags(const QModelIndex& index) const
 
 //! Sets the role data for the item at index to value. Returns true if
 //! successful, otherwise returns false.
-/*! 
+/*!
  * This method is used to modify the item of data associated with a
  * specified model index.
  *
@@ -330,7 +336,7 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
 
     if(index.column() == 0)
         return false;
-    
+
     medAbstractDatabaseItem *item = d->item(index);
 
     bool result = item->setData(index.column(), value);
@@ -431,10 +437,10 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 {
     if (action == Qt::IgnoreAction)
         return true;
-    
+
     if (!data->hasFormat("text/uri-list"))
         return false;
-    
+
     if (!data->hasUrls())
         return false;
 
@@ -461,7 +467,7 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 // /////////////////////////////////////////////////////////////////
 // Initialization
 // /////////////////////////////////////////////////////////////////
-    
+
 void medDatabaseModel::repopulate(void)
 {
     beginRemoveRows(QModelIndex(),0,rowCount());
@@ -477,11 +483,11 @@ void medDatabaseModel::repopulate(void)
 }
 
 //! Model population.
-/*! 
+/*!
  *  This method fills the model in with the data. The actual data is
  *  contained within an medDatabaseItem and the later is accessed from
  *  an index using the QModelIndex::internalPointer() method.
- * 
+ *
  * \param root The root item of the model.
  */
 
@@ -521,7 +527,7 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
                 QVariant attribute = d->ptAttributes[i];
                 if ( !attribute.isNull() ) {
                     QString value =  dbc->metaData(patient, attribute.toString() );
-                    if ( !value.isEmpty() ) 
+                    if ( !value.isEmpty() )
                         ptData[i] = value;
                 }
             }
@@ -542,14 +548,14 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
                         QVariant attribute = d->seAttributes[i];
                         if ( !attribute.isNull() ) {
                             QString value =  dbc->metaData(serie, attribute.toString() );
-                            if ( !value.isEmpty() ) 
+                            if ( !value.isEmpty() )
                                 seData[i] = value;
                         }
                     }
                     medAbstractDatabaseItem *seItem = new medDatabaseItem(serie, d->seAttributes, seData, ptItem);
 
                     ptItem->append(seItem);
-                } // foreach series 
+                } // foreach series
             } // foreach study
             // ptItem->append(stItem);
             root->append(ptItem);
@@ -561,7 +567,9 @@ QStringList medDatabaseModel::columnNames() const
 {
     if ( d->columnNames.isEmpty() ) {
         QStringList ret;
+#if QT_VERSION > 0x0406FF
         ret.reserve( d->DataCount );
+#endif
         for (int i(0); i<d->DataCount; ++i)
             ret.append(QString());
 
@@ -588,6 +596,3 @@ QStringList medDatabaseModel::columnNames() const
     }
     return d->columnNames;
 }
-
-
-
