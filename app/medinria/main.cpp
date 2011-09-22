@@ -1,5 +1,5 @@
-/* main.cpp --- 
- * 
+/* main.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu Sep 17 08:29:18 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 139
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include <QtGui>
@@ -28,11 +28,11 @@
 
 #include <dtkScript/dtkScriptManager.h>
 
-#include <medCore/medPluginManager.h>
-#include <medCore/medDataIndex.h>
-#include <medSql/medDatabaseController.h>
-#include <medCore/medSettingsManager.h>
-#include <medCore/medStorage.h>
+#include <medPluginManager.h>
+#include <medDataIndex.h>
+#include <medDatabaseController.h>
+#include <medSettingsManager.h>
+#include <medStorage.h>
 
 
 int main(int argc, char *argv[])
@@ -48,12 +48,23 @@ int main(int argc, char *argv[])
 
     QSplashScreen splash(QPixmap(":/pixmaps/medinria-splash.png"), Qt::WindowStaysOnTopHint);
 
-    // Do not show the splash screen in debug builds because it hogs the 
-    // foreground, hiding all other windows. This makes debugging the startup 
+    // Do not show the splash screen in debug builds because it hogs the
+    // foreground, hiding all other windows. This makes debugging the startup
     // operations difficult.
 #if ! defined( _DEBUG ) // && defined( WINDOWS )
-    QObject::connect(medDatabaseController::instance().data(), SIGNAL(copyMessage(QString, int, QColor)), &splash, SLOT(showMessage(QString, int, QColor)) ); 
+    QObject::connect(medDatabaseController::instance().data(), SIGNAL(copyMessage(QString, int, QColor)), &splash, SLOT(showMessage(QString, int, QColor)) );
+
+    application.setMsgColor(Qt::white);
+    application.setMsgAlignment(Qt::AlignLeft|Qt::AlignBottom);
+
+    QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString&)),
+                     &application, SLOT(redirectMessageToSplash(const QString&)) );
+    QObject::connect(medPluginManager::instance(), SIGNAL(loaded(QString)),
+                     &application, SLOT(redirectMessageToSplash(QString)) );
+    QObject::connect(&application, SIGNAL(showMessage(const QString&, int, const QColor&)),
+                     &splash, SLOT(showMessage(const QString&, int, const QColor&)) );
     splash.show();
+    splash.showMessage("Loading plugins...",Qt::AlignLeft|Qt::AlignBottom,Qt::white);
 #endif
 
     // DATABASE INITIAL ROUTINE
@@ -64,7 +75,7 @@ int main(int argc, char *argv[])
     // if the user configured a new location for the database in the settings editor, we'll need to move it
     QString newLocation = mnger->value("medDatabaseSettingsWidget", "new_database_location").toString();
     if (!newLocation.isEmpty()) {
-        
+
         // if the locations are different we need to move the db to the new location
         if (currentLocation.compare(newLocation) != 0) {
             if(!medDatabaseController::instance()->moveDatabase(newLocation)){
@@ -81,10 +92,10 @@ int main(int argc, char *argv[])
 
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
-    
+
     medMainWindow mainwindow;
     mainwindow.show();
-   
+
 
     if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
     && !dtkApplicationArgumentsContain(&application, "--wall")){
@@ -107,10 +118,11 @@ int main(int argc, char *argv[])
     splash.finish(&mainwindow);
 
     int status = application.exec();
-    
+
     medPluginManager::instance()->uninitialize();
     dtkScriptManager::instance()->uninitialize();
-    
+
 
     return status;
 }
+

@@ -11,7 +11,7 @@ medAbstractDataSourceFactory *medAbstractDataSourceFactory::instance(void)
 {
     if(!s_instance)
         s_instance = new medAbstractDataSourceFactory;
-    
+
     return s_instance;
 }
 
@@ -21,7 +21,7 @@ bool medAbstractDataSourceFactory::registerDataSource(QString type, medAbstractD
         d->dataSource_creators.insert(type, func);
         return true;
     }
-    
+
     return false;
 }
 
@@ -30,13 +30,13 @@ QList<QString> medAbstractDataSourceFactory::dataSourcePlugins(void)
     return d->dataSource_creators.keys();
 }
 
-medAbstractDataSource *medAbstractDataSourceFactory::create(QString type)
+medAbstractDataSource *medAbstractDataSourceFactory::create(QString type,QWidget * parent)
 {
     if(!d->dataSource_creators.contains(type))
         return NULL;
-    
-    medAbstractDataSource *conf = d->dataSource_creators[type]();
-    
+
+    medAbstractDataSource *conf = d->dataSource_creators[type](parent);
+
     return conf;
 }
 

@@ -1,5 +1,5 @@
-/* medDatabaseWriter.cpp --- 
- * 
+/* medDatabaseWriter.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:27:20 2010 (+0200)
@@ -9,24 +9,25 @@
  *     Update #: 19
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#include "medDatabaseController.h"
-#include "medDatabaseWriter.h"
-#include <medCore/medStorage.h>
-#include <medCore/medDataIndex.h>
+#include <medDatabaseController.h>
+#include <medDatabaseWriter.h>
+#include <medMetaDataKeys.h>
+#include <medStorage.h>
+#include <medDataIndex.h>
+#include <medAbstractDataImage.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkLog.h>
 
@@ -34,11 +35,13 @@ class medDatabaseWriterPrivate
 {
 public:
     dtkAbstractData *data;
+    bool isCancelled;
 };
 
-medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data) : QObject(), d(new medDatabaseWriterPrivate)
+medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data) : medJobItem(), d(new medDatabaseWriterPrivate)
 {
     d->data = data;
+    d->isCancelled = false;
 }
 
 medDatabaseWriter::~medDatabaseWriter(void)
@@ -48,147 +51,147 @@ medDatabaseWriter::~medDatabaseWriter(void)
     d = NULL;
 }
 
-medDataIndex medDatabaseWriter::run(void)
+void medDatabaseWriter::run(void)
 {
     if (!d->data) {
         emit failure (this);
-	return medDataIndex();
+    return;
     }
 
-    if(!d->data->hasMetaData("SeriesDescription")) {
+    if(!d->data->hasMetaData(medMetaDataKeys::SeriesDescription.key())) {
         qDebug() << "Critical: data has no SeriesDescription, cannot save it";
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
-    
+
     // copied from medDatabaseImporter::run()
-    
-    if(!d->data->hasMetaData("PatientName"))
-        d->data->addMetaData("PatientName", QStringList() << "John Doe");
 
-    if(!d->data->hasMetaData("StudyDescription"))
-        d->data->addMetaData("StudyDescription", QStringList() << "EmptyStudy");
+    if(!d->data->hasMetaData(medMetaDataKeys::PatientName.key()))
+        d->data->addMetaData(medMetaDataKeys::PatientName.key(), QStringList() << "John Doe");
 
-    // if(!d->data->hasMetaData("SeriesDescription"))
-    // d->data->addMetaData("SeriesDescription", QStringList() << fileInfo.baseName());
+    if(!d->data->hasMetaData(medMetaDataKeys::StudyDescription.key()))
+        d->data->addMetaData(medMetaDataKeys::StudyDescription.key(), QStringList() << "EmptyStudy");
 
-    if(!d->data->hasMetaData("StudyID"))
-        d->data->addMetaData("StudyID", QStringList() << "");
-    
-    if(!d->data->hasMetaData("SeriesID"))
-        d->data->addMetaData("SeriesID", QStringList() << "");
+    // if(!d->data->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+    // d->data->addMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << fileInfo.baseName());
 
-    if(!d->data->hasMetaData("Orientation"))
-        d->data->addMetaData("Orientation", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::StudyID.key()))
+        d->data->addMetaData(medMetaDataKeys::StudyID.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("SeriesNumber"))
-        d->data->addMetaData("SeriesNumber", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::SeriesID.key()))
+        d->data->addMetaData(medMetaDataKeys::SeriesID.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("SequenceName"))
-        d->data->addMetaData("SequenceName", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Orientation.key()))
+        d->data->addMetaData(medMetaDataKeys::Orientation.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("SliceThickness"))
-        d->data->addMetaData("SliceThickness", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::SeriesNumber.key()))
+        d->data->addMetaData(medMetaDataKeys::SeriesNumber.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Rows"))
-        d->data->addMetaData("Rows", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::SequenceName.key()))
+        d->data->addMetaData(medMetaDataKeys::SequenceName.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Columns"))
-        d->data->addMetaData("Columns", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::SliceThickness.key()))
+        d->data->addMetaData(medMetaDataKeys::SliceThickness.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Age"))
-        d->data->addMetaData("Age", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Rows.key()))
+        d->data->addMetaData(medMetaDataKeys::Rows.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("BirthDate"))
-        d->data->addMetaData("BirthDate", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Columns.key()))
+        d->data->addMetaData(medMetaDataKeys::Columns.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Gender"))
-        d->data->addMetaData("Gender", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Age.key()))
+        d->data->addMetaData(medMetaDataKeys::Age.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Description"))
-        d->data->addMetaData("Description", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::BirthDate.key()))
+        d->data->addMetaData(medMetaDataKeys::BirthDate.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Modality"))
-        d->data->addMetaData("Modality", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Gender.key()))
+        d->data->addMetaData(medMetaDataKeys::Gender.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Protocol"))
-        d->data->addMetaData("Protocol", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Description.key()))
+        d->data->addMetaData(medMetaDataKeys::Description.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Comments"))
-        d->data->addMetaData("Comments", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Modality.key()))
+        d->data->addMetaData(medMetaDataKeys::Modality.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Status"))
-        d->data->addMetaData("Status", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Protocol.key()))
+        d->data->addMetaData(medMetaDataKeys::Protocol.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("AcquisitionDate"))
-        d->data->addMetaData("AcquisitionDate", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Comments.key()))
+        d->data->addMetaData(medMetaDataKeys::Comments.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("ImportationDate"))
-        d->data->addMetaData("ImportationDate", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Status.key()))
+        d->data->addMetaData(medMetaDataKeys::Status.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Referee"))
-        d->data->addMetaData("Referee", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::AcquisitionDate.key()))
+        d->data->addMetaData(medMetaDataKeys::AcquisitionDate.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Performer"))
-        d->data->addMetaData("Performer", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::ImportationDate.key()))
+        d->data->addMetaData(medMetaDataKeys::ImportationDate.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Institution"))
-        d->data->addMetaData("Institution", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Referee.key()))
+        d->data->addMetaData(medMetaDataKeys::Referee.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("Report"))
-        d->data->addMetaData("Report", QStringList() << "");
+    if(!d->data->hasMetaData(medMetaDataKeys::Performer.key()))
+        d->data->addMetaData(medMetaDataKeys::Performer.key(), QStringList() << "");
 
-    if(!d->data->hasMetaData("FilePaths"))
-        d->data->addMetaData("FilePaths", QStringList() << "generated with medinria");
+    if(!d->data->hasMetaData(medMetaDataKeys::Institution.key()))
+        d->data->addMetaData(medMetaDataKeys::Institution.key(), QStringList() << "");
+
+    if(!d->data->hasMetaData(medMetaDataKeys::Report.key()))
+        d->data->addMetaData(medMetaDataKeys::Report.key(), QStringList() << "");
+
+    if(!d->data->hasMetaData(medMetaDataKeys::FilePaths.key()))
+        d->data->addMetaData(medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medinria");
 
     QString size ="";
-    if (dtkAbstractDataImage *imagedata = dynamic_cast<dtkAbstractDataImage*> (d->data) )
+    if (medAbstractDataImage *imagedata = dynamic_cast<medAbstractDataImage*> (d->data) )
         size = QString::number (imagedata->zDimension() );
-    d->data->addMetaData ("Size", size);
+    d->data->addMetaData (medMetaDataKeys::Size.key(), size);
 
 
-    QString patientName = d->data->metaDataValues("PatientName")[0];
-    QString studyName   = d->data->metaDataValues("StudyDescription")[0];
-    QString seriesName  = d->data->metaDataValues("SeriesDescription")[0];
+    QString patientName = d->data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
+    QString studyName   = d->data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
+    QString seriesName  = d->data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 
-    QString studyId        = d->data->metaDataValues("StudyID")[0];
-    QString seriesId       = d->data->metaDataValues("SeriesID")[0];
-    QString orientation    = d->data->metaDataValues("Orientation")[0];
-    QString seriesNumber   = d->data->metaDataValues("SeriesNumber")[0];
-    QString sequenceName   = d->data->metaDataValues("SequenceName")[0];
-    QString sliceThickness = d->data->metaDataValues("SliceThickness")[0];
-    QString rows           = d->data->metaDataValues("Rows")[0];
-    QString columns        = d->data->metaDataValues("Columns")[0];
-    QString age            = d->data->metaDataValues("Age")[0];
-    QString birthdate      = d->data->metaDataValues("BirthDate")[0];
-    QString gender         = d->data->metaDataValues("Gender")[0];
-    QString description    = d->data->metaDataValues("Description")[0];
-    QString modality       = d->data->metaDataValues("Modality")[0];
-    QString protocol       = d->data->metaDataValues("Protocol")[0];
-    QString comments       = d->data->metaDataValues("Comments")[0];
-    QString status         = d->data->metaDataValues("Status")[0];
-    QString acqdate        = d->data->metaDataValues("AcquisitionDate")[0];
-    QString importdate     = d->data->metaDataValues("ImportationDate")[0];
-    QString referee        = d->data->metaDataValues("Referee")[0];
-    QString performer      = d->data->metaDataValues("Performer")[0];
-    QString institution    = d->data->metaDataValues("Institution")[0];
-    QString report         = d->data->metaDataValues("Report")[0];
+    QString studyId        = d->data->metaDataValues(medMetaDataKeys::StudyID.key())[0];
+    QString seriesId       = d->data->metaDataValues(medMetaDataKeys::SeriesID.key())[0];
+    QString orientation    = d->data->metaDataValues(medMetaDataKeys::Orientation.key())[0];
+    QString seriesNumber   = d->data->metaDataValues(medMetaDataKeys::SeriesNumber.key())[0];
+    QString sequenceName   = d->data->metaDataValues(medMetaDataKeys::SequenceName.key())[0];
+    QString sliceThickness = d->data->metaDataValues(medMetaDataKeys::SliceThickness.key())[0];
+    QString rows           = d->data->metaDataValues(medMetaDataKeys::Rows.key())[0];
+    QString columns        = d->data->metaDataValues(medMetaDataKeys::Columns.key())[0];
+    QString age            = d->data->metaDataValues(medMetaDataKeys::Age.key())[0];
+    QString birthdate      = d->data->metaDataValues(medMetaDataKeys::BirthDate.key())[0];
+    QString gender         = d->data->metaDataValues(medMetaDataKeys::Gender.key())[0];
+    QString description    = d->data->metaDataValues(medMetaDataKeys::Description.key())[0];
+    QString modality       = d->data->metaDataValues(medMetaDataKeys::Modality.key())[0];
+    QString protocol       = d->data->metaDataValues(medMetaDataKeys::Protocol.key())[0];
+    QString comments       = d->data->metaDataValues(medMetaDataKeys::Comments.key())[0];
+    QString status         = d->data->metaDataValues(medMetaDataKeys::Status.key())[0];
+    QString acqdate        = d->data->metaDataValues(medMetaDataKeys::AcquisitionDate.key())[0];
+    QString importdate     = d->data->metaDataValues(medMetaDataKeys::ImportationDate.key())[0];
+    QString referee        = d->data->metaDataValues(medMetaDataKeys::Referee.key())[0];
+    QString performer      = d->data->metaDataValues(medMetaDataKeys::Performer.key())[0];
+    QString institution    = d->data->metaDataValues(medMetaDataKeys::Institution.key())[0];
+    QString report         = d->data->metaDataValues(medMetaDataKeys::Report.key())[0];
 
 
-
-    QSqlQuery query(*(medDatabaseController::instance()->database()));
+    medDatabaseControllerImpl * dbi = medDatabaseController::instance();
+    QSqlQuery query(*(dbi->database()));
     QVariant id;
-    
+
     // Check if PATIENT/STUDY/SERIES already exists in the database
 
     bool dataExists = false;
-    
+
     query.prepare("SELECT id FROM patient WHERE name = :name");
     query.bindValue(":name", patientName);
-    
+
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    
+
     if(query.first()) {
         id = query.value(0);
 
@@ -223,11 +226,11 @@ medDataIndex medDatabaseWriter::run(void)
 	    }
 	}
     }
-    
+
     if (dataExists) {
         qDebug() << "data is already in the database, skipping";
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
 
 
@@ -235,77 +238,86 @@ medDataIndex medDatabaseWriter::run(void)
     // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
     QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
 
-    QString s_patientName = patientName.simplified();
-    QString s_studyName   = studyName.simplified();
-    QString s_seriesName  = seriesName.simplified();
+    QString s_patientName = dbi->stringForPath( patientName );
+    QString s_studyName   = dbi->stringForPath( studyName );
+    QString s_seriesName  = dbi->stringForPath( seriesName );
 
-    s_patientName.replace (0x00EA, 'e');
-    s_studyName.replace   (0x00EA, 'e');
-    s_seriesName.replace  (0x00EA, 'e');
-    s_patientName.replace (0x00E4, 'a');
-    s_studyName.replace   (0x00E4, 'a');
-    s_seriesName.replace  (0x00E4, 'a');	
+    QString subDirName = "/" +
+        s_patientName + "/" +
+        s_studyName;
+    QString imageFileNameBase =  subDirName + "/" +
+                            s_seriesName; //  + ".mha";
 
-    QString imageFileName = "/" +
-                            s_patientName + "/" +
-                            s_studyName   + "/" +
-                            s_seriesName  + ".mha";
-
-
-    d->data->addMetaData ("FileName", imageFileName);
+    QDir dir( medStorage::dataLocation() + subDirName );
+    if (!dir.exists()) {
+        if ( !medStorage::mkpath(medStorage::dataLocation() + subDirName) ) {
+            dtkDebug() << "Unable to create directory for images";
+            emit failure (this);
+            return ;
+        }
+    }
 
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
     int writeSuccess = 0;
-    
+
     for (int i=0; i<writers.size(); i++)
     {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
+        dtkSmartPointer<dtkAbstractDataWriter> dataWriter;
+        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
         qDebug() << "trying " << dataWriter->description();
-        
+
         if (!dataWriter->handled().contains(d->data->description()))
         {
             qDebug() << "failed with " << dataWriter->description();
 	    continue;
         }
-        
+
         qDebug() << "success with " << dataWriter->description();
 	dataWriter->setData (d->data);
 
+        QStringList extensions = dataWriter->supportedFileExtensions();
+        QString extension;
+        if ( extensions.isEmpty() ) {
+            extension = ".mha";
+        } else {
+            extension = extensions[0];
+        }
+        QString imageFileName = imageFileNameBase + extension;
         qDebug() << "trying to write in file : "<< medStorage::dataLocation() + imageFileName;
-        
-	if (dataWriter->canWrite (medStorage::dataLocation() + imageFileName)) {
-	    if (dataWriter->write( medStorage::dataLocation() + imageFileName )) {
-		writeSuccess = 1;
-		delete dataWriter;
-		break;
-	    }
-	}
+
+        if (dataWriter->canWrite (medStorage::dataLocation() + imageFileName)) {
+            if (dataWriter->write( medStorage::dataLocation() + imageFileName )) {
+                writeSuccess = 1;
+                d->data->addMetaData ("FileName", imageFileName);
+                break;
+            }
+        }
     }
 
     if (!writeSuccess) {
 	emit failure (this);
-	return medDataIndex();
+    return;
     }
 
 
 
 
-    QStringList filePaths  = d->data->metaDataValues ("FilePaths");
-    QString     seriesPath = d->data->metaDataValues ("FileName")[0];
+    QStringList filePaths  = d->data->metaDataValues(medMetaDataKeys::FilePaths.key());
+    QString     seriesPath = d->data->metaDataValues("FileName")[0];
 
 
     // generate and save the thumbnails
     QList<QImage> &thumbnails = d->data->thumbnails();
-    
-    QFileInfo   seriesInfo (imageFileName);
+
+    QFileInfo   seriesInfo (seriesPath);
     QString     thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
     QStringList thumbPaths;
 
     if (thumbnails.count())
         if (!medStorage::mkpath (medStorage::dataLocation() + thumb_dir))
 	    qDebug() << "Cannot create directory: " << thumb_dir;
-    
+
     for (int j=0; j<thumbnails.count(); j++) {
         QString thumb_name = thumb_dir + QString().setNum (j) + ".jpg";
         thumbnails[j].save(medStorage::dataLocation() + thumb_name, "JPG");
@@ -315,11 +327,12 @@ medDataIndex medDatabaseWriter::run(void)
     QImage  thumbnail = d->data->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
     QString thumbPath = thumb_dir + "ref.jpg";
     thumbnail.save (medStorage::dataLocation() + thumbPath, "JPG");
-    
+
 
     // Now, populate the database
 
-    medDataIndex index;
+    medDataIndex index(medDatabaseController::instance()->dataSourceId(), medDataIndex::NOT_VALID,
+        medDataIndex::NOT_VALID, medDataIndex::NOT_VALID, medDataIndex::NOT_VALID);
 
     ////////////////////////////////////////////////////////////////// PATIENT
 
@@ -351,7 +364,7 @@ medDataIndex medDatabaseWriter::run(void)
     query.bindValue(":studyID", studyId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    
+
     if(query.first()) {
         id = query.value(0);
         index.setStudyId (id.toInt());
@@ -368,7 +381,7 @@ medDataIndex medDatabaseWriter::run(void)
     }
 
     ///////////////////////////////////////////////////////////////// SERIES
-    
+
     query.prepare("SELECT * FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
     query.bindValue(":id",             id);
     query.bindValue(":name",           seriesName);
@@ -382,7 +395,7 @@ medDataIndex medDatabaseWriter::run(void)
 
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    
+
     if(query.first()) {
         id = query.value(0);
         index.setSeriesId (id.toInt());
@@ -439,9 +452,8 @@ medDataIndex medDatabaseWriter::run(void)
 	        ; //qDebug() << "Image" << file << "already in database";
 	    }
 	    else {
-	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
+	    query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
 		query.bindValue(":series", id);
-		query.bindValue(":size", 64);
 		query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
 		query.bindValue(":path", fileInfo.filePath());
 		query.bindValue(":instance_path", seriesPath);
@@ -467,9 +479,8 @@ medDataIndex medDatabaseWriter::run(void)
 	        ; //qDebug() << "Image" << file << "already in database";
 	    }
 	    else {
-	        query.prepare("INSERT INTO image (series, size, name, path, instance_path, thumbnail) VALUES (:series, :size, :name, :path, :instance_path, :thumbnail)");
+	        query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
 		query.bindValue(":series", id);
-		query.bindValue(":size", 64);
 		query.bindValue(":name", fileInfo.fileName());
 		query.bindValue(":path", fileInfo.filePath());
 		query.bindValue(":instance_path", seriesPath);
@@ -486,6 +497,11 @@ medDataIndex medDatabaseWriter::run(void)
 
     emit progressed(100);
     emit success(this);
-
-    return index;
+    emit addedIndex(index);
 }
+
+void medDatabaseWriter::onCancel( QObject* )
+{
+    d->isCancelled = true;
+}
+

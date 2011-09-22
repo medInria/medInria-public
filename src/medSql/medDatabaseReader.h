@@ -1,5 +1,5 @@
-/* medDatabaseReader.h --- 
- * 
+/* medDatabaseReader.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:25:31 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 12
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASEREADER_H
@@ -22,7 +22,9 @@
 
 #include <QtCore/QObject>
 
-#include <medCore/medDataIndex.h>
+#include <dtkCore/dtkSmartPointer.h>
+
+#include <medDataIndex.h>
 
 class dtkAbstractData;
 
@@ -36,11 +38,15 @@ public:
      medDatabaseReader(const medDataIndex& index);
     ~medDatabaseReader(void);
 
-    dtkAbstractData *run(void);
+    dtkSmartPointer<dtkAbstractData> run(void);
 
     QString getFilePath();
 
     qint64 getDataSize();
+
+protected:
+    dtkSmartPointer<dtkAbstractData> readFile(QString filename);
+    dtkSmartPointer<dtkAbstractData> readFile(const QStringList filenames );
 
 signals:
     void success(QObject *);

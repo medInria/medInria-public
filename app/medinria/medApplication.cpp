@@ -1,27 +1,31 @@
 /* medApplication.cpp ---
- * 
+ *
  * Author: John Stark
  * Copyright (C) 2011 - John Stark, Inria.
  * Created: May 2011
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medApplication.h"
 
-#include <dtkCore/dtkGlobal.h>
-
 #include <QtGui>
+
+#include <dtkCore/dtkGlobal.h>
+#include <dtkCore/dtkLog.h>
+#include <medPluginManager.h>
 
 class medApplicationPrivate
 {
 public:
+    QColor msgColor;
+    int msgAlignment;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -42,6 +46,15 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setStyle( new QPlastiqueStyle() );
     this->setStyleSheet(dtkReadFile(":/medinria.qss"));
 
+    //Set some splash screen properties:
+    setMsgColor(Qt::black);
+    setMsgAlignment(Qt::AlignLeft);
+
+    //redirect medPluginManager msgs to the logs
+    QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString &)),
+                     this, SLOT(redirectErrorMessageToLog(const QString&)) );
+    QObject::connect(medPluginManager::instance(), SIGNAL(loaded(QString)),
+                     this, SLOT(redirectMessageToLog(QString)) );
 }
 
 medApplication::~medApplication(void)
@@ -50,3 +63,37 @@ medApplication::~medApplication(void)
     d = NULL;
 }
 
+void medApplication::setMsgColor(const QColor& color)
+{
+    d->msgColor = color;
+}
+
+const QColor& medApplication::msgColor()
+{
+    return d->msgColor;
+}
+
+int medApplication::msgAlignment()
+{
+    return d->msgAlignment;
+}
+
+void medApplication::setMsgAlignment(int alignment)
+{
+    d->msgAlignment = alignment;
+}
+
+void medApplication::redirectMessageToLog(const QString &message)
+{
+    dtkOutput()<< message;
+}
+
+void medApplication::redirectErrorMessageToLog(const QString &message)
+{
+    dtkError()<< message;
+}
+
+void medApplication::redirectMessageToSplash(const QString &message)
+{
+    emit showMessage(message,d->msgAlignment,d->msgColor);
+}

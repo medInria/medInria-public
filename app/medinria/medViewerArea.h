@@ -1,5 +1,5 @@
-/* medViewerArea.h --- 
- * 
+/* medViewerArea.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Sep 18 12:42:58 2009 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 114
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDVIEWERAREA_H
@@ -22,14 +22,14 @@
 
 #include <QtGui>
 
-#include <medGui/medViewerConfiguration.h>
+#include <medViewerConfiguration.h>
 
 class dtkAbstractView;
 
 class medDataIndex;
 class medToolBox;
 class medViewContainer;
-class medStackedViewContainers;
+class medTabbedViewContainers;
 class medViewerAreaPrivate;
 
 /**
@@ -44,13 +44,13 @@ class medViewerArea : public QWidget
 
 public:
      /**
-      * @brief 
+      * @brief
       *
       * @param parent
      */
      medViewerArea(QWidget *parent = 0);
     /**
-     * @brief 
+     * @brief
      *
      * @param void
     */
@@ -60,13 +60,13 @@ public:
      * @brief Called whenever the viewer area is switched to. Add viewer area
      *  specific status widgets on the left of the status bar.
      *
-     * @param status     
-    */    
+     * @param status
+    */
     void setup(QStatusBar *status);
-    
+
     /**
      * @brief Status bar setdown
-     *  
+     *
      * Called whenever the viewer area is left. Remove viewer area
      * specific status widgets from the left of the status bar.
      *
@@ -77,10 +77,10 @@ public:
 public slots:
     /**
      * @brief Sets up the newly chosen configuration.
-     * 
+     *
      * When a configuration is switched to, sets up all the signal/slot connections
      * to raise the new medViewerConfiguration.
-     * This calls the factory if the configuration is not yet in the private 
+     * This calls the factory if the configuration is not yet in the private
      * hash table of configurations
      *
      * @param name the identifyer/description of the configuration.
@@ -104,17 +104,34 @@ public slots:
      * @param index Could describe just an image, or a complete Series,
      * Study or even Patient.
     */
-    void open(const medDataIndex& index);
-    
+    bool open(const medDataIndex& index);
+
+    /**
+     * @brief Open data corresponding to index \param index in a new tab.
+     *
+     * @param index Could describe just an image, or a complete Series,
+     * Study or even Patient.
+     */
+    bool openInTab(const medDataIndex& index);
+
     /**
      * @brief Opens file on the local filesystem.
-     * 
-     * Calls open(const medDataIndex& index) with a 
-     * new index created from the medDatabaseNonPersistentController 
+     *
+     * Calls open(const medDataIndex& index) with a
+     * new index created from the medDatabaseNonPersistentController
      * @param file
     */
     void open(const QString& file);
-    
+
+    /**
+     * @brief Opens file on the local filesystem.
+     *
+     * Calls openInTab(const medDataIndex& index) with a
+     * new index created from the medDatabaseNonPersistentController
+     * @param file
+    */
+    void openInTab(const QString& file);
+
     /**
      * @brief  Update the medToolBoxes and frees the memory.
      *
@@ -124,35 +141,42 @@ public slots:
     void onViewClosed(void);
 
     /**
-     * @brief Switch the view area layout to the one of patient 
+     * @brief  Updates the medToolBoxes when a layer (data) has been removed from a view.
+     *
+     * @param void
+    */
+    void onDataRemoved(int layer);
+
+    /**
+     * @brief Switch the view area layout to the one of patient
      * with database index \param index.
      *
-     * Also sets numerous depending elements: the 
+     * Also sets numerous depending elements: the
      * @param index
     */
     void switchToPatient(const medDataIndex& index);
-    
-    
+
+
     /**
-     * @brief Switches between stack of containers 
+     * @brief Switches between stack of containers
      * (from one configuration to an other)
      *
      * Called from the setupConfiguration method.
      * @param stack
     */
-    void switchToStackedViewContainers(medStackedViewContainers* stack);
-    
+    void switchToStackedViewContainers(medTabbedViewContainers* stack);
+
     /**
      * @brief Switches between medViewContainers.
      *
      * The list of containers is different from one configuration to an other.
-     * This method tries to switch to a container of name \param name. 
+     * This method tries to switch to a container of name \param name.
      * If it doesn't exist, does nothing.
      *
      * @param name the identifyer/description of the container.
     */
     void switchToContainer(const QString& name);
-    
+
     /**
      * @brief Set custom view preset
      *  Presets are defined in medViewContainerCustom::Preset.
@@ -167,7 +191,7 @@ public slots:
      * @param toolbox
     */
     void addToolBox(medToolBox *toolbox);
-    
+
     /**
      * @brief Removes a medToolBox from the medToolBoxContainer.
      *
@@ -185,10 +209,13 @@ public slots:
     */
     void switchToLayout (medViewerConfiguration::LayoutType layout);
 
+//    void onFileOpened(const medDataIndex &index);
+    void onFileOpenedInTab(const medDataIndex &index);
+
 protected slots:
     /**
-     * @brief View focused callback. 
-     * 
+     * @brief View focused callback.
+     *
      *  This method updates the toolboxes according to the focused view.
      *
      * @param view
@@ -197,25 +224,26 @@ protected slots:
 
 protected:
     /**
-     * @brief Returns the current view container.
+     * @brief Returns the current root view container.
      *
-     * Note that container are hierarchical structures. 
-     * This methods returns the root container in the current medStackedViewContainers.
+     * Note that containers are hierarchical structures.  This methods
+     * returns the root container in the current
+     * medTabbedViewContainers.
      *
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer      *currentContainer(void);
-    
+    medViewContainer      *currentRootContainer(void);
+
     /**
      * @brief Returns the currently focused child container.
-     * 
-     * Note that container are hierarchical structures. 
-     * This methods returns a container that can contain a view. 
+     *
+     * Note that containers are hierarchical structures.
+     * This methods returns a container that can contain a view.
      * It's a leaf in the container tree.
      *
      * @param void
-     * @return medViewContainer * 
+     * @return medViewContainer *
     */
     medViewContainer      *currentContainerFocused(void);
 
@@ -226,7 +254,7 @@ protected slots:
      * @param checked
     */
     void bringUpTransferFunction(bool checked);
-    
+
     /**
      * @brief Updates the transfer function of the current view
      *
@@ -242,7 +270,7 @@ signals:
      *
     */
     void clearOnPatientChange();
-    
+
 private:
     friend class medMessageController;
 

@@ -24,7 +24,9 @@ project(medinria)
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  medApplication.h  
+  medApplication.h
+  medHomepageArea.h
+  medHomepageButton.h
   medBrowserArea.h  
   medBrowserToolBoxSource.h
   medBrowserToolBoxSettings.h  
@@ -33,8 +35,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerConfigurationDiffusion.h
   medViewerConfigurationVisualization.h
   medViewerConfigurationRegistration.h   
+  medViewerConfigurationFiltering.h 
   medViewerToolBoxConfiguration.h  
-  medViewerToolBoxPatient.h    
   medPacsDataSource.h 
   medFileSystemDataSource.h  
   medDatabaseDataSource.h
@@ -47,17 +49,19 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_SOURCES
   main.cpp
-  medApplication.cpp  
+  medApplication.cpp
+  medHomepageArea.cpp
+  medHomepageButton.cpp
   medBrowserArea.cpp  
   medBrowserToolBoxSource.cpp
   medBrowserToolBoxSettings.cpp    
   medMainWindow.cpp
   medViewerArea.cpp    
   medViewerToolBoxConfiguration.cpp
-  medViewerToolBoxPatient.cpp  
   medViewerConfigurationDiffusion.cpp
   medViewerConfigurationVisualization.cpp
   medViewerConfigurationRegistration.cpp   
+  medViewerConfigurationFiltering.cpp   
   medPacsDataSource.cpp  
   medFileSystemDataSource.cpp
   medDatabaseDataSource.cpp
@@ -90,8 +94,19 @@ if(WIN32)
   set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES} ${PROJECT_NAME}.rc)
 endif()
 
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+    "medPch.h" "../../src/medPch/medPch.cpp" 
+    ${${PROJECT_NAME}_SOURCES_WRAP}
+    ${${PROJECT_NAME}_SOURCES_QRC}
+    ${${PROJECT_NAME}_SOURCES_MOC}
+    ${${PROJECT_NAME}_SOURCES})
+endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+
+include_directories(${PROJECT_NAME}_BINARY_DIR)
 
 add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM}
+  ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SOURCES_WRAP}
   ${${PROJECT_NAME}_SOURCES_QRC}
   ${${PROJECT_NAME}_SOURCES_MOC}

@@ -1,5 +1,5 @@
-/* medDatabaseNonPersitentController.h --- 
- * 
+/* medDatabaseNonPersitentController.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Sun Jun 27 17:45:07 2010 (+0200)
@@ -9,20 +9,20 @@
  *     Update #: 58
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATABASENONPERSISTENTCONTROLLERIMPL_H
 #define MEDDATABASENONPERSISTENTCONTROLLERIMPL_H
 
-#include <medCore/medAbstractDbController.h>
+#include <medAbstractDbController.h>
 #include "medSqlExport.h"
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QList>
@@ -30,19 +30,21 @@
 class dtkAbstractData;
 class medDatabaseNonPersistentItem;
 class medDatabaseNonPersistentControllerImplPrivate;
+class medImportJobWatcher;
+
 
 class MEDSQL_EXPORT medDatabaseNonPersistentControllerImpl: public medAbstractDbController
 {
     Q_OBJECT
 
 public:
-    
+
     medDatabaseNonPersistentControllerImpl(void);
     ~medDatabaseNonPersistentControllerImpl(void);
 
-    
+
     /**
-    * Get the table indices 
+    * Get the table indices
     * @params bool increment if true auto-increment the counter
     * @return int return the id (before incrementation)
     */
@@ -56,7 +58,7 @@ public:
     * @params void
     * @return int
     */
-    int nonPersistentDataStartingIndex(void);
+    int nonPersistentDataStartingIndex(void) const;
 
     /* proprietary method, should be avoided */
     QList<medDatabaseNonPersistentItem *> items(void);
@@ -68,7 +70,7 @@ public:
     * Status of connection, should always be true
     * @return bool
     */
-    bool isConnected();
+    bool isConnected() const;
 
     /**
     * return the size that the data behind the medDataIndex in byte
@@ -77,35 +79,71 @@ public:
     */
     qint64 getEstimatedSize(const medDataIndex& index) const;
 
+    /** List all the items in the DB */
+    QList<medDataIndex> availableItems() const;
+    virtual QString metaData(const medDataIndex& index, const QString& key) const;
+    virtual QImage thumbnail( const medDataIndex& index) const;
+
+    /**Implement base class */
+    virtual int dataSourceId() const;
+
+    /** Enumerate all patients stored in this DB*/
+    virtual QList<medDataIndex> patients() const;
+
+    /** Enumerate all studies for given patient*/
+    virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
+
+    /** Enumerate all series for given patient*/
+    virtual QList<medDataIndex> series(const medDataIndex& index ) const;
+
+    /** Enumerate all images for given patient*/
+    virtual QList<medDataIndex> images(const medDataIndex& index ) const;
+
+    /** Return true if data source is persistent. This implementation returns false.*/
+    virtual bool isPersistent() const;
+
+    /** Set metadata for specific item. Return true on success, false otherwise. */
+    virtual bool setMetaData(const medDataIndex& index, const QString& key, const QString& value);
+
 public slots:
 
     /**
-    * Read data from nonPersistent storage using the index
+    * Reads data from nonPersistent storage using the index
     * @params const medDataIndex & index Index to look for
     * @return dtkAbstractData* data
     */
-    QSharedPointer<dtkAbstractData> read(const medDataIndex& index) const;
+    dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const;
 
     /**
-    * Store data temporarily referenced by temp index
-    * @params dtkAbstractData * data data to be stored
-    * @return medDataIndex assigned index
+    * Stores data temporarily referenced by temp index
+    * @param data data to be stored
+    * @param callerUuid
     */
-    medDataIndex import(dtkAbstractData *data);
-
+    void import(dtkAbstractData *data,const QString& callerUuid);
 
     /**
-    * Store data temporarily referenced by temp index
-    * @params const QString & file data stored at file path
-    * @return medDataIndex - assigned index
-    */
-    medDataIndex import(const QString& file);
+     * Stores data temporarily referenced by temp index
+     * @param file data stored at file path.
+     * @param callerUuid caller's identifier.
+     */
+    void import(const QString& file,const QString& callerUuid);
+
+    /**
+     * Remove data referenced by index from temporary database
+     * @params const medDataIndex & index : data index
+     */
+    void remove(const medDataIndex& index);
 
     /**
     * Removes any reference to non-persistent data. Do not actually free memory.
     */
     void clear (void);
 
+    /** true if the given data index matches one in our db*/
+    bool contains( const medDataIndex& index) const;
+
+signals:
+    void updated(const medDataIndex&, const QString&);
 
 private:
     medDatabaseNonPersistentControllerImplPrivate *d;
