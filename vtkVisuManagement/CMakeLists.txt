@@ -30,6 +30,7 @@ SET(vtkVisuManagement_SRCS
 )
 
 SET(vtkLandmarkManagement_SRCS
+ vtkLandmark.cxx
  vtkLandmarkManager.cxx
  vtkLandmarkManagerCallback.cxx
 )
