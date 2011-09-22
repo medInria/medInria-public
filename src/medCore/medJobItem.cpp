@@ -2,7 +2,8 @@
 
 medJobItem::medJobItem() : QRunnable()
 {
-    connect(this, SIGNAL(progressed(QObject*, int)), this, SLOT(onProgressed(QObject*, int)));
+    // Use  Qt::DirectConnection to avoid a crash when processing queued events after this has been deleted.
+    connect(this, SIGNAL(progressed(QObject*, int)), this, SLOT(onProgressed(QObject*, int)), Qt::DirectConnection);
 }
 
 medJobItem::~medJobItem()
