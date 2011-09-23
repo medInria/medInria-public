@@ -27,7 +27,11 @@ void SeedPointAnnotation::paint( QPainter * painter, const QStyleOptionGraphicsI
 
     painter->save();
 
-    painter->setPen( seedPointAnnotationData()->color() );
+    QColor color =   seedPointAnnotationData()->isSelected() ?
+         seedPointAnnotationData()->selectedColor() :
+         seedPointAnnotationData()->color();
+
+    painter->setPen( color );
     painter->setRenderHints( 
         QPainter::Antialiasing          |
         QPainter::SmoothPixmapTransform |
@@ -95,6 +99,12 @@ void SeedPointAnnotation::onSceneCameraChanged()
 void SeedPointAnnotation::onSceneOrientationChanged()
 {
     this->onSceneChanged( this->scene() );
+}
+
+void SeedPointAnnotation::onDataModified()
+{
+    this->onSceneChanged( this->scene() );
+    BaseClass::onDataModified();
 }
 
 

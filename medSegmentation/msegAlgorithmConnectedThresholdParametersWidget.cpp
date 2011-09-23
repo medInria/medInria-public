@@ -77,6 +77,7 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
     m_lowThresh->setToolTip( tr("Set the lower threshold") );
     m_highThresh = new QDoubleSpinBox(this);
     m_highThresh->setToolTip( tr("Set the upper threshold") );
+    m_lowThresh->setMaximum( 20000. );
     m_highThresh->setMaximum( 20000. );
 
     highLowLayout->addWidget( m_lowThresh );
@@ -87,6 +88,7 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
     layout->addWidget(m_seedPointTable);
 
     m_seedPointTable->setColumnCount(2);
+    m_seedPointTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_seedPointTable->setHorizontalHeaderLabels( QStringList() << tr("Index") << tr("Location") );
     m_addSeedPointButton = new QPushButton( tr("Add") , this);
     m_removeSeedPointButton = new QPushButton( tr("Remove") , this);
@@ -115,13 +117,14 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
         this, SLOT(onRemoveSeedPointPressed ()));
     connect (m_applyButton,     SIGNAL(pressed()),
         this, SLOT(onApplyButtonPressed()));
-
+    connect(m_seedPointTable, SIGNAL(itemSelectionChanged()), 
+        this, SLOT(onSeedPointTableSelectionChanged()));
 }
 
 AlgorithmConnectedThresholdParametersWidget::~AlgorithmConnectedThresholdParametersWidget()
 {
     foreach( const SeedPoint & seed, m_seedPoints ) {
-        controller()->removeAnnotation( seed.annotationData );
+        seed.annotationData->parentData()->removeAttachedData(seed.annotationData);
     }
 }
 
@@ -151,7 +154,8 @@ void AlgorithmConnectedThresholdParametersWidget::onRemoveSeedPointPressed()
     // Delete from the end so that indices are untouched.
     for( IntVector::const_reverse_iterator rit( rowsToDelete.rbegin() ); rit != rowsToDelete.rend(); ++rit ){
         m_seedPointTable->removeRow( (*rit) );
-        controller()->removeAnnotation( m_seedPoints.at(*rit).annotationData );
+        medAnnotationData * annData = m_seedPoints.at(*rit).annotationData;
+        annData->parentData()->removeAttachedData(annData);
         m_seedPoints.remove( *rit );
     }
 }
@@ -219,7 +223,8 @@ void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView 
     newSeed.annotationData->setParentData( this->m_data.data() );
 
     newSeed.annotationData->setCenterWorld(vec);
-    newSeed.annotationData->setColor( Qt::red );
+    newSeed.annotationData->setSelectedColor( Qt::red );
+    newSeed.annotationData->setColor( Qt::cyan );
     m_seedPoints.append( newSeed );
 
     int newRow = m_seedPointTable->rowCount();
@@ -229,8 +234,7 @@ void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView 
     QString vecString = QString("%1,%2,%3").arg( vec.x() , 5 ).arg( vec.y() , 5 ).arg( vec.z() , 5 );
     m_seedPointTable->setItem( newRow, 1, new QTableWidgetItem( vecString )) ;
 
-    controller()->addAnnotation(newSeed.annotationData);
-
+    this->m_data->addAttachedData(newSeed.annotationData);
 }
 
 void AlgorithmConnectedThresholdParametersWidget::onViewMousePress( medAbstractView *view, const QVector3D &vec )
@@ -264,6 +268,26 @@ QString AlgorithmConnectedThresholdParametersWidget::s_localizedName(const QObje
 
     return trObj->tr( "Connected Threshold" );
 }
+
+void AlgorithmConnectedThresholdParametersWidget::onSeedPointTableSelectionChanged()
+{
+    QList<QTableWidgetItem *> selection = m_seedPointTable->selectedItems();
+    typedef QSet<int> IntVector;
+    IntVector selectedRows;
+    foreach( QTableWidgetItem * item, selection ) {
+        selectedRows.insert( item->row() );
+    }
+
+    for ( int i(0); i<m_seedPoints.size(); ++i) {
+
+        if ( selectedRows.contains(i) ) {
+            m_seedPoints[i].annotationData->setSelected(true);
+        } else {
+            m_seedPoints[i].annotationData->setSelected(false);
+        }
+    }
+}
+
 
 
 

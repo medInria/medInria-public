@@ -26,6 +26,10 @@ public:
 
     qreal radiusScene() const { return m_radiusScene; }
     void setRadiusScene(qreal val);
+
+    QColor selectedColor() const { return m_selectedColor; }
+    void setSelectedColor(QColor val);
+
     QColor color() const { return m_color; }
     void setColor(QColor val);
 
@@ -34,11 +38,15 @@ public:
 
     static QString s_description();
 
+    virtual void setSelected(bool value);
+    bool isSelected() const { return m_isSelected; }
+
 protected:
     qreal m_radiusScene;
+    QColor m_selectedColor;
     QColor m_color;
     QVector3D m_centerWorld;
-
+    bool m_isSelected;
 };
 
 }

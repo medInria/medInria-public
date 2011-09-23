@@ -222,7 +222,21 @@ QVector3D v3dViewGraphicsScene::sceneToWorld( const QPointF & sceneVec) const
             (sizey*(viewport[3]-viewport[1])) - 1.0;
     double vz = 0.;
 
+    if (this->isScene2D() ) {
+        // Project the point into the view plane.
+        vtkCamera * cam = ren->GetActiveCamera();
+        double pointInDisplayPlane[3];
+        if (cam) {
+            cam->GetFocalPoint(pointInDisplayPlane);
+        } else {
+            d->view->currentView()->GetCurrentPoint(pointInDisplayPlane);
+        }
+        ren->WorldToView(pointInDisplayPlane[0],pointInDisplayPlane[1],pointInDisplayPlane[2]);
+        vz = pointInDisplayPlane[2];
+    }
+
     ren->ViewToWorld(vx,vy,vz);
+
     return QVector3D( vx, vy, vz );
 
 }

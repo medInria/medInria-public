@@ -44,15 +44,10 @@ public:
 
     QString localizedNameForAlgorithm( const QString & algName ) const;
 
-    void addAnnotation( medAnnotationData * annotation );
-    void removeAnnotation( medAnnotationData * annotation );
-
 signals:
     void algorithmAdded( QString name );
 
 public slots:
-    void onViewAdded(dtkAbstractView* view);
-    void onViewRemoved(dtkAbstractView* view);
     void onAlgorithmSelected( const QString & name );
 
     void onSuccess( QObject * sender );
@@ -65,7 +60,6 @@ protected:
     void activateViews( bool isActivate = true );
     medAnnotationFactory * annotationFactory();
 
-    bool addAnnotationToScene( medAbstractViewScene * vscene, medAnnotationData * annotation );
 private:
 
     ControllerPrivate * d;

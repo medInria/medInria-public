@@ -46,6 +46,8 @@ public slots:
 
     void onViewMousePress(medAbstractView *view, const QVector3D &vec);
 
+    void onSeedPointTableSelectionChanged();
+
 protected:
     void addSeedPoint( medAbstractView *view, const QVector3D &vec );
     void setData( dtkAbstractData *data );

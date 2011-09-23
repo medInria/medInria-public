@@ -16,6 +16,8 @@ class SeedPointAnnotationData;
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT SeedPointAnnotation : public medAnnotationGraphicsObject
 {
     Q_OBJECT;
+    typedef medAnnotationGraphicsObject BaseClass;
+
 public:
     SeedPointAnnotation( QGraphicsItem * parent = 0 );
     virtual ~SeedPointAnnotation(void);
@@ -32,6 +34,8 @@ protected:
     void onSceneCameraChanged() MED_OVERRIDE;
     void onSceneOrientationChanged() MED_OVERRIDE;
     void initializeSceneCoordinates();
+    void onDataModified() MED_OVERRIDE;
+
 private:
     const SeedPointAnnotationData *seedPointAnnotationData() const;
 
