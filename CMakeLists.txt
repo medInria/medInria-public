@@ -68,6 +68,11 @@ endif (BUILD_TESTING)
 ## #################################################################
 ## Input
 ## #################################################################
+if(MSVC)
+  #Macros that enable precompiled headers to be added, defined by dtk.
+  include(dtkPch)
+  option(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+endif(MSVC)
 
 set(DEPENDS_ON_DTK 1)
 
@@ -140,12 +145,6 @@ endif()
 if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
     add_subdirectory(exampleProcessImageFilter)
 endif()
-
-if(MSVC)
-  #Macros that enable precompiled headers to be added, defined by dtk.
-  include(dtkPch)
-  option(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
-endif(MSVC)
 
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_V3DDATA_PLUGIN OR
