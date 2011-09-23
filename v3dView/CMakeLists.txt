@@ -130,15 +130,12 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES})
 
-include_directories(${CMAKE_SOURCE_DIR}/src/medAbstractViewExtension)
-
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
   dtkCore
   medCore
-  medAbstractViewExtension
   vtkCommon
   vtkRendering
   vtkImageView

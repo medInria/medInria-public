@@ -131,6 +131,7 @@ void Controller::onSuccess( QObject * sender )
     AlgorithmGeneric * alg = d->runningProcesses.value( sender );
 
 #pragma message DTK_COMPILER_WARNING("JDS : Need to complete this")
+//#error
     /*
     Create a segmentation algorithm, pass it the data and 
         run it. 

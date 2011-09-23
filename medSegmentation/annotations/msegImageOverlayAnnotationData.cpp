@@ -9,22 +9,14 @@
 
 namespace mseg {
 
-ImageOverlayAnnotationData::ImageOverlayAnnotationData() :
-    m_radiusScene(10)
+ImageOverlayAnnotationData::ImageOverlayAnnotationData()
 {
     // TODO Auto-generated constructor stub
-
 }
 
 ImageOverlayAnnotationData::~ImageOverlayAnnotationData()
 {
     // TODO Auto-generated destructor stub
-}
-
-void ImageOverlayAnnotationData::setRadiusScene( qreal val )
-{
-    m_radiusScene = val;
-    emit dataModified();
 }
 
 QString ImageOverlayAnnotationData::s_description()

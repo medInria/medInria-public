@@ -27,41 +27,17 @@ void ImageOverlayAnnotation::paint( QPainter * painter, const QStyleOptionGraphi
 
     painter->save();
 
-    painter->setPen( ImageOverlayAnnotationData()->color() );
-    painter->setRenderHints( 
-        QPainter::Antialiasing          |
-        QPainter::SmoothPixmapTransform |
-        QPainter::TextAntialiasing      );
-
-    qreal radiusScene =ImageOverlayAnnotationData()->radiusScene();
-    painter->drawEllipse( QPointF( 0.0, 0.0 ), radiusScene, radiusScene );
-
-    painter->drawLine(-radiusScene,0,radiusScene,0 );
-    painter->drawLine(0, -radiusScene, 0,radiusScene);
-
     painter->restore();
 }
 
 void ImageOverlayAnnotation::initializeSceneCoordinates()
 {
-    this->prepareGeometryChange();
-    const QVector3D centerPt = ImageOverlayAnnotationData()->centerWorld();
-    this->setPos( this->worldToScene( centerPt ) );
-    if ( this->isPointInCurrentSlice(centerPt)) {
-        this->setVisible(true);
-    } else {
-        this->setVisible(false);
-    }
     m_isInitialized = true;
 }
 
 QRectF ImageOverlayAnnotation::boundingRect( void ) const
 {
-    const qreal penWidth = 1;
-    const qreal radiusScene = ImageOverlayAnnotationData()->radiusScene();
-
-    return QRectF(-radiusScene - penWidth / 2, -radiusScene - penWidth / 2,
-        radiusScene*2 + penWidth, radiusScene*2 + penWidth);
+    return QRectF();
 }
 
 const ImageOverlayAnnotationData *ImageOverlayAnnotation::ImageOverlayAnnotationData() const

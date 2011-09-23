@@ -11,13 +11,16 @@
 
 #include <medCore/medAbstractView.h>
 
-#include <medStackedViewContainers.h>
 #include <medProgressionStack.h>
-#include <medViewerConfigurationFactory.h>
+#include <medTabbedViewContainers.h>
 #include <medViewContainer.h>
-#include <medViewerToolBoxView.h>
+#include <medViewerConfigurationFactory.h>
+#include <medViewerToolBoxLayout.h>
+#include <medViewerToolBoxViewProperties.h>
 
 #include <dtkCore/dtkLog.h>
+
+#include <stdexcept>
 
 namespace mseg {
 // /////////////////////////////////////////////////////////////////
@@ -26,7 +29,14 @@ namespace mseg {
 class ConfigurationPrivate
 {
 public:
-    medViewerToolBoxView                *viewToolBox;
+    // Give values to items without a constructor.
+    ConfigurationPrivate() : 
+      layoutToolBox(NULL), viewPropertiesToolBox(NULL), segmentationToolBox(NULL)
+    {}
+
+    medViewerToolBoxLayout              *layoutToolBox;
+    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
+
     Toolbox          *segmentationToolBox;
 
     QScopedPointer<Controller> controller;
@@ -36,16 +46,44 @@ public:
 // Configuration
 // /////////////////////////////////////////////////////////////////
 //static
-medViewerConfiguration * Configuration::createMedSegmentationConfiguration()
+medViewerConfiguration * Configuration::createMedSegmentationConfiguration(QWidget * parent)
 {
-    return new Configuration;
+    return new Configuration(parent);
 }
 
 Configuration::Configuration(QWidget * parent /* = NULL */ ) : 
 medViewerConfiguration(parent), d(new ConfigurationPrivate)
 {
-    d->segmentationToolBox = NULL;
     d->controller.reset( new Controller( this ) );
+
+    // Always have a parent.
+    if ( !parent) 
+        throw (std::runtime_error ("Must have a parent widget"));
+
+    // -- Layout toolbox --
+    d->layoutToolBox = new medViewerToolBoxLayout(parent);
+
+    connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),
+        this,             SIGNAL(layoutModeChanged(const QString&)));
+    connect (d->layoutToolBox, SIGNAL(presetClicked(int)),
+        this,             SIGNAL(layoutPresetClicked(int)));
+    connect (d->layoutToolBox, SIGNAL(split(int,int)),
+        this,             SIGNAL(layoutSplit(int,int)));
+
+    connect(this,SIGNAL(setLayoutTab(const QString &)), d->layoutToolBox, SLOT(setTab(const QString &)));
+
+    this->addToolBox( d->layoutToolBox );
+
+    // -- View toolbox --
+
+    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
+
+    this->addToolBox( d->viewPropertiesToolBox );
+
+    connect ( this, SIGNAL(layoutModeChanged(const QString &)),
+        stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
+    connect ( stackedViewContainers(), SIGNAL(currentChanged(const QString &)),
+        this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 }
 
 Configuration::~Configuration(void)
@@ -71,17 +109,17 @@ QString Configuration::ConfigurationName()
 
 void Configuration::setupViewContainerStack()
 {
+    const QString identifier(this->containerIdentifier());
     if (!stackedViewContainers()->count())
     {
         //Containers:
-        addSingleContainer();
-        // addMultiContainer();
-        // addCustomContainer();
-        connect(stackedViewContainers()->container("Single"),SIGNAL(viewAdded(dtkAbstractView*)),
-            this,SLOT(onViewAdded(dtkAbstractView*)));
-        connect(stackedViewContainers()->container("Single"),SIGNAL(viewRemoved(dtkAbstractView*)),
-            this,SLOT(onViewRemoved(dtkAbstractView*)));
+        this->addMultiContainer(identifier);
+
+        //Default container:
+        this->connectToolboxesToCurrentContainer(identifier);
     }
+
+    this->stackedViewContainers()->unlockTabs();
 }
 
 //static
@@ -121,6 +159,19 @@ Toolbox * Configuration::segmentationToobox()
     return d->segmentationToolBox;
 }
 
+QString Configuration::containerIdentifier() const
+{
+    return "Segmentation";
+}
+
+
+void Configuration::connectToolboxesToCurrentContainer(const QString &name)
+{
+    connect(stackedViewContainers()->container(name),SIGNAL(viewAdded(dtkAbstractView*)),
+        this,SLOT(onViewAdded(dtkAbstractView*)));
+    connect(stackedViewContainers()->container(name),SIGNAL(viewRemoved(dtkAbstractView*)),
+        this,SLOT(onViewRemoved(dtkAbstractView*)));
+}
 
 
 } // namespace mseg
