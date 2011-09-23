@@ -2,7 +2,7 @@
 
 #include <medCore/medAbstractData.h>
 
-#include <dtkCore/dtkSmartPOinter.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 class medAnnotationData::medAnnotationDataPrivate
 {
@@ -11,7 +11,7 @@ public:
 };
 
 medAnnotationData::medAnnotationData()
-    : dtkAbstractData(),
+    : medAttachedData(),
     d( new medAnnotationDataPrivate )
 {
 }

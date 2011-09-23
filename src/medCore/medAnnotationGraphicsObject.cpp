@@ -77,8 +77,13 @@ bool medAnnotationGraphicsObject::isPointInSlice( const QVector3D & testPoint, c
 
     distanceToPlane = distanceToPlane / sliceNormal.length();
 
-    thickness       = ( thickness       < 0 ? -thickness : thickness );
     return ( distanceToPlane >= -thickness ) && ( distanceToPlane < thickness );
+}
+
+bool medAnnotationGraphicsObject::isPointInCurrentSlice( const QVector3D & testPoint ) const
+{
+    medAbstractViewScene * scene = qobject_cast< medAbstractViewScene *>( this->scene() );
+    return this->isPointInSlice( testPoint, scene->viewCenter(), scene->viewPlaneNormal(), 0.5*scene->sliceThickness() );
 }
 
 QList<medAbstractView *> medAnnotationGraphicsObject::views() const
@@ -112,7 +117,13 @@ medAbstractView * medAnnotationGraphicsObject::view() const
 
 void medAnnotationGraphicsObject::setAnnotationData( const medAnnotationData * annotationData )
 {
+    if ( d->m_data ) {
+        disconnect( d->m_data, SIGNAL(dataModified()), this, SLOT(onDataModified()) );
+    }
     d->m_data = annotationData;
+    if ( d->m_data ) {
+        connect( d->m_data, SIGNAL(dataModified()), this, SLOT(onDataModified()) );
+    }
 }
 
 const medAnnotationData * medAnnotationGraphicsObject::annotationData() const
@@ -170,10 +181,10 @@ void medAnnotationGraphicsObject::onSceneOrientationChanged()
 
 }
 
-bool medAnnotationGraphicsObject::isPointInCurrentSlice( const QVector3D & testPoint ) const
+void medAnnotationGraphicsObject::onDataModified()
 {
-    medAbstractViewScene * scene = qobject_cast< medAbstractViewScene *>( this->scene() );
-    return this->isPointInSlice( testPoint, scene->viewCenter(), scene->viewPlaneNormal(), scene->sliceThickness() );
+    this->scene()->update( this->boundingRect() );
 }
+
 
 

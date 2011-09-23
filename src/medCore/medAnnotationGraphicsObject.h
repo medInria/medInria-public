@@ -44,6 +44,10 @@ public:
 
     virtual QVariant annotationItemChange ( AnnotationGraphicsItemChange change, const QVariant & value );
 
+protected slots:
+    //! Called when the annotation data is altered. This version just schedules an update of the scene.
+    virtual void onDataModified();
+
 protected:
     virtual QPointF worldToScene( const QVector3D & worldVec ) const;
     virtual QVector3D sceneToWorld( const QPointF & sceneVec ) const;

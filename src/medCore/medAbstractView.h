@@ -27,6 +27,10 @@
 
 class medAbstractViewPrivate;
 
+class medAbstractViewScene;
+class medAttachedData;
+class medAnnotationData;
+
 class QColor;
 
 /**
@@ -176,6 +180,10 @@ public:
 
     virtual QString getLUT(int layer) const;
     virtual QString getPreset(int layer) const;
+
+    //! Get the QGraphicsScene
+    virtual medAbstractViewScene * scene();
+
 
 signals:
     /**
@@ -335,6 +343,13 @@ public slots:
 
     void setFullScreen( bool state );
 
+    // Respond to add / removal of attached data to data items viewed.
+    virtual void onAttachedDataAdded(medAttachedData* data);
+    virtual void onAttachedDataRemoved(medAttachedData* data);
+
+    virtual void onDataRemoved( int layer, dtkAbstractData* data);
+    virtual void onDataAdded( int layer, dtkAbstractData* data);
+
 protected:
     void emitViewSliceChangedEvent    (int slice);
     void emitViewPositionChangedEvent (const QVector3D &position);
@@ -349,6 +364,9 @@ protected:
 
     // Emitted whenever the plane color changes.
     void emitColorChangedEvent();
+
+    virtual void addAnnotation( medAnnotationData * annData );
+    virtual void removeAnnotation( medAnnotationData * annData );
 
 private:
     medAbstractViewPrivate *d;

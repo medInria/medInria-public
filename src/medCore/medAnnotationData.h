@@ -3,7 +3,7 @@
 
 #include "medCoreExport.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAttachedData.h>
 
 class medAbstractData;
 
@@ -11,7 +11,7 @@ class medAbstractData;
  * Base class for the data of view annotations.
  * 
  ***/
-class MEDCORE_EXPORT medAnnotationData : public dtkAbstractData
+class MEDCORE_EXPORT medAnnotationData : public medAttachedData
 {
     Q_OBJECT;
 
