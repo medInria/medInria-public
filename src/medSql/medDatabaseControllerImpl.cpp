@@ -736,7 +736,9 @@ QList<medDataIndex> medDatabaseControllerImpl::patients() const
     QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
     query.prepare("SELECT id FROM patient");
     EXEC_QUERY(query);
+#if QT_VERSION > 0x0406FF
     ret.reserve( query.size() );
+#endif
     while( query.next() ){
         ret.push_back( medDataIndex::makePatientIndex(this->dataSourceId(), query.value(0).toInt()));
     }
@@ -757,7 +759,9 @@ QList<medDataIndex> medDatabaseControllerImpl::studies( const medDataIndex& inde
     query.prepare("SELECT id FROM study WHERE patient = :patientId");
     query.bindValue(":patientId", index.patientId());
     EXEC_QUERY(query);
+#if QT_VERSION > 0x0406FF
     ret.reserve( query.size() );
+#endif
     while( query.next() ){
         ret.push_back( medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), query.value(0).toInt()));
     }
@@ -778,7 +782,9 @@ QList<medDataIndex> medDatabaseControllerImpl::series( const medDataIndex& index
     query.prepare("SELECT id FROM series WHERE study = :studyId");
     query.bindValue(":studyId", index.studyId());
     EXEC_QUERY(query);
+#if QT_VERSION > 0x0406FF
     ret.reserve( query.size() );
+#endif
     while( query.next() ){
         ret.push_back( medDataIndex::makeSeriesIndex(this->dataSourceId(), index.patientId(), index.studyId(), query.value(0).toInt()));
     }
@@ -799,7 +805,9 @@ QList<medDataIndex> medDatabaseControllerImpl::images( const medDataIndex& index
     query.prepare("SELECT id FROM image WHERE series = :seriesId");
     query.bindValue(":seriesId", index.seriesId());
     EXEC_QUERY(query);
+#if QT_VERSION > 0x0406FF
     ret.reserve( query.size() );
+#endif
     while( query.next() ){
         ret.push_back( medDataIndex(this->dataSourceId(), index.patientId(), index.studyId(), index.seriesId(), query.value(0).toInt()));
     }

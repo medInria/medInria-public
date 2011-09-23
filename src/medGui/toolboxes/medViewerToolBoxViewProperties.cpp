@@ -251,6 +251,7 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
 void
     medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
+
     medToolBox::update(view);
     if(!view)
     {
@@ -285,6 +286,7 @@ void
             }
 
         //qDebug() << "update 3";
+           
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
             if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
@@ -325,7 +327,8 @@ void
 
 void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, int imageLayer)
 {
-
+    if(!data)
+        return;
     QString layerItemString = QString::number(imageLayer);
     d->thumbLocation = ":icons/layer.png";
 
@@ -429,10 +432,11 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 }
 void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, int meshLayer)
 {
+    if(!data)
+        return;
    // QString layerItemString;
    // if(d->view->layerCount() > 1 || d->view->meshLayerCount() > 0 )
     //    if(data)
-
     QString layerItemString = "Mesh " + QString::number(meshLayer);
 
     d->thumbLocation = ":icons/layer.png";
