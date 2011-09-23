@@ -55,9 +55,15 @@ set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 enable_testing()
 OPTION(BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
 
-mark_as_advanced(DART_ROOT)
+#configure ctest variables
+option(BUILD_REPORTING "Build Reporting")
+if(BUILD_REPORTING)
+  include(dtkReporting)
+endif(BUILD_REPORTING)
 
-include(Dart)
+if (BUILD_TESTING)
+  add_subdirectory(tests)
+endif (BUILD_TESTING)
 
 ## #################################################################
 ## Input
@@ -182,9 +188,7 @@ if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
 
-if (BUILD_TESTING)
-  add_subdirectory(tests)
-endif (BUILD_TESTING)
+
 
 include(${PROJECT_NAME}Pack)
 
