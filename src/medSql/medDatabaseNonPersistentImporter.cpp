@@ -137,7 +137,7 @@ void medDatabaseNonPersistentImporter::run(void)
 
     medDatabaseNonPersistentController::instance()->insert(index, item);
 
-    emit progressed(this, 100);
+    emit progress(this, 100);
     emit success(this);
     emit nonPersistentImported(index, d->callerUuid);
 }

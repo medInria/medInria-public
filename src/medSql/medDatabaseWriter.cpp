@@ -495,7 +495,7 @@ void medDatabaseWriter::run(void)
         }
     }
 
-    emit progressed(this, 100);
+    emit progress(this, 100);
     emit success(this);
     emit addedIndex(index);
 }

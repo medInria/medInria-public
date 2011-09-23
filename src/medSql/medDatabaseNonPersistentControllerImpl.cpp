@@ -164,7 +164,7 @@ void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
 {
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
 
-    connect(importer, SIGNAL(progress(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
     connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &)));
     connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
     connect(importer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));

@@ -30,12 +30,12 @@
  *   QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
  *   @endcode
  *
- *  WARNING : Using slots in a QRunnable is very risky. This is because 
- *    a) the events may be processed in a different thread 
- *    and 
+ *  @warning : Using slots in a QRunnable is very risky. This is because
+ *    a) the events may be processed in a different thread
+ *    and
  *    b) the deletion is performed by a delete call in QThreadPool ( and not deleteLater() )
- *   This means that events pending for the object when the job finishes may cause the app to crash : see 
- *   the warning in the doc for QObject::~QObject(). 
+ *   This means that events pending for the object when the job finishes may cause the app to crash : see
+ *   the warning in the doc for QObject::~QObject().
  * @sa  QObject::~QObject()
  */
 class MEDCORE_EXPORT medJobItem :  public QObject, public QRunnable
@@ -47,12 +47,12 @@ public:
     virtual ~medJobItem();
 
 signals:
-    void progressed(QObject* sender, int progress);
+    void progress  (QObject* sender, int progress);
     void success   (QObject* sender);
     void failure   (QObject* sender);
     void cancelled (QObject* sender);
     void showError (QObject* sender, const QString& message, unsigned int timeout);
-    void progress  (int progress); // backward compatible version (automatically called when progressed is emitted)
+    void progressed(int progress); // backward compatible version (automatically called when progressed is emitted)
 
     /**
     * This signal is emitted when the process cannot be cancelled anymore.
@@ -72,7 +72,7 @@ public slots:
     virtual void onCancel(QObject*);
 
 protected slots:
-    void onProgressed(QObject* sender, int prog);
+    void onProgress(QObject* sender, int prog);
 
 };
 

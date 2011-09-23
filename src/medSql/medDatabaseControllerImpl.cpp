@@ -394,7 +394,7 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
     //we need to change the importer and its addedIndex signal to suppot importUuid
     //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
     Q_UNUSED(importUuid)
-    connect(writer, SIGNAL(progress(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
     connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(writer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
@@ -613,7 +613,7 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
 {
     medDatabaseRemover *remover = new medDatabaseRemover(index);
 
-    connect(remover, SIGNAL(progress(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(remover, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
     connect(remover, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(remover, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(remover, SIGNAL(removed(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));

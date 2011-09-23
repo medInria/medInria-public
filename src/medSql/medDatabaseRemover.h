@@ -42,15 +42,6 @@ public:
 signals:
 
     /**
-    * Signal emitted when the removing process progresses.
-    * Note that this signal is also present in the parent @medJobItem
-    * with another name (progressed) but it has been renamed as apparently Qt
-    * does not support signal overloading.
-    * @param progress – the progress between 0 and 100
-    **/
-    //void progress(int progress);
-
-    /**
     * Signal emitted when the removing process finishes.
     * @param index – the @medDataIndex of the removed item
     **/

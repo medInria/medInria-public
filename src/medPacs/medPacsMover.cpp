@@ -16,7 +16,7 @@ public:
     QVector<medMoveCommandItem> cmdList;
 };
 
-medPacsMover::medPacsMover(const QVector<medMoveCommandItem>& cmdList): medJobItem(), 
+medPacsMover::medPacsMover(const QVector<medMoveCommandItem>& cmdList): medJobItem(),
                            d(new medPacsMoverPrivate)
 {
     d->cmdList = cmdList;
@@ -61,7 +61,7 @@ void medPacsMover::doQueuedMove()
 
             d->move->addRequestToQueue(d->cmdList.at(i).group, d->cmdList.at(i).elem, d->cmdList.at(i).query.toLatin1(), source, target);
         }
-    
+
     if(d->move->performQueuedMoveRequests() == 0)
             emit success(this);
     else
@@ -80,7 +80,7 @@ void medPacsMover::onCancel(QObject* sender)
     }
 }
 
-void medPacsMover::progressForward( int progress)
+void medPacsMover::progressForward( int prog)
 {
-    emit progressed(this, progress);
+    emit progress(this, prog);
 }

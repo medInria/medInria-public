@@ -457,7 +457,7 @@ void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
 
     if(npDb)
     {
-        connect(npDb, SIGNAL(updated(const medDataIndex &, QString )), this, 
+        connect(npDb, SIGNAL(updated(const medDataIndex &, QString )), this,
             SLOT(onNonPersistentDataImported(const medDataIndex &, QString)));
         npDb->import(data, uuid);
     }
@@ -505,7 +505,7 @@ void medDataManager::importNonPersistent( QString file, const QString &uuid )
     medAbstractDbController* npDb = d->getNonPersDbController();
     if(npDb)
     {
-        connect(npDb, SIGNAL(updated(const medDataIndex &)), this, SLOT(onNonPersistentDataImported(const medDataIndex &)));
+        connect(npDb, SIGNAL(updated(const medDataIndex &,QString)), this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));
         npDb->import(file, uuid);
     }
 }

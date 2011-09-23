@@ -93,7 +93,7 @@ void medDatabaseNonPersistentReader::run(void)
 
     foreach (QString file, fileList) {
 
-        emit progressed(this, (int)(((qreal)fileIndex/(qreal)fileCount)*50.0));
+        emit progress(this, (int)(((qreal)fileIndex/(qreal)fileCount)*50.0));
 
         fileIndex++;
 
@@ -186,7 +186,7 @@ void medDatabaseNonPersistentReader::run(void)
 
     for (it; it!=imagesToWriteMap.end(); it++) {
 
-        emit progressed(this, (int)(((qreal)imageIndex/(qreal)imagesCount)*50.0 + 50.0));
+        emit progress(this, (int)(((qreal)imageIndex/(qreal)imagesCount)*50.0 + 50.0));
 
         imageIndex++;
 
@@ -329,7 +329,7 @@ void medDatabaseNonPersistentReader::run(void)
         medDatabaseNonPersistentController::instance()->insert(index, item);
     }
 
-    emit progressed(this, 100);
+    emit progress(this, 100);
     emit success(this);
 //    qDebug() << "uuid value before signal"<< d->callerUuid;
     emit nonPersistentRead(index,d->callerUuid);
