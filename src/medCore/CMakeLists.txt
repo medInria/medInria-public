@@ -54,6 +54,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractDataMesh.h
   medAttachedData.h
   medAnnotationData.h
+  medAnnotationFactory.h
   medAnnotationGraphicsObject.h
 )
 
@@ -100,6 +101,7 @@ set(${PROJECT_NAME}_SOURCES
   medAttachedData.cpp
   medAbstractDatabaseItem.cpp
   medAnnotationData.cpp
+  medAnnotationFactory.cpp
   medAnnotationGraphicsObject.cpp
 )
 
